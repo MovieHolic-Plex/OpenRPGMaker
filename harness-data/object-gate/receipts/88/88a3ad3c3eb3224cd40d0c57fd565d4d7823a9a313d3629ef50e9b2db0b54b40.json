@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88a3ad3c3eb3224cd40d0c57fd565d4d7823a9a313d3629ef50e9b2db0b54b40",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "museum carpet area (autotile block)",
+ "label": "monster-rooms/rm_mu_carpet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet floor pattern",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor/carpet tile viewed from above, perfectly valid for a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3276
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat carpet / floor terrain autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a flat carpet/floor autotile terrain surface viewed from above as a floor plane across all 48 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4739
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain autotile representing a patterned museum carpet; fully horizontal floor plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor surface",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing the entire carpet surface viewed from above with geometric diamond patterning and border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3442
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "0ef28b56a23326dd",
+   "6bf2b58aead2e5b0",
+   "8641e3b84b77e21e",
+   "8e9c74f78b6989d2",
+   "b4eb344fd83dc5fd",
+   "c3739a2351b0274e",
+   "cfd3f64e19a3ebbd",
+   "f10cb8b1a9a5db24",
+   "fc4f7f5e3d9a7797"
+  ],
+  "24": [
+   "23c689916759f127",
+   "3de1bf24ce608bbd",
+   "4226bd2638d379e0",
+   "5af11bbcfc0ea7f0",
+   "62911189ab112b3b",
+   "7f44a49291cbbc7c",
+   "859a820a3ffdca96",
+   "879de21ca31fd054",
+   "892cda05b2752adb",
+   "9cd869b17a4217e4",
+   "ae00e374267294de",
+   "b2daf816c15af8cc",
+   "b69d5826705ad5eb",
+   "bf157d80ec31f0e7",
+   "c3710beb8f541d4a",
+   "d293fc6d941d1655",
+   "f80080cc19e89690"
+  ],
+  "32": [
+   "0866109f0b3d70a8",
+   "5e00b846bcc1cf23",
+   "6920ebfbc69df80c",
+   "940b5c449c5de7ec",
+   "c78f73014438bd79",
+   "ca17d91cba9035c7",
+   "d94714095e13a7e6",
+   "f3a267ca25a4db17"
+  ],
+  "48": [
+   "1961bc30192a0b3c",
+   "234931fa1a439537",
+   "3f853e28bbf253c4",
+   "527efc94d5095eba",
+   "80451b6cfe07bc64",
+   "c8cf2e833f1f459d"
+  ]
+ }
+}

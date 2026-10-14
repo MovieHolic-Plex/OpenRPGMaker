@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fbf32b495d8782ae44843d39638f51d2e4c3d0a5e67eb05e444e2eab2dee1c62",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "ship room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship room back wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles representing a vertical south-facing sci-fi/ship bulkhead wall across two tile rows with paneling and trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4816
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile (vertical surface meant to be viewed from the south in 3/4 perspective), not a standing object requiring a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical wall face with riveted panels, blue lower wainscoting, and baseboard; as a wall face terrain tile, it correctly represents a flat vertical south-facing surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ship room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing vertical paneling, horizontal stripes, and skirting for an interior ship wall; wall faces naturally face south in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4270
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "03be43825fc0c268",
+   "043af654bb52bb90",
+   "7e64f6d2c73ecf90",
+   "cc880c038f828b8f",
+   "f0cfc5c3bc77ae7a",
+   "f9a9dffd9ef30d49"
+  ],
+  "24": [
+   "0c63229ac7a32259",
+   "0dfb6027d4023cab",
+   "1e97a0855c786159",
+   "210e4a8f7da1fc3c",
+   "329136f54111dcbf",
+   "3454d25f52245ea9",
+   "46d382c08c304f3f",
+   "65345287a7b5ae04",
+   "6ba6648903457920",
+   "7f58021aad60a40b",
+   "8eef8d82f05ccae1",
+   "900bf4da8bc56000",
+   "979101bb90bb50ca",
+   "9d2d90bd73822275",
+   "a0595c82714d6370",
+   "a0fccce33cc6fb20",
+   "b42f13fb16847b4d",
+   "b95fa200ec2da2d2",
+   "bd3ff96fef88202c",
+   "c4271356e48a6f4f",
+   "ca3d8096a260293c",
+   "d4955e853d4f41da",
+   "d7e4956ed8634ea6",
+   "e08ad8263006cb7e",
+   "e260961ed790c3ab",
+   "e47f84b448a2bb47",
+   "ed91b47b44d392f0",
+   "ee11c0d9ea6fea70",
+   "effa4dd846708695",
+   "f0cf1048a3f6eb2e",
+   "f22181aa5e483ab8",
+   "f35f1d972d6698b9",
+   "fc85107e8f2f67cb",
+   "fce0949cd47f0425",
+   "fe4144bf80574bde",
+   "fe5ac0bdeaef244d"
+  ],
+  "32": [
+   "27113c35593c36cd",
+   "2954886a2881e4f8"
+  ],
+  "48": [
+   "009cff4a46d3333e",
+   "0679f3dbe88d1f86",
+   "364c6e179f7477b7",
+   "548bb61801cf3244",
+   "86e253f2be926331",
+   "8d0f3956bfb72e8a",
+   "8ed648c0034d9a89",
+   "a7d4237d12aa9e21",
+   "b9647880bdf3fc27",
+   "b9f52b1865471303",
+   "d32f9b2210619a02",
+   "f546dbcf5636f359"
+  ]
+ }
+}

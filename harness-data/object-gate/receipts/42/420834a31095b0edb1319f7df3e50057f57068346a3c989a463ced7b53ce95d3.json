@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "420834a31095b0edb1319f7df3e50057f57068346a3c989a463ced7b53ce95d3",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "lab room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_lab",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab floor tiles and entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain floor tile set with a flat entry mat lying on the floor plane, seen entirely from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles and a flat rectangular entry mat viewed from above as appropriate for ground/terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles and entry mat viewed top-down across the entire surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is flat ground terrain consisting of a grid of floor tiles and a flat rectangular entry mat viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3525
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "3687c1bc2edde63c",
+   "b313fea12fa79d09",
+   "e7dc17585deadf2c"
+  ],
+  "24": [
+   "004e2d24004f8283",
+   "03b9385d8b375172",
+   "0bc3232275e999bf",
+   "0e3687c8a2ceafba",
+   "14fa8c9b9538241d",
+   "87ab5ea5ddf10336",
+   "8c14394324cf843f",
+   "91eeeff72c41d1a7",
+   "933ea0ea3cbf9a29",
+   "a5849b7f20faee26",
+   "b376b7b7fedbf678",
+   "f88541f44cb84589",
+   "f9cb2ed22a54b501",
+   "fc363a2710ef3c1b",
+   "fd05b346f7a42530"
+  ],
+  "32": [
+   "6645841f61c91c7e",
+   "8335b1fce4b24d02",
+   "c8a5e3e311fbf425",
+   "cc1e4a87478479e5",
+   "e1cf463e35303dfd",
+   "f90875c70162e0e8"
+  ],
+  "48": [
+   "393ba0b5008f82ff",
+   "3ea946ce26d19b99",
+   "815fed2333ec5ff9",
+   "8ae36140fe486d04",
+   "d23e0cb70d6a5a9f",
+   "f34257a879e77835"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f380a8fdb6b34959c4ec6091bd3b6837ea01d6a2a96d9a26e2a6e3a80e56129",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seat cushion and backrest of office chair",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion is clearly visible from above as a foreshortened rounded surface spanning rows 5 to 11 (about 6-7 pixel rows tall), with backrest and armrests positioned correctly for a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4683
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion is clearly viewed from above as an elliptical/rounded surface spanning rows 5-11 with armrests at rows 7-9 and backrest extending northward at rows 1-4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded seat cushion is clearly viewed from above spanning rows 5 to 10 (approx. 6 source pixel rows) with armrests on both sides and a backrest to the north, correctly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5646
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "green rounded object with neck/headrest and side tabs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts what appears to be a flask or potion bottle with a glass specular highlight, lacking wheels, legs, or any recognisable chair structure. Even if interpreted as an office chair, it lacks wheels and shows either a pure front face or a flat 90-degree bird's-eye view with no foreshortened 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9679
+  }
+ ],
+ "decidedAt": "2026-10-14T05:37:50.617Z",
+ "cells": {
+  "16": [
+   "60635f3e6536290a"
+  ],
+  "24": [
+   "3b7416f1c06876da",
+   "442d7a2fa97cf116",
+   "621a362aea755ff9",
+   "7686fedcaa4da168",
+   "87472bd20c168eeb",
+   "ce263b6931a527b4"
+  ],
+  "32": [
+   "84f494c18dbed1a0",
+   "85bb7acc0bd9e2b1",
+   "92f8b10f8ddb3485",
+   "bdb9f3885cd1d71c",
+   "c0e18d5c7e076b27",
+   "c50852fb4d9d2c54"
+  ],
+  "48": [
+   "111470c890aef044",
+   "199ff4d011c82d43",
+   "1ce90a1a984ede14",
+   "4d43212dee456660",
+   "5b5c4b8fb429b55e",
+   "77188630d7c547ec"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2fa9d329e9d7e4fa1cec545e077c74bd71494af3effd9cefbfb621ec2adb44ed",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "elevator doors set in the back wall",
+ "label": "monster-rooms/dp_elevator",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted elevator doors set flush into the back wall; properly drawn flat against the vertical wall surface as permitted for wall_mounted features.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16549
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The elevator doors and frame are set flat into the back wall. As a wall-mounted feature facing south, it is correctly displayed flat on the vertical wall surface without a top projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13692
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator frame and sliding doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted back-wall elevator doors rendered flat on the wall plane as appropriate for the kind; no top surface required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5773
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator doors and frame set in the back wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Elevator doors designed to be embedded flush in a north/back wall; flat front elevation is appropriate for this wall-mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8044
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.761Z",
+ "cells": {
+  "16": [
+   "099a93a636e44a3b",
+   "482229632bdc1044",
+   "9dc3dd85f950f894",
+   "e81d0ad468cdcd8b"
+  ],
+  "24": [
+   "00a9231a6b13f4e1",
+   "0418fd4d71991103",
+   "0967140f84c12714",
+   "1252279db83007f4",
+   "1f2bffdf1a938b66",
+   "388471901473e95e",
+   "4058b106c034eac4",
+   "522367fde7f80d28",
+   "59d983a2cb35d38f",
+   "6cc77d11d1ebea01",
+   "74f8bc6cc94d7981",
+   "7d0a4829f4fb9888",
+   "89704690aeab2485",
+   "9400afff0be4c45a",
+   "9e75f7dd39961fcb",
+   "ace725418227035f",
+   "afc514b0ddfb9772",
+   "ba966f14c175491a",
+   "bdd9d964f0416924",
+   "c3e203c8cd6e1a77",
+   "c59959a7c883b35a",
+   "c9b46de386d907e6",
+   "d908d66fed4d2587",
+   "eb7b07877721406a"
+  ],
+  "32": [
+   "34d0996ed302e893"
+  ],
+  "48": [
+   "41388e1a7435d07b",
+   "51ff3a1408ff0cd3",
+   "a20d525e3e06861c",
+   "b8f38fae425ea4fb",
+   "e57d39b2305c495c",
+   "fe7c23c064f25b6a"
+  ]
+ }
+}

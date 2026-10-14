@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d51a366182a4b0e5e11261bdd32db9ed0dbd52e707a53d874674f898029319a3",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "deckhouse room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_deckhouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a two-tile high terrain wall face tile with metallic wall panels, rivets, and a lower baseboard trim. As standard vertical wall terrain, it properly represents a south-facing wall surface without requiring an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "deckhouse back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile correctly rendered as a vertical south-facing interior surface spanning two tile rows with baseboard/skirting, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6867
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile representing an interior back wall with metal panels, rivets, and blue baseboard trim; correctly formatted as 2-row vertical wall terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile depicting two vertical tile rows of an interior bulkhead/wall with paneling and base trim. As a vertical terrain surface, no top projection is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13511
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "116af5a9ab8624ca",
+   "345a989b1c3e6562",
+   "3d6dd1b0c67bf47a",
+   "3fe787f8008b143a",
+   "5a4070c20e51396a",
+   "6519b5b8cd624ec3"
+  ],
+  "24": [
+   "007b4fd325bea5f2",
+   "0cf53439c0facba8",
+   "0f559bf143ca00cd",
+   "10fbb4eec148fe57",
+   "13313d4db69f6fa7",
+   "154fce4255895891",
+   "20eab3925d185b18",
+   "28a4badc05013017",
+   "28f22b9b2285bba2",
+   "2c69bcfcf6cf60bd",
+   "2dc2ad5a4755c923",
+   "360bf484ced94076",
+   "36f38343dedd0325",
+   "3a62f38079fe91eb",
+   "3bcd69ee3775d4bf",
+   "5398039459c0f91d",
+   "6a55c910839f1cf8",
+   "717551d11101bebb",
+   "79fb3ddf49ee6d02",
+   "7eec7db638551896",
+   "838eeaeb97094297",
+   "97aff1bda43348fd",
+   "a87f649731b3b66c",
+   "b1dc1d168f22b429",
+   "b5b41e6145eaf8f0",
+   "c8cbaaaf3cafc2b9",
+   "cfed2db3817a463e",
+   "d13d6e94703aa24a",
+   "d4d11c3e2cd88f34",
+   "e15b17519bf6d316",
+   "e5b517d32be9753b",
+   "e82ec4f43dd3d8fd",
+   "ef258ab0cba1fb95",
+   "f007fcfb6cef3b61",
+   "f4bba548ace8da16",
+   "f56b41ce1ba7a181"
+  ],
+  "32": [
+   "0c52e596c3f09ade",
+   "7fb463e8d8598346"
+  ],
+  "48": [
+   "0086a4a535ed9e7a",
+   "062b021105d4e85f",
+   "08e05a920840d18e",
+   "24d1cd020b771933",
+   "602db29055402fd4",
+   "7176e93e4eb4feea",
+   "8333b1b33aea6d3e",
+   "aa203fe06c3d369f",
+   "b8f515affacd6ba2",
+   "bb6459e58e32735d",
+   "c96ce19d52db1821",
+   "e95f695205d7e95f"
+  ]
+ }
+}

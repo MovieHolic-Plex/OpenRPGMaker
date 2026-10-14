@@ -293,12 +293,13 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
 - **체육관 시트**(`monster-gyms`, run `g1`): 풀관 바닥 `gy_fl_turf*`·꽃은 소스가 이미 본 시트 민트 풀(`mo.grass_tex`)이었는데 번들이 옛 굽기(`g103`, 겨자색)였다 — 다시 구워 맞췄다.
   나무 줄 칸막이 `gy_hedge_at*` 는 `gyms_common.hedge` 를 본 시트 수관(`forest.crown`)과 같은 잎 덩이 다섯 문법(`HEDGE_CLUMPS`, 왼쪽 위 빛·덩이 사이 짙은 틈·잎 점)으로 다시 그렸다.
   같이 바뀐 칸: `g_bigrock`(본 시트 정본을 따라옴). 굽기 규칙 변화로 `gy_vent_up*` 3칸에 `defaultLayer: upper`+받침이 붙었다(그림은 그대로).
-- **실내 지역 시트**(`monster-rooms`, run `m8`): 연구소·학교·박물관·백화점·배(복도·선실·갑판) 벽·바닥(`rooms_kit`)과 가구(`rooms_furn`)를 `interior2` 의 GBA 결로 — 바닥 결·벽 징두리·3톤 재질·1px 윗면 빛.
+- **실내 지역 시트**(`monster-rooms`, run `m17`): 연구소·학교·박물관·백화점·배(복도·선실·갑판) 벽·바닥(`rooms_kit`)과 가구(`rooms_furn`)를 `interior2` 의 GBA 결로 — 바닥 결·벽 징두리·3톤 재질·1px 윗면 빛.
   사천왕 방·뱃머리·챔피언 단은 그대로. 같은 칸 이름·번호·불투명/빈 칸 구분을 지켰다(`tiles.json` 동일, 맵 90장 무수정).
 - 적대 검수 한 바퀴(캠페인 맵 원본 해상도 렌더): 연구소 벽 무늬 없음 · 칠판 얼룩 · 접수대 잡티 · 선실 바닥 과대비/침대 머리판이 벽과 붙음 · 탁자 잡티 · 백화점 주황 과채도 · 칸마다 같은 반짝임(격자) → 한 번 고침.
 - 확인: `python3 harness.py … draw/bake/wire`(옛 run 견본 맵이 없어 `cycle_theme.sh` 가 쇼케이스를 다시 만든 뒤 wire), `node/wire_check.mts` 「시트 7장 ok」,
   모델 없는 `qa:game check` 네 테마(풀밭·해안·사막·눈) 막힘 0·자동 플레이 엔딩, 출하 플레이어 `monster-stairs.mjs`·`monster-journey.mjs`(`unshare -rn` + `ip link set lo up`).
-- **3/4 관문**: 판정자(google-antigravity gemini)를 이번 작업에서 쓸 수 없어 영수증 없음 — `object-gate check` 거절, 프로필도 미보정. 「3/4 관문 미통과」.
+- **3/4 관문**: 다시 그린 조각 48개(방 시트 45·체육관 3)를 `object-gate review`(gemini-3.8-flash ×4, 과반)로 받았다 — 첫 판 38/47 통과, 정면 입면으로 떨어진 9개(연구소 의자·박물관 수조·배 계선주 등)를 윗면이 보이게 다시 그려 **48/48 PASS**, 영수증은 `harness-data/object-gate/receipts/`(그림 화소 해시 = 배선된 시트 조각 해시 대조).
+  단 보정 프로필이 미보정이라 `object-gate check` 는 여전히 거절한다 — 영수증은 있으나 「보정된 관문 통과」는 아니다.
 - **타이틀 키아트 변형**: `scripts/content/monster-title-art.py` 가 풀밭(기본)·사막·눈 세 장을 240×160 좌표 도트로 찍는다(생성 이미지 아님) → `public/assets/emerald-monster/title-<meadow|desert|snow>{.png,-asset.json}`.
   고르는 배선은 `src/project/emeraldMonsterTitleArt.ts`(VARIANTS 표). 해안은 기존 사슴 그림 그대로.
 - 눈 테마 시작 마을 주민은 여전히 People1 기본 칩이다. `pokemon-character-casting` 에 눈 후보 셋(`snow_resident_m`·`snow_resident_f`·`snow_trainer`)이 **사용자 판정 대기**로 있다 —

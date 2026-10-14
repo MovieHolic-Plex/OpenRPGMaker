@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "090f567d5dd3632756765022b94ff931ecbba027ae7cfdf2c2af6c2899c6cf67",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "school room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_school",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom interior back wall face with upper panels, chair rail, green lower wainscoting, and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid interior back wall terrain tile spanning two vertical tile heights. As a vertical room wall face, it correctly represents a flat south-facing surface in standard JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "school room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall face tile depicting an interior classroom wall with upper panels, wooden molding, green wainscoting, and baseboard. As a vertical wall surface terrain tile, it correctly shows the front surface without a standing object top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10104
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "school room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two-row vertical interior wall terrain showing upper beige wall panels, wooden divider moulding, green lower wainscoting, and baseboard. As vertical wall terrain rather than a standing object, it appropriately renders the vertical wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "school room back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a two-tile-high vertical wall face (terrain) featuring an upper beige section with vertical seam accents, wooden dado rail, lower green wainscoting, and a wooden baseboard. As standard JRPG wall terrain, it properly depicts the vertical surface facing south without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7880
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "089fa3920042f133",
+   "0b6f52f2f4edce03",
+   "26885a966f5e6342",
+   "27c86059c8313788",
+   "a5fd351b7f489c6e",
+   "c302272a3941c218"
+  ],
+  "24": [
+   "0292782309635938",
+   "038c6f66d480c50f",
+   "0a9e94716d942073",
+   "1220d2c6c398c1b5",
+   "1237a1e925a6f368",
+   "2863b91b658b4677",
+   "2f559ae510c28c15",
+   "4317a01ea006121a",
+   "4780b02672bc8aa3",
+   "4ae546b678d32d75",
+   "56ae192876259913",
+   "62c1f77f6e021e12",
+   "6b64e3d0cf78fe17",
+   "71128fb52655b18f",
+   "79a408b1fa5ca575",
+   "7b8230bb01ed86a9",
+   "84381e6bb6d3a08f",
+   "8ebf5978a30906e3",
+   "a05fc454ba621b41",
+   "a1068dd413a074be",
+   "a219434296d7855b",
+   "b147c9955d33e8ed",
+   "b54a50c811cd2e0f",
+   "c8bbdf711ae7ae12",
+   "ce5e7a2c79555e44",
+   "d297d9245a5cfb8a",
+   "d6fe8592b9754049",
+   "daa20d45980e5aad",
+   "e27bd04249796a22",
+   "e45466861935b86f",
+   "f93909dca1189f0d",
+   "fc14e989722d259d"
+  ],
+  "32": [
+   "7fb10df5816777d7",
+   "9fb505419373c664"
+  ],
+  "48": [
+   "146f282b78cedd96",
+   "25b327cf08503ec7",
+   "3aad4176df00246e",
+   "4e9207f0daa55d12",
+   "556f1a8cc60c9dce",
+   "5dedb7ec7d39f5ad",
+   "879e9dc59d0ef08b",
+   "923bc5bf3983df8e",
+   "98139ecb344d1e68",
+   "c788f5e2378a6523",
+   "ce709d358e2ab9bd",
+   "eb52283de8bb03c3"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f338bcad905e66aa4923b1258b74cbcf0a41203794ca7b1c1dcc24a81b187a9",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "computer server rack against the wall",
+ "label": "monster-rooms/lab_server",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server rack and top display unit are drawn entirely in flat front elevation with 0 visible rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server rack and upper display panel are drawn in direct front elevation with no visible horizontal top surface foreshortened from above (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3170
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The server rack and the panel/board above it are drawn completely from the front with a 1px outline at row 0 and no visible foreshortened top surface or shelf depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "computer server rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn as a flat front elevation without any visible top surface (only a 1px border at row 0/row 11).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3793
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:46.922Z",
+ "cells": {
+  "16": [
+   "02c8ae187275af20",
+   "dab0c40d590384b2"
+  ],
+  "24": [
+   "0d684af4d7076df7",
+   "0fa5193a18170092",
+   "0ff56f750cb9c255",
+   "1b70baf4b2919d1e",
+   "2b1428e99ba53898",
+   "6eb365244fcf8ae9",
+   "7d692fbdbed95bfb",
+   "ae4aeb586a137b93",
+   "d62ec0a1fc944078",
+   "db146bcfc953351b",
+   "e3b9e6b725baf513",
+   "f069002b07a23ffe"
+  ],
+  "32": [
+   "1bb4329c789d1b11",
+   "5b5f3be95805ce70",
+   "e9a4b615906cd0d6"
+  ],
+  "48": [
+   "387c464e3721ce54",
+   "63ebc23f97263a81",
+   "938cc1b60be7bc66",
+   "a985af87c810779e",
+   "ba3d5a1aded47741",
+   "fbc3b5d7d0b5de00"
+  ]
+ }
+}

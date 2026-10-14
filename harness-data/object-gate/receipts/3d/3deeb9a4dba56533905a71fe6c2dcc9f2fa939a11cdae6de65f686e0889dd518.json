@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3deeb9a4dba56533905a71fe6c2dcc9f2fa939a11cdae6de65f686e0889dd518",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "dept room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_dept",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tiled floor terrain with a flat red entry mat lying on the floor surface; entirely top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3579
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles with an entry mat lying flat on the ground plane, consistent with top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3334
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles with red entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles with an entry mat viewed top-down on the ground plane, appropriately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiles with a red entry mat laid horizontally on the ground plane, viewed directly from above in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3441
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "2fe6a06bd021c5b9",
+   "73690c8d338dc0ac",
+   "d30735a55e16d722"
+  ],
+  "24": [
+   "0bca74f28c53ef07",
+   "1d3bc617cda31fd1",
+   "1e282c0556dc6181",
+   "49792ab4f87fb3fe",
+   "515d9eccced945bc",
+   "5d1daefa86fe0a95",
+   "86d3f9e95ba41e7f",
+   "951a8b29fd65284c",
+   "97782ca6ed06afdd",
+   "a5c0f144e2487ef9",
+   "a9478125abfe5ae9",
+   "adad8472b772cf7e",
+   "b9930459366646ec",
+   "c7353bafe2158508",
+   "e4e9fdc5a3577b05"
+  ],
+  "32": [
+   "14bd2ec582ec8f50",
+   "18eaa366f5570d89",
+   "245e1908b146898d",
+   "6283d419197ec57b",
+   "ca34ea6b132b92b6",
+   "e663919ee9fa5f49"
+  ],
+  "48": [
+   "0072afd50fdd77d1",
+   "2d5cf14cf046a245",
+   "b7a22a3ca7dca8bb",
+   "ed090a8030cba15a",
+   "f97f8e8d8cbd7aa9",
+   "fc089d9f5ce41dc3"
+  ]
+ }
+}

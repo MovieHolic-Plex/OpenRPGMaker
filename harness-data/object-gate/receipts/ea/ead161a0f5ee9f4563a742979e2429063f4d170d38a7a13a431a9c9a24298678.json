@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ead161a0f5ee9f4563a742979e2429063f4d170d38a7a13a431a9c9a24298678",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "dept room back wall face (two rows)",
+ "label": "monster-rooms/rm_wall_dept",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "back wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile representing a vertical architectural back wall surface with wallpaper/pattern and baseboard trim across two tile rows. As terrain, it is not a standing object and correctly depicts the wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8925
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a back wall face and base trim; vertical wall faces naturally face south and correctly show no top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3134
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "back wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile comprising wall surface, patterned studs/wallpaper, lower trim and baseboard; as standard JRPG wall terrain, no horizontal top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "back wall face tile segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows a standard 2-row back wall face terrain tile with patterned wall surface and bottom molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2814
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.766Z",
+ "cells": {
+  "16": [
+   "04cb66f1140cc1f3",
+   "09d31d8ac2b239f0",
+   "156f03582630f506",
+   "92aaaceb0561b3fb",
+   "9de9ed164e113c44",
+   "f33ed0ec169e5039"
+  ],
+  "24": [
+   "021dac61ef1ee86c",
+   "02f6a4bf356179a8",
+   "03f5f30886c857b6",
+   "08684c5f25be7a1c",
+   "0d825c7895226584",
+   "1a4b16a3a60f6805",
+   "2825c62cc79a115a",
+   "3476e5df78894b36",
+   "3a831f4b64736427",
+   "4bc94572115d2cd8",
+   "50e68cbf2ec50f8c",
+   "5e56cd619612ad17",
+   "60a81123153020ca",
+   "62e482f1a08320ff",
+   "6a5438fa0939decb",
+   "70f3b8457771a05e",
+   "7d65928d002a01ab",
+   "89a7489390a804d5",
+   "8cfe86f0d5614ad6",
+   "91151f44c52bbee6",
+   "9a9d62fd4c09adb1",
+   "9d3a7b7ff4b62e9d",
+   "ad6da2a12f31b7b2",
+   "b320060c76b7a16e",
+   "b408734c77d590b1",
+   "b5243489e67d0546",
+   "cd29cf696dfcc122",
+   "d35c6252862dcbea",
+   "db8d6ded70b37b00",
+   "e1916b955e4a8e6b",
+   "ee0a00a1a2bf8070",
+   "f4f5d84f53d998e1",
+   "fbd80fbb8b1e6796"
+  ],
+  "32": [
+   "119274583bbd77bd",
+   "430e651167337996"
+  ],
+  "48": [
+   "0015ac0ca7534d8a",
+   "28aad90ddb35355b",
+   "49c5b3fbf4ea130e",
+   "4e3e7efcb8c5858f",
+   "7dd43e2e5cf69ae6",
+   "88d411e3f6be58e0",
+   "919216e694c46028",
+   "a0c820cd15f758a8",
+   "aef0039eba9ed74b",
+   "b81330e194a9cb83",
+   "eafd5996f0eb2e79",
+   "f4d7b94d4b70a915"
+  ]
+ }
+}

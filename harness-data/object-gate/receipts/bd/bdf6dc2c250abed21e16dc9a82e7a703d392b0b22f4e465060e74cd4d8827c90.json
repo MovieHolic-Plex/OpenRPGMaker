@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bdf6dc2c250abed21e16dc9a82e7a703d392b0b22f4e465060e74cd4d8827c90",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "corridor bench",
+ "label": "monster-rooms/sh_bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation: rows 1-5 form the backrest, rows 6-9 form the front thickness of the seat cushion (with row 6 as a 1px edge highlight), and rows 10-14 are the legs. There is no visible horizontal seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12629
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corridor bench / tandem seating",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat pan is drawn from above as a horizontal surface across rows 6-9 (4 pixel rows tall), shaded in lighter blue than the south-facing backrest (rows 2-5).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation: rows 2-5 depict the front of the backrest, row 6 is a 1px highlight on the top edge of the seat cushion, and rows 7-9 depict the front vertical face of the seat cushion with legs extending directly beneath. No foreshortened horizontal seat surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure 2D front elevation (side-scroller style), showing the flat front of the backrest, seat, and two front legs with no horizontal seat top or top rail visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9336
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "3181d024c05caab8",
+   "59c7f07916207556"
+  ],
+  "24": [
+   "23e8b6abcff4bf12",
+   "37e09b690a4d446a",
+   "3d6465cf733bc8ef",
+   "4024c91a203adf49",
+   "425f6f0bf68c1fa2",
+   "4be166b6cb3a4e6b",
+   "66f9c9028450777a",
+   "6a368fdc9056852f",
+   "730d107ef8cf7171",
+   "7d23cfbb735826af",
+   "8edadaf0c5097735",
+   "cdc9d4fa31b5b43f"
+  ],
+  "32": [
+   "32da85b48d776bed",
+   "54270192b6fdcef0"
+  ],
+  "48": [
+   "416714a70a822d1d",
+   "50c70e40e6fd33b5",
+   "641a628006d85299",
+   "ae3b78acdfe869de",
+   "b3602042a2b382a7",
+   "ecf262db601acb7c"
+  ]
+ }
+}

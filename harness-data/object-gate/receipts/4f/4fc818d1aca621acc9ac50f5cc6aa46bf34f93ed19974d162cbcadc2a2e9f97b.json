@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fc818d1aca621acc9ac50f5cc6aa46bf34f93ed19974d162cbcadc2a2e9f97b",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "mooring bollard",
+ "label": "monster-rooms/sh_bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cap and post of the mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard head and base are drawn in flat front profile with straight horizontal edges and no visible top elliptical surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cap and shaft of mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom cap of the bollard has straight vertical sides from rows 3 to 6 with a front-facing specular highlight and flat bottom edge at row 7, showing only a pure front elevation without an elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4678
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cap and body of mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat front elevation / side-scroller sprite. All horizontal interfaces (the bottom of the cap, the base rim, and the bottom plinth) are perfectly straight horizontal lines rather than foreshortened ellipses, and no top circular surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7768
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring bollard head and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation: the cap has a flat horizontal bottom edge at row 7, the base has flat horizontal steps (rows 12-13), and the circular top surface is not foreshortened into an ellipse showing its top plane (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6246
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:46.923Z",
+ "cells": {
+  "16": [
+   "371dff2174772afc"
+  ],
+  "24": [
+   "42b3b77befc65ad1",
+   "5550c6d967140f5b",
+   "79f4f88306fe1b02",
+   "85ef85b5b8d0b059",
+   "ab6b125b14bb547e",
+   "ade08d52a6d499c2"
+  ],
+  "32": [
+   "1578ebcc8394696f",
+   "2870351cd8a14b9e",
+   "7180d0dced9b2e8a",
+   "d8a9db0a12b84177",
+   "f4a948cb7658e0a2",
+   "f4bdc8fd942d700d"
+  ],
+  "48": [
+   "574e7737843e6abd",
+   "58145a0d6faf8eb4",
+   "5e668866b3fe7be9",
+   "b9615cc6912ce245",
+   "e0054de2fb3d6f88",
+   "eaf5950fdd5e7718"
+  ]
+ }
+}
