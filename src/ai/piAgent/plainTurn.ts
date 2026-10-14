@@ -1,4 +1,4 @@
-import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from './monsterGameRequest';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, MONSTER_FREE_CAMPAIGN_NOTE, MONSTER_FREE_KIT_NOTE, hasMonsterCollectIntent, MONSTER_TOURNAMENT_INITIAL_TOOLS, MONSTER_TOURNAMENT_PROMPT, MONSTER_EXPEDITION_INITIAL_TOOLS, MONSTER_EXPEDITION_PROMPT } from './monsterGameRequest';
 // 평문 조수 턴의 순수 부분 — 의도 선언 → 실행 계획, 그리고 Pi 요청(계획 턴·실행 턴) 조립.
 //
 // 채팅 패널(`aiChatPanel.plainPiTurn` + `aiPiAgentCommand.runPiCommand`)과 헤드리스 생성기
@@ -85,6 +85,8 @@ export interface PlainPiTurnClassification {
   readonly questionPromoted: boolean;
   readonly initialToolNames?: readonly string[];
   readonly intentNote: string | null;
+  /** 몬스터 수집 의도 — 호출자가 손대지 않은 빈 시작 맵을 몬스터 키트로 옮긴다(genrePresets.openBlankStartOnMonsterKit). */
+  readonly monsterKit?: boolean;
   /**
    * 이 턴을 어떻게 읽었는지 한 줄(`intent:llm mode=… construction=… → 마을 계약 …`). 활동 로그의 첫 상태 행이 된다.
    * 2026-09-28 실측: 「위로 올라가면 마을」이 잘못 읽혀 5번 헛돌았는데 사용 로그에는 판정이 한 줄도 없어서
@@ -139,6 +141,26 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // One producer owns shared world/DB/session; never scatter a fresh campaign across map bundles.
     return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
       initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT, routingAudit };
+  }
+  // 포켓몬 낱말 없이 말한 몬스터 수집 게임·포획 없는 대회형(2026-10-14 자유도 감사 #3·#5) — 자유 경로로 빠지면 칩셋이 버들항·사막·숲 섞임이었다.
+  if (!plan.readOnly) {
+    const blank = !input.project.system.monsterCampaign && Object.keys(input.project.maps).length <= 1;
+    const kind = classifyMonsterGameRequest(input.text, blank);
+    if (kind === 'tournament') {
+      const routingAudit = "intent:monster-tournament → 포획 없는 대회형 제작";
+      return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
+        initialToolNames: [...MONSTER_TOURNAMENT_INITIAL_TOOLS], intentNote: MONSTER_TOURNAMENT_PROMPT, routingAudit };
+    }
+    if (kind === 'expedition') {
+      const routingAudit = "intent:monster-expedition → 체육관 없는 도감 탐험 제작";
+      return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
+        initialToolNames: [...MONSTER_EXPEDITION_INITIAL_TOOLS], intentNote: MONSTER_EXPEDITION_PROMPT, routingAudit };
+    }
+    if (kind === 'campaign') {
+      const routingAudit = "intent:monster-collect-free → 몬스터 칩셋 캠페인 제작";
+      return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
+        initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + MONSTER_FREE_CAMPAIGN_NOTE, routingAudit };
+    }
   }
   if (isGenrePresetBriefRequest(input.text)) {
     const team = input.piTeam && !plan.readOnly;
@@ -270,8 +292,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     }
   }
   if (input.selectedEvent) intentNote = intentNote ? `${intentNote}\n${input.selectedEvent}` : input.selectedEvent;
+  const monsterKit = !plan.readOnly && hasMonsterCollectIntent(input.text);
+  if (monsterKit) {
+    intentNote = intentNote ? `${intentNote}\n\n${MONSTER_FREE_KIT_NOTE}` : MONSTER_FREE_KIT_NOTE;
+    routingAudit += " · 몬스터 수집 의도 → 몬스터 키트";
+  }
   const team = input.piTeam && !plan.readOnly;
-  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit };
+  return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit, ...(monsterKit ? { monsterKit } : {}) };
 }
 
 /** Ultrabrain 계획 턴을 먼저 돌리는가 — 단독·쓰기·비일상 실행만. */

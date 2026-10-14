@@ -58,7 +58,7 @@ function escape(text: string): string {
 }
 
 /** pairs 를 긴 이름부터 바꾸는 문자열 치환기. 바뀐 문자열 수를 센다. */
-function replacer(pairs: readonly (readonly [string, string])[]) {
+export function replacer(pairs: readonly (readonly [string, string])[]) {
   const sorted = [...pairs].sort((a, b) => b[0].length - a[0].length);
   const patterns = sorted.map(([from, to]) => [new RegExp(`${escape(from)}(으로|로|이|가|은|는|을|를|과|와)?(?=[^가-힣]|$)|${escape(from)}`, "g"), from, to] as const);
   let changed = 0;

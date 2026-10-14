@@ -45,8 +45,8 @@ export interface ExpeditionManifest {
 }
 
 /** Build one ordinary editor project. No game-specific gameplay engine is hidden here. */
-const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast" };
-const START_ROUTE_NAMES: Readonly<Record<StartTheme, string>> = { desert: "1번길 · 모래바람 길", snow: "1번길 · 서리 들길", coast: "1번길 · 바닷바람 길" };
+const START_HABITAT: Readonly<Record<StartTheme, string>> = { desert: "desert", snow: "snow", coast: "coast", volcano: "volcano" };
+const START_ROUTE_NAMES: Readonly<Record<StartTheme, string>> = { desert: "1번길 · 모래바람 길", snow: "1번길 · 서리 들길", coast: "1번길 · 바닷바람 길", volcano: "1번길 · 재바람 길" };
 
 /** 관장 타입을 바꾼 관의 배지 이름. 본래 타입이면 worldPlan 의 배지를 그대로 쓴다. */
 const TYPE_BADGE: Readonly<Record<string, string>> = {
@@ -68,6 +68,8 @@ const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
 };
 
 export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme } = {}): ExpeditionManifest {
+  // 화산 기획의 1관은 불 체육관이다 — 시작 마을이 재 마을 판(둘째 마을 ↔ 잿빛 온천 맞바꿈)이라 풀 관장이 서 있으면 어색하다. 기획서가 첫 관 타입을 정하면 그것이 이긴다.
+  if (options.startTheme === "volcano" && !options.firstGymType && options.gymTypes?.[0] === undefined) options = { ...options, firstGymType: "fire" };
   // 시작 테마의 1번길 이름도 그 땅으로 — 사막 모랫길 위에 「1번길 · 별싹 들판」 표지가 떴다(2026-10-07 사막 런타임 캡처).
   const routes = planRoutes.map(r => r.key === "meadow" && options.startTheme ? { ...r, name: START_ROUTE_NAMES[options.startTheme] } : r);
   for (const [aid, asset] of Object.entries(markerAssets)) project.assets.uploaded[aid] = structuredClone(asset) as Project["assets"]["uploaded"][string];
@@ -93,7 +95,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   // 시작 테마가 있으면 둘째 마을(1관)도 그 땅의 마을 판을 쓴다 — 사막 마을·사막 길 다음에 꽃밭 마을과 정원 체육관이 나와
   // 분위기가 튀었다(2026-10-07 사용자 지적). 같은 기후의 뒤쪽 마을(모래종·서리꽃)과 판·안내 문장을 맞바꾼다.
   // 바닷가는 바꾸지 않는다 — 물결 항구는 잔교·배 출구 좌표가 그 판에 묶여 있고(harborExit), 바닷가 시작 마을도 풀밭 판이다.
-  const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : undefined;
+  const swappedTown = options.startTheme === "desert" ? "dune" : options.startTheme === "snow" ? "frost" : options.startTheme === "volcano" ? "ember" : undefined;
   const lookOf = (key: string): string => !swappedTown ? key : key === "grove" ? swappedTown : key === swappedTown ? "grove" : key;
   const lookTown = (t: (typeof towns)[number]) => towns.find(other => other.key === lookOf(t.key))!;
 
@@ -427,7 +429,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     if (pool.length < 2 && neighbourHabitat[habitat]) pool = [...pool, ...EXPEDITION_SPECIES.filter(s => s.habitat === neighbourHabitat[habitat] && s.stage === 1 && fits(s)).map(s => s.id)];
     // 시작 테마의 첫 길: 그 땅의 첫 단계 종을 둘째 자리(Lv2)에 — 사막 1번길 풀숲에서 바람삐·심지충만 나왔다(2026-10-07 사용자 지적).
     if (accent) {
-      const native = EXPEDITION_SPECIES.filter(s => s.habitat === accent && s.stage === 1 && fits(s) && !pool.includes(s.id)).map(s => s.id);
+      // 화산 서식지 종은 전부 스타터 계통(숯비늘)이라 초반에는 비어 있다 — 불 타입 첫 단계 종(심지충)이 그 자리를 맡는다.
+      const native = EXPEDITION_SPECIES.filter(s => (s.habitat === accent || (accent === "volcano" && s.types.includes("fire"))) && s.stage === 1 && fits(s) && !pool.includes(s.id)).map(s => s.id);
       if (native.length) pool = [pool[0]!, ...native, ...pool.slice(1)].filter(Boolean);
     }
     map.encounterRate = 14;

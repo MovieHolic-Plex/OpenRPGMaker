@@ -77,6 +77,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
+import { needsMonsterKitStart, openBlankStartOnMonsterKit } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
 import { warmHeavyWire } from "@/ai/piAgent/heavyWire";
@@ -2252,6 +2253,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } finally {
       // 선언이 던진 턴도 그 구간이 얼마였는지 남긴다 — 해석 실패가 그 턴의 지연 전부인 경우가 있다.
       timing.end("intent");
+    }
+    // 포켓몬 낱말이 없어도 몬스터 수집 의도면 손대지 않은 빈 시작 맵을 몬스터 키트로 옮겨 연다 — 칩셋 계열은 첫 맵에서 정해진다.
+    if (classified.monsterKit && needsMonsterKitStart(store.getCurrent())) {
+      store.update((draft) => { openBlankStartOnMonsterKit(draft); }, { scope: "project", label: "몬스터 수집 의도: 시작 맵을 몬스터 키트로", origin: "system" });
     }
     return {
       command: plainPiCommand(text, classified.mode, turnMapId),

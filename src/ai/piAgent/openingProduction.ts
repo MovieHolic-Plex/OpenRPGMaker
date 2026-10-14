@@ -17,7 +17,10 @@ export function openingImageProject(project: Project, resourceIds: readonly stri
  * 오프닝 검토 영수증을 요구해 다 지은 게임을 「오프닝 제작 미완료」로 실패시켰다.
  */
 export function withoutAuthoringPresetManual(task: string): string {
-  return task.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, '');
+  return task.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, '')
+    // 몬스터 자유 경로 지시문(호스트가 붙인 글)도 사용자 요청이 아니다 — 「오프닝을 새로 만들지 않는다」 문장이 오프닝 제작 요청으로 읽혀
+    // 대회·탐험 게임이 끝난 뒤 컷신 검증·타이틀 키아트 재촉으로 180여 호출이 더 들었다(2026-10-14 실측).
+    .replace(/\[(?:포획 없는 대회형 몬스터 게임 제작|체육관 없는 도감 탐험형 몬스터 게임 제작|몬스터 수집 의도 — 몬스터 키트)\][^\n]*(?:\n(?!\n)[^\n]*)*/gu, '');
 }
 
 export function requestsOpeningProduction(rawTask: string): boolean {

@@ -29,16 +29,26 @@ const MONSTER_START_TILESET_ID = "monster_overworld";
  * 전부 버들항으로 깔린다(2026-10-06 실측). 그래서 손대지 않은 빈 시작 맵만 몬스터 칩셋 풀밭으로 옮긴다.
  * 사람이 칠했거나 이벤트가 있는 맵, 맵이 여럿인 프로젝트는 그대로 둔다.
  */
-function openBlankStartOnMonsterKit(project: Project): void {
+/** 손대지 않은 빈 시작 맵 하나뿐이고 몬스터 키트가 있으면 그 맵(옮길 대상), 아니면 undefined. */
+function blankStartMapForMonsterKit(project: Project): { map: Project["maps"][string]; kit: Project["tilesets"][string] } | undefined {
   const maps = Object.values(project.maps);
   const map = maps[0];
   const kit = project.tilesets[MONSTER_START_TILESET_ID];
-  if (maps.length !== 1 || !map || !kit || map.tilesetId === kit.id || map.events.length) return;
-  if (!map.lowerTiles.every(tile => tile === map.lowerTiles[0]) || map.upperTiles.some(tile => tile !== -1)) return;
-  if (map.lowerOverlayTiles?.some(tile => tile !== -1) || map.upperOverlayTiles?.some(tile => tile !== -1) || map.shadowBits?.some(Boolean) || map.relief) return;
-  map.tilesetId = kit.id;
-  map.tileSize = kit.tileSize;
-  map.lowerTiles.fill(0);
+  if (maps.length !== 1 || !map || !kit || map.tilesetId === kit.id || map.events.length) return undefined;
+  if (!map.lowerTiles.every(tile => tile === map.lowerTiles[0]) || map.upperTiles.some(tile => tile !== -1)) return undefined;
+  if (map.lowerOverlayTiles?.some(tile => tile !== -1) || map.upperOverlayTiles?.some(tile => tile !== -1) || map.shadowBits?.some(Boolean) || map.relief) return undefined;
+  return { map, kit };
+}
+
+/** 빈 시작 맵을 몬스터 키트로 옮겨야 하는가(이미 옮겼거나 손댄 맵이면 false). */
+export function needsMonsterKitStart(project: Project): boolean { return blankStartMapForMonsterKit(project) !== undefined; }
+
+export function openBlankStartOnMonsterKit(project: Project): void {
+  const found = blankStartMapForMonsterKit(project);
+  if (!found) return;
+  found.map.tilesetId = found.kit.id;
+  found.map.tileSize = found.kit.tileSize;
+  found.map.lowerTiles.fill(0);
 }
 
 export function applyGenrePreset(project: Project, id: GenrePresetId): void {

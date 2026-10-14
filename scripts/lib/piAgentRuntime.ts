@@ -1,5 +1,5 @@
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
-import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from '../../src/ai/piAgent/monsterGameRequest.ts';
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
 import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
@@ -262,7 +262,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && requestsEmeraldMonsterGame(request.task));
+  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'));
   const gameSystemProduction = new PiGameSystemProduction();
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);

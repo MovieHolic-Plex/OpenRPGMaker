@@ -16,7 +16,7 @@ function issues(p:Project):string[]{
   if(monsterParty&&s.battleModel!=='gen1')errors.push('몬스터 파티와 전투 규칙이 다릅니다. gen1을 명시적으로 선택하세요.');
   if(monsterParty&&!fieldMenu(p))errors.push('수집 게임의 ESC 항목/순서가 저작되지 않았습니다. 기본 범용 메뉴가 표시됩니다.');
   if(fieldMenu(p)?.entries.some(e=>['monster-dex','region-map','campaign-progress'].includes(e.command))&&!c)errors.push('도감·지도·배지 항목에는 실제 캠페인 정의가 필요합니다.');
-  if(monsterParty&&!s.monsterCollection)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다.');
+  if(monsterParty&&s.monsterCollection===undefined)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다. 포획 없는 대회형이면 configure_monster_system(enabled:true, capture:false) 로 포획 없음을 선언하세요.');
   if(s.opening?.musicResourceId&&!p.assets.uploaded[s.opening.musicResourceId]?.ref&&!p.assets.uploaded[s.opening.musicResourceId]?.dataUrl && s.opening.musicResourceId.startsWith('composed_music_'))errors.push('저작 음악의 실제 바이트가 없습니다.');
   return errors;
 }

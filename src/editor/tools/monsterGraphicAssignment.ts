@@ -156,3 +156,17 @@ export function ensureMonsterGraphic(
   graphic.monsterResourceId = assignment.resourceId;
   warnings.push(...(notes.length ? notes : [`${label} 누락 → 이름 "${record.name}" 으로 "${assignment.resourceId}" 를 붙였습니다.`]));
 }
+
+/**
+ * 계통 배치 정의(define_monster_families autoGraphics:true)용 — 이름에 맞는 외형이 없을 때 **저작자가 명시적으로 허용한** 자동 배정.
+ * 아직 어느 종·적도 안 쓰는 카탈로그 외형을 태그가 겹치는 순으로 고르고, 모자라면 undefined(호출자가 그 계통만 실패로 보고한다).
+ * 이름과 어울리는지는 보장하지 않는다 — 호출자가 어떤 외형을 붙였는지 경고로 돌려줘야 한다.
+ */
+export function pickUnusedMonsterResource(project: Project, used: ReadonlySet<string>, tags: readonly unknown[] | undefined): { id: string; label: string } | undefined {
+  const wanted = new Set((tags ?? []).filter((tag): tag is string => typeof tag === "string").map(normalizedIdentity));
+  const free = availableCandidates(project).filter((match) => !used.has(match.id));
+  if (!free.length) return undefined;
+  const scored = free.map((match) => ({ match, score: [...semanticTermsOf(match)].filter((term) => wanted.has(term)).length }));
+  scored.sort((a, b) => b.score - a.score);
+  return { id: scored[0]!.match.id, label: scored[0]!.match.label };
+}

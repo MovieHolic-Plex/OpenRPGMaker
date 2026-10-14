@@ -3107,3 +3107,11 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
 계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.
+
+
+## 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
+
+`monsterTournamentTools.ts`: `build_monster_tournament`(포획 없는 대회형, rounds 2~8) · `build_monster_expedition`(체육관 없는 탐험형, rounds 2~5, 결과 `groundMapIds`).
+`monsterBatchTools.ts`: `define_monster_families`(계통 최대 40, 계통별 원자적·부분 실패는 `data.failed`) · `rename_monster_species`(최대 60, 적·무리·대사·도감 설명까지 전파).
+`configure_monster_system` 에 `capture:false`(포획 없는 파티 전투 모드), `build_monster_game.startTheme` 에 `volcano`.
+요청 분류·키트 시작 맵 이동·한계는 `openwiki/monster-expedition.md` 「자유 경로 · 대회형/탐험형 · 계통 일괄 도구」 절.
