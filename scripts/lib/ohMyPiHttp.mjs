@@ -33,6 +33,9 @@ export function isCompanionPath(url = "") {
     || path === "/auth/login-cancel"
     || path === "/auth/providers"
     || path === "/auth/key"
+    || path === "/auth/openai-compat"
+    || path === "/auth/openai-compat/test"
+    || path === "/auth/openai-compat/delete"
     || path === "/auth/logout"
     || path === "/auth/refresh"
     || path === "/auth/oauth-paste"
@@ -228,6 +231,16 @@ export async function handleCompanionRequest(req, adapters) {
 
   if (method === "POST" && path === "/auth/logout") {
     return json(200, await adapters.logout(provider));
+  }
+
+  // 사용자 지정(OpenAI 호환) 엔드포인트. 키·헤더 값은 쓰기 전용이다 — 응답에는 hasKey·headerNames 만 나간다.
+  if (path === "/auth/openai-compat" || path === "/auth/openai-compat/test" || path === "/auth/openai-compat/delete") {
+    if (typeof adapters.compatList !== "function") return json(501, { error: "이 동반 서비스는 사용자 지정 엔드포인트를 지원하지 않습니다." });
+    if (method === "GET" && path === "/auth/openai-compat") return json(200, await adapters.compatList());
+    if (method === "POST" && path === "/auth/openai-compat") return json(200, await adapters.compatSave(body));
+    if (method === "POST" && path === "/auth/openai-compat/delete") return json(200, await adapters.compatDelete(body.id));
+    if (method === "POST" && path === "/auth/openai-compat/test") return json(200, await adapters.compatTest(body));
+    return json(405, { error: "Method not allowed" });
   }
 
   if (method === "POST" && path === "/v1/images/generations") {

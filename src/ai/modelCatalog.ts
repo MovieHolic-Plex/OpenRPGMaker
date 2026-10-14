@@ -1,4 +1,5 @@
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId, openAiCompatModelBlockReason } from "@/ai/openAiCompat";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 
 export interface AiModelCatalogGroup {
@@ -80,6 +81,13 @@ export function modelCatalogForAuthMode(
   void authMode;
   const id = parseOhMyPiProvider(providerId);
   const provider = getOhMyPiProvider(id);
+  if (isOpenAiCompatProviderId(id)) {
+    // 사용자 지정 엔드포인트: 마지막 「연결 시험」 이 받은 목록이 곧 카탈로그다. 목록을 못 받는 서버는 비어 있고,
+    // 그때는 모델 ID 를 직접 입력한다(검증은 비어 있지 않은 문자열이면 통과).
+    const known = getKnownOpenAiCompatEndpoint(id);
+    const listed = [...new Set([known?.defaultModel ?? "", ...(known?.models ?? [])].filter(Boolean))];
+    return [{ label: `${provider?.label ?? id} · 연결 시험에서 받은 목록`, models: listed }];
+  }
   const models = PROVIDER_MODELS[id] ?? (provider ? [provider.defaultModel] : []);
   return [{ label: `${provider?.label ?? id} · oh-my-pi`, models }];
 }
@@ -117,6 +125,8 @@ export function isModelValidForAuthMode(
 ): boolean {
   if (authMode !== "chatgpt") return true;
   const provider = parseOhMyPiProvider(providerId);
+  // 사용자 지정 엔드포인트는 서버가 정한 어떤 모델 ID 든 쓸 수 있다 — 비어 있지만 않으면 된다.
+  if (isOpenAiCompatProviderId(provider)) return model.trim().length > 0 && openAiCompatModelBlockReason(provider, model) === null;
   const wanted = model.trim().toLowerCase();
   const allowed = PROVIDER_MODELS[provider] ?? [];
   if (allowed.some((id) => id.toLowerCase() === wanted)) return true;

@@ -74,3 +74,16 @@
   cursor: default;
   opacity: .55;
 }
+
+/* [레이어 보존] 사용자 지정 연결 폼의 주 버튼(저장)·삭제 확인 — 바탕은 database 레이어의 범용 .ai-assistant-action 이 칠한다. */
+.ai-compat-form-actions .ai-assistant-action.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent, #fff);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-compat-card-actions .ai-assistant-action.is-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}

@@ -5,7 +5,7 @@
 // 배치 결정: docs/superpowers/specs/2026-09-15-studio-agent-lanes-design.md §11 (2026-09-17, 하단 레인 보드).
 
 import { defaultModelForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
-import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
+import { getOhMyPiProvider, selectableOhMyPiProviders } from "@/ai/ohMyPiProviders";
 import { LANE_STATUS_LABEL, laneElapsedMs, type LaneState, type LaneStatus } from "@/ai/piAgent/lane";
 import type { TeamBoardAgent } from "@/ai/piAgent/teamBoardState";
 import type { Project } from "@/project/types";
@@ -109,7 +109,7 @@ function renderNewLaneForm(input: NewLanePaneInput): HTMLElement {
         input.onFormChange({ provider, model: defaultModelForAuthMode("chatgpt", provider) });
       },
     },
-    children: OH_MY_PI_PROVIDERS.map((provider) => el("option", {
+    children: selectableOhMyPiProviders().map((provider) => el("option", {
       text: provider.label,
       attrs: { value: provider.id, ...(provider.id === input.form.provider ? { selected: "" } : {}) },
     })),
@@ -272,7 +272,7 @@ export function laneAvatarLetter(label: string): string {
 }
 
 function providerLabel(id: string): string {
-  return OH_MY_PI_PROVIDERS.find((provider) => provider.id === id)?.label ?? id;
+  return getOhMyPiProvider(id)?.label ?? id;
 }
 
 function laneLastLine(lane: LaneState): string {
