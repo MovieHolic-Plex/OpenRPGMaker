@@ -140,7 +140,7 @@ def howto_md(exs):
 - `compose_campus_grounds({{mapId, style:"school"|"university", buildings?, seed?, replace?}})` 가 아래 순서·규칙대로 야외 한 장을 **매번 다르게** 짠다(학교 48×36 이상, 대학 52×40 이상). 씨앗이 운동장 방향·건물 고르기·나무·벤치 자리를 바꾼다.
   - 학교 `buildings` = [본관, 옆동, 체육관] 키트 끝말(예 `["school-12","cafeteria","gym-green"]`). 대학 = [북쪽 가운데, 북쪽 왼쪽, 북쪽 오른쪽, 남쪽 왼쪽, 남쪽 오른쪽](예 `["hall-12","library","dorm-7","admin","union"]`).
   - 시작 칸에서 모든 건물 문 접근칸에 닿는지 엔진 통행으로 확인해 안 되면 깔지 않는다(맵을 바꾸지 않는다).
-- 건물 문 ↔ 실내: `build_hand_interior_room({{tileset:"modern_campus", exitWidth:2, ...}})` 로 실내를 짓고 `link_campus_interior({{mapId, door:{{x,y}}, width:2, interiorMapId}})` 로 잇는다. 문 좌표는 compose 결과 `data.buildings[].doors`.
+- 건물 문 ↔ 실내: 문 그림은 **안으로 이어지는 건물에만** 찍힌다(장식 문 금지). `build_hand_interior_room({{tileset:"modern_campus", exitWidth:2, ...}})` 로 실내를 먼저 짓고 `compose_campus_grounds({{..., entrances:[{{building:"본관", interiorMapId}}]}})` 로 들어갈 건물만 지정하면 문과 이음이 한 번에 난다. 안 지정한 건물은 문 없는 벽면이다. 나중에 실내를 달 때는 `link_campus_interior({{mapId, building, interiorMapId}})` — 문 그림과 이음을 같이 낸다. 그려진 문이 걸어서 닿지 않거나 이음이 없으면 projectLint 가 `campus-dead-door` error 로 막는다. 아래 예제 그림은 문 모양을 보이려고 전 건물에 문을 그린 것(`entrances:["all"]`)이다.
 
 ## 구성기의 순서 (직접 깔 때도 같은 순서)
 1. **바닥 한 재질**: 전체 `캠퍼스 잔디`. 남쪽 4줄 = 보도 1 + 차도 3(가운데 점선).
@@ -157,7 +157,7 @@ def howto_md(exs):
 - 차도(아스팔트·점선·횡단보도) 위에는 소품·건물을 놓지 않는다.
 
 ## 문 그림 · 접근칸 · 출입구 · 이벤트는 따로다
-- **문 그림** = 건물 키트 맨 아래 줄 문(막힘). **접근칸** = 문 바로 아래 줄(걸을 수 있는 바닥). **출입구** = 키트 `parts` 의 entrance. **이동 이벤트** = 접근칸에 건다(link_campus_interior 가 만든다).
+- **문 그림** = 건물 키트 맨 아래 줄 문(막힘). **접근칸** = 문 바로 아래 줄(걸을 수 있는 바닥). **출입구** = 키트 `parts` 의 entrance. **이동 이벤트** = 접근칸에 건다(entrances·link_campus_interior 가 만든다). 문 그림이 있으면 셋 다 있어야 하고, 하나라도 없으면 죽은 문이다.
 
 ## 반복 가능 / 고정
 - 반복: 바닥 낱칸 전부. 고정: 건물·소품·나무·교문 기둥·분수·시계탑. 담·생울타리는 고정 조각을 폭 간격으로 나란히.

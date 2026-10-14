@@ -49,6 +49,16 @@ export type RuntimeQaOp =
       readonly timeoutMs?: number;
     }
   | {
+      readonly kind: "waitForEventAt";
+      readonly eventId: string;
+      readonly mapId: string;
+      readonly x: number;
+      readonly y: number;
+      /** true 면 「그 칸이 아니다」를 기다린다. */
+      readonly not?: boolean;
+      readonly timeoutMs?: number;
+    }
+  | {
       readonly kind: "waitFor";
       readonly testid: string;
       readonly state: "present" | "absent";

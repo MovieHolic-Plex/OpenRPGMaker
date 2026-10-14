@@ -2,7 +2,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { isDetectionEmoting } from "./npcDetectionEncounter";
 import { pursuitTarget } from "./horrorRuntime";
-import { pursuitPass } from "./pursuitNavigation";
+import { pursuitPass, pursuitState } from "./pursuitNavigation";
 import { canMoveFootprint } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
@@ -15,7 +15,8 @@ import { store } from "@/project/store";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
 import { UNIT_FOOTPRINT } from "@/project/footprint";
 import { abortHop, applyHopFrame, finishHop } from "@/player/characterHopRuntime";
-import type { AutonomousMover } from "@/player/playSceneTypes";
+import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
+import { showSceneEmote } from "@/player/playSceneEmotes";
 import {
   applyFacing,
   executeInstantCommand,
@@ -28,6 +29,7 @@ import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
 import { moveRuntimeEventPosition,
 runtimeEventView,
+type RuntimeEventView,
 runtimeEventViewById, } from "@/project/runtimeEventState"
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, frameDeltaMs: number): void {
@@ -53,8 +55,13 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       continue;
     }
     if (mover.strategy === "chase") {
-      updateChaseNpc(scene, eventId, mover, deltaMs);
-      continue;
+      // 순찰+추격: 경로가 있고 추격 중이 아니면 아래 순찰(sequence) 처리로 흘려보낸다.
+      const patrol = mover.moves.length > 0 && !mover.chaseTarget && !mover.actionFrozen
+        ? patrolChaseState(scene, eventId, mover, deltaMs) : undefined;
+      if (!patrol || patrol.engaged) {
+        updateChaseNpc(scene, eventId, mover, deltaMs, patrol ? { value: patrol.tracked } : undefined);
+        continue;
+      }
     }
     if (yieldingLivingMovers.has(mover) && mover.step >= mover.moves.length) {
       if ((mover.livingRepathCooldownMs ?? 0) <= 0) {
@@ -169,11 +176,71 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
   runLivingRepaths(scene, repathCandidates);
 }
 
-function updateChaseNpc(
+/**
+ * 순찰+추격 한 마리의 이번 프레임 상태. 추격 판정(pursuitTarget)은 프레임당 한 번만 불러야 수색 시간이 두 배로 가지 않으므로
+ * 결과를 updateChaseNpc 에 넘긴다. 추격 정책(sight/pursuit)이 없으면 순찰할 시야 기준이 없어 늘 추격 쪽으로 둔다.
+ */
+function patrolChaseState(
   scene: AutonomousNpcSceneContext,
   eventId: string,
   mover: AutonomousMover,
   deltaMs: number
+): { engaged: boolean; tracked: ReturnType<typeof pursuitTarget> } | undefined {
+  const project = store.getCurrent();
+  const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
+  if (!view) return undefined;
+  const world = { project, map: scene.map, session: scene.session, positions: scene.eventPositions };
+  if (mover.patrolChasing === undefined) {
+    // 이 장면에서 처음 본 순찰 적. 저장·맵 재진입으로 경로 한가운데에 서 있으면 상대 걸음이 어긋나므로 출발 칸으로 먼저 돌려보낸다.
+    mover.patrolChasing = false;
+    const state = pursuitState(world, view);
+    if (state.home.mapId === scene.map.id && (state.home.x !== view.x || state.home.y !== view.y)) state.active = true;
+  }
+  const tracked = pursuitTarget(world, view, mover, deltaMs);
+  const engaged = tracked !== null;
+  if (engaged) {
+    // 순찰 도중 끊겼으므로 돌아온 뒤에는 출발 칸(=복귀 칸)에서 경로 처음부터 다시 돈다.
+    // 전환 순간에만 되감는다 — 추격 중 매 프레임 timer 를 0 으로 되돌리면 추격 걸음 간격(moveIntervalMs)이 영영 안 찬다.
+    if (!mover.patrolChasing) {
+      mover.patrolChasing = true;
+      mover.step = 0;
+      mover.timer = 0;
+    }
+  } else if (mover.patrolChasing) {
+    mover.patrolChasing = false;
+    mover.step = 0;
+    mover.timer = 0;
+  }
+  return { engaged, tracked };
+}
+
+/** movement.sightAlert — 시야에 처음 든 순간 말풍선을 띄우고 holdMs 동안 멈춘다. 멈춰야 하면 true. */
+function holdForSightAlert(
+  scene: AutonomousNpcSceneContext,
+  eventId: string,
+  mover: AutonomousMover,
+  alert: NonNullable<RuntimeEventView["movement"]["sightAlert"]>,
+  tracked: ReturnType<typeof pursuitTarget>,
+  deltaMs: number
+): boolean {
+  if (tracked === null || tracked?.searching) mover.alertSeen = false;
+  else if (tracked && !tracked.searching && !mover.alertSeen) {
+    mover.alertSeen = true;
+    mover.alertHoldMs = Math.max(0, alert.holdMs);
+    // 헤드리스 장면(테스트 러너)에는 Phaser 가 없다 — 말풍선은 실제 장면에서만 띄운다.
+    if ((scene as { textures?: unknown }).textures) showSceneEmote(scene as unknown as PlaySceneContext, eventId, alert.emote, Math.max(600, alert.holdMs));
+  }
+  if ((mover.alertHoldMs ?? 0) <= 0) return false;
+  mover.alertHoldMs = Math.max(0, (mover.alertHoldMs ?? 0) - Math.max(0, deltaMs));
+  return true;
+}
+
+function updateChaseNpc(
+  scene: AutonomousNpcSceneContext,
+  eventId: string,
+  mover: AutonomousMover,
+  deltaMs: number,
+  precomputed?: { value: ReturnType<typeof pursuitTarget> }
 ): void {
   const project = store.getCurrent();
   const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId);
@@ -184,7 +251,14 @@ function updateChaseNpc(
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
   }
-  const tracked = mover.chaseTarget ? undefined : pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
+  const tracked = mover.chaseTarget ? undefined
+    : precomputed ? precomputed.value
+    : pursuitTarget({ project, map: scene.map, session: scene.session, positions: scene.eventPositions }, view, mover, deltaMs);
+  const sightAlert = view.movement.sightAlert;
+  if (sightAlert && !mover.chaseTarget && holdForSightAlert(scene, eventId, mover, sightAlert, tracked, deltaMs)) {
+    setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
+    return;
+  }
   if (tracked === null) {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;

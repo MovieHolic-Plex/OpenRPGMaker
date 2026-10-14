@@ -9,6 +9,8 @@
 //   - 나무는 담 안쪽·운동장 가장자리·정원 덩이에만, 4칸 이상 띄운다. 가로등은 길 옆 5~6칸 간격.
 // 순수 함수다(프로젝트를 모른다). 칸 번호는 호출자가 준 사전(palette)에서 얻는다 — 도구(campusTools.ts)는 번들 정의에서, QA 스크립트는 구운 JSON 에서.
 
+import { plainFacadePatch } from "./campusDoors";
+
 export type CampusStyle = "school" | "university";
 
 export interface CampusKit {
@@ -27,7 +29,13 @@ export interface CampusPalette {
 }
 
 export interface CampusCell { readonly x: number; readonly y: number }
-export interface CampusBuilding { readonly name: string; readonly kit: string; readonly rect: { x: number; y: number; w: number; h: number }; readonly doors: CampusCell[]; readonly access: CampusCell[] }
+export interface CampusBuilding {
+  readonly name: string; readonly kit: string; readonly rect: { x: number; y: number; w: number; h: number };
+  /** 문 칸·접근칸 자리(문이 없는 건물도 «문이 있었을 자리»를 가진다 — 나중에 link_campus_interior 가 문을 낼 때 쓴다). */
+  readonly doors: CampusCell[]; readonly access: CampusCell[];
+  /** true 면 문 그림이 찍혔다 = 호출자가 접근칸에 실내 이동을 반드시 잇는다. false 면 문 없는 벽면(장식 문 금지). */
+  readonly entrance: boolean;
+}
 
 export interface CampusSpec {
   readonly width: number;
@@ -36,6 +44,11 @@ export interface CampusSpec {
   readonly seed?: number;
   /** 건물 교체(키트 id 끝말, 예 school-12·library). 슬롯 순서는 MIN_SIZE 옆 설명. 비우면 씨앗이 고른다. */
   readonly buildings?: readonly string[];
+  /**
+   * 문을 낼 건물(키트 끝말 또는 "all"). 비우면 어느 건물에도 문이 없다 — 문 그림은 안으로 이어질 때만 찍는다(장식 문 금지).
+   * 여기 적은 건물의 문은 호출자가 반드시 실내에 잇는다(도구는 같은 호출에서 잇거나, 못 이으면 맵을 바꾸지 않는다).
+   */
+  readonly entrances?: readonly string[];
 }
 
 export interface CampusResult {
@@ -85,6 +98,9 @@ class Board {
   readonly buildings: CampusBuilding[] = [];
   readonly props: { kit: string; x: number; y: number }[] = [];
   readonly notes: string[] = [];
+  /** 문을 낼 키트 id 집합(비면 아무도 없음) · all 이면 전부. */
+  entrances: ReadonlySet<string> = new Set();
+  entranceAll = false;
   constructor(readonly W: number, readonly H: number, readonly pal: CampusPalette, ground: number) {
     this.lower = new Array(W * H).fill(ground);
     this.upper = new Array(W * H).fill(-1);
@@ -146,12 +162,23 @@ class Board {
   }
   building(kitId: string, x: number, y: number): CampusBuilding {
     const kit = this.stamp(kitId, x, y, "bld");
+    const entrance = !!kit.door && (this.entranceAll || this.entrances.has(kitId));
+    // 문을 내지 않는 건물은 문 칸을 옆 벽 타일로 덮는다 — 문 그림은 안으로 이어지는 건물에만 있다.
+    if (!entrance) {
+      for (const p of plainFacadePatch(kit)) {
+        const X = x + p.col, Y = y + p.row;
+        if (!this.in(X, Y)) continue;
+        const k = Y * this.W + X;
+        this.lower[k] = p.lower >= 0 ? p.lower : this.lower[k]!;
+        this.upper[k] = p.upper;
+      }
+    }
     const d = kit.door ?? { dx: Math.floor(kit.width / 2) - 1, w: 2 };
     const doors = Array.from({ length: d.w }, (_, i) => ({ x: x + d.dx + i, y: y + kit.height - 1 }));
     const access = doors.map((c) => ({ x: c.x, y: c.y + 1 }));
     // 접근칸과 그 아래 한 칸은 비운다(소품·나무 금지)
     for (const a of access) { this.reserve({ x: a.x, y: a.y, w: 1, h: 2 }); }
-    const b = { name: BUILDING_NAME[kitId] ?? kitId, kit: kitId, rect: { x, y, w: kit.width, h: kit.height }, doors, access };
+    const b = { name: BUILDING_NAME[kitId] ?? kitId, kit: kitId, rect: { x, y, w: kit.width, h: kit.height }, doors, access, entrance };
     this.buildings.push(b);
     return b;
   }
@@ -162,6 +189,7 @@ class Board {
   }
   /** 문 접근칸에서 길(path·plaza·walk)까지 곧은 길(아래로 → 옆으로)을 낸다. */
   connect(b: CampusBuilding, piece = "pave-path"): void {
+    if (!b.entrance) return; // 문 없는 벽면 앞에는 길을 내지 않는다(막다른 포석 금지)
     const isNet = (x: number, y: number) => this.in(x, y) && ["path", "plaza", "walk"].includes(this.use[y * this.W + x]!);
     const a0 = b.access[0]!, w = b.access.length;
     let y = a0.y;
@@ -486,6 +514,9 @@ export function composeCampus(spec: CampusSpec, pal: CampusPalette): CampusResul
   const rng = mulberry(seed * 7919 + (spec.style === "school" ? 11 : 23));
   const b = new Board(spec.width, spec.height, pal, pal.tile("lawn"));
   const want = spec.buildings ?? [];
+  const asked = (spec.entrances ?? []).map((e) => e.trim()).filter(Boolean);
+  b.entranceAll = asked.includes("all");
+  b.entrances = new Set(asked.filter((e) => e !== "all").map(kitIdOf));
   const r = spec.style === "school" ? composeSchool(b, rng, want) : composeUniversity(b, rng, want);
   b.curbs();
   b.groundVariety(seed);

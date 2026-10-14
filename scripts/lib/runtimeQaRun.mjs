@@ -231,6 +231,36 @@ async function applyOp(page, op, runState) {
         op.timeoutMs,
       );
       return;
+    case "waitForEventAt":
+      // not:true 면 「그 칸이 아니다」까지 기다린다(추격하러 나갔다). 위치는 session.eventLocations — pursuit 정책이 있는 이벤트만 실린다.
+      try {
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => {
+          const at = state.eventLocations?.[target.eventId];
+          const here = !!at && at.mapId === target.mapId && at.x === target.x && at.y === target.y;
+          return target.not ? !!at && !here : here;
+        },
+        { eventId: op.eventId, mapId: op.mapId, x: op.x, y: op.y, not: op.not === true },
+        op.timeoutMs,
+      );
+      } catch (error) {
+        // 실패 진단: 기다리던 이벤트가 마지막으로 보고한 위치를 같이 남긴다.
+        const seen = await page.evaluate((id) => window.__oprnDebug?.readState?.().eventLocations?.[id] ?? null, op.eventId).catch(() => null);
+        throw new Error(`waitForEventAt ${op.eventId}@${op.mapId}(${op.x},${op.y})${op.not ? " 아님" : ""} 시간 초과 — 마지막 보고 위치 ${JSON.stringify(seen)}`, { cause: error });
+      }
+      return;
+    case "traceEvent": {
+      const out = [];
+      const t0 = Date.now();
+      while (Date.now() - t0 < op.ms) {
+        const at = await page.evaluate((id) => window.__oprnDebug?.readState?.().eventLocations?.[id] ?? null, op.eventId);
+        out.push(at ? `${at.x},${at.y}` : "null");
+        await page.waitForTimeout(250);
+      }
+      console.log(`TRACE ${op.eventId}: ${out.join(" ")}`);
+      return;
+    }
     case "pauseFrames":
       await pauseRuntimeFrames(page);
       return;
@@ -757,6 +787,11 @@ async function readObserved(page, {
       followerSpriteCount: characters ? Object.keys(characters.followers).length : null,
       vehicleSprites: characters ? (characters.vehicles ?? {}) : null,
       emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
+      // 시나리오가 이름을 댄 이벤트의 런타임 위치(session.eventLocations — 자율 이동·추격 정책이 있는 이벤트가 싣는다). 1×1 몸의 사각은 그 칸이다.
+      events: Object.fromEntries((watched.eventIds ?? []).flatMap((id) => {
+        const at = full?.eventLocations?.[id];
+        return at ? [[id, { mapId: at.mapId, x: at.x, y: at.y, bodyRect: { left: at.x, right: at.x, top: at.y, bottom: at.y } }]] : [];
+      })),
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };

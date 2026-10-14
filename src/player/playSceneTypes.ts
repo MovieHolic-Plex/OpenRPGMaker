@@ -69,6 +69,12 @@ export type AutonomousMover = {
   chaseRepathTimerMs?: number;
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;
+  /** movement.sightAlert: 직접 시야에 든 적이 있어 이미 놀람을 한 번 냈다(완전히 놓치면 다시 낸다). */
+  alertSeen?: boolean;
+  /** 놀람 뒤 남은 멈춤(ms) — 이 동안 추격 걸음을 떼지 않는다. */
+  alertHoldMs?: number;
+  /** 순찰+추격: 직전 프레임에 추격 상태였다. 추격이 끝나면 순찰을 처음 걸음부터 다시 시작한다. */
+  patrolChasing?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };
   /** 액션 전투 상태기계가 선딜/후딜/돌진 중 이동을 억제할 때 세운다. */
   actionFrozen?: boolean;

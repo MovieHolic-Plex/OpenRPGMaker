@@ -45,6 +45,9 @@ export const OP_KINDS = [
   "waitForRuntime",
   "waitForEmote",
   "waitForPosition",
+  // 이벤트(자율 이동 적·NPC)가 그 칸에 도착/이탈할 때까지 조건 대기 — session.eventLocations 를 읽는다(필드 적 QA).
+  "waitForEventAt",
+  "traceEvent",
   // 조건 대기. 고정 sleep 만으로 UI 전이를 기다리면 느린 호스트에서 flaky 해지고,
   // 키를 정해진 횟수만큼 눌러 대사를 소진하려 하면 **NPC 를 재발동시켜 초과 입력**이 된다
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).

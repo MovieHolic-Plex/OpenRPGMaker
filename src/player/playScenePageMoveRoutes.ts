@@ -185,7 +185,8 @@ function routeForPageMovement(
     case "approach":
       return { moves: [...DIRECTIONAL_MOVES], repeat: true, strategy: "approach" };
     case "chase":
-      return { moves: [], repeat: true, strategy: "chase" };
+      // route 가 있으면 시야 밖에서 그 경로를 순찰한다(순찰+추격). 없으면 제자리에서 기다린다.
+      return { moves: movement.route ? [...movement.route.moves] : [], repeat: true, strategy: "chase" };
     case "custom":
       return movement.route
         ? { moves: [...movement.route.moves], repeat: movement.route.repeat, strategy: "sequence" }

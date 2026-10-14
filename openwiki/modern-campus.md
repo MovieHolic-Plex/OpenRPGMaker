@@ -181,3 +181,14 @@ FAIL 둘은 **3/4 관문 미통과** — 굽지 않는다. 교훈: 윗면과 앞
 - 시각 QA(1회): 첫 조립에서 판 한 장 잔디·소품 부족·벤치가 길 위·운동장 윗선 없음을 보고 가장자리 칸·들꽃 잔디·가로등·화단·벤치 옮김·가로수를 더했다(재검수 1회).
 
 - **실조수 검증 후 고침 (2026-10-14, argon medium):** 건물 문 중 실내에 안 이어진 것은 `link_campus_interior` 결과가 목록으로 짚어 준다(체육관·별관 죽은 문 2회 연속 발생, `unlinkedBuildingDoors`). `build_hand_interior_room` 의 「참고 예제와 N% 같다」 경고는 「요청을 충족하면 그대로 끝낸다」로 바꿨다 — 옛 문구는 같은 방을 3~6번 재시공하게 했다(361초). 1차 `PROHIBITED_CONTENT` 는 최종 답 생성 턴의 모델 안전 필터 오탐으로 추정(고등학교·긴 문맥, 2차 재현 안 됨; 코드 원인 아님).
+
+## 죽은 문 강제 (2026-10-14, known-bugs-fix)
+
+옛 구성기는 건물마다 문 그림을 찍고, 실내 연결은 조수가 건물마다 따로 불러야 했다. 본관만 잇고 강당·별관 문은 말없이 «죽은 문»이 됐고, 알림은 `link_campus_interior` 결과의 안내 문장뿐이라 강제가 아니었다.
+지금은 **문 그림과 이음이 한 거래**다.
+
+- 구성기(`campusComposer.ts`): `CampusSpec.entrances`(키트 끝말 또는 `"all"`)에 든 건물만 문 그림을 찍고 길을 문 앞으로 잇는다. 나머지 건물은 `campusDoors.plainFacadePatch` 로 문 칸을 옆 벽 타일로 덮은 **문 없는 벽면**이다(장식 문 금지). 기본값은 문 0개.
+- `compose_campus_grounds({entrances:[{building,interiorMapId}]})`(`campusTools.ts`): 건물 이름·실내 맵 존재를 **먼저 검증**하고 다 맞을 때만 깐다(실패하면 맵 불변). 같은 호출에서 `linkEntrance()` 가 접근칸 이동 이벤트와 실내 출구 되돌림을 낸다. `replace:true` 재구성은 옛 `ev_mc_enter_*` 이벤트를 지운다(예전엔 남아 허공 이동이 됐다).
+- `link_campus_interior({building|door, interiorMapId})`: 문 없는 건물에 실내를 달 때 문 그림 + 이음을 한 번에 낸다. 이음이 실패하면 문 그림도 안 난다.
+- `projectLint` `campus-dead-door`(`src/project/lint/campusDoorLint.ts`, 순수 판정 `src/project/campusDoors.ts`): 캠퍼스 칩셋 맵의 모든 문 그림 칸은 ① 접근칸(바로 아래)이 걸을 수 있고 ② 거기에 존재하는 맵으로 가는 transfer 가 있고 ③ 시작 칸/진입 착지 칸에서 닿아야 한다. 어기면 error(손으로 칠한 맵의 «이음 없음»만 warning). `commitChangeset` 게이트는 새 error 를 막으므로 변조·누락이 저장 전에 거절된다.
+- 검증: `node node_modules/vite-node/dist/cli.mjs --script scripts/content/modern-campus/qa/check-campus-doors.mts`(기본 문 0·entrances 본관만·없는 실내 거부·link 로 강당 추가·이음 제거 시 lint error). 참고문서 예제 렌더는 `compose-scene.mts` 가 `entrances:["all"]` 로 문 전체를 보여 준다.
