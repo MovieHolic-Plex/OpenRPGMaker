@@ -99,7 +99,7 @@ export function buildMask(layout: DungeonLayout, profile: GrammarInfo, type: Dun
     throw new DungeonComposeError("입구 방에 걸을 수 있는 바닥이 없다.", "no-entrance");
   })();
   if (type === "sewer") carveSewer(g, rooms as readonly PlacedRoom[], seed);
-  if (profile.liquid || layout.grid) {
+  if ((profile.liquid || layout.grid) && !layout.thin) {
     const st = settle(g, entranceStart, rng(seed * 313 + 7));
     bridgeCount += st.bridges;
     if (st.removed) warnings.push(`닿지 않는 바닥 ${st.removed}칸을 막았다(액체로 갈라져 다리를 놓을 수 없는 조각).`);

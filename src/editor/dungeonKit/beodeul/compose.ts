@@ -23,8 +23,9 @@ import { buildMask } from "../mask";
 import { PROFILES } from "./profiles";
 import { dressTyped, type DressCtx } from "./dress";
 import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
-import type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
+import type { DungeonCompose, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
 
+export type { DungeonCompose } from "../types";
 export { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError };
 export type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom };
 export { layoutDungeon };
@@ -51,26 +52,6 @@ export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dunge
 
 
 // ---------- 2. 타일 ----------
-
-export interface DungeonCompose {
-  readonly type: DungeonType;
-  readonly width: number;
-  readonly height: number;
-  readonly lower: number[];
-  readonly upper: number[];
-  readonly rooms: PlacedRoom[];
-  readonly corridors: PlacedCorridor[];
-  readonly entrance: { x: number; y: number };
-  readonly stairsUp: { x: number; y: number; front: { x: number; y: number } } | null;
-  readonly stairsDown: { x: number; y: number } | null;
-  /** 서사 앵커: 보스방(입구에서 가장 깊은 방 또는 kind boss)·보물 방·잠긴 문 자리(보스·보물 방으로 들어가는 통로 한가운데 칸). */
-  readonly anchors: { boss: string | null; treasure: string | null; gate: { x: number; y: number; to: string } | null };
-  readonly spots: Record<string, { x: number; y: number }[]>;
-  readonly picture: string[];
-  readonly liquid: { readonly kind: "water" | "lava" | null; readonly cells: number; readonly bridges: number };
-  readonly counts: Record<string, number>;
-  readonly warnings: string[];
-}
 
 export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompose {
   const type: DungeonType = spec.type ?? spec.style ?? "catacomb";
