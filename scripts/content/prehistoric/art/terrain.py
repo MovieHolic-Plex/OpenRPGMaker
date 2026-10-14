@@ -258,7 +258,7 @@ def p_dirt(lx, ly, s=1):
     return _grid(('dirt', s), lambda: _dirt_grid(s))[ly % 16][lx % 16]
 
 
-FOOT = [['.2.', '232', '343', '.4.'], ['2.', '32', '34', '4.'], ['.2', '23', '43', '.4']]     # 발자국: 북쪽 벽 그늘·남쪽 테 빛
+FOOT = [['.3.', '343', '454', '.5.'], ['3.', '43', '45', '5.'], ['.3', '34', '54', '.5']]     # 발자국: 북쪽 벽 그늘·남쪽 테 빛
 
 
 def _path_grid(s):
@@ -268,9 +268,9 @@ def _path_grid(s):
     for y in range(16):
         for x in range(16):
             n = sm(x, y, s)
-            t = 4 + (1 if n > 0.8 else 0)
+            t = 5 - (1 if n < 0.2 else 0)                # 흙(3 둘레)보다 두 단 밝아야 길이 흙 바탕에서 읽힌다
             q = rnd(x, y, s + 43)
-            if q < 0.16: t += 1
+            if q < 0.12: t += 1
             elif q < 0.24: t -= 1
             g[y][x] = ('dirt', max(2, min(6, t)))
     pos = [(2, 3), (9, 1), (5, 10), (12, 9)]
@@ -492,7 +492,7 @@ def lane(c, key):
                 up, dn, lf, rt = ins(x, y - 1), ins(x, y + 1), ins(x - 1, y), ins(x + 1, y)
                 if not up: t = 2
                 elif not ins(x, y - 2): t = min(t, 3)
-                elif not lf: t = min(t, 3)
+                elif not lf: t = min(t, 4)
                 c.P(x, y, mat, t)
             else:
                 mat, t = p_dirt(x, y)

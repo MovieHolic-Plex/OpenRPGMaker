@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "becc2ada40b3170c441555f7e36ca5d77c2d10f581434a6d92d994ecae35e122",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut thatch s",
+ "label": "prehistoric/ph-hut-thatch-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical thatch hut",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatch roof forms the main body and displays full downward-sloping top surfaces across rows 1-43, with concentric tiers curving downward toward the camera in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8967
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched hut with conical roof and round base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn as a flat 2D architectural elevation: the ground contact line at row 62 is a straight horizontal line across the entire base, the thatch tiers are horizontal straight bands without downward elliptical curvature for 3/4 perspective, and the apex is centered dead-on with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7271
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched conical hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in a pure front/architectural elevation: all thatch tiers, wall textures, door lintel, and stone base are flat horizontal lines with no curvature or top-down foreshortening. The apex of the cone and the base rim show no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9656
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical thatch hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn in pure front elevation: the ground contact line at rows 61-62 is completely straight and horizontal rather than curving along the cylindrical footprint, all thatch tiers are horizontal bands, and the peak sits at the very top contour with no visible top-down foreshortening (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7480
+  }
+ ],
+ "decidedAt": "2026-10-14T08:09:40.845Z",
+ "cells": {
+  "16": [
+   "0597753f2d683fd6",
+   "145b833001ad90a3",
+   "18bc23ac8095ff8c",
+   "1ac5ed4a29661241",
+   "386bf7dd3fa0e867",
+   "389a4b6657690341",
+   "68f4618fdaad6231",
+   "71fb6d39e2ee5852",
+   "76a9efec9cb64e80",
+   "90630bcbc3a6222d",
+   "abbaac0daf371f58",
+   "f62dc9900931646c"
+  ],
+  "24": [
+   "0efe0c60f12b3e70",
+   "326f454a1b03cd35",
+   "3788800c44571bac",
+   "471e761ec72699bb",
+   "4e1c0bf25f4d12ae",
+   "56d07cef8e119173",
+   "9a1b39c802c4218f",
+   "c5e302cca4537fd0",
+   "cd328f2b9507a48c",
+   "d922d8889caa05ad",
+   "e274123674b0c727",
+   "f295ab7716c8a657"
+  ],
+  "32": [
+   "22c54a90f640668a",
+   "49ef905f4c40c127",
+   "4b400688b1b63002",
+   "4f3d9f8716b96351",
+   "739a2385249afb48",
+   "92516b8aed00f13c",
+   "942a84fd8822ba90",
+   "a35a83f051d0caa6",
+   "b2a96095c1ce7d56",
+   "d7d4720127e7e328",
+   "e55fecffd2e22c43",
+   "f205ef17bb64c672"
+  ],
+  "48": [
+   "0279a95086d82c21",
+   "2683452592bd276c",
+   "a728f7b7e0a9ca74",
+   "cfec0e5b326d5606"
+  ]
+ }
+}
