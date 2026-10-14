@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.221.0 — 2026-10-15
+
+### 기능
+
+- **dungeon** — genre x tileset-adapter dungeons (author_dungeon), monster-kit adapter, beodeul cave/mine/volcano polish (#2587) (`cf71dea`)
+
+### 수정
+
+- **ci** — register the compatible-provider settings CSS (`68327c6`)
+
 ## 0.220.0 — 2026-10-15
 
 ### 기능
