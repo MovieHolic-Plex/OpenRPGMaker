@@ -315,7 +315,6 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
     const wallOnly = (list: number[]) => list.filter((x) => isWall(x, topWall));
     // 벽 횃불: 방 윗벽 가운데 줄에 5칸 간격(양쪽 끝 한 칸 안쪽부터)
     const torchXs = wallOnly(wallXs.filter((x) => (x - r.x) % 5 === 1 || (x - r.x) % 5 === 0 && false));
-    for (const x of torchXs) put(K.torch, x, topWall);
     const wallCenterFirst = [...wallXs].sort((a, b) => Math.abs(a - (r.x + r.w / 2)) - Math.abs(b - (r.x + r.w / 2)));
     const floorCells = (inset: number): [number, number][] => {
       const out: [number, number][] = [];
@@ -409,7 +408,9 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
         break;
       }
     }
-    void torchXs; void sideCols;
+    // 벽 횃불은 맨 마지막에 — 계단·깃발·벽감이 먼저 자리를 잡고 남은 벽 칸에만 건다.
+    for (const x of torchXs) put(K.torch, x, topWall);
+    void sideCols;
   });
 
   // 가장 깊은(마지막) 방 맨 안쪽에 내려가는 계단 한 칸(바닥 칸 하나의 그림만 바뀐다).
