@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "32d5c7964eec522e3e35db73ae55003406688ea72af591e0dd20286af63395de",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "두레박 장대(샤두프)",
+ "label": "desert-east/de-shaduf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shadoof frame and lever arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam (rows 19-21) has only a 1px outline on top with no foreshortened top plane visible. The entire structure (pillars, crossbeam, and lever mechanism) is drawn in a pure front/side elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden shadoof frame and lever",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam and supporting vertical posts are drawn completely flat in 2D front/side elevation with no visible top surface (row 19 is merely a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5511
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame and shadoof lever arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbeam at row 19 has only a 1px dark top outline with no top surface, and the two vertical support pillars are drawn completely flat in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5713
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame and shadoof lever arm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D side/front elevation. The horizontal crossbeam (rows 19-21) has only a 1px outline line at row 19 with no visible top surface, and the vertical pillars end in completely flat horizontal baseline cuts at row 45.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6618
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "5d919d3b35238a73",
+   "77c6419856adcd71",
+   "adb0201d0871f4e0",
+   "d1f2b840c8d5f29a",
+   "d7fbbda65a4bdb5f"
+  ],
+  "24": [
+   "137f5ee6515008b6",
+   "15a4d2dd0344b932",
+   "400c24695ca1a44b",
+   "4069ccdabef28faa",
+   "514293d97c938da2",
+   "5613dce2db039f1c",
+   "8a65d031aa91366c",
+   "bafa5983fecd9946",
+   "c4f9451b5e7095bb",
+   "c810168589ebecf1",
+   "d4cd9867699b93be",
+   "e6d061f6f0f261f3"
+  ],
+  "32": [
+   "16626baa6dd0491d",
+   "413b0c07591545ba",
+   "6a8f4a4674ec827e",
+   "78249e85bba30067"
+  ],
+  "48": [
+   "4c9f771d4741f70a",
+   "98966932674fb773",
+   "d2a347dcf4e629de"
+  ]
+ }
+}

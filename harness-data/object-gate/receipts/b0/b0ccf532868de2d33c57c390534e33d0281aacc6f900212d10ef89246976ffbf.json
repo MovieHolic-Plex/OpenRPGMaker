@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0ccf532868de2d33c57c390534e33d0281aacc6f900212d10ef89246976ffbf",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "뚜껑 단지 셋(석고)",
+ "label": "desert-east/de-canopic-jars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "set of three lidded jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three jars are drawn in pure front elevation with straight horizontal bands (rows 6, 9-10) and completely flat horizontal base lines (rows 10 and 14). There is no visible top surface or elliptical foreshortening on the lids or bodies.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8399
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "set of three lidded jars (canopic/plaster jars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three jars are drawn in pure front elevation with zero top-down tilt: the bases, color bands, and lid sections are completely flat horizontal pixel rows with no visible elliptical top surfaces or foreshortened curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "set of three lidded jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three jars are drawn in pure front elevation: the blue decorative bands (rows 6 and 9-10) and base lines (rows 10 and 14) are completely straight horizontal lines with no curvature, and the lids are rendered as flat frontal domes rather than ellipses viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6971
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "set of three lidded jars/canopic jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The jars are drawn in flat front elevation with straight horizontal bands and flat bottom baselines (rows 10 and 14). The lids and jar tops have no elliptical foreshortening or visible top surface looking down.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5272
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "1a541b29bd21008e"
+  ],
+  "24": [
+   "892070bdddb8a1a2",
+   "baf5c0b1e168f3e4",
+   "cd2e127d64ea38d4",
+   "e4ff8169fd5356af",
+   "e554c9375a2b4122",
+   "e63ca4bfd1af6c0a"
+  ],
+  "32": [
+   "11ce5504453362ec",
+   "3fdb661680e044d4",
+   "52705f0bd355e189",
+   "5c2ec346c1c1c371",
+   "9acfaf77ba629d7f",
+   "fc1db85e7ab58764"
+  ],
+  "48": [
+   "0b0eab706cf5217c",
+   "2c9f6a66168de98f",
+   "4409388c043285a8",
+   "8ab54e474f52aa56",
+   "e200460927bb2075",
+   "f53fe81637a75887"
+  ]
+ }
+}

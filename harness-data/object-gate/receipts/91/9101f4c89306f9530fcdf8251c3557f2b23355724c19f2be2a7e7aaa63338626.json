@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9101f4c89306f9530fcdf8251c3557f2b23355724c19f2be2a7e7aaa63338626",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "큰 바위",
+ "label": "desert-east/de-boulder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large boulder with smaller rock formation",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-facing surface of the boulder is visible as a lighter, textured dome spanning rows 8-14 (~7 rows) before transitioning into the darker vertical south face marked by cracks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder features a clearly defined, lighter top surface spanning rows 8 to 15, transitioning into a shaded south-facing vertical face with cracks below (rows 16 to 26). The attached smaller rock at the lower right similarly exhibits a distinct top face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock displays a clear top-down 3/4 perspective with a broad, lit top surface across rows 8–14 above shaded vertical south-facing cliff planes with vertical fissures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3606
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-facing rounded surface of the boulder is clearly visible from row 7 to row 15 (around 8 rows tall) with lighter highlighting and texture, transitioning into the vertical south face with vertical cracks and darker shading below row 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4484
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "05499ad3dda32bf7",
+   "0769c6e2de5ccb04",
+   "1b8e76923fb1d15d",
+   "dfa8497b1496ea12"
+  ],
+  "24": [
+   "200d7c8429ebf948",
+   "22aa7c6d98345c4e",
+   "25be12d865b828a3",
+   "28395b679ae788aa",
+   "2e991f10267725c0",
+   "3e2d368ba97b65d6",
+   "432cad6c808985bb",
+   "588fe9ebb4db1fe1",
+   "5a45a9335f60a144",
+   "5a83d4d3f1994986",
+   "630c8edce0c35fa4",
+   "a3a5dbe941d6a307",
+   "b39911ba174b8ab6",
+   "d49a6be1be670b39",
+   "daa09241ccd446bc",
+   "e52aebce19ea1351",
+   "e9676680e385eebb",
+   "f6278abd30ae590d"
+  ],
+  "32": [
+   "4b028e4347a507cc"
+  ],
+  "48": [
+   "1bd1969da69477a9",
+   "3fbbe54160c21dde",
+   "69970e9d91cf360a",
+   "6b12ca5008e374e8",
+   "ce85fb98c357e20f",
+   "f352af447f06f782"
+  ]
+ }
+}

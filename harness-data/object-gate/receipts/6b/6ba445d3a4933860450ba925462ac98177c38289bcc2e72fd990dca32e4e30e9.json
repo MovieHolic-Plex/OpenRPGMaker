@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ba445d3a4933860450ba925462ac98177c38289bcc2e72fd990dca32e4e30e9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래",
+ "label": "desert-east/de-sand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 sand terrain ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3847
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile representing flat sand, viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5173
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting sand across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4244
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting calm sand texture covering the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3435
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.783Z",
+ "cells": {
+  "16": [
+   "4487660d92511029"
+  ],
+  "24": [
+   "5fc16048522767f1",
+   "68da6ddb5cccd8da",
+   "88e4efbe4e0eb120",
+   "9b19a3a9d0e14409",
+   "bfb5e0c9f8cc9dfa",
+   "c76f19eaaf9e69f1"
+  ],
+  "32": [
+   "244e7fcb46e373b2",
+   "3749fe1ddcb5c3d5",
+   "5ff8c990a8abd2dd",
+   "657c2939cd185481",
+   "70608b109b7b98ef",
+   "7eff0f01c9fd96c4"
+  ],
+  "48": [
+   "3a3d23ea470fd071",
+   "6c47daff5d8224da",
+   "ac23c42518c4fd69",
+   "c95f2a4511fcfd30",
+   "df48c467d9f3ff20",
+   "e61ec3ebd3caa7d3"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79f12e0dfdfba97ce20aadb7e2f41251465f8ec6207cbb1e30cca2d5b8a6cba4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "오아시스 풀밭",
+ "label": "desert-east/de-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grassy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 flat grass ground tile with pixel texture variations, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4676
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oasis grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground tile depicting oasis grass texture across all 16x16 pixels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5250
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a 16x16 flat grass ground texture viewed from above, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a 16x16 seamless top-down grass terrain tile with pixel-level color variation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4353
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.816Z",
+ "cells": {
+  "16": [
+   "382e73fd1b187a73"
+  ],
+  "24": [
+   "0e9f96069f8d45c4",
+   "2104567c8bee87f4",
+   "3edbdc8bb5bb0fe3",
+   "5d147f5c7f80e3ce",
+   "ce11d44d0e9b4222",
+   "e6768e2c2075ce6a"
+  ],
+  "32": [
+   "4375bece00bc83e9",
+   "910e0d2114a5b677",
+   "91f5adf0d8fa643e",
+   "a4f568ccc3a23206",
+   "be78c85ce71e2a07",
+   "e32e21617c9fdbc1"
+  ],
+  "48": [
+   "0a511dd0926194d5",
+   "25342dd4877f26f6",
+   "2d799be1fec5a66c",
+   "a3bfeb2a2871ef53",
+   "b55565b2debbc61b",
+   "c6a5f66609ee45d5"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c09ce5c04f7cb733994b1604e5c588d34cf47472de28a6f8940955b070c4311",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 — 남동 바깥 모서리(테 북·서)",
+ "label": "desert-east/de-ceil-tomb-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling terrain tile with north and west border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat overhead ceiling/terrain autotile with borders on the north and west edges; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling/floor terrain tile with border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a ceiling corner border (north and west edges). Correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4964
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling border autotile (top-down terrain)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ceiling terrain tile with border trim on north and west edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4931
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling corner terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat overhead ceiling/terrain autotile piece with north and west borders and dark stone surface filling the remainder; full 16x16 surface viewed from top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5714
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "fbd21049ee1d5ff2"
+  ],
+  "24": [
+   "181ec4f05ac894d0",
+   "5b4a7d15ef38002a",
+   "b2ff449479daf8c4",
+   "d51c2c06861839fd",
+   "dd34e2a025acb5e7",
+   "e6bee5f89883a082"
+  ],
+  "32": [
+   "0daf345295d3de18",
+   "3c8ff51024f518f4",
+   "40a91c2302b539b5",
+   "5bd08ce3bfb805d8",
+   "7ab4825a33747718",
+   "7e36a5f53b350d1e"
+  ],
+  "48": [
+   "11a9f75fd58b416a",
+   "2dbba12aa4c83689",
+   "338e887d717e0fef",
+   "7ea15c39d78f4171",
+   "ed49ee4b1a98f023",
+   "fef76739b9258fa1"
+  ]
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79575515d5d145b8c6f645caada29da9942ef128bb377401052694fa92a05024",
+ "width": 32,
+ "height": 32,
+ "kind": "figure",
+ "name": "사자 석상(받침)",
+ "label": "desert-east/de-lion-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lion statue on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly depicts a horizontal top plane across rows 18-22 (approx 5 rows) in a light highlight tone above the front vertical face (rows 23-30), correctly adhering to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5434
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lion statue on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lion faces west in silhouette, while the rectangular plinth beneath it clearly displays a top surface of about 5 pixel rows (rows 18-22 in a lighter tone where the statue rests) above an 8-row vertical front face (rows 23-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7165
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lion statue on rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly displays a 5-row light-shaded top surface (rows 18-22) upon which the lion figure rests, above an 8-row south face (rows 23-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lion statue on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth clearly exhibits a 5-row top surface (rows 18-22) in lighter tone with cast shadow from the lion, meeting the requirement for a figure/plinth in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10532
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "2aa82047f37ceb49",
+   "782887f0c24f32df",
+   "aa87a122fa168ae9",
+   "bd48c7b8649e1ce5"
+  ],
+  "24": [
+   "0097d76cf7902f75",
+   "02d0f25b5fbf50b0",
+   "05cdf8842013fa32",
+   "0ae2161c93ec6cf8",
+   "0c8e127d92fde1e1",
+   "18ed70f2d67220d9",
+   "296959f4d965ee68",
+   "4c1a76430f7ef0a6",
+   "4d2a89e95346d550",
+   "755b704728207921",
+   "773705088a741cb2",
+   "7a173de3e02d2e17",
+   "7db82c06b14fcf8c",
+   "7e957256d18b2a13",
+   "82eae993c5a918ad",
+   "a911428df0bb5506",
+   "bea049767718eab8",
+   "cab1abc2b32ce38c",
+   "cdd0c0b263099ac8",
+   "cddf220678d02569",
+   "f97812ad6baa6670",
+   "fc4343dbeaf56394"
+  ],
+  "32": [
+   "ece1475dd7139b6c"
+  ],
+  "48": [
+   "28cfa2ec2d75016b",
+   "5117204b686eca52",
+   "52dd07474a268607",
+   "9f90da96f287236b",
+   "c91da5429126dae2",
+   "fec11d0ae245ee10"
+  ]
+ }
+}

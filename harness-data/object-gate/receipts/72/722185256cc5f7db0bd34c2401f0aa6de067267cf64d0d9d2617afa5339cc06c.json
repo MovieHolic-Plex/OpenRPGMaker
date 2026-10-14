@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "722185256cc5f7db0bd34c2401f0aa6de067267cf64d0d9d2617afa5339cc06c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 개울 바닥(갈라진 진흙)",
+ "label": "desert-east/de-mud",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cracked mud / dry creek bed ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing dry cracked earth from an overhead 3/4 perspective spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5067
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cracked mud / dry stream bed ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting cracked mud/ground spanning the full 16x16 ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cracked mud / dry creek bed ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cracked dry earth or stones viewed directly as ground surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dry cracked mud stream bed terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting cracked dry earth/mud viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11549
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.816Z",
+ "cells": {
+  "16": [
+   "286b9f1dcddcc5d0"
+  ],
+  "24": [
+   "1b42d63af70bba1a",
+   "287aefe79653c25c",
+   "62cc002000aec70c",
+   "ae1a3f46cc8a32ac",
+   "d91df8d2720e020a",
+   "da9e76672bd180cb"
+  ],
+  "32": [
+   "16984abdb8e16872",
+   "1fb29cd2f17a9367",
+   "2c0057d95916f752",
+   "3860474e3ad0d237",
+   "3d9664ac4fe82d6f",
+   "df8788695a96928c"
+  ],
+  "48": [
+   "0851c9d389410a76",
+   "20b3ebed2f23697c",
+   "2accefbe210f0fea",
+   "2ca0f85ff6be6fc9",
+   "582090cc676028dc",
+   "da5afbb4f94dbb15"
+  ]
+ }
+}

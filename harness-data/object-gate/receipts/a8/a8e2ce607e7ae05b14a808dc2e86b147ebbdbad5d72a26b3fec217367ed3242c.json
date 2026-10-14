@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8e2ce607e7ae05b14a808dc2e86b147ebbdbad5d72a26b3fec217367ed3242c",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "물담배(시샤)",
+ "label": "desert-east/de-hookah",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water base / vase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn in a straight front/side elevation. The blue glass vase is a flat circle, and all horizontal elements (base, mid-ring, top tray) are completely flat 1-pixel horizontal bars without any top-down elliptical foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass base vase and stem of hookah",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn in pure side-scroller / front elevation: the coal tray at row 3 is a 1px flat horizontal line, the top bowl is seen from the side with no top opening, and the base is a flat front-facing circle with a flat bottom.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5260
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hookah base and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn in pure front elevation: the coal tray at row 3 is a 1px flat horizontal bar, the top bowl has no visible rim or opening, and the circular base flask shows no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5406
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hookah water base and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hookah is drawn in pure 2D side elevation; the round glass base, metal trays, and top bowl show no foreshortened horizontal surfaces or ellipses (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5256
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "783e7aac56d00bdd"
+  ],
+  "24": [
+   "31671b53c5a39209",
+   "35ce64ed4b1691c1",
+   "5791753d52227c28",
+   "84c9f714139ab9c5",
+   "cd5670afeb665303",
+   "e7bddea1bdd0b9af"
+  ],
+  "32": [
+   "38928d42cedaafb0",
+   "44a71fb266f74638",
+   "8c74f17a563f0d8b",
+   "ced3eaeb3c850812",
+   "d15aea55a404ebf4",
+   "e0e5d43aa6c5ed78"
+  ],
+  "48": [
+   "0171f9d2745cffb1",
+   "8b6b989d425a00d2",
+   "bbd469263e31ce2e",
+   "c2f974769063ebc8",
+   "c4bf12af6c4b1e42",
+   "eba149f399ca1084"
+  ]
+ }
+}

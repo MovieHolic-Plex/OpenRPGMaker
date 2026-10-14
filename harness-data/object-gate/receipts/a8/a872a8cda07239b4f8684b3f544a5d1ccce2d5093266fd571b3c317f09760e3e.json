@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a872a8cda07239b4f8684b3f544a5d1ccce2d5093266fd571b3c317f09760e3e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "obelisk shaft and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft, tier steps, base plinth, and golden pyramidion cap are all drawn in pure front elevation with flat horizontal dividing lines and no visible top surfaces (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6770
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk shaft and its pyramidion cap are drawn in flat front elevation with strictly horizontal seams and a 2D triangular cap with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8196
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk is drawn in pure front elevation with zero top-down perspective. The pyramidion cap, the shaft transitions (widening at row 27), and the pedestal base all have completely flat horizontal lines with no visible top surfaces (0 top_rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13191
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "obelisk shaft and pyramidion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk is drawn strictly in pure front elevation with completely flat horizontal lines across the cap base, shaft tiers, and plinth. No horizontal surfaces or top faces are visible from the required 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10165
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.965Z",
+ "cells": {
+  "16": [
+   "5955c122b2a8eaaa",
+   "5f0a25b4636e1ae8",
+   "92e990ec1157f773"
+  ],
+  "24": [
+   "0124c5d49533d261",
+   "057f7c93a965255f",
+   "249deb02a64076cc",
+   "256565852ce6fa90",
+   "778b3d59021bd019",
+   "aa271e6dc621e95d"
+  ],
+  "32": [
+   "03dfde176c1dd8e6",
+   "1d23294948d1a48b",
+   "2a0d28a521737a54",
+   "34801eb66ae240c8",
+   "7453606f288f2430",
+   "7e176353f6e5ae73",
+   "8a9122d9e89a4897",
+   "aaf58e17dd20018f",
+   "b1ba5f07b30dcddb",
+   "c61e999c19beb3e9",
+   "db6840a87f844c67",
+   "fe6408a3d110de70"
+  ],
+  "48": [
+   "89c268715f22d226",
+   "998366af3c0ac3b7",
+   "d8b97adb1c7c53ea"
+  ]
+ }
+}

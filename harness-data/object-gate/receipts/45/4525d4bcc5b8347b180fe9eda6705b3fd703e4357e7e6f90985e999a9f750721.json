@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4525d4bcc5b8347b180fe9eda6705b3fd703e4357e7e6f90985e999a9f750721",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "군청 금테 꽃병",
+ "label": "desert-east/de-vase-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulbous vase body with neck and handles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase is drawn in pure front elevation: the main spherical body has no foreshortened top surface, the gold middle stripe runs in a straight horizontal line across row 9 without elliptical curvature, and the opening is not drawn as an ellipse viewed from above (the top is composed of flat horizontal color blocks).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 16088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulbous vase body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase is drawn in pure flat front elevation. The main spherical body, horizontal gold band, base, and neck are drawn with completely straight horizontal pixel rows with no curvature or top surface visible. Even if the black band at rows 2-3 was intended as an opening, it is drawn as a flat rectangle rather than an ellipse seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 13667
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ultramarine vase with gold trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vase is drawn in pure front elevation: the gold belly band (row 9), base (rows 14-15), neck, and mouth are all completely flat horizontal stripes with no elliptical curvature or visible top surface from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 14033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulbous vase body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bulbous main body is drawn in flat front elevation with 0 top rows visible. The opening is not rendered as an ellipse seen from above, but rather as a flat 5x2 pixel rectangular patch with no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 24839
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "a4098cd5a4ce7a50"
+  ],
+  "24": [
+   "35bf0cf737055b21",
+   "672e56fd0bce4fc3",
+   "89d87df18c78df24",
+   "b48caa78498097f9",
+   "d22aacbb6fbee6de",
+   "e3359703197482a6"
+  ],
+  "32": [
+   "596bb686738a13fa",
+   "64cb5601bba4cc05",
+   "7a7dbd836bbac56f",
+   "7b663dd34ea7d68b",
+   "d941eae272f95319",
+   "f74f09a53f33ed45"
+  ],
+  "48": [
+   "02d5011e99da0c6c",
+   "07c1413617e606d0",
+   "0900e5b8e5124925",
+   "935de4c3a5a9e6b5",
+   "9fb526f97eaaccef",
+   "d5b5c572cce1ddd6"
+  ]
+ }
+}

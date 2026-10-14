@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11b3397c5582b4b21fd87fb75f0d311b3aef54872545371c5b94c44910d628ce",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "회칠 벽(청록 타일 징두리)",
+ "label": "desert-east/de-wall-plaster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face with wainscot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical plaster wall face with tiled dado (wainscoting). As a wall surface terrain tile rather than a freestanding object, it correctly depicts the front-facing vertical wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plaster wall face with tiled wainscoting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall surface tile (terrain) with wooden crown/beam at the top, plaster midsection, and decorative turquoise tile wainscoting at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3792
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plaster wall face with tiled wainscoting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical wall face with plaster and lower tiled wainscoting/dado. As a wall face tile, it correctly shows a flat vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall face with plaster upper section and tiled wainscoting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall segment tile consisting of a wooden top molding, plaster wall surface, and decorative turquoise tile wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4400
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "1db6f1dc22bdeac8",
+   "911b05164fee7157"
+  ],
+  "24": [
+   "20fc565aa331eb49",
+   "27a5f99c00967601",
+   "37627fa845c79db8",
+   "4079e30821f07000",
+   "4c0138cfb7e93926",
+   "67f975a4cadf03e8",
+   "83e5c8861f0eddff",
+   "a3a8a44c46574b89",
+   "a417c00c4ca0d25a",
+   "ad598cf0f7afc1f0",
+   "db81aab6e0f511ef",
+   "e6ba70fc542c4a19"
+  ],
+  "32": [
+   "24efb1e5789ebfad",
+   "5ded13542b9eff17",
+   "ecf0f068e0c8f37d"
+  ],
+  "48": [
+   "2d12771c0c2cb32a",
+   "7b92d5fc4f4a699d",
+   "9c94f4a57e1afbf3",
+   "c55be83a9eac133a",
+   "c720e41761fc6d18",
+   "f3fc50a899f63350"
+  ]
+ }
+}

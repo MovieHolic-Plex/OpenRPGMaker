@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31ccce9e6bca02022258cba54e1ac2b8e36fe4874cb38a11c154f75c86984bba",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "앉는 방석(큰)",
+ "label": "desert-east/de-cushion-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sitting cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cushion is clearly visible from above across rows 4 to 10 (7 rows), with the front south-facing thickness shown on rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5090
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor cushion / sitting mat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cushion is clearly visible from rows 4 to 10 (7 rows tall) with interior decorative pattern, and the south-facing thickness/front edge is rendered below it from rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5299
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cushion is clearly seen from above across rows 4-10 with an inner pattern, and rows 11-13 depict the south-facing front thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6019
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cushion is clearly visible from rows 4 to 10 (7 rows tall) showing the decorative center and borders, while rows 11 to 13 show its front vertical thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.225Z",
+ "cells": {
+  "16": [
+   "751f0d5b38e3fb4a"
+  ],
+  "24": [
+   "058932050ac32410",
+   "7d577af076cb75db",
+   "83fa412fd31037a1",
+   "90e9c42a4b6b5477",
+   "c4267af174451c62",
+   "fd7d8665a4b918a4"
+  ],
+  "32": [
+   "068e88587470c49a",
+   "2c0436efcb6c6900",
+   "6938102ff5c6f2a7",
+   "7ed77cca2f0af1d2",
+   "8c2510b6b0aab3b9",
+   "f5929d9160b7a54a"
+  ],
+  "48": [
+   "2e76e97db020a2da",
+   "4060db3c4a234f70",
+   "a08e8e0db5e1b654",
+   "a0fb360946ac63c9",
+   "b43ef28a322f5c12",
+   "de3f32ca74884cc7"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6ab6ce8dc62210e347b32b5d4073f3205e500e385d7e583658154f28999ad16",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "찻집 젤리주 타일 바닥",
+ "label": "desert-east/de-floor-zellige",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled floor pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating floor tile pattern with circular inset motifs and gem-like corner accents, correctly representing horizontal terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5549
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled floor pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile pattern viewed directly from above / in top-down terrain perspective, covering the full 16x16 tile seamlessly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4448
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile pattern viewed from above filling the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4481
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile featuring repeating circular stone or jelly bead inlays with decorative corner tiles, viewed directly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4465
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.209Z",
+ "cells": {
+  "16": [
+   "864c76e2a1374878"
+  ],
+  "24": [
+   "67969a349458abdc",
+   "92e949f2c20f93cf",
+   "d3d285a5532d2739",
+   "e7d2e0576bade2be",
+   "f7c95290663e253b",
+   "fed9b429c400269e"
+  ],
+  "32": [
+   "00da474d550dfb66",
+   "4c9384ceb8c370dc",
+   "60bce3e693599215",
+   "8326e7159369cccc",
+   "ac833830e929023b",
+   "d162c1dba6e9b39b"
+  ],
+  "48": [
+   "4bb132624ca25903",
+   "4cf83e617c41822f",
+   "7a0b0ba8fe68a32f",
+   "8b996978c9c99f16",
+   "8ee604e53f93a8be",
+   "9ab19a57ba7e91c0"
+  ]
+ }
+}

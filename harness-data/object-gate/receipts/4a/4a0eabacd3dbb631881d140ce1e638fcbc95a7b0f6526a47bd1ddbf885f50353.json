@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a0eabacd3dbb631881d140ce1e638fcbc95a7b0f6526a47bd1ddbf885f50353",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "노점(등잔·놋그릇)",
+ "label": "desert-east/de-stall-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top is clearly visible from rows 19 to 24 (6 rows deep) with items resting on it, and the canopy roof slope is shown from rows 1 to 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall clearly shows top surfaces: the counter top spans rows 19-24 (6 rows tall), and the sloping fabric awning covers rows 2-9 (8 rows) above its front valance, providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4883
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped canopy and display counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall clearly shows top/sloped surfaces in 3/4 perspective: the downward-sloping striped canopy spans rows 2-10 and the horizontal counter top surface spans rows 19-24 (6 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6027
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a 6-pixel-deep top surface (rows 19-24) upon which wares are displayed, and the awning slope occupies rows 1-9 above a hanging valance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5568
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "28b4ba8fe03af985",
+   "dfbf86d1ea0a4d99",
+   "fb3f066f08298c0d",
+   "fdc58cbcd47da371"
+  ],
+  "24": [
+   "0a84da44971fb855",
+   "23f3fdb225e11cc4",
+   "2d2b75cc56484ed1",
+   "2d80ce93130fe51b",
+   "354cf04683300f26",
+   "3a5f27fa1a73ab1e",
+   "3f953ccb1d9ba6fc",
+   "41dd4d74bcc0476f",
+   "41e43de7dd501eb8",
+   "43218ec1cc9573ed",
+   "4be30f2f220955cf",
+   "4f5ccfed372a037a",
+   "74145d1ae686d923",
+   "763325a721460bba",
+   "7b8dbf2f9f64962a",
+   "7e27714f1431bb71",
+   "80a7e128bc977a86",
+   "834e3a52d543d495",
+   "8e959bc6b7657eef",
+   "9fe33da1144c7664",
+   "a8a3a302f462c80e",
+   "ad362219f9b4133c",
+   "b5188c88a92c1898",
+   "b838783d98613bca"
+  ],
+  "32": [
+   "c13847a2a5ecef92"
+  ],
+  "48": [
+   "4ab911e98def2a2c",
+   "5d5534941868308e",
+   "5ede3645921ce4b1",
+   "7fb9a96a69cdb526",
+   "f15acb7a25b7b5d6",
+   "ff26584816b1bb3f"
+  ]
+ }
+}

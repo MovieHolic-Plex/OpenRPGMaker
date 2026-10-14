@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "13211eb3ce08cf1a6cf3ca50e445bddee185379f16f7721aa66242e3ef3ae5d2",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "사모바르 찻대",
+ "label": "desert-east/de-tea-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tea counter table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter table top surface spans rows 7-10 (4 pixel rows deep) upon which a samovar, teacups, and teapot sit, with the south front face and under-counter shelves clearly visible in rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5569
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden tea counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a visible horizontal surface about 4 rows deep (rows 7-10) with objects resting on it, and the front face/shelves extend below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 35037
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden tea table / counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a clearly visible horizontal surface spanning rows 6 to 10 (~5 rows tall), on which a samovar, cups, and teapot rest, over a front-facing shelf structure in rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3846
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden tea table / counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a clearly visible horizontal surface spanning rows 7 to 10 (4 rows tall) where the samovar and tea ware rest, above the front-facing lower shelf and base spanning rows 11 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.213Z",
+ "cells": {
+  "16": [
+   "1cdb2834cebfa6d5",
+   "235db143b313127f",
+   "3aaa766b38e0a6af"
+  ],
+  "24": [
+   "1b6332e5c82313d8",
+   "2f3641214a6ee4f9",
+   "c7850a31a542b2ae",
+   "d9b5e62c4b29320a"
+  ],
+  "32": [
+   "0955add6d97e6d35",
+   "0f71bafd0d1eeba2",
+   "0fe71e378d680ea0",
+   "1295a16c173556a9",
+   "3c064ad1367d46cf",
+   "4327b1e9d1e93f93",
+   "47027a74522c0577",
+   "7a51cf04a820d820",
+   "86100aa30681561c",
+   "a457103410df1203",
+   "bd738e6de433af65",
+   "d391b9db3d6c3ab0"
+  ],
+  "48": [
+   "17332588ff2b70df",
+   "7f91f624b5eb1db7"
+  ]
+ }
+}

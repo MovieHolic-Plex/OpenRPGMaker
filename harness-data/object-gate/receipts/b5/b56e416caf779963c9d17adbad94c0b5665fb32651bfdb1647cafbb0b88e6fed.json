@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b56e416caf779963c9d17adbad94c0b5665fb32651bfdb1647cafbb0b88e6fed",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "돌 부스러기",
+ "label": "desert-east/de-rubble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered stone fragments",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each stone fragment is drawn in proper 3/4 perspective with a 2-pixel-tall top surface and a 1-pixel-tall south-facing shadow/front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered stone fragments",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each scattered stone shows a light-toned top surface (around 2px tall) and a darker south face (1px tall) with a small cast shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3560
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered stone fragments",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each scattered stone piece clearly shows a 2px tall top face in a lighter shade and a 1px tall front face in shadow, correctly following the 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5749
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered stone fragments/debris blocks",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each scattered stone piece displays a 2-row light-colored top surface and a 1-row south-facing shadow/front edge, correctly showing the top-down 3/4 perspective for floor debris.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4774
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "8f0e841e71c6dee0"
+  ],
+  "24": [
+   "1faaacf0e32794b1",
+   "306b8c48091b4711",
+   "3185e401bf19ba46",
+   "5c7177cfc23b548f",
+   "988dcaf770b11509",
+   "a3b83958d92def0b"
+  ],
+  "32": [
+   "068dfa4b274ffd6d",
+   "1697d3d6d05be1d5",
+   "433bd777d482a314",
+   "49a0df917904c9ab",
+   "97e658459193eb50",
+   "b4294666a1b7f976"
+  ],
+  "48": [
+   "536fb571bec1f8c8",
+   "5ac50672a120e113",
+   "5cb93f6c32c54137",
+   "a04f166b2af3e56d",
+   "a7b157654b2a6aef",
+   "e19d96931a6a8235"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17f3db38d4b68d434edb91938682582f246060c30d48860e17f368378984be1a",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "이정표(무늬 없는 판)",
+ "label": "desert-east/de-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signpost with two directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden post and both directional signboards are drawn as a flat front elevation without visible top surfaces on the post cap or signboards (only 1px dark outline borders).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signpost with two directional arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post and both horizontal signboards are drawn as a flat 2D front elevation; neither the top cut of the post nor the top edges of the signboards have visible top surface depth (only 1px outline borders).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signpost with two directional boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and its horizontal sign boards are drawn strictly in front elevation; neither the post top nor the sign boards show any foreshortened top surfaces (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "directional signpost boards and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign boards and post have only 1px outline borders at the top (rows 5 and 12) with no foreshortened top surfaces visible, rendering the signpost in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5424
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.227Z",
+ "cells": {
+  "16": [
+   "6ed288991e4e19bc",
+   "eefef3b02a28c9a3"
+  ],
+  "24": [
+   "10908b8148310f22",
+   "2124817790ac0925",
+   "3511e583b2bc2b3d",
+   "376aa1bd52e54010",
+   "53611fded0b215b1",
+   "656a37fa59534b7a",
+   "6aa53a8ab8e12f68",
+   "9f1e61c3e5a54a58",
+   "ad8c67d1ea84f169",
+   "e46dcfda8193ef44",
+   "edf1b5229d8864dd",
+   "fd7a53cb492055fd"
+  ],
+  "32": [
+   "016b25797d8a75ab",
+   "4643cf041b7939b0",
+   "b25b312bf12752b4"
+  ],
+  "48": [
+   "18041f60a3c08098",
+   "256944c2e943b098",
+   "9aff0b167004ab5d",
+   "a49dba404022d908",
+   "ba8f10bab604d488",
+   "f213ed106664a524"
+  ]
+ }
+}

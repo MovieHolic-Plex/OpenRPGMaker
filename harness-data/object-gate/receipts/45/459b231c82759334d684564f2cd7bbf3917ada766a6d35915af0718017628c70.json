@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "459b231c82759334d684564f2cd7bbf3917ada766a6d35915af0718017628c70",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "대리석 실내 분수",
+ "label": "desert-east/de-fountain-indoor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble fountain basin with water pool",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular marble fountain basin is viewed from a 3/4 top-down angle, showing a broad elliptical opening filled with water (rows 7-17, ~11 rows) and a south front wall (rows 18-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5313
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular marble fountain basin with water pool",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening with water is clearly rendered as a foreshortened ellipse spanning roughly rows 7 to 17 (about 11 rows high), showing proper 3/4 perspective above the south vertical wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4276
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble fountain basin",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water from row 7 to row 17 (11 rows tall), framed by a marble rim and an upright south face from row 18 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3843
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble fountain basin",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 7-17) viewed from a 3/4 overhead perspective, with the south exterior wall extending from row 18 to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5090
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "2409934b272fc331",
+   "5b733bdd19be03f4",
+   "98f005307b4d6259",
+   "cb3e782a8e6c0723"
+  ],
+  "24": [
+   "04e829124539cae9",
+   "1adbdd298cde2598",
+   "1d31c7fea172b1da",
+   "345fed501f541a0c",
+   "361f5cc1c9952006",
+   "3a9d13475ffb6f27",
+   "3d42e92a080cf645",
+   "3ef526bd122d964f",
+   "53288a20bffb1ba4",
+   "5b8d3f602b4c60e8",
+   "645996ccad3c9875",
+   "6e26819f76a922cd",
+   "7319cfd9bd5bc188",
+   "7728106cc7d32b72",
+   "82c1482d0e915b4a",
+   "899e165ca20f83bb",
+   "9232327e73b1a47f",
+   "ae8479335b21994f",
+   "b8227b0e4f1a5633",
+   "bb4b050f6e001f07",
+   "bc559e0420308305",
+   "c542a8f782debb7d",
+   "eebc028cd8ec6f77",
+   "fb945cb8354d0089"
+  ],
+  "32": [
+   "19a4f56debb981c5"
+  ],
+  "48": [
+   "20719ad0f39c2855",
+   "669b57962e8a4780",
+   "6971524ffef8d35c",
+   "8d9cb0c906303d50",
+   "b5fe46ead5ecb0a8",
+   "d03f579ad0487ca8"
+  ]
+ }
+}

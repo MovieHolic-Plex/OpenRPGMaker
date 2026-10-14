@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f0950bd07aa97daf4b344e9d17f3b1421ce81f873913a1e7bba19202d26c35f2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 — 방 서쪽 경계(테 동쪽)",
+ "label": "desert-east/de-ceil-tomb-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomb ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat dark stone ceiling terrain tile with eastern edge border, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5920
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents dark stone ceiling terrain with border edge, matching the terrain kind specification.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7029
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark stone ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a tomb ceiling section with border on the east edge. Entire tile represents a surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling/terrain border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a dark stone tomb ceiling border surface; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "931f3fbe46474319"
+  ],
+  "24": [
+   "3034b94c100ee3ca",
+   "3871fcd36f17bb77",
+   "6564df4572241cc1",
+   "b0354ce7f91c98e4",
+   "e24ffefa5d412e51",
+   "f2c88a05b1162d85"
+  ],
+  "32": [
+   "309f645c2c820a14",
+   "b409191398ace98b",
+   "c3983bfa2b7b0aa5",
+   "c85e2dd0c34407fc",
+   "dee878079ee9c485",
+   "fffcc65a5f174bde"
+  ],
+  "48": [
+   "4eef38b1530bf612",
+   "6323ad58e19501c0",
+   "764c4764ddeba8d5",
+   "7a3d76763d41f802",
+   "854057e2133f4a4b",
+   "e4f5764c401ad1f0"
+  ]
+ }
+}
