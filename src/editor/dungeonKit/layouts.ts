@@ -4,9 +4,9 @@
 //   · carveSewer  : 사각 방 배치 위에 수로·저수조를 판다(양옆 보행로가 남는다)
 // 모두 Grid(바닥·방 번호·액체·다리)를 만들고, 벽 두께 규칙·연결은 grid.settle 이 고정점까지 맞춘다.
 import { DungeonComposeError } from "./errors";
-import type { DungeonLayout, DungeonSpec, PlacedCorridor, PlacedRoom } from "./compose";
+import type { DungeonLayout, DungeonRoomKind, DungeonSpec, PlacedCorridor, PlacedRoom } from "./types";
 import { Grid, carveDisc, edgeDistance, rng, smooth, vnoise, type Rect } from "./grid";
-import type { DungeonRoomKind, TypeProfile } from "./profiles";
+import type { GrammarInfo } from "./grammar";
 
 const MARGIN = 2;
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, Math.round(v)));
@@ -19,18 +19,23 @@ const sizeIndex = (spec: DungeonSpec): number => {
 
 // ---------------------------------------------------------------- 미궁(미로)
 
-export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
+/**
+ * thin = true 는 「얇은 칸막이 미로」(몬스터 키트의 유적 돌담 ru_pb 용): 통로 폭 2·칸막이 1칸. 벽 앞면 3줄·천장 띠가 필요 없어 위 여백도 줄인다.
+ * 기본(thin = false)은 버들항용 폭 3 통로 + 두꺼운 벽이며 출력은 이전과 같다.
+ */
+export function layoutMaze(spec: DungeonSpec, thin = false): DungeonLayout & { grid: Grid } {
   const seed = spec.seed ?? 7;
   const random = rng(seed * 2654435761 + 11);
   const si = sizeIndex(spec);
-  const nx = spec.width ? clamp((spec.width - 6) / 6 + 1, 6, 16) : [6, 8, 11][si]!;
-  const ny = spec.height ? clamp((spec.height - 28) / 7 + 2, 3, 6) : [3, 4, 5][si]!;
-  const PX = 6, PY = 7;
-  const ox = MARGIN + 1, oy = MARGIN + 4;
-  const mazeBottom = oy + (ny - 1) * PY + 3;            // 마지막 노드 줄 바닥 아래 경계(배타)
-  const ENT_W = 11, ENT_H = 6;
-  const entY = mazeBottom + 4;
-  const W = ox + (nx - 1) * PX + 3 + MARGIN + 1;
+  const N = thin ? 2 : 3;                                // 노드(통로) 폭
+  const nx = thin ? (spec.width ? clamp((spec.width - 4) / 3, 6, 20) : [7, 10, 14][si]!) : spec.width ? clamp((spec.width - 6) / 6 + 1, 6, 16) : [6, 8, 11][si]!;
+  const ny = thin ? (spec.height ? clamp((spec.height - 8) / 3, 5, 14) : [5, 7, 9][si]!) : spec.height ? clamp((spec.height - 28) / 7 + 2, 3, 6) : [3, 4, 5][si]!;
+  const PX = thin ? 3 : 6, PY = thin ? 3 : 7;
+  const ox = MARGIN + 1, oy = MARGIN + (thin ? 2 : 4);
+  const mazeBottom = oy + (ny - 1) * PY + N;            // 마지막 노드 줄 바닥 아래 경계(배타)
+  const ENT_W = thin ? 9 : 11, ENT_H = thin ? 5 : 6;
+  const entY = mazeBottom + (PY - N);
+  const W = ox + (nx - 1) * PX + N + MARGIN + 1;
   const H = entY + ENT_H + MARGIN + 1;
   const g = new Grid(W, H);
 
@@ -88,16 +93,16 @@ export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
   }
 
   // ---- 칠하기 ----
-  const nodeRect = (i: number, j: number): Rect => ({ x: ox + i * PX, y: oy + j * PY, w: 3, h: 3 });
+  const nodeRect = (i: number, j: number): Rect => ({ x: ox + i * PX, y: oy + j * PY, w: N, h: N });
   const linkRect = (i: number, j: number, a: number, b: number): Rect => (a !== i
-    ? { x: ox + Math.min(i, a) * PX + 3, y: oy + j * PY, w: PX - 3, h: 3 }
-    : { x: ox + i * PX, y: oy + Math.min(j, b) * PY + 3, w: 3, h: 4 });
+    ? { x: ox + Math.min(i, a) * PX + N, y: oy + j * PY, w: PX - N, h: N }
+    : { x: ox + i * PX, y: oy + Math.min(j, b) * PY + N, w: N, h: PY - N });
   const rooms: PlacedRoom[] = [];
   const corridors: PlacedCorridor[] = [];
   // 방 0 = 입구(아래), 1 = 보스, 2 = 보물
-  const entX = nodeRect(startI, startJ).x + 1 - Math.floor(ENT_W / 2);
+  const entX = nodeRect(startI, startJ).x + Math.floor(N / 2) - Math.floor(ENT_W / 2);
   const entrance: PlacedRoom = { id: "entrance", kind: "entrance", x: entX, y: entY, w: ENT_W, h: ENT_H, from: null, dir: null, depth: 0 };
-  const region: Rect = { x: ox + bx * PX, y: oy, w: 2 * PX + 3, h: PY + 3 };
+  const region: Rect = { x: ox + bx * PX, y: oy, w: 2 * PX + N, h: PY + N };
   const boss: PlacedRoom = { id: "boss", kind: "boss", ...region, from: "entrance", dir: "N", depth: 1 + bestD };
   rooms.push(entrance, boss);
   if (vault) rooms.push({ id: "vault", kind: "vault", ...nodeRect(vault[0], vault[1]), from: "entrance", dir: "N", depth: 1 + vd });
@@ -111,7 +116,7 @@ export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
   paint(region, 1);
   if (vault) paint(nodeRect(vault[0], vault[1]), 2);
   paint(entrance, 0);
-  const entLink: Rect = { x: nodeRect(startI, startJ).x, y: mazeBottom, w: 3, h: 4 };
+  const entLink: Rect = { x: nodeRect(startI, startJ).x, y: mazeBottom, w: N, h: PY - N };
   paint(entLink, -1);
   corridors.push({ a: "entrance", b: "maze", dir: "N", rect: entLink });
   // 보스 연결
@@ -124,14 +129,14 @@ export function layoutMaze(spec: DungeonSpec): DungeonLayout & { grid: Grid } {
     const near = neighbors(vault[0], vault[1]).find(([a, b]) => links.has(lk(key(vault![0], vault![1]), key(a, b))));
     if (near) corridors.push({ a: "maze", b: "vault", dir: near[0] !== vault[0] ? (near[0] > vault[0] ? "W" : "E") : "S", rect: linkRect(vault[0], vault[1], near[0], near[1]) });
   }
-  return { rooms, corridors, width: W, height: H, notes: [], grid: g };
+  return { rooms, corridors, width: W, height: H, notes: [], grid: g, ...(thin ? { thin: true } : {}) };
 }
 
 // ---------------------------------------------------------------- 동굴·화산(불규칙)
 
 interface Chamber { cx: number; cy: number; rx: number; ry: number; kind: DungeonRoomKind; index: number }
 
-export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayout & { grid: Grid } {
+export function layoutBlob(spec: DungeonSpec, profile: GrammarInfo): DungeonLayout & { grid: Grid } {
   const seed = spec.seed ?? 7;
   const random = rng(seed * 40503 + 17);
   const si = sizeIndex(spec);
@@ -139,7 +144,7 @@ export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayo
   const W = spec.width ? clamp(spec.width, 48, 200) : dw;
   const H = spec.height ? clamp(spec.height, 40, 150) : dh;
   const g = new Grid(W, H);
-  const wantN = spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [4, 7, 10][si]!;
+  const wantN = spec.roomCount ? clamp(spec.roomCount, 2, 14) : spec.width && spec.height ? clamp((W * H) / 640, 4, 14) : [4, 7, 10][si]!;
   const ENT_W = 13, ENT_H = 6;
   const entX = Math.floor(W / 2) - 6, entY = H - MARGIN - 1 - ENT_H;
   const entrance: Rect = { x: entX, y: entY, w: ENT_W, h: ENT_H };
@@ -187,7 +192,7 @@ export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayo
   const byDepth = [...chambers].sort((a, b) => depth[b.index]! - depth[a.index]!);
   const boss = byDepth[0]!;
   boss.kind = "boss"; boss.rx = Math.max(boss.rx, 8); boss.ry = Math.max(boss.ry, 6);
-  const vault = byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
+  const vault = spec.vault === false ? undefined : byDepth.find((c) => c !== boss && edges.filter(([a, b]) => a === c.index || b === c.index).length <= 1) ?? byDepth[1];
   if (vault && vault !== boss) { vault.kind = "vault"; vault.rx = Math.min(vault.rx, 6); vault.ry = Math.min(vault.ry, 5); }
   const rest = chambers.filter((c) => c.kind === "cavern");
   const lakeWant = profile.liquid ? (si === 0 ? 1 : si === 1 ? 2 : 3) : 0;
@@ -252,6 +257,17 @@ export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayo
         if (!g.inb(x, y) || g.roomAt[g.idx(x, y)] !== c.index || ed[g.idx(x, y)]! < 3) continue;
         if (((x - c.cx) / 3) ** 2 + ((y - c.cy) / 2) ** 2 + (vnoise(x, y, 3, seed + c.index) - 0.5) * 0.5 < 1) g.liquid[g.idx(x, y)] = 1;
       }
+    }
+    // 용암 못 가장자리가 계단처럼 각져 보이던 것을 다듬는다(용암은 가장자리 그림이 없어 모양이 곧 가장자리다): 이웃 8칸 다수결 두 번. 물(호수)은 운하 오토타일이 테두리를 그리니 건드리지 않는다.
+    if (profile.liquid === "lava") for (let pass = 0; pass < 2; pass += 1) {
+      const next = g.liquid.slice();
+      for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
+        const i = g.idx(x, y);
+        if (!g.floor[i] || ed[i]! < 2) continue;
+        let n = 0; for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if ((dx || dy) && g.liquid[g.idx(x + dx, y + dy)]) n += 1;
+        if (g.liquid[i] && n <= 3) next[i] = 0; else if (!g.liquid[i] && n >= 5) next[i] = 1;
+      }
+      g.liquid.set(next);
     }
   }
   // 문 앞 칸은 액체가 아니다

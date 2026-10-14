@@ -77,7 +77,7 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
     names.push("author_beodeul_town", "check_city_form", "check_reachability");
   }
   // 던전 시공 도구를 고른 요청에는 시공 뒤 확인 도구를 함께 보인다(받침·도달은 도구가 스스로 검사하지만 이벤트 배치 뒤 확인이 필요하다).
-  if (names.includes("author_beodeul_dungeon")) names.push("author_beodeul_dungeon", "check_reachability", "show_map_region", "run_lint");
+  if (names.includes("author_dungeon") || names.includes("author_beodeul_dungeon")) names.push("author_dungeon", "check_reachability", "show_map_region", "run_lint");
   return toolSchemasForNames(names) as OpenAiTool[];
 }
 
