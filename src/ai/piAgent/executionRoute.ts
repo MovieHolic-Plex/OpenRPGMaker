@@ -131,9 +131,9 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
-  const villageNote = input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
-  const villageNote = input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
-  const villageNote = input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
+    : input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
+    : input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
+    : input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
     : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
