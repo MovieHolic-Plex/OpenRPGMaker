@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0051fdf4d4aad88e6128db05401aaa18a1b16e08ae72200b33e2cb29a2a7c17",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "small wooden chicken coop hut on short legs (plank roof, small door, ramp, nest box)",
+ "label": "beodeul_farm/object_coop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden chicken coop hut",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern roof slope is prominently foreshortened and visible from above, occupying rows 3 through 21 (19 rows) over the front wall (rows 25-38), following standard top-down 3/4 view building conventions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6375
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chicken coop hut with wooden plank roof",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern roof slope occupies rows 3 to 21 (~19 rows of foreshortened top surface) above the south wall facade and legs, typical of standard RPG 3/4 perspective structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5992
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden chicken coop with plank roof, front wall on stilts, and ramp",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing plank roof slope is visible and foreshortened from above, occupying rows 3 to 22 (20 rows) over the vertical front wall below (rows 25-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5083
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chicken coop building with sloped plank roof and stilt legs",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The forward-facing roof slope occupies rows 3 to 22 (20 rows of top surface) before overhanging the front wall (rows 24 to 38) and base platform, fitting standard 3/4 top-down perspective for structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5605
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.331Z",
+ "cells": {
+  "16": [
+   "3297ac4f00ea581e",
+   "66cc62b37881d040",
+   "6a713a7a89b693f0",
+   "77f1bc289205692f",
+   "a90e706425c084a5",
+   "b26c4599039bf6e6",
+   "b701c37525039443",
+   "c24e198fff4aa9d5",
+   "e6f82110a1fb4dda"
+  ],
+  "24": [
+   "1e43c221a1351073",
+   "a73ccd971ab1436f",
+   "abf379cb40d94df1",
+   "f21043b948ae896a"
+  ],
+  "32": [
+   "15cb9848dd5c7297",
+   "4ca1150e5a759377",
+   "4ca954d94e02ef67",
+   "54fde66a6b4b0dcc",
+   "584e53922f6a73a2",
+   "643eed32a12156eb",
+   "6873c1512b184119",
+   "7005dd86d186d62b",
+   "7108f87b7153a30f",
+   "768e1b210799897e",
+   "7e063b9c8603ec48",
+   "7ef277f6d0b60cd1",
+   "a466a7843aba00d7",
+   "a94af62160327276",
+   "b1d80e5c36b82096",
+   "b216b1235f7b70db",
+   "bcb8ffa26a5f0dc0",
+   "c3f79f2193da1bd3",
+   "d3f7e02012fe0c3d",
+   "e230ccb9fe97d39d",
+   "e9cd8affea03e36d",
+   "ef6dd0a7c227d7c0",
+   "f3e55044105bf0c7",
+   "fad1354d16542741"
+  ],
+  "48": [
+   "01c282b8744a9b3e"
+  ]
+ }
+}

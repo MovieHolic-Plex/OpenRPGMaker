@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89735e1bf07362f2f780eb217c42a0172903a9d233a5a5ed5e84ce469459b13d",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: cabbage sprout (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_cabbage_sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The four cabbage sprouts are drawn as flat 2D 'Y' silhouettes standing vertically from front elevation with no visible top surface or 3/4 downward angle perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4278
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sprout plants",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D Y-shaped silhouettes in pure front elevation with vertical stems and leaves, showing no top-down perspective or horizontal surface depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabbage sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D icon in pure front elevation with no foreshortened top surfaces or top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3506
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D front-facing Y-shape (vertical stem with two upright flat leaf pixels) with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4340
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.328Z",
+ "cells": {
+  "16": [
+   "de1e233eb7d03f17"
+  ],
+  "24": [
+   "023d673336d15fa3",
+   "117e8b54b758f51e",
+   "180a33b9b27a37f7",
+   "4624a2fd59376e4f",
+   "5476c129250b303f",
+   "efa3ad0d87aa9f5f"
+  ],
+  "32": [
+   "0b6255920138c4c9",
+   "0ec7956b0ee7c92e",
+   "4f88f5d01a1f9a9b",
+   "55baa4c50589b953",
+   "683c254e93def2c8",
+   "eaad6d0187f89828"
+  ],
+  "48": [
+   "0900fe6f93374347",
+   "125390dc9f6ce4dd",
+   "3f815b1615afa34c",
+   "84b848bbf77f296d",
+   "a5492e67ad216885",
+   "e61f63c6b1684c10"
+  ]
+ }
+}

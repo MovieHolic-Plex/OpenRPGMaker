@@ -54,7 +54,8 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부, 마을 집이 이미 선 맵은 완성된 집 보호로 거부). " +
     "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
-    "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
+    "고칠 곳만 stamp_object(kit:beodeul_city/…)·fill_region 으로 손본다 — 집을 하나씩 따로 놓지 말 것. " +
+    "농가·농촌 마을은 지은 뒤 농장 키트로 쓰임을 더한다: 헛간 bd-farm-barn 6×6·닭장 bd-farm-coop 3×3 을 흙 마당에 모은 농가 덩이, 울타리 두른 밭 bd-farm-fenced-plot 7×6(문 아래 흙길), 작물 밭 bd-farm-plot-wheat·cabbage·tomato·sowing — 밭 덩이 사이는 폭 2칸 흙길, 넓은 풀밭을 경작지로 통째로 덮지 않는다(참고문서 beodeul-farm). 던전·필드는 이 도구가 아니다(참고문서 beodeul-picks-dungeon·field, 필드 길은 author_wild_route).",
   mode: "write",
   domains: ["map"],
   preservesAuthoredRaster: true,

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ae6432812587ea76a873148d9c065811c0c83ccf71074935dde1881056e9efe",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: seeded (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_seeded",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed mound is drawn in pure side/front elevation at only 2 source pixels tall with no 3/4 foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7130
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed mound is only 2 pixels tall, drawn as a flat 2D stepped profile (2px wide top, 3px wide bottom) with a drop shadow directly beneath. There is no foreshortened top surface showing depth from the 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7364
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed mound is only 2 pixels tall in total with no foreshortened top surface shown; the 1-pixel upper row acts only as an edge highlight/upper segment rather than a 3/4 top view surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7466
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed mound is only 2 source pixels tall (rows 3-4 and rows 11-12) with a 1px shadow beneath. The 1px lighter line on row 3 is an edge highlight rather than a foreshortened top surface, giving the seeds a flat front-facing elevation with no visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10855
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.329Z",
+ "cells": {
+  "16": [
+   "70b5349aec6409bc"
+  ],
+  "24": [
+   "22726cd318b271ce",
+   "46a91befa3a50322",
+   "57fbec3aef221c48",
+   "5e46fd7627eb1d27",
+   "a2d749cb4923bf9c",
+   "b9e0e3e17bf1e910"
+  ],
+  "32": [
+   "95153b54ce2eb174",
+   "bddea4ad011fae44",
+   "cc2a0feb1656c836",
+   "d953ed8bc33ef891",
+   "de44c9c4fa201fd4",
+   "fe4e73a02f9fa3c8"
+  ],
+  "48": [
+   "04fa2b8da7bb0faa",
+   "0669d0068ff35804",
+   "76174b81f973b5c7",
+   "87b08b6f98041f6a",
+   "a74acbfdeadf3356",
+   "efbeffbce043895d"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46c93c624da3a64dfcbcf2efc98f3063b6bf93069509687e984f6fbf2a842331",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'gate' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden post and fence rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thick post shows a clear top surface spanning rows 2 to 5 (4 rows tall) before transitioning to the darker front face below. The horizontal rails also show lighter top faces foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12837
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence post with cap and connecting rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The left post displays a distinct top surface / cap 4 rows tall (rows 2-5) seen from above before transitioning into the front-facing vertical post body on rows 6-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The left fence post clearly shows a 4-pixel-tall top cap (rows 1-4) viewed from above, and the horizontal rails show lighter top surfaces above darker front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4365
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post with attached rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thick wooden post features a clear top cap surface spanning rows 2-4 (3 source pixel rows tall) viewed from above, before transitioning to the vertical south face on row 5. The horizontal rail also shows top surface lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6928
+  }
+ ],
+ "decidedAt": "2026-10-14T05:16:47.557Z",
+ "cells": {
+  "16": [
+   "58ff5412fd3e852e"
+  ],
+  "24": [
+   "0a2e94a7964a0cc5",
+   "5a1aa280cf164cfa",
+   "a5b5885333eda70b",
+   "c8250dc105e7d8d0",
+   "d49905267d6a7e4d",
+   "e7b0713405732f41"
+  ],
+  "32": [
+   "021fbeca621520b3",
+   "162141af56abe49f",
+   "2ae3a0b3270a6ba9",
+   "463af2f961d84c62",
+   "592de7f0caf037b9",
+   "714b85d107d80a7a"
+  ],
+  "48": [
+   "148cdc4bad8cf861",
+   "4859be57f99ad908",
+   "afdbbc564d902f8b",
+   "b87ce605f7230501",
+   "c914ed9bdf58d11c",
+   "ca9c56bd13108064"
+  ]
+ }
+}

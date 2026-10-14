@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5b4a06065580e29142b9ad67fb8b0676b3601f9cfec2acfe72fb25b87893a9b",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat young (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rows of young wheat/grass sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat plants are drawn as flat vertical 2D cutouts/billboards from a pure side/front elevation, ending in flat horizontal base lines at rows 5 and 13 with no top-down ground spread or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5029
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rows of young wheat shoots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat sprouts are drawn in flat 2D front elevation as vertical spikes across horizontal rows, with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5113
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rows of young wheat/grass sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat plants are drawn in pure front elevation as vertical 2D blade silhouettes arranged in flat horizontal bands with 0 rows of visible top surface or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7496
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rows of young wheat plants",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat plants are drawn in pure front elevation as flat vertical blades with no depth or visible top-down foreshortening (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4830
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.328Z",
+ "cells": {
+  "16": [
+   "8d1931ca412cbcd8"
+  ],
+  "24": [
+   "3578bc67a109ebea",
+   "520324608b3ce20b",
+   "6678550b41e131fd",
+   "7abf284a4331c07c",
+   "d3c9857fda5fe15e",
+   "f6bc76aceafaea58"
+  ],
+  "32": [
+   "215b26ffd7b734a8",
+   "455ca58a95b0df82",
+   "46aa952eded2a7c7",
+   "83d38a452b058dfa",
+   "8b19f9fcd4ee7071",
+   "dc1eb47ebf518542"
+  ],
+  "48": [
+   "84d14c75bf1fb45b",
+   "86e972f4834af72b",
+   "8bb0d355ee0b40f4",
+   "a70d90af57dcc581",
+   "acc5326cf31d6b32",
+   "c3f697e7c7e27f36"
+  ]
+ }
+}
