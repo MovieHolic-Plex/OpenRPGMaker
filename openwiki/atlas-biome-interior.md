@@ -223,3 +223,25 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 사용자가 고른 단품·방향/상태 자식·모션만 반영하며, 게시 실패는 선택을 지우지 않는다.
 대기열·재시도·칸 번호 보존·저장 후 재로드 계약: [하네스 문서](harnesses/interior-props.md#서버-확정--공용-sqlite-자동-등록-2026-10-04).
 새 쓰임 `play`(오락기·놀이 기구)는 `use6.USE_KO`의 정식 낱말이다.
+
+## 박물관·배 안·투기장 — interior-plus (2026-10-14)
+
+v5 시트 **끝에 덧붙인** 손 도트 조각(같은 팔레트 v6·같은 램프, Opus 손 도트)과 방 종류 16개. 칸 번호는 덧붙이기만 한다 — 6557 이전 칸은 화소·통행·층·메타가 그대로이고
+(굽기가 매번 대조한다), 기존 프로젝트는 `ensureAtlasBiomeInteriorCurrent` 가 정의를 새로 고친다(번들 칸 수 이하 = 같은 시트).
+
+- **그림**: `scripts/content/interior-plus/pieces/{structure,museum,ship,arena}.py`(iplib: 램프·box·cyl·barrel·shadow). 기물 74(박물관 28·배 26·투기장 20) + 바닥 5(deck·hold·parquet·sand·sandstone) + 벽면 4(hull·cabin·gallery·arenawall).
+  v5 와 겹치는 것(함포 `ship cannon`·조타륜·해먹·닻·밧줄 더미·흉상·고딕 미술관 조각)은 새로 그리지 않고 v5 id 를 쓴다. 옆 보는 함포(cannon east/west)·나침반 함·선원 3층 침상 등은 새 것.
+- **굽기**: `python3 scripts/content/interior-plus/bake.py` — 핀 `tiledata/hand-interior/plus/pins.json`(키 → 칸 번호, 덧붙이기 전용; `--repack` 은 내보내기 전에만),
+  정의·사양을 v5 끝(base)으로 자른 뒤 다시 얹는다. v5 id 와 겹치는 이름은 거부한다(2026-10-14 `orrery` 가 v5 기물을 덮을 뻔했다). `build_tileset.py` 끝에서 자동으로 다시 돈다(`HAND_INTERIOR_NO_PLUS=1` 로 끔).
+- **3/4 관문**: `gate_export.py pending` → `npm run harness -- object-gate review --batch tiledata/hand-interior/plus/_gate/pending.jsonl`. 바닥·벽면은 조립 방 4장(`gate_rooms.py`, kind structure)이 그 칸을 화소 그대로 품어 덮는다.
+  굽기는 모든 영수증이 PASS 여야 한다(프로필이 미보정이면 현재 프로필 PASS 를 「미보정 임시 통과」로 세고 보고한다 — jp-city `gate_kinds.state` 와 같은 뜻).
+- **방 종류·견본**: `tiledata/hand-interior/plus/plans/*.json`(museum·ship·ship_hold·arena, 방 사각형 입력) → `rooms_json.py`(사양 rooms: 종류 이름·찾는 말·건물·예제 가구 수) ·
+  `templates.mts` → `src/assets/interiorPlusRoomTemplates.json`. `templates.ts` 가 v5·전국 견본과 **배열로 이어 붙인다**(같은 칩셋 키를 펼치기로 합치면 v5 견본이 사라진다).
+  `layout.ts`: HUB 에 museum_lobby·museum_gallery·ship_crew·ship_gundeck·arena_floor·arena_stands, 출구 순서에 museum_lobby·ship_crew·ship_cargo·arena_armory, 기본 트임 arena_stands↔arena_floor. 화풍 묶음 museum·ship·arena.
+- **참고문서**: `prepare-references.mts` 가 같은 용도에 `hand-interior-v5-plus`(경계·방 종류·배치 규칙)와 예제 4장 `hand-interior-v5-map-{museum,ship,ship_hold,arena}`(rooms 입력 + 도구가 만든 평면 + 네 층 배열 + 그림)을 넣는다.
+- **조수 경로**: `src/ai/interiorPlusPolicy.ts` — plainTurn 테마 사슬(앞이 잡으면 끝)에서 시대 테마·jp_city 다음, **고딕·해적 군도보다 앞**. 의도 선언 지시문(intentDeclaration)과 HAND_INTERIOR_POLICY_LINE·도구 설명에도 같은 경계를 적었다.
+  경계 결정: ① 박물관·미술관·전시실은 호러·고딕·흉가·저택·폐성·유령 낱말이 없을 때만 여기(있으면 gothic_manor `build_gothic_place place:"gallery"`). ② 배 «안»(방 낱말: 선장실·조타실·선실·화물칸·포 갑판·배 주방·배 감방)은 여기,
+  해적 항구·섬·난파선 같은 바깥은 pirate_isles. 보고 있는 맵이 pirate_isles 면 배 테마는 잡지 않는다(그 칩셋의 `compose_pirate_isles_map kind ship` 을 지킨다). ③ 투기장·콜로세움·검투사는 여기. 바깥 낱말만 있고 실내 힌트가 없으면 잡지 않는다.
+- **적대 검수(2026-10-14)**: 9방(전시실·유물실·선장실·배 주방·화물칸·포 갑판·관중석·모래 마당·검투사 방)을 원본 해상도로 새 검수자가 보고 결함 47건(높음 8). 한 번 고친 것:
+  그림 액자 한 중심선·관람 줄이 그림을 가리던 것·진열장 윗면 판·쇠창살 문을 벽면 걸이로(모래 위에 서 있던 문)·물통 거치대와 자루가 발밑 칸보다 7px 떠 있던 것·삼베 자루 색·닻 사슬 고리·고패 지렛대·핀 막대·북채(뿔처럼 보임)·허수아비 얼굴 제거·선체 벽 걸레받이·투기장 모래 반복·관중석 좌석 정렬·사다리와 돛대가 한 기둥으로 보이던 것·주방 탁상 물건이 탁자 앞턱에 그려지던 것(2줄 탁자로).
+  남은 것: v5 조각(족쇄·짚 더미·화로)이 사암·돌무더기 벽 위에서 잘 안 보인다, 대리석 바닥 광택 줄 반복(v5 바닥), 관중석 계단 단차(층 높이는 이 칩셋 구조 밖).
