@@ -585,6 +585,8 @@
   min-height: 0;
   overflow: auto;
   overflow-wrap: anywhere;
+  /* 한글은 낱말(공백) 단위로 줄을 바꾼다 — anywhere 만 두면 「낯 / 선」 처럼 글자 가운데서 꺾인다(r1 오프닝 QA). */
+  word-break: keep-all;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
   white-space: pre-wrap;
 }
