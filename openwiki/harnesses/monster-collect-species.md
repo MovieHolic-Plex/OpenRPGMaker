@@ -68,6 +68,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 1. 시드 종에 `campaignSpeciesId`(예: `mx_species_coalbit`)를 적는다 — 캠페인 종 하나에 하네스 종 하나. **이 값이 대응 표의 정본이다.**
    현재 대응: `sparkit`→`mx_species_coalbit`(불꽃), `aqualing`→`mx_species_rivulet`(물), `leafling`→`mx_species_spriglet`(풀). 사람이 고른 스타터 세 종이 캠페인 스타터 3계통 1단계에 붙는다.
+   2026-10-15 추가 12종(감독 위임으로 앞·뒤 선택): `gustchick`→`mx_species_gustchick`, `pipbug`→`pipbug`, `wickworm`→`wickworm`, `rootpig`→`rootpig`, `frondhare`→`frondhare`, `kilnclaw`→`kilnclaw`, `brookraft`→`brookraft`, `coralpin`→`coralpin`, `curlfin`→`curlfin`, `zaptoe`→`zaptoe`, `pebblekid`→`pebblekid`, `gritnose`→`gritnose`(하네스 종 id 와 캠페인 종 id 가 `mx_species_` 접두만 다르다. 정본은 시드).
    (이름·도감 설명은 캠페인 쪽 그대로라 스파킷=도롱뇽 그림이 「숯비늘」로 보인다 — 맞추려면 캠페인 종 이름·설명을 바꾸거나 `campaignSpeciesId` 를 지운다.)
 2. `build`(끝에 자동) 또는 `manifest` 단계가 번들 폴더를 읽어 `src/assets/harnessMonsterBundle.json` 을 쓴다(종 → `campaignSpeciesId`·면·대기 칸 수, **이미지 바이트 없음**). 모래상자는 `<샌드박스>/bundle/manifest.json`.
 3. 런타임 입구는 `src/assets/harnessMonsterArt.ts`:
