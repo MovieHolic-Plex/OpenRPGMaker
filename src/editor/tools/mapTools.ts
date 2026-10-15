@@ -88,6 +88,8 @@ import {
 } from "./roadObstacles";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { emptyMapNextStep } from "./mapEmptiness";
+import { THEME_SCENES, parseThemeScene, runThemedMap, themeSceneCatalogLines } from "./themeScenes";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { closestDeclaredKey } from "./argRepair";
@@ -203,6 +205,9 @@ export function assignCreatedMapBgm(
   return resourceId;
 }
 
+/** themeScene 이 create_map 을 안쪽에서 부를 때 붙이는 내부 표지(스키마에 없다 — 모델이 보내는 인자가 아니다). */
+const THEMED_INNER_ARG = "__themedInner";
+
 const createMap: ToolDefinition = {
   name: "create_map",
   // border 는 모델 스키마에서 뺐다(2026-09-11). 실측: 스키마에 enum 이 있으면 조수가 동굴·던전·지하실
@@ -210,7 +215,8 @@ const createMap: ToolDefinition = {
   // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
   // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
-  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 build_hand_interior_room(손 도트 v5, atlas_biome_interior)이 새 mapId 까지 함께 시공한다. 옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)은 폐기되어 거부된다.`,
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 build_hand_interior_room(손 도트 v5, atlas_biome_interior)이 새 mapId 까지 함께 시공한다. 옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)은 폐기되어 거부된다. `
+    + `필드·마을·던전을 만들 때는 themeScene 을 주면 맵 생성과 그 칩셋의 구성기 호출이 한 번에 끝난다(예: themeScene:"snow_north:village"). themeScene 없이 만든 맵은 단색 잔디이므로 곧바로 find_tools 로 구성기를 찾거나 check_map_emptiness 가 알려 주는 도구로 채운다 — 단색 맵은 완성이 아니다. 장면: ${themeSceneCatalogLines().join(" · ")}.`,
   mode: "write",
   defaultTilesetId: defaultOutdoorTilesetId,
   parameters: {
@@ -223,6 +229,7 @@ const createMap: ToolDefinition = {
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
+      themeScene: { type: "string", description: `테마 장면 "장면" 또는 "장면:스타일" — 맵을 만들고 그 칩셋 구성기를 바로 불러 길·건물·물·나무까지 한 번에 깐다(width·height 를 생략하면 그 장면의 권장 크기). 장면: ${THEME_SCENES.map((scene) => scene.id).join("|")}` },
       tilesetId: { type: "string", description: "타일셋 id(생략 시 숲마을 · 거리별 잔디, 사용자가 보는 맵이 다른 계열 칩셋이면 그 맵의 칩셋. 실내·던전은 해당 칩셋을 명시). 프로젝트에 있는 타일셋만." },
       bgm: {
         type: "object",
@@ -234,9 +241,31 @@ const createMap: ToolDefinition = {
         },
       },
     },
-    required: ["name", "width", "height"],
+    required: ["name"],
   },
+  invalidArgsExample: { name: "북쪽 설원 마을", width: 46, height: 36, themeScene: "snow_north:village" },
   run(draft, args): ToolExecResult {
+    const themeArg = typeof args.themeScene === "string" && args.themeScene.trim() ? args.themeScene.trim() : undefined;
+    if (themeArg !== undefined) {
+      const parsed = parseThemeScene(themeArg);
+      if ("error" in parsed) throw new ToolError(parsed.error, { code: "invalid-args" });
+      if (typeof args.tilesetId === "string" && args.tilesetId.trim() && args.tilesetId.trim() !== parsed.scene.tilesetId) {
+        throw new ToolError(`themeScene '${parsed.scene.id}' 는 칩셋 '${parsed.scene.tilesetId}' 을 쓰는데 tilesetId '${args.tilesetId}' 를 함께 보냈습니다 — tilesetId 를 빼거나 같은 값으로 보내세요.`, { code: "invalid-args" });
+      }
+      const { themeScene: _themeScene, ...rest } = args;
+      void _themeScene;
+      return runThemedMap(draft, parsed.scene, {
+        name: String(rest.name ?? ""),
+        ...(typeof rest.id === "string" ? { id: rest.id } : {}),
+        ...(typeof rest.width === "number" ? { width: rest.width } : {}),
+        ...(typeof rest.height === "number" ? { height: rest.height } : {}),
+        ...(typeof rest.seed === "number" ? { seed: rest.seed } : {}),
+        ...(parsed.style !== undefined ? { style: parsed.style } : {}),
+      }, (innerDraft, innerArgs) => createMap.run(innerDraft, { ...innerArgs, [THEMED_INNER_ARG]: true, ...(rest.bgmResourceId !== undefined ? { bgmResourceId: rest.bgmResourceId } : {}), ...(rest.bgm !== undefined ? { bgm: rest.bgm } : {}) }));
+    }
+    if (typeof args.width !== "number" || typeof args.height !== "number") {
+      throw new ToolError("width 와 height 가 필요합니다(themeScene 을 주면 생략 가능). 예: create_map({\"name\":\"북쪽 들판\",\"width\":40,\"height\":30})", { code: "invalid-args" });
+    }
     const width = args.width as number;
     const height = args.height as number;
     if (width < 3 || height < 3) throw new ToolError("맵 크기는 최소 3x3 이상이어야 합니다.");
@@ -287,9 +316,11 @@ const createMap: ToolDefinition = {
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
         + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
+    // themeScene 이 안쪽에서 부른 create_map 은 곧바로 구성기가 채우므로 「단색」 안내를 붙이지 않는다.
+    const flatNote = args[THEMED_INNER_ARG] === true ? "" : ` 지금은 단색 ${tileset.name ?? tilesetId} 바닥입니다. ${emptyMapNextStep(map)}`;
     return {
-      summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
-      data: { mapId: id, bgmResourceId },
+      summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}.${flatNote}`,
+      data: { mapId: id, bgmResourceId, flat: true },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },

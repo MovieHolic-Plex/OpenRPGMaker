@@ -164,6 +164,8 @@ function argsWithCurrentMapTileset(ctx: ToolContext, tool: ToolDefinition, args:
     args = { ...args, mapId: ctx.currentMapId };
   }
   if (!tool.defaultTilesetId || !ctx.currentMapId) return args;
+  // themeScene 은 자기 칩셋을 정한다 — 보는 맵의 칩셋을 덮어 넣지 않는다(계열이 다르면 실행기 계열 검사가 사용자에게 묻게 한다).
+  if (typeof args.themeScene === "string" && args.themeScene.trim().length > 0) return args;
   if (typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0) return args;
   const viewed = ctx.project.maps[ctx.currentMapId];
   const currentMap = viewed ? familyBaselineMap(ctx.project, viewed) : undefined;   // 빈 시작 맵·세계 지도는 채울 칩셋의 기준이 아니다
