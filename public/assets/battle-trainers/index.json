@@ -1,0 +1,173 @@
+{
+ "version": 1,
+ "trainers": {
+  "hero_m": {
+   "role": "hero_m",
+   "label": "주인공(남) 뒷모습",
+   "view": "back",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "back": "back.png"
+  },
+  "hero_m_front": {
+   "role": "hero_m_front",
+   "label": "주인공(남) 앞모습",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "hero_f": {
+   "role": "hero_f",
+   "label": "주인공(여) 뒷모습",
+   "view": "back",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "back": "back.png"
+  },
+  "hero_f_front": {
+   "role": "hero_f_front",
+   "label": "주인공(여) 앞모습",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "boy": {
+   "role": "boy",
+   "label": "소년",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "girl": {
+   "role": "girl",
+   "label": "소녀",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "fisher": {
+   "role": "fisher",
+   "label": "낚시꾼",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "hiker": {
+   "role": "hiker",
+   "label": "등산가",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "bug_catcher": {
+   "role": "bug_catcher",
+   "label": "곤충채집 소년",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "gym_rock": {
+   "role": "gym_rock",
+   "label": "관장(바위)",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "gym_water": {
+   "role": "gym_water",
+   "label": "관장(물)",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "scientist": {
+   "role": "scientist",
+   "label": "연구원",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "punk": {
+   "role": "punk",
+   "label": "불량배",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  },
+  "elder": {
+   "role": "elder",
+   "label": "노인",
+   "view": "front",
+   "size": [
+    128,
+    128
+   ],
+   "footY": 126,
+   "source": "OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)",
+   "front": "front.png"
+  }
+ }
+}
