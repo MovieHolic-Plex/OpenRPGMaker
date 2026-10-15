@@ -1,7 +1,9 @@
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { SKILL_WEATHER_KINDS, SKILL_WEATHER_MAX_TURNS, SKILL_WEATHER_MIN_TURNS } from "@/battle/weather";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
+import { isStatStageKey, STAT_STAGE_KEYS, STAT_STAGE_MAX } from "@/battle/statStages";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
@@ -398,6 +400,12 @@ const stateEffectSchema = objectSchema({
   chance: integerSchema(),
   operation: { type: "string", enum: ["add", "remove"] },
 });
+const statStageEffectSchema = objectSchema({
+  stat: { type: "string", enum: [...STAT_STAGE_KEYS], description: "attack 공격 · defense 방어 · spAttack 특수공격 · spDefense 특수방어 · speed 스피드 · accuracy 명중률 · evasion 회피율" },
+  stages: integerSchema("능력치 단계 변화 −6~+6, 0 제외. 울음=attack −1, 칼춤=attack +2, 몸을 단단히=defense +1, 연막=accuracy −1"),
+  chance: integerSchema("발동 확률 0~100(생략 = 100). 피해 기술의 부가 효과(예: 20% 방어 하락)에 쓴다"),
+  target: { type: "string", enum: ["target", "self"], description: "생략/target = 기술 대상의 단계, self = 시전자 자신(오버히트로 자신의 특수공격이 떨어짐)" },
+});
 const rateMapSchema: JsonSchema = { type: "object", description: "{ id: A|B|C|D|E }", additionalProperties: true };
 const parameterCurvesSchema = objectSchema({
   maxHp: { type: "array", items: integerSchema() },
@@ -738,6 +746,11 @@ const skillRecordSchema = objectSchema({
   }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
+  statStageEffects: arrayOf(statStageEffectSchema),
+  weather: objectSchema({
+    kind: { type: "string", enum: [...SKILL_WEATHER_KINDS], description: "sun=쾌청(불 기술 ×1.5·물 ×0.5) · rain=비(물 ×1.5·불 ×0.5) · sandstorm=모래바람(차례 말 바위·땅·강철 외 최대 HP 1/16 피해) · hail=싸라기눈(차례 말 얼음 외 1/16 피해)" },
+    turns: integerSchema(`지속 차례 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS}. 생략 = 5`),
+  }, "날씨 기술(포켓몬식, gen1 전투 모델만): 명중하면 전투 날씨를 바꾼다. 이미 같은 날씨면 실패. 전투 한 번 동안만 유지. 보통 scope self 의 support 기술(effect {kind:\"support\"})에 붙인다."),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema(
@@ -1268,12 +1281,42 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
 }
 
 /**
+ * 능력치 단계 효과 검사. 정규화가 모르는 stat·0 단계를 조용히 버리면 모델은 「울음을 만들었다」고 보고하고
+ * 실제로는 아무 일도 안 하는 기술이 된다 — 모르는 키·범위 밖 값은 허용 값을 담아 거부한다(빈 배열 = 해제).
+ */
+function validateStatStageEffects(value: unknown): void {
+  if (!Array.isArray(value)) throw new ToolError("skill.statStageEffects 는 [{stat, stages, chance?, target?}] 배열이어야 합니다(해제 = 빈 배열).", { code: "invalid-stat-stage-effects" });
+  if (value.length > 4) throw new ToolError(`skill.statStageEffects 는 최대 4개입니다(받은 ${value.length}개).`, { code: "invalid-stat-stage-effects" });
+  for (const [index, row] of value.entries()) {
+    const entry = row as Record<string, unknown> | null;
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new ToolError(`skill.statStageEffects[${index}] 는 {stat, stages} 객체여야 합니다.`, { code: "invalid-stat-stage-effects" });
+    }
+    const unknownKeys = Object.keys(entry).filter((key) => !["stat", "stages", "chance", "target"].includes(key));
+    if (unknownKeys.length > 0) throw new ToolError(`skill.statStageEffects[${index}] 의 모르는 키: ${unknownKeys.join(", ")} — 허용 키: stat, stages, chance, target.`, { code: "invalid-stat-stage-effects" });
+    if (!isStatStageKey(entry.stat)) {
+      throw new ToolError(`skill.statStageEffects[${index}].stat '${String(entry.stat)}' 은 능력치 단계 이름이 아닙니다 — 허용 값: ${STAT_STAGE_KEYS.join(", ")}.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (typeof entry.stages !== "number" || !Number.isInteger(entry.stages) || entry.stages === 0 || Math.abs(entry.stages) > STAT_STAGE_MAX) {
+      throw new ToolError(`skill.statStageEffects[${index}].stages 는 0 이 아닌 −${STAT_STAGE_MAX}~+${STAT_STAGE_MAX} 정수입니다(양수 = 올림, 음수 = 내림). 받은 값: ${JSON.stringify(entry.stages)}.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {
+      throw new ToolError(`skill.statStageEffects[${index}].chance 는 0~100 입니다.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (entry.target !== undefined && entry.target !== "target" && entry.target !== "self") {
+      throw new ToolError(`skill.statStageEffects[${index}].target 은 "target"(기술 대상, 기본) 또는 "self"(시전자) 입니다.`, { code: "invalid-stat-stage-effects" });
+    }
+  }
+}
+
+/**
  * 연계기·위치 범위기 패치 검사. 정규화가 조용히 버리면 모델은 「연계기를 넣었다」고 보고하고 실제로는 일반 기술이 된다 —
  * 없는 배우·인원 수·반경은 사유와 허용 예시를 담아 거부한다.
  */
 function validateSkillTechPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
   const record = patch as Record<string, unknown>;
+  if (record.statStageEffects !== undefined) validateStatStageEffects(record.statStageEffects);
   if (record.comboActorIds !== undefined) {
     const ids = Array.isArray(record.comboActorIds) ? record.comboActorIds : null;
     if (!ids || ids.some((id) => typeof id !== "string" || !id.trim())) {
@@ -1879,10 +1922,15 @@ const upsertSkill: ToolDefinition = {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
     validateSkillRetroPatch(draft, args.skill);
+    const weatherPatch = (args.skill as { weather?: unknown } | undefined)?.weather;
+    if (weatherPatch !== undefined) validateSkillWeather(weatherPatch);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
+    if (weatherPatch !== undefined && draft.system.battleModel !== "gen1") {
+      warnings.push(`날씨는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`);
+    }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
@@ -1890,6 +1938,23 @@ const upsertSkill: ToolDefinition = {
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** weather 를 줬는데 모양이 틀리면 허용 값을 담아 거절한다(조용히 날씨 없는 기술이 되지 않게). */
+function validateSkillWeather(value: unknown): void {
+  const code = "invalid-skill-weather";
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError(`skill.weather 는 {kind, turns?} 객체여야 합니다 — kind 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  const entry = value as Record<string, unknown>;
+  const unknownKeys = Object.keys(entry).filter((key) => key !== "kind" && key !== "turns");
+  if (unknownKeys.length > 0) throw new ToolError(`skill.weather 의 모르는 키: ${unknownKeys.join(", ")} — 허용 키: kind, turns.`, { code });
+  if (!SKILL_WEATHER_KINDS.includes(entry.kind as never)) {
+    throw new ToolError(`skill.weather.kind '${String(entry.kind)}' 는 날씨 이름이 아닙니다 — 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  if (entry.turns !== undefined && !(typeof entry.turns === "number" && Number.isInteger(entry.turns) && entry.turns >= SKILL_WEATHER_MIN_TURNS && entry.turns <= SKILL_WEATHER_MAX_TURNS)) {
+    throw new ToolError(`skill.weather.turns 는 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS} 정수입니다. 받은 값: ${JSON.stringify(entry.turns)}.`, { code });
+  }
+}
 
 /** FF6 특수 효과(스케치·폭주·대열 섞기·강제 교대)의 저작 오류는 거부하고 흔한 빠짐은 알린다. */
 function validateSkillSpecialEffect(draft: Project, record: SkillRecord, warnings: string[]): void {

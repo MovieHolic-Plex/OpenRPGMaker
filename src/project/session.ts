@@ -372,6 +372,8 @@ export interface PlaySession {
   galleryUnlocks?: string[];
   dailyGifts?: DailyGiftLog;
   dailyTalks?: DailyTalkLog;
+  /** 소셜 루프(system.socialLoop)가 켜졌을 때만 생긴다: 오늘 쓴 시간대 칸과 사람별 오늘 얻은 호감. project/socialLoop.ts. */
+  socialLoop?: import("@/project/socialLoop").SocialLoopDayState;
   /** Accumulated player steps toward the next monster walk-care tick. */
   monsterCareSteps?: number;
   /** Completed Gen1 monster-party field steps modulo the four-step poison tick. */

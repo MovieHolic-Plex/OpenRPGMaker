@@ -10,6 +10,7 @@ import { extractTreeNode, insertTreeNode } from "@/project/mapTree";
 import { CAMPUS_MIN_SIZE, campusPaletteFromTileset, composeCampus, type CampusKit, type CampusStyle } from "@/project/campusComposer";
 import { campusDoorCells, campusDoorTileIds, eventTransfersToExistingMap, findCampusDeadDoors, type DeadDoor } from "@/project/campusDoors";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { claimStartIfBlank } from "./composerStart";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -178,11 +179,13 @@ export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
     draft.maps[mapId] = target;
     for (const e of entranceKits) draft.maps[e.interiorMapId] = next.maps[e.interiorMapId]!;
     if (entranceKits.length) draft.mapTree = next.mapTree;
+    // 시작 위치: 이 맵이 시작 맵인데 시작 칸이 건물·벽에 덮였거나 시작 맵이 빈 기본 맵이면 교정 시작 칸으로(compose_modern_city_street 와 같다 — 새 프로젝트의 빈 시작 맵에 깔면 (10,8) 이 막혀 커밋이 거부됐다).
+    const startNote = claimStartIfBlank(draft, mapId, r.start).note;
     return {
       summary: `${style === "school" ? "학교 교정" : "대학 캠퍼스"}를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + `건물: ${r.buildings.map((d) => d.entrance ? `${d.name} (문 ${d.doors.map((c) => `${c.x},${c.y}`).join(" · ")} → 실내에 이어짐)` : `${d.name} (문 없는 벽면)`).join(" · ")}. `
         + (r.buildings.some((d) => !d.entrance) ? "문 없는 건물은 안이 없다 — 실내를 달려면 build_hand_interior_room 으로 지은 뒤 link_campus_interior({building, interiorMapId}) 가 문과 이음을 한 번에 낸다(문만 있고 안이 없는 죽은 문은 만들지 않는다). " : "")
-        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : ""),
+        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote,
       data: { mapId, style, seed, start: r.start, gate: r.gate, buildings: r.buildings.map((d) => ({ name: d.name, kit: d.kit, rect: d.rect, entrance: d.entrance, doors: d.entrance ? d.doors : [], access: d.entrance ? d.access : [] })), props: r.props.length },
     };
   },

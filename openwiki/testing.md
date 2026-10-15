@@ -2157,3 +2157,14 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 (진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)
 - `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 - `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`) — 비행선 flightView:"mode7" 탑승·비행 화면(멀리 보기+지평선 원근+하늘). 크로미움은 `unshare -rn` 안에서. 같은 비행의 탑뷰 기준은 `QA_FLIGHT_VIEW=flat`. 프레임 시간은 rAF 간격으로 잰다(플랫 대비 평균 16.67ms 동일).
+
+## `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
+
+연애 시뮬레이션 감사에서 R1(막힘 3)·R3(막힘 1)이 **끝까지 플레이할 수 있는 게임인데도** `autoplay-failed` 로 나왔다. 원인은 모두 `src/qa/gameCheck/autoPlay.ts`의 계획기가 모르는 규칙이었고, 기준을 느슨하게 하지 않고 **규칙을 정확하게** 만들었다.
+
+1. **호감 문턱을 선행 요구로 안 봤다** — 페이지 조건 `friendshipAtLeast` 를 `leafRequirements` 가 버려서, 호감 20 이 필요한 고백 페이지를 호감 0 으로 한 번 조사하고 「다른 페이지가 실행됐다」로 오판. 이제 `Requirement` 종류 `friendship`(npcKey·value): 세터는 `changeFriendship(delta>0)`(npcKey 가 비면 이벤트 `characterId`), 완료는 `session.friendship[npcKey] ≥ value`, 변수 문턱과 같은 되풀이(`repeat`, 최대 20번)로 쌓는다.
+2. **NPC 일정을 안 봤다** — 러너는 일정이 있는 이벤트를 시각에 맞춰 `session.eventLocations` 의 다른 맵·칸에 세운다. 계획기는 저작 위치로 걸어가 「조사할 action 이벤트 없음」. `executeGoal` 이 `presentLocation()` 으로 지금 선 자리(맵·칸)를 쓴다.
+3. **하루 잠금이 공통 이벤트로 풀리는 걸 몰랐다** — 「오늘 만남 끝」 스위치를 침대 이벤트가 아니라 `timeSystem.onDayEnd` 공통 이벤트가 끈다. 계획기는 공통 이벤트 안 세터를 못 써서 「되풀이해도 문턱에 닿지 않습니다」. 이제 그 스위치를 `onDayEnd` 가 끄면 되풀이 준비로 `advanceDays 1`(`Goal.sleepDays`)을 쓴다. 목표 페이지가 같은 스위치 OFF 를 요구하면 선행 뒤에 하룻밤을 한 번 넣는다.
+4. (참고) 러너 쪽 호감 대화 재현은 `applySocialTalkForRunner`(`socialLoop` 켠 프로젝트) — 별도 PR.
+
+**정밀성 확인(반례 3종이 여전히 막힌다)**: 호감을 올리는 세터를 지운 사본, `onDayEnd` 리셋을 지운 사본, 일정이 문 없는 맵으로 보내는 사본 → 모두 `autoplay-failed`. 입력·출력은 `~/romance-fix-work/item3/`. 알려진 한계: `talkFriendship`(대화 자체가 호감을 주는 이벤트)는 세터 방문이 없어 아직 계획에 못 쓴다.

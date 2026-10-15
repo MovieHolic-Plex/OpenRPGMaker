@@ -3281,3 +3281,31 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 기술에 붙이기는 기존 `upsert_skill.stateEffects:[{stateId, chance, operation:"add"}]`. 독·강철 타입은 맹독에 안 걸린다.
 - 이중 피해 금지: 맹독 레코드에 `runtimeEffects.hpDamagePercentPerTurn` 을 따로 주지 않는다(gen1 은 독 피해를 차례 말 잔여 피해로만 처리하므로 값이 쓰이지 않지만 의미를 오해하게 만든다).
 - 레시피 `monster-status-conditions`. 규칙 정본은 `openwiki/runtime-battle.md` 「맹독·혼란」.
+
+
+## `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
+
+- 울음(공격 −1)·칼춤(공격 +2, 자신)·연막(명중률 −1)·몸을 단단히(방어 +1) 같은 포켓몬식 능력 변화 기술. 상태(`state_attack_up`)로 흉내 내지 않는다 — 단계는 −6~+6 에서 쌓이고 교체하면 초기화되며 화면에 `ATK↑2` 알약이 뜬다. 규칙 정본은 `openwiki/runtime-battle.md` 「능력치 단계」.
+- 인자: `statStageEffects:[{stat,stages,chance?,target?}]`(최대 4). `stat` enum = `attack|defense|spAttack|spDefense|speed|accuracy|evasion`, `stages` 는 0 이 아닌 −6~+6 정수, `chance` 0~100(생략 100), `target` = `target`(기술 대상, 기본)|`self`. **자유 키 객체 금지** — enum 값만 받으므로 Gemini 스키마 400 이 없다. 모르는 stat·0·범위 밖·모르는 키는 허용 값을 알려 주고 거절(`invalid-stat-stage-effects`). 빈 배열 = 해제.
+- 쓰임: 보조 기술(`effect:{kind:"support"}`, `scope:"enemy"|"self"`) + 단계, 또는 피해 기술의 부가 효과(`chance:20`). 능력 색인 레시피 `monster-battle-depth`.
+- 새 세이브 필드 없음(스킬 레코드의 선택 필드, 생략=기존 동작). 장르 잠금(monster-collect)은 칩셋 계열만 막으므로 이 도구와 상호작용이 없다.
+- 증명: `simulate_battle`/`run_scene_test` 로 기술을 쓰고 대상의 `statStages`·문장을 읽는다(upsert 성공은 증명이 아니다).
+- 참고: `docs/tool-catalog.md` 는 이 저장소에 없다(생성 스크립트가 낡았다는 메모의 그 파일) — 도구 행은 이 문서와 `toolCapabilityIndex.ts` 에 둔다.
+
+## 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+
+`read_project_wiki`(ids 포함)·`read_authoring_preset`(`world-story` 분야의 `world`)·`get_original_context`(`/world`)는 `project.world` 를 `aiVisibleWorld`/`aiVisibleEntities` 로 거른 뒤 돌려준다 — 카드에 `visibility: "ai-hidden"` 이면 이름·id·관계 메모까지 나가지 않는다. 새 읽기 도구가 `project.world` 를 모델에 돌려주면 같은 필터를 부르고 `test/helpers/worldAiPaths.ts` 에 경로를 등록한다.
+
+
+## `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
+
+- 기술 하나에 선언형 날씨 하나: `skill.weather {kind, turns?}`. `kind` enum = `sun|rain|sandstorm|hail`, `turns` 3~8(기본 5). **자유 키·자유 코드 없음.**
+- 거절: 모르는 kind·범위 밖 turns·모르는 키 → `invalid-skill-weather`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-weather`. 맵·트루프로 거는 날씨는 아직 없다.
+||||||| cc7b272d6c
+
+
+## 연애 루프 도구 변경 (2026-10-16)
+
+- `place_npc` `talkFriendship`(true | {delta}) — 그 NPC 와의 대화 한 번이 호감과 하루 칸(`system.socialLoop` 이 켜졌을 때)을 쓴다. 정의에 없는 키를 주면 **조수 실행(`ctx.assistantRun`)에서는 오류**로 거부한다(예전엔 말없이 버려 「호감 대화가 안 켜진다」). 예제·직접 실행은 그대로.
+- `set_deadline_ending` — 「N일 뒤 결말 판정」: 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
+- 장르 잠금 프리셋 `romance` 추가 — 위 「장르 칩셋 잠금」과 같은 구조(허용 칩셋 계열 oprn-campus·oprn-modern·oprn-jp, 비허용 계열 시공 도구 숨김). 정의·기본값은 `openwiki/harnesses/romance-scene.md` 「연애 인터뷰 기본값」.
