@@ -400,6 +400,6 @@ image-generation model is used. Repository code/asset policy applies.
 `battle-trainers/<role>/{front,back}.png` (created only after the user picks candidates on the pick sheet) are repository-owned original artwork for the monster-collect
 genre: a built-in image-generation model draws an original character per role (prompted as original, no imitation of existing Nintendo characters, no ball motif),
 using repository-owned monster-collect battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, themselves generated originals) only as a
-style sample, then the `monster-collect-species` pixelizer detects the pixel grid and reduces the result to 64x64 / <=20 colors. They contain no EasyRPG Actor1 pixels
+style sample, then (current method, user-selected 2026-10-15) the result is downscaled smoothly to a 128x128 transparent canvas (displayed 1x); the earlier 64x64 grid-pixelized candidates (p4) were not selected. They contain no EasyRPG Actor1 pixels
 and no Nintendo artwork, and no sample is copied. Harness: `src/harnesses/battle-trainer-sprites/`.
 License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).

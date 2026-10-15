@@ -195,6 +195,46 @@ def gen_prompt(role, spec, letter):
     return common + task + pose + f"Character: {spec['label']} — {spec['brief']} Variation: {g['variants'][letter]} " + forbid + bg
 
 
+def smooth_cfg(): return seed()['gen128']
+
+
+def make_smooth(raw_path):
+    """생성 원본(마젠타/알파 배경) → (128 캔버스 RGBA 부드러운 축소, 정보, 오류 목록). 격자·양자화 없음."""
+    import numpy as np
+    c = smooth_cfg(); canvas, th, foot = c['canvas'], c['bodyHeight'], c['footRow']
+    col, mask = _fringe_free_rgba(raw_path)
+    H, W = mask.shape; ys, xs = np.nonzero(mask)
+    errors = []
+    if not len(ys): return None, {}, ['그림이 비었다']
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    if y0 <= 0 or x0 <= 0 or y1 >= H or x1 >= W: errors.append('몸이 원본 가장자리에 닿음(잘림)')
+    if (y1 - y0) / H < c['minInkFraction']: errors.append('몸이 너무 작다(원본 높이의 %d%%)' % round((y1 - y0) / H * 100))
+    rgb = Image.fromarray(col[y0:y1, x0:x1]); m = Image.fromarray(mask[y0:y1, x0:x1])
+    tw = max(1, round((x1 - x0) * th / (y1 - y0)))
+    if tw > c['maxWidth']: errors.append('몸이 너무 넓다(%dpx > %d)' % (tw, c['maxWidth']))
+    tw = min(tw, canvas)
+    rgb_s = rgb.resize((tw, th), Image.LANCZOS); m_s = m.resize((tw, th), Image.LANCZOS)
+    rgba = rgb_s.convert('RGBA'); rgba.putalpha(m_s)
+    out = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0))
+    out.alpha_composite(rgba, ((canvas - tw) // 2, foot + 1 - th))
+    arr = np.asarray(out).astype(np.int16); solid = arr[..., 3] >= 200
+    pink = solid & (arr[..., 0] > 170) & (arr[..., 2] > 170) & (arr[..., 1] < 120)
+    fringe = pink.sum() / max(1, solid.sum())
+    if fringe > c['maxFringe']: errors.append('마젠타 번짐 %.1f%%' % (fringe * 100))
+    bbox = out.getchannel('A').point(lambda v: 255 if v >= 128 else 0).getbbox()
+    return out, {'width': bbox[2] - bbox[0], 'height': bbox[3] - bbox[1], 'fringe': round(float(fringe), 4), 'rawInk': [int(x1 - x0), int(y1 - y0)], 'raw': [int(W), int(H)]}, errors
+
+
+def finish_smooth(cdir, raw_name, meta):
+    """raw 한 장 → sprite.png(128) + 메타. 통과하면 status ok."""
+    out, info, errors = make_smooth(os.path.join(cdir, raw_name))
+    rec = {'raw': raw_name, 'errors': errors, 'info': info}
+    if out is not None and not errors:
+        out.save(os.path.join(cdir, 'sprite.png')); enlarged(out, 4, os.path.join(cdir, 'sprite_4x.png'))
+        meta.update({'status': 'ok', 'hash': sha(out), 'info': info, 'raw': raw_name, 'size': [out.width, out.height], 'method': 'smooth128'})
+    return rec
+
+
 def make_gen_candidate(plate, role, letter, throw=False):
     g = gen_seed(); spec = g['roles'][role]; view = spec['view']
     cdir = os.path.join(RUNS, plate, role, letter); os.makedirs(cdir, exist_ok=True)
@@ -216,6 +256,10 @@ def make_gen_candidate(plate, role, letter, throw=False):
         if code or not os.path.exists(raw):
             rec['errors'] = ['이미지 생성 실패: ' + err.strip().splitlines()[-1][:200] if err.strip() else '이미지 생성 실패']
             meta['attempts'].append(rec); write_json(meta_path, meta); continue
+        if is128(plate):
+            rec.update(finish_smooth(cdir, 'raw-%d.png' % n, meta)); meta['attempts'].append(rec)
+            if meta.get('status') == 'ok': break
+            write_json(meta_path, meta); continue
         adir = os.path.join(cdir, 'attempts', str(n)); os.makedirs(adir, exist_ok=True)
         code, out, err = run_gen('pixelize', '--raw', raw, '--out-dir', adir, '--max-colors', str(g['maxColors']))
         line = next((ln for ln in reversed(out.strip().splitlines()) if ln.startswith('{')), None)
@@ -354,8 +398,11 @@ def next_plate():
 def plate_mode(plate): return read_json(os.path.join(RUNS, plate, 'plate.json'), {}).get('mode')
 
 
+def is128(plate): return plate_mode(plate) == 'gen128'
+
+
 def require_gen(plate, what):
-    if plate_mode(plate) != 'gen':
+    if plate_mode(plate) not in ('gen', 'gen128'):
         sys.exit('%s 는 폐기된 판이다(p1·p2 소스 Actor1, p3 소스 편집 모드, 사용자 결정으로 폐기) — %s 하지 않는다' % (plate, what))
 
 
@@ -371,6 +418,7 @@ def cmd_draw(a):
         cs = chip_seed(); table = cs['roles']; letters_all = list(cs['intensity'])[:a.n]; maker = make_chip_candidate
     else:
         table = g['roles']; letters_all = list(g['variants'])[:a.n]; maker = make_gen_candidate
+        if a.mode == 'gen128' and a.plate and plate_mode(a.plate) == 'gen': sys.exit('%s 는 64 격자 판이다' % a.plate)
     roles = list(table) if a.role in (None, 'all') else a.role.split(',')
     for r in roles:
         if r not in table: sys.exit('모르는 역할: %s' % r)
@@ -379,7 +427,9 @@ def cmd_draw(a):
     os.makedirs(os.path.join(RUNS, plate), exist_ok=True)
     write_json(os.path.join(RUNS, plate, 'plate.json'), {'plate': plate, 'roles': roles, 'letters': letters_all, 'created': now(), 'mode': mode,
                                                          'model': MODEL if mode == 'chip' else 'god-tibo-imagen',
-                                                         'method': ('generated image -> grid pixelize (monster-collect-species pipeline) -> 64x64' if mode == 'gen' else 'agy-argon-edit (deprecated)')})
+                                                         'method': {'gen': 'generated image -> grid pixelize (monster-collect-species pipeline) -> 64x64',
+                                                                    'gen128': 'generated image -> smooth high-quality downscale -> 128x128 transparent (display 1x)',
+                                                                    'chip': 'agy-argon-edit (deprecated)'}[mode]})
     print(plate, mode, 'jobs=%d par=%d' % (len(jobs), a.par), flush=True)
     if a.background:
         log = open(os.path.join(RUNS, plate, 'draw.log'), 'a')
@@ -408,7 +458,7 @@ def cmd_status(a):
     plates = [a.plate] if a.plate else sorted(d for d in os.listdir(RUNS) if re.fullmatch(r'p\d+', d)) if os.path.isdir(RUNS) else []
     for p in plates:
         m = plate_mode(p)
-        print('==', p, '(%s)' % ('생성형' if m == 'gen' else '폐기: ' + ('p3 편집 모드' if m == 'chip' else 'p1/p2 옛 소스 Actor1')))
+        print('==', p, '(%s)' % ('생성형 128 부드러운 축소' if m == 'gen128' else '생성형 64 격자(폐기)' if m == 'gen' else '폐기: ' + ('p3 편집 모드' if m == 'chip' else 'p1/p2 옛 소스 Actor1')))
         for role, cs in plate_cands(p).items():
             print('  %-14s %s' % (role, ' '.join('%s:%s' % (l, m2.get('status', '?')) for l, m2 in cs.items())))
     picks = read_json(os.path.join(DATA, 'picks.json'), {})
@@ -453,6 +503,7 @@ def thumb_uri(path, size=220):
 
 def cmd_sheet(a):
     require_gen(a.plate, '시트를 만들')
+    if is128(a.plate): return cmd_sheet128(a)
     g = gen_seed(); cands = plate_cands(a.plate)
     manual = read_json(os.path.join(RUNS, a.plate, 'manual_filter.json'), {})  # 눈으로 보고 걸러낸 것: {"role/letter": "사유"}
     name = 'trainer-sprites-pick-%s.html' % a.plate.lstrip('p')
@@ -495,6 +546,98 @@ def cmd_sheet(a):
     out = os.path.join(VIZ, name)
     open(out, 'w', encoding='utf-8').write(html)
     print(out, len(html) // 1024, 'KB', '걸러냄', len(dropped))
+
+
+def cmd_sheet128(a):
+    g = gen_seed(); c = smooth_cfg(); cands = plate_cands(a.plate)
+    manual = read_json(os.path.join(RUNS, a.plate, 'manual_filter.json'), {})
+    name = 'trainer-sprites-pick-%s.html' % a.plate.lstrip('p')
+    only = a.only.split(',') if a.only else None
+    cards = []; roles_js = {}; dropped = []
+    order = [r for r in g['roles'] if r in cands and (not only or r in only)]
+    BG = data_uri(os.path.join(ROOT, 'public/assets/emerald-monster/battle/grass.png'))
+    for role in order:
+        spec = g['roles'][role]; view = spec['view']; items = []; shown = 0
+        roles_js[role] = {'view': view, 'cands': {}}
+        for l, m in cands[role].items():
+            if m.get('status') != 'ok':
+                dropped.append('%s/%s: 생성·검사 실패 — %s' % (role, l, (m.get('attempts') or [{}])[-1].get('errors'))); continue
+            if '%s/%s' % (role, l) in manual:
+                dropped.append('%s/%s: %s' % (role, l, manual['%s/%s' % (role, l)])); continue
+            sp_path = os.path.join(RUNS, a.plate, role, l, 'sprite.png')
+            uri = data_uri(sp_path); raw_uri = thumb_uri(os.path.join(RUNS, a.plate, role, l, m['raw']))
+            roles_js[role]['cands'][l] = {'sprite': uri}; shown += 1
+            prompt = open(os.path.join(RUNS, a.plate, role, l, 'prompt.txt'), encoding='utf-8').read()
+            inf = m['info']
+            items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div>'
+                         f'<div class=pair><div><img class=rawimg src="{raw_uri}"><div class=hs>생성 원본(마젠타 배경)</div></div>'
+                         f'<div><div class=bg><img class=px data-w=128 src="{uri}"></div><div class=hs>128×128 투명 · 몸 {inf["height"]}px · 표시 1배</div></div></div>'
+                         f'<div class=hs>{m["hash"]}</div>'
+                         f'<details onclick="event.stopPropagation()"><summary>이 후보의 생성 프롬프트</summary><pre>{prompt}</pre></details></div>')
+        cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small> <b class=n>{shown}장</b></h3><div class=row>{"".join(items)}</div></section>')
+    drop_html = ('<div class=how><b>걸러낸 후보</b><br>' + '<br>'.join(dropped) + '</div>') if dropped else ''
+    html = TEMPLATE128.replace('@@CARDS@@', '\n'.join(cards)).replace('@@ROLES@@', json.dumps(roles_js)).replace('@@PLATE@@', a.plate) \
+        .replace('@@ROLELIST@@', ' '.join('<code>%s</code>' % r for r in order)).replace('@@DROPPED@@', drop_html).replace('@@BG@@', BG) \
+        .replace('@@NOTE@@', a.note or '')
+    os.makedirs(VIZ, exist_ok=True)
+    out = os.path.join(VIZ, name); open(out, 'w', encoding='utf-8').write(html)
+    print(out, len(html) // 1024, 'KB', '걸러냄', len(dropped))
+
+
+TEMPLATE128 = r"""<!doctype html><meta charset=utf-8><title>트레이너 스프라이트 고르기 @@PLATE@@ (128 부드러운 축소)</title>
+<style>
+body{background:#1c2230;color:#e8ecf4;font:14px/1.5 -apple-system,'Noto Sans KR',sans-serif;margin:0;padding:16px 24px 60px}
+h1{font-size:20px;margin:0 0 6px}h3{margin:22px 0 6px;font-size:15px}h3 small{font-weight:400;color:#9fb0c8}
+.how{background:#26304a;border:1px solid #3c4a6e;border-radius:8px;padding:10px 14px;margin:8px 0;max-width:1000px}
+code{background:#10151f;padding:1px 6px;border-radius:4px;color:#ffd78a}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.cand{background:#232b3d;border:2px solid #323d58;border-radius:8px;padding:8px;cursor:pointer;position:relative}
+.cand.sel{border-color:#ffd78a;background:#2e3550}
+.bg{display:inline-block;line-height:0;background:#7fb86a}
+.px{image-rendering:pixelated}
+.lt{position:absolute;top:4px;left:8px;font-weight:700;color:#ffd78a;z-index:2;text-shadow:0 0 3px #000}
+.hs{font-size:11px;color:#8da0bb;margin-top:4px}
+.pair{display:flex;gap:10px;align-items:flex-end}.rawimg{width:200px;height:200px;object-fit:contain;background:#f0f}
+pre{white-space:pre-wrap;font-size:11px;max-width:420px;color:#c8d4e8;background:#10151f;padding:6px;border-radius:4px}details{margin-top:4px;font-size:11px;color:#8da0bb}.n{color:#ffd78a;font-size:12px}
+button{background:#3a4770;color:#fff;border:0;border-radius:6px;padding:5px 12px;cursor:pointer}button.on{background:#c79a2a;color:#111}
+#cmd{width:100%;max-width:1000px;background:#10151f;color:#ffd78a;border:1px solid #3c4a6e;padding:6px;font-family:monospace}
+#bat{border:2px solid #3c4a6e;image-rendering:pixelated;background:#000}
+.bar{position:sticky;top:0;background:#1c2230ee;padding:6px 0;z-index:5;display:flex;gap:14px;align-items:center}
+</style>
+<h1>트레이너 스프라이트 후보 시트 (@@PLATE@@) — 128×128 투명 · 부드러운 축소 · 표시 1배</h1>
+<div class=how><b>고르는 방법</b> — 카드를 눌러 역할마다 하나씩 고르면 맨 아래에 <code>pick</code> 명령이 만들어집니다. 번호만 말해 주셔도 됩니다: 예) <code>hero_m=B hero_f_front=A …</code> (역할: @@ROLELIST@@). 각 역할에서 마음에 드는 것이 없으면 「없음」이라고 말해 주세요.<br>
+@@NOTE@@
+<b>규격</b>: 이미지 서버가 만든 그림을 격자 도트화·색 줄이기 없이 부드러운 고품질 축소로 128×128 투명 PNG 에 담았습니다. 몸 높이 112px, 발 바닥 줄 126, 화면에는 <b>1배(128px)</b>로 나옵니다(렌더러는 PR #2638 로 128 폭을 받음). 번들·프로젝트에는 고르기 전까지 아무것도 들어가지 않습니다.
+이 그림은 사람 캐릭터라 3/4 윗면 관문 대상이 아닙니다(object-gate 영수증 없음, 사람 선택 경로). Actor1·Nintendo 원작 그림 아님, 소스 복제 아님.</div>
+@@DROPPED@@
+<div class=bar>보기 배율 <span id=sc></span> <small class=hs>카드 그림만 바뀝니다. 게임에서는 1배입니다.</small></div>
+<h3>전투 화면 합성 미리보기 (480×240, 게임 필드와 같은 위치·크기) — 카드를 누르면 바뀝니다 · 상대는 마지막에 누른 앞모습, 내 트레이너는 마지막에 누른 뒷모습</h3>
+<canvas id=bat width=480 height=240></canvas>
+@@CARDS@@
+<h3>선택 결과</h3><textarea id=cmd rows=3 readonly></textarea>
+<script>
+const R=@@ROLES@@; const sel={}; let opp=null, hero=null;
+const bgi=new Image();bgi.src="@@BG@@";bgi.onload=()=>drawBat();
+const imgs={};function img(u){if(!imgs[u]){const i=new Image();i.src=u;i.onload=()=>drawBat();imgs[u]=i}return imgs[u]}
+function setScale(s){document.querySelectorAll('.px').forEach(i=>i.style.width=(128*s)+'px');
+ document.querySelectorAll('#sc button').forEach(b=>b.classList.toggle('on',+b.dataset.s===s))}
+const sc=document.getElementById('sc');[1,2].forEach(s=>{const b=document.createElement('button');b.textContent=s+'×';b.dataset.s=s;b.onclick=()=>setScale(s);sc.appendChild(b)});
+function drawBat(){const c=document.getElementById('bat'),g=c.getContext('2d');g.imageSmoothingEnabled=false;
+ if(bgi.complete)g.drawImage(bgi,0,0,480,240);else{g.fillStyle='#9c9';g.fillRect(0,0,480,240)}
+ g.fillStyle='#b8d098';g.strokeStyle='#90b078';g.lineWidth=4;
+ for(const [x,y] of [[8,208],[288,182]]){g.beginPath();g.ellipse(x+96,y+20,96,20,0,0,7);g.fill();g.stroke()}
+ const pick=r=>r&&(sel[r]||Object.keys(R[r].cands)[0]);
+ const h=pick(hero),o=pick(opp);
+ if(h)g.drawImage(img(R[hero].cands[h].sprite),48,240-128,128,128);
+ if(o)g.drawImage(img(R[opp].cands[o].sprite),480-48-128,240-30-128,128,128)}
+function cmd(){const parts=Object.entries(sel).map(([r,l])=>r+'='+l);
+ document.getElementById('cmd').value=parts.length?('npm run harness -- battle-trainer-sprites pick @@PLATE@@ '+parts.join(' ')):'(아직 고른 것이 없습니다)'}
+document.querySelectorAll('.cand').forEach(c=>c.onclick=()=>{const r=c.dataset.role,l=c.dataset.l;sel[r]=l;
+ document.querySelectorAll('.cand[data-role="'+r+'"]').forEach(x=>x.classList.toggle('sel',x===c));
+ if(R[r].view==='back')hero=r;else opp=r;drawBat();cmd()});
+for(const r in R){if(R[r].view==='back'&&!hero)hero=r;if(R[r].view==='front'&&!opp)opp=r}
+setScale(1);drawBat();cmd();
+</script>"""
 
 
 TEMPLATE = r"""<!doctype html><meta charset=utf-8><title>트레이너 스프라이트 고르기 @@PLATE@@</title>
@@ -588,11 +731,46 @@ def cmd_bake(a):
         view = cs['roles'][role]['view']
         odir = os.path.join(BUNDLE, role); os.makedirs(odir, exist_ok=True)
         shutil.copy(os.path.join(cdir, 'sprite.png'), os.path.join(odir, '%s.png' % view))
-        index['trainers'][role] = {'role': role, 'label': cs['roles'][role]['label'], 'view': view, 'size': [64, 64], 'footY': 62,
-                                   'source': 'OPRN monster-collect trainer art (generated image, grid-pixelized to 64x64)', view: '%s.png' % view}
+        if is128(a.plate):
+            index['trainers'][role] = {'role': role, 'label': cs['roles'][role]['label'], 'view': view, 'size': [128, 128], 'footY': smooth_cfg()['footRow'],
+                                       'source': 'OPRN monster-collect trainer art (generated image, smooth downscale to 128x128 transparent, displayed 1x)', view: '%s.png' % view}
+        else:
+            index['trainers'][role] = {'role': role, 'label': cs['roles'][role]['label'], 'view': view, 'size': [64, 64], 'footY': 62,
+                                       'source': 'OPRN monster-collect trainer art (generated image, grid-pixelized to 64x64)', view: '%s.png' % view}
         print('baked', role, p['letter'])
     write_json(os.path.join(BUNDLE, 'index.json'), index)
 
+
+
+def cmd_rerender(a):
+    """이미 생성된 원본(옛 판)을 128 부드러운 축소 판으로 다시 만든다. 이미지 서버를 부르지 않는다."""
+    if plate_mode(a.src) not in ('gen', 'gen128'): sys.exit('%s 는 생성형 판이 아니다' % a.src)
+    g = gen_seed(); roles = a.roles or [r for r in g['roles'] if r in plate_cands(a.src)]
+    dst = os.path.join(RUNS, a.dst); os.makedirs(dst, exist_ok=True)
+    pj = os.path.join(dst, 'plate.json'); cur = read_json(pj, {})
+    cur.update({'plate': a.dst, 'mode': 'gen128', 'roles': sorted(set(cur.get('roles', [])) | set(roles)), 'created': cur.get('created', now()), 'model': 'god-tibo-imagen',
+                'method': 'generated image -> smooth high-quality downscale -> 128x128 transparent (display 1x)', 'derivedFrom': a.src})
+    write_json(pj, cur)
+    for view in ('front', 'back'):
+        s = os.path.join(RUNS, a.src, '_ref_%s.png' % view)
+        if os.path.exists(s) and not os.path.exists(os.path.join(dst, '_ref_%s.png' % view)): shutil.copy(s, dst)
+    for role in roles:
+        for letter, m in plate_cands(a.src).get(role, {}).items():
+            sdir = os.path.join(RUNS, a.src, role, letter)
+            raws = sorted(f for f in os.listdir(sdir) if re.fullmatch(r'raw-\d+\.png', f))
+            if not raws: print('%s/%s: 원본 없음 — draw 로 새로 만들어야 함' % (role, letter)); continue
+            use = [m['raw']] if m.get('raw') in raws else raws[::-1]
+            cdir = os.path.join(dst, role, letter); os.makedirs(cdir, exist_ok=True)
+            meta = {'role': role, 'letter': letter, 'view': g['roles'][role]['view'], 'mode': 'gen128', 'model': 'god-tibo-imagen', 'derivedFrom': '%s/%s/%s' % (a.src, role, letter),
+                    'samples': m.get('samples'), 'attempts': []}
+            for f in use:
+                shutil.copy(os.path.join(sdir, f), os.path.join(cdir, f))
+                rec = finish_smooth(cdir, f, meta); meta['attempts'].append(rec)
+                if meta.get('status') == 'ok': break
+            if 'status' not in meta: meta['status'] = 'failed'
+            shutil.copy(os.path.join(sdir, 'prompt.txt'), os.path.join(cdir, 'prompt.txt'))
+            meta['finished'] = now(); write_json(os.path.join(cdir, 'meta.json'), meta)
+            print('%s/%s %s %s' % (role, letter, meta['status'], '' if meta['status'] == 'ok' else meta['attempts'][-1]['errors']))
 
 
 # ---------- compare: 같은 생성 원본의 세 가지 표현(64 격자 / 128 양자화 / 128 부드러움) 비교 시트 ----------
@@ -730,15 +908,16 @@ const sc=document.getElementById('sc');[1,1.5,2].forEach(z=>{const b=document.cr
 def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('list')
-    d = sp.add_parser('draw'); d.add_argument('role', nargs='?'); d.add_argument('--n', type=int, default=5); d.add_argument('--par', type=int, default=5)
-    d.add_argument('--plate'); d.add_argument('--mode', choices=['gen', 'chip'], default='gen'); d.add_argument('--background', action='store_true')
+    d = sp.add_parser('draw'); d.add_argument('role', nargs='?'); d.add_argument('--n', type=int, default=5); d.add_argument('--par', type=int, default=2)
+    d.add_argument('--plate'); d.add_argument('--mode', choices=['gen', 'gen128', 'chip'], default='gen128'); d.add_argument('--background', action='store_true')
     st = sp.add_parser('status'); st.add_argument('plate', nargs='?')
-    sh = sp.add_parser('sheet'); sh.add_argument('plate')
+    sh = sp.add_parser('sheet'); sh.add_argument('plate'); sh.add_argument('--only'); sh.add_argument('--note')
     pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+')
     bk = sp.add_parser('bake'); bk.add_argument('plate'); bk.add_argument('roles', nargs='*')
+    rr = sp.add_parser('rerender'); rr.add_argument('src'); rr.add_argument('dst'); rr.add_argument('roles', nargs='*')
     cp = sp.add_parser('compare'); cp.add_argument('plate'); cp.add_argument('picks', nargs='+'); cp.add_argument('--out', default='5')
     a = ap.parse_args()
-    {'list': cmd_list, 'draw': cmd_draw, 'status': cmd_status, 'sheet': cmd_sheet, 'pick': cmd_pick, 'bake': cmd_bake, 'compare': cmd_compare}[a.cmd](a)
+    {'list': cmd_list, 'draw': cmd_draw, 'status': cmd_status, 'sheet': cmd_sheet, 'pick': cmd_pick, 'bake': cmd_bake, 'compare': cmd_compare, 'rerender': cmd_rerender}[a.cmd](a)
 
 
 if __name__ == '__main__': main()
