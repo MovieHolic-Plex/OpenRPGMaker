@@ -7,7 +7,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/chrono-battle-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/chrono-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/chrono-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
 
 export default {
   id: "chrono-battle-probe",

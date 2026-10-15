@@ -287,6 +287,12 @@ export interface PlaySession {
   actorExperience: Record<string, number>;
   /** 배우별 누적 기술 포인트(TP). 승리 시 얻고 learnedSkills[].tp 문턱으로 기술을 배운다. 생략 = 없음. */
   actorTechPoints?: Record<string, number>;
+  /** 마석 AP 진행: 배우 → 스킬 id → 누적 AP. EquipmentRecord.apGrants 가 채우고, 필요 AP 에 닿으면 영구 습득(actorSkillIds·learnedViaAp). 생략 = 없음. */
+  actorApProgress?: Record<ActorId, Record<SkillId, number>>;
+  /** 마석 AP 로 영구 습득한 스킬(배우별). 장비를 벗어도 남는다 — 같은 스킬이 actorSkillIds 에도 들어 있다. 생략 = 없음. */
+  learnedViaAp?: Record<ActorId, SkillId[]>;
+  /** 폭주(rage 기술) 배우가 승리 때마다 모은 몬스터 목록(몬스터 레코드 id, 배우당 최대 64). 생략 = 없음. */
+  actorRageEnemyIds?: Record<ActorId, string[]>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
@@ -351,7 +357,12 @@ export interface PlaySession {
   /** 주인공 통행 차단 행의 런타임 오버라이드. 생략이면 `system.playerPassRows`, 그것도 없으면 몸 높이 전체. */
   playerPassRows?: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
-  mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
+  mapOverrides: Record<MapId, MapTileOverrides>;
+  /**
+   * 카운트다운 타이머 중 지금 흐르는 것(timerId → 진행 중). 값(`timers`)만 저장하면 불러온 뒤 시계가 멈춘다 —
+   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.applySession). 없으면 모두 멈춘 상태.
+   */
+  timerActive?: Record<string, boolean>;
   farmPlots?: FarmPlots;
   // farmPlots 성장 틱이 적용된 마지막 달력 날짜. 시계가 날짜를 넘길 때마다 여기까지의 차이만큼만 성장시킨다.
   farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
@@ -824,18 +835,22 @@ function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): nu
   }
 }
 
-// 맵 타일 오버라이드(changeTile 런타임 반영).
+// 맵 타일 오버라이드(changeTile 런타임 반영). lower=1층, upper=3층, lower2=2층, upper2=4층(2·4층은 쓰일 때만 생긴다).
+export type MapOverrideLayer = "lower" | "upper" | "lower2" | "upper2";
+export type MapTileOverrides = { lower: Record<number, number>; upper: Record<number, number>; lower2?: Record<number, number>; upper2?: Record<number, number> };
+
 export function setMapTileOverride(
   session: PlaySession,
   mapId: MapId,
-  layer: "lower" | "upper",
+  layer: MapOverrideLayer,
   index: number,
   tile: number
 ): void {
   if (!session.mapOverrides[mapId]) {
     session.mapOverrides[mapId] = { lower: {}, upper: {} };
   }
-  session.mapOverrides[mapId][layer][index] = tile;
+  const overrides = session.mapOverrides[mapId];
+  (overrides[layer] ??= {})[index] = tile;
 }
 export function getMapTile(
   session: PlaySession,
@@ -906,6 +921,8 @@ export type ConditionEvalContext = {
   readonly host?: ActorQueryHost;
   /** 요일 계산용 달력(프로젝트 시스템에서). 생략 = 계절 28일·1년 1일 월요일. */
   readonly calendar?: ActorQueryOptions;
+  /** 파티가 아는 스킬 집합(partyKnowsSkill). 프로젝트를 아는 호출측이 partyKnownSkillIds 로 만든다. */
+  readonly partySkillIds?: () => ReadonlySet<string>;
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -970,6 +987,7 @@ export function evalCondition(
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -980,7 +998,7 @@ export function evalCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, context?.calendar);
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}) });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":

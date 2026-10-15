@@ -112,6 +112,12 @@ export type ActorQueryCondition =
   | { kind: "actorStat"; actorId: ActorId | "leader"; stat: "level" | "hp" | "mp" | "hpPercent" | "mpPercent"; op: ConditionCompareOp; value: number }
   | { kind: "actorState"; actorId: ActorId | "leader" | "anyone"; stateId: string; present: boolean }
   | { kind: "partyLeader"; actorId: ActorId }
+  /**
+   * 파티(배우 + 몬스터 파티)의 누군가가 이 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시).
+   * present 생략 = true. 아는 기술은 배우의 배운/직업/성장/장비 부여 스킬과 몬스터 파티 인스턴스의 기술이다.
+   * 해석 못 하면(스킬 id 가 비었음) 거짓.
+   */
+  | { kind: "partyKnowsSkill"; skillId: string; present?: boolean }
   | { kind: "partySize"; op: ConditionCompareOp; value: number }
   /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
   | { kind: "facing"; subject: "player" | "event"; dir: Dir }
@@ -310,6 +316,9 @@ export type ShowAnimationTarget =
   | { readonly eventId: string }
   | { readonly x: number; readonly y: number };
 
+/** changeTile 이 쓸 수 있는 맵 층. 이름은 mapLayers.ts 의 층 번호와 같다: 1층 lower · 2층 lower2 · 3층 upper · 4층 upper2. */
+export type ChangeTileLayer = "lower" | "upper" | "lower2" | "upper2";
+
 export type Command =
   | {
       kind: "text";
@@ -394,7 +403,8 @@ export type Command =
   | {
       kind: "changeTile";
       mapId: MapId;
-      layer: "lower" | "upper";
+      /** lower=1층, upper=3층, lower2=2층(바닥 장식), upper2=4층(물체 하나 더). 그림자는 못 바꾼다. */
+      layer: ChangeTileLayer;
       x: number;
       y: number;
       tile: number;

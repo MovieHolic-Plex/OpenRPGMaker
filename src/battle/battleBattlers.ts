@@ -7,7 +7,7 @@ import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/proje
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
-import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { monsterBattleStats, monsterBattleStatsForSpecies, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
@@ -50,7 +50,8 @@ export interface ActorBattlerOverrides {
 }
 
 export interface MutableBattler {
-  readonly row?: BattleRow;
+  /** 대열(앞/뒤). 대열 섞기(shuffleParty)가 전투 중에 바꾼다. */
+  row?: BattleRow;
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
@@ -106,6 +107,8 @@ export interface MutableBattler {
   defending: boolean;
   /** 리미트 게이지 0~100. system.limitGauge 를 켠 전투의 아군만 가진다. */
   limitGauge?: number;
+  /** 폭주(rage) 중인 몬스터 레코드 id. 있으면 그 몬스터의 행동 표대로 매 차례 자동 행동한다(전투 끝까지, 저장하지 않음). */
+  rageEnemyId?: string;
   /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
   resource2?: number;
 }
@@ -515,7 +518,32 @@ function enemyBattlerSkillIds(project: Project, enemy: ReturnType<typeof normali
   return learned.length > 0 ? learned : enemy.skillIds;
 }
 
-export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
+/** 야생 레벨 굴림(조우표 levelMin/levelMax)으로 종 몬스터 적의 레벨을 바꿀 때의 능력치 개체값. 종 enemy 를 만드는 쪽(demoEnemy 호출)과 같은 값이다. */
+const WILD_LEVEL_IVS = { hp: 12, atk: 12, def: 12, spd: 12 } as const;
+
+/** 종 몬스터 적을 그 레벨의 능력치·기술로 다시 계산한다. 종이 없는 일반 적은 건드리지 않는다. */
+function wildLevelAdjusted(project: Project, enemy: ReturnType<typeof normalizeEnemyRecord>, level: number): { level: number; stats: ReturnType<typeof normalizeEnemyRecord>["stats"]; skillIds: SkillId[]; actions: readonly EnemyActionPattern[] } | undefined {
+  const species = enemy.speciesId ? monsterSpeciesById(project, enemy.speciesId) : undefined;
+  if (!species || level === enemy.level) return undefined;
+  const stats = monsterBattleStatsForSpecies(species, level, WILD_LEVEL_IVS);
+  const skillIds = monsterSkillIdsAtLevel(species, level);
+  if (skillIds.length === 0) return undefined;
+  const known = new Set(skillIds);
+  const kept = enemy.actions.filter((action) => !action.skillId || known.has(action.skillId));
+  const covered = new Set(kept.map((action) => action.skillId));
+  const added: EnemyActionPattern[] = skillIds.filter((skillId) => !covered.has(skillId)).map((skillId) => {
+    const skill = project.database.skills.find((entry) => entry.id === skillId);
+    const heals = skill?.effect.kind === "healing" && skill.effect.affects === "hp";
+    return {
+      skillId, priority: skill?.effect.kind === "damage" ? 6 : 2,
+      condition: heals ? { kind: "hp", minPercent: 0, maxPercent: 35 } : { kind: "always" },
+      switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false },
+    } as EnemyActionPattern;
+  });
+  return { level, stats: { ...enemy.stats, ...stats }, skillIds, actions: [...kept, ...added] };
+}
+
+export function enemyBattlers(project: Project, troop: TroopRecord, options?: { readonly wildLevel?: number }): MutableBattler[] {
   const members = troop.members?.length
     ? troop.members
     : (troop.enemyIds ?? []).map((enemyId, index) => ({
@@ -528,7 +556,9 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
     const enemyId = member.enemyId;
     const enemy = project.database.enemies.find((record) => record.id === enemyId);
     if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
-    const normalizedEnemy = normalizeEnemyRecord(enemy);
+    const baseEnemy = normalizeEnemyRecord(enemy);
+    const adjusted = options?.wildLevel !== undefined ? wildLevelAdjusted(project, baseEnemy, options.wildLevel) : undefined;
+    const normalizedEnemy = adjusted ? { ...baseEnemy, level: adjusted.level, stats: adjusted.stats, skillIds: adjusted.skillIds, actions: [...adjusted.actions] } : baseEnemy;
     const stats = normalizedEnemy.stats;
     const authoredX = member.x;
     const authoredY = member.y;

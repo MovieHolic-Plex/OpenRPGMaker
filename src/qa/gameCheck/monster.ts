@@ -7,6 +7,7 @@
 //   - 트레이너 battleProcessing 에 troopId 가 없거나 엉뚱한 칸에 들어갔다.
 //   - 스타터를 안 받고도 도로로 나갈 수 있다(영웅 혼자 야생과 싸운다).
 
+import { genreLockViolations } from "@/project/genreLock";
 import { TILE } from "@/project/defaults/constants";
 import { itemAllowsBattle } from "@/project/itemUsage";
 import { isMonsterNoCaptureGame, monsterSpeciesForEnemy } from "@/project/monsterCollection";
@@ -43,6 +44,14 @@ export function checkMonster(project: Project, briefText?: string): Finding[] {
   }
   if (system.monsterBattleParty !== true && system.battleParty !== "monsters") {
     findings.push({ severity: "warning", code: "monster-battle-party-off", message: "몬스터 파티 전투가 꺼져 있어 잡은 몬스터가 아니라 영웅이 싸웁니다(configure_monster_system battleParty:true)." });
+  }
+
+  // 장르 잠금: 잠금 이후 허용 밖 칩셋으로 생긴 맵은 경고, 잠금 이전부터 있던 것은 정보로만 센다(막지 않는다).
+  for (const violation of genreLockViolations(project)) {
+    findings.push({
+      severity: violation.preexisting ? "info" : "warning", code: violation.preexisting ? "genre-lock-preexisting" : "genre-lock-violation",
+      message: `맵 「${violation.mapName}」(${violation.mapId})이 장르 잠금 밖 칩셋 ${violation.tilesetId} 를 씁니다${violation.preexisting ? "(잠금 이전부터 있던 맵)" : ""}.`,
+    });
   }
 
   // 1b) 캠페인 정의(도감·배지·진행 목표)가 실제로 지은 이벤트·도감과 맞는가 — 정의만 줄이고 관장은 그대로인 손상.

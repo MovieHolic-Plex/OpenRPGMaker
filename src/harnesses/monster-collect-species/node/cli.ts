@@ -11,6 +11,7 @@
  *   pick   --species <id> --side front|back [--action <동작>] --run <run> --candidate <k> [--note <text>]
  *   build                                      골라 둔 격자 → public/assets/harnesses/... 스프라이트·대기·동작 스트립 + 검사
  *   check                                      번들 검사만
+ *   manifest                                   번들 폴더 → 런타임 목록(src/assets/harnessMonsterBundle.json). build 가 끝에 자동 실행
  *   preview [--species <id>]                   번들 스프라이트·애니메이션을 한 쪽 HTML 로 (qa-runs/.../preview/)
  */
 import { createHash } from "node:crypto";
@@ -421,7 +422,39 @@ function stageBuild(): number {
   }
   for (const [speciesId, manifest] of Object.entries(anim)) writeFileSync(join(PATHS.bundle, speciesId, "anim.json"), JSON.stringify(manifest, null, 2) + "\n");
   errors += stageCheck();
+  stageManifest();
   return errors;
+}
+
+/**
+ * 번들 폴더(public/assets/harnesses/monster-collect-species/<종>/)를 읽어 런타임 목록을 쓴다 — 이미지 바이트 없이 id·면·대기 칸 수만.
+ * 런타임(`src/assets/harnessMonsterArt.ts`)은 이 목록에 종이 있으면 `campaignSpeciesId` 로 이어진 캠페인 종의 그림을 번들 그림으로 바꾼다.
+ * 그림 파일이 실제로 있는 면만 싣는다(없는 면은 기존 그림으로 폴백).
+ */
+function stageManifest(): void {
+  const seed = loadSeed();
+  type Entry = { campaignSpeciesId?: string; front?: { idle?: { frames: number; frameMs: number } }; back?: { idle?: { frames: number; frameMs: number } }; field?: { sheet: number; index: number } };
+  const species: Record<string, Entry> = {};
+  // 따라다니기 걷기 칩: field_chip.py bake 가 쓴 field/index.json (시트 수 + 종별 시트·번호). 시트 파일이 실제로 있는 종만 싣는다.
+  const fieldIndexPath = join(PATHS.bundle, "field", "index.json");
+  const fieldIndex = existsSync(fieldIndexPath) ? (JSON.parse(readFileSync(fieldIndexPath, "utf8")) as { sheets: number; chips: Record<string, { sheet: number; index: number }> }) : undefined;
+  for (const sp of seed.species) {
+    const entry: Entry = {};
+    if (sp.campaignSpeciesId) entry.campaignSpeciesId = sp.campaignSpeciesId;
+    const manifestPath = join(PATHS.bundle, sp.id, "anim.json");
+    const anim = existsSync(manifestPath) ? (JSON.parse(readFileSync(manifestPath, "utf8")) as AnimManifest) : undefined;
+    for (const which of ["front", "back"] as const) {
+      if (!existsSync(bundlePath(sp.id, which))) continue;
+      const idle = anim?.sides[which]?.idle;
+      entry[which] = idle && existsSync(join(PATHS.bundle, sp.id, idle.path)) ? { idle: { frames: idle.frames, frameMs: idle.frameMs } } : {};
+    }
+    const chip = fieldIndex?.chips[sp.id];
+    if (chip && existsSync(join(PATHS.bundle, "field", `chips-${chip.sheet}.png`))) entry.field = { sheet: chip.sheet, index: chip.index };
+    if (entry.front || entry.back) species[sp.id] = entry;
+  }
+  mkdirSync(resolve(PATHS.manifest, ".."), { recursive: true });
+  writeFileSync(PATHS.manifest, JSON.stringify({ version: 1, canvas: SPRITE_CANVAS, ...(fieldIndex && fieldIndex.sheets > 0 ? { fieldSheets: fieldIndex.sheets } : {}), species }, null, 2) + "\n");
+  console.log(`런타임 목록 → ${relativeToRepo(PATHS.manifest)} (종 ${Object.keys(species).length})`);
 }
 
 function stageCheck(): number {
@@ -522,6 +555,7 @@ export async function run(argv: string[]): Promise<number> {
     case "pick": stagePick(args); return 0;
     case "build": return stageBuild() > 0 ? 1 : 0;
     case "check": return stageCheck() > 0 ? 1 : 0;
+    case "manifest": stageManifest(); return 0;
     default:
       console.error(`모르는 단계: ${stage}. 단계: ${MONSTER_COLLECT_SPECIES_HARNESS.stages.map((s) => s.id).join(", ")}`);
       return 2;

@@ -32,6 +32,35 @@ export function hasEquipmentSlot(project: Project, id: string): boolean {
   return equipmentSlots(project).some((slot) => slot.id === id);
 }
 
+/** 이 칸이 대신 받아 주는 장비 부위(EquipmentSlotRecord.equipsAs). 없는 칸·자기 자신을 가리키는 값은 undefined. */
+export function equipsAsSlot(project: Project, id: string): string | undefined {
+  const target = equipmentSlots(project).find((slot) => slot.id === id)?.equipsAs;
+  return target && target !== id && hasEquipmentSlot(project, target) ? target : undefined;
+}
+
+/**
+ * 도구·스크립트용: id 를 지정해 칸을 만들거나(없으면) 이름·equipsAs 를 고친다. 기본 5칸의 id 는 의미가 고정이라
+ * 이름만 바꿀 수 있다. equipsAs 를 비우려면 `null`. 반환 값은 "added" | "updated". 잘못된 입력은 Error.
+ */
+export function upsertEquipmentSlot(project: Project, input: { id: string; label: string; equipsAs?: string | null }): "added" | "updated" {
+  if (!isEquipmentSlotId(input.id)) throw new Error(`Invalid equipment slot id: ${input.id}`);
+  const label = requireLabel(input.label);
+  const builtin = BUILTIN_EQUIPMENT_SLOTS.some((slot) => slot.id === input.id);
+  const existed = hasEquipmentSlot(project, input.id);
+  const equipsAs = input.equipsAs ?? undefined;
+  if (equipsAs !== undefined) {
+    if (builtin) throw new Error(`기본 부위(${input.id})는 equipsAs 를 가질 수 없습니다`);
+    if (equipsAs === input.id) throw new Error(`equipsAs 는 자기 자신이 될 수 없습니다: ${input.id}`);
+    if (!hasEquipmentSlot(project, equipsAs)) throw new Error(`Unknown equipment slot: ${equipsAs}`);
+  }
+  const slots = project.database.equipmentSlots ?? [];
+  const current = slots.find((slot) => slot.id === input.id);
+  const keepEquipsAs = input.equipsAs === undefined ? current?.equipsAs : equipsAs;
+  const record: EquipmentSlotRecord = { id: input.id, label, ...(keepEquipsAs ? { equipsAs: keepEquipsAs } : {}) };
+  project.database.equipmentSlots = current ? slots.map((slot) => slot.id === input.id ? record : slot) : [...slots, record];
+  return existed ? "updated" : "added";
+}
+
 /** Mutators operate on an editor draft. Call inside store.update with an activity label. */
 export function addEquipmentSlot(project: Project, label: string): EquipmentSlotRecord {
   const slot = { id: genId("slot"), label: requireLabel(label) };

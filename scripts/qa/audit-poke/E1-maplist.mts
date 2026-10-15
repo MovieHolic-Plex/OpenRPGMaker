@@ -1,0 +1,11 @@
+import { readFileSync } from "node:fs";
+import { deserialize } from "@/project/io/serialize";
+const project: any = deserialize(readFileSync("qa-runs/audit-poke/A1-base.json", "utf8"));
+const ms = Object.values(project.maps) as any[];
+const enc = ms.filter(m => (m.encounterRate ?? 0) > 0 && m.encounterTable?.length);
+console.log("maps total", ms.length, "with encounters", enc.length, ":", enc.map(m => `${m.id.replace("mx_map_","")}[${m.mapRole ?? "-"}]`).join(" "));
+console.log("towns/interiors with rate>0:", ms.filter(m => (m.encounterRate ?? 0) > 0 && !enc.includes(m)).length, " rate>0 but table empty/none:", ms.filter(m=>(m.encounterRate??0)>0 && !m.encounterTable?.length).map(m=>m.id).join(","));
+const lvls = enc.flatMap(m => m.encounterTable.map((e: any) => { const t = project.database.troops.find((x: any) => x.id === e.troopId); const en = project.database.enemies.find((x: any) => x.id === t.enemyIds[0]); return en.level; }));
+console.log("distinct fixed wild levels across all encounter entries:", [...new Set(lvls)].sort((a: any, b: any) => a - b).join(","));
+const meadow = project.maps.mx_map_meadow; console.log("meadow table:", meadow.encounterTable.map((e: any) => { const t = project.database.troops.find((x: any) => x.id === e.troopId); const en = project.database.enemies.find((x: any) => x.id === t.enemyIds[0]); return `${en.speciesId.replace("mx_species_","")} Lv${en.level} w${e.weight}`; }).join(" | "));
+console.log("enemy records:", project.database.enemies.length, "troops:", project.database.troops.length);

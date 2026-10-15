@@ -1085,6 +1085,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "actorStat":
       case "actorState":
       case "partyLeader":
+      case "partyKnowsSkill":
       case "partySize":
       case "facing":
       case "relativeFacing":
@@ -1108,7 +1109,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           } satisfies ActorQuerySession,
           condition,
           { eventId: options.ownerEventId },
-          calendarOptionsOf(options.project),
+          { ...calendarOptionsOf(options.project), partySkillIds: () => new Set(options.actors.flatMap((battler) => battler.skillIds)) },
         );
       case "difficulty":
         return conditionState.difficultyId !== undefined && conditionState.difficultyId === condition.difficultyId;

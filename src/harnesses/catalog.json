@@ -59,6 +59,11 @@
           "summary": "번들 스프라이트의 색 수·마젠타 잔점·윤곽·앞뒤 색 일치, 애니메이션 프레임(대기 0번=원본·발 고정, 동작 색·몸집)을 검사한다."
         },
         {
+          "id": "manifest",
+          "title": "런타임 목록",
+          "summary": "번들 폴더를 읽어 src/assets/harnessMonsterBundle.json(이미지 바이트 없음)을 쓴다. 런타임이 「번들에 종 id 가 있으면 그 그림」 규칙으로 캠페인 종(seed 의 campaignSpeciesId)에 번들 그림을 쓴다. build 가 끝에 자동 실행."
+        },
+        {
           "id": "preview",
           "title": "미리보기",
           "summary": "번들 스프라이트의 대기·동작을 전투 배율로 재생하는 HTML 한 쪽을 만든다."

@@ -45,7 +45,7 @@ import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
-import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
@@ -1003,15 +1003,15 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = pickEncounterTroopForMap(map, scene.session, position, undefined, store.getCurrent());
-  if (!troopId) return;
+  const picked = pickEncounterForMap(map, scene.session, position, undefined, store.getCurrent());
+  if (!picked) return;
   // 전투 시작(비동기). 전투가 끝날 때까지 맵 로직·입력을 잠근다 — 잠그지 않으면 전투
   // 오버레이 뒤에서 걸음이 계속 완료되어 게이지가 쌓이고 전투가 겹쳐 시작된다.
-  void runRandomEncounterBattle(scene, troopId);
+  void runRandomEncounterBattle(scene, picked.troopId, picked.level);
 }
 
 // runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
-async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string, enemyLevel?: number): Promise<void> {
   const session = scene.session;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
@@ -1019,7 +1019,7 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
   try {
     // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
     // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
-    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false, ...(enemyLevel !== undefined ? { enemyLevel } : {}) });
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
     session.battleResult = result;
     if (result === "defeat") applyBattleDefeat(scene);

@@ -45,6 +45,7 @@ import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId, type GenreLock } from "@/project/genreLock";
 import {
   normalizeBundleDefinitions,
   normalizeEnergySystemConfig,
@@ -68,13 +69,14 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
+import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -208,6 +210,17 @@ function battleLookWithRetiredSkinWindow(system: { battleUiStyle?: unknown; batt
   return { ...look, window: lookWindow };
 }
 
+/** 알 수 없는 preset·모양이 깨진 값은 잠금 없음으로 본다 — 저장 바이트를 지키려고 선택 칸은 있을 때만 쓴다. */
+function normalizeGenreLock(value: unknown): GenreLock | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<GenreLock>;
+  if (!isGenreLockPresetId(raw.preset)) return undefined;
+  const families = Array.isArray(raw.allowedFamilies) ? raw.allowedFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0) : [];
+  if (!families.length) return undefined;
+  const mapIds = Array.isArray(raw.grandfatheredMapIds) ? [...new Set(raw.grandfatheredMapIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  return { preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)], ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}) };
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
@@ -231,6 +244,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return cameraZoom !== undefined ? { cameraZoom } : {};
     })(),
     ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
+    ...(() => {
+      const genreLock = normalizeGenreLock(system.genreLock);
+      return genreLock ? { genreLock } : {};
+    })(),
     titleResourceId,
     systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
@@ -298,12 +315,18 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
     ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    ...(() => {
+      const battleTeams = normalizeBattleTeams(system.battleTeams);
+      return battleTeams ? { battleTeams } : {};
+    })(),
+    ...(isTeamSwapCost(system.teamSwapCost) ? { teamSwapCost: system.teamSwapCost } : {}),
     // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
     ...(() => {
       const companions = normalizeCompanionConfig(system.companions);
       return companions ? { companions } : {};
     })(),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
+    ...(typeof system.captureShakesVariableId === "string" && system.captureShakesVariableId.trim() ? { captureShakesVariableId: system.captureShakesVariableId.trim() } : {}),
     // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
     ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
@@ -434,10 +457,14 @@ export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined):
 }
 
 function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
-  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined && policy.expShare === undefined && policy.trainerPrizePerLevel === undefined)) return undefined;
+  const prize = typeof policy.trainerPrizePerLevel === "number" && Number.isFinite(policy.trainerPrizePerLevel) ? Math.max(0, Math.min(9999, Math.trunc(policy.trainerPrizePerLevel))) : 0;
   return {
     participationOnly: policy.participationOnly === true,
     levelGapPenalty: policy.levelGapPenalty === true,
+    // 새 칸은 켰을 때만 저장한다 — 안 쓰는 프로젝트의 저장 바이트는 그대로.
+    ...(policy.expShare === true ? { expShare: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -683,7 +710,9 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.criticalRate) ? { criticalRate: clampInteger(record.criticalRate!, 0, 100) } : {}),
     ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
     ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
+    ...(record.oncePerBattle === true ? { oncePerBattle: true } : {}),
     ...(typeof record.fieldCommonEventId === "string" && record.fieldCommonEventId.trim() ? { fieldCommonEventId: record.fieldCommonEventId.trim() } : {}),
+    ...(record.unforgettable === true ? { unforgettable: true } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
@@ -711,7 +740,20 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
     ...(() => {
       const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
-      return comboActorIds.length >= 2 ? { comboActorIds } : {};
+      if (comboActorIds.length < 2) return {};
+      const comboRequires = Array.isArray(record.comboRequires)
+        ? record.comboRequires.flatMap((entry) => {
+            const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+            const skillId = typeof entry?.skillId === "string" ? entry.skillId.trim() : "";
+            return actorId && skillId && comboActorIds.includes(actorId) ? [{ actorId, skillId }] : [];
+          })
+        : [];
+      return {
+        comboActorIds,
+        ...(comboRequires.length > 0 ? { comboRequires } : {}),
+        ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
+        ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+      };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
       && Number.isFinite(record.area.radius) && record.area.radius > 0
@@ -813,7 +855,42 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
       const grantsCommand = normalizeGrantedCommand(record.grantsCommand);
       return grantsCommand ? { grantsCommand } : {};
     })(),
+    ...(() => {
+      const apGrants = normalizeApGrants(record.apGrants);
+      return apGrants.length > 0 ? { apGrants } : {};
+    })(),
+    ...(typeof record.apRate === "number" && Number.isFinite(record.apRate) && Math.round(record.apRate) !== 100 ? { apRate: clampInteger(record.apRate, 1, 1000) } : {}),
+    ...(() => {
+      const levelUpBonus = normalizeLevelUpBonus(record.levelUpBonus);
+      return levelUpBonus ? { levelUpBonus } : {};
+    })(),
   };
+}
+
+/** 마석 AP 항목: 스킬 id 가 있고 필요 AP 가 양의 정수인 것만, 같은 스킬은 뒤의 것이 이긴다. */
+export function normalizeApGrants(grants: readonly Partial<EquipmentApGrant>[] | undefined): EquipmentApGrant[] {
+  if (!Array.isArray(grants)) return [];
+  const bySkill = new Map<string, number>();
+  for (const grant of grants) {
+    const skillId = cleanOptionalId(grant?.skillId);
+    if (!skillId || typeof grant?.ap !== "number" || !Number.isFinite(grant.ap) || grant.ap <= 0) continue;
+    bySkill.set(skillId, clampInteger(grant.ap, 1, 99999));
+  }
+  return [...bySkill].slice(0, 64).map(([skillId, ap]) => ({ skillId, ap }));
+}
+
+export function normalizeLevelUpBonus(bonus: Partial<EquipmentLevelUpBonus> | undefined): EquipmentLevelUpBonus | undefined {
+  if (!bonus || typeof bonus !== "object") return undefined;
+  const out: EquipmentLevelUpBonus = {};
+  for (const key of ["maxHpPercent", "maxMpPercent"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value > 0) out[key] = clampInteger(value, 1, 100);
+  }
+  for (const key of ["attack", "defense", "mind", "agility"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value !== 0) out[key] = clampInteger(value, -99, 99);
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function normalizeGrantedCommand(command: Partial<ClassBattleCommand> | undefined): ClassBattleCommand | undefined {
@@ -942,6 +1019,10 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
   if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
+  if (effect?.kind === "rage") {
+    const enemyIds = uniqueCleanIds(effect.enemyIds ?? []).slice(0, 24);
+    return enemyIds.length > 0 ? { kind: "rage", enemyIds } : { kind: "rage" };
+  }
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 

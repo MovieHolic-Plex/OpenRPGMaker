@@ -13,10 +13,13 @@ export function monsterKnownMoveEntries(options: StatusMenuDetailOptions, instan
   return (entry.instance.skillIds ?? []).map(id => {
     const skill = options.project.database.skills.find(record => record.id === id);
     const max = skill?.maxPp;
-    return { label: skill?.name ?? id, value: max === undefined ? "PP —" : `PP ${entry.instance.skillPp?.[id] ?? max}/${max}`,
+    // 필드 기술(절단·파도타기 같은 비전머신)은 고르면 바로 쓴다 — 배우 스킬 목록의 필드 능력과 같은 동작.
+    const field = Boolean(skill?.fieldCommonEventId) && Boolean(options.onUseMonsterFieldSkill);
+    return { label: skill?.name ?? id, value: field ? "필드에서 사용" : max === undefined ? "PP —" : `PP ${entry.instance.skillPp?.[id] ?? max}/${max}`,
       description: [monsterTypeLabel(options.project, skill?.elementId ? [skill.elementId] : []),
+        skill?.fieldCommonEventId ? "필드 기술 — Enter 로 바라보는 앞에 쓴다" : "",
         skill ? `위력 ${skill.power} · 성공 ${skill.successRate}%` : "", monsterMoveDescription(options.project, skill?.description)].filter(Boolean).join(" · "),
-      testId: `status-menu-monster-known-skill-${instanceId}-${id}`, onActivate: readOnly };
+      testId: `status-menu-monster-known-skill-${instanceId}-${id}`, onActivate: field ? () => options.onUseMonsterFieldSkill?.(instanceId, id) : readOnly };
   });
 }
 

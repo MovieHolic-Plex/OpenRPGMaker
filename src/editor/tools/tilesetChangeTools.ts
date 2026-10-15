@@ -4,6 +4,7 @@
 // 승인하면 그 계열을 대화 승인 목록(ToolContext.approvedTilesetFamilies)에 넣는다. 실행기 계열 검사는 toolRunner.ts.
 
 import { tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
+import { activeGenreLock, genreLockAllowsTileset, GENRE_LOCK_PRESETS } from "@/project/genreLock";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const ASK_TILESET_CHANGE_TOOL = "ask_tileset_change";
@@ -83,8 +84,11 @@ const askTilesetChange: ToolDefinition = {
       reason,
       purpose,
     };
+    // 장르 잠금 중이면 사용자 승인은 이 계열 한정 허용이지 잠금 해제가 아니다 — 카드·결과에 그 사실을 싣는다.
+    const lockNote = activeGenreLock(project) && !genreLockAllowsTileset(project, toTilesetId)
+      ? ` 이 프로젝트는 장르 잠금(${GENRE_LOCK_PRESETS[activeGenreLock(project)!.lock.preset].label})이 켜져 있어 승인해도 그 계열 한정 허용일 뿐 잠금은 풀리지 않는다.` : "";
     return {
-      summary: "사용자에게 칩셋 계열 변경을 물었다. 답을 기다리며 이 턴을 끝내라(더 칠하지 마라).",
+      summary: `사용자에게 칩셋 계열 변경을 물었다. 답을 기다리며 이 턴을 끝내라(더 칠하지 마라).${lockNote}`,
       data: question,
     };
   },

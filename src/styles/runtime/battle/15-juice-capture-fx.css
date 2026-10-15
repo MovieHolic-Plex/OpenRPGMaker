@@ -101,8 +101,15 @@
   height: 22px;
   width: 22px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #e43b44 0%, #e43b44 44%, #23262b 44%, #23262b 56%, #f6f5f1 56%);
-  border: 3px solid #23262b;
+  /* 독자 디자인의 수정 구슬(원작 몬스터볼을 닮지 않게: 반구 분할·중앙 단추 없음) — 청록 유리 구에 금빛 마름모 문양. */
+  background:
+    linear-gradient(45deg, transparent 42%, #f2d77a 43% 57%, transparent 58%),
+    linear-gradient(-45deg, transparent 42%, #f2d77a 43% 57%, transparent 58%),
+    radial-gradient(circle at 34% 28%, #d8f4ff 0 12%, #4ab0c8 13% 58%, #1c4a68 100%);
+  background-size: 8px 8px, 8px 8px, 100% 100%;
+  background-position: center, center, center;
+  background-repeat: no-repeat;
+  border: 3px solid #1c2c40;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   left: 20%;
   top: 78%;
@@ -117,7 +124,7 @@
   100% { left: var(--orb-to-x); top: var(--orb-to-y); transform: translate(-50%, -50%) rotate(720deg); }
 }
 .battle-orb-shake {
-  animation: battle-orb-rock 420ms ease-in-out 3;
+  animation: battle-orb-rock 420ms ease-in-out 1;
   left: var(--orb-to-x);
   top: var(--orb-to-y);
 }

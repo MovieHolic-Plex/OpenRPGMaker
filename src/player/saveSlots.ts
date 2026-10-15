@@ -145,6 +145,8 @@ export type SaveSnapshot = {
     readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
     readonly variables: Record<string, number>;
     readonly timers: Record<string, number>;
+    /** 흐르던 카운트다운(timerId → true). 없는 옛 세이브는 모두 멈춘 채 불러온다. */
+    readonly timerActive?: Record<string, boolean>;
     readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly itemUseCharges?: Record<string, number>;
@@ -187,6 +189,9 @@ export type SaveSnapshot = {
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
     readonly actorTechPoints?: Record<string, number>;
+    readonly actorApProgress?: PlaySession["actorApProgress"];
+    readonly learnedViaAp?: PlaySession["learnedViaAp"];
+    readonly actorRageEnemyIds?: PlaySession["actorRageEnemyIds"];
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
@@ -397,6 +402,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
+      ...(session.timerActive && Object.values(session.timerActive).some(Boolean) ? { timerActive: structuredClone(session.timerActive) } : {}),
       gold: normalizeEconomyValue(session.gold),
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
@@ -445,6 +451,9 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       ...(session.actorTechPoints && Object.keys(session.actorTechPoints).length > 0 ? { actorTechPoints: structuredClone(session.actorTechPoints) } : {}),
+      ...(session.actorApProgress && Object.keys(session.actorApProgress).length > 0 ? { actorApProgress: structuredClone(session.actorApProgress) } : {}),
+      ...(session.learnedViaAp && Object.keys(session.learnedViaAp).length > 0 ? { learnedViaAp: structuredClone(session.learnedViaAp) } : {}),
+      ...(session.actorRageEnemyIds && Object.keys(session.actorRageEnemyIds).length > 0 ? { actorRageEnemyIds: structuredClone(session.actorRageEnemyIds) } : {}),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
@@ -651,6 +660,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
+  if (snapshot.session.timerActive) session.timerActive = structuredClone(snapshot.session.timerActive);
   session.gold = normalizeEconomyValue(snapshot.session.gold);
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   const normalizedItems = normalizeItemTransitionState({
@@ -717,6 +727,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorTechPoints) session.actorTechPoints = structuredClone(snapshot.session.actorTechPoints);
+  if (snapshot.session.actorApProgress) session.actorApProgress = structuredClone(snapshot.session.actorApProgress);
+  if (snapshot.session.learnedViaAp) session.learnedViaAp = structuredClone(snapshot.session.learnedViaAp);
+  if (snapshot.session.actorRageEnemyIds) session.actorRageEnemyIds = structuredClone(snapshot.session.actorRageEnemyIds);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
@@ -1156,6 +1169,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
+      timerActive: isBooleanRecord(session.timerActive) ? session.timerActive : undefined,
       gold: normalizeEconomyValue(session.gold),
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
@@ -1204,6 +1218,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorTechPoints: isNumberRecord(session.actorTechPoints) ? session.actorTechPoints : undefined,
+      actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
+      learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
+      actorRageEnemyIds: isActorSkillIdsRecord(session.actorRageEnemyIds) ? session.actorRageEnemyIds : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,

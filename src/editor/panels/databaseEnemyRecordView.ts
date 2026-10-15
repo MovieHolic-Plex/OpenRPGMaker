@@ -717,6 +717,10 @@ function rewardFields(record: EnemyRecord): HTMLElement[] {
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, gold } }),
       { min: 0, max: 999999 }
     ),
+    numberField("마석 AP", "db-field-enemy-ap", record.rewards.ap ?? 0, (ap) =>
+      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, ap: ap > 0 ? ap : undefined } }),
+      { min: 0, max: 999999 }
+    ),
     selectField("아이템", "db-picker-enemy-drop", record.rewards.dropItemId ?? "", store.getCurrent().database.items, (dropItemId) =>
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropItemId: emptyToUndefined(dropItemId) } })
     ),

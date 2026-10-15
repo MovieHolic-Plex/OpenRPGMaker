@@ -292,7 +292,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   applyChangeTileStep(step: {
     kind: "changeTile";
     mapId: MapId;
-    layer: "lower" | "upper";
+    layer: import("@/project/types").ChangeTileLayer;
     x: number;
     y: number;
     tile: number;
@@ -316,6 +316,8 @@ export interface PlaySceneContext extends Phaser.Scene {
     battleFlow?: "gauge" | "strict";
     // 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 소유 이벤트). 인카운터/스폰은 없음.
     ownerEventId?: string;
+    // 조우표 levelMin/levelMax 로 굴린 야생 레벨(랜덤 인카운터만).
+    enemyLevel?: number;
   }, isCurrent?: () => boolean): Promise<"victory" | "defeat" | "escape" | null>;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;

@@ -46,6 +46,7 @@ export function skillCombatRuleCard(record: SkillRecord, options: { readonly col
     el('p', { class: 'db-skill-card-note', text: '급소 확률 -1: 기존 배틀러 기본값. 명중률은 효과 카드에서 설정합니다. 대기 턴은 사용한 턴 이후의 완전한 턴 수입니다.' }),
     numberField('급소 배율', 'feature16-critical-multiplier', record.criticalMultiplier ?? 1.35, value => updateDatabaseRecord('skills', record.id, { criticalMultiplier: value }), { min: 1, max: 10, step: 0.05 }),
     numberField('재사용 대기 턴', 'feature16-cooldown', record.cooldownTurns ?? 0, value => updateDatabaseRecord('skills', record.id, { cooldownTurns: value }), { min: 0, max: 99 }),
+    numberField('전투당 1회 (1=한 번만, 0=제한 없음)', 'feature16-once-per-battle', record.oncePerBattle ? 1 : 0, value => updateDatabaseRecord('skills', record.id, { oncePerBattle: value >= 1 ? true : undefined }), { min: 0, max: 1 }),
     numberField('HP 대가 % (최대 HP)', 'feature16-hp-cost', record.hpCostPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { hpCostPercent: value }), { min: 0, max: 100 }),
     numberField('흡수 % (준 피해)', 'feature16-drain', record.drainPercent ?? 0, value => updateDatabaseRecord('skills', record.id, { drainPercent: value }), { min: 0, max: 100 }),
     numberField('게이지 밀기 (-100~100)', 'feature16-gauge-shift', record.gaugeShift ?? 0, value => updateDatabaseRecord('skills', record.id, { gaugeShift: value === 0 ? undefined : value }), { min: -100, max: 100, step: 5 }),

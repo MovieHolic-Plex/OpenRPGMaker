@@ -5,6 +5,7 @@ import { regionReferenceContext } from "@/project/regionReferences";
 //       ④ 자주 쓰는 리소스 시맨틱 요약 ⑤ 게임 스타일 문서 발췌 ⑥ 밸런스 상수.
 // 토큰 예산(문자 수 근사) 상한을 넘으면 조회 툴 안내로 대체한다.
 
+import { genreLockPromptNote } from "@/project/genreLock";
 import { runTool } from "@/editor/tools";
 import { spatialAuthoringContext } from "./spatialContext";
 import type { ToolContext } from "@/editor/tools";
@@ -647,6 +648,9 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   // 그 끈김에 통째 사라진다 — 그러면 모델은 존재하는 기능을 다시 "없다"고 오보한다.
   const budget = options.budgetChars ?? DEFAULT_BUDGET_CHARS;
   const sections: string[] = [INTRO, summarySection(project), BALANCE_NOTE, RESOURCE_HINT];
+  // 장르 잠금(옵트인): 허용 계열 밖 칩셋은 쓰지 않는다는 한 덩어리. 잠금이 없으면 섹션이 없다(프롬프트 불변).
+  const genreLock = genreLockPromptNote(project);
+  if (genreLock) sections.push(genreLock);
   const currentMapId = resolveContextMapId(options);
   const tileSemantics = tileSemanticsSection(project);
   if (tileSemantics) sections.push(tileSemantics);

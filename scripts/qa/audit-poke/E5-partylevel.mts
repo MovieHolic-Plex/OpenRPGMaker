@@ -1,0 +1,12 @@
+import { readFileSync } from "node:fs";
+import { deserialize } from "@/project/io/serialize";
+import { startSession } from "@/project/session";
+import { giveMonster } from "@/project/monsterCollection";
+import { partyEncounterLevel, eligibleEncounterEntries } from "@/player/encounters";
+const project: any = deserialize(readFileSync("qa-runs/audit-poke/A1-base.json", "utf8"));
+const s: any = startSession(project, 3);
+giveMonster(project, s, { speciesId: project.database.monsterSpecies[0].id, level: 40 });
+console.log("lead monster level 40; partyEncounterLevel(session) =", partyEncounterLevel(s), "partyActorIds", JSON.stringify(s.partyActorIds), "actorLevels", JSON.stringify(s.actorLevels));
+const map: any = structuredClone(project.maps.mx_map_meadow);
+map.encounterTable = [{ troopId: map.encounterTable[0].troopId, weight: 1, conditions: { minPartyLevel: 30 } }];
+console.log("entry requires minPartyLevel 30 -> eligible:", eligibleEncounterEntries(map, { ...s, switches: {} }, { x: 5, y: 10 }).length > 0);
