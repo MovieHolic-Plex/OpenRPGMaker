@@ -14,7 +14,7 @@ const VEHICLE_HINT = {
   cart: "레일 칸(칸 이름 선로·레일·궤도)에 세우거나 지형의 vehiclePassage.cart 를 켜라 — 레일 타일이 칩셋에 없으면 업로드·타일 이름표로 붙여야 한다.",
   airship: "",
 } as const;
-const ALLOWED_KEYS = ["vehicle", "mapId", "x", "y", "characterIndex"] as const;
+const ALLOWED_KEYS = ["vehicle", "mapId", "x", "y", "characterIndex", "flightView"] as const;
 
 const placeVehicle: ToolDefinition = {
   name: "place_vehicle",
@@ -25,6 +25,7 @@ const placeVehicle: ToolDefinition = {
     + " 초코보 = 걸을 수 있는 칸 + 숲(걸을 수 없는 숲 포함)을 지나고 물·산은 못 간다(걸음 두 배). 광산 수레 = 칸 이름에 선로·레일·궤도가 있는 레일 칸(또는 vehiclePassage.cart)에서만 달린다(걸음 두 배)."
     + " 비행선은 벽·물을 넘어 날고 걸을 수 있는 칸에 내려앉는다(지형 기록이 있으면 airshipLand 를 따른다)."
     + " 월드맵 키트 지도는 지형 태그가 이미 붙어 있다(바다 boat·ship, 강 boat·raft, 숲 chocobo). 물 타일에 태그가 없으면 set_tile_rules 의 terrainTag 로 지형 레코드 번호(1부터)를 준다."
+    + " 비행선에는 flightView:\"mode7\" 로 FF6식 비행 시점(타는 동안 멀리 보기 + 지평선 원근)을 켤 수 있다 — 생략하면 기존 탑뷰 그대로."
     + " characterIndex 는 그림 칸(기본 boat 0·ship 1·airship 2 = Vehicles 시트, 초코보 5 = Animal 시트의 말, 광산 수레 5(임시: 무한궤도 차)·뗏목 0 = Vehicles 시트). 전용 수레·초코보 도트가 생기면 칸만 바꾸면 된다.",
   mode: "write",
   parameters: {
@@ -34,6 +35,7 @@ const placeVehicle: ToolDefinition = {
       mapId: { type: "string" },
       x: { type: "integer" },
       y: { type: "integer" },
+      flightView: { type: "string", enum: ["mode7", "flat"], description: "비행선 전용 시점. mode7 = 타는 동안 멀리 보기 + 지평선 원근 필터(WebGL 에서만, 캔버스는 멀리 보기만). flat 또는 생략 = 기존 탑뷰(다시 호출해 생략하면 앞서 정한 값을 유지, flat 이면 해제). 비행선이 아니면 무시하고 경고한다. 알려진 한계: 비행선·주인공 스프라이트가 원근으로 약간 납작해 보인다." },
       characterIndex: { type: "integer", minimum: 0, maximum: 7, description: "탈것 그림 칸(0~7; 초코보는 Animal 시트, 나머지는 Vehicles 시트). 생략 시 종류별 기본값" },
     },
     required: ["vehicle", "mapId", "x", "y"],
@@ -58,11 +60,18 @@ const placeVehicle: ToolDefinition = {
     if (!Number.isInteger(characterIndex) || (characterIndex as number) < 0 || (characterIndex as number) > 7) {
       throw new ToolError("characterIndex 는 0~7 정수여야 합니다.", { code: "invalid-args" });
     }
-    const next: VehicleConfig = { id, characterIndex: characterIndex as number, mapId: map.id, x, y };
+    if (args.flightView !== undefined && args.flightView !== "mode7" && args.flightView !== "flat") {
+      throw new ToolError("flightView 는 mode7 | flat 중 하나여야 합니다 — 생략하면 기존 탑뷰(또는 앞서 정한 값)를 유지합니다.", { code: "invalid-args" });
+    }
+    const previousView = (draft.system.vehicles ?? []).find((entry) => entry.id === id)?.flightView;
+    const flightView = id === "airship" ? (args.flightView === undefined ? previousView : args.flightView === "mode7" ? ("mode7" as const) : undefined) : undefined;
+    const next: VehicleConfig = { id, characterIndex: characterIndex as number, mapId: map.id, x, y, ...(flightView ? { flightView } : {}) };
     const vehicles = (draft.system.vehicles ?? []).filter((entry) => entry.id !== id);
     const moved = vehicles.length !== (draft.system.vehicles ?? []).length;
     draft.system.vehicles = [...vehicles, next];
     const warnings: string[] = [];
+    if (args.flightView !== undefined && id !== "airship") warnings.push(`flightView 는 비행선(airship) 전용이라 ${VEHICLE_LABEL[id]} 에는 적용되지 않는다(무시).`);
+    if (flightView === "mode7") warnings.push("비행 시점 mode7 은 WebGL 에서만 원근이 그려진다(캔버스 렌더러는 멀리 보기만). 비행선·주인공 그림이 원근으로 약간 납작해 보이는 것은 알려진 한계다.");
     if (id === "airship") {
       if (!airshipCanLand(draft, map, x, y)) warnings.push(`(${x},${y}) 는 비행선 착륙 지형이 아니다 — 여기서 타면 같은 자리에 다시 내릴 수 없다.`);
     } else if (!vehicleCanEnter(draft, map, id, x, y)) {

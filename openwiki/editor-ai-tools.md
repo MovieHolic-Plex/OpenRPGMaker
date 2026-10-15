@@ -3226,6 +3226,16 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
 
+## 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
+
+- `author_stage_performance {mapId, eventId?, x?, y?, trigger?: action|auto, once?, skippable?, letterbox?, curtainRise?, leaveDark?, acts:[…]}` (`src/editor/tools/stagePerformanceTools.ts`, 도메인 event, 라벨 「무대 공연 짜기」).
+  오페라·콘서트·연극 한 장면을 막(act) 목록으로 받아 시각표를 코드가 계산하고 `script_cutscene` 비트로 컴파일해 그 검증·커밋 경로를 그대로 지난다(새 그림·새 소리 없음).
+- 막 종류: `backdrop`(먼 배경 리소스 전환·분위기 색 tint "R,G,B,알파") · `curtain`(close/open) · `spotlight`(주변 어둡게 + 인물 잔상·반짝임, on:false 로 끔) · `lyric`(가사 자막 — `container:"corner"` 비차단 자막을 줄마다 `ms` 만큼 기다림;
+  자막 수명 = 코너 대사 공식 `min(7000, max(2200, 1600+글자×90))`, 더 길게 잡으면 빈 화면 경고) · `chorus`(2~3명 `voices` 가 `staggerMs` 간격으로 겹쳐 뜸 — 화면 구석 자막은 3줄까지만 쌓여 4명은 거절) ·
+  `cue`(파티클 8종·flash·shake) · `music`(이미 있는 BGM/SE 리소스) · `pause`.
+- 모르는 인자는 최상위·막·줄·목소리 모두 거절한다. 결과 `data.timeline` 에 막별 시작·끝 ms. 화면 색조는 컷신이 끝나도 남으므로 막을 닫거나 색을 입힌 채 끝나면 도구가 끝에 0.7초 페이드로 되돌린다(`leaveDark:true` 면 그대로 — 맵 이동으로 이어 붙일 때).
+- 시험: `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — 시작하자마자 도는 공연, 합창 두 줄이 동시에 코너 자막으로 쌓이고 끝나면 어두운 화면이 남지 않는다.
+
 ## `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
 
 포켓몬식 「절단·괴력·파도타기·플래시·폭포 오르기」 를 한 호출로(`fieldObstacleTools.ts`, 이벤트 도메인). 새 런타임 개념이 아니라 #2602 의 `partyKnowsSkill` 조건 + 스킬 `fieldCommonEventId` + `changeTile` 의 조립이다.
@@ -3253,4 +3263,13 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `upsert_troop.teamSwapCost` — 그 적 그룹만 비용을 덮어쓴다(`null` 로 되돌림).
 - 능력 색인 `battle-teams`(read → write → `simulate_battle`/`run_lint`). 동시 전투는 지원하지 않는다고 정책에 못 박았다 — 약속하지 말 것. 편집기: 시스템 탭 「팀 교대 전투」 카드, 적 그룹 「팀 교대 비용」.
 - 계약 문서는 `runtime-battle.md` 「팀 교대 전투」. 새 도구는 없다(기존 도구 확장) — 라벨·의도 선언 변경 없음.
+
+## 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
+
+- `place_vehicle {vehicle:"airship", …, flightView?: "mode7"|"flat"}` → `system.vehicles[비행선].flightView`(선택). **생략 = 기존 탑뷰와 바이트까지 같다**(필드가 저장되지 않는다). 비행선 외 탈것에 주면 무시하고 경고한다. 모르는 인자·값은 거절.
+- 런타임 `src/player/playSceneMode7.ts` 한 파일(+ `PlayScene.update` 에서 `updateMode7(this, deltaMs)` 한 줄; `playSceneScreenDistortion.ts` 는 건드리지 않았다). 비행선을 타고 mode7 일 때만 카메라를 0.5배로 멀리 빼고
+  WebGL 카메라 필터 `OprnMode7` 이 지평선(화면 위 20%) 아래 땅을 원근으로 눕히고 위는 하늘색으로 채운다(북쪽이 항상 위, 지도 회전 없음). 내리면 필터를 떼고 `applyStoredCameraState` 로 저작 배율을 되돌린다.
+- 캔버스(비 WebGL) 렌더러: 멀리 보기만, 콘솔 경고 한 번. 비용 분기: 켠 뒤 90프레임 평균이 평소(지수 이동 평균)의 1.8배(최소 34ms)를 넘으면 필터를 끄고 멀리 보기만 남긴다.
+- **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
+- 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
 

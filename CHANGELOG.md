@@ -5,6 +5,34 @@
 
 <!-- releases -->
 
+## 0.232.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — 얇은 소품 기준 보강 + 새 정상 35장 재측정 (프로필 e48906a, 여전히 rejected) (#2647) (`cb3af82`)
+
+## 0.231.0 — 2026-10-16
+
+### 기능
+
+- **mode7** — 비행선 flightView opt-in 의사 Mode7 비행 시점 (FF6 audit #31) (#2634) (`2165301`)
+- **cutscene** — author_stage_performance — opera/stage acts compiled to cutscene beats (FF6 audit #31) (#2614) (`ad0a2f8`)
+- **world** — derive_world_variant, world entrance links, world terrain tags and terrain encounter conditions (#2604) (`0b73ced`)
+
+### 수정
+
+- **object-gate** — 굽기 스크립트의 관문 우회 길 제거 (#2644) (`f6f513a`)
+
+## 0.230.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — rules v7 — 3/4 half passes calibration data, profile still rejected (style half) (#2642) (`072de5c`)
+
+### 수정
+
+- **stamp-place** — 바로 깔기 — 물건은 칩셋 그림을 이름으로 찾고, 없으면 깔지 않는다 (적대적 리뷰 + 코퍼스 가드) (#2643) (`39432bc`)
+
 ## 0.229.1 — 2026-10-15
 
 ### 성능

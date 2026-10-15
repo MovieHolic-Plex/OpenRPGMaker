@@ -4,7 +4,7 @@
  * 판정 규칙은 이 숫자를 직접 읽지 않는다 — 판정자가 읽고 답한다(통과 근거는 여전히 판정자의 답 + rules.ts 규칙).
  * FACTS_VERSION 은 프로필 해시에 들어간다(알고리즘을 바꾸면 올린다).
  */
-export const FACTS_VERSION = 1;
+export const FACTS_VERSION = 2;
 
 type Img = { width: number; height: number; data: Uint8Array };
 const lum = (r: number, g: number, b: number) => Math.round(0.299 * r + 0.587 * g + 0.114 * b);
@@ -70,3 +70,12 @@ export function styleFacts({ width, height, data }: Img): StyleFacts {
 }
 
 export const factsLine = (name: string, f: StyleFacts) => `${name}: median distinct colours per full 16x16 tile=${f.tileColorsMedian}, 5x5 flat-fill coverage=${Math.round(f.flatFill * 100)}%, near-neutral share of dark edge pixels=${Math.round(f.neutralEdge * 100)}%, distinct colours=${f.distinctColors}`;
+
+/** 행마다 불투명 화소 수(실루엣 폭)를 같은 폭끼리 묶은 표 — 타원 뚜껑·기둥 머리가 「넓어졌다 좁아지는지」를 판정자가 글자로 읽게 한다. */
+export function widthProfile({ width, height, data }: Img): string {
+  const ws: number[] = [];
+  for (let y = 0; y < height; y++) { let n = 0; for (let x = 0; x < width; x++) if (data[(y * width + x) * 4 + 3]! >= 128) n++; ws.push(n); }
+  const runs: string[] = []; let s = 0;
+  for (let y = 1; y <= height; y++) if (y === height || ws[y] !== ws[s]) { runs.push(y - 1 === s ? `${s}:${ws[s]}` : `${s}-${y - 1}:${ws[s]}`); s = y; }
+  return `SILHOUETTE WIDTH BY ROW (opaque pixels per source row, equal neighbours merged; "rows:width"): ${runs.join(' | ')}`;
+}
