@@ -129,6 +129,8 @@ export type MonsterInstance = {
   /** Learned moves awaiting a replace-or-reject choice when the active set is full. */
   readonly pendingSkillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
+  /** 지니고 있는 도구(heldEffect 가 있는 아이템 id). 생략 = 없음. 열매는 전투에서 쓰면 비워진다. */
+  readonly heldItemId?: string;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;
 };

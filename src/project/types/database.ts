@@ -498,6 +498,25 @@ export interface ItemRecord {
   farmTool?: FarmTool;
   captureProfile?: ItemCaptureProfile;
   careProfile?: ItemCareProfile;
+  /** 지닌 도구 효과(선택). 있으면 몬스터 파티 게임에서 파티 몬스터에게 지니게 할 수 있다(gen1 전투에서 적용). 생략 = 일반 아이템. */
+  heldEffect?: HeldItemEffect;
+}
+
+export type HeldItemEffectKind = "healBelow" | "cureStatus" | "boostType" | "endureOnce" | "regen";
+export type HeldItemStatus = "poison" | "burn" | "sleep" | "freeze" | "paralysis" | "any";
+
+/**
+ * 지닌 도구 효과(선언형). healBelow{thresholdPercent=50,healPercent,healFlat?} · cureStatus{status} ·
+ * boostType{type,percent 101~200} · endureOnce · regen{percent 1~25}. healBelow/cureStatus/endureOnce 는 쓰면 사라진다.
+ */
+export interface HeldItemEffect {
+  kind: HeldItemEffectKind;
+  thresholdPercent?: number;
+  healPercent?: number;
+  healFlat?: number;
+  status?: HeldItemStatus;
+  type?: string;
+  percent?: number;
 }
 
 export interface ItemCaptureProfile {

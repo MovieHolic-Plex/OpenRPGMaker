@@ -8,6 +8,7 @@ import { isItemActorEligible } from "@/project/itemEligibility";
 import { applyMonsterMedicine, machineSkillOf, previewMonsterMachine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
 import { teachMonsterSkill } from "@/project/monsterCollection";
 import { actorOwnedSkillIds } from "@/project/growth/runtime";
+import { giveHeldItem } from "@/project/monsterHeldItems";
 export { machineSkillOf, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
 
 export type MenuItemUseResult =
@@ -65,6 +66,12 @@ export function useItemFromMenu(
 
   if (item.careProfile) {
     return useCareItem(project, session, item, targetMonsterInstanceId);
+  }
+
+  // 지닌 도구: 사용이 아니라 «쥐여 주기» — 수량은 몬스터에게 옮겨 가고 전투에서 발동한다.
+  if (item.heldEffect) {
+    const given = giveHeldItem(project, session, item.id, targetMonsterInstanceId);
+    return given.kind === "done" ? { kind: "used", message: given.message } : given;
   }
 
   if (targetsPartyMonsters(project, item)) {

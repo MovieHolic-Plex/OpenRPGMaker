@@ -257,6 +257,31 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         hint: "사용할 대상을 선택하세요.",
       };
     }
+    if (item.heldEffect) {
+      // 지닌 도구 — 몬스터마다 지금 지닌 도구를 보이고, 고르면 쥐여 준다(이미 지닌 도구는 가방으로 돌아온다).
+      const heldName = (id: string | undefined) => (id ? project.database.items.find((record) => record.id === id)?.name : undefined);
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — 지닐 몬스터 선택`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const current = heldName(instance.heldItemId);
+          const same = instance.heldItemId === item.id;
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: current ? `지닌 도구: ${current}` : "지닌 도구 없음",
+            description: same ? "이미 이 도구를 지니고 있습니다" : current ? `${current}을(를) 가방에 돌려주고 ${item.name}을(를) 쥐여 줍니다` : `${item.name}을(를) 쥐여 줍니다`,
+            disabled: same,
+            unavailableReason: same ? "이미 이 도구를 지니고 있습니다" : undefined,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterHeldItemTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 쥐여 주기 · Esc 아이템 목록",
+      };
+    }
     const machineSkillId = machineSkillOf(project, item);
     if (machineSkillId) {
       // 기술머신·비전머신 — 몬스터마다 「배울 수 있음 / 이미 익힘 / 못 배움」을 미리 보인다.
@@ -344,7 +369,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
-    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
       && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);

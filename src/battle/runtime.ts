@@ -22,6 +22,14 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import {
+  heldBoostPercent,
+  heldCuresStatus,
+  heldEffectOfItem,
+  heldEndureDamage,
+  heldHealAmount,
+  heldRegenAmount,
+} from "@/battle/heldItems";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -799,6 +807,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         stateId: status?.stateId,
       });
     }
+    applyHeldRegen(battler);
+    triggerHeldItem(battler);
   }
 
   function gen1ModifiedStat(
@@ -817,6 +827,56 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ? attackMultiplierForStates(options.project, withoutBurn)
       : defenseMultiplierForStates(options.project, battler);
     return Math.max(1, Math.trunc(value * multiplier));
+  }
+
+  /** 기술 결과 뒤에 흘리는 지닌 도구 줄(버티기). */
+  const heldNotes: { message: string }[] = [];
+
+  function consumeHeldItem(battler: MutableBattler): void {
+    delete battler.heldItemId;
+  }
+
+  function flushHeldNotes(user: MutableBattler, target: MutableBattler): void {
+    while (heldNotes.length > 0) recordSpecial(user, target, heldNotes.shift()!.message);
+  }
+
+  /**
+   * 지닌 도구가 발동할 차례인지 본다: 열매(HP 가 문턱 이하면 회복, 주요 상태가 맞으면 치료). 쓰면 사라진다.
+   * 기술 하나가 끝난 뒤와 차례 말 잔여 피해 뒤에 부른다.
+   */
+  function triggerHeldItem(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const item = options.project.database.items.find((record) => record.id === holder.heldItemId);
+    const effect = item?.heldEffect;
+    if (!item || !effect) return;
+    const heal = heldHealAmount(effect, holder.hp, holder.maxHp);
+    if (heal > 0) {
+      consumeHeldItem(holder);
+      holder.hp = Math.min(holder.maxHp, holder.hp + heal);
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${item.name}을(를) 먹고 체력을 회복했다!`);
+      recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+      return;
+    }
+    const status = gen1MajorStatusOf(holder);
+    if (status && heldCuresStatus(effect, status.kind)) {
+      consumeHeldItem(holder);
+      holder.stateIds = holder.stateIds.filter((stateId) => stateId !== status.stateId);
+      delete holder.stateTurns[status.stateId];
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${item.name}을(를) 먹고 상태이상이 나았다!`);
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(holder), targetId: holder.id, stateId: status.stateId, reason: "effect" });
+    }
+  }
+
+  /** 매 차례 회복 도구(먹다 남은 음식 같은): 차례 말 잔여 피해 뒤에 조금씩 회복한다. 사라지지 않는다. */
+  function applyHeldRegen(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const effect = heldEffectOfItem(options.project, holder.heldItemId);
+    const heal = heldRegenAmount(effect, holder.hp, holder.maxHp);
+    if (heal <= 0) return;
+    const name = options.project.database.items.find((record) => record.id === holder.heldItemId)?.name ?? "도구";
+    holder.hp += heal;
+    recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${name} 덕분에 체력을 회복했다!`);
+    recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
   }
 
   function gen1BaseSpeed(battler: MutableBattler): number {
@@ -884,7 +944,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
-    target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
+    // 지닌 도구: 같은 타입 강화 → 피해 배율, 버티기 도구 → 가득 찬 HP 에서 쓰러질 피해를 HP 1 로(쓰면 사라진다).
+    const heldBoost = heldBoostPercent(heldEffectOfItem(options.project, user.heldItemId), move.elementId);
+    let dealt = formationDamage(Math.round((heldBoost === 100 ? resolved.damage : Math.max(resolved.damage > 0 ? 1 : 0, Math.floor(resolved.damage * heldBoost / 100))) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
+    if (resource === "hp") {
+      const endured = heldEndureDamage(heldEffectOfItem(options.project, target.heldItemId), before, target.maxHp, dealt);
+      if (endured.endured) {
+        const itemName = options.project.database.items.find((item) => item.id === target.heldItemId)?.name ?? "도구";
+        dealt = endured.damage;
+        consumeHeldItem(target);
+        heldNotes.push({ message: `${withJosa(target.name, "은/는")} ${itemName} 덕분에 버텼다!` });
+      }
+    }
+    target[resource] = Math.max(0, before - dealt);
     return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
@@ -4082,6 +4154,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }
+    flushHeldNotes(user, target);
+    triggerHeldItem(target);
+    if (user !== target) triggerHeldItem(user);
   }
 
   function defrostTargetWithGen1FireMove(

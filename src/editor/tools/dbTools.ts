@@ -2,6 +2,7 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
+import { HELD_ITEM_KINDS, HELD_ITEM_STATUSES } from "@/battle/heldItems";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
@@ -522,6 +523,16 @@ const stateRuntimeEffectsSchema = objectSchema({
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
 });
 
+const heldEffectSchema = objectSchema({
+  kind: { type: "string", enum: [...HELD_ITEM_KINDS], description: "healBelow=HP 가 thresholdPercent% 이하가 되면 먹고 회복(1회용) · cureStatus=주요 상태이상이 되면 먹고 치료(1회용) · boostType=같은 type 기술 피해 percent% · endureOnce=가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀(1회용) · regen=매 차례 말 최대 HP 의 percent% 회복" },
+  thresholdPercent: integerSchema("healBelow: 1~100(기본 50)"),
+  healPercent: integerSchema("healBelow: 최대 HP 의 이 %(0~100, 기본 30)"),
+  healFlat: integerSchema("healBelow: 고정 회복량(0~999)"),
+  status: { type: "string", enum: [...HELD_ITEM_STATUSES], description: "cureStatus: 고칠 상태(기본 any)" },
+  type: stringSchema("boostType 필수. system.typeChart.types 값"),
+  percent: integerSchema("boostType 101~200(기본 120) · regen 1~25(기본 6)"),
+}, "지닌 도구 효과(포켓몬식). 파티 몬스터가 지니고 전투에서 발동한다. gen1 전투 모델에서만 작동. 이 필드를 주면 플레이어가 메뉴의 「도구」에서 몬스터에게 지닐 수 있다.");
+
 const itemRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
@@ -554,6 +565,7 @@ const itemRecordSchema = objectSchema({
   equipmentProfile: itemEquipmentProfileSchema,
   farmTool: { type: "string", enum: ["hoe", "wateringCan"] },
   captureProfile: captureProfileSchema,
+  heldEffect: heldEffectSchema,
 }) as RecordSchema;
 
 const enemyRecordSchema = objectSchema({
@@ -1109,6 +1121,22 @@ function resolveIconResourceId(project: Project, record: { iconResourceId?: stri
   );
 }
 
+/** heldEffect 를 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 거절한다. 조용히 효과 없는 도구가 되지 않게. */
+function validateItemHeldEffect(draft: Project, raw: unknown, record: ItemRecord): string | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const code = "invalid-held-effect";
+  if (!record.heldEffect) {
+    throw new ToolError(`heldEffect 가 올바르지 않아 저장하지 않았습니다 — kind(${HELD_ITEM_KINDS.join("|")}) 가 필요하고, boostType 은 type(system.typeChart.types) 도 필요합니다. cureStatus 의 status 는 ${HELD_ITEM_STATUSES.join("|")}.`, { code });
+  }
+  const types = draft.system.typeChart?.types ?? [];
+  if (record.heldEffect.type && types.length > 0 && !types.includes(record.heldEffect.type)) {
+    throw new ToolError(`heldEffect.type '${record.heldEffect.type}' 는 타입 상성표에 없습니다 — 허용: ${types.join(", ")}`, { code });
+  }
+  return draft.system.battleModel === "gen1"
+    ? undefined
+    : `지닌 도구는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`;
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1133,6 +1161,8 @@ const upsertItem: ToolDefinition = {
     const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
+    const heldWarning = validateItemHeldEffect(draft, (merged as { heldEffect?: unknown }).heldEffect, record);
+    if (heldWarning) warnings.push(heldWarning);
     coerceSwitchItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);
