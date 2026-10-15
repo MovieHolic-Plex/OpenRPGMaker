@@ -136,7 +136,7 @@ def components(im):
     return sorted(sizes, reverse=True)
 
 
-def check_and_normalize(im, baseline, hmin=36, hmax=60):
+def check_and_normalize(im, baseline, hmin=36, hmax=60, maxcolors=18, fixed_shift=None):
     """(정규화한 이미지, 이동량, 오류[], 경고[])."""
     errs, warns = [], []
     bbox = im.getbbox()
@@ -148,7 +148,7 @@ def check_and_normalize(im, baseline, hmin=36, hmax=60):
     if w > 60: errs.append('그림 너비 %d칸은 너무 넓다(최대 60)' % w)
     cols = len({c for c in pixels(im) if c[3]})
     opaque = sum(1 for c in pixels(im) if c[3])
-    if cols > 18: errs.append('사용 색 %d개(최대 18)' % cols)
+    if cols > maxcolors: errs.append('사용 색 %d개(최대 %d)' % (cols, maxcolors))
     ratio = opaque / (im.width * im.height)
     if ratio < 0.12: errs.append('불투명 화소 비율 %.0f%% 너무 적다' % (ratio * 100))
     comp = components(im)
@@ -158,6 +158,7 @@ def check_and_normalize(im, baseline, hmin=36, hmax=60):
     feet_cx = (fx[0] + fx[2]) / 2 if fx else (x0 + x1) / 2
     dy = baseline + 1 - y1
     dx = int(round(im.width / 2 - feet_cx))
+    if fixed_shift is not None: dx, dy = fixed_shift
     if abs(dx) > 12 or abs(dy) > 12: errs.append('발 위치가 기준에서 너무 멀다(dx=%d dy=%d)' % (dx, dy))
     if errs: return im, (dx, dy), errs, warns
     out = Image.new('RGBA', im.size, (0, 0, 0, 0)); out.alpha_composite(im, (dx, dy))
@@ -360,6 +361,193 @@ def make_throw(cdir, role, spec, meta):
     return state
 
 
+# ---------- 편집 방식(p2~): Actor1 24x32 프레임을 국소 편집 ----------
+
+def grid_to_rgb(rows, pal):
+    return [[(pal[ch] + (255,)) if ch != '.' else (0, 0, 0, 0) for ch in r] for r in rows]
+
+
+def changed_ratio(src_rgb, new_rgb):
+    n = c = 0
+    for ra, rb in zip(src_rgb, new_rgb):
+        for a, b in zip(ra, rb):
+            if a[3] or b[3]:
+                n += 1
+                if a != b: c += 1
+    return (c / n if n else 0.0), c, n
+
+
+def edit_prompt(role, spec, letter, inten, srows, spal, base_grid_note, extra=''):
+    ed = seed()['edit_mode']
+    vname = '앞모습' if spec['view'] == 'front' else '뒷모습'
+    pal_lines = '\n'.join('  %s = %s' % (k, v) for k, v in spal.items())
+    return f"""@source_8x.png 는 RPG 도트 캐릭터 Actor1 의 {vname} 가운데 걸음 프레임(원본 24x32, 8배 확대)이다. 아래 ASCII 가 같은 프레임의 정확한 원본 격자다.
+{NO_GEN}
+
+[과제] 새로 그리지 마라. 이 프레임을 **국소 편집**해 '{spec['label']}' 로 만든다. 실루엣·윤곽 색·명암 톤·팔레트 구조·얼굴 위치와 크기를 원본 그대로 유지하고, 아래 지시한 칸만 바꾼다.
+편집 지시: {spec['edit']}
+이번 후보({letter})의 변경 강도: {inten['label']} — {inten['how']}
+규칙: 바꾸지 않은 칸은 원본과 같은 글자(같은 색)여야 한다. 원본 대비 바뀐 칸이 전체(불투명 칸 기준)의 {int(ed['max_changed_ratio'] * 100)}% 를 넘으면 검사에서 거절된다. 윗/왼쪽 빛, 재질당 같은 명암 단계 수를 지켜 색만 갈아 끼우듯 다룬다(어두운 단계는 어두운 단계로 대응). 새 색은 8개까지, 새 글자(원본에 없는 글자)로 palette.json 에 추가한다.
+원작 포켓몬 캐릭터 닮은꼴 금지. 몬스터볼 모양 금지.
+
+[원본 격자 24x32] ('.'=투명, 32줄 x 24글자)
+{chr(10).join(srows)}
+[원본 팔레트]
+{pal_lines}
+
+[산출물] 현재 폴더에 두 파일을 쓴다.
+1. grid.txt — 정확히 32줄, 각 줄 정확히 24글자(원본과 같은 크기). 전체 격자를 다시 쓴다.
+2. palette.json — {{"글자": "#rrggbb", ...}} (사용한 모든 글자, '.' 제외. 원본 글자의 색을 바꿔 쓰면 그 글자의 새 색으로 적는다).
+쓴 뒤 grid.txt 를 PNG(preview.png, 8배)로 굽는 확인용 스크립트로 직접 열어 보고 원본과 나란히 비교하라. 윤곽이 끊기거나 원본과 다른 칸이 의도보다 많으면 고쳐 grid.txt 를 다시 써라. 끝나면 'done' 한 단어만 답하라.
+{extra}"""
+
+
+def scale_and_place(im, factor, baseline, fixed_shift=None, maxcolors=40):
+    big = im.resize((im.width * factor, im.height * factor), Image.NEAREST)
+    canvas = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
+    canvas.alpha_composite(big, ((64 - big.width) // 2, 0))
+    return check_and_normalize(canvas, baseline, hmin=20, hmax=64, maxcolors=maxcolors, fixed_shift=fixed_shift)
+
+
+def validate_edit(cdir, src_rgb, size=(24, 32), max_ratio=0.40):
+    ld, errs = load_grid_n(os.path.join(cdir, 'grid.txt'), os.path.join(cdir, 'palette.json'), size)
+    if not ld: return None, None, errs
+    rows, pal = ld
+    ratio, c, n = changed_ratio(src_rgb, grid_to_rgb(rows, pal))
+    if ratio > max_ratio: errs.append('원본 대비 변경 셀 %.0f%% (최대 %d%%) — 지시한 칸만 바꿔라' % (ratio * 100, max_ratio * 100))
+    if ratio < 0.01: errs.append('원본과 거의 같다(변경 %.1f%%) — 지시한 편집이 보이지 않는다' % (ratio * 100))
+    return (rows, pal), {'ratio': round(ratio, 4), 'changed': c, 'cells': n}, errs
+
+
+def load_grid_n(grid_path, pal_path, size):
+    w, h = size; errs = []
+    try:
+        rows = [ln.rstrip('\n') for ln in open(grid_path, encoding='utf-8')]
+    except FileNotFoundError:
+        return None, ['grid.txt 가 없다']
+    while rows and rows[-1] == '': rows.pop()
+    try:
+        pal = {k: parse_hex(v) for k, v in json.load(open(pal_path)).items() if k != '.'}
+    except Exception as e:
+        return None, ['palette.json 읽기 실패: %s' % e]
+    if len(rows) != h: errs.append('줄 수 %d (%d 여야 함)' % (len(rows), h))
+    bad = [i for i, r in enumerate(rows) if len(r) != w]
+    if bad: errs.append('길이가 %d 가 아닌 줄: %s' % (w, bad[:10]))
+    unk = sorted({ch for r in rows for ch in r if ch != '.' and ch not in pal})
+    if unk: errs.append('팔레트에 없는 글자: %s' % ''.join(unk))
+    if errs: return None, errs
+    return (rows, pal), []
+
+
+def make_edit_candidate(plate, role, letter, throw=True):
+    s = seed(); spec = s['roles'][role]; view = spec['view']; ed = s['edit_mode']
+    cdir = os.path.join(RUNS, plate, role, letter); os.makedirs(cdir, exist_ok=True)
+    meta_path = os.path.join(cdir, 'meta.json'); meta = read_json(meta_path, {})
+    if meta.get('status') == 'ok' and (view == 'front' or meta.get('throw', {}).get('status') in ('ok', 'skipped')):
+        return meta
+    meta.update({'role': role, 'letter': letter, 'view': view, 'model': MODEL, 'mode': 'edit', 'started': now()})
+    src = source_frame(spec['source'], view)
+    srows, spal = ascii_of(src)
+    src_rgb = grid_to_rgb(srows, {k: parse_hex(v) for k, v in spal.items()})
+    enlarged(src, 8, os.path.join(cdir, 'source_8x.png'))
+    src.save(os.path.join(cdir, 'source.png'))
+    write_json(os.path.join(cdir, 'source.json'), {'block': spec['source'], 'view': view, 'frame': 1, 'rows': srows, 'palette': spal})
+    inten = ed['intensity'][letter]
+    fb = ''
+    if meta.get('status') != 'ok':
+        meta['attempts'] = meta.get('attempts', [])
+        for n in range(len(meta['attempts']) + 1, MAX_ATTEMPTS + 1):
+            if not fb:
+                for f in ('grid.txt', 'palette.json'):
+                    try: os.remove(os.path.join(cdir, f))
+                    except FileNotFoundError: pass
+            code = run_agy(cdir, edit_prompt(role, spec, letter, inten, srows, spal, '', fb), 'try%d' % n)
+            rec = {'n': n, 'agy_exit': code, 'at': now()}
+            ld, st, errs = validate_edit(cdir, src_rgb, max_ratio=ed['max_changed_ratio'])
+            if ld:
+                small = render(*ld)
+                norm, shift, e2, warns = scale_and_place(small, ed['scale'], s['baseline'], maxcolors=len(spal) + 8)
+                errs += e2; rec.update({'warnings': warns, 'shift': shift, 'edit': st})
+                if not errs:
+                    small.save(os.path.join(cdir, 'edited_native.png'))
+                    norm.save(os.path.join(cdir, 'sprite.png')); enlarged(norm, 8, os.path.join(cdir, 'sprite_8x.png'))
+                    shutil.copy(os.path.join(cdir, 'grid.txt'), os.path.join(cdir, 'grid.final.txt'))
+                    shutil.copy(os.path.join(cdir, 'palette.json'), os.path.join(cdir, 'palette.final.json'))
+                    meta.update({'status': 'ok', 'hash': sha(norm), 'shift': list(shift), 'warnings': warns, 'edit': st,
+                                 'colors': len({c for c in pixels(norm) if c[3]})})
+                    rec['errors'] = []; meta['attempts'].append(rec); break
+            rec['errors'] = errs; meta['attempts'].append(rec)
+            adir = attempt_dir(cdir, n); os.makedirs(adir, exist_ok=True)
+            for f in ('grid.txt', 'palette.json', 'agy-try%d.log' % n):
+                if os.path.exists(os.path.join(cdir, f)): shutil.copy(os.path.join(cdir, f), adir)
+            fb = ('\n[이전 시도 실패] 폴더의 grid.txt/palette.json 은 검사에서 떨어졌다: ' + '; '.join(errs)
+                  + '. 같은 설계를 유지하되 위 문제만 고쳐 grid.txt 와 palette.json 을 다시 써라.')
+            write_json(meta_path, meta)
+        else:
+            meta['status'] = 'failed'
+    meta['finished'] = now(); write_json(meta_path, meta)
+    if meta['status'] != 'ok' or view != 'back' or not throw:
+        if meta['status'] == 'ok': meta['throw'] = {'status': 'skipped'}; write_json(meta_path, meta)
+        return meta
+    meta['throw'] = make_edit_throw(cdir, role, spec, meta)
+    write_json(meta_path, meta)
+    return meta
+
+
+def make_edit_throw(cdir, role, spec, meta):
+    s = seed(); ed = s['edit_mode']
+    tdir = os.path.join(cdir, 'throw'); os.makedirs(tdir, exist_ok=True)
+    back = Image.open(os.path.join(cdir, 'edited_native.png')).convert('RGBA')
+    rows, pal = ascii_of(back)
+    enlarged(back, 8, os.path.join(tdir, 'back_8x.png'))
+    base_rgb = grid_to_rgb(rows, {k: parse_hex(v) for k, v in pal.items()})
+    pal_lines = '\n'.join('  %s = %s' % (k, v) for k, v in pal.items())
+    prompt = f"""@back_8x.png 는 내 트레이너 뒷모습 도트(24x32, 8배 확대)다. 아래가 같은 그림의 정확한 격자다.
+{NO_GEN}
+[과제] 같은 캐릭터가 오른팔(그림 기준 오른쪽, 보는 쪽에서 오른편)로 공을 던지는 동작 프레임 3장을 **편집**으로 만든다. 머리·몸·다리·색·윤곽·명암은 원본과 같게 두고 팔과 몸통 기울기만 바꾼다. 바뀐 칸은 원본 대비 {int(ed['max_changed_ratio'] * 100)}% 이하여야 한다. 공은 그리지 않는다(손은 주먹 또는 편 손).
+- throw_1.txt: 던지기 준비(오른팔을 뒤로·아래로 젖힘)
+- throw_2.txt: 휘두르는 중간(오른팔이 머리 위로 올라옴)
+- throw_3.txt: 놓는 순간(팔이 앞쪽 위로 쭉 뻗음, 몸이 살짝 앞으로) — 연출이 이 프레임에서 공을 날린다.
+발 위치는 그대로. 각 파일은 32줄 x 24글자, 팔레트는 아래 글자만 쓰거나 palette_throw.json 에 새 글자 몇 개 추가.
+[원본 격자 24x32]
+{chr(10).join(rows)}
+[팔레트]
+{pal_lines}
+확인용 preview 를 직접 열어 한 번 고쳐라. 끝나면 'done' 한 단어만 답하라.
+"""
+    state = {'status': 'failed', 'attempts': []}
+    fb = ''
+    pjson = os.path.join(tdir, 'palette_full.json')
+    for n in range(1, MAX_ATTEMPTS + 1):
+        for i in (1, 2, 3):
+            try: os.remove(os.path.join(tdir, 'throw_%d.txt' % i))
+            except FileNotFoundError: pass
+        code = run_agy(tdir, prompt + fb, 'try%d' % n)
+        rec = {'n': n, 'agy_exit': code, 'at': now(), 'errors': []}
+        full = dict(pal)
+        try: full.update(json.load(open(os.path.join(tdir, 'palette_throw.json'))))
+        except Exception: pass
+        json.dump(full, open(pjson, 'w'))
+        frames = []
+        for i in (1, 2, 3):
+            ld, errs = load_grid_n(os.path.join(tdir, 'throw_%d.txt' % i), pjson, (24, 32))
+            if not ld: rec['errors'] += ['프레임%d: %s' % (i, e) for e in errs]; continue
+            ratio, c, nn = changed_ratio(base_rgb, grid_to_rgb(*ld))
+            if ratio > ed['max_changed_ratio']: rec['errors'].append('프레임%d: 원본 대비 변경 %.0f%%' % (i, ratio * 100)); continue
+            small = render(*ld)
+            norm, shift, e2, warns = scale_and_place(small, ed['scale'], s['baseline'], fixed_shift=tuple(meta['shift']), maxcolors=60)
+            if e2: rec['errors'] += ['프레임%d: %s' % (i, e) for e in e2]
+            else: frames.append(norm)
+        state['attempts'].append(rec)
+        if len(frames) == 3 and not rec['errors']:
+            strip = Image.new('RGBA', (64 * 3, 64), (0, 0, 0, 0))
+            for i, f in enumerate(frames): strip.alpha_composite(f, (64 * i, 0))
+            strip.save(os.path.join(cdir, 'throw.png')); state.update({'status': 'ok', 'hash': sha(strip)})
+            break
+        fb = '\n[이전 시도 실패] ' + '; '.join(rec['errors']) + '. 문제 프레임만 고쳐 다시 써라(throw_N.txt).'
+    return state
+
+
 # ---------- 명령 ----------
 
 def next_plate():
@@ -384,16 +572,16 @@ def cmd_draw(a):
     jobs = [(r, l) for r in roles for l in letters]
     os.makedirs(os.path.join(RUNS, plate), exist_ok=True)
     write_json(os.path.join(RUNS, plate, 'plate.json'), {'plate': plate, 'model': MODEL, 'roles': roles, 'letters': letters,
-                                                         'created': now(), 'method': 'agy-argon-grid-rows (no image generation)'})
+                                                         'created': now(), 'mode': a.mode, 'method': ('agy-argon-edit-actor1-24x32' if a.mode == 'edit' else 'agy-argon-grid-rows') + ' (no image generation)'})
     print(plate, 'jobs=%d par=%d' % (len(jobs), a.par), flush=True)
     if a.background:
         log = open(os.path.join(RUNS, plate, 'draw.log'), 'a')
-        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate]
+        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate, '--mode', a.mode]
                          + (['--no-throw'] if a.no_throw else []), stdout=log, stderr=log, start_new_session=True)
         print('백그라운드로 시작:', os.path.join(RUNS, plate, 'draw.log'))
         return
     def one(j):
-        m = make_candidate(plate, j[0], j[1], throw=not a.no_throw)
+        m = (make_edit_candidate if a.mode == 'edit' else make_candidate)(plate, j[0], j[1], throw=not a.no_throw)
         print('%s/%s %s %s' % (j[0], j[1], m.get('status'), m.get('throw', {}).get('status', '')), flush=True)
     with cf.ThreadPoolExecutor(a.par) as ex: list(ex.map(one, jobs))
     print('끝', plate)
@@ -425,6 +613,7 @@ def data_uri(path):
 
 def cmd_sheet(a):
     s = seed(); cands = plate_cands(a.plate)
+    edit = (read_json(os.path.join(RUNS, a.plate, 'plate.json'), {}).get('mode') == 'edit')
     num = a.plate.lstrip('p')
     name = 'trainer-sprites-pick-%s.html' % num
     cards = []
@@ -446,12 +635,12 @@ def cmd_sheet(a):
             warn = ''.join('<div class=w>%s</div>' % w for w in m.get('warnings', []))
             items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div><div class=bg><img class=px data-w=64 src="{uri}"></div>'
                          + (f'<div class="bg thr"><div class=anim data-strip="{turi}" style="background-image:url({turi})"></div></div>' if turi else '')
-                         + f'<div class=hs>{m["hash"]} · {m["colors"]}색{(" · 던지기 3장" if turi else "")}</div>{warn}</div>')
+                         + f'<div class=hs>{m["hash"]} · {m["colors"]}색{(" · 던지기 3장" if turi else "")}{(" · 변경 %d%%" % round(m["edit"]["ratio"] * 100)) if m.get("edit") else ""}</div>{warn}</div>')
         for l in fail:
             items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>{"아직 그리는 중" if busy(cs[l]) else "검사 탈락(기록 %d회)" % len(cs[l].get("attempts", []))}</div></div>')
-        dirs = '<br>'.join('<b>%s</b> %s' % (k, v.split(' — ')[0]) for k, v in s['directions'].items())
         cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small></h3>'
-                     f'<div class=row><div class=src><div class=bg><img class=px data-w=24 src="{src_uri}"></div><div class=hs>Actor1 원본 블록 {spec["source"]}</div></div>{"".join(items)}</div></section>')
+                     f'<div class=row><div class=src><div class=bg style="width:calc(var(--s,4)*64px);height:calc(var(--s,4)*64px);display:flex;align-items:flex-end;justify-content:center"><img class=px data-w={48 if edit else 24} src="{src_uri}"></div><div class=hs>Actor1 원본 · 블록 {spec["source"]}{" (2배, 결과와 같은 도트 밀도)" if edit else ""}</div></div>{"".join(items)}</div></section>')
+    dirs = '<br>'.join('<b>%s</b> %s — %s' % (k, v['label'], v['how']) for k, v in s['edit_mode']['intensity'].items()) if edit else '<br>'.join('<b>%s</b> %s' % (k, v.split(' — ')[0]) for k, v in s['directions'].items())
     html = TEMPLATE.replace('@@CARDS@@', '\n'.join(cards)).replace('@@ROLES@@', json.dumps(roles_js)).replace('@@PLATE@@', a.plate) \
         .replace('@@ROLELIST@@', ' '.join('<code>%s</code>' % r for r in cands)).replace('@@DIRS@@', dirs)
     os.makedirs(VIZ, exist_ok=True)
@@ -481,7 +670,7 @@ button{background:#3a4770;color:#fff;border:0;border-radius:6px;padding:5px 12px
 #cmd{width:100%;max-width:1000px;background:#10151f;color:#ffd78a;border:1px solid #3c4a6e;padding:6px;font-family:monospace}
 #bat{border:2px solid #3c4a6e;image-rendering:pixelated;background:#000}
 </style>
-<h1>트레이너 스프라이트 후보 시트 (@@PLATE@@) — Argon 이 Actor1 을 손 도트 격자로 변형</h1>
+<h1>트레이너 스프라이트 후보 시트 (@@PLATE@@) — 왼쪽 Actor1 원본 | 오른쪽 Argon 이 격자로 편집한 결과</h1>
 <div class=how><b>고르는 방법</b> — 카드를 눌러 역할마다 하나씩 고르면 맨 아래 칸에 <code>pick</code> 명령이 만들어집니다. 번호만 말해 주셔도 됩니다: 예) <code>hero_m=B hero_f=A boy=C …</code> (역할: @@ROLELIST@@).
 고르기 전에는 번들·프로젝트에 아무것도 들어가지 않습니다. 후보 방향: <br>@@DIRS@@<br>
 이 그림은 사람 캐릭터라 3/4 윗면 관문 대상이 아닙니다(object-gate 영수증 없음, 사람 선택 경로). 출처: Actor1 © Marina Navarro Travesset / VictorSena, CC BY 4.0 (EasyRPG RTP).</div>
@@ -496,7 +685,7 @@ function setScale(s){scale=s;document.querySelectorAll('.px').forEach(i=>i.style
  document.querySelectorAll('.anim').forEach(a=>{a.style.width=(64*s)+'px';a.style.height=(64*s)+'px'});
  document.querySelectorAll('#sc button').forEach(b=>b.classList.toggle('on',+b.dataset.s===s));
  // anim keyframes use px offsets of 1x; rescale with CSS var instead
- document.documentElement.style.setProperty('--k',s)}
+ document.documentElement.style.setProperty('--s',s)}
 const sc=document.getElementById('sc');[2,4,8].forEach(s=>{const b=document.createElement('button');b.textContent=s+'×';b.dataset.s=s;b.onclick=()=>setScale(s);sc.appendChild(b)});
 const st=document.createElement('style');document.head.appendChild(st);
 function animCss(){st.textContent='@keyframes thr{0%{background-position:0 0}33%{background-position:-'+(64*scale)+'px 0}66%{background-position:-'+(128*scale)+'px 0}}'}
@@ -561,7 +750,7 @@ def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('list')
     d = sp.add_parser('draw'); d.add_argument('role', nargs='?'); d.add_argument('--n', type=int, default=5); d.add_argument('--par', type=int, default=5)
-    d.add_argument('--plate'); d.add_argument('--no-throw', action='store_true'); d.add_argument('--background', action='store_true')
+    d.add_argument('--plate'); d.add_argument('--mode', choices=['edit', 'redraw'], default='edit'); d.add_argument('--no-throw', action='store_true'); d.add_argument('--background', action='store_true')
     st = sp.add_parser('status'); st.add_argument('plate', nargs='?')
     sh = sp.add_parser('sheet'); sh.add_argument('plate')
     pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+')
