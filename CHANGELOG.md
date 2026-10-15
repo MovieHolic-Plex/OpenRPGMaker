@@ -5,6 +5,15 @@
 
 <!-- releases -->
 
+## 0.234.0 — 2026-10-16
+
+### 기능
+
+- **ai** — split image settings by purpose — generative image model vs dot-authoring text model (#2656) (`66aecb8`)
+- **object-gate** — front_prop human approval record exempts the 3/4 half only for approved pixel hashes (#2653) (`69d5877`)
+- **ai-ui** — B안 1단계 — 진행·확인·실패를 대화 속 카드 하나로 (#2651) (`467eecd`)
+- **object-gate** — front_prop kind (rules v8) — human-review only; adversarial probe 0/144, fresh/A pass rates unchanged (#2650) (`f833b11`)
+
 ## 0.233.0 — 2026-10-16
 
 ### 기능

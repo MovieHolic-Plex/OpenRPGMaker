@@ -1,4 +1,5 @@
 import { generateAiImage } from "@/ai/imageGenerationClient";
+import type { ImagePurpose } from "@/ai/imageRoute";
 import { genId } from "@/util/id";
 
 /**
@@ -91,8 +92,13 @@ type JobRecord = {
 const DEFAULT_CONCURRENCY = 1;
 const MAX_CONCURRENCY = 4;
 
+/** 필드 종류(UI 층 표기) → 그림 용도. 모르는 종류는 일반 그림으로 본다. */
+function purposeForQueueKind(kind: string): ImagePurpose {
+  return kind === "faceset" ? "faceset" : kind === "title" ? "title-picture" : kind === "backdrop" ? "backdrop" : "picture";
+}
+
 const defaultRunner: ImageQueueRunner = async (job, options) => {
-  const image = await generateAiImage({ prompt: job.prompt, signal: options.signal });
+  const image = await generateAiImage({ prompt: job.prompt, signal: options.signal, purpose: purposeForQueueKind(job.kind) });
   return image.dataUrl;
 };
 
