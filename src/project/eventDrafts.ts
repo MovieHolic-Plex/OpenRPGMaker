@@ -1,5 +1,5 @@
 import { commitEventDraftAuthoredWrites, eventDraftAuthoredDiff } from "./eventDraftAuthored";
-import { cloneProjectSharingReferenceDocuments } from "./projectClone";
+import { cloneProjectSharingReferenceDocuments, cloneProjectSharingSharedDictionaries } from "./projectClone";
 import type { GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "@/project/types";
 
 export type EventDiffKind = "created" | "updated";
@@ -76,6 +76,20 @@ export function mapWithCommittedEvents(map: GameMap): GameMap {
 
 export function projectWithoutEventDrafts(project: Project): Project {
   const next = cloneProjectSharingReferenceDocuments(project);
+  for (const map of Object.values(next.maps)) {
+    map.events = committedEvents(map.events);
+  }
+  return next;
+}
+
+/**
+ * `projectWithoutEventDrafts` 와 같은 사본이되 타일셋·업로드 자산 항목은 원본 객체를 가리킨다(사전만 얕게 복사).
+ * 스토어는 그 항목을 제자리에서 고치지 않는다(projectClone 계약)는 점에 기대는 부팅 전용 경로다 —
+ * 부팅 정규화가 돌면 항목을 제자리에서 고칠 수 있으므로 건너뛰는 문서(표식이 맞는 문서)에서만 쓴다.
+ * 왜(2026-10-15 실측, 웜 부팅): 저장 기준본 복제가 항목 전부를 structuredClone 해 1.5s 와 그 쓰레기의 GC 를 첫 화면 앞에서 치렀다.
+ */
+export function projectWithoutEventDraftsSharingSharedDictionaries(project: Project): Project {
+  const next = cloneProjectSharingSharedDictionaries(project);
   for (const map of Object.values(next.maps)) {
     map.events = committedEvents(map.events);
   }

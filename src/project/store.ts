@@ -25,7 +25,7 @@ import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
+import { projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
 import { forgetTrustedSharedEntries, jsonContentDigest, primeSharedEntryDigests, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
 import { afterBootSettled } from "@/util/bootSettled";
 import { yieldToTask } from "@/util/yieldToTask";
@@ -367,7 +367,10 @@ class ProjectStore {
             else this.beginLocalProjectSession();
             this.remotePersistenceEnabled = !sharedDemo;
             this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current);
+            // 정규화를 건너뛰는 문서(표식이 맞는 문서)는 타일셋·업로드 자산 항목이 제자리에서 바뀌지 않는다 — 기준본이 항목을
+            // 공유해도 된다(복제 1.5s 절약, projectWithoutEventDraftsSharingSharedDictionaries). 정규화가 돌 문서는 예전처럼 통째로 복제한다.
+            const sharesDictionaries = bootNormalizationMatches(this.current, currentBootNormalizationMarker()) && !hasPendingFacesetSheetRepair(this.current);
+            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current, { shareDictionaries: sharesDictionaries });
             resetManualProjectCommitBaseline(this.current);
             this.syncProjectUrlBar();
           }
@@ -1080,9 +1083,12 @@ class ProjectStore {
    * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
    * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
    */
-  private baselineFrom(source: Project, options: { readonly owned?: boolean } = {}): Project {
+  private baselineFrom(source: Project, options: { readonly owned?: boolean; readonly shareDictionaries?: boolean } = {}): Project {
     // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
-    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
+    // shareDictionaries: 타일셋·업로드 자산 항목이 이후 제자리에서 바뀌지 않는다고 보증한다(부팅 정규화를 건너뛰는 문서).
+    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source
+      ? source
+      : options.shareDictionaries ? projectWithoutEventDraftsSharingSharedDictionaries(source) : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
     const stale = (): boolean => this.contentLineage !== lineage || this.persistedBaseline !== baseline;
     const warm = async (): Promise<void> => {
