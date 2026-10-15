@@ -1,0 +1,342 @@
+[
+ {
+  "name": "g0_pirate",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 pirate 조각(재검수 추출 #0), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g9_desert",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각(재검수 추출 #9), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g6_snow",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 snow 조각(재검수 추출 #6), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g19_modern_city",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #19), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g20_campus",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 campus 조각(재검수 추출 #20), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g26_modern_city",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #26), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g17_gothic",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 gothic 조각(재검수 추출 #17), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g12_desert",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각(재검수 추출 #12), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g39_desert",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각(재검수 추출 #39), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g37_desert",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각(재검수 추출 #37), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g63_sky",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 sky 조각(재검수 추출 #63), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g79_sengoku",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 sengoku 조각(재검수 추출 #79), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g74_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #74), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g34_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #34), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g53_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #53), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g44_desert",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각(재검수 추출 #44), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g70_sf",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 sf 조각(재검수 추출 #70), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g54_steampunk",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 steampunk 조각(재검수 추출 #54), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g62_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #62), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g47_sky",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 sky 조각(재검수 추출 #47), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g4_campus",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 campus 조각(재검수 추출 #4), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "g18_modern_city",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각(재검수 추출 #18), 작업자 G 육안 라벨(8배 시트). 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "b24_campus",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-real-bad",
+  "tier": "A",
+  "note": "번들 campus 조각 #24: 정면 입면(윗면 1~2행), 작업자 G 육안 라벨. 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "b23_campus",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-real-bad",
+  "tier": "A",
+  "note": "번들 campus 조각 #23: 정면 입면(윗면 1~2행), 작업자 G 육안 라벨. 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "b31_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-real-bad",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #31: 정면 입면(윗면 1~2행), 작업자 G 육안 라벨. 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "b76_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-real-bad",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #76: 정면 입면(윗면 1~2행), 작업자 G 육안 라벨. 판정 결과를 보기 전에 정함."
+ },
+ {
+  "name": "c26_modern_city",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #26 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c62_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #62 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c70_sf",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #70 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c44_desert",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #44 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c6_snow",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #6 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c4_campus",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #4 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c18_modern_city",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #18 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ },
+ {
+  "name": "c53_modern_city",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh-synth-cut",
+  "tier": "A",
+  "note": "재검수 #53 원본의 맨 위 4행(윗면)을 잘라낸 합성 위반. 원본이 윗면 4~6행이므로 남는 윗면 ≤2행."
+ }
+]

@@ -86,6 +86,12 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
         return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다"
     if receipt.get("verdict") == "pass":
         return None
+    if receipt.get("verdict") == "refer":
+        # 보류(판정자 의견이 갈림·사용자 정의 영역)는 pass 가 아니다 — 모든 출구에서 막는다(workshop-local 의 사람 덮어쓰기만 예외).
+        if not (context == "workshop-local" and (receipt.get("override") or {}).get("by") == "human"):
+            why = " · ".join(receipt.get("reasons") or []) or "판정자 의견이 갈림"
+            return f"판정 보류(사람 확인 필요: {why}) — 보류는 통과로 세지 않는다"
+        return None
     if context == "workshop-local" and (receipt.get("override") or {}).get("by") == "human":
         return None
     why = " · ".join(receipt.get("reasons") or []) or "fail"

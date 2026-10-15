@@ -1,0 +1,112 @@
+[
+ {
+  "name": "g7_steampunk",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 steampunk 조각 #7 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "g12_modern_city",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #12 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "g25_desert",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 desert 조각 #25 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "g26_steampunk",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 steampunk 조각 #26 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "g30_prehistoric",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 prehistoric 조각 #30 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "g43_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "fresh2-real-good",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #43 작업자 G 육안 라벨(판정 전)"
+ },
+ {
+  "name": "b44_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh2-real-bad",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #44 정면 입면(윗면 없음) 육안 라벨(판정 전)"
+ },
+ {
+  "name": "b11_campus",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh2-real-bad",
+  "tier": "A",
+  "note": "번들 campus 조각 #11 정면 입면(윗면 없음) 육안 라벨(판정 전)"
+ },
+ {
+  "name": "b46_modern_city",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh2-real-bad",
+  "tier": "A",
+  "note": "번들 modern_city 조각 #46 정면 입면(윗면 없음) 육안 라벨(판정 전)"
+ },
+ {
+  "name": "c43_modern_city",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh2-synth-cut",
+  "tier": "A",
+  "note": "#43 원본 맨 위 4행 제거 합성 위반(독립 눈 W≥2 아니면 D 로 뺀다 — 사전 선언)"
+ },
+ {
+  "name": "c7_steampunk",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "fresh2-synth-cut",
+  "tier": "A",
+  "note": "#7 원본 맨 위 4행 제거 합성 위반(독립 눈 W≥2 아니면 D 로 뺀다 — 사전 선언)"
+ }
+]
