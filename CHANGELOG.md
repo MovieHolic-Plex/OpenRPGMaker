@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.237.1 — 2026-10-16
+
+### 수정
+
+- **ci** — record world-panel and battle-pill CSS in the gates (`c26e89a`)
+
 ## 0.237.0 — 2026-10-16
 
 ### 기능
