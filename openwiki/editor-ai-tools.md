@@ -20,6 +20,7 @@
 - **`check_map_emptiness({mapId?})`**(`mapEmptiness.ts`, 읽기): 가장 흔한 바닥 ≥ 80% 이고 장식 ≤ 10%(100칸 이상)면 flat. qa:game `visual-flat` 과 같은 기준. `run_lint` 와 `evaluate_game_quality` 에도 warning `map-flat-ground` 로 자동 들어가 완료 직전 검사(`LAYER_VERIFICATION_TOOLS`)에서 걸린다. 월드맵 키트 맵과 시작 때 남은 빈 시드 맵 `map_blank_start` 는 제외. evaluate_game_quality 는 이미 `empty-map`(error)인 맵을 중복으로 올리지 않는다.
 - 능력 색인에 `theme-scenes` 레시피(`toolCapabilityIndex.ts`)와 find_tools 별칭(「맵 만들기」「빈 맵」)이 같은 길을 가리킨다.
 - 시험: 새 프로젝트에 16장면을 `node scripts/oprn-tools.mjs --new --project … create_map '{"name":…,"themeScene":…}'` 로 전부 깔아 본다(전부 ok, `check_map_emptiness` 로 flat 은 시드 맵 1장만).
+- **맵 성격 명시(2026-10-15 역할극 후속)**: themeScene 이 만든 맵은 분명한 스타일(cave·mine·labyrinth 등 → `dungeon`, village·market·street·harbor 등 → `town`)이면 `mapRole` 을 직접 적는다(`themeSceneMapRole`). 저작자가 고른 값은 덮지 않는다. 이름 추정(`guessMapRole`)의 INTERIOR_WORDS 는 「방어·방패·방향…」의 「방」을 실내로 읽지 않는다 — 「방어전 - 설원 광산 전선」 맵에 `place_field_enemy` 가 「실내라 필드 적 불가」로 거절되던 사례.
 
 ## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 
