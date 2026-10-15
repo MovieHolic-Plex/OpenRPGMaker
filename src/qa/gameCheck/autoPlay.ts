@@ -904,6 +904,11 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   return steps;
 }
 
+/** 필드 스킬이 세계를 바꿨는지 가리는 지문 — 바뀐 타일(맵 덮어쓰기)·스위치·셀프 스위치. */
+function worldFingerprint(session: PlaySession): string {
+  return JSON.stringify([session.mapOverrides, session.switches, session.selfSwitches]);
+}
+
 /** 몬스터 파티 게임: 필드 스킬을 가르치는 기술머신 아이템이 있으면 어떻게 줄지 일러 준다. */
 function machineHint(project: Project, skills: readonly { readonly id: string }[]): string {
   const items = project.database.items.filter((item) => { const taught = machineSkillOf(project, item); return taught !== undefined && skills.some((skill) => skill.id === taught); });
@@ -959,7 +964,7 @@ function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: bool
     return pathMoves(project, session, session.currentMapId, { x: session.x, y: session.y }, target, adjacent, ignore) !== null;
   };
   let tried = false;
-  for (let round = 0; round < 6; round += 1) {
+  for (let round = 0; round < 10; round += 1) {
     const session = driver.last.session;
     const authored = project.maps[session.currentMapId];
     if (!authored) break;
@@ -993,7 +998,11 @@ function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: bool
         const approach = pathMoves(project, now, now.currentMapId, { x: now.x, y: now.y }, blocker, true);
         if (!approach) continue;
         tried = true;
-        const used = tryCommit(driver, [...approach, { kind: "useFieldSkill", skillId: skill.id, target: blocker.id }]);
+        const useSteps: SceneStep[] = [...approach, { kind: "useFieldSkill", skillId: skill.id, target: blocker.id }];
+        // 엉뚱한 기술을 쓰면 「여기에는 쓸 수 없다」만 나오고 명령은 성공한다 — 세계가 실제로 바뀐 기술만 확정한다(물길에 절단을 쓰고 끝내지 않는다).
+        const trial = run(driver, [...driver.steps, ...useSteps]);
+        if (!trial.ok || worldFingerprint(trial.session) === worldFingerprint(driver.last.session)) continue;
+        const used = tryCommit(driver, useSteps);
         if (!used.ok) continue;
         progressed = true;
         if (pathExists()) return { unlocked: true, note: "" };
@@ -1001,6 +1010,9 @@ function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: bool
       }
       if (pathExists()) return { unlocked: true, note: "" };
     }
+    // 아는 스킬로는 이 막힘이 안 열린다(물길은 파도타기형, 바위는 괴력형… 엉뚱한 스킬을 쓰면 「여기에는 쓸 수 없다」만 나온다) —
+    // 아직 모르는 다른 필드 스킬을 익히러 가서 다시 시도한다. 길 위에 서로 다른 비전머신 관문이 줄지어 있으면 하나씩 익혀 가며 연다.
+    if (acquireFieldSkill(driver, fieldSkills.filter((skill) => !known.has(skill.id)))) continue;
     if (!progressed) break;
   }
   return { unlocked: false, note: tried ? " 파티가 아는 필드 스킬(useFieldSkill)을 막은 이벤트 앞에서 써 봤지만 길이 열리지 않았습니다 — 스킬의 fieldCommonEventId 공통 이벤트가 fieldAbilityTarget 을 보고 그 이벤트를 치우는지 확인하세요." : "" };
