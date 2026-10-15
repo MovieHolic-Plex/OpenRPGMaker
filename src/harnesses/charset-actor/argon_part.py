@@ -336,8 +336,7 @@ def cmd_sheet(a):
 .var{{color:#9fb0ba;margin:2px 0 8px;font-size:13px}}.cmp{{display:flex;gap:16px;margin-bottom:8px;align-items:flex-end;flex-wrap:wrap}}figure{{margin:0}}figcaption,.cap{{color:#8fa0aa;font-size:12px}}img{{image-rendering:pixelated}}.big{{display:block;max-width:100%;margin:6px 0}}details{{margin-top:8px}}.note{{color:#e8b86d;font-size:13px;margin:4px 0 0}}</style>
 <h1>{html.escape(a.title)}</h1>
 <div class="how">{a.intro}<b>방식</b>: 격자를 새로 쓰지 않고, 베이스 칩(Actor·People)의 <b>머리·상의·하의·신발·장비</b>만 마스크 안에서 고칩니다. 얼굴(눈·입)·맨살·몸 비율·다리·걷기 포즈·출렁임은 하네스가 12프레임 전부 픽셀 대조로 불변을 검증합니다. 왼쪽 방향은 거울 복사가 아니라 베이스의 왼쪽 그림에 방향별로 편집을 올립니다.<br>
-<b>사용자 위임: ★ 추천 베이스로 진행</b>(tt-hero-boy=People1:0 · iw-legion-soldier=Actor3:0 · tt-scrap-robot=People4:4 · iw-steam-armor=Actor3:0). 나머지 7종 베이스는 확인 후 정합니다.<br>
-저작 모델: <span class="eff high">Argon high</span> 이 본판, <span class="eff medium">Argon medium</span> 은 같은 베이스·같은 지시의 대조군(원형당 1종)입니다. 마음에 드는 후보의 <code>id</code>를 채팅에 적어 주세요. 고르기 전에는 팩·번들·프로젝트에 설치하지 않습니다. 후보 {total}종 · 실행 {html.escape(", ".join(a.runs))}</div>
+<b>사용자 위임: ★ 추천 베이스로 진행</b> — 베이스는 각 카드에 표시. 저작 모델은 카드의 <span class="eff high">Argon high</span> / <span class="eff medium">Argon medium</span> 표기를 따릅니다. 마음에 드는 후보의 <code>id</code>를 채팅에 적어 주세요. 고르기 전에는 팩·번들·프로젝트에 설치하지 않습니다. 후보 {total}종 · 실행 {html.escape(", ".join(a.runs))}</div>
 {"".join(sections)}</html>'''
     out = Path(a.out).expanduser()
     out.write_text(page, encoding='utf-8')
