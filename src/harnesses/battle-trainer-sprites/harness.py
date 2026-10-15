@@ -228,9 +228,9 @@ def throw_prompt(role, spec, srows, spal, frames=3):
 {NO_GEN}
 
 [과제] 같은 캐릭터가 오른팔로 공을 던지는 동작 프레임 {frames}장을 같은 그림체·같은 팔레트·같은 크기(64x64)·같은 발 위치로 그려라. 공(몬스터볼)은 그리지 않는다(엔진이 그린다) — 손은 주먹 또는 편 손만.
-- throw_1.txt: 던지기 준비(오른팔을 뒤로·위로 젖히고 몸을 살짝 비틂)
-- throw_2.txt: 놓는 순간(팔이 앞쪽 위로 쭉 뻗음, 몸이 앞으로 기울어짐)
-- throw_3.txt: 마무리(팔이 앞쪽 아래로 내려옴, 자세 복귀 중)
+- throw_1.txt: 던지기 준비(오른팔을 뒤로·아래로 젖히고 몸을 살짝 비틂)
+- throw_2.txt: 휘두르는 중간(오른팔이 머리 위로 올라옴, 몸이 앞으로 기울기 시작)
+- throw_3.txt: 놓는 순간(팔이 앞쪽 위로 쭉 뻗음, 몸이 앞으로 기울어짐) — 전투 연출이 이 프레임에서 공을 날리므로 마지막 프레임이 놓는 순간이어야 한다.
 머리·몸·다리의 윤곽과 색은 원본과 일치해야 하며 팔·몸통 기울기·머리카락 흔들림만 바뀐다. 이미지 생성·합성 코드 금지, 모든 행을 직접 적는다.
 
 [원본 격자 64x64] ('.'=투명)
@@ -435,6 +435,7 @@ def cmd_sheet(a):
         b = io.BytesIO(); src.save(b, 'PNG'); src_uri = 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
         ok = [(l, m) for l, m in cs.items() if m.get('status') == 'ok']
         fail = [l for l, m in cs.items() if m.get('status') != 'ok']
+        busy = lambda m: m.get('status') not in ('ok', 'failed')
         items = []
         roles_js[role] = {'view': view, 'cands': {}}
         for l, m in ok:
@@ -447,7 +448,7 @@ def cmd_sheet(a):
                          + (f'<div class="bg thr"><div class=anim data-strip="{turi}" style="background-image:url({turi})"></div></div>' if turi else '')
                          + f'<div class=hs>{m["hash"]} · {m["colors"]}색{(" · 던지기 3장" if turi else "")}</div>{warn}</div>')
         for l in fail:
-            items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>검사 탈락(기록 {len(cs[l].get("attempts", []))}회)</div></div>')
+            items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>{"아직 그리는 중" if busy(cs[l]) else "검사 탈락(기록 %d회)" % len(cs[l].get("attempts", []))}</div></div>')
         dirs = '<br>'.join('<b>%s</b> %s' % (k, v.split(' — ')[0]) for k, v in s['directions'].items())
         cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small></h3>'
                      f'<div class=row><div class=src><div class=bg><img class=px data-w=24 src="{src_uri}"></div><div class=hs>Actor1 원본 블록 {spec["source"]}</div></div>{"".join(items)}</div></section>')
@@ -504,8 +505,8 @@ const imgs={};function img(u){if(!imgs[u]){const i=new Image();i.src=u;imgs[u]=i
 function drawBat(){const c=document.getElementById('bat'),g=c.getContext('2d');g.imageSmoothingEnabled=false;
  const gr=g.createLinearGradient(0,0,0,320);gr.addColorStop(0,'#bfe6f4');gr.addColorStop(.45,'#d9f0d0');gr.addColorStop(.46,'#7fc06a');gr.addColorStop(1,'#4f9a48');g.fillStyle=gr;g.fillRect(0,0,480,320);
  g.fillStyle='#8cc77a';g.beginPath();g.ellipse(360,130,90,22,0,0,7);g.fill();g.fillStyle='#6aab58';g.beginPath();g.ellipse(110,262,110,26,0,0,7);g.fill();
- if(hero&&sel[hero]){const u=R[hero].cands[sel[hero]].sprite;const i=img(u);const f=()=>g.drawImage(i,24,128+ (320-262)-64+10-64,128,128);if(i.complete)f();else i.onload=drawBat}
- if(opp&&sel[opp]){const u=R[opp].cands[sel[opp]].sprite;const i=img(u);if(i.complete)g.drawImage(i,296,22,128,128);else i.onload=drawBat}}
+ if(hero&&sel[hero]){const u=R[hero].cands[sel[hero]].sprite;const i=img(u);const f=()=>g.drawImage(i,112-64,238-62*2-2,128,128);if(i.complete)f();else i.onload=drawBat}
+ if(opp&&sel[opp]){const u=R[opp].cands[sel[opp]].sprite;const i=img(u);if(i.complete)g.drawImage(i,368-64,210-62*2-2,128,128);else i.onload=drawBat}}
 function cmd(){const parts=Object.entries(sel).map(([r,l])=>r+'='+l);
  document.getElementById('cmd').value=parts.length?('npm run harness -- battle-trainer-sprites pick @@PLATE@@ '+parts.join(' ')):'(아직 고른 것이 없습니다)'}
 document.querySelectorAll('.cand:not(.failed)').forEach(c=>c.onclick=()=>{const r=c.dataset.role,l=c.dataset.l;sel[r]=l;
