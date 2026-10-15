@@ -28,6 +28,8 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
+import { monsterSpeciesById, type MonsterExperienceResult } from "@/project/monsterCollection";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -325,8 +327,16 @@ export async function playBattle(
                 } else {
                   exitBattleAudio(project, session, savedAudio);
                 }
+                const rewardSink: { monsterResults?: readonly MonsterExperienceResult[] } = {};
                 applyBattleRewardsToSession(session,
-                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project, rewardSink);
+                // 레벨업으로 진화한 몬스터는 3세대처럼 진화 장면을 보여 준다(규칙은 위에서 이미 확정됐다 — 장면은 연출뿐).
+                if (!terminalDefeat && isEmeraldMonsterStyle(project)) {
+                  const evolved = (rewardSink.monsterResults ?? []).flatMap((entry) => entry.evolution?.ok === true
+                    ? [{ name: session.monsterInstances[entry.instanceId]?.nickname || monsterSpeciesById(project, entry.evolution.fromSpeciesId)?.name || "몬스터", fromSpeciesId: entry.evolution.fromSpeciesId, toSpeciesId: entry.evolution.toSpeciesId }]
+                    : []);
+                  if (evolved.length > 0) await playEmeraldEvolutions(host, project, evolved, signal).catch(() => undefined);
+                }
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }

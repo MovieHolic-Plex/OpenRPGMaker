@@ -10,7 +10,7 @@ import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
-import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
+import { applyMonsterExperienceAndEvolution, giveMonster, type MonsterExperienceResult } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -37,7 +37,9 @@ export type BattleRewardsOutcome = {
 export function applyBattleRewardsToSession(
   session: PlaySession,
   outcome: BattleRewardsOutcome,
-  project: Project
+  project: Project,
+  /** 표시 계층이 읽는 부수 결과(진화 연출용). 규칙에는 영향이 없다. */
+  sink?: { monsterResults?: readonly MonsterExperienceResult[] },
 ): readonly BattleLevelUpResult[] {
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
@@ -113,7 +115,8 @@ export function applyBattleRewardsToSession(
     : snapshotInstanceIds.length > 0
       ? snapshotInstanceIds
       : undefined;
-  applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
+  const monsterResults = applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
+  if (sink) sink.monsterResults = monsterResults;
   return levelUps;
 }
 
