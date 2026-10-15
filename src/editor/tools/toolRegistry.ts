@@ -2,6 +2,8 @@ import { MONSTER_GAME_TOOLS } from './monsterGameTools';
 import { MONSTER_TOURNAMENT_TOOLS } from './monsterTournamentTools';
 import { MONSTER_BATCH_TOOLS } from './monsterBatchTools';
 import { bindStreetToolLookup } from "./jpCityStreetTool";
+import { bindThemeToolLookup } from "./themeScenes";
+import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
@@ -356,6 +358,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
+  ...MAP_EMPTINESS_TOOLS,
   // Documentation tools belong to the system domain for explicitly scoped callers.
   ...withDomain(AI_DOC_TOOLS, "system"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
@@ -378,6 +381,7 @@ export function getTool(name: string): ToolDefinition | undefined {
   return TOOL_BY_NAME.get(name);
 }
 bindStreetToolLookup(getTool);
+bindThemeToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;

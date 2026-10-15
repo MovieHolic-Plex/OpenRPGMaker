@@ -44,7 +44,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["액션 전투", "action combat", "realtime battle"], tools: ["set_action_combat", "make_action_enemy", "run_action_combat_test"], label: "액션 전투" },
   { terms: ["전투 막기", "길막", "장애물", "바위", "나무 베기", "blocker", "obstacle", "boulder", "rock"], tools: ["place_battle_blocker", "place_trap", "set_tile_passability"], label: "길 막는 장애물" },
   // ── 맵 ──
-  { terms: ["새 맵", "맵 만들", "맵 생성", "맵 추가", "map create", "create map", "new map", "add map"], tools: ["create_map", "duplicate_map", "resize_map"], label: "맵 만들기" },
+  { terms: ["새 맵", "맵 만들", "맵 생성", "맵 추가", "map create", "create map", "new map", "add map", "themescene", "테마 맵", "필드 맵", "필드 만들"], tools: ["create_map", "author_wild_route", "duplicate_map", "resize_map"], label: "맵 만들기(themeScene 으로 구성기까지 한 번에)" },
   { terms: ["마을 만들", "마을", "village", "town"], tools: ["author_beodeul_town", "compose_jp_city_street", "compose_snow_north_map"], label: "마을" },
   { terms: ["던전", "동굴", "지하", "미궁", "dungeon", "cave", "labyrinth"], tools: ["author_dungeon", "author_beodeul_dungeon", "configure_roguelike_room"], label: "던전" },
   { terms: ["실내", "방 만들", "집 안", "interior", "indoor", "room"], tools: ["build_hand_interior_room", "stamp_object"], label: "실내" },
@@ -55,7 +55,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["통행", "지나갈 수", "passability", "walkable", "reachab", "도달"], tools: ["check_reachability", "set_tile_passability"], label: "통행·도달성" },
   { terms: ["비행선", "비공정", "배 타", "배를", "탈것", "초코보", "뗏목", "airship", "vehicle", "ship", "boat", "mount"], tools: ["place_vehicle", "set_map_transit"], label: "탈것" },
   { terms: ["기차", "지하철", "열차", "버스", "교통", "train", "subway", "transit"], tools: ["set_map_transit", "inspect_map_transit"], label: "교통" },
-  { terms: ["빈 맵", "텅 빈", "빈칸", "단색", "비어 있", "empty map", "blank", "flat grass", "채우기", "꾸미기", "decorate", "fill"], tools: ["find_empty_ground", "furnish_outdoor_area", "fill_region", "place_props"], label: "맵 채우기" },
+  { terms: ["빈 맵", "텅 빈", "빈칸", "단색", "단색 잔디", "잔디 평지", "비어 있", "empty map", "blank", "flat grass", "채우기", "꾸미기", "decorate", "fill"], tools: ["check_map_emptiness", "create_map", "find_empty_ground", "furnish_outdoor_area", "place_props"], label: "맵 채우기" },
   { terms: ["눈 마을", "설원", "북방", "눈덮인", "snow village", "snow north", "눈 맵"], tools: ["compose_snow_north_map", "link_snow_north_interior"], label: "설원 테마" },
   { terms: ["사막", "오아시스", "바자르", "피라미드", "desert", "oasis", "bazaar"], tools: ["compose_desert_east_map", "compose_desert_east_room"], label: "사막 테마" },
   { terms: ["증기", "스팀펑크", "기계 도시", "제국 도시", "steampunk", "industrial city"], tools: ["compose_steampunk_city_map", "link_steampunk_interior"], label: "스팀펑크 테마" },
