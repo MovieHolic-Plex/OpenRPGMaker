@@ -28,6 +28,7 @@ const SCEN = (process.env.SCENARIOS ?? "idle,panel,stream,team").split(",").map(
 const STREAM_SEC = Number(process.env.STREAM_SEC ?? 24);
 const [VW, VH] = (process.env.VILLAGE ?? "96x80").split("x").map(Number);
 const PROFILE = process.env.PROFILE === "1";
+const TRACEGC = process.env.TRACEGC === "1"; // 시나리오 동안 V8 GC 일시정지를 추적해 100ms 넘는 것(종류·길이)을 적는다.
 const NOINPUT = process.env.NOINPUT === "1"; // 입력 구간을 건너뛴다 — AI 스트림만의 비용을 분리해 본다.
 const out = "verify-shots/perf-ai-lag";
 mkdirSync(out, { recursive: true });
@@ -216,6 +217,7 @@ function summarize(win) {
     frames: { n: win.steps.length, gapP50: q(gaps, 0.5), gapP95: q(gaps, 0.95), gapMax: q(gaps, 1), over50: gaps.filter((g) => g > 50).length, over100: gaps.filter((g) => g > 100).length,
       stepCostP50: q(cost, 0.5), stepCostP95: q(cost, 0.95), stepCostMax: q(cost, 1), renderedFrac: win.steps.length ? +(win.steps.filter((s) => s[2]).length / win.steps.length).toFixed(2) : 0, renderCostP50: q(renderedCost, 0.5), renderCostP95: q(renderedCost, 0.95) },
     longTask: { n: win.long.length, totalMs: sum(win.long.map((l) => l[1])), maxMs: q(win.long.map((l) => l[1]), 1) },
+    bigFrames: win.loaf.filter((f) => f.dur > 1500).map((f) => ({ at: f.at, dur: f.dur, block: f.block, render: f.render, scripts: f.scripts.filter((x) => x.d > 100) })),
     loaf: { n: win.loaf.length, totalMs: sum(win.loaf.map((f) => f.dur)), maxMs: q(win.loaf.map((f) => f.dur), 1), scriptTop: [...byScript].sort((a, b) => b[1] - a[1]).slice(0, 8).map(([k, v]) => `${v.toFixed(0)}ms ${k}`) },
     input: win.input ? { n: win.input.length, p50: q(win.input, 0.5), p95: q(win.input, 0.95), max: q(win.input, 1) } : undefined,
   };
@@ -257,8 +259,19 @@ async function stopProfile(cdp, name) {
   const selfTop = [...self].filter(([k]) => !/^\((idle|program|root)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k]) => k);
   const paths = new Map();
   profile.samples.forEach((id, i) => { const k = keyOf(byId.get(id)); if (!selfTop.includes(k)) return; const key = k + "  <=  " + chain(id, 4); paths.set(key, (paths.get(key) ?? 0) + (profile.timeDeltas[i] ?? 0) / 1000); });
+  // 가장 긴 연속 바쁜 구간(= 사용자가 느끼는 멈춤) 3개와 그 구간의 자기 시간 상위 함수.
+  const intervals = []; let cur = null; let tAcc = 0;
+  profile.samples.forEach((id, i) => {
+    const dt = (profile.timeDeltas[i] ?? 0) / 1000; tAcc += dt;
+    const isIdle = /^\((idle|program)\)/.test(byId.get(id).callFrame.functionName);
+    if (isIdle) { if (cur && dt > 0) { cur.end = tAcc - dt; intervals.push(cur); cur = null; } return; }
+    if (!cur) cur = { start: tAcc - dt, end: tAcc, self: new Map() };
+    cur.end = tAcc; const k = keyOf(byId.get(id)); cur.self.set(k, (cur.self.get(k) ?? 0) + dt);
+  });
+  if (cur) intervals.push(cur);
+  const longest = intervals.sort((a, b) => (b.end - b.start) - (a.end - a.start)).slice(0, 4).map((iv) => `${(iv.end - iv.start).toFixed(0)}ms @${iv.start.toFixed(0)}ms: ` + [...iv.self].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => `${v.toFixed(0)} ${k}`).join(" | "));
   const callers = [...paths].sort((a, b) => b[1] - a[1]).slice(0, 30).map(([k, v]) => v.toFixed(0).padStart(7) + "ms " + k);
-  writeFileSync(`${out}/${label}-${name}-profile.txt`, `busy ${(all - idle).toFixed(0)}ms of ${all.toFixed(0)}ms (idle ${idle.toFixed(0)}ms)\nSELF\n${top(self, 40).join("\n")}\n\nCALLERS (self 상위 함수 <- 호출 경로)\n${callers.join("\n")}\n\nTOTAL\n${top(total, 70).join("\n")}\n`);
+  writeFileSync(`${out}/${label}-${name}-profile.txt`, `busy ${(all - idle).toFixed(0)}ms of ${all.toFixed(0)}ms (idle ${idle.toFixed(0)}ms)\nSELF\n${top(self, 40).join("\n")}\n\nLONGEST BUSY INTERVALS\n${longest.join("\n")}\n\nCALLERS (self 상위 함수 <- 호출 경로)\n${callers.join("\n")}\n\nTOTAL\n${top(total, 70).join("\n")}\n`);
   return { busyMs: +(all - idle).toFixed(0), wallMs: +all.toFixed(0), selfTop: top(self, 6) };
 }
 
@@ -413,6 +426,7 @@ async function runScenario(name) {
   if (name !== "idle") await openPanel();
   await page.evaluate(() => { window.__perf.on = true; window.__perf.t0 = performance.now(); });
   const cdp = PROFILE ? await startProfile() : null;
+  if (TRACEGC) await browser.startTracing(page, { categories: ["v8", "devtools.timeline", "disabled-by-default-v8.gc"] });
   const scen = { name };
   const m0 = await metricsNow();
   const w0 = Date.now();
@@ -454,8 +468,15 @@ async function runScenario(name) {
   }
   scen.engine = { wallMs: Date.now() - w0, ...metricsDelta(m0, await metricsNow()) };
   if (cdp) scen.profile = await stopProfile(cdp, name);
+  if (TRACEGC) {
+    const trace = JSON.parse((await browser.stopTracing()).toString());
+    const gcs = (trace.traceEvents ?? []).filter((e) => e.ph === "X" && /GC|MajorGC|MinorGC/i.test(e.name) && e.dur > 20000);
+    scen.gcPauses = gcs.map((e) => `${(e.dur / 1000).toFixed(0)}ms ${e.name}`).sort((x, y) => parseInt(y) - parseInt(x)).slice(0, 15);
+    scen.gcTotalMs = Math.round((trace.traceEvents ?? []).filter((e) => e.ph === "X" && /^V8\.GC/.test(e.name)).reduce((a, e) => a + (e.dur ?? 0), 0) / 1000);
+  }
   scen.forced = await page.evaluate(() => { const f = window.__perf.forced; if (!f) return undefined; const o = Object.entries(f).sort((a, b) => b[1].ms - a[1].ms).slice(0, 14).map(([k, v]) => `${v.ms.toFixed(0)}ms n=${v.n} max=${v.max.toFixed(0)} ${k}`); for (const k of Object.keys(f)) delete f[k]; return o; });
   scen.muts = await page.evaluate(() => { const m = window.__perf.muts; if (!m) return undefined; const o = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([k, v]) => `${v} ${k}`); for (const k of Object.keys(m)) delete m[k]; return o; });
+  scen.relief = await page.evaluate(() => { const r = window.__oprnEditReliefStats?.(); return r ? { full: r.full, window: r.window, same: r.same, clear: r.clear, fullReasons: r.fullReasons, bakes: r.backing?.bakes } : undefined; });
   scen.regs = await page.evaluate(() => { const r = window.__perf.regs; const o = Object.entries(r).sort((a, b) => b[1] - a[1]).slice(0, 12); window.__perf.regs = {}; return o; });
   await page.evaluate(() => { window.__perf.on = false; });
   await page.screenshot({ path: `${out}/${label}-${name}.png` });
