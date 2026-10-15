@@ -1,6 +1,7 @@
 {
   "version": 1,
   "canvas": 112,
+  "fieldSheets": 1,
   "species": {
     "sparkit": {
       "campaignSpeciesId": "mx_species_coalbit",
@@ -60,6 +61,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 0
       }
     },
     "pipbug": {
@@ -195,6 +200,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 1
       }
     },
     "pebblekid": {
