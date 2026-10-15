@@ -56,6 +56,27 @@
   }
  },
  "prop": {
+  "prop-bench-wood": {
+   "h": 14,
+   "kit": "bd-prop-bench_wood",
+   "rows": null,
+   "sha256": "99ec1dd28ee61911524b1469be8f51db80e57060f203bd55bf73a4359dd1db7b",
+   "w": 26
+  },
+  "prop-hedge": {
+   "h": 18,
+   "kit": "bd-prop-hedge",
+   "rows": null,
+   "sha256": "91f8a30cf25f3651692e044d0032f6c236fa39445a74e9b68ea510c93aa3da75",
+   "w": 46
+  },
+  "prop-lamp-crook": {
+   "h": 42,
+   "kit": "bd-prop-lamp_crook",
+   "rows": null,
+   "sha256": "401fd21b7201a92a8b88c8489a3283e784b9498d8152813b7b6172b2e468efae",
+   "w": 12
+  },
   "prop-stall-cheese": {
    "h": 44,
    "kit": "bd-prop-stall_cheese_meat",

@@ -23,7 +23,9 @@ KITS = {  # 종류 → [(파일 이름, 키트 id, 행 범위 또는 None)]
     "roof": [("roof-h104_0", "bd-house-h104_0", (1, 3))],
     "wall": [("wall-h104_0-timber", "bd-house-h104_0", (4, 5)), ("wall-h106_1-stone", "bd-house-h106_1", (6, 7))],
     "tree": [("tree-d43edd", "bd-tree-d43edd", None), ("tree-1a786c", "bd-tree-1a786c", None)],
-    "prop": [("prop-stall-cheese", "bd-prop-stall_cheese_meat", None), ("prop-well-roofed", "bd-prop-well_roofed", None)],
+    "prop": [("prop-stall-cheese", "bd-prop-stall_cheese_meat", None), ("prop-well-roofed", "bd-prop-well_roofed", None),
+             # 얇은 소품(가로등·산울타리·벤치) — 정보량 기준이 큰 소품만 보고 얇은 정상 그림을 떨어뜨리던 것을 보강(2026-10-15)
+             ("prop-lamp-crook", "bd-prop-lamp_crook", None), ("prop-hedge", "bd-prop-hedge", None), ("prop-bench-wood", "bd-prop-bench_wood", None)],
 }
 PATCHES = {  # 바닥 종류 → [(이름, 타일 번호 4×3 순서)]
     "ground": [
