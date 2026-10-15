@@ -34,7 +34,7 @@ export function chooseAutoBattleCommand(project: Project, snapshot: BattleSnapsh
   const plan = tactic ?? actorAutoTactic(project, actor.recordId);
   // 연계기는 배우지 않아도 연계 멤버에게 열린다 — 메뉴(battleCommandDom)와 같은 목록.
   const owned = battlerSkillIdsWithGrants(actor);
-  const offered = [...owned, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)];
+  const offered = [...owned, ...comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned, comboParticipantsFromSnapshot(snapshot))];
   const learned = offered
     .map((skillId) => project.database.skills.find((record) => record.id === skillId))
     .filter((skill): skill is SkillRecord => Boolean(skill))

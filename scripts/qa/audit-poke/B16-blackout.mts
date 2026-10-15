@@ -1,0 +1,13 @@
+import { createScarloxyPokemonDemoProject } from "../../../test/support/scarloxyPokemonProject";
+import { startSession } from "../../../src/project/session";
+import { giveMonster, monsterCurrentHp, monsterMaxHp } from "../../../src/project/monsterCollection";
+import { createDefeatRecovery } from "../../../src/player/defeatRecovery";
+import { scarloxySpeciesId } from "../../../src/project/defaults/scarloxyPokemonDemoGame";
+const project=createScarloxyPokemonDemoProject();
+console.log("system.gameOver:",JSON.stringify(project.system.gameOver),"startMap",project.startMapId);
+const session:any=startSession(project);
+const r:any=giveMonster(project,session,{speciesId:scarloxySpeciesId("sparchu"),level:20});
+const id=r.instance.instanceId; session.monsterInstances[id]={...session.monsterInstances[id],currentHp:0,stateIds:["state_poison"]};
+session.gold=1000; session.currentMapId="map_pkmn_route"; session.x=5;session.y=5;
+const rec:any=createDefeatRecovery(project,session,{outcome:"recover",presentation:"blackout"} as any);
+console.log("recovery result:",rec?{map:rec.currentMapId,x:rec.x,y:rec.y,gold:rec.gold,hp:monsterCurrentHp(project,rec.monsterInstances[id]),max:monsterMaxHp(project,rec.monsterInstances[id]),states:rec.monsterInstances[id].stateIds}:null);

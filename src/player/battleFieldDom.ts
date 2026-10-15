@@ -1041,7 +1041,7 @@ function onFieldEnemyPositions(
 ): readonly { x: number; y: number }[] | undefined {
   if (!anchors) return undefined;
   const positions = snapshot.enemies.map((_, index) =>
-    onFieldPointToAuthored(onFieldEnemyPoint(anchors, index, snapshot.enemies.length), anchors.canvas, group));
+    onFieldPointToAuthored(onFieldEnemyPoint(anchors, index, snapshot.enemies.length, snapshot.enemies.map((enemy) => ({ x: enemy.authoredX, y: enemy.authoredY }))), anchors.canvas, group));
   return positions.every((position) => position !== undefined) ? positions as { x: number; y: number }[] : undefined;
 }
 

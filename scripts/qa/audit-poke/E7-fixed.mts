@@ -1,0 +1,14 @@
+import { readFileSync } from "node:fs";
+import { deserialize } from "@/project/io/serialize";
+import { startSession } from "@/project/session";
+import { giveMonster } from "@/project/monsterCollection";
+import { runSceneTest } from "@/testing/sceneTestRunner";
+const project: any = deserialize(readFileSync("qa-runs/audit-poke/A1-base.json", "utf8"));
+const ev = Object.values(project.maps).flatMap((m: any) => m.events.filter((e: any) => /legendary_/.test(e.id)).map((e: any) => ({ map: m, e })));
+console.log("legendary events:", ev.map(x => `${x.map.id}:${x.e.id}@(${x.e.x},${x.e.y})`).join(", "));
+const { map, e } = ev[0];
+const session: any = startSession(project, 11); giveMonster(project, session, { speciesId: project.database.monsterSpecies[0].id, level: 60 }); session.switches.mx_ending = true;
+const res: any = runSceneTest(project, { mapId: map.id, start: { x: e.x, y: e.y + 1 }, steps: [{ kind: "face", dir: "up" }, { kind: "interact", eventId: e.id }] }, undefined, { initialSession: session, monsterTactics: true });
+console.log("ok", res.ok, "reason", res.failureReason, "log:", res.log.slice(-6));
+const troop = project.database.troops.find((t: any) => t.id.includes("legendary_0")); console.log("troop flags", JSON.stringify({ unc: troop.uncapturable, tr: troop.trainerBattle }));
+const cmd = JSON.stringify(e.pages?.[0]?.commands ?? e.commands).match(/"canEscape":(true|false)/g); console.log("battleProcessing canEscape in event:", cmd);

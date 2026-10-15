@@ -5,6 +5,7 @@ import { validateFieldHud } from "./shapeFieldHud";
 import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId } from "@/project/genreLock";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import {
@@ -99,6 +100,7 @@ export function validateSystem(value: unknown): void {
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
+  if (system.captureShakesVariableId !== undefined) requireNonBlankString("system.captureShakesVariableId", system.captureShakesVariableId);
   if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
   if (system.gameOvers !== undefined) {
     const rows = requireArray("system.gameOvers", system.gameOvers);
@@ -128,6 +130,14 @@ export function validateSystem(value: unknown): void {
   if (system.genre !== undefined) {
     requireString("system.genre", system.genre);
     assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);
+  }
+  if (system.genreLock !== undefined) {
+    const genreLock = requireRecord("system.genreLock", system.genreLock);
+    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "grandfatheredMapIds"]);
+    assert(isGenreLockPresetId(genreLock.preset), `system.genreLock.preset is not a supported lock preset: ${String(genreLock.preset)}`);
+    assert(genreLock.mode === "enforce" || genreLock.mode === "warn", "system.genreLock.mode must be enforce or warn.");
+    for (const [index, family] of requireArray("system.genreLock.allowedFamilies", genreLock.allowedFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFamilies[${index}]`, family);
+    if (genreLock.grandfatheredMapIds !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredMapIds", genreLock.grandfatheredMapIds).entries()) requireNonBlankString(`system.genreLock.grandfatheredMapIds[${index}]`, id);
   }
   if (system.titleScreen !== undefined) {
     const titleScreen = requireRecord("system.titleScreen", system.titleScreen);
@@ -265,7 +275,8 @@ function validateCinematicSequence(label: string, value: unknown): void {
 
 export function validateGameOverSettings(value: unknown, label = "system.gameOver"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId", "goldLossPercent"]);
+  if (settings.goldLossPercent !== undefined) assert(Number.isInteger(settings.goldLossPercent) && Number(settings.goldLossPercent) >= 0 && Number(settings.goldLossPercent) <= 100, `${label}.goldLossPercent must be an integer in 0..100.`);
   if (settings.outcome !== undefined) assert(settings.outcome === "menu" || settings.outcome === "recover" || settings.outcome === "title", `${label}.outcome is invalid.`);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.timing !== undefined) {

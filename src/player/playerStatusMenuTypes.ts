@@ -37,6 +37,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly onToggleMonsterView: () => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
+  readonly onUseMonsterFieldSkill?: (instanceId: string, skillId: string) => void;
   readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
   readonly onRejectPendingMonsterSkill?: (instanceId: string, pendingSkillId: string) => void;
   readonly onSelectLifeLedgerTab?: (tab: LifeLedgerTabId) => void;

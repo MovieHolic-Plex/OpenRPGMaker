@@ -57,12 +57,16 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
     if (patch.fieldCommonEventId) record.fieldCommonEventId = patch.fieldCommonEventId;
     else delete record.fieldCommonEventId;
   }
+  if ("unforgettable" in patch) {
+    if (patch.unforgettable === true) record.unforgettable = true;
+    else delete record.unforgettable;
+  }
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("maxPp" in patch) record.maxPp = patch.maxPp;
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "moveMotion"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboCombinedStats", "comboSwitchId", "moveMotion"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -193,6 +197,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("backdropLayers" in patch) record.backdropLayers = patch.backdropLayers;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
+  if ("teamSwapCost" in patch) record.teamSwapCost = patch.teamSwapCost;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   if ("afterBattle" in patch) record.afterBattle = patch.afterBattle;
   database.troops[index] = normalizeTroopRecord(record);

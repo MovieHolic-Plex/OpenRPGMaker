@@ -1,4 +1,5 @@
 import { activeTools } from "./toolRegistry";
+import { genreLockHidesTool } from "@/project/genreLock";
 import { TOOL_ALIASES, aliasTermHit } from "./toolAliases";
 import { ToolError, type ToolDefinition, type ToolDomain, type ToolExecResult } from "./types";
 
@@ -204,11 +205,15 @@ export const FIND_TOOLS: ToolDefinition = {
     required: ["query"],
     additionalProperties: false,
   },
-  run(_project, args): ToolExecResult {
+  run(project, args): ToolExecResult {
     const query = args.query as string;
     const domain = parseDomain(args.domain);
     const limit = normalizedLimit(args.limit);
+    // 장르 잠금 중에는 허용 계열 밖 칩셋 전용 파이프라인(버들항·jp_city·캠퍼스… 시공 도구)이 결과에 나오지 않는다 — 조수가 애초에 고르지 않게(project/genreLock.ts).
+    const visible = (tool: { name: string }) => !genreLockHidesTool(project, tool.name);
+    const lockedNames = [...new Set(words(query))].filter((name) => genreLockHidesTool(project, name));
     const pool = activeTools()
+      .filter(visible)
       .filter((tool) => tool.name !== FIND_TOOLS.name)
       .filter((tool) => domain === undefined || tool.domains?.includes(domain));
     // 정확한 툴 이름을 보냈으면 그 툴만 돌려준다. 예전엔 설명에 그 이름이 나오는 툴 5개가 스키마째 딸려 와
@@ -216,7 +221,7 @@ export const FIND_TOOLS: ToolDefinition = {
     // find_tools 6회 중 4회가 정확한 이름 검색).
     // 정확한 이름은 domain 필터보다 우선한다 — 모델은 domain 을 자주 틀리게 짚는다(evaluate_village_look 을 map 으로).
     const named = new Set(words(query));
-    const exact = activeTools().filter((tool) => tool.name !== FIND_TOOLS.name && named.has(tool.name));
+    const exact = activeTools().filter((tool) => visible(tool) && tool.name !== FIND_TOOLS.name && named.has(tool.name));
     let hits: ToolSearchHit[];
     let nearest = false;
     if (exact.length > 0) {
@@ -227,12 +232,13 @@ export const FIND_TOOLS: ToolDefinition = {
     }
     const candidates = hits.map(({ tool, why }) => ({ name: tool.name, mode: tool.mode, domains: tool.domains ?? [], why, description: tool.description, parameters: tool.parameters }));
     const label = (hit: ToolSearchHit) => (hit.why && exact.length === 0 ? `${hit.tool.name} [${hit.why}]` : hit.tool.name);
+    const lockNote = lockedNames.length ? ` 단 ${lockedNames.join(", ")} 는 장르 잠금 중이라 쓸 수 없다(허용 계열 칩셋 도구만 보인다).` : "";
     return {
-      summary: candidates.length > 0
+      summary: (candidates.length > 0
         ? nearest
           ? `"${query}"에 정확히 맞는 툴은 없어 가장 가까운 ${candidates.length}개를 돌려줍니다: ${hits.map(label).join(", ")}. 맞지 않으면 기능어를 바꾸거나 영문 툴 이름으로 다시 검색하세요.`
           : `편집기 툴 ${candidates.length}개 발견: ${hits.map(label).join(", ")}${unknownNames(exact, named)}`
-        : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`,
+        : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`) + lockNote,
       data: { matches: candidates, ...(nearest ? { nearest: true } : {}) },
     };
   },

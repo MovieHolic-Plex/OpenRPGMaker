@@ -181,6 +181,10 @@ export function defaultStateRecords(): StateRecord[] {
     { id: "state_evade", name: "회피", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 3, recoverNaturallyChance: 30, runtimeEffects: { evasionChance: 40, removeOnBattleEnd: true } },
     // 리플렉: 단일 마법을 시전자에게 튕긴다.
     { id: "state_reflect", name: "리플렉", battleAura: "shield-shimmer", restriction: "없음", removalCondition: "전투 종료", recoverNaturallyFromTurn: 4, recoverNaturallyChance: 25, runtimeEffects: { reflect: true, removeOnBattleEnd: true } },
+    // 폭주: 폭주(rage) 기술이 건다. 이 상태인 동안 모습이 된 몬스터의 행동 표대로 자동 행동한다. 해제(정화 등)하면 폭주가 끝난다.
+    { id: "state_rage", name: "폭주", battleAura: "berserk-pulse", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { forcedAction: "rage", removeOnBattleEnd: true } },
+    // 좀비: HP 회복이 같은 양의 피해가 된다(FF6). 회복 스킬·아이템·재생 모두.
+    { id: "state_zombie", name: "좀비", battleAura: "poison-bubble", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { invertHealing: true, removeOnBattleEnd: true } },
     // 리레이즈: 쓰러지면 최대 HP 25% 로 한 번 일어난다. 저절로 풀리지 않는다.
     { id: "state_reraise", name: "리레이즈", battleAura: "regen-sparkle", restriction: "없음", removalCondition: "전투 종료", runtimeEffects: { reraisePercent: 25, removeOnBattleEnd: true } },
     // 선고: 자기 차례 3번 뒤 전투 불능. 저절로 풀리지 않는다(정화로 해제).

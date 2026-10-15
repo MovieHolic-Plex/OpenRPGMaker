@@ -5,9 +5,10 @@ import { effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorParameterKey, ItemRecord, Project, SkillId } from "@/project/types";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
-import { applyMonsterMedicine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { applyMonsterMedicine, machineSkillOf, previewMonsterMachine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { teachMonsterSkill } from "@/project/monsterCollection";
 import { actorOwnedSkillIds } from "@/project/growth/runtime";
-export { previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
+export { machineSkillOf, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
 
 export type MenuItemUseResult =
   | { readonly kind: "used"; readonly message: string }
@@ -76,6 +77,10 @@ export function useItemFromMenu(
     return { kind: "used", message: `${item.name}을 사용했습니다` };
   }
 
+  // 기술머신·비전머신: 몬스터 파티 게임에서는 파티 몬스터에게 가르친다(칸이 가득 차면 레벨업 때처럼 교체 대기).
+  const machineSkillId = machineSkillOf(project, item);
+  if (machineSkillId) return useMonsterMachine(project, session, item, machineSkillId, targetMonsterInstanceId);
+
   const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
   if (learnedSkillId) {
     return useSkillBook(project, session, item, learnedSkillId, targetActorId);
@@ -104,6 +109,28 @@ export function useItemFromMenu(
 
   commitSuccessfulUse(project, session, item);
   return { kind: "used", message: `${item.name}을 사용했습니다` };
+}
+
+function useMonsterMachine(
+  project: Project,
+  session: PlaySession,
+  item: ItemRecord,
+  skillId: SkillId,
+  instanceId?: string
+): MenuItemUseResult {
+  const id = instanceId?.trim();
+  if (!id) return { kind: "unusable", message: "가르칠 파티 몬스터를 선택하세요" };
+  const preview = previewMonsterMachine(project, session, item, id);
+  if (preview.reason) return { kind: "unusable", message: preview.reason };
+  const taught = teachMonsterSkill(project, session.monsterInstances[id]!, skillId);
+  if (!taught.ok) return { kind: "unusable", message: "기술을 가르칠 수 없습니다" };
+  session.monsterInstances[id] = taught.instance;
+  commitSuccessfulUse(project, session, item);
+  const name = project.database.skills.find((skill) => skill.id === skillId)?.name ?? skillId;
+  return {
+    kind: "used",
+    message: taught.outcome === "learned" ? `「${name}」 기술을 익혔습니다` : `「${name}」 기술을 배우려면 기존 기술 하나를 잊어야 합니다 — 몬스터 목록에서 고르세요`,
+  };
 }
 
 function useCareItem(

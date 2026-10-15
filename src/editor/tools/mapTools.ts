@@ -21,6 +21,7 @@ import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUT
 import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { cloneGameMap } from "@/project/mapClone";
 import {
@@ -56,6 +57,8 @@ import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaC
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
+import { terrainRecordAt } from "@/project/terrainAt";
+import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
@@ -312,12 +315,17 @@ const createMap: ToolDefinition = {
       draft.mapTree.children.push({ mapId: id, children: [] });
     }
     adoptStartIfNeeded(draft, map);
+    const seedStart = draft.maps[draft.startMapId];
+    const startNote = id !== draft.startMapId && seedStart && seedStart.id === "map_blank_start" && isUntouchedMap(seedStart) && Object.keys(draft.maps).length >= 2
+      ? [`게임 시작 위치가 아직 빈 시드 맵 ${seedStart.id} 입니다 — 이 게임을 이 맵부터 시작하려면 set_start_position({mapId:"${id}", x, y}) 를 부르세요(통행 칸 좌표).`]
+      : [];
     const warnings = blankNamesake
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
         + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
     // themeScene 이 안쪽에서 부른 create_map 은 곧바로 구성기가 채우므로 「단색」 안내를 붙이지 않는다.
     const flatNote = args[THEMED_INNER_ARG] === true ? "" : ` 지금은 단색 ${tileset.name ?? tilesetId} 바닥입니다. ${emptyMapNextStep(map)}`;
+    warnings.push(...startNote);
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}.${flatNote}`,
       data: { mapId: id, bgmResourceId, flat: true },
@@ -1375,6 +1383,7 @@ const encounterConditionsSchema: JsonSchema = {
     maxPartyLevel: { type: "integer" },
     region: rectSchema,
     locationId: { type: "string", description: "이 맵의 로케이션(구역) id 또는 이름. 그 구역 안에서만 이 항목이 나온다 — 풀숲 구역 같은 곳에만 야생을 걸 때(구역을 옮기면 조건도 따라온다). region(생좌표 사각형)보다 우선." },
+    terrainId: { type: "string", description: "지형 기록 id(database.terrains). 서 있는 칸의 지형 태그가 이 기록일 때만 나온다 — 키 큰 풀 칸에서만 야생을 걸 때 'terrain_grass'(몬스터 칩셋 태그 5, 없으면 자동으로 만든다). 구역(locationId)이 아니라 타일 종류에 묶이므로 풀 그림을 고쳐 칠해도 따라간다." },
     timePhase: { type: "string", enum: TIME_PHASES },
     season: { type: "string", enum: SEASONS },
   },
@@ -1386,6 +1395,8 @@ const encounterEntrySchema: JsonSchema = {
   properties: {
     troopId: { type: "string" },
     weight: { type: "integer" },
+    levelMin: { type: "integer", minimum: 1, maximum: 99, description: "야생 레벨 하한. 이 항목이 뽑히면 [levelMin, levelMax] 에서 레벨을 굴려 그 레벨의 능력치·기술·경험치로 싸운다(종 몬스터 적 트룹만). 둘 중 하나만 주면 그 레벨 고정. 생략 = 트룹 적의 level." },
+    levelMax: { type: "integer", minimum: 1, maximum: 99, description: "야생 레벨 상한(포함)." },
     conditions: encounterConditionsSchema,
   },
   required: ["troopId", "weight"],
@@ -1455,6 +1466,21 @@ function applyEncounterRate(map: GameMap, requested: unknown, hasEntries: boolea
   return `인카운터율 0 이라 기본값 ${DEFAULT_TABLE_ENCOUNTER_RATE} 으로 보정`;
 }
 
+/** terrainId 조건이 이 맵에서 실제로 서 있을 칸이 하나도 없으면 알린다 — 조우가 영영 안 나온다. */
+function encounterTerrainWarnings(draft: Project, map: GameMap, entries: readonly EncounterTableEntry[]): string[] {
+  const wanted = [...new Set(entries.flatMap((entry) => entry.conditions?.terrainId ? [entry.conditions.terrainId] : []))];
+  const warnings: string[] = [];
+  for (const terrainId of wanted) {
+    let cells = 0;
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+      if (terrainRecordAt(draft, { mapId: map.id, x, y })?.record.id === terrainId) cells += 1;
+    }
+    if (cells === 0) warnings.push(`terrainId ${terrainId}: 이 맵(${map.name})에는 그 지형 태그가 붙은 칸이 없어 해당 항목은 나오지 않습니다 — 칩셋 타일에 지형 태그를 주거나(타일 지형 도구) 그 타일(키 큰 풀 등)을 칠하세요.`);
+    else warnings.push(`terrainId ${terrainId}: 이 맵에서 ${cells}칸에서만 나옵니다.`);
+  }
+  return warnings;
+}
+
 function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
   if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
@@ -1465,13 +1491,13 @@ function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): En
  * 맵 전체 조우로 저장됐다). 알려진 칸은 스키마에 선언해 저장하고, 아직 없는 기능은 이유를 말하고 거절한다.
  */
 const ENCOUNTER_UNSUPPORTED_HINTS: Readonly<Record<string, string>> = {
-  minLevel: "야생 레벨 범위(minLevel/maxLevel)는 조우표에 아직 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
-  maxLevel: "야생 레벨 범위(minLevel/maxLevel)는 조우표에 아직 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
-  level: "조우표 항목에는 레벨 칸이 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다",
+  minLevel: "야생 레벨 범위의 이름은 levelMin/levelMax(항목 바로 아래)입니다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  maxLevel: "야생 레벨 범위의 이름은 levelMin/levelMax(항목 바로 아래)입니다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  level: "고정 레벨은 levelMin 과 levelMax 에 같은 값을 주세요(항목 바로 아래)",
   weather: "날씨 조건은 조우표에 아직 없다(날씨를 보는 것은 낚시 규칙의 weatherKinds 뿐) — 비 오는 날 전용 맵은 날씨 이벤트로 스위치를 켜고 conditions.switchId 로 거는 우회를 쓴다",
   shiny: "이로치(색이 다른 개체) 개념은 아직 없다",
-  terrain: "타일 종류(풀숲 등) 조건은 아직 없다 — 풀숲 구역을 맵 로케이션으로 만들고 conditions.locationId 로 거세요",
-  terrainTag: "타일 종류(풀숲 등) 조건은 아직 없다 — 풀숲 구역을 맵 로케이션으로 만들고 conditions.locationId 로 거세요",
+  terrain: "타일 종류 조건의 이름은 conditions.terrainId 입니다(키 큰 풀 칸만이면 'terrain_grass')",
+  terrainTag: "타일 종류 조건의 이름은 conditions.terrainId 입니다(키 큰 풀 칸만이면 'terrain_grass')",
   location: "구역 조건의 이름은 locationId 입니다",
 };
 
@@ -1489,19 +1515,44 @@ function rejectUnknownEncounterKeys(input: Record<string, unknown>, allowed: rea
 
 function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry {
   const entry = requireRecordValue(value, label);
-  rejectUnknownEncounterKeys(entry, ["troopId", "weight", "conditions"], label, map.id);
+  rejectUnknownEncounterKeys(entry, ["troopId", "weight", "levelMin", "levelMax", "conditions"], label, map.id);
   const troopId = stringField(entry, "troopId", label);
   assertKnownTroop(draft, troopId);
   const weight = integerField(entry, "weight", label);
   if (weight <= 0) throw new ToolError(`${label}.weight는 1 이상이어야 합니다.`, { code: "invalid-weight", mapId: map.id });
   const conditions = entry.conditions === undefined ? undefined : parseEncounterConditions(draft, map, entry.conditions, `${label}.conditions`);
-  return conditions ? { troopId, weight, conditions } : { troopId, weight };
+  const level: Pick<EncounterTableEntry, "levelMin" | "levelMax"> = {};
+  for (const key of ["levelMin", "levelMax"] as const) {
+    if (entry[key] === undefined) continue;
+    const value = integerField(entry, key, label);
+    if (value < 1 || value > 99) throw new ToolError(`${label}.${key}는 1~99 정수여야 합니다(받은 값 ${value}).`, { code: "invalid-level-range", mapId: map.id });
+    level[key] = value;
+  }
+  if (level.levelMin !== undefined && level.levelMax !== undefined && level.levelMin > level.levelMax) {
+    throw new ToolError(`${label}: levelMin(${level.levelMin})이 levelMax(${level.levelMax})보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
+  }
+  if (level.levelMin !== undefined || level.levelMax !== undefined) {
+    const enemyIds = new Set((draft.database.troops.find((troop) => troop.id === troopId)?.members ?? []).map((member) => member.enemyId));
+    const hasSpecies = draft.database.enemies.some((enemy) => enemyIds.has(enemy.id) && enemy.speciesId);
+    if (!hasSpecies) throw new ToolError(`${label}: 트룹 ${troopId} 에 종 몬스터 적(speciesId 있는 enemy)이 없어 levelMin/levelMax 가 적용되지 않습니다. 몬스터 도감 종의 야생 트룹(define_monster_families spawn 또는 upsert_enemy speciesId)을 쓰거나 levelMin/levelMax 를 빼세요.`, { code: "invalid-level-range", mapId: map.id });
+  }
+  return { troopId, weight, ...level, ...(conditions ? { conditions } : {}) };
 }
 
 function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry["conditions"] {
   const input = requireRecordValue(value, label);
-  rejectUnknownEncounterKeys(input, ["switchId", "variableId", "atLeast", "minPartyLevel", "maxPartyLevel", "region", "locationId", "timePhase", "season"], label, map.id);
+  rejectUnknownEncounterKeys(input, ["switchId", "variableId", "atLeast", "minPartyLevel", "maxPartyLevel", "region", "locationId", "terrainId", "timePhase", "season"], label, map.id);
   const conditions: NonNullable<EncounterTableEntry["conditions"]> = {};
+  if (input.terrainId !== undefined) {
+    const raw = stringField(input, "terrainId", label).trim();
+    const terrainId = raw === "grass" || raw === "tall_grass" ? GRASS_TERRAIN_ID : raw;
+    const terrains = draft.database.terrains ??= [];
+    if (!terrains.some((terrain) => terrain.id === terrainId) && terrainId === GRASS_TERRAIN_ID) ensureGrassTerrainRecord(terrains);
+    if (!terrains.some((terrain) => terrain.id === terrainId)) {
+      throw new ToolError(`${label}.terrainId가 없습니다: ${raw}. database.terrains 의 id: ${terrains.map((terrain) => terrain.id).join(", ") || "(없음)"}${terrainId === GRASS_TERRAIN_ID ? " — 'terrain_grass' 는 지형 기록이 정확히 4개(물·모래·눈·돌)일 때만 자동으로 만든다. 기록이 더 있으면 upsert_database_utility 로 5번째(태그 5) 자리에 직접 만드세요" : ""}`, { code: "terrain-not-found", mapId: map.id });
+    }
+    conditions.terrainId = terrainId;
+  }
   if (input.locationId !== undefined) {
     const locationId = stringField(input, "locationId", label).trim();
     const location = locationId ? resolveLocation(map, locationId) : undefined;
@@ -2211,9 +2262,11 @@ const setEncounterTable: ToolDefinition = {
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
     const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
+    const warnings = encounterTerrainWarnings(draft, map, entries);
     return {
       summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정${rateNote === undefined ? "" : ` — ${rateNote}`}`,
       data: { mapId: map.id, entries, encounterRate: map.encounterRate ?? 0 },
+      ...(warnings.length ? { warnings } : {}),
     };
   },
 };

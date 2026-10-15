@@ -1,12 +1,12 @@
 // ct-field 시나리오 픽스처 — 크로노 트리거식 필드 기능을 편집기 도구(runTool)로만 저작한다.
-//   node node_modules/vite-node/vite-node.mjs --script scripts/qa/runtime/ct-field-fixture.mts > project.json
+//   node node_modules/vite-node/dist/cli.mjs --script scripts/qa/runtime/ct-field-fixture.mts > project.json
 // 시작 맵(20×15, 시작 10,8)에 파티 3명 + fromParty, 턱 칸 (4,4)(아래로만), 선두 교대 이벤트 (15,8),
 // 시간의 문 (시작 맵 ↔ 과거 맵). 엔진 계약 픽스처이며 데모 콘텐츠로 출하하거나 원격에 저장하지 않는다.
 import { createBlankProject } from "../../../src/project/defaults";
 import { runTool } from "../../../src/editor/tools/toolRunner";
 import { deserialize, serialize } from "../../../src/project/io";
 
-export const LEDGE_TILE = 6;
+export const LEDGE_TILE = 741; // beodeul_city 바닥 칸(옛 6 은 상위 전용 칩으로 자동 라우팅돼 1층에 안 칠해졌다)
 export const LEDGE_CELL = { x: 4, y: 4 } as const;
 export const LEAD_EVENT_ID = "ev_ct_lead_mage";
 export const LEAD_EVENT_CELL = { x: 15, y: 8 } as const;

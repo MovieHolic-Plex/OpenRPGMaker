@@ -41,7 +41,7 @@ import { el } from "@/util/dom";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 import { POKEMON_MOVE_MOTIONS, POKEMON_MOVE_MOTION_LABELS, isPokemonMoveMotion, pokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 
-const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
+const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom", "sketch", "rage", "shuffleParty", "forceSwitch"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
 const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillDamageStatistic[];
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
@@ -512,6 +512,13 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
       updateDatabaseRecord("skills", record.id, { effect: { kind: "randomSkillFrom", skillIds: value.split(",").map((id) => id.trim()).filter(Boolean) } })
     ));
   }
+  if (record.effect.kind === "rage") {
+    const enemyIds = record.effect.enemyIds ?? [];
+    controls.push(textField("폭주 몬스터 ID 고정(쉼표, 비우면 승리 때 모은 목록)", "db-field-skill-effect-rage-enemies", enemyIds.join(", "), (value) => {
+      const ids = value.split(",").map((id) => id.trim()).filter(Boolean);
+      updateDatabaseRecord("skills", record.id, { effect: ids.length ? { kind: "rage", enemyIds: ids } : { kind: "rage" } });
+    }));
+  }
   if (record.effect.kind === "switch") {
     controls.push(
       selectField("스위치", "db-field-skill-effect-switch", record.effect.switchId ?? "", switchOptions(), (switchId) =>
@@ -542,6 +549,10 @@ function updateSkillEffectKind(record: SkillRecord, kind: SkillEffect["kind"]): 
     case "steal":
     case "scan":
     case "learnEnemySkill":
+    case "sketch":
+    case "rage":
+    case "shuffleParty":
+    case "forceSwitch":
       updateDatabaseRecord("skills", record.id, { effect: { kind } });
       return;
     case "randomSkillFrom":

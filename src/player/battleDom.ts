@@ -181,7 +181,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
-  const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
+  const activeAtb = options.runtime.snapshot().atbMode === "active";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
   // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
   // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.
@@ -392,6 +392,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setDirectorState(state: BattleDirectorState): void;
     render(): void;
     runActorCommand(command: ActorCommand): void;
+    runTeamSwap(targetTeamId: string): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -407,6 +408,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     render: () => syncView(),
     runActorCommand,
+    runTeamSwap,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -1512,6 +1514,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */
+  function runTeamSwap(targetTeamId: string): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.performTeamSwap) return;
+    const before = options.runtime.snapshot();
+    options.runtime.performTeamSwap({ kind: "teamSwap", targetTeamId });
+    const afterCommand = options.runtime.snapshot();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    const arrived = afterCommand.actors[0]?.recordId;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
+    sequencer.runAfterActorCommand({ kind: "switch", targetActorId: arrived ?? "" }, before, afterCommand);
   }
 
   function runActorCommand(command: ActorCommand): void {

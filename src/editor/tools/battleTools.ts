@@ -26,6 +26,7 @@ const simulateBattleTool: ToolDefinition = {
       seed: { type: "integer", description: "PRNG 시드(재현성)" },
       battleFlow: { type: "string", enum: ["gauge", "strict"], description: "전투 흐름(gauge 기본, strict 엄격 턴제)" },
       activeSlots: { type: "integer", description: "동시 참전 액터 수 override(미지정 시 시스템/트룹 설정)" },
+      useSkills: { type: "boolean", description: "true = 아군이 자동 전투 AI(기술·회복·연계기)로 행동한다. 기본 false 는 통상 공격+회복약뿐이라 기술·연계기 밸런스를 못 잰다. 결과 data.skillUses 에 기술별 사용 횟수가 나온다. 연계기는 짝도 게이지 만충이어야 열려 자동 전투에서는 드물게만 쓰인다(skillUses 에 안 잡혀도 연계기가 죽은 것이 아니다 — 위력은 upsert_skill 값과 comboCombinedStats 로 직접 계산해 맞춰라)" },
       strictScript: {
         type: "array",
         description: "strict 전용 라운드별 명령. 예: [[{actorId:'actor_hero', command:'attack', target:'enemy-1'}, {actorId:'actor_mage', command:'switch', switchActorId:'actor_healer'}]]",
@@ -70,6 +71,7 @@ const simulateBattleTool: ToolDefinition = {
       seed: args.seed as number | undefined,
       battleFlow: args.battleFlow as "gauge" | "strict" | undefined,
       activeSlots: args.activeSlots as number | undefined,
+      ...(args.useSkills === true ? { useSkills: true } : {}),
       strictScript: args.strictScript as Parameters<typeof simulateBattle>[0]["strictScript"],
     });
     // 페이즈(전투 이벤트 페이지)는 승률과 같은 급의 1차 지표다 — 넣은 연출이 실제로 떴는지를
@@ -80,6 +82,10 @@ const simulateBattleTool: ToolDefinition = {
     const phaseNote = phases.length === 0
       ? ""
       : `, 페이즈 ${phases.length - silent.length}/${phases.length} 발동`;
+    const skillEntries = Object.entries(result.skillUses);
+    const skillNote = skillEntries.length > 0
+      ? `, 기술 ${skillEntries.map(([id, count]) => `${project.database.skills.find((skill) => skill.id === id)?.name ?? id}×${count}`).join("·")}`
+      : args.useSkills === true ? ", 기술 사용 0회(연계기·기술이 조건/MP/해금으로 막혔는지 확인)" : "";
     const warnings: string[] = [];
     if (silent.length > 0) {
       warnings.push(
@@ -96,7 +102,7 @@ const simulateBattleTool: ToolDefinition = {
       );
     }
     return {
-      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}`,
+      summary: `전투 시뮬(${troopId}, Lv${args.heroLevel}, n=${result.samples}): 승률 ${(result.winRate * 100).toFixed(0)}%, 평균 ${result.avgTurns.toFixed(1)}타${phaseNote}${skillNote}`,
       data: result,
       ...(warnings.length > 0 ? { warnings } : {}),
     };

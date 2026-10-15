@@ -385,6 +385,12 @@ export interface EncounterTableEntry {
   troopId: TroopId;
   weight: number;
   conditions?: EncounterConditions;
+  /**
+   * 야생 레벨 범위(포함). 이 항목이 뽑히면 전투 시작 때 [levelMin, levelMax] 에서 레벨을 굴려 그 레벨의 능력치·기술로 싸운다
+   * (troop 의 종 enemy 레코드 레벨은 범위를 안 줬을 때의 값). 둘 중 하나만 주면 그 값으로 고정. 종 몬스터 enemy 에만 적용된다.
+   */
+  levelMin?: number;
+  levelMax?: number;
 }
 
 export interface EncounterConditions {
@@ -403,6 +409,11 @@ export interface EncounterConditions {
    * 로케이션을 넓히면 이 조건도 함께 넓어진다(복사본이 없으므로 어긋날 수 없다).
    */
   locationId?: string;
+  /**
+   * `database.terrains[].id`. 서 있는 칸의 지형 태그(타일 → 태그 N → terrains[N-1])가 이 지형 기록일 때만 나온다.
+   * 타일 종류에 묶이므로 풀 그림을 고쳐 칠해도 조우 칸이 따라간다(키 큰 풀 = `terrain_grass`, 칩셋 태그 5).
+   */
+  terrainId?: string;
   timePhase?: TimePhase;
   season?: Season;
 }

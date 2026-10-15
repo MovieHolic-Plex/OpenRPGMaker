@@ -5,6 +5,40 @@
 
 <!-- releases -->
 
+## 0.226.0 — 2026-10-15
+
+### 기능
+
+- **battle** — FF6식 팀 교대 전투 — 한 번에 한 팀만 싸운다 (battleTeams · teamSwapCost) (#2613) (`921d948`)
+- **battle** — FF6 battle effects - zombie, sketch, rage, trance, enemy shuffle/forced switch (#2600) (`d814dd1`)
+- **monster-art** — bake follower walk chips for gustchick and zaptoe (supervisor picks) (#2617) (`7b0f2b7`)
+
+### 수정
+
+- **ci** — keep harness follower chips out of the sealed walking catalog (`71571ea`)
+
+## 0.225.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — follower walk-chip wiring (campaignSpeciesId -> species fieldGraphic via bundle manifest) + field_chip harness (#2612) (`ef21a7e`)
+
+### 수정
+
+- **ci** — record the pokemon battle CSS budget and winners (`27875e9`)
+- **ci** — accept the harness monster walking chips in the charset catalog (`38e97b2`)
+
+## 0.224.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — 12 species front/back picks + bundle build (supervisor-delegated) (#2607) (`5492828`)
+- **battle** — pokemon battle phase 2 - typewriter text, capture shakes, evolution scene, level-up stat box (#2605) (`d7481be`)
+
+### 수정
+
+- **ai** — themeScene maps carry an explicit mapRole; 방어/방패 no longer read as interior (#2606) (`61e6db9`)
+
 ## 0.223.0 — 2026-10-15
 
 ### 기능
