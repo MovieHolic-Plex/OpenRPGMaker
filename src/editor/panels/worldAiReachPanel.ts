@@ -149,6 +149,12 @@ export function renderWorldAiReachPanel(options: WorldAiReachPanelOptions): HTML
       body,
     ],
   });
-  details.addEventListener("toggle", () => options.onToggle(details.open));
+  // 처음부터 open 속성을 달고 만들면 브라우저가 토글 이벤트를 한 번 쏜다 — 사용자의 조작이 아니므로 기록하지 않는다.
+  let lastOpen = options.open;
+  details.addEventListener("toggle", () => {
+    if (details.open === lastOpen) return;
+    lastOpen = details.open;
+    options.onToggle(details.open);
+  });
   return details;
 }
