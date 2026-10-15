@@ -76,12 +76,16 @@ export function createAiWorkspace(options: {
     outcome.hidden = !showChat;
     // 대화 화면에서는 탭이 없다 — 받은함 + 대화 한 화면. 조수 상세는 상태 줄 팝오버의 「조수 상세」로 들어오고, 거기서 탭으로 돌아온다.
     tabs.hidden = !showTeamUi || wide || studio || active === "chat";
-    panel.dataset.workspaceTab = active;
-    chatTab.setAttribute("aria-selected", String(active === "chat"));
-    teamTab.setAttribute("aria-selected", String(active === "team"));
-    chatTab.tabIndex = active === "chat" ? 0 : -1;
-    teamTab.tabIndex = teamTab.isConnected && active === "team" ? 0 : -1;
-    teamTab.textContent = count ? `조수 ${count}` : "조수";
+    // 같은 값을 다시 쓰지 않는다 — 조수 이벤트마다 sync 가 돌고(스트림 24초에 85번), 같은 값 쓰기도 스타일 무효화를 일으킨다(2026-10-15 실측).
+    if (panel.dataset.workspaceTab !== active) panel.dataset.workspaceTab = active;
+    const chatSelected = String(active === "chat"), teamSelected = String(active === "team");
+    if (chatTab.getAttribute("aria-selected") !== chatSelected) chatTab.setAttribute("aria-selected", chatSelected);
+    if (teamTab.getAttribute("aria-selected") !== teamSelected) teamTab.setAttribute("aria-selected", teamSelected);
+    const chatIndex = active === "chat" ? 0 : -1, teamIndex = teamTab.isConnected && active === "team" ? 0 : -1;
+    if (chatTab.tabIndex !== chatIndex) chatTab.tabIndex = chatIndex;
+    if (teamTab.tabIndex !== teamIndex) teamTab.tabIndex = teamIndex;
+    const teamLabel = count ? `조수 ${count}` : "조수";
+    if (teamTab.textContent !== teamLabel) teamTab.textContent = teamLabel;
   };
   const select = (tab: Tab, remember = true) => {
     if (tab === "team" && !showTeamUi) {

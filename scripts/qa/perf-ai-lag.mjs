@@ -38,7 +38,7 @@ const errors = [];
 page.on("pageerror", (e) => errors.push(String(e.message).slice(0, 300)));
 page.on("console", (m) => { if (m.text().startsWith("[perf]") || m.type() === "error") console.log("[page]", m.text().slice(0, 300)); });
 
-await page.addInitScript(({ attr }) => {
+await page.addInitScript(({ attr, gbcr }) => {
   localStorage.setItem("oprn:editor-ui-mode", "standard");
   for (const k of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(k, "1");
   const P = window.__perf = { on: false, t0: 0, long: [], loaf: [], evt: [], input: [], step: [], regs: {} };
@@ -59,11 +59,29 @@ await page.addInitScript(({ attr }) => {
   } catch {}
   // 입력 큐 대기 — 캔버스 위 포인터 이벤트가 핸들러에 닿기까지(메인 스레드가 막혔던 시간).
   window.addEventListener("pointermove", (e) => { if (P.on && P.measureInput) P.input.push([P.phase ?? "", performance.now() - e.timeStamp]); }, { capture: true, passive: true });
+  if (gbcr) {
+    // 강제 레이아웃 귀속: getBoundingClientRect/scrollHeight 등 레이아웃을 강제하는 읽기의 호출 수·시간을 호출 파일:줄 별로 집계한다.
+    const forced = P.forced = {};
+    const note = (what, ms) => { if (!P.on) return; const st = (new Error().stack?.split("\n") ?? []).slice(3, 5).map((l) => (l.match(/\/src\/([^?:)]+)\??[^:]*:(\d+)/) || [])[0]?.replace(/^\/src\//, "") ?? "?").join(" < "); const k = what + " @ " + st; const e = forced[k] ??= { n: 0, ms: 0, max: 0 }; e.n += 1; e.ms += ms; e.max = Math.max(e.max, ms); };
+    // DOM 변경 귀속: 변경 대상의 가장 가까운 data-testid/class 별 레코드 수(스트림 동안 어디가 계속 바뀌는가).
+    const muts = P.muts = {};
+    P.mutsRef = muts;
+    const label = (node) => { const el = node.nodeType === 1 ? node : node.parentElement; if (!el) return "?"; const t = el.closest("[data-testid]"); return t ? "testid:" + t.dataset.testid : (el.closest("[class]")?.className?.toString().split(" ")[0] ?? el.tagName); };
+    const startMut = () => new MutationObserver((list) => { if (!P.on) return; for (const m of list) { const k = m.type + (m.attributeName ? ":" + m.attributeName : "") + " " + label(m.target); muts[k] = (muts[k] ?? 0) + 1; } }).observe(document, { subtree: true, attributes: true, childList: true, characterData: true });
+    document.addEventListener("DOMContentLoaded", startMut, { once: true });
+    const orig = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function () { const a = performance.now(); const r = orig.call(this); note("gBCR", performance.now() - a); return r; };
+    for (const prop of ["scrollHeight", "clientHeight", "offsetHeight", "offsetWidth", "scrollTop"]) {
+      const d = Object.getOwnPropertyDescriptor(Element.prototype, prop) ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, prop);
+      if (!d?.get) continue;
+      Object.defineProperty(Element.prototype, prop, { ...d, get() { const a = performance.now(); const v = d.get.call(this); note(prop, performance.now() - a); return v; } });
+    }
+  }
   if (attr) {
     const wrap = (name) => { const orig = window[name]; window[name] = function (cb, ...rest) { const s = new Error().stack?.split("\n")[2]?.replace(/^.*\/src\//, "src/").replace(/\?[^:]*/, "") ?? "?"; if (P.on) P.regs[name + " " + s] = (P.regs[name + " " + s] ?? 0) + 1; return orig.call(this, cb, ...rest); }; };
     wrap("requestAnimationFrame"); wrap("setTimeout"); wrap("setInterval");
   }
-}, { attr: process.env.ATTR === "1" });
+}, { attr: process.env.ATTR === "1", gbcr: process.env.GBCR === "1" });
 
 // 모델 서버: 의도 선언(/chat/completions)·읽기 전용 실행은 고정 응답.
 await page.route("**/*", async (route) => {
@@ -406,6 +424,8 @@ async function runScenario(name) {
     // 스트림이 돌고 있는 한가운데(첫 체크포인트가 적용된 뒤)에서 입력 구간.
     await page.waitForFunction(() => (window.__perf.script?.checkpoints ?? 0) >= 1, undefined, { timeout: 120000 });
     const mid = await cursor();
+    await page.waitForTimeout(1200);
+    await page.screenshot({ path: `${out}/${label}-${name}-mid.png` }); // 스트림 한가운데 — 지도 위 이름표·상태 줄이 그려진 모습
     scen.streamBeforeInput = summarize({ ...(await windowSlice(before)), steps: (await windowSlice(before)).steps.slice(0, mid.step - before.step), long: [], loaf: [] });
     const ip = NOINPUT ? { raw: { step: [], long: [], input: [], evt: [] }, per: {} } : await inputPhase(name);
     const afterInput = await cursor();
@@ -434,6 +454,8 @@ async function runScenario(name) {
   }
   scen.engine = { wallMs: Date.now() - w0, ...metricsDelta(m0, await metricsNow()) };
   if (cdp) scen.profile = await stopProfile(cdp, name);
+  scen.forced = await page.evaluate(() => { const f = window.__perf.forced; if (!f) return undefined; const o = Object.entries(f).sort((a, b) => b[1].ms - a[1].ms).slice(0, 14).map(([k, v]) => `${v.ms.toFixed(0)}ms n=${v.n} max=${v.max.toFixed(0)} ${k}`); for (const k of Object.keys(f)) delete f[k]; return o; });
+  scen.muts = await page.evaluate(() => { const m = window.__perf.muts; if (!m) return undefined; const o = Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 14).map(([k, v]) => `${v} ${k}`); for (const k of Object.keys(m)) delete m[k]; return o; });
   scen.regs = await page.evaluate(() => { const r = window.__perf.regs; const o = Object.entries(r).sort((a, b) => b[1] - a[1]).slice(0, 12); window.__perf.regs = {}; return o; });
   await page.evaluate(() => { window.__perf.on = false; });
   await page.screenshot({ path: `${out}/${label}-${name}.png` });

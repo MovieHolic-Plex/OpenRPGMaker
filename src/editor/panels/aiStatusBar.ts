@@ -30,6 +30,7 @@ export function mountAiStatusBar(): () => void {
   let openId: string | null = null;
   let settledSince: number | null = null;
   let hiddenBySettle = false;
+  let lastChipSignature = "";
 
   const chips = el("div", { class: "ai-status-chips", dataset: { testid: "ai-status-chips" } });
   const elapsed = el("span", { class: "ai-status-elapsed", dataset: { testid: "ai-status-elapsed" } });
@@ -51,8 +52,20 @@ export function mountAiStatusBar(): () => void {
   });
   document.body.append(root, pop);
 
-  /** 캔버스 아래쪽 가운데에 앉히되, 지도 위로 펼쳐진 AI 창은 피한다. */
+  /**
+   * 앉히기 요청을 한 프레임에 한 번으로 모은다.
+   *
+   * 왜(2026-10-15 실측, 조수 스트림 24초): 조수 이벤트마다(83번) render() 직후 동기로 캔버스·도크 `getBoundingClientRect` 를 읽었다.
+   * 방금 바꾼 DOM 위의 읽기라 매번 강제 레이아웃(평균 11ms, 합 0.96s). 프레임 시작에서 읽으면 그 프레임의 레이아웃 한 번에 묻힌다.
+   */
+  let placeFrame = 0;
   const place = (): void => {
+    if (placeFrame) return;
+    if (typeof requestAnimationFrame !== "function") { placeNow(); return; }
+    placeFrame = requestAnimationFrame(() => { placeFrame = 0; placeNow(); });
+  };
+  /** 캔버스 아래쪽 가운데에 앉히되, 지도 위로 펼쳐진 AI 창은 피한다. */
+  const placeNow = (): void => {
     const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
     const rect = canvas?.getBoundingClientRect();
     if (!rect || rect.width <= 0) return;
@@ -161,7 +174,11 @@ export function mountAiStatusBar(): () => void {
     const rest = ordered.slice(shown.length);
     const here = editorState.get().currentMapId;
     const mapsInvolved = new Set(presences.map(p => p.mapId ?? "")).size;
-    chips.replaceChildren(...shown.map(presence => el("button", {
+    // 보이는 칩의 내용이 그대로면 칩을 다시 만들지 않는다 — 조수 이벤트(델타·도구 신호)마다 같은 칩을 지우고 만들던 것을 거른다.
+    const chipSignature = JSON.stringify([openId, here, mapsInvolved, shown.map(p => [p.id, p.state, p.tone, p.source, p.action, p.steps, p.name, p.mapId, p.mapName]), rest.length, rest.some(needsUser)]);
+    if (chipSignature !== lastChipSignature) {
+      lastChipSignature = chipSignature;
+      chips.replaceChildren(...shown.map(presence => el("button", {
       class: "ai-status-chip",
       attrs: { type: "button", "aria-expanded": String(openId === presence.id), title: `${presence.name} · ${PRESENCE_LABEL[presence.state]}` },
       dataset: { testid: "ai-status-chip", presenceId: presence.id, state: presence.state, tone: String(presence.tone), source: presence.source, elsewhere: String(Boolean(presence.mapId && here && presence.mapId !== here)) },
@@ -178,6 +195,7 @@ export function mountAiStatusBar(): () => void {
       children: [el("b", { text: `+${rest.length}` }), el("span", { class: "ai-status-action", text: rest.some(needsUser) ? "확인 필요" : "더 보기" })],
       on: { click: () => openFor(ALL) },
     })] : []));
+    }
     stop.hidden = !presences.some(isActive);
     if (openId === ALL) renderAll();
     else if (openId) {
@@ -224,6 +242,7 @@ export function mountAiStatusBar(): () => void {
 
   return () => {
     off();
+    if (placeFrame) cancelAnimationFrame(placeFrame);
     window.clearInterval(timer);
     window.removeEventListener("resize", onResize);
     window.removeEventListener("oprn:ai-panel-collapse", onResize);
