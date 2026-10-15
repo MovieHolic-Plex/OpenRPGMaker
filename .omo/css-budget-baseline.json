@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-12T16:14:39.097Z",
+  "generatedAt": "2026-10-15T06:46:16.031Z",
   "metrics": {
-    "hexLiterals": 2396,
+    "hexLiterals": 2436,
     "important": 300,
     "undefinedVars": 61,
     "globalRootFiles": 10,
-    "cssFileCount": 408
+    "cssFileCount": 409
   },
   "details": {
     "hexByFile": {
@@ -142,9 +142,10 @@
       "src/styles/runtime/battle-skins/_retro2003.css": 24,
       "src/styles/runtime/battle-skins/_transitions.css": 4,
       "src/styles/runtime/commerce.css": 1,
+      "src/styles/runtime/emeraldEvolution.css": 7,
       "src/styles/runtime/emeraldOpeningMotion.css": 13,
       "src/styles/runtime/emeraldShop.css": 15,
-      "src/styles/runtime/emeraldSurfaces.css": 147,
+      "src/styles/runtime/emeraldSurfaces.css": 180,
       "src/styles/runtime/emeraldTrainerIntro.css": 3,
       "src/styles/runtime/fieldHud.css": 62,
       "src/styles/runtime/galleryMenu.css": 2,
@@ -841,6 +842,7 @@
       "src/styles/runtime/battle/29-impact-contact.css",
       "src/styles/runtime/battle/30-backdrop-motion.css",
       "src/styles/runtime/commerce.css",
+      "src/styles/runtime/emeraldEvolution.css",
       "src/styles/runtime/emeraldOpeningMotion.css",
       "src/styles/runtime/emeraldShop.css",
       "src/styles/runtime/emeraldSurfaces.css",
