@@ -16272,4 +16272,8 @@
 "채팅 조수":"Chat assistant",
 "채팅 조수에게 보낼 질문 예: 항구 마을을 만들어 줘":"Question for the chat assistant, e.g. Build a harbor town",
 "추가할 문서 종류":"Type of document to add",
-"화면: 세계관 · 세계 개요 열기":"Screen: World · open World overview"}
+"화면: 세계관 · 세계 개요 열기":"Screen: World · open World overview",
+"이름이 맞는 문서가 여러 개입니다. 목록에서 고르세요.":"Several documents match that name. Pick one from the list.",
+"연결할 문서":"Document to link",
+"연결할 문서 이름":"Name of the document to link",
+"연결할 문서를 이름으로 찾지 못했습니다. 목록에서 고르세요.":"No document found with that name. Pick one from the list."}

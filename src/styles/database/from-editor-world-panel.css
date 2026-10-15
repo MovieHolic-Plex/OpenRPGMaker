@@ -1220,3 +1220,6 @@
   font: 500 11px/1.6 var(--font-ui);
   white-space: nowrap;
 }
+
+/* 연결 속성 — 이름을 못 찾았을 때 입력줄 바로 아래에 짧게 알린다. */
+.world-edit-section > .world-edit-error { margin: 4px 0 0; padding: 0; font-size: 12px; }
