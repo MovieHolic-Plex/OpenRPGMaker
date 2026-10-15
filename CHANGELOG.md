@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.231.0 — 2026-10-16
+
+### 기능
+
+- **mode7** — 비행선 flightView opt-in 의사 Mode7 비행 시점 (FF6 audit #31) (#2634) (`2165301`)
+- **cutscene** — author_stage_performance — opera/stage acts compiled to cutscene beats (FF6 audit #31) (#2614) (`ad0a2f8`)
+- **world** — derive_world_variant, world entrance links, world terrain tags and terrain encounter conditions (#2604) (`0b73ced`)
+
+### 수정
+
+- **object-gate** — 굽기 스크립트의 관문 우회 길 제거 (#2644) (`f6f513a`)
+
 ## 0.230.0 — 2026-10-16
 
 ### 기능
