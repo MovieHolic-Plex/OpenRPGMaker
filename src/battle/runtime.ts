@@ -22,6 +22,16 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import {
+  type BattleWeatherState,
+  WEATHER_CONTINUE_LINES,
+  WEATHER_END_LINES,
+  WEATHER_START_LINES,
+  SKILL_WEATHER_DEFAULT_TURNS,
+  weatherDamagePercent,
+  weatherResidualDamage,
+  weatherResidualLine,
+} from "@/battle/weather";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -483,6 +493,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
   // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  /** 전투 날씨(쾌청·비·모래바람·싸라기눈). 기술이 켜고 차례 말에 줄어든다. 저장하지 않는다. */
+  let weather: BattleWeatherState | undefined;
   // The cycle containing the current action, before a gauge completion increments turn.
   let rewardTurn = 1;
   // 현재 gauge 사이클에서 이미 행동 슬롯을 소비한 배틀러 id(행동 불가 스킵 포함).
@@ -884,7 +896,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
-    target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
+    // 날씨: 쾌청·비는 불·물 기술의 피해 배율을 바꾼다.
+    const weatherPercent = weatherDamagePercent(weather?.kind, gen1CanonicalTypeForId(options.project, move.elementId));
+    const weatherDamage = weatherPercent === 100 ? resolved.damage : Math.max(resolved.damage > 0 ? 1 : 0, Math.floor(resolved.damage * weatherPercent / 100));
+    target[resource] = Math.max(0, before - formationDamage(Math.round(weatherDamage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
     return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
@@ -909,6 +924,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     gaugeCycleActed.clear();
     frozenGaugeElapsedMs = 0;
     turn += 1;
+    tickBattleWeather();
     advanceBattleSkillCooldowns([...actors, ...enemies]);
     // 멈춘 배틀러는 자기 차례의 상태 처리를 못 받는다. 사이클이 닫힐 때 한 번 돌려 스톱이 자연 회복할 수 있게 한다.
     if (!gen1) {
@@ -1916,6 +1932,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function completeStrictRound(round: number): void {
+    tickBattleWeather();
     advanceBattleSkillCooldowns([...actors, ...enemies]);
     for (const actor of actors) actor.defending = false;
     for (const battler of [...actors, ...enemies]) battler.gauge = 0;
@@ -2122,6 +2139,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       troopId: options.troopId,
       backdropResourceId,
       turn,
+      ...(weather ? { weather: { ...weather } } : {}),
       strictRound: strictRoundCount,
       strictPendingActorIds: [...strictPendingActorIds],
       strictQueuedActorIds: strictActorCommands.map((entry) => entry.actorId),
@@ -4082,6 +4100,42 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
     }
+    if (applied.hit && skill?.weather) setBattleWeather(user, target, skill.weather.kind, skill.weather.turns ?? SKILL_WEATHER_DEFAULT_TURNS);
+  }
+
+  /** 날씨 기술이 닿았을 때: 같은 날씨가 이미 있으면 실패, 다르면 바꾼다. */
+  function setBattleWeather(user: MutableBattler, target: MutableBattler, kind: BattleWeatherState["kind"], turns: number): void {
+    if (weather?.kind === kind) {
+      recordSpecial(user, target, "하지만 아무 일도 일어나지 않았다!");
+      return;
+    }
+    weather = { kind, turnsLeft: turns };
+    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message: WEATHER_START_LINES[kind], weatherKind: kind, weatherAfter: { ...weather } });
+  }
+
+  /**
+   * 한 라운드가 끝날 때: 날씨 문장 하나, 모래바람·싸라기눈의 피해(해당 타입 제외), 지속 차례 감소, 끝나면 종료 문장.
+   * 피해로 쓰러지는 배틀러가 있어 승패가 갈릴 수 있으므로 부르는 쪽이 resolveOutcome 을 이어서 돈다.
+   */
+  function tickBattleWeather(): void {
+    if (!gen1 || !weather || result) return;
+    const current = weather;
+    beginTimelineAction();
+    const anchor = [...activeActors(), ...visibleEnemies()].find((battler) => battler.hp > 0);
+    const side = anchor ? battlerSide(anchor) : "actor";
+    const next = current.turnsLeft > 1 ? { kind: current.kind, turnsLeft: current.turnsLeft - 1 } : undefined;
+    if (next) recordTimeline({ kind: "special", side, message: WEATHER_CONTINUE_LINES[current.kind], weatherKind: current.kind, weatherAfter: next });
+    for (const battler of [...activeActors(), ...visibleEnemies()]) {
+      if (battler.hp <= 0) continue;
+      const amount = weatherResidualDamage(current.kind, battler.maxHp, battlerTypes(options.project, battler).map((typeId) => gen1CanonicalTypeForId(options.project, typeId)));
+      if (amount <= 0) continue;
+      const dealt = Math.min(battler.hp, amount);
+      battler.hp -= dealt;
+      recordTimeline({ kind: "stateUpkeep", side: battlerSide(battler), targetId: battler.id, amount: dealt, message: weatherResidualLine(current.kind, battler.name), weatherKind: current.kind });
+    }
+    weather = next;
+    if (!next) recordTimeline({ kind: "special", side, message: WEATHER_END_LINES[current.kind], weatherKind: current.kind, weatherAfter: null });
+    resolveOutcome();
   }
 
   function defrostTargetWithGen1FireMove(

@@ -3278,6 +3278,14 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `read_project_wiki`(ids 포함)·`read_authoring_preset`(`world-story` 분야의 `world`)·`get_original_context`(`/world`)는 `project.world` 를 `aiVisibleWorld`/`aiVisibleEntities` 로 거른 뒤 돌려준다 — 카드에 `visibility: "ai-hidden"` 이면 이름·id·관계 메모까지 나가지 않는다. 새 읽기 도구가 `project.world` 를 모델에 돌려주면 같은 필터를 부르고 `test/helpers/worldAiPaths.ts` 에 경로를 등록한다.
 
+
+## `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
+
+- 기술 하나에 선언형 날씨 하나: `skill.weather {kind, turns?}`. `kind` enum = `sun|rain|sandstorm|hail`, `turns` 3~8(기본 5). **자유 키·자유 코드 없음.**
+- 거절: 모르는 kind·범위 밖 turns·모르는 키 → `invalid-skill-weather`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-weather`. 맵·트루프로 거는 날씨는 아직 없다.
+||||||| cc7b272d6c
+
+
 ## 연애 루프 도구 변경 (2026-10-16)
 
 - `place_npc` `talkFriendship`(true | {delta}) — 그 NPC 와의 대화 한 번이 호감과 하루 칸(`system.socialLoop` 이 켜졌을 때)을 쓴다. 정의에 없는 키를 주면 **조수 실행(`ctx.assistantRun`)에서는 오류**로 거부한다(예전엔 말없이 버려 「호감 대화가 안 켜진다」). 예제·직접 실행은 그대로.

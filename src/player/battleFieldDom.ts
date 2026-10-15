@@ -1,4 +1,6 @@
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
+import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
+import type { SkillWeatherKind } from "@/project/types";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
@@ -310,6 +312,8 @@ export interface BattleFieldPresentation {
   readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
   /** 결과 문장이 나오는 단계. 이때부터 EXP 바가 승리 보상만큼 찬다. */
   readonly resultShown?: boolean;
+  /** 재생 시점에 맞춘 날씨(null = 날씨 없음). undefined 면 스냅샷의 weather. 스냅샷은 명령 즉시 해결돼 날씨 문장보다 배지가 먼저 바뀐다. */
+  readonly weather?: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | null;
 }
 
 function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
@@ -349,9 +353,27 @@ export function syncBattleField(
   presentation?: BattleFieldPresentation,
 ): void {
   syncBackdrop(field, snapshot.backdropResourceId);
+  syncWeatherBadge(field, presentation?.weather !== undefined ? presentation.weather ?? undefined : snapshot.weather);
   syncEnemyGroup(field, snapshot, presentation);
   syncActorGroup(field, snapshot, presentation);
   if (feedback) showDamageFeedback(field, feedback);
+}
+
+/** 날씨 배지(쾌청·비·모래바람·싸라기눈 + 남은 차례). 글자와 색만 — 새 그림 없음. 날씨가 없으면 걷는다. */
+function syncWeatherBadge(field: HTMLElement, weather: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | undefined): void {
+  const existing = field.querySelector<HTMLElement>(".battle-weather-badge");
+  if (!weather) { existing?.remove(); return; }
+  const badge = existing ?? document.createElement("span");
+  if (!existing) {
+    badge.className = "battle-weather-badge";
+    badge.dataset.testid = "battle-weather-badge";
+    badge.setAttribute("role", "status");
+    field.append(badge);
+  }
+  badge.dataset.weather = weather.kind;
+  badge.dataset.turnsLeft = String(weather.turnsLeft);
+  badge.textContent = `${WEATHER_GLYPHS[weather.kind]} ${WEATHER_LABELS[weather.kind]} ${weather.turnsLeft}`;
+  badge.setAttribute("aria-label", `날씨: ${WEATHER_LABELS[weather.kind]}, ${weather.turnsLeft}차례 남음`);
 }
 
 /** 원장이 있으면 원장의 HP/사망을, 없으면 스냅샷 값을 쓴다. 연출이 상태를 앞지르지 않게
