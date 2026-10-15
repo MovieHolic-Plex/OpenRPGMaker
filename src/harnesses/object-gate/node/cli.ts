@@ -29,12 +29,12 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  판정자 ${j} × ${OBJECT_GATE_PROFILE.runsPerJudge}번 중앙값·과반 · 규칙 v${OBJECT_GATE_PROFILE.rulesVersion} · 측정 사실(열 훑기·화풍 지표) v${OBJECT_GATE_PROFILE.factsVersion} · 3/4 + 버들항 화풍 한 번에 (판정자 신원·effort 는 프로필 해시에 들어 있다 — 바꾸면 보정부터 다시)`);
     for (const p of profiles) {
       const st = p.style ? ` 화풍 얕음 ${p.style.caught}/${p.style.badTotal} 버들 ${p.style.passed}/${p.style.goodTotal}` : '';
-      console.log(`  ${p.profileHash} ${p.status} 3/4 위반 ${p.bad.caught}/${p.bad.total} 정상 ${p.good.passed}/${p.good.total}${st}${p.judge ? ` [${p.judge}]` : ''} (${p.calibratedAt.slice(0, 10)})`);
+      console.log(`  ${p.profileHash} ${p.status} 3/4 위반 ${p.bad.caught}/${p.bad.total} 정상 ${p.good.passed}/${p.good.total}${p.holdout ? ` 숨김1 위반 ${p.holdout.bad.caught}/${p.holdout.bad.total} 정상 ${p.holdout.good.passed}/${p.holdout.good.total}` : ''}${p.fresh ? ` 새숨김 위반 ${p.fresh.bad.caught}/${p.fresh.bad.total} 정상 ${p.fresh.good.passed}/${p.fresh.good.total}` : ''}${st}${p.judge ? ` [${p.judge}]` : ''} (${p.calibratedAt.slice(0, 10)})`);
     }
     const receipts = listReceipts();
     const now = receipts.filter(r => r.profileHash === current);
     console.log(`영수증 ${receipts.length}장 — 통과 ${receipts.filter(r => r.verdict === 'pass').length}, 사람 덮어쓰기 ${receipts.filter(r => r.override).length}`);
-    console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
+    console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
   throw Error('단계: review | calibrate | rereview | check | status | audit | preview');

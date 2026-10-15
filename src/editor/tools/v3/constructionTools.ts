@@ -508,7 +508,7 @@ function detectWallRegion(map: GameMap, tileset: TilesetDef): Rect | null {
   return found ? { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 } : null;
 }
 
-function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): boolean {
+export function isWallCell(map: GameMap, tileset: TilesetDef, x: number, y: number): boolean {
   if (!inMapBounds(map, x, y)) return false;
   const tile = map.lowerTiles[y * map.width + x];
   return wallRoleGroups(tileset).some((group) => group.tileIds.includes(tile));
