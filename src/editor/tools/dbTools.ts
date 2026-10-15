@@ -1640,7 +1640,7 @@ const setTypeChart: ToolDefinition = {
     if (args.preset !== undefined && presetName !== "gen3" && presetName !== "gen6") {
       throw new ToolError(`preset 은 'gen3' 또는 'gen6' 입니다(받은 값: ${JSON.stringify(args.preset)}). 1세대 15타입은 기본이라 preset 이 없습니다.`, { code: "invalid-args" });
     }
-    const presetChart = presetName ? typeChartForPreset(presetName) : null;
+    const presetChart = presetName === "gen3" || presetName === "gen6" ? typeChartForPreset(presetName) : null;
     const given = args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
       ? args.multipliers as Record<string, Record<string, number>>
       : {};

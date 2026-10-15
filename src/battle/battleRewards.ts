@@ -47,7 +47,8 @@ function enemyReward(project: Project, enemy: MutableBattler) {
   if (!record) return { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined, ap: undefined };
   const normalized = normalizeEnemyRecord(record);
   // 야생 레벨 굴림(조우표 levelMin/levelMax)으로 레코드 레벨과 달라졌으면 경험치를 레벨 비로 맞춘다.
-  const scale = normalized.level > 0 && enemy.level !== undefined && enemy.level !== normalized.level ? enemy.level / normalized.level : 1;
+  const recordLevel = normalized.level ?? 0;
+  const scale = recordLevel > 0 && enemy.level !== undefined && enemy.level !== recordLevel ? enemy.level / recordLevel : 1;
   return scale === 1 ? normalized.rewards : { ...normalized.rewards, exp: Math.max(0, Math.round(normalized.rewards.exp * scale)) };
 }
 

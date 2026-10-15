@@ -547,17 +547,6 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return e;
   }
 
-  // 패배하면 원작처럼 직원 앞에서 다시 선다 — 출입문 칸 위로 옮기면 다음 걸음에 문이 발동하지 않아 헤맨다.
-  function centerLanding(centerKey: string): Point {
-    const room = project.maps[id(centerKey)]!;
-    const exit = entries.get(room.id)!;
-    return nearest(room, { x: exit.x, y: exit.y - 1 }, connected(room).filter(p => coord(p) !== coord(exit)), true);
-  }
-
-  function townFor(map: GameMap): string {
-    return towns.find(t => map.id.startsWith(id(t.key)))?.key ?? routes.find(r => id(r.key) === map.id)?.from ?? sides.find(s => id(s.key) === map.id)?.town ?? ({ mx_map_hideout: "prism", mx_map_observatory: finalKey, mx_map_lab: "home", mx_map_museum: "prism", mx_map_school: "home" }[map.id] ?? (map.id.startsWith("mx_map_league_") ? finalKey : "home"));
-  }
-
   const townMaps = new Map(towns.map(t => [t.key, make(t.key, lookTown(t).name, t.key === "home" && options.startTheme ? START_TOWNS[options.startTheme].template : volcano && (VOLCANO_TOWN_KEYS as readonly string[]).includes(t.key) ? "climate/ash_town" : lookTown(t).template, lookTown(t).music, "town")]));
   // 관장 타입을 기획서가 바꾸면(사막 기획서 1관 = 땅) 체육관 판도 그 타입의 판으로 — 「땅 관장」이 꽃밭 정원 체육관에 서 있었다(2026-10-07 사용자 지적).
   // 1관 타입을 기획서가 다른 관의 본래 타입으로 바꾸면(눈 기획서 1관 = 얼음) 그 관은 1관의 본래 타입을 받는다 — 얼음 관장이 둘 나왔다(2026-10-07 눈 시험).

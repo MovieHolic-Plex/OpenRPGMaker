@@ -4176,7 +4176,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const prizePerLevel = options.project.system.rewardPolicy?.trainerPrizePerLevel ?? 0;
     if (prizePerLevel > 0 && troopRecord.trainerBattle === true) {
       const lastEnemy = [...enemies].reverse().find((enemy) => !enemy.hidden && enemy.captured !== true);
-      collected.gold = scaleByDifficulty(Math.max(0, Math.trunc(lastEnemy?.level ?? rawCollected.enemyLevel)) * prizePerLevel, difficultyRate(options.project.system, sessionState, "goldRate"));
+      collected.gold = scaleByDifficulty(Math.max(0, Math.trunc(lastEnemy?.level ?? rawCollected.enemyLevel ?? 1)) * prizePerLevel, difficultyRate(options.project.system, sessionState, "goldRate"));
     }
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
