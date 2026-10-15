@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.227.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the team-swap command width and the genre-lock field (`32d52fc`)
+
 ## 0.227.0 — 2026-10-15
 
 ### 기능
