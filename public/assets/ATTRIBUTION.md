@@ -394,3 +394,11 @@ artwork, drawn directly on the final 48px grid by
 `scripts/asset-gen/charset-battler/silver-swordswoman.py`. All 24 battle cells and
 21 cast cells use 16 opaque colors and binary alpha. No source image or
 image-generation model is used. Repository code/asset policy applies.
+
+## Battle trainer sprites (Actor1 derivatives, pending human pick)
+
+`battle-trainers/<role>/{front,back,throw}.png` (created only after the user picks candidates on the pick sheet) are modified derivatives of
+EasyRPG RTP `CharSet/Actor1.png` (Marina Navarro Travesset (base), VictorSena (edit), CC BY 4.0, https://github.com/EasyRPG/RTP;
+see `easyrpg/AUTHORS.md`). Each is a 64×64 palette-symbol grid authored by Gemini 4 Argon (Medium) through Agy, starting from the Actor1 frame
+and its palette; no image-generation tool is used. Changes: re-proportioned to a battle-scale trainer, redrawn pose/clothes/hair, new
+colors per role. Harness: `src/harnesses/battle-trainer-sprites/`. The modified files remain under CC BY 4.0 attribution to the original authors.
