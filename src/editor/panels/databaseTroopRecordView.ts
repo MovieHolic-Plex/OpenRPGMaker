@@ -24,6 +24,8 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { DEFAULT_TEAM_SWAP_COST } from "@/battle/battleTeams";
+import { TEAM_SWAP_COST_LABELS, isTeamSwapCost } from "@/project/battleTeamModel";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId, nextBattleScenery } from "@/editor/panels/battleSceneryPicker";
 import { battleMethodOf, BATTLE_METHOD_LABELS } from "@/project/battleMethod";
@@ -326,6 +328,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
             ],
           }),
           activeSlotsField(record, rerender),
+          ...(store.getCurrent().system.battleTeams?.length ? [teamSwapCostField(record, rerender)] : []),
         ],
       }),
       backdropField(record, rerender),
@@ -1020,6 +1023,17 @@ function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElemen
   field.title = `동시 참전할 아군 수입니다. 0이면 시스템 설정 사용: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}.`;
   field.append(el("small", { class: "db-ws-usage", text: record.activeSlots ? `${record.activeSlots}명 지정` : `기본: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}` }));
   return field;
+}
+
+/** 팀 교대 전투(system.battleTeams)가 있을 때만 — 이 적 그룹만 교대 비용을 덮어쓴다. */
+function teamSwapCostField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const system = store.getCurrent().system;
+  const base = system.teamSwapCost ?? DEFAULT_TEAM_SWAP_COST;
+  const options = [{ id: "", name: `시스템 설정(${base})` }, ...(["free", "gauge", "turn"] as const).map((id) => ({ id, name: TEAM_SWAP_COST_LABELS[id] }))];
+  return selectField("팀 교대 비용", "db-field-troop-team-swap-cost", record.teamSwapCost ?? "", options, (value) => {
+    updateDatabaseRecord("troops", record.id, { teamSwapCost: isTeamSwapCost(value) ? value : undefined });
+    rerender();
+  });
 }
 
 function uncapturableField(record: TroopRecord, rerender: () => void): HTMLElement {

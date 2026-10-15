@@ -50,7 +50,8 @@ export interface ActorBattlerOverrides {
 }
 
 export interface MutableBattler {
-  readonly row?: BattleRow;
+  /** 대열(앞/뒤). 대열 섞기(shuffleParty)가 전투 중에 바꾼다. */
+  row?: BattleRow;
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
   // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
@@ -106,6 +107,8 @@ export interface MutableBattler {
   defending: boolean;
   /** 리미트 게이지 0~100. system.limitGauge 를 켠 전투의 아군만 가진다. */
   limitGauge?: number;
+  /** 폭주(rage) 중인 몬스터 레코드 id. 있으면 그 몬스터의 행동 표대로 매 차례 자동 행동한다(전투 끝까지, 저장하지 않음). */
+  rageEnemyId?: string;
   /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
   resource2?: number;
 }

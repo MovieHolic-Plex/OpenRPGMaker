@@ -117,6 +117,12 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
 세이브(`PlaySession`): `actorApProgress {배우:{스킬:AP}}`·`learnedViaAp {배우:[스킬]}` — `saveSlots.ts` 의 저장·복원·`isActorSkillPpRecord`/`isActorSkillIdsRecord` 검증, 없으면 필드 자체를 쓰지 않는다. 레벨업 보너스는 기존 `actorParamBonuses` 를 쓴다. 전투 규칙: `runtime-battle.md` 「FF6 마석 성장」.
 
+## FF6 전투 특수 효과 — 선택 필드 (2026-10-15)
+
+모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 스킬 `effect.kind` 에 `sketch`·`rage`(`enemyIds?`, 정규화에서 중복 제거·최대 24)·`shuffleParty`·`forceSwitch`,
+상태 `runtimeEffects.invertHealing`·`grantSkillIds`(최대 12)·`forcedAction: "rage"`. 세이브(`PlaySession`): `actorRageEnemyIds {배우:[몬스터 id]}`(최대 64) — `saveSlots.ts` 저장·복원·`isActorSkillIdsRecord` 검증, 없으면 키를 쓰지 않는다.
+전투 중 상태(`MutableBattler.rageEnemyId`)는 저장하지 않는다. 규칙: `runtime-battle.md` 「FF6 전투 특수 효과」.
+
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,

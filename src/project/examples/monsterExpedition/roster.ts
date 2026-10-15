@@ -3,7 +3,7 @@ import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRe
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
-import { harnessArtForCampaignSpecies } from "@/assets/harnessMonsterArt";
+import { harnessArtForCampaignSpecies, harnessFieldGraphicForCampaignSpecies } from "@/assets/harnessMonsterArt";
 
 export type ExpeditionHabitat = "grass" | "forest" | "coast" | "mountain" | "desert" | "snow" | "cave" | "ruins" | "swamp" | "volcano";
 export interface ExpeditionSpeciesInfo {
@@ -73,6 +73,11 @@ function harnessArt(slug: string): { readonly front: string; readonly back: stri
 function art(slug: string): { readonly monsterResourceId: string; readonly backResourceId: string } {
   const harness = harnessArt(slug);
   return harness ? { monsterResourceId: harness.front, backResourceId: harness.back } : { monsterResourceId: `mx_art_${slug}_front`, backResourceId: `mx_art_${slug}_back` };
+}
+/** 따라다니기 칩: 하네스 번들에 그 종의 칩이 있을 때만 필드 그래픽을 단다(없으면 기본 몬스터 칩 폴백). */
+function fieldArt(slug: string): { readonly fieldGraphic?: NonNullable<ReturnType<typeof harnessFieldGraphicForCampaignSpecies>> } {
+  const fieldGraphic = harnessFieldGraphicForCampaignSpecies(sid(slug));
+  return fieldGraphic ? { fieldGraphic } : {};
 }
 const typesFor = (family: Family, stage: number): string[] => family.types.filter((type, i): type is string => !!type && (i === 0 || stage >= (family.secondaryFrom ?? 1)));
 
@@ -255,7 +260,7 @@ export function configureExpeditionRoster(project: Project): void {
     const secondary = family.types[1] ?? "normal";
     return normalizeMonsterSpeciesRecord({
       id: sid(slug), name: family.names[index]!, types: typesFor(family, stage),
-      graphic: { ...art(slug), graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
+      graphic: { ...art(slug), ...fieldArt(slug), graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
       baseStats: bases(family.stats, stage), expCurve: { ...EXPEDITION_EXP_CURVE },
       captureRate: [0.72, 0.42, 0.2][index], skillsByLevel: learnset(primary, secondary),
       evolutions: index < 2 ? [{ toSpeciesId: sid(family.slugs[index + 1]!), requires: { level: family.evolution[index]! } }] : [],
@@ -263,7 +268,7 @@ export function configureExpeditionRoster(project: Project): void {
   }));
   for (const rare of RARES) records.push(normalizeMonsterSpeciesRecord({
     id: sid(rare.slug), name: rare.name, types: [...rare.types],
-    graphic: { ...art(rare.slug), graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
+    graphic: { ...art(rare.slug), ...fieldArt(rare.slug), graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
     baseStats: bases(rare.stats, 3), expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: 0.065,
     skillsByLevel: learnset(rare.types[0], rare.types[1]), evolutions: [],
   }));

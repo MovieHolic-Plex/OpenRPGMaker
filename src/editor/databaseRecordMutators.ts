@@ -187,11 +187,13 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("autoAlign" in patch && patch.autoAlign !== undefined) record.autoAlign = patch.autoAlign;
   if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
   if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
+  if ("trainerSprite" in patch) record.trainerSprite = patch.trainerSprite;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
   if ("backdropAnimation" in patch) record.backdropAnimation = patch.backdropAnimation;
   if ("backdropLayers" in patch) record.backdropLayers = patch.backdropLayers;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
+  if ("teamSwapCost" in patch) record.teamSwapCost = patch.teamSwapCost;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   if ("afterBattle" in patch) record.afterBattle = patch.afterBattle;
   database.troops[index] = normalizeTroopRecord(record);

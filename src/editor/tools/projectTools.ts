@@ -4,7 +4,7 @@ import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/projec
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import type { Terms } from "@/project/types";
+import type { Project, Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
 import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
@@ -25,6 +25,8 @@ import {
   patchBattleLook,
   type BattleLookSettings,
 } from "@/project/battleLook";
+import { MAX_BATTLE_TEAMS, isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
+import { DEFAULT_TEAM_SWAP_COST } from "@/battle/battleTeams";
 import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_FULL_PORTRAIT_DEFAULTS, DIALOGUE_FULL_PORTRAIT_LIMITS, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, normalizeDialogueFullPortraitSettings, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, FONT_ROLES, fontOptionsForRole, isFontFamilyId, normalizeSystemFontConfig } from "@/project/fontRegistry";
 import {
@@ -207,6 +209,22 @@ const setProjectSettings: ToolDefinition = {
         type: "object",
         properties: {
           flow: { type: "string", enum: ["gauge", "strict"] },
+          teams: {
+            type: "array",
+            maxItems: 4,
+            description: "FF6 식 팀 교대 전투(교대 묶음). 2~4팀이며 한 번에 한 팀만 싸우고 나머지는 대기한다 — 동시 행동은 없다. 팀 구성원은 서로 겹칠 수 없다. 빈 배열 [] = 해제(기존 한 파티 전투). 파티 밖 배우를 팀에 넣어도 되고, 파티에 있으나 어느 팀에도 없는 배우는 첫 팀에 붙는다. 맵을 나눠 걷는 FF6 식 파티 분할은 별개다(recipe party-split).",
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string", description: "팀 id(예: team_a)" },
+                name: { type: "string", description: "전투 버튼에 보이는 이름(예: 티나 팀)" },
+                actorIds: { type: "array", items: { type: "string" }, description: "이 팀의 배우 id. 파티에 있는 배우만 전투에 선다" },
+              },
+              required: ["id", "actorIds"],
+              additionalProperties: false,
+            },
+          },
+          teamSwapCost: { type: "string", enum: ["free", "gauge", "turn"], description: "팀 교대 비용(teams 가 있을 때). free = 들어온 팀이 바로 행동 · gauge = 들어온 팀 게이지 0 에서 시작(기본) · turn = 들어온 팀은 적이 한 번 행동할 때까지 쉼. 적 그룹별 덮어쓰기는 upsert_troop.teamSwapCost" },
           uiStyle: {
             type: "string",
             description: `전투 방식. 화면과 규칙을 같이 정한다 — retro2003 = 도트 측면(RM식 규칙, 기본), pokemon = 몬스터 대치(Gen1 규칙). 창 색·배치·글꼴·연출은 look 으로 고른다. 가능: ${listActiveBattleSkinIds().map((id) => `${id}(${BATTLE_SKINS[id].label})`).join(", ")}`,
@@ -330,6 +348,7 @@ const setProjectSettings: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const changed: string[] = [];
+    const teamWarnings: string[] = [];
     if (args.fonts !== undefined) {
       if (!args.fonts || typeof args.fonts !== "object" || Array.isArray(args.fonts)) {
         throw new ToolError("fonts는 역할별 글꼴 객체여야 합니다.", { code: "invalid-args" });
@@ -445,6 +464,13 @@ const setProjectSettings: ToolDefinition = {
         else delete draft.system.battleLook;
       }
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
+      if (battle.teams !== undefined) teamWarnings.push(...applyBattleTeams(draft, battle.teams));
+      if (battle.teamSwapCost !== undefined) {
+        if (!isTeamSwapCost(battle.teamSwapCost)) throw new ToolError(`battle.teamSwapCost 는 free · gauge · turn 중 하나여야 합니다(받은 값 ${JSON.stringify(battle.teamSwapCost)}).`, { code: "invalid-args" });
+        if (battle.teamSwapCost === DEFAULT_TEAM_SWAP_COST) delete draft.system.teamSwapCost;
+        else draft.system.teamSwapCost = battle.teamSwapCost;
+        if (!draft.system.battleTeams?.length) teamWarnings.push("teamSwapCost 를 저장했지만 battle.teams 가 없어 아직 효과가 없습니다. battle.teams 로 팀을 먼저 만드세요.");
+      }
       // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
       if (battle.atbMode === "active") draft.system.atbMode = "active";
       else if (battle.atbMode === "wait") delete draft.system.atbMode;
@@ -542,7 +568,7 @@ const setProjectSettings: ToolDefinition = {
       changed.push("초기 파티");
     }
     if (changed.length === 0) throw new ToolError("바꿀 프로젝트 설정이 없습니다.", { code: "invalid-args" });
-    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed } };
+    return { summary: `프로젝트 설정 변경 — ${changed.join(", ")}`, data: { changed }, ...(teamWarnings.length > 0 ? { warnings: teamWarnings } : {}) };
   },
 };
 
@@ -578,5 +604,46 @@ const setParty: ToolDefinition = {
     };
   },
 };
+
+/** battle.teams 를 검증해 system.battleTeams 에 쓴다. 빈 배열 = 해제. 반환 = 경고. */
+function applyBattleTeams(draft: Project, value: unknown): string[] {
+  if (!Array.isArray(value)) throw new ToolError("battle.teams 는 배열이어야 합니다. 예: [{\"id\":\"team_a\",\"name\":\"티나 팀\",\"actorIds\":[\"actor_terra\"]},{\"id\":\"team_b\",\"name\":\"로크 팀\",\"actorIds\":[\"actor_locke\"]}]. 해제는 [].", { code: "invalid-args" });
+  if (value.length === 0) {
+    delete draft.system.battleTeams;
+    delete draft.system.teamSwapCost;
+    return [];
+  }
+  if (value.length < 2) throw new ToolError("팀 교대 전투는 팀이 2개 이상이어야 합니다. 팀이 하나면 battle.teams 를 [] 로 비우세요.", { code: "invalid-args" });
+  if (value.length > MAX_BATTLE_TEAMS) throw new ToolError(`팀은 최대 ${MAX_BATTLE_TEAMS}개입니다(받은 ${value.length}개).`, { code: "invalid-args" });
+  const ids = new Set<string>();
+  const claimed = new Map<string, string>();
+  for (const [index, raw] of value.entries()) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new ToolError(`battle.teams[${index}] 는 {id, name, actorIds} 객체여야 합니다.`, { code: "invalid-args" });
+    const team = raw as Record<string, unknown>;
+    const unknownKeys = Object.keys(team).filter((key) => key !== "id" && key !== "name" && key !== "actorIds");
+    if (unknownKeys.length > 0) throw new ToolError(`battle.teams[${index}] 에 알 수 없는 키: ${unknownKeys.join(", ")}. 가능: id, name, actorIds.`, { code: "invalid-args" });
+    if (typeof team.id !== "string" || !team.id.trim()) throw new ToolError(`battle.teams[${index}].id 가 필요합니다.`, { code: "invalid-args" });
+    if (ids.has(team.id)) throw new ToolError(`팀 id 가 겹칩니다: ${team.id}`, { code: "duplicate-id" });
+    ids.add(team.id);
+    if (!Array.isArray(team.actorIds) || team.actorIds.length === 0) throw new ToolError(`팀 ${team.id} 의 actorIds 가 비어 있습니다. 팀마다 배우가 1명 이상 필요합니다.`, { code: "invalid-args" });
+    for (const actorId of team.actorIds.map(String)) {
+      if (!draft.database.actors.some((actor) => actor.id === actorId)) throw new ToolError(`팀 ${team.id} 의 배우를 찾을 수 없습니다: ${actorId}. upsert_actor 로 먼저 만드세요.`, { code: "actor-not-found" });
+      const other = claimed.get(actorId);
+      if (other) throw new ToolError(`배우 ${actorId} 가 팀 ${other} 와 ${team.id} 에 모두 들어 있습니다. 한 배우는 한 팀에만 둡니다.`, { code: "duplicate-actor" });
+      claimed.set(actorId, team.id);
+    }
+  }
+  const teams = normalizeBattleTeams(value);
+  if (!teams || teams.length < 2) throw new ToolError("정규화 뒤 팀이 2개 미만입니다. 각 팀의 actorIds 를 확인하세요.", { code: "invalid-args" });
+  draft.system.battleTeams = teams;
+  const warnings: string[] = [];
+  const party = draft.system.startActorIds ?? draft.session.partyActorIds;
+  const loose = party.filter((id) => !claimed.has(id));
+  if (loose.length > 0) warnings.push(`시작 파티의 ${loose.join(", ")} 는 어느 팀에도 없어 첫 팀(${teams[0]!.name})에 붙습니다.`);
+  const inParty = teams.filter((team) => !team.actorIds.some((id) => party.includes(id)));
+  if (inParty.length > 0) warnings.push(`팀 ${inParty.map((team) => team.id).join(", ")} 에는 시작 파티 배우가 없습니다. 전투 중에는 파티에 있는 배우만 서므로, 이 팀은 나중에 파티가 갖춰질 때까지 교대할 수 없습니다.`);
+  if (draft.system.battleFlow === "strict") warnings.push("strict(엄격 턴제)에서는 팀 교대가 한 라운드 전체를 씁니다 — free · gauge · turn 이 같은 결과입니다.");
+  return warnings;
+}
 
 export const PROJECT_TOOLS: readonly ToolDefinition[] = [resetProject, setProjectSettings, setParty];
