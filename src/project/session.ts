@@ -287,6 +287,10 @@ export interface PlaySession {
   actorExperience: Record<string, number>;
   /** 배우별 누적 기술 포인트(TP). 승리 시 얻고 learnedSkills[].tp 문턱으로 기술을 배운다. 생략 = 없음. */
   actorTechPoints?: Record<string, number>;
+  /** 마석 AP 진행: 배우 → 스킬 id → 누적 AP. EquipmentRecord.apGrants 가 채우고, 필요 AP 에 닿으면 영구 습득(actorSkillIds·learnedViaAp). 생략 = 없음. */
+  actorApProgress?: Record<ActorId, Record<SkillId, number>>;
+  /** 마석 AP 로 영구 습득한 스킬(배우별). 장비를 벗어도 남는다 — 같은 스킬이 actorSkillIds 에도 들어 있다. 생략 = 없음. */
+  learnedViaAp?: Record<ActorId, SkillId[]>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;

@@ -112,6 +112,11 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
   `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
   누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
+## FF6 마석 성장 — 선택 필드 (2026-10-15)
+
+모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
+세이브(`PlaySession`): `actorApProgress {배우:{스킬:AP}}`·`learnedViaAp {배우:[스킬]}` — `saveSlots.ts` 의 저장·복원·`isActorSkillPpRecord`/`isActorSkillIdsRecord` 검증, 없으면 필드 자체를 쓰지 않는다. 레벨업 보너스는 기존 `actorParamBonuses` 를 쓴다. 전투 규칙: `runtime-battle.md` 「FF6 마석 성장」.
+
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,

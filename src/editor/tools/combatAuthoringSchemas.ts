@@ -43,6 +43,7 @@ export const actionSkillProfileSchema = object({
 export const authoredSkillProperties: Record<string, JsonSchema> = {
   damageFormula: { type: 'string', maxLength: 512, description: '산술식: power, a.atk/def/mind/agi/hp/mp/level, b.* 및 + - * / % 괄호. 빈 문자열은 기본 공식으로 복원.' },
   criticalRate: integer(0, 100), criticalMultiplier: number(1, 10), cooldownTurns: integer(0, 99),
+  oncePerBattle: { type: 'boolean', description: '전투당 1회(FF6 소환 마법): 한 전투에서 시전자가 한 번 쓰면 그 전투가 끝날 때까지 다시 못 쓴다. cooldownTurns:99 근사 대신 이것을 쓴다. false 로 해제.' },
   hitSequence: hitSequenceSchema,
   learnable: { type: 'boolean', description: '청마법: 적이 쓰면 learnEnemySkill 을 아는 배우가 배울 수 있다.' },
   inputSequence: object({

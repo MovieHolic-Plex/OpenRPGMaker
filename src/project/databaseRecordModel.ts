@@ -68,7 +68,7 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
@@ -683,6 +683,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.criticalRate) ? { criticalRate: clampInteger(record.criticalRate!, 0, 100) } : {}),
     ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
     ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
+    ...(record.oncePerBattle === true ? { oncePerBattle: true } : {}),
     ...(typeof record.fieldCommonEventId === "string" && record.fieldCommonEventId.trim() ? { fieldCommonEventId: record.fieldCommonEventId.trim() } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
@@ -813,7 +814,42 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
       const grantsCommand = normalizeGrantedCommand(record.grantsCommand);
       return grantsCommand ? { grantsCommand } : {};
     })(),
+    ...(() => {
+      const apGrants = normalizeApGrants(record.apGrants);
+      return apGrants.length > 0 ? { apGrants } : {};
+    })(),
+    ...(typeof record.apRate === "number" && Number.isFinite(record.apRate) && Math.round(record.apRate) !== 100 ? { apRate: clampInteger(record.apRate, 1, 1000) } : {}),
+    ...(() => {
+      const levelUpBonus = normalizeLevelUpBonus(record.levelUpBonus);
+      return levelUpBonus ? { levelUpBonus } : {};
+    })(),
   };
+}
+
+/** 마석 AP 항목: 스킬 id 가 있고 필요 AP 가 양의 정수인 것만, 같은 스킬은 뒤의 것이 이긴다. */
+export function normalizeApGrants(grants: readonly Partial<EquipmentApGrant>[] | undefined): EquipmentApGrant[] {
+  if (!Array.isArray(grants)) return [];
+  const bySkill = new Map<string, number>();
+  for (const grant of grants) {
+    const skillId = cleanOptionalId(grant?.skillId);
+    if (!skillId || typeof grant?.ap !== "number" || !Number.isFinite(grant.ap) || grant.ap <= 0) continue;
+    bySkill.set(skillId, clampInteger(grant.ap, 1, 99999));
+  }
+  return [...bySkill].slice(0, 64).map(([skillId, ap]) => ({ skillId, ap }));
+}
+
+export function normalizeLevelUpBonus(bonus: Partial<EquipmentLevelUpBonus> | undefined): EquipmentLevelUpBonus | undefined {
+  if (!bonus || typeof bonus !== "object") return undefined;
+  const out: EquipmentLevelUpBonus = {};
+  for (const key of ["maxHpPercent", "maxMpPercent"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value > 0) out[key] = clampInteger(value, 1, 100);
+  }
+  for (const key of ["attack", "defense", "mind", "agility"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value !== 0) out[key] = clampInteger(value, -99, 99);
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function normalizeGrantedCommand(command: Partial<ClassBattleCommand> | undefined): ClassBattleCommand | undefined {

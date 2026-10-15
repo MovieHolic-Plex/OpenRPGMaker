@@ -16,7 +16,7 @@ import { battleTroopError } from '@/project/battleAdmission';
 import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
-import type { ActorId, EnemyId, ItemId, ItemRecord, Project, SkillId } from "@/project/types";
+import type { ActorId, ActorInitialEquipment, EnemyId, ItemId, ItemRecord, Project, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
@@ -35,6 +35,7 @@ import {
 import { createBattleEventRuntime, type BattleEventRuntimeResult, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp, computeTechPointLearning } from "@/battle/battleLevelUp";
+import { computeApLearning } from "@/battle/battleEsperAp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
@@ -491,7 +492,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
     tp?: number;
-    techLearned?: { actorId: string; actorName: string; skillIds: SkillId[] }[];
+    ap?: number;
+    techLearned?: { actorId: string; actorName: string; skillIds: SkillId[]; viaAp?: SkillId[] }[];
   } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
   // Mutable battle authority is detached from the live session seed.
   const battleEventState: BattleEventRuntimeState = {
@@ -4178,6 +4180,45 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       const techLearned = computeTechLearnedPreview(collected.tp, rewards.levelUps);
       if (techLearned.length > 0) rewards.techLearned = techLearned;
     }
+    // 마석 AP: 같은 보상 대상·같은 함수(computeApLearning)로 미리본다. 습득은 결과 화면의 「기술 습득」 행에 합쳐진다.
+    if (collected.ap && !usePartyMonsters) {
+      rewards.ap = collected.ap;
+      const apLearned = computeApLearnedPreview(collected.ap, rewards.levelUps);
+      if (apLearned.length > 0) {
+        const merged = rewards.techLearned ?? [];
+        for (const entry of apLearned) {
+          const existing = merged.find((item) => item.actorId === entry.actorId);
+          if (existing) {
+            for (const skillId of entry.skillIds) if (!existing.skillIds.includes(skillId)) existing.skillIds.push(skillId);
+            existing.viaAp = [...(existing.viaAp ?? []), ...entry.viaAp];
+          } else merged.push(entry);
+        }
+        rewards.techLearned = merged;
+      }
+    }
+  }
+
+  function computeApLearnedPreview(earnedAp: number, levelUps: readonly BattleLevelUpResult[]): { actorId: string; actorName: string; skillIds: SkillId[]; viaAp: SkillId[] }[] {
+    const learned: { actorId: string; actorName: string; skillIds: SkillId[]; viaAp: SkillId[] }[] = [];
+    const actorIds = rewardActorIds(options.project, battleEventState.partyActorIds ?? actors.map((actor) => actor.recordId), [...participatingActorIds]);
+    for (const actorId of new Set(actorIds)) {
+      const battler = actors.find((entry) => entry.recordId === actorId);
+      if (!battler || battler.hp <= 0) continue;
+      const levelUp = levelUps.find((entry) => entry.actorId === actorId);
+      const known = [...battler.skillIds, ...(levelUp?.learnedSkillIds ?? []), ...(battleEventState.actorSkillIds?.[actorId] ?? [])];
+      const result = computeApLearning(options.project, currentEffectiveEquipment(actorId), earnedAp, sessionState.actorApProgress?.[actorId], known);
+      const skillIds = result.learned.map((entry) => entry.skillId);
+      if (skillIds.length > 0) learned.push({ actorId, actorName: battler.name, skillIds: [...skillIds], viaAp: skillIds });
+    }
+    return learned;
+  }
+
+  /** 지금(전투 중 장비 교체 포함) 이 배우가 끼고 있는 유효 장비. */
+  function currentEffectiveEquipment(actorId: string): ActorInitialEquipment | undefined {
+    const record = options.project.database.actors.find((actor) => actor.id === actorId);
+    const raw = battleEventState.actorEquipment?.[actorId];
+    if (!record || !raw) return actorEquipment.get(actorId as ActorId);
+    return effectiveActorEquipment(options.project, record, raw, effectiveActorClassId(options.project, { classOverrides: battleEventState.classOverrides }, actorId));
   }
 
   // TP 습득 미리보기 — 세션 적립(applyBattleRewardsToSession)과 같은 대상(살아남은 보상 대상)·같은 함수.
@@ -4218,7 +4259,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       const level = battleEventState.actorLevels?.[actorId] ?? 1;
       const adjustedExp = expForRewardActor(earnedExp, level, enemyLevel, options.project.system.rewardPolicy);
       const totalExp = (battleEventState.actorExperience?.[actorId] ?? 0) + adjustedExp;
-      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: battleEventState.classOverrides });
+      const result = computeActorLevelUp(options.project, actorId, level, totalExp, { classOverrides: battleEventState.classOverrides, equipment: currentEffectiveEquipment(actorId) });
       if (result) results.push(result);
     }
     return results;

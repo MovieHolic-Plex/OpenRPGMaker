@@ -61,6 +61,7 @@ export function validateDatabase(value: unknown): void {
       assert(!ids.has(id), `Duplicate equipment slot id: ${id}`);
       ids.add(id);
       assert(requireString("equipment slot.label", slot.label).trim().length > 0, "Equipment slot label must not be blank");
+      if (slot.equipsAs !== undefined) assert(isEquipmentSlotId(requireString("equipment slot.equipsAs", slot.equipsAs)), `Invalid equipment slot equipsAs: ${String(slot.equipsAs)}`);
     }
   }
   for (const raw of database.actors as unknown[]) {

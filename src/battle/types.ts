@@ -169,6 +169,9 @@ export interface BattleSessionState {
   readonly actorLevels?: Readonly<Record<string, number>>;
   /** 배우별 누적 기술 포인트(TP). 승리 후 TP 습득 미리보기의 기준. */
   readonly actorTechPoints?: Readonly<Record<string, number>>;
+  /** 마석 AP 진행(배우 → 스킬 id → 누적 AP). 승리 후 AP 습득 미리보기의 기준. */
+  readonly actorApProgress?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
+  readonly learnedViaAp?: Readonly<Record<string, readonly SkillId[]>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
   readonly difficultyId?: string;
@@ -465,6 +468,8 @@ export interface BattleLevelUpPreview {
   readonly mindGain: number;
   readonly agilityGain: number;
   readonly learnedSkillIds: readonly SkillId[];
+  /** 장착 마석의 레벨업 보너스(위 *Gain 에 합산돼 있다). 결과 화면이 「마석 보너스」로 따로 보일 수 있다. */
+  readonly equipmentBonus?: { readonly maxHp: number; readonly maxMp: number; readonly attack: number; readonly defense: number; readonly mind: number; readonly agility: number };
 }
 
 export interface BattleRewardsSnapshot {
@@ -480,7 +485,9 @@ export interface BattleRewardsSnapshot {
   /** 기술 포인트(트룹 합계). 살아남은 파티원 전원이 받는다. 저작된 TP 가 없으면 생략. */
   readonly tp?: number;
   /** TP 로 새로 배우는 기술 미리보기(결과 화면용). 세션 적립은 battleRewardsToSession 이 같은 규칙으로 한다. */
-  readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[] }[];
+  readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[]; /** 이 중 마석 AP 로 배운 스킬(EquipmentRecord.apGrants). 생략 = TP 습득뿐. */ readonly viaAp?: readonly SkillId[] }[];
+  /** 마석 AP(트룹 합계). 살아남은 파티원 전원이 받아 장착 마석의 apGrants 에 쌓는다. 저작된 AP 가 없으면 생략. */
+  readonly ap?: number;
 }
 
 /** 전투 이벤트의 Tint Screen 이 남긴 화면 상태. 색조 문자열은 맵의 m2Runtime.screen.tint 와 같은 문법이다. */

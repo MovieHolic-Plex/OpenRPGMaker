@@ -1372,6 +1372,23 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: 시스템 탭 「전투 자원」, 스킬 카드 「전투 자원」, 상태 전투 규칙 패널의 「감정 계열/단계」, 장비 카드 「장착 시 스킬·명령」, 생활·제작 업그레이드 「장비 강화」. AI 도구는 `set_project_settings.battle.*`·`upsert_skill`·`upsert_state`·`upsert_equipment`·`upsert_item_upgrade.target`.
 - 테스트: `test/mgL3BattleGauges.test.ts`, `mgL3BattleGaugeHud`, `mgL3BattleEmotion`, `mgL3EquipmentGrants`, `mgL3BattleResourceEditor`.
 
+## FF6 마석 성장 — AP 영구 습득 · 레벨업 보너스 · 전투당 1회 (2026-10-15, 작업자 A)
+
+전부 **값이 있을 때만** 동작한다(없는 옛 프로젝트·세이브는 바이트 그대로). 순수 규칙은 `src/battle/battleEsperAp.ts`(미리보기·세션 정산이 같은 함수를 쓴다).
+
+- **AP 영구 습득** — `EquipmentRecord.apGrants [{skillId, ap}]` + `apRate`(%, 기본 100). 적 `EnemyRewards.ap`(트룹 합계 → `BattleRewardsSnapshot.ap`)를 살아남은 보상 대상 전원이
+  받아 **장착한 마석**의 apGrants 에 쌓는다(마석 몫 = max(1, round(AP × apRate/100)), 같은 스킬을 여러 마석이 가르치면 몫을 합하고 필요 AP 는 가장 낮은 값).
+  필요 AP 를 채우면 스킬을 영구 습득한다 — `PlaySession.actorSkillIds` + `learnedViaAp`(배우별 기록)에 들어가 장비를 벗어도 남고, 진행치는 `actorApProgress[배우][스킬]` 에 남는다.
+  `grantsSkillIds`(장착 중에만 사용)와 별개다: 이미 아는 스킬에는 쌓지 않고, 장착 부여로 쓰는 중인 스킬은 아는 것으로 치지 않는다.
+  정산 `applyEsperApToSession`(`player/battleRewardsToSession.ts`, TP 정산 직후), 결과 미리보기 `computeApLearnedPreview`(runtime.ts, `rewards.techLearned[].viaAp`). 세이브 `actorApProgress`·`learnedViaAp` 저장·복원·검증(`saveSlots.ts`).
+- **레벨업 보너스** — `EquipmentRecord.levelUpBonus {maxHpPercent,maxMpPercent,attack,defense,mind,agility}`. 장착한 배우가 레벨이 오를 때마다(올라간 레벨 하나당 한 번) 영구 보너스를 받는다:
+  `computeActorLevelUp({equipment})` 가 `BattleLevelUpResult.equipmentBonus` 를 돌려주고(`*Gain` 에 이미 합산), `applyActorLevelUp` 가 `session.actorParamBonuses` 에 적립한다(Change Parameters 와 같은 저장소 — 장비를 벗어도 남고 전투·메뉴가 이미 읽는다). 퍼센트는 그 레벨의 **곡선 최대치** 기준.
+- **전투당 1회** — `SkillRecord.oncePerBattle`. 쓰면 `skillCooldowns[id] = ONCE_PER_BATTLE_LOCK(1e6)`(라운드가 지나도 풀리지 않는다, 배틀러와 함께 사라짐). 라벨 「이번 전투에서는 이미 사용했습니다.」. `cooldownTurns:99` 근사를 대신한다.
+- **장비 부위 도구** — `upsert_equipment_slot {slots:[{id,label,equipsAs?}], removeIds?}`. `EquipmentSlotRecord.equipsAs` = 그 칸이 대신 받아 주는 부위(유물 2칸: `relic_2.equipsAs="relic"`, `equipmentSlotAccepts` 가 읽는다).
+  `upsert_equipment` 가 모르는 slot 이면 이 도구를 안내한다.
+- 저작: 장비 탭 「마석 성장」 카드(`databaseEquipmentEsperFields.ts`)·적 탭 「마석 AP」·스킬 카드 「전투당 1회」. AI: `upsert_equipment`(apGrants·apRate·levelUpBonus, 모르는 스킬/키는 거절)·`upsert_enemy.rewards.ap`·`upsert_skill.oncePerBattle`·`upsert_equipment_slot`. 능력 색인 레시피 `esper-growth`.
+- 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-growth-probe.mts`(실제 도구 → 전투 → 세션 정산 → 세이브 왕복).
+
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
 전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.

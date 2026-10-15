@@ -25,6 +25,7 @@ const system = (label: string, icon: DeckIconName = "gear"): ToolLabelEntry => (
 export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   upsert_item: build("아이템 수정", "box"),
   upsert_equipment: build("장비 수정", "box"),
+  upsert_equipment_slot: build("장비 부위 수정", "box"),
   upsert_enemy: people("몬스터 수정", "user"),
   upsert_actor: people("캐릭터 수정", "user"),
   upsert_skill: build("스킬 수정", "spark"),

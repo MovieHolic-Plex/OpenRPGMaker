@@ -187,6 +187,8 @@ export type SaveSnapshot = {
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
     readonly actorTechPoints?: Record<string, number>;
+    readonly actorApProgress?: PlaySession["actorApProgress"];
+    readonly learnedViaAp?: PlaySession["learnedViaAp"];
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
@@ -445,6 +447,8 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       ...(session.actorTechPoints && Object.keys(session.actorTechPoints).length > 0 ? { actorTechPoints: structuredClone(session.actorTechPoints) } : {}),
+      ...(session.actorApProgress && Object.keys(session.actorApProgress).length > 0 ? { actorApProgress: structuredClone(session.actorApProgress) } : {}),
+      ...(session.learnedViaAp && Object.keys(session.learnedViaAp).length > 0 ? { learnedViaAp: structuredClone(session.learnedViaAp) } : {}),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
@@ -717,6 +721,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorTechPoints) session.actorTechPoints = structuredClone(snapshot.session.actorTechPoints);
+  if (snapshot.session.actorApProgress) session.actorApProgress = structuredClone(snapshot.session.actorApProgress);
+  if (snapshot.session.learnedViaAp) session.learnedViaAp = structuredClone(snapshot.session.learnedViaAp);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
@@ -1204,6 +1210,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorTechPoints: isNumberRecord(session.actorTechPoints) ? session.actorTechPoints : undefined,
+      actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
+      learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,

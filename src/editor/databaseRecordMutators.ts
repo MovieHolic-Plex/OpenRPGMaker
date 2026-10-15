@@ -62,7 +62,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "moveMotion"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "moveMotion"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -139,6 +139,9 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
   if ("grantsSkillIds" in patch) record.grantsSkillIds = patch.grantsSkillIds;
   if ("grantsCommand" in patch) record.grantsCommand = patch.grantsCommand;
+  if ("apGrants" in patch) record.apGrants = patch.apGrants;
+  if ("apRate" in patch) record.apRate = patch.apRate;
+  if ("levelUpBonus" in patch) record.levelUpBonus = patch.levelUpBonus;
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 

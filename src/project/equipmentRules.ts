@@ -1,6 +1,6 @@
 import type { ActorInitialEquipment, ActorRecord, EquipmentRecord, Project } from "@/project/types";
 
-import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
+import { equipmentSlots, equipsAsSlot, hasEquipmentSlot } from "@/project/equipmentSlots";
 
 export type EquipmentSlot = keyof ActorInitialEquipment;
 
@@ -55,6 +55,7 @@ export function equipmentSlotAccepts(
   if (!hasEquipmentSlot(project, slot) || !hasEquipmentSlot(project, equipment.slot)) return false;
   if (equipment.twoHanded && equipment.slot !== "weapon") return false;
   if (equipment.slot === slot) return true;
+  if (equipsAsSlot(project, slot) === equipment.slot) return true;
   const classDualWield = project.database.classes.find((record) => record.id === classId)?.options.dualWield === true;
   return slot === "shield" && equipment.slot === "weapon" && !equipment.twoHanded
     && (actor.options.dualWield || classDualWield);
