@@ -26,12 +26,12 @@ const server = http.createServer((req, res) => {
 }).listen(0);
 const port = server.address().port;
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1000, height: 760 }, reducedMotion: 'reduce' }); const errors = [];
+const page = await browser.newPage({ viewport: { width: 1040, height: 880 }, reducedMotion: 'no-preference' }); const errors = [];
 page.on('pageerror', e => errors.push(String(e)));
 try {
   await page.goto(`http://127.0.0.1:${port}/_qa.html`);
   const css = fs.readFileSync(path.join(out, 'probe.css'), 'utf8');
-  await page.addStyleTag({ content: '.battle-scene{position:relative;width:480px;height:320px;background:#e0e8b0 url(/assets/emerald-monster/battle/grass.png) 0 0/480px 240px no-repeat;image-rendering:pixelated}.mon{position:absolute;image-rendering:pixelated;width:128px;height:128px}' + css });
+  await page.addStyleTag({ content: '.battle-scene{position:relative;width:480px;height:392px;background:#e0e8b0 url(/assets/emerald-monster/battle/grass.png) 0 0/480px 240px no-repeat;image-rendering:pixelated}.mon{position:absolute;image-rendering:pixelated;width:128px;height:128px}' + css });
   await page.addScriptTag({ path: path.join(out, 'probe.js') });
   const res = await page.evaluate(async ({ pairs, base }) => {
     const { mountEmeraldTrainerIntro } = window.trainerProbe; const wait = ms => new Promise(r => setTimeout(r, ms)); const rows = [];
@@ -43,17 +43,19 @@ try {
       const c = mountEmeraldTrainerIntro(root, project, { currentMapId: 'x', switches: {}, variables: {}, selfSwitches: {} }, { troopId: 't', eventState: { switches: {}, variables: {}, selfSwitches: {} } });
       c.sync({ step: 'intro', trainerIntroduction: true });
       for (let i = 0; i < 80 && !root.dataset.emeraldTrainerIntro; i++) await wait(25);
-      // 같은 줄 비교용 몬스터: 캠페인(64 -> 2배)·하네스(112 -> 128)
-      const m1 = Object.assign(document.createElement('img'), { className: 'mon', src: '/assets/monster-expedition/creatures/brambleboar-front.png' }); m1.style.cssText = 'left:0;top:246px;width:64px;height:64px';
-      const m2 = Object.assign(document.createElement('img'), { className: 'mon', src: '/assets/harnesses/monster-collect-species/sparkit/front.png' }); m2.style.cssText = 'left:90px;top:246px;width:72px;height:72px';
+      // 아래 줄: 같은 128px 칸에 캠페인 몬스터(64 -> 2배)·하네스 몬스터(112 -> 128px)
+      const m1 = Object.assign(document.createElement('img'), { className: 'mon', src: '/assets/monster-expedition/creatures/brambleboar-front.png' }); m1.style.cssText = 'left:20px;top:256px;width:128px;height:128px';
+      const m2 = Object.assign(document.createElement('img'), { className: 'mon', src: '/assets/harnesses/monster-collect-species/sparkit/front.png' }); m2.style.cssText = 'left:200px;top:256px;width:128px;height:128px';
       root.append(m1, m2);
+      await wait(900); // 도입 슬라이드가 끝난 자리
       const imgs = [...root.querySelectorAll('.emerald-trainer-intro img')];
-      rows.push({ opp, hero, shown: !!root.dataset.emeraldTrainerIntro, imgs: imgs.map(i => ({ cls: i.className, nat: [i.naturalWidth, i.naturalHeight], css: [i.width, i.height], scale: i.dataset.portraitScale, profile: i.dataset.portraitProfile })) });
+      const cs = imgs.map(i => { const r = i.getBoundingClientRect(), b = root.getBoundingClientRect(), st = getComputedStyle(i); return { x: r.left - b.left, y: r.top - b.top, w: r.width, h: r.height, vis: st.visibility, op: st.opacity, disp: st.display, tr: st.transform, an: st.animationName, src: i.currentSrc.slice(-30) }; });
+      rows.push({ cs, opp, hero, shown: !!root.dataset.emeraldTrainerIntro, imgs: imgs.map(i => ({ cls: i.className, nat: [i.naturalWidth, i.naturalHeight], css: [i.width, i.height], scale: i.dataset.portraitScale, profile: i.dataset.portraitProfile })) });
     }
     return rows;
   }, { pairs, base: `http://127.0.0.1:${port}` });
   if (errors.length) throw Error(errors.join(';'));
-  await page.screenshot({ path: path.join(out, 'bundled-trainers.png') });
+  await page.screenshot({ path: path.join(out, 'bundled-trainers.png'), fullPage: true });
   fs.writeFileSync(path.join(out, 'record.json'), JSON.stringify(res, null, 2));
   console.log(JSON.stringify(res));
 } finally { await browser.close(); server.close(); }
