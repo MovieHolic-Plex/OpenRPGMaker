@@ -60,6 +60,12 @@ function isTransferGateEvent(event: GameEvent): boolean {
   return (event.pages ?? []).some((page) => (page.commands ?? []).some((command) => command?.kind === "transfer"));
 }
 
+function passableCells(project: Project, map: GameMap, blocked: ReadonlySet<string>): Set<number> {
+  const all = new Set<number>();
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!blocked.has(`${x},${y}`) && isPassable(project, map, x, y)) all.add(y * map.width + x);
+  return all;
+}
+
 /** 차단 칸을 뺀 지도에서 가장 큰 통행 묶음 — 「방 바닥」의 기준. */
 export function largestWalkGroup(project: Project, map: GameMap, blocked: ReadonlySet<string>): Set<number> {
   const visited = new Set<number>();
@@ -118,13 +124,14 @@ export function transferGatesStayApproachable(
   // (실측 2026-10-13: 나무로 막힌 남쪽 출입구가 있는 맵에서 집 문 연결이 전부 거절됐다).
   const alreadySealed = new Set<string>();
   if (newGate) {
-    const baseGroup = largestWalkGroup(project, map, blocked);
+    const baseGroup = map.worldmapSource ? passableCells(project, map, blocked) : largestWalkGroup(project, map, blocked);
     for (const event of map.events ?? []) {
       if (isTransferGateEvent(event) && !gateTouchesGroup(project, map, event, baseGroup)) alreadySealed.add(event.id);
     }
     blocked.add(`${newGate.x},${newGate.y}`);
   }
-  const group = largestWalkGroup(project, map, blocked);
+  // 월드맵 키트 지도: 섬·장벽 너머 땅은 배·비행선으로 닿으므로 「가장 큰 묶음」이 아니라 통행 칸 전부를 방 바닥으로 본다.
+  const group = map.worldmapSource ? passableCells(project, map, blocked) : largestWalkGroup(project, map, blocked);
   const sealed: string[] = [];
   for (const event of map.events ?? []) {
     if (!isTransferGateEvent(event)) continue;
@@ -159,6 +166,13 @@ export function playerAnchors(project: Project, map: GameMap): Point[] {
 
 /** 앵커에서 걸어 닿는 칸 집합(y*width+x). 앵커가 없으면 null — 판단할 근거가 없다. */
 export function walkableFromAnchors(project: Project, map: GameMap): Set<number> | null {
+  // 월드맵 키트 지도는 걸어서 닿지 않는 장소(섬·장벽 너머)를 배·비행선·관문으로 잇도록 만든 곳이다. 도달성은 키트의 여정 검사가
+  // 이미 맡았으므로(모든 장소가 어떤 수단으로든 닿음) 걷기 BFS 로 입구를 거절하지 않는다 — 통행 칸이면 모두 닿는 것으로 본다.
+  if (map.worldmapSource) {
+    const all = new Set<number>();
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (isPassable(project, map, x, y)) all.add(y * map.width + x);
+    return all;
+  }
   const anchors = playerAnchors(project, map);
   if (anchors.length === 0) return null;
   const seen = new Set<number>();

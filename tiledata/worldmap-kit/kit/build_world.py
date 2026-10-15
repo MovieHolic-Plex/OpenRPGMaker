@@ -50,7 +50,11 @@ def signature(journey_id, roles_data, terrain=None):
     h = hashlib.sha1()
     h.update((K.WM / 'journeys' / (journey_id + '.json')).read_bytes())
     if terrain is not None:                          # 지형 편집 작업도 지형 모양을 바꾼다
-        h.update(json.dumps(terrain, sort_keys=True, ensure_ascii=False).encode())
+        t = dict(terrain)
+        v = t.pop('variant', None)                   # 변형은 칸 배열을 고치는 작업(ops)만 지형을 바꾼다 — 색 표·아이콘·여정 모드는 지형 뒤에 적용된다
+        if v and v.get('ops'):
+            t['variant'] = {'ops': v['ops'], 'protect_roads': v.get('protect_roads', [])}
+        h.update(json.dumps(t, sort_keys=True, ensure_ascii=False).encode())
     h.update(json.dumps(roles_data['roles'], sort_keys=True).encode())
     for f in sorted(K.LIB.glob('*.py')):
         if f.name.startswith(('kit_palette', 'kit_common', 'kit_theme', 'kit_selected_icons')):      # 팔레트·입력 검사·아이콘·테마 덧칠 코드는 지형에 영향이 없다
@@ -350,6 +354,11 @@ def _main(a):
             raise K.KitError('지형 편집: ' + str(e))
         iconset = K.IconSet(a.iconset)
         assign = K.assign_icons(roles, journey, iconset)          # 역할 채움 검사 포함(모자라면 여기서 KitError)
+        if terrain and terrain.get('variant'):                    # 월드 변형: 색 표·아이콘 덮어쓰기(같은 칸 수만)
+            import kit_variant as KV
+            assign = KV.adjust_assign(assign, terrain, journey, iconset)
+            if terrain['variant'].get('palette'):
+                a.palette = terrain['variant']['palette']
         selected = None
         if a.selected_icons:
             from kit_selected_icons import SelectedIcons
@@ -429,7 +438,7 @@ def _main(a):
         from check_journey import run_check
         jw = W2.MapWorld(world)
         bad, info, txt = run_check(journey, jw, out_path=out / 'journey-check.txt', verbose=False)
-        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey))
+        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey), notes=info.get('variant_notes', []))
         print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
 
@@ -462,7 +471,7 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain, selected=No
     if not no_check:
         from check_journey import run_check
         bad, info, txt = run_check(journey, W.MapWorld(world), out_path=out / 'journey-check.txt', verbose=False)
-        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey))
+        report['journey_check'] = dict(ok=not bad, bad=KTer.explain(bad, journey), notes=info.get('variant_notes', []))
         print('여정 검사: %s' % ('통과' if not bad else '불일치 %d건 — %s' % (len(bad), '; '.join(bad[:3]))))
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
 

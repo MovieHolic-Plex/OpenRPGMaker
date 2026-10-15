@@ -61,6 +61,8 @@ import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
+import { terrainRecordAt } from "@/project/terrainAt";
+import { scaledEncounterRate } from "@/project/terrainStep";
 import { monsterBattlePartyOf, monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
@@ -2603,7 +2605,8 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
 function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map || state.gameOver || state.runtimeFailure) return null;
-  const rate = map.encounterRate ?? 0;
+  // 실제 플레이(maybeTriggerRandomEncounter)와 같이: 서 있는 칸의 지형 조우율(%)을 곱한다 — 숲 140%·길 40% 같은 세계 지형 값이 여기서도 듣는다.
+  const rate = scaledEncounterRate(map.encounterRate ?? 0, terrainRecordAt(state.project, { mapId: map.id, x: state.session.x, y: state.session.y })?.record.encounterRatePercent);
   if (rate <= 0) return null;
   const position = { x: state.session.x, y: state.session.y };
   const hasCandidates = map.encounterTable && map.encounterTable.length > 0

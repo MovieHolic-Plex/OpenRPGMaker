@@ -208,7 +208,7 @@ export function paintTilesBulk(
     }
     if (repairTrees) {
       repairTreePairsOnMap(m, tileset, {
-        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current, { storeProject: true }),
       });
     }
   }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile || upperGroups.length > 0) });
@@ -361,7 +361,7 @@ export function eraseTilesBulk(
     for(const group of upperGroups)shapeAutotileGroupAround(autotileGroupLayerView(m,group),group,eraseEdits.filter(edit=>edit.layer==='upper'));
     // 의도적으로 짝을 지운 뒤에는 수관을 다시 심지 않도록, 남은 고아 밑동만 정리
     repairTreePairsOnMap(m, tileset, {
-      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+      canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current, { storeProject: true }),
     });
   }, {
     cells: writes.flatMap((write) => changedTileCellsForEdit(mapId, write.layer, [{ x: write.x, y: write.y }], shapeAutotile || upperGroups.length>0)),
@@ -623,7 +623,7 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
     if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
       repairTreePairsOnMap(m, tileset, {
-        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
+        canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current, { storeProject: true }),
       });
     }
   }, {

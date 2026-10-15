@@ -288,6 +288,7 @@ CLEAR = []           # (다각형, 'forest'|'mount'|'all')
 GEN = None           # 생성 지형(kit_gen): dict(land=bool 칸 마스크, ground=int16 바닥, edit=bool 사용자 작업이 바닥을 정한 칸). None 이면 손 대륙
 EDIT_GROUND = None   # 지형 편집이 바닥을 정한 칸(bool) — 지역 팔레트가 그 칸을 덮지 않게 build_world 가 읽는다        물체를 걷는다(숲·산 뒤, 장소 정리 전)
 WARN = []            # 빌드 중 경고(경사로 자리 없음 등) — 오류가 아니라 보고용
+VARIANT_HOOK = None  # 월드 변형(kit_variant.install 이 건다): 지형·물체가 다 만들어진 뒤 (land, G, O, Hh, icon_cells) 를 고친다. None 이면 변형 아님
 
 # 장소: (이름, 출처, 지정, x, y, 밑 바닥(None=그대로), 종류, 설명)
 SITES = [
@@ -514,6 +515,8 @@ def build():
         cm_ = polymask(poly, .8, 860 + i, minsize=1)
         kill = {'forest': lambda: np.isin(O, V.FORESTS), 'mount': lambda: np.isin(O, MOUNTS), 'all': lambda: O > 0}[what]()   # FORESTS 는 이 모듈의 숲 작업 목록이다(물체 코드는 V.FORESTS) — 예전엔 clear 가 늘 터졌다
         O[cm_ & kill] = 0
+    if VARIANT_HOOK is not None:
+        VARIANT_HOOK(land, G, O, Hh, icon_cells)
     global _DBG
     _DBG = (land.copy(), G.copy(), Hh.copy(), O.copy())
     # 8. 장소 밑 정리

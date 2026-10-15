@@ -16,6 +16,7 @@ import { composeRouted, routeDungeon } from "../dungeonKit/route";
 import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { ToolError, type ToolDefinition } from "./types";
+import { DUNGEON_ENTRANCE_TAG, ENTRANCE_OPTION_SCHEMA, linkEntranceInDraft, parseEntranceOption } from "./dungeonLinkTools";
 
 const createMapTool = MAP_TOOLS.find((tool) => tool.name === "create_map")!;
 const resizeMapTool = MAP_TOOLS.find((tool) => tool.name === "resize_map")!;
@@ -48,13 +49,16 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
     "결과 data.rooms[].spots 는 적·상자·NPC 이벤트를 둘 수 있는 빈 바닥 칸이다 — 이벤트는 그 좌표에만 둔다. data.stairsUp.front 는 입구 앞 칸(위층으로 가는 이동 지점), data.stairsDown 은 내려가는 구멍·계단 칸. " +
     "data.anchors: boss(보스방 id), treasure(보물 방 id), gate(그 방으로 들어가는 통로 칸 — 잠긴 문·열쇠 이벤트 자리). " +
     "data.population 은 장르별 채우기 계획이다: pokemon = wildZones(야생 조우 구역 — 이 도구가 방마다 「야생 조우」 이름표 구역을 만들고, encounters:[{troopId,weight}] 를 주면 구역별 encounterTable 도 깐다) · enemies(시선 있는 트레이너 자리: 같은 좌표·sightRange·face 로 place_field_enemy 를 부른다) · shortcut(깊은 방 구멍 → 입구 앞 칸 이동 이벤트) · boss(선택) / rpg = enemies(필드 적) · chests · boss · lockedGate(문 칸+열쇠 방). 계획의 이벤트는 기존 도구로 직접 놓는다. " +
-    "mapId 없으면 새 맵을 만든다. mapId 가 있으면 비어 있는 같은 계열 맵을 방 배치 크기로 넓혀 그 자리에 짓는다(내용이 있는 맵이면 거부 — 새 맵으로). 시작 맵이면 시작 위치를 입구로 옮긴다.",
+    "entrance:{fromMapId, place|x,y} 를 주면 야외·월드맵 입구와 이 던전을 자동으로 양방향 잇는다(고아 맵이 안 남는다) — 월드맵 「광산 입구」 장소에 place 로 바로 붙여라. 나중에 잇거나 여러 곳을 한 번에 이으려면 link_world_entrance. "
+    + "mapId 없으면 새 맵을 만든다. mapId 가 있으면 비어 있는 같은 계열 맵을 방 배치 크기로 넓혀 그 자리에 짓는다(내용이 있는 맵이면 거부 — 새 맵으로). 시작 맵이면 시작 위치를 입구로 옮긴다.",
   mode: "write",
   domains: ["map", "tile"],
   preservesAuthoredRaster: true,
   parameters: {
     type: "object",
+    additionalProperties: false,
     properties: {
+      entrance: ENTRANCE_OPTION_SCHEMA,
       mapId: { type: "string", description: "비어 있는 기존 버들항 맵 id(시작 빈 맵 등). 생략하면 새 맵." },
       id: { type: "string", description: "새 맵 id(생략 시 자동)" },
       name: { type: "string", description: "새 맵 이름(기본: 지하 던전)" },
@@ -64,6 +68,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       adapter: { type: "string", enum: ["beodeul", "monster"], description: "칩셋 어댑터를 직접 지정(보통 생략 — mapId 의 칩셋·프로젝트 장르가 정한다). 다른 계열 칩셋으로 가려면 사용자 승인이 먼저다." },
       encounters: { type: "array", description: "야생 조우(pokemon): [{troopId, weight}] — 야생 조우 구역(방)마다 locationId 조건으로 encounterTable 에 깐다. 생략하면 구역 이름표만 만들고 set_encounter_table 로 잇는다.", items: { type: "object", properties: { troopId: { type: "string" }, weight: { type: "integer" } }, required: ["troopId"] } },
       encounterRate: { type: "integer", description: "야생 조우 확률(걸음당 %, 기본 12). encounters 를 줄 때만." },
+      style: { type: "string", enum: [...DUNGEON_STYLES], description: "catacomb·castle 방 문법의 벽 양식(선택)" },
       seed: { type: "integer", description: "배치·장식 변주 시드(같은 값 = 같은 층). 기본 7" },
       size: { type: "string", enum: [...DUNGEON_SIZES], description: "rooms 를 생략했을 때 층 크기: small 방 4 · medium 6(기본) · large 9" },
       width: { type: "integer", description: "바라는 맵 가로(칸, 선택). rooms 생략 시 방 수를 이 넓이에 맞추고, 배치가 이 비율로 자란다." },
@@ -102,6 +107,10 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       size: (DUNGEON_SIZES as readonly string[]).includes(String(args.size)) ? (args.size as DungeonSpec["size"]) : undefined,
       width: int(args.width), height: int(args.height),
     };
+    const entranceOpt = args.entrance === undefined ? undefined : parseEntranceOption(args.entrance);
+    if (entranceOpt) {
+      if (!draft.maps[entranceOpt.fromMapId]) throw new ToolError(`entrance.fromMapId 맵이 없다: ${entranceOpt.fromMapId} — 야외·월드맵 id 를 확인하라(list_maps).`, { code: "map-not-found", mapId: entranceOpt.fromMapId });
+    }
     const requestedMapId = typeof args.mapId === "string" && args.mapId.trim() ? args.mapId.trim() : "";
     if (requestedMapId && !draft.maps[requestedMapId]) throw new ToolError(`맵이 없습니다: ${requestedMapId}`, { code: "map-not-found", mapId: requestedMapId });
     let composed, route;
@@ -176,6 +185,24 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
         notes.push("야생 조우 구역 이름표만 만들었다 — set_encounter_table 의 conditions.locationId 로 이 구역(이름 「야생 조우 …」)에 야생을 잇는다.");
       }
     }
+    // 입구 표식: 야외 맵과 잇는 문 칸(stairsUp 이 있으면 그 칸, 없으면 입구 칸)과 도착 칸. link_world_entrance 가 이 표식을 읽는다.
+    {
+      const gate = composed.stairsUp ? { x: composed.stairsUp.x, y: composed.stairsUp.y } : composed.entrance;
+      const land = composed.stairsUp ? composed.stairsUp.front : undefined;
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(DUNGEON_ENTRANCE_TAG));
+      addMapLocation(map, { name: "던전 입구", x: gate.x, y: gate.y, w: 1, h: 1, note: `야외로 나가는 문 칸 (${gate.x},${gate.y})${land ? ` · 도착 칸 (${land.x},${land.y})` : ""}`,
+        tags: [DUNGEON_ENTRANCE_TAG, COMPOSED_LAYOUT_TAG, `gate:${gate.x},${gate.y}`, ...(land ? [`land:${land.x},${land.y}`] : [])] });
+    }
+    let entranceLink: ReturnType<typeof linkEntranceInDraft> | undefined;
+    if (entranceOpt) {
+      try {
+        entranceLink = linkEntranceInDraft(draft, { ...entranceOpt, toMapId: mapId });
+      } catch (error) {
+        if (error instanceof ToolError) throw new ToolError(`던전은 지었지만 야외 입구 연결에 실패했다: ${error.message} — 연결만 link_world_entrance({worldMapId:"${entranceOpt.fromMapId}", links:[{${entranceOpt.place ? `place:"${entranceOpt.place}"` : `x:${entranceOpt.x},y:${entranceOpt.y}`}, toMapId:"${mapId}"}]}) 로 다시 하라.`, { code: error.code ?? "entrance-link-failed", mapId });
+        throw error;
+      }
+      notes.push(`야외 ${entranceOpt.fromMapId}(${entranceLink.fromGate.x},${entranceLink.fromGate.y}) ↔ 이 던전을 양방향으로 이었다.`);
+    }
     // 만든 결과를 한 번 더, 실제 맵으로 검사한다(조립기 내부 검사와 같은 규칙).
     const bad = groundSupportIssues(map, tileset, { events: false }).filter((issue) => issue.severity === "error");
     if (bad.length) throw new ToolError(`시공 결과에 받침 없는 물체 ${bad.length}건: ${bad[0]!.message}`, { code: "support-violation", mapId });
@@ -193,6 +220,7 @@ export const AUTHOR_DUNGEON_TOOL: ToolDefinition = {
       rooms: composed.rooms.map((room) => ({ id: room.id, kind: room.kind, x: room.x, y: room.y, w: room.w, h: room.h, from: room.from, spots: composed.spots[room.id] ?? [] })),
       corridors: composed.corridors.map((c) => ({ from: c.a, to: c.b, dir: c.dir, ...(c.loop ? { loop: true } : {}), ...c.rect })),
       population, counts: composed.counts, warnings: composed.warnings,
+      ...(entranceLink ? { entranceLink: { fromMapId: entranceOpt!.fromMapId, fromGate: entranceLink.fromGate, toGate: entranceLink.toGate, outEvent: entranceLink.link.eventIdA, backEvent: entranceLink.link.eventIdB, landing: entranceLink.link.landingB } } : {}),
     };
     const dressed = Object.values(composed.counts).reduce((a, b) => a + b, 0);
     return {

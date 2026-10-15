@@ -2118,6 +2118,16 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 (짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
 관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
 
+## 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+
+- 헤드리스 도구 시험: `node scripts/oprn-tools.mjs --project <p.json> --out <o.json> derive_world_variant '{...}'` — 호스트 월드맵 빌더(`scripts/lib/worldmapBuild.mjs`)를 걸어 주므로
+  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
+- 크로미움이 이 호스트에서 `ERR_NETWORK_CHANGED` 로 뜨면 `unshare -rn bash -c 'ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-vehicle'`.
+- `ct-vehicle`(`scripts/qa/runtime/ct-vehicle*.{mts,mjs}`) 은 두 번 깨졌다: ① 기본 칩셋이 숲마을 → 버들항이 되어 물 0번·벽 42번이 다른 그림이 됨 → 물 8번·벽 408번·지형 태그 없는 물은
+  칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.
+  새 런타임 픽스처는 `system.opening` 을 지우지 않으면 첫 확인 키가 먹히지 않는다(15개 시나리오의 `node_modules/vite-node/vite-node.mjs` 경로도 vite-node 6 에 없어 `dist/cli.mjs` 로 가야 한다 — ct-vehicle 만 고침).
+- `ct-vehicle-walkers`(`scripts/qa/runtime/ct-vehicle-walkers*`) — 초코보(통행 불가 숲 통과·호수 거절)·광산 수레(레일에서만)·뗏목(강만, 바다 거절)을 승하차까지 실제 플레이어로 본다. 크로미움은 `unshare -rn` 안에서. `parkedVehicleSprites` 검사는 초코보만 Animal 텍스처를 기대한다(`scripts/lib/runtimeQa.mjs`).
+
 ## 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
 
 바위깨기·물 건너기처럼 **파티가 어떤 스킬을 알아야 열리는 길**은 세 군데가 같은 해석기(`src/project/partySkills.ts`)를 쓴다.

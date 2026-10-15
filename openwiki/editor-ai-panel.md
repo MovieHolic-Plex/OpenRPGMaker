@@ -4344,3 +4344,40 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 모의 서버 `scripts/qa/openai-compat-mock-server.mjs`(401·404·429·도구 미지원·강도 인자 거절·`--models`) + 실제 설정 화면 Playwright: 카드·프리셋·401/404·모델 목록·마스킹된 키·역할 지정 거절·차단 모델 숨김·4개 언어. 실제 프로젝트 저장소 호스트(`scripts/oprn-serve.mjs`)에서 조수 한 턴(분류 호출 → 도구 25개 → `set_map_properties` 도구 호출 → 결과 왕복)으로 맵 이름을 바꾸고 `project.sqlite` 저장·새 브라우저 재로드로 확인.
 - 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
 - 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.
+
+## 조수·팀 모드 렉 (2026-10-15)
+
+증상: 조수 패널을 열거나 팀 모드로 들어가면 편집기에서 사실상 아무것도 못 한다. 가설 「Phaser 렌더가 범인」은 **측정으로 기각**됐다 — Phaser step 비용 p50 0.3ms, 렌더하는 프레임 비율 11~16%, 팀 스트림 중에도 렌더 비용 p95 6ms. 범인은 메인 스레드의 JS·스타일 재계산이다.
+
+### 측정법
+
+- 하네스: `scripts/qa/perf-ai-lag.mjs`(결과 `verify-shots/perf-ai-lag/<LABEL>.json`), 전/후 표는 `node scripts/qa/perf-ai-report.mjs <전> <후>`.
+- 실제 편집기(Phaser 포함)·실제 스토어·실제 입력창(`ai-input`→`ai-send`) 경로이고 **모델 서버만 대본 NDJSON** 이다. 같은 96×80 마을 위에서 idle → panel → stream(조수 1명, 생각·도구·map_delta·체크포인트) → team(팀장+시공 2+검수) 순으로 돌고, 각 시나리오 안에서 칠하기 드래그·가운데 버튼 팬·Ctrl+휠 줌 «입력 구간» 을 같이 잰다.
+- 지표: Phaser step 간격/비용, Long Task, Long Animation Frame 스크립트 귀속, 입력 큐 지연, 체크포인트 ACK ms, CDP 프로파일(`PROFILE=1`, self/inclusive/호출 경로).
+- 옵션: `SCENARIOS` `STREAM_SEC` `VILLAGE` `PROFILE=1` `NOINPUT=1`(스트림 비용만 분리) `ATTR=1`(rAF/타이머 등록자) `GBCR=1`(강제 레이아웃 호출자·DOM 변경 수) `TRACEGC=1`(V8 GC 일시정지).
+- 실행: 이 박스는 크로미움이 ERR_NETWORK_CHANGED 로 백지가 나므로 `unshare -rn bash -c 'ip link set lo up; npm run dev:worktree -- --port 99NN & …; QA_BASE_URL=… LABEL=… node scripts/qa/perf-ai-lag.mjs'`. dev 서버는 `npm run dev:worktree` 로만(vite 직접 호출 금지). 전/후 비교는 origin/main 을 별도 워크트리에 두고 같은 스크립트로 돌린다 — 결과 파일이 그 워크트리의 `verify-shots` 에 생기니 복사할 것.
+
+### 기준선(같은 머신·같은 대본, 전→후)
+
+| 지표 | 수정 전 | 수정 후 |
+|---|---|---|
+| team 프레임 gap p95 / 최대 | 209 / 4153 ms | 65 / 2345 ms |
+| team 100ms 넘는 프레임 | 65 | 20 |
+| team Long Task 합 | 27.9 s | 14.0 s |
+| team 칠하기 중 Long Task 합 | 11.4 s | 1.1 s |
+| stream gap p95 | 107 ms | 46 ms |
+| 체크포인트 ACK 중앙값 (stream / team) | 1039 / 957 ms | 534 / 547 ms |
+| idle 칠하기 Long Task 합 | 3.6 s | 0.15 s |
+
+### 고친 병목 (한 커밋씩)
+
+1. **체크포인트 저장 왕복 검사 직렬화** — `checkRoundtrip` 이 매 적용마다 프로젝트 전체를 문자열로 만들었다. 이미 검증된 타일셋 항목의 타일별 배열(tileMeta·passability·priority·terrain)을 같은 길이의 placeholder 로 바꿔 왕복 텍스트를 49.7→15.0 MB 로 줄였다(`sharedDictionaryJson.roundtripTilesetPiece`; 근거: `validateTileset` 만 이 네 필드를 읽는다는 Proxy 추적). dev-showcase 경로의 쓸모없는 저장 복제도 건너뛴다(`canSaveDevProjectOverride`).
+2. **스트림 이벤트마다 강제 레이아웃** — 존재 표시·상태바·대화 스크롤·작업 탭이 DOM 을 쓴 직후 `getBoundingClientRect` 를 불러 동기 레이아웃을 유발했다. rAF 한 번으로 합치고, 바뀐 것만 제자리에서 쓰고, 값이 같으면 쓰지 않는다(스타일 재계산 3062→1441). 연출(고스트·시공 막)은 그대로.
+3. **붓 한 번마다 라벨 점수 재탐색(약 140ms)** — `resolveForestCanopyReplacementExemptTileIds` 가 칠할 때마다 타일셋 전 라벨을 다시 훑었다. 스토어 타일셋 객체(제자리 수정 금지 계약)를 열쇠로 한 WeakMap 으로 기억한다.
+
+### 못 고친 것 · 불확실한 것
+
+- 팀 스트림에서 1.7~2.3 s 짜리 단발 정지가 남아 있다(setTimeout 콜백·`import.then`, GC, 릴리프 굽기 `ground` 전체 재굽기, `databaseModal.ts` rAF `run` 130~160 ms). 원인을 하나로 못 박지 못했다.
+- 체크포인트 한 번의 동기 구간이 아직 ~0.5 s 다. 남은 큰 몫은 `eventDraftVault.cloneKeepingDigests` + `shareContentDigests`(팀 11회 체크포인트에서 합 ~3.7 s). 이 복제는 detached draft(도구가 제자리에서 계속 고친다)와 스토어를 분리하는 격리라 생략할 수 없다 — 줄이려면 바뀐 맵만 복제하는 구조 공유가 필요하고 이번에는 위험이 커서 하지 않았다.
+- 이 하네스는 dev-showcase 경로다. 실제 Electron/호스트 저장 경로(`viewSubmit`, `saveMapPatch`)는 재지 않았다. 병목 1의 «저장 복제 건너뛰기» 는 하네스 환경 한정 효과다.
+- 하네스 한 번의 편차가 크다(팀 최대 정지 2~4 s 는 실행마다 다르다). 판정은 p95·Long Task 합·ACK 중앙값 같은 합계로 하고, 한 번의 최댓값으로 회귀를 선언하지 마라.

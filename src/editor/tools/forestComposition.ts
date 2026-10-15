@@ -9,7 +9,7 @@ import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import { isTreeCanopyTileId, isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
-import type { AutotileGroup, GameMap, Project } from "@/project/types";
+import type { AutotileGroup, GameMap, Project, TilesetDef } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { forestCoverageTarget, type ForestDensity } from "./forestDensity";
 import { protectedHouseCells } from "./houseProtection";
@@ -43,19 +43,42 @@ const BLOCKING_BUSH_LABELS: readonly string[] = ["덤불"];
  * repairTreePairs 가 보존할 수 있는 타일은 숲 합성이 gap closure에 실제로 쓰는 blocking-bush
  * id뿐이다. 라벨을 현재 타일셋에서 다시 풀어 일반 가구·상자·장식까지 예외가 넓어지지 않게 한다.
  */
-export function resolveForestCanopyReplacementExemptTileIds(project: Project): ReadonlySet<number> {
+export function resolveForestCanopyReplacementExemptTileIds(project: Project, options: { readonly storeProject?: boolean } = {}): ReadonlySet<number> {
   const tileIds = new Set<number>();
   for (const map of Object.values(project.maps)) {
     const tileset = project.tilesets[map.tilesetId];
     if (!tileset) continue;
-    for (const label of BLOCKING_BUSH_LABELS) {
-      const access = resolveMaterialByLabel(tileset, label, { preferGroup: false, preferRoles: ["prop", "decoration"] });
-      if (access.status === "missing" || access.kind === "group") continue;
-      const pass = tilePassability(tileset, TILE.GRASS, access.tileId);
-      if (!pass.up && !pass.down && !pass.left && !pass.right) tileIds.add(access.tileId);
-    }
+    for (const id of options.storeProject ? exemptIdsOfStoreTileset(tileset) : exemptIdsOfTileset(tileset)) tileIds.add(id);
   }
   return tileIds;
+}
+
+function exemptIdsOfTileset(tileset: TilesetDef): readonly number[] {
+  const ids: number[] = [];
+  for (const label of BLOCKING_BUSH_LABELS) {
+    const access = resolveMaterialByLabel(tileset, label, { preferGroup: false, preferRoles: ["prop", "decoration"] });
+    if (access.status === "missing" || access.kind === "group") continue;
+    const pass = tilePassability(tileset, TILE.GRASS, access.tileId);
+    if (!pass.up && !pass.down && !pass.left && !pass.right) ids.push(access.tileId);
+  }
+  return ids;
+}
+
+/**
+ * 스토어 프로젝트의 타일셋 한 칸의 결과를 객체별로 기억한다.
+ *
+ * 왜(2026-10-15 실측, 버들항 마을 96×80 · 타일셋 46개): 붓질 한 번(`paintTilesBulk` · 지우기 · 채우기)마다 이 함수가 맵의 타일셋 전체 타일을
+ * 라벨 점수로 훑는다(resolveMaterialByLabel → scoreTextMatch 수만 번, 한 번에 약 140ms) — 라벨은 붓질로 바뀌지 않는데도.
+ * 스토어의 타일셋 항목은 제자리에서 고치지 않는다는 계약(projectClone)이라 같은 객체면 결과가 같다. 라벨·그룹·통행 배열 자체가 갈아 끼워졌으면
+ * (배열 정체성이 다르면) 다시 계산한다. 초안(draft)은 제자리 수정이 있으니 이 기억을 쓰지 않는다 — toolRunner 는 기본 경로를 쓴다.
+ */
+const storeTilesetExempt = new WeakMap<TilesetDef, { readonly meta: unknown; readonly groups: unknown; readonly pass: unknown; readonly count: number; readonly ids: readonly number[] }>();
+function exemptIdsOfStoreTileset(tileset: TilesetDef): readonly number[] {
+  const hit = storeTilesetExempt.get(tileset);
+  if (hit && hit.meta === tileset.tileMeta && hit.groups === tileset.tileGroups && hit.pass === tileset.passability && hit.count === tileset.count) return hit.ids;
+  const ids = exemptIdsOfTileset(tileset);
+  storeTilesetExempt.set(tileset, { meta: tileset.tileMeta, groups: tileset.tileGroups, pass: tileset.passability, count: tileset.count, ids });
+  return ids;
 }
 
 /**
