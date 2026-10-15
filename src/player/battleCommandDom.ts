@@ -456,7 +456,7 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   // 장비가 준 스킬은 배우지 않아도 목록에 뜬다(EquipmentRecord.grantsSkillIds).
   const owned = battlerSkillIdsWithGrants(actor);
   const combos = snapshot
-    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)
+    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned, comboParticipantsFromSnapshot(snapshot))
     : [];
   return [...owned, ...combos].filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);

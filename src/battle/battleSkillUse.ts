@@ -14,7 +14,7 @@ export type MutableBattleSkillUser = Pick<
 >;
 export type BattleSkillUseFailure =
   | "missingSkill" | "notLearned" | "skillBlocked" | "insufficientMp" | "noPp" | "cooldown"
-  | "comboPartnerAbsent" | "comboPartnerNotReady" | "comboPartnerMp"
+  | "comboPartnerAbsent" | "comboPartnerNotReady" | "comboPartnerMp" | "comboLocked"
   | "insufficientResource2" | "limitNotReady" | "insufficientPartyGauge";
 export type BattleSkillResourceConsumption =
   | { readonly kind: "pp" | "mp"; readonly remaining: number }
@@ -125,7 +125,7 @@ export function battleSkillUseFailureLabel(
   failure: BattleSkillUseFailure,
   skill: SkillRecord | undefined,
   user: Pick<BattleSkillUser, "mp" | "maxMp"> & Partial<Pick<BattleSkillUser, "equipmentEffects" | "resource2">>,
-  project?: Pick<Project, "system">,
+  project?: Pick<Project, "system"> & Partial<Pick<Project, "database">>,
 ): string {
   switch (failure) {
     case "missingSkill":
@@ -155,6 +155,12 @@ export function battleSkillUseFailureLabel(
       return "연계 동료가 아직 준비되지 않았습니다.";
     case "comboPartnerMp":
       return "연계 동료의 MP가 부족합니다.";
+    case "comboLocked": {
+      const need = (skill?.comboRequires ?? [])
+        .map((entry) => `${project?.database?.actors.find((actor) => actor.id === entry.actorId)?.name ?? entry.actorId}: ${project?.database?.skills.find((record) => record.id === entry.skillId)?.name ?? entry.skillId}`)
+        .join(", ");
+      return `아직 연계할 수 없습니다 — 필요한 기술: ${need}`;
+    }
   }
 }
 
@@ -174,6 +180,16 @@ export interface BattleComboParticipant {
   readonly ready: boolean;
   /** 이 동료 장비의 MP 절반 효과 — 연계기에서 각자 내는 MP 도 절반이다. */
   readonly halfMpCost?: boolean;
+  /** 이 배우가 배운 기술(장비 부여 포함) — 연계기 해금 조건(comboRequires)을 본다. 생략하면 조건을 판정하지 않는다. */
+  readonly skillIds?: readonly SkillId[];
+}
+
+/** 연계기 해금 조건(comboRequires)을 아직 못 채운 항목. 참가자 기술 목록이 없으면(알 수 없음) 통과로 본다. */
+export function comboLockedBy(skill: Pick<SkillRecord, "comboRequires"> | undefined, party: readonly BattleComboParticipant[]): { actorId: string; skillId: SkillId }[] {
+  return (skill?.comboRequires ?? []).filter((entry) => {
+    const member = party.find((candidate) => candidate.recordId === entry.actorId);
+    return !member?.skillIds || !member.skillIds.includes(entry.skillId);
+  });
 }
 
 /**
@@ -194,6 +210,7 @@ export function battleActorSkillFailure(
   const partyFailure = skill && (partyGauge ?? 0) < battleSkillPartyGaugeCost(project, skill) ? "insufficientPartyGauge" as const : undefined;
   if (!skill || !combo) return battleSkillUseFailure(project, user, skillId) ?? partyFailure;
   if (!combo.includes(user.recordId as ActorId)) return "notLearned";
+  if (comboLockedBy(skill, party).length > 0) return "comboLocked";
   const own = battleSkillUseFailure(project, user, skillId, { requireLearned: false });
   if (own) return own;
   const members = combo.map((actorId) => party.find((entry) => entry.recordId === actorId));
@@ -210,11 +227,19 @@ export function battleActorSkillFailure(
  * 이 배우가 시전할 수 있는 연계기 — 연계 멤버이고 동료 전원이 참전 중인 것만(동료가 전투에 없으면 목록에서 숨긴다).
  * 이미 배운 목록(known)에 있는 id 는 뺀다.
  */
-export function comboSkillIdsFor(project: Project, actorRecordId: string, partyRecordIds: readonly string[], known: readonly SkillId[] = []): SkillId[] {
+export function comboSkillIdsFor(
+  project: Project,
+  actorRecordId: string,
+  partyRecordIds: readonly string[],
+  known: readonly SkillId[] = [],
+  /** 주면 해금 조건(comboRequires)을 못 채운 연계기는 목록에서 숨긴다(CT 식: 배우기 전엔 보이지 않는다). */
+  party?: readonly BattleComboParticipant[],
+): SkillId[] {
   return project.database.skills
     .filter((skill) => {
       const combo = comboActorIdsOf(skill);
-      return combo !== undefined && combo.includes(actorRecordId as ActorId) && combo.every((id) => partyRecordIds.includes(id)) && !known.includes(skill.id);
+      return combo !== undefined && combo.includes(actorRecordId as ActorId) && combo.every((id) => partyRecordIds.includes(id)) && !known.includes(skill.id)
+        && (!party || comboLockedBy(skill, party).length === 0);
     })
     .map((skill) => skill.id);
 }
@@ -223,6 +248,7 @@ export function comboSkillIdsFor(project: Project, actorRecordId: string, partyR
 export function comboParticipantsFromSnapshot(snapshot: Pick<BattleSnapshot, "actors">): BattleComboParticipant[] {
   return snapshot.actors.map((actor) => ({
     recordId: actor.recordId, hp: actor.hp, mp: actor.mp, maxMp: actor.maxMp, stateIds: actor.stateIds, ready: actor.gauge >= 100,
+    skillIds: battlerSkillIdsWithGrants(actor),
     ...(actor.equipmentEffects?.halfMpCost ? { halfMpCost: true } : {}),
   }));
 }

@@ -1,3 +1,4 @@
+import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
@@ -748,6 +749,20 @@ const skillRecordSchema = objectSchema({
   comboActorIds: stringArraySchema(
     "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
   ),
+  comboRequires: {
+    type: "array",
+    description:
+      "연계기 해금 조건: [{actorId, skillId}] — 그 배우가 그 기술을 배워야 연계기가 메뉴에 열린다(CT 식: 개구리가 베기·마법사가 불꽃을 알아야 합체기). actorId 는 comboActorIds 안의 배우여야 한다. 빈 배열이면 조건 해제",
+    items: objectSchema({ actorId: { type: "string" }, skillId: { type: "string" } }, "{actorId, skillId} 두 키만"),
+  },
+  comboCombinedStats: {
+    type: "boolean",
+    description: "true 면 피해·치유의 공격력·마력이 연계 참가자 전원의 합이다(합체기는 power 를 낮게). 기본 false = 시전자 능력치",
+  },
+  comboSwitchId: {
+    type: "string",
+    description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
+  },
   area: objectSchema(
     {
       shape: { type: "string", enum: ["circle", "line"] },
@@ -1268,6 +1283,30 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
     if (missing.length > 0) {
       throw new ToolError(`존재하지 않는 comboActorIds: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
     }
+  }
+  if (record.comboRequires !== undefined) {
+    const rows = Array.isArray(record.comboRequires) ? record.comboRequires : null;
+    if (!rows) throw new ToolError("skill.comboRequires 는 [{actorId, skillId}] 배열이어야 합니다.", { code: "invalid-combo-requires" });
+    const comboIds = Array.isArray(record.comboActorIds) ? (record.comboActorIds as string[]).map((id) => String(id).trim()) : undefined;
+    for (const [index, row] of rows.entries()) {
+      const entry = row as Record<string, unknown> | null;
+      const unknownKeys = entry && typeof entry === "object" ? Object.keys(entry).filter((key) => key !== "actorId" && key !== "skillId") : [];
+      if (!entry || typeof entry !== "object" || typeof entry.actorId !== "string" || typeof entry.skillId !== "string" || unknownKeys.length > 0) {
+        throw new ToolError(`skill.comboRequires[${index}] 는 {actorId, skillId} 두 키만 가진 객체여야 합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}.`, { code: "invalid-combo-requires" });
+      }
+      if (!draft.database.actors.some((actor) => actor.id === entry.actorId)) {
+        throw new ToolError(`comboRequires[${index}].actorId 가 없는 배우: ${entry.actorId} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
+      }
+      if (comboIds && !comboIds.includes(entry.actorId as string)) {
+        throw new ToolError(`comboRequires[${index}].actorId ${entry.actorId} 는 comboActorIds(${comboIds.join(", ")}) 에 없습니다. 연계 참가자만 조건을 가질 수 있습니다.`, { code: "invalid-combo-requires" });
+      }
+      if (!draft.database.skills.some((skill) => skill.id === entry.skillId)) {
+        throw new ToolError(`comboRequires[${index}].skillId 가 없는 기술: ${entry.skillId} — 먼저 upsert_skill 로 만드세요.`, { code: "skill-not-found" });
+      }
+    }
+  }
+  if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
+    ensureNamedSwitch(draft, record.comboSwitchId.trim(), `연계기 발동: ${typeof record.name === "string" ? record.name : record.comboSwitchId.trim()}`);
   }
   if (record.area !== undefined) {
     const area = record.area as { shape?: unknown; radius?: unknown } | null;

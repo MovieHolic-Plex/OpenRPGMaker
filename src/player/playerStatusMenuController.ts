@@ -12,6 +12,7 @@ import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
+import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
@@ -79,7 +80,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let confirmToTitlePending = false;
-  let waitModeEnabled = true;
+  // 「대기」 ON = 명령 메뉴가 열린 동안 시간이 멈춘다(wait). 플레이어 장치 설정이 게임 저작 기본(system.atbMode)을 덮는다.
+  const currentWaitMode = (): boolean => (getPlayerPreferences().atbMode ?? store.getCurrent().system.atbMode ?? "wait") !== "active";
+  let waitModeEnabled = currentWaitMode();
 
   const reset = (): void => {
     initialMenuSelection = true;
@@ -91,7 +94,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     inventoryView = { ...DEFAULT_INVENTORY_VIEW };
     detailCursors.clear();
     detailScrolls.clear();
-    waitModeEnabled = true;
+    waitModeEnabled = currentWaitMode();
     resetSubscreenState();
   };
 
@@ -744,10 +747,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function toggleWaitMode(): void {
     waitModeEnabled = !waitModeEnabled;
+    updatePlayerPreferences({ atbMode: waitModeEnabled ? "wait" : "active" });
     mode = "function";
     options.emitMenuJuice(
       "menu-confirm",
-      renderMenu(`대기 방식을 ${waitModeEnabled ? "ON" : "OFF"}로 전환했습니다`, "wait")
+      renderMenu(
+        waitModeEnabled
+          ? "대기 ON — 명령을 고르는 동안 전투 시간이 멈춥니다(다음 전투부터)"
+          : "대기 OFF — 명령을 고르는 동안에도 적이 움직입니다(액티브, 다음 전투부터)",
+        "wait",
+      )
     );
   }
 

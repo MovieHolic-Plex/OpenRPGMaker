@@ -267,6 +267,21 @@ function isAutoInspectEvent(event: GameEvent): boolean {
  * 아래(below) 조사 이벤트를 먼저 집어 상자·NPC 가 영영 반응하지 않았다(2026-09-23 도그푸딩:
  * 동굴 (3,6) chest_cave_potion 과 술통 조사 ev_inspect_…_9_5). 걷어낸 id 를 돌려준다.
  */
+
+/** 명령 비교용 — 자동 부여되는 commandId 는 모델이 다시 쓴 명령에 없어도 같은 명령이다(patch_event_page 「빠짐」 경고 오탐 방지). 중첩 then/else 도 같이 벗긴다. */
+function stripCommandIds(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stripCommandIds);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+      if (key === "commandId") continue;
+      out[key] = stripCommandIds(entry);
+    }
+    return out;
+  }
+  return value;
+}
+
 export function displaceAutoInspectEvents(map: GameMap, event: GameEvent): string[] {
   if (isAutoInspectEvent(event)) return [];
   const displaced = map.events.filter(entry => entry.id !== event.id && isAutoInspectEvent(entry) && entry.x === event.x && entry.y === event.y);
@@ -4138,7 +4153,7 @@ const patchEventPage: ToolDefinition = {
     if (Array.isArray(fields.commands)) {
       const kept = fields.commands as unknown[];
       for (const old of pages[index]!.commands ?? []) {
-        if (!kept.some((next) => jsonEqual(next, old))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
+        if (!kept.some((next) => jsonEqual(stripCommandIds(next), stripCommandIds(old)))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
       }
     }
     const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;

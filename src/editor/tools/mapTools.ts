@@ -21,6 +21,7 @@ import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUT
 import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { cloneGameMap } from "@/project/mapClone";
 import {
@@ -314,12 +315,17 @@ const createMap: ToolDefinition = {
       draft.mapTree.children.push({ mapId: id, children: [] });
     }
     adoptStartIfNeeded(draft, map);
+    const seedStart = draft.maps[draft.startMapId];
+    const startNote = id !== draft.startMapId && seedStart && seedStart.id === "map_blank_start" && isUntouchedMap(seedStart) && Object.keys(draft.maps).length >= 2
+      ? [`게임 시작 위치가 아직 빈 시드 맵 ${seedStart.id} 입니다 — 이 게임을 이 맵부터 시작하려면 set_start_position({mapId:"${id}", x, y}) 를 부르세요(통행 칸 좌표).`]
+      : [];
     const warnings = blankNamesake
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
         + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
     // themeScene 이 안쪽에서 부른 create_map 은 곧바로 구성기가 채우므로 「단색」 안내를 붙이지 않는다.
     const flatNote = args[THEMED_INNER_ARG] === true ? "" : ` 지금은 단색 ${tileset.name ?? tilesetId} 바닥입니다. ${emptyMapNextStep(map)}`;
+    warnings.push(...startNote);
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}.${flatNote}`,
       data: { mapId: id, bgmResourceId, flat: true },

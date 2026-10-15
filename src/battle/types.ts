@@ -138,6 +138,8 @@ export interface BattleRuntimeOptions {
   readonly canEscape: boolean;
   readonly canLose: boolean;
   readonly battleFlow?: BattleFlow;
+  /** 플레이어 장치 설정(필드 메뉴 「대기」 토글)이 저작 기본(system.atbMode)을 덮는다. 생략 = 저작 값. */
+  readonly atbMode?: "active" | "wait";
   readonly activeSlots?: number;
   /** 전투 개시 진형. 지정하면 그대로, 생략하면 system.battleFormationRoll 일 때만 민첩으로 굴린다(아니면 보통). */
   readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
@@ -352,6 +354,8 @@ export interface BattleActionResultSnapshot {
   readonly critical: boolean;
   readonly skillName?: string;
   readonly skillId?: SkillId;
+  /** 연계기(듀얼·트리플 테크) 엔트리면 참가 배우 전원(시전자 포함). 표시 계층이 참가자 모두에게 행동 모션을 줄 수 있다. */
+  readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
 }
@@ -580,6 +584,8 @@ export interface BattleSnapshot {
   readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
+  /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
+  readonly atbMode: "active" | "wait";
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;

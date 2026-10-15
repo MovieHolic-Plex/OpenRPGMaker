@@ -316,6 +316,15 @@ export interface SkillRecord {
   actionSkill?: ActionSkillProfile;
   /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
   comboActorIds?: ActorId[];
+  /**
+   * 연계기 해금 조건(크로노 트리거식): 각 항목의 배우가 그 기술을 **배운 상태**여야 연계기가 메뉴에 열린다
+   * (예: 개구리가 「베기」, 마법사가 「불꽃」을 알아야 합체기). 비우면 조건 없음(comboActorIds 만 맞으면 열림).
+   */
+  comboRequires?: { actorId: ActorId; skillId: SkillId }[];
+  /** true 면 피해·치유 계산의 공격력·마력이 연계 참가자 전원의 합이다(시전자 한 명의 능력치가 아니라). 기술 위력은 그에 맞춰 낮게 잡는다. */
+  comboCombinedStats?: boolean;
+  /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
+  comboSwitchId?: string;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**

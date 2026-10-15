@@ -724,7 +724,20 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
     ...(() => {
       const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
-      return comboActorIds.length >= 2 ? { comboActorIds } : {};
+      if (comboActorIds.length < 2) return {};
+      const comboRequires = Array.isArray(record.comboRequires)
+        ? record.comboRequires.flatMap((entry) => {
+            const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+            const skillId = typeof entry?.skillId === "string" ? entry.skillId.trim() : "";
+            return actorId && skillId && comboActorIds.includes(actorId) ? [{ actorId, skillId }] : [];
+          })
+        : [];
+      return {
+        comboActorIds,
+        ...(comboRequires.length > 0 ? { comboRequires } : {}),
+        ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
+        ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+      };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
       && Number.isFinite(record.area.radius) && record.area.radius > 0

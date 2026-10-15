@@ -100,7 +100,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
+import { battleActorSkillFailure, battleSkillMpCostFor, battleSkillPartyGaugeCost, battleSkillUseFailure, battlerSkillIdsWithGrants, comboActorIdsOf, consumeBattleSkillResource, type BattleComboParticipant } from "@/battle/battleSkillUse";
 import { applyBattleHitGauges, clampPartyGauge, initialPartyGauge, seedBattleGauges } from "@/battle/battleGauges";
 import { applyStateEffectsWithEmotion, createWeaknessTracker, emotionDamageMultiplier } from "@/battle/battleEmotion";
 import {
@@ -292,7 +292,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 스킨별 ATB 가속(청람·세피아·먹빛·코발트 창)은 2026-10-02 그 스킨들과 함께 지웠다 — 속도는 atbSpeed 하나가 정한다.
   const skinHasteMultiplier = atbSpeedMultiplier(options.project.system.atbSpeed);
   // Active ATB: gauge 흐름에서만 의미가 있다. strict 는 라운드제라 메뉴가 시간을 멈추지 않는다.
-  const activeAtb = battleFlow === "gauge" && options.project.system.atbMode === "active";
+  const activeAtb = battleFlow === "gauge" && (options.atbMode ?? options.project.system.atbMode) === "active";
 
   /* 포켓몬 스킨은 1:1 대치 문법이다 — 상대가 하나뿐인데 「슬라임 / 뒤로」 목록을 띄우고 확인키를
      한 번 더 받는 것이 이 스킨에서 가장 눈에 띄던 군더더기였다(감독 지적, 실측 A-03-target).
@@ -464,6 +464,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       critical: entry.critical,
       skillName: entry.skillName,
       ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(() => { const combo = comboActorIdsOf(entry.skillId ? lookupSkill(entry.skillId) : undefined); return combo ? { comboActorIds: [...combo] } : {}; })(),
       ...(entry.effectiveness !== undefined && kind === "damage" ? { effectiveness: entry.effectiveness } : {}),
       ...(resource ? { resource } : {}),
     });
@@ -2094,6 +2095,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       eventChoice,
       eventPause,
       battleFlow,
+      atbMode: activeAtb ? "active" : "wait",
       activeActorId,
       activeSlots,
       forcedSwitchActorId: forcedActor?.recordId,
@@ -2638,6 +2640,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return activeActors().map((battler) => ({
       recordId: battler.recordId, hp: battler.hp, mp: battler.mp, maxMp: battler.maxMp, stateIds: battler.stateIds,
       ready: allReady || battler.gauge >= 100,
+      skillIds: battlerSkillIdsWithGrants(battler),
       ...(battler.equipmentEffects?.halfMpCost ? { halfMpCost: true } : {}),
     }));
   }
@@ -3569,6 +3572,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     afterTarget?: (target: MutableBattler) => void,
   ): void {
     const skill = lookupSkill(skillId);
+    if (skill?.comboSwitchId && comboActorIdsOf(skill)) battleEventState.switches[skill.comboSwitchId] = true;
     if (skill && prepareGimmickCast(user, targets, skill)) return;
     // 흉내·춤·슬롯: 후보 중 하나를 굴려 그 기술로 바꿔 쓴다. 자원은 원래 기술 몫만 소비했다.
     if (skill?.effect.kind === "randomSkillFrom") {
@@ -3859,7 +3863,37 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     recordSpecial(user, target, `${target.name}이(가) ${skill.name}을(를) 배웠다!`);
   }
 
+  /**
+   * 연계기 comboCombinedStats: 피해·치유 계산 동안만 시전자의 공격력·마력을 연계 참가자 전원의 합으로 바꾼다.
+   * 시전자 객체를 잠깐 바꿨다 되돌리는 방식이라 계산 안의 모든 경로(수식·상태 배율·예측)가 같은 값을 본다.
+   */
   function applySkillHit(
+    user: MutableBattler,
+    target: MutableBattler,
+    skillId: SkillId,
+    commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill",
+    hitMultiplier = 1,
+  ): void {
+    const comboSkill = lookupSkill(skillId);
+    const combo = comboSkill?.comboCombinedStats ? comboActorIdsOf(comboSkill) : undefined;
+    if (!combo || !combo.includes(user.recordId as ActorId)) {
+      applySkillHitCore(user, target, skillId, commandKind, hitMultiplier);
+      return;
+    }
+    const members = activeActors().filter((battler) => combo.includes(battler.recordId as ActorId) && (battler === user || battler.hp > 0));
+    const originalAttack = user.attackPower;
+    const originalMind = user.mind;
+    user.attackPower = members.reduce((sum, member) => sum + (member === user ? originalAttack : member.attackPower), 0);
+    user.mind = members.reduce((sum, member) => sum + (member === user ? originalMind : member.mind), 0);
+    try {
+      applySkillHitCore(user, target, skillId, commandKind, hitMultiplier);
+    } finally {
+      user.attackPower = originalAttack;
+      user.mind = originalMind;
+    }
+  }
+
+  function applySkillHitCore(
     user: MutableBattler,
     target: MutableBattler,
     skillId: SkillId,
