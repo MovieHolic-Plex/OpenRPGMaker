@@ -7,6 +7,7 @@ import { gunzipSync, gzipSync } from 'node:zlib';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import { SHARED_CONTENT_ENDPOINT, SHARED_CONTENT_PREVIEW_ENDPOINT, type SharedContentLibrary, type SharedContentScope, type SharedContentSnapshot } from '../../src/project/sharedContentSchema';
 import { normalizeWorldAtlases } from '../../src/project/worldAtlas';
+import { dedupeSharedContent } from '../../src/project/sharedContentDedup';
 import { validateTilesetReferences, type TilesetReferenceCategory } from '../../src/project/tilesetReferences';
 import { parseSharedReferenceImage, sharedReferenceImageAddress, SHARED_REFERENCE_IMAGE_PREFIX } from '../../src/project/bundledReferenceImagePath';
 export const sharedContentFile = () => process.env.OPRN_SHARED_CONTENT_SQLITE || join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), 'oprn', 'shared-content.sqlite');
@@ -215,7 +216,8 @@ export function sharedContentResponse(method: string, url: URL, ifNoneMatch?: st
   const requested = url.searchParams.get('scope');
   const scope: SharedContentScope = requested === 'defaults' || requested === 'rest' ? requested : 'all';
   try {
-    const { revision, gzip } = encodedSharedContentWithRevision(scope);
+    // `dedup=1`: 같은 긴 글을 한 번만 싣는 전송 형식(src/project/sharedContentDedup.ts). 없으면 예전 형식이다.
+    const { revision, gzip } = encodedSharedContentWithRevision(scope, sharedContentFile(), url.searchParams.get('dedup') === '1');
     const etag = sharedContentEtag(scope, revision);
     // 판본이 같으면 본문 없이 304 — 부팅마다 73MB(gzip) 를 다시 받던 것을 없앤다(2026-09-27 실측).
     if (ifNoneMatch && ifNoneMatch.split(',').some(tag => tag.trim() === etag)) return { status: 304, etag };
@@ -236,15 +238,15 @@ const encodedCache = new Map<string, { revision: string; gzip: Buffer }>();
 export function encodedSharedContent(scope: SharedContentScope, file = sharedContentFile()): Buffer {
   return encodedSharedContentWithRevision(scope, file).gzip;
 }
-export function encodedSharedContentWithRevision(scope: SharedContentScope, file = sharedContentFile()): { revision: string; gzip: Buffer } {
+export function encodedSharedContentWithRevision(scope: SharedContentScope, file = sharedContentFile(), dedup = false): { revision: string; gzip: Buffer } {
   const db = open(file);
   let revision: string;
   try { revision = snapshotRevision(db.prepare('SELECT id, revision FROM content_libraries ORDER BY id').all() as { id: string; revision: string }[]); }
   finally { db.close(); }
-  const key = file + '\n' + scope, cached = encodedCache.get(key);
+  const key = file + '\n' + scope + (dedup ? '\ndedup' : ''), cached = encodedCache.get(key);
   if (cached?.revision === revision) return cached;
   const snapshot = readSharedContentForEditor(scope, file);
-  const entry = { revision: snapshot.revision, gzip: gzipSync(JSON.stringify(snapshot), { level: 1 }) };
+  const entry = { revision: snapshot.revision, gzip: gzipSync(JSON.stringify((dedup ? dedupeSharedContent(snapshot) : null) ?? snapshot), { level: 1 }) };
   encodedCache.set(key, entry);
   return entry;
 }
