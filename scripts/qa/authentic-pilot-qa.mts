@@ -258,7 +258,7 @@ JSON으로만 답하라:
         stream: false,
         max_tokens: 2000,
         temperature: 0.1,
-        reasoning: { effort: "low" },
+        reasoning: { effort: "high" },
       },
       { apiKey },
     )) as any;
