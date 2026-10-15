@@ -139,7 +139,6 @@ require_all([(img, "tall_furniture", "murim/prop_scroll_shelf"), ...], context="
 | 인자 `--dev` (관문 무시) | `scripts/content/prehistoric/bake_ph.py` (`--dry` 는 그대로, 저장소 산출물을 쓰지 않음) |
 
 남긴 것(object-gate 가 아닌 다른 관문): 조선 `--no-gate`·`JS_SKIPGATE`(조선 조각 게이트), `DE_UNGATED`(/tmp 로만 굽고 저장소 산출물을 쓰지 않음), jp-city 지도 게시의 `SKIP_GATE`(적대적 지도 검증). 이들은 영수증을 대신하지 않는다.
-||||||| 8754f17f5f
 
 
 
