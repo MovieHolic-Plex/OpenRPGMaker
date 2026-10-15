@@ -269,6 +269,43 @@ interface TownLayout {
   readonly starter: { readonly x: number; readonly y: number };
 }
 
+/** 현대 캠퍼스·도시 시작 맵을 칩셋 구성기 도구로 깐다. 시작 맵의 칩셋을 컨셉 칩셋으로 옮기고 구성기가 서는 크기로 키운 뒤 부른다. 실패하면 던진다(호출부가 빈 칩셋 맵으로 물러난다). */
+export function composeKitStartMap(ctx: { project: Project }, mapId: string, plan: StartPlan): void {
+  const kit = ctx.project.tilesets[plan.tilesetId];
+  if (!kit || !plan.composeKit) throw new Error("구성기가 있는 칩셋이 아닙니다: " + plan.tilesetId);
+  const base = startMapSizeFor(kit.id, plan) ?? { width: 56, height: 44 };
+  const campus = plan.composeKit === "modern_campus";
+  const schoolText = /고등학교|중학교|교복|학원/u.test(ctx.project.gameDesignBrief?.summary ?? "");
+  const style = campus ? (schoolText ? "school" : "university") : undefined;
+  // 구성기 최소 크기: 대학 52×40 · 학교 48×36 · 도시 40×30.
+  const min = campus ? (style === "school" ? { w: 48, h: 36 } : { w: 52, h: 40 }) : { w: 40, h: 30 };
+  const width = Math.max(min.w, base.width), height = Math.max(min.h, base.height);
+  tool(ctx, "resize_map", { mapId, width, height });
+  const blank = ctx.project.maps[mapId]!;
+  blank.tilesetId = kit.id; blank.tileSize = kit.tileSize;
+  blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
+  const text = ctx.project.gameDesignBrief?.summary ?? "";
+  // 기본 이름 「빈 맵」 은 장소를 말해 주지 않는다 — 구성기가 까는 장소 이름으로 바꾼다(조수·인터뷰가 이미 지은 이름은 건드리지 않는다).
+  if (blank.name === "빈 맵") blank.name = campus ? (style === "school" ? "학교 교정" : "캠퍼스 교정") : "거리";
+  const data = campus
+    ? tool(ctx, "compose_campus_grounds", { mapId, style, seed: plan.seed })
+    : tool(ctx, "compose_modern_city_street", { mapId, seed: plan.seed, shops: modernCityShopsFromText(text) });
+  // 시작 칸은 구성기가 정한 교문·보도 칸이다 — 기본 시작 칸 (10,8) 이 우연히 풀밭이라 통과해도 거기서 시작하지 않는다.
+  const at = (data as { start?: { x: number; y: number } } | undefined)?.start;
+  if (at && ctx.project.startMapId === mapId) ctx.project.startPos = { x: at.x, y: at.y };
+}
+
+/** 기획 글에서 도시 거리에 꼭 넣을 건물(연애·일상 무대의 단골 장소)을 뽑는다. 못 짚으면 비워 씨앗이 고른다. */
+function modernCityShopsFromText(text: string): string[] {
+  const table: readonly (readonly [RegExp, string])[] = [
+    [/카페|커피/u, "카페"], [/편의점/u, "편의점"], [/사무실|회사|직장|출근|퇴근|오피스/u, "사무실"], [/아파트|원룸|자취/u, "아파트"],
+    [/은행/u, "은행"], [/병원/u, "병원"], [/빵집|베이커리/u, "빵집"],
+  ];
+  const out: string[] = [];
+  for (const [pattern, shop] of table) if (pattern.test(text) && !out.includes(shop)) out.push(shop);
+  return out.slice(0, 5);
+}
+
 /**
  * 시작 마을을 기획의 구상(형태·지형·무대)대로 미리 짓고, 시작 칸에서 걸어 닿는 동쪽 끝 문 자리와 시작 NPC 자리를 찾는다.
  * 길을 새로 파지 않는다 — 시공기가 만든 길 위에서만 찾는다. 못 찾으면 null(호출부가 옛 뼈대로 물러난다).
@@ -276,14 +313,19 @@ interface TownLayout {
 const PLACE_TMP_ID = "map_place_tmp";
 function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
   const placeRef = plan.placeId ? regionReference(plan.placeId) : undefined;
-  if (plan.composeStreet) {
+  if (plan.composeStreet || plan.composeKit) {
     if (start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
   } else if (plan.placeId) {
     if (!placeRef || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
   } else if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
   // 시험 사본에서 짓는다 — 걸어 닿는 문 자리를 못 찾으면 마을을 채택하지 않고 빈 시작 맵 그대로 둔다(호출부가 옛 모양으로 간다).
   const trial = { project: structuredClone(ctx.project) };
-  if (plan.composeStreet) {
+  if (plan.composeKit) {
+    // 현대 캠퍼스·도시: 칩셋 구성기 도구가 시작 맵을 통째로 깐다(칸 번호로 칠하지 않는다) — 단색 잔디 시작 금지.
+    try {
+      composeKitStartMap(trial, start.id, plan);
+    } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-kit]", error); return null; }
+  } else if (plan.composeStreet) {
     // 구성기가 씨앗으로 거리를 새로 짠다 — 칩셋을 옮기고 맵을 키운 뒤 땅·도로·건물·소품을 도구 호출로 깐다.
     try {
       const kit = trial.project.tilesets[plan.tilesetId]!;
@@ -340,7 +382,10 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
   }
   if (largest.size < 40) return null;
   const midY = map.height / 2;
-  const origin = [...largest.keys()].sort((a, b) => (a % map.width) - (b % map.width) || Math.abs(Math.floor(a / map.width) - midY) - Math.abs(Math.floor(b / map.width) - midY))[0]!;
+  // 구성기가 정한 시작 칸(교문·보도)이 걸어 다니는 큰 덩어리 안이면 그 자리에서 시작한다 — 서쪽 끝 풀밭이 아니라.
+  const composerStart = plan.composeKit ? trial.project.startPos : undefined;
+  const composerOrigin = composerStart && composerStart.x >= 0 && composerStart.y >= 0 && composerStart.x < map.width && composerStart.y < map.height ? key(composerStart.x, composerStart.y) : undefined;
+  const origin = composerOrigin !== undefined && largest.has(composerOrigin) ? composerOrigin : [...largest.keys()].sort((a, b) => (a % map.width) - (b % map.width) || Math.abs(Math.floor(a / map.width) - midY) - Math.abs(Math.floor(b / map.width) - midY))[0]!;
   const startAt = { x: origin % map.width, y: Math.floor(origin / map.width) };
   const reach = walk(origin);
   const doors = [...reach.keys()].filter((cell) => cell % map.width === map.width - 1 && isPassableLanding(trial.project, map, map.width - 1, Math.floor(cell / map.width)))

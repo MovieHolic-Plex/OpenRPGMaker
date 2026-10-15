@@ -36,6 +36,11 @@ export interface StartPlan {
   readonly placeId?: string;
   /** 컨셉 칩셋이 jp_city 이고 학교·역 같은 특정 장소가 아니면, 완성 장소를 붙이지 않고 구성기(jpCityStreetComposer)가 씨앗으로 거리를 새로 짠다. */
   readonly composeStreet?: boolean;
+  /**
+   * 컨셉(또는 연애 인터뷰의 무대)이 현대 캠퍼스·도시 칩셋이면 그 칩셋 구성기(compose_campus_grounds / compose_modern_city_street)가
+   * 시작 맵을 코드에서 미리 깐다 — 단색 잔디에서 시작하지 않는다(2026-10-16 연애 감사 I2/I3/O1).
+   */
+  readonly composeKit?: "modern_campus" | "modern_city";
 }
 
 /** 칩셋별 완성 야외 장소. 학교·역 낱말이면 그 장소, 아니면 씨앗이 상가 거리·노면전차 거리·동네 한 장 중 고른다. */
@@ -123,12 +128,42 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   const hint = input.tilesetHint;
   const placeId = kitStartPlaceId(hint, seed, stage);
   const composeStreet = hint === "jp_city" && !placeId;
-  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}), ...(composeStreet ? { composeStreet } : {}) };
+  const composeKit = hint === "modern_campus" || hint === "modern_city" ? hint : undefined;
+  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}), ...(composeStreet ? { composeStreet } : {}), ...(composeKit ? { composeKit } : {}) };
+}
+
+/** 연애 인터뷰 무대 낱말 → 현대 칩셋. 학교·대학 무대는 캠퍼스, 직장·동네·카페 무대는 도시. */
+const ROMANCE_CAMPUS_WORDS = /대학|캠퍼스|동기|학교|학원|교정|도서관|동아리|강의|수업|교실|기숙사/gu;
+const ROMANCE_CITY_WORDS = /직장|회사|사무실|출근|퇴근|오피스|카페|편의점|아파트|원룸|동네|도심|시내|번화가|골목|버스\s?정류장|지하철|현대/gu;
+
+/**
+ * 연애 인터뷰(「관계·연애」 단독)가 고른 무대에서 시작 칩셋을 뽑는다. 기획에 「타일셋:」 줄이 없을 때만 쓴다.
+ *
+ * 왜 (2026-10-16 연애 감사 I2): 「캠퍼스 재회」 인터뷰가 버들항 농장·항구 마을로 시작했다 — 컨셉 피드만 tilesetHint 를 기획서에 적고
+ * 인터뷰는 적지 않아서, 캠퍼스·직장 구성기가 있어도 사용자가 지나는 입구가 거기에 닿지 못했다.
+ * - 경험 선택 「campus」 = 대학 재회 → modern_campus.
+ * - 경험 선택 「palace」(가면무도회) → 현대가 아니다. 버들항을 유지한다.
+ * - 경험 선택 「town」 · 자유 서술: 학교 낱말이 많으면 캠퍼스, 직장·동네·카페 낱말이 있으면 도시. 현대 단서가 없는 「마을 이웃」은
+ *   시대가 중립이라 기존 버들항 마을 시공기를 유지한다(선택지 문구에 시대 단서가 없다).
+ * 혼합 장르(연애 + 다른 장르)는 건드리지 않는다 — 다른 장르의 시작이 우선이다.
+ */
+export function inferStartTilesetHint(brief: GameDesignBrief | undefined): string | undefined {
+  const interview = brief?.interview;
+  if (!brief || !interview || interview.genre !== "romance" || interview.secondary) return undefined;
+  const experience = interview.choiceIds.experience;
+  if (experience === "palace") return undefined;
+  const text = [brief.summary, interview.concept, interview.notes].join("\n");
+  const campus = text.match(ROMANCE_CAMPUS_WORDS)?.length ?? 0;
+  const city = text.match(ROMANCE_CITY_WORDS)?.length ?? 0;
+  if (experience === "campus") return city > campus ? "modern_city" : "modern_campus";
+  if (campus === 0 && city === 0) return undefined;
+  return campus > city ? "modern_campus" : "modern_city";
 }
 
 /** 프로젝트에서 구상을 낸다 — 뼈대(playableSegment)와 프롬프트가 같은 입력으로 같은 구상을 얻는다. */
 export function planStartForBrief(brief: GameDesignBrief | undefined, title: string): StartPlan {
-  return planStart({ seedText: startSeedText(brief, title), stageText: brief?.summary, tilesetHint: brief ? briefTilesetHint(brief.summary) : undefined });
+  const hint = brief ? briefTilesetHint(brief.summary) ?? inferStartTilesetHint(brief) : undefined;
+  return planStart({ seedText: startSeedText(brief, title), stageText: brief?.summary, tilesetHint: hint });
 }
 
 /** 칩셋마다 시작 맵을 짓는 길(조수 시스템 프롬프트의 칩셋 지침과 같은 도구 이름). 버들항 도구 author_beodeul_town 은 다른 칩셋에서 쓰지 않는다. */
@@ -156,6 +191,16 @@ export function startPlanPrompt(plan: StartPlan): string {
     "뼈대가 지키는 것은 「핵심 행동 → 문 → 길 → 구간 끝」의 연결뿐이다. 마을·거리의 모양·광장·십자 길·가운데 앵커는 보존 대상이 아니다. 문(시작 맵 동쪽 끝)과 길 맵 연결, 뼈대 이벤트 id 는 유지한다.",
     "광장·십자 길·한가운데 건물을 기본으로 두지 않는다. 앵커(시작 NPC·핵심 건물)는 「왜 거기에 있는지」가 있는 자리에 둔다 — 물가·길목·언덕 위처럼 지형이 말해 주는 곳.",
   ];
+  if (kit && plan.composeKit) {
+    const campus = plan.composeKit === "modern_campus";
+    return [
+      `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
+      `시작 맵은 코드가 칩셋 구성기(${campus ? "compose_campus_grounds" : "compose_modern_city_street"}, 씨앗 ${plan.seed})로 이미 ${campus ? "캠퍼스 교정(건물·길·분수·교문·소품)" : "도시 거리(도로·건물·공원·소품)"}를 깔아 열려 있다. 길 맵(${plan.routeW}×${plan.routeH})도 같은 칩셋의 길이다. 이 맵을 지우거나 풀밭으로 덮지 않는다 — 단색 잔디에서 다시 시작하지 않고 이어서 만든다.`,
+      kit,
+      "해야 할 일: ① list_map_locations 로 건물 이름표(문 칸)를 읽고 show_map_region 으로 본다. ② 기획의 핵심 장소를 문마다 골라 실내를 짓고(build_hand_interior_room) 문과 잇는다(" + (campus ? "link_campus_interior" : "link_modern_city_interior") + "). ③ 실내와 거리에 기획의 인물·단서·이벤트를 둔다. 건물을 다시 깔려면 구성기를 replace:true 로 다시 부르되 시작 맵·문 연결은 유지한다.",
+      ...common,
+    ].join("\n");
+  }
   if (kit && plan.composeStreet) {
     return [
       `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
