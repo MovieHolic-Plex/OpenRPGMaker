@@ -196,3 +196,7 @@ node scripts/qa-project-wiki-runtime.mjs --project output/evidence/project-wiki/
 The runtime proof loads unchanged exported data, uses keyboard Enter at the
 keyboard-only title, then proves visible monster contact opens `battle-scene`
 and a map attack reduces the same action enemy's HP without creating that scene.
+
+## AI 비공개 카드 (2026-10-16)
+
+`WorldEntity.visibility = "ai-hidden"` 인 문서는 위키 문맥·`read_project_wiki`(id 지목 포함)·위키 추출기 입력·NPC 대사 작성기·독립 검수·원본 문맥에서 빠진다(`project/world/visibility.ts`). `applyProjectWikiPatch` 의 같은 주제 peers 판정도 숨긴 카드를 보지 않는다. 모델이 돌려주는 패치의 `visibility` 는 파서 `onlyKeys` 가 거절한다 — 공개 범위는 사람만 바꾼다. 상세·경로 목록은 [editor-database.md](editor-database.md) 「세계관 노션식 통합 1단계」.

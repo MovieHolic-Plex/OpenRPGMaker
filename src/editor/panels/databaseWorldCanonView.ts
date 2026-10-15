@@ -10,6 +10,8 @@ import {
 } from "@/editor/panels/databaseWorldCanonFields";
 import { detailPane, inspectorTabs, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { worldDocumentProperties } from "./worldDocumentProperties";
+import { worldPropertiesOpen } from "./worldManager";
+import { renderWorldAiReachPanel } from "./worldAiReachPanel";
 import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { composeBodyWithDraft, mergeInterviewPatch, requestWorldCanonInterview, requestWorldCanonBodyDraft, type BodyDraftMode } from "@/ai/worldCanonInterview";
 
@@ -30,6 +32,8 @@ import {
 import { el } from "@/util/dom";
 
 const propertiesOpen = new WeakMap<HTMLElement, boolean>();
+const aiReachOpen = new WeakMap<HTMLElement, boolean>();
+const aiProbe: { query: string } = { query: "" };
 const activeSpreadTab = new WeakMap<HTMLElement, string>();
 
 function excerptHint(filled: number): string {
@@ -138,11 +142,11 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           writeCanon({ visibility: value });
           updateAiPreview();
         }),
-        el("p", { class: "world-muted", text: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다." }),
+        el("p", { class: "world-muted", text: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다. AI에게도 숨기려면 설정집 문서의 「공개 범위」를 쓰세요." }),
       ],
     }),
     aiDetails,
-  ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
+  ], propertiesOpen.get(host) ?? worldPropertiesOpen({ propertiesOpen: undefined }), (open) => propertiesOpen.set(host, open));
 
   // ---- 탭 구성: 본문(도화지)이 첫 화면의 주인공이다 ----
   // 세계 개요를 클릭하면 폼이 아니라 쓰기 시작할 수 있는 도화지가 먼저 보여야 한다(2026-09-22 사용자 피드백).
@@ -173,7 +177,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
     wrap.append(el("p", {
       class: "world-canon-ai-lead",
-      text: "조수가 매 턴 읽는 고정 블록이다. 여기 보이는 것 = 조수가 아는 것의 전부다. 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
+      text: "조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 속성의 「AI가 읽는 것」). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
     }));
     const grid = el("div", { class: "world-canon-ai-grid" });
     aiRefs.tiles = new Map();
@@ -187,9 +191,9 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       grid.append(item);
     }
     aiRefs.pre = el("pre", { class: "world-ai-preview world-canon-ai-pre", dataset: { testid: "world-canon-ai-panel-preview" } });
-    wrap.append(grid, sectionCard({
+    wrap.append(grid, renderWorldAiReachPanel({ open: aiReachOpen.get(host) ?? true, onToggle: (open) => aiReachOpen.set(host, open), probe: aiProbe }), sectionCard({
       title: "조수 프롬프트 투영",
-      hint: "worldCanonPromptSection — 이름·전제·톤·없는 것·법칙 + 본문 발췌",
+      hint: "이름·전제·톤·없는 것·법칙 + 본문 발췌",
       children: [aiRefs.pre],
     }));
     updateAiPreview();

@@ -735,6 +735,47 @@
   display: none;
 }
 
+/* 이미지 절의 두 갈래(배경·대형 / 도트) — 소제목 + 한 줄 설명. 갈래 사이는 헤어라인으로만 가른다. */
+.ai-settings-subgroup {
+  display: grid;
+}
+
+.ai-settings-subgroup:first-child {
+  padding-top: var(--space-2);
+}
+
+.ai-settings-subgroup + .ai-settings-subgroup {
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+}
+
+.ai-settings-subgroup-head {
+  display: grid;
+  gap: 2px;
+  padding-bottom: var(--space-1);
+}
+
+.ai-settings-subgroup-head h4,
+.ai-settings-subgroup-head p {
+  margin: 0;
+}
+
+.ai-settings-subgroup-head h4 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-subgroup-head p {
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 /* ── 연결 상태 ─────────────────────────────────────────────────────────── */
 
 .ai-auth-state {

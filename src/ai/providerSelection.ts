@@ -64,7 +64,10 @@ export function configForProviderSelection(config: AiConfig, providerId: string,
   const writer = modelForRole(next, "writer");
   next.model = writer.provider === next.providerId ? writer.model : modelForRole(next, "deep").model;
   next.liteModel = modelForRole(next, "deep").model;
-  next.modelSelectionOverrides = force ? (pinned.image ? { image: true } : {}) : { ...pinned };
+  // 도트 저작 칸(pixelModel)은 계정 선택을 따라 바뀌지 않는다 — 맞추기(force)에서도 고른 표시를 지우지 않는다.
+  next.modelSelectionOverrides = force
+    ? { ...(pinned.image ? { image: true as const } : {}), ...(pinned.pixel ? { pixel: true as const } : {}) }
+    : { ...pinned };
   return next;
 }
 

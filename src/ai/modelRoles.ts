@@ -28,21 +28,29 @@ export function modelForRole(config: AiConfig, role: SpecialistRole): RoleModel 
     thinkingLevel: role === "deep" ? "low" : "medium",
   };
 }
-export function configForRole(config: AiConfig, role: SpecialistRole): AiConfig {
-  const selected = modelForRole(config, role);
+/** 고른 한 칸(제공자·모델·강도)을 호출 설정으로 바꾼다. 역할 칸과 도트 저작 칸이 같이 쓴다. */
+export function configForRoleModel(config: AiConfig, selected: RoleModel): AiConfig {
   return { ...config, authMode: "chatgpt", apiKey: "", providerId: selected.provider,
     model: selected.model, reasoningEffort: selected.thinkingLevel };
+}
+export function configForRole(config: AiConfig, role: SpecialistRole): AiConfig {
+  return configForRoleModel(config, modelForRole(config, role));
+}
+/** 저장된 한 칸(제공자·모델·사고 강도)을 읽는다. 제공자·모델이 비면 undefined. 알 수 없는 강도는 high. */
+export function parseRoleModel(raw: unknown): RoleModel | undefined {
+  const value = raw as Partial<RoleModel> | null | undefined;
+  if (!value || typeof value !== "object" || typeof value.provider !== "string" || !value.provider.trim()
+    || typeof value.model !== "string" || !value.model.trim()) return undefined;
+  return { provider: value.provider.trim(), model: value.model.trim(),
+    thinkingLevel: value.thinkingLevel === "off" || value.thinkingLevel === "low" || value.thinkingLevel === "medium"
+      ? value.thinkingLevel : "high" };
 }
 export function parseRoleModels(raw: unknown): SpecialistModels {
   const result: SpecialistModels = {};
   if (!raw || typeof raw !== "object") return result;
   for (const role of ["vision", "writer", "deep", "build"] as const) {
-    const value = (raw as Record<string, unknown>)[role] as Partial<RoleModel> | undefined;
-    if (!value || typeof value.provider !== "string" || !value.provider.trim()
-      || typeof value.model !== "string" || !value.model.trim()) continue;
-    result[role] = { provider: value.provider.trim(), model: value.model.trim(),
-      thinkingLevel: value.thinkingLevel === "off" || value.thinkingLevel === "low" || value.thinkingLevel === "medium"
-        ? value.thinkingLevel : "high" };
+    const parsed = parseRoleModel((raw as Record<string, unknown>)[role]);
+    if (parsed) result[role] = parsed;
   }
   return result;
 }

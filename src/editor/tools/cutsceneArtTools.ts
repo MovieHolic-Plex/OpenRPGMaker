@@ -151,7 +151,7 @@ const generateCutsceneArt: ToolDefinition = {
     }
     try {
       const viewport = DEFAULT_PLAY_RESOLUTION;
-      const image = await generate({ prompt: cutsceneArtPrompt(parsed.role, parsed.prompt, parsed.style) });
+      const image = await generate({ prompt: cutsceneArtPrompt(parsed.role, parsed.prompt, parsed.style), purpose: parsed.role === "sprite" ? "cutscene-sprite" : "cutscene-backdrop" });
       const art = parsed.style === "illustration"
         ? (parsed.role === "sprite" ? await processIllustrationSprite(image.dataUrl) : await processIllustrationBackdrop(image.dataUrl, viewport))
         : (parsed.role === "sprite"

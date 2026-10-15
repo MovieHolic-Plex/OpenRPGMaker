@@ -1,6 +1,7 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
-import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
+import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels } from "./modelRoles";
+import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
@@ -56,8 +57,13 @@ export interface AiConfig {
   // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
   roleModels?: SpecialistModels;
+  /**
+   * 도트 저작 모델(타일셋·기물·캐릭터셋을 격자 문자열로 찍는 **텍스트 모델**, 이미지 모델 아님 — src/ai/pixelModel.ts).
+   * 없으면 기존 동작(공방 그리기가 계획·최종 판단 모델을 쓴다)을 그대로 둔다.
+   */
+  pixelModel?: RoleModel;
   /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
-  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image", true>>;
+  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel", true>>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
   ultrabrainReasoningEffort?: "low" | "medium" | "high";
@@ -217,6 +223,8 @@ export function defaultAiConfig(): AiConfig {
       writer: { ...argonMedium },
       build: { ...argonMedium },
     },
+    // 도트 저작(공방)은 텍스트 모델이 격자 문자열로 찍는다 — 이미지 모델 칸과 별개다(src/ai/pixelModel.ts).
+    pixelModel: { ...DEFAULT_PIXEL_MODEL },
     roleModelsPolicyVersion: 1,
   };
 }
@@ -370,15 +378,18 @@ export function loadAiConfig(): AiConfig {
       roleModels: parsed.roleModelsPolicyVersion === 1
         ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels))
         : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
+      // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
+      ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.
       modelSelectionOverrides: Object.fromEntries(
-        (["ultrabrain", "vision", "writer", "deep", "build", "image"] as const).filter(slot => {
+        (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel"] as const).filter(slot => {
           if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
             return parsed.modelSelectionOverrides[slot] === true;
           }
           return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
             : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
+            : slot === "pixel" ? Boolean(parsed.pixelModel)
             : Boolean(parsed.roleModels?.[slot]);
         }).map(slot => [slot, true as const]),
       ),

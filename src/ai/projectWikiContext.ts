@@ -1,6 +1,7 @@
 import type { Project } from "@/project/types";
 import { activeWikiEntities, wikiOrder } from "@/project/world/wiki";
 import type { WikiCombatMode, WorldEntity } from "@/project/world/types";
+import { aiVisibleEntities, isAiHiddenEntity } from "@/project/world/visibility";
 
 export interface ProjectWikiContextResult {
   readonly text: string;
@@ -30,6 +31,8 @@ export function resolveWikiCombatMode(project: Project, mapId?: string | null): 
 export function projectWikiContext(project: Project, options: { readonly query: string; readonly mapId?: string | null }): ProjectWikiContextResult {
   const terms = [...new Set(options.query.toLowerCase().match(/[\p{L}\p{N}_-]+/gu) ?? [])].slice(0, 32);
   const candidates = [...activeWikiEntities(project.world), ...(project.world?.entities.filter((entity) => !entity.wiki) ?? [])]
+    // 모델 입력 경로 — AI 비공개 카드는 후보에서 빠진다(visibility.ts).
+    .filter((entity) => !isAiHiddenEntity(entity))
     .filter((entity) => entity.wiki?.kind !== "progress" && inScope(entity, options.mapId))
     .map((entity) => {
       const text = `${entity.name} ${entity.summary} ${entity.tags?.join(" ") ?? ""} ${entity.body?.slice(0, 4000) ?? ""}`.toLowerCase();
@@ -58,4 +61,19 @@ export function projectWikiContext(project: Project, options: { readonly query: 
     remaining -= line.length + 1;
   }
   return { text: lines.join("\n"), selectedIds };
+}
+
+/** 위키 기록기(자동 기록 모델)가 기존 문서로 받는 상한. */
+export const WIKI_EXTRACTOR_DOCUMENT_CAP = 64;
+
+/**
+ * 위키 기록기 입력에 실리는 기존 문서. 질문과 겹친 문서를 앞세우고 상한까지 자른다.
+ * `buildProjectWikiPayload` 와 설정집 「AI가 읽는 것」 패널이 같은 함수를 쓴다(화면과 입력이 어긋나지 않게).
+ * AI 비공개 카드는 여기서 빠진다(visibility.ts).
+ */
+export function wikiExtractorDocuments(project: Project, selected: ReadonlySet<string>): readonly WorldEntity[] {
+  return [...aiVisibleEntities(project.world?.entities ?? [])]
+    .filter((entity) => entity.wiki?.kind !== "progress")
+    .sort((a, b) => Number(selected.has(b.id)) - Number(selected.has(a.id)))
+    .slice(0, WIKI_EXTRACTOR_DOCUMENT_CAP);
 }
