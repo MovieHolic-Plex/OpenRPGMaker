@@ -395,10 +395,12 @@ artwork, drawn directly on the final 48px grid by
 21 cast cells use 16 opaque colors and binary alpha. No source image or
 image-generation model is used. Repository code/asset policy applies.
 
-## Battle trainer sprites (Actor1 derivatives, pending human pick)
+## Battle trainer sprites (OPRN monster-collect trainer art derivatives, pending human pick)
 
-`battle-trainers/<role>/{front,back,throw}.png` (created only after the user picks candidates on the pick sheet) are modified derivatives of
-EasyRPG RTP `CharSet/Actor1.png` (Marina Navarro Travesset (base), VictorSena (edit), CC BY 4.0, https://github.com/EasyRPG/RTP;
-see `easyrpg/AUTHORS.md`). Each is a 64×64 palette-symbol grid authored by Gemini 4 Argon (Medium) through Agy, starting from the Actor1 frame
-and its palette; no image-generation tool is used. Changes: re-proportioned to a battle-scale trainer, redrawn pose/clothes/hair, new
-colors per role. Harness: `src/harnesses/battle-trainer-sprites/`. The modified files remain under CC BY 4.0 attribution to the original authors.
+`battle-trainers/<role>/{front,back}.png` (created only after the user picks candidates on the pick sheet) are locally edited derivatives of the
+OPRN monster-collect campaign battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, 64×64). Those sources are repository-owned
+original artwork: built-in image generation (prompted as original, no imitation of existing Nintendo characters), then extracted to 64×64 / 15 colors
+with nearest sampling by the `pokemon-character-motion` portrait importer. Each derivative is a 64×64 palette-symbol grid written by Gemini 4 Argon (Medium)
+through Agy from the source grid (no image-generation tool at this step); at most 40% of cells and 10% of the silhouette differ from the source.
+Changes: hair/cap/clothes colors per role. They contain no EasyRPG Actor1 pixels and no Nintendo artwork. Harness: `src/harnesses/battle-trainer-sprites/`.
+License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
