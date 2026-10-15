@@ -6,7 +6,7 @@ monster-collect-species 의 격자 검출·도트화(pixelize)를 거쳐 64x64 �
 옛 편집 모드(chip, p3)·p1·p2 는 사용자 폐기 — 시트는 보존만 하고 pick/sheet/bake 는 거절한다.
 감독·에이전트는 후보를 고르지 않는다. 사람 선택 경로이며 object-gate 영수증은 없다.
 """
-import argparse, base64, concurrent.futures as cf, datetime, hashlib, json, os, re, shutil, subprocess, sys, threading, time
+import argparse, base64, concurrent.futures as cf, datetime, hashlib, io, json, os, re, shutil, subprocess, sys, threading, time
 from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -419,38 +419,82 @@ def data_uri(path):
     return 'data:image/png;base64,' + base64.b64encode(open(path, 'rb').read()).decode()
 
 
+def sprite_stats(im):
+    px = im.load(); w, h = im.size; opaque = orphan = edge = dark = 0
+    for y in range(h):
+        for x in range(w):
+            p = px[x, y]
+            if not p[3]: continue
+            opaque += 1; same = False; is_edge = False
+            for ox, oy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + ox, y + oy
+                if not (0 <= nx < w and 0 <= ny < h) or not px[nx, ny][3]: is_edge = True; continue
+                if px[nx, ny][:3] == p[:3]: same = True
+            if not same: orphan += 1
+            if is_edge:
+                edge += 1
+                if 0.3 * p[0] + 0.59 * p[1] + 0.11 * p[2] < 80: dark += 1
+    return {'orphan': orphan / opaque if opaque else 1, 'outline': dark / edge if edge else 0}
+
+
+def machine_filter(sp):
+    """사람에게 보이기 전 걸러내기: 외톨이 점(색이 잘게 갈라짐)이 많거나 윤곽이 끊긴 도트화는 뭉개진 것으로 본다."""
+    st = sprite_stats(sp); why = []
+    if st['orphan'] > 0.10: why.append('외톨이 점 %d%% — 색이 잘게 갈라짐' % round(st['orphan'] * 100))
+    if st['outline'] < 0.90: why.append('윤곽이 끊김(어두운 가장자리 %d%%)' % round(st['outline'] * 100))
+    return why, st
+
+
+def thumb_uri(path, size=220):
+    src = Image.open(path).convert('RGBA'); im = Image.new('RGB', src.size, (255, 0, 255)); im.paste(src, (0, 0), src); im.thumbnail((size, size))
+    b = io.BytesIO(); im.save(b, 'JPEG', quality=82)
+    return 'data:image/jpeg;base64,' + base64.b64encode(b.getvalue()).decode()
+
+
 def cmd_sheet(a):
     require_gen(a.plate, '시트를 만들')
     g = gen_seed(); cands = plate_cands(a.plate)
+    manual = read_json(os.path.join(RUNS, a.plate, 'manual_filter.json'), {})  # 눈으로 보고 걸러낸 것: {"role/letter": "사유"}
     name = 'trainer-sprites-pick-%s.html' % a.plate.lstrip('p')
-    cards = []; roles_js = {}
+    cards = []; roles_js = {}; dropped = []
     order = [r for r in g['roles'] if r in cands]
     for role in order:
         spec = g['roles'][role]; view = spec['view']; cdict = cands[role]
         ref_uri = data_uri(os.path.join(RUNS, a.plate, '_ref_%s.png' % view))
-        ok = [(l, m) for l, m in cdict.items() if m.get('status') == 'ok']
-        fail = [l for l, m in cdict.items() if m.get('status') != 'ok']
-        busy = lambda m: m.get('status') not in ('ok', 'failed')
         items = []
         roles_js[role] = {'view': view, 'cands': {}}
-        for l, m in ok:
-            uri = data_uri(os.path.join(RUNS, a.plate, role, l, 'sprite.png'))
+        shown = 0
+        for l, m in cdict.items():
+            if m.get('status') != 'ok':
+                if m.get('status') == 'failed': dropped.append('%s/%s: 생성·검사 실패(이미지 서버 오류 또는 규격 미달 %d회)' % (role, l, len(m.get('attempts', []))))
+                continue
+            sp_path = os.path.join(RUNS, a.plate, role, l, 'sprite.png')
+            sp = Image.open(sp_path).convert('RGBA')
+            why, st = machine_filter(sp)
+            if '%s/%s' % (role, l) in manual: why.append(manual['%s/%s' % (role, l)])
+            if why:
+                dropped.append('%s/%s: %s' % (role, l, ' · '.join(why))); continue
+            uri = data_uri(sp_path)
+            raw_uri = thumb_uri(os.path.join(RUNS, a.plate, role, l, m['raw']))
             roles_js[role]['cands'][l] = {'sprite': uri}
-            warn = ''.join('<div class=w>%s</div>' % w for w in m.get('warnings', []))
-            items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div><div class=bg><img class=px data-w=64 src="{uri}"></div>'
-                         f'<div class=hs>{m["hash"]} · {m["colors"]}색 · 격자 {m["block"]}px · 높이 {m["ink"]["height"]}</div>{warn}</div>')
-        for l in fail:
-            items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>{"아직 그리는 중" if busy(cdict[l]) else "검사 탈락(시도 %d회)" % len(cdict[l].get("attempts", []))}</div></div>')
-        note = '<div class=hs>던지기 프레임: 이번 판은 만들지 않았습니다(소스 hero_back 은 볼을 쥔 던지기 자세 1장뿐이었음). 뒷모습은 오른팔을 들어 던지기 직전 자세로 그리게 했습니다.</div>' if view == 'back' else ''
-        cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small></h3>'
-                     f'<div class=row><div class=src><img src="{ref_uri}" style="width:220px;image-rendering:pixelated"><div class=hs>참고 그림체 샘플(저장소 소유 전용 소스, 이미지 서버에 준 참고 이미지)</div></div>{"".join(items)}</div>{note}</section>')
+            shown += 1
+            prompt = open(os.path.join(RUNS, a.plate, role, l, 'prompt.txt'), encoding='utf-8').read()
+            items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div>'
+                         f'<div class=pair><div><img class=rawimg src="{raw_uri}"><div class=hs>생성 원본</div></div>'
+                         f'<div><div class=bg><img class=px data-w=64 src="{uri}"></div><div class=hs>도트화 64×64</div></div></div>'
+                         f'<div class=hs>{m["hash"]} · {m["colors"]}색 · 격자 {m["block"]}px · 높이 {m["ink"]["height"]} · 외톨이 {round(st["orphan"] * 100)}%</div>'
+                         f'<details onclick="event.stopPropagation()"><summary>이 후보의 생성 프롬프트</summary><pre>{prompt}</pre></details></div>')
+        cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small> <b class=n>{shown}장</b></h3>'
+                     f'<div class=row><div class=src><img src="{ref_uri}" style="width:220px;image-rendering:pixelated"><div class=hs>이미지 서버에 준 참고 이미지(그림체 샘플, 저장소 소유 전용 소스)</div></div>{"".join(items)}</div></section>')
+    drop_html = ('<div class=how><b>걸러낸 후보(사람에게 보이기 전에 걸렀습니다)</b><br>' + '<br>'.join(dropped) + '</div>') if dropped else ''
     dirs = '<br>'.join('<b>%s</b> %s' % kv for kv in g['variants'].items())
     html = TEMPLATE.replace('@@CARDS@@', '\n'.join(cards)).replace('@@ROLES@@', json.dumps(roles_js)).replace('@@PLATE@@', a.plate) \
-        .replace('@@ROLELIST@@', ' '.join('<code>%s</code>' % r for r in order)).replace('@@DIRS@@', dirs)
+        .replace('@@ROLELIST@@', ' '.join('<code>%s</code>' % r for r in order)).replace('@@DIRS@@', dirs).replace('@@DROPPED@@', drop_html) \
+        .replace('@@MAINPROMPT@@', gen_prompt('hero_m', g['roles']['hero_m'], 'A').replace('<', '&lt;'))
     os.makedirs(VIZ, exist_ok=True)
     out = os.path.join(VIZ, name)
     open(out, 'w', encoding='utf-8').write(html)
-    print(out, len(html) // 1024, 'KB')
+    print(out, len(html) // 1024, 'KB', '걸러냄', len(dropped))
 
 
 TEMPLATE = r"""<!doctype html><meta charset=utf-8><title>트레이너 스프라이트 고르기 @@PLATE@@</title>
@@ -467,6 +511,7 @@ code{background:#10151f;padding:1px 6px;border-radius:4px;color:#ffd78a}
 .px{image-rendering:pixelated}
 .lt{position:absolute;top:4px;left:8px;font-weight:700;color:#ffd78a;z-index:2;text-shadow:0 0 3px #000}
 .hs{font-size:11px;color:#8da0bb;margin-top:4px}.w{font-size:11px;color:#f0a070}
+.pair{display:flex;gap:10px;align-items:flex-end}.rawimg{width:220px;height:220px;object-fit:contain;background:#f0f;image-rendering:pixelated}pre{white-space:pre-wrap;font-size:11px;max-width:460px;color:#c8d4e8;background:#10151f;padding:6px;border-radius:4px}details{margin-top:4px;font-size:11px;color:#8da0bb}.n{color:#ffd78a;font-size:12px}
 .thr{margin-top:6px}.anim{width:64px;height:64px;image-rendering:pixelated;background-size:auto 100%;animation:thr 0.9s steps(1) infinite}
 @keyframes thr{0%{background-position:0 0}33%{background-position:-64px 0}66%{background-position:-128px 0}}
 .bar{position:sticky;top:0;background:#1c2230ee;padding:6px 0;z-index:5;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
@@ -478,6 +523,8 @@ button{background:#3a4770;color:#fff;border:0;border-radius:6px;padding:5px 12px
 <div class=how><b>고르는 방법</b> — 카드를 눌러 역할마다 하나씩 고르면 맨 아래 칸에 <code>pick</code> 명령이 만들어집니다. 번호만 말해 주셔도 됩니다: 예) <code>hero_m=B hero_f=A boy=C …</code> (역할: @@ROLELIST@@).
 고르기 전에는 번들·프로젝트에 아무것도 들어가지 않습니다. 후보 방향: <br>@@DIRS@@<br>
 이 그림은 사람 캐릭터라 3/4 윗면 관문 대상이 아닙니다(object-gate 영수증 없음, 사람 선택 경로). 방식: 이미지 서버가 저장소 소유 몬스터 수집 전용 그림체 샘플을 참고로 역할별 새 인물을 그리고, 몬스터 하네스와 같은 격자 검출·도트화로 64×64 로 정리했습니다(Actor1·Nintendo 원작 그림 아님, 소스 복제 아님).</div>
+<div class=how><details><summary><b>생성 프롬프트 틀</b> (예: hero_m A. 역할마다 Character 줄과 Variation 문장만 다릅니다 — 이 문장을 고쳐 달라고 말씀해 주시면 됩니다)</summary><pre>@@MAINPROMPT@@</pre></details></div>
+@@DROPPED@@
 <div class=bar>배율 <span id=sc></span> · 같은 배율로 봅니다</div>
 <h3>전투 화면 합성 미리보기 (480×320, 임시 배경) — 아래에서 카드를 누르면 바뀝니다 · 상대는 마지막에 누른 앞모습, 내 트레이너는 마지막에 누른 뒷모습</h3>
 <canvas id=bat width=480 height=320></canvas>
