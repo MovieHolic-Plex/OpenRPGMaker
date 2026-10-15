@@ -1581,6 +1581,22 @@ function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, 
     throw new ToolError(`${label}: minPartyLevel이 maxPartyLevel보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
   }
   if (input.region !== undefined) conditions.region = parseRect(input.region, `${label}.region`, map);
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    const location = resolveLocation(map, locationId);
+    if (!location) {
+      const known = (map.locations ?? []).map((entry) => `${entry.id}(${entry.name})`).join(", ") || "(없음)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, { code: "invalid-location-anchor", mapId: map.id });
+    }
+    conditions.locationId = location.id;
+  }
+  if (input.terrainId !== undefined) {
+    const terrainId = stringField(input, "terrainId", label);
+    if (!(draft.database.terrains ?? []).some((record) => record.id === terrainId)) {
+      throw new ToolError(`${label}.terrainId 지형 레코드가 없다: ${terrainId} — 있는 것: ${(draft.database.terrains ?? []).map((record) => record.id).join(", ") || "(없음)"}. 세계 지도 지형 레코드는 edit_world_terrain/derive_world_variant 가 맵을 빌드할 때 생긴다.`, { code: "terrain-not-found", mapId: map.id });
+    }
+    conditions.terrainId = terrainId;
+  }
   if (input.timePhase !== undefined) {
     const timePhase = stringField(input, "timePhase", label);
     if (!isTimePhase(timePhase)) throw new ToolError(`${label}.timePhase가 잘못되었습니다: ${timePhase}`, { code: "invalid-time-phase", mapId: map.id });

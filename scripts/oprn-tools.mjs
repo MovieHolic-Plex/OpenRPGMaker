@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildTsModule, withTsModule } from "./ontology-ts-loader.mjs";
+import { buildWorldmap } from "./lib/worldmapBuild.mjs";
 
 const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts", import.meta.url)));
 const STORE_ENTRY = resolve(fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url)));
@@ -138,6 +139,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   await withHeadless(args.bundle, async (module) => {
     module.setHeadlessPublicRoot(PUBLIC_DIR);
+    module.setHeadlessWorldmapBuilder?.(buildWorldmap);   // 월드맵 키트(Python)를 이 프로세스에서 직접 돌린다 — 동반 서비스 없이
     if (args.list) {
       process.stdout.write(`${JSON.stringify({ tools: module.listHeadlessTools() }, null, 2)}\n`);
       return;
@@ -170,7 +172,7 @@ async function main() {
         ? await loadProjectFromDirectory(args.projectDir)
         : loadProject(module, args.projectPath));
     }
-    await module.prepareHeadlessTool(args.toolName, toolArgs);
+    await module.prepareHeadlessTool(args.toolName, toolArgs, project);
     const { result, project: next } = module.runHeadlessToolWithProject(project, args.toolName, toolArgs, args.assistant
       ? { assistantRun: true, ...(args.currentMapId ? { currentMapId: args.currentMapId } : {}), ...(args.approved.length ? { approvedTilesetFamilies: args.approved } : {}) }
       : {});

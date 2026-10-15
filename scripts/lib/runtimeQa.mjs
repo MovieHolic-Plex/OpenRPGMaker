@@ -571,7 +571,7 @@ export function evaluateExpect(expected, observed) {
   for (const id of expected.parkedVehicleSprites ?? []) {
     const sprite = observed.vehicleSprites?.[id];
     if (!sprite) failures.push(`parkedVehicleSprites: ${id} 스프라이트가 필드에 없다`);
-    else if (sprite.textureKey !== "tex_easyrpg_charset_vehicles") failures.push(`parkedVehicleSprites: ${id} 텍스처 ${sprite.textureKey}`);
+    else if (sprite.textureKey !== (id === "chocobo" ? "tex_easyrpg_charset_animal" : "tex_easyrpg_charset_vehicles")) failures.push(`parkedVehicleSprites: ${id} 텍스처 ${sprite.textureKey}`);
   }
 
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {

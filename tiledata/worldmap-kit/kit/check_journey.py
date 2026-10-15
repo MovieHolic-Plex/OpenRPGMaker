@@ -39,6 +39,10 @@ def run_check(journey, world, out_path=None, verbose=True):
     with contextlib.redirect_stdout(buf):
         _, bad, info = C.run(verbose=True, w=world, out_path=out_path)
     txt = buf.getvalue()
+    import kit_variant as KV
+    if KV.MODE[0] == 'free':                                  # 월드 변형(free): 막 순서 대신 도달성만 본다
+        bad, notes = KV.relax(bad, world, info)
+        info['variant_notes'] = notes
     if verbose:
         print(txt.rstrip())
     return bad, info, txt

@@ -337,7 +337,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       if (tool.name === 'get_concept_facility') for (const image of await interiorPresetImages(result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
-      if (tool.name === 'read_world_terrain' || tool.name === 'edit_world_terrain') for (const image of worldTerrainImages(tool.name)) {
+      if (tool.name === 'read_world_terrain' || tool.name === 'edit_world_terrain' || tool.name === 'derive_world_variant') for (const image of worldTerrainImages(tool.name)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'generate_cutscene_art') for (const image of cutsceneArtImages(ctx.project, result.data)) {

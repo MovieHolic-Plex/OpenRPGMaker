@@ -138,6 +138,9 @@ const VEHICLE_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "boat", label: "배" },
   { value: "ship", label: "배(대형)" },
   { value: "airship", label: "비행선" },
+  { value: "chocobo", label: "초코보" },
+  { value: "cart", label: "광산 수레" },
+  { value: "raft", label: "뗏목" },
 ];
 
 

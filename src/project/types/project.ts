@@ -423,6 +423,20 @@ export interface EncounterConditions {
  * 참조도 같은 맵 안에서만 걸리므로 복사본은 자기 로케이션을 가리킨다).
  */
 /** 월드맵 키트 지도의 원본 — 테마와 지형 작업 목록(`worldmap-terrain/1` 의 ops, 칸 좌표). */
+/**
+ * 월드 변형 명세(키트 kit_variant.py 의 terrain.variant) — 기준 지도와 같은 지형 위에 침수·균열·바닥 갈아엎기를 얹고
+ * 여정 검사를 「모든 장소가 어떤 수단으로든 닿는다」로 바꾼다. derive_world_variant 가 만든다.
+ */
+export interface WorldmapVariantSpec {
+  journey?: "free" | "keep";
+  palette?: string;
+  icon_preset?: "ruin";
+  icon_ratio?: number;
+  icons?: Record<string, string>;
+  protect_roads?: Array<[number, number]>;
+  ops?: Array<Record<string, unknown>>;
+}
+
 export interface WorldmapSource {
   /** tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
   theme: string;
@@ -437,6 +451,11 @@ export interface WorldmapSource {
   fitSalt?: number;
   /** Baseline generated tile arrays, used to preserve subsequent hand edits on regeneration. */
   tilemap?: { version: 1; lowerTiles: number[]; upperTiles: number[]; materialKeys: string[] };
+  /**
+   * 파멸 전/후처럼 다른 월드맵에서 파생된 변형 지도(derive_world_variant, 2026-10-15). `of` 는 기준 지도 id,
+   * `spec` 은 키트 terrain.variant(침수·균열·바닥 갈아엎기·색 표·아이콘). 있으면 재빌드가 같은 변형을 다시 얹는다. 없으면 일반 월드맵.
+   */
+  variant?: { of: string; preset?: string; spec: WorldmapVariantSpec };
 }
 
 export interface MapNamedLocation {
