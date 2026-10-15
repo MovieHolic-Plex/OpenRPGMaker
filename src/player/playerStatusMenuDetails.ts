@@ -169,7 +169,7 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
   if (item && itemAllowsMenu(item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(machineSkillOf(project, item)));
     entries.push({
       label: "사용",
       value: "",
