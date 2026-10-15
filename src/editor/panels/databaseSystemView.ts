@@ -1702,10 +1702,12 @@ function galleryLabelField(value: string): HTMLElement {
 function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: () => void): HTMLElement {
   const lock = project.system.genreLock;
   const report = genreLockReport(project);
-  const checkbox = checkboxField("장르 칩셋 잠금 (몬스터 수집 — 조수는 몬스터 칩셋만 새로 쓴다)", "db-field-system-genre-lock", lock !== undefined, (checked) => {
+  const lockPreset = lock?.preset ?? (project.gameDesignBrief?.interview?.genre === "romance" ? "romance" : "monster-collect");
+  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋만 새로 쓴다";
+  const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
     recordProjectSnapshot();
     store.update((draft) => {
-      if (checked) enableGenreLock(draft, "monster-collect");
+      if (checked) enableGenreLock(draft, lockPreset);
       else disableGenreLock(draft);
     }, { scope: "system", label: checked ? "장르 잠금 켜기" : "장르 잠금 끄기" });
     rerender();

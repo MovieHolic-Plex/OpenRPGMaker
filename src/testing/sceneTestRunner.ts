@@ -103,7 +103,9 @@ import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { findChestAt } from "@/project/placeables";
 import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
-import { giveGiftToNpc } from "@/project/friendship";
+import { giveGiftToNpc, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
+import { advanceSocialSlotClock } from "@/player/socialSlotClock";
+import { resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
 import { accrueShopLoyalty, handleShopTransaction, shopItems, type ShopStep } from "@/player/playSceneShop";
 import { beginShopVisit, endShopVisit, shopIsClosed } from "@/player/playSceneShopVisit";
 import { resolveShopStock } from "@/project/shopStock";
@@ -1297,6 +1299,34 @@ function updateHeldInterpreter(
   }
   if (currentEventId) releaseCutsceneControlForOwner(state.session, currentEventId);
   state.held = null;
+  if (currentEventId && stop.stop === "done") applySocialTalkForRunner(state, currentEventId);
+}
+
+/**
+ * 런타임 runTalkPath 와 같은 규칙: action 대화가 끝나면 한 번 호감 지급(+ 소셜 루프가 켜져 있으면 시간대 칸과 시계).
+ * 이게 없으면 헤드리스 시나리오에서는 대화로 호감이 오르지 않아 friendshipAtLeast 조건이 영원히 닫혀 보였다.
+ */
+function applySocialTalkForRunner(state: RunnerState, eventId: string): void {
+  const map = currentMap(state);
+  if (!map) return;
+  const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((entry) => entry.event.id === eventId);
+  if (!view || !isTalkFriendshipEnabled(view.event)) return;
+  const page = resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session));
+  if ((page?.trigger ?? view.event.trigger).kind !== "action") return;
+  const result = trySocialTalk(state.session, view.event, state.project);
+  if (!result.ok) {
+    if (result.reason === "no-slots") state.log.push(`talk ${eventId}: ${result.reason}`);
+    return;
+  }
+  const minutes = advanceSocialSlotClock(state.project, state.session);
+  if (minutes > 0) applyNpcSchedulesForRunner(state);
+  state.log.push(`talk ${eventId}: +${result.delta} => ${result.friendship}${result.slotsLeft !== undefined ? ` (남은 칸 ${result.slotsLeft})` : ""}${result.capped ? " [하루 상한]" : ""}`);
+  // 런타임과 같다: 칸을 다 쓴 날은(forceSleep 이면) 잠으로 넘어가 기한 엔딩이 센다.
+  const loop = resolveSocialLoop(state.project);
+  if (loop && socialSlotsExhausted(state.session, loop) && resolveTimeSystem(state.project)?.forceSleep === true) {
+    const failure = sleepUntilMorningForRunner(state);
+    if (failure) state.runtimeFailure = failure;
+  }
 }
 
 function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpStop {
@@ -2812,7 +2842,7 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   // 다음 한 방에 쓰러지고 먼저 눕히지도 못하면 자기 회복 기술(햇살쉼 등)을 쓴다 — 챔피언 앞에서 리더가 화상·약점 한 방에
   // 체력 반을 남기고 쓰러져 Lv2 동료들만 남았다(2026-10-07 사막 기획서, 회복약이 바닥난 뒤). 플레이어도 그때 회복한다.
   // 예상 피해는 난수·급소를 빼고 잰다 — 1.5배 여유에 화상·독 한 틱을 더한다(예상 107 에 실제 145, 화상 18 로 쓰러졌다).
-  const upkeep = active && active.stateIds.some((stateId) => /^(burn|poison)$/u.test(project.database.states.find((state) => state.id === stateId)?.gen1MajorStatus ?? ""))
+  const upkeep = active && active.stateIds.some((stateId) => /^(burn|poison|toxic)$/u.test(project.database.states.find((state) => state.id === stateId)?.gen1MajorStatus ?? ""))
     ? Math.max(1, Math.floor(active.maxHp / 16)) : 0;
   const healMove = project.system.battleModel === "gen1" && active && target && active.hp > 0 && active.hp < active.maxHp * 0.6
     // 먼저 눕힐 수 있어 보여도 명중 90% 기술이 빗나가면 그 한 방을 맞는다(빗나간 뒤 쓰러졌다) — 신중한 플레이어처럼 회복한다.

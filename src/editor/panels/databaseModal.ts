@@ -439,7 +439,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       switchDatabaseActiveTab("worldCodex", body);
       refreshDatabasePanel(body);
       manualStatusShown = true;
-      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 카드 내용을 확인하세요.");
+      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 문서 내용을 확인하세요.");
       return false;
     }
     refreshDatabasePanel(body);
@@ -534,7 +534,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     if (manualStatusShown && store.getAutoSaveState().kind !== "error") return;
     manualStatusShown = false;
     const status = codexSession.isDirty()
-      ? ({ text: "설정집 카드 저장 전", kind: "pending" } as const)
+      ? ({ text: "설정집 문서 저장 전", kind: "pending" } as const)
       : databaseFooterStatus(store.getAutoSaveState());
     footerStatus.textContent = status.text;
     footerStatus.dataset.statusKind = status.kind;

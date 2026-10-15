@@ -6,3 +6,4 @@ export * from "./digest";
 export * from "./lint";
 export * from "./wiki";
 export * from "./review";
+export * from "./visibility";

@@ -1,3 +1,4 @@
+import { statStageEffectText } from "@/battle/statStages";
 import { actionSkillFields } from "./databaseActionSkillForm";
 import { skillCombatRuleCard, skillInputSequenceFields } from "@/editor/panels/databaseCombatRuleFields";
 // 스킬 탭 인스펙터 (2026-08 모던 개편).
@@ -303,13 +304,15 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
   const element = record.elementId
     ? `${project.database.elements?.find((entry) => entry.id === record.elementId)?.name || record.elementId} 속성. `
     : "";
-  const states = (record.stateEffects ?? []).length > 0
-    ? `${(record.stateEffects ?? []).map((effect) => {
-        const state = project.database.states.find((entry) => entry.id === effect.stateId);
-        const name = state?.name || effect.stateId;
-        return `${name} ${effect.operation === "add" ? "부여" : "해제"}${effect.chance < 100 ? ` ${effect.chance}%` : ""}`;
-      }).join(" · ")}. `
-    : "";
+  const stateRows = [
+    ...(record.stateEffects ?? []).map((effect) => {
+      const state = project.database.states.find((entry) => entry.id === effect.stateId);
+      const name = state?.name || effect.stateId;
+      return `${name} ${effect.operation === "add" ? "부여" : "해제"}${effect.chance < 100 ? ` ${effect.chance}%` : ""}`;
+    }),
+    ...(record.statStageEffects ?? []).map(statStageEffectText),
+  ];
+  const states = stateRows.length > 0 ? `${stateRows.join(" · ")}. ` : "";
   const animation = record.animationId
     ? `연출: ${project.database.battleAnimations.find((entry) => entry.id === record.animationId)?.name || record.animationId}`
     : "연출 없음";

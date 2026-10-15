@@ -6,6 +6,7 @@ import {
 } from "@/project/session";
 import { isPositiveItemQuantity } from "@/project/itemQuantities";
 import { resolveSocialKey } from "@/project/socialKey";
+import { recordSocialLoopTalk, resolveSocialLoop, socialLoopGate, socialLoopToday } from "@/project/socialLoop";
 import {
   resolveBirthday,
   resolveGiftPrefs,
@@ -111,6 +112,13 @@ export function giveGiftToNpc(project: Project, session: PlaySession, event: Gam
   if (!changeItem(session, itemId, "-=", 1)) {
     return { ok: false, reason: "no-item", npcKey, message: responseText(responses, "noItems") };
   }
+  // 소셜 루프가 켜져 있으면 선물 호감도 사람별 하루 상한에 센다(칸은 쓰지 않는다).
+  const loop = resolveSocialLoop(project);
+  if (loop && delta > 0) {
+    const day = socialLoopToday(session);
+    delta = Math.min(delta, Math.max(0, loop.dailyFriendshipCap - (day.gained[npcKey] ?? 0)));
+    session.socialLoop = { day: day.day, slotsUsed: day.slotsUsed, gained: { ...day.gained, [npcKey]: (day.gained[npcKey] ?? 0) + delta } };
+  }
   const friendship = changeFriendship(session, npcKey, delta);
   session.dailyGifts ??= {};
   session.dailyGifts[npcKey] = today;
@@ -136,10 +144,14 @@ export type SocialTalkResult =
       readonly delta: number;
       readonly friendship: number;
       readonly message?: string;
+      /** 소셜 루프가 하루 상한으로 호감을 깎았다(0 일 수 있다 — 칸은 썼다). */
+      readonly capped?: boolean;
+      /** 소셜 루프가 켜져 있을 때 오늘 남은 시간대 칸(이 대화가 쓴 뒤). */
+      readonly slotsLeft?: number;
     }
   | {
       readonly ok: false;
-      readonly reason: "not-enabled" | "missing-npc-key" | "already-talked";
+      readonly reason: "not-enabled" | "missing-npc-key" | "already-talked" | "no-slots";
       readonly npcKey?: string;
       readonly message?: string;
     };
@@ -164,7 +176,7 @@ function talkFriendshipDelta(flag: TalkFriendshipConfig | undefined): number {
  * Once-per-day talk friendship grant. Uses resolveSocialKey only (no event.id).
  * Independent of dailyGifts. Mutates session.dailyTalks and friendship on success.
  */
-export function trySocialTalk(session: PlaySession, event: GameEvent): SocialTalkResult {
+export function trySocialTalk(session: PlaySession, event: GameEvent, project?: Project): SocialTalkResult {
   if (!isTalkFriendshipEnabled(event)) {
     return { ok: false, reason: "not-enabled" };
   }
@@ -174,13 +186,23 @@ export function trySocialTalk(session: PlaySession, event: GameEvent): SocialTal
   }
   session.dailyTalks ??= {};
   const today = giftDayKey(session.gameTime);
-  if (session.dailyTalks[npcKey] === today) {
+  const loop = resolveSocialLoop(project);
+  // 소셜 루프가 켜져 있으면 「하루 한 번」 대신 시간대 칸 + 사람별 하루 상한이 횟수를 정한다.
+  if (!loop && session.dailyTalks[npcKey] === today) {
     return { ok: false, reason: "already-talked", npcKey };
   }
-  const delta = talkFriendshipDelta(event.talkFriendship);
-  const friendship = changeFriendship(session, npcKey, delta);
+  const wanted = talkFriendshipDelta(event.talkFriendship);
+  if (!loop) {
+    const friendship = changeFriendship(session, npcKey, wanted);
+    session.dailyTalks[npcKey] = today;
+    return { ok: true, npcKey, delta: wanted, friendship };
+  }
+  const gate = socialLoopGate(session, loop, npcKey, wanted);
+  if (!gate.ok) return { ok: false, reason: gate.reason, npcKey };
+  const friendship = changeFriendship(session, npcKey, gate.grant);
   session.dailyTalks[npcKey] = today;
-  return { ok: true, npcKey, delta, friendship };
+  recordSocialLoopTalk(session, npcKey, gate.grant);
+  return { ok: true, npcKey, delta: gate.grant, friendship, capped: gate.capped, slotsLeft: gate.slotsLeft };
 }
 
 function responseText(responses: GiftResponses | undefined, key: keyof typeof DEFAULT_GIFT_RESPONSES): string {

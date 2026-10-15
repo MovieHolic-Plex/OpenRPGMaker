@@ -23,7 +23,7 @@ export function validateFieldHud(value: unknown): void {
       assert(Number.isFinite(n)&&Number.isInteger(n)&&n>=min&&n<=max,`${path}.${key} is outside ${min}..${max}`);
     }
     for(const key of ["enabled","hideEmpty","autoAvoid","showValue"])if(widget[key]!==undefined)requireBoolean(`${path}.${key}`,widget[key]);
-    for(const key of ["label","actorId","variableId","maxVariableId","switchId","timerId","resourceId"])if(widget[key]!==undefined){requireString(`${path}.${key}`,widget[key]);assert((widget[key] as string).length<=(key==="label"?60:160),`${path}.${key} is too long`);}
+    for(const key of ["label","actorId","npcKey","variableId","maxVariableId","switchId","timerId","resourceId"])if(widget[key]!==undefined){requireString(`${path}.${key}`,widget[key]);assert((widget[key] as string).length<=(key==="label"?60:160),`${path}.${key} is too long`);}
     if(widget.color!==undefined){requireString(`${path}.color`,widget.color);assert(/^#[\da-f]{6}$/i.test(widget.color as string),`${path}.color must be a hex color`);}
     if(widget.itemIds!==undefined){const items=requireArray(`${path}.itemIds`,widget.itemIds);assert(items.length<=10,`${path}.itemIds exceeds 10`);for(const id of items){requireString(`${path}.itemIds`,id);assert((id as string).length>0&&(id as string).length<=160,`${path}.itemIds has invalid id`);}}
   }

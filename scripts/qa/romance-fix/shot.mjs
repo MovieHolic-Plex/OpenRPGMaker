@@ -1,0 +1,11 @@
+import { chromium } from "@playwright/test";
+const b = await chromium.launch({ args: ["--no-sandbox"] });
+const p = await b.newPage({ viewport: { width: 1280, height: 900 } });
+const errs=[]; p.on("pageerror", e=>errs.push(String(e)));
+await p.goto("file:///home/main/claude-viz/audit-romance.html"); await p.waitForTimeout(800);
+const info = await p.evaluate(()=>({imgs:[...document.images].length, broken:[...document.images].filter(i=>!i.naturalWidth).length, rows:document.querySelectorAll('#m tbody tr').length}));
+console.log(JSON.stringify(info), errs);
+await p.screenshot({ path: "/tmp/rom/top.png" });
+await p.evaluate(()=>document.querySelector('h2:nth-of-type(3)')?.scrollIntoView());
+await p.screenshot({ path: "/tmp/rom/full.png", fullPage: true });
+await b.close();

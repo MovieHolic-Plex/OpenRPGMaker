@@ -77,3 +77,30 @@ export function romanceTownLayoutFindings(project: Project): string[] {
   return count > 0 && bare / count > 0.7
     ? [`마을 첫 만남 화면의 ${Math.round(bare / count * 100)}%가 물체 없는 기본 잔디입니다. 장소의 길·마당·경계를 구성한 뒤 다시 검수하세요. 이는 미완성 바닥 검사이며 미술 점수가 아닙니다.`] : [];
 }
+
+/**
+ * 어느 칩셋이든 첫 만남 화면(상대 둘레 20×15)이 한 가지 바닥으로 90% 넘게 덮이고 위 칸이 비어 있으면 「단색 빈 판」으로 반려한다.
+ * romanceTownLayoutFindings 는 버들항 기본 잔디 737 만 본다 — 다른 칩셋(캠퍼스 잔디·거리 흙 등)의 빈 시작 맵은 통과했다
+ * (2026-10-16 연애 감사 O1: 20×15 단색 잔디 첫 만남이 visual-flat 경고 하나로 통과). 미완성 바닥 검사이며 미술 점수가 아니다.
+ */
+export function romanceStageFlatFindings(project: Project): string[] {
+  const map = project.maps[project.startMapId];
+  if (!map) return [];
+  const npc = Object.values(project.maps).flatMap(m => m.events).find(e => e.id === 'ev_romance_partner');
+  const width = Math.min(20, map.width), height = Math.min(15, map.height);
+  const cx = npc && project.maps[project.startMapId]?.events.includes(npc) ? npc.x : project.startPos.x;
+  const cy = npc && project.maps[project.startMapId]?.events.includes(npc) ? npc.y : project.startPos.y;
+  const x0 = Math.max(0, Math.min(map.width - width, cx - Math.floor(width / 2)));
+  const y0 = Math.max(0, Math.min(map.height - height, cy - Math.floor(height / 2)));
+  const counts = new Map<number, number>();
+  let decorated = 0;
+  for (let y = y0; y < y0 + height; y++) for (let x = x0; x < x0 + width; x++) {
+    const i = y * map.width + x;
+    counts.set(map.lowerTiles[i]!, (counts.get(map.lowerTiles[i]!) ?? 0) + 1);
+    if ((map.upperTiles[i] ?? -1) >= 0 || (map.lowerOverlayTiles?.[i] ?? -1) >= 0 || (map.upperOverlayTiles?.[i] ?? -1) >= 0) decorated++;
+  }
+  const total = width * height;
+  const dominant = Math.max(0, ...counts.values());
+  return total > 0 && dominant / total > 0.9 && decorated / total < 0.05
+    ? [`첫 만남 화면의 ${Math.round(dominant / total * 100)}%가 한 가지 바닥이고 그 위에 아무것도 없습니다(단색 빈 판). 길·건물·소품으로 장소를 구성하세요(캠퍼스·도시 칩셋이면 구성기 도구). 이는 미완성 바닥 검사이며 미술 점수가 아닙니다.`] : [];
+}

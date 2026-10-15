@@ -1,4 +1,7 @@
+import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
+import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
+import type { SkillWeatherKind } from "@/project/types";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
@@ -308,12 +311,21 @@ export interface BattleFieldPresentation {
   /** 연출이 아직 재생하지 않은 상태 부여·해제를 되돌린 상태 목록. 스냅샷은 명령 즉시 해결돼
    *  「…에 걸렸다!」 비트 전에 배지가 먼저 붙었다(2026-09-29 실측). 없으면 스냅샷 그대로. */
   readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
+  /** 아직 재생하지 않은 능력치 단계 변화를 되감은 단계(stateView 와 같은 장부). 없으면 스냅샷 그대로. */
+  readonly stageView?: (battlerId: string, stages: BattleBattlerSnapshot["statStages"]) => BattleBattlerSnapshot["statStages"];
   /** 결과 문장이 나오는 단계. 이때부터 EXP 바가 승리 보상만큼 찬다. */
   readonly resultShown?: boolean;
+  /** 재생 시점에 맞춘 날씨(null = 날씨 없음). undefined 면 스냅샷의 weather. 스냅샷은 명령 즉시 해결돼 날씨 문장보다 배지가 먼저 바뀐다. */
+  readonly weather?: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | null;
 }
 
 function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
   return presentation?.stateView ? presentation.stateView(battler.id, battler.stateIds) : battler.stateIds;
+}
+
+/** 지금 보여 줄 능력치 단계. 상태 배지와 같은 장부를 따라 「…이 올랐다!」 줄에서 알약이 바뀐다. */
+function presentedStatStages(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): BattleBattlerSnapshot["statStages"] {
+  return presentation?.stageView ? presentation.stageView(battler.id, battler.statStages) : battler.statStages;
 }
 
 /** 지금 보여 줄 변신 그림. 상태 표시와 같은 장부(stateView)를 따라 「…에 걸렸다!」 줄에서 바뀌고 「풀렸다」 줄에서 돌아온다. */
@@ -349,9 +361,27 @@ export function syncBattleField(
   presentation?: BattleFieldPresentation,
 ): void {
   syncBackdrop(field, snapshot.backdropResourceId);
+  syncWeatherBadge(field, presentation?.weather !== undefined ? presentation.weather ?? undefined : snapshot.weather);
   syncEnemyGroup(field, snapshot, presentation);
   syncActorGroup(field, snapshot, presentation);
   if (feedback) showDamageFeedback(field, feedback);
+}
+
+/** 날씨 배지(쾌청·비·모래바람·싸라기눈 + 남은 차례). 글자와 색만 — 새 그림 없음. 날씨가 없으면 걷는다. */
+function syncWeatherBadge(field: HTMLElement, weather: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | undefined): void {
+  const existing = field.querySelector<HTMLElement>(".battle-weather-badge");
+  if (!weather) { existing?.remove(); return; }
+  const badge = existing ?? document.createElement("span");
+  if (!existing) {
+    badge.className = "battle-weather-badge";
+    badge.dataset.testid = "battle-weather-badge";
+    badge.setAttribute("role", "status");
+    field.append(badge);
+  }
+  badge.dataset.weather = weather.kind;
+  badge.dataset.turnsLeft = String(weather.turnsLeft);
+  badge.textContent = `${WEATHER_GLYPHS[weather.kind]} ${WEATHER_LABELS[weather.kind]} ${weather.turnsLeft}`;
+  badge.setAttribute("aria-label", `날씨: ${WEATHER_LABELS[weather.kind]}, ${weather.turnsLeft}차례 남음`);
 }
 
 /** 원장이 있으면 원장의 HP/사망을, 없으면 스냅샷 값을 쓴다. 연출이 상태를 앞지르지 않게
@@ -468,7 +498,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (partyStatusRowsCarryIcons()) {
       // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
       // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
-      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation), statStages: presentedStatStages(actor, presentation) });
     }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
@@ -669,7 +699,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     node.dataset.battlerDefending = String(actor.defending);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
-    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
+    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation), statStages: presentedStatStages(actor, presentation) });
     syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
     syncChargeMark(node, presented.defeated ? undefined : actor.charging);
     syncGimmickMarks(node,presented.defeated?[]:actor.gimmicks??[]);
@@ -728,7 +758,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (atbBar) atbBar.style.setProperty("--battle-stat", `${clampGauge(enemy.gauge)}%`);
   // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
-  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
+  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation), statStages: presentedStatStages(enemy, presentation) });
   syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
   syncChargeMark(node, presented.defeated ? undefined : enemy.charging);
   syncGimmickMarks(node,presented.defeated?[]:enemy.gimmicks??[]);
@@ -1818,6 +1848,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
   if (stateId.includes("wet")) return "wet";
   if (stateId.includes("oil")) return "oiled";
+  if (stateId.includes("toxic")) return "toxic";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -1825,7 +1856,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("paraly") || stateId.includes("bind")) return "paralysis";
   if (stateId.includes("blind") || stateId.includes("dark")) return "blind";
   if (stateId.includes("silence") || stateId.includes("mute")) return "silence";
-  if (stateId.includes("confuse") || stateId.includes("charm")) return "confuse";
+  if (stateId.includes("confus") || stateId.includes("charm")) return "confuse";
   if (stateId.includes("death") || stateId.includes("down") || stateId.includes("ko")) return "death";
   return "burst";
 }
@@ -1942,8 +1973,14 @@ export function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapsho
 function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   const cluster = document.createElement("span");
   cluster.className = "battle-status-icons";
+  cluster.dataset.hasStages = battler.statStages && !battler.defeated ? "true" : "false";
   const states = battler.stateIds.slice(0, 4).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
   const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
+  // 능력치 단계 알약(ATK↑2·SPE↓1): 쓰러진 배틀러는 단계를 보이지 않는다. 상태 알약 뒤에 붙고 같은 클러스터 안이라 스킨별 배치 규칙을 그대로 탄다.
+  const stagePills = battler.defeated ? [] : STAT_STAGE_KEYS.flatMap((stat) => {
+    const stage = battler.statStages?.[stat] ?? 0;
+    return stage === 0 ? [] : [{ stat, stage }];
+  });
   for (const entry of entries) {
     const node = document.createElement("span");
     node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
@@ -1954,6 +1991,18 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.statusName = entry.name;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
+    cluster.append(node);
+  }
+  for (const { stat, stage } of stagePills) {
+    const node = document.createElement("span");
+    node.className = `battle-stage-pill battle-stage-pill-${stage > 0 ? "up" : "down"}`;
+    node.dataset.testid = `battle-stage-${battler.id}-${stat}`;
+    node.dataset.stageStat = stat;
+    node.dataset.stage = String(stage);
+    const arrows = Math.abs(stage);
+    node.textContent = `${STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `${STAT_STAGE_LABELS[stat]} ${stage > 0 ? "+" : ""}${stage}단계`);
     cluster.append(node);
   }
   return cluster;

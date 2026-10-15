@@ -349,7 +349,7 @@ export function applyGen1FieldPoisonStep(project: Project, session: PlaySession)
 
   const poisonStateIds = new Set(
     project.database.states
-      .filter((state) => state.gen1MajorStatus === "poison")
+      .filter((state) => state.gen1MajorStatus === "poison" || state.gen1MajorStatus === "toxic")
       .map((state) => state.id),
   );
   const poisonedParty = session.monsterParty.flatMap((instanceId) => {

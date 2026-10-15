@@ -9,7 +9,7 @@ import type { ToolDefinition, ToolExecResult } from "./types";
 const checkGenreLock: ToolDefinition = {
   name: "check_genre_lock",
   description: "장르 칩셋 잠금 상태를 확인한다 — 잠금 여부·모드·허용 칩셋 목록, 허용 계열 밖 칩셋을 쓰는 맵(잠금 이후에 생긴 것 / 잠금 이전부터 있던 것을 나눠서)과 맵마다 가장 가까운 허용 칩셋 대안. "
-    + "몬스터 수집 게임을 만든 뒤·맵을 여럿 만든 뒤 마지막에 부른다. 이 도구는 읽기만 하며 맵을 고치지 않는다.",
+    + "몬스터 수집·연애 게임을 만든 뒤·맵을 여럿 만든 뒤 마지막에 부른다. 이 도구는 읽기만 하며 맵을 고치지 않는다.",
   mode: "read",
   domains: ["core", "map", "system"],
   parameters: { type: "object", properties: {}, additionalProperties: false },

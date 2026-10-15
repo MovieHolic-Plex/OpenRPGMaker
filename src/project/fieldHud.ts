@@ -1,7 +1,7 @@
 /** Serializable HUD authoring. No executable expressions or arbitrary CSS in project data. */
 export const FIELD_HUD_THEMES = { collector: "수집 · 여행", classic: "고전 JRPG", horror: "상징 · 호러", chase: "추격 · HUD 없음", hearts: "하트 · 모험", minimal: "고요한 탐험", farm: "생활 · 농장", survival: "생존 · 탐험", adventure: "액션 · 모험", party: "파티 RPG", legacy: "기존 HUD" } as const;
 export const HUD_KINDS = { gauge: "게이지", clock: "달력 · 시계", slots: "슬롯 모음", text: "정보 · 숫자", party: "파티", timers: "상태 타이머", image: "이미지" } as const;
-export const HUD_SOURCES = { hp: "체력", mp: "마력", energy: "생활 에너지", stamina: "액션 스태미나", gold: "소지금", variable: "프로젝트 변수", timer: "타이머", tools: "손 슬롯", inventory: "아이템 보유량", weather: "오늘 날씨", map: "현재 맵" } as const;
+export const HUD_SOURCES = { hp: "체력", mp: "마력", energy: "생활 에너지", stamina: "액션 스태미나", gold: "소지금", variable: "프로젝트 변수", timer: "타이머", tools: "손 슬롯", inventory: "아이템 보유량", weather: "오늘 날씨", map: "현재 맵", friendship: "호감(인물 하나·생략하면 가장 높은 사람)", socialSlots: "오늘 남은 대화 시간" } as const;
 export const HUD_SHAPES = { bar: "가로 막대", vertical: "세로 막대", hearts: "하트", ring: "원형", number: "숫자", petals: "꽃잎 · 생명" } as const;
 export const HUD_ANCHORS = { "top-left": "왼쪽 위", "top-center": "가운데 위", "top-right": "오른쪽 위", "middle-left": "왼쪽 중앙", "middle-center": "정중앙", "middle-right": "오른쪽 중앙", "bottom-left": "왼쪽 아래", "bottom-center": "가운데 아래", "bottom-right": "오른쪽 아래" } as const;
 export const HUD_CONDITIONS = { always: "항상", damaged: "최댓값 미만", low: "25% 이하", nonzero: "0보다 클 때", action: "액션 맵에서", switch: "스위치가 켜질 때", changed: "값 변경 후 3초" } as const;
@@ -38,7 +38,7 @@ export interface HudWidget {
   showValue: boolean;
   enabled: boolean; hideEmpty: boolean; autoAvoid: boolean;
   max: number; slots: number;
-  actorId?: string; variableId?: string; maxVariableId?: string; switchId?: string; timerId?: string; resourceId?: string;
+  actorId?: string; npcKey?: string; variableId?: string; maxVariableId?: string; switchId?: string; timerId?: string; resourceId?: string;
   itemIds: string[];
 }
 export interface FieldHudConfig {
@@ -66,7 +66,7 @@ export function normalizeHudWidget(value: unknown, index = 0): HudWidget {
     condition: choice(raw.condition, HUD_CONDITIONS, "always"),
     showValue: raw.showValue !== false, enabled: raw.enabled !== false, hideEmpty: raw.hideEmpty !== false, autoAvoid: raw.autoAvoid === true,
     max: number(raw.max, 100, 1, 999999999), slots: number(raw.slots, 8, 1, 10),
-    actorId: optional("actorId"), variableId: optional("variableId"), maxVariableId: optional("maxVariableId"), switchId: optional("switchId"), timerId: optional("timerId"), resourceId: optional("resourceId"),
+    actorId: optional("actorId"), npcKey: optional("npcKey"), variableId: optional("variableId"), maxVariableId: optional("maxVariableId"), switchId: optional("switchId"), timerId: optional("timerId"), resourceId: optional("resourceId"),
     itemIds: Array.isArray(raw.itemIds) ? [...new Set(raw.itemIds.filter((id): id is string => typeof id === "string" && id.length > 0 && id.length <= 160))].slice(0, 10) : [],
   };
 }

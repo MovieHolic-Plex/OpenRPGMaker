@@ -37,7 +37,7 @@ function checkUnlinkedLore(world: ProjectWorld, issues: LintIssue[]): void {
     issues.push({
       severity: "warning",
       code: "world-lore-unlinked",
-      message: `설정집 카드가 게임 개체와 연결되어 있지 않습니다: ${entity.id}(${entity.name})`,
+      message: `설정집 문서가 게임 개체와 연결되어 있지 않습니다: ${entity.id}(${entity.name})`,
     });
   }
 }
@@ -86,7 +86,7 @@ function checkGuidelineBodies(world: ProjectWorld, issues: LintIssue[]): void {
     issues.push({
       severity: "info",
       code: "world-guideline-body-missing",
-      message: `제작 노트 카드에 본문이 없습니다: ${entity.id}(${entity.name})`,
+      message: `제작 노트 문서에 본문이 없습니다: ${entity.id}(${entity.name})`,
     });
   }
 }
