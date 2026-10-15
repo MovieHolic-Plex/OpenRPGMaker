@@ -42,8 +42,8 @@ function trainerPicture(project: Project, id: string, bundledFile: 'front' | 'ba
 function trainerSheet(project: Project, id: string): TrainerSheet | undefined {
   const asset = project.assets.uploaded[id];
   if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, 'throw'), frames: 0 } : undefined;
-  if (asset.kind !== 'picture' || asset.meta.height !== 64 || asset.meta.width % 64 !== 0) return undefined;
-  const frames = asset.meta.width / 64;
+  if (asset.kind !== 'picture' || asset.meta.height !== 64 || (asset.meta.width ?? 0) % 64 !== 0) return undefined;
+  const frames = (asset.meta.width ?? 0) / 64;
   const url = resolveAssetResourceUrl(id, { project });
   return url && frames >= 2 && frames <= 8 ? { url, frames } : undefined;
 }
