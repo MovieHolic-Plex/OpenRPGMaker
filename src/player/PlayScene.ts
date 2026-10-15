@@ -91,6 +91,7 @@ import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransit
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
+import { updateMode7 } from "@/player/playSceneMode7";
 import { updateScreenDistortion } from "@/player/playSceneScreenDistortion";
 import { updateFieldStaging } from "@/player/playSceneFieldStaging";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
@@ -418,6 +419,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
     updateScreenDistortion(this);
+    updateMode7(this, deltaMs);
     updateFieldStaging(this);
     const tileView = runtimeCameraTileView(this.cameras.main);
     syncRuntimeTileWindow(this, tileView);
