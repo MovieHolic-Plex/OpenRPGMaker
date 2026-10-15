@@ -1,0 +1,13 @@
+{
+ "sheets": 1,
+ "chips": {
+  "gustchick": {
+   "sheet": 1,
+   "index": 0
+  },
+  "zaptoe": {
+   "sheet": 1,
+   "index": 1
+  }
+ }
+}
