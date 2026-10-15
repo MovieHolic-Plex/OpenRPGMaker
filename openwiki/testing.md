@@ -2154,3 +2154,5 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 `scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
 실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
 (진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
+- `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`) — 비행선 flightView:"mode7" 탑승·비행 화면(멀리 보기+지평선 원근+하늘). 크로미움은 `unshare -rn` 안에서. 같은 비행의 탑뷰 기준은 `QA_FLIGHT_VIEW=flat`. 프레임 시간은 rAF 간격으로 잰다(플랫 대비 평균 16.67ms 동일).
