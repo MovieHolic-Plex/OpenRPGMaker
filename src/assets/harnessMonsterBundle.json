@@ -1,7 +1,7 @@
 {
   "version": 1,
   "canvas": 112,
-  "fieldSheets": 1,
+  "fieldSheets": 2,
   "species": {
     "sparkit": {
       "campaignSpeciesId": "mx_species_coalbit",
@@ -111,6 +111,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 6
       }
     },
     "rootpig": {
@@ -126,6 +130,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 7
       }
     },
     "frondhare": {
@@ -141,6 +149,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 0
       }
     },
     "kilnclaw": {
@@ -156,6 +168,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 1
       }
     },
     "brookraft": {
@@ -171,6 +187,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 2
       }
     },
     "coralpin": {
@@ -186,6 +206,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 3
       }
     },
     "curlfin": {
@@ -201,6 +225,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 4
       }
     },
     "zaptoe": {
@@ -235,6 +263,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 5
       }
     },
     "gritnose": {
@@ -250,6 +282,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 6
       }
     }
   }

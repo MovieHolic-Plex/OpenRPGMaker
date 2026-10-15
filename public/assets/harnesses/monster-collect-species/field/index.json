@@ -1,5 +1,5 @@
 {
- "sheets": 1,
+ "sheets": 2,
  "chips": {
   "gustchick": {
    "sheet": 1,
@@ -24,6 +24,42 @@
   "pipbug": {
    "sheet": 1,
    "index": 5
+  },
+  "wickworm": {
+   "sheet": 1,
+   "index": 6
+  },
+  "rootpig": {
+   "sheet": 1,
+   "index": 7
+  },
+  "frondhare": {
+   "sheet": 2,
+   "index": 0
+  },
+  "kilnclaw": {
+   "sheet": 2,
+   "index": 1
+  },
+  "brookraft": {
+   "sheet": 2,
+   "index": 2
+  },
+  "coralpin": {
+   "sheet": 2,
+   "index": 3
+  },
+  "curlfin": {
+   "sheet": 2,
+   "index": 4
+  },
+  "pebblekid": {
+   "sheet": 2,
+   "index": 5
+  },
+  "gritnose": {
+   "sheet": 2,
+   "index": 6
   }
  }
 }
