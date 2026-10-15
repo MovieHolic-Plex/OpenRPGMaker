@@ -13,8 +13,15 @@ import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 const [projectArg, outArg, scenArg] = process.argv.slice(2);
 if (!projectArg) throw new Error("usage: poke-battle-diag.capture.mjs <project.json> <outDir> [scenarios]");
 process.env.VITE_CACHE_DIR ??= resolve(".vite-cache/poke-battle-diag");
-const projectJson = await readFile(resolve(projectArg), "utf8");
+let projectJson = await readFile(resolve(projectArg), "utf8");
 const project = JSON.parse(projectJson);
+if (process.env.TRAINER_ART) {
+  // 캡처 전용 임시 그림(Actor1 정수배 확대) — 커밋·배포 대상이 아니다. 트레이너 슬라이드 인 연출 검증용.
+  const art = JSON.parse(await readFile(resolve(process.env.TRAINER_ART), "utf8"));
+  for (const [id, a] of Object.entries(art)) project.assets.uploaded[id] = { id, name: id, kind: "picture", dataUrl: a.dataUrl, meta: { mime: "image/png", width: a.w, height: a.h } };
+  for (const troop of project.database.troops) if (troop.trainerBattle) troop.trainerSprite = { front: "tmp_tr_front", back: "tmp_tr_back", throw: "tmp_tr_throw", backThrow: "tmp_tr_backthrow" };
+  projectJson = JSON.stringify(project);
+}
 const out = resolve(outArg ?? "qa-runs/pbd/out");
 await mkdir(out, { recursive: true });
 const SCEN = (scenArg ?? "wild,catch,levelup,evolve,trainer,gym,lose").split(",");
