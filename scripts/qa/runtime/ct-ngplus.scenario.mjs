@@ -64,12 +64,14 @@ export default {
       { kind: "waitForPosition", mapId: START, x: SX, y: SY },
       { kind: "hold", dir: null, ms: 3500 },
     ], expect: { testidAbsent: ["title-screen", "ending-screen"] } },
-    { id: "ngplus-menu", note: "ESC → 파티: 주인공 L7(이월), 장은 1장(이야기 상태는 넘어가지 않는다)", ops: [
+    { id: "ngplus-chapter", note: "ESC → 메뉴 머리의 장은 1장(이야기 상태는 넘어가지 않는다)", ops: [
       { kind: "pressUntil", key: "Escape", testid: "main-menu", state: "present", maxPresses: 4, timeoutMs: 3_000 },
       { kind: "waitForVisible", testid: "status-menu-chapter" },
+    ], expect: { visibleText: { "status-menu-chapter": "1장 · 서기 1000년" } } },
+    { id: "ngplus-menu", note: "파티: 주인공 L7(이월)", ops: [
       key("ArrowDown", 3), key("Enter"), { kind: "waitForVisible", testid: "status-menu-party-row-0" },
     ], expect: {
-      visibleText: { "status-menu-chapter": "1장 · 서기 1000년", "status-menu-party-row-0": "L7" },
+      visibleText: { "status-menu-party-row-0": "L7" },
     }, shot: true },
   ],
 };
