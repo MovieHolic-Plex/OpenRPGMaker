@@ -43,6 +43,7 @@ import { analyzeCityForm, cityFormAdvice } from "./cityForm";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
+import { flatGroundIssues } from "./mapEmptiness";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
@@ -704,6 +705,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
     ...lintTilesetPalettes(project),
     ...verifyPlacedTiles(project),
+    ...flatGroundIssues(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const warnings = issues.filter((issue) => issue.severity === "warning").length;
