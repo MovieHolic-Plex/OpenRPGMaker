@@ -1,0 +1,1029 @@
+{
+ "about": "규칙 v8 front_prop 적대 시험: 위반 표본 144장을 front_prop 으로 거짓 선언. pure = 면제 종류와 같은 조건(종류 판정 3/4 이상이면 통과) 프로필 66893f5b3bb82932, humanOnly = 자동 통과 없이 보류 프로필 ee216f0de5822996.",
+ "counts": {
+  "A/fail": 65,
+  "A/pass": 17,
+  "A/refer": 2,
+  "B/fail": 4,
+  "B/pass": 1,
+  "B/refer": 2,
+  "C/fail": 20,
+  "C/pass": 1,
+  "D/fail": 13,
+  "D/pass": 3,
+  "U/fail": 12,
+  "U/pass": 4
+ },
+ "passPure": 26,
+ "passHumanOnly": 0,
+ "items": [
+  {
+   "name": "pairs__old-wardrobe",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__cake_display_case__w8-C",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__chopping_block__v5",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__altar_E__w21-G",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__pew__v5",
+   "tier": "A",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__pew_E2__w45-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__pew_E3__w45-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__pulpit__w32-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__votive_stand__v5",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__coffin__w73-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__column_dwarf__w51-A",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__column_marble__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__column_steel__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__column_stone__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__column_wood__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__armchair__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__barrel__w2-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__chair_E__v5",
+   "tier": "U",
+   "kindMatches": "0/8",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__chair_N__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__chair_S__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__chair_W__v5",
+   "tier": "U",
+   "kindMatches": "0/8",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__cradle__w29-F",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__sofa__v5",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__firewood_bundle__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__magitek_engine__w46-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__mine_cart__w2-C",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__powder_kegs__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__rune_stone__w45-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__stone_throne__w52-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__theater_seat__w10-C",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__hammock__w72-A",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__safe__w72-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__spear_rack__w70-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__hay_bale__w44-A",
+   "tier": "A",
+   "kindMatches": "2/4",
+   "pure": "refer",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__saddle_rack__w26-D",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__loom__w43-A",
+   "tier": "U",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__spiral_stair__v5",
+   "tier": "U",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "interior__slot_machine__w46-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__choir_stall__w45-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__fish_tank__w44-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__kitchen_range__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "interior__patient_bed__w74-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__scroll_shelf__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__scroll_shelf__B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__medicine_cabinet__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__medicine_cabinet__B",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__gong_frame__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "murim__weapon_rack__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_old-wardrobe",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_cake_display_case__w8-C",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_chopping_block__v5",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_altar_E__w21-G",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_pew__v5",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_pew_E2__w45-A",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_pew_E3__w45-A",
+   "tier": "A",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_pulpit__w32-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_votive_stand__v5",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_coffin__w73-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_column_dwarf__w51-A",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_column_marble__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_column_steel__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_column_stone__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_column_wood__w51-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_armchair__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_barrel__w2-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_chair_E__v5",
+   "tier": "U",
+   "kindMatches": "0/8",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_chair_N__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_chair_S__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_chair_W__v5",
+   "tier": "U",
+   "kindMatches": "0/8",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_cradle__w29-F",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_sofa__v5",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_firewood_bundle__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_magitek_engine__w46-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_mine_cart__w2-C",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_powder_kegs__w9-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_rune_stone__w45-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_stone_throne__w52-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_theater_seat__w10-C",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_hammock__w72-A",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_safe__w72-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_spear_rack__w70-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_hay_bale__w44-A",
+   "tier": "C",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_saddle_rack__w26-D",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_loom__w43-A",
+   "tier": "U",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_spiral_stair__v5",
+   "tier": "U",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__mir_slot_machine__w46-A",
+   "tier": "A",
+   "kindMatches": "1/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_choir_stall__w45-A",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_fish_tank__w44-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_kitchen_range__v5",
+   "tier": "U",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_patient_bed__w74-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_scroll_shelf__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_scroll_shelf__B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_medicine_cabinet__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_medicine_cabinet__B",
+   "tier": "C",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_gong_frame__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__mir_weapon_rack__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_wardrobe__w42-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_wardrobe__w42-A",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_dresser__w71-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_dresser__w71-A",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_bookshelf_1w__w41-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_bookshelf_1w__w41-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_stove__w44-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_stove__w44-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_nightstand__w8-C",
+   "tier": "A",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__thin_nightstand__w8-C",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_keg_rack__w48-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_keg_rack__w48-A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_tea_table__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_tea_table__A",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_tea_table__B",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__thin_tea_table__B",
+   "tier": "D",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__flat_water_trough__w4-A",
+   "tier": "A",
+   "kindMatches": "2/4",
+   "pure": "refer",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__thin_water_trough__w4-A",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_feed_trough__w4-B",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__thin_feed_trough__w4-B",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_coal_bin__w10-B",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__thin_coal_bin__w10-B",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__flat_timber_prop__w53-B",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__thin_timber_prop__w53-B",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__realbad_desk_2x1",
+   "tier": "B",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__realbad_work_2x1",
+   "tier": "B",
+   "kindMatches": "2/4",
+   "pure": "refer",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__realbad_grindstone",
+   "tier": "B",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__realbad_spinning_wheel",
+   "tier": "B",
+   "kindMatches": "2/4",
+   "pure": "refer",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "holdout__realbad_confessional",
+   "tier": "B",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__realbad_cupboard",
+   "tier": "B",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "holdout__realbad_sword_rack",
+   "tier": "B",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__b24_campus",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__b23_campus",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__b31_modern_city",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__b76_modern_city",
+   "tier": "A",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c26_modern_city",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c62_modern_city",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c70_sf",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c44_desert",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c6_snow",
+   "tier": "A",
+   "kindMatches": "3/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh__c4_campus",
+   "tier": "D",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh__c18_modern_city",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh__c53_modern_city",
+   "tier": "D",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh2__b44_modern_city",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh2__b11_campus",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh2__b46_modern_city",
+   "tier": "A",
+   "kindMatches": "4/4",
+   "pure": "pass",
+   "humanOnly": "refer"
+  },
+  {
+   "name": "fresh2__c43_modern_city",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  },
+  {
+   "name": "fresh2__c7_steampunk",
+   "tier": "D",
+   "kindMatches": "0/4",
+   "pure": "fail",
+   "humanOnly": "fail"
+  }
+ ]
+}

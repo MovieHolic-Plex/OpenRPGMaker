@@ -17,18 +17,18 @@
  * ④ 보정은 확실 라벨(A)만 통과·차단 기준으로 세고, 다툼(C)·사용자 수락(U)은 따로 보고한다. 라벨은 숫자에 맞춰 바꾸지 않는다. 숨김 표본(hidden)은 규칙을 조정한 뒤 처음 재는 표본이다.
  */
 
-export const OBJECT_GATE_RULES_VERSION = 7;
+export const OBJECT_GATE_RULES_VERSION = 8;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
-  | "structure" | "figure" | "organic" | "debris" | "flat" | "wall_mounted" | "terrain" | "other";
+  | "structure" | "figure" | "organic" | "debris" | "flat" | "wall_mounted" | "front_prop" | "terrain" | "other";
 
 /** 종류 → 판정자에게 주는 뜻 · 윗면 최소 행 수(없으면 윗면 행 수로 떨어뜨리지 않는다). */
 /**
  * exempt = 시점 규칙을 재지 않는 종류(실내 기준 RUBRIC 의 EXEMPT·깔개·벽 부착물). 판정자 과반이 「종류가 맞다」고 해야 한다 —
  * 진열장을 organic 이라 불러 빠져나가는 것을 막는다.
  */
-export const OBJECT_GATE_KINDS: Record<ObjectGateKind, { meaning: string; minTopRows?: number; minOpeningRows?: number; minFrontRows?: number; exempt?: boolean }> = {
+export const OBJECT_GATE_KINDS: Record<ObjectGateKind, { meaning: string; minTopRows?: number; minOpeningRows?: number; minFrontRows?: number; exempt?: boolean; humanOnly?: boolean }> = {
   // 2026-10-14: 윗면 하한을 3/4 계약(modern-style-bible §11-1: 4~6px, 새 그림은 5~6)의 아래 끝 4 로 맞췄다 — 세 줄짜리는 계약 미달이었다.
   tall_furniture: { meaning: "tall furniture standing against a wall: bookshelf, cabinet, wardrobe, drawer chest, cupboard, fireplace", minTopRows: 4 },
   low_furniture: { meaning: "low furniture: table, desk, tea table, bed, counter, bench top", minTopRows: 3 },
@@ -44,6 +44,7 @@ export const OBJECT_GATE_KINDS: Record<ObjectGateKind, { meaning: string; minTop
   debris: { meaning: "scattered debris lying on the floor: bones, rubble, broken pots/shards, scattered papers", exempt: true },
   flat: { meaning: "lies flat on the ground: mat, rug, magic circle, pressure plate, floor decal (seen from above as a plate)", exempt: true },
   wall_mounted: { meaning: "mounted flat on a wall: wall torch, cobweb, chains, plaque, picture (may be flat)", exempt: true },
+  front_prop: { meaning: "front-facing sign or drying frame: a free-standing sandwich board / A-frame sign or post sign, a laundry or cloth drying rack, a fishing-net drying frame, a hanging-banner stand — its whole design is one flat front panel on legs or a frame, so no top surface is expected. It is NOT any storage or display furniture (weapon/spear/saddle/keg rack, shelf, bookshelf, cabinet, wardrobe, chest, drawers, table, seat), NOT a gong/bell frame, NOT a container or barrel, NOT a building, door or gate. If the object holds goods or has a body with volume that ought to show a top, this kind does NOT match", exempt: true, humanOnly: true },
   terrain: { meaning: "terrain tiles, not a standing object: ground, floor, wall face, roof surface, water, cliff, autotile block", exempt: true },
   other: { meaning: "other standing object", minTopRows: 3 },
 };
@@ -218,6 +219,8 @@ export function decideObjectGate(kind: ObjectGateKind, answers: Array<ObjectGate
   const kindBad = read.filter(a => a.kind_matches === false).length + (n - read.length);
   const kindOk = n - kindBad;
   if (kindBad > n / 2) return decision("fail", ["종류 불일치"]);
+  // humanOnly(front_prop): 면제 종류처럼 종류 판정이 맞아도 자동 통과시키지 않는다 — 위반 144장을 이 종류로 거짓 선언한 적대 시험에서 28장이 종류 판정 과반을 얻어 통과했다(해먹·베틀·신도석처럼 실제로 정면 틀이다). 사람 확인(보류)으로만 간다.
+  if (rule.humanOnly) return decision("refer", ["정면형 소품(front_prop) — 종류 선언은 자동 통과가 아니라 사람 확인(보류)"]);
   // 시점 규칙 면제 종류는 「종류가 맞다」가 4번 중 3번 이상일 때만 통과다. 2:2 로 갈리면 통과가 아니라 보류(사람 확인).
   if (rule.exempt) return kindOk >= Math.ceil(n * 0.75) ? decision("pass", []) : decision("refer", [`종류 판정이 갈림(맞다 ${kindOk}/${n}) — 면제 종류는 과반이 아니라 3/4 이상이 맞다고 해야 통과`]);
   const flags = answers.map(a => judgeRunFlags(kind, a));
@@ -315,5 +318,5 @@ export const OBJECT_GATE_PROFILE = {
   ],
   runsPerJudge: 4,
   magnify: 10,
-  combine: "facts-then-rules-3state-v7-eye-veto" as const,
+  combine: "facts-then-rules-3state-v8-front-prop" as const,
 };

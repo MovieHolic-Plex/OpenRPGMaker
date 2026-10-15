@@ -78,10 +78,11 @@ export function gateProfile(): Record<string, unknown> {
 export const gateProfileHash = () => objectGateProfileHash(gateProfile());
 
 /** 답 캐시 키 — 프롬프트에 영향 주는 것(판정자·지시문·출력 형식·기준 그림·확대 배율)만 묶는다. 합치기 규칙·하한만 바뀌면 캐시를 그대로 쓴다(--offline 재계산). */
+// front_prop(규칙 v8)의 뜻은 그 종류로 선언한 그림의 사용자 문구에만 들어가므로 다른 종류의 프롬프트 해시에서 뺀다(그 종류의 답 캐시는 -fp 로 따로).
 export const gatePromptHash = (half: 'view34' | 'style' | 'eye' = 'view34') => {
   const p = gateProfile() as Record<string, unknown>;
   if (half === 'eye') return objectGateProfileHash({ half, judges: p.judges, eyeRubric: p.eyeRubric, eyeOutputFormat: p.eyeOutputFormat, view34Pairs: p.view34Pairs, magnify: p.magnify });
   return objectGateProfileHash(half === 'view34'
-    ? { half, judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, outputFormat: p.outputFormat, view34Guide: p.view34Guide, view34Pairs: p.view34Pairs, magnify: p.magnify, kinds: Object.fromEntries(Object.entries(p.kinds as Record<string, { meaning: string }>).map(([k, v]) => [k, v.meaning])) }
+    ? { half, judges: p.judges, factsVersion: p.factsVersion, rubric: p.rubric, outputFormat: p.outputFormat, view34Guide: p.view34Guide, view34Pairs: p.view34Pairs, magnify: p.magnify, kinds: Object.fromEntries(Object.entries(p.kinds as Record<string, { meaning: string }>).filter(([k]) => k !== 'front_prop').map(([k, v]) => [k, v.meaning])) }
     : { half, judges: p.judges, factsVersion: p.factsVersion, styleRubric: p.styleRubric, styleOutputFormat: p.styleOutputFormat, styleKinds: p.styleKinds, styleRefs: p.styleRefs });
 };
