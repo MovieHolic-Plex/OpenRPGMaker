@@ -1792,6 +1792,11 @@ export interface SystemRecords {
   fonts?: import("@/project/fontRegistry").SystemFontConfig;
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
   genre?: GenrePackId;
+  /**
+   * 장르 잠금(옵트인). 조수·도구가 새 맵·칩셋에 허용 계열 밖 칩셋을 쓰면 거부한다 — 판정은 project/genreLock.ts 하나.
+   * 없으면 아무 동작도 바뀌지 않는다(저장 바이트 불변). 사용자의 손 편집은 막지 않는다.
+   */
+  genreLock?: import("../genreLock").GenreLock;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
   /** 배우별 리미트 게이지(0~100). 생략 = 없음. */

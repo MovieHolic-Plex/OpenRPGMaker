@@ -5,6 +5,7 @@ import { validateFieldHud } from "./shapeFieldHud";
 import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId } from "@/project/genreLock";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import {
@@ -128,6 +129,14 @@ export function validateSystem(value: unknown): void {
   if (system.genre !== undefined) {
     requireString("system.genre", system.genre);
     assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);
+  }
+  if (system.genreLock !== undefined) {
+    const genreLock = requireRecord("system.genreLock", system.genreLock);
+    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "grandfatheredMapIds"]);
+    assert(isGenreLockPresetId(genreLock.preset), `system.genreLock.preset is not a supported lock preset: ${String(genreLock.preset)}`);
+    assert(genreLock.mode === "enforce" || genreLock.mode === "warn", "system.genreLock.mode must be enforce or warn.");
+    for (const [index, family] of requireArray("system.genreLock.allowedFamilies", genreLock.allowedFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFamilies[${index}]`, family);
+    if (genreLock.grandfatheredMapIds !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredMapIds", genreLock.grandfatheredMapIds).entries()) requireNonBlankString(`system.genreLock.grandfatheredMapIds[${index}]`, id);
   }
   if (system.titleScreen !== undefined) {
     const titleScreen = requireRecord("system.titleScreen", system.titleScreen);
