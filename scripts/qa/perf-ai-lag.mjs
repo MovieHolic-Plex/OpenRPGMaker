@@ -234,7 +234,13 @@ async function stopProfile(cdp, name) {
   const top = (m, n) => [...m].filter(([k]) => !/^\((idle|program|root)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, n).map(([k, v]) => v.toFixed(0).padStart(7) + "ms " + k);
   const idle = [...self].filter(([k]) => /^\(idle\)/.test(k)).reduce((a, [, v]) => a + v, 0);
   const all = [...self].reduce((a, [, v]) => a + v, 0);
-  writeFileSync(`${out}/${label}-${name}-profile.txt`, `busy ${(all - idle).toFixed(0)}ms of ${all.toFixed(0)}ms (idle ${idle.toFixed(0)}ms)\nSELF\n${top(self, 40).join("\n")}\n\nTOTAL\n${top(total, 70).join("\n")}\n`);
+  // 자기 시간 상위 12개가 어느 호출 경로(바로 위 4단계)에서 왔는지 — 「누가 불렀나」를 바로 읽는다.
+  const chain = (id, depth) => { const names = []; for (let cur = parent.get(id), i = 0; cur !== undefined && i < depth; cur = parent.get(cur), i += 1) names.push(keyOf(byId.get(cur)).replace(/ src\//, " ")); return names.join(" <- "); };
+  const selfTop = [...self].filter(([k]) => !/^\((idle|program|root)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, 12).map(([k]) => k);
+  const paths = new Map();
+  profile.samples.forEach((id, i) => { const k = keyOf(byId.get(id)); if (!selfTop.includes(k)) return; const key = k + "  <=  " + chain(id, 4); paths.set(key, (paths.get(key) ?? 0) + (profile.timeDeltas[i] ?? 0) / 1000); });
+  const callers = [...paths].sort((a, b) => b[1] - a[1]).slice(0, 30).map(([k, v]) => v.toFixed(0).padStart(7) + "ms " + k);
+  writeFileSync(`${out}/${label}-${name}-profile.txt`, `busy ${(all - idle).toFixed(0)}ms of ${all.toFixed(0)}ms (idle ${idle.toFixed(0)}ms)\nSELF\n${top(self, 40).join("\n")}\n\nCALLERS (self 상위 함수 <- 호출 경로)\n${callers.join("\n")}\n\nTOTAL\n${top(total, 70).join("\n")}\n`);
   return { busyMs: +(all - idle).toFixed(0), wallMs: +all.toFixed(0), selfTop: top(self, 6) };
 }
 
