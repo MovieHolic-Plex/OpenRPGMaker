@@ -7,6 +7,22 @@
   - after boot, it conditionally registers PWA support and can open a classic event-editor capture path for special debug params.
   - Shared tile references and the remaining catalog normally load after the shell. First-generation interview requests use `projectInterviewBootPreparation.ts` to join those same loads and apply reference refresh **before** save and immutable AI-base capture. The remaining catalog starts inside that preparation when needed, avoiding a wait on `bootApp()` returning. Ordinary editing still boots with only the default catalog; stale-base rejection is unchanged.
 
+- **부팅 스플래시와 계측 (2026-10-15):** 편집기 첫 화면은 `index.html` 의 `#oprn-boot-loader`(`data-testid="boot-loader"`)다 —
+  인라인 CSS·마크업만으로 첫 프레임에 그려지고(외부 자원·이미지 없음, 로고는 인라인 SVG), 단계 표시(4칸 이산: 앱 → 공용 자료 → 프로젝트 → 도구)·
+  10초/60초 안내(지연 CSS 애니메이션이라 JS 없이 뜬다)·실패 화면(「다시 시도」 = `<a href="">`)·언어 분기(ko/en/ja/zh,
+  `navigator.language` 규칙은 `src/i18n/locale.ts` 와 같다)는 `public/boot-splash.js`(외부 클래식 스크립트 — Electron `app://` CSP 가 인라인
+  스크립트를 막고, 번들 로드가 실패해도 먼저 돌고 있어야 실패를 말할 수 있다)가 맡는다. 번들은 `src/app/bootLoader.ts` 의 `reportBootStage`·
+  `failBootLoader`·`dismissBootLoader` 로 `window.__oprnBootSplash` 에 사실만 넘긴다(퍼센트 없음). 편집기 i18n 계층에 의존하지 않는다 —
+  `data-i18n-skip` 으로 DOM 번역기를 비킨다(화면 글자 역참조 금지 계약, `openwiki/i18n.md`). 기존 `#oprn-boot-loader`·`boot-loader` testid·
+  `data-leaving` 은 그대로라 e2e/캡처 스크립트의 «로더가 사라질 때까지 대기» 가 유효하다.
+  계측: `src/util/bootMarks.ts` 의 `bootMark` 가 `performance.mark("oprn:boot:<이름>")` 을 새긴다(html · js-eval-start · js-ready · prepare · shared ·
+  project · project-read · project-normalized · project-loaded · editor · shell-mounted · settled · failed-*). 콘솔에서 `__oprnBoot()`(요약)·
+  `__oprnBoot(true)`(표). 스플래시 표시와 같은 신호다.
+  첫 페인트 경로의 두 함정(실측): ① vite 가 head 에 심는 스타일시트(main.css 2.1MB)는 렌더 차단이라 `scripts/lib/deferStylesheets.mjs` 가 빌드 산출물에서
+  body 끝으로 옮긴다(지연 모듈 스크립트는 차단 스타일시트가 다 올 때까지 실행되지 않으므로 FOUC 없음). ② 호스트가 head 끝에 심던 `bridge.js` 는
+  modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
+  Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
+
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
   - `bootApp()` loads the project store, seeds editor state from `startMapId`, renders the topbar, and enters edit mode.
