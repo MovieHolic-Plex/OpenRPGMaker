@@ -819,6 +819,18 @@ export interface BattleEventPageRecord {
   commands: Command[];
 }
 
+/** 트레이너 전투 인물 그림 계약(에메랄드 전투 소개·볼 던지기). 값은 모두 업로드 그림(`assets.uploaded`) id 다.
+ *  - front: 상대 정면 64x64(또는 64x96 옛 세로 초상) 그림 한 장.
+ *  - back: 내 뒷모습 64x64 한 장. 생략하면 `oprn_emerald_trainer_hero_back`.
+ *  - throw / backThrow: 볼 던지기 프레임을 가로로 이은 시트. 프레임 64x64, 폭 = 64 x N(2~8), 높이 64. 왼쪽부터 재생하고
+ *    마지막 프레임이 볼을 놓는 순간이다. 생략하면 던지는 동작 없이 정지 자세로 미끄러져 나간다. */
+export interface TroopTrainerSprite {
+  front: string;
+  back?: string;
+  throw?: string;
+  backThrow?: string;
+}
+
 export interface TroopRecord {
   id: TroopId;
   name: string;
@@ -828,6 +840,8 @@ export interface TroopRecord {
   uncapturable?: boolean;
   /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
   trainerBattle?: boolean;
+  /** 트레이너 전투의 인물 그림. 없으면 필드 이벤트 그래픽에서 추정(옛 방식), 그것도 없으면 슬라이드 인 연출 없이 시작한다. */
+  trainerSprite?: TroopTrainerSprite;
   previewBackgroundResourceId?: string;
   /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
   backdropAnimation?: BattleBackdropAnimation;

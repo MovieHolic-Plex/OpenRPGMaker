@@ -831,7 +831,7 @@ export function createBattleSequencer(
           playSendOut();
           return;
         }
-        hooks.onDirectorState({ step: "intro", lines: [foeSendOut], activeActorRecordId: snapshot.activeActorId });
+        hooks.onDirectorState({ step: "intro", trainerSendOut: "foe", lines: [foeSendOut], activeActorRecordId: snapshot.activeActorId });
         hooks.onSyncView();
         delay(playSendOut, BATTLE_INTRO_MS);
       }, BATTLE_INTRO_MS);
