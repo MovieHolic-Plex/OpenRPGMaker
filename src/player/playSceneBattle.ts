@@ -139,6 +139,7 @@ export async function playBattle(
       // battleProcessing 스텝을 만든 맵 이벤트. 트룹 배틀 이벤트의 selfSwitch 소유 이벤트가 된다.
       // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
       ownerEventId: step.ownerEventId,
+      ...(step.enemyLevel !== undefined ? { enemyLevel: step.enemyLevel } : {}),
       sessionState: {
         messageWindowSettings: session.messageWindowSettings,
         switches: scene.session.switches,
@@ -158,6 +159,7 @@ export async function playBattle(
         actorTechPoints: scene.session.actorTechPoints,
         actorApProgress: scene.session.actorApProgress,
         learnedViaAp: scene.session.learnedViaAp,
+        actorRageEnemyIds: scene.session.actorRageEnemyIds,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         difficultyId: scene.session.difficultyId,

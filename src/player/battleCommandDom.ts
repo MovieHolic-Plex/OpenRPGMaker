@@ -23,6 +23,7 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
+import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -39,6 +40,8 @@ export interface BattleCommandPanelOptions {
   setDirectorState(state: BattleDirectorState): void;
   render(): void;
   runActorCommand(command: ActorCommand): void;
+  /** 팀 교대 전투(system.battleTeams) 전용 — 설정이 없으면 호출되지 않는다. */
+  runTeamSwap?(targetTeamId: string): void;
   beginTargetCommand(command: TargetedActorCommand): void;
   confirmTargetSelection(targetId: string): void;
   cancelTargetSelection?(): void;
@@ -196,13 +199,14 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     : undefined;
   for (const command of battleCommandsForActor(project, actor?.recordId, {
     classId: actor?.classId,
-    includeSwitch: snapshot.reserveActors.length > 0,
+    includeSwitch: snapshot.reserveActors.length > 0 && (!snapshot.teams || snapshot.switchCandidateActorIds.length > 0),
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
     overrideCommandIds,
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
+  if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
   return menu;
 }
 

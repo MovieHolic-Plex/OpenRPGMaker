@@ -117,6 +117,12 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
 세이브(`PlaySession`): `actorApProgress {배우:{스킬:AP}}`·`learnedViaAp {배우:[스킬]}` — `saveSlots.ts` 의 저장·복원·`isActorSkillPpRecord`/`isActorSkillIdsRecord` 검증, 없으면 필드 자체를 쓰지 않는다. 레벨업 보너스는 기존 `actorParamBonuses` 를 쓴다. 전투 규칙: `runtime-battle.md` 「FF6 마석 성장」.
 
+## FF6 전투 특수 효과 — 선택 필드 (2026-10-15)
+
+모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 스킬 `effect.kind` 에 `sketch`·`rage`(`enemyIds?`, 정규화에서 중복 제거·최대 24)·`shuffleParty`·`forceSwitch`,
+상태 `runtimeEffects.invertHealing`·`grantSkillIds`(최대 12)·`forcedAction: "rage"`. 세이브(`PlaySession`): `actorRageEnemyIds {배우:[몬스터 id]}`(최대 64) — `saveSlots.ts` 저장·복원·`isActorSkillIdsRecord` 검증, 없으면 키를 쓰지 않는다.
+전투 중 상태(`MutableBattler.rageEnemyId`)는 저장하지 않는다. 규칙: `runtime-battle.md` 「FF6 전투 특수 효과」.
+
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,
@@ -1629,3 +1635,13 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 업로드 참조는 같은 라이브러리에 있어야 하며, 사용자 복사본 ID는 덮어쓰지 않는다.
 72×128 걷기 원본은 native 하네스에서 무손실 RM2000 288×256 시트로 패킹하고, 프레임 수는 96이다.
 그림만 공용 등록하면 48×40 행동의 발 기준점이 유실되므로 설치기는 정의도 함께 게시한다.
+
+## 필드 기술(HM) 선택 필드 (2026-10-15)
+
+- `SkillRecord.unforgettable?: boolean` — 몬스터의 기술 교체 후보(`playerStatusMenuDetails` 대기 기술 행)와 `replacePendingMonsterSkill` 에서 제외. 생략=기존 동작. `normalizeSkillRecord` 가 `true` 만 보존.
+- `MonsterSpeciesRecord.machineSkillIds?: SkillId[]` — 기술머신·비전머신(`learnedSkillId` 아이템, 몬스터 파티 게임)으로 가르칠 수 있는 기술. 비면 제한 없음. `normalizeMonsterSpeciesRecord`가 중복·빈 값을 거르고 `io/references.ts` 가 스킬 id 존재를 검사.
+- 저장 슬롯(`saveSlotValidation`)에는 새 필드가 없다 — 몬스터 인스턴스의 `skillIds`·`pendingSkillIds` 만 바뀐다. 두 필드 모두 선택이라 이주 불필요.
+
+## 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
+
+project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이션 없음, 안 쓰면 직렬화에 나타나지 않는다). `EncounterTableEntry.levelMin?/levelMax?`(1~99 정수, `shapeEventFields.ts` 검증), `EncounterConditions.terrainId?`(`database.terrains[].id` 참조 — `references.ts` 가 끊긴 참조를 보고), `GameOverSettings.goldLossPercent?`(0~100 정수), `RewardPolicy.expShare?/trainerPrizePerLevel?`, `SystemRecords.captureShakesVariableId?`(변수 id). 저장 슬롯(`saveSlotValidation`)은 이 값들을 읽지 않는다 — 전부 프로젝트 정의 쪽이고 세션 상태는 기존 `session.gold`·`session.variables` 만 바뀐다. 지형 기록 `terrain_grass` 는 기본 기록 4개(물·모래·눈·돌) 뒤 5번째에 `ensureGrassTerrainRecord` 가 덧붙이며(기본값으로 새 프로젝트에 넣지 않는다) 태그 5 칸이 없는 칩셋에는 영향이 없다.

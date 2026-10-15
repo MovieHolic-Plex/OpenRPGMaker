@@ -8,6 +8,8 @@ import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
 import { FIELD_ENEMY_TOOLS } from './fieldEnemyTools';
+import { FIELD_OBSTACLE_TOOLS } from './fieldObstacleTools';
+import { TRAINER_TOOLS } from './trainerTools';
 import { GAME_SYSTEM_AUTHORING_TOOLS } from './gameSystemAuthoringTools';
 import { OPENING_STORYBOOK_TOOLS } from './openingStorybookTools';
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
@@ -352,6 +354,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_BATCH_TOOLS, 'database'),
   ...withDomain(NPC_PATROL_TOOLS, 'event'),
   ...withDomain(FIELD_ENEMY_TOOLS, 'event'),
+  ...withDomain(FIELD_OBSTACLE_TOOLS, 'event'),
+  ...withDomain(TRAINER_TOOLS, 'event'),
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),

@@ -2105,6 +2105,12 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 `assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.
 
+## FF6 수정 A 헤드리스 프로브 (2026-10-15)
+
+`node node_modules/vite-node/dist/cli.mjs --script scripts/qa/ff6-fix-a-growth-probe.mts`(마석 AP·레벨업 보너스·부위 도구·전투당 1회)와
+`scripts/qa/ff6-fix-a-effects-probe.mts`(좀비·스케치·폭주·트랜스·대열 섞기·강제 교대·블리츠·검기·룬·분석·적 반격). 실제 도구(`runTool`)로 저작 → 실제 전투 런타임 → 세션 정산(`applyBattleRewardsToSession`) → 세이브 왕복.
+한 줄이 `{id, ok, detail}` JSON 이고 끝에 `DONE`. 감사 기준선은 `scripts/qa/ff6-audit-probe.mts`(MISSING 항목이 있던 원본). vitest·gates 는 돌리지 않았다.
+
 ## 몬스터 여정 영상 (2026-10-07)
 
 `JOURNEY_VIDEO=1 node scripts/qa/runtime/monster-journey.mjs <play.json> <out>`(netns 안에서 — `unshare -rn sh -c "ip link set lo up && …"`)는
@@ -2131,3 +2137,10 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 ③ 스킬 칸은 2열 명령창이라 커서 이동이 `ArrowRight` ④ ct-field 의 턱 타일 6 은 beodeul_city 에서 상위 전용 칩으로 라우팅돼 1층에 안 칠해진다 → 741
 ⑤ retro 스킨은 적 좌표를 구역(x≥34, y 92..142)으로 접으므로 moveEnemy(30,30) 의 렌더 값은 10.625% / 57.49999999999999% 다(부동소수 표기 그대로 비교).
 ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructureGuard.ts`)는 코드 실행이 아니라 순수 함수이며 `adventureCompletionProblems` 가 부른다.
+
+
+## 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+
+`scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
+실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
+(진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)

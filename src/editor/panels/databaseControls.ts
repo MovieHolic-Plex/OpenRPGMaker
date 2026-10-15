@@ -558,6 +558,14 @@ function literalLabel(value: string): string {
       return "적 기술 습득(청마법)";
     case "randomSkillFrom":
       return "무작위 기술(흉내·춤·슬롯)";
+    case "sketch":
+      return "스케치(적 기술 그려 쓰기)";
+    case "rage":
+      return "폭주(몬스터 모습으로 자동 행동)";
+    case "shuffleParty":
+      return "대열 섞기(적 기술용)";
+    case "forceSwitch":
+      return "강제 교대(적 기술용)";
     case "hp":
       return "HP";
     case "mp":

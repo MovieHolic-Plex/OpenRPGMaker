@@ -280,6 +280,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         },
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
+        onUseMonsterFieldSkill: useMonsterFieldSkillFromMenu,
         onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
         onRejectPendingMonsterSkill: rejectMonsterSkillFromMenu,
         onSelectLifeLedgerTab: (tab) => {
@@ -632,6 +633,18 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+  }
+
+  /** 몬스터 기술 목록에서 필드 기술을 고르면 쓰고 메뉴를 닫는다(배우의 onSelectSkill 필드 능력과 같은 흐름). */
+  function useMonsterFieldSkillFromMenu(instanceId: string, skillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const used = scene.useFieldAbility(instanceId, skillId);
+    if (used.ok) {
+      options.closeMenu();
+      return;
+    }
+    options.emitMenuJuice("menu-invalid", renderMenu(used.message, "monsters"));
   }
 
   function replaceMonsterSkillFromMenu(instanceId: string, pendingSkillId: string, replacedSkillId: string): void {

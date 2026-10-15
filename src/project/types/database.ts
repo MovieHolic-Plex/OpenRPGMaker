@@ -161,6 +161,19 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+
+/**
+ * FF6 식 팀 교대 전투(2026-10-15). 팀 = 교대 묶음 — 한 번에 한 팀만 싸우고 나머지는 대기한다.
+ * free = 들어온 팀 게이지가 가득(바로 행동) · gauge = 게이지 0 에서 시작(기본) · turn = 적이 한 번 행동할 때까지 쉼.
+ */
+export type TeamSwapCost = "free" | "gauge" | "turn";
+
+/** 저작된 전투 팀. 구성원은 전투 파티에 있는 배우만 쓰인다. */
+export interface BattleTeamRecord {
+  id: string;
+  name: string;
+  actorIds: ActorId[];
+}
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
@@ -261,6 +274,11 @@ export interface SkillRecord {
    * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
    */
   fieldCommonEventId?: string;
+  /**
+   * 잊을 수 없는 기술(포켓몬 비전머신 HM): 몬스터가 새 기술을 배우려고 칸이 모자랄 때 이 기술은 교체 후보에서 빠진다.
+   * 생략 = 잊을 수 있다(기존 동작). 배우 기술에는 영향이 없다.
+   */
+  unforgettable?: boolean;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -383,7 +401,18 @@ export type SkillEffect =
   /** 청마법 습득(라젠): 대상 적의 learnable 기술 중 모르는 것 하나를 배운다. 이 기술을 아는 배우는 learnable 기술에 맞아도 배운다. */
   | { kind: "learnEnemySkill" }
   /** 흉내·춤·슬롯: skillIds 중 하나를 무작위로 골라 그 기술을 대신 쓴다. */
-  | { kind: "randomSkillFrom"; skillIds: SkillId[] };
+  | { kind: "randomSkillFrom"; skillIds: SkillId[] }
+  /** 스케치(렐름): 대상 적이 가진 기술 중 하나를 무작위로 그려 시전자가 대신 쓴다(hitRate 가 곧 성공률). 스케치·폭주류 기술은 고르지 않는다. */
+  | { kind: "sketch" }
+  /**
+   * 폭주(가우): 시전자가 몬스터 하나의 모습이 되어 그 몬스터의 행동 표(enemyActions)를 따라 매 차례 자동으로 행동한다(전투 끝까지).
+   * 몬스터는 enemyIds 가 있으면 그중, 없으면 시전자가 승리 때마다 모은 폭주 목록(session.actorRageEnemyIds)에서 무작위로 고른다.
+   */
+  | { kind: "rage"; enemyIds?: string[] }
+  /** 대열 섞기: 대상 편 활성 배우의 자리와 열(앞/뒤)을 무작위로 뒤섞는다. 적 기술이 쓰면 플레이어 파티를 섞는다. */
+  | { kind: "shuffleParty" }
+  /** 강제 교대: 대상 활성 배우를 예비 배우 중 살아 있는 한 명으로 바꾼다(예비가 없으면 실패). */
+  | { kind: "forceSwitch" };
 
 /** 입력 커맨드 기술: 전투 UI 가 keys 를 순서대로 요구하고, timeLimitMs 안에 성공하면 successMultiplier, 실패하면 failMultiplier 로 위력이 바뀐다. */
 export interface SkillInputSequence {
@@ -704,6 +733,11 @@ export interface MonsterSpeciesRecord {
   expCurve?: ActorExperienceCurve;
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
+  /**
+   * 기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술. 생략하거나 비면 제한이 없다(기존 동작 —
+   * 아이템 하나가 모든 종에게 통한다). 값이 있으면 이 목록의 기술만 이 종에게 가르칠 수 있다(예: 파도타기는 물 종만).
+   */
+  machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
 }
 
@@ -858,6 +892,8 @@ export interface TroopRecord {
   backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
+  /** 이 전투만의 팀 교대 비용. 생략 = 시스템 설정. */
+  teamSwapCost?: TeamSwapCost;
   battleEventPages: BattleEventPageRecord[];
   /**
    * 전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 **다음**, 결과별로 한 번 실행하는 명령.
@@ -968,8 +1004,8 @@ export interface StateRuntimeEffects {
   physicalDefenseMultiplier?: number;
   /** 실드: 마력(mind) 계열 피해에만 곱하는 방어 배율. */
   magicDefenseMultiplier?: number;
-  /** 버서크: 명령 없이 무작위 상대를 통상 공격한다. */
-  forcedAction?: "attackRandom";
+  /** 버서크(attackRandom): 명령 없이 무작위 상대를 통상 공격한다. 폭주(rage): 폭주 중인 몬스터(배틀러 rageEnemyId)의 행동 표대로 자동 행동한다. */
+  forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
@@ -990,6 +1026,13 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
+  invertHealing?: boolean;
+  /**
+   * 트랜스·변신 상태가 주는 기술: 이 상태인 동안만 전투 명령 목록에 더해지고 상태가 풀리면 사라진다(장비의 grantsSkillIds 와 같은 방식).
+   * 리미트 게이지(system.limitGauge)가 찬 뒤 limitSkill 기술로 이 상태를 걸면 FF6 트랜스(테라)가 된다. transformResourceId·배율과 같이 쓴다.
+   */
+  grantSkillIds?: string[];
   /**
    * 변신: 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 전투 그림 id(예 "party-pixel-monster4-5" 9칸 시트,
    * 걷기 칩 전투 시트), 적은 몬스터 그림 id. 능력치는 같은 상태의 배율 칸으로 바꾼다. 풀리면 원래 그림으로 돌아온다.
@@ -1731,7 +1774,13 @@ export interface SystemRecords {
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
   battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
+  /** 팀 교대 전투(2~4팀). 생략 = 기존 한 파티 전투. 한 번에 한 팀만 싸운다(교대 묶음). */
+  battleTeams?: BattleTeamRecord[];
+  /** 팀 교대 비용 기본값. 팀이 둘 이상일 때만 뜻이 있고 생략하면 "gauge". */
+  teamSwapCost?: TeamSwapCost;
   rewardPolicy?: RewardPolicy;
+  /** 포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 이 변수에 기록한다 — 이벤트가 읽어 「아깝다!」 같은 분기를 만든다. 생략 = 기록 안 함. */
+  captureShakesVariableId?: string;
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
@@ -1953,4 +2002,8 @@ export interface MonsterCareConfig {
 export interface RewardPolicy {
   participationOnly?: boolean;
   levelGapPenalty?: boolean;
+  /** 몬스터 파티 전투: 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다(경험치 나누기). 생략 = 나선 몬스터만. */
+  expShare?: boolean;
+  /** 트레이너 전 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식). 생략·0 = 적 레코드의 rewards.gold 합(저작 고정값). */
+  trainerPrizePerLevel?: number;
 }
