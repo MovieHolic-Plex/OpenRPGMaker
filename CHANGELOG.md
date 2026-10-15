@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.228.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record follower chips and four-layer tile labels on event surfaces (`ca7d2c1`)
+
 ## 0.228.0 — 2026-10-15
 
 ### 기능
