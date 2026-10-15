@@ -145,6 +145,8 @@ export type SaveSnapshot = {
     readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
     readonly variables: Record<string, number>;
     readonly timers: Record<string, number>;
+    /** 흐르던 카운트다운(timerId → true). 없는 옛 세이브는 모두 멈춘 채 불러온다. */
+    readonly timerActive?: Record<string, boolean>;
     readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly itemUseCharges?: Record<string, number>;
@@ -397,6 +399,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
+      ...(session.timerActive && Object.values(session.timerActive).some(Boolean) ? { timerActive: structuredClone(session.timerActive) } : {}),
       gold: normalizeEconomyValue(session.gold),
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
@@ -651,6 +654,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
+  if (snapshot.session.timerActive) session.timerActive = structuredClone(snapshot.session.timerActive);
   session.gold = normalizeEconomyValue(snapshot.session.gold);
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   const normalizedItems = normalizeItemTransitionState({
@@ -1156,6 +1160,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
+      timerActive: isBooleanRecord(session.timerActive) ? session.timerActive : undefined,
       gold: normalizeEconomyValue(session.gold),
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),

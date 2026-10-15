@@ -62,6 +62,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   resize_map: build("맵 크기 바꾸기", "map"),
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
+  derive_map_variant: build("시대별 맵 파생", "map"),
   author_beodeul_town: build("마을 짓기", "house"),
   author_dungeon: build("던전 짓기", "map"),
   author_beodeul_dungeon: build("던전 짓기", "map"),
@@ -98,6 +99,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
   create_time_gate: people("시간의 문 잇기", "link"),
+  tile_change_effect: people("타일 바꾸기 장치", "flag"),
   place_vehicle: build("탈것 세우기", "map"),
   // ── 보기·검사 ──
   // 웹 검색은 프로젝트 조회가 아니라 바깥 검색이다 — inspect(도구 그룹·돋보기 아이콘)으로 둔다.

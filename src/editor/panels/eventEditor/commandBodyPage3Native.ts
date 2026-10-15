@@ -71,9 +71,11 @@ const WEATHER_SEGMENTS = [
 ] as const satisfies readonly SegmentOption<WeatherKind>[];
 
 const LAYER_SEGMENTS = [
-  { value: "lower", key: "lower", label: "바닥" },
-  { value: "upper", key: "upper", label: "상위" },
-] as const satisfies readonly SegmentOption<"lower" | "upper">[];
+  { value: "lower", key: "lower", label: "바닥 1층" },
+  { value: "lower2", key: "lower2", label: "장식 2층" },
+  { value: "upper", key: "upper", label: "상위 3층" },
+  { value: "upper2", key: "upper2", label: "장식 4층" },
+] as const satisfies readonly SegmentOption<"lower" | "upper" | "lower2" | "upper2">[];
 
 const LIGHTING_PRESETS = [
   { id: "day", label: "낮", ambient: 0, color: "#000000", transitionMs: 0 },

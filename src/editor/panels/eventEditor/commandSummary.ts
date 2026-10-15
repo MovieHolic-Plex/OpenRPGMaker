@@ -550,7 +550,9 @@ function weatherLabel(kind: Extract<Command, { kind: "setWeather" }>["weather"])
   }
 }
 
-function tileLayerSummary(layer: "lower" | "upper"): string {
+function tileLayerSummary(layer: "lower" | "upper" | "lower2" | "upper2"): string {
+  if (layer === "upper2") return "상위 장식(4층)";
+  if (layer === "lower2") return "바닥 장식(2층)";
   return layer === "upper" ? "상위" : "바닥";
 }
 

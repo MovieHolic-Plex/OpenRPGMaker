@@ -351,7 +351,12 @@ export interface PlaySession {
   /** 주인공 통행 차단 행의 런타임 오버라이드. 생략이면 `system.playerPassRows`, 그것도 없으면 몸 높이 전체. */
   playerPassRows?: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
-  mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
+  mapOverrides: Record<MapId, MapTileOverrides>;
+  /**
+   * 카운트다운 타이머 중 지금 흐르는 것(timerId → 진행 중). 값(`timers`)만 저장하면 불러온 뒤 시계가 멈춘다 —
+   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.applySession). 없으면 모두 멈춘 상태.
+   */
+  timerActive?: Record<string, boolean>;
   farmPlots?: FarmPlots;
   // farmPlots 성장 틱이 적용된 마지막 달력 날짜. 시계가 날짜를 넘길 때마다 여기까지의 차이만큼만 성장시킨다.
   farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
@@ -824,18 +829,22 @@ function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): nu
   }
 }
 
-// 맵 타일 오버라이드(changeTile 런타임 반영).
+// 맵 타일 오버라이드(changeTile 런타임 반영). lower=1층, upper=3층, lower2=2층, upper2=4층(2·4층은 쓰일 때만 생긴다).
+export type MapOverrideLayer = "lower" | "upper" | "lower2" | "upper2";
+export type MapTileOverrides = { lower: Record<number, number>; upper: Record<number, number>; lower2?: Record<number, number>; upper2?: Record<number, number> };
+
 export function setMapTileOverride(
   session: PlaySession,
   mapId: MapId,
-  layer: "lower" | "upper",
+  layer: MapOverrideLayer,
   index: number,
   tile: number
 ): void {
   if (!session.mapOverrides[mapId]) {
     session.mapOverrides[mapId] = { lower: {}, upper: {} };
   }
-  session.mapOverrides[mapId][layer][index] = tile;
+  const overrides = session.mapOverrides[mapId];
+  (overrides[layer] ??= {})[index] = tile;
 }
 export function getMapTile(
   session: PlaySession,

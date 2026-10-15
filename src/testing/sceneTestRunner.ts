@@ -248,6 +248,10 @@ export type SceneExpectStep = {
   cutsceneLocked?: boolean;
   mapId?: string;
   gameTimeAt?: Partial<GameTime>;
+  /** 카운트다운 남은 초: {timer1: 0} 또는 {timerId,seconds}. 흐르는 중이면 올림한 값이다. */
+  timerRemaining?: { timerId: string; seconds: number } | Record<string, number>;
+  /** 지금 흐르는 중이어야 하는 타이머 id(들). */
+  timerRunning?: string | readonly string[];
   timePhase?: TimePhase;
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
@@ -391,6 +395,8 @@ interface RunnerState {
   lightingTransition: LightingAmbientTransition | null;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
+  /** 흐르는 카운트다운의 남은 ms(timerId → ms). 런타임 playSceneTimers 와 같은 규칙이다. */
+  readonly timerRemainingMs: Map<string, number>;
   activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
   inCommonAuto: boolean;
@@ -465,6 +471,8 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   bgmPlaying: sceneText, messageShown: sceneBoolean, gameOver: sceneBoolean,
   endingReached: sceneText, cutsceneLocked: sceneBoolean, mapId: sceneText,
   gameTimeAt: value => sceneShape(value, { minute: sceneCount, hour: sceneCount, day: sceneCount, season: isSeason, year: sceneCount }),
+  timerRemaining: value => sceneNumbers(value) || sceneShape(value, { timerId: sceneText, seconds: sceneNumber }, ["timerId", "seconds"]),
+  timerRunning: sceneStringOrList,
   timePhase: isTimePhase,
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
@@ -545,6 +553,7 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   followerAt: "{name,x,y}", cameraAt: "{cx,cy,tolerance?}", lightingAmbient: "숫자 또는 {value,tolerance?}",
   lightAt: "{x,y,expected?}", animationPlaying: "true/false", bgmPlaying: "BGM 리소스 id 문자열",
   pictureVisible: "그림 id 문자열 또는 {id,resourceId?}", gameTimeAt: "{minute?,hour?,day?,season?,year?}",
+  timerRemaining: "{timer1: 초} 또는 {timerId,seconds}", timerRunning: "타이머 id(timer1|timer2) 또는 id 배열",
   cropStageAt: "{x,y,stage,mapId?}",
 };
 
@@ -688,6 +697,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     lightingTransition: null,
     timeFixedAccumulatorMs: 0,
     timeMinuteAccumulator: 0,
+    timerRemainingMs: restoredTimerRemaining(session),
     activeAnimations: [],
     autoStartedKeys: new Set(),
     inCommonAuto: false,
@@ -1408,11 +1418,14 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         syncFollowCamera(state);
         step = interp.resume(undefined);
         break;
+      case "timer":
+        applyTimerForRunner(state, step);
+        step = interp.resume(undefined);
+        break;
       case "spawnEvent":
       case "removeEvent":
       case "vehicle":
       case "setEventGraphicPattern":
-      case "timer":
       case "moveEvent":
       case "waitForAllMovement":
       case "stopAllMovement":
@@ -1686,6 +1699,7 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     if (timeFailure) return timeFailure;
     advanceCamera(state, delta);
     advanceLighting(state, delta);
+    advanceTimersForRunner(state, delta);
     advanceAnimations(state, delta);
     resumeHeldAnimationIfReady(state);
     advanceFieldSpawnsForRunner(state, delta);
@@ -1693,6 +1707,58 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     if (state.runtimeFailure) return state.runtimeFailure;
   }
   return null;
+}
+
+/** 저장에서 되살린 세션이면 흐르던 타이머의 남은 시간을 장면 타이머처럼 다시 짠다. */
+function restoredTimerRemaining(session: PlaySession): Map<string, number> {
+  const remaining = new Map<string, number>();
+  for (const [id, active] of Object.entries(session.timerActive ?? {})) {
+    if (active && (session.timers[id] ?? 0) > 0) remaining.set(id, (session.timers[id] ?? 0) * 1000);
+  }
+  return remaining;
+}
+
+function timerSeconds(value: number | undefined): number {
+  return Math.max(0, Math.floor(Number.isFinite(value) ? (value as number) : 0));
+}
+
+/** timer 명령(set/start/stop). 런타임 playSceneTimers.applyTimerStep 과 같다 — 헤드리스가 건너뛰면 카운트다운을 시험할 수 없다. */
+function applyTimerForRunner(state: RunnerState, step: Extract<StepResult, { kind: "timer" }>): void {
+  const id = step.timerId ?? "timer1";
+  const session = state.session;
+  const running = state.timerRemainingMs.get(id);
+  const current = running !== undefined ? Math.ceil(running / 1000) : timerSeconds(session.timers[id]);
+  if (step.action === "set") {
+    session.timers[id] = timerSeconds(step.seconds);
+    state.timerRemainingMs.delete(id);
+  } else if (step.action === "start") {
+    const seconds = timerSeconds(step.seconds ?? current);
+    session.timers[id] = seconds;
+    if (seconds > 0) state.timerRemainingMs.set(id, seconds * 1000);
+    else state.timerRemainingMs.delete(id);
+  } else {
+    session.timers[id] = current;
+    state.timerRemainingMs.delete(id);
+  }
+  syncTimerActive(state);
+}
+
+function syncTimerActive(state: RunnerState): void {
+  const active: Record<string, boolean> = {};
+  for (const id of state.timerRemainingMs.keys()) active[id] = true;
+  if (Object.keys(active).length > 0) state.session.timerActive = active;
+  else delete state.session.timerActive;
+}
+
+function advanceTimersForRunner(state: RunnerState, deltaMs: number): void {
+  if (state.timerRemainingMs.size === 0) return;
+  for (const [id, remainingMs] of [...state.timerRemainingMs.entries()]) {
+    const next = Math.max(0, remainingMs - deltaMs);
+    state.session.timers[id] = timerSeconds(Math.ceil(next / 1000));
+    if (next === 0) state.timerRemainingMs.delete(id);
+    else state.timerRemainingMs.set(id, next);
+  }
+  syncTimerActive(state);
 }
 
 function advanceGameTimeByRealDelta(state: RunnerState, deltaMs: number): string | null {
@@ -2095,6 +2161,18 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.gameTimeAt) {
     const timeFailure = expectGameTimeAt(state, step.gameTimeAt);
     if (timeFailure) return timeFailure;
+  }
+  if (step.timerRemaining) {
+    const expected: Record<string, number> = "timerId" in step.timerRemaining && typeof step.timerRemaining.timerId === "string"
+      ? { [step.timerRemaining.timerId]: Number((step.timerRemaining as { seconds: number }).seconds) }
+      : (step.timerRemaining as Record<string, number>);
+    for (const [id, seconds] of Object.entries(expected)) {
+      const actual = state.session.timers[id] ?? 0;
+      if (actual !== seconds) return `타이머 ${id}: 기대 ${seconds}초, 실제 ${actual}초`;
+    }
+  }
+  for (const id of toStringList(step.timerRunning)) {
+    if (!state.timerRemainingMs.has(id)) return `타이머 ${id}: 기대 흐르는 중, 실제 멈춤(남은 ${state.session.timers[id] ?? 0}초)`;
   }
   if (step.timePhase !== undefined) {
     const actual = timePhaseFor(state.session.gameTime);

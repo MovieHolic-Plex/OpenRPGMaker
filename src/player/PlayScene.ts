@@ -1,4 +1,5 @@
 import { setCharacterBaseOrigin } from "./characterOrigin";
+import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
 import { syncTerrainWater } from "./terrainWater";
 import { prepareFieldAbility } from "@/player/fieldAbility";
@@ -695,7 +696,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();
-    this.runtimeTimers.clear();
+    // 불러온 세션의 카운트다운을 되살린다 — 비우기만 하면 저장 때 흐르던 타이머가 멈춘 채 남았다.
+    restoreRuntimeTimers(this);
     this.moving = false;
     this.centerCamera();
     // 인게임 로드: 이전 오디오 정지 후 저장된 BGM/BGS 재개.

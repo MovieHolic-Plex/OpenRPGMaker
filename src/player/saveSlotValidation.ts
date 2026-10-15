@@ -452,7 +452,12 @@ export function parseMapOverrides(value: Record<string, unknown>): PlaySession["
     if (!isRecord(layers)) continue;
     const lower = isNumberRecord(layers.lower) ? layers.lower : {};
     const upper = isNumberRecord(layers.upper) ? layers.upper : {};
-    parsed[mapId] = { lower, upper };
+    parsed[mapId] = {
+      lower,
+      upper,
+      ...(isNumberRecord(layers.lower2) ? { lower2: layers.lower2 } : {}),
+      ...(isNumberRecord(layers.upper2) ? { upper2: layers.upper2 } : {}),
+    };
   }
   return parsed;
 }
