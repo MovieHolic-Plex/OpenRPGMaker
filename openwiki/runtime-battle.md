@@ -1350,6 +1350,17 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
 
+## CT 감사 후속 — 연계기 해금·합체 능력치·Active/Wait 설정·필드 위 배치 (2026-10-15)
+
+- **연계기 해금** `SkillRecord.comboRequires [{actorId, skillId}]`: 그 배우가 그 기술을 **배운 상태**여야 메뉴에 열린다(`comboLockedBy`·`comboSkillIdsFor(…, party)`는 못 채운 연계기를 숨기고, `battleActorSkillFailure` 는 `comboLocked` 로 거절한다). 판정 참가자 `BattleComboParticipant.skillIds` 는 장비 부여 기술까지 합친다. 값이 비면 조건 없음(옛 프로젝트 불변).
+- **합체 능력치** `SkillRecord.comboCombinedStats:true`: 피해·치유 계산 동안만 시전자의 공격력·마력을 연계 참가자 전원 합으로 바꾼다(`applySkillHit` 래퍼, 끝나면 원복). 기술 위력은 낮게 잡는다. **`comboSwitchId`**: 연계기가 발동하면 전투 이벤트 상태의 스위치가 켜진다(세션으로 되돌려 쓰여 이후 이야기 분기). 타임라인 엔트리에 `comboActorIds` 가 실려 표시 계층이 참가자 전원에게 모션을 줄 수 있다(합체 모션 자체는 아직 없다 — 참가자는 선다).
+- **Active/Wait** 필드 메뉴 「대기 ON/OFF」는 이제 실제로 읽힌다: `PlayerPreferences.atbMode`(장치 설정, 세이브 밖) > `system.atbMode`(저작) > wait. `playSceneBattle` 이 `createBattleRuntime({atbMode})` 로 넘기고 런타임 `snapshot().atbMode` 가 전투 DOM 의 `data-battle-atb-mode`·메뉴 중 시간 진행을 정한다. 다음 전투부터 적용된다.
+- **필드 위 전투 배치** `onFieldEnemyPoint`: 트룹 `members[].x/y` 가 모두 있으면 무게중심을 심볼 발밑에 두고 나머지를 24단위=한 칸으로 환산해 저작 배치대로 세운다(없으면 한 칸 간격 가로줄). 아군은 주인공·동료 스프라이트 자리가 정본이고, 동료가 겹치거나 모자라면 주인공 등 뒤로 엇갈려 선다(`onFieldPartyPoint`).
+- **걷기 칩이 없는 종**(박쥐·늑대 …)도 `place_field_enemy` 심볼이 된다: 전투 도트 그림(`generated-enemy-*`)을 정지 그림으로 쓴다(다른 그림으로 대체하지 않는다, 걷기 애니메이션 없음).
+- **필드 배경(`battleBackdrop:"field"`)** 도 스냅샷 전에 주인공·동료·시비 건 적 스프라이트를 투명하게 한다(`hideOnFieldSprites`) — 안 그러면 같은 캐릭터가 배틀러와 필드 그림에 두 번 보인다.
+- `simulate_battle {useSkills:true}`: 아군이 자동 전투 AI(기술·회복·연계기)로 행동하고 `data.skillUses` 에 기술별 횟수가 나온다. 기본은 통상 공격+회복약.
+- 검증: `scripts/qa/runtime/ct-*.scenario.mjs`(ct-vehicle 제외)가 다시 돈다 — 원인은 `vite-node/vite-node.mjs`(v6 에서 `dist/cli.mjs` 로 이동), 투명 심볼 그림, 스킬 칸 커서 방향, retro 스킨의 적 좌표 접힘(x≥34·y 92..142)이었다.
+
 ## 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
 
 전부 **system 에서 켤 때만** 동작하고 값이 있을 때만 저장한다(정규화가 기본값·꺼짐을 생략). 옛 프로젝트는 스냅샷에 게이지 필드조차 없다.
@@ -1389,6 +1400,23 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   `upsert_equipment` 가 모르는 slot 이면 이 도구를 안내한다.
 - 저작: 장비 탭 「마석 성장」 카드(`databaseEquipmentEsperFields.ts`)·적 탭 「마석 AP」·스킬 카드 「전투당 1회」. AI: `upsert_equipment`(apGrants·apRate·levelUpBonus, 모르는 스킬/키는 거절)·`upsert_enemy.rewards.ap`·`upsert_skill.oncePerBattle`·`upsert_equipment_slot`. 능력 색인 레시피 `esper-growth`.
 - 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-growth-probe.mts`(실제 도구 → 전투 → 세션 정산 → 세이브 왕복).
+
+## 팀 교대 전투 (2026-10-15, FF6 수정 A)
+
+**팀 = 교대 묶음이다. 한 번에 한 팀만 싸우고 나머지는 대기한다 — 동시 행동은 없다**(사용자 결정 옵션 A). 설정이 없으면 아무것도 달라지지 않는다.
+
+- **저작:** `system.battleTeams: [{id,name,actorIds}]`(2~4팀, 한 배우는 한 팀만; `project/battleTeamModel.ts` 가 정규화), `system.teamSwapCost` / `TroopRecord.teamSwapCost` = `free | gauge | turn`
+  (기본 `gauge`, 트룹이 시스템을 덮는다). 팀이 구성원 있는 2개 미만이면 팀 전투가 아니다. 팀에 없는 파티원은 첫 팀에 붙는다. 저장 변경 없음(전투 중 상태는 저장하지 않는다).
+- **런타임(`battle/runtime.ts`, 순수 규칙은 `battle/battleTeams.ts`):** 시작 활성 팀 = 첫 전투원이 속한 팀. `switchCandidateActors` 는 **같은 팀** 대기 구성원만 — 다른 팀은 `performTeamSwap({kind:"teamSwap",targetTeamId})` 로만 들어온다.
+  `ActorCommand` 합집합에는 넣지 않았다(대상·피해가 없는 팀 단위 명령이라 연출 `commandTarget`/`commandLine` 대상이 아니다) — `BattleRuntime.performTeamSwap?` 별도 입구이며 타임라인에는 기존 `switch` 한 줄(「전열을 교체했다.」)로 흐른다.
+- **비용:** `free` = 들어온 팀 게이지 100(바로 행동) · `gauge` = 게이지 0(나간 팀 게이지는 어느 비용이든 유지하지 않는다) · `turn` = 게이지 0 + 적이 한 번 행동할 때까지 충전 정지(`teamResting`; `performEnemyTurn` 이 푼다).
+  교대는 명령을 고르던 배우의 행동 슬롯을 쓴다(gauge 흐름). **strict**: 교대가 이 라운드 전체를 쓰고 물러난 팀의 다른 명령은 버려진다, 교대 뒤 적만 행동한다 — free·gauge 는 같고 turn 은 다음 라운드도 아군이 쉰다.
+- **전멸 순환:** 활성 팀의 모든 구성원(대기 포함)이 쓰러지거나 행동 불가가 되면 `resolveOutcome` 끝에서 다음 살아 있는 팀이 자동으로 들어온다(`gauge`, free 는 free). **패배는 모든 팀이 쓰러졌을 때만**(`actors.every(...)` 는 원래 전원 기준이라 불변).
+- **스냅샷:** 팀 전투일 때만 `teams[{id,name,actorIds,active,canSwapIn,alive}]`·`activeTeamId`·`teamSwapCost`. `reserveActors` 에는 다른 팀도 들어 있다(보상 정산이 전 파티를 본다).
+- **화면:** `player/battleTeamSwapDom.ts` 가 루트 명령 메뉴에 팀별 「○○ 교대」 버튼(`actor-team-swap-<teamId>`)을 더한다. `battleCommandDom.ts` 는 import 1줄·`append` 1줄·`includeSwitch` 조건 1줄만 바뀌었다. `battleDom.ts` 의 `runTeamSwap` 이 시퀀서로 잇는다.
+- **도구·편집기:** `set_project_settings` `battle.teams`/`battle.teamSwapCost`(모르는 키·겹침·1팀·없는 배우 거절, `[]` = 해제, 경고: 팀 없는 파티원·파티 없는 팀·strict), `upsert_troop.teamSwapCost`, 시스템 탭 「팀 교대 전투」 카드(`databaseBattleTeamsSection.ts`)·적 그룹 「팀 교대 비용」. 능력 색인 `battle-teams`.
+- **한계:** 팀별 맵 분할 이동은 별개(이벤트 `storeParty`/`recallParty`). 교대 연출은 한 줄 문장뿐(그림 필요 없음). 몬스터 파티 전투·gen1 은 팀 전투를 쓰지 않는다.
+- 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-teams-probe.mts`(도구 거절 4 · 한 팀만 싸움 · 같은 팀 교체 · gauge/free/turn 비용 · 전멸 순환→전 팀 전멸에서만 패배 · strict · 팀 없는 프로젝트 불변).
 
 ## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15, 작업자 A)
 

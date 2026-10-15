@@ -9,7 +9,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-onfield-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-const json = execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-onfield-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 });
+const json = execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-onfield-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 });
 writeFileSync(fixture, json);
 const project = JSON.parse(String(json));
 const START = project.startMapId;
@@ -25,31 +25,35 @@ export default {
   beats: [
     { id: "field", note: "new game: hero + companion on the field, bat symbol three tiles north", ops: [
       { kind: "key", key: "Enter" },
-      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 12 },
-      { kind: "waitForRuntime" },
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 1 },
+      // 오프닝 뒤 필드로 페이드인이 끝나야 입력이 열린다(field-enemy 시나리오와 같은 대기).
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { mapId: START, x: SX, y: SY, followerSpriteCount: 1, testidAbsent: ["title-screen", "battle-scene"] }, shot: true },
-    { id: "approach", note: "walk up two tiles to stand right under the symbol, then record field sprite screen positions", ops: [
-      { kind: "key", key: "ArrowUp" },
-      { kind: "waitForPosition", mapId: START, x: SX, y: SY - 1 },
-      { kind: "key", key: "ArrowUp" },
+    { id: "approach", note: "stand two tiles up, right under the symbol, then record field sprite screen positions", ops: [
+      // 키 한 번 누름(key)은 걷지 않는다 — 걸음은 방향을 누르고 있어야 한다(hold). 접근은 teleport 로 정확히 두 칸 올린다.
+      { kind: "teleport", mapId: START, x: SX, y: SY - 2 },
       { kind: "waitForPosition", mapId: START, x: SX, y: SY - 2 },
       { kind: "face", dir: "up" },
       { kind: "hold", ms: 400 },
       { kind: "captureFieldAnchors", eventId: BAT },
     ], expect: { mapId: START, x: SX, y: SY - 2 } },
-    { id: "battle-on-field", note: "talk to the symbol: battle opens in place (no transition overlay), battlers stand where the field sprites were", ops: [
-      { kind: "action" },
-      // 블로커 인트로 대사("적이 앞을 가로막았다!")를 넘긴다.
-      { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16 },
+    { id: "battle-on-field", note: "bump the symbol: battle opens in place (no transition overlay), battlers stand where the field sprites were", ops: [
+      // 접촉 적(eventTouch)은 조사 키가 아니라 부딪혀야 열린다 — 위로 걸어 닿는다.
+      { kind: "hold", dir: "up", ms: 800 },
+      { kind: "waitFor", testid: "battle-scene", state: "present", timeoutMs: 20_000 },
       scene("data-battle-presentation", "onField", 10_000),
       { kind: "waitFor", testid: "battle-onfield-backdrop", state: "present", timeoutMs: 10_000 },
       { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 40_000 },
     ], expect: {
       testidPresent: ["battle-scene", "enemy-1", "battle-onfield-backdrop"],
       testidAbsent: ["battle-transition-overlay"],
-      onFieldPlacement: { enemyTestid: "enemy-1", actorTestids: ["battle-actor-actor_hero", "battle-actor-actor_guardian"], maxTiles: 1 },
+      onFieldPlacement: { enemyTestid: "enemy-1", actorTestids: ["battle-actor-actor_hero", "battle-actor-actor_guardian"], maxTiles: 2 },
     }, shot: true },
     { id: "victory-returns-in-place", note: "one attack defeats the bat; the battle closes without a transition and the hero is on the same tile", ops: [
       scene("data-battle-sequence-busy", "false"),

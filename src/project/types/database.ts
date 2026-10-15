@@ -161,6 +161,19 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+
+/**
+ * FF6 식 팀 교대 전투(2026-10-15). 팀 = 교대 묶음 — 한 번에 한 팀만 싸우고 나머지는 대기한다.
+ * free = 들어온 팀 게이지가 가득(바로 행동) · gauge = 게이지 0 에서 시작(기본) · turn = 적이 한 번 행동할 때까지 쉼.
+ */
+export type TeamSwapCost = "free" | "gauge" | "turn";
+
+/** 저작된 전투 팀. 구성원은 전투 파티에 있는 배우만 쓰인다. */
+export interface BattleTeamRecord {
+  id: string;
+  name: string;
+  actorIds: ActorId[];
+}
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
@@ -261,6 +274,11 @@ export interface SkillRecord {
    * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
    */
   fieldCommonEventId?: string;
+  /**
+   * 잊을 수 없는 기술(포켓몬 비전머신 HM): 몬스터가 새 기술을 배우려고 칸이 모자랄 때 이 기술은 교체 후보에서 빠진다.
+   * 생략 = 잊을 수 있다(기존 동작). 배우 기술에는 영향이 없다.
+   */
+  unforgettable?: boolean;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -298,6 +316,15 @@ export interface SkillRecord {
   actionSkill?: ActionSkillProfile;
   /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
   comboActorIds?: ActorId[];
+  /**
+   * 연계기 해금 조건(크로노 트리거식): 각 항목의 배우가 그 기술을 **배운 상태**여야 연계기가 메뉴에 열린다
+   * (예: 개구리가 「베기」, 마법사가 「불꽃」을 알아야 합체기). 비우면 조건 없음(comboActorIds 만 맞으면 열림).
+   */
+  comboRequires?: { actorId: ActorId; skillId: SkillId }[];
+  /** true 면 피해·치유 계산의 공격력·마력이 연계 참가자 전원의 합이다(시전자 한 명의 능력치가 아니라). 기술 위력은 그에 맞춰 낮게 잡는다. */
+  comboCombinedStats?: boolean;
+  /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
+  comboSwitchId?: string;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -706,6 +733,11 @@ export interface MonsterSpeciesRecord {
   expCurve?: ActorExperienceCurve;
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
+  /**
+   * 기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술. 생략하거나 비면 제한이 없다(기존 동작 —
+   * 아이템 하나가 모든 종에게 통한다). 값이 있으면 이 목록의 기술만 이 종에게 가르칠 수 있다(예: 파도타기는 물 종만).
+   */
+  machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
 }
 
@@ -860,6 +892,8 @@ export interface TroopRecord {
   backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
+  /** 이 전투만의 팀 교대 비용. 생략 = 시스템 설정. */
+  teamSwapCost?: TeamSwapCost;
   battleEventPages: BattleEventPageRecord[];
   /**
    * 전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 **다음**, 결과별로 한 번 실행하는 명령.
@@ -1740,7 +1774,13 @@ export interface SystemRecords {
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
   battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
+  /** 팀 교대 전투(2~4팀). 생략 = 기존 한 파티 전투. 한 번에 한 팀만 싸운다(교대 묶음). */
+  battleTeams?: BattleTeamRecord[];
+  /** 팀 교대 비용 기본값. 팀이 둘 이상일 때만 뜻이 있고 생략하면 "gauge". */
+  teamSwapCost?: TeamSwapCost;
   rewardPolicy?: RewardPolicy;
+  /** 포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 이 변수에 기록한다 — 이벤트가 읽어 「아깝다!」 같은 분기를 만든다. 생략 = 기록 안 함. */
+  captureShakesVariableId?: string;
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
@@ -1810,6 +1850,11 @@ export interface SystemRecords {
   fonts?: import("@/project/fontRegistry").SystemFontConfig;
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
   genre?: GenrePackId;
+  /**
+   * 장르 잠금(옵트인). 조수·도구가 새 맵·칩셋에 허용 계열 밖 칩셋을 쓰면 거부한다 — 판정은 project/genreLock.ts 하나.
+   * 없으면 아무 동작도 바뀌지 않는다(저장 바이트 불변). 사용자의 손 편집은 막지 않는다.
+   */
+  genreLock?: import("../genreLock").GenreLock;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
   /** 배우별 리미트 게이지(0~100). 생략 = 없음. */
@@ -1962,4 +2007,8 @@ export interface MonsterCareConfig {
 export interface RewardPolicy {
   participationOnly?: boolean;
   levelGapPenalty?: boolean;
+  /** 몬스터 파티 전투: 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다(경험치 나누기). 생략 = 나선 몬스터만. */
+  expShare?: boolean;
+  /** 트레이너 전 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식). 생략·0 = 적 레코드의 rewards.gold 합(저작 고정값). */
+  trainerPrizePerLevel?: number;
 }

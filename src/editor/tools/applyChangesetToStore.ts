@@ -28,6 +28,7 @@ import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivit
 import type { ProjectChangeAnnotation } from "@/project/store";
 import { mapCellApply, toolMapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
+import { GENRE_LOCK_RELEASED_MARKER } from "@/project/genreLock";
 import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
 /**
@@ -57,6 +58,8 @@ function applyAnnotation(
     }
   }
   if (toolNames.length > 0) fields.push({ path: "tools", after: toolNames.join(", ") });
+  // 장르 잠금 해제는 감사 로그에 따로 남긴다 — 조수가 말없이 잠금을 풀면 「왜 다른 칩셋이 깔렸지」를 못 짚는다.
+  if (diff?.warnings.some((message) => message.startsWith(GENRE_LOCK_RELEASED_MARKER))) fields.push({ path: "system.genreLock", before: "enforce", after: "released" });
   return { label, origin, ...(fields.length > 0 ? { fields } : {}), ...(reason ? { reason } : {}) };
 }
 

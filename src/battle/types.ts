@@ -100,6 +100,16 @@ export type ActorCommand =
   | { readonly kind: "switch"; readonly targetActorId: ActorId }
   | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
+/**
+ * FF6 식 팀 교대(system.battleTeams) — 한 팀이 물러나고 지정한 팀이 들어온다.
+ * ActorCommand 합집합에 넣지 않는다: 대상·피해가 없는 팀 단위 명령이라 행동 결과 연출(commandTarget/commandLine)의 대상이 아니다.
+ * 런타임의 performActorCommand 만 이 명령을 따로 받는다.
+ */
+export interface TeamSwapCommand {
+  readonly kind: "teamSwap";
+  readonly targetTeamId: string;
+}
+
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;
   readonly side: "actor" | "enemy";
@@ -112,12 +122,24 @@ export interface BattleTargetSelectionSnapshot {
   readonly selectedActorId?: ActorId;
 }
 
+export interface BattleTeamSnapshot {
+  readonly id: string;
+  readonly name: string;
+  readonly actorIds: readonly ActorId[];
+  readonly active: boolean;
+  /** 지금 이 팀으로 교대할 수 있는가(살아 있는 구성원이 있고, 한 턴 비용의 쉬는 시간이 아님). */
+  readonly canSwapIn: boolean;
+  readonly alive: number;
+}
+
 export interface BattleRuntimeOptions {
   readonly project: Project;
   readonly troopId: TroopId;
   readonly canEscape: boolean;
   readonly canLose: boolean;
   readonly battleFlow?: BattleFlow;
+  /** 플레이어 장치 설정(필드 메뉴 「대기」 토글)이 저작 기본(system.atbMode)을 덮는다. 생략 = 저작 값. */
+  readonly atbMode?: "active" | "wait";
   readonly activeSlots?: number;
   /** 전투 개시 진형. 지정하면 그대로, 생략하면 system.battleFormationRoll 일 때만 민첩으로 굴린다(아니면 보통). */
   readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
@@ -134,6 +156,8 @@ export interface BattleRuntimeOptions {
   // selfSwitch 조건/`setSelfSwitch` 커맨드가 이 이벤트의 셀프 스위치를 읽고 쓴다.
   // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined 유지(조건은 false).
   readonly ownerEventId?: string;
+  /** 조우표 levelMin/levelMax 로 굴린 야생 레벨. 종 몬스터 적의 능력치·기술·경험치·포획 레벨이 이 레벨 기준이 된다(생략 = enemy 레코드 레벨). */
+  readonly enemyLevel?: number;
   readonly captureLocation?: MonsterCaughtAt;
   readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
   // 아군측을 파티 몬스터로 구성할 때 필드 순서대로의 인스턴스 목록.
@@ -330,6 +354,8 @@ export interface BattleActionResultSnapshot {
   readonly critical: boolean;
   readonly skillName?: string;
   readonly skillId?: SkillId;
+  /** 연계기(듀얼·트리플 테크) 엔트리면 참가 배우 전원(시전자 포함). 표시 계층이 참가자 모두에게 행동 모션을 줄 수 있다. */
+  readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
 }
@@ -558,10 +584,16 @@ export interface BattleSnapshot {
   readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
+  /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
+  readonly atbMode: "active" | "wait";
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;
   readonly switchCandidateActorIds: readonly ActorId[];
+  /** 팀 교대 전투일 때만. 교대 묶음 목록과 지금 싸우는 팀. 팀 설정이 없으면 생략(기존 스냅샷 그대로). */
+  readonly teams?: readonly BattleTeamSnapshot[];
+  readonly activeTeamId?: string;
+  readonly teamSwapCost?: import("@/project/types").TeamSwapCost;
   readonly participatingActorIds: readonly ActorId[];
   readonly actors: readonly BattleBattlerSnapshot[];
   readonly reserveActors: readonly BattleBattlerSnapshot[];
@@ -612,6 +644,8 @@ export interface BattleRuntime {
   setSelectedTargetEnemy(enemyId: string): void;
   cancelTargetSelection(): void;
   performActorCommand(command: ActorCommand): void;
+  /** 팀 교대 전투(system.battleTeams)에서 지금 명령을 고르는 배우의 차례로 활성 팀을 바꾼다. 팀 설정이 없으면 아무 일도 없다. */
+  performTeamSwap?(command: TeamSwapCommand): void;
   chooseAutoCommand(): ActorCommand | undefined;
   executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;

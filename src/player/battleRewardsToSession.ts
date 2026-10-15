@@ -10,7 +10,7 @@ import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
-import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
+import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -115,6 +115,12 @@ export function applyBattleRewardsToSession(
       ? snapshotInstanceIds
       : undefined;
   applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
+  // 경험치 나누기(system.rewardPolicy.expShare): 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 절반을 받는다.
+  if (project.system.rewardPolicy?.expShare === true && participantInstanceIds !== undefined && outcome.monsterPartyMode === true) {
+    const taken = new Set(participantInstanceIds);
+    const bench = session.monsterParty.filter((id) => !taken.has(id) && session.monsterInstances[id] !== undefined && monsterCurrentHp(project, session.monsterInstances[id]!) > 0);
+    if (bench.length > 0) applyMonsterExperienceAndEvolution(project, session, Math.floor(earnedExp / 2), bench);
+  }
   return levelUps;
 }
 

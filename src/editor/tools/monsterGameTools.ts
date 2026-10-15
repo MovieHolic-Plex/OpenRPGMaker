@@ -1,3 +1,4 @@
+import { enableGenreLock } from '@/project/genreLock';
 import type { ToolDefinition } from './types';
 import { ToolError } from './types';
 import { configureEmeraldMonsterStyle, EMERALD_MONSTER_AUTHORING_GUIDE } from '@/project/emeraldMonsterStyle';
@@ -42,6 +43,7 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       const updatedCreatureAssets = configureEmeraldMonsterCreatureArt(p, args.replaceCreatureArt === true).length;
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
       else if(p.meta.oprnOpeningBook?.portraitResourceId==='oprn_emerald_professor'&&!p.meta.oprnOpeningBook.portraitMotion)configureEmeraldMonsterPortraitMotion(p);
+      enableGenreLock(p,'monster-collect');
       if(JSON.stringify(p.session)!==session||JSON.stringify([p.startMapId,p.startPos])!==start)throw new ToolError('보수 중 세션/시작 위치가 바뀌었습니다.',{code:'monster-repair-state'});
       return {summary:'기존 전체 캠페인을 재생성하지 않고 에메랄드 프로필과 안전한 보수를 적용했습니다.',data:{...reviewMonsterGame(p),mode,sessionPreserved:true,movedEvents:moved,updatedCreatureAssets}};
     }
@@ -57,6 +59,7 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
     configureMonsterPresentation(fresh);configureEmeraldMonsterStyle(fresh);configureEmeraldMonsterOpening(fresh,{titleTheme:monsterTitleThemeFromStart(typeof args.startTheme==='string'?args.startTheme:undefined)});
     const renamed=args.names&&typeof args.names==='object'?renameCampaign(fresh,args.names as CampaignNames):0;
     replaceProjectContents(p,fresh);
+    enableGenreLock(p,'monster-collect');
     const planned=p.system.monsterCampaign;return {summary:`공용 원작 캠페인을 재사용해 실제${Object.keys(p.maps).length}맵(집·센터 2층 포함)·${planned?.speciesIds.length??60}종·${planned?.badges.length??8}체육관${(planned?.badges.length??8)===0?'(체육관 없는 탐험·도감 게임)':''}·${(planned?.badges.length??8)>=1?'리그·':''}엔딩 게임을 생성했습니다. 구조 검토와 실제 플레이/저장은 별도입니다.`,data:{...reviewMonsterGame(p),mode:'create',source:'original-starlight-islands-campaign',sessionPreserved:false,renamedStrings:renamed,...(typeof args.firstGymType==='string'?{firstGymType:args.firstGymType}:{})}};
   }},
   ...(['read_monster_game','review_monster_game'] as const).map(name=>({name,description:name==='read_monster_game'?'현재 전체 몬스터 게임의 실제 맵/종별 정면·뒷면·타입·기술·생태/메뉴/상점/오프닝/진행 연결을 읽는다.':'마지막 변경 뒤 캠페인 정의(plan)가 약속한 맵·종·배지 수(기본 72맵/60종/8배지)와 실제 자원·스토리·스타터·상점·연결 검토. 구조 검사는 실제 플레이/저장 완료 증거가 아님.',mode:'read' as const,parameters:{type:'object' as const,additionalProperties:false,properties:{}},run:((p)=>{const data=reviewMonsterGame(p);return {summary:data.issues.length?'전체 몬스터 게임에 제작 문제가 남았습니다.':'전체 캠페인 구조와 리소스 연결을 검토했습니다. 실제 플레이/저장은 별도입니다.',data};}) as ToolDefinition['run']})),

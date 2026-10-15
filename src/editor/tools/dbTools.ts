@@ -1,3 +1,4 @@
+import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
@@ -18,6 +19,7 @@ import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 //            / set_session_start / set_title_screen.
 // 모든 레코드는 기존 레코드와 병합한 뒤 normalize* 계열을 거쳐 id로 upsert한다.
 
+import { typeChartForPreset } from "@/project/typeCharts";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
@@ -606,6 +608,7 @@ const troopRecordSchema = objectSchema({
   }, "배경 겹 하나")),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
+  teamSwapCost: { type: "string", enum: ["free", "gauge", "turn"], description: "이 적 그룹 전투만의 팀 교대 비용(set_project_settings battle.teams 가 있을 때). free = 들어온 팀 바로 행동 · gauge = 게이지 0(기본) · turn = 적이 한 번 행동할 때까지 쉼. 생략 = 시스템 설정" },
   // battleEventPages 는 여기서 받지 않는다 — 자유 객체(additionalProperties:true)로 통과시키면
   // 조건 kind 오타·빈 commands·무한 반복이 무검증으로 저장된다. upsert_troop_battle_page /
   // author_boss_phases 가 페이지 단위로 검증해서 쓴다(아래 run 의 리다이렉트 참고).
@@ -638,6 +641,7 @@ const monsterSpeciesRecordSchema = objectSchema({
   expCurve: expCurveSchema,
   captureRate: numberSchema("0~1"),
   skillsByLevel: arrayOf(learnedSkillSchema),
+  machineSkillIds: stringArraySchema("기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술 id. 비우면 제한 없음(모든 종이 배운다). 값이 있으면 이 기술만 — 예: 파도타기는 물 종만"),
   evolutions: arrayOf(monsterEvolutionSchema),
 }) as RecordSchema;
 
@@ -741,9 +745,24 @@ const skillRecordSchema = objectSchema({
     description:
       "필드 능력: 메뉴에서 쓰면 이 공통 이벤트를 실행(정면 이벤트 id 는 문자열 변수 fieldAbilityTarget, 좌표는 변수 fieldAbilityX/Y). 빈 문자열이면 해제",
   },
+  unforgettable: { type: "boolean", description: "잊을 수 없는 기술(비전머신 HM): 몬스터의 기술 교체 후보에서 빠진다. false 면 해제. 필드 기술(절단·파도타기)에 쓴다" },
   comboActorIds: stringArraySchema(
     "연계기(듀얼·트리플 테크) 참가 배우 2~3명. 전원이 참전·생존·준비 상태여야 메뉴에 열리고, 각자 mpCost 와 턴을 소비한다. 멤버는 따로 배우지 않아도 된다. 빈 배열이면 해제",
   ),
+  comboRequires: {
+    type: "array",
+    description:
+      "연계기 해금 조건: [{actorId, skillId}] — 그 배우가 그 기술을 배워야 연계기가 메뉴에 열린다(CT 식: 개구리가 베기·마법사가 불꽃을 알아야 합체기). actorId 는 comboActorIds 안의 배우여야 한다. 빈 배열이면 조건 해제",
+    items: objectSchema({ actorId: { type: "string" }, skillId: { type: "string" } }, "{actorId, skillId} 두 키만"),
+  },
+  comboCombinedStats: {
+    type: "boolean",
+    description: "true 면 피해·치유의 공격력·마력이 연계 참가자 전원의 합이다(합체기는 power 를 낮게). 기본 false = 시전자 능력치",
+  },
+  comboSwitchId: {
+    type: "string",
+    description: "연계기가 발동하면 켜지는 스위치 id(전투 이벤트 페이지 조건·이후 이야기 분기). 없는 스위치는 자동 등록된다. 빈 문자열이면 해제",
+  },
   area: objectSchema(
     {
       shape: { type: "string", enum: ["circle", "line"] },
@@ -1265,6 +1284,30 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
       throw new ToolError(`존재하지 않는 comboActorIds: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
     }
   }
+  if (record.comboRequires !== undefined) {
+    const rows = Array.isArray(record.comboRequires) ? record.comboRequires : null;
+    if (!rows) throw new ToolError("skill.comboRequires 는 [{actorId, skillId}] 배열이어야 합니다.", { code: "invalid-combo-requires" });
+    const comboIds = Array.isArray(record.comboActorIds) ? (record.comboActorIds as string[]).map((id) => String(id).trim()) : undefined;
+    for (const [index, row] of rows.entries()) {
+      const entry = row as Record<string, unknown> | null;
+      const unknownKeys = entry && typeof entry === "object" ? Object.keys(entry).filter((key) => key !== "actorId" && key !== "skillId") : [];
+      if (!entry || typeof entry !== "object" || typeof entry.actorId !== "string" || typeof entry.skillId !== "string" || unknownKeys.length > 0) {
+        throw new ToolError(`skill.comboRequires[${index}] 는 {actorId, skillId} 두 키만 가진 객체여야 합니다${unknownKeys.length ? `(모르는 키: ${unknownKeys.join(", ")})` : ""}.`, { code: "invalid-combo-requires" });
+      }
+      if (!draft.database.actors.some((actor) => actor.id === entry.actorId)) {
+        throw new ToolError(`comboRequires[${index}].actorId 가 없는 배우: ${entry.actorId} — 허용 예시: ${knownIds(draft.database.actors)}`, { code: "actor-not-found" });
+      }
+      if (comboIds && !comboIds.includes(entry.actorId as string)) {
+        throw new ToolError(`comboRequires[${index}].actorId ${entry.actorId} 는 comboActorIds(${comboIds.join(", ")}) 에 없습니다. 연계 참가자만 조건을 가질 수 있습니다.`, { code: "invalid-combo-requires" });
+      }
+      if (!draft.database.skills.some((skill) => skill.id === entry.skillId)) {
+        throw new ToolError(`comboRequires[${index}].skillId 가 없는 기술: ${entry.skillId} — 먼저 upsert_skill 로 만드세요.`, { code: "skill-not-found" });
+      }
+    }
+  }
+  if (typeof record.comboSwitchId === "string" && record.comboSwitchId.trim()) {
+    ensureNamedSwitch(draft, record.comboSwitchId.trim(), `연계기 발동: ${typeof record.name === "string" ? record.name : record.comboSwitchId.trim()}`);
+  }
   if (record.area !== undefined) {
     const area = record.area as { shape?: unknown; radius?: unknown } | null;
     if (!area || typeof area !== "object" || (area.shape !== "circle" && area.shape !== "line")) {
@@ -1624,29 +1667,39 @@ const defineCrop: ToolDefinition = {
 
 const setTypeChart: ToolDefinition = {
   name: "set_type_chart",
-  description: "포켓몬식 타입 상성표를 설정한다. types는 타입 id 배열이고 multipliers[공격][방어]는 데미지 배율이다.",
+  description: "포켓몬식 타입 상성표를 설정한다. preset 으로 표준 표를 한 번에 깔 수 있다 — 'gen3'(15타입+악·강철, 에메랄드 상성), 'gen6'(+페어리, 강철의 고스트·악 반감 제거). 직접 만들려면 types 배열과 multipliers[공격][방어](데미지 배율)를 준다. preset 과 함께 multipliers 를 주면 그 칸만 덮어쓴다. 1세대 15타입은 몬스터 프로젝트 기본이라 preset 이 필요 없다. 악·강철·페어리 타입 몬스터를 정의하기 전에 먼저 부른다.",
   mode: "write",
   domains: ["database"],
   parameters: {
     type: "object",
     properties: {
-      types: stringArraySchema("예: ['fire','water','grass']"),
-      multipliers: { type: "object", description: "{ attackerType: { defenderType: multiplier } }", additionalProperties: true },
+      preset: { type: "string", enum: ["gen3", "gen6"], description: "표준 상성표: gen3=17타입(15+악·강철), gen6=18타입(+페어리). 생략하면 types·multipliers 를 직접 준다." },
+      types: stringArraySchema("예: ['fire','water','grass'] (preset 을 쓰면 생략)"),
+      multipliers: { type: "object", description: "{ attackerType: { defenderType: multiplier } } (preset 과 같이 주면 그 칸만 덮어씀)", additionalProperties: true },
     },
-    required: ["types", "multipliers"],
     additionalProperties: false,
   },
+  invalidArgsHint: "preset('gen3'|'gen6') 하나만 주거나, types 와 multipliers 를 둘 다 주세요.",
   invalidArgsExample: {
     types: ["fire", "water", "grass"],
     multipliers: { fire: { grass: 2, water: 0.5, fire: 0.5 }, water: { fire: 2, grass: 0.5, water: 0.5 }, grass: { water: 2, fire: 0.5, grass: 0.5 } },
   },
   run(draft, args): ToolExecResult {
-    const chart = normalizeTypeChart({
-      types: Array.isArray(args.types) ? args.types as string[] : [],
-      multipliers: args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
-        ? args.multipliers as Record<string, Record<string, number>>
-        : {},
-    });
+    const presetName = typeof args.preset === "string" ? args.preset : undefined;
+    if (args.preset !== undefined && presetName !== "gen3" && presetName !== "gen6") {
+      throw new ToolError(`preset 은 'gen3' 또는 'gen6' 입니다(받은 값: ${JSON.stringify(args.preset)}). 1세대 15타입은 기본이라 preset 이 없습니다.`, { code: "invalid-args" });
+    }
+    const presetChart = presetName === "gen3" || presetName === "gen6" ? typeChartForPreset(presetName) : null;
+    const given = args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
+      ? args.multipliers as Record<string, Record<string, number>>
+      : {};
+    if (!presetChart && (!Array.isArray(args.types) || args.types.length === 0)) {
+      throw new ToolError("types 배열 또는 preset('gen3'|'gen6') 이 필요합니다.", { code: "missing-type-chart-types" });
+    }
+    const merged = presetChart
+      ? { types: presetChart.types, multipliers: Object.fromEntries(Object.entries(presetChart.multipliers).map(([attacker, row]) => [attacker, { ...row, ...(given[attacker] ?? {}) }])) as Record<string, Record<string, number>> }
+      : { types: args.types as string[], multipliers: given };
+    const chart = normalizeTypeChart(merged);
     if (!chart) throw new ToolError("types에 최소 1개 타입 id가 필요합니다.", { code: "missing-type-chart-types" });
 
     // 상성표 교체로 기존 참조가 새로 고아가 되면, 무관한 선재 오류처럼 보이며 커밋 전체가 거부된다.

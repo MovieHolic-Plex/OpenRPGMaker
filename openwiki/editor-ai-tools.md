@@ -1,5 +1,29 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
+
+권고(`monsterGameRequest` 지시문 · `openBlankStartOnMonsterKit` · 「칩셋 계열 지키기」)만으로는 조수가 버들항·사막·jp_city 등 다른 계열이나 비몬스터 파이프라인으로
+맵을 만드는 것을 못 막았다. 프로젝트 단위 잠금이 그 구멍을 막는다. 옵트인이며 `system.genreLock` 이 없으면 동작·저장 바이트가 그대로다.
+
+- **데이터**: `Project.system.genreLock?: { preset: "monster-collect"; mode: "enforce" | "warn"; allowedFamilies: string[]; grandfatheredMapIds?: string[] }`.
+  `allowedFamilies` 는 켤 때 `GENRE_LOCK_PRESETS`(표, `src/project/genreLock.ts`)에서 복사한다 — 정본은 프로젝트 쪽 목록이다. 표에는 `monster-collect` 만 있다(다른 장르는 별도 결정).
+  shape 검증 `io/shapeDatabaseFields.ts` · normalize `databaseRecordModel.ts`(모르는 preset·깨진 값은 잠금 없음으로 본다).
+- **판정 함수는 한 곳**: `genreLock.ts` 의 `assertGenreLock(before, draft, {toolName, approved})`(맵 위반) · `genreLockMapViolation` · `genreLockDefaultTileset` · `genreLockHidesTool` · `genreLockReport`.
+  세계 지도 전용 칩셋(`worldmap_<mapId>`)과 `atlas_cartography` 는 장르와 무관해 통과한다.
+- **강제 지점은 `toolRunner.runToolDefinition` 한 곳**(`ctx.assistantRun` 일 때만 — 편집기 직접 편집·예제·콘텐츠 스크립트는 안 막는다):
+  1. 새 맵·`tilesetId` 가 바뀐 맵이 허용 계열 밖이면 오류 `genre-lock`(`ToolError`)으로 거부. 메시지에 허용 칩셋 id 목록·가장 가까운 대안(던전→monster_dungeon, 실내→monster_rooms, 항구→monster_coast, 기후→monster_climate, 체육관→monster_gyms, 기본→monster_overworld)·`ask_tileset_change` 경로를 싣는다. **무음 대체 없음**. `create_map`·`themeScene`·`import_region_reference`·`allowsTilesetChange` 도구(`build_concept_example` 등) 모두 이 한 곳을 지난다. 빠지는 도구는 `reset_project`·`revert_last_edit`(`GENRE_LOCK_EXEMPT_TOOLS`)뿐이다.
+  2. `tilesetId` 를 생략한 `create_map` 의 기본 칩셋이 허용 밖이면 허용 칩셋(대안 표)으로 바꾸고 도구 결과 경고에 그 사실을 적는다(`genreLockedDefaultTileset`). 모델이 `tilesetId` 를 직접 적은 경우는 바꾸지 않고 1번으로 거부한다.
+  3. 승인 카드로 사용자가 허용한 계열(`ctx.approvedTilesetFamilies`)은 그 계열 한정으로 통과한다 — 잠금 해제가 아니다(`ask_tileset_change` 결과에 그 문장이 붙는다). 계열 검사(`tileset-family-change`)는 잠금 중 허용 칩셋으로 가는 변경을 막지 않는다.
+  4. `mode:"warn"` 은 거부 대신 경고만 낸다.
+- **조수에게 보이는 것을 좁힌다**: `find_tools` 결과·Pi 도구 목록(`toolAdapter.createPiToolset`)에서 비허용 계열 전용 시공 도구(`hiddenToolPatterns` — `author_beodeul_*`·`compose_*_map`·`link_*_interior`·`build_jp_city_*` 등)를 뺀다. 이름으로 직접 부르면 실행기가 `genre-lock` 으로 거부한다.
+  `list_tileset_references`(tilesetId 생략)는 허용 계열 칩셋만 나열한다(직접 묻는 비허용 칩셋은 읽기 가능 + 경고). 시스템 프롬프트(`buildSystemPrompt`·`buildPiAgentSystemPrompt`)에 「장르 잠금」 한 덩어리가 붙는다 — 잠금이 없으면 줄이 없다.
+- **켜는 곳**: `applyGenrePreset("monster-collect")`(빈 시작 맵을 몬스터 키트로 옮긴 뒤) · `configure_monster_system(enabled:true)` · `build_monster_game/tournament/expedition` · 자료집 시스템 탭 「장르 칩셋 잠금」 체크박스(상태 배지: 잠금 이후 위반 맵 수·잠금 이전부터 있던 맵 수). 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다.
+  켤 때 이미 허용 밖 칩셋이던 맵은 `grandfatheredMapIds` 에 기록해 막지 않고 따로 보고한다.
+- **끄는 곳**: `configure_monster_system(enabled:false)` 는 잠금도 풀며 결과 경고 「장르 잠금 해제됨: …」(채팅에 보임)와 편집 감사 로그 필드 `system.genreLock before:"enforce" after:"released"`(`applyChangesetToStore.applyAnnotation`)를 남긴다. 체크박스는 라벨 「장르 잠금 끄기」로 기록된다.
+- **검사**: `check_genre_lock`(읽기 도구, `genreLockTools.ts`) — 허용 칩셋·잠금 이후 위반 맵·**잠금 이전부터 있던 허용 밖 맵**을 나눠 보고한다. `projectLint` `opt-in:genre-lock-violation`(잠금 이후 위반만) · `qa:game` monster 검사의 `genre-lock-violation`(warning)/`genre-lock-preexisting`(info).
+- **헤드리스 시험**: `node scripts/oprn-tools.mjs --assistant [--current-map <id>] [--approve-family <family>] --project p.json --write <tool> '<args>'` 가 `assistantRun` 문맥으로 실행기를 부른다(조수 대용 역할극용). SQLite 저장→재로드 증거는 `node scripts/qa/genre-lock-persist.mjs [--from project.json] [projectDir]`.
+- 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
+
 ## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)
 
 - **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
@@ -3185,3 +3209,32 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
 
 `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
+
+## `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
+
+포켓몬식 「절단·괴력·파도타기·플래시·폭포 오르기」 를 한 호출로(`fieldObstacleTools.ts`, 이벤트 도메인). 새 런타임 개념이 아니라 #2602 의 `partyKnowsSkill` 조건 + 스킬 `fieldCommonEventId` + `changeTile` 의 조립이다.
+- 인자: `mapId,x,y,kind(rock|tree|water|waterfall|dark),requiresSkillId?,skillName?,machine?(hm|tm|none),tile?,passTile?,direction?,length?,hint?,blockedText?,id?`. 모르는 키는 가까운 이름을 알려 주고 거절.
+- 만드는 것: ① 막는 지형 — rock·tree 는 칩셋(`monster_wild`)의 실제 타일(`깨지는 바위`·`자르기 나무`)을 길 칸에 깔고, water·waterfall 은 막힌 칸에서 시작해 `direction`·`length` 만큼 건널 다리(나무다리)·발판(디딤돌) 목록을 잡는다(타일은 기술을 쓸 때 `changeTile` 로 놓여 세이브에 남는다), dark 는 맵 `defaultLighting` 을 어둡게 한다. ② 투명 이벤트: 모름 → 안내(막힘), `partyKnowsSkill` → 「메뉴에서 쓰자」 안내, 열림 → 통과. ③ 필드 스킬(없으면 독자 이름: 덩굴 가르기·바위 밀치기·물길 열기·폭포 오르기·반딧불 소환, `unforgettable:true`) + 공통 이벤트(대상 이벤트 id 별 분기를 쌓음). ④ 기술머신 아이템 `item_hm_*`(book·사라지지 않음)/`item_tm_*`(한 번 쓰면 소모).
+- 가르치는 법은 호출자가 잇는다: `data.itemId` 를 NPC·상자가 `changeItem += 1` 로 주게 한다. 몬스터 파티 게임에서 `learnedSkillId` 아이템은 **파티 몬스터에게** 쓴다(`machineSkillOf`·`teachMonsterSkill`) — 칸이 가득이면 `pendingSkillIds` 로 가서 메뉴에서 교체하되 `unforgettable` 기술은 후보에서 빠진다. 종별 제한은 `define_monster_species.machineSkillIds`(비면 모든 종).
+- 플레이: 상태 메뉴 → 몬스터 기술 목록에서 필드 기술을 고르면 `PlayScene.useFieldAbility(instanceId, skillId)` — 몬스터는 MP·PP 없이 `partyMembersKnowingSkill` 로 아는지만 보고 쓰러진 몬스터는 못 쓴다(`prepareMonsterFieldAbility`, 러너와 같은 함수).
+- 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
+- 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
+- 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+
+
+## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+
+- `place_trainer`(`trainerTools.ts`, 이벤트 도메인): 시야선 트레이너 한 명을 한 호출로 — `team:[{speciesId,level}]`(enemy·troop 자동, `trainerBattle`·포획 불가) 또는 `troopId`, `facing`·`sightRange`·`emote`·`approachSpeed`·`before/after/rematchLine/rematch`·`rewardGold/rewardItems`·`winSwitchId`. 모르는 키(`dialogue`·`reward` …)는 가까운 이름을 알려 주고 거절. `place_field_enemy` 는 야생 심볼 도구라 보상·재대결이 없어 트레이너를 그걸로 놓지 않는다.
+- `set_type_chart {preset:'gen3'|'gen6'}`: 표준 17/18타입 표(preset 과 `multipliers` 를 같이 주면 그 칸만 덮어씀). 기본은 1세대 15타입이라 preset 이 없다. `define_monster_families` 는 기본(불·물·풀) 상성표면 요청 타입에 맞춰 표준 표를 자동으로 깔고 경고한다.
+- `set_encounter_table` 항목: `levelMin/levelMax`(종 몬스터 트룹만 — 아니면 「다음 도구」를 알려 거절), `conditions.terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭). 옛 거절 안내(`minLevel`·`terrain`) 는 새 이름을 가리키도록 바꿨다.
+- 패배·보상: `set_game_over {goldLossPercent}`(blackout 일 때만), `configure_game_systems {rewardPolicy:{expShare,trainerPrizePerLevel}}`, `configure_monster_system {captureShakesVariableId}`(변수 먼저 `create_variable`).
+- 의도 선언(`intentDeclaration.ts` tools 설명)·능력 색인(`toolCapabilityIndex.ts` 레시피 `monster-field-rules`)·몬스터 프롬프트(`monsterGameRequest.ts`) 에 같은 안내를 넣었다. 도구 라벨은 `aiToolLabels.ts`.
+
+## 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+
+- `set_project_settings` `battle.teams: [{id,name?,actorIds}]`(2~4팀, `[]` 해제) + `battle.teamSwapCost: free|gauge|turn`. 모르는 키(팀 객체 안 포함)·팀 id 중복·한 배우 두 팀·없는 배우(→ `upsert_actor` 안내)·팀 1개·빈 팀은 `ToolError`. 경고(`warnings`): 팀 없는 시작 파티원(첫 팀에 붙음)·시작 파티 배우가 없는 팀·strict 흐름(free/gauge/turn 동일)·팀 없이 비용만 저장.
+  `[]` 로 해제하면 `teamSwapCost` 도 같이 지운다. 기본값 `gauge` 는 저장하지 않는다.
+- `upsert_troop.teamSwapCost` — 그 적 그룹만 비용을 덮어쓴다(`null` 로 되돌림).
+- 능력 색인 `battle-teams`(read → write → `simulate_battle`/`run_lint`). 동시 전투는 지원하지 않는다고 정책에 못 박았다 — 약속하지 말 것. 편집기: 시스템 탭 「팀 교대 전투」 카드, 적 그룹 「팀 교대 비용」.
+- 계약 문서는 `runtime-battle.md` 「팀 교대 전투」. 새 도구는 없다(기존 도구 확장) — 라벨·의도 선언 변경 없음.
+

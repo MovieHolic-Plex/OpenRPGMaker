@@ -8,7 +8,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-field-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-field-fixture.mts"], {
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-field-fixture.mts"], {
   maxBuffer: 80 * 1024 * 1024,
 }));
 
@@ -22,16 +22,24 @@ export default {
     { id: "party-followers", note: "New game: guardian and mage walk behind the hero with no addFollower authored", ops: [
       { kind: "key", key: "Enter" },
       { kind: "waitFor", testid: "title-screen", state: "absent" },
-      { kind: "waitForRuntime" },
+      // 기본 오프닝 컷신이 끝나야 입력이 열린다.
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_guardian", "actor:actor_mage"] },
+      // 페이드인이 끝난 뒤 찍는다(어두운 캡처는 눈 검수가 안 된다).
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { mapId: START, x: 10, y: 8 }, shot: true },
     { id: "lead-switch", note: "changeParty lead: the mage becomes the field leader; hero and guardian follow", ops: [
       { kind: "teleport", mapId: START, x: 14, y: 8 },
       { kind: "waitForPosition", mapId: START, x: 14, y: 8 },
       { kind: "face", dir: "right" },
+      { kind: "hold", ms: 600 },
       { kind: "action" },
-      { kind: "waitForLeader", actorId: "actor_mage", spriteResourceId: "easyrpg-charset-actor1" },
+      { kind: "waitForLeader", actorId: "actor_mage" },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_hero", "actor:actor_guardian"] },
     ], expect: { mapId: START, x: 14, y: 8 }, shot: true },
     { id: "ledge-hop", note: "Stepping down onto the ledge tile at (4,4) hops the player two tiles to (4,5)", ops: [

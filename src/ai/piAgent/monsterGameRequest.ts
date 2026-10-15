@@ -115,7 +115,7 @@ export function monsterScaleNote(task: string): string {
   return parts.length ? `\n[요청에서 읽은 규모] build_monster_game 에 ${parts.join(', ')} 를 그대로 넘긴다 — 빠뜨리면 기본 8관 90맵 캠페인으로 지어져 요청과 어긋나고 완료 검사가 막는다.` : '';
 }
 
-export const MONSTER_GAME_INITIAL_TOOLS = ['get_project_summary','read_game_systems','read_monster_game','configure_monster_style','build_monster_game','configure_monster_campaign','review_monster_game','review_game_systems','get_opening','review_opening','show_opening_image','find_tools','define_monster_families','rename_monster_species'] as const;
+export const MONSTER_GAME_INITIAL_TOOLS = ['get_project_summary','read_game_systems','read_monster_game','configure_monster_style','build_monster_game','configure_monster_campaign','review_monster_game','review_game_systems','get_opening','review_opening','show_opening_image','find_tools','define_monster_families','rename_monster_species','place_trainer','set_type_chart','set_encounter_table'] as const;
 export const MONSTER_GAME_PRODUCTION_PROMPT = `[전체 몬스터 게임 제작]
 포켓몬형 전체 게임 요청은 에메랄드 참고 프로필을 기본으로 사용한다. read_monster_game/read_game_systems로 실제 현재 내용을 읽고 configure_monster_style(reference:emerald)를 적용한다.
 빈 프로젝트에는 build_monster_game(mode:create)를 사용한다. 기획서·요청에 고유명(지방·시작 마을·박사·첫 도로·첫 체육관·첫 관장·첫 배지, 게임 제목)이 있으면 title 과 names 로 그대로 넘긴다 — 넘기지 않으면 기본 이름(별싹 마을·천문박사·유림)이 남는다. 시작 마을이 사막·눈·바닷가·화산(용암·재·화산 섬)으로 적혀 있으면 startTheme(desert|snow|coast|volcano)도 넘긴다 — 빠뜨리면 사막 기획인데 풀밭 마을에서 시작한다. 체육관 이름·관장·배지·타입이 기획서에 있으면 names.gyms 에 1관부터 순서대로(타입은 바위→rock, 물→water…) 넘긴다 — 이름만 「바위 체육관」이고 관장이 풀 몬스터를 내보내지 않게. 첫 도로 트레이너 직업명은 names.firstRouteTrainers. 이미 캠페인이 있으면 mode:repair로 보수한다. 저작 게임을 전부 버린다고 명시한 요청만 replace:true로 전체를 교체한다. 설정 도구만 실행하거나 작은 시작 예제만 만들어 전체 게임 완료로 보고하지 않는다.
@@ -125,7 +125,8 @@ export const MONSTER_GAME_PRODUCTION_PROMPT = `[전체 몬스터 게임 제작]
 에메랄드 도트 규격: 필드 그림은16×32 원본, 인물 잉크는 주인공14×20~21픽셀, 팔레트15불투명색+투명이다. 에디터24×32는 포장 칸이며 원본을 x4 투명여백에 그대로 넣는다.24×32 인물을 그리거나 늘리지 않는다. 전투 인물/교수 소개는64×64다. 공용 검수된 그림은 build_monster_game(mode:create|repair)의 캐스트를 우선 쓰고 새로운 걷기 그림은 pokemon-character-motion 하네스의 import→check→preview→review→gate→build를 거쳐 공유팩에 등록해야 한다. 구조 통과만으로 그림 품질 승인이나 실제 플레이 완료를 주장하지 않는다. 교수의 실제 눈·입·손 모션은 configure_opening_portrait_motion으로 연결하며 Enter 페이지와 음악의 재시작으로 움직임을 대신하지 않는다.
 startTheme 는 시작 마을·1번길·전투 배경뿐 아니라 타이틀 키아트(그 풍경 그림이 설치돼 있으면)와 테마 주민 칩(사용자가 Allow 해 설치한 칩이 있을 때만, 없으면 기본 칩)도 고른다 — 조수가 타이틀이나 주민 그림을 따로 만들어 끼우지 않는다. 마을 빈터는 생성기가 쓰임(숲 덩이·꽃밭·눈놀이 터·선인장 밭·파라솔 쉼터…)으로 이미 채운다. 만든 뒤 「○○ 마을 왼쪽 아래 빈 곳 채워」 같은 이어 고치기는 build_monster_game 을 다시 부르지 말고 furnish_outdoor_area(mapId, region:bottom-left) 한 번 → show_map_region 으로 본다.
 마지막 변경 뒤 read_monster_game 및 review_monster_game, read_game_systems 및 review_game_systems, review_opening을 실제로 실행한다. 완료 검사 문제는 도구로 해결하며 요청한 규모(기본은 72맵/60종/8관)를 축소하지 않는다.
-구조 검토는 플레이/청취/저장 검증이 아니다. 실제 이동·스타터·조우·포획·회복·상점 거래·배지·저장/Continue와 정본 저장 재로드는 별도로 확인하며 미검증 범위를 보고한다. 전투는 현재gen1 규칙이며 에메랄드의 모든 규칙을 구현했다고 말하지 않는다.`;
+구조 검토는 플레이/청취/저장 검증이 아니다. 실제 이동·스타터·조우·포획·회복·상점 거래·배지·저장/Continue와 정본 저장 재로드는 별도로 확인하며 미검증 범위를 보고한다. 전투는 현재gen1 규칙이며 에메랄드의 모든 규칙을 구현했다고 말하지 않는다.
+도로·체육관에 트레이너를 더하라는 요청은 place_trainer(시야선에 들면 「!」 후 배틀, 한 호출), 악·강철·페어리가 있는 18타입은 set_type_chart {preset:'gen3'|'gen6'}, 야생 레벨 범위·풀숲 칸에서만 나오는 조우는 set_encounter_table 의 levelMin/levelMax·conditions.terrainId('terrain_grass')로 한다.`;
 
 /** 포켓몬 낱말 없이 몬스터 수집·체육관 게임을 말했을 때 캠페인 프롬프트 뒤에 붙는다. */
 export const MONSTER_FREE_CAMPAIGN_NOTE = `

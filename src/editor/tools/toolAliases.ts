@@ -42,7 +42,8 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["밸런스", "난이도", "시뮬레이션", "승률", "simulate", "balance", "difficulty"], tools: ["simulate_battle", "tune_enemy", "evaluate_game_quality"], label: "전투 시뮬" },
   { terms: ["전투 연출", "배틀 애니", "전투 애니메이션", "battle animation", "battle fx", "효과"], tools: ["upsert_battle_animation", "read_directing_guide", "list_fx_sheets"], label: "전투 연출" },
   { terms: ["액션 전투", "action combat", "realtime battle"], tools: ["set_action_combat", "make_action_enemy", "run_action_combat_test"], label: "액션 전투" },
-  { terms: ["전투 막기", "길막", "장애물", "바위", "나무 베기", "blocker", "obstacle", "boulder", "rock"], tools: ["place_battle_blocker", "place_trap", "set_tile_passability"], label: "길 막는 장애물" },
+  { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
+  { terms: ["전투 막기", "길막", "장애물", "바위", "나무 베기", "blocker", "obstacle", "boulder", "rock"], tools: ["place_battle_blocker", "place_field_obstacle", "place_trap", "set_tile_passability"], label: "길 막는 장애물" },
   // ── 맵 ──
   { terms: ["새 맵", "맵 만들", "맵 생성", "맵 추가", "map create", "create map", "new map", "add map", "themescene", "테마 맵", "필드 맵", "필드 만들"], tools: ["create_map", "author_wild_route", "duplicate_map", "resize_map"], label: "맵 만들기(themeScene 으로 구성기까지 한 번에)" },
   { terms: ["마을 만들", "마을", "village", "town"], tools: ["author_beodeul_town", "compose_jp_city_street", "compose_snow_north_map"], label: "마을" },

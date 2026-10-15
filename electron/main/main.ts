@@ -83,6 +83,8 @@ function createWindow(): BrowserWindow {
     minWidth: 1100,
     minHeight: 600,
     show: false,
+    // 첫 프레임(스플래시)이 그려지기 전·창 크기가 바뀌는 순간에 흰 화면이 비치지 않게 스플래시·시작 화면 바탕색과 맞춘다(tokens.css --bg-base).
+    backgroundColor: "#F7F8F8",
     fullscreen: true,
     autoHideMenuBar: true,
     ...chromeOptions,
@@ -99,6 +101,7 @@ function createWindow(): BrowserWindow {
     },
   });
 
+  // ready-to-show 는 렌더러가 첫 프레임을 그린 뒤에 온다 — 창이 처음 보이는 순간 이미 스플래시(index.html)·시작 화면 뼈대가 그려져 있다.
   window.once("ready-to-show", () => window.show());
   // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
   const broadcastFullscreen = (fullscreen: boolean): void => {

@@ -111,10 +111,16 @@ export async function prepareHeadlessTool(name: string, args: Record<string, unk
  * Run a tool through the same runner as the editor (argument normalization, draft, tree repair, commit gate) and
  * return the resulting project. A rejected or read call returns the input project unchanged.
  */
-export function runHeadlessToolWithProject(project: Project, name: string, args: Record<string, unknown>): { result: ToolResult; project: Project } {
+export function runHeadlessToolWithProject(
+  project: Project,
+  name: string,
+  args: Record<string, unknown>,
+  /** 조수 실행 정책(장르 잠금 등)을 집행하게 하는 문맥 — oprn-tools.mjs --assistant. 생략하면 편집기 UI·스크립트와 같은 무정책 실행. */
+  context: { readonly assistantRun?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] } = {},
+): { result: ToolResult; project: Project } {
   const tool = getTool(name);
   if (!tool) return { result: runHeadlessTool(project, name, args), project };
-  const ctx = { project };
+  const ctx = { project, ...context };
   const result = runToolDefinition(ctx, tool, args);
   return { result, project: ctx.project };
 }

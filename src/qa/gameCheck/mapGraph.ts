@@ -88,12 +88,12 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
         severity: seedLeftBehind ? "warning" : "blocker",
         code: "orphan-empty-map",
         message: seedLeftBehind
-          ? `시작 맵을 옮긴 뒤 남은 빈 시드 맵 ${map.name}(${map.id}) ${map.width}×${map.height} 입니다. 플레이에는 쓰이지 않습니다.`
-          : `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다.`,
+          ? `시작 맵을 옮긴 뒤 남은 빈 시드 맵 ${map.name}(${map.id}) ${map.width}×${map.height} 입니다. 플레이에는 쓰이지 않습니다. 쓸 곳이 없으면 remove_map 으로 지웁니다.`
+          : `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다. 고치기: 장소를 짓는 도구(author_beodeul_town·author_dungeon·build_hand_interior_room 등)로 채우고 create_transfer_pair 로 잇거나, 쓰지 않으면 remove_map.`,
         where,
       });
     } else if (!graph.reachable.has(map.id)) {
-      findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}.`, where });
+      findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}. 고치기: create_transfer_pair({a:{mapId:<시작 맵에서 닿는 맵>,x,y}, b:{mapId:"${map.id}",x,y}}) — 시대 사이면 create_time_gate.`, where });
     }
   }
   return findings;

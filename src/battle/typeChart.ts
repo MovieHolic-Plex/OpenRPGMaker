@@ -9,11 +9,13 @@ export interface Gen1TypeModifiers {
 
 export type Gen1CanonicalType =
   | "normal" | "fighting" | "flying" | "poison" | "ground" | "rock" | "bug" | "ghost"
-  | "fire" | "water" | "grass" | "electric" | "psychic" | "ice" | "dragon";
+  | "fire" | "water" | "grass" | "electric" | "psychic" | "ice" | "dragon"
+  // 3세대 이후 타입(typeCharts.ts 의 gen3·gen6 프리셋). 1세대 규칙 프로젝트에는 쓰이지 않는다.
+  | "dark" | "steel" | "fairy";
 
 const GEN1_CANONICAL_TYPES: readonly Gen1CanonicalType[] = [
   "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
-  "fire", "water", "grass", "electric", "psychic", "ice", "dragon",
+  "fire", "water", "grass", "electric", "psychic", "ice", "dragon", "dark", "steel", "fairy",
 ];
 
 const GEN1_LOCALIZED_TYPE_ALIASES: Readonly<Record<string, Gen1CanonicalType>> = {
@@ -33,6 +35,10 @@ const GEN1_LOCALIZED_TYPE_ALIASES: Readonly<Record<string, Gen1CanonicalType>> =
   에스퍼: "psychic",
   얼음: "ice",
   드래곤: "dragon",
+  악: "dark",
+  강철: "steel",
+  페어리: "fairy",
+  요정: "fairy",
 };
 
 /** Resolves cartridge type meaning without requiring the authored chart id itself to be English. */

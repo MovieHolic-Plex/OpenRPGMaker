@@ -1,0 +1,16 @@
+import { createMonsterExpedition } from "../../../src/project/examples/monsterExpedition";
+const project:any = (createMonsterExpedition({gymCount:2,speciesCount:20}) as any).project;
+console.log("states:",project.database.states.map((s:any)=>`${s.id}${s.gen1MajorStatus?"["+s.gen1MajorStatus+"]":""}${s.runtimeEffects?JSON.stringify(s.runtimeEffects):""}`).join("\n  "));
+const sk=project.database.skills;
+console.log("skills total",sk.length);
+const stat=sk.filter((s:any)=>s.effect.kind==="support"||(s.stateEffects?.length));
+console.log("skills with stateEffects or support:",stat.length);
+const stateUse:Record<string,number>={}; for(const s of sk) for(const e of s.stateEffects??[]) stateUse[e.stateId]=(stateUse[e.stateId]??0)+1;
+console.log("stateEffects usage",JSON.stringify(stateUse));
+const fields=new Set<string>(); for(const s of sk) for(const k of Object.keys(s)) fields.add(k);
+console.log("skill fields in use:",[...fields].join(","));
+console.log("movePriority !=0:",sk.filter((s:any)=>s.movePriority).map((s:any)=>s.id+":"+s.movePriority).join(","));
+console.log("maxPp sample",sk.slice(0,5).map((s:any)=>s.id+":"+s.maxPp).join(","),"missing maxPp",sk.filter((s:any)=>s.maxPp===undefined).length);
+console.log("high crit:",sk.filter((s:any)=>s.gen1CriticalRate==="high").length,"chargeTurns:",sk.filter((s:any)=>s.chargeTurns).length,"drain:",sk.filter((s:any)=>s.drainPercent).length,"hpCost:",sk.filter((s:any)=>s.hpCostPercent).length,"hitSequence:",sk.filter((s:any)=>s.hitSequence?.length>1).length);
+console.log("skill types:",JSON.stringify(sk.reduce((a:any,s:any)=>{a[s.type]=(a[s.type]??0)+1;return a;},{})));
+const mv=sk.filter((s:any)=>s.effect.kind==="support"); console.log("support skills:",mv.map((s:any)=>`${s.id}/${s.name}/${JSON.stringify(s.stateEffects)}`).join("\n  "));

@@ -304,7 +304,14 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
 
   const inject = (html: string): string => {
     const config = `<script>window.__OPRN_BRIDGE__=${JSON.stringify({ endpoint: BRIDGE_PATH, token, requestBodyEncoding: "gzip", companionToken: shared ? null : companionToken })}</script>`;
-    return html.replace('</head>', `${config}<script src="${BRIDGE_SCRIPT_PATH}"></script></head>`);
+    // <head> 맨 앞에 심는다. 끝(</head>)에 두면 앞의 modulepreload 수십 개가 HTTP/1.1 연결 6개를 다 쥐고 있어 이 «파서 차단» 스크립트가
+    // 연결을 기다리느라 첫 화면(스플래시)이 늦는다 — 실측(2026-10-15, 10Mbps 제한): bridge.js 응답 시작 2.1s, 첫 페인트 1.9s → 앞으로 옮기면 약 0.15s.
+    const injected = `${config}<script src="${BRIDGE_SCRIPT_PATH}"></script>`;
+    // <meta charset> 은 문서 앞 1024바이트 안에 있어야 하므로 그 뒤에 넣는다(없으면 <head> 바로 뒤).
+    for (const anchor of [/<meta\s+charset=[^>]*>/i, /<head(?:\s[^>]*)?>/i]) {
+      if (anchor.test(html)) return html.replace(anchor, (tag) => `${tag}${injected}`);
+    }
+    return html.replace('</head>', `${injected}</head>`);
   };
   const serveStatic = async (pathname: string, response: ServerResponse): Promise<void> => {
     // URL.pathname 은 퍼센트 인코딩 그대로다 — 번들 BGM 「Town 1.mid」는 `Town%201.mid` 로 와서
