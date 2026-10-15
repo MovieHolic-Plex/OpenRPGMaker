@@ -30,6 +30,8 @@ export default {
       { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_guardian", "actor:actor_mage"] },
+      // 페이드인이 끝난 뒤 찍는다(어두운 캡처는 눈 검수가 안 된다).
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { mapId: START, x: 10, y: 8 }, shot: true },
     { id: "lead-switch", note: "changeParty lead: the mage becomes the field leader; hero and guardian follow", ops: [
       { kind: "teleport", mapId: START, x: 14, y: 8 },

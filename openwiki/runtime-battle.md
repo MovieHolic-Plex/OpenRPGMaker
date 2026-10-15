@@ -1357,6 +1357,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **Active/Wait** 필드 메뉴 「대기 ON/OFF」는 이제 실제로 읽힌다: `PlayerPreferences.atbMode`(장치 설정, 세이브 밖) > `system.atbMode`(저작) > wait. `playSceneBattle` 이 `createBattleRuntime({atbMode})` 로 넘기고 런타임 `snapshot().atbMode` 가 전투 DOM 의 `data-battle-atb-mode`·메뉴 중 시간 진행을 정한다. 다음 전투부터 적용된다.
 - **필드 위 전투 배치** `onFieldEnemyPoint`: 트룹 `members[].x/y` 가 모두 있으면 무게중심을 심볼 발밑에 두고 나머지를 24단위=한 칸으로 환산해 저작 배치대로 세운다(없으면 한 칸 간격 가로줄). 아군은 주인공·동료 스프라이트 자리가 정본이고, 동료가 겹치거나 모자라면 주인공 등 뒤로 엇갈려 선다(`onFieldPartyPoint`).
 - **걷기 칩이 없는 종**(박쥐·늑대 …)도 `place_field_enemy` 심볼이 된다: 전투 도트 그림(`generated-enemy-*`)을 정지 그림으로 쓴다(다른 그림으로 대체하지 않는다, 걷기 애니메이션 없음).
+- **필드 배경(`battleBackdrop:"field"`)** 도 스냅샷 전에 주인공·동료·시비 건 적 스프라이트를 투명하게 한다(`hideOnFieldSprites`) — 안 그러면 같은 캐릭터가 배틀러와 필드 그림에 두 번 보인다.
 - `simulate_battle {useSkills:true}`: 아군이 자동 전투 AI(기술·회복·연계기)로 행동하고 `data.skillUses` 에 기술별 횟수가 나온다. 기본은 통상 공격+회복약.
 - 검증: `scripts/qa/runtime/ct-*.scenario.mjs`(ct-vehicle 제외)가 다시 돈다 — 원인은 `vite-node/vite-node.mjs`(v6 에서 `dist/cli.mjs` 로 이동), 투명 심볼 그림, 스킬 칸 커서 방향, retro 스킨의 적 좌표 접힘(x≥34·y 92..142)이었다.
 

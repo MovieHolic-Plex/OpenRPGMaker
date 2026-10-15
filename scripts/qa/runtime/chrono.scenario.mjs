@@ -28,6 +28,7 @@ export default {
       { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "seed", seed: 1 },
       { kind: "pressUntil", key: "z", testid: "dialogue-box", state: "absent", maxPresses: 12 },
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { mapId: "map_era_present", x: 20, y: 23, testidAbsent: ["title-screen", "battle-scene"] }, shot: true },
     { id: "ct-battle", note: "Face the visible enemy and fight: chrono skin, gauge flow, 3-person party", ops: [
       { kind: "face", dir: "up" },

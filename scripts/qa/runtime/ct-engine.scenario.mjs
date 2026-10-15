@@ -27,7 +27,8 @@ const attack = [
   cursorTo("actor-command-attack"),
   { kind: "key", key: "z" },
   { kind: "waitFor", testid: "battle-target-prompt", state: "present", timeoutMs: 10_000 },
-  { kind: "key", key: "z" },
+  // 한 번 눌러 소비되지 않으면(전투 시퀀스 틈) 대상 창이 열린 채 굳는다 — 닫힐 때까지 확인 키를 다시 누른다.
+  { kind: "pressUntil", key: "z", testid: "battle-target-prompt", state: "absent", maxPresses: 4, timeoutMs: 1500 },
 ];
 
 export default {
