@@ -48,6 +48,7 @@ import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
 import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
+import { WORLD_VARIANT_TOOLS } from "./worldVariantTools";
 import { WORLD_ATLAS_TOOLS } from "./worldAtlasTools";
 import { WORLDMAP_ICON_TOOLS } from "./worldmapIconTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
@@ -111,6 +112,7 @@ import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
+import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
@@ -294,6 +296,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
   ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
+  ...withDomain(WORLD_VARIANT_TOOLS, "world"),
   ...withDomain(WORLD_ATLAS_TOOLS, "world"),
   ...withDomain(WORLDMAP_ICON_TOOLS, "world"),
   // 충돌 전용 지름길은 script_cutscene_staged 하나로 합친다(2026-10-02 조수 시험: 두 도구가 있으면 모델은 전용 쪽만 쓰고
@@ -326,6 +329,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(RESOURCE_TOOLS, "system"),
   ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
+  ...DUNGEON_LINK_TOOLS,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),

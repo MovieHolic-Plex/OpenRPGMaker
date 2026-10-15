@@ -989,7 +989,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   }
   const position = { x: scene.tileX, y: scene.tileY };
   const hasCandidates = map.encounterTable && map.encounterTable.length > 0
-    ? eligibleEncounterEntries(map, scene.session, position).length > 0
+    ? eligibleEncounterEntries(map, scene.session, position, store.getCurrent()).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return;
   // 몬스터 파티 전투인데 아직 파트너가 없으면 야생이 나오지 않는다 — 전투를 열 수 없어 매 걸음 오류 창이 떴다
@@ -1003,7 +1003,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = pickEncounterTroopForMap(map, scene.session, position);
+  const troopId = pickEncounterTroopForMap(map, scene.session, position, undefined, store.getCurrent());
   if (!troopId) return;
   // 전투 시작(비동기). 전투가 끝날 때까지 맵 로직·입력을 잠근다 — 잠그지 않으면 전투
   // 오버레이 뒤에서 걸음이 계속 완료되어 게이지가 쌓이고 전투가 겹쳐 시작된다.

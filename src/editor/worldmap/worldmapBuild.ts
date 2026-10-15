@@ -6,6 +6,9 @@
  * - Pi 워커·헤드리스: 시작할 때 `setWorldmapBuilder(buildWorldmap)` 로 노드 구현을 직접 꽂는다.
  */
 
+import type { WorldmapVariantSpec } from "@/project/types";
+export type { WorldmapVariantSpec };
+
 export const WORLDMAP_GROUNDS = [
   "grass", "farm", "crop", "savanna", "sand", "dune", "dirt", "badlands", "ash", "basalt", "swamp", "marsh", "tundra", "snow", "glacier", "jungle",
 ] as const;
@@ -74,7 +77,7 @@ export interface WorldmapWorld {
 
 export interface WorldmapBuildRequest {
   theme: string;
-  terrain?: { id?: string; base?: WorldmapBase; ops: Array<Record<string, unknown>>; fit_salt?: number } | null;
+  terrain?: { id?: string; base?: WorldmapBase; ops: Array<Record<string, unknown>>; fit_salt?: number; variant?: WorldmapVariantSpec } | null;
   /** 픽셀 렌더 없이 칸 배열·도식 그림만(몇 초). */
   preview?: boolean;
 }
@@ -105,7 +108,8 @@ export type WorldmapBuildResult =
       rendered: Array<{ placeId: string; iconId: string; sha256: string; x: number; y: number; width: number; height: number }>;
       pending: Array<{ placeId: string; iconId: string; reason: string; x: number; y: number; width: number; height: number }>;
     };
-    journeyCheck: { ok: boolean; bad: string[] } | null;
+    /** notes = 변형(free) 지도에서 설계 막과 달라진 장소(막 순서 규칙을 대신한 안내). */
+    journeyCheck: { ok: boolean; bad: string[]; notes?: string[] } | null;
     warnings: string[];
     seconds: number;
   }

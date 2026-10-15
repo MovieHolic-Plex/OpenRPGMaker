@@ -1,4 +1,5 @@
-import type { EncounterTableEntry, GameMap } from "@/project/types";
+import type { EncounterTableEntry, GameMap, Project } from "@/project/types";
+import { terrainRecordAt } from "@/project/terrainAt";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { nextSessionRandom } from "@/project/session";
 import { conditionMatchesSeason, conditionMatchesTimePhase } from "@/project/gameTime";
@@ -17,7 +18,8 @@ export function partyEncounterLevel(session: PlaySessionLike): number {
 export function eligibleEncounterEntries(
   map: GameMap,
   session: PlaySessionLike,
-  position: EncounterPosition
+  position: EncounterPosition,
+  project?: Project
 ): EncounterTableEntry[] {
   const partyLevel = partyEncounterLevel(session);
   return (map.encounterTable ?? []).filter((entry) => {
@@ -36,6 +38,8 @@ export function eligibleEncounterEntries(
       // 서생지 적이 마을 광장에서 튀어나온다. lint 가 `map-location-missing-ref` 로 알린다.
       if (!location || !pointInRect(position, location)) return false;
     } else if (conditions.region && !pointInRect(position, conditions.region)) return false;
+    // 지형 조건: 프로젝트를 모르는 호출자(자동 점검 등)는 지형을 판정할 수 없어 이 조건을 무시한다(통과).
+    if (conditions.terrainId && project && terrainRecordAt(project, { mapId: map.id, x: position.x, y: position.y })?.record.id !== conditions.terrainId) return false;
     if (conditions.timePhase && !conditionMatchesTimePhase(session.gameTime, conditions.timePhase)) return false;
     if (conditions.season && !conditionMatchesSeason(session.gameTime, conditions.season)) return false;
     return true;
@@ -64,10 +68,11 @@ export function pickEncounterTroopForMap(
   map: GameMap,
   session: PlaySessionLike,
   position: EncounterPosition,
-  rng: Rng = () => nextSessionRandom(session, "encounter")
+  rng: Rng = () => nextSessionRandom(session, "encounter"),
+  project?: Project
 ): string | undefined {
   if (map.encounterTable && map.encounterTable.length > 0) {
-    return pickWeightedEncounterTroop(eligibleEncounterEntries(map, session, position), rng);
+    return pickWeightedEncounterTroop(eligibleEncounterEntries(map, session, position, project), rng);
   }
   const troops = map.troopIds;
   if (!troops || troops.length === 0) return undefined;

@@ -1330,9 +1330,12 @@ const encounterConditionsSchema: JsonSchema = {
     minPartyLevel: { type: "integer" },
     maxPartyLevel: { type: "integer" },
     region: rectSchema,
+    locationId: { type: "string", description: "이 맵의 위치(구역) id 또는 이름 — 그 구역 안에서만 나온다(구역을 옮기면 조건도 따라온다)" },
+    terrainId: { type: "string", description: "걷는 칸의 지형 레코드 id — 이 지형에서만 나온다. 세계 지도: terrain_world_forest·_desert·_snow·_swamp·_plains·_wasteland·_volcano·_mountain·_road (read_database terrains 로 확인)" },
     timePhase: { type: "string", enum: TIME_PHASES },
     season: { type: "string", enum: SEASONS },
   },
+  additionalProperties: false,
 };
 
 const encounterEntrySchema: JsonSchema = {
@@ -1425,6 +1428,9 @@ function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label
 
 function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry["conditions"] {
   const input = requireRecordValue(value, label);
+  const known = ["switchId", "variableId", "atLeast", "minPartyLevel", "maxPartyLevel", "region", "locationId", "terrainId", "timePhase", "season"];
+  const extra = Object.keys(input).filter((key) => !known.includes(key));
+  if (extra.length) throw new ToolError(`${label} 가 모르는 조건: ${extra.join(", ")} — 있는 것: ${known.join(", ")}. 지형 조건은 terrainId(지형 레코드 id) 다.`, { code: "invalid-args", mapId: map.id });
   const conditions: NonNullable<EncounterTableEntry["conditions"]> = {};
   if (input.switchId !== undefined) {
     conditions.switchId = stringField(input, "switchId", label);
@@ -1445,6 +1451,22 @@ function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, 
     throw new ToolError(`${label}: minPartyLevel이 maxPartyLevel보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
   }
   if (input.region !== undefined) conditions.region = parseRect(input.region, `${label}.region`, map);
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    const location = resolveLocation(map, locationId);
+    if (!location) {
+      const known = (map.locations ?? []).map((entry) => `${entry.id}(${entry.name})`).join(", ") || "(없음)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, { code: "invalid-location-anchor", mapId: map.id });
+    }
+    conditions.locationId = location.id;
+  }
+  if (input.terrainId !== undefined) {
+    const terrainId = stringField(input, "terrainId", label);
+    if (!(draft.database.terrains ?? []).some((record) => record.id === terrainId)) {
+      throw new ToolError(`${label}.terrainId 지형 레코드가 없다: ${terrainId} — 있는 것: ${(draft.database.terrains ?? []).map((record) => record.id).join(", ") || "(없음)"}. 세계 지도 지형 레코드는 edit_world_terrain/derive_world_variant 가 맵을 빌드할 때 생긴다.`, { code: "terrain-not-found", mapId: map.id });
+    }
+    conditions.terrainId = terrainId;
+  }
   if (input.timePhase !== undefined) {
     const timePhase = stringField(input, "timePhase", label);
     if (!isTimePhase(timePhase)) throw new ToolError(`${label}.timePhase가 잘못되었습니다: ${timePhase}`, { code: "invalid-time-phase", mapId: map.id });

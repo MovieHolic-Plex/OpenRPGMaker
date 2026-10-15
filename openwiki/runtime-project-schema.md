@@ -24,6 +24,10 @@
 그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
 없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
 자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+`variant?: { of, preset?, spec }`(2026-10-15, 선택) — `derive_world_variant` 가 파생한 변형 세계의 원본: `of` 는 기준 지도 id, `spec` 은 키트 `terrain.variant`
+(`WorldmapVariantSpec`: ops·palette·icon_preset·journey·protect_roads…). 없으면 일반 세계 지도. 옛 문서는 그대로 열린다(마이그레이션 없음).
+`EncounterConditions.terrainId?: string`(2026-10-15, 선택) — 서 있는 칸 지형 레코드 id 와 같을 때만 그 항목이 나온다. 없으면 지형 무관(옛 동작).
+`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. 없으면 false.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 

@@ -2111,3 +2111,9 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 `<out>/journey.mp4`(H.264, 타이틀부터)를 남긴다. 영상 모드는 시작 마을→연구소→마을→도로 풀숲, 센터→도로→트레이너를 실제 방향 입력으로 걷는다
 (짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
 관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
+
+## 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+
+- 헤드리스 도구 시험: `node scripts/oprn-tools.mjs --project <p.json> --out <o.json> derive_world_variant '{...}'` — 호스트 월드맵 빌더(`scripts/lib/worldmapBuild.mjs`)를 걸어 주므로
+  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
+- 크로미움이 이 호스트에서 `ERR_NETWORK_CHANGED` 로 뜨면 `unshare -rn bash -c 'ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-vehicle'`.

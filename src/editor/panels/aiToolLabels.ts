@@ -68,6 +68,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   build_world: world("세계 짓기", "map"),
   read_world_terrain: world("세계 지형 읽기", "eye"),
   edit_world_terrain: world("세계 지형 바꾸기", "map"),
+  derive_world_variant: world("세계 변형판 만들기", "map"),
+  link_world_entrance: world("월드 입구 잇기", "map"),
   set_build_spec: build("밑그림 확정", "list"),
   // ── 사람·이야기 ──
   place_npc: people("NPC 배치", "user"),

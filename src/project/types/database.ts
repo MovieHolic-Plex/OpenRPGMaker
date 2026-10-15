@@ -209,6 +209,12 @@ export interface DatabaseTerrainVehiclePassage {
   boat: boolean;
   ship: boolean;
   airshipLand: boolean;
+  /** 초코보(걷는 탈것): 걸을 수 없는 칸(숲 등)도 지난다. 없으면 false. (2026-10-15) */
+  chocobo?: boolean;
+  /** 광산 수레: 이 칸(레일)만 다닌다. 없으면 false. */
+  cart?: boolean;
+  /** 뗏목: 강·얕은 물만 다닌다(바다는 안 됨). 없으면 false. */
+  raft?: boolean;
 }
 
 export interface DatabaseTerrainRecord {

@@ -2,6 +2,7 @@ import type { GameMap, Project, TilesetDef, TilesetId } from '@/project/types';
 import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID, WORLDMAP_SELECTED_TEXTURE } from '@/project/defaults/worldmapSelected';
 import type { WorldmapBuildResult } from './worldmapBuild';
 import { attachWorldmapAuthoringBrushes, WORLDMAP_AUTHORING_TEXTURE } from '@/project/defaults/worldmapAuthoring';
+import { ensureWorldTerrainRecords, worldTerrainKindOfLabel } from '@/project/worldTerrainRecords';
 
 type Build = Extract<WorldmapBuildResult, { ok: true }>;
 
@@ -23,6 +24,12 @@ export function makeWorldmapTilemap(project: Project, id: TilesetId, assetId: st
       placementRules: '대표 재료를 바닥에 칠한다. 경계 변형은 캔버스 스포이트로 선택한다. 큰 지형 변경은 edit_world_terrain으로 한다.', source: 'imported' })),
     referenceSourceTilesetId: WORLDMAP_SELECTED_ID,
   };
+  // 지형 태그: 칸 이름표(바다·강·숲·사막·눈…)로 세계 지형 레코드를 달아 조우율·전투 배경·탈것 통행이 세계 지도에서도 듣게 한다.
+  const worldTags = ensureWorldTerrainRecords(project);
+  packed.tiles.forEach((tile, i) => {
+    const kind = worldTerrainKindOfLabel(tile.label);
+    if (kind) tileset.terrain[i] = worldTags[kind];
+  });
   const upper = new Array<number>(packed.lowerTiles.length).fill(-1);
   const source = project.tilesets[WORLDMAP_SELECTED_ID];
   const graft = (tile: number, inheritGround = false) => {

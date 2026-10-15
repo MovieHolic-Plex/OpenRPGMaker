@@ -3140,3 +3140,15 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   `qa:game check` 의 monster 검사(`src/qa/gameCheck/monster.ts`)에서도 돈다.
 - 남은 한계: 화산 같은 시작 풍경은 아직 meadow·desert·snow·coast 뿐(키트 적용·테마는 monster-free-b). 체육관 없는 마을의 회관은 체육관
   모양 건물이다. `resizeCampaignGyms` 가 줄인 체육관 맵은 건물·퍼즐이 남은 빈 시험장이다(관장 대사만 정리).
+
+## 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
+
+- `derive_world_variant {baseMapId, newMapId?, name?, preset?:"ruin"|"none", flood?, rifts?, fissures?, recolor?, forest?, zones?, palette?, ruinIcons?, icons?, journey?:"free"|"keep", variantOps?, copyEvents?, preview?}` —
+  파멸 전/후 같은 대륙. 모르는 키는 거절(허용 목록을 메시지에 준다). `preview:true` 는 저장 없이 도식·통계만(몇 초). 결과 `data.diff`(구조·땅 변화 %, 구역별), `data.journeyCheck.notes`.
+  기본 preset `ruin` = 침수 3칸·자동 균열·바닥 갈아엎기·고사목·ruin 색 표·폐허 아이콘 70%. 라벨 「세계 변형판 만들기」.
+- `link_world_entrance {worldMapId, links:[{place|x,y, toMapId, toGate?}], autoMatch?, fade?}` — 월드맵 장소 입구 ↔ 던전·마을 양방향. 던전은 `던전 입구` 표식이 문 칸을 알려 준다.
+  `autoMatch:true` 는 이름·id 가 같은 맵이 정확히 하나일 때만 잇는다. 결과 `data.unlinkedPlaces` = 입구 이벤트가 없는 장소. 라벨 「월드 입구 잇기」.
+- `author_dungeon.entrance:{fromMapId, place|x,y, fade?}` — 짓는 즉시 야외 입구와 양방향(고아 맵 방지). 모르는 키·없는 장소는 거절하며 `link_world_entrance` 로 우회하는 문장을 준다.
+  `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
+- `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.
+- 실행 근거: `qa-runs/ff6b`(gitignore) — 변형 diff 46%·두 지도 렌더 비교, 던전 왕복 `run_scene_test`, 지형별 조우·배경·조우율 표.
