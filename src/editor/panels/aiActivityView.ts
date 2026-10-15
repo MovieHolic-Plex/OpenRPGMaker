@@ -6,6 +6,7 @@ import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
 import { bindActivityLevel, createActivityLevelControl, getActivityLevel } from "./aiActivityPreference";
 import { toolBriefLabel, toolGroup, toolLabel } from "./aiToolLabels";
+import { friendlyExecutionError, GENERIC_EXECUTION_ERROR } from "@/ai/piAgent/userFacingCopy";
 
 export interface ActivityView { root: HTMLElement; update(trace: ActivityTrace | undefined, actor?: string): void }
 const clock = (ms: number): string => `${Math.floor(Math.max(0, ms) / 60000).toString().padStart(2, "0")}:${Math.floor(Math.max(0, ms) / 1000 % 60).toString().padStart(2, "0")}`;
@@ -40,6 +41,9 @@ function briefEntryText(entry: ActivityEntry): string {
       return entry.status === "error" ? "작업 실패" : planner ? "계획 완료" : "맡은 작업 완료";
     case "review":
       return entry.status === "ok" ? "확인 완료" : "더 다듬을 곳 발견";
+    case "error":
+      // 원인을 짚은 쉬운 문장이 있으면 그것을, 못 짚으면 원문 한 줄을 그대로(일반 문구는 아래 말풍선이 이미 말한다).
+      { const plain = friendlyExecutionError(entry.summary); return plain === GENERIC_EXECUTION_ERROR ? activityText(entry.summary, 140) : plain; }
     default:
       return activityText(entry.summary, 140);
   }
@@ -152,6 +156,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       // 도구 실패 뒤에 기록이 더 이어졌으면 조수가 회복한 것이다 — 간단히 보기에서는 지운다.
       // 실행 자체가 실패로 끝나면 마지막 run.phase 「실패」 줄이 그 사실을 말한다. 자세히 보기는 그대로 둔다.
       const latestEntry = candidates.at(-1)?.id;
+      const hasErrorRow = candidates.some(entry => entry.kind === "error");
       // Fold adjacent successes once; retain only the brief display window.
       const active: ActivityEntry[] = [];
       const completed: ActivityEntry[] = [];
@@ -187,7 +192,9 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
         if (!majorKinds.has(entry.kind) || (entry.name === "run.phase" && entry.id !== latestPhase)
           || (entry.name.startsWith("save.") && entry.id !== latestSave)
           || (entry.name === "checkpoint.apply" && entry.status !== "error")
-          || (entry.kind === "tool" && entry.status === "error" && entry.id !== latestEntry)) continue;
+          || (entry.kind === "tool" && entry.status === "error" && entry.id !== latestEntry)
+          // 원인 줄(error)이 이미 있으면 같은 실패를 알리는 종료 줄(「실패」)은 뺀다.
+          || (entry.name === "run.phase" && entry.status === "error" && hasErrorRow)) continue;
         if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok"
           && previous.name === entry.name && previous.actor === entry.actor && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) count++;
         else { flush(); count = 1; }

@@ -17,8 +17,6 @@ import { el } from "@/util/dom";
 interface Placed {
   readonly presence: Presence;
   readonly region: PresenceRegion | null;
-  /** 대화 카드가 같은 말(검토·초안)을 하고 있다 — 상자는 위치 표시로만 남기고 글자 이름표는 접는다. */
-  readonly quiet: boolean;
 }
 
 let layer: HTMLElement | null = null;
@@ -55,7 +53,7 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   if (!mapId) return [];
   // 초안 영역은 맵당 조수 한 명 규칙에 따라 그 맵에 쓰는 조수(검수 제외) 한 명에게만 붙인다. 나머지는 이름표만.
   // 대화 카드가 진행·확인·실패를 맡고 있으면(도크 열림 + 전부 대화창의 일) 지도는 「일하는 중」 이름표만 말한다.
-  // 실패는 이름표를 달지 않고(대화 카드가 원인을 갖고 있다), 검토·초안은 상자만 남겨 어디가 바뀌었는지만 가리킨다.
+  // 실패는 이름표를 달지 않는다(대화 카드가 원인을 갖고 있다). 검토·초안 상자는 어디가 바뀌었는지 가리키므로 남긴다.
   const covered = conversationCardCovers(presences);
   const here = presences.filter(p => p.mapId === mapId && p.state !== "applied" && !(covered && p.state === "failed"));
   const writer = here.find(p => !p.region && !p.readsOnly);
@@ -63,7 +61,6 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   return here.map(presence => ({
     presence,
     region: presence.region ?? (presence === writer ? draft : null),
-    quiet: covered && (presence.state === "review" || presence.state === "draft"),
   }));
 }
 
@@ -77,12 +74,12 @@ function regionClass(presence: Presence, region: PresenceRegion | null): string 
 }
 
 /** 칸 하나에 쓰인 마지막 글. 같으면 DOM 을 건드리지 않는다. */
-const written = new WeakMap<HTMLElement, { cls: string; tone: string; state: string; name: string; text: string; slot: string; quiet: string }>();
+const written = new WeakMap<HTMLElement, { cls: string; tone: string; state: string; name: string; text: string; slot: string }>();
 
-function buildRegion(presence: Presence, region: PresenceRegion | null, index: number, quiet: boolean): HTMLElement {
+function buildRegion(presence: Presence, region: PresenceRegion | null, index: number): HTMLElement {
   const node = el("div", {
     class: regionClass(presence, region),
-    dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index), quiet: quiet ? "1" : "0" },
+    dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index) },
     children: [el("span", { class: "ai-map-region-tag", children: [
       el("span", { class: "ai-map-region-dot" }),
       el("b", { text: presence.name }),
@@ -91,7 +88,7 @@ function buildRegion(presence: Presence, region: PresenceRegion | null, index: n
   });
   // 좌표를 받기 전에는 보이지 않게 둔다 — 첫 배치가 다음 프레임이라도 왼쪽 위 구석에 깜빡이지 않게.
   if (region) node.hidden = true;
-  written.set(node, { cls: node.className, tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index), quiet: quiet ? "1" : "0" });
+  written.set(node, { cls: node.className, tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index) });
   return node;
 }
 
@@ -108,16 +105,16 @@ function render(): void {
   const existing = new Map<string, HTMLElement>();
   for (const node of root.children) if (node instanceof HTMLElement && node.dataset.presenceId) existing.set(node.dataset.presenceId, node);
   const order: HTMLElement[] = [];
-  placed.forEach(({ presence, region, quiet }, index) => {
+  placed.forEach(({ presence, region }, index) => {
     const node = existing.get(presence.id);
     existing.delete(presence.id);
-    if (!node) { order.push(buildRegion(presence, region, index, quiet)); return; }
+    if (!node) { order.push(buildRegion(presence, region, index)); return; }
     const prev = written.get(node);
-    const next = { cls: regionClass(presence, region), tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index), quiet: quiet ? "1" : "0" };
-    if (!prev || prev.cls !== next.cls || prev.tone !== next.tone || prev.state !== next.state || prev.slot !== next.slot || prev.quiet !== next.quiet) {
+    const next = { cls: regionClass(presence, region), tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index) };
+    if (!prev || prev.cls !== next.cls || prev.tone !== next.tone || prev.state !== next.state || prev.slot !== next.slot) {
       // 좌표 상태(`is-cornered` 전환·style)는 감시 루프가 다시 맞춘다.
       if (prev?.cls !== next.cls) { node.className = next.cls; delete node.dataset.rect; node.style.cssText = ""; node.hidden = region !== null; }
-      node.dataset.tone = next.tone; node.dataset.state = next.state; node.dataset.slot = next.slot; node.dataset.quiet = next.quiet;
+      node.dataset.tone = next.tone; node.dataset.state = next.state; node.dataset.slot = next.slot;
     }
     if (!prev || prev.name !== next.name || prev.text !== next.text) {
       const tag = node.querySelector(".ai-map-region-tag");

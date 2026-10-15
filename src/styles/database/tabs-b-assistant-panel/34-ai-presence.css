@@ -132,8 +132,13 @@ html[data-ai-activity-level="trace"] body:not(.ai-dock-collapsed):not(.ai-studio
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 /* 진행 중인 카드에서도 「중지」가 보인다 — 지도 아래 상태 줄의 「■ 멈춤」이 접힌 뒤의 유일한 대화 쪽 중지. */
-.ai-work-inline[data-state="running"] > .ai-work-inline-actions { display: flex; margin-top: 8px; }
+.ai-work-inline.has-activity[data-state="running"] > .ai-work-inline-head[aria-expanded] ~ .ai-work-inline-actions { display: flex; margin-top: 8px; }
 /* 간단히 보기에서 실패 원인은 한 번만 — 기록 줄에 원인이 이미 있으면 카드 아래쪽 빨간 되풀이 줄은 접는다. 자세히 보기는 그대로. */
 html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-work-inline:has(.ai-activity-entry.is-error) .ai-team-error { display: none; }
 .ai-work-inline-undone { color: var(--text-2); font-size: var(--font-size-sm); align-self: center; }
 .ai-work-inline[data-undone="1"] { opacity: 0.8; }
+/* 검토·초안 상태의 지도 상자는 「어디가 바뀌었나」만 가리킨다 — 「내 차례」 글자는 대화 카드가 말한다(도크가 열려 있을 때). 영역을 모르는 구석 이름표는 통째로 접는다. */
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region[data-state="review"]:not(.is-cornered) .ai-map-region-tag,
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region[data-state="draft"]:not(.is-cornered) .ai-map-region-tag { display: none; }
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region.is-cornered[data-state="review"],
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region.is-cornered[data-state="draft"] { display: none; }
