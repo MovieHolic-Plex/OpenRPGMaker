@@ -32,6 +32,6 @@ export default {
     { id: "11-deadline", note: "기한(1일)이 찼다 — 잠으로 넘어가는 순간 onDayEnd 가 엔딩을 부른다: 호감 20 → 「친구로 남는 결말」 에필로그", shot: true,
       ops: [enter, { kind: "waitForText", testid: "dialogue-box", text: "친구로 남는 결말" }, ...stable], expect: { testidPresent: ["dialogue-box"] } },
     { id: "12-ending-screen", note: "에필로그 뒤 엔딩 화면", shot: true,
-      ops: [...skipThenNext, { kind: "waitFor", testid: "ending-screen", state: "present", timeoutMs: 60000 }, { kind: "waitForVisible", testid: "ending-screen", minAlpha: 0.95, timeoutMs: 20000 }, { kind: "pauseFrames" }, { kind: "stepFrames", frames: 600, deltaMs: 16 }, { kind: "resumeFrames" }], expect: { testidPresent: ["ending-screen"] } },
+      ops: [...skipThenNext, { kind: "waitFor", testid: "ending-screen", state: "present", timeoutMs: 60000 }, { kind: "waitForVisible", testid: "ending-screen", minAlpha: 0.95, timeoutMs: 20000 }, { kind: "waitForText", testid: "ending-screen", text: "친구로 남는 결말", timeoutMs: 30000 }, { kind: "pauseFrames" }, { kind: "stepFrames", frames: 200, deltaMs: 16 }, { kind: "resumeFrames" }], expect: { testidPresent: ["ending-screen"] } },
   ],
 };
