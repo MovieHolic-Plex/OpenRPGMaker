@@ -309,6 +309,11 @@ export interface SkillRecord {
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
   /**
+   * 능력치 단계(포켓몬식 −6~+6) 변화: 명중하면 대상(또는 시전자)의 단계를 올리거나 내린다 — 울음 −1 공격, 칼춤 +2 공격.
+   * 전투 한 번 동안만 유지되고 교체하면 사라진다. 생략 = 단계 효과 없음(기존 프로젝트는 저장 바이트 그대로).
+   */
+  statStageEffects?: SkillStatStageEffect[];
+  /**
    * 날씨: 이 기술이 명중하면 전투 날씨를 바꾼다(포켓몬식 쾌청·비·모래바람·싸라기눈). 몇 차례 동안 같은 타입 기술의 피해를 키우거나 줄이고,
    * 모래바람·싸라기눈은 차례 말 피해를 준다. 전투 한 번 동안만 유지(저장 안 함). gen1 전투 모델만. 생략 = 날씨 없음(기존 프로젝트는 저장 바이트 그대로).
    */
@@ -398,6 +403,16 @@ export interface SkillArea {
 export interface SkillMpCost {
   flat: number;
   percentMax: number;
+}
+
+export interface SkillStatStageEffect {
+  stat: import("@/battle/statStages").StatStageKey;
+  /** −6~+6 (0 제외). 양수 = 올림, 음수 = 내림. */
+  stages: number;
+  /** 발동 확률(0~100). 생략 = 100. */
+  chance?: number;
+  /** 누구의 단계를 바꾸나. 생략 = 기술의 대상, self = 시전자(예: 오버히트로 자신의 특수공격이 떨어진다). */
+  target?: "target" | "self";
 }
 
 export type SkillWeatherKind = "sun" | "rain" | "sandstorm" | "hail";

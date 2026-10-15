@@ -1,6 +1,7 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
 import { WEATHER_LABELS, weatherResidualLine } from "@/battle/weather";
 import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
+import { STAT_STAGE_LABELS, statStageMessage } from "@/battle/statStages";
 import { withJosa } from "@/util/josa";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
@@ -482,7 +483,9 @@ export function createBattleSequencer(
       delay(continueNext, BATTLE_LOG_MS);
       return;
     }
-    const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? entry.message : undefined;
+    // 능력치 단계 변화는 표시 이름(야생·상대 접두)으로 문장을 다시 만든다 — 런타임 message 는 이름만 있는 일반 문장이다.
+    const stageLine = statStageLine(entry, snapshot);
+    const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? (stageLine ?? entry.message) : undefined;
     const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
     const raw = feedbackFromTimeline(entry);
     // 선고(doomTurns)로 쓰러지는 upkeep: 남은 HP 숫자(-99999 같은) 대신 상태 이름을 띄운다. amount 는 원장용으로 둔다.
@@ -515,10 +518,13 @@ export function createBattleSequencer(
     if (specialAfterCommand) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
+      const stagePopup = statStagePopup(entry);
       delay(() => {
         hooks.onDirectorState({ step: "acting", lines: [specialAfterCommand], targetId: entry.targetId });
+        // 올림·내림이 실제로 일어난 단계는 대상 위에 「공격↑」 글자가 잠깐 뜬다(표시 전용 label 피드백, HP 원장·타격 연출을 건드리지 않는다).
+        if (stagePopup && entry.targetId) hooks.onDamageFeedback({ targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stagePopup });
         hooks.onSyncView();
-        delay(continueNext, BATTLE_STATE_LINE_MS);
+        delay(() => { if (stagePopup) hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
       }, BATTLE_LOG_MS);
       return;
     }
@@ -648,7 +654,7 @@ export function createBattleSequencer(
       return { step: "acting", lines: [`${withJosa(actor?.name ?? "아군", "이/가")} 다시 일어섰다! (HP ${entry.amount ?? 0})`], targetId: entry.targetId };
     }
     if (entry.kind === "move") return { step: "acting", lines: [], targetId: entry.targetId };
-    if (entry.kind === "special") return { step: "acting", lines: entry.message ? [entry.message] : [], targetId: entry.targetId };
+    if (entry.kind === "special") return { step: "acting", lines: entry.message ? [statStageLine(entry, snapshot) ?? entry.message] : [], targetId: entry.targetId };
     if (entry.kind !== "action") return undefined;
     const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
       ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);
@@ -700,6 +706,29 @@ export function createBattleSequencer(
       return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
     }
     return { failLine: `${name}에게는 효과가 없었다.` };
+  }
+
+  /** 능력치 단계 변화(statStage)가 실린 special 엔트리의 문장 — 에메랄드 문장 규칙이면 「상대/야생 이름」을 쓴다. 아니면 undefined. */
+  function statStageLine(entry: BattleTimelineEntrySnapshot, snapshot: BattleSnapshot): string | undefined {
+    if (entry.kind !== "special" || !entry.statStage) return undefined;
+    const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
+    const target = peers.find((battler) => battler.id === entry.targetId);
+    if (!target) return undefined;
+    const name = emeraldNarrationActive() ? emeraldBattlerName(target, snapshot) : disambiguatedBattlerName(target, peers);
+    return statStageMessage(name, {
+      stat: entry.statStage.stat,
+      before: entry.statStage.before,
+      after: entry.statStage.after,
+      applied: entry.statStage.after - entry.statStage.before,
+      requested: entry.statStage.requested,
+    });
+  }
+
+  /** 단계가 실제로 움직였을 때만 뜨는 짧은 글자(「공격↑」). 한계에 걸려 안 움직였으면 문장만. */
+  function statStagePopup(entry: BattleTimelineEntrySnapshot): string | undefined {
+    const change = entry.statStage;
+    if (!change || change.after === change.before) return undefined;
+    return `${STAT_STAGE_LABELS[change.stat]}${change.after > change.before ? "↑" : "↓"}`;
   }
 
   /** 상태 부여·해제 문장. 능력 증감(「공격 상승」)은 「…의 공격이 올랐다!」로 읽는다. */

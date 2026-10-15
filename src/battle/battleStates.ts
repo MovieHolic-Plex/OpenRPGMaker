@@ -5,6 +5,7 @@ import { stateRatePercentage } from "@/project/actorModel";
 import { resolvedStateValues } from "@/project/ontology/databaseStateOntology";
 import type { DatabaseStateEffect, Project, StateRecord } from "@/project/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
+import { statStageMultiplier, type StatStages } from "@/battle/statStages";
 
 export type Rng = () => number;
 const defaultRng: Rng = () => {
@@ -315,19 +316,23 @@ function clampStateMultiplier(value: number): number {
   return Math.max(STATE_MULTIPLIER_MIN, Math.min(STATE_MULTIPLIER_MAX, value));
 }
 
-export function attackMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+// 능력치 단계(statStages.ts)는 상태 배율을 clamp 한 뒤에 곱한다 — 단계는 −6~+6 에서 따로 멈추고,
+// 상태 배율(0.4~2.5)과 겹쳐도 서로의 한계를 먹지 않는다. battler 에 statStages 가 없으면 이전 계산과 같다.
+type StageBattler = { readonly stateIds: readonly string[]; readonly statStages?: StatStages };
+
+export function attackMultiplierForStates(project: Project, battler: StageBattler, kind: "attack" | "mind" = "attack"): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, kind === "mind" ? "spAttack" : "attack");
 }
 
-export function agilityMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+export function agilityMultiplierForStates(project: Project, battler: StageBattler): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.agilityMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, "speed");
 }
 
-export function defenseMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+export function defenseMultiplierForStates(project: Project, battler: StageBattler, kind: "attack" | "mind" = "attack"): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, kind === "mind" ? "spDefense" : "defense");
 }
 
 /**
@@ -336,8 +341,10 @@ export function defenseMultiplierForStates(project: Project, battler: { readonly
  */
 export function defenseMultiplierForStatesByKind(
   project: Project,
-  battler: { readonly stateIds: readonly string[] },
+  battler: StageBattler,
   kind: "attack" | "mind",
+  /** 능력치 단계(방어/특수방어)를 고르는 계열. 생략하면 kind 를 따른다 — 마법 속성 기술은 statistic 과 무관하게 특수방어 단계를 본다. */
+  stageKind: "attack" | "mind" = kind,
 ): number {
   const raw = battler.stateIds.reduce((factor, stateId) => {
     const behavior = behaviorFor(project, stateId);
@@ -345,7 +352,7 @@ export function defenseMultiplierForStatesByKind(
     const split = kind === "mind" ? behavior.magicDefenseMultiplier : behavior.physicalDefenseMultiplier;
     return factor * behavior.defenseMultiplier * split;
   }, 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, stageKind === "mind" ? "spDefense" : "defense");
 }
 
 /** 좀비: 걸린 상태 중 하나라도 invertHealing 이면 true — HP 회복이 피해로 뒤집힌다. */

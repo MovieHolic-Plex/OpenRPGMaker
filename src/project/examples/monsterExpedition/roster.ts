@@ -169,10 +169,23 @@ const DEBUFF: Readonly<Record<string, string>> = {
   fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down", dark: "state_attack_down", steel: "state_defense_down", fairy: "state_attack_down",
 };
 
+/** 능력 하락 기술(울음·꼬리흔들기·모래뿌리기)은 이진 하락 상태 대신 능력치 단계(−1)로 걸어 포켓몬처럼 겹쳐 쌓인다(2026-10-16). */
+const STAGE_DEBUFF: Readonly<Record<string, { readonly stat: "attack" | "defense" | "speed"; readonly stages: number }>> = {
+  state_attack_down: { stat: "attack", stages: -1 },
+  state_defense_down: { stat: "defense", stages: -1 },
+  state_agility_down: { stat: "speed", stages: -1 },
+};
+
 export function buildMoves(project: Project): SkillRecord[] {
   const availableStates = new Set(project.database.states.map(state => state.id));
   const availableAnimations = new Set(project.database.battleAnimations.map(animation => animation.id));
   const stateEffect = (stateId: string, chance: number, operation: "add" | "remove" = "add") => availableStates.has(stateId) ? [{ stateId, chance, operation }] : [];
+  /** 상태이상이면 stateEffects, 능력 하락이면 statStageEffects 한 칸으로 갈라 붙인다. */
+  const applyDebuff = (move: Partial<SkillRecord>, stateId: string, chance: number): void => {
+    const stage = STAGE_DEBUFF[stateId];
+    if (stage) move.statStageEffects = [{ ...stage, ...(chance < 100 ? { chance } : {}) }];
+    else move.stateEffects = stateEffect(stateId, chance);
+  };
   const chartTypes = new Set(project.system.typeChart?.types ?? []);
   const moveNames = Object.entries({ ...MOVE_NAMES, ...Object.fromEntries(Object.entries(EXTRA_MOVE_NAMES).filter(([type]) => chartTypes.has(type))) });
   return moveNames.flatMap(([type, names]) => names.map((name, index) => {
@@ -202,8 +215,8 @@ export function buildMoves(project: Project): SkillRecord[] {
       move.description = `${name}: 위력 30. 같은 차례의 보통 공격보다 먼저 움직인다.`;
     }
     if (tier === 4 && ["ground", "water", "flying", "normal"].includes(type)) {
-      move.stateEffects = stateEffect(DEBUFF[type]!, 20);
-      move.description += " 20% 확률로 상대의 전투 능력을 낮춘다.";
+      applyDebuff(move, DEBUFF[type]!, 20);
+      move.description += " 20% 확률로 상대의 전투 능력을 한 단계 낮춘다.";
     }
     if (tier === 5 && ["fire", "electric", "ice", "poison"].includes(type)) {
       move.hitRate = 85; move.stateEffects = stateEffect(DEBUFF[type]!, 20);
@@ -221,14 +234,15 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.description = "맑은 물로 자신에게 걸린 독·화상·마비·수면·빙결을 씻어낸다.";
       } else if (["fighting", "flying", "rock", "bug", "steel"].includes(type)) {
         move.scope = "self";
-        const buff = type === "fighting" ? "state_attack_up" : type === "flying" ? "state_agility_up" : "state_defense_up";
-        move.stateEffects = stateEffect(buff, 100);
-        move.description = type === "fighting" ? "결의를 다져 자신의 공격을 높인다." : type === "flying" ? "순풍을 타 자신의 속도를 높인다." : "몸을 굳혀 자신의 방어를 높인다.";
+        // 이진 상승 상태가 아니라 능력치 단계(공격 +2 · 스피드 +2 · 방어 +2)로 건다 — 거듭 쓰면 최대 +6 까지 쌓인다.
+        const boost = type === "fighting" ? { stat: "attack" as const, stages: 2 } : type === "flying" ? { stat: "speed" as const, stages: 2 } : { stat: "defense" as const, stages: 2 };
+        move.statStageEffects = [{ ...boost, target: "self" as const }];
+        move.description = type === "fighting" ? "결의를 다져 자신의 공격을 크게 높인다(+2단계)." : type === "flying" ? "순풍을 타 자신의 스피드를 크게 높인다(+2단계)." : "몸을 굳혀 자신의 방어를 크게 높인다(+2단계).";
       } else {
-        move.stateEffects = stateEffect(DEBUFF[type]!, 100);
+        applyDebuff(move, DEBUFF[type]!, 100);
         move.hitRate = type === "psychic" ? 75 : type === "ice" ? 55 : 90;
         move.maxPp = type === "ice" ? 5 : 15;
-        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 낮춘다. 명중률 90%." : "모래장막으로 상대의 속도를 낮춘다. 명중률 90%.";
+        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : "모래장막으로 상대의 스피드를 한 단계 낮춘다. 명중률 90%.";
       }
     }
     return normalizeSkillRecord(move);

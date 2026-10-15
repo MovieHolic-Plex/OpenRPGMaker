@@ -1654,6 +1654,11 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 `system.vehicles[].flightView?: "mode7"`(2026-10-15, 비행선 전용, 선택) — 비행 시점. 생략 = 기존 탑뷰(옛 프로젝트 JSON 바이트 불변). `normalizeVehicleConfigs` 화이트리스트에 들어 있고 비행선 외 id 에서는 버린다.
 
 
+## SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+
+선택 필드 `statStageEffects?: {stat, stages, chance?, target?}[]`(능력치 단계 −6~+6). 값이 있을 때만 정규화가 싣는다 — 안 쓰는 프로젝트는 저장 바이트 그대로이고 로드 보정이 필요 없다. 전투 중 단계(`MutableBattler.statStages`)는 저장하지 않는다. 규칙: `openwiki/runtime-battle.md`.
+
+
 ## SkillRecord.weather (2026-10-16, poke-depth PR5)
 
 선택 필드 `weather?: {kind, turns?}`(쾌청·비·모래바람·싸라기눈 중 하나; 정규화는 모양이 맞을 때만 싣고 turns 기본 5 는 저장하지 않는다). 전투 날씨 상태는 저장하지 않는다. 안 쓰는 프로젝트는 저장 바이트 그대로. 규칙: `openwiki/runtime-battle.md` 「날씨」.

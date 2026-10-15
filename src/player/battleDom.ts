@@ -1211,6 +1211,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     };
   }
 
+  /** 시퀀서가 아직 재생하지 않은 능력치 단계 변화를 되감은 단계(표시 전용). 스냅샷은 명령 즉시 해결돼 문장 전에 알약이 먼저 바뀐다. */
+  function pendingStageView(snapshot: BattleSnapshot): BattleFieldPresentation["stageView"] {
+    const pending = snapshot.timeline.filter((entry) => entry.sequence > playedTimelineSequence && entry.statStage && entry.targetId);
+    if (pending.length === 0) return undefined;
+    return (battlerId, stages) => {
+      let view: Record<string, number> = { ...(stages ?? {}) };
+      for (const entry of [...pending].reverse()) {
+        if (entry.targetId !== battlerId || !entry.statStage) continue;
+        view = { ...view, [entry.statStage.stat]: entry.statStage.before };
+      }
+      return view;
+    };
+  }
+
   /** 시퀀서가 지금까지 재생한 날씨 변화만 반영한 날씨(표시 전용). 아직 재생하지 않은 날씨 엔트리가 없으면 undefined(스냅샷 그대로). */
   function pendingWeatherView(snapshot: BattleSnapshot): BattleFieldPresentation["weather"] {
     if (!snapshot.timeline.some((entry) => entry.sequence > playedTimelineSequence && entry.weatherAfter !== undefined)) return undefined;
@@ -1263,6 +1277,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       onField: options.onField,
       rollingHp,
       stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
+      stageView: sequenceBusy ? pendingStageView(snapshot) : undefined,
       weather: sequenceBusy ? pendingWeatherView(snapshot) : undefined,
       resultShown: showingResult,
     };

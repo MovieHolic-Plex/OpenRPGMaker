@@ -27,6 +27,7 @@ import {
 } from "@/battle/battleDamage";
 import { battlerTypes, gen1TypeModifiersForTypes } from "@/battle/typeChart";
 import { readGen1MajorStatus } from "@/battle/gen1/status";
+import { applyStatStage } from "@/battle/statStages";
 import { attackMultiplierForStates, defenseMultiplierForStates, defenseMultiplierForStatesByKind, stateElementRateOverride } from "@/battle/battleStates";
 import { damageEffectKind } from "@/battle/battleSpecialEffects";
 
@@ -184,11 +185,13 @@ export function predictSkillDamage(
       const nonBurnStateIds = majorStatus?.kind === "burn"
         ? user.stateIds.filter((stateId) => stateId !== majorStatus.stateId)
         : user.stateIds;
-      sourceStat = Math.max(1, Math.trunc(sourceStat * attackMultiplierForStates(project, { stateIds: nonBurnStateIds })));
+      sourceStat = Math.max(1, Math.trunc(sourceStat * attackMultiplierForStates(project, { stateIds: nonBurnStateIds, statStages: user.statStages })));
       if (majorStatus?.kind === "burn") sourceStat = Math.max(1, Math.floor(sourceStat / 2));
+    } else {
+      sourceStat = applyStatStage(sourceStat, user.statStages, "spAttack");
     }
     const defenseStat = magical
-      ? targetStats.mind
+      ? applyStatStage(targetStats.mind, target.statStages, "spDefense")
       : Math.max(1, Math.trunc(targetStats.defense * defenseMultiplierForStates(project, target)));
     const modifiers = gen1TypeModifiersForTypes(
       project,
@@ -220,7 +223,7 @@ export function predictSkillDamage(
   const userStats = battlerStats(project, user);
   const sourceStat = Math.round(
     (spec.statistic === "mind" ? userStats.mind : userStats.attack)
-    * attackMultiplierForStates(project, user)
+    * attackMultiplierForStates(project, user, spec.statistic === "mind" || isMagicalElement(project, spec.elementId) ? "mind" : "attack")
   );
   const elementMultiplier = battleElementMultiplier(project, spec.elementId, user, target)
     * emotionDamageMultiplier(project, user, target);
@@ -228,7 +231,7 @@ export function predictSkillDamage(
   // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
   // effectiveDefense 는 배율 곱을 truncate 하지 않는다 — runtime 도 float 상태로 /2 floor 한다.
   const defenseStat = (isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense)
-    * defenseMultiplierForStatesByKind(project, target, spec.statistic);
+    * defenseMultiplierForStatesByKind(project, target, spec.statistic, spec.statistic === "mind" || isMagicalElement(project, spec.elementId) ? "mind" : "attack");
   let magnitude = Math.round((spec.power + Math.floor(sourceStat / 2)) * elementMultiplier);
   if (elementMultiplier === 0) magnitude = 0;
   if (elementMultiplier > 0) {
@@ -292,9 +295,9 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
     if (source.hp <= 0 || (destination.hp <= 0 && skill.effect.kind === "damage")) break;
     const targetDefenseMultiplier = usesGen1Damage(project)
       ? defenseMultiplierForStates(project, destination)
-      : defenseMultiplierForStatesByKind(project, destination, statistic);
+      : defenseMultiplierForStatesByKind(project, destination, statistic, statistic === "mind" || usesMagicalDefense(project, skill.elementId) ? "mind" : "attack");
     const formula = skill.damageFormula ? evaluateDamageFormula(skill.damageFormula, formulaBattlerContext(
-      { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source)) },
+      { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source, "mind")) },
       { ...destination, defense: destination.defense * targetDefenseMultiplier, mind: destination.mind * targetDefenseMultiplier }, skill.power)) : undefined;
     let hit = predictSkillDamage(project, { ...battlerSnapshot(source), row: undefined },
       { power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), elementId: skill.elementId },
@@ -309,7 +312,7 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
           power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), damageFormula: skill.damageFormula,
           variance: 0, criticalRate: 0, hitRate: 100, rng: () => 0.5,
           affects: skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.affects : "hp",
-          attackerStatMultiplier: attackMultiplierForStates(project, source),
+          attackerStatMultiplier: attackMultiplierForStates(project, source, statistic === "mind" || usesMagicalDefense(project, skill.elementId) ? "mind" : "attack"),
           targetDefenseMultiplier,
           elementMultiplier: battleElementMultiplier(project, skill.elementId, source, destination)
             * emotionDamageMultiplier(project, source, destination),

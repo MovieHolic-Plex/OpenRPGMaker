@@ -228,6 +228,11 @@ export function resolveGen1DamagingMove(input: Gen1MoveInput, nextByte: Gen1Next
   };
 }
 
+/** 단계(−6~+6)를 카트리지 배율 표로 적용한다(내림, 최소 1). 능력치 단계 시스템(statStages.ts)이 같은 표를 쓴다. */
+export function applyStatStageRatio(value: number, stage: number): number {
+  return applyStatRatio(value, stage);
+}
+
 function applyStatRatio(value: number, stage: number): number {
   const normalizedStage = Math.min(6, Math.max(-6, Math.trunc(stage)));
   const ratio = STAT_MODIFIER_RATIOS[normalizedStage + 6] ?? [1, 1];
