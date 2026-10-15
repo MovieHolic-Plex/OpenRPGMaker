@@ -977,7 +977,12 @@ export interface StateRecord {
   id: StateId;
   name: string;
   /** Gen1 persistent major status semantics, independent of authored state id/name. */
-  gen1MajorStatus?: "poison" | "burn" | "sleep" | "freeze" | "paralysis";
+  gen1MajorStatus?: "poison" | "toxic" | "burn" | "sleep" | "freeze" | "paralysis";
+  /**
+   * 주요 상태와 따로 겹쳐 걸리는 휘발 상태(gen1 전투 전용). "confusion" = 걸릴 때 2~5 행동 동안 지속,
+   * 행동마다 절반이 위력 40 자해로 행동을 잃는다. 교체하면 풀린다. 생략 = 일반 상태.
+   */
+  volatileStatus?: "confusion";
   // RM2K3 상태(State) 편집 가능 필드 — 사용자가 DB 탭에서 재정의한 값.
   // 값을 설정하지 않으면 ontology 기본값(stateOntologyFor)이 사용된다.
   removalCondition?: string;

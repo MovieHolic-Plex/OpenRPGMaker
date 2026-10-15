@@ -222,6 +222,10 @@ export function buildMoves(project: Project): SkillRecord[] {
       move.hitRate = 85; move.stateEffects = stateEffect(DEBUFF[type]!, 20);
       move.description += " 명중률 85%. 20% 확률로 상태이상을 준다.";
     }
+    if (tier === 4 && ["psychic", "ghost", "fairy"].includes(type) && availableStates.has("state_confusion")) {
+      move.stateEffects = [...(move.stateEffects ?? []), ...stateEffect("state_confusion", type === "psychic" ? 30 : 20)];
+      move.description += ` ${type === "psychic" ? 30 : 20}% 확률로 상대를 혼란에 빠뜨린다.`;
+    }
     if (tier === 6) {
       move.power = 0; move.hitRate = 100; move.effect = { kind: "support" };
       if (["normal", "grass", "dragon"].includes(type)) {
@@ -230,7 +234,7 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.description = "자신의 체력을 회복한다. 회복량은 특수 능력에 따라 달라진다.";
       } else if (type === "water") {
         move.scope = "self"; move.maxPp = 10;
-        move.stateEffects = ["state_poison", "state_burn", "state_paralysis", "state_sleep", "state_freeze"].flatMap(id => stateEffect(id, 100, "remove"));
+        move.stateEffects = ["state_poison", "state_toxic", "state_burn", "state_paralysis", "state_sleep", "state_freeze", "state_confusion"].flatMap(id => stateEffect(id, 100, "remove"));
         move.description = "맑은 물로 자신에게 걸린 독·화상·마비·수면·빙결을 씻어낸다.";
       } else if (["fighting", "flying", "rock", "bug", "steel"].includes(type)) {
         move.scope = "self";
@@ -239,10 +243,10 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.statStageEffects = [{ ...boost, target: "self" as const }];
         move.description = type === "fighting" ? "결의를 다져 자신의 공격을 크게 높인다(+2단계)." : type === "flying" ? "순풍을 타 자신의 스피드를 크게 높인다(+2단계)." : "몸을 굳혀 자신의 방어를 크게 높인다(+2단계).";
       } else {
-        applyDebuff(move, DEBUFF[type]!, 100);
+        applyDebuff(move, type === "poison" && availableStates.has("state_toxic") ? "state_toxic" : DEBUFF[type]!, 100);
         move.hitRate = type === "psychic" ? 75 : type === "ice" ? 55 : 90;
         move.maxPp = type === "ice" ? 5 : 15;
-        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : "모래장막으로 상대의 스피드를 한 단계 낮춘다. 명중률 90%.";
+        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 맹독에 빠뜨린다 — 차례마다 피해가 커진다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 한 단계 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 한 단계 낮춘다. 명중률 90%." : "모래장막으로 상대의 스피드를 한 단계 낮춘다. 명중률 90%.";
       }
     }
     return normalizeSkillRecord(move);

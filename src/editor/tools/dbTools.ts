@@ -918,7 +918,8 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
-  gen1MajorStatus: { type: "string", enum: ["poison", "burn", "sleep", "freeze", "paralysis"] },
+  gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
+  volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
   restriction: stringSchema(),
   priority: integerSchema(),
@@ -2161,6 +2162,11 @@ const upsertState: ToolDefinition = {
         throw new ToolError(`runtimeEffects.grantSkillIds '${skillId}' 는 없는 기술입니다 — 먼저 upsert_skill 로 만든 뒤 다시 부르세요.`);
       }
     }
+    if ((record.volatileStatus || record.gen1MajorStatus) && draft.system.battleModel !== "gen1") {
+      warnings.push(`${record.volatileStatus ? "volatileStatus(혼란)" : "gen1MajorStatus"} 는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다 — 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 이 상태는 일반 상태처럼만 동작합니다.`);
+    }
+    if (record.gen1MajorStatus === "toxic") warnings.push("맹독(toxic)은 차례 말마다 1/16 × (1,2,3…15) 피해가 커지고 교체하면 처음부터 셉니다. runtimeEffects.hpDamagePercentPerTurn 을 따로 주지 마세요(이중 피해). 보통 독은 gen1MajorStatus:\"poison\"(고정 1/16).");
+    if (record.volatileStatus === "confusion") warnings.push("혼란(volatileStatus:\"confusion\")은 주요 상태와 겹쳐 걸리고 2~5 행동 지속, 행동마다 절반이 위력 40 자해로 행동을 잃으며 교체·전투 종료로 풀립니다. removalCondition 은 '전투 종료' 로 두세요.");
     if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

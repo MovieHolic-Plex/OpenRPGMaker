@@ -134,6 +134,10 @@ import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
   applyGen1PostActionResidual,
+  gen1ConfusionSelfDamage,
+  gen1ConfusionTurns,
+  gen1NextToxicCounter,
+  stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
   gen1ParalyzedSpeed,
@@ -697,6 +701,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return options.project.database.states.map((state) => ({
       id: state.id,
       gen1MajorStatus: state.gen1MajorStatus,
+      ...(state.volatileStatus ? { volatileStatus: state.volatileStatus } : {}),
       ...(state.gen1MajorStatus === "freeze" && state.recoverNaturallyChance ? { thawChance: state.recoverNaturallyChance } : {}),
     }));
   }
@@ -740,7 +745,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         continue;
       }
 
-      if (stateRecord?.gen1MajorStatus) {
+      if (stateRecord?.volatileStatus === "confusion") {
+        // 혼란: 주요 상태와 따로 걸린다. 이미 혼란이면 다시 걸리지 않는다. 남는 행동 수는 바이트 하나(2~5).
+        if (gen1ConfusionActive(target)) continue;
+        target.stateIds = [...target.stateIds, effect.stateId];
+        target.stateTurns[effect.stateId] = gen1ConfusionTurns(nextGen1Byte);
+      } else if (stateRecord?.gen1MajorStatus) {
         const applied = applyGen1MajorStatus({
           stateIds: target.stateIds,
           stateTurns: target.stateTurns,
@@ -766,6 +776,40 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
+  function gen1ConfusionStateId(battler: MutableBattler): string | undefined {
+    return battler.stateIds.find((stateId) => options.project.database.states.find((state) => state.id === stateId)?.volatileStatus === "confusion");
+  }
+
+  function gen1ConfusionActive(battler: MutableBattler): boolean {
+    return gen1ConfusionStateId(battler) !== undefined;
+  }
+
+  /** 행동 직전 혼란 판정. 자신을 때리면 true(이번 행동을 잃는다). */
+  function stepGen1ConfusionBeforeAction(battler: MutableBattler): boolean {
+    const stateId = gen1ConfusionStateId(battler);
+    if (!stateId) return false;
+    const step = stepGen1Confusion(battler.stateTurns[stateId] ?? 0, nextGen1Byte);
+    if (step.outcome === "snappedOut") {
+      battler.stateIds = battler.stateIds.filter((id) => id !== stateId);
+      delete battler.stateTurns[stateId];
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "natural" });
+      return false;
+    }
+    battler.stateTurns[stateId] = step.turnsLeft;
+    if (step.outcome !== "selfHit") return false;
+    const damage = Math.min(battler.hp, gen1ConfusionSelfDamage(
+      battler.level ?? 1,
+      gen1ModifiedStat(battler, "attack", battler.attackPower),
+      gen1ModifiedStat(battler, "defense", battler.defense),
+    ));
+    battler.hp -= damage;
+    recordTimeline({
+      kind: "stateUpkeep", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, amount: damage, stateId,
+      message: `${withJosa(battler.name, "은/는")} 혼란에 빠져 자신을 공격했다!`,
+    });
+    return true;
+  }
+
   function gen1MajorStatusOf(battler: MutableBattler) {
     return readGen1MajorStatus(battler.stateIds, battler.stateTurns, gen1StateRecords());
   }
@@ -789,19 +833,29 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         reason: "natural",
       });
     }
-    if (stepped.canAct) return true;
-    recordIncapacitated(battler);
-    applyGen1Residual(battler);
-    return false;
+    if (!stepped.canAct) {
+      recordIncapacitated(battler);
+      applyGen1Residual(battler);
+      return false;
+    }
+    if (stepGen1ConfusionBeforeAction(battler)) {
+      applyGen1Residual(battler);
+      return false;
+    }
+    return true;
   }
 
   function applyGen1Residual(battler: MutableBattler): void {
     if (!gen1 || battler.hp <= 0) return;
     const status = gen1MajorStatusOf(battler);
+    // 맹독: 차례 말마다 카운터가 올라 1/16 × 카운터씩 깎인다(교체하면 처음부터).
+    const toxicCounter = status?.kind === "toxic" ? gen1NextToxicCounter(battler.stateTurns[status.stateId]) : undefined;
+    if (status && toxicCounter !== undefined) battler.stateTurns[status.stateId] = toxicCounter;
     const residual = applyGen1PostActionResidual({
       kind: status?.kind,
       maxHp: battler.maxHp,
       currentHp: battler.hp,
+      toxicCounter,
     });
     battler.hp = residual.currentHp;
     if (residual.damage > 0) {
@@ -4523,6 +4577,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (outgoing) {
       outgoing.gauge = 0;
       outgoing.defending = false;
+      resetVolatileStatesOnSwitchOut(outgoing);
       // 교체로 빠지면 능력치 단계가 사라진다(포켓몬 규칙). 다시 나와도 0 단계에서 시작한다.
       delete outgoing.statStages;
     }
@@ -4539,6 +4594,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
     markActiveParticipants();
     return true;
+  }
+
+  /** 교체해서 빠지면 혼란은 풀리고 맹독 카운터는 처음(1/16)부터 다시 센다. */
+  function resetVolatileStatesOnSwitchOut(battler: MutableBattler): void {
+    if (!gen1) return;
+    for (const stateId of [...battler.stateIds]) {
+      const record = options.project.database.states.find((state) => state.id === stateId);
+      if (record?.volatileStatus) {
+        battler.stateIds = battler.stateIds.filter((id) => id !== stateId);
+        delete battler.stateTurns[stateId];
+      } else if (record?.gen1MajorStatus === "toxic") battler.stateTurns[stateId] = 0;
+    }
   }
 
   function canSwitchActor(fromActorId: ActorId, targetActorId: ActorId): boolean {

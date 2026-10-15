@@ -3275,6 +3275,14 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 
 
+## `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
+
+- `gen1MajorStatus` enum 에 `"toxic"`(맹독: 1/16 × 1,2,3…15) 추가, 새 enum `volatileStatus: "confusion"`(주요 상태와 겹치는 휘발 상태, 2~5 행동·절반 자해·교체/전투 종료로 풀림). 둘 다 **gen1 전투 모델에서만 작동** — 아니면 도구가 경고하고 일반 상태처럼 돈다. 자유 키 없음(enum 값만).
+- 기술에 붙이기는 기존 `upsert_skill.stateEffects:[{stateId, chance, operation:"add"}]`. 독·강철 타입은 맹독에 안 걸린다.
+- 이중 피해 금지: 맹독 레코드에 `runtimeEffects.hpDamagePercentPerTurn` 을 따로 주지 않는다(gen1 은 독 피해를 차례 말 잔여 피해로만 처리하므로 값이 쓰이지 않지만 의미를 오해하게 만든다).
+- 레시피 `monster-status-conditions`. 규칙 정본은 `openwiki/runtime-battle.md` 「맹독·혼란」.
+
+
 ## `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
 
 - 울음(공격 −1)·칼춤(공격 +2, 자신)·연막(명중률 −1)·몸을 단단히(방어 +1) 같은 포켓몬식 능력 변화 기술. 상태(`state_attack_up`)로 흉내 내지 않는다 — 단계는 −6~+6 에서 쌓이고 교체하면 초기화되며 화면에 `ATK↑2` 알약이 뜬다. 규칙 정본은 `openwiki/runtime-battle.md` 「능력치 단계」.

@@ -784,7 +784,8 @@ export function createBattleSequencer(
     if (target && emeraldNarrationActive() && (entry.kind === "stateAdded" || entry.kind === "stateRemoved" || entry.kind === "incapacitated")) {
       const states = store.getCurrent().database.states;
       const major = (stateId: string | undefined) => states.find((state) => state.id === stateId)?.gen1MajorStatus;
-      const status = entry.kind === "incapacitated" ? target.stateIds.map(major).find(Boolean) : major(entry.stateId);
+      const volatile = (stateId: string | undefined) => states.find((state) => state.id === stateId)?.volatileStatus;
+      const status = entry.kind === "incapacitated" ? target.stateIds.map(major).find(Boolean) : major(entry.stateId) ?? volatile(entry.stateId);
       const emerald = emeraldMajorStatusLine(entry.kind === "stateAdded" ? "added" : entry.kind === "stateRemoved" ? "removed" : "held",
         status, emeraldBattlerName(target, snapshot));
       if (emerald) return { step: "acting", lines: [emerald], targetId: entry.targetId };
@@ -886,7 +887,9 @@ export function createBattleSequencer(
       );
       // 얼음·잠·마비로 못 움직인 차례에 명령 대사(「새싹토의 새싹치기!」)를 붙이면, 결과를 못 찾아 상대의 마지막 타격
       // (「효과가 굉장했다!」)을 빌려 읽었다(2026-10-07 눈 관장전 영상). 그 엔트리는 상태 문장으로 읽힌다.
-      const commandIncapacitated = commandEntryIndex >= 0 && commandEntries[commandEntryIndex]!.kind === "incapacitated";
+      // 혼란 자해(userRecordId 를 단 stateUpkeep + 문장)도 같다 — 명령을 못 쓴 차례다.
+      const commandHead = commandEntryIndex >= 0 ? commandEntries[commandEntryIndex]! : undefined;
+      const commandIncapacitated = commandHead?.kind === "incapacitated" || (commandHead?.kind === "stateUpkeep" && Boolean(commandHead.message));
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);

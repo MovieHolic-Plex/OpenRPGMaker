@@ -1848,6 +1848,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
   if (stateId.includes("wet")) return "wet";
   if (stateId.includes("oil")) return "oiled";
+  if (stateId.includes("toxic")) return "toxic";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -1855,7 +1856,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("paraly") || stateId.includes("bind")) return "paralysis";
   if (stateId.includes("blind") || stateId.includes("dark")) return "blind";
   if (stateId.includes("silence") || stateId.includes("mute")) return "silence";
-  if (stateId.includes("confuse") || stateId.includes("charm")) return "confuse";
+  if (stateId.includes("confus") || stateId.includes("charm")) return "confuse";
   if (stateId.includes("death") || stateId.includes("down") || stateId.includes("ko")) return "death";
   return "burst";
 }

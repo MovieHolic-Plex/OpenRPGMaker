@@ -94,6 +94,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     id: record.id,
     name: record.name,
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
+    ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
@@ -1057,7 +1058,7 @@ function isGen1BallClass(value: unknown): value is NonNullable<ItemCaptureProfil
 }
 
 function isGen1MajorStatus(value: unknown): value is NonNullable<StateRecord["gen1MajorStatus"]> {
-  return value === "poison" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
+  return value === "poison" || value === "toxic" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
 }
 
 function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {

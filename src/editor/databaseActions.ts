@@ -323,6 +323,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
         if ("gen1MajorStatus" in patch) record.gen1MajorStatus = patch.gen1MajorStatus;
+        if ("volatileStatus" in patch) record.volatileStatus = patch.volatileStatus;
         if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
         if ("restriction" in patch) record.restriction = patch.restriction;
         if ("priority" in patch && patch.priority !== undefined) record.priority = patch.priority;
