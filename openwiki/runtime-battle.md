@@ -787,6 +787,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
   몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).
   교차 출처라 못 읽으면 그림 상자 위쪽 앞끝으로 물러난다. 엔진의 `data-emit-*` 배선은 아직 없고 QA 녹화가 주입으로 시연했다(스트립과 같은 처지).
+- **몬스터 수집 하네스 그림이 전투에 배선됨 (2026-10-15):** 캠페인 종의 `graphic.monsterResourceId/backResourceId` 가 `harness-monster-<종>-<front|back>`(112×112, `src/assets/harnessMonsterArt.ts`)이면 상대=앞모습·내 몬스터=뒷모습으로 읽고, 대기 스트립(112×N)은 `battlerIdleAnimation()` 이 돌려준다. 적에게도 `applyIdleAnimationToImage` 가 걸리며(`battleFieldDom.ts` enemyButton, 도트 시트 적 제외), 포켓몬 스킨의 `background:none` 이 스트립을 지우던 것을 `_battlers.css` 한 규칙으로 막았다. 번들에 없는 종은 기존 그림. 규칙·대응 표는 `openwiki/harnesses/monster-collect-species.md` 「캠페인·전투 배선」.
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중

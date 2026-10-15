@@ -60,6 +60,26 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 실제 원본 손실 수와 흰색 RGB 변형 손실 수는 별도로 기록하며, 실제 손실을 가정하지 않는다.
 흰색 연결 fixture의 회귀 근거와 실제 원본 측정은 서로 구분한다.
 
+## 캠페인·전투 배선 (2026-10-15) — 「번들에 종이 있으면 그 그림」
+
+사용자 결정(2026-10-15): 인게임 전투 몬스터는 생성형(이 하네스) 그림이다. 번들(`public/assets/harnesses/monster-collect-species/<종>/`)은 이제 `build_monster_game` 캠페인(60종)·전투 화면에 실제로 쓰인다.
+
+**일반 규칙(종마다 하드코딩 없음):**
+
+1. 시드 종에 `campaignSpeciesId`(예: `mx_species_coalbit`)를 적는다 — 캠페인 종 하나에 하네스 종 하나. **이 값이 대응 표의 정본이다.**
+   현재 대응: `sparkit`→`mx_species_coalbit`(불꽃), `aqualing`→`mx_species_rivulet`(물), `leafling`→`mx_species_spriglet`(풀). 사람이 고른 스타터 세 종이 캠페인 스타터 3계통 1단계에 붙는다.
+   (이름·도감 설명은 캠페인 쪽 그대로라 스파킷=도롱뇽 그림이 「숯비늘」로 보인다 — 맞추려면 캠페인 종 이름·설명을 바꾸거나 `campaignSpeciesId` 를 지운다.)
+2. `build`(끝에 자동) 또는 `manifest` 단계가 번들 폴더를 읽어 `src/assets/harnessMonsterBundle.json` 을 쓴다(종 → `campaignSpeciesId`·면·대기 칸 수, **이미지 바이트 없음**). 모래상자는 `<샌드박스>/bundle/manifest.json`.
+3. 런타임 입구는 `src/assets/harnessMonsterArt.ts`:
+   - 리소스 id `harness-monster-<하네스종>-<front|back>` → 리졸버(`generatedAssetResourceResolver.ts`)가 `/assets/harnesses/monster-collect-species/<종>/<면>.png` 로 풀고, 참조 검증(`resourceReferenceValidation.ts` `collectResourceIds`)과 몬스터 자원 목록(`monsterResourceCatalog.ts`)에 올라간다. 내보내기는 기존 경로(`collectWebExportAssets`)가 그림 파일과 대기 스트립을 함께 싣는다(확인함).
+   - 대기 스트립(112×N)은 `battlerIdleAnimation()` 이 같은 모듈에서 image-strip 으로 돌려준다(카탈로그 배열에는 안 넣는다 — 목록이 정본).
+   - `harnessArtForCampaignSpecies(id)` 가 캠페인 종 id → 번들 그림을 준다.
+4. `roster.ts`(`configureExpeditionRoster`)가 종마다 **앞·뒤가 둘 다 번들에 있으면** `graphic.monsterResourceId/backResourceId` 를 번들 그림으로, 아니면 기존 `mx_art_*`(64×64 업로드 그림)로 둔다. 번들 그림으로 바뀐 종의 `mx_art_<slug>_*` 는 프로젝트에 복사하지 않는다. 기본 적 레코드·야생·트레이너 팀은 `species.graphic` 을 읽으므로 따라온다. → **번들에 없는 종은 지금처럼 기존 그림으로 폴백한다.**
+5. 전투: 내 몬스터는 `backResourceId`(`.battle-monster-authored-back`), 상대는 `monsterResourceId` 를 쓴다. 상대 적 그림에도 대기 스트립을 적용하도록 `battleFieldDom.ts` `enemyButton` 에 `applyIdleAnimationToImage` 를 더했고(도트 시트 적은 제외), 포켓몬 스킨 CSS(`20-pokemon-skin.css` 의 `.battle-enemy-image{background:none}`)가 스트립 배경을 지워 적이 투명해지던 것을 `battle-skins/_battlers.css` 한 규칙(특정도 보강, 죽은 적·감속·고대비는 제외)으로 막았다. `applyIdleAnimationToImage` 끝의 가드는 스킨이 배경을 지워도 표시를 걷어 정적 `src` 로 돌아가게 한다.
+6. 폴백 확인: 번들에 면이 하나뿐이거나 종이 없으면 기존 그림, 스트립이 없으면 정적 그림.
+
+**남은 한계:** 아이콘(`_icon` 32×32)은 번들 종에 없어 메뉴·도감이 앞모습(112)으로 폴백한다 · 전투 표시 크기가 에메랄드 스킨 128px 고정이라 112 캔버스는 1.14배(비정수) — 하네스 배치 시안(`qa/battle-layout.css`)은 내 몬스터 3배·상대 2배 정수 배율 · 진화형·다른 종은 사람이 고른 뒤 `build` 하면 같은 규칙으로 자동 반영(시드에 `campaignSpeciesId`) · 이미 만든 저장 프로젝트는 옛 `mx_art_*` id 를 그대로 가진다(새 캠페인부터 반영).
+
 ## 파일
 
 | 경로 | 무엇 |
@@ -76,6 +96,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/harnesses/monster-collect-species/anim/idle.ts` | 대기: 고른 스프라이트를 정수 픽셀로 움직이는 4프레임 (생성 없음) |
 | `src/harnesses/monster-collect-species/anim/row.ts` | 큰 동작: 한 줄 참고 그림, 줄 → 프레임 나누기, 같은 배율·발 맞춤, 스트립 |
 | `harness-data/monster-collect-species/seed.json` | 사람이 쓰는 도감 기획 + 화풍 계약 + 애니메이션 계약(`animation`) |
+| `src/assets/harnessMonsterBundle.json` · `src/assets/harnessMonsterArt.ts` | 런타임 번들 목록(바이트 없음, `build`/`manifest` 가 씀) · 런타임 입구(리소스 id·URL·대기 스트립·캠페인 종 대응) |
 | `harness-data/monster-collect-species/ledger.json` | 하네스가 쓰는 선택 기록 (원본 sha256·프롬프트·블록 크기) |
 | `harness-data/monster-collect-species/grids/<종>-<면>.png` | 고른 후보의 격자 도트(칸 하나 = 픽셀 하나). `build` 의 입력 |
 | `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (112×112) |
@@ -105,7 +126,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
   - 블록 크기는 짐작해서 고른다: 첫 포즈 폭(px) ÷ 기준 잉크 폭(칸), ±30%(`rowBlockHint`). 짐작 없이 고르면 12장 중 5장이 2배 블록을 골라 몸집이 반이 됐다.
   - 줄 전체를 한 번에 도트화(격자·팔레트 공유) → 큰 성분 N 개를 씨앗으로 묶기 → 0번 잉크 폭을 기준 스프라이트 폭에 맞춘 배율을 N 장에 똑같이 → 발 위치를 0번에 맞춰 바닥 정렬.
   - 포즈가 겹친 후보는 「큰 덩어리가 N 개가 아니다」로 떨어진다. 후보 시트는 CSS 로 스트립을 재생한다. 고르는 건 사람.
-- 엔진 배선은 아직 없다 — 스트립과 `anim.json` 만 번들에 있다. 공격 모션(돌진·넉백·히트스톱)은 엔진이 이미 하므로, 붙일 땐 그 위에 프레임만 바꾼다.
+- 공격·피격 동작 스트립의 엔진 배선은 아직 없다(대기 스트립은 2026-10-15 에 배선됨, 위 「캠페인·전투 배선」). 공격 모션(돌진·넉백·히트스톱)은 엔진이 이미 하므로, 붙일 땐 그 위에 프레임만 바꾼다.
 
 ### 공격 방향 계약 (`animation.direction`)
 
@@ -180,6 +201,6 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 ## 아직 없는 것
 
 - 에디터 화면(도감에서 「새 종 만들기」 후보 카드), 조수 도구 — `entrypoints.editorUi/assistantTool = false`. 조수 장르 안내문(`MONSTER_COLLECT_AUTHORING_GUIDE`)에는 도구가 생긴 뒤에 힌트를 넣는다.
-- 번들 스프라이트를 몬스터 종 기록(`graphic.monsterResourceId` / `backResourceId`)과 기본 프로젝트에 배선하는 일.
+- (배선됨, 2026-10-15) 번들 스프라이트 → 캠페인 종 기록은 위 「캠페인·전투 배선」. 남은 것: 에디터에서 종 그림을 번들로 고르는 화면, `build_monster_game` 이외 프리셋.
 - 파티 아이콘·필드 동행 그림.
-- 애니메이션 스트립의 엔진 배선(`battlerIdleAnimations.ts` 카탈로그·전투 명령 단계별 프레임 전환).
+- 동작 스트립(공격·피격) 의 엔진 배선(전투 명령 단계별 프레임 전환). 대기 스트립은 배선됨.
