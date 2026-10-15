@@ -3167,3 +3167,12 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 모르는 인자는 최상위·막·줄·목소리 모두 거절한다. 결과 `data.timeline` 에 막별 시작·끝 ms. 화면 색조는 컷신이 끝나도 남으므로 막을 닫거나 색을 입힌 채 끝나면 도구가 끝에 0.7초 페이드로 되돌린다(`leaveDark:true` 면 그대로 — 맵 이동으로 이어 붙일 때).
 - 시험: `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — 시작하자마자 도는 공연, 합창 두 줄이 동시에 코너 자막으로 쌓이고 끝나면 어두운 화면이 남지 않는다.
 
+## 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
+
+- `place_vehicle {vehicle:"airship", …, flightView?: "mode7"|"flat"}` → `system.vehicles[비행선].flightView`(선택). **생략 = 기존 탑뷰와 바이트까지 같다**(필드가 저장되지 않는다). 비행선 외 탈것에 주면 무시하고 경고한다. 모르는 인자·값은 거절.
+- 런타임 `src/player/playSceneMode7.ts` 한 파일(+ `PlayScene.update` 에서 `updateMode7(this, deltaMs)` 한 줄; `playSceneScreenDistortion.ts` 는 건드리지 않았다). 비행선을 타고 mode7 일 때만 카메라를 0.5배로 멀리 빼고
+  WebGL 카메라 필터 `OprnMode7` 이 지평선(화면 위 20%) 아래 땅을 원근으로 눕히고 위는 하늘색으로 채운다(북쪽이 항상 위, 지도 회전 없음). 내리면 필터를 떼고 `applyStoredCameraState` 로 저작 배율을 되돌린다.
+- 캔버스(비 WebGL) 렌더러: 멀리 보기만, 콘솔 경고 한 번. 비용 분기: 켠 뒤 90프레임 평균이 평소(지수 이동 평균)의 1.8배(최소 34ms)를 넘으면 필터를 끄고 멀리 보기만 남긴다.
+- **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
+- 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
+

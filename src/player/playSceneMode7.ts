@@ -26,11 +26,11 @@ import { boardedVehicleId, vehicleConfig } from "@/project/vehicles";
 
 const FILTER_NODE = "OprnMode7";
 /** 비행 중 카메라 배율 배수. */
-const ZOOM_OUT = 0.62;
+const ZOOM_OUT = 0.5;
 /** 지평선이 화면 위에서 몇 % 에 놓이는가. */
 const HORIZON = 0.2;
 /** 지평선 쪽 땅이 가로로 몇 배 넓게 담기는가(원근 세기). */
-const FAR_WIDTH = 2.6;
+const FAR_WIDTH = 1.7;
 const SKY_TOP: readonly [number, number, number] = [0.36, 0.58, 0.9];
 const SKY_LOW: readonly [number, number, number] = [0.78, 0.88, 0.98];
 /** 켠 뒤 이 프레임 수의 평균으로 비용을 잰다. */
@@ -46,7 +46,8 @@ uniform vec3 uSkyTop;
 uniform vec3 uSkyLow;
 varying vec2 outTexCoord;
 void main() {
-  vec2 uv = outTexCoord;
+  // 필터 텍스처는 y 가 아래에서 위로 자란다 — 위에서 아래로 읽는 좌표로 뒤집어 쓴다.
+  vec2 uv = vec2(outTexCoord.x, 1.0 - outTexCoord.y);
   if (uv.y < uHorizon) {
     float k = uv.y / max(0.0001, uHorizon);
     gl_FragColor = vec4(mix(uSkyTop, uSkyLow, k), 1.0);
@@ -58,7 +59,7 @@ void main() {
   float d = (z - 1.0) / max(0.0001, uFar - 1.0);
   float sy = mix(0.62, 0.0, d);
   float sx = 0.5 + (uv.x - 0.5) * z;
-  gl_FragColor = texture2D(uMainSampler, clamp(vec2(sx, sy), 0.0, 1.0));
+  gl_FragColor = texture2D(uMainSampler, clamp(vec2(sx, 1.0 - sy), 0.0, 1.0));
 }
 `;
 
