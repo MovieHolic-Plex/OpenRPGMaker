@@ -3280,3 +3280,9 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 아이템 하나에 선언형 효과 하나: `item.heldEffect {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`. `kind` enum = `healBelow|cureStatus|boostType|endureOnce|regen`, `status` enum = `poison|burn|sleep|freeze|paralysis|any`. **자유 키·자유 코드 없음.**
 - 거절: 모르는 종류·필수 매개변수 누락(boostType 의 type)·상성표에 없는 type → `invalid-held-effect`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-held-items`.
 - 플레이어가 지닐 수 있게 하려면 아이템이 가방에 들어와야 한다 — 상점·이벤트 `gain` 도 같이 만든다.
+||||||| 2dc8f97f30
+
+
+## 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+
+`read_project_wiki`(ids 포함)·`read_authoring_preset`(`world-story` 분야의 `world`)·`get_original_context`(`/world`)는 `project.world` 를 `aiVisibleWorld`/`aiVisibleEntities` 로 거른 뒤 돌려준다 — 카드에 `visibility: "ai-hidden"` 이면 이름·id·관계 메모까지 나가지 않는다. 새 읽기 도구가 `project.world` 를 모델에 돌려주면 같은 필터를 부르고 `test/helpers/worldAiPaths.ts` 에 경로를 등록한다.

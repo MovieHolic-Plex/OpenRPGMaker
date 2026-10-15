@@ -13,6 +13,7 @@
 import type { ChatMessage } from "@/ai/llmClient";
 import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { normalizeProjectWorld } from "@/project/world/guards";
+import { aiVisibleEntities } from "@/project/world/visibility";
 import type { WorldCanon } from "@/project/world/canon";
 import type { ProjectWorld, WorldEntity, WorldRelation } from "@/project/world/types";
 import type { EventPage, EventPageCondition, GameEvent, Project } from "@/project/types";
@@ -144,7 +145,8 @@ function describeCondition(condition: EventPageCondition): string {
 }
 
 export function worldEntityNames(project: Project): string[] {
-  return normalizeProjectWorld(project).entities.map((entity) => entity.name.trim()).filter((name) => name.length > 0);
+  // 대사 작성기에 이름을 알리고 재요청 문구로도 돌려보내므로 AI 비공개 카드 이름은 뺀다.
+  return aiVisibleEntities(normalizeProjectWorld(project).entities).map((entity) => entity.name.trim()).filter((name) => name.length > 0);
 }
 
 /** 같은 맵에서 이미 대사가 있는 NPC 들 — 새 주민이 이들을 언급하고 이들과 어긋나지 않게 한다. */
