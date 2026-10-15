@@ -145,6 +145,11 @@ const CASES = {
     satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: ["state_poison"] }; },
     nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorStateIds = { actor_parity: [] }; },
   },
+  partyKnowsSkill: {
+    condition: { kind: "partyKnowsSkill", skillId: "skill_parity" },
+    satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorSkillIds = { actor_parity: ["skill_parity"] }; },
+    nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorSkillIds = { actor_parity: [] }; },
+  },
   partyLeader: {
     condition: { kind: "partyLeader", actorId: "actor_parity" },
     satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },

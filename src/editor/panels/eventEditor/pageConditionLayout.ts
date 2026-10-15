@@ -127,6 +127,7 @@ export function pageConditionField(
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
     case "partySize":
     case "facing":
     case "relativeFacing":

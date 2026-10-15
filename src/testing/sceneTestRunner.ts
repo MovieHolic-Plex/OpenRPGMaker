@@ -31,6 +31,8 @@ import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { useItemFromMenu } from "@/player/playerItemUse";
+import { prepareFieldAbility, recordFieldAbilityTarget } from "@/player/fieldAbility";
+import { partyMembersKnowingSkill, partySkillContext } from "@/project/partySkills";
 import { getSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
@@ -206,6 +208,11 @@ export type SceneStep =
   | { kind: "interact"; eventId?: string }
   /** 메뉴에서 아이템을 쓴다. 스위치 아이템이면 직후 자동 공통 이벤트가 돈다. */
   | { kind: "useItem"; itemId: string }
+  /**
+   * 메뉴에서 필드 스킬(skill.fieldCommonEventId)을 쓴다 — 바라보는 앞 칸이 대상. 파티(배우·몬스터)가 그 스킬을 알아야 하고
+   * actorId 를 생략하면 아는 첫 구성원이 쓴다. target 은 앞 칸 이벤트 id 확인용(다르면 실패).
+   */
+  | { kind: "useFieldSkill"; skillId: string; target?: string; actorId?: string }
   | { kind: "snapshotRewards" }
   | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
@@ -508,6 +515,7 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
   } },
   interact: { fields: { eventId: sceneText } },
   useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
+  useFieldSkill: { fields: { skillId: sceneText, target: sceneText, actorId: sceneText }, required: ["skillId"] },
   snapshotRewards: { fields: {} },
   retryCheckpoint: { fields: {} },
   gift: { fields: { eventId: sceneText, itemId: sceneText }, required: ["itemId"] },
@@ -570,6 +578,7 @@ const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, strin
   move: { direction: "dir", target: "to", position: "to" },
   gift: { item: "itemId" },
   useItem: { item: "itemId", id: "itemId" },
+  useFieldSkill: { skill: "skillId", id: "skillId", skillID: "skillId", user: "actorId", actor: "actorId", event: "target", eventId: "target" },
   expect: { ending: "endingReached", ended: "endingReached", inventory: "inventoryCount", position: "playerAt", switch: "switchOn" },
 };
 
@@ -769,7 +778,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
 function runStep(state: RunnerState, step: SceneStep): string | null {
   if (state.rewardProof && state.held && step.kind !== "choose"
     && !(step.kind === "expect" && step.mapId !== undefined && Object.keys(step).length === 2)) return "Unfinished interaction: only its pending choice may proceed";
-  if (state.held && ["walk", "move", "interact", "gift", "useItem"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
+  if (state.held && ["walk", "move", "interact", "gift", "useItem", "useFieldSkill"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
@@ -788,6 +797,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runInteractStep(state, step.eventId);
     case "useItem":
       return runUseItemStep(state, step.itemId);
+    case "useFieldSkill":
+      return runUseFieldSkillStep(state, step);
     case "snapshotRewards":
       state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
       if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
@@ -1046,6 +1057,42 @@ function runUseItemStep(state: RunnerState, itemId: string): string | null {
   return result.kind === "used" ? null : result.message;
 }
 
+function runUseFieldSkillStep(state: RunnerState, step: Extract<SceneStep, { kind: "useFieldSkill" }>): string | null {
+  const skill = state.project.database.skills.find((record) => record.id === step.skillId);
+  if (!skill) return `useFieldSkill: 스킬 '${step.skillId}' 가 없습니다 — get_database_records {collection:"skills"} 로 id 를 확인하세요.`;
+  if (!skill.fieldCommonEventId) return `useFieldSkill: '${skill.name}'(${skill.id}) 는 필드 스킬이 아닙니다 — upsert_skill 의 fieldCommonEventId 에 공통 이벤트 id 를 지정하세요.`;
+  if (state.gameOver) return "useFieldSkill: 게임 오버 중에는 쓸 수 없습니다.";
+  const users = partyMembersKnowingSkill(state.project, state.session, skill.id);
+  const user = step.actorId ? users.find((entry) => entry.id === step.actorId) : users[0];
+  if (!user) {
+    return step.actorId
+      ? `useFieldSkill: '${step.actorId}' 는 ${skill.id} 를 모릅니다(이 스킬을 아는 파티원: ${users.map((entry) => entry.id).join(", ") || "없음"}).`
+      : `useFieldSkill: 파티에 ${skill.id} 를 아는 구성원이 없습니다 — set_party 로 아는 배우를 넣거나 upsert_actor 의 learnedSkills[{level,skillId}]·장비 grantsSkillIds 로 습득시키세요.`;
+  }
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  const delta = directionDelta(state.facing);
+  const front = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x + delta.x, state.session.y + delta.y, "action");
+  if (step.target !== undefined && front?.event.id !== step.target) return `useFieldSkill: 앞 칸 이벤트가 ${front?.event.id ?? "없음"} 입니다(기대 ${step.target}) — walk adjacent + face 로 바라보세요.`;
+  let commonEventId: string;
+  if (user.kind === "actor") {
+    const prepared = prepareFieldAbility(state.project, state.session, user.id, skill, { facing: state.facing, eventId: front?.event.id });
+    if (prepared.kind === "unusable") return `useFieldSkill: ${prepared.message}`;
+    commonEventId = prepared.commonEventId;
+  } else {
+    if (!(state.project.commonEvents ?? []).some((event) => event.id === skill.fieldCommonEventId)) return `useFieldSkill: 공통 이벤트 ${skill.fieldCommonEventId} 가 없습니다 — upsert_common_event 로 만드세요.`;
+    recordFieldAbilityTarget(state.session, user.id, { facing: state.facing, eventId: front?.event.id });
+    commonEventId = skill.fieldCommonEventId;
+  }
+  const commonEvent = (state.project.commonEvents ?? []).find((event) => event.id === commonEventId)!;
+  state.log.push(`useFieldSkill ${skill.id} by ${user.kind} ${user.id} → ${front?.event.id ?? "front tile"}`);
+  const failure = runCommonEventForRunner(state, commonEvent);
+  if (failure) return failure;
+  refreshRoguelikeRoomForRunner(state);
+  // 공통 이벤트가 켠 스위치로 열리는 자동 페이지(깨지는 바위의 smash 페이지)는 실플레이어처럼 바로 돈다.
+  return runAutoTriggers(state);
+}
+
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
   // Capture before every selection exit; clear only when the intended event is selected.
   if (expectedEventId !== undefined) state.failedSelection = {
@@ -1196,7 +1243,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   }
   if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
-  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
+  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session))?.commands ?? view.event.commands;
   if (commands.length === 0) {
     state.held = null;
     state.log.push(`event ${view.event.id}: no commands`);
@@ -2247,7 +2294,7 @@ function expectShopStock(
   if (!map) return `상점 재고 확인 맵 없음: ${mapId}`;
   const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((entry) => entry.event.id === expected.eventId);
   if (!view) return `상점 이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
-  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
+  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session))?.commands ?? view.event.commands;
   const shop = findShopCommand(commands);
   if (!shop) return `상점 커맨드 없음: ${expected.eventId}`;
   const stock = resolveShopStock(state.project, state.session, shop);

@@ -11,6 +11,16 @@
 - `set_party` 는 `scope` 생략 시 `start`(경고). `script_cutscene` 의 `{say:"…"}` 줄임 비트는 `kind:"say"` 로 보강하고 kind 오류는 쓸 수 있는 kind 목록을 준다.
 - **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`weather`·`shiny`·`terrain`: 이유 문구 포함 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). `conditions.locationId`(맵 로케이션 id/이름)는 스키마에 선언해 실제로 저장한다. 레벨 범위·날씨·이로치는 포켓몬 라인 작업에서 필드를 만들 때까지 거절이 정상이다.
 
+## 빈 잔디 맵 방지 — create_map themeScene · check_map_emptiness (2026-10-15 FF6 감사 #35)
+
+실측: 역할극 필드 맵 7장이 전부 단색 잔디였다(create_map 만 부르고 칩셋 구성기를 못 찾았다). 세 겹으로 막는다.
+
+- **`create_map({themeScene:"장면[:스타일]"})`** (`themeScenes.ts` 정본 표 16장면): 맵 생성과 그 칩셋 구성기 호출이 한 호출. `width/height` 를 생략하면 장면 권장 크기(`themeSceneDefaultSize`). 장면 → 구성기: snow_north→compose_snow_north_map · desert_east · steampunk_city · sky_island · prehistoric · pirate_isles · sengoku_edo · sf_station · modern_city · campus · jp_city 의 compose_*, wizarding→build_wizarding_space, gothic→build_gothic_place, beodeul_town→author_beodeul_town, beodeul_dungeon→author_dungeon, beodeul_field→author_wild_route(남쪽→북쪽 출구, 길·숲·풀숲). 구성기가 맵을 스스로 짓는 장면(wizarding·gothic·beodeul_town·beodeul_dungeon)은 미리 맵을 만들지 않고 이름만 넘긴다. 어느 단계든 던지면 호출 전체가 버려진다. 모르는 장면·스타일은 쓸 수 있는 목록과 예시로 거절, `tilesetId` 가 장면 칩셋과 다르면 거절. 러너(`argsWithCurrentMapTileset`)는 themeScene 이 있으면 보는 맵 칩셋을 덮어 넣지 않는다 — 계열이 다르면 기존 계열 검사가 사용자 승인을 요구한다. **새 테마 구성기를 만들면 `THEME_SCENES` 에 한 줄을 더한다**(도구 이름은 레지스트리에 있어야 한다). 순환을 피하려고 구성기는 `bindThemeToolLookup(getTool)` 로 조회한다.
+- **themeScene 없이 만든 맵**의 `create_map` 요약은 「지금은 단색 … 바닥입니다. 다음: <그 칩셋의 구성기 구체 호출문>」 을 붙인다(`emptyMapNextStep` — 맵 이름 낱말로 장면을 줄 세운다. 실내 칩셋은 build_hand_interior_room, 구성기 없는 칩셋은 find_empty_ground→furnish_outdoor_area).
+- **`check_map_emptiness({mapId?})`**(`mapEmptiness.ts`, 읽기): 가장 흔한 바닥 ≥ 80% 이고 장식 ≤ 10%(100칸 이상)면 flat. qa:game `visual-flat` 과 같은 기준. `run_lint` 와 `evaluate_game_quality` 에도 warning `map-flat-ground` 로 자동 들어가 완료 직전 검사(`LAYER_VERIFICATION_TOOLS`)에서 걸린다. 월드맵 키트 맵과 시작 때 남은 빈 시드 맵 `map_blank_start` 는 제외. evaluate_game_quality 는 이미 `empty-map`(error)인 맵을 중복으로 올리지 않는다.
+- 능력 색인에 `theme-scenes` 레시피(`toolCapabilityIndex.ts`)와 find_tools 별칭(「맵 만들기」「빈 맵」)이 같은 길을 가리킨다.
+- 시험: 새 프로젝트에 16장면을 `node scripts/oprn-tools.mjs --new --project … create_map '{"name":…,"themeScene":…}'` 로 전부 깔아 본다(전부 ok, `check_map_emptiness` 로 flat 은 시드 맵 1장만).
+
 ## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 
 왜: 실제 입력창 검수(`~/claude-viz/village-ai-report.md` 문제 2·3)에서 `author_beodeul_town` 이 깐 높이 마을(map.relief)에 조수가 품질 수리로
@@ -3162,3 +3172,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   `qa:game check` 의 monster 검사(`src/qa/gameCheck/monster.ts`)에서도 돈다.
 - 남은 한계: 화산 같은 시작 풍경은 아직 meadow·desert·snow·coast 뿐(키트 적용·테마는 monster-free-b). 체육관 없는 마을의 회관은 체육관
   모양 건물이다. `resizeCampaignGyms` 가 줄인 체육관 맵은 건물·퍼즐이 남은 빈 시험장이다(관장 대사만 정리).
+
+## 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
+
+`run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).

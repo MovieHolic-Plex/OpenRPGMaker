@@ -173,7 +173,8 @@ const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
-    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?,facing?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'present',itemId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?,facing?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'present',itemId?}|{kind:'useFieldSkill',skillId,target?,actorId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
+    " useFieldSkill 은 메뉴에서 필드 스킬(skill.fieldCommonEventId)을 바라보는 앞 칸에 쓴다 — 파티(배우·몬스터)가 그 스킬을 알아야 하고 actorId 를 빼면 아는 첫 구성원이 쓴다, target 은 앞 칸 이벤트 id 확인(바위깨기·물 건너기 게이트 증명: 알기 전엔 막히고, 쓰면 길이 열려 move 로 지나간다). 이벤트 조건은 partyKnowsSkill{skillId}." +
     " present 는 대기 중인 presentItem(아이템 제시)에 itemId 를 내고, itemId 를 빼면 닫는다(cancelBranch)." +
     " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, partyIncludes, partyExcludes, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timerRemaining({timer1:초}), timerRunning(id), timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
     "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,eventId,toMapId} asserts the last actual interpreter transfer. " +
@@ -203,6 +204,9 @@ const runSceneTestTool: ToolDefinition = {
             y: { type: "integer" },
             eventId: { type: "string" },
             itemId: { type: "string" },
+            skillId: { type: "string", description: "useFieldSkill: 쓸 필드 스킬 id" },
+            target: { type: "string", description: "useFieldSkill: 앞 칸 이벤트 id(확인용)" },
+            actorId: { type: "string", description: "useFieldSkill: 쓰는 배우/몬스터 인스턴스 id(생략=아는 첫 구성원)" },
             count: { type: "integer", minimum: 1, maximum: 99 },
             unitPrice: { type: "integer", minimum: 0 },
             lastTransfer: { type: "object", properties: { fromMapId: { type: "string" }, eventId: { type: "string" }, toMapId: { type: "string" } }, required: ["fromMapId", "eventId", "toMapId"], additionalProperties: false },

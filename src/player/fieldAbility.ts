@@ -35,13 +35,22 @@ export function prepareFieldAbility(
   if (!vitals || vitals.mp < cost) return { kind: "unusable", message: "MP 가 모자랍니다" };
   if (vitals.hp <= 0) return { kind: "unusable", message: "쓰러진 동료는 쓸 수 없습니다" };
   vitals.mp -= cost;
+  recordFieldAbilityTarget(session, actorId, front);
+  return { kind: "ok", commonEventId };
+}
+
+/** 대상 칸·이벤트·사용자를 공통 이벤트가 읽는 변수에 적는다(MP 를 내지 않는다 — 몬스터 파티원이 쓸 때도 같은 경로). */
+export function recordFieldAbilityTarget(
+  session: PlaySessionLike,
+  userId: string,
+  front: { readonly facing: Dir; readonly eventId?: string },
+): void {
   const d = DELTA[front.facing];
   session.variables[FIELD_ABILITY_X_VARIABLE] = session.x + d.dx;
   session.variables[FIELD_ABILITY_Y_VARIABLE] = session.y + d.dy;
   session.stringVariables ??= {};
   session.stringVariables[FIELD_ABILITY_TARGET_STRING] = front.eventId ?? "";
-  session.stringVariables[FIELD_ABILITY_USER_STRING] = actorId;
-  return { kind: "ok", commonEventId };
+  session.stringVariables[FIELD_ABILITY_USER_STRING] = userId;
 }
 
 /** 스킬이 필드 능력인가(메뉴 행에 '사용' 표시). */

@@ -24,6 +24,7 @@ import type {
   Trigger,
 } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
+import { partySkillContext } from "@/project/partySkills";
 
 const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
   type: "fixed",
@@ -175,7 +176,7 @@ function forEachRuntimeEventView(
   near?: FootprintRect,
 ): void {
   const appearanceProject = project.database && project.assets ? { database: project.database, assets: project.assets } : undefined;
-  const pageContext: EventPageLocationContext = { locations: map.locations };
+  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
   const erased = idSet(session.erasedEventIds);
   const removedOnCurrentMap = removedEventSet(session, map.id);
   const locations = session.eventLocations;
@@ -268,7 +269,7 @@ export function runtimeEventViewById(
   // 전에 맵의 모든 이벤트 뷰(페이지 조건 평가 포함)를 만들었다 — NPC 마다 프레임당 1~3회 불려
   // NPC 수의 제곱으로 커졌다. 순서·중복 규칙은 순회 원본과 같다: 현재 맵 → 옮겨 온 이벤트 → 소환.
   const appearanceProject = runtimeAppearanceProject(project);
-  const pageContext: EventPageLocationContext = { locations: map.locations };
+  const pageContext: EventPageLocationContext = { locations: map.locations, ...partySkillContext(project, session) };
   const erased = session.erasedEventIds;
   const location = session.eventLocations?.[eventId];
   // 거르는 조건이 전부 id·세션으로만 정해져서, 같은 id 가 여럿이어도 답은 **첫** 이벤트가 정한다(예전 선형
