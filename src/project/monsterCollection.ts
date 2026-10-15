@@ -38,6 +38,8 @@ export type GiveMonsterInput = {
   readonly stateTurns?: Readonly<Record<string, number>>;
   readonly skillIds?: readonly SkillId[];
   readonly skillPp?: Readonly<Record<SkillId, number>>;
+  /** 포획에 쓴 볼(아이템 id). */
+  readonly caughtBallId?: string;
 };
 
 export type GiveMonsterResult =
@@ -243,6 +245,7 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     stateTurns: input.stateTurns ? { ...input.stateTurns } : undefined,
     skillIds: input.skillIds ? [...input.skillIds] : undefined,
     skillPp: input.skillPp ? { ...input.skillPp } : undefined,
+    ...(input.caughtBallId ? { caughtBallId: input.caughtBallId } : {}),
   };
   const maxHp = monsterMaxHpFor(project, species, instance);
   const hydrated = normalizeMonsterInstanceBattleState(project, {

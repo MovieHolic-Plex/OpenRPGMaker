@@ -1680,3 +1680,8 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 
 
 `system.socialLoop?: { slotsPerDay?, dailyFriendshipCap? }`(2026-10-16, 선택) — 호감 대화의 하루 칸·사람별 하루 상한. 생략 = 기존 동작(옛 프로젝트 JSON 바이트 불변). `databaseRecordModel.ts` 화이트리스트·`io/shapeDatabaseFields.ts` 검증에 있다. 세션 `session.socialLoop`(`saveSlots.ts` 스냅샷·`isSocialLoopDayState`). 필드 HUD 위젯 소스에 `friendship`(호감 하트)·`socialSlots`(오늘 남은 시간) 추가. 상세 `openwiki/harnesses/romance-scene.md`.
+
+
+## ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
+
+선택 필드 둘. `captureProfile.condition?`(선언형 네 종류 중 하나; 정규화는 모양이 맞을 때만 싣는다)와 `MonsterInstance.caughtBallId?`(포획에 쓴 볼 아이템 id; 세이브 검증은 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 규칙: `openwiki/runtime-battle.md` 「조건부 볼」.

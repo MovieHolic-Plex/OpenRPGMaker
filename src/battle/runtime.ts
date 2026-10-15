@@ -22,6 +22,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import { captureConditionLine, captureConditionMultiplier } from "@/battle/captureBalls";
 import { applyStatStage, scaleByStage, shiftStatStage, statStageMessage, statStageOf } from "@/battle/statStages";
 import {
   type BattleWeatherState,
@@ -3068,6 +3069,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       kind: "successfulUse",
       itemId: captureItemId,
     }));
+    // 조건부 볼: 조건이 맞으면 포획 확률 배율이 더 오른다(그물·퀵·타이머·리피트). 맞으면 문장 하나.
+    const ballBonus = captureConditionMultiplier(item.captureProfile.condition, {
+      turn,
+      targetTypes: battlerTypes(options.project, target),
+      speciesCaught: battleEventState.switches[`mx_caught_${species.id}`] === true,
+    });
+    if (ballBonus > 1 && item.captureProfile.condition) recordSpecial(user, target, captureConditionLine(item.captureProfile.condition, item.name));
     // gen1 이면 Gen1 계열 공식(만HP 1/3 + 상태 보너스) — "재우고 잡기"가 여기서 성립한다.
     let rate: number;
     let roll: number | undefined;
@@ -3077,7 +3085,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ballClass: item.captureProfile.ballClass ?? "poke",
         maxHp: target.maxHp,
         currentHp: target.hp,
-        catchRate: Math.round(species.captureRate * 255),
+        catchRate: Math.min(255, Math.round(species.captureRate * 255 * ballBonus)),
         majorStatus: gen1MajorStatusOf(target)?.kind,
       }, nextGen1Byte);
       rate = attempt.probability.value;
@@ -3088,7 +3096,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return;
       }
     } else {
-      rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item), {
+      rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item) * ballBonus, {
         model: "rm2k3",
         statusMultiplier: captureStatusMultiplier(target.stateIds),
       });

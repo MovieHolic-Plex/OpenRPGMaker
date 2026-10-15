@@ -1,5 +1,6 @@
 import { statStageEffectText } from "@/battle/statStages";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
+import { captureConditionLabel } from "@/battle/captureBalls";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import type {
   ActorCommand,
@@ -528,14 +529,15 @@ function isBattleUsableItem(item: {
   );
 }
 
-function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {
+function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number; condition?: string }[] {
   const project = store.getCurrent();
   const troop = project.database.troops.find((entry) => entry.id === snapshot.troopId);
   if (troop?.trainerBattle === true || troop?.uncapturable === true) return [];
   const inventory = snapshot.eventState.inventory;
   return project.database.items
     .filter((item) => isCaptureTool(item) && (inventory[item.id] ?? 0) > 0)
-    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1 }));
+    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1,
+      ...(item.captureProfile?.condition ? { condition: captureConditionLabel(item.captureProfile.condition, (id) => project.database.elements?.find((element) => element.id === id)?.name ?? id) } : {}) }));
 }
 
 function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
@@ -756,7 +758,7 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {
-      const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+      const detail = item.condition ?? (item.multiplier === 1 ? terms.capture : `x${item.multiplier}`);
       nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
         options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
       }));
@@ -771,7 +773,7 @@ function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpt
   header.textContent = terms.capture;
   const nodes: HTMLElement[] = [header];
   for (const item of captureItems(snapshot)) {
-    const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+    const detail = item.condition ?? (item.multiplier === 1 ? terms.capture : `x${item.multiplier}`);
     nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
       options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
     }));

@@ -63,7 +63,7 @@ export function applyBattleRewardsToSession(
       giveMonster(project, session, {
         speciesId: capture.speciesId, level: capture.level, caughtAt: capture.caughtAt,
         ivs: capture.ivs, currentHp: capture.currentHp, stateIds: capture.stateIds,
-        stateTurns: capture.stateTurns, skillIds: capture.skillIds, skillPp: capture.skillPp,
+        stateTurns: capture.stateTurns, skillIds: capture.skillIds, skillPp: capture.skillPp, caughtBallId: capture.captureItemId,
       });
     }
     // Derived maxima follow final levels/class/growth, never stale battler maxima.

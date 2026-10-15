@@ -434,6 +434,7 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "held": return `지닌 도구 · ${HELD_ITEM_KIND_LABELS[value as HeldItemEffectKind] ?? value}`;
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;
+    case "capture-cond": return `조건 ${value}`;
     case "seed": return `${ITEM_SEED_LABEL[value] ?? value} ${signedItemAmount(Number(amount))}`;
     default: return token;
   }

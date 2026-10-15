@@ -133,6 +133,8 @@ export type MonsterInstance = {
   readonly heldItemId?: string;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;
+  /** 이 몬스터를 잡은 볼(아이템 id). 생략 = 선물·시작 몬스터 등 포획이 아닌 입수. 메뉴가 볼 이름·아이콘을 보인다. */
+  readonly caughtBallId?: string;
 };
 
 export type FarmPlotState = {

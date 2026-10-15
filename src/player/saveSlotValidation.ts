@@ -218,6 +218,7 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (instance.heldItemId !== undefined && typeof instance.heldItemId !== "string") return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
+    if (instance.caughtBallId !== undefined && typeof instance.caughtBallId !== "string") return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);
   });
 }

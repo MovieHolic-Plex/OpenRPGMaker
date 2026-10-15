@@ -1,6 +1,7 @@
 import { abilityEffectText } from "@/battle/abilities";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { captureConditionLabel } from "@/battle/captureBalls";
 import { heldEffectText } from "@/battle/heldItems";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
 import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterMenuIconResourceId, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
@@ -47,6 +48,23 @@ export function monsterPartySkillDetail(options: StatusMenuDetailOptions): Statu
   })), emptyLabel: "파티 몬스터가 없습니다", hint: "Enter 보유 기술·현재 PP 보기" };
 }
 
+/** 「포획 볼」 줄 — 잡은 볼의 이름·등급·조건을 보인다(그림이 아니라 글자 ◓ + 이름: 볼 그림이 필요하면 아이템의 iconResourceId). 포획이 아닌 입수는 줄이 없다. */
+function caughtBallEntries(options: StatusMenuDetailOptions, instanceId: string): StatusMenuDetailEntry[] {
+  const ballId = options.session.monsterInstances[instanceId]?.caughtBallId;
+  if (!ballId) return [];
+  const item = options.project.database.items.find((record) => record.id === ballId);
+  const profile = item?.captureProfile;
+  const grade = profile?.ballClass === "master" ? "마스터 등급" : profile?.ballClass === "ultra" ? "울트라 등급" : profile?.ballClass === "great" ? "그레이트 등급" : "";
+  const note = [grade, profile?.condition ? captureConditionLabel(profile.condition) : ""].filter(Boolean).join(" · ");
+  return [{
+    label: "포획 볼", value: `◓ ${item?.name ?? "알 수 없는 볼"}`,
+    ...(note ? { description: note } : {}),
+    testId: `status-menu-monster-ball-${instanceId}`,
+    ...(item ? { icon: { resourceId: item.iconResourceId ?? item.imageResourceId, alt: item.name, testId: `status-menu-monster-ball-icon-${instanceId}` } } : {}),
+    onActivate: readOnly,
+  }];
+}
+
 /** 「지닌 도구」 줄 — 지닌 도구와 효과를 보이고, 고르면(파티 몬스터만) 가방으로 되돌린다. */
 function heldItemEntry(options: StatusMenuDetailOptions, instanceId: string): StatusMenuDetailEntry {
   const held = options.session.monsterInstances[instanceId]?.heldItemId;
@@ -78,6 +96,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
       { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) },
       { label: "타입", value: entry.typeLabel, onActivate: readOnly },
       { label: "상태", value: entry.stateNames.join(" · ") || "정상", onActivate: readOnly },
+      ...caughtBallEntries(options, raw.instanceId),
       ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
       { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", onActivate: readOnly },
       { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", onActivate: readOnly },

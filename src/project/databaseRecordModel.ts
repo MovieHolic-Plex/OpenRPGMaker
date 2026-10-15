@@ -72,6 +72,7 @@ import {
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
+import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
 import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
@@ -1052,6 +1053,7 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
   return {
     multiplier,
     ...(isGen1BallClass(profile.ballClass) ? { ballClass: profile.ballClass } : {}),
+    ...(normalizeCaptureCondition(profile.condition) ? { condition: normalizeCaptureCondition(profile.condition) } : {}),
   };
 }
 

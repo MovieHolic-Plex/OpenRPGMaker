@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조건부 볼 · 포획 볼 기록 — 포켓몬식 그물·퀵·타이머·리피트 볼 (2026-10-16, poke-depth PR6)
+
+- 데이터: `ItemCaptureProfile.condition?: {kind: "type"|"firstTurn"|"turns"|"repeat", multiplier, types?, step?}`(**선택 필드**, 생략=조건 없음·저장 바이트 불변; multiplier 1.1~8). 기존 `ballClass`(poke/great/ultra/master)와 **겹친다** — 조건이 맞으면 포획 확률이 더 오른다. 규칙·정규화는 `src/battle/captureBalls.ts`(`normalizeCaptureCondition` 은 필수 매개변수가 빠지면 조건을 버린다).
+- 종류: `type`(대상 타입이 `types` 중 하나면 ×multiplier — 그물 볼) · `firstTurn`(전투 첫 라운드에만, `turn===0` — 퀵 볼) · `turns`(`1 + 끝난 라운드×step`, 상한 multiplier — 타이머 볼) · `repeat`(대상 종이 도감에 이미 있을 때 — 전투가 시드한 `mx_caught_<종>` 스위치 — 리피트 볼).
+- 적용(`runtime.ts applyCapture`): `captureConditionMultiplier` 를 gen1 은 `catchRate = min(255, 종 포획률×255×배율)` 에, 기본 모델은 `captureItemMultiplier×배율` 에 곱한다. 마스터 등급은 어차피 확정이다. 조건이 맞으면 전투 문장 하나(「신속 구슬이 첫 차례라서 힘을 발휘한다!」)가 던지기 줄 뒤에 나온다.
+- 포획 볼 기록: `MonsterInstance.caughtBallId?`(선택, 세이브 검증 포함)를 포획 결과(`battleRewardsToSession`)가 채운다. 선물·시작 몬스터는 없음. 상태 메뉴 몬스터 상세에 「포획 볼 ◓ 이름」 줄(testid `status-menu-monster-ball-<id>`, 설명 = 등급·조건, 아이콘은 그 볼 아이템의 `iconResourceId`).
+- 화면: 전투 포획 목록의 상세 칸이 조건 요약(「첫 차례 ×5」·「물·벌레 타입 ×3.5」)을 보인다(`battleCommandDom.captureItems`). 아이템 정보 화면의 「효과」 칸에 `조건 …`.
+- 조수: `upsert_item.item.captureProfile.condition`(enum·숫자·타입 id 배열만, 자유 키 없음). 모르는 종류·kind=type 인데 types 없음·상성표에 없는 타입은 허용 값을 담아 `invalid-capture-condition` 로 거절. 레시피 `monster-capture-balls`.
+- 예제 몬스터 원정: 그물·신속·경과·재회 구슬(`mx_ball_*`, `roster.ts EXPEDITION_BALL_IDS`)을 DB·상점에 추가. **그림 필요**: 네 볼은 기본 포획 구슬 그림(`cc0-jetrel-capture-orb`)을 재사용한다 — 볼마다 다른 도트 그림은 3/4 관문(object-gate)을 통과해야 하므로 만들지 않았다.
+- 검증: `bun scripts/qa/poke-depth/balls.probe.mts`(엔진 4항목), `scripts/qa/runtime/poke-depth-balls.capture.mjs`(출하 플레이어 — 신속 구슬을 던져 잡고 상세에서 「포획 볼」 확인; LEGACY=1 이 「전」). 단위 `test/captureBalls.test.ts`(미실행).
+- 남은 것: 레벨·HP·상태·시간대 조건(다이브·네스트·듀스크 볼), 볼 종류별 도감 필터, 볼별 던지기·흔들림 연출, DB 편집기 볼 조건 칸, 볼마다 다른 그림. 도감 아이콘은 기존 `monsterMenuIconResourceId` 그대로.
+
 ## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
 
 - 데이터: `ItemRecord.heldEffect?: {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`(**선택 필드**, 생략=지닐 수 없는 아이템·저장 바이트 불변)와 `MonsterInstance.heldItemId?`(선택, 세이브 슬롯 검증 `isMonsterInstancesRecord`). 종류 다섯 enum — `healBelow`(HP 가 문턱 이하가 되면 먹고 회복, 1회용)·`cureStatus`(주요 상태가 걸리면 먹고 치료, 1회용)·`boostType`(같은 타입 기술 피해 percent 101~200)·`endureOnce`(가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀, 1회용)·`regen`(매 차례 말 최대 HP 의 percent 1~25 회복, 안 사라짐). 순수 규칙·정규화는 `src/battle/heldItems.ts`(`normalizeHeldItemEffect` 는 필수 매개변수가 빠지면 효과를 버린다).

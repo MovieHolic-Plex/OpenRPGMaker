@@ -5,7 +5,7 @@ import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel } from "@/project/
 import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarloxyDemoGame";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { EXPEDITION_AUDIO as audio } from "./audio";
-import { EXPEDITION_HELD_ITEM_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS } from "./roster";
+import { EXPEDITION_BALL_IDS, EXPEDITION_HELD_ITEM_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS } from "./roster";
 import markerAssets from "./markers.json";
 import templateData from "./mapTemplates.json";
 import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, type StartTheme } from "./townLayouts";
@@ -498,7 +498,7 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
   npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
     [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${hubName} 회복 센터` }, text("회복 완료! 메뉴에서 파티를 확인하세요.")], 3);
   npc(mart, "shop", "도구점 주인", expedition ? "포획구슬과 회복 도구를 챙겨 가세요." : "대회에서는 회복 도구가 큰 힘이 돼요. 필요한 만큼 챙겨 가세요.", { x: mart.width >> 1, y: 5 },
-    [{ kind: "shop", itemIds: [...(expedition ? ["item_capture_orb"] : []), "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
+    [{ kind: "shop", itemIds: [...(expedition ? ["item_capture_orb", ...EXPEDITION_BALL_IDS] : []), "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
   npc(house, "resident", "엄마", expedition ? "탐험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : "경기에서 가장 중요한 건 동료들이 무사한 거야. 언제든 쉬어 가렴.", { x: 6, y: 5 }, [{ kind: "recoverAll" }], 2);
   npc(hub, "guide", expedition ? "여행 안내원" : "대회 안내원", expedition ? `${regionName}에 온 걸 환영해요. 북동쪽 건물이 연구소예요. 체육관은 없고, 북쪽 사냥터를 따라 걸으며 도감을 채우는 탐험이에요.` : `${arenaName}에 온 걸 환영해요. 북동쪽 건물에서 접수를 하고, 북쪽 연습장 길 끝이 경기장이에요. 포획은 없어요 — 가진 동료로 승부를 봅니다.`, mid(hub), [], 4);
   npc(hub, "local", "마을 주민", expedition ? "사냥터에는 마을 밖에서만 만날 수 있는 몬스터가 많대. 구슬을 넉넉히 챙겨 가렴." : "이 대회는 몬스터와 조련사가 함께 서는 무대야. 연습장에서 몸을 풀고 가렴.", { x: 3, y: 10 }, [], 1);

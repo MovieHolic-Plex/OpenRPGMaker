@@ -551,6 +551,23 @@ export interface ItemCaptureProfile {
   multiplier: number;
   /** Optional Gen1 capture algorithm class; multiplier remains the compatibility contract. */
   ballClass?: "poke" | "great" | "ultra" | "master";
+  /**
+   * 조건부 볼(포켓몬식 그물·퀵·타이머·리피트 볼): 조건이 맞으면 포획 확률 배율이 더 오른다. 볼 등급과 겹친다.
+   * 생략 = 조건 없음(기존 프로젝트는 저장 바이트 그대로). 규칙은 battle/captureBalls.ts.
+   */
+  condition?: ItemCaptureCondition;
+}
+
+export type ItemCaptureConditionKind = "type" | "firstTurn" | "turns" | "repeat";
+
+export interface ItemCaptureCondition {
+  kind: ItemCaptureConditionKind;
+  /** 1.1~8. type·repeat 기본 3.5, firstTurn 기본 5, turns 는 상한(기본 4). */
+  multiplier: number;
+  /** kind === "type": 대상이 이 타입 중 하나면 적용(system.typeChart.types 값). */
+  types?: string[];
+  /** kind === "turns": 차례마다 늘어나는 배율(기본 0.3). */
+  step?: number;
 }
 
 export interface ItemCareProfile {
