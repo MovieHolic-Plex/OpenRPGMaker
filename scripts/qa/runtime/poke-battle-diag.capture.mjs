@@ -13,8 +13,15 @@ import { startPlayerQaServer } from "../../lib/runtimeQaRun.mjs";
 const [projectArg, outArg, scenArg] = process.argv.slice(2);
 if (!projectArg) throw new Error("usage: poke-battle-diag.capture.mjs <project.json> <outDir> [scenarios]");
 process.env.VITE_CACHE_DIR ??= resolve(".vite-cache/poke-battle-diag");
-const projectJson = await readFile(resolve(projectArg), "utf8");
+let projectJson = await readFile(resolve(projectArg), "utf8");
 const project = JSON.parse(projectJson);
+if (process.env.TRAINER_ART) {
+  // 캡처 전용 임시 그림(Actor1 정수배 확대) — 커밋·배포 대상이 아니다. 트레이너 슬라이드 인 연출 검증용.
+  const art = JSON.parse(await readFile(resolve(process.env.TRAINER_ART), "utf8"));
+  for (const [id, a] of Object.entries(art)) project.assets.uploaded[id] = { id, name: id, kind: "picture", dataUrl: a.dataUrl, meta: { mime: "image/png", width: a.w, height: a.h } };
+  for (const troop of project.database.troops) if (troop.trainerBattle) troop.trainerSprite = { front: "tmp_tr_front", back: "tmp_tr_back", throw: "tmp_tr_throw", backThrow: "tmp_tr_backthrow" };
+  projectJson = JSON.stringify(project);
+}
 const out = resolve(outArg ?? "qa-runs/pbd/out");
 await mkdir(out, { recursive: true });
 const SCEN = (scenArg ?? "wild,catch,levelup,evolve,trainer,gym,lose").split(",");
@@ -116,7 +123,7 @@ async function recStop() {
 const present = (id) => page.locator(`[data-testid="${id}"]`).count().then((n) => n > 0);
 const step = (id, ok, detail) => { report.steps.push({ id, ok, detail }); console.log(ok ? "✓" : "✗", id, detail); };
 const settled = async (done) => { for (let k = 0; k < 4; k++) { if (!(await done())) return false; await page.waitForTimeout(250); } return true; };
-const pressEnterUntil = async (done, max = 40) => { for (let i = 0; i < max; i++) { if (await settled(done)) return true; await page.keyboard.press("Enter"); await page.waitForTimeout(250); } return settled(done); };
+const pressEnterUntil = async (done, max = 40) => { for (let i = 0; i < max; i++) { if (await settled(done)) return true; await page.keyboard.press("Enter"); await page.waitForTimeout(Number(process.env.ENTER_MS ?? 250)); if (process.env.DUMP_STATS) { const d = await page.evaluate(() => { const b = [...document.querySelectorAll(".battle-levelup-stats")].find((n) => n.parentElement?.dataset.emeraldLast === "true"); if (!b) return null; const cs = getComputedStyle(b); const sp = b.children[0] ? getComputedStyle(b.children[0]) : null; return { mode: b.dataset.statsMode, text: b.textContent, font: cs.font, h: b.getBoundingClientRect().height, tr: cs.transform, spTr: sp?.transform, spFont: sp?.fontSize }; }); if (d) console.log("STATS", JSON.stringify(d)); } } return settled(done); };
 const teleport = async (mapId, x, y, quiet = false) => {
   if (!quiet) report.debugWrites.push(`teleport ${mapId} (${x},${y})`);
   await page.evaluate(([m, tx, ty]) => window.__oprnDebug.teleport(m, tx, ty), [mapId, x, y]);
@@ -259,7 +266,7 @@ async function scenarioCatch() {
   for (let turn = 0; turn < 12 && (await present("battle-scene")); turn++) {
     if (!(await waitCmd(20000))) { await page.keyboard.press("Enter"); continue; }
     const f = await hpFrac();
-    if (f !== null && f <= 0.5) {
+    if (f !== null && f <= Number(process.env.CATCH_HP ?? 0.5)) {
       await mark("item-menu");
       await page.locator('[data-testid="actor-command-item"]').focus(); await page.keyboard.press("Enter");
       await page.waitForTimeout(700);
@@ -295,7 +302,7 @@ async function scenarioLevelup() {
   if (rec) rec.ring = 0;
   await mark("encounter-detected");
   await waitCmd(60000);
-  await fightToEnd({ maxTurns: 40, skillIndex: 0 });
+  await fightToEnd({ maxTurns: 40, skillIndex: 0, holdResultMs: Number(process.env.HOLD ?? 0) });
   await page.waitForTimeout(800);
   await recStop();
   step("levelup", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level}`))));
@@ -339,6 +346,7 @@ async function scenarioEvolve() {
   await waitCmd(60000);
   await fightToEnd({ maxTurns: 40, skillIndex: 0 });
   await page.waitForTimeout(1500);
+  if (await present("emerald-evolution")) { await mark("evolution-scene"); await page.waitForFunction(() => !document.querySelector('[data-testid="emerald-evolution"]'), undefined, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(600); }
   await mark("after-battle-field");
   await recStop();
   step("evolve", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level}`))));
