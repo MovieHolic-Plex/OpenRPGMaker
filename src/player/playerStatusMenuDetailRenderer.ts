@@ -1,7 +1,8 @@
 import { renderCampaignRegionMap } from "@/player/playerMonsterCampaignMenu";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
-import type { Project } from "@/project/types";
+import { HELD_ITEM_KIND_LABELS } from "@/battle/heldItems";
+import type { HeldItemEffectKind, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 export type StatusMenuDetailPanelOptions = {
@@ -430,6 +431,7 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "skill": return `스킬 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "switch": return `장치 ${project.switches.find((entry) => entry.id === value)?.name || value}`;
     case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}`;
+    case "held": return `지닌 도구 · ${HELD_ITEM_KIND_LABELS[value as HeldItemEffectKind] ?? value}`;
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;
     case "seed": return `${ITEM_SEED_LABEL[value] ?? value} ${signedItemAmount(Number(amount))}`;

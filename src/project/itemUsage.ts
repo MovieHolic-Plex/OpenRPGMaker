@@ -26,6 +26,8 @@ export function activeItemEffects(item: ItemRecord): ItemRecord {
 
 export function itemAllowsMenu(item: ItemRecord): boolean {
   if (item.occasion !== "always" && item.occasion !== "field") return false;
+  // 지닌 도구(heldEffect)는 메뉴에서 파티 몬스터에게 쥐여 준다.
+  if (item.heldEffect) return true;
   return item.type === "medicine" || item.type === "book" || item.type === "seed" || item.type === "switch"
     || (item.type === "special" && (Boolean(item.careProfile) || (!item.captureProfile && !item.activateSkillId && !item.skillId && item.stateEffects.length > 0)));
 }

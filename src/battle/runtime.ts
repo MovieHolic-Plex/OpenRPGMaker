@@ -44,6 +44,14 @@ import {
   abilityTypeImmunity,
   scaleDamageByPercent,
 } from "@/battle/abilities";
+import {
+  heldBoostPercent,
+  heldCuresStatus,
+  heldEffectOfItem,
+  heldEndureDamage,
+  heldHealAmount,
+  heldRegenAmount,
+} from "@/battle/heldItems";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -883,6 +891,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         stateId: status?.stateId,
       });
     }
+    applyHeldRegen(battler);
+    triggerHeldItem(battler);
   }
 
   function gen1ModifiedStat(
@@ -901,6 +911,56 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ? attackMultiplierForStates(options.project, withoutBurn)
       : defenseMultiplierForStates(options.project, battler);
     return Math.max(1, Math.trunc(value * multiplier));
+  }
+
+  /** 기술 결과 뒤에 흘리는 지닌 도구 줄(버티기). */
+  const heldNotes: { message: string }[] = [];
+
+  function consumeHeldItem(battler: MutableBattler): void {
+    delete battler.heldItemId;
+  }
+
+  function flushHeldNotes(user: MutableBattler, target: MutableBattler): void {
+    while (heldNotes.length > 0) recordSpecial(user, target, heldNotes.shift()!.message);
+  }
+
+  /**
+   * 지닌 도구가 발동할 차례인지 본다: 열매(HP 가 문턱 이하면 회복, 주요 상태가 맞으면 치료). 쓰면 사라진다.
+   * 기술 하나가 끝난 뒤와 차례 말 잔여 피해 뒤에 부른다.
+   */
+  function triggerHeldItem(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const item = options.project.database.items.find((record) => record.id === holder.heldItemId);
+    const effect = item?.heldEffect;
+    if (!item || !effect) return;
+    const heal = heldHealAmount(effect, holder.hp, holder.maxHp);
+    if (heal > 0) {
+      consumeHeldItem(holder);
+      holder.hp = Math.min(holder.maxHp, holder.hp + heal);
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 체력을 회복했다!`);
+      recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+      return;
+    }
+    const status = gen1MajorStatusOf(holder);
+    if (status && heldCuresStatus(effect, status.kind)) {
+      consumeHeldItem(holder);
+      holder.stateIds = holder.stateIds.filter((stateId) => stateId !== status.stateId);
+      delete holder.stateTurns[status.stateId];
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 상태이상이 나았다!`);
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(holder), targetId: holder.id, stateId: status.stateId, reason: "effect" });
+    }
+  }
+
+  /** 매 차례 회복 도구(먹다 남은 음식 같은): 차례 말 잔여 피해 뒤에 조금씩 회복한다. 사라지지 않는다. */
+  function applyHeldRegen(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const effect = heldEffectOfItem(options.project, holder.heldItemId);
+    const heal = heldRegenAmount(effect, holder.hp, holder.maxHp);
+    if (heal <= 0) return;
+    const name = options.project.database.items.find((record) => record.id === holder.heldItemId)?.name ?? "도구";
+    holder.hp += heal;
+    recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${name} 덕분에 체력을 회복했다!`);
+    recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
   }
 
   /** 기술 결과 뒤에 흘리는 특성 줄(타입 무효·버티기). applyExactGen1Damage 가 쌓고 applyGen1Skill 이 비운다. */
@@ -1025,13 +1085,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 날씨: 쾌청·비는 불·물 기술의 피해 배율을 바꾼다.
     const weatherPercent = weatherDamagePercent(weather?.kind, gen1CanonicalTypeForId(options.project, move.elementId));
     const weatherDamage = weatherPercent === 100 ? resolved.damage : Math.max(resolved.damage > 0 ? 1 : 0, Math.floor(resolved.damage * weatherPercent / 100));
+    const heldBoost = heldBoostPercent(heldEffectOfItem(options.project, user.heldItemId), move.elementId);
+    const boostedDamage = heldBoost === 100 ? weatherDamage : Math.max(weatherDamage > 0 ? 1 : 0, Math.floor(weatherDamage * heldBoost / 100));
     const abilityPercent = abilityDamagePercent({ ability: userAbility, hp: user.hp, maxHp: user.maxHp }, { ability: targetAbility }, move.elementId);
-    let dealt = formationDamage(Math.round(scaleDamageByPercent(weatherDamage, abilityPercent) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
+    let dealt = formationDamage(Math.round(scaleDamageByPercent(boostedDamage, abilityPercent) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
     if (resource === "hp") {
       const endured = abilityEndureDamage(targetAbility, before, target.maxHp, dealt);
       if (endured.endured && targetAbility) {
         dealt = endured.damage;
         abilityNotes.push({ message: `${withJosa(target.name, "은/는")} 특성 ${targetAbility.name} 덕분에 버텼다!` });
+      }
+    }
+    if (resource === "hp") {
+      const heldEndured = heldEndureDamage(heldEffectOfItem(options.project, target.heldItemId), before, target.maxHp, dealt);
+      if (heldEndured.endured) {
+        const itemName = options.project.database.items.find((item) => item.id === target.heldItemId)?.name ?? "도구";
+        dealt = heldEndured.damage;
+        consumeHeldItem(target);
+        heldNotes.push({ message: `${withJosa(target.name, "은/는")} ${itemName} 덕분에 버텼다!` });
       }
     }
     target[resource] = Math.max(0, before - dealt);
@@ -4260,6 +4331,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battleEventState.switches[skill.effect.switchId] = true;
     }
     if (applied.hit && skill?.weather) setBattleWeather(user, target, skill.weather.kind, skill.weather.turns ?? SKILL_WEATHER_DEFAULT_TURNS);
+    flushHeldNotes(user, target);
+    triggerHeldItem(target);
+    if (user !== target) triggerHeldItem(user);
   }
 
   /** 날씨 기술이 닿았을 때: 같은 날씨가 이미 있으면 실패, 다르면 바꾼다. */

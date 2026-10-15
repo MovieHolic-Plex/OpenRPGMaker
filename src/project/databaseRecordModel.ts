@@ -1,4 +1,5 @@
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeHeldItemEffect } from "@/battle/heldItems";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -786,6 +787,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
     captureProfile: normalizeCaptureProfile(record.captureProfile),
     careProfile: normalizeCareProfile(record.careProfile),
+    ...(normalizeHeldItemEffect(record.heldEffect) ? { heldEffect: normalizeHeldItemEffect(record.heldEffect) } : {}),
   };
 }
 

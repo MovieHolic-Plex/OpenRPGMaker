@@ -285,6 +285,8 @@ export interface BattleBattlerSnapshot {
   readonly characterIndex?: number;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;
+  /** 지닌 도구 id(있을 때만). */
+  readonly heldItemId?: string;
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;

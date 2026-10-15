@@ -3275,6 +3275,14 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 
 
+## `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
+
+- 아이템 하나에 선언형 효과 하나: `item.heldEffect {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`. `kind` enum = `healBelow|cureStatus|boostType|endureOnce|regen`, `status` enum = `poison|burn|sleep|freeze|paralysis|any`. **자유 키·자유 코드 없음.**
+- 거절: 모르는 종류·필수 매개변수 누락(boostType 의 type)·상성표에 없는 type → `invalid-held-effect`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-held-items`.
+- 플레이어가 지닐 수 있게 하려면 아이템이 가방에 들어와야 한다 — 상점·이벤트 `gain` 도 같이 만든다.
+
+
+
 ## `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
 
 - 종 하나에 선언형 특성 하나: `species.ability {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`. `kind` enum = `immuneType|resistType|boostLowHp|immuneStatus|contactStatus|statMultiplier|endure`, `status` enum = `poison|burn|sleep|freeze|paralysis`, `stat` enum = `attack|defense|mind`. 종류별 필수 매개변수와 percent 범위는 스키마 설명과 `openwiki/runtime-battle.md` 「특성」에 있다. **자유 키·자유 코드 없음.**
@@ -3308,7 +3316,6 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 - 기술 하나에 선언형 날씨 하나: `skill.weather {kind, turns?}`. `kind` enum = `sun|rain|sandstorm|hail`, `turns` 3~8(기본 5). **자유 키·자유 코드 없음.**
 - 거절: 모르는 kind·범위 밖 turns·모르는 키 → `invalid-skill-weather`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-weather`. 맵·트루프로 거는 날씨는 아직 없다.
-||||||| cc7b272d6c
 
 
 ## 연애 루프 도구 변경 (2026-10-16)

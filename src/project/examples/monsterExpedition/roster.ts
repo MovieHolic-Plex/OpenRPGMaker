@@ -1,5 +1,5 @@
 import type { EnemyStats, MonsterAbility, MonsterSpeciesRecord, Project, SkillRecord, UploadedAsset } from "@/project/types";
-import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { normalizeEnemyRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
@@ -281,6 +281,23 @@ export function learnset(primary: string, secondary: string) {
  * its 15 elements, type chart, and semantic status records. Never reads files or
  * mutates a remote/canonical store. All uploaded PNGs remain portable on export.
  */
+/** 지닌 도구 예시 네 가지(열매·강화·버티기·재생). 메뉴 「가방」에서 파티 몬스터에게 쥐여 줄 수 있다. */
+export const EXPEDITION_HELD_ITEM_IDS = ["mx_held_oran", "mx_held_charcoal", "mx_held_sash", "mx_held_leftovers"] as const;
+
+function configureExpeditionHeldItems(project: Project): void {
+  const items = [
+    { id: "mx_held_oran", name: "회복 열매", price: 150, description: "지니게 하면 HP 가 절반 이하일 때 먹고 30% 회복한다(1회용).", heldEffect: { kind: "healBelow" as const, thresholdPercent: 50, healPercent: 30 } },
+    { id: "mx_held_charcoal", name: "불꽃 숯", price: 300, description: "지니게 하면 불 타입 기술의 피해가 커진다.", heldEffect: { kind: "boostType" as const, type: "fire", percent: 120 } },
+    { id: "mx_held_sash", name: "끈기 띠", price: 400, description: "지니게 하면 가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버틴다(1회용).", heldEffect: { kind: "endureOnce" as const } },
+    { id: "mx_held_leftovers", name: "남은 먹이", price: 500, description: "지니게 하면 매 차례 말에 HP 를 조금씩 회복한다.", heldEffect: { kind: "regen" as const, percent: 6 } },
+  ];
+  const known = new Set(project.database.items.map(item => item.id));
+  for (const item of items) {
+    if (known.has(item.id)) continue;
+    project.database.items.push(normalizeItemRecord({ ...item, type: "normalGoods", occasion: "field", scope: "none", consumable: false }));
+  }
+}
+
 /** 주 타입이 정하는 특성(예제 원정의 모든 종). 이름은 이 게임 고유 이름이고 효과는 선언형 일곱 종류 중 하나다. */
 const ABILITY_BY_TYPE: Readonly<Record<string, MonsterAbility>> = {
   flying: { name: "부양", kind: "immuneType", type: "ground" },
@@ -302,6 +319,7 @@ function expeditionAbility(types: readonly string[] | undefined, chartTypes: Rea
 }
 
 export function configureExpeditionRoster(project: Project): void {
+  configureExpeditionHeldItems(project);
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
   // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
   const replacedArt = [...FAMILIES.flatMap(family => family.slugs), ...RARES.map(rare => rare.slug)]

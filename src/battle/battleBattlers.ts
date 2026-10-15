@@ -68,6 +68,8 @@ export interface MutableBattler {
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
   readonly monsterInstanceId?: string;
   readonly speciesId?: string;
+  /** 지닌 도구. 열매가 쓰이면 비워진다(전투 뒤 세션에 되돌려 쓴다). */
+  heldItemId?: string;
   readonly name: string;
   // 파생 스탯: 전투 중 changeEquipment/promoteActor 가 refreshActorBattlerDerivedStats 로
   // 재계산할 수 있어 mutable. 생성 산식과 같은 actorDerivedStats 를 공유한다.
@@ -476,6 +478,7 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       recordId: hydrated.instanceId as ActorId,
       monsterInstanceId: hydrated.instanceId,
       speciesId: hydrated.speciesId,
+      ...(hydrated.heldItemId ? { heldItemId: hydrated.heldItemId } : {}),
       level: hydrated.level,
       name: monsterDisplayName(project, hydrated),
       maxHp: stats.maxHp,
@@ -633,6 +636,7 @@ export function battlerSnapshot(
     characterIndex: battler.characterIndex,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,
+    ...(battler.heldItemId ? { heldItemId: battler.heldItemId } : {}),
     hp: battler.hp,
     maxHp: battler.maxHp,
     mp: battler.mp,

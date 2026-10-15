@@ -134,6 +134,8 @@ export type StatusMenuDetailOptions = {
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
+  /** 몬스터가 지닌 도구를 가방으로 되돌린다. */
+  readonly onTakeHeldItem?: (instanceId: string) => void;
   /** 몬스터 파티원이 필드 기술(skill.fieldCommonEventId)을 바라보는 앞에 쓴다. */
   readonly onUseMonsterFieldSkill?: (instanceId: string, skillId: string) => void;
   readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;

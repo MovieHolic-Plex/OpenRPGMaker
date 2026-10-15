@@ -2005,6 +2005,19 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.setAttribute("aria-label", `${STAT_STAGE_LABELS[stat]} ${stage > 0 ? "+" : ""}${stage}단계`);
     cluster.append(node);
   }
+  // 지닌 도구 알약(◆): 쓰러지지 않은 파티 몬스터가 아직 지닌 도구가 있을 때만. 열매는 쓰면 사라지므로 알약도 같이 사라진다.
+  if (battler.heldItemId && !battler.defeated) {
+    const held = store.getCurrent().database.items.find((item) => item.id === battler.heldItemId);
+    const node = document.createElement("span");
+    node.className = "battle-held-pill";
+    node.dataset.testid = `battle-held-${battler.id}`;
+    node.dataset.heldItemId = battler.heldItemId;
+    node.textContent = "◆";
+    node.title = held?.name ?? "지닌 도구";
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `지닌 도구: ${held?.name ?? battler.heldItemId}`);
+    cluster.append(node);
+  }
   return cluster;
 }
 

@@ -52,6 +52,7 @@ import {
   optimizeStatusMenuEquipment,
   useStatusMenuItem,
 } from "@/player/playerStatusMenuMutations";
+import { takeHeldItem } from "@/project/monsterHeldItems";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -280,6 +281,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         },
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
+        onTakeHeldItem: takeHeldItemFromMenu,
         onUseMonsterFieldSkill: useMonsterFieldSkillFromMenu,
         onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
         onRejectPendingMonsterSkill: rejectMonsterSkillFromMenu,
@@ -633,6 +635,15 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+  }
+
+  function takeHeldItemFromMenu(instanceId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-monster-held-${instanceId}`);
+    const result = takeHeldItem(store.getCurrent(), scene.getSession(), instanceId);
+    if (result.kind === "done") scene.syncRuntimeState();
+    options.emitMenuJuice(result.kind === "done" ? "menu-confirm" : "menu-invalid", renderMenu(result.message, "monsters"));
   }
 
   /** 몬스터 기술 목록에서 필드 기술을 고르면 쓰고 메뉴를 닫는다(배우의 onSelectSkill 필드 능력과 같은 흐름). */
