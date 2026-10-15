@@ -114,3 +114,29 @@
 .ai-side-threads-clear { cursor: pointer; border: 1px solid var(--border-default); border-radius: 7px; padding: 1px 8px; font: inherit; color: var(--text-2); background: transparent; }
 .ai-side-threads-list { max-height: 38vh; overflow-y: auto; padding: 0 8px 6px; }
 .ai-side-threads-list[hidden], .ai-side-threads[hidden], .ai-side-threads-clear[hidden] { display: none; }
+
+/*
+ * B안 1단계 (2026-10-15) — 진행 표시는 「지도 이름표 + 대화 카드」 한 쌍이 기본이다.
+ * 같은 일을 8곳이 알리던 것(좌하단 카드·어두운 상태판·단계 알약·헤더 칩·상태 줄·받은함…)을 걷어낸 자리.
+ * 걷은 것은 지우지 않고 접었다: 「작업 표시 → 자세히 / 매우 자세히」를 고르면(html[data-ai-activity-level]) 맵 위 보조 표시가 돌아온다.
+ * 상태 줄·받은함은 도크가 접혔거나 대화 카드가 없는 일(영역·다른 맵)일 때 스스로 나온다(aiStatusBar·aiInbox).
+ */
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-canvas-progress,
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-canvas-activity { display: none; }
+/* 단계 알약은 위치를 재야 하므로 display 가 아니라 visibility 로 접는다(칸 크기를 유지). 도크가 접혀도 지도 이름표·상태 줄이 같은 말을 하므로 접힌 채다. */
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-ghost-phase-chip { visibility: hidden; }
+/* 도크 머리의 「작업 중…」 칩은 대화 카드와 같은 말이다 — 읽기 도구에는 남기고 눈에서만 걷는다. 점(상태 색)은 그대로. */
+.ai-deck-rail-state .ai-assistant-status[data-status-tone="running"] {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+/* 진행 중인 카드에서도 「중지」가 보인다 — 지도 아래 상태 줄의 「■ 멈춤」이 접힌 뒤의 유일한 대화 쪽 중지. */
+.ai-work-inline.has-activity[data-state="running"] > .ai-work-inline-head[aria-expanded] ~ .ai-work-inline-actions { display: flex; margin-top: 8px; }
+/* 간단히 보기에서 실패 원인은 한 번만 — 기록 줄에 원인이 이미 있으면 카드 아래쪽 빨간 되풀이 줄은 접는다. 자세히 보기는 그대로. */
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-work-inline:has(.ai-activity-entry.is-error) .ai-team-error { display: none; }
+.ai-work-inline-undone { color: var(--text-2); font-size: var(--font-size-sm); align-self: center; }
+.ai-work-inline[data-undone="1"] { opacity: 0.8; }
+/* 검토·초안 상태의 지도 상자는 「어디가 바뀌었나」만 가리킨다 — 「내 차례」 글자는 대화 카드가 말한다(도크가 열려 있을 때). 영역을 모르는 구석 이름표는 통째로 접는다. */
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region[data-state="review"]:not(.is-cornered) .ai-map-region-tag,
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region[data-state="draft"]:not(.is-cornered) .ai-map-region-tag { display: none; }
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region.is-cornered[data-state="review"],
+body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-map-region.is-cornered[data-state="draft"] { display: none; }

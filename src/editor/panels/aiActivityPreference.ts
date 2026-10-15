@@ -7,6 +7,13 @@ const LEVEL_ICONS: Readonly<Record<ActivityLevel, DeckIconName>> = { none: "x", 
 const KEY = "oprn:ai-activity-level";
 let fallback: ActivityLevel = "brief";
 let sessionOverride: ActivityLevel | undefined;
+/**
+ * 지도 위 보조 진행 표시(좌하단 카드·어두운 상태판·단계 알약)는 「자세히/전체 기록」을 고른 사람에게만 보인다.
+ * 기본(간단히)에서는 대화 카드와 지도 이름표가 같은 말을 하므로 CSS 가 이 속성을 읽어 접는다(B안 1단계).
+ */
+function publishLevel(level: ActivityLevel): void {
+  if (typeof document !== "undefined") document.documentElement.dataset.aiActivityLevel = level;
+}
 export function getActivityLevel(): ActivityLevel {
   if (sessionOverride) return sessionOverride;
   try { const value = localStorage.getItem(KEY); return value && Object.hasOwn(ACTIVITY_LEVELS, value) ? value as ActivityLevel : "brief"; }
@@ -15,9 +22,11 @@ export function getActivityLevel(): ActivityLevel {
 export function setActivityLevel(level: ActivityLevel): void {
   fallback = level;
   try { localStorage.setItem(KEY, level); sessionOverride = undefined; } catch { sessionOverride = level; }
+  publishLevel(level);
   // Only attached surfaces; no global listener retains removed request cards.
   document.querySelectorAll<HTMLElement>("[data-ai-activity-surface]").forEach(node => node.dispatchEvent(new Event("ai-activity-level")));
 }
+publishLevel(getActivityLevel());
 export function bindActivityLevel(root: HTMLElement, update: (level: ActivityLevel) => void): void {
   root.dataset.aiActivitySurface = "true";
   root.addEventListener("ai-activity-level", () => update(getActivityLevel()));

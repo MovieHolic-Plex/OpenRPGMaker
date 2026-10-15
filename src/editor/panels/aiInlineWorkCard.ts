@@ -130,7 +130,14 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
       }));
       if (preview.onUndo) {
         const undo = el("button", { text: "이 작업 되돌리기", attrs: { type: "button" } }) as HTMLButtonElement;
-        undo.addEventListener("click", () => { preview.onUndo?.(); undo.disabled = true; });
+        undo.addEventListener("click", () => {
+          preview.onUndo?.();
+          undo.disabled = true;
+          // 맵에서만 사라지고 카드는 「적용됨」 그대로였다 — 카드 자신이 되돌렸다고 말한다(B안 1단계).
+          root.dataset.undone = "1";
+          status.textContent = "되돌렸어요";
+          undo.replaceWith(el("span", { class: "ai-work-inline-undone", dataset: { testid: "ai-work-card-undone" }, text: "되돌렸어요", attrs: { role: "status" } }));
+        });
         actions.append(undo);
       }
     },

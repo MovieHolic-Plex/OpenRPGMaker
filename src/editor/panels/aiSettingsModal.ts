@@ -411,7 +411,7 @@ export function renderAiSettingsForm(options: {
   };
   setAutonomyDerived(initialAutonomyLevel);
   const autonomyRow = settingsRow(
-    "자율성",
+    "일하는 방식",
     autonomyDescription,
     el("span", { class: "ai-config-stack", children: [autonomySelect, autonomyDerived] }),
   );
@@ -459,7 +459,7 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
   piApplySelect.addEventListener("change", () => persist(false));
-  const piApplyRow = settingsRow("결과 적용", "YOLO·AUTO·DEFAULT는 실제 맵을 실시간 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
+  const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },

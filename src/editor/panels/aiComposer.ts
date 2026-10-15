@@ -286,7 +286,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   const autonomySelect = options.effortChips
     ? el("select", {
       class: "ai-composer-effort-select",
-      attrs: { title: "자율성 — AI가 스스로 판단하고 실행하는 정도", "aria-label": "자율성" },
+      attrs: { title: "일하는 방식 — AI가 스스로 판단하고 실행하는 정도", "aria-label": "일하는 방식" },
       dataset: { testid: "ai-composer-autonomy" },
       children: AUTONOMY_LEVELS.map((level) =>
         el("option", { attrs: { value: level.id }, text: level.label }),
@@ -375,7 +375,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   paintSettingsSummary = (): void => {
     const mode = normalizePiApplyMode(applyModeSelect.value);
-    const labels = { default: "기본", yolo: "YOLO", auto: "자동", review: "검토 후 적용", step: "단계별 적용" };
+    const labels = { default: "기본", yolo: "확인 없이 반영", auto: "자동 검수", review: "검토 후 적용", step: "단계별 적용" };
     settingsToggle.textContent = quickPlacement ? "작업 설정 · 바로 깔기" : mode === "default" ? "작업 설정" : `작업 설정 · ${labels[mode]}`;
   };
   paintSettingsSummary();
@@ -390,7 +390,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("strong", { text: "작업 설정" }),
       el("small", { text: "다음에 보내는 요청부터 사용합니다." }),
-      ...(autonomySelect ? [settingRow("AI가 할 일", "질문만 할지, 직접 작업을 맡길지 선택하세요.", autonomySelect)] : []),
+      ...(autonomySelect ? [settingRow("일하는 방식", "질문만 할지, 직접 작업을 맡길지 · 오른쪽일수록 더 오래 깊게 일해요.", autonomySelect)] : []),
       settingRow("변경 적용 방식", "결과를 바로 반영하거나 확인 후 적용합니다.", applyModeSelect),
       ...(teamToggle ? [settingRow("작업 인원", "혼자 또는 팀으로 · 작업량과 검토도 설정합니다.", teamToggle)] : []),
     ],

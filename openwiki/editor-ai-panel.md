@@ -71,6 +71,24 @@
   모델 호출·SQLite 저장 검수가 아니다. 이 세션에서 gates·vitest·전체 typecheck 는 돌리지 않았다(`test/aiTeamObservation.test.ts` 문자열만 맞춤).
 - 아직 안 한 것: 질문(ask) 카드를 받은함으로 옮기기, 팀 레일·크게 보기·스튜디오 보드 정리, 「작업 표시」 4단계 설정 제거, 카메라 따라가기 토글.
 
+## B안 1단계 — 진행·확인·실패는 대화 속 카드 하나 (2026-10-15)
+
+설계서: 「AI 조수 UI 복잡도 적대적 QA 1차」(추천 B 중 1단계). 같은 일을 8곳이 알리던 것을 줄였다. 측정은 같은 모의 서버 harness 로 전/후 같은 시나리오·크기에서 했다
+(모델 호출 없음, 상태 재현). 계약은 바뀌지 않았다 — 맵당 조수 한 명·대기열·체크포인트·묶음별 확정은 손대지 않았고 표시 층만 접었다.
+
+- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 전부 `source: "chat"` 이면 true.
+  `aiChatPanel.applyCollapsed` 가 body 클래스 `ai-dock-collapsed` 를 알림(`oprn:ai-panel-collapse`) 직전에 맞춘다. 영역 작업·다른 맵 작업이 섞이거나 도크가 접히면 false → 아래 표면이 그대로 나온다.
+  - 지도 아래 상태 줄(`aiStatusBar`): true 면 접힘. 접힌 도크의 유일한 창구는 그대로다.
+  - 받은함(`aiInbox`): 대화창 앞 턴(`chat`)의 검토·실패 카드는 더 만들지 않는다(대화 안 변경안 카드·오류 카드가 같은 버튼·원인을 갖는다). 다른 맵·영역 작업만 받은함에 남는다.
+  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다. 검토·초안 상자는 남기되 글자(「내 차례」)는 CSS 가 접는다.
+- **접힘(지우지 않음)**: 좌하단 `ai-canvas-progress`·어두운 `ai-canvas-activity`·`ai-ghost-phase-chip` 은 「작업 표시」가 「자세히/매우 자세히」일 때만 보인다
+  (`html[data-ai-activity-level]` 를 `aiActivityPreference` 가 발행, CSS `34-ai-presence.css`). 헤더 상태 칩은 작업 중일 때 눈에서만 걷는다(`aria` 용 텍스트는 남음). 진행 카드의 「중지」 버튼이 작업 중에도 보인다.
+- **문구**: 적용 방식 라벨 `YOLO/AUTO MODE/DEFAULT` → 「바로 반영 · 확인 없이/자동 검수/큰 삭제만 확인」(id 는 그대로), 「AI가 할 일/자율성」 → 「일하는 방식」,
+  `Ultrabrain · 계획`·`Ultrabrain` 역할 이름 → 「계획」·「전체 검수」, 적용 거절 화면 문장은 `friendlyApplyFailure`(사유 코드·도구 이름 없음, 원문은 실행 기록 `finishLog.error` 에만).
+- **간단히 보기**: 같은 문장이 연달아 나오면 한 줄, 원인 줄(error)이 있으면 같은 실패의 「실패」 종료 줄을 뺀다. 「이 작업 되돌리기」를 누르면 카드가 「되돌렸어요」로 바뀐다. 패널을 열면 포커스가 입력창으로 간다.
+- 이 단계에서 하지 않은 것(2단계 이후): 전/후 썸네일이 든 결과 카드, 접힌 도크에서 적용 버튼(레일 배지에서 같은 카드 열기), 로그 입구 이름 통합, 팀·스튜디오·작업함 고급화.
+- 증거: `.playwright-mcp/cap.mjs`(gitignore) 기반 전/후 계량표는 PR 본문 · `~/claude-viz/ai-ui-b1-1.html`.
+
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
 일반 편집기는 오른쪽 복원 레일 44px만 예약한다. AI 창은 지도 위에 380px(좁은 화면은

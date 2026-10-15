@@ -2,6 +2,7 @@
 // 도크 맨 위 「내 확인이 필요해요」 — 승인·실패만 모은다. 비어 있으면 아예 보이지 않는다.
 //
 // 상태 줄이 「무슨 일을」이면 받은함은 「내가 할 일」이다. 진행 중인 일은 여기 올리지 않는다(지도·상태 줄이 맡는다).
+// 2026-10-15(B안 1단계): 대화창 앞 턴의 검토·실패는 대화 안 카드가 맡는다. 받은함은 대화 카드가 없는 일(다른 맵·영역 작업)만 모은다.
 // 적용/되돌리기는 로그 카드·팀 패널의 검토 버튼과 같은 클로저(currentTeamReviewActions)를 부른다 — 두 버튼, 한 동작.
 
 import { currentTeamReviewActions } from "@/ai/piAgent/teamActivity";
@@ -65,7 +66,9 @@ export function createAiInbox(options: { readonly openLogs: () => void }): { roo
   };
 
   const off = subscribeAiPresence(presences => {
-    const items = presences.filter(needsUser);
+    // 대화창 앞 턴의 검토·실패는 대화 속 카드(변경안 카드·오류 카드)가 이미 같은 버튼과 원인을 갖고 있다 — 여기서 되풀이하지 않는다(B안 1단계).
+    // 받은함에 남는 것: 대화 카드가 없는 일 = 다른 맵에서 도는 실행·영역 작업의 확인과 실패.
+    const items = presences.filter(needsUser).filter(presence => presence.source !== "chat");
     root.hidden = items.length === 0;
     count.textContent = items.length ? String(items.length) : "";
     list.replaceChildren(...items.map(card));

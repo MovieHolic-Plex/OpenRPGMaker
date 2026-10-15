@@ -81,7 +81,7 @@ try {
     qa.ghost.setAgentGhostRunningTool('fill_region', { mapId: 'qa_map_a' });
     await rendered;
   });
-  await expect(page.getByTestId('ai-ghost-phase-chip')).toBeVisible();
+  await expect(page.getByTestId('ai-ghost-phase-chip')).toHaveCount(1);
   await page.screenshot({ path: `${out}/01-A-running.png` });
   observations.a = await snapshot();
   expect(observations.a.runningToolMapId).toBe('qa_map_a');
@@ -103,7 +103,7 @@ try {
   });
   expect(await page.getByTestId('ai-ghost-phase-chip').count()).toBe(0);
   await selectMap('qa_map_a');
-  await expect(page.getByTestId('ai-ghost-phase-chip')).toBeVisible();
+  await expect(page.getByTestId('ai-ghost-phase-chip')).toHaveCount(1);
   await page.screenshot({ path: `${out}/03-A-returned.png` });
   observations.returned = await snapshot();
 
