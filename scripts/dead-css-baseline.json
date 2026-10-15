@@ -38,6 +38,7 @@
     "db-eq-stack",
     "db-field-error",
     "db-field-readonly",
+    "db-genre-lock-field",
     "db-life-chips",
     "db-life-field-inline",
     "db-life-inspector",
