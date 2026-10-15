@@ -129,3 +129,15 @@ require_all([(img, "tall_furniture", "murim/prop_scroll_shelf"), ...], context="
 
 **남은 병목(측정된 것):** (a) 라벨 잡음 — 실내 3/4 위반 표본 일부(통나무·기둥·통)는 판정자가 4행 윗면을 읽고 라벨은 「2~3px 띠」다. 사람이 8배로 다시 라벨을 확인해야 한다. 화풍 표본은 농장 v2/v3 의 밭·울타리가 같은 수치인데 라벨이 반대고(밭 v2 vs v3), 약한 라벨(PR 전/후 60+60)은 병합이 버들항 수준을 보증하지 않아 「전」이 얕다고 단정할 수 없다 — 현행 규칙(위반 하나도 못 놓침)은 이 약한 라벨에서 영원히 통과 불가다. (b) 버들항 기준 그림이 큰 기물(노점·우물)뿐이라 작은 소품(가로등·바닥)이 얇게 읽혀 떨어진다(홀드아웃 13장 중 12 통과로 개선, 기준 그림 보강은 미착수).
 **→ `rereview` 는 돌리지 않았고 영수증 0장.** 시각화: `~/claude-viz/gate-sonnet.html`(Argon 과 나란한 혼동표·예시).
+
+## 우회 길 제거 (2026-10-15)
+
+굽기 스크립트에서 object-gate 를 건너뛰는 길을 없앴다. 관문 거절은 그림을 고치거나 사용자와 정책을 상의하는 수밖에 없다.
+
+| 제거한 것 | 위치 |
+|---|---|
+| 환경변수 `JP_GATE=skip` | `scripts/content/jp-city/gate_kinds.py` `enforce()` |
+| 인자 `--no-gate` | `scripts/content/interior-plus/bake.py` (방 영수증 `require_structure` 항상 실행) |
+| 인자 `--dev` (관문 무시) | `scripts/content/prehistoric/bake_ph.py` (`--dry` 는 그대로, 저장소 산출물을 쓰지 않음) |
+
+남긴 것(object-gate 가 아닌 다른 관문): 조선 `--no-gate`·`JS_SKIPGATE`(조선 조각 게이트), `DE_UNGATED`(/tmp 로만 굽고 저장소 산출물을 쓰지 않음), jp-city 지도 게시의 `SKIP_GATE`(적대적 지도 검증). 이들은 영수증을 대신하지 않는다.
