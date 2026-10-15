@@ -15,7 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
-import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows } from "@/player/emeraldBattleNarration";
+import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -500,7 +500,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   // battle-reward-reveal(opacity 0→1, delay) 애니메이션이 매번 0초로 리셋돼 행이
   // 반투명에 갇히거나(경험치) 아예 안 보였다(골드 — 적대 리뷰 3차 실측).
   const rows = rewardRows(snapshot);
-  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}${"stats" in row && row.stats ? `#${row.stats.mode}` : ""}`).join("|")}`;
+  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}${row.stats ? `#${row.stats.mode}` : ""}`).join("|")}`;
   if (cards.dataset.rowsKey !== rowsKey) {
     cards.dataset.rowsKey = rowsKey;
     cards.replaceChildren();
@@ -518,7 +518,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
       value.className = "battle-result-reward-value";
       value.textContent = row.value;
       item.append(label, icon, value);
-      const stats = "stats" in row ? row.stats : undefined;
+      const stats = row.stats;
       if (stats) {
         const box = document.createElement("div");
         box.className = "battle-levelup-stats";
@@ -1049,7 +1049,7 @@ export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
   return rewardRows(snapshot).length;
 }
 
-function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
+function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
   if (emeraldNarrationActive()) return emeraldResultRows(snapshot, skillName);

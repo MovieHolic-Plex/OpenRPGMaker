@@ -502,7 +502,7 @@ export interface BattleScreenState {
 export interface BattleEventStateSnapshot {
   /** Read-only pre-reward party EXP, for the result gauge; never written back as a reward. */
   readonly monsterCollection?: {
-    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp">>>;
+    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp" | "ivs">>>;
   };
   /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
   readonly screen?: BattleScreenState;

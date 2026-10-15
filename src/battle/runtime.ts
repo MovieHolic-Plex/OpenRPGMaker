@@ -2030,7 +2030,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ...(usePartyMonsters && options.partyMonsters?.length ? {
           monsterCollection: {
             instances: Object.fromEntries(options.partyMonsters.map(instance => [instance.instanceId, {
-              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp,
+              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp, ...(instance.ivs ? { ivs: instance.ivs } : {}),
             }])),
           },
         } : {}),
