@@ -201,7 +201,7 @@ export function genreLockViolations(project: Project, approved: readonly string[
 export function genreLockPromptNote(project: Project): string | null {
   const active = enforcingGenreLock(project);
   if (!active) return null;
-  const allowed = genreLockAllowedTilesets(project).map((t) => `${t.id}(${t.name})`).join(", ");
+  const allowed = genreLockAllowedTilesets(project).map((t) => t.id).join(", ");
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `[장르 잠금 — ${active.def.label}]
 이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 몬스터 칩셋 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`;

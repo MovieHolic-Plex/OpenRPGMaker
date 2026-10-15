@@ -139,8 +139,9 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
       && draft.worldAtlases?.some(atlas => atlas.overviewMapId === id || atlas.nodes.some(node => node.mapId === id))) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
-    // 장르 잠금 중에는 허용 계열이 곧 「맞는 그림체」다 — 보는 맵이 잠금 이전부터 있던 다른 계열이어도 허용 칩셋으로 새 맵을 만드는 것은 막지 않는다(허용 밖은 잠금 검사가 따로 거부한다).
-    if (enforcingGenreLock(draft) && genreLockAllowsTileset(draft, next.tilesetId)) continue;
+    // 장르 잠금 중 기준 맵이 잠금 밖(켜기 전부터 있던 다른 계열 맵)이면 그 맵의 계열이 「맞는 그림체」가 아니다 — 허용 칩셋으로 새 맵을 만드는 것은 막지 않는다.
+    // 기준 맵이 허용 계열이면 이 검사가 그대로 돈다(밝은 monster_* 와 에메랄드풍은 섞지 않는다 — 2026-10-06 연속성 결정).
+    if (enforcingGenreLock(draft) && !genreLockAllowsTileset(draft, currentMap.tilesetId) && genreLockAllowsTileset(draft, next.tilesetId)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
     const toName = draft.tilesets[next.tilesetId]?.name ?? next.tilesetId;
     const candidates = sameFamilyTilesets(before, baseFamily).slice(0, FAMILY_CANDIDATE_LIMIT)
