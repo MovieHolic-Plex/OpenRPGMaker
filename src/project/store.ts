@@ -1,3 +1,4 @@
+import { bootMark } from "@/util/bootMarks";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
@@ -335,6 +336,7 @@ class ProjectStore {
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const { project, authority, target } = await this.readRemoteProject();
+          bootMark("project-read");
           if (!project && target !== null && isLocalTarget(target)) {
             // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
             // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
@@ -378,6 +380,7 @@ class ProjectStore {
       // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
       if (seededNewLocalProject && canWriteTeamProject()) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
+      bootMark("project-normalized");
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
         this.loaded = false;
