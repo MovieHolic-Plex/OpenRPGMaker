@@ -394,3 +394,12 @@ artwork, drawn directly on the final 48px grid by
 `scripts/asset-gen/charset-battler/silver-swordswoman.py`. All 24 battle cells and
 21 cast cells use 16 opaque colors and binary alpha. No source image or
 image-generation model is used. Repository code/asset policy applies.
+
+## Battle trainer sprites (OPRN monster-collect trainer art, generated image, smooth downscale to 128x128)
+
+`battle-trainers/<role>/{front,back}.png` (14 pictures: hero m/f back + front, boy, girl, fisher, hiker, bug_catcher, gym_rock, gym_water, scientist, punk, elder) are repository-owned original artwork for the monster-collect
+genre: a built-in image-generation model draws an original character per role (prompted as original, no imitation of existing Nintendo characters, no ball motif),
+using repository-owned monster-collect battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, themselves generated originals) only as a
+style sample, then (current method, user-selected 2026-10-15) the result is downscaled smoothly to a 128x128 transparent canvas (displayed 1x); the earlier 64x64 grid-pixelized candidates (p4) were not selected. They contain no EasyRPG Actor1 pixels
+and no Nintendo artwork, and no sample is copied. Selection record: the method was chosen by the user; the hero, boy and girl pictures and the eight remaining roles were chosen by the supervisor under the user's explicit delegation ("pick whatever you recommend", 2026-10-15/16), recorded in `harness-data/battle-trainer-sprites/picks.json` (`by: user-delegated-to-supervisor`) and changeable by re-picking. Harness: `src/harnesses/battle-trainer-sprites/`.
+License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
