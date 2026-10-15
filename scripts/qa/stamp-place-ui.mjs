@@ -127,6 +127,9 @@ for (const theme of THEMES) {
       const map = p.maps[mapId];
       return { x: Math.max(0, Math.floor(map.width / 2) - 4), y: Math.max(0, Math.floor(map.height / 2) - 3) };
     }, { mapId });
+    // SEL_<테마>=x,y 로 선택 시작점을 바꾼다(코퍼스의 「마당」 선택과 같게 — 기본은 맵 가운데라 길 한복판일 수 있다).
+    const override = process.env[`SEL_${theme.toUpperCase()}`];
+    if (override) { const [ox, oy] = override.split(",").map(Number); sel.x = ox; sel.y = oy; }
     const tileSize = geometry.tile;
     const toClient = (tx, ty) => page.evaluate(([x, y, size]) => window.__oprnEditWorldToClient?.(x * size + size / 2, y * size + size / 2) ?? null, [tx, ty, tileSize]);
     const a = await toClient(sel.x, sel.y);
@@ -175,7 +178,7 @@ for (const theme of THEMES) {
       const events = y.events.filter((e) => !ids.has(e.id)).map((e) => ({ name: e.name, x: e.x, y: e.y, graphic: JSON.stringify(e.pages?.[0]?.graphic ?? {}).slice(0, 160) }));
       return { tiles, events };
     })();
-    const chat = await page.evaluate(() => [...document.querySelectorAll("[data-testid=ai-chat-panel] *")].filter((el) => el.children.length === 0).map((el) => (el.textContent ?? "").trim()).filter((t) => t.length > 3).slice(-14));
+    const chat = await page.evaluate(() => [...document.querySelectorAll("[data-testid=ai-chat-panel] *, .ai-chat-log *, .ai-msg *")].filter((el) => el.children.length === 0).map((el) => (el.textContent ?? "").trim()).filter((t) => t.length > 3).slice(-14));
     fs.writeFileSync(path.join(OUT, `${label}.json`), JSON.stringify({ theme, text, modelCalls, diff, chat, errors: errors.slice(0, 5) }, null, 1));
     console.log(`[${label}] "${text}" tilesChanged=${diff.tiles} newEvents=${diff.events.length} modelCalls=${modelCalls.length} (${Date.now() - started}ms)`);
     console.log("   chat:", chat.slice(-6).join(" ⏎ ").slice(0, 600));

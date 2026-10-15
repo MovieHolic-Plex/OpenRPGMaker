@@ -367,6 +367,10 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     case "fill_region": {
       if (!rect) return dropped("영역이 대상 밖입니다");
       if (!material) return dropped("재료가 없습니다");
+      // 연못·호수를 물 재료가 없는 칩셋에서 「하늘」「잔디」로 채우던 대체를 막는다(천공섬 「연못 파 줘」가 하늘 칠하기였다).
+      if (/연못|호수|못 파|pond|lake/iu.test(`${labelText ?? ""} ${facts.text}`) && !/물|수역|해안|바다|호수|연못|강|water|lake|pond|sea|river|shore/iu.test(material)) {
+        return dropped(`「${material}」은 물이 아니라서 연못으로 칠하지 않았습니다 — 이 칩셋의 물 재료 라벨이 없으면 연못은 깔지 않습니다(다른 재료로 흉내 내지 않음)`);
+      }
       const shape = enumArg(args.shape, ["rect", "circle", "ellipse"] as const);
       const clearUpper = typeof args.clearUpper === "boolean" ? args.clearUpper : undefined;
       return { step: { tool: stampTool, label, args: { mapId, rect, material, shape: shape ?? "rect", ...(clearUpper !== undefined ? { clearUpper } : {}) } } };

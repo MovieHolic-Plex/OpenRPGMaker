@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """코퍼스 결과 집계 — 같은 기준으로 전/후를 채점한다.  python3 scripts/qa/stamp-place-corpus-report.py output/stamp-corpus/base [after1 ...]"""
-import json, re, sys, collections
+import json, os, re, sys, collections
+ONLY = set(filter(None, os.environ.get("THEMES", "").split(",")))  # THEMES=beodeul,jp,interior,sky 로 같은 칩셋만 비교
 CLAIM = re.compile(r"놓음|배치 ·|완료|깔았|세웠|심었|산포|생성")
 DENY = re.compile(r"않|실패|못|없|거절|버린")
 def score(path):
-    d = json.load(open(path + "/results.json")); R = d["results"]
+    d = json.load(open(path + "/results.json")); R = [r for r in d["results"] if not ONLY or r["theme"] in ONLY]
     out = collections.Counter(); bad = []
     for r in R:
         obj = r["expect"] in ("art", "event")
