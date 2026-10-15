@@ -42,6 +42,7 @@ export async function generateTitleLogo(
     const image = await (options.generateImage ?? generateAiImage)({
       prompt: buildTitleLogoPrompt(title, args.mood?.trim() || undefined),
       signal: options.signal,
+      purpose: "title-logo",
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {

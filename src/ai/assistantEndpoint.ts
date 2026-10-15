@@ -28,6 +28,7 @@ import { configForUltrabrain } from "./ultrabrainConfig";
 // 표면 정책이 아니라 각자의 단계 정책을 따른다(systemPromptEnvelope 가 봉투를 씌우지 않는 것과 같은 경계).
 
 import { configForLiteModel, isProxyAuth, loadAiConfig, type AiConfig } from "./llmClient";
+import { configForPixel } from "./pixelModel";
 
 /**
  * AI 표면 식별자 — 사람이 에디터에서 직접 여는 AI 진입점.
@@ -85,6 +86,7 @@ export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
  * - `structure-kit`: 구조물 이름·배치 설명을 짓는 일회성 감독 판단이라 감독 모델.
  * - `tileset-analysis`: 이미지를 읽는 감독 판단이라 감독 모델 + 매핑 JSON 전용 고정 예산.
  * - `workshop-draw`: 공방 그리기. 격자 JSON 이 길어 감독 모델 + 넉넉한 고정 예산(16384).
+ *   설정의 «도트 저작 모델»(pixelModel, 텍스트 모델)이 저장돼 있으면 그 모델이 이긴다 — 없으면(옛 설정) 감독 모델 그대로.
  * - `workshop-review`: 공방 검수. 그림을 읽는 판단이라 vision 역할 + 고정 예산(4096).
  */
 const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
@@ -117,7 +119,9 @@ export function resolveSurfaceAiConfig(surface: AiSurface, base?: AiConfig): AiC
   const policy = SURFACE_POLICIES[surface];
   const source = base ?? loadAiConfig();
   const hasRoles = source.roleModels && Object.keys(source.roleModels).length > 0;
-  const tiered = hasRoles
+  // 도트 저작 칸: 공방 그리기만 이 칸을 읽는다. 검수(workshop-review)는 그림을 읽는 일이라 시각(vision) 역할이다.
+  const pixelTiered = surface === "workshop-draw" ? configForPixel(source) : undefined;
+  const tiered = pixelTiered ? { ...pixelTiered, maxTokens: source.maxTokens } : hasRoles
     ? surface === "tileset-analysis" || surface === "workshop-review" ? configForRole(source, "vision")
       : policy.tier === "lite" ? configForRole(source, "deep")
       : { ...configForUltrabrain(source), maxTokens: source.maxTokens }

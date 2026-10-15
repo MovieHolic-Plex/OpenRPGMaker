@@ -30,6 +30,7 @@ export async function generateImageAsset(
     const image = await (options.generateImage ?? generateAiImage)({
       prompt: imageAssetPrompt(request.kind, request.prompt),
       signal: options.signal,
+      purpose: request.kind === "title" ? "title-picture" : request.kind === "backdrop" ? "backdrop" : "picture",
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다.", code: "image-invalid" };
