@@ -3,6 +3,7 @@ import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRe
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
+import { harnessArtForCampaignSpecies } from "@/assets/harnessMonsterArt";
 
 export type ExpeditionHabitat = "grass" | "forest" | "coast" | "mountain" | "desert" | "snow" | "cave" | "ruins" | "swamp" | "volcano";
 export interface ExpeditionSpeciesInfo {
@@ -63,6 +64,16 @@ const RARES = [
 
 const sid = (slug: string): string => `mx_species_${slug}`;
 const moveId = (type: string, tier: number): string => `mx_skill_${type}_${tier}`;
+/** 하네스 번들에 앞·뒤가 **둘 다** 있는 종(앞만 있으면 앞뒤가 다른 생물로 보이므로 기존 그림 유지). */
+function harnessArt(slug: string): { readonly front: string; readonly back: string } | undefined {
+  const art = harnessArtForCampaignSpecies(sid(slug));
+  return art.front && art.back ? { front: art.front, back: art.back } : undefined;
+}
+/** 종의 전투 그림: 하네스 번들(사람이 고른 생성형 도트)이 있으면 그것, 없으면 기존 mx_art_*. */
+function art(slug: string): { readonly monsterResourceId: string; readonly backResourceId: string } {
+  const harness = harnessArt(slug);
+  return harness ? { monsterResourceId: harness.front, backResourceId: harness.back } : { monsterResourceId: `mx_art_${slug}_front`, backResourceId: `mx_art_${slug}_back` };
+}
 const typesFor = (family: Family, stage: number): string[] => family.types.filter((type, i): type is string => !!type && (i === 0 || stage >= (family.secondaryFrom ?? 1)));
 
 export const EXPEDITION_SPECIES: readonly ExpeditionSpeciesInfo[] = [
@@ -199,8 +210,14 @@ export function learnset(primary: string, secondary: string) {
  */
 export function configureExpeditionRoster(project: Project): void {
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
+  // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
+  const replacedArt = [...FAMILIES.flatMap(family => family.slugs), ...RARES.map(rare => rare.slug)]
+    .filter(slug => harnessArt(slug)).map(slug => `mx_art_${slug}_`);
   // Clone so a project's SQLite externalization cannot mutate another seed.
-  for (const [id, asset] of Object.entries(incomingArt)) project.assets.uploaded[id] = { ...asset, meta: { ...asset.meta } };
+  for (const [id, asset] of Object.entries(incomingArt)) {
+    if (replacedArt.some(prefix => id.startsWith(prefix))) continue;
+    project.assets.uploaded[id] = { ...asset, meta: { ...asset.meta } };
+  }
   const moves = buildMoves(project);
   const moveIds = new Set(moves.map(move => move.id));
   project.database.skills = [...project.database.skills.filter(move => !moveIds.has(move.id)), ...moves];
@@ -210,7 +227,7 @@ export function configureExpeditionRoster(project: Project): void {
     const secondary = family.types[1] ?? "normal";
     return normalizeMonsterSpeciesRecord({
       id: sid(slug), name: family.names[index]!, types: typesFor(family, stage),
-      graphic: { monsterResourceId: `mx_art_${slug}_front`, backResourceId: `mx_art_${slug}_back`, graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
+      graphic: { ...art(slug), graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
       baseStats: bases(family.stats, stage), expCurve: { ...EXPEDITION_EXP_CURVE },
       captureRate: [0.72, 0.42, 0.2][index], skillsByLevel: learnset(primary, secondary),
       evolutions: index < 2 ? [{ toSpeciesId: sid(family.slugs[index + 1]!), requires: { level: family.evolution[index]! } }] : [],
@@ -218,7 +235,7 @@ export function configureExpeditionRoster(project: Project): void {
   }));
   for (const rare of RARES) records.push(normalizeMonsterSpeciesRecord({
     id: sid(rare.slug), name: rare.name, types: [...rare.types],
-    graphic: { monsterResourceId: `mx_art_${rare.slug}_front`, backResourceId: `mx_art_${rare.slug}_back`, graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
+    graphic: { ...art(rare.slug), graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
     baseStats: bases(rare.stats, 3), expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: 0.065,
     skillsByLevel: learnset(rare.types[0], rare.types[1]), evolutions: [],
   }));

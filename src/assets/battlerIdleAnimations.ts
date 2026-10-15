@@ -27,6 +27,7 @@
 // 장수). 임의로 고르면 슬라임이 경련하고 골렘이 슬로모션이 된다. 절차 티어는 전투 애니메이션
 // 프레임 간격(`BATTLE_ANIMATION_FRAME_MS` = 120ms)을 그대로 쓴다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
+import { harnessMonsterIdleAnimation } from "@/assets/harnessMonsterArt";
 
 export type BattlerIdleAnimationTier = "image-strip" | "sheet-cell";
 
@@ -105,7 +106,8 @@ const BY_RESOURCE_ID = new Map(BATTLER_IDLE_ANIMATIONS.map((entry) => [entry.res
 /** 등록된 idle 애니메이션. 없으면 undefined — 호출자는 정적 렌더로 폴백한다. */
 export function battlerIdleAnimation(resourceId: string | undefined): BattlerIdleAnimation | undefined {
   if (!resourceId) return undefined;
-  return BY_RESOURCE_ID.get(resourceId);
+  // 몬스터 수집 하네스 번들 종 그림의 대기 스트립(112×N). 카탈로그 배열에는 넣지 않는다 — 번들 목록이 정본이다.
+  return BY_RESOURCE_ID.get(resourceId) ?? harnessMonsterIdleAnimation(resourceId);
 }
 
 /** 한 사이클 총 길이(ms). CSS 애니메이션 duration 으로 쓴다. */
