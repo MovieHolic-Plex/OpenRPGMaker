@@ -2137,6 +2137,7 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
 
 ## CT 회귀 시나리오 복구 (2026-10-15)
 
@@ -2154,3 +2155,5 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 `scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
 실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
 (진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
+- `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`) — 비행선 flightView:"mode7" 탑승·비행 화면(멀리 보기+지평선 원근+하늘). 크로미움은 `unshare -rn` 안에서. 같은 비행의 탑뷰 기준은 `QA_FLIGHT_VIEW=flat`. 프레임 시간은 rAF 간격으로 잰다(플랫 대비 평균 16.67ms 동일).

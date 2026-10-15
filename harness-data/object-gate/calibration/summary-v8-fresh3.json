@@ -1,0 +1,482 @@
+{
+ "about": "fresh3 = 버들항 번들 원본 35장(기준 그림·이전 표본에 안 쓴 것). 라벨(정상)은 판정 전에 키트 출처로 고정, 결과를 보고 바꾸지 않았다. 프로필 e48906a2b68b219a(얇은 소품 기준 3장 보강). 나무 5장·꽃밭은 3/4 라벨이 없어 3/4 반쪽은 부르지 않았다(표의 3/4 fail 은 판정 없음).",
+ "items": [
+  {
+   "name": "b3_prop-stall_jug_bottle",
+   "kind": "low_furniture",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "독립 눈이 「3/4 아님」 8/12 — 사실 판정은 통과였지만 전체 인상이 정면 입면"
+   ],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-veg_cart",
+   "kind": "low_furniture",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-crate_apple",
+   "kind": "box",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+    "앞면 7행 < 8 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-crate_cabbage",
+   "kind": "box",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 0/4)",
+    "앞면 7행 < 8 (3/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-anchor_display",
+   "kind": "frame",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "윗면 2행 < 3 (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-net_rack",
+   "kind": "frame",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+    "맨 위의 큰 부분(27행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-fish_crates",
+   "kind": "box",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+    "앞면 7행 < 8 (4/4)",
+    "윗면 3행 < 4 (1/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-stall_veg",
+   "kind": "low_furniture",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-fish_barrel",
+   "kind": "round_body",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 1/4, 분명한 위반 1/4)",
+    "윗면 3행 < 4 (2/4)",
+    "투영이 3/4 아님(front_elevation) (1/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-mooring_bollard",
+   "kind": "column",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 1/4)",
+    "윗면 3행 < 4 (3/4)",
+    "기둥 머리가 타원 판이 아님(위아래 둥글림 true, 몸통보다 4 튀어나옴 < 6) (3/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-bread_rack",
+   "kind": "tall_furniture",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "윗면 0행 < 4 (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-sandwich_board",
+   "kind": "frame",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+    "윗면 0행 < 3 (3/4)"
+   ],
+   "style": "pass",
+   "styleScore": 6,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-crate_fish",
+   "kind": "box",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 0/4, 분명한 위반 0/4)",
+    "앞면 7행 < 8 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-cloth_stand",
+   "kind": "frame",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+    "맨 위의 큰 부분(20행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (4/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-door_pots",
+   "kind": "container",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-parasol_table",
+   "kind": "low_furniture",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "fail",
+   "styleScore": 6,
+   "styleReasons": [
+    "판정자 fail (4/4)"
+   ]
+  },
+  {
+   "name": "b3_prop-planter_round",
+   "kind": "container",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-sword_barrel",
+   "kind": "round_body",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (3/4)",
+    "윗면 1행 < 4 (3/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (3/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-flowerbox_long",
+   "kind": "container",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "refer",
+   "view34Reasons": [
+    "판정자 의견이 갈림(분명한 3/4 2/4, 분명한 위반 1/4)",
+    "투영이 3/4 아님(front_elevation) (1/4)",
+    "윗면 2행 < 4 (1/4)"
+   ],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-laundry_rack",
+   "kind": "frame",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)",
+    "윗면 0행 < 3 (3/4)"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-tree_planter",
+   "kind": "container",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "윗면 3행 < 4 (4/4)",
+    "맨 위의 큰 부분(26행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+    "맨 위의 큰 부분(25행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)"
+   ],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_prop-column_monument",
+   "kind": "column",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "투영이 3/4 아님(front_elevation) (4/4)",
+    "윗면 2행 < 4 (4/4)",
+    "큰 부분 하나가 윗면 없이 세로 면으로만 그려짐 (4/4)"
+   ],
+   "style": "fail",
+   "styleScore": 5,
+   "styleReasons": [
+    "판정자 fail (4/4)",
+    "윤곽이 근흑(재질 어두운 톤 아님) (4/4)",
+    "명암 3단 < 4 (3/4)"
+   ]
+  },
+  {
+   "name": "b3_prop-statue_sage",
+   "kind": "figure",
+   "styleKind": "prop",
+   "view34Label": "good",
+   "view34": "fail",
+   "view34Reasons": [
+    "맨 위의 큰 부분(40행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (3/4)",
+    "맨 위의 큰 부분(42행)이 윗면 없이 세로 면뿐 — 윗끝이 3/4 가 아님 (1/4)"
+   ],
+   "style": "fail",
+   "styleScore": 6,
+   "styleReasons": [
+    "판정자 fail (3/4)"
+   ]
+  },
+  {
+   "name": "b3_prop-flowerbed",
+   "kind": "flat",
+   "styleKind": "prop",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h101_1",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h103_1",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h109_0",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h113_1",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h120_0",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_house-h132_0",
+   "kind": "structure",
+   "styleKind": "building",
+   "view34Label": "good",
+   "view34": "pass",
+   "view34Reasons": [],
+   "style": "pass",
+   "styleScore": 8,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_tree-eef4bc",
+   "kind": "organic",
+   "styleKind": "tree",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "fail",
+   "styleScore": 4,
+   "styleReasons": [
+    "판정자 fail (4/4)",
+    "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+   ]
+  },
+  {
+   "name": "b3_tree-c27062",
+   "kind": "organic",
+   "styleKind": "tree",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "fail",
+   "styleScore": 4,
+   "styleReasons": [
+    "판정자 fail (4/4)",
+    "칸 정보량이 기준보다 훨씬 낮음 (4/4)"
+   ]
+  },
+  {
+   "name": "b3_tree-e9d9b3",
+   "kind": "organic",
+   "styleKind": "tree",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_tree-d105b2",
+   "kind": "organic",
+   "styleKind": "tree",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  },
+  {
+   "name": "b3_tree-cc0fcb",
+   "kind": "organic",
+   "styleKind": "tree",
+   "view34Label": null,
+   "view34": "fail",
+   "view34Reasons": [
+    "판정 없음"
+   ],
+   "style": "pass",
+   "styleScore": 7,
+   "styleReasons": []
+  }
+ ]
+}

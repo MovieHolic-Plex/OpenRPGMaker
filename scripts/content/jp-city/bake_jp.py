@@ -772,7 +772,7 @@ def main():
     sys.path.insert(0, HERE); import gate_kinds
     if a.gate_report:
         res = gate_kinds.check_all(); gate_kinds.report(res); sys.exit(0 if not res['bad'] else 1)
-    if not a.dry and not a.selftest and os.path.abspath(a.out_root) == os.path.abspath(ROOT): gate_kinds.enforce()   # 3/4 관문: 영수증 없는 키트가 있으면 굽기 거절(JP_GATE=skip 로만 우회)
+    if not a.dry and not a.selftest and os.path.abspath(a.out_root) == os.path.abspath(ROOT): gate_kinds.enforce()   # 3/4 관문: 영수증 없는 키트가 있으면 굽기 거절(우회 없음)
     out = bake(a.out_root, dry=a.dry)
     rep = out['report']
     if a.selftest:

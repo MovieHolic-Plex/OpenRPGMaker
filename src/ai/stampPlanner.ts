@@ -8,6 +8,7 @@
 // 좌표·도구·인자 모양은 코드가 검증한다 — 대상 사각형 밖으로 나간 칸은 잘라 내고, 허용 목록 밖 도구는 버린다.
 // 이 파일은 순수하다(네트워크·스토어 없음). 호출·실행은 editor/stampPlaceRunner.ts.
 import { clampChestGold, type MapPlacementContext } from "./mapPlacementContext";
+import { acceptedObjectNames, baseName, nearestStampObjects, resolveStampObject, type StampObjectEntry } from "./stampObjects";
 
 export type StampTool =
   | "fill_region"
@@ -29,7 +30,9 @@ export type StampTool =
   | "move_event"
   | "remove_event"
   | "place_inn"
-  | "place_signpost";
+  | "place_signpost"
+  | "place_object"
+  | "stamp_tileset_object";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -51,6 +54,7 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "remove_event",
   "place_inn",
   "place_signpost",
+  "place_object",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -71,6 +75,10 @@ export interface StampStep {
   readonly label: string;
   /** 코드가 고친 점과 근거(예: 상자 금액 보정). 결과 줄에 붙인다. */
   readonly note?: string;
+  /** 같은 요청에서 나온 여러 개(화분 세 개 = 도구 호출 셋)를 결과 줄 하나로 묶는 표지. */
+  readonly group?: string;
+  /** 이 단계가 놓는 칸(결과 줄에 좌표로 적는다). */
+  readonly at?: readonly { readonly x: number; readonly y: number }[];
 }
 
 /** 모델에게 주는 사실. 재료는 현재 맵 타일셋의 실제 라벨이다. */
@@ -92,6 +100,20 @@ export interface StampPlanFacts {
   readonly doorMaterials?: readonly string[];
   /** 현재 맵 사실 — 상자 보상·NPC·조사 지점을 이 맵에 맞춰 고르는 근거(1순위). */
   readonly placement?: MapPlacementContext;
+  /** 이 칩셋에서 놓을 수 있는 물건 사전(place_object 이름 대조용 — 모델에게 보내지 않는다). */
+  readonly objects?: readonly StampObjectEntry[];
+  /** 모델에게 보여 줄 「이 칩셋에 실제로 있는 물건 이름」 견본 — 이름 어휘를 맞추게 하는 데만 쓴다. */
+  readonly objectSamples?: readonly string[];
+  /** 한 칸이 물건 발자국에 들어도 되는 자리인가(통행 가능·위층 비어 있음·이벤트·시작칸 아님) — 실행 시점의 맵. */
+  readonly isOpenCell?: (x: number, y: number) => boolean;
+  /** 그 칸에 보이는 그림(위층 타일·겹침·보이는 이벤트)이 이미 있는가 — 그림 없는 조사 지점을 거르는 데 쓴다. */
+  readonly hasArtAt?: (x: number, y: number) => boolean;
+  /** 수리 라운드 — 물건 이름이 사용자 문장에 실제로 든 낱말이어야 한다(문 달기가 실패하자 「뚜껑문」으로 바꿔 깔던 대체를 막는다). */
+  readonly repairRound?: boolean;
+  /** 그 칸이 벽 어휘 타일인가 — place_door 는 벽 칸에만 달린다(아니면 도구가 거부해 수리 호출만 낭비한다). */
+  readonly isWallCell?: (x: number, y: number) => boolean;
+  /** place_props 의 material 이 나무(density 를 받는 재료)인가 — 아니면 density 를 칸 수로 바꾼다(첫 호출이 항상 실패하던 길). */
+  readonly isTreeMaterial?: (material: string) => boolean;
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -102,8 +124,9 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- material MUST be copied verbatim from the provided labels (facts.fillMaterials for fill_region; the labels in facts.materialHint for place_props; facts.wallMaterials / facts.doorMaterials for walls/doors). Map everyday words to the closest real label: 땅/흙/맨땅 → a dirt/soil/earth fill label; 풀밭/잔디 → grass; 물/호수/연못 → water; 숲/나무 → a tree label. Never invent a label; never use a group id.",
   "- Shapes: 동그랗게/원/둥근/호수/연못 → fill_region shape \"circle\" (ellipse for wide ovals); otherwise \"rect\".",
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
-  "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
-  "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기/표지판/비석 → place_examine_hotspots. Put them on walkable ground inside the target, not on trees, water or walls.",
+  "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". density is ONLY for tree labels — never send density with any other material. Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
+  "- PHYSICAL THINGS (물건: 화분·의자·탁자·침대·벤치·우물·가로등·자판기·책장·동상·우체통·통·바위·돌·카펫·모닥불·꽃밭·덤불 한 포기…) are placed ONLY with place_object {name, alternatives?, area|at, count?}. name = the correctly spelled everyday Korean noun alone (fix typos: 화뷴→화분, 의짜→의자; no numbers or verbs); alternatives = up to 3 true synonyms of the SAME thing (탁자→[\"테이블\",\"식탁\"]); never a different or merely similar thing (왕좌≠의자, 대포≠화로) — code ignores those and refuses honestly. Code looks the name up among this tileset's real object pictures (facts.objectNames are examples of names that exist) and REFUSES, listing the nearest names, when no picture matches. So NEVER imitate a thing with place_examine_hotspots (it makes an INVISIBLE event), place_npc/make_villager (people only), or a terrain place_props — those make invisible, wrong or person-shaped things. place_chest, place_savepoint, place_signpost keep their own jobs; place_door only goes on an existing WALL cell (code drops it, saying so, when the target has no wall). Use place_props only for terrain-like scatter with labels copied from the lists, never for a named object. Counts (세 개·둘·여러) → count (default 1, max 8); position words (창가·구석·가운데·왼쪽·입구 옆) → pick area/at inside the target accordingly.",
+  "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기 → place_examine_hotspots ONLY on a cell that already shows a picture (a drawn painting, statue, sign…; code drops hotspots on bare floor); 표지판 → place_signpost. Put them on walkable ground inside the target, not on trees, water or walls.",
   "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
   "- facts.placement.role says what this map is. TOWN (마을): prefer townsfolk with lines, merchants with stock, an inn keeper (place_inn, price from facts.placement.innPrice), signposts at road forks and entrances (place_signpost), a savepoint near the inn, examine hotspots on wells/boards; put people beside roads and doors, never inside houses or on the road itself; chests are rare and small. No traps or blocking monsters in a town unless the sentence asks. INTERIOR: a few NPCs/props, no monsters. DUNGEON/FIELD: chests, blockers from encounterTroops, traps on corridors.",
   "- Empty sentence in a TOWN means: fill it like a lived-in village (2~4 townsfolk, 1 merchant if no shop exists yet, 1 signpost), not treasure and monsters.",
@@ -127,6 +150,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_storage_chest {at:{x,y}}",
   "place_inn {at:{x,y}, name?, price?:number, greeting?:string}",
   "place_signpost {at:{x,y}, lines:[\"북쪽: 어둠 동굴\"]}",
+  "place_object {name:\"화분\", alternatives?:[\"동의어\"], at?:{x,y}, area?:{x,y,w,h}, count?:int}",
   "place_trap {at:{x,y}, trigger?:\"touch\"|\"action\", message?:string}",
   "place_battle_blocker {at:{x,y}, troopId, intro?:[\"...\"]}",
   "set_scene_mood {weather:{kind:\"none\"|\"rain\"|\"storm\"|\"snow\"|\"fog\", intensity?:0..1}}",
@@ -145,6 +169,7 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
     materialHint: facts.materialHint,
     ...(facts.wallMaterials?.length ? { wallMaterials: facts.wallMaterials } : {}),
     ...(facts.doorMaterials?.length ? { doorMaterials: facts.doorMaterials } : {}),
+    ...(facts.objectSamples?.length ? { objectNames: facts.objectSamples } : {}),
     ...(facts.placement ? { placement: placementForModel(facts.placement) } : {}),
   });
 }
@@ -164,7 +189,7 @@ export function buildStampRepairPrompt(failures: readonly { readonly step: Stamp
   return [
     "These steps failed when executed:",
     listed,
-    "Return {\"steps\":[...]} with replacement steps for ONLY the failed steps (same JSON shape and rules). Use a label the error suggests or one from the provided lists. If a step cannot be fixed, leave it out.",
+    "Return {\"steps\":[...]} with replacement steps for ONLY the failed steps (same JSON shape and rules). Use a label the error suggests or one from the provided lists. If a step cannot be fixed, leave it out. Never replace a failed thing with a person/NPC/merchant, an invisible examine hotspot, or an unrelated terrain scatter — leaving it out is the honest answer.",
   ].join("\n");
 }
 
@@ -242,7 +267,16 @@ function enumArg<T extends string>(value: unknown, allowed: readonly T[]): T | u
   return typeof value === "string" && (allowed as readonly string[]).includes(value) ? (value as T) : undefined;
 }
 
-export type StampStepCheck = { readonly step: StampStep } | { readonly dropped: string };
+/** 칩셋에 그림이 없어 깔지 않은 물건 — 이벤트·지형으로 흉내 내지 않고 가까운 이름을 보여 준다. */
+export interface StampRefusal {
+  readonly wanted: string;
+  readonly nearest: readonly string[];
+}
+
+export type StampStepCheck =
+  | { readonly step: StampStep }
+  | { readonly dropped: string }
+  | { readonly refused: StampRefusal };
 
 const TOOL_KO: Record<StampTool, string> = {
   fill_region: "칠하기",
@@ -265,6 +299,8 @@ const TOOL_KO: Record<StampTool, string> = {
   remove_event: "지우기",
   place_inn: "여관",
   place_signpost: "표지판",
+  place_object: "물건",
+  stamp_tileset_object: "물건",
 };
 
 /**
@@ -289,10 +325,52 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
   if ((stampTool === "place_trap" || stampTool === "place_battle_blocker") && isSafeArea(facts) && !asksForHostile(facts.text)) {
     return dropped(`${facts.placement?.map.name ?? "이 맵"}: ${facts.placement?.role.role === "town" ? "마을" : "실내"}이라 요청 없이 ${stampTool === "place_trap" ? "함정을" : "몬스터를"} 두지 않습니다(${facts.placement?.role.reason})`);
   }
+  // 사람이 아닌 것을 NPC 로 세우지 않는다 — 「대포」「공룡 알」이 주민 그림으로 서던 경로다(2026-10-15 코퍼스).
+  if ((stampTool === "place_npc" || stampTool === "place_inn") && !allowsPerson(facts.text)) {
+    return dropped(`「${facts.text}」는 사람을 세우라는 말이 아니라서 NPC 를 두지 않습니다(물건은 place_object 로 칩셋 그림을 찾아 깝니다)`);
+  }
   switch (stampTool) {
+    case "place_object": {
+      const named = stringArg(args.name) ?? stringArg(args.object) ?? stringArg(args.query) ?? stringArg(args.material);
+      if (!named) return dropped("물건 이름이 없습니다");
+      const alternatives = stringList(args.alternatives ?? args.alts ?? args.synonyms, 4);
+      const primary = cleanObjectName(named) || named;
+      if (/^(?:문|출입문|대문|door|창|창문|window)$/iu.test(primary.trim())) {
+        return dropped(`「${primary}」은 벽에 다는 물건이라 바닥에 놓지 않습니다(문은 place_door 로 벽 칸에만 — 벽이 없으면 먼저 벽·건물이 필요합니다)`);
+      }
+      if (facts.repairRound && !norm2(facts.text).includes(norm2(primary))) {
+        return dropped(`수리 라운드에서는 요청하지 않은 물건(「${primary}」)으로 바꾸지 않습니다`);
+      }
+      const accepted = acceptedObjectNames(primary, alternatives.map(cleanObjectName).filter((name) => name.length > 0));
+      const names = accepted.names;
+      const hit = resolveStampObject(facts.objects ?? [], names);
+      if (!hit) return { refused: { wanted: primary, nearest: nearestStampObjects(facts.objects ?? [], [primary]) } };
+      const countRaw = finiteInt(args.count);
+      const count = Math.max(1, Math.min(STAMP_MAX_OBJECTS, countRaw ?? 1));
+      const area = args.at !== undefined ? pointRect(clampPointToTarget(args.at, target)) : rect;
+      if (!area) return dropped("물건을 놓을 영역이 대상 밖입니다");
+      const entry = hit.entry;
+      const shown = baseName(entry.name);
+      const notes: string[] = [];
+      if (hit.corrected) notes.push(`철자 보정 「${hit.matchedBy}」→「${shown}」`);
+      else if (norm2(shown) !== norm2(named) && !norm2(shown).includes(norm2(named))) notes.push(`「${named}」→「${shown}」(${hit.matchedBy})`);
+      if (hit.variants.length > 1) notes.push(`같은 이름 ${hit.variants.length}종 중 ${entry.id}`);
+      return {
+        step: {
+          tool: stampTool,
+          label: labelText ?? `${shown} ${count}개`,
+          ...(notes.length ? { note: notes.join(" · ") } : {}),
+          args: { mapId, name: shown, entryId: entry.id, entryKind: entry.kind, entryName: entry.name, width: entry.width, height: entry.height, area, count },
+        },
+      };
+    }
     case "fill_region": {
       if (!rect) return dropped("영역이 대상 밖입니다");
       if (!material) return dropped("재료가 없습니다");
+      // 연못·호수를 물 재료가 없는 칩셋에서 「하늘」「잔디」로 채우던 대체를 막는다(천공섬 「연못 파 줘」가 하늘 칠하기였다).
+      if (/연못|호수|못 파|pond|lake/iu.test(`${labelText ?? ""} ${facts.text}`) && !/물|수역|해안|바다|호수|연못|강|water|lake|pond|sea|river|shore/iu.test(material)) {
+        return dropped(`「${material}」은 물이 아니라서 연못으로 칠하지 않았습니다 — 이 칩셋의 물 재료 라벨이 없으면 연못은 깔지 않습니다(다른 재료로 흉내 내지 않음)`);
+      }
       const shape = enumArg(args.shape, ["rect", "circle", "ellipse"] as const);
       const clearUpper = typeof args.clearUpper === "boolean" ? args.clearUpper : undefined;
       return { step: { tool: stampTool, label, args: { mapId, rect, material, shape: shape ?? "rect", ...(clearUpper !== undefined ? { clearUpper } : {}) } } };
@@ -304,12 +382,18 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const count = finiteInt(args.count);
       const packing = enumArg(args.packing, ["natural", "dense"] as const);
       const cells = rect.w * rect.h;
-      const sized = density
+      // density 는 나무 재료만 받는다(도구가 아니면 「density는 침엽수/활엽수 material에만」 으로 거부 — 코퍼스에서 비수목 place_props 58회가 첫 호출 실패 → 수리 호출).
+      const treeOnly = density && facts.isTreeMaterial !== undefined && !facts.isTreeMaterial(material);
+      const share = { sparse: 0.15, normal: 0.4, dense: 0.8, impassable: 1 } as const;
+      const sized = density && !treeOnly
         ? { density }
-        : count !== null && count > 0
-          ? { count: Math.min(count, cells), ...(packing ? { packing } : {}) }
-          : { count: cells, packing: "dense" as const };
-      return { step: { tool: stampTool, label, args: { mapId, area: rect, material, ...sized } } };
+        : treeOnly
+          ? { count: Math.max(1, count !== null && count > 0 ? Math.min(count, cells) : Math.round(cells * share[density!])), ...(density === "impassable" ? { packing: "dense" as const } : {}) }
+          : count !== null && count > 0
+            ? { count: Math.min(count, cells), ...(packing ? { packing } : {}) }
+            : { count: cells, packing: "dense" as const };
+      const densityNote = treeOnly ? `density 는 나무 전용이라 칸 수 ${(sized as { count: number }).count}개로 바꿈` : undefined;
+      return { step: { tool: stampTool, label, ...(densityNote ? { note: densityNote } : {}), args: { mapId, area: rect, material, ...sized } } };
     }
     case "paint_road": {
       const rawPoints = Array.isArray(args.points) ? args.points : [];
@@ -335,7 +419,21 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         ? clampPointToTarget(args.at, target)
         : rect ? { x: rect.x + Math.floor((rect.w - 1) / 2), y: rect.y + rect.h - 1 } : null;
       if (!at) return dropped("문 위치가 없습니다");
-      return { step: { tool: stampTool, label, args: { mapId, at, material: material ?? "문" } } };
+      let doorAt = at;
+      let doorNote: string | undefined;
+      if (facts.isWallCell && !facts.isWallCell(at.x, at.y)) {
+        // 모델이 고른 칸이 벽이 아니면 영역 안의 벽 칸 중 가장 가까운 것(아래쪽 우선)으로 옮긴다. 벽이 없으면 문을 달지 않는다.
+        let best: { x: number; y: number; d: number } | null = null;
+        for (let y = target.y; y < target.y + target.h; y++) for (let x = target.x; x < target.x + target.w; x++) {
+          if (!facts.isWallCell(x, y)) continue;
+          const d = Math.abs(x - at.x) + Math.abs(y - at.y) - (y >= at.y ? 0.1 : 0);
+          if (!best || d < best.d) best = { x, y, d };
+        }
+        if (!best) return dropped("문은 벽 칸에만 달 수 있는데 이 영역에는 벽이 없습니다(문 그림을 이벤트·바닥으로 흉내 내지 않았습니다 — 벽·건물이 있는 곳을 고르거나 먼저 벽을 지으세요)");
+        doorAt = { x: best.x, y: best.y };
+        doorNote = `고른 칸은 벽이 아니라 가장 가까운 벽 (${best.x},${best.y})로 옮김`;
+      }
+      return { step: { tool: stampTool, label, ...(doorNote ? { note: doorNote } : {}), args: { mapId, at: doorAt, material: material ?? "문" } } };
     }
     case "place_chest": {
       const at = pointOrCenter(args.at, rect, target);
@@ -415,10 +513,16 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         return [{ at, name: stringArg(spot.name) ?? "조사 지점", lines: lines.length > 0 ? lines : ["특별한 것은 없다."] }];
       });
       if (hotspots.length === 0) return dropped("조사 지점이 없습니다");
-      return { step: { tool: stampTool, label: labelText ?? `조사 지점 ${hotspots.length}곳`, args: { mapId, hotspots } } };
+      // 그림 없는 칸의 조사 지점은 「빈 바닥 위 투명 이벤트」다 — 물건을 깔지 못해 이벤트로 흉내 내던 경로(코퍼스 64회)를 막는다.
+      const seen = hotspots.filter((spot) => facts.hasArtAt === undefined || facts.hasArtAt(spot.at.x, spot.at.y) || facts.hasArtAt(spot.at.x, spot.at.y - 1));
+      if (seen.length === 0) return dropped("조사 지점은 이미 그림이 있는 칸에만 둡니다 — 이 자리에는 보이는 물건이 없어 투명 이벤트만 생기므로 두지 않았습니다(물건은 place_object)");
+      const skippedSpots = hotspots.length - seen.length;
+      return { step: { tool: stampTool, label: labelText ?? `조사 지점 ${seen.length}곳`, ...(skippedSpots > 0 ? { note: `그림 없는 자리 ${skippedSpots}곳은 뺌` } : {}), args: { mapId, hotspots: seen } } };
     }
     case "make_villager":
       return dropped("상인은 place_npc merchant:true 로 보낸다");
+    case "stamp_tileset_object":
+      return dropped("stamp_tileset_object 는 코드가 place_object 에서 만드는 내부 단계다 — place_object 를 쓴다");
     case "place_inn": {
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("여관 주인 위치가 없습니다");
@@ -617,6 +721,106 @@ export function resolveStampOverlaps(
   return { steps: out, dropped };
 }
 
+// ── 물건 자리 정하기 ─────────────────────────────────────────────────────────
+
+function insideRect(rect: StampRect, x: number, y: number): boolean {
+  return x >= rect.x && y >= rect.y && x < rect.x + rect.w && y < rect.y + rect.h;
+}
+
+/** 물건 발자국(밑줄 왼쪽 칸 base 기준)의 칸들. */
+function footprintCells(base: { x: number; y: number }, width: number, height: number): { x: number; y: number }[] {
+  const cells: { x: number; y: number }[] = [];
+  for (let dy = 0; dy < height; dy++) for (let dx = 0; dx < width; dx++) cells.push({ x: base.x + dx, y: base.y - dy });
+  return cells;
+}
+
+/**
+ * 계획의 `place_object`(이름만 정해진 보류 단계)를 실제 도구 호출로 펼친다 — 칸은 **지금 맵**에서 고른다.
+ *  - 킷 물건: 발자국 전체가 대상 사각형 안·통행 가능·위층 비어 있음·이벤트 없음이어야 하고, 서로 한 칸 띄운다(모자라면 붙여서).
+ *  - 소품 그룹: place_props(그룹 이름 = material) 한 번.
+ * 자리가 없으면 그 단계를 버리고 이유를 남긴다(무음 폐기 금지).
+ */
+export function expandStampObjects(
+  steps: readonly StampStep[],
+  facts: StampPlanFacts,
+): OverlapResult {
+  const out: StampStep[] = [];
+  const dropped: string[] = [];
+  // 같은 계획의 새 이벤트(NPC 등)가 선 칸과 바로 위아래는 물건이 덮지 않는다.
+  const taken = new Set<string>();
+  for (const step of steps) {
+    const points = stepPoints(step);
+    if (!points) continue;
+    for (const point of points.get()) for (const dy of [-1, 0, 1]) taken.add(`${point.x},${point.y + dy}`);
+  }
+  const chosen: { x: number; y: number }[][] = [];
+  const open = (x: number, y: number): boolean =>
+    x >= 0 && y >= 0 && x < facts.mapWidth && y < facts.mapHeight && !taken.has(`${x},${y}`) && (facts.isOpenCell ? facts.isOpenCell(x, y) : true);
+  for (const step of steps) {
+    if (step.tool !== "place_object") { out.push(step); continue; }
+    const args = step.args;
+    const area = args.area as StampRect;
+    const count = Number(args.count) || 1;
+    const width = Number(args.width) || 1;
+    const height = Number(args.height) || 1;
+    const name = String(args.name ?? step.label);
+    const mapId = String(args.mapId);
+    if (args.entryKind === "group") {
+      out.push({
+        tool: "place_props", label: step.label, ...(step.note ? { note: step.note } : {}), group: name,
+        args: { mapId, area, material: String(args.entryName), count, minGap: 1 },
+      });
+      continue;
+    }
+    const pointAnchor = area.w === 1 && area.h === 1;
+    const search = pointAnchor ? { x: area.x - 3, y: area.y - 3, w: 7, h: 7 } : area;
+    const cx = area.x + (area.w - 1) / 2;
+    const cy = area.y + (area.h - 1) / 2;
+    const candidates: { x: number; y: number; d: number }[] = [];
+    for (let y = search.y; y < search.y + search.h; y++) for (let x = search.x; x < search.x + search.w; x++) {
+      candidates.push({ x, y, d: Math.hypot(x - cx, y - cy) });
+    }
+    candidates.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+    const fits = (base: { x: number; y: number }, margin: number): boolean => {
+      const cells = footprintCells(base, width, height);
+      if (!cells.every((cell) => insideRect(facts.target, cell.x, cell.y) && open(cell.x, cell.y))) return false;
+      if (margin === 0) return !chosen.some((other) => other.some((o) => cells.some((c) => c.x === o.x && c.y === o.y)));
+      return !chosen.some((other) => other.some((o) => cells.some((c) => Math.abs(c.x - o.x) <= margin && Math.abs(c.y - o.y) <= margin)));
+    };
+    const picked: { x: number; y: number }[] = [];
+    for (const margin of count > 1 ? [1, 0] : [0]) {
+      for (const candidate of candidates) {
+        if (picked.length >= count) break;
+        const base = { x: candidate.x, y: candidate.y };
+        if (picked.some((p) => p.x === base.x && p.y === base.y)) continue;
+        if (!fits(base, margin)) continue;
+        picked.push(base);
+        chosen.push(footprintCells(base, width, height));
+      }
+      if (picked.length >= count) break;
+    }
+    if (picked.length === 0) {
+      let openCells = 0;
+      for (let y = facts.target.y; y < facts.target.y + facts.target.h; y++) for (let x = facts.target.x; x < facts.target.x + facts.target.w; x++) if (open(x, y)) openCells += 1;
+      dropped.push(`${name}: 놓을 자리가 없습니다(${facts.targetIsSelection ? "선택 영역" : "맵"} ${facts.target.w}×${facts.target.h} 안에서 길·물·벽·건물·막힌 칸·이벤트를 뺀 빈 칸이 ${openCells}칸뿐이라 ${width}×${height} 물건이 들어갈 자리가 없음 — 영역을 넓히거나 빈 마당을 골라 주세요)`);
+      continue;
+    }
+    const short = picked.length < count ? `자리가 모자라 ${count}개 중 ${picked.length}개만` : "";
+    picked.forEach((base, index) => {
+      const notes = [index === 0 ? step.note : undefined, index === 0 ? short : undefined].filter(Boolean).join(" · ");
+      out.push({
+        tool: "stamp_tileset_object",
+        label: picked.length > 1 ? `${name} ${index + 1}/${picked.length}` : name,
+        group: name,
+        at: [{ x: base.x, y: base.y }],
+        ...(notes ? { note: notes } : {}),
+        args: { mapId, objectId: String(args.entryId), base },
+      });
+    });
+  }
+  return { steps: out, dropped };
+}
+
 function stringList(value: unknown, limit: number): string[] {
   if (!Array.isArray(value)) return [];
   return value.map(stringArg).filter((line): line is string => Boolean(line)).map((line) => line.slice(0, 120)).slice(0, limit);
@@ -628,10 +832,42 @@ function pointOrCenter(value: unknown, rect: StampRect | null, target: StampRect
   return { x: box.x + Math.floor(box.w / 2), y: box.y + Math.floor(box.h / 2) };
 }
 
+/** 한 번에 놓을 물건 개수 상한. */
+export const STAMP_MAX_OBJECTS = 8;
+
+/** 모델이 이름에 붙인 수량·조사를 떼고 낱말만 남긴다(「화분 세 개」→「화분」). */
+export function cleanObjectName(value: string): string {
+  return value
+    .replace(/\d+/gu, " ")
+    .replace(/(?:^|\s)(?:한|두|세|네|다섯|여섯|일곱|여덟|몇|여러|하나|둘|셋|넷)(?=\s|$)/gu, " ")
+    .replace(/\s+(?:개|그루|대|채|송이|마리|명|줄)$/u, "")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
+function norm2(text: string): string {
+  return text.replace(/[\s·()]+/gu, "").toLowerCase();
+}
+
+function pointRect(point: { x: number; y: number } | null): StampRect | null {
+  return point ? { x: point.x, y: point.y, w: 1, h: 1 } : null;
+}
+
+/** 문장이 사람을 세우라는 말인가 — 사람 낱말이 있거나 「알아서·예쁘게」처럼 구체 물건이 없는 말. */
+const PERSON_WORDS = /사람|주민|npc|상인|경비|병사|아이|아저씨|아주머니|할머니|할아버지|여관|주인|손님|학생|선생|기사|공주|왕|마법사|요리사|대장장이|점원|캐릭터|동료|친구|인물|노인|소녀|소년|여자|남자|용사|상점|가게|술집|주막|대장간|시장|교회|신부|수녀|villager|merchant|guard|keeper|shop|inn\b/iu;
+const VAGUE_WORDS = /예쁘|알아서|분위기|꾸며|꾸미|아늑|풍성|채워|사람 사는|마을처럼|활기|따뜻|멋지|그럴듯|빈 입력|살아 있|생기/u;
+export function allowsPerson(text: string): boolean {
+  const t = text.trim();
+  if (t.length === 0) return true;
+  return PERSON_WORDS.test(t) || VAGUE_WORDS.test(t);
+}
+
 export interface ParsedStampPlan {
   readonly steps: readonly StampStep[];
   /** 버린 단계와 이유(채팅에 한 줄로 남긴다). */
   readonly dropped: readonly string[];
+  /** 칩셋에 그림이 없어 깔지 않은 물건(거절 사유와 가까운 이름). */
+  readonly refused: readonly StampRefusal[];
   /** JSON 을 읽지 못했을 때만. */
   readonly error?: string;
 }
@@ -641,9 +877,10 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
   const list = isRecord(parsed) && Array.isArray(parsed.steps)
     ? parsed.steps
     : Array.isArray(parsed) ? parsed : null;
-  if (!list) return { steps: [], dropped: [], error: "모델 응답에서 steps 를 읽지 못했습니다" };
+  if (!list) return { steps: [], dropped: [], refused: [], error: "모델 응답에서 steps 를 읽지 못했습니다" };
   const steps: StampStep[] = [];
   const dropped: string[] = [];
+  const refused: StampRefusal[] = [];
   for (const entry of list) {
     if (steps.length >= STAMP_MAX_STEPS) {
       dropped.push(`단계 상한(${STAMP_MAX_STEPS}) 초과`);
@@ -651,7 +888,8 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
     }
     const check = validateStampStep(entry, facts);
     if ("step" in check) steps.push(check.step);
+    else if ("refused" in check) refused.push(check.refused);
     else dropped.push(check.dropped);
   }
-  return { steps, dropped };
+  return { steps, dropped, refused };
 }

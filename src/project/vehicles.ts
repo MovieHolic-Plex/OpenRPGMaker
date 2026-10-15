@@ -39,7 +39,15 @@ export interface VehicleConfig {
   mapId?: MapId;
   x?: number;
   y?: number;
+  /**
+   * 비행 시점(비행선 전용, 선택). "mode7" 이면 비행선을 탄 동안 멀리 보기 + 원근 필터(playSceneMode7.ts).
+   * 생략 = 기존 탑뷰 그대로(저장 JSON 에도 필드가 없다).
+   */
+  flightView?: FlightView;
 }
+
+export const FLIGHT_VIEWS = ["mode7"] as const;
+export type FlightView = (typeof FLIGHT_VIEWS)[number];
 
 export interface VehicleLocation {
   mapId: MapId;
@@ -80,9 +88,11 @@ export function normalizeVehicleConfigs(value: unknown): VehicleConfig[] | undef
     const placed = typeof record.mapId === "string" && record.mapId
       && typeof record.x === "number" && Number.isFinite(record.x)
       && typeof record.y === "number" && Number.isFinite(record.y);
+    const flightView = record.id === "airship" && record.flightView === "mode7" ? ("mode7" as const) : undefined;
     byId.set(record.id, {
       id: record.id,
       characterIndex,
+      ...(flightView ? { flightView } : {}),
       ...(placed ? { mapId: record.mapId as string, x: Math.trunc(record.x as number), y: Math.trunc(record.y as number) } : {}),
     });
   }

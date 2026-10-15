@@ -1,0 +1,364 @@
+[
+ {
+  "id": "pot",
+  "cat": "object",
+  "text": "화분 깔아 줘",
+  "expect": "art",
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "pot3",
+  "cat": "plural",
+  "text": "화분 세 개 놓아 줘",
+  "expect": "art",
+  "count": 3,
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "pot-window",
+  "cat": "position",
+  "text": "창가에 화분 놓아 줘",
+  "expect": "art",
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "pot-corner",
+  "cat": "position",
+  "text": "구석에 화분 하나",
+  "expect": "art",
+  "count": 1,
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "pot-typo",
+  "cat": "typo",
+  "text": "화뷴 깔아줘",
+  "expect": "art",
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "pot-nospace",
+  "cat": "typo",
+  "text": "화분깔아",
+  "expect": "art",
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "chair",
+  "cat": "object",
+  "text": "의자 놓아 줘",
+  "expect": "art",
+  "kw": "의자|chair|stool|seat|sofa"
+ },
+ {
+  "id": "chair2",
+  "cat": "plural",
+  "text": "왼쪽에 의자 둘",
+  "expect": "art",
+  "count": 2,
+  "kw": "의자|chair|stool|seat|sofa"
+ },
+ {
+  "id": "chair-typo",
+  "cat": "typo",
+  "text": "의짜 두 개",
+  "expect": "art",
+  "count": 2,
+  "kw": "의자|chair|stool|seat|sofa"
+ },
+ {
+  "id": "table",
+  "cat": "object",
+  "text": "탁자 하나 놓아 줘",
+  "expect": "art",
+  "count": 1,
+  "kw": "탁자|테이블|table|desk|counter|식탁"
+ },
+ {
+  "id": "table-center",
+  "cat": "position",
+  "text": "가운데에 탁자",
+  "expect": "art",
+  "kw": "탁자|테이블|table|desk|counter|식탁"
+ },
+ {
+  "id": "bed",
+  "cat": "object",
+  "text": "침대 깔아 줘",
+  "expect": "art",
+  "kw": "침대|bed|futon|이불"
+ },
+ {
+  "id": "tree",
+  "cat": "object",
+  "text": "나무 심어 줘",
+  "expect": "art",
+  "kw": "나무|tree|conifer|침엽|활엽"
+ },
+ {
+  "id": "tree3",
+  "cat": "plural",
+  "text": "나무 세 그루",
+  "expect": "art",
+  "count": 3,
+  "kw": "나무|tree|conifer|침엽|활엽"
+ },
+ {
+  "id": "flowers",
+  "cat": "object",
+  "text": "꽃밭 만들어 줘",
+  "expect": "art",
+  "kw": "꽃|flower|화단|garden"
+ },
+ {
+  "id": "fence",
+  "cat": "object",
+  "text": "울타리 둘러 줘",
+  "expect": "art",
+  "kw": "울타리|fence|담|hedge|guard"
+ },
+ {
+  "id": "lamp",
+  "cat": "object",
+  "text": "가로등 세워 줘",
+  "expect": "art",
+  "kw": "가로등|등|lamp|light|lantern|torch"
+ },
+ {
+  "id": "sign",
+  "cat": "object",
+  "text": "표지판 세워 줘",
+  "expect": "art",
+  "kw": "표지|간판|sign|board|푯말"
+ },
+ {
+  "id": "well",
+  "cat": "object",
+  "text": "우물 하나 만들어 줘",
+  "expect": "art",
+  "count": 1,
+  "kw": "우물|well"
+ },
+ {
+  "id": "chest",
+  "cat": "object",
+  "text": "보물상자 하나 두어 줘",
+  "expect": "event",
+  "count": 1,
+  "kw": "상자|chest|box"
+ },
+ {
+  "id": "woodbox",
+  "cat": "object",
+  "text": "나무 상자 몇 개 쌓아 줘",
+  "expect": "art",
+  "kw": "상자|box|crate"
+ },
+ {
+  "id": "npc",
+  "cat": "object",
+  "text": "주민 한 명 세워 줘",
+  "expect": "event",
+  "count": 1,
+  "kw": "."
+ },
+ {
+  "id": "door",
+  "cat": "object",
+  "text": "문 달아 줘",
+  "expect": "art",
+  "kw": "문|door|gate"
+ },
+ {
+  "id": "board",
+  "cat": "object",
+  "text": "간판 달아 줘",
+  "expect": "art",
+  "kw": "간판|표지|sign|board"
+ },
+ {
+  "id": "vending",
+  "cat": "object",
+  "text": "자판기 놓아 줘",
+  "expect": "art",
+  "kw": "자판기|vending"
+ },
+ {
+  "id": "bench",
+  "cat": "object",
+  "text": "벤치 놓아 줘",
+  "expect": "art",
+  "kw": "벤치|bench"
+ },
+ {
+  "id": "bench-typo",
+  "cat": "typo",
+  "text": "벤취 두개",
+  "expect": "art",
+  "count": 2,
+  "kw": "벤치|bench"
+ },
+ {
+  "id": "bookshelf",
+  "cat": "object",
+  "text": "책장 놓아 줘",
+  "expect": "art",
+  "kw": "책장|서가|bookshelf|shelf|book"
+ },
+ {
+  "id": "stairs",
+  "cat": "object",
+  "text": "계단 만들어 줘",
+  "expect": "art",
+  "kw": "계단|stair|step"
+ },
+ {
+  "id": "pond",
+  "cat": "object",
+  "text": "연못 파 줘",
+  "expect": "art",
+  "kw": "연못|물|pond|water|lake"
+ },
+ {
+  "id": "campfire",
+  "cat": "object",
+  "text": "모닥불 피워 줘",
+  "expect": "art",
+  "kw": "모닥불|campfire|fire|bonfire|불"
+ },
+ {
+  "id": "vague-pretty",
+  "cat": "vague",
+  "text": "예쁘게",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "vague-auto",
+  "cat": "vague",
+  "text": "알아서 해 줘",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "vague-mood",
+  "cat": "vague",
+  "text": "분위기 있게 꾸며 줘",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "vague-cozy",
+  "cat": "vague",
+  "text": "아늑하게",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "vague-empty",
+  "cat": "vague",
+  "text": "",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "vague-more",
+  "cat": "vague",
+  "text": "좀 더 풍성하게",
+  "expect": "any",
+  "kw": ""
+ },
+ {
+  "id": "stone",
+  "cat": "object",
+  "text": "바위 몇 개 놓아 줘",
+  "expect": "art",
+  "kw": "바위|돌|rock|stone|boulder"
+ },
+ {
+  "id": "statue",
+  "cat": "object",
+  "text": "동상 세워 줘",
+  "expect": "art",
+  "kw": "동상|조각상|statue"
+ },
+ {
+  "id": "flower-pot-many",
+  "cat": "plural",
+  "text": "화분 여러 개 줄지어 놓아 줘",
+  "expect": "art",
+  "kw": "화분|pot|planter|plant|꽃"
+ },
+ {
+  "id": "mailbox",
+  "cat": "object",
+  "text": "우체통 놓아 줘",
+  "expect": "art",
+  "kw": "우체통|mailbox|post"
+ },
+ {
+  "id": "barrel",
+  "cat": "object",
+  "text": "통 두 개 놓아 줘",
+  "expect": "art",
+  "count": 2,
+  "kw": "통|barrel|keg|항아리|pot"
+ },
+ {
+  "id": "bush",
+  "cat": "object",
+  "text": "덤불 깔아 줘",
+  "expect": "art",
+  "kw": "덤불|관목|bush|shrub|hedge"
+ },
+ {
+  "id": "carpet",
+  "cat": "object",
+  "text": "카펫 깔아 줘",
+  "expect": "art",
+  "kw": "카펫|깔개|carpet|rug|mat"
+ },
+ {
+  "id": "torch",
+  "cat": "object",
+  "text": "횃불 달아 줘",
+  "expect": "art",
+  "kw": "횃불|torch|등불|lantern|lamp"
+ },
+ {
+  "id": "spaceship",
+  "cat": "missing",
+  "text": "우주선 놓아 줘",
+  "expect": "refuse",
+  "kw": ""
+ },
+ {
+  "id": "dino-egg",
+  "cat": "missing",
+  "text": "공룡 알 깔아 줘",
+  "expect": "refuse",
+  "kw": ""
+ },
+ {
+  "id": "airplane",
+  "cat": "missing",
+  "text": "비행기 세워 줘",
+  "expect": "refuse",
+  "kw": ""
+ },
+ {
+  "id": "cannon",
+  "cat": "missing",
+  "text": "대포 두 대 놓아 줘",
+  "expect": "refuse",
+  "count": 2,
+  "kw": ""
+ },
+ {
+  "id": "throne",
+  "cat": "missing",
+  "text": "황금 왕좌 놓아 줘",
+  "expect": "refuse",
+  "kw": ""
+ }
+]

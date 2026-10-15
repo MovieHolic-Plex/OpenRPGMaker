@@ -5,6 +5,44 @@
 
 <!-- releases -->
 
+## 0.231.0 — 2026-10-16
+
+### 기능
+
+- **mode7** — 비행선 flightView opt-in 의사 Mode7 비행 시점 (FF6 audit #31) (#2634) (`2165301`)
+- **cutscene** — author_stage_performance — opera/stage acts compiled to cutscene beats (FF6 audit #31) (#2614) (`ad0a2f8`)
+- **world** — derive_world_variant, world entrance links, world terrain tags and terrain encounter conditions (#2604) (`0b73ced`)
+
+### 수정
+
+- **object-gate** — 굽기 스크립트의 관문 우회 길 제거 (#2644) (`f6f513a`)
+
+## 0.230.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — rules v7 — 3/4 half passes calibration data, profile still rejected (style half) (#2642) (`072de5c`)
+
+### 수정
+
+- **stamp-place** — 바로 깔기 — 물건은 칩셋 그림을 이름으로 찾고, 없으면 깔지 않는다 (적대적 리뷰 + 코퍼스 가드) (#2643) (`39432bc`)
+
+## 0.229.1 — 2026-10-15
+
+### 성능
+
+- **boot** — warm boot 9.3s -> 4.4s, cold 19.0s -> 13.6s, first-visit shared-content 13.1MB -> 3.7MB (#2640) (`ecd9f79`)
+
+## 0.229.0 — 2026-10-15
+
+### 기능
+
+- **battle** — trainer pictures accept 128-wide canvases (display scale 128/width), throw frames 64 or 128 (#2638) (`08353b1`)
+
+### 수정
+
+- **ci** — record chocobo, cart, and raft on the M2 vehicle surfaces (`5f9c108`)
+
 ## 0.228.1 — 2026-10-15
 
 ### 수정

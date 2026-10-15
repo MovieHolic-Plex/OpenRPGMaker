@@ -1,0 +1,163 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "03c2e291e607b97c",
+ "status": "rejected",
+ "calibratedAt": "2026-10-15T12:30:30.651Z",
+ "bad": {
+  "total": 30,
+  "caught": 30,
+  "missed": [],
+  "refer": 9
+ },
+ "good": {
+  "total": 29,
+  "passed": 26,
+  "falseFail": [
+   "interior/roundtable__v5",
+   "interior/cheese_wheels__v5",
+   "interior/bookshelf_1w__w41-A"
+  ],
+  "refer": 3
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 84,
+    "passed": 0
+   },
+   "good": {
+    "total": 104,
+    "passed": 88
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 7,
+    "passed": 3
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 21,
+    "passed": 9
+   },
+   "good": {
+    "total": 19,
+    "passed": 3
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 16,
+    "passed": 1
+   },
+   "good": {
+    "total": 4,
+    "passed": 0
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 16,
+    "passed": 11
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  }
+ },
+ "holdout": {
+  "bad": {
+   "total": 47,
+   "caught": 47,
+   "missed": []
+  },
+  "good": {
+   "total": 47,
+   "passed": 42,
+   "falseFail": [
+    "holdout/mir_bathtub__w22-F",
+    "holdout/mir_straw_bed__w44-A",
+    "holdout/mir_cheese_wheels__v5",
+    "holdout/mir_bookshelf_1w__w41-A",
+    "holdout/hue_cheese_wheels__v5"
+   ]
+  }
+ },
+ "fresh": {
+  "bad": {
+   "total": 7,
+   "caught": 7,
+   "missed": []
+  },
+  "good": {
+   "total": 28,
+   "passed": 20,
+   "falseFail": [
+    "fresh/g6_snow",
+    "fresh/g20_campus",
+    "fresh/g53_modern_city",
+    "fresh/g44_desert",
+    "fresh/g62_modern_city",
+    "fresh/g18_modern_city",
+    "fresh2/g7_steampunk",
+    "fresh2/g12_modern_city"
+   ]
+  }
+ },
+ "style": {
+  "badTotal": 10,
+  "caught": 9,
+  "missed": [
+   "style/farm__farm-fenced-plot__v2"
+  ],
+  "badRefer": 0,
+  "goodTotal": 18,
+  "passed": 14,
+  "falseFail": [
+   "style/farm__farm-fenced-plot__v3",
+   "style/farm__farm-plot-wheat__v3",
+   "style/farm__farm-fence-v-3__v3",
+   "style/beodeul__prop-lamp_double"
+  ],
+  "goodRefer": 0,
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 3
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 3
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 6
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 12
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "claude-sonnet-5-5(high)"
+}

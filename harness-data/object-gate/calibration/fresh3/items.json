@@ -1,0 +1,352 @@
+[
+ {
+  "name": "b3_prop-stall_jug_bottle",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-stall_jug_bottle — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-veg_cart",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-veg_cart — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-crate_apple",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-crate_apple — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-crate_cabbage",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-crate_cabbage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-anchor_display",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-anchor_display — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-net_rack",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-net_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-fish_crates",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-fish_crates — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-stall_veg",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-stall_veg — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-fish_barrel",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-fish_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-mooring_bollard",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-mooring_bollard — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-bread_rack",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-bread_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-sandwich_board",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-sandwich_board — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-crate_fish",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-crate_fish — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-cloth_stand",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-cloth_stand — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-door_pots",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-door_pots — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-parasol_table",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-parasol_table — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-planter_round",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-planter_round — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-sword_barrel",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-sword_barrel — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-flowerbox_long",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-flowerbox_long — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-laundry_rack",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-laundry_rack — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-tree_planter",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-tree_planter — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-column_monument",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-column_monument — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-statue_sage",
+  "kind": "figure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-statue_sage — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_prop-flowerbed",
+  "kind": "flat",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-prop-flowerbed — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h101_1",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h101_1 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h103_1",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h103_1 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h109_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h109_0 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h113_1",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h113_1 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h120_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h120_0 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_house-h132_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-house-h132_0 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_tree-eef4bc",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-tree-eef4bc — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_tree-c27062",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-tree-c27062 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_tree-e9d9b3",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-tree-e9d9b3 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_tree-d105b2",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-tree-d105b2 — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ },
+ {
+  "name": "b3_tree-cc0fcb",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "fresh3-beodeul-good",
+  "tier": "A",
+  "note": "버들항 번들 키트 bd-tree-cc0fcb — 기준·이전 표본에 안 쓴 원본. 라벨은 판정 전에 고정(원본 = 정상)."
+ }
+]
