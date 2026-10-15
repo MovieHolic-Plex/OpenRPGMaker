@@ -45,6 +45,7 @@ import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId, type GenreLock } from "@/project/genreLock";
 import {
   normalizeBundleDefinitions,
   normalizeEnergySystemConfig,
@@ -209,6 +210,17 @@ function battleLookWithRetiredSkinWindow(system: { battleUiStyle?: unknown; batt
   return { ...look, window: lookWindow };
 }
 
+/** 알 수 없는 preset·모양이 깨진 값은 잠금 없음으로 본다 — 저장 바이트를 지키려고 선택 칸은 있을 때만 쓴다. */
+function normalizeGenreLock(value: unknown): GenreLock | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<GenreLock>;
+  if (!isGenreLockPresetId(raw.preset)) return undefined;
+  const families = Array.isArray(raw.allowedFamilies) ? raw.allowedFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0) : [];
+  if (!families.length) return undefined;
+  const mapIds = Array.isArray(raw.grandfatheredMapIds) ? [...new Set(raw.grandfatheredMapIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  return { preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)], ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}) };
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
@@ -232,6 +244,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return cameraZoom !== undefined ? { cameraZoom } : {};
     })(),
     ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
+    ...(() => {
+      const genreLock = normalizeGenreLock(system.genreLock);
+      return genreLock ? { genreLock } : {};
+    })(),
     titleResourceId,
     systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),

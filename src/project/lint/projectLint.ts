@@ -30,6 +30,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - ground-support        (error|warning) 던전 키트 맵: 천장·벽 위에 놓인 물체/이벤트, 바닥에 걸린 벽 횃불(error), 허공을 향한 벽(warning)
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
+import { genreLockViolations } from "@/project/genreLock";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { describeShadowedPage, describeUnwrittenSelfSwitchGate, findShadowedPages, findUnwrittenSelfSwitchGates } from "../eventPageShadow";
 import {
@@ -1050,6 +1051,10 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   const actionCombatMaps = maps.filter((m) => m.actionCombat === true);
  const timeEnabled = system.timeSystem?.enabled === true;
 
+  // 0. 장르 잠금 위반 — 잠금을 켠 뒤 허용 밖 칩셋으로 생긴/바뀐 맵(조수 경로는 거부하지만 손 편집·옛 도구 경로는 못 막는다). 잠금 이전부터 있던 맵은 경고하지 않는다.
+  for (const violation of genreLockViolations(project).filter((entry) => !entry.preexisting)) {
+    issues.push({ severity: "warning", code: "opt-in:genre-lock-violation", mapId: violation.mapId, message: `맵 ${violation.mapId}「${violation.mapName}」이 장르 잠금 밖 칩셋(${violation.tilesetId})을 씁니다 — 허용 계열은 check_genre_lock 로 확인하세요.` });
+  }
   // 1. monsterCollection && no species
   if (system.monsterCollection === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-collection-empty", message: "포획이 활성인데 몬스터 종족이 0 — 전투에 포획 명령이 나타나지 않습니다." });

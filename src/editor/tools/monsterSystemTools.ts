@@ -1,6 +1,7 @@
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
+import { disableGenreLock, enableGenreLock, genreLockReleasedNotice } from "@/project/genreLock";
 
 // 몬스터 수집/포획 + 몬스터 전투 파티 모드를 켜고 끄는 저작 도구.
 // 두 플래그는 별개 축이다:
@@ -11,7 +12,7 @@ import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
 const configureMonsterSystem: ToolDefinition = {
   name: "configure_monster_system",
   description:
-    "몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜬다. 포획 없는 몬스터 게임(대회형·트레이너 대전 중심)은 enabled:true + capture:false — 포획 커맨드는 끄고 몬스터 파티 전투만 켠다(「포획 없음」을 선언한 게임이라 검사기도 야생 조우·포획 도구를 요구하지 않는다). battleParty:true면 전투와 필드 메뉴·기술·회복약·저장 레벨이 실제 몬스터 파티를 사용한다. presentation:'collector'는 수집 게임 메뉴/HUD를 설정하고 미수정 기본 왕국 오프닝만 비활성화한다(저작한 오프닝은 보존). 설정 성공은 플레이 검증이 아니다. 동료 지급과 퍼즐 조작 뒤 run_scene_test의 playerCanMove/실제 이동을 검사하고 출하 플레이어도 확인한다. enabled:false면 포획/몬스터 전투 플래그를 제거한다.",
+    "몬스터 수집/포획 시스템을 켠다. enabled:true면 전투에 '포획' 커맨드가 뜬다. 포획 없는 몬스터 게임(대회형·트레이너 대전 중심)은 enabled:true + capture:false — 포획 커맨드는 끄고 몬스터 파티 전투만 켠다(「포획 없음」을 선언한 게임이라 검사기도 야생 조우·포획 도구를 요구하지 않는다). battleParty:true면 전투와 필드 메뉴·기술·회복약·저장 레벨이 실제 몬스터 파티를 사용한다. presentation:'collector'는 수집 게임 메뉴/HUD를 설정하고 미수정 기본 왕국 오프닝만 비활성화한다(저작한 오프닝은 보존). 설정 성공은 플레이 검증이 아니다. 동료 지급과 퍼즐 조작 뒤 run_scene_test의 playerCanMove/실제 이동을 검사하고 출하 플레이어도 확인한다. enabled:true 는 장르 칩셋 잠금도 켠다 — 이후 조수는 새 맵·칩셋에 몬스터 칩셋 계열만 쓸 수 있고 다른 계열은 거부된다. enabled:false면 포획/몬스터 전투 플래그를 제거하고 그 잠금도 푼다(「장르 잠금 해제됨」 경고가 결과·편집 기록에 남는다).",
   mode: "write",
   parameters: {
     type: "object",
@@ -28,10 +29,17 @@ const configureMonsterSystem: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     if (args.enabled !== true) {
+      const releasedLock = draft.system.genreLock;
       delete draft.system.monsterCollection;
       delete draft.system.monsterBattleParty;
       if (draft.system.battleParty === "monsters") delete draft.system.battleParty;
-      return { summary: "몬스터 수집 비활성화 — 포획/몬스터 전투 플래그를 모두 제거했습니다.", data: { enabled: false, battleParty: false } };
+      // 잠금은 말없이 풀리지 않는다 — 결과 경고(채팅)와 편집 기록(applyAnnotation 이 이 문구를 읽는다)에 남긴다.
+      const notice = releasedLock && disableGenreLock(draft) ? genreLockReleasedNotice(draft, releasedLock) : undefined;
+      return {
+        summary: `몬스터 수집 비활성화 — 포획/몬스터 전투 플래그를 모두 제거했습니다.${notice ? " 장르 잠금 해제됨." : ""}`,
+        ...(notice ? { warnings: [notice] } : {}),
+        data: { enabled: false, battleParty: false, ...(notice ? { genreLockReleased: true } : {}) },
+      };
     }
     // 포획 없음은 「꺼짐(undefined)」이 아니라 명시한 false 다 — 검사기가 「포획을 켜는 걸 잊음」과 「포획 없는 게임」을 구분한다.
     const capture = args.capture !== false;
@@ -60,6 +68,7 @@ const configureMonsterSystem: ToolDefinition = {
     }
     // 칩셋 계열은 첫 맵에서 정해진다 — 빈 시작 맵이 버들항이면 몬스터 게임 전체가 버들항으로 깔린다(손댄 맵은 건드리지 않는다).
     openBlankStartOnMonsterKit(draft);
+    const lockedNow = enableGenreLock(draft, "monster-collect");
     const presentation = args.presentation === "collector" ? configureMonsterPresentation(draft) : undefined;
     return {
       summary: !capture
@@ -68,7 +77,7 @@ const configureMonsterSystem: ToolDefinition = {
         ? "몬스터 수집 활성화 + 전투를 몬스터 파티로 진행합니다(포획 커맨드 노출)."
         : "몬스터 수집 활성화 — 전투에 포획 커맨드가 뜹니다(전투 출전은 battleParty:true 필요).",
       data: {
-        enabled: true, capture, battleParty,
+        enabled: true, capture, battleParty, ...(draft.system.genreLock ? { genreLock: draft.system.genreLock.preset, ...(lockedNow ? { genreLockEnabledNow: true } : {}) } : {}),
         partyPresentation: battleParty ? "monster-party" : "actor-party",
         ...(presentation ? { presentation: "collector", ...presentation } : {}),
         verificationScope: "configuration-only",
