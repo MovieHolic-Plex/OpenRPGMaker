@@ -14,10 +14,13 @@ def hands(down_l, down_r, right_near, left_near):
 
 
 NEW = {
-    'Actor4:0': dict(face={'down': (9, 15, 14, 17), 'right': (12, 15, 16, 17), 'left': (7, 15, 11, 17), 'up': None},
+    'Actor4:1': dict(face={'down': (9, 15, 14, 18), 'right': (12, 15, 17, 18), 'left': (6, 15, 10, 18), 'up': None},
+                     t_start=18, waist=25, shoe_top=29, skin='Bxq',
+                     hands=hands([(5, 24), (6, 24)], [(17, 24), (18, 24)], [(8, 24), (9, 24)], [(14, 24), (15, 24)])),
+    'Actor4:0': dict(face={'down': (9, 15, 14, 17), 'right': (13, 15, 16, 17), 'left': (7, 15, 10, 17), 'up': None},
                      t_start=18, waist=25, shoe_top=28, skin='Ay',
                      hands=hands([(5, 24), (6, 24)], [(17, 24), (18, 24)], [(8, 24), (9, 24)], [(14, 24), (15, 24)])),
-    'People1:1': dict(face={'down': (8, 16, 15, 19), 'right': (12, 16, 16, 19), 'left': (7, 16, 13, 19), 'up': None},
+    'People1:1': dict(face={'down': (8, 16, 15, 19), 'right': (12, 16, 16, 19), 'left': (7, 16, 10, 19), 'up': None},
                       t_start=20, waist=25, shoe_top=29, skin='vwt',
                       hands=hands([(6, 25), (7, 25)], [(16, 25), (17, 25)], [(9, 25), (10, 25)], [(13, 25), (14, 25)])),
     'People1:5': dict(face={'down': (8, 14, 15, 18), 'right': (11, 14, 16, 18), 'left': (7, 14, 12, 18), 'up': None},
