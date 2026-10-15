@@ -152,6 +152,12 @@ export function validateSystem(value: unknown): void {
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
+  if (system.socialLoop !== undefined) {
+    const socialLoop = requireRecord("system.socialLoop", system.socialLoop);
+    requireOnlyFields("system.socialLoop", socialLoop, ["slotsPerDay", "dailyFriendshipCap"]);
+    if (socialLoop.slotsPerDay !== undefined) requireNumber("system.socialLoop.slotsPerDay", socialLoop.slotsPerDay);
+    if (socialLoop.dailyFriendshipCap !== undefined) requireNumber("system.socialLoop.dailyFriendshipCap", socialLoop.dailyFriendshipCap);
+  }
   if (system.gallery !== undefined) {
     const gallery = requireRecord("system.gallery", system.gallery);
     if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);

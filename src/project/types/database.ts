@@ -308,6 +308,16 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /**
+   * 능력치 단계(포켓몬식 −6~+6) 변화: 명중하면 대상(또는 시전자)의 단계를 올리거나 내린다 — 울음 −1 공격, 칼춤 +2 공격.
+   * 전투 한 번 동안만 유지되고 교체하면 사라진다. 생략 = 단계 효과 없음(기존 프로젝트는 저장 바이트 그대로).
+   */
+  statStageEffects?: SkillStatStageEffect[];
+  /**
+   * 날씨: 이 기술이 명중하면 전투 날씨를 바꾼다(포켓몬식 쾌청·비·모래바람·싸라기눈). 몇 차례 동안 같은 타입 기술의 피해를 키우거나 줄이고,
+   * 모래바람·싸라기눈은 차례 말 피해를 준다. 전투 한 번 동안만 유지(저장 안 함). gen1 전투 모델만. 생략 = 날씨 없음(기존 프로젝트는 저장 바이트 그대로).
+   */
+  weather?: SkillWeather;
   /** Gen1 move PP cap. Omitted for legacy projects that have not opted into per-move PP yet. */
   maxPp?: number;
   /** Gen1's high-critical move class. Omission is the legacy-compatible normal class. */
@@ -393,6 +403,24 @@ export interface SkillArea {
 export interface SkillMpCost {
   flat: number;
   percentMax: number;
+}
+
+export interface SkillStatStageEffect {
+  stat: import("@/battle/statStages").StatStageKey;
+  /** −6~+6 (0 제외). 양수 = 올림, 음수 = 내림. */
+  stages: number;
+  /** 발동 확률(0~100). 생략 = 100. */
+  chance?: number;
+  /** 누구의 단계를 바꾸나. 생략 = 기술의 대상, self = 시전자(예: 오버히트로 자신의 특수공격이 떨어진다). */
+  target?: "target" | "self";
+}
+
+export type SkillWeatherKind = "sun" | "rain" | "sandstorm" | "hail";
+
+export interface SkillWeather {
+  kind: SkillWeatherKind;
+  /** 지속 차례 3~8. 생략 = 5. */
+  turns?: number;
 }
 
 export type SkillEffect =
@@ -749,6 +777,26 @@ export interface MonsterSpeciesGraphic {
   flying: boolean;
 }
 
+export type MonsterAbilityKind = "immuneType" | "resistType" | "boostLowHp" | "immuneStatus" | "contactStatus" | "statMultiplier" | "endure";
+export type MonsterAbilityStatus = "poison" | "burn" | "sleep" | "freeze" | "paralysis";
+export type MonsterAbilityStat = "attack" | "defense" | "mind";
+
+/**
+ * 종의 특성 하나(선언형). 종류별 필수 매개변수는 정규화(`normalizeMonsterAbility`)가 지킨다.
+ * immuneType{type,healPercent?} · resistType{type,percent} · boostLowHp{type,percent} · immuneStatus{status} ·
+ * contactStatus{status,percent=확률} · statMultiplier{stat,percent} · endure.
+ */
+export interface MonsterAbility {
+  name: string;
+  description?: string;
+  kind: MonsterAbilityKind;
+  type?: string;
+  status?: MonsterAbilityStatus;
+  stat?: MonsterAbilityStat;
+  percent?: number;
+  healPercent?: number;
+}
+
 export interface MonsterSpeciesRecord {
   id: MonsterSpeciesId;
   name: string;
@@ -764,6 +812,8 @@ export interface MonsterSpeciesRecord {
    */
   machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
+  /** 특성(선택). 생략 = 특성 없음(기존 동작). gen1 전투 모델에서만 적용된다. */
+  ability?: MonsterAbility;
 }
 
 export interface CropStageRecord {
@@ -968,7 +1018,12 @@ export interface StateRecord {
   id: StateId;
   name: string;
   /** Gen1 persistent major status semantics, independent of authored state id/name. */
-  gen1MajorStatus?: "poison" | "burn" | "sleep" | "freeze" | "paralysis";
+  gen1MajorStatus?: "poison" | "toxic" | "burn" | "sleep" | "freeze" | "paralysis";
+  /**
+   * 주요 상태와 따로 겹쳐 걸리는 휘발 상태(gen1 전투 전용). "confusion" = 걸릴 때 2~5 행동 동안 지속,
+   * 행동마다 절반이 위력 40 자해로 행동을 잃는다. 교체하면 풀린다. 생략 = 일반 상태.
+   */
+  volatileStatus?: "confusion";
   // RM2K3 상태(State) 편집 가능 필드 — 사용자가 DB 탭에서 재정의한 값.
   // 값을 설정하지 않으면 ontology 기본값(stateOntologyFor)이 사용된다.
   removalCondition?: string;
@@ -1817,6 +1872,8 @@ export interface SystemRecords {
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;
   giftSystem?: boolean;
+  /** 관계·연애 하루 루프(옵트인): 호감 대화가 시간대 칸을 쓰고 사람별 하루 호감 상한이 있다. project/socialLoop.ts. 생략 = 기존 동작 그대로. */
+  socialLoop?: import("@/project/socialLoop").SocialLoopConfig;
   /**
    * 갤러리. enabled 가 아니면 메뉴에 나오지 않는다.
    * label 을 비우면 메뉴 이름은 「갤러리」. 다른 낱말을 적어 두면 그 이름으로 보인다.

@@ -127,16 +127,50 @@ export function needsUser(presence: Presence): boolean {
 }
 
 /**
- * 대화 카드가 이미 이 일들을 말하고 있나. 오른쪽 도크가 열려 있고(접힘·스튜디오 아님) 일이 전부 대화창의 일(source=chat)이면
+ * 대화 카드가 이미 이 일들을 말하고 있나. 오른쪽 도크가 열려 있고(접힘·스튜디오 아님) 일이 **정확히 하나**이고 대화창의 일(source=chat)이면
  * 대화 속 카드 하나가 진행·확인·실패를 맡는다 — 지도 아래 줄·받은함·실패 이름표는 같은 말을 되풀이하는 두 번째 알림이다.
- * 도크가 접혔거나 스튜디오이거나, 영역 작업·다른 맵 작업처럼 대화 카드가 없는 일이 섞였으면 그쪽이 유일한 창구라 false.
+ * 도크가 접혔거나 스튜디오이거나, 영역 작업·다른 맵 작업처럼 대화 카드가 없는 일이 섞였거나, **일이 둘 이상(팀 레인·검수 조수)**이면 false —
+ * 팀은 한 대화 카드에 시간순 한 줄로 합쳐져 「누가 무엇을 하나·누가 실패했나」가 안 읽힌다(2026-10-16 실측: 레인 4명이 카드에서는 「시공 3」 한 줄뿐).
  * 도크 상태는 패널이 body 클래스(`ai-dock-collapsed`·`ai-studio-open`)로 알린다.
  */
 export function conversationCardCovers(presences: readonly Presence[]): boolean {
   if (typeof document === "undefined" || !document.body) return false;
   const body = document.body.classList;
   if (body.contains("ai-dock-collapsed") || body.contains("ai-studio-open")) return false;
-  return presences.length > 0 && presences.every(presence => presence.source === "chat");
+  return presences.length === 1 && presences[0]!.source === "chat";
+}
+
+/** 급한 순서: 내 확인 필요 > 실패 > 일하는 중 > 대기 > 초안 완료 > 적용됨. 작을수록 급하다. */
+export function urgencyRank(presence: Presence): number {
+  switch (presence.state) {
+    case "review": return 0;
+    case "failed": return 1;
+    case "working": return 2;
+    case "waiting": return 3;
+    case "draft": return 4;
+    case "applied": return 5;
+  }
+}
+
+export interface JobSummary {
+  readonly total: number;
+  /** 사람이 확인해야 하는 검토. */
+  readonly review: number;
+  readonly failed: number;
+  /** 일하는 중 + 대기. */
+  readonly running: number;
+  /** 가장 급한 상태(없으면 null). */
+  readonly top: "review" | "failed" | "running" | null;
+}
+
+/** 접힌 도크·상태 줄이 「몇 개가 돌고 무엇이 급한가」를 한 줄로 말하는 데 쓰는 개수. 끝난(적용됨) 일은 세지 않는다. */
+export function summarizeJobs(presences: readonly Presence[], extraRunning = 0): JobSummary {
+  const live = presences.filter(presence => presence.state !== "applied");
+  const review = live.filter(presence => presence.state === "review").length;
+  const failed = live.filter(presence => presence.state === "failed").length;
+  const running = live.filter(isActive).length + extraRunning;
+  const total = live.length + extraRunning;
+  return { total, review, failed, running, top: review > 0 ? "review" : failed > 0 ? "failed" : running > 0 ? "running" : null };
 }
 
 /** 한 번에 하나만 취소·중단할 때. background 는 대기열 표를, 앞 턴은 팀 중지 슬롯을 쓴다. */

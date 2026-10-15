@@ -1338,6 +1338,7 @@ const placeNpc: ToolDefinition = {
       id: { type: "string" },
       guide: { type: "string", enum: ["action-controls"], description: "키 바인딩 정본의 조작 안내 한 페이지. pages 대신 사용하며 맵별 고정 ID로 재사용한다." },
       characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
+      talkFriendship: { type: "boolean", description: "true 면 이 NPC 와 action 대화를 끝낼 때마다 하루 한 번 호감이 오른다(characterId 가 없으면 이름에서 할당). 연애·관계 게임의 기본 호감 통로. 선언 밖 인물 옵션은 거부되니 make_villager 를 써라." },
     },
     // x,y 또는 home 중 하나 — 스키마 required 로 두면 make_villager 모양(home)으로 부른 호출이 Pi 검증에서
     // 통째로 거부됐다(2026-09-24 JRPG ember-4: 상점 NPC 넷이 전부 「x,y is required」). run 에서 둘 중 하나를 요구한다.
@@ -1464,6 +1465,12 @@ const placeNpc: ToolDefinition = {
       event.characterId = event.characterId
         ?? allocateCharacterId(draft, undefined, name, normalizationWarnings);
       normalizationWarnings.push(`호감 페이지/커맨드 → characterId '${event.characterId}' 자동 할당`);
+    }
+    if (args.talkFriendship === true) {
+      event.characterId = event.characterId ?? allocateCharacterId(draft, undefined, name, normalizationWarnings);
+      event.talkFriendship = true;
+    } else if (args.talkFriendship === false) {
+      delete event.talkFriendship;
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event, normalizationWarnings, event, draft);

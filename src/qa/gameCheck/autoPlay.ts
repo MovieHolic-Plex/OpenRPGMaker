@@ -39,7 +39,13 @@ type Requirement =
   /** 파티가 이 스킬을 알기 — 이벤트 조건 partyKnowsSkill. 필드 스킬 문(바위깨기·물 건너기)이 여기서 선행으로 잡힌다. */
   | { readonly kind: "skill"; readonly id: string }
   /** 이 맵에 들어가기 — 들어가는 문이 전부 조건부일 때만 생긴다(기억을 차례로 여는 회상 스토리의 문). */
-  | { readonly kind: "map"; readonly id: string };
+  | { readonly kind: "map"; readonly id: string }
+  /**
+   * 호감도(friendshipAtLeast) 문턱. 변수 문턱과 같은 «되풀이로 쌓기» 이지만 세터는 changeFriendship(delta>0)이고
+   * 값은 session.friendship[npcKey] 에 있다 — 2026-10-16 연애 도그푸딩: 이 요구가 계획에 없어 호감 20 이 필요한 고백 페이지를
+   * 호감 0 으로 한 번 조사하고 「다른 페이지가 실행됐다」로 오판했다.
+   */
+  | { readonly kind: "friendship"; readonly npcKey: string; readonly value: number };
 
 interface Goal {
   readonly label: string;
@@ -58,6 +64,11 @@ interface Goal {
   readonly alternatives?: readonly CommandVisit[];
   /** 이벤트를 돌린 뒤 이 아이템을 파티에게 써서 목표를 채운다(기술머신을 받고 몬스터에게 가르치기). */
   readonly useItemAfter?: string;
+  /**
+   * 이 목표는 이벤트를 돌리지 않고 하룻밤을 넘긴다(advanceDays) — 「오늘 만남 끝」 스위치를 시간 시스템의 onDayEnd 공통 이벤트가
+   * 끄는 프로젝트의 되풀이 준비. 침대 이벤트가 없어도 하루는 넘어간다(강제 취침).
+   */
+  readonly sleepDays?: number;
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
@@ -69,6 +80,7 @@ function requirementLabel(project: Project, req: Requirement): string {
     case "actor": return `배우 ${req.id} 합류`;
     case "skill": return `파티가 스킬 ${project.database.skills.find((skill) => skill.id === req.id)?.name || req.id} 습득`;
     case "map": return `맵 ${project.maps[req.id]?.name ?? req.id} 진입`;
+    case "friendship": return `호감 ${req.npcKey} ≥ ${req.value}`;
   }
 }
 
@@ -88,6 +100,10 @@ function leafRequirements(condition: unknown, page: PageRef): Requirement[] {
     if (leaf.kind === "item" && leaf.present === true && typeof leaf.itemId === "string") out.push({ kind: "item", id: leaf.itemId });
     if (leaf.kind === "actor" && leaf.present === true && typeof leaf.actorId === "string") out.push({ kind: "actor", id: leaf.actorId });
     if (leaf.kind === "partyKnowsSkill" && leaf.present !== false && typeof leaf.skillId === "string") out.push({ kind: "skill", id: leaf.skillId });
+    if (leaf.kind === "friendshipAtLeast" && typeof leaf.value === "number") {
+      const npcKey = (typeof leaf.npcKey === "string" ? leaf.npcKey.trim() : "") || page.event?.characterId?.trim() || "";
+      if (npcKey) out.push({ kind: "friendship", npcKey, value: leaf.value });
+    }
   }
   return out;
 }
@@ -253,6 +269,7 @@ function satisfiedAtStart(project: Project, req: Requirement): boolean {
     return start ? partyKnownSkillIds(project, { ...start, variables: start.variables ?? {}, partyActorIds: start.partyActorIds ?? [] } as PartySkillSession).has(req.id) : false;
   }
   if (req.kind === "map") return !mapGated(project, req.id);
+  if (req.kind === "friendship") return ((project.session as { friendship?: Record<string, number> } | undefined)?.friendship?.[req.npcKey] ?? 0) >= req.value;
   if (req.kind === "variable" && req.op && req.value !== undefined) return compare(project.session?.variables?.[req.id] ?? 0, req.op, req.value);
   return false;
 }
@@ -304,6 +321,11 @@ function setterMatches(project: Project, req: Requirement, visit: CommandVisit):
       return c.kind === "changeParty" && c.action === "add" && typeof c.actorId === "string"
         && actorKnownSkillIds(project, { variables: {}, partyActorIds: [c.actorId] }, c.actorId).has(req.id);
     case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
+    case "friendship": {
+      if (c.kind !== "changeFriendship" || typeof c.delta !== "number" || c.delta <= 0) return false;
+      const key = (typeof c.npcKey === "string" ? c.npcKey.trim() : "") || visit.page.event?.characterId?.trim() || "";
+      return key === req.npcKey;
+    }
   }
 }
 
@@ -315,6 +337,7 @@ function machineTeaches(project: Project, itemId: string): string | undefined {
 
 function reqKey(req: Requirement): string {
   if (req.kind === "variable" && req.op) return `variable:${req.id}${req.op}${req.value}`;
+  if (req.kind === "friendship") return `friendship:${req.npcKey}>=${req.value}`;
   return req.kind === "selfSwitch" ? `self:${req.mapId}:${req.eventId}:${req.key}` : `${req.kind}:${req.id}`;
 }
 
@@ -363,9 +386,25 @@ function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly
     if (resets.some((goal) => goal.label.includes(id))) continue;
     const reset = visits.find((visit) => visit.command.kind === "setSwitch" && visit.command.switchId === id && visit.command.value === false
       && visit.page.event !== setter.page.event && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)));
-    if (reset) resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id}(${id}) 끄기`, visit: reset, done: (session) => session.switches[id] !== true });
+    if (reset) { resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id}(${id}) 끄기`, visit: reset, done: (session) => session.switches[id] !== true }); continue; }
+    // 침대 이벤트가 없어도 날이 바뀌며 onDayEnd 공통 이벤트가 끈다 — 2026-10-16 연애 도그푸딩(R3): 「오늘 만남 끝」 sw_0001 을
+    // ce_new_day 가 끄는데 계획기는 공통 이벤트 안의 세터를 못 봐 「되풀이해도 문턱에 닿지 않습니다(호감 3)」 로 오판했다.
+    if (dayEndHookTurnsOff(project, id) && !resets.some((goal) => goal.sleepDays)) {
+      resets.push({ label: `하룻밤 넘기기(onDayEnd 가 스위치 ${id} 를 끈다)`, visit: setter, sleepDays: 1, done: (session) => session.switches[id] !== true });
+    }
   }
   return resets;
+}
+
+/** 하루 끝 훅(timeSystem.onDayEnd 공통 이벤트)이 이 스위치를 끄는가. */
+function dayEndHookTurnsOff(project: Project, switchId: string): boolean {
+  const hookId = project.system?.timeSystem?.onDayEnd;
+  const hook = hookId ? project.commonEvents.find((event) => event.id === hookId) : undefined;
+  if (!hook) return false;
+  const scan = (commands: readonly RawCommand[]): boolean => commands.some((command) =>
+    (command.kind === "setSwitch" && command.switchId === switchId && command.value === false)
+    || childLists(command).some((child) => scan(child.list)));
+  return scan(hook.commands as readonly RawCommand[]);
 }
 
 /** 목표 명령 하나에 이르는 선행 목표 목록(선행 먼저). */
@@ -451,12 +490,13 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
         // presentItem 안의 +3 은 자동 플레이가 아이템을 내지 못하면 0에 머문다. 대화 +2 를 먼저 고른다.
         if (visit.segments.some((segment) => segment.command.kind === "presentItem")) return -1;
         const command = visit.command;
+        if (command.kind === "changeFriendship") return typeof command.delta === "number" ? command.delta : 0;
         if (command.kind !== "setVariable" || typeof command.value !== "number") return 0;
         if (command.op === "+=") return command.value;
         if (command.op === "-=") return -command.value;
         return 0;
       };
-      const preferLargerStep = req.kind === "variable" && (req.op === ">=" || req.op === ">");
+      const preferLargerStep = req.kind === "friendship" || (req.kind === "variable" && (req.op === ">=" || req.op === ">"));
       const candidates = visits.filter((candidate) => setterMatches(project, req, candidate) && map[candidate.page.map!.id])
         .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length
           || (preferLargerStep ? stepToward(b) - stepToward(a) : 0)
@@ -466,17 +506,19 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
         const snapshot = snapshotPlan();
         if (planVisit(candidate, depth + 1)) {
           const threshold = req.kind === "variable" && req.op && req.value !== undefined ? req : undefined;
+          const friendshipGoal = req.kind === "friendship" ? req : undefined;
           goals.push({
-            label: req.kind === "map" ? requirementLabel(project, req) : threshold ? `${requirementLabel(project, req)} 만들기` : `${requirementLabel(project, req)} 켜기`, visit: candidate,
+            label: req.kind === "map" ? requirementLabel(project, req) : threshold || friendshipGoal ? `${requirementLabel(project, req)} 만들기` : `${requirementLabel(project, req)} 켜기`, visit: candidate,
             done: (session) => req.kind === "switch" ? session.switches[req.id] === true
               : req.kind === "selfSwitch" ? session.selfSwitches?.[req.eventId]?.[req.key] === true
               : req.kind === "actor" ? session.partyActorIds.includes(req.id)
               : req.kind === "skill" ? partyKnownSkillIds(project, session as unknown as PartySkillSession).has(req.id)
               : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
               : req.kind === "map" ? session.currentMapId === req.id
+              : req.kind === "friendship" ? (session.friendship?.[req.npcKey] ?? 0) >= req.value
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
             ...(req.kind === "skill" && candidate.command.kind === "changeItem" && typeof candidate.command.itemId === "string" ? { useItemAfter: candidate.command.itemId } : {}),
-            ...(threshold ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
+            ...(threshold || friendshipGoal ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
             alternatives: candidates.filter((other) => other !== candidate && other.page.map?.id === candidate.page.map?.id
               && requirementsOf(project, other).length <= requirementsOf(project, candidate).length),
           });
@@ -497,7 +539,17 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
     }
     return true;
   };
-  planVisit(target, 0);
+  const planned0 = planVisit(target, 0);
+  // 목표 페이지가 「스위치 꺼짐」을 요구하고 하루 끝 훅이 그 스위치를 끄면, 선행(호감 쌓기)이 켜 둔 스위치는 한 번 자고 나서야 꺼진다 —
+  // 2026-10-16 연애 도그푸딩(R3): 고백 페이지 [호감 ≥ 15, 오늘 만남 끝=OFF] 를 마지막 대화 직후 같은 날 열다 막혔다.
+  if (planned0) {
+    for (const condition of target.page.conditions as readonly RawCommand[]) {
+      if (condition.kind !== "switch" || condition.value !== false || typeof condition.switchId !== "string") continue;
+      const id = condition.switchId;
+      if (!goals.length || !dayEndHookTurnsOff(project, id)) continue;
+      goals.push({ label: `하룻밤 넘기기(고백 페이지가 스위치 ${id} 꺼짐을 요구 — onDayEnd 가 끈다)`, visit: target, sleepDays: 1, done: (session) => session.switches[id] !== true });
+    }
+  }
   goals.push(targetGoal);
   return { goals, unresolved };
 }
@@ -1068,6 +1120,10 @@ function trace(goal: string, ok: boolean, detail: string, driver: Driver, where?
 
 function describeProgress(driver: Driver, goal: Goal): string {
   const c = goal.visit.command;
+  if (c.kind === "changeFriendship") {
+    const key = (typeof c.npcKey === "string" ? c.npcKey.trim() : "") || goal.visit.page.event?.characterId?.trim() || "";
+    return `호감 ${key}=${driver.last.session.friendship?.[key] ?? 0}`;
+  }
   return typeof c.variableId === "string" ? `${c.variableId}=${driver.last.session.variables[c.variableId] ?? 0}` : "";
 }
 
@@ -1260,12 +1316,30 @@ function train(driver: Driver, target: number, knockedOut = 0, heals = 0): strin
   }
 }
 
+/** 일정이 있는 NPC 의 지금 위치 — 러너가 세운 자리(session.eventLocations)를 따른다. 일정이 없거나 아직 안 세웠으면 저작 위치. */
+function presentLocation(session: PlaySession, authoredMap: string, event: GameEvent): { mapId: string; event: GameEvent } {
+  if (!event.schedule?.length) return { mapId: authoredMap, event };
+  const at = session.eventLocations?.[event.id];
+  if (!at || (at.mapId === authoredMap && at.x === event.x && at.y === event.y)) return { mapId: authoredMap, event };
+  return { mapId: at.mapId, event: { ...event, x: at.x, y: at.y } };
+}
+
 function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, healed = false, walkRetries = 0): AutoPlayStepTrace {
   const { project } = driver;
   const visit = goal.visit;
-  const targetMap = visit.page.map?.id;
-  const event = visit.page.event;
-  if (!targetMap || !event) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
+  if (goal.sleepDays) {
+    if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);
+    const slept = tryCommit(driver, [{ kind: "advanceDays", days: goal.sleepDays }]);
+    return slept.ok ? trace(goal.label, true, "하룻밤 지남", driver, visit.where) : trace(goal.label, false, `하룻밤 넘기기 실패: ${slept.reason}`, driver, visit.where);
+  }
+  const authoredMap = visit.page.map?.id;
+  const authoredEvent = visit.page.event;
+  if (!authoredMap || !authoredEvent) return trace(goal.label, false, "공통 이벤트 안의 명령은 자동 플레이가 부를 수 없습니다.", driver, visit.where);
+  // NPC 일정: 러너는 시각에 맞춰 일정이 있는 이벤트를 다른 맵·칸에 세운다(session.eventLocations). 저작 위치(「교실 앞 27,34」)로
+  // 걸어가 «조사할 이벤트 없음» 으로 오판하지 않고, 지금 그 사람이 선 자리로 간다(2026-10-16 연애 도그푸딩: 한유나는 1~5일 아침 강의실).
+  const present = presentLocation(driver.last.session, authoredMap, authoredEvent);
+  const targetMap = present.mapId;
+  const event = present.event;
   if (goal.done?.(driver.last.session, driver.last)) return trace(goal.label, true, "이미 충족돼 건너뜀", driver, visit.where);
   if (Date.now() > driver.deadline) return trace(goal.label, false, "자동 플레이 시간 상한 초과", driver, visit.where);
   const route = routeTo(project, driver.last.session.currentMapId, targetMap, driver.last.session);

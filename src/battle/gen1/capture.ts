@@ -1,7 +1,7 @@
 import type { Gen1NextByte } from "@/battle/gen1/rng";
 
 export type Gen1BallClass = "poke" | "great" | "ultra" | "master";
-export type Gen1MajorStatus = "poison" | "burn" | "sleep" | "freeze" | "paralysis";
+export type Gen1MajorStatus = "poison" | "toxic" | "burn" | "sleep" | "freeze" | "paralysis";
 
 export interface Gen1CaptureInput {
   readonly ballClass: Gen1BallClass;

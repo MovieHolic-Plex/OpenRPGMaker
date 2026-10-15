@@ -320,6 +320,8 @@ export interface BattleBattlerSnapshot {
   readonly scanned?: boolean;
   /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
   readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
+  /** 능력치 단계(−6~+6, 0 이 아닌 칸만). 표시 계층이 단계 알약(ATK↑2)을 그린다. 저장하지 않는다. */
+  readonly statStages?: Readonly<Partial<Record<import("@/battle/statStages").StatStageKey, number>>>;
   /** 변신(StateRuntimeEffects.transformResourceId) 중인 그림 id. 표시 계층이 원래 그림 대신 쓴다(battleCharacterResourceId 는 원래 그림 그대로). */
   readonly transformResourceId?: string;
 }
@@ -423,6 +425,12 @@ export interface BattleTimelineEntrySnapshot {
   readonly waitMs?: number;
   /** kind === "special" 인 엔트리의 전투 메시지. */
   readonly message?: string;
+  /** 능력치 단계가 바뀐 special 엔트리. before 는 재생 전 화면(단계 알약)을 되감는 근거다. */
+  readonly statStage?: { readonly stat: import("@/battle/statStages").StatStageKey; readonly before: number; readonly after: number; readonly requested: number };
+  /** 날씨가 만든 엔트리(지속 문장·차례 말 피해·종료 문장). 표시 계층이 표시 이름으로 문장을 다시 만들고 상태 이름 팝업을 쓰지 않는다. */
+  readonly weatherKind?: import("@/project/types").SkillWeatherKind;
+  /** 이 엔트리 뒤의 날씨(null = 날씨 끝). 날씨 배지를 재생 시점에 맞추는 근거 — 스냅샷의 weather 는 명령 즉시 해결돼 문장보다 먼저 바뀐다. */
+  readonly weatherAfter?: { readonly kind: import("@/project/types").SkillWeatherKind; readonly turnsLeft: number } | null;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;
@@ -578,6 +586,8 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  /** 지금 전투 날씨(없으면 생략). 표시 계층이 날씨 배지를 그린다. 저장하지 않는다. */
+  readonly weather?: { readonly kind: import("@/project/types").SkillWeatherKind; readonly turnsLeft: number };
   /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러져 물러난 적. 표시 계층이 쓰러짐 비트를 재생하는 동안만 쓴다. */
   readonly departedEnemies?: readonly BattleBattlerSnapshot[];
   /** Gauge prediction from the same scheduler/rates as tick, using battler instance id. */

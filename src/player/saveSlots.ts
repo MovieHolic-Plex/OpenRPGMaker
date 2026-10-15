@@ -215,6 +215,7 @@ export type SaveSnapshot = {
     readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
+    readonly socialLoop?: PlaySession["socialLoop"];
     readonly monsterCareSteps?: number;
     readonly monsterFieldPoisonSteps?: number;
     readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
@@ -293,6 +294,13 @@ export type SaveSlotReadResult =
   | { readonly kind: "empty"; readonly slot: SaveSlotIndex }
   | { readonly kind: "corrupt"; readonly slot: SaveSlotIndex; readonly message: string }
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
+
+function isSocialLoopDayState(value: unknown): value is NonNullable<PlaySession["socialLoop"]> {
+  if (!value || typeof value !== "object") return false;
+  const state = value as { day?: unknown; slotsUsed?: unknown; gained?: unknown };
+  return typeof state.day === "string" && typeof state.slotsUsed === "number" && Number.isFinite(state.slotsUsed)
+    && isNumberRecord(state.gained);
+}
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
   const pinned = publicationSaveKey(slot);
@@ -476,6 +484,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
+      ...(session.socialLoop ? { socialLoop: structuredClone(session.socialLoop) } : {}),
       monsterCareSteps: session.monsterCareSteps,
       monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
@@ -756,6 +765,8 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   else delete session.galleryUnlocks;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
+  if (snapshot.session.socialLoop) session.socialLoop = structuredClone(snapshot.session.socialLoop);
+  else delete session.socialLoop;
   if (typeof snapshot.session.monsterCareSteps === "number") {
     session.monsterCareSteps = Math.max(0, Math.trunc(snapshot.session.monsterCareSteps));
   }
@@ -1243,6 +1254,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
+      ...(isSocialLoopDayState(session.socialLoop) ? { socialLoop: session.socialLoop } : {}),
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)
         ? Math.max(0, Math.trunc(session.monsterCareSteps))
         : undefined,
