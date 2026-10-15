@@ -109,8 +109,25 @@ const MOVE_NAMES: Readonly<Record<string, readonly [string, string, string, stri
   dragon: ["비늘울림", "소금숨결", "돛룡파동", "심해포효", "섬의메아리", "용의호흡"],
 };
 const PHYSICAL_TYPES = new Set(["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost"]);
-const ANIMATIONS: Readonly<Record<string, string>> = {
-  normal: "anim_attack", fighting: "anim_attack", flying: "anim_attack", poison: "anim_poison", ground: "anim_attack", rock: "anim_attack", bug: "anim_attack", ghost: "anim_magic", fire: "anim_fire", water: "anim_heal", grass: "anim_heal", electric: "anim_magic", psychic: "anim_magic", ice: "anim_magic", dragon: "anim_magic",
+/** 타입 × 단계(1~6) 기술 이펙트. 데이터베이스에 이미 있는 anim_gen_* / anim_scarloxy_* 만 쓴다(새 그림 없음).
+ *  예전에는 타입 하나에 이펙트 하나(그마저 존재하지 않는 anim_attack·anim_fire 가 7타입 42기술을 무연출로 만들었고,
+ *  풀·물은 「회복 빛」이 상대 몸에 떴다 — 2026-10-15 진단 B2). 단계가 오를수록 큰 이펙트, 6단계(위력 0 보조기)는 몸을 감싸는 이펙트. */
+const ANIMATIONS: Readonly<Record<string, readonly [string, string, string, string, string, string]>> = {
+  normal: ["anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_sonic_wave", "anim_gen_critical_burst", "anim_gen_cleanse_sparkle"],
+  fighting: ["anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_earth_spike", "anim_gen_critical_burst", "anim_gen_earth_spike", "anim_gen_power_aura"],
+  flying: ["anim_gen_wind_slice", "anim_gen_wind_slice", "anim_gen_wind_slice", "anim_gen_sonic_wave", "anim_gen_wind_slice", "anim_gen_cleanse_sparkle"],
+  poison: ["anim_poison", "anim_poison", "anim_gen_bite_crunch", "anim_poison", "anim_poison", "anim_gen_sleep_dust"],
+  ground: ["anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_smoke_vanish"],
+  rock: ["anim_gen_projectile_shot", "anim_gen_projectile_shot", "anim_gen_tackle_impact", "anim_gen_earth_spike", "anim_gen_meteor_fall", "anim_gen_guard_barrier"],
+  bug: ["anim_gen_claw_rake", "anim_gen_bite_crunch", "anim_gen_drain_orbs", "anim_gen_tackle_impact", "anim_gen_critical_burst", "anim_gen_guard_barrier"],
+  ghost: ["anim_gen_shadow_pulse", "anim_gen_blind_veil", "anim_gen_drain_orbs", "anim_gen_sonic_wave", "anim_gen_confusion_spiral", "anim_gen_blind_veil"],
+  fire: ["anim_scarloxy_fire", "anim_scarloxy_fire", "anim_gen_fire_burst", "anim_gen_fire_burst", "anim_gen_fire_burst", "anim_gen_power_aura"],
+  water: ["anim_scarloxy_splash", "anim_scarloxy_splash", "anim_gen_water_column", "anim_gen_water_column", "anim_gen_water_column", "anim_gen_cleanse_sparkle"],
+  grass: ["anim_scarloxy_green", "anim_gen_leaf_volley", "anim_gen_drain_orbs", "anim_gen_leaf_volley", "anim_gen_leaf_volley", "anim_heal"],
+  electric: ["anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_paralysis_bind"],
+  psychic: ["anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_sleep_dust"],
+  ice: ["anim_scarloxy_ice", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_guard_barrier"],
+  dragon: ["anim_gen_sonic_wave", "anim_gen_sonic_wave", "anim_gen_projectile_shot", "anim_gen_sonic_wave", "anim_gen_meteor_fall", "anim_gen_power_aura"],
 };
 const DEBUFF: Readonly<Record<string, string>> = {
   fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down",
@@ -128,7 +145,7 @@ export function buildMoves(project: Project): SkillRecord[] {
       mpCost: { flat: 0, percentMax: 0 }, successRate: 100, hitRate: tier >= 4 ? 90 : 100, variance: 0,
       effect: { kind: "damage", statistic: PHYSICAL_TYPES.has(type) ? "attack" : "mind", affects: "hp" },
       description: `${name}: ${type} 타입의 기술. 위력 ${[35, 55, 75, 90, 105, 0][index]}, 최대 횟수 ${[30, 25, 15, 10, 5, 15][index]}.`,
-      ...(availableAnimations.has(ANIMATIONS[type]!) ? { animationId: ANIMATIONS[type] } : {}),
+      ...(availableAnimations.has(ANIMATIONS[type]![index]!) ? { animationId: ANIMATIONS[type]![index] } : {}),
     };
     if (tier === 2 && ["poison", "electric", "fire", "ice"].includes(type)) {
       move.stateEffects = stateEffect(DEBUFF[type]!, type === "poison" ? 25 : 10);

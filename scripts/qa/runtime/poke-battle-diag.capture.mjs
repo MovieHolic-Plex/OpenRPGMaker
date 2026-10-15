@@ -188,10 +188,10 @@ async function pressSkill(index = 0) {
   return id;
 }
 /** 전투가 끝날 때까지 싸운다. 정지하지 않고 최대 turns 턴. */
-async function fightToEnd({ maxTurns = 30, skillIndex = 0, onTurn } = {}) {
+async function fightToEnd({ maxTurns = 30, skillIndex = 0, onTurn, holdResultMs = 0 } = {}) {
   for (let turn = 0; turn < maxTurns; turn++) {
     if (!(await present("battle-scene"))) return "ended";
-    if (await present("battle-result-panel")) { await pressEnterUntil(async () => !(await present("battle-scene")), 30); return "result"; }
+    if (await present("battle-result-panel")) { if (holdResultMs) { await mark("result-hold"); await page.waitForTimeout(holdResultMs); } await pressEnterUntil(async () => !(await present("battle-scene")), 30); return "result"; }
     const forced = page.locator('[data-testid^="actor-switch-"]');
     if (!(await page.locator('[data-testid="actor-command-fight"]').count())) {
       if (await forced.count()) { await mark("forced-switch"); await forced.first().focus(); await page.keyboard.press("Enter"); await page.waitForTimeout(800); continue; }
@@ -298,6 +298,26 @@ async function scenarioLevelup() {
   await page.waitForTimeout(800);
   await recStop();
   step("levelup", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level}`))));
+  await waitBattleOver();
+}
+async function scenarioExp() {
+  await healLead();
+  const m0 = await live();
+  const lead = m0.party[0];
+  const sp = project.database.monsterSpecies.find((x) => x.id === lead.speciesId);
+  const curve = sp.expCurve;
+  const total = (L) => { let t = 0; for (let l = 2; l <= L; l++) { t += curve.base + Math.floor(curve.extra * Math.pow(l - 1, 0.9)); t += Math.floor((l - 2) * curve.acceleration); } return t; };
+  const L = lead.level;
+  report.debugWrites.push(`lead exp set to 40% of lv${L} band`);
+  await setLead({ exp: Math.floor(total(L) + (total(L + 1) - total(L)) * 0.4) });
+  await recStart("exp", 6000);
+  const enc = await findWild();
+  if (rec) rec.ring = 0;
+  await waitCmd(60000);
+  await fightToEnd({ maxTurns: 40, skillIndex: Number(process.env.SKILL ?? 0), holdResultMs: Number(process.env.HOLD ?? 5000) });
+  await page.waitForTimeout(800);
+  await recStop();
+  step("exp", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level} exp${m.exp}`))));
   await waitBattleOver();
 }
 async function scenarioEvolve() {
@@ -460,7 +480,7 @@ async function scenarioDom() {
   await page.locator('[data-testid="actor-command-run"]').focus(); await page.keyboard.press("Enter");
   await waitBattleOver();
 }
-const table = { dom: scenarioDom, misc: scenarioMisc, wild: scenarioWild, catch: scenarioCatch, levelup: scenarioLevelup, evolve: scenarioEvolve, trainer: scenarioTrainer, gym: scenarioGym, lose: scenarioLose };
+const table = { exp: scenarioExp, dom: scenarioDom, misc: scenarioMisc, wild: scenarioWild, catch: scenarioCatch, levelup: scenarioLevelup, evolve: scenarioEvolve, trainer: scenarioTrainer, gym: scenarioGym, lose: scenarioLose };
 try {
   await bootAndStarter();
   for (const name of SCEN) {

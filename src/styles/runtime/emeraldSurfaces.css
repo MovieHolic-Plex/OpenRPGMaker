@@ -54,7 +54,9 @@
   filter: none;
   image-rendering: pixelated;
 }
-.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy .battle-enemy-image:not([data-battler-anim]) {
+/* 쓰러진 적은 제외한다: 이 규칙이 .defeated 에도 걸려 19 의 pkmn-battler-faint 가 한 번도 돌지 않았고,
+   막타를 맞은 적이 쓰러졌다 문장 뒤에도 결과 화면까지 멀쩡히 서 있었다(2026-10-15 재현: img animation-name none, opacity 1). */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy:not(.defeated) .battle-enemy-image:not([data-battler-anim]) {
   animation: none;
   scale: 1;
 }
@@ -104,7 +106,7 @@
   left: auto;
   top: auto;
   right: 12px;
-  bottom: 92px;
+  bottom: 84px;
   width: 224px;
   background: none;
   border: 0;
@@ -159,6 +161,11 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
+/* 내 몬스터 상자 EXP 바: 상자 맨 아래 가는 줄(3세대). 승리 결과 단계에서 보상만큼 차오른다(syncExpBar). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp) { grid-template-rows: 24px 10px auto 8px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp { grid-area: 4 / 1; align-self: end; position: relative; height: 6px; box-sizing: border-box; background: #384840; border: 1px solid #384840; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp-fill { display: block; height: 100%; width: var(--battle-exp, 0%); background: #40a8e8; transition: width 1.2s linear; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp[data-exp-reset="true"] .battle-actor-exp-fill { transition: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-vitals { grid-area: 3 / 1; padding: 0; justify-content: flex-end; gap: 4px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-hp { font: 16px/18px var(--runtime-pixel-font); color: #384840; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-type-badges, .battle-actor-mp, .battle-atb-label, .battle-playback-status, .battle-flow-status, .battle-key-prompts, .battle-command-icon, .battle-command-tag, .battle-command-scroll-cue) { display: none; }
@@ -317,6 +324,8 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-label { color: #f8f8e8; font: 18px/24px var(--runtime-pixel-font); text-shadow: 2px 2px #284050; white-space: nowrap; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-finale-stamp { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-status-icon-death { display: none; }
+/* 결과 단계에서도 내 몬스터 상자는 남는다 — EXP 바가 차오르는 것이 보여야 한다(공용 규칙 09·13 이 숨긴다). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-party { display: grid; opacity: 1; visibility: visible; }
 
 /* Field menu and its separate full-screen functions. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] {
