@@ -288,6 +288,10 @@ It requires an existing catalog; full generation without the option remains supp
 - 검증: `bun scripts/content/dungeon-proof.mts <dir>` — 몬스터 6종(cave·wet·volcano·ice·labyrinth·temple) × rpg/pokemon × 시드 2. lint error 0, 전부 도달, `check_terrain_access` 전부 true. 능력표 정본은 `src/editor/dungeonKit/capabilities.ts`.
 - **방 바깥 색(2026-10-15 후속):** 유적 키트(`ru_pb`)는 방 바깥 전부를 벽 오토타일 255(칸 1902, 옅은 민트)로 깔아 출하 플레이어에서도 민트 평면으로 보였다(렌더 바탕색이 아니라 시트 그림). 지금은 열린 칸에서 2칸 안쪽만 돌담 대지, 바깥은 단색 어두운 칸 1520(1823 은 가로 줄무늬라 금지). 동굴·바다 동굴·화산은 `wallReach: 3`(벽 3칸 두께, 바깥 허공)으로 벽과 바닥의 비슷한 명암이 덩이로 읽히게 했다. `MonsterKit.wallReach` 가 정본.
 
+## 필드 기술 게이트(HM) (2026-10-15, poke-fix-p Phase 2)
+
+원정 게임은 `place_field_obstacle` 로 절단·괴력·파도타기류 게이트를 쓸 수 있다. 상세는 `editor-ai-tools.md` 「place_field_obstacle」. 요점: 몬스터가 필드 기술을 상태 메뉴에서 쓰고(MP 없음), 기술머신은 가방에서 파티 몬스터에게 쓰며(가득이면 교체 대기), `unforgettable` 필드 기술은 교체 후보에서 빠진다. 자동 플레이는 기술머신을 줍고 쓰는 줄까지 따라간다. 만들어진 체육관·길 기본 생성(`build_monster_game`)에는 아직 HM 게이트를 자동으로 넣지 않는다(조수가 `place_field_obstacle` 로 추가).
+
 ## 필드·진행 규칙 1차 (2026-10-15, poke-fix-p — 감사 S 항목)
 
 감사(`audit-poke`)의 필드·진행 부족분. 새 규칙은 전부 옵트인이고 안 쓰는 프로젝트의 저장 바이트는 그대로다.

@@ -717,6 +717,7 @@ function validateMonsterSpeciesRecords(
   if (cycleIds.length > 0) issues.push(`종족 진화 그래프에 사이클이 있습니다: ${cycleIds.join(" → ")}`);
   for (const species of project.database.monsterSpecies ?? []) {
     collectExistingIdIssues(`monsterSpecies ${species.id}: skill`, (species.skillsByLevel ?? []).map((entry) => entry.skillId), skillIds, issues);
+    collectExistingIdIssues(`monsterSpecies ${species.id}: machineSkill`, species.machineSkillIds ?? [], skillIds, issues);
     for (const evolution of species.evolutions ?? []) {
       if (evolution.toSpeciesId === species.id) issues.push(`종족 ${species.id}: 자기 자신으로 진화할 수 없습니다`);
       if (!speciesIds.has(evolution.toSpeciesId)) issues.push(`monsterSpecies ${species.id}: evolution toSpeciesId does not exist: ${evolution.toSpeciesId}`);

@@ -130,6 +130,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
     onMoveMonster: options.actions.onMoveMonster,
+    onUseMonsterFieldSkill: options.actions.onUseMonsterFieldSkill,
     onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
     onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
     onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,

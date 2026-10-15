@@ -3186,6 +3186,17 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
 
+## `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
+
+포켓몬식 「절단·괴력·파도타기·플래시·폭포 오르기」 를 한 호출로(`fieldObstacleTools.ts`, 이벤트 도메인). 새 런타임 개념이 아니라 #2602 의 `partyKnowsSkill` 조건 + 스킬 `fieldCommonEventId` + `changeTile` 의 조립이다.
+- 인자: `mapId,x,y,kind(rock|tree|water|waterfall|dark),requiresSkillId?,skillName?,machine?(hm|tm|none),tile?,passTile?,direction?,length?,hint?,blockedText?,id?`. 모르는 키는 가까운 이름을 알려 주고 거절.
+- 만드는 것: ① 막는 지형 — rock·tree 는 칩셋(`monster_wild`)의 실제 타일(`깨지는 바위`·`자르기 나무`)을 길 칸에 깔고, water·waterfall 은 막힌 칸에서 시작해 `direction`·`length` 만큼 건널 다리(나무다리)·발판(디딤돌) 목록을 잡는다(타일은 기술을 쓸 때 `changeTile` 로 놓여 세이브에 남는다), dark 는 맵 `defaultLighting` 을 어둡게 한다. ② 투명 이벤트: 모름 → 안내(막힘), `partyKnowsSkill` → 「메뉴에서 쓰자」 안내, 열림 → 통과. ③ 필드 스킬(없으면 독자 이름: 덩굴 가르기·바위 밀치기·물길 열기·폭포 오르기·반딧불 소환, `unforgettable:true`) + 공통 이벤트(대상 이벤트 id 별 분기를 쌓음). ④ 기술머신 아이템 `item_hm_*`(book·사라지지 않음)/`item_tm_*`(한 번 쓰면 소모).
+- 가르치는 법은 호출자가 잇는다: `data.itemId` 를 NPC·상자가 `changeItem += 1` 로 주게 한다. 몬스터 파티 게임에서 `learnedSkillId` 아이템은 **파티 몬스터에게** 쓴다(`machineSkillOf`·`teachMonsterSkill`) — 칸이 가득이면 `pendingSkillIds` 로 가서 메뉴에서 교체하되 `unforgettable` 기술은 후보에서 빠진다. 종별 제한은 `define_monster_species.machineSkillIds`(비면 모든 종).
+- 플레이: 상태 메뉴 → 몬스터 기술 목록에서 필드 기술을 고르면 `PlayScene.useFieldAbility(instanceId, skillId)` — 몬스터는 MP·PP 없이 `partyMembersKnowingSkill` 로 아는지만 보고 쓰러진 몬스터는 못 쓴다(`prepareMonsterFieldAbility`, 러너와 같은 함수).
+- 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
+- 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
+- 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+
 
 ## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
 

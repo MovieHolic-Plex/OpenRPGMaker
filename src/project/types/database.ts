@@ -274,6 +274,11 @@ export interface SkillRecord {
    * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
    */
   fieldCommonEventId?: string;
+  /**
+   * 잊을 수 없는 기술(포켓몬 비전머신 HM): 몬스터가 새 기술을 배우려고 칸이 모자랄 때 이 기술은 교체 후보에서 빠진다.
+   * 생략 = 잊을 수 있다(기존 동작). 배우 기술에는 영향이 없다.
+   */
+  unforgettable?: boolean;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -719,6 +724,11 @@ export interface MonsterSpeciesRecord {
   expCurve?: ActorExperienceCurve;
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
+  /**
+   * 기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술. 생략하거나 비면 제한이 없다(기존 동작 —
+   * 아이템 하나가 모든 종에게 통한다). 값이 있으면 이 목록의 기술만 이 종에게 가르칠 수 있다(예: 파도타기는 물 종만).
+   */
+  machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
 }
 
