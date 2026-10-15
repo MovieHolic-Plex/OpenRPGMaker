@@ -6,6 +6,7 @@ import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnem
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
+import { monsterExpBarProgress } from "@/player/battleExpBar";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -307,6 +308,8 @@ export interface BattleFieldPresentation {
   /** 연출이 아직 재생하지 않은 상태 부여·해제를 되돌린 상태 목록. 스냅샷은 명령 즉시 해결돼
    *  「…에 걸렸다!」 비트 전에 배지가 먼저 붙었다(2026-09-29 실측). 없으면 스냅샷 그대로. */
   readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
+  /** 결과 문장이 나오는 단계. 이때부터 EXP 바가 승리 보상만큼 찬다. */
+  readonly resultShown?: boolean;
 }
 
 function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
@@ -385,6 +388,34 @@ export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
   return group;
 }
 
+/** EXP 바: 평소엔 전투 시작 때 진행률. 결과 단계에서 승리 보상만큼 차고, 레벨이 오르면 끝까지 찬 뒤(바 전이 시간만큼 기다려)
+ *  새 레벨과 그 구간 진행률로 바꾼다(전이 없이 즉시 — 3세대처럼 바가 비었다가 다시 차오른다). */
+function syncExpBar(row: HTMLElement, actor: BattleBattlerSnapshot, snapshot: BattleSnapshot, presentation: BattleFieldPresentation | undefined): void {
+  const bar = row.querySelector<HTMLElement>(".battle-actor-exp");
+  if (!bar || !actor.monsterInstanceId) return;
+  const progress = monsterExpBarProgress(snapshot, actor.monsterInstanceId);
+  if (!progress) return;
+  const filled = presentation?.resultShown === true && snapshot.result === "victory";
+  if (!filled) {
+    bar.style.setProperty("--battle-exp", `${progress.fromPct}%`);
+    return;
+  }
+  if (row.dataset.expFilled === "true") return;
+  row.dataset.expFilled = "true";
+  bar.style.setProperty("--battle-exp", `${progress.toPct}%`);
+  if (!progress.levelUp) return;
+  scheduleBattleTimer(() => {
+    row.dataset.expRolledLevel = String(progress.afterLevel);
+    const level = row.querySelector(".battle-actor-level .battle-vital-value");
+    if (level) level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `${progress.afterLevel}` : ` ${progress.afterLevel}`;
+    bar.dataset.expReset = "true";
+    bar.style.setProperty("--battle-exp", "0%");
+    void bar.offsetWidth;
+    delete bar.dataset.expReset;
+    bar.style.setProperty("--battle-exp", `${progress.afterPct}%`);
+  }, 1300);
+}
+
 export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   // 파티 패널은 마운트 시 한 번만 만들어지고 호출자가 요소 참조를 쥐고 있다. 교대(멤버 교체)로
   // 스냅샷의 액터 집합과 DOM 행 집합이 어긋나면, 새로 들어온 액터의 행은 없어 스킵되고 빠져나간
@@ -403,7 +434,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
     const level = row.querySelector(".battle-actor-level .battle-vital-value");
-    if (level && actor.level !== undefined) level.textContent = ` ${actor.level}`;
+    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = ` ${actor.level}`;
+    syncExpBar(row, actor, snapshot, presentation);
     const presented = rollingVitals(actor, presentedState(actor, presentation), presentation);
     // 롤링 미터: 치명타를 맞고 미터가 아직 0 에 닿지 않은 아군. 스킨이 붉게 깜빡이게 그릴 수 있다.
     if (presented.dying) row.dataset.rollingHpDying = "true";
@@ -1554,6 +1586,16 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const face = actorFaceNode(actor);
   if (face) row.append(face);
   row.append(name, vitals, hpGauge, mpGauge);
+  // 3세대 내 몬스터 상자의 EXP 바(에메랄드 HUD 만 그린다). 값은 syncBattleParty 가 채운다.
+  if (actor.monsterInstanceId && isEmeraldMonsterStyle(store.getCurrent())) {
+    const exp = document.createElement("span");
+    exp.className = "battle-actor-exp";
+    exp.dataset.testid = `battle-actor-exp-${actor.recordId}`;
+    const fill = document.createElement("span");
+    fill.className = "battle-actor-exp-fill";
+    exp.append(fill);
+    row.append(exp);
+  }
   const types = battleTypeBadges(actor);
   if (types) row.append(types);
   const role = actorRoleNode(actor);

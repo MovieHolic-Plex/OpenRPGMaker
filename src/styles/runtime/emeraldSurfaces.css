@@ -54,9 +54,25 @@
   filter: none;
   image-rendering: pixelated;
 }
-.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy .battle-enemy-image:not([data-battler-anim]) {
-  animation: none;
+/* 쓰러진 적은 제외한다: 이 규칙이 .defeated 에도 걸려 19 의 pkmn-battler-faint 가 한 번도 돌지 않았고,
+   막타를 맞은 적이 쓰러졌다 문장 뒤에도 결과 화면까지 멀쩡히 서 있었다(2026-10-15 재현: img animation-name none, opacity 1). */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy:not(.defeated) .battle-enemy-image:not([data-battler-anim]) {
+  /* 대기 오르내림(3세대 도트 몬스터는 가만히 서 있지 않는다): 1 도트(2px)를 반 박자씩 오르내린다. 하네스 대기 스트립이 등록된 종은
+     data-battler-anim 이 붙어 이 규칙에서 빠진다. translate 속성이라 공격·피격 이동(transform)과 겹치지 않는다. */
+  animation: emerald-idle-bob 1.1s steps(1, end) infinite;
+  animation-delay: -0.4s;
   scale: 1;
+}
+@keyframes emerald-idle-bob {
+  0% { translate: 0 0; }
+  50% { translate: 0 -2px; }
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:not(.defeated) :is(.battle-monster-image, .battle-monster-authored-back):not([data-battler-anim]) {
+  animation: emerald-idle-bob 1.1s steps(1, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy:not(.defeated) .battle-enemy-image:not([data-battler-anim]),
+  .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:not(.defeated) :is(.battle-monster-image, .battle-monster-authored-back):not([data-battler-anim]) { animation: none; }
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor :is(.battle-monster-image, .battle-monster-authored-back) {
   width: 128px;
@@ -104,7 +120,7 @@
   left: auto;
   top: auto;
   right: 12px;
-  bottom: 92px;
+  bottom: 84px;
   width: 224px;
   background: none;
   border: 0;
@@ -159,6 +175,11 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
+/* 내 몬스터 상자 EXP 바: 상자 맨 아래 가는 줄(3세대). 승리 결과 단계에서 보상만큼 차오른다(syncExpBar). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp) { grid-template-rows: 24px 10px auto 8px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp { grid-area: 4 / 1; align-self: end; position: relative; height: 6px; box-sizing: border-box; background: #384840; border: 1px solid #384840; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp-fill { display: block; height: 100%; width: var(--battle-exp, 0%); background: #40a8e8; transition: width 1.2s linear; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp[data-exp-reset="true"] .battle-actor-exp-fill { transition: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-vitals { grid-area: 3 / 1; padding: 0; justify-content: flex-end; gap: 4px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-hp { font: 16px/18px var(--runtime-pixel-font); color: #384840; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-type-badges, .battle-actor-mp, .battle-atb-label, .battle-playback-status, .battle-flow-status, .battle-key-prompts, .battle-command-icon, .battle-command-tag, .battle-command-scroll-cue) { display: none; }
@@ -219,6 +240,42 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-submenu-header) { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: 16px; grid-auto-rows: 24px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-submenu-header { grid-column: 1 / -1; min-height: 16px; height: 16px; line-height: 16px; padding: 0; margin: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-submenu-header) .battle-command { min-height: 24px; }
+/* 기술 상자(3세대): 왼쪽 2×2 기술 이름 + 오른쪽 정보 상자(PP·타입). 정보 상자는 기술마다 하나씩 DOM 에 있고
+   커서가 선 기술 것만 보인다(형제 선택자 — 커서 이동에 JS 가 끼지 않는다). 머리글 「싸운다」는 3세대 화면에 없다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-move-info) { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 104px; grid-template-rows: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); overflow: hidden; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-menu:has(.battle-move-info) .battle-submenu-header { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-move-info) .battle-command { min-height: 0; height: 100%; align-items: center; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-menu:has(.battle-move-info) .battle-command-text { justify-content: flex-start; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-menu:has(.battle-move-info) .battle-command-text small { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-menu:has(.battle-move-info) .battle-command[data-battle-command-inert="true"] .battle-command-text strong { color: #98a090; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-info { display: grid; visibility: hidden; grid-column: 3; grid-row: 1 / 3; align-content: start; justify-items: start; grid-auto-rows: min-content; gap: 2px; margin: -4px -8px -4px 0; padding: 4px 8px 20px; border-left: 4px solid #586050; box-sizing: border-box; font: 16px/20px var(--runtime-pixel-font); color: #384840; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command[data-move-slot="1"][data-battle-command-cursor="true"] ~ .battle-move-info[data-move-slot="1"],
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command[data-move-slot="2"][data-battle-command-cursor="true"] ~ .battle-move-info[data-move-slot="2"],
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command[data-move-slot="3"][data-battle-command-cursor="true"] ~ .battle-move-info[data-move-slot="3"],
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command[data-move-slot="4"][data-battle-command-cursor="true"] ~ .battle-move-info[data-move-slot="4"] { visibility: visible; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-panel .battle-command-menu:has(.battle-move-info) .battle-command[data-testid="actor-command-back"] { grid-column: 3; grid-row: 2; justify-self: end; align-self: end; width: auto; height: 16px; min-height: 0; padding: 0 4px 0 16px; z-index: 1; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-command-menu:has(.battle-move-info) .battle-command[data-testid="actor-command-back"] strong { font: 12px/16px var(--runtime-pixel-font); color: #586858; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-info > * { text-shadow: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-pp { font: 18px/22px var(--runtime-pixel-font); color: #384840; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-pp[data-pp-state="low"] { color: #c88820; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-pp[data-pp-state="empty"] { color: #c85048; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type { display: inline-block; min-width: 56px; padding: 0 8px; box-sizing: border-box; text-align: center; font: 16px/20px var(--runtime-pixel-font); color: #fff; text-shadow: 1px 1px #384840; background: #686868; border: 2px solid #384840; border-radius: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-reason { font: 12px/14px var(--runtime-pixel-font); color: #c85048; white-space: normal; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="normal"] { background: #a8a878; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="fire"] { background: #f08030; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="water"] { background: #6890f0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="electric"] { background: #e0b010; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="grass"] { background: #58a838; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="ice"] { background: #68b8b8; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="fighting"] { background: #c03028; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="poison"] { background: #a040a0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="ground"] { background: #b89840; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="flying"] { background: #8870d8; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="psychic"] { background: #f85888; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="bug"] { background: #98a818; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="rock"] { background: #a89028; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="ghost"] { background: #705898; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-move-type[data-skill-type="dragon"] { background: #7038f8; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="playback"] .battle-message-window { grid-column: 1 / -1; }
 /* 행동·피해 연출 중(busy)에도 문장 창은 띠 전폭, 명령 창은 숨긴다. 반쪽 창에 남으면 「바람삐가 어깨툭을 사용했다!」가 두 줄로 접혀
    두 문장이 네 줄 — 가운데 정렬로 창 위아래로 넘쳐 몬스터 위에 겹쳤고, 빈 오른쪽엔 「싸운다」 커서 ▶ 만 떠 있었다(2026-10-06 여정 캡처·기하 탐침).
@@ -281,6 +338,8 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-label { color: #f8f8e8; font: 18px/24px var(--runtime-pixel-font); text-shadow: 2px 2px #284050; white-space: nowrap; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-finale-stamp { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-status-icon-death { display: none; }
+/* 결과 단계에서도 내 몬스터 상자는 남는다 — EXP 바가 차오르는 것이 보여야 한다(공용 규칙 09·13 이 숨긴다). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-party { display: grid; opacity: 1; visibility: visible; }
 
 /* Field menu and its separate full-screen functions. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] {

@@ -1,3 +1,8 @@
 /* 픽셀 글꼴 @font-face 는 2026-10-07 저작권 정리로 뺐다(Neo둥근모·갈무리 woff2 삭제).
    글꼴 이름(NeoDunggeunmo·Galmuri*)은 fontRegistry 스택에 남아, 사용자 컴퓨터에 깔려 있으면 그 글꼴을, 없으면
    다음 후보(굴림체·돋움체·고정폭)를 쓴다. 이 파일은 들여오는 쪽(runtime/index.css·styles/index.css)을 위해 남긴다. */
+
+/* 갈무리(Galmuri, quiple, SIL OFL 1.1 — licenses/OFL-Galmuri.md). 2026-10-15: 에메랄드 전투·메뉴의 도트 글꼴(Galmuri9)만 되살렸다.
+   9px 글꼴을 18px(정확히 2배)로 써서 480×320 네이티브 격자에 맞는다 — Galmuri11 을 18px 로 쓰면 획이 뭉개져 고르지 않았다(2026-10-15 비교).
+   woff2 는 public/assets/fonts/ 에 두고 CSS 가 쓸 때만 내려받는다(번들에 넣지 않는다). Neo둥근모는 계속 뺀 채다. */
+@font-face { font-family: "Galmuri9"; src: url("/assets/fonts/Galmuri9.woff2") format("woff2"); font-display: swap; }
