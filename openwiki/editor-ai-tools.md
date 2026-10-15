@@ -3273,3 +3273,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
 - 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
 
+
+
+## `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
+
+- 종 하나에 선언형 특성 하나: `species.ability {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`. `kind` enum = `immuneType|resistType|boostLowHp|immuneStatus|contactStatus|statMultiplier|endure`, `status` enum = `poison|burn|sleep|freeze|paralysis`, `stat` enum = `attack|defense|mind`. 종류별 필수 매개변수와 percent 범위는 스키마 설명과 `openwiki/runtime-battle.md` 「특성」에 있다. **자유 키·자유 코드 없음.**
+- 거절: 필수 매개변수 누락·모르는 종류/값 → `invalid-species-ability`(허용 값을 담음), 타입 상성표에 없는 `type` → 같은 코드로 허용 타입 목록. `battleModel` 이 gen1 이 아니면 저장은 하되 경고.
+- 원작 특성 이름을 그대로 쓰지 않는다(프로젝트 고유 이름). 레시피 `monster-abilities`.

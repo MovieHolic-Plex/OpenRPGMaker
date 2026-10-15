@@ -1,6 +1,7 @@
 import type { Rng } from "@/util/rng";
 import { mulberry32 } from "@/util/rng";
 import { ACTOR_LEVEL_MAX, totalExpForLevel } from "@/project/actorModel";
+import { normalizeMonsterAbility } from "@/battle/abilities";
 import type {
   ActorExperienceCurve,
   ActorLearnedSkill,
@@ -99,6 +100,7 @@ export function normalizeMonsterSpeciesRecord(
   const types = normalizeSpeciesTypes(record.types);
   const evolutions = normalizeEvolutions(record.evolutions);
   const machineSkillIds = uniqueSkillIds((Array.isArray(record.machineSkillIds) ? record.machineSkillIds : []).filter((id): id is SkillId => typeof id === "string" && id.trim() !== "").map((id) => id.trim() as SkillId));
+  const ability = normalizeMonsterAbility(record.ability);
   return {
     id: record.id,
     name: textOrDefault(record.name, "몬스터"),
@@ -110,6 +112,7 @@ export function normalizeMonsterSpeciesRecord(
     skillsByLevel: skillsByLevel.length > 0 ? skillsByLevel : undefined,
     machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
+    ...(ability ? { ability } : {}),
   };
 }
 

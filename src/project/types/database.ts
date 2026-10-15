@@ -730,6 +730,26 @@ export interface MonsterSpeciesGraphic {
   flying: boolean;
 }
 
+export type MonsterAbilityKind = "immuneType" | "resistType" | "boostLowHp" | "immuneStatus" | "contactStatus" | "statMultiplier" | "endure";
+export type MonsterAbilityStatus = "poison" | "burn" | "sleep" | "freeze" | "paralysis";
+export type MonsterAbilityStat = "attack" | "defense" | "mind";
+
+/**
+ * 종의 특성 하나(선언형). 종류별 필수 매개변수는 정규화(`normalizeMonsterAbility`)가 지킨다.
+ * immuneType{type,healPercent?} · resistType{type,percent} · boostLowHp{type,percent} · immuneStatus{status} ·
+ * contactStatus{status,percent=확률} · statMultiplier{stat,percent} · endure.
+ */
+export interface MonsterAbility {
+  name: string;
+  description?: string;
+  kind: MonsterAbilityKind;
+  type?: string;
+  status?: MonsterAbilityStatus;
+  stat?: MonsterAbilityStat;
+  percent?: number;
+  healPercent?: number;
+}
+
 export interface MonsterSpeciesRecord {
   id: MonsterSpeciesId;
   name: string;
@@ -745,6 +765,8 @@ export interface MonsterSpeciesRecord {
    */
   machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
+  /** 특성(선택). 생략 = 특성 없음(기존 동작). gen1 전투 모델에서만 적용된다. */
+  ability?: MonsterAbility;
 }
 
 export interface CropStageRecord {

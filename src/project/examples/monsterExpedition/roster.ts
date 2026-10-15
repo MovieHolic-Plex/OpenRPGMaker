@@ -1,4 +1,4 @@
-import type { EnemyStats, MonsterSpeciesRecord, Project, SkillRecord, UploadedAsset } from "@/project/types";
+import type { EnemyStats, MonsterAbility, MonsterSpeciesRecord, Project, SkillRecord, UploadedAsset } from "@/project/types";
 import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
@@ -241,6 +241,26 @@ export function learnset(primary: string, secondary: string) {
  * its 15 elements, type chart, and semantic status records. Never reads files or
  * mutates a remote/canonical store. All uploaded PNGs remain portable on export.
  */
+/** 주 타입이 정하는 특성(예제 원정의 모든 종). 이름은 이 게임 고유 이름이고 효과는 선언형 일곱 종류 중 하나다. */
+const ABILITY_BY_TYPE: Readonly<Record<string, MonsterAbility>> = {
+  flying: { name: "부양", kind: "immuneType", type: "ground" },
+  electric: { name: "전류막", kind: "contactStatus", status: "paralysis", percent: 30 },
+  fire: { name: "불씨기세", kind: "boostLowHp", type: "fire", percent: 150 },
+  water: { name: "물살기세", kind: "boostLowHp", type: "water", percent: 150 },
+  grass: { name: "새싹기세", kind: "boostLowHp", type: "grass", percent: 150 },
+  bug: { name: "벌레의기개", kind: "boostLowHp", type: "bug", percent: 150 },
+  rock: { name: "바위심지", kind: "endure" },
+  fighting: { name: "뚝심", kind: "statMultiplier", stat: "attack", percent: 125 },
+  poison: { name: "독내성", kind: "immuneStatus", status: "poison" },
+  ice: { name: "서릿결", kind: "immuneStatus", status: "freeze" },
+  ground: { name: "대지접지", kind: "immuneType", type: "electric" },
+  psychic: { name: "맑은정신", kind: "immuneStatus", status: "sleep" },
+};
+function expeditionAbility(types: readonly string[] | undefined, chartTypes: ReadonlySet<string>): MonsterAbility | undefined {
+  const ability = ABILITY_BY_TYPE[types?.[0] ?? ""];
+  return ability && (!ability.type || chartTypes.size === 0 || chartTypes.has(ability.type)) ? { ...ability } : undefined;
+}
+
 export function configureExpeditionRoster(project: Project): void {
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
   // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
@@ -258,8 +278,9 @@ export function configureExpeditionRoster(project: Project): void {
     const stage = index + 1;
     const primary = family.primary ?? family.types[0];
     const secondary = family.types[1] ?? "normal";
+    const types = typesFor(family, stage);
     return normalizeMonsterSpeciesRecord({
-      id: sid(slug), name: family.names[index]!, types: typesFor(family, stage),
+      id: sid(slug), name: family.names[index]!, types, ability: expeditionAbility(types, new Set(project.system.typeChart?.types ?? [])),
       graphic: { ...art(slug), ...fieldArt(slug), graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
       baseStats: bases(family.stats, stage), expCurve: { ...EXPEDITION_EXP_CURVE },
       captureRate: [0.72, 0.42, 0.2][index], skillsByLevel: learnset(primary, secondary),
@@ -267,7 +288,7 @@ export function configureExpeditionRoster(project: Project): void {
     });
   }));
   for (const rare of RARES) records.push(normalizeMonsterSpeciesRecord({
-    id: sid(rare.slug), name: rare.name, types: [...rare.types],
+    id: sid(rare.slug), name: rare.name, types: [...rare.types], ability: expeditionAbility(rare.types, new Set(project.system.typeChart?.types ?? [])),
     graphic: { ...art(rare.slug), ...fieldArt(rare.slug), graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
     baseStats: bases(rare.stats, 3), expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: 0.065,
     skillsByLevel: learnset(rare.types[0], rare.types[1]), evolutions: [],

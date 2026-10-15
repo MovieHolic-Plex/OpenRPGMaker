@@ -22,6 +22,17 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import {
+  abilityBlocksStatus,
+  abilityContactStatus,
+  abilityDamagePercent,
+  abilityDefensePercent,
+  abilityEndureDamage,
+  abilityOffensePercent,
+  abilityOfBattler,
+  abilityTypeImmunity,
+  scaleDamageByPercent,
+} from "@/battle/abilities";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
@@ -727,6 +738,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
 
       if (stateRecord?.gen1MajorStatus) {
+        const guard = abilityOfBattler(options.project, target);
+        if (guard && abilityBlocksStatus(guard, stateRecord.gen1MajorStatus)) {
+          recordSpecial(user, target, `${withJosa(target.name, "은/는")} 특성 ${guard.name} 덕분에 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          continue;
+        }
         const applied = applyGen1MajorStatus({
           stateIds: target.stateIds,
           stateTurns: target.stateTurns,
@@ -819,6 +835,42 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return Math.max(1, Math.trunc(value * multiplier));
   }
 
+  /** 기술 결과 뒤에 흘리는 특성 줄(타입 무효·버티기). applyExactGen1Damage 가 쌓고 applyGen1Skill 이 비운다. */
+  const abilityNotes: { message: string; heal?: { battler: MutableBattler; amount: number } }[] = [];
+
+  function typeName(typeId: string | undefined): string {
+    return options.project.database.elements?.find((element) => element.id === typeId)?.name ?? typeId ?? "해당";
+  }
+
+  function stateName(stateId: string): string {
+    return options.project.database.states.find((state) => state.id === stateId)?.name ?? stateId;
+  }
+
+  function flushAbilityNotes(user: MutableBattler, target: MutableBattler): void {
+    while (abilityNotes.length > 0) {
+      const note = abilityNotes.shift()!;
+      recordSpecial(user, target, note.message);
+      if (note.heal) {
+        note.heal.battler.hp = Math.min(note.heal.battler.maxHp, note.heal.battler.hp + note.heal.amount);
+        recordTimeline({
+          kind: "healing", side: battlerSide(note.heal.battler), userRecordId: note.heal.battler.recordId, targetId: note.heal.battler.id,
+          hit: true, amount: note.heal.amount, critical: false, resource: "hp", aside: "drain",
+        });
+      }
+    }
+  }
+
+  /** 접촉 특성(정전기 등): 물리 피해를 받은 쪽이 확률로 공격자에게 주요 상태를 건다. */
+  function applyContactAbility(attacker: MutableBattler, holder: MutableBattler): void {
+    const ability = abilityOfBattler(options.project, holder);
+    const contact = abilityContactStatus(ability);
+    if (!ability || !contact || attacker.hp <= 0 || gen1MajorStatusOf(attacker)) return;
+    const state = options.project.database.states.find((record) => record.gen1MajorStatus === contact.status);
+    if (!state || !gen1EffectChanceSucceeds(contact.percent, nextGen1Byte)) return;
+    recordSpecial(holder, attacker, `${holder.name}의 특성 ${ability.name}!`);
+    applyGen1States(holder, attacker, [{ stateId: state.id, chance: 100, operation: "add" }], { kind: "status" });
+  }
+
   function gen1BaseSpeed(battler: MutableBattler): number {
     const species = battler.speciesId
       ? options.project.database.monsterSpecies?.find((record) => record.id === battler.speciesId)
@@ -842,8 +894,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
   ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean; readonly effectiveness: number } {
     const magical = usesMagicalDefense(options.project, move.elementId);
-    const unmodifiedOffense = magical ? user.mind : user.attackPower;
-    const unmodifiedDefense = magical ? target.mind : target.defense;
+    const userAbility = abilityOfBattler(options.project, user);
+    const targetAbility = abilityOfBattler(options.project, target);
+    // 타입 무효·흡수 특성: 기술이 닿기 전에 막는다(난수 바이트를 쓰지 않는다). 설명 줄과 흡수 회복은 기술 결과 뒤에 흘려 보낸다.
+    const immunity = (move.affects ?? "hp") === "hp" ? abilityTypeImmunity(targetAbility, move.elementId) : undefined;
+    if (immunity && targetAbility) {
+      const healed = immunity.healPercent > 0 ? Math.min(target.maxHp - target.hp, Math.max(1, Math.floor(target.maxHp * immunity.healPercent / 100))) : 0;
+      abilityNotes.push({
+        message: `${withJosa(target.name, "은/는")} 특성 ${targetAbility.name} 덕분에 ${typeName(move.elementId)} 기술이 통하지 않는다!${healed > 0 ? ` 체력을 회복했다!` : ""}`,
+        heal: healed > 0 ? { battler: target, amount: healed } : undefined,
+      });
+      // 빗나감이 아니라 「효과가 없다」(상성 0 배)로 읽히게 hit:true·피해 0 으로 돌려준다.
+      return { hit: true, amount: 0, critical: false, effectiveness: 0 };
+    }
+    const offensePercent = abilityOffensePercent(userAbility, magical);
+    const defensePercent = abilityDefensePercent(targetAbility, magical);
+    const scaleStat = (value: number, percent: number): number => (percent === 100 ? value : Math.max(1, Math.floor(value * percent / 100)));
+    const unmodifiedOffense = scaleStat(magical ? user.mind : user.attackPower, offensePercent);
+    const unmodifiedDefense = scaleStat(magical ? target.mind : target.defense, defensePercent);
     const types = gen1TypeModifiersForTypes(
       options.project,
       move.elementId,
@@ -884,7 +952,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
-    target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
+    const abilityPercent = abilityDamagePercent({ ability: userAbility, hp: user.hp, maxHp: user.maxHp }, { ability: targetAbility }, move.elementId);
+    let dealt = formationDamage(Math.round(scaleDamageByPercent(resolved.damage, abilityPercent) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
+    if (resource === "hp") {
+      const endured = abilityEndureDamage(targetAbility, before, target.maxHp, dealt);
+      if (endured.endured && targetAbility) {
+        dealt = endured.damage;
+        abilityNotes.push({ message: `${withJosa(target.name, "은/는")} 특성 ${targetAbility.name} 덕분에 버텼다!` });
+      }
+    }
+    target[resource] = Math.max(0, before - dealt);
     return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
@@ -4061,12 +4138,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    flushAbilityNotes(user, target);
     // 흡수(drainPercent)는 gen1 규칙에서도 먹는다 — 예전엔 대가만 깎이고 회복은 조용히 빠졌다.
     if (applied.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(applied.amount, gen1MpBefore - target.mp) : applied.amount, affects, commandKind);
     const defrosted = applied.hit
       && effectKind === "damage"
       && applied.amount > 0
       && defrostTargetWithGen1FireMove(user, target, skill);
+    if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
+      applyContactAbility(user, target);
+    }
     if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
