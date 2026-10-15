@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.237.0 — 2026-10-16
+
+### 기능
+
+- **battle** — conditional capture balls (type/first-turn/turns/repeat) + caught-ball record, menu row, assistant tool (#2667) (`4a4bbbd`)
+- **battle** — 포켓몬식 지닌 도구 — 열매·강화·버티기·재생 (#2665) (`1c05e58`)
+- **battle** — species abilities (seven declarative kinds) for the gen1 battle model (#2660) (`ebb2113`)
+
+### 문서
+
+- **object-gate** — remove stray merge-marker line (#2669) (`a586adf`)
+
 ## 0.236.0 — 2026-10-16
 
 ### 기능
