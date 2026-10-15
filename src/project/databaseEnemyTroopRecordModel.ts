@@ -20,6 +20,7 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
+import { isTeamSwapCost } from "@/project/battleTeamModel";
 
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
@@ -105,6 +106,14 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     autoAlign: record.autoAlign ?? true,
     uncapturable: record.uncapturable === true,
     ...(record.trainerBattle === true ? { trainerBattle: true } : {}),
+    ...(() => {
+      const sprite = record.trainerSprite;
+      const id = (value: unknown): string | undefined => typeof value === "string" && value.trim() ? value.trim() : undefined;
+      const front = id(sprite?.front);
+      if (!front) return {};
+      const back = id(sprite?.back), throwSheet = id(sprite?.throw), backThrow = id(sprite?.backThrow);
+      return { trainerSprite: { front, ...(back ? { back } : {}), ...(throwSheet ? { throw: throwSheet } : {}), ...(backThrow ? { backThrow } : {}) } };
+    })(),
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
     // 움직이는 전투 배경. 효과가 하나도 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
     ...(() => {
@@ -117,6 +126,7 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     })(),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
+    ...(isTeamSwapCost(record.teamSwapCost) ? { teamSwapCost: record.teamSwapCost } : {}),
     battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
     // 전투 뒤 이벤트. 저작된 결과가 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
     ...(() => {
@@ -182,6 +192,7 @@ function normalizeRewards(rewards: Partial<EnemyRewards> | undefined): EnemyRewa
     dropItemId: cleanOptionalId(rewards?.dropItemId),
     dropRatePercent: clampInteger(rewards?.dropRatePercent ?? 0, 0, 100),
     ...(typeof rewards?.tp === "number" && Number.isFinite(rewards.tp) && rewards.tp > 0 ? { tp: clampInteger(rewards.tp, 1, 999999) } : {}),
+    ...(typeof rewards?.ap === "number" && Number.isFinite(rewards.ap) && rewards.ap > 0 ? { ap: clampInteger(rewards.ap, 1, 999999) } : {}),
     ...(Array.isArray(rewards?.drops) ? { drops: rewards.drops.slice(0, 64).filter(drop => drop && cleanOptionalId(drop.itemId)).map(drop => ({
       itemId: drop.itemId.trim(), ratePercent: clampInteger(drop.ratePercent ?? 100, 0, 100),
       quantity: clampInteger(drop.quantity ?? 1, 1, 99), condition: normalizeActionCondition(drop.condition),

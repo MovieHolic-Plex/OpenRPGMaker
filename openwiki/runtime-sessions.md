@@ -620,6 +620,8 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
 - **타이틀 변형(#17)** — `system.titleScreen.variants: TitleScreenVariant[]`. `when`은 `endingSeen` / `clearCount(atLeast)` / `saveMapId`이고 **위에서부터 처음 맞는 줄**이
   배경·음악을 덮는다(`src/project/titleVariants.ts`). `titleScreen.resumeOnLaunch`면 가장 최근 저장(자동 저장 포함)으로 타이틀을 건너뛰고, 불러오지 못하면 타이틀로 떨어진다.
 - **파티 묶음(#22)** — 명령 `storeParty` / `recallParty`(`partySetId`). 멤버와 맵 위치를 함께 저장하고, 지금 파티는 `activePartySetId`로 자동 저장된 뒤 바뀐다(FF6 3분할, 콥스파티 분기).
+  2026-10-15: 순차 팀 전환(번갈아 조작)은 `scripts/qa/ff6-fix-a-party-probe.mts` 로 증명했다(3팀 저장 → A→B→C→A 전환 시 각자 자기 맵·자리에서 이어 감, 상한 8, 팀별 전투 파티, 세이브 왕복).
+  조수 안내는 능력 색인 레시피 `party-split`. 전용 지휘 도구는 없다 — 이벤트 명령 조합이다. 여러 팀이 한 전투에서 동시에 싸우는 것은 아직 미지원(설계 메모 대기).
 - **스킬 장착(#18)** — `ActorRecord.loadoutSlots`(1~12). 있으면 전투는 **장착한 스킬만** 쓰고(`applySkillLoadoutsToBattlers`), 메뉴 스킬 화면에서 장착을 바꾼다. 생략 = 배운 스킬 전부.
 - **아이템 조합·대상 사용(#12)** — 메뉴 아이템 화면의 「조합」이 `craftRecipes`를 두 재료로 찾는다(`combineItems`). 「바라보는 대상에 사용」은 정면 이벤트를 실행하며
   세션 `itemUsedId`를 걸어 두고, 그 이벤트 페이지가 조건 `itemUsed`로 반응한다(`src/player/itemUseOnTarget.ts`).

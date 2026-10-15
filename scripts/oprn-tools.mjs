@@ -22,6 +22,7 @@ function usage() {
     "  --write          save a successful write tool's result back to --project (or --out). Without it write tools are dry runs.",
     "  --out <file>     save to this project.json instead of --project (implies --write)",
     "  --new            start from a new empty project (as the editor opens it) when --project does not exist yet",
+    "  --assistant      run as the assistant would (ToolContext.assistantRun: genre lock, retired chipsets, family guard). --current-map <id> sets the viewed map; --approve-family <family> (repeatable) adds a user-approved tileset family.",
     "  --bundle <file>  reuse a prebuilt tool bundle; built there on first use (delete it after changing src/)",
     "",
     "With --write, every saved call keeps the previous project in <project>.history/ so revert_last_edit {steps}",
@@ -30,12 +31,15 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const parsed = { list: false, write: false, fresh: false, projectPath: undefined, projectDir: undefined, outPath: undefined, bundle: undefined, toolName: undefined, toolArgsJson: "{}" };
+  const parsed = { assistant: false, currentMapId: undefined, approved: [], list: false, write: false, fresh: false, projectPath: undefined, projectDir: undefined, outPath: undefined, bundle: undefined, toolName: undefined, toolArgsJson: "{}" };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--list") parsed.list = true;
     else if (arg === "--write") parsed.write = true;
     else if (arg === "--new") parsed.fresh = true;
+    else if (arg === "--assistant") parsed.assistant = true;
+    else if (arg === "--current-map") { parsed.currentMapId = argv[i + 1]; i += 1; }
+    else if (arg === "--approve-family") { parsed.approved.push(argv[i + 1]); i += 1; }
     else if (arg === "--project") { parsed.projectPath = argv[i + 1]; i += 1; }
     else if (arg === "--project-dir") { parsed.projectDir = argv[i + 1]; i += 1; }
     else if (arg === "--out") { parsed.outPath = argv[i + 1]; parsed.write = true; i += 1; }
@@ -169,7 +173,9 @@ async function main() {
         : loadProject(module, args.projectPath));
     }
     await module.prepareHeadlessTool(args.toolName, toolArgs, project);
-    const { result, project: next } = module.runHeadlessToolWithProject(project, args.toolName, toolArgs);
+    const { result, project: next } = module.runHeadlessToolWithProject(project, args.toolName, toolArgs, args.assistant
+      ? { assistantRun: true, ...(args.currentMapId ? { currentMapId: args.currentMapId } : {}), ...(args.approved.length ? { approvedTilesetFamilies: args.approved } : {}) }
+      : {});
     if (args.write && result.ok && next !== project) {
       pushHistory(savePath, `${args.toolName}: ${String(result.summary ?? "").slice(0, 120)}`);
       writeFileSync(savePath, module.serializeHeadlessProject(next));

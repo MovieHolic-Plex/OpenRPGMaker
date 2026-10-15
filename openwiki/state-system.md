@@ -45,6 +45,9 @@ Runtime effects (`runtimeEffects?: StateRuntimeEffects`):
 - `hpDamagePercentPerTurn` / `hpHealPercentPerTurn` — 턴당 최대 HP 비례 피해 / 회복
 - `attackMultiplier` / `defenseMultiplier` / `agilityMultiplier` — 공격·방어·민첩 배율
 - `removeOnBattleEnd` — 전투 종료 시 해제
+- `invertHealing` — 좀비: HP 회복(회복 스킬·아이템·재생)이 같은 양의 피해가 된다(`invertsHealingForStates`). 기본 상태 `state_zombie`.
+- `grantSkillIds` — 트랜스·변신: 이 상태인 동안만 전투 기술 목록에 더해지는 기술(최대 12). 리미트 기술로 이 상태를 걸면 FF6 트랜스.
+- `forcedAction: "rage"` — 폭주: 폭주(rage) 기술이 몬스터를 정한 배틀러가 그 몬스터의 행동 표대로 자동 행동한다. 기본 상태 `state_rage`(`attackRandom` 은 버서크).
 
 Emotion (`emotion?: { family, tier }`, 2026-09-27): 감정 계열·단계. 배틀러는 감정 상태를 하나만 가지며, 같은 계열을 다시 걸면 한 단계 오르고
 (최고 단계에서 멈춤) 다른 계열은 바꿔 끼운다. 계열 상성 배율은 `system.emotionCycle`. 규칙·파일은 `openwiki/runtime-battle.md` 「전투 자원 · 감정 · 장비 부여」.
@@ -57,7 +60,7 @@ Emotion (`emotion?: { family, tier }`, 2026-09-27): 감정 계열·단계. 배�
 
 `StateOntology` in `src/project/ontology/databaseStateOntology.ts`. A complete template with every field filled, looked up by `stateOntologyFor(id, name)`. Unknown ids get a generic fallback template.
 
-The built-in `STATE_ONTOLOGY` covers the twelve default states:
+The built-in `STATE_ONTOLOGY` covers the twelve default states (2026-10-15: `state_zombie`·`state_rage` 는 온톨로지 없이 명시적 `runtimeEffects` 만 가진 기본 상태이고 `RETRO_GIMMICK_STATE_IDS` 로 기존 프로젝트에도 심는다):
 
 | id | name | key runtime effect |
 |---|---|---|

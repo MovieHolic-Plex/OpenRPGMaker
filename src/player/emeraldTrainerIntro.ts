@@ -10,11 +10,50 @@ const SHEETS = ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'] as con
 const ROLES = ['hero', 'rival', 'professor', 'nurse', 'merchant', 'mother', 'resident', 'gym_leader',
   'company_agent', 'captain', 'worker', 'explorer', 'student', 'ranger', 'moon_leader', 'hiker'] as const;
 type TrainerPicture = { url: string; width: 64; height: 64 | 96 };
+/** 볼 던지기 가로 시트: 프레임 64×64 × N. */
+type TrainerSheet = { url: string; frames: number };
+type TrainerIntroPair = { role: string; opponent: TrainerPicture; hero: TrainerPicture; opponentThrow?: TrainerSheet; heroThrow?: TrainerSheet };
+const THROW_FRAME_MS = 80;
+
+/** 인물 그림 계약(TroopRecord.trainerSprite): 모든 값이 업로드 그림 id. 없으면 아래 옛 규칙(필드 이벤트 그래픽 → 역할 이름)으로 간다. */
+function authoredTrainerPair(project: Project, troopId: string): TrainerIntroPair | undefined {
+  const sprite = project.database.troops.find(troop => troop.id === troopId)?.trainerSprite;
+  if (!sprite?.front) return undefined;
+  const opponent = trainerPicture(project, sprite.front);
+  const hero = trainerPicture(project, sprite.back ?? 'oprn_emerald_trainer_hero_back', 'back');
+  if (!opponent || !hero) return undefined;
+  return { role: 'authored', opponent, hero, opponentThrow: sprite.throw ? trainerSheet(project, sprite.throw) : undefined, heroThrow: sprite.backThrow ? trainerSheet(project, sprite.backThrow) : undefined };
+}
+
+/** 번들 인물 그림(public/assets/battle-trainers/<role>/{front,back,throw}.png) 의 role id 꼴. 업로드 그림 id 가 먼저다. */
+const BUNDLED_ROLE = /^[a-z][a-z0-9_]*$/u;
+const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw'): string => `/assets/battle-trainers/${role}/${file}.png`;
+
+function trainerPicture(project: Project, id: string, bundledFile: 'front' | 'back' = 'front'): TrainerPicture | null {
+  const asset = project.assets.uploaded[id];
+  if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, bundledFile), width: 64, height: 64 } : null;
+  // Emerald native trainer poses are 64×64. Keep explicitly authored older 64×96 portraits at their own aspect ratio.
+  if (asset.kind !== 'picture' || asset.meta.width !== 64 || (asset.meta.height !== 64 && asset.meta.height !== 96)) return null;
+  const url = resolveAssetResourceUrl(id, { project });
+  return url ? { url, width: 64, height: asset.meta.height } : null;
+}
+
+/** frames 0 = 번들 그림이라 마운트 때 그림 폭(64 x N)에서 센다. */
+function trainerSheet(project: Project, id: string): TrainerSheet | undefined {
+  const asset = project.assets.uploaded[id];
+  if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, 'throw'), frames: 0 } : undefined;
+  if (asset.kind !== 'picture' || asset.meta.height !== 64 || (asset.meta.width ?? 0) % 64 !== 0) return undefined;
+  const frames = (asset.meta.width ?? 0) / 64;
+  const url = resolveAssetResourceUrl(id, { project });
+  return url && frames >= 2 && frames <= 8 ? { url, frames } : undefined;
+}
 
 /** The live field page selects the outfit. Never infer a trainer from its name or use substitute art. */
 export function resolveEmeraldTrainerIntro(project: Project, session: PlaySession, snapshot: BattleSnapshot):
-  { role: typeof ROLES[number]; opponent: TrainerPicture; hero: TrainerPicture } | undefined {
+  TrainerIntroPair | undefined {
   if (!project.database.troops.find(troop => troop.id === snapshot.troopId)?.trainerBattle) return undefined;
+  const authored = authoredTrainerPair(project, snapshot.troopId);
+  if (authored) return authored;
   const eventId = snapshot.troopId.startsWith('mx_troop_') ? snapshot.troopId.slice('mx_troop_'.length) : undefined;
   if (!eventId) return undefined;
   const map = project.maps[session.currentMapId];
@@ -37,20 +76,16 @@ export function resolveEmeraldTrainerIntro(project: Project, session: PlaySessio
   const character = Math.floor(Math.floor(pattern / 12) / 4) * 4 + Math.floor((pattern % 12) / 3);
   const role: typeof ROLES[number] | undefined = themed ? (character === 2 ? 'explorer' : 'resident') : ROLES[sheet * 8 + character];
   if (!role) return undefined;
-  const picture = (id: string): TrainerPicture | null => {
-    const asset = project.assets.uploaded[id];
-    // Emerald native trainer poses are64×64. Keep explicitly authored older
-    // 64×96 portraits at their own aspect ratio without treating them as native.
-    if (asset?.kind !== 'picture' || asset.meta.width !== 64 || (asset.meta.height !== 64 && asset.meta.height !== 96)) return null;
-    const url = resolveAssetResourceUrl(id, { project });
-    return url ? { url, width: 64, height: asset.meta.height } : null;
-  };
-  const opponent = picture(`oprn_emerald_trainer_${role}`);
-  const hero = picture('oprn_emerald_trainer_hero_back');
-  return opponent && hero ? { role, opponent, hero } : undefined;
+  const opponent = trainerPicture(project, `oprn_emerald_trainer_${role}`);
+  const hero = trainerPicture(project, 'oprn_emerald_trainer_hero_back', 'back');
+  const opponentThrow = trainerSheet(project, `oprn_emerald_trainer_${role}_throw`);
+  const heroThrow = trainerSheet(project, 'oprn_emerald_trainer_hero_back_throw');
+  return opponent && hero ? { role, opponent, hero, opponentThrow, heroThrow } : undefined;
 }
 
-/** One pair per battle, outside field roster reconciliation. Loading/error never hides the real battlers. */
+/** One pair per battle, outside field roster reconciliation. Loading/error never hides the real battlers.
+ *  단계(BattleDirectorState): intro(둘이 양쪽에서 미끄러져 들어온다) → foe(상대가 볼을 던지고 나간다, 상대 몬스터 등장)
+ *  → hero(내가 볼을 던지고 나간다, 내 몬스터 등장). 그림이 계약대로 없으면 마운트하지 않아 연출 없이 지금처럼 시작한다. */
 export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, session: PlaySession | undefined,
   snapshot: BattleSnapshot): { sync(state: BattleDirectorState): void; destroy(): void } {
   const pair = session && resolveEmeraldTrainerIntro(project, session, snapshot);
@@ -61,18 +96,25 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
   layer.dataset.trainerRole = pair.role;
   layer.setAttribute('aria-hidden', 'true');
   layer.hidden = true;
-  let wanted = false;
+  let phase: 'intro' | 'foe' | 'hero' | undefined;
   let destroyed = false;
   let failed = false;
   let ready = 0;
+  const revealMs = (sheet: TrainerSheet | undefined): number => sheet ? sheet.frames * THROW_FRAME_MS + 120 : 250;
   const update = (): void => {
     if (destroyed) return;
-    const visible = wanted && !failed && ready === 2;
+    const visible = phase !== undefined && !failed && ready === 2;
     layer.hidden = !visible;
-    if (visible) root.dataset.emeraldTrainerIntro = 'true';
-    else delete root.dataset.emeraldTrainerIntro;
+    if (visible && phase) {
+      layer.dataset.phase = phase;
+      root.dataset.emeraldTrainerIntro = phase;
+      root.style.setProperty('--emerald-reveal-ms', `${revealMs(phase === 'foe' ? pair.opponentThrow : pair.heroThrow)}ms`);
+    } else {
+      delete layer.dataset.phase;
+      delete root.dataset.emeraldTrainerIntro;
+    }
   };
-  for (const [side, picture] of [['hero', pair.hero], ['opponent', pair.opponent]] as const) {
+  for (const [side, picture, sheet] of [['hero', pair.hero, pair.heroThrow], ['opponent', pair.opponent, pair.opponentThrow]] as const) {
     const image = document.createElement('img');
     image.className = `emerald-trainer-intro-${side}`;
     image.alt = '';
@@ -89,15 +131,43 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
     image.onerror = () => { failed = true; update(); };
     layer.append(image);
     image.src = picture.url;
+    if (sheet) {
+      const frames = sheet.frames;
+      // 던지는 동작 시트: 한 칸 128×128 으로 보여 주고 background-position 을 프레임 수만큼 계단으로 민다.
+      const throwNode = document.createElement('div');
+      throwNode.className = `emerald-trainer-throw emerald-trainer-throw-${side}`;
+      const configure = (count: number): void => {
+        sheet.frames = count;
+        throwNode.style.setProperty('--throw-frames', String(count));
+        throwNode.style.setProperty('--throw-steps', String(count - 1));
+        throwNode.style.setProperty('--throw-ms', `${count * THROW_FRAME_MS}ms`);
+        throwNode.style.backgroundImage = `url("${sheet.url}")`;
+        layer.dataset[side === 'hero' ? 'heroThrow' : 'opponentThrow'] = 'true';
+      };
+      layer.append(throwNode);
+      if (frames > 0) configure(frames);
+      else {
+        // 번들 시트: 없거나 규격이 아니면 던지는 동작 없이 정지 자세로 미끄러진다(오류로 막지 않는다).
+        const probe = new Image();
+        probe.onload = () => {
+          if (!destroyed && probe.naturalHeight === 64 && probe.naturalWidth % 64 === 0 && probe.naturalWidth / 64 >= 2 && probe.naturalWidth / 64 <= 8) configure(probe.naturalWidth / 64);
+        };
+        probe.src = sheet.url;
+      }
+    }
   }
   root.append(layer);
   return {
-    sync(state) { wanted = state.step === 'intro' && state.trainerIntroduction === true; update(); },
+    sync(state) {
+      phase = state.step === 'intro' ? (state.trainerIntroduction === true ? 'intro' : state.trainerSendOut) : undefined;
+      update();
+    },
     destroy() {
       destroyed = true;
       for (const image of layer.querySelectorAll('img')) { image.onload = null; image.onerror = null; image.removeAttribute('src'); }
       layer.remove();
       delete root.dataset.emeraldTrainerIntro;
+      root.style.removeProperty('--emerald-reveal-ms');
     },
   };
 }

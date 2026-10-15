@@ -16,6 +16,8 @@ export type HarnessPaths = {
   bundle: string;
   /** 실행 산출물 (gitignore) */
   runs: string;
+  /** 런타임이 읽는 번들 목록(이미지 바이트 없음). 정본 `src/assets/harnessMonsterBundle.json`, 모래상자는 번들 폴더 안 */
+  manifest: string;
 };
 
 /**
@@ -32,6 +34,7 @@ export function harnessPaths(sandbox = process.env.MONSTER_HARNESS_SANDBOX): Har
       grids: resolve(root, "data/grids"),
       bundle: resolve(root, "bundle"),
       runs: resolve(root, "runs"),
+      manifest: resolve(root, "bundle/manifest.json"),
     };
   }
   return {
@@ -41,6 +44,7 @@ export function harnessPaths(sandbox = process.env.MONSTER_HARNESS_SANDBOX): Har
     grids: resolve(REPO_ROOT, "harness-data", ID, "grids"),
     bundle: resolve(REPO_ROOT, "public/assets/harnesses", ID),
     runs: resolve(REPO_ROOT, "qa-runs/harnesses", ID),
+    manifest: resolve(REPO_ROOT, "src/assets/harnessMonsterBundle.json"),
   };
 }
 

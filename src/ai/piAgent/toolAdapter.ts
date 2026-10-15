@@ -21,6 +21,7 @@ import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/edito
 
 import { captureActivityVisuals, type ActivityVisual } from "@/ai/activityVisual";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
+import { genreLockHidesTool } from "@/project/genreLock";
 import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -208,7 +209,7 @@ export function scopeFindToolsResult(result: ToolResult, callable: (name: string
   return {
     ...result,
     summary: inside.length > 0
-      ? `편집기 툴 ${inside.length}개 발견: ${inside.map(nameOf).filter(Boolean).join(", ")}${missing}. ${note}`
+      ? `편집기 툴 ${inside.length}개 발견: ${inside.map((match) => { const name = nameOf(match); const why = match && typeof match === "object" ? (match as { why?: unknown }).why : undefined; return name && typeof why === "string" && why ? `${name} [${why}]` : name; }).filter(Boolean).join(", ")}${missing}. ${note}`
       : `이 실행에서 호출할 수 있는 툴 중 맞는 것이 없습니다${missing}. ${note}`,
     data: { ...data, matches: inside },
   };
@@ -267,7 +268,8 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
   const referenceGate = options.referenceGate ?? new PiTilesetReferenceGate();
   const maxDataChars = options.maxDataChars ?? DEFAULT_MAX_DATA_CHARS;
   const maxIssues = options.maxIssues ?? DEFAULT_MAX_ISSUES;
-  return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).map((tool) => ({
+  // 장르 잠금 중에는 허용 계열 밖 칩셋 전용 시공 도구를 조수에게 아예 보이지 않는다(실행기도 같은 이름을 거부한다).
+  return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).filter((tool) => !genreLockHidesTool(ctx.project, tool.name)).map((tool) => ({
     name: tool.name,
     label: tool.name,
     description: tool.description,

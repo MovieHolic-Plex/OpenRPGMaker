@@ -350,6 +350,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
     "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
+    "kind=partyKnowsSkill → skillId + present(boolean, 생략=true): 파티 배우·몬스터 파티 누군가가 그 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시. 막힌 길을 여는 페이지는 이 조건, 못 여는 안내 페이지는 present:false). " +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -365,6 +366,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
     actorId: { type: "string" },
     value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
     speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    skillId: { type: "string", description: "partyKnowsSkill 조건: 조회한 스킬 ID(필드 스킬은 upsert_skill 의 fieldCommonEventId 가 있는 스킬)" },
     present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },

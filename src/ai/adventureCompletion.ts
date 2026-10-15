@@ -4,6 +4,7 @@ import { roleCapabilities } from "@/project/tileRoles";
 import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { worldCanonHasContent } from "@/project/world/canon";
+import { gameStructureProblems } from "./gameStructureGuard";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
 export interface AdventureRequirements {
@@ -45,6 +46,8 @@ export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 �
 아이템과 장비 모두 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
+시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
+완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다.
 마지막 저작 후 모든 관련 맵 전체를 show_map_region(최대 24×24이므로 큰 맵은 분할 조회)으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
 
 function commands(map: GameMap): Array<{ event: GameMap["events"][number]; command: Command }> {
@@ -173,5 +176,7 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   }
   if (required.battle && !battle) problems.push("도달 가능한 전투가 없습니다. 조회한 트룹을 조우표/필드 스폰/battleProcessing에 연결하세요. DB 시드만으로 전투는 시작되지 않습니다.");
   if (required.party && [...party].filter(id => actorIds.has(id)).length < 2) problems.push("전투 파티가 1명뿐이고 도달 가능한 changeParty 합류도 없습니다. 배우 ID 조회 후 시작 파티 또는 합류 이벤트를 저작하세요.");
+  // 시작 맵·맵 도달성·엔딩 호출 — 도구 한 번으로 풀리는 구조 결함이라 메시지가 다음 도구와 인자를 이름으로 준다(gameStructureGuard.ts).
+  for (const problem of gameStructureProblems(project)) if (!problems.includes(problem)) problems.push(problem);
   return problems;
 }

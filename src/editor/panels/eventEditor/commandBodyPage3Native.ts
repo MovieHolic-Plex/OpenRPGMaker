@@ -71,9 +71,11 @@ const WEATHER_SEGMENTS = [
 ] as const satisfies readonly SegmentOption<WeatherKind>[];
 
 const LAYER_SEGMENTS = [
-  { value: "lower", key: "lower", label: "바닥" },
-  { value: "upper", key: "upper", label: "상위" },
-] as const satisfies readonly SegmentOption<"lower" | "upper">[];
+  { value: "lower", key: "lower", label: "바닥 1층" },
+  { value: "lower2", key: "lower2", label: "장식 2층" },
+  { value: "upper", key: "upper", label: "상위 3층" },
+  { value: "upper2", key: "upper2", label: "장식 4층" },
+] as const satisfies readonly SegmentOption<"lower" | "upper" | "lower2" | "upper2">[];
 
 const LIGHTING_PRESETS = [
   { id: "day", label: "낮", ambient: 0, color: "#000000", transitionMs: 0 },
@@ -1473,7 +1475,7 @@ export function changeTileBody(
   const renderPreview = () => {
     const mapId = mapSel.value;
     const mapName = mapId ? project.maps[mapId]?.name || mapId : "(맵 선택)";
-    const layerLabel = layer.select.value === "upper" ? "상위" : "바닥";
+    const layerLabel = LAYER_SEGMENTS.find((segment) => segment.value === layer.select.value)?.label ?? layer.select.value;
     const tx = parseInt(x.value, 10) || 0;
     const ty = parseInt(y.value, 10) || 0;
     const parsedTile = parseInt(tile.value, 10);

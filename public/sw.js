@@ -1,5 +1,6 @@
 // v11(2026-10-05): 반려된 주인공 시트의 후속 수정과 히드라 소환 원화를 갱신한다.
-const CACHE_NAME = "oprn-pwa-v11";
+// v12(2026-10-15): 첫 로드 스플래시 스크립트(/boot-splash.js, 해시 없는 파일)를 캐시 우선에서 뺀다 — 옛 사본이 남지 않게 캐시를 갈아 끼운다.
+const CACHE_NAME = "oprn-pwa-v12";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",
@@ -44,6 +45,8 @@ function shouldHandle(request) {
 
 function shouldCacheFirst(request) {
   const url = new URL(request.url);
+  // 해시가 없는 스플래시 스크립트는 항상 네트워크(4KB)에서 — 캐시 우선이면 고친 뒤에도 옛 사본이 남는다.
+  if (url.pathname === "/boot-splash.js") return false;
   return CACHE_FIRST_DESTINATIONS.has(request.destination) || url.pathname.startsWith("/assets/");
 }
 

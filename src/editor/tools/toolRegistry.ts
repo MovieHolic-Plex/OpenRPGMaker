@@ -2,10 +2,14 @@ import { MONSTER_GAME_TOOLS } from './monsterGameTools';
 import { MONSTER_TOURNAMENT_TOOLS } from './monsterTournamentTools';
 import { MONSTER_BATCH_TOOLS } from './monsterBatchTools';
 import { bindStreetToolLookup } from "./jpCityStreetTool";
+import { bindThemeToolLookup } from "./themeScenes";
+import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
 import { FIELD_ENEMY_TOOLS } from './fieldEnemyTools';
+import { FIELD_OBSTACLE_TOOLS } from './fieldObstacleTools';
+import { TRAINER_TOOLS } from './trainerTools';
 import { GAME_SYSTEM_AUTHORING_TOOLS } from './gameSystemAuthoringTools';
 import { OPENING_STORYBOOK_TOOLS } from './openingStorybookTools';
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
@@ -25,6 +29,8 @@ import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
+import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
@@ -65,6 +71,7 @@ import { RELIEF_TOOLS } from "./reliefTools";
 import { TERRAIN_TOOLS } from "./terrainTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
+import { GENRE_LOCK_TOOLS } from "./genreLockTools";
 import { WILD_ROUTE_TOOLS } from "./wildRouteTool";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
@@ -290,6 +297,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(MAP_VARIANT_TOOLS, "map"),
+  ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
@@ -341,6 +350,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
+  ...GENRE_LOCK_TOOLS,
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
   ...withDomain(MUSIC_AUTHORING_TOOLS, 'system'),
@@ -350,6 +360,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MONSTER_BATCH_TOOLS, 'database'),
   ...withDomain(NPC_PATROL_TOOLS, 'event'),
   ...withDomain(FIELD_ENEMY_TOOLS, 'event'),
+  ...withDomain(FIELD_OBSTACLE_TOOLS, 'event'),
+  ...withDomain(TRAINER_TOOLS, 'event'),
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
@@ -360,6 +372,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
+  ...MAP_EMPTINESS_TOOLS,
   // Documentation tools belong to the system domain for explicitly scoped callers.
   ...withDomain(AI_DOC_TOOLS, "system"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
@@ -382,6 +395,7 @@ export function getTool(name: string): ToolDefinition | undefined {
   return TOOL_BY_NAME.get(name);
 }
 bindStreetToolLookup(getTool);
+bindThemeToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;

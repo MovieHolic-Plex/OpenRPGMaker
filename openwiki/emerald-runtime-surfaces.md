@@ -114,3 +114,11 @@ see `pokemon-like-field-kit.md` for approval, canonical adoption and player proo
 - **상태 배지:** HP 상자 둘째 줄 왼쪽(스프라이트 배지는 숨김) — `battle-status-in-box` 검사. 상자 표기는 양쪽 모두 `Lv9`.
 - **쓰러진 뒤 교체:** 포켓몬 화면은 「다음은 누구를 내보낼까?」 목록이 바로 뜬다(예전엔 「무엇을 할까? ▸교체」 한 칸).
 - **경험치:** `monsterExpInLevelBand` 가 저장 경험치를 현재 레벨 구간으로 맞춘다 — 레벨만 바꾼 저장본이 한 번에 Lv14→20 으로 뛰었다.
+
+## 전투 2단계 (2026-10-15, 안 A: 원작 3세대 문법 완성, 새 그림 0)
+
+- 글자는 한 글자씩 찍힌다(`battleDirectorDom.ts` 타자기, 줄 문장 키로 중복 방지). 전투 중 확인키는 먼저 줄을 끝까지 채운다(`completeBattleMessageTyping`).
+- 포획: 타임라인 항목 `shakes: 0|1|2|3`(엔진 굴림). `playCaptureCinematic(field, targetId, success, shakes)`가 흔들림 횟수만큼 구슬을 흔든다. 던지는 순간 몬스터 돌진 모션은 끈다(`captureEntryActive`). 구슬은 독자 도안(원작 몬스터볼 모양 금지).
+- 진화: `emeraldEvolutionScene.ts`가 `previewMonsterEvolution`(레벨·우정 조건만, 아이템 진화 제외)으로 전투 화면이 닫히기 전에 실루엣 교체 장면을 연다. 규칙 적용은 여전히 `applyBattleRewardsToSession`.
+- 레벨업 상자: `emeraldResultRows`가 레벨 문장 줄에 `stats`(오른 양 → 새 수치 두 장)를 싣고, 마지막으로 공개된 줄에 붙은 것만 `.battle-levelup-stats`로 문장 창 위에 보인다. 수치는 `monsterBattleStatsForSpecies`(종족·레벨·IV) 차이이며 `snapshot.eventState.monsterCollection.instances[*].ivs`를 읽는다. 기술 교체 선택은 아직 없다.
+- 트레이너 연출: `TroopRecord.trainerSprite`(`front`/`back`/`throw?`)가 있을 때만 슬라이드 인·볼 던지기, 없으면 연출 없이 시작.

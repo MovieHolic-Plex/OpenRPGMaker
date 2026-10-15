@@ -9,11 +9,11 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-techs-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-techs-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-techs-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
 
 const revealed = (testid, value) => ({ kind: "waitForAttr", testid, attr: "data-battle-hp-revealed", value, timeoutMs: 30_000 });
 // 화면이 그리는 커서(data-battle-command-cursor)를 방향키로 옮긴다 — 이 스킨은 명령 그리드가 포인터를 가린다.
-const cursorTo = (testid) => ({ kind: "pressUntil", key: "ArrowDown", testid, state: "present", attr: "data-battle-command-cursor", value: "true", maxPresses: 8, timeoutMs: 1500 });
+const cursorTo = (testid) => ({ kind: "pressUntil", key: testid === "actor-command-skill" ? "ArrowRight" : "ArrowDown", testid, state: "present", attr: "data-battle-command-cursor", value: "true", maxPresses: 8, timeoutMs: 1500 });
 const idle = { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-sequence-busy", value: "false", timeoutMs: 30_000 };
 
 export default {

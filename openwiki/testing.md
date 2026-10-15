@@ -2105,6 +2105,12 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 `assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.
 
+## FF6 수정 A 헤드리스 프로브 (2026-10-15)
+
+`node node_modules/vite-node/dist/cli.mjs --script scripts/qa/ff6-fix-a-growth-probe.mts`(마석 AP·레벨업 보너스·부위 도구·전투당 1회)와
+`scripts/qa/ff6-fix-a-effects-probe.mts`(좀비·스케치·폭주·트랜스·대열 섞기·강제 교대·블리츠·검기·룬·분석·적 반격). 실제 도구(`runTool`)로 저작 → 실제 전투 런타임 → 세션 정산(`applyBattleRewardsToSession`) → 세이브 왕복.
+한 줄이 `{id, ok, detail}` JSON 이고 끝에 `DONE`. 감사 기준선은 `scripts/qa/ff6-audit-probe.mts`(MISSING 항목이 있던 원본). vitest·gates 는 돌리지 않았다.
+
 ## 몬스터 여정 영상 (2026-10-07)
 
 `JOURNEY_VIDEO=1 node scripts/qa/runtime/monster-journey.mjs <play.json> <out>`(netns 안에서 — `unshare -rn sh -c "ip link set lo up && …"`)는
@@ -2121,3 +2127,30 @@ dedicated exported player passed. Do not describe this as all browser checks gre
   칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.
   새 런타임 픽스처는 `system.opening` 을 지우지 않으면 첫 확인 키가 먹히지 않는다(15개 시나리오의 `node_modules/vite-node/vite-node.mjs` 경로도 vite-node 6 에 없어 `dist/cli.mjs` 로 가야 한다 — ct-vehicle 만 고침).
 - `ct-vehicle-walkers`(`scripts/qa/runtime/ct-vehicle-walkers*`) — 초코보(통행 불가 숲 통과·호수 거절)·광산 수레(레일에서만)·뗏목(강만, 바다 거절)을 승하차까지 실제 플레이어로 본다. 크로미움은 `unshare -rn` 안에서. `parkedVehicleSprites` 검사는 초코보만 Animal 텍스처를 기대한다(`scripts/lib/runtimeQa.mjs`).
+
+## 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
+
+바위깨기·물 건너기처럼 **파티가 어떤 스킬을 알아야 열리는 길**은 세 군데가 같은 해석기(`src/project/partySkills.ts`)를 쓴다.
+- 이벤트 페이지·분기 조건 `{kind:"partyKnowsSkill",skillId,present?}` — 배우(습득표·직업·성장 트리·장비 `grantsSkillIds`)와 몬스터 파티(`monsterSkillIds`)가 아는 스킬. 평가기 둘(`session.evalCondition`·`pageResolution.evalPageCondition`)과 전투 이벤트가 같은 결과를 낸다.
+- `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` — 앞 칸을 바라본 채 스킬의 `fieldCommonEventId` 를 돌린다(배우는 MP 소모, 몬스터는 무소모). 모르면 「누가 아는지」·고치는 도구를 말하며 실패하고, 끝나면 자동 페이지(깨진 바위의 smash 페이지)가 바로 돈다.
+- `qa:game check` 자동 플레이 — 길이 막히면 막은 조사 이벤트 앞에서 아는 필드 스킬을 쓴 뒤 길을 다시 잰다. `partyKnowsSkill` 선행 조건은 `learnSkill`/동료 합류로 채운다. 아는 사람이 없으면 `autoplay-failed` 문구가 「이 길 앞에서 learnedSkills/learnSkill/grantsSkillIds 로 가르쳐라」 까지 말한다.
+
+재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
+알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+
+## CT 회귀 시나리오 복구 (2026-10-15)
+
+`scripts/qa/runtime/ct-*.scenario.mjs`(engine·techs·field·onfield·ngplus, 그리고 chrono)는 편집기 도구(runTool)로 프로젝트를 만든 뒤 출하 플레이어에서 돈다.
+**netns 안에서** 돌린다: `unshare -rn bash -c "ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-engine --out /tmp/x"`.
+깨져 있던 이유(감사 2026-10-15)와 고침: ① 시나리오가 `node_modules/vite-node/vite-node.mjs` 를 불렀으나 v6 은 `dist/cli.mjs` 다
+② `place_battle_blocker` 가 텍스트 그림(「들판 박쥐」)을 거절 → `graphic:{transparent:true}`, 온필드는 `place_field_enemy`(걷기 칩 없는 종도 전투 그림 심볼)
+③ 스킬 칸은 2열 명령창이라 커서 이동이 `ArrowRight` ④ ct-field 의 턱 타일 6 은 beodeul_city 에서 상위 전용 칩으로 라우팅돼 1층에 안 칠해진다 → 741
+⑤ retro 스킨은 적 좌표를 구역(x≥34, y 92..142)으로 접으므로 moveEnemy(30,30) 의 렌더 값은 10.625% / 57.49999999999999% 다(부동소수 표기 그대로 비교).
+ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructureGuard.ts`)는 코드 실행이 아니라 순수 함수이며 `adventureCompletionProblems` 가 부른다.
+
+
+## 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+
+`scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
+실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
+(진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)
