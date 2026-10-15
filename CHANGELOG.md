@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.230.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — rules v7 — 3/4 half passes calibration data, profile still rejected (style half) (#2642) (`072de5c`)
+
+### 수정
+
+- **stamp-place** — 바로 깔기 — 물건은 칩셋 그림을 이름으로 찾고, 없으면 깔지 않는다 (적대적 리뷰 + 코퍼스 가드) (#2643) (`39432bc`)
+
 ## 0.229.1 — 2026-10-15
 
 ### 성능
