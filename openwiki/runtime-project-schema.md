@@ -1629,3 +1629,9 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 업로드 참조는 같은 라이브러리에 있어야 하며, 사용자 복사본 ID는 덮어쓰지 않는다.
 72×128 걷기 원본은 native 하네스에서 무손실 RM2000 288×256 시트로 패킹하고, 프레임 수는 96이다.
 그림만 공용 등록하면 48×40 행동의 발 기준점이 유실되므로 설치기는 정의도 함께 게시한다.
+
+## 필드 기술(HM) 선택 필드 (2026-10-15)
+
+- `SkillRecord.unforgettable?: boolean` — 몬스터의 기술 교체 후보(`playerStatusMenuDetails` 대기 기술 행)와 `replacePendingMonsterSkill` 에서 제외. 생략=기존 동작. `normalizeSkillRecord` 가 `true` 만 보존.
+- `MonsterSpeciesRecord.machineSkillIds?: SkillId[]` — 기술머신·비전머신(`learnedSkillId` 아이템, 몬스터 파티 게임)으로 가르칠 수 있는 기술. 비면 제한 없음. `normalizeMonsterSpeciesRecord`가 중복·빈 값을 거르고 `io/references.ts` 가 스킬 id 존재를 검사.
+- 저장 슬롯(`saveSlotValidation`)에는 새 필드가 없다 — 몬스터 인스턴스의 `skillIds`·`pendingSkillIds` 만 바뀐다. 두 필드 모두 선택이라 이주 불필요.

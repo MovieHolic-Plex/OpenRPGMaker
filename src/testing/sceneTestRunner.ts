@@ -30,8 +30,8 @@ import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/pro
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
-import { useItemFromMenu } from "@/player/playerItemUse";
-import { prepareFieldAbility, recordFieldAbilityTarget } from "@/player/fieldAbility";
+import { machineSkillOf, previewMonsterMachine, useItemFromMenu } from "@/player/playerItemUse";
+import { prepareFieldAbility, prepareMonsterFieldAbility } from "@/player/fieldAbility";
 import { partyMembersKnowingSkill, partySkillContext } from "@/project/partySkills";
 import { getSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
@@ -1052,7 +1052,13 @@ function findGiftEventOverlapping(
 
 function runUseItemStep(state: RunnerState, itemId: string): string | null {
   const actorId = state.session.partyActorIds.find((id): id is string => typeof id === "string");
-  const result = useItemFromMenu(state.project, state.session, itemId, actorId);
+  // 기술머신·비전머신은 파티 몬스터에게 쓴다 — 가르칠 수 있는 첫 몬스터(없으면 첫 몬스터)가 대상이다.
+  const item = state.project.database.items.find((entry) => entry.id === itemId);
+  const machine = item ? machineSkillOf(state.project, item) : undefined;
+  const monsterId = machine && item
+    ? (state.session.monsterParty ?? []).find((id) => !previewMonsterMachine(state.project, state.session, item, id).reason) ?? state.session.monsterParty?.[0]
+    : undefined;
+  const result = useItemFromMenu(state.project, state.session, itemId, actorId, monsterId);
   state.log.push(`useItem ${itemId}: ${result.kind} ${result.message}`);
   return result.kind === "used" ? null : result.message;
 }
@@ -1067,7 +1073,7 @@ function runUseFieldSkillStep(state: RunnerState, step: Extract<SceneStep, { kin
   if (!user) {
     return step.actorId
       ? `useFieldSkill: '${step.actorId}' 는 ${skill.id} 를 모릅니다(이 스킬을 아는 파티원: ${users.map((entry) => entry.id).join(", ") || "없음"}).`
-      : `useFieldSkill: 파티에 ${skill.id} 를 아는 구성원이 없습니다 — set_party 로 아는 배우를 넣거나 upsert_actor 의 learnedSkills[{level,skillId}]·장비 grantsSkillIds 로 습득시키세요.`;
+      : `useFieldSkill: 파티에 ${skill.id} 를 아는 구성원이 없습니다 — set_party 로 아는 배우를 넣거나 upsert_actor 의 learnedSkills[{level,skillId}]·장비 grantsSkillIds 로 습득시키세요(몬스터 파티 게임은 기술머신 — useItem 스텝으로 파티 몬스터에게 가르치거나 define_monster_species skillsByLevel).`;
   }
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -1081,8 +1087,10 @@ function runUseFieldSkillStep(state: RunnerState, step: Extract<SceneStep, { kin
     commonEventId = prepared.commonEventId;
   } else {
     if (!(state.project.commonEvents ?? []).some((event) => event.id === skill.fieldCommonEventId)) return `useFieldSkill: 공통 이벤트 ${skill.fieldCommonEventId} 가 없습니다 — upsert_common_event 로 만드세요.`;
-    recordFieldAbilityTarget(state.session, user.id, { facing: state.facing, eventId: front?.event.id });
-    commonEventId = skill.fieldCommonEventId;
+    // 실플레이어(PlayScene.useFieldAbility)와 같은 판정 — 쓰러진 몬스터는 쓰지 못한다.
+    const prepared = prepareMonsterFieldAbility(state.project, state.session, user.id, skill, { facing: state.facing, eventId: front?.event.id });
+    if (prepared.kind === "unusable") return `useFieldSkill: ${prepared.message}`;
+    commonEventId = prepared.commonEventId;
   }
   const commonEvent = (state.project.commonEvents ?? []).find((event) => event.id === commonEventId)!;
   state.log.push(`useFieldSkill ${skill.id} by ${user.kind} ${user.id} → ${front?.event.id ?? "front tile"}`);

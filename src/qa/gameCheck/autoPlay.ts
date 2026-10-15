@@ -18,6 +18,7 @@ import { runtimeMap } from "@/project/runtimeMap";
 import { eligibleEncounterEntries } from "@/player/encounters";
 import { slideRuleAt } from "@/project/slideTiles";
 import { getSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
+import { machineSkillOf } from "@/project/monsterMedicine";
 import { isMonsterPartyGame, monsterCurrentHp, monsterMaxHp, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
@@ -55,6 +56,8 @@ interface Goal {
   readonly repeat?: { readonly resets: readonly Goal[]; readonly max: number };
   /** 같은 맵에서 같은 조건을 채우는 다른 세터 — 고른 세터 칸까지 걸어갈 길이 없으면 차례로 시도한다(워프 판 여럿이 같은 스위치를 켠다). */
   readonly alternatives?: readonly CommandVisit[];
+  /** 이벤트를 돌린 뒤 이 아이템을 파티에게 써서 목표를 채운다(기술머신을 받고 몬스터에게 가르치기). */
+  readonly useItemAfter?: string;
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
@@ -297,10 +300,17 @@ function setterMatches(project: Project, req: Requirement, visit: CommandVisit):
     case "skill":
       if (c.kind === "learnSkill") return c.skillId === req.id && c.action !== "forget";
       // 합류하는 동료가 그 스킬을 처음부터 아는 경우(배우 skillIds·직업 습득·장비) — 합류가 곧 습득이다.
+      if (c.kind === "changeItem" && c.op !== "-=" && typeof c.itemId === "string" && machineTeaches(project, c.itemId) === req.id) return true;
       return c.kind === "changeParty" && c.action === "add" && typeof c.actorId === "string"
         && actorKnownSkillIds(project, { variables: {}, partyActorIds: [c.actorId] }, c.actorId).has(req.id);
     case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
   }
+}
+
+/** 몬스터 파티 게임에서 이 아이템(기술머신·비전머신)이 가르치는 기술 id — 몬스터 기술은 learnSkill 이 아니라 아이템으로 익힌다. */
+function machineTeaches(project: Project, itemId: string): string | undefined {
+  const item = project.database.items.find((entry) => entry.id === itemId);
+  return item ? machineSkillOf(project, item) : undefined;
 }
 
 function reqKey(req: Requirement): string {
@@ -465,6 +475,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
               : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
               : req.kind === "map" ? session.currentMapId === req.id
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
+            ...(req.kind === "skill" && candidate.command.kind === "changeItem" && typeof candidate.command.itemId === "string" ? { useItemAfter: candidate.command.itemId } : {}),
             ...(threshold ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
             alternatives: candidates.filter((other) => other !== candidate && other.page.map?.id === candidate.page.map?.id
               && requirementsOf(project, other).length <= requirementsOf(project, candidate).length),
@@ -539,6 +550,8 @@ interface Driver {
   /** 수련하다 쓰러진 맵 — 상성이 나쁜 풀숲(유령 탑의 풀·에스퍼 리더)은 다시 고르지 않는다. */
   /** 수련하다 쓰러진 풀숲 → 그때 리더 레벨. 리더가 그보다 3 넘게 자라면 다시 쓴다(8번길이 영영 막혀 7번길에서 Lv52 가 멈췄다). */
   readonly badGrounds: Map<string, number>;
+  /** 필드 기술을 익히러 가는 중인 스킬 — 익히는 길이 같은 장애물에 막혀 맴돌지 않게 한다. */
+  acquiring?: Set<string>;
 }
 
 /** runAutoPlay({ recoverBeforeRandomEncounters }) 로 도는 프로젝트 — 인카운터 직전마다 파티를 회복한다. */
@@ -591,10 +604,13 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
       // 반감 기술만 들고 Lv93 로 열 번 졌다(2026-10-07 사막 기획서). 플레이어도 기술 범위를 남긴다.
       const elementOf = (skillId: string) => skillOf(skillId)?.elementId ?? "";
       const lastOfElement = (skillId: string) => elementOf(skillId) !== elementOf(pending) && known.filter((other) => elementOf(other) === elementOf(skillId)).length <= 1;
-      const candidates = [...known].filter((skillId) => power(skillId) >= 0 && !keepsLastStab(skillId));
+      // 잊을 수 없는 기술(비전머신)은 후보가 아니다. 필드 기술(절단·파도타기)을 배우려는 대기는 위력과 상관없이 약한 기술과 바꾼다 —
+      // 거절하면 길을 여는 기술을 영영 잃어 필드 기술 문에서 막힌다.
+      const candidates = [...known].filter((skillId) => power(skillId) >= 0 && !keepsLastStab(skillId) && skillOf(skillId)?.unforgettable !== true);
       const duplicated = candidates.filter((skillId) => !lastOfElement(skillId));
       const weakest = (duplicated.length ? duplicated : candidates).sort((a, b) => power(a) - power(b))[0];
-      const replaced = weakest && power(pending) > power(weakest) ? replacePendingMonsterSkill(project, instance, pending, weakest) : undefined;
+      const wantsField = Boolean(skillOf(pending)?.fieldCommonEventId);
+      const replaced = weakest && (wantsField || power(pending) > power(weakest)) ? replacePendingMonsterSkill(project, instance, pending, weakest) : undefined;
       const settled = replaced?.ok ? replaced : rejectPendingMonsterSkill(instance, pending);
       if (settled.ok) instance = settled.instance;
     }
@@ -888,6 +904,48 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   return steps;
 }
 
+/** 몬스터 파티 게임: 필드 스킬을 가르치는 기술머신 아이템이 있으면 어떻게 줄지 일러 준다. */
+function machineHint(project: Project, skills: readonly { readonly id: string }[]): string {
+  const items = project.database.items.filter((item) => { const taught = machineSkillOf(project, item); return taught !== undefined && skills.some((skill) => skill.id === taught); });
+  if (items.length === 0) return "";
+  return ` 몬스터 파티 게임이면 기술머신 ${items.map((item) => item.id).join(", ")} 을(를) 길 앞의 NPC·상자가 changeItem += 1 로 주게 하세요(place_chest contents.itemId) — 자동 플레이가 받아서 파티 몬스터에게 가르칩니다.`;
+}
+
+/**
+ * 필드 스킬(절단·파도타기…)을 익히는 길을 따라가 배운다: 그 스킬을 주는 세터(learnSkill·기술머신 changeItem·합류)를 골라
+ * planCriticalPath 로 선행 조건까지 밟고 실행한다. 하나라도 익히면 true. 같은 스킬은 한 번에 하나만(익히는 길이 이 장애물에 또 막히면 맴돌지 않는다).
+ */
+function acquireFieldSkill(driver: Driver, skills: readonly { readonly id: string; readonly name: string }[]): boolean {
+  const project = driver.project;
+  driver.acquiring ??= new Set<string>();
+  const visits: CommandVisit[] = [];
+  for (const page of allPages(project)) {
+    if (!page.map || !page.event) continue;
+    visitPageCommands(page, (visit) => visits.push(visit));
+  }
+  for (const skill of skills) {
+    if (driver.acquiring.has(skill.id)) continue;
+    const req: Requirement = { kind: "skill", id: skill.id };
+    for (const visit of visits.filter((candidate) => setterMatches(project, req, candidate) && project.maps[candidate.page.map!.id])) {
+      const goal: Goal = {
+        label: `${requirementLabel(project, req)} 익히기`, visit,
+        done: (session) => partyKnownSkillIds(project, session as unknown as PartySkillSession).has(skill.id),
+        ...(visit.command.kind === "changeItem" && typeof visit.command.itemId === "string" ? { useItemAfter: visit.command.itemId } : {}),
+      };
+      const plan = planCriticalPath(project, visit, goal);
+      if (plan.unresolved.length > 0) continue;
+      driver.acquiring.add(skill.id);
+      let ok = true;
+      for (const step of plan.goals) {
+        if (!executeGoal(driver, step).ok) { ok = false; break; }
+      }
+      driver.acquiring.delete(skill.id);
+      if (ok && partyKnownSkillIds(project, driver.last.session as unknown as PartySkillSession).has(skill.id)) return true;
+    }
+  }
+  return false;
+}
+
 /**
  * 길이 막혔을 때 필드 스킬로 여는 시도. 막은 이벤트(길 위의 바위·덤불)를 하나씩 지우면 길이 나는 후보로 좁히고,
  * 파티가 아는 필드 스킬을 그 앞에서 써 본다(run_scene_test useFieldSkill 과 같은 경로). 아는 스킬이 없으면 무엇을 해야 하는지 말해 준다.
@@ -922,9 +980,11 @@ function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: bool
     if (blockers.length === 0) break;
     const known = partyKnownSkillIds(project, session as unknown as PartySkillSession);
     const usable = fieldSkills.filter((skill) => known.has(skill.id));
+    // 아는 스킬이 없으면 익히는 길(기술머신 상자·스킬을 가르치는 NPC)을 찾아 먼저 익힌다 — 실제 플레이어가 막힌 덩굴 앞에서 비전서를 찾으러 가는 것과 같다.
+    if (usable.length === 0 && acquireFieldSkill(driver, fieldSkills.filter((skill) => !known.has(skill.id)))) continue;
     if (usable.length === 0) {
       const names = fieldSkills.map((skill) => `${skill.name}(${skill.id})`).join(", ");
-      return { unlocked: false, note: ` 길을 막은 ${blockers.slice(0, 3).map((event) => event.id).join(", ")} 은(는) 필드 스킬로 여는 장애물로 보이지만 파티에 그 스킬(${names})을 아는 구성원이 없습니다 — 이 길 앞에서 upsert_actor learnedSkills[{level,skillId}] 나 learnSkill 이벤트·장비 grantsSkillIds 로 스킬을 가르치세요.` };
+      return { unlocked: false, note: ` 길을 막은 ${blockers.slice(0, 3).map((event) => event.id).join(", ")} 은(는) 필드 스킬로 여는 장애물로 보이지만 파티에 그 스킬(${names})을 아는 구성원이 없습니다 — 이 길 앞에서 upsert_actor learnedSkills[{level,skillId}] 나 learnSkill 이벤트·장비 grantsSkillIds 로 스킬을 가르치세요.${machineHint(project, fieldSkills)}` };
     }
     let progressed = false;
     for (const blocker of blockers) {
@@ -1276,6 +1336,11 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
     return executeGoal(driver, goal, escaped, trained + 1);
   }
   if (failure) return trace(goal.label, false, failure, driver, visit.where);
+  if (goal.useItemAfter && goal.done && !goal.done(driver.last.session, driver.last)) {
+    const taught = tryCommit(driver, [{ kind: "useItem", itemId: goal.useItemAfter }]);
+    if (!taught.ok) return trace(goal.label, false, `기술머신 ${goal.useItemAfter} 을(를) 받았지만 파티에게 쓰지 못했습니다: ${taught.reason}`, driver, visit.where);
+    checkpoint(driver); // 가득 찬 몬스터는 대기 기술을 교체로 정리해야 파티가 그 기술을 안다
+  }
   if (lostTo && isMonsterPartyGame(project) && !goal.done?.(driver.last.session, driver.last)) {
     return trace(goal.label, false, `이벤트 전투 패배 — 수련 ${trained}번 뒤에도 ${lostTo[1]} 을 넘지 못했습니다(파티 ${partySummary(project, driver.last.session)}).`, driver, visit.where);
   }

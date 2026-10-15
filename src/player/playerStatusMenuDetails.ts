@@ -16,7 +16,7 @@ import { actorOwnedSkillIds } from '@/project/growth/runtime';
 import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
-import { menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
+import { machineSkillOf, menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -255,6 +255,32 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         }),
         emptyLabel: "대상이 없습니다",
         hint: "사용할 대상을 선택하세요.",
+      };
+    }
+    const machineSkillId = machineSkillOf(project, item);
+    if (machineSkillId) {
+      // 기술머신·비전머신 — 몬스터마다 「배울 수 있음 / 이미 익힘 / 못 배움」을 미리 보인다.
+      const skillName = project.database.skills.find((skill) => skill.id === machineSkillId)?.name ?? machineSkillId;
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — ${skillName}`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewMonsterMachine(project, session, item, instanceId);
+          const known = (instance.skillIds ?? []).length;
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: preview.reason ? "배울 수 없음" : known >= 4 ? "교체해서 배움" : "배울 수 있음",
+            description: preview.reason ?? (known >= 4 ? "기술이 가득 찼습니다 — 가르치면 몬스터 목록에서 잊을 기술을 고릅니다" : `${skillName}을(를) 가르칩니다`),
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterMachineTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 가르치기 · Esc 아이템 목록",
       };
     }
     if (targetsPartyMonsters(project, item)) {
@@ -640,7 +666,8 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
           const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
           return [
-            ...(instance.skillIds ?? []).map((replacedSkillId) => {
+            // 잊을 수 없는 기술(비전머신)은 교체 후보에서 뺀다.
+            ...(instance.skillIds ?? []).filter((id) => options.project.database.skills.find((skill) => skill.id === id)?.unforgettable !== true).map((replacedSkillId) => {
               const replaced = options.project.database.skills.find((skill) => skill.id === replacedSkillId);
               return {
                 label: `${replaced?.name ?? replacedSkillId} → ${pending?.name ?? pendingSkillId}`,
@@ -822,7 +849,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || targetsPartyMonsters(project, item) ? "partyMonster"
+  const scope = item.careProfile || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"

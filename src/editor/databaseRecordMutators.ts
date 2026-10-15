@@ -57,6 +57,10 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
     if (patch.fieldCommonEventId) record.fieldCommonEventId = patch.fieldCommonEventId;
     else delete record.fieldCommonEventId;
   }
+  if ("unforgettable" in patch) {
+    if (patch.unforgettable === true) record.unforgettable = true;
+    else delete record.unforgettable;
+  }
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("maxPp" in patch) record.maxPp = patch.maxPp;
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
