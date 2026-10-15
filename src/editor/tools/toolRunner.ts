@@ -21,6 +21,7 @@ import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lin
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
+import { applyArgAliases, describeArgError } from "./argRepair";
 import { getTool } from "./toolRegistry";
 import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -275,7 +276,7 @@ function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string,
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
-  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
+  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, applyArgAliases(tool.name, tool.parameters, args).args)) as Record<string, unknown>;
 }
 
 export function runTool(
@@ -301,12 +302,17 @@ export function runToolDefinition(
   const name = tool.name;
 
   const prunedPaths: string[] = [];
+  // 모호하지 않은 인자 별칭(table→collection 등)은 옮기고 「X 는 Y 입니다」 경고를 남긴다(argRepair.ts) — 조용한 교정 금지.
+  const aliased = applyArgAliases(name, tool.parameters, args);
   const normalizedArgs = argsWithCurrentMapTileset(ctx, tool,
     normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
-      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, args, "", prunedPaths) as Record<string, unknown> : args))) as Record<string, unknown>);
-  const prunedNote = prunedPaths.length
-    ? `빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`
-    : null;
+      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
+  const prunedNote = [
+    ...aliased.notes,
+    ...(prunedPaths.length
+      ? [`빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`]
+      : []),
+  ].join("\n") || null;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
@@ -316,7 +322,7 @@ export function runToolDefinition(
       issues: argErrors.map((message) => ({
         severity: "error",
         code: "invalid-args",
-        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint)
+        message: argErrorMessage(describeArgError(message, tool.parameters, normalizedArgs, tool.invalidArgsExample !== undefined), tool.invalidArgsExample, tool.invalidArgsHint)
           + (repair ? `\nrepair: ${JSON.stringify(repair)}` : ""),
       })),
     };

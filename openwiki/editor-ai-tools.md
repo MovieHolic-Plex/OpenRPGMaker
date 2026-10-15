@@ -1,5 +1,16 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)
+
+- **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
+  결과마다 `data.matches[].why` 와 요약의 `이름 [이유]` 로 왜 골랐는지 보인다. 아무것도 안 맞으면 글자 쌍 겹침이 가장 큰 3개(`data.nearest`)를 준다. `matchScore` 는 자연어 승격(`capabilityEscalation`)이 계속 쓴다.
+  **별칭을 추가할 땐 도구 이름이 실제 레지스트리에 있어야 한다**(없으면 조용히 무시). 낱말이 너무 흔하면(「적」「배」「벽」) 다른 말에 끼어드니 두 글자 이상 구로 쓴다.
+- **재생 코퍼스**: `scripts/qa/fixtures/find-tools-corpus.json`(감사 역할극 3판의 find_tools 질의 107건 + 이후 실제 호출 도구) → `bun scripts/qa/find-tools-replay.mts [--verbose]`.
+  적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
+- **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.
+- `set_party` 는 `scope` 생략 시 `start`(경고). `script_cutscene` 의 `{say:"…"}` 줄임 비트는 `kind:"say"` 로 보강하고 kind 오류는 쓸 수 있는 kind 목록을 준다.
+- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`weather`·`shiny`·`terrain`: 이유 문구 포함 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). `conditions.locationId`(맵 로케이션 id/이름)는 스키마에 선언해 실제로 저장한다. 레벨 범위·날씨·이로치는 포켓몬 라인 작업에서 필드를 만들 때까지 거절이 정상이다.
+
 ## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 
 왜: 실제 입력창 검수(`~/claude-viz/village-ai-report.md` 문제 2·3)에서 `author_beodeul_town` 이 깐 높이 마을(map.relief)에 조수가 품질 수리로
