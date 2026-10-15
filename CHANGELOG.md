@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.223.0 — 2026-10-15
+
+### 기능
+
+- **ai** — partyKnowsSkill condition + run_scene_test useFieldSkill + auto-play field-skill gates (#2602) (`19e48e3`)
+
 ## 0.222.0 — 2026-10-15
 
 ### 기능
