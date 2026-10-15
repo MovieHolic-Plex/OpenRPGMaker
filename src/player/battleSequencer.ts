@@ -100,7 +100,7 @@ export interface BattleSequencerHooks {
   /** 엔트리 재생 시작 시 그 엔트리의 전투 애니메이션(없으면 undefined — 레이어 정리). */
   readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
-  readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
+  readonly onCaptureCinematic?: (targetId: string, success: boolean, shakes?: 0 | 1 | 2 | 3) => number;
   /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms(템포 적용 전). 시퀀서는 이펙트
    *  마운트를 `approach − 착탄` 만큼 늦춰 착탄 프레임이 임팩트 비트(팝업·히트스톱)와 같은
    *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. `approachMs` = 이 엔트리
@@ -532,7 +532,7 @@ export function createBattleSequencer(
       return;
     }
     const cinematicMs = entry.kind === "capture" && entry.targetId
-      ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true) ?? 0
+      ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true, entry.shakes) ?? 0
       : 0;
     // 격파 대사 비트 — 이 타격이 대상을 쓰러뜨리면, recover 후 대사가 잠시 머문다.
     // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.

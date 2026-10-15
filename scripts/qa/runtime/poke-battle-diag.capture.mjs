@@ -266,7 +266,7 @@ async function scenarioCatch() {
   for (let turn = 0; turn < 12 && (await present("battle-scene")); turn++) {
     if (!(await waitCmd(20000))) { await page.keyboard.press("Enter"); continue; }
     const f = await hpFrac();
-    if (f !== null && f <= 0.5) {
+    if (f !== null && f <= Number(process.env.CATCH_HP ?? 0.5)) {
       await mark("item-menu");
       await page.locator('[data-testid="actor-command-item"]').focus(); await page.keyboard.press("Enter");
       await page.waitForTimeout(700);

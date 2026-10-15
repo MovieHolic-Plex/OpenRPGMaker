@@ -896,7 +896,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
     case "item":
       return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
-      return `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
+      // 던지는 쪽은 트레이너(나)다 — 몬스터 이름을 주어로 쓰면 「새싹토가 구슬을 던졌다」가 된다(2026-10-15 진단 C1).
+      return emeraldNarrationActive() ? `${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!` : `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
     case "defend":
       return `${subject} 방어 태세를 취했다.`;
     case "escape":
@@ -926,6 +927,13 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
     case "missingTarget":
       return "포획할 대상이 없다.";
     case undefined:
+      if (emeraldNarrationActive()) {
+        const shakes = result.shakes ?? 3;
+        return shakes <= 0 ? "안 돼! 몬스터가 구슬에서 빠져나왔다!"
+          : shakes === 1 ? "아앗! 잡은 줄 알았는데!"
+          : shakes === 2 ? "아깝다! 거의 잡을 뻔했는데!"
+          : "아아, 조금만 더 했으면 잡았는데!";
+      }
       return "아앗, 아깝다! 몬스터가 구슬에서 빠져나왔다!";
   }
 }

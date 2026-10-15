@@ -172,6 +172,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
   if (pokemonMotion) preloadPokemonMotionSounds();
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
+  let captureEntryActive = false;
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
@@ -469,14 +470,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
       });
     },
-    onCaptureCinematic(targetId, success) {
-      return playCaptureCinematic(field, targetId, success);
+    onCaptureCinematic(targetId, success, shakes) {
+      return playCaptureCinematic(field, targetId, success, shakes);
     },
     onDirectorState(state) {
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      captureEntryActive = entry.kind === "capture";
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
@@ -613,8 +615,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
       else root.classList.remove("battle-hit-stop-critical");
     },
-    onActionMotion(beat) {
+    onActionMotion(rawBeat) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      // 구슬을 던지는 것은 트레이너다 — 내 몬스터가 상대에게 돌진하지 않는다(2026-10-15 진단 C1).
+      const beat = captureEntryActive && rawBeat && rawBeat.userMotion === "lunge" ? { ...rawBeat, userMotion: "idle" as const } : rawBeat;
       if (retroMotion) {
         // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
         const timed = beat && beat.durationMs > 0

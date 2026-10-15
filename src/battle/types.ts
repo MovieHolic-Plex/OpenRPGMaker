@@ -384,6 +384,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
+  /** capture 엔트리: 구슬이 흔들린 횟수(0~3). 실패 연출이 이 횟수만큼 흔들리고 빠져나온다. */
+  readonly shakes?: 0 | 1 | 2 | 3;
   /** 회복 엔트리가 어느 자원에 작용했는가. 표시 계층이 이 값을 HP 원장에 그대로 쓰면
    *  MP 회복이 HP 로 새어 들어간다(실측: 마력약 MP+30 → 표시 HP 250→280). */
   readonly resource?: "hp" | "mp";

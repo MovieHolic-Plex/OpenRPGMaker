@@ -2671,6 +2671,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         targetId: next.targetId,
         commandKind: "capture",
         success: next.success,
+        ...(next.shakes !== undefined ? { shakes: next.shakes } : {}),
       });
     };
     const target = visibleEnemies().find((entry) => entry.id === targetEnemyId && entry.hp > 0);
