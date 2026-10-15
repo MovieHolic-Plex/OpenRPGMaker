@@ -72,6 +72,8 @@ try {
         await page.getByTestId("ai-settings-section-image").scrollIntoViewIfNeeded();
       }
       await page.screenshot({ path: resolve(out, `${tag}-${scenario}-${lang}-models.png`) });
+      await page.getByTestId("ai-config-pixel-status").scrollIntoViewIfNeeded();
+      await page.screenshot({ path: resolve(out, `${tag}-${scenario}-${lang}-pixel.png`) });
       report.push(row);
       await page.close();
     }

@@ -4412,3 +4412,52 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 체크포인트 한 번의 동기 구간이 아직 ~0.5 s 다. 남은 큰 몫은 `eventDraftVault.cloneKeepingDigests` + `shareContentDigests`(팀 11회 체크포인트에서 합 ~3.7 s). 이 복제는 detached draft(도구가 제자리에서 계속 고친다)와 스토어를 분리하는 격리라 생략할 수 없다 — 줄이려면 바뀐 맵만 복제하는 구조 공유가 필요하고 이번에는 위험이 커서 하지 않았다.
 - 이 하네스는 dev-showcase 경로다. 실제 Electron/호스트 저장 경로(`viewSubmit`, `saveMapPatch`)는 재지 않았다. 병목 1의 «저장 복제 건너뛰기» 는 하네스 환경 한정 효과다.
 - 하네스 한 번의 편차가 크다(팀 최대 정지 2~4 s 는 실행마다 다르다). 판정은 p95·Long Task 합·ACK 중앙값 같은 합계로 하고, 한 번의 최댓값으로 회귀를 선언하지 마라.
+
+## 이미지 용도 분리 — 배경·대형은 이미지 모델, 도트는 텍스트 모델 (2026-10-16)
+
+사용자 요청: 「AI 설정에서 이미지 생성 모델을 용도별로 분리. 배경·대형 이미지(타이틀·오프닝·컷신 스틸 등)는 GPT 생성형 이미지, 도트를 찍어야 하는 것(타일셋·캐릭터셋 등)은 Argon 또는 Claude(코드 손 도트).」
+
+- **라우터 하나**: `src/ai/imageRoute.ts` 의 `IMAGE_PURPOSES` 표가 정본이다(`generative` / `dot-text` / `upload-only`).
+  `resolveImageRoute(purpose, config)` 는 순수 함수. 새 그림 경로는 이 표에 한 줄을 먼저 넣고 `generateAiImage({ purpose })` 로 넘긴다.
+- **막기**: `generateAiImage` 와 Bun 워커 `createWorkerImageGenerator`(`scripts/lib/piPresentationTools.ts`)는 purpose 가 `dot-text`·`upload-only` 면
+  네트워크 호출 전에 `ImageGenerationError` 로 거절한다. purpose 는 서버로 보내지 않는다. purpose 가 없는 호출은 종전 그대로(설정의 이미지 모델 칸).
+  모든 앱 안 호출처가 purpose 를 넘기는지는 `test/imageRoute.test.ts` 의 소스 스캔이 본다(**작성만 했고 이 작업에서는 실행하지 않았다**).
+- **도트 저작 모델**: `AiConfig.pixelModel`(`{provider, model, thinkingLevel}`) + `modelSelectionOverrides.pixel`. 이미지 모델이 아니라 **텍스트 모델**이
+  격자 문자열·좌표로 픽셀을 쓴다(`src/ai/pixelModel.ts`). 지금 이 칸을 읽는 곳은 `resolveSurfaceAiConfig("workshop-draw")` 하나다
+  (`src/ai/assistantEndpoint.ts`) — 공방 그리기. 검수(`workshop-review`)는 그림을 읽는 일이라 시각(vision) 역할 그대로다. **조수 채팅은 이 칸을 읽지 않는다.**
+- **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
+  모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
+  새 설정(`defaultAiConfig`)만 Google Gemini 4 Argon · 보통으로 시작한다. 이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않는다(`providerSelection.ts`).
+- **선택지**: `PIXEL_MODEL_CHOICES` — Argon, Claude(Opus/Sonnet 4.5·4.6 = Antigravity 카탈로그에 실제 있는 id), GPT-6.1 Sol. 계정에서 실제로 쓸 수 있는지는 요청 때 오류로 알려 주며 자동 대체하지 않는다.
+- **화면**: 모델 탭의 「이미지」 절이 두 묶음이다 — 「배경·대형 이미지 — 생성형 이미지 모델」(기존 제공자·모델·추천·상태 그대로, 추천 문구에서 «픽셀 타일·캐릭터가 안정적» 문장을 뺐다) /
+  「도트 저작 — 텍스트 모델이 격자로 찍기」(모델·추론 강도·상태). 문구는 4개 언어 카탈로그(en/ja/zh 각 +16). `aiChatPanel.ts` 는 건드리지 않았다.
+- **증거 스크립트**: `bun scripts/qa/image-route-table.ts`(모델 호출 없이 용도별 라우터 출력표·입구 거절·공방 표면 모델), `scripts/qa/image-model-split.mjs`(격리 netns 에서 모달 캡처·저장 확인).
+
+### 용도 분류표 (근거 = 파일:줄, 2026-10-16 origin/main 15f8ce5 기준)
+
+| 용도 id | 갈래 | 근거 | 비고 |
+|---|---|---|---|
+| title-art | 생성형 | `src/editor/titleArtGeneration.ts:47`, 워커 `scripts/lib/piPresentationTools.ts` | 타이틀 키아트 |
+| title-logo | 생성형 | `src/editor/titleLogoGeneration.ts:45` | 흰 바탕 로고 → 투명 잘라내기 |
+| title-depth | 생성형 | `src/editor/titleDepthGeneration.ts:84` | 흑백 깊이 지도(흐려도 됨) |
+| opening-still | 생성형 | `src/editor/openingImageGeneration.ts:110` | 오프닝·게임오버 스틸, 전경 레이어 |
+| cutscene-backdrop / cutscene-sprite | 생성형(**모호 1**) | `src/editor/tools/cutsceneArtTools.ts:154` | style:game 은 «16비트 도트» 를 요구한 뒤 게임 해상도로 줄인다 |
+| backdrop · title-picture · picture | 생성형 | `src/editor/imageAssetGeneration.ts:33`, `src/ai/imageGenerationQueue.ts:101`(필드 kind) | generate_image_asset · 「그림 표시」·피커 AI 칸 |
+| faceset | 생성형 | `src/ai/imageGenerationQueue.ts:101`(kind faceset) | 얼굴 바꾸기·배우 얼굴 칸 |
+| character-appearance | 생성형 | `src/editor/characterAppearanceGeneration.ts:105` | «hand-drawn 2D portrait, 도트 아님» 프롬프트 |
+| item-icon | 생성형(**모호 4**) | `src/editor/aiDatabaseGeneration.ts:288` | 아이템 아이콘 |
+| interview-scene | 생성형(**모호 2**) | `src/editor/interviewSceneGeneration.ts:45` | 도트 격자 검수까지 하지만 이미지 모델로 생성 |
+| concept-thumb | 생성형(**모호 3**) | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | «SNES 도트 썸네일» 을 이미지 모델에 요구 |
+| tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
+| charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
+| user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
+| (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |
+| (제외) 컨셉 하네스 | 별도 경로 | `src/harnesses/game-concepts/node/draw.ts:12-13` | 노드 쪽이 `openai-codex`/`codex-image-default` 를 직접 고정 |
+
+### 사용자에게 물을 목록(결정 전에는 현재 동작 유지, 건드리지 않음)
+
+1. 컷신 `style:game` 스프라이트·배경 — 도트 용도로 보고 막을까, 지금처럼 이미지 모델 → 도트화로 둘까.
+2. 새 게임 인터뷰 배경 — 도트 검수를 통과해야 쓰는데 이미지 모델로 생성한다. 도트 저작 모델로 옮길까.
+3. 컨셉 카드 썸네일 — 같은 질문(도트 썸네일을 이미지 모델에 요구).
+4. 아이템 아이콘 — 일러스트 아이콘으로 두나, 도트 아이콘으로 보나.
+5. 조수 채팅 중 도트 작업에도 도트 저작 모델을 쓸까(지금은 공방 그리기만). 옛 설정 사용자의 공방 그리기를 Argon 보통으로 일괄 전환할지도 같이.
