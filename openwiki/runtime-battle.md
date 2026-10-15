@@ -1,5 +1,18 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
+
+- 데이터: `ItemRecord.heldEffect?: {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`(**선택 필드**, 생략=지닐 수 없는 아이템·저장 바이트 불변)와 `MonsterInstance.heldItemId?`(선택, 세이브 슬롯 검증 `isMonsterInstancesRecord`). 종류 다섯 enum — `healBelow`(HP 가 문턱 이하가 되면 먹고 회복, 1회용)·`cureStatus`(주요 상태가 걸리면 먹고 치료, 1회용)·`boostType`(같은 타입 기술 피해 percent 101~200)·`endureOnce`(가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀, 1회용)·`regen`(매 차례 말 최대 HP 의 percent 1~25 회복, 안 사라짐). 순수 규칙·정규화는 `src/battle/heldItems.ts`(`normalizeHeldItemEffect` 는 필수 매개변수가 빠지면 효과를 버린다).
+- 적용 범위: **gen1 전투 모델의 파티 몬스터만**(적에게는 `heldItemId` 가 없다). `monsterPartyBattlers` 가 인스턴스의 `heldItemId` 를 배틀러에 싣고 `battlerSnapshot` 이 내보낸다.
+- 훅 순서(`runtime.ts`): ① `applyExactGen1Damage` 에서 피해 배율(`heldBoostPercent`) → 버티기(`heldEndureDamage`, 가득 찬 HP 에서 쓰러질 피해면 `hpBefore-1`, 도구 소모, 문장은 `heldNotes`) ② 기술 하나가 끝난 뒤 `flushHeldNotes` + `triggerHeldItem`(맞은 쪽 → 쓴 쪽 순; 열매 회복은 `healing aside:"drain"` 엔트리, 상태 치료는 `stateRemoved reason:"effect"`) ③ 차례 말 잔여 피해 뒤 `applyHeldRegen` + `triggerHeldItem`. 소모된 도구는 `battler.heldItemId` 를 지운다.
+- 전투가 끝나면: 열매·띠 같은 소모품은 **인스턴스에서도 지운다**(`battleRewardsToSession.applyBattleMonsterVitalsToSession` 이 `heldItemId` 를 되쓴다 — 쓰고 사라진 도구가 다음 전투에 되돌아오지 않는다).
+- 필드: 메뉴 「가방」 → 도구 → 「지니게 하기」(원정 스타일은 행동 화면, 기본 스타일은 바로 대상) → 파티 몬스터. 이미 다른 도구를 지닌 몬스터는 바꿔 쥐고 옛 도구는 가방으로 돌아온다(`project/monsterHeldItems.giveHeldItem`, 인벤토리는 `itemTransitions` 정본). 몬스터 상세의 「지닌 도구」 줄을 고르면 가방으로 되돌린다(`takeHeldItem`, `onTakeHeldItem` 액션이 `onMoveMonster` 와 같은 길로 흐른다).
+- 화면: 전투 상태 클러스터에 `◆` 알약(`.battle-held-pill`, testid `battle-held-<battlerId>`, 이름은 title·aria-label; 소모되면 사라짐)과 도구가 발동할 때의 전투 문장. 도구 정보 화면의 「효과」 칸은 `지닌 도구 · <종류>`.
+- 조수: `upsert_item.item.heldEffect`(enum·정수만, 자유 키 없음). 필수 매개변수 누락·모르는 값·상성표에 없는 type 은 허용 값을 담아 `invalid-held-effect` 로 거절, gen1 이 아닌 프로젝트는 저장하되 경고. 레시피 `monster-held-items`.
+- 예제 몬스터 원정: 회복 열매·불꽃 숯·끈기 띠·남은 먹이(`mx_held_*`, `roster.ts` `EXPEDITION_HELD_ITEM_IDS`)를 DB 에 넣고 상점 목록에 올린다.
+- 검증: `bun scripts/qa/poke-depth/held-items.probe.mts`(엔진 6항목), `scripts/qa/runtime/poke-depth-items.capture.mjs`(출하 플레이어 — 메뉴에서 쥐여 주고 전투에서 열매가 발동; LEGACY=1 이 「전」). 단위 `test/heldItems.test.ts`(미실행).
+- 남은 것: 슬롯 하나(몬스터당 도구 하나), 적·트레이너 몬스터의 도구, 야생 몬스터가 떨구는 도구, 특성·날씨와 얽힌 도구, 교체 시 발동 도구, 전투 중 도구 교환은 없다. rm2k3 전투 모델은 지원하지 않는다.
+
 ## 필드 적 접촉 전투 진형 (2026-10-14)
 
 접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로

@@ -173,7 +173,7 @@
 /* 상태 배지: HP 상자 안 둘째 줄 왼쪽(3세대 자리). 스프라이트에 붙은 배지는 숨긴다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-actor-group .battle-actor, .battle-enemy) > .battle-status-icons { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons :is(.battle-status-icon, .battle-held-pill) { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
 /* 내 몬스터 상자 EXP 바: 상자 맨 아래 가는 줄(3세대). 승리 결과 단계에서 보상만큼 차오른다(syncExpBar). */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp) { grid-template-rows: 24px 10px auto 8px; }

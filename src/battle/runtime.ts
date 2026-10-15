@@ -853,7 +853,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (heal > 0) {
       consumeHeldItem(holder);
       holder.hp = Math.min(holder.maxHp, holder.hp + heal);
-      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${item.name}을(를) 먹고 체력을 회복했다!`);
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 체력을 회복했다!`);
       recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
       return;
     }
@@ -862,7 +862,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       consumeHeldItem(holder);
       holder.stateIds = holder.stateIds.filter((stateId) => stateId !== status.stateId);
       delete holder.stateTurns[status.stateId];
-      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${item.name}을(를) 먹고 상태이상이 나았다!`);
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 상태이상이 나았다!`);
       recordTimeline({ kind: "stateRemoved", side: battlerSide(holder), targetId: holder.id, stateId: status.stateId, reason: "effect" });
     }
   }

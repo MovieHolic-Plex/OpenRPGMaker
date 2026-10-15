@@ -1,4 +1,5 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { withJosa } from "@/util/josa";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -169,9 +170,9 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
   if (item && itemAllowsMenu(item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(machineSkillOf(project, item)));
+    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)));
     entries.push({
-      label: "사용",
+      label: item.heldEffect ? "지니게 하기" : "사용",
       value: "",
       unavailableReason: menuItemUnavailableReason(item),
       testId: `status-menu-item-use-${itemId}`,
@@ -270,7 +271,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           return [{
             label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
             value: current ? `지닌 도구: ${current}` : "지닌 도구 없음",
-            description: same ? "이미 이 도구를 지니고 있습니다" : current ? `${current}을(를) 가방에 돌려주고 ${item.name}을(를) 쥐여 줍니다` : `${item.name}을(를) 쥐여 줍니다`,
+            description: same ? "이미 이 도구를 지니고 있습니다" : current ? `${withJosa(current, "을/를")} 가방에 돌려주고 ${withJosa(item.name, "을/를")} 쥐여 줍니다` : `${withJosa(item.name, "을/를")} 쥐여 줍니다`,
             disabled: same,
             unavailableReason: same ? "이미 이 도구를 지니고 있습니다" : undefined,
             testId: `status-menu-monster-${instanceId}`,
@@ -874,7 +875,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
+  const scope = item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -923,6 +924,7 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.learnedSkillId) tokens.push(`learn:${encodeURIComponent(item.learnedSkillId)}`);
   if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
   if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
+  if (item.heldEffect) tokens.push(`held:${item.heldEffect.kind}`);
   if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}`);
   if (item.captureProfile) {
     tokens.push(project.system.battleModel === "gen1"

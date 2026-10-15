@@ -1,4 +1,5 @@
 // 파티 몬스터에게 지닌 도구를 쥐여 주고 되돌려 받는 필드 메뉴 규칙. 인벤토리 수량은 itemTransitions 가 정본이다.
+import { withJosa } from "@/util/josa";
 import { transitionItemState } from "@/project/itemTransitions";
 import { monsterDisplayName } from "@/project/monsterCollection";
 import type { PlaySession } from "@/project/session";
@@ -19,7 +20,7 @@ export function giveHeldItem(project: Project, session: PlaySession, itemId: str
   const instance = instanceId ? session.monsterInstances?.[instanceId] : undefined;
   if (!instance || !instanceId) return { kind: "unusable", message: "도구를 쥐여 줄 파티 몬스터를 선택하세요" };
   if ((session.inventory[itemId] ?? 0) <= 0) return { kind: "unusable", message: "가방에 도구가 없습니다" };
-  if (instance.heldItemId === itemId) return { kind: "unusable", message: `${monsterDisplayName(project, instance)}은(는) 이미 ${item.name}을(를) 지니고 있습니다` };
+  if (instance.heldItemId === itemId) return { kind: "unusable", message: `${withJosa(monsterDisplayName(project, instance), "은/는")} 이미 ${withJosa(item.name, "을/를")} 지니고 있습니다` };
   const previous = instance.heldItemId;
   const actions = [
     { kind: "remove", itemId, amount: 1 } as const,
@@ -31,7 +32,7 @@ export function giveHeldItem(project: Project, session: PlaySession, itemId: str
   session.itemUseCharges = next.itemUseCharges;
   session.monsterInstances[instanceId] = { ...instance, heldItemId: itemId };
   const name = monsterDisplayName(project, instance);
-  return { kind: "done", message: previous ? `${name}의 ${itemNameOf(project, previous)}을(를) 가방에 넣고 ${item.name}을(를) 쥐여 주었습니다` : `${name}에게 ${item.name}을(를) 쥐여 주었습니다` };
+  return { kind: "done", message: previous ? `${name}의 ${withJosa(itemNameOf(project, previous), "을/를")} 가방에 넣고 ${withJosa(item.name, "을/를")} 쥐여 주었습니다` : `${name}에게 ${withJosa(item.name, "을/를")} 쥐여 주었습니다` };
 }
 
 /** 몬스터가 지닌 도구를 가방으로 되돌린다. */
@@ -45,5 +46,5 @@ export function takeHeldItem(project: Project, session: PlaySession, instanceId:
   session.itemUseCharges = next.itemUseCharges;
   const { heldItemId: _removed, ...rest } = instance;
   session.monsterInstances[instanceId] = rest;
-  return { kind: "done", message: `${monsterDisplayName(project, instance)}의 ${itemNameOf(project, itemId)}을(를) 가방에 넣었습니다` };
+  return { kind: "done", message: `${monsterDisplayName(project, instance)}의 ${withJosa(itemNameOf(project, itemId), "을/를")} 가방에 넣었습니다` };
 }
