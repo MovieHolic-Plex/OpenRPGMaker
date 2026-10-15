@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.222.0 — 2026-10-15
+
+### 기능
+
+- **monster** — seed the first 12 campaign species for the species harness (#2599) (`4a75eec`)
+- **ai-tools** — create_map themeScene runs the theme composer in one call; check_map_emptiness and map-flat-ground lint; theme-scenes recipe (#2598) (`93c364d`)
+- **battle** — pokemon battle phase 1 - move box info, EXP bar, final-blow faint, move effects, idle bob, Galmuri9 (#2594) (`e55bc24`)
+- **monster** — harness-bundled species art wired into campaign + battle (#2593) (`a204cb4`)
+- **ai-tools** — find_tools alias ranking, arg alias/repair helpers, encounter-table rejects unknown keys (#2592) (`0293fc9`)
+- **ct** — 시대 변형·타일 변화·시간문 잠금·타이머 저장·NG+ 이월 도구 (PR1) (#2591) (`9b2e233`)
+- **battle** — FF6 magicite growth - AP permanent learning, level-up bonus, once-per-battle skills, equipment slot tool (#2590) (`423504d`)
+
 ## 0.221.0 — 2026-10-15
 
 ### 기능
