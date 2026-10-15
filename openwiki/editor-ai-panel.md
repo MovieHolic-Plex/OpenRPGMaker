@@ -1164,6 +1164,37 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
 
+### 물건은 이름으로 칩셋에서 찾는다 — 없으면 깔지 않는다 (2026-10-15 적대적 감사)
+
+사용자 신고: 「화분 깔아 줘」가 이벤트만 만들고 그림이 없었다. 코퍼스(4칩셋×50문장=200회)로 재현하니 **물건 요청의 39%가 엉뚱한 그림**(화분→자갈·물고기·풀 얼룩),
+**18%가 「깔았습니다」인데 보이는 것이 없었고**, 12.5%는 이벤트만(투명 「빈 바닥 위」 조사 지점·사람 그림 NPC)이었다.
+
+원인 순위(실측): ① 계획기에 **물건을 이름으로 찾아 찍는 도구가 없었다**(모델이 `place_props` 에 라벨을 짐작해 넣거나 조사 지점·NPC 로 흉내) ②
+조사 지점·NPC 가 그림 없이 들어갔다 ③ `place_props` density 를 비수목에 보내 첫 호출이 실패하고 수리 호출이 엉뚱한 대체를 냈다 ④ 결과 줄이 도구 요약만 이어 붙였다 ⑤ 복구 라운드의 성공이 첫 시도 실패를 지웠다.
+
+원칙: **그림이 없으면 이벤트도 지형도 깔지 않는다. 가까운 실제 이름을 보여 주고 거절한다. 조용한 대체·거짓 성공 금지. 결과 줄은 실제 변경 수를 말한다.**
+모델은 의도(이름·개수·위치 낱말)를 정하고, 코드가 이름 검색·칸 선택·정직한 보고를 한다.
+
+- `src/ai/stampObjects.ts`(순수) — `buildStampObjectIndex(tileset)`: 공방/팩 킷(`pack`)·DB 저작 킷(`authored`)·손 도트 실내 킷(`hand`)·소품 그룹(`group`, 한 칸이거나 patternGrammar 있는 것만)을 **물건 사전**으로 만든다.
+  벽·문·창·걸이·간판 부착물(`WALL_BOUND_NAME`·`WALL_TAGS`)은 바닥 물건이 아니라 뺀다. `resolveStampObject(index, names)` 이름 일치 → 낱말 시작 일치 → 한글만 포함 일치 → 자모 편집거리 1(오타, **사용자 말에만**).
+  `acceptedObjectNames` 는 모델의 대체 이름을 **같은 동의어 묶음**(`SYNONYM_GROUPS`)만 받는다(왕좌≠의자, 대포≠화로). 영어 동의어는 낱말 앞부분만(door↛trapdoor). `nearestStampObjects` 가 거절 시 가까운 이름 5개.
+- `stampPlanner.ts` — 공개 도구 `place_object {name, alternatives?, at|area, count?}`, 내부 `stamp_tileset_object`(모델이 못 부름). `validateStampStep` 은 이름을 못 찾으면 `{refused}`, 사람 낱말 없는 NPC·그림 없는 조사 지점·벽 아닌 칸의 문은 버린다.
+  비수목에 보낸 `density` 는 칸 수로 바꾼다(`facts.isTreeMaterial`). `expandStampObjects` 가 **적용 직전의 맵**에서 `facts.isOpenCell`(통행 가능·위층 비어 있음·이벤트·시작칸·길·물·벽 아님)로 칸을 골라 도구 호출로 펼친다. 자리가 없으면 사유(빈 칸 수)를 말한다.
+- `stampPlaceRunner.ts` — 거절은 수리 라운드로 돌리지 않는다(되물으면 사람·조사 지점 대체가 나왔다). 수리 라운드는 `repairRound` 사실로 **요청하지 않은 물건으로 바꾸지 않는다**.
+  결과 끝에 `stampEffect.ts` 가 적용 전후 맵을 비교해 「실제로 바뀐 것: 타일 N칸 · 새 이벤트 M개(그림 a · 투명 b)」를 적는다. 그림 도구가 「성공」인데 아무것도 안 바뀌면 `ok=false` + 「깔리지 않은 것으로 봅니다」.
+  `StampRunResult.refused` 는 큐 주문의 `refused` 로 가서 채팅 헤드가 「실패」가 아니라 **「깔지 않음(칩셋에 그림 없음)」**/「일부 적용 · 그림 없는 물건 N개는 깔지 않음」이 된다.
+- 번개 버튼(`selection-chip-stamp`)·드래그 영역 handoff(`stamp:true`)·입력줄은 모두 `stampPlaceNow` → 같은 러너라 같은 규칙을 탄다. 일반 조수의 `place_npc`·조사 지점·`stamp_tileset_object` 도구 계약은 건드리지 않았다(가드는 바로 깔기 계획기에만).
+
+**측정법(회귀 가드):** `scripts/qa/stamp-place-corpus.mts` — 실제 계획기·검증기·러너·도구를 헤드리스로 돌리고 `scripts/qa/stamp-place-corpus.json`(50문장: 물건·오타·수량·위치·모호·비물건·없는 물건)을 칩셋별로 돌린다.
+`--mode script` 는 기록된 대본(`stamp-place-corpus.script.json`)을 재생(모델 없음), `--mode agy --record` 는 Argon medium(agy 대용)으로 새로 받아 기록. 판정: 그림 맞음/엉뚱한 물건/이벤트만/정직한 거절(그림 없음·자리 없음)/도구 실패/결과 줄 거짓.
+채점 `python3 scripts/qa/stamp-place-corpus-report.py <결과폴더...>`. 실제 에디터 재현 `scripts/qa/stamp-place-ui.mjs`(dev:worktree + Playwright, blankProject 라 정본 저장 증거 아님).
+기준선(origin/main fed4d8d0b9, 4칩셋 200회, 같은 채점): 그림 맞음 20.5%·엉뚱한 물건 39%·결과 줄 거짓 18%·이벤트만 12.5%.
+수정 후(같은 문장·칩셋, 2026-10-15 `final2`): 그림 맞음 54%·엉뚱한 물건 0.5%·결과 줄 거짓 0%·이벤트만 0%, 나머지는 정직한 거절(그림 없음 11%·자리 없음 9.5%)·도구 실패 사유 표시 3%·모호한 말 12%. 추가 3칩셋(마당 선택 일본 주택가·몬스터 키트·초원 마을 150회): 그림 26%·정직한 거절 43%·엉뚱 1.3%·거짓 줄 0.
+판정이 바뀌면 이 숫자도 같이 고친다(정본 표: `~/claude-viz/stamp-place-review-1.html` 을 `scripts/qa/stamp-place-review-html.py` 로 재생성).
+**남은 약점:** 일본 주택가 「울타리」가 도로 위에 얹힘(재료 선택), 문 달기는 벽이 없으면 거절(벽 지을지는 사용자 몫), 채점은 휴리스틱이라 눈 확인 필요.
+**한계:** 대본 재생은 프롬프트가 바뀌면 키가 어긋나 새로 기록해야 한다. 칩셋에 그림이 아예 없는 물건(몬스터 키트의 화분·농장의 연못)은 **깔지 않는 것이 정답**이다 — 그림을 새로 만들어 채우지 않는다.
+vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변경에서 **실행하지 않았다**(워크트리 규칙).
+
 ### 연속 주문 대기열 (2026-09-28)
 
 목표: 드래그하면서 바로 깔기 명령을 연달아 내린다. 예전에는 바로 깔기가 채팅의 `turnBusy` 슬롯을 잡아 두 번째 드래그가

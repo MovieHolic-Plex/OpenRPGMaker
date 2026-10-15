@@ -25,8 +25,17 @@ function growth(kit: SectionStructureKitDef): { x: boolean; y: boolean } {
   return { x: axis === "horizontal" || axis === "both", y: axis === "vertical" || axis === "both" };
 }
 
+/** 바로 깔기(`place_object`)가 id 로 짚는 작은 물건 킷 — 팩 프리셋이 아닌 손 도트 실내·저작 킷(3×3 이하)도 id 정확 일치로만 찍는다. */
+function objectKitById(tileset: TilesetDef | undefined, id: string): SectionStructureKitDef | undefined {
+  const kit = (tileset?.structureKits ?? []).find((candidate) => candidate.id === id);
+  if (!kit || kit.width > 3 || kit.height > 3 || kit.width * kit.height > 9 || !kit.rows?.length) return undefined;
+  return kit;
+}
+
 function findObject(tileset: TilesetDef | undefined, query: string): SectionStructureKitDef {
   const objects = packObjects(tileset);
+  const byKitId = objects.length === 0 || !objects.some((kit) => kit.id === query.trim()) ? objectKitById(tileset, query.trim()) : undefined;
+  if (byKitId) return byKitId;
   if (objects.length === 0) {
     throw new ToolError("이 맵의 타일셋에는 팩 물체가 없습니다 — 팩 프리셋으로 만든 타일셋, 또는 공방에서 그려 넣은 기물(workshop:…)이 있는 손 도트 실내 칩셋에서만 쓴다.", { code: "no-pack-objects" });
   }

@@ -2566,7 +2566,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const appendStampOrderResult = (order: StampOrder): void => {
     // 멈추기로 끊은 주문은 멈추기가 한 줄로 이미 알렸다.
     if (order.status === "aborted" && order.applied === 0) return;
-    const head = order.status === "done" ? "완료" : order.applied > 0 ? "일부 적용" : "실패";
+    // 없는 물건은 「실패」가 아니라 「깔지 않음」 — 이벤트·지형으로 흉내 내지 않았다는 뜻이다(2026-10-15 바로 깔기 감사).
+    const head = order.status === "done"
+      ? "완료"
+      : order.applied > 0
+        ? `일부 적용${order.refused > 0 ? ` · 그림 없는 물건 ${order.refused}개는 깔지 않음` : ""}`
+        : order.refused > 0 ? "깔지 않음(칩셋에 그림 없음)" : "실패";
     appendBubble("system", [`#${order.id} ${order.label} — ${head}`, ...order.lines.map((line) => `- ${line}`)].join("\n"));
   };
   // 대기열 상태를 입력줄 요약·멈추기 버튼·상태 줄에 비춘다.
