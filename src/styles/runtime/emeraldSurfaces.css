@@ -332,10 +332,30 @@
   color: #f8f8e8;
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel :is(.battle-result-title, .battle-result-confirm, .battle-result-reward-value, .battle-result-exp-bar, .battle-result-party) { display: none; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-cards { display: block; max-height: none; overflow: hidden; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-cards { display: block; max-height: none; overflow: visible; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row { display: none; padding: 0; min-height: 0; background: transparent; animation: none; opacity: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-page="true"] { display: block; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-label { color: #f8f8e8; font: 18px/24px var(--runtime-pixel-font); text-shadow: 2px 2px #284050; white-space: nowrap; }
+/* 레벨업 능력치 상자: 문장 창 오른쪽 위에 얹힌다. 마지막으로 공개된 줄(data-emerald-last)에 붙은 것만 보인다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-levelup-stats { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] .battle-levelup-stats {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 16px;
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  width: 136px;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  box-sizing: border-box;
+  background: #f8f8e8;
+  border: 4px solid #486050;
+  color: #384840;
+  font: 16px/20px var(--runtime-pixel-font);
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-result-panel .battle-levelup-stat-value { text-align: right; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-finale-stamp { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-battle-director-step="result"] .battle-status-icon-death { display: none; }
 /* 결과 단계에서도 내 몬스터 상자는 남는다 — EXP 바가 차오르는 것이 보여야 한다(공용 규칙 09·13 이 숨긴다). */

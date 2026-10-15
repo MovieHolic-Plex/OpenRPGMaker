@@ -123,7 +123,7 @@ async function recStop() {
 const present = (id) => page.locator(`[data-testid="${id}"]`).count().then((n) => n > 0);
 const step = (id, ok, detail) => { report.steps.push({ id, ok, detail }); console.log(ok ? "✓" : "✗", id, detail); };
 const settled = async (done) => { for (let k = 0; k < 4; k++) { if (!(await done())) return false; await page.waitForTimeout(250); } return true; };
-const pressEnterUntil = async (done, max = 40) => { for (let i = 0; i < max; i++) { if (await settled(done)) return true; await page.keyboard.press("Enter"); await page.waitForTimeout(250); } return settled(done); };
+const pressEnterUntil = async (done, max = 40) => { for (let i = 0; i < max; i++) { if (await settled(done)) return true; await page.keyboard.press("Enter"); await page.waitForTimeout(Number(process.env.ENTER_MS ?? 250)); if (process.env.DUMP_STATS) { const d = await page.evaluate(() => { const b = [...document.querySelectorAll(".battle-levelup-stats")].find((n) => n.parentElement?.dataset.emeraldLast === "true"); if (!b) return null; const cs = getComputedStyle(b); const sp = b.children[0] ? getComputedStyle(b.children[0]) : null; return { mode: b.dataset.statsMode, text: b.textContent, font: cs.font, h: b.getBoundingClientRect().height, tr: cs.transform, spTr: sp?.transform, spFont: sp?.fontSize }; }); if (d) console.log("STATS", JSON.stringify(d)); } } return settled(done); };
 const teleport = async (mapId, x, y, quiet = false) => {
   if (!quiet) report.debugWrites.push(`teleport ${mapId} (${x},${y})`);
   await page.evaluate(([m, tx, ty]) => window.__oprnDebug.teleport(m, tx, ty), [mapId, x, y]);
@@ -302,7 +302,7 @@ async function scenarioLevelup() {
   if (rec) rec.ring = 0;
   await mark("encounter-detected");
   await waitCmd(60000);
-  await fightToEnd({ maxTurns: 40, skillIndex: 0 });
+  await fightToEnd({ maxTurns: 40, skillIndex: 0, holdResultMs: Number(process.env.HOLD ?? 0) });
   await page.waitForTimeout(800);
   await recStop();
   step("levelup", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level}`))));

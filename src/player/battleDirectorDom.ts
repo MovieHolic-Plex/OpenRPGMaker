@@ -500,7 +500,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   // battle-reward-reveal(opacity 0→1, delay) 애니메이션이 매번 0초로 리셋돼 행이
   // 반투명에 갇히거나(경험치) 아예 안 보였다(골드 — 적대 리뷰 3차 실측).
   const rows = rewardRows(snapshot);
-  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}`).join("|")}`;
+  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}${"stats" in row && row.stats ? `#${row.stats.mode}` : ""}`).join("|")}`;
   if (cards.dataset.rowsKey !== rowsKey) {
     cards.dataset.rowsKey = rowsKey;
     cards.replaceChildren();
@@ -518,6 +518,21 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
       value.className = "battle-result-reward-value";
       value.textContent = row.value;
       item.append(label, icon, value);
+      const stats = "stats" in row ? row.stats : undefined;
+      if (stats) {
+        const box = document.createElement("div");
+        box.className = "battle-levelup-stats";
+        box.dataset.statsMode = stats.mode;
+        for (const line of stats.lines) {
+          const name = document.createElement("span");
+          name.textContent = line.label;
+          const amount = document.createElement("span");
+          amount.className = "battle-levelup-stat-value";
+          amount.textContent = line.value;
+          box.append(name, amount);
+        }
+        item.append(box);
+      }
       if (row.kind === "exp") {
         const bar = document.createElement("div");
         bar.className = "battle-result-exp-bar";
@@ -573,7 +588,10 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   if (emeraldNarrationActive()) {
     const all = [...cards.querySelectorAll<HTMLElement>(".battle-result-reward-row")];
     const shown = Math.min(all.length, Math.max(1, revealStage));
-    for (const [index, item] of all.entries()) item.dataset.emeraldPage = index >= shown - 2 && index < shown ? "true" : "false";
+    for (const [index, item] of all.entries()) {
+      item.dataset.emeraldPage = index >= shown - 2 && index < shown ? "true" : "false";
+      item.dataset.emeraldLast = index === shown - 1 ? "true" : "false";
+    }
   }
   // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
   // 재동기화(revealStage 진행) 때마다 그 3개가 확인 버튼/계속 프롬프트 뒤로 밀려나, 화면
