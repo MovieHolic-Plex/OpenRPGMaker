@@ -594,6 +594,139 @@ def cmd_bake(a):
     write_json(os.path.join(BUNDLE, 'index.json'), index)
 
 
+
+# ---------- compare: 같은 생성 원본의 세 가지 표현(64 격자 / 128 양자화 / 128 부드러움) 비교 시트 ----------
+
+def _fringe_free_rgba(raw_path):
+    """마젠타 배경 생성 원본 → (색, 마스크). 가장자리 마젠타 번짐은 안쪽 색으로 덮는다."""
+    import numpy as np
+    im = Image.open(raw_path).convert('RGBA')
+    full = np.asarray(im).astype(np.int16)
+    a = full[..., :3]
+    r, g, b = a[..., 0], a[..., 1], a[..., 2]
+    bg = ((r > 170) & (b > 170) & (g < 120) & (abs(r - b) < 70)) | (full[..., 3] < 128)  # 생성기가 알파 투명 배경을 줄 때도 있다
+    soft = (r - g > 60) & (b - g > 60)  # 분홍 번짐
+    ink = ~bg
+    core = ink & ~soft
+    col = a.copy()
+    known = core.copy()
+    for _ in range(4):  # 번진 화소 색을 이웃 확실한 색으로 채운다
+        for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            sh = np.roll(np.roll(col, dy, 0), dx, 1); shk = np.roll(np.roll(known, dy, 0), dx, 1)
+            take = (~known) & shk
+            col[take] = sh[take]; known = known | take
+    return col.astype(np.uint8), ink.astype(np.uint8) * 255
+
+
+def make_variants(raw_path, out_dir, tag, target_h=112, canvas=128, colors=24):
+    import numpy as np
+    col, mask = _fringe_free_rgba(raw_path)
+    ys, xs = np.nonzero(mask)
+    y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+    rgb = Image.fromarray(col[y0:y1, x0:x1]); m = Image.fromarray(mask[y0:y1, x0:x1])
+    h = y1 - y0; w = x1 - x0
+    tw = max(1, round(w * target_h / h))
+    rgb_s = rgb.resize((tw, target_h), Image.LANCZOS); m_s = m.resize((tw, target_h), Image.LANCZOS)
+    left = (canvas - tw) // 2; top = canvas - 1 - target_h   # 발 줄 = canvas-2 (아래 1칸 여백)
+    # (3) 부드럽게: 반투명 가장자리 유지
+    soft = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0))
+    rgba = rgb_s.convert('RGBA'); rgba.putalpha(m_s)
+    soft.alpha_composite(rgba, (left, top))
+    # (2) 양자화: 마스크 이진화 + 색 수만 줄임(디더 없음)
+    hard_m = m_s.point(lambda v: 255 if v >= 128 else 0)
+    q = rgb_s.quantize(colors=colors, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert('RGB')
+    qr = q.convert('RGBA'); qr.putalpha(hard_m)
+    quant = Image.new('RGBA', (canvas, canvas), (0, 0, 0, 0))
+    quant.alpha_composite(qr, (left, top))
+    os.makedirs(out_dir, exist_ok=True)
+    pq = os.path.join(out_dir, tag + '_hires%d.png' % canvas); ps = os.path.join(out_dir, tag + '_smooth%d.png' % canvas)
+    quant.save(pq); soft.save(ps)
+    return pq, ps, len({c[:3] for c in pixels(quant) if c[3]})
+
+
+def data_uri_jpg_bg(path):
+    return data_uri(path)
+
+
+def cmd_compare(a):
+    require_gen(a.plate, '비교 시트를 만들')
+    picks = [p.split('/') for p in a.picks]            # role/letter
+    out_dir = os.path.join(RUNS, a.plate, 'compare')
+    byrole = {}
+    for role, letter in picks:
+        m = read_json(os.path.join(RUNS, a.plate, role, letter, 'meta.json'))
+        if not m or m.get('status') != 'ok': sys.exit('%s/%s 는 통과한 후보가 아니다' % (role, letter))
+        tag = '%s_%s' % (role, letter)
+        pq, ps, ncol = make_variants(os.path.join(RUNS, a.plate, role, letter, m['raw']), out_dir, tag)
+        byrole.setdefault(role, []).append({'tag': tag, 'letter': letter, 'grid': os.path.join(RUNS, a.plate, role, letter, 'sprite.png'), 'quant': pq, 'smooth': ps, 'colors': ncol, 'm': m})
+    mon = {'harness_front': os.path.join(ROOT, 'public/assets/harnesses/monster-collect-species/sparkit/front.png'),
+           'harness_back': os.path.join(ROOT, 'public/assets/harnesses/monster-collect-species/leafling/back.png'),
+           'camp_front': os.path.join(ROOT, 'public/assets/monster-expedition/creatures/brambleboar-front.png'),
+           'camp_back': os.path.join(ROOT, 'public/assets/monster-expedition/creatures/atollclamp-back.png')}
+    bg = os.path.join(ROOT, 'public/assets/emerald-monster/battle/grass.png')
+    U = {k: data_uri(v) for k, v in mon.items()}; BG = data_uri(bg)
+    pairs = []  # (성별, k)
+    for gname in ('m', 'f'):
+        backs = byrole.get('hero_%s' % gname, []); fronts = byrole.get('hero_%s_front' % gname, [])
+        for k in range(min(len(backs), len(fronts))): pairs.append((gname, backs[k], fronts[k]))
+    rows = []
+    for gname, bk, fr in pairs:
+        cols = []
+        for key, title, size in (('grid', '(1) 지금: 64×64 격자 도트화 · 2배(128px)', 128), ('quant', '(2) 격자 강제 없이 128 캔버스(몸 112px) · 24색 양자화 · 1배', 128), ('smooth', '(3) 128 캔버스 부드러운 축소(원본 색 그대로) · 1배', 128)):
+            u_b = data_uri(bk[key]); u_f = data_uri(fr[key])
+            cols.append(f'<div class=sc><div class=ct>{title}</div>'
+                        f'<div class=zoom><div class=field style="background-image:url({BG})">'
+                        f'<img class=px style="left:48px;bottom:0;width:128px;height:128px" src="{u_b}">'
+                        f'<img class=px style="right:48px;bottom:30px;width:128px;height:128px" src="{u_f}"></div></div>'
+                        f'<div class=ct style="margin-top:6px">같은 줄에 몬스터와 나란히(왼쪽부터: 캠페인 몬스터 64→2배 · 상대 트레이너 · 내 트레이너 · 하네스 몬스터 112→128px)</div>'
+                        f'<div class=zoom><div class=field style="background-image:url({BG})">'
+                        f'<img class=px style="left:0px;bottom:24px;width:128px;height:128px" src="{U["camp_front"]}">'
+                        f'<img class=px style="left:118px;bottom:24px;width:128px;height:128px" src="{u_f}">'
+                        f'<img class=px style="left:236px;bottom:24px;width:128px;height:128px" src="{u_b}">'
+                        f'<img class=px style="left:354px;bottom:24px;width:128px;height:128px" src="{U["harness_back"]}">'
+                        f'</div></div></div>')
+        info = f'히어로{"(남)" if gname == "m" else "(여)"} · 뒷모습 {bk["letter"]} / 앞모습 {fr["letter"]} · (2) 양자화 색 {bk["colors"]}·{fr["colors"]}'
+        rows.append(f'<section><h3>{info}</h3><div class=r3>{"".join(cols)}</div></section>')
+    # 확대 비교(같은 화면 크기)
+    crops = []
+    for role in ('hero_m', 'hero_m_front', 'hero_f', 'hero_f_front'):
+        for v in byrole.get(role, []):
+            cells = ''.join(f'<div><div class=bg><img class=px style="width:{w}px;height:{w}px" src="{data_uri(v[key])}"></div><div class=hs>{lab}</div></div>' for key, lab, w in (('grid', '(1) 64 격자 ×4', 256), ('quant', '(2) 128 양자화 ×2', 256), ('smooth', '(3) 128 부드러움 ×2', 256)))
+            crops.append(f'<div class=cand><div class=hs>{role} {v["letter"]}</div><div class=pair>{cells}</div></div>')
+    html = COMPARE_TEMPLATE.replace('@@ROWS@@', '\n'.join(rows)).replace('@@CROPS@@', '\n'.join(crops)).replace('@@PLATE@@', a.plate)
+    os.makedirs(VIZ, exist_ok=True)
+    out = os.path.join(VIZ, 'trainer-sprites-pick-%s.html' % a.out)
+    open(out, 'w', encoding='utf-8').write(html)
+    print(out, len(html) // 1024, 'KB')
+
+
+COMPARE_TEMPLATE = r"""<!doctype html><meta charset=utf-8><title>트레이너 표현 방식 비교 @@PLATE@@</title>
+<style>
+body{background:#1c2230;color:#e8ecf4;font:14px/1.5 -apple-system,'Noto Sans KR',sans-serif;margin:0;padding:16px 24px 60px}
+h1{font-size:20px;margin:0 0 6px}h3{margin:22px 0 6px;font-size:15px}
+.how{background:#26304a;border:1px solid #3c4a6e;border-radius:8px;padding:10px 14px;margin:8px 0;max-width:1100px}
+.r3{display:flex;gap:14px;flex-wrap:wrap}.sc{flex:0 0 auto}.ct{font-size:12px;color:#ffd78a;margin-bottom:3px;max-width:480px}
+.field{position:relative;width:480px;height:240px;background-size:480px 240px;background-repeat:no-repeat;image-rendering:pixelated;overflow:hidden;transform-origin:0 0}
+.zoom{width:calc(480px*var(--z,1));height:calc(240px*var(--z,1));overflow:hidden}.zoom .field{transform:scale(var(--z,1))}
+.field img{position:absolute;image-rendering:pixelated}
+.px{image-rendering:pixelated}.bg{background:#5a9a5a;display:inline-block;line-height:0}.hs{font-size:11px;color:#8da0bb}
+.cand{background:#232b3d;border:2px solid #323d58;border-radius:8px;padding:8px;margin:8px 0;display:inline-block;margin-right:10px}.pair{display:flex;gap:10px}
+button{background:#3a4770;color:#fff;border:0;border-radius:6px;padding:5px 12px;cursor:pointer}button.on{background:#c79a2a;color:#111}
+</style>
+<h1>트레이너 표현 방식 비교 (@@PLATE@@ 생성 원본 그대로, 같은 그림 세 가지)</h1>
+<div class=how>고르는 시트가 아닙니다 — 번들·프로젝트에는 아무것도 들어가지 않았고, 비교용 그림(각 역할에서 보기 좋은 2장)만 올렸습니다. 어느 쪽이 몬스터와 어울리는지 보고 방향만 정해 주세요.<br>
+장면은 실제 게임의 480×240 field·지형 그림·몬스터 128px·발판 위치를 CSS 로 복제한 것입니다(플레이어 실제 렌더 아님). 위 장면은 트레이너 도입(슬라이드 인) 위치이고, 아래 장면은 <b>캠페인 기본 몬스터(64×64 → 2배)</b>와 <b>하네스 몬스터(112×112 → 128px, 1.14배)</b>를 트레이너와 같은 줄에 세운 밀도 비교입니다.<br>
+(1) 지금: 생성 원본 → 격자 검출 도트화 → 64×64, 2배 확대. (2) 격자 강제 없이 원본을 128 캔버스(몸 112px)로 줄이고 색만 24색으로 줄임(디더 없음, 윤곽 보존, 최근접 표시). (3) 같은 크기로 부드럽게(고품질 축소) 줄인 것 — 반투명 가장자리 포함, 도트 아님.<br>
+배율 <span id=sc></span></div>
+@@ROWS@@
+<h3>확대 비교 (같은 화면 크기)</h3>
+@@CROPS@@
+<script>
+function setZ(z){document.documentElement.style.setProperty('--z',z);document.querySelectorAll('#sc button').forEach(b=>b.classList.toggle('on',+b.dataset.z===z))}
+const sc=document.getElementById('sc');[1,1.5,2].forEach(z=>{const b=document.createElement('button');b.textContent=z+'×';b.dataset.z=z;b.onclick=()=>setZ(z);sc.appendChild(b)});setZ(1);
+</script>"""
+
+
 def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('list')
@@ -603,8 +736,9 @@ def main():
     sh = sp.add_parser('sheet'); sh.add_argument('plate')
     pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+')
     bk = sp.add_parser('bake'); bk.add_argument('plate'); bk.add_argument('roles', nargs='*')
+    cp = sp.add_parser('compare'); cp.add_argument('plate'); cp.add_argument('picks', nargs='+'); cp.add_argument('--out', default='5')
     a = ap.parse_args()
-    {'list': cmd_list, 'draw': cmd_draw, 'status': cmd_status, 'sheet': cmd_sheet, 'pick': cmd_pick, 'bake': cmd_bake}[a.cmd](a)
+    {'list': cmd_list, 'draw': cmd_draw, 'status': cmd_status, 'sheet': cmd_sheet, 'pick': cmd_pick, 'bake': cmd_bake, 'compare': cmd_compare}[a.cmd](a)
 
 
 if __name__ == '__main__': main()
