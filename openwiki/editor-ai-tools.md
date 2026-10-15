@@ -1,5 +1,29 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
+
+권고(`monsterGameRequest` 지시문 · `openBlankStartOnMonsterKit` · 「칩셋 계열 지키기」)만으로는 조수가 버들항·사막·jp_city 등 다른 계열이나 비몬스터 파이프라인으로
+맵을 만드는 것을 못 막았다. 프로젝트 단위 잠금이 그 구멍을 막는다. 옵트인이며 `system.genreLock` 이 없으면 동작·저장 바이트가 그대로다.
+
+- **데이터**: `Project.system.genreLock?: { preset: "monster-collect"; mode: "enforce" | "warn"; allowedFamilies: string[]; grandfatheredMapIds?: string[] }`.
+  `allowedFamilies` 는 켤 때 `GENRE_LOCK_PRESETS`(표, `src/project/genreLock.ts`)에서 복사한다 — 정본은 프로젝트 쪽 목록이다. 표에는 `monster-collect` 만 있다(다른 장르는 별도 결정).
+  shape 검증 `io/shapeDatabaseFields.ts` · normalize `databaseRecordModel.ts`(모르는 preset·깨진 값은 잠금 없음으로 본다).
+- **판정 함수는 한 곳**: `genreLock.ts` 의 `assertGenreLock(before, draft, {toolName, approved})`(맵 위반) · `genreLockMapViolation` · `genreLockDefaultTileset` · `genreLockHidesTool` · `genreLockReport`.
+  세계 지도 전용 칩셋(`worldmap_<mapId>`)과 `atlas_cartography` 는 장르와 무관해 통과한다.
+- **강제 지점은 `toolRunner.runToolDefinition` 한 곳**(`ctx.assistantRun` 일 때만 — 편집기 직접 편집·예제·콘텐츠 스크립트는 안 막는다):
+  1. 새 맵·`tilesetId` 가 바뀐 맵이 허용 계열 밖이면 오류 `genre-lock`(`ToolError`)으로 거부. 메시지에 허용 칩셋 id 목록·가장 가까운 대안(던전→monster_dungeon, 실내→monster_rooms, 항구→monster_coast, 기후→monster_climate, 체육관→monster_gyms, 기본→monster_overworld)·`ask_tileset_change` 경로를 싣는다. **무음 대체 없음**. `create_map`·`themeScene`·`import_region_reference`·`allowsTilesetChange` 도구(`build_concept_example` 등) 모두 이 한 곳을 지난다. 빠지는 도구는 `reset_project`·`revert_last_edit`(`GENRE_LOCK_EXEMPT_TOOLS`)뿐이다.
+  2. `tilesetId` 를 생략한 `create_map` 의 기본 칩셋이 허용 밖이면 허용 칩셋(대안 표)으로 바꾸고 도구 결과 경고에 그 사실을 적는다(`genreLockedDefaultTileset`). 모델이 `tilesetId` 를 직접 적은 경우는 바꾸지 않고 1번으로 거부한다.
+  3. 승인 카드로 사용자가 허용한 계열(`ctx.approvedTilesetFamilies`)은 그 계열 한정으로 통과한다 — 잠금 해제가 아니다(`ask_tileset_change` 결과에 그 문장이 붙는다). 계열 검사(`tileset-family-change`)는 잠금 중 허용 칩셋으로 가는 변경을 막지 않는다.
+  4. `mode:"warn"` 은 거부 대신 경고만 낸다.
+- **조수에게 보이는 것을 좁힌다**: `find_tools` 결과·Pi 도구 목록(`toolAdapter.createPiToolset`)에서 비허용 계열 전용 시공 도구(`hiddenToolPatterns` — `author_beodeul_*`·`compose_*_map`·`link_*_interior`·`build_jp_city_*` 등)를 뺀다. 이름으로 직접 부르면 실행기가 `genre-lock` 으로 거부한다.
+  `list_tileset_references`(tilesetId 생략)는 허용 계열 칩셋만 나열한다(직접 묻는 비허용 칩셋은 읽기 가능 + 경고). 시스템 프롬프트(`buildSystemPrompt`·`buildPiAgentSystemPrompt`)에 「장르 잠금」 한 덩어리가 붙는다 — 잠금이 없으면 줄이 없다.
+- **켜는 곳**: `applyGenrePreset("monster-collect")`(빈 시작 맵을 몬스터 키트로 옮긴 뒤) · `configure_monster_system(enabled:true)` · `build_monster_game/tournament/expedition` · 자료집 시스템 탭 「장르 칩셋 잠금」 체크박스(상태 배지: 잠금 이후 위반 맵 수·잠금 이전부터 있던 맵 수). 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다.
+  켤 때 이미 허용 밖 칩셋이던 맵은 `grandfatheredMapIds` 에 기록해 막지 않고 따로 보고한다.
+- **끄는 곳**: `configure_monster_system(enabled:false)` 는 잠금도 풀며 결과 경고 「장르 잠금 해제됨: …」(채팅에 보임)와 편집 감사 로그 필드 `system.genreLock before:"enforce" after:"released"`(`applyChangesetToStore.applyAnnotation`)를 남긴다. 체크박스는 라벨 「장르 잠금 끄기」로 기록된다.
+- **검사**: `check_genre_lock`(읽기 도구, `genreLockTools.ts`) — 허용 칩셋·잠금 이후 위반 맵·**잠금 이전부터 있던 허용 밖 맵**을 나눠 보고한다. `projectLint` `opt-in:genre-lock-violation`(잠금 이후 위반만) · `qa:game` monster 검사의 `genre-lock-violation`(warning)/`genre-lock-preexisting`(info).
+- **헤드리스 시험**: `node scripts/oprn-tools.mjs --assistant [--current-map <id>] [--approve-family <family>] --project p.json --write <tool> '<args>'` 가 `assistantRun` 문맥으로 실행기를 부른다(조수 대용 역할극용). SQLite 저장→재로드 증거는 `node scripts/qa/genre-lock-persist.mjs [--from project.json] [projectDir]`.
+- 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
+
 ## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)
 
 - **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
