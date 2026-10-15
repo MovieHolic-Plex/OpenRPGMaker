@@ -44,7 +44,7 @@ interface CaseResult {
   events: GameEvent[];
   assistantReply: string;
   gates: Gate[];
-  judge: { passed: boolean; score: number; critique: string; requirements?: unknown };
+  judge: { passed: boolean; score: number; critique: string; requirements?: unknown; votes?: number[] };
   overallPassed: boolean;
   mapPng: string;
   shotA: string;
@@ -227,7 +227,7 @@ function branchGates(testCase: JrpgCommandCase, a: LiveInGameBranchTelemetry, b:
 // Blind judge: user prompt + images only. No per-case answer key, no hint of what "good" looks like.
 // ---------------------------------------------------------------------------
 
-async function blindJudge(prompt: string, imagePaths: string[], apiKey: string) {
+async function blindJudgeOnce(prompt: string, imagePaths: string[], apiKey: string) {
   const text = `너는 이 게임을 처음 플레이해 보는 까다로운 레벨 디자이너다. 아래는 사용자가 에디터 AI 조수에게 한 명령과, 조수가 만든 결과물의 스크린샷이다
 (1번: 전체 맵, 2번: 분기 A 발동 직전 게임 장면, 3번: 분기 A 첫 대사가 뜬 순간, 4번: 분기 A 이벤트 중 가장 강한 연출 순간, 5번: 분기 B 연출 순간. 분기 A/B는 같은 이벤트를 조건(파티·아이템·스위치)만 달리해 플레이한 것이다).
 
@@ -282,6 +282,43 @@ JSON으로만 답하라:
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Character art the project already owns before the prompt is given (like actor_marle or item_fire_ring in the
+ * fixture): the assistant must still find it with list_resources and wire it into the event itself. Nothing is
+ * published to the shared library or bundled — the frog sheet comes from an isolated charset-actor run.
+ */
+const FROG_KNIGHT_SHEET = process.env.PILOT_FROG_KNIGHT_SHEET ?? "/home/main/chr-frog-knight/data/runs/frog-knight-2/frog-knight-2__gpt-r1/views/sheet_rgba.png";
+
+function installProjectCharsets(caseId: string, project: Project): void {
+  if (caseId !== "jrpg_046" || !existsSync(FROG_KNIGHT_SHEET)) return;
+  const src = PNG.sync.read(readFileSync(FROG_KNIGHT_SHEET));
+  const sheet = new PNG({ width: 288, height: 256 });
+  PNG.bitblt(src, sheet, 0, 0, Math.min(src.width, 72), Math.min(src.height, 128), 0, 0);
+  const id = "charset_frog_knight";
+  (project.assets.uploaded as Record<string, unknown>)[id] = {
+    id,
+    name: "개구리 기사 (직립 개구리 검사, 은빛 갑옷·붉은 스카프·붉은 망토)",
+    kind: "charset",
+    dataUrl: `data:image/png;base64,${PNG.sync.write(sheet).toString("base64")}`,
+    meta: { width: 288, height: 256 },
+  };
+}
+
+type JudgeResult = { passed: boolean; score: number; critique: string; requirements?: unknown };
+
+/**
+ * Same scene, three independent judge calls; the verdict is the majority (pass needs 2 of 3, each call still
+ * strict: no "no" item, score >= 80). The score and critique come from the median-score call. A single call
+ * contradicted itself between runs on identical frames, so one noisy "no" must not decide the run.
+ */
+async function blindJudge(prompt: string, imagePaths: string[], apiKey: string): Promise<JudgeResult & { votes: number[] }> {
+  const runs = await Promise.all([0, 1, 2].map(() => blindJudgeOnce(prompt, imagePaths, apiKey)));
+  const sorted = [...runs].sort((x, y) => x.score - y.score);
+  const median = sorted[1]!;
+  const passes = runs.filter((r) => r.passed).length;
+  return { ...median, passed: passes >= 2, votes: runs.map((r) => r.score) };
+}
+
 function triggerModeFor(events: GameEvent[], fx: number, fy: number): "action" | "step_right" {
   const ev = events.find((e) => e.x === fx && e.y === fy) ?? events[0];
   const kind = ev?.pages?.[0]?.trigger?.kind ?? ev?.trigger?.kind;
@@ -332,7 +369,7 @@ async function main() {
   await Promise.all(
     ids.map(async (id) => {
       const testCase = JRPG_200_CASES.find((c) => c.id === id)!;
-      const res = (await runSingleJrpgCase(testCase, outDir, { clearFixtureEvents: true })) as SingleCaseExecutionResult & { afterProject: Project };
+      const res = (await runSingleJrpgCase(testCase, outDir, { clearFixtureEvents: true, prepareProject: (p) => installProjectCharsets(id, p) })) as SingleCaseExecutionResult & { afterProject: Project };
       assistantRuns.set(id, res);
       console.log(
         `  [${id}] assistant done in ${Math.round(res.durationMs / 1000)}s, tools=${res.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`).join(",") || "none"}`,

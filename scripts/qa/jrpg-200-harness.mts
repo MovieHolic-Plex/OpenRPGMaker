@@ -1722,7 +1722,7 @@ function headlessChat(keys: Map<string, string | undefined>) {
 export async function runSingleJrpgCase(
   testCase: JrpgCommandCase,
   outDir: string,
-  options: { clearFixtureEvents?: boolean } = {},
+  options: { clearFixtureEvents?: boolean; prepareProject?: (project: Project) => void } = {},
 ): Promise<SingleCaseExecutionResult> {
   const startedAt = Date.now();
   await preloadKitStartPlaces();
@@ -1730,6 +1730,7 @@ export async function runSingleJrpgCase(
   beforeProject.startMapId = testCase.mapId;
   // Fixture decoys (a door, a pit, NPCs) are test furniture, not content the prompt is about; a clean stage keeps them from being judged as the assistant's mess.
   if (options.clearFixtureEvents) beforeProject.maps[testCase.mapId]!.events = [];
+  options.prepareProject?.(beforeProject);
   const workingProject = structuredClone(beforeProject);
 
   const apiKey = await resolveRequestApiKey(MODEL_PROVIDER);
