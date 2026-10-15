@@ -14,7 +14,7 @@ export function renderWorldCodexTab(host: HTMLElement, container: HTMLElement = 
   const attachedCards = lint.byEntityId.size;
   const countBy = (type: string): number => world.entities.filter((entity) => entity.type === type).length;
   const stats = statStrip([
-    { label: "낱장 카드", value: `${world.entities.length}장` },
+    { label: "문서", value: `${world.entities.length}개` },
     { label: "인물", value: `${countBy("character")}명` },
     { label: "장소·세력", value: `${countBy("place") + countBy("faction")}곳` },
     { label: "사건", value: `${countBy("event")}건` },
@@ -22,7 +22,7 @@ export function renderWorldCodexTab(host: HTMLElement, container: HTMLElement = 
       label: "검사 지적",
       value: `${attachedCount}건`,
       tone: attachedCount > 0 ? "warn" : "good",
-      hint: attachedCount > 0 ? `카드 ${attachedCards}장` : "깨끗함",
+      hint: attachedCount > 0 ? `문서 ${attachedCards}개` : "깨끗함",
     },
   ], { testid: "db-world-codex-stats" });
   const workspace = workspaceShell({
@@ -35,7 +35,7 @@ export function renderWorldCodexTab(host: HTMLElement, container: HTMLElement = 
             dataset: { testid: "db-world-codex-lead" },
             children: [
               el("strong", { text: "설정집" }),
-              el("span", { class: "world-ai-scope-label", text: "NPC 대사 AI 참고 · 이름과 요약" }),
+              el("span", { class: "world-ai-scope-label", text: "AI 참고 범위는 속성의 「AI가 읽는 것」에서 확인합니다" }),
             ],
           }),
           stats,

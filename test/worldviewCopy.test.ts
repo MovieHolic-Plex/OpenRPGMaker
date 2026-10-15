@@ -22,10 +22,10 @@ describe("worldview copy IA", () => {
     expect(body?.getAttribute("aria-label")).toBe("이 세계 본문");
   });
 
-  it("codex add-type control offers 카드 종류, not 세계관 타입", () => {
+  it("codex add-type control offers 문서 종류, not 세계관 타입", () => {
     const panel = renderWorldPanel({ embedded: true }) as unknown as FakeElement;
     const selects = panel.querySelectorAll("select");
     const select = selects.find((node) => node.className.split(/\s+/).includes("world-add-type")) ?? null;
-    expect(select?.getAttribute("aria-label")).toBe("추가할 카드 종류");
+    expect(select?.getAttribute("aria-label")).toBe("추가할 문서 종류");
   });
 });

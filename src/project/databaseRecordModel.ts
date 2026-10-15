@@ -72,6 +72,7 @@ import {
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
+import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -330,6 +331,14 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;
+  // 연애 하루 루프(옵트인). 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다(2026-10-16 런타임 QA 실측).
+  if (system.socialLoop && typeof system.socialLoop === "object") {
+    const { slotsPerDay, dailyFriendshipCap } = system.socialLoop;
+    records.socialLoop = {
+      ...(typeof slotsPerDay === "number" && Number.isFinite(slotsPerDay) ? { slotsPerDay: Math.trunc(slotsPerDay) } : {}),
+      ...(typeof dailyFriendshipCap === "number" && Number.isFinite(dailyFriendshipCap) ? { dailyFriendshipCap: Math.trunc(dailyFriendshipCap) } : {}),
+    };
+  }
   if (gallery) records.gallery = gallery;
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;
@@ -687,6 +696,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
       const statStageEffects = normalizeStatStageEffects(record.statStageEffects);
       return statStageEffects.length ? { statStageEffects } : {};
     })(),
+    ...(normalizeSkillWeather(record.weather) ? { weather: normalizeSkillWeather(record.weather) } : {}),
     ...(typeof record.maxPp === "number" && Number.isFinite(record.maxPp) && record.maxPp > 0
       ? { maxPp: clampInteger(record.maxPp, 1, 99) }
       : {}),

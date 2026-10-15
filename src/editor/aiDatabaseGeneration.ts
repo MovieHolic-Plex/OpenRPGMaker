@@ -4,6 +4,7 @@ import { PIXEL_ENEMY_PORTRAIT_URLS } from "@/assets/pixelEnemyPortraits";
 import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import type { WorldCanon } from "@/project/world/canon";
 import { generateAiImage, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import type { ImagePurpose } from "@/ai/imageRoute";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -38,7 +39,7 @@ export interface AiDatabaseGenerationDeps {
     config: AiConfig,
     request: { messages: readonly ChatMessage[]; signal?: AbortSignal },
   ) => Promise<ChatResult>;
-  readonly generateImage?: (request: { prompt: string; signal?: AbortSignal }) => Promise<GeneratedImageAsset>;
+  readonly generateImage?: (request: { prompt: string; signal?: AbortSignal; purpose?: ImagePurpose }) => Promise<GeneratedImageAsset>;
   readonly flattenArtwork?: (dataUrl: string) => Promise<string>;
   readonly applyCalls?: (
     calls: readonly { name: string; args: Record<string, unknown> }[],
@@ -284,7 +285,7 @@ export async function generateDatabaseRecordWithAi(
   if (input.withArtwork && input.kind === "item") {
     notify("artwork");
     const generateImage = deps.generateImage ?? ((request) => generateAiImage(request));
-    const image = await generateImage({ prompt: artworkPromptFor("item", name, brief), signal: input.signal });
+    const image = await generateImage({ prompt: artworkPromptFor("item", name, brief), signal: input.signal, purpose: "item-icon" });
     const flattened = deps.flattenArtwork ? await deps.flattenArtwork(image.dataUrl) : image.dataUrl;
     artwork = { resourceId: `${recordId}_art`, dataUrl: flattened };
     artworkModel = image.model;

@@ -15,12 +15,18 @@ import { generateProviderImage } from './ohMyPiImageRuntime';
 import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
 import type { GenerateAiImageRequest } from '../../src/ai/imageGenerationClient';
+import { imageRouteRefusal, resolveImageRoute } from '../../src/ai/imageRoute';
 import type { Project } from '../../src/project/types';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
 
 export function createWorkerImageGenerator(request: PiAgentRequest, keyFor: (provider: string) => string | undefined) {
-  return async ({ prompt, signal: imageSignal, referenceImages }: GenerateAiImageRequest) => {
+  return async ({ prompt, signal: imageSignal, referenceImages, purpose }: GenerateAiImageRequest) => {
+    // 도트·업로드 전용 용도는 이미지 모델로 보내지 않는다(브라우저 generateAiImage 와 같은 라우터).
+    if (purpose) {
+      const route = resolveImageRoute(purpose, { imageProviderId: request.imageProvider, imageModel: request.imageModel });
+      if (route.kind !== 'generative') throw new Error(imageRouteRefusal(route));
+    }
     const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
     const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
     const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };

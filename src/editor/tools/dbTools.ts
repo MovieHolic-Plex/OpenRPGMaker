@@ -1,5 +1,6 @@
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { SKILL_WEATHER_KINDS, SKILL_WEATHER_MAX_TURNS, SKILL_WEATHER_MIN_TURNS } from "@/battle/weather";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { isStatStageKey, STAT_STAGE_KEYS, STAT_STAGE_MAX } from "@/battle/statStages";
@@ -746,6 +747,10 @@ const skillRecordSchema = objectSchema({
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
   statStageEffects: arrayOf(statStageEffectSchema),
+  weather: objectSchema({
+    kind: { type: "string", enum: [...SKILL_WEATHER_KINDS], description: "sun=쾌청(불 기술 ×1.5·물 ×0.5) · rain=비(물 ×1.5·불 ×0.5) · sandstorm=모래바람(차례 말 바위·땅·강철 외 최대 HP 1/16 피해) · hail=싸라기눈(차례 말 얼음 외 1/16 피해)" },
+    turns: integerSchema(`지속 차례 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS}. 생략 = 5`),
+  }, "날씨 기술(포켓몬식, gen1 전투 모델만): 명중하면 전투 날씨를 바꾼다. 이미 같은 날씨면 실패. 전투 한 번 동안만 유지. 보통 scope self 의 support 기술(effect {kind:\"support\"})에 붙인다."),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema(
@@ -1916,10 +1921,15 @@ const upsertSkill: ToolDefinition = {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
     validateSkillRetroPatch(draft, args.skill);
+    const weatherPatch = (args.skill as { weather?: unknown } | undefined)?.weather;
+    if (weatherPatch !== undefined) validateSkillWeather(weatherPatch);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
+    if (weatherPatch !== undefined && draft.system.battleModel !== "gen1") {
+      warnings.push(`날씨는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`);
+    }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
@@ -1927,6 +1937,23 @@ const upsertSkill: ToolDefinition = {
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** weather 를 줬는데 모양이 틀리면 허용 값을 담아 거절한다(조용히 날씨 없는 기술이 되지 않게). */
+function validateSkillWeather(value: unknown): void {
+  const code = "invalid-skill-weather";
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError(`skill.weather 는 {kind, turns?} 객체여야 합니다 — kind 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  const entry = value as Record<string, unknown>;
+  const unknownKeys = Object.keys(entry).filter((key) => key !== "kind" && key !== "turns");
+  if (unknownKeys.length > 0) throw new ToolError(`skill.weather 의 모르는 키: ${unknownKeys.join(", ")} — 허용 키: kind, turns.`, { code });
+  if (!SKILL_WEATHER_KINDS.includes(entry.kind as never)) {
+    throw new ToolError(`skill.weather.kind '${String(entry.kind)}' 는 날씨 이름이 아닙니다 — 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  if (entry.turns !== undefined && !(typeof entry.turns === "number" && Number.isInteger(entry.turns) && entry.turns >= SKILL_WEATHER_MIN_TURNS && entry.turns <= SKILL_WEATHER_MAX_TURNS)) {
+    throw new ToolError(`skill.weather.turns 는 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS} 정수입니다. 받은 값: ${JSON.stringify(entry.turns)}.`, { code });
+  }
+}
 
 /** FF6 특수 효과(스케치·폭주·대열 섞기·강제 교대)의 저작 오류는 거부하고 흔한 빠짐은 알린다. */
 function validateSkillSpecialEffect(draft: Project, record: SkillRecord, warnings: string[]): void {

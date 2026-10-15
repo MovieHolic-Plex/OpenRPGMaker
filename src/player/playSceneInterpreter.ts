@@ -57,6 +57,9 @@ import { despawnFieldEnemyForScene, runFieldSpawnEventBattle, spawnFieldEnemyFor
 import { playCommandBattle } from "./commandBattle";
 import { claimForeground, foregroundOwner } from "./foregroundControl";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { advanceSocialSlotClock } from "@/player/socialSlotClock";
+import { resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
+import { resolveTimeSystem } from "@/project/gameTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { playPresentItem } from "@/player/playScenePresentItem";
@@ -167,9 +170,17 @@ async function runTalkPath(
   const page = resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
   const trigger = page?.trigger ?? event.trigger;
   if (trigger.kind !== "action") return;
-  const result = trySocialTalk(scene.session, event);
-  if (!result.ok) return;
-  showSceneEmote(scene, event.id, friendshipDeltaEmote(result.delta));
+  const result = trySocialTalk(scene.session, event, store.getCurrent());
+  if (!result.ok && result.reason !== "no-slots") return;
+  const project = store.getCurrent();
+  const loop = resolveSocialLoop(project);
+  let endsDay = false;
+  if (result.ok) {
+    // 소셜 루프: 호감 대화 한 번이 하루 시간대 한 칸을 쓴다 — 시계도 그만큼 간다.
+    advanceSocialSlotClock(project, scene.session);
+    endsDay = !!loop && socialSlotsExhausted(scene.session, loop) && resolveTimeSystem(project)?.forceSleep === true;
+    showSceneEmote(scene, event.id, friendshipDeltaEmote(result.delta));
+  }
   scene.syncRuntimeState();
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
@@ -178,7 +189,12 @@ async function runTalkPath(
   scene.running = true;
   scene.setInputEnabled(false);
   try {
-    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
+    const feedback = result.ok
+      ? formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship })
+        + (result.capped ? " (오늘은 이 사람에게서 얻을 수 있는 만큼 얻었다)" : "")
+        + (result.slotsLeft !== undefined ? ` · 오늘 남은 시간 ${result.slotsLeft}` : "")
+        + (endsDay ? " · 하루가 저문다." : "")
+      : "오늘은 더 이야기할 시간이 없다. 내일 다시 만나자.";
     await dialogue.showText({
       speaker: resolveCharacterSpeaker(store.getCurrent(), event),
       body: feedback,
@@ -186,15 +202,24 @@ async function runTalkPath(
       playerTileY: scene.tileY,
       mapHeight: scene.map.height,
     });
+  } catch (error) {
+    // 마지막 칸의 시계는 하루 끝 1분 앞에 서 있어, 피드백이 떠 있는 동안 자연 시계가 강제 취침을 먼저 건다 — 그 취침이
+    // 열린 대사를 가져가며 끊는 것이다(런타임 QA 실측 「Text cancelled」). 하루가 이미 넘어가는 중이면 정상 흐름이다.
+    const takenOverBySleep = endsDay && scene.timeSleepInProgress
+      && error instanceof DOMException && error.name === "AbortError";
+    if (!takenOverBySleep) throw error;
   } finally {
+    // 취침이 이미 대화창(에필로그)을 쥐고 있으면 여기서 닫지 않는다.
     if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
       scene.running = previousRunning;
       scene.lastActionTargetKey = "";
       scene.setInputEnabled(previousInputEnabled);
-      dialogue.close();
+      if (!scene.timeSleepInProgress) dialogue.close();
       scene.refreshRuntimeSurfaces();
     }
   }
+  // 칸을 다 쓴 날은 저문다 — 잠자리 이벤트가 없어도 하루가 넘어가고, 기한 엔딩(onDayEnd)이 센다.
+  if (endsDay && scene.session === activeSession && scene.sys?.isActive() !== false) await scene.sleepUntilMorning();
 }
 
 function shouldOfferGiftMenu(event: CommandSourceEvent, page: RuntimeEventView["page"] | undefined, project: ReturnType<typeof store.getCurrent>): boolean {

@@ -1,3 +1,4 @@
+import { isAiHiddenEntity } from "./visibility";
 import type { Project } from "../types";
 import { ProjectFormatError } from "../io/errors";
 import { createWikiSource, normalizeWikiMetadata, normalizeWorld } from "./guards";
@@ -147,7 +148,8 @@ export function applyProjectWikiPatch(liveWorld: ProjectWorld, baseWorld: Projec
       conflicts.push({ id: candidate.id, reason: protectedDocument(existing) ? "protected" : "concurrent-edit" });
       continue;
     }
-    const peers = baseWorld.entities.filter((entity) => entity.wiki && wikiScope(entity) === wikiScope(candidate) && wikiTopic(entity) === wikiTopic(candidate) && entity.wiki.kind === wiki.kind);
+    // AI 비공개 문서는 모델이 본 적이 없으니 자동 대체·충돌 판정에서 빠진다 — 충돌 보고로 존재가 새지 않게(visibility.ts).
+    const peers = baseWorld.entities.filter((entity) => !isAiHiddenEntity(entity) && entity.wiki && wikiScope(entity) === wikiScope(candidate) && wikiTopic(entity) === wikiTopic(candidate) && entity.wiki.kind === wiki.kind);
     if (peers.some((entity) => entity.wiki?.basis === wiki.basis && wikiOrder(entity) >= wikiOrder(candidate))) {
       conflicts.push({ id: candidate.id, reason: "stale" });
       continue;

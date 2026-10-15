@@ -76,11 +76,11 @@
 설계서: 「AI 조수 UI 복잡도 적대적 QA 1차」(추천 B 중 1단계). 같은 일을 8곳이 알리던 것을 줄였다. 측정은 같은 모의 서버 harness 로 전/후 같은 시나리오·크기에서 했다
 (모델 호출 없음, 상태 재현). 계약은 바뀌지 않았다 — 맵당 조수 한 명·대기열·체크포인트·묶음별 확정은 손대지 않았고 표시 층만 접었다.
 
-- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 전부 `source: "chat"` 이면 true.
+- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 **정확히 하나**이고 `source: "chat"` 이면 true(2단계 보정, 아래 「B안 1단계 보정」 참고: 처음엔 「전부 chat」이었다).
   `aiChatPanel.applyCollapsed` 가 body 클래스 `ai-dock-collapsed` 를 알림(`oprn:ai-panel-collapse`) 직전에 맞춘다. 영역 작업·다른 맵 작업이 섞이거나 도크가 접히면 false → 아래 표면이 그대로 나온다.
   - 지도 아래 상태 줄(`aiStatusBar`): true 면 접힘. 접힌 도크의 유일한 창구는 그대로다.
   - 받은함(`aiInbox`): 대화창 앞 턴(`chat`)의 검토·실패 카드는 더 만들지 않는다(대화 안 변경안 카드·오류 카드가 같은 버튼·원인을 갖는다). 다른 맵·영역 작업만 받은함에 남는다.
-  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다. 검토·초안 상자는 남기되 글자(「내 차례」)는 CSS 가 접는다.
+  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다(covered 일 때). 검토·초안 상자와 이름표 글자는 **도크 상태와 무관하게 늘 보인다** — 영역을 모르는 구석 이름표만 `data-covered="1"` 일 때 접는다.
 - **접힘(지우지 않음)**: 좌하단 `ai-canvas-progress`·어두운 `ai-canvas-activity`·`ai-ghost-phase-chip` 은 「작업 표시」가 「자세히/매우 자세히」일 때만 보인다
   (`html[data-ai-activity-level]` 를 `aiActivityPreference` 가 발행, CSS `34-ai-presence.css`). 헤더 상태 칩은 작업 중일 때 눈에서만 걷는다(`aria` 용 텍스트는 남음). 진행 카드의 「중지」 버튼이 작업 중에도 보인다.
 - **문구**: 적용 방식 라벨 `YOLO/AUTO MODE/DEFAULT` → 「바로 반영 · 확인 없이/자동 검수/큰 삭제만 확인」(id 는 그대로), 「AI가 할 일/자율성」 → 「일하는 방식」,
@@ -88,6 +88,20 @@
 - **간단히 보기**: 같은 문장이 연달아 나오면 한 줄, 원인 줄(error)이 있으면 같은 실패의 「실패」 종료 줄을 뺀다. 「이 작업 되돌리기」를 누르면 카드가 「되돌렸어요」로 바뀐다. 패널을 열면 포커스가 입력창으로 간다.
 - 이 단계에서 하지 않은 것(2단계 이후): 전/후 썸네일이 든 결과 카드, 접힌 도크에서 적용 버튼(레일 배지에서 같은 카드 열기), 로그 입구 이름 통합, 팀·스튜디오·작업함 고급화.
 - 증거: `.playwright-mcp/cap.mjs`(gitignore) 기반 전/후 계량표는 PR 본문 · `~/claude-viz/ai-ui-b1-1.html`.
+
+## B안 1단계 보정 — 드래그·팀·접힘에서 사라지던 입구 (2026-10-16)
+
+사용자 반박(「세션 1개처럼 보인다 · 팀이 주력 · 드래그가 제일 중요」)을 같은 harness 로 적대 검증해 1단계가 만든 회귀를 고쳤다.
+**드래그 AI 는 Pi 채팅 턴**(`aiRegionHandoff` → `handleRegionHandoff`)이라 `source: "chat"` 이다 — 「전부 chat」 판정이 드래그 일·팀 레인까지 「대화 카드가 맡는다」고 읽었다.
+
+- `conversationCardCovers` = 일이 **하나**일 때만 true. 레인이 둘 이상(팀·검수 조수)이거나 영역·다른 맵 일이 섞이면 줄·받은함·이름표가 그대로 나온다.
+  팀 4명이 대화 카드에서는 시간순 한 줄(「시공 3」)로만 보였고 실패한 레인이 안 읽혔다.
+- 검토·초안 상자·이름표는 도크 상태와 무관하게 늘 보인다(`34-ai-presence.css` 의 body 클래스 규칙 삭제 → `.ai-map-region[data-covered="1"].is-cornered` 만 접음). 드래그한 영역의 「확인 입구」다.
+- 접힌 도크 + 일 하나라도 상태 줄은 이미 나온다(1단계부터). 여기에 **상태 줄 팝오버에서 「적용·변경 보기·버리기」**(검토 대기, 대화 카드·받은함과 같은 `currentTeamReviewActions` 클로저)와 background 검토의 「검토하기」를 달았다 — 접은 채로 적용하러 도크를 열 필요가 없다.
+- **개수·급한 상태**: `aiPresence.summarizeJobs(presences, extraRunning)`·`urgencyRank`. 상태 줄 맨 앞 「작업 N개 · 확인 필요 K · 실패 F」(일이 둘 이상일 때), 칩은 급한 순(확인 > 실패 > 진행 > 대기 > 초안), 폭이 좁으면 칩 수를 줄여 「+N」(`chipBudget`, 칩이 잘려 읽히지 않게). 줄 색은 확인(앰버) > 실패(빨강).
+  접힌 레일(`ai-collapsed-restore`)에 같은 요약 배지(`ai-collapsed-restore-jobs`: 둘 이상이면 개수, 확인·실패가 있으면 그 수, 색은 앰버/빨강).
+- **바로 깔기 주문(`stampOrderQueue`)은 aiPresence 와 별개 파이프라인**이다 — 상태 줄이 그 개수(「바로 깔기 N개 진행 · M개 대기」)를 함께 센다(요약 총수·「멈춤」 포함). 주문 위치는 지도 위 번호 상자(`stampOrderRenderer`)가 그대로 말한다.
+- 증거: 드래그 전 흐름 harness `cap2.mjs`(드래그 → 칩 → 작업 → 초안 → 적용, 도크 열림/접힘/스튜디오 × 1440×900·1100×700), 팀 4명 `cap3.mjs team4`, 대화 1+영역 1+대기 1 `cap3.mjs multi` — gitignore `.playwright-mcp/`. 보고 `~/claude-viz/ai-ui-b1-2.html`.
 
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
@@ -4430,3 +4444,52 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 체크포인트 한 번의 동기 구간이 아직 ~0.5 s 다. 남은 큰 몫은 `eventDraftVault.cloneKeepingDigests` + `shareContentDigests`(팀 11회 체크포인트에서 합 ~3.7 s). 이 복제는 detached draft(도구가 제자리에서 계속 고친다)와 스토어를 분리하는 격리라 생략할 수 없다 — 줄이려면 바뀐 맵만 복제하는 구조 공유가 필요하고 이번에는 위험이 커서 하지 않았다.
 - 이 하네스는 dev-showcase 경로다. 실제 Electron/호스트 저장 경로(`viewSubmit`, `saveMapPatch`)는 재지 않았다. 병목 1의 «저장 복제 건너뛰기» 는 하네스 환경 한정 효과다.
 - 하네스 한 번의 편차가 크다(팀 최대 정지 2~4 s 는 실행마다 다르다). 판정은 p95·Long Task 합·ACK 중앙값 같은 합계로 하고, 한 번의 최댓값으로 회귀를 선언하지 마라.
+
+## 이미지 용도 분리 — 배경·대형은 이미지 모델, 도트는 텍스트 모델 (2026-10-16)
+
+사용자 요청: 「AI 설정에서 이미지 생성 모델을 용도별로 분리. 배경·대형 이미지(타이틀·오프닝·컷신 스틸 등)는 GPT 생성형 이미지, 도트를 찍어야 하는 것(타일셋·캐릭터셋 등)은 Argon 또는 Claude(코드 손 도트).」
+
+- **라우터 하나**: `src/ai/imageRoute.ts` 의 `IMAGE_PURPOSES` 표가 정본이다(`generative` / `dot-text` / `upload-only`).
+  `resolveImageRoute(purpose, config)` 는 순수 함수. 새 그림 경로는 이 표에 한 줄을 먼저 넣고 `generateAiImage({ purpose })` 로 넘긴다.
+- **막기**: `generateAiImage` 와 Bun 워커 `createWorkerImageGenerator`(`scripts/lib/piPresentationTools.ts`)는 purpose 가 `dot-text`·`upload-only` 면
+  네트워크 호출 전에 `ImageGenerationError` 로 거절한다. purpose 는 서버로 보내지 않는다. purpose 가 없는 호출은 종전 그대로(설정의 이미지 모델 칸).
+  모든 앱 안 호출처가 purpose 를 넘기는지는 `test/imageRoute.test.ts` 의 소스 스캔이 본다(**작성만 했고 이 작업에서는 실행하지 않았다**).
+- **도트 저작 모델**: `AiConfig.pixelModel`(`{provider, model, thinkingLevel}`) + `modelSelectionOverrides.pixel`. 이미지 모델이 아니라 **텍스트 모델**이
+  격자 문자열·좌표로 픽셀을 쓴다(`src/ai/pixelModel.ts`). 지금 이 칸을 읽는 곳은 `resolveSurfaceAiConfig("workshop-draw")` 하나다
+  (`src/ai/assistantEndpoint.ts`) — 공방 그리기. 검수(`workshop-review`)는 그림을 읽는 일이라 시각(vision) 역할 그대로다. **조수 채팅은 이 칸을 읽지 않는다.**
+- **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
+  모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
+  새 설정(`defaultAiConfig`)만 Google Gemini 4 Argon · 보통으로 시작한다. 이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않는다(`providerSelection.ts`).
+- **선택지**: `PIXEL_MODEL_CHOICES` — Argon, Claude(Opus/Sonnet 4.5·4.6 = Antigravity 카탈로그에 실제 있는 id), GPT-6.1 Sol. 계정에서 실제로 쓸 수 있는지는 요청 때 오류로 알려 주며 자동 대체하지 않는다.
+- **화면**: 모델 탭의 「이미지」 절이 두 묶음이다 — 「배경·대형 이미지 — 생성형 이미지 모델」(기존 제공자·모델·추천·상태 그대로, 추천 문구에서 «픽셀 타일·캐릭터가 안정적» 문장을 뺐다) /
+  「도트 저작 — 텍스트 모델이 격자로 찍기」(모델·추론 강도·상태). 문구는 4개 언어 카탈로그(en/ja/zh 각 +16). `aiChatPanel.ts` 는 건드리지 않았다.
+- **증거 스크립트**: `bun scripts/qa/image-route-table.ts`(모델 호출 없이 용도별 라우터 출력표·입구 거절·공방 표면 모델), `scripts/qa/image-model-split.mjs`(격리 netns 에서 모달 캡처·저장 확인).
+
+### 용도 분류표 (근거 = 파일:줄, 2026-10-16 origin/main 15f8ce5 기준)
+
+| 용도 id | 갈래 | 근거 | 비고 |
+|---|---|---|---|
+| title-art | 생성형 | `src/editor/titleArtGeneration.ts:47`, 워커 `scripts/lib/piPresentationTools.ts` | 타이틀 키아트 |
+| title-logo | 생성형 | `src/editor/titleLogoGeneration.ts:45` | 흰 바탕 로고 → 투명 잘라내기 |
+| title-depth | 생성형 | `src/editor/titleDepthGeneration.ts:84` | 흑백 깊이 지도(흐려도 됨) |
+| opening-still | 생성형 | `src/editor/openingImageGeneration.ts:110` | 오프닝·게임오버 스틸, 전경 레이어 |
+| cutscene-backdrop / cutscene-sprite | 생성형(**모호 1**) | `src/editor/tools/cutsceneArtTools.ts:154` | style:game 은 «16비트 도트» 를 요구한 뒤 게임 해상도로 줄인다 |
+| backdrop · title-picture · picture | 생성형 | `src/editor/imageAssetGeneration.ts:33`, `src/ai/imageGenerationQueue.ts:101`(필드 kind) | generate_image_asset · 「그림 표시」·피커 AI 칸 |
+| faceset | 생성형 | `src/ai/imageGenerationQueue.ts:101`(kind faceset) | 얼굴 바꾸기·배우 얼굴 칸 |
+| character-appearance | 생성형 | `src/editor/characterAppearanceGeneration.ts:105` | «hand-drawn 2D portrait, 도트 아님» 프롬프트 |
+| item-icon | 생성형(**모호 4**) | `src/editor/aiDatabaseGeneration.ts:288` | 아이템 아이콘 |
+| interview-scene | 생성형(**모호 2**) | `src/editor/interviewSceneGeneration.ts:45` | 도트 격자 검수까지 하지만 이미지 모델로 생성 |
+| concept-thumb | 생성형(**모호 3**) | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | «SNES 도트 썸네일» 을 이미지 모델에 요구 |
+| tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
+| charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
+| user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
+| (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |
+| (제외) 컨셉 하네스 | 별도 경로 | `src/harnesses/game-concepts/node/draw.ts:12-13` | 노드 쪽이 `openai-codex`/`codex-image-default` 를 직접 고정 |
+
+### 사용자에게 물을 목록(결정 전에는 현재 동작 유지, 건드리지 않음)
+
+1. 컷신 `style:game` 스프라이트·배경 — 도트 용도로 보고 막을까, 지금처럼 이미지 모델 → 도트화로 둘까.
+2. 새 게임 인터뷰 배경 — 도트 검수를 통과해야 쓰는데 이미지 모델로 생성한다. 도트 저작 모델로 옮길까.
+3. 컨셉 카드 썸네일 — 같은 질문(도트 썸네일을 이미지 모델에 요구).
+4. 아이템 아이콘 — 일러스트 아이콘으로 두나, 도트 아이콘으로 보나.
+5. 조수 채팅 중 도트 작업에도 도트 저작 모델을 쓸까(지금은 공방 그리기만). 옛 설정 사용자의 공방 그리기를 Argon 보통으로 일괄 전환할지도 같이.

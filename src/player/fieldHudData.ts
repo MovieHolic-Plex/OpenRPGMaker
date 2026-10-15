@@ -2,6 +2,7 @@ import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { HudWidget } from "@/project/fieldHud";
 import { formatGameClock } from "@/project/gameTime";
+import { resolveSocialLoop, socialSlotsLeft } from "@/project/socialLoop";
 import { handSlotCurrent, handSlotEntries, handSlotIndex } from "./handSlot";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { resolveActorFaceResourceId, resolveActorName } from "@/project/sessionActorCommands";
@@ -57,6 +58,18 @@ export function readHudWidget(widget: HudWidget, project: Project, session: Play
     case "timer": return read(widget.timerId ? session.timers[widget.timerId] : undefined);
     case "inventory": return read(widget.itemIds.length ? widget.itemIds.reduce((sum, id) => sum + (session.inventory[id] ?? 0), 0) : undefined);
     case "weather": return { ...read(session.dailyWeather ? 1 : undefined), text: session.dailyWeather ? WEATHER[session.dailyWeather.kind] : undefined };
+    case "friendship": {
+      // 인물을 정하지 않으면 지금 가장 가까운 사람(단일 상대 연애에서는 그 상대).
+      const all = session.friendship ?? {};
+      const value = widget.npcKey ? all[widget.npcKey] ?? 0 : Math.max(0, ...Object.values(all));
+      return read(value, widget.max);
+    }
+    case "socialSlots": {
+      const loop = resolveSocialLoop(project);
+      if (!loop) return read(undefined);
+      const left = socialSlotsLeft(session, loop);
+      return { ...read(left, loop.slotsPerDay), text: `오늘 남은 시간 ${left}/${loop.slotsPerDay}` };
+    }
     case "map": return { ...read(1), text: project.maps[session.currentMapId]?.name ?? "" };
     default: return read(undefined);
   }

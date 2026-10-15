@@ -5,6 +5,29 @@
 
 <!-- releases -->
 
+## 0.235.0 — 2026-10-16
+
+### 기능
+
+- **romance** — daily social loop (slots + per-person cap), deadline ending tool, place_npc strict keys, romance defaults + genre lock + heart HUD (#2664) (`47f2388`)
+- **romance** — interview stage opens on a composed modern campus/city; first-meeting stage designation replaces one-map rule (#2654) (`6ea8127`)
+- **world** — 세계관 노션식 통합 1단계 — 문서 용어·카드 AI 공개 범위·「AI가 읽는 것」·연결 자동 완성 (#2661) (`cc7b272`)
+
+### 수정
+
+- **qa-game** — autoplay plans friendshipAtLeast gates, follows NPC schedules, and sleeps through onDayEnd day locks (romance false blocks) (#2663) (`0acbadd`)
+- **ai-ui** — 드래그 검토 입구·팀 레인·접힌 도크 개수 복구 (B안 1단계 보정) (#2662) (`62e3f41`)
+- **ci** — record the assistant presence hide rules in the CSS gates (`0675a70`)
+
+## 0.234.0 — 2026-10-16
+
+### 기능
+
+- **ai** — split image settings by purpose — generative image model vs dot-authoring text model (#2656) (`66aecb8`)
+- **object-gate** — front_prop human approval record exempts the 3/4 half only for approved pixel hashes (#2653) (`69d5877`)
+- **ai-ui** — B안 1단계 — 진행·확인·실패를 대화 속 카드 하나로 (#2651) (`467eecd`)
+- **object-gate** — front_prop kind (rules v8) — human-review only; adversarial probe 0/144, fresh/A pass rates unchanged (#2650) (`f833b11`)
+
 ## 0.233.0 — 2026-10-16
 
 ### 기능

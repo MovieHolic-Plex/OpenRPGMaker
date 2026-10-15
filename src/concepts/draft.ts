@@ -93,7 +93,7 @@ export async function draftConceptFromText(text: string, deps: DraftDeps = {}): 
 
 /** 도트 썸네일 dataURL. 그리지 못하면 null — 상세는 장르 틀 기본 그림으로 남는다. */
 export async function drawConceptThumb(concept: GameConcept, deps: { generate?: (prompt: string, signal?: AbortSignal) => Promise<string>; signal?: AbortSignal } = {}): Promise<string | null> {
-  const generate = deps.generate ?? (async (prompt: string, signal?: AbortSignal) => (await generateAiImage({ prompt, ...(signal ? { signal } : {}) })).dataUrl);
+  const generate = deps.generate ?? (async (prompt: string, signal?: AbortSignal) => (await generateAiImage({ prompt, purpose: "concept-thumb", ...(signal ? { signal } : {}) })).dataUrl);
   try {
     return await generate(conceptArtPrompt(concept), deps.signal);
   } catch {

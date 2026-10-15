@@ -1,4 +1,5 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
+import { WEATHER_LABELS, weatherResidualLine } from "@/battle/weather";
 import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleEventChoiceSnapshot, BattleEventPauseSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import { STAT_STAGE_LABELS, statStageMessage } from "@/battle/statStages";
 import { withJosa } from "@/util/josa";
@@ -488,7 +489,7 @@ export function createBattleSequencer(
     const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
     const raw = feedbackFromTimeline(entry);
     // 선고(doomTurns)로 쓰러지는 upkeep: 남은 HP 숫자(-99999 같은) 대신 상태 이름을 띄운다. amount 는 원장용으로 둔다.
-    const feedback = raw && entry.kind === "stateUpkeep" && entry.message ? { ...raw, label: stateLabel(entry.stateId) } : raw;
+    const feedback = raw && entry.kind === "stateUpkeep" && entry.message ? { ...raw, label: entry.weatherKind ? WEATHER_LABELS[entry.weatherKind] : stateLabel(entry.stateId) } : raw;
     // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
     if (entry.kind === "move") {
       hooks.onSyncView();
@@ -788,7 +789,11 @@ export function createBattleSequencer(
         status, emeraldBattlerName(target, snapshot));
       if (emerald) return { step: "acting", lines: [emerald], targetId: entry.targetId };
     }
-    const line = entry.kind === "stateUpkeep" && entry.message ? entry.message
+    // 날씨 피해: 표시 이름(야생·상대 접두)으로 문장을 다시 만든다 — 런타임 message 는 이름만 있는 일반 문장이다.
+    const weatherLine = entry.kind === "stateUpkeep" && entry.weatherKind && target
+      ? weatherResidualLine(entry.weatherKind, emeraldNarrationActive() ? emeraldBattlerName(target, snapshot) : disambiguatedBattlerName(target, peers))
+      : undefined;
+    const line = weatherLine ? weatherLine : entry.kind === "stateUpkeep" && entry.message ? entry.message
       : (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
       ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
       : isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;

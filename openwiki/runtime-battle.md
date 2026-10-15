@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 날씨 — 기술이 켜고 전투 한 번 동안 유지 (2026-10-16, poke-depth PR5)
+
+- 데이터: `SkillRecord.weather?: {kind: "sun"|"rain"|"sandstorm"|"hail", turns?}`(**선택 필드**, 생략=날씨 없음·저장 바이트 불변; turns 3~8, 기본 5 는 저장하지 않는다). 규칙·정규화는 `src/battle/weather.ts`(`normalizeSkillWeather` 는 모르는 종류를 버린다). 전투 날씨는 런타임 지역 변수라 **저장하지 않는다**(`BattleSnapshot.weather` 로만 나간다).
+- 적용 범위: **gen1 전투 모델만**. 맵·트루프에서 날씨를 거는 길은 아직 없다(기술만).
+- 훅(`runtime.ts`): ① `applyGen1Skill` 이 날씨 기술이 닿은 뒤 `setBattleWeather` — 같은 날씨가 이미 있으면 「하지만 아무 일도 일어나지 않았다!」, 다르면 덮어쓰고 시작 문장 ② `applyExactGen1Damage` 의 피해에 `weatherDamagePercent`(쾌청: 불 150·물 50, 비: 물 150·불 50; 타입은 `gen1CanonicalTypeForId`) ③ 라운드 끝(`completeStrictRound`, gauge 흐름은 사이클 마감 `markGaugeActionCycle`)에 `tickBattleWeather`: 지속 문장 → 모래바람(바위·땅·강철 제외)·싸라기눈(얼음 제외)의 최대 HP 1/16(최소 1) 피해 → 남은 차례 −1 → 0 이면 종료 문장 → `resolveOutcome`(피해로 승패가 갈릴 수 있다).
+- 타임라인: 날씨가 만든 엔트리는 `weatherKind` 를 달고(피해는 `stateUpkeep`+message, 문장은 `special`), 배지가 바뀌는 엔트리는 `weatherAfter`(그 뒤 날씨, null=끝)를 싣는다. 스냅샷의 `weather` 는 명령 즉시 해결돼 문장보다 먼저 바뀌므로 `battleDom.pendingWeatherView` 가 재생한 `weatherAfter` 까지만 반영해 배지를 문장에 맞춘다(stateView·stageView 와 같은 방식). 피해 문장·팝업은 시퀀서가 표시 이름·날씨 이름으로 다시 만든다.
+- 화면: 전투장 오른쪽 위 배지 `.battle-weather-badge`(testid `battle-weather-badge`, 「☀ 쾌청 4」 — 글자+색 4종, 새 그림 없음)와 전투 문장.
+- 조수: `upsert_skill.skill.weather`(enum·정수만, 자유 키 없음). 모르는 종류·turns 범위 밖·모르는 키는 허용 값을 담아 `invalid-skill-weather` 로 거절, gen1 이 아니면 경고. 레시피 `monster-weather`.
+- 예제 몬스터 원정: 주 타입 불·물·바위·땅·얼음 계통이 Lv30 에 날씨 기술(햇살·소나기·모래바람·싸라기눈 부르기, `buildWeatherMoves`)을 배운다.
+- 검증: `bun scripts/qa/poke-depth/weather.probe.mts`(엔진 7항목), `scripts/qa/runtime/poke-depth-weather.capture.mjs`(출하 플레이어, MODE=sun|sand, LEGACY=1 이 「전」). 단위 `test/battleWeather.test.ts`(미실행).
+- 남은 것: 맵·트루프·이벤트로 거는 날씨(필드 날씨→전투 시작 날씨), 날씨를 켜는 특성, 날씨 의존 기술(번개·솔라빔 등), 날씨 연장 도구(지닌 도구), DB 편집기 기술 폼의 날씨 칸, 예측(`battlePredict`) 반영, 날씨 그림 효과(비·모래 입자)는 없다. rm2k3 모델은 지원하지 않는다.
+
 ## 필드 적 접촉 전투 진형 (2026-10-14)
 
 접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로

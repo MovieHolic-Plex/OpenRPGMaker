@@ -148,16 +148,16 @@ export function listEditorCommands(): readonly EditorCommand[] {
     },
     {
       id: "open-world",
-      label: "화면: 세계관 · 이 세계 열기",
+      label: "화면: 세계관 · 세계 개요 열기",
       category: "화면",
-      keywords: ["world", "세계", "세계관"],
+      keywords: ["world", "세계", "세계관", "세계 개요", "이 세계"],
       run: () => openWorldPanel(),
     },
     {
       id: "open-world-codex",
       label: "화면: 세계관 · 설정집 열기",
       category: "화면",
-      keywords: ["world", "codex", "세계관", "설정집", "낱장", "카드"],
+      keywords: ["world", "codex", "세계관", "설정집", "문서", "낱장", "카드"],
       run: () => openWorldCodexPanel(),
     },
     {
