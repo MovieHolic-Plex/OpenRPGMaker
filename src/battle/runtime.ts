@@ -340,7 +340,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         partyActorIds: options.party?.partyActorIds,
       });
   if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
-  const enemies = enemyBattlers(options.project, troopRecord);
+  const enemies = enemyBattlers(options.project, troopRecord, options.enemyLevel !== undefined ? { wildLevel: options.enemyLevel } : undefined);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
   seedBattleGauges(options.project, actors);
   let partyGauge = initialPartyGauge(options.project);
@@ -2747,7 +2747,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetId: target.id,
       enemyId: target.recordId as EnemyId,
       speciesId: species.id,
-      level: Math.max(1, Math.min(99, Math.trunc(enemyRecord?.level ?? 1))),
+      level: Math.max(1, Math.min(99, Math.trunc(target.level ?? enemyRecord?.level ?? 1))),
       caughtAt,
       ivs: rollMonsterIvs(rng),
       captureItemId,

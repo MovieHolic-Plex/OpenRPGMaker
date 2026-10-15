@@ -44,10 +44,14 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
 
 function enemyReward(project: Project, enemy: MutableBattler) {
   const record = project.database.enemies.find((item) => item.id === enemy.recordId);
-  return record ? normalizeEnemyRecord(record).rewards : { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined, ap: undefined };
+  if (!record) return { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined, ap: undefined };
+  const normalized = normalizeEnemyRecord(record);
+  // 야생 레벨 굴림(조우표 levelMin/levelMax)으로 레코드 레벨과 달라졌으면 경험치를 레벨 비로 맞춘다.
+  const scale = normalized.level > 0 && enemy.level !== undefined && enemy.level !== normalized.level ? enemy.level / normalized.level : 1;
+  return scale === 1 ? normalized.rewards : { ...normalized.rewards, exp: Math.max(0, Math.round(normalized.rewards.exp * scale)) };
 }
 
 function enemyLevel(project: Project, enemy: MutableBattler): number {
   const record = project.database.enemies.find((item) => item.id === enemy.recordId);
-  return Math.max(1, Math.min(99, Math.trunc(record?.level ?? 1)));
+  return Math.max(1, Math.min(99, Math.trunc(enemy.level ?? record?.level ?? 1)));
 }

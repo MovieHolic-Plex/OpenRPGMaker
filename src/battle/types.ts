@@ -134,6 +134,8 @@ export interface BattleRuntimeOptions {
   // selfSwitch 조건/`setSelfSwitch` 커맨드가 이 이벤트의 셀프 스위치를 읽고 쓴다.
   // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined 유지(조건은 false).
   readonly ownerEventId?: string;
+  /** 조우표 levelMin/levelMax 로 굴린 야생 레벨. 종 몬스터 적의 능력치·기술·경험치·포획 레벨이 이 레벨 기준이 된다(생략 = enemy 레코드 레벨). */
+  readonly enemyLevel?: number;
   readonly captureLocation?: MonsterCaughtAt;
   readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
   // 아군측을 파티 몬스터로 구성할 때 필드 순서대로의 인스턴스 목록.
