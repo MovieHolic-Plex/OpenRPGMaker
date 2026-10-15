@@ -36,6 +36,9 @@ const VEHICLE_OPTIONS = [
   { value: "boat", label: "소형선" },
   { value: "ship", label: "대형선" },
   { value: "airship", label: "비행선" },
+  { value: "chocobo", label: "초코보" },
+  { value: "cart", label: "광산 수레" },
+  { value: "raft", label: "뗏목" },
 ] as const;
 const PLAYER_OPTIONS = [{ value: "player", label: "주인공" }] as const;
 
