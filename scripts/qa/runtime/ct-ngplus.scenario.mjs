@@ -25,8 +25,15 @@ export default {
       testidPresent: ["title-screen", "title-new-game"], testidAbsent: ["title-new-game-plus"],
     }, shot: true },
     { id: "first-run", note: "새 게임 → 시작 칸, ESC 메뉴에 1장", ops: [
-      key("Enter"), { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime", timeoutMs: 120_000 },
+      key("Enter"), { kind: "waitFor", testid: "title-screen", state: "absent" },
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "waitForPosition", mapId: START, x: SX, y: SY },
+      // 필드로 페이드인이 끝나야 입력이 열린다(field-enemy 시나리오와 같은 대기).
+      { kind: "hold", dir: null, ms: 3500 },
       key("Escape"), { kind: "waitForVisible", testid: "status-menu-chapter" },
     ], expect: { visibleText: { "status-menu-chapter": "1장" } }, shot: true },
     { id: "talk-to-sage", note: "메뉴를 닫고 북쪽 현자에게 말을 건다 → 대사", ops: [
@@ -48,13 +55,19 @@ export default {
     { id: "ngplus-field", note: "↓ 로 고르고 Enter → 시작 칸에서 새로 시작한다", ops: [
       key("ArrowDown"), { kind: "waitForAttr", testid: "title-new-game-plus", attr: "aria-selected", value: "true" },
       key("Enter"),
-      { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "title-screen", state: "absent" },
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "waitForPosition", mapId: START, x: SX, y: SY },
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { testidAbsent: ["title-screen", "ending-screen"] } },
     { id: "ngplus-menu", note: "ESC → 파티: 주인공 L7(이월), 장은 1장(이야기 상태는 넘어가지 않는다)", ops: [
       { kind: "pressUntil", key: "Escape", testid: "main-menu", state: "present", maxPresses: 4, timeoutMs: 3_000 },
       { kind: "waitForVisible", testid: "status-menu-chapter" },
-      key("ArrowDown", 3), { kind: "waitForVisible", testid: "status-menu-party-row-0" },
+      key("ArrowDown", 3), key("Enter"), { kind: "waitForVisible", testid: "status-menu-party-row-0" },
     ], expect: {
       visibleText: { "status-menu-chapter": "1장 · 서기 1000년", "status-menu-party-row-0": "L7" },
     }, shot: true },

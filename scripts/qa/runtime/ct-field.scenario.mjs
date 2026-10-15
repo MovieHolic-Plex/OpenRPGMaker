@@ -22,7 +22,12 @@ export default {
     { id: "party-followers", note: "New game: guardian and mage walk behind the hero with no addFollower authored", ops: [
       { kind: "key", key: "Enter" },
       { kind: "waitFor", testid: "title-screen", state: "absent" },
+      // 기본 오프닝 컷신이 끝나야 입력이 열린다.
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
       { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_guardian", "actor:actor_mage"] },
     ], expect: { mapId: START, x: 10, y: 8 }, shot: true },

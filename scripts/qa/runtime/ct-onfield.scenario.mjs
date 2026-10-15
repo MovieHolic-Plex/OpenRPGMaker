@@ -25,8 +25,11 @@ export default {
   beats: [
     { id: "field", note: "new game: hero + companion on the field, bat symbol three tiles north", ops: [
       { kind: "key", key: "Enter" },
-      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 12 },
+      // 기본 오프닝은 타이틀이 사라진 뒤 한 박자 늦게 뜬다 — 먼저 뜨기를 기다려야 「없음」 판정이 틈에 속지 않는다.
+      { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+      { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
       { kind: "waitForRuntime", timeoutMs: 120_000 },
+      { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 1 },
       // 오프닝 뒤 필드로 페이드인이 끝나야 입력이 열린다(field-enemy 시나리오와 같은 대기).
@@ -41,8 +44,9 @@ export default {
       { kind: "captureFieldAnchors", eventId: BAT },
     ], expect: { mapId: START, x: SX, y: SY - 2 } },
     { id: "battle-on-field", note: "bump the symbol: battle opens in place (no transition overlay), battlers stand where the field sprites were", ops: [
-      { kind: "hold", dir: "up", ms: 500 },
-      { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16 },
+      // 접촉 적(eventTouch)은 조사 키가 아니라 부딪혀야 열린다 — 위로 걸어 닿는다.
+      { kind: "hold", dir: "up", ms: 800 },
+      { kind: "waitFor", testid: "battle-scene", state: "present", timeoutMs: 20_000 },
       scene("data-battle-presentation", "onField", 10_000),
       { kind: "waitFor", testid: "battle-onfield-backdrop", state: "present", timeoutMs: 10_000 },
       { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 40_000 },
