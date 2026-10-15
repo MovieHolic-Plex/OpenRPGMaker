@@ -1654,6 +1654,11 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 `system.vehicles[].flightView?: "mode7"`(2026-10-15, 비행선 전용, 선택) — 비행 시점. 생략 = 기존 탑뷰(옛 프로젝트 JSON 바이트 불변). `normalizeVehicleConfigs` 화이트리스트에 들어 있고 비행선 외 id 에서는 버린다.
 
 
+## MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
+
+선택 필드 `ability?: MonsterAbility`(선언형 일곱 종류 중 하나). 정규화는 값이 있고 필수 매개변수가 맞을 때만 싣는다 — 안 쓰는 프로젝트는 저장 바이트 그대로. 전투 중 상태는 없다(종 정의에서 읽는다). 규칙: `openwiki/runtime-battle.md` 「특성」.
+
+
 ## StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
 
 선택 필드 `volatileStatus?: "confusion"` 과 `gen1MajorStatus` 의 새 값 `"toxic"`. 정규화는 값이 있을 때만 싣는다(안 쓰는 프로젝트는 저장 바이트 그대로). 남은 혼란 행동 수·맹독 카운터는 전투 중 `stateTurns` 에만 있고 저장하지 않는다. 규칙: `openwiki/runtime-battle.md`.

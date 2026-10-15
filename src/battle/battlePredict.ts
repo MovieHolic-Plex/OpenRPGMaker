@@ -30,6 +30,7 @@ import { readGen1MajorStatus } from "@/battle/gen1/status";
 import { applyStatStage } from "@/battle/statStages";
 import { attackMultiplierForStates, defenseMultiplierForStates, defenseMultiplierForStatesByKind, stateElementRateOverride } from "@/battle/battleStates";
 import { damageEffectKind } from "@/battle/battleSpecialEffects";
+import { abilityDamagePercent, abilityDefensePercent, abilityOffensePercent, abilityOfBattler, abilityTypeImmunity, scaleDamageByPercent } from "@/battle/abilities";
 
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
@@ -175,7 +176,13 @@ export function predictSkillDamage(
     const userStats = battlerStats(project, user);
     const targetStats = battlerStats(project, target);
     const magical = isMagicalElement(project, spec.elementId);
-    let sourceStat = magical ? userStats.mind : userStats.attack;
+    const userAbility = abilityOfBattler(project, user);
+    const targetAbility = abilityOfBattler(project, target);
+    if (abilityTypeImmunity(targetAbility, spec.elementId)) {
+      return { amount: 0, healing: false, weak: false, resistant: true, elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined };
+    }
+    const abilityStat = (value: number, percent: number): number => (percent === 100 ? value : Math.max(1, Math.floor(value * percent / 100)));
+    let sourceStat = abilityStat(magical ? userStats.mind : userStats.attack, abilityOffensePercent(userAbility, magical));
     const majorStatus = readGen1MajorStatus(
       user.stateIds,
       user.stateTurns ?? {},
@@ -190,9 +197,9 @@ export function predictSkillDamage(
     } else {
       sourceStat = applyStatStage(sourceStat, user.statStages, "spAttack");
     }
-    const defenseStat = magical
+    const defenseStat = abilityStat(magical
       ? applyStatStage(targetStats.mind, target.statStages, "spDefense")
-      : Math.max(1, Math.trunc(targetStats.defense * defenseMultiplierForStates(project, target)));
+      : Math.max(1, Math.trunc(targetStats.defense * defenseMultiplierForStates(project, target))), abilityDefensePercent(targetAbility, magical));
     const modifiers = gen1TypeModifiersForTypes(
       project,
       spec.elementId,
@@ -207,6 +214,7 @@ export function predictSkillDamage(
     if (amount > 1) amount = Math.floor((amount * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
     // runtime.computeGen1Magnitude 와 같은 순서: 랜덤 계수 뒤 방어 자세 반감.
     if (target.defending) amount = Math.floor(amount / 2);
+    amount = scaleDamageByPercent(amount, abilityDamagePercent({ ability: userAbility, hp: user.hp, maxHp: user.maxHp }, { ability: targetAbility }, spec.elementId));
     const typeProduct = modifiers.typeFactors.reduce((product, factor) => product * factor / 10, 1);
     return {
       amount: formationDamage(amount, user.row, target.row, magical ? "mind" : "attack", "damage"),

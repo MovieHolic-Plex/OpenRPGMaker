@@ -1,3 +1,4 @@
+import { abilityEffectText } from "@/battle/abilities";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
@@ -61,6 +62,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
       { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) },
       { label: "타입", value: entry.typeLabel, onActivate: readOnly },
       { label: "상태", value: entry.stateNames.join(" · ") || "정상", onActivate: readOnly },
+      ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
       { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", onActivate: readOnly },
       { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", onActivate: readOnly },
       { label: "방어", value: String(entry.stats.defense), onActivate: readOnly },

@@ -3,6 +3,7 @@ import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { SKILL_WEATHER_KINDS, SKILL_WEATHER_MAX_TURNS, SKILL_WEATHER_MIN_TURNS } from "@/battle/weather";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
+import { MONSTER_ABILITY_KINDS, MONSTER_ABILITY_STATS, MONSTER_ABILITY_STATUSES } from "@/battle/abilities";
 import { isStatStageKey, STAT_STAGE_KEYS, STAT_STAGE_MAX } from "@/battle/statStages";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
@@ -643,6 +644,17 @@ const monsterSpeciesGraphicSchema = objectSchema({
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
 });
 
+const monsterAbilitySchema = objectSchema({
+  name: stringSchema("특성 이름(최대 20자). 원작 특성 이름을 그대로 쓰지 말고 게임 고유 이름으로"),
+  description: stringSchema("한 줄 설명. 생략하면 효과에서 자동 생성"),
+  kind: { type: "string", enum: [...MONSTER_ABILITY_KINDS], description: "immuneType=타입 기술 무효(healPercent 있으면 흡수 회복) · resistType=타입 피해 percent% · boostLowHp=HP 1/3 이하에서 같은 타입 기술 percent% · immuneStatus=상태 면역 · contactStatus=물리 피해를 받으면 percent% 확률로 공격자에게 status · statMultiplier=능력 percent% · endure=가득 찬 HP 에서 한 번 버티기" },
+  type: stringSchema("immuneType/resistType/boostLowHp 필수. system.typeChart.types 값"),
+  status: { type: "string", enum: [...MONSTER_ABILITY_STATUSES], description: "immuneStatus/contactStatus 필수" },
+  stat: { type: "string", enum: [...MONSTER_ABILITY_STATS], description: "statMultiplier 필수. attack=물리 공격, defense=물리 방어, mind=특수 공격·방어" },
+  percent: integerSchema("resistType 0~99(기본 50) · boostLowHp 101~400(기본 150) · contactStatus 확률 1~100(기본 30) · statMultiplier 25~400(기본 150)"),
+  healPercent: integerSchema("immuneType 전용: 막으면서 최대 HP 의 이 %(1~100)를 회복. 0/생략=그냥 무효"),
+});
+
 const monsterSpeciesRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
@@ -654,6 +666,7 @@ const monsterSpeciesRecordSchema = objectSchema({
   skillsByLevel: arrayOf(learnedSkillSchema),
   machineSkillIds: stringArraySchema("기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술 id. 비우면 제한 없음(모든 종이 배운다). 값이 있으면 이 기술만 — 예: 파도타기는 물 종만"),
   evolutions: arrayOf(monsterEvolutionSchema),
+  ability: monsterAbilitySchema,
 }) as RecordSchema;
 
 const cropStageSchema = objectSchema({ days: integerSchema("단계 소요일") });
@@ -1625,6 +1638,22 @@ const upsertTroop: ToolDefinition = {
   },
 };
 
+/** ability 를 줬는데 정규화가 버렸으면(필수 매개변수 누락·모르는 종류) 이유와 허용 값을 담아 거절한다. 조용히 특성 없는 종이 되지 않게. */
+function validateSpeciesAbility(draft: Project, raw: unknown, record: MonsterSpeciesRecord): string | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const code = "invalid-species-ability";
+  if (!record.ability) {
+    throw new ToolError(`ability 가 올바르지 않아 저장하지 않았습니다 — name(문자열)과 kind(${MONSTER_ABILITY_KINDS.join("|")}) 가 필요하고, kind 별 필수: immuneType/resistType/boostLowHp → type(system.typeChart.types), immuneStatus/contactStatus → status(${MONSTER_ABILITY_STATUSES.join("|")}), statMultiplier → stat(${MONSTER_ABILITY_STATS.join("|")}), endure → 없음.`, { code });
+  }
+  const types = draft.system.typeChart?.types ?? [];
+  if (record.ability.type && types.length > 0 && !types.includes(record.ability.type)) {
+    throw new ToolError(`ability.type '${record.ability.type}' 는 타입 상성표에 없습니다 — 허용: ${types.join(", ")}`, { code });
+  }
+  return draft.system.battleModel === "gen1"
+    ? undefined
+    : `특성은 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`;
+}
+
 const defineMonsterSpecies: ToolDefinition = {
   name: "define_monster_species",
   description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다."
@@ -1652,6 +1681,7 @@ const defineMonsterSpecies: ToolDefinition = {
     if (missingSkills.length > 0) {
       throw new ToolError(`존재하지 않는 species skillId: ${[...new Set(missingSkills)].join(", ")} — 허용 예시: ${knownIds(draft.database.skills)}`, { code: "skill-not-found" });
     }
+    const abilityWarning = validateSpeciesAbility(draft, (merged as { ability?: unknown }).ability, record);
     const speciesIds = new Set(draft.database.monsterSpecies.map((species) => species.id));
     // 자기 자신 진화는 레벨업마다 무한 재적용되므로 tool 경로에서도 거부한다(UI 드롭다운엔 옵션이 없어 복구 불가).
     if ((record.evolutions ?? []).some((evolution) => evolution.toSpeciesId === record.id)) {
@@ -1668,6 +1698,7 @@ const defineMonsterSpecies: ToolDefinition = {
       throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
     }
     const warnings: string[] = [];
+    if (abilityWarning) warnings.push(abilityWarning);
     ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {

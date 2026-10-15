@@ -3275,6 +3275,13 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 
 
+## `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
+
+- 종 하나에 선언형 특성 하나: `species.ability {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`. `kind` enum = `immuneType|resistType|boostLowHp|immuneStatus|contactStatus|statMultiplier|endure`, `status` enum = `poison|burn|sleep|freeze|paralysis`, `stat` enum = `attack|defense|mind`. 종류별 필수 매개변수와 percent 범위는 스키마 설명과 `openwiki/runtime-battle.md` 「특성」에 있다. **자유 키·자유 코드 없음.**
+- 거절: 필수 매개변수 누락·모르는 종류/값 → `invalid-species-ability`(허용 값을 담음), 타입 상성표에 없는 `type` → 같은 코드로 허용 타입 목록. `battleModel` 이 gen1 이 아니면 저장은 하되 경고.
+- 원작 특성 이름을 그대로 쓰지 않는다(프로젝트 고유 이름). 레시피 `monster-abilities`.
+
+
 ## `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
 
 - `gen1MajorStatus` enum 에 `"toxic"`(맹독: 1/16 × 1,2,3…15) 추가, 새 enum `volatileStatus: "confusion"`(주요 상태와 겹치는 휘발 상태, 2~5 행동·절반 자해·교체/전투 종료로 풀림). 둘 다 **gen1 전투 모델에서만 작동** — 아니면 도구가 경고하고 일반 상태처럼 돈다. 자유 키 없음(enum 값만).

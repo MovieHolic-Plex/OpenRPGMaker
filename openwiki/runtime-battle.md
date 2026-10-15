@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 특성(ability) — 종마다 선언형 효과 하나 (2026-10-16, poke-depth PR3)
+
+- 데이터: `MonsterSpeciesRecord.ability?: {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`(**선택 필드**, 생략=특성 없음·저장 바이트 불변). 종류는 일곱 enum — `immuneType`(타입 무효, `healPercent` 가 있으면 흡수 회복)·`resistType`(percent 0~99)·`boostLowHp`(HP ≤ 1/3 에서 같은 타입 기술 percent 101~400)·`immuneStatus`·`contactStatus`(물리 피해를 받으면 percent% 확률로 공격자에게 주요 상태)·`statMultiplier`(attack=물리 공격, defense=물리 방어, mind=특수 공격·방어, percent 25~400)·`endure`. 정본·정규화·순수 효과 함수는 `src/battle/abilities.ts`(`normalizeMonsterAbility` 는 종류별 필수 매개변수가 빠지면 특성을 버린다).
+- 적용 범위: **gen1 전투 모델의 피해 경로만**(`applyExactGen1Damage`). 다른 모델은 필드가 있어도 무시한다. 배틀러의 특성은 `abilityOfBattler`(종 id 또는 적 레코드의 speciesId)로 찾는다 — 플레이어 몬스터·야생·트레이너 몬스터가 같다.
+- 훅 순서(`runtime.ts`): ① 타입 무효·흡수(기술이 닿기 전, 난수 바이트 0, 결과는 「효과가 없는 것 같다…」 + 설명 줄 + 흡수 회복 `healing aside:"drain"`), ② 능력 배율(공격 쪽은 `offense`, 방어 쪽은 `defense` 두 값에 모두 곱함 — 급소의 「단계·상태 무시」 계약과 같은 쪽에 들어간다), ③ 결과 피해에 위기 강화×타입 반감, ④ `endure`(가득 찬 HP 에서 쓰러질 피해면 HP 1 이 남게), ⑤ 접촉 상태(`applyContactAbility`: `gen1EffectChanceSucceeds` 확률, 공격자가 이미 주요 상태면 안 건다), ⑥ 상태 면역(`applyGen1States` — 확률 판정을 통과한 뒤 「○○은 특성 ○○ 덕분에 ○○ 상태에 걸리지 않는다!」). 설명 줄은 `abilityNotes` 에 쌓였다가 `flushAbilityNotes` 가 기술 결과 엔트리 **뒤에** `special` 로 기록한다.
+- 예측(`battlePredict`)도 같은 순수 함수를 쓴다(타입 무효면 0, 배율·위기 강화·반감).
+- 화면: 별도 알약 없음 — 전투 문장으로만 나온다. 상태 메뉴 「몬스터 → 상세」에 「특성」 줄(이름 + 효과 설명, testid `status-menu-monster-ability`). DB 편집기 종족 → 성장 탭의 「특성」 카드(`db-monster-species-ability-card`: 종류를 고르면 그 종류에 필요한 칸만).
+- 조수: `define_monster_species.species.ability`(enum·정수만, 자유 키 없음). 필수 매개변수 누락·모르는 값·상성표에 없는 type 은 허용 값을 담아 `invalid-species-ability` 로 거절, gen1 이 아닌 프로젝트는 저장하되 경고. 레시피 `monster-abilities`(`toolCapabilityIndex.ts`). 원작 특성 이름을 그대로 쓰지 말 것.
+- 예제 몬스터 원정: 주 타입별 특성(`roster.ts` `ABILITY_BY_TYPE` — 비행=땅 무효, 전기=접촉 마비, 불·물·풀·벌레=위기 강화, 바위=버티기, 격투=공격 125%, 독·얼음·에스퍼=상태 면역, 땅=전기 무효).
+- 검증: `bun scripts/qa/poke-depth/abilities.probe.mts`(엔진 8항목), `scripts/qa/runtime/poke-depth-abilities.capture.mjs`(출하 플레이어, MODE=immune|contact|endure, LEGACY=1 이 「전」). 단위 `test/monsterAbilities.test.ts`(미실행).
+- 남은 것: **개체별 특성 선택**(한 종에 특성 둘·숨은 특성)은 없다 — 종당 하나. 등장 시·교체 시 발동하는 특성(위협·날씨 소환)·턴 말 특성(가속·재생)·날씨/지닌 도구와 얽힌 특성은 해당 시스템이 들어온 뒤 더한다. rm2k3 전투 모델은 지원하지 않는다.
+
 ## 맹독·혼란 — gen1 전투의 상태이상 보강 (2026-10-16, poke-depth PR2)
 
 - 범위: **`battleModel: "gen1"` 프로젝트(몬스터 수집)만.** 다른 전투 모델에서는 같은 레코드가 일반 상태처럼만 돈다(`upsert_state` 가 경고).
