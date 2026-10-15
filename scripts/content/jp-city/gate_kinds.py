@@ -173,7 +173,7 @@ def report(res: dict, file=sys.stdout) -> None:
 
 
 def enforce() -> None:
-    """bake 진입 관문. 미통과 키트가 있으면 표를 찍고 종료(코드 3). JP_GATE=skip 이면 큰 경고 후 통과."""
+    """bake 진입 관문. 미통과 키트가 있으면 표를 찍고 종료(코드 3). 우회 환경변수는 없다(JP_GATE=skip 은 2026-10-15 제거)."""
     res = check_all()
     if not res['bad'] and res['total']:
         if res.get('covered'): print(f"[3/4 관문] 상가 띠 {len(res['covered'])}개는 조립 건물 영수증으로 덮임(covered by assembled)", file=sys.stderr)
@@ -183,11 +183,8 @@ def enforce() -> None:
             print(f"[3/4 관문] 통과 {res['total']}/{res['total']}")
         return
     report(res, file=sys.stderr)
-    if os.environ.get('JP_GATE') == 'skip':
-        print('!' * 70 + f"\n!! JP_GATE=skip — 3/4 관문 미통과 키트 {max(len(res['bad']), 1)}개를 알고도 굽는다. 보고에 「3/4 관문 미통과」라고 적을 것.\n" + '!' * 70, file=sys.stderr)
-        return
     print('굽기를 거절한다. 영수증을 받으려면: python3 scripts/content/jp-city/gate_review_all.py 후 npm run harness -- object-gate review --batch /tmp/jp-gate-chunk-N.jsonl\n'
-          '(관문을 건너뛰려면 JP_GATE=skip — 권장하지 않음)', file=sys.stderr)
+          '(건너뛰는 길은 없다 — 그림을 고치거나 관문 정책을 사용자와 상의)', file=sys.stderr)
     sys.exit(3)
 
 

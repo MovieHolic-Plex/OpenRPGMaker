@@ -3,7 +3,6 @@
 
   python3 scripts/content/prehistoric/bake_ph.py          # 쓰기
   python3 scripts/content/prehistoric/bake_ph.py --dry    # 보고만
-  python3 scripts/content/prehistoric/bake_ph.py --dev    # 관문 무시(구성기 시험용 — 커밋 금지, 보고서에 dev 표시)
 
 산출: public/assets/prehistoric/prehistoric-chipset.png · src/assets/prehistoricTileset.json · src/assets/prehistoricSheet.json
       tiledata/prehistoric/bake-pins.json · bake-report.json
@@ -69,7 +68,7 @@ def smart_cells(png, W, H, rows=1):
     return out
 
 
-def build_pieces(report, dev=False):
+def build_pieces(report):
     regs, anims = _regs()
     items, by = [], {}
     for reg in regs:
@@ -83,7 +82,6 @@ def build_pieces(report, dev=False):
     def status(it):
         nonlocal prov, covered
         if not os.path.exists(it['png']): return 'PNG 없음 — art 내보내기 먼저'
-        if dev: return True
         if it['id'].startswith(('w-', 'lane-', 'wall-', 'paint-', 'ceil')):
             s = TB.covered_status(it['id'], it['png'])
             if s in ('pass', 'prov'): covered += 1
@@ -130,16 +128,16 @@ def build_pieces(report, dev=False):
                 p['tags'] = p['tags'] + ['애니메이션']
                 p['desc'] = f"{an} — {len(fr)}프레임 반복(칸 {it['w']}×{it['h']}). " + p['desc']
         pieces.append(p)
-    report['gate'] = dict(dev_no_gate=dev, provisional_profile_uncalibrated=prov, covered_by_assembled=covered, blocked=blocked, pieces=len(pieces),
+    report['gate'] = dict(provisional_profile_uncalibrated=prov, covered_by_assembled=covered, blocked=blocked, pieces=len(pieces),
                           outdoor=sum(1 for p in pieces if p['group'] != 'ph-interior'), interior=sum(1 for p in pieces if p['group'] == 'ph-interior'))
     return pieces
 
 
-def bake(dry=False, dev=False):
+def bake(dry=False):
     report = collections.OrderedDict()
     pins = TB.Pins(P['pins'], TPR)
     O = TB.Outdoor(pins, TPR, 'ph', THEME)
-    pieces = build_pieces(report, dev)
+    pieces = build_pieces(report)
     for p in pieces:
         if p.get('kind_pc'):
             k = p['kind']; p['kind'] = p['kind_pc']; O.add_piece(p); p['kind'] = k
@@ -167,8 +165,8 @@ def bake(dry=False, dev=False):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('--dry', action='store_true'); ap.add_argument('--dev', action='store_true'); a = ap.parse_args()
-    o = bake(dry=a.dry, dev=a.dev); r = o['report']
+    ap = argparse.ArgumentParser(); ap.add_argument('--dry', action='store_true'); a = ap.parse_args()
+    o = bake(dry=a.dry); r = o['report']
     print(json.dumps({k: r[k] for k in ('tiles', 'reassembly', 'palette_violations')}, ensure_ascii=False))
     print('정의 검사 위반', r['definition']['violations'], r['definition']['by_code'], r['definition']['examples'])
     g = r['gate']; print('관문', {k: v for k, v in g.items() if k != 'blocked'}); [print('  막힘', b) for b in g['blocked'][:40]]

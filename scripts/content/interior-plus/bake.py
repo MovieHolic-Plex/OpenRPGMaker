@@ -1,6 +1,6 @@
 """interior-plus 굽기 — 박물관·배 안·투기장 조각을 atlas_biome_interior 시트 끝에 덧붙인다(기존 칸 번호 불변, 덧붙이기 전용).
 
-  python3 scripts/content/interior-plus/bake.py [--no-gate]
+  python3 scripts/content/interior-plus/bake.py [--repack]
 
 - 번호 핀: tiledata/hand-interior/plus/pins.json — {base, slots:{키: 칸}}. 같은 키는 늘 같은 칸, 새 키는 끝에 붙는다.
   base = 덧붙이기 전 시트 칸 수(build_tileset.py 의 굽기 끝). 다시 돌리면 base 뒤를 지우고 핀 순서로 다시 싣는다.
@@ -78,7 +78,7 @@ def gate_items(reg):
     return [(pid, iplib.render(reg.pieces[pid]), reg.pieces[pid]['gate']) for pid in reg.order]
 
 
-def main(no_gate=False, repack=False):
+def main(repack=False):
     reg = loader.load()
     pins = json.load(open(PINS)) if os.path.exists(PINS) else {}
     ts = json.load(open(TSJ)); sp = json.load(open(SPJ)); sheet = Image.open(SHEET).convert('RGBA')
@@ -105,9 +105,8 @@ def main(no_gate=False, repack=False):
     for w in reg.walls: sp['walls'].pop(w, None)
     for o in plus_prev: sp['objects'].pop(o, None)
 
-    if not no_gate:
-        import gate_rooms   # 기물 영수증 + 바닥·벽면 조립 방 영수증(미보정 프로필이면 현재 프로필 PASS 를 임시 통과로 센다 — 보고에 적힌다)
-        gate_rooms.require_structure(reg)
+    import gate_rooms   # 기물 영수증 + 바닥·벽면 조립 방 영수증(미보정 프로필이면 현재 프로필 PASS 를 임시 통과로 센다 — 보고에 적힌다). 우회 인자는 없다(--no-gate 는 2026-10-15 제거)
+    gate_rooms.require_structure(reg)
 
     tiles = {}   # 칸 번호 → (그림, meta, pass, prio)
     nxt = [max([base - 1] + list(slots.values())) + 1]
@@ -227,4 +226,4 @@ def main(no_gate=False, repack=False):
 
 
 if __name__ == '__main__':
-    main(no_gate='--no-gate' in sys.argv, repack='--repack' in sys.argv)
+    main(repack='--repack' in sys.argv)
