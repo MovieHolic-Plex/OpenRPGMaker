@@ -2061,13 +2061,15 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 
 
 /** 포획 구슬 시네마틱을 재생하고 총 소요 ms를 반환한다.
- *  투척(480ms) → 흡수(240ms) → 흔들림 3회(1,260ms) → 성공 반짝/실패 탈출(420ms). */
-export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean): number {
+ *  투척(480ms) → 흡수(240ms) → 흔들림(성공은 3회, 실패는 런타임이 정한 0~3회, 한 번 420ms + 쉼 340ms) → 성공 반짝/실패 탈출(420ms). */
+export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean, shakes?: 0 | 1 | 2 | 3): number {
   const target = findBattlerNode(field, targetId);
   if (!target) return 0;
+  const rocks = success ? 3 : Math.max(0, Math.min(3, shakes ?? 3));
   const orb = document.createElement("span");
   orb.className = "battle-capture-orb";
   orb.dataset.testid = "battle-capture-orb";
+  orb.dataset.shakes = String(rocks);
   orb.style.setProperty("--orb-to-x", target.style.getPropertyValue("--battle-node-x") || "70%");
   orb.style.setProperty("--orb-to-y", target.style.getPropertyValue("--battle-node-y") || "35%");
   field.append(orb);
@@ -2075,8 +2077,14 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
   const at = (fn: () => void, ms: number): void => {
     timers.push(window.setTimeout(fn, ms));
   };
+  const ROCK_MS = 420;
+  const REST_MS = 340;
   at(() => target.classList.add("battle-capture-absorbed"), 460);
-  at(() => orb.classList.add("battle-orb-shake"), 720);
+  let clock = 720;
+  for (let i = 0; i < rocks; i += 1) {
+    at(() => { orb.classList.remove("battle-orb-shake"); void orb.offsetWidth; orb.classList.add("battle-orb-shake"); orb.dataset.rock = String(i + 1); }, clock);
+    clock += ROCK_MS + REST_MS;
+  }
   at(() => {
     orb.classList.remove("battle-orb-shake");
     if (success) {
@@ -2085,11 +2093,12 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
       orb.classList.add("battle-orb-burst");
       target.classList.remove("battle-capture-absorbed");
     }
-  }, 1980);
+  }, clock);
+  const total = clock + 420;
   at(() => {
     orb.remove();
     // 성공 시 런타임 스냅샷에서 적이 사라지므로 잔류 노드도 정리한다.
     if (success) target.remove();
-  }, 2400);
-  return 2400;
+  }, total);
+  return total;
 }

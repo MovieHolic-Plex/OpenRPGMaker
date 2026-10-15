@@ -984,6 +984,10 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
   if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
+  if (effect?.kind === "rage") {
+    const enemyIds = uniqueCleanIds(effect.enemyIds ?? []).slice(0, 24);
+    return enemyIds.length > 0 ? { kind: "rage", enemyIds } : { kind: "rage" };
+  }
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 

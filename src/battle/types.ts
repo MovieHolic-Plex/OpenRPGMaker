@@ -192,6 +192,8 @@ export interface BattleSessionState {
   /** 마석 AP 진행(배우 → 스킬 id → 누적 AP). 승리 후 AP 습득 미리보기의 기준. */
   readonly actorApProgress?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   readonly learnedViaAp?: Readonly<Record<string, readonly SkillId[]>>;
+  /** 폭주(가우)가 모은 몬스터 목록(배우 → 몬스터 레코드 id). 폭주 기술이 이 목록에서 몬스터를 고른다. */
+  readonly actorRageEnemyIds?: Readonly<Record<string, readonly string[]>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
   readonly difficultyId?: string;
@@ -404,6 +406,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
+  /** capture 엔트리: 구슬이 흔들린 횟수(0~3). 실패 연출이 이 횟수만큼 흔들리고 빠져나온다. */
+  readonly shakes?: 0 | 1 | 2 | 3;
   /** 회복 엔트리가 어느 자원에 작용했는가. 표시 계층이 이 값을 HP 원장에 그대로 쓰면
    *  MP 회복이 HP 로 새어 들어간다(실측: 마력약 MP+30 → 표시 HP 250→280). */
   readonly resource?: "hp" | "mp";
@@ -508,6 +512,8 @@ export interface BattleRewardsSnapshot {
   readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[]; /** 이 중 마석 AP 로 배운 스킬(EquipmentRecord.apGrants). 생략 = TP 습득뿐. */ readonly viaAp?: readonly SkillId[] }[];
   /** 마석 AP(트룹 합계). 살아남은 파티원 전원이 받아 장착 마석의 apGrants 에 쌓는다. 저작된 AP 가 없으면 생략. */
   readonly ap?: number;
+  /** 폭주(rage) 기술을 아는 배우가 있을 때만: 이번 전투에서 쓰러뜨린 몬스터 레코드 id(중복 없음). 세션이 그 배우의 폭주 목록에 더한다. */
+  readonly rageEnemyIds?: readonly string[];
 }
 
 /** 전투 이벤트의 Tint Screen 이 남긴 화면 상태. 색조 문자열은 맵의 m2Runtime.screen.tint 와 같은 문법이다. */
@@ -520,7 +526,7 @@ export interface BattleScreenState {
 export interface BattleEventStateSnapshot {
   /** Read-only pre-reward party EXP, for the result gauge; never written back as a reward. */
   readonly monsterCollection?: {
-    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp">>>;
+    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp" | "ivs">>>;
   };
   /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
   readonly screen?: BattleScreenState;

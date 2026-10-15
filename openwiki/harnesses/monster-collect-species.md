@@ -68,6 +68,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 1. 시드 종에 `campaignSpeciesId`(예: `mx_species_coalbit`)를 적는다 — 캠페인 종 하나에 하네스 종 하나. **이 값이 대응 표의 정본이다.**
    현재 대응: `sparkit`→`mx_species_coalbit`(불꽃), `aqualing`→`mx_species_rivulet`(물), `leafling`→`mx_species_spriglet`(풀). 사람이 고른 스타터 세 종이 캠페인 스타터 3계통 1단계에 붙는다.
+   2026-10-15 추가 12종(감독 위임으로 앞·뒤 선택): `gustchick`→`mx_species_gustchick`, `pipbug`→`pipbug`, `wickworm`→`wickworm`, `rootpig`→`rootpig`, `frondhare`→`frondhare`, `kilnclaw`→`kilnclaw`, `brookraft`→`brookraft`, `coralpin`→`coralpin`, `curlfin`→`curlfin`, `zaptoe`→`zaptoe`, `pebblekid`→`pebblekid`, `gritnose`→`gritnose`(하네스 종 id 와 캠페인 종 id 가 `mx_species_` 접두만 다르다. 정본은 시드).
    (이름·도감 설명은 캠페인 쪽 그대로라 스파킷=도롱뇽 그림이 「숯비늘」로 보인다 — 맞추려면 캠페인 종 이름·설명을 바꾸거나 `campaignSpeciesId` 를 지운다.)
 2. `build`(끝에 자동) 또는 `manifest` 단계가 번들 폴더를 읽어 `src/assets/harnessMonsterBundle.json` 을 쓴다(종 → `campaignSpeciesId`·면·대기 칸 수, **이미지 바이트 없음**). 모래상자는 `<샌드박스>/bundle/manifest.json`.
 3. 런타임 입구는 `src/assets/harnessMonsterArt.ts`:
@@ -204,3 +205,13 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 - (배선됨, 2026-10-15) 번들 스프라이트 → 캠페인 종 기록은 위 「캠페인·전투 배선」. 남은 것: 에디터에서 종 그림을 번들로 고르는 화면, `build_monster_game` 이외 프리셋.
 - 파티 아이콘·필드 동행 그림.
 - 동작 스트립(공격·피격) 의 엔진 배선(전투 명령 단계별 프레임 전환). 대기 스트립은 배선됨.
+
+## 따라다니기 걷기 칩 (2026-10-15)
+
+파티 몬스터를 필드에서 따라다니게 하는 엔진은 이미 있다(`src/project/followers.ts` · `src/player/playSceneFollowers.ts`). 에메랄드 스타일은 종에 `graphic.fieldGraphic.sprite.id` 또는 `graphic.fieldCharsetId` 가 없으면 따라다니기를 건너뛰므로, 하네스가 **걷기 칩**을 대 주는 것이 이 절이다. 전투 앞·뒤 그림과 같은 일반 규칙(종 하드코딩 없음)이다.
+
+- 그림: `src/harnesses/monster-collect-species/field_chip.py`. 고른 앞·뒤 그림을 참고로 보여 주고 Argon(`gemini-4-argon-medium`, `agy`)이 24×32 격자 문자열 9장(down/up/right × 프레임 0·1·2, 왼쪽은 right 거울)을 손으로 적는다. 이미지 생성·합성 코드 없음. 하네스가 규격(발 줄·덩어리·색 16·프레임 간 변경 셀 수)을 검사하고 어기면 이유를 붙여 최대 3번 다시 시킨다. `--base <run>/cand-k` 로 고른 후보의 몸은 두고 걷기만 보강할 수 있다.
+- 단계: `draw` → `sheet`(걷기 GIF 8배·1배 실제 크기) → 사람이 `pick`(그림 해시에 묶임, `harness-data/monster-collect-species/field-picks.json` + `field-chips/<종>.png`) → `bake`.
+- `bake` 는 칩 8명씩 288×256 시트(`public/assets/harnesses/monster-collect-species/field/chips-<n>.png`, 한 캐릭터 72×128 = 3패턴 × 4방향 위·오른·아래·왼)로 묶고 `field/index.json`(종 → 시트·칸)을 쓴다. **칸 번호는 덧붙이기 전용**이다 — 저장된 프로젝트의 참조가 흔들리지 않게 한 번 준 칸은 바꾸지 않는다. 끝에 `manifest` 를 돌려 `harnessMonsterBundle.json` 에 `fieldSheets` 와 종별 `field {sheet,index}` 를 싣는다.
+- 런타임: `harnessMonsterArt.ts` 가 시트를 캐릭터셋 카탈로그(`charsetCatalog.ts`, id `oprn-charset-harness-monster<n>` / 텍스처 `tex_oprn_charset_harness_monster<n>`)에 올리고, 로스터(`roster.ts` `fieldArt`)가 `campaignSpeciesId` 로 이어진 종에 `graphic.fieldGraphic` 을 단다. 칩이 없는 종은 기존대로 기본 몬스터 칩. 해석기·참조 검증·내보내기는 charset 의 일반 경로를 따른다.
+- 3/4 관문(object-gate) 영수증 없음 — 몬스터 하네스 경로(생성형 참고 + 격자 손 저작). 사람이 고른 것만 굽는다.

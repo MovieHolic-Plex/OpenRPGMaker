@@ -1,6 +1,7 @@
 {
   "version": 1,
   "canvas": 112,
+  "fieldSheets": 1,
   "species": {
     "sparkit": {
       "campaignSpeciesId": "mx_species_coalbit",
@@ -34,6 +35,194 @@
     },
     "leafling": {
       "campaignSpeciesId": "mx_species_spriglet",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "gustchick": {
+      "campaignSpeciesId": "mx_species_gustchick",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 0
+      }
+    },
+    "pipbug": {
+      "campaignSpeciesId": "mx_species_pipbug",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "wickworm": {
+      "campaignSpeciesId": "mx_species_wickworm",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "rootpig": {
+      "campaignSpeciesId": "mx_species_rootpig",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "frondhare": {
+      "campaignSpeciesId": "mx_species_frondhare",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "kilnclaw": {
+      "campaignSpeciesId": "mx_species_kilnclaw",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "brookraft": {
+      "campaignSpeciesId": "mx_species_brookraft",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "coralpin": {
+      "campaignSpeciesId": "mx_species_coralpin",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "curlfin": {
+      "campaignSpeciesId": "mx_species_curlfin",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "zaptoe": {
+      "campaignSpeciesId": "mx_species_zaptoe",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 1
+      }
+    },
+    "pebblekid": {
+      "campaignSpeciesId": "mx_species_pebblekid",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "gritnose": {
+      "campaignSpeciesId": "mx_species_gritnose",
       "front": {
         "idle": {
           "frames": 4,

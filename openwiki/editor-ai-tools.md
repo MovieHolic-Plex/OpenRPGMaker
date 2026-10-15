@@ -20,6 +20,7 @@
 - **`check_map_emptiness({mapId?})`**(`mapEmptiness.ts`, 읽기): 가장 흔한 바닥 ≥ 80% 이고 장식 ≤ 10%(100칸 이상)면 flat. qa:game `visual-flat` 과 같은 기준. `run_lint` 와 `evaluate_game_quality` 에도 warning `map-flat-ground` 로 자동 들어가 완료 직전 검사(`LAYER_VERIFICATION_TOOLS`)에서 걸린다. 월드맵 키트 맵과 시작 때 남은 빈 시드 맵 `map_blank_start` 는 제외. evaluate_game_quality 는 이미 `empty-map`(error)인 맵을 중복으로 올리지 않는다.
 - 능력 색인에 `theme-scenes` 레시피(`toolCapabilityIndex.ts`)와 find_tools 별칭(「맵 만들기」「빈 맵」)이 같은 길을 가리킨다.
 - 시험: 새 프로젝트에 16장면을 `node scripts/oprn-tools.mjs --new --project … create_map '{"name":…,"themeScene":…}'` 로 전부 깔아 본다(전부 ok, `check_map_emptiness` 로 flat 은 시드 맵 1장만).
+- **맵 성격 명시(2026-10-15 역할극 후속)**: themeScene 이 만든 맵은 분명한 스타일(cave·mine·labyrinth 등 → `dungeon`, village·market·street·harbor 등 → `town`)이면 `mapRole` 을 직접 적는다(`themeSceneMapRole`). 저작자가 고른 값은 덮지 않는다. 이름 추정(`guessMapRole`)의 INTERIOR_WORDS 는 「방어·방패·방향…」의 「방」을 실내로 읽지 않는다 — 「방어전 - 설원 광산 전선」 맵에 `place_field_enemy` 가 「실내라 필드 적 불가」로 거절되던 사례.
 
 ## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 
@@ -248,6 +249,14 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - `upsert_equipment_slot` — 장비 부위(유물 2칸·마석 칸). `slots:[{id,label,equipsAs?}]` 순서대로 만들고(equipsAs 가 가리키는 부위를 앞에), `removeIds` 는 쓰는 칸을 거절한다. 모르는 키·기본 5칸의 equipsAs·없는 equipsAs 는 오류로 거절. `upsert_equipment` 가 모르는 slot 이면 「먼저 upsert_equipment_slot」을 안내한다(예전: `Unknown equipment slot: relic` 만).
 - `upsert_equipment` 신규 필드: `apGrants [{skillId,ap}]`(없는 스킬은 거절 → upsert_skill 안내)·`apRate`·`levelUpBonus`. AP 를 줄 적이 하나도 없으면 경고(`upsert_enemy.rewards.ap`). `upsert_skill.oncePerBattle` 은 소환용.
 - 능력 색인 레시피 `esper-growth`, 라벨 「장비 부위 수정」. 설명·규칙: `openwiki/runtime-battle.md` 「FF6 마석 성장」.
+
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15)
+
+- `upsert_skill.effect.kind` 에 `sketch`·`rage`(+`enemyIds`)·`shuffleParty`·`forceSwitch` 가 늘었다. 모르는 키는 거절(허용 필드 목록을 알려 준다). `rage.enemyIds` 에 없는 적 id 는 거절하고 `upsert_enemy` 를 안내한다.
+  경고: 폭주에 scope 가 self 가 아님 / `state_rage` 상태가 프로젝트에 없음, 스케치에 scope 가 enemy 가 아님, 대열 섞기·강제 교대가 self 범위(적이 플레이어 파티를 흔드는 기술이라는 안내).
+- `upsert_state.runtimeEffects` 에 `invertHealing`(좀비), `grantSkillIds`(트랜스·변신이 주는 기술, 없는 기술은 거절 → `upsert_skill` 안내), `forcedAction: "rage"`(폭주)가 늘었다.
+- 능력 색인 레시피 `ff6-battle-effects`(스케치·폭주·교대·좀비·트랜스·블리츠·검기·룬 한 장 요약). 새 도구는 없다 — 라벨·활동 서술은 기존 `upsert_skill`/`upsert_state` 를 그대로 쓴다.
+- 규칙·파일: `openwiki/runtime-battle.md` 「FF6 전투 특수 효과」, `openwiki/state-system.md`.
 
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
