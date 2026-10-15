@@ -8,15 +8,17 @@
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
 
-import { OBJECT_GATE_PROFILE, type ObjectGateJudgeAnswer, type ObjectGateKind, type ObjectGateStyleKind } from './rules';
+import { OBJECT_GATE_PROFILE, type ObjectGateEyeAnswer, type ObjectGateJudgeAnswer, type ObjectGateKind, type ObjectGateState, type ObjectGateStyleAnswer, type ObjectGateStyleKind } from './rules';
 
 export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local';
 
 export type ObjectGateHalf = { pass: boolean; reasons: string[] };
 
 export type ObjectGateRun = {
-  judge: string; run: number; answer: ObjectGateJudgeAnswer | null; pass: boolean; reasons: string[]; ms?: number; error?: string;
-  /** 규칙 v4: 이 판정 한 번의 3/4 · 화풍 반쪽. 옛 영수증에는 없다. */
+  judge: string; run: number;
+  /** 규칙 v6: 3/4 호출(answer)과 화풍 호출(styleAnswer)은 따로다. 옛 영수증은 answer 안에 style 이 들어 있었다. */
+  answer: ObjectGateJudgeAnswer | null; styleAnswer?: ObjectGateStyleAnswer | null; eyeAnswer?: ObjectGateEyeAnswer | null;
+  pass: boolean; reasons: string[]; ms?: number; error?: string; styleError?: string;
   view34?: ObjectGateHalf; style?: ObjectGateHalf;
 };
 
@@ -24,7 +26,7 @@ export type ObjectGateRun = {
 export type ObjectGateAuxMetrics = { tileColorsMedian: number; tileColorsP90: number; darkV5: number; nearBlackEdge: number; opaqueTiles: number };
 
 /** 한쪽 판정 요약. 영수증은 3/4 와 화풍을 따로 적고, 둘 다 pass 일 때만 최상위 verdict 가 pass 다. */
-export type ObjectGateHalfVerdict = { verdict: 'pass' | 'fail'; reasons: string[] };
+export type ObjectGateHalfVerdict = { verdict: ObjectGateState; reasons: string[] };
 
 export type ObjectGateReceipt = {
   schema: 'oprn-object-gate-receipt/1';
@@ -35,13 +37,15 @@ export type ObjectGateReceipt = {
   name: string;
   label?: string;
   profileHash: string;
-  /** 3/4 와 화풍 둘 다 pass 일 때만 pass. reasons 는 두 반쪽의 이유를 「3/4: …」「화풍: …」 머리말로 합친 것. */
-  verdict: 'pass' | 'fail';
+  /** 3/4 와 화풍 둘 다 pass 일 때만 pass. 하나라도 fail 이면 fail, 그 밖(판정자 의견이 갈림·사용자 정의 영역)은 refer(사람 확인 필요 — pass 로 세지 않고 모든 출구에서 막는다). */
+  verdict: ObjectGateState;
   reasons: string[];
   /** 규칙 v4 부터. 보고서가 어느 반쪽이 떨어졌는지 말할 수 있도록 따로 적는다. */
   view34?: ObjectGateHalfVerdict;
   style?: ObjectGateHalfVerdict & { styleKind: ObjectGateStyleKind; refs: string[]; scale: number; score?: number };
   metrics?: ObjectGateAuxMetrics;
+  /** 규칙 v7: 독립 눈(전체 인상) 답의 판정 목록(right|borderline|wrong). 거부권 계산에 쓰인 근거. */
+  eye?: { verdicts: string[] };
   runs: ObjectGateRun[];
   decidedAt: string;
   /** 판정한 원본 PNG 를 칸 크기별로 자른 칸 해시(정렬 변형 포함). 시트 칸 관문이 이걸로 「판정받은 그림의 칸」을 알아본다. */
@@ -57,9 +61,14 @@ export type ObjectGateProfileRecord = {
   profileHash: string;
   status: 'calibrated' | 'rejected';
   calibratedAt: string;
-  /** 3/4 반쪽(옛 필드 이름 유지). */
-  bad: { total: number; caught: number; missed: string[] };
-  good: { total: number; passed: number; falseFail: string[] };
+  /** 3/4 반쪽(옛 필드 이름 유지). 규칙 v6 부터 확실(A) 라벨만 센다. caught = pass 가 아니게 막은 것(fail 또는 refer). */
+  bad: { total: number; caught: number; missed: string[]; refer?: number };
+  good: { total: number; passed: number; falseFail: string[]; refer?: number };
+  /** 규칙 v6: 다툼(C)·사용자 수락(U) 라벨은 통과·차단 기준에서 빼고 따로 적는다. */
+  tiers?: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }>;
+  /** 규칙 v6: 규칙을 조정할 때 쓰지 않은 숨김 표본의 결과(개발 표본과 따로). */
+  fresh?: { bad: { total: number; caught: number; missed: string[] }; good: { total: number; passed: number; falseFail: string[] } };
+  holdout?: { bad: { total: number; caught: number; missed: string[] }; good: { total: number; passed: number; falseFail: string[] } };
   /** 규칙 v4 의 화풍 반쪽. 둘 다 기준을 넘어야 calibrated 다. 옛 프로필 기록에는 없다. */
   style?: ObjectGateConfusion & { groups?: Record<string, { total: number; passed: number }> };
   judge?: string;
@@ -121,6 +130,11 @@ export function objectGateRefusal(input: {
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
   if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다(위반 표본을 다 잡지 못했거나 보정 전)`;
   if (receipt.verdict === 'pass') return null;
+  if (receipt.verdict === 'refer') {
+    // 보류는 통과로 세지 않는다(번들·공용·스토어 출구는 예외 없이 막는다). 공방 로컬만 사람이 직접 누른 「그래도 넣기」로 확인할 수 있다(Python refusal 과 같다).
+    if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
+    return `판정 보류(사람 확인 필요: ${receipt.reasons.join(' · ') || '판정자 의견이 갈림'}) — 보류는 통과로 세지 않는다. 그림을 더 분명하게 고치거나 사람이 고르는 하네스 경로를 거쳐라`;
+  }
   if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
   const why = receipt.reasons.length ? receipt.reasons.join(' · ') : 'fail';
   return context === 'workshop-local'

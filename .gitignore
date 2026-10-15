@@ -271,3 +271,8 @@ qa-runs/
 # 하네스 build 는 계속 이 폴더에 쓰고, scripts/content/sync-interview-scenes.mjs push 로 올린다.
 /public/assets/harnesses/interview-scene-bank/
 /harness-data/interview-scene-bank/edit-sources/
+
+# object-gate 보정 판정 호출 원본 답 캐시(재현은 summary-v7.json, 사본은 ~/backups). 옛 4개 캐시는 이미 커밋돼 있어 건드리지 않는다.
+harness-data/object-gate/calibration/answers/view34-*/
+harness-data/object-gate/calibration/answers/style-*/
+harness-data/object-gate/calibration/answers/eye-*/
