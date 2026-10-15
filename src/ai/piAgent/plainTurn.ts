@@ -11,7 +11,7 @@ import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclaration";
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
-import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
+import { buildSessionRegistryTools, SCENE_SETTING_NOTE, SCENE_SETTING_PATTERN } from "@/ai/sessionToolExposure";
 import { isLivedMap } from "@/editor/tools/livedMap";
 import type { Project } from "@/project/types";
 import type { PiApplyMode } from "./applyMode";
@@ -166,6 +166,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
         ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
       ])];
+      if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
       // 키트 시트 야외 맵(몬스터 수집 마을 등)의 빈 터 꾸미기 — 도구를 보이게 하고 노트로 이름을 부른다(2026-10-07 이어 고치기 r8~r11).
