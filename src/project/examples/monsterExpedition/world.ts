@@ -18,6 +18,8 @@ import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
+import { terrainRecordAt } from "@/project/terrainAt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
 
 type Point = { x: number; y: number };
@@ -484,8 +486,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     // 첫 길은 Lv5 스타터 한 마리로 걸어 나가는 곳이라 야생을 두세 레벨 아래로 둔다.
     // 첫 종만 Lv3, 나머지는 Lv2 — Lv3 벌레는 벌레 기술을 배워 풀 스타터를 두 배로 때린다.
     const wildLevel = (i: number) => level <= 6 ? Math.max(2, level - (i === 0 ? 1 : 2)) : Math.max(3, level - i % 3);
+    // 레벨은 항목마다 [기준, 기준+1] 범위로 굴린다(조우표 levelMin/levelMax) — 같은 풀에서 레벨이 조금씩 달라진다. 트룹 적 level 은 범위가 없을 때의 값.
     map.encounterTable = pool.map((speciesId, i) => ({ troopId: troop(`야생의 ${speciesById.get(speciesId)!.name}`, `${map.id}_wild_${i}`, [speciesId], wildLevel(i), false),
-      weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
+      levelMin: wildLevel(i), levelMax: wildLevel(i) + 1, weight: i < 3 ? 5 : 2, conditions: { locationId: `${map.id}_habitat`, switchId: "mx_starter" } }));
     return pool;
   }
 
@@ -513,8 +516,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [battleMusic(), ...(winSwitch ? [sw(winSwitch)] : []), ...win, music(map.bgm!.resourceId!)],
-      defeatBranch: [battleMusic(), text("동료들이 지쳤다. 회복 센터에서 다시 준비하자."), { kind: "recoverAll" },
-        transfer(project.maps[id(`${townFor(map)}_center`)] ?? project.maps[id("home_center")]!, centerLanding(project.maps[id(`${townFor(map)}_center`)] ? `${townFor(map)}_center` : "home_center"))],
+      // 지면 야생 조우와 같은 블랙아웃(system.gameOver: 마지막 회복 센터로 귀환 + 소지금 절반) — 옛 분기는 가까운 센터로 옮기기만 하고 돈을 잃지 않았다.
+      defeatBranch: [battleMusic(), text("눈앞이 캄캄해졌다…"), { kind: "gameOver" }],
       escapeBranch: [battleMusic(), text("다시 준비해서 돌아오자.")] };
     let commands: Command[] = [...intro, fight];
     if (required) commands = [{ kind: "fork", condition: condition(required), then: commands, else: [text("먼저 이곳의 장치와 이전 약속을 마쳐야 한다.", name)] }];
@@ -862,7 +865,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.endings = [{ id: "mx_ending_starlight", name: gymCount >= FULL_GYMS ? "여덟 빛의 약속" : gymCount > 0 ? `${gymWord(gymCount)} 빛의 약속` : "별빛섬의 등대", conditions: [condition("mx_ending")], priority: 100,
     presentation: { tone: "warm", musicResourceId: audio.ending, credits: "별빛섬 몬스터 원정\n기획·맵·이벤트: OPRN Studio\n몬스터·타일·음악: 오리지널 좌표 도트와 작곡\n함께 걸어 준 모든 동료에게" } }];
   // 야생에게 지면 원작처럼 마지막으로 들른 회복 센터(직원의 checkpointSave)에서 깨어난다. 들른 적이 없으면 집.
-  project.system.gameOver = { outcome: "recover", presentation: "blackout", title: "다시 시작할 수 있어", message: "동료들과 함께 회복 센터에서 쉬었다." };
+  project.system.gameOver = { outcome: "recover", presentation: "blackout", goldLossPercent: 50, title: "다시 시작할 수 있어", message: "소지금의 절반을 잃었지만, 동료들과 함께 회복 센터에서 쉬었다." };
   project.system.startActorIds = [DEFAULT_ACTOR_ID];
   project.session.partyActorIds = [DEFAULT_ACTOR_ID];
   project.system.sellPrices = [...(project.system.sellPrices ?? []).filter(p => p.itemId !== "item_capture_orb"), { itemId: "item_capture_orb", price: 0 }];
@@ -885,6 +888,17 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   visitSwitches(project.maps); visitSwitches(project.system.monsterCampaign);
   for (const sid of allSwitches) if (!project.switches.some(s => s.id === sid)) project.switches.push({ id: sid, name: sid });
   project.session.switches = Object.fromEntries(project.switches.map(s => [s.id, false]));
+  // 키 큰 풀 칸(칩셋 지형 태그 5)이 충분한 길은 풀 칸에서만 야생이 나온다(포켓몬식 — 길·맨땅·문 앞은 안전). 지형은 칠이 모두 끝난 뒤에 센다.
+  // 풀 칸이 모자란 던전·곁길은 서식지 사각형 전체 그대로(조우가 영영 없는 맵이 되지 않게).
+  ensureGrassTerrainRecord(project.database.terrains ??= []);
+  for (const map of Object.values(project.maps)) {
+    const wildEntries = (map.encounterTable ?? []).filter(e => e.conditions?.locationId === `${map.id}_habitat`);
+    if (!wildEntries.length) continue;
+    let grassCells = 0;
+    for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (terrainRecordAt(project, { mapId: map.id, x, y })?.record.id === GRASS_TERRAIN_ID) grassCells++;
+    if (grassCells < 16) continue;
+    for (const e of wildEntries) e.conditions = { ...e.conditions!, terrainId: GRASS_TERRAIN_ID };
+  }
   repairExpeditionNpcLayout(project);
   repairExpeditionResidents(project, lookOf);
   repairExpeditionShopPrices(project);

@@ -1709,6 +1709,8 @@ export interface SystemRecords {
   battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
+  /** 포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 이 변수에 기록한다 — 이벤트가 읽어 「아깝다!」 같은 분기를 만든다. 생략 = 기록 안 함. */
+  captureShakesVariableId?: string;
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
@@ -1930,4 +1932,8 @@ export interface MonsterCareConfig {
 export interface RewardPolicy {
   participationOnly?: boolean;
   levelGapPenalty?: boolean;
+  /** 몬스터 파티 전투: 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다(경험치 나누기). 생략 = 나선 몬스터만. */
+  expShare?: boolean;
+  /** 트레이너 전 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식). 생략·0 = 적 레코드의 rewards.gold 합(저작 고정값). */
+  trainerPrizePerLevel?: number;
 }

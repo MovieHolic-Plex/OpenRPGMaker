@@ -1,4 +1,4 @@
-import type { ToolDefinition, ToolExecResult } from "./types";
+import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
 
@@ -20,7 +20,8 @@ const configureMonsterSystem: ToolDefinition = {
       capture: { type: "boolean", description: "생략/true 면 포획 커맨드가 뜨는 수집 게임. false 면 포획 없는 몬스터 게임(대회형·대전 중심) — monsterCollection=false 를 명시하고 battleParty 를 생략하면 몬스터 파티 전투를 켠다." },
       battleParty: { type: "boolean", description: "전투를 몬스터 파티로 진행할지(포켓몬식). 생략하면 현재 설정 유지, false 면 영웅이 싸운다." },
       presentation: { type: "string", enum: ["preserve", "collector"], description: "생략/preserve는 기존 화면 설정 유지. collector는 몬스터 수집용 메뉴/HUD를 설정하고 미수정 기본 오프닝만 끈다." },
-      rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정. 생략/preserve는 기존 규칙 유지.' },
+      rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정하고, 패배 규칙이 아직 없으면 포켓몬식 블랙아웃(마지막 회복 센터 귀환 + 소지금 절반)을 심는다. 생략/preserve는 기존 규칙 유지.' },
+      captureShakesVariableId: { type: 'string', description: '포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 담을 변수 id(create_variable 로 먼저 만든다). 이벤트(전투 뒤 분기)가 읽어 「아깝다!」 같은 반응을 만든다. 빈 문자열이면 기록을 끈다. 화면 연출은 바뀌지 않는다.' },
     },
     required: ["enabled"],
     additionalProperties: false,
@@ -35,7 +36,17 @@ const configureMonsterSystem: ToolDefinition = {
     // 포획 없음은 「꺼짐(undefined)」이 아니라 명시한 false 다 — 검사기가 「포획을 켜는 걸 잊음」과 「포획 없는 게임」을 구분한다.
     const capture = args.capture !== false;
     draft.system.monsterCollection = capture;
-    if(args.rules==='gen1'){draft.system.battleModel='gen1';draft.system.battleUiStyle='pokemon';}
+    if(args.rules==='gen1'){
+      draft.system.battleModel='gen1';draft.system.battleUiStyle='pokemon';
+      // 패배 규칙이 없으면(저작자가 정한 게 없으면) 포켓몬식 블랙아웃을 심는다. 이미 있는 gameOver 는 건드리지 않는다.
+      if (!draft.system.gameOver && !draft.system.gameOvers?.length) draft.system.gameOver = { outcome: 'recover', presentation: 'blackout', goldLossPercent: 50 };
+    }
+    if (args.captureShakesVariableId !== undefined) {
+      const variableId = typeof args.captureShakesVariableId === 'string' ? args.captureShakesVariableId.trim() : '';
+      if (!variableId) delete draft.system.captureShakesVariableId;
+      else if (!draft.variables.some(v => v.id === variableId)) throw new ToolError(`captureShakesVariableId 변수가 없습니다: ${variableId} — create_variable 로 먼저 만들고 id 를 주세요(기존 변수: ${draft.variables.slice(0, 6).map(v => v.id).join(', ') || '없음'}).`, { code: 'variable-not-found' });
+      else draft.system.captureShakesVariableId = variableId;
+    }
     // battleParty 를 생략하면 지금 설정을 지킨다. 몬스터 수집 프리셋은 이미 몬스터 파티 전투로 시작하는데,
     // 조수가 {enabled:true} 만 보내면 조용히 영웅 전투로 떨어뜨렸다(잡은 몬스터가 싸우지 않는 포켓몬풍).
     const current = draft.system.monsterBattleParty === true || draft.system.battleParty === "monsters";
