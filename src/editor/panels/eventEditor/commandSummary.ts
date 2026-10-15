@@ -1222,6 +1222,7 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
     case "partySize":
     case "facing":
     case "relativeFacing":

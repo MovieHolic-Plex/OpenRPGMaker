@@ -18,6 +18,7 @@ import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
+import { partySkillContext } from "@/project/partySkills";
 import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type ConditionEvalContext, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
@@ -107,7 +108,7 @@ function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): C
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations }) : undefined;
+  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations, ...partySkillContext(state.project, state.session) }) : undefined;
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
@@ -1292,7 +1293,7 @@ function resolveOpenChestId(state: InterpreterState): string {
  * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
-  return { map: state.project?.maps[state.session.currentMapId] };
+  return { map: state.project?.maps[state.session.currentMapId], ...partySkillContext(state.project, state.session) };
 }
 
 /** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */

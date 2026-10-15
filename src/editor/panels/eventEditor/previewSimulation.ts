@@ -274,6 +274,7 @@ function conditionNeedsUnsimulatedState(condition: Condition): boolean {
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
     case "partySize":
     case "facing":
     case "relativeFacing":

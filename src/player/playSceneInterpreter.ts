@@ -1,6 +1,7 @@
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
+import { partySkillContext } from "@/project/partySkills";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
@@ -83,7 +84,7 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     .find((entry) => entry.event.id === eventId);
   if (!view) return;
   const event = view.event;
-  const page = view.page ?? resolveEventPage(event, scene.session, { locations: scene.map.locations });
+  const page = view.page ?? resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
   if (!page && event.condition && !evalCondition(scene.session, event.condition, undefined, { map: scene.map })) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
@@ -163,7 +164,7 @@ async function runTalkPath(
   if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
-  const page = resolveEventPage(event, scene.session, { locations: scene.map.locations });
+  const page = resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
   const trigger = page?.trigger ?? event.trigger;
   if (trigger.kind !== "action") return;
   const result = trySocialTalk(scene.session, event);

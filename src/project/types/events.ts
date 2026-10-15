@@ -112,6 +112,12 @@ export type ActorQueryCondition =
   | { kind: "actorStat"; actorId: ActorId | "leader"; stat: "level" | "hp" | "mp" | "hpPercent" | "mpPercent"; op: ConditionCompareOp; value: number }
   | { kind: "actorState"; actorId: ActorId | "leader" | "anyone"; stateId: string; present: boolean }
   | { kind: "partyLeader"; actorId: ActorId }
+  /**
+   * 파티(배우 + 몬스터 파티)의 누군가가 이 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시).
+   * present 생략 = true. 아는 기술은 배우의 배운/직업/성장/장비 부여 스킬과 몬스터 파티 인스턴스의 기술이다.
+   * 해석 못 하면(스킬 id 가 비었음) 거짓.
+   */
+  | { kind: "partyKnowsSkill"; skillId: string; present?: boolean }
   | { kind: "partySize"; op: ConditionCompareOp; value: number }
   /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
   | { kind: "facing"; subject: "player" | "event"; dir: Dir }
