@@ -33,6 +33,7 @@ import {
   chargingDirectorState,
   commandPromptState,
   resultDirectorState,
+  completeBattleMessageTyping,
   syncBattleMessageWindow,
   syncBattleResultPanel,
   targetSelectDirectorState,
@@ -830,6 +831,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
       if (isBattleConfirmKey(event) || isBattleCancelKey(event)) {
         event.preventDefault();
+        // 문장이 글자 단위로 나오는 중이면 이 입력은 그 문장을 한 번에 끝내는 데 쓴다(3세대). 다음 입력부터 빨리감기.
+        if (completeBattleMessageTyping(messageWindow)) return;
         beginSkip();
       }
       return;

@@ -524,3 +524,5 @@
 
 /* Approved field-kit palette: fixed native windows; input and state remain controller-owned. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-command-rail > .status-menu-command.selected { background: #e8edda; }
+/* 글자 단위 출력: 아직 안 나온 글자는 자리만 차지한다(줄바꿈이 출력 중에 흔들리지 않는다). */
+.battle-message-untyped { visibility: hidden; }

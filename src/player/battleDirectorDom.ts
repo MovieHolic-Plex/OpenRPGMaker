@@ -329,6 +329,57 @@ export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   return windowNode;
 }
 
+/** 3세대 문장 출력 속도: 한 글자당 ms(약 2프레임). 문장 하나는 최대 1.2초 비트 안에 끝난다. */
+const MESSAGE_TYPE_MS = 28;
+const messageTypers = new WeakMap<HTMLElement, { timer: number; finish: () => void }>();
+
+/** 글자 단위로 나오는 중이면 한 번에 끝낸다. 끝낸 게 있으면 true — 호출자는 이 확인키를 여기서 소비한다. */
+export function completeBattleMessageTyping(windowNode: HTMLElement): boolean {
+  const typer = messageTypers.get(windowNode);
+  if (!typer) return false;
+  typer.finish();
+  return true;
+}
+
+function typewriterAllowed(windowNode: HTMLElement): boolean {
+  if (!windowNode.closest('.battle-scene[data-monster-style="emerald"]')) return false;
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return true;
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function startMessageTypewriter(windowNode: HTMLElement, rows: readonly HTMLElement[]): void {
+  const parts = rows.map((row) => {
+    const full = row.textContent ?? "";
+    const shown = document.createElement("span");
+    const rest = document.createElement("span");
+    rest.className = "battle-message-untyped";
+    rest.textContent = full;
+    row.replaceChildren(shown, rest);
+    return { full, shown, rest };
+  });
+  let rowIndex = 0;
+  let charIndex = 0;
+  const finish = (): void => {
+    const typer = messageTypers.get(windowNode);
+    if (typer) window.clearInterval(typer.timer);
+    messageTypers.delete(windowNode);
+    for (const part of parts) { part.shown.textContent = part.full; part.rest.textContent = ""; }
+    delete windowNode.dataset.messageTyping;
+  };
+  windowNode.dataset.messageTyping = "true";
+  const timer = window.setInterval(() => {
+    if (!windowNode.isConnected) { finish(); return; }
+    const part = parts[rowIndex];
+    if (!part) { finish(); return; }
+    charIndex += 1;
+    part.shown.textContent = part.full.slice(0, charIndex);
+    part.rest.textContent = part.full.slice(charIndex);
+    if (charIndex >= part.full.length) { rowIndex += 1; charIndex = 0; }
+    if (rowIndex >= parts.length) finish();
+  }, MESSAGE_TYPE_MS);
+  messageTypers.set(windowNode, { timer, finish });
+}
+
 export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDirectorState): void {
   windowNode.dataset.battleDirectorStep = state.step;
   let cursor = windowNode.querySelector<HTMLElement>(".battle-message-cursor");
@@ -344,12 +395,24 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
     lines.className = "battle-message-lines";
     windowNode.append(lines);
   }
+  // 같은 문장이면 다시 만들지 않는다(단계가 acting→impact 로 바뀌어도) — 새로 만들면 글자 출력이 처음부터 다시 시작한다.
+  const key = state.lines.join("\u0002");
+  if (windowNode.dataset.messageKey === key && lines.childElementCount === state.lines.length) return;
+  windowNode.dataset.messageKey = key;
+  const previous = messageTypers.get(windowNode);
+  if (previous) { window.clearInterval(previous.timer); messageTypers.delete(windowNode); delete windowNode.dataset.messageTyping; }
   lines.replaceChildren();
+  const rows: HTMLElement[] = [];
   for (const line of state.lines) {
     const row = document.createElement("div");
     row.className = "battle-message-line";
     row.textContent = line;
     lines.append(row);
+    rows.push(row);
+  }
+  // 에메랄드 문장 창만 글자 단위로 나온다(명령 대기 「무엇을 할까?」와 결과 문장은 즉시).
+  if ((state.step === "acting" || state.step === "intro" || state.step === "impact") && rows.length > 0 && typewriterAllowed(windowNode)) {
+    startMessageTypewriter(windowNode, rows);
   }
 }
 
