@@ -1161,6 +1161,8 @@
 
 /* 「AI가 읽는 것」 패널 · 문서별 AI 공개 범위 (2026-10-16 세계관 통합 1단계). 토큰은 --db-studio-* 만 쓴다. */
 .world-document-workspace .world-ai-reach {
+  text-align: left;
+  max-width: 640px;
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
   background: var(--db-studio-inset);
@@ -1168,13 +1170,14 @@
   color: var(--db-studio-text-2);
 }
 .world-document-workspace .world-ai-reach > summary {
-  display: grid;
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
   padding: 10px 12px;
   cursor: pointer;
-  list-style: none;
 }
-.world-document-workspace .world-ai-reach > summary strong { font: 600 13px/1.5 var(--font-ui); color: var(--db-studio-text-1); }
+.world-document-workspace .world-ai-reach > summary strong { font: 600 13px/1.5 var(--font-ui); color: var(--db-studio-text-1); white-space: nowrap; }
 .world-document-workspace .world-ai-reach-summary { display: flex; flex-wrap: wrap; gap: 4px 8px; }
 .world-document-workspace .world-ai-reach-chip {
   padding: 1px 8px;

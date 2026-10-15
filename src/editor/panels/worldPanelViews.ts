@@ -324,7 +324,7 @@ function renderWikiPane(
       children: [
         el("h3", { text: hasDocuments ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
         el("p", { text: hasDocuments ? "목록에서 문서를 열거나 새 문서를 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
-        aiReachPanel(state),
+        aiReachPanel(state, false),
       ],
     });
   }
@@ -427,8 +427,9 @@ function renderWikiPane(
   });
 }
 
-function aiReachPanel(state: WorldPanelState): HTMLElement {
-  return renderWorldAiReachPanel({ open: state.aiReachOpen, onToggle: (open) => { state.aiReachOpen = open; }, probe: state.aiProbe });
+/** 속성 레일(272px)에서는 요약 한 줄만 보이게 접어 두고, 빈 화면처럼 넓은 자리에서는 펼친다. */
+function aiReachPanel(state: WorldPanelState, inRail = true): HTMLElement {
+  return renderWorldAiReachPanel({ open: state.aiReachOpen ?? !inRail, onToggle: (open) => { state.aiReachOpen = open; }, probe: state.aiProbe });
 }
 
 function wikiRetrievalHint(state: WorldDocumentAiState): HTMLElement {

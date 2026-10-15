@@ -54,8 +54,8 @@ export type WorldPanelState = {
   gallery: boolean;
   /** undefined = 아직 사용자가 정하지 않음 → 넓은 화면에서는 펼친다(`worldPropertiesOpen`). */
   propertiesOpen: boolean | undefined;
-  /** 「AI가 읽는 것」 패널 펼침(기본 펼침). */
-  aiReachOpen: boolean;
+  /** 「AI가 읽는 것」 패널 펼침. undefined = 자리에 맞는 기본(빈 화면·세계 개요는 펼침, 좁은 속성 레일은 접힘). */
+  aiReachOpen: boolean | undefined;
   /** 「AI가 읽는 것」 질문 시험 입력 — 리렌더 너머로 유지한다. */
   aiProbe: { query: string };
   onDraftChange?: () => void;
@@ -73,7 +73,7 @@ export function createWorldPanelState(options: WorldPanelOptions = {}): WorldPan
   return { tab: options.initialTab ?? "overview", search: "", selectedId: options.initialEntityId ?? null,
     addType: "character", editDraft: null, editError: "",
     documentOpen: Boolean(options.initialEntityId), gallery: false, propertiesOpen: undefined,
-    aiReachOpen: true, aiProbe: { query: "" } };
+    aiReachOpen: undefined, aiProbe: { query: "" } };
 }
 
 export function hasWorldDraftChanges(state: WorldPanelState): boolean {
