@@ -1798,6 +1798,8 @@ export interface SystemRecords {
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;
   giftSystem?: boolean;
+  /** 관계·연애 하루 루프(옵트인): 호감 대화가 시간대 칸을 쓰고 사람별 하루 호감 상한이 있다. project/socialLoop.ts. 생략 = 기존 동작 그대로. */
+  socialLoop?: import("@/project/socialLoop").SocialLoopConfig;
   /**
    * 갤러리. enabled 가 아니면 메뉴에 나오지 않는다.
    * label 을 비우면 메뉴 이름은 「갤러리」. 다른 낱말을 적어 두면 그 이름으로 보인다.

@@ -370,7 +370,7 @@ function validateEndings(value: unknown): void {
       }
       validateConditionShape(label, condition);
       const kind = (condition as { kind?: unknown }).kind;
-      assert(kind === "switch" || kind === "variable", `${label}는 switch, variable 또는 newGamePlus 조건이어야 합니다.`);
+      assert(kind === "switch" || kind === "variable" || kind === "friendshipAtLeast", `${label}는 switch, variable, friendshipAtLeast 또는 newGamePlus 조건이어야 합니다.`);
     }
     if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
