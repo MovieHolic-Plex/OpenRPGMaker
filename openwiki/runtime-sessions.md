@@ -584,7 +584,9 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
   `save-slot-N-chapter` 에 보인다.
 - 검증: `node scripts/runtime-qa.mjs --scenario ct-ngplus`(픽스처 `scripts/qa/runtime/ct-ngplus-fixture.mts` 는 runTool 만 쓴다).
 
-## 탈것 — 소형선·대형선·비행선 (2026-09-26)
+## 탈것 — 소형선·대형선·비행선 (2026-09-26) + 초코보·광산 수레·뗏목 (2026-10-15)
+
+- `VEHICLE_IDS` 는 boat·ship·airship·chocobo·cart·raft. `system.vehicles[].id` 가 넓어졌을 뿐 생략 = 탈것 없음(옛 프로젝트 동작 그대로). 통행 규칙·그림(`vehicleSheet`: 초코보만 Animal 시트)은 `vehicleCanEnter` 주석과 `openwiki/editor-ai-tools.md` 「걷는 탈것 셋」.
 
 - **저작.** `system.vehicles?: { id: "boat"|"ship"|"airship"; characterIndex; mapId?; x?; y? }[]` (생략 = 탈것 없음, 기존 프로젝트 동작 그대로).
   정규화 `normalizeVehicleConfigs`(`src/project/vehicles.ts`)가 화이트리스트에 들어 있어 왕복에 살아남는다. 편집기 도구 `place_vehicle`.

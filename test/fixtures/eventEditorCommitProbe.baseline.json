@@ -244,7 +244,7 @@
  "changeTile": {
   "probes": {
    "change-tile-map-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map_blank_start\",\"tile\":1,\"x\":0,\"y\":0}",
-   "change-tile-layer-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0}",
+   "change-tile-layer-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper2\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0}",
    "change-tile-x-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":7861,\"y\":0}",
    "change-tile-y-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":7666}",
    "change-tile-tile-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":7679,\"x\":0,\"y\":0}"

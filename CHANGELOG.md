@@ -5,6 +5,30 @@
 
 <!-- releases -->
 
+## 0.227.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the team-swap command width and the genre-lock field (`32d52fc`)
+
+## 0.227.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — follower walk chips for the remaining nine species (#2626) (`5d4ccb5`)
+- **monster-art** — bake follower walk chips for sparkit, aqualing, leafling, pipbug (supervisor picks) (#2620) (`97b9330`)
+- **genre-lock** — monster-collect genre chipset lock enforced for assistant/tool runs (#2625) (`105ac40`)
+- **ct** — Active/Wait 연동·필드 배치·연계기·CT 시나리오 복구·완료 가드 (PR2) (#2624) (`e22aa52`)
+- **monster** — HM 필드 기술 세트 — place_field_obstacle · 몬스터 필드 기술 · TM/HM 가르치기 · 잊기 불가 (포켓몬 감사 PR2) (#2622) (`eb2692b`)
+- **boot** — instant discrete-step splash, failure + retry screen, always-on boot marks (#2611) (`4c62f61`)
+- **monster** — 시야선 트레이너·18타입·풀 칸 조우·야생 레벨 범위·블랙아웃 규칙 (포켓몬 감사 S, PR1) (#2603) (`fed4d8d`)
+
+### 수정
+
+- **ci** — build system records field by field so typecheck can finish (`a1a929d`)
+- **ci** — record the field-skill condition and four-layer tile surfaces (`6b71bd4`)
+- **battle-ui** — team-swap command spans the full row in the retro2003 root menu (label was clipped to 로크 …) (#2623) (`dbfaecc`)
+
 ## 0.226.0 — 2026-10-15
 
 ### 기능

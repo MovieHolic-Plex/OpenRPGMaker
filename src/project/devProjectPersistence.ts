@@ -33,6 +33,11 @@ export function discardDevProjectOverride(): void {
 
 // 반환값: 실제로 기록했는가 — fresh/blank 위치(저장 스킵 모드)에서는 false.
 // store가 미저장 변경 추적(결함 ⑧)에 사용한다.
+/** 이 위치에서 `saveDevProjectOverride` 가 실제로 쓰는가. 호출자가 쓰지 않을 사본을 만들지 않게 먼저 묻는다. */
+export function canSaveDevProjectOverride(): boolean {
+  return !isFreshProjectLocation() && devProjectStorageKey() !== null;
+}
+
 export function saveDevProjectOverride(project: Project): boolean {
   if (isFreshProjectLocation()) return false;
   const key = devProjectStorageKey();

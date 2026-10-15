@@ -37,7 +37,10 @@ const VEHICLE_SEGMENTS = [
   { value: "boat", key: "boat", label: "소형선" },
   { value: "ship", key: "ship", label: "대형선" },
   { value: "airship", key: "airship", label: "비행선" },
-] as const satisfies readonly SegmentOption<"boat" | "ship" | "airship">[];
+  { value: "chocobo", key: "chocobo", label: "초코보" },
+  { value: "cart", key: "cart", label: "광산 수레" },
+  { value: "raft", key: "raft", label: "뗏목" },
+] as const satisfies readonly SegmentOption<"boat" | "ship" | "airship" | "chocobo" | "cart" | "raft">[];
 
 const SCREEN_COLOR_SEGMENTS = [
   { value: "white", key: "white", label: "흰색" },
@@ -327,7 +330,7 @@ function setVehicleLocationBody(context: CommandEditContext, cmd: M2Command): HT
   const vehicleRaw = String(cmd.fields.vehicle ?? cmd.fields.target ?? "boat");
   const vehicle = segmentedSelect({
     options: VEHICLE_SEGMENTS,
-    value: vehicleRaw === "ship" || vehicleRaw === "airship" ? vehicleRaw : "boat",
+    value: VEHICLE_SEGMENTS.find((option) => option.value === vehicleRaw)?.value ?? "boat",
     testid: "set-vehicle-location-vehicle",
     ariaLabel: "탈것",
   });
