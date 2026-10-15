@@ -29,11 +29,11 @@ export function openWorldAtlasCreateDialog(): void {
       }) as HTMLInputElement;
       const seedField = el('label', { text: '배치 번호', children: [seed] });
       const theme = el('select', {
-        attrs: { 'aria-label': '세계관' }, dataset: { testid: 'world-atlas-theme' },
+        attrs: { 'aria-label': '지도 테마' }, dataset: { testid: 'world-atlas-theme' },
       }) as HTMLSelectElement;
       themeCatalog.forEach(entry => theme.append(el('option', { text: entry.name, attrs: { value: entry.id } })));
       theme.value = 'fantasy';
-      const themeField = el('label', { text: '세계관', children: [theme] });
+      const themeField = el('label', { text: '지도 테마', children: [theme] });
       const help = el('p', { text: initial.description });
       const status = el('p', { attrs: { 'aria-live': 'polite' }, dataset: { testid: 'world-atlas-create-status' } });
       const create = el('button', {

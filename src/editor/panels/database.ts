@@ -333,9 +333,16 @@ function railChildren(header: HTMLElement): HTMLElement[] {
   return Array.from(header.children) as HTMLElement[];
 }
 
+/**
+ * 비어 있어도 접지 않는 탭. 세계관 두 탭(세계 개요·설정집)은 「목록」이 아니라 쓰기 시작하는 입구다 —
+ * 새 프로젝트에서 두 탭이 「빈 탭 2개」 뒤에 숨어 세계관 그룹이 머리 글자만 남았다(2026-10-16 실측).
+ * 카운트 배지는 그대로 0 이면 비운다(`refreshTabCounts`).
+ */
+const NEVER_FOLDED_TABS: ReadonlySet<DatabaseTab> = new Set<DatabaseTab>(["worldCanon", "worldCodex"]);
+
 /** 목록 탭인데 레코드가 0 개인 탭만 「빈 탭」 이다. null(목록 아님)은 빈 것이 아니다. */
 function isEmptyListTab(id: DatabaseTab): boolean {
-  return databaseTabCount(id) === 0;
+  return !NEVER_FOLDED_TABS.has(id) && databaseTabCount(id) === 0;
 }
 
 function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
