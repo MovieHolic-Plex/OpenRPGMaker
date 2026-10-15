@@ -67,7 +67,7 @@ call("upsert_troop_battle_page", { troopId: "troop_ct_guard", page: {
 
 const mapId = project.startMapId;
 const map = project.maps[mapId]!;
-const blocker = call("place_battle_blocker", { mapId, x: project.startPos.x, y: project.startPos.y - 1, troopId: "troop_ct_guard", id: "ev_ct_guard", intro: ["반격병이 길을 막았다!"] });
+const blocker = call("place_battle_blocker", { graphic: { transparent: true }, mapId, x: project.startPos.x, y: project.startPos.y - 1, troopId: "troop_ct_guard", id: "ev_ct_guard", intro: ["반격병이 길을 막았다!"] });
 const at = blocker.data as { x: number; y: number };
 if (!isPassable(project, map, at.x, at.y + 1)) throw new Error(`블로커 남쪽 칸이 막혀 있다: (${at.x}, ${at.y + 1})`);
 call("set_start_position", { mapId, x: at.x, y: at.y + 1 });

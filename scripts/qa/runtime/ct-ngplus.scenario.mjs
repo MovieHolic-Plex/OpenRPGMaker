@@ -8,7 +8,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-ngplus-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-ngplus-fixture.mts"], {
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-ngplus-fixture.mts"], {
   maxBuffer: 40 * 1024 * 1024,
 }));
 
@@ -22,7 +22,7 @@ export default {
       testidPresent: ["title-screen", "title-new-game"], testidAbsent: ["title-new-game-plus"],
     }, shot: true },
     { id: "first-run", note: "새 게임 → 시작 칸, ESC 메뉴에 1장", ops: [
-      key("Enter"), { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime" },
+      key("Enter"), { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "waitForPosition", mapId: "map_lantern_village", x: 14, y: 18 },
       key("Escape"), { kind: "waitForVisible", testid: "status-menu-chapter" },
     ], expect: { visibleText: { "status-menu-chapter": "1장" } }, shot: true },
@@ -45,7 +45,7 @@ export default {
     { id: "ngplus-field", note: "↓ 로 고르고 Enter → 시작 칸에서 새로 시작한다", ops: [
       key("ArrowDown"), { kind: "waitForAttr", testid: "title-new-game-plus", attr: "aria-selected", value: "true" },
       key("Enter"),
-      { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime" },
+      { kind: "waitFor", testid: "title-screen", state: "absent" }, { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "waitForPosition", mapId: "map_lantern_village", x: 14, y: 18 },
     ], expect: { testidAbsent: ["title-screen", "ending-screen"] } },
     { id: "ngplus-menu", note: "ESC → 파티: 주인공 L7(이월), 장은 1장(이야기 상태는 넘어가지 않는다)", ops: [

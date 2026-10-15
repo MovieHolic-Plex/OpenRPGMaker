@@ -1,6 +1,6 @@
 // ct-ngplus.scenario.mjs 픽스처 — 강하게 다시 하기(New Game+)와 장 표시를 편집기 도구 호출로만 저작한다.
 //
-//   node node_modules/vite-node/vite-node.mjs --script scripts/qa/runtime/ct-ngplus-fixture.mts > /tmp/ct-ngplus.json
+//   node node_modules/vite-node/dist/cli.mjs --script scripts/qa/runtime/ct-ngplus-fixture.mts > /tmp/ct-ngplus.json
 //
 // 기준은 editor-authored-demo-v3(시작 map_lantern_village (14,18), 파티 4명 모두 Lv1).
 // 시작 칸 바로 북쪽 NPC 가 주인공을 Lv7 로 올리고 장 변수를 2 로 올린 뒤 엔딩을 부른다.

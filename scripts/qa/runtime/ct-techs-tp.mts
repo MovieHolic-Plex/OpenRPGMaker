@@ -1,6 +1,6 @@
 // 기술 포인트(TP) 헤드리스 증거: ct-techs 픽스처를 만든 뒤 simulate_battle 로 승리 보상의 TP·습득 미리보기를 보고,
 // 같은 결과를 applyBattleRewardsToSession 에 흘려 세션 적립 → 세이브 왕복까지 확인한다.
-// 사용: node node_modules/vite-node/vite-node.mjs --script scripts/qa/runtime/ct-techs-tp.mts
+// 사용: node node_modules/vite-node/dist/cli.mjs --script scripts/qa/runtime/ct-techs-tp.mts
 import { execFileSync } from "node:child_process";
 import { runTool } from "../../../src/editor/tools/toolRunner";
 import { deserialize } from "../../../src/project/io";
@@ -9,7 +9,7 @@ import { applyBattleRewardsToSession } from "../../../src/player/battleRewardsTo
 import { applySaveSnapshot, createSaveSnapshot } from "../../../src/player/saveSlots";
 import type { SimulateBattleResult } from "../../../src/battle/simulate";
 
-const json = execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-techs-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }).toString();
+const json = execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-techs-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }).toString();
 const project = deserialize(json);
 // 한 판에 끝나도록 통나무를 약하게 만든다(도구로만). TP 3 × 3 = 9 ≥ 비검 문턱 5.
 const tuned = runTool({ project }, "upsert_enemy", { enemy: { id: "enemy_ct_block", stats: { maxHp: 5 } } });

@@ -2121,3 +2121,13 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+
+## CT 회귀 시나리오 복구 (2026-10-15)
+
+`scripts/qa/runtime/ct-*.scenario.mjs`(engine·techs·field·onfield·ngplus, 그리고 chrono)는 편집기 도구(runTool)로 프로젝트를 만든 뒤 출하 플레이어에서 돈다.
+**netns 안에서** 돌린다: `unshare -rn bash -c "ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-engine --out /tmp/x"`.
+깨져 있던 이유(감사 2026-10-15)와 고침: ① 시나리오가 `node_modules/vite-node/vite-node.mjs` 를 불렀으나 v6 은 `dist/cli.mjs` 다
+② `place_battle_blocker` 가 텍스트 그림(「들판 박쥐」)을 거절 → `graphic:{transparent:true}`, 온필드는 `place_field_enemy`(걷기 칩 없는 종도 전투 그림 심볼)
+③ 스킬 칸은 2열 명령창이라 커서 이동이 `ArrowRight` ④ ct-field 의 턱 타일 6 은 beodeul_city 에서 상위 전용 칩으로 라우팅돼 1층에 안 칠해진다 → 741
+⑤ retro 스킨은 적 좌표를 구역(x≥34, y 92..142)으로 접으므로 moveEnemy(30,30) 의 렌더 값은 10.625% / 57.49999999999999% 다(부동소수 표기 그대로 비교).
+ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructureGuard.ts`)는 코드 실행이 아니라 순수 함수이며 `adventureCompletionProblems` 가 부른다.

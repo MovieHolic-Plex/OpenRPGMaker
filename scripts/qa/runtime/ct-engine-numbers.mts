@@ -1,7 +1,7 @@
 // Chrono Trigger 전투 엔진 헤드리스 증거: 스톱·버서크·프로텍트/실드·상태 속성 덮어쓰기·행동 moveTo 를 숫자로 본다.
 // ct-engine 픽스처 위에 runTool 로만 상태·스킬·적·트룹을 덧댄다. simulate_battle 로 전투 요약을 받고,
 // 같은 createBattleRuntime 을 같은 시드로 몇 틱 굴려 첫 피해·게이지·좌표를 읽는다(상태 유무만 다른 대조 쌍).
-// 사용: node node_modules/vite-node/vite-node.mjs --script scripts/qa/runtime/ct-engine-numbers.mts
+// 사용: node node_modules/vite-node/dist/cli.mjs --script scripts/qa/runtime/ct-engine-numbers.mts
 import { execFileSync } from "node:child_process";
 import { runTool } from "../../../src/editor/tools/toolRunner";
 import { deserialize } from "../../../src/project/io";
@@ -9,7 +9,7 @@ import { createBattleRuntime } from "../../../src/battle/runtime";
 import type { BattleSnapshot } from "../../../src/battle/types";
 import { mulberry32 } from "../../../src/util/rng";
 
-const json = execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-engine-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }).toString();
+const json = execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-engine-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }).toString();
 const project = deserialize(json);
 const ctx = { project };
 function call(name: string, args: Record<string, unknown>) {

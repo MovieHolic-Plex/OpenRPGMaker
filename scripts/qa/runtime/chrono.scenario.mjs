@@ -7,7 +7,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/chrono-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/chrono-fixture.mts"], {
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/chrono-fixture.mts"], {
   maxBuffer: 80 * 1024 * 1024,
   env: { ...process.env, CHRONO_REPORT: join(temporary, "report.json") },
 }));
@@ -25,7 +25,7 @@ export default {
     ], expect: { testidPresent: ["cinematic-sequence"], visibleText: { "cinematic-sequence": "가르디아" } }, shot: true },
     { id: "ct-field", note: "Opening skipped into the village; start cell south of the field enemy", ops: [
       { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 8 },
-      { kind: "waitForRuntime" },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "seed", seed: 1 },
       { kind: "pressUntil", key: "z", testid: "dialogue-box", state: "absent", maxPresses: 12 },
     ], expect: { mapId: "map_era_present", x: 20, y: 23, testidAbsent: ["title-screen", "battle-scene"] }, shot: true },

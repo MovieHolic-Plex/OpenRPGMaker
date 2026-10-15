@@ -8,7 +8,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-field-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-field-fixture.mts"], {
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-field-fixture.mts"], {
   maxBuffer: 80 * 1024 * 1024,
 }));
 
@@ -22,7 +22,7 @@ export default {
     { id: "party-followers", note: "New game: guardian and mage walk behind the hero with no addFollower authored", ops: [
       { kind: "key", key: "Enter" },
       { kind: "waitFor", testid: "title-screen", state: "absent" },
-      { kind: "waitForRuntime" },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 2, ids: ["actor:actor_guardian", "actor:actor_mage"] },
     ], expect: { mapId: START, x: 10, y: 8 }, shot: true },

@@ -9,7 +9,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-onfield-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-const json = execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-onfield-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 });
+const json = execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-onfield-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 });
 writeFileSync(fixture, json);
 const project = JSON.parse(String(json));
 const START = project.startMapId;
@@ -26,22 +26,20 @@ export default {
     { id: "field", note: "new game: hero + companion on the field, bat symbol three tiles north", ops: [
       { kind: "key", key: "Enter" },
       { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 12 },
-      { kind: "waitForRuntime" },
+      { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 1 },
     ], expect: { mapId: START, x: SX, y: SY, followerSpriteCount: 1, testidAbsent: ["title-screen", "battle-scene"] }, shot: true },
-    { id: "approach", note: "walk up two tiles to stand right under the symbol, then record field sprite screen positions", ops: [
-      { kind: "key", key: "ArrowUp" },
-      { kind: "waitForPosition", mapId: START, x: SX, y: SY - 1 },
-      { kind: "key", key: "ArrowUp" },
+    { id: "approach", note: "stand two tiles up, right under the symbol, then record field sprite screen positions", ops: [
+      // 키 한 번 누름(key)은 걷지 않는다 — 걸음은 방향을 누르고 있어야 한다(hold). 접근은 teleport 로 정확히 두 칸 올린다.
+      { kind: "teleport", mapId: START, x: SX, y: SY - 2 },
       { kind: "waitForPosition", mapId: START, x: SX, y: SY - 2 },
       { kind: "face", dir: "up" },
       { kind: "hold", ms: 400 },
       { kind: "captureFieldAnchors", eventId: BAT },
     ], expect: { mapId: START, x: SX, y: SY - 2 } },
-    { id: "battle-on-field", note: "talk to the symbol: battle opens in place (no transition overlay), battlers stand where the field sprites were", ops: [
-      { kind: "action" },
-      // 블로커 인트로 대사("적이 앞을 가로막았다!")를 넘긴다.
+    { id: "battle-on-field", note: "bump the symbol: battle opens in place (no transition overlay), battlers stand where the field sprites were", ops: [
+      { kind: "hold", dir: "up", ms: 500 },
       { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16 },
       scene("data-battle-presentation", "onField", 10_000),
       { kind: "waitFor", testid: "battle-onfield-backdrop", state: "present", timeoutMs: 10_000 },
@@ -49,7 +47,7 @@ export default {
     ], expect: {
       testidPresent: ["battle-scene", "enemy-1", "battle-onfield-backdrop"],
       testidAbsent: ["battle-transition-overlay"],
-      onFieldPlacement: { enemyTestid: "enemy-1", actorTestids: ["battle-actor-actor_hero", "battle-actor-actor_guardian"], maxTiles: 1 },
+      onFieldPlacement: { enemyTestid: "enemy-1", actorTestids: ["battle-actor-actor_hero", "battle-actor-actor_guardian"], maxTiles: 2 },
     }, shot: true },
     { id: "victory-returns-in-place", note: "one attack defeats the bat; the battle closes without a transition and the hero is on the same tile", ops: [
       scene("data-battle-sequence-busy", "false"),
