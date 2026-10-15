@@ -344,7 +344,7 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
         backgroundColor: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
         letterbox: { type: 'integer', minimum: 0, maximum: 20 },
         text: { type: 'object', additionalProperties: false, properties: {
-          layout: { type: 'string', enum: ['center', 'bottom', 'left', 'credits'] },
+          layout: { type: 'string', enum: ['center', 'bottom', 'bar', 'left', 'credits'], description: 'bar = 레터박스 막대 안 한 줄 자막(letterbox 14~20 과 함께). bottom = 그림 위 하단.' },
           font: { type: 'string', enum: ['serif', 'sans', 'pixel'] },
           size: { type: 'integer', minimum: 8, maximum: 16, description: '논리 px(무대 320×240, 화면에서 3배). 자막 10~13, 장 제목 최대 16.' },
           color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },

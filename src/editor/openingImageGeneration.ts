@@ -126,7 +126,9 @@ export async function generateCinematicStill(
       });
       if (!await inspect(image.dataUrl)) return { ok: false, summary: '전경 그림에 실제 투명 배경 또는 대상이 없습니다. 체커보드/단색 배경은 투명하지 않습니다. 실제 alpha PNG로 다시 생성하세요.', code: 'foreground-not-transparent' };
     }
-    const dataUrl = brief?.layerRole && brief.layerRole !== 'background' ? await removeOpeningChroma(image.dataUrl, options.signal) : image.dataUrl;
+    const isLayer = Boolean(brief?.layerRole && brief.layerRole !== 'background') || (purpose === 'opening' && args.role === 'foreground');
+    const keyed = brief?.layerRole && brief.layerRole !== 'background' ? await removeOpeningChroma(image.dataUrl, options.signal) : image.dataUrl;
+    const dataUrl = purpose === 'opening' && args.pixelArt !== false ? await pixelizeOpeningImage(keyed, isLayer) : keyed;
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };
   } catch (error) {
     if (error instanceof ImageGenerationError) {
@@ -142,6 +144,21 @@ export async function generateCinematicStill(
 }
 
 /** Edge-connected chroma only. Never label an opaque failed cutout as a transparent actor. */
+/**
+ * 생성기는 매끈한 에어브러시 그림을 주므로 컷마다 화풍·격자가 달라진다(실측: 타이틀은 굵은 도트, 컷은 디지털 페인팅).
+ * 모든 오프닝 그림을 같은 격자(배경 가로 384칸 · 전경 192칸 이내)와 제한 팔레트로 내려 한 작품의 도트로 맞춘다.
+ * 플레이어는 작은 그림에 pixelated 렌더링을 건다. 처리할 수 없으면(예: 노드의 JPEG) 원본을 그대로 쓴다.
+ */
+export async function pixelizeOpeningImage(dataUrl: string, isLayer: boolean): Promise<string> {
+  try {
+    const { decodeImage, encodePng, pixelate } = await import('@/editor/cutsceneArt/imageProcess');
+    const source = await decodeImage(dataUrl);
+    const width = Math.min(isLayer ? 192 : 384, source.width);
+    const height = Math.max(1, Math.round(width * source.height / source.width));
+    return await encodePng(pixelate(source, width, height, isLayer ? 32 : 96));
+  } catch { return dataUrl; }
+}
+
 export async function removeOpeningChroma(dataUrl: string, signal?: AbortSignal): Promise<string> {
   const image = new Image(); image.src = dataUrl; await image.decode(); signal?.throwIfAborted();
   const width = image.naturalWidth, height = image.naturalHeight, count = width * height;
