@@ -3273,3 +3273,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
 - 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
 
+
+## 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+
+`read_project_wiki`(ids 포함)·`read_authoring_preset`(`world-story` 분야의 `world`)·`get_original_context`(`/world`)는 `project.world` 를 `aiVisibleWorld`/`aiVisibleEntities` 로 거른 뒤 돌려준다 — 카드에 `visibility: "ai-hidden"` 이면 이름·id·관계 메모까지 나가지 않는다. 새 읽기 도구가 `project.world` 를 모델에 돌려주면 같은 필터를 부르고 `test/helpers/worldAiPaths.ts` 에 경로를 등록한다.
