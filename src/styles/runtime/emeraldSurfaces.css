@@ -57,8 +57,22 @@
 /* 쓰러진 적은 제외한다: 이 규칙이 .defeated 에도 걸려 19 의 pkmn-battler-faint 가 한 번도 돌지 않았고,
    막타를 맞은 적이 쓰러졌다 문장 뒤에도 결과 화면까지 멀쩡히 서 있었다(2026-10-15 재현: img animation-name none, opacity 1). */
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy:not(.defeated) .battle-enemy-image:not([data-battler-anim]) {
-  animation: none;
+  /* 대기 오르내림(3세대 도트 몬스터는 가만히 서 있지 않는다): 1 도트(2px)를 반 박자씩 오르내린다. 하네스 대기 스트립이 등록된 종은
+     data-battler-anim 이 붙어 이 규칙에서 빠진다. translate 속성이라 공격·피격 이동(transform)과 겹치지 않는다. */
+  animation: emerald-idle-bob 1.1s steps(1, end) infinite;
+  animation-delay: -0.4s;
   scale: 1;
+}
+@keyframes emerald-idle-bob {
+  0% { translate: 0 0; }
+  50% { translate: 0 -2px; }
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:not(.defeated) :is(.battle-monster-image, .battle-monster-authored-back):not([data-battler-anim]) {
+  animation: emerald-idle-bob 1.1s steps(1, end) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"][data-monster-style="emerald"] .battle-enemy:not(.defeated) .battle-enemy-image:not([data-battler-anim]),
+  .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor:not(.defeated) :is(.battle-monster-image, .battle-monster-authored-back):not([data-battler-anim]) { animation: none; }
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-group .battle-actor :is(.battle-monster-image, .battle-monster-authored-back) {
   width: 128px;
