@@ -204,7 +204,7 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 
 - 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
   판정자 Claude Sonnet 5.5 high 하나×네 번(과반, 2026-10-14 교체; 보정 프로필 `3989203095df6a2f` rejected — 3/4 위반 43/47·정상 19/36, 화풍 58/71·31/78)이고 한 번에 3/4 와 버들항 화풍 둘을 함께 판정한다(영수증에 칸 둘, 둘 다 통과해야 통과; 숫자 지표는 보조). 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
-- **지금 상태(2026-10-15 실측): 영수증 0장, 현재 프로필 `03c2e291e607b97c`(규칙 v7) 보정 rejected** — 3/4 반쪽은 확실 위반 0/84 자동통과·정상 85% 통과지만 화풍 반쪽이 미통과다. 굽기 스크립트 다수(`theme_bake` 계열·modern-city·murim-chipset·jp-city)는 이미 `refusal`/`require_pass` 를 호출하므로 새 그림은 지금 **거절된다**(옛 영수증 5,300장 무효). 배선 표·우회 경로(`JP_GATE=skip`, interior-plus `--no-gate`)는 `openwiki/harnesses/object-gate.md`. 「관문이 있다」·「통과했다」고 쓰지 마라.
+- **지금 상태(2026-10-16 실측): 영수증 0장, 현재 프로필 `ee216f0de5822996`(규칙 v8) 보정 rejected** — 3/4 반쪽은 확실 위반 0/84 자동통과지만 정상 통과율·화풍 반쪽이 미통과다. 굽기 스크립트 다수(`theme_bake` 계열·modern-city·murim-chipset·jp-city)는 이미 `refusal`/`require_pass` 를 호출하므로 새 그림은 지금 **거절된다**(우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop` — **사람이 터미널에서 `approve-front-prop` 로 그림 해시에 승인한 것만** 3/4 면제(화풍은 그대로 pass), 승인 전엔 보류이며 감독·에이전트는 승인하지 않는다. 「관문이 있다」·「통과했다」고 쓰지 마라.
   그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.

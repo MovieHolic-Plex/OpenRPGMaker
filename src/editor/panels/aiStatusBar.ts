@@ -12,7 +12,8 @@ import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
-import { isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, type Presence } from "./aiPresence";
+import { AI_STUDIO_CHANGE_EVENT } from "@/editor/aiStudioMode";
+import { conversationCardCovers, isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, type Presence } from "./aiPresence";
 
 /** 끝난 일(적용됨)은 이 시간 뒤에 줄에서 물러난다. 실패·검토 대기는 사람이 처리할 때까지 남는다. */
 const SETTLED_HIDE_MS = 6000;
@@ -164,7 +165,7 @@ export function mountAiStatusBar(): () => void {
   const stepText = (presence: Presence): string => presence.steps > 0 && presence.state === "working" ? ` · ${presence.steps}단계` : "";
 
   function render(): void {
-    const visible = presences.length > 0 && !hiddenBySettle;
+    const visible = presences.length > 0 && !hiddenBySettle && !conversationCardCovers(presences);
     root.hidden = !visible;
     if (!visible) { closePop(); return; }
     const attention = presences.some(p => p.state === "failed") ? "failed" : presences.some(p => p.state === "review") ? "review" : "none";
@@ -224,6 +225,8 @@ export function mountAiStatusBar(): () => void {
   });
   const timer = window.setInterval(tick, 1000);
   const onResize = (): void => place();
+  // 도크를 접고 펼치거나 스튜디오가 열리고 닫히면 「대화 카드가 보이나」가 바뀐다 — 줄을 다시 판단한다.
+  const onVisibilityContext = (): void => render();
   const onDocPointer = (event: PointerEvent): void => {
     if (pop.hidden) return;
     const target = event.target as Node | null;
@@ -239,6 +242,8 @@ export function mountAiStatusBar(): () => void {
   const observer = typeof ResizeObserver === "function" ? new ResizeObserver(() => place()) : null;
   if (canvas) observer?.observe(canvas);
   window.addEventListener("oprn:ai-panel-collapse", onResize);
+  window.addEventListener("oprn:ai-panel-collapse", onVisibilityContext);
+  window.addEventListener(AI_STUDIO_CHANGE_EVENT, onVisibilityContext);
 
   return () => {
     off();
@@ -246,6 +251,8 @@ export function mountAiStatusBar(): () => void {
     window.clearInterval(timer);
     window.removeEventListener("resize", onResize);
     window.removeEventListener("oprn:ai-panel-collapse", onResize);
+    window.removeEventListener("oprn:ai-panel-collapse", onVisibilityContext);
+    window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onVisibilityContext);
     document.removeEventListener("pointerdown", onDocPointer, true);
     document.removeEventListener("keydown", onKey);
     observer?.disconnect();

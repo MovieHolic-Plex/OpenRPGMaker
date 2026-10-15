@@ -10,7 +10,8 @@
 import { agentGhostPreviewsForMap, getAgentGhostPreviewState, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { editorState } from "@/editor/editorState";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
-import { isActive, PRESENCE_LABEL, subscribeAiPresence, type Presence, type PresenceRegion } from "@/editor/panels/aiPresence";
+import { conversationCardCovers, isActive, PRESENCE_LABEL, subscribeAiPresence, type Presence, type PresenceRegion } from "@/editor/panels/aiPresence";
+import { AI_STUDIO_CHANGE_EVENT } from "@/editor/aiStudioMode";
 import { el } from "@/util/dom";
 
 interface Placed {
@@ -51,10 +52,16 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   const mapId = editorState.get().currentMapId;
   if (!mapId) return [];
   // 초안 영역은 맵당 조수 한 명 규칙에 따라 그 맵에 쓰는 조수(검수 제외) 한 명에게만 붙인다. 나머지는 이름표만.
-  const here = presences.filter(p => p.mapId === mapId && p.state !== "applied");
+  // 대화 카드가 진행·확인·실패를 맡고 있으면(도크 열림 + 전부 대화창의 일) 지도는 「일하는 중」 이름표만 말한다.
+  // 실패는 이름표를 달지 않는다(대화 카드가 원인을 갖고 있다). 검토·초안 상자는 어디가 바뀌었는지 가리키므로 남긴다.
+  const covered = conversationCardCovers(presences);
+  const here = presences.filter(p => p.mapId === mapId && p.state !== "applied" && !(covered && p.state === "failed"));
   const writer = here.find(p => !p.region && !p.readsOnly);
   const draft = writer ? ghostBounds(mapId) : null;
-  return here.map(presence => ({ presence, region: presence.region ?? (presence === writer ? draft : null) }));
+  return here.map(presence => ({
+    presence,
+    region: presence.region ?? (presence === writer ? draft : null),
+  }));
 }
 
 /** 이름표 한 칸의 내용 글. 실행 중이면 지금 하는 일, 아니면 상태 라벨. */
@@ -187,6 +194,9 @@ export function mountAiMapPresence(): () => void {
   const offPresence = subscribeAiPresence(next => { latest = next; refresh(); });
   const offGhost = subscribeAgentGhostPreview(refresh);
   let lastMapId = editorState.get().currentMapId;
+  // 도크를 접고 펼치거나 스튜디오가 열리고 닫히면 대화 카드가 보이는지가 바뀐다 — 이름표 글을 다시 판단한다.
+  window.addEventListener("oprn:ai-panel-collapse", refresh);
+  window.addEventListener(AI_STUDIO_CHANGE_EVENT, refresh);
   const offEditor = editorState.subscribe(() => {
     // 맵을 바꿨을 때만 다시 고른다 — 붓질마다 DOM 을 갈아엎지 않는다.
     const mapId = editorState.get().currentMapId;
@@ -194,6 +204,8 @@ export function mountAiMapPresence(): () => void {
   });
   teardown = () => {
     offPresence(); offGhost(); offEditor();
+    window.removeEventListener("oprn:ai-panel-collapse", refresh);
+    window.removeEventListener(AI_STUDIO_CHANGE_EVENT, refresh);
     if (watchFrame) cancelAnimationFrame(watchFrame);
     watchFrame = 0;
     layer?.remove(); layer = null; placed = []; teardown = null;

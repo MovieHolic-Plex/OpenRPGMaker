@@ -54,6 +54,17 @@ export type ObjectGateReceipt = {
   override?: { by: 'human'; at: string; note?: string };
 };
 
+/**
+ * 정면형 소품(front_prop) 종류 선언의 사람 승인 기록. 화소 해시·종류·승인자·시각을 묶는다 — 그림이 한 화소라도 바뀌면 해시가 달라져 승인은 자동으로 무효다.
+ * 승인된 그림만 3/4 반쪽을 면제한다(화풍 반쪽은 그대로 pass 여야 한다). 감독·에이전트는 승인할 수 없다: 승인 입구(cli `approve-front-prop`)는 터미널 대화형 확인만 받는다.
+ */
+export type ObjectGateFrontPropApproval = { schema: 'oprn-object-gate-front-prop-approval/1'; pixelSha256: string; kind: 'front_prop'; approvedBy: string; approvedAt: string; by: 'human'; note?: string };
+
+export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | null | undefined, pixelSha256: string): approval is ObjectGateFrontPropApproval {
+  return !!approval && approval.schema === 'oprn-object-gate-front-prop-approval/1' && approval.by === 'human' && approval.kind === 'front_prop'
+    && approval.pixelSha256 === pixelSha256 && typeof approval.approvedBy === 'string' && approval.approvedBy.trim().length > 0 && !!approval.approvedAt;
+}
+
 export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
 
 export type ObjectGateProfileRecord = {
@@ -123,12 +134,21 @@ export function objectGateRefusal(input: {
   kind?: ObjectGateKind;
   context: ObjectGateContext;
   calibratedProfiles: ReadonlySet<string>;
+  /** front_prop 종류의 사람 승인 기록(없으면 null). 이 그림 해시에 묶인 유효한 승인이 있을 때만 3/4 반쪽을 면제한다. */
+  approval?: ObjectGateFrontPropApproval | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
   if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
   if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다(위반 표본을 다 잡지 못했거나 보정 전)`;
+  // front_prop: 사람이 이 그림 해시에 대해 종류를 승인했다면 3/4 반쪽은 면제 — 남은 것은 화풍 반쪽의 판정뿐이다. 승인이 없으면 아래 보류 경로(번들·공용·스토어 출구 차단).
+  if (receipt.kind === 'front_prop' && validFrontPropApproval(input.approval, pixelSha256)) {
+    const styleVerdict = receipt.style?.verdict;
+    if (styleVerdict === 'pass') return null;
+    if (styleVerdict === 'refer') return `화풍 판정 보류(정면형 소품은 사람이 종류를 승인했으나 화풍 반쪽이 사람 확인 필요) — 보류는 통과로 세지 않는다`;
+    return `화풍 불합격(정면형 소품은 3/4 면제를 승인받았으나 화풍 반쪽이 떨어졌다: ${receipt.style?.reasons?.join(' · ') || 'fail'})`;
+  }
   if (receipt.verdict === 'pass') return null;
   if (receipt.verdict === 'refer') {
     // 보류는 통과로 세지 않는다(번들·공용·스토어 출구는 예외 없이 막는다). 공방 로컬만 사람이 직접 누른 「그래도 넣기」로 확인할 수 있다(Python refusal 과 같다).

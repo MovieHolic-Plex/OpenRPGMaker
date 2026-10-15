@@ -8,5 +8,22 @@ export function friendlyExecutionError(message: string): string {
   if (/429|rate.limit|quota|한도/i.test(message)) return "AI 사용 한도에 도달했어요. 잠시 후 다시 시도해 주세요.";
   if (/timeout|timed.out|시간.*상한/i.test(message)) return "응답을 기다리다가 작업이 멈췄어요. 다시 시도해 주세요.";
   if (/fetch|network|connection|503|연결/i.test(message)) return "AI에 연결하지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요.";
-  return "작업을 끝내지 못했어요. 작업 과정에서 자세한 내용을 확인할 수 있어요.";
+  return GENERIC_EXECUTION_ERROR;
+}
+export const GENERIC_EXECUTION_ERROR = "작업을 끝내지 못했어요. 작업 과정에서 자세한 내용을 확인할 수 있어요.";
+/**
+ * 적용 거절의 화면 문장. 사유 코드(`commit-rejected`)와 도구 이름(`set_start_position`·`tile_query`)은 실행 기록에만 남긴다.
+ * 이슈 문장에서 영문 식별자를 걷고도 한국어 설명이 남으면 그것을 이유로 붙인다.
+ */
+export function friendlyApplyFailure(reason: string, issue?: string): string {
+  const head = reason === "stale-base" || reason === "stale-baseline" ? "그사이 맵이 바뀌어 변경을 적용하지 못했어요."
+    : reason === "retired-run" ? "이미 끝난 작업이라 변경을 적용하지 않았어요."
+    : reason === "map-destruction-unapproved" ? "맵을 지우는 변경이라 확인 없이는 적용하지 않았어요."
+    : "변경 내용을 적용하지 못했어요.";
+  const cleaned = (issue ?? "")
+    .replace(/`[^`]*`/gu, "")
+    .replace(/\b[a-z][a-z0-9]*(?:[_-][a-z0-9]+)+\b/gu, "")
+    .replace(/\(\s*\)|\[\s*\]/gu, "")
+    .replace(/\s+/gu, " ").trim();
+  return /[가-힣]/u.test(cleaned) ? `${head} ${cleaned}` : head;
 }

@@ -126,6 +126,19 @@ export function needsUser(presence: Presence): boolean {
   return presence.state === "review" || presence.state === "failed";
 }
 
+/**
+ * 대화 카드가 이미 이 일들을 말하고 있나. 오른쪽 도크가 열려 있고(접힘·스튜디오 아님) 일이 전부 대화창의 일(source=chat)이면
+ * 대화 속 카드 하나가 진행·확인·실패를 맡는다 — 지도 아래 줄·받은함·실패 이름표는 같은 말을 되풀이하는 두 번째 알림이다.
+ * 도크가 접혔거나 스튜디오이거나, 영역 작업·다른 맵 작업처럼 대화 카드가 없는 일이 섞였으면 그쪽이 유일한 창구라 false.
+ * 도크 상태는 패널이 body 클래스(`ai-dock-collapsed`·`ai-studio-open`)로 알린다.
+ */
+export function conversationCardCovers(presences: readonly Presence[]): boolean {
+  if (typeof document === "undefined" || !document.body) return false;
+  const body = document.body.classList;
+  if (body.contains("ai-dock-collapsed") || body.contains("ai-studio-open")) return false;
+  return presences.length > 0 && presences.every(presence => presence.source === "chat");
+}
+
 /** 한 번에 하나만 취소·중단할 때. background 는 대기열 표를, 앞 턴은 팀 중지 슬롯을 쓴다. */
 export function stopPresence(presence: Presence): void {
   if (presence.source === "background" && presence.ticketId !== undefined) mapRunQueue().cancel(presence.ticketId);
