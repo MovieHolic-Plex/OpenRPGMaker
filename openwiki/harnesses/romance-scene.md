@@ -65,3 +65,18 @@ node scripts/qa/romance-scene-review.mjs <hydrated-project.json> <owned-host-url
 The focused contract script checks production tool dispatch, atomic rejection, schema roundtrip, native runtime paths and adversarial variants. Live QA uses a dedicated host/root, normal New Game interview, real provider, and host persistence. Authored tiles require reading the current canonical reference documents/images first. Game browser evidence must use the dedicated `player.html` QA server, never the editor play shell. Do not confuse fixture execution or JSON roundtrip with live provider success or SQLite reload.
 
 Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final automatic project completed without human content repair; a software-renderer page error prevents calling the full editor UI audit error-free. Package browser QA includes real exported dependencies and disables opening only on an explicitly labelled scene QA copy.
+
+## 하루 루프 뼈대 `system.socialLoop` (2026-10-16, 현대 연애 병목 감사 2번)
+
+옵트인이다 — `system.socialLoop` 이 없으면 동작·저장 바이트가 그대로다(`databaseRecordModel.ts` 화이트리스트에 있어야 저장·불러오기 왕복에서 살아남는다).
+
+- **데이터**: `system.socialLoop?: { slotsPerDay?: 1..12(기본 3); dailyFriendshipCap?: 기본 20 }`, 세션 `session.socialLoop`(오늘 쓴 칸·사람별 오늘 얻은 호감, 날이 바뀌면 다음 대화에서 새로 시작). 정본 `src/project/socialLoop.ts`.
+- **판정은 `trySocialTalk(session, event, project)` 한 곳**(`friendship.ts`): 호감이 오르는 대화(`talkFriendship`)가 시간대 한 칸을 쓰고, 한 사람에게서 하루 합계에 상한이 있다. 상한을 채운 사람과 또 말하면 호감은 0 이지만 칸은 쓴다(플레이어가 갇히지 않게 거절하지 않는다). 칸이 없으면 `no-slots`.
+- **시계**: 칸 하나 = 하루 길이 ÷ 칸 수만큼 시계가 간다(`player/socialSlotClock.ts`, 하루 끝 1분 앞까지만). 마지막 칸을 쓰면 `forceSleep` 이 켜져 있을 때 하루가 저물어 `playSceneInterpreter.runTalkPath` 가 `sleepUntilMorning` 을 부른다 → `timeSystem.onDayEnd` 공통 이벤트(기한 엔딩)가 돈다. 자연 시계가 같은 순간 먼저 강제 취침을 걸어 열린 피드백 대사를 가져가는 경우(`Text cancelled`)는 정상 흐름으로 삼킨다.
+- **헤드리스 같은 규칙**: `sceneTestRunner.applySocialTalkForRunner`(대화 호감)·`runDayEndHookForRunner`/`sleepUntilMorningForRunner`(잠). `qa:game check` 가 같은 루프를 본다(별도 PR).
+- **도구**: `place_npc` 의 `talkFriendship`(호감 대화 켜기) — 모르는 키는 조수 실행에서 거부(`toolRunner` strict keys, 말없이 버리지 않는다). `set_deadline_ending`(`endingTools.ts`): 「N일 뒤 결말 판정」 한 줄 — 공통 이벤트 `ce_deadline_ending` + 변수 `var_days_elapsed` + `timeSystem.onDayEnd` 를 한 번에 깔고, 엔딩 조건 `friendshipAtLeast`(npcKey, value)를 쓴다.
+- **런타임 QA**: `npm run qa:runtime -- --scenario romance-loop`(대화 3번→하루 저묾→이튿날 아침 호감 유지) · `romance-loop-end`(기한 1일 → 「친구로 남는 결말」 에필로그 → 엔딩 화면). 픽스처는 `scripts/qa/romance-fix/loop-fixture.mts`. SQLite 왕복 `scripts/qa/romance-fix/sqlite-roundtrip-loop.sh`(시험 프로젝트에만).
+
+## 연애 인터뷰 기본값 (2026-10-16, 5번)
+
+`src/project/romancePreset.ts` `applyRomanceDefaults(project)` — 인터뷰 장르가 `romance` 일 때만(결정론, 이미 있던 설정은 건드리지 않는다): 시간 시스템(0.1분/초·강제 취침), `socialLoop`, 호감 하트 HUD(`fieldHud` 위젯 소스 `friendship`·`socialSlots` 추가, 글자·CSS 만), 타이틀 배경(`oprn-still-moon-meadow` — 새 그림 없음, 눈 덮인 마을 기본값 대체), 장르 잠금 `romance`(`genreLock.ts` `GENRE_LOCK_PRESETS.romance`: 허용 계열 oprn-campus/oprn-modern/oprn-jp, 몬스터 잠금 #2625 과 같은 구조, 조수 실행에서만 강제). 호출처: `projectInterviewStartup.ts`·`welcomeGenreSystemPresetAction.ts`.

@@ -113,6 +113,7 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
       const sources = widget.kind === "slots" ? { tools: HUD_SOURCES.tools, inventory: HUD_SOURCES.inventory } : Object.fromEntries(Object.entries(HUD_SOURCES).filter(([key]) => !(widget.kind === "gauge" ? ["tools", "weather", "map"] : ["tools"]).includes(key)));
       inspector.append(select("연결할 데이터", widget.source, sources, value => patch({ source: value as HudWidget["source"] }, true), "hud-field-source"));
       if (["hp", "mp"].includes(widget.source)) inspector.append(select("배우", widget.actorId ?? "", { "": "선두 배우", ...Object.fromEntries(project.database.actors.map(a => [a.id, a.name])) }, value => patch({ actorId: value }), "hud-field-actorId"));
+      if (widget.source === "friendship") inspector.append(input("호감 대상(characterId, 비우면 가장 높은 사람)", "npcKey", widget), input("최댓값", "max", widget, "number"));
       if (widget.source === "variable") {
         const variables = Object.fromEntries(project.variables.map(v => [v.id, v.name || v.id]));
         inspector.append(select("변수", widget.variableId ?? "", { "": "선택하세요", ...variables }, value => patch({ variableId: value }), "hud-field-variableId"), select("최댓값 변수", widget.maxVariableId ?? "", { "": "고정 최댓값 사용", ...variables }, value => patch({ maxVariableId: value }), "hud-field-maxVariableId"));

@@ -275,6 +275,30 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
  * (2026-10-07 장르 시험: 레이어 id:"", 오프닝 text 장면의 composition:{} 같은 거부가 반복됐다). 필수 칸·빈 배열·0 은 건드리지 않는다 —
  * 빈 배열은 「해제」 뜻으로 쓰는 도구가 있다.
  */
+/**
+ * 모르는 최상위 인자를 말없이 버리지 않는다(2026-10-16 연애 감사). place_npc 는 선언 밖 키(talkFriendship·friendshipUnlock·schedule 등)를
+ * 그냥 무시해서 「호감 대화를 켰다」고 믿은 NPC 가 아무 호감도 못 줬다. 조수 실행에서만 거부한다 — 편집기·콘텐츠 스크립트 호출은 그대로.
+ * 이 목록은 선택 적용이다: 키를 아는 도구만 올린다(그 외 도구는 기존대로 관대).
+ */
+const STRICT_TOP_LEVEL_ARG_TOOLS: ReadonlyMap<string, readonly string[]> = new Map([
+  // run() 이 직접 읽지만 스키마에는 없는 별칭 두 개.
+  ["place_npc", ["dialogue", "commands"]],
+]);
+
+function unknownTopLevelArgKeys(tool: { name: string; parameters: JsonSchema }, args: Record<string, unknown>): string[] {
+  const extra = STRICT_TOP_LEVEL_ARG_TOOLS.get(tool.name);
+  if (!extra) return [];
+  const declared = new Set([...Object.keys(tool.parameters.properties ?? {}), ...extra]);
+  return Object.keys(args).filter((key) => !declared.has(key) && args[key] !== undefined);
+}
+
+function unknownArgKeysMessage(toolName: string, keys: readonly string[]): string {
+  const hint = toolName === "place_npc"
+    ? " 호감·선물·상점·시간표·friendshipUnlock 같은 인물 옵션은 make_villager 에 있고, place_npc 는 talkFriendship(호감 대화 켜기)만 받는다. 인물 옵션이 필요하면 make_villager 로 만들거나 place_npc 뒤에 update_event 로 고쳐라."
+    : "";
+  return `${toolName} 은 선언되지 않은 인자 ${keys.map((key) => `'${key}'`).join(", ")} 를 받지 않는다 — 말없이 버리면 저작한 내용이 사라진 채 성공처럼 보이므로 거부했다.${hint}`;
+}
+
 function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, path: string, dropped: string[]): unknown {
   if (!schema || value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) {
@@ -356,6 +380,14 @@ export function runToolDefinition(
       ? [`빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`]
       : []),
   ].join("\n") || null;
+  const unknownKeys = ctx.assistantRun ? unknownTopLevelArgKeys(tool, normalizedArgs) : [];
+  if (unknownKeys.length > 0) {
+    return {
+      ok: false,
+      summary: `'${name}' 인자 검증 실패`,
+      issues: [{ severity: "error", code: "invalid-args", message: unknownArgKeysMessage(name, unknownKeys) }],
+    };
+  }
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);

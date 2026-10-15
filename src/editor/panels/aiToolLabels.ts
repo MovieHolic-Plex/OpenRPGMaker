@@ -147,6 +147,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_map_properties: world("맵 속성", "gear"),
   set_start_position: world("시작 위치", "pin"),
   define_ending: world("엔딩 정의", "flag"),
+  set_deadline_ending: world("기한 엔딩", "flag"),
   set_project_genre: system("장르 정하기"),
   set_project_settings: system("프로젝트 설정"),
   set_title_screen: system("타이틀 화면"),
