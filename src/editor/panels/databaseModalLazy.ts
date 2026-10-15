@@ -2,6 +2,7 @@ import type { DatabaseTab } from "@/editor/panels/database";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { uiLabel } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
+import { afterBootSettled } from "@/util/bootSettled";
 
 /**
  * 자료집 본문은 수 MB 편집 표면이다. 편집기 첫 화면 그래프에는 넣지 않는다.
@@ -55,8 +56,13 @@ export function scheduleDatabaseModalPrefetch(): void {
     });
   };
   // 지금 프레임의 첫 그림은 넘기고, 그 다음부터는 기다리지 않는다.
-  if (typeof requestAnimationFrame === "function") requestAnimationFrame(start);
-  else setTimeout(start, 0);
+  // 부팅 중이면 첫 화면(부팅 로더 걷힘) 뒤로 미룬다 — 자료집 묶음 읽기·숨은 창 만들기(약 0.3~0.5s)가 편집 화면이 뜨기 전 메인 스레드를
+  // 쓰던 것을 뒤로 옮긴다(2026-10-15 실측, 웜 부팅). 그 사이 자료집을 먼저 누르면 클릭 경로가 본문을 읽고 연다(위 머리말).
+  const afterFirstFrame = (): void => {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(start);
+    else setTimeout(start, 0);
+  };
+  afterBootSettled(afterFirstFrame);
 }
 
 scheduleDatabaseModalPrefetch();
