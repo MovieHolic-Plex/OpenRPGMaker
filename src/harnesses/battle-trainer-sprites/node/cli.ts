@@ -1,7 +1,7 @@
 /**
  * npm run harness -- battle-trainer-sprites <단계> [옵션]
  *
- *   list  ·  draw [역할|all] [--n 5] [--par 5] [--plate p1] [--no-throw] [--background]
+ *   list  ·  draw [역할,…|all] [--n 5] [--par 6] [--plate p4] [--mode gen] [--background]
  *   status [판]  ·  sheet <판>  ·  pick <판> 역할=글자 …  ·  bake <판> [역할 …]
  *
  * 실제 일은 같은 폴더의 harness.py 가 한다. 이 파일은 입구만 맡는다.

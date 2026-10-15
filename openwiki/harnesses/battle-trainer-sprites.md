@@ -1,49 +1,46 @@
-# battle-trainer-sprites — 전투 트레이너 스프라이트 (몬스터 수집 전용 그림 편집)
+# battle-trainer-sprites — 전투 트레이너 스프라이트 (생성형 이미지 → 격자 도트화 → 사람이 고름)
 
 포켓몬식 전투 화면의 **상대 트레이너 앞모습**과 **내 트레이너 뒷모습**을 만든다.
 진단 정본 `~/claude-viz/poke-battle-diag.html` B4·C5(트레이너 그림 없음)의 후속이다.
 
-## 결정 이력
-- 2026-10-15 1차: 「Actor1 을 Argon 으로 변형」 → p1(Argon 이 64×64 를 새로 그림), p2(Actor1 24×32 편집). **둘 다 폐기.**
-- 2026-10-15 사용자 지적: 전투 트레이너 구도는 **포켓몬(몬스터 수집) 전용 그림**만 소스로 써야 한다. Actor1(RM2000 RTP)은 틀린 소스다.
-  p1·p2 시트(`trainer-sprites-pick-1/2.html`)와 `qa-runs` 산출은 보존만 한다. `pick`·`sheet`·`bake` 는 이 판들을 거절한다.
+## 결정 이력 (2026-10-15, 전부 사용자 지적으로 폐기·교체)
+1. p1 — Argon 이 Actor1 을 보고 64×64 를 새로 그림. 폐기(Actor1 과 너무 다름).
+2. p2 — Actor1 24×32 프레임을 Argon 이 국소 편집. 폐기(소스가 틀림: 전투 트레이너는 포켓몬/몬스터 수집 전용 그림이어야 한다).
+3. p3 — 몬스터 수집 전용 전투 인물 64×64 를 Argon 이 격자로 국소 편집(색만 바꿈). 폐기(「너무 개판」).
+4. **p4~ = 몬스터 종 하네스와 같은 경로: 생성형 이미지 → 격자 도트화 → 사람이 고름.** 편집·Argon 격자 모드는 이 용도의 기본 경로가 아니다.
 
-## 소스 (p3~)
-`harness-data/battle-trainer-sprites/source/*.png`(+`SOURCES.json`) — 몬스터 수집 캠페인이 전투 화면에서 쓰는 전투 인물 그림(`oprn_emerald_trainer_<role>`, 정면 16종·뒷모습 `hero_back` 1종, 모두 64×64) 사본이다.
-출처는 이 저장소가 소유한 원작 그림이다: 내장 이미지 생성(원작 닮은꼴 금지 프롬프트, `assets/emerald-monster-v2/npc-generation.json`)
-→ `pokemon-character-motion portrait-import` 가 64×64·15색으로 nearest 추출. Nintendo 원작 그림도 EasyRPG Actor1 도 아니다.
-필드 걷기 칩 `oprn_emerald_field_cast_*`(16×32)는 hero 슬롯이 Nintendo 판형 기반이라 공개 번들에 못 넣는 내부 자산이고 너무 작아 소스로 쓰지 않는다.
+p1·p2·p3 시트와 `qa-runs` 산출은 보존만 한다. `sheet`·`pick`·`bake` 는 gen 판이 아니면 거절한다. 편집 코드(`--mode chip`)는 남겨 두었지만 기본이 아니다.
 
-## 방식 = 국소 편집
-- 소스 64×64 격자를 그대로 두고(확대·축소 없음, 도트 밀도 유지) Argon 이 전체 격자를 다시 쓴다. 머리·모자·옷 색 같은 지시한 곳만 바꾼다.
-- 하네스 검사: 변경 셀 ≤40%, 실루엣(투명/불투명) 변경 ≤10%, 새 색 ≤8, 변화 ≥1%. 초과하면 사유를 붙여 같은 일꾼이 최대 3회 다시 쓴다(`attempts`).
-- 후보 A~E 는 변경 강도만 다르다(A 최소). `asis` 역할(소스 그대로)은 A 하나다.
-- 모델은 agy `gemini-4-argon-medium`(8318 프록시는 Argon 만, claude-* 금지). 이미지 생성 도구 금지, 격자 행 문자열 직접 작성.
+## 방법
+1. **참고 이미지** — 저장소 소유 몬스터 수집 전용 전투 인물(`harness-data/battle-trainer-sprites/source/*.png`, 64×64; 몬스터 수집 캠페인의 `oprn_emerald_trainer_*` 사본)을
+   14배 확대해 마젠타 캔버스(1254×1254)에 2장 붙인다. 앞모습 판은 resident·student, 뒷모습 판은 hero_back(손의 볼은 지운 사본)·resident.
+   「같은 그림체·같은 비율·새 인물」로 그리게 하며 샘플 복제·샘플 속 볼은 금지한다.
+2. **생성** — 이미지 서버 god-tibo-imagen `POST /v1/generate/json`(`OPRN_HARNESS_IMAGE_URL`, 기본 `http://mdc-server:8091`).
+   `monster-collect-species/node/imageSource.ts` 의 `generateImage` 를 그대로 import 한다(복사 없음). 502/503 이면 15초·30초… 백오프로 다시 시도하고, 판 단위 병렬은 낮게(`--par`) 둔다.
+3. **도트화** — `monster-collect-species/pixel/pipeline.ts` 의 `pixelize`(격자 검출·칸별 최빈 색·정리) → 64×64 정리(`node/gen.ts`):
+   원본 잉크 높이로 블록 크기를 추정해 근처 블록 4개를 다 도트화하고, 검사를 통과한 것 중 외톨이 점이 가장 적은 것을 쓴다(자동 탐색은 큰 블록을 골라 얼굴이 뭉개지기 쉬웠다).
+   색은 20색 상한(16색으로 줄이면 머리 갈색이 윤곽색에 합쳐진다). 필요하면 정수·비정수 축소(`downscale`) 후 발 줄 62, 가운데 정렬.
+4. **검사** — 캔버스 가장자리 닿음 금지, 그림 높이 36~58, 색 ≤20, 마젠타 잔점 0, 불투명 ≥12%. 윤곽·외톨이 점은 경고. 실패하면 새로 생성해 최대 3회.
+5. **사람이 고른다** — 시트 `~/claude-viz/trainer-sprites-pick-<판>.html`(역할별 후보 A~E, 참고 샘플 옆에, 2×/4×/8× 도트 확대, 전투 480×320 합성 미리보기).
 
-## 역할 (p3)
-| 역할 | 방향 | 소스 | 방식 |
-|---|---|---|---|
-| hero_m | 뒷 | hero_back | 모자·머리·재킷 색 국소 편집 |
-| hero_f | 뒷 | hero_back | 소스 그대로 |
-| hero_f_front | 앞 | hero | 소스 그대로(상대 쪽 미리보기용) |
-| boy | 앞 | rival | 머리·재킷·바지 색 |
-| girl | 앞 | resident | 원피스·머리 색·리본 |
+후보 A~E 는 같은 brief 에 변주 문구(머리·소품·실루엣)만 다르다. 던지기 프레임은 만들지 않는다(소스에도 없음). 뒷모습은 「오른팔을 들어 던지기 직전, 손에 아무것도 없음」으로 그리게 했다.
 
-남은 역할(fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder)은 `chip.future_sources` 에 소스 대응만 정해 두었다.
-**던지기 프레임은 없다.** 소스 `hero_back` 이 오른팔로 볼을 쥔 던지기 자세 1장이다. 필요 여부는 감독이 판단한다.
+## 역할
+`hero_m`·`hero_f`(뒷모습) + `hero_m_front`·`hero_f_front`(앞모습), `boy` `girl` `fisher` `hiker` `bug_catcher` `gym_rock` `gym_water` `scientist` `punk` `elder`(앞모습).
+brief 는 `harness-data/battle-trainer-sprites/seed.json` 의 `gen.roles`. 원작 포켓몬 트레이너·캐릭터 닮은꼴 금지, 몬스터볼 모양 금지.
 
 ## 명령
 ```bash
 npm run harness -- battle-trainer-sprites list
-npm run harness -- battle-trainer-sprites draw all --n 5 --par 15 --plate p3 --background
+npm run harness -- battle-trainer-sprites draw hero_m,hero_f,boy,girl --n 5 --par 6 --plate p4 --background
 npm run harness -- battle-trainer-sprites status [판]
-npm run harness -- battle-trainer-sprites sheet p3     # ~/claude-viz/trainer-sprites-pick-3.html (원본 | 결과 나란히 + 전투 합성 미리보기)
-npm run harness -- battle-trainer-sprites pick p3 hero_m=B boy=C ...   # 사용자가 고른 것만 기록(그림 해시에 묶임)
-npm run harness -- battle-trainer-sprites bake p3      # 고른 기록이 있는 역할만 public/assets/battle-trainers/<역할>/ 에 굽는다
+npm run harness -- battle-trainer-sprites sheet p4     # ~/claude-viz/trainer-sprites-pick-4.html
+npm run harness -- battle-trainer-sprites pick p4 hero_m=B boy=C ...   # 사용자가 고른 것만 기록(그림 해시에 묶임)
+npm run harness -- battle-trainer-sprites bake p4      # 고른 기록이 있는 역할만 public/assets/battle-trainers/<역할>/ 에 굽는다
 ```
 
 ## 계약
-- 64×64 투명 PNG, 발 바닥 줄 62(소스 그대로). **object-gate 영수증 없음, 사람 선택 경로.** 사람 캐릭터라 3/4 윗면 규칙 대상이 아니다. 감독·에이전트는 고르지 않는다.
+- 64×64 투명 PNG, 발 바닥 줄 62. **object-gate 영수증 없음, 사람 선택 경로.** 사람 캐릭터라 3/4 윗면 규칙 대상이 아니다. 감독·에이전트는 고르지 않는다.
 - `bake` 는 `picks.json`(`harness-data/battle-trainer-sprites/`)에 기록이 있고 현재 그림 해시가 일치할 때만 `public/assets/battle-trainers/<role>/{front|back}.png` 와 `index.json` 으로 굽는다. 고르기 전에는 번들·프로젝트에 아무것도 넣지 않는다.
 
 ## 데이터 계약 (전투 화면 쪽)
@@ -51,7 +48,8 @@ npm run harness -- battle-trainer-sprites bake p3      # 고른 기록이 있는
 전투 CSS/DOM 연출은 전투 화면 담당이 맡는다. 이 하네스는 그림만 낸다.
 
 ## 출처·라이선스
-`public/assets/ATTRIBUTION.md` 「Battle trainer sprites」. 소스는 저장소 소유 원작, OPRN 게임 사용 라이선스(소재 단독 재배포 금지, `openwiki/licensing.md`).
+`public/assets/ATTRIBUTION.md` 「Battle trainer sprites」. 생성형 이미지(독자 디자인) → 도트화이므로 저장소 소유 몬스터 수집 전용 그림이다. OPRN 게임 사용 라이선스(소재 단독 재배포 금지, `openwiki/licensing.md`).
 
 ## 파일
-`src/harnesses/battle-trainer-sprites/{harness.py,harness.ts,node/cli.ts}` · 시드 `harness-data/battle-trainer-sprites/seed.json` · 소스 `harness-data/battle-trainer-sprites/source/` · 산출 `qa-runs/harnesses/battle-trainer-sprites/<판>/<역할>/<글자>/`.
+`src/harnesses/battle-trainer-sprites/{harness.py,harness.ts,node/cli.ts,node/gen.ts}` · 시드 `harness-data/battle-trainer-sprites/seed.json` · 샘플 `harness-data/battle-trainer-sprites/source/` ·
+산출 `qa-runs/harnesses/battle-trainer-sprites/<판>/<역할>/<글자>/{prompt.txt,raw-N.png,sprite.png,meta.json}`.

@@ -395,12 +395,11 @@ artwork, drawn directly on the final 48px grid by
 21 cast cells use 16 opaque colors and binary alpha. No source image or
 image-generation model is used. Repository code/asset policy applies.
 
-## Battle trainer sprites (OPRN monster-collect trainer art derivatives, pending human pick)
+## Battle trainer sprites (OPRN monster-collect trainer art, generated image to dot-art, pending human pick)
 
-`battle-trainers/<role>/{front,back}.png` (created only after the user picks candidates on the pick sheet) are locally edited derivatives of the
-OPRN monster-collect campaign battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, 64×64). Those sources are repository-owned
-original artwork: built-in image generation (prompted as original, no imitation of existing Nintendo characters), then extracted to 64×64 / 15 colors
-with nearest sampling by the `pokemon-character-motion` portrait importer. Each derivative is a 64×64 palette-symbol grid written by Gemini 4 Argon (Medium)
-through Agy from the source grid (no image-generation tool at this step); at most 40% of cells and 10% of the silhouette differ from the source.
-Changes: hair/cap/clothes colors per role. They contain no EasyRPG Actor1 pixels and no Nintendo artwork. Harness: `src/harnesses/battle-trainer-sprites/`.
+`battle-trainers/<role>/{front,back}.png` (created only after the user picks candidates on the pick sheet) are repository-owned original artwork for the monster-collect
+genre: a built-in image-generation model draws an original character per role (prompted as original, no imitation of existing Nintendo characters, no ball motif),
+using repository-owned monster-collect battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, themselves generated originals) only as a
+style sample, then the `monster-collect-species` pixelizer detects the pixel grid and reduces the result to 64x64 / <=20 colors. They contain no EasyRPG Actor1 pixels
+and no Nintendo artwork, and no sample is copied. Harness: `src/harnesses/battle-trainer-sprites/`.
 License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).

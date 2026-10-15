@@ -1,18 +1,10 @@
 #!/usr/bin/env python3
-"""전투 트레이너 스프라이트 하네스 — 몬스터 수집(포켓몬류) 전용 전투 인물 그림(64x64)을 Argon 이 격자 행 문자열로 국소 편집해 변형한다.
+"""전투 트레이너 스프라이트 하네스 — 몬스터 하네스와 같은 「생성형 이미지 → 격자 도트화 → 사람이 고름」.
 
-p3 부터 기본 모드 = chip: 소스는 harness-data/battle-trainer-sprites/source/ 의 몬스터 수집 캠페인 전투 인물 64x64 이다(Actor1 아님).
-p1(redraw)·p2(Actor1 24x32 편집)는 소스가 틀려 폐기 — 시트는 보존만 하고 bake 는 거절한다.
-
-  harness.py list                                  역할(12)과 원본 블록
-  harness.py draw [역할|all] [--n 5] [--par 5] [--plate p1] [--throw]
-                                                   후보를 그린다(agy gemini-4-argon-medium, 바로 안 돌아옴). 판 id 출력
-  harness.py status [판]                           판·후보 상태
-  harness.py sheet <판>                            고르는 시트를 ~/claude-viz/trainer-sprites-pick-<번호>.html 에 쓴다(자체완결)
-  harness.py pick <판> 역할=글자 [...]             사용자가 고른 후보를 기록(현재 그림 해시에 묶임)
-  harness.py bake <판> [역할 ...]                  고른 것만 public/assets/battle-trainers/<역할>/ 에 굽는다(고르기 전엔 거절)
-
-규칙: 이미지 생성 도구 금지(Argon 이 행 문자열을 직접 쓴다). 감독·에이전트는 후보를 고르지 않는다. 사람 선택 경로이며 object-gate 영수증은 없다.
+기본 모드 = gen: 이미지 서버(god-tibo-imagen)가 저장소 소유 몬스터 수집 전용 그림체 샘플을 참고 이미지로 보고 역할별 새 트레이너를 그리면,
+monster-collect-species 의 격자 검출·도트화(pixelize)를 거쳐 64x64 투명 PNG 로 정리한다(node/gen.ts 가 그 코드를 import 한다).
+옛 편집 모드(chip, p3)·p1·p2 는 사용자 폐기 — 시트는 보존만 하고 pick/sheet/bake 는 거절한다.
+감독·에이전트는 후보를 고르지 않는다. 사람 선택 경로이며 object-gate 영수증은 없다.
 """
 import argparse, base64, concurrent.futures as cf, datetime, hashlib, json, os, re, shutil, subprocess, sys, threading, time
 from PIL import Image
@@ -150,7 +142,104 @@ def load_grid_n(grid_path, pal_path, size):
     return (rows, pal), []
 
 
-# ---------- chip 방식(p3~): 몬스터 수집 전용 전투 인물 64x64 를 국소 편집 ----------
+
+# ---------- gen 방식(p4~): 생성형 이미지 → 격자 도트화 ----------
+
+GEN_TS = os.path.join(HERE, 'node', 'gen.ts')
+VITE_NODE = os.path.join(ROOT, 'node_modules', '.bin', 'vite-node')
+
+
+def gen_seed(): return seed()['gen']
+
+
+def run_gen(*args, timeout=TIMEOUT):
+    r = subprocess.run([VITE_NODE, '--script', GEN_TS, '--', *args], cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+    return r.returncode, (r.stdout or ''), (r.stderr or '')
+
+
+def gen_reference(plate, view):
+    g = gen_seed(); path = os.path.join(RUNS, plate, '_ref_%s.png' % view)
+    if not os.path.exists(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        src = os.path.join(ROOT, chip_seed()['dir'])
+        names = []
+        for n in g['samples'][view]:
+            p = os.path.join(src, n + '.png')
+            if n == 'hero_back':  # 샘플의 손에 든 볼을 지운다(볼 모양을 그리게 하지 않기 위해, 참고 이미지 전용·번들 아님)
+                im = Image.open(p).convert('RGBA'); px = im.load()
+                for y in range(20, 29):
+                    for x in range(49, 64): px[x, y] = (0, 0, 0, 0)
+                p = os.path.join(RUNS, plate, '_sample_hero_back_noball.png'); im.save(p)
+            names.append(p)
+        files = ','.join(names)
+        code, out, err = run_gen('reference', '--out', path, '--samples', files, '--scale', str(g['sampleScale']))
+        if code: sys.exit('참고 이미지 합성 실패: ' + err[-400:])
+    return path
+
+
+def gen_prompt(role, spec, letter):
+    g = gen_seed()
+    n = len(g['samples'][spec['view']])
+    common = (f"The reference image shows {n} EXAMPLE trainer sprites on a flat magenta canvas. They define the target art style: "
+              f"{g['style']} Each art pixel is one clean square block about {g['sampleScale']}x{g['sampleScale']} image pixels, and a full figure is about 56 art pixels tall "
+              f"(roughly {56 * g['sampleScale']} image pixels, i.e. about {round(56 * g['sampleScale'] / 12.54)}% of the picture height): draw your character just as large as the examples. ")
+    task = ("EDIT TASK: draw ONE NEW, completely different original character in exactly that style (same head-to-body proportion, same outline weight and shading, same pixel block size). "
+            "Do NOT copy or redraw any example character and do NOT include the examples in your picture; the output has only the one new character, centered. ")
+    if spec['view'] == 'front':
+        pose = ("Pose: standing upright, facing the viewer (front view, straight on), feet apart on the same ground line, simple relaxed arms; any prop is held in a hand and stays inside the figure's reach. ")
+    else:
+        pose = ("Pose: seen from BEHIND (camera directly behind and slightly above), showing the back of the head, hair, back and legs; the RIGHT arm (on the viewer's right) is raised and bent back as if about to throw something, hand open with NOTHING in it; the left arm hangs down. ")
+    forbid = ("Some examples may show a small ball or orb; YOUR character holds no ball, no capsule, no orb and no creature. No monster-ball shape anywhere. "
+              "It must NOT resemble any existing official Pokemon trainer or character. Original design only. ")
+    bg = ("The whole background is flat solid pure magenta #FF00FF everywhere, magenta touching the outline directly: NO glow, NO aura, NO shadow, NO ground, NO text, no anti-aliasing, no gradients, no dithering. ")
+    return common + task + pose + f"Character: {spec['label']} — {spec['brief']} Variation: {g['variants'][letter]} " + forbid + bg
+
+
+def make_gen_candidate(plate, role, letter, throw=False):
+    g = gen_seed(); spec = g['roles'][role]; view = spec['view']
+    cdir = os.path.join(RUNS, plate, role, letter); os.makedirs(cdir, exist_ok=True)
+    meta_path = os.path.join(cdir, 'meta.json'); meta = read_json(meta_path, {})
+    if meta.get('status') == 'ok': return meta
+    ref = gen_reference(plate, view)
+    prompt = gen_prompt(role, spec, letter)
+    open(os.path.join(cdir, 'prompt.txt'), 'w', encoding='utf-8').write(prompt)
+    meta.update({'role': role, 'letter': letter, 'view': view, 'mode': 'gen', 'started': now(), 'model': 'god-tibo-imagen',
+                 'reference': os.path.relpath(ref, RUNS), 'samples': g['samples'][view]})
+    # 이미지 서버 오류(502 등)로 못 받은 시도는 후보 시도 횟수에 넣지 않는다 — 검사에 떨어진 시도만 센다.
+    meta['attempts'] = [x for x in meta.get('attempts', []) if not any(str(e).startswith('이미지 생성 실패') for e in x.get('errors', []))]
+    meta.pop('status', None)
+    for n in range(len(meta['attempts']) + 1, MAX_ATTEMPTS + 1):
+        rec = {'n': n, 'at': now()}
+        raw = os.path.join(cdir, 'raw-%d.png' % n)
+        code, out, err = run_gen('generate', '--prompt-file', os.path.join(cdir, 'prompt.txt'), '--reference', ref, '--out', raw,
+                                 '--slug', 'bts-%s-%s-%s-%d' % (plate, role, letter, n))
+        if code or not os.path.exists(raw):
+            rec['errors'] = ['이미지 생성 실패: ' + err.strip().splitlines()[-1][:200] if err.strip() else '이미지 생성 실패']
+            meta['attempts'].append(rec); write_json(meta_path, meta); continue
+        adir = os.path.join(cdir, 'attempts', str(n)); os.makedirs(adir, exist_ok=True)
+        code, out, err = run_gen('pixelize', '--raw', raw, '--out-dir', adir, '--max-colors', str(g['maxColors']))
+        line = next((ln for ln in reversed(out.strip().splitlines()) if ln.startswith('{')), None)
+        if code or not line:
+            rec['errors'] = ['도트화 실패: ' + (err.strip().splitlines()[-1][:200] if err.strip() else '?')]
+            meta['attempts'].append(rec); write_json(meta_path, meta); continue
+        res = json.loads(line); rec.update({k: res[k] for k in ('block', 'colors', 'ink', 'warnings', 'errors')})
+        meta['attempts'].append(rec)
+        if not res['errors']:
+            shutil.copy(os.path.join(adir, 'sprite.png'), os.path.join(cdir, 'sprite.png'))
+            shutil.copy(os.path.join(adir, 'grid.png'), os.path.join(cdir, 'grid.png'))
+            sp = Image.open(os.path.join(cdir, 'sprite.png')).convert('RGBA')
+            enlarged(sp, 8, os.path.join(cdir, 'sprite_8x.png'))
+            meta.update({'status': 'ok', 'hash': sha(sp), 'colors': res['colors'], 'block': res['block'], 'ink': res['ink'], 'warnings': res['warnings'],
+                         'raw': 'raw-%d.png' % n, 'throw': {'status': 'skipped'}})
+            break
+        write_json(meta_path, meta)
+    else:
+        meta['status'] = 'failed'
+    meta['finished'] = now(); write_json(meta_path, meta)
+    return meta
+
+
+# ---------- chip 방식(p3, 폐기): 몬스터 수집 전용 전투 인물 64x64 를 국소 편집 ----------
 
 def chip_seed(): return seed()['chip']
 
@@ -265,31 +354,41 @@ def next_plate():
 def plate_mode(plate): return read_json(os.path.join(RUNS, plate, 'plate.json'), {}).get('mode')
 
 
+def require_gen(plate, what):
+    if plate_mode(plate) != 'gen':
+        sys.exit('%s 는 폐기된 판이다(p1·p2 소스 Actor1, p3 소스 편집 모드, 사용자 결정으로 폐기) — %s 하지 않는다' % (plate, what))
+
+
 def cmd_list(a):
-    for k, v in chip_seed()['roles'].items():
-        print('%-14s %-18s %s  소스 %s (%s)' % (k, v['label'], v['view'], v['file'], '그대로' if v['mode'] == 'asis' else '국소 편집'))
-    print('남은 역할(소스 대응만 정해 둠):', ', '.join('%s←%s' % kv for kv in chip_seed()['future_sources'].items()))
+    for k, v in gen_seed()['roles'].items():
+        print('%-14s %-18s %s  %s' % (k, v['label'], v['view'], v['brief'][:60]))
 
 
 def cmd_draw(a):
-    cs = chip_seed()
-    roles = [r for r in cs['roles'] if cs['roles'][r].get('draw', True)] if a.role in (None, 'all') else a.role.split(',')
+    g = gen_seed()
+    mode = a.mode
+    if mode == 'chip':
+        cs = chip_seed(); table = cs['roles']; letters_all = list(cs['intensity'])[:a.n]; maker = make_chip_candidate
+    else:
+        table = g['roles']; letters_all = list(g['variants'])[:a.n]; maker = make_gen_candidate
+    roles = list(table) if a.role in (None, 'all') else a.role.split(',')
     for r in roles:
-        if r not in cs['roles']: sys.exit('모르는 역할: %s' % r)
+        if r not in table: sys.exit('모르는 역할: %s' % r)
     plate = a.plate or next_plate()
-    letters_all = list(cs['intensity'])[:a.n]
-    jobs = [(r, l) for r in roles for l in (['A'] if cs['roles'][r]['mode'] == 'asis' else letters_all)]
+    jobs = [(r, l) for r in roles for l in (['A'] if table[r].get('mode') == 'asis' else letters_all)]
     os.makedirs(os.path.join(RUNS, plate), exist_ok=True)
-    write_json(os.path.join(RUNS, plate, 'plate.json'), {'plate': plate, 'model': MODEL, 'roles': roles, 'letters': letters_all, 'created': now(),
-                                                         'mode': 'chip', 'method': 'agy-argon-edit-monster-collect-trainer-64x64 (no image generation)'})
-    print(plate, 'jobs=%d par=%d' % (len(jobs), a.par), flush=True)
+    write_json(os.path.join(RUNS, plate, 'plate.json'), {'plate': plate, 'roles': roles, 'letters': letters_all, 'created': now(), 'mode': mode,
+                                                         'model': MODEL if mode == 'chip' else 'god-tibo-imagen',
+                                                         'method': ('generated image -> grid pixelize (monster-collect-species pipeline) -> 64x64' if mode == 'gen' else 'agy-argon-edit (deprecated)')})
+    print(plate, mode, 'jobs=%d par=%d' % (len(jobs), a.par), flush=True)
     if a.background:
         log = open(os.path.join(RUNS, plate, 'draw.log'), 'a')
-        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate], stdout=log, stderr=log, start_new_session=True)
+        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate, '--mode', mode],
+                         stdout=log, stderr=log, start_new_session=True)
         print('백그라운드로 시작:', os.path.join(RUNS, plate, 'draw.log'))
         return
     def one(j):
-        m = make_chip_candidate(plate, j[0], j[1])
+        m = maker(plate, j[0], j[1])
         print('%s/%s %s' % (j[0], j[1], m.get('status')), flush=True)
     with cf.ThreadPoolExecutor(a.par) as ex: list(ex.map(one, jobs))
     print('끝', plate)
@@ -308,9 +407,10 @@ def plate_cands(plate):
 def cmd_status(a):
     plates = [a.plate] if a.plate else sorted(d for d in os.listdir(RUNS) if re.fullmatch(r'p\d+', d)) if os.path.isdir(RUNS) else []
     for p in plates:
-        print('==', p, '(%s)' % (plate_mode(p) or '폐기: 옛 소스 Actor1'))
+        m = plate_mode(p)
+        print('==', p, '(%s)' % ('생성형' if m == 'gen' else '폐기: ' + ('p3 편집 모드' if m == 'chip' else 'p1/p2 옛 소스 Actor1')))
         for role, cs in plate_cands(p).items():
-            print('  %-14s %s' % (role, ' '.join('%s:%s%s' % (l, m.get('status', '?'), ('(%d%%)' % round(m['edit']['ratio'] * 100)) if m.get('edit') else '') for l, m in cs.items())))
+            print('  %-14s %s' % (role, ' '.join('%s:%s' % (l, m2.get('status', '?')) for l, m2 in cs.items())))
     picks = read_json(os.path.join(DATA, 'picks.json'), {})
     print('picks:', json.dumps(picks, ensure_ascii=False) if picks else '(없음 — 사용자가 고르기 전)')
 
@@ -320,15 +420,14 @@ def data_uri(path):
 
 
 def cmd_sheet(a):
-    if plate_mode(a.plate) != 'chip': sys.exit('%s 는 폐기된 옛 소스(Actor1) 판이다 — 시트를 다시 만들지 않는다' % a.plate)
-    cs = chip_seed(); cands = plate_cands(a.plate)
-    num = a.plate.lstrip('p')
-    name = 'trainer-sprites-pick-%s.html' % num
+    require_gen(a.plate, '시트를 만들')
+    g = gen_seed(); cands = plate_cands(a.plate)
+    name = 'trainer-sprites-pick-%s.html' % a.plate.lstrip('p')
     cards = []; roles_js = {}
-    order = [r for r in cs['roles'] if r in cands]
+    order = [r for r in g['roles'] if r in cands]
     for role in order:
-        spec = cs['roles'][role]; view = spec['view']; cdict = cands[role]
-        src_uri = data_uri(os.path.join(RUNS, a.plate, role, sorted(cdict)[0], 'source.png'))
+        spec = g['roles'][role]; view = spec['view']; cdict = cands[role]
+        ref_uri = data_uri(os.path.join(RUNS, a.plate, '_ref_%s.png' % view))
         ok = [(l, m) for l, m in cdict.items() if m.get('status') == 'ok']
         fail = [l for l, m in cdict.items() if m.get('status') != 'ok']
         busy = lambda m: m.get('status') not in ('ok', 'failed')
@@ -337,16 +436,15 @@ def cmd_sheet(a):
         for l, m in ok:
             uri = data_uri(os.path.join(RUNS, a.plate, role, l, 'sprite.png'))
             roles_js[role]['cands'][l] = {'sprite': uri}
-            e = m.get('edit') or {}
-            lab = '소스 그대로' if e.get('asis') else '변경 %d%% · 실루엣 %d%% · 새 색 %d' % (round(e['ratio'] * 100), round(e['mask'] * 100), e['new_colors'])
+            warn = ''.join('<div class=w>%s</div>' % w for w in m.get('warnings', []))
             items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div><div class=bg><img class=px data-w=64 src="{uri}"></div>'
-                         f'<div class=hs>{m["hash"]} · {m["colors"]}색 · {lab}</div></div>')
+                         f'<div class=hs>{m["hash"]} · {m["colors"]}색 · 격자 {m["block"]}px · 높이 {m["ink"]["height"]}</div>{warn}</div>')
         for l in fail:
-            items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>{"아직 그리는 중" if busy(cdict[l]) else "검사 탈락(기록 %d회)" % len(cdict[l].get("attempts", []))}</div></div>')
-        note = '<div class=hs>던지기 프레임: 소스 hero_back 자체가 오른팔로 볼을 쥔 던지기 자세 1장입니다. 별도 던지기 프레임은 만들지 않았습니다.</div>' if view == 'back' else ''
+            items.append(f'<div class="cand failed"><div class=lt>{l}</div><div class=hs>{"아직 그리는 중" if busy(cdict[l]) else "검사 탈락(시도 %d회)" % len(cdict[l].get("attempts", []))}</div></div>')
+        note = '<div class=hs>던지기 프레임: 이번 판은 만들지 않았습니다(소스 hero_back 은 볼을 쥔 던지기 자세 1장뿐이었음). 뒷모습은 오른팔을 들어 던지기 직전 자세로 그리게 했습니다.</div>' if view == 'back' else ''
         cards.append(f'<section><h3>{spec["label"]} <small>({role}, {"앞" if view == "front" else "뒤"}) — {spec["brief"]}</small></h3>'
-                     f'<div class=row><div class=src><div class=bg><img class=px data-w=64 src="{src_uri}"></div><div class=hs>원본 · {spec["file"]}</div></div>{"".join(items)}</div>{note}</section>')
-    dirs = '<br>'.join('<b>%s</b> %s — %s' % (k, v['label'], v['how']) for k, v in cs['intensity'].items())
+                     f'<div class=row><div class=src><img src="{ref_uri}" style="width:220px;image-rendering:pixelated"><div class=hs>참고 그림체 샘플(저장소 소유 전용 소스, 이미지 서버에 준 참고 이미지)</div></div>{"".join(items)}</div>{note}</section>')
+    dirs = '<br>'.join('<b>%s</b> %s' % kv for kv in g['variants'].items())
     html = TEMPLATE.replace('@@CARDS@@', '\n'.join(cards)).replace('@@ROLES@@', json.dumps(roles_js)).replace('@@PLATE@@', a.plate) \
         .replace('@@ROLELIST@@', ' '.join('<code>%s</code>' % r for r in order)).replace('@@DIRS@@', dirs)
     os.makedirs(VIZ, exist_ok=True)
@@ -376,11 +474,11 @@ button{background:#3a4770;color:#fff;border:0;border-radius:6px;padding:5px 12px
 #cmd{width:100%;max-width:1000px;background:#10151f;color:#ffd78a;border:1px solid #3c4a6e;padding:6px;font-family:monospace}
 #bat{border:2px solid #3c4a6e;image-rendering:pixelated;background:#000}
 </style>
-<h1>트레이너 스프라이트 후보 시트 (@@PLATE@@) — 왼쪽 몬스터 수집 전용 원본 | 오른쪽 Argon 이 격자로 편집한 결과</h1>
+<h1>트레이너 스프라이트 후보 시트 (@@PLATE@@) — 왼쪽 그림체 샘플(참고 이미지) | 오른쪽 생성형 이미지 → 격자 도트화 결과</h1>
 <div class=how><b>고르는 방법</b> — 카드를 눌러 역할마다 하나씩 고르면 맨 아래 칸에 <code>pick</code> 명령이 만들어집니다. 번호만 말해 주셔도 됩니다: 예) <code>hero_m=B hero_f=A boy=C …</code> (역할: @@ROLELIST@@).
 고르기 전에는 번들·프로젝트에 아무것도 들어가지 않습니다. 후보 방향: <br>@@DIRS@@<br>
-이 그림은 사람 캐릭터라 3/4 윗면 관문 대상이 아닙니다(object-gate 영수증 없음, 사람 선택 경로). 소스: 몬스터 수집 캠페인 전용 전투 인물 그림(저장소 소유, GPT 이미지 생성 원본을 64×64 로 추출) — Actor1(EasyRPG)·Nintendo 원작 그림 아님. 편집은 소스 도트 밀도 그대로(확대 없음), 변경 셀 ≤40%·실루엣 변경 ≤10% 를 하네스가 검사합니다.</div>
-<div class=bar>배율 <span id=sc></span> · 같은 배율로 원본과 나란히 봅니다</div>
+이 그림은 사람 캐릭터라 3/4 윗면 관문 대상이 아닙니다(object-gate 영수증 없음, 사람 선택 경로). 방식: 이미지 서버가 저장소 소유 몬스터 수집 전용 그림체 샘플을 참고로 역할별 새 인물을 그리고, 몬스터 하네스와 같은 격자 검출·도트화로 64×64 로 정리했습니다(Actor1·Nintendo 원작 그림 아님, 소스 복제 아님).</div>
+<div class=bar>배율 <span id=sc></span> · 같은 배율로 봅니다</div>
 <h3>전투 화면 합성 미리보기 (480×320, 임시 배경) — 아래에서 카드를 누르면 바뀝니다 · 상대는 마지막에 누른 앞모습, 내 트레이너는 마지막에 누른 뒷모습</h3>
 <canvas id=bat width=480 height=320></canvas>
 @@CARDS@@
@@ -417,7 +515,7 @@ setScale(4);drawBat();cmd();
 
 
 def cmd_pick(a):
-    if plate_mode(a.plate) != 'chip': sys.exit('%s 는 폐기된 옛 소스(Actor1) 판이다 — 고르지 않는다' % a.plate)
+    require_gen(a.plate, '고르')
     picks = read_json(os.path.join(DATA, 'picks.json'), {})
     cur = picks.setdefault(a.plate, {})
     for kv in a.picks:
@@ -430,8 +528,8 @@ def cmd_pick(a):
 
 
 def cmd_bake(a):
-    if plate_mode(a.plate) != 'chip': sys.exit('%s 는 폐기된 옛 소스(Actor1) 판이다 — 굽지 않는다' % a.plate)
-    cs = chip_seed(); picks = read_json(os.path.join(DATA, 'picks.json'), {}).get(a.plate, {})
+    require_gen(a.plate, '굽')
+    cs = gen_seed(); picks = read_json(os.path.join(DATA, 'picks.json'), {}).get(a.plate, {})
     roles = a.roles or list(picks)
     if not picks or not roles: sys.exit('사용자가 고르기 전에는 굽지 않는다(picks.json 에 %s 기록 없음). pick 먼저.' % a.plate)
     index = read_json(os.path.join(BUNDLE, 'index.json'), {'version': 1, 'trainers': {}})
@@ -444,7 +542,7 @@ def cmd_bake(a):
         odir = os.path.join(BUNDLE, role); os.makedirs(odir, exist_ok=True)
         shutil.copy(os.path.join(cdir, 'sprite.png'), os.path.join(odir, '%s.png' % view))
         index['trainers'][role] = {'role': role, 'label': cs['roles'][role]['label'], 'view': view, 'size': [64, 64], 'footY': 62,
-                                   'source': 'OPRN monster-collect trainer art (repo-owned, GPT image generation extracted to 64x64), locally edited', view: '%s.png' % view}
+                                   'source': 'OPRN monster-collect trainer art (generated image, grid-pixelized to 64x64)', view: '%s.png' % view}
         print('baked', role, p['letter'])
     write_json(os.path.join(BUNDLE, 'index.json'), index)
 
@@ -453,7 +551,7 @@ def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('list')
     d = sp.add_parser('draw'); d.add_argument('role', nargs='?'); d.add_argument('--n', type=int, default=5); d.add_argument('--par', type=int, default=5)
-    d.add_argument('--plate'); d.add_argument('--background', action='store_true')
+    d.add_argument('--plate'); d.add_argument('--mode', choices=['gen', 'chip'], default='gen'); d.add_argument('--background', action='store_true')
     st = sp.add_parser('status'); st.add_argument('plate', nargs='?')
     sh = sp.add_parser('sheet'); sh.add_argument('plate')
     pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+')

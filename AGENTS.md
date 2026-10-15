@@ -42,7 +42,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`
   → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
 
-- **전투 화면의 트레이너 그림(상대 앞모습·내 뒷모습·볼 던지기)을 만들 때** → `battle-trainer-sprites` · 시드 `harness-data/battle-trainer-sprites/seed.json` · `npm run harness -- battle-trainer-sprites draw|status|sheet|pick|bake` · 문서 `openwiki/harnesses/battle-trainer-sprites.md`. 소스는 몬스터 수집 캠페인 전용 전투 인물 64×64(Actor1 아님)이고 Argon 이 격자로 국소 편집(생성 이미지 금지·변경 셀 ≤40%), 사람이 시트에서 고른 것만 굽는다. object-gate 영수증 없음·사람 선택 경로.
+- **전투 화면의 트레이너 그림(상대 앞모습·내 뒷모습·볼 던지기)을 만들 때** → `battle-trainer-sprites` · 시드 `harness-data/battle-trainer-sprites/seed.json` · `npm run harness -- battle-trainer-sprites draw|status|sheet|pick|bake` · 문서 `openwiki/harnesses/battle-trainer-sprites.md`. 몬스터 종 하네스와 같은 「생성형 이미지(이미지 서버) → 격자 도트화 → 사람이 고름」, 몬스터 수집 전용 그림체 샘플을 참고 이미지로 쓴다(Actor1·편집 모드 폐기). 사람이 시트에서 고른 것만 굽는다. object-gate 영수증 없음·사람 선택 경로.
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
