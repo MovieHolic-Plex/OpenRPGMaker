@@ -60,6 +60,12 @@ export type SpeciesSeed = {
   evolvesFrom?: string;
   /** 스타터 세 마리 묶음 이름 */
   starterSet?: string;
+  /**
+   * 이 종의 그림이 쓰일 캠페인 종 id(예: mx_species_coalbit). 하네스 번들 manifest 가 이 값을 싣고,
+   * 런타임(`src/assets/harnessMonsterArt.ts`)이 「번들에 있으면 그 그림」 규칙으로 캠페인 종의 graphic 을 바꾼다.
+   * 생략하면 번들에만 남고 캠페인에는 쓰이지 않는다. 캠페인 종 하나에 하네스 종 하나만 붙는다.
+   */
+  campaignSpeciesId?: string;
   /** 영어 디자인 설명 (생성 프롬프트에 들어간다) */
   design: string;
   palette?: string;
@@ -123,12 +129,18 @@ export function validateSeed(value: unknown): MonsterSeed {
     if (!action.keys || keys.some((k) => !Number.isInteger(k) || k < 0 || k >= action.frames)) throw new Error(`동작 ${id} keys 는 0~${action.frames - 1} 칸 번호 (anticipation·contact·recover)`);
   }
   const ids = new Set<string>();
+  const campaignIds = new Set<string>();
   for (const species of seed.species) {
     if (!/^[a-z][a-z0-9-]*$/.test(species.id)) throw new Error(`종 id 는 소문자 kebab-case: ${species.id}`);
     if (ids.has(species.id)) throw new Error(`종 id 중복: ${species.id}`);
     ids.add(species.id);
     if (!species.design?.trim()) throw new Error(`종 ${species.id} 에 design 설명이 없다`);
     if (![1, 2, 3].includes(species.stage)) throw new Error(`종 ${species.id} stage 는 1~3`);
+    if (species.campaignSpeciesId !== undefined) {
+      if (!/^[a-z][a-z0-9_]*$/.test(species.campaignSpeciesId)) throw new Error(`종 ${species.id} campaignSpeciesId 는 소문자·숫자·밑줄: ${species.campaignSpeciesId}`);
+      if (campaignIds.has(species.campaignSpeciesId)) throw new Error(`campaignSpeciesId 중복: ${species.campaignSpeciesId} (캠페인 종 하나에 하네스 종 하나)`);
+      campaignIds.add(species.campaignSpeciesId);
+    }
     for (const [side, point] of Object.entries(species.emit ?? {})) {
       if (side !== "front" && side !== "back") throw new Error(`종 ${species.id} emit 의 면은 front·back: ${side}`);
       if (!point || !Number.isInteger(point.x) || !Number.isInteger(point.y) || point.x < 0 || point.y < 0 || point.x >= SPRITE_CANVAS || point.y >= SPRITE_CANVAS) {

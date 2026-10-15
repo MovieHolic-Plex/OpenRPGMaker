@@ -149,6 +149,13 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
     image.style.removeProperty("--battler-anim-duration");
   });
   probe.src = url;
+  // 스킨 CSS 가 배경을 지워(`background: none`) 스트립이 안 그려지면 내용 이미지는 상자 밖이라 **투명한 적**이 된다(2026-10-15 포켓몬 스킨 실측).
+  // 붙은 직후 계산된 배경이 비어 있으면 표시를 걷어 정적 `src` 가 보이게 한다 — 새 스킨이 같은 함정을 만들어도 조용히 사라지지 않는다.
+  requestAnimationFrame(() => {
+    if (!image.isConnected || image.dataset.battlerAnim === undefined) return;
+    if (getComputedStyle(image).backgroundImage !== "none") return;
+    delete image.dataset.battlerAnim;
+  });
 }
 
 /**
@@ -1109,6 +1116,8 @@ function enemyButton(
     // 도트 측면 전투: 도트 시트가 있는 적은 시트 칸으로 그린다(대기 루프·예비동작·돌진·착탄·피격·녹음).
     // src 는 원본 그대로 두고 배경으로 칸을 그린다 — 시트를 못 읽으면 표시를 걷어 원본이 다시 보인다.
     if (activeSkin().motionStyle === "retro") applyPixelEnemySheet(enemyNode, image, resourceId);
+    // 도트 시트가 없는 적은 대기 스트립이 등록돼 있으면 그것으로 숨쉰다(몬스터 수집 하네스 번들 종 그림). 미등록이면 아무 일도 없다.
+    if (!image.dataset.pixelSheet) applyIdleAnimationToImage(image, resourceId);
     enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);

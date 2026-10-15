@@ -99,6 +99,19 @@
     steps(var(--battler-anim-frames), jump-none) infinite;
 }
 
+/* 포켓몬 스킨의 적은 `.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image { background: none }`(20-pokemon-skin.css, 특정도 0,3,0)가
+   위 규칙의 배경 **묶음 속성 전부**(image·size·repeat·position-y)를 지운다 — 대기 스트립이 걸린 적 그림이 투명해진다(2026-10-15 실측: 몬스터 수집 하네스
+   번들 종 그림, 적 자리가 빈 발판). 같은 속성을 이긴다고 보장되는 특정도로 다시 쓴다. 죽은 적은 정적 `src` 로 눕고(.battle-pose-dead), 감속·고대비·인쇄는
+   정적 `src` 로 되돌리므로(위 규칙) 그 경우는 이 규칙에서 뺀다. */
+@media screen and (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy:not(.battle-pose-dead) > .battle-enemy-image[data-battler-anim] {
+    background-image: var(--battler-anim-url);
+    background-repeat: no-repeat;
+    background-size: calc(100% * var(--battler-anim-frames)) auto;
+    background-position-y: 50%;
+  }
+}
+
 /* 백분율 배경 위치는 (엘리먼트 폭 − 배경 폭)에 대해 계산된다. 배경이 N배 넓으므로
    0% 가 첫 프레임, 100% 가 마지막 프레임이다 — `-100% × N` 으로 밀면 배틀러가
    상자 밖으로 나가 화면에서 사라진다(실측). */

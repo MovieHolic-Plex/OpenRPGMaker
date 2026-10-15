@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "canvas": 112,
+  "species": {
+    "sparkit": {
+      "campaignSpeciesId": "mx_species_coalbit",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "aqualing": {
+      "campaignSpeciesId": "mx_species_rivulet",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    },
+    "leafling": {
+      "campaignSpeciesId": "mx_species_spriglet",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      }
+    }
+  }
+}
