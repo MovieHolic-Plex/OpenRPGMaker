@@ -3,12 +3,12 @@
 // 옵트인이다: `system.genreLock` 이 없으면 아무 동작도 바뀌지 않고 저장 바이트도 그대로다.
 // 판정 함수는 여기 하나(`genreLockMapViolation` / `genreLockAllowsTileset`)이고, 실행기(toolRunner)·도구 노출·검사 도구·DB 화면이 같은 것을 쓴다.
 // 강제 대상은 조수·도구 경로(ToolContext.assistantRun)뿐이다 — 사용자가 편집기에서 손으로 칠하는 것은 막지 않고 경고만 한다.
-// 장르별 허용 계열은 아래 표(데이터)에 둔다. 이번 구현은 monster-collect 만 켠다(다른 장르는 표에 넣지 않는다).
+// 장르별 허용 계열은 아래 표(데이터)에 둔다. monster-collect(2026-10-15)에 이어 romance(2026-10-16, 현대 학교·도시 무대의 연애 게임)가 같은 구조로 켠다.
 
 import { tilesetFamily, tilesetFamilyLabel } from "./tilesetFamily";
 import type { GameMap, Project } from "./types";
 
-export type GenreLockPresetId = "monster-collect";
+export type GenreLockPresetId = "monster-collect" | "romance";
 export type GenreLockMode = "enforce" | "warn";
 
 /** `system.genreLock` — 저장 형태. */
@@ -31,6 +31,10 @@ interface Alternative {
 
 interface GenreLockPresetDef {
   readonly label: string;
+  /** 안내 문장에 쓰는 이름(「몬스터 칩셋」). */
+  readonly kitNoun: string;
+  /** 잠금을 다시 켜는 방법(해제 안내 문장). */
+  readonly relockHint: string;
   readonly families: readonly string[];
   /** tilesetId 를 생략한 맵 생성 도구에 넣는 기본 칩셋. */
   readonly defaultTilesetId: string;
@@ -44,6 +48,8 @@ interface GenreLockPresetDef {
 export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPresetDef>> = {
   "monster-collect": {
     label: "포켓몬 라이크(몬스터 수집)",
+    kitNoun: "몬스터 칩셋",
+    relockHint: "configure_monster_system(enabled:true) 또는 자료집 시스템 탭의 「장르 칩셋 잠금」",
     families: ["oprn-monster", "oprn-monster-emerald"],
     defaultTilesetId: "monster_overworld",
     alternatives: [
@@ -58,6 +64,23 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       /^(author|dress|harmonize|naturalize|refine|compose)_beodeul_/u,
       /^(compose|link|build|list)_(campus|desert_east|jp_city|modern_city|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
       /^apply_beodeul_/u,
+    ],
+  },
+  romance: {
+    label: "현대 연애(학교·도시 무대)",
+    kitNoun: "현대 칩셋",
+    relockHint: "자료집 시스템 탭의 「장르 칩셋 잠금」",
+    families: ["oprn-campus", "oprn-modern", "oprn-jp"],
+    defaultTilesetId: "modern_city",
+    alternatives: [
+      { pattern: /campus|school|univers|academy|classroom|library|dorm|캠퍼스|학교|대학|교실|도서관|기숙|동아리|강의/iu, tilesetId: "modern_campus", use: "캠퍼스·학교(교정·교실·도서관·기숙사)" },
+      { pattern: /japan|jp_|tokyo|일본|도쿄|신사|상점가|역 /iu, tilesetId: "jp_city", use: "일본 상점가·주택가·역" },
+      { pattern: /city|street|cafe|shop|office|apartment|station|park|거리|도시|카페|상점|사무실|아파트|역|공원|골목|편의점/iu, tilesetId: "modern_city", use: "현대 도시 거리·카페·사무실·아파트" },
+    ],
+    hiddenToolPatterns: [
+      /^(author|dress|harmonize|naturalize|refine|compose)_beodeul_/u,
+      /^apply_beodeul_/u,
+      /^(compose|link|build|list)_(desert_east|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
     ],
   },
 };
@@ -133,7 +156,7 @@ export function genreLockHiddenToolMessage(project: Project, toolName: string): 
   const active = activeGenreLock(project)!;
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `장르 잠금(${active.def.label}): ${toolName} 은 ${allowedLabels(project, active)} 밖 칩셋 계열의 전용 시공 도구라 이 프로젝트에서는 쓰지 않는다. `
-    + `create_map(tilesetId=허용 칩셋)으로 빈 맵을 만들어 칠하기 도구로 깔거나, 몬스터 칩셋 판(${alts})을 골라라. 사용자가 그 계열을 정말 원할 때만 ask_tileset_change 로 묻고 턴을 끝내라.`;
+    + `create_map(tilesetId=허용 칩셋)으로 빈 맵을 만들어 칠하기 도구로 깔거나, ${active.def.kitNoun} 판(${alts})을 골라라. 사용자가 그 계열을 정말 원할 때만 ask_tileset_change 로 묻고 턴을 끝내라.`;
 }
 
 function allowedLabels(project: Project, active: ActiveGenreLock): string {
@@ -204,7 +227,7 @@ export function genreLockPromptNote(project: Project): string | null {
   const allowed = genreLockAllowedTilesets(project).map((t) => t.id).join(", ");
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `[장르 잠금 — ${active.def.label}]
-이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 몬스터 칩셋 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`;
+이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`;
 }
 
 /** 프로젝트를 통째로 갈아 끼우거나 되돌리는 도구 — 결과가 새 프로젝트/이전 상태라 잠금 판정 대상이 아니다. */
@@ -260,7 +283,7 @@ export const GENRE_LOCK_RELEASED_MARKER = "장르 잠금 해제됨";
 export function genreLockReleasedNotice(project: Project, previous: GenreLock): string {
   const def = GENRE_LOCK_PRESETS[previous.preset];
   const outsiders = Object.values(project.maps).filter((map) => !isWorldmapKitMap(map) && map.tilesetId !== "atlas_cartography" && !previous.allowedFamilies.includes(tilesetFamily(project, map.tilesetId)));
-  return `${GENRE_LOCK_RELEASED_MARKER}: ${def.label} 칩셋 잠금(${previous.mode})을 껐다 — 이제 조수가 다른 계열 칩셋으로 맵을 만들 수 있다. 다시 막으려면 configure_monster_system(enabled:true) 또는 자료집 시스템 탭의 「장르 칩셋 잠금」을 켠다.`
+  return `${GENRE_LOCK_RELEASED_MARKER}: ${def.label} 칩셋 잠금(${previous.mode})을 껐다 — 이제 조수가 다른 계열 칩셋으로 맵을 만들 수 있다. 다시 막으려면 ${def.relockHint}을 켠다.`
     + (outsiders.length ? ` (이미 허용 밖 칩셋인 맵 ${outsiders.length}개: ${outsiders.slice(0, 5).map((map) => map.id).join(", ")}${outsiders.length > 5 ? " …" : ""})` : "");
 }
 
