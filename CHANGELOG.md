@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.236.0 — 2026-10-16
+
+### 기능
+
+- **battle** — badly-poisoned (toxic) and confusion for the gen1 battle model (#2657) (`1a45c1b`)
+- **battle** — pokemon-style stat stages (-6..+6) with HUD pills, assistant tool and docs (#2655) (`139e0c1`)
+- **battle** — weather — sun/rain/sandstorm/hail skills, damage mods, residual, badge, assistant tool (#2666) (`882947e`)
+
 ## 0.235.0 — 2026-10-16
 
 ### 기능
