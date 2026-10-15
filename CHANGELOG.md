@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.225.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — follower walk-chip wiring (campaignSpeciesId -> species fieldGraphic via bundle manifest) + field_chip harness (#2612) (`ef21a7e`)
+
+### 수정
+
+- **ci** — record the pokemon battle CSS budget and winners (`27875e9`)
+- **ci** — accept the harness monster walking chips in the charset catalog (`38e97b2`)
+
 ## 0.224.0 — 2026-10-15
 
 ### 기능
