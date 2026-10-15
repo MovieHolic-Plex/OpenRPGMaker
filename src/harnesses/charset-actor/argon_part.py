@@ -88,7 +88,7 @@ def agy_bin():
 
 
 def seed_workdir(adir, base_key, prev=None, seed_edit=None, cand_keep_gear=False):
-    nk = H.norm_base(base_key)
+    nk = base_key if '@' in base_key else H.norm_base(base_key)
     pal, frames, labels, zones, info = P.segment(nk)
     (adir / 'base.json').write_text(json.dumps(dict(base=nk), ensure_ascii=False))
     json.dump({k: '#%02x%02x%02x' % v for k, v in pal.items() if v is not None}, open(adir / 'palette.json', 'w'), indent=1)
@@ -191,7 +191,7 @@ def run_agy(cwd, text, label, model):
 def make_candidate(spec, cand, key, run_dir, model):
     cdir = run_dir / key
     cdir.mkdir(parents=True, exist_ok=True)
-    base_key = H.norm_base(cand['base'])
+    base_key = cand['base'] if '@' in cand['base'] else H.norm_base(cand['base'])
     meta = dict(key=key, arch=spec['id'], base=base_key, variant=cand['variant'], model=model, effort=EFFORT[model], attempts=[],
                 delegated=cand.get('delegated', ''), before=cand.get('before', ''), gear_task=cand.get('gear_task', ''))
     feedback, prev = [], None
@@ -302,7 +302,7 @@ def cmd_sheet(a):
             pal, _, frames = C.load(cd / 'chip.chr.txt')
             bk = meta['base']
             if bk not in base_cache:
-                bp, bf = H.base_of(bk)
+                bp, bf = H.base_of(bk.split("@")[0])
                 base_cache[bk] = (gif_b64(bp, bf, 2), gif_b64(bp, bf, 8))
             ctx = C.context(pal, frames, H.ACTOR1, scale=4, lawn=None, others=(0, 1, 3, 6))
             diff = diff_image(bk, pal, frames)
@@ -316,7 +316,7 @@ def cmd_sheet(a):
             nk = f'{meta["key"]}/{meta["effort"]}'
             note = notes.get(nk) or notes.get(meta['key'])
             card = (f'<div class="card" id="{html.escape(meta["key"])}-{meta["effort"]}"><div class="id">{html.escape(meta["key"])} '
-                    f'<span class="eff {meta["effort"]}">Argon {meta["effort"]}</span> <small>베이스 {html.escape(H.base_label(bk))}{(" · " + html.escape(meta["delegated"])) if meta.get("delegated") else ""} · 시도 {len(meta["attempts"])}회</small></div>'
+                    f'<span class="eff {meta["effort"]}">Argon {meta["effort"]}</span> <small>베이스 {html.escape(H.base_label(bk.split("@")[0]))}{(" · " + html.escape(meta["delegated"])) if meta.get("delegated") else ""} · 시도 {len(meta["attempts"])}회</small></div>'
                     f'<p class="var">{html.escape(meta["variant"])}</p>'
                     f'<div class="cmp"><figure><img src="data:image/gif;base64,{base_cache[bk][0]}"><figcaption>베이스 원본 2×</figcaption></figure>{before_html}'
                     f'<figure><img src="data:image/gif;base64,{gif_b64(pal, frames, 2)}"><figcaption>후보 2× (위·오른쪽·아래·왼쪽)</figcaption></figure>'

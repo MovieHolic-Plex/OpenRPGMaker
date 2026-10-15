@@ -75,12 +75,19 @@ def head_skin(pal, rows, top, skin_letters=None):
     return min(xs), y0, max(xs), y1
 
 
+def split_key(key):
+    """'Actor3:0@robot' → ('Actor3:0', 'Actor3:0@robot'): 같은 베이스를 다른 분할(SPECS 변형)로 쓸 때."""
+    base, _, var = str(key).partition('@')
+    nk = H.norm_base(base)
+    return nk, (nk + '@' + var if var else nk)
+
+
 def segment(key, overrides=None):
     """베이스 → (pal, frames, labels{(d,f): [[region char]]}, zones{(d,f): {'h','t','g'} → set}, info).
     분할은 베이스마다 사람이 눈으로 정한 SPECS(얼굴 상자·상의 시작·허리·신발 줄·맨살 글자)에서 나온다."""
-    nk = H.norm_base(key)
+    nk, sk = split_key(key)
     pal, frames = H.base_of(nk)
-    sp = dict(SPECS[nk])
+    sp = dict(SPECS[sk])
     sp.update(overrides or {})
     boxes = sp['face']                      # {dir: (x0,y0,x1,y1) | None}
     t_start, waist, shoe_top = sp['t_start'], sp['waist'], sp['shoe_top']
@@ -182,7 +189,8 @@ SPECS.update({
 })
 # 로봇은 눈 줄 상자를 둘로 쪼개 눈만 고정한다(사이의 살색은 금속으로 칠할 수 있다). People4:4 의 좁힌 판.
 SPECS['People4:4'] = dict(SPECS['People4:4'], face={'down': [(9, 14, 10, 16), (13, 14, 14, 16)], 'right': [(13, 14, 15, 16)], 'left': [(8, 14, 10, 16)], 'up': None})
-SPECS['Actor3:0'] = SPECS['Actor3:0']
+SPECS['Actor3:0@robot'] = dict(SPECS['Actor3:0'], robot=True, skin='',
+                               face={'down': [(9, 14, 10, 15), (13, 14, 14, 15)], 'right': [(13, 14, 15, 15)], 'left': [(8, 14, 10, 15)], 'up': None})
 
 
 # 분할이 틀린 베이스는 여기서 보정한다(마스크 시트를 눈으로 본 뒤 적는다). 키 = 'Actor3:0' 꼴.
@@ -221,9 +229,9 @@ def mask_image(key, scale=5):
 
 def anchor_image(key, scale=6):
     """서 있는 그림 4방향에 앵커 칸을 표시: 초록=held R, 하늘=held L, 노랑=hip R, 분홍=back (칸 테두리 한 칸)."""
-    nk = H.norm_base(key)
+    nk, sk = split_key(key)
     pal, bframes = H.base_of(nk)
-    spec = SPECS[nk]
+    spec = SPECS[sk]
     im = Image.new('RGBA', (4 * 28, 34), (92, 140, 70, 255))
     cols = {('held', 'R'): (60, 255, 90, 255), ('held', 'L'): (60, 220, 255, 255), ('hip', 'R'): (255, 235, 60, 255), ('back', 'R'): (255, 80, 200, 255)}
     for i, d in enumerate(('down', 'up', 'right', 'left')):
@@ -331,9 +339,9 @@ def anchor_for(key, bframes, spec, kind, side, d, f):
 
 
 def anchor_table(key):
-    nk = H.norm_base(key)
+    nk, sk = split_key(key)
     pal, bframes = H.base_of(nk)
-    spec = SPECS[nk]
+    spec = SPECS[sk]
     lines = ['종류별 앵커(서 있는 그림 기준 grip 칸 좌표 x,y 와 모드). 스프라이트의 grip 칸이 이 칸에 겹친다. 걷기 프레임은 앵커가 손·몸과 함께 움직인다.']
     for kind, sides in (('held', 'RL'), ('hip', 'RL'), ('back', 'R')):
         if kind == 'held' and 'hands' not in spec:
@@ -460,7 +468,7 @@ def apply_edits(key, edit, overrides=None):
                     if 0 <= ty < FH and bf[ty][x] == T and (x, ty) in zones[(d, f)][zk]:
                         setpx((d, f), x, ty, ch, 'paint')
     # 3) 장비: 종류(held 손에 든 것 · hip 허리 · back 등)별 앵커에 스프라이트의 grip 칸을 겹쳐 방향·프레임마다 따라가게 한다
-    spec = SPECS[H.norm_base(key)]
+    spec = SPECS[split_key(key)[1]]
     gear_info = {}
     for i, g in enumerate(edit.get('gear') or []):
         gkind, side, name = g.get('kind'), g.get('side', 'R'), g.get('name', f'gear{i}')
