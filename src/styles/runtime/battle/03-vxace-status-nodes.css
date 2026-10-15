@@ -223,6 +223,13 @@
   content: "PSN";
 }
 
+.battle-status-icon-toxic {
+  --battle-status-icon-bg: #6a2a82;
+}
+.battle-status-icon-toxic::before {
+  content: "TOX";
+}
+
 .battle-status-icon-burn {
   --battle-status-icon-bg: #c2543a;
 }

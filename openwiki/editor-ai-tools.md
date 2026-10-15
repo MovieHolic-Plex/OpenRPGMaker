@@ -3273,3 +3273,11 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
 - 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
 
+
+
+## `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
+
+- `gen1MajorStatus` enum 에 `"toxic"`(맹독: 1/16 × 1,2,3…15) 추가, 새 enum `volatileStatus: "confusion"`(주요 상태와 겹치는 휘발 상태, 2~5 행동·절반 자해·교체/전투 종료로 풀림). 둘 다 **gen1 전투 모델에서만 작동** — 아니면 도구가 경고하고 일반 상태처럼 돈다. 자유 키 없음(enum 값만).
+- 기술에 붙이기는 기존 `upsert_skill.stateEffects:[{stateId, chance, operation:"add"}]`. 독·강철 타입은 맹독에 안 걸린다.
+- 이중 피해 금지: 맹독 레코드에 `runtimeEffects.hpDamagePercentPerTurn` 을 따로 주지 않는다(gen1 은 독 피해를 차례 말 잔여 피해로만 처리하므로 값이 쓰이지 않지만 의미를 오해하게 만든다).
+- 레시피 `monster-status-conditions`. 규칙 정본은 `openwiki/runtime-battle.md` 「맹독·혼란」.

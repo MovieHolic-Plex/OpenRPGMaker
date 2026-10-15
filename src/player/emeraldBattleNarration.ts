@@ -45,14 +45,17 @@ export function emeraldMajorStatusLine(phase: "added" | "removed" | "held", stat
     return status === "freeze" ? `${name}의 얼음이 녹았다!`
       : status === "sleep" ? `${topic} 잠에서 깨어났다!`
       : status === "paralysis" ? `${name}의 마비가 풀렸다!`
-      : status === "poison" ? `${name}의 독이 사라졌다!`
-      : status === "burn" ? `${name}의 화상이 나았다!` : undefined;
+      : status === "poison" || status === "toxic" ? `${name}의 독이 사라졌다!`
+      : status === "burn" ? `${name}의 화상이 나았다!`
+      : status === "confusion" ? `${name}의 혼란이 풀렸다!` : undefined;
   }
   return status === "freeze" ? `${topic} 얼어 버렸다!`
     : status === "sleep" ? `${topic} 잠들어 버렸다!`
     : status === "paralysis" ? `${topic} 마비되어 기술이 나오기 어려워졌다!`
     : status === "poison" ? `${topic} 독에 걸렸다!`
-    : status === "burn" ? `${topic} 화상을 입었다!` : undefined;
+    : status === "toxic" ? `${topic} 맹독에 걸렸다!`
+    : status === "burn" ? `${topic} 화상을 입었다!`
+    : status === "confusion" ? `${topic} 혼란에 빠졌다!` : undefined;
 }
 
 export function emeraldMoveLine(userName: string, skillName: string | undefined): string {

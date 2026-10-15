@@ -1,5 +1,17 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맹독·혼란 — gen1 전투의 상태이상 보강 (2026-10-16, poke-depth PR2)
+
+- 범위: **`battleModel: "gen1"` 프로젝트(몬스터 수집)만.** 다른 전투 모델에서는 같은 레코드가 일반 상태처럼만 돈다(`upsert_state` 가 경고).
+- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
+- 혼란 = `StateRecord.volatileStatus: "confusion"`(**새 선택 필드**, 생략=옛 동작). 주요 상태와 겹쳐 걸리고(`readGen1MajorStatus` 는 이 필드가 있는 상태를 주요 상태로 안 읽는다), 걸릴 때 바이트 하나로 남는 행동 수 2~5(`gen1ConfusionTurns`, `stateTurns[id]` 에 저장)가 정해진다. `prepareGen1CombatAction` 이 주요 상태(수면·얼음·마비) 뒤에 `stepGen1ConfusionBeforeAction` 을 부른다: 카운터를 하나 줄여 0 이면 풀리고(`stateRemoved`, reason natural, 그 행동은 정상), 아니면 바이트 하나로 절반(<128)이 **위력 40 무속성 물리 자해**(`gen1ConfusionSelfDamage`: 급소·자속·난수 없음, 자기 공격·방어에 상태·단계 배율 적용, 최소 1)로 그 행동을 잃는다. 자해는 `stateUpkeep` 엔트리(`userRecordId`+문장 「○○은 혼란에 빠져 자신을 공격했다!」)로 기록되고, 시퀀서는 이를 「명령을 못 쓴 차례」로 읽는다(`commandIncapacitated`) — 안 그러면 적의 첫 엔트리가 아군 명령 대사로 읽힌다. 이미 혼란이면 다시 안 걸리고 바이트도 안 쓴다. 교체해서 빠지면 풀린다. 전투가 끝나면 `removeOnBattleEnd` 로 풀린다(상태 레코드에 `runtimeEffects:{removeOnBattleEnd:true}`).
+- RNG: 맹독은 바이트를 안 쓴다(걸리는 순간의 확률 굴림만). 혼란은 걸릴 때 1바이트, 행동마다 1바이트(풀리는 행동은 0바이트). 이 상태를 안 쓰는 게임의 난수열은 그대로다.
+- 화면: 배지 `TOX`(진보라)·`CNF`(분홍, `stateIconToken` 이 `confus`·`toxic` 를 읽는다 — 옛 코드는 `confuse` 만 읽어 `state_confusion` 이 점(●)으로 떨어졌다). 에메랄드 문장: 「○○은 맹독에 걸렸다!」「○○은 맹독의 피해를 입었다!」「○○은 혼란에 빠졌다!」「○○의 혼란이 풀렸다!」. 혼란 오라(`confuse-stars`)는 `state_confusion` id 에 이미 매핑돼 있어 머리 위에 별이 돈다.
+- 예제 몬스터 원정(`monsterExpedition/roster.ts`·`scarloxyPokemonDemoGame.ts`): `state_toxic`·`state_confusion` 추가. 독 6단계 기술이 맹독, 에스퍼·고스트·페어리 4단계 기술이 20~30% 혼란, 물 6단계 정화가 맹독·혼란까지 씻는다.
+- 조수: `upsert_state` 의 `gen1MajorStatus` enum 에 `toxic`, 새 `volatileStatus` enum(`confusion`). 모델이 gen1 이 아니면 경고. 레시피 `monster-status-conditions`(`toolCapabilityIndex.ts`).
+- 검증: `bun scripts/qa/poke-depth/status.probe.mts`(엔진: 맹독 25→150, 혼란 2~5·자해 ≈1/3 라운드), `scripts/qa/runtime/poke-depth-status.capture.mjs`(출하 플레이어, MODE=toxic|confuse, LEGACY=1 이 「전」). 단위 `test/statusConditions.test.ts`(미실행).
+- 남은 것: 나머지 휘발 상태(풀죽음·씨뿌리기·바인드)·상태 치료 도구(만병통치약이 혼란을 낫게 함)·rm2k3 모델의 혼란은 다루지 않는다. 모든 기술의 수면 확률·턴 수는 기존 그대로.
+
 ## 필드 적 접촉 전투 진형 (2026-10-14)
 
 접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로
