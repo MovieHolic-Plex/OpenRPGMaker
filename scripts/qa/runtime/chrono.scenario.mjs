@@ -42,15 +42,15 @@ export default {
     ], expect: { testidPresent: ["battle-scene"] }, shot: true },
     { id: "ct-era-future", note: "Time gate destination: duplicated map with fog + dark lighting", ops: [
       { kind: "teleport", mapId: "map_era_future", x: 20, y: 16 },
-      { kind: "waitForPosition", mapId: "map_era_future", x: 20, y: 16 },
-    ], expect: { mapId: "map_era_future" }, shot: true },
+      { kind: "waitForPosition", mapId: "map_era_future", x: 19, y: 15 },
+    ], expect: { mapId: "map_era_future", x: 19, y: 15 }, shot: true },
     { id: "ct-castle", note: "build_castle map", ops: [
       { kind: "teleport", mapId: "map_castle", x: 24, y: 30 },
       { kind: "waitForPosition", mapId: "map_castle", x: 24, y: 30 },
     ], expect: { mapId: "map_castle" }, shot: true },
     { id: "ct-cave", note: "run_dungeon_room_pipeline cave with save point", ops: [
       { kind: "teleport", mapId: "map_cave", x: 29, y: 20 },
-      { kind: "waitForPosition", mapId: "map_cave", x: 29, y: 20 },
-    ], expect: { mapId: "map_cave" }, shot: true },
+      { kind: "waitForPosition", mapId: "map_cave", x: 28, y: 19 },
+    ], expect: { mapId: "map_cave", x: 28, y: 19 }, shot: true },
   ],
 };

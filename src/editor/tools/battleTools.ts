@@ -26,7 +26,7 @@ const simulateBattleTool: ToolDefinition = {
       seed: { type: "integer", description: "PRNG 시드(재현성)" },
       battleFlow: { type: "string", enum: ["gauge", "strict"], description: "전투 흐름(gauge 기본, strict 엄격 턴제)" },
       activeSlots: { type: "integer", description: "동시 참전 액터 수 override(미지정 시 시스템/트룹 설정)" },
-      useSkills: { type: "boolean", description: "true = 아군이 자동 전투 AI(기술·회복·연계기)로 행동한다. 기본 false 는 통상 공격+회복약뿐이라 기술·연계기 밸런스를 못 잰다. 결과 data.skillUses 에 기술별 사용 횟수가 나온다" },
+      useSkills: { type: "boolean", description: "true = 아군이 자동 전투 AI(기술·회복·연계기)로 행동한다. 기본 false 는 통상 공격+회복약뿐이라 기술·연계기 밸런스를 못 잰다. 결과 data.skillUses 에 기술별 사용 횟수가 나온다. 연계기는 짝도 게이지 만충이어야 열려 자동 전투에서는 드물게만 쓰인다(skillUses 에 안 잡혀도 연계기가 죽은 것이 아니다 — 위력은 upsert_skill 값과 comboCombinedStats 로 직접 계산해 맞춰라)" },
       strictScript: {
         type: "array",
         description: "strict 전용 라운드별 명령. 예: [[{actorId:'actor_hero', command:'attack', target:'enemy-1'}, {actorId:'actor_mage', command:'switch', switchActorId:'actor_healer'}]]",

@@ -29,6 +29,8 @@ export default {
       { kind: "waitForRuntime", timeoutMs: 120_000 },
       { kind: "seed", seed: 1 },
       { kind: "waitForFollowers", count: 1 },
+      // 오프닝 뒤 필드로 페이드인이 끝나야 입력이 열린다(field-enemy 시나리오와 같은 대기).
+      { kind: "hold", dir: null, ms: 3500 },
     ], expect: { mapId: START, x: SX, y: SY, followerSpriteCount: 1, testidAbsent: ["title-screen", "battle-scene"] }, shot: true },
     { id: "approach", note: "stand two tiles up, right under the symbol, then record field sprite screen positions", ops: [
       // 키 한 번 누름(key)은 걷지 않는다 — 걸음은 방향을 누르고 있어야 한다(hold). 접근은 teleport 로 정확히 두 칸 올린다.
