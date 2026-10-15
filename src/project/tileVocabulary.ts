@@ -145,8 +145,8 @@ export function unapprovedVocabulary(tileset: TilesetDef, limit = 10): Unapprove
 const MATERIAL_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[] = [
   [/돌벽|석벽|돌담|stone[-_]?wall|목골|석재/, ["돌벽", "석벽", "돌담", "석재", "목골", "stone", "castle", "timber"]],
   [/흰\s*집\s*벽|회벽|^벽$/, ["흰 집 벽", "회벽", "벽", "흰"]],
-  [/흙길|모래길|dirt|sand|^길$|^도로$/, ["흙길", "모래", "길", "도로"]],
-  [/^물$|호수|연못|^강$|lake|water/, ["물", "호수", "연못", "강", "오토타일"]],
+  [/흙길|모래길|모랫길|dirt|sand|^길$|^도로$/, ["흙길", "모래", "모랫길", "길 포석", "길", "도로"]],
+  [/^물$|호수|연못|^강$|운하|lake|water/, ["물", "호수", "연못", "강", "운하"]],
   [/침엽수|conifer/, ["침엽수"]],
   [/활엽수|broadleaf/, ["활엽수"]],
   [/마른나무/, ["마른나무"]],
@@ -157,7 +157,7 @@ const MATERIAL_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[]
   [/지붕|roof/, ["지붕"]],
   [/^문$|입구|door/, ["문", "입구", "나무 문"]],
   [/창문|window/, ["창문"]],
-  [/^잔디$|풀밭|^grass$/, ["잔디"]],
+  [/^잔디$|풀밭|잔디밭|^grass$/, ["잔디", "풀밭"]],
   [/키큰\s*풀|tall\s*grass|dark\s*grass|짙은\s*잔디|인카운터\s*풀/, ["키큰 풀"]],
   [/^나무\s*상자$/, ["나무 상자", "상자"]],
   [/^과일\s*박스$/, ["과일박스", "과일"]],
@@ -236,8 +236,7 @@ function tokenCoverageScore(text: string, term: string): number {
   return Math.min(65, 40 + Math.round((15 * covered) / tokens.length));
 }
 
-function scoreTextMatch(haystack: string, terms: readonly string[]): number {
-  const text = haystack.trim().toLowerCase();
+function scoreSingleText(text: string, terms: readonly string[]): number {
   if (!text) return 0;
   let best = 0;
   for (const term of terms) {
@@ -251,6 +250,17 @@ function scoreTextMatch(haystack: string, terms: readonly string[]): number {
     else if (text.includes(term)) best = Math.max(best, 55);
     else if (term.length >= 2 && term.includes(text) && text.length >= 2) best = Math.max(best, 40);
     else best = Math.max(best, tokenCoverageScore(text, term));
+  }
+  return best;
+}
+
+function scoreTextMatch(haystack: string, terms: readonly string[]): number {
+  const text = haystack.trim().toLowerCase();
+  if (!text) return 0;
+  let best = scoreSingleText(text, terms);
+  const stripped = text.replace(/^버들항\s*(?:장소\s*)?(?:·\s*)?/u, "").trim();
+  if (stripped && stripped !== text) {
+    best = Math.max(best, scoreSingleText(stripped, terms));
   }
   return best;
 }
@@ -330,11 +340,54 @@ export function isFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata)
   return isAutotileGroup(tileset, group) || isFlatFillGroup(tileset, group);
 }
 
+const BEODEUL_GROUP_ALIASES: Readonly<Record<string, string>> = {
+  "길": "beodeul:paving",
+  "돌길": "beodeul:paving",
+  "포석": "beodeul:paving",
+  "포석길": "beodeul:paving",
+  "길 포석": "beodeul:paving",
+  "버들항 길": "beodeul:paving",
+  "광장": "beodeul:plaza",
+  "판석": "beodeul:plaza",
+  "석판": "beodeul:plaza",
+  "돌바닥": "beodeul:plaza",
+  "광장 판석": "beodeul:plaza",
+  "신전 바닥": "beodeul:plaza",
+  "모랫길": "beodeul:sand",
+  "모래길": "beodeul:sand",
+  "흙길": "beodeul:sand",
+  "오솔길": "beodeul:sand",
+  "풀밭": "beodeul:grass",
+  "잔디": "beodeul:grass",
+  "잔디밭": "beodeul:grass",
+  "초원": "beodeul:grass",
+  "물": "beodeul:water",
+  "강": "beodeul:water",
+  "강물": "beodeul:water",
+  "운하": "beodeul:water",
+  "호수": "beodeul:water",
+  "연못": "beodeul:water",
+  "버들항 강·운하 물": "beodeul:water",
+  "밭": "beodeul:farmland",
+  "경작지": "beodeul:farmland",
+};
+
 function findExactGroupByName(tileset: TilesetDef, query: string): TileGroupMetadata | undefined {
   const needle = normalizeMaterialQuery(query);
   if (!needle) return undefined;
   const groups = tileset.tileGroups ?? [];
-  const exact = groups.filter((group) => normalizeMaterialQuery(group.name) === needle);
+  if (tileset.id === "beodeul_city") {
+    const aliasGroupId = BEODEUL_GROUP_ALIASES[needle];
+    if (aliasGroupId) {
+      const aliased = groups.find((g) => g.id === aliasGroupId);
+      if (aliased) return aliased;
+    }
+  }
+  const exact = groups.filter((group) => {
+    const gName = normalizeMaterialQuery(group.name);
+    const stripped = normalizeMaterialQuery(group.name.replace(/^버들항\s*(?:장소\s*)?(?:·\s*)?/u, ""));
+    return gName === needle || (stripped.length > 0 && stripped === needle);
+  });
   if (exact.length === 0) return undefined;
   if (exact.length === 1) return exact[0];
   // multi exact-name ambiguity → missing path (caller falls through); prefer patterned/smaller.

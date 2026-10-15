@@ -120,6 +120,7 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { CUSTOM_MAP_OBJECT_TOOLS } from "./customMapObjectTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -159,7 +160,7 @@ function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] 
 // 전제 조건인데 40툴 트림에서 잘리면 모델이 id 를 발명하고 무결성 검증에서 거부된다
 // (2026-08-23 실측: 발명한 element id 3개 거부 후 "속성 id 조회 기능이 없다"며 작업 3건 포기).
 const CORE_TOOL_NAMES: ReadonlySet<string> = new Set([
-  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query", "get_database_records",
+  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query", "get_database_records", "author_custom_map_object",
 ]);
 
 // 혼합 패밀리(QUERY_TOOLS 등)의 이름 단위 도메인 교정.
@@ -280,6 +281,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
   ...TILESET_CHANGE_TOOLS,
   ...STORE_TOOLS,
+  ...withDomain(CUSTOM_MAP_OBJECT_TOOLS, "core"),
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
   ...KIT_AREA_TOOLS,

@@ -30,10 +30,12 @@ export function readOAuthClientsFromPiAi() {
     }
   };
   const antigravity = read("src/registry/oauth/google-antigravity.ts");
+  const antigravityKdl = read("../pi-catalog/src/compat/rules/auth/google-antigravity.kdl");
   const codex = read("src/registry/oauth/openai-codex.ts");
   const encoded = (name) => antigravity.match(new RegExp(`const ${name} = decode\\(\\s*"([A-Za-z0-9+/=]+)"`))?.[1];
-  const id = encoded("CLIENT_ID");
-  const secret = encoded("CLIENT_SECRET");
+  const kdlEncoded = (kdlKey) => antigravityKdl.match(new RegExp(`${kdlKey}\\s+"([A-Za-z0-9+/=]+)"\\s+encoding="base64"`))?.[1];
+  const id = encoded("CLIENT_ID") ?? kdlEncoded("client-id");
+  const secret = encoded("CLIENT_SECRET") ?? kdlEncoded("client-secret");
   const codexId = codex.match(/const CLIENT_ID = "([^"]+)"/)?.[1];
   return {
     ...(id ? { antigravityClientId: decodeBase64(id) } : {}),

@@ -11,6 +11,8 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
+import { resolveRegionEventSprites, type RegionEventSprite } from '../../src/ai/toolImageEventSprites.ts';
+import { charsetFrameSource } from '../../src/assets/easyrpgRtp.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
@@ -209,6 +211,57 @@ function outline(target: Raster, x: number, y: number, size: number, rgb: readon
   }
 }
 
+function loadSpriteRaster(url: string, preserveAlpha = false): Raster | null {
+  const key = `sprite|${url}|${preserveAlpha ? "alpha" : "key"}`;
+  if (imageCache.has(key)) return imageCache.get(key)!;
+  let bytes: Buffer | null = null;
+  if (url.startsWith("data:image/png;base64,")) {
+    bytes = Buffer.from(url.slice(url.indexOf(",") + 1), "base64");
+  } else if (/^\.?\/?assets\//u.test(url)) {
+    const clean = url.replace(/^\.?\//u, "").split("?")[0]!;
+    const candidates = [path.join("public", clean), path.join("/home/main/z-project/rpg-zzu-default-llm-argon/public", clean)];
+    for (const file of candidates) {
+      if (fs.existsSync(file)) {
+        bytes = fs.readFileSync(file);
+        break;
+      }
+    }
+  }
+  let raster: Raster | null = null;
+  if (bytes) {
+    try {
+      const png = PNG.sync.read(bytes);
+      raster = { width: png.width, height: png.height, data: new Uint8Array(png.data) };
+      if (!preserveAlpha) {
+        const pixels = new Uint8ClampedArray(raster.data.buffer, raster.data.byteOffset, raster.data.byteLength);
+        applyTransparentColorKey(pixels);
+      }
+    } catch {
+      raster = null;
+    }
+  }
+  imageCache.set(key, raster);
+  return raster;
+}
+
+function drawRegionEventSpritesOnTarget(ctx: PngContext, sprites: readonly RegionEventSprite[]): void {
+  for (const sprite of sprites) {
+    const raster = loadSpriteRaster(sprite.imageUrl, sprite.preserveAlpha);
+    if (!raster) continue;
+    ctx.drawImage(
+      raster,
+      sprite.frame.x,
+      sprite.frame.y,
+      sprite.frame.width,
+      sprite.frame.height,
+      sprite.destX,
+      sprite.destY,
+      sprite.destW,
+      sprite.destH,
+    );
+  }
+}
+
 export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSource?: { map: GameMap; x: number; y: number }): { png: Buffer; note?: string } {
   const tileset = project.tilesets[map.tilesetId];
   const size = (tileset?.tileSize ?? 16) * scale;
@@ -223,9 +276,12 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
   }
   let note: string | undefined;
+  const resolvedSprites = resolveRegionEventSprites(project, map, { x: 0, y: 0, w: map.width, h: map.height }, size);
+  const eventSprites = resolvedSprites.ok ? resolvedSprites.sprites : [];
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
-    const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
+    const pngCtx = new PngContext(target);
+    const context = pngCtx as unknown as CanvasRenderingContext2D;
     const sun = sunlightField(sunSource?.map ?? map, tileset,
       rasterSunlightArt(image, tileset.tileSize, tileset.tilesPerRow));
     const sunRow = (row: number) => {
@@ -249,17 +305,45 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
         for (const cell of row.cells) ctx.drawImage(upper, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
         sunRow(row.y);
       }
+      drawRegionEventSpritesOnTarget(ctx, eventSprites);
     } else {
       drawMapTileLayer(context, image as never, map, tileset, "lower", scale);
+      drawRegionEventSpritesOnTarget(pngCtx, eventSprites.filter((s) => s.priority === "below"));
       drawMapTileLayer(context, image as never, map, tileset, "upper", scale);
       for (let row = 0; row < map.height; row++) sunRow(row);
+      drawRegionEventSpritesOnTarget(pngCtx, eventSprites.filter((s) => s.priority !== "below"));
     }
   }
+  const pngCtx = new PngContext(target);
   const surfaceY = (x: number, y: number) => relief?.rows[y]?.cells[x]?.y ?? y * size;
+  // Render vehicles placed on this map
+  const sysVehicles = (project.system as { vehicles?: Record<string, { mapId?: string; x?: number; y?: number; characterIndex?: number }> } | undefined)?.vehicles ?? {};
+  const dbVehicles = (project.database?.system as { vehicles?: Record<string, { mapId?: string; x?: number; y?: number; characterIndex?: number }> } | undefined)?.vehicles ?? {};
+  const allVehicles = { ...dbVehicles, ...sysVehicles };
+  const vehicleRaster = loadSpriteRaster("/assets/charsets/Vehicles.png", false);
+  for (const [vKey, v] of Object.entries(allVehicles)) {
+    if (!v || v.mapId !== map.id || typeof v.x !== "number" || typeof v.y !== "number") continue;
+    const cIdx = typeof v.characterIndex === "number" ? v.characterIndex : vKey === "airship" ? 2 : vKey === "ship" ? 1 : 0;
+    const frame = charsetFrameSource({ characterIndex: cIdx, direction: "down", pattern: 1 });
+    if (vehicleRaster) {
+      const destW = frame.width * scale;
+      const destH = frame.height * scale;
+      const dx = v.x * size + (size - destW) / 2;
+      const dy = surfaceY(v.x, v.y) + size - destH;
+      pngCtx.drawImage(vehicleRaster, frame.x, frame.y, frame.width, frame.height, dx, dy, destW, destH);
+    }
+  }
   for (const event of map.events ?? []) outline(target, event.x * size, surfaceY(event.x, event.y), size, MARK[eventKind(event)]);
   if (map.id === project.startMapId) {
     const sx = project.startPos.x * size;
     const sy = surfaceY(project.startPos.x, project.startPos.y);
+    const heroRaster = loadSpriteRaster("/assets/charsets/Actor1.png", false);
+    if (heroRaster) {
+      const frame = charsetFrameSource({ characterIndex: 0, direction: "down", pattern: 1 });
+      const destW = frame.width * scale;
+      const destH = frame.height * scale;
+      pngCtx.drawImage(heroRaster, frame.x, frame.y, frame.width, frame.height, sx + (size - destW) / 2, sy + size - destH, destW, destH);
+    }
     outline(target, sx - 3, sy - 3, size + 6, MARK.start);
     outline(target, sx, sy, size, MARK.start);
   }

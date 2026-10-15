@@ -166,8 +166,11 @@ const tileQuery: ToolDefinition = {
         ...(group.sourceSize ? { sourceSize: group.sourceSize } : {}),
         ...(group.blockSize ? { blockSize: group.blockSize } : {}),
       }));
+      const seenLabels = new Set<string>(labels.map((l) => l.label));
       for (const material of materials) {
         if (labels.length >= limit) break;
+        if (seenLabels.has(material.label)) continue;
+        seenLabels.add(material.label);
         labels.push({
           kind: "tile",
           tileId: material.tileId,
@@ -182,18 +185,44 @@ const tileQuery: ToolDefinition = {
           const label = typeof meta?.label === "string" ? meta.label.trim() : "";
           const description = typeof meta?.description === "string" ? meta.description.trim() : "";
           if (!label && !description) continue;
+          const finalLabel = label || `타일 ${tileId}`;
+          if (seenLabels.has(finalLabel)) continue;
+          seenLabels.add(finalLabel);
           labels.push({
             kind: "tile",
             tileId,
-            label: label || `타일 ${tileId}`,
+            label: finalLabel,
             description,
             ...(typeof meta?.role === "string" && meta.role ? { role: meta.role } : {}),
           });
         }
       }
+      const beodeulKits =
+        tilesetId === "beodeul_city"
+          ? [
+              { objectId: "kit:beodeul_city/bd-pick-temple-ruins-mosaic-medallion-5x5", name: "버들항 신전 폐허 · 5×5 내전 모자이크 바닥 메달리온", size: "5×5", use: "stamp_object (신전·성소·광장 중심 모자이크 바닥)" },
+              { objectId: "kit:beodeul_city/bd-pick-temple-ruins-floor-trav", name: "버들항 신전 폐허 · 2×2 트래버틴 대리석 바닥", size: "2×2", use: "stamp_object (대리석 판석 바닥)" },
+              { objectId: "kit:beodeul_city/bd-pick-temple-ruins-floor-ruin", name: "버들항 신전 폐허 · 2×2 풍화된 유적 돌바닥", size: "2×2", use: "stamp_object (유적·던전 바닥)" },
+              { objectId: "kit:beodeul_city/bd-prop-well_roofed", name: "버들항 지붕 있는 우물", size: "2×3", use: "stamp_object (광장 중심 우물)" },
+              { objectId: "kit:beodeul_city/bd-prop-bench_wood", name: "버들항 나무 벤치", size: "2×1", use: "stamp_object (광장·길가 쉼터)" },
+              { objectId: "kit:beodeul_city/bd-prop-lamp_crook", name: "버들항 지팡이 가로등", size: "1×2", use: "stamp_object (길가·광장 조명)" },
+              { objectId: "kit:beodeul_city/bd-prop-flowerbox_long", name: "버들항 긴 꽃상자 화단", size: "2×1", use: "stamp_object (집 앞·광장 화단)" },
+              { objectId: "kit:beodeul_city/bd-pick-temple-ruins-column-temple-tall", name: "버들항 키 큰 로마 신전 기둥", size: "1×3", use: "stamp_object (성소·유적 기둥)" },
+              { objectId: "kit:beodeul_city/bd-tree-03a8f7", name: "버들항 큰 활엽수 A", size: "3×3", use: "stamp_object (숲·외곽 나무 군락)" },
+              { objectId: "kit:beodeul_city/bd-tree-3e8732", name: "버들항 큰 활엽수 B", size: "3×3", use: "stamp_object (숲·외곽 나무 군락)" },
+              { objectId: "kit:beodeul_city/bd-tree-f4f319", name: "버들항 둥근 덤불 A", size: "2×2", use: "stamp_object (길가·숲 가장자리 덤불)" },
+              { objectId: "kit:beodeul_city/bd-house-village-cream", name: "버들항 회벽·목골 별채 집", size: "7×8", use: "stamp_object (마을 민가)" },
+              { objectId: "kit:beodeul_city/bd-house-village-stone", name: "버들항 사암 돌벽 박공집", size: "6×7", use: "stamp_object (마을 돌집)" },
+            ]
+          : undefined;
       return {
-        summary: `타일 라벨 ${labels.length}개 — place_props/fill_region/build_wall 등의 material 인자에 label 문자열을 넣으세요(그룹 id 금지).`,
-        data: { tilesetId, query: query || null, labels },
+        summary: `타일 라벨 ${labels.length}개 — fill_region/lay_path/place_props 등의 material 인자에 label 문자열(예: "버들항 길 포석", "버들항 광장 판석", "버들항 모랫길", "버들항 풀밭", "버들항 물")을 넣으세요.${beodeulKits ? " 버들항 다중칸 구조물·모자이크 바닥·나무·소품은 stamp_object(objectId: 'kit:beodeul_city/...') 및 dress_beodeul_ground 를 함께 쓰면 정교한 버들항 타일 배치가 완성됩니다." : ""}`,
+        data: {
+          tilesetId,
+          query: query || null,
+          labels,
+          ...(beodeulKits ? { recommendedBeodeulKits: beodeulKits } : {}),
+        },
       };
     }
     return failWithExample("알 수 없는 tile_query ask입니다", QUERY_EXAMPLE);

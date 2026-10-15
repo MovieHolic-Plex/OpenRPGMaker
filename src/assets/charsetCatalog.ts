@@ -54,6 +54,33 @@ export function projectCharsetAssets(project: {
   return [...CHARSET_ASSETS, ...uploadedCharsets];
 }
 
+const SHORT_CHARSET_ALIASES: Readonly<Record<string, string>> = {
+  actor1: "tex_easyrpg_charset_actor1",
+  actor2: "tex_easyrpg_charset_actor2",
+  actor3: "tex_easyrpg_charset_actor3",
+  actor4: "tex_easyrpg_charset_actor4",
+  object1: "tex_easyrpg_charset_object1",
+  object2: "tex_easyrpg_charset_object2",
+  people1: "tex_easyrpg_charset_people1",
+  people2: "tex_easyrpg_charset_people2",
+  people3: "tex_easyrpg_charset_people3",
+  people4: "tex_easyrpg_charset_people4",
+  monster: "tex_easyrpg_charset_monster1",
+  monster1: "tex_easyrpg_charset_monster1",
+  monster2: "tex_easyrpg_charset_monster2",
+  vehicles: "tex_easyrpg_charset_vehicles",
+  crystal: "tex_easyrpg_charset_object1",
+  door1: "tex_easyrpg_charset_object1",
+  chest: "tex_easyrpg_charset_object1",
+};
+
 export function findCharsetAsset(idOrTextureKey: string): EasyRpgCharsetAsset | undefined {
-  return CHARSET_ASSETS.find((asset) => asset.id === idOrTextureKey || asset.textureKey === idOrTextureKey);
+  const direct = CHARSET_ASSETS.find((asset) => asset.id === idOrTextureKey || asset.textureKey === idOrTextureKey);
+  if (direct) return direct;
+  const aliasKey = SHORT_CHARSET_ALIASES[idOrTextureKey.toLowerCase()];
+  if (aliasKey) {
+    return CHARSET_ASSETS.find((asset) => asset.textureKey === aliasKey || asset.id === aliasKey);
+  }
+  const lower = idOrTextureKey.toLowerCase();
+  return CHARSET_ASSETS.find((asset) => asset.fileName.replace(/\.png$/iu, "").toLowerCase() === lower);
 }

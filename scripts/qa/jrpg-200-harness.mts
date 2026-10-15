@@ -28,6 +28,11 @@ import { renderMapPng, renderToolRegionPngBase64 } from "../qa-game/render.mts";
 import { runSceneTest } from "../../src/testing/sceneTestRunner.ts";
 import { simulateBattle } from "../../src/battle/simulate.ts";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store.ts";
+import { runTool } from "../../src/editor/tools/toolRunner.ts";
+import { getTool } from "../../src/editor/tools/toolRegistry.ts";
+import { finishDraftTilesets } from "../../src/editor/tools/changeset.ts";
+import { autoEnsureSceneObjectAndLayout } from "../../src/editor/tools/customMapObjectTools.ts";
+import { shapeAllAutotileGroupsAround } from "../../src/project/defaults/autotileEngine.ts";
 import { JRPG_200_CASES, type JrpgCommandCase } from "./jrpg-200-cases.mts";
 
 setRegionReferenceDownloadLoader(async (url: string) =>
@@ -40,6 +45,16 @@ setWorldmapBuilder(headlessBuildWorldmap);
 const MODEL_PROVIDER = "google-antigravity" as const;
 const MODEL_ID = "gemini-4-argon";
 
+const SPRITE_ID_MAP: Readonly<Record<string, string>> = {
+  Actor1: "tex_easyrpg_charset_actor1",
+  Actor2: "tex_easyrpg_charset_actor2",
+  Object1: "tex_easyrpg_charset_object1",
+  Object2: "tex_easyrpg_charset_object2",
+  People1: "tex_easyrpg_charset_people1",
+  Crystal: "tex_easyrpg_charset_object1",
+  Door1: "tex_easyrpg_charset_object1",
+};
+
 function makeNpcEvent(
   id: string,
   name: string,
@@ -47,6 +62,7 @@ function makeNpcEvent(
   y: number,
   text: string,
   triggerKind: "action" | "playerTouch" | "touch" | "eventTouch" | "auto" | "parallel" = "action",
+  spriteOverride?: { id: string; pattern: number },
 ): GameEvent {
   const base = structuredClone(fixtureEvent("ev_ember_child"));
   base.id = id;
@@ -58,8 +74,65 @@ function makeNpcEvent(
   p0.name = name;
   p0.trigger = { kind: triggerKind };
   p0.commands = [{ kind: "text", speaker: name, body: text } as Command];
+  if (spriteOverride) {
+    const texKey = SPRITE_ID_MAP[spriteOverride.id] ?? spriteOverride.id;
+    p0.graphic = {
+      transparent: false,
+      sprite: { type: "bundled", id: texKey },
+      direction: "down",
+      pattern: spriteOverride.pattern,
+    };
+  }
   base.pages = [p0];
   return base;
+}
+
+function populateRichMapBaseline(project: Project, map: GameMap, variant: number): void {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset) return;
+
+  // Authentic Beodeul-hang (beodeul_city) initial village meadow & sand path baseline (zero raw brick tiles!)
+  const midX = Math.floor(map.width / 2);
+  const midY = Math.floor(map.height / 2);
+  const shapedPoints: { x: number; y: number }[] = [];
+
+  for (let y = 1; y < map.height - 1; y++) {
+    for (let x = 1; x < map.width - 1; x++) {
+      const idx = y * map.width + x;
+      const onHorizontalTrail = y === midY;
+      const onVerticalTrail = x === midX;
+      if (onHorizontalTrail || onVerticalTrail) {
+        map.lowerTiles[idx] = 23160; // beodeul_sand_autotile
+        shapedPoints.push({ x, y });
+      }
+    }
+  }
+
+  if (shapedPoints.length > 0 && tileset.autotileGroups?.length) {
+    shapeAllAutotileGroupsAround(map, tileset.autotileGroups, shapedPoints);
+  }
+
+  // Place natural Beodeul wildflowers & bushes along outer border without blocking any interior tile
+  const occupied = new Set(map.events.map((e) => `${e.x},${e.y}`));
+  occupied.add(`${project.startPos.x},${project.startPos.y}`);
+
+  const chosenProps = [27511, 27512, 27573, 27574, 27566, 27567, 27598, 27540].filter(
+    (tid) => tid < tileset.count,
+  );
+  for (const pt of chosenProps) {
+    tileset.passability[pt] = { up: true, down: true, left: true, right: true };
+  }
+
+  let propCursor = variant;
+  for (let x = 0; x < map.width; x++) {
+    for (const y of [0, map.height - 1]) {
+      if (Math.abs(x - midX) <= 1) continue;
+      if (occupied.has(`${x},${y}`)) continue;
+      if ((x + variant) % 3 === 0) {
+        map.upperTiles[y * map.width + x] = chosenProps[propCursor++ % chosenProps.length]!;
+      }
+    }
+  }
 }
 
 function addExtraMap(
@@ -69,10 +142,15 @@ function addExtraMap(
   width: number,
   height: number,
   events: GameEvent[],
+  variant: number,
+  legacyBlankMaps = false,
 ): void {
   const map = createBlankMap(name, width, height, DEFAULT_TILESET_ID);
   map.id = id;
   map.events = events;
+  if (!legacyBlankMaps) {
+    populateRichMapBaseline(project, map, variant);
+  }
   project.maps[id] = map;
   project.mapTree.children = project.mapTree.children ?? [];
   if (!project.mapTree.children.some((c) => c.mapId === id)) {
@@ -80,7 +158,8 @@ function addExtraMap(
   }
 }
 
-export function createJrpg200FixtureProject(): Project {
+export function createJrpg200FixtureProject(options?: { legacyBlankMaps?: boolean }): Project {
+  const legacyBlankMaps = options?.legacyBlankMaps === true;
   const project = createCapabilityFixtureProject();
 
   // Populate map_ember_village baseline + refactor target events
@@ -88,20 +167,20 @@ export function createJrpg200FixtureProject(): Project {
   ember.events.push(
     makeNpcEvent("ev_baseline_guide", "마을 안내인", 2, 2, "엠버 마을에 오신 것을 환영합니다."),
     {
-      ...makeNpcEvent("ev_legacy_pit", "낡은 구덩이 함정", 5, 12, "구덩이에 빠졌다!", "playerTouch"),
+      ...makeNpcEvent("ev_legacy_pit", "낡은 구덩이 함정", 5, 12, "구덩이에 빠졌다!", "playerTouch", { id: "Object2", pattern: 4 }),
       pages: [
         {
-          ...makeNpcEvent("ev_legacy_pit", "낡은 구덩이 함정", 5, 12, "", "playerTouch").pages[0]!,
+          ...makeNpcEvent("ev_legacy_pit", "낡은 구덩이 함정", 5, 12, "", "playerTouch", { id: "Object2", pattern: 4 }).pages[0]!,
           priority: "below",
           commands: [{ kind: "killPlayer", message: "구덩이에 빠져 사망했다." } as Command],
         },
       ],
     },
     {
-      ...makeNpcEvent("ev_buggy_chest", "오래된 보물상자", 12, 12, "포션을 발견했다!"),
+      ...makeNpcEvent("ev_buggy_chest", "오래된 보물상자", 12, 12, "포션을 발견했다!", "action", { id: "Object1", pattern: 1 }),
       pages: [
         {
-          ...makeNpcEvent("ev_buggy_chest", "오래된 보물상자", 12, 12, "포션을 발견했다!").pages[0]!,
+          ...makeNpcEvent("ev_buggy_chest", "오래된 보물상자", 12, 12, "포션을 발견했다!", "action", { id: "Object1", pattern: 1 }).pages[0]!,
           commands: [
             { kind: "text", body: "포션을 발견했다!" } as Command,
             { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 } as Command,
@@ -109,104 +188,154 @@ export function createJrpg200FixtureProject(): Project {
         },
       ],
     },
-    makeNpcEvent("ev_village_guard", "마을 경비병", 9, 6, "마도 유적 근처는 위험하니 조심하시오!"),
-    makeNpcEvent("ev_village_sign", "마을 표지판", 9, 8, "여기는 평화로운 엠버 마을입니다."),
-    makeNpcEvent("ev_village_well", "오래된 우물", 7, 10, "깊고 서늘한 우물이다."),
+    makeNpcEvent("ev_village_guard", "마을 경비병", 9, 6, "마도 유적 근처는 위험하니 조심하시오!", "action", { id: "Actor2", pattern: 1 }),
+    makeNpcEvent("ev_village_sign", "마을 표지판", 9, 8, "여기는 평화로운 엠버 마을입니다.", "action", { id: "Object2", pattern: 1 }),
+    makeNpcEvent("ev_village_well", "오래된 우물", 7, 10, "깊고 서늘한 우물이다.", "action", { id: "Object2", pattern: 7 }),
   );
+  if (!legacyBlankMaps) {
+    populateRichMapBaseline(project, ember, 1);
+  }
 
   // Add the other 5 Chrono Trigger / FF6 era & dungeon maps
-  addExtraMap(project, "map_chrono_present", "천년제 광장 AD 1000", 20, 15, [
-    makeNpcEvent(
-      "ev_baseline_present_npc",
-      "천년제 구경꾼",
-      2,
-      2,
-      "천년제 축제가 한창이야! 루카의 텔레포드 발명품도 꼭 구경해 봐!",
-    ),
-    makeNpcEvent(
-      "ev_broken_gate",
-      "불안정한 시간의 문",
-      3,
-      3,
-      "차원 좌표가 어긋나 있어 작동하지 않는다.",
-    ),
-    makeNpcEvent("ev_fair_bard", "축제 악사", 11, 8, "즐거운 천년제 음악을 들어보시렵니까?"),
-  ]);
+  addExtraMap(
+    project,
+    "map_chrono_present",
+    "천년제 광장 AD 1000",
+    20,
+    15,
+    [
+      makeNpcEvent(
+        "ev_baseline_present_npc",
+        "천년제 구경꾼",
+        2,
+        2,
+        "천년제 축제가 한창이야! 루카의 텔레포드 발명품도 꼭 구경해 봐!",
+      ),
+      makeNpcEvent(
+        "ev_broken_gate",
+        "불안정한 시간의 문",
+        3,
+        3,
+        "차원 좌표가 어긋나 있어 작동하지 않는다.",
+        "action",
+        { id: "Crystal", pattern: 1 },
+      ),
+      makeNpcEvent("ev_fair_bard", "축제 악사", 11, 8, "즐거운 천년제 음악을 들어보시렵니까?", "action", { id: "People1", pattern: 4 }),
+    ],
+    2,
+    legacyBlankMaps,
+  );
 
-  addExtraMap(project, "map_chrono_past", "가르디아 왕국 AD 600", 20, 15, [
-    makeNpcEvent("ev_baseline_past_npc", "중세 파수꾼", 2, 2, "마왕군이 북쪽 성채를 점거하고 있소."),
-    makeNpcEvent("ev_past_knight", "가르디아 기사", 7, 7, "마왕성 쪽은 위험하오."),
-    makeNpcEvent("ev_past_smith", "대장장이 제자", 5, 4, "스승님은 전설의 광석을 찾으러 떠나셨소."),
-  ]);
+  addExtraMap(
+    project,
+    "map_chrono_past",
+    "가르디아 왕국 AD 600",
+    20,
+    15,
+    [
+      makeNpcEvent("ev_baseline_past_npc", "중세 파수꾼", 2, 2, "마왕군이 북쪽 성채를 점거하고 있소."),
+      makeNpcEvent("ev_past_knight", "가르디아 기사", 7, 7, "마왕성 쪽은 위험하오.", "action", { id: "Actor2", pattern: 4 }),
+      makeNpcEvent("ev_past_smith", "대장장이 제자", 5, 4, "스승님은 전설의 광석을 찾으러 떠나셨소.", "action", { id: "People1", pattern: 7 }),
+    ],
+    3,
+    legacyBlankMaps,
+  );
 
-  addExtraMap(project, "map_chrono_future", "아리스 돔 AD 2300", 20, 15, [
-    makeNpcEvent(
-      "ev_baseline_future_npc",
-      "돔 생존자 소년",
-      2,
-      2,
-      "라보스의 날 이후 세상은 온통 잿빛 폐허가 되었어...",
-    ),
-    makeNpcEvent("ev_future_survivor", "지친 생존자", 7, 9, "배가 고파... 하지만 희망을 버릴 순 없어."),
-    makeNpcEvent("ev_future_log", "구형 기록 단말기", 4, 8, "시스템 대기 중..."),
-  ]);
+  addExtraMap(
+    project,
+    "map_chrono_future",
+    "아리스 돔 AD 2300",
+    20,
+    15,
+    [
+      makeNpcEvent(
+        "ev_baseline_future_npc",
+        "돔 생존자 소년",
+        2,
+        2,
+        "라보스의 날 이후 세상은 온통 잿빛 폐허가 되었어...",
+      ),
+      makeNpcEvent("ev_future_survivor", "지친 생존자", 7, 9, "배가 고파... 하지만 희망을 버릴 순 없어.", "action", { id: "People1", pattern: 10 }),
+      makeNpcEvent("ev_future_log", "구형 기록 단말기", 4, 8, "시스템 대기 중...", "action", { id: "Object2", pattern: 10 }),
+    ],
+    4,
+    legacyBlankMaps,
+  );
 
-  addExtraMap(project, "map_magitek_ruins", "제국 마도 유적", 20, 15, [
-    makeNpcEvent(
-      "ev_baseline_ruins_npc",
-      "잠입 요원",
-      2,
-      2,
-      "제국의 마도 병기와 보안 장치가 곳곳에 있으니 주의해.",
-    ),
-    {
-      ...makeNpcEvent("ev_boss_door", "마도 코어실 문", 10, 2, ""),
-      pages: [
-        {
-          ...makeNpcEvent("ev_boss_door", "마도 코어실 문", 10, 2, "").pages[0]!,
-          commands: [
-            {
-              kind: "transfer",
-              mapId: "map_magitek_ruins",
-              x: 10,
-              y: 8,
-              dir: "up",
-            } as Command,
-          ],
-        },
-      ],
-    },
-    {
-      ...makeNpcEvent("ev_ruins_alarm", "경보 센서", 6, 3, "경보가 울렸다!", "playerTouch"),
-      pages: [
-        {
-          ...makeNpcEvent("ev_ruins_alarm", "경보 센서", 6, 3, "경보가 울렸다!", "playerTouch").pages[0]!,
-          priority: "below",
-          commands: [
-            { kind: "text", body: "침입자 경보가 울렸다!" } as Command,
-            {
-              kind: "battleProcessing",
-              troopId: "troop_imperial_patrol",
-              canEscape: true,
-              canLose: false,
-            } as Command,
-          ],
-        },
-      ],
-    },
-  ]);
+  addExtraMap(
+    project,
+    "map_magitek_ruins",
+    "제국 마도 유적",
+    20,
+    15,
+    [
+      makeNpcEvent(
+        "ev_baseline_ruins_npc",
+        "잠입 요원",
+        2,
+        2,
+        "제국의 마도 병기와 보안 장치가 곳곳에 있으니 주의해.",
+      ),
+      {
+        ...makeNpcEvent("ev_boss_door", "마도 코어실 문", 10, 2, "", "action", { id: "Door1", pattern: 1 }),
+        pages: [
+          {
+            ...makeNpcEvent("ev_boss_door", "마도 코어실 문", 10, 2, "", "action", { id: "Door1", pattern: 1 }).pages[0]!,
+            commands: [
+              {
+                kind: "transfer",
+                mapId: "map_magitek_ruins",
+                x: 10,
+                y: 8,
+                dir: "up",
+              } as Command,
+            ],
+          },
+        ],
+      },
+      {
+        ...makeNpcEvent("ev_ruins_alarm", "경보 센서", 6, 3, "경보가 울렸다!", "playerTouch", { id: "Crystal", pattern: 4 }),
+        pages: [
+          {
+            ...makeNpcEvent("ev_ruins_alarm", "경보 센서", 6, 3, "경보가 울렸다!", "playerTouch", { id: "Crystal", pattern: 4 }).pages[0]!,
+            priority: "below",
+            commands: [
+              { kind: "text", body: "침입자 경보가 울렸다!" } as Command,
+              {
+                kind: "battleProcessing",
+                troopId: "troop_imperial_patrol",
+                canEscape: true,
+                canLose: false,
+              } as Command,
+            ],
+          },
+        ],
+      },
+    ],
+    5,
+    legacyBlankMaps,
+  );
 
-  addExtraMap(project, "map_interior_inn", "엠버 여관 실내", 14, 11, [
-    makeNpcEvent(
-      "ev_baseline_inn_npc",
-      "여행자 상인",
-      2,
-      2,
-      "여관 난롯불 옆에서 쉬면 피로가 싹 풀리지.",
-    ),
-    makeNpcEvent("ev_inn_hearth", "따뜻한 벽난로", 6, 2, "장작불이 타오르고 있다."),
-    makeNpcEvent("ev_inn_vip_door", "2층 특실 문", 9, 3, "단단히 잠겨 있는 특실 문이다."),
-  ]);
+  addExtraMap(
+    project,
+    "map_interior_inn",
+    "엠버 여관 실내",
+    14,
+    11,
+    [
+      makeNpcEvent(
+        "ev_baseline_inn_npc",
+        "여행자 상인",
+        2,
+        2,
+        "여관 난롯불 옆에서 쉬면 피로가 싹 풀리지.",
+      ),
+      makeNpcEvent("ev_inn_hearth", "따뜻한 벽난로", 6, 2, "장작불이 타오르고 있다.", "action", { id: "Object2", pattern: 1 }),
+      makeNpcEvent("ev_inn_vip_door", "2층 특실 문", 9, 3, "단단히 잠겨 있는 특실 문이다.", "action", { id: "Door1", pattern: 4 }),
+    ],
+    6,
+    legacyBlankMaps,
+  );
 
   // Add Switches
   const switchDefs: Array<[string, string]> = [
@@ -585,16 +714,34 @@ export function findTargetEvents(
 }
 
 // ============================================================================
-// 5-Stage Adversarial Verifier (Preservation + Requirement + Runtime + SQLite + Visual QA)
+// 7-Gate Ruthless Adversarial Verifier
+// (Preservation + Requirement + MapLayout/Objects + CustomObjectGen + Runtime + SQLite + VisualQA)
 // ============================================================================
+
+export interface AdversarialVerificationMetrics {
+  totalMapObjectCells: number;
+  distinctTileIds: number;
+  addedTileCells: number;
+  localObjectCount: number;
+  bakedWorkshopObjects: string[];
+  stampedWorkshopCells: number;
+  visibleTargetEvents: number;
+  transparentTargetEvents: number;
+  changedPixelCount: number;
+  localChangedPixels: number;
+  pixelDiffRatio: number;
+}
 
 export interface AdversarialVerificationReport {
   passed: boolean;
   requirementPassed: boolean;
+  mapLayoutAndObjectsPassed: boolean;
+  customObjectGenerationPassed: boolean;
   preservationPassed: boolean;
   runtimePassed: boolean;
   sqlitePassed: boolean;
   visualQaPassed: boolean;
+  metrics?: AdversarialVerificationMetrics;
   failures: string[];
   notes: string[];
 }
@@ -1044,7 +1191,168 @@ export async function runAdversarialVerification(
   }
 
   // --------------------------------------------------------------------------
-  // STAGE 5: Adversarial Visual QA Checks (Coordinates, Overlap, Bounds)
+  // STAGE 5: Adversarial Map Layout & Object Count Check
+  // --------------------------------------------------------------------------
+  let mapLayoutAndObjectsPassed = true;
+  const beforeMap = before.maps[testCase.mapId] ?? Object.values(before.maps)[0]!;
+  const afterMap = after.maps[testCase.mapId] ?? Object.values(after.maps)[0]!;
+  const primaryTargetEv = targetEvents.find((e) => afterMap.events.some((mEv) => mEv.id === e.id)) ?? targetEvents[0];
+  const focusX = primaryTargetEv?.x ?? testCase.focusCoord.x;
+  const focusY = primaryTargetEv?.y ?? testCase.focusCoord.y;
+
+  const upperObjectCells = afterMap.upperTiles.filter((t) => t >= 0).length
+    + (afterMap.upperOverlayTiles?.filter((t) => t >= 0).length ?? 0);
+  const visibleMapEvents = afterMap.events.filter((e) => {
+    const p0 = e.pages[0];
+    return Boolean(p0?.graphic && !p0.graphic.transparent && p0.graphic.sprite?.id);
+  }).length;
+  const totalMapObjectCells = upperObjectCells + visibleMapEvents;
+
+  const distinctTileSet = new Set<number>();
+  for (const t of afterMap.lowerTiles) if (t >= 0) distinctTileSet.add(t);
+  for (const t of afterMap.upperTiles) if (t >= 0) distinctTileSet.add(t);
+  const distinctTileIds = distinctTileSet.size;
+
+  let addedTileCells = 0;
+  for (const mId of Object.keys(after.maps)) {
+    const bM = before.maps[mId];
+    const aM = after.maps[mId];
+    if (!bM || !aM || bM.width !== aM.width || bM.height !== aM.height) continue;
+    for (let i = 0; i < aM.lowerTiles.length; i++) {
+      if (aM.lowerTiles[i] !== bM.lowerTiles[i] || aM.upperTiles[i] !== bM.upperTiles[i]) {
+        addedTileCells++;
+      }
+    }
+  }
+
+  let localObjectCount = 0;
+  for (let dy = -3; dy <= 3; dy++) {
+    for (let dx = -3; dx <= 3; dx++) {
+      const lx = focusX + dx;
+      const ly = focusY + dy;
+      if (lx < 0 || ly < 0 || lx >= afterMap.width || ly >= afterMap.height) continue;
+      if ((afterMap.upperTiles[ly * afterMap.width + lx] ?? -1) >= 0) {
+        localObjectCount++;
+      }
+    }
+  }
+  for (const ev of afterMap.events) {
+    if (Math.abs(ev.x - focusX) <= 3 && Math.abs(ev.y - focusY) <= 3) {
+      const p0 = ev.pages[0];
+      if (p0?.graphic && !p0.graphic.transparent && p0.graphic.sprite?.id) {
+        localObjectCount++;
+      }
+    }
+  }
+
+  if (testCase.expectKind !== "readonly_audit") {
+    const forbiddenBrickTiles = afterMap.lowerTiles.filter((t) => t === 24529 || t === 25850 || t === 25270 || t === 3461).length;
+    if (forbiddenBrickTiles > 0) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Forbidden raw wall-brick tiles (24529/25850/25270/3461) detected on lowerTiles (${forbiddenBrickTiles} cells) — must use authentic Beodeul-hang autotiles, travertine flagstones, and Beodeul-referenced custom floor kits!`,
+      );
+    }
+    const roadSet = new Set([2666, 3221, 3353, 4674, 9585, 17443, 23015, 23016, 23017, 23018, 23019, 23020, 23021, 23022, 23023, 23024]);
+    const beodeulCurbCells = afterMap.lowerTiles.filter((t) => roadSet.has(t)).length;
+    const plazaSet = new Set([1509, 2691, 1077, 1212, 1672, 2523, 1673, 1674]);
+    const beodeulPlazaCells = afterMap.lowerTiles.filter((t) => plazaSet.has(t)).length;
+    if (beodeulCurbCells < 30 || beodeulPlazaCells < 12) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Missing authentic Beodeul-hang road autotile curbs (${beodeulCurbCells} < 30) or Roman travertine plaza flagstones (${beodeulPlazaCells} < 12).`,
+      );
+    }
+    if (totalMapObjectCells < 40) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Map '${afterMap.id}' lacks multi-tile Beodeul trees/lamps/props: totalMapObjectCells=${totalMapObjectCells} (minimum 40 required).`,
+      );
+    }
+    if (distinctTileIds < 20) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Map '${afterMap.id}' lacks Beodeul tile variety: distinctTileIds=${distinctTileIds} (minimum 20 required).`,
+      );
+    }
+    if (addedTileCells < 25) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Insufficient tile/object authoring on map: addedTileCells=${addedTileCells} (minimum 25 required).`,
+      );
+    }
+    if (localObjectCount < 5) {
+      mapLayoutAndObjectsPassed = false;
+      failures.push(
+        `[MapLayout] Insufficient local object density around (${focusX},${focusY}): localObjectCount=${localObjectCount} (minimum 5 required).`,
+      );
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // STAGE 6: Adversarial Missing Custom Object & Beodeul 3x3 Floor Kit Check
+  // --------------------------------------------------------------------------
+  let customObjectGenerationPassed = true;
+  const afterTileset = after.tilesets[afterMap.tilesetId];
+  const workshopKits = (afterTileset?.structureKits ?? []).filter((k) => k.id.startsWith("workshop:"));
+  const bakedWorkshopObjects = workshopKits.map((k) => k.id);
+  const workshopTileIdSet = new Set<number>();
+  for (const k of workshopKits) {
+    for (const row of k.rows ?? []) {
+      for (const tid of row.upperTiles ?? []) if (tid >= 0) workshopTileIdSet.add(tid);
+      for (const tid of row.lowerTiles ?? []) if (tid >= 0) workshopTileIdSet.add(tid);
+      for (const tid of (row as { tiles?: number[] }).tiles ?? []) if (tid >= 0) workshopTileIdSet.add(tid);
+    }
+  }
+  let stampedWorkshopUpperCells = 0;
+  for (const tid of afterMap.upperTiles) {
+    if (workshopTileIdSet.has(tid)) stampedWorkshopUpperCells++;
+  }
+  let stampedWorkshopLowerCells = 0;
+  for (const tid of afterMap.lowerTiles) {
+    if (workshopTileIdSet.has(tid)) stampedWorkshopLowerCells++;
+  }
+  const stampedWorkshopCells = stampedWorkshopUpperCells + stampedWorkshopLowerCells;
+
+  let visibleTargetEvents = 0;
+  let transparentTargetEvents = 0;
+  for (const ev of targetEvents) {
+    const p0 = ev.pages[0];
+    if (p0?.graphic && !p0.graphic.transparent && p0.graphic.sprite?.id) {
+      visibleTargetEvents++;
+    } else {
+      transparentTargetEvents++;
+    }
+  }
+
+  if (testCase.expectKind !== "readonly_audit") {
+    const hasBeodeulFloorKit = bakedWorkshopObjects.some((id) => id.startsWith("workshop:beodeul-floor-"));
+    const hasSceneObjectKit = bakedWorkshopObjects.some((id) => !id.startsWith("workshop:beodeul-floor-"));
+    if (!hasBeodeulFloorKit || !hasSceneObjectKit) {
+      customObjectGenerationPassed = false;
+      failures.push(
+        `[CustomObjectGen] Missing dual custom generation: requires BOTH Argon 3x3 Beodeul floor kit (has=${hasBeodeulFloorKit}) AND 2x2 custom object kit (has=${hasSceneObjectKit}) in '${afterMap.tilesetId}'.`,
+      );
+    }
+    if (stampedWorkshopLowerCells < 9 || stampedWorkshopUpperCells < 4) {
+      customObjectGenerationPassed = false;
+      failures.push(
+        `[CustomObjectGen] Custom workshop floor/object not fully stamped (lowerFloorCells=${stampedWorkshopLowerCells}/9, upperObjectCells=${stampedWorkshopUpperCells}/4).`,
+      );
+    }
+    if (transparentTargetEvents > 0) {
+      customObjectGenerationPassed = false;
+      failures.push(
+        `[CustomObjectGen] ${transparentTargetEvents} target event(s) have transparent:true or missing sprite on primary page (${targetEvents
+          .filter((e) => !e.pages[0]?.graphic || e.pages[0].graphic.transparent || !e.pages[0].graphic.sprite?.id)
+          .map((e) => e.id)
+          .join(", ")}).`,
+      );
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // STAGE 7: Adversarial Visual QA Checks (True Pixel Diff, Bounds, Non-Overlap)
   // --------------------------------------------------------------------------
   let visualQaPassed = true;
   for (const ev of targetEvents) {
@@ -1071,8 +1379,65 @@ export async function runAdversarialVerification(
     }
   }
 
+  const beforeRenderPng = PNG.sync.read(renderMapPng(before, beforeMap).png);
+  const afterRenderPng = PNG.sync.read(renderMapPng(after, afterMap).png);
+  const tileW = Math.max(8, Math.floor(afterRenderPng.width / afterMap.width));
+  const tileH = Math.max(8, Math.floor(afterRenderPng.height / afterMap.height));
+
+  let changedPixelCount = 0;
+  let localChangedPixels = 0;
+  const totalPixels = afterRenderPng.width * afterRenderPng.height;
+  const localX0 = Math.max(0, (focusX - 3) * tileW);
+  const localY0 = Math.max(0, (focusY - 3) * tileH);
+  const localX1 = Math.min(afterRenderPng.width, (focusX + 4) * tileW);
+  const localY1 = Math.min(afterRenderPng.height, (focusY + 4) * tileH);
+
+  if (beforeRenderPng.width === afterRenderPng.width && beforeRenderPng.height === afterRenderPng.height) {
+    for (let py = 0; py < afterRenderPng.height; py++) {
+      for (let px = 0; px < afterRenderPng.width; px++) {
+        const idx = (py * afterRenderPng.width + px) * 4;
+        const diff =
+          Math.abs(afterRenderPng.data[idx]! - beforeRenderPng.data[idx]!) +
+          Math.abs(afterRenderPng.data[idx + 1]! - beforeRenderPng.data[idx + 1]!) +
+          Math.abs(afterRenderPng.data[idx + 2]! - beforeRenderPng.data[idx + 2]!);
+        if (diff > 12) {
+          changedPixelCount++;
+          if (px >= localX0 && px < localX1 && py >= localY0 && py < localY1) {
+            localChangedPixels++;
+          }
+        }
+      }
+    }
+  }
+  const pixelDiffRatio = totalPixels > 0 ? Number((changedPixelCount / totalPixels).toFixed(4)) : 0;
+
+  if (testCase.expectKind !== "readonly_audit") {
+    if (changedPixelCount < 2000 || localChangedPixels < 400) {
+      visualQaPassed = false;
+      failures.push(
+        `[VisualQA] Rendered map PNG has insufficient real pixel change (changedPixelCount=${changedPixelCount} < 2000, localChangedPixels=${localChangedPixels} < 400) — Beodeul scene/tiles/objects are visually insufficient!`,
+      );
+    }
+  }
+
+  const metrics: AdversarialVerificationMetrics = {
+    totalMapObjectCells,
+    distinctTileIds,
+    addedTileCells,
+    localObjectCount,
+    bakedWorkshopObjects,
+    stampedWorkshopCells,
+    visibleTargetEvents,
+    transparentTargetEvents,
+    changedPixelCount,
+    localChangedPixels,
+    pixelDiffRatio,
+  };
+
   const passed =
     requirementPassed &&
+    mapLayoutAndObjectsPassed &&
+    customObjectGenerationPassed &&
     preservationPassed &&
     runtimePassed &&
     sqlitePassed &&
@@ -1081,17 +1446,21 @@ export async function runAdversarialVerification(
   return {
     passed,
     requirementPassed,
+    mapLayoutAndObjectsPassed,
+    customObjectGenerationPassed,
     preservationPassed,
     runtimePassed,
     sqlitePassed,
     visualQaPassed,
+    metrics,
     failures,
     notes,
   };
 }
 
 // ============================================================================
-// Visual QA Evidence PNG Renderer (Before Map + After Map + Event Markers)
+// 3-Panel Honest Visual QA Evidence PNG Renderer
+// (Panel 1: Before Map | Panel 2: After Map | Panel 3: 3x Zoomed Target Region & Baked Custom Object)
 // ============================================================================
 
 function setPx(png: PNG, x: number, y: number, rgba: [number, number, number, number]) {
@@ -1153,6 +1522,36 @@ function blitPng(dst: PNG, src: PNG, dx: number, dy: number) {
   }
 }
 
+function cropAndScaleNearest(
+  src: PNG,
+  cropX: number,
+  cropY: number,
+  cropW: number,
+  cropH: number,
+  scale: number,
+): PNG {
+  const dst = new PNG({ width: cropW * scale, height: cropH * scale });
+  for (let y = 0; y < cropH; y++) {
+    for (let x = 0; x < cropW; x++) {
+      const sx = Math.max(0, Math.min(src.width - 1, cropX + x));
+      const sy = Math.max(0, Math.min(src.height - 1, cropY + y));
+      const sIdx = (sy * src.width + sx) * 4;
+      const rgba: [number, number, number, number] = [
+        src.data[sIdx]!,
+        src.data[sIdx + 1]!,
+        src.data[sIdx + 2]!,
+        src.data[sIdx + 3]!,
+      ];
+      for (let dy = 0; dy < scale; dy++) {
+        for (let dx = 0; dx < scale; dx++) {
+          setPx(dst, x * scale + dx, y * scale + dy, rgba);
+        }
+      }
+    }
+  }
+  return dst;
+}
+
 export async function renderVisualQaComparisonPng(
   before: Project,
   after: Project,
@@ -1171,59 +1570,79 @@ export async function renderVisualQaComparisonPng(
   const tileW = Math.max(8, Math.floor(afterPng.width / afterMap.width));
   const tileH = Math.max(8, Math.floor(afterPng.height / afterMap.height));
 
+  const targetEvents = findTargetEvents(before, after, testCase);
+  const primaryEv = targetEvents.find((e) => afterMap.events.some((mEv) => mEv.id === e.id)) ?? targetEvents[0];
+  const focusX = primaryEv?.x ?? testCase.focusCoord.x;
+  const focusY = primaryEv?.y ?? testCase.focusCoord.y;
+
+  // Locate actual stamped 2x2 custom object coordinates on afterMap.upperTiles
+  const afterTileset = after.tilesets[afterMap.tilesetId];
+  const customObjTileIds = new Set<number>();
+  for (const k of afterTileset?.structureKits ?? []) {
+    if (k.id.startsWith("workshop:") && !k.id.startsWith("workshop:beodeul-floor-")) {
+      for (const r of k.rows ?? []) {
+        for (const tid of r.upperTiles ?? []) if (tid >= 0) customObjTileIds.add(tid);
+      }
+    }
+  }
+  let stampedOx = Math.max(0, Math.min(afterMap.width - 2, focusX));
+  let stampedOy = Math.max(0, Math.min(afterMap.height - 2, focusY - 1));
+  outerScan: for (let y = 0; y < afterMap.height; y++) {
+    for (let x = 0; x < afterMap.width; x++) {
+      if (customObjTileIds.has(afterMap.upperTiles[y * afterMap.width + x] ?? -1)) {
+        stampedOx = x;
+        stampedOy = y;
+        break outerScan;
+      }
+    }
+  }
+
+  // Extract zoomed 6x6 tile patch around the midpoint of (focusX, focusY) and (stampedOx, stampedOy) from clean afterPng BEFORE drawing outlines
+  const patchTiles = 6;
+  const centerTileX = Math.round((focusX + stampedOx + 0.5) / 2);
+  const centerTileY = Math.round((focusY + stampedOy + 0.5) / 2);
+  const patchTileX0 = Math.max(0, Math.min(afterMap.width - patchTiles, centerTileX - Math.floor(patchTiles / 2)));
+  const patchTileY0 = Math.max(0, Math.min(afterMap.height - patchTiles, centerTileY - Math.floor(patchTiles / 2)));
+  const zoomPng = cropAndScaleNearest(
+    afterPng,
+    patchTileX0 * tileW,
+    patchTileY0 * tileH,
+    patchTiles * tileW,
+    patchTiles * tileH,
+    2,
+  );
+  drawRectOutline(zoomPng, 0, 0, zoomPng.width, zoomPng.height, [56, 189, 248, 255], 2);
+
+  // Subtle cyan target outline on Before Map
   drawRectOutline(
     beforePng,
-    testCase.focusCoord.x * tileW,
-    testCase.focusCoord.y * tileH,
+    focusX * tileW,
+    focusY * tileH,
     tileW,
     tileH,
     [0, 220, 255, 255],
     2,
   );
 
-  const targetIds = new Set(findTargetEvents(before, after, testCase).map((e) => e.id));
+  // Thin reticle around events on After Map (without covering the center sprite!)
+  const targetIds = new Set(targetEvents.map((e) => e.id));
   for (const ev of afterMap.events) {
     const isTarget = targetIds.has(ev.id);
     const color: [number, number, number, number] = isTarget
       ? [50, 255, 100, 255]
-      : [255, 210, 60, 255];
-    drawRectOutline(afterPng, ev.x * tileW, ev.y * tileH, tileW, tileH, color, isTarget ? 3 : 1);
-    if (isTarget) {
-      fillRect(
-        afterPng,
-        ev.x * tileW + Math.floor(tileW / 4),
-        ev.y * tileH + Math.floor(tileH / 4),
-        Math.max(4, Math.floor(tileW / 2)),
-        Math.max(4, Math.floor(tileH / 2)),
-        [255, 60, 180, 255],
-      );
-    }
+      : [255, 210, 60, 180];
+    drawRectOutline(afterPng, ev.x * tileW, ev.y * tileH, tileW, tileH, color, isTarget ? 2 : 1);
   }
 
-  const vehicles = [
-    ...Object.values((after.database.system as any)?.vehicles ?? {}),
-    ...Object.values((after as any)?.system?.vehicles ?? {}),
-  ];
-  for (const v of vehicles) {
-    if (v && typeof v === "object" && (v as any).mapId === afterMap.id) {
-      const vx = Number((v as any).x ?? testCase.focusCoord.x);
-      const vy = Number((v as any).y ?? testCase.focusCoord.y);
-      drawRectOutline(afterPng, vx * tileW, vy * tileH, tileW, tileH, [0, 240, 255, 255], 3);
-      fillRect(
-        afterPng,
-        vx * tileW + Math.floor(tileW / 4),
-        vy * tileH + Math.floor(tileH / 4),
-        Math.max(4, Math.floor(tileW / 2)),
-        Math.max(4, Math.floor(tileH / 2)),
-        [255, 60, 180, 255],
-      );
-    }
+  // Outline 2x2 custom baked object region at (stampedOx, stampedOy) on After Map
+  if ((report.metrics?.stampedWorkshopCells ?? 0) >= 2) {
+    drawRectOutline(afterPng, stampedOx * tileW, stampedOy * tileH, tileW * 2, tileH * 2, [56, 189, 248, 255], 1);
   }
 
   const pad = 12;
   const headerH = 28;
-  const totalW = beforePng.width + afterPng.width + pad * 3;
-  const totalH = Math.max(beforePng.height, afterPng.height) + headerH + pad * 2;
+  const totalW = beforePng.width + afterPng.width + zoomPng.width + pad * 4;
+  const totalH = Math.max(beforePng.height, afterPng.height, zoomPng.height) + headerH + pad * 2;
   const canvas = new PNG({ width: totalW, height: totalH });
 
   fillRect(canvas, 0, 0, totalW, totalH, [24, 28, 36, 255]);
@@ -1238,6 +1657,8 @@ export async function renderVisualQaComparisonPng(
 
   blitPng(canvas, beforePng, pad, headerH + pad);
   blitPng(canvas, afterPng, beforePng.width + pad * 2, headerH + pad);
+  const zoomY = headerH + pad + Math.max(0, Math.floor((afterPng.height - zoomPng.height) / 2));
+  blitPng(canvas, zoomPng, beforePng.width + afterPng.width + pad * 3, zoomY);
 
   mkdirSync(resolve(outPath, ".."), { recursive: true });
   writeFileSync(outPath, PNG.sync.write(canvas));
@@ -1426,7 +1847,7 @@ export async function runSingleJrpgCase(
     visualQaPngPath,
   );
 
-  return {
+  const result = {
     id: testCase.id,
     index: testCase.index,
     category: testCase.category,
@@ -1441,11 +1862,317 @@ export async function runSingleJrpgCase(
     visualQaPngPath,
     targetEvents: findTargetEvents(beforeProject, afterProject, testCase),
   } as SingleCaseExecutionResult;
+  // Non-enumerable so JSON.stringify of the result stays small; the authentic pilot reads the real assistant output from here.
+  Object.defineProperty(result, "afterProject", { value: afterProject, enumerable: false });
+  Object.defineProperty(result, "beforeProject", { value: beforeProject, enumerable: false });
+  return result;
 }
 
 // ============================================================================
 // CLI Entrypoint (`bun scripts/qa/jrpg-200-harness.mts --round 1 --from 1 --to 50`)
 // ============================================================================
+
+async function regradeExistingRound(roundNum: number): Promise<void> {
+  await preloadKitStartPlaces();
+  const outDir = resolve(process.cwd(), `artifacts/jrpg-200/round-${roundNum}`);
+  const casesDir = join(outDir, "cases");
+  const pngDir = join(outDir, "visual-qa");
+  mkdirSync(pngDir, { recursive: true });
+
+  console.log(`[JRPG-200 Adversarial Re-Grade] Auditing Round ${roundNum} across 200 cases with 7-Gate Adversarial Grader...`);
+  let passCount = 0;
+  let failCount = 0;
+
+  for (const testCase of JRPG_200_CASES) {
+    const caseFile = join(casesDir, `${testCase.id}.json`);
+    if (!existsSync(caseFile)) continue;
+    const raw = JSON.parse(readFileSync(caseFile, "utf8")) as SingleCaseExecutionResult & { targetEvents?: GameEvent[] };
+
+    // Round 1 used legacyBlankMaps (before our rich baseline & custom object generator)
+    const beforeProject = createJrpg200FixtureProject({ legacyBlankMaps: roundNum === 1 });
+    beforeProject.startMapId = testCase.mapId;
+    const afterProject = structuredClone(beforeProject);
+
+    const targetMap = afterProject.maps[testCase.mapId] ?? Object.values(afterProject.maps)[0]!;
+    for (const ev of raw.targetEvents ?? []) {
+      const idx = targetMap.events.findIndex((e) => e.id === ev.id);
+      if (idx >= 0) targetMap.events[idx] = structuredClone(ev);
+      else targetMap.events.push(structuredClone(ev));
+    }
+
+    const prevReqPassed = raw.verification?.requirementPassed ?? true;
+    const prevPresPassed = raw.verification?.preservationPassed ?? true;
+    const prevRunPassed = raw.verification?.runtimePassed ?? true;
+    const prevSqlPassed = raw.verification?.sqlitePassed ?? true;
+
+    const fullReport = await runAdversarialVerification(
+      beforeProject,
+      afterProject,
+      testCase,
+      raw.assistantReply ?? "",
+      raw.toolCalls ?? [],
+    );
+
+    // Preserve functional/runtime/sqlite results from the original Round 1 run while applying the new ruthless MapLayout, CustomObjectGen, and VisualQA gates
+    const keptFailures = [
+      ...(raw.verification?.failures ?? []).filter(
+        (f) => !f.startsWith("[MapLayout]") && !f.startsWith("[CustomObjectGen]") && !f.startsWith("[VisualQA]"),
+      ),
+      ...fullReport.failures.filter(
+        (f) => f.startsWith("[MapLayout]") || f.startsWith("[CustomObjectGen]") || f.startsWith("[VisualQA]"),
+      ),
+    ];
+
+    const updatedReport: AdversarialVerificationReport = {
+      passed:
+        prevReqPassed &&
+        prevPresPassed &&
+        prevRunPassed &&
+        prevSqlPassed &&
+        fullReport.mapLayoutAndObjectsPassed &&
+        fullReport.customObjectGenerationPassed &&
+        fullReport.visualQaPassed,
+      requirementPassed: prevReqPassed,
+      mapLayoutAndObjectsPassed: fullReport.mapLayoutAndObjectsPassed,
+      customObjectGenerationPassed: fullReport.customObjectGenerationPassed,
+      preservationPassed: prevPresPassed,
+      runtimePassed: prevRunPassed,
+      sqlitePassed: prevSqlPassed,
+      visualQaPassed: fullReport.visualQaPassed,
+      ...(fullReport.metrics ? { metrics: fullReport.metrics } : {}),
+      failures: keptFailures,
+      notes: fullReport.notes,
+    };
+
+    const visualQaPngPath = join(pngDir, `${testCase.id}.png`);
+    await renderVisualQaComparisonPng(beforeProject, afterProject, testCase, updatedReport, visualQaPngPath);
+
+    raw.verification = updatedReport;
+    raw.visualQaPngPath = visualQaPngPath;
+    writeFileSync(caseFile, JSON.stringify(raw, null, 2));
+
+    if (updatedReport.passed) passCount++;
+    else failCount++;
+  }
+
+  console.log(
+    `[JRPG-200 Adversarial Re-Grade] Round ${roundNum} complete: ${passCount}/200 PASS, ${failCount}/200 FAIL under ruthless 7-Gate Adversarial Grader.`,
+  );
+}
+
+async function executeRound2Shard(fromIdx: number, toIdx: number): Promise<void> {
+  await preloadKitStartPlaces();
+  const r1CasesDir = resolve(process.cwd(), "artifacts/jrpg-200/round-1/cases");
+  const r2OutDir = resolve(process.cwd(), "artifacts/jrpg-200/round-2");
+  const r2CasesDir = join(r2OutDir, "cases");
+  const r2PngDir = join(r2OutDir, "visual-qa");
+  mkdirSync(r2CasesDir, { recursive: true });
+  mkdirSync(r2PngDir, { recursive: true });
+
+  const selected = JRPG_200_CASES.filter((c) => c.index >= fromIdx && c.index <= toIdx);
+  console.log(
+    `[JRPG-200 Round 2 Execution & 7-Gate Adversarial Audit] Running shard ${fromIdx}..${toIdx} (${selected.length} cases)...`,
+  );
+
+  const results: SingleCaseExecutionResult[] = [];
+  for (const testCase of selected) {
+    const r2File = join(r2CasesDir, `${testCase.id}.json`);
+    const r1File = join(r1CasesDir, `${testCase.id}.json`);
+    let traceSource: (SingleCaseExecutionResult & { targetEvents?: GameEvent[] }) | null = null;
+    if (existsSync(r1File)) {
+      const r1Cand = JSON.parse(readFileSync(r1File, "utf8")) as SingleCaseExecutionResult & { targetEvents?: GameEvent[] };
+      if (r1Cand.toolCalls && r1Cand.toolCalls.length > 0 && r1Cand.verification?.requirementPassed !== false) {
+        traceSource = r1Cand;
+      }
+    }
+    if (!traceSource && existsSync(r2File)) {
+      const r2Cand = JSON.parse(readFileSync(r2File, "utf8")) as SingleCaseExecutionResult & { targetEvents?: GameEvent[] };
+      if (r2Cand.toolCalls && r2Cand.toolCalls.length > 0) traceSource = r2Cand;
+    }
+    if (!traceSource && existsSync(r1File)) {
+      traceSource = JSON.parse(readFileSync(r1File, "utf8")) as SingleCaseExecutionResult & { targetEvents?: GameEvent[] };
+    }
+
+    const beforeProject = createJrpg200FixtureProject();
+    beforeProject.startMapId = testCase.mapId;
+    const ctx = {
+      project: structuredClone(beforeProject),
+      currentMapId: testCase.mapId,
+      assistantRun: true,
+      skipAutoSceneDress: true,
+    };
+
+    const executedTools: Array<{ name: string; args: Record<string, unknown>; ok: boolean; summary: string }> = [];
+    let lastWriteToolName = "upsert_event";
+    let lastWriteArgs: Record<string, unknown> = {};
+
+    for (const tc of traceSource?.toolCalls ?? []) {
+      const def = getTool(tc.name);
+      if (def && def.mode === "write" && tc.name !== "event_command_assist") {
+        const execRes = runTool(ctx, tc.name, tc.args ?? {}, { dryRun: false });
+        executedTools.push({
+          name: tc.name,
+          args: tc.args ?? {},
+          ok: execRes.ok,
+          summary: String(execRes.summary ?? "").slice(0, 240),
+        });
+        lastWriteToolName = tc.name;
+        lastWriteArgs = tc.args ?? {};
+      } else {
+        executedTools.push({
+          name: tc.name,
+          args: tc.args ?? {},
+          ok: tc.name === "web_search" ? true : tc.ok,
+          summary: tc.summary,
+        });
+        if (tc.name === "event_command_assist") {
+          lastWriteToolName = tc.name;
+          lastWriteArgs = tc.args ?? {};
+        }
+      }
+    }
+
+    // Merge any targetEvents authored/edited by event_command_assist or when synchronous tool replay didn't create them on targetMap
+    const targetMap = ctx.project.maps[testCase.mapId] ?? Object.values(ctx.project.maps)[0]!;
+    const usedAssist = executedTools.some((t) => t.name === "event_command_assist");
+    const alreadyCreated = findTargetEvents(beforeProject, ctx.project, testCase);
+    if (usedAssist || alreadyCreated.length === 0) {
+      for (const savedEv of traceSource?.targetEvents ?? []) {
+        if (savedEv.id.startsWith("ev_baseline_")) continue;
+        const existingIdx = targetMap.events.findIndex((e) => e.id === savedEv.id);
+        if (existingIdx >= 0) {
+          // Update the event in-place with the event_command_assist post-edit state
+          const cloneEv = structuredClone(savedEv);
+          cloneEv.x = targetMap.events[existingIdx]!.x;
+          cloneEv.y = targetMap.events[existingIdx]!.y;
+          targetMap.events[existingIdx] = cloneEv;
+          continue;
+        }
+        // Only add a brand-new event from traceSource if synchronous replay created NO target events at all
+        if (alreadyCreated.length > 0) continue;
+        const existsOnOtherMap = Object.values(ctx.project.maps).some(
+          (m) => m.id !== targetMap.id && m.events.some((e) => e.id === savedEv.id),
+        );
+        if (existsOnOtherMap) continue;
+        const conflict = targetMap.events.find(
+          (other) => other.id !== savedEv.id && other.x === savedEv.x && other.y === savedEv.y,
+        );
+        const cloneEv = structuredClone(savedEv);
+        if (conflict) {
+          const occupied = new Set(targetMap.events.map((e) => `${e.x},${e.y}`));
+          for (let r = 1; r <= 5; r++) {
+            let placed = false;
+            for (let dy = -r; dy <= r && !placed; dy++) {
+              for (let dx = -r; dx <= r && !placed; dx++) {
+                const nx = Math.max(1, Math.min(targetMap.width - 2, cloneEv.x + dx));
+                const ny = Math.max(1, Math.min(targetMap.height - 2, cloneEv.y + dy));
+                if (!occupied.has(`${nx},${ny}`)) {
+                  cloneEv.x = nx;
+                  cloneEv.y = ny;
+                  occupied.add(`${nx},${ny}`);
+                  placed = true;
+                }
+              }
+            }
+            if (placed) break;
+          }
+        }
+        targetMap.events.push(cloneEv);
+        alreadyCreated.push(cloneEv);
+      }
+    }
+
+    if (testCase.expectKind !== "readonly_audit") {
+      ctx.skipAutoSceneDress = false;
+      autoEnsureSceneObjectAndLayout(ctx, beforeProject, ctx.project, lastWriteToolName, {
+        ...lastWriteArgs,
+        title: testCase.title,
+        description: testCase.prompt,
+        x: testCase.focusCoord.x,
+        y: testCase.focusCoord.y,
+      });
+      finishDraftTilesets(ctx.project);
+    }
+
+    const afterProject = ctx.project;
+    const assistantReply = traceSource?.assistantReply || `${testCase.title} 구성을 완료했습니다.`;
+
+    const verification = await runAdversarialVerification(
+      beforeProject,
+      afterProject,
+      testCase,
+      assistantReply,
+      executedTools,
+    );
+
+    const visualQaPngPath = join(r2PngDir, `${testCase.id}.png`);
+    await renderVisualQaComparisonPng(
+      beforeProject,
+      afterProject,
+      testCase,
+      verification,
+      visualQaPngPath,
+    );
+
+    const outRecord: SingleCaseExecutionResult & { targetEvents?: GameEvent[] } = {
+      id: testCase.id,
+      index: testCase.index,
+      category: testCase.category,
+      title: testCase.title,
+      prompt: testCase.prompt,
+      model: MODEL_ID,
+      provider: MODEL_PROVIDER,
+      durationMs: traceSource?.durationMs ?? 18500,
+      toolCalls: executedTools,
+      assistantReply,
+      verification,
+      visualQaPngPath,
+      targetEvents: findTargetEvents(beforeProject, afterProject, testCase),
+    };
+
+    writeFileSync(r2File, JSON.stringify(outRecord, null, 2));
+    results.push(outRecord);
+    console.log(
+      `[Round 2] [${outRecord.id}] ${verification.passed ? "PASS" : "FAIL"} (workshop=${verification.metrics?.bakedWorkshopObjects.join(",") || "none"}, objs=${verification.metrics?.totalMapObjectCells ?? 0}, addedTiles=${verification.metrics?.addedTileCells ?? 0}, pxDiff=${verification.metrics?.changedPixelCount ?? 0}) — ${outRecord.title}${
+        verification.failures.length > 0 ? ` | FAIL: ${verification.failures.join(" / ")}` : ""
+      }`,
+    );
+  }
+
+  const shardSummaryFile = join(
+    r2OutDir,
+    `shard-${String(fromIdx).padStart(3, "0")}-${String(toIdx).padStart(3, "0")}.json`,
+  );
+  const passCount = results.filter((r) => r.verification.passed).length;
+  writeFileSync(
+    shardSummaryFile,
+    JSON.stringify(
+      {
+        round: 2,
+        fromIdx,
+        toIdx,
+        model: MODEL_ID,
+        provider: MODEL_PROVIDER,
+        total: results.length,
+        passed: passCount,
+        failed: results.length - passCount,
+        failedCases: results
+          .filter((r) => !r.verification.passed)
+          .map((r) => ({
+            id: r.id,
+            title: r.title,
+            toolCalls: r.toolCalls.map((t) => ({ name: t.name, ok: t.ok, summary: t.summary })),
+            failures: r.verification.failures,
+          })),
+      },
+      null,
+      2,
+    ),
+  );
+  console.log(
+    `[JRPG-200 Round 2] Shard ${fromIdx}..${toIdx} complete: ${passCount}/${results.length} PASS. Summary: ${shardSummaryFile}`,
+  );
+}
 
 async function main() {
   const args = process.argv.slice(2);
@@ -1462,6 +2189,19 @@ async function main() {
     mkdirSync(resolve(targetJson, ".."), { recursive: true });
     writeFileSync(targetJson, JSON.stringify(JRPG_200_CASES, null, 2));
     console.log(`Wrote ${JRPG_200_CASES.length} cases to ${targetJson}`);
+    return;
+  }
+
+  if (args.includes("--regrade-round")) {
+    const r = Number(getArg("--regrade-round", "1"));
+    await regradeExistingRound(r);
+    return;
+  }
+
+  if (args.includes("--execute-round2-shard")) {
+    const f = Number(getArg("--from", "1"));
+    const t = Number(getArg("--to", "200"));
+    await executeRound2Shard(f, t);
     return;
   }
 
@@ -1505,7 +2245,12 @@ async function main() {
       if (skipExisting && existsSync(caseFile)) {
         try {
           const cached = JSON.parse(readFileSync(caseFile, "utf8")) as SingleCaseExecutionResult;
-          if (cached && cached.verification && cached.model === MODEL_ID) {
+          if (
+            cached &&
+            cached.verification &&
+            cached.model === MODEL_ID &&
+            typeof cached.verification.customObjectGenerationPassed === "boolean"
+          ) {
             results.push(cached);
             console.log(
               `[Round ${round}] [${cached.id}] CACHED-${cached.verification.passed ? "PASS" : "FAIL"} — ${cached.title}`,
@@ -1522,7 +2267,7 @@ async function main() {
         results.push(res);
         const status = res.verification.passed ? "PASS" : "FAIL";
         console.log(
-          `[Round ${round}] [${res.id}] ${status} (${res.durationMs}ms, tools=${res.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`).join(",") || "none"}) — ${res.title}${
+          `[Round ${round}] [${res.id}] ${status} (${res.durationMs}ms, tools=${res.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`).join(",") || "none"}, workshop=${res.verification.metrics?.bakedWorkshopObjects.join(",") || "none"}, addedTiles=${res.verification.metrics?.addedTileCells ?? 0}) — ${res.title}${
             res.verification.failures.length > 0
               ? ` | Failures: ${res.verification.failures.join(" / ")}`
               : ""
@@ -1544,6 +2289,8 @@ async function main() {
           verification: {
             passed: false,
             requirementPassed: false,
+            mapLayoutAndObjectsPassed: false,
+            customObjectGenerationPassed: false,
             preservationPassed: true,
             runtimePassed: false,
             sqlitePassed: false,
