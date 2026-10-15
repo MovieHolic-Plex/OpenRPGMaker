@@ -40,6 +40,8 @@ interface CaseResult {
   title: string;
   prompt: string;
   assistantToolCalls: string[];
+  toolCallDetails: { name: string; ok: boolean; args: string; summary: string }[];
+  events: GameEvent[];
   assistantReply: string;
   gates: Gate[];
   judge: { passed: boolean; score: number; critique: string; requirements?: unknown };
@@ -204,6 +206,13 @@ function branchGates(testCase: JrpgCommandCase, a: LiveInGameBranchTelemetry, b:
       id: "h7_switch_set",
       passed: Boolean(b.switchesAfterAdvance["sw_masamune_awakened"]) || Boolean(a.switchesAfterAdvance["sw_masamune_awakened"]),
       detail: `sw_masamune_awakened A=${a.switchesAfterAdvance["sw_masamune_awakened"]} B=${b.switchesAfterAdvance["sw_masamune_awakened"]}`,
+    });
+  }
+  if (/무너/u.test(testCase.prompt)) {
+    gates.push({
+      id: "h10_terrain_changed_in_play",
+      passed: a.mapOverrideCount >= 1,
+      detail: `분기A 플레이 중 바뀐 타일 ${a.mapOverrideCount}칸 (프롬프트가 지형 붕괴를 요구 — 1칸 이상)`,
     });
   }
   gates.push({
@@ -378,6 +387,8 @@ async function main() {
         title: testCase.title,
         prompt: testCase.prompt,
         assistantToolCalls: run.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`),
+        toolCallDetails: run.toolCalls.map((t) => ({ name: t.name, ok: t.ok, args: JSON.stringify(t.args).slice(0, 1200), summary: t.summary })),
+        events,
         assistantReply: run.assistantReply,
         gates,
         judge,

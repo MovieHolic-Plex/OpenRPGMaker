@@ -113,7 +113,7 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
   }
   // 이벤트·컷씬 요청이 장소·지형·사물을 말하면 그 무대를 짓는 시공 도구를 처음부터 보인다 — 이벤트 도구만 쥐면 무대 없이 대사만 남는다(2026-10-15 JRPG 파일럿 실측).
   if (SCENE_SETTING_PATTERN.test(input.requestText)) {
-    appendUnique(tools, seen, toolSchemasForNames(['build_scene_setting', 'fill_region', 'stamp_object', 'place_props', 'list_spatial_designs', 'get_map_region', 'show_map_region', 'check_reachability']) as OpenAiTool[]);
+    appendUnique(tools, seen, toolSchemasForNames(['build_scene_setting', 'fill_region', 'stamp_object', 'place_props', 'list_spatial_designs', 'get_map_region', 'show_map_region', 'check_reachability', 'list_resources', 'generate_cutscene_art', 'script_cutscene']) as OpenAiTool[]);
   }
   if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);
