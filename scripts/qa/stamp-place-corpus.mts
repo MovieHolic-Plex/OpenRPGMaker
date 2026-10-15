@@ -16,7 +16,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { createBlankProject, ensureBundledTilesets } from "../../src/project/defaults.ts";
 import { runTool } from "../../src/editor/tools/toolRunner.ts";
-import { runStampPlaceWith, type StampRunDeps } from "../../src/editor/stampPlaceRunner.ts";
+import { runStampPlaceWith, isOpenObjectCell, type StampRunDeps } from "../../src/editor/stampPlaceRunner.ts";
 import { isPassableLanding } from "../../src/project/collision.ts";
 import { resolveMaterialByLabel } from "../../src/project/tileVocabulary.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
@@ -39,7 +39,7 @@ const RENDER = flag("render");
 interface CorpusEntry { id: string; cat: string; text: string; expect: "art" | "event" | "refuse" | "any"; kw: string; count?: number }
 
 // ── 테마(칩셋) 맵 ────────────────────────────────────────────────────────────
-interface ThemeSetup { readonly id: string; readonly label: string; readonly mapId: string; readonly build: (ctx: { project: Project }) => void }
+interface ThemeSetup { readonly id: string; readonly label: string; readonly mapId: string; readonly build: (ctx: { project: Project }) => void; readonly yard?: boolean }
 const THEMES: readonly ThemeSetup[] = [
   { id: "beodeul", label: "버들항(beodeul_city)", mapId: "t_beodeul", build: (ctx) => {
     must(runTool(ctx, "create_map", { name: "버들항 마을", id: "t_beodeul", width: 40, height: 30, tilesetId: "beodeul_city" }, { dryRun: false }));
@@ -47,6 +47,9 @@ const THEMES: readonly ThemeSetup[] = [
   } },
   { id: "jp", label: "일본 주택가(jp_city)", mapId: "t_jp", build: (ctx) => {
     must(runTool(ctx, "create_map", { name: "일본 주택가", id: "t_jp", themeScene: "jp_city:residential" }, { dryRun: false }));
+  } },
+  { id: "jpyard", label: "일본 주택가 · 마당 선택(jp_city)", mapId: "t_jpyard", yard: true, build: (ctx) => {
+    must(runTool(ctx, "create_map", { name: "일본 주택가", id: "t_jpyard", themeScene: "jp_city:residential" }, { dryRun: false }));
   } },
   { id: "interior", label: "손 도트 실내(atlas_biome_interior)", mapId: "t_interior", build: (ctx) => {
     must(runTool(ctx, "build_hand_interior_room", { name: "빵집 안", mapId: "t_interior", floor: "plank", wall: "plaster", layout: { program: "house-1f" } }, { dryRun: false }), true);
@@ -77,15 +80,16 @@ function baseProject(): Project {
 }
 
 /** 비어 있고 통행 가능한 W×H 사각형 중 맵 가운데에 가장 가까운 것. */
-function pickSelection(project: Project, map: GameMap, w: number, h: number): { x: number; y: number; width: number; height: number } {
+function pickSelection(project: Project, map: GameMap, w: number, h: number, yard = false): { x: number; y: number; width: number; height: number } {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
-  const ok = (x: number, y: number): boolean => !occupied.has(`${x},${y}`) && isPassableLanding(project, map, x, y);
+  // 실제 사용자가 고르는 자리 = 물건이 놓일 수 있는 마당·바닥. 길 한복판은 아니다.
+  const ok = (x: number, y: number): boolean => !occupied.has(`${x},${y}`) && (yard ? isOpenObjectCell(project, map, x, y) : isPassableLanding(project, map, x, y));
   let best: { x: number; y: number; score: number } | null = null;
   const cx = map.width / 2, cy = map.height / 2;
   for (let y = 0; y + h <= map.height; y++) for (let x = 0; x + w <= map.width; x++) {
     let free = 0;
     for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (ok(x + dx, y + dy)) free++;
-    if (free < w * h * 0.9) continue;
+    if (free < w * h * (yard ? 0.7 : 0.9)) continue;
     const score = Math.hypot(x + w / 2 - cx, y + h / 2 - cy);
     if (!best || score < best.score) best = { x, y, score };
   }
@@ -327,7 +331,7 @@ for (const themeId of themeIds) {
   const base = setupCtx.project;
   const map = base.maps[theme.mapId];
   if (!map) { console.error(`테마 ${themeId} 맵을 만들지 못했습니다`); continue; }
-  const sel = pickSelection(base, map, 8, 6);
+  const sel = pickSelection(base, map, 8, 6, theme.yard === true);
   setupInfo[themeId] = { label: theme.label, tileset: map.tilesetId, map: `${map.width}x${map.height}`, selection: sel, events: map.events.length };
   console.log(`[setup] ${theme.label} ${map.width}x${map.height} sel=${JSON.stringify(sel)} events=${map.events.length}`);
   for (const entry of entries) tasks.push(() => runCase(theme, entry, base, sel));

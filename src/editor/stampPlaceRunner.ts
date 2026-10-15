@@ -178,7 +178,7 @@ export function buildStampPlanFacts(
 }
 
 /** 물건 발자국 한 칸이 놓일 수 있는 칸 — 걸을 수 있고, 위층이 비었고, 이벤트·시작칸이 아니고, 길·물·벽 면이 아니다. */
-function isOpenObjectCell(project: Project, map: GameMap, x: number, y: number): boolean {
+export function isOpenObjectCell(project: Project, map: GameMap, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
   const index = y * map.width + x;
   if ((map.upperTiles[index] ?? -1) >= 0 || (map.upperOverlayTiles?.[index] ?? -1) >= 0) return false;
