@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.229.0 — 2026-10-15
+
+### 기능
+
+- **battle** — trainer pictures accept 128-wide canvases (display scale 128/width), throw frames 64 or 128 (#2638) (`08353b1`)
+
+### 수정
+
+- **ci** — record chocobo, cart, and raft on the M2 vehicle surfaces (`5f9c108`)
+
 ## 0.228.1 — 2026-10-15
 
 ### 수정
