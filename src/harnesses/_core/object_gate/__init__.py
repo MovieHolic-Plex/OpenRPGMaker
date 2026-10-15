@@ -18,7 +18,7 @@ from pathlib import Path
 
 KINDS = (
     "tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box",
-    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "terrain", "other",
+    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other",
 )
 CONTEXTS = ("bundle", "shared", "store", "workshop-local")
 

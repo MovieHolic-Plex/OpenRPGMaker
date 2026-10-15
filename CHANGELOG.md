@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.233.0 — 2026-10-16
+
+### 기능
+
+- **harness** — battle-trainer-sprites — generated image -> 128 smooth downscale trainer sprites (human pick) (#2601) (`15f8ce5`)
+
 ## 0.232.0 — 2026-10-16
 
 ### 기능
