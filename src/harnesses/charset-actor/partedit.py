@@ -272,7 +272,7 @@ def anchor_for(key, bframes, spec, kind, side, d, f):
         else:
             gx = max(xs)
         ys = sorted(c[1] for c in near if c[0] == gx)
-        return (gx, ys[len(ys) // 2]), 'front', near
+        return (gx, ys[len(ys) // 2]), ('behind' if d == 'up' else 'front'), near
     if kind == 'hip':
         y = spec.get('hip_row', spec['waist'] - 1) + off
         ext = row_extent(rows, y) or row_extent(rows, y - 1)
@@ -517,7 +517,10 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
         added = {(x, y) for y in range(FH) for x in range(FW) if bframes[fk][y][x] == T and new[fk][y][x] != T}
         glued = added | {c for c, how in kind[fk].items() if how == 'gear'}   # 장비가 몸 위에 겹친 칸까지 이어 붙여 덩어리를 센다
         for comp in components(glued):
-            if len(set(comp) & added) and len(comp) < 3:
+            gear_only = all(kind[fk].get(c) == 'gear' for c in set(comp) & added)
+            body_touch = any(bframes[fk][y + dy][x + dx] != T for (x, y) in comp for dx in (-1, 0, 1) for dy in (-1, 0, 1)
+                             if 0 <= x + dx < FW and 0 <= y + dy < FH)
+            if len(set(comp) & added) and len(comp) < 3 and not (gear_only and body_touch):
                 errs.append(f'{fk[0]} {fk[1]}: 새 픽셀 덩어리가 {len(comp)}칸뿐이다 {sorted(comp)} — 튀어나온 한 칸(삐죽 픽셀)은 허용하지 않는다')
         if len(added) > 110:
             errs.append(f'{fk[0]} {fk[1]}: 실루엣 밖에 새 픽셀 {len(added)}칸(최대 110)')

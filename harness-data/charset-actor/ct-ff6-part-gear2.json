@@ -37,6 +37,23 @@
      "keep_gear": true
     }
    ]
+  },
+  {
+   "id": "iw-steam-armor",
+   "name": "증기 기갑병",
+   "genre": "제국군",
+   "role": "기계 갑옷 병사",
+   "concept": "걸어 다니는 증기 기계 갑옷. 몸통이 큰 철제 상자형, 가슴에 둥근 관측창과 해치, 등에 굴뚝과 보일러 통, 어깨에 둥근 리벳 판, 팔은 굵은 피스톤 집게, 다리는 두꺼운 관절. 철회색과 구릿빛, 눈은 노란 조명 한 줄. 특정 게임의 실제 기계 갑옷 모양을 복제하지 않는다.",
+   "candidates": [
+    {
+     "base": "Actor3:0",
+     "variant": "철회색+구릿빛 판금 갑옷, 등에 굴뚝 두 개.",
+     "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+     "seed_edit": "/home/main/z-project/rpg-zzu-chips-ct-ff6/qa-runs/harnesses/ct-ff6-part/p4-high/iw-steam-armor-a/edit.json",
+     "before": "p4-high/iw-steam-armor-a",
+     "gear_task": "**back 굴뚝**: 등에 고정된 굴뚝 한 쌍(철회색 통 + 구리 띠, 어깨 폭 안쪽에 붙은 두 개를 한 스프라이트에, 12폭 이하). 위(up)에서는 등 위에 보이고, 아래·옆에서는 어깨 뒤로 머리 위에 위쪽으로 삐져나온 부분만 보인다. 팔을 든 모양으로 읽히지 않게 몸·머리 뒤에서 솟게 한다."
+    }
+   ]
   }
  ]
 }
