@@ -49,9 +49,9 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     alternatives: [
       { pattern: /gym|league|체육관|리그/iu, tilesetId: "monster_gyms", use: "체육관·리그 홀" },
       { pattern: /dungeon|cave|catacomb|temple|labyrinth|sewer|mine|ice|던전|동굴|미궁|지하|감옥|묘지|하수|광산|신전|유적|얼음/iu, tilesetId: "monster_dungeon", use: "던전·동굴·유적·얼음 동굴" },
-      { pattern: /interior|room|house|inn|shop|school|campus|실내|집|방|상점|여관|민가|학교|캠퍼스|저택/iu, tilesetId: "monster_rooms", use: "실내(집·상점·센터·교실)" },
+      { pattern: /interior|room|house|inn|shop|실내|집안|방 |상점|여관|민가|저택|센터/iu, tilesetId: "monster_rooms", use: "실내(집·상점·센터·교실)" },
       { pattern: /coast|harbou?r|port|sea|beach|pirate|isle|항구|해안|바다|섬|해적|포구/iu, tilesetId: "monster_coast", use: "항구·해안 마을" },
-      { pattern: /desert|snow|volcan|autumn|climate|oasis|사막|설원|눈|화산|가을|기후|오아시스|벚꽃|봄/iu, tilesetId: "monster_climate", use: "사막·설원·화산·가을 같은 기후 지역" },
+      { pattern: /desert|snow|volcan|autumn|climate|oasis|사막|설원|눈|화산|가을|기후|오아시스/iu, tilesetId: "monster_climate", use: "사막·설원·화산·가을 같은 기후 지역" },
       { pattern: /field|forest|grass|wild|route|meadow|들|숲|풀|도로|야생|길/iu, tilesetId: "monster_wild", use: "야생 풀밭·숲·도로" },
     ],
     hiddenToolPatterns: [
@@ -146,11 +146,11 @@ export function genreLockRejection(project: Project, args: { toolName: string; m
   const toTileset = project.tilesets[args.map.tilesetId];
   const toFamily = tilesetFamily(project, args.map.tilesetId);
   const alt = genreLockAlternative(project, `${args.map.tilesetId} ${toTileset?.name ?? ""} ${args.map.name} ${args.toolName} ${args.hint ?? ""}`);
-  const allowed = genreLockAllowedTilesets(project).slice(0, 12).map((t) => `${t.id}(${t.name})`).join(", ");
+  const allowed = genreLockAllowedTilesets(project).map((t) => t.id).join(", ");
   return `장르 잠금(${active.def.label}): 이 프로젝트는 ${allowedLabels(project, active)} 칩셋 계열만 새 맵·칩셋에 쓴다. `
     + `${args.toolName} 이 맵 ${args.map.id}「${args.map.name}」에 「${toTileset?.name ?? args.map.tilesetId}」(${args.map.tilesetId}, ${tilesetFamilyLabel(project, toFamily)} 계열)을 쓰려 해 거부했다 — 다른 칩셋으로 바꿔 넣지 않았다. `
     + `허용 칩셋: ${allowed || "없음"}. `
-    + (alt ? `가장 가까운 대안: ${alt.tilesetId}(${alt.use}) — tilesetId 를 그것으로 지정해 다시 부르거나 create_map(tilesetId=${alt.tilesetId}) 로 빈 맵을 만든 뒤 칠하기 도구로 직접 깔아라. ` : "")
+    + (alt ? `가장 가까운 대안: ${alt.tilesetId}(${alt.use}) — 그 도구가 tilesetId 를 받으면 그것으로 지정해 다시 부르고, 못 받으면 create_map(tilesetId=${alt.tilesetId}) 로 빈 맵을 만든 뒤 칠하기 도구로 직접 깔아라. ` : "")
     + `사용자가 이 계열을 정말 원한다고 말했을 때만 ask_tileset_change(toTilesetId="${args.map.tilesetId}") 로 견본을 보여 묻고 턴을 끝내라 — 승인은 그 계열 한정 허용이지 잠금 해제가 아니다.`;
 }
 
