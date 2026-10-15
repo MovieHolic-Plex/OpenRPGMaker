@@ -892,10 +892,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
       let mapImage: string | undefined, sheetImage: string | undefined;
       // 맵 그림 없이 판정하면 배경이 검게 나와 「검은 배경이 맵을 가린다」는 허위 지적이 반복된다(2026-10-15 3~4라운드 실측) — 세 번 시도하고, 끝내 못 얻으면 판정을 건너뛴다.
-      for (let n = 0; n < 3 && !mapImage; n++) {
-        try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x: 0, y: 0, w: start.width, h: start.height }, options.signal)}`; } catch { mapImage = undefined; if (options.signal?.aborted) return; }
+      let mapError = '';
+      const windows = [{ w: start.width, h: start.height }, { w: 36, h: 24 }, { w: 24, h: 16 }];
+      for (const win of windows) {
+        if (mapImage) break;
+        const w = Math.min(win.w, start.width), h = Math.min(win.h, start.height);
+        const x = Math.max(0, Math.min(start.width - w, Math.round(((event as { x?: number }).x ?? start.width / 2) - w / 2))), y = Math.max(0, Math.min(start.height - h, Math.round(((event as { y?: number }).y ?? start.height / 2) - h / 2)));
+        try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x, y, w, h }, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
       }
-      if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: '시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다 — 합격으로 보고하지 않습니다' }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
+      if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: `시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다(${mapError.slice(0, 160)}) — 합격으로 보고하지 않습니다` }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
       let motionImage: string | undefined;
       try { const imgs = await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }, mapImage ? { mapImage } : undefined); sheetImage = imgs[0]?.dataUrl; motionImage = imgs[1]?.dataUrl; } catch { sheetImage = undefined; }
       const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
