@@ -10,7 +10,7 @@ import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
-import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
+import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -37,7 +37,7 @@ export type BattleRewardsOutcome = {
 export function applyBattleRewardsToSession(
   session: PlaySession,
   outcome: BattleRewardsOutcome,
-  project: Project
+  project: Project,
 ): readonly BattleLevelUpResult[] {
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
@@ -94,6 +94,7 @@ export function applyBattleRewardsToSession(
     }
     applyTechPointsToSession(session, project, outcome, rewardActorIdList);
     applyEsperApToSession(session, project, outcome, rewardActorIdList);
+    applyRageEnemiesToSession(session, project, outcome, rewardActorIdList);
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
   const itemState = transitionItemStates(
@@ -114,6 +115,12 @@ export function applyBattleRewardsToSession(
       ? snapshotInstanceIds
       : undefined;
   applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
+  // 경험치 나누기(system.rewardPolicy.expShare): 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 절반을 받는다.
+  if (project.system.rewardPolicy?.expShare === true && participantInstanceIds !== undefined && outcome.monsterPartyMode === true) {
+    const taken = new Set(participantInstanceIds);
+    const bench = session.monsterParty.filter((id) => !taken.has(id) && session.monsterInstances[id] !== undefined && monsterCurrentHp(project, session.monsterInstances[id]!) > 0);
+    if (bench.length > 0) applyMonsterExperienceAndEvolution(project, session, Math.floor(earnedExp / 2), bench);
+  }
   return levelUps;
 }
 
@@ -166,6 +173,28 @@ function applyEsperApToSession(
     session.actorSkillIds[actorId] = [...new Set([...(session.actorSkillIds[actorId] ?? []), ...skillIds])];
     const via = (session.learnedViaAp ??= {});
     via[actorId] = [...new Set([...(via[actorId] ?? []), ...skillIds])];
+  }
+}
+
+// 폭주(가우): 폭주 기술을 아는 살아남은 배우가 이번 전투에서 쓰러뜨린 몬스터를 폭주 목록에 더한다(배우당 최대 64종).
+function applyRageEnemiesToSession(
+  session: PlaySession,
+  project: Project,
+  outcome: BattleRewardsOutcome,
+  actorIds: readonly string[],
+): void {
+  const enemyIds = outcome.rewards.rageEnemyIds ?? [];
+  if (enemyIds.length === 0) return;
+  const rageSkillIds = new Set(project.database.skills.filter((skill) => skill.effect.kind === "rage").map((skill) => skill.id));
+  if (rageSkillIds.size === 0) return;
+  for (const actorId of new Set(actorIds)) {
+    const vitals = session.actorVitals[actorId];
+    const snapshot = (outcome.actors ?? []).find((actor) => actor.recordId === actorId);
+    if ((vitals ? vitals.hp : snapshot?.hp ?? 1) <= 0) continue;
+    const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
+    if (!known.some((skillId) => rageSkillIds.has(skillId))) continue;
+    const pool = (session.actorRageEnemyIds ??= {});
+    pool[actorId] = [...new Set([...(pool[actorId] ?? []), ...enemyIds])].slice(0, 64);
   }
 }
 

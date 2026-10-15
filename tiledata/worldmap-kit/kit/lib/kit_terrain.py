@@ -29,6 +29,7 @@ base "generate" — 손 대륙 대신 빈 판에 새 구조를 만든다(kit_gen
   dune_sea   poly                           4막 사구 바다 자리(시작 대륙 1막 땅 안)
   sky_island x, y                           천공섬 자리(열린 바다)
   land·sea·island 는 구조에 접혀 맞춤 전에 반영되고, move_place 는 맞춤의 고정 핀이 된다.
+변형(variant): 최상위 키 variant — 만든 세계 위에 침수·바닥 갈아엎기·고사목·갈라진 땅을 얹는다. kit_variant.py 머리말.
 바닥 이름: grass farm crop savanna sand dune dirt badlands ash basalt swamp marsh tundra snow glacier jungle
 """
 import copy
@@ -75,6 +76,12 @@ def validate(spec):
     ops = spec.get('ops', [])
     if not isinstance(ops, list):
         raise TerrainError('ops 는 배열')
+    if 'variant' in spec:
+        import kit_variant as KV
+        try:
+            KV.validate(spec['variant'])
+        except KV.VariantError as e:
+            raise TerrainError(str(e))
     for i, o in enumerate(ops):
         k = o.get('op')
         if k not in OPS:
@@ -191,6 +198,8 @@ def blob(cx, cy, rx, ry, salt):
 
 def apply(spec, journey):
     """make_map_v4 의 목록에 작업을 얹고, move_place 를 반영한 여정 사본을 돌려준다. 프로세스당 한 번(빌드 전)."""
+    import kit_variant as KV
+    KV.install((spec or {}).get('variant'))             # 월드 변형: 지형이 다 만들어진 뒤 칸 배열을 고치는 훅(없으면 아무 일도 안 한다)
     if spec is None:
         return journey
     import make_map_v4 as M4

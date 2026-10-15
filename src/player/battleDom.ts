@@ -33,6 +33,7 @@ import {
   chargingDirectorState,
   commandPromptState,
   resultDirectorState,
+  completeBattleMessageTyping,
   syncBattleMessageWindow,
   syncBattleResultPanel,
   targetSelectDirectorState,
@@ -171,6 +172,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
   if (pokemonMotion) preloadPokemonMotionSounds();
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
+  let captureEntryActive = false;
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
@@ -179,7 +181,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
-  const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
+  const activeAtb = options.runtime.snapshot().atbMode === "active";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
   // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
   // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.
@@ -390,6 +392,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setDirectorState(state: BattleDirectorState): void;
     render(): void;
     runActorCommand(command: ActorCommand): void;
+    runTeamSwap(targetTeamId: string): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -405,6 +408,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     render: () => syncView(),
     runActorCommand,
+    runTeamSwap,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -468,14 +472,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
       });
     },
-    onCaptureCinematic(targetId, success) {
-      return playCaptureCinematic(field, targetId, success);
+    onCaptureCinematic(targetId, success, shakes) {
+      return playCaptureCinematic(field, targetId, success, shakes);
     },
     onDirectorState(state) {
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      captureEntryActive = entry.kind === "capture";
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
@@ -612,8 +617,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
       else root.classList.remove("battle-hit-stop-critical");
     },
-    onActionMotion(beat) {
+    onActionMotion(rawBeat) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      // 구슬을 던지는 것은 트레이너다 — 내 몬스터가 상대에게 돌진하지 않는다(2026-10-15 진단 C1).
+      const beat = captureEntryActive && rawBeat && rawBeat.userMotion === "lunge" ? { ...rawBeat, userMotion: "idle" as const } : rawBeat;
       if (retroMotion) {
         // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
         const timed = beat && beat.durationMs > 0
@@ -830,6 +837,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
       if (isBattleConfirmKey(event) || isBattleCancelKey(event)) {
         event.preventDefault();
+        // 문장이 글자 단위로 나오는 중이면 이 입력은 그 문장을 한 번에 끝내는 데 쓴다(3세대). 다음 입력부터 빨리감기.
+        if (completeBattleMessageTyping(messageWindow)) return;
         beginSkip();
       }
       return;
@@ -1505,6 +1514,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */
+  function runTeamSwap(targetTeamId: string): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.performTeamSwap) return;
+    const before = options.runtime.snapshot();
+    options.runtime.performTeamSwap({ kind: "teamSwap", targetTeamId });
+    const afterCommand = options.runtime.snapshot();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    const arrived = afterCommand.actors[0]?.recordId;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
+    sequencer.runAfterActorCommand({ kind: "switch", targetActorId: arrived ?? "" }, before, afterCommand);
   }
 
   function runActorCommand(command: ActorCommand): void {

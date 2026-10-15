@@ -4,6 +4,7 @@ import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import type { BattleAudioSession } from "@/player/battleAudio";
@@ -28,6 +29,8 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
+import { previewMonsterEvolution } from "@/project/monsterCollection";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -112,6 +115,7 @@ export async function playBattle(
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
       canLose: step.canLose,
       battleFlow: step.battleFlow,
+      atbMode: getPlayerPreferences().atbMode,
       formation: step.formation,
       party: {
         levels: scene.session.actorLevels,
@@ -135,6 +139,7 @@ export async function playBattle(
       // battleProcessing 스텝을 만든 맵 이벤트. 트룹 배틀 이벤트의 selfSwitch 소유 이벤트가 된다.
       // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
       ownerEventId: step.ownerEventId,
+      ...(step.enemyLevel !== undefined ? { enemyLevel: step.enemyLevel } : {}),
       sessionState: {
         messageWindowSettings: session.messageWindowSettings,
         switches: scene.session.switches,
@@ -154,6 +159,7 @@ export async function playBattle(
         actorTechPoints: scene.session.actorTechPoints,
         actorApProgress: scene.session.actorApProgress,
         learnedViaAp: scene.session.learnedViaAp,
+        actorRageEnemyIds: scene.session.actorRageEnemyIds,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         difficultyId: scene.session.difficultyId,
@@ -204,7 +210,8 @@ export async function playBattle(
       const onFieldAnchors = project.system.battlePresentation === "onField"
         ? computeOnFieldAnchors(scene as unknown as OnFieldScene, fieldCanvas, step.ownerEventId, mapTileSize(scene.map))
         : undefined;
-      const restoreOnFieldSprites = onFieldAnchors ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
+      // 필드 배경 스냅샷에도 주인공·동료·시비 건 적이 찍히면 같은 캐릭터가 배틀러와 두 번 보인다(CT 감사 캡처) — 둘 다 숨긴 뒤 찍는다.
+      const restoreOnFieldSprites = onFieldAnchors || project.system.battleBackdrop === "field" ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
       const fieldBackdrop = project.system.battleBackdrop === "field" || onFieldAnchors !== undefined;
       const fieldSnapshot = fieldBackdrop ? captureFieldSnapshot(scene.game) : Promise.resolve(undefined);
       const newTransition = (): BattleTransition => onFieldAnchors
@@ -295,6 +302,16 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
+              // 레벨업으로 진화할 몬스터는 결과 문장을 다 본 뒤, 전투 화면이 걷히기 전에 3세대 진화 장면을 본다(규칙 반영은 아래에서 그대로).
+              const evolving = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const preview = previewMonsterEvolution(project, session, entry.instanceId, entry.toLevel);
+                  return preview ? [preview] : [];
+                })
+                : [];
+              const evolutionDone = evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : Promise.resolve();
+              void evolutionDone.then(() => {
+              if (!current()) { abort(); return; }
               const transition = newTransition();
               exitTransition = transition;
               void transition.exit().then(async () => {
@@ -341,6 +358,7 @@ export async function playBattle(
                   resolve(null);
                 } else resolve(result);
               }).catch(fail);
+              });
             } catch (error) {
               fail(error);
             }

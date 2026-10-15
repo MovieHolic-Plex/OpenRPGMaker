@@ -2,13 +2,39 @@ import type { ItemRecord, Project, SkillMpCost } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { nextSessionRandom } from "@/project/session";
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
-import { monsterCurrentHp, monsterMaxHp, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { monsterCurrentHp, monsterMaxHp, normalizeMonsterInstanceBattleState, teachMonsterSkill } from "@/project/monsterCollection";
 
 /** Field medicine follows the same unrestricted-monster contract as battle.
  * Actor/class-restricted medicine remains authored for actors only. */
 export function targetsPartyMonsters(project: Project, item: ItemRecord): boolean {
   return (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true)
     && item.type === "medicine" && (item.scope === "ally" || item.scope === "allAllies");
+}
+
+/**
+ * 기술머신·비전머신: 몬스터 파티 게임에서 learnedSkillId(또는 book 의 skillId)를 가진 아이템은 배우가 아니라 파티 몬스터에게 쓴다.
+ * 배우 파티 게임의 스킬북은 그대로다(battleParty/monsterBattleParty 가 몬스터일 때만).
+ */
+export function machineSkillOf(project: Project, item: ItemRecord): string | undefined {
+  if (!(project.system.battleParty === "monsters" || project.system.monsterBattleParty === true)) return undefined;
+  return item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
+}
+
+/** 이 기술머신을 이 파티 몬스터에게 쓸 수 있는가(읽기 전용 미리보기 — 메뉴 대상 줄과 사용 경로가 같은 판정을 쓴다). */
+export function previewMonsterMachine(project: Project, session: Pick<PlaySession, "monsterParty" | "monsterInstances" | "inventory">, item: ItemRecord, instanceId: string) {
+  const skillId = machineSkillOf(project, item);
+  const instance = session.monsterInstances?.[instanceId];
+  const skillName = project.database.skills.find((skill) => skill.id === skillId)?.name ?? skillId ?? "";
+  let reason: string | undefined;
+  if (!skillId) reason = "이 아이템은 기술을 가르치지 않습니다";
+  else if (!instance || !session.monsterParty?.includes(instanceId)) reason = "파티 몬스터를 선택하세요";
+  else if (!itemAllowsMenu(activeItemEffects(item))) reason = "필드에서 사용할 수 없는 아이템입니다";
+  else if ((session.inventory[item.id] ?? 0) <= 0) reason = "아이템이 없습니다";
+  else {
+    const taught = teachMonsterSkill(project, instance, skillId);
+    if (!taught.ok) reason = taught.reason === "alreadyKnown" ? "이미 익힌 기술입니다" : taught.reason === "incompatible" ? `${skillName}은(는) 이 몬스터가 배울 수 없는 기술입니다` : "기술을 가르칠 수 없습니다";
+  }
+  return { reason, skillId, skillName };
 }
 
 /** One explicit move-PP effect shared by field and battle medicine. Missing PP

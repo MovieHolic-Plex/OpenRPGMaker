@@ -12178,7 +12178,10 @@
    "m2-command-target-option-select": [
     "boat",
     "ship",
-    "airship"
+    "airship",
+    "chocobo",
+    "cart",
+    "raft"
    ],
    "m2-command-value-resource-picker": [
     "",
@@ -12195,7 +12198,7 @@
   "tags": {
    "div": 13,
    "label": 3,
-   "option": 11,
+   "option": 14,
    "p": 1,
    "select": 3
   },
@@ -13462,6 +13465,9 @@
    "set-vehicle-location-vehicle",
    "set-vehicle-location-vehicle-segment-airship",
    "set-vehicle-location-vehicle-segment-boat",
+   "set-vehicle-location-vehicle-segment-cart",
+   "set-vehicle-location-vehicle-segment-chocobo",
+   "set-vehicle-location-vehicle-segment-raft",
    "set-vehicle-location-vehicle-segment-ship",
    "set-vehicle-location-x-input",
    "set-vehicle-location-y-input"
@@ -13498,6 +13504,9 @@
    "set-vehicle-location-vehicle": "select{hidden}",
    "set-vehicle-location-vehicle-segment-airship": "button{}",
    "set-vehicle-location-vehicle-segment-boat": "button{}",
+   "set-vehicle-location-vehicle-segment-cart": "button{}",
+   "set-vehicle-location-vehicle-segment-chocobo": "button{}",
+   "set-vehicle-location-vehicle-segment-raft": "button{}",
    "set-vehicle-location-vehicle-segment-ship": "button{}",
    "set-vehicle-location-x-input": "input[number]{}",
    "set-vehicle-location-y-input": "input[number]{}"
@@ -13510,19 +13519,25 @@
    "set-vehicle-location-vehicle": [
     "boat",
     "ship",
-    "airship"
+    "airship",
+    "chocobo",
+    "cart",
+    "raft"
    ]
   },
   "labels": [
+   "광산 수레",
    "대형선",
+   "뗏목",
    "비행선",
-   "소형선"
+   "소형선",
+   "초코보"
   ],
   "tags": {
-   "button": 3,
+   "button": 6,
    "div": 16,
    "input": 2,
-   "option": 5,
+   "option": 8,
    "p": 3,
    "select": 2,
    "span": 5
@@ -13537,6 +13552,9 @@
    "set-vehicle-location-vehicle": "select",
    "set-vehicle-location-vehicle-segment-airship": "button",
    "set-vehicle-location-vehicle-segment-boat": "button",
+   "set-vehicle-location-vehicle-segment-cart": "button",
+   "set-vehicle-location-vehicle-segment-chocobo": "button",
+   "set-vehicle-location-vehicle-segment-raft": "button",
    "set-vehicle-location-vehicle-segment-ship": "button",
    "set-vehicle-location-x-input": "input",
    "set-vehicle-location-y-input": "input"
@@ -13546,8 +13564,8 @@
    "set-vehicle-location-intent": "탈것 위치 설정소형선·대형선·비행선 위치를 지정합니다.",
    "set-vehicle-location-preview": "소형선 → (맵 미선택) (#, #)지정 맵 좌표로 탈것을 옮깁니다."
   },
-  "testidCount": 12,
-  "controlCount": 7
+  "testidCount": 15,
+  "controlCount": 10
  },
  "m2-040-set-event-location": {
   "testids": [

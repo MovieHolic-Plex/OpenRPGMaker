@@ -3,6 +3,7 @@ import { appendFileSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { withTsModule } from "./ontology-ts-loader.mjs";
+import { buildWorldmap } from "./lib/worldmapBuild.mjs";
 
 const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts", import.meta.url)));
 const STORE_ENTRY = resolve(fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url)));
@@ -102,7 +103,7 @@ function handleRequest(module, project, auditLogPath, request) {
         return;
       }
       // Lazy tool data (reference snapshots) loads before the synchronous run, as in the editor.
-      void module.prepareHeadlessTool(name, args).then(() => {
+      void module.prepareHeadlessTool(name, args, project).then(() => {
         const result = module.runHeadlessTool(project, name, args);
         audit(auditLogPath, { tool: name, args, summary: result.summary, ok: result.ok });
         success(id, { content: textContent(result), isError: result.ok !== true });
@@ -161,6 +162,7 @@ async function main() {
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {
     module.setHeadlessPublicRoot(fileURLToPath(new URL("../public", import.meta.url)));
+    module.setHeadlessWorldmapBuilder?.(buildWorldmap);
     const project = args.projectDir
       ? await loadProjectFromDirectory(args.projectDir)
       : loadProject(module, args.projectPath);

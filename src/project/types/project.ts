@@ -385,6 +385,12 @@ export interface EncounterTableEntry {
   troopId: TroopId;
   weight: number;
   conditions?: EncounterConditions;
+  /**
+   * 야생 레벨 범위(포함). 이 항목이 뽑히면 전투 시작 때 [levelMin, levelMax] 에서 레벨을 굴려 그 레벨의 능력치·기술로 싸운다
+   * (troop 의 종 enemy 레코드 레벨은 범위를 안 줬을 때의 값). 둘 중 하나만 주면 그 값으로 고정. 종 몬스터 enemy 에만 적용된다.
+   */
+  levelMin?: number;
+  levelMax?: number;
 }
 
 export interface EncounterConditions {
@@ -403,6 +409,11 @@ export interface EncounterConditions {
    * 로케이션을 넓히면 이 조건도 함께 넓어진다(복사본이 없으므로 어긋날 수 없다).
    */
   locationId?: string;
+  /**
+   * `database.terrains[].id`. 서 있는 칸의 지형 태그(타일 → 태그 N → terrains[N-1])가 이 지형 기록일 때만 나온다.
+   * 타일 종류에 묶이므로 풀 그림을 고쳐 칠해도 조우 칸이 따라간다(키 큰 풀 = `terrain_grass`, 칩셋 태그 5).
+   */
+  terrainId?: string;
   timePhase?: TimePhase;
   season?: Season;
 }
@@ -412,6 +423,20 @@ export interface EncounterConditions {
  * 참조도 같은 맵 안에서만 걸리므로 복사본은 자기 로케이션을 가리킨다).
  */
 /** 월드맵 키트 지도의 원본 — 테마와 지형 작업 목록(`worldmap-terrain/1` 의 ops, 칸 좌표). */
+/**
+ * 월드 변형 명세(키트 kit_variant.py 의 terrain.variant) — 기준 지도와 같은 지형 위에 침수·균열·바닥 갈아엎기를 얹고
+ * 여정 검사를 「모든 장소가 어떤 수단으로든 닿는다」로 바꾼다. derive_world_variant 가 만든다.
+ */
+export interface WorldmapVariantSpec {
+  journey?: "free" | "keep";
+  palette?: string;
+  icon_preset?: "ruin";
+  icon_ratio?: number;
+  icons?: Record<string, string>;
+  protect_roads?: Array<[number, number]>;
+  ops?: Array<Record<string, unknown>>;
+}
+
 export interface WorldmapSource {
   /** tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
   theme: string;
@@ -426,6 +451,11 @@ export interface WorldmapSource {
   fitSalt?: number;
   /** Baseline generated tile arrays, used to preserve subsequent hand edits on regeneration. */
   tilemap?: { version: 1; lowerTiles: number[]; upperTiles: number[]; materialKeys: string[] };
+  /**
+   * 파멸 전/후처럼 다른 월드맵에서 파생된 변형 지도(derive_world_variant, 2026-10-15). `of` 는 기준 지도 id,
+   * `spec` 은 키트 terrain.variant(침수·균열·바닥 갈아엎기·색 표·아이콘). 있으면 재빌드가 같은 변형을 다시 얹는다. 없으면 일반 월드맵.
+   */
+  variant?: { of: string; preset?: string; spec: WorldmapVariantSpec };
 }
 
 export interface MapNamedLocation {

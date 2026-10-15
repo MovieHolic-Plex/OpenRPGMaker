@@ -78,23 +78,23 @@ call("C07", "author_boss_phases", { troopId: "troop_boss", enemyId: "enemy_boss_
 call("C07", "simulate_battle", { troopId: "troop_boss", heroLevel: 12, partyActorIds: ["actor_hero", "actor_mage", "actor_cleric"], n: 20, seed: 7 });
 
 // ── C10 마을(현대) + 상점 ──
-call("C10", "author_village", { target: { kind: "new", mapId: "map_era_present", name: "트루스 마을 (현대)", width: 40, height: 30, tilesetId: "easyrpg_chipset_combined_town" }, houseCount: 5, countPolicy: "exact", seed: 3, interior: false, morphology: "green", npcCount: 3, residents: [{ name: "촌장", lines: ["천년제에 잘 왔네."] }, { name: "대장장이", lines: ["검은 손봐 주지."] }, { name: "아이", lines: ["마르레가 광장에 있어!"] }] });
+call("C10", "author_beodeul_town", { id: "map_era_present", name: "트루스 마을 (현대)", width: 40, height: 30, houseCount: 5, seed: 3 });
 const town = "map_era_present";
 const shopAt = passableNear(ctx.project, town, 20, 15);
 call("C10", "make_villager", { mapId: town, name: "무기상", home: shopAt, id: "ev_weapon_shop", dialogue: [{ text: "좋은 물건 있어." }] });
 call("C10", "set_shop_stock", { mapId: town, eventId: "ev_weapon_shop", stock: [{ itemId: "equip_iron_sword" }, { itemId: "item_potion" }, { itemId: "item_ether" }] });
 
 // ── C11 성 ──
-call("C11", "build_castle", { id: "map_castle", name: "가르디아 성", width: 48, height: 40, seed: 5, npcs: true });
+call("C11", "author_dungeon", { id: "map_castle", name: "가르디아 성", type: "castle", seed: 5 });
 // ── C12 던전 ──
-call("C12", "run_dungeon_room_pipeline", { mapId: "map_cave", name: "잊힌 동굴", theme: "stone", character: "cavern", seed: 9 });
+call("C12", "author_dungeon", { id: "map_cave", name: "잊힌 동굴", type: "mine", seed: 9 });
 
 // ── C13 시간 여행: 같은 장소의 다른 시대 + 시간의 문 ──
-call("C13", "duplicate_map", { mapId: town, id: "map_era_future", name: "트루스 마을 (미래 폐허)" });
+call("C13", "derive_map_variant", { sourceMapId: town, variants: [{ id: "map_era_future", name: "트루스 마을 (미래 폐허)", era: "미래" }] });
 call("C13", "set_scene_mood", { mapId: "map_era_future", weather: { kind: "fog", intensity: 0.6 }, lighting: { ambient: 0.55, color: "#201028" } });
 const gateA = passableNear(ctx.project, town, 3, 3);
 const gateB = passableNear(ctx.project, "map_era_future", 3, 3);
-call("C13", "create_transfer_pair", { a: { mapId: town, x: gateA.x, y: gateA.y }, b: { mapId: "map_era_future", x: gateB.x, y: gateB.y }, fade: "white" });
+call("C13", "create_time_gate", { a: { mapId: town, x: gateA.x, y: gateA.y }, b: { mapId: "map_era_future", x: gateB.x, y: gateB.y }, name: "시간의 문", effect: "swirl" });
 
 // 월드 연결: 마을 ↔ 성, 마을 ↔ 동굴
 for (const [target, tx, ty] of [["map_castle", 24, 38], ["map_cave", 2, 10]] as const) {
@@ -109,9 +109,9 @@ const bossSwitch = String((flag.data as { targetId?: string; switchId?: string }
 // ── C08 보이는 필드 적(심볼 인카운터) · 보스 방 ──
 if (ctx.project.maps["map_cave"]) {
   const bat = passableNear(ctx.project, "map_cave", 12, 12);
-  call("C08", "place_battle_blocker", { mapId: "map_cave", x: bat.x, y: bat.y, troopId: "troop_imps", id: "ev_cave_imps", fightMovement: "random" });
+  call("C08", "place_battle_blocker", { graphic: { transparent: true }, mapId: "map_cave", x: bat.x, y: bat.y, troopId: "troop_imps", id: "ev_cave_imps", fightMovement: "random" });
   const boss = passableNear(ctx.project, "map_cave", Math.floor(map("map_cave").width * 0.7), Math.floor(map("map_cave").height * 0.5));
-  call("C08", "place_battle_blocker", { mapId: "map_cave", x: boss.x, y: boss.y, troopId: "troop_boss", id: "ev_boss", clearSwitchId: bossSwitch, intro: ["시간이 울린다…"] });
+  call("C08", "place_battle_blocker", { graphic: { transparent: true }, mapId: "map_cave", x: boss.x, y: boss.y, troopId: "troop_boss", id: "ev_boss", clearSwitchId: bossSwitch, intro: ["시간이 울린다…"] });
   const save = passableNear(ctx.project, "map_cave", boss.x - 3, boss.y);
   call("C15", "place_savepoint", { mapId: "map_cave", x: save.x, y: save.y, name: "세이브 포인트" });
   const chest = passableNear(ctx.project, "map_cave", 6, 6);
@@ -165,7 +165,7 @@ call("C30", "set_project_settings", { chapter: { variableId: ctx.project.databas
 
 // ── 시작 위치: 필드 적 바로 남쪽 → 런타임에서 위를 보고 조사하면 전투 ──
 const startPair = standPair(ctx.project, town, 20, 22);
-call("C09", "place_battle_blocker", { mapId: town, x: startPair.at.x, y: startPair.at.y, troopId: "troop_imps", id: "ev_field_imps", fightMovement: "fixed" });
+call("C09", "place_battle_blocker", { graphic: { transparent: true }, mapId: town, x: startPair.at.x, y: startPair.at.y, troopId: "troop_imps", id: "ev_field_imps", fightMovement: "fixed" });
 call("C00", "set_start_position", { mapId: town, x: startPair.stand.x, y: startPair.stand.y });
 
 // 픽스처 정리: 기본 빈 맵은 쓰지 않는다. 멸망 엔딩은 미래 폐허의 기록 장치가 부른다.

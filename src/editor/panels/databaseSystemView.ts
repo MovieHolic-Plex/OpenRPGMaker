@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
+import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
@@ -50,6 +51,7 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
+import { disableGenreLock, enableGenreLock, genreLockReport } from "@/project/genreLock";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
@@ -104,7 +106,7 @@ import {
 } from "@/project/playResolution";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
-import type { PlayResolution, SystemRecords } from "@/project/types";
+import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
 const titleStageRefreshers = new WeakMap<HTMLElement, (kind: "values" | "effects") => void>();
@@ -417,6 +419,7 @@ function systemSectionNodes(
             else delete draft.system.monsterCollection;
           });
         }),
+        genreLockField(project, rerender),
         checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterBattleParty = true;
@@ -454,6 +457,7 @@ function systemSectionNodes(
             : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
         ),
       ]),
+      battleTeamsSection(project, updateSystem, rerender),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
@@ -1562,15 +1566,20 @@ function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => v
 }
 
 function nextRewardPolicy(
-  current: { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined,
+  current: RewardPolicy | undefined,
   patch: { participationOnly?: boolean; levelGapPenalty?: boolean },
-): { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined {
+): RewardPolicy | undefined {
   const participationOnly = patch.participationOnly ?? current?.participationOnly === true;
   const levelGapPenalty = patch.levelGapPenalty ?? current?.levelGapPenalty === true;
-  if (!participationOnly && !levelGapPenalty) return undefined;
+  // 이 토글 화면에 없는 칸(expShare·trainerPrizePerLevel)은 조수·도구가 저작한 값이므로 그대로 둔다.
+  const expShare = current?.expShare === true;
+  const prize = current?.trainerPrizePerLevel ?? 0;
+  if (!participationOnly && !levelGapPenalty && !expShare && prize <= 0) return undefined;
   return {
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
+    ...(expShare ? { expShare: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -1684,6 +1693,32 @@ function galleryLabelField(value: string): HTMLElement {
     }, "system:gallery-label");
   });
   return field("메뉴 이름", input);
+}
+
+/**
+ * 장르 칩셋 잠금(몬스터 수집) 켜기/끄기 + 상태 배지. 잠금은 조수·도구만 막는다 — 여기서 손으로 칠하는 것은 막지 않고 허용 밖 맵 수만 알린다.
+ * 켜면 지금 있는 허용 밖 맵은 「잠금 이전부터 있던 맵」으로 기록한다(project/genreLock.ts).
+ */
+function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: () => void): HTMLElement {
+  const lock = project.system.genreLock;
+  const report = genreLockReport(project);
+  const checkbox = checkboxField("장르 칩셋 잠금 (몬스터 수집 — 조수는 몬스터 칩셋만 새로 쓴다)", "db-field-system-genre-lock", lock !== undefined, (checked) => {
+    recordProjectSnapshot();
+    store.update((draft) => {
+      if (checked) enableGenreLock(draft, "monster-collect");
+      else disableGenreLock(draft);
+    }, { scope: "system", label: checked ? "장르 잠금 켜기" : "장르 잠금 끄기" });
+    rerender();
+  });
+  const badge = el("p", {
+    class: "db-system-resolution-help",
+    dataset: { testid: "db-genre-lock-badge" },
+    text: !lock ? "꺼짐 — 조수가 다른 계열 칩셋으로 맵을 만들 수 있다."
+      : `잠금 중(${lock.mode === "warn" ? "경고만" : "강제"}) · 허용 칩셋 ${report.allowedTilesets.length}개`
+        + (report.violations.length ? ` · 허용 밖 맵 ${report.violations.length}개(손으로 칠한 것은 막지 않는다)` : "")
+        + (report.preexisting.length ? ` · 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개` : ""),
+  });
+  return el("div", { class: "db-genre-lock-field", children: [checkbox, badge] });
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {

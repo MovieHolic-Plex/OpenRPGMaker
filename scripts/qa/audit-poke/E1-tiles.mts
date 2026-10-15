@@ -1,0 +1,10 @@
+import { readFileSync } from "node:fs";
+import { deserialize } from "@/project/io/serialize";
+const p: any = deserialize(readFileSync("qa-runs/audit-poke/A1-t2.json","utf8"));
+const m = p.maps.e1_route;
+const row = (y:number)=>Array.from({length:m.width},(_,x)=>String(m.lowerTiles[y*m.width+x]).padStart(5)).join("");
+for (const y of [9,12,14,15]) console.log("y"+y, row(y));
+const up=(y:number)=>Array.from({length:m.width},(_,x)=>String(m.upperTiles[y*m.width+x]).padStart(5)).join("");
+console.log("upper y15", up(15));
+console.log("tileMeta/terrain in beodeul: tag of tiles 2.. ", JSON.stringify([m.lowerTiles[15*m.width+12], m.lowerTiles[13*m.width+10]]));
+const ts = p.tilesets[m.tilesetId]; console.log(m.tilesetId, "terrainTag count", Object.values(ts.tileMeta??{}).filter((x:any)=>x.terrainTag).length, "terrain nonzero", Object.values(ts.terrain??{}).filter((x:any)=>x).length);

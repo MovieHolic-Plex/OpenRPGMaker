@@ -2105,12 +2105,28 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 `assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.
 
+## FF6 수정 A 헤드리스 프로브 (2026-10-15)
+
+`node node_modules/vite-node/dist/cli.mjs --script scripts/qa/ff6-fix-a-growth-probe.mts`(마석 AP·레벨업 보너스·부위 도구·전투당 1회)와
+`scripts/qa/ff6-fix-a-effects-probe.mts`(좀비·스케치·폭주·트랜스·대열 섞기·강제 교대·블리츠·검기·룬·분석·적 반격). 실제 도구(`runTool`)로 저작 → 실제 전투 런타임 → 세션 정산(`applyBattleRewardsToSession`) → 세이브 왕복.
+한 줄이 `{id, ok, detail}` JSON 이고 끝에 `DONE`. 감사 기준선은 `scripts/qa/ff6-audit-probe.mts`(MISSING 항목이 있던 원본). vitest·gates 는 돌리지 않았다.
+
 ## 몬스터 여정 영상 (2026-10-07)
 
 `JOURNEY_VIDEO=1 node scripts/qa/runtime/monster-journey.mjs <play.json> <out>`(netns 안에서 — `unshare -rn sh -c "ip link set lo up && …"`)는
 `<out>/journey.mp4`(H.264, 타이틀부터)를 남긴다. 영상 모드는 시작 마을→연구소→마을→도로 풀숲, 센터→도로→트레이너를 실제 방향 입력으로 걷는다
 (짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
 관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
+
+## 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+
+- 헤드리스 도구 시험: `node scripts/oprn-tools.mjs --project <p.json> --out <o.json> derive_world_variant '{...}'` — 호스트 월드맵 빌더(`scripts/lib/worldmapBuild.mjs`)를 걸어 주므로
+  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
+- 크로미움이 이 호스트에서 `ERR_NETWORK_CHANGED` 로 뜨면 `unshare -rn bash -c 'ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-vehicle'`.
+- `ct-vehicle`(`scripts/qa/runtime/ct-vehicle*.{mts,mjs}`) 은 두 번 깨졌다: ① 기본 칩셋이 숲마을 → 버들항이 되어 물 0번·벽 42번이 다른 그림이 됨 → 물 8번·벽 408번·지형 태그 없는 물은
+  칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.
+  새 런타임 픽스처는 `system.opening` 을 지우지 않으면 첫 확인 키가 먹히지 않는다(15개 시나리오의 `node_modules/vite-node/vite-node.mjs` 경로도 vite-node 6 에 없어 `dist/cli.mjs` 로 가야 한다 — ct-vehicle 만 고침).
+- `ct-vehicle-walkers`(`scripts/qa/runtime/ct-vehicle-walkers*`) — 초코보(통행 불가 숲 통과·호수 거절)·광산 수레(레일에서만)·뗏목(강만, 바다 거절)을 승하차까지 실제 플레이어로 본다. 크로미움은 `unshare -rn` 안에서. `parkedVehicleSprites` 검사는 초코보만 Animal 텍스처를 기대한다(`scripts/lib/runtimeQa.mjs`).
 
 ## 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
 
@@ -2121,3 +2137,20 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
 알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+
+## CT 회귀 시나리오 복구 (2026-10-15)
+
+`scripts/qa/runtime/ct-*.scenario.mjs`(engine·techs·field·onfield·ngplus, 그리고 chrono)는 편집기 도구(runTool)로 프로젝트를 만든 뒤 출하 플레이어에서 돈다.
+**netns 안에서** 돌린다: `unshare -rn bash -c "ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-engine --out /tmp/x"`.
+깨져 있던 이유(감사 2026-10-15)와 고침: ① 시나리오가 `node_modules/vite-node/vite-node.mjs` 를 불렀으나 v6 은 `dist/cli.mjs` 다
+② `place_battle_blocker` 가 텍스트 그림(「들판 박쥐」)을 거절 → `graphic:{transparent:true}`, 온필드는 `place_field_enemy`(걷기 칩 없는 종도 전투 그림 심볼)
+③ 스킬 칸은 2열 명령창이라 커서 이동이 `ArrowRight` ④ ct-field 의 턱 타일 6 은 beodeul_city 에서 상위 전용 칩으로 라우팅돼 1층에 안 칠해진다 → 741
+⑤ retro 스킨은 적 좌표를 구역(x≥34, y 92..142)으로 접으므로 moveEnemy(30,30) 의 렌더 값은 10.625% / 57.49999999999999% 다(부동소수 표기 그대로 비교).
+ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructureGuard.ts`)는 코드 실행이 아니라 순수 함수이며 `adventureCompletionProblems` 가 부른다.
+
+
+## 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+
+`scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
+실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
+(진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)

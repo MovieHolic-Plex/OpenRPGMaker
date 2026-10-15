@@ -11,6 +11,7 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
+import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage } from "@/project/genreLock";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -138,6 +139,9 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
       && draft.worldAtlases?.some(atlas => atlas.overviewMapId === id || atlas.nodes.some(node => node.mapId === id))) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
+    // 장르 잠금 중 기준 맵이 잠금 밖(켜기 전부터 있던 다른 계열 맵)이면 그 맵의 계열이 「맞는 그림체」가 아니다 — 허용 칩셋으로 새 맵을 만드는 것은 막지 않는다.
+    // 기준 맵이 허용 계열이면 이 검사가 그대로 돈다(밝은 monster_* 와 에메랄드풍은 섞지 않는다 — 2026-10-06 연속성 결정).
+    if (enforcingGenreLock(draft) && !genreLockAllowsTileset(draft, currentMap.tilesetId) && genreLockAllowsTileset(draft, next.tilesetId)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
     const toName = draft.tilesets[next.tilesetId]?.name ?? next.tilesetId;
     const candidates = sameFamilyTilesets(before, baseFamily).slice(0, FAMILY_CANDIDATE_LIMIT)
@@ -153,6 +157,34 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
       { code: "tileset-family-change", mapId: id },
     );
   }
+}
+
+/**
+ * 장르 잠금(project/genreLock.ts): 조수·도구가 새 맵을 만들거나 맵 칩셋을 바꿔 허용 계열 밖이 되면 거부한다. 판정은 assertGenreLock 하나.
+ * 편집기 직접 편집·예제·콘텐츠 스크립트(ctx.assistantRun 아님)는 막지 않는다. warn 모드는 경고만 돌려준다.
+ */
+function rejectGenreLockViolation(ctx: ToolContext, before: Project, draft: Project, name: string): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return assertGenreLock(before, draft, { toolName: name, approved: ctx.approvedTilesetFamilies ?? [] });
+  } catch (cause) {
+    if (cause instanceof GenreLockError) throw new ToolError(cause.message, { code: "genre-lock", mapId: cause.mapId });
+    throw cause;
+  }
+}
+
+/**
+ * 장르 잠금 중 tilesetId 를 생략한 create_map 류 호출의 기본 칩셋이 허용 밖이면(보는 맵이 잠금 이전부터 있던 다른 계열이어도) 허용 칩셋으로 대체하고 경고를 남긴다.
+ * 모델이 tilesetId 를 직접 적었으면 건드리지 않는다 — 그것은 아래 거부 경로가 막는다(무음 대체 금지).
+ */
+function genreLockedDefaultTileset(ctx: ToolContext, tool: ToolDefinition, original: Record<string, unknown>, args: Record<string, unknown>): { args: Record<string, unknown>; note?: string } {
+  if (!ctx.assistantRun || !tool.defaultTilesetId || !enforcingGenreLock(ctx.project)) return { args };
+  if (typeof original.tilesetId === "string" && original.tilesetId.trim().length > 0) return { args };
+  if (typeof args.themeScene === "string" && args.themeScene.trim().length > 0) return { args };
+  const effective = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId : tool.defaultTilesetId(ctx.project);
+  const hint = `${tool.name} ${typeof args.name === "string" ? args.name : ""} ${typeof args.theme === "string" ? args.theme : ""} ${typeof args.purpose === "string" ? args.purpose : ""}`;
+  const swap = genreLockDefaultTileset(ctx.project, effective, hint);
+  return swap ? { args: { ...args, tilesetId: swap.tilesetId }, note: swap.note } : { args };
 }
 
 /**
@@ -303,14 +335,23 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
+  // 장르 잠금 중 허용 계열 밖 칩셋 전용 파이프라인은 조수에게 보이지 않는다(find_tools·Pi 도구 목록). 이미 알고 있는 이름으로 부르는 경우의 마지막 방어선.
+  if (ctx.assistantRun && genreLockHidesTool(ctx.project, name)) {
+    const message = genreLockHiddenToolMessage(ctx.project, name);
+    return { ok: false, summary: `'${name}' 장르 잠금으로 거부`, issues: [{ severity: "error", code: "genre-lock", message }] };
+  }
+
   const prunedPaths: string[] = [];
   // 모호하지 않은 인자 별칭(table→collection 등)은 옮기고 「X 는 Y 입니다」 경고를 남긴다(argRepair.ts) — 조용한 교정 금지.
   const aliased = applyArgAliases(name, tool.parameters, args);
-  const normalizedArgs = argsWithCurrentMapTileset(ctx, tool,
+  const filledArgs = argsWithCurrentMapTileset(ctx, tool,
     normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
       ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
+  const lockedDefault = genreLockedDefaultTileset(ctx, tool, aliased.args, filledArgs);
+  const normalizedArgs = lockedDefault.args;
   const prunedNote = [
     ...aliased.notes,
+    ...(lockedDefault.note ? [lockedDefault.note] : []),
     ...(prunedPaths.length
       ? [`빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`]
       : []),
@@ -367,6 +408,11 @@ export function runToolDefinition(
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
+    // 장르 잠금은 계열 검사보다 먼저 돈다(허용 칩셋 목록·대안을 알리는 더 구체적인 거부). allowsTilesetChange 도구(예제 통째 가져오기 등)도 거친다 — 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 빠진다.
+    if (!GENRE_LOCK_EXEMPT_TOOLS.has(name)) {
+      const lockWarnings = rejectGenreLockViolation(ctx, before, draft, name);
+      if (lockWarnings.length) exec = { ...exec, warnings: [...lockWarnings, ...(exec.warnings ?? [])] };
+    }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
       rejectRetiredEasyRpgMaps(ctx, before, draft, name);

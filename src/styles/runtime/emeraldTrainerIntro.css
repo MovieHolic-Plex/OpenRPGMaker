@@ -1,4 +1,4 @@
-/* Native64×64 poses at2×; explicit legacy64×96 portraits retain their own height. */
+/* 인물 그림은 화면 폭 128px 로 보인다: 64 폭은 2배, 128 폭은 1배(캔버스가 커도 필드 앵커·몬스터와의 밀도는 그대로). 옛 64×96 은 자기 비율을 유지한다. */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro {
   position: absolute;
   inset: 0 0 auto;
@@ -30,21 +30,54 @@
   image-rendering: pixelated;
   z-index: 1;
 }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-hero {
-  left: 48px;
-  bottom: 0;
-  animation: emerald-trainer-arrive-left 240ms steps(4, end) both;
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-hero { left: 48px; bottom: 0; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-opponent { right: 48px; bottom: 30px; }
+/* 볼 던지기 시트(프레임 64×64 × N): 한 칸 128×128 로 보여 주고 프레임 수만큼 계단으로 민다. 인물 그림 자리와 같다. */
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw {
+  position: absolute;
+  display: none;
+  width: 128px;
+  height: 128px;
+  background-repeat: no-repeat;
+  background-size: calc(var(--throw-frames, 1) * 100%) 100%;
+  image-rendering: pixelated;
+  z-index: 1;
 }
-.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-opponent {
-  right: 48px;
-  bottom: 30px;
-  animation: emerald-trainer-arrive-right 240ms steps(4, end) both;
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-hero { left: 48px; bottom: 0; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-throw-opponent { right: 48px; bottom: 30px; }
+/* 1) 소개: 두 사람이 화면 밖에서 미끄러져 들어온다(오른쪽 상대, 왼쪽 나). */
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="intro"] .emerald-trainer-intro-hero { animation: emerald-trainer-arrive-left 560ms steps(14, end) both; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="intro"] .emerald-trainer-intro-opponent { animation: emerald-trainer-arrive-right 560ms steps(14, end) both; }
+/* 2) 상대가 볼을 던지고(시트가 있으면) 오른쪽으로 나간다. 상대 몬스터는 던진 뒤에 나타난다. */
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-trainer-intro-opponent { animation: emerald-trainer-exit-right 380ms steps(10, end) 0.2s both; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"][data-opponent-throw="true"] .emerald-trainer-intro-opponent { display: none; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"][data-opponent-throw="true"] .emerald-trainer-throw-opponent {
+  display: block;
+  animation: emerald-trainer-throw var(--throw-ms) steps(var(--throw-steps), end) both, emerald-trainer-exit-right 380ms steps(10, end) var(--throw-ms) both;
 }
-.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="true"] :is(.battle-actor-group, .battle-enemy-group, .battle-party, .battle-enemy-list-panel) {
-  visibility: hidden;
+/* 3) 나는 상대 몬스터가 나온 뒤 볼을 던지고 왼쪽으로 나간다. 상대는 이미 없다. */
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"] .emerald-trainer-intro-opponent { display: none; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"] .emerald-trainer-intro-hero { animation: emerald-trainer-exit-left 380ms steps(10, end) 0.2s both; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"][data-hero-throw="true"] .emerald-trainer-intro-hero { display: none; }
+.battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"][data-hero-throw="true"] .emerald-trainer-throw-hero {
+  display: block;
+  animation: emerald-trainer-throw var(--throw-ms) steps(var(--throw-steps), end) both, emerald-trainer-exit-left 380ms steps(10, end) var(--throw-ms) both;
 }
-@keyframes emerald-trainer-arrive-left { from { transform: translateX(-32px); } to { transform: translateX(0); } }
-@keyframes emerald-trainer-arrive-right { from { transform: translateX(32px); } to { transform: translateX(0); } }
+/* 몬스터·HUD 는 단계마다 정해진 쪽만 보인다. 던진 뒤(--emerald-reveal-ms)에 나타난다. */
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro] :is(.battle-actor-group, .battle-enemy-group, .battle-party, .battle-enemy-list-panel) { visibility: hidden; }
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="foe"] :is(.battle-enemy-group, .battle-enemy-list-panel),
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-actor-group, .battle-party) { animation: emerald-reveal 1ms linear var(--emerald-reveal-ms, 300ms) both; }
+.battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="hero"] :is(.battle-enemy-group, .battle-enemy-list-panel) { visibility: visible; }
+@keyframes emerald-reveal { from { visibility: hidden; } to { visibility: visible; } }
+@keyframes emerald-trainer-throw { from { background-position-x: 0%; } to { background-position-x: 100%; } }
+@keyframes emerald-trainer-arrive-left { from { transform: translateX(-208px); } to { transform: translateX(0); } }
+@keyframes emerald-trainer-arrive-right { from { transform: translateX(208px); } to { transform: translateX(0); } }
+@keyframes emerald-trainer-exit-left { from { transform: translateX(0); } to { transform: translateX(-208px); } }
+@keyframes emerald-trainer-exit-right { from { transform: translateX(0); } to { transform: translateX(208px); } }
 @media (prefers-reduced-motion: reduce) {
-  .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro img { animation: none; }
+  .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro :is(img, .emerald-trainer-throw) { animation: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="foe"] .emerald-trainer-intro-opponent,
+  .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro[data-phase="hero"] .emerald-trainer-intro-hero { visibility: hidden; }
 }

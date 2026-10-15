@@ -433,8 +433,11 @@ function stageBuild(): number {
  */
 function stageManifest(): void {
   const seed = loadSeed();
-  type Entry = { campaignSpeciesId?: string; front?: { idle?: { frames: number; frameMs: number } }; back?: { idle?: { frames: number; frameMs: number } } };
+  type Entry = { campaignSpeciesId?: string; front?: { idle?: { frames: number; frameMs: number } }; back?: { idle?: { frames: number; frameMs: number } }; field?: { sheet: number; index: number } };
   const species: Record<string, Entry> = {};
+  // 따라다니기 걷기 칩: field_chip.py bake 가 쓴 field/index.json (시트 수 + 종별 시트·번호). 시트 파일이 실제로 있는 종만 싣는다.
+  const fieldIndexPath = join(PATHS.bundle, "field", "index.json");
+  const fieldIndex = existsSync(fieldIndexPath) ? (JSON.parse(readFileSync(fieldIndexPath, "utf8")) as { sheets: number; chips: Record<string, { sheet: number; index: number }> }) : undefined;
   for (const sp of seed.species) {
     const entry: Entry = {};
     if (sp.campaignSpeciesId) entry.campaignSpeciesId = sp.campaignSpeciesId;
@@ -445,10 +448,12 @@ function stageManifest(): void {
       const idle = anim?.sides[which]?.idle;
       entry[which] = idle && existsSync(join(PATHS.bundle, sp.id, idle.path)) ? { idle: { frames: idle.frames, frameMs: idle.frameMs } } : {};
     }
+    const chip = fieldIndex?.chips[sp.id];
+    if (chip && existsSync(join(PATHS.bundle, "field", `chips-${chip.sheet}.png`))) entry.field = { sheet: chip.sheet, index: chip.index };
     if (entry.front || entry.back) species[sp.id] = entry;
   }
   mkdirSync(resolve(PATHS.manifest, ".."), { recursive: true });
-  writeFileSync(PATHS.manifest, JSON.stringify({ version: 1, canvas: SPRITE_CANVAS, species }, null, 2) + "\n");
+  writeFileSync(PATHS.manifest, JSON.stringify({ version: 1, canvas: SPRITE_CANVAS, ...(fieldIndex && fieldIndex.sheets > 0 ? { fieldSheets: fieldIndex.sheets } : {}), species }, null, 2) + "\n");
   console.log(`런타임 목록 → ${relativeToRepo(PATHS.manifest)} (종 ${Object.keys(species).length})`);
 }
 

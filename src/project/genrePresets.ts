@@ -11,6 +11,7 @@ import { applyBattleMethod } from "@/project/battleMethod";
 import type { Project } from "@/project/types";
 import type { GenrePackId } from "@/project/genrePackId";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
+import { enableGenreLock } from "@/project/genreLock";
 
 export type GenrePresetId = GenrePackId;
 
@@ -68,6 +69,8 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       system.monsterCare = { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
       configureMonsterPresentation(project);
       openBlankStartOnMonsterKit(project);
+      // 장르 잠금(옵트인): 이 프로젝트의 조수·도구가 새 맵에 쓰는 칩셋을 몬스터 계열로 묶는다. 빈 시작 맵을 옮긴 뒤에 켜야 그 맵이 「이전부터 있던 맵」으로 안 잡힌다.
+      enableGenreLock(project, "monster-collect");
       break;
     case "farm-life":
       system.timeSystem = {

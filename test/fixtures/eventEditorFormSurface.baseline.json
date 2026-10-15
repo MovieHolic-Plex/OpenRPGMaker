@@ -12111,6 +12111,7 @@
     "actorStat",
     "actorState",
     "partyLeader",
+    "partyKnowsSkill",
     "partySize",
     "facing",
     "relativeFacing",
@@ -12180,7 +12181,7 @@
    "div": 14,
    "input": 1,
    "label": 4,
-   "option": 72,
+   "option": 73,
    "p": 3,
    "section": 2,
    "select": 3,
@@ -13815,6 +13816,8 @@
    "event-graphic-resource-tex_easyrpg_charset_vehicles",
    "event-graphic-resource-tex_farming_charset_chicken",
    "event-graphic-resource-tex_farming_charset_cow",
+   "event-graphic-resource-tex_oprn_charset_harness_monster1",
+   "event-graphic-resource-tex_oprn_charset_harness_monster2",
    "event-graphic-resource-tex_oprn_charset_wizarding1",
    "event-graphic-resource-tex_oprn_charset_wizarding2",
    "event-graphic-resource-tex_oprn_charset_wizarding3",
@@ -13900,6 +13903,8 @@
    "event-graphic-resource-tex_easyrpg_charset_vehicles": "button{}",
    "event-graphic-resource-tex_farming_charset_chicken": "button{}",
    "event-graphic-resource-tex_farming_charset_cow": "button{}",
+   "event-graphic-resource-tex_oprn_charset_harness_monster1": "button{}",
+   "event-graphic-resource-tex_oprn_charset_harness_monster2": "button{}",
    "event-graphic-resource-tex_oprn_charset_wizarding1": "button{}",
    "event-graphic-resource-tex_oprn_charset_wizarding2": "button{}",
    "event-graphic-resource-tex_oprn_charset_wizarding3": "button{}",
@@ -13933,6 +13938,8 @@
    "Wizarding4",
    "Wizarding5",
    "chicken",
+   "chips-1",
+   "chips-2",
    "cow",
    "scarloxy-charset-people1",
    "scarloxy-charset-people2",
@@ -13966,7 +13973,7 @@
    "패턴"
   ],
   "tags": {
-   "button": 40,
+   "button": 42,
    "div": 15,
    "fieldset": 2,
    "input": 8,
@@ -13974,7 +13981,7 @@
    "legend": 2,
    "option": 2,
    "select": 1,
-   "span": 29
+   "span": 31
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -14019,6 +14026,8 @@
    "event-graphic-resource-tex_easyrpg_charset_vehicles": "button",
    "event-graphic-resource-tex_farming_charset_chicken": "button",
    "event-graphic-resource-tex_farming_charset_cow": "button",
+   "event-graphic-resource-tex_oprn_charset_harness_monster1": "button",
+   "event-graphic-resource-tex_oprn_charset_harness_monster2": "button",
    "event-graphic-resource-tex_oprn_charset_wizarding1": "button",
    "event-graphic-resource-tex_oprn_charset_wizarding2": "button",
    "event-graphic-resource-tex_oprn_charset_wizarding3": "button",
@@ -14040,8 +14049,8 @@
    "event-command-edit-summary": "모습 바꾸기",
    "event-command-frame-walk-preview": ""
   },
-  "testidCount": 58,
-  "controlCount": 49
+  "testidCount": 60,
+  "controlCount": 51
  },
  "changeTile": {
   "testids": [
@@ -14049,7 +14058,9 @@
    "change-tile-intent",
    "change-tile-layer-select",
    "change-tile-layer-select-segment-lower",
+   "change-tile-layer-select-segment-lower2",
    "change-tile-layer-select-segment-upper",
+   "change-tile-layer-select-segment-upper2",
    "change-tile-map-preview",
    "change-tile-map-select",
    "change-tile-preset-clear",
@@ -14102,7 +14113,9 @@
   "controls": {
    "change-tile-layer-select": "select{hidden}",
    "change-tile-layer-select-segment-lower": "button{}",
+   "change-tile-layer-select-segment-lower2": "button{}",
    "change-tile-layer-select-segment-upper": "button{}",
+   "change-tile-layer-select-segment-upper2": "button{}",
    "change-tile-map-select": "select{}",
    "change-tile-preset-clear": "button{}",
    "change-tile-preset-floor": "button{}",
@@ -14116,7 +14129,9 @@
   "selectOptions": {
    "change-tile-layer-select": [
     "lower",
-    "upper"
+    "lower2",
+    "upper",
+    "upper2"
    ],
    "change-tile-map-select": [
     "",
@@ -14127,16 +14142,18 @@
    "+",
    "−",
    "기본 바닥",
-   "바닥",
+   "바닥 1층",
    "비우기",
    "빈 바닥",
-   "상위"
+   "상위 3층",
+   "장식 2층",
+   "장식 4층"
   ],
   "tags": {
-   "button": 7,
+   "button": 9,
    "div": 21,
    "input": 3,
-   "option": 4,
+   "option": 6,
    "p": 3,
    "select": 2,
    "span": 2
@@ -14146,7 +14163,9 @@
    "change-tile-intent": "div",
    "change-tile-layer-select": "select",
    "change-tile-layer-select-segment-lower": "button",
+   "change-tile-layer-select-segment-lower2": "button",
    "change-tile-layer-select-segment-upper": "button",
+   "change-tile-layer-select-segment-upper2": "button",
    "change-tile-map-preview": "div",
    "change-tile-map-select": "select",
    "change-tile-preset-clear": "button",
@@ -14164,11 +14183,11 @@
   "texts": {
    "change-tile-intent": "지형 변경맵 한 칸의 바닥이나 상위 타일을 바꿉니다. 비우기를 누르면 그 칸을 지웁니다.",
    "change-tile-map-preview": "",
-   "change-tile-preview": "(맵 선택) · 바닥 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바로 바꿉니다.",
+   "change-tile-preview": "(맵 선택) · 바닥 #층 (#, #) → 기본 바닥맵 위 그 칸의 타일을 바로 바꿉니다.",
    "event-command-edit-summary": "지형 변경"
   },
-  "testidCount": 18,
-  "controlCount": 12
+  "testidCount": 20,
+  "controlCount": 14
  },
  "callCommonEvent": {
   "testids": [

@@ -177,12 +177,27 @@ export function runThemedMap(draft: Project, scene: ThemeScene, request: ThemedM
   const result = tool.run(draft, composerArgs);
   const composerData = (result.data ?? {}) as { mapId?: string };
   mapId = composerData.mapId ?? mapId;
+  // 맵 성격을 명시한다 — 이름으로 추정하면 「방어전」의 「방」이 실내로 읽혀 필드 적을 거절했다(2026-10-15 역할극). 저작자가 이미 고른 값은 그대로 둔다.
+  const built = draft.maps[mapId];
+  const role = themeSceneMapRole(scene, style);
+  if (built && role && built.mapRole === undefined) built.mapRole = role;
   const warnings = [...(result.warnings ?? [])];
   return {
     summary: `${createdSummary ? `${createdSummary} → ` : ""}themeScene '${scene.id}${style && scene.styles ? `:${style}` : ""}'(${scene.label}) 로 ${scene.tool} 까지 한 번에 지었다 — ${result.summary}`,
     data: { mapId, themeScene: scene.id, ...(style !== undefined ? { style } : {}), composer: scene.tool, result: result.data },
     ...(warnings.length > 0 ? { warnings } : {}),
   };
+}
+
+const DUNGEON_STYLES: ReadonlySet<string> = new Set(["cave", "mine", "labyrinth", "catacomb", "sewer", "crypt", "cellar", "volcano_cave"]);
+const TOWN_STYLES: ReadonlySet<string> = new Set(["village", "market", "shopping", "residential", "castle_town", "inn_street", "bazaar", "harbor", "street", "city"]);
+
+/** 장면 종류에서 분명한 맵 성격만 돌려준다(애매하면 undefined — 이름 추정에 맡긴다). */
+export function themeSceneMapRole(scene: ThemeScene, style: string | undefined): "town" | "dungeon" | undefined {
+  if (scene.id === "beodeul_dungeon" || (style !== undefined && DUNGEON_STYLES.has(style))) return "dungeon";
+  if (scene.id === "beodeul_town" && style === "city") return "town";
+  if (style !== undefined && TOWN_STYLES.has(style)) return "town";
+  return undefined;
 }
 
 /** 한눈에 보는 목록 한 줄씩 — create_map 도구 설명·오류·색인에 쓴다. */

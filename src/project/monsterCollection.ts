@@ -81,7 +81,7 @@ export type MonsterExperienceResult = {
 
 export type MonsterSkillChoiceResult =
   | { readonly ok: true; readonly instance: MonsterInstance }
-  | { readonly ok: false; readonly reason: "missingPendingSkill" | "missingActiveSkill" };
+  | { readonly ok: false; readonly reason: "missingPendingSkill" | "missingActiveSkill" | "unforgettable" };
 
 export const DEFAULT_MONSTER_EXP_CURVE: ActorExperienceCurve = { base: 30, extra: 20, acceleration: 30 };
 
@@ -98,6 +98,7 @@ export function normalizeMonsterSpeciesRecord(
   const skillsByLevel = normalizeSkillsByLevel(record.skillsByLevel);
   const types = normalizeSpeciesTypes(record.types);
   const evolutions = normalizeEvolutions(record.evolutions);
+  const machineSkillIds = uniqueSkillIds((Array.isArray(record.machineSkillIds) ? record.machineSkillIds : []).filter((id): id is SkillId => typeof id === "string" && id.trim() !== "").map((id) => id.trim() as SkillId));
   return {
     id: record.id,
     name: textOrDefault(record.name, "몬스터"),
@@ -107,6 +108,7 @@ export function normalizeMonsterSpeciesRecord(
     expCurve: normalizeExpCurve(record.expCurve),
     captureRate: clampNumber(normalizeCaptureRateScale(record.captureRate), 0, 1),
     skillsByLevel: skillsByLevel.length > 0 ? skillsByLevel : undefined,
+    machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
   };
 }
@@ -384,6 +386,8 @@ export function replacePendingMonsterSkill(
   const skillIds = [...(normalized.skillIds ?? [])];
   const replaceIndex = skillIds.indexOf(replacedSkillId);
   if (replaceIndex < 0) return { ok: false, reason: "missingActiveSkill" };
+  // 비전머신 기술은 잊을 수 없다 — 메뉴가 후보에서 빼지만 이 경로를 직접 부르는 이벤트·도구도 막는다.
+  if (project.database.skills.find((skill) => skill.id === replacedSkillId)?.unforgettable === true) return { ok: false, reason: "unforgettable" };
   skillIds[replaceIndex] = pendingSkillId;
   const previousPp = { ...(normalized.skillPp ?? {}) };
   delete previousPp[replacedSkillId];
@@ -412,6 +416,32 @@ export function rejectPendingMonsterSkill(
       pendingSkillIds: pendingSkillIds.length > 0 ? pendingSkillIds : undefined,
     },
   };
+}
+
+export type TeachMonsterSkillResult =
+  | { readonly ok: true; readonly instance: MonsterInstance; readonly outcome: "learned" | "pending" }
+  | { readonly ok: false; readonly reason: "missingSpecies" | "unknownSkill" | "alreadyKnown" | "incompatible" };
+
+/** 이 종이 기술머신으로 이 기술을 배울 수 있는가 — species.machineSkillIds 가 비어 있으면 제한 없음(기존 동작). */
+export function monsterCanLearnMachineSkill(project: Project, instance: MonsterInstance, skillId: SkillId): boolean {
+  const species = monsterSpeciesById(project, instance.speciesId);
+  if (!species) return false;
+  const allowed = species.machineSkillIds ?? [];
+  return allowed.length === 0 || allowed.includes(skillId);
+}
+
+/**
+ * 기술머신·비전머신으로 몬스터에게 기술을 가르친다. 칸(MONSTER_SKILL_MAX)이 남으면 바로 익히고, 가득 찼으면 레벨업 때와 같이
+ * pendingSkillIds 로 두어 메뉴의 「기술 교체」에서 고르게 한다(잊을 수 없는 기술은 그 후보에서 빠진다).
+ */
+export function teachMonsterSkill(project: Project, instance: MonsterInstance, skillId: SkillId): TeachMonsterSkillResult {
+  if (!monsterSpeciesById(project, instance.speciesId)) return { ok: false, reason: "missingSpecies" };
+  if (!project.database.skills.some((skill) => skill.id === skillId)) return { ok: false, reason: "unknownSkill" };
+  const normalized = normalizeMonsterInstanceBattleState(project, instance);
+  if ((normalized.skillIds ?? []).includes(skillId) || (normalized.pendingSkillIds ?? []).includes(skillId)) return { ok: false, reason: "alreadyKnown" };
+  if (!monsterCanLearnMachineSkill(project, instance, skillId)) return { ok: false, reason: "incompatible" };
+  const next = applyLearnedMonsterSkills(project, normalized, [skillId]);
+  return { ok: true, instance: next, outcome: (next.skillIds ?? []).includes(skillId) ? "learned" : "pending" };
 }
 
 /**
@@ -444,6 +474,21 @@ export function monsterEvolutionCycleSpeciesIds(species: readonly MonsterSpecies
   };
   for (const record of species) visit(record.id);
   return [...cycled].sort();
+}
+
+/** 레벨업 뒤 자동 진화(아이템 없는 조건)가 일어날지 미리 본다 — 세션은 바꾸지 않는다. 진화 장면이 보상 반영 전에 돌 수 있게 한다. */
+export function previewMonsterEvolution(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  atLevel: number,
+): { readonly name: string; readonly fromSpeciesId: MonsterSpeciesId; readonly toSpeciesId: MonsterSpeciesId } | undefined {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+  if (!instance || !species) return undefined;
+  const evolution = selectEvolution(project, session, { ...instance, level: atLevel }, species, { instanceId, allowItemEvolution: false });
+  return evolution ? { name: monsterDisplayName(project, instance), fromSpeciesId: species.id, toSpeciesId: evolution.toSpeciesId } : undefined;
 }
 
 export function applyMonsterExperienceAndEvolution(

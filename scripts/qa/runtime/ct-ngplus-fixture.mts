@@ -1,22 +1,25 @@
 // ct-ngplus.scenario.mjs 픽스처 — 강하게 다시 하기(New Game+)와 장 표시를 편집기 도구 호출로만 저작한다.
 //
-//   node node_modules/vite-node/vite-node.mjs --script scripts/qa/runtime/ct-ngplus-fixture.mts > /tmp/ct-ngplus.json
+//   node node_modules/vite-node/dist/cli.mjs --script scripts/qa/runtime/ct-ngplus-fixture.mts > /tmp/ct-ngplus.json
 //
-// 기준은 editor-authored-demo-v3(시작 map_lantern_village (14,18), 파티 4명 모두 Lv1).
+// 기준은 editor-authored-demo-v3(빈 프로젝트의 시작 맵).
 // 시작 칸 바로 북쪽 NPC 가 주인공을 Lv7 로 올리고 장 변수를 2 로 올린 뒤 엔딩을 부른다.
 // NG+ 는 레벨(7)을 들고 가지만 장 변수는 이야기 상태라 1 로 되돌아가야 한다.
 // 엔진 계약용 최소 픽스처 — 데모 콘텐츠로 배포하거나 원격에 저장하지 않는다.
-import { readFileSync } from "node:fs";
+import { createBlankProject } from "../../../src/project/defaults";
 import { runTool } from "../../../src/editor/tools/toolRunner";
 import { deserialize, serialize } from "../../../src/project/io";
 
-export const CT_NGPLUS_NPC = { id: "ev_ct_ngplus_sage", x: 14, y: 17 } as const;
+export const CT_NGPLUS_NPC_ID = "ev_ct_ngplus_sage";
 export const CT_NGPLUS_ENDING_ID = "ending_ct_first";
 export const CT_NGPLUS_CHAPTER_VAR = "var_ct_chapter";
 export const CT_NGPLUS_LEVEL = 7;
 
-const project = deserialize(readFileSync("test/fixtures/projects/editor-authored-demo-v3.json", "utf8"));
+// 옛 데모(editor-authored-demo-v3)는 삭제된 EasyRPG 칩셋을 써서 맵이 안 떴다 — 빈 프로젝트의 시작 맵으로 짓는다.
+const project = createBlankProject();
 project.meta.title = "CT New Game+ contract";
+const START_MAP = project.startMapId;
+const START = { x: project.startPos.x, y: project.startPos.y };
 const ctx = { project };
 
 const calls: { name: string; args: Record<string, unknown> }[] = [
@@ -35,10 +38,10 @@ const calls: { name: string; args: Record<string, unknown> }[] = [
   {
     name: "place_npc",
     args: {
-      mapId: "map_lantern_village",
-      id: CT_NGPLUS_NPC.id,
-      x: CT_NGPLUS_NPC.x,
-      y: CT_NGPLUS_NPC.y,
+      mapId: START_MAP,
+      id: CT_NGPLUS_NPC_ID,
+      x: START.x,
+      y: START.y - 1,
       name: "시간의 현자",
       movement: "fixed",
       pages: [{
@@ -60,8 +63,8 @@ for (const call of calls) {
     process.exit(1);
   }
 }
-const npc = ctx.project.maps.map_lantern_village?.events.find((event) => event.id === CT_NGPLUS_NPC.id);
-if (!npc || npc.x !== CT_NGPLUS_NPC.x || npc.y !== CT_NGPLUS_NPC.y) {
+const npc = ctx.project.maps[START_MAP]?.events.find((event) => event.id === CT_NGPLUS_NPC_ID);
+if (!npc || npc.x !== START.x || npc.y !== START.y - 1) {
   console.error(`NPC 가 요청 칸에 놓이지 않았다: ${JSON.stringify(npc && { x: npc.x, y: npc.y })}`);
   process.exit(1);
 }

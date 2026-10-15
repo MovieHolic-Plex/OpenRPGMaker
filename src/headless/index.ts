@@ -102,19 +102,32 @@ export function setHeadlessPublicRoot(publicDir: string): void {
 }
 
 /** Await the tool's lazy data (reference snapshots etc.) — the browser does this in runToolAsync before run. */
-export async function prepareHeadlessTool(name: string, args: Record<string, unknown>): Promise<void> {
+export async function prepareHeadlessTool(name: string, args: Record<string, unknown>, project?: Project): Promise<void> {
   const tool = getTool(name);
-  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args)).catch(() => undefined);
+  // project: 맵에 쌓인 원본을 읽어 무엇을 준비할지 정하는 도구(edit_world_terrain·derive_world_variant)가 쓴다.
+  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args), project).catch(() => undefined);
 }
+
+/**
+ * 월드맵 키트 빌더를 노드 구현으로 꽂는다(scripts/lib/worldmapBuild.mjs). 헤드리스에는 동반 서비스(/v1/worldmap/build)가 없어
+ * 꽂지 않으면 edit_world_terrain·derive_world_variant 가 「동반 서비스가 떠 있어야 한다」로 실패한다(감사 FF6 역할극 1회차).
+ */
+export { setWorldmapBuilder as setHeadlessWorldmapBuilder } from "@/editor/worldmap/worldmapBuild";
 
 /**
  * Run a tool through the same runner as the editor (argument normalization, draft, tree repair, commit gate) and
  * return the resulting project. A rejected or read call returns the input project unchanged.
  */
-export function runHeadlessToolWithProject(project: Project, name: string, args: Record<string, unknown>): { result: ToolResult; project: Project } {
+export function runHeadlessToolWithProject(
+  project: Project,
+  name: string,
+  args: Record<string, unknown>,
+  /** 조수 실행 정책(장르 잠금 등)을 집행하게 하는 문맥 — oprn-tools.mjs --assistant. 생략하면 편집기 UI·스크립트와 같은 무정책 실행. */
+  context: { readonly assistantRun?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] } = {},
+): { result: ToolResult; project: Project } {
   const tool = getTool(name);
   if (!tool) return { result: runHeadlessTool(project, name, args), project };
-  const ctx = { project };
+  const ctx = { project, ...context };
   const result = runToolDefinition(ctx, tool, args);
   return { result, project: ctx.project };
 }

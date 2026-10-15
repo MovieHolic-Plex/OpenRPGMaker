@@ -161,6 +161,19 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+
+/**
+ * FF6 식 팀 교대 전투(2026-10-15). 팀 = 교대 묶음 — 한 번에 한 팀만 싸우고 나머지는 대기한다.
+ * free = 들어온 팀 게이지가 가득(바로 행동) · gauge = 게이지 0 에서 시작(기본) · turn = 적이 한 번 행동할 때까지 쉼.
+ */
+export type TeamSwapCost = "free" | "gauge" | "turn";
+
+/** 저작된 전투 팀. 구성원은 전투 파티에 있는 배우만 쓰인다. */
+export interface BattleTeamRecord {
+  id: string;
+  name: string;
+  actorIds: ActorId[];
+}
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
@@ -214,6 +227,12 @@ export interface DatabaseTerrainVehiclePassage {
   boat: boolean;
   ship: boolean;
   airshipLand: boolean;
+  /** 초코보(걷는 탈것): 걸을 수 없는 칸(숲 등)도 지난다. 없으면 false. (2026-10-15) */
+  chocobo?: boolean;
+  /** 광산 수레: 이 칸(레일)만 다닌다. 없으면 false. */
+  cart?: boolean;
+  /** 뗏목: 강·얕은 물만 다닌다(바다는 안 됨). 없으면 false. */
+  raft?: boolean;
 }
 
 export interface DatabaseTerrainRecord {
@@ -261,6 +280,11 @@ export interface SkillRecord {
    * `fieldAbilityX`·`fieldAbilityY` 에 적는다(황금의 태양 Move·포켓몬 비전머신·OMORI 리더 능력).
    */
   fieldCommonEventId?: string;
+  /**
+   * 잊을 수 없는 기술(포켓몬 비전머신 HM): 몬스터가 새 기술을 배우려고 칸이 모자랄 때 이 기술은 교체 후보에서 빠진다.
+   * 생략 = 잊을 수 있다(기존 동작). 배우 기술에는 영향이 없다.
+   */
+  unforgettable?: boolean;
   mpCost: SkillMpCost;
   successRate: number;
   variance: number;
@@ -298,6 +322,15 @@ export interface SkillRecord {
   actionSkill?: ActionSkillProfile;
   /** 연계기(듀얼·트리플 테크): 함께 쓰는 배우 2~3명(시전자 포함). 모두 준비돼야 쓸 수 있고 각자 MP·턴을 소비한다. */
   comboActorIds?: ActorId[];
+  /**
+   * 연계기 해금 조건(크로노 트리거식): 각 항목의 배우가 그 기술을 **배운 상태**여야 연계기가 메뉴에 열린다
+   * (예: 개구리가 「베기」, 마법사가 「불꽃」을 알아야 합체기). 비우면 조건 없음(comboActorIds 만 맞으면 열림).
+   */
+  comboRequires?: { actorId: ActorId; skillId: SkillId }[];
+  /** true 면 피해·치유 계산의 공격력·마력이 연계 참가자 전원의 합이다(시전자 한 명의 능력치가 아니라). 기술 위력은 그에 맞춰 낮게 잡는다. */
+  comboCombinedStats?: boolean;
+  /** 연계기가 발동할 때 켜지는 스위치(전투 이벤트 페이지 조건·전투 뒤 이야기 분기에 쓴다). */
+  comboSwitchId?: string;
   /** 위치 범위기: 단일 대상 스코프에서 주 대상 둘레의 같은 편도 함께 맞힌다(전투장 픽셀). */
   area?: SkillArea;
   /**
@@ -374,7 +407,18 @@ export type SkillEffect =
   /** 청마법 습득(라젠): 대상 적의 learnable 기술 중 모르는 것 하나를 배운다. 이 기술을 아는 배우는 learnable 기술에 맞아도 배운다. */
   | { kind: "learnEnemySkill" }
   /** 흉내·춤·슬롯: skillIds 중 하나를 무작위로 골라 그 기술을 대신 쓴다. */
-  | { kind: "randomSkillFrom"; skillIds: SkillId[] };
+  | { kind: "randomSkillFrom"; skillIds: SkillId[] }
+  /** 스케치(렐름): 대상 적이 가진 기술 중 하나를 무작위로 그려 시전자가 대신 쓴다(hitRate 가 곧 성공률). 스케치·폭주류 기술은 고르지 않는다. */
+  | { kind: "sketch" }
+  /**
+   * 폭주(가우): 시전자가 몬스터 하나의 모습이 되어 그 몬스터의 행동 표(enemyActions)를 따라 매 차례 자동으로 행동한다(전투 끝까지).
+   * 몬스터는 enemyIds 가 있으면 그중, 없으면 시전자가 승리 때마다 모은 폭주 목록(session.actorRageEnemyIds)에서 무작위로 고른다.
+   */
+  | { kind: "rage"; enemyIds?: string[] }
+  /** 대열 섞기: 대상 편 활성 배우의 자리와 열(앞/뒤)을 무작위로 뒤섞는다. 적 기술이 쓰면 플레이어 파티를 섞는다. */
+  | { kind: "shuffleParty" }
+  /** 강제 교대: 대상 활성 배우를 예비 배우 중 살아 있는 한 명으로 바꾼다(예비가 없으면 실패). */
+  | { kind: "forceSwitch" };
 
 /** 입력 커맨드 기술: 전투 UI 가 keys 를 순서대로 요구하고, timeLimitMs 안에 성공하면 successMultiplier, 실패하면 failMultiplier 로 위력이 바뀐다. */
 export interface SkillInputSequence {
@@ -695,6 +739,11 @@ export interface MonsterSpeciesRecord {
   expCurve?: ActorExperienceCurve;
   captureRate: number;
   skillsByLevel?: ActorLearnedSkill[];
+  /**
+   * 기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술. 생략하거나 비면 제한이 없다(기존 동작 —
+   * 아이템 하나가 모든 종에게 통한다). 값이 있으면 이 목록의 기술만 이 종에게 가르칠 수 있다(예: 파도타기는 물 종만).
+   */
+  machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
 }
 
@@ -819,6 +868,18 @@ export interface BattleEventPageRecord {
   commands: Command[];
 }
 
+/** 트레이너 전투 인물 그림 계약(에메랄드 전투 소개·볼 던지기). 값은 모두 업로드 그림(`assets.uploaded`) id 다.
+ *  - front: 상대 정면 한 장. 64x64·64x96(옛 세로 초상)·128x128·128x192 중 하나(화면 폭은 모두 128px: 64 폭 2배, 128 폭 1배).
+ *  - back: 내 뒷모습 한 장(64x64·64x96·128x128·128x192 중 하나). 생략하면 `oprn_emerald_trainer_hero_back`.
+ *  - throw / backThrow: 볼 던지기 프레임을 가로로 이은 시트. 프레임은 정사각 64 또는 128, 폭 = 프레임 x N(2~8), 높이 = 프레임(64 또는 128). 화면에는 한 칸을 128x128 로 보인다. 왼쪽부터 재생하고
+ *    마지막 프레임이 볼을 놓는 순간이다. 생략하면 던지는 동작 없이 정지 자세로 미끄러져 나간다. */
+export interface TroopTrainerSprite {
+  front: string;
+  back?: string;
+  throw?: string;
+  backThrow?: string;
+}
+
 export interface TroopRecord {
   id: TroopId;
   name: string;
@@ -828,6 +889,8 @@ export interface TroopRecord {
   uncapturable?: boolean;
   /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
   trainerBattle?: boolean;
+  /** 트레이너 전투의 인물 그림. 없으면 필드 이벤트 그래픽에서 추정(옛 방식), 그것도 없으면 슬라이드 인 연출 없이 시작한다. */
+  trainerSprite?: TroopTrainerSprite;
   previewBackgroundResourceId?: string;
   /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
   backdropAnimation?: BattleBackdropAnimation;
@@ -835,6 +898,8 @@ export interface TroopRecord {
   backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
+  /** 이 전투만의 팀 교대 비용. 생략 = 시스템 설정. */
+  teamSwapCost?: TeamSwapCost;
   battleEventPages: BattleEventPageRecord[];
   /**
    * 전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 **다음**, 결과별로 한 번 실행하는 명령.
@@ -945,8 +1010,8 @@ export interface StateRuntimeEffects {
   physicalDefenseMultiplier?: number;
   /** 실드: 마력(mind) 계열 피해에만 곱하는 방어 배율. */
   magicDefenseMultiplier?: number;
-  /** 버서크: 명령 없이 무작위 상대를 통상 공격한다. */
-  forcedAction?: "attackRandom";
+  /** 버서크(attackRandom): 명령 없이 무작위 상대를 통상 공격한다. 폭주(rage): 폭주 중인 몬스터(배틀러 rageEnemyId)의 행동 표대로 자동 행동한다. */
+  forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
@@ -967,6 +1032,13 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
+  invertHealing?: boolean;
+  /**
+   * 트랜스·변신 상태가 주는 기술: 이 상태인 동안만 전투 명령 목록에 더해지고 상태가 풀리면 사라진다(장비의 grantsSkillIds 와 같은 방식).
+   * 리미트 게이지(system.limitGauge)가 찬 뒤 limitSkill 기술로 이 상태를 걸면 FF6 트랜스(테라)가 된다. transformResourceId·배율과 같이 쓴다.
+   */
+  grantSkillIds?: string[];
   /**
    * 변신: 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 전투 그림 id(예 "party-pixel-monster4-5" 9칸 시트,
    * 걷기 칩 전투 시트), 적은 몬스터 그림 id. 능력치는 같은 상태의 배율 칸으로 바꾼다. 풀리면 원래 그림으로 돌아온다.
@@ -1708,7 +1780,13 @@ export interface SystemRecords {
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
   battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
+  /** 팀 교대 전투(2~4팀). 생략 = 기존 한 파티 전투. 한 번에 한 팀만 싸운다(교대 묶음). */
+  battleTeams?: BattleTeamRecord[];
+  /** 팀 교대 비용 기본값. 팀이 둘 이상일 때만 뜻이 있고 생략하면 "gauge". */
+  teamSwapCost?: TeamSwapCost;
   rewardPolicy?: RewardPolicy;
+  /** 포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 이 변수에 기록한다 — 이벤트가 읽어 「아깝다!」 같은 분기를 만든다. 생략 = 기록 안 함. */
+  captureShakesVariableId?: string;
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */
   opening?: CinematicSequence;
@@ -1778,6 +1856,11 @@ export interface SystemRecords {
   fonts?: import("@/project/fontRegistry").SystemFontConfig;
   /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
   genre?: GenrePackId;
+  /**
+   * 장르 잠금(옵트인). 조수·도구가 새 맵·칩셋에 허용 계열 밖 칩셋을 쓰면 거부한다 — 판정은 project/genreLock.ts 하나.
+   * 없으면 아무 동작도 바뀌지 않는다(저장 바이트 불변). 사용자의 손 편집은 막지 않는다.
+   */
+  genreLock?: import("../genreLock").GenreLock;
   /** AI 마을 생성의 물·숲·길 수치와 낱말 규칙. 생략하면 내장 기본값(예전 하드코딩과 동일 동작). */
   worldGen?: import("@/project/worldGenRules").WorldGenRules;
   /** 배우별 리미트 게이지(0~100). 생략 = 없음. */
@@ -1930,4 +2013,8 @@ export interface MonsterCareConfig {
 export interface RewardPolicy {
   participationOnly?: boolean;
   levelGapPenalty?: boolean;
+  /** 몬스터 파티 전투: 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다(경험치 나누기). 생략 = 나선 몬스터만. */
+  expShare?: boolean;
+  /** 트레이너 전 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식). 생략·0 = 적 레코드의 rewards.gold 합(저작 고정값). */
+  trainerPrizePerLevel?: number;
 }

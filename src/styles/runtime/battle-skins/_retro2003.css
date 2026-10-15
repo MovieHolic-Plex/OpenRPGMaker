@@ -518,3 +518,7 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command-text strong { font-size: 20px; }
 /* 게이지 칸이 창 오른쪽 테두리에 닿았다 — 행 오른쪽에 여백. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-party .battle-actor-status { padding-right: 8px; }
+
+/* FF6식 팀 교대 버튼(「로크 팀 교대」)은 2열 한 칸에 담기에 이름이 길어 「로크 …」 로 잘렸다.
+   교대 버튼만 한 줄 전체를 쓴다 — 다른 명령의 2열 배치는 그대로. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-command-menu.battle-standard-root .battle-command[data-testid^="actor-team-swap-"] { grid-column: 1 / -1; }

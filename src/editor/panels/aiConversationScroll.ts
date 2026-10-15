@@ -27,11 +27,23 @@ export function conversationScroll(log: HTMLElement): ConversationScroll {
     if (disposed || !follow) return;
     log.scrollTop = log.scrollHeight;
     lastAutomaticTop = log.scrollTop;
-    notice.hidden = true;
+    if (!notice.hidden) notice.hidden = true;
+  };
+  /**
+   * DOM 이 바뀌었음을 알리는 관찰자용: 프레임 시작에서 한 번만 맨 아래로 맞춘다.
+   * 왜(2026-10-15 실측, 조수 스트림 24초): 관찰자 콜백이 변경 직후 동기로 `scrollHeight` 를 읽어 매번 강제 레이아웃(174번, 합 1.0s, 최대 79ms)이었다.
+   * 프레임 시작(rAF)에서 읽으면 그 프레임의 레이아웃에 묻히고, 같은 프레임 안의 변경은 한 번으로 모인다. 그려지기 전에 맞춰지므로 눈에 보이는 차이는 없다.
+   */
+  const schedule = () => {
+    if (disposed) return;
+    if (!follow) { if (notice.hidden) notice.hidden = false; return; }
+    if (typeof requestAnimationFrame !== "function") { scroll(); return; }
+    if (frame !== undefined) return;
+    frame = requestAnimationFrame(() => { frame = undefined; scroll(); });
   };
   const changed = () => {
     if (disposed) return;
-    if (!follow) { notice.hidden = false; return; }
+    if (!follow) { if (notice.hidden) notice.hidden = false; return; }
     // Synchronous appends and streaming text use the same policy. A later image
     // resize also follows, without turning the reader's earlier position into a jump.
     scroll();
@@ -53,9 +65,9 @@ export function conversationScroll(log: HTMLElement): ConversationScroll {
     if (follow) notice.hidden = true;
     else stopFollowing();
   };
-  const observer = typeof MutationObserver === "undefined" ? null : new MutationObserver(changed);
+  const observer = typeof MutationObserver === "undefined" ? null : new MutationObserver(schedule);
   observer?.observe(log, { childList: true, subtree: true, characterData: true });
-  const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => { if (follow) changed(); });
+  const resize = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => { if (follow) schedule(); });
   const observeChildren = () => {
     resize?.disconnect();
     resize?.observe(log);

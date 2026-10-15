@@ -1475,7 +1475,7 @@ export function changeTileBody(
   const renderPreview = () => {
     const mapId = mapSel.value;
     const mapName = mapId ? project.maps[mapId]?.name || mapId : "(맵 선택)";
-    const layerLabel = layer.select.value === "upper" ? "상위" : "바닥";
+    const layerLabel = LAYER_SEGMENTS.find((segment) => segment.value === layer.select.value)?.label ?? layer.select.value;
     const tx = parseInt(x.value, 10) || 0;
     const ty = parseInt(y.value, 10) || 0;
     const parsedTile = parseInt(tile.value, 10);

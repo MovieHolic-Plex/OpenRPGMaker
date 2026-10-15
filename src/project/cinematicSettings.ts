@@ -58,6 +58,8 @@ export type GameOverSettings = {
   presentation?: DefeatPresentation;
   /** Blackout preserves progress; this is a destination, never a save rollback. */
   recovery?: RecoveryDestination;
+  /** 귀환(outcome recover) 때 잃는 소지금 비율(0~100). 생략·0 = 잃지 않음. 포켓몬식 블랙아웃은 50. */
+  goldLossPercent?: number;
   sequence?: CinematicSequence;
   title?: string;
   message?: string;

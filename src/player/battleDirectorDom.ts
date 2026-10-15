@@ -15,7 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
-import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows } from "@/player/emeraldBattleNarration";
+import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -23,6 +23,8 @@ export interface BattleDirectorState {
   readonly step: BattleDirectorStep;
   /** Presentation-only first trainer beat; send-out shares `intro` but has no portrait. */
   readonly trainerIntroduction?: true;
+  /** 트레이너 전투의 볼 던지기 비트: foe = 상대가 몬스터를 내보낸다, hero = 내가 내보낸다(emeraldTrainerIntro 가 인물을 그린다). */
+  readonly trainerSendOut?: "foe" | "hero";
   readonly lines: readonly string[];
   readonly activeActorRecordId?: string;
   readonly targetId?: string;
@@ -77,8 +79,10 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
 export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorState | undefined {
   const lead = snapshot.actors.find((actor) => !actor.defeated && actor.monsterInstanceId);
   if (!lead) return undefined;
+  const trainer = store.getCurrent().database.troops.find((entry) => entry.id === snapshot.troopId)?.trainerBattle === true;
   return {
     step: "intro",
+    ...(trainer ? { trainerSendOut: "hero" as const } : {}),
     lines: [`가라, ${lead.name}!`],
     activeActorRecordId: snapshot.activeActorId,
   };
@@ -325,6 +329,57 @@ export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   return windowNode;
 }
 
+/** 3세대 문장 출력 속도: 한 글자당 ms(약 2프레임). 문장 하나는 최대 1.2초 비트 안에 끝난다. */
+const MESSAGE_TYPE_MS = 28;
+const messageTypers = new WeakMap<HTMLElement, { timer: number; finish: () => void }>();
+
+/** 글자 단위로 나오는 중이면 한 번에 끝낸다. 끝낸 게 있으면 true — 호출자는 이 확인키를 여기서 소비한다. */
+export function completeBattleMessageTyping(windowNode: HTMLElement): boolean {
+  const typer = messageTypers.get(windowNode);
+  if (!typer) return false;
+  typer.finish();
+  return true;
+}
+
+function typewriterAllowed(windowNode: HTMLElement): boolean {
+  if (!windowNode.closest('.battle-scene[data-monster-style="emerald"]')) return false;
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") return true;
+  return !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function startMessageTypewriter(windowNode: HTMLElement, rows: readonly HTMLElement[]): void {
+  const parts = rows.map((row) => {
+    const full = row.textContent ?? "";
+    const shown = document.createElement("span");
+    const rest = document.createElement("span");
+    rest.className = "battle-message-untyped";
+    rest.textContent = full;
+    row.replaceChildren(shown, rest);
+    return { full, shown, rest };
+  });
+  let rowIndex = 0;
+  let charIndex = 0;
+  const finish = (): void => {
+    const typer = messageTypers.get(windowNode);
+    if (typer) window.clearInterval(typer.timer);
+    messageTypers.delete(windowNode);
+    for (const part of parts) { part.shown.textContent = part.full; part.rest.textContent = ""; }
+    delete windowNode.dataset.messageTyping;
+  };
+  windowNode.dataset.messageTyping = "true";
+  const timer = window.setInterval(() => {
+    if (!windowNode.isConnected) { finish(); return; }
+    const part = parts[rowIndex];
+    if (!part) { finish(); return; }
+    charIndex += 1;
+    part.shown.textContent = part.full.slice(0, charIndex);
+    part.rest.textContent = part.full.slice(charIndex);
+    if (charIndex >= part.full.length) { rowIndex += 1; charIndex = 0; }
+    if (rowIndex >= parts.length) finish();
+  }, MESSAGE_TYPE_MS);
+  messageTypers.set(windowNode, { timer, finish });
+}
+
 export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDirectorState): void {
   windowNode.dataset.battleDirectorStep = state.step;
   let cursor = windowNode.querySelector<HTMLElement>(".battle-message-cursor");
@@ -340,12 +395,24 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
     lines.className = "battle-message-lines";
     windowNode.append(lines);
   }
+  // 같은 문장이면 다시 만들지 않는다(단계가 acting→impact 로 바뀌어도) — 새로 만들면 글자 출력이 처음부터 다시 시작한다.
+  const key = state.lines.join("\u0002");
+  if (windowNode.dataset.messageKey === key && lines.childElementCount === state.lines.length) return;
+  windowNode.dataset.messageKey = key;
+  const previous = messageTypers.get(windowNode);
+  if (previous) { window.clearInterval(previous.timer); messageTypers.delete(windowNode); delete windowNode.dataset.messageTyping; }
   lines.replaceChildren();
+  const rows: HTMLElement[] = [];
   for (const line of state.lines) {
     const row = document.createElement("div");
     row.className = "battle-message-line";
     row.textContent = line;
     lines.append(row);
+    rows.push(row);
+  }
+  // 에메랄드 문장 창만 글자 단위로 나온다(명령 대기 「무엇을 할까?」와 결과 문장은 즉시).
+  if ((state.step === "acting" || state.step === "intro" || state.step === "impact") && rows.length > 0 && typewriterAllowed(windowNode)) {
+    startMessageTypewriter(windowNode, rows);
   }
 }
 
@@ -433,7 +500,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   // battle-reward-reveal(opacity 0→1, delay) 애니메이션이 매번 0초로 리셋돼 행이
   // 반투명에 갇히거나(경험치) 아예 안 보였다(골드 — 적대 리뷰 3차 실측).
   const rows = rewardRows(snapshot);
-  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}`).join("|")}`;
+  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}${row.stats ? `#${row.stats.mode}` : ""}`).join("|")}`;
   if (cards.dataset.rowsKey !== rowsKey) {
     cards.dataset.rowsKey = rowsKey;
     cards.replaceChildren();
@@ -451,6 +518,21 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
       value.className = "battle-result-reward-value";
       value.textContent = row.value;
       item.append(label, icon, value);
+      const stats = row.stats;
+      if (stats) {
+        const box = document.createElement("div");
+        box.className = "battle-levelup-stats";
+        box.dataset.statsMode = stats.mode;
+        for (const line of stats.lines) {
+          const name = document.createElement("span");
+          name.textContent = line.label;
+          const amount = document.createElement("span");
+          amount.className = "battle-levelup-stat-value";
+          amount.textContent = line.value;
+          box.append(name, amount);
+        }
+        item.append(box);
+      }
       if (row.kind === "exp") {
         const bar = document.createElement("div");
         bar.className = "battle-result-exp-bar";
@@ -506,7 +588,10 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   if (emeraldNarrationActive()) {
     const all = [...cards.querySelectorAll<HTMLElement>(".battle-result-reward-row")];
     const shown = Math.min(all.length, Math.max(1, revealStage));
-    for (const [index, item] of all.entries()) item.dataset.emeraldPage = index >= shown - 2 && index < shown ? "true" : "false";
+    for (const [index, item] of all.entries()) {
+      item.dataset.emeraldPage = index >= shown - 2 && index < shown ? "true" : "false";
+      item.dataset.emeraldLast = index === shown - 1 ? "true" : "false";
+    }
   }
   // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
   // 재동기화(revealStage 진행) 때마다 그 3개가 확인 버튼/계속 프롬프트 뒤로 밀려나, 화면
@@ -829,7 +914,8 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
     case "item":
       return `${subject} ${withJosa(itemName(command.itemId), "을/를")} 사용했다!`;
     case "capture":
-      return `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
+      // 던지는 쪽은 트레이너(나)다 — 몬스터 이름을 주어로 쓰면 「새싹토가 구슬을 던졌다」가 된다(2026-10-15 진단 C1).
+      return emeraldNarrationActive() ? `${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!` : `${subject} ${withJosa(itemName(command.captureItemId), "을/를")} 던졌다!`;
     case "defend":
       return `${subject} 방어 태세를 취했다.`;
     case "escape":
@@ -859,6 +945,13 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
     case "missingTarget":
       return "포획할 대상이 없다.";
     case undefined:
+      if (emeraldNarrationActive()) {
+        const shakes = result.shakes ?? 3;
+        return shakes <= 0 ? "안 돼! 몬스터가 구슬에서 빠져나왔다!"
+          : shakes === 1 ? "아앗! 잡은 줄 알았는데!"
+          : shakes === 2 ? "아깝다! 거의 잡을 뻔했는데!"
+          : "아아, 조금만 더 했으면 잡았는데!";
+      }
       return "아앗, 아깝다! 몬스터가 구슬에서 빠져나왔다!";
   }
 }
@@ -956,7 +1049,7 @@ export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
   return rewardRows(snapshot).length;
 }
 
-function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
+function rewardRows(snapshot: BattleSnapshot): readonly EmeraldResultRow[] {
   // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
   // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
   if (emeraldNarrationActive()) return emeraldResultRows(snapshot, skillName);
