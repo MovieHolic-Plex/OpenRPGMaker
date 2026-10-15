@@ -3,7 +3,6 @@
 //   격리 netns 에서 dev 서버와 함께 돌린다(이 박스는 크로미움이 ERR_NETWORK_CHANGED 로 백지가 난다):
 //     unshare -rn bash -c 'ip link set lo up; (npm run dev:worktree -- --port 9901 &) ; sleep 25; \
 //        QA_BASE_URL=http://127.0.0.1:9901 LABEL=before node scripts/qa/perf-ai-lag.mjs'
-//   또는 scripts/qa/perf-ai-lag-netns.sh (dev 서버까지 한 번에).
 //
 // 시나리오(SCENARIOS=콤마 목록, 기본 전부). 각 시나리오는 같은 페이지·같은 96×80 마을 위에서 차례로 돈다:
 //   idle        조수 접힘, 아무것도 안 함
