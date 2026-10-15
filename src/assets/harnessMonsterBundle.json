@@ -16,6 +16,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 2
       }
     },
     "aqualing": {
@@ -31,6 +35,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 3
       }
     },
     "leafling": {
@@ -46,6 +54,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 4
       }
     },
     "gustchick": {
@@ -80,6 +92,10 @@
           "frames": 4,
           "frameMs": 220
         }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 5
       }
     },
     "wickworm": {

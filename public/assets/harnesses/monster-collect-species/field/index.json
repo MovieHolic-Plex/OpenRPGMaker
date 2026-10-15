@@ -8,6 +8,22 @@
   "zaptoe": {
    "sheet": 1,
    "index": 1
+  },
+  "sparkit": {
+   "sheet": 1,
+   "index": 2
+  },
+  "aqualing": {
+   "sheet": 1,
+   "index": 3
+  },
+  "leafling": {
+   "sheet": 1,
+   "index": 4
+  },
+  "pipbug": {
+   "sheet": 1,
+   "index": 5
   }
  }
 }
