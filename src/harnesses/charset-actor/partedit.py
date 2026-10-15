@@ -94,13 +94,15 @@ def segment(key, overrides=None):
             off = C.bob_of(frames[(d, 1)], rows) if f != 1 else 0
             x0, y0, x1, y1 = bbox(rows)
             bx = boxes.get(d)
+            bxs = [] if not bx else (list(bx) if isinstance(bx[0], (tuple, list)) else [bx])
+            bx = bxs[0] if bxs else None
             lab = [[T] * FW for _ in range(FH)]
             for y in range(FH):
                 for x in range(FW):
                     c = rows[y][x]
                     if c == T:
                         continue
-                    if bx and bx[0] <= x <= bx[2] and bx[1] + off <= y <= bx[3] + off:
+                    if any(b[0] <= x <= b[2] and b[1] + off <= y <= b[3] + off for b in bxs):
                         lab[y][x] = 'F'
                     elif y < t_start + off:
                         lab[y][x] = 'H'
@@ -113,7 +115,7 @@ def segment(key, overrides=None):
             labels[(d, f)] = lab
             op = {(x, y) for y in range(FH) for x in range(FW) if rows[y][x] != T}
             zh, zt, zg = set(), set(), set()
-            face_y0 = (bx[1] if bx else t_start - 4) + off
+            face_y0 = (min(b[1] for b in bxs) if bxs else t_start - 4) + off
             hx = [x for y in range(y0, t_start + off) for x in range(FW) if rows[y][x] != T]
             hx0, hx1 = (min(hx), max(hx)) if hx else (x0, x1)
             for y in range(max(1, y0 - 3), face_y0):
@@ -151,6 +153,36 @@ SPECS = {
                              'up': {'vl': [(5, 22), (6, 22), (5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 22), (18, 22), (17, 23), (18, 23), (17, 24), (18, 24)]},
                              'right': {'near': [(8, 22), (9, 22), (8, 23), (9, 23), (8, 24), (9, 24)]}, 'left': {'near': [(14, 22), (15, 22), (14, 23), (15, 23), (14, 24), (15, 24)]}}),
 }
+
+
+SPECS.update({
+    'People3:7': dict(face={'down': (9, 14, 14, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 11, 17), 'up': None},
+                      t_start=18, waist=26, shoe_top=30, skin='',
+                      hands={'down': {'vl': [(4, 23), (5, 23), (6, 23), (4, 24), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (19, 23), (17, 24), (18, 24), (19, 24)]},
+                             'up': {'vl': [(4, 23), (5, 23), (6, 23), (4, 24), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (19, 23), (17, 24), (18, 24), (19, 24)]},
+                             'right': {'near': [(8, 23), (9, 23), (8, 24), (9, 24)]}, 'left': {'near': [(14, 23), (15, 23), (14, 24), (15, 24)]}}),
+    'Actor3:3': dict(face={'down': (8, 13, 15, 17), 'right': (12, 13, 16, 17), 'left': (7, 13, 11, 17), 'up': None},
+                     t_start=18, waist=27, shoe_top=29, skin='ruv'),
+    'Actor1:6': dict(face={'down': (8, 15, 15, 17), 'right': (12, 15, 17, 17), 'left': (6, 15, 12, 17), 'up': None},
+                     t_start=18, waist=26, shoe_top=30, skin=''),
+    'Actor3:2': dict(face={'down': (8, 14, 15, 16), 'right': (11, 14, 16, 16), 'left': (7, 14, 12, 16), 'up': None},
+                     t_start=18, waist=26, shoe_top=29, skin=''),
+    'Actor4:6': dict(face={'down': (9, 12, 15, 18), 'right': (13, 12, 17, 18), 'left': (6, 12, 11, 18), 'up': None},
+                     t_start=19, waist=25, shoe_top=29, skin=''),
+    'People3:4': dict(face={'down': (9, 14, 14, 17), 'right': (12, 14, 16, 17), 'left': (8, 14, 12, 17), 'up': None},
+                      t_start=18, waist=26, shoe_top=29, skin='D',
+                      hands={'down': {'vl': [(5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'up': {'vl': [(5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'right': {'near': [(8, 23), (9, 23), (8, 24), (9, 24)]}, 'left': {'near': [(14, 23), (15, 23), (14, 24), (15, 24)]}}),
+    'People3:3': dict(face={'down': (9, 14, 14, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 12, 17), 'up': None},
+                      t_start=18, waist=24, shoe_top=29, skin='J',
+                      hands={'down': {'vl': [(5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'up': {'vl': [(5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'right': {'near': [(9, 24), (10, 24)]}, 'left': {'near': [(12, 24), (13, 24)]}}),
+})
+# 로봇은 눈 줄 상자를 둘로 쪼개 눈만 고정한다(사이의 살색은 금속으로 칠할 수 있다). People4:4 의 좁힌 판.
+SPECS['People4:4'] = dict(SPECS['People4:4'], face={'down': [(9, 14, 10, 16), (13, 14, 14, 16)], 'right': [(13, 14, 15, 16)], 'left': [(8, 14, 10, 16)], 'up': None})
+SPECS['Actor3:0'] = SPECS['Actor3:0']
 
 
 # 분할이 틀린 베이스는 여기서 보정한다(마스크 시트를 눈으로 본 뒤 적는다). 키 = 'Actor3:0' 꼴.
@@ -197,6 +229,8 @@ def anchor_image(key, scale=6):
     for i, d in enumerate(('down', 'up', 'right', 'left')):
         im.alpha_composite(C.frame_rgba(pal, bframes[(d, 1)]), (2 + i * 28, 1))
         for (kind, side), col in cols.items():
+            if kind == 'held' and 'hands' not in spec:
+                continue
             (x, y), mode, cells = anchor_for(nk, bframes, spec, kind, side, d, 1)
             if kind == 'held':
                 for cx, cy in cells:
@@ -242,7 +276,7 @@ def row_extent(rows, y):
 
 def hand_cells(key, bframes, d, f, slot, spec):
     """베이스의 손 칸(서 있는 그림에서 사람이 정한 칸)을 걷기 프레임마다 픽셀 대응으로 따라간다. → set((x,y))"""
-    std = set(map(tuple, spec['hands'][d][slot])) if slot in spec['hands'][d] else set()
+    std = set(map(tuple, spec.get('hands', {}).get(d, {}).get(slot, ()))) if True else set()
     if f == 1 or not std:
         return std
     corr, bob = C.correspondence(bframes[(d, 1)], bframes[(d, f)])
@@ -260,6 +294,8 @@ def anchor_for(key, bframes, spec, kind, side, d, f):
     if kind == 'held':
         std_slot = slot if slot in ('vl', 'vr') else 'near'
         # 먼 손(옆모습에서 보이지 않는 손)은 가까운 손의 줄에서 몸 뒤쪽 가장자리를 앵커로 쓴다
+        if 'hands' not in spec:
+            raise EditError('이 베이스는 손 앵커가 없어 held 장비를 못 쓴다')
         near = hand_cells(key, bframes, d, f, std_slot, spec) if slot != 'far' else hand_cells(key, bframes, d, f, 'near', spec)
         if slot == 'far':
             y = sorted(c[1] for c in near)[len(near) // 2]
@@ -300,6 +336,9 @@ def anchor_table(key):
     spec = SPECS[nk]
     lines = ['종류별 앵커(서 있는 그림 기준 grip 칸 좌표 x,y 와 모드). 스프라이트의 grip 칸이 이 칸에 겹친다. 걷기 프레임은 앵커가 손·몸과 함께 움직인다.']
     for kind, sides in (('held', 'RL'), ('hip', 'RL'), ('back', 'R')):
+        if kind == 'held' and 'hands' not in spec:
+            lines.append('  kind=held: 이 베이스는 손 칸이 정의되지 않았다(held 장비 금지, hip·back 만 쓴다)')
+            continue
         for side in sides:
             row = []
             for d in ('down', 'up', 'right', 'left'):
