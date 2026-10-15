@@ -1390,6 +1390,29 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: 장비 탭 「마석 성장」 카드(`databaseEquipmentEsperFields.ts`)·적 탭 「마석 AP」·스킬 카드 「전투당 1회」. AI: `upsert_equipment`(apGrants·apRate·levelUpBonus, 모르는 스킬/키는 거절)·`upsert_enemy.rewards.ap`·`upsert_skill.oncePerBattle`·`upsert_equipment_slot`. 능력 색인 레시피 `esper-growth`.
 - 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-growth-probe.mts`(실제 도구 → 전투 → 세션 정산 → 세이브 왕복).
 
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15, 작업자 A)
+
+전부 **값이 있을 때만** 동작한다. 새 효과 종류는 `SkillEffect` 합집합 끝에 붙었고 피해 공식에서는 피해 0 의 support 로 접힌다(`battleSpecialEffects.ts` `isSpecialSkillEffectKind`).
+
+- **스케치**(`{kind:"sketch"}`) — `applySkillCast` 가 hitRate 를 굴린 뒤 대상 적의 `skillIds`·행동 표 기술 중 하나(`sketchableSkills`: 스케치·폭주·무작위·청마법 습득 제외)를 골라 `castPickedSkill`
+  (흉내 `randomSkillFrom` 과 같은 함수)로 **시전자 능력치**로 쓴다. 그린 기술의 MP 는 내지 않는다.
+- **폭주**(`{kind:"rage", enemyIds?}`) — `beginRage` 가 몬스터 하나를 골라 `MutableBattler.rageEnemyId` 에 새기고 `state_rage`(`forcedAction:"rage"`)를 건다. 이후 그 배우는 명령 메뉴 없이
+  (`berserkAttackCommand` → `rageCommand`: gauge 로 준비됨·메뉴 도중·strict 라운드 시작 세 경로 모두) 몬스터 행동 표 한 줄을 골라 자동 행동한다. 폭주 명령은 **MP·PP·파티 게이지·HP 대가를 내지 않는다**
+  (`rageActive` 이고 자기가 배운 기술이 아닐 때). 상태를 풀면(정화) 폭주도 끝나고, 전투가 끝나면 사라진다(`removeOnBattleEnd`). 후보: `effect.enemyIds` 가 있으면 그것, 없으면 `PlaySession.actorRageEnemyIds[배우]`.
+  목록 적립: 폭주 기술을 아는 배우가 있는 전투에서만 `BattleRewardsSnapshot.rageEnemyIds`(쓰러뜨린 몬스터 레코드 id)가 실리고 `applyRageEnemiesToSession` 이 폭주 기술을 아는 **살아남은** 배우에게 더한다(배우당 64종).
+  세이브 `actorRageEnemyIds`(`saveSlots.ts` 저장·복원·검증, 없으면 키를 쓰지 않는다). 목록이 비면 「폭주할 몬스터를 아직 모른다」 안내만 하고 상태는 걸지 않는다.
+- **대열 섞기**(`shuffleParty`)·**강제 교대**(`forceSwitch`) — 적(또는 어느 편이든)의 기술. 배우 편이 대상일 때만 작동한다. 섞기는 활성 배우의 **자리 순서**와 앞/뒤 열(`MutableBattler.row` 는 이제 가변)을 뒤섞고,
+  교대는 살아 있는 예비 배우 한 명과 `switchActiveActor`(타임라인 `switch`)로 바꾼다. 예비가 없으면 「교대할 동료가 없다」. 자리에서 빠진 배우의 strict 라운드 명령은 `drainStrictActions` 가 버린다
+  (`activeActorIds.includes` 검사)이고, gauge 의 열린 메뉴는 `restoreMenuAfterEnemy` 가 거둔다. 예비 배우가 있으려면 트룹 `activeSlots` 가 파티 수보다 작아야 한다.
+- **좀비**(`StateRuntimeEffects.invertHealing`, 기본 상태 `state_zombie`) — `invertsHealingForStates`. 회복 스킬(`applySkillHit`)·회복 아이템(`applyItemRecovery`)의 **HP** 회복은 같은 양의 피해가 되고
+  (타임라인 `damage`), 재생 틱(`runStateUpkeep`)은 지속 피해처럼 HP 1 아래로 깎지 않는다. MP 회복·부활 기술은 그대로다. 이미 쓰러진 대상은 바뀌지 않는다.
+- **트랜스**(리미트 게이지 + `StateRuntimeEffects.grantSkillIds`) — 새 런타임 게이지는 없다. `system.limitGauge` 가 받은 피해·가한 타격으로 차고, `limitSkill` 기술이 `transformResourceId`·배율·`grantSkillIds`
+  를 가진 상태를 건다. `grantedSkillIdsForStates` + `syncStateGrantedSkills`(상태가 바뀔 때마다)가 그 기술을 전투 기술 목록에 더했다가 상태가 풀리면 자기가 더한 것만 걷어 낸다(배운 기술은 불변).
+- **블리츠·검기·룬·분석·적 반격** — 새 코드 없이 기존 기능으로 된다는 것을 헤드리스 프로브로 증명했다: `inputSequence`(성공 ×2 > 입력 없음 > 실패 ×0.5, 입력 창은 `battleDom` 의 `openInputPrompt`),
+  `chargeTurns`(명령 직후 피해 0·`charging` 예고 → 발동), `battleGimmick: absorb`(마법 피격 흡수), `scan`(분석), `EnemyRecord.reactions`(물리 피격 직후 적 반격).
+- 증거: `scripts/qa/ff6-fix-a-effects-probe.mts`(실제 도구 → 실제 전투 → 세션 정산 → 세이브 왕복).
+- 아트 필요 목록(미작성 — 3/4 관문 미보정): 마기텍 아머 전투 그림, 제국 병사 전투 그림, 폭주 몬스터 모습 전환(지금은 상태 오라만).
+
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
 전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.

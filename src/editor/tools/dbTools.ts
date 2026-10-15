@@ -501,7 +501,8 @@ const stateRuntimeEffectsSchema = objectSchema({
   freezesGauge: booleanSchema("스톱 — ATB 게이지가 멈추고 행동하지 못한다"),
   physicalDefenseMultiplier: numberSchema("프로텍트 — 공격(attack) 계열 피해에만 곱하는 방어 배율(예 2 = 반감보다 단단)"),
   magicDefenseMultiplier: numberSchema("실드 — 마력(mind) 계열 피해에만 곱하는 방어 배율"),
-  forcedAction: { type: "string", enum: ["attackRandom"], description: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
+  forcedAction: { type: "string", enum: ["attackRandom", "rage"], description: "attackRandom=버서크(명령 없이 무작위 상대 통상 공격), rage=폭주(폭주 기술이 정한 몬스터의 행동 표대로 자동 행동). 폭주 기본 상태 id state_rage" },
+  grantSkillIds: stringArraySchema("트랜스·변신 — 이 상태인 동안만 전투 명령 목록에 더해지는 기술 id(최대 12). 리미트 기술(limitSkill)로 이 상태를 걸면 FF6 트랜스"),
   elementRates: { ...rateMapSchema, description: "이 상태인 동안 덮어쓸 속성 등급(속성 id → A~E)" },
   incapacitates: booleanSchema("석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다"),
   damageToMpRate: numberSchema("받는 HP 피해 중 MP 에서 대신 깎는 비율 0~1(예 0.5 = 절반을 MP 로)"),
@@ -513,6 +514,7 @@ const stateRuntimeEffectsSchema = objectSchema({
   reraisePercent: numberSchema("리레이즈 % 1~100 — 쓰러지면 최대 HP 의 이 비율로 한 번 일어나고 상태는 사라진다(아군만)"),
   transformResourceId: stringSchema("변신 — 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 9칸 시트 \"party-pixel-<칩>\"(예 party-pixel-monster4-5 이끼 골렘) 또는 전투 시트 id, 적은 몬스터 그림 id. 능력치는 같은 상태의 공격·방어·민첩 배율로. 풀리면 원래 그림. 빈 문자열이면 해제"),
   doomTurns: numberSchema("선고 1~9 — 걸린 뒤 자기 차례가 이만큼 오면 전투 불능. 상태를 풀면 멈춘다"),
+  invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
 });
 
 const itemRecordSchema = objectSchema({
@@ -713,14 +715,19 @@ const skillRecordSchema = objectSchema({
         "scan",
         "learnEnemySkill",
         "randomSkillFrom",
+        "sketch",
+        "rage",
+        "shuffleParty",
+        "forceSwitch",
       ],
       description:
-        "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위",
+        "steal=적 stealItems 훔치기, scan=라이브라, learnEnemySkill=청마법 습득, randomSkillFrom=skillIds 중 무작위, sketch=대상 적의 기술 하나를 그려 쓰기(렐름), rage=몬스터 모습으로 폭주해 전투 끝까지 자동 행동(가우; 승리 때 쓰러뜨린 몬스터가 목록에 쌓이고 enemyIds 로 고정도 가능), shuffleParty=대상 편 활성 배우의 자리·열 섞기(적 기술용), forceSwitch=대상 활성 배우를 살아 있는 예비 배우와 강제 교대(적 기술용)",
     },
     statistic: stringSchema(),
     affects: stringSchema(),
     switchId: stringSchema(),
     skillIds: stringArraySchema("randomSkillFrom 후보 기술 id"),
+    enemyIds: stringArraySchema("rage 로 고정할 몬스터(적) id. 비우면 승리 때 모은 목록에서 무작위"),
   }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
@@ -1819,12 +1826,33 @@ const upsertSkill: ToolDefinition = {
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
+    validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
     const auto = autoChoreographyNote(draft, record);
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** FF6 특수 효과(스케치·폭주·대열 섞기·강제 교대)의 저작 오류는 거부하고 흔한 빠짐은 알린다. */
+function validateSkillSpecialEffect(draft: Project, record: SkillRecord, warnings: string[]): void {
+  const effect = record.effect;
+  if (effect.kind === "rage") {
+    for (const enemyId of effect.enemyIds ?? []) {
+      if (!draft.database.enemies.some((enemy) => enemy.id === enemyId)) {
+        throw new ToolError(`effect.enemyIds '${enemyId}' 는 없는 적입니다 — 먼저 upsert_enemy 로 만들거나 list_database(enemies) 로 id 를 확인하세요. 비우면 승리 때 모은 목록에서 고릅니다.`);
+      }
+    }
+    if (!draft.database.states.some((state) => state.id === "state_rage")) {
+      warnings.push("state_rage(폭주) 상태가 프로젝트에 없어 폭주가 상태 없이 전투 끝까지 이어집니다. 해제·표시가 필요하면 upsert_state({id:\"state_rage\", runtimeEffects:{forcedAction:\"rage\"}}) 로 만드세요.");
+    }
+    if (record.scope !== "self") warnings.push("폭주 기술은 scope \"self\" 가 자연스럽습니다(시전자가 몬스터 모습이 됨).");
+  }
+  if (effect.kind === "sketch" && record.scope !== "enemy") warnings.push("스케치 기술은 그릴 적을 고르므로 scope \"enemy\"(단일 적) 가 자연스럽습니다.");
+  if ((effect.kind === "shuffleParty" || effect.kind === "forceSwitch") && record.scope === "self") {
+    warnings.push(`${effect.kind} 는 적이 플레이어 파티를 흔드는 기술입니다 — scope 를 \"enemy\"/\"allEnemies\"(상대편) 로 하고 적의 행동(upsert_enemy.actions)에 넣으세요.`);
+  }
+}
 
 /** 계약·연출 레코드·고정 레시피가 없는 스킬은 기전·속성·범위로 자동 배정된 연출을 쓴다. 그 결과를 알려 준다(바꾸려면 retroChoreographyId). */
 function autoChoreographyNote(draft: Project, record: SkillRecord): string | undefined {
@@ -2006,8 +2034,15 @@ const upsertState: ToolDefinition = {
       throw new ToolError(`state.battleAura '${String(rawAura)}' 는 없는 오라입니다. 가능: ${BATTLE_AURA_IDS.join(", ")}, none`);
     }
     const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
+    const warnings: string[] = [];
+    for (const skillId of record.runtimeEffects?.grantSkillIds ?? []) {
+      if (!draft.database.skills.some((skill) => skill.id === skillId)) {
+        throw new ToolError(`runtimeEffects.grantSkillIds '${skillId}' 는 없는 기술입니다 — 먼저 upsert_skill 로 만든 뒤 다시 부르세요.`);
+      }
+    }
+    if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
-    return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 

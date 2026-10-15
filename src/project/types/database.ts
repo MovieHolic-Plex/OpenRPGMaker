@@ -374,7 +374,18 @@ export type SkillEffect =
   /** 청마법 습득(라젠): 대상 적의 learnable 기술 중 모르는 것 하나를 배운다. 이 기술을 아는 배우는 learnable 기술에 맞아도 배운다. */
   | { kind: "learnEnemySkill" }
   /** 흉내·춤·슬롯: skillIds 중 하나를 무작위로 골라 그 기술을 대신 쓴다. */
-  | { kind: "randomSkillFrom"; skillIds: SkillId[] };
+  | { kind: "randomSkillFrom"; skillIds: SkillId[] }
+  /** 스케치(렐름): 대상 적이 가진 기술 중 하나를 무작위로 그려 시전자가 대신 쓴다(hitRate 가 곧 성공률). 스케치·폭주류 기술은 고르지 않는다. */
+  | { kind: "sketch" }
+  /**
+   * 폭주(가우): 시전자가 몬스터 하나의 모습이 되어 그 몬스터의 행동 표(enemyActions)를 따라 매 차례 자동으로 행동한다(전투 끝까지).
+   * 몬스터는 enemyIds 가 있으면 그중, 없으면 시전자가 승리 때마다 모은 폭주 목록(session.actorRageEnemyIds)에서 무작위로 고른다.
+   */
+  | { kind: "rage"; enemyIds?: string[] }
+  /** 대열 섞기: 대상 편 활성 배우의 자리와 열(앞/뒤)을 무작위로 뒤섞는다. 적 기술이 쓰면 플레이어 파티를 섞는다. */
+  | { kind: "shuffleParty" }
+  /** 강제 교대: 대상 활성 배우를 예비 배우 중 살아 있는 한 명으로 바꾼다(예비가 없으면 실패). */
+  | { kind: "forceSwitch" };
 
 /** 입력 커맨드 기술: 전투 UI 가 keys 를 순서대로 요구하고, timeLimitMs 안에 성공하면 successMultiplier, 실패하면 failMultiplier 로 위력이 바뀐다. */
 export interface SkillInputSequence {
@@ -959,8 +970,8 @@ export interface StateRuntimeEffects {
   physicalDefenseMultiplier?: number;
   /** 실드: 마력(mind) 계열 피해에만 곱하는 방어 배율. */
   magicDefenseMultiplier?: number;
-  /** 버서크: 명령 없이 무작위 상대를 통상 공격한다. */
-  forcedAction?: "attackRandom";
+  /** 버서크(attackRandom): 명령 없이 무작위 상대를 통상 공격한다. 폭주(rage): 폭주 중인 몬스터(배틀러 rageEnemyId)의 행동 표대로 자동 행동한다. */
+  forcedAction?: "attackRandom" | "rage";
   /** 이 상태인 동안 속성 등급을 덮어쓴다(속성 id → A~E). */
   elementRates?: Record<string, ActorRateGrade>;
   /** 석화처럼 전투 불능으로 친다 — 아군 전원이 쓰러졌거나 이 상태면 패배. 이 상태로는 행동하지 못한다. */
@@ -981,6 +992,13 @@ export interface StateRuntimeEffects {
   reraisePercent?: number;
   /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
   doomTurns?: number;
+  /** 좀비: 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다(FF6 좀비). MP 회복은 그대로. */
+  invertHealing?: boolean;
+  /**
+   * 트랜스·변신 상태가 주는 기술: 이 상태인 동안만 전투 명령 목록에 더해지고 상태가 풀리면 사라진다(장비의 grantsSkillIds 와 같은 방식).
+   * 리미트 게이지(system.limitGauge)가 찬 뒤 limitSkill 기술로 이 상태를 걸면 FF6 트랜스(테라)가 된다. transformResourceId·배율과 같이 쓴다.
+   */
+  grantSkillIds?: string[];
   /**
    * 변신: 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 전투 그림 id(예 "party-pixel-monster4-5" 9칸 시트,
    * 걷기 칩 전투 시트), 적은 몬스터 그림 id. 능력치는 같은 상태의 배율 칸으로 바꾼다. 풀리면 원래 그림으로 돌아온다.
