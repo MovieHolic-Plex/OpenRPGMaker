@@ -1,0 +1,1628 @@
+[
+ {
+  "run": "run1",
+  "i": 1,
+  "query": "전투 파티 에스퍼 마법 배우기 성장",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 14,
+  "query": "장비 마법 습득 AP",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 15,
+  "query": "에스퍼",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 16,
+  "query": "비행선",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 17,
+  "query": "보이는 적 심볼",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 18,
+  "query": "월드맵",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 19,
+  "query": "트룹 전투",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 20,
+  "query": "파티 편성 선택",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 21,
+  "query": "컷신",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 22,
+  "query": "장비 마법 습득",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 23,
+  "query": "에스퍼",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 24,
+  "query": "비행선",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 25,
+  "query": "보이는 적",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 26,
+  "query": "월드맵",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 27,
+  "query": "트룹",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 28,
+  "query": "파티 편성",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 29,
+  "query": "컷신",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 30,
+  "query": "전투 이벤트",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 31,
+  "query": "place_vehicle",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 32,
+  "query": "place_field_enemy",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 33,
+  "query": "author_worldmap_structure",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 34,
+  "query": "list_worldmap_themes",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 35,
+  "query": "edit_world_terrain",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 36,
+  "query": "월드맵 지형 대륙 만들기",
+  "exact": false,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 37,
+  "query": "edit_world_terrain",
+  "exact": true,
+  "called": [
+   "edit_world_terrain",
+   "author_worldmap_structure",
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 40,
+  "query": "create_map",
+  "exact": true,
+  "called": [
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 41,
+  "query": "새 맵 만들기 create map",
+  "exact": false,
+  "called": [
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 43,
+  "query": "duplicate_map",
+  "exact": true,
+  "called": [
+   "duplicate_map",
+   "create_map",
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 46,
+  "query": "get_database_records",
+  "exact": true,
+  "called": [
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 51,
+  "query": "upsert_troop",
+  "exact": true,
+  "called": [
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 52,
+  "query": "set_party",
+  "exact": true,
+  "called": [
+   "upsert_troop",
+   "set_party",
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 58,
+  "query": "장비 착용 시 기술 배움 성장",
+  "exact": false,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 59,
+  "query": "learnSkill 장비 기술 학습 AP",
+  "exact": false,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 60,
+  "query": "read_game_systems",
+  "exact": true,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 62,
+  "query": "upsert_equipment 장비 기술 부여 grantsSkills",
+  "exact": false,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 63,
+  "query": "upsert_equipment",
+  "exact": true,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run1",
+  "i": 64,
+  "query": "script_cutscene",
+  "exact": true,
+  "called": [
+   "upsert_equipment",
+   "script_cutscene",
+   "place_vehicle",
+   "place_field_enemy"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 1,
+  "query": "에스퍼 마법 배우기 장착 파티 선택 월드맵 전투 트룹 보이는 적",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 5,
+  "query": "에스퍼 마법 습득 장착",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 6,
+  "query": "파티 선택 4명 고르기",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 7,
+  "query": "월드맵 파멸 전후 두 버전",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 8,
+  "query": "마기텍 아머 비행선 오프닝 컷신",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 9,
+  "query": "다중 파티 분할 방어전",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 10,
+  "query": "에스퍼 마법 습득 장착",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 11,
+  "query": "파티 선택 4명 고르기",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 12,
+  "query": "월드맵 파멸 전후 두 버전",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 13,
+  "query": "마기텍 아머 비행선 오프닝 컷신",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 14,
+  "query": "다중 파티 분할 방어전",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 24,
+  "query": "worldmap 월드맵 생성",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 25,
+  "query": "배우 추가 파티원 6명",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 26,
+  "query": "기술 학습 스킬 습득 장비 장착 성장",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 27,
+  "query": "트룹 전투 적 구성",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 28,
+  "query": "컷신 연출 오프닝",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 29,
+  "query": "배우 만들기 upsert_actor",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 30,
+  "query": "스킬 만들기 upsert_skill",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 31,
+  "query": "새 맵 만들기 create_map",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 32,
+  "query": "에스퍼 소환수 마법석",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 33,
+  "query": "파티 선택 메뉴 캐릭터 고르기 선택지",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 34,
+  "query": "필드 적 시각 보이는 적 추격",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 35,
+  "query": "비공정 비행선 탈것",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 36,
+  "query": "월드맵 두 버전 파멸 전후 맵 전환",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 37,
+  "query": "upsert_actor",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 38,
+  "query": "upsert_skill",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 68,
+  "query": "set_party",
+  "exact": true,
+  "called": [
+   "set_party",
+   "upsert_enemy",
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 73,
+  "query": "upsert_troop",
+  "exact": true,
+  "called": [
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run2",
+  "i": 74,
+  "query": "script_cutscene_staged",
+  "exact": true,
+  "called": [
+   "upsert_troop",
+   "place_field_enemy",
+   "script_cutscene"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 1,
+  "query": "battle troop enemy encounter",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 4,
+  "query": "party select choose members recruit",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 5,
+  "query": "esper summon equip learn magic",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 6,
+  "query": "split party multiple teams defense",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 7,
+  "query": "world ruin before after two versions",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 8,
+  "query": "airship opening cutscene",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 9,
+  "query": "map create",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 25,
+  "query": "upsert_actor",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 26,
+  "query": "upsert_skill",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 27,
+  "query": "upsert_troop",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 28,
+  "query": "upsert_event",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 29,
+  "query": "create_map",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 30,
+  "query": "changeParty",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 31,
+  "query": "upsert_enemy",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 32,
+  "query": "add_companion",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 33,
+  "query": "set_world_map",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 34,
+  "query": "story flag",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 35,
+  "query": "equipment accessory",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 36,
+  "query": "learn skill",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 37,
+  "query": "party formation menu",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 38,
+  "query": "configure_companion_rules",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 39,
+  "query": "upsert_actor",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 40,
+  "query": "upsert_equipment",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 41,
+  "query": "equipment skill grant",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 42,
+  "query": "magic learning rate AP",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 43,
+  "query": "upsert_class",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 44,
+  "query": "upsert_item",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 45,
+  "query": "upsert_troop_battle_page",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 46,
+  "query": "battle event page",
+  "exact": false,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 47,
+  "query": "script_cutscene",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 48,
+  "query": "set_variable game variable",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 49,
+  "query": "declare_story_flag",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 50,
+  "query": "set_project_settings",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 52,
+  "query": "upsert_equipment",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 53,
+  "query": "upsert_troop",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 54,
+  "query": "upsert_enemy",
+  "exact": true,
+  "called": [
+   "create_map",
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 60,
+  "query": "upsert_equipment",
+  "exact": true,
+  "called": [
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 61,
+  "query": "upsert_item",
+  "exact": true,
+  "called": [
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 62,
+  "query": "upsert_skill",
+  "exact": true,
+  "called": [
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 63,
+  "query": "upsert_equipment",
+  "exact": true,
+  "called": [
+   "upsert_actor",
+   "upsert_skill",
+   "upsert_equipment",
+   "upsert_enemy",
+   "upsert_troop"
+  ]
+ },
+ {
+  "run": "run3",
+  "i": 88,
+  "query": "change party add remove lead actor event command",
+  "exact": false,
+  "called": []
+ }
+]

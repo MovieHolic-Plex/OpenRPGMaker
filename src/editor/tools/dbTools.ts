@@ -84,6 +84,8 @@ import { expandShortParameterCurves } from "./parameterCurveInput";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
+import { closestDeclaredKey } from "./argRepair";
+import { DB_FIELD_REJECT_HINTS, repairRecordArgs } from "./dbRecordAliases";
 
 const DATABASE_RECORD_COLLECTIONS = [
   "actors",
@@ -904,8 +906,11 @@ function rejectUnknownFields(value: unknown, schema: JsonSchema, label: string, 
   for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
     const childSchema = schema.properties?.[key];
     if (!childSchema) {
+      const recordLabel = label.split(/[.[]/u)[0]!;
+      const near = closestDeclaredKey(key, allowed);
+      const why = DB_FIELD_REJECT_HINTS[recordLabel]?.[key];
       throw new ToolError(
-        `${label}.${key}는 허용되지 않는 필드입니다. 허용 필드: ${allowed.join(", ")}. 최소 예시: ${JSON.stringify(example)}`,
+        `${label}.${key}는 허용되지 않는 필드입니다.${near ? ` '${key}' 는 '${label.includes(".") ? label.slice(0, label.lastIndexOf(".") + 1) : `${label}.`}${near}' 입니다.` : ""}${why ? ` ${why}.` : ""} 허용 필드: ${allowed.join(", ")}. 최소 예시: ${JSON.stringify(example)}`,
         { code: "unknown-db-field" }
       );
     }
@@ -923,6 +928,7 @@ function mergeRecord<T extends { id: string; name: string }>(
   schema: RecordSchema,
   example: Record<string, unknown>,
   requiredForNew: readonly string[] = ["name"],
+  missingHint?: (key: string) => string | undefined,
 ): T | (Partial<T> & Pick<T, "id" | "name">) {
   const base = requireRecordId(patch, label);
   rejectUnknownFields(patch, schema, label, { [label]: example });
@@ -930,7 +936,8 @@ function mergeRecord<T extends { id: string; name: string }>(
   if (!existing) {
     for (const key of requiredForNew) {
       if ((patch as Record<string, unknown>)[key] === undefined) {
-        throw new ToolError(`${label}.${key}가 신규 레코드에 필요합니다. 최소 예시: ${JSON.stringify({ [label]: example })}`, { code: "missing-db-field" });
+        const hint = missingHint?.(key);
+        throw new ToolError(`${label}.${key}가 신규 레코드에 필요합니다.${hint ? ` ${hint}` : ""} 최소 예시: ${JSON.stringify({ [label]: example })}`, { code: "missing-db-field" });
       }
     }
   }
@@ -1343,14 +1350,16 @@ const upsertEnemy: ToolDefinition = {
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
   }),
-  run(draft, args): ToolExecResult {
+  run(draft, rawArgs): ToolExecResult {
+    const repaired = repairRecordArgs("enemy", "enemy", rawArgs, enemyRecordSchema, upsertEnemy.parameters);
+    const args = repaired.args;
     validateEnemyCombatPatch(args.enemy);
     validateEnemyReactions(draft, args.enemy);
     requirePositiveTp((args.enemy as { rewards?: { tp?: unknown } } | undefined)?.rewards?.tp, "enemy.rewards.tp");
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     rejectUnknownEnemyReferences(draft, args.enemy);
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
-    const warnings: string[] = [];
+    const warnings: string[] = [...repaired.notes];
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
@@ -1452,7 +1461,7 @@ const upsertTroop: ToolDefinition = {
     const enemyIds = new Set(draft.database.enemies.map((enemy) => enemy.id));
     const missing = [...new Set(record.enemyIds.filter((enemyId) => !enemyIds.has(enemyId)))];
     if (missing.length > 0) {
-      throw new ToolError(`존재하지 않는 enemyId: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.enemies)}`, { code: "enemy-not-found" });
+      throw new ToolError(`존재하지 않는 enemyId: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.enemies)}. 없는 적은 upsert_enemy 로 먼저 만든 뒤(성공 결과를 확인) 트룹에 넣으세요.`, { code: "enemy-not-found" });
     }
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
@@ -1686,10 +1695,15 @@ const upsertActor: ToolDefinition = {
   description: "아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
   mode: "write",
   parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero", maxLevel: 99 }),
-  run(draft, args): ToolExecResult {
-    const warnings: string[] = [];
+  run(draft, rawArgs): ToolExecResult {
+    const repaired = repairRecordArgs("actor", "actor", rawArgs, actorRecordSchema, upsertActor.parameters);
+    const args = repaired.args;
+    const warnings: string[] = [...repaired.notes];
     expandShortParameterCurves(args.actor, "actor", warnings);
-    const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
+    const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"],
+      (key) => key === "classId"
+        ? `classId 는 직업 id 입니다 — 지금 있는 직업: ${knownIds(draft.database.classes, 12)}. 새 직업이 필요하면 upsert_class 로 먼저 만드세요(직업이 곧 능력치 곡선·전투 명령).`
+        : undefined);
     const actorPatch = args.actor as Record<string, unknown>;
     if (typeof actorPatch.appearanceId === "string"
       && !draft.database.characterAppearances?.some((appearance) => appearance.id === actorPatch.appearanceId)) {

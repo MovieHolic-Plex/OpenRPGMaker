@@ -90,6 +90,7 @@ import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
+import { closestDeclaredKey } from "./argRepair";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
 import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
@@ -1330,9 +1331,11 @@ const encounterConditionsSchema: JsonSchema = {
     minPartyLevel: { type: "integer" },
     maxPartyLevel: { type: "integer" },
     region: rectSchema,
+    locationId: { type: "string", description: "이 맵의 로케이션(구역) id 또는 이름. 그 구역 안에서만 이 항목이 나온다 — 풀숲 구역 같은 곳에만 야생을 걸 때(구역을 옮기면 조건도 따라온다). region(생좌표 사각형)보다 우선." },
     timePhase: { type: "string", enum: TIME_PHASES },
     season: { type: "string", enum: SEASONS },
   },
+  additionalProperties: false,
 };
 
 const encounterEntrySchema: JsonSchema = {
@@ -1343,6 +1346,7 @@ const encounterEntrySchema: JsonSchema = {
     conditions: encounterConditionsSchema,
   },
   required: ["troopId", "weight"],
+  additionalProperties: false,
 };
 
 const fieldGraphicSchema: JsonSchema = {
@@ -1413,8 +1417,36 @@ function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): En
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
 }
 
+/**
+ * 조우표 항목·조건의 모르는 키를 거절한다(2026-10-15 포켓몬 감사 0단계: locationId·minLevel·weather·shiny 를 조용히 버려
+ * 맵 전체 조우로 저장됐다). 알려진 칸은 스키마에 선언해 저장하고, 아직 없는 기능은 이유를 말하고 거절한다.
+ */
+const ENCOUNTER_UNSUPPORTED_HINTS: Readonly<Record<string, string>> = {
+  minLevel: "야생 레벨 범위(minLevel/maxLevel)는 조우표에 아직 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  maxLevel: "야생 레벨 범위(minLevel/maxLevel)는 조우표에 아직 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  level: "조우표 항목에는 레벨 칸이 없다 — 야생 레벨은 그 트룹의 적 level 로 정한다",
+  weather: "날씨 조건은 조우표에 아직 없다(날씨를 보는 것은 낚시 규칙의 weatherKinds 뿐) — 비 오는 날 전용 맵은 날씨 이벤트로 스위치를 켜고 conditions.switchId 로 거는 우회를 쓴다",
+  shiny: "이로치(색이 다른 개체) 개념은 아직 없다",
+  terrain: "타일 종류(풀숲 등) 조건은 아직 없다 — 풀숲 구역을 맵 로케이션으로 만들고 conditions.locationId 로 거세요",
+  terrainTag: "타일 종류(풀숲 등) 조건은 아직 없다 — 풀숲 구역을 맵 로케이션으로 만들고 conditions.locationId 로 거세요",
+  location: "구역 조건의 이름은 locationId 입니다",
+};
+
+function rejectUnknownEncounterKeys(input: Record<string, unknown>, allowed: readonly string[], label: string, mapId: string): void {
+  for (const key of Object.keys(input)) {
+    if (allowed.includes(key)) continue;
+    const near = closestDeclaredKey(key, allowed);
+    const why = ENCOUNTER_UNSUPPORTED_HINTS[key];
+    throw new ToolError(
+      `${label}.${key} 는 조우표가 받지 않는 칸입니다(조용히 버리면 맵 전체 조우가 되므로 거절합니다).${near ? ` '${key}' 는 '${near}' 입니다.` : ""}${why ? ` ${why}.` : ""} 받는 칸: ${allowed.join(", ")}`,
+      { code: "unknown-encounter-field", mapId },
+    );
+  }
+}
+
 function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry {
   const entry = requireRecordValue(value, label);
+  rejectUnknownEncounterKeys(entry, ["troopId", "weight", "conditions"], label, map.id);
   const troopId = stringField(entry, "troopId", label);
   assertKnownTroop(draft, troopId);
   const weight = integerField(entry, "weight", label);
@@ -1425,7 +1457,17 @@ function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label
 
 function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry["conditions"] {
   const input = requireRecordValue(value, label);
+  rejectUnknownEncounterKeys(input, ["switchId", "variableId", "atLeast", "minPartyLevel", "maxPartyLevel", "region", "locationId", "timePhase", "season"], label, map.id);
   const conditions: NonNullable<EncounterTableEntry["conditions"]> = {};
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    const location = locationId ? resolveLocation(map, locationId) : undefined;
+    if (!location) {
+      const known = mapLocations(map).map((entry) => `${entry.name}(${entry.id})`).join(", ") || "(없음 — create_map_location 으로 구역을 먼저 만드세요)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, { code: "location-not-found", mapId: map.id });
+    }
+    conditions.locationId = location.id;
+  }
   if (input.switchId !== undefined) {
     conditions.switchId = stringField(input, "switchId", label);
     if (!draft.switches.some((sw) => sw.id === conditions.switchId)) {
@@ -2118,6 +2160,7 @@ const setEncounterTable: ToolDefinition = {
       encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "entries"],
+    additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);

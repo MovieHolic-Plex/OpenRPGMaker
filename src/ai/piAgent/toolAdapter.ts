@@ -208,7 +208,7 @@ export function scopeFindToolsResult(result: ToolResult, callable: (name: string
   return {
     ...result,
     summary: inside.length > 0
-      ? `편집기 툴 ${inside.length}개 발견: ${inside.map(nameOf).filter(Boolean).join(", ")}${missing}. ${note}`
+      ? `편집기 툴 ${inside.length}개 발견: ${inside.map((match) => { const name = nameOf(match); const why = match && typeof match === "object" ? (match as { why?: unknown }).why : undefined; return name && typeof why === "string" && why ? `${name} [${why}]` : name; }).filter(Boolean).join(", ")}${missing}. ${note}`
       : `이 실행에서 호출할 수 있는 툴 중 맞는 것이 없습니다${missing}. ${note}`,
     data: { ...data, matches: inside },
   };

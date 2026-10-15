@@ -548,7 +548,7 @@ const setProjectSettings: ToolDefinition = {
 
 const setParty: ToolDefinition = {
   name: "set_party",
-  description: "파티 구성만 바꾼다. scope=start는 새 게임 시작 파티와 세션 파티를 함께 설정하고, scope=session은 현재 세션 파티만 설정한다. actorIds는 실제 actors id 목록이며 빈 배열도 허용한다.",
+  description: "파티 구성만 바꾼다. scope=start는 새 게임 시작 파티와 세션 파티를 함께 설정하고, scope=session은 현재 세션 파티만 설정한다. scope 를 생략하면 start 다. actorIds는 실제 actors id 목록이며 빈 배열도 허용한다. 호출 예시: {\"actorIds\":[\"actor_hero\",\"actor_mage\"]}",
   mode: "write",
   domains: ["database", "system"],
   parameters: {
@@ -557,12 +557,13 @@ const setParty: ToolDefinition = {
       scope: { type: "string", enum: ["start", "session"], description: "start=새 게임 정본 + 현재 세션, session=현재 세션만" },
       actorIds: { type: "array", items: { type: "string" }, description: "파티 순서대로 나열한 실제 actor id" },
     },
-    required: ["scope", "actorIds"],
+    required: ["actorIds"],
     additionalProperties: false,
   },
+  invalidArgsExample: { actorIds: ["actor_hero", "actor_mage"] },
   run(draft, args): ToolExecResult {
-    const scope = args.scope === "start" || args.scope === "session" ? args.scope : undefined;
-    if (!scope || !Array.isArray(args.actorIds)) throw new ToolError("scope(start/session)와 actorIds 배열이 필요합니다.", { code: "invalid-args" });
+    const scope = args.scope === undefined ? "start" : args.scope === "start" || args.scope === "session" ? args.scope : undefined;
+    if (!scope || !Array.isArray(args.actorIds)) throw new ToolError("scope(start/session, 생략하면 start)와 actorIds 배열이 필요합니다. 예시: {\"actorIds\":[\"actor_hero\"]}", { code: "invalid-args" });
     const actorIds = args.actorIds.map(String);
     const duplicates = actorIds.filter((id, index) => actorIds.indexOf(id) !== index);
     if (duplicates.length > 0) throw new ToolError(`파티에 같은 actor id를 중복으로 넣을 수 없습니다: ${[...new Set(duplicates)].join(", ")}`, { code: "duplicate-actor" });
@@ -573,6 +574,7 @@ const setParty: ToolDefinition = {
     return {
       summary: `${scope === "start" ? "시작 파티" : "현재 세션 파티"} 설정 — ${actorIds.length}명`,
       data: { scope, actorIds },
+      ...(args.scope === undefined ? { warnings: ["scope 를 생략해 start(새 게임 시작 파티 + 현재 세션 파티)로 설정했습니다. 현재 세션 파티만 바꾸려면 scope:\"session\" 을 쓰세요."] } : {}),
     };
   },
 };

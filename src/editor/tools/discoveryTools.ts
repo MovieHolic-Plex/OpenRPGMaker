@@ -1,4 +1,5 @@
 import { activeTools } from "./toolRegistry";
+import { TOOL_ALIASES, aliasTermHit } from "./toolAliases";
 import { ToolError, type ToolDefinition, type ToolDomain, type ToolExecResult } from "./types";
 
 const TOOL_DOMAINS = ["core", "tile", "map", "event", "database", "world", "quest", "battle", "system"] as const;
@@ -55,9 +56,143 @@ function unknownNames(exact: readonly ToolDefinition[], named: ReadonlySet<strin
   return missing.length > 0 ? `. 없는 툴 이름: ${missing.join(", ")}` : "";
 }
 
+// ── 순위 매기기(2026-10-15) ─────────────────────────────────────────────────────────────────────
+// 예전 매처는 「질의 낱말이 설명 낱말에 부분 문자열로 들면 +5」 라서 map·battle·create 같은 흔한 낱말이 긴 설명
+// (author_dungeon·import_region_reference)을 아무 질의에나 끌어올렸다. 감사 역할극 코퍼스 적중 48%.
+// 지금은 (1) 낱말 희귀도(IDF) 가중 (2) 이름 조각 일치 우대 (3) 용어 별칭 사전 (4) 첫 문장 우대로 매긴다.
+
+interface IndexedTool {
+  readonly tool: ToolDefinition;
+  readonly index: number;
+  readonly nameParts: readonly string[];
+  readonly firstSentence: ReadonlySet<string>;
+  readonly body: ReadonlySet<string>;
+  readonly length: number;
+}
+
+export interface ToolSearchHit {
+  readonly tool: ToolDefinition;
+  readonly score: number;
+  readonly why: string;
+}
+
+const STOP_WORDS = new Set(["the", "a", "an", "of", "to", "and", "or", "for", "in", "on", "is", "it", "with", "한", "를", "을", "이", "가", "은", "는", "의", "에", "도"]);
+
+function indexTools(pool: readonly ToolDefinition[]): IndexedTool[] {
+  return pool.map((tool, index) => {
+    const lowered = tool.description.toLocaleLowerCase();
+    const end = lowered.search(/[.。]\s|\n/u);
+    const firstText = end < 0 ? lowered : lowered.slice(0, end);
+    return {
+      tool, index,
+      nameParts: tool.name.toLocaleLowerCase().split("_").filter(Boolean),
+      firstSentence: new Set(words(firstText)),
+      body: new Set(words(lowered)),
+      length: lowered.length,
+    };
+  });
+}
+
+function queryTerms(query: string): string[] {
+  const out = new Set<string>();
+  for (const word of words(query)) {
+    for (const part of word.split(/[_-]+/u)) {
+      if (part.length >= 2 && !STOP_WORDS.has(part)) out.add(part);
+    }
+  }
+  return [...out];
+}
+
+/** 설명 낱말 중 한국어 조사가 붙은 형태(「스킬을」)까지 같은 낱말로 본다. */
+function wordsHit(set: ReadonlySet<string>, term: string): "exact" | "fuzzy" | undefined {
+  if (set.has(term)) return "exact";
+  if (term.length < 2) return undefined;
+  for (const candidate of set) {
+    if (candidate.length >= 2 && (candidate.includes(term) || (candidate.length >= 2 && term.includes(candidate) && /[\u3131-\uD79D]/u.test(candidate)))) return "fuzzy";
+  }
+  return undefined;
+}
+
+export function searchTools(pool: readonly ToolDefinition[], query: string): ToolSearchHit[] {
+  const queryLower = query.trim().toLocaleLowerCase();
+  if (!queryLower) return [];
+  const indexed = indexTools(pool);
+  const terms = queryTerms(queryLower);
+  const df = new Map<string, number>();
+  for (const entry of indexed) {
+    for (const term of terms) {
+      if (entry.body.has(term) || entry.nameParts.includes(term)) df.set(term, (df.get(term) ?? 0) + 1);
+    }
+  }
+  const idf = (term: string) => Math.log(1 + indexed.length / (1 + (df.get(term) ?? 0)));
+  const byName = new Map(indexed.map((entry) => [entry.tool.name, entry]));
+  const bonus = new Map<string, { score: number; labels: string[] }>();
+  for (const alias of TOOL_ALIASES) {
+    const hit = alias.terms.find((term) => aliasTermHit(queryLower, term));
+    if (hit === undefined) continue;
+    alias.tools.forEach((toolName, position) => {
+      if (!byName.has(toolName)) return;
+      const slot = bonus.get(toolName) ?? { score: 0, labels: [] };
+      slot.score = Math.min(30, slot.score + Math.max(6, 16 - 3 * position));
+      if (!slot.labels.includes(alias.label ?? hit)) slot.labels.push(alias.label ?? hit);
+      bonus.set(toolName, slot);
+    });
+  }
+  const hits: ToolSearchHit[] = [];
+  for (const entry of indexed) {
+    const name = entry.tool.name;
+    let score = 0;
+    const nameHits: string[] = [];
+    const bodyHits: string[] = [];
+    if (name.includes(queryLower) && queryLower.length >= 3) { score += 30; nameHits.push(queryLower); }
+    for (const term of terms) {
+      if (entry.nameParts.includes(term)) { score += 5 + idf(term); nameHits.push(term); continue; }
+      if (term.length >= 3 && entry.nameParts.some((part) => part.startsWith(term) || (part.length >= 4 && term.startsWith(part)))) { score += 2.5; nameHits.push(term); }
+      const first = wordsHit(entry.firstSentence, term);
+      if (first) { score += idf(term) * (first === "exact" ? 2.4 : 1.4); bodyHits.push(term); continue; }
+      const rest = wordsHit(entry.body, term);
+      if (rest) { score += idf(term) * (rest === "exact" ? 1.0 : 0.5); bodyHits.push(term); }
+    }
+    if (queryLower.length >= 3 && entry.tool.description.toLocaleLowerCase().includes(queryLower)) score += 6;
+    score /= 1 + 0.12 * Math.log(Math.max(40, entry.length) / 40);
+    const alias = bonus.get(name);
+    if (alias) score += alias.score;
+    if (score <= 0) continue;
+    const reasons: string[] = [];
+    if (alias) reasons.push(`별칭 ${alias.labels.slice(0, 2).join("/")}`);
+    if (nameHits.length > 0) reasons.push(`이름 ${[...new Set(nameHits)].slice(0, 2).join("·")}`);
+    if (bodyHits.length > 0 && reasons.length < 2) reasons.push(`설명 ${[...new Set(bodyHits)].slice(0, 2).join("·")}`);
+    hits.push({ tool: entry.tool, score, why: reasons.join(", ") });
+  }
+  return hits.sort((left, right) => right.score - left.score || byName.get(left.tool.name)!.index - byName.get(right.tool.name)!.index);
+}
+
+function bigrams(text: string): Set<string> {
+  const compact = text.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, "");
+  const out = new Set<string>();
+  for (let i = 0; i + 1 < compact.length; i += 1) out.add(compact.slice(i, i + 2));
+  return out;
+}
+
+/** 아무 낱말도 안 맞았을 때 — 글자 쌍(bigram) 겹침이 가장 큰 툴 3개와 그 이유. */
+export function nearestTools(pool: readonly ToolDefinition[], query: string, count = 3): ToolSearchHit[] {
+  const q = bigrams(query);
+  if (q.size < 2) return [];
+  return pool
+    .map((tool) => {
+      const target = bigrams(`${tool.name.replace(/_/g, " ")} ${tool.description.slice(0, 160)}`);
+      let shared = 0;
+      for (const gram of q) if (target.has(gram)) shared += 1;
+      return { tool, score: shared / q.size, why: "가장 가까운 글자 일치" };
+    })
+    .filter((hit) => hit.score >= 0.34)
+    .sort((left, right) => right.score - left.score)
+    .slice(0, count);
+}
+
 export const FIND_TOOLS: ToolDefinition = {
   name: "find_tools",
-  description: "현재 라운드에 노출되지 않은 전체 편집기 기능을 검색한다. 기능 키워드나 정확한 툴 이름을 보내면 다음 라운드에서 호출할 수 있는 툴 스키마를 찾는다. 검색 결과는 다음 라운드에 추가된다. 결과가 없으면 다른 기능어나 영문 툴 이름으로 다시 검색한다.",
+  description: "현재 라운드에 노출되지 않은 전체 편집기 기능을 검색한다. 기능 키워드(한국어·영어 모두 가능)나 정확한 툴 이름을 보내면 다음 라운드에서 호출할 수 있는 툴 스키마를 찾는다. 결과마다 왜 골랐는지 이유가 붙는다. 검색 결과는 다음 라운드에 추가된다. 결과가 없으면 가장 가까운 3개를 돌려주니 이름을 보고 다시 검색한다. 이미 아는 툴 이름이면 이름만 보내라(그 툴 스키마 하나만 온다).",
   mode: "read",
   parameters: {
     type: "object",
@@ -82,17 +217,23 @@ export const FIND_TOOLS: ToolDefinition = {
     // 정확한 이름은 domain 필터보다 우선한다 — 모델은 domain 을 자주 틀리게 짚는다(evaluate_village_look 을 map 으로).
     const named = new Set(words(query));
     const exact = activeTools().filter((tool) => tool.name !== FIND_TOOLS.name && named.has(tool.name));
-    const candidates = (exact.length > 0 ? exact : pool)
-      .map((tool, index) => ({ tool, index, score: matchScore(tool.name, tool.description, query) }))
-      .filter((candidate) => candidate.score > 0)
-      .sort((left, right) => right.score - left.score || left.index - right.index)
-      .slice(0, limit)
-      .map(({ tool }) => ({ name: tool.name, mode: tool.mode, domains: tool.domains ?? [], description: tool.description, parameters: tool.parameters }));
+    let hits: ToolSearchHit[];
+    let nearest = false;
+    if (exact.length > 0) {
+      hits = exact.map((tool) => ({ tool, score: 100, why: "이름 일치" })).slice(0, limit);
+    } else {
+      hits = searchTools(pool, query).slice(0, limit);
+      if (hits.length === 0) { hits = nearestTools(pool, query); nearest = hits.length > 0; }
+    }
+    const candidates = hits.map(({ tool, why }) => ({ name: tool.name, mode: tool.mode, domains: tool.domains ?? [], why, description: tool.description, parameters: tool.parameters }));
+    const label = (hit: ToolSearchHit) => (hit.why && exact.length === 0 ? `${hit.tool.name} [${hit.why}]` : hit.tool.name);
     return {
       summary: candidates.length > 0
-        ? `편집기 툴 ${candidates.length}개 발견: ${candidates.map((candidate) => candidate.name).join(", ")}${unknownNames(exact, named)}`
+        ? nearest
+          ? `"${query}"에 정확히 맞는 툴은 없어 가장 가까운 ${candidates.length}개를 돌려줍니다: ${hits.map(label).join(", ")}. 맞지 않으면 기능어를 바꾸거나 영문 툴 이름으로 다시 검색하세요.`
+          : `편집기 툴 ${candidates.length}개 발견: ${hits.map(label).join(", ")}${unknownNames(exact, named)}`
         : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`,
-      data: { matches: candidates },
+      data: { matches: candidates, ...(nearest ? { nearest: true } : {}) },
     };
   },
 };
