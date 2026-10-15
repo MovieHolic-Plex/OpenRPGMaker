@@ -104,7 +104,7 @@ async function playOne(host: HTMLElement, project: Project, entry: EmeraldEvolut
   };
   try {
     await sleep(250, controller.signal);
-    await say(`어라? ${withJosa(entry.name, '이/가')} 모습이…!`, 900);
+    await say(`어라? ${entry.name}의 모습이…!`, 900);
     // 실루엣 점멸: 간격이 점점 줄어든다(400ms → 60ms). 흰 실루엣일 때 모양이 바뀐다.
     playBattleCue('victory');
     const swaps = [420, 360, 300, 250, 200, 160, 130, 100, 80, 70, 60, 60, 60, 60];

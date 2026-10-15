@@ -28,7 +28,7 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
-import { monsterSpeciesById, type MonsterExperienceResult } from "@/project/monsterCollection";
+import { previewMonsterEvolution } from "@/project/monsterCollection";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 
 export type ResolvedMonsterBattleParty = {
@@ -297,6 +297,16 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
+              // 레벨업으로 진화할 몬스터는 결과 문장을 다 본 뒤, 전투 화면이 걷히기 전에 3세대 진화 장면을 본다(규칙 반영은 아래에서 그대로).
+              const evolving = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const preview = previewMonsterEvolution(project, session, entry.instanceId, entry.toLevel);
+                  return preview ? [preview] : [];
+                })
+                : [];
+              const evolutionDone = evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : Promise.resolve();
+              void evolutionDone.then(() => {
+              if (!current()) { abort(); return; }
               const transition = newTransition();
               exitTransition = transition;
               void transition.exit().then(async () => {
@@ -327,16 +337,8 @@ export async function playBattle(
                 } else {
                   exitBattleAudio(project, session, savedAudio);
                 }
-                const rewardSink: { monsterResults?: readonly MonsterExperienceResult[] } = {};
                 applyBattleRewardsToSession(session,
-                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project, rewardSink);
-                // 레벨업으로 진화한 몬스터는 3세대처럼 진화 장면을 보여 준다(규칙은 위에서 이미 확정됐다 — 장면은 연출뿐).
-                if (!terminalDefeat && isEmeraldMonsterStyle(project)) {
-                  const evolved = (rewardSink.monsterResults ?? []).flatMap((entry) => entry.evolution?.ok === true
-                    ? [{ name: session.monsterInstances[entry.instanceId]?.nickname || monsterSpeciesById(project, entry.evolution.fromSpeciesId)?.name || "몬스터", fromSpeciesId: entry.evolution.fromSpeciesId, toSpeciesId: entry.evolution.toSpeciesId }]
-                    : []);
-                  if (evolved.length > 0) await playEmeraldEvolutions(host, project, evolved, signal).catch(() => undefined);
-                }
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }
@@ -351,6 +353,7 @@ export async function playBattle(
                   resolve(null);
                 } else resolve(result);
               }).catch(fail);
+              });
             } catch (error) {
               fail(error);
             }

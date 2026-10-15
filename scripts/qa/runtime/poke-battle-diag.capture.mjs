@@ -346,6 +346,7 @@ async function scenarioEvolve() {
   await waitCmd(60000);
   await fightToEnd({ maxTurns: 40, skillIndex: 0 });
   await page.waitForTimeout(1500);
+  if (await present("emerald-evolution")) { await mark("evolution-scene"); await page.waitForFunction(() => !document.querySelector('[data-testid="emerald-evolution"]'), undefined, { timeout: 30000 }).catch(() => {}); await page.waitForTimeout(600); }
   await mark("after-battle-field");
   await recStop();
   step("evolve", enc, JSON.stringify(await live().then((l) => l.party.map((m) => `${m.speciesId} Lv${m.level}`))));
