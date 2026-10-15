@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T06:46:16.031Z",
+  "generatedAt": "2026-10-15T22:45:02.653Z",
   "metrics": {
-    "hexLiterals": 2436,
+    "hexLiterals": 2456,
     "important": 300,
     "undefinedVars": 61,
     "globalRootFiles": 10,
@@ -61,7 +61,7 @@
       "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 2,
       "src/styles/database/tabs-b-assistant-panel/31-map-run-card.css": 6,
       "src/styles/database/tabs-b-assistant-panel/33-store-card.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 44,
+      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 52,
       "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css": 2,
       "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 6,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
@@ -120,7 +120,7 @@
       "src/styles/runtime/actionHud.css": 4,
       "src/styles/runtime/battle/01-scene-base.css": 14,
       "src/styles/runtime/battle/02-intro-reveal.css": 2,
-      "src/styles/runtime/battle/03-vxace-status-nodes.css": 41,
+      "src/styles/runtime/battle/03-vxace-status-nodes.css": 53,
       "src/styles/runtime/battle/04-anim-damage-layers.css": 5,
       "src/styles/runtime/battle/06-damage-flash-targeting.css": 13,
       "src/styles/runtime/battle/07-640-scene-turn-ribbon.css": 26,

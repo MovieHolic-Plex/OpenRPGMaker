@@ -37,6 +37,7 @@
     "db-enemy-pixel-skill-count",
     "db-eq-stack",
     "db-field-error",
+    "db-field-label",
     "db-field-readonly",
     "db-genre-lock-field",
     "db-life-chips",
