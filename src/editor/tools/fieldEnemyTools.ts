@@ -19,6 +19,7 @@ import { GRAPHIC_SPEC_SCHEMA } from './schemaShapes';
 import { battlersForFieldGraphic, fieldGraphicForBattler, fieldReadyBattlerIds } from './fieldEnemyGraphics';
 import { charsetGraphic } from './eventCompile';
 import { decodeCharsetFrameIndex } from '@/assets/easyrpgRtp';
+import { isGeneratedMonsterSprite } from '@/assets/generatedMonsterSprites';
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 const OPPOSITE: Record<Dir, Dir> = { up: 'down', down: 'up', left: 'right', right: 'left' };
@@ -167,7 +168,7 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       '필드 맵에 「보이는 적」(심볼 인카운터, 크로노 트리거·FF 심볼식) 한 마리를 놓는다. 걸어 다니는 적에게 닿으면 그 자리에서 전투가 열리고, 이기면 사라지며 맵을 나갔다 들어와도 그대로 사라져 있다(승리 스위치). 패배는 기존 게임 오버 경로, 도망치면 몇 초 기절해 같은 전투가 바로 다시 열리지 않는다. 느낌표(alert)는 chase 는 시야에 든 순간, stationary·patrol 은 닿기 직전에 뜬다. ' +
       'behavior: stationary=제자리 보초(주인공이 닿거나 부딪히면 전투) · patrol=닫힌 왕복 순찰(patrol.length 칸 직선 또는 patrol.directions 닫힌 경로) · chase=시야(sightRange 칸, 벽 가림) 안에 들면 머리 위 느낌표(alert)와 짧은 멈춤 뒤 쫓아오고, 놓치면 마지막 목격 자리를 잠깐 뒤진 뒤 원래 자리로 돌아간다. chase 에 patrol 을 같이 주면 시야 밖에서는 순찰하다 시야에 들면 쫓고 놓치면 돌아와 다시 순찰한다. pace 는 주인공 걷기보다 항상 느려 피할 수 있다. ' +
       '던전 층·들판·길목에서 「몬스터가 돌아다닌다/눈에 보이는 적/피하거나 선제」 요청의 정본 — 한 마리씩 의도한 자리에 놓고 필요한 만큼 여러 번 호출한다(보통 한 맵 3~6마리, 서로 다른 troopId·behavior 로). ' +
-      '필드 그림은 **전투 그림이 정본**: 적 그룹 선두 적의 monsterResourceId 와 같은 종류의 charset 을 자동으로 고른다(슬라임→슬라임 칩, 해골→해골 칩). 대응하는 칩이 없는 종(박쥐·늑대·거미 등)은 다른 그림으로 대체하지 않고 거절하니, 거절 메시지의 적 중 하나로 바꾸거나 graphic 만 주고 troopId 를 생략하면 그 그림에 맞는 적 그룹을 고른다. ' +
+      '필드 그림은 **전투 그림이 정본**: 적 그룹 선두 적의 monsterResourceId 와 같은 종류의 charset 을 자동으로 고른다(슬라임→슬라임 칩, 해골→해골 칩). 대응하는 걷기 칩이 없는 종(박쥐·늑대·거미 등)은 **전투에 서는 같은 도트 그림을 정지 심볼로 그대로** 쓴다(다른 그림으로 대체하지 않는다). 전투 그림(monsterResourceId)이 아예 없는 적만 거절한다. ' +
       '쓰지 말 것: 마을·실내 생활 공간(마을 맵은 거부됨), 보스방·이야기 전투(place_battle_blocker 로 조사 전투 + upsert_troop_battle_page), 걸을 때마다 무작위로 터지는 랜덤 인카운터(set_encounter_table), 구역 전체에 리스폰하는 사냥터(make_hunting_ground). 출입구·시작점 주변과 도달 불가 칸은 거부하며 chase 는 입구에서 시야 밖에 놓아야 한다. ' +
       '전투 방향 보정(적 등 뒤 접촉=선제, 등을 잡히면 기습)은 set_project_settings battle.formationRoll:true 를 켜야 적용된다. 그림은 생략하면 적 그룹 선두 몬스터 이름으로 기존 도트를 찾는다(새 그림·생성 인물 금지).',
     parameters: schema({
@@ -275,6 +276,11 @@ export const FIELD_ENEMY_TOOLS: readonly ToolDefinition[] = [
       } else if (expected) {
         graphic = charsetGraphic(expected.textureKey, expected.characterIndex);
         graphicNote = `필드 그림 「${expected.label}」 — 전투 그림(${lead?.monsterResourceId})과 같은 종류로 자동 선택`;
+      } else if (lead?.monsterResourceId && isGeneratedMonsterSprite(lead.monsterResourceId)) {
+        // 같은 종류의 걷기 칩이 없는 종(박쥐·늑대·거미 …): 전투에 서는 **같은 도트 그림**을 필드 심볼로 쓴다.
+        // 다른 그림으로 대체하는 것이 아니라 전투 그림 그대로이므로 필드의 모습과 전투가 어긋나지 않는다(정지 그림, 걷는 칸 애니메이션 없음).
+        graphic = { sprite: { type: 'bundled', id: lead.monsterResourceId }, direction: 'down', pattern: 0 };
+        graphicNote = `걷기 칩이 없는 종 — 전투 도트 그림(${lead.monsterResourceId})을 필드 심볼로 그대로 사용(정지 그림)`;
       } else if (!lead?.monsterResourceId) {
         // 전투 그림이 아직 없는 적 — 이름으로 찾되 못 찾으면 다른 그림으로 대체하지 않고 거절한다.
         for (const name of [lead?.name?.trim(), troop.name?.trim()].filter((entry): entry is string => !!entry)) {

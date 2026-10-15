@@ -181,7 +181,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
-  const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
+  const activeAtb = options.runtime.snapshot().atbMode === "active";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
   // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
   // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.

@@ -4,6 +4,7 @@ import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import type { BattleAudioSession } from "@/player/battleAudio";
@@ -114,6 +115,7 @@ export async function playBattle(
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
       canLose: step.canLose,
       battleFlow: step.battleFlow,
+      atbMode: getPlayerPreferences().atbMode,
       formation: step.formation,
       party: {
         levels: scene.session.actorLevels,
