@@ -1652,3 +1652,8 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이션 없음, 안 쓰면 직렬화에 나타나지 않는다). `EncounterTableEntry.levelMin?/levelMax?`(1~99 정수, `shapeEventFields.ts` 검증), `EncounterConditions.terrainId?`(`database.terrains[].id` 참조 — `references.ts` 가 끊긴 참조를 보고), `GameOverSettings.goldLossPercent?`(0~100 정수), `RewardPolicy.expShare?/trainerPrizePerLevel?`, `SystemRecords.captureShakesVariableId?`(변수 id). 저장 슬롯(`saveSlotValidation`)은 이 값들을 읽지 않는다 — 전부 프로젝트 정의 쪽이고 세션 상태는 기존 `session.gold`·`session.variables` 만 바뀐다. 지형 기록 `terrain_grass` 는 기본 기록 4개(물·모래·눈·돌) 뒤 5번째에 `ensureGrassTerrainRecord` 가 덧붙이며(기본값으로 새 프로젝트에 넣지 않는다) 태그 5 칸이 없는 칩셋에는 영향이 없다.
 
 `system.vehicles[].flightView?: "mode7"`(2026-10-15, 비행선 전용, 선택) — 비행 시점. 생략 = 기존 탑뷰(옛 프로젝트 JSON 바이트 불변). `normalizeVehicleConfigs` 화이트리스트에 들어 있고 비행선 외 id 에서는 버린다.
+
+
+## SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+
+선택 필드 `statStageEffects?: {stat, stages, chance?, target?}[]`(능력치 단계 −6~+6). 값이 있을 때만 정규화가 싣는다 — 안 쓰는 프로젝트는 저장 바이트 그대로이고 로드 보정이 필요 없다. 전투 중 단계(`MutableBattler.statStages`)는 저장하지 않는다. 규칙: `openwiki/runtime-battle.md`.

@@ -22,10 +22,12 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import { applyStatStage, scaleByStage, shiftStatStage, statStageMessage, statStageOf } from "@/battle/statStages";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
   accuracyByteFromPercent,
+  scaledGen1Accuracy,
   applySkillLike,
   createGen1ByteRng,
   resolveGen1DamagingMove,
@@ -851,8 +853,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battlerTypes(options.project, target),
     );
     const formula = move.damageFormula ? evaluateDamageFormula(move.damageFormula, formulaBattlerContext(
-      { ...user, attackPower: Math.round(user.attackPower * attackMultiplierForStates(options.project, user)), mind: Math.round(user.mind * attackMultiplierForStates(options.project, user)) },
-      { ...target, defense: target.defense * defenseMultiplierForStates(options.project, target), mind: target.mind * defenseMultiplierForStates(options.project, target) }, move.power)) : undefined;
+      { ...user, attackPower: Math.round(user.attackPower * attackMultiplierForStates(options.project, user)), mind: Math.round(user.mind * attackMultiplierForStates(options.project, user, "mind")) },
+      { ...target, defense: target.defense * defenseMultiplierForStates(options.project, target), mind: target.mind * defenseMultiplierForStates(options.project, target, "mind") }, move.power)) : undefined;
     const resolved = resolveGen1DamagingMove({
       level: user.level ?? 1,
       power: move.power,
@@ -865,19 +867,21 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       offense: {
         unmodified: unmodifiedOffense,
         modified: magical
-          ? unmodifiedOffense
+          ? applyStatStage(unmodifiedOffense, user.statStages, "spAttack")
           : gen1ModifiedStat(user, "attack", unmodifiedOffense),
       },
       defense: {
         unmodified: unmodifiedDefense,
         modified: magical
-          ? unmodifiedDefense
+          ? applyStatStage(unmodifiedDefense, target.statStages, "spDefense")
           : gen1ModifiedStat(target, "defense", unmodifiedDefense),
       },
       burned: gen1MajorStatusOf(user)?.kind === "burn",
       stab: types.stab,
       typeFactors: types.typeFactors,
       baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
+      accuracyStage: statStageOf(user.statStages, "accuracy"),
+      evasionStage: statStageOf(target.statStages, "evasion"),
     }, nextGen1Byte);
     // 상성 문장용 배율 — 방어 쪽 타입 배율의 곱(정수 ×10 표기를 되돌린다). 자속 보정(stab)은 넣지 않는다.
     const effectiveness = types.typeFactors.reduce((product, factor) => product * (factor / 10), 1);
@@ -1456,7 +1460,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
-      hitRate: withEvasion(normalAttackHitRate(actor, target), actor, target),
+      hitRate: withAccuracyStages(withEvasion(normalAttackHitRate(actor, target), actor, target), actor, target),
       // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
       variance: 20,
       elementMultiplier: normalAttackElementMultiplier(actor, target) * emotionDamageMultiplier(options.project, actor, target),
@@ -1944,7 +1948,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         side: "actor",
         index: actors.indexOf(actor),
         speed: gen1
-          ? gen1ParalyzedSpeed(actor.agility, gen1MajorStatusOf(actor)?.kind === "paralysis")
+          ? gen1ParalyzedSpeed(applyStatStage(actor.agility, actor.statStages, "speed"), gen1MajorStatusOf(actor)?.kind === "paralysis")
           : actor.agility * agilityMultiplierForStates(options.project, actor),
         priority,
         commandClass: strictCommandClass(entry.command),
@@ -1964,7 +1968,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           side: "enemy",
           index,
           speed: gen1
-            ? gen1ParalyzedSpeed(enemy.agility, gen1MajorStatusOf(enemy)?.kind === "paralysis")
+            ? gen1ParalyzedSpeed(applyStatStage(enemy.agility, enemy.statStages, "speed"), gen1MajorStatusOf(enemy)?.kind === "paralysis")
             : enemy.agility * agilityMultiplierForStates(options.project, enemy),
           priority: strictActionPriority(action?.skillId),
           commandClass: "combat",
@@ -2341,7 +2345,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
-      hitRate: withEvasion(normalAttackHitRate(enemy, target), enemy, target),
+      hitRate: withAccuracyStages(withEvasion(normalAttackHitRate(enemy, target), enemy, target), enemy, target),
       // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
       variance: 20,
       ...(emotionMultiplier !== 1 ? { elementMultiplier: emotionMultiplier } : {}),
@@ -2422,6 +2426,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (gen1 || battlerSide(user) === battlerSide(target)) return hitRate;
     const evade = evasionChanceForStates(options.project, target);
     return evade > 0 ? Math.round(((hitRate ?? 100) * (100 - evade)) / 100) : hitRate;
+  }
+
+  /** 능력치 단계의 명중률·회피율을 명중률(%)에 곱한다(상대 편에게 쓸 때만, 최대 100). 단계가 0 이면 그대로. */
+  function withAccuracyStages(hitRate: number | undefined, user: MutableBattler, target: MutableBattler): number | undefined {
+    if (gen1 || battlerSide(user) === battlerSide(target)) return hitRate;
+    const accuracy = statStageOf(user.statStages, "accuracy");
+    const evasion = statStageOf(target.statStages, "evasion");
+    if (accuracy === 0 && evasion === 0) return hitRate;
+    const scaled = scaleByStage(scaleByStage((hitRate ?? 100) * 100, accuracy), -evasion);
+    return Math.max(0, Math.min(100, Math.round(scaled / 100)));
   }
 
   /**
@@ -3922,6 +3936,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       : "attack";
     const affects =
       effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
+    // 능력치 단계의 공격/특수공격·방어/특수방어 칸: 마법 속성 기술이거나 마력 계열 효과면 특수 쪽(gen1 경로와 같은 분류).
+    const stageKind: "attack" | "mind" = statistic === "mind" || isMagicalElement(skill?.elementId) ? "mind" : "attack";
     const hpBefore = target.hp;
     const mpBefore = target.mp;
     const targetMaxHpBefore = target.maxHp;
@@ -3933,15 +3949,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
-      hitRate: effectKind === "damage" && statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
+      hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
       hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, user, target) * emotionDamageMultiplier(options.project, user, target),
-      attackerStatMultiplier: attackMultiplierForStates(options.project, user),
-      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, user, stageKind),
+      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic, stageKind),
       useMagicalDefense: isMagicalElement(skill?.elementId),
       gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
@@ -3986,6 +4002,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (result.hit) {
       applyStates(user, target, skill?.stateEffects);
+      if (effectKind !== "damage" || result.amount > 0) applyStatStageEffects(user, target, skill);
     }
     if (result.hit && skill?.gaugeShift) shiftGauge(target, skill.gaugeShift);
     if (result.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
@@ -4006,8 +4023,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const effect = skill?.effect;
     const effectKind = effect?.kind ?? "damage";
     const power = skill?.power ?? 50;
-    const accuracyHit = effectKind === "damage"
-      || nextGen1Byte() < accuracyByteFromPercent(skill?.hitRate ?? 100);
+    // 자기에게 거는 능력 변화 기술은 빗나가지 않는다(바이트도 쓰지 않는다 — 단계 기술이 없는 게임의 난수열은 그대로).
+    const selfStageMove = user === target && (skill?.statStageEffects?.length ?? 0) > 0;
+    const accuracyHit = effectKind === "damage" || selfStageMove
+      || nextGen1Byte() < scaledGen1Accuracy(
+        accuracyByteFromPercent(skill?.hitRate ?? 100),
+        user === target ? 0 : statStageOf(user.statStages, "accuracy"),
+        user === target ? 0 : statStageOf(target.statStages, "evasion"),
+      );
     const statistic: "attack" | "mind" = effect && (effect.kind === "damage" || effect.kind === "healing")
       ? effect.statistic
       : "attack";
@@ -4079,8 +4102,40 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
+    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
+    }
+  }
+
+  /**
+   * 기술의 능력치 단계 효과(울음 −1 공격, 칼춤 +2 공격 …)를 적용한다. chance 는 gen1 이면 카트리지 경계(100% 는 굴리지 않음),
+   * 그 밖은 rng 로 굴린다. 이미 한계(±6)면 「더 이상 오르지 않는다!」 한 줄만 남긴다. 변화는 special 엔트리(statStage 포함)로 기록해
+   * 화면이 문장과 같은 박자에 단계 알약을 바꾼다.
+   */
+  function applyStatStageEffects(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+  ): void {
+    for (const effect of skill?.statStageEffects ?? []) {
+      const subject = effect.target === "self" ? user : target;
+      if (subject.hp <= 0) continue;
+      const chance = effect.chance ?? 100;
+      if (chance < 100) {
+        const passed = gen1 ? gen1EffectChanceSucceeds(chance, nextGen1Byte) : rng() * 100 < chance;
+        if (!passed) continue;
+      }
+      const shifted = shiftStatStage(subject.statStages, effect.stat, effect.stages);
+      subject.statStages = shifted.stages;
+      recordTimeline({
+        kind: "special",
+        side: battlerSide(user),
+        userRecordId: user.recordId,
+        targetId: subject.id,
+        message: statStageMessage(subject.name, shifted.change),
+        statStage: { stat: effect.stat, before: shifted.change.before, after: shifted.change.after, requested: shifted.change.requested },
+      });
     }
   }
 
@@ -4414,9 +4469,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (outgoing) {
       outgoing.gauge = 0;
       outgoing.defending = false;
+      // 교체로 빠지면 능력치 단계가 사라진다(포켓몬 규칙). 다시 나와도 0 단계에서 시작한다.
+      delete outgoing.statStages;
     }
     candidate.gauge = 0;
     candidate.defending = false;
+    delete candidate.statStages;
     recordTimeline({
       kind: "switch",
       side: "actor",

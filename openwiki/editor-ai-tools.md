@@ -3273,3 +3273,13 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
 - 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
 
+
+
+## `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
+
+- 울음(공격 −1)·칼춤(공격 +2, 자신)·연막(명중률 −1)·몸을 단단히(방어 +1) 같은 포켓몬식 능력 변화 기술. 상태(`state_attack_up`)로 흉내 내지 않는다 — 단계는 −6~+6 에서 쌓이고 교체하면 초기화되며 화면에 `ATK↑2` 알약이 뜬다. 규칙 정본은 `openwiki/runtime-battle.md` 「능력치 단계」.
+- 인자: `statStageEffects:[{stat,stages,chance?,target?}]`(최대 4). `stat` enum = `attack|defense|spAttack|spDefense|speed|accuracy|evasion`, `stages` 는 0 이 아닌 −6~+6 정수, `chance` 0~100(생략 100), `target` = `target`(기술 대상, 기본)|`self`. **자유 키 객체 금지** — enum 값만 받으므로 Gemini 스키마 400 이 없다. 모르는 stat·0·범위 밖·모르는 키는 허용 값을 알려 주고 거절(`invalid-stat-stage-effects`). 빈 배열 = 해제.
+- 쓰임: 보조 기술(`effect:{kind:"support"}`, `scope:"enemy"|"self"`) + 단계, 또는 피해 기술의 부가 효과(`chance:20`). 능력 색인 레시피 `monster-battle-depth`.
+- 새 세이브 필드 없음(스킬 레코드의 선택 필드, 생략=기존 동작). 장르 잠금(monster-collect)은 칩셋 계열만 막으므로 이 도구와 상호작용이 없다.
+- 증명: `simulate_battle`/`run_scene_test` 로 기술을 쓰고 대상의 `statStages`·문장을 읽는다(upsert 성공은 증명이 아니다).
+- 참고: `docs/tool-catalog.md` 는 이 저장소에 없다(생성 스크립트가 낡았다는 메모의 그 파일) — 도구 행은 이 문서와 `toolCapabilityIndex.ts` 에 둔다.

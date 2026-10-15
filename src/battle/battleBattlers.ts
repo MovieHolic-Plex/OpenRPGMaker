@@ -1,3 +1,4 @@
+import { hasStatStages, type StatStages } from "@/battle/statStages";
 import { battleRow, type BattleRow } from "@/battle/battleFormation";
 import { effectivePromotionLineage, validActorClassOverride } from '@/project/growth/lineage';
 import { growthEffects } from "@/project/growth/runtime";
@@ -111,6 +112,8 @@ export interface MutableBattler {
   rageEnemyId?: string;
   /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
   resource2?: number;
+  /** 능력치 단계(−6~+6). 0 이 아닌 칸만 가지며 저장하지 않는다 — 교체로 빠지거나 전투가 끝나면 사라진다(statStages.ts). */
+  statStages?: StatStages;
 }
 
 export function actorBattlers(
@@ -652,6 +655,7 @@ export function battlerSnapshot(
     ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
     ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
     ...(battler.scanned ? { scanned: true } : {}),
+    ...(hasStatStages(battler.statStages) ? { statStages: { ...battler.statStages } } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };

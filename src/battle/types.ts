@@ -318,6 +318,8 @@ export interface BattleBattlerSnapshot {
   readonly scanned?: boolean;
   /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
   readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
+  /** 능력치 단계(−6~+6, 0 이 아닌 칸만). 표시 계층이 단계 알약(ATK↑2)을 그린다. 저장하지 않는다. */
+  readonly statStages?: Readonly<Partial<Record<import("@/battle/statStages").StatStageKey, number>>>;
   /** 변신(StateRuntimeEffects.transformResourceId) 중인 그림 id. 표시 계층이 원래 그림 대신 쓴다(battleCharacterResourceId 는 원래 그림 그대로). */
   readonly transformResourceId?: string;
 }
@@ -421,6 +423,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly waitMs?: number;
   /** kind === "special" 인 엔트리의 전투 메시지. */
   readonly message?: string;
+  /** 능력치 단계가 바뀐 special 엔트리. before 는 재생 전 화면(단계 알약)을 되감는 근거다. */
+  readonly statStage?: { readonly stat: import("@/battle/statStages").StatStageKey; readonly before: number; readonly after: number; readonly requested: number };
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;
