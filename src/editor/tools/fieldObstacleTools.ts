@@ -197,6 +197,18 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const warnings: string[] = [];
       const near = entryCells(draft, map).filter((cell) => Math.abs(cell.x - x) + Math.abs(cell.y - y) <= 1);
       if (near.length) warnings.push(`장애물이 출입구·시작점 바로 옆입니다(${near.slice(0, 2).map((cell) => `(${cell.x},${cell.y})`).join(', ')}) — 들어서자마자 길이 막힙니다. 더 안쪽 길목에 두는 편이 좋습니다.`);
+      // 같은 id 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린다 — 안 그러면 옛 칸에 바위가 영영 남아 길을 막는다.
+      const previous = map.events.find((entry) => entry.id === id);
+      if (previous) {
+        for (const page of previous.pages ?? []) {
+          for (const command of page.commands) {
+            if (command.kind === 'changeTile' && command.mapId === map.id && command.x === previous.x && command.y === previous.y) {
+              writeLayer(map, command.layer, command.y * map.width + command.x, command.tile);
+              warnings.push(`같은 id '${id}' 의 앞선 장애물 칸 (${previous.x}, ${previous.y}) 의 막는 타일을 원래대로 되돌렸습니다.`);
+            }
+          }
+        }
+      }
       const occupied = map.events.find((entry) => entry.id !== id && entry.x === x && entry.y === y);
       if (occupied) throw new ToolError(`(${x}, ${y}) 에는 이미 이벤트 '${occupied.id}' 가 있습니다 — 다른 칸을 고르거나 remove_event 로 치우세요.`, { code: 'obstacle-occupied', mapId: map.id, x, y });
 
