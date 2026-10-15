@@ -9,6 +9,7 @@ export const ACTOR_QUERY_CONDITION_MODE_OPTIONS = [
   { value: "actorStat", label: "배우 수치(레벨·HP·MP)" },
   { value: "actorState", label: "배우 상태 보유" },
   { value: "partyLeader", label: "선두 배우" },
+  { value: "partyKnowsSkill", label: "파티가 아는 스킬(필드 기술)" },
   { value: "partySize", label: "파티 인원" },
   { value: "facing", label: "방향" },
   { value: "relativeFacing", label: "마주봄·등 뒤" },
@@ -60,6 +61,8 @@ export function defaultActorQueryCondition(kind: ActorQueryCondition["kind"]): A
       return { kind, actorId: "anyone", stateId: firstStateId(), present: true };
     case "partyLeader":
       return { kind, actorId: firstActorId() };
+    case "partyKnowsSkill":
+      return { kind, skillId: firstFieldSkillId(), present: true };
     case "partySize":
       return { kind, op: ">=", value: 2 };
     case "facing":
@@ -92,6 +95,14 @@ function firstActorId(): string {
 function firstStateId(): string {
   return project()?.database.states?.[0]?.id ?? "";
 }
+/** 필드 스킬(fieldCommonEventId 가 있는 스킬)을 먼저, 없으면 첫 스킬. */
+function firstFieldSkillId(): string {
+  const skills = project()?.database.skills ?? [];
+  return (skills.find((skill) => skill.fieldCommonEventId) ?? skills[0])?.id ?? "";
+}
+function skillName(id: string): string {
+  return project()?.database.skills.find((skill) => skill.id === id)?.name || id || "(스킬 없음)";
+}
 function firstEndingId(): string {
   return project()?.endings?.[0]?.id ?? "";
 }
@@ -116,6 +127,8 @@ export function actorQueryConditionSummary(condition: ActorQueryCondition): stri
       return `${actorName(condition.actorId)}에게 ${stateName(condition.stateId)} ${condition.present ? "있음" : "없음"}`;
     case "partyLeader":
       return `선두가 ${actorName(condition.actorId)}`;
+    case "partyKnowsSkill":
+      return `파티가 「${skillName(condition.skillId)}」을(를) ${condition.present === false ? "모름" : "앎"}`;
     case "partySize":
       return `파티 ${condition.value}명 ${opLabel(condition.op)}`;
     case "facing":
@@ -149,6 +162,8 @@ export function actorQueryConditionHint(kind: ActorQueryCondition["kind"]): stri
       return "배우가 상태(독·저주·감정 등)를 가졌는지 봅니다. '누군가' 는 파티 전원 중 한 명이라도.";
     case "partyLeader":
       return "파티 선두가 이 배우일 때 참. 리더에 따라 대사를 바꿀 때 씁니다.";
+    case "partyKnowsSkill":
+      return "파티의 배우(배운·직업·장비 스킬)나 몬스터 파티 누군가가 이 스킬을 알 때 참. 바위깨기·나무베기·서핑·플래시처럼 길을 막은 장애물을 여는 필드 기술 게이트에 씁니다. 판정을 '모름' 으로 하면 '아직 못 여는' 안내 페이지를 만들 수 있습니다.";
     case "partySize":
       return "현재 파티 인원을 비교합니다.";
     case "facing":
@@ -221,6 +236,12 @@ export function renderActorQueryCondition(condition: ActorQueryCondition, onChan
       break;
     case "partyLeader":
       box.append(row("선두", sel(actorOptions([]), condition.actorId, "event-condition-party-leader", (actorId) => set({ actorId }))));
+      break;
+    case "partyKnowsSkill":
+      box.append(
+        row("스킬", sel((project()?.database.skills ?? []).map((s) => ({ value: s.id, label: s.name || s.id })), condition.skillId, "event-condition-party-knows-skill", (skillId) => set({ skillId }))),
+        row("판정", bool(condition.present !== false, "앎", "모름", "event-condition-party-knows-skill-present", (present) => set({ present }))),
+      );
       break;
     case "partySize":
     case "clearCount":
@@ -298,6 +319,9 @@ export function actorQueryConditionProblems(
       break;
     case "partyLeader":
       if (!refs.actors.has(condition.actorId)) problems.push(`없는 배우 ${condition.actorId || "(비어 있음)"}`);
+      break;
+    case "partyKnowsSkill":
+      if (!(project()?.database.skills ?? []).some((skill) => skill.id === condition.skillId)) problems.push(`없는 스킬 ${condition.skillId || "(비어 있음)"}`);
       break;
     case "endingSeen":
       if (!refs.endings.has(condition.endingId)) problems.push(`없는 엔딩 ${condition.endingId || "(비어 있음)"}`);

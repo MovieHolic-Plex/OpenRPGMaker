@@ -7,7 +7,8 @@
 // 러너는 매번 새 세션으로 처음부터 돈다 — 목표 하나를 붙일 때마다 누적 단계 전체를 다시 돌린다(작은 게임이면 수 초).
 
 import { canMove } from "@/project/collision";
-import { resolveEventPage } from "@/project/io";
+import { resolveEventPage as resolveEventPageRaw } from "@/project/io";
+import { actorKnownSkillIds, partyKnownSkillIds, partySkillContext, type PartySkillSession } from "@/project/partySkills";
 import { evalCondition, type PlaySession } from "@/project/session";
 import type { Condition, GameEvent, Project } from "@/project/types";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
@@ -21,6 +22,12 @@ import { isMonsterPartyGame, monsterCurrentHp, monsterMaxHp, rejectPendingMonste
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
 
+/** 파티가 아는 스킬을 읽는 페이지 조건(partyKnowsSkill)까지 푸는 resolveEventPage — 프로젝트는 자동 플레이 한 판 동안 하나다. */
+let pageProject: Project | undefined;
+function resolveEventPage(event: GameEvent, session: PlaySession): ReturnType<typeof resolveEventPageRaw> {
+  return resolveEventPageRaw(event, session, pageProject ? partySkillContext(pageProject, session as unknown as PartySkillSession) : undefined);
+}
+
 type Requirement =
   | { readonly kind: "switch"; readonly id: string }
   | { readonly kind: "selfSwitch"; readonly mapId: string; readonly eventId: string; readonly key: string }
@@ -28,6 +35,8 @@ type Requirement =
   | { readonly kind: "variable"; readonly id: string; readonly op?: string; readonly value?: number }
   | { readonly kind: "item"; readonly id: string }
   | { readonly kind: "actor"; readonly id: string }
+  /** 파티가 이 스킬을 알기 — 이벤트 조건 partyKnowsSkill. 필드 스킬 문(바위깨기·물 건너기)이 여기서 선행으로 잡힌다. */
+  | { readonly kind: "skill"; readonly id: string }
   /** 이 맵에 들어가기 — 들어가는 문이 전부 조건부일 때만 생긴다(기억을 차례로 여는 회상 스토리의 문). */
   | { readonly kind: "map"; readonly id: string };
 
@@ -55,6 +64,7 @@ function requirementLabel(project: Project, req: Requirement): string {
     case "variable": return `변수 ${project.variables.find((v) => v.id === req.id)?.name || req.id}${req.op && req.value !== undefined ? ` ${req.op} ${req.value}` : ""}`;
     case "item": return `아이템 ${req.id}`;
     case "actor": return `배우 ${req.id} 합류`;
+    case "skill": return `파티가 스킬 ${project.database.skills.find((skill) => skill.id === req.id)?.name || req.id} 습득`;
     case "map": return `맵 ${project.maps[req.id]?.name ?? req.id} 진입`;
   }
 }
@@ -74,6 +84,7 @@ function leafRequirements(condition: unknown, page: PageRef): Requirement[] {
     }
     if (leaf.kind === "item" && leaf.present === true && typeof leaf.itemId === "string") out.push({ kind: "item", id: leaf.itemId });
     if (leaf.kind === "actor" && leaf.present === true && typeof leaf.actorId === "string") out.push({ kind: "actor", id: leaf.actorId });
+    if (leaf.kind === "partyKnowsSkill" && leaf.present !== false && typeof leaf.skillId === "string") out.push({ kind: "skill", id: leaf.skillId });
   }
   return out;
 }
@@ -234,6 +245,10 @@ function satisfiedAtStart(project: Project, req: Requirement): boolean {
   if (req.kind === "switch") return initiallyOn(project, req.id);
   if (req.kind === "actor") return (project.session?.partyActorIds ?? []).includes(req.id);
   if (req.kind === "item") return (project.session?.inventory?.[req.id] ?? 0) > 0;
+  if (req.kind === "skill") {
+    const start = project.session;
+    return start ? partyKnownSkillIds(project, { ...start, variables: start.variables ?? {}, partyActorIds: start.partyActorIds ?? [] } as PartySkillSession).has(req.id) : false;
+  }
   if (req.kind === "map") return !mapGated(project, req.id);
   if (req.kind === "variable" && req.op && req.value !== undefined) return compare(project.session?.variables?.[req.id] ?? 0, req.op, req.value);
   return false;
@@ -279,6 +294,11 @@ function setterMatches(project: Project, req: Requirement, visit: CommandVisit):
     }
     case "item": return c.kind === "changeItem" && c.itemId === req.id && c.op !== "-=";
     case "actor": return c.kind === "changeParty" && c.actorId === req.id && c.action === "add";
+    case "skill":
+      if (c.kind === "learnSkill") return c.skillId === req.id && c.action !== "forget";
+      // 합류하는 동료가 그 스킬을 처음부터 아는 경우(배우 skillIds·직업 습득·장비) — 합류가 곧 습득이다.
+      return c.kind === "changeParty" && c.action === "add" && typeof c.actorId === "string"
+        && actorKnownSkillIds(project, { variables: {}, partyActorIds: [c.actorId] }, c.actorId).has(req.id);
     case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
   }
 }
@@ -441,6 +461,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
             done: (session) => req.kind === "switch" ? session.switches[req.id] === true
               : req.kind === "selfSwitch" ? session.selfSwitches?.[req.eventId]?.[req.key] === true
               : req.kind === "actor" ? session.partyActorIds.includes(req.id)
+              : req.kind === "skill" ? partyKnownSkillIds(project, session as unknown as PartySkillSession).has(req.id)
               : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
               : req.kind === "map" ? session.currentMapId === req.id
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
@@ -780,7 +801,7 @@ function relaysTo(event: GameEvent, targetId: string): boolean {
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
  */
-function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean): SceneStep[] | null {
+function pathMoves(project: Project, session: PlaySession, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean, ignoreIds?: ReadonlySet<string>): SceneStep[] | null {
   // 장치가 changeTile 로 연 길까지 본다(세션 오버라이드를 입힌 맵).
   const authored = project.maps[mapId];
   if (!authored) return null;
@@ -793,7 +814,15 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   // 전부 피하면 좁은 기억 방(11×9)에서 투명 조사 지점·컷신 자리에 둘러싸인 메멘토가 「길이 없다」로 오판됐다(2026-09-24).
   // 지금 켜진 페이지가 없는 이벤트(한 번 돈 방문 기록 자동 이벤트)는 그림도 충돌도 없다 — 체육관 문 앞을 막는 것으로 보면
   // 관장에게 영영 못 갔다(2026-10-06 몬스터 원정 잿빛 온천). overlapForbidden 이 빠진 페이지는 겹침 허용과 같다.
-  const harmless = (event: GameEvent) => triggerOf(event, session) === "none" || ((event.pages ?? []).length > 0 && (event.pages ?? []).every((page) =>
+  // 지금 켜진 페이지가 길을 안 막고(런타임: 우선순위 same + 겹침 금지만 막는다) 접촉 발동도 아니면 — 깨진 바위의 「gone」 페이지 —
+  // 지나가는 칸이다. 다른 페이지가 나중에 막는지는 상관없다(그 페이지가 켜질 때 길을 다시 잰다).
+  const activePassable = (event: GameEvent) => {
+    const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
+    if (!page) return false;
+    return !((page.priority ?? "same") === "same" && (page.overlapForbidden ?? true))
+      && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "");
+  };
+  const harmless = (event: GameEvent) => triggerOf(event, session) === "none" || activePassable(event) || ((event.pages ?? []).length > 0 && (event.pages ?? []).every((page) =>
     page.priority === "below" && page.overlapForbidden !== true
     && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? "")));
   // 같은 맵 안으로 옮기는 접촉 판(워프 미로)은 막힌 칸이 아니라 짝 판으로 건너가는 길이다 — 피하면 워프로만 닿는
@@ -807,7 +836,7 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
     const jump = (page?.commands ?? event.commands ?? []).find((command) => command.kind === "transfer");
     if (jump?.kind === "transfer" && jump.mapId === mapId) warps.set(`${event.x},${event.y}`, { x: jump.x, y: jump.y });
   }
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event)).map((event) => `${event.x},${event.y}`)
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event) && !ignoreIds?.has(event.id)).map((event) => `${event.x},${event.y}`)
     .filter((cell) => !relayCells.has(cell) && !warps.has(cell)));
   const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
@@ -859,6 +888,64 @@ function pathMoves(project: Project, session: PlaySession, mapId: string, from: 
   return steps;
 }
 
+/**
+ * 길이 막혔을 때 필드 스킬로 여는 시도. 막은 이벤트(길 위의 바위·덤불)를 하나씩 지우면 길이 나는 후보로 좁히고,
+ * 파티가 아는 필드 스킬을 그 앞에서 써 본다(run_scene_test useFieldSkill 과 같은 경로). 아는 스킬이 없으면 무엇을 해야 하는지 말해 준다.
+ */
+function unlockWithFieldSkills(driver: Driver, target: GameEvent, adjacent: boolean): { readonly unlocked: boolean; readonly note: string } {
+  const project = driver.project;
+  const fieldSkills = project.database.skills.filter((skill) => skill.fieldCommonEventId);
+  if (fieldSkills.length === 0) return { unlocked: false, note: "" };
+  const pathExists = (ignore?: ReadonlySet<string>): boolean => {
+    const session = driver.last.session;
+    return pathMoves(project, session, session.currentMapId, { x: session.x, y: session.y }, target, adjacent, ignore) !== null;
+  };
+  let tried = false;
+  for (let round = 0; round < 6; round += 1) {
+    const session = driver.last.session;
+    const authored = project.maps[session.currentMapId];
+    if (!authored) break;
+    const map = runtimeMap(authored, session);
+    const solid = (map.events ?? []).filter((event) => event.id !== target.id && triggerOf(event, session) === "action");
+    // 하나만 지워도 길이 나는 후보를 먼저, 없으면 후보 전부를 지웠을 때 길이 나는 경우(바위가 줄지어 막음)의 가까운 순.
+    let blockers = solid.filter((event) => pathExists(new Set([event.id])));
+    if (blockers.length === 0 && pathExists(new Set(solid.map((event) => event.id)))) {
+      blockers = [...solid].sort((a, b) => Math.abs(a.x - session.x) + Math.abs(a.y - session.y) - (Math.abs(b.x - session.x) + Math.abs(b.y - session.y)));
+    }
+    // 바위가 타일(upperTiles)로 그려져 있고 이벤트는 투명한 경우 — 이벤트를 치워도 길이 안 난다. 자기 칸의 타일을 지우는
+    // changeTile 을 가진 이벤트(깨지는 바위·베는 덤불)를 먼저, 그다음 목표에 가까운 조사 이벤트를 후보로 둔다.
+    if (blockers.length === 0) {
+      const erasesOwnTile = (event: GameEvent): boolean => JSON.stringify(event.pages ?? []).includes('"kind":"changeTile"');
+      const nearTarget = (event: GameEvent): number => Math.abs(event.x - target.x) + Math.abs(event.y - target.y);
+      blockers = [...solid].sort((a, b) => Number(erasesOwnTile(b)) - Number(erasesOwnTile(a)) || nearTarget(a) - nearTarget(b)).slice(0, 6);
+    }
+    if (blockers.length === 0) break;
+    const known = partyKnownSkillIds(project, session as unknown as PartySkillSession);
+    const usable = fieldSkills.filter((skill) => known.has(skill.id));
+    if (usable.length === 0) {
+      const names = fieldSkills.map((skill) => `${skill.name}(${skill.id})`).join(", ");
+      return { unlocked: false, note: ` 길을 막은 ${blockers.slice(0, 3).map((event) => event.id).join(", ")} 은(는) 필드 스킬로 여는 장애물로 보이지만 파티에 그 스킬(${names})을 아는 구성원이 없습니다 — 이 길 앞에서 upsert_actor learnedSkills[{level,skillId}] 나 learnSkill 이벤트·장비 grantsSkillIds 로 스킬을 가르치세요.` };
+    }
+    let progressed = false;
+    for (const blocker of blockers) {
+      for (const skill of usable) {
+        const now = driver.last.session;
+        const approach = pathMoves(project, now, now.currentMapId, { x: now.x, y: now.y }, blocker, true);
+        if (!approach) continue;
+        tried = true;
+        const used = tryCommit(driver, [...approach, { kind: "useFieldSkill", skillId: skill.id, target: blocker.id }]);
+        if (!used.ok) continue;
+        progressed = true;
+        if (pathExists()) return { unlocked: true, note: "" };
+        break;
+      }
+      if (pathExists()) return { unlocked: true, note: "" };
+    }
+    if (!progressed) break;
+  }
+  return { unlocked: false, note: tried ? " 파티가 아는 필드 스킬(useFieldSkill)을 막은 이벤트 앞에서 써 봤지만 길이 열리지 않았습니다 — 스킬의 fieldCommonEventId 공통 이벤트가 fieldAbilityTarget 을 보고 그 이벤트를 치우는지 확인하세요." : "" };
+}
+
 /** 이벤트를 발동시킨다 — 조사형은 옆에 서서 조사, 접촉형은 그 칸으로 걷기, 자동은 맵에 들어오면 이미 돌았다. */
 function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): string | null {
   const session = driver.last.session;
@@ -880,8 +967,18 @@ function fireEvent(driver: Driver, event: GameEvent, visit: CommandVisit): strin
       return resolveChoices(driver, choiceSequence(visit));
     }
   }
-  const moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch);
-  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).`;
+  let moves = pathMoves(driver.project, session, mapId, { x: session.x, y: session.y }, event, !touch);
+  let skillNote = "";
+  if (!moves) {
+    // 필드 스킬 문: 바위·물길을 필드 스킬(skill.fieldCommonEventId)로 열어야 지나가는 길이면 아는 스킬을 써 열어 본다.
+    const unlock = unlockWithFieldSkills(driver, event, !touch);
+    skillNote = unlock.note;
+    if (unlock.unlocked) {
+      const now = driver.last.session;
+      moves = pathMoves(driver.project, now, now.currentMapId, { x: now.x, y: now.y }, event, !touch);
+    }
+  }
+  if (!moves) return `${driver.project.maps[mapId]?.name ?? mapId} (${session.x},${session.y}) 에서 ${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걸어갈 길이 없습니다(벽·물·다른 이벤트에 막힘).${skillNote}`;
   if (moves.length > 0) {
     const walked = tryCommit(driver, moves);
     if (!walked.ok) return `${event.name ?? event.id} ${touch ? "칸" : "옆"} (${event.x},${event.y}) 까지 걷다 멈췄습니다: ${walked.reason}`;
@@ -1300,6 +1397,7 @@ export function runAutoPlay(
   project: Project,
   options: { readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[]; readonly recoverBeforeRandomEncounters?: boolean } = {},
 ): AutoPlayReport {
+  pageProject = project;
   if (options.recoverBeforeRandomEncounters) RECOVERING_PROJECTS.add(project);
   else RECOVERING_PROJECTS.delete(project);
   const deadline = Date.now() + (options.budgetMs ?? 60_000);

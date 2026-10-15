@@ -2111,3 +2111,13 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 `<out>/journey.mp4`(H.264, 타이틀부터)를 남긴다. 영상 모드는 시작 마을→연구소→마을→도로 풀숲, 센터→도로→트레이너를 실제 방향 입력으로 걷는다
 (짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
 관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
+
+## 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
+
+바위깨기·물 건너기처럼 **파티가 어떤 스킬을 알아야 열리는 길**은 세 군데가 같은 해석기(`src/project/partySkills.ts`)를 쓴다.
+- 이벤트 페이지·분기 조건 `{kind:"partyKnowsSkill",skillId,present?}` — 배우(습득표·직업·성장 트리·장비 `grantsSkillIds`)와 몬스터 파티(`monsterSkillIds`)가 아는 스킬. 평가기 둘(`session.evalCondition`·`pageResolution.evalPageCondition`)과 전투 이벤트가 같은 결과를 낸다.
+- `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` — 앞 칸을 바라본 채 스킬의 `fieldCommonEventId` 를 돌린다(배우는 MP 소모, 몬스터는 무소모). 모르면 「누가 아는지」·고치는 도구를 말하며 실패하고, 끝나면 자동 페이지(깨진 바위의 smash 페이지)가 바로 돈다.
+- `qa:game check` 자동 플레이 — 길이 막히면 막은 조사 이벤트 앞에서 아는 필드 스킬을 쓴 뒤 길을 다시 잰다. `partyKnowsSkill` 선행 조건은 `learnSkill`/동료 합류로 채운다. 아는 사람이 없으면 `autoplay-failed` 문구가 「이 길 앞에서 learnedSkills/learnSkill/grantsSkillIds 로 가르쳐라」 까지 말한다.
+
+재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
+알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.

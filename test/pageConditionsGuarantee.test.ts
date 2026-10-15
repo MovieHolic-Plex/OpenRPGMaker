@@ -124,6 +124,8 @@ function sampleCondition(kind: (typeof CONDITION_KINDS)[number]): EventPageCondi
       return { kind: "actorState", actorId: "anyone", stateId: project.database.states[0]?.id ?? "state_1", present: true };
     case "partyLeader":
       return { kind: "partyLeader", actorId: DEFAULT_ACTOR_ID };
+    case "partyKnowsSkill":
+      return { kind: "partyKnowsSkill", skillId: "skill_probe", present: true };
     case "partySize":
       return { kind: "partySize", op: ">=", value: 1 };
     case "facing":
@@ -272,6 +274,7 @@ describe("page conditions working guarantee (all kinds)", () => {
      sampleCondition("actorStat"),
      sampleCondition("actorState"),
      sampleCondition("partyLeader"),
+     sampleCondition("partyKnowsSkill"),
      sampleCondition("partySize"),
      sampleCondition("facing"),
      sampleCondition("relativeFacing"),
@@ -654,6 +657,10 @@ describe("page conditions working guarantee (all kinds)", () => {
           break;
         case "partyLeader":
           query.partyActorIds = [condition.actorId];
+          break;
+        case "partyKnowsSkill":
+          query.partyActorIds = [DEFAULT_ACTOR_ID];
+          query.actorSkillIds = { [DEFAULT_ACTOR_ID]: [condition.skillId] };
           break;
         case "partySize":
           query.partyActorIds = Array.from({ length: condition.value }, (_, i) => `a${i}`);
