@@ -23,7 +23,7 @@ NEW = {
     'People1:5': dict(face={'down': (8, 14, 15, 18), 'right': (11, 14, 16, 18), 'left': (7, 14, 12, 18), 'up': None},
                       t_start=19, waist=25, shoe_top=29, skin='vyr',
                       hands=hands([(5, 23), (5, 24)], [(18, 23), (18, 24)], [(8, 23), (9, 23)], [(14, 23), (15, 23)])),
-    'People5:5': dict(face={'down': (8, 14, 15, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 11, 17), 'up': None},
+    'People5:5': dict(face={'down': (9, 14, 14, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 11, 17), 'up': None},
                       t_start=18, waist=25, shoe_top=31, skin='uvwx',
                       hands=hands([(5, 24), (6, 24)], [(17, 24), (18, 24)], [(8, 24), (9, 24)], [(14, 24), (15, 24)])),
     'People4:1': dict(face={'down': (7, 15, 16, 19), 'right': (11, 15, 16, 19), 'left': (7, 15, 13, 19), 'up': None},
