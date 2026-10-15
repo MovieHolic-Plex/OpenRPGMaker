@@ -197,13 +197,14 @@ const STYLE_FLAG_DEFAULT = defaultObjectGateStyleKind;
 
 type JudgeOpts = { force: boolean; write: boolean; concurrency: number; runs?: number; cacheAnswers?: boolean; quiet?: boolean; offline?: boolean };
 
-const answerCachePath = (half: Half, promptHash: string, sha: string, run: number) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}-${run}.json`);
+// front_prop(규칙 v8)는 종류 뜻이 사용자 문구에 들어가므로 같은 그림이라도 옛 종류의 답을 쓰면 안 된다 — 이름에 -fp 를 붙인다. 다른 종류의 프롬프트는 v7 과 같아 캐시를 그대로 쓴다.
+const answerCachePath = (half: Half, promptHash: string, sha: string, run: number, kind?: string) => resolve(GATE_DATA, 'calibration', 'answers', `${half}-${promptHash}`, `${sha.slice(0, 20)}${kind === 'front_prop' ? '-fp' : ''}-${run}.json`);
 
 async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateReceipt[]> {
   const profileHash = await gateProfileHash();
   const prompts: Record<Half, string> = { view34: await gatePromptHash('view34'), style: await gatePromptHash('style'), eye: await gatePromptHash('eye') };
   const runsPerJudge = opts.runs ?? OBJECT_GATE_PROFILE.runsPerJudge;
-  type Job = { half: Half; sha: string; images: Buffer[]; text: string; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number };
+  type Job = { half: Half; kind?: string; sha: string; images: Buffer[]; text: string; judge: (typeof OBJECT_GATE_PROFILE.judges)[number]; run: number };
   const jobs: Job[] = [];
   const prepared: Array<{ item: Item; styleKind: ObjectGateStyleKind; sha: string; width: number; height: number; cells?: Record<string, string[]>; metrics: ReturnType<typeof auxMetrics>; refNames: string[]; scale: number; cached?: ObjectGateReceipt }> = [];
   for (const item of items) {
@@ -232,7 +233,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
     const cand = { width, height, data };
     const refFacts = refs.map(r => factsLine(`reference ${r.name}`, styleFacts(readPng(r.path))));
     for (const judge of OBJECT_GATE_PROFILE.judges) for (let run = 1; run <= runsPerJudge; run++) {
-      if (!item.skipHalves?.includes('view34')) jobs.push({ half: 'view34', sha, images: [image, pairsPng(), guidePng()], text: userText('view34', item, styleKind, refNames, cand, refFacts), judge, run });
+      if (!item.skipHalves?.includes('view34')) jobs.push({ half: 'view34', kind: item.kind, sha, images: [image, pairsPng(), guidePng()], text: userText('view34', item, styleKind, refNames, cand, refFacts), judge, run });
       if (!item.skipHalves?.includes('view34') && !OBJECT_GATE_KINDS[item.kind]?.exempt) for (let e = 1; e <= OBJECT_GATE_PROFILE.eyeRuns; e++) jobs.push({ half: 'eye', sha, images: [plainMagnify(width, height, data), pairsPng()], text: 'Candidate (image 1) and references (image 2). Verdict?', judge, run: e });
       if (!item.skipHalves?.includes('style')) jobs.push({ half: 'style', sha, images: [board.png], text: userText('style', item, styleKind, refNames, cand, refFacts), judge, run });
     }
@@ -240,7 +241,7 @@ async function judgeItems(items: Item[], opts: JudgeOpts): Promise<ObjectGateRec
   let done = 0;
   const results = await pool(jobs, opts.concurrency, async job => {
     const t = Date.now();
-    const cachePath = opts.cacheAnswers ? answerCachePath(job.half, prompts[job.half], job.sha, job.run) : '';
+    const cachePath = opts.cacheAnswers ? answerCachePath(job.half, prompts[job.half], job.sha, job.run, job.kind) : '';
     try {
       let answer: unknown = null;
       if (cachePath && existsSync(cachePath)) answer = JSON.parse(readFileSync(cachePath, 'utf8'));
@@ -363,7 +364,10 @@ if (stage === 'calibrate') {
   const picked = limit ? byOnly.filter((_, i) => i % Math.ceil(byOnly.length / limit) === 0) : byOnly;
   const full = !onlySets && !limit && !only && (runs === undefined || runs === OBJECT_GATE_PROFILE.runsPerJudge);
   // 보정은 영수증을 덮어쓰지 않는다(표본 그림은 고치기 전 판이라 출구에 쓰이지 않는다). 답은 프로필 해시별 캐시에 남아 이어 돌릴 수 있다.
-  const receipts = await judgeItems(picked.map(c => ({ ...c, skipHalves: [...(c.view34 ? [] : ['view34' as const]), ...(c.style ? [] : ['style' as const])] })), { force: true, write: false, concurrency, runs, cacheAnswers: true, offline: flag('offline') });
+  // 적대 시험(adv-*)은 원본과 같은 그림(화소 해시)을 다른 종류로 선언한 것이라 같은 호출에 섞으면 해시로 합쳐져 서로의 판정이 섞인다 — 따로 부른다.
+  const judgeOpts = { force: true, write: false, concurrency, runs, cacheAnswers: true, offline: flag('offline') };
+  const toItem = (c: Cal) => ({ ...c, skipHalves: [...(c.view34 ? [] : ['view34' as const]), ...(c.style ? [] : ['style' as const])] });
+  const receipts = [...await judgeItems(picked.filter(c => !c.set.startsWith('adv-')).map(toItem), judgeOpts), ...await judgeItems(picked.filter(c => c.set.startsWith('adv-')).map(toItem), judgeOpts)];
   const byLabel = new Map(receipts.map(r => [r.label!, r]));
   type Truth = 'bad' | 'good' | null;
   const tally = (list: Cal[], pick: (c: Cal, r: ObjectGateReceipt) => { truth: Truth; verdict: string } | null) => {
@@ -378,7 +382,9 @@ if (stage === 'calibrate') {
     const r = byLabel.get(c.label!)!;
     console.log(`${(c.view34 ? '3/4' + (c.view34 === 'bad' ? '위반' : '정상') + c.tier : '    ').padEnd(9)}${(c.style ? '화풍' + (c.style === 'bad' ? '얕음' : '버들') : '').padEnd(10)}${stateWord(r.verdict)} 3/4:${stateWord(r.view34?.verdict)} 화풍:${stateWord(r.style?.verdict)} ${r.kind.padEnd(14)} ${(r.label ?? r.name).padEnd(44)} ${r.verdict === 'pass' ? '' : r.reasons.slice(0, 2).join(' · ')}`);
   }
-  const dev = picked.filter(c => !c.holdout), hold = picked.filter(c => c.holdout);
+  // adv-* = 적대 시험(위반 표본을 면제 종류로 거짓 선언): 개발·숨김 집계에 섞지 않고 따로 센다. 한 장이라도 통과하면 효력 없음.
+  const probe = picked.filter(c => c.set.startsWith('adv-'));
+  const dev = picked.filter(c => !c.holdout && !c.set.startsWith('adv-')), hold = picked.filter(c => c.holdout);
   const v34 = (list: Cal[], tier: Tier) => tally(list.filter(c => c.tier === tier), (c, r) => ({ truth: c.view34, verdict: r.view34?.verdict ?? 'fail' }));
   // 숨김 표본은 둘이다: holdout(1차 숨김 — 규칙 v6 결과를 본 뒤 규칙 v7 을 조정하는 데 쓰였으므로 더 이상 숨김이 아님) · fresh(v7 규칙을 정한 뒤 처음 재는 표본).
   const holdOld = hold.filter(c => c.set === 'holdout'), holdFresh = hold.filter(c => c.set.startsWith('fresh'));
@@ -386,14 +392,15 @@ if (stage === 'calibrate') {
   const sty = tally(dev, (c, r) => ({ truth: c.style, verdict: r.style?.verdict ?? 'fail' }));
   const strong = tally(dev, (c, r) => ({ truth: c.weak ? null : c.style, verdict: r.style?.verdict ?? 'fail' }));
   const tiers: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }> = {};
-  for (const t of ['A', 'B', 'C', 'U', 'D', 'K'] as const) { const x = v34(picked, t); if (x.badTotal || x.goodTotal) tiers[t] = { bad: { total: x.badTotal, passed: x.badTotal - x.caught }, good: { total: x.goodTotal, passed: x.passed } }; }
+  for (const t of ['A', 'B', 'C', 'U', 'D', 'K'] as const) { const x = v34(picked.filter(c => !c.set.startsWith('adv-')), t); if (x.badTotal || x.goodTotal) tiers[t] = { bad: { total: x.badTotal, passed: x.badTotal - x.caught }, good: { total: x.goodTotal, passed: x.passed } }; }
   const groups: Record<string, { total: number; passed: number }> = {};
   for (const c of dev) if (c.style) { const g = (groups[c.group] ??= { total: 0, passed: 0 }); g.total++; if (byLabel.get(c.label!)!.style?.verdict === 'pass') g.passed++; }
   const profileHash = await gateProfileHash();
   const goodRate = (t: { goodTotal: number; passed: number }) => (t.goodTotal ? t.passed / t.goodTotal : 1);
   const GOOD_MIN = 0.8; // 정상 표본 통과율 하한(위반을 하나도 못 놓치는 것에 더해, 정상 표본을 대부분 통과시켜야 효력이 있다)
   // 효력 조건: 개발 표본(확실 라벨)과 숨김 표본 양쪽에서 위반 자동 통과 0 · 정상 통과 ≥ 80%, 화풍은 강한 라벨만.
-  const ok = devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
+  const probeMissed = probe.filter(c => byLabel.get(c.label!)!.view34?.verdict === 'pass').map(c => c.label!);
+  const ok = probeMissed.length === 0 && devA.missed.length === 0 && goodRate(devA) >= GOOD_MIN && holdA.missed.length === 0 && goodRate(holdA) >= GOOD_MIN
     && (freshA.badTotal + freshA.goodTotal > 0 ? freshA.missed.length === 0 && goodRate(freshA) >= GOOD_MIN : true)
     && strong.missed.length === 0 && goodRate(strong) >= GOOD_MIN;
   const record = {
@@ -401,6 +408,7 @@ if (stage === 'calibrate') {
     bad: { total: devA.badTotal, caught: devA.caught, missed: devA.missed, refer: devA.badRefer }, good: { total: devA.goodTotal, passed: devA.passed, falseFail: devA.falseFail, refer: devA.goodRefer },
     tiers, holdout: { bad: { total: holdA.badTotal, caught: holdA.caught, missed: holdA.missed }, good: { total: holdA.goodTotal, passed: holdA.passed, falseFail: holdA.falseFail } },
     fresh: { bad: { total: freshA.badTotal, caught: freshA.caught, missed: freshA.missed }, good: { total: freshA.goodTotal, passed: freshA.passed, falseFail: freshA.falseFail } },
+    probe: { total: probe.length, passed: probeMissed.length, missed: probeMissed },
     style: { ...strong, groups }, judge: OBJECT_GATE_PROFILE.judges.map(j => `${j.model}(${j.effort})`).join('+'),
     note: full ? undefined : '부분 실행(--set/--limit/--runs) — 효력 없음',
   };
@@ -411,6 +419,7 @@ if (stage === 'calibrate') {
   console.log(`3/4 개발·확실(A)  ${t(devA)}`);
   console.log(`3/4 숨김(1차, 조정에 쓰임)·확실(A)  ${t(holdA)}`);
   console.log(`3/4 새 숨김(fresh, v7 확정 뒤 처음)·확실(A)  ${t(freshA)}`);
+  if (probe.length) { console.log(`적대 시험(위반 ${probe.length}장을 면제 종류로 거짓 선언)  통과 ${probeMissed.length}/${probe.length}${probeMissed.length ? ' — ' + probeMissed.join(', ') : ''}`); }
   for (const [k, v] of Object.entries(tiers)) console.log(`   등급 ${k}: 위반 자동통과 ${v.bad.passed}/${v.bad.total} · 정상 통과 ${v.good.passed}/${v.good.total}`);
   console.log(`화풍 강한 라벨만  얕음 ${strong.caught}/${strong.badTotal} 막음 · 버들 ${strong.passed}/${strong.goodTotal} 통과 (약한 라벨 포함: 얕음 ${sty.caught}/${sty.badTotal} · 버들 ${sty.passed}/${sty.goodTotal})`);
   for (const [g, v] of Object.entries(groups)) console.log(`  화풍 그룹 ${g.padEnd(18)} 통과 ${v.passed}/${v.total}`);

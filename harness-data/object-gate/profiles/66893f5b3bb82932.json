@@ -1,0 +1,209 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "66893f5b3bb82932",
+ "status": "rejected",
+ "calibratedAt": "2026-10-15T16:58:52.089Z",
+ "bad": {
+  "total": 30,
+  "caught": 30,
+  "missed": [],
+  "refer": 9
+ },
+ "good": {
+  "total": 29,
+  "passed": 26,
+  "falseFail": [
+   "interior/roundtable__v5",
+   "interior/cheese_wheels__v5",
+   "interior/bookshelf_1w__w41-A"
+  ],
+  "refer": 3
+ },
+ "tiers": {
+  "A": {
+   "bad": {
+    "total": 84,
+    "passed": 0
+   },
+   "good": {
+    "total": 133,
+    "passed": 103
+   }
+  },
+  "B": {
+   "bad": {
+    "total": 7,
+    "passed": 3
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "C": {
+   "bad": {
+    "total": 21,
+    "passed": 9
+   },
+   "good": {
+    "total": 19,
+    "passed": 3
+   }
+  },
+  "U": {
+   "bad": {
+    "total": 16,
+    "passed": 1
+   },
+   "good": {
+    "total": 4,
+    "passed": 0
+   }
+  },
+  "D": {
+   "bad": {
+    "total": 16,
+    "passed": 11
+   },
+   "good": {
+    "total": 0,
+    "passed": 0
+   }
+  },
+  "K": {
+   "bad": {
+    "total": 0,
+    "passed": 0
+   },
+   "good": {
+    "total": 10,
+    "passed": 0
+   }
+  }
+ },
+ "holdout": {
+  "bad": {
+   "total": 47,
+   "caught": 47,
+   "missed": []
+  },
+  "good": {
+   "total": 47,
+   "passed": 42,
+   "falseFail": [
+    "holdout/mir_bathtub__w22-F",
+    "holdout/mir_straw_bed__w44-A",
+    "holdout/mir_cheese_wheels__v5",
+    "holdout/mir_bookshelf_1w__w41-A",
+    "holdout/hue_cheese_wheels__v5"
+   ]
+  }
+ },
+ "fresh": {
+  "bad": {
+   "total": 7,
+   "caught": 7,
+   "missed": []
+  },
+  "good": {
+   "total": 57,
+   "passed": 35,
+   "falseFail": [
+    "fresh3/b3_prop-stall_jug_bottle",
+    "fresh3/b3_prop-crate_apple",
+    "fresh3/b3_prop-crate_cabbage",
+    "fresh3/b3_prop-anchor_display",
+    "fresh3/b3_prop-fish_crates",
+    "fresh3/b3_prop-fish_barrel",
+    "fresh3/b3_prop-mooring_bollard",
+    "fresh3/b3_prop-bread_rack",
+    "fresh3/b3_prop-crate_fish",
+    "fresh3/b3_prop-sword_barrel",
+    "fresh3/b3_prop-flowerbox_long",
+    "fresh3/b3_prop-tree_planter",
+    "fresh3/b3_prop-column_monument",
+    "fresh3/b3_prop-statue_sage",
+    "fresh/g6_snow",
+    "fresh/g20_campus",
+    "fresh/g53_modern_city",
+    "fresh/g44_desert",
+    "fresh/g62_modern_city",
+    "fresh/g18_modern_city",
+    "fresh2/g7_steampunk",
+    "fresh2/g12_modern_city"
+   ]
+  }
+ },
+ "probe": {
+  "total": 144,
+  "passed": 26,
+  "missed": [
+   "adv-front-prop/interior__pew__v5",
+   "adv-front-prop/interior__column_dwarf__w51-A",
+   "adv-front-prop/interior__hammock__w72-A",
+   "adv-front-prop/interior__loom__w43-A",
+   "adv-front-prop/interior__spiral_stair__v5",
+   "adv-front-prop/holdout__mir_pew__v5",
+   "adv-front-prop/holdout__mir_pew_E2__w45-A",
+   "adv-front-prop/holdout__mir_pew_E3__w45-A",
+   "adv-front-prop/holdout__mir_column_dwarf__w51-A",
+   "adv-front-prop/holdout__mir_hammock__w72-A",
+   "adv-front-prop/holdout__mir_hay_bale__w44-A",
+   "adv-front-prop/holdout__mir_loom__w43-A",
+   "adv-front-prop/holdout__mir_spiral_stair__v5",
+   "adv-front-prop/holdout__flat_nightstand__w8-C",
+   "adv-front-prop/holdout__flat_tea_table__B",
+   "adv-front-prop/holdout__thin_tea_table__B",
+   "adv-front-prop/holdout__flat_feed_trough__w4-B",
+   "adv-front-prop/holdout__flat_timber_prop__w53-B",
+   "adv-front-prop/holdout__thin_timber_prop__w53-B",
+   "adv-front-prop/holdout__realbad_desk_2x1",
+   "adv-front-prop/fresh__c6_snow",
+   "adv-front-prop/fresh__c4_campus",
+   "adv-front-prop/fresh__c53_modern_city",
+   "adv-front-prop/fresh2__b44_modern_city",
+   "adv-front-prop/fresh2__b11_campus",
+   "adv-front-prop/fresh2__b46_modern_city"
+  ]
+ },
+ "style": {
+  "badTotal": 10,
+  "caught": 9,
+  "missed": [
+   "style/farm__farm-fenced-plot__v2"
+  ],
+  "badRefer": 0,
+  "goodTotal": 18,
+  "passed": 14,
+  "falseFail": [
+   "style/farm__farm-fenced-plot__v3",
+   "style/farm__farm-plot-wheat__v3",
+   "style/farm__farm-fence-v-3__v3",
+   "style/beodeul__prop-lamp_double"
+  ],
+  "goodRefer": 1,
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 4
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 4
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 10
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 12
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "claude-sonnet-5-5(high)"
+}
