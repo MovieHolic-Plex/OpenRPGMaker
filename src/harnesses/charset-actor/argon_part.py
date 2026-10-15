@@ -87,7 +87,7 @@ def agy_bin():
     return shutil.which('agy') or os.path.expanduser('~/.local/bin/agy')
 
 
-def seed_workdir(adir, base_key, prev=None, seed_edit=None):
+def seed_workdir(adir, base_key, prev=None, seed_edit=None, cand_keep_gear=False):
     nk = H.norm_base(base_key)
     pal, frames, labels, zones, info = P.segment(nk)
     (adir / 'base.json').write_text(json.dumps(dict(base=nk), ensure_ascii=False))
@@ -99,7 +99,8 @@ def seed_workdir(adir, base_key, prev=None, seed_edit=None):
         shutil.copy(prev / 'edit.json', adir / 'edit.json')
     elif seed_edit:
         ed = json.loads(Path(seed_edit).read_text(encoding='utf-8'))
-        ed.pop('gear', None)          # 의복·머리 편집은 이어받고 장비는 새 규칙으로 다시 쓴다
+        if not cand_keep_gear:
+            ed.pop('gear', None)      # 의복·머리 편집은 이어받고 장비는 새 규칙으로 다시 쓴다
         (adir / 'edit.json').write_text(json.dumps(ed, ensure_ascii=False, indent=1))
     plain = Image.new('RGBA', (72, 128), (92, 140, 70, 255))
     plain.alpha_composite(C.sheet_rgba(pal, frames))
@@ -197,7 +198,7 @@ def make_candidate(spec, cand, key, run_dir, model):
     for n in range(1, MAX_ATTEMPTS + 1):
         adir = cdir / 'attempts' / str(n)
         adir.mkdir(parents=True, exist_ok=True)
-        pal, info = seed_workdir(adir, base_key, prev, cand.get('seed_edit'))
+        pal, info = seed_workdir(adir, base_key, prev, cand.get('seed_edit'), bool(cand.get('keep_gear')))
         info['adir'] = str(adir)
         code, out = run_agy(adir, prompt(spec, cand, pal, info, feedback, bool(prev)), f'try{n}', model)
         res, errs, warns, m = P.run_apply(adir, write=True)

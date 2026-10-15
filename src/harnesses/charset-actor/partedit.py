@@ -595,6 +595,13 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
             if len(vis) < 3:
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다 — 이 방향·모드({gi["mode"]})에서 몸에 가려 안 보인다(grip {gi["anchor"]})')
                 continue
+            need = {'held': 10, 'hip': 8, 'back': 8}[gi['kind']]
+            if gi['mode'] == 'front' and len(vis) < need:
+                errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다(최소 {need}) — 1칸 폭 막대·너무 작은 장비는 손에 쥔 것으로 읽히지 않는다. 키워라')
+            if gi['kind'] == 'held' and gi['mode'] == 'front':
+                thick = sum(1 for (x, y) in vis if (x + 1, y) in vis or (x - 1, y) in vis)
+                if thick < 0.5 * len(vis):
+                    errs.append(f'장비 {name!r} {d} {f}: 막대가 1칸 폭이라 얇다(2칸 폭 칸이 {thick}/{len(vis)}) — 자루를 2칸 폭으로 그려야 손에 쥔 것으로 읽힌다')
             near = any(max(abs(x - cx), abs(y - cy)) <= 1 for (x, y) in vis for (cx, cy) in gi['cells'])
             if not near:
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 앵커 칸 {sorted(gi["cells"])[:2]} 에 닿거나 겹치지 않는다 — 손에 쥐어지지 않고 따로 논다')
