@@ -334,10 +334,12 @@ export default defineConfig(({ mode }) => {
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
           if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) {
-            // 1MB 가 넘는 JSON 은 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 청크가 여럿이면 병렬로 풀린다.
+            // 8MB 가 넘는 JSON(버들항·일본 도시 타일셋)만 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 큰 덩이가 여럿이면
+            // 병렬로 풀린다. 웜 부팅 실측(2026-10-15, 9회 중앙값): 한 덩이 → 셋으로 모듈 평가 시작 1.6s → 1.1s, 편집 화면 5.5s → 4.6s.
+            // 더 잘게(1MB 기준 11덩이) 나누면 평가는 0.1s 더 빠르지만 modulepreload 가 46개로 늘어 첫 페인트가 0.2s → 0.4s 로 늦어진다.
             let size = 0;
             try { size = statSync(file).size; } catch { /* 가상 모듈 */ }
-            return size > 1_000_000 ? `bundled-data-${file.slice(file.lastIndexOf("/") + 1, -5)}` : "bundled-data";
+            return size > 8_000_000 ? `bundled-data-${file.slice(file.lastIndexOf("/") + 1, -5)}` : "bundled-data";
           }
           return undefined;
         },
