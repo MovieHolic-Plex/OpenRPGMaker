@@ -146,7 +146,7 @@ export function battleSkillUseFailureLabel(
       return `${(project && limitGaugeConfig(project)?.label) || "리미트"} 게이지가 가득 차야 합니다.`;
     case "insufficientPartyGauge":
       return `${(project && partyGaugeConfig(project)?.label) || "연계 게이지"}가 부족합니다.`;
-    case "cooldown": return "재사용 대기 중입니다.";
+    case "cooldown": return skill?.oncePerBattle ? "이번 전투에서는 이미 사용했습니다." : "재사용 대기 중입니다.";
     case "noPp":
       return "PP가 부족합니다.";
     case "comboPartnerAbsent":
@@ -229,8 +229,12 @@ export function comboParticipantsFromSnapshot(snapshot: Pick<BattleSnapshot, "ac
 
 /** Includes the casting round; end-of-round decrement leaves N subsequent blocked rounds. */
 export function startBattleSkillCooldown(user: Pick<MutableBattler, "skillCooldowns">, skill: SkillRecord): void {
-  if ((skill.cooldownTurns ?? 0) > 0) (user.skillCooldowns ??= {})[skill.id] = skill.cooldownTurns! + 1;
+  // 전투당 1회(oncePerBattle): 라운드가 지나도 풀리지 않는 대기값. 전투가 끝나면 배틀러와 함께 사라진다.
+  if (skill.oncePerBattle) (user.skillCooldowns ??= {})[skill.id] = ONCE_PER_BATTLE_LOCK;
+  else if ((skill.cooldownTurns ?? 0) > 0) (user.skillCooldowns ??= {})[skill.id] = skill.cooldownTurns! + 1;
 }
+/** 전투당 1회 기술의 영구 대기값(라운드마다 1씩 줄어도 한 전투 안에는 풀릴 수 없는 크기). */
+export const ONCE_PER_BATTLE_LOCK = 1_000_000;
 export function advanceBattleSkillCooldowns(battlers: readonly Pick<MutableBattler, "skillCooldowns">[]): void {
   for (const battler of battlers) for (const id of Object.keys(battler.skillCooldowns ?? {})) {
     const remaining = battler.skillCooldowns![id] - 1;

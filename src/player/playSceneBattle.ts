@@ -152,6 +152,8 @@ export async function playBattle(
         actorSkillIds: scene.session.actorSkillIds,
         actorExperience: scene.session.actorExperience,
         actorTechPoints: scene.session.actorTechPoints,
+        actorApProgress: scene.session.actorApProgress,
+        learnedViaAp: scene.session.learnedViaAp,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         difficultyId: scene.session.difficultyId,

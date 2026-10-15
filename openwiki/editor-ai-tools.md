@@ -222,6 +222,12 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - SQLite 저장·재로드 근거: `verify-shots/beodeul-door/applied/canonical-proof.json`.
   실제 플레이 검사는 같은 폴더의 `runtime/SUMMARY.md`를 먼저 읽는다.
 
+## FF6 마석 성장 도구 — upsert_equipment_slot · apGrants · levelUpBonus (2026-10-15)
+
+- `upsert_equipment_slot` — 장비 부위(유물 2칸·마석 칸). `slots:[{id,label,equipsAs?}]` 순서대로 만들고(equipsAs 가 가리키는 부위를 앞에), `removeIds` 는 쓰는 칸을 거절한다. 모르는 키·기본 5칸의 equipsAs·없는 equipsAs 는 오류로 거절. `upsert_equipment` 가 모르는 slot 이면 「먼저 upsert_equipment_slot」을 안내한다(예전: `Unknown equipment slot: relic` 만).
+- `upsert_equipment` 신규 필드: `apGrants [{skillId,ap}]`(없는 스킬은 거절 → upsert_skill 안내)·`apRate`·`levelUpBonus`. AP 를 줄 적이 하나도 없으면 경고(`upsert_enemy.rewards.ap`). `upsert_skill.oncePerBattle` 은 소환용.
+- 능력 색인 레시피 `esper-growth`, 라벨 「장비 부위 수정」. 설명·규칙: `openwiki/runtime-battle.md` 「FF6 마석 성장」.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.

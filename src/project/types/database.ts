@@ -95,6 +95,11 @@ export type ActorInitialEquipment = Partial<Record<string, EquipmentId>>;
 export interface EquipmentSlotRecord {
   id: string;
   label: string;
+  /**
+   * 이 칸에는 `equipsAs` 부위로 만든 장비도 들어간다(FF6 유물 2칸: relic_2.equipsAs = "relic" 이면 slot:"relic" 장비가
+   * relic·relic_2 어느 칸에든 낀다). 칸 id 로 만든 장비는 물론 들어간다. 생략 = 자기 부위 장비만.
+   */
+  equipsAs?: string;
 }
 
 export interface ActorOptions {
@@ -266,6 +271,11 @@ export interface SkillRecord {
   criticalMultiplier?: number;
   /** Number of subsequent full battle rounds during which this skill is unavailable. */
   cooldownTurns?: number;
+  /**
+   * 전투당 1회(FF6 소환 마법): 한 전투에서 시전자가 한 번 쓰면 그 전투가 끝날 때까지 다시 쓸 수 없다.
+   * cooldownTurns 99 로 근사하던 것을 대신한다(쿨다운은 라운드가 지나면 풀리지만 이것은 풀리지 않는다). 생략 = 제한 없음.
+   */
+  oncePerBattle?: boolean;
   /** Ordered damage/healing multipliers, one per hit. Omitted means one hit. */
   hitSequence?: number[];
   effect: SkillEffect;
@@ -542,6 +552,32 @@ export interface EquipmentRecord {
   grantsSkillIds?: SkillId[];
   /** 장착 중에만 전투 명령 메뉴에 붙는 명령. skillId 가 있으면 그 스킬도 함께 쓸 수 있다. */
   grantsCommand?: ClassBattleCommand;
+  /**
+   * 마석 AP 습득(FF6): 장착한 배우가 전투 승리마다 AP(적 rewards.ap 합계 × apRate%)를 이 장비의 각 항목에 쌓고,
+   * 필요 AP 를 채우면 그 스킬을 **영구히** 배운다 — 장비를 벗어도 남는다. 배운 스킬은 PlaySession.actorSkillIds 와
+   * learnedViaAp 에 기록된다. grantsSkillIds 와 따로이다(거기 넣으면 배우기 전에도 장착 중에는 쓸 수 있다). 생략 = 없음.
+   */
+  apGrants?: EquipmentApGrant[];
+  /** AP 습득률 %(1~1000, 기본 100). 이 장비의 apGrants 에만 곱한다(마석마다 배우는 속도가 다르다). */
+  apRate?: number;
+  /** 레벨업 보너스(FF6 마석): 장착한 배우가 레벨이 오를 때마다 영구 능력치 보너스를 받는다(PlaySession.actorParamBonuses). 생략 = 없음. */
+  levelUpBonus?: EquipmentLevelUpBonus;
+}
+
+export interface EquipmentApGrant {
+  skillId: SkillId;
+  /** 영구 습득에 필요한 AP(1~99999). */
+  ap: number;
+}
+
+/** 레벨 하나가 오를 때마다 더해지는 영구 보너스. *Percent 는 그때의 최대치의 %, 나머지는 고정값. */
+export interface EquipmentLevelUpBonus {
+  maxHpPercent?: number;
+  maxMpPercent?: number;
+  attack?: number;
+  defense?: number;
+  mind?: number;
+  agility?: number;
 }
 
 export interface EquipmentStatBonuses {
@@ -711,6 +747,8 @@ export interface EnemyRewards {
   dropRatePercent: number;
   /** 기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다. 생략 = 0. */
   tp?: number;
+  /** 마석 AP. 승리 시 살아남은 파티원 전원이 트룹 합계를 받아 장착한 마석의 apGrants 에 쌓는다. 생략 = 0. */
+  ap?: number;
   /** When present, replaces the legacy single drop (including an explicitly empty list). */
   drops?: { itemId: ItemId; ratePercent: number; quantity: number; condition: EnemyActionCondition }[];
 }

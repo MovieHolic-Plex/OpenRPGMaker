@@ -1,6 +1,10 @@
 import type { BattleResult } from "@/battle/runtime";
 import type { BattleBattlerSnapshot, BattleCapturedMonsterSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
 import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
+import { computeApLearning } from "@/battle/battleEsperAp";
+import { effectiveActorEquipment } from "@/project/equipmentRules";
+import { effectiveActorClassId } from "@/project/sessionClass";
+import { normalizeActorRecord } from "@/project/actorModel";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
@@ -89,6 +93,7 @@ export function applyBattleRewardsToSession(
       if (levelUp) levelUps.push(levelUp);
     }
     applyTechPointsToSession(session, project, outcome, rewardActorIdList);
+    applyEsperApToSession(session, project, outcome, rewardActorIdList);
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
   const itemState = transitionItemStates(
@@ -133,6 +138,34 @@ function applyTechPointsToSession(
     const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
     const learned = computeTechPointLearning(project, actorId, level, totalTp, known);
     if (learned.length > 0) session.actorSkillIds[actorId] = [...(session.actorSkillIds[actorId] ?? []), ...learned];
+  }
+}
+
+// 마석 AP: 살아남은 보상 대상 전원이 트룹 AP 합계를 받아 장착한 마석의 apGrants 에 쌓고, 필요 AP 를 채운 스킬은
+// 영구 습득한다(actorSkillIds + learnedViaAp). 장비를 벗어도 남는다. 저작된 AP 가 없으면 아무것도 쓰지 않는다.
+function applyEsperApToSession(
+  session: PlaySession,
+  project: Project,
+  outcome: BattleRewardsOutcome,
+  actorIds: readonly string[],
+): void {
+  const earnedAp = Math.max(0, Math.trunc(outcome.rewards.ap ?? 0));
+  if (earnedAp <= 0) return;
+  for (const actorId of new Set(actorIds)) {
+    const record = project.database.actors.find((actor) => actor.id === actorId);
+    if (!record) continue;
+    const vitals = session.actorVitals[actorId];
+    const snapshot = (outcome.actors ?? []).find((actor) => actor.recordId === actorId);
+    if ((vitals ? vitals.hp : snapshot?.hp ?? 1) <= 0) continue;
+    const equipment = effectiveActorEquipment(project, normalizeActorRecord(record), session.actorEquipment?.[actorId], effectiveActorClassId(project, session, actorId));
+    const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
+    const result = computeApLearning(project, equipment, earnedAp, session.actorApProgress?.[actorId], known);
+    if (Object.keys(result.progress).length > 0) (session.actorApProgress ??= {})[actorId] = result.progress;
+    if (result.learned.length === 0) continue;
+    const skillIds = result.learned.map((entry) => entry.skillId);
+    session.actorSkillIds[actorId] = [...new Set([...(session.actorSkillIds[actorId] ?? []), ...skillIds])];
+    const via = (session.learnedViaAp ??= {});
+    via[actorId] = [...new Set([...(via[actorId] ?? []), ...skillIds])];
   }
 }
 
@@ -270,10 +303,26 @@ function applyBattleVitalsToSession(
 export function applyActorLevelUp(session: PlaySession, project: Project, actorId: string): BattleLevelUpResult | null {
   const currentLevel = session.actorLevels[actorId] ?? 1;
   const totalExp = session.actorExperience[actorId] ?? 0;
-  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides });
+  const actorRecord = project.database.actors.find((actor) => actor.id === actorId);
+  const equipment = actorRecord
+    ? effectiveActorEquipment(project, normalizeActorRecord(actorRecord), session.actorEquipment?.[actorId], effectiveActorClassId(project, session, actorId))
+    : undefined;
+  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides, equipment });
   if (!result) return null;
 
   session.actorLevels[actorId] = result.toLevel;
+
+  // 마석 레벨업 보너스는 영구 보너스(Change Parameters 와 같은 actorParamBonuses)로 적립한다 — 장비를 벗어도 남는다.
+  // 최대치는 아래 vitals 가산과 이후 refreshGrowthVitals 가 같은 값으로 맞춘다.
+  if (result.equipmentBonus) {
+    session.actorParamBonuses ??= {};
+    const bonuses = { ...(session.actorParamBonuses[actorId] ?? {}) };
+    for (const key of ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const) {
+      const gain = result.equipmentBonus[key];
+      if (gain) bonuses[key] = (bonuses[key] ?? 0) + gain;
+    }
+    session.actorParamBonuses[actorId] = bonuses;
+  }
 
   // maxHp/maxMp 증가분만큼 최대치와 현재치를 함께 올린다(RM2K3: 증가분 가산).
   const vitals = session.actorVitals[actorId];
