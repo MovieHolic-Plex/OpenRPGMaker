@@ -202,12 +202,19 @@ async function runTalkPath(
       playerTileY: scene.tileY,
       mapHeight: scene.map.height,
     });
+  } catch (error) {
+    // 마지막 칸의 시계는 하루 끝 1분 앞에 서 있어, 피드백이 떠 있는 동안 자연 시계가 강제 취침을 먼저 건다 — 그 취침이
+    // 열린 대사를 가져가며 끊는 것이다(런타임 QA 실측 「Text cancelled」). 하루가 이미 넘어가는 중이면 정상 흐름이다.
+    const takenOverBySleep = endsDay && scene.timeSleepInProgress
+      && error instanceof DOMException && error.name === "AbortError";
+    if (!takenOverBySleep) throw error;
   } finally {
+    // 취침이 이미 대화창(에필로그)을 쥐고 있으면 여기서 닫지 않는다.
     if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
       scene.running = previousRunning;
       scene.lastActionTargetKey = "";
       scene.setInputEnabled(previousInputEnabled);
-      dialogue.close();
+      if (!scene.timeSleepInProgress) dialogue.close();
       scene.refreshRuntimeSurfaces();
     }
   }
