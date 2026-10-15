@@ -6,7 +6,7 @@ import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarlox
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { EXPEDITION_AUDIO as audio } from "./audio";
-import { EXPEDITION_BALL_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
+import { EXPEDITION_BALL_IDS, EXPEDITION_HELD_ITEM_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
 import { EXPEDITION_TOWNS as allTowns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as planRoutes, EXPEDITION_SIDE_AREAS as allSides } from "./worldPlan";
 import { campaignLevels, campaignShape, clampGymCount, FULL_GYMS, gymWord } from "./campaignPlan";
 import markerAssets from "./markers.json";
@@ -612,7 +612,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
       [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${lookTown(t).name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
-      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb"], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
+      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
     if (i === 0) event(upstairs, "console", { x: 8, y: 3 }, [text("게임기다. 모험에서 돌아오면 또 하자.")], { graphic: invisible });

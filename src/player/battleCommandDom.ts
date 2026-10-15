@@ -1,3 +1,4 @@
+import { statStageEffectText } from "@/battle/statStages";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
@@ -396,7 +397,7 @@ export function syncEnemyListPanel(
     }
     row.classList.toggle("defeated", shownDefeated);
     // 에메랄드 상대 HP 상자에도 상태 배지를 단다(스프라이트 쪽 배지는 CSS 가 숨긴다).
-    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds });
+    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds, statStages: shownDefeated ? undefined : enemy.statStages });
   }
 }
 
@@ -703,7 +704,7 @@ function skillDetailFor(
   const states = (fullSkill.stateEffects ?? []).map((effect) => {
     const name = project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId;
     return `${name} ${effect.operation === "remove" ? "해제" : "부여"}`;
-  }).join(", ");
+  }).concat((fullSkill.statStageEffects ?? []).map(statStageEffectText)).join(", ");
   const effect = fullSkill.effect.kind === "healing"
     ? `${terms.hp} ${fullSkill.power} 회복`
     : fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch"

@@ -221,6 +221,16 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
       runtimeEffects: { hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },
     }),
     normalizeStateRecord({
+      id: "state_toxic", name: "맹독", gen1MajorStatus: "toxic", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_confusion", name: "혼란", volatileStatus: "confusion", restriction: "없음",
+      removalCondition: "전투 종료", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { removeOnBattleEnd: true },
+    }),
+    normalizeStateRecord({
       id: "state_burn", name: "화상", gen1MajorStatus: "burn", restriction: "없음",
       removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
       runtimeEffects: { attackMultiplier: 0.5, hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },

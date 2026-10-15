@@ -207,8 +207,12 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
     const instance = session.monsterInstances[instanceId];
     if (!instance) continue;
     if (session.actorStateIds) delete session.actorStateIds[instanceId];
+    // 열매는 쓰면 사라진다 — 전투 끝에 배틀러가 도구를 잃었으면 개체에서도 지운다(그 밖의 경우는 건드리지 않는다).
+    const { heldItemId: carried, ...bare } = instance;
+    const heldItem = carried && !actor.heldItemId ? {} : carried ? { heldItemId: carried } : {};
     session.monsterInstances[instanceId] = {
-      ...instance,
+      ...bare,
+      ...heldItem,
       currentHp: Math.max(0, Math.min(actor.maxHp, actor.hp)),
       stateIds: [...actor.stateIds],
       stateTurns: actor.stateTurns

@@ -1,8 +1,12 @@
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { CAPTURE_CONDITION_KINDS, CAPTURE_CONDITION_MAX_MULTIPLIER, CAPTURE_CONDITION_MIN_MULTIPLIER } from "@/battle/captureBalls";
+import { SKILL_WEATHER_KINDS, SKILL_WEATHER_MAX_TURNS, SKILL_WEATHER_MIN_TURNS } from "@/battle/weather";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
+import { HELD_ITEM_KINDS, HELD_ITEM_STATUSES } from "@/battle/heldItems";
+import { MONSTER_ABILITY_KINDS, MONSTER_ABILITY_STATS, MONSTER_ABILITY_STATUSES } from "@/battle/abilities";
+import { isStatStageKey, STAT_STAGE_KEYS, STAT_STAGE_MAX } from "@/battle/statStages";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
 import { finalizeSkillCombatPatch, validateEnemyCombatPatch, validateSkillCombatPatch } from "./combatAuthoringValidation";
 import { PARTY_PIXEL_SHEETS, partyPixelSheet } from "@/assets/partyPixelSheets";
@@ -399,6 +403,12 @@ const stateEffectSchema = objectSchema({
   chance: integerSchema(),
   operation: { type: "string", enum: ["add", "remove"] },
 });
+const statStageEffectSchema = objectSchema({
+  stat: { type: "string", enum: [...STAT_STAGE_KEYS], description: "attack 공격 · defense 방어 · spAttack 특수공격 · spDefense 특수방어 · speed 스피드 · accuracy 명중률 · evasion 회피율" },
+  stages: integerSchema("능력치 단계 변화 −6~+6, 0 제외. 울음=attack −1, 칼춤=attack +2, 몸을 단단히=defense +1, 연막=accuracy −1"),
+  chance: integerSchema("발동 확률 0~100(생략 = 100). 피해 기술의 부가 효과(예: 20% 방어 하락)에 쓴다"),
+  target: { type: "string", enum: ["target", "self"], description: "생략/target = 기술 대상의 단계, self = 시전자 자신(오버히트로 자신의 특수공격이 떨어짐)" },
+});
 const rateMapSchema: JsonSchema = { type: "object", description: "{ id: A|B|C|D|E }", additionalProperties: true };
 const parameterCurvesSchema = objectSchema({
   maxHp: { type: "array", items: integerSchema() },
@@ -529,6 +539,16 @@ const stateRuntimeEffectsSchema = objectSchema({
   invertHealing: booleanSchema("좀비 — 이 상태인 동안 받는 HP 회복(회복 스킬·회복 아이템·재생)이 같은 양의 피해가 된다. 기본 상태 id state_zombie"),
 });
 
+const heldEffectSchema = objectSchema({
+  kind: { type: "string", enum: [...HELD_ITEM_KINDS], description: "healBelow=HP 가 thresholdPercent% 이하가 되면 먹고 회복(1회용) · cureStatus=주요 상태이상이 되면 먹고 치료(1회용) · boostType=같은 type 기술 피해 percent% · endureOnce=가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀(1회용) · regen=매 차례 말 최대 HP 의 percent% 회복" },
+  thresholdPercent: integerSchema("healBelow: 1~100(기본 50)"),
+  healPercent: integerSchema("healBelow: 최대 HP 의 이 %(0~100, 기본 30)"),
+  healFlat: integerSchema("healBelow: 고정 회복량(0~999)"),
+  status: { type: "string", enum: [...HELD_ITEM_STATUSES], description: "cureStatus: 고칠 상태(기본 any)" },
+  type: stringSchema("boostType 필수. system.typeChart.types 값"),
+  percent: integerSchema("boostType 101~200(기본 120) · regen 1~25(기본 6)"),
+}, "지닌 도구 효과(포켓몬식). 파티 몬스터가 지니고 전투에서 발동한다. gen1 전투 모델에서만 작동. 이 필드를 주면 플레이어가 메뉴의 「도구」에서 몬스터에게 지닐 수 있다.");
+
 const itemRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
@@ -561,6 +581,7 @@ const itemRecordSchema = objectSchema({
   equipmentProfile: itemEquipmentProfileSchema,
   farmTool: { type: "string", enum: ["hoe", "wateringCan"] },
   captureProfile: captureProfileSchema,
+  heldEffect: heldEffectSchema,
 }) as RecordSchema;
 
 const enemyRecordSchema = objectSchema({
@@ -642,6 +663,17 @@ const monsterSpeciesGraphicSchema = objectSchema({
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
 });
 
+const monsterAbilitySchema = objectSchema({
+  name: stringSchema("특성 이름(최대 20자). 원작 특성 이름을 그대로 쓰지 말고 게임 고유 이름으로"),
+  description: stringSchema("한 줄 설명. 생략하면 효과에서 자동 생성"),
+  kind: { type: "string", enum: [...MONSTER_ABILITY_KINDS], description: "immuneType=타입 기술 무효(healPercent 있으면 흡수 회복) · resistType=타입 피해 percent% · boostLowHp=HP 1/3 이하에서 같은 타입 기술 percent% · immuneStatus=상태 면역 · contactStatus=물리 피해를 받으면 percent% 확률로 공격자에게 status · statMultiplier=능력 percent% · endure=가득 찬 HP 에서 한 번 버티기" },
+  type: stringSchema("immuneType/resistType/boostLowHp 필수. system.typeChart.types 값"),
+  status: { type: "string", enum: [...MONSTER_ABILITY_STATUSES], description: "immuneStatus/contactStatus 필수" },
+  stat: { type: "string", enum: [...MONSTER_ABILITY_STATS], description: "statMultiplier 필수. attack=물리 공격, defense=물리 방어, mind=특수 공격·방어" },
+  percent: integerSchema("resistType 0~99(기본 50) · boostLowHp 101~400(기본 150) · contactStatus 확률 1~100(기본 30) · statMultiplier 25~400(기본 150)"),
+  healPercent: integerSchema("immuneType 전용: 막으면서 최대 HP 의 이 %(1~100)를 회복. 0/생략=그냥 무효"),
+});
+
 const monsterSpeciesRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
@@ -653,6 +685,7 @@ const monsterSpeciesRecordSchema = objectSchema({
   skillsByLevel: arrayOf(learnedSkillSchema),
   machineSkillIds: stringArraySchema("기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술 id. 비우면 제한 없음(모든 종이 배운다). 값이 있으면 이 기술만 — 예: 파도타기는 물 종만"),
   evolutions: arrayOf(monsterEvolutionSchema),
+  ability: monsterAbilitySchema,
 }) as RecordSchema;
 
 const cropStageSchema = objectSchema({ days: integerSchema("단계 소요일") });
@@ -745,6 +778,11 @@ const skillRecordSchema = objectSchema({
   }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
+  statStageEffects: arrayOf(statStageEffectSchema),
+  weather: objectSchema({
+    kind: { type: "string", enum: [...SKILL_WEATHER_KINDS], description: "sun=쾌청(불 기술 ×1.5·물 ×0.5) · rain=비(물 ×1.5·불 ×0.5) · sandstorm=모래바람(차례 말 바위·땅·강철 외 최대 HP 1/16 피해) · hail=싸라기눈(차례 말 얼음 외 1/16 피해)" },
+    turns: integerSchema(`지속 차례 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS}. 생략 = 5`),
+  }, "날씨 기술(포켓몬식, gen1 전투 모델만): 명중하면 전투 날씨를 바꾼다. 이미 같은 날씨면 실패. 전투 한 번 동안만 유지. 보통 scope self 의 support 기술(effect {kind:\"support\"})에 붙인다."),
   maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
   gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema(
@@ -912,7 +950,8 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
-  gen1MajorStatus: { type: "string", enum: ["poison", "burn", "sleep", "freeze", "paralysis"] },
+  gen1MajorStatus: { type: "string", enum: ["poison", "toxic", "burn", "sleep", "freeze", "paralysis"] },
+  volatileStatus: { type: "string", enum: ["confusion"] },
   removalCondition: stringSchema(),
   restriction: stringSchema(),
   priority: integerSchema(),
@@ -1128,6 +1167,22 @@ function validateItemCaptureCondition(draft: Project, raw: unknown, record: Item
   if (unknown.length > 0) throw new ToolError(`captureProfile.condition.types '${unknown.join(", ")}' 는 타입 상성표에 없습니다 — 허용: ${known.join(", ")}`, { code });
 }
 
+/** heldEffect 를 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 거절한다. 조용히 효과 없는 도구가 되지 않게. */
+function validateItemHeldEffect(draft: Project, raw: unknown, record: ItemRecord): string | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const code = "invalid-held-effect";
+  if (!record.heldEffect) {
+    throw new ToolError(`heldEffect 가 올바르지 않아 저장하지 않았습니다 — kind(${HELD_ITEM_KINDS.join("|")}) 가 필요하고, boostType 은 type(system.typeChart.types) 도 필요합니다. cureStatus 의 status 는 ${HELD_ITEM_STATUSES.join("|")}.`, { code });
+  }
+  const types = draft.system.typeChart?.types ?? [];
+  if (record.heldEffect.type && types.length > 0 && !types.includes(record.heldEffect.type)) {
+    throw new ToolError(`heldEffect.type '${record.heldEffect.type}' 는 타입 상성표에 없습니다 — 허용: ${types.join(", ")}`, { code });
+  }
+  return draft.system.battleModel === "gen1"
+    ? undefined
+    : `지닌 도구는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`;
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1153,6 +1208,8 @@ const upsertItem: ToolDefinition = {
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
     validateItemCaptureCondition(draft, (merged as { captureProfile?: { condition?: unknown } }).captureProfile?.condition, record);
+    const heldWarning = validateItemHeldEffect(draft, (merged as { heldEffect?: unknown }).heldEffect, record);
+    if (heldWarning) warnings.push(heldWarning);
     coerceSwitchItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);
@@ -1287,12 +1344,42 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
 }
 
 /**
+ * 능력치 단계 효과 검사. 정규화가 모르는 stat·0 단계를 조용히 버리면 모델은 「울음을 만들었다」고 보고하고
+ * 실제로는 아무 일도 안 하는 기술이 된다 — 모르는 키·범위 밖 값은 허용 값을 담아 거부한다(빈 배열 = 해제).
+ */
+function validateStatStageEffects(value: unknown): void {
+  if (!Array.isArray(value)) throw new ToolError("skill.statStageEffects 는 [{stat, stages, chance?, target?}] 배열이어야 합니다(해제 = 빈 배열).", { code: "invalid-stat-stage-effects" });
+  if (value.length > 4) throw new ToolError(`skill.statStageEffects 는 최대 4개입니다(받은 ${value.length}개).`, { code: "invalid-stat-stage-effects" });
+  for (const [index, row] of value.entries()) {
+    const entry = row as Record<string, unknown> | null;
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new ToolError(`skill.statStageEffects[${index}] 는 {stat, stages} 객체여야 합니다.`, { code: "invalid-stat-stage-effects" });
+    }
+    const unknownKeys = Object.keys(entry).filter((key) => !["stat", "stages", "chance", "target"].includes(key));
+    if (unknownKeys.length > 0) throw new ToolError(`skill.statStageEffects[${index}] 의 모르는 키: ${unknownKeys.join(", ")} — 허용 키: stat, stages, chance, target.`, { code: "invalid-stat-stage-effects" });
+    if (!isStatStageKey(entry.stat)) {
+      throw new ToolError(`skill.statStageEffects[${index}].stat '${String(entry.stat)}' 은 능력치 단계 이름이 아닙니다 — 허용 값: ${STAT_STAGE_KEYS.join(", ")}.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (typeof entry.stages !== "number" || !Number.isInteger(entry.stages) || entry.stages === 0 || Math.abs(entry.stages) > STAT_STAGE_MAX) {
+      throw new ToolError(`skill.statStageEffects[${index}].stages 는 0 이 아닌 −${STAT_STAGE_MAX}~+${STAT_STAGE_MAX} 정수입니다(양수 = 올림, 음수 = 내림). 받은 값: ${JSON.stringify(entry.stages)}.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (entry.chance !== undefined && (typeof entry.chance !== "number" || entry.chance < 0 || entry.chance > 100)) {
+      throw new ToolError(`skill.statStageEffects[${index}].chance 는 0~100 입니다.`, { code: "invalid-stat-stage-effects" });
+    }
+    if (entry.target !== undefined && entry.target !== "target" && entry.target !== "self") {
+      throw new ToolError(`skill.statStageEffects[${index}].target 은 "target"(기술 대상, 기본) 또는 "self"(시전자) 입니다.`, { code: "invalid-stat-stage-effects" });
+    }
+  }
+}
+
+/**
  * 연계기·위치 범위기 패치 검사. 정규화가 조용히 버리면 모델은 「연계기를 넣었다」고 보고하고 실제로는 일반 기술이 된다 —
  * 없는 배우·인원 수·반경은 사유와 허용 예시를 담아 거부한다.
  */
 function validateSkillTechPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
   const record = patch as Record<string, unknown>;
+  if (record.statStageEffects !== undefined) validateStatStageEffects(record.statStageEffects);
   if (record.comboActorIds !== undefined) {
     const ids = Array.isArray(record.comboActorIds) ? record.comboActorIds : null;
     if (!ids || ids.some((id) => typeof id !== "string" || !id.trim())) {
@@ -1601,6 +1688,22 @@ const upsertTroop: ToolDefinition = {
   },
 };
 
+/** ability 를 줬는데 정규화가 버렸으면(필수 매개변수 누락·모르는 종류) 이유와 허용 값을 담아 거절한다. 조용히 특성 없는 종이 되지 않게. */
+function validateSpeciesAbility(draft: Project, raw: unknown, record: MonsterSpeciesRecord): string | undefined {
+  if (raw === undefined || raw === null) return undefined;
+  const code = "invalid-species-ability";
+  if (!record.ability) {
+    throw new ToolError(`ability 가 올바르지 않아 저장하지 않았습니다 — name(문자열)과 kind(${MONSTER_ABILITY_KINDS.join("|")}) 가 필요하고, kind 별 필수: immuneType/resistType/boostLowHp → type(system.typeChart.types), immuneStatus/contactStatus → status(${MONSTER_ABILITY_STATUSES.join("|")}), statMultiplier → stat(${MONSTER_ABILITY_STATS.join("|")}), endure → 없음.`, { code });
+  }
+  const types = draft.system.typeChart?.types ?? [];
+  if (record.ability.type && types.length > 0 && !types.includes(record.ability.type)) {
+    throw new ToolError(`ability.type '${record.ability.type}' 는 타입 상성표에 없습니다 — 허용: ${types.join(", ")}`, { code });
+  }
+  return draft.system.battleModel === "gen1"
+    ? undefined
+    : `특성은 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`;
+}
+
 const defineMonsterSpecies: ToolDefinition = {
   name: "define_monster_species",
   description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다."
@@ -1628,6 +1731,7 @@ const defineMonsterSpecies: ToolDefinition = {
     if (missingSkills.length > 0) {
       throw new ToolError(`존재하지 않는 species skillId: ${[...new Set(missingSkills)].join(", ")} — 허용 예시: ${knownIds(draft.database.skills)}`, { code: "skill-not-found" });
     }
+    const abilityWarning = validateSpeciesAbility(draft, (merged as { ability?: unknown }).ability, record);
     const speciesIds = new Set(draft.database.monsterSpecies.map((species) => species.id));
     // 자기 자신 진화는 레벨업마다 무한 재적용되므로 tool 경로에서도 거부한다(UI 드롭다운엔 옵션이 없어 복구 불가).
     if ((record.evolutions ?? []).some((evolution) => evolution.toSpeciesId === record.id)) {
@@ -1644,6 +1748,7 @@ const defineMonsterSpecies: ToolDefinition = {
       throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
     }
     const warnings: string[] = [];
+    if (abilityWarning) warnings.push(abilityWarning);
     ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {
@@ -1898,10 +2003,15 @@ const upsertSkill: ToolDefinition = {
     validateSkillCombatPatch(args.skill);
     validateSkillTechPatch(draft, args.skill);
     validateSkillRetroPatch(draft, args.skill);
+    const weatherPatch = (args.skill as { weather?: unknown } | undefined)?.weather;
+    if (weatherPatch !== undefined) validateSkillWeather(weatherPatch);
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
     const warnings: string[] = [];
+    if (weatherPatch !== undefined && draft.system.battleModel !== "gen1") {
+      warnings.push(`날씨는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`);
+    }
     validateSkillSpecialEffect(draft, record, warnings);
     dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
@@ -1909,6 +2019,23 @@ const upsertSkill: ToolDefinition = {
     return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${auto ? ` — ${auto}` : ""}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
+
+/** weather 를 줬는데 모양이 틀리면 허용 값을 담아 거절한다(조용히 날씨 없는 기술이 되지 않게). */
+function validateSkillWeather(value: unknown): void {
+  const code = "invalid-skill-weather";
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new ToolError(`skill.weather 는 {kind, turns?} 객체여야 합니다 — kind 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  const entry = value as Record<string, unknown>;
+  const unknownKeys = Object.keys(entry).filter((key) => key !== "kind" && key !== "turns");
+  if (unknownKeys.length > 0) throw new ToolError(`skill.weather 의 모르는 키: ${unknownKeys.join(", ")} — 허용 키: kind, turns.`, { code });
+  if (!SKILL_WEATHER_KINDS.includes(entry.kind as never)) {
+    throw new ToolError(`skill.weather.kind '${String(entry.kind)}' 는 날씨 이름이 아닙니다 — 허용 값: ${SKILL_WEATHER_KINDS.join(", ")}.`, { code });
+  }
+  if (entry.turns !== undefined && !(typeof entry.turns === "number" && Number.isInteger(entry.turns) && entry.turns >= SKILL_WEATHER_MIN_TURNS && entry.turns <= SKILL_WEATHER_MAX_TURNS)) {
+    throw new ToolError(`skill.weather.turns 는 ${SKILL_WEATHER_MIN_TURNS}~${SKILL_WEATHER_MAX_TURNS} 정수입니다. 받은 값: ${JSON.stringify(entry.turns)}.`, { code });
+  }
+}
 
 /** FF6 특수 효과(스케치·폭주·대열 섞기·강제 교대)의 저작 오류는 거부하고 흔한 빠짐은 알린다. */
 function validateSkillSpecialEffect(draft: Project, record: SkillRecord, warnings: string[]): void {
@@ -2116,6 +2243,11 @@ const upsertState: ToolDefinition = {
         throw new ToolError(`runtimeEffects.grantSkillIds '${skillId}' 는 없는 기술입니다 — 먼저 upsert_skill 로 만든 뒤 다시 부르세요.`);
       }
     }
+    if ((record.volatileStatus || record.gen1MajorStatus) && draft.system.battleModel !== "gen1") {
+      warnings.push(`${record.volatileStatus ? "volatileStatus(혼란)" : "gen1MajorStatus"} 는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다 — 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 이 상태는 일반 상태처럼만 동작합니다.`);
+    }
+    if (record.gen1MajorStatus === "toxic") warnings.push("맹독(toxic)은 차례 말마다 1/16 × (1,2,3…15) 피해가 커지고 교체하면 처음부터 셉니다. runtimeEffects.hpDamagePercentPerTurn 을 따로 주지 마세요(이중 피해). 보통 독은 gen1MajorStatus:\"poison\"(고정 1/16).");
+    if (record.volatileStatus === "confusion") warnings.push("혼란(volatileStatus:\"confusion\")은 주요 상태와 겹쳐 걸리고 2~5 행동 지속, 행동마다 절반이 위력 40 자해로 행동을 잃으며 교체·전투 종료로 풀립니다. removalCondition 은 '전투 종료' 로 두세요.");
     if (record.runtimeEffects?.forcedAction === "rage") warnings.push("forcedAction rage 는 폭주(rage) 기술이 몬스터를 정한 배틀러에게만 작동합니다 — upsert_skill 로 effect.kind \"rage\" 기술을 만들어 이 상태를 걸게 하세요(기본 id state_rage 는 자동으로 걸림).");
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };

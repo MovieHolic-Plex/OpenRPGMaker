@@ -1,6 +1,8 @@
+import { abilityEffectText } from "@/battle/abilities";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { captureConditionLabel } from "@/battle/captureBalls";
+import { heldEffectText } from "@/battle/heldItems";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
 import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterMenuIconResourceId, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
@@ -63,6 +65,21 @@ function caughtBallEntries(options: StatusMenuDetailOptions, instanceId: string)
   }];
 }
 
+/** 「지닌 도구」 줄 — 지닌 도구와 효과를 보이고, 고르면(파티 몬스터만) 가방으로 되돌린다. */
+function heldItemEntry(options: StatusMenuDetailOptions, instanceId: string): StatusMenuDetailEntry {
+  const held = options.session.monsterInstances[instanceId]?.heldItemId;
+  const item = held ? options.project.database.items.find((record) => record.id === held) : undefined;
+  if (!item?.heldEffect) {
+    return { label: "지닌 도구", value: "없음", description: "가방의 지닐 수 있는 도구를 고르면 이 몬스터에게 쥐여 줄 수 있습니다", testId: `status-menu-monster-held-${instanceId}`, onActivate: readOnly };
+  }
+  return {
+    label: "지닌 도구", value: item.name,
+    description: `${heldEffectText(item.heldEffect)} 선택하면 가방으로 되돌립니다.`,
+    testId: `status-menu-monster-held-${instanceId}`,
+    onActivate: () => options.onTakeHeldItem?.(instanceId),
+  };
+}
+
 export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingChoices: readonly StatusMenuDetailEntry[]): StatusMenuDetail | undefined {
   const instanceId = options.monsterInstanceId;
   const view = options.monsterView ?? "party";
@@ -80,6 +97,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
       { label: "타입", value: entry.typeLabel, onActivate: readOnly },
       { label: "상태", value: entry.stateNames.join(" · ") || "정상", onActivate: readOnly },
       ...caughtBallEntries(options, raw.instanceId),
+      ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
       { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", onActivate: readOnly },
       { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", onActivate: readOnly },
       { label: "방어", value: String(entry.stats.defense), onActivate: readOnly },
@@ -87,6 +105,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
       { label: "속도", value: String(entry.stats.agility), onActivate: readOnly },
       ...monsterKnownMoveEntries(options, raw.instanceId),
       ...pendingChoices,
+      heldItemEntry(options, raw.instanceId),
       { label: target === "box" ? "보관함으로 이동" : "파티로 이동", value: reason ? "이동 불가" : "", description: reason ?? "선택하면 이 몬스터를 이동합니다", unavailableReason: reason,
         testId: `status-menu-monster-move-${raw.instanceId}`, onActivate: () => options.onMoveMonster?.(raw.instanceId, target) },
     ], hint: "↑↓ 능력·현재 PP 확인 · Esc 몬스터 목록" };

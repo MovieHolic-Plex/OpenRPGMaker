@@ -23,10 +23,41 @@ import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
 import { captureConditionLine, captureConditionMultiplier } from "@/battle/captureBalls";
+import { applyStatStage, scaleByStage, shiftStatStage, statStageMessage, statStageOf } from "@/battle/statStages";
+import {
+  type BattleWeatherState,
+  WEATHER_CONTINUE_LINES,
+  WEATHER_END_LINES,
+  WEATHER_START_LINES,
+  SKILL_WEATHER_DEFAULT_TURNS,
+  weatherDamagePercent,
+  weatherResidualDamage,
+  weatherResidualLine,
+} from "@/battle/weather";
+import {
+  abilityBlocksStatus,
+  abilityContactStatus,
+  abilityDamagePercent,
+  abilityDefensePercent,
+  abilityEndureDamage,
+  abilityOffensePercent,
+  abilityOfBattler,
+  abilityTypeImmunity,
+  scaleDamageByPercent,
+} from "@/battle/abilities";
+import {
+  heldBoostPercent,
+  heldCuresStatus,
+  heldEffectOfItem,
+  heldEndureDamage,
+  heldHealAmount,
+  heldRegenAmount,
+} from "@/battle/heldItems";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, moveBattler, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import {
   accuracyByteFromPercent,
+  scaledGen1Accuracy,
   applySkillLike,
   createGen1ByteRng,
   resolveGen1DamagingMove,
@@ -123,6 +154,10 @@ import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
   applyGen1PostActionResidual,
+  gen1ConfusionSelfDamage,
+  gen1ConfusionTurns,
+  gen1NextToxicCounter,
+  stepGen1Confusion,
   gen1EffectChanceSucceeds,
   gen1MajorStatusBlockedByType,
   gen1ParalyzedSpeed,
@@ -484,6 +519,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 트룹 이벤트의 turn/everyRound 조건과 적 행동 패턴(turn)이 모델마다 다른 케이던스로
   // 발화했다(적대 리뷰: 적 3체 기준 gauge 의 "3턴"은 사실상 1라운드였다).
   let turn = 0;
+  /** 전투 날씨(쾌청·비·모래바람·싸라기눈). 기술이 켜고 차례 말에 줄어든다. 저장하지 않는다. */
+  let weather: BattleWeatherState | undefined;
   // The cycle containing the current action, before a gauge completion increments turn.
   let rewardTurn = 1;
   // 현재 gauge 사이클에서 이미 행동 슬롯을 소비한 배틀러 id(행동 불가 스킵 포함).
@@ -684,6 +721,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return options.project.database.states.map((state) => ({
       id: state.id,
       gen1MajorStatus: state.gen1MajorStatus,
+      ...(state.volatileStatus ? { volatileStatus: state.volatileStatus } : {}),
       ...(state.gen1MajorStatus === "freeze" && state.recoverNaturallyChance ? { thawChance: state.recoverNaturallyChance } : {}),
     }));
   }
@@ -727,7 +765,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         continue;
       }
 
-      if (stateRecord?.gen1MajorStatus) {
+      if (stateRecord?.volatileStatus === "confusion") {
+        // 혼란: 주요 상태와 따로 걸린다. 이미 혼란이면 다시 걸리지 않는다. 남는 행동 수는 바이트 하나(2~5).
+        if (gen1ConfusionActive(target)) continue;
+        target.stateIds = [...target.stateIds, effect.stateId];
+        target.stateTurns[effect.stateId] = gen1ConfusionTurns(nextGen1Byte);
+      } else if (stateRecord?.gen1MajorStatus) {
+        const guard = abilityOfBattler(options.project, target);
+        if (guard && abilityBlocksStatus(guard, stateRecord.gen1MajorStatus)) {
+          recordSpecial(user, target, `${withJosa(target.name, "은/는")} 특성 ${guard.name} 덕분에 ${stateName(effect.stateId)} 상태에 걸리지 않는다!`);
+          continue;
+        }
         const applied = applyGen1MajorStatus({
           stateIds: target.stateIds,
           stateTurns: target.stateTurns,
@@ -753,6 +801,40 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
+  function gen1ConfusionStateId(battler: MutableBattler): string | undefined {
+    return battler.stateIds.find((stateId) => options.project.database.states.find((state) => state.id === stateId)?.volatileStatus === "confusion");
+  }
+
+  function gen1ConfusionActive(battler: MutableBattler): boolean {
+    return gen1ConfusionStateId(battler) !== undefined;
+  }
+
+  /** 행동 직전 혼란 판정. 자신을 때리면 true(이번 행동을 잃는다). */
+  function stepGen1ConfusionBeforeAction(battler: MutableBattler): boolean {
+    const stateId = gen1ConfusionStateId(battler);
+    if (!stateId) return false;
+    const step = stepGen1Confusion(battler.stateTurns[stateId] ?? 0, nextGen1Byte);
+    if (step.outcome === "snappedOut") {
+      battler.stateIds = battler.stateIds.filter((id) => id !== stateId);
+      delete battler.stateTurns[stateId];
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(battler), targetId: battler.id, stateId, reason: "natural" });
+      return false;
+    }
+    battler.stateTurns[stateId] = step.turnsLeft;
+    if (step.outcome !== "selfHit") return false;
+    const damage = Math.min(battler.hp, gen1ConfusionSelfDamage(
+      battler.level ?? 1,
+      gen1ModifiedStat(battler, "attack", battler.attackPower),
+      gen1ModifiedStat(battler, "defense", battler.defense),
+    ));
+    battler.hp -= damage;
+    recordTimeline({
+      kind: "stateUpkeep", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, amount: damage, stateId,
+      message: `${withJosa(battler.name, "은/는")} 혼란에 빠져 자신을 공격했다!`,
+    });
+    return true;
+  }
+
   function gen1MajorStatusOf(battler: MutableBattler) {
     return readGen1MajorStatus(battler.stateIds, battler.stateTurns, gen1StateRecords());
   }
@@ -776,19 +858,29 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         reason: "natural",
       });
     }
-    if (stepped.canAct) return true;
-    recordIncapacitated(battler);
-    applyGen1Residual(battler);
-    return false;
+    if (!stepped.canAct) {
+      recordIncapacitated(battler);
+      applyGen1Residual(battler);
+      return false;
+    }
+    if (stepGen1ConfusionBeforeAction(battler)) {
+      applyGen1Residual(battler);
+      return false;
+    }
+    return true;
   }
 
   function applyGen1Residual(battler: MutableBattler): void {
     if (!gen1 || battler.hp <= 0) return;
     const status = gen1MajorStatusOf(battler);
+    // 맹독: 차례 말마다 카운터가 올라 1/16 × 카운터씩 깎인다(교체하면 처음부터).
+    const toxicCounter = status?.kind === "toxic" ? gen1NextToxicCounter(battler.stateTurns[status.stateId]) : undefined;
+    if (status && toxicCounter !== undefined) battler.stateTurns[status.stateId] = toxicCounter;
     const residual = applyGen1PostActionResidual({
       kind: status?.kind,
       maxHp: battler.maxHp,
       currentHp: battler.hp,
+      toxicCounter,
     });
     battler.hp = residual.currentHp;
     if (residual.damage > 0) {
@@ -800,6 +892,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         stateId: status?.stateId,
       });
     }
+    applyHeldRegen(battler);
+    triggerHeldItem(battler);
   }
 
   function gen1ModifiedStat(
@@ -818,6 +912,92 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ? attackMultiplierForStates(options.project, withoutBurn)
       : defenseMultiplierForStates(options.project, battler);
     return Math.max(1, Math.trunc(value * multiplier));
+  }
+
+  /** 기술 결과 뒤에 흘리는 지닌 도구 줄(버티기). */
+  const heldNotes: { message: string }[] = [];
+
+  function consumeHeldItem(battler: MutableBattler): void {
+    delete battler.heldItemId;
+  }
+
+  function flushHeldNotes(user: MutableBattler, target: MutableBattler): void {
+    while (heldNotes.length > 0) recordSpecial(user, target, heldNotes.shift()!.message);
+  }
+
+  /**
+   * 지닌 도구가 발동할 차례인지 본다: 열매(HP 가 문턱 이하면 회복, 주요 상태가 맞으면 치료). 쓰면 사라진다.
+   * 기술 하나가 끝난 뒤와 차례 말 잔여 피해 뒤에 부른다.
+   */
+  function triggerHeldItem(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const item = options.project.database.items.find((record) => record.id === holder.heldItemId);
+    const effect = item?.heldEffect;
+    if (!item || !effect) return;
+    const heal = heldHealAmount(effect, holder.hp, holder.maxHp);
+    if (heal > 0) {
+      consumeHeldItem(holder);
+      holder.hp = Math.min(holder.maxHp, holder.hp + heal);
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 체력을 회복했다!`);
+      recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+      return;
+    }
+    const status = gen1MajorStatusOf(holder);
+    if (status && heldCuresStatus(effect, status.kind)) {
+      consumeHeldItem(holder);
+      holder.stateIds = holder.stateIds.filter((stateId) => stateId !== status.stateId);
+      delete holder.stateTurns[status.stateId];
+      recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${withJosa(item.name, "을/를")} 먹고 상태이상이 나았다!`);
+      recordTimeline({ kind: "stateRemoved", side: battlerSide(holder), targetId: holder.id, stateId: status.stateId, reason: "effect" });
+    }
+  }
+
+  /** 매 차례 회복 도구(먹다 남은 음식 같은): 차례 말 잔여 피해 뒤에 조금씩 회복한다. 사라지지 않는다. */
+  function applyHeldRegen(holder: MutableBattler): void {
+    if (!gen1 || holder.hp <= 0 || !holder.heldItemId) return;
+    const effect = heldEffectOfItem(options.project, holder.heldItemId);
+    const heal = heldRegenAmount(effect, holder.hp, holder.maxHp);
+    if (heal <= 0) return;
+    const name = options.project.database.items.find((record) => record.id === holder.heldItemId)?.name ?? "도구";
+    holder.hp += heal;
+    recordSpecial(holder, holder, `${withJosa(holder.name, "은/는")} ${name} 덕분에 체력을 회복했다!`);
+    recordTimeline({ kind: "healing", side: battlerSide(holder), userRecordId: holder.recordId, targetId: holder.id, hit: true, amount: heal, critical: false, resource: "hp", aside: "drain" });
+  }
+
+  /** 기술 결과 뒤에 흘리는 특성 줄(타입 무효·버티기). applyExactGen1Damage 가 쌓고 applyGen1Skill 이 비운다. */
+  const abilityNotes: { message: string; heal?: { battler: MutableBattler; amount: number } }[] = [];
+
+  function typeName(typeId: string | undefined): string {
+    return options.project.database.elements?.find((element) => element.id === typeId)?.name ?? typeId ?? "해당";
+  }
+
+  function stateName(stateId: string): string {
+    return options.project.database.states.find((state) => state.id === stateId)?.name ?? stateId;
+  }
+
+  function flushAbilityNotes(user: MutableBattler, target: MutableBattler): void {
+    while (abilityNotes.length > 0) {
+      const note = abilityNotes.shift()!;
+      recordSpecial(user, target, note.message);
+      if (note.heal) {
+        note.heal.battler.hp = Math.min(note.heal.battler.maxHp, note.heal.battler.hp + note.heal.amount);
+        recordTimeline({
+          kind: "healing", side: battlerSide(note.heal.battler), userRecordId: note.heal.battler.recordId, targetId: note.heal.battler.id,
+          hit: true, amount: note.heal.amount, critical: false, resource: "hp", aside: "drain",
+        });
+      }
+    }
+  }
+
+  /** 접촉 특성(정전기 등): 물리 피해를 받은 쪽이 확률로 공격자에게 주요 상태를 건다. */
+  function applyContactAbility(attacker: MutableBattler, holder: MutableBattler): void {
+    const ability = abilityOfBattler(options.project, holder);
+    const contact = abilityContactStatus(ability);
+    if (!ability || !contact || attacker.hp <= 0 || gen1MajorStatusOf(attacker)) return;
+    const state = options.project.database.states.find((record) => record.gen1MajorStatus === contact.status);
+    if (!state || !gen1EffectChanceSucceeds(contact.percent, nextGen1Byte)) return;
+    recordSpecial(holder, attacker, `${holder.name}의 특성 ${ability.name}!`);
+    applyGen1States(holder, attacker, [{ stateId: state.id, chance: 100, operation: "add" }], { kind: "status" });
   }
 
   function gen1BaseSpeed(battler: MutableBattler): number {
@@ -843,8 +1023,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     },
   ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean; readonly effectiveness: number } {
     const magical = usesMagicalDefense(options.project, move.elementId);
-    const unmodifiedOffense = magical ? user.mind : user.attackPower;
-    const unmodifiedDefense = magical ? target.mind : target.defense;
+    const userAbility = abilityOfBattler(options.project, user);
+    const targetAbility = abilityOfBattler(options.project, target);
+    // 타입 무효·흡수 특성: 기술이 닿기 전에 막는다(난수 바이트를 쓰지 않는다). 설명 줄과 흡수 회복은 기술 결과 뒤에 흘려 보낸다.
+    const immunity = (move.affects ?? "hp") === "hp" ? abilityTypeImmunity(targetAbility, move.elementId) : undefined;
+    if (immunity && targetAbility) {
+      const healed = immunity.healPercent > 0 ? Math.min(target.maxHp - target.hp, Math.max(1, Math.floor(target.maxHp * immunity.healPercent / 100))) : 0;
+      abilityNotes.push({
+        message: `${withJosa(target.name, "은/는")} 특성 ${targetAbility.name} 덕분에 ${typeName(move.elementId)} 기술이 통하지 않는다!${healed > 0 ? ` 체력을 회복했다!` : ""}`,
+        heal: healed > 0 ? { battler: target, amount: healed } : undefined,
+      });
+      // 빗나감이 아니라 「효과가 없다」(상성 0 배)로 읽히게 hit:true·피해 0 으로 돌려준다.
+      return { hit: true, amount: 0, critical: false, effectiveness: 0 };
+    }
+    const offensePercent = abilityOffensePercent(userAbility, magical);
+    const defensePercent = abilityDefensePercent(targetAbility, magical);
+    const scaleStat = (value: number, percent: number): number => (percent === 100 ? value : Math.max(1, Math.floor(value * percent / 100)));
+    const unmodifiedOffense = scaleStat(magical ? user.mind : user.attackPower, offensePercent);
+    const unmodifiedDefense = scaleStat(magical ? target.mind : target.defense, defensePercent);
     const types = gen1TypeModifiersForTypes(
       options.project,
       move.elementId,
@@ -852,8 +1048,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       battlerTypes(options.project, target),
     );
     const formula = move.damageFormula ? evaluateDamageFormula(move.damageFormula, formulaBattlerContext(
-      { ...user, attackPower: Math.round(user.attackPower * attackMultiplierForStates(options.project, user)), mind: Math.round(user.mind * attackMultiplierForStates(options.project, user)) },
-      { ...target, defense: target.defense * defenseMultiplierForStates(options.project, target), mind: target.mind * defenseMultiplierForStates(options.project, target) }, move.power)) : undefined;
+      { ...user, attackPower: Math.round(user.attackPower * attackMultiplierForStates(options.project, user)), mind: Math.round(user.mind * attackMultiplierForStates(options.project, user, "mind")) },
+      { ...target, defense: target.defense * defenseMultiplierForStates(options.project, target), mind: target.mind * defenseMultiplierForStates(options.project, target, "mind") }, move.power)) : undefined;
     const resolved = resolveGen1DamagingMove({
       level: user.level ?? 1,
       power: move.power,
@@ -866,26 +1062,51 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       offense: {
         unmodified: unmodifiedOffense,
         modified: magical
-          ? unmodifiedOffense
+          ? applyStatStage(unmodifiedOffense, user.statStages, "spAttack")
           : gen1ModifiedStat(user, "attack", unmodifiedOffense),
       },
       defense: {
         unmodified: unmodifiedDefense,
         modified: magical
-          ? unmodifiedDefense
+          ? applyStatStage(unmodifiedDefense, target.statStages, "spDefense")
           : gen1ModifiedStat(target, "defense", unmodifiedDefense),
       },
       burned: gen1MajorStatusOf(user)?.kind === "burn",
       stab: types.stab,
       typeFactors: types.typeFactors,
       baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
+      accuracyStage: statStageOf(user.statStages, "accuracy"),
+      evasionStage: statStageOf(target.statStages, "evasion"),
     }, nextGen1Byte);
     // 상성 문장용 배율 — 방어 쪽 타입 배율의 곱(정수 ×10 표기를 되돌린다). 자속 보정(stab)은 넣지 않는다.
     const effectiveness = types.typeFactors.reduce((product, factor) => product * (factor / 10), 1);
     if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical, effectiveness };
     const resource = move.affects ?? "hp";
     const before = target[resource];
-    target[resource] = Math.max(0, before - formationDamage(Math.round(resolved.damage * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage"));
+    // 날씨: 쾌청·비는 불·물 기술의 피해 배율을 바꾼다.
+    const weatherPercent = weatherDamagePercent(weather?.kind, gen1CanonicalTypeForId(options.project, move.elementId));
+    const weatherDamage = weatherPercent === 100 ? resolved.damage : Math.max(resolved.damage > 0 ? 1 : 0, Math.floor(resolved.damage * weatherPercent / 100));
+    const heldBoost = heldBoostPercent(heldEffectOfItem(options.project, user.heldItemId), move.elementId);
+    const boostedDamage = heldBoost === 100 ? weatherDamage : Math.max(weatherDamage > 0 ? 1 : 0, Math.floor(weatherDamage * heldBoost / 100));
+    const abilityPercent = abilityDamagePercent({ ability: userAbility, hp: user.hp, maxHp: user.maxHp }, { ability: targetAbility }, move.elementId);
+    let dealt = formationDamage(Math.round(scaleDamageByPercent(boostedDamage, abilityPercent) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
+    if (resource === "hp") {
+      const endured = abilityEndureDamage(targetAbility, before, target.maxHp, dealt);
+      if (endured.endured && targetAbility) {
+        dealt = endured.damage;
+        abilityNotes.push({ message: `${withJosa(target.name, "은/는")} 특성 ${targetAbility.name} 덕분에 버텼다!` });
+      }
+    }
+    if (resource === "hp") {
+      const heldEndured = heldEndureDamage(heldEffectOfItem(options.project, target.heldItemId), before, target.maxHp, dealt);
+      if (heldEndured.endured) {
+        const itemName = options.project.database.items.find((item) => item.id === target.heldItemId)?.name ?? "도구";
+        dealt = heldEndured.damage;
+        consumeHeldItem(target);
+        heldNotes.push({ message: `${withJosa(target.name, "은/는")} ${itemName} 덕분에 버텼다!` });
+      }
+    }
+    target[resource] = Math.max(0, before - dealt);
     return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
   }
 
@@ -910,6 +1131,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     gaugeCycleActed.clear();
     frozenGaugeElapsedMs = 0;
     turn += 1;
+    tickBattleWeather();
     advanceBattleSkillCooldowns([...actors, ...enemies]);
     // 멈춘 배틀러는 자기 차례의 상태 처리를 못 받는다. 사이클이 닫힐 때 한 번 돌려 스톱이 자연 회복할 수 있게 한다.
     if (!gen1) {
@@ -1457,7 +1679,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(actor),
-      hitRate: withEvasion(normalAttackHitRate(actor, target), actor, target),
+      hitRate: withAccuracyStages(withEvasion(normalAttackHitRate(actor, target), actor, target), actor, target),
       // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
       variance: 20,
       elementMultiplier: normalAttackElementMultiplier(actor, target) * emotionDamageMultiplier(options.project, actor, target),
@@ -1917,6 +2139,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function completeStrictRound(round: number): void {
+    tickBattleWeather();
     advanceBattleSkillCooldowns([...actors, ...enemies]);
     for (const actor of actors) actor.defending = false;
     for (const battler of [...actors, ...enemies]) battler.gauge = 0;
@@ -1945,7 +2168,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         side: "actor",
         index: actors.indexOf(actor),
         speed: gen1
-          ? gen1ParalyzedSpeed(actor.agility, gen1MajorStatusOf(actor)?.kind === "paralysis")
+          ? gen1ParalyzedSpeed(applyStatStage(actor.agility, actor.statStages, "speed"), gen1MajorStatusOf(actor)?.kind === "paralysis")
           : actor.agility * agilityMultiplierForStates(options.project, actor),
         priority,
         commandClass: strictCommandClass(entry.command),
@@ -1965,7 +2188,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           side: "enemy",
           index,
           speed: gen1
-            ? gen1ParalyzedSpeed(enemy.agility, gen1MajorStatusOf(enemy)?.kind === "paralysis")
+            ? gen1ParalyzedSpeed(applyStatStage(enemy.agility, enemy.statStages, "speed"), gen1MajorStatusOf(enemy)?.kind === "paralysis")
             : enemy.agility * agilityMultiplierForStates(options.project, enemy),
           priority: strictActionPriority(action?.skillId),
           commandClass: "combat",
@@ -2123,6 +2346,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       troopId: options.troopId,
       backdropResourceId,
       turn,
+      ...(weather ? { weather: { ...weather } } : {}),
       strictRound: strictRoundCount,
       strictPendingActorIds: [...strictPendingActorIds],
       strictQueuedActorIds: strictActorCommands.map((entry) => entry.actorId),
@@ -2342,7 +2566,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       statistic: "attack",
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
-      hitRate: withEvasion(normalAttackHitRate(enemy, target), enemy, target),
+      hitRate: withAccuracyStages(withEvasion(normalAttackHitRate(enemy, target), enemy, target), enemy, target),
       // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
       variance: 20,
       ...(emotionMultiplier !== 1 ? { elementMultiplier: emotionMultiplier } : {}),
@@ -2423,6 +2647,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (gen1 || battlerSide(user) === battlerSide(target)) return hitRate;
     const evade = evasionChanceForStates(options.project, target);
     return evade > 0 ? Math.round(((hitRate ?? 100) * (100 - evade)) / 100) : hitRate;
+  }
+
+  /** 능력치 단계의 명중률·회피율을 명중률(%)에 곱한다(상대 편에게 쓸 때만, 최대 100). 단계가 0 이면 그대로. */
+  function withAccuracyStages(hitRate: number | undefined, user: MutableBattler, target: MutableBattler): number | undefined {
+    if (gen1 || battlerSide(user) === battlerSide(target)) return hitRate;
+    const accuracy = statStageOf(user.statStages, "accuracy");
+    const evasion = statStageOf(target.statStages, "evasion");
+    if (accuracy === 0 && evasion === 0) return hitRate;
+    const scaled = scaleByStage(scaleByStage((hitRate ?? 100) * 100, accuracy), -evasion);
+    return Math.max(0, Math.min(100, Math.round(scaled / 100)));
   }
 
   /**
@@ -3930,6 +4164,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       : "attack";
     const affects =
       effect && (effect.kind === "damage" || effect.kind === "healing") ? effect.affects : "hp";
+    // 능력치 단계의 공격/특수공격·방어/특수방어 칸: 마법 속성 기술이거나 마력 계열 효과면 특수 쪽(gen1 경로와 같은 분류).
+    const stageKind: "attack" | "mind" = statistic === "mind" || isMagicalElement(skill?.elementId) ? "mind" : "attack";
     const hpBefore = target.hp;
     const mpBefore = target.mp;
     const targetMaxHpBefore = target.maxHp;
@@ -3941,15 +4177,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // RM2K3 스킬 성공률: hitRate(명중률)와 successRate(성공률)를 합성한 단일 판정.
       // 두 값 모두 100 이 기본이라 기존 데이터의 기대 명중률은 변하지 않는다.
       // 회피 상태는 물리(공격력 계열) 피해 기술만 피한다.
-      hitRate: effectKind === "damage" && statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
+      hitRate: effectKind === "damage" ? withAccuracyStages(statistic === "attack" ? withEvasion(combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill), user, target) : combinedSkillHitRate(skill),
       damageFormula: skill?.damageFormula,
       hitMultiplier:hitMultiplier*(effectKind==="damage"?gimmickDamageMultiplier(user,target):1),
       criticalMultiplier: skill?.criticalMultiplier,
       variance: skill?.variance,
       criticalRate: skill?.criticalRate ?? criticalRateFor(user),
       elementMultiplier: elementMultiplierFor(skill?.elementId, user, target) * emotionDamageMultiplier(options.project, user, target),
-      attackerStatMultiplier: attackMultiplierForStates(options.project, user),
-      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic),
+      attackerStatMultiplier: attackMultiplierForStates(options.project, user, stageKind),
+      targetDefenseMultiplier: defenseMultiplierForStatesByKind(options.project, target, statistic, stageKind),
       useMagicalDefense: isMagicalElement(skill?.elementId),
       gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
@@ -3994,6 +4230,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (result.hit) {
       applyStates(user, target, skill?.stateEffects);
+      if (effectKind !== "damage" || result.amount > 0) applyStatStageEffects(user, target, skill);
     }
     if (result.hit && skill?.gaugeShift) shiftGauge(target, skill.gaugeShift);
     if (result.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
@@ -4014,8 +4251,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const effect = skill?.effect;
     const effectKind = effect?.kind ?? "damage";
     const power = skill?.power ?? 50;
-    const accuracyHit = effectKind === "damage"
-      || nextGen1Byte() < accuracyByteFromPercent(skill?.hitRate ?? 100);
+    // 자기에게 거는 능력 변화 기술은 빗나가지 않는다(바이트도 쓰지 않는다 — 단계 기술이 없는 게임의 난수열은 그대로).
+    const selfStageMove = user === target && (skill?.statStageEffects?.length ?? 0) > 0;
+    const accuracyHit = effectKind === "damage" || selfStageMove
+      || nextGen1Byte() < scaledGen1Accuracy(
+        accuracyByteFromPercent(skill?.hitRate ?? 100),
+        user === target ? 0 : statStageOf(user.statStages, "accuracy"),
+        user === target ? 0 : statStageOf(target.statStages, "evasion"),
+      );
     const statistic: "attack" | "mind" = effect && (effect.kind === "damage" || effect.kind === "healing")
       ? effect.statistic
       : "attack";
@@ -4069,12 +4312,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
     }
+    flushAbilityNotes(user, target);
     // 흡수(drainPercent)는 gen1 규칙에서도 먹는다 — 예전엔 대가만 깎이고 회복은 조용히 빠졌다.
     if (applied.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(applied.amount, gen1MpBefore - target.mp) : applied.amount, affects, commandKind);
     const defrosted = applied.hit
       && effectKind === "damage"
       && applied.amount > 0
       && defrostTargetWithGen1FireMove(user, target, skill);
+    if (applied.hit && effectKind === "damage" && applied.amount > 0 && !usesMagicalDefense(options.project, skill?.elementId)) {
+      applyContactAbility(user, target);
+    }
     if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
       const stateEffects = defrosted
         ? skill?.stateEffects?.filter((stateEffect) => {
@@ -4087,8 +4334,79 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         kind: effectKind === "damage" ? "damage" : "status",
       });
     }
+    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) applyStatStageEffects(user, target, skill);
     if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
       battleEventState.switches[skill.effect.switchId] = true;
+    }
+    if (applied.hit && skill?.weather) setBattleWeather(user, target, skill.weather.kind, skill.weather.turns ?? SKILL_WEATHER_DEFAULT_TURNS);
+    flushHeldNotes(user, target);
+    triggerHeldItem(target);
+    if (user !== target) triggerHeldItem(user);
+  }
+
+  /** 날씨 기술이 닿았을 때: 같은 날씨가 이미 있으면 실패, 다르면 바꾼다. */
+  function setBattleWeather(user: MutableBattler, target: MutableBattler, kind: BattleWeatherState["kind"], turns: number): void {
+    if (weather?.kind === kind) {
+      recordSpecial(user, target, "하지만 아무 일도 일어나지 않았다!");
+      return;
+    }
+    weather = { kind, turnsLeft: turns };
+    recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, message: WEATHER_START_LINES[kind], weatherKind: kind, weatherAfter: { ...weather } });
+  }
+
+  /**
+   * 한 라운드가 끝날 때: 날씨 문장 하나, 모래바람·싸라기눈의 피해(해당 타입 제외), 지속 차례 감소, 끝나면 종료 문장.
+   * 피해로 쓰러지는 배틀러가 있어 승패가 갈릴 수 있으므로 부르는 쪽이 resolveOutcome 을 이어서 돈다.
+   */
+  function tickBattleWeather(): void {
+    if (!gen1 || !weather || result) return;
+    const current = weather;
+    beginTimelineAction();
+    const anchor = [...activeActors(), ...visibleEnemies()].find((battler) => battler.hp > 0);
+    const side = anchor ? battlerSide(anchor) : "actor";
+    const next = current.turnsLeft > 1 ? { kind: current.kind, turnsLeft: current.turnsLeft - 1 } : undefined;
+    if (next) recordTimeline({ kind: "special", side, message: WEATHER_CONTINUE_LINES[current.kind], weatherKind: current.kind, weatherAfter: next });
+    for (const battler of [...activeActors(), ...visibleEnemies()]) {
+      if (battler.hp <= 0) continue;
+      const amount = weatherResidualDamage(current.kind, battler.maxHp, battlerTypes(options.project, battler).map((typeId) => gen1CanonicalTypeForId(options.project, typeId)));
+      if (amount <= 0) continue;
+      const dealt = Math.min(battler.hp, amount);
+      battler.hp -= dealt;
+      recordTimeline({ kind: "stateUpkeep", side: battlerSide(battler), targetId: battler.id, amount: dealt, message: weatherResidualLine(current.kind, battler.name), weatherKind: current.kind });
+    }
+    weather = next;
+    if (!next) recordTimeline({ kind: "special", side, message: WEATHER_END_LINES[current.kind], weatherKind: current.kind, weatherAfter: null });
+    resolveOutcome();
+  }
+
+  /**
+   * 기술의 능력치 단계 효과(울음 −1 공격, 칼춤 +2 공격 …)를 적용한다. chance 는 gen1 이면 카트리지 경계(100% 는 굴리지 않음),
+   * 그 밖은 rng 로 굴린다. 이미 한계(±6)면 「더 이상 오르지 않는다!」 한 줄만 남긴다. 변화는 special 엔트리(statStage 포함)로 기록해
+   * 화면이 문장과 같은 박자에 단계 알약을 바꾼다.
+   */
+  function applyStatStageEffects(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+  ): void {
+    for (const effect of skill?.statStageEffects ?? []) {
+      const subject = effect.target === "self" ? user : target;
+      if (subject.hp <= 0) continue;
+      const chance = effect.chance ?? 100;
+      if (chance < 100) {
+        const passed = gen1 ? gen1EffectChanceSucceeds(chance, nextGen1Byte) : rng() * 100 < chance;
+        if (!passed) continue;
+      }
+      const shifted = shiftStatStage(subject.statStages, effect.stat, effect.stages);
+      subject.statStages = shifted.stages;
+      recordTimeline({
+        kind: "special",
+        side: battlerSide(user),
+        userRecordId: user.recordId,
+        targetId: subject.id,
+        message: statStageMessage(subject.name, shifted.change),
+        statStage: { stat: effect.stat, before: shifted.change.before, after: shifted.change.after, requested: shifted.change.requested },
+      });
     }
   }
 
@@ -4422,9 +4740,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (outgoing) {
       outgoing.gauge = 0;
       outgoing.defending = false;
+      resetVolatileStatesOnSwitchOut(outgoing);
+      // 교체로 빠지면 능력치 단계가 사라진다(포켓몬 규칙). 다시 나와도 0 단계에서 시작한다.
+      delete outgoing.statStages;
     }
     candidate.gauge = 0;
     candidate.defending = false;
+    delete candidate.statStages;
     recordTimeline({
       kind: "switch",
       side: "actor",
@@ -4435,6 +4757,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
     markActiveParticipants();
     return true;
+  }
+
+  /** 교체해서 빠지면 혼란은 풀리고 맹독 카운터는 처음(1/16)부터 다시 센다. */
+  function resetVolatileStatesOnSwitchOut(battler: MutableBattler): void {
+    if (!gen1) return;
+    for (const stateId of [...battler.stateIds]) {
+      const record = options.project.database.states.find((state) => state.id === stateId);
+      if (record?.volatileStatus) {
+        battler.stateIds = battler.stateIds.filter((id) => id !== stateId);
+        delete battler.stateTurns[stateId];
+      } else if (record?.gen1MajorStatus === "toxic") battler.stateTurns[stateId] = 0;
+    }
   }
 
   function canSwitchActor(fromActorId: ActorId, targetActorId: ActorId): boolean {

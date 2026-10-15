@@ -276,3 +276,4 @@ qa-runs/
 harness-data/object-gate/calibration/answers/view34-*/
 harness-data/object-gate/calibration/answers/style-*/
 harness-data/object-gate/calibration/answers/eye-*/
+.tmp-tsc/

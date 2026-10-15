@@ -173,8 +173,10 @@
 /* 상태 배지: HP 상자 안 둘째 줄 왼쪽(3세대 자리). 스프라이트에 붙은 배지는 숨긴다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-actor-group .battle-actor, .battle-enemy) > .battle-status-icons { display: none; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons :is(.battle-status-icon, .battle-stage-pill, .battle-held-pill) { font: 12px/12px var(--runtime-pixel-font); min-width: 30px; height: 14px; padding: 1px 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
+/* 능력치 단계 알약(ATK↑2)이 있으면 알약 묶음이 HP 막대 줄(2행)에서 3행으로 내려온다 — 막대 앞 「HP」 글자와 겹치지 않고, 내 몬스터 상자에서는 오른쪽 HP 숫자와 같은 줄 왼쪽에 앉는다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons[data-has-stages="true"] { grid-row: 3; flex-wrap: wrap; }
 /* 내 몬스터 상자 EXP 바: 상자 맨 아래 가는 줄(3세대). 승리 결과 단계에서 보상만큼 차오른다(syncExpBar). */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp) { grid-template-rows: 24px 10px auto 8px; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp { grid-area: 4 / 1; align-self: end; position: relative; height: 6px; box-sizing: border-box; background: #384840; border: 1px solid #384840; }

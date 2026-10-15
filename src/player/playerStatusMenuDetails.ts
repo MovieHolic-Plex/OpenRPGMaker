@@ -1,5 +1,6 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { captureConditionLabel } from "@/battle/captureBalls";
+import { withJosa } from "@/util/josa";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -170,9 +171,9 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
   if (item && itemAllowsMenu(item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(machineSkillOf(project, item)));
+    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)));
     entries.push({
-      label: "사용",
+      label: item.heldEffect ? "지니게 하기" : "사용",
       value: "",
       unavailableReason: menuItemUnavailableReason(item),
       testId: `status-menu-item-use-${itemId}`,
@@ -256,6 +257,31 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         }),
         emptyLabel: "대상이 없습니다",
         hint: "사용할 대상을 선택하세요.",
+      };
+    }
+    if (item.heldEffect) {
+      // 지닌 도구 — 몬스터마다 지금 지닌 도구를 보이고, 고르면 쥐여 준다(이미 지닌 도구는 가방으로 돌아온다).
+      const heldName = (id: string | undefined) => (id ? project.database.items.find((record) => record.id === id)?.name : undefined);
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — 지닐 몬스터 선택`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const current = heldName(instance.heldItemId);
+          const same = instance.heldItemId === item.id;
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: current ? `지닌 도구: ${current}` : "지닌 도구 없음",
+            description: same ? "이미 이 도구를 지니고 있습니다" : current ? `${withJosa(current, "을/를")} 가방에 돌려주고 ${withJosa(item.name, "을/를")} 쥐여 줍니다` : `${withJosa(item.name, "을/를")} 쥐여 줍니다`,
+            disabled: same,
+            unavailableReason: same ? "이미 이 도구를 지니고 있습니다" : undefined,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterHeldItemTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 쥐여 주기 · Esc 아이템 목록",
       };
     }
     const machineSkillId = machineSkillOf(project, item);
@@ -345,7 +371,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
-    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
       && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
@@ -850,7 +876,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
+  const scope = item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -899,6 +925,7 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.learnedSkillId) tokens.push(`learn:${encodeURIComponent(item.learnedSkillId)}`);
   if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
   if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
+  if (item.heldEffect) tokens.push(`held:${item.heldEffect.kind}`);
   if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}`);
   if (item.captureProfile) {
     tokens.push(project.system.battleModel === "gen1"

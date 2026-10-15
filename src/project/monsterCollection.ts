@@ -1,6 +1,7 @@
 import type { Rng } from "@/util/rng";
 import { mulberry32 } from "@/util/rng";
 import { ACTOR_LEVEL_MAX, totalExpForLevel } from "@/project/actorModel";
+import { normalizeMonsterAbility } from "@/battle/abilities";
 import type {
   ActorExperienceCurve,
   ActorLearnedSkill,
@@ -101,6 +102,7 @@ export function normalizeMonsterSpeciesRecord(
   const types = normalizeSpeciesTypes(record.types);
   const evolutions = normalizeEvolutions(record.evolutions);
   const machineSkillIds = uniqueSkillIds((Array.isArray(record.machineSkillIds) ? record.machineSkillIds : []).filter((id): id is SkillId => typeof id === "string" && id.trim() !== "").map((id) => id.trim() as SkillId));
+  const ability = normalizeMonsterAbility(record.ability);
   return {
     id: record.id,
     name: textOrDefault(record.name, "몬스터"),
@@ -112,6 +114,7 @@ export function normalizeMonsterSpeciesRecord(
     skillsByLevel: skillsByLevel.length > 0 ? skillsByLevel : undefined,
     machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
+    ...(ability ? { ability } : {}),
   };
 }
 
@@ -349,7 +352,7 @@ export function applyGen1FieldPoisonStep(project: Project, session: PlaySession)
 
   const poisonStateIds = new Set(
     project.database.states
-      .filter((state) => state.gen1MajorStatus === "poison")
+      .filter((state) => state.gen1MajorStatus === "poison" || state.gen1MajorStatus === "toxic")
       .map((state) => state.id),
   );
   const poisonedParty = session.monsterParty.flatMap((instanceId) => {

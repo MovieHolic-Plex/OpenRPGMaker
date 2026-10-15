@@ -215,6 +215,7 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (instance.stateTurns !== undefined && !isNonNegativeIntegerRecord(instance.stateTurns)) return false;
     if (instance.skillPp !== undefined && !isNonNegativeIntegerRecord(instance.skillPp)) return false;
     if (instance.pendingSkillIds !== undefined && !isStringArray(instance.pendingSkillIds)) return false;
+    if (instance.heldItemId !== undefined && typeof instance.heldItemId !== "string") return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
     if (instance.caughtBallId !== undefined && typeof instance.caughtBallId !== "string") return false;

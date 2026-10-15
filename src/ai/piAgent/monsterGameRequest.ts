@@ -126,7 +126,8 @@ export const MONSTER_GAME_PRODUCTION_PROMPT = `[전체 몬스터 게임 제작]
 startTheme 는 시작 마을·1번길·전투 배경뿐 아니라 타이틀 키아트(그 풍경 그림이 설치돼 있으면)와 테마 주민 칩(사용자가 Allow 해 설치한 칩이 있을 때만, 없으면 기본 칩)도 고른다 — 조수가 타이틀이나 주민 그림을 따로 만들어 끼우지 않는다. 마을 빈터는 생성기가 쓰임(숲 덩이·꽃밭·눈놀이 터·선인장 밭·파라솔 쉼터…)으로 이미 채운다. 만든 뒤 「○○ 마을 왼쪽 아래 빈 곳 채워」 같은 이어 고치기는 build_monster_game 을 다시 부르지 말고 furnish_outdoor_area(mapId, region:bottom-left) 한 번 → show_map_region 으로 본다.
 마지막 변경 뒤 read_monster_game 및 review_monster_game, read_game_systems 및 review_game_systems, review_opening을 실제로 실행한다. 완료 검사 문제는 도구로 해결하며 요청한 규모(기본은 72맵/60종/8관)를 축소하지 않는다.
 구조 검토는 플레이/청취/저장 검증이 아니다. 실제 이동·스타터·조우·포획·회복·상점 거래·배지·저장/Continue와 정본 저장 재로드는 별도로 확인하며 미검증 범위를 보고한다. 전투는 현재gen1 규칙이며 에메랄드의 모든 규칙을 구현했다고 말하지 않는다.
-도로·체육관에 트레이너를 더하라는 요청은 place_trainer(시야선에 들면 「!」 후 배틀, 한 호출), 악·강철·페어리가 있는 18타입은 set_type_chart {preset:'gen3'|'gen6'}, 야생 레벨 범위·풀숲 칸에서만 나오는 조우는 set_encounter_table 의 levelMin/levelMax·conditions.terrainId('terrain_grass')로 한다.`;
+도로·체육관에 트레이너를 더하라는 요청은 place_trainer(시야선에 들면 「!」 후 배틀, 한 호출), 악·강철·페어리가 있는 18타입은 set_type_chart {preset:'gen3'|'gen6'}, 야생 레벨 범위·풀숲 칸에서만 나오는 조우는 set_encounter_table 의 levelMin/levelMax·conditions.terrainId('terrain_grass')로 한다.
+울음·칼춤·연막 같은 능력 변화 기술은 upsert_skill 의 statStageEffects([{stat:'attack'|'defense'|'spAttack'|'spDefense'|'speed'|'accuracy'|'evasion', stages:-6~+6, chance?, target?:'self'}])로 한다 — 포켓몬식 단계(전투 한 번, 교체하면 초기화)이고 상태(state_attack_up)로 흉내 내지 않는다.`;
 
 /** 포켓몬 낱말 없이 몬스터 수집·체육관 게임을 말했을 때 캠페인 프롬프트 뒤에 붙는다. */
 export const MONSTER_FREE_CAMPAIGN_NOTE = `

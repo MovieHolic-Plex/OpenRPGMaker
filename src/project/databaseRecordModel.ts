@@ -1,4 +1,5 @@
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeHeldItemEffect } from "@/battle/heldItems";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -69,9 +70,11 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCaptureCondition } from "@/battle/captureBalls";
+import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
+import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -93,6 +96,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     id: record.id,
     name: record.name,
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
+    ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
@@ -691,6 +695,11 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    ...(() => {
+      const statStageEffects = normalizeStatStageEffects(record.statStageEffects);
+      return statStageEffects.length ? { statStageEffects } : {};
+    })(),
+    ...(normalizeSkillWeather(record.weather) ? { weather: normalizeSkillWeather(record.weather) } : {}),
     ...(typeof record.maxPp === "number" && Number.isFinite(record.maxPp) && record.maxPp > 0
       ? { maxPp: clampInteger(record.maxPp, 1, 99) }
       : {}),
@@ -779,6 +788,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
     captureProfile: normalizeCaptureProfile(record.captureProfile),
     careProfile: normalizeCareProfile(record.careProfile),
+    ...(normalizeHeldItemEffect(record.heldEffect) ? { heldEffect: normalizeHeldItemEffect(record.heldEffect) } : {}),
   };
 }
 
@@ -992,6 +1002,25 @@ function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 
+/** 능력치 단계 효과 정규화: 모르는 stat·0 단계는 버린다(툴 쪽이 먼저 거절한다). 최대 4개. */
+export function normalizeStatStageEffects(effects: readonly Partial<SkillStatStageEffect>[] | undefined): SkillStatStageEffect[] {
+  if (!Array.isArray(effects)) return [];
+  return effects
+    .filter((effect): effect is Partial<SkillStatStageEffect> & { stat: SkillStatStageEffect["stat"] } => isStatStageKey(effect?.stat))
+    .flatMap((effect) => {
+      const stages = clampInteger(Number(effect.stages ?? 0), STAT_STAGE_MIN, STAT_STAGE_MAX);
+      if (stages === 0) return [];
+      const chance = clampInteger(Number(effect.chance ?? 100), 0, 100);
+      return [{
+        stat: effect.stat,
+        stages,
+        ...(chance < 100 ? { chance } : {}),
+        ...(effect.target === "self" ? { target: "self" as const } : {}),
+      }];
+    })
+    .slice(0, 4);
+}
+
 function normalizeStateEffects(effects: readonly Partial<DatabaseStateEffect>[] | undefined): DatabaseStateEffect[] {
   return (effects ?? [])
     .filter((effect): effect is DatabaseStateEffect => typeof effect.stateId === "string" && effect.stateId.length > 0)
@@ -1033,7 +1062,7 @@ function isGen1BallClass(value: unknown): value is NonNullable<ItemCaptureProfil
 }
 
 function isGen1MajorStatus(value: unknown): value is NonNullable<StateRecord["gen1MajorStatus"]> {
-  return value === "poison" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
+  return value === "poison" || value === "toxic" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
 }
 
 function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {

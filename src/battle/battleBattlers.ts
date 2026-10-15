@@ -1,3 +1,4 @@
+import { hasStatStages, type StatStages } from "@/battle/statStages";
 import { battleRow, type BattleRow } from "@/battle/battleFormation";
 import { effectivePromotionLineage, validActorClassOverride } from '@/project/growth/lineage';
 import { growthEffects } from "@/project/growth/runtime";
@@ -67,6 +68,8 @@ export interface MutableBattler {
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
   readonly monsterInstanceId?: string;
   readonly speciesId?: string;
+  /** 지닌 도구. 열매가 쓰이면 비워진다(전투 뒤 세션에 되돌려 쓴다). */
+  heldItemId?: string;
   readonly name: string;
   // 파생 스탯: 전투 중 changeEquipment/promoteActor 가 refreshActorBattlerDerivedStats 로
   // 재계산할 수 있어 mutable. 생성 산식과 같은 actorDerivedStats 를 공유한다.
@@ -111,6 +114,8 @@ export interface MutableBattler {
   rageEnemyId?: string;
   /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
   resource2?: number;
+  /** 능력치 단계(−6~+6). 0 이 아닌 칸만 가지며 저장하지 않는다 — 교체로 빠지거나 전투가 끝나면 사라진다(statStages.ts). */
+  statStages?: StatStages;
 }
 
 export function actorBattlers(
@@ -473,6 +478,7 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       recordId: hydrated.instanceId as ActorId,
       monsterInstanceId: hydrated.instanceId,
       speciesId: hydrated.speciesId,
+      ...(hydrated.heldItemId ? { heldItemId: hydrated.heldItemId } : {}),
       level: hydrated.level,
       name: monsterDisplayName(project, hydrated),
       maxHp: stats.maxHp,
@@ -630,6 +636,7 @@ export function battlerSnapshot(
     characterIndex: battler.characterIndex,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,
+    ...(battler.heldItemId ? { heldItemId: battler.heldItemId } : {}),
     hp: battler.hp,
     maxHp: battler.maxHp,
     mp: battler.mp,
@@ -652,6 +659,7 @@ export function battlerSnapshot(
     ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
     ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
     ...(battler.scanned ? { scanned: true } : {}),
+    ...(hasStatStages(battler.statStages) ? { statStages: { ...battler.statStages } } : {}),
     effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
     pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };
