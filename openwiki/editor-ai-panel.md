@@ -1188,7 +1188,10 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 **측정법(회귀 가드):** `scripts/qa/stamp-place-corpus.mts` — 실제 계획기·검증기·러너·도구를 헤드리스로 돌리고 `scripts/qa/stamp-place-corpus.json`(50문장: 물건·오타·수량·위치·모호·비물건·없는 물건)을 칩셋별로 돌린다.
 `--mode script` 는 기록된 대본(`stamp-place-corpus.script.json`)을 재생(모델 없음), `--mode agy --record` 는 Argon medium(agy 대용)으로 새로 받아 기록. 판정: 그림 맞음/엉뚱한 물건/이벤트만/정직한 거절(그림 없음·자리 없음)/도구 실패/결과 줄 거짓.
 채점 `python3 scripts/qa/stamp-place-corpus-report.py <결과폴더...>`. 실제 에디터 재현 `scripts/qa/stamp-place-ui.mjs`(dev:worktree + Playwright, blankProject 라 정본 저장 증거 아님).
-기준선(200회): 그림 맞음 20.5%·엉뚱한 물건 39%·결과 줄 거짓 18%·이벤트만 12.5%. 수정 후는 아래 PR 의 stamp-place-review-1 표 참조 — 판정이 바뀌면 이 숫자도 같이 고친다.
+기준선(origin/main fed4d8d0b9, 4칩셋 200회, 같은 채점): 그림 맞음 20.5%·엉뚱한 물건 39%·결과 줄 거짓 18%·이벤트만 12.5%.
+수정 후(같은 문장·칩셋, 2026-10-15 `final2`): 그림 맞음 54%·엉뚱한 물건 0.5%·결과 줄 거짓 0%·이벤트만 0%, 나머지는 정직한 거절(그림 없음 11%·자리 없음 9.5%)·도구 실패 사유 표시 3%·모호한 말 12%. 추가 3칩셋(마당 선택 일본 주택가·몬스터 키트·초원 마을 150회): 그림 26%·정직한 거절 43%·엉뚱 1.3%·거짓 줄 0.
+판정이 바뀌면 이 숫자도 같이 고친다(정본 표: `~/claude-viz/stamp-place-review-1.html` 을 `scripts/qa/stamp-place-review-html.py` 로 재생성).
+**남은 약점:** 일본 주택가 「울타리」가 도로 위에 얹힘(재료 선택), 문 달기는 벽이 없으면 거절(벽 지을지는 사용자 몫), 채점은 휴리스틱이라 눈 확인 필요.
 **한계:** 대본 재생은 프롬프트가 바뀌면 키가 어긋나 새로 기록해야 한다. 칩셋에 그림이 아예 없는 물건(몬스터 키트의 화분·농장의 연못)은 **깔지 않는 것이 정답**이다 — 그림을 새로 만들어 채우지 않는다.
 vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변경에서 **실행하지 않았다**(워크트리 규칙).
 
