@@ -157,7 +157,35 @@ def run_gen(*args, timeout=TIMEOUT):
     return r.returncode, (r.stdout or ''), (r.stderr or '')
 
 
+def selected_reference(plate, view):
+    """선택된 주인공 그림(생성 원본)을 참고 이미지로 쓴다: 마젠타 1254x1254 캔버스에 앞모습 남·여를 나란히."""
+    src_plate = plate_cfg(plate)['refPlate']
+    picks = read_json(os.path.join(DATA, 'picks.json'), {}).get(src_plate, {})
+    path = os.path.join(RUNS, plate, '_ref_selected.png')
+    if os.path.exists(path): return path
+    roles = ['hero_m_front', 'hero_f_front']
+    for r in roles:
+        if r not in picks: sys.exit('참고 이미지용 선택이 없다: %s (%s)' % (r, src_plate))
+    import numpy as np
+    S = 1254; canvas = Image.new('RGB', (S, S), (255, 0, 255)); tiles = []
+    for r in roles:
+        m = read_json(os.path.join(RUNS, src_plate, r, picks[r]['letter'], 'meta.json'))
+        col, mask = _fringe_free_rgba(os.path.join(RUNS, src_plate, r, picks[r]['letter'], m['raw']))
+        ys, xs = np.nonzero(mask); y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
+        rgba = Image.fromarray(col[y0:y1, x0:x1]).convert('RGBA'); rgba.putalpha(Image.fromarray(mask[y0:y1, x0:x1]))
+        k = 880 / rgba.height; tiles.append(rgba.resize((max(1, round(rgba.width * k)), 880), Image.LANCZOS))
+    gap = 60; total = sum(t.width for t in tiles) + gap; x = (S - total) // 2
+    for t in tiles:
+        canvas.paste(t, (x, (S - 880) // 2), t); x += t.width + gap
+    os.makedirs(os.path.dirname(path), exist_ok=True); canvas.save(path)
+    return path
+
+
+def plate_cfg(plate): return read_json(os.path.join(RUNS, plate, 'plate.json'), {})
+
+
 def gen_reference(plate, view):
+    if plate_cfg(plate).get('refPlate'): return selected_reference(plate, view)
     g = gen_seed(); path = os.path.join(RUNS, plate, '_ref_%s.png' % view)
     if not os.path.exists(path):
         os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -177,7 +205,22 @@ def gen_reference(plate, view):
     return path
 
 
-def gen_prompt(role, spec, letter):
+def gen_prompt_selected(role, spec, letter):
+    g = gen_seed()
+    common = ("The reference image shows 2 EXAMPLE trainer characters (a boy and a girl, front view) on a flat magenta canvas. They are the chosen look of this game's trainer cast and define the target art style: "
+              f"{g['style']} Match their illustration style exactly: the same head-to-body proportion, the same outline weight, the same flat shading with 2-3 tones, the same clean pixel-art look. "
+              "A full figure is about 70% of the picture height: draw your character just as large as the examples. ")
+    task = ("TASK: draw ONE NEW, completely different original character of the same cast in exactly that style. "
+            "Do NOT copy or redraw either example character and do NOT include the examples in your picture; the output has only the one new character, centered. ")
+    pose = "Pose: standing upright, facing the viewer (front view, straight on), feet apart on the same ground line; any prop is held in a hand and stays inside the picture. "
+    forbid = ("Your character holds no ball, no capsule, no orb and no creature. No monster-ball shape anywhere. "
+              "It must NOT resemble any existing official Pokemon trainer or character. Original design only. ")
+    bg = ("The whole background is flat solid pure magenta #FF00FF everywhere, magenta touching the outline directly: NO glow, NO aura, NO shadow, NO ground, NO text, no gradients. ")
+    return common + task + pose + f"Character: {spec['label']} — {spec['brief']} Variation: {g['variants'][letter]} " + forbid + bg
+
+
+def gen_prompt(role, spec, letter, plate=None):
+    if plate and plate_cfg(plate).get('refPlate'): return gen_prompt_selected(role, spec, letter)
     g = gen_seed()
     n = len(g['samples'][spec['view']])
     common = (f"The reference image shows {n} EXAMPLE trainer sprites on a flat magenta canvas. They define the target art style: "
@@ -241,7 +284,7 @@ def make_gen_candidate(plate, role, letter, throw=False):
     meta_path = os.path.join(cdir, 'meta.json'); meta = read_json(meta_path, {})
     if meta.get('status') == 'ok': return meta
     ref = gen_reference(plate, view)
-    prompt = gen_prompt(role, spec, letter)
+    prompt = gen_prompt(role, spec, letter, plate)
     open(os.path.join(cdir, 'prompt.txt'), 'w', encoding='utf-8').write(prompt)
     meta.update({'role': role, 'letter': letter, 'view': view, 'mode': 'gen', 'started': now(), 'model': 'god-tibo-imagen',
                  'reference': os.path.relpath(ref, RUNS), 'samples': g['samples'][view]})
@@ -426,14 +469,14 @@ def cmd_draw(a):
     jobs = [(r, l) for r in roles for l in (['A'] if table[r].get('mode') == 'asis' else letters_all)]
     os.makedirs(os.path.join(RUNS, plate), exist_ok=True)
     write_json(os.path.join(RUNS, plate, 'plate.json'), {'plate': plate, 'roles': roles, 'letters': letters_all, 'created': now(), 'mode': mode,
-                                                         'model': MODEL if mode == 'chip' else 'god-tibo-imagen',
+                                                         'model': MODEL if mode == 'chip' else 'god-tibo-imagen', **({'refPlate': a.ref_plate} if a.ref_plate else {}),
                                                          'method': {'gen': 'generated image -> grid pixelize (monster-collect-species pipeline) -> 64x64',
                                                                     'gen128': 'generated image -> smooth high-quality downscale -> 128x128 transparent (display 1x)',
                                                                     'chip': 'agy-argon-edit (deprecated)'}[mode]})
     print(plate, mode, 'jobs=%d par=%d' % (len(jobs), a.par), flush=True)
     if a.background:
         log = open(os.path.join(RUNS, plate, 'draw.log'), 'a')
-        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate, '--mode', mode],
+        subprocess.Popen([sys.executable, __file__, 'draw', ','.join(roles), '--n', str(a.n), '--par', str(a.par), '--plate', plate, '--mode', mode] + (['--ref-plate', a.ref_plate] if a.ref_plate else []),
                          stdout=log, stderr=log, start_new_session=True)
         print('백그라운드로 시작:', os.path.join(RUNS, plate, 'draw.log'))
         return
@@ -553,6 +596,8 @@ def cmd_sheet128(a):
     manual = read_json(os.path.join(RUNS, a.plate, 'manual_filter.json'), {})
     name = 'trainer-sprites-pick-%s.html' % a.plate.lstrip('p')
     only = a.only.split(',') if a.only else None
+    rec = read_json(os.path.join(RUNS, a.plate, 'recommend.json'), {})            # {"role": "letter"} 감독 추천 ★(최종 선택 아님)
+    picked = read_json(os.path.join(DATA, 'picks.json'), {}).get(a.plate, {})     # 이미 기록된 선택(위임 포함)
     cards = []; roles_js = {}; dropped = []
     order = [r for r in g['roles'] if r in cands and (not only or r in only)]
     BG = data_uri(os.path.join(ROOT, 'public/assets/emerald-monster/battle/grass.png'))
@@ -569,7 +614,10 @@ def cmd_sheet128(a):
             roles_js[role]['cands'][l] = {'sprite': uri}; shown += 1
             prompt = open(os.path.join(RUNS, a.plate, role, l, 'prompt.txt'), encoding='utf-8').read()
             inf = m['info']
-            items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}</div>'
+            star = ' ★감독 추천' if rec.get(role) == l else ''
+            pk = picked.get(role)
+            mark = (' ✔현재 선택(%s)' % ('사용자 위임' if pk.get('by') else '선택')) if pk and pk['letter'] == l else ''
+            items.append(f'<div class=cand data-role="{role}" data-l="{l}"><div class=lt>{l}{star}{mark}</div>'
                          f'<div class=pair><div><img class=rawimg src="{raw_uri}"><div class=hs>생성 원본(마젠타 배경)</div></div>'
                          f'<div><div class=bg><img class=px data-w=128 src="{uri}"></div><div class=hs>128×128 투명 · 몸 {inf["height"]}px · 표시 1배</div></div></div>'
                          f'<div class=hs>{m["hash"]}</div>'
@@ -713,6 +761,7 @@ def cmd_pick(a):
         m = read_json(os.path.join(RUNS, a.plate, role, letter, 'meta.json'))
         if not m or m.get('status') != 'ok': sys.exit('%s=%s 는 통과한 후보가 아니다' % (role, letter))
         cur[role] = {'letter': letter, 'hash': m['hash'], 'at': now()}
+        if a.delegated: cur[role]['by'] = a.delegated   # 예: 'user-delegated-to-supervisor' — 사용자가 위임한 선택임을 기록, 되돌리려면 다시 pick
     write_json(os.path.join(DATA, 'picks.json'), picks)
     print(json.dumps(cur, ensure_ascii=False))
 
@@ -909,10 +958,10 @@ def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest='cmd', required=True)
     sp.add_parser('list')
     d = sp.add_parser('draw'); d.add_argument('role', nargs='?'); d.add_argument('--n', type=int, default=5); d.add_argument('--par', type=int, default=2)
-    d.add_argument('--plate'); d.add_argument('--mode', choices=['gen', 'gen128', 'chip'], default='gen128'); d.add_argument('--background', action='store_true')
+    d.add_argument('--plate'); d.add_argument('--mode', choices=['gen', 'gen128', 'chip'], default='gen128'); d.add_argument('--background', action='store_true'); d.add_argument('--ref-plate')
     st = sp.add_parser('status'); st.add_argument('plate', nargs='?')
     sh = sp.add_parser('sheet'); sh.add_argument('plate'); sh.add_argument('--only'); sh.add_argument('--note')
-    pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+')
+    pk = sp.add_parser('pick'); pk.add_argument('plate'); pk.add_argument('picks', nargs='+'); pk.add_argument('--delegated')
     bk = sp.add_parser('bake'); bk.add_argument('plate'); bk.add_argument('roles', nargs='*')
     rr = sp.add_parser('rerender'); rr.add_argument('src'); rr.add_argument('dst'); rr.add_argument('roles', nargs='*')
     cp = sp.add_parser('compare'); cp.add_argument('plate'); cp.add_argument('picks', nargs='+'); cp.add_argument('--out', default='5')

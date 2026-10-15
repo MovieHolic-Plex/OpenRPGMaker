@@ -1,0 +1,40 @@
+{
+ "p6": {
+  "hero_m": {
+   "letter": "A",
+   "hash": "3a36f8d35aea879d",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  },
+  "hero_m_front": {
+   "letter": "E",
+   "hash": "c613c4dc280b246e",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  },
+  "hero_f": {
+   "letter": "A",
+   "hash": "61abcca197c285db",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  },
+  "hero_f_front": {
+   "letter": "A",
+   "hash": "02ca344ffdf30e1a",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  },
+  "boy": {
+   "letter": "A",
+   "hash": "fbf6094bb169d35f",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  },
+  "girl": {
+   "letter": "A",
+   "hash": "71c7f5accdf831cc",
+   "at": "2026-10-15T22:42:36",
+   "by": "user-delegated-to-supervisor"
+  }
+ }
+}

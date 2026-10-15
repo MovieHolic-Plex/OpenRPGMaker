@@ -56,3 +56,9 @@ npm run harness -- battle-trainer-sprites bake p4      # 고른 기록이 있는
 ## 파일
 `src/harnesses/battle-trainer-sprites/{harness.py,harness.ts,node/cli.ts,node/gen.ts}` · 시드 `harness-data/battle-trainer-sprites/seed.json` · 샘플 `harness-data/battle-trainer-sprites/source/` ·
 산출 `qa-runs/harnesses/battle-trainer-sprites/<판>/<역할>/<글자>/{prompt.txt,raw-N.png,sprite.png,meta.json}`.
+
+## 선택 기록과 위임 (2026-10-15)
+
+- 방식은 사용자가 pick-5 에서 「128 부드러움」으로 골랐다.
+- 주인공 4역·소년·소녀(pick-6)는 사용자가 「전부 추천대로」로 감독에게 위임했다. `harness-data/battle-trainer-sprites/picks.json` 의 해당 항목에 `by: user-delegated-to-supervisor` 로 남긴다. 바꾸려면 `pick p6 <역=번호> --delegated user-delegated-to-supervisor` 를 다시 하면 되고, 번들에 굽기 전까지는 되돌리기 쉽다.
+- 나머지 8역(pick-7 = p7)은 선택된 주인공 앞모습 두 장(남 E·여 A)을 참고 이미지로 붙여 같은 화풍으로 생성(`draw --ref-plate p6`). 시트의 ★ 는 감독 추천이며 최종 확정이 아니다.
