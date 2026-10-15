@@ -262,7 +262,8 @@ async function runCase(theme: ThemeSetup, entry: CorpusEntry, base: Project, sel
   const personLike = (info: EventInfo): boolean => /charset|actor|face|villager|people/i.test(info.graphic);
   const nonPersonVisibleEvents = events.filter((info) => info.visible && !personLike(info));
   let verdict: Verdict;
-  if (!result.usedModel && result.applied === 0 && diff.tilesChanged === 0 && events.length === 0) verdict = entry.expect === "refuse" ? "REFUSED_OK" : "NONE";
+  if ((result.refused ?? 0) > 0 && result.applied === 0 && diff.tilesChanged === 0 && events.length === 0) verdict = entry.expect === "refuse" ? "REFUSED_OK" : "REFUSED_OK";
+  else if (!result.usedModel && result.applied === 0 && diff.tilesChanged === 0 && events.length === 0) verdict = entry.expect === "refuse" ? "REFUSED_OK" : "NONE";
   else if (diff.tilesChanged > 0) verdict = "ART";
   else if (events.length > 0 && nonPersonVisibleEvents.length === 0) verdict = result.ok && objectRequested && entry.expect !== "refuse" ? "FALSE_OK" : "EVENT_ONLY";
   else if (events.length > 0) verdict = "ART";
@@ -276,7 +277,7 @@ async function runCase(theme: ThemeSetup, entry: CorpusEntry, base: Project, sel
   }
   if (entry.expect === "refuse" && (verdict === "ART" || verdict === "EVENT_ONLY" || verdict === "FALSE_OK")) notes.push("칩셋에 없는 물건인데 뭔가 깔렸다(엉뚱한 대체)");
   // 정직성: 결과가 「성공」인데 그림이 없다면 거짓. 줄에 「깔았/배치/완료」가 있는데 변화 0 도 거짓.
-  const claimsDone = result.ok || result.lines.some((line) => /완료|깔|배치|놓|세웠|심었/u.test(line) && !/실패|못|없/u.test(line));
+  const claimsDone = result.ok || result.lines.some((line) => /놓음|배치 ·|완료|깔았|세웠|심었|산포|생성/u.test(line) && !/않|실패|못|없|거절|버린/u.test(line));
   const nothingVisible = diff.tilesChanged === 0 && nonPersonVisibleEvents.length === 0;
   const honest = !(claimsDone && nothingVisible && objectRequested && entry.expect !== "refuse") && !(entry.expect === "refuse" && claimsDone && (diff.tilesChanged > 0 || events.length > 0));
   let relevant: boolean | null = null;

@@ -39,7 +39,11 @@ function norm(text: string): string {
   return text.toLowerCase().replace(/[\s·・,.()\[\]_/\\-]+/gu, " ").trim();
 }
 
+/** 이름·id 에 「벽/창/문/걸이」가 든 물건은 벽에 붙는 부착물 — 바닥에 서지 않는다(「벽 횃불」이 바닥 칸에서 무결성 거부됐다). */
+const WALL_BOUND_NAME = /(?:^|[\s_:-])(?:wall|window|door|hang|벽|창|창문|문|걸이|걸개|현판)(?:$|[\s_:-])|벽걸이|벽 /iu;
+
 function isFloorStanding(kit: SectionStructureKitDef): boolean {
+  if (WALL_BOUND_NAME.test(`${kit.name ?? ""} ${kit.id}`)) return false;
   const tags = kit.ai?.tags ?? [];
   if (tags.some((tag) => WALL_TAGS.has(tag))) return false;
   const snap = (kit.ai as { snap?: string } | undefined)?.snap;
@@ -182,6 +186,61 @@ function fuzzyNameScore(query: string, entry: StampObjectEntry): number {
   return 0;
 }
 
+/**
+ * 같은 물건을 가리키는 낱말 묶음. 모델이 준 「비슷한 말」은 **이 묶음 안에서만** 받는다 —
+ * 「황금 왕좌」에 「의자」, 「공룡 알」에 「바위」, 「대포」에 「화로」를 붙여 엉뚱한 그림을 깔던 길을 막는다(2026-10-15 코퍼스).
+ */
+const SYNONYM_GROUPS: readonly (readonly string[])[] = [
+  ["화분", "꽃 화분", "화초", "planter", "pot", "flowerpot"],
+  ["의자", "스툴", "걸상", "chair", "stool"],
+  ["탁자", "테이블", "식탁", "책상", "table", "desk"],
+  ["침대", "bed"],
+  ["벤치", "긴 의자", "bench"],
+  ["책장", "서가", "책꽂이", "bookshelf", "bookcase"],
+  ["통", "나무통", "술통", "배럴", "barrel", "keg"],
+  ["상자", "나무 상자", "궤", "박스", "크레이트", "crate", "box"],
+  ["항아리", "단지", "독", "jar", "urn"],
+  ["우물", "well"],
+  ["가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
+  ["횃불", "토치", "torch"],
+  ["모닥불", "화톳불", "캠프파이어", "campfire", "bonfire"],
+  ["바위", "돌", "큰 바위", "암석", "boulder", "rock", "stone"],
+  ["덤불", "관목", "수풀", "bush", "shrub"],
+  ["꽃", "꽃밭", "화단", "꽃무더기", "flower", "flowerbed"],
+  ["울타리", "펜스", "담장", "fence", "hedge"],
+  ["표지판", "푯말", "이정표", "안내판", "sign", "signpost"],
+  ["간판", "signboard"],
+  ["동상", "조각상", "statue"],
+  ["우체통", "mailbox", "postbox"],
+  ["자판기", "vending machine", "vending"],
+  ["카펫", "러그", "양탄자", "깔개", "carpet", "rug"],
+  ["나무", "tree"],
+  ["연못", "분수", "pond", "fountain"],
+  ["계단", "stair", "stairs"],
+  ["문", "door"],
+];
+
+function synonymGroupOf(name: string): readonly string[] | null {
+  const q = norm(name);
+  for (const group of SYNONYM_GROUPS) if (group.some((word) => norm(word) === q)) return group;
+  return null;
+}
+
+/** 모델이 제안한 이름 중 코드가 인정하는 것 — 첫 이름(사용자 말)과 같은 묶음에 든 말만. */
+export function acceptedObjectNames(primary: string, alternatives: readonly string[]): { readonly names: string[]; readonly rejected: string[] } {
+  const group = synonymGroupOf(primary);
+  const names = [primary];
+  const rejected: string[] = [];
+  for (const alt of alternatives) {
+    if (norm(alt) === norm(primary)) continue;
+    if (group && group.some((word) => norm(word) === norm(alt))) names.push(alt);
+    else rejected.push(alt);
+  }
+  // 묶음의 다른 낱말도 시도한다(칩셋이 「테이블」로만 이름을 붙였을 수 있다).
+  if (group) for (const word of group) if (!names.some((existing) => norm(existing) === norm(word))) names.push(word);
+  return { names, rejected };
+}
+
 export interface StampObjectHit {
   readonly entry: StampObjectEntry;
   /** 어느 이름(요청 이름 또는 동의어)으로 찾았나. */
@@ -207,24 +266,35 @@ function pickVariants(hits: readonly { entry: StampObjectEntry; score: number }[
 }
 
 /**
- * 이름(+동의어)으로 물건을 찾는다. 바닥에 서는 물건만(벽·문·간판 부착물은 제외).
- * 이름 수준에서 맞는 것이 없으면 null — 설명문 일치는 후보로만(`nearestStampObjects`).
+ * 이름으로 물건을 찾는다. `names[0]` 이 사용자 말(철자 오타 보정은 이 이름에만), 나머지는 같은 묶음의 동의어다.
+ * 바닥에 서는 물건만(벽·문·간판 부착물은 제외). 이름 수준에서 맞는 것이 없으면 null.
  */
 export function resolveStampObject(
   index: readonly StampObjectEntry[],
   names: readonly string[],
 ): StampObjectHit | null {
   const floor = index.filter((entry) => entry.floorStanding);
-  for (const exact of [true, false]) {
-    for (const name of names) {
-      const scored: { entry: StampObjectEntry; score: number }[] = [];
-      for (const entry of floor) {
-        const score = exact ? nameScore(name, entry) : fuzzyNameScore(name, entry);
-        if (score > 0) scored.push({ entry, score });
-      }
-      if (scored.length === 0) continue;
+  for (const name of names) {
+    const scored: { entry: StampObjectEntry; score: number }[] = [];
+    for (const entry of floor) {
+      const score = nameScore(name, entry);
+      if (score > 0) scored.push({ entry, score });
+    }
+    if (scored.length === 0) continue;
+    const variants = pickVariants(scored);
+    return { entry: variants[0]!, matchedBy: name, corrected: false, variants };
+  }
+  // 오타 한 칸 — 사용자 말(첫 이름)과 그 묶음 낱말에만.
+  const primary = names[0];
+  if (primary !== undefined) {
+    const scored: { entry: StampObjectEntry; score: number }[] = [];
+    for (const entry of floor) {
+      const score = fuzzyNameScore(primary, entry);
+      if (score > 0) scored.push({ entry, score });
+    }
+    if (scored.length > 0) {
       const variants = pickVariants(scored);
-      return { entry: variants[0]!, matchedBy: name, corrected: !exact, variants };
+      return { entry: variants[0]!, matchedBy: primary, corrected: true, variants };
     }
   }
   return null;
