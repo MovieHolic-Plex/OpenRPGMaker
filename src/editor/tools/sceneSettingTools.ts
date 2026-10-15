@@ -38,19 +38,18 @@ interface Layout {
 const s = (id: string, dx: number, dy: number): Stamp => ({ id, dx, dy });
 
 /** 이벤트 칸 (x,y), 시작 칸 (x-1,y). 두 칸은 걸어 닿아야 하므로 아래 배치는 그 칸을 막지 않는다. */
-function layoutFor(theme: SceneTheme): Layout {
+function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
   switch (theme) {
     case "lava_bridge": {
       // 용암 강이 가로로 흐르고(y-1..y), 바위 다리(3×7)가 세로로 가로지른다. 이벤트 칸은 다리 한가운데.
       const lava: Stamp[] = [];
-      for (let dx = -10; dx <= 10; dx += 2) lava.push(s(`${VOLCANO}lava-strip`, dx, -1));
+      for (let dx = -2 * Math.ceil(x / 2); dx <= 2 * Math.ceil((map.width - x) / 2); dx += 2) lava.push(s(`${VOLCANO}lava-strip`, dx, -1));
       return {
         ground: { material: "버들항 광장 판석", rx: 10, ry: 6 },
         fills: [],
         stamps: [
           ...lava,
           s(`${VOLCANO}bridge`, -1, -3),
-          s(`${VOLCANO}lava-fall-strip`, -8, -4),
           s(`${VOLCANO}altar`, 5, -6),
           s(`${VOLCANO}brazier`, -3, -4),
           s(`${VOLCANO}brazier`, 3, -4),
@@ -132,6 +131,7 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${VOLCANO}brazier`, -5, -2),
           s(`${VOLCANO}brazier`, 5, -2),
           s(`${RUINS}ruined-wall-2`, 8, 0),
+          s("bd-prop-sword_barrel", 0, -1),
         ],
       };
   }
@@ -168,19 +168,21 @@ function snapToMapEdge(map: GameMap, r: { x: number; y: number; w: number; h: nu
 }
 
 /** 직사각형 바닥의 네 모서리를 계단식으로 깎아 반듯한 사각 패치로 보이지 않게 한다(맵 끝에 닿은 변은 그대로). */
-function roundedParts(r: { x: number; y: number; w: number; h: number }) {
+function roundedParts(map: GameMap, r: { x: number; y: number; w: number; h: number }) {
   if (r.w < 6 || r.h < 6) return [r];
   const c = r.w >= 12 && r.h >= 8 ? 3 : 2;
+  // 맵 가장자리에 닿은 변은 그대로 둔다 — 깎으면 그 모서리에 풀밭 삼각형이 남는다.
+  const left = r.x <= 0, right = r.x + r.w >= map.width, top = r.y <= 0, bottom = r.y + r.h >= map.height;
+  const cl = left ? 0 : c, cr = right ? 0 : c, ct = top ? 0 : c, cb = bottom ? 0 : c;
   return [
-    { x: r.x + c, y: r.y, w: r.w - 2 * c, h: r.h },
-    { x: r.x, y: r.y + c, w: r.w, h: r.h - 2 * c },
-    { x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 },
-    { x: r.x + 2, y: r.y + 1, w: r.w - 4, h: r.h - 2 },
+    { x: r.x + cl, y: r.y, w: r.w - cl - cr, h: r.h },
+    { x: r.x, y: r.y + ct, w: r.w, h: r.h - ct - cb },
+    { x: r.x + (left ? 0 : 1), y: r.y + (top ? 0 : 1), w: r.w - (left ? 0 : 1) - (right ? 0 : 1), h: r.h - (top ? 0 : 1) - (bottom ? 0 : 1) },
   ];
 }
 
-function themeKitIds(theme: SceneTheme): string[] {
-  return [...new Set(layoutFor(theme).stamps.map((st) => KIT + st.id))];
+function themeKitIds(theme: SceneTheme, map: GameMap, x: number): string[] {
+  return [...new Set(layoutFor(theme, map, x).stamps.map((st) => KIT + st.id))];
 }
 
 function clampRect(map: GameMap, x: number, y: number, w: number, h: number) {
@@ -218,7 +220,8 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
     prepare: async (args) => {
       const theme = args.theme as SceneTheme;
       if (!SCENE_THEMES.includes(theme)) return;
-      await Promise.all(themeKitIds(theme).map((id) => prepareSharedObject(id)));
+      const probe = { width: 40, height: 40 } as GameMap;
+      await Promise.all(themeKitIds(theme, probe, 10).map((id) => prepareSharedObject(id)));
     },
     run(project: Project, args: Readonly<Record<string, unknown>>): ToolExecResult {
       const theme = args.theme as SceneTheme;
@@ -238,7 +241,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         throw new ToolError(`좌표 (${args.x},${args.y}) 가 맵 ${map.width}×${map.height} 밖입니다`, { code: "out-of-map" });
       }
 
-      const layout = layoutFor(theme);
+      const layout = layoutFor(theme, map, x);
       const fill = toolByName(CONSTRUCTION_TOOLS_V3, "fill_region");
       const stamp = toolByName(SHARED_OBJECT_TOOLS, "stamp_object");
       const warnings: string[] = [];
@@ -246,14 +249,14 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
 
       const g = layout.ground;
       const ground = snapToMapEdge(map, clampRect(map, x - g.rx, y - g.ry, g.rx * 2 + 1, g.ry * 2 + 1));
-      for (const r of roundedParts(ground)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
+      for (const r of roundedParts(map, ground)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
       built.push(`바닥 ${g.material} ${ground.w}×${ground.h}`);
 
       for (const f of layout.fills) {
         const r = clampRect(map, x + f.dx, y + f.dy, f.w, f.h);
         if (r.w === 0 || r.h === 0) continue;
         try {
-          for (const part of roundedParts(r)) fill.run(project, { mapId, rect: part, material: f.material, clearUpper: true });
+          for (const part of roundedParts(map, r)) fill.run(project, { mapId, rect: part, material: f.material, clearUpper: true });
         } catch (error) {
           warnings.push(`${f.material} 칠하기 실패: ${error instanceof Error ? error.message : String(error)}`);
         }
