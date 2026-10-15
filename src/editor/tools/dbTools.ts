@@ -18,6 +18,7 @@ import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 //            / set_session_start / set_title_screen.
 // 모든 레코드는 기존 레코드와 병합한 뒤 normalize* 계열을 거쳐 id로 upsert한다.
 
+import { typeChartForPreset } from "@/project/typeCharts";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
@@ -1617,29 +1618,39 @@ const defineCrop: ToolDefinition = {
 
 const setTypeChart: ToolDefinition = {
   name: "set_type_chart",
-  description: "포켓몬식 타입 상성표를 설정한다. types는 타입 id 배열이고 multipliers[공격][방어]는 데미지 배율이다.",
+  description: "포켓몬식 타입 상성표를 설정한다. preset 으로 표준 표를 한 번에 깔 수 있다 — 'gen3'(15타입+악·강철, 에메랄드 상성), 'gen6'(+페어리, 강철의 고스트·악 반감 제거). 직접 만들려면 types 배열과 multipliers[공격][방어](데미지 배율)를 준다. preset 과 함께 multipliers 를 주면 그 칸만 덮어쓴다. 1세대 15타입은 몬스터 프로젝트 기본이라 preset 이 필요 없다. 악·강철·페어리 타입 몬스터를 정의하기 전에 먼저 부른다.",
   mode: "write",
   domains: ["database"],
   parameters: {
     type: "object",
     properties: {
-      types: stringArraySchema("예: ['fire','water','grass']"),
-      multipliers: { type: "object", description: "{ attackerType: { defenderType: multiplier } }", additionalProperties: true },
+      preset: { type: "string", enum: ["gen3", "gen6"], description: "표준 상성표: gen3=17타입(15+악·강철), gen6=18타입(+페어리). 생략하면 types·multipliers 를 직접 준다." },
+      types: stringArraySchema("예: ['fire','water','grass'] (preset 을 쓰면 생략)"),
+      multipliers: { type: "object", description: "{ attackerType: { defenderType: multiplier } } (preset 과 같이 주면 그 칸만 덮어씀)", additionalProperties: true },
     },
-    required: ["types", "multipliers"],
     additionalProperties: false,
   },
+  invalidArgsHint: "preset('gen3'|'gen6') 하나만 주거나, types 와 multipliers 를 둘 다 주세요.",
   invalidArgsExample: {
     types: ["fire", "water", "grass"],
     multipliers: { fire: { grass: 2, water: 0.5, fire: 0.5 }, water: { fire: 2, grass: 0.5, water: 0.5 }, grass: { water: 2, fire: 0.5, grass: 0.5 } },
   },
   run(draft, args): ToolExecResult {
-    const chart = normalizeTypeChart({
-      types: Array.isArray(args.types) ? args.types as string[] : [],
-      multipliers: args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
-        ? args.multipliers as Record<string, Record<string, number>>
-        : {},
-    });
+    const presetName = typeof args.preset === "string" ? args.preset : undefined;
+    if (args.preset !== undefined && presetName !== "gen3" && presetName !== "gen6") {
+      throw new ToolError(`preset 은 'gen3' 또는 'gen6' 입니다(받은 값: ${JSON.stringify(args.preset)}). 1세대 15타입은 기본이라 preset 이 없습니다.`, { code: "invalid-args" });
+    }
+    const presetChart = presetName ? typeChartForPreset(presetName) : null;
+    const given = args.multipliers && typeof args.multipliers === "object" && !Array.isArray(args.multipliers)
+      ? args.multipliers as Record<string, Record<string, number>>
+      : {};
+    if (!presetChart && (!Array.isArray(args.types) || args.types.length === 0)) {
+      throw new ToolError("types 배열 또는 preset('gen3'|'gen6') 이 필요합니다.", { code: "missing-type-chart-types" });
+    }
+    const merged = presetChart
+      ? { types: presetChart.types, multipliers: Object.fromEntries(Object.entries(presetChart.multipliers).map(([attacker, row]) => [attacker, { ...row, ...(given[attacker] ?? {}) }])) as Record<string, Record<string, number>> }
+      : { types: args.types as string[], multipliers: given };
+    const chart = normalizeTypeChart(merged);
     if (!chart) throw new ToolError("types에 최소 1개 타입 id가 필요합니다.", { code: "missing-type-chart-types" });
 
     // 상성표 교체로 기존 참조가 새로 고아가 되면, 무관한 선재 오류처럼 보이며 커밋 전체가 거부된다.

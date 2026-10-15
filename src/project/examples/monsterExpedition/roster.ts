@@ -108,7 +108,13 @@ const MOVE_NAMES: Readonly<Record<string, readonly [string, string, string, stri
   ice: ["서리발", "눈바늘", "빙하발톱", "설월바람", "영구동결", "서리숨"],
   dragon: ["비늘울림", "소금숨결", "돛룡파동", "심해포효", "섬의메아리", "용의호흡"],
 };
-const PHYSICAL_TYPES = new Set(["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost"]);
+/** 3세대 이후 타입 기술(악·강철·페어리). 프로젝트 상성표에 그 타입이 있을 때만 buildMoves 가 만든다 — 1세대 프로젝트의 기술 목록은 그대로다. */
+const EXTRA_MOVE_NAMES: Readonly<Record<string, readonly [string, string, string, string, string, string]>> = {
+  dark: ["그늘물기", "밤그림자", "어둠송곳니", "새벽약탈", "흑야의일격", "그늘숨기"],
+  steel: ["쇠톱니", "철판치기", "강철꼬리", "볼트충돌", "철갑돌격", "철벽자세"],
+  fairy: ["별가루", "달빛방울", "요정의입맞춤", "꽃잎결계", "달무리폭죽", "별빛숨결"],
+};
+const PHYSICAL_TYPES = new Set(["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "dark", "steel"]);
 /** 타입 × 단계(1~6) 기술 이펙트. 데이터베이스에 이미 있는 anim_gen_* / anim_scarloxy_* 만 쓴다(새 그림 없음).
  *  예전에는 타입 하나에 이펙트 하나(그마저 존재하지 않는 anim_attack·anim_fire 가 7타입 42기술을 무연출로 만들었고,
  *  풀·물은 「회복 빛」이 상대 몸에 떴다 — 2026-10-15 진단 B2). 단계가 오를수록 큰 이펙트, 6단계(위력 0 보조기)는 몸을 감싸는 이펙트. */
@@ -128,16 +134,21 @@ const ANIMATIONS: Readonly<Record<string, readonly [string, string, string, stri
   psychic: ["anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_sleep_dust"],
   ice: ["anim_scarloxy_ice", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_guard_barrier"],
   dragon: ["anim_gen_sonic_wave", "anim_gen_sonic_wave", "anim_gen_projectile_shot", "anim_gen_sonic_wave", "anim_gen_meteor_fall", "anim_gen_power_aura"],
+  dark: ["anim_gen_bite_crunch", "anim_gen_shadow_pulse", "anim_gen_bite_crunch", "anim_gen_claw_rake", "anim_gen_shadow_pulse", "anim_gen_blind_veil"],
+  steel: ["anim_gen_tackle_impact", "anim_gen_claw_rake", "anim_gen_tackle_impact", "anim_gen_projectile_shot", "anim_gen_critical_burst", "anim_gen_guard_barrier"],
+  fairy: ["anim_gen_cleanse_sparkle", "anim_gen_drain_orbs", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_power_aura", "anim_gen_cleanse_sparkle"],
 };
 const DEBUFF: Readonly<Record<string, string>> = {
-  fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down",
+  fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down", dark: "state_attack_down", steel: "state_defense_down", fairy: "state_attack_down",
 };
 
 export function buildMoves(project: Project): SkillRecord[] {
   const availableStates = new Set(project.database.states.map(state => state.id));
   const availableAnimations = new Set(project.database.battleAnimations.map(animation => animation.id));
   const stateEffect = (stateId: string, chance: number, operation: "add" | "remove" = "add") => availableStates.has(stateId) ? [{ stateId, chance, operation }] : [];
-  return Object.entries(MOVE_NAMES).flatMap(([type, names]) => names.map((name, index) => {
+  const chartTypes = new Set(project.system.typeChart?.types ?? []);
+  const moveNames = Object.entries({ ...MOVE_NAMES, ...Object.fromEntries(Object.entries(EXTRA_MOVE_NAMES).filter(([type]) => chartTypes.has(type))) });
+  return moveNames.flatMap(([type, names]) => names.map((name, index) => {
     const tier = index + 1;
     const move: Partial<SkillRecord> & Pick<SkillRecord, "id" | "name"> = {
       id: moveId(type, tier), name, elementId: type,
@@ -181,7 +192,7 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.scope = "self"; move.maxPp = 10;
         move.stateEffects = ["state_poison", "state_burn", "state_paralysis", "state_sleep", "state_freeze"].flatMap(id => stateEffect(id, 100, "remove"));
         move.description = "맑은 물로 자신에게 걸린 독·화상·마비·수면·빙결을 씻어낸다.";
-      } else if (["fighting", "flying", "rock", "bug"].includes(type)) {
+      } else if (["fighting", "flying", "rock", "bug", "steel"].includes(type)) {
         move.scope = "self";
         const buff = type === "fighting" ? "state_attack_up" : type === "flying" ? "state_agility_up" : "state_defense_up";
         move.stateEffects = stateEffect(buff, 100);
@@ -190,7 +201,7 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.stateEffects = stateEffect(DEBUFF[type]!, 100);
         move.hitRate = type === "psychic" ? 75 : type === "ice" ? 55 : 90;
         move.maxPp = type === "ice" ? 5 : 15;
-        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 낮춘다. 명중률 90%." : "모래장막으로 상대의 속도를 낮춘다. 명중률 90%.";
+        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 낮춘다. 명중률 90%." : "모래장막으로 상대의 속도를 낮춘다. 명중률 90%.";
       }
     }
     return normalizeSkillRecord(move);
