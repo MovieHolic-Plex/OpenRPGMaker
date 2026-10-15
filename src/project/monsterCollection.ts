@@ -476,6 +476,21 @@ export function monsterEvolutionCycleSpeciesIds(species: readonly MonsterSpecies
   return [...cycled].sort();
 }
 
+/** 레벨업 뒤 자동 진화(아이템 없는 조건)가 일어날지 미리 본다 — 세션은 바꾸지 않는다. 진화 장면이 보상 반영 전에 돌 수 있게 한다. */
+export function previewMonsterEvolution(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  atLevel: number,
+): { readonly name: string; readonly fromSpeciesId: MonsterSpeciesId; readonly toSpeciesId: MonsterSpeciesId } | undefined {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+  if (!instance || !species) return undefined;
+  const evolution = selectEvolution(project, session, { ...instance, level: atLevel }, species, { instanceId, allowItemEvolution: false });
+  return evolution ? { name: monsterDisplayName(project, instance), fromSpeciesId: species.id, toSpeciesId: evolution.toSpeciesId } : undefined;
+}
+
 export function applyMonsterExperienceAndEvolution(
   project: Project,
   session: PlaySession,

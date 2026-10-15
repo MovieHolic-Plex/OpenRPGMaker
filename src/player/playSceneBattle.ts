@@ -28,6 +28,8 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
+import { previewMonsterEvolution } from "@/project/monsterCollection";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -295,6 +297,16 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
+              // 레벨업으로 진화할 몬스터는 결과 문장을 다 본 뒤, 전투 화면이 걷히기 전에 3세대 진화 장면을 본다(규칙 반영은 아래에서 그대로).
+              const evolving = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const preview = previewMonsterEvolution(project, session, entry.instanceId, entry.toLevel);
+                  return preview ? [preview] : [];
+                })
+                : [];
+              const evolutionDone = evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : Promise.resolve();
+              void evolutionDone.then(() => {
+              if (!current()) { abort(); return; }
               const transition = newTransition();
               exitTransition = transition;
               void transition.exit().then(async () => {
@@ -341,6 +353,7 @@ export async function playBattle(
                   resolve(null);
                 } else resolve(result);
               }).catch(fail);
+              });
             } catch (error) {
               fail(error);
             }

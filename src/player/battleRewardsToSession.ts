@@ -37,7 +37,7 @@ export type BattleRewardsOutcome = {
 export function applyBattleRewardsToSession(
   session: PlaySession,
   outcome: BattleRewardsOutcome,
-  project: Project
+  project: Project,
 ): readonly BattleLevelUpResult[] {
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.

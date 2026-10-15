@@ -14,7 +14,8 @@ import motion as M
 import recipes as R
 
 CATALOG_FILES = ('charsetCatalog.ts', 'easyrpgRtp.ts', 'scarloxyPack.ts',
-                 'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'wizardingCharsets.ts',
+                 'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'harnessMonsterArt.ts',
+                 'harnessMonsterBundle.json', 'wizardingCharsets.ts',
                  'wizardingCharsets.json', 'sharedCharacterGraphics.json')
 WALKING_GROUPS = {'Actor', 'People', 'Monster', 'Animal', 'Scarloxy', 'Farm', 'Template'}
 
@@ -38,13 +39,25 @@ def wizarding_catalog(directory):
                  group=group[1]) for number in range(1, count + 1)]
 
 
+def harness_monster_charsets(directory):
+    """Walking chips baked from the species-harness bundle. Sheet count lives in the manifest."""
+    count = json.loads((directory / 'harnessMonsterBundle.json').read_text()).get('fieldSheets') or 0
+    if not isinstance(count, int) or count < 0:
+        raise ValueError('몬스터 수집 따라다니기 칩 목록 형식을 읽을 수 없습니다')
+    return [dict(id=f'oprn-charset-harness-monster{n}',
+                 name=f'HarnessMonster{n} · 몬스터 수집 따라다니기 칩 · OPRN',
+                 path=f'assets/harnesses/monster-collect-species/field/chips-{n}.png',
+                 textureKey=f'tex_oprn_charset_harness_monster{n}', group='Monster')
+            for n in range(1, count + 1)]
+
+
 def editor_catalog():
     """Read registered literal assets; fail closed if a new catalog provider appears."""
     directory = H.ROOT / 'src/assets'
     providers = re.findall(r'\.\.\.([A-Z_]+)', (directory / 'charsetCatalog.ts').read_text().split('export const CHARSET_ASSETS:')[1].split('];')[0])
     expected = {'EASYRPG_CHARSET_ASSETS', 'SCARLOXY_CHARSET_ASSETS',
                 'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS',
-                'WIZARDING_CHARSET_ASSETS'}
+                'HARNESS_MONSTER_CHARSET_ASSETS', 'WIZARDING_CHARSET_ASSETS'}
     if set(providers) != expected:
         raise ValueError('에디터 캐릭터 카탈로그 공급자가 바뀌었습니다. 원본 목록 연결을 갱신하세요.')
     result = []
@@ -67,6 +80,7 @@ def editor_catalog():
         result.append(dict(id=f'easyrpg-charset-monster{number}', name=label,
                            path=f'assets/generated/charsets/Monster{number}.png',
                            textureKey=f'tex_easyrpg_charset_monster{number}', group='Monster'))
+    result.extend(harness_monster_charsets(directory))
     result.extend(wizarding_catalog(directory))
     if len({r['id'] for r in result}) != len(result):
         raise ValueError('에디터 원본 ID가 중복됐습니다')

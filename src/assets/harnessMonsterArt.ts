@@ -11,12 +11,16 @@
 // 대기 스트립 `<종>/anim/<면>-idle.png`(112×N 가로) — `battlerIdleAnimation()` 이 image-strip 으로 읽는다.
 import bundle from "./harnessMonsterBundle.json";
 import type { BattlerIdleAnimation } from "./battlerIdleAnimations";
+import { charsetFrameIndex, type EasyRpgCharsetAsset } from "./easyrpgRtp";
+import type { EventPageGraphic } from "@/project/types";
 
 export type HarnessMonsterSide = "front" | "back";
 
 type BundleSide = { readonly idle?: { readonly frames: number; readonly frameMs: number } };
-type BundleSpecies = { readonly campaignSpeciesId?: string; readonly front?: BundleSide; readonly back?: BundleSide };
-type BundleFile = { readonly version: 1; readonly canvas: number; readonly species: Readonly<Record<string, BundleSpecies>> };
+/** 따라다니기용 걷기 칩: `field/chips-<sheet>.png`(288×256, 8명)의 `index` 번째 캐릭터. */
+type BundleField = { readonly sheet: number; readonly index: number };
+type BundleSpecies = { readonly campaignSpeciesId?: string; readonly front?: BundleSide; readonly back?: BundleSide; readonly field?: BundleField };
+type BundleFile = { readonly version: 1; readonly canvas: number; readonly fieldSheets?: number; readonly species: Readonly<Record<string, BundleSpecies>> };
 
 const FILE = bundle as BundleFile;
 const BASE_PATH = "assets/harnesses/monster-collect-species";
@@ -70,4 +74,39 @@ export function harnessArtForCampaignSpecies(campaignSpeciesId: string): { reado
     };
   }
   return {};
+}
+
+// ---- 따라다니기 걷기 칩 ------------------------------------------------------------
+// 사람이 고른 칩(`field_chip.py pick`)을 `field_chip.py bake` 가 8명씩 288×256 시트로 묶고, manifest 가 `fieldSheets`·종별 `field` 를 싣는다.
+// 시트는 일반 캐릭터셋 카탈로그(charsetCatalog)에 들어가 편집기·플레이어가 다른 번들 칩과 똑같이 읽는다.
+
+export const HARNESS_MONSTER_CHARSET_ASSETS = Array.from({ length: FILE.fieldSheets ?? 0 }, (_, i) => i + 1).map((n) => ({
+  category: "charset",
+  id: `oprn-charset-harness-monster${n}`,
+  name: `HarnessMonster${n} · 몬스터 수집 따라다니기 칩 · OPRN`,
+  sourcePath: "src/harnesses/monster-collect-species/field_chip.py",
+  path: `${BASE_PATH}/field/chips-${n}.png`,
+  fileName: `chips-${n}.png`,
+  textureKey: `tex_oprn_charset_harness_monster${n}`,
+  group: "Monster",
+})) satisfies readonly EasyRpgCharsetAsset[];
+
+export const HARNESS_MONSTER_CHARSET_RESOURCE_IDS: readonly string[] = HARNESS_MONSTER_CHARSET_ASSETS.flatMap((asset) => [asset.id, asset.textureKey]);
+
+export function resolveHarnessMonsterCharsetUrl(resourceId: string): string | null {
+  const asset = HARNESS_MONSTER_CHARSET_ASSETS.find((entry) => entry.id === resourceId || entry.textureKey === resourceId);
+  return asset ? `/${asset.path}` : null;
+}
+
+/** 캠페인 종 id → 따라다니기 칩(필드 그래픽). 이어진 하네스 종의 칩이 번들에 없으면 undefined(기본 몬스터 칩으로 폴백). */
+export function harnessFieldGraphicForCampaignSpecies(campaignSpeciesId: string): EventPageGraphic | undefined {
+  for (const entry of Object.values(FILE.species)) {
+    if (entry.campaignSpeciesId !== campaignSpeciesId || !entry.field) continue;
+    return {
+      sprite: { type: "bundled", id: `tex_oprn_charset_harness_monster${entry.field.sheet}` },
+      direction: "down",
+      pattern: charsetFrameIndex({ characterIndex: entry.field.index, direction: "down", pattern: 1 }),
+    };
+  }
+  return undefined;
 }
