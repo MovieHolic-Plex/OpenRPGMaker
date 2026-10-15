@@ -3186,6 +3186,15 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
 
+
+## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+
+- `place_trainer`(`trainerTools.ts`, 이벤트 도메인): 시야선 트레이너 한 명을 한 호출로 — `team:[{speciesId,level}]`(enemy·troop 자동, `trainerBattle`·포획 불가) 또는 `troopId`, `facing`·`sightRange`·`emote`·`approachSpeed`·`before/after/rematchLine/rematch`·`rewardGold/rewardItems`·`winSwitchId`. 모르는 키(`dialogue`·`reward` …)는 가까운 이름을 알려 주고 거절. `place_field_enemy` 는 야생 심볼 도구라 보상·재대결이 없어 트레이너를 그걸로 놓지 않는다.
+- `set_type_chart {preset:'gen3'|'gen6'}`: 표준 17/18타입 표(preset 과 `multipliers` 를 같이 주면 그 칸만 덮어씀). 기본은 1세대 15타입이라 preset 이 없다. `define_monster_families` 는 기본(불·물·풀) 상성표면 요청 타입에 맞춰 표준 표를 자동으로 깔고 경고한다.
+- `set_encounter_table` 항목: `levelMin/levelMax`(종 몬스터 트룹만 — 아니면 「다음 도구」를 알려 거절), `conditions.terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭). 옛 거절 안내(`minLevel`·`terrain`) 는 새 이름을 가리키도록 바꿨다.
+- 패배·보상: `set_game_over {goldLossPercent}`(blackout 일 때만), `configure_game_systems {rewardPolicy:{expShare,trainerPrizePerLevel}}`, `configure_monster_system {captureShakesVariableId}`(변수 먼저 `create_variable`).
+- 의도 선언(`intentDeclaration.ts` tools 설명)·능력 색인(`toolCapabilityIndex.ts` 레시피 `monster-field-rules`)·몬스터 프롬프트(`monsterGameRequest.ts`) 에 같은 안내를 넣었다. 도구 라벨은 `aiToolLabels.ts`.
+
 ## 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
 
 - `set_project_settings` `battle.teams: [{id,name?,actorIds}]`(2~4팀, `[]` 해제) + `battle.teamSwapCost: free|gauge|turn`. 모르는 키(팀 객체 안 포함)·팀 id 중복·한 배우 두 팀·없는 배우(→ `upsert_actor` 안내)·팀 1개·빈 팀은 `ToolError`. 경고(`warnings`): 팀 없는 시작 파티원(첫 팀에 붙음)·시작 파티 배우가 없는 팀·strict 흐름(free/gauge/turn 동일)·팀 없이 비용만 저장.

@@ -120,6 +120,8 @@ export type StepResult =
       // 이 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 의 소유 이벤트).
       // 랜덤 인카운터/필드 스폰 전투는 undefined.
       ownerEventId?: string;
+      /** 랜덤 인카운터가 조우표 levelMin/levelMax 로 굴린 야생 레벨(그 외 경로는 없음). */
+      enemyLevel?: number;
     }
   | {
       kind: "showPicture";

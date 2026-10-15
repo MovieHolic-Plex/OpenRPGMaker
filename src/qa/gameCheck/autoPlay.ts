@@ -1054,8 +1054,8 @@ function trainingGround(project: Project, session: PlaySession, avoid: ReadonlyM
         if (!canMove(project, map, x, y, x + 1, y) || !canMove(project, map, x + 1, y, x, y)) continue;
         // 얼음 위에서는 좌우로 오가지 못하고 미끄러진다 — 서리종 동굴 얼음 칸에서 40묶음 동안 한 번도 조우하지 못했다.
         if (tileset && (slideRuleAt(tileset, map, x, y) || slideRuleAt(tileset, map, x + 1, y))) continue;
-        const here = eligibleEncounterEntries(map, session, { x, y });
-        if (here.length === 0 || eligibleEncounterEntries(map, session, { x: x + 1, y }).length === 0) continue;
+        const here = eligibleEncounterEntries(map, session, { x, y }, project);
+        if (here.length === 0 || eligibleEncounterEntries(map, session, { x: x + 1, y }, project).length === 0) continue;
         level = Math.max(...here.map((entry) => troopLevel(project, entry.troopId)));
         cell = { x, y };
       }
@@ -1077,7 +1077,7 @@ function reachableGrass(project: Project, session: PlaySession): { x: number; y:
   if (!authored) return null;
   const map = runtimeMap(authored, session);
   const occupied = new Set((map.events ?? []).map((event) => `${event.x},${event.y}`));
-  const grass = (x: number, y: number) => !occupied.has(`${x},${y}`) && eligibleEncounterEntries(map, session, { x, y }).length > 0;
+  const grass = (x: number, y: number) => !occupied.has(`${x},${y}`) && eligibleEncounterEntries(map, session, { x, y }, project).length > 0;
   const seen = new Set([`${session.x},${session.y}`]);
   const queue = [{ x: session.x, y: session.y }];
   for (let i = 0; i < queue.length; i++) {

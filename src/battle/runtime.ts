@@ -348,7 +348,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         partyActorIds: options.party?.partyActorIds,
       });
   if (!usePartyMonsters) applySkillLoadoutsToBattlers(options.project, actors, sessionState.actorSkillLoadouts);
-  const enemies = enemyBattlers(options.project, troopRecord);
+  const enemies = enemyBattlers(options.project, troopRecord, options.enemyLevel !== undefined ? { wildLevel: options.enemyLevel } : undefined);
   // 리미트·기력·파티 게이지(battleGauges). 끈 프로젝트는 필드를 만들지 않는다.
   seedBattleGauges(options.project, actors);
   let partyGauge = initialPartyGauge(options.project);
@@ -2789,6 +2789,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function applyCapture(user: MutableBattler, captureItemId: ItemId, targetEnemyId: string): void {
     const finish = (next: BattleCaptureResultSnapshot): void => {
       lastCaptureResult = next;
+      // 흔들린 횟수를 이벤트가 읽게 한다(system.captureShakesVariableId). 잡히면 4, 막힌 던지기(blockedReason)는 0.
+      const shakesVariableId = options.project.system.captureShakesVariableId;
+      if (shakesVariableId) battleEventState.variables[shakesVariableId] = next.success ? 4 : (next.shakes ?? 0);
       recordTimeline({
         kind: "capture",
         side: "actor",
@@ -2873,7 +2876,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       targetId: target.id,
       enemyId: target.recordId as EnemyId,
       speciesId: species.id,
-      level: Math.max(1, Math.min(99, Math.trunc(enemyRecord?.level ?? 1))),
+      level: Math.max(1, Math.min(99, Math.trunc(target.level ?? enemyRecord?.level ?? 1))),
       caughtAt,
       ivs: rollMonsterIvs(rng),
       captureItemId,
@@ -4473,6 +4476,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       exp: scaleByDifficulty(rawCollected.exp, difficultyRate(options.project.system, sessionState, "expRate")),
       gold: scaleByDifficulty(rawCollected.gold, difficultyRate(options.project.system, sessionState, "goldRate")),
     };
+    // 트레이너 상금 공식(system.rewardPolicy.trainerPrizePerLevel): 상대 마지막 몬스터 레벨 × 값. 난이도 배율(goldRate)은 그대로 곱한다.
+    const prizePerLevel = options.project.system.rewardPolicy?.trainerPrizePerLevel ?? 0;
+    if (prizePerLevel > 0 && troopRecord.trainerBattle === true) {
+      const lastEnemy = [...enemies].reverse().find((enemy) => !enemy.hidden && enemy.captured !== true);
+      collected.gold = scaleByDifficulty(Math.max(0, Math.trunc(lastEnemy?.level ?? rawCollected.enemyLevel ?? 1)) * prizePerLevel, difficultyRate(options.project.system, sessionState, "goldRate"));
+    }
     rewards.exp = collected.exp;
     rewards.gold = collected.gold;
     rewards.enemyLevel = collected.enemyLevel;

@@ -310,6 +310,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       return companions ? { companions } : {};
     })(),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
+    ...(typeof system.captureShakesVariableId === "string" && system.captureShakesVariableId.trim() ? { captureShakesVariableId: system.captureShakesVariableId.trim() } : {}),
     // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
     ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
@@ -440,10 +441,14 @@ export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined):
 }
 
 function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
-  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined && policy.expShare === undefined && policy.trainerPrizePerLevel === undefined)) return undefined;
+  const prize = typeof policy.trainerPrizePerLevel === "number" && Number.isFinite(policy.trainerPrizePerLevel) ? Math.max(0, Math.min(9999, Math.trunc(policy.trainerPrizePerLevel))) : 0;
   return {
     participationOnly: policy.participationOnly === true,
     levelGapPenalty: policy.levelGapPenalty === true,
+    // 새 칸은 켰을 때만 저장한다 — 안 쓰는 프로젝트의 저장 바이트는 그대로.
+    ...(policy.expShare === true ? { expShare: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
