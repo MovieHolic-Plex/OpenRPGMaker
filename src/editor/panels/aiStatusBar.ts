@@ -37,7 +37,10 @@ export function mountAiStatusBar(): () => void {
   let lastChipSignature = "";
 
   // 「작업 N개 · 확인 K · 실패 F」 — 일이 둘 이상이면 줄 맨 앞에서 개수와 가장 급한 상태를 말한다(칩이 +N 으로 접혀도 총수가 보인다).
-  const summary = el("span", { class: "ai-status-summary", dataset: { testid: "ai-status-summary" }, attrs: { hidden: "" } });
+  const summary = el("button", {
+    class: "ai-status-summary", attrs: { type: "button", hidden: "", title: "모든 AI 작업을 맵별로 한눈에 봅니다", "aria-expanded": "false" },
+    dataset: { testid: "ai-status-summary" }, on: { click: () => openFor(ALL) },
+  });
   const chips = el("div", { class: "ai-status-chips", dataset: { testid: "ai-status-chips" } });
   // 바로 깔기 주문(드래그 → Enter)은 aiPresence 와 별개 파이프라인(stampOrderQueue)이다 — 개수만 여기서 함께 말한다.
   const stampChip = el("span", { class: "ai-status-stamp", dataset: { testid: "ai-status-stamp" }, attrs: { hidden: "", title: "바로 깔기 주문 — 지도 위 번호 상자에서 위치를 볼 수 있어요" } });
@@ -84,10 +87,10 @@ export function mountAiStatusBar(): () => void {
     const left = rect.left + 16;
     return { left, width: Math.max(280, Math.round(right - left - 16)), rect };
   };
-  /** 한 줄에 놓을 칩 수: 요약·시간·「작업 기록」·「멈춤」(약 380px)을 뺀 폭을 칩 하나 약 170px 로 나눈다. 좁으면 +N 으로 접는다(칩이 잘려 읽히지 않는 것보다 낫다). */
+  /** 한 줄에 놓을 칩 수: 요약·시간·「작업 기록」·「멈춤」(약 300px)을 뺀 폭을 칩 하나 약 150px 로 나눈다. 좁으면 +N 으로 접는다(칩이 잘려 읽히지 않는 것보다 낫다). */
   const chipBudget = (): number => {
     const box = barBox();
-    return box ? Math.max(1, Math.min(MAX_CHIPS, Math.floor((box.width - 380) / 170))) : MAX_CHIPS;
+    return box ? Math.max(1, Math.min(MAX_CHIPS, Math.floor((box.width - 300) / 150))) : MAX_CHIPS;
   };
   const placeNow = (): void => {
     const box = barBox();
@@ -100,10 +103,12 @@ export function mountAiStatusBar(): () => void {
   };
 
   const placePop = (): void => {
-    const chip = openId === ALL ? chips.querySelector<HTMLElement>(".is-more") : chips.querySelector<HTMLElement>(`[data-presence-id="${CSS.escape(openId ?? "")}"]`);
+    const chip = openId === ALL ? (chips.querySelector<HTMLElement>(".is-more") ?? (summary.hidden ? null : summary)) : chips.querySelector<HTMLElement>(`[data-presence-id="${CSS.escape(openId ?? "")}"]`);
     if (!chip) { closePop(); return; }
     const chipRect = chip.getBoundingClientRect();
-    pop.style.left = `${Math.max(8, Math.round(chipRect.left))}px`;
+    // 오른쪽 끝 칩(「+N」)에서 열려도 화면 밖으로 나가지 않게 가둔다(실측 2026-10-16: 380px 팝오버가 오른쪽에서 잘렸다).
+    const popWidth = pop.offsetWidth || 380;
+    pop.style.left = `${Math.max(8, Math.min(Math.round(chipRect.left), window.innerWidth - popWidth - 8))}px`;
     pop.style.bottom = `${Math.round(window.innerHeight - root.getBoundingClientRect().top + 10)}px`;
   };
 
@@ -111,6 +116,7 @@ export function mountAiStatusBar(): () => void {
     openId = null;
     pop.hidden = true;
     for (const chip of chips.querySelectorAll(".ai-status-chip")) chip.setAttribute("aria-expanded", "false");
+    summary.setAttribute("aria-expanded", "false");
   }
 
   function openLogs(): void {
@@ -177,6 +183,7 @@ export function mountAiStatusBar(): () => void {
     pop.hidden = false;
     placePop();
     for (const chip of chips.querySelectorAll<HTMLElement>(".ai-status-chip")) chip.setAttribute("aria-expanded", String((chip.dataset.presenceId ?? (chip.classList.contains("is-more") ? ALL : "")) === id));
+    summary.setAttribute("aria-expanded", String(id === ALL));
   }
 
   /** 맵별로 묶은 전체 목록 — 여러 맵에서 여러 조수가 돌 때의 「한 번에 보기」. */
@@ -290,7 +297,7 @@ export function mountAiStatusBar(): () => void {
   const onDocPointer = (event: PointerEvent): void => {
     if (pop.hidden) return;
     const target = event.target as Node | null;
-    if (target && (pop.contains(target) || chips.contains(target))) return;
+    if (target && (pop.contains(target) || chips.contains(target) || summary.contains(target))) return;
     closePop();
   };
   const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !pop.hidden) { closePop(); } };

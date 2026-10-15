@@ -140,7 +140,7 @@ html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]
 .ai-map-region[data-covered="1"].is-cornered[data-state="review"],
 .ai-map-region[data-covered="1"].is-cornered[data-state="draft"] { display: none; }
 /* 상태 줄 맨 앞의 「작업 N개 · 확인 K · 실패 F」 — 칩이 +N 으로 접혀도 총수·급한 상태가 보인다. */
-.ai-status-summary { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: var(--bg-inset); color: var(--text-1); font-size: 12px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-status-summary { flex: 0 0 auto; border: 0; cursor: pointer; font-family: var(--font-ui); padding: 4px 10px; border-radius: 999px; background: var(--bg-inset); color: var(--text-1); font-size: 12px; font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ai-status-summary[hidden] { display: none; }
 .ai-status-summary[data-top="review"] { background: var(--warning-muted, #fff1d6); color: var(--warning, #a65f00); }
 .ai-status-summary[data-top="failed"] { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
