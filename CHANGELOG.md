@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.229.1 — 2026-10-15
+
+### 성능
+
+- **boot** — warm boot 9.3s -> 4.4s, cold 19.0s -> 13.6s, first-visit shared-content 13.1MB -> 3.7MB (#2640) (`ecd9f79`)
+
 ## 0.229.0 — 2026-10-15
 
 ### 기능
