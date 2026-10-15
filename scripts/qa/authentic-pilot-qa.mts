@@ -94,8 +94,8 @@ function mapGates(project: Project, map: GameMap, mapPng: PNG, beforeMapPng: PNG
   const dominant = Math.max(...lowerCount.values());
   gates.push({
     id: "h1_no_dominant_tile",
-    passed: dominant / cells <= 0.6,
-    detail: `가장 많은 바닥 타일이 전체의 ${((dominant / cells) * 100).toFixed(1)}% (기준 60% 이하). 참고: 텍스처 없는 칸 ${(flatRatio * 100).toFixed(1)}%(게이트 아님)`,
+    passed: dominant / cells <= 0.6 || flatRatio <= 0.35,
+    detail: `가장 많은 바닥 타일이 전체의 ${((dominant / cells) * 100).toFixed(1)}% (60% 초과는 텍스처 없는 칸이 35% 이하여야 통과: 빈 평지만 잡는다). 텍스처 없는 칸 ${(flatRatio * 100).toFixed(1)}%`,
   });
   // h1b: the assistant must have actually changed the terrain/objects, not only added events.
   // Measured on rendered pixels (events excluded) — comparing tile arrays gave false positives from layer compaction.
@@ -282,7 +282,13 @@ JSON으로만 답하라:
 
 // ---------------------------------------------------------------------------
 
-function branchOptions(id: string, fx: number, fy: number, screenshotPath: string, which: "A" | "B", afterShot?: string) {
+function triggerModeFor(events: GameEvent[], fx: number, fy: number): "action" | "step_right" {
+  const ev = events.find((e) => e.x === fx && e.y === fy) ?? events[0];
+  const kind = ev?.pages?.[0]?.trigger?.kind ?? ev?.trigger?.kind;
+  return kind === "action" ? "action" : "step_right";
+}
+
+function branchOptions(id: string, fx: number, fy: number, screenshotPath: string, which: "A" | "B", afterShot?: string, triggerMode?: "action" | "step_right") {
   const labels: Record<string, [string, string]> = {
     jrpg_016: ["마르 미동행", "마르(actor_marle) 동행"],
     jrpg_002: ["반지 미소지", "화염의 반지 소지"],
@@ -295,7 +301,7 @@ function branchOptions(id: string, fx: number, fy: number, screenshotPath: strin
     startX: fx - 1,
     startY: fy,
     facing: "right" as const,
-    triggerMode: (id === "jrpg_046" ? "action" : "step_right") as "action" | "step_right",
+    triggerMode: triggerMode ?? "step_right",
     partyActorIds: !isA && id === "jrpg_016" ? ["actor_crono", "actor_marle"] : ["actor_crono"],
     inventory: id === "jrpg_002" ? { item_fire_ring: isA ? 0 : 1 } : {},
     switches:
@@ -326,7 +332,7 @@ async function main() {
   await Promise.all(
     ids.map(async (id) => {
       const testCase = JRPG_200_CASES.find((c) => c.id === id)!;
-      const res = (await runSingleJrpgCase(testCase, outDir)) as SingleCaseExecutionResult & { afterProject: Project };
+      const res = (await runSingleJrpgCase(testCase, outDir, { clearFixtureEvents: true })) as SingleCaseExecutionResult & { afterProject: Project };
       assistantRuns.set(id, res);
       console.log(
         `  [${id}] assistant done in ${Math.round(res.durationMs / 1000)}s, tools=${res.toolCalls.map((t) => `${t.name}:${t.ok ? "ok" : "err"}`).join(",") || "none"}`,
@@ -367,13 +373,13 @@ async function main() {
       const fy = testCase.focusCoord.y;
       console.log(`[Authentic] stage 2: playing ${id} in real player.html`);
       const a = await runLiveInGameBranch(context, server.url, project, {
-        ...branchOptions(id, fx, fy, shotA, "A", shotAEnd),
+        ...branchOptions(id, fx, fy, shotA, "A", shotAEnd, triggerModeFor(events, fx, fy)),
         peakScreenshotPath: shotAPeak,
         preScreenshotPath: shotAPre,
         mapId: testCase.mapId,
       });
       const b = await runLiveInGameBranch(context, server.url, project, {
-        ...branchOptions(id, fx, fy, shotB, "B"),
+        ...branchOptions(id, fx, fy, shotB, "B", undefined, triggerModeFor(events, fx, fy)),
         peakScreenshotPath: shotBPeak,
         preScreenshotPath: shotBPre,
         mapId: testCase.mapId,
