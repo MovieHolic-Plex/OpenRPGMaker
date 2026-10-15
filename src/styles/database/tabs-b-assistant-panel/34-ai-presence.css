@@ -123,10 +123,8 @@
  */
 html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-canvas-progress,
 html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-canvas-activity { display: none; }
-/* 단계 알약은 위치를 재야 하므로 display 가 아니라 visibility 로 접는다(숨긴 채로도 칸 크기를 유지 → 도크를 접으면 제자리에 나타난다). */
-body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-ghost-phase-chip { visibility: hidden; }
-html[data-ai-activity-level="detail"] body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-ghost-phase-chip,
-html[data-ai-activity-level="trace"] body:not(.ai-dock-collapsed):not(.ai-studio-open) .ai-ghost-phase-chip { visibility: visible; }
+/* 단계 알약은 위치를 재야 하므로 display 가 아니라 visibility 로 접는다(칸 크기를 유지). 도크가 접혀도 지도 이름표·상태 줄이 같은 말을 하므로 접힌 채다. */
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-ghost-phase-chip { visibility: hidden; }
 /* 도크 머리의 「작업 중…」 칩은 대화 카드와 같은 말이다 — 읽기 도구에는 남기고 눈에서만 걷는다. 점(상태 색)은 그대로. */
 .ai-deck-rail-state .ai-assistant-status[data-status-tone="running"] {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
