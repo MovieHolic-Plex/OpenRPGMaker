@@ -70,6 +70,15 @@
         "block": 11,
         "pickedAt": "2026-10-15T04:31:25.028Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/gustchick-back.png",
+        "sourceSha256": "ca97e91ae7fa1e6e9a392e4c29cb532df9864f10f2838056b7fbea67dd9281f3",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/gustchick/back/20261015-043657/raw-2.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 14,
+        "pickedAt": "2026-10-15T05:10:15.617Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "pipbug": {
@@ -81,6 +90,15 @@
         "block": 9,
         "pickedAt": "2026-10-15T04:31:40.892Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/pipbug-back.png",
+        "sourceSha256": "9551e6d384278dc98bb4c9f5fba6e7473bcc49f6b0382fed4722fb74c3126495",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/pipbug/back/20261015-043910/raw-2.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 11,
+        "pickedAt": "2026-10-15T05:10:02.701Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "wickworm": {
@@ -92,6 +110,15 @@
         "block": 10,
         "pickedAt": "2026-10-15T04:31:55.059Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/wickworm-back.png",
+        "sourceSha256": "f3d522245d37fd800d54a0f168c738fb7b3dcba900b35c0386304cc923b955df",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/wickworm/back/20261015-044104/raw-2.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 14,
+        "pickedAt": "2026-10-15T05:10:30.186Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "rootpig": {
@@ -103,6 +130,15 @@
         "block": 10,
         "pickedAt": "2026-10-15T04:32:08.790Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/rootpig-back.png",
+        "sourceSha256": "4eab6f134879baa091efeb1912bd19e770d3c873292d5741f13d0ea2cdf75b37",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/rootpig/back/20261015-044637/raw-2.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 14,
+        "pickedAt": "2026-10-15T05:11:22.080Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "frondhare": {
@@ -114,6 +150,15 @@
         "block": 14,
         "pickedAt": "2026-10-15T04:32:22.865Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/frondhare-back.png",
+        "sourceSha256": "d247aa9a8d99220405a91e7186a466beeb507a4cba71b5f4f3e2a89f5c4ec036",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/frondhare/back/20261015-044450/raw-4.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 14,
+        "pickedAt": "2026-10-15T05:10:55.850Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "kilnclaw": {
@@ -125,6 +170,15 @@
         "block": 9,
         "pickedAt": "2026-10-15T04:32:36.974Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/kilnclaw-back.png",
+        "sourceSha256": "3308c1c7cfdf863efaec12cc4220d243b33240fd3acdc0f339cbbef5ab5b448e",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/kilnclaw/back/20261015-044836/raw-4.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 7,
+        "pickedAt": "2026-10-15T05:11:38.297Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "brookraft": {
@@ -136,6 +190,15 @@
         "block": 7,
         "pickedAt": "2026-10-15T04:32:50.372Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/brookraft-back.png",
+        "sourceSha256": "fefaddf07dffc59ff5849c680e158c5e5c0119f8e88d810111010e8f06fa2825",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/brookraft/back/20261015-045036/raw-4.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 7,
+        "pickedAt": "2026-10-15T05:10:43.206Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "coralpin": {
@@ -147,6 +210,15 @@
         "block": 7,
         "pickedAt": "2026-10-15T04:33:04.291Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/coralpin-back.png",
+        "sourceSha256": "2edf633776cd8c21fb4768c8d9b2c69c4c33c5609a0d13b7d5d442dd3568ca2a",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/coralpin/back/20261015-045201/raw-3.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 10,
+        "pickedAt": "2026-10-15T05:09:37.332Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "curlfin": {
@@ -158,6 +230,15 @@
         "block": 8,
         "pickedAt": "2026-10-15T04:33:16.935Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/curlfin-back.png",
+        "sourceSha256": "b6e37892a6b8f7f328bc45760c6e9aad04fd2590b24ccba3f31224f686c5fa1f",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/curlfin/back/20261015-045334/raw-1.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 8,
+        "pickedAt": "2026-10-15T05:09:11.967Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "zaptoe": {
@@ -169,6 +250,15 @@
         "block": 9,
         "pickedAt": "2026-10-15T04:33:29.036Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/zaptoe-back.png",
+        "sourceSha256": "e9c72e3b1681969b2e7c8f156143d1f8999dbeb5bc43645184569593d462c85d",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/zaptoe/back/20261015-045609/raw-1.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 9,
+        "pickedAt": "2026-10-15T05:09:24.718Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "pebblekid": {
@@ -180,6 +270,15 @@
         "block": 8,
         "pickedAt": "2026-10-15T04:33:42.134Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/pebblekid-back.png",
+        "sourceSha256": "fab8ade9dd650911a0aef00ced9f717e3445a0528206b75323c01dec385b9914",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/pebblekid/back/20261015-045700/raw-1.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 10,
+        "pickedAt": "2026-10-15T05:11:07.569Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     },
     "gritnose": {
@@ -191,6 +290,15 @@
         "block": 10,
         "pickedAt": "2026-10-15T04:33:55.681Z",
         "note": "2026-10-15 감독 위임 선택(사용자: 귀여운 걸로 감독이 전부 골라라)"
+      },
+      "back": {
+        "grid": "grids/gritnose-back.png",
+        "sourceSha256": "6b788fd9b6fa99002e51ca5565c05e2153d013ce6e4da145ab7ad6b49cc37a6a",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/gritnose/back/20261015-045934/raw-4.png",
+        "prompt": "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style). Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size) as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above, we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands. The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible; the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference (a four-legged creature stays on four legs). It is close to the camera and fills the picture. Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing. Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
+        "block": 11,
+        "pickedAt": "2026-10-15T05:09:49.122Z",
+        "note": "2026-10-15 감독 위임 선택(앞모습과 체형·색 일관, 귀여움)"
       }
     }
   }
