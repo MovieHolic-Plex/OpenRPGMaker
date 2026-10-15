@@ -76,11 +76,11 @@
 설계서: 「AI 조수 UI 복잡도 적대적 QA 1차」(추천 B 중 1단계). 같은 일을 8곳이 알리던 것을 줄였다. 측정은 같은 모의 서버 harness 로 전/후 같은 시나리오·크기에서 했다
 (모델 호출 없음, 상태 재현). 계약은 바뀌지 않았다 — 맵당 조수 한 명·대기열·체크포인트·묶음별 확정은 손대지 않았고 표시 층만 접었다.
 
-- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 전부 `source: "chat"` 이면 true.
+- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 **정확히 하나**이고 `source: "chat"` 이면 true(2단계 보정, 아래 「B안 1단계 보정」 참고: 처음엔 「전부 chat」이었다).
   `aiChatPanel.applyCollapsed` 가 body 클래스 `ai-dock-collapsed` 를 알림(`oprn:ai-panel-collapse`) 직전에 맞춘다. 영역 작업·다른 맵 작업이 섞이거나 도크가 접히면 false → 아래 표면이 그대로 나온다.
   - 지도 아래 상태 줄(`aiStatusBar`): true 면 접힘. 접힌 도크의 유일한 창구는 그대로다.
   - 받은함(`aiInbox`): 대화창 앞 턴(`chat`)의 검토·실패 카드는 더 만들지 않는다(대화 안 변경안 카드·오류 카드가 같은 버튼·원인을 갖는다). 다른 맵·영역 작업만 받은함에 남는다.
-  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다. 검토·초안 상자는 남기되 글자(「내 차례」)는 CSS 가 접는다.
+  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다(covered 일 때). 검토·초안 상자와 이름표 글자는 **도크 상태와 무관하게 늘 보인다** — 영역을 모르는 구석 이름표만 `data-covered="1"` 일 때 접는다.
 - **접힘(지우지 않음)**: 좌하단 `ai-canvas-progress`·어두운 `ai-canvas-activity`·`ai-ghost-phase-chip` 은 「작업 표시」가 「자세히/매우 자세히」일 때만 보인다
   (`html[data-ai-activity-level]` 를 `aiActivityPreference` 가 발행, CSS `34-ai-presence.css`). 헤더 상태 칩은 작업 중일 때 눈에서만 걷는다(`aria` 용 텍스트는 남음). 진행 카드의 「중지」 버튼이 작업 중에도 보인다.
 - **문구**: 적용 방식 라벨 `YOLO/AUTO MODE/DEFAULT` → 「바로 반영 · 확인 없이/자동 검수/큰 삭제만 확인」(id 는 그대로), 「AI가 할 일/자율성」 → 「일하는 방식」,
@@ -88,6 +88,20 @@
 - **간단히 보기**: 같은 문장이 연달아 나오면 한 줄, 원인 줄(error)이 있으면 같은 실패의 「실패」 종료 줄을 뺀다. 「이 작업 되돌리기」를 누르면 카드가 「되돌렸어요」로 바뀐다. 패널을 열면 포커스가 입력창으로 간다.
 - 이 단계에서 하지 않은 것(2단계 이후): 전/후 썸네일이 든 결과 카드, 접힌 도크에서 적용 버튼(레일 배지에서 같은 카드 열기), 로그 입구 이름 통합, 팀·스튜디오·작업함 고급화.
 - 증거: `.playwright-mcp/cap.mjs`(gitignore) 기반 전/후 계량표는 PR 본문 · `~/claude-viz/ai-ui-b1-1.html`.
+
+## B안 1단계 보정 — 드래그·팀·접힘에서 사라지던 입구 (2026-10-16)
+
+사용자 반박(「세션 1개처럼 보인다 · 팀이 주력 · 드래그가 제일 중요」)을 같은 harness 로 적대 검증해 1단계가 만든 회귀를 고쳤다.
+**드래그 AI 는 Pi 채팅 턴**(`aiRegionHandoff` → `handleRegionHandoff`)이라 `source: "chat"` 이다 — 「전부 chat」 판정이 드래그 일·팀 레인까지 「대화 카드가 맡는다」고 읽었다.
+
+- `conversationCardCovers` = 일이 **하나**일 때만 true. 레인이 둘 이상(팀·검수 조수)이거나 영역·다른 맵 일이 섞이면 줄·받은함·이름표가 그대로 나온다.
+  팀 4명이 대화 카드에서는 시간순 한 줄(「시공 3」)로만 보였고 실패한 레인이 안 읽혔다.
+- 검토·초안 상자·이름표는 도크 상태와 무관하게 늘 보인다(`34-ai-presence.css` 의 body 클래스 규칙 삭제 → `.ai-map-region[data-covered="1"].is-cornered` 만 접음). 드래그한 영역의 「확인 입구」다.
+- 접힌 도크 + 일 하나라도 상태 줄은 이미 나온다(1단계부터). 여기에 **상태 줄 팝오버에서 「적용·변경 보기·버리기」**(검토 대기, 대화 카드·받은함과 같은 `currentTeamReviewActions` 클로저)와 background 검토의 「검토하기」를 달았다 — 접은 채로 적용하러 도크를 열 필요가 없다.
+- **개수·급한 상태**: `aiPresence.summarizeJobs(presences, extraRunning)`·`urgencyRank`. 상태 줄 맨 앞 「작업 N개 · 확인 필요 K · 실패 F」(일이 둘 이상일 때), 칩은 급한 순(확인 > 실패 > 진행 > 대기 > 초안), 폭이 좁으면 칩 수를 줄여 「+N」(`chipBudget`, 칩이 잘려 읽히지 않게). 줄 색은 확인(앰버) > 실패(빨강).
+  접힌 레일(`ai-collapsed-restore`)에 같은 요약 배지(`ai-collapsed-restore-jobs`: 둘 이상이면 개수, 확인·실패가 있으면 그 수, 색은 앰버/빨강).
+- **바로 깔기 주문(`stampOrderQueue`)은 aiPresence 와 별개 파이프라인**이다 — 상태 줄이 그 개수(「바로 깔기 N개 진행 · M개 대기」)를 함께 센다(요약 총수·「멈춤」 포함). 주문 위치는 지도 위 번호 상자(`stampOrderRenderer`)가 그대로 말한다.
+- 증거: 드래그 전 흐름 harness `cap2.mjs`(드래그 → 칩 → 작업 → 초안 → 적용, 도크 열림/접힘/스튜디오 × 1440×900·1100×700), 팀 4명 `cap3.mjs team4`, 대화 1+영역 1+대기 1 `cap3.mjs multi` — gitignore `.playwright-mcp/`. 보고 `~/claude-viz/ai-ui-b1-2.html`.
 
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 

@@ -17,6 +17,8 @@ import { el } from "@/util/dom";
 interface Placed {
   readonly presence: Presence;
   readonly region: PresenceRegion | null;
+  /** 대화 카드가 이 일의 진행·확인을 맡고 있다(도크 열림 + 일 하나). CSS 가 영역 없는 구석 검토 이름표를 접는 근거. */
+  readonly covered: boolean;
 }
 
 let layer: HTMLElement | null = null;
@@ -52,8 +54,8 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   const mapId = editorState.get().currentMapId;
   if (!mapId) return [];
   // 초안 영역은 맵당 조수 한 명 규칙에 따라 그 맵에 쓰는 조수(검수 제외) 한 명에게만 붙인다. 나머지는 이름표만.
-  // 대화 카드가 진행·확인·실패를 맡고 있으면(도크 열림 + 전부 대화창의 일) 지도는 「일하는 중」 이름표만 말한다.
-  // 실패는 이름표를 달지 않는다(대화 카드가 원인을 갖고 있다). 검토·초안 상자는 어디가 바뀌었는지 가리키므로 남긴다.
+  // 대화 카드가 진행·확인·실패를 맡고 있으면(도크 열림 + 일 하나가 대화창의 일) 실패는 이름표를 달지 않는다(대화 카드가 원인을 갖고 있다).
+  // 검토·초안 상자와 이름표는 어디가 바뀌었는지·어디서 확인하는지를 가리키므로 도크 상태와 무관하게 늘 남긴다(2026-10-16: 드래그 영역의 검토 입구).
   const covered = conversationCardCovers(presences);
   const here = presences.filter(p => p.mapId === mapId && p.state !== "applied" && !(covered && p.state === "failed"));
   const writer = here.find(p => !p.region && !p.readsOnly);
@@ -61,6 +63,7 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   return here.map(presence => ({
     presence,
     region: presence.region ?? (presence === writer ? draft : null),
+    covered,
   }));
 }
 
@@ -76,10 +79,10 @@ function regionClass(presence: Presence, region: PresenceRegion | null): string 
 /** 칸 하나에 쓰인 마지막 글. 같으면 DOM 을 건드리지 않는다. */
 const written = new WeakMap<HTMLElement, { cls: string; tone: string; state: string; name: string; text: string; slot: string }>();
 
-function buildRegion(presence: Presence, region: PresenceRegion | null, index: number): HTMLElement {
+function buildRegion(presence: Presence, region: PresenceRegion | null, index: number, covered: boolean): HTMLElement {
   const node = el("div", {
     class: regionClass(presence, region),
-    dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index) },
+    dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index), covered: covered ? "1" : "0" },
     children: [el("span", { class: "ai-map-region-tag", children: [
       el("span", { class: "ai-map-region-dot" }),
       el("b", { text: presence.name }),
@@ -105,10 +108,12 @@ function render(): void {
   const existing = new Map<string, HTMLElement>();
   for (const node of root.children) if (node instanceof HTMLElement && node.dataset.presenceId) existing.set(node.dataset.presenceId, node);
   const order: HTMLElement[] = [];
-  placed.forEach(({ presence, region }, index) => {
+  placed.forEach(({ presence, region, covered }, index) => {
     const node = existing.get(presence.id);
     existing.delete(presence.id);
-    if (!node) { order.push(buildRegion(presence, region, index)); return; }
+    if (!node) { order.push(buildRegion(presence, region, index, covered)); return; }
+    const coveredText = covered ? "1" : "0";
+    if (node.dataset.covered !== coveredText) node.dataset.covered = coveredText;
     const prev = written.get(node);
     const next = { cls: regionClass(presence, region), tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index) };
     if (!prev || prev.cls !== next.cls || prev.tone !== next.tone || prev.state !== next.state || prev.slot !== next.slot) {

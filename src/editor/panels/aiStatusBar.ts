@@ -12,8 +12,11 @@ import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
+import { currentTeamReviewActions } from "@/ai/piAgent/teamActivity";
+import { peekStampOrderQueue, subscribeStampOrders } from "@/editor/stampOrderQueue";
+import { sideThreads } from "./aiSideThreads";
 import { AI_STUDIO_CHANGE_EVENT } from "@/editor/aiStudioMode";
-import { conversationCardCovers, isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, type Presence } from "./aiPresence";
+import { conversationCardCovers, isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, summarizeJobs, urgencyRank, type Presence } from "./aiPresence";
 
 /** 끝난 일(적용됨)은 이 시간 뒤에 줄에서 물러난다. 실패·검토 대기는 사람이 처리할 때까지 남는다. */
 const SETTLED_HIDE_MS = 6000;
@@ -33,7 +36,11 @@ export function mountAiStatusBar(): () => void {
   let hiddenBySettle = false;
   let lastChipSignature = "";
 
+  // 「작업 N개 · 확인 K · 실패 F」 — 일이 둘 이상이면 줄 맨 앞에서 개수와 가장 급한 상태를 말한다(칩이 +N 으로 접혀도 총수가 보인다).
+  const summary = el("span", { class: "ai-status-summary", dataset: { testid: "ai-status-summary" }, attrs: { hidden: "" } });
   const chips = el("div", { class: "ai-status-chips", dataset: { testid: "ai-status-chips" } });
+  // 바로 깔기 주문(드래그 → Enter)은 aiPresence 와 별개 파이프라인(stampOrderQueue)이다 — 개수만 여기서 함께 말한다.
+  const stampChip = el("span", { class: "ai-status-stamp", dataset: { testid: "ai-status-stamp" }, attrs: { hidden: "", title: "바로 깔기 주문 — 지도 위 번호 상자에서 위치를 볼 수 있어요" } });
   const elapsed = el("span", { class: "ai-status-elapsed", dataset: { testid: "ai-status-elapsed" } });
   const log = el("button", {
     class: "ai-status-btn", text: "작업 기록", attrs: { type: "button", title: "실행 기록·로그 내려받기를 엽니다" },
@@ -43,13 +50,13 @@ export function mountAiStatusBar(): () => void {
   const stop = el("button", {
     class: "ai-status-btn is-stop", text: "■ 멈춤", attrs: { type: "button", title: "지금 도는 AI 작업을 모두 멈춥니다" },
     dataset: { testid: "ai-status-stop" },
-    on: { click: () => { stopAllPresences(); } },
+    on: { click: () => { stopAllPresences(); peekStampOrderQueue()?.cancelAll(); } },
   });
   const pop = el("div", { class: "ai-status-pop", dataset: { testid: "ai-status-pop" }, attrs: { role: "dialog", "aria-label": "AI 작업 상세", hidden: "" } });
   const root = el("aside", {
     class: "ai-status-bar", attrs: { role: "status", "aria-live": "polite", "aria-label": "AI 작업 상태", hidden: "" },
     dataset: { testid: "ai-status-bar", attention: "none" },
-    children: [chips, el("span", { class: "ai-status-spacer" }), elapsed, log, stop],
+    children: [summary, chips, stampChip, el("span", { class: "ai-status-spacer" }), elapsed, log, stop],
   });
   document.body.append(root, pop);
 
@@ -66,16 +73,28 @@ export function mountAiStatusBar(): () => void {
     placeFrame = requestAnimationFrame(() => { placeFrame = 0; placeNow(); });
   };
   /** 캔버스 아래쪽 가운데에 앉히되, 지도 위로 펼쳐진 AI 창은 피한다. */
-  const placeNow = (): void => {
+  /** 줄이 쓸 수 있는 폭 — 캔버스 아래쪽 가운데, 지도 위로 펼쳐진 AI 창은 피한다. 칩 개수도 이 폭으로 정한다. */
+  const barBox = (): { left: number; width: number; rect: DOMRect } | null => {
     const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
     const rect = canvas?.getBoundingClientRect();
-    if (!rect || rect.width <= 0) return;
+    if (!rect || rect.width <= 0) return null;
     const dock = document.querySelector<HTMLElement>(".ai-right-dock .ai-chat-panel:not(.is-collapsed)");
     const dockLeft = dock ? dock.getBoundingClientRect().left : Infinity;
     const right = Math.min(rect.right, dockLeft);
     const left = rect.left + 16;
-    root.style.left = `${Math.round(left)}px`;
-    root.style.width = `${Math.max(280, Math.round(right - left - 16))}px`;
+    return { left, width: Math.max(280, Math.round(right - left - 16)), rect };
+  };
+  /** 한 줄에 놓을 칩 수: 요약·시간·「작업 기록」·「멈춤」(약 380px)을 뺀 폭을 칩 하나 약 170px 로 나눈다. 좁으면 +N 으로 접는다(칩이 잘려 읽히지 않는 것보다 낫다). */
+  const chipBudget = (): number => {
+    const box = barBox();
+    return box ? Math.max(1, Math.min(MAX_CHIPS, Math.floor((box.width - 380) / 170))) : MAX_CHIPS;
+  };
+  const placeNow = (): void => {
+    const box = barBox();
+    if (!box) return;
+    const { rect } = box;
+    root.style.left = `${Math.round(box.left)}px`;
+    root.style.width = `${box.width}px`;
     root.style.bottom = `${Math.max(8, Math.round(window.innerHeight - rect.bottom + 16))}px`;
     if (!pop.hidden) placePop();
   };
@@ -106,6 +125,28 @@ export function mountAiStatusBar(): () => void {
     else selectEditorMap(presence.mapId, { checkoutForEditing: false });
   }
 
+  /**
+   * 검토 대기의 「확인 입구」 — 도크를 접었거나 스튜디오여도 팝오버에서 바로 적용·버리기를 한다(대화 카드·받은함과 같은 클로저, 두 버튼 한 동작).
+   * 다른 맵에서 돈 실행(background)의 검토는 그 실행 카드가 쥐고 있어 그쪽으로 데려간다.
+   */
+  function reviewActions(presence: Presence): HTMLElement[] {
+    if (presence.state !== "review") return [];
+    if (presence.source === "background") {
+      return [el("button", { class: "ai-status-btn is-primary", text: "검토하기", attrs: { type: "button" }, dataset: { testid: "ai-status-review-open" }, on: { click: () => {
+        closePop();
+        window.dispatchEvent(new Event("oprn:ai-open-chat"));
+        if (presence.ticketId !== undefined) sideThreads()?.reveal(presence.ticketId);
+      } } })];
+    }
+    const actions = (): ReturnType<typeof currentTeamReviewActions> => currentTeamReviewActions();
+    const report = actions()?.openReport;
+    return [
+      el("button", { class: "ai-status-btn is-primary", text: "적용", attrs: { type: "button" }, dataset: { testid: "ai-status-apply" }, on: { click: () => { closePop(); actions()?.apply(); } } }),
+      ...(report ? [el("button", { class: "ai-status-btn", text: "변경 보기", attrs: { type: "button" }, dataset: { testid: "ai-status-report" }, on: { click: () => { closePop(); actions()?.openReport?.(); } } })] : []),
+      el("button", { class: "ai-status-btn", text: "버리기", attrs: { type: "button" }, dataset: { testid: "ai-status-discard" }, on: { click: () => { closePop(); actions()?.discard(); } } }),
+    ];
+  }
+
   function renderPop(presence: Presence): void {
     const rows = presence.recent.length
       ? presence.recent.map(entry => el("li", { class: entry.failed ? "is-failed" : "", text: `${entry.failed ? "✗" : entry.running ? "…" : "✓"} ${entry.label}` }))
@@ -121,6 +162,7 @@ export function mountAiStatusBar(): () => void {
       el("p", { class: "ai-status-pop-now", children: [el("b", { text: "지금 " }), presence.action] }),
       el("ul", { class: "ai-status-pop-recent", children: rows }),
       el("div", { class: "ai-status-pop-actions", children: [
+        ...reviewActions(presence),
         ...(presence.source === "chat" ? [el("button", { class: "ai-status-btn", text: "조수 상세", attrs: { type: "button" }, dataset: { testid: "ai-status-detail" }, on: { click: () => { closePop(); window.dispatchEvent(new Event("oprn:ai-open-team")); } } })] : []),
         ...(presence.mapId ? [el("button", { class: "ai-status-btn", text: presence.mapId && presence.mapId !== editorState.get().currentMapId ? "그 맵으로 이동" : "지도로 이동", attrs: { type: "button" }, dataset: { testid: "ai-status-locate" }, on: { click: () => locate(presence) } })] : []),
         ...(isActive(presence) ? [el("button", { class: "ai-status-btn is-stop", text: "멈춤", attrs: { type: "button" }, on: { click: () => { stopPresence(presence); closePop(); } } })] : []),
@@ -165,18 +207,35 @@ export function mountAiStatusBar(): () => void {
   const stepText = (presence: Presence): string => presence.steps > 0 && presence.state === "working" ? ` · ${presence.steps}단계` : "";
 
   function render(): void {
-    const visible = presences.length > 0 && !hiddenBySettle && !conversationCardCovers(presences);
+    const stamp = peekStampOrderQueue()?.summary() ?? { waiting: 0, running: 0, total: 0 };
+    const visible = ((presences.length > 0 && !hiddenBySettle) || stamp.total > 0) && !(conversationCardCovers(presences) && stamp.total === 0);
     root.hidden = !visible;
     if (!visible) { closePop(); return; }
-    const attention = presences.some(p => p.state === "failed") ? "failed" : presences.some(p => p.state === "review") ? "review" : "none";
+    // 급한 순: 내 확인 필요(앰버) > 실패(빨강). 둘 다 있으면 앰버 — 사람이 먼저 눌러야 일이 이어지는 쪽이다.
+    const attention = presences.some(p => p.state === "review") ? "review" : presences.some(p => p.state === "failed") ? "failed" : "none";
     root.dataset.attention = attention;
-    const ordered = [...presences].sort((a, b) => Number(needsUser(b)) - Number(needsUser(a)));
-    const shown = ordered.length > MAX_CHIPS ? ordered.slice(0, MAX_CHIPS - 1) : ordered;
+    // 급한 순: 내 확인 > 실패 > 진행. 칩이 넘쳐 「+N」 로 접혀도 가장 급한 것은 앞 칸에 남는다.
+    const ordered = [...presences].sort((a, b) => urgencyRank(a) - urgencyRank(b));
+    const jobs = summarizeJobs(presences, stamp.total);
+    // 조각마다 따로 쓴다 — 화면 번역이 「작업 {0}개」·「확인 필요 {0}」·「실패 {0}」 낱개 항목으로 맞춘다.
+    const pieces: string[] = [`작업 ${jobs.total}개`];
+    if (jobs.review > 0) pieces.push(`확인 필요 ${jobs.review}`);
+    if (jobs.failed > 0) pieces.push(`실패 ${jobs.failed}`);
+    summary.hidden = jobs.total < 2;
+    summary.replaceChildren(...(jobs.total < 2 ? [] : pieces.flatMap((text, i) => [...(i ? [el("i", { text: " · ", attrs: { "aria-hidden": "true" } })] : []), el("span", { text })])));
+    summary.dataset.top = jobs.top ?? "";
+    stampChip.hidden = stamp.total === 0;
+    stampChip.replaceChildren(...(stamp.total === 0 ? [] : [
+      el("span", { text: `바로 깔기 ${stamp.running}개 진행` }),
+      ...(stamp.waiting > 0 ? [el("i", { text: " · ", attrs: { "aria-hidden": "true" } }), el("span", { text: `${stamp.waiting}개 대기` })] : []),
+    ]));
+    const budget = chipBudget();
+    const shown = ordered.length > budget ? ordered.slice(0, Math.max(1, budget - 1)) : ordered;
     const rest = ordered.slice(shown.length);
     const here = editorState.get().currentMapId;
     const mapsInvolved = new Set(presences.map(p => p.mapId ?? "")).size;
     // 보이는 칩의 내용이 그대로면 칩을 다시 만들지 않는다 — 조수 이벤트(델타·도구 신호)마다 같은 칩을 지우고 만들던 것을 거른다.
-    const chipSignature = JSON.stringify([openId, here, mapsInvolved, shown.map(p => [p.id, p.state, p.tone, p.source, p.action, p.steps, p.name, p.mapId, p.mapName]), rest.length, rest.some(needsUser)]);
+    const chipSignature = JSON.stringify([openId, here, mapsInvolved, budget, shown.map(p => [p.id, p.state, p.tone, p.source, p.action, p.steps, p.name, p.mapId, p.mapName]), rest.length, rest.some(needsUser)]);
     if (chipSignature !== lastChipSignature) {
       lastChipSignature = chipSignature;
       chips.replaceChildren(...shown.map(presence => el("button", {
@@ -197,7 +256,7 @@ export function mountAiStatusBar(): () => void {
       on: { click: () => openFor(ALL) },
     })] : []));
     }
-    stop.hidden = !presences.some(isActive);
+    stop.hidden = !presences.some(isActive) && stamp.total === 0;
     if (openId === ALL) renderAll();
     else if (openId) {
       const open = presences.find(p => p.id === openId);
@@ -223,8 +282,9 @@ export function mountAiStatusBar(): () => void {
     else { settledSince = null; hiddenBySettle = false; }
     render();
   });
+  const offStamp = subscribeStampOrders(() => render());
   const timer = window.setInterval(tick, 1000);
-  const onResize = (): void => place();
+  const onResize = (): void => render(); // 폭이 바뀌면 칩 개수도 다시 정한다(render 가 앉히기까지 한다).
   // 도크를 접고 펼치거나 스튜디오가 열리고 닫히면 「대화 카드가 보이나」가 바뀐다 — 줄을 다시 판단한다.
   const onVisibilityContext = (): void => render();
   const onDocPointer = (event: PointerEvent): void => {
@@ -239,7 +299,7 @@ export function mountAiStatusBar(): () => void {
   document.addEventListener("keydown", onKey);
   // 도크가 접히고 펼쳐지거나 레이아웃이 바뀌어도 줄이 AI 창을 가리지 않게 다시 앉힌다.
   const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
-  const observer = typeof ResizeObserver === "function" ? new ResizeObserver(() => place()) : null;
+  const observer = typeof ResizeObserver === "function" ? new ResizeObserver(() => render()) : null;
   if (canvas) observer?.observe(canvas);
   window.addEventListener("oprn:ai-panel-collapse", onResize);
   window.addEventListener("oprn:ai-panel-collapse", onVisibilityContext);
@@ -247,6 +307,7 @@ export function mountAiStatusBar(): () => void {
 
   return () => {
     off();
+    offStamp();
     if (placeFrame) cancelAnimationFrame(placeFrame);
     window.clearInterval(timer);
     window.removeEventListener("resize", onResize);
