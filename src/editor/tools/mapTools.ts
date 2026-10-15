@@ -315,23 +315,35 @@ const duplicateMap: ToolDefinition = {
       throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id} — ${MAP_ID_TAKEN_GUIDANCE}`, { code: "map-exists", mapId: id });
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
-    const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));
-    const nextEventId = (): string => {
-      let candidate = genId("ev");
-      while (usedEventIds.has(candidate)) candidate = genId("ev");
-      usedEventIds.add(candidate);
-      return candidate;
-    };
-    const copy = cloneGameMap(source, { newId: id, newName: name, nextEventId });
-    draft.maps[id] = copy;
-    const parentId = findParentMapId(draft.mapTree, source.id);
-    const sourceIndex = siblingIndex(draft.mapTree, source.id);
-    if (!insertTreeNode(draft.mapTree, { mapId: id, children: [] }, parentId ?? "", sourceIndex >= 0 ? sourceIndex + 1 : undefined)) {
-      appendToTree(draft.mapTree, id);
-    }
+    cloneMapIntoProject(draft, source, id, name);
     return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})`, data: { mapId: id } };
   },
 };
+
+/**
+ * 맵 하나를 새 id 로 복제해 트리의 원본 바로 뒤에 넣는다(duplicate_map·derive_map_variant 공용).
+ * 같은 맵 안 이벤트 참조(moveEvent·callMapEvent·showAnimation …)는 cloneGameMap 이 복제본 id 로 다시 잇는다.
+ * 돌려주는 이벤트 id 표는 원본 → 복제본이다.
+ */
+export function cloneMapIntoProject(draft: Project, source: GameMap, id: string, name: string): { copy: GameMap; eventIdMap: Map<string, string> } {
+  const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));
+  const nextEventId = (): string => {
+    let candidate = genId("ev");
+    while (usedEventIds.has(candidate)) candidate = genId("ev");
+    usedEventIds.add(candidate);
+    return candidate;
+  };
+  const copy = cloneGameMap(source, { newId: id, newName: name, nextEventId });
+  // cloneGameMap 은 원본 events 순서 그대로 복제한다 — 순서로 원본→복제 id 표를 만든다.
+  const eventIdMap = new Map<string, string>(source.events.map((event, index) => [event.id, copy.events[index]!.id]));
+  draft.maps[id] = copy;
+  const parentId = findParentMapId(draft.mapTree, source.id);
+  const sourceIndex = siblingIndex(draft.mapTree, source.id);
+  if (!insertTreeNode(draft.mapTree, { mapId: id, children: [] }, parentId ?? "", sourceIndex >= 0 ? sourceIndex + 1 : undefined)) {
+    appendToTree(draft.mapTree, id);
+  }
+  return { copy, eventIdMap };
+}
 
 const manageMapTree: ToolDefinition = {
   name: "manage_map_tree",

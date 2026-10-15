@@ -34,7 +34,10 @@ export function updateRuntimeTimers(scene: PlaySceneContext, deltaMs: number): v
     if (!timer.active) continue;
     timer.remaining = Math.max(0, timer.remaining - deltaMs / 1000);
     scene.session.timers[id] = displaySeconds(timer);
-    if (timer.remaining === 0) timer.active = false;
+    if (timer.remaining === 0) {
+      timer.active = false;
+      recordTimerActive(scene.session, id, false);
+    }
   }
 }
 
@@ -56,6 +59,7 @@ export function applyBattleTimerWrites(
     const active = state.timerActivityWrites?.[id] ?? scene.runtimeTimers.get(id)?.active ?? false;
     scene.session.timers[id] = remaining;
     scene.runtimeTimers.set(id, { remaining, active: active && remaining > 0 });
+    recordTimerActive(scene.session, id, active && remaining > 0);
   }
 }
 
@@ -73,6 +77,24 @@ function setRuntimeTimer(scene: PlaySceneContext, id: string, seconds: number, a
   const normalized = normalizeSeconds(seconds);
   scene.session.timers[id] = normalized;
   scene.runtimeTimers.set(id, { remaining: normalized, active: active && normalized > 0 });
+  recordTimerActive(scene.session, id, active && normalized > 0);
+}
+
+/** 흐르는 타이머를 세션에 적어 둔다 — 세이브가 이 표를 싣고, 불러오기가 장면 타이머를 다시 짠다. */
+function recordTimerActive(session: PlaySessionTimers, id: string, active: boolean): void {
+  if (active) (session.timerActive ??= {})[id] = true;
+  else if (session.timerActive) delete session.timerActive[id];
+}
+
+type PlaySessionTimers = { timerActive?: Record<string, boolean> };
+
+/** 불러온 세션(timers + timerActive)에서 장면 타이머를 다시 만든다. 값이 0 이거나 흐르던 표시가 없으면 멈춘 채다. */
+export function restoreRuntimeTimers(scene: Pick<PlaySceneContext, "session" | "runtimeTimers">): void {
+  scene.runtimeTimers.clear();
+  for (const [id, seconds] of Object.entries(scene.session.timers)) {
+    const remaining = normalizeSeconds(seconds);
+    scene.runtimeTimers.set(id, { remaining, active: remaining > 0 && scene.session.timerActive?.[id] === true });
+  }
 }
 
 function normalizeSeconds(seconds: number): number {

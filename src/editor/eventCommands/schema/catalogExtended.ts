@@ -171,10 +171,12 @@ defineCommand({
     mapId: f.record("대상 맵", "map"),
     at: f.mapPoint("좌표", "mapId"),
     layer: f.enum("레이어", [
-      { value: "lower", label: "하단", key: "lower" },
-      { value: "upper", label: "상단", key: "upper" },
+      { value: "lower", label: "하단(1층)", key: "lower" },
+      { value: "lower2", label: "하단 장식(2층)", key: "lower2" },
+      { value: "upper", label: "상단(3층)", key: "upper" },
+      { value: "upper2", label: "상단 장식(4층)", key: "upper2" },
     ]),
-    tile: f.number("타일 번호", { min: 0 }),
+    tile: f.number("타일 번호(-1 = 비움)", { min: -1 }),
   },
   summary: (c, l) => `${l.recordName(str(c.mapId))} (${num(c.x)}, ${num(c.y)}) → 타일 ${num(c.tile)}`,
 });

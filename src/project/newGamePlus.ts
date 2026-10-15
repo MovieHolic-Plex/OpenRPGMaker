@@ -8,7 +8,7 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 
-export const NEW_GAME_PLUS_CARRY_FIELDS = ["levels", "skills", "equipment", "inventory", "gold"] as const;
+export const NEW_GAME_PLUS_CARRY_FIELDS = ["levels", "skills", "equipment", "inventory", "gold", "techPoints", "party"] as const;
 export type NewGamePlusCarryField = (typeof NEW_GAME_PLUS_CARRY_FIELDS)[number];
 
 export const DEFAULT_NEW_GAME_PLUS_LABEL = "강하게 다시 하기";
@@ -35,6 +35,8 @@ export type ClearCarrySnapshot = {
   readonly actorLevels?: Record<string, number>;
   readonly actorExperience?: Record<string, number>;
   readonly actorSkillIds?: Record<string, string[]>;
+  /** 기술 포인트(TP). carry 에 techPoints 를 골랐을 때만 채운다. */
+  readonly actorTechPoints?: Record<string, number>;
   readonly actorEquipment?: Record<string, ActorInitialEquipment>;
   readonly inventory?: Record<string, number>;
   readonly gold?: number;
@@ -107,12 +109,13 @@ export function currentChapterLabel(
 
 /** 엔딩 순간의 세션에서 carry 필드만 떠 둔다. 이야기 상태(스위치·변수·상자·맵)는 담지 않는다. */
 export function captureClearCarry(
-  session: Pick<PlaySession, "partyActorIds" | "actorLevels" | "actorExperience" | "actorSkillIds" | "actorEquipment" | "inventory" | "gold">,
+  session: Pick<PlaySession, "partyActorIds" | "actorLevels" | "actorExperience" | "actorSkillIds" | "actorTechPoints" | "actorEquipment" | "inventory" | "gold">,
   carry: readonly NewGamePlusCarryField[],
 ): ClearCarrySnapshot {
   const fields = new Set(carry);
   return {
     ...(fields.size > 0 ? { partyActorIds: [...session.partyActorIds] } : {}),
+    ...(fields.has("techPoints") && session.actorTechPoints ? { actorTechPoints: structuredClone(session.actorTechPoints) } : {}),
     ...(fields.has("levels")
       ? { actorLevels: structuredClone(session.actorLevels), actorExperience: structuredClone(session.actorExperience) }
       : {}),
@@ -140,6 +143,24 @@ export function applyClearCarry(project: Project, session: PlaySession, carry: C
   }
   for (const [actorId, equipment] of known(carry.actorEquipment)) {
     session.actorEquipment[actorId] = structuredClone(equipment);
+  }
+  for (const [actorId, tp] of known(carry.actorTechPoints)) {
+    if (typeof tp === "number" && Number.isFinite(tp)) {
+      session.actorTechPoints = { ...(session.actorTechPoints ?? {}), [actorId]: Math.max(0, Math.trunc(tp)) };
+    }
+  }
+  // 파티 구성: 저작자가 carry 에 party 를 골랐을 때만. 지금 프로젝트에 없는 배우는 버리고, 하나도 안 남으면 시작 파티를 둔다.
+  if (project.system.newGamePlus?.carry.includes("party") && carry.partyActorIds) {
+    const party = carry.partyActorIds.filter((id) => actorIds.has(id));
+    if (party.length > 0) {
+      session.partyActorIds = party;
+      for (const id of party) {
+        session.actorRows[id] ??= "front";
+        session.actorExperience[id] ??= 0;
+        delete session.actorVitals[id];
+        refreshGrowthVitals(project, session, id);
+      }
+    }
   }
   if (carry.inventory) {
     for (const [itemId, count] of Object.entries(carry.inventory)) {

@@ -25,6 +25,8 @@ import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
+import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
@@ -288,6 +290,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(MAP_VARIANT_TOOLS, "map"),
+  ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),

@@ -54,6 +54,8 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
+import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
+import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
 import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
@@ -1111,6 +1113,11 @@ const upsertEvent: ToolDefinition = {
       ? node.some(misplaced)
       : !!node && typeof node === "object" && (((node as { kind?: unknown }).kind === "transfer" && "fields" in (node as object)) || Object.values(node as object).some(misplaced));
     if (misplaced(patch)) throw new ToolError("transfer 명령에는 fields 가 없습니다. direction(up/down/left/right/retain)·fade·mapId·x·y 를 명령 바로 아래에 직접 적으세요.", { code: "invalid-args" });
+    // changeTile 은 모르는 키(tileId·map 등)를 조용히 버리면 변경이 사라진다 — 입력 단계에서 거절하고 맞는 이름을 알려 준다.
+    const changeTileIssues = collectChangeTileCommands(patch).flatMap((command, index) => changeTileProblems(command, draft).map((problem) => `changeTile #${index + 1}: ${problem}`));
+    if (changeTileIssues.length > 0) {
+      throw new ToolError(`${changeTileIssues.join(" / ")} — ${CHANGE_TILE_USAGE}`, { code: "invalid-args" });
+    }
     // A trigger describes when to run; commands belong beside it. Do this on the
     // incoming patch before normalization can turn an omitted command list into [].
     const commandOwners = [
@@ -1144,6 +1151,9 @@ const upsertEvent: ToolDefinition = {
           { code: "invalid-args" },
         );
       }
+      const keyFindings = pageKeyFindings(page, `event.pages[${index}]`);
+      if (keyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(keyFindings.reject), { code: "invalid-args" });
+      if (keyFindings.warn.length > 0) warnings.push(pageKeyWarning(keyFindings.warn));
       // 유니온 밖 값은 저장됐다가 플레이어가 처음 조사하는 순간 런타임 exhaustiveness trips 를
       // 때려 씬이 죽는다(2026-09-24 갤러리 도그푸딩: 모델이 32페이지에 "none" 을 넣어 브라우저 완주가 막힘).
       // args 는 위에서 Partial<GameEvent> 로 캐스팅된 입력이라 런타임 값이 유니온을 어길 수 있다 — includes 로 실제 값을 본다.
@@ -3310,7 +3320,7 @@ const placeStorageChest: ToolDefinition = {
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
+  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
   parameters: {
     type: "object",
@@ -3321,14 +3331,20 @@ const placeSavepoint: ToolDefinition = {
       name: { type: "string" },
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
+      mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
     },
     required: ["mapId", "x", "y"],
+    additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     const heal = args.heal === true;
+    const saveMode = args.mode === undefined ? "both" : args.mode;
+    if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint") {
+      throw new ToolError(`mode 는 both | slot | checkpoint 중 하나여야 합니다(받은 값: ${JSON.stringify(args.mode)}).`, { code: "invalid-args", mapId: map.id });
+    }
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -3363,18 +3379,23 @@ const placeSavepoint: ToolDefinition = {
           movement: PASSIVE,
           commands: [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
-            { kind: "checkpointSave", label: "savepoint" },
-            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : "이곳에 모험을 기록했다." },
+            ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
+            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." },
+            ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
           ],
         },
       ],
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
+    const saveWarnings = [
+      ...(adjusted ? [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] : []),
+      ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
+    ];
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${heal ? " — 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted, heal },
-      ...(adjusted ? { warnings: [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] } : {}),
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y}) — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal, mode: saveMode },
+      ...(saveWarnings.length > 0 ? { warnings: saveWarnings } : {}),
     };
   },
 };
@@ -4106,6 +4127,9 @@ const patchEventPage: ToolDefinition = {
       throw new ToolError("set 에 바꿀 페이지 필드를 하나 이상 넣으세요.", { code: "invalid-args" });
     }
     const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
+    const setKeyFindings = pageKeyFindings(fields, "set");
+    if (setKeyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(setKeyFindings.reject), { code: "invalid-args" });
+    if (setKeyFindings.warn.length > 0) throw new ToolError(`set 에 알 수 없는 페이지 키가 있다: ${setKeyFindings.warn.join(", ")}. ${pageKeyWarning(setKeyFindings.warn.map((key) => key.replace(/^set\./u, "")))}`, { code: "invalid-args" });
     const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
     const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
     // commands 는 배열 통째 교체라 유지할 명령을 빠뜨리기 쉽다. 사라진 원래 명령을 결과에 적어 모델이 바로 되살리게 한다

@@ -311,7 +311,7 @@ const setProjectSettings: ToolDefinition = {
         properties: {
           enabled: { type: "boolean" },
           label: { type: "string", maxLength: NEW_GAME_PLUS_LABEL_MAX, description: `타이틀 항목 이름. 생략 = 「${DEFAULT_NEW_GAME_PLUS_LABEL}」` },
-          carry: { type: "array", items: { type: "string", enum: [...NEW_GAME_PLUS_CARRY_FIELDS] }, description: "넘길 것: levels(레벨·경험치), skills, equipment, inventory, gold" },
+          carry: { type: "array", items: { type: "string", enum: [...NEW_GAME_PLUS_CARRY_FIELDS] }, description: "넘길 것: levels(레벨·경험치), skills, equipment, inventory, gold, techPoints(기술 포인트 TP), party(파티 구성). CT 식이면 levels·skills·techPoints·party 를 함께 고른다." },
         },
         additionalProperties: false,
       },

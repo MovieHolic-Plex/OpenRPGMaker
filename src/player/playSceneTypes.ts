@@ -292,7 +292,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   applyChangeTileStep(step: {
     kind: "changeTile";
     mapId: MapId;
-    layer: "lower" | "upper";
+    layer: import("@/project/types").ChangeTileLayer;
     x: number;
     y: number;
     tile: number;
