@@ -7,7 +7,7 @@ import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPrepar
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
-import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
+import { friendlyApplyFailure, friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 import { executionRoleFor } from "@/ai/buildRole";
@@ -655,7 +655,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
-      push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
+      push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "계획" });
       const planned = await stage("plan", () => runPiAgentViaCompanion({ ...buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true,
@@ -945,7 +945,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
         onReview: review => {
           push({ type: "agent_spawn", agentId: `ultrabrain-${review.mapId}`, role: "reviewer", mapId: review.mapId,
-            mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+            mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "전체 검수" });
           (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`확인 기록 · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
           push({ type: "review", agentId: `ultrabrain-${review.mapId}`, mapId: review.mapId, ok: review.harmonious, findings: [...review.findings] });
         },
@@ -1043,7 +1043,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       // 그 줄이 채팅에 남아 「적용 완료」·「적용됨」 과 동시에 보인다.
       // (2026-09-25 실측: 사용자 QA 원장 「AI 검수 실패와 적용 후 안내가 모순됨」, 회귀 test/piAgentRunOutcome.test.ts)
       surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요.");
-      push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+      push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "전체 검수" });
       // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
       // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
       push({ type: "agent_event", agentId: "ultrabrain", event: { type: "error", message: `검수 불가 — ${message}` } });
@@ -1147,8 +1147,10 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   }));
     if (!appliedResult.ok) {
       const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
+      // 화면에는 내부 사유 코드·도구 이름 없이 한 문장으로, 원문은 실행 기록(finishLog)에만 남긴다.
+      const shownReason = friendlyApplyFailure(appliedResult.reason, appliedResult.issue);
       publishFinalOutcome();
-      boardState = markTeamBoardFailed(boardState, reason); sync();
+      boardState = markTeamBoardFailed(boardState, shownReason); sync();
       finishLog({ applied: false, changedCount, error: reason });
       surface.setStatus("적용 실패");
       surface.appendProcess?.(reason);

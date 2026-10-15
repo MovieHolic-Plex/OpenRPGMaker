@@ -3664,7 +3664,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false; // 레일 클릭으로 연 직후 타이머에 다시 접히지 않게
     savePanelCollapsed(false);
     applyCollapsed();
-    collapseButton.focus({ preventScroll: true });
+    // 열자마자 칠 수 있게 입력창에 둔다 — 예전엔 「접기」 단추에 있어 입력창을 한 번 더 눌러야 했다.
+    (input.disabled ? collapseButton : input).focus({ preventScroll: true });
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed: false, turnBusy, via: "rail" } });
   };
   collapseButton.addEventListener("click", toggleCollapsed);

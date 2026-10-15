@@ -133,3 +133,7 @@ html[data-ai-activity-level="trace"] body:not(.ai-dock-collapsed):not(.ai-studio
 }
 /* 진행 중인 카드에서도 「중지」가 보인다 — 지도 아래 상태 줄의 「■ 멈춤」이 접힌 뒤의 유일한 대화 쪽 중지. */
 .ai-work-inline[data-state="running"] > .ai-work-inline-actions { display: flex; margin-top: 8px; }
+/* 간단히 보기에서 실패 원인은 한 번만 — 기록 줄에 원인이 이미 있으면 카드 아래쪽 빨간 되풀이 줄은 접는다. 자세히 보기는 그대로. */
+html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]) .ai-work-inline:has(.ai-activity-entry.is-error) .ai-team-error { display: none; }
+.ai-work-inline-undone { color: var(--text-2); font-size: var(--font-size-sm); align-self: center; }
+.ai-work-inline[data-undone="1"] { opacity: 0.8; }

@@ -197,6 +197,8 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       rows = illustrated ? [illustrated, ...(plain ? [plain] : []), ...active].sort((a, b) => a.at - b.at)
         : [...completed.slice(-Math.max(1, 4 - activeCount)), ...active];
       if (sayEntry) rows = [...rows, sayEntry].sort((a, b) => a.at - b.at);
+      // 같은 문장이 연달아 두 번 나오면 한 줄로 — 실패 때 같은 원인이 오류 기록·작업 종료 기록으로 두 번 적혔다(B안 1단계).
+      rows = rows.filter((entry, i) => i === 0 || briefEntryText(entry) !== briefEntryText(rows[i - 1]!));
     } else {
       // Collect the visible window plus one row for the "more" button.
       const recent: ActivityEntry[] = [];
