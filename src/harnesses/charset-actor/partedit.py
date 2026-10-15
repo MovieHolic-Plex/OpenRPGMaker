@@ -76,65 +76,51 @@ def head_skin(pal, rows, top, skin_letters=None):
 
 
 def segment(key, overrides=None):
-    """베이스 → (pal, frames, labels{(d,f): [[region char]]}, zones{(d,f): {'h','t','g'} → set}, info)."""
-    pal, frames = H.base_of(H.norm_base(key))
-    ov = dict((OVERRIDES.get(H.norm_base(key)) or {}), **(overrides or {}))
-    skin_letters = set(ov['skin']) if 'skin' in ov else None
-    # 방향별 기준(서 있는 자세)
-    down = frames[('down', 1)]
-    top1 = bbox(down)[1]
-    sk = head_skin(pal, down, top1, skin_letters)
-    chin_off = (sk[3] - top1) if sk else 9
-    forehead_off = (sk[1] - top1) if sk else 3
-    foot = bbox(down)[3]
-    # 칸 비율 기본값: 발 바닥 2줄 = 신발, 그 위 4줄 = 하의, 그 위 = 상의. 틀린 베이스는 OVERRIDES 로 보정한다.
-    legs_top = None
-    waist = ov.get('waist', foot - 6)
-    shoe_top = ov.get('shoe_top', foot - 1)
-    info = dict(top=top1, chin_off=chin_off, forehead_off=forehead_off, foot=foot, legs_top=legs_top, waist=waist, shoe_top=shoe_top,
-                face=bool(sk), skin_letters=''.join(sorted(skin_letters)) if skin_letters else None)
+    """베이스 → (pal, frames, labels{(d,f): [[region char]]}, zones{(d,f): {'h','t','g'} → set}, info).
+    분할은 베이스마다 사람이 눈으로 정한 SPECS(얼굴 상자·상의 시작·허리·신발 줄·맨살 글자)에서 나온다."""
+    nk = H.norm_base(key)
+    pal, frames = H.base_of(nk)
+    sp = dict(SPECS[nk])
+    sp.update(overrides or {})
+    boxes = sp['face']                      # {dir: (x0,y0,x1,y1) | None}
+    t_start, waist, shoe_top = sp['t_start'], sp['waist'], sp['shoe_top']
+    skin = set(sp.get('skin', ''))
+    foot = bbox(frames[('down', 1)])[3]
+    info = dict(spec=nk, t_start=t_start, waist=waist, shoe_top=shoe_top, skin=''.join(sorted(skin)), foot=foot, robot=bool(sp.get('robot')))
     labels, zones = {}, {}
     for d in DIRS:
         for f in range(3):
             rows = frames[(d, f)]
+            off = C.bob_of(frames[(d, 1)], rows) if f != 1 else 0
             x0, y0, x1, y1 = bbox(rows)
-            sk_f = head_skin(pal, rows, y0, skin_letters) if (d != 'up') else None
-            chin = y0 + chin_off
+            bx = boxes.get(d)
             lab = [[T] * FW for _ in range(FH)]
             for y in range(FH):
                 for x in range(FW):
                     c = rows[y][x]
                     if c == T:
                         continue
-                    skin = (skin_letters is not None and c in skin_letters) or (skin_letters is None and skin_like(pal[c]))
-                    if y <= chin + 1 and y >= y0 and y < y0 + 14 and y <= chin:
-                        # 머리 구역
-                        if sk_f is not None and y >= sk_f[1] + 2 and sk_f[0] - 1 <= x <= sk_f[2] + 1:
-                            lab[y][x] = 'F'          # 눈~턱, 얼굴 폭 ±1
-                        elif skin and sk_f is not None and y >= sk_f[1] + 2:
-                            lab[y][x] = 'F'          # 귀·옆 맨살
-                        else:
-                            lab[y][x] = 'H'
-                    elif y <= chin + 1:
-                        lab[y][x] = 'F' if skin else 'H'   # 턱 아래 한 줄(목)
+                    if bx and bx[0] <= x <= bx[2] and bx[1] + off <= y <= bx[3] + off:
+                        lab[y][x] = 'F'
+                    elif y < t_start + off:
+                        lab[y][x] = 'H'
                     elif y < waist:
-                        lab[y][x] = 'F' if skin else 'T'
+                        lab[y][x] = 'F' if c in skin else 'T'
                     elif y < shoe_top:
-                        lab[y][x] = 'F' if skin else 'B'
+                        lab[y][x] = 'F' if c in skin else 'B'
                     else:
-                        lab[y][x] = 'F' if skin else 'S'
+                        lab[y][x] = 'F' if c in skin else 'S'
             labels[(d, f)] = lab
             op = {(x, y) for y in range(FH) for x in range(FW) if rows[y][x] != T}
             zh, zt, zg = set(), set(), set()
-            hx0, hx1 = x0, x1
-            heads = [x for y in range(y0, chin + 1) for x in range(FW) if rows[y][x] != T]
-            if heads:
-                hx0, hx1 = min(heads), max(heads)
-            for y in range(max(1, y0 - 3), chin + 1):
+            face_y0 = (bx[1] if bx else t_start - 4) + off
+            hx = [x for y in range(y0, t_start + off) for x in range(FW) if rows[y][x] != T]
+            hx0, hx1 = (min(hx), max(hx)) if hx else (x0, x1)
+            for y in range(max(1, y0 - 3), face_y0):
                 for x in range(max(1, hx0 - 1), min(FW - 1, hx1 + 2)):
-                    if (x, y) not in op and (y < y0 + forehead_off + 2):
+                    if (x, y) not in op:
                         zh.add((x, y))
-            for y in range(chin + 2, waist):
+            for y in range(t_start + off, waist):
                 for x in range(1, FW - 1):
                     if (x, y) not in op and any((x + dx, y) in op and lab[y][x + dx] == 'T' for dx in (-2, -1, 1, 2)):
                         zt.add((x, y))
@@ -144,6 +130,18 @@ def segment(key, overrides=None):
                         zg.add((x, y))
             zones[(d, f)] = dict(h=zh, t=zt, g=zg)
     return pal, frames, labels, zones, info
+
+
+SPECS = {
+    # 얼굴 상자 = 눈~턱을 가로 전부 담은 직사각형(그 안 픽셀은 한 칸도 못 바꾼다). 방향마다 따로(오른쪽·왼쪽은 칩이 거울이 아님).
+    'People1:0': dict(face={'down': (6, 16, 17, 19), 'right': (9, 16, 17, 19), 'left': (6, 16, 14, 19), 'up': None},
+                      t_start=20, waist=27, shoe_top=29, skin='yzwv'),
+    'Actor3:0': dict(face={'down': (8, 14, 15, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 11, 17), 'up': None},
+                     t_start=18, waist=25, shoe_top=29, skin=''),
+    # 로봇은 사람 얼굴 규칙의 예외: 눈 상자만 고정하고 나머지 머리(살색 포함)는 금속으로 칠할 수 있다(원형 설명 「눈은 한 줄 유리창).
+    'People4:4': dict(face={'down': (8, 14, 15, 16), 'right': (11, 14, 17, 16), 'left': (6, 14, 12, 16), 'up': None},
+                      t_start=18, waist=28, shoe_top=30, skin='', robot=True),
+}
 
 
 # 분할이 틀린 베이스는 여기서 보정한다(마스크 시트를 눈으로 본 뒤 적는다). 키 = 'Actor3:0' 꼴.
@@ -218,6 +216,9 @@ def apply_edits(key, edit, overrides=None):
         if len(k) != 1 or k in ('.', ' '):
             errs.append(f'palette 글자 {k!r} 는 한 글자(.제외)여야 한다')
             continue
+        if k in bpal:
+            errs.append(f'palette {k!r}: 베이스에 이미 있는 글자의 색을 바꿀 수 없다(바꾸려면 recolor 로 새 글자에 옮겨라). 쓰이지 않은 새 글자를 써라')
+            continue
         try:
             pal[k] = hex_rgb(v)
         except Exception:
@@ -290,14 +291,19 @@ def apply_edits(key, edit, overrides=None):
     for (d, _), cells in paints.items():
         for (x, y), (ch, reg) in cells.items():
             setpx((d, 1), x, y, ch, 'paint')
+        b1 = bframes[(d, 1)]
         for f in (0, 2):
-            bob = bob_for(bframes, d, f)
-            for (x, y), (ch, reg) in cells.items():
-                ty = y + bob
-                if not (0 <= ty < FH):
-                    continue
-                if labels[(d, f)][ty][x] == reg or (x, ty) in zones[(d, f)]['h' if reg == 'H' else 't']:
-                    setpx((d, f), x, ty, ch, 'paint')
+            bf = bframes[(d, f)]
+            corr, bob = C.correspondence(b1, bf)
+            for (x, y), q in corr.items():
+                if q is not None and q in cells and labels[(d, f)][y][x] in EDITABLE and labels[(d, f)][y][x] == cells[q][1]:
+                    setpx((d, f), x, y, cells[q][0], 'paint')
+            for (x, y), (ch, reg) in cells.items():     # 몸 밖 구역에 새로 그린 칸은 출렁임만큼 내려 옮긴다
+                if b1[y][x] == T:
+                    ty = y + bob
+                    zk = 'h' if reg == 'H' else 't'
+                    if 0 <= ty < FH and bf[ty][x] == T and (x, ty) in zones[(d, f)][zk]:
+                        setpx((d, f), x, ty, ch, 'paint')
     # 3) 장비: 방향마다 따로 올린다(거울 복사 없음). 놓을 수 있는 칸 = 장비 띠(g) 또는 머리 장식 구역(h)의 빈 칸
     gear_cells = {}
     for i, g in enumerate(edit.get('gear') or []):
@@ -335,7 +341,10 @@ def apply_edits(key, edit, overrides=None):
                 if 0 <= ty < FH and bframes[(d, f)][ty][x] == T and ((x, ty) in zs['g'] or (x, ty) in zs['h']):
                     setpx((d, f), x, ty, ch, 'gear')
     out = {k: [''.join(r) for r in rows] for k, rows in new.items()}
-    report = dict(info=info, errors=errs)
+    gear_report = {}
+    for (d, name), cells in gear_cells.items():
+        gear_report.setdefault(name, {})[d] = sum((x - 11.5) for (x, y) in cells) / max(1, len(cells))
+    report = dict(info=info, errors=errs, gear=gear_report)
     return pal, out, bframes, bpal, labels, zones, changed, kind, report
 
 
@@ -360,7 +369,7 @@ def components(cells):
     return comps
 
 
-def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides=None):
+def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides=None, gear_report=None):
     """12프레임 전부 대조. → (errors, warnings, metrics)."""
     errs, warns, m = [], [], {}
     # 불변: F 칸은 색까지 같아야 한다. 몸 밖 칸은 구역이 아니면 투명 그대로.
@@ -454,7 +463,10 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
             continue   # 소지품 한도는 구역·덩어리 검사가 맡는다
         errs.append(t)
     warns += g.get('warns', [])
-    # 장비 손 일관: 같은 이름의 장비가 아래·위에서 몸 중심의 반대편인지는 눈 검수 몫(경고)
+    # 장비 손 일관: 같은 이름의 장비가 아래·위에서는 몸 중심의 반대편(왼쪽↔오른쪽 뒤집힘)이어야 같은 손에 든 것이다
+    for name, per in (gear_report or {}).items():
+        if 'down' in per and 'up' in per and per['down'] * per['up'] > 0:
+            errs.append(f'장비 {name!r}: 아래 방향과 위 방향에서 몸 중심의 같은 쪽(왼쪽/오른쪽)에 있다 — 한 손에 든 것은 위·아래에서 화면 반대편에 보여야 한다')
     return errs, warns, m
 
 
@@ -485,7 +497,7 @@ def run_apply(workdir, key=None, write=True):
     except Exception as e:  # noqa: BLE001
         return None, [f'편집 적용 실패: {e!r}'], [], {}
     errs = list(rep['errors'])
-    errs2, warns, m = verify(key, pal, new, bframes, bpal, labels, zones, changed, kind)
+    errs2, warns, m = verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, gear_report=rep.get('gear'))
     errs += errs2
     if write:
         render_preview(pal, new, wd / 'preview.png')
