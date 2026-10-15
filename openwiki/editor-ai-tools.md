@@ -3156,3 +3156,14 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
   `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
 - `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.
 - 실행 근거: `qa-runs/ff6b`(gitignore) — 변형 diff 46%·두 지도 렌더 비교, 던전 왕복 `run_scene_test`, 지형별 조우·배경·조우율 표.
+
+## 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
+
+- `author_stage_performance {mapId, eventId?, x?, y?, trigger?: action|auto, once?, skippable?, letterbox?, curtainRise?, leaveDark?, acts:[…]}` (`src/editor/tools/stagePerformanceTools.ts`, 도메인 event, 라벨 「무대 공연 짜기」).
+  오페라·콘서트·연극 한 장면을 막(act) 목록으로 받아 시각표를 코드가 계산하고 `script_cutscene` 비트로 컴파일해 그 검증·커밋 경로를 그대로 지난다(새 그림·새 소리 없음).
+- 막 종류: `backdrop`(먼 배경 리소스 전환·분위기 색 tint "R,G,B,알파") · `curtain`(close/open) · `spotlight`(주변 어둡게 + 인물 잔상·반짝임, on:false 로 끔) · `lyric`(가사 자막 — `container:"corner"` 비차단 자막을 줄마다 `ms` 만큼 기다림;
+  자막 수명 = 코너 대사 공식 `min(7000, max(2200, 1600+글자×90))`, 더 길게 잡으면 빈 화면 경고) · `chorus`(2~3명 `voices` 가 `staggerMs` 간격으로 겹쳐 뜸 — 화면 구석 자막은 3줄까지만 쌓여 4명은 거절) ·
+  `cue`(파티클 8종·flash·shake) · `music`(이미 있는 BGM/SE 리소스) · `pause`.
+- 모르는 인자는 최상위·막·줄·목소리 모두 거절한다. 결과 `data.timeline` 에 막별 시작·끝 ms. 화면 색조는 컷신이 끝나도 남으므로 막을 닫거나 색을 입힌 채 끝나면 도구가 끝에 0.7초 페이드로 되돌린다(`leaveDark:true` 면 그대로 — 맵 이동으로 이어 붙일 때).
+- 시험: `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — 시작하자마자 도는 공연, 합창 두 줄이 동시에 코너 자막으로 쌓이고 끝나면 어두운 화면이 남지 않는다.
+

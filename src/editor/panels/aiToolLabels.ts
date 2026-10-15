@@ -88,6 +88,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   script_cutscene_preset: people("연출 프리셋", "book"),
   script_cutscene_impact: people("충돌 연출", "book"),
   script_cutscene_staged: people("연출 짜기", "book"),
+  author_stage_performance: people("무대 공연 짜기", "book"),
   generate_cutscene_art: build("컷신 그림 만들기", "spark"),
   author_actor_charset: build("걷는 캐릭터셋 만들기", "spark"),
   preview_cutscene: inspect("컷신 미리보기", "eye"),

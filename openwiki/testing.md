@@ -2121,3 +2121,4 @@ dedicated exported player passed. Do not describe this as all browser checks gre
   칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.
   새 런타임 픽스처는 `system.opening` 을 지우지 않으면 첫 확인 키가 먹히지 않는다(15개 시나리오의 `node_modules/vite-node/vite-node.mjs` 경로도 vite-node 6 에 없어 `dist/cli.mjs` 로 가야 한다 — ct-vehicle 만 고침).
 - `ct-vehicle-walkers`(`scripts/qa/runtime/ct-vehicle-walkers*`) — 초코보(통행 불가 숲 통과·호수 거절)·광산 수레(레일에서만)·뗏목(강만, 바다 거절)을 승하차까지 실제 플레이어로 본다. 크로미움은 `unshare -rn` 안에서. `parkedVehicleSprites` 검사는 초코보만 Animal 텍스처를 기대한다(`scripts/lib/runtimeQa.mjs`).
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
