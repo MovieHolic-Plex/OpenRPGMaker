@@ -390,7 +390,7 @@ export function runToolDefinition(
 
   // 쓰기 툴: draft에 적용.
   const prerequisite = authoringWritePrerequisite(ctx.project);
-  if (prerequisite && name !== prerequisite && name !== 'set_build_spec'
+  if (prerequisite && name !== prerequisite && name !== 'set_build_spec' && name !== 'set_romance_stage'
     && tool.domains?.some(domain => domain === 'event' || domain === 'map' || domain === 'tile')) {
     return { ok: false, summary: '첫 대화를 먼저 작성하세요.', issues: [{ severity: 'error', code: 'authoring-prerequisite',
       message: `${prerequisite}으로 확정한 두 선택의 대사를 먼저 작성한 뒤 장소를 꾸미세요. 임시 초안을 두고 배경 시공부터 시작하지 않습니다.` }] };

@@ -26,6 +26,7 @@ import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText,
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
+import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirection';
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
@@ -61,8 +62,12 @@ export type PlayableSegmentVerdict =
  */
 export function judgePlayableSegment(project: Project, options: { readonly budgetMs?: number; readonly expected?: Project } = {}): PlayableSegmentVerdict {
   const authoring = inspectAuthoringHarness(project, options.expected ?? project);
-  if (authoring) return authoring.ok ? { ok: true, endingId: 'ending_romance_first_meeting', ms: authoring.ms }
-    : { ok: false, blockers: authoring.blockers, ms: authoring.ms };
+  if (authoring) {
+    // 마무리 판정: 동작 검사 통과 + 첫 만남 화면이 단색 빈 판이 아님(초안 시드는 이 판정을 거치지 않는다 — 사람이 먼저 대화를 쓰고 꾸민다).
+    const flat = authoring.ok ? romanceStageFlatFindings(project) : [];
+    return authoring.ok && flat.length === 0 ? { ok: true, endingId: 'ending_romance_first_meeting', ms: authoring.ms }
+      : { ok: false, blockers: authoring.ok ? flat : authoring.blockers, ms: authoring.ms };
+  }
   const started = Date.now();
   const report = runGameCheck(project, { autoPlayBudgetMs: options.budgetMs ?? 60_000 });
   const reached = report.autoPlay?.runs.some((run) => run.ok && run.endingReached === SEGMENT_END_ENDING_ID) === true;
@@ -486,13 +491,28 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
 }
 
 /**
+ * 손대지 않은 빈 시작 맵을 기획이 고른 현대 칩셋(캠퍼스·도시) 구성기로 깐 사본. 해당 없음·실패면 null(호출부가 입력 그대로 쓴다).
+ * 길 맵·시작 NPC·엔딩은 만들지 않는다 — 한 장면 하네스가 그 위에 자기 이벤트를 얹는다.
+ */
+export function stageStartOnModernKit(project: Project): Project | null {
+  const plan = planStartForBrief(project.gameDesignBrief, project.meta.title);
+  const start = project.maps[project.startMapId];
+  if (!plan.composeKit || !start || start.tilesetId !== DEFAULT_TILESET_ID || !project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
+  const ctx = { project: structuredClone(project) };
+  try { composeKitStartMap(ctx, start.id, plan); }
+  catch (error) { if (nodeEnv("START_DEBUG")) console.error("[stage-kit]", error); return null; }
+  return ctx.project;
+}
+
+/**
  * 뼈대를 깔고 판정까지 통과한 프로젝트. 대상 장르가 아니거나, 이미 있거나, 깔다 실패하거나, 판정을 통과하지 못하면 null —
  * 호출부는 예전 흐름(AI 만)으로 진행한다. 실패는 코드 결함이므로 콘솔에 남긴다.
  */
 export function withVerifiedPlayableSegment(project: Project): Project | null {
   const harness = authoringHarnessFor(project) ?? eligibleAuthoringHarnessFor(project);
   if (harness) {
-    const seeded = harness.seed(project);
+    // 연애 첫 만남 같은 한 장면 하네스도 단색 잔디가 아니라 인터뷰가 고른 현대 무대(캠퍼스·거리)에서 시작한다 — 시작 맵 한 장을 그 구성기로 깐다.
+    const seeded = harness.seed(stageStartOnModernKit(project) ?? project);
     if (!seeded) return null;
     const verdict = harness.inspect(seeded, seeded, { allowDraft: true });
     if (!verdict.ok) throw Error('첫 만남 초안 실행 실패: ' + verdict.blockers.join(' / '));

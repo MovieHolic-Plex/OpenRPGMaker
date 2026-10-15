@@ -86,6 +86,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   author_story_arc: people("이야기 짜기", "book"),
   author_romance_scene: people("첫 만남 만들기", "book"),
   inspect_romance_scene: inspect("첫 만남 동작 확인", "eye"),
+  set_romance_stage: people("첫 만남 무대 지정", "book"),
   script_cutscene: people("연출 쓰기", "book"),
   script_cutscene_preset: people("연출 프리셋", "book"),
   script_cutscene_impact: people("충돌 연출", "book"),
