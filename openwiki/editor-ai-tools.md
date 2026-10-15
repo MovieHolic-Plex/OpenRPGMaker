@@ -228,6 +228,14 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - `upsert_equipment` 신규 필드: `apGrants [{skillId,ap}]`(없는 스킬은 거절 → upsert_skill 안내)·`apRate`·`levelUpBonus`. AP 를 줄 적이 하나도 없으면 경고(`upsert_enemy.rewards.ap`). `upsert_skill.oncePerBattle` 은 소환용.
 - 능력 색인 레시피 `esper-growth`, 라벨 「장비 부위 수정」. 설명·규칙: `openwiki/runtime-battle.md` 「FF6 마석 성장」.
 
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15)
+
+- `upsert_skill.effect.kind` 에 `sketch`·`rage`(+`enemyIds`)·`shuffleParty`·`forceSwitch` 가 늘었다. 모르는 키는 거절(허용 필드 목록을 알려 준다). `rage.enemyIds` 에 없는 적 id 는 거절하고 `upsert_enemy` 를 안내한다.
+  경고: 폭주에 scope 가 self 가 아님 / `state_rage` 상태가 프로젝트에 없음, 스케치에 scope 가 enemy 가 아님, 대열 섞기·강제 교대가 self 범위(적이 플레이어 파티를 흔드는 기술이라는 안내).
+- `upsert_state.runtimeEffects` 에 `invertHealing`(좀비), `grantSkillIds`(트랜스·변신이 주는 기술, 없는 기술은 거절 → `upsert_skill` 안내), `forcedAction: "rage"`(폭주)가 늘었다.
+- 능력 색인 레시피 `ff6-battle-effects`(스케치·폭주·교대·좀비·트랜스·블리츠·검기·룬 한 장 요약). 새 도구는 없다 — 라벨·활동 서술은 기존 `upsert_skill`/`upsert_state` 를 그대로 쓴다.
+- 규칙·파일: `openwiki/runtime-battle.md` 「FF6 전투 특수 효과」, `openwiki/state-system.md`.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.

@@ -947,6 +947,10 @@ function skillKindLabel(skill: SkillRecord): string {
     case "scan": return "탐색";
     case "learnEnemySkill": return "습득";
     case "randomSkillFrom": return "무작위";
+    case "sketch": return "스케치";
+    case "rage": return "폭주";
+    case "shuffleParty": return "대열";
+    case "forceSwitch": return "교대";
     default: return assertNever(skill.effect);
   }
 }

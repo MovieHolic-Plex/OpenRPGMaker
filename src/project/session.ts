@@ -291,6 +291,8 @@ export interface PlaySession {
   actorApProgress?: Record<ActorId, Record<SkillId, number>>;
   /** 마석 AP 로 영구 습득한 스킬(배우별). 장비를 벗어도 남는다 — 같은 스킬이 actorSkillIds 에도 들어 있다. 생략 = 없음. */
   learnedViaAp?: Record<ActorId, SkillId[]>;
+  /** 폭주(rage 기술) 배우가 승리 때마다 모은 몬스터 목록(몬스터 레코드 id, 배우당 최대 64). 생략 = 없음. */
+  actorRageEnemyIds?: Record<ActorId, string[]>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
