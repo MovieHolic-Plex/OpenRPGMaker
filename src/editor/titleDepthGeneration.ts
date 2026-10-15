@@ -81,6 +81,7 @@ export async function generateTitleDepthMap(artDataUrl: string, options: { signa
   const generated = await generateAiImage({
     prompt: buildTitleDepthPrompt(),
     referenceImages: [splitDataUrl(artDataUrl)],
+    purpose: "title-depth",
     ...(options.signal ? { signal: options.signal } : {}),
   });
   // 깊이 지도는 흐릿해도 되므로 긴 변 512 로 줄여 저장한다.

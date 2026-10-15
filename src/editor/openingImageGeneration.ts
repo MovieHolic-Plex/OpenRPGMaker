@@ -107,6 +107,7 @@ export async function generateCinematicStill(
         prompt,
       ].join('\n\n') : buildCinematicStillPrompt(prompt, purpose, brief),
       signal: options.signal,
+      purpose: "opening-still",
       ...(referenceImages.length ? { referenceImages } : {}),
     });
     options.signal?.throwIfAborted();

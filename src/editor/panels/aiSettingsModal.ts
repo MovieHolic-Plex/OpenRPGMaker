@@ -1,5 +1,6 @@
 import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
+import { PIXEL_MODEL_CHOICES, resolvePixelModel } from "@/ai/pixelModel";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
@@ -269,8 +270,8 @@ export function renderAiSettingsForm(options: {
       el("p", {
         class: "ai-config-recommend-text",
         children: [
-          el("strong", { text: "그림은 GPT 모델을 강력히 추천합니다." }),
-          el("span", { text: " 픽셀 타일·캐릭터의 형태와 색이 더 안정적입니다. ChatGPT 계정 연결이 필요합니다." }),
+          el("strong", { text: "배경·대형 그림은 GPT 이미지 모델을 추천합니다." }),
+          el("span", { text: " 앵글·초점 지시를 더 잘 지키고 해상도도 높습니다. ChatGPT 계정 연결이 필요합니다." }),
         ],
       }),
       useRecommendedImage,
@@ -303,6 +304,58 @@ export function renderAiSettingsForm(options: {
     refreshImageStatus();
   };
   refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
+
+  // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
+  const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
+  // ── 도트 저작 모델(텍스트 모델) ───────────────────────────────────────────────
+  // 도트는 이미지 모델이 아니라 텍스트 모델이 격자 문자열·좌표로 직접 찍는다. 그래서 이 칸은 이미지 모델 목록이 아니라
+  // 텍스트 모델 목록이고, 비워 두면(따라가기) 옛 동작 그대로 계획·최종 판단 모델이 공방 그리기를 맡는다.
+  const PIXEL_FOLLOW = "";
+  const pixelKey = (provider: string, model: string): string => `${provider}::${model}`;
+  const initialPixel = resolvePixelModel(config);
+  const pixelModelSelect = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "도트 저작 모델", "aria-describedby": "ai-config-pixel-status" },
+    dataset: { testid: "ai-config-pixel-model" },
+  }) as HTMLSelectElement;
+  const pixelEffort = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "도트 저작 추론 강도" },
+    dataset: { testid: "ai-config-pixel-reasoning" },
+    children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
+  }) as HTMLSelectElement;
+  const pixelStatus = el("p", {
+    class: "ai-config-help",
+    attrs: { id: "ai-config-pixel-status", role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-config-pixel-status" },
+  });
+  const refreshPixelModels = (selected: string): void => {
+    const brain = `${configForUltrabrain(config).model}`;
+    pixelModelSelect.replaceChildren(
+      el("option", { attrs: { value: PIXEL_FOLLOW }, text: `계획·최종 판단 모델을 따라가기 (${brain})` }),
+      ...PIXEL_MODEL_CHOICES.map(choice => el("option", {
+        attrs: { value: pixelKey(choice.provider, choice.model) }, text: `${choice.providerLabel} · ${choice.label}`,
+      })),
+    );
+    if (selected !== PIXEL_FOLLOW && !PIXEL_MODEL_CHOICES.some(choice => pixelKey(choice.provider, choice.model) === selected)) {
+      pixelModelSelect.append(el("option", { attrs: { value: selected, disabled: "" }, text: `${selected.replace("::", " · ")} · 목록에 없음` }));
+    }
+    pixelModelSelect.value = selected;
+    pixelModelSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshPixelStatus();
+  };
+  const refreshPixelStatus = (): void => {
+    const following = pixelModelSelect.value === PIXEL_FOLLOW;
+    pixelEffort.disabled = following;
+    const choice = PIXEL_MODEL_CHOICES.find(entry => pixelKey(entry.provider, entry.model) === pixelModelSelect.value);
+    pixelStatus.textContent = following
+      ? "따로 고르지 않아 계획·최종 판단 모델이 공방의 도트 그리기를 맡습니다(기존 동작)."
+      : choice?.model.startsWith("claude")
+        ? "Claude 모델은 Google 계정 연결로 씁니다. 계정에서 쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다."
+        : "선택한 모델의 계정 로그인이 필요합니다. 쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다.";
+  };
+  refreshPixelModels(initialPixel.follows ? PIXEL_FOLLOW : pixelKey(initialPixel.model.provider, initialPixel.model.model));
+  pixelEffort.value = initialPixel.model.thinkingLevel;
   const model = modelField("Writer 모델", modelForRole(config, "writer").model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "Deep 모델",
@@ -314,8 +367,6 @@ export function renderAiSettingsForm(options: {
     providerId,
   );
   const brainConfig = configForUltrabrain(config);
-  // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
-  const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
   const brainProvider = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
     attrs: { "aria-label": "Ultrabrain 제공자" },
@@ -568,6 +619,11 @@ export function renderAiSettingsForm(options: {
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
     imageProviderId: imageProvider.value,
     imageModel: imageModel.value,
+    // 도트 저작 칸: 「따라가기」면 저장하지 않는다(옛 동작 유지). 고른 값만 저장하고 고른 표시를 남긴다.
+    ...(pixelModelSelect.value === PIXEL_FOLLOW ? {} : (() => {
+      const [provider, model] = pixelModelSelect.value.split("::");
+      return { pixelModel: { provider, model, thinkingLevel: pixelEffort.value as RoleModel["thinkingLevel"] } };
+    })()),
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
     // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
     baseUrl: DEFAULT_BASE_URL,
@@ -682,6 +738,13 @@ export function renderAiSettingsForm(options: {
     refreshImageModels(recommendedImage.model);
     persist(false);
   });
+  pixelModelSelect.addEventListener("change", () => {
+    if (pixelModelSelect.value === PIXEL_FOLLOW) delete modelSelectionOverrides.pixel;
+    else modelSelectionOverrides.pixel = true;
+    refreshPixelStatus();
+    persist(false);
+  });
+  pixelEffort.addEventListener("change", () => { modelSelectionOverrides.pixel = true; persist(false); });
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -1063,11 +1126,18 @@ export function renderAiSettingsForm(options: {
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
         rolesDetails,
-        settingsSection("image", "이미지 생성", "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.", [
-          settingsRow("이미지 생성 제공자", "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.", imageProvider),
-          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
-          imageRecommendation,
-          imageStatus,
+        settingsSection("image", "이미지", "그림의 종류에 따라 쓰는 모델이 다릅니다. 이미지를 읽는 Vision과는 별도로 고릅니다.", [
+          settingsGroup("배경·대형 이미지 — 생성형 이미지 모델", "타이틀·오프닝·컷신·배경·초상처럼 그림 한 장을 통째로 그리는 용도입니다.", "image-large", [
+            settingsRow("이미지 생성 제공자", "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.", imageProvider),
+            settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
+            imageRecommendation,
+            imageStatus,
+          ]),
+          settingsGroup("도트 저작 — 텍스트 모델이 격자로 찍기", "타일셋·캐릭터셋·맵 기물 같은 도트는 이미지 모델이 아니라 텍스트 모델이 픽셀 격자(문자열 행)와 좌표를 직접 써서 만듭니다. 이미지 모델은 도트 눈금·색 수·3/4 시점을 지키지 못해 이 용도에는 쓰지 않습니다.", "image-dot", [
+            settingsRow("도트 저작 모델", "Argon 또는 Claude 계열을 고릅니다. 공방의 그리기 단계가 이 모델을 씁니다. 조수 채팅은 이 칸이 아니라 위 「역할별 모델」을 따릅니다.", pixelModelSelect),
+            settingsRow("도트 저작 추론 강도", "격자를 한 줄씩 맞추는 일이라 보통 이상을 권합니다.", pixelEffort),
+            pixelStatus,
+          ]),
         ]),
       ]),
       pane("behavior", [
@@ -1148,6 +1218,21 @@ function settingsSection(
         ],
       }),
       el("div", { class: "ai-settings-section-body", children }),
+    ],
+  });
+}
+
+/** 한 절 안의 소제목 묶음 — 이미지 절이 «큰 그림»과 «도트» 두 갈래를 나란히 보여 줄 때 쓴다. */
+function settingsGroup(title: string, description: string, id: string, children: readonly HTMLElement[]): HTMLElement {
+  return el("div", {
+    class: "ai-settings-subgroup",
+    dataset: { testid: `ai-settings-group-${id}` },
+    children: [
+      el("div", { class: "ai-settings-subgroup-head", children: [
+        el("h4", { text: title }),
+        el("p", { text: description }),
+      ] }),
+      ...children,
     ],
   });
 }

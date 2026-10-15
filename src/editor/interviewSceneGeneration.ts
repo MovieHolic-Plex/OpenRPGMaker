@@ -42,7 +42,7 @@ export async function generateInterviewScene(prompt: string, signal: AbortSignal
   for (let attempt = 1; attempt <= INTERVIEW_ART_ATTEMPTS; attempt++) {
     signal.throwIfAborted();
     progress(attempt === 1 ? "generating" : "retrying", attempt);
-    const image = await generateAiImage({ prompt: prompt + (findings.length ? "\nREDRAW FROM SCRATCH. Fix every rejection: " + JSON.stringify(findings) : ""), signal });
+    const image = await generateAiImage({ prompt: prompt + (findings.length ? "\nREDRAW FROM SCRATCH. Fix every rejection: " + JSON.stringify(findings) : ""), signal, purpose: "interview-scene" });
     signal.throwIfAborted();
     const probe = new Image(); probe.src = image.dataUrl; await probe.decode();
     signal.throwIfAborted();
