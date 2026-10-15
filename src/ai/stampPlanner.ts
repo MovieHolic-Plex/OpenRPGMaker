@@ -108,6 +108,10 @@ export interface StampPlanFacts {
   readonly isOpenCell?: (x: number, y: number) => boolean;
   /** 그 칸에 보이는 그림(위층 타일·겹침·보이는 이벤트)이 이미 있는가 — 그림 없는 조사 지점을 거르는 데 쓴다. */
   readonly hasArtAt?: (x: number, y: number) => boolean;
+  /** 수리 라운드 — 물건 이름이 사용자 문장에 실제로 든 낱말이어야 한다(문 달기가 실패하자 「뚜껑문」으로 바꿔 깔던 대체를 막는다). */
+  readonly repairRound?: boolean;
+  /** 그 칸이 벽 어휘 타일인가 — place_door 는 벽 칸에만 달린다(아니면 도구가 거부해 수리 호출만 낭비한다). */
+  readonly isWallCell?: (x: number, y: number) => boolean;
   /** place_props 의 material 이 나무(density 를 받는 재료)인가 — 아니면 density 를 칸 수로 바꾼다(첫 호출이 항상 실패하던 길). */
   readonly isTreeMaterial?: (material: string) => boolean;
 }
@@ -121,7 +125,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- Shapes: 동그랗게/원/둥근/호수/연못 → fill_region shape \"circle\" (ellipse for wide ovals); otherwise \"rect\".",
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". density is ONLY for tree labels — never send density with any other material. Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
-  "- PHYSICAL THINGS (물건: 화분·의자·탁자·침대·벤치·우물·가로등·자판기·책장·동상·우체통·통·바위·돌·카펫·모닥불·꽃밭·덤불 한 포기…) are placed ONLY with place_object {name, alternatives?, area|at, count?}. name = the correctly spelled everyday Korean noun alone (fix typos: 화뷴→화분, 의짜→의자; no numbers or verbs); alternatives = up to 3 true synonyms of the SAME thing (탁자→[\"테이블\",\"식탁\"]); never a different or merely similar thing (왕좌≠의자, 대포≠화로) — code ignores those and refuses honestly. Code looks the name up among this tileset's real object pictures (facts.objectNames are examples of names that exist) and REFUSES, listing the nearest names, when no picture matches. So NEVER imitate a thing with place_examine_hotspots (it makes an INVISIBLE event), place_npc/make_villager (people only), or a terrain place_props — those make invisible, wrong or person-shaped things. place_chest, place_savepoint, place_signpost, place_door keep their own jobs. Use place_props only for terrain-like scatter with labels copied from the lists, never for a named object. Counts (세 개·둘·여러) → count (default 1, max 8); position words (창가·구석·가운데·왼쪽·입구 옆) → pick area/at inside the target accordingly.",
+  "- PHYSICAL THINGS (물건: 화분·의자·탁자·침대·벤치·우물·가로등·자판기·책장·동상·우체통·통·바위·돌·카펫·모닥불·꽃밭·덤불 한 포기…) are placed ONLY with place_object {name, alternatives?, area|at, count?}. name = the correctly spelled everyday Korean noun alone (fix typos: 화뷴→화분, 의짜→의자; no numbers or verbs); alternatives = up to 3 true synonyms of the SAME thing (탁자→[\"테이블\",\"식탁\"]); never a different or merely similar thing (왕좌≠의자, 대포≠화로) — code ignores those and refuses honestly. Code looks the name up among this tileset's real object pictures (facts.objectNames are examples of names that exist) and REFUSES, listing the nearest names, when no picture matches. So NEVER imitate a thing with place_examine_hotspots (it makes an INVISIBLE event), place_npc/make_villager (people only), or a terrain place_props — those make invisible, wrong or person-shaped things. place_chest, place_savepoint, place_signpost keep their own jobs; place_door only goes on an existing WALL cell (code drops it, saying so, when the target has no wall). Use place_props only for terrain-like scatter with labels copied from the lists, never for a named object. Counts (세 개·둘·여러) → count (default 1, max 8); position words (창가·구석·가운데·왼쪽·입구 옆) → pick area/at inside the target accordingly.",
   "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기 → place_examine_hotspots ONLY on a cell that already shows a picture (a drawn painting, statue, sign…; code drops hotspots on bare floor); 표지판 → place_signpost. Put them on walkable ground inside the target, not on trees, water or walls.",
   "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
   "- facts.placement.role says what this map is. TOWN (마을): prefer townsfolk with lines, merchants with stock, an inn keeper (place_inn, price from facts.placement.innPrice), signposts at road forks and entrances (place_signpost), a savepoint near the inn, examine hotspots on wells/boards; put people beside roads and doors, never inside houses or on the road itself; chests are rare and small. No traps or blocking monsters in a town unless the sentence asks. INTERIOR: a few NPCs/props, no monsters. DUNGEON/FIELD: chests, blockers from encounterTroops, traps on corridors.",
@@ -331,6 +335,12 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (!named) return dropped("물건 이름이 없습니다");
       const alternatives = stringList(args.alternatives ?? args.alts ?? args.synonyms, 4);
       const primary = cleanObjectName(named) || named;
+      if (/^(?:문|출입문|대문|door|창|창문|window)$/iu.test(primary.trim())) {
+        return dropped(`「${primary}」은 벽에 다는 물건이라 바닥에 놓지 않습니다(문은 place_door 로 벽 칸에만 — 벽이 없으면 먼저 벽·건물이 필요합니다)`);
+      }
+      if (facts.repairRound && !norm2(facts.text).includes(norm2(primary))) {
+        return dropped(`수리 라운드에서는 요청하지 않은 물건(「${primary}」)으로 바꾸지 않습니다`);
+      }
       const accepted = acceptedObjectNames(primary, alternatives.map(cleanObjectName).filter((name) => name.length > 0));
       const names = accepted.names;
       const hit = resolveStampObject(facts.objects ?? [], names);
@@ -405,7 +415,21 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         ? clampPointToTarget(args.at, target)
         : rect ? { x: rect.x + Math.floor((rect.w - 1) / 2), y: rect.y + rect.h - 1 } : null;
       if (!at) return dropped("문 위치가 없습니다");
-      return { step: { tool: stampTool, label, args: { mapId, at, material: material ?? "문" } } };
+      let doorAt = at;
+      let doorNote: string | undefined;
+      if (facts.isWallCell && !facts.isWallCell(at.x, at.y)) {
+        // 모델이 고른 칸이 벽이 아니면 영역 안의 벽 칸 중 가장 가까운 것(아래쪽 우선)으로 옮긴다. 벽이 없으면 문을 달지 않는다.
+        let best: { x: number; y: number; d: number } | null = null;
+        for (let y = target.y; y < target.y + target.h; y++) for (let x = target.x; x < target.x + target.w; x++) {
+          if (!facts.isWallCell(x, y)) continue;
+          const d = Math.abs(x - at.x) + Math.abs(y - at.y) - (y >= at.y ? 0.1 : 0);
+          if (!best || d < best.d) best = { x, y, d };
+        }
+        if (!best) return dropped("문은 벽 칸에만 달 수 있는데 이 영역에는 벽이 없습니다(문 그림을 이벤트·바닥으로 흉내 내지 않았습니다 — 벽·건물이 있는 곳을 고르거나 먼저 벽을 지으세요)");
+        doorAt = { x: best.x, y: best.y };
+        doorNote = `고른 칸은 벽이 아니라 가장 가까운 벽 (${best.x},${best.y})로 옮김`;
+      }
+      return { step: { tool: stampTool, label, ...(doorNote ? { note: doorNote } : {}), args: { mapId, at: doorAt, material: material ?? "문" } } };
     }
     case "place_chest": {
       const at = pointOrCenter(args.at, rect, target);
@@ -772,7 +796,9 @@ export function expandStampObjects(
       if (picked.length >= count) break;
     }
     if (picked.length === 0) {
-      dropped.push(`${name}: 놓을 자리가 없습니다(${facts.targetIsSelection ? "선택 영역" : "맵"} 안에 ${width}×${height} 칸이 비어 있고 걸을 수 있는 곳이 없음)`);
+      let openCells = 0;
+      for (let y = facts.target.y; y < facts.target.y + facts.target.h; y++) for (let x = facts.target.x; x < facts.target.x + facts.target.w; x++) if (open(x, y)) openCells += 1;
+      dropped.push(`${name}: 놓을 자리가 없습니다(${facts.targetIsSelection ? "선택 영역" : "맵"} ${facts.target.w}×${facts.target.h} 안에서 길·물·벽·건물·막힌 칸·이벤트를 뺀 빈 칸이 ${openCells}칸뿐이라 ${width}×${height} 물건이 들어갈 자리가 없음 — 영역을 넓히거나 빈 마당을 골라 주세요)`);
       continue;
     }
     const short = picked.length < count ? `자리가 모자라 ${count}개 중 ${picked.length}개만` : "";

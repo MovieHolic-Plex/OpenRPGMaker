@@ -58,10 +58,10 @@ const THEMES: readonly ThemeSetup[] = [
   { id: "sky", label: "천공섬 마을(sky_island)", mapId: "t_sky", build: (ctx) => {
     must(runTool(ctx, "create_map", { name: "천공섬 마을", id: "t_sky", themeScene: "sky_island:village" }, { dryRun: false }));
   } },
-  { id: "monster", label: "몬스터 키트 야외(monster_overworld)", mapId: "t_monster", build: (ctx) => {
+  { id: "monster", label: "몬스터 키트 야외(monster_overworld)", mapId: "t_monster", yard: true, build: (ctx) => {
     must(runTool(ctx, "create_map", { name: "몬스터 마을", id: "t_monster", width: 34, height: 26, tilesetId: "monster_overworld" }, { dryRun: false }));
   } },
-  { id: "farm", label: "초원 마을(scarloxy_chipset_grassland)", mapId: "t_farm", build: (ctx) => {
+  { id: "farm", label: "초원 마을(scarloxy_chipset_grassland)", mapId: "t_farm", yard: true, build: (ctx) => {
     must(runTool(ctx, "create_map", { name: "농장", id: "t_farm", width: 34, height: 26, tilesetId: "scarloxy_chipset_grassland" }, { dryRun: false }));
   } },
 ];
@@ -89,8 +89,8 @@ function pickSelection(project: Project, map: GameMap, w: number, h: number, yar
   for (let y = 0; y + h <= map.height; y++) for (let x = 0; x + w <= map.width; x++) {
     let free = 0;
     for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) if (ok(x + dx, y + dy)) free++;
-    if (free < w * h * (yard ? 0.7 : 0.9)) continue;
-    const score = Math.hypot(x + w / 2 - cx, y + h / 2 - cy);
+    if (!yard && free < w * h * 0.9) continue;
+    const score = yard ? -free * 1000 + Math.hypot(x + w / 2 - cx, y + h / 2 - cy) : Math.hypot(x + w / 2 - cx, y + h / 2 - cy);
     if (!best || score < best.score) best = { x, y, score };
   }
   const fallback = { x: Math.max(0, Math.floor(cx - w / 2)), y: Math.max(0, Math.floor(cy - h / 2)) };

@@ -54,6 +54,8 @@ export interface StampOrder {
   repairing: boolean;
   lines: readonly string[];
   applied: number;
+  /** 칩셋에 그림이 없어 깔지 않은 물건 수 — 헤드라인이 「실패」가 아니라 「깔지 않음」으로 읽게 한다. */
+  refused: number;
   reported: boolean;
 }
 
@@ -215,7 +217,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     if (!signal.aborted && deps.projectKey() !== order.projectKey) controllers.get(order.id)?.abort();
   };
 
-  const finish = (order: StampOrder, status: StampOrderStatus, lines: readonly string[], applied: number): void => {
+  const finish = (order: StampOrder, status: StampOrderStatus, lines: readonly string[], applied: number, refused = 0): void => {
     controllers.delete(order.id);
     order.status = status;
     claims.get(order.id)?.();
@@ -225,6 +227,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     order.repairing = false;
     order.lines = lines;
     order.applied = applied;
+    order.refused = refused;
     trim();
     emit();
     pump();
@@ -262,7 +265,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
       (result) => {
         if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }
         const aborted = controller.signal.aborted;
-        finish(order, aborted && result.applied === 0 ? "aborted" : result.ok ? "done" : "failed", result.lines, result.applied);
+        finish(order, aborted && result.applied === 0 ? "aborted" : result.ok ? "done" : "failed", result.lines, result.applied, result.refused ?? 0);
       },
       (cause: unknown) => {
         if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }
@@ -334,6 +337,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
         repairing: false,
         lines: [],
         applied: 0,
+        refused: 0,
         reported: false,
       };
       list.push(order);

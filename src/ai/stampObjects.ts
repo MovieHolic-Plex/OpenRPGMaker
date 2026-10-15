@@ -170,6 +170,8 @@ function nameScore(query: string, entry: StampObjectEntry): number {
   // 한 글자 낱말(통·문)은 낱말이 정확히 같을 때만 — 「통로」「소통」에 걸리지 않게.
   if ([...q].length < 2) return 0;
   if (words.some((word) => word.startsWith(q))) return 2;
+  // 영어 동의어는 낱말 앞부분만(「door」가 「trapdoor」·「outdoor」에 걸려 뚜껑문이 문으로 깔리던 것).
+  if (/[a-z]/u.test(q)) return 0;
   if (entry.nameText.includes(q)) return 2;
   return 0;
 }

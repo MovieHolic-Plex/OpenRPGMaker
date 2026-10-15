@@ -44,6 +44,7 @@ import { fillableMaterialSuggestions, resolveMaterialByLabel, suggestMaterialsBy
 import { isPathSurfaceTile } from "@/editor/tools/placementTools";
 import { store } from "@/project/store";
 import { isPassableLanding } from "@/project/collision";
+import { isWallCell } from "@/editor/tools/v3/constructionTools";
 import type { GameMap, Project } from "@/project/types";
 
 /** 계획 호출 하나에 허용하는 벽시계(의도 선언과 같다). 수리 호출도 같은 값을 따로 쓴다. */
@@ -164,6 +165,7 @@ export function buildStampPlanFacts(
     objectSamples: sampleStampObjectNames(objects, 36),
     isOpenCell: (x, y) => isOpenObjectCell(project, map, x, y),
     hasArtAt: (x, y) => hasArtAt(map, x, y),
+    ...(tileset ? { isWallCell: (x: number, y: number) => isWallCell(map, tileset, x, y) } : {}),
     isTreeMaterial: (material) => {
       if (!tileset) return false;
       const resolved = resolveMaterialByLabel(tileset, material, { preferGroup: true, preferRoles: ["prop", "terrain"] });
@@ -408,7 +410,7 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
       await input.waitForApply();
       if (input.signal?.aborted) throw new StampAborted();
     }
-    const repairFacts = refreshFacts(deps, facts);
+    const repairFacts = { ...refreshFacts(deps, facts), repairRound: true };
     const parsed = parseStampPlan(repairRaw, repairFacts);
     const repairedSettled = resolveStampOverlaps(parsed.steps, repairFacts, landingCheck(deps, input.mapId));
     const repairedExpanded = expandStampObjects(repairedSettled.steps, repairFacts);
