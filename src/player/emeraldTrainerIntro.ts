@@ -4,13 +4,16 @@ import { resolveEventPage } from '@/project/io/pageResolution';
 import type { Project } from '@/project/types';
 import type { PlaySession } from '@/project/session';
 import type { BattleDirectorState } from '@/player/battleDirectorDom';
+import { TRAINER_DISPLAY_WIDTH, isTrainerPictureSize, trainerThrowFrames } from '@/player/trainerPictureSize';
 import '@/styles/runtime/emeraldTrainerIntro.css';
 
 const SHEETS = ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'] as const;
 const ROLES = ['hero', 'rival', 'professor', 'nurse', 'merchant', 'mother', 'resident', 'gym_leader',
   'company_agent', 'captain', 'worker', 'explorer', 'student', 'ranger', 'moon_leader', 'hiker'] as const;
-type TrainerPicture = { url: string; width: 64; height: 64 | 96 };
-/** 볼 던지기 가로 시트: 프레임 64×64 × N. */
+/** 인물 그림 원본 크기. 가로는 64(2배 표시) 또는 128(1배 표시) 두 가지이고, 세로는 가로와 같거나(정사각) 1.5배(옛 키 큰 그림)다.
+ *  width/height 0 = 번들 그림이라 마운트 때 그림 크기에서 정한다. 어느 쪽이든 화면 폭은 128px 로 같다(전투 필드 앵커·몬스터 밀도 유지). */
+type TrainerPicture = { url: string; width: number; height: number };
+/** 볼 던지기 가로 시트: 프레임 한 칸이 정사각(64 또는 128) × N. 화면에는 한 칸을 128×128 로 보여 준다. */
 type TrainerSheet = { url: string; frames: number };
 type TrainerIntroPair = { role: string; opponent: TrainerPicture; hero: TrainerPicture; opponentThrow?: TrainerSheet; heroThrow?: TrainerSheet };
 const THROW_FRAME_MS = 80;
@@ -31,21 +34,23 @@ const bundledTrainerUrl = (role: string, file: 'front' | 'back' | 'throw'): stri
 
 function trainerPicture(project: Project, id: string, bundledFile: 'front' | 'back' = 'front'): TrainerPicture | null {
   const asset = project.assets.uploaded[id];
-  if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, bundledFile), width: 64, height: 64 } : null;
-  // Emerald native trainer poses are 64×64. Keep explicitly authored older 64×96 portraits at their own aspect ratio.
-  if (asset.kind !== 'picture' || asset.meta.width !== 64 || (asset.meta.height !== 64 && asset.meta.height !== 96)) return null;
+  if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, bundledFile), width: 0, height: 0 } : null;
+  // 64×64 · 64×96 · 128×128 · 128×192 만 받는다. 크기마다 화면 폭이 128px 이 되도록 배율을 맞춘다.
+  const width = asset.meta.width ?? 0;
+  const height = asset.meta.height ?? 0;
+  if (asset.kind !== 'picture' || !isTrainerPictureSize(width, height)) return null;
   const url = resolveAssetResourceUrl(id, { project });
-  return url ? { url, width: 64, height: asset.meta.height } : null;
+  return url ? { url, width, height } : null;
 }
 
-/** frames 0 = 번들 그림이라 마운트 때 그림 폭(64 x N)에서 센다. */
+/** frames 0 = 번들 그림이라 마운트 때 그림 크기(정사각 칸 × N)에서 센다. */
 function trainerSheet(project: Project, id: string): TrainerSheet | undefined {
   const asset = project.assets.uploaded[id];
   if (!asset) return BUNDLED_ROLE.test(id) ? { url: bundledTrainerUrl(id, 'throw'), frames: 0 } : undefined;
-  if (asset.kind !== 'picture' || asset.meta.height !== 64 || (asset.meta.width ?? 0) % 64 !== 0) return undefined;
-  const frames = (asset.meta.width ?? 0) / 64;
+  if (asset.kind !== 'picture') return undefined;
+  const frames = trainerThrowFrames(asset.meta.width ?? 0, asset.meta.height ?? 0);
   const url = resolveAssetResourceUrl(id, { project });
-  return url && frames >= 2 && frames <= 8 ? { url, frames } : undefined;
+  return url && frames ? { url, frames } : undefined;
 }
 
 /** The live field page selects the outfit. Never infer a trainer from its name or use substitute art. */
@@ -118,13 +123,23 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
     const image = document.createElement('img');
     image.className = `emerald-trainer-intro-${side}`;
     image.alt = '';
-    image.width = picture.width * 2;
-    image.height = picture.height * 2;
-    image.dataset.portraitProfile = picture.height === 64 ? 'emerald-native' : 'legacy-tall';
-    image.style.setProperty('--trainer-portrait-height', `${image.height}px`);
+    // 번들 그림은 크기를 모르므로 불러온 뒤 정한다. 업로드 그림은 계약 크기로 미리 정한다.
+    const applySize = (width: number, height: number): void => {
+      const scale = TRAINER_DISPLAY_WIDTH / width;
+      image.width = width * scale;
+      image.height = height * scale;
+      image.dataset.portraitProfile = height === width ? (width === 64 ? 'emerald-native' : 'hires-square') : 'legacy-tall';
+      image.dataset.portraitScale = String(scale);
+      image.style.setProperty('--trainer-portrait-height', `${image.height}px`);
+    };
+    if (picture.width > 0) applySize(picture.width, picture.height);
+    else applySize(64, 64);
     image.onload = () => {
       if (destroyed) return;
-      if (image.naturalWidth !== picture.width || image.naturalHeight !== picture.height) failed = true;
+      if (picture.width > 0) {
+        if (image.naturalWidth !== picture.width || image.naturalHeight !== picture.height) failed = true;
+      } else if (isTrainerPictureSize(image.naturalWidth, image.naturalHeight)) applySize(image.naturalWidth, image.naturalHeight);
+      else failed = true;
       ready++;
       update();
     };
@@ -150,7 +165,9 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
         // 번들 시트: 없거나 규격이 아니면 던지는 동작 없이 정지 자세로 미끄러진다(오류로 막지 않는다).
         const probe = new Image();
         probe.onload = () => {
-          if (!destroyed && probe.naturalHeight === 64 && probe.naturalWidth % 64 === 0 && probe.naturalWidth / 64 >= 2 && probe.naturalWidth / 64 <= 8) configure(probe.naturalWidth / 64);
+          if (destroyed) return;
+          const count = trainerThrowFrames(probe.naturalWidth, probe.naturalHeight);
+          if (count) configure(count);
         };
         probe.src = sheet.url;
       }

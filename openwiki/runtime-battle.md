@@ -1867,6 +1867,15 @@ accepted metadata; unknown dimensions, metadata/decode mismatch and broken URLs
 retain the native battle fallback. The pair can mix the two supported profiles.
 There is no placeholder art, implicit resizing or custom-sheet inference.
 
+**Trainer picture sizes (2026-10-15 generalization).** `src/player/trainerPictureSize.ts` is the single contract shared by
+`emeraldTrainerIntro` and the export collector (`webExportAssets`): widths 64 or 128, height equal to width or 1.5x
+(64x64, 64x96, 128x128, 128x192). The on-screen width is always 128px, so the display scale is `128 / width`
+(64 wide at 2x, 128 wide at 1x; exposed as `data-portrait-scale`, profile `hires-square` for 128x128). Field anchors,
+the 240px battle field and the platform positions are unchanged, so existing 64x64 / 64x96 pictures render exactly as
+before. Throw sheets: each frame is square (64 or 128), 2-8 frames, always shown as one 128x128 box. Bundled
+(`/assets/battle-trainers/<role>/...`) pictures are sized after decode instead of assuming 64x64.
+`scripts/qa/runtime/emerald-trainer-dimensions.mjs` covers the new sizes and throw sheets.
+
 The separate `emeraldTrainerIntro.css` renders native64×64 portraits at128×128 and
 legacy64×96 portraits at128×192, exact integer2× in both dimensions with
 `object-fit:contain`. Width/height attributes and CSS height agree with each
