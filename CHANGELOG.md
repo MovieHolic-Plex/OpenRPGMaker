@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.226.0 — 2026-10-15
+
+### 기능
+
+- **battle** — FF6식 팀 교대 전투 — 한 번에 한 팀만 싸운다 (battleTeams · teamSwapCost) (#2613) (`921d948`)
+- **battle** — FF6 battle effects - zombie, sketch, rage, trance, enemy shuffle/forced switch (#2600) (`d814dd1`)
+- **monster-art** — bake follower walk chips for gustchick and zaptoe (supervisor picks) (#2617) (`7b0f2b7`)
+
+### 수정
+
+- **ci** — keep harness follower chips out of the sealed walking catalog (`71571ea`)
+
 ## 0.225.0 — 2026-10-15
 
 ### 기능
