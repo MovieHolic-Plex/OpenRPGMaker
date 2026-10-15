@@ -69,6 +69,7 @@ await page.addInitScript(() => {
   const start = () => { new MutationObserver(sample).observe(document.documentElement, { subtree: true, childList: true, attributes: true, characterData: true }); setInterval(sample, 50); };
   if (document.documentElement) start(); else document.addEventListener("DOMContentLoaded", start);
 });
+if (process.env.FONTVAR) await page.addInitScript((f) => { const st = document.createElement('style'); st.textContent = `.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"]{--runtime-pixel-font:${f} !important}`; document.documentElement.appendChild(st); }, process.env.FONTVAR);
 if (process.env.FONT) {
   // 비교용: 번들에서 빠진 픽셀 글꼴(Galmuri9)을 이름 그대로 주입해 같은 전투를 다시 찍는다. 저장소에는 커밋하지 않는다.
   const fontBytes = await readFile(resolve(process.env.FONT));
