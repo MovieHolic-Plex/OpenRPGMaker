@@ -31,23 +31,23 @@ try{
     const check=(name,pass,details)=>{checks.push({name,pass:!!pass,details});if(!pass)throw Error(name+': '+JSON.stringify(details))};
     const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
     const png=(width,height)=>{const c=document.createElement('canvas');c.width=width;c.height=height;const x=c.getContext('2d');x.fillStyle='#265478';x.fillRect(0,0,width,height);x.fillStyle='#f0b830';x.fillRect(0,0,8,8);x.fillRect(width-8,height-8,8,8);return c.toDataURL()};
-    const picture=(height)=>({kind:'picture',meta:{width:64,height},dataUrl:png(64,height)});
+    const picture=(height,width=64)=>({kind:'picture',meta:{width,height},dataUrl:png(width,height)});
     const session={currentMapId:'field',switches:{},variables:{},selfSwitches:{}};
     const snapshot={troopId:'mx_troop_rival',eventState:{switches:{},variables:{},selfSwitches:{}}};
-    const project=(opponentHeight,heroHeight)=>({database:{troops:[{id:snapshot.troopId,trainerBattle:true}]},maps:{field:{events:[{id:'rival',pages:[{conditions:[],graphic:{sprite:{type:'uploaded',id:'oprn_emerald_field_cast_1'},pattern:3}}]}]}},assets:{uploaded:{oprn_emerald_trainer_rival:picture(opponentHeight),oprn_emerald_trainer_hero_back:picture(heroHeight)}}});
+    const project=(opponentHeight,heroHeight,width=64,heroWidth=width)=>({database:{troops:[{id:snapshot.troopId,trainerBattle:true}]},maps:{field:{events:[{id:'rival',pages:[{conditions:[],graphic:{sprite:{type:'uploaded',id:'oprn_emerald_field_cast_1'},pattern:3}}]}]}},assets:{uploaded:{oprn_emerald_trainer_rival:picture(opponentHeight,width),oprn_emerald_trainer_hero_back:picture(heroHeight,heroWidth)}}});
     const mounted=(project,label)=>{
       const root=document.createElement('div');root.className='battle-scene';root.dataset.monsterStyle='emerald';root.dataset.case=label;
       const battler=document.createElement('div');battler.className='battle-actor-group';root.append(battler);document.querySelector('#host').append(root);
       const controller=mountEmeraldTrainerIntro(root,project,session,snapshot);controller.sync({step:'intro',trainerIntroduction:true});return {root,battler,controller};
     };
-    for(const [label,opponentHeight,heroHeight] of [['native',64,64],['legacy',96,96],['mixed',64,96]]){
-      const p=project(opponentHeight,heroHeight),pair=resolveEmeraldTrainerIntro(p,session,snapshot);
+    for(const [label,opponentHeight,heroHeight,width,heroWidth] of [['native',64,64,64,64],['legacy',96,96,64,64],['mixed',64,96,64,64],['hires',128,128,128,128],['hires-tall',192,192,128,128],['hires-hero-native-foe',64,128,64,128]]){
+      const p=project(opponentHeight,heroHeight,width,heroWidth),pair=resolveEmeraldTrainerIntro(p,session,snapshot);
       check(label+' metadata resolves correct profile',pair?.role==='rival'&&pair.opponent.height===opponentHeight&&pair.hero.height===heroHeight);
       const m=mounted(p,label);
       for(let i=0;i<40&&!m.root.dataset.emeraldTrainerIntro;i++)await wait(10);
       const dimensions=[...m.root.querySelectorAll('img')].map(image=>{const style=getComputedStyle(image),rect=image.getBoundingClientRect(),root=m.root.getBoundingClientRect();return {side:image.className,profile:image.dataset.portraitProfile,width:image.width,height:image.height,naturalWidth:image.naturalWidth,naturalHeight:image.naturalHeight,cssWidth:parseFloat(style.width),cssHeight:parseFloat(style.height),objectFit:style.objectFit,bottom:rect.bottom-root.top}});
-      check(label+' decoded pictures render at uniform integer2x',dimensions.length===2&&dimensions.every(image=>image.width===image.naturalWidth*2&&image.height===image.naturalHeight*2&&image.cssWidth===image.width&&image.cssHeight===image.height&&image.objectFit==='contain'),dimensions);
-      check(label+' preserves battle baseline and hides monsters only when ready',m.root.dataset.emeraldTrainerIntro==='true'&&getComputedStyle(m.battler).visibility==='hidden'&&dimensions[0].bottom===240&&dimensions[1].bottom===210,dimensions);
+      check(label+' decoded pictures render at 128px display width (64 wide 2x, 128 wide 1x)',dimensions.length===2&&dimensions.every(image=>image.width===128&&image.width*image.naturalHeight===image.height*image.naturalWidth&&image.cssWidth===image.width&&image.cssHeight===image.height&&image.objectFit==='contain'),dimensions);
+      check(label+' preserves battle baseline and hides monsters only when ready',m.root.dataset.emeraldTrainerIntro==='intro'&&getComputedStyle(m.battler).visibility==='hidden'&&dimensions[0].bottom===240&&dimensions[1].bottom===210,dimensions);
       m.controller.sync({step:'intro'});
       check(label+' send-out retains original native battlers',!m.root.dataset.emeraldTrainerIntro&&m.root.querySelector('.emerald-trainer-intro').hidden&&getComputedStyle(m.battler).visibility==='visible');
       m.controller.sync({step:'intro',trainerIntroduction:true});cases.push({label,dimensions});
@@ -60,6 +60,17 @@ try{
     for(const [label,change] of invalidChanges){
       const p=project(64,64);change(p.assets.uploaded.oprn_emerald_trainer_rival,p);const m=mounted(p,label);await wait(100);
       check(label+' retains native battle fallback',!m.root.dataset.emeraldTrainerIntro&&getComputedStyle(m.battler).visibility==='visible'&&(!m.root.querySelector('.emerald-trainer-intro')||m.root.querySelector('.emerald-trainer-intro').hidden));
+      m.controller.destroy();m.root.remove();
+    }
+    // 던지기 시트: 칸 64 또는 128(정사각), 2~8칸. 화면에는 항상 한 칸 128x128.
+    for(const [label,w,h,valid] of [['throw64x4',256,64,true],['throw128x3',384,128,true],['throw128x1',128,128,false],['throw64x9',576,64,false],['throw-nonsquare',300,128,false]]){
+      const p=project(128,128,128);p.assets.uploaded.oprn_emerald_trainer_rival_throw=picture(h,w);
+      const m=mounted(p,label);for(let i=0;i<40&&!m.root.dataset.emeraldTrainerIntro;i++)await wait(10);
+      m.controller.sync({step:'intro',trainerSendOut:'foe'});await wait(60);
+      const node=m.root.querySelector('.emerald-trainer-throw-opponent'),box=node?.getBoundingClientRect();
+      const frames=node?.style.getPropertyValue('--throw-frames')??'';
+      check(label+(valid?' accepted at '+w/h+' frames':' rejected, falls back to still pose'),valid?(frames===String(w/h)&&m.root.querySelector('.emerald-trainer-intro').dataset.opponentThrow==='true'):(!frames&&!m.root.querySelector('.emerald-trainer-intro').dataset.opponentThrow));
+      if(valid)check(label+' frame box 128x128',box.width===128&&box.height===128,{width:box.width,height:box.height});
       m.controller.destroy();m.root.remove();
     }
     const late=mounted(project(64,64),'late-destroy');late.controller.destroy();late.controller.destroy();await wait(100);

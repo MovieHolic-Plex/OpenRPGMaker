@@ -869,9 +869,9 @@ export interface BattleEventPageRecord {
 }
 
 /** 트레이너 전투 인물 그림 계약(에메랄드 전투 소개·볼 던지기). 값은 모두 업로드 그림(`assets.uploaded`) id 다.
- *  - front: 상대 정면 64x64(또는 64x96 옛 세로 초상) 그림 한 장.
- *  - back: 내 뒷모습 64x64 한 장. 생략하면 `oprn_emerald_trainer_hero_back`.
- *  - throw / backThrow: 볼 던지기 프레임을 가로로 이은 시트. 프레임 64x64, 폭 = 64 x N(2~8), 높이 64. 왼쪽부터 재생하고
+ *  - front: 상대 정면 한 장. 64x64·64x96(옛 세로 초상)·128x128·128x192 중 하나(화면 폭은 모두 128px: 64 폭 2배, 128 폭 1배).
+ *  - back: 내 뒷모습 한 장(64x64·64x96·128x128·128x192 중 하나). 생략하면 `oprn_emerald_trainer_hero_back`.
+ *  - throw / backThrow: 볼 던지기 프레임을 가로로 이은 시트. 프레임은 정사각 64 또는 128, 폭 = 프레임 x N(2~8), 높이 = 프레임(64 또는 128). 화면에는 한 칸을 128x128 로 보인다. 왼쪽부터 재생하고
  *    마지막 프레임이 볼을 놓는 순간이다. 생략하면 던지는 동작 없이 정지 자세로 미끄러져 나간다. */
 export interface TroopTrainerSprite {
   front: string;

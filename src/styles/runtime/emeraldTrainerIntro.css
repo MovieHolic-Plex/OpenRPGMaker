@@ -1,4 +1,4 @@
-/* Native64×64 poses at2×; explicit legacy64×96 portraits retain their own height. */
+/* 인물 그림은 화면 폭 128px 로 보인다: 64 폭은 2배, 128 폭은 1배(캔버스가 커도 필드 앵커·몬스터와의 밀도는 그대로). 옛 64×96 은 자기 비율을 유지한다. */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro {
   position: absolute;
   inset: 0 0 auto;
