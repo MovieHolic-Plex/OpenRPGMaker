@@ -91,7 +91,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
                     class: "db-overview-icon-chips",
                     attrs: { "aria-label": "프로젝트 개요 범위" },
                     children: [
-                      overviewIconChip("세계", "tilesets"),
+                      overviewIconChip("맵", "tilesets"),
                       overviewIconChip("이야기", "commonEvents"),
                       overviewIconChip("주민 관계", "characters"),
                       overviewIconChip("시스템", "system"),
@@ -187,9 +187,9 @@ function renderCodexCard(project: ReturnType<typeof store.getCurrent>, host: HTM
     on: { click: () => jumpToTab(host, "worldCodex") },
     children: [
       el("span", { text: "설정집" }),
-      el("strong", { text: count > 0 ? `낱장 카드 ${count}장` : "낱장 카드를 적어 보세요" }),
+      el("strong", { text: count > 0 ? `설정집 문서 ${count}개` : "설정집 문서를 적어 보세요" }),
       el("p", {
-        text: "인물·장소·사건 낱장 카드 — 이름과 요약 한 줄은 「이 세계」가 함께 읽는다",
+        text: "인물·장소·사건 문서 — AI가 읽는 범위는 설정집 속성에서 확인한다",
       }),
     ],
   });

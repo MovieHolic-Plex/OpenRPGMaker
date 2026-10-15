@@ -5,6 +5,7 @@ import type { OriginalContext } from "./originalContext";
 import { extractOriginalContext, originalContextWindow } from "./originalContext";
 import { estimateAdmissionTokens } from "./contextCompaction";
 import { totalMessagesCharLength } from "./messageBudget";
+import { aiVisibleWorld } from "@/project/world/visibility";
 export { requiresVisualReview } from "./mapVisualEvidence";
 
 export interface ReviewFinding {
@@ -60,9 +61,10 @@ export type ReviewEvidenceFit = "complete" | "packed-grids" | "shared-reference-
 // (project/types/project.ts and startStateOf). Review it exactly like other authored
 // values. Only asset transport is omitted explicitly; no runtime session is read.
 export function reviewChanges(before: Project, after: Project): ReviewInput["changes"] {
-  const left = before as unknown as Record<string, unknown>;
-  const right = after as unknown as Record<string, unknown>;
-  return [...new Set([...Object.keys(left), ...Object.keys(right)])].sort().flatMap(key => {
+  // world 는 검수 모델에 가는 변경 목록이다 — AI 비공개 카드와 그 관계는 양쪽에서 뺀다(visibility.ts).
+  const left = { ...before, world: aiVisibleWorld(before.world) } as unknown as Record<string, unknown>;
+  const right = { ...after, world: aiVisibleWorld(after.world) } as unknown as Record<string, unknown>;
+  return [...new Set([...Object.keys(before), ...Object.keys(after)])].sort().flatMap(key => {
     if (JSON.stringify(left[key]) === JSON.stringify(right[key])) return [];
     if (key === "maps") {
       return [...new Set([...Object.keys(before.maps), ...Object.keys(after.maps)])].flatMap(id => {

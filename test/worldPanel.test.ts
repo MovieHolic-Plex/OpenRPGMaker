@@ -278,16 +278,18 @@ describe("worldPanel", () => {
     requireTestId(panel, "world-card-w_broken").click();
 
     const list = requireTestId(requireTestId(panel, "world-wiki-view"), "world-lint-list");
-    expect(list.textContent).toContain("설정집 w_broken");
+    // 날 id(w_broken)는 사용자에게 보이지 않고 이름만 보인다.
+    expect(list.textContent).toContain("설정집 사라진 인물");
+    expect(list.textContent).not.toContain("w_broken");
     expect(list.textContent).toContain("actor:actor_missing");
   });
 
-  it("maps unlinked lore warnings to the card badge", () => {
+  it("does not badge every unlinked document — 연결 안 됨은 권고라 문서·목록에서 뺀다", () => {
     store.replace(worldProject([entity({ id: "w_unlinked", type: "place", name: "안개숲", refs: [] })]));
 
     const panel = renderPanel();
 
-    expect(requireTestId(panel, "world-lint-badge-w_unlinked").dataset.severity).toBe("warning");
+    expect(findByTestId(panel, "world-lint-badge-w_unlinked")).toBeNull();
   });
 
   it("saves direct edits through normalized project world", () => {

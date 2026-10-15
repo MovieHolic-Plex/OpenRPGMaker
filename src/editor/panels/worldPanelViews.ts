@@ -4,6 +4,8 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderMarkdown } from "@/util/markdown";
+import { isAiHiddenEntity } from "@/project/world/visibility";
+import { worldDocumentAiState, type WorldDocumentAiState } from "@/ai/worldAiReach";
 import { renderEntityMedia } from "./worldMediaRenderer";
 import {
   type WorldLintSummary,
@@ -18,6 +20,7 @@ import {
   highestSeverity,
   isWorldEntityType,
   labelWithControl,
+  lintMessageForDisplay,
   option,
   ORIGIN_LABELS,
   RELATION_KIND_LABELS,
@@ -29,11 +32,14 @@ import {
   startNewDraft,
   TABS,
   toggleEntityLock,
+  toggleEntityVisibility,
   visibleEntities,
+  worldPropertiesOpen,
 } from "./worldManager";
 import { renderRefEditor, renderRefJumps } from "./worldRefEditor";
 import { renderRelationEditor } from "./worldRelationEditor";
 import { worldDocumentProperties } from "./worldDocumentProperties";
+import { renderWorldAiReachPanel } from "./worldAiReachPanel";
 
 export function renderHeader(state: WorldPanelState, refresh: () => void, options: WorldPanelOptions): HTMLElement {
   const search = el("input", {
@@ -50,7 +56,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
 
   const addType = el("select", {
     class: "world-add-type",
-    attrs: { "aria-label": "추가할 카드 종류" },
+    attrs: { "aria-label": "추가할 문서 종류" },
     dataset: { testid: "world-add-type" },
   }) as HTMLSelectElement;
   for (const type of WORLD_ENTITY_TYPES) addType.append(option(type, ENTITY_TYPE_LABELS[type], type === state.addType));
@@ -71,7 +77,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
     addType,
     el("button", {
       class: "btn small primary world-add-button",
-      text: "+ 새 항목",
+      text: "+ 새 문서",
       attrs: { type: "button" },
       dataset: { testid: "world-add-entity" },
       on: {
@@ -137,7 +143,7 @@ export function renderMain(
       renderTabs(state, refresh),
       el("span", {
         class: "world-result-count",
-        text: `${visibleEntities(world.entities, state.tab, state.search).length}개 항목`,
+        text: `${visibleEntities(world.entities, state.tab, state.search).length}개 문서`,
         attrs: { role: "status" },
         dataset: { testid: "world-result-count" },
       }),
@@ -192,7 +198,7 @@ function renderCardGrid(
   const entities = visibleEntities(world.entities, state.tab, state.search);
   if (entities.length === 0) {
     return el("div", { class: "world-card-grid empty", children: [
-      el("p", { text: state.search ? "검색 결과가 없습니다." : "아직 등록한 항목이 없습니다." }),
+      el("p", { text: state.search ? "검색 결과가 없습니다." : "아직 등록한 문서가 없습니다." }),
       el("button", {
         class: "btn small",
         text: state.search ? "검색 초기화" : `${ENTITY_TYPE_LABELS[state.addType]} 추가`,
@@ -278,6 +284,12 @@ function renderWorldCard(
             class: "world-card-title-row",
             children: [
               el("strong", { class: "world-card-title", text: entity.name || "(이름 없음)" }),
+              ...(isAiHiddenEntity(entity) ? [el("span", {
+                class: "world-ai-hidden-badge",
+                text: "AI 숨김",
+                attrs: { title: "이 문서는 조수·NPC 대사 작성기 등 AI에게 보내지 않습니다" },
+                dataset: { testid: `world-ai-hidden-badge-${entity.id}` },
+              })] : []),
               lock,
             ],
           }),
@@ -311,7 +323,8 @@ function renderWikiPane(
       dataset: { testid: "world-wiki-view" },
       children: [
         el("h3", { text: hasDocuments ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
-        el("p", { text: hasDocuments ? "목록에서 항목을 열거나 새 항목을 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
+        el("p", { text: hasDocuments ? "목록에서 문서를 열거나 새 문서를 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
+        aiReachPanel(state),
       ],
     });
   }
@@ -335,6 +348,24 @@ function renderWikiPane(
           el("div", {
             class: "world-wiki-actions",
             children: [
+              el("button", {
+                class: `world-visibility-button${isAiHiddenEntity(entity) ? " hidden" : ""}`,
+                text: isAiHiddenEntity(entity) ? "AI 숨김" : "AI 공개",
+                attrs: {
+                  type: "button",
+                  "aria-pressed": String(isAiHiddenEntity(entity)),
+                  title: isAiHiddenEntity(entity)
+                    ? "이 문서는 AI에게 보내지 않습니다. 누르면 다시 공개합니다"
+                    : "이 문서는 AI가 읽을 수 있습니다. 누르면 AI에게 숨깁니다",
+                },
+                dataset: { testid: "world-visibility-toggle", entityId: entity.id },
+                on: {
+                  click: () => {
+                    toggleEntityVisibility(entity.id);
+                    refresh();
+                  },
+                },
+              }),
               el("button", {
                 class: `world-lock-button${entity.locked ? " locked" : ""}`,
                 text: entity.locked ? "잠김" : "열림",
@@ -367,7 +398,7 @@ function renderWikiPane(
                 dataset: { testid: "world-delete-entity" },
                 on: { click: () => {
                   const count = relationsForEntity(currentWorld(store.getCurrent()), entity.id).length;
-                  if (!globalThis.confirm(`「${entity.name}」 카드를 삭제할까요? 관계 ${count}개도 제거됩니다. 연결된 게임 항목은 유지되며 실행 취소로 복원할 수 있습니다.`)) return;
+                  if (!globalThis.confirm(`「${entity.name}」 문서를 삭제할까요? 관계 ${count}개도 제거됩니다. 연결된 게임 항목은 유지되며 실행 취소로 복원할 수 있습니다.`)) return;
                   if (deleteWorldEntity(entity.id)) { state.selectedId = null; refresh(); }
                 } },
               }),
@@ -384,19 +415,29 @@ function renderWikiPane(
             renderMarkdownBody(entity.body ?? ""),
           ] }),
           worldDocumentProperties([
+            aiReachPanel(state),
             renderTagList(entity.tags ?? []),
             renderRelationChips(relations, world, entity.id, state, refresh),
             renderRefJumps(entity.refs ?? [], project),
-            wikiRetrievalHint(),
-          ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
+            wikiRetrievalHint(worldDocumentAiState(entity)),
+          ], worldPropertiesOpen(state), (open) => { state.propertiesOpen = open; }),
         ],
       }),
     ],
   });
 }
 
-function wikiRetrievalHint(): HTMLElement {
-  return el("p", { class: "world-muted", text: "제작 조수는 현재 요청과 관련된 위키 문서만 제한된 분량으로 참고합니다. 본문·연결·출처가 포함될 수 있으며, 대체된 지침은 현재 지침으로 사용하지 않습니다." });
+function aiReachPanel(state: WorldPanelState): HTMLElement {
+  return renderWorldAiReachPanel({ open: state.aiReachOpen, onToggle: (open) => { state.aiReachOpen = open; }, probe: state.aiProbe });
+}
+
+function wikiRetrievalHint(state: WorldDocumentAiState): HTMLElement {
+  const text = state === "hidden"
+    ? "이 문서는 AI에게 숨겨져 있습니다. 조수·NPC 대사 작성기·설정 기록기 어디에도 보내지 않습니다."
+    : state === "blank"
+      ? "요약과 본문이 비어 있어 AI에게 보낼 내용이 없습니다."
+      : "제작 조수는 현재 요청과 관련된 위키 문서만 제한된 분량으로 참고합니다. 본문·연결·출처가 포함될 수 있으며, 대체된 지침은 현재 지침으로 사용하지 않습니다.";
+  return el("p", { class: "world-muted", dataset: { testid: "world-ai-state-hint", aiState: state }, text });
 }
 
 function renderWikiProvenance(entity: WorldEntity, world: ProjectWorld): HTMLElement[] {
@@ -476,6 +517,16 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
     attrs: { type: "checkbox", "aria-label": "잠금" },
   }) as HTMLInputElement;
   lockedInput.checked = draft.locked;
+  const visibilitySelect = el("select", {
+    class: "world-edit-input",
+    attrs: { "aria-label": "공개 범위" },
+    dataset: { testid: "world-edit-visibility" },
+  }) as HTMLSelectElement;
+  visibilitySelect.append(
+    option("public", "공개 — AI가 읽을 수 있음", draft.visibility === "public"),
+    option("ai-hidden", "비밀 — AI에게 보내지 않음", draft.visibility === "ai-hidden"),
+  );
+  visibilitySelect.value = draft.visibility;
 
   const syncDraft = (): void => {
     draft.name = nameInput.value;
@@ -484,9 +535,10 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
     draft.body = bodyInput.value;
     if (isWorldEntityType(typeSelect.value)) draft.type = typeSelect.value;
     draft.locked = lockedInput.checked;
+    draft.visibility = visibilitySelect.value === "ai-hidden" ? "ai-hidden" : "public";
     state.onDraftChange?.();
   };
-  for (const control of [nameInput, summaryInput, tagsInput, bodyInput, typeSelect, lockedInput]) {
+  for (const control of [nameInput, summaryInput, tagsInput, bodyInput, typeSelect, lockedInput, visibilitySelect]) {
     control.addEventListener("input", syncDraft);
     control.addEventListener("change", syncDraft);
   }
@@ -560,13 +612,15 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
             })] : []),
           ] }),
           worldDocumentProperties([
+            aiReachPanel(state),
             field("종류", typeSelect),
             field("태그", tagsInput),
+            field("공개 범위", visibilitySelect),
             labelWithControl("편집 잠금", lockedInput),
             renderRefEditor(draft, project, syncDraft, refresh),
             renderRelationEditor(draft, world, syncDraft, refresh),
-            wikiRetrievalHint(),
-          ], state.propertiesOpen, (open) => { state.propertiesOpen = open; }),
+            wikiRetrievalHint(draft.visibility === "ai-hidden" ? "hidden" : "reads"),
+          ], worldPropertiesOpen(state), (open) => { state.propertiesOpen = open; }),
         ],
       }),
     ],
@@ -577,7 +631,7 @@ function renderIssueList(entityIssues: readonly LintIssue[], globalIssues: reado
   const items = (issues: readonly LintIssue[]): HTMLElement => el("ul", {
     children: issues.map((issue) => el("li", {
       class: `world-lint-item ${issue.severity}`,
-      text: `${SEVERITY_LABELS[issue.severity]} · ${issue.message}`,
+      text: `${SEVERITY_LABELS[issue.severity]} · ${lintMessageForDisplay(issue.message)}`,
       dataset: { severity: issue.severity },
     })),
   });
@@ -585,7 +639,7 @@ function renderIssueList(entityIssues: readonly LintIssue[], globalIssues: reado
     class: `world-lint-list${entityIssues.length + globalIssues.length === 0 ? " empty" : ""}`,
     dataset: { testid: "world-lint-list" },
     children: [
-      ...(entityIssues.length ? [el("strong", { text: "이 카드 검사" }), items(entityIssues)] : []),
+      ...(entityIssues.length ? [el("strong", { text: "이 문서 검사" }), items(entityIssues)] : []),
       ...(globalIssues.length ? [el("details", {
         dataset: { testid: "world-global-lint" },
         children: [el("summary", { text: `전체 프로젝트 확인 사항 ${globalIssues.length}개` }), items(globalIssues)],

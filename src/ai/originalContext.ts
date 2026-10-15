@@ -1,6 +1,7 @@
 import { getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import type { Project } from "@/project/types";
+import { aiVisibleWorld } from "@/project/world/visibility";
 import { startStateOf } from "@/project/session";
 import type { IntentDeclaration, IntentSelectionFact } from "./intentDeclaration";
 import type { ChatMessage, OpenAiToolSchema } from "./llmClient";
@@ -193,7 +194,8 @@ export function extractOriginalContext(project: Project, options: OriginalContex
   const broadDatabase = domains.has("database") || domains.has("battle") || domains.has("system") || Boolean(intent?.adventure);
   const broadWorld = domains.has("world") || domains.has("quest") || Boolean(intent?.adventure);
   if (broadWorld) {
-    add("/world", project.world);
+    // 모델에 가는 읽기 근거 — AI 비공개 카드와 그 관계는 뺀다(visibility.ts).
+    add("/world", aiVisibleWorld(project.world));
     add("/worldGraph", project.worldGraph);
     add("/quests", project.quests);
     add("/endings", project.endings);

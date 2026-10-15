@@ -1158,3 +1158,62 @@
   font-weight: 700;
 }
 
+
+/* 「AI가 읽는 것」 패널 · 문서별 AI 공개 범위 (2026-10-16 세계관 통합 1단계). 토큰은 --db-studio-* 만 쓴다. */
+.world-document-workspace .world-ai-reach {
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  background: var(--db-studio-inset);
+  font: 400 12px/1.5 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-ai-reach > summary {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  cursor: pointer;
+  list-style: none;
+}
+.world-document-workspace .world-ai-reach > summary strong { font: 600 13px/1.5 var(--font-ui); color: var(--db-studio-text-1); }
+.world-document-workspace .world-ai-reach-summary { display: flex; flex-wrap: wrap; gap: 4px 8px; }
+.world-document-workspace .world-ai-reach-chip {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+  font: 500 11px/1.6 var(--font-ui);
+}
+.world-document-workspace .world-ai-reach-body { display: grid; gap: 10px; padding: 0 12px 12px; }
+.world-document-workspace .world-ai-reach-rows { display: grid; gap: 8px; margin: 0; }
+.world-document-workspace .world-ai-reach-row { display: grid; gap: 2px; }
+.world-document-workspace .world-ai-reach-row dt { font: 600 12px/1.5 var(--font-ui); color: var(--db-studio-text-1); }
+.world-document-workspace .world-ai-reach-row dd { margin: 0; display: grid; gap: 2px; }
+.world-document-workspace .world-ai-reach-row small { color: var(--db-studio-text-2); }
+.world-document-workspace .world-ai-reach-list { margin: 0; }
+.world-document-workspace .world-ai-reach-list.hidden { color: var(--db-studio-text-1); }
+.world-document-workspace .world-ai-reach-names { color: var(--db-studio-text-1); }
+.world-document-workspace .world-visibility-button {
+  flex: 0 0 auto;
+  min-width: 36px;
+  min-height: 26px;
+  padding: 2px 8px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-2);
+  font: 500 12px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-visibility-button.hidden {
+  border-color: var(--db-studio-accent);
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+.world-document-workspace .world-ai-hidden-badge {
+  flex: 0 0 auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-accent);
+  color: var(--db-studio-accent);
+  font: 500 11px/1.6 var(--font-ui);
+  white-space: nowrap;
+}

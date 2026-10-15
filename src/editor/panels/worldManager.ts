@@ -23,6 +23,7 @@ import {
   type WorldRefKind,
   type WorldRelation,
   type WorldRelationKind,
+  type WorldVisibility,
 } from "@/project/world/types";
 import type { LintIssue, LintSeverity } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
@@ -51,21 +52,35 @@ export type WorldPanelState = {
   editError: string;
   documentOpen: boolean;
   gallery: boolean;
-  propertiesOpen: boolean;
+  /** undefined = 아직 사용자가 정하지 않음 → 넓은 화면에서는 펼친다(`worldPropertiesOpen`). */
+  propertiesOpen: boolean | undefined;
+  /** 「AI가 읽는 것」 패널 펼침(기본 펼침). */
+  aiReachOpen: boolean;
+  /** 「AI가 읽는 것」 질문 시험 입력 — 리렌더 너머로 유지한다. */
+  aiProbe: { query: string };
   onDraftChange?: () => void;
 };
+
+/** 이 폭 이상의 화면에서는 속성(AI 공개·AI가 읽는 것·연결)을 기본으로 펼친다. */
+export const WORLD_PROPERTIES_AUTO_OPEN_MIN_VIEWPORT = 1366;
+
+export function worldPropertiesOpen(state: Pick<WorldPanelState, "propertiesOpen">): boolean {
+  if (state.propertiesOpen !== undefined) return state.propertiesOpen;
+  return typeof window !== "undefined" && window.innerWidth >= WORLD_PROPERTIES_AUTO_OPEN_MIN_VIEWPORT;
+}
 
 export function createWorldPanelState(options: WorldPanelOptions = {}): WorldPanelState {
   return { tab: options.initialTab ?? "overview", search: "", selectedId: options.initialEntityId ?? null,
     addType: "character", editDraft: null, editError: "",
-    documentOpen: Boolean(options.initialEntityId), gallery: false, propertiesOpen: false };
+    documentOpen: Boolean(options.initialEntityId), gallery: false, propertiesOpen: undefined,
+    aiReachOpen: true, aiProbe: { query: "" } };
 }
 
 export function hasWorldDraftChanges(state: WorldPanelState): boolean {
   const draft = state.editDraft;
   if (!draft) return false;
   if (draft.isNew) return Boolean(draft.name.trim() || draft.summary.trim() || draft.body.trim() || draft.tagsText.trim() || draft.refs.length
-    || draft.locked || draft.type !== "character" || draft.relations.some((relation) => relation.a === draft.id || relation.b === draft.id));
+    || draft.locked || draft.visibility !== "public" || draft.type !== "character" || draft.relations.some((relation) => relation.a === draft.id || relation.b === draft.id));
   const world = store.getCurrent().world;
   const stored = world?.entities.find((entity) => entity.id === draft.id);
   return !stored || JSON.stringify(draftFromEntity(stored, world?.relations ?? [])) !== JSON.stringify(draft);
@@ -89,6 +104,8 @@ export type WorldEditDraft = {
   refs: WorldRef[];
   origin: WorldOrigin;
   locked: boolean;
+  /** AI 공개 범위. `ai-hidden` 이면 모델에 가는 어떤 경로에도 실리지 않는다. */
+  visibility: WorldVisibility;
   relations: WorldRelation[];
   isNew: boolean;
   /** Snapshot of the document opened by this editor, not a project-wide revision. */
@@ -228,7 +245,7 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
       return;
     }
     if (stored?.locked === true && draft.locked) {
-      state.editError = "잠긴 카드는 잠금을 푼 뒤에 편집할 수 있습니다.";
+      state.editError = "잠긴 문서는 잠금을 푼 뒤에 편집할 수 있습니다.";
       return;
     }
   }
@@ -239,18 +256,19 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
   const textChanged = stored && (draft.name.trim() !== stored.name || draft.summary.trim() !== stored.summary || draft.body !== (stored.body ?? ""));
   const manualSource = wiki ? {
     id: genId("manual"), kind: "manual" as const, at: Date.now(),
-    text: [manualNote ? `수동 편집 메모 · 원본 ${draft.id}` : "수동 편집", draft.name.trim() || "새 카드", draft.summary.trim(), draft.body].filter(Boolean).join("\n\n"),
+    text: [manualNote ? `수동 편집 메모 · 원본 ${draft.id}` : "수동 편집", draft.name.trim() || "새 문서", draft.summary.trim(), draft.body].filter(Boolean).join("\n\n"),
   } : undefined;
   const entity: WorldEntity = {
     id: manualNote ? nextWorldId(world) : normalizeWorldEntityId(draft.id),
     type: draft.type,
-    name: draft.name.trim() || "새 카드",
+    name: draft.name.trim() || "새 문서",
     summary: draft.summary.trim(),
     ...(draft.body.trim() ? { body: draft.body } : {}),
     ...(parseTags(draft.tagsText).length > 0 ? { tags: parseTags(draft.tagsText) } : {}),
     ...(draft.refs.length > 0 ? { refs: [...draft.refs] } : {}),
     origin: manualNote ? "user" : draft.origin,
     ...(draft.locked ? { locked: true } : {}),
+    ...(draft.visibility === "ai-hidden" ? { visibility: draft.visibility } : {}),
     ...(wiki && manualSource ? { wiki: manualNote ? {
       kind: "knowledge", basis: "explicit", sources: [manualSource],
       ...(wiki.topic ? { topic: wiki.topic } : {}),
@@ -273,7 +291,7 @@ export function saveDraft(state: WorldPanelState, _world: ProjectWorld): void {
     recordProjectSnapshot(draft.isNew ? "세계관 추가" : "세계관 편집");
     store.update((project) => {
       project.world = normalized;
-    }, { scope: "project", label: draft.isNew ? "설정집 카드 추가" : "설정집 카드 편집" });
+    }, { scope: "project", label: draft.isNew ? "설정집 문서 추가" : "설정집 문서 편집" });
     state.selectedId = entity.id;
     state.documentOpen = true;
     if (!entityInTab(entity, state.tab)) state.tab = entity.type;
@@ -295,7 +313,7 @@ export function deleteWorldEntity(entityId: string): boolean {
     toast("대체 이력에 연결된 문서는 삭제할 수 없습니다. 이전 지침이 다시 적용되지 않도록 이력을 보존합니다.", "error");
     return false;
   }
-  recordProjectSnapshot("설정집 카드 삭제");
+  recordProjectSnapshot("설정집 문서 삭제");
   store.update((project) => {
     project.world = normalizeWorld({
       entities: world.entities.filter((entry) => entry.id !== entityId),
@@ -304,7 +322,7 @@ export function deleteWorldEntity(entityId: string): boolean {
     for (const faction of project.factions?.defs ?? []) {
       if (faction.worldEntityId === entityId) delete faction.worldEntityId;
     }
-  }, { scope: "project", label: "설정집 카드 삭제" });
+  }, { scope: "project", label: "설정집 문서 삭제" });
   return true;
 }
 
@@ -318,7 +336,22 @@ export function toggleEntityLock(entityId: string): void {
   recordProjectSnapshot("세계관 잠금 변경");
   store.update((project) => {
     project.world = normalized;
-  }, { scope: "project", label: "설정집 카드 잠금 변경" });
+  }, { scope: "project", label: "설정집 문서 잠금 변경" });
+}
+
+/** 카드의 AI 공개 범위를 뒤집는다. 잠금(AI 쓰기 보호)과 독립이라 잠긴 카드도 바꿀 수 있다. */
+export function toggleEntityVisibility(entityId: string): void {
+  const world = currentWorld(store.getCurrent());
+  const entities = world.entities.map((entity): WorldEntity => {
+    if (entity.id !== entityId) return entity;
+    const { visibility: _visibility, ...rest } = entity;
+    return entity.visibility === "ai-hidden" ? rest : { ...rest, visibility: "ai-hidden" };
+  });
+  const normalized = normalizeWorld({ entities, relations: world.relations });
+  recordProjectSnapshot("세계관 공개 범위 변경");
+  store.update((project) => {
+    project.world = normalized;
+  }, { scope: "project", label: "설정집 문서 공개 범위 변경" });
 }
 
 export function startNewDraft(state: WorldPanelState, world: ProjectWorld, type: WorldEntityType): void {
@@ -336,6 +369,7 @@ export function startNewDraft(state: WorldPanelState, world: ProjectWorld, type:
     refs: [],
     origin: "user",
     locked: false,
+    visibility: "public",
     relations: [...world.relations],
     isNew: true,
   };
@@ -353,10 +387,23 @@ export function draftFromEntity(entity: WorldEntity, relations: readonly WorldRe
     refs: [...(entity.refs ?? [])],
     origin: entity.origin,
     locked: entity.locked === true,
+    visibility: entity.visibility === "ai-hidden" ? "ai-hidden" : "public",
     relations: [...relations],
     isNew: false,
     baseEntity: JSON.stringify(entity),
   };
+}
+
+/**
+ * 문서마다 붙이면 소음이 되는 권고성 검사. 「게임 개체와 연결 안 됨」은 설정만 쓰는 문서에는 정상이라
+ * 빈 프로젝트가 아닌 40장 프로젝트에서 30장에 경고 배지가 붙었다(2026-10-16 실측). 문서·목록·통계에서는 빼고,
+ * 프로젝트 검사(`lintWorld`, 위키 파서)에는 그대로 남는다.
+ */
+const ADVISORY_LINT_CODES: ReadonlySet<string> = new Set(["world-lore-unlinked"]);
+
+/** lint 메시지에 섞인 `w_<id>(이름)` 을 이름만 남겨 보여 준다 — 날 id 는 사용자가 읽을 수 없다. */
+export function lintMessageForDisplay(message: string): string {
+  return message.replace(/\bw_[A-Za-z0-9_-]+\(([^)]*)\)/gu, (_match, name: string) => name || "(이름 없음)");
 }
 
 export function summarizeWorldLint(world: ProjectWorld, project: Project): WorldLintSummary {
@@ -364,6 +411,7 @@ export function summarizeWorldLint(world: ProjectWorld, project: Project): World
   const byEntityId = new Map<string, LintIssue[]>();
   const global: LintIssue[] = [];
   for (const issue of all) {
+    if (ADVISORY_LINT_CODES.has(issue.code)) continue;
     const matches = world.entities.filter((entity) => issue.message.includes(entity.id));
     if (matches.length === 0) {
       global.push(issue);

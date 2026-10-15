@@ -3,6 +3,7 @@ import {
   authoringPresetById, searchAuthoringPresets, type AuthoringPresetCategory,
 } from '@/project/authoringPresets';
 import type { Project } from '@/project/types';
+import { aiVisibleWorld } from '@/project/world/visibility';
 import { ToolError, type ToolDefinition } from './types';
 
 const SYSTEM_FIELDS = {
@@ -35,8 +36,9 @@ function readAuthoringState(project: Project, category: AuthoringPresetCategory)
     system: Object.fromEntries(fields.filter(key => project.system[key] !== undefined)
       .map(key => [key, structuredClone(project.system[key])])),
     absentFields: fields.filter(key => project.system[key] === undefined),
+    // 모델에 돌려주는 값 — world 는 AI 비공개 카드를 뺀 모습이다(visibility.ts).
     project: Object.fromEntries(projectFields.filter(key => project[key] !== undefined)
-      .map(key => [key, structuredClone(project[key])])),
+      .map(key => [key, structuredClone(key === 'world' ? aiVisibleWorld(project.world) : project[key])])),
     absentProjectFields: projectFields.filter(key => project[key] === undefined),
     flagDefinitions: { switches: structuredClone(project.switches), variables: structuredClone(project.variables),
       storyFlags: structuredClone(project.storyFlags ?? []) },
