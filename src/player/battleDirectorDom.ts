@@ -23,6 +23,8 @@ export interface BattleDirectorState {
   readonly step: BattleDirectorStep;
   /** Presentation-only first trainer beat; send-out shares `intro` but has no portrait. */
   readonly trainerIntroduction?: true;
+  /** 트레이너 전투의 볼 던지기 비트: foe = 상대가 몬스터를 내보낸다, hero = 내가 내보낸다(emeraldTrainerIntro 가 인물을 그린다). */
+  readonly trainerSendOut?: "foe" | "hero";
   readonly lines: readonly string[];
   readonly activeActorRecordId?: string;
   readonly targetId?: string;
@@ -77,8 +79,10 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
 export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorState | undefined {
   const lead = snapshot.actors.find((actor) => !actor.defeated && actor.monsterInstanceId);
   if (!lead) return undefined;
+  const trainer = store.getCurrent().database.troops.find((entry) => entry.id === snapshot.troopId)?.trainerBattle === true;
   return {
     step: "intro",
+    ...(trainer ? { trainerSendOut: "hero" as const } : {}),
     lines: [`가라, ${lead.name}!`],
     activeActorRecordId: snapshot.activeActorId,
   };
