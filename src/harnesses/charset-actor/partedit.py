@@ -135,12 +135,21 @@ def segment(key, overrides=None):
 SPECS = {
     # 얼굴 상자 = 눈~턱을 가로 전부 담은 직사각형(그 안 픽셀은 한 칸도 못 바꾼다). 방향마다 따로(오른쪽·왼쪽은 칩이 거울이 아님).
     'People1:0': dict(face={'down': (6, 16, 17, 19), 'right': (9, 16, 17, 19), 'left': (6, 16, 14, 19), 'up': None},
-                      t_start=20, waist=27, shoe_top=29, skin='yzwv'),
+                      t_start=20, waist=27, shoe_top=29, skin='yzwv',
+                      hands={'down': {'vl': [(6, 25), (7, 25)], 'vr': [(16, 25), (17, 25)]},
+                             'up': {'vl': [(6, 25), (7, 25)], 'vr': [(16, 25), (17, 25)]},
+                             'right': {'near': [(9, 25), (10, 25)]}, 'left': {'near': [(13, 25), (14, 25)]}}),
     'Actor3:0': dict(face={'down': (8, 14, 15, 17), 'right': (12, 14, 16, 17), 'left': (7, 14, 11, 17), 'up': None},
-                     t_start=18, waist=25, shoe_top=29, skin=''),
+                     t_start=18, waist=25, shoe_top=29, skin='',
+                     hands={'down': {'vl': [(4, 22), (5, 22), (4, 23), (5, 23), (4, 24), (5, 24)], 'vr': [(18, 22), (19, 22), (18, 23), (19, 23), (18, 24), (19, 24)]},
+                            'up': {'vl': [(4, 22), (5, 22), (4, 23), (5, 23), (4, 24), (5, 24)], 'vr': [(18, 22), (19, 22), (18, 23), (19, 23), (18, 24), (19, 24)]},
+                            'right': {'near': [(13, 23), (14, 23), (13, 24), (14, 24)]}, 'left': {'near': [(8, 23), (9, 23), (8, 24), (9, 24)]}}),
     # 로봇은 사람 얼굴 규칙의 예외: 눈 상자만 고정하고 나머지 머리(살색 포함)는 금속으로 칠할 수 있다(원형 설명 「눈은 한 줄 유리창).
     'People4:4': dict(face={'down': (8, 14, 15, 16), 'right': (11, 14, 17, 16), 'left': (6, 14, 12, 16), 'up': None},
-                      t_start=18, waist=28, shoe_top=30, skin='', robot=True),
+                      t_start=18, waist=28, shoe_top=30, skin='', robot=True,
+                      hands={'down': {'vl': [(5, 22), (6, 22), (5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 22), (18, 22), (17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'up': {'vl': [(5, 22), (6, 22), (5, 23), (6, 23), (5, 24), (6, 24)], 'vr': [(17, 22), (18, 22), (17, 23), (18, 23), (17, 24), (18, 24)]},
+                             'right': {'near': [(8, 22), (9, 22), (8, 23), (9, 23), (8, 24), (9, 24)]}, 'left': {'near': [(14, 22), (15, 22), (14, 23), (15, 23), (14, 24), (15, 24)]}}),
 }
 
 
@@ -178,6 +187,24 @@ def mask_image(key, scale=5):
     return out.resize((out.width * scale, out.height * scale), Image.NEAREST), info
 
 
+def anchor_image(key, scale=6):
+    """서 있는 그림 4방향에 앵커 칸을 표시: 초록=held R, 하늘=held L, 노랑=hip R, 분홍=back (칸 테두리 한 칸)."""
+    nk = H.norm_base(key)
+    pal, bframes = H.base_of(nk)
+    spec = SPECS[nk]
+    im = Image.new('RGBA', (4 * 28, 34), (92, 140, 70, 255))
+    cols = {('held', 'R'): (60, 255, 90, 255), ('held', 'L'): (60, 220, 255, 255), ('hip', 'R'): (255, 235, 60, 255), ('back', 'R'): (255, 80, 200, 255)}
+    for i, d in enumerate(('down', 'up', 'right', 'left')):
+        im.alpha_composite(C.frame_rgba(pal, bframes[(d, 1)]), (2 + i * 28, 1))
+        for (kind, side), col in cols.items():
+            (x, y), mode, cells = anchor_for(nk, bframes, spec, kind, side, d, 1)
+            if kind == 'held':
+                for cx, cy in cells:
+                    im.putpixel((2 + i * 28 + cx, 1 + cy), tuple(v // 2 for v in col[:3]) + (255,)) if False else None
+            im.putpixel((2 + i * 28 + x, 1 + y), col)
+    return im.resize((im.width * scale, im.height * scale), Image.NEAREST).convert('RGB')
+
+
 def mask_grid(labels, zones, d, f):
     """모델에게 주는 마스크 글자 격자: 부위 글자 H F T B S, 구역 h(머리 장식) t(어깨) g(장비 띠, 소문자), '.' 은 건드릴 수 없는 빈 칸."""
     lab, zs = labels[(d, f)], zones[(d, f)]
@@ -187,10 +214,99 @@ def mask_grid(labels, zones, d, f):
         for x in range(FW):
             c = lab[y][x]
             if c == T:
-                c = 'h' if (x, y) in zs['h'] else 't' if (x, y) in zs['t'] else 'g' if (x, y) in zs['g'] else T
+                c = 'h' if (x, y) in zs['h'] else 't' if (x, y) in zs['t'] else T
             r.append(c)
         rows.append(''.join(r))
     return rows
+
+
+# ─────────────────────────────── 손·허리·등 앵커 ───────────────────────────────
+KINDS = ('held', 'hip', 'back')
+
+
+def side_slot(d, side):
+    """캐릭터의 오른손(R)/왼손(L) → 그 방향에서 어느 손인가: 'vl'/'vr'(위·아래, 보는 사람 기준) 또는 'near'/'far'(옆)."""
+    if d == 'down':
+        return 'vl' if side == 'R' else 'vr'
+    if d == 'up':
+        return 'vr' if side == 'R' else 'vl'
+    if d == 'right':
+        return 'near' if side == 'R' else 'far'
+    return 'near' if side == 'L' else 'far'
+
+
+def row_extent(rows, y):
+    xs = [x for x, c in enumerate(rows[y]) if c != T] if 0 <= y < FH else []
+    return (min(xs), max(xs)) if xs else None
+
+
+def hand_cells(key, bframes, d, f, slot, spec):
+    """베이스의 손 칸(서 있는 그림에서 사람이 정한 칸)을 걷기 프레임마다 픽셀 대응으로 따라간다. → set((x,y))"""
+    std = set(map(tuple, spec['hands'][d][slot])) if slot in spec['hands'][d] else set()
+    if f == 1 or not std:
+        return std
+    corr, bob = C.correspondence(bframes[(d, 1)], bframes[(d, f)])
+    got = {p for p, q in corr.items() if q in std}
+    if not got:
+        got = {(x, y + bob) for x, y in std}
+    return got
+
+
+def anchor_for(key, bframes, spec, kind, side, d, f):
+    """→ (grip 칸 (x,y), 모드 'front'|'behind', 앵커 칸 집합). front = 몸·옷 위에 그린다(손·얼굴은 위에 남는다), behind = 몸 뒤(몸 밖 빈 칸에만)."""
+    rows = bframes[(d, f)]
+    off = C.bob_of(bframes[(d, 1)], rows) if f != 1 else 0
+    slot = side_slot(d, side)
+    if kind == 'held':
+        std_slot = slot if slot in ('vl', 'vr') else 'near'
+        # 먼 손(옆모습에서 보이지 않는 손)은 가까운 손의 줄에서 몸 뒤쪽 가장자리를 앵커로 쓴다
+        near = hand_cells(key, bframes, d, f, std_slot, spec) if slot != 'far' else hand_cells(key, bframes, d, f, 'near', spec)
+        if slot == 'far':
+            y = sorted(c[1] for c in near)[len(near) // 2]
+            ext = row_extent(rows, y)
+            x = ext[0] if d == 'right' else ext[1]       # 오른쪽을 보면 몸 뒤 = 왼쪽 끝
+            return (x, y), 'behind', {(x, y)}
+        xs = [c[0] for c in near]
+        if slot == 'vl' or (slot == 'near' and d == 'left'):
+            gx = min(xs)
+        else:
+            gx = max(xs)
+        ys = sorted(c[1] for c in near if c[0] == gx)
+        return (gx, ys[len(ys) // 2]), 'front', near
+    if kind == 'hip':
+        y = spec.get('hip_row', spec['waist'] - 1) + off
+        ext = row_extent(rows, y) or row_extent(rows, y - 1)
+        if slot == 'near' and d in ('right', 'left'):
+            cx = (ext[0] + ext[1]) // 2
+            return (cx, y), 'front', {(cx, y)}
+        if slot == 'far':
+            x = ext[0] if d == 'right' else ext[1]
+            return (x, y), 'behind', {(x, y)}
+        x = ext[0] if slot == 'vl' else ext[1]
+        return (x, y), 'front', {(x, y)}
+    # back: 어깨 뒤 중앙(위에서는 등 위에 그려지고, 다른 방향에서는 몸 뒤로 위쪽에 삐져나온다)
+    y = spec['t_start'] + 1 + off
+    ext = row_extent(rows, y)
+    if d in ('down', 'up'):
+        x = (ext[0] + ext[1]) // 2
+    else:
+        x = ext[0] if d == 'right' else ext[1]
+    return (x, y), ('front' if d == 'up' else 'behind'), {(x, y)}
+
+
+def anchor_table(key):
+    nk = H.norm_base(key)
+    pal, bframes = H.base_of(nk)
+    spec = SPECS[nk]
+    lines = ['종류별 앵커(서 있는 그림 기준 grip 칸 좌표 x,y 와 모드). 스프라이트의 grip 칸이 이 칸에 겹친다. 걷기 프레임은 앵커가 손·몸과 함께 움직인다.']
+    for kind, sides in (('held', 'RL'), ('hip', 'RL'), ('back', 'R')):
+        for side in sides:
+            row = []
+            for d in ('down', 'up', 'right', 'left'):
+                (x, y), mode, cells = anchor_for(nk, bframes, spec, kind, side, d, 1)
+                row.append(f'{d}=({x},{y}) {mode}')
+            lines.append(f'  kind={kind}{"" if kind == "back" else " side=" + side}: ' + ' · '.join(row))
+    return '\n'.join(lines), spec, bframes
 
 
 # ─────────────────────────────── 편집 적용 ───────────────────────────────
@@ -304,47 +420,52 @@ def apply_edits(key, edit, overrides=None):
                     zk = 'h' if reg == 'H' else 't'
                     if 0 <= ty < FH and bf[ty][x] == T and (x, ty) in zones[(d, f)][zk]:
                         setpx((d, f), x, ty, ch, 'paint')
-    # 3) 장비: 방향마다 따로 올린다(거울 복사 없음). 놓을 수 있는 칸 = 장비 띠(g) 또는 머리 장식 구역(h)의 빈 칸
-    gear_cells = {}
+    # 3) 장비: 종류(held 손에 든 것 · hip 허리 · back 등)별 앵커에 스프라이트의 grip 칸을 겹쳐 방향·프레임마다 따라가게 한다
+    spec = SPECS[H.norm_base(key)]
+    gear_info = {}
     for i, g in enumerate(edit.get('gear') or []):
-        d = g.get('dir')
-        if d not in DIRS:
-            errs.append(f'gear[{i}]: dir {d!r}')
+        gkind, side, name = g.get('kind'), g.get('side', 'R'), g.get('name', f'gear{i}')
+        if gkind not in KINDS or side not in ('R', 'L'):
+            errs.append(f'gear[{i}]: kind {gkind!r} 은 held|hip|back, side 는 R|L')
             continue
-        sp = g.get('sprite') or []
-        gx, gy = int(g.get('x', 0)), int(g.get('y', 0))
-        name = g.get('name', f'gear{i}')
-        for dy, row in enumerate(sp):
-            for dx, ch in enumerate(row):
-                if ch in ('.', ' '):
-                    continue
-                if not ok_letter(ch, f'gear[{i}]'):
-                    continue
-                x, y = gx + dx, gy + dy
-                if not (0 <= x < FW and 0 <= y < FH):
-                    errs.append(f'gear[{i}] {d}: 칸 밖 ({x},{y})')
-                    continue
-                zs = zones[(d, 1)]
-                if bframes[(d, 1)][y][x] != T:
-                    errs.append(f'gear[{i}] {d} ({x},{y}): 몸 칸 위에는 장비를 올릴 수 없다(몸 위 장식은 paint 로)')
-                elif (x, y) in zs['g'] or (x, y) in zs['h']:
-                    gear_cells.setdefault((d, name), {})[(x, y)] = ch
-                else:
-                    errs.append(f'gear[{i}] {d} ({x},{y}): 장비 띠·머리 장식 구역 밖이다')
-    for (d, name), cells in gear_cells.items():
-        for (x, y), ch in cells.items():
-            setpx((d, 1), x, y, ch, 'gear')
-            for f in (0, 2):
-                bob = bob_for(bframes, d, f)
-                ty = y + bob
-                zs = zones[(d, f)]
-                if 0 <= ty < FH and bframes[(d, f)][ty][x] == T and ((x, ty) in zs['g'] or (x, ty) in zs['h']):
-                    setpx((d, f), x, ty, ch, 'gear')
+        for d in DIRS:
+            sp = (g.get('sprites') or {}).get(d)
+            if not sp:
+                errs.append(f'gear[{i}] {name}: {d} 방향 스프라이트가 없다(네 방향 모두 필요)')
+                continue
+            rows_ = sp.get('rows') or []
+            gx, gy = (sp.get('grip') or [None, None])[:2]
+            if gx is None or not (0 <= gy < len(rows_)) or not (0 <= gx < max(len(r) for r in rows_)) or rows_[gy][gx] in ('.', ' '):
+                errs.append(f'gear[{i}] {name} {d}: grip 칸 {sp.get("grip")} 이 스프라이트 안의 불투명 칸이어야 한다')
+                continue
+            npx = sum(1 for r in rows_ for c in r if c not in ('.', ' '))
+            if npx > 120 or len(rows_) > 26 or max(len(r) for r in rows_) > 12:
+                errs.append(f'gear[{i}] {name} {d}: 스프라이트가 너무 크다(120칸·12×26 이하, 지금 {npx}칸)')
+                continue
+            for f in range(3):
+                (ax, ay), mode, acells = anchor_for(key, bframes, spec, gkind, side, d, f)
+                vis = set()
+                for dy, row in enumerate(rows_):
+                    for dx, ch in enumerate(row):
+                        if ch in ('.', ' '):
+                            continue
+                        if not ok_letter(ch, f'gear[{i}]'):
+                            continue
+                        x, y = ax + dx - gx, ay + dy - gy
+                        if not (1 <= x < FW - 1 and 1 <= y < FH - 1):
+                            continue
+                        if (x, y) in acells and gkind == 'held' and mode == 'front':
+                            continue                       # 손은 무기 위에 그려진다(손 칸은 베이스 그대로)
+                        lab = labels[(d, f)][y][x]
+                        if lab == 'F':
+                            continue                       # 얼굴·맨살은 어떤 장비도 덮지 못한다
+                        if bframes[(d, f)][y][x] != T and mode == 'behind':
+                            continue                       # 몸 뒤: 몸 밖 빈 칸에만 보인다
+                        setpx((d, f), x, y, ch, 'gear')
+                        vis.add((x, y))
+                gear_info.setdefault(name, {})[(d, f)] = dict(anchor=(ax, ay), mode=mode, cells=acells, vis=vis, kind=gkind)
     out = {k: [''.join(r) for r in rows] for k, rows in new.items()}
-    gear_report = {}
-    for (d, name), cells in gear_cells.items():
-        gear_report.setdefault(name, {})[d] = sum((x - 11.5) for (x, y) in cells) / max(1, len(cells))
-    report = dict(info=info, errors=errs, gear=gear_report)
+    report = dict(info=info, errors=errs, gear=gear_info)
     return pal, out, bframes, bpal, labels, zones, changed, kind, report
 
 
@@ -385,7 +506,7 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
                     errs.append(f'{d} {f} ({x},{y}): 고정 부위(얼굴·맨살·눈) 픽셀이 바뀌었다')
                 elif lab == T:
                     zs = zones[fk]
-                    if nc is not None and not ((x, y) in zs['h'] or (x, y) in zs['t'] or (x, y) in zs['g']):
+                    if nc is not None and kind[fk].get((x, y)) != 'gear' and not ((x, y) in zs['h'] or (x, y) in zs['t'] or (x, y) in zs['g']):
                         errs.append(f'{d} {f} ({x},{y}): 구역 밖 빈 칸에 픽셀이 생겼다')
                 elif lab in EDITABLE and nc is None:
                     errs.append(f'{d} {f} ({x},{y}): 몸 칸이 투명이 되었다')
@@ -394,8 +515,9 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
     # 튀어나온 한 칸: 새로 생긴 칸의 덩어리가 3칸 미만이면 거절
     for fk in new:
         added = {(x, y) for y in range(FH) for x in range(FW) if bframes[fk][y][x] == T and new[fk][y][x] != T}
-        for comp in components(added):
-            if len(comp) < 3:
+        glued = added | {c for c, how in kind[fk].items() if how == 'gear'}   # 장비가 몸 위에 겹친 칸까지 이어 붙여 덩어리를 센다
+        for comp in components(glued):
+            if len(set(comp) & added) and len(comp) < 3:
                 errs.append(f'{fk[0]} {fk[1]}: 새 픽셀 덩어리가 {len(comp)}칸뿐이다 {sorted(comp)} — 튀어나온 한 칸(삐죽 픽셀)은 허용하지 않는다')
         if len(added) > 110:
             errs.append(f'{fk[0]} {fk[1]}: 실루엣 밖에 새 픽셀 {len(added)}칸(최대 110)')
@@ -463,10 +585,28 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
             continue   # 소지품 한도는 구역·덩어리 검사가 맡는다
         errs.append(t)
     warns += g.get('warns', [])
-    # 장비 손 일관: 같은 이름의 장비가 아래·위에서는 몸 중심의 반대편(왼쪽↔오른쪽 뒤집힘)이어야 같은 손에 든 것이다
+    # 장비: 손·허리·등 앵커에 붙어 있는가(닿거나 겹침), 프레임마다 앵커 대비 위치가 같은가, 보이는 픽셀이 있는가
     for name, per in (gear_report or {}).items():
-        if 'down' in per and 'up' in per and per['down'] * per['up'] > 0:
-            errs.append(f'장비 {name!r}: 아래 방향과 위 방향에서 몸 중심의 같은 쪽(왼쪽/오른쪽)에 있다 — 한 손에 든 것은 위·아래에서 화면 반대편에 보여야 한다')
+        for (d, f), gi in per.items():
+            ax, ay = gi['anchor']
+            vis = gi['vis']
+            if gi['mode'] == 'behind' and d in ('right', 'left'):
+                continue                       # 옆모습의 먼 손·먼 허리: 몸에 가려지는 쪽이라 보임·닿음을 요구하지 않는다
+            if len(vis) < 3:
+                errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다 — 이 방향·모드({gi["mode"]})에서 몸에 가려 안 보인다(grip {gi["anchor"]})')
+                continue
+            near = any(max(abs(x - cx), abs(y - cy)) <= 1 for (x, y) in vis for (cx, cy) in gi['cells'])
+            if not near:
+                errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 앵커 칸 {sorted(gi["cells"])[:2]} 에 닿거나 겹치지 않는다 — 손에 쥐어지지 않고 따로 논다')
+        # 프레임 간 앵커 상대 위치 편차(몸 윗줄 기준)
+        for d in DIRS:
+            ys = []
+            for f in range(3):
+                if (d, f) in per:
+                    top = min(y for y, r in enumerate(bframes[(d, f)]) if any(c != T for c in r))
+                    ys.append(per[(d, f)]['anchor'][1] - top)
+            if ys and max(ys) - min(ys) > 2:
+                errs.append(f'장비 {name!r} {d}: 걷기 프레임마다 앵커-몸 위치가 {ys} 로 흔들린다(손 추적 실패, 편차 2줄 이하)')
     return errs, warns, m
 
 
