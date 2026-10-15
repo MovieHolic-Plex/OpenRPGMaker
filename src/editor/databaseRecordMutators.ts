@@ -192,6 +192,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("backdropLayers" in patch) record.backdropLayers = patch.backdropLayers;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
+  if ("teamSwapCost" in patch) record.teamSwapCost = patch.teamSwapCost;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   if ("afterBattle" in patch) record.afterBattle = patch.afterBattle;
   database.troops[index] = normalizeTroopRecord(record);

@@ -75,6 +75,7 @@ import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
+import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -298,6 +299,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
     ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    ...(() => {
+      const battleTeams = normalizeBattleTeams(system.battleTeams);
+      return battleTeams ? { battleTeams } : {};
+    })(),
+    ...(isTeamSwapCost(system.teamSwapCost) ? { teamSwapCost: system.teamSwapCost } : {}),
     // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
     ...(() => {
       const companions = normalizeCompanionConfig(system.companions);

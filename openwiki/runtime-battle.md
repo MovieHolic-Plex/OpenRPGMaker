@@ -1390,6 +1390,23 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: 장비 탭 「마석 성장」 카드(`databaseEquipmentEsperFields.ts`)·적 탭 「마석 AP」·스킬 카드 「전투당 1회」. AI: `upsert_equipment`(apGrants·apRate·levelUpBonus, 모르는 스킬/키는 거절)·`upsert_enemy.rewards.ap`·`upsert_skill.oncePerBattle`·`upsert_equipment_slot`. 능력 색인 레시피 `esper-growth`.
 - 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-growth-probe.mts`(실제 도구 → 전투 → 세션 정산 → 세이브 왕복).
 
+## 팀 교대 전투 (2026-10-15, FF6 수정 A)
+
+**팀 = 교대 묶음이다. 한 번에 한 팀만 싸우고 나머지는 대기한다 — 동시 행동은 없다**(사용자 결정 옵션 A). 설정이 없으면 아무것도 달라지지 않는다.
+
+- **저작:** `system.battleTeams: [{id,name,actorIds}]`(2~4팀, 한 배우는 한 팀만; `project/battleTeamModel.ts` 가 정규화), `system.teamSwapCost` / `TroopRecord.teamSwapCost` = `free | gauge | turn`
+  (기본 `gauge`, 트룹이 시스템을 덮는다). 팀이 구성원 있는 2개 미만이면 팀 전투가 아니다. 팀에 없는 파티원은 첫 팀에 붙는다. 저장 변경 없음(전투 중 상태는 저장하지 않는다).
+- **런타임(`battle/runtime.ts`, 순수 규칙은 `battle/battleTeams.ts`):** 시작 활성 팀 = 첫 전투원이 속한 팀. `switchCandidateActors` 는 **같은 팀** 대기 구성원만 — 다른 팀은 `performTeamSwap({kind:"teamSwap",targetTeamId})` 로만 들어온다.
+  `ActorCommand` 합집합에는 넣지 않았다(대상·피해가 없는 팀 단위 명령이라 연출 `commandTarget`/`commandLine` 대상이 아니다) — `BattleRuntime.performTeamSwap?` 별도 입구이며 타임라인에는 기존 `switch` 한 줄(「전열을 교체했다.」)로 흐른다.
+- **비용:** `free` = 들어온 팀 게이지 100(바로 행동) · `gauge` = 게이지 0(나간 팀 게이지는 어느 비용이든 유지하지 않는다) · `turn` = 게이지 0 + 적이 한 번 행동할 때까지 충전 정지(`teamResting`; `performEnemyTurn` 이 푼다).
+  교대는 명령을 고르던 배우의 행동 슬롯을 쓴다(gauge 흐름). **strict**: 교대가 이 라운드 전체를 쓰고 물러난 팀의 다른 명령은 버려진다, 교대 뒤 적만 행동한다 — free·gauge 는 같고 turn 은 다음 라운드도 아군이 쉰다.
+- **전멸 순환:** 활성 팀의 모든 구성원(대기 포함)이 쓰러지거나 행동 불가가 되면 `resolveOutcome` 끝에서 다음 살아 있는 팀이 자동으로 들어온다(`gauge`, free 는 free). **패배는 모든 팀이 쓰러졌을 때만**(`actors.every(...)` 는 원래 전원 기준이라 불변).
+- **스냅샷:** 팀 전투일 때만 `teams[{id,name,actorIds,active,canSwapIn,alive}]`·`activeTeamId`·`teamSwapCost`. `reserveActors` 에는 다른 팀도 들어 있다(보상 정산이 전 파티를 본다).
+- **화면:** `player/battleTeamSwapDom.ts` 가 루트 명령 메뉴에 팀별 「○○ 교대」 버튼(`actor-team-swap-<teamId>`)을 더한다. `battleCommandDom.ts` 는 import 1줄·`append` 1줄·`includeSwitch` 조건 1줄만 바뀌었다. `battleDom.ts` 의 `runTeamSwap` 이 시퀀서로 잇는다.
+- **도구·편집기:** `set_project_settings` `battle.teams`/`battle.teamSwapCost`(모르는 키·겹침·1팀·없는 배우 거절, `[]` = 해제, 경고: 팀 없는 파티원·파티 없는 팀·strict), `upsert_troop.teamSwapCost`, 시스템 탭 「팀 교대 전투」 카드(`databaseBattleTeamsSection.ts`)·적 그룹 「팀 교대 비용」. 능력 색인 `battle-teams`.
+- **한계:** 팀별 맵 분할 이동은 별개(이벤트 `storeParty`/`recallParty`). 교대 연출은 한 줄 문장뿐(그림 필요 없음). 몬스터 파티 전투·gen1 은 팀 전투를 쓰지 않는다.
+- 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-teams-probe.mts`(도구 거절 4 · 한 팀만 싸움 · 같은 팀 교체 · gauge/free/turn 비용 · 전멸 순환→전 팀 전멸에서만 패배 · strict · 팀 없는 프로젝트 불변).
+
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
 전부 **값이 있을 때만 저장**한다(정규화가 기본값을 생략). 옛 프로젝트는 바이트·동작 그대로다.

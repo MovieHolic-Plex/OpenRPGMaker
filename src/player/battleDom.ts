@@ -390,6 +390,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setDirectorState(state: BattleDirectorState): void;
     render(): void;
     runActorCommand(command: ActorCommand): void;
+    runTeamSwap(targetTeamId: string): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -405,6 +406,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     render: () => syncView(),
     runActorCommand,
+    runTeamSwap,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -1505,6 +1507,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */
+  function runTeamSwap(targetTeamId: string): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.performTeamSwap) return;
+    const before = options.runtime.snapshot();
+    options.runtime.performTeamSwap({ kind: "teamSwap", targetTeamId });
+    const afterCommand = options.runtime.snapshot();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    const arrived = afterCommand.actors[0]?.recordId;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
+    sequencer.runAfterActorCommand({ kind: "switch", targetActorId: arrived ?? "" }, before, afterCommand);
   }
 
   function runActorCommand(command: ActorCommand): void {
