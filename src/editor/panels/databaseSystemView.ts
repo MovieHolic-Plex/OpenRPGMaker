@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
+import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
@@ -454,6 +455,7 @@ function systemSectionNodes(
             : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
         ),
       ]),
+      battleTeamsSection(project, updateSystem, rerender),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({

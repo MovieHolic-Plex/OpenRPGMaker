@@ -3185,3 +3185,12 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
 
 `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
+
+## 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+
+- `set_project_settings` `battle.teams: [{id,name?,actorIds}]`(2~4팀, `[]` 해제) + `battle.teamSwapCost: free|gauge|turn`. 모르는 키(팀 객체 안 포함)·팀 id 중복·한 배우 두 팀·없는 배우(→ `upsert_actor` 안내)·팀 1개·빈 팀은 `ToolError`. 경고(`warnings`): 팀 없는 시작 파티원(첫 팀에 붙음)·시작 파티 배우가 없는 팀·strict 흐름(free/gauge/turn 동일)·팀 없이 비용만 저장.
+  `[]` 로 해제하면 `teamSwapCost` 도 같이 지운다. 기본값 `gauge` 는 저장하지 않는다.
+- `upsert_troop.teamSwapCost` — 그 적 그룹만 비용을 덮어쓴다(`null` 로 되돌림).
+- 능력 색인 `battle-teams`(read → write → `simulate_battle`/`run_lint`). 동시 전투는 지원하지 않는다고 정책에 못 박았다 — 약속하지 말 것. 편집기: 시스템 탭 「팀 교대 전투」 카드, 적 그룹 「팀 교대 비용」.
+- 계약 문서는 `runtime-battle.md` 「팀 교대 전투」. 새 도구는 없다(기존 도구 확장) — 라벨·의도 선언 변경 없음.
+

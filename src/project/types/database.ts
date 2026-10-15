@@ -161,6 +161,19 @@ export interface ClassOptions {
 }
 
 export type BattleFlow = "gauge" | "strict";
+
+/**
+ * FF6 식 팀 교대 전투(2026-10-15). 팀 = 교대 묶음 — 한 번에 한 팀만 싸우고 나머지는 대기한다.
+ * free = 들어온 팀 게이지가 가득(바로 행동) · gauge = 게이지 0 에서 시작(기본) · turn = 적이 한 번 행동할 때까지 쉼.
+ */
+export type TeamSwapCost = "free" | "gauge" | "turn";
+
+/** 저작된 전투 팀. 구성원은 전투 파티에 있는 배우만 쓰인다. */
+export interface BattleTeamRecord {
+  id: string;
+  name: string;
+  actorIds: ActorId[];
+}
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
@@ -860,6 +873,8 @@ export interface TroopRecord {
   backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
+  /** 이 전투만의 팀 교대 비용. 생략 = 시스템 설정. */
+  teamSwapCost?: TeamSwapCost;
   battleEventPages: BattleEventPageRecord[];
   /**
    * 전투 뒤 이벤트 — 결과 화면이 닫히고 필드로 돌아온 **다음**, 결과별로 한 번 실행하는 명령.
@@ -1740,6 +1755,10 @@ export interface SystemRecords {
    *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
   battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
+  /** 팀 교대 전투(2~4팀). 생략 = 기존 한 파티 전투. 한 번에 한 팀만 싸운다(교대 묶음). */
+  battleTeams?: BattleTeamRecord[];
+  /** 팀 교대 비용 기본값. 팀이 둘 이상일 때만 뜻이 있고 생략하면 "gauge". */
+  teamSwapCost?: TeamSwapCost;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
   /** Opt-in pre-map new-game sequence. Disabled sequences retain their authored content. */

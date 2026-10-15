@@ -68,8 +68,10 @@ import type { BattleSkinId } from "@/battle/skins/types";
 import type {
   ActorCommand,
   ActorCommandDraft,
+  TeamSwapCommand,
   BattleActionResultSnapshot,
   BattleAnimationSnapshot,
+  BattleTeamSnapshot,
   BattleCapturedMonsterSnapshot,
   BattleCaptureResultSnapshot,
   BattleBattlerSnapshot,
@@ -114,6 +116,8 @@ import { predictSkillDamage } from "@/battle/battlePredict";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
 import { attemptGen1Capture } from "@/battle/gen1/capture";
+import { effectiveTeamSwapCost, resolveBattleTeams } from "@/battle/battleTeams";
+import type { TeamSwapCost } from "@/project/types";
 import { restoredMovePp } from "@/project/monsterMedicine";
 import {
   applyGen1MajorStatus,
@@ -365,14 +369,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ?? options.project.system.activeSlots
     ?? (gen1 ? 1 : undefined);
   const activeSlots = normalizeActiveSlots(requestedActiveSlots, actors.length);
-  let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
+  // 팀 교대 전투(system.battleTeams, 구성원 있는 팀 2개 이상일 때만). 한 번에 한 팀만 싸운다 — 교대 묶음.
+  const battleTeams = !gen1 && !usePartyMonsters
+    ? resolveBattleTeams(options.project.system.battleTeams, actors.map((actor) => actor.recordId))
+    : undefined;
+  const teamSwapCost = effectiveTeamSwapCost(options.project.system, troopRecord);
+  let activeTeamId: string | undefined = battleTeams?.find((team) => team.actorIds.includes(actors[0]?.recordId as ActorId))?.id ?? battleTeams?.[0]?.id;
+  // 한 턴 비용으로 들어온 팀은 적이 한 번 행동할 때까지 쉰다(게이지가 차지 않는다).
+  const teamResting = new Set<string>();
+  let activeActorIds: ActorId[] = battleTeams
+    ? (battleTeams.find((team) => team.id === activeTeamId)?.actorIds ?? []).slice(0, activeSlots)
+    : actors.slice(0, activeSlots).map((actor) => actor.recordId);
   // 전투 개시 진형: 명시(명령·심볼 접촉) > 시스템 굴림 > 보통. 굴림이 꺼져 있으면 rng 를 쓰지 않아 기존 시드 흐름이 그대로다.
   const formation: BattleStartFormation = options.formation
     ?? (options.project.system.battleFormationRoll === true && !gen1
       ? rollBattleFormation({
-          partyAgility: average(actors.slice(0, activeSlots).filter((actor) => actor.hp > 0).map((actor) => actor.agility)),
+          partyAgility: average(activeActors().filter((actor) => actor.hp > 0).map((actor) => actor.agility)),
           enemyAgility: average(enemies.filter((enemy) => !enemy.hidden && enemy.hp > 0).map((enemy) => enemy.agility)),
-          preemptiveEquipment: actors.slice(0, activeSlots).some((actor) => actorHasPreemptiveEquipment(actor.recordId)),
+          preemptiveEquipment: activeActors().some((actor) => actorHasPreemptiveEquipment(actor.recordId)),
         }, rng)
       : "normal");
   if (formation === "backAttack" || formation === "pincer") {
@@ -994,7 +1008,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tickDuringMenu(deltaMs: number): void {
     const menuActor = actors.find((entry) => entry.recordId === activeActorId);
     const enemiesInBattle = visibleEnemies();
-    const others = activeActors().filter((entry) => entry !== menuActor);
+    const others = chargingActors().filter((entry) => entry !== menuActor);
     const rate = (battler: MutableBattler): number => gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
     const ready = nextReadyBattler([], enemiesInBattle, deltaMs, skinHasteMultiplier, rate);
     const elapsed = ready ? ready.timeMs : deltaMs;
@@ -1075,12 +1089,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number =>
       gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
-    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
+    const chargers = chargingActors();
+    const ready = nextReadyBattler(chargers, enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
     if (!ready) {
-      chargeBattlers(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
+      chargeBattlers(chargers, enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
       return;
     }
-    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
+    chargeBattlers(chargers, enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
@@ -1136,6 +1151,33 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     performEnemyTurn(ready.battler);
+  }
+
+  /**
+   * FF6 식 팀 교대. 지금 명령을 고르는 배우의 차례를 써서 활성 팀을 바꾼다(gauge: 이 행동 슬롯을 소비, strict: 이 라운드 전체를 소비).
+   * 물러나는 팀의 이번 라운드 명령은 버린다. ActorCommand 합집합과 분리된 별도 입구다(types.ts TeamSwapCommand).
+   */
+  function performTeamSwap(command: TeamSwapCommand): void {
+    if (cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return;
+    if (forcedSwitchActor()) return;
+    const actor = actors.find((entry) => entry.recordId === activeActorId);
+    if (!actor || !canSwapToTeam(command.targetTeamId)) return;
+    beginTimelineAction();
+    currentActorCommandKind = "switch";
+    targetSelection = undefined;
+    if (battleFlow === "strict") {
+      // 교대가 이 라운드 전체를 쓴다 — 물러나는 팀의 다른 명령은 버리고, 교대 뒤 적만 행동한다.
+      swapActiveTeam(command.targetTeamId, actor.recordId);
+      strictActorCommands = [];
+      strictPendingActorIds = [];
+      activeActorId = undefined;
+      resolveStrictRound();
+      return;
+    }
+    swapActiveTeam(command.targetTeamId, actor.recordId);
+    actor.gauge = 0;
+    gaugeCycleActed.add(actor.id);
+    applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
   }
 
   function performActorCommand(command: ActorCommand): void {
@@ -1700,7 +1742,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
       }
     }
-    strictPendingActorIds = strictFormationSkipSide === "actor" ? [] : activeActors()
+    strictPendingActorIds = strictActorsSkipRound() ? [] : activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
@@ -1716,13 +1758,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     resolveStrictRound();
   }
 
+  /** 이번 strict 라운드에 아군이 쉬는가 — 진형(기습) 첫 라운드, 또는 한 턴 비용으로 막 교대해 들어온 팀. */
+  function strictActorsSkipRound(): boolean {
+    const resting = teamResting.size > 0;
+    teamResting.clear();
+    return strictFormationSkipSide === "actor" || resting;
+  }
+
   function prepareStrictActorCommands(): void {
     if (!gen1) {
       for (const actor of activeActors()) {
         if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
       }
     }
-    strictPendingActorIds = strictFormationSkipSide === "actor" ? [] : activeActors()
+    strictPendingActorIds = strictActorsSkipRound() ? [] : activeActors()
       .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
@@ -2030,7 +2079,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function snapshot(): BattleSnapshot {
     const enemiesInBattle = visibleEnemies();
     const nextReady = battleFlow === "gauge" && phase === "charging" && !result
-      ? nextReadyBattler(activeActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
+      ? nextReadyBattler(chargingActors(), enemiesInBattle, Infinity, skinHasteMultiplier,
         (battler) => agilityMultiplierForStates(options.project, battler))
       : undefined;
     const forcedActor = forcedSwitchActor();
@@ -2049,6 +2098,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       activeSlots,
       forcedSwitchActorId: forcedActor?.recordId,
       switchCandidateActorIds: switchCandidateActors().map((actor) => actor.recordId),
+      ...(battleTeams ? { teams: teamSnapshots(), activeTeamId, teamSwapCost } : {}),
       participatingActorIds: [...participatingActorIds],
       actors: activeActors().map((actor, index) => withCharging(actor, battlerSnapshot(actor, activeActorPosition(index), actorPoseContext))),
       reserveActors: reserveActors().map((actor) => battlerSnapshot(actor, undefined, { showActionPose: false })),
@@ -2092,6 +2142,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function performEnemyTurn(enemy: MutableBattler, finish: () => void = finishGaugeTurnSlot): void {
     rewardTurn = turn + 1;
+    teamResting.clear();
     // 턴 시작 상태 처리(지속 피해/자연 회복).
     if (!gen1) {
       applyUpkeep(enemy);
@@ -4214,13 +4265,91 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
   }
 
+  /** 게이지가 차는 아군 — 한 턴 비용으로 막 들어온 팀은 적이 한 번 행동할 때까지 쉰다. */
+  function chargingActors(): readonly MutableBattler[] {
+    return teamResting.size === 0 ? activeActors() : activeActors().filter((actor) => !teamResting.has(actor.recordId));
+  }
+
   function reserveActors(): readonly MutableBattler[] {
     const active = new Set(activeActorIds);
     return actors.filter((actor) => !active.has(actor.recordId));
   }
 
   function switchCandidateActors(): readonly MutableBattler[] {
-    return reserveActors().filter((actor) => actor.hp > 0);
+    // 팀 교대 전투의 개별 교체는 같은 팀 안에서만 — 다른 팀은 「팀 교대」 명령으로만 들어온다.
+    const sameTeam = activeTeamId ? new Set(battleTeams?.find((team) => team.id === activeTeamId)?.actorIds ?? []) : undefined;
+    return reserveActors().filter((actor) => actor.hp > 0 && (!sameTeam || sameTeam.has(actor.recordId as ActorId)));
+  }
+
+  function actorFitToFight(actor: MutableBattler): boolean {
+    return actor.hp > 0 && !isBattlerIncapacitated(options.project, actor);
+  }
+
+  /** 이 팀으로 교대할 수 있는가: 지금 팀이 아니고, 싸울 수 있는 구성원이 있다. */
+  function canSwapToTeam(teamId: string): boolean {
+    if (!battleTeams || teamId === activeTeamId) return false;
+    const team = battleTeams.find((entry) => entry.id === teamId);
+    return Boolean(team && team.actorIds.some((id) => {
+      const actor = actors.find((entry) => entry.recordId === id);
+      return actor !== undefined && actorFitToFight(actor);
+    }));
+  }
+
+  /**
+   * 활성 팀을 바꾼다. 들어오는 팀: 싸울 수 있는 구성원만(앞에서 activeSlots 명). 비용은 teamSwapCost —
+   * free 는 게이지 가득(바로 행동), gauge 는 0, turn 은 0 + 적이 한 번 행동할 때까지 쉼. 나가는 팀의 게이지는 유지하지 않는다.
+   */
+  function swapActiveTeam(toTeamId: string, userRecordId: ActorId | undefined, cost: TeamSwapCost = teamSwapCost): boolean {
+    if (!canSwapToTeam(toTeamId)) return false;
+    const incoming = battleTeams!.find((team) => team.id === toTeamId)!;
+    const incomingFit = incoming.actorIds
+      .map((id) => actors.find((entry) => entry.recordId === id))
+      .filter((actor): actor is MutableBattler => actor !== undefined && actorFitToFight(actor))
+      .slice(0, activeSlots);
+    for (const outgoing of activeActors()) {
+      outgoing.gauge = 0;
+      outgoing.defending = false;
+    }
+    activeTeamId = toTeamId;
+    activeActorIds = incomingFit.map((actor) => actor.recordId);
+    teamResting.clear();
+    for (const actor of incomingFit) {
+      actor.defending = false;
+      actor.gauge = cost === "free" ? 100 : 0;
+      if (cost === "turn") teamResting.add(actor.recordId);
+    }
+    recordTimeline({
+      kind: "switch",
+      side: "actor",
+      userRecordId: userRecordId ?? incomingFit[0]!.recordId,
+      targetId: incomingFit[0]!.id,
+      commandKind: "switch",
+      success: true,
+    });
+    markActiveParticipants();
+    return true;
+  }
+
+  /** 지금 팀이 전멸(쓰러짐·행동 불가)했고 싸울 수 있는 다른 팀이 있으면 그 팀을 자동으로 들인다. */
+  function rotateWipedTeam(): boolean {
+    if (!battleTeams || !activeTeamId) return false;
+    // 같은 팀 대기 구성원이 남아 있으면 개별 교체(강제 교체)가 먼저다.
+    const members = battleTeams.find((team) => team.id === activeTeamId)?.actorIds ?? [];
+    if (members.some((id) => { const member = actors.find((entry) => entry.recordId === id); return member !== undefined && actorFitToFight(member); })) return false;
+    const next = battleTeams.find((team) => canSwapToTeam(team.id));
+    return next ? swapActiveTeam(next.id, undefined, teamSwapCost === "free" ? "free" : "gauge") : false;
+  }
+
+  function teamSnapshots(): readonly BattleTeamSnapshot[] | undefined {
+    if (!battleTeams) return undefined;
+    return battleTeams.map((team) => ({
+      id: team.id,
+      name: team.name,
+      actorIds: team.actorIds,
+      active: team.id === activeTeamId,
+      canSwapIn: canSwapToTeam(team.id),
+      alive: team.actorIds.filter((id) => (actors.find((entry) => entry.recordId === id)?.hp ?? 0) > 0).length,
+    }));
   }
 
   function forcedSwitchActor(): MutableBattler | undefined {
@@ -4293,6 +4422,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       clearEndOfBattleStates();
       return;
     }
+    // 지금 팀이 전멸했지만 다른 팀이 살아 있으면 패배가 아니다 — 다음 팀이 들어온다.
+    rotateWipedTeam();
     if (singleFileEnemies) {
       const current = enemies.find((enemy) => enemy.id === activeGen1EnemyId);
       if (!current || current.hp <= 0 || current.hidden) {
@@ -4461,6 +4592,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     setSelectedTargetEnemy,
     cancelTargetSelection,
     performActorCommand,
+    performTeamSwap,
     chooseAutoCommand,
     executeEquipmentUse,
     snapshot,
