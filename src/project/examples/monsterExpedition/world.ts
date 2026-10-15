@@ -297,7 +297,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
 
   // 트레이너가 설 자리 — 풀숲(조우)·계단·턱·출구 판 위나 문 곁, 길목에는 세우지 않는다. 시각 QA(2026-10-06)에서
   // 트레이너가 풀숲 한가운데·산길 돌계단·유적 출구 판 위에 서 있었다. 그런 칸이 없으면 예전처럼 가장 가까운 칸.
-  function standSpot(map: GameMap, wanted: Point, sighted = false, apart: readonly Point[] = []): Point {
+  function standSpot(map: GameMap, wanted: Point, sighted = false, apart: readonly Point[] = [], strict = false, keepsRoute?: (p: Point) => boolean): Point | undefined {
     const meta = project.tilesets[map.tilesetId]?.tileMeta ?? [];
     const busy = (tile: number | undefined) => tile !== undefined && tile >= 0 && /키 큰 풀|계단|stairs|턱|출구|매트|mat\(/i.test(meta[tile]?.label ?? "");
     const doors = map.events.filter(e => e.id.includes("_to_"));
@@ -308,9 +308,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       && !reserved.get(map.id)!.has(coord(p)) && !map.events.some(e => e.x === p.x && e.y === p.y);
     // 시야선 트레이너는 곧은 통로가 3칸 이상 트인 자리에 세운다(그래야 걸어오는 연출이 성립한다). 그런 칸이 없으면 예전처럼.
     const open = (p: Point) => !sighted || sightFacing(map, p).range >= 3;
-    const candidates = connected(map).filter(p => fits(p) && open(p) && apart.every(a => Math.abs(a.x - p.x) + Math.abs(a.y - p.y) >= 5))
+    const candidates = connected(map).filter(p => fits(p) && open(p) && (!keepsRoute || keepsRoute(p)) && apart.every(a => Math.abs(a.x - p.x) + Math.abs(a.y - p.y) >= 5))
       .sort((a, b) => Math.abs(a.x - wanted.x) + Math.abs(a.y - wanted.y) - Math.abs(b.x - wanted.x) - Math.abs(b.y - wanted.y));
-    return candidates.find(p => walkable(map, p).size === before - 1) ?? nearest(map, wanted, connected(map), true);
+    const spot = candidates.find(p => walkable(map, p).size === before - 1);
+    // strict: 길을 끊지 않는 자리가 없으면 세우지 않는다(체육관 졸개 — 좁은 퍼즐 방에서 통로를 막아 장치까지 못 가게 만들었다).
+    return spot ?? (strict ? undefined : nearest(map, wanted, connected(map), true));
   }
 
   function connect(a: GameMap, b: GameMap, required?: string): void {
@@ -641,7 +643,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     connect(townMaps.get(r.from)!, map, r.required);
     connect(map, townMaps.get(r.to)!);
     for (let i = 0; i < 3; i++) {
-      const at = standSpot(map, { x: 3 + i * 7, y: 6 + i * 8 }, true);
+      const at = standSpot(map, { x: 3 + i * 7, y: 6 + i * 8 }, true)!;
       // 첫 길의 트레이너는 그 길 풀숲의 종을 한두 레벨 아래로 — 스타터 한 마리로 넘을 수 있어야 한다(Lv4~6 바람삐가 풀 스타터를 이겼다).
       const first = r.level <= 6;
       const team = first ? Array.from({ length: i === 2 ? 2 : 1 }, (_, k) => wildPool[(i + k) % wildPool.length]!) : pickSpecies(r.habitat, r.level + 1, undefined, i === 2 ? 2 : 1);
@@ -762,11 +764,19 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const gruntCount = i < 3 ? 3 : 4;
     const entry = entries.get(map.id)!;
     const placed: Point[] = [];
+    // 장치를 모두 푼 뒤의 지도 — 졸개가 풀린 길(1칸 통로)을 막으면 관장에게 못 간다(8관 검사: 달등 체육관 통로 한가운데에 졸개가 섰다).
+    // 풀기 전 지도에서 길을 끊지 않는 것만으로는 모자라, 풀린 지도에서도 관장 곁까지 닿는 자리에만 세운다.
+    const solved: GameMap = { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles] };
+    for (const d of changes) if (d.kind === "changeTile") (d.layer === "upper" ? solved.upperTiles : solved.lowerTiles)[d.y * map.width + d.x] = d.tile;
+    const leaderSides = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([dx, dy]) => coord({ x: leader.x + dx!, y: leader.y + dy! }));
+    const keepsRoute = (p: Point) => { const open = walkable(solved, p); return leaderSides.some(side => open.has(side)); };
     for (let k = 0; k < gruntCount; k++) {
       const t = (k + 1) / (gruntCount + 1);
       const wanted = { x: Math.round(entry.x + (leader.x - entry.x) * t), y: Math.round(entry.y + (leader.y - entry.y) * t) };
       const gruntLevel = Math.max(2, g.level - 3 + (k >> 1));
-      const standing = standSpot(map, wanted, true, placed); placed.push(standing);
+      const standing = standSpot(map, wanted, true, placed, true, keepsRoute);
+      if (!standing) continue;
+      placed.push(standing);
       battle(map, `grunt_${k}`, ["수련생", "견습 조련사", "체육관 단원", "문하생"][k % 4]!, standing, pickSpecies("", gruntLevel, gymType(i, g), k === gruntCount - 1 && gruntLevel >= 8 ? 2 : 1), gruntLevel,
         `${map.id}_grunt_${k}_won`, ["관장님께 가려면 먼저 나를 넘어야 해!", "여기 장치를 푼 실력, 내 동료들로 확인해 볼게.", "관장님의 제자로서 그냥 보낼 수는 없지!", "마지막으로 나와 겨뤄 보자. 지면 돌아가 다시 훈련이야."][k % 4]!,
         [gain("item_potion", 1), text("관장에게 가는 길이 한 걸음 가까워졌다.")], undefined, undefined, true);
