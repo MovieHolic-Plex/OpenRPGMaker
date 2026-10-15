@@ -64,6 +64,28 @@ const RARES = [
 
 const sid = (slug: string): string => `mx_species_${slug}`;
 const moveId = (type: string, tier: number): string => `mx_skill_${type}_${tier}`;
+
+/** 날씨 기술(포켓몬식): 주 타입이 불·물·바위·땅·얼음인 계통이 Lv30 에 배운다. 쾌청·비·모래바람·싸라기눈. */
+const WEATHER_MOVES: Readonly<Record<string, { readonly id: string; readonly name: string; readonly kind: "sun" | "rain" | "sandstorm" | "hail"; readonly elementId: string; readonly description: string }>> = {
+  fire: { id: "mx_skill_weather_sun", name: "햇살 부르기", kind: "sun", elementId: "fire", description: "햇살을 강하게 만든다. 5차례 동안 불 기술은 강해지고 물 기술은 약해진다." },
+  water: { id: "mx_skill_weather_rain", name: "소나기 부르기", kind: "rain", elementId: "water", description: "비를 부른다. 5차례 동안 물 기술은 강해지고 불 기술은 약해진다." },
+  rock: { id: "mx_skill_weather_sand", name: "모래바람 부르기", kind: "sandstorm", elementId: "rock", description: "모래바람을 일으킨다. 5차례 동안 매 차례 말에 바위·땅 이외의 몬스터가 피해를 입는다." },
+  ground: { id: "mx_skill_weather_sand", name: "모래바람 부르기", kind: "sandstorm", elementId: "rock", description: "모래바람을 일으킨다. 5차례 동안 매 차례 말에 바위·땅 이외의 몬스터가 피해를 입는다." },
+  ice: { id: "mx_skill_weather_hail", name: "싸라기눈 부르기", kind: "hail", elementId: "ice", description: "싸라기눈을 내린다. 5차례 동안 매 차례 말에 얼음 이외의 몬스터가 피해를 입는다." },
+};
+
+export function buildWeatherMoves(project: Project): SkillRecord[] {
+  const chartTypes = new Set(project.system.typeChart?.types ?? []);
+  const seen = new Set<string>();
+  return Object.values(WEATHER_MOVES).flatMap(move => {
+    if (seen.has(move.id) || !chartTypes.has(move.elementId)) return [];
+    seen.add(move.id);
+    return [normalizeSkillRecord({
+      id: move.id, name: move.name, elementId: move.elementId, scope: "self", power: 0, maxPp: 5, hitRate: 100, successRate: 100, variance: 0,
+      mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "support" }, weather: { kind: move.kind }, description: move.description,
+    })];
+  });
+}
 /** 하네스 번들에 앞·뒤가 **둘 다** 있는 종(앞만 있으면 앞뒤가 다른 생물로 보이므로 기존 그림 유지). */
 function harnessArt(slug: string): { readonly front: string; readonly back: string } | undefined {
   const art = harnessArtForCampaignSpecies(sid(slug));
@@ -234,7 +256,7 @@ export function learnset(primary: string, secondary: string) {
     // full recovery loop. Recovery follows the second attack, at level 13.
     const learnLevel = tier === 6 && ["normal", "grass", "dragon"].includes(type) && level === 7 ? 13 : level;
     return [{ level: learnLevel, skillId }];
-  }).sort((a, b) => a.level - b.level);
+  }).concat(WEATHER_MOVES[primary] ? [{ level: 30, skillId: WEATHER_MOVES[primary]!.id }] : []).sort((a, b) => a.level - b.level);
 }
 
 /** Configures only this content layer. Call after the native Gen1 preset provides
@@ -251,7 +273,7 @@ export function configureExpeditionRoster(project: Project): void {
     if (replacedArt.some(prefix => id.startsWith(prefix))) continue;
     project.assets.uploaded[id] = { ...asset, meta: { ...asset.meta } };
   }
-  const moves = buildMoves(project);
+  const moves = [...buildMoves(project), ...buildWeatherMoves(project)];
   const moveIds = new Set(moves.map(move => move.id));
   project.database.skills = [...project.database.skills.filter(move => !moveIds.has(move.id)), ...moves];
   const records: MonsterSpeciesRecord[] = FAMILIES.flatMap(family => family.slugs.map((slug, index) => {

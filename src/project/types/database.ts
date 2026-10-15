@@ -308,6 +308,11 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /**
+   * 날씨: 이 기술이 명중하면 전투 날씨를 바꾼다(포켓몬식 쾌청·비·모래바람·싸라기눈). 몇 차례 동안 같은 타입 기술의 피해를 키우거나 줄이고,
+   * 모래바람·싸라기눈은 차례 말 피해를 준다. 전투 한 번 동안만 유지(저장 안 함). gen1 전투 모델만. 생략 = 날씨 없음(기존 프로젝트는 저장 바이트 그대로).
+   */
+  weather?: SkillWeather;
   /** Gen1 move PP cap. Omitted for legacy projects that have not opted into per-move PP yet. */
   maxPp?: number;
   /** Gen1's high-critical move class. Omission is the legacy-compatible normal class. */
@@ -393,6 +398,14 @@ export interface SkillArea {
 export interface SkillMpCost {
   flat: number;
   percentMax: number;
+}
+
+export type SkillWeatherKind = "sun" | "rain" | "sandstorm" | "hail";
+
+export interface SkillWeather {
+  kind: SkillWeatherKind;
+  /** 지속 차례 3~8. 생략 = 5. */
+  turns?: number;
 }
 
 export type SkillEffect =

@@ -40,6 +40,7 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
@@ -1210,6 +1211,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     };
   }
 
+  /** 시퀀서가 지금까지 재생한 날씨 변화만 반영한 날씨(표시 전용). 아직 재생하지 않은 날씨 엔트리가 없으면 undefined(스냅샷 그대로). */
+  function pendingWeatherView(snapshot: BattleSnapshot): BattleFieldPresentation["weather"] {
+    if (!snapshot.timeline.some((entry) => entry.sequence > playedTimelineSequence && entry.weatherAfter !== undefined)) return undefined;
+    let view: BattleFieldPresentation["weather"] = null;
+    for (const entry of snapshot.timeline) {
+      if (entry.sequence > playedTimelineSequence) break;
+      if (entry.weatherAfter !== undefined) view = entry.weatherAfter;
+    }
+    return view;
+  }
+
   /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러진 적 다음 몬스터는 런타임에선 이미 서 있지만,
    *  화면에는 그 교체 비트(「○○는 △△를 내보냈다!」)가 재생될 때 나와야 한다. 아직 재생하지 않은 적 교체가
    *  가리키는 적을 숨긴다 — 앞 몬스터가 쓰러지기도 전에 HP 상자 둘·겹친 그림이 보였다(2026-10-07 관장전 실측). */
@@ -1251,6 +1263,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       onField: options.onField,
       rollingHp,
       stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
+      weather: sequenceBusy ? pendingWeatherView(snapshot) : undefined,
       resultShown: showingResult,
     };
     // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
