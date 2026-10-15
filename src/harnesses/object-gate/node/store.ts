@@ -1,12 +1,34 @@
 /** 영수증·프로필 파일 저장소(노드). 경로 규칙은 seed.json 과 Python object_gate 가 같이 쓴다. */
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { PNG } from 'pngjs';
-import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateProfileRecord, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
+import { OBJECT_GATE_PROFILE, objectGatePixelSha256, objectGateProfileHash, type ObjectGateFrontPropApproval, type ObjectGateProfileRecord, type ObjectGateReceipt, type ObjectGateStyleKind } from '../../_core/objectGate';
 
 export const GATE_DATA = resolve(process.env.OBJECT_GATE_DATA ?? 'harness-data/object-gate');
 const receiptPath = (sha: string) => resolve(GATE_DATA, 'receipts', sha.slice(0, 2), `${sha}.json`);
+
+const approvalPath = (sha: string) => resolve(GATE_DATA, 'approvals', 'front_prop', sha.slice(0, 2), `${sha}.json`);
+export function readApproval(sha: string): ObjectGateFrontPropApproval | null {
+  const path = approvalPath(sha);
+  return existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) as ObjectGateFrontPropApproval : null;
+}
+export function writeApproval(approval: ObjectGateFrontPropApproval): string {
+  const path = approvalPath(approval.pixelSha256);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, `${JSON.stringify(approval, null, 1)}\n`);
+  return path;
+}
+export function removeApproval(sha: string): boolean {
+  const path = approvalPath(sha);
+  if (!existsSync(path)) return false;
+  unlinkSync(path); return true;
+}
+export function listApprovals(): ObjectGateFrontPropApproval[] {
+  const root = resolve(GATE_DATA, 'approvals', 'front_prop');
+  if (!existsSync(root)) return [];
+  return readdirSync(root).flatMap(dir => readdirSync(resolve(root, dir)).filter(f => f.endsWith('.json')).map(f => JSON.parse(readFileSync(resolve(root, dir, f), 'utf8')) as ObjectGateFrontPropApproval));
+}
 
 export function readPng(path: string): { width: number; height: number; data: Uint8Array; png: Buffer } {
   const png = readFileSync(path);

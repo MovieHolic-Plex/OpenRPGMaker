@@ -1,7 +1,9 @@
 import { spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 import { OBJECT_GATE_PROFILE, objectGateRefusal, type ObjectGateContext, type ObjectGateKind } from '../../_core/objectGate';
-import { calibratedProfiles, gateProfileHash, listReceipts, pngPixelSha256, readProfiles, readReceipt } from './store';
+import { createInterface } from 'node:readline/promises';
+import { validFrontPropApproval } from '../../_core/objectGate';
+import { calibratedProfiles, gateProfileHash, listApprovals, listReceipts, pngPixelSha256, readApproval, readProfiles, readReceipt, removeApproval, writeApproval } from './store';
 
 const spawnBun = (argv: string[]): Promise<number> => new Promise((done, reject) => {
   const child = spawn('bun', [resolve('src/harnesses/object-gate/node/judge.mts'), ...argv], { stdio: 'inherit', cwd: process.cwd() });
@@ -16,9 +18,39 @@ export async function run(argv: string[]): Promise<number> {
     const png = option('png'), context = option('context') as ObjectGateContext | undefined;
     if (!png || !context) throw Error('check --png <그림> --context bundle|shared|store|workshop-local [--kind 종류]');
     const sha = await pngPixelSha256(resolve(png));
-    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles() });
+    const refusal = objectGateRefusal({ receipt: readReceipt(sha), pixelSha256: sha, kind: option('kind') as ObjectGateKind | undefined, context, calibratedProfiles: calibratedProfiles(), approval: readApproval(sha) });
     console.log(refusal ? `거절: ${refusal}` : `통과 (${sha.slice(0, 12)})`);
     return refusal ? 3 : 0;
+  }
+  // 정면형 소품(front_prop) 종류 선언의 사람 승인. 감독·에이전트는 승인하지 않는다 — 터미널(대화형)에서 사람이 그림 해시 앞 8자를 직접 쳐야 기록된다(파이프·백그라운드·--yes 는 거절).
+  if (stage === 'approve-front-prop') {
+    const png = option('png'), by = option('by')?.trim();
+    if (!png || !by) throw Error('approve-front-prop --png <그림> --by <승인자 이름> [--note 메모]  (사람이 터미널에서 직접)');
+    if (!process.stdin.isTTY || !process.stdout.isTTY) { console.error('거절: 승인은 사람이 터미널에서 직접 해야 한다(대화형 입력만 받는다). 감독·에이전트·스크립트는 승인할 수 없다.'); return 3; }
+    const sha = await pngPixelSha256(resolve(png));
+    const receipt = readReceipt(sha);
+    if (!receipt) { console.error('거절: 이 그림의 판정 영수증이 없다 — object-gate review --kind front_prop 로 먼저 판정받아라(승인은 판정 뒤에 한다).'); return 3; }
+    if (receipt.kind !== 'front_prop') { console.error(`거절: 영수증 종류가 front_prop 이 아니다(${receipt.kind}).`); return 3; }
+    console.log(`그림 ${resolve(png)}\n  화소 해시 ${sha}\n  판정 ${receipt.verdict} · 3/4 ${receipt.view34?.verdict ?? '-'} · 화풍 ${receipt.style?.verdict ?? '-'}\n  이 그림은 윗면이 없는 정면형 소품(간판·건조 틀)이고, 그래서 3/4 판정을 면제해도 좋다고 승인합니다. 그림이 한 화소라도 바뀌면 승인은 무효가 됩니다.`);
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const answer = (await rl.question(`승인하려면 해시 앞 8자(${sha.slice(0, 8)})를 입력: `)).trim(); rl.close();
+    if (answer !== sha.slice(0, 8)) { console.error('입력이 달라 승인하지 않았다.'); return 3; }
+    const file = writeApproval({ schema: 'oprn-object-gate-front-prop-approval/1', pixelSha256: sha, kind: 'front_prop', approvedBy: by, approvedAt: new Date().toISOString(), by: 'human', ...(option('note') ? { note: option('note') } : {}) });
+    console.log(`승인 기록 ${file}`);
+    return 0;
+  }
+  if (stage === 'revoke-front-prop') {
+    const png = option('png'); if (!png) throw Error('revoke-front-prop --png <그림>');
+    const sha = await pngPixelSha256(resolve(png));
+    console.log(removeApproval(sha) ? `승인을 철회했다 (${sha.slice(0, 12)})` : '이 그림에는 승인 기록이 없다');
+    return 0;
+  }
+  if (stage === 'approvals') {
+    const approvals = listApprovals(), receipts = listReceipts();
+    const fp = receipts.filter(r => r.kind === 'front_prop');
+    console.log(`front_prop 영수증 ${fp.length}장 — 승인됨 ${fp.filter(r => validFrontPropApproval(readApproval(r.pixelSha256), r.pixelSha256)).length}, 승인 기록 ${approvals.length}건`);
+    for (const a of approvals) console.log(`  ${a.pixelSha256.slice(0, 12)} ${a.approvedBy} ${a.approvedAt}${a.note ? ` — ${a.note}` : ''}`);
+    return 0;
   }
   if (stage === 'status') {
     const current = await gateProfileHash();
@@ -37,5 +69,5 @@ export async function run(argv: string[]): Promise<number> {
     console.log(`  현재 프로필 영수증 ${now.length}장 — 통과 ${now.filter(r => r.verdict === 'pass').length}, 보류 ${now.filter(r => r.verdict === 'refer').length} (3/4 통과 ${now.filter(r => r.view34?.verdict === 'pass').length}, 화풍 통과 ${now.filter(r => r.style?.verdict === 'pass').length}) · 옛 프로필 ${receipts.length - now.length}장은 무효(재검수 필요: rereview)`);
     return 0;
   }
-  throw Error('단계: review | calibrate | rereview | check | status | audit | preview');
+  throw Error('단계: review | calibrate | rereview | check | status | audit | preview | approve-front-prop | revoke-front-prop | approvals');
 }
