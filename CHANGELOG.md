@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.224.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — 12 species front/back picks + bundle build (supervisor-delegated) (#2607) (`5492828`)
+- **battle** — pokemon battle phase 2 - typewriter text, capture shakes, evolution scene, level-up stat box (#2605) (`d7481be`)
+
+### 수정
+
+- **ai** — themeScene maps carry an explicit mapRole; 방어/방패 no longer read as interior (#2606) (`61e6db9`)
+
 ## 0.223.0 — 2026-10-15
 
 ### 기능
