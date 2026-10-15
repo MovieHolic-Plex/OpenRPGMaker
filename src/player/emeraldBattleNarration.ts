@@ -1,5 +1,6 @@
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterBattleStatsForSpecies, monsterSpeciesById } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { withJosa } from "@/util/josa";
@@ -90,7 +91,33 @@ export function emeraldIntroSendOut(snapshot: BattleSnapshot): string | undefine
   return trainer && first ? emeraldTrainerSendOutLine(trainer.name, first.name) : undefined;
 }
 
-export type EmeraldResultRow = { readonly kind: string; readonly label: string; readonly value: string };
+export type EmeraldStatLine = { readonly label: string; readonly value: string };
+export type EmeraldResultRow = {
+  readonly kind: string;
+  readonly label: string;
+  readonly value: string;
+  /** 레벨업 능력치 상자. delta = 오른 양(+3), final = 새 수치. 문장 창 위에 얹히고 마지막으로 공개된 줄일 때만 보인다. */
+  readonly stats?: { readonly mode: "delta" | "final"; readonly lines: readonly EmeraldStatLine[] };
+};
+
+/** 3세대 레벨업 상자: 먼저 오른 양, 확인키 뒤 새 수치. 몬스터 능력치 식(monsterBattleStatsForSpecies)을 그대로 쓴다. */
+function levelUpStatRows(snapshot: BattleSnapshot, levelUp: { readonly instanceId: string; readonly fromLevel: number; readonly toLevel: number }): EmeraldResultRow[] {
+  const instance = snapshot.eventState.monsterCollection?.instances[levelUp.instanceId];
+  if (!instance) return [];
+  const species = monsterSpeciesById(store.getCurrent(), instance.speciesId);
+  if (!species) return [];
+  const before = monsterBattleStatsForSpecies(species, levelUp.fromLevel, instance.ivs);
+  const after = monsterBattleStatsForSpecies(species, levelUp.toLevel, instance.ivs);
+  const defs: readonly [string, "maxHp" | "attack" | "defense" | "mind" | "agility"][] = [
+    ["체력", "maxHp"], ["공격", "attack"], ["방어", "defense"], ["지능", "mind"], ["민첩", "agility"],
+  ];
+  const delta = defs.map(([label, key]) => ({ label, value: `+${after[key] - before[key]}` }));
+  const final = defs.map(([label, key]) => ({ label, value: String(after[key]) }));
+  return [
+    { kind: "msg", label: "", value: "", stats: { mode: "delta", lines: delta } },
+    { kind: "msg", label: "", value: "", stats: { mode: "final", lines: final } },
+  ];
+}
 
 /** 승리·패배를 문장 창 쪽들로. 도주는 쪽이 없다(「무사히 도망쳤다!」로 닫힌다). */
 export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId: string) => string): EmeraldResultRow[] {
@@ -119,7 +146,12 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
     if (exp > 0) rows.push({ kind: "msg", label: `${withJosa(actor.name, "은/는")} 경험치를 ${exp} 얻었다!`, value: "" });
     const levelUp = levelUps.get(instanceId);
     if (!levelUp) continue;
-    rows.push({ kind: "msg", label: `${withJosa(levelUp.name, "은/는")} ${withJosa(`레벨 ${levelUp.toLevel}`, "이/가")} 되었다!`, value: "" });
+    const statRows = levelUpStatRows(snapshot, levelUp);
+    const levelLine = `${withJosa(levelUp.name, "은/는")} ${withJosa(`레벨 ${levelUp.toLevel}`, "이/가")} 되었다!`;
+    // 첫 상자(오른 양)는 레벨 문장과 같은 줄에 붙는다 — 문장 줄을 따로 쌓으면 상자가 한 박자 늦게 뜬다.
+    if (statRows.length > 0) rows.push({ kind: "msg", label: levelLine, value: "", stats: statRows[0]!.stats });
+    else rows.push({ kind: "msg", label: levelLine, value: "" });
+    if (statRows.length > 1) rows.push(statRows[1]!);
     for (const skillId of levelUp.learnedSkillIds) {
       rows.push({ kind: "msg", label: `${withJosa(levelUp.name, "은/는")} ${withJosa(skillName(skillId), "을/를")} 배웠다!`, value: "" });
     }

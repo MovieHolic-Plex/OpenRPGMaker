@@ -1,7 +1,8 @@
 import { setCharacterBaseOrigin } from "./characterOrigin";
+import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
 import { syncTerrainWater } from "./terrainWater";
-import { prepareFieldAbility } from "@/player/fieldAbility";
+import { prepareFieldAbility, prepareMonsterFieldAbility } from "@/player/fieldAbility";
 import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -658,7 +659,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     if (this.running) return { ok: false, message: "지금은 쓸 수 없습니다" };
     const delta = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[this.facing];
     const front = findRuntimeEventInScene(this as unknown as Parameters<typeof findRuntimeEventInScene>[0], this.tileX + delta[0]!, this.tileY + delta[1]!, "action");
-    const result = prepareFieldAbility(project, this.session, actorId, skill, { facing: this.facing, eventId: front?.event.id });
+    // 몬스터 파티원(인스턴스 id)이 쓰면 MP 없이 파티 해석기로 아는지만 본다 — 배우 id 와 겹치지 않는다.
+    const frontCell = { facing: this.facing, eventId: front?.event.id };
+    const result = this.session.monsterInstances?.[actorId]
+      ? prepareMonsterFieldAbility(project, this.session, actorId, skill, frontCell)
+      : prepareFieldAbility(project, this.session, actorId, skill, frontCell);
     if (result.kind === "unusable") return { ok: false, message: result.message };
     const commonEvent = (project.commonEvents ?? []).find((event) => event.id === result.commonEventId);
     void import("@/player/playSceneInterpreter").then(({ runCommands }) => runCommands(this, commonEvent?.commands ?? [], front?.event.id));
@@ -695,7 +700,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();
-    this.runtimeTimers.clear();
+    // 불러온 세션의 카운트다운을 되살린다 — 비우기만 하면 저장 때 흐르던 타이머가 멈춘 채 남았다.
+    restoreRuntimeTimers(this);
     this.moving = false;
     this.centerCamera();
     // 인게임 로드: 이전 오디오 정지 후 저장된 BGM/BGS 재개.

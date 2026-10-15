@@ -6,13 +6,14 @@ import { demoEnemy, demoTroop } from '@/project/defaults/scarloxyDemoGame';
 import { expeditionEnemyActions } from '@/project/examples/monsterExpedition/enemyActions';
 import { bases, buildMoves, learnset, EXPEDITION_EXP_CURVE } from '@/project/examples/monsterExpedition/roster';
 import { replacer } from '@/project/examples/monsterExpedition/campaignNames';
+import { isUntouchedDefaultTypeChart, typeChartForPreset } from '@/project/typeCharts';
 import { ensureMonsterGraphic, pickUnusedMonsterResource } from './monsterGraphicAssignment';
 
 // 도감을 한 번에 채우는 배치 도구 둘. define_monster_species 는 한 종씩이라 100종 도감은 호출 100번 + 진화 순서 맞추기였다
 // (2026-10-14 자유도 감사: 154호출). 여기서는 계통 단위로 한 번에 정의하고, 계통마다 따로 검증해 일부가 실패해도 나머지는 남긴다.
 
 const SLUG = /^[a-z][a-z0-9_]{1,30}$/;
-const BASE_TYPES = new Set(['normal', 'fighting', 'flying', 'poison', 'ground', 'rock', 'bug', 'ghost', 'fire', 'water', 'grass', 'electric', 'psychic', 'ice', 'dragon']);
+const BASE_TYPES = new Set(['normal', 'fighting', 'flying', 'poison', 'ground', 'rock', 'bug', 'ghost', 'fire', 'water', 'grass', 'electric', 'psychic', 'ice', 'dragon', 'dark', 'steel', 'fairy']);
 const CAPTURE_RATES = [0.72, 0.42, 0.2];
 const MAX_FAMILIES = 40;
 
@@ -28,6 +29,22 @@ function ensureTypeMoves(draft: Project): void {
   const have = new Set(draft.database.skills.map(s => s.id));
   const missing = buildMoves(draft).filter(m => !have.has(m.id));
   if (missing.length) draft.database.skills.push(...missing);
+}
+
+/** 상성표가 아직 기본(불·물·풀 셋)이면 그대로는 normal·ghost 같은 흔한 타입이 전부 거부된다 — 요청이 쓴 타입에 맞춰 표준 상성표를 먼저 깐다. 이미 손댄 표는 건드리지 않는다(허용 밖 타입은 계통별 오류로 안내). */
+function seedTypeChartForFamilies(draft: Project, families: FamilyArg[]): string | undefined {
+  if (!isUntouchedDefaultTypeChart(draft.system.typeChart)) return undefined;
+  const wanted = new Set<string>();
+  for (const f of families) {
+    for (const t of asStrings(f.types) ?? []) wanted.add(t);
+    for (const st of Array.isArray(f.stages) ? f.stages as StageArg[] : []) for (const t of asStrings(st?.types) ?? []) wanted.add(t);
+  }
+  if (![...wanted].some(t => !['fire', 'water', 'grass'].includes(t))) return undefined;
+  const preset = wanted.has('fairy') ? 'gen6' : 'gen3';
+  const chart = typeChartForPreset(preset);
+  if (!chart) return undefined;
+  draft.system.typeChart = chart;
+  return `상성표가 기본(불·물·풀)이라 요청한 타입을 쓸 수 없어 표준 ${preset} 상성표(${chart.types.length}타입)를 먼저 깔았습니다 — 다른 표를 쓰려면 set_type_chart 를 부르세요.`;
 }
 
 function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, takenNames: Set<string>, overwrite: boolean, autoGraphics: boolean, usedArt: Set<string>, warnings: string[]): string[] {
@@ -52,7 +69,7 @@ function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, tak
     const types = asStrings(st.types) ?? familyTypes;
     if (!types.length || types.length > 2) throw new Error(`${name}: types 는 1~2개`);
     const unknown = types.filter(t => !chart.has(t));
-    if (unknown.length) throw new Error(`${name}: 알 수 없는 타입 ${unknown.join(', ')} — 허용: ${[...chart].join(', ')}`);
+    if (unknown.length) throw new Error(`${name}: 알 수 없는 타입 ${unknown.join(', ')} — 허용: ${[...chart].join(', ')}.${unknown.some(t => ['dark', 'steel', 'fairy'].includes(t)) ? " 악·강철·페어리는 set_type_chart {preset:'gen3'|'gen6'} 를 먼저 부르면 상성표에 들어갑니다." : ' 새 타입은 set_type_chart 로 상성표에 먼저 추가하세요.'}`);
     const evolveAt = typeof st.evolveAtLevel === 'number' ? Math.round(st.evolveAtLevel) : [16, 32][i]!;
     if (i < stages.length - 1 && (evolveAt <= previousLevel || evolveAt > 99)) throw new Error(`${name}: evolveAtLevel 은 앞 단계보다 크고 99 이하여야 합니다(받은 값 ${evolveAt})`);
     if (i < stages.length - 1) previousLevel = evolveAt;
@@ -192,9 +209,10 @@ const defineMonsterFamilies: ToolDefinition = {
     if (families.length > MAX_FAMILIES) throw new ToolError(`한 번에 ${MAX_FAMILIES}계통까지. 나눠서 호출하세요.`, { code: 'invalid-args' });
     const overwrite = args.overwrite === true;
     const autoGraphics = args.autoGraphics === true;
+    const seeded = seedTypeChartForFamilies(draft, families);
     ensureTypeMoves(draft);
     const usedArt = new Set<string>([...(draft.database.monsterSpecies ?? []).map(s => s.graphic.monsterResourceId), ...draft.database.enemies.map(e => e.monsterResourceId)].filter((id): id is string => !!id));
-    const warnings: string[] = [];
+    const warnings: string[] = seeded ? [seeded] : [];
     const failed: Failure[] = [];
     const created: { family: string; ids: string[] }[] = [];
     const seenKeys = new Set<string>();

@@ -116,6 +116,19 @@ export function gameWeekday(time: GameTime | undefined, daysPerSeason: number, s
 export interface ActorQueryOptions {
   readonly daysPerSeason?: number;
   readonly startWeekday?: number;
+  /**
+   * 파티가 아는 스킬 id 집합(필드 스킬 게이트). 호출측이 프로젝트로 계산해 넘긴다(partySkills.partyKnownSkillIds) —
+   * 직업·레벨·성장·몬스터 학습표는 프로젝트가 있어야 풀린다. 생략하면 세션에 이미 적힌 스킬(actorSkillIds·몬스터 skillIds)만 본다.
+   */
+  readonly partySkillIds?: () => ReadonlySet<string>;
+}
+
+/** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
+export function sessionKnownSkillIds(session: ActorQuerySession & { readonly actorSkillIds?: Readonly<Record<string, readonly string[]>>; readonly monsterParty?: readonly string[]; readonly monsterInstances?: Readonly<Record<string, { readonly skillIds?: readonly string[] }>> }): Set<string> {
+  const ids = new Set<string>();
+  for (const actorId of session.partyActorIds) for (const skillId of session.actorSkillIds?.[actorId] ?? []) ids.add(skillId);
+  for (const instanceId of session.monsterParty ?? []) for (const skillId of session.monsterInstances?.[instanceId]?.skillIds ?? []) ids.add(skillId);
+  return ids;
 }
 
 export function evalActorQueryCondition(
@@ -133,6 +146,11 @@ export function evalActorQueryCondition(
       return actorHasState(session, condition.actorId, condition.stateId) === condition.present;
     case "partyLeader":
       return session.partyActorIds[0] === condition.actorId;
+    case "partyKnowsSkill": {
+      if (!condition.skillId.trim()) return false;
+      const known = (options.partySkillIds?.() ?? sessionKnownSkillIds(session)).has(condition.skillId);
+      return known === (condition.present !== false);
+    }
     case "partySize":
       return compareVariableValue(session.partyActorIds.length, condition.op, condition.value);
     case "facing": {
@@ -197,6 +215,7 @@ export const ACTOR_QUERY_CONDITION_KINDS = [
   "actorStat",
   "actorState",
   "partyLeader",
+  "partyKnowsSkill",
   "partySize",
   "facing",
   "relativeFacing",

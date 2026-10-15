@@ -18,6 +18,8 @@ import { projectWireView } from "./serialize";
  * 항목 글과 투영본 글을 따로 쥐면 같은 타일셋 내용이 두 벌 남았다(2026-10-05 실측: 조수 턴 시작 뒤 렌더러 힙에서 약 205MB + 280MB).
  */
 const fieldPieces = new WeakMap<object, readonly string[]>();
+/** fieldPieces 와 같은 순서·같은 길이의 키 목록(값이 undefined 인 키는 둘 다 건너뛴다). */
+const fieldKeys = new WeakMap<object, readonly string[]>();
 /** 배열 항목처럼 필드로 나누지 않는 항목의 글. */
 const wholePieces = new WeakMap<object, string | null>();
 
@@ -29,11 +31,13 @@ function fieldsOf(entry: Record<string, unknown>): readonly string[] {
   const hit = fieldPieces.get(entry);
   if (hit) return hit;
   const fields: string[] = [];
+  const keys: string[] = [];
   for (const key of Object.keys(entry)) {
     const text = JSON.stringify(entry[key]) as string | undefined;
-    if (text !== undefined) fields.push(`${JSON.stringify(key)}:${text}`);
+    if (text !== undefined) { fields.push(`${JSON.stringify(key)}:${text}`); keys.push(key); }
   }
   fieldPieces.set(entry, fields);
+  fieldKeys.set(entry, keys);
   return fields;
 }
 
@@ -110,7 +114,6 @@ export function markRoundtripPassed(project: Project): void {
  */
 /** 참고문서를 뺀 structureKits 조각 — 키트에 참고문서가 있을 때만 따로 쥔다(없으면 항목 조각을 그대로 쓴다). */
 const strippedKitPieces = new WeakMap<object, string | null>();
-const REFERENCE_DOCUMENTS_FIELD = `${JSON.stringify("referenceDocuments")}:`;
 const STRUCTURE_KITS_FIELD = `${JSON.stringify("structureKits")}:`;
 function strippedKitsField(entry: Record<string, unknown>, field: string): string {
   let hit = strippedKitPieces.get(entry);
@@ -126,14 +129,40 @@ function strippedKitsField(entry: Record<string, unknown>, field: string): strin
   }
   return hit ?? field;
 }
+/**
+ * 칸 수(`count`)와 길이만 대조되는 칸별 배열. 통과한 항목에서는 같은 길이의 `null` 배열로 갈아 끼운다.
+ *
+ * 왜(2026-10-15 실측, 새 프로젝트 기본 자료 · 타일셋 46개 · 왕복 글 49.7MB 의 대부분이 tileMeta·passability·priority·terrain):
+ * 되읽기(`validateTileset`)는 이 넷을 «길이 == count» 로만 본다(tileMeta 는 null 칸을 건너뛴다). 같은 불변 객체는 이미 실제 내용으로
+ * 그 검사를 통과했고(roundtripPassed), 되읽은 프로젝트는 던지는지만 보고 버려진다. 되읽기 경로에서 이 넷을 읽는 곳은 validateTileset 뿐이다 —
+ * 실측(2026-10-15): `deserializeParsed` 가 도는 동안 타일셋 항목의 속성 읽기를 Proxy 로 가로채 호출 모듈을 집계하니 passability·priority·terrain·tileMeta 는
+ * `io/shapeResourceFields.ts`(validateTileset)만 읽었다. spatial 쪽은 `structureKits`·`count` 같은 다른 필드를 읽고 그 필드들은 그대로 둔다.
+ * 새 되읽기 단계가 이 넷을 읽게 되면 이 투영을 함께 고쳐야 한다. 새 항목·바뀐 항목(통과 기록 없음)은 전부 실제 글이다.
+ */
+const PER_TILE_ARRAY_FIELDS = new Set(["tileMeta", "passability", "priority", "terrain"]);
+/** 통과한 항목의 왕복 글 투영본. 항목이 불변이라 객체 하나에 글 하나다(항목 글 조각 `fieldPieces` 와 달리 큰 배열을 쥐지 않는다). */
+const roundtripPieces = new WeakMap<object, string>();
 function roundtripTilesetPiece(entry: unknown): string | undefined {
   if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return pieceOf(entry);
+  const hit = roundtripPieces.get(entry);
+  if (hit !== undefined) return hit;
   const parts: string[] = [];
-  for (const field of fieldsOf(entry)) {
-    if (field.startsWith(REFERENCE_DOCUMENTS_FIELD)) continue;
-    parts.push(field.startsWith(STRUCTURE_KITS_FIELD) ? strippedKitsField(entry, field) : field);
+  const fields = fieldsOf(entry);
+  const keys = fieldKeys.get(entry)!; // fieldsOf 가 채웠다 — 키와 조각이 한 쌍이다.
+  for (let index = 0; index < fields.length; index += 1) {
+    const key = keys[index]!;
+    const field = fields[index]!;
+    if (key === "referenceDocuments") continue;
+    const value = entry[key];
+    if (PER_TILE_ARRAY_FIELDS.has(key) && Array.isArray(value)) {
+      parts.push(`${JSON.stringify(key)}:[${new Array<string>(value.length).fill("null").join(",")}]`);
+      continue;
+    }
+    parts.push(key === "structureKits" ? strippedKitsField(entry, field) : field);
   }
-  return `{${parts.join(",")}}`;
+  const piece = `{${parts.join(",")}}`;
+  roundtripPieces.set(entry, piece);
+  return piece;
 }
 
 /**

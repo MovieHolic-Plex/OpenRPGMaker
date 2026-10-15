@@ -122,7 +122,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_door {at:{x,y}, material}",
   "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
   "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean, stock?:[itemId]}",
-  "place_savepoint {at:{x,y}}",
+  "place_savepoint {at:{x,y}, mode?:\"both\"|\"slot\"|\"checkpoint\", heal?:boolean}",
   "place_examine_hotspots {spots:[{at:{x,y}, name, lines:[\"...\"]}]}",
   "place_storage_chest {at:{x,y}}",
   "place_inn {at:{x,y}, name?, price?:number, greeting?:string}",
@@ -402,7 +402,8 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     case "place_savepoint": {
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("세이브 위치가 없습니다");
-      return { step: { tool: stampTool, label: labelText ?? "세이브 포인트", args: { mapId, x: at.x, y: at.y } } };
+      const mode = args.mode === "slot" || args.mode === "checkpoint" || args.mode === "both" ? args.mode : undefined;
+      return { step: { tool: stampTool, label: labelText ?? "세이브 포인트", args: { mapId, x: at.x, y: at.y, ...(mode ? { mode } : {}), ...(args.heal === true ? { heal: true } : {}) } } };
     }
     case "place_examine_hotspots": {
       const raw = Array.isArray(args.spots) ? args.spots : Array.isArray(args.hotspots) ? args.hotspots : [];

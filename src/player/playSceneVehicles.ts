@@ -17,7 +17,7 @@ import {
   boardedVehicleId,
   parkedVehicleAt,
   setParkedVehicleLocation,
-  VEHICLE_CHARSET_TEXTURE_KEY,
+  vehicleSheet,
   VEHICLE_IDS,
   vehicleCharacterIndex,
   vehicleLocation,
@@ -99,7 +99,7 @@ export function syncVehicleSprites(scene: PlaySceneContext): void {
       sprites.delete(id);
       sprite = undefined;
     }
-    if (!location || location.mapId !== scene.map.id || !scene.textures.exists(VEHICLE_CHARSET_TEXTURE_KEY)) {
+    if (!location || location.mapId !== scene.map.id || !scene.textures.exists(vehicleSheet(id).textureKey)) {
       sprite?.destroy();
       sprites.delete(id);
       continue;
@@ -108,11 +108,11 @@ export function syncVehicleSprites(scene: PlaySceneContext): void {
     const x = characterSpriteX(location.x, tileSize);
     const y = characterSpriteY(location.y, tileSize);
     if (!sprite) {
-      sprite = scene.add.sprite(x, y, VEHICLE_CHARSET_TEXTURE_KEY, frame);
+      sprite = scene.add.sprite(x, y, vehicleSheet(id).textureKey, frame);
       placeCharacterSprite(sprite, "same");
       sprites.set(id, sprite);
     } else {
-      sprite.setTexture(VEHICLE_CHARSET_TEXTURE_KEY, frame);
+      sprite.setTexture(vehicleSheet(id).textureKey, frame);
       sprite.setPosition(x, y);
       updateCharacterDepth(sprite, "same");
     }

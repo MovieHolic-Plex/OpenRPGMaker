@@ -57,19 +57,72 @@ function collect(presences: readonly Presence[]): readonly Placed[] {
   return here.map(presence => ({ presence, region: presence.region ?? (presence === writer ? draft : null) }));
 }
 
-function render(): void {
-  const root = ensureLayer();
-  if (!root) return;
-  root.replaceChildren(...placed.map(({ presence, region }, index) => el("div", {
-    class: `ai-map-region${region ? "" : " is-cornered"}${isActive(presence) ? " is-pulse" : ""}`,
+/** 이름표 한 칸의 내용 글. 실행 중이면 지금 하는 일, 아니면 상태 라벨. */
+function tagText(presence: Presence): string {
+  return ` · ${presence.state === "working" ? presence.action : PRESENCE_LABEL[presence.state]}`;
+}
+
+function regionClass(presence: Presence, region: PresenceRegion | null): string {
+  return `ai-map-region${region ? "" : " is-cornered"}${isActive(presence) ? " is-pulse" : ""}`;
+}
+
+/** 칸 하나에 쓰인 마지막 글. 같으면 DOM 을 건드리지 않는다. */
+const written = new WeakMap<HTMLElement, { cls: string; tone: string; state: string; name: string; text: string; slot: string }>();
+
+function buildRegion(presence: Presence, region: PresenceRegion | null, index: number): HTMLElement {
+  const node = el("div", {
+    class: regionClass(presence, region),
     dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index) },
     children: [el("span", { class: "ai-map-region-tag", children: [
       el("span", { class: "ai-map-region-dot" }),
       el("b", { text: presence.name }),
-      el("span", { text: ` · ${presence.state === "working" ? presence.action : PRESENCE_LABEL[presence.state]}` }),
+      el("span", { text: tagText(presence) }),
     ] })],
-  })));
-  reposition();
+  });
+  // 좌표를 받기 전에는 보이지 않게 둔다 — 첫 배치가 다음 프레임이라도 왼쪽 위 구석에 깜빡이지 않게.
+  if (region) node.hidden = true;
+  written.set(node, { cls: node.className, tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index) });
+  return node;
+}
+
+/**
+ * 이름표 DOM 을 맞춘다. 같은 조수의 칸은 노드를 두고 달라진 글·속성만 고친다.
+ *
+ * 왜(2026-10-15 실측, 마을 96×80 · 조수 대본 스트림 24초): 조수 이벤트마다(도구 시작·끝·고스트 갱신 115번) 칸을 통째로 지우고 다시 만들고
+ * 곧바로 `getBoundingClientRect` 로 좌표를 읽었다. 방금 바뀐 DOM 위의 동기 읽기라 매번 강제 레이아웃(평균 10ms, 합 1.2s).
+ * 이제 칸이 달라지지 않은 호출은 DOM 을 건드리지 않고, 좌표는 프레임 시작의 감시 루프(watch)가 읽는다 — 어차피 그 프레임이 레이아웃을 한 번 돌린다.
+ */
+function render(): void {
+  const root = ensureLayer();
+  if (!root) return;
+  const existing = new Map<string, HTMLElement>();
+  for (const node of root.children) if (node instanceof HTMLElement && node.dataset.presenceId) existing.set(node.dataset.presenceId, node);
+  const order: HTMLElement[] = [];
+  placed.forEach(({ presence, region }, index) => {
+    const node = existing.get(presence.id);
+    existing.delete(presence.id);
+    if (!node) { order.push(buildRegion(presence, region, index)); return; }
+    const prev = written.get(node);
+    const next = { cls: regionClass(presence, region), tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index) };
+    if (!prev || prev.cls !== next.cls || prev.tone !== next.tone || prev.state !== next.state || prev.slot !== next.slot) {
+      // 좌표 상태(`is-cornered` 전환·style)는 감시 루프가 다시 맞춘다.
+      if (prev?.cls !== next.cls) { node.className = next.cls; delete node.dataset.rect; node.style.cssText = ""; node.hidden = region !== null; }
+      node.dataset.tone = next.tone; node.dataset.state = next.state; node.dataset.slot = next.slot;
+    }
+    if (!prev || prev.name !== next.name || prev.text !== next.text) {
+      const tag = node.querySelector(".ai-map-region-tag");
+      const nameEl = tag?.querySelector("b");
+      const textEl = tag?.lastElementChild;
+      if (nameEl && nameEl.textContent !== next.name) nameEl.textContent = next.name;
+      if (textEl && textEl.textContent !== next.text) textEl.textContent = next.text;
+    }
+    written.set(node, next);
+    order.push(node);
+  });
+  for (const node of existing.values()) node.remove();
+  // 순서가 같으면 DOM 을 건드리지 않는다.
+  const current = Array.from(root.children);
+  if (current.length !== order.length || order.some((node, i) => node !== current[i])) root.replaceChildren(...order);
   watch();
 }
 
@@ -106,6 +159,11 @@ function writeIfChanged(node: HTMLElement, rect: { left: number; top: number; wi
 
 function reposition(): void {
   if (!layer?.isConnected) return;
+  // 영역 없이 구석에 쌓이는 이름표뿐이면 읽을 좌표가 없다 — 프레임마다 레이아웃을 강제하지 않는다.
+  if (!placed.some(item => item.region)) {
+    for (const node of layer.querySelectorAll<HTMLElement>(".ai-map-region[data-rect]")) { node.style.cssText = ""; delete node.dataset.rect; }
+    return;
+  }
   const layerRect = layer.getBoundingClientRect();
   for (const node of layer.querySelectorAll<HTMLElement>(".ai-map-region")) {
     const entry = placed.find(item => item.presence.id === node.dataset.presenceId);

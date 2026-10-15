@@ -1,3 +1,4 @@
+import { bootMark } from "@/util/bootMarks";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
@@ -19,7 +20,7 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
-import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { canSaveDevProjectOverride, isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
@@ -335,6 +336,7 @@ class ProjectStore {
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const { project, authority, target } = await this.readRemoteProject();
+          bootMark("project-read");
           if (!project && target !== null && isLocalTarget(target)) {
             // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
             // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
@@ -378,6 +380,7 @@ class ProjectStore {
       // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
       if (seededNewLocalProject && canWriteTeamProject()) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
+      bootMark("project-normalized");
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
         this.loaded = false;
@@ -1523,7 +1526,9 @@ class ProjectStore {
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
-        if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
+        // 쓰지 않을 위치면 사본을 만들지 않는다 — 예전에는 인자를 먼저 만들어 매 저장마다 전체 복제(새 프로젝트 기본 자료 약 1.2s)를 하고 버렸다.
+        // 쓸 때도 곧바로 직렬화만 하므로 복제 없는 보기로 충분하다.
+        if (canSaveDevProjectOverride() && saveDevProjectOverride(projectViewWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
           if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
           return { kind: "saved-local", written: true };

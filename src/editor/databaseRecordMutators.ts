@@ -57,12 +57,16 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
     if (patch.fieldCommonEventId) record.fieldCommonEventId = patch.fieldCommonEventId;
     else delete record.fieldCommonEventId;
   }
+  if ("unforgettable" in patch) {
+    if (patch.unforgettable === true) record.unforgettable = true;
+    else delete record.unforgettable;
+  }
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("maxPp" in patch) record.maxPp = patch.maxPp;
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "moveMotion"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "oncePerBattle", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "comboRequires", "comboCombinedStats", "comboSwitchId", "moveMotion"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -139,6 +143,9 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
   if ("grantsSkillIds" in patch) record.grantsSkillIds = patch.grantsSkillIds;
   if ("grantsCommand" in patch) record.grantsCommand = patch.grantsCommand;
+  if ("apGrants" in patch) record.apGrants = patch.apGrants;
+  if ("apRate" in patch) record.apRate = patch.apRate;
+  if ("levelUpBonus" in patch) record.levelUpBonus = patch.levelUpBonus;
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 
@@ -184,11 +191,13 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("autoAlign" in patch && patch.autoAlign !== undefined) record.autoAlign = patch.autoAlign;
   if ("uncapturable" in patch && patch.uncapturable !== undefined) record.uncapturable = patch.uncapturable;
   if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
+  if ("trainerSprite" in patch) record.trainerSprite = patch.trainerSprite;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
   if ("backdropAnimation" in patch) record.backdropAnimation = patch.backdropAnimation;
   if ("backdropLayers" in patch) record.backdropLayers = patch.backdropLayers;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
+  if ("teamSwapCost" in patch) record.teamSwapCost = patch.teamSwapCost;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;
   if ("afterBattle" in patch) record.afterBattle = patch.afterBattle;
   database.troops[index] = normalizeTroopRecord(record);

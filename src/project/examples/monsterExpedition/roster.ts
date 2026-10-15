@@ -3,6 +3,7 @@ import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRe
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
+import { harnessArtForCampaignSpecies, harnessFieldGraphicForCampaignSpecies } from "@/assets/harnessMonsterArt";
 
 export type ExpeditionHabitat = "grass" | "forest" | "coast" | "mountain" | "desert" | "snow" | "cave" | "ruins" | "swamp" | "volcano";
 export interface ExpeditionSpeciesInfo {
@@ -63,6 +64,21 @@ const RARES = [
 
 const sid = (slug: string): string => `mx_species_${slug}`;
 const moveId = (type: string, tier: number): string => `mx_skill_${type}_${tier}`;
+/** 하네스 번들에 앞·뒤가 **둘 다** 있는 종(앞만 있으면 앞뒤가 다른 생물로 보이므로 기존 그림 유지). */
+function harnessArt(slug: string): { readonly front: string; readonly back: string } | undefined {
+  const art = harnessArtForCampaignSpecies(sid(slug));
+  return art.front && art.back ? { front: art.front, back: art.back } : undefined;
+}
+/** 종의 전투 그림: 하네스 번들(사람이 고른 생성형 도트)이 있으면 그것, 없으면 기존 mx_art_*. */
+function art(slug: string): { readonly monsterResourceId: string; readonly backResourceId: string } {
+  const harness = harnessArt(slug);
+  return harness ? { monsterResourceId: harness.front, backResourceId: harness.back } : { monsterResourceId: `mx_art_${slug}_front`, backResourceId: `mx_art_${slug}_back` };
+}
+/** 따라다니기 칩: 하네스 번들에 그 종의 칩이 있을 때만 필드 그래픽을 단다(없으면 기본 몬스터 칩 폴백). */
+function fieldArt(slug: string): { readonly fieldGraphic?: NonNullable<ReturnType<typeof harnessFieldGraphicForCampaignSpecies>> } {
+  const fieldGraphic = harnessFieldGraphicForCampaignSpecies(sid(slug));
+  return fieldGraphic ? { fieldGraphic } : {};
+}
 const typesFor = (family: Family, stage: number): string[] => family.types.filter((type, i): type is string => !!type && (i === 0 || stage >= (family.secondaryFrom ?? 1)));
 
 export const EXPEDITION_SPECIES: readonly ExpeditionSpeciesInfo[] = [
@@ -97,19 +113,47 @@ const MOVE_NAMES: Readonly<Record<string, readonly [string, string, string, stri
   ice: ["서리발", "눈바늘", "빙하발톱", "설월바람", "영구동결", "서리숨"],
   dragon: ["비늘울림", "소금숨결", "돛룡파동", "심해포효", "섬의메아리", "용의호흡"],
 };
-const PHYSICAL_TYPES = new Set(["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost"]);
-const ANIMATIONS: Readonly<Record<string, string>> = {
-  normal: "anim_attack", fighting: "anim_attack", flying: "anim_attack", poison: "anim_poison", ground: "anim_attack", rock: "anim_attack", bug: "anim_attack", ghost: "anim_magic", fire: "anim_fire", water: "anim_heal", grass: "anim_heal", electric: "anim_magic", psychic: "anim_magic", ice: "anim_magic", dragon: "anim_magic",
+/** 3세대 이후 타입 기술(악·강철·페어리). 프로젝트 상성표에 그 타입이 있을 때만 buildMoves 가 만든다 — 1세대 프로젝트의 기술 목록은 그대로다. */
+const EXTRA_MOVE_NAMES: Readonly<Record<string, readonly [string, string, string, string, string, string]>> = {
+  dark: ["그늘물기", "밤그림자", "어둠송곳니", "새벽약탈", "흑야의일격", "그늘숨기"],
+  steel: ["쇠톱니", "철판치기", "강철꼬리", "볼트충돌", "철갑돌격", "철벽자세"],
+  fairy: ["별가루", "달빛방울", "요정의입맞춤", "꽃잎결계", "달무리폭죽", "별빛숨결"],
+};
+const PHYSICAL_TYPES = new Set(["normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost", "dark", "steel"]);
+/** 타입 × 단계(1~6) 기술 이펙트. 데이터베이스에 이미 있는 anim_gen_* / anim_scarloxy_* 만 쓴다(새 그림 없음).
+ *  예전에는 타입 하나에 이펙트 하나(그마저 존재하지 않는 anim_attack·anim_fire 가 7타입 42기술을 무연출로 만들었고,
+ *  풀·물은 「회복 빛」이 상대 몸에 떴다 — 2026-10-15 진단 B2). 단계가 오를수록 큰 이펙트, 6단계(위력 0 보조기)는 몸을 감싸는 이펙트. */
+const ANIMATIONS: Readonly<Record<string, readonly [string, string, string, string, string, string]>> = {
+  normal: ["anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_sonic_wave", "anim_gen_critical_burst", "anim_gen_cleanse_sparkle"],
+  fighting: ["anim_gen_tackle_impact", "anim_gen_tackle_impact", "anim_gen_earth_spike", "anim_gen_critical_burst", "anim_gen_earth_spike", "anim_gen_power_aura"],
+  flying: ["anim_gen_wind_slice", "anim_gen_wind_slice", "anim_gen_wind_slice", "anim_gen_sonic_wave", "anim_gen_wind_slice", "anim_gen_cleanse_sparkle"],
+  poison: ["anim_poison", "anim_poison", "anim_gen_bite_crunch", "anim_poison", "anim_poison", "anim_gen_sleep_dust"],
+  ground: ["anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_earth_spike", "anim_gen_smoke_vanish"],
+  rock: ["anim_gen_projectile_shot", "anim_gen_projectile_shot", "anim_gen_tackle_impact", "anim_gen_earth_spike", "anim_gen_meteor_fall", "anim_gen_guard_barrier"],
+  bug: ["anim_gen_claw_rake", "anim_gen_bite_crunch", "anim_gen_drain_orbs", "anim_gen_tackle_impact", "anim_gen_critical_burst", "anim_gen_guard_barrier"],
+  ghost: ["anim_gen_shadow_pulse", "anim_gen_blind_veil", "anim_gen_drain_orbs", "anim_gen_sonic_wave", "anim_gen_confusion_spiral", "anim_gen_blind_veil"],
+  fire: ["anim_scarloxy_fire", "anim_scarloxy_fire", "anim_gen_fire_burst", "anim_gen_fire_burst", "anim_gen_fire_burst", "anim_gen_power_aura"],
+  water: ["anim_scarloxy_splash", "anim_scarloxy_splash", "anim_gen_water_column", "anim_gen_water_column", "anim_gen_water_column", "anim_gen_cleanse_sparkle"],
+  grass: ["anim_scarloxy_green", "anim_gen_leaf_volley", "anim_gen_drain_orbs", "anim_gen_leaf_volley", "anim_gen_leaf_volley", "anim_heal"],
+  electric: ["anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_thunder_strike", "anim_gen_paralysis_bind"],
+  psychic: ["anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_sleep_dust"],
+  ice: ["anim_scarloxy_ice", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_ice_shatter", "anim_gen_guard_barrier"],
+  dragon: ["anim_gen_sonic_wave", "anim_gen_sonic_wave", "anim_gen_projectile_shot", "anim_gen_sonic_wave", "anim_gen_meteor_fall", "anim_gen_power_aura"],
+  dark: ["anim_gen_bite_crunch", "anim_gen_shadow_pulse", "anim_gen_bite_crunch", "anim_gen_claw_rake", "anim_gen_shadow_pulse", "anim_gen_blind_veil"],
+  steel: ["anim_gen_tackle_impact", "anim_gen_claw_rake", "anim_gen_tackle_impact", "anim_gen_projectile_shot", "anim_gen_critical_burst", "anim_gen_guard_barrier"],
+  fairy: ["anim_gen_cleanse_sparkle", "anim_gen_drain_orbs", "anim_gen_psychic_wave", "anim_gen_psychic_wave", "anim_gen_power_aura", "anim_gen_cleanse_sparkle"],
 };
 const DEBUFF: Readonly<Record<string, string>> = {
-  fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down",
+  fire: "state_burn", water: "state_agility_down", grass: "state_sleep", electric: "state_paralysis", psychic: "state_sleep", ice: "state_freeze", poison: "state_poison", ghost: "state_attack_down", ground: "state_agility_down", rock: "state_defense_down", bug: "state_defense_down", normal: "state_attack_down", flying: "state_agility_down", fighting: "state_defense_down", dragon: "state_attack_down", dark: "state_attack_down", steel: "state_defense_down", fairy: "state_attack_down",
 };
 
 export function buildMoves(project: Project): SkillRecord[] {
   const availableStates = new Set(project.database.states.map(state => state.id));
   const availableAnimations = new Set(project.database.battleAnimations.map(animation => animation.id));
   const stateEffect = (stateId: string, chance: number, operation: "add" | "remove" = "add") => availableStates.has(stateId) ? [{ stateId, chance, operation }] : [];
-  return Object.entries(MOVE_NAMES).flatMap(([type, names]) => names.map((name, index) => {
+  const chartTypes = new Set(project.system.typeChart?.types ?? []);
+  const moveNames = Object.entries({ ...MOVE_NAMES, ...Object.fromEntries(Object.entries(EXTRA_MOVE_NAMES).filter(([type]) => chartTypes.has(type))) });
+  return moveNames.flatMap(([type, names]) => names.map((name, index) => {
     const tier = index + 1;
     const move: Partial<SkillRecord> & Pick<SkillRecord, "id" | "name"> = {
       id: moveId(type, tier), name, elementId: type,
@@ -117,7 +161,7 @@ export function buildMoves(project: Project): SkillRecord[] {
       mpCost: { flat: 0, percentMax: 0 }, successRate: 100, hitRate: tier >= 4 ? 90 : 100, variance: 0,
       effect: { kind: "damage", statistic: PHYSICAL_TYPES.has(type) ? "attack" : "mind", affects: "hp" },
       description: `${name}: ${type} 타입의 기술. 위력 ${[35, 55, 75, 90, 105, 0][index]}, 최대 횟수 ${[30, 25, 15, 10, 5, 15][index]}.`,
-      ...(availableAnimations.has(ANIMATIONS[type]!) ? { animationId: ANIMATIONS[type] } : {}),
+      ...(availableAnimations.has(ANIMATIONS[type]![index]!) ? { animationId: ANIMATIONS[type]![index] } : {}),
     };
     if (tier === 2 && ["poison", "electric", "fire", "ice"].includes(type)) {
       move.stateEffects = stateEffect(DEBUFF[type]!, type === "poison" ? 25 : 10);
@@ -153,7 +197,7 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.scope = "self"; move.maxPp = 10;
         move.stateEffects = ["state_poison", "state_burn", "state_paralysis", "state_sleep", "state_freeze"].flatMap(id => stateEffect(id, 100, "remove"));
         move.description = "맑은 물로 자신에게 걸린 독·화상·마비·수면·빙결을 씻어낸다.";
-      } else if (["fighting", "flying", "rock", "bug"].includes(type)) {
+      } else if (["fighting", "flying", "rock", "bug", "steel"].includes(type)) {
         move.scope = "self";
         const buff = type === "fighting" ? "state_attack_up" : type === "flying" ? "state_agility_up" : "state_defense_up";
         move.stateEffects = stateEffect(buff, 100);
@@ -162,7 +206,7 @@ export function buildMoves(project: Project): SkillRecord[] {
         move.stateEffects = stateEffect(DEBUFF[type]!, 100);
         move.hitRate = type === "psychic" ? 75 : type === "ice" ? 55 : 90;
         move.maxPp = type === "ice" ? 5 : 15;
-        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 낮춘다. 명중률 90%." : "모래장막으로 상대의 속도를 낮춘다. 명중률 90%.";
+        move.description = type === "psychic" ? "자장가로 상대를 잠재운다. 명중률 75%." : type === "ice" ? "찬 숨결로 상대를 얼린다. 명중률 55%." : type === "electric" ? "전류의 실로 상대를 마비시킨다. 명중률 90%." : type === "poison" ? "경계하는 독성 분비물로 상대를 중독시킨다. 명중률 90%." : type === "fire" ? "춤추는 열기로 상대에게 화상을 준다. 명중률 90%." : type === "ghost" ? "고요한 시선으로 상대의 공격을 낮춘다. 명중률 90%." : type === "dark" ? "그늘에 숨어 상대의 공격을 낮춘다. 명중률 90%." : type === "fairy" ? "별빛 숨결로 상대의 공격을 낮춘다. 명중률 90%." : "모래장막으로 상대의 속도를 낮춘다. 명중률 90%.";
       }
     }
     return normalizeSkillRecord(move);
@@ -199,8 +243,14 @@ export function learnset(primary: string, secondary: string) {
  */
 export function configureExpeditionRoster(project: Project): void {
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
+  // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
+  const replacedArt = [...FAMILIES.flatMap(family => family.slugs), ...RARES.map(rare => rare.slug)]
+    .filter(slug => harnessArt(slug)).map(slug => `mx_art_${slug}_`);
   // Clone so a project's SQLite externalization cannot mutate another seed.
-  for (const [id, asset] of Object.entries(incomingArt)) project.assets.uploaded[id] = { ...asset, meta: { ...asset.meta } };
+  for (const [id, asset] of Object.entries(incomingArt)) {
+    if (replacedArt.some(prefix => id.startsWith(prefix))) continue;
+    project.assets.uploaded[id] = { ...asset, meta: { ...asset.meta } };
+  }
   const moves = buildMoves(project);
   const moveIds = new Set(moves.map(move => move.id));
   project.database.skills = [...project.database.skills.filter(move => !moveIds.has(move.id)), ...moves];
@@ -210,7 +260,7 @@ export function configureExpeditionRoster(project: Project): void {
     const secondary = family.types[1] ?? "normal";
     return normalizeMonsterSpeciesRecord({
       id: sid(slug), name: family.names[index]!, types: typesFor(family, stage),
-      graphic: { monsterResourceId: `mx_art_${slug}_front`, backResourceId: `mx_art_${slug}_back`, graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
+      graphic: { ...art(slug), ...fieldArt(slug), graphicHue: 0, transparent: false, flying: ["bird", "moth", "heron"].includes(family.family) },
       baseStats: bases(family.stats, stage), expCurve: { ...EXPEDITION_EXP_CURVE },
       captureRate: [0.72, 0.42, 0.2][index], skillsByLevel: learnset(primary, secondary),
       evolutions: index < 2 ? [{ toSpeciesId: sid(family.slugs[index + 1]!), requires: { level: family.evolution[index]! } }] : [],
@@ -218,7 +268,7 @@ export function configureExpeditionRoster(project: Project): void {
   }));
   for (const rare of RARES) records.push(normalizeMonsterSpeciesRecord({
     id: sid(rare.slug), name: rare.name, types: [...rare.types],
-    graphic: { monsterResourceId: `mx_art_${rare.slug}_front`, backResourceId: `mx_art_${rare.slug}_back`, graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
+    graphic: { ...art(rare.slug), ...fieldArt(rare.slug), graphicHue: 0, transparent: false, flying: ["crane", "ray"].includes(rare.family) },
     baseStats: bases(rare.stats, 3), expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: 0.065,
     skillsByLevel: learnset(rare.types[0], rare.types[1]), evolutions: [],
   }));

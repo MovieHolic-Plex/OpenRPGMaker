@@ -77,7 +77,7 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
     names.push("author_beodeul_town", "check_city_form", "check_reachability");
   }
   // 던전 시공 도구를 고른 요청에는 시공 뒤 확인 도구를 함께 보인다(받침·도달은 도구가 스스로 검사하지만 이벤트 배치 뒤 확인이 필요하다).
-  if (names.includes("author_dungeon") || names.includes("author_beodeul_dungeon")) names.push("author_dungeon", "check_reachability", "show_map_region", "run_lint");
+  if (names.includes("author_dungeon") || names.includes("author_beodeul_dungeon")) names.push("author_dungeon", "link_world_entrance", "check_reachability", "show_map_region", "run_lint");
   return toolSchemasForNames(names) as OpenAiTool[];
 }
 
@@ -106,7 +106,7 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
       'read_tileset_reference', 'list_worldmap_icons', 'stamp_worldmap_icon', 'inspect_worldmap_icon', 'show_map_region', 'check_reachability']) as OpenAiTool[]);
   }
   if (/(월드맵|세계\s*지도|지역\s*지도|포켓몬.*(?:도로|지도)|마리오.*(?:맵|지도)|할로우.*지도|스파이어.*지도|world\s*map|overworld)/i.test(input.requestText)) {
-    appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain']) as OpenAiTool[]);
+    appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain', 'derive_world_variant', 'link_world_entrance']) as OpenAiTool[]);
   }
   if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);

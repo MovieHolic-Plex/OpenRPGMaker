@@ -25,6 +25,7 @@ const system = (label: string, icon: DeckIconName = "gear"): ToolLabelEntry => (
 export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   upsert_item: build("아이템 수정", "box"),
   upsert_equipment: build("장비 수정", "box"),
+  upsert_equipment_slot: build("장비 부위 수정", "box"),
   upsert_enemy: people("몬스터 수정", "user"),
   upsert_actor: people("캐릭터 수정", "user"),
   upsert_skill: build("스킬 수정", "spark"),
@@ -62,12 +63,15 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   resize_map: build("맵 크기 바꾸기", "map"),
   remove_map: build("맵 삭제", "map"),
   duplicate_map: build("맵 복제", "map"),
+  derive_map_variant: build("시대별 맵 파생", "map"),
   author_beodeul_town: build("마을 짓기", "house"),
   author_dungeon: build("던전 짓기", "map"),
   author_beodeul_dungeon: build("던전 짓기", "map"),
   build_world: world("세계 짓기", "map"),
   read_world_terrain: world("세계 지형 읽기", "eye"),
   edit_world_terrain: world("세계 지형 바꾸기", "map"),
+  derive_world_variant: world("세계 변형판 만들기", "map"),
+  link_world_entrance: world("월드 입구 잇기", "map"),
   set_build_spec: build("밑그림 확정", "list"),
   // ── 사람·이야기 ──
   place_npc: people("NPC 배치", "user"),
@@ -98,6 +102,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   link_maps: people("맵 연결", "link"),
   create_transfer_pair: people("맵 연결", "link"),
   create_time_gate: people("시간의 문 잇기", "link"),
+  tile_change_effect: people("타일 바꾸기 장치", "flag"),
   place_vehicle: build("탈것 세우기", "map"),
   // ── 보기·검사 ──
   // 웹 검색은 프로젝트 조회가 아니라 바깥 검색이다 — inspect(도구 그룹·돋보기 아이콘)으로 둔다.
@@ -121,6 +126,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   look_at_houses: inspect("집 살펴보기", "eye"),
   check_reachability: inspect("통행 검사", "shield"),
   check_city_form: inspect("도시 형태 검사", "shield"),
+  check_genre_lock: inspect("장르 칩셋 잠금 검사", "shield"),
   run_lint: inspect("맵 검사", "shield"),
   lint_quest: inspect("퀘스트 검사", "shield"),
   lint_world: inspect("세계 검사", "shield"),
@@ -194,6 +200,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_factions: world("진영 정하기", "flag"),
   place_battle_blocker: people("전투 블로커 놓기", "user"),
   place_field_enemy: people("필드 적 놓기", "user"),
+  place_field_obstacle: people("필드 기술 장애물 놓기", "box"),
+  place_trainer: people("시야선 트레이너 놓기", "user"),
   make_chase_scene: people("추격 장면 만들기", "user"),
   configure_object_behavior: people("오브젝트 동작 설정", "box"),
   author_npc_cast: people("주민 대사 쓰기", "user"),

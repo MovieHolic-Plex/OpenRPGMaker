@@ -118,8 +118,8 @@ export function checkProgression(project: Project): Finding[] {
     findings.push({
       severity: "blocker", code: "no-ending-trigger",
       message: endings.length > 0
-        ? `엔딩 ${endings.length}개(${endings.map((e) => e.name || e.id).join(", ")})가 정의돼 있지만 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 게임을 끝낼 수 없습니다.`
-        : "어떤 이벤트도 엔딩(triggerEnding/ending)을 부르지 않습니다 — 게임을 끝낼 수 없습니다.",
+        ? `엔딩 ${endings.length}개(${endings.map((e) => e.name || e.id).join(", ")})가 정의돼 있지만 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 게임을 끝낼 수 없습니다. 고치기: 마지막 사건 이벤트에 upsert_event/patch_event_page 로 {kind:"triggerEnding", endingId:"${endings[0]!.id}"} 를 넣으세요.`
+        : "어떤 이벤트도 엔딩(triggerEnding/ending)을 부르지 않습니다 — 게임을 끝낼 수 없습니다. 고치기: define_ending({id,name,conditions:[]}) 후 마지막 사건 이벤트에 {kind:\"triggerEnding\", endingId} 를 upsert_event/patch_event_page 로 넣으세요.",
     });
   }
   for (const trigger of triggers) {

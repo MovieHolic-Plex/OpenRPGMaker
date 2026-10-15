@@ -1,0 +1,292 @@
+{
+  "version": 1,
+  "canvas": 112,
+  "fieldSheets": 2,
+  "species": {
+    "sparkit": {
+      "campaignSpeciesId": "mx_species_coalbit",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 2
+      }
+    },
+    "aqualing": {
+      "campaignSpeciesId": "mx_species_rivulet",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 3
+      }
+    },
+    "leafling": {
+      "campaignSpeciesId": "mx_species_spriglet",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 4
+      }
+    },
+    "gustchick": {
+      "campaignSpeciesId": "mx_species_gustchick",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 0
+      }
+    },
+    "pipbug": {
+      "campaignSpeciesId": "mx_species_pipbug",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 5
+      }
+    },
+    "wickworm": {
+      "campaignSpeciesId": "mx_species_wickworm",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 6
+      }
+    },
+    "rootpig": {
+      "campaignSpeciesId": "mx_species_rootpig",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 7
+      }
+    },
+    "frondhare": {
+      "campaignSpeciesId": "mx_species_frondhare",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 0
+      }
+    },
+    "kilnclaw": {
+      "campaignSpeciesId": "mx_species_kilnclaw",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 1
+      }
+    },
+    "brookraft": {
+      "campaignSpeciesId": "mx_species_brookraft",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 2
+      }
+    },
+    "coralpin": {
+      "campaignSpeciesId": "mx_species_coralpin",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 3
+      }
+    },
+    "curlfin": {
+      "campaignSpeciesId": "mx_species_curlfin",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 4
+      }
+    },
+    "zaptoe": {
+      "campaignSpeciesId": "mx_species_zaptoe",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 1,
+        "index": 1
+      }
+    },
+    "pebblekid": {
+      "campaignSpeciesId": "mx_species_pebblekid",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 5
+      }
+    },
+    "gritnose": {
+      "campaignSpeciesId": "mx_species_gritnose",
+      "front": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "back": {
+        "idle": {
+          "frames": 4,
+          "frameMs": 220
+        }
+      },
+      "field": {
+        "sheet": 2,
+        "index": 6
+      }
+    }
+  }
+}

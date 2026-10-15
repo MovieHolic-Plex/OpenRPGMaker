@@ -7,6 +7,8 @@ export type PlayerPreferences = {
   voice: number;
   textSpeed: 'slow' | 'normal' | 'fast';
   reduceMenuMotion: boolean;
+  /** 필드 메뉴 「대기 ON/OFF」: 플레이어가 고른 ATB 방식. 생략하면 게임 저작 값(system.atbMode, 기본 wait)을 따른다. */
+  atbMode?: 'wait' | 'active';
 };
 export const DEFAULT_PLAYER_PREFERENCES: Readonly<PlayerPreferences> = {
   bgm: 0.7, se: 0.8, voice: 0.8, textSpeed: 'normal', reduceMenuMotion: false,
@@ -20,6 +22,7 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
     bgm: volume(input.bgm, 0.7), se: volume(input.se, 0.8), voice: volume(input.voice, 0.8),
     textSpeed: input.textSpeed === 'slow' || input.textSpeed === 'fast' ? input.textSpeed : 'normal',
     reduceMenuMotion: input.reduceMenuMotion === true,
+    ...(input.atbMode === 'wait' || input.atbMode === 'active' ? { atbMode: input.atbMode } : {}),
   };
 }
 function deviceStorage(): PreferenceStorage | undefined {

@@ -23,6 +23,7 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
+import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -39,6 +40,8 @@ export interface BattleCommandPanelOptions {
   setDirectorState(state: BattleDirectorState): void;
   render(): void;
   runActorCommand(command: ActorCommand): void;
+  /** 팀 교대 전투(system.battleTeams) 전용 — 설정이 없으면 호출되지 않는다. */
+  runTeamSwap?(targetTeamId: string): void;
   beginTargetCommand(command: TargetedActorCommand): void;
   confirmTargetSelection(targetId: string): void;
   cancelTargetSelection?(): void;
@@ -196,13 +199,14 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     : undefined;
   for (const command of battleCommandsForActor(project, actor?.recordId, {
     classId: actor?.classId,
-    includeSwitch: snapshot.reserveActors.length > 0,
+    includeSwitch: snapshot.reserveActors.length > 0 && (!snapshot.teams || snapshot.switchCandidateActorIds.length > 0),
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
     overrideCommandIds,
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
+  if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
   return menu;
 }
 
@@ -452,7 +456,7 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   // 장비가 준 스킬은 배우지 않아도 목록에 뜬다(EquipmentRecord.grantsSkillIds).
   const owned = battlerSkillIdsWithGrants(actor);
   const combos = snapshot
-    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)
+    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned, comboParticipantsFromSnapshot(snapshot))
     : [];
   return [...owned, ...combos].filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
@@ -563,6 +567,40 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   return nodes;
 }
 
+function moveInfoBox(
+  slot: string,
+  project: ReturnType<typeof store.getCurrent>,
+  elementId: string | undefined,
+  pp: number | undefined,
+  maxPp: number | undefined,
+  reason: string | undefined,
+): HTMLElement {
+  const box = document.createElement("div");
+  box.className = "battle-move-info";
+  box.dataset.moveSlot = slot;
+  box.dataset.testid = `battle-move-info-${slot}`;
+  const ppNode = document.createElement("span");
+  ppNode.className = "battle-move-pp";
+  ppNode.dataset.ppState = pp === undefined || maxPp === undefined ? "none" : pp === 0 ? "empty" : pp * 4 <= maxPp ? "low" : "ok";
+  ppNode.textContent = pp === undefined || maxPp === undefined ? "PP --" : `PP ${pp}/${maxPp}`;
+  box.append(ppNode);
+  if (elementId) {
+    const label = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
+    const type = document.createElement("span");
+    type.className = "battle-move-type";
+    type.dataset.skillType = elementId;
+    type.textContent = label;
+    box.append(type);
+  }
+  if (reason) {
+    const why = document.createElement("span");
+    why.className = "battle-move-reason";
+    why.textContent = reason;
+    box.append(why);
+  }
+  return box;
+}
+
 function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
@@ -579,6 +617,7 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
     }));
     return nodes;
   }
+  const infoNodes: HTMLElement[] = [];
   for (const skillId of moves) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const useFailure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
@@ -594,8 +633,13 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason);
     appendSkillTypeBadge(button, project, skill?.elementId);
+    const slot = String(infoNodes.length + 1);
+    button.dataset.moveSlot = slot;
     nodes.push(button);
+    infoNodes.push(moveInfoBox(slot, project, skill?.elementId, pp, skill?.maxPp, reason));
   }
+  // 3세대 화면의 우측 정보 상자: 커서가 선 기술의 PP·타입. 커서 연동은 CSS(형제 선택자)가 한다.
+  nodes.push(...infoNodes);
   return nodes;
 }
 

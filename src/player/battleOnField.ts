@@ -29,7 +29,13 @@ export interface OnFieldAnchors {
   /** 한 타일의 캔버스 비율 크기 — 여러 마리 적을 한 칸 간격으로 벌린다. */
   readonly tileFx: number;
   readonly tileFy: number;
+  /** 주인공 등 뒤 방향의 한 칸 걸음(캔버스 비율) — 동료 스프라이트가 없는 파티원이 서는 줄. */
+  readonly behindFx?: number;
+  readonly behindFy?: number;
 }
+
+/** 적 트룹 좌표(0..320 × 0..160 전투장 단위) → 필드 칸: 24단위 = 한 칸. 트룹의 적 간격(보통 40~60단위)이 필드에서 2칸 안팎으로 벌어진다. */
+export const ON_FIELD_UNITS_PER_TILE = 24;
 
 type FieldSprite = Pick<Phaser.GameObjects.Sprite, "x" | "y" | "alpha" | "setAlpha" | "active">;
 
@@ -65,7 +71,8 @@ export function computeOnFieldAnchors(
     ? toPoint(owner.x, owner.y)
     : toPoint(player.x + dx * tileSize * FALLBACK_ENEMY_TILES, player.y + dy * tileSize * FALLBACK_ENEMY_TILES);
   const party = [toPoint(player.x, player.y), ...[...(scene.followerSprites?.values() ?? [])].map((sprite) => toPoint(sprite.x, sprite.y))];
-  return { canvas, enemy, party, tileFx: tileSize / view.width, tileFy: tileSize / view.height };
+  const tileFx = tileSize / view.width, tileFy = tileSize / view.height;
+  return { canvas, enemy, party, tileFx, tileFy, behindFx: -dx * tileFx, behindFy: -dy * tileFy };
 }
 
 /**
@@ -138,15 +145,52 @@ export function onFieldPointToAuthored(point: OnFieldPoint, canvas: HTMLElement,
   return { x: ((sx - g.left) / g.width) * AUTHOR_W, y: ((sy - g.top) / g.height) * AUTHOR_H };
 }
 
-/** 적 i/n 의 자리 — 심볼을 중심으로 한 칸 간격 가로줄. */
-export function onFieldEnemyPoint(anchors: OnFieldAnchors, index: number, count: number): OnFieldPoint {
+/**
+ * 적 i/n 의 자리. 트룹에 저작한 좌표(authored)가 모든 적에 있으면 **저작 배치 그대로**(트룹 무게중심을 심볼 발밑에 두고
+ * 나머지는 ON_FIELD_UNITS_PER_TILE 단위로 환산한 상대 위치), 없으면 심볼을 중심으로 한 칸 간격 가로줄.
+ */
+export function onFieldEnemyPoint(
+  anchors: OnFieldAnchors,
+  index: number,
+  count: number,
+  authored?: readonly ({ readonly x?: number; readonly y?: number } | undefined)[],
+): OnFieldPoint {
+  const own = authored?.[index];
+  if (authored && authored.length === count && authored.every((entry) => entry && Number.isFinite(entry.x) && Number.isFinite(entry.y)) && own) {
+    const cx = authored.reduce((sum, entry) => sum + entry!.x!, 0) / count;
+    const cy = authored.reduce((sum, entry) => sum + entry!.y!, 0) / count;
+    return {
+      fx: anchors.enemy.fx + ((own.x! - cx) / ON_FIELD_UNITS_PER_TILE) * anchors.tileFx,
+      fy: anchors.enemy.fy + ((own.y! - cy) / ON_FIELD_UNITS_PER_TILE) * anchors.tileFy,
+    };
+  }
   return { fx: anchors.enemy.fx + (index - (count - 1) / 2) * anchors.tileFx, fy: anchors.enemy.fy };
 }
 
-/** 아군 i 의 자리 — 필드 스프라이트가 모자라면(파티 > 동료 표시) 주인공 옆으로 한 칸씩. */
+/**
+ * 아군 i 의 자리 — 필드에 선 주인공·동료 스프라이트 자리가 정본. 파티가 필드에 보이는 동료보다 많으면(활성 파티 3명인데
+ * 동료 표시 1명 등) 나머지는 마지막 스프라이트 등 뒤로 한 칸씩, 좌우로 반 칸씩 엇갈려 선다 — 한 점에 겹치지 않는다.
+ */
 export function onFieldPartyPoint(anchors: OnFieldAnchors, index: number): OnFieldPoint {
-  const known = anchors.party[index];
-  if (known) return known;
-  const lead = anchors.party[0] ?? anchors.enemy;
-  return { fx: lead.fx + index * anchors.tileFx, fy: lead.fy };
+  // 앞 사람부터 차례로 정한다: 필드 스프라이트 자리가 앞 사람과 반 칸 안으로 겹치면(걸음을 멈춘 동료는 주인공 칸에 포개진다)
+  // 그 자리 대신 대형 칸으로 보낸다.
+  const placed: OnFieldPoint[] = [];
+  const near = (a: OnFieldPoint, b: OnFieldPoint): boolean =>
+    Math.abs(a.fx - b.fx) < anchors.tileFx * 0.5 && Math.abs(a.fy - b.fy) < anchors.tileFy * 0.5;
+  for (let i = 0; i <= index; i += 1) {
+    const known = anchors.party[i];
+    if (known && !placed.some((entry) => near(entry, known))) { placed.push(known); continue; }
+    const base = placed[0] ?? anchors.party[0] ?? anchors.enemy;
+    const slot = Math.max(1, placed.length);
+    const bx = anchors.behindFx ?? anchors.tileFx, by = anchors.behindFy ?? 0;
+    // 등 뒤가 가로면 세로로, 세로면 가로로 엇갈린다: 1번 뒤-왼쪽, 2번 뒤-오른쪽, 3번 두 칸 뒤 …
+    const rank = Math.ceil(slot / 2);
+    const side = (slot % 2 === 1 ? 1 : -1) * 0.6;
+    const vertical = Math.abs(by) > Math.abs(bx);
+    placed.push({
+      fx: base.fx + rank * bx * 0.8 + (vertical ? side * anchors.tileFx : 0),
+      fy: base.fy + rank * by * 0.8 + (vertical ? 0 : side * anchors.tileFy),
+    });
+  }
+  return placed[index]!;
 }

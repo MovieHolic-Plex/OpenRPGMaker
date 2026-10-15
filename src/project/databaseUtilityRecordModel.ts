@@ -43,6 +43,9 @@ export function normalizeTerrainRecords(records: readonly Partial<DatabaseTerrai
         boat: record.vehiclePassage?.boat ?? false,
         ship: record.vehiclePassage?.ship ?? false,
         airshipLand: record.vehiclePassage?.airshipLand ?? true,
+        ...(record.vehiclePassage?.chocobo === true ? { chocobo: true } : {}),
+        ...(record.vehiclePassage?.cart === true ? { cart: true } : {}),
+        ...(record.vehiclePassage?.raft === true ? { raft: true } : {}),
       },
       ...(record.climbable === true ? { climbable: true } : {}),
     }));

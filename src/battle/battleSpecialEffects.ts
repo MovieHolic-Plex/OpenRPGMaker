@@ -1,10 +1,11 @@
 import type { EnemyRecord, EnemyStealItem, ItemId, Project, SkillEffect, SkillId, SkillRecord } from "@/project/types";
 
 /** 전투 특수 명령 효과(훔치기·라이브라·청마법·무작위 기술). 피해 계산에서는 support 처럼 0 을 낸다. */
-export type SpecialSkillEffectKind = "steal" | "scan" | "learnEnemySkill" | "randomSkillFrom";
+export type SpecialSkillEffectKind = "steal" | "scan" | "learnEnemySkill" | "randomSkillFrom" | "sketch" | "rage" | "shuffleParty" | "forceSwitch";
 
 export function isSpecialSkillEffectKind(kind: SkillEffect["kind"]): kind is SpecialSkillEffectKind {
-  return kind === "steal" || kind === "scan" || kind === "learnEnemySkill" || kind === "randomSkillFrom";
+  return kind === "steal" || kind === "scan" || kind === "learnEnemySkill" || kind === "randomSkillFrom"
+    || kind === "sketch" || kind === "rage" || kind === "shuffleParty" || kind === "forceSwitch";
 }
 
 /** 피해 공식이 아는 효과 종류로 접는다 — 특수 효과는 피해 0 의 support 다. */
@@ -18,6 +19,10 @@ export function specialSkillEffectLabel(effect: SkillEffect): string {
     case "scan": return "라이브라(능력 탐색)";
     case "learnEnemySkill": return "적 기술 습득(청마법)";
     case "randomSkillFrom": return `무작위 기술 ${effect.skillIds.length}종 중 하나`;
+    case "sketch": return "스케치(적 기술 그려 쓰기)";
+    case "rage": return "폭주(몬스터가 되어 자동 행동)";
+    case "shuffleParty": return "대열 섞기";
+    case "forceSwitch": return "강제 교대";
     default: return "특수 효과";
   }
 }
@@ -72,4 +77,33 @@ export function pickRandomSkill(project: Project, skillIds: readonly SkillId[], 
     .filter((skill): skill is SkillRecord => Boolean(skill) && skill!.effect.kind !== "randomSkillFrom");
   if (candidates.length === 0) return undefined;
   return candidates[Math.min(candidates.length - 1, Math.floor(rng() * candidates.length))];
+}
+
+/** 스케치로 그릴 수 있는 기술: 스케치·폭주·무작위류(재귀)와 기본 공격은 뺀다. 순서는 대상의 skillIds 순서. */
+export function sketchableSkills(project: Project, skillIds: readonly SkillId[]): SkillRecord[] {
+  const out: SkillRecord[] = [];
+  for (const id of skillIds) {
+    const skill = project.database.skills.find((record) => record.id === id);
+    if (!skill || out.some((entry) => entry.id === skill.id)) continue;
+    const kind = skill.effect.kind;
+    if (kind === "sketch" || kind === "rage" || kind === "randomSkillFrom" || kind === "learnEnemySkill") continue;
+    out.push(skill);
+  }
+  return out;
+}
+
+/** 폭주 몬스터의 행동 표에서 쓸 수 있는 기술 id(빈 문자열 = 통상 공격). 순서·중복은 가중치로 그대로 둔다. */
+export function rageActionSkillIds(enemy: Pick<EnemyRecord, "actions">): string[] {
+  const out = (enemy.actions ?? []).map((action) => action.skillId ?? "");
+  return out.length > 0 ? out : [""];
+}
+
+/** 무작위 순열(Fisher-Yates). rng 는 [0,1). */
+export function shuffled<T>(items: readonly T[], rng: () => number): T[] {
+  const out = [...items];
+  for (let i = out.length - 1; i > 0; i -= 1) {
+    const j = Math.min(i, Math.floor(rng() * (i + 1)));
+    [out[i], out[j]] = [out[j]!, out[i]!];
+  }
+  return out;
 }
