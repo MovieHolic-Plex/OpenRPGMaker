@@ -20,11 +20,14 @@ def main():
     ap.add_argument('run')
     ap.add_argument('--par', type=int, default=2)
     ap.add_argument('--attempts', type=int, default=3)
+    ap.add_argument('--interleave', action='store_true', help='후보 글자(a,b,c..)별로 원형을 돌아가며 주문한다(모든 원형에 먼저 한 안씩)')
     a = ap.parse_args()
     root = H.run_dir(a.run)
     manifest = json.loads((root / 'manifest.json').read_text())
     rows = manifest['characters']
     queue = [dict(i=i, row=r, tries=0, ready_at=0.0) for i, r in enumerate(rows, 1)]
+    if a.interleave:
+        queue.sort(key=lambda q: (q['row']['key'].rsplit('-', 1)[1], q['i']))
     (root / 'pause-request.json').unlink(missing_ok=True)
     H.write_json_atomic(root / 'driver.json', dict(pid=__import__('os').getpid(), started=H.now(), run=a.run, par=a.par, batchSize=1))
     active = {}
