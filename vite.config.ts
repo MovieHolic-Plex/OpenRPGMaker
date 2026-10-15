@@ -6,6 +6,7 @@ import {
   existsSync,
   readdirSync,
   realpathSync,
+  statSync,
 } from "node:fs";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
 import { createActivityMirrorMiddleware } from "./scripts/lib/activityMirrorMiddleware.mjs";
@@ -332,7 +333,12 @@ export default defineConfig(({ mode }) => {
         // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
-          if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) return "bundled-data";
+          if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) {
+            // 1MB 가 넘는 JSON 은 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 청크가 여럿이면 병렬로 풀린다.
+            let size = 0;
+            try { size = statSync(file).size; } catch { /* 가상 모듈 */ }
+            return size > 1_000_000 ? `bundled-data-${file.slice(file.lastIndexOf("/") + 1, -5)}` : "bundled-data";
+          }
           return undefined;
         },
       },
