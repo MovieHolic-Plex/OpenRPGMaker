@@ -1,3 +1,4 @@
+import { applyRomanceDefaults, isRomanceInterviewProject } from "@/project/romancePreset";
 import { store } from "@/project/store";
 import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import { toast } from "@/util/toast";
@@ -74,7 +75,12 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     // 판정을 통과한 뼈대만 심는다. 못 깔면 예전처럼 AI 만으로 진행한다(판정 대상도 아니게 된다).
     await preparePlayableSegmentAssets(store.getCurrent());
     const skeleton = withVerifiedPlayableSegment(store.getCurrent());
-    if (skeleton) store.replace(skeleton, { change: { label: "끝낼 수 있는 첫 구간 뼈대", origin: "system" } });
+    if (skeleton) {
+      applyRomanceDefaults(skeleton);
+      store.replace(skeleton, { change: { label: "끝낼 수 있는 첫 구간 뼈대", origin: "system" } });
+    } else if (isRomanceInterviewProject(store.getCurrent())) {
+      store.update(project => { applyRomanceDefaults(project); }, { scope: "project", label: "연애 기본값", origin: "system" });
+    }
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("게임 기획 저장을 확인하지 못했습니다.");
     if (!stillCurrent()) return;

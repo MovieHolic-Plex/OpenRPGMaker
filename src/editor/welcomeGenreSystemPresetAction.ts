@@ -1,3 +1,4 @@
+import { applyRomanceDefaults } from "@/project/romancePreset";
 import {
   materializeGenreBlankProjectSystemPreset,
   type GenreBlankProjectSystemPresetPlan,
@@ -89,6 +90,8 @@ export async function applyWelcomeGenreSystemPresetPlan(
     await preparePlayableSegmentAssets(result.project);
     const skeleton = withVerifiedPlayableSegment(result.project);
     if (skeleton) result = { ...result, project: skeleton };
+    // 연애 인터뷰의 결정론 기본값(하루 루프·호감 HUD·타이틀·장르 잠금) — 뼈대가 안 깔려도 깐다.
+    applyRomanceDefaults(result.project);
   }
   await dependencies.adoptProject(result.project, { title: plan.title });
   dependencies.focusStartMap();

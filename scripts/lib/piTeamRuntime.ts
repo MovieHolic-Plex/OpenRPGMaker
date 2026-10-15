@@ -35,7 +35,7 @@ import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
-import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
+import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings, romanceStageFlatFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -564,7 +564,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     } finally { mailbox.close(agentId); ownership.release(); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result: { ok: boolean; findings: string[]; artChecks?: unknown } = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
-    if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot));
+    if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot), ...romanceStageFlatFindings(snapshot));
     if (authoringHarnessFor(base)) {
       result.findings.push(...(inspectAuthoringHarness(snapshot, base)?.blockers ?? []));
       if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }

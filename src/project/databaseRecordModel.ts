@@ -330,6 +330,14 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;
+  // 연애 하루 루프(옵트인). 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다(2026-10-16 런타임 QA 실측).
+  if (system.socialLoop && typeof system.socialLoop === "object") {
+    const { slotsPerDay, dailyFriendshipCap } = system.socialLoop;
+    records.socialLoop = {
+      ...(typeof slotsPerDay === "number" && Number.isFinite(slotsPerDay) ? { slotsPerDay: Math.trunc(slotsPerDay) } : {}),
+      ...(typeof dailyFriendshipCap === "number" && Number.isFinite(dailyFriendshipCap) ? { dailyFriendshipCap: Math.trunc(dailyFriendshipCap) } : {}),
+    };
+  }
   if (gallery) records.gallery = gallery;
   if (newGamePlus) records.newGamePlus = newGamePlus;
   if (chapter) records.chapter = chapter;
