@@ -129,6 +129,13 @@ export function genreLockHidesTool(project: Pick<Project, "system">, toolName: s
   return !!active && active.def.hiddenToolPatterns.some((pattern) => pattern.test(toolName));
 }
 
+export function genreLockHiddenToolMessage(project: Project, toolName: string): string {
+  const active = activeGenreLock(project)!;
+  const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
+  return `장르 잠금(${active.def.label}): ${toolName} 은 ${allowedLabels(project, active)} 밖 칩셋 계열의 전용 시공 도구라 이 프로젝트에서는 쓰지 않는다. `
+    + `create_map(tilesetId=허용 칩셋)으로 빈 맵을 만들어 칠하기 도구로 깔거나, 몬스터 칩셋 판(${alts})을 골라라. 사용자가 그 계열을 정말 원할 때만 ask_tileset_change 로 묻고 턴을 끝내라.`;
+}
+
 function allowedLabels(project: Project, active: ActiveGenreLock): string {
   return [...active.allowed].map((family) => tilesetFamilyLabel(project, family)).join("·");
 }
@@ -147,11 +154,16 @@ export function genreLockRejection(project: Project, args: { toolName: string; m
     + `사용자가 이 계열을 정말 원한다고 말했을 때만 ask_tileset_change(toTilesetId="${args.map.tilesetId}") 로 견본을 보여 묻고 턴을 끝내라 — 승인은 그 계열 한정 허용이지 잠금 해제가 아니다.`;
 }
 
-/** 잠금을 켠다(이미 같은 preset 이면 모드·허용 계열만 맞추고 grandfather 목록은 유지). 바뀌었으면 true. */
+/**
+ * 잠금을 켠다(이미 같은 preset·모드면 아무것도 안 한다). 바뀌었으면 true.
+ * 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다 — 켜면 조수가 아무 맵도 만들 수 없다(칩셋이 없는 최소 fixture·옛 프로젝트 보호).
+ * 켜는 시점에 이미 허용 밖 칩셋이던 맵은 grandfatheredMapIds 로 기록한다(막지 않고 따로 보고).
+ */
 export function enableGenreLock(project: Project, preset: GenreLockPresetId, mode: GenreLockMode = "enforce"): boolean {
   const def = GENRE_LOCK_PRESETS[preset];
   const existing = project.system.genreLock;
   if (existing && existing.preset === preset && existing.mode === mode) return false;
+  if (!Object.values(project.tilesets).some((tileset) => def.families.includes(tilesetFamily(project, tileset.id)))) return false;
   const keep = existing && existing.preset === preset ? existing.grandfatheredMapIds : undefined;
   project.system.genreLock = { preset, mode, allowedFamilies: [...def.families] };
   const grandfathered = keep ? [...keep] : Object.values(project.maps).filter((map) => genreLockMapViolation(project, map)).map((map) => map.id);
@@ -193,4 +205,84 @@ export function genreLockPromptNote(project: Project): string | null {
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `[장르 잠금 — ${active.def.label}]
 이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 몬스터 칩셋 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`;
+}
+
+/** 프로젝트를 통째로 갈아 끼우거나 되돌리는 도구 — 결과가 새 프로젝트/이전 상태라 잠금 판정 대상이 아니다. */
+export const GENRE_LOCK_EXEMPT_TOOLS: ReadonlySet<string> = new Set(["reset_project", "revert_last_edit"]);
+
+export class GenreLockError extends Error {
+  readonly mapId: string;
+  constructor(message: string, mapId: string) {
+    super(message);
+    this.name = "GenreLockError";
+    this.mapId = mapId;
+  }
+}
+
+/**
+ * 도구 실행이 만든 draft 가 잠금을 어기는지 판정하는 유일한 입구(toolRunner 가 부른다).
+ * 대상 = 이번에 새로 생긴 맵 + tilesetId 가 바뀐 맵. enforce 면 첫 위반에서 GenreLockError, warn 이면 경고 문장 목록을 돌려준다.
+ * 잠금 이전부터 있던 맵을 다른 칩셋으로 옮기지 않는 한 건드리지 않는다. approved = 사용자가 카드로 승인한 계열(그 계열 한정 허용).
+ */
+export function assertGenreLock(before: Project, draft: Project, args: { toolName: string; approved?: readonly string[] }): string[] {
+  const active = activeGenreLock(draft);
+  if (!active) return [];
+  const warnings: string[] = [];
+  for (const [id, next] of Object.entries(draft.maps)) {
+    const previous = before.maps[id];
+    if (previous && previous.tilesetId === next.tilesetId) continue;
+    if (!genreLockMapViolation(draft, next, args.approved ?? [])) continue;
+    const message = genreLockRejection(draft, { toolName: args.toolName, map: next });
+    if (active.lock.mode === "enforce") throw new GenreLockError(message, id);
+    warnings.push(`[경고 모드] ${message}`);
+  }
+  return warnings;
+}
+
+/**
+ * tilesetId 를 생략해 도구 기본 칩셋이 들어갈 자리에 잠금 허용 칩셋을 넣는다. 도구 기본값이 이미 허용이면 undefined(그대로 둔다).
+ * 조용한 교체가 아니다 — 호출부가 돌려준 note 를 도구 결과 경고로 싣는다.
+ */
+export function genreLockDefaultTileset(project: Project, defaultTilesetId: string, hint: string): { tilesetId: string; note: string } | undefined {
+  const active = enforcingGenreLock(project);
+  if (!active || genreLockAllowsTileset(project, defaultTilesetId)) return undefined;
+  const alt = genreLockAlternative(project, hint);
+  if (!alt) return undefined;
+  return {
+    tilesetId: alt.tilesetId,
+    note: `장르 잠금(${active.def.label}): 기본 칩셋 ${defaultTilesetId} 는 허용 계열이 아니라 ${alt.tilesetId}(${alt.use}) 로 만들었다. 다른 허용 칩셋이 맞으면 tilesetId 를 직접 지정하라.`,
+  };
+}
+
+/** 잠금을 해제할 때 도구 결과·감사 로그에 싣는 문장. */
+export const GENRE_LOCK_RELEASED_MARKER = "장르 잠금 해제됨";
+
+export function genreLockReleasedNotice(project: Project, previous: GenreLock): string {
+  const def = GENRE_LOCK_PRESETS[previous.preset];
+  const outsiders = Object.values(project.maps).filter((map) => !isWorldmapKitMap(map) && map.tilesetId !== "atlas_cartography" && !previous.allowedFamilies.includes(tilesetFamily(project, map.tilesetId)));
+  return `${GENRE_LOCK_RELEASED_MARKER}: ${def.label} 칩셋 잠금(${previous.mode})을 껐다 — 이제 조수가 다른 계열 칩셋으로 맵을 만들 수 있다. 다시 막으려면 configure_monster_system(enabled:true) 또는 자료집 시스템 탭의 「장르 칩셋 잠금」을 켠다.`
+    + (outsiders.length ? ` (이미 허용 밖 칩셋인 맵 ${outsiders.length}개: ${outsiders.slice(0, 5).map((map) => map.id).join(", ")}${outsiders.length > 5 ? " …" : ""})` : "");
+}
+
+export interface GenreLockReport {
+  readonly active: boolean;
+  readonly preset?: GenreLockPresetId;
+  readonly mode?: GenreLockMode;
+  readonly allowedFamilies: readonly string[];
+  readonly allowedTilesets: readonly { id: string; name: string }[];
+  /** 잠금을 켠 뒤에 생긴/바뀐 허용 밖 맵(조수·도구 경로가 못 막은 것 — 고쳐야 할 대상). */
+  readonly violations: readonly GenreLockViolation[];
+  /** 잠금을 켜기 전부터 있던 허용 밖 맵(막지 않는다 — 옮길지는 사용자가 정한다). */
+  readonly preexisting: readonly GenreLockViolation[];
+}
+
+export function genreLockReport(project: Project, approved: readonly string[] = []): GenreLockReport {
+  const active = activeGenreLock(project);
+  if (!active) return { active: false, allowedFamilies: [], allowedTilesets: [], violations: [], preexisting: [] };
+  const all = genreLockViolations(project, approved);
+  return {
+    active: true, preset: active.lock.preset, mode: active.lock.mode, allowedFamilies: [...active.allowed],
+    allowedTilesets: genreLockAllowedTilesets(project),
+    violations: all.filter((v) => !v.preexisting), preexisting: all.filter((v) => v.preexisting),
+  };
 }
