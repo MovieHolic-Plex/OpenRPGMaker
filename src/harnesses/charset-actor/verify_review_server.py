@@ -47,7 +47,13 @@ def verify(check, isolated_store):
         else:
             check('catalog-refuses-body-using-output-transparent-key', False)
         assets = CS.editor_catalog()
-        check('catalog-reads-all-six-editor-monster-sheets', sum(a['group'] == 'Monster' for a in assets) == 6)
+        editor_monsters = [a for a in assets if a['id'].startswith('easyrpg-charset-monster')]
+        followers = [a for a in assets if a['id'].startswith('oprn-charset-harness-monster')]
+        field_sheets = json.loads((CS.H.ROOT / 'src/assets/harnessMonsterBundle.json').read_text()).get('fieldSheets') or 0
+        check('catalog-reads-all-six-editor-monster-sheets', len(editor_monsters) == 6)
+        check('catalog-reads-harness-follower-sheets', len(followers) == field_sheets and all(
+            a['group'] == 'Monster' and a['path'].endswith(f'chips-{n}.png') and a['textureKey'] == f'tex_oprn_charset_harness_monster{n}'
+            for n, a in enumerate(followers, 1)))
         check('catalog-includes-scarloxy-and-farm-provider-assets', sum(a['group'] == 'Scarloxy' for a in assets) == 2 and sum(a['group'] == 'Farm' for a in assets) == 2)
         wizarding = [a for a in assets if a['group'] == 'Wizarding']
         check('catalog-reads-wizarding-provider-sheets', len(wizarding) >= 1 and all(a['id'].startswith('oprn-charset-wizarding') and a['path'].endswith('.png') for a in wizarding))

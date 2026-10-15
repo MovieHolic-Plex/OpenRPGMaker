@@ -20,6 +20,7 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { normalizeEnemyCollapseEffect } from "@/project/enemyCollapse";
+import { isTeamSwapCost } from "@/project/battleTeamModel";
 
 export function normalizeEnemyRecord(
   record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
@@ -125,6 +126,7 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     })(),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
+    ...(isTeamSwapCost(record.teamSwapCost) ? { teamSwapCost: record.teamSwapCost } : {}),
     battleEventPages: uniqueBattleEventPages(record.battleEventPages ?? []),
     // 전투 뒤 이벤트. 저작된 결과가 없으면 키를 만들지 않는다(옛 JSON 바이트 유지).
     ...(() => {

@@ -291,3 +291,15 @@ It requires an existing catalog; full generation without the option remains supp
 ## 필드 기술 게이트(HM) (2026-10-15, poke-fix-p Phase 2)
 
 원정 게임은 `place_field_obstacle` 로 절단·괴력·파도타기류 게이트를 쓸 수 있다. 상세는 `editor-ai-tools.md` 「place_field_obstacle」. 요점: 몬스터가 필드 기술을 상태 메뉴에서 쓰고(MP 없음), 기술머신은 가방에서 파티 몬스터에게 쓰며(가득이면 교체 대기), `unforgettable` 필드 기술은 교체 후보에서 빠진다. 자동 플레이는 기술머신을 줍고 쓰는 줄까지 따라간다. 만들어진 체육관·길 기본 생성(`build_monster_game`)에는 아직 HM 게이트를 자동으로 넣지 않는다(조수가 `place_field_obstacle` 로 추가).
+
+## 필드·진행 규칙 1차 (2026-10-15, poke-fix-p — 감사 S 항목)
+
+감사(`audit-poke`)의 필드·진행 부족분. 새 규칙은 전부 옵트인이고 안 쓰는 프로젝트의 저장 바이트는 그대로다.
+
+- **시야선 트레이너가 기본.** 출하 캠페인의 길 트레이너 3명은 `page.detectionEncounter`(시선 방향 직선 4칸·`forward`) 로 걸어와 말을 건다. 1쪽(승리 전·시야선) + 2쪽(승리 스위치·재대결 대사)이며 **지거나 도망치면 승리 스위치가 없어 다시 시야에 들면 또 걸어온다**(진 전투는 `onComplete` 영수증을 남기지 않는다 — `playSceneInterpreter.ts` `lostBattle`). 서는 자리 `standSpot(.., sighted)`: 곧은 통로 3칸 이상·미끄럼 칸 제외·서로 5칸 이상. `sightFacing` 이 가장 긴 직선 쪽을 본다(문·입구 곁은 시선에서 제외).
+- **체육관 졸개** 3~4명(퍼즐 → 졸개 → 관장). **장치를 푼 뒤의 지도**에서도 관장 곁까지 닿는 자리에만 세우고(`keepsRoute`), 길을 끊는 자리밖에 없으면 세우지 않는다(`standSpot(..strict)`; 프리즘 체육관은 0명). 달등 체육관에서 졸개가 풀린 1칸 통로를 막아 `qa:game check` 가 실패했던 것을 이 규칙으로 고쳤다.
+- **도구 `place_trainer`**(`trainerTools.ts`): 한 호출로 시야선 트레이너(team 또는 troopId·시선·이모트·대사·상금·재대결). 모르는 키는 거절하고 가까운 이름을 알려 준다. 막힌 시선·도달 불가·매복은 경고.
+- **18타입 상성표**(`project/typeCharts.ts`): `set_type_chart {preset:'gen3'|'gen6'}` — gen3 = 15+악·강철(17타입, 고스트→에스퍼 2배), gen6 = +페어리(강철의 고스트·악 반감 제거). **1세대 15타입이 기본**이라 기존 프로젝트는 불변. `define_monster_families` 는 상성표가 아직 기본(불·물·풀)이면 요청 타입에 맞춰 표준 표를 먼저 깔고(경고로 알림), 이미 손댄 표에 없는 타입은 「set_type_chart {preset} 를 먼저」 힌트로 거절한다. 악·강철·페어리 기술 18개는 상성표에 그 타입이 있을 때만 `buildMoves` 가 만든다(`EXTRA_MOVE_NAMES`). 강철은 독에 걸리지 않는다(`gen1MajorStatusBlockedByType`).
+- **야생 레벨 범위·풀 칸 조우.** `EncounterTableEntry.levelMin/levelMax`(뽑힐 때마다 굴림 → `BattleRuntimeOptions.enemyLevel` → `enemyBattlers({wildLevel})` 가 능력치·기술·EXP 를 그 레벨로 다시 계산, 포획 레벨도 그 값) 와 `conditions.terrainId`(서 있는 칸 지형 기록 — 타일 → 태그 N → `terrains[N-1]`). `terrain_grass`(「초원 풀밭」)는 칩셋 지형 태그 5 자리(terrains[4])에 `ensureGrassTerrainRecord` 가 심는다(기본 기록 4개일 때만). **출하 캠페인 길은 풀 칸 16칸 이상이면 풀 칸에서만 야생이 나온다**(길·맨땅·문 앞 안전; 던전·곁길은 서식지 전체 그대로). `eligibleEncounterEntries(map, session, pos, project?)` — terrainId 항목은 project 가 없으면 나오지 않는다. `set_encounter_table` 은 두 칸을 받고 그 맵에 해당 지형 칸이 없으면 경고한다.
+- **패배·보상 규칙(옵트인).** `system.gameOver.goldLossPercent`(0~100, 블랙아웃 귀환 때 소지금 감소 — 출하 캠페인 50, 길·체육관 트레이너 패배도 같은 `gameOver` 를 탄다), `system.rewardPolicy.expShare`(몬스터 전투에서 나서지 않은 살아 있는 파티 몬스터가 EXP 절반), `system.rewardPolicy.trainerPrizePerLevel`(트레이너전 상금 = 상대 마지막 몬스터 레벨 × 값, 난이도 goldRate 적용), `system.captureShakesVariableId`(던지기마다 흔들린 횟수 0~3, 잡히면 4 를 그 변수에 — **이벤트 칸만**, 화면 연출은 따로). 도구: `set_game_over {goldLossPercent}` · `configure_game_systems {rewardPolicy:{expShare,trainerPrizePerLevel}}` · `configure_monster_system {captureShakesVariableId, rules:'gen1'}`(gen1 은 패배 규칙이 없을 때 포켓몬식 블랙아웃을 심는다).
+- 검증(미실행 표기 아님): 노브 비교 `scripts/qa/audit-poke/fix-*.mts`(trainers·enc·lvl·rules), `qa:game check` 8관(90맵) 막힘 0 엔딩 도달. vitest·gates 는 돌리지 않았다.

@@ -99,6 +99,7 @@ export function validateSystem(value: unknown): void {
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
+  if (system.captureShakesVariableId !== undefined) requireNonBlankString("system.captureShakesVariableId", system.captureShakesVariableId);
   if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
   if (system.gameOvers !== undefined) {
     const rows = requireArray("system.gameOvers", system.gameOvers);
@@ -265,7 +266,8 @@ function validateCinematicSequence(label: string, value: unknown): void {
 
 export function validateGameOverSettings(value: unknown, label = "system.gameOver"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId", "goldLossPercent"]);
+  if (settings.goldLossPercent !== undefined) assert(Number.isInteger(settings.goldLossPercent) && Number(settings.goldLossPercent) >= 0 && Number(settings.goldLossPercent) <= 100, `${label}.goldLossPercent must be an integer in 0..100.`);
   if (settings.outcome !== undefined) assert(settings.outcome === "menu" || settings.outcome === "recover" || settings.outcome === "title", `${label}.outcome is invalid.`);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.timing !== undefined) {

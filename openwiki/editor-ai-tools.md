@@ -250,6 +250,14 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - `upsert_equipment` 신규 필드: `apGrants [{skillId,ap}]`(없는 스킬은 거절 → upsert_skill 안내)·`apRate`·`levelUpBonus`. AP 를 줄 적이 하나도 없으면 경고(`upsert_enemy.rewards.ap`). `upsert_skill.oncePerBattle` 은 소환용.
 - 능력 색인 레시피 `esper-growth`, 라벨 「장비 부위 수정」. 설명·규칙: `openwiki/runtime-battle.md` 「FF6 마석 성장」.
 
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15)
+
+- `upsert_skill.effect.kind` 에 `sketch`·`rage`(+`enemyIds`)·`shuffleParty`·`forceSwitch` 가 늘었다. 모르는 키는 거절(허용 필드 목록을 알려 준다). `rage.enemyIds` 에 없는 적 id 는 거절하고 `upsert_enemy` 를 안내한다.
+  경고: 폭주에 scope 가 self 가 아님 / `state_rage` 상태가 프로젝트에 없음, 스케치에 scope 가 enemy 가 아님, 대열 섞기·강제 교대가 self 범위(적이 플레이어 파티를 흔드는 기술이라는 안내).
+- `upsert_state.runtimeEffects` 에 `invertHealing`(좀비), `grantSkillIds`(트랜스·변신이 주는 기술, 없는 기술은 거절 → `upsert_skill` 안내), `forcedAction: "rage"`(폭주)가 늘었다.
+- 능력 색인 레시피 `ff6-battle-effects`(스케치·폭주·교대·좀비·트랜스·블리츠·검기·룬 한 장 요약). 새 도구는 없다 — 라벨·활동 서술은 기존 `upsert_skill`/`upsert_state` 를 그대로 쓴다.
+- 규칙·파일: `openwiki/runtime-battle.md` 「FF6 전투 특수 효과」, `openwiki/state-system.md`.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
@@ -3188,3 +3196,21 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
 - 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
 - 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+
+
+## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+
+- `place_trainer`(`trainerTools.ts`, 이벤트 도메인): 시야선 트레이너 한 명을 한 호출로 — `team:[{speciesId,level}]`(enemy·troop 자동, `trainerBattle`·포획 불가) 또는 `troopId`, `facing`·`sightRange`·`emote`·`approachSpeed`·`before/after/rematchLine/rematch`·`rewardGold/rewardItems`·`winSwitchId`. 모르는 키(`dialogue`·`reward` …)는 가까운 이름을 알려 주고 거절. `place_field_enemy` 는 야생 심볼 도구라 보상·재대결이 없어 트레이너를 그걸로 놓지 않는다.
+- `set_type_chart {preset:'gen3'|'gen6'}`: 표준 17/18타입 표(preset 과 `multipliers` 를 같이 주면 그 칸만 덮어씀). 기본은 1세대 15타입이라 preset 이 없다. `define_monster_families` 는 기본(불·물·풀) 상성표면 요청 타입에 맞춰 표준 표를 자동으로 깔고 경고한다.
+- `set_encounter_table` 항목: `levelMin/levelMax`(종 몬스터 트룹만 — 아니면 「다음 도구」를 알려 거절), `conditions.terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭). 옛 거절 안내(`minLevel`·`terrain`) 는 새 이름을 가리키도록 바꿨다.
+- 패배·보상: `set_game_over {goldLossPercent}`(blackout 일 때만), `configure_game_systems {rewardPolicy:{expShare,trainerPrizePerLevel}}`, `configure_monster_system {captureShakesVariableId}`(변수 먼저 `create_variable`).
+- 의도 선언(`intentDeclaration.ts` tools 설명)·능력 색인(`toolCapabilityIndex.ts` 레시피 `monster-field-rules`)·몬스터 프롬프트(`monsterGameRequest.ts`) 에 같은 안내를 넣었다. 도구 라벨은 `aiToolLabels.ts`.
+
+## 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+
+- `set_project_settings` `battle.teams: [{id,name?,actorIds}]`(2~4팀, `[]` 해제) + `battle.teamSwapCost: free|gauge|turn`. 모르는 키(팀 객체 안 포함)·팀 id 중복·한 배우 두 팀·없는 배우(→ `upsert_actor` 안내)·팀 1개·빈 팀은 `ToolError`. 경고(`warnings`): 팀 없는 시작 파티원(첫 팀에 붙음)·시작 파티 배우가 없는 팀·strict 흐름(free/gauge/turn 동일)·팀 없이 비용만 저장.
+  `[]` 로 해제하면 `teamSwapCost` 도 같이 지운다. 기본값 `gauge` 는 저장하지 않는다.
+- `upsert_troop.teamSwapCost` — 그 적 그룹만 비용을 덮어쓴다(`null` 로 되돌림).
+- 능력 색인 `battle-teams`(read → write → `simulate_battle`/`run_lint`). 동시 전투는 지원하지 않는다고 정책에 못 박았다 — 약속하지 말 것. 편집기: 시스템 탭 「팀 교대 전투」 카드, 적 그룹 「팀 교대 비용」.
+- 계약 문서는 `runtime-battle.md` 「팀 교대 전투」. 새 도구는 없다(기존 도구 확장) — 라벨·의도 선언 변경 없음.
+

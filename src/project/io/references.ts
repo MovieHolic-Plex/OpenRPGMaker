@@ -1230,6 +1230,9 @@ function validateMapRecords(
       if (!context.troopIds.has(entry.troopId)) issues.push(`map ${map.id}: encounterTable[${index}].troopId does not exist: ${entry.troopId}`);
       if (entry.conditions?.switchId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.switchId`, [entry.conditions.switchId], switchIds, issues);
       if (entry.conditions?.variableId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.variableId`, [entry.conditions.variableId], variableIds, issues);
+      if (entry.conditions?.terrainId && !(project.database.terrains ?? []).some((terrain) => terrain.id === entry.conditions!.terrainId)) {
+        issues.push(`map ${map.id}: encounterTable[${index}].conditions.terrainId does not exist: ${entry.conditions.terrainId}`);
+      }
     }
     for (const [index, spawn] of (map.fieldSpawns ?? []).entries()) {
       if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);

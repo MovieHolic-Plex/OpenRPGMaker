@@ -75,6 +75,7 @@ import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
+import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -298,12 +299,18 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
     ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
+    ...(() => {
+      const battleTeams = normalizeBattleTeams(system.battleTeams);
+      return battleTeams ? { battleTeams } : {};
+    })(),
+    ...(isTeamSwapCost(system.teamSwapCost) ? { teamSwapCost: system.teamSwapCost } : {}),
     // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
     ...(() => {
       const companions = normalizeCompanionConfig(system.companions);
       return companions ? { companions } : {};
     })(),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
+    ...(typeof system.captureShakesVariableId === "string" && system.captureShakesVariableId.trim() ? { captureShakesVariableId: system.captureShakesVariableId.trim() } : {}),
     // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
     // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
     ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
@@ -434,10 +441,14 @@ export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined):
 }
 
 function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
-  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined && policy.expShare === undefined && policy.trainerPrizePerLevel === undefined)) return undefined;
+  const prize = typeof policy.trainerPrizePerLevel === "number" && Number.isFinite(policy.trainerPrizePerLevel) ? Math.max(0, Math.min(9999, Math.trunc(policy.trainerPrizePerLevel))) : 0;
   return {
     participationOnly: policy.participationOnly === true,
     levelGapPenalty: policy.levelGapPenalty === true,
+    // 새 칸은 켰을 때만 저장한다 — 안 쓰는 프로젝트의 저장 바이트는 그대로.
+    ...(policy.expShare === true ? { expShare: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -979,6 +990,10 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
   if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
+  if (effect?.kind === "rage") {
+    const enemyIds = uniqueCleanIds(effect.enemyIds ?? []).slice(0, 24);
+    return enemyIds.length > 0 ? { kind: "rage", enemyIds } : { kind: "rage" };
+  }
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
 }
 

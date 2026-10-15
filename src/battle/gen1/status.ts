@@ -72,6 +72,8 @@ export function gen1MajorStatusBlockedByType(
   moveKind: "damage" | "status",
 ): boolean {
   if (status === "poison" && targetTypes.includes("poison")) return true;
+  // 3세대 이후: 강철은 독 상태에 걸리지 않는다(15타입 1세대 프로젝트에는 강철 타입이 없어 영향 없음).
+  if (status === "poison" && targetTypes.includes("steel")) return true;
   if (!moveType) return false;
   if (moveKind === "damage" && status !== "sleep") return targetTypes.includes(moveType);
   return moveKind === "status"

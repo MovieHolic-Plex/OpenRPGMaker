@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
+import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
@@ -104,7 +105,7 @@ import {
 } from "@/project/playResolution";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
-import type { PlayResolution, SystemRecords } from "@/project/types";
+import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
 const titleStageRefreshers = new WeakMap<HTMLElement, (kind: "values" | "effects") => void>();
@@ -454,6 +455,7 @@ function systemSectionNodes(
             : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
         ),
       ]),
+      battleTeamsSection(project, updateSystem, rerender),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
@@ -1562,15 +1564,20 @@ function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => v
 }
 
 function nextRewardPolicy(
-  current: { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined,
+  current: RewardPolicy | undefined,
   patch: { participationOnly?: boolean; levelGapPenalty?: boolean },
-): { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined {
+): RewardPolicy | undefined {
   const participationOnly = patch.participationOnly ?? current?.participationOnly === true;
   const levelGapPenalty = patch.levelGapPenalty ?? current?.levelGapPenalty === true;
-  if (!participationOnly && !levelGapPenalty) return undefined;
+  // 이 토글 화면에 없는 칸(expShare·trainerPrizePerLevel)은 조수·도구가 저작한 값이므로 그대로 둔다.
+  const expShare = current?.expShare === true;
+  const prize = current?.trainerPrizePerLevel ?? 0;
+  if (!participationOnly && !levelGapPenalty && !expShare && prize <= 0) return undefined;
   return {
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
+    ...(expShare ? { expShare: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 

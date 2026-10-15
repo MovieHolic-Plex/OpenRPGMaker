@@ -198,6 +198,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   place_battle_blocker: people("전투 블로커 놓기", "user"),
   place_field_enemy: people("필드 적 놓기", "user"),
   place_field_obstacle: people("필드 기술 장애물 놓기", "box"),
+  place_trainer: people("시야선 트레이너 놓기", "user"),
   make_chase_scene: people("추격 장면 만들기", "user"),
   configure_object_behavior: people("오브젝트 동작 설정", "box"),
   author_npc_cast: people("주민 대사 쓰기", "user"),

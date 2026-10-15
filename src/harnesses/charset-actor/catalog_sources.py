@@ -132,6 +132,9 @@ def create(name='에디터 전체 캐릭터 원본'):
             if entry['group'] == 'Wizarding':
                 skipped.append(dict(assetId=entry['id'], reason='마법 학교 시트는 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
                 continue
+            if entry['id'].startswith('oprn-charset-harness-monster'):
+                skipped.append(dict(assetId=entry['id'], reason='몬스터 수집 따라다니기 칩은 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
+                continue
             if entry['group'] not in WALKING_GROUPS or entry['group'] == 'Animal':
                 skipped.append(dict(assetId=entry['id'], reason='Animal은 고정한 동물 영역의 별도 실행으로 제작' if entry['group'] == 'Animal' else '문·기물·탈것은 걷는 캐릭터 원본이 아님'))
                 continue

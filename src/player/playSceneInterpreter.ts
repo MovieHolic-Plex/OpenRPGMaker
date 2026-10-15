@@ -267,7 +267,7 @@ export async function runCommands(
   };
   observe("started");
   try {
-    let result = interpreter.start(), normalCompletion = true, handledFailure = false;
+    let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
@@ -276,9 +276,11 @@ export async function runCommands(
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
+      // 진 전투는 시야선 트레이너(발견 이벤트)의 「끝낸 만남」 영수증으로 세지 않는다 — 센터에서 돌아와 다시 시야에 들면 또 걸어온다.
+      if (step.kind === "battleProcessing" && activeSession.battleResult === "defeat") lostBattle = true;
     }
     if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
-      observe("completed"); options.onComplete?.();
+      observe("completed"); if (!lostBattle) options.onComplete?.();
     } else observe(handledFailure ? "failed" : "cancelled");
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError"

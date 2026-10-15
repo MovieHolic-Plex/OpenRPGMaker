@@ -42,7 +42,7 @@ export interface StateBehavior {
   readonly freezesGauge: boolean;
   readonly physicalDefenseMultiplier: number;
   readonly magicDefenseMultiplier: number;
-  readonly forcedAction?: "attackRandom";
+  readonly forcedAction?: "attackRandom" | "rage";
   readonly elementRates?: Readonly<Record<string, string>>;
   // 반격·도발·감싸기·회피·리플렉·리레이즈·선고(2026-10-01). 모두 runtimeEffects 에서만 온다.
   readonly counterChance: number;
@@ -52,6 +52,8 @@ export interface StateBehavior {
   readonly reflect: boolean;
   readonly reraisePercent: number;
   readonly doomTurns: number;
+  readonly invertHealing: boolean;
+  readonly grantSkillIds: readonly string[];
 }
 
 // hpTurn 문자열/숫자에서 매 턴 HP 변화 비율(부호 포함)을 추출.
@@ -100,7 +102,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     freezesGauge: runtime?.freezesGauge === true,
     physicalDefenseMultiplier: runtime?.physicalDefenseMultiplier ?? 1,
     magicDefenseMultiplier: runtime?.magicDefenseMultiplier ?? 1,
-    ...(runtime?.forcedAction === "attackRandom" ? { forcedAction: "attackRandom" as const } : {}),
+    ...(runtime?.forcedAction === "attackRandom" || runtime?.forcedAction === "rage" ? { forcedAction: runtime.forcedAction } : {}),
     ...(runtime?.elementRates ? { elementRates: runtime.elementRates } : {}),
     counterChance: clampPercent(runtime?.counterChance),
     taunt: runtime?.taunt === true,
@@ -109,6 +111,8 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     reflect: runtime?.reflect === true,
     reraisePercent: clampPercent(runtime?.reraisePercent),
     doomTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.doomTurns ?? 0) || 0))),
+    invertHealing: runtime?.invertHealing === true,
+    grantSkillIds: Array.isArray(runtime?.grantSkillIds) ? runtime.grantSkillIds.filter((id): id is string => typeof id === "string" && id.length > 0).slice(0, 12) : [],
   };
 }
 
@@ -241,7 +245,13 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       battler.hp -= applied;
       hpDamage += applied;
     }
-    if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 0 && battler.hp < battler.maxHp) {
+    if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 1 && invertsHealingForStates(project, battler)) {
+      // 좀비: 재생이 피해가 된다. 지속 피해와 같이 HP 1 아래로는 깎지 않는다.
+      const tick = Math.max(1, Math.floor((battler.maxHp * behavior.hpHealPercentPerTurn) / 100));
+      const applied = Math.min(tick, battler.hp - 1);
+      battler.hp -= applied;
+      hpDamage += applied;
+    } else if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 0 && battler.hp < battler.maxHp) {
       const tick = Math.max(1, Math.floor((battler.maxHp * behavior.hpHealPercentPerTurn) / 100));
       const applied = Math.min(tick, battler.maxHp - battler.hp);
       battler.hp += applied;
@@ -338,14 +348,29 @@ export function defenseMultiplierForStatesByKind(
   return clampStateMultiplier(raw);
 }
 
+/** 좀비: 걸린 상태 중 하나라도 invertHealing 이면 true — HP 회복이 피해로 뒤집힌다. */
+export function invertsHealingForStates(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.invertHealing === true);
+}
+
+/** 트랜스·변신: 걸린 상태가 이 순간 주는 기술 id(중복 없음). */
+export function grantedSkillIdsForStates(project: Project, battler: { readonly stateIds: readonly string[] }): string[] {
+  const out: string[] = [];
+  for (const stateId of battler.stateIds) {
+    for (const id of behaviorFor(project, stateId)?.grantSkillIds ?? []) if (!out.includes(id)) out.push(id);
+  }
+  return out;
+}
+
 /** 스톱: 게이지가 멈추는 상태가 하나라도 있으면 true. */
 export function gaugeFrozenByStates(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
   return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.freezesGauge === true);
 }
 
-/** 버서크: 강제 행동 상태가 있으면 그 종류. */
-export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | undefined {
-  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom") ? "attackRandom" : undefined;
+/** 버서크·폭주: 강제 행동 상태가 있으면 그 종류(버서크가 먼저). */
+export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | "rage" | undefined {
+  if (battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom")) return "attackRandom";
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "rage") ? "rage" : undefined;
 }
 
 /** 반격 확률(%): 걸린 상태 중 가장 큰 값. */
