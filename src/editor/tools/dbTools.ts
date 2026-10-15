@@ -1,5 +1,6 @@
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { CAPTURE_CONDITION_KINDS, CAPTURE_CONDITION_MAX_MULTIPLIER, CAPTURE_CONDITION_MIN_MULTIPLIER } from "@/battle/captureBalls";
 import { BATTLE_MOTION_PATTERNS } from "@/battle/battleMotionProgram";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { isBlendModeName, normalizeBlendMode } from "@/project/blendMode";
@@ -476,6 +477,12 @@ const itemEquipmentProfileSchema = objectSchema({
 const captureProfileSchema = objectSchema({
   multiplier: numberSchema("포획 확률 배율. 생략 시 1"),
   ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
+  condition: objectSchema({
+    kind: { type: "string", enum: [...CAPTURE_CONDITION_KINDS], description: "type=대상이 types 중 하나일 때 · firstTurn=전투 첫 차례에만 · turns=차례가 지날수록(차례마다 step 만큼, 상한 multiplier) · repeat=이미 도감에 있는 종에게" },
+    multiplier: numberSchema(`조건이 맞을 때 포획 확률에 곱하는 배율 ${CAPTURE_CONDITION_MIN_MULTIPLIER}~${CAPTURE_CONDITION_MAX_MULTIPLIER}. 생략: type·repeat 3.5, firstTurn 5, turns 상한 4`),
+    types: stringArraySchema("kind=type 필수. system.typeChart.types 값(최대 6개)"),
+    step: numberSchema("kind=turns: 차례마다 늘어나는 배율(0.05~2, 기본 0.3)"),
+  }, "조건부 볼(그물·퀵·타이머·리피트 볼). 볼 등급과 겹친다. gen1 전투 모델과 기본 모델 모두 적용."),
 });
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
 const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), tp: integerSchema("기술 포인트. 승리 시 살아남은 파티원 전원이 트룹 합계를 받는다"), ap: integerSchema("마석 AP(FF6). 승리 시 살아남은 파티원 전원이 트룹 합계를 받아 장착한 마석의 apGrants 에 쌓는다. 1 이상"), dropItemId: stringSchema(), dropRatePercent: integerSchema(), drops: conditionalDropsSchema });
@@ -1109,6 +1116,18 @@ function resolveIconResourceId(project: Project, record: { iconResourceId?: stri
   );
 }
 
+/** captureProfile.condition 을 줬는데 정규화가 버렸으면(모르는 종류·필수 매개변수 누락) 허용 값을 담아 거절한다. */
+function validateItemCaptureCondition(draft: Project, raw: unknown, record: ItemRecord): void {
+  if (raw === undefined || raw === null) return;
+  const code = "invalid-capture-condition";
+  if (!record.captureProfile?.condition) {
+    throw new ToolError(`captureProfile.condition 이 올바르지 않아 저장하지 않았습니다 — kind(${CAPTURE_CONDITION_KINDS.join("|")}) 가 필요하고 kind=type 은 types(system.typeChart.types 값 배열)도 필요합니다.`, { code });
+  }
+  const known = draft.system.typeChart?.types ?? [];
+  const unknown = (record.captureProfile.condition.types ?? []).filter((type) => known.length > 0 && !known.includes(type));
+  if (unknown.length > 0) throw new ToolError(`captureProfile.condition.types '${unknown.join(", ")}' 는 타입 상성표에 없습니다 — 허용: ${known.join(", ")}`, { code });
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1133,6 +1152,7 @@ const upsertItem: ToolDefinition = {
     const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
+    validateItemCaptureCondition(draft, (merged as { captureProfile?: { condition?: unknown } }).captureProfile?.condition, record);
     coerceSwitchItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);

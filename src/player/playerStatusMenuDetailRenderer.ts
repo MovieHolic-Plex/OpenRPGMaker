@@ -432,6 +432,7 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}`;
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;
+    case "capture-cond": return `조건 ${value}`;
     case "seed": return `${ITEM_SEED_LABEL[value] ?? value} ${signedItemAmount(Number(amount))}`;
     default: return token;
   }

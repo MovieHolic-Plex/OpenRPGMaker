@@ -1,4 +1,5 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { captureConditionLabel } from "@/battle/captureBalls";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -903,6 +904,8 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
     tokens.push(project.system.battleModel === "gen1"
       ? `capture-class:${item.captureProfile.ballClass ?? "poke"}`
       : `capture:${item.captureProfile.multiplier}`);
+    const condition = item.captureProfile.condition;
+    if (condition) tokens.push(`capture-cond:${encodeURIComponent(captureConditionLabel(condition))}`);
   }
   for (const [key] of STAT_LABELS) {
     const delta = item.seedParameterBonuses[key];

@@ -71,6 +71,7 @@ import {
 } from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
+import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
@@ -1023,6 +1024,7 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
   return {
     multiplier,
     ...(isGen1BallClass(profile.ballClass) ? { ballClass: profile.ballClass } : {}),
+    ...(normalizeCaptureCondition(profile.condition) ? { condition: normalizeCaptureCondition(profile.condition) } : {}),
   };
 }
 

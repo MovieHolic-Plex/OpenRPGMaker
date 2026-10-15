@@ -1,5 +1,5 @@
 import type { EnemyStats, MonsterSpeciesRecord, Project, SkillRecord, UploadedAsset } from "@/project/types";
-import { normalizeEnemyRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
+import { normalizeEnemyRecord, normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
@@ -241,7 +241,30 @@ export function learnset(primary: string, secondary: string) {
  * its 15 elements, type chart, and semantic status records. Never reads files or
  * mutates a remote/canonical store. All uploaded PNGs remain portable on export.
  */
+/** 조건부 볼 예시 넷(그물·퀵·타이머·리피트). 포획 확률 배율이 조건이 맞을 때 더 오른다. 상점에서 판다. */
+export const EXPEDITION_BALL_IDS = ["mx_ball_net", "mx_ball_quick", "mx_ball_timer", "mx_ball_repeat"] as const;
+
+function configureExpeditionBalls(project: Project): void {
+  const chartTypes = new Set(project.system.typeChart?.types ?? []);
+  const netTypes = ["water", "bug"].filter(type => chartTypes.has(type));
+  const balls = [
+    ...(netTypes.length ? [{ id: "mx_ball_net", name: "그물 구슬", price: 200, description: "물·벌레 타입에게 포획 확률이 3.5배가 된다.", captureProfile: { multiplier: 1, ballClass: "poke" as const, condition: { kind: "type" as const, types: netTypes, multiplier: 3.5 } } }] : []),
+    { id: "mx_ball_quick", name: "신속 구슬", price: 300, description: "전투 첫 차례에 던지면 포획 확률이 5배가 된다.", captureProfile: { multiplier: 1, ballClass: "poke" as const, condition: { kind: "firstTurn" as const, multiplier: 5 } } },
+    { id: "mx_ball_timer", name: "경과 구슬", price: 300, description: "차례가 지날수록 포획 확률이 늘어난다(차례마다 +0.3, 최대 4배).", captureProfile: { multiplier: 1, ballClass: "poke" as const, condition: { kind: "turns" as const, multiplier: 4, step: 0.3 } } },
+    { id: "mx_ball_repeat", name: "재회 구슬", price: 300, description: "도감에 이미 있는 종에게 포획 확률이 3.5배가 된다.", captureProfile: { multiplier: 1, ballClass: "poke" as const, condition: { kind: "repeat" as const, multiplier: 3.5 } } },
+  ];
+  const known = new Set(project.database.items.map(item => item.id));
+  for (const ball of balls) {
+    if (known.has(ball.id)) continue;
+    project.database.items.push(normalizeItemRecord({
+      ...ball, type: "special", scope: "enemy", imageResourceId: "cc0-jetrel-capture-orb", iconResourceId: "cc0-jetrel-capture-orb",
+      occasion: "battle", occasionField: false, occasionBattle: true, consumable: true,
+    }));
+  }
+}
+
 export function configureExpeditionRoster(project: Project): void {
+  configureExpeditionBalls(project);
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
   // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
   const replacedArt = [...FAMILIES.flatMap(family => family.slugs), ...RARES.map(rare => rare.slug)]
