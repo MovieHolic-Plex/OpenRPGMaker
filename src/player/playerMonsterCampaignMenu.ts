@@ -58,6 +58,8 @@ export function createMonsterCampaignDetail(options: StatusMenuDetailOptions, co
           label: `${String(index + 1).padStart(2, '0')} ${badge.name}`,
           value: acquired ? '획득 ◆' : '미획득 ◇',
           description: project.maps[badge.cityMapId]?.name ?? campaign.locations.find((location) => location.mapId === badge.cityMapId)?.name ?? '체육관',
+          // 배지 케이스: 받은 배지는 그 배지의 그림(캠페인 정의 iconResourceId, 없으면 기본 배지 아이콘)이 앞에 붙는다.
+          ...(acquired ? { icon: { resourceId: badge.iconResourceId ?? 'cc0-jetrel-badge', alt: badge.name, testId: `campaign-badge-icon-${badge.id}` } } : {}),
           attributes: { 'data-badge-acquired': String(acquired) },
           testId: `campaign-badge-${badge.id}`,
           onActivate: readOnly,

@@ -87,6 +87,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["npc", "주민", "마을 사람", "villager", "대화"], tools: ["place_npc", "make_villager", "author_npc_cast"], label: "NPC" },
   { terms: ["스위치", "변수", "플래그", "story flag", "flag", "switch", "variable"], tools: ["declare_story_flag", "find_flag_usage", "rename_switch", "rename_variable"], label: "스위치·변수·플래그" },
   { terms: ["퀘스트", "의뢰", "quest"], tools: ["define_quest", "create_quest", "verify_quest"], label: "퀘스트" },
+  { terms: ["배지", "뱃지", "휘장", "배지 획득", "배지 연출", "관장 승리", "badge", "badge ceremony", "gym badge"], tools: ["configure_monster_campaign", "read_monster_game"], label: "배지(체육관 승리 연출·아이콘)" },
   { terms: ["시간문", "시간 여행", "과거로", "time gate", "time travel", "time portal"], tools: ["create_time_gate", "create_transfer_pair"], label: "시간문" },
   { terms: ["세이브", "저장 지점", "savepoint", "save point"], tools: ["place_savepoint"], label: "세이브 포인트" },
   { terms: ["센터", "포켓몬 센터", "몬스터 센터", "회복 센터", "간호사", "병원", "pokemon center", "monster center", "nurse", "heal center"], tools: ["place_monster_center", "place_savepoint"], label: "몬스터 센터(회복 연출)" },

@@ -191,6 +191,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   });
   const resourceIds = collectResourceIds(project);
   check(() => {
+    for (const badge of project.system.monsterCampaign?.badges ?? []) {
+      if (badge.iconResourceId) assert(resourceIds.has(badge.iconResourceId), `monsterCampaign: unknown badge icon ${badge.iconResourceId}`);
+    }
+  });
+  check(() => {
     for (const widget of project.system.fieldHud?.widgets ?? []) {
       const path = `system.fieldHud.${widget.id}`;
       if (widget.actorId) assert(actorIds.has(widget.actorId), `${path}: unknown actorId ${widget.actorId}`);

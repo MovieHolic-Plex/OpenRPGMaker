@@ -9,7 +9,7 @@ export type MonsterCampaignDefinition = {
   dexRegisteredText?: string;
   speciesIds: string[];
   speciesNotes: Record<string, string>;
-  badges: { id: string; name: string; switchId: string; cityMapId: string }[];
+  badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: 'town' | 'route' | 'dungeon' | 'league' }[];
   objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
 };

@@ -24,6 +24,7 @@ export function validateMonsterCampaign(value: unknown): void {
   for (const value of badges) {
     const badge = requireRecord("monsterCampaign.badge", value);
     for (const key of ["id", "name", "switchId", "cityMapId"]) requireString(`monsterCampaign.badge.${key}`, badge[key]);
+    if (badge.iconResourceId !== undefined) requireString("monsterCampaign.badge.iconResourceId", badge.iconResourceId);
   }
   const locations = requireArray("monsterCampaign.locations", campaign.locations);
   for (const value of locations) {
