@@ -8,7 +8,7 @@ import { bestEquipmentPlan } from "@/player/playerStatusMenuDetails";
 import type { ActorInitialEquipment } from "@/project/types";
 
 export type StatusMenuMutationResult =
-  | { readonly kind: "used"; readonly message: string; readonly evolutions?: readonly CareEvolution[] }
+  | { readonly kind: "used"; readonly message: string; readonly evolutions?: readonly CareEvolution[]; readonly transfer?: { readonly mapId: string; readonly x: number; readonly y: number } }
   | { readonly kind: "unusable"; readonly message: string };
 
 export function useStatusMenuItem(scene: PlayScene, itemId: string, actorId?: string, monsterInstanceId?: string): StatusMenuMutationResult {

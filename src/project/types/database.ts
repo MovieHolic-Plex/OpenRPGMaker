@@ -533,6 +533,12 @@ export interface ItemRecord {
    * heldEffect → 지닌 도구, 쓸 곳 없는 never 아이템 → 중요한 물건, 나머지 → 도구로 정해진다. 다른 장르의 아이템 화면은 이 값을 쓰지 않는다.
    */
   pocket?: ItemBagPocket;
+  /** 벌레퇴치류(선택): 쓰면 이 걸음 수(1~9999) 동안 야생 조우를 막는다. 필드 메뉴에서 쓴다. 생략 = 일반 아이템. */
+  repelSteps?: number;
+  /** repelSteps 와 함께: true 면 파티 선두 몬스터보다 레벨이 낮은 야생만 막는다(포켓몬식). 생략 = 전부 막는다. */
+  repelBelowLead?: boolean;
+  /** 탈출 로프류(선택): "entrance" = 던전·동굴(mapRole dungeon)에서 쓰면 마지막으로 들어온 입구 밖으로 나간다. 전투 중·던전 밖에서는 「효과가 없다」. */
+  escapeTo?: "entrance";
 }
 
 export type ItemBagPocket = "items" | "balls" | "machines" | "held" | "key";
@@ -1949,6 +1955,8 @@ export interface SystemRecords {
   /** Opt-in item upgrade rows. */
   itemUpgrades?: import("@/project/upgrades").ItemUpgradeRule[];
   /** Opt-in sell price overrides. */
+  /** 도망 성공 뒤 야생 조우를 건너뛰는 걸음 수(0~99, 0 = 끔). 생략 = 몬스터 파티 게임은 4, 다른 장르는 0. project/encounterGuard.ts. */
+  escapeGraceSteps?: number;
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
   /** Opt-in life-sim energy pool. */
   energy?: EnergySystemConfig;

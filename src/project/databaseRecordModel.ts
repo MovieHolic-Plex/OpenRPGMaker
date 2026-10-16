@@ -1,5 +1,6 @@
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
+import { normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -800,6 +801,9 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     careProfile: normalizeCareProfile(record.careProfile),
     ...(normalizeHeldItemEffect(record.heldEffect) ? { heldEffect: normalizeHeldItemEffect(record.heldEffect) } : {}),
     ...(isItemBagPocket(record.pocket) ? { pocket: record.pocket } : {}),
+    ...(normalizeRepelSteps(record.repelSteps) !== undefined ? { repelSteps: normalizeRepelSteps(record.repelSteps) } : {}),
+    ...(normalizeRepelSteps(record.repelSteps) !== undefined && record.repelBelowLead === true ? { repelBelowLead: true } : {}),
+    ...(record.escapeTo === "entrance" ? { escapeTo: "entrance" as const } : {}),
   };
 }
 

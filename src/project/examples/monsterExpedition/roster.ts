@@ -3,6 +3,7 @@ import { normalizeEnemyRecord, normalizeItemRecord, normalizeSkillRecord } from 
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
+import { configureExpeditionFieldItems } from "./fieldItems";
 import { harnessArtForCampaignSpecies, harnessFieldGraphicForCampaignSpecies } from "@/assets/harnessMonsterArt";
 
 export type ExpeditionHabitat = "grass" | "forest" | "coast" | "mountain" | "desert" | "snow" | "cave" | "ruins" | "swamp" | "volcano";

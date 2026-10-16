@@ -1,4 +1,5 @@
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
+import { applyRepel, resolveEscapeRope, type EscapeDestination } from "@/project/encounterGuard";
 import { applyCareItem, type CareEvolution } from "@/project/monsterCare";
 import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 import { evolveMonster, monsterSpeciesById, previewMonsterItemEvolution } from "@/project/monsterCollection";
@@ -15,7 +16,7 @@ import { giveHeldItem } from "@/project/monsterHeldItems";
 export { machineSkillOf, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
 
 export type MenuItemUseResult =
-  | { readonly kind: "used"; readonly message: string; /** 이 사용으로 진화한 몬스터(순서대로). 메뉴가 진화 장면을 보인다. */ readonly evolutions?: readonly CareEvolution[] }
+  | { readonly kind: "used"; readonly message: string; /** 이 사용으로 진화한 몬스터(순서대로). 메뉴가 진화 장면을 보인다. */ readonly evolutions?: readonly CareEvolution[]; /** 탈출 로프: 메뉴를 닫고 이 칸으로 옮긴다(호출자가 장면에서 실행). */ readonly transfer?: EscapeDestination }
   | { readonly kind: "unusable"; readonly message: string };
 
 /** The menu preview and execution share the same authored-type and target rules. */
@@ -78,6 +79,20 @@ export function useItemFromMenu(
   if (!item || (session.inventory[item.id] ?? 0) <= 0) return { kind: "unusable", message: "사용할 수 없습니다" };
   const unavailableReason = menuItemUnavailableReason(item, project);
   if (unavailableReason) return { kind: "unusable", message: unavailableReason };
+
+  // 벌레퇴치: 남은 걸음 동안 야생 조우를 막는다(세션 encounterGuard). 겹쳐 쓰지 않는다.
+  if (item.repelSteps !== undefined) {
+    const used = applyRepel(session, item);
+    if (used.kind === "used") commitSuccessfulUse(project, session, item);
+    return used;
+  }
+  // 탈출 로프: 던전에서만. 이동 자체는 장면이 한다(transfer).
+  if (item.escapeTo) {
+    const rope = resolveEscapeRope(project, session, item);
+    if (rope.kind === "unusable") return rope;
+    commitSuccessfulUse(project, session, item);
+    return { kind: "used", message: rope.message, transfer: rope.destination };
+  }
 
   if (item.careProfile) {
     return useCareItem(project, session, item, targetMonsterInstanceId);

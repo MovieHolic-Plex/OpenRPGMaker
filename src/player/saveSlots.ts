@@ -1,3 +1,4 @@
+import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
 import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
@@ -220,6 +221,7 @@ export type SaveSnapshot = {
     readonly monsterFieldPoisonSteps?: number;
     readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
     readonly equippedToolItemId?: PlaySession["equippedToolItemId"];
+    readonly encounterGuard?: PlaySession["encounterGuard"];
     readonly chests?: PlaySession["chests"];
     readonly placeables?: PlaySession["placeables"];
     readonly followers?: PlaySession["followers"];
@@ -489,6 +491,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
+      ...(session.encounterGuard ? { encounterGuard: structuredClone(session.encounterGuard) } : {}),
       chests: parseChestsRecord(session.chests) ?? {},
       placeables: restorePlaceables(project, session.placeables),
       followers: structuredClone(session.followers),
@@ -777,6 +780,10 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
+  // 세이브에 없으면 «보호 없음» 이다 — 이전 세션의 도망 무적·벌레퇴치를 끌고 오지 않는다.
+  const restoredGuard = parseEncounterGuard(snapshot.session.encounterGuard);
+  if (restoredGuard) session.encounterGuard = restoredGuard;
+  else delete session.encounterGuard;
   session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
   if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
   if (snapshot.session.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = structuredClone(snapshot.session.farmBuildingPlacements);
@@ -1263,6 +1270,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
+      ...(parseEncounterGuard(session.encounterGuard) ? { encounterGuard: parseEncounterGuard(session.encounterGuard) } : {}),
       chests: parseChestsRecord(session.chests),
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,

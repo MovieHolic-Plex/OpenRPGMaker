@@ -22,6 +22,7 @@ const configureMonsterSystem: ToolDefinition = {
       battleParty: { type: "boolean", description: "전투를 몬스터 파티로 진행할지(포켓몬식). 생략하면 현재 설정 유지, false 면 영웅이 싸운다." },
       presentation: { type: "string", enum: ["preserve", "collector"], description: "생략/preserve는 기존 화면 설정 유지. collector는 몬스터 수집용 메뉴/HUD를 설정하고 미수정 기본 오프닝만 끈다." },
       rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정하고, 패배 규칙이 아직 없으면 포켓몬식 블랙아웃(마지막 회복 센터 귀환 + 소지금 절반)을 심는다. 생략/preserve는 기존 규칙 유지.' },
+      escapeGraceSteps: { type: 'integer', description: '도망에 성공한 뒤 야생 조우가 나오지 않는 걸음 수(0~99, 0 = 끔). 생략하면 기존 값을 두고, 값이 없으면 몬스터 파티 게임은 기본 4걸음이다.' },
       captureShakesVariableId: { type: 'string', description: '포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 담을 변수 id(create_variable 로 먼저 만든다). 이벤트(전투 뒤 분기)가 읽어 「아깝다!」 같은 반응을 만든다. 빈 문자열이면 기록을 끈다. 화면 연출은 바뀌지 않는다.' },
     },
     required: ["enabled"],
@@ -48,6 +49,10 @@ const configureMonsterSystem: ToolDefinition = {
       draft.system.battleModel='gen1';draft.system.battleUiStyle='pokemon';
       // 패배 규칙이 없으면(저작자가 정한 게 없으면) 포켓몬식 블랙아웃을 심는다. 이미 있는 gameOver 는 건드리지 않는다.
       if (!draft.system.gameOver && !draft.system.gameOvers?.length) draft.system.gameOver = { outcome: 'recover', presentation: 'blackout', goldLossPercent: 50 };
+    }
+    if (args.escapeGraceSteps !== undefined) {
+      if (typeof args.escapeGraceSteps !== 'number' || !Number.isInteger(args.escapeGraceSteps) || args.escapeGraceSteps < 0 || args.escapeGraceSteps > 99) throw new ToolError('escapeGraceSteps 는 0~99 의 정수여야 합니다.', { code: 'invalid-args' });
+      draft.system.escapeGraceSteps = args.escapeGraceSteps;
     }
     if (args.captureShakesVariableId !== undefined) {
       const variableId = typeof args.captureShakesVariableId === 'string' ? args.captureShakesVariableId.trim() : '';

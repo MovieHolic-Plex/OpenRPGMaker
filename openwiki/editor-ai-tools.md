@@ -3381,3 +3381,9 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 부활 = `onlyEffectiveOnDeadActors:true` + `hpRecovery`(캠페인 기본 `mx_revive` 부활의 깃털). **진화의 돌은 별도 필드가 없다** — 아이템을 만들고 종의 `evolutions[].requires.itemId` 로 가리키면 `isEvolutionStone`(`monsterEvolutionItems.ts`)이 알아보고 필드 메뉴에서 쓴다.
 - 가방 포켓(`playerBagPockets.ts` `bagPocketOf`): `item.pocket` 이 먼저, 없으면 포획 도구→볼, 기술머신→기술머신, `heldEffect`→지닐 도구, `occasion never`·스위치·장비→중요한 물건, 나머지→도구. ItemType 은 보지 않는다. 몬스터 파티 게임에서만 켜지고 다른 장르의 아이템 화면(분류 필터)은 그대로다.
 - 조수 입구: `toolCapabilityIndex` 레시피 `monster-field-items`, `toolAliases`(부활약·진화의 돌·이상한 사탕·에테르·가방 포켓…), `monsterGameRequest` 지시문 한 줄. 자료집 아이템 카드에도 「레벨 올리기」 칸(`db-field-item-care-level-up`).
+
+## `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
+
+- 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
+- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
+- 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.

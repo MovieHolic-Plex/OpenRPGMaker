@@ -46,6 +46,7 @@ import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
+import { grantEscapeGrace, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
@@ -981,6 +982,18 @@ export function applyTerrainStepDamage(scene: PlaySceneContext): boolean {
 
 export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
+  // 도망 뒤 무적 걸음·벌레퇴치: 걸음마다 남은 수를 줄인다(조우율이 0인 마을 걸음도 센다). 효과가 끝난 걸음엔 문장을 띄운다.
+  const guard = tickEncounterGuard(scene.session);
+  if (guard.expiredItemId !== undefined) {
+    // 끝난 걸음엔 문장이 먼저다 — 같은 걸음에 전투가 겹치지 않게 이번 판정은 건너뛴다.
+    void showEncounterGuardNotice(scene, repelExpiredMessage(store.getCurrent(), guard.expiredItemId));
+    return;
+  }
+  if (guard.suppress) {
+    encounterStepCounter = 0;
+    encounterAccumulator = 0;
+    return;
+  }
   const map = scene.map;
   const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
   const baseRate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
@@ -1011,6 +1024,8 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   encounterAccumulator = 0;
   const picked = pickEncounterForMap(map, scene.session, position, undefined, store.getCurrent());
   if (!picked) return;
+  // 낮은 레벨만 막는 벌레퇴치 — 뽑힌 야생이 파티 선두보다 약하면 이번 조우는 없던 일이다.
+  if (guard.repelBelowLead && repelBlocksWildLevel(troopWildLevel(store.getCurrent(), picked.troopId, picked.level), monsterBattlePartyOf(store.getCurrent(), scene.session).party.find((monster) => (monster.currentHp ?? 1) > 0)?.level)) return;
   // 전투 시작(비동기). 전투가 끝날 때까지 맵 로직·입력을 잠근다 — 잠그지 않으면 전투
   // 오버레이 뒤에서 걸음이 계속 완료되어 게이지가 쌓이고 전투가 겹쳐 시작된다.
   void runRandomEncounterBattle(scene, picked.troopId, picked.level);
@@ -1028,6 +1043,8 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false, ...(enemyLevel !== undefined ? { enemyLevel } : {}) });
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
     session.battleResult = result;
+    // 도망에 성공하면 몇 걸음은 다시 만나지 않는다(원작식). 무적 걸음은 세션에 저장된다.
+    if (result === "escape") grantEscapeGrace(store.getCurrent(), session);
     if (result === "defeat") applyBattleDefeat(scene);
     // 적 그룹 「전투 뒤」 이벤트. 인카운터는 canLose=false 라 패배는 게임 오버 — 승리·도망만 돈다.
     else await runTroopAfterBattle(scene, troopId, result, () => scene.session === session);
@@ -1042,6 +1059,13 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
       scene.setInputEnabled(previousInputEnabled);
     }
   }
+}
+
+/** 필드 문장 한 줄(벌레퇴치가 끝났다 등). 다른 이벤트가 돌고 있으면 건너뛴다. */
+async function showEncounterGuardNotice(scene: PlaySceneContext, body: string): Promise<void> {
+  if (scene.running) return;
+  const { runCommands } = await import("@/player/playSceneInterpreter");
+  await runCommands(scene, [{ kind: "text", body }]);
 }
 
 // 전투 후/맵 진입 시 스텝 카운터 리셋(외부에서 호출 가능).

@@ -17,6 +17,7 @@ import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine"
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
+import { configureExpeditionFishing, EXPEDITION_FIELD_ITEM_IDS, EXPEDITION_FISHING_ROD_ID } from './fieldItems';
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
 import { EXPEDITION_HERO_BACK, expeditionTrainerFront, gymLeaderArt, typeArt } from "./trainerArt";
@@ -624,7 +625,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     npc(center, "nurse", "센터 직원", "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?", { x: center.width >> 1, y: 5 },
       monsterCenterCommands({ greeting: null, checkpointLabel: `${lookTown(t).name} 회복 센터`, audio: { me: audio.victory }, machineCells: [5, 6, 7, 8, 9, 10].map(x => ({ x: x + ((center.width >> 1) - 7), y: 3 })) }), 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
-      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", "mx_revive", ...EXPEDITION_STONE_IDS, ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
+      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", "mx_revive", ...EXPEDITION_FIELD_ITEM_IDS, ...EXPEDITION_STONE_IDS, ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
     if (i === 0) event(upstairs, "console", { x: 8, y: 3 }, [text("게임기다. 모험에서 돌아오면 또 하자.")], { graphic: invisible });
@@ -911,6 +912,14 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) if (terrainRecordAt(project, { mapId: map.id, x, y })?.record.id === GRASS_TERRAIN_ID) grassCells++;
     if (grassCells < 16) continue;
     for (const e of wildEntries) e.conditions = { ...e.conditions!, terrainId: GRASS_TERRAIN_ID };
+  }
+  // 낚시: 물이 가장 넓은 길 한 곳에 낚시 구역을 열고, 그 물가의 낚시꾼이 낚싯대를 준다(낚싯대가 있어야 낚는다).
+  const pond = configureExpeditionFishing(project);
+  if (pond) {
+    const map = project.maps[pond.mapId]!;
+    npc(map, "angler", "낚시꾼", "물가를 바라보고 조사 버튼을 누르면 낚시를 해. 무엇이 걸릴지는 물에게 물어봐야 알지!",
+      { x: pond.area.x - 1, y: pond.area.y + (pond.area.h >> 1) },
+      [{ kind: "fork", condition: { kind: "item", itemId: EXPEDITION_FISHING_ROD_ID, present: false }, then: [gain(EXPEDITION_FISHING_ROD_ID, 1), text("낚싯대를 받았다! 물가를 바라보고 조사하면 낚시를 할 수 있다.")], else: [text("낚싯대는 이미 가지고 있구나. 물가에서 마음껏 써 봐.")] }], 6);
   }
   repairExpeditionNpcLayout(project);
   repairExpeditionResidents(project, lookOf);

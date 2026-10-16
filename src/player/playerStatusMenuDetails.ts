@@ -1,6 +1,7 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { roJosa, withJosa } from "@/util/josa";
+import { repelStepsLeft } from "@/project/encounterGuard";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -14,7 +15,7 @@ import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
-import { activeItemEffects } from "@/project/itemUsage";
+import { activeItemEffects, isFieldUtilityItem } from "@/project/itemUsage";
 import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 import { previewCareItem } from "@/project/monsterCare";
 import { actorOwnedSkillIds } from '@/project/growth/runtime';
@@ -175,7 +176,7 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
   if (item && itemAllowsFieldMenu(project, item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)) || isEvolutionStone(project, item));
+    const needsTarget = item.type !== "switch" && !isFieldUtilityItem(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)) || isEvolutionStone(project, item));
     entries.push({
       label: item.heldEffect ? "지니게 하기" : "사용",
       value: "",
@@ -415,7 +416,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
-    const needsTarget = item.type !== "switch" && itemAllowsFieldMenu(project, item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || isEvolutionStone(project, item));
+    const needsTarget = item.type !== "switch" && !isFieldUtilityItem(item) && itemAllowsFieldMenu(project, item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || isEvolutionStone(project, item));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
       && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
@@ -424,7 +425,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         label: item.name,
         icon: itemEntryIcon(item),
         value: `${inventory.get(item.id) ?? 0}개`,
-        description: item.description,
+        description: `${repelNote(session, item.id)}${item.description}`,
         facts: itemFacts(project, session, item),
         testId: `status-menu-item-${item.id}`,
         attributes: { itemActions: "true" },
@@ -435,7 +436,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       label: item.name,
       icon: itemEntryIcon(item),
       value: `${inventory.get(item.id) ?? 0}개`,
-      description: item.description,
+      description: `${repelNote(session, item.id)}${item.description}`,
       unavailableReason: menuItemUnavailableReason(item, project),
       facts: itemFacts(project, session, item),
       testId: `status-menu-item-${item.id}`,
@@ -466,6 +467,12 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     emptyLabel: "아이템이 없습니다",
     hint: "←→ 포켓 · ↑↓ 이동 · Enter 선택",
   };
+}
+
+/** 지금 효과를 내는 벌레퇴치 아이템 설명 앞에 남은 걸음을 붙인다(«[남은 87걸음] …»). 목록 행 값은 폭이 좁아 이름과 겹치므로 설명에 쓴다. 다른 행은 빈 문자열. */
+function repelNote(session: PlaySession, itemId: string): string {
+  const left = repelStepsLeft(session);
+  return left > 0 && session.encounterGuard?.repelItemId === itemId ? `[남은 ${left}걸음] ` : "";
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
@@ -949,7 +956,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) || isEvolutionStone(project, item) ? "partyMonster"
+  const scope = isFieldUtilityItem(item) ? "none" : item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) || isEvolutionStone(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -999,6 +1006,8 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
   if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
   if (item.heldEffect) tokens.push(`held:${item.heldEffect.kind}`);
+  if (item.repelSteps !== undefined) tokens.push(`repel:${item.repelSteps}${item.repelBelowLead ? ":below-lead" : ""}`);
+  if (item.escapeTo) tokens.push(`escape:${item.escapeTo}`);
   if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}:${item.careProfile.levelUp ?? 0}`);
   if (isEvolutionStone(project, item)) tokens.push("evolve:stone");
   if (item.captureProfile) {
