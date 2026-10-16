@@ -5,7 +5,15 @@ export default async function party({ page, key, shot, choose, railOpen, log }) 
     const s = window.__oprnHooksScene.getSession();
     return s.monsterParty.map(id => `${s.monsterInstances[id].speciesId}:${s.monsterInstances[id].level}`);
   });
-  await railOpen(); await choose('status-menu-command-monsters');
+  // 지닌 도구 표시: 첫·셋째 몬스터에 도구를 쥐여 준다(세션만 바꾼다).
+  log.held = await page.evaluate(() => {
+    const project = window.__collectProject, s = window.__oprnHooksScene.getSession();
+    const item = project.database.items.find(i => i.heldEffect);
+    if (!item) return null;
+    for (const id of [s.monsterParty[0], s.monsterParty[2]]) s.monsterInstances[id].heldItemId = item.id;
+    return item.name;
+  });
+  await railOpen(); await choose('status-menu-command-monsters'); await shot('19-party-held');
   log.swapBefore = await state();
   // 요약 → 쪽 넘기기(능력치 → 기술 → 관리)
   await key('Enter'); await shot('20-summary-stats');

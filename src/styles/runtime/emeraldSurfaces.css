@@ -442,7 +442,7 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-track { margin-top: 2px; }
 /* 지닌 도구가 있는 칸은 아이콘 오른쪽 아래에 작은 알 표시. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face { position: relative; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face::after { content: ""; position: absolute; right: 0; bottom: 0; width: 8px; height: 8px; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; background: white; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face::after { content: ""; position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; background: linear-gradient(indianred 0 45%, currentColor 45% 55%, white 55%); }
 /* 자리 바꾸기: 먼저 고른 칸을 점선 테두리로 표시한다. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-swap-source="true"] { outline: 2px dashed currentColor; outline-offset: -6px; }
 /* Summary is an independent screen, with all known PP and pending decisions retained. */
