@@ -11,6 +11,10 @@ export function validateMonsterCampaign(value: unknown): void {
       assert(Number.isInteger(n) && n >= 0 && n <= 4096, `monsterCampaign.plan.${key} 는 0 이상의 정수여야 합니다`);
     }
   }
+  if (campaign.dexRegisteredText !== undefined) {
+    const text = requireString("monsterCampaign.dexRegisteredText", campaign.dexRegisteredText);
+    assert(text.length <= 80, "monsterCampaign.dexRegisteredText 는 80자 이하여야 합니다");
+  }
   const species = requireArray("monsterCampaign.speciesIds", campaign.speciesIds);
   species.forEach(id => requireString("monsterCampaign.speciesId", id));
   assert(new Set(species).size === species.length, "Duplicate campaign species id");

@@ -36,8 +36,25 @@ await page.addInitScript(() => {
 // 1대1 몬스터 전투에서 상대 HP 상자·그림이 둘 이상 동시에 보이면 안 된다 — 2026-10-07 관장전 캡처에서 쓰러지기 전
 // 다음 몬스터가 먼저 서 HP 상자 둘이 겹쳤는데 단계 판정은 통과였다. 100ms 마다 재고, 전투 문장도 차례로 모은다.
 await page.addInitScript(() => {
-  const seen = { maxEnemies: 0, overlap: [], lines: [] };
+  const seen = { maxEnemies: 0, overlap: [], lines: [], capture: { thrower: false, orb: false, rocks: 0, outcome: null, dexLine: null, resultLine: null } };
   window.__journeyBattleWatch = seen;
+  // 포획 연출(던지는 주인공·구슬·흔들림·성공/탈출·도감 등록 문장)은 20ms 마다 따로 본다 — 100ms 틱은 400ms 흔들림 한 번도 놓친다.
+  setInterval(() => {
+    const cap = seen.capture;
+    if (document.querySelector('[data-testid="battle-capture-thrower"]')) cap.thrower = true;
+    const orb = document.querySelector('[data-testid="battle-capture-orb"]');
+    if (orb) {
+      cap.orb = true;
+      cap.rocks = Math.max(cap.rocks, Number(orb.dataset.rock ?? 0));
+      if (orb.classList.contains("battle-orb-caught")) cap.outcome = "caught";
+      else if (orb.classList.contains("battle-orb-burst")) cap.outcome = "escaped";
+    }
+    for (const node of document.querySelectorAll(".battle-message-line")) {
+      const text = (node.textContent ?? "").trim();
+      if (/도감에 등록/.test(text)) cap.dexLine = text;
+      if (/잡았다|빠져나|아깝|잡을 뻔|잡은 줄/.test(text)) cap.resultLine = text;
+    }
+  }, 20);
   const visible = (node) => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden" && Number(getComputedStyle(node).opacity) > 0.05;
   setInterval(() => {
     const scene = document.querySelector('[data-testid="battle-scene"]');
@@ -369,6 +386,12 @@ try {
     const after = await live();
     const owned = after.party.length + after.box.length;
     step("capture", owned > before.party.length + before.box.length, `${captureLog.join(" / ")} → 보유 ${owned}`, await shot("08-after-capture"));
+    // 포획 연출·문장 단언(2026-10-16): 던지는 주인공이 나오고, 구슬이 흔들리고, 잡힘/탈출이 구슬 모습으로 갈리고, 새 종이면 도감 등록 문장이 뜬다.
+    const cap = await page.evaluate(() => window.__journeyBattleWatch.capture);
+    report.captureWatch = cap;
+    const newSpecies = after.party.concat(after.box).some((m) => !before.party.concat(before.box).some((b) => b.speciesId === m.speciesId));
+    step("capture-cinematic", cap.thrower && cap.orb && cap.rocks >= 1 && cap.outcome !== null, JSON.stringify(cap));
+    step("capture-dex-line", !newSpecies || cap.dexLine !== null, newSpecies ? `새 종 → ${cap.dexLine ?? "도감 등록 문장 없음"}` : "이미 있던 종(문장 없음이 정상)");
   }
 
   // 포획전에서 지친 동료를 마을 회복 센터 직원에게 맡긴다(플레이어가 하듯) — 지친 채 트레이너에게 졌다.

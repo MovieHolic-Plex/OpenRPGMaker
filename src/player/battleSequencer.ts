@@ -5,6 +5,7 @@ import { STAT_STAGE_LABELS, statStageMessage } from "@/battle/statStages";
 import { withJosa } from "@/util/josa";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
+  approachScaleFor,
   planActionBeats,
   planEnemyActionBeats,
   weightForFeedback,
@@ -28,6 +29,8 @@ import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 import { emeraldBattlerName, emeraldFaintLine, emeraldIntroSendOut, emeraldMajorStatusLine, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
 
 export const BATTLE_INTRO_MS = 1_200;
+/** 포획 결과 문장 최소 체류(ms, 템포·배속 적용 후). */
+export const CAPTURE_RESULT_HOLD_MS = 1300;
 // 아래 3개는 **normal 무게** 기준값이다. light/heavy 는 battleActionBeats 가 배율로 늘리거나 줄인다.
 // 470 → 400 (2026-09-27): 전진은 비트 끝 240ms 에만 움직이므로(22-hit-feel.css ⑦) 앞의 230ms 가
 // "주인공의 공격!" 뒤 아무것도 움직이지 않는 죽은 시간이었다.
@@ -548,6 +551,9 @@ export function createBattleSequencer(
     const baseWeight = weightForFeedback(feedback, Boolean(killLine));
     const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
     const tempo = hooks.motionTempo?.() ?? 1;
+    // 포획 연출(구슬·흔들림)은 실제 시간으로 흐른다. 행동 비트는 무게 배율(light 0.72)·템포(÷1.5)·배속(÷speed)으로 줄어들므로
+    // 그만큼 키워 넘겨야 한다 — 안 그러면 「잡았다!」 문장이 구슬이 아직 흔들리는 중에 뜬다(실측: 연출 3.4초 중 1.7초에 결과 문장).
+    const cinematicBeatMs = cinematicMs * (tempo > 0 ? tempo : 1) * Math.max(0.2, speedMultiplier) / approachScaleFor(weight);
     const planBeats = (animationMs: number | undefined): readonly BattleActionBeat[] => tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
@@ -566,11 +572,11 @@ export function createBattleSequencer(
           userId: entry.userRecordId ?? entry.userId ?? "actor",
           targetId: entry.targetId,
           feedback,
-          actingMs: Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs),
+          actingMs: Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicBeatMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
           impactMs: hooks.actorRecoverMs?.(entry, weight)
-            ?? recoverMsForAnimation(animationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
+            ?? recoverMsForAnimation(animationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicBeatMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
         }), tempo);
     let beats = planBeats(entry.animation?.durationMs);
@@ -594,6 +600,12 @@ export function createBattleSequencer(
       const impactBeatMs = beats.find((beat) => beat.kind === "impact")?.durationMs ?? 0;
       const needed = Math.round(presentationMs - impactBeatMs);
       beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < needed ? { ...beat, durationMs: needed } : beat));
+    }
+    // 포획 결과 문장(「잡았다!」·「아깝다!」)은 글자가 다 나온 뒤 읽을 시간이 필요하다 — 연출이 끝나면 바로 다음 차례로 넘어가
+    // 실패 문장이 0.4초 만에 지나갔다(2026-10-16 실측). recover 비트(템포 적용 뒤 길이)를 최소 CAPTURE_RESULT_HOLD_MS 로 늘린다.
+    if (entry.kind === "capture") {
+      const hold = CAPTURE_RESULT_HOLD_MS;
+      beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < hold ? { ...beat, durationMs: hold } : beat));
     }
     if (entry.animation && animationOffsetMs > 0) {
       hooks.onEntryAnimation?.(undefined);

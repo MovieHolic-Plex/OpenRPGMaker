@@ -2123,29 +2123,103 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 }
 
 
+/** 던지는 사람(주인공 뒷모습) 그림 주소. 이 프로젝트의 트레이너가 이미 정한 뒷모습(troop.trainerSprite.back)을 먼저, 없으면 번들 hero_m.
+ *  업로드 그림 id 면 업로드 주소. 새 그림을 만들지 않고 battle-trainers 번들만 쓴다. */
+function captureThrowerUrl(): string {
+  const project = store.getCurrent();
+  const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.back ?? "hero_m";
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? "/assets/battle-trainers/hero_m/back.png";
+  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png";
+}
+
+/** 던지는 사람이 미끄러져 들어와 손을 휘두를 때까지(ms). 구슬은 이 뒤에 손에서 떠난다. */
+export const CAPTURE_THROWER_LEAD_MS = 320;
+
 /** 포획 구슬 시네마틱을 재생하고 총 소요 ms를 반환한다.
- *  투척(480ms) → 흡수(240ms) → 흔들림(성공은 3회, 실패는 런타임이 정한 0~3회, 한 번 420ms + 쉼 340ms) → 성공 반짝/실패 탈출(420ms). */
+ *  (포켓몬 스킨) 주인공이 왼쪽에서 들어와 던진다(320ms) → 투척(480ms) → 흡수(240ms, 흰 섬광) → 흔들림(성공은 3회, 실패는 런타임이 정한 0~3회, 한 번 420ms + 쉼 340ms) → 성공 반짝+별/실패 탈출(420ms).
+ *  다른 스킨은 던지는 사람 없이 왼쪽 아래에서 구슬이 날아간다(옛 연출). */
 export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean, shakes?: 0 | 1 | 2 | 3): number {
   const target = findBattlerNode(field, targetId);
   if (!target) return 0;
   const rocks = success ? 3 : Math.max(0, Math.min(3, shakes ?? 3));
+  const scene = field.closest<HTMLElement>(".battle-scene");
+  // 던지는 사람은 포켓몬 스킨의 일반 전투 화면에만 선다(온필드 전투는 필드 스프라이트가 자리를 맡는다).
+  const withThrower = scene?.dataset.battleUiStyle === "pokemon" && scene.dataset.battlePresentation !== "onField";
+  const lead = withThrower ? CAPTURE_THROWER_LEAD_MS : 0;
+  // 구슬이 날아가 앉는 곳 = 상대 몸통 한가운데(그림 상자의 발끝에서 28% 위). 발끝(--battle-node-y)에 앉으면 아군 HUD 상자에 절반이 가렸다.
+  const fieldRect = field.getBoundingClientRect();
+  const fieldScale = field.offsetWidth > 0 ? fieldRect.width / field.offsetWidth : 1;
+  const local = (rect: DOMRect, fx: number, fy: number): { x: number; y: number } => ({
+    x: (rect.left + rect.width * fx - fieldRect.left) / fieldScale,
+    y: (rect.top + rect.height * fy - fieldRect.top) / fieldScale,
+  });
+  const targetImage = target.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-image") ?? target;
+  const targetRect = targetImage.getBoundingClientRect();
+  const hasGeometry = fieldRect.width > 0 && targetRect.width > 0;
+  const toPoint = hasGeometry ? local(targetRect, 0.5, 0.84) : undefined;
+  const toX = toPoint ? `${toPoint.x.toFixed(1)}px` : (target.style.getPropertyValue("--battle-node-x") || "70%");
+  const toY = toPoint ? `${toPoint.y.toFixed(1)}px` : (target.style.getPropertyValue("--battle-node-y") || "35%");
+  const at = (fn: () => void, ms: number): void => {
+    scheduleBattleTimer(fn, ms);
+  };
+  const spawn = (className: string, life: number, setup?: (node: HTMLElement) => void): HTMLElement => {
+    const node = document.createElement("span");
+    node.className = className;
+    node.style.setProperty("--orb-to-x", toX);
+    node.style.setProperty("--orb-to-y", toY);
+    setup?.(node);
+    field.append(node);
+    at(() => node.remove(), life);
+    return node;
+  };
+  let thrower: HTMLImageElement | undefined;
+  let orbFrom: { x: string; y: string } | undefined;
+  if (withThrower) {
+    thrower = document.createElement("img");
+    thrower.className = "battle-capture-thrower";
+    thrower.dataset.testid = "battle-capture-thrower";
+    thrower.alt = "";
+    thrower.src = captureThrowerUrl();
+    // 내 몬스터가 서 있는 칸에 그대로 선다(그림 128px 정사각 = 몬스터 상자와 같은 크기).
+    const mine = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
+    const mineRect = mine?.getBoundingClientRect();
+    if (mineRect && mineRect.width > 0 && fieldRect.width > 0) {
+      const box = local(mineRect, 0, 0);
+      thrower.style.left = `${box.x.toFixed(1)}px`;
+      thrower.style.top = `${box.y.toFixed(1)}px`;
+      thrower.style.bottom = "auto";
+      thrower.style.width = `${(mineRect.width / fieldScale).toFixed(1)}px`;
+      // 손: 그림의 오른쪽 위 3/4 지점(뒷모습이 손을 들고 있다) — 구슬은 여기서 떠난다.
+      const hand = local(mineRect, 0.78, 0.4);
+      orbFrom = { x: `${hand.x.toFixed(1)}px`, y: `${hand.y.toFixed(1)}px` };
+    }
+    field.append(thrower);
+    // 내 몬스터는 던지는 동안 자리를 비켜 준다(같은 자리에 주인공이 선다).
+    field.classList.add("battle-capture-thrower-active");
+    // 구슬이 손을 떠나 날아가는 동안 주인공이 팔을 거둬 나간다 — 흔들림 내내 서 있지 않는다.
+    at(() => thrower?.classList.add("battle-capture-thrower-out"), lead + 360);
+    at(() => { thrower?.remove(); field.classList.remove("battle-capture-thrower-active"); }, lead + 360 + 260);
+  }
   const orb = document.createElement("span");
   orb.className = "battle-capture-orb";
   orb.dataset.testid = "battle-capture-orb";
   orb.dataset.shakes = String(rocks);
-  orb.style.setProperty("--orb-to-x", target.style.getPropertyValue("--battle-node-x") || "70%");
-  orb.style.setProperty("--orb-to-y", target.style.getPropertyValue("--battle-node-y") || "35%");
-  field.append(orb);
-  const timers: number[] = [];
-  const at = (fn: () => void, ms: number): void => {
-    timers.push(window.setTimeout(fn, ms));
-  };
+  orb.style.setProperty("--orb-to-x", toX);
+  orb.style.setProperty("--orb-to-y", toY);
+  if (orbFrom) {
+    orb.classList.add("battle-capture-orb-from-hand");
+    orb.style.setProperty("--orb-from-x", orbFrom.x);
+    orb.style.setProperty("--orb-from-y", orbFrom.y);
+  }
+  // 구슬은 던지는 손짓이 끝난 뒤에 나타난다.
+  at(() => { field.append(orb); playMonsterSfxNow("ball-throw"); }, lead);
   const ROCK_MS = 420;
   const REST_MS = 340;
-  // 몬스터 장르 기본 소리 세트(던지기·흔들림·성공·실패) — 다른 장르는 예전처럼 무음이다.
-  playMonsterSfxNow("ball-throw");
-  at(() => target.classList.add("battle-capture-absorbed"), 460);
-  let clock = 720;
+  at(() => {
+    target.classList.add("battle-capture-absorbed");
+    spawn("battle-capture-flash", 340);
+  }, lead + 460);
+  let clock = lead + 720;
   for (let i = 0; i < rocks; i += 1) {
     at(() => { orb.classList.remove("battle-orb-shake"); void orb.offsetWidth; orb.classList.add("battle-orb-shake"); orb.dataset.rock = String(i + 1); playMonsterSfxNow("ball-shake"); }, clock);
     clock += ROCK_MS + REST_MS;
@@ -2154,16 +2228,17 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
     orb.classList.remove("battle-orb-shake");
     if (success) {
       orb.classList.add("battle-orb-caught");
-      playMonsterSfxNow("capture-success");
-    } else {
-      orb.classList.add("battle-orb-burst");
-      target.classList.remove("battle-capture-absorbed");
-      playMonsterSfxNow("ball-break");
+      target.classList.add("battle-capture-escaped");
+      at(() => target.classList.remove("battle-capture-escaped"), 420);
+      spawn("battle-capture-flash battle-capture-flash-escape", 340);
+      sound?.("escape");
     }
   }, clock);
   const total = clock + 420;
   at(() => {
     orb.remove();
+    thrower?.remove();
+    field.classList.remove("battle-capture-thrower-active");
     // 성공 시 런타임 스냅샷에서 적이 사라지므로 잔류 노드도 정리한다.
     if (success) target.remove();
   }, total);

@@ -1,3 +1,12 @@
+## 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
+
+- 시각 QA: `MODE=success|fail|both [SHAKES=0..3] [VIDEO=1] unshare -rn sh -c "ip link set lo up && node scripts/qa/runtime/monster-capture.scenario.mjs <campaign.json> <outDir>"` — 실제 가방 버튼으로 볼을 던져 프레임 연속 캡처(+녹화)·전투 문장 로그(`<mode>MsgLog`)를 남긴다. 진단 전용.
+- 연출(`battleFieldDom.playCaptureCinematic`): 포켓몬 스킨 일반 전투(온필드 제외)는 **주인공 뒷모습(번들 `battle-trainers/<troop.trainerSprite.back|hero_m>/back.png`, 새 그림 없음)이 내 몬스터 자리에 서서 손을 휘두르고**, 구슬이 그 손에서 떠난다(몬스터는 그동안 `.battle-capture-thrower-active` 로 투명). 구슬은 상대 몸통(그림 상자 하단 0.84) 위에 앉는다 — 예전 발끝 좌표는 아군 HUD 에 절반이 가렸다. 흡수 때 흰 섬광, 흔들림 ±30°·±12px, 잡힘은 금빛 별 6개+밝은 구슬, 탈출은 붉은 섬광+몬스터가 튀어나옴(`battle-capture-escaped`). 효과음 `battleSfx` ballThrow·ballRock·ballCaught·ballEscape·dex(합성).
+- 시퀀서: 연출은 실시간이라 행동 비트(무게 배율·템포·배속으로 줄어듦)에 맞춰 늘려 넘긴다(`cinematicBeatMs`, `approachScaleFor`) — 안 그러면 「잡았다!」가 구슬이 흔들리는 도중에 떴다. 결과 문장은 최소 `CAPTURE_RESULT_HOLD_MS`(1300ms) 체류.
+- 도감 등록: 캠페인 도감(`system.monsterCampaign.speciesIds`)에 있는 종을 처음 잡으면 `lastCaptureResult.newDexEntry` + 타임라인 special(`aside:"dex"`) 한 줄「{name}의 데이터가 도감에 등록되었다!」+징글. 문구는 **선택 필드** `monsterCampaign.dexRegisteredText`({name}=종 이름, ≤80자)로 바꾼다 — 조수 `configure_monster_campaign definition.dexRegisteredText`, 별칭 「도감 등록 문장」. 도감 영수증(mx_caught_)은 여전히 승리·도주 커밋 때만 찍힌다(패배로 버려지는 포획은 도감에 안 남는다).
+- 실패 문구: 흔들림 0~3회별 4행 × (에메랄드 고정 / 그 밖 스킨 변형 2개를 굴림 값으로 번갈아)(`battleDirectorDom.captureFailLine`).
+- 단위 `test/captureDexRegistration.test.ts`(미실행). `monster-journey.mjs` 가 던지는 주인공·구슬·흔들림·잡힘/탈출·도감 문장을 단언(`capture-cinematic`, `capture-dex-line`).
+
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
 ## 조건부 볼 · 포획 볼 기록 — 포켓몬식 그물·퀵·타이머·리피트 볼 (2026-10-16, poke-depth PR6)

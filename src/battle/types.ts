@@ -408,7 +408,7 @@ export interface BattleTimelineEntrySnapshot {
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
-  readonly aside?: "hpCost" | "drain";
+  readonly aside?: "hpCost" | "drain" | "dex";
   /** Conditional choreography follows the rule outcome, including preparation and follow-up cancellation. */
   readonly gimmick?: {pattern:import("@/battle/battleMotionProgram").BattleMotionPattern;triggered:boolean;allyId?:string;source?:"periodic"};
   /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
@@ -462,6 +462,8 @@ export interface BattleCaptureResultSnapshot {
   readonly speciesId?: MonsterSpeciesId;
   readonly blockedReason?: BattleCaptureBlockedReason;
   readonly shakes?: 0 | 1 | 2 | 3;
+  /** 도감에 처음 등록되는 포획이면 true(캠페인 도감이 있는 게임만). 없으면 생략. */
+  readonly newDexEntry?: true;
 }
 
 export interface BattleRoundActionLogSnapshot {

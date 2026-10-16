@@ -55,6 +55,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('configure_monster_campaign','도감 순서·생태 설명·배지 스위치·지도 좌표·진행 목표를 실제 데이터/맵/스위치와 검증해 저장. 주어진 칸만 바꾼다(나머지는 유지). 줄이는 변경은 allowShrink:true 가 있어야 하고, 배지 수를 줄이려면 badgeCount 로 체육관 이벤트까지 함께 줄인다. 정의가 실제 지은 이벤트와 어긋나면 거부한다. 런타임 진행 상태는 바꾸지 않음.','write',schema({
     definition:{type:'object',additionalProperties:false,description:'바꿀 칸만 넣는다. 넣은 배열은 그 칸 전체를 대체한다(항목을 하나 고칠 때도 나머지를 함께 보낸다 — 먼저 read_game_systems).',properties:{
       id:str,name:str,
+      dexRegisteredText:{type:'string',description:'새 종을 처음 잡았을 때 전투에 뜨는 도감 등록 문장. {name} 은 종 이름. 80자 이하. 빈 문자열이면 기본 문장(「{name}의 데이터가 도감에 등록되었다!」)으로 되돌린다.'},
       speciesIds:{type:'array',items:str},
       speciesNotes:{type:'array',items:{type:'object',additionalProperties:false,properties:{speciesId:str,note:str},required:['speciesId','note']}},
       badges:{type:'array',items:{type:'object',additionalProperties:false,properties:{id:str,name:str,switchId:str,cityMapId:str},required:['id','name','switchId','cityMapId']}},
@@ -80,10 +81,11 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       }
       const base=p.system.monsterCampaign;
       const next:NonNullable<Project['system']['monsterCampaign']>=base?JSON.parse(JSON.stringify(base)) as NonNullable<Project['system']['monsterCampaign']>:{id:'',name:'',speciesIds:[],speciesNotes:{},badges:[],locations:[],objectives:[]};
-      const known=new Set(['id','name','speciesIds','speciesNotes','badges','locations','objectives']);
+      const known=new Set(['id','name','dexRegisteredText','speciesIds','speciesNotes','badges','locations','objectives']);
       for(const key of Object.keys(raw))if(!known.has(key))throw Error(`알 수 없는 칸: ${key}`);
       if(raw.id!==undefined)next.id=String(raw.id);
       if(raw.name!==undefined)next.name=String(raw.name);
+      if(raw.dexRegisteredText!==undefined){const t=String(raw.dexRegisteredText).trim();if(t)next.dexRegisteredText=t;else delete next.dexRegisteredText;}
       for(const key of ['speciesIds','badges','locations','objectives'] as const){
         if(raw[key]===undefined)continue;
         if(!Array.isArray(raw[key]))throw Error(`${key} 는 배열이어야 합니다.`);

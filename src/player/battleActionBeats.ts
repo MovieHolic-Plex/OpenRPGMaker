@@ -43,6 +43,11 @@ export function weightForFeedback(feedback: DamageFeedback | undefined, lethal =
   return "normal";
 }
 
+/** 행동 무게가 approach 비트 길이에 곱하는 배율. 실시간으로 흐르는 연출(포획 구슬)의 길이를 비트에 맞출 때 되나눈다. */
+export function approachScaleFor(weight: BattleActionWeight): number {
+  return APPROACH_SCALE[weight];
+}
+
 function scaled(base: number, scale: number): number {
   if (scale === 1) return base;
   return Math.max(0, Math.round(base * scale));
