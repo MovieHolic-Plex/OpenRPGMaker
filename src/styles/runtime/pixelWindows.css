@@ -208,6 +208,10 @@
   font: 400 7.5px/1.3 var(--runtime-pixel-font);
   text-shadow: var(--px-shadow);
 }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"] {
+  /* 명령 한 줄 14px + 위아래 안쪽 4px. 6항목까지는 예전 94px 그대로, 그보다 많으면 늘어나 마지막 항목이 창 밖으로 안 나간다(R10). 아래 돈·장소·시간·장 창은 그만큼 내려온다. */
+  --px-dock-h: max(94px, calc(var(--status-menu-command-count, 6) * 14px + 8px));
+}
 .oprn-status-menu.main-menu[data-menu-skin="pixel"]::before { background: var(--px-stage); border: 0; border-radius: 0; box-shadow: none; inset: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] :is(button, .status-menu-command, .status-menu-detail-row, .status-menu-detail-title,
   .status-menu-detail-hint, .status-menu-detail-empty, .status-menu-detail-description, .status-menu-showcase-name, .status-menu-showcase-description,
@@ -240,18 +244,18 @@
   white-space: nowrap;
   width: 78px;
 }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 8.5px; top: 104px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 6.5px; top: 126px; }
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: 146px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-gold { color: var(--px-ink); font-size: 8.5px; top: calc(var(--px-dock-h, 94px) + 10px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-location { color: var(--px-ink-dim); font-size: 6.5px; top: calc(var(--px-dock-h, 94px) + 32px); }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-time { color: var(--px-ink-dim); top: calc(var(--px-dock-h, 94px) + 52px); }
 /* 장(NG+ 회차) — 시간 창 아래 같은 폭. 이야기 진행이 첫 화면에서 보인다. */
-.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: 166px; }
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-status-menu-screen="main"] .status-menu-chapter { color: var(--px-accent); top: calc(var(--px-dock-h, 94px) + 72px); }
 
 /* 명령 창 — 오른쪽 위, 손가락 커서. 두 모드에서 같은 자리라 화면을 넘겨도 창이 움직이지 않는다. */
 .oprn-status-menu.main-menu[data-menu-skin="pixel"] .status-menu-primary-dock {
   border-right: 1px solid var(--px-edge);
   bottom: auto;
   gap: 0;
-  height: 94px;
+  height: var(--px-dock-h, 94px);
   left: auto;
   padding: 4px 0;
   right: 6px;

@@ -17,6 +17,7 @@ import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
 import { checkPerHeroineEndings, checkRomanceEndings } from "./romanceEndings";
 import { allPages, visitPageCommands } from "./walk";
+import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 
 const ROMANCE_BRIEF = /연애|로맨스|호감|고백|romance|dating/iu;
 /** 뼈대가 깔아 두는 자리표시 이름 — 기획에 맞게 바꿨어야 하는 것들. */
@@ -158,18 +159,41 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     });
   }
 
+  // 3b) 선택지가 달린 조사 이벤트가 눈에 안 보이는 칸에 서 있나(romance-real-2 R14: 「설레는 약속 게시판」이 그림 없는 투명 이벤트 + 빈 바닥).
+  //     호감을 올리는 선택의 입구인데 플레이어가 무엇을 조사할지 알 수 없다. 인물(그림 칩 검사는 위 romance-npc-invisible)은 제외.
+  const hiddenChoice: string[] = [];
+  for (const ref of allPages(project)) {
+    const { map, event, page } = ref;
+    if (!map || !event || !page || ref.pageIndex !== 0 || isPersonEvent(event) || page.trigger?.kind !== "action") continue;
+    let hasChoices = false;
+    visitPageCommands(ref, (visit) => { if (visit.command.kind === "choices") hasChoices = true; });
+    if (!hasChoices) continue;
+    const g = page.graphic as { transparent?: boolean; sprite?: unknown; appearanceId?: string; characterResourceId?: string } | undefined;
+    const drawn = g !== undefined && g.transparent !== true && (g.sprite !== undefined || g.appearanceId !== undefined || g.characterResourceId !== undefined);
+    const onObjectTile = (map.upperTiles[event.y * map.width + event.x] ?? -1) > 0;
+    if (!drawn && !onObjectTile) hiddenChoice.push(`${event.name ?? event.id}(${map.name})`);
+  }
+  if (hiddenChoice.length > 0) {
+    findings.push({
+      severity: "warning", code: "romance-choice-event-invisible",
+      message: `선택지가 달린 조사 이벤트 ${hiddenChoice.length}개가 그림 없는 투명 이벤트이고 물건 타일도 없는 빈 바닥입니다(${hiddenChoice.slice(0, 4).join(", ")}${hiddenChoice.length > 4 ? " …" : ""}) — 플레이어는 무엇을 조사할지 볼 수 없습니다. place_props/set_build_spec 으로 게시판·편지·책상 같은 그림을 입히세요.`,
+    });
+  }
+
   // 4) 대사 본문 앞에 화자 표기가 또 붙은 줄(「[이름]」 이중 표기·바깥 따옴표).
   let doubled = 0;
   let example = "";
   for (const page of allPages(project)) visitPageCommands(page, (visit) => {
     const command = visit.command;
     if (command.kind !== "text" || typeof command.body !== "string") return;
-    if (/^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
+    // 「[이름]」 줄 머리표, 또는 speaker 칸과 같은 이름이 「이름:」 로 본문 앞에 또 붙은 줄(romance-real-2 R07: `한지훈: "반가워!"`).
+    const echoed = stripSpeakerEcho(command.body, typeof command.speaker === "string" ? command.speaker : undefined) !== command.body;
+    if (echoed || /^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
   });
   if (doubled > 0) {
     findings.push({
       severity: "warning", code: "romance-speaker-in-body",
-      message: `대사 ${doubled}줄의 본문이 「[이름]」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 대사창에 이름이 두 번 보입니다.`,
+      message: `대사 ${doubled}줄의 본문이 「[이름]」·「이름:」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 재생 화면은 이름표와 같은 이름의 머리표를 걷어 주지만 저작 데이터는 깨끗해야 합니다.`,
     });
   }
   return findings;

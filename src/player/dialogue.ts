@@ -59,6 +59,7 @@ import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { el, clearChildren } from "@/util/dom";
 import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
+import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 
 type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
@@ -479,7 +480,8 @@ export function createDialogueUI(
   let lastPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
   let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
 
-  function showText(request: DialogueTextRequest): Promise<void> {
+  function showText(rawRequest: DialogueTextRequest): Promise<void> {
+    const request = withoutSpeakerEcho(rawRequest);
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
     const voiceFile = request.voiceResourceId?.trim();
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
@@ -1565,6 +1567,13 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
  * 달아 엔딩 에필로그에 「내레이션」 이름표가 떴다(2026-09-24 추리 도그푸딩). 이름표 없이 서술로 보인다.
  */
 const NARRATION_SPEAKER = /^(?:내레이션|나레이션|해설|서술|narration|narrator)$/iu;
+
+/** 본문 앞에 이름표와 같은 이름이 또 붙어 있으면 걷은 요청을 돌려준다(dialogueSpeakerEcho.ts). */
+function withoutSpeakerEcho(request: DialogueTextRequest): DialogueTextRequest {
+  if (!nameplateSpeaker(request.speaker)) return request;
+  const body = stripSpeakerEcho(request.body, request.speaker);
+  return body === request.body ? request : { ...request, body };
+}
 
 export function nameplateSpeaker(speaker: string | undefined): string | undefined {
   const name = speaker?.trim();

@@ -104,7 +104,6 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **`set_deadline_ending`**: `tiers` 생략 시 뼈대 세 엔딩 사용, `characterId:"*"` 허용. 히로인별 결말은 `define_ending` 후 tiers 맨 위에 `{endingId, friendshipAtLeast, characterId}` 로 얹는다.
 - **호감 변수 읽기 호환** (`src/project/affectionVariables.ts`): 이름이 「인물 호감도」 모양(예: 「윤서연 호감도」)이고 그 인물이 프로필 displayName·이벤트 이름으로 하나로 정해지면, 런타임 `setVariable`(commandCatalog)이 변수의 **변화량(Δ)** 을 그 인물 `friendship` 에도 더한다 → 선택지가 올린 호감이 ESC 관계 화면·호감 HUD·`friendshipAtLeast`·엔딩에 그대로 반영된다. 변수 자체와 변수 조건은 그대로 동작한다. 인물을 못 정한 호감 변수는 `romance-affection-variable-unmapped` 경고(완료 조건). 정식 경로는 `changeFriendship({npcKey, delta})` 다(조수 지시문·`schemaShapes` 가 그렇게 안내).
 - **검사** (`src/qa/gameCheck/romanceEndings.ts`): `romance-endings-unbranched`(호감으로 갈리는 엔딩 <3), `romance-ending-shadowed`(어떤 호감 상태에서도 못 이기는 엔딩), `romance-endings-not-per-heroine`(호감 대화 인물 ≥2인데 엔딩이 특정 인물을 안 겨눔). 모두 `romanceCompletionGaps`(finish 게이트) 대상. 기한 엔딩 자동 플레이(`deadline.ts`)는 인물 집중·아무도 안 만남에 더해 **호감 문턱 상태(딱 문턱 / 한 칸 모자람)에서 시작하는 판**을 돌려 문턱 엔딩을 하나씩 연다. autoPlay 는 `*` 키를 인식하고, 이름 없는 triggerEnding 의 목표를 호감 문턱 없는 기본 결말로 둔다(`bareEndingTarget`).
-||||||| parent of c212daf6f0 (docs(openwiki): romance title/finish-gate/ending-kicker contracts)
 
 
 ## 제목 · 완료 게이트 · 엔딩 화면 작은 줄 (2026-10-16 romance-fix-4, R03/R05/R08)
@@ -113,11 +112,21 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **제목 그림 잠금**: 연애 잠금 프로젝트에서 조수가 제목 배경을 연애 허용 목록(`romanceTitleArt.ts` `ROMANCE_TITLE_BACKGROUNDS`) 밖의 번들 그림(농장 등)으로 바꾸면 `toolRunner.ts rejectRomanceTitleMismatch` 가 `romance-title-art` 로 거절한다. 사용자가 올린 그림은 막지 않는다.
 - **긴 제목 (R05)**: `title.css` 의 제목 `max-width` 가 제목 왼쪽(`--title-left`, `titleScreen.ts` 가 설정)에서 오른쪽 가장자리까지만 쓰고 줄을 바꾼다.
 - **엔딩 화면 위 작은 줄 (R08)**: `EndingPresentation.kicker`(≤24자, `define_ending.presentation.kicker`). 비우면 연애 프로젝트(`usesRelationshipMenu`)는 「두 사람의 이야기」, 어두운 톤은 「이야기의 끝」, 나머지는 「우리의 여정」.
-||||||| parent of 686b6ba46b (docs(openwiki): romance HUD default layout and short names)
 
-||||||| parent of f6690b797c (docs(openwiki): romance HUD default layout and short names)
 
 
 ## HUD 가림 · 짧은 이름 (2026-10-16 romance-fix-4, R06/R09)
 
 호감 목록·남은 시간 판은 값이 바뀐 뒤 3초만, 시계는 모서리 칩 — 평소 지도·실내 위쪽을 덮지 않는다(자세한 건 `editor-ai-tools.md` 의 romance HUD 항목). 이름 줄임은 `friendshipShortName`(괄호·앞 직함 제거). 옛 기본 HUD 로 저장된 프로젝트는 `applyRomanceDefaults` 가 새 배치로 바꾼다. 못 고친 것: HUD 가 가린 실내 위쪽의 수리 후 캡처(야외 픽스처만 측정), R09 id 중복 인물(HUD 만 해결), R10 ESC 「타이틀로」 겹침.
+
+
+## 남은 결함 수리 (2026-10-17 fix-leftovers, romance-real-2 R04/R07/R10/R12/R14/R15)
+
+- **R04 팀 시간 상한은 팀 전체 벽시계다.** `PiAgentRequest.timeoutMs`(없으면 `PI_AGENT_DEFAULT_TIMEOUT_MS`)는 예전엔 팀장·시공·검수·첫 플레이 검토가 **각자** 통째로 받았다(최악 +수 배, 실측 1380초 상한에 1611초). `piTeamRuntime.ts child()` 는 이제 `teamTimeoutLeftMs(상한, 팀 시작, 지금)`(바닥 1초)만큼만 하위 에이전트에 준다. 장기 목표(goalCampaign) 45분은 에이전트마다 따로 쓴다. 증거 스크립트 `scripts/qa/fix-leftovers/r04-team-timeout.mts`(상한 3000ms 가짜 실행기: 수리 전 팀장·시공·검수가 각자 3000ms 를 받아 최악 종료 +6779ms, 수리 후 팀장 2998·시공 1722ms 로 줄어 +3070ms 에 맞고, 상한이 이미 지난 뒤 시작한 검수는 1초 바닥만 받는다).
+- **R07 대사 본문의 화자 이름.** `src/project/dialogueSpeakerEcho.ts stripSpeakerEcho(body, speaker)`: 이름표와 같은 이름(또는 「서연 (소꿉친구 반장)」→「서연」 같은 줄임)이 본문 맨 앞에 「이름:」·「[이름]」·「【이름】」 로 또 붙으면 재생(`player/dialogue.ts showText`)이 걷고 바깥 따옴표도 벗긴다. 다른 이름·본문 속 인용은 건드리지 않는다. `romance-speaker-in-body` 검사도 같은 함수로 「이름:」 형을 잡는다(저작 데이터는 깨끗해야 한다는 경고 문구 유지).
+- **R10 ESC 「타이틀로」 겹침.** 도트 스킨 명령 창 높이가 94px 고정이라 7항목(호감도·일정·소지품·저장·불러오기·설정·타이틀로) 연애 메뉴의 마지막 항목이 창 밖으로 나갔다. `playerStatusMenu.ts` 가 `--status-menu-command-count` 를 박고 `pixelWindows.css` 의 `--px-dock-h = max(94px, 항목수×14+8)` 로 높이를 정하며 아래 돈·장소·시간·장 창은 그만큼 내려온다. 6항목 이하는 이전과 같다.
+- **R12 아침 06:00 어두움 — 재현 안 됨.** 시간대 틴트는 06~10시 「아침」 0.08 알파뿐이다. 실제 어둠은 날이 바뀌는 `sleepUntilMorning` 의 페이드 인 중에 찍힌 것(소프트웨어 GL 에서 3초 넘게 걸림): 같은 장면이 60프레임 뒤 밝다(`scripts/qa/runtime/romance-r12-fade.scenario.mjs`, 평균 밝기 18.9 → 122.9). 상시 어둠 결함이 아니라 코드를 바꾸지 않았다.
+- **R14 선택지 이벤트가 투명.** `romance-choice-event-invisible`(경고, 완료 조건은 아님): 선택지(`choices`)가 달린 action 이벤트가 그림 없는 투명 이벤트이고 물건 타일도 없는 빈 바닥이면 짚는다(약속 게시판·에스프레소 머신 주문서 — 실제 Argon 산출물 2판에서 잡힘).
+- **R15 짝 얼굴 없는 칩.** 얼굴이 없으면 대사창은 얼굴 칸 없이 본문이 전폭을 쓴다(캡처로 확인, 별도 폴백 코드 없음).
+- **429 자동 재시도(연애·JRPG 공용).** 팀 finish 는 429 로 끊긴 채 같은 맵에 다시 맡겨지지 않은 배정(`rateLimitedUnresolved`)이 있으면 제공자 쿨다운(`retry-after-ms`, 없으면 60초, 최대 330초)만큼 쉰 뒤 같은 맵·같은 task 로 **한 번** 다시 맡기고(`retryRateLimitedAssignments`) 끝나면 이어서 finish 검사를 한다. 팀 남은 시간이 쉬는 시간+120초 미만이면 건너뛴다. 다시 429 면 기존 가드(팀장에게 되돌려 재배정, #2752)가 그대로 걸린다. 증거: `scripts/qa/fix-leftovers/team-429-retry.mts`.
+- **못 고친 것.** R11(맵 구도: 아스팔트 띠·봄에 가을 나무·NPC 밀집은 모델의 배치 판단이라 코드 규칙으로 고칠 수 없다), R13(연애 전용 도구를 안 쓰는 것은 모델 선택 — 지시문 효과는 실 Argon 재측정으로만 판정), R16(측정 한계).

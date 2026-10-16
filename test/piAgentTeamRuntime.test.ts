@@ -7,7 +7,7 @@ import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { runPiTeam, type RunPiTeamOptions } from "../scripts/lib/piTeamRuntime";
+import { runPiTeam, teamTimeoutLeftMs, type RunPiTeamOptions } from "../scripts/lib/piTeamRuntime";
 
 function seeded(): Project {
   const ctx = { project: createBlankProject() };
@@ -345,7 +345,7 @@ describe("팀 런타임 — 실행 상한", () => {
 
   // 깨질 것: 규약(protocol.ts)은 「팀은 하위 에이전트마다 같은 값이 걸린다」 고 말하는데, child() 가 timeoutMs 를
   // 빠뜨리면 시공·검수는 런타임 기본값으로 돌아 사용자가 올린 상한이 팀장에게만 적용된다.
-  it("timeoutMs 가 팀장·시공·검수 하위 에이전트에 그대로 실린다", async () => {
+  it("timeoutMs 는 팀 전체 상한으로 팀장·시공·검수에 남은 시간만큼 실린다", async () => {
     const seen: (number | undefined)[] = [];
     const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[]; timeoutMs?: number }): Promise<PiAgentDoneEvent> => {
       seen.push(opts.timeoutMs);
@@ -367,8 +367,18 @@ describe("팀 런타임 — 실행 상한", () => {
     };
 
     await runPiTeam(request(seeded()), { runAgent: runAgent as RunPiTeamOptions["runAgent"], timeoutMs: 1234 });
-    // 팀장 → 시공 → 검수 순으로 셋이 돌았고, 셋 다 같은 상한을 받았다.
-    expect(seen).toEqual([1234, 1234, 1234]);
+    // 팀장 → 시공 → 검수 순으로 셋이 돌았고, 셋 다 상한을 받되 늘어나지 않는다(팀 시작 뒤 남은 시간).
+    expect(seen).toHaveLength(3);
+    for (const value of seen) expect(value).toBeGreaterThan(0);
+    for (const value of seen) expect(value!).toBeLessThanOrEqual(1234);
+    expect(seen[1]!).toBeLessThanOrEqual(seen[0]!);
+    expect(seen[2]!).toBeLessThanOrEqual(seen[1]!);
+  });
+
+  it("teamTimeoutLeftMs: 시작 뒤 지난 시간을 빼고 바닥은 1초다", () => {
+    expect(teamTimeoutLeftMs(1380_000, 1_000, 231_000)).toBe(1150_000);
+    expect(teamTimeoutLeftMs(1380_000, 1_000, 1_700_000)).toBe(1000);
+    expect(teamTimeoutLeftMs(5_000, 10_000, 9_000)).toBe(5_000);
   });
 });
 
@@ -781,5 +791,59 @@ describe("팀 마을 완료 상태", () => {
     expect(done.villageCompletion?.mapIds).toEqual(["map_a"]);
     expect(done.villageCompletion?.issues.join("\n")).toContain("문 앞 좌표가 0개");
     expect(events.some(event => event.type === "agent_done" && event.agentId.startsWith("orchestrator-") && !event.ok)).toBe(true);
+  });
+});
+
+describe("팀 런타임 — 429 자동 재시도(finish 단계)", () => {
+  // 깨질 것: 시공 팀원이 429 로 죽은 채 팀장이 finish 하면 일이 안 된 채로 끝났다(romance-real-2 b1/b2, jrpg-real-1 J04).
+  // 일반 가드(#2752)는 팀장에게 되돌려 재배정을 시킬 뿐이라, 팀장이 잊으면 그대로 끝났다.
+  function scenario(failTimes: number) {
+    const builderRuns: { task: string }[] = [];
+    let finishCalls = 0;
+    const events: PiAgentEvent[] = [];
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }): Promise<PiAgentDoneEvent> => {
+      const extra = opts.extraTools ?? [];
+      if (extra.some((tool) => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "집을 짓는다", member: "builder" });
+        await callTool(extra, "wait_agents", {});
+        finishCalls += 1;
+        await callTool(extra, "finish", { report: "끝" });
+        return doneWith(req.project);
+      }
+      if (extra.some((tool) => tool.name === "report_review")) {
+        await extra.find((tool) => tool.name === "report_review")!.execute("call", { ok: true, findings: [] });
+        return doneWith(req.project);
+      }
+      builderRuns.push({ task: req.task });
+      if (builderRuns.length <= failTimes) throw new Error("429 All credentials for model gemini-4-argon-high are cooling down via provider antigravity retry-after-ms=299000");
+      return doneWith(built(req.project, "map_a", "지어짐"), ["maps.map_a"]);
+    };
+    return { runAgent, builderRuns, events, finishCalls: () => finishCalls };
+  }
+
+  it("한 번 429 로 끊기면 finish 가 쉰 뒤 같은 맵을 한 번 다시 맡기고, 성공하면 보고에 끊김이 남지 않는다", async () => {
+    const s = scenario(1);
+    const backoffs: (number | undefined)[] = [];
+    const done = await runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], onEvent: (e) => s.events.push(e), rateLimitBackoffMs: (hint) => { backoffs.push(hint); return 0; } });
+    expect(s.builderRuns).toHaveLength(2);
+    expect(s.builderRuns[1]!.task).toContain("자동 재시도");
+    expect(s.builderRuns[1]!.task).toContain("집을 짓는다");
+    expect(backoffs).toEqual([299000]);
+    expect(done.project.maps.map_a!.name).toBe("지어짐");
+    const report = s.events.filter((e) => e.type === "team_report").map((e) => (e as { text: string }).text).join("\n");
+    expect(report).not.toContain("끊겨 끝내지 못한 배정");
+    expect(s.finishCalls()).toBe(1);
+  });
+
+  it("재시도도 429 면 한 번만 시도하고, 일반 가드가 팀장에게 돌려보낸다(무한 재시도 없음)", async () => {
+    const s = scenario(99);
+    await expect(runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], rateLimitBackoffMs: () => 0 })).rejects.toThrow(/사용 한도\(429\)/);
+    expect(s.builderRuns).toHaveLength(2);
+  });
+
+  it("429 가 없으면 재시도하지 않는다", async () => {
+    const s = scenario(0);
+    await runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], rateLimitBackoffMs: () => 0 });
+    expect(s.builderRuns).toHaveLength(1);
   });
 });
