@@ -86,6 +86,11 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
   return toolSchemasForNames(names) as OpenAiTool[];
 }
 
+/** 이벤트 요청 속 장소·지형·사물 낱말 — 말한 것이 맵에 없으면 조수가 먼저 지어야 하는 대상. */
+export const SCENE_SETTING_PATTERN = /(화산|용암|마그마|독\s*늪|늪지|유적|성소|신전|제단|협곡|다리|동굴|폭포|성검|중세)/u;
+
+export const SCENE_SETTING_NOTE = "[무대 필수] 이 요청이 말한 장소·지형·사물이 요청 좌표 주변에 보이지 않으면 이벤트를 만들기 전에 build_scene_setting({mapId,theme,x,y}) 를 한 번 호출해 무대를 짓는다(x,y = 이벤트 칸). theme: 화산·열풍 → volcano(마을 외곽이면 houses:2~3), 용암 다리·붕괴 → lava_bridge, 독늪·독안개 → poison_swamp, 유적·성소·제단·성검·중세 성소 → ruins_shrine. 지은 뒤 show_map_region 으로 그림을 확인한다. 이벤트만 만들고 끝내면 미완성이다. 맵의 나머지는 보존한다.";
+
 /**
  * Build the registry portion of one AssistantSession request.
  *
@@ -117,6 +122,10 @@ function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): O
   }
   if (/(월드맵|세계\s*지도|지역\s*지도|포켓몬.*(?:도로|지도)|마리오.*(?:맵|지도)|할로우.*지도|스파이어.*지도|world\s*map|overworld)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain', 'derive_world_variant', 'link_world_entrance']) as OpenAiTool[]);
+  }
+  // 이벤트·컷씬 요청이 장소·지형·사물을 말하면 그 무대를 짓는 시공 도구를 처음부터 보인다 — 이벤트 도구만 쥐면 무대 없이 대사만 남는다(2026-10-15 JRPG 파일럿 실측).
+  if (SCENE_SETTING_PATTERN.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(['build_scene_setting', 'fill_region', 'stamp_object', 'place_props', 'list_spatial_designs', 'get_map_region', 'show_map_region', 'check_reachability']) as OpenAiTool[]);
   }
   if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);
