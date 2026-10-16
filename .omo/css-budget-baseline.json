@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-16T15:45:38.979Z",
+  "generatedAt": "2026-10-16T21:45:11.652Z",
   "metrics": {
-    "hexLiterals": 2545,
+    "hexLiterals": 2559,
     "important": 303,
     "undefinedVars": 61,
     "globalRootFiles": 10,
-    "cssFileCount": 410
+    "cssFileCount": 411
   },
   "details": {
     "hexByFile": {
@@ -75,6 +75,7 @@
       "src/styles/database/title-workbench.css": 39,
       "src/styles/database/workshop/workshop.css": 20,
       "src/styles/dialogue.css": 17,
+      "src/styles/dialogueReading.css": 14,
       "src/styles/editor/relief-toolbar.css": 30,
       "src/styles/event/command-forms/forms-2.css": 22,
       "src/styles/event/command-forms/forms-3.css": 56,
@@ -693,6 +694,7 @@
       "src/styles/database/workspace-modern.css",
       "src/styles/database/world-gen.css",
       "src/styles/dialogue.css",
+      "src/styles/dialogueReading.css",
       "src/styles/dialogueStyles.css",
       "src/styles/editor/relief-toolbar.css",
       "src/styles/editor/terrain-design.css",
