@@ -48,7 +48,7 @@ describe("emerald opening pixel grid (CSS contract)", () => {
     expect(rule).toBeDefined();
     expect(rule).toContain("width:var(--art-box-width,128px)");
     expect(rule).toContain("height:var(--art-box-height,128px)");
-    expect(rule).toMatch(/left:272px;top:76px/u);
+    expect(rule).toMatch(/left:272px;top:56px/u);
     expect(rule).not.toMatch(/%/u);
   });
   it("keeps idle bobs on 2px steps and the dialogue window inside the stage", () => {

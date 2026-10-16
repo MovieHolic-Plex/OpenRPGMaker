@@ -53,7 +53,7 @@ bust, the bust rises from behind the dialogue box). Candidate review sheet:
 **Opening pixel grid (2026-10-16 scale QA).** On the 480x320 stage one logical dot = 2 screen px
 for the professor (122x97 -> 244x194), the starter monsters (64x64 canvas -> 128x128) and the
 Galmuri9 18px text. Everything must sit on that 2px grid: the bust at left 118/14, top 14; the
-introduced monster at left 272, top 76 with its box from `--art-box-width/height`
+introduced monster at left 272, top 56 (box bottom 184 = dialogue window top, so the whole sprite shows above the window) with its box from `--art-box-width/height`
 (`bindIntegerArtScale`, not a % box); idle bobs are 2px (`steps(1, end)` per segment, `steps(2)`
 gave a -1px half step); the dialogue window uses `left:14px`, `border:6px double` and
 `width:calc(100% - 68px)` (the old 94% + padding overflowed the right edge). `restyle-bust.py`
