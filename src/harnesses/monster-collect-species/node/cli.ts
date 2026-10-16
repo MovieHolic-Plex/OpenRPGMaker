@@ -23,6 +23,7 @@ import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
 import type { GridOptions } from "../pixel/grid";
 import { MAX_INK_SIDE, SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
+import { checkEyes } from "../checks/eyes";
 import { checkDirection, checkFrames, checkPair, checkSprite, similarSilhouettes, type CheckIssue } from "../checks/checks";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
 import { emptyLedger, validateSeed, type ActionContract, type ActionKind, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
@@ -141,7 +142,8 @@ function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaIma
   return rowFrames(splitRow(grid, action.frames), which, stage, cropToInk(base).width, rear);
 }
 
-type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
+/** eye: 눈 규칙(checks/eyes.ts) 결과 — 앞모습 pass=false 는 판정 대상 탈락, pair 는 두 눈 확인(참고) */
+type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[]; eye?: { pass: boolean; pair: boolean } };
 type RunRecord = { species: string; side: SpriteSide; prompt: string; reference: string; fixedBlock?: number; candidates: Candidate[] };
 
 /** 원본 PNG 바이트들을 도트화해 run 폴더에 후보로 쓰고, 비교 시트를 만든다. */
@@ -161,8 +163,9 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
       const sprite = fit.sprite;
       writePng(join(dir, `grid-${k}.png`), grid);
       writePng(join(dir, `sprite-${k}.png`), sprite);
-      const issues = checkSprite(sprite, seed.style.maxColors).issues;
-      candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues });
+      const issues = checkSprite(sprite, seed.style.maxColors, which).issues;
+      const eye = checkEyes(sprite, which);
+      candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues, eye: { pass: eye.pass, pair: eye.pair } });
     } catch (error) {
       console.error(`후보 ${k} 도트화 실패: ${error instanceof Error ? error.message : error}`);
     }
@@ -179,7 +182,7 @@ function sheetHtml(species: SpeciesSeed, which: SpriteSide, id: string, candidat
   // 실루엣 테스트: 같은 그림을 검정 단색 마스크 64px 로도 보여 준다 (시그니처만으로 종이 구별되는지 — 디자인 규칙 ④)
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
-    return `<figure><img src="${c.sprite}" width="${SPRITE_CANVAS * 5}" height="${SPRITE_CANVAS * 5}"><div class="sil"><img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS}" height="${SPRITE_CANVAS}"> <img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS * 2}" height="${SPRITE_CANVAS * 2}"></div><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
+    return `<figure><img src="${c.sprite}" width="${SPRITE_CANVAS * 5}" height="${SPRITE_CANVAS * 5}"><div class="sil"><img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS}" height="${SPRITE_CANVAS}"> <img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS * 2}" height="${SPRITE_CANVAS * 2}"></div><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}${c.eye ? ` · 눈 규칙 ${c.eye.pass ? "통과" : "<b class=\"error\">탈락</b>"}${which === "front" && c.eye.pass ? (c.eye.pair ? " · 두 눈" : " · 한 눈") : ""}` : ""}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
   }).join("");
   return `<!doctype html><meta charset="utf-8"><title>${species.name} ${which} ${id}</title>
 <style>body{margin:0;background:#15171d;color:#dfe3ea;font:14px system-ui,sans-serif;padding:12px}main{display:flex;flex-wrap:wrap;gap:10px}
@@ -485,7 +488,9 @@ function stageRefit(args: Args): void {
           const grid = readPng(join(base, id, c.grid));
           const sprite = toSprite(grid, which, species.stage).sprite;
           writePng(join(base, id, c.sprite), sprite);
-          c.issues = checkSprite(sprite, seed.style.maxColors).issues;
+          c.issues = checkSprite(sprite, seed.style.maxColors, which).issues;
+          const eye = checkEyes(sprite, which);
+          c.eye = { pass: eye.pass, pair: eye.pair };
         }
         writeFileSync(file, JSON.stringify(record, null, 2) + "\n");
         writeFileSync(join(base, id, "sheet.html"), sheetHtml(species, which, id, record.candidates));
@@ -519,8 +524,8 @@ function stageCheck(): number {
   for (const species of seed.species) {
     const front = existsSync(bundlePath(species.id, "front")) ? readPng(bundlePath(species.id, "front")) : null;
     const back = existsSync(bundlePath(species.id, "back")) ? readPng(bundlePath(species.id, "back")) : null;
-    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors).issues);
-    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors).issues);
+    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front").issues);
+    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back").issues);
     if (front && back) errors += printIssues(`${species.id} 앞·뒤`, checkPair(front, back));
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");
     if (!existsSync(manifestPath)) continue;

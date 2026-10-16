@@ -1,7 +1,8 @@
 /** 번들 스프라이트 자동 검사. 사람 눈 검수(닮은꼴·자세)를 대신하지 않는다 — 기계로 잡을 수 있는 결함만. */
 import { isOpaque, opaqueBounds, pixelAt, rgbKey, type Rgba, type RgbaImage } from "../pixel/image";
 import { isMagentaCast, labDistance, oklabCached } from "../pixel/oklab";
-import { MAX_INK_SIDE, SPRITE_CANVAS } from "../pixel/fit";
+import { MAX_INK_SIDE, SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
+import { checkEyes } from "./eyes";
 
 export type CheckIssue = { level: "error" | "warn"; message: string };
 
@@ -61,7 +62,7 @@ export function spriteStats(image: RgbaImage): SpriteStats {
   };
 }
 
-export function checkSprite(image: RgbaImage, maxColors: number): { stats: SpriteStats; issues: CheckIssue[] } {
+export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSide): { stats: SpriteStats; issues: CheckIssue[] } {
   const stats = spriteStats(image);
   const issues: CheckIssue[] = [];
   if (image.width !== SPRITE_CANVAS || image.height !== SPRITE_CANVAS) issues.push({ level: "error", message: `캔버스가 ${SPRITE_CANVAS}x${SPRITE_CANVAS} 가 아니다 (${image.width}x${image.height})` });
@@ -75,6 +76,8 @@ export function checkSprite(image: RgbaImage, maxColors: number): { stats: Sprit
   if (stats.outlineRatio < 0.85) issues.push({ level: "warn", message: `윤곽이 약하다 (가장자리 어두운 칸 ${(stats.outlineRatio * 100).toFixed(0)}%)` });
   if (stats.orphanRatio > 0.12) issues.push({ level: "warn", message: `외톨이 점 ${(stats.orphanRatio * 100).toFixed(1)}% — 색이 잘게 갈라졌다` });
   if (Math.sqrt(stats.ink.width * stats.ink.height) < 30) issues.push({ level: "warn", message: `몸집이 작다 (${stats.ink.width}x${stats.ink.height})` });
+  // 눈 규칙(판본 3): 면을 알 때만. 앞모습 주 눈 탈락은 error(후보 탈락), 뒷모습 눈 비침은 warn
+  if (side && stats.ink.width > 0) issues.push(...checkEyes(image, side).issues);
   return { stats, issues };
 }
 

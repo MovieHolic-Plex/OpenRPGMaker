@@ -75,6 +75,11 @@ export type SpeciesSeed = {
    * 원작 몬스터의 특징을 베끼지 않는다(오리지널).
    */
   signature: string;
+  /**
+   * 눈 설계 덮어쓰기(영어 문장). 생략하면 「눈 두 개, 3/4 시점, 가까운 눈이 더 크다」 기본 문장(prompts.ts eyeClause)이 들어간다.
+   * 줄기눈·한 눈처럼 종 설계상 눈이 다르면 여기에 적는다. 눈 픽셀 규칙(3×3 이상 + 하이라이트 + 밝은 얼굴 위)은 그대로 적용된다.
+   */
+  eyes?: string;
   /** 포인트 색 하나 — 시그니처에만 쓰는 선명한 색. 몸 색 3~4개(palette) + 포인트 1개 */
   accent?: string;
   palette?: string;
