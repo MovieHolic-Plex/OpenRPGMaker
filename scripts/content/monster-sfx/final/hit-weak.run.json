@@ -1,0 +1,25 @@
+{
+ "id": "hit-weak",
+ "cand": 0,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "e68653e1e358417c",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "patch error: voices[2] unknown keys [' env'] (allowed ['amp_steps', 'duty', 'env', 'gain', 'highpass_hz', 'label', 'lfsr', 'lowpass_hz', 'notes', 'steps', 'table', 'tremolo', 'vibrato', 'wave'])"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": [
+    "trailing silence 100.0 ms > 80"
+   ]
+  },
+  {
+   "round": 2,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

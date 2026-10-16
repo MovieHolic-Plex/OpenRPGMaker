@@ -1,0 +1,3824 @@
+{
+ "format": 1,
+ "license": "CC0-1.0",
+ "originality": "Synthesised from numeric patches (pulse/triangle/wave/LFSR-noise oscillators and envelopes). No recording, sample, soundfont, MIDI or melody from any game is used; reference renders were only compared in listening/analysis and nothing derived from them is shipped.",
+ "authoring": {
+  "model": "gemini-4-argon-high",
+  "role": "wrote the synthesiser patches (JSON); it generated no audio"
+ },
+ "synth": "scripts/content/monster-sfx/synth.py",
+ "sampleRate": 44100,
+ "channels": 1,
+ "codec": "vorbis q5",
+ "sounds": {
+  "ui-cursor": {
+   "file": "ui-cursor.ogg",
+   "title": "메뉴 커서",
+   "bytes": 4553,
+   "sha256": "6db5c74ff221c15493ec0ffb9e6895d0b9f7f31b121f5b809714b045409c5f6c",
+   "durationSeconds": 0.0521,
+   "peakDbfs": -7.75,
+   "rmsDbfs": -24.17,
+   "dcOffset": 3e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 20.0,
+   "clippedSamples": 0,
+   "centroidHz": 5233.0,
+   "gate": "pass",
+   "replaces": "RTP Cursor1.wav (0.18s)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "8401e81cd1106c94",
+   "patch": {
+    "id": "ui-cursor",
+    "duration": 0.055,
+    "seed": 3009,
+    "voices": [
+     {
+      "wave": "wave",
+      "table": [
+       8,
+       12,
+       15,
+       14,
+       10,
+       6,
+       3,
+       2,
+       5,
+       9,
+       13,
+       14,
+       11,
+       7,
+       4,
+       3,
+       6,
+       10,
+       13,
+       12,
+       9,
+       5,
+       2,
+       1,
+       3,
+       7,
+       11,
+       13,
+       12,
+       9,
+       6,
+       4
+      ],
+      "gain": 0.85,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.018,
+       "s": 0.0,
+       "r": 0.004,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.014,
+        "pitch": "E6",
+        "vel": 0.75
+       },
+       {
+        "t": 0.015,
+        "dur": 0.025,
+        "pitch": "B6",
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.014,
+       "s": 0.0,
+       "r": 0.003,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.012,
+        "pitch": "B5",
+        "vel": 0.65
+       },
+       {
+        "t": 0.015,
+        "dur": 0.02,
+        "pitch": "F#6",
+        "vel": 0.85
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.25,
+      "lowpass_hz": 5200,
+      "highpass_hz": 1200,
+      "env": {
+       "a": 0.0005,
+       "d": 0.006,
+       "s": 0.0,
+       "r": 0.002,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.007,
+        "clock": [
+         [
+          0,
+          42000
+         ],
+         [
+          0.007,
+          18000
+         ]
+        ],
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 400,
+     "lowpass_hz": 8500
+    }
+   }
+  },
+  "ui-confirm": {
+   "file": "ui-confirm.ogg",
+   "title": "결정",
+   "bytes": 6183,
+   "sha256": "af1fdf0d538bfae7993b4b3448c8b06f4a250daa64c70bf8aad34db557aec7be",
+   "durationSeconds": 0.1421,
+   "peakDbfs": -9.54,
+   "rmsDbfs": -22.02,
+   "dcOffset": 0.0,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 0.0,
+   "clippedSamples": 0,
+   "centroidHz": 4655.0,
+   "gate": "pass",
+   "replaces": "RTP Decision1/2.wav (1.3s, much longer)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "aa463541447290d4",
+   "patch": {
+    "id": "ui-confirm",
+    "duration": 0.145,
+    "seed": 4010,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.75,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.035,
+       "s": 0.55,
+       "r": 0.006,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.042,
+        "pitch": [
+         [
+          0.0,
+          "C#6"
+         ],
+         [
+          0.008,
+          "D6"
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.046,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          "G#6"
+         ],
+         [
+          0.008,
+          "A6"
+         ]
+        ],
+        "vel": 1.0,
+        "env": {
+         "a": 0.001,
+         "d": 0.045,
+         "s": 0.4,
+         "r": 0.035,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.35,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.03,
+       "s": 0.3,
+       "r": 0.006,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.006,
+        "dur": 0.036,
+        "pitch": "A5",
+        "vel": 0.8
+       },
+       {
+        "t": 0.052,
+        "dur": 0.055,
+        "pitch": "F#6",
+        "vel": 0.85,
+        "arp": {
+         "steps": [
+          0,
+          7,
+          12
+         ],
+         "rate_hz": 65
+        },
+        "env": {
+         "a": 0.001,
+         "d": 0.04,
+         "s": 0.3,
+         "r": 0.032,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.45,
+      "env": {
+       "a": 0.001,
+       "d": 0.035,
+       "s": 0.25,
+       "r": 0.01,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.035,
+        "pitch": "D5",
+        "vel": 0.85
+       },
+       {
+        "t": 0.046,
+        "dur": 0.055,
+        "pitch": "A5",
+        "vel": 0.9,
+        "env": {
+         "a": 0.001,
+         "d": 0.045,
+         "s": 0.25,
+         "r": 0.03,
+         "curve": "lin"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.15,
+      "env": {
+       "a": 0.0005,
+       "d": 0.008,
+       "s": 0.0,
+       "r": 0.002,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.008,
+        "clock": [
+         [
+          0.0,
+          90000
+         ],
+         [
+          0.008,
+          25000
+         ]
+        ],
+        "vel": 0.8
+       },
+       {
+        "t": 0.046,
+        "dur": 0.008,
+        "clock": [
+         [
+          0.0,
+          120000
+         ],
+         [
+          0.008,
+          40000
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 220,
+     "lowpass_hz": 12000
+    }
+   }
+  },
+  "ui-cancel": {
+   "file": "ui-cancel.ogg",
+   "title": "취소",
+   "bytes": 5390,
+   "sha256": "358bc6939fe24ec1c502dcc5c63292054dcce6f4b685db935f5c316a312d999d",
+   "durationSeconds": 0.1571,
+   "peakDbfs": -8.78,
+   "rmsDbfs": -21.85,
+   "dcOffset": 3e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 45.0,
+   "clippedSamples": 0,
+   "centroidHz": 1312.0,
+   "gate": "pass",
+   "replaces": "RTP Cancel1.wav (0.08s)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "6ea63d1fbf0544f5",
+   "patch": {
+    "id": "ui-cancel",
+    "duration": 0.16,
+    "seed": 2009,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.65,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.055,
+       "s": 0.0,
+       "r": 0.015,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.05,
+        "pitch": [
+         [
+          0.0,
+          "G4"
+         ],
+         [
+          0.05,
+          "F#4"
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.055,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          "C4"
+         ],
+         [
+          0.075,
+          "B3"
+         ]
+        ],
+        "vel": 0.8,
+        "env": {
+         "a": 0.002,
+         "d": 0.075,
+         "s": 0.0,
+         "r": 0.02,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.35,
+      "amp_steps": 16,
+      "lowpass_hz": 2800,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.0,
+       "r": 0.015,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.05,
+        "pitch": "Eb4",
+        "vel": 0.8
+       },
+       {
+        "t": 0.055,
+        "dur": 0.07,
+        "pitch": "G3",
+        "vel": 0.7,
+        "env": {
+         "a": 0.002,
+         "d": 0.07,
+         "s": 0.0,
+         "r": 0.02,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.55,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.0,
+       "r": 0.015,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.05,
+        "pitch": "G3",
+        "vel": 0.85
+       },
+       {
+        "t": 0.055,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          "C3"
+         ],
+         [
+          0.075,
+          "B2"
+         ]
+        ],
+        "vel": 0.9,
+        "env": {
+         "a": 0.002,
+         "d": 0.075,
+         "s": 0.0,
+         "r": 0.02,
+         "curve": "exp"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "lowpass_hz": 4200,
+     "highpass_hz": 90
+    }
+   }
+  },
+  "ui-error": {
+   "file": "ui-error.ogg",
+   "title": "오류(못 함)",
+   "bytes": 5860,
+   "sha256": "383d8913076effccd248074be4b290275a3de50c723f4f5168af274662b5e869",
+   "durationSeconds": 0.2627,
+   "peakDbfs": -9.0,
+   "rmsDbfs": -20.95,
+   "dcOffset": -0.00011,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 45.0,
+   "clippedSamples": 0,
+   "centroidHz": 781.0,
+   "gate": "pass",
+   "replaces": "RTP Buzzer1.wav (0.32s)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "954d3e1ebca7edb7",
+   "patch": {
+    "id": "ui-error",
+    "duration": 0.24,
+    "seed": 4008,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.75,
+      "amp_steps": 16,
+      "lowpass_hz": 2400,
+      "env": {
+       "a": 0.002,
+       "d": 0.04,
+       "s": 0.65,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          175
+         ],
+         [
+          0.06,
+          155
+         ]
+        ]
+       },
+       {
+        "t": 0.085,
+        "dur": 0.095,
+        "pitch": [
+         [
+          0.0,
+          145
+         ],
+         [
+          0.095,
+          120
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.06,
+         "s": 0.4,
+         "r": 0.035,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "lowpass_hz": 2100,
+      "env": {
+       "a": 0.002,
+       "d": 0.04,
+       "s": 0.5,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          262
+         ],
+         [
+          0.06,
+          233
+         ]
+        ],
+        "arp": {
+         "steps": [
+          0,
+          -1
+         ],
+         "rate_hz": 55
+        }
+       },
+       {
+        "t": 0.085,
+        "dur": 0.095,
+        "pitch": [
+         [
+          0.0,
+          218
+         ],
+         [
+          0.095,
+          180
+         ]
+        ],
+        "arp": {
+         "steps": [
+          0,
+          -1
+         ],
+         "rate_hz": 55
+        },
+        "env": {
+         "a": 0.002,
+         "d": 0.06,
+         "s": 0.35,
+         "r": 0.035,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.65,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.5,
+       "r": 0.02,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          175
+         ],
+         [
+          0.06,
+          155
+         ]
+        ]
+       },
+       {
+        "t": 0.085,
+        "dur": 0.095,
+        "pitch": [
+         [
+          0.0,
+          145
+         ],
+         [
+          0.095,
+          110
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.07,
+         "s": 0.3,
+         "r": 0.035,
+         "curve": "lin"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.22,
+      "lowpass_hz": 2200,
+      "env": {
+       "a": 0.001,
+       "d": 0.018,
+       "s": 0.0,
+       "r": 0.008,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.02,
+        "clock": [
+         [
+          0.0,
+          16000
+         ],
+         [
+          0.02,
+          4500
+         ]
+        ]
+       },
+       {
+        "t": 0.085,
+        "dur": 0.022,
+        "clock": [
+         [
+          0.0,
+          13000
+         ],
+         [
+          0.022,
+          3800
+         ]
+        ]
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 55,
+     "lowpass_hz": 2800
+    }
+   }
+  },
+  "hit-weak": {
+   "file": "hit-weak.ogg",
+   "title": "타격 · 효과가 별로",
+   "bytes": 5548,
+   "sha256": "44e7288ce3fcd844663203e1a9c4932458cd09c4d8a3fd812d416b8fd798f60e",
+   "durationSeconds": 0.1571,
+   "peakDbfs": -5.15,
+   "rmsDbfs": -20.94,
+   "dcOffset": 5e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 20.0,
+   "clippedSamples": 0,
+   "centroidHz": 1928.0,
+   "gate": "pass",
+   "replaces": "RTP Damage2.wav (0.56s, volume 0.6 / pitch +22%)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "e68653e1e358417c",
+   "patch": {
+    "id": "hit-weak",
+    "duration": 0.16,
+    "seed": 1008,
+    "voices": [
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.45,
+      "lowpass_hz": 4500,
+      "highpass_hz": 300,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0.12,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.045,
+        "clock": [
+         [
+          0.0,
+          22000
+         ],
+         [
+          0.045,
+          4500
+         ]
+        ],
+        "vel": 0.85
+       },
+       {
+        "t": 0.05,
+        "dur": 0.06,
+        "clock": [
+         [
+          0.0,
+          9000
+         ],
+         [
+          0.06,
+          2800
+         ]
+        ],
+        "vel": 0.5
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.35,
+      "lowpass_hz": 3200,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0.1,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.045,
+        "pitch": [
+         [
+          0.0,
+          310
+         ],
+         [
+          0.045,
+          135
+         ]
+        ],
+        "vel": 0.8
+       },
+       {
+        "t": 0.05,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          170
+         ],
+         [
+          0.06,
+          95
+         ]
+        ],
+        "vel": 0.55
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.5,
+      "env": {
+       "a": 0.002,
+       "d": 0.1,
+       "s": 0.08,
+       "r": 0.035,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.11,
+        "pitch": [
+         [
+          0.0,
+          165
+         ],
+         [
+          0.04,
+          82
+         ],
+         [
+          0.11,
+          60
+         ]
+        ],
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "lowpass_hz": 5000,
+     "highpass_hz": 80
+    }
+   }
+  },
+  "hit-normal": {
+   "file": "hit-normal.ogg",
+   "title": "타격 · 보통",
+   "bytes": 6550,
+   "sha256": "6fb25f40d7033df27265c697a9b9c5d99f89206635dae8788c60c6ff7a649eea",
+   "durationSeconds": 0.2471,
+   "peakDbfs": -2.1,
+   "rmsDbfs": -17.1,
+   "dcOffset": -1e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 20.0,
+   "clippedSamples": 0,
+   "centroidHz": 4802.0,
+   "gate": "pass",
+   "replaces": "RTP Damage2.wav (0.56s)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "3cc68ba58296db4d",
+   "patch": {
+    "id": "hit-normal",
+    "duration": 0.25,
+    "seed": 4010,
+    "voices": [
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "amp_steps": 16,
+      "gain": 1.15,
+      "env": {
+       "a": 0.001,
+       "d": 0.14,
+       "s": 0.15,
+       "r": 0.06,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.16,
+        "pitch": [
+         [
+          0.0,
+          220
+         ],
+         [
+          0.025,
+          95
+         ],
+         [
+          0.16,
+          42
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "amp_steps": 16,
+      "gain": 0.85,
+      "env": {
+       "a": 0.001,
+       "d": 0.1,
+       "s": 0.1,
+       "r": 0.05,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.11,
+        "duty": [
+         [
+          0.0,
+          0.5
+         ],
+         [
+          0.02,
+          0.25
+         ],
+         [
+          0.06,
+          0.125
+         ]
+        ],
+        "pitch": [
+         [
+          0.0,
+          620
+         ],
+         [
+          0.015,
+          240
+         ],
+         [
+          0.11,
+          60
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.032,
+        "dur": 0.12,
+        "duty": 0.125,
+        "pitch": [
+         [
+          0.0,
+          310
+         ],
+         [
+          0.12,
+          68
+         ]
+        ],
+        "vel": 0.55,
+        "env": {
+         "a": 0.001,
+         "d": 0.1,
+         "s": 0.15,
+         "r": 0.05,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "amp_steps": 16,
+      "gain": 0.75,
+      "env": {
+       "a": 0.001,
+       "d": 0.045,
+       "s": 0.0,
+       "r": 0.015,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.045,
+        "clock": [
+         [
+          0.0,
+          85000
+         ],
+         [
+          0.015,
+          28000
+         ],
+         [
+          0.045,
+          9000
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "amp_steps": 16,
+      "gain": 0.9,
+      "env": {
+       "a": 0.002,
+       "d": 0.14,
+       "s": 0.15,
+       "r": 0.05,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.004,
+        "dur": 0.18,
+        "clock": [
+         [
+          0.0,
+          48000
+         ],
+         [
+          0.035,
+          19000
+         ],
+         [
+          0.12,
+          8500
+         ],
+         [
+          0.18,
+          4200
+         ]
+        ],
+        "vel": 0.95
+       },
+       {
+        "t": 0.04,
+        "dur": 0.15,
+        "clock": [
+         [
+          0.0,
+          22000
+         ],
+         [
+          0.15,
+          5000
+         ]
+        ],
+        "vel": 0.5,
+        "env": {
+         "a": 0.002,
+         "d": 0.12,
+         "s": 0.15,
+         "r": 0.04,
+         "curve": "lin"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 35,
+     "lowpass_hz": 12000
+    }
+   }
+  },
+  "hit-super": {
+   "file": "hit-super.ogg",
+   "title": "타격 · 효과가 굉장",
+   "bytes": 9777,
+   "sha256": "014bd12a13129d550dd03fcc7cf3e2ccd4f014f6bf1be1fc815abd7aea141a3d",
+   "durationSeconds": 0.5471,
+   "peakDbfs": -1.22,
+   "rmsDbfs": -17.98,
+   "dcOffset": -0.00019,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 15.0,
+   "clippedSamples": 0,
+   "centroidHz": 5027.0,
+   "gate": "pass",
+   "replaces": "RTP Damage2.wav x2 (volume 1.3 / pitch -12%)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "b7e809dcf6c34659",
+   "patch": {
+    "id": "hit-super",
+    "duration": 0.55,
+    "seed": 2009,
+    "voices": [
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 1.15,
+      "env": {
+       "a": 0.001,
+       "d": 0.12,
+       "s": 0.1,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.08,
+        "pitch": [
+         [
+          0.0,
+          260
+         ],
+         [
+          0.025,
+          110
+         ],
+         [
+          0.08,
+          42
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.085,
+        "dur": 0.36,
+        "pitch": [
+         [
+          0.0,
+          200
+         ],
+         [
+          0.035,
+          85
+         ],
+         [
+          0.2,
+          48
+         ],
+         [
+          0.36,
+          34
+         ]
+        ],
+        "vel": 1.0,
+        "env": {
+         "a": 0.001,
+         "d": 0.22,
+         "s": 0.25,
+         "r": 0.08,
+         "curve": "lin"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.85,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.075,
+       "s": 0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          950
+         ],
+         [
+          0.015,
+          380
+         ],
+         [
+          0.075,
+          95
+         ]
+        ],
+        "vel": 1.0,
+        "arp": {
+         "steps": [
+          0,
+          7,
+          12
+         ],
+         "rate_hz": 90
+        }
+       },
+       {
+        "t": 0.085,
+        "dur": 0.26,
+        "pitch": [
+         [
+          0.0,
+          720
+         ],
+         [
+          0.025,
+          260
+         ],
+         [
+          0.15,
+          90
+         ],
+         [
+          0.26,
+          55
+         ]
+        ],
+        "vel": 0.95,
+        "env": {
+         "a": 0.001,
+         "d": 0.18,
+         "s": 0.15,
+         "r": 0.06,
+         "curve": "lin"
+        },
+        "arp": {
+         "steps": [
+          0,
+          5,
+          12
+         ],
+         "rate_hz": 75
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0,
+       "r": 0.01,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          1800
+         ],
+         [
+          0.06,
+          220
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.085,
+        "dur": 0.18,
+        "pitch": [
+         [
+          0.0,
+          1400
+         ],
+         [
+          0.18,
+          120
+         ]
+        ],
+        "vel": 0.85,
+        "env": {
+         "a": 0.001,
+         "d": 0.18,
+         "s": 0,
+         "r": 0.03,
+         "curve": "lin"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.85,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.055,
+       "s": 0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.055,
+        "clock": [
+         [
+          0.0,
+          95000
+         ],
+         [
+          0.02,
+          32000
+         ],
+         [
+          0.055,
+          9000
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.085,
+        "dur": 0.14,
+        "clock": [
+         [
+          0.0,
+          75000
+         ],
+         [
+          0.03,
+          22000
+         ],
+         [
+          0.14,
+          5500
+         ]
+        ],
+        "vel": 0.95,
+        "env": {
+         "a": 0.001,
+         "d": 0.14,
+         "s": 0,
+         "r": 0.03,
+         "curve": "lin"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.95,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.08,
+       "s": 0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.08,
+        "clock": [
+         [
+          0.0,
+          80000
+         ],
+         [
+          0.04,
+          24000
+         ],
+         [
+          0.08,
+          12000
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.085,
+        "dur": 0.37,
+        "clock": [
+         [
+          0.0,
+          65000
+         ],
+         [
+          0.08,
+          22000
+         ],
+         [
+          0.22,
+          9500
+         ],
+         [
+          0.37,
+          4200
+         ]
+        ],
+        "vel": 1.0,
+        "env": {
+         "a": 0.001,
+         "d": 0.24,
+         "s": 0.25,
+         "r": 0.08,
+         "curve": "lin"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "lowpass_hz": 12000,
+     "highpass_hz": 30
+    }
+   }
+  },
+  "ball-shake": {
+   "file": "ball-shake.ogg",
+   "title": "포획 볼 흔들림",
+   "bytes": 6297,
+   "sha256": "0ffb8807de4679e8286f69e914c18f3c9831e29e84d97aa3d18efb821212ed8e",
+   "durationSeconds": 0.2714,
+   "peakDbfs": -1.53,
+   "rmsDbfs": -22.92,
+   "dcOffset": 6e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 75.0,
+   "clippedSamples": 0,
+   "centroidHz": 3066.0,
+   "gate": "pass",
+   "replaces": "무음",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "4a6ff68d9d7476f3",
+   "patch": {
+    "id": "ball-shake",
+    "duration": 0.25,
+    "seed": 1010,
+    "voices": [
+     {
+      "wave": "triangle",
+      "gain": 0.95,
+      "steps": 32,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.065,
+       "s": 0.0,
+       "r": 0.015,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.07,
+        "pitch": [
+         [
+          0.0,
+          580
+         ],
+         [
+          0.015,
+          290
+         ],
+         [
+          0.07,
+          140
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.095,
+        "dur": 0.045,
+        "pitch": [
+         [
+          0.0,
+          440
+         ],
+         [
+          0.012,
+          240
+         ],
+         [
+          0.045,
+          160
+         ]
+        ],
+        "vel": 0.6,
+        "env": {
+         "a": 0.001,
+         "d": 0.04,
+         "s": 0.0,
+         "r": 0.01,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.55,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.035,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.04,
+        "pitch": [
+         [
+          0.0,
+          1160
+         ],
+         [
+          0.012,
+          580
+         ],
+         [
+          0.04,
+          380
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.095,
+        "dur": 0.03,
+        "pitch": [
+         [
+          0.0,
+          880
+         ],
+         [
+          0.03,
+          440
+         ]
+        ],
+        "vel": 0.5,
+        "env": {
+         "a": 0.001,
+         "d": 0.025,
+         "s": 0.0,
+         "r": 0.008,
+         "curve": "exp"
+        }
+       },
+       {
+        "t": 0.145,
+        "dur": 0.025,
+        "pitch": [
+         [
+          0.0,
+          740
+         ],
+         [
+          0.025,
+          420
+         ]
+        ],
+        "vel": 0.3,
+        "env": {
+         "a": 0.001,
+         "d": 0.02,
+         "s": 0.0,
+         "r": 0.008,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "highpass_hz": 600,
+      "lowpass_hz": 7500,
+      "env": {
+       "a": 0.001,
+       "d": 0.022,
+       "s": 0.0,
+       "r": 0.008,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.025,
+        "clock": [
+         [
+          0.0,
+          28000
+         ],
+         [
+          0.025,
+          11000
+         ]
+        ],
+        "vel": 0.9
+       },
+       {
+        "t": 0.095,
+        "dur": 0.02,
+        "clock": [
+         [
+          0.0,
+          24000
+         ],
+         [
+          0.02,
+          10000
+         ]
+        ],
+        "vel": 0.65
+       },
+       {
+        "t": 0.145,
+        "dur": 0.018,
+        "clock": [
+         [
+          0.0,
+          20000
+         ],
+         [
+          0.018,
+          9000
+         ]
+        ],
+        "vel": 0.4
+       },
+       {
+        "t": 0.18,
+        "dur": 0.015,
+        "clock": [
+         [
+          0.0,
+          16000
+         ],
+         [
+          0.015,
+          8000
+         ]
+        ],
+        "vel": 0.22
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 90,
+     "lowpass_hz": 9000
+    }
+   }
+  },
+  "capture-success": {
+   "file": "capture-success.ogg",
+   "title": "포획 성공",
+   "bytes": 21846,
+   "sha256": "4cf65224119f7a0c1cd7b41b25b2b5daaf6a4023cb141f84f79998e41ea63965",
+   "durationSeconds": 1.35,
+   "peakDbfs": -5.88,
+   "rmsDbfs": -18.98,
+   "dcOffset": -2e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 0.0,
+   "clippedSamples": 0,
+   "centroidHz": 3684.0,
+   "gate": "pass",
+   "replaces": "무음 (연출만)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "4737cce985d04cd5",
+   "patch": {
+    "id": "capture-success",
+    "duration": 1.35,
+    "seed": 4015,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.65,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.06,
+       "s": 0.7,
+       "r": 0.04,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 6.5,
+       "depth_semitones": 0.2,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.09,
+        "pitch": "A4"
+       },
+       {
+        "t": 0.1,
+        "dur": 0.09,
+        "pitch": "C#5"
+       },
+       {
+        "t": 0.2,
+        "dur": 0.09,
+        "pitch": "E5"
+       },
+       {
+        "t": 0.3,
+        "dur": 0.09,
+        "pitch": "F#5"
+       },
+       {
+        "t": 0.4,
+        "dur": 0.09,
+        "pitch": "E5"
+       },
+       {
+        "t": 0.5,
+        "dur": 0.09,
+        "pitch": "G#5"
+       },
+       {
+        "t": 0.6,
+        "dur": 0.52,
+        "pitch": [
+         [
+          0.0,
+          "G#5"
+         ],
+         [
+          0.02,
+          "A5"
+         ]
+        ],
+        "duty": [
+         [
+          0.0,
+          0.25
+         ],
+         [
+          0.08,
+          0.5
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.25,
+         "s": 0.5,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.5,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.08,
+        "pitch": "E4"
+       },
+       {
+        "t": 0.1,
+        "dur": 0.08,
+        "pitch": "A4"
+       },
+       {
+        "t": 0.2,
+        "dur": 0.08,
+        "pitch": "C#5"
+       },
+       {
+        "t": 0.3,
+        "dur": 0.08,
+        "pitch": "D5"
+       },
+       {
+        "t": 0.4,
+        "dur": 0.08,
+        "pitch": "B4"
+       },
+       {
+        "t": 0.5,
+        "dur": 0.08,
+        "pitch": "E5"
+       },
+       {
+        "t": 0.6,
+        "dur": 0.22,
+        "pitch": "C#6",
+        "arp": {
+         "steps": [
+          0,
+          4,
+          7,
+          12
+         ],
+         "rate_hz": 55
+        },
+        "env": {
+         "a": 0.002,
+         "d": 0.18,
+         "s": 0.4,
+         "r": 0.04,
+         "curve": "exp"
+        }
+       },
+       {
+        "t": 0.84,
+        "dur": 0.28,
+        "pitch": "E5",
+        "duty": 0.25,
+        "arp": {
+         "steps": [
+          0,
+          5
+         ],
+         "rate_hz": 50
+        },
+        "env": {
+         "a": 0.005,
+         "d": 0.2,
+         "s": 0.35,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.85,
+      "env": {
+       "a": 0.002,
+       "d": 0.08,
+       "s": 0.8,
+       "r": 0.04,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.26,
+        "pitch": "A3"
+       },
+       {
+        "t": 0.3,
+        "dur": 0.16,
+        "pitch": "D4"
+       },
+       {
+        "t": 0.48,
+        "dur": 0.1,
+        "pitch": "E4"
+       },
+       {
+        "t": 0.6,
+        "dur": 0.5,
+        "pitch": "A3",
+        "env": {
+         "a": 0.002,
+         "d": 0.3,
+         "s": 0.6,
+         "r": 0.2,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 7,
+      "gain": 0.22,
+      "env": {
+       "a": 0.001,
+       "d": 0.03,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.03,
+        "clock": [
+         [
+          0.0,
+          50000
+         ],
+         [
+          0.03,
+          15000
+         ]
+        ]
+       },
+       {
+        "t": 0.3,
+        "dur": 0.03,
+        "clock": 45000,
+        "vel": 0.7
+       },
+       {
+        "t": 0.6,
+        "dur": 0.18,
+        "clock": [
+         [
+          0.0,
+          90000
+         ],
+         [
+          0.18,
+          28000
+         ]
+        ],
+        "vel": 0.9,
+        "env": {
+         "a": 0.001,
+         "d": 0.15,
+         "s": 0.0,
+         "r": 0.05,
+         "curve": "exp"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 45,
+     "lowpass_hz": 12000,
+     "echo": {
+      "delay": 0.1,
+      "feedback": 0.22,
+      "mix": 0.16
+     }
+    }
+   }
+  },
+  "level-up": {
+   "file": "level-up.ogg",
+   "title": "레벨 업",
+   "bytes": 21553,
+   "sha256": "1ad35a1203e5ba3c88b42828bf4b4df238c68708d3c93f025a2984a74117341b",
+   "durationSeconds": 1.35,
+   "peakDbfs": -3.77,
+   "rmsDbfs": -18.93,
+   "dcOffset": -0.0001,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 15.0,
+   "clippedSamples": 0,
+   "centroidHz": 3705.0,
+   "gate": "pass",
+   "replaces": "무음 (문장만)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "5a43eed1f527f3e0",
+   "patch": {
+    "id": "level-up",
+    "duration": 1.35,
+    "seed": 1008,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.9,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.5,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": "D5"
+       },
+       {
+        "t": 0.07,
+        "dur": 0.06,
+        "pitch": "F#5"
+       },
+       {
+        "t": 0.14,
+        "dur": 0.06,
+        "pitch": "A5"
+       },
+       {
+        "t": 0.21,
+        "dur": 0.06,
+        "pitch": "B5"
+       },
+       {
+        "t": 0.28,
+        "dur": 0.06,
+        "pitch": "D6"
+       },
+       {
+        "t": 0.35,
+        "dur": 0.14,
+        "pitch": "E6",
+        "env": {
+         "a": 0.002,
+         "d": 0.12,
+         "s": 0.3,
+         "r": 0.02,
+         "curve": "exp"
+        }
+       },
+       {
+        "t": 0.5,
+        "dur": 0.65,
+        "pitch": "F#6",
+        "env": {
+         "a": 0.002,
+         "d": 0.35,
+         "s": 0.4,
+         "r": 0.15,
+         "curve": "exp"
+        }
+       }
+      ],
+      "vibrato": {
+       "rate_hz": 7.5,
+       "depth_semitones": 0.25,
+       "delay": 0.15
+      }
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.65,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.06,
+       "s": 0.3,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.12,
+        "pitch": "A4"
+       },
+       {
+        "t": 0.14,
+        "dur": 0.12,
+        "pitch": "D5"
+       },
+       {
+        "t": 0.28,
+        "dur": 0.06,
+        "pitch": "F#5"
+       },
+       {
+        "t": 0.35,
+        "dur": 0.14,
+        "pitch": "A5"
+       },
+       {
+        "t": 0.5,
+        "dur": 0.65,
+        "pitch": "D5",
+        "arp": {
+         "steps": [
+          0,
+          4,
+          7,
+          12
+         ],
+         "rate_hz": 55
+        },
+        "env": {
+         "a": 0.002,
+         "d": 0.4,
+         "s": 0.25,
+         "r": 0.15,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 1.1,
+      "env": {
+       "a": 0.003,
+       "d": 0.1,
+       "s": 0.7,
+       "r": 0.02,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.13,
+        "pitch": "D3"
+       },
+       {
+        "t": 0.14,
+        "dur": 0.13,
+        "pitch": "F#3"
+       },
+       {
+        "t": 0.28,
+        "dur": 0.06,
+        "pitch": "G3"
+       },
+       {
+        "t": 0.35,
+        "dur": 0.14,
+        "pitch": "A3"
+       },
+       {
+        "t": 0.5,
+        "dur": 0.18,
+        "pitch": "D3"
+       },
+       {
+        "t": 0.7,
+        "dur": 0.1,
+        "pitch": "A2"
+       },
+       {
+        "t": 0.82,
+        "dur": 0.1,
+        "pitch": "D3"
+       },
+       {
+        "t": 0.94,
+        "dur": 0.28,
+        "pitch": "D2",
+        "env": {
+         "a": 0.003,
+         "d": 0.2,
+         "s": 0.0,
+         "r": 0.08,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.25,
+      "env": {
+       "a": 0.002,
+       "d": 0.04,
+       "s": 0.0,
+       "r": 0.01,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.04,
+        "clock": 45000
+       },
+       {
+        "t": 0.35,
+        "dur": 0.06,
+        "clock": 55000
+       },
+       {
+        "t": 0.5,
+        "dur": 0.22,
+        "clock": [
+         [
+          0.0,
+          90000
+         ],
+         [
+          0.22,
+          25000
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.2,
+         "s": 0.0,
+         "r": 0.02,
+         "curve": "exp"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 40,
+     "lowpass_hz": 12000,
+     "echo": {
+      "delay": 0.07,
+      "feedback": 0.18,
+      "mix": 0.15
+     }
+    }
+   }
+  },
+  "faint": {
+   "file": "faint.ogg",
+   "title": "기절",
+   "bytes": 14232,
+   "sha256": "334820122c702771a19445d12327febf742c8575633b460ccf8a4af468087e16",
+   "durationSeconds": 1.03,
+   "peakDbfs": -4.28,
+   "rmsDbfs": -19.0,
+   "dcOffset": 2e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 65.0,
+   "clippedSamples": 0,
+   "centroidHz": 1739.0,
+   "gate": "pass",
+   "replaces": "RTP Collapse2.wav (1.6s)",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "49b91966e3b3d884",
+   "patch": {
+    "id": "faint",
+    "duration": 1.03,
+    "seed": 4005,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.45,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.35,
+       "s": 0.4,
+       "r": 0.15,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 12,
+       "depth_semitones": 0.45,
+       "delay": 0.08
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.45,
+        "pitch": [
+         [
+          0.0,
+          "G5"
+         ],
+         [
+          0.08,
+          "Eb5"
+         ],
+         [
+          0.2,
+          "C5"
+         ],
+         [
+          0.32,
+          "Ab4"
+         ],
+         [
+          0.45,
+          "F4"
+         ]
+        ],
+        "duty": [
+         [
+          0.0,
+          0.25
+         ],
+         [
+          0.25,
+          0.5
+         ]
+        ],
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.22,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.01,
+       "d": 0.3,
+       "s": 0.2,
+       "r": 0.15,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.03,
+        "dur": 0.38,
+        "pitch": [
+         [
+          0.0,
+          "Bb5"
+         ],
+         [
+          0.12,
+          "G5"
+         ],
+         [
+          0.25,
+          "Eb5"
+         ],
+         [
+          0.38,
+          "Ab4"
+         ]
+        ],
+        "vel": 0.7
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.65,
+      "env": {
+       "a": 0.002,
+       "d": 0.4,
+       "s": 0.0,
+       "r": 0.05,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.38,
+        "dur": 0.35,
+        "pitch": [
+         [
+          0.0,
+          "F4"
+         ],
+         [
+          0.12,
+          "C4"
+         ],
+         [
+          0.25,
+          "G3"
+         ],
+         [
+          0.35,
+          "C3"
+         ]
+        ],
+        "env": {
+         "a": 0.02,
+         "d": 0.3,
+         "s": 0.2,
+         "r": 0.06,
+         "curve": "exp"
+        },
+        "vel": 0.85
+       },
+       {
+        "t": 0.78,
+        "dur": 0.18,
+        "pitch": [
+         [
+          0.0,
+          145
+         ],
+         [
+          0.04,
+          72
+         ],
+         [
+          0.18,
+          42
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.18,
+         "s": 0.0,
+         "r": 0.06,
+         "curve": "exp"
+        },
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.35,
+      "amp_steps": 16,
+      "lowpass_hz": 4500,
+      "env": {
+       "a": 0.001,
+       "d": 0.14,
+       "s": 0.0,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.14,
+        "clock": [
+         [
+          0.0,
+          28000
+         ],
+         [
+          0.05,
+          14000
+         ],
+         [
+          0.14,
+          5000
+         ]
+        ],
+        "vel": 0.75
+       },
+       {
+        "t": 0.78,
+        "dur": 0.16,
+        "clock": [
+         [
+          0.0,
+          9000
+         ],
+         [
+          0.05,
+          4200
+         ],
+         [
+          0.16,
+          2200
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.15,
+         "s": 0.0,
+         "r": 0.05,
+         "curve": "exp"
+        },
+        "vel": 0.9
+       }
+      ]
+     }
+    ],
+    "post": {
+     "lowpass_hz": 5500,
+     "highpass_hz": 35,
+     "echo": {
+      "delay": 0.065,
+      "feedback": 0.18,
+      "mix": 0.14
+     }
+    }
+   }
+  },
+  "center-heal": {
+   "file": "center-heal.ogg",
+   "title": "센터 회복 징글",
+   "bytes": 29427,
+   "sha256": "9cd0c7b8e290c023b431fa0caa8ca329d7653957c2c98db48747915cb4a13005",
+   "durationSeconds": 2.35,
+   "peakDbfs": -5.22,
+   "rmsDbfs": -19.98,
+   "dcOffset": -4e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 5.0,
+   "clippedSamples": 0,
+   "centroidHz": 1772.0,
+   "gate": "pass",
+   "replaces": "무음",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "193cc658c7c50cce",
+   "patch": {
+    "id": "center-heal",
+    "duration": 2.35,
+    "seed": 2011,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.48,
+      "lowpass_hz": 5500,
+      "env": {
+       "a": 0.003,
+       "d": 0.14,
+       "s": 0.45,
+       "r": 0.12,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.5,
+       "depth_semitones": 0.14,
+       "delay": 0.12
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.13,
+        "pitch": "F4",
+        "vel": 0.8
+       },
+       {
+        "t": 0.15,
+        "dur": 0.13,
+        "pitch": "A4",
+        "vel": 0.85
+       },
+       {
+        "t": 0.3,
+        "dur": 0.13,
+        "pitch": "C5",
+        "vel": 0.9
+       },
+       {
+        "t": 0.45,
+        "dur": 0.13,
+        "pitch": "G5",
+        "vel": 0.95
+       },
+       {
+        "t": 0.6,
+        "dur": 0.26,
+        "pitch": "F5",
+        "vel": 0.92
+       },
+       {
+        "t": 0.9,
+        "dur": 0.13,
+        "pitch": "C5",
+        "vel": 0.82
+       },
+       {
+        "t": 1.05,
+        "dur": 0.13,
+        "pitch": "D5",
+        "vel": 0.88
+       },
+       {
+        "t": 1.2,
+        "dur": 0.72,
+        "pitch": "A5",
+        "vel": 1.0,
+        "env": {
+         "a": 0.005,
+         "d": 0.45,
+         "s": 0.35,
+         "r": 0.3,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.32,
+      "lowpass_hz": 4200,
+      "env": {
+       "a": 0.004,
+       "d": 0.15,
+       "s": 0.4,
+       "r": 0.12,
+       "curve": "exp"
+      },
+      "vibrato": {
+       "rate_hz": 5.2,
+       "depth_semitones": 0.12,
+       "delay": 0.15
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.13,
+        "pitch": "C4",
+        "vel": 0.75
+       },
+       {
+        "t": 0.15,
+        "dur": 0.13,
+        "pitch": "F4",
+        "vel": 0.78
+       },
+       {
+        "t": 0.3,
+        "dur": 0.13,
+        "pitch": "A4",
+        "vel": 0.82
+       },
+       {
+        "t": 0.45,
+        "dur": 0.13,
+        "pitch": "Bb4",
+        "vel": 0.85
+       },
+       {
+        "t": 0.6,
+        "dur": 0.26,
+        "pitch": "A4",
+        "vel": 0.85
+       },
+       {
+        "t": 0.9,
+        "dur": 0.13,
+        "pitch": "G4",
+        "vel": 0.78
+       },
+       {
+        "t": 1.05,
+        "dur": 0.13,
+        "pitch": "Bb4",
+        "vel": 0.82
+       },
+       {
+        "t": 1.2,
+        "dur": 0.72,
+        "pitch": "C5",
+        "vel": 0.92,
+        "arp": {
+         "steps": [
+          0,
+          5,
+          9
+         ],
+         "rate_hz": 36
+        },
+        "env": {
+         "a": 0.006,
+         "d": 0.45,
+         "s": 0.3,
+         "r": 0.3,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.65,
+      "env": {
+       "a": 0.003,
+       "d": 0.22,
+       "s": 0.55,
+       "r": 0.15,
+       "curve": "lin"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.4,
+        "pitch": "F3",
+        "vel": 0.9
+       },
+       {
+        "t": 0.45,
+        "dur": 0.4,
+        "pitch": "D3",
+        "vel": 0.9
+       },
+       {
+        "t": 0.9,
+        "dur": 0.26,
+        "pitch": "C3",
+        "vel": 0.88
+       },
+       {
+        "t": 1.2,
+        "dur": 0.75,
+        "pitch": "F3",
+        "vel": 1.0,
+        "env": {
+         "a": 0.004,
+         "d": 0.5,
+         "s": 0.35,
+         "r": 0.3,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "wave",
+      "table": [
+       8,
+       10,
+       12,
+       14,
+       15,
+       15,
+       14,
+       13,
+       11,
+       9,
+       8,
+       7,
+       6,
+       5,
+       4,
+       4,
+       5,
+       6,
+       8,
+       9,
+       10,
+       11,
+       10,
+       9,
+       7,
+       5,
+       3,
+       2,
+       1,
+       1,
+       3,
+       5
+      ],
+      "gain": 0.26,
+      "lowpass_hz": 3600,
+      "env": {
+       "a": 0.015,
+       "d": 0.25,
+       "s": 0.5,
+       "r": 0.25,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.42,
+        "pitch": "A3",
+        "vel": 0.8
+       },
+       {
+        "t": 0.45,
+        "dur": 0.42,
+        "pitch": "Bb3",
+        "vel": 0.85
+       },
+       {
+        "t": 0.9,
+        "dur": 0.26,
+        "pitch": "E4",
+        "vel": 0.8
+       },
+       {
+        "t": 1.2,
+        "dur": 0.72,
+        "pitch": "F4",
+        "vel": 0.95,
+        "env": {
+         "a": 0.01,
+         "d": 0.45,
+         "s": 0.4,
+         "r": 0.3,
+         "curve": "exp"
+        }
+       }
+      ]
+     }
+    ],
+    "post": {
+     "lowpass_hz": 6800,
+     "highpass_hz": 65,
+     "echo": {
+      "delay": 0.15,
+      "feedback": 0.28,
+      "mix": 0.24
+     }
+    }
+   }
+  },
+  "encounter": {
+   "file": "encounter.ogg",
+   "title": "야생 조우 전환",
+   "bytes": 13984,
+   "sha256": "de447b18197097bd4a2bd14cad1824fd0b2a0bffd87f5692d74b48ed193cc28d",
+   "durationSeconds": 0.9271,
+   "peakDbfs": -4.76,
+   "rmsDbfs": -18.09,
+   "dcOffset": 0.00012,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 0.0,
+   "clippedSamples": 0,
+   "centroidHz": 4103.0,
+   "gate": "pass",
+   "replaces": "무음",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "b30eb40d6a1beec6",
+   "patch": {
+    "id": "encounter",
+    "duration": 0.93,
+    "seed": 1009,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.25,
+      "gain": 0.85,
+      "amp_steps": 15,
+      "env": {
+       "a": 0.002,
+       "d": 0.06,
+       "s": 0.65,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.07,
+        "pitch": [
+         [
+          0.0,
+          "F5"
+         ],
+         [
+          0.035,
+          "B5"
+         ],
+         [
+          0.07,
+          "F5"
+         ]
+        ],
+        "duty": 0.5,
+        "vel": 1.0
+       },
+       {
+        "t": 0.08,
+        "dur": 0.07,
+        "pitch": [
+         [
+          0.0,
+          "F#5"
+         ],
+         [
+          0.035,
+          "C6"
+         ],
+         [
+          0.07,
+          "F#5"
+         ]
+        ],
+        "duty": 0.5,
+        "vel": 1.0
+       },
+       {
+        "t": 0.16,
+        "dur": 0.54,
+        "pitch": [
+         [
+          0.0,
+          "G4"
+         ],
+         [
+          0.18,
+          "C#5"
+         ],
+         [
+          0.36,
+          "G5"
+         ],
+         [
+          0.54,
+          "D#6"
+         ]
+        ],
+        "arp": {
+         "steps": [
+          0,
+          3,
+          6,
+          9
+         ],
+         "rate_hz": 60
+        },
+        "env": {
+         "a": 0.002,
+         "d": 0.1,
+         "s": 0.85,
+         "r": 0.015,
+         "curve": "lin"
+        }
+       },
+       {
+        "t": 0.72,
+        "dur": 0.13,
+        "pitch": [
+         [
+          0.0,
+          "E6"
+         ],
+         [
+          0.025,
+          "E5"
+         ]
+        ],
+        "arp": {
+         "steps": [
+          0,
+          7,
+          12
+         ],
+         "rate_hz": 55
+        },
+        "duty": 0.5,
+        "env": {
+         "a": 0.002,
+         "d": 0.1,
+         "s": 0.25,
+         "r": 0.06,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.6,
+      "amp_steps": 15,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.5,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.07,
+        "pitch": "B4",
+        "vel": 0.8
+       },
+       {
+        "t": 0.08,
+        "dur": 0.07,
+        "pitch": "C5",
+        "vel": 0.85
+       },
+       {
+        "t": 0.16,
+        "dur": 0.54,
+        "pitch": [
+         [
+          0.0,
+          "C#4"
+         ],
+         [
+          0.27,
+          "A4"
+         ],
+         [
+          0.54,
+          "A5"
+         ]
+        ],
+        "arp": {
+         "steps": [
+          0,
+          6,
+          3,
+          9
+         ],
+         "rate_hz": 60
+        },
+        "env": {
+         "a": 0.005,
+         "d": 0.1,
+         "s": 0.75,
+         "r": 0.015,
+         "curve": "lin"
+        }
+       },
+       {
+        "t": 0.72,
+        "dur": 0.13,
+        "pitch": "B4",
+        "duty": 0.25,
+        "env": {
+         "a": 0.002,
+         "d": 0.1,
+         "s": 0.2,
+         "r": 0.06,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.9,
+      "env": {
+       "a": 0.002,
+       "d": 0.08,
+       "s": 0.7,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          220
+         ],
+         [
+          0.06,
+          90
+         ]
+        ]
+       },
+       {
+        "t": 0.08,
+        "dur": 0.06,
+        "pitch": [
+         [
+          0.0,
+          250
+         ],
+         [
+          0.06,
+          100
+         ]
+        ]
+       },
+       {
+        "t": 0.16,
+        "dur": 0.54,
+        "pitch": [
+         [
+          0.0,
+          110
+         ],
+         [
+          0.27,
+          220
+         ],
+         [
+          0.54,
+          520
+         ]
+        ],
+        "env": {
+         "a": 0.003,
+         "d": 0.1,
+         "s": 0.8,
+         "r": 0.01,
+         "curve": "lin"
+        }
+       },
+       {
+        "t": 0.72,
+        "dur": 0.13,
+        "pitch": [
+         [
+          0.0,
+          320
+         ],
+         [
+          0.04,
+          82.4
+         ],
+         [
+          0.13,
+          55
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.1,
+         "s": 0.2,
+         "r": 0.05,
+         "curve": "exp"
+        }
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.55,
+      "amp_steps": 15,
+      "env": {
+       "a": 0.002,
+       "d": 0.08,
+       "s": 0.0,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.04,
+        "clock": [
+         [
+          0.0,
+          45000
+         ],
+         [
+          0.04,
+          12000
+         ]
+        ],
+        "vel": 0.6
+       },
+       {
+        "t": 0.08,
+        "dur": 0.04,
+        "clock": [
+         [
+          0.0,
+          55000
+         ],
+         [
+          0.04,
+          15000
+         ]
+        ],
+        "vel": 0.65
+       },
+       {
+        "t": 0.16,
+        "dur": 0.52,
+        "clock": [
+         [
+          0.0,
+          6000
+         ],
+         [
+          0.25,
+          28000
+         ],
+         [
+          0.52,
+          95000
+         ]
+        ],
+        "env": {
+         "a": 0.02,
+         "d": 0.1,
+         "s": 0.75,
+         "r": 0.02,
+         "curve": "lin"
+        },
+        "vel": 0.8
+       },
+       {
+        "t": 0.72,
+        "dur": 0.13,
+        "clock": [
+         [
+          0.0,
+          80000
+         ],
+         [
+          0.04,
+          18000
+         ],
+         [
+          0.13,
+          4500
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.1,
+         "s": 0.15,
+         "r": 0.05,
+         "curve": "exp"
+        },
+        "vel": 1.0
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 45,
+     "lowpass_hz": 12000,
+     "echo": {
+      "delay": 0.055,
+      "feedback": 0.2,
+      "mix": 0.16
+     }
+    }
+   }
+  },
+  "ball-throw": {
+   "file": "ball-throw.ogg",
+   "title": "포획 볼 던지기",
+   "bytes": 6401,
+   "sha256": "147e578766489ea633b7495d701e5665856a06aa897eac2eee108b28d1ff1d24",
+   "durationSeconds": 0.2271,
+   "peakDbfs": -11.98,
+   "rmsDbfs": -22.02,
+   "dcOffset": -3e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 15.0,
+   "clippedSamples": 0,
+   "centroidHz": 3020.0,
+   "gate": "pass",
+   "replaces": "무음",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "32059a52b02fb045",
+   "patch": {
+    "id": "ball-throw",
+    "duration": 0.23,
+    "seed": 3010,
+    "voices": [
+     {
+      "wave": "pulse",
+      "duty": 0.75,
+      "gain": 0.85,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.05,
+       "s": 0.75,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.18,
+        "duty": [
+         [
+          0.0,
+          0.75
+         ],
+         [
+          0.06,
+          0.25
+         ],
+         [
+          0.13,
+          0.125
+         ]
+        ],
+        "pitch": [
+         [
+          0.0,
+          290
+         ],
+         [
+          0.07,
+          460
+         ],
+         [
+          0.18,
+          880
+         ]
+        ],
+        "vel": 1.0
+       }
+      ]
+     },
+     {
+      "wave": "wave",
+      "table": [
+       8,
+       12,
+       15,
+       14,
+       10,
+       6,
+       4,
+       7,
+       11,
+       14,
+       12,
+       8,
+       3,
+       1,
+       2,
+       6,
+       9,
+       13,
+       11,
+       7,
+       4,
+       2,
+       0,
+       2,
+       5,
+       8,
+       6,
+       3,
+       1,
+       0,
+       3,
+       6
+      ],
+      "gain": 0.5,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.1,
+       "s": 0.4,
+       "r": 0.025,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.18,
+        "pitch": [
+         [
+          0.0,
+          294
+         ],
+         [
+          0.07,
+          466
+         ],
+         [
+          0.18,
+          888
+         ]
+        ],
+        "vel": 0.9
+       }
+      ]
+     },
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.22,
+      "amp_steps": 16,
+      "lowpass_hz": 5500,
+      "highpass_hz": 700,
+      "env": {
+       "a": 0.002,
+       "d": 0.11,
+       "s": 0.25,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.17,
+        "clock": [
+         [
+          0.0,
+          16000
+         ],
+         [
+          0.09,
+          42000
+         ],
+         [
+          0.17,
+          22000
+         ]
+        ],
+        "vel": 0.85
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 160,
+     "lowpass_hz": 8500
+    }
+   }
+  },
+  "ball-break": {
+   "file": "ball-break.ogg",
+   "title": "포획 실패(볼이 깨짐)",
+   "bytes": 10557,
+   "sha256": "7ff21a7fbb1c3b8b81a6ec9165e9609ffb6fa20683be27736fcb5c4389bfe85b",
+   "durationSeconds": 0.5171,
+   "peakDbfs": -1.82,
+   "rmsDbfs": -20.58,
+   "dcOffset": -3e-05,
+   "leadSilenceMs": 0.0,
+   "trailSilenceMs": 10.0,
+   "clippedSamples": 0,
+   "centroidHz": 3470.0,
+   "gate": "pass",
+   "replaces": "무음",
+   "model": "gemini-4-argon-high",
+   "promptSha256_16": "2d749807456c1e30",
+   "patch": {
+    "id": "ball-break",
+    "duration": 0.52,
+    "seed": 2010,
+    "voices": [
+     {
+      "wave": "noise",
+      "lfsr": 15,
+      "gain": 0.85,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.001,
+       "d": 0.06,
+       "s": 0.0,
+       "r": 0.02,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.06,
+        "clock": [
+         [
+          0.0,
+          90000
+         ],
+         [
+          0.015,
+          32000
+         ],
+         [
+          0.06,
+          7000
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.075,
+        "dur": 0.04,
+        "clock": [
+         [
+          0.0,
+          45000
+         ],
+         [
+          0.04,
+          15000
+         ]
+        ],
+        "vel": 0.45
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.5,
+      "gain": 0.75,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.08,
+       "s": 0.15,
+       "r": 0.04,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.055,
+        "pitch": [
+         [
+          0.0,
+          260
+         ],
+         [
+          0.012,
+          540
+         ],
+         [
+          0.055,
+          110
+         ]
+        ],
+        "duty": [
+         [
+          0.0,
+          0.5
+         ],
+         [
+          0.025,
+          0.25
+         ]
+        ],
+        "env": {
+         "a": 0.001,
+         "d": 0.05,
+         "s": 0.0,
+         "r": 0.01,
+         "curve": "exp"
+        },
+        "vel": 1.0
+       },
+       {
+        "t": 0.075,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          "A5"
+         ],
+         [
+          0.075,
+          "G#5"
+         ]
+        ],
+        "duty": 0.25,
+        "vel": 0.9
+       },
+       {
+        "t": 0.165,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          "F5"
+         ],
+         [
+          0.075,
+          "E5"
+         ]
+        ],
+        "duty": 0.25,
+        "vel": 0.85
+       },
+       {
+        "t": 0.255,
+        "dur": 0.075,
+        "pitch": [
+         [
+          0.0,
+          "D5"
+         ],
+         [
+          0.075,
+          "C#5"
+         ]
+        ],
+        "duty": 0.25,
+        "vel": 0.8
+       },
+       {
+        "t": 0.345,
+        "dur": 0.12,
+        "pitch": [
+         [
+          0.0,
+          "B4"
+         ],
+         [
+          0.03,
+          "A#4"
+         ],
+         [
+          0.12,
+          "G4"
+         ]
+        ],
+        "duty": 0.5,
+        "env": {
+         "a": 0.002,
+         "d": 0.09,
+         "s": 0.25,
+         "r": 0.04,
+         "curve": "exp"
+        },
+        "vel": 0.85
+       }
+      ]
+     },
+     {
+      "wave": "pulse",
+      "duty": 0.125,
+      "gain": 0.5,
+      "amp_steps": 16,
+      "env": {
+       "a": 0.002,
+       "d": 0.07,
+       "s": 0.1,
+       "r": 0.04,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.085,
+        "dur": 0.075,
+        "pitch": "E6",
+        "arp": {
+         "steps": [
+          0,
+          5
+         ],
+         "rate_hz": 55
+        },
+        "vel": 0.75
+       },
+       {
+        "t": 0.175,
+        "dur": 0.075,
+        "pitch": "C6",
+        "arp": {
+         "steps": [
+          0,
+          4
+         ],
+         "rate_hz": 55
+        },
+        "vel": 0.7
+       },
+       {
+        "t": 0.265,
+        "dur": 0.075,
+        "pitch": "A5",
+        "arp": {
+         "steps": [
+          0,
+          3
+         ],
+         "rate_hz": 55
+        },
+        "vel": 0.65
+       },
+       {
+        "t": 0.355,
+        "dur": 0.11,
+        "pitch": [
+         [
+          0.0,
+          "F#5"
+         ],
+         [
+          0.11,
+          "D5"
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.08,
+         "s": 0.2,
+         "r": 0.04,
+         "curve": "exp"
+        },
+        "vel": 0.6
+       }
+      ]
+     },
+     {
+      "wave": "triangle",
+      "steps": 32,
+      "gain": 0.8,
+      "env": {
+       "a": 0.001,
+       "d": 0.08,
+       "s": 0.0,
+       "r": 0.03,
+       "curve": "exp"
+      },
+      "notes": [
+       {
+        "t": 0.0,
+        "dur": 0.065,
+        "pitch": [
+         [
+          0.0,
+          220
+         ],
+         [
+          0.015,
+          380
+         ],
+         [
+          0.065,
+          65
+         ]
+        ],
+        "vel": 1.0
+       },
+       {
+        "t": 0.075,
+        "dur": 0.065,
+        "pitch": "A4",
+        "vel": 0.75
+       },
+       {
+        "t": 0.165,
+        "dur": 0.065,
+        "pitch": "F4",
+        "vel": 0.7
+       },
+       {
+        "t": 0.255,
+        "dur": 0.065,
+        "pitch": "D4",
+        "vel": 0.65
+       },
+       {
+        "t": 0.345,
+        "dur": 0.12,
+        "pitch": [
+         [
+          0.0,
+          "B3"
+         ],
+         [
+          0.12,
+          "G3"
+         ]
+        ],
+        "env": {
+         "a": 0.002,
+         "d": 0.09,
+         "s": 0.25,
+         "r": 0.04,
+         "curve": "exp"
+        },
+        "vel": 0.75
+       }
+      ]
+     }
+    ],
+    "post": {
+     "highpass_hz": 60,
+     "lowpass_hz": 12000
+    }
+   }
+  }
+ }
+}

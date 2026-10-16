@@ -31,6 +31,7 @@ import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
 import { previewMonsterEvolution } from "@/project/monsterCollection";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
+import { playMonsterSfx } from "@/player/monsterSfx";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -218,6 +219,8 @@ export async function playBattle(
         ? instantBattleTransition()
         : createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
       const entryTransition = newTransition();
+      // 몬스터 장르: 야생 조우 전환음(소리 세트가 없는 장르는 예전처럼 무음).
+      playMonsterSfx(project, "encounter");
       // 전투 DOM 의 첫 스타일·레이아웃(수백 줄 CSS 를 처음 매칭)과 SE 디코드 요청을 진입 커버(번쩍임) 동안 치른다.
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
       preloadBattleJuiceSamples();

@@ -11,6 +11,7 @@ import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/ba
 import { fadeOutBattleSample, playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import { monsterBattleCue, preloadMonsterSfx, playMonsterSfx } from "@/player/monsterSfx";
 
 export type BattleJuiceEvent =
   | "command-select"
@@ -86,12 +87,15 @@ export function preloadBattleJuiceSamples(): void {
   for (const id of Object.values(BATTLE_SFX)) ids.add(id);
   for (const id of Object.values(SFX_FALLBACK)) if (id) ids.add(id);
   preloadBattleSamples([...ids]);
+  preloadMonsterSfx();
 }
 
 /** 같은 사건 소리의 크기·높이 보정(포켓몬 스킨의 타격 세기). 1 이면 원래 크기·높이다. */
 export interface BattleCueShape {
   readonly volume?: number;
   readonly rate?: number;
+  /** 상성 단계. 몬스터 효과음 세트는 단계마다 따로 만든 소리를 쓰므로 volume·rate 보정 대신 이 값으로 고른다. */
+  readonly tier?: "weak" | "normal" | "super";
 }
 
 export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, context?: BattleAudioContext, shape?: BattleCueShape): void {
@@ -144,6 +148,9 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
     playSynthVoice("victory");
     return;
   }
+  // 몬스터 수집 장르의 기본 소리 세트(원본 칩튠 합성). 위의 저작 슬롯이 먼저고, 이 세트에 없는 사건(빗나감·회복 등)은 아래 기본 경로로 간다.
+  const monsterCue = monsterBattleCue(event, shape?.tier);
+  if (monsterCue && playMonsterSfx(project, monsterCue)) return;
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
   if (tryPlay(primary, shape)) return;

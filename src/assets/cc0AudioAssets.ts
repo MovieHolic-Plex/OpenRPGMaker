@@ -5,6 +5,7 @@
  *   CC0 는 표기 의무가 없지만 ATTRIBUTION.md 와 함께 출처를 남겨 재검증이 가능하게 한다.
  */
 import { PRODUCT_BRAND } from "@/brand";
+import { MONSTER_SFX_CUES, MONSTER_SFX_TITLES, monsterSfxPath, monsterSfxResourceId } from "@/assets/monsterSfxAssets";
 
 export type Cc0AudioAsset = {
   readonly id: string;
@@ -77,6 +78,15 @@ export const CC0_AUDIO_ASSETS = [
     license: "CC0-1.0",
     sourceName: "cynicmusic / pixelsphere.org (OpenGameArt, CC0)",
   },
+  // ── 몬스터 수집 장르 기본 효과음 세트(원본 칩튠 합성, 출처·패치는 monster-sfx/manifest.json) ──
+  ...MONSTER_SFX_CUES.map((cue) => ({
+    id: monsterSfxResourceId(cue),
+    name: `${MONSTER_SFX_TITLES[cue]} · 몬스터 효과음 (CC0)`,
+    path: monsterSfxPath(cue),
+    kind: "sound" as const,
+    license: "CC0-1.0" as const,
+    sourceName: `${PRODUCT_BRAND} original chip synthesis (monster-sfx)`,
+  })),
 ] as const satisfies readonly Cc0AudioAsset[];
 
 export const CC0_MUSIC_ASSETS = CC0_AUDIO_ASSETS.filter((asset) => asset.kind === "music");
