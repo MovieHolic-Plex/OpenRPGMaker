@@ -295,6 +295,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 기존 마법 영창과 직접 저작 경로를 보존한다.
 
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
+- **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
 
 - 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
   `rm2003`(유리)·`octopath`(먹빛)·`chrono`(청람)·`bravely`(세피아)·`ff`(코발트)·`goldensun`(금갈색)을 **지웠다** —
