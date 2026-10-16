@@ -237,6 +237,22 @@ export function usedCharsetGraphicKeysOnMap(map: {
   return used;
 }
 
+/** 이 맵에서 같은 걷기 칩(시트+인물 번호)을 첫 페이지 그림으로 쓰는 이벤트 수. */
+export function usedCharsetGraphicKeysOnMapCount(map: {
+  readonly events: readonly { readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[];
+}, graphic: EventPageGraphic): number {
+  const id = graphic.sprite?.id;
+  if (!id) return 0;
+  const index = decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex;
+  let count = 0;
+  for (const event of map.events) {
+    const g = event.pages?.[0]?.graphic;
+    if (!g || g.transparent || g.sprite?.id !== id) continue;
+    if (decodeCharsetFrameIndex(typeof g.pattern === "number" ? g.pattern : 0).characterIndex === index) count += 1;
+  }
+  return count;
+}
+
 // 대사 한 줄을 text 커맨드로.
 function textCommand(speaker: string | undefined, body: string): Command {
   return speaker ? { kind: "text", speaker, body } : { kind: "text", body };
