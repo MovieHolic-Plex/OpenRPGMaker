@@ -157,4 +157,4 @@ review_monster_game 은 72맵·8체육관 캠페인 기준이라 이 게임에 �
 
 /** 포켓몬 낱말 없이 몬스터 수집 의도가 있는 작은 요청(마을·맵·종 하나)에 붙는다 — 전체 게임 제작 경로가 아닌 자유 경로. */
 export const MONSTER_FREE_KIT_NOTE = `[몬스터 수집 의도 — 몬스터 키트]
-이 프로젝트의 몬스터 수집 작업은 몬스터 칩셋 계열(oprn-monster·monster_overworld 등 몬스터 키트)로 이어 간다. 새 맵·마을·길은 지금 시작 맵의 칩셋 계열을 따른다 — 버들항·사막·숲 칩셋을 섞지 않는다(빈 시작 맵은 이미 몬스터 키트로 옮겨 두었다). 종을 정의하면 define_monster_species(한 종) 대신 계통이 여럿이면 define_monster_families 를 쓴다. 포획 없는 대전 중심이면 configure_monster_system(enabled:true, capture:false).`;
+이 프로젝트의 몬스터 수집 작업은 몬스터 칩셋 계열(oprn-monster·monster_overworld 등 몬스터 키트)로 이어 간다. 새 맵·마을·길은 지금 시작 맵의 칩셋 계열을 따른다 — 버들항·사막·숲 칩셋을 섞지 않는다(손대지 않은 빈 시작 맵이었다면 이미 몬스터 키트로 옮기고 장르 잠금도 걸어 두었다 — 사용자가 다른 계열을 정말 원할 때만 ask_tileset_change 로 묻고, 잠금 해제는 사용자가 말했을 때만 configure_monster_system(enabled:false)). 종을 정의하면 define_monster_species(한 종) 대신 계통이 여럿이면 define_monster_families 를 쓴다. 포획 없는 대전 중심이면 configure_monster_system(enabled:true, capture:false).`;
