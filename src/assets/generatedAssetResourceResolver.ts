@@ -54,6 +54,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
   // 연애(현대 캠퍼스) 타이틀 — 벚꽃 교정 옥상 노을, 교복 둘이 난간에서 교정을 내려다본다(2026-10-16, gpt-image-2.5-sunburst 로 만든 큰 그림).
   "oprn-title-romance-campus": "/assets/generated/title/romance-campus-spring.jpg",
+  // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
+  "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",
   // ── 구 id 별칭 (읽기 호환. 새로 쓸 때는 위 id 를 쓴다) ──────────────
   "rpg-zzu-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",

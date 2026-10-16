@@ -327,6 +327,16 @@
   inset:22px auto auto calc(50% - 64px);width:128px;height:128px;object-fit:contain;image-rendering:pixelated;
 }
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-showcase="monster"] .cinematic-image {left:64px;}
+/* 박사 반신상(2026-10-16): 받침 타원을 버리고, 122×97 도트 반신상(정수 2배 244×194)이 대사창 뒤에서 솟는다. 옛 64×64 칩 초상은 위 규칙 그대로. */
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"]::before {
+  left:0;right:0;top:0;height:72%;border-radius:0;box-shadow:none;
+  background:radial-gradient(ellipse 48% 62% at 50% 46%,#fffdee 0%,rgba(255,253,238,.75) 45%,rgba(255,253,238,0) 100%);
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-image {
+  inset:15px auto auto calc(50% - 122px);width:244px;height:194px;object-fit:contain;object-position:center bottom;image-rendering:pixelated;
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"][data-showcase="monster"] .cinematic-image {left:14px;}
+.cinematic-sequence[data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-creature {left:55%;top:24%;width:30%;height:40%;}
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-creature {
   position:absolute;left:268px;top:72px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);object-fit:contain;image-rendering:pixelated;z-index:1;
 }
