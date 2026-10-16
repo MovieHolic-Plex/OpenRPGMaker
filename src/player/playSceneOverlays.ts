@@ -11,6 +11,7 @@ import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 
@@ -285,6 +286,13 @@ function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
   return hall;
 }
 
+function endingKicker(presentation?: EndingPresentation): string {
+  const own = presentation?.kicker?.trim();
+  if (own) return own;
+  if (presentation?.tone === "dark") return "이야기의 끝";
+  return usesRelationshipMenu(store.getCurrent()) ? "두 사람의 이야기" : "우리의 여정";
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation): void {
   const terminal = createTerminalScene(scene, "ending", title || "엔딩");
   if (!terminal) return;
@@ -312,7 +320,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
       if (!await terminal.wait(400)) return;
     }
     const epilogue = textNode("div", "ending-epilogue", "");
-    epilogue.append(textNode("div", "ending-kicker", presentation?.tone === "dark" ? "이야기의 끝" : "우리의 여정"));
+    epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
     epilogue.append(textNode("h1", "ending-heading", title || "The End"));
     if (message) epilogue.append(textNode("div", "ending-message", message));
     terminal.root.append(epilogue);

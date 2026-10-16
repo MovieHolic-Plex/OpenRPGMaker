@@ -9,6 +9,8 @@
 
 import { affectionVariableOwners, unmappedAffectionVariables } from "@/project/affectionVariables";
 import { isTalkFriendshipEnabled } from "@/project/friendship";
+import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
+import { romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
@@ -77,6 +79,17 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
       message: `게임 제목이 기본값 「${(project.system?.titleScreen?.title || project.meta?.title || "").trim() || "(비어 있음)"}」 그대로입니다 — set_title_screen {title} 로 이 게임의 이름을 정하세요(타이틀 화면에 그대로 나옵니다).`,
     });
   }
+
+  // 코드가 깔아 둔 연애 기본 부제는 제목이 아니라 「이 게임에 맞게 정해야 할 자리」다 — 게임 내용과 무관한 문구가 그대로 남으면 타이틀이 템플릿처럼 보인다.
+  if ((project.system?.titleScreen?.logoSubtitle ?? "").trim() === ROMANCE_TITLE_SUBTITLE) {
+    findings.push({
+      severity: "warning", code: "romance-default-subtitle",
+      message: `타이틀 부제가 코드 기본값 「${ROMANCE_TITLE_SUBTITLE}」 그대로입니다 — set_title_screen {logoSubtitle} 로 이 게임 내용에 맞는 한 줄(예: 배경 장소·계절·관계의 분위기)로 바꾸세요.`,
+    });
+  }
+
+  const titleArtMismatch = romanceTitleMismatch(project.system?.titleScreen?.backgroundResourceId);
+  if (titleArtMismatch) findings.push({ severity: "warning", code: "romance-title-art-mismatch", message: romanceTitleMismatchMessage(titleArtMismatch) });
 
   // 2) 호감이 쌓이는 인물 · 인물 엔딩.
   const people: { readonly map: GameMap; readonly event: GameEvent }[] = [];
@@ -162,15 +175,25 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   return findings;
 }
 
-/** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish 가 이것을 막는다(scripts/lib/piTeamRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine"]);
+/** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
 const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";
-export function romanceCompletionGaps(project: Project): string[] {
-  if (project.gameDesignBrief?.interview?.genre !== "romance") return [];
+
+/** 사용자 요청 문장이 「연애 게임 만들기」인가 — 인터뷰 기획서가 없는 채팅 한 줄 경로도 같은 완료 검사를 받게 한다(romance-real-2 R03: 이 경로는 게이트가 안 걸렸다). */
+export function isRomanceGameRequest(text: string | undefined | null): boolean {
+  if (typeof text !== "string") return false;
+  // 장르 프리셋 지시문에 실린 제작 매뉴얼은 사용자 요청이 아니다(openingProduction.withoutAuthoringPresetManual 과 같은 처리).
+  text = text.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, "");
+  return /연애|로맨스|romance|dating|소개팅|썸\s?타/iu.test(text) && /만들|제작|짜 ?줘|구현/u.test(text) && /게임|시뮬|game|sim/iu.test(text);
+}
+
+export function romanceCompletionGaps(project: Project, options: { readonly task?: string } = {}): string[] {
+  const interview = project.gameDesignBrief?.interview?.genre === "romance";
+  if (!interview && !isRomanceGameRequest(options.task)) return [];
   const singleScene = (project.endings ?? []).some((ending) => ending.id === SINGLE_SCENE_ENDING_ID);
-  return checkRomance(project)
+  return checkRomance(project, options.task ?? briefTextOf(project))
     .filter((finding) => COMPLETION_CODES.has(finding.code) && !(singleScene && ENDING_CODES.has(finding.code)))
     .map((finding) => finding.message);
 }

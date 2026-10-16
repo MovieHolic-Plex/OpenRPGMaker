@@ -34,6 +34,8 @@ export type EndingPresentation = {
   tone?: "warm" | "dark";
   backgroundResourceId?: string;
   credits?: string;
+  /** Small line above the ending heading. Absent: romance projects say "두 사람의 이야기", others "우리의 여정". */
+  kicker?: string;
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";

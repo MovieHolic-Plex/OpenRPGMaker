@@ -3,6 +3,7 @@ import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_IN
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
 import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
+import { PiRomanceProduction } from '../../src/ai/piAgent/romanceProduction.ts';
 import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
@@ -270,6 +271,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const exposed = new Set<string>();
   const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
   const gameSystemProduction = new PiGameSystemProduction();
+  // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
+  const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
@@ -915,11 +918,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     let previousOpeningIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 5 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
-      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
+      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project),...romanceProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인/연애 게임 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).

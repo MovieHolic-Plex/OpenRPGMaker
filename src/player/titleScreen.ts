@@ -587,6 +587,7 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
     });
     node.style.left = logicalX(settings.layout.titleX);
     node.style.top = logicalY(settings.layout.titleY);
+    node.style.setProperty("--title-left", logicalX(settings.layout.titleX));
     nodes.push(node);
   }
 
@@ -603,6 +604,7 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
     });
     fallback.style.left = logicalX(settings.layout.titleX);
     fallback.style.top = logicalY(settings.layout.titleY);
+    fallback.style.setProperty("--title-left", logicalX(settings.layout.titleX));
     nodes.push(fallback);
   }
 
