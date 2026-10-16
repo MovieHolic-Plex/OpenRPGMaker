@@ -1,0 +1,135 @@
+{
+ "palette": {
+  "u": "#1b1c26",
+  "v": "#2d3042",
+  "w": "#454a66",
+  "x": "#646b8c",
+  "y": "#5a6275",
+  "z": "#8c96ab",
+  "A": "#c5cde0",
+  "B": "#eef2fa",
+  "C": "#6b1821",
+  "D": "#a6242f",
+  "E": "#e03c44",
+  "F": "#f77676"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "e": "u",
+    "b": "u",
+    "j": "v",
+    "n": "w",
+    "q": "x",
+    "o": "v",
+    "k": "u"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "y",
+    "b": "y",
+    "c": "A",
+    "f": "B",
+    "e": "u",
+    "j": "v",
+    "n": "w"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "b": "y",
+    "d": "y",
+    "g": "z",
+    "l": "A",
+    "r": "B"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "d": "u",
+    "b": "u",
+    "i": "v",
+    "m": "w"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "9": "...uCEEFFEEECCDEEuwvu...",
+    "10": "...CCDDDDDDDneoojnje...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "9": "....uCEEFFEEECCDDDDDu...",
+    "10": "....uCDDDDDDDDCDDDDuC...",
+    "11": "....ejnjjjjqqnnnjeeCEu..",
+    "12": ".....ejjjjjjnnnnnje.Cu.."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "9": "....uCEEEFFEECCDDDDDu...",
+    "10": "...CCDDDDDDDDuovwwwwu...",
+    "11": "...FCjjjejokbeeeeje....."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "9": "..uCEEFFEEECCCDDDDu.....",
+    "10": "...uwwwwwvuovCDDDDDC....",
+    "11": "....ejeeeebkojejjjeC...."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "20": "......hokyBzyzBAkjje....",
+    "21": ".....boohyBBzBBAenqne...",
+    "22": ".....hokbyBBAzBAejje....",
+    "23": "....bpoobuvwxwvuboopb..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "22": ".....ejjeyAAAAAzykoh....",
+    "23": "....bpoobuvwxwvuboopb..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "20": "......bookyBBzBAy.......",
+    "21": "......booyBBzBBAy.......",
+    "23": ".....bpoouvwxwvub......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "20": "......yABzBBykjje.......",
+    "21": "......yABBzBBynqne......",
+    "23": ".......buvwxwvoopb......"
+   }
+  }
+ ]
+}

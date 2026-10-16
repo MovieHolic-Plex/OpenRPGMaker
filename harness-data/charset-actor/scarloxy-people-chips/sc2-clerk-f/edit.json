@@ -1,0 +1,153 @@
+{
+ "palette": {
+  "A": "#3b2316",
+  "B": "#543321",
+  "C": "#70462e",
+  "D": "#946144",
+  "E": "#1e517b",
+  "F": "#3988be",
+  "G": "#68b8e8",
+  "H": "#a2dcfa",
+  "I": "#4f5666",
+  "J": "#8791a3",
+  "K": "#c2cad6",
+  "L": "#eef2f7",
+  "M": "#ffffff",
+  "N": "#1c2847",
+  "O": "#2b3d69",
+  "P": "#41598f"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "A",
+    "c": "B",
+    "i": "C",
+    "p": "D",
+    "a": "E",
+    "e": "F",
+    "l": "G",
+    "f": "A",
+    "r": "D",
+    "n": "C"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "u": "M",
+    "o": "L",
+    "d": "I",
+    "h": "I",
+    "b": "I",
+    "f": "I",
+    "w": "H",
+    "q": "G",
+    "k": "F",
+    "g": "E",
+    "t": "L",
+    "m": "K"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "f": "N",
+    "h": "O",
+    "g": "N",
+    "k": "P",
+    "t": "G",
+    "m": "F"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "N",
+    "e": "O",
+    "l": "P",
+    "x": "M",
+    "s": "K"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "4": ".....EEEE......EEEE.....",
+    "5": "....EGHHFE....EFHHGE....",
+    "6": "....EFGGFE.AAA.EFGGFE...",
+    "7": "...AAAEGFEACCCBEFGEEAA.."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "4": ".....EEEE......EEEE.....",
+    "5": "....EGHHFE....EFHHGE....",
+    "6": "....EFGGFE.AAA.EFGGFE...",
+    "7": "...AAAEGFEACCCBEFGEEAA.."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "5": ".......EEEEcb...........",
+    "6": "......EGHHFEAAA.........",
+    "7": ".....AEFGGFEACCBA.......",
+    "8": ".....ADDCCFGCCCCCA......"
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "5": "...........bcEEEE.......",
+    "6": ".........AAAEFHHGE......",
+    "7": ".......ABCCAEFGGFEA.....",
+    "8": "......ACCCCCGFCCDDA....."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "22": ".....ILLLFGHHHGFLLLI....",
+    "23": ".....IKLIFGGGGGFILLI....",
+    "24": "....IvrIFGGGGGGGFIrvI..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "21": "......IMMGLLLLLGMMI.....",
+    "22": ".....ILLFGLLLLLGFLLI....",
+    "23": ".....IKLFGGGGGGGFLLI...."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "22": "......IKILLGFGHEd.......",
+    "23": "......IKKLKFGGGHE.......",
+    "24": "......IIvrrFGGGGjf......"
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "22": ".......EHGFGLLIKIg......",
+    "23": ".......EHHGFGKLKKI......",
+    "24": "......fjGGGGFrrvII......"
+   }
+  }
+ ]
+}

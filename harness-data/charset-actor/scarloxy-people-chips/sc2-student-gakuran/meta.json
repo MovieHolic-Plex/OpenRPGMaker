@@ -1,0 +1,50 @@
+{
+ "key": "sc2-student-gakuran",
+ "arch": "sp2-student-gakuran",
+ "base": "Scarloxy1:5",
+ "variant": "보라 머리를 짧은 검은 머리로(H 전부 검정·짙은 남색), 이마 위 학생모 챙 한 줄(h 구역 H paint), 민트 민소매를 짙은 남색 학생복으로 recolor, 가슴 금색 단추 두 줄, 주황 반바지는 검은 바지로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdf"
+ ],
+ "metrics": {
+  "added_up0": 48,
+  "added_up1": 64,
+  "added_up2": 55,
+  "added_right0": 48,
+  "added_right1": 60,
+  "added_right2": 53,
+  "added_down0": 61,
+  "added_down1": 64,
+  "added_down2": 49,
+  "added_left0": 48,
+  "added_left1": 60,
+  "added_left2": 53,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.893,
+   "S": 0.982
+  },
+  "cross": 7,
+  "cross_base": 0,
+  "lone": 229,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.466,
+  "nearest": "ScarloxyPeople3#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 31,
+  "hole_filled_px": 6,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 24
+  }
+ },
+ "run": "sp2-r4/sp2-student-gakuran-b"
+}

@@ -1,0 +1,52 @@
+{
+ "key": "sc2-gymnast",
+ "name": "체조 소년",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy1:0",
+ "recolor": [
+  {
+   "region": "T",
+   "to": {
+    "hue": 48,
+    "sat": 0.85,
+    "v": 1.0
+   },
+   "gray": [
+    0.85,
+    1.0
+   ]
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 215,
+    "s": 0.75,
+    "v": 0.55
+   },
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "H",
+   "to": {
+    "hue": 215,
+    "s": 0.75,
+    "v": 0.55
+   },
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "고정 검사: 12프레임 552칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-gymnast"
+}

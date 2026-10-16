@@ -235,4 +235,22 @@ describe("생성한 캠페인 맞추기", () => {
     expect(denied.ok).toBe(false);
     expect(denied.issues?.[0]?.code).toBe("genre-lock");
   });
+  it("Scarloxy 변형 사람 칩 2차(ScarloxyPeople5~10)도 같은 계열이라 허용되고 RTP 사람 칩은 계속 거부된다", () => {
+    for (const n of [5, 8, 10]) expect(charsetFamilyOf(undefined, `tex_oprn_charset_scarloxy_people${n}`)).toBe("scarloxy-people");
+    expect(charsetFamilyOf(undefined, "oprn-charset-scarloxy-people10")).toBe("scarloxy-people");
+    const ctx = ctxOf(lockedProject());
+    const clerk = placeNpc(ctx, "점원", 5, { graphic: { textureKey: "tex_oprn_charset_scarloxy_people5", characterIndex: 0 } });
+    expect(clerk.ok).toBe(true);
+    const boss = placeNpc(ctx, "드래곤 도장 보스", 7, { graphic: { textureKey: "tex_oprn_charset_scarloxy_people8", characterIndex: 1 } });
+    expect(boss.ok).toBe(true);
+    const denied = placeNpc(ctx, "판타지 청년", 9, { graphic: RTP_YOUTH });
+    expect(denied.ok).toBe(false);
+  });
+  it("사용자가 뺀 ScarloxyPeople8#3 칸은 비워 둔 채 의미표·카탈로그에 노출되지 않고 다른 칸 번호는 그대로다", async () => {
+    const { SCARLOXY_PEOPLE_CHARSET_SEMANTICS } = await import("@/assets/scarloxyPeopleCharsets");
+    const sheet8 = SCARLOXY_PEOPLE_CHARSET_SEMANTICS.filter((entry) => entry.textureKey === "tex_oprn_charset_scarloxy_people8").map((entry) => entry.characterIndex);
+    expect(sheet8).toEqual([0, 1, 2, 4, 5, 6, 7]);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS.some((entry) => entry.tags?.includes("scarloxy-student-gakuran"))).toBe(false);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(69);
+  });
 });

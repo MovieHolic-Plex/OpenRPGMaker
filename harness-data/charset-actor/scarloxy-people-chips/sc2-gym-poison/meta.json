@@ -1,0 +1,51 @@
+{
+ "key": "sc2-gym-poison",
+ "arch": "sp2-gym-poison",
+ "base": "Scarloxy1:3",
+ "variant": "보라 머리를 짙은 자주색으로 바꾸고, 어깨 구역 t 에 짙은 보라 망토 끝(T paint 2칸 폭), 남색 웃옷을 검자주색, 가슴 분홍 십자 무늬를 연두색으로, 하의는 검정.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 acgn"
+ ],
+ "metrics": {
+  "added_up0": 7,
+  "added_up1": 8,
+  "added_up2": 7,
+  "added_right0": 3,
+  "added_right1": 8,
+  "added_right2": 6,
+  "added_down0": 4,
+  "added_down1": 13,
+  "added_down2": 12,
+  "added_left0": 0,
+  "added_left1": 3,
+  "added_left2": 3,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.926,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 282,
+  "lone_base": 249
+ },
+ "distinct": {
+  "score": 0.578,
+  "nearest": "accepted:sp2-elder-f-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 24,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 4,
+   "베이스 몸 칸을 비운 것을 되돌림": 3
+  }
+ },
+ "run": "sp2-r1/sp2-gym-poison-a"
+}

@@ -1,0 +1,137 @@
+{
+ "palette": {
+  "A": "#3b2112",
+  "B": "#63391f",
+  "C": "#8c5530",
+  "D": "#b57647",
+  "E": "#d49b6a",
+  "F": "#2e1d18",
+  "G": "#4f3328",
+  "H": "#6e493a",
+  "I": "#382010",
+  "J": "#693c1e",
+  "K": "#8f562e",
+  "L": "#b07246",
+  "M": "#dfd3be",
+  "N": "#b8a68e",
+  "O": "#877660",
+  "P": "#9e2b20",
+  "Q": "#c94030",
+  "R": "#d99b38",
+  "S": "#1d2b44",
+  "T": "#2d466e",
+  "U": "#476aa3",
+  "V": "#361e10",
+  "W": "#5e361d",
+  "X": "#855130",
+  "Y": "#a8704c"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "a": "A",
+    "d": "B",
+    "k": "C",
+    "p": "D",
+    "v": "C",
+    "s": "E",
+    "c": "A",
+    "m": "B",
+    "o": "D",
+    "f": "A",
+    "g": "B",
+    "r": "F",
+    "b": "F",
+    "e": "F",
+    "h": "G",
+    "j": "H"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "v": "K",
+    "r": "L",
+    "i": "I",
+    "k": "J",
+    "d": "I",
+    "a": "I",
+    "n": "K",
+    "f": "J",
+    "s": "L",
+    "m": "Q",
+    "g": "P",
+    "c": "I",
+    "e": "I",
+    "b": "I"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "S",
+    "d": "U",
+    "e": "S",
+    "f": "T",
+    "n": "U",
+    "g": "T",
+    "c": "S"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "c": "V",
+    "v": "Y",
+    "m": "W",
+    "o": "X",
+    "r": "X",
+    "g": "W",
+    "e": "V"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "7": ".......ACCDDDDDCCA......",
+    "8": ".....AAACCCEEECCCAAA....",
+    "9": "....ADCCCCDDDDDCCCCBA...",
+    "10": "....AFHHAADDDDDAAHHFA..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "7": ".......ACCCDDDCCCA......",
+    "8": ".....AAACCCEEECCCAAA....",
+    "9": "....ADCCCCDDDDDCCCCBA...",
+    "10": "....AFHHCCCCCCCCCHHFA..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "7": "......ACCCCCCDDDCA......",
+    "8": "....AAACCCCCEEEDDDAAA...",
+    "9": "...ADCCCCCCCDDDDDDCCCA..",
+    "10": "...AFHHFGHACDDDDDDDCCA.."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "7": "......ACDDCCCCCCCA......",
+    "8": "...AAADDDEEECCCCCAAA....",
+    "9": "..ACCDDDDDDDCCCCCCCBB...",
+    "10": "..ACCDDDDDDDCAHGFHHFA..."
+   }
+  }
+ ]
+}

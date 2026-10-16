@@ -1,0 +1,49 @@
+{
+ "key": "sc2-gym-bug",
+ "arch": "sp2-gym-bug",
+ "base": "Scarloxy2:1",
+ "variant": "초록 잎 머리를 노랑·연두 머리로 recolor 하고 머리 위 h 구역에 더듬이 두 가닥(H paint: 위로 뻗은 4칸 이상 이어진 덩어리 둘, 끝은 둥글게), 연두 튜닉을 노랑·검정 가로 줄무늬 옷(T recolor 노랑 + T paint 검정 줄 2개), 올리브 바지를 짙은 초록으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "한 프레임에만 나오는 색 c — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 dmos"
+ ],
+ "metrics": {
+  "added_up0": 11,
+  "added_up1": 15,
+  "added_up2": 11,
+  "added_right0": 11,
+  "added_right1": 11,
+  "added_right2": 11,
+  "added_down0": 11,
+  "added_down1": 15,
+  "added_down2": 11,
+  "added_left0": 11,
+  "added_left1": 11,
+  "added_left2": 11,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.982,
+   "B": 0.938,
+   "S": 0.991
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 285,
+  "lone_base": 273
+ },
+ "distinct": {
+  "score": 0.623,
+  "nearest": "scarloxy-charset-people2#1"
+ },
+ "repairs": {
+  "dropped_stray_px": 16,
+  "hole_filled_px": 8,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-gym-bug-a"
+}

@@ -125,13 +125,13 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     families: ["oprn-monster", "oprn-monster-emerald"],
     // 캐릭터 칩(2026-10-16): 사람은 몬스터 테이밍 팩(Scarloxy) 트레이너·도장 보스, 생물은 OPRN 몬스터·몬스터 수집 따라다니기 칩이다.
     // RTP Monster1~3·Animal 은 생물이라 허용하지만 RTP Actor·People(판타지 사람)·마법 학교·공용 공방 사람 칩은 막는다.
-    // 사람 칩(2026-10-16): Scarloxy 원본 10칸(People1 8 + People2 2) + 그 뼈대에서 변형한 OPRN ScarloxyPeople1~3(21칸: 경찰·연구원·간호사·단원·낚시꾼·캠퍼·등산가·곤충채집·라이벌·여학생·신관·도장 보스 …).
+    // 사람 칩(2026-10-16): Scarloxy 원본 10칸(People1 8 + People2 2) + 그 뼈대에서 변형한 OPRN ScarloxyPeople1~10(70칸: 경찰·연구원·간호사·단원·낚시꾼·캠퍼·등산가·점원·수영 선수·뱃사람·노인·마을 주민·도장 보스 13종·학생·역무원·등대지기·포획 대회 참가자 …).
     // 닌텐도 원작 판형은 공개 저장소에 둘 수 없다. 변형 칩도 charsetFamily 가 같은 `scarloxy-people` 로 분류하므로 저장된 옛 잠금의 허용 목록을 바꿀 필요가 없다.
     charsets: {
       families: ["scarloxy-people", "oprn-creature", "rtp-creature", "object", "uploaded", "other"],
       kitNoun: "몬스터 수집 캐릭터 칩",
       playerDefault: { resourceId: "scarloxy-charset-people1", characterIndex: 0 },
-      promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스)과 그 변형 직군 칩(oprn-charset-scarloxy-people1~3: 경찰·연구원·간호사·단원·낚시꾼·캠퍼·등산가·곤충채집·라이벌·여학생·신관·도장 보스 …; list_npc_graphics 에 '간호사'·'경찰' 같은 직군 말로 찾는다), "
+      promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스)과 그 변형 직군 칩(oprn-charset-scarloxy-people1~10: 경찰·연구원·간호사·단원·낚시꾼·점원·수영 선수·뱃사람·선장·노인·마을 주민·어린이·점쟁이·불/물/땅/격투/비행/독/벌레/고스트/강철/드래곤 도장 보스·남학생·역무원·등대지기·포획 대회 참가자·사육사 …; list_npc_graphics 에 '점원'·'뱃사람'·'노인' 같은 직군 말로 찾는다), "
         + "몬스터·동물은 OPRN 몬스터 칩(Monster4~6)·몬스터 수집 따라다니기 칩·RTP 동물이다.",
       enforceLine: "RTP Actor·People·마법 학교·공용 공방 사람 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
     },

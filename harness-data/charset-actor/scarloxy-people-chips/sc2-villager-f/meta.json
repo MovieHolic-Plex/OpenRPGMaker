@@ -1,0 +1,50 @@
+{
+ "key": "sc2-villager-f",
+ "arch": "sp2-villager-f",
+ "base": "Scarloxy1:3",
+ "variant": "긴 보라 머리를 밝은 갈색으로 바꾸고 머리 위에 하늘색 머릿수건(h 구역 H paint, 머리를 덮는 한 줄 + 뒤 매듭 한 덩어리), 남색 웃옷은 황토색, 분홍 십자 무늬 자리에 흰 앞치마(T paint, 가슴 아래 중앙 면), 하의는 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 acgn"
+ ],
+ "metrics": {
+  "added_up0": 4,
+  "added_up1": 6,
+  "added_up2": 6,
+  "added_right0": 8,
+  "added_right1": 8,
+  "added_right2": 8,
+  "added_down0": 4,
+  "added_down1": 6,
+  "added_down2": 6,
+  "added_left0": 7,
+  "added_left1": 7,
+  "added_left2": 7,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.926,
+   "S": 1.0
+  },
+  "cross": 2,
+  "cross_base": 0,
+  "lone": 249,
+  "lone_base": 249
+ },
+ "distinct": {
+  "score": 0.568,
+  "nearest": "accepted:sp2-elder-f-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 57,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "베이스 몸 칸을 비운 것을 되돌림": 8
+  }
+ },
+ "run": "sp2-r1/sp2-villager-f-a"
+}

@@ -1,0 +1,55 @@
+{
+ "key": "sc2-picnic-girl",
+ "name": "소풍 소녀",
+ "head": "Scarloxy1:3",
+ "body": "Scarloxy1:4",
+ "recolor": [
+  {
+   "region": "H",
+   "to": {
+    "hue": 335,
+    "s": 0.4,
+    "v": 1.0
+   },
+   "hue": [
+    250,
+    300
+   ],
+   "smin": 0.1
+  },
+  {
+   "region": "T",
+   "to": {
+    "hue": 105,
+    "s": 0.5,
+    "v": 0.85
+   },
+   "hue": [
+    40,
+    60
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 45,
+    "s": 0.6,
+    "v": 0.9
+   },
+   "hue": [
+    300,
+    350
+   ],
+   "smin": 0.2
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "한 프레임에만 나오는 색 j — 걸을 때 깜빡일 수 있다",
+  "면제: edge",
+  "면제: outline"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-picnic-girl"
+}

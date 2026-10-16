@@ -1,0 +1,50 @@
+{
+ "key": "sc2-kid-girl",
+ "arch": "sp2-kid-girl",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 금발로 바꾸고 양쪽 갈래 위에 큰 붉은 리본(h 구역 H paint 3×3 덩어리 둘), 노란 웃옷을 분홍 원피스로 recolor, 가슴 중앙 흰 꽃 무늬(T paint 3×3), 분홍 반바지를 흰색 레이스 하의로, 신발은 흰색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdghikmopqtw"
+ ],
+ "metrics": {
+  "added_up0": 20,
+  "added_up1": 20,
+  "added_up2": 20,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 20,
+  "added_down1": 20,
+  "added_down2": 20,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.784,
+   "S": 1.0
+  },
+  "cross": 21,
+  "cross_base": 12,
+  "lone": 321,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.496,
+  "nearest": "accepted:sp2-lab-assistant-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 18,
+  "hole_filled_px": 2,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 2
+  }
+ },
+ "run": "sp2-r3/sp2-kid-girl-a"
+}

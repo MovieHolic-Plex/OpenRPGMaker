@@ -1,0 +1,182 @@
+{
+ "sc2-clerk-m": {
+  "score": 0.611,
+  "nearest": "sc2-capture-contest"
+ },
+ "sc2-clerk-f": {
+  "score": 0.575,
+  "nearest": "sc2-lab-assistant"
+ },
+ "sc2-peddler": {
+  "score": 0.622,
+  "nearest": "ScarloxyPeople4#0"
+ },
+ "sc2-swimmer-m": {
+  "score": 0.742,
+  "nearest": "sc2-lifeguard"
+ },
+ "sc2-swimmer-f": {
+  "score": 0.812,
+  "nearest": "sc2-lab-assistant"
+ },
+ "sc2-sailor": {
+  "score": 0.658,
+  "nearest": "sc2-peddler"
+ },
+ "sc2-captain": {
+  "score": 0.521,
+  "nearest": "sc2-student-blazer"
+ },
+ "sc2-lifeguard": {
+  "score": 0.659,
+  "nearest": "sc2-gym-fighting"
+ },
+ "sc2-elder-m": {
+  "score": 0.571,
+  "nearest": "sc2-fishing-contest"
+ },
+ "sc2-elder-f": {
+  "score": 0.579,
+  "nearest": "sc2-villager-f"
+ },
+ "sc2-villager-m": {
+  "score": 0.467,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "sc2-villager-f": {
+  "score": 0.568,
+  "nearest": "sc2-elder-f"
+ },
+ "sc2-villager-boy": {
+  "score": 0.606,
+  "nearest": "scarloxy-charset-people1#1"
+ },
+ "sc2-kid-raincoat": {
+  "score": 0.529,
+  "nearest": "sc2-capture-contest"
+ },
+ "sc2-kid-girl": {
+  "score": 0.496,
+  "nearest": "sc2-lab-assistant"
+ },
+ "sc2-fortune-teller": {
+  "score": 0.781,
+  "nearest": "ScarloxyPeople2#6"
+ },
+ "sc2-gym-ground": {
+  "score": 0.697,
+  "nearest": "sc2-gym-fire"
+ },
+ "sc2-gym-fire": {
+  "score": 0.62,
+  "nearest": "sc2-student-blazer"
+ },
+ "sc2-gym-water": {
+  "score": 0.669,
+  "nearest": "scarloxy-charset-people1#3"
+ },
+ "sc2-gym-fighting": {
+  "score": 0.648,
+  "nearest": "sc2-lifeguard"
+ },
+ "sc2-gym-flying": {
+  "score": 0.622,
+  "nearest": "scarloxy-charset-people1#2"
+ },
+ "sc2-gym-poison": {
+  "score": 0.578,
+  "nearest": "sc2-elder-f"
+ },
+ "sc2-gym-bug": {
+  "score": 0.623,
+  "nearest": "scarloxy-charset-people2#1"
+ },
+ "sc2-gym-ghost": {
+  "score": 0.58,
+  "nearest": "ScarloxyPeople3#0"
+ },
+ "sc2-gym-steel": {
+  "score": 0.603,
+  "nearest": "sc2-student-gakuran"
+ },
+ "sc2-gym-dragon": {
+  "score": 0.623,
+  "nearest": "sc2-captain"
+ },
+ "sc2-student-blazer": {
+  "score": 0.453,
+  "nearest": "sc2-captain"
+ },
+ "sc2-student-gakuran": {
+  "score": 0.466,
+  "nearest": "ScarloxyPeople3#6"
+ },
+ "sc2-station": {
+  "score": 0.464,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "sc2-courier": {
+  "score": 0.438,
+  "nearest": "sc2-station"
+ },
+ "sc2-lighthouse": {
+  "score": 0.54,
+  "nearest": "sc2-rancher"
+ },
+ "sc2-fishing-contest": {
+  "score": 0.459,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "sc2-capture-contest": {
+  "score": 0.503,
+  "nearest": "sc2-kid-raincoat"
+ },
+ "sc2-lab-assistant": {
+  "score": 0.495,
+  "nearest": "sc2-kid-girl"
+ },
+ "sc2-lab-assistant-m": {
+  "score": 0.598,
+  "nearest": "sc2-photographer"
+ },
+ "sc2-rancher": {
+  "score": 0.55,
+  "nearest": "sc2-lighthouse"
+ },
+ "sc2-breeder": {
+  "score": 0.506,
+  "nearest": "sc2-lab-assistant"
+ },
+ "sc2-chef-f": {
+  "score": 0.468,
+  "nearest": "ScarloxyPeople3#5"
+ },
+ "sc2-ball-boy": {
+  "score": 0.557,
+  "nearest": "ScarloxyPeople3#6"
+ },
+ "sc2-surfer": {
+  "score": 0.689,
+  "nearest": "ScarloxyPeople1#5"
+ },
+ "sc2-gymnast": {
+  "score": 0.448,
+  "nearest": "ScarloxyPeople2#1"
+ },
+ "sc2-photographer": {
+  "score": 0.442,
+  "nearest": "ScarloxyPeople2#3"
+ },
+ "sc2-picnic-girl": {
+  "score": 0.587,
+  "nearest": "scarloxy-charset-people1#4"
+ },
+ "sc2-cap-girl": {
+  "score": 0.5,
+  "nearest": "scarloxy-charset-people1#4"
+ },
+ "sc2-rookie-boy": {
+  "score": 0.624,
+  "nearest": "ScarloxyPeople2#0"
+ }
+}

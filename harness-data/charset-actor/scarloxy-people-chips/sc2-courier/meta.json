@@ -1,0 +1,53 @@
+{
+ "key": "sc2-courier",
+ "arch": "sp2-courier",
+ "base": "Scarloxy1:2",
+ "variant": "초록 벙거지를 붉은 캡모자(챙 한 줄 H paint)로 recolor, 흰 민소매를 노란 제복으로, 가슴에 대각선 가방끈(T paint 갈색, 어깨에서 허리 반대편으로), 보라 바지를 남색으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 bfiq"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.97,
+   "S": 1.0
+  },
+  "cross": 1,
+  "cross_base": 3,
+  "lone": 230,
+  "lone_base": 209
+ },
+ "distinct": {
+  "score": 0.531,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 9,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "left 줄 9 이 24글자가 아니라 버림": 1,
+   "left 줄 10 이 24글자가 아니라 버림": 1,
+   "left 줄 11 이 24글자가 아니라 버림": 1
+  }
+ },
+ "run": "sp2-r1/sp2-courier-a"
+}

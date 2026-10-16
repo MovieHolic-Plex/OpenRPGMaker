@@ -1,0 +1,48 @@
+{
+ "key": "sc2-sailor",
+ "arch": "sp2-sailor",
+ "base": "Scarloxy1:6",
+ "variant": "밀짚모자를 흰 선원 모자로 recolor(챙 둘레는 연회색, 윤곽은 짙은 남색)하고 챙을 위로 접은 둥근 모양으로 H paint 로 윗선을 다듬는다. 흰 민소매 위에 남색 가로 줄무늬(T paint 가슴·배 2줄), 반바지는 남색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bdegnq"
+ ],
+ "metrics": {
+  "added_up0": 13,
+  "added_up1": 15,
+  "added_up2": 15,
+  "added_right0": 15,
+  "added_right1": 15,
+  "added_right2": 15,
+  "added_down0": 13,
+  "added_down1": 15,
+  "added_down2": 15,
+  "added_left0": 15,
+  "added_left1": 15,
+  "added_left2": 15,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.949,
+   "B": 0.952,
+   "S": 0.989
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 231,
+  "lone_base": 176
+ },
+ "distinct": {
+  "score": 0.658,
+  "nearest": "accepted:sp2-peddler-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 4,
+  "hole_filled_px": 4,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-sailor-a"
+}

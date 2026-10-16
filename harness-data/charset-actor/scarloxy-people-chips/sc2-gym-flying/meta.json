@@ -1,0 +1,49 @@
+{
+ "key": "sc2-gym-flying",
+ "arch": "sp2-gym-flying",
+ "base": "Scarloxy1:2",
+ "variant": "초록 벙거지를 하늘색 머리띠+밝은 머리로 바꾸고 h 구역에 흰 깃털 2갈래(H paint, 위로 솟은 3칸 이상 덩어리), 어깨 구역 t 에 흰 망토 끝(T paint, 어깨 양옆 2칸 폭), 민소매를 하늘색, 보라 바지를 흰색으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 4,
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 BCbfiq"
+ ],
+ "metrics": {
+  "added_up0": 13,
+  "added_up1": 30,
+  "added_up2": 24,
+  "added_right0": 20,
+  "added_right1": 20,
+  "added_right2": 20,
+  "added_down0": 13,
+  "added_down1": 30,
+  "added_down2": 26,
+  "added_left0": 20,
+  "added_left1": 20,
+  "added_left2": 20,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.97,
+   "S": 1.0
+  },
+  "cross": 1,
+  "cross_base": 3,
+  "lone": 229,
+  "lone_base": 209
+ },
+ "distinct": {
+  "score": 0.622,
+  "nearest": "scarloxy-charset-people1#2"
+ },
+ "repairs": {
+  "dropped_stray_px": 23,
+  "hole_filled_px": 2,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-gym-flying-a"
+}

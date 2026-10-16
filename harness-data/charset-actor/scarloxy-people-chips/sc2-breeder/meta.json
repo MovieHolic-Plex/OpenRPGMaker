@@ -1,0 +1,51 @@
+{
+ "key": "sc2-breeder",
+ "arch": "sp2-breeder",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 연갈색 한 묶음으로(H recolor), 머리 위 노란 두건(h 구역 H paint 한 줄 + 매듭), 노란 웃옷을 연두 작업복, 갈색 앞치마(T paint), 분홍 반바지를 갈색으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdghkmopqtw"
+ ],
+ "metrics": {
+  "added_up0": 20,
+  "added_up1": 20,
+  "added_up2": 20,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 20,
+  "added_down1": 20,
+  "added_down2": 20,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.784,
+   "S": 1.0
+  },
+  "cross": 8,
+  "cross_base": 12,
+  "lone": 280,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.506,
+  "nearest": "accepted:sp2-lab-assistant-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 36,
+  "hole_filled_px": 4,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 194,
+   "베이스 몸 칸을 비운 것을 되돌림": 10
+  }
+ },
+ "run": "sp2-r4/sp2-breeder-b"
+}

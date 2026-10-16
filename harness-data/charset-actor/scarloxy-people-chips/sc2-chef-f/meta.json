@@ -1,0 +1,51 @@
+{
+ "key": "sc2-chef-f",
+ "arch": "sp2-chef-f",
+ "base": "Scarloxy1:3",
+ "variant": "긴 보라 머리를 밤색으로 바꾸고 흰 요리모자 3줄 높이(h 구역 H paint), 남색 웃옷을 흰 요리복으로, 분홍 십자 무늬는 붉은 스카프 모양(T paint), 하의는 회색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 5,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 acgn"
+ ],
+ "metrics": {
+  "added_up0": 51,
+  "added_up1": 69,
+  "added_up2": 52,
+  "added_right0": 60,
+  "added_right1": 61,
+  "added_right2": 61,
+  "added_down0": 45,
+  "added_down1": 70,
+  "added_down2": 54,
+  "added_left0": 60,
+  "added_left1": 61,
+  "added_left2": 61,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.926,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 266,
+  "lone_base": 249
+ },
+ "distinct": {
+  "score": 0.468,
+  "nearest": "ScarloxyPeople3#5"
+ },
+ "repairs": {
+  "dropped_stray_px": 18,
+  "hole_filled_px": 7,
+  "sanitized": {
+   "베이스 몸 칸을 비운 것을 되돌림": 5,
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 1
+  }
+ },
+ "run": "sp2-r2/sp2-chef-f-b"
+}

@@ -145,3 +145,26 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   `OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" CTFF6_PART_OUT=$HOME/spc-runs python3 src/harnesses/charset-actor/scarloxy_draw.py draw --spec harness-data/charset-actor/scarloxy-people-spec.json --model gemini-4-argon-high --run sp-r3 --label sp-merchant-a --label sp-swimmer-a`
   → 통과분을 `scarloxy-people-chips/<key>/` 로 복사하고 `scarloxy-people-install.json` 에 덧붙인 뒤 `install_scarloxy_people.py`.
 - 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-4」. `test/fixtures/eventEditorPortalSurface.baseline.json` 에 `ScarloxyPeople# (ScarloxyPeople)` 4항목을 손으로 덧붙였다(포털 표면 게이트 미실행).
+
+## 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 44종 (2026-10-16)
+
+사용자가 1차 25종(ScarloxyPeople1~4)을 「다 괜찮다, 늘려도 된다」로 승인해 같은 방식·화풍으로 45종을 덧붙였고 사용자 검토에서 1종(ScarloxyPeople8#3 남학생·검은 학생복 학생모)이 빠져 **44종**이 남았다(총 69칸 + 원본 10 = 80명 허용). 1차는 스크립트 21 + Argon 4 였고, 이번은 **Argon 35 + 스크립트 9**.
+사람 칩이라 3/4 관문(object-gate)은 해당 없음. 기존 25종은 시트 PNG·명단 항목이 바이트 동일(`install_scarloxy_people.py --check`), 칸 번호는 시트 5부터(4번 시트의 빈 7칸은 두었다).
+
+- 1차에서 Argon 이 3회 안에 못 통과한 원인과 대응 — 드라이버 `scarloxy_argon2.py`(주문서 `harness-data/charset-actor/scarloxy-people-spec-2.json`, 직군별 후보 a/b = 다른 뼈대):
+  (1) 몸 칸을 '.' 로 비움·마스크 밖 칠함(오류 126개까지) → `sanitize()` 가 paint 줄을 부위 마스크에 맞춰 자른다(되돌린 칸 수는 meta.repairs.sanitized, 다음 시도 되먹임에 포함, recolor 와 같은 색을 또 paint 한 칸은 정리해 행 교체 55% 한도를 아낀다).
+  (2) 삐죽 점·몸 안쪽 구멍 → `scarloxy_repair.drop_strays/fill_holes` 를 평가 단계에 넣고 같은 `partedit.verify` 를 다시 건다(edit.json 은 그대로).
+  (3) 뼈대와 61% 같음 → 주문서에 베이스 부위별 글자표(글자=색(칸 수))와 「모든 글자 recolor」 명시, 결과가 가장 가까운 칩(뼈대·설치분·같은 런 채택분)과 45% 미만이면 안 바뀐 글자 목록으로 거절.
+  (4) 장비가 앵커에 안 닿음 → 1차 어댑터는 anchors.txt 를 모델에 안 보냈다. 이번에는 gear 를 쓰지 않고 h·t 구역 paint + recolor 로만 실루엣(모자·가운·앞치마·망토 끝)을 바꾼다. 손 소품(낚싯대·잠자리채·지팡이)은 뼈대에 손 칸이 없어 여전히 못 한다.
+  (5) 시도 3→5회, `argon_http.py` 는 429·5xx·연결 오류·JSON 파싱 실패를 60→120→240초 백오프로 재호출, 동시 호출 2개 이하(`--par`). 키는 `OPRN_LIVE_KEY` 환경변수로만, 모델 `gemini-4-argon-*` 만, 스트리밍만.
+  결과: 주문 48건 중 43건 통과(90%, 1차 33%), 3회 안 40건, 429 0회. 같은 직군에서 a 가 5회 안에 못 통과하면 다른 뼈대 b 로 바꿨고 5직군 모두 b 로 통과했다.
+- 스크립트 칩(`scarloxy_compose.py`, 레시피 `scarloxy-people/recipes-2.json`)은 `lock: true` 로 **얼굴·눈·피부·손 고정 칸을 recolor 에서 제외**하고(`face_fixed`) 12프레임 화소 동일을 빌드 때 검사한다. 1차 레시피(lock 없음)는 그대로 다시 구우면 화소 동일(`build` 확인)이라 건드리지 않았다.
+- 설치 관문: `scarloxy_lock.py` — 최종 격자만 보고 12프레임의 얼굴·피부·손 고정 칸(Argon 은 뼈대 분할의 F 칸 전부, 스크립트는 `face_fixed`+몸 주인 맨살)을 원본과 화소 대조. `install_scarloxy_people.py` 는 시트 5~ 에 이것을 건다. 신규 45종 33,639칸 모두 일치.
+  **알림:** 같은 검사를 1차 설치 25종에 돌리면 스크립트 칩 12종(도장 보스 얼음·전기·바위·에스퍼, 단원 남·여, 경찰관, 연구원, 탐험가(여), 여학생, 어린이, 신관)에서 24~142화소(눈썹·손 그림자 색)가 부위 색 바꾸기에 같이 칠해져 있다. 승인된 불변분이라 건드리지 않았다.
+- 칩을 뺄 때: 칸 번호는 덧붙이기 전용이라 시트를 당기지 않는다. 설치 명단(`scarloxy-people-install.json`)의 그 행을 `{"vacant": true, key, id, name, reason}` 로 바꾸고 `install_scarloxy_people.py` 를 다시 돌리면 그 칸은 투명으로 남고 `scarloxyPeopleCharsets.json`·카탈로그·의미표·조수 검색에서 빠진다(다른 칸 화소 불변, `--check` 가 확인). `scarloxy_collect.py` 는 vacant 의 key 를 이미 쓴 것으로 보아 다시 채택하지 않는다.
+- 거름: `scarloxy_collect.py` 가 채택 매니페스트(`scarloxy-people/round2.json`)를 받아 ① chips 폴더로 복사 ② 고정 검사 ③ 가장 가까운 칩과 다른 화소 30% 미만 거절(`round2-distinct.json`) ④ 명단에 덧붙임(5번 시트부터 8칸씩). 사람은 `~/claude-viz/monster-people-chips-2.html`(`scarloxy_sheet2.py`)에서 **버릴 번호만** 말한다.
+- 굽기·재실행: `python3 src/harnesses/charset-actor/install_scarloxy_people.py` (`--check` 화소·명단 동일). Argon 재주문 한 줄:
+  `OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" CTFF6_PART_OUT=$HOME/spc-runs python3 src/harnesses/charset-actor/scarloxy_argon2.py draw --spec harness-data/charset-actor/scarloxy-people-spec-2.json --run sp2-r5 --label sp2-clerk-m-a --par 2`
+- 배선: 시트 수는 명단의 `sheets` 에서 나오므로 카탈로그·의미표·리졸버·참조 검증·`charsetFamily`·`catalog_sources.py` 는 코드 변경 없이 10시트를 읽는다. 바뀐 것: `genreLock.ts` 안내 문장(1~10, 직군 목록), `test/genreLockCharsets.test.ts`(새 시트 칩 허용·RTP 거절 테스트 추가), 포털 표면 기준선(`ScarloxyPeople# (ScarloxyPeople)` 10항목).
+- 검증(출하 경로): `scarloxy-people-chips-fixture.mts --part 0|1` + `scarloxy-people-chips.scenario.mjs`(`node scripts/runtime-qa.mjs --scenario scarloxy-people-chips --project tmp/scarloxy-people-chips[-2].json --out verify-shots/runtime-qa/<이름>`, 판마다 35칸 5줄×7열)로 70칸 전수 렌더, `scarloxy-people-chips-persist.mts`(몬스터 잠금 프로젝트 새·옛 두 판: 새 직군 칩 place_npc 허용 · RTP 칩 거절 · 임시 SQLite 저장·재로드). vitest/gates 는 실행하지 않았다.
+- 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-10」.

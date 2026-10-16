@@ -1,0 +1,145 @@
+{
+ "palette": {
+  "u": "#5c3c14",
+  "v": "#9e6b1e",
+  "w": "#d69e2e",
+  "x": "#f2cc49",
+  "y": "#fae588",
+  "z": "#1c2d4a",
+  "A": "#2d4c7a",
+  "B": "#4472ad",
+  "C": "#6b9bd4",
+  "D": "#e8f2fc"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "a": "u",
+    "e": "u",
+    "b": "v",
+    "g": "x",
+    "k": "y",
+    "p": "w"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "u",
+    "b": "u",
+    "c": "u",
+    "d": "v",
+    "e": "u",
+    "h": "w",
+    "i": "w",
+    "m": "y",
+    "n": "x"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "z",
+    "b": "z",
+    "c": "z",
+    "e": "z",
+    "f": "A",
+    "i": "B"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "z",
+    "b": "A",
+    "g": "B",
+    "k": "C",
+    "o": "B",
+    "r": "D"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "5": ".........uuuuu..........",
+    "6": ".......uuxyyyxxuu.......",
+    "7": "......uxyyyyyyyyxu......",
+    "8": ".....uxyyyyyyyywxuuu....",
+    "9": ".....uxyyyyyyyyyxxu....."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "5": ".........uuuuu..........",
+    "6": ".......uuxyyyxxuu.......",
+    "7": "......uxyyyyyyyyxu......",
+    "8": "....uuuxyyyyyyyyyxu.....",
+    "9": ".....uxxyyyyyyyyyxu....."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "5": ".........uuuuuu.........",
+    "6": ".......uuxyyyyxuu.......",
+    "7": "......uxyyyyyyyyxu......",
+    "8": ".....uxxyyyyyyyyyxu.....",
+    "9": ".....uxyyyyyyyyyyxu....."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "5": ".........uuuuuu.........",
+    "6": ".......uuxyyyyxuu.......",
+    "7": "......uxyyyyyyyyxu......",
+    "8": ".....uxyyyyyyyyyxxu.....",
+    "9": ".....uxyyyyyyyyyyxu....."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "22": ".....jplxxwDwxxlpj......",
+    "23": "....uppvwxxDxxwvppu.....",
+    "24": "...uqppvwxxDxxwvppqu....",
+    "25": "...uqlpvwxxDxxwvplqu...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "20": "......uqqwwwwwwxqu......",
+    "21": ".....uqqqxxxxxxxqqu....."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "22": ".......upplwxwDu........",
+    "23": ".......jplvwxxDu........",
+    "24": "......uqppvwxxDju......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "22": "........uDxwvlppu.......",
+    "23": "........uDxxwvlpj.......",
+    "24": ".......ujDxxwvppqu......"
+   }
+  }
+ ]
+}
