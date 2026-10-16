@@ -10,6 +10,8 @@ import type { Project } from "@/project/types";
 export const DEFAULT_SOCIAL_SLOTS_PER_DAY = 3;
 export const DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP = 20;
 export const MAX_SOCIAL_SLOTS_PER_DAY = 12;
+/** 소셜 루프(연애)에서 호감의 만점. 기본 1000 척도는 하루 20 상한·문턱 20~40 의 연애 규모에서 단계 표시가 0 에 붙는다. */
+export const SOCIAL_FRIENDSHIP_MAX = 100;
 
 /** `system.socialLoop` — 저장 형태. 필드를 생략하면 위 기본값. */
 export interface SocialLoopConfig {
@@ -104,4 +106,9 @@ export function socialLoopSummary(project: Project, session: PlaySession): strin
 /** 오늘 칸을 다 썼는가. */
 export function socialSlotsExhausted(session: PlaySession, loop: ResolvedSocialLoop): boolean {
   return socialSlotsLeft(session, loop) <= 0;
+}
+
+/** 호감 표시 척도(단계 막대·피드백의 `n/10`·HUD 하트). 소셜 루프가 켜진 프로젝트만 만점 100, 나머지는 기존 1000. */
+export function friendshipDisplayMax(project: Pick<Project, "system"> | undefined): number | undefined {
+  return resolveSocialLoop(project) ? SOCIAL_FRIENDSHIP_MAX : undefined;
 }

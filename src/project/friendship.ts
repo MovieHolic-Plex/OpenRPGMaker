@@ -285,6 +285,31 @@ export type FriendshipListEntry = {
   readonly displayName?: string;
 };
 
+const eventNameByCharacter = new WeakMap<object, Map<string, string>>();
+
+/**
+ * 호감 키(characterId)의 사람 이름. 캐릭터 프로필이 있으면 그 displayName, 없으면(place_npc/make_villager 로만 만든 NPC) 그 키를 가진 이벤트의 이름.
+ * 프로젝트 단위로 한 번 색인한다(HUD 가 프레임마다 부른다).
+ */
+export function friendshipDisplayName(project: Project | undefined, key: string): string | undefined {
+  if (!project) return undefined;
+  const profile = project.characters?.[key]?.displayName?.trim();
+  if (profile) return profile;
+  let index = eventNameByCharacter.get(project);
+  if (!index) {
+    index = new Map();
+    for (const map of Object.values(project.maps ?? {})) {
+      for (const event of map.events ?? []) {
+        const id = event.characterId?.trim();
+        const name = event.name?.trim();
+        if (id && name && !index.has(id)) index.set(id, name);
+      }
+    }
+    eventNameByCharacter.set(project, index);
+  }
+  return index.get(key);
+}
+
 /** Sorted read-only list of known social keys present in session.friendship. */
 export function listFriendshipEntries(
   friendship: Readonly<Record<string, number>> | undefined,
@@ -298,7 +323,7 @@ export function listFriendshipEntries(
     .map((key) => {
       const value = Math.trunc(Number.isFinite(friendship[key]) ? friendship[key]! : 0);
       const tier = friendshipTier(value, max, tiers);
-      const displayName = project?.characters?.[key]?.displayName?.trim();
+      const displayName = friendshipDisplayName(project, key);
       return {
         key,
         value,

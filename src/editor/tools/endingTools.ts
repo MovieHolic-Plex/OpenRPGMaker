@@ -192,7 +192,8 @@ const setDeadlineEnding: ToolDefinition = {
   name: "set_deadline_ending",
   description:
     "N일이 지나면 결말을 정한다(연애·관계 게임의 기한 엔딩). 시간 시스템이 켜져 있어야 한다 — 하루가 끝날 때마다 지난 날을 세고(변수 var_days_elapsed), days 번째 하루가 끝나면 tiers 를 위에서부터 보아 처음 맞는 엔딩을 실행한다. "
-    + "tiers 는 호감이 높은 것부터 [{endingId, friendshipAtLeast}] 로 적고, 마지막 항목은 friendshipAtLeast 를 생략해 기본 결말로 둔다. "
+    + "tiers 는 호감이 높은 것부터 [{endingId, friendshipAtLeast, characterId?}] 로 적고, 마지막 항목은 friendshipAtLeast 를 생략해 기본 결말로 둔다. "
+    + "인물이 여럿이면(다인 연애) 항목마다 characterId 를 줘 「그 사람의 호감이 문턱 이상이면 그 사람과의 결말」 로 적는다 — 위에서부터 처음 맞는 항목이 이기므로 여러 명이 문턱을 넘으면 먼저 적은 인물이 이긴다(그래서 더 아끼는 결말·높은 문턱을 위에 둔다). "
     + "엔딩은 먼저 define_ending 으로 정의해 둔다(conditions 는 [] 로 둬도 된다 — 호감 문턱은 이 도구가 건다). 이 도구는 공통 이벤트 ce_deadline_ending 을 만들고 system.timeSystem.onDayEnd 로 연결한다. "
     + "이미 다른 onDayEnd 공통 이벤트가 있으면 그것을 먼저 부르고 이어서 기한 판정을 한다. 같은 호출을 다시 하면 갱신한다.",
   mode: "write",
@@ -200,7 +201,7 @@ const setDeadlineEnding: ToolDefinition = {
     type: "object",
     properties: {
       days: { type: "integer", description: "결말이 나는 날 수(1 이상). 시작일을 1일째로 세어, days 번째 하루가 끝날 때 판정한다." },
-      characterId: { type: "string", description: "호감을 읽을 인물 키(place_npc/make_villager 의 characterId). friendshipAtLeast 를 쓰면 필수." },
+      characterId: { type: "string", description: "호감을 읽을 기본 인물 키(place_npc/make_villager 의 characterId). 한 사람 기준이면 여기에 한 번만 적는다. 다인이면 tiers[].characterId 로 항목마다 적는다." },
       tiers: {
         type: "array",
         description: "위에서부터 처음 맞는 것이 실행된다. 마지막 항목은 friendshipAtLeast 없이 기본 결말.",
@@ -209,6 +210,7 @@ const setDeadlineEnding: ToolDefinition = {
           properties: {
             endingId: { type: "string", description: "define_ending 으로 만든 엔딩 id" },
             friendshipAtLeast: { type: "integer", description: "이 호감 이상이면 이 엔딩. 생략하면 항상 맞는 기본 결말" },
+            characterId: { type: "string", description: "이 항목이 호감을 읽을 인물(생략하면 상위 characterId). 다인 연애에서 인물마다 다른 결말을 줄 때." },
           },
           required: ["endingId"],
         },
@@ -227,7 +229,7 @@ const setDeadlineEnding: ToolDefinition = {
     if (!draft.system.timeSystem?.enabled) {
       throw new ToolError("시간 시스템이 꺼져 있어 기한을 셀 수 없습니다 — configure_time_system({enabled:true}) 를 먼저 부르세요.", { code: "time-system-required" });
     }
-    const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown }[] : [];
+    const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[] : [];
     if (tiers.length === 0) throw new ToolError("tiers 에 엔딩이 하나 이상 있어야 합니다.", { code: "invalid-args" });
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
     const known = new Set((draft.endings ?? []).map((ending) => ending.id));
@@ -240,10 +242,11 @@ const setDeadlineEnding: ToolDefinition = {
       if (threshold !== undefined && (typeof threshold !== "number" || !Number.isFinite(threshold))) {
         throw new ToolError(`tiers[${index}].friendshipAtLeast 는 숫자여야 합니다.`, { code: "invalid-args" });
       }
-      if (threshold !== undefined && !characterId) {
-        throw new ToolError("friendshipAtLeast 를 쓰려면 호감을 읽을 characterId 가 필요합니다.", { code: "invalid-args" });
+      const tierCharacter = typeof tier?.characterId === "string" && tier.characterId.trim() ? tier.characterId.trim() : characterId;
+      if (threshold !== undefined && !tierCharacter) {
+        throw new ToolError(`tiers[${index}] 에 friendshipAtLeast 를 쓰려면 호감을 읽을 characterId 가 필요합니다 — 상위 characterId 또는 tiers[${index}].characterId 를 주세요.`, { code: "invalid-args" });
       }
-      return { endingId, threshold: threshold === undefined ? undefined : Math.trunc(threshold as number) };
+      return { endingId, threshold: threshold === undefined ? undefined : Math.trunc(threshold as number), characterId: tierCharacter };
     });
     const last = resolved[resolved.length - 1]!;
     if (last.threshold !== undefined) {
@@ -261,7 +264,7 @@ const setDeadlineEnding: ToolDefinition = {
       const tier = resolved[index]!;
       chain = [{
         kind: "fork",
-        condition: { kind: "friendshipAtLeast", npcKey: characterId, value: tier.threshold! },
+        condition: { kind: "friendshipAtLeast", npcKey: tier.characterId, value: tier.threshold! },
         then: [{ kind: "triggerEnding", endingId: tier.endingId }],
         else: chain,
       }];
@@ -285,7 +288,7 @@ const setDeadlineEnding: ToolDefinition = {
       ...(timeSystem.forceSleep === true ? [] : ["forceSleep 이 꺼져 있으면 플레이어가 자지 않는 한 하루가 끝나지 않아 기한이 오지 않습니다 — 연애 게임은 하루 칸을 다 쓰면 자동으로 하루가 끝나도록 forceSleep 을 켜거나 잠자리 이벤트(sleepUntilMorning)를 두세요."]),
     ];
     return {
-      summary: `${days}일째 하루가 끝날 때 결말 판정(${resolved.map((tier) => `${tier.endingId}${tier.threshold === undefined ? "(기본)" : `≥${tier.threshold}`}`).join(" → ")}) — 공통 이벤트 ${DEADLINE_ENDING_COMMON_EVENT_ID}, onDayEnd 연결`,
+      summary: `${days}일째 하루가 끝날 때 결말 판정(${resolved.map((tier) => `${tier.endingId}${tier.threshold === undefined ? "(기본)" : `${tier.characterId && tier.characterId !== characterId ? ` ${tier.characterId}` : ""}≥${tier.threshold}`}`).join(" → ")}) — 공통 이벤트 ${DEADLINE_ENDING_COMMON_EVENT_ID}, onDayEnd 연결`,
       data: { commonEventId: DEADLINE_ENDING_COMMON_EVENT_ID, variableId: DEADLINE_ENDING_VARIABLE_ID, days, tiers: resolved },
       ...(warnings.length ? { warnings } : {}),
     };
