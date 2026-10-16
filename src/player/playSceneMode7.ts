@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
+import { ensureFilterShaderNode } from "@/player/playSceneFilterShader";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -96,20 +97,16 @@ function webglNodes(scene: PlaySceneContext): Phaser.Renderer.WebGL.RenderNodes.
 function ensureFilterNode(scene: PlaySceneContext): boolean {
   const nodes = webglNodes(scene);
   if (!nodes) return false;
-  if (nodes.getNode(FILTER_NODE)) return true;
-  const PhaserRuntime = getLoadedPhaser();
-  const node = new PhaserRuntime.Renderer.WebGL.RenderNodes.BaseFilterShader(FILTER_NODE, nodes, undefined, FRAG_SHADER);
-  const shader = node as Phaser.Renderer.WebGL.RenderNodes.BaseFilterShader & {
-    setupUniforms(controller: Phaser.Filters.Controller, _drawingContext: Phaser.Renderer.WebGL.DrawingContext): void;
-  };
-  shader.setupUniforms = function (_controller, _drawingContext) {
-    this.programManager.setUniform("uHorizon", HORIZON);
-    this.programManager.setUniform("uFar", FAR_WIDTH);
-    this.programManager.setUniform("uSkyTop", [...SKY_TOP]);
-    this.programManager.setUniform("uSkyLow", [...SKY_LOW]);
-  };
-  nodes.addNode(FILTER_NODE, node);
-  return true;
+  return ensureFilterShaderNode(nodes, {
+    name: FILTER_NODE,
+    fragmentSource: FRAG_SHADER,
+    setupUniforms(node) {
+      node.programManager.setUniform("uHorizon", HORIZON);
+      node.programManager.setUniform("uFar", FAR_WIDTH);
+      node.programManager.setUniform("uSkyTop", [...SKY_TOP]);
+      node.programManager.setUniform("uSkyLow", [...SKY_LOW]);
+    },
+  });
 }
 
 function setBoundsForZoom(scene: PlaySceneContext, camera: Phaser.Cameras.Scene2D.Camera): void {
