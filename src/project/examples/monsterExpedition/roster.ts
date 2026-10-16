@@ -3,7 +3,7 @@ import { normalizeEnemyRecord, normalizeItemRecord, normalizeSkillRecord } from 
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import uploadedArt from "../../../../public/assets/monster-expedition/creatures/uploaded-art.json";
 import { expeditionEnemyActions } from "./enemyActions";
-import { configureExpeditionFieldItems } from "./fieldItems";
+import { configureExpeditionFieldItems as configureExpeditionWalkItems } from "./fieldItems";
 import { harnessArtForCampaignSpecies, harnessFieldGraphicForCampaignSpecies } from "@/assets/harnessMonsterArt";
 
 export type ExpeditionHabitat = "grass" | "forest" | "coast" | "mountain" | "desert" | "snow" | "cave" | "ruins" | "swamp" | "volcano";
@@ -374,6 +374,7 @@ export function configureExpeditionRoster(project: Project): void {
   configureExpeditionBalls(project);
   configureExpeditionHeldItems(project);
   configureExpeditionFieldItems(project);
+  configureExpeditionWalkItems(project);
   const incomingArt: Record<string, UploadedAsset> = uploadedArt as Record<string, UploadedAsset>;
   // 하네스 번들 그림으로 바뀐 종의 mx_art_* 는 아무도 참조하지 않으므로 프로젝트에 복사하지 않는다.
   const replacedArt = [...FAMILIES.flatMap(family => family.slugs), ...RARES.map(rare => rare.slug)]
