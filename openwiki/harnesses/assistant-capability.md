@@ -184,3 +184,17 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 `--case monster-followup`은 bun 으로 만든 캠페인 고정물에 「서리꽃 마을 왼쪽 아래 빈 곳 채워」를 시킨다. 합격은 그 맵만 바뀜·크기/이벤트/다른 콘텐츠 보존·빈칸 60% 이하 —
 숫자보다 `render.mts`로 서리꽃 마을을 원 크기로 그려 검은 칸·테두리 파괴를 눈으로 본다(2026-10-06~07 r8~r11: 검은 칸 셋·테두리 파괴 원인은 도구였다).
 재로드 때 다른 세션이 공용 DB 에 자료를 게시하면 부팅 정규화가 한 번 더 저장한다 — 맵·DB 가 같고 rev+1·`bootNormalization.lib`만 다르면 `libraryResync`로 허용한다.
+
+### 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+
+헤드리스 실조수 경로(`npm run qa:game -- gen --seed-project … --text "<한 줄>" --compat-base http://127.0.0.1:8318/v1 --compat-model gemini-4-argon-high --compat-thinking medium`, 키는 `OPRN_LIVE_KEY` 환경변수만, `flock /tmp/oprn-8318.lock` 직렬)으로 연애 시작 프로젝트(대사 시스템 저작 없음 = 관계 기본 구성) 위에서 자연어 5문장을 각각 독립 실행했다. 입력창 UI 경로가 아니라 `runPiAgent` 직접 호출이다(조수 하네스의 UI 관문을 대신하지 않는다). 프록시에는 `gemini-4-argon-high` 하나만 있고 `-medium` 모델 id 는 없다(400 model_not_found) — 추론 강도는 `--compat-thinking`.
+
+| 문장 | 결과(저장된 project.json 의 `meta.oprnDialogueSystem`) |
+|---|---|
+| 백로그·오토·스킵·숨기기 다 켜고 백로그 250줄 | `set_dialogue_system {backlog,auto,skip,hideButton:true,backlogLimit:250}` → limit 250, 나머지 켜짐 |
+| 스킵 안 읽은 글도, 오토 빠르게, 창 70% | `defaults {skipScope:"all",autoSpeed:"fast",windowOpacity:0.7}`, 기능 켜짐·limit 100 유지 |
+| 백로그 10000줄(범위 밖) | 1차 호출 `backlogLimit: must be <= 500` 거절 → 2차 500 으로 재호출, 최종 보고에 「요청한 10,000줄은 그대로 안 됨, 최대 500줄」을 정직하게 적음 |
+| 숨기기 버튼만 빼 줘 | `{hideButton:false}` 만 전달, 나머지 보존 |
+| 시스템 글자를 영어로 | `{language:"en"}` 만 전달 |
+
+5/5 도구 선택·인자가 맞았고(`read_game_systems` 먼저 → `set_dialogue_system` → `review_game_systems`) 기존 설정은 보존됐다. 한계: 범위 밖 요청(3번)에서 어시스턴트가 사용자에게 되묻지 않고 최대치로 대신 적용했다(보고는 정직). 조수 UI 입력창 경로·플레이 검수는 이 시험에 포함되지 않는다. 증거는 저장소 밖 로컬 `qa-runs/dlg-a1..a5`(gitignore).
