@@ -29,8 +29,9 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
-import { previewMonsterEvolution } from "@/project/monsterCollection";
+import { monsterSkillIds, previewMonsterEvolution, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
+import { playEmeraldMoveLearns, type EmeraldMoveLearnDecision } from "@/player/emeraldMoveLearnScene";
 import { playMonsterSfx } from "@/player/monsterSfx";
 
 export type ResolvedMonsterBattleParty = {
@@ -315,7 +316,20 @@ export async function playBattle(
                   return preview ? [preview] : [];
                 })
                 : [];
-              const evolutionDone = evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : Promise.resolve();
+              // 칸(4개)이 가득 차 새 기술을 못 배우는 몬스터는 진화보다 먼저 「잊게 할까?」를 묻는다. 결정은 보상 적용 뒤에 세션에 쓴다.
+              const learnRequests = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const instance = session.monsterInstances[entry.instanceId];
+                  if (!instance) return [];
+                  const activeSkillIds = monsterSkillIds(project, instance);
+                  return (entry.overflowSkillIds ?? []).map((pendingSkillId) => ({ instanceId: entry.instanceId, name: entry.name, pendingSkillId, activeSkillIds }));
+                })
+                : [];
+              let moveDecisions: readonly EmeraldMoveLearnDecision[] = [];
+              const learnDone = learnRequests.length > 0
+                ? playEmeraldMoveLearns(host, project, learnRequests, signal).then((decisions) => { moveDecisions = decisions; }).catch(() => undefined)
+                : Promise.resolve();
+              const evolutionDone = learnDone.then(() => evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : undefined);
               void evolutionDone.then(() => {
               if (!current()) { abort(); return; }
               const transition = newTransition();
@@ -352,6 +366,12 @@ export async function playBattle(
                   { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
+                }
+                for (const decision of moveDecisions) {
+                  const instance = session.monsterInstances[decision.instanceId];
+                  if (!instance || decision.replaceSkillId === undefined) continue;
+                  const replaced = replacePendingMonsterSkill(project, instance, decision.pendingSkillId, decision.replaceSkillId);
+                  if (replaced.ok) session.monsterInstances[decision.instanceId] = replaced.instance;
                 }
                 appendBattleReport(session, project, snapshot, result);
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");

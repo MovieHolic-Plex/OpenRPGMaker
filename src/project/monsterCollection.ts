@@ -625,7 +625,22 @@ export type MonsterLevelUpPreview = {
   readonly fromLevel: number;
   readonly toLevel: number;
   readonly learnedSkillIds: readonly SkillId[];
+  /**
+   * learnedSkillIds 중 기술 칸(MONSTER_SKILL_MAX)이 모자라 바로 익히지 못하고 보류(pendingSkillIds)로 가는 것.
+   * 비어 있으면 필드 자체가 없다 — 「배웠다!」 문장은 여기 없는 것만 말해야 한다.
+   */
+  readonly overflowSkillIds?: readonly SkillId[];
 };
+
+/** 새로 배울 기술을 칸이 남는 만큼은 바로 익히고, 나머지는 보류로 가르는 것(applyLearnedMonsterSkills 와 같은 순서·같은 기준). */
+export function splitLearnedMonsterSkills(
+  activeSkillIds: readonly SkillId[],
+  learnedSkillIds: readonly SkillId[],
+): { readonly learned: SkillId[]; readonly overflow: SkillId[] } {
+  const free = Math.max(0, MONSTER_SKILL_MAX - activeSkillIds.length);
+  const fresh = uniqueSkillIds(learnedSkillIds).filter((skillId) => !activeSkillIds.includes(skillId));
+  return { learned: fresh.slice(0, free), overflow: fresh.slice(free) };
+}
 
 // 승리 exp 를 적용하면 발생할 몬스터 레벨업을 계산만 한다(세션 변경 없음).
 // 결과 화면 표시용이며, 실제 적립은 applyMonsterExperienceAndEvolution 이 담당한다 —
@@ -649,17 +664,21 @@ export function previewMonsterExperience(
     const fromLevel = instance.level;
     const toLevel = monsterLevelForExp(species, fromLevel, monsterExpInLevelBand(species, fromLevel, instance.exp) + exp);
     if (toLevel <= fromLevel) continue;
+    const activeSkillIds = monsterSkillIds(project, instance);
+    const learnedSkillIds = newSkillsForLevelRange(
+      species,
+      fromLevel,
+      toLevel,
+      [...activeSkillIds, ...(instance.pendingSkillIds ?? [])],
+    );
+    const { overflow } = splitLearnedMonsterSkills(activeSkillIds, learnedSkillIds);
     results.push({
       instanceId: instance.instanceId,
       name: monsterDisplayName(project, instance),
       fromLevel,
       toLevel,
-      learnedSkillIds: newSkillsForLevelRange(
-        species,
-        fromLevel,
-        toLevel,
-        [...monsterSkillIds(project, instance), ...(instance.pendingSkillIds ?? [])],
-      ),
+      learnedSkillIds,
+      ...(overflow.length > 0 ? { overflowSkillIds: overflow } : {}),
     });
   }
   return results;
