@@ -434,6 +434,8 @@ function fitTitleTextNodes(nodes: readonly HTMLElement[], settings: TitleScreenS
   if (!node) return null;
   const fit = fitTitleText(settings.title, { left: settings.layout.titleX, basePx: 27, letterSpacingEm: 0.06 });
   node.style.fontSize = `${fit.fontPx}px`;
+  // 부제 위치는 제목 높이 = 줄 수 × 글자 크기 × 1.1 로 계산한다 — 다른 규칙이 줄 높이를 1.5 로 덮으면(실측 40px) 두 줄 제목이 부제를 덮는다(jrpg-loop-1 D15).
+  node.style.lineHeight = "1.1";
   node.style.whiteSpace = fit.lines > 1 ? "normal" : "nowrap";
   node.style.maxWidth = `${fit.availablePx}px`;
   node.style.width = "max-content";
