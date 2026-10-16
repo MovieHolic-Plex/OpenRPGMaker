@@ -485,6 +485,14 @@ export function monsterMarkerTool(toolName: string, args: Readonly<Record<string
   if (toolName === "configure_monster_system") return args.enabled !== false;
   return MONSTER_MARKER_TOOLS.has(toolName);
 }
+/**
+ * 위 표지 도구 중 스스로 잠금을 거는 것(configure_monster_system·build_monster_*)을 뺀 나머지 — 「얇은」 몬스터 도구.
+ * 이 도구가 **빈 시작 맵뿐인 새 프로젝트**에서 처음 불리면(라우팅이 의도 문장을 놓친 자유 경로, 2026-10-16 잠금 누수 감사 #2) toolRunner 가 도구를 돌리기 전에
+ * 몬스터 키트 시작 + 장르 잠금을 건다 — 안 그러면 표지(system.genre)만 붙고 주인공이 RTP Actor1 그대로 남는다. 맵이 있는 기존 프로젝트는 표지만 남긴다(소급 잠금 금지).
+ */
+export function monsterToolStartsLock(toolName: string): boolean {
+  return toolName !== "configure_monster_system" && !toolName.startsWith("build_monster_") && MONSTER_MARKER_TOOLS.has(toolName);
+}
 const MONSTER_MARKER_TOOLS: ReadonlySet<string> = new Set([
   "build_monster_game", "build_monster_tournament", "build_monster_expedition", "define_monster_species", "define_monster_families", "rename_monster_species",
   "give_starter_monsters", "place_trainer", "place_monster_center", "set_encounter_table", "configure_monster_style",
