@@ -77,7 +77,19 @@ export async function setParty(page, instances) {
   }, instances);
 }
 
+/** 필드 대사(오프닝 자동 이벤트)가 끝날 때까지 확인키로 넘긴다 — 대사가 뜬 채 전투를 열면 문장 상자가 전투 HUD 위에 겹쳐 찍힌다(프로브 인공물). */
+export async function settleField(page) {
+  let quiet = 0;
+  for (let i = 0; i < 60 && quiet < 6; i++) {
+    const open = await page.evaluate(() => Boolean(document.querySelector('[data-testid="dialogue-box"], [data-testid="cinematic-sequence"], .dialogue-box, .cinematic-skip')));
+    quiet = open ? 0 : quiet + 1;
+    if (open) await page.keyboard.press("Escape");
+    await page.waitForTimeout(400);
+  }
+}
+
 export async function startBattle(page, troopId, extra = {}) {
+  await settleField(page);
   await page.evaluate(([troopId, extra]) => {
     window.__battleResult = null;
     void window.__oprnHooksScene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: true, ...extra }).then((v) => { window.__battleResult = v ?? "null"; });
