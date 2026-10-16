@@ -9,7 +9,7 @@
 //       --concept-card <card.json>  굽기 전 개념 카드를 이 실행에만 얹는다(슈퍼하네스 조수 시험)
 //       --compat-base <url> --compat-model <id>  사용자 지정(OpenAI 호환) 엔드포인트로 모든 역할을 돌린다(예: CLIProxyAPI 8318 의 gemini-4-argon-high).
 //           키는 환경변수 OPRN_LIVE_KEY(--compat-key-env 로 이름 변경)에서만 읽는다 — 파일·녹화·로그에 쓰지 않는다. 허용 gemini-4-argon*, 차단 claude-*(--compat-allow/--compat-block 쉼표 목록).
-//           환경변수 QA_COMPAT_BASE·QA_COMPAT_MODEL 로도 줄 수 있다. 부가: --compat-thinking low|medium|high --compat-reasoning none|field|suffix
+//           환경변수 QA_COMPAT_BASE·QA_COMPAT_MODEL 로도 줄 수 있다. 부가: --compat-thinking low|medium|high --compat-reasoning none|field|suffix --compat-no-images(기본은 이미지 입력 켬)
 //       --text "<채팅 한 줄>"  기획 지시문 대신 조수 채팅에 친 문장 하나를 그대로 보낸다(씨앗은 --brief 의 새 프로젝트, 기획서는 뺀다)
 //
 // 브라우저 경로와 같은 함수를 부른다:
@@ -143,6 +143,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
       compat = buildQaCompatSetup({
         baseUrl: compatBase, model: compatModel, keyEnv: arg("compat-key-env") ?? QA_COMPAT_DEFAULT_KEY_ENV,
         ...(arg("compat-thinking") ? { thinkingLevel: arg("compat-thinking") as "low" | "medium" | "high" } : {}),
+        ...(flag("compat-no-images") ? { supportsImages: false } : {}),
         ...(arg("compat-reasoning") ? { reasoningMode: arg("compat-reasoning")! } : {}),
         ...(list("compat-allow") ? { allowModels: list("compat-allow")! } : {}),
         ...(list("compat-block") ? { blockModels: list("compat-block")! } : {}),

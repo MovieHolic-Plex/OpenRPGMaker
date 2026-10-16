@@ -30,6 +30,8 @@ export interface QaCompatOptions {
   /** 역할 모델(계획·실행·시각·작문·시공·감독)에 줄 사고 강도. 기본 medium(감독은 high). */
   readonly thinkingLevel?: RoleModel["thinkingLevel"];
   readonly reasoningMode?: string;
+  /** 이미지 입력(Vision). 기본 true — Argon(Gemini)은 받는다. 끄면 타일셋 참고문서의 이미지가 모델에 안 가 선행 읽기 게이트를 못 넘는다. */
+  readonly supportsImages?: boolean;
   readonly allowModels?: readonly string[];
   readonly blockModels?: readonly string[];
   /** 키를 읽을 환경변수 이름(값이 아니다). */
@@ -67,7 +69,7 @@ export function buildQaCompatSetup(options: QaCompatOptions): QaCompatSetup {
     reasoningMode: parseOpenAiCompatReasoningMode(options.reasoningMode ?? "none"),
     allowModels: [...(options.allowModels ?? QA_COMPAT_DEFAULT_ALLOW)],
     blockModels: [...(options.blockModels ?? QA_COMPAT_DEFAULT_BLOCK)],
-    supportsImages: false,
+    supportsImages: options.supportsImages ?? true,
     maxOutputTokens: OPENAI_COMPAT_DEFAULT_MAX_OUTPUT_TOKENS,
     contextWindow: OPENAI_COMPAT_DEFAULT_CONTEXT_WINDOW,
     firstTokenTimeoutSec: OPENAI_COMPAT_DEFAULT_FIRST_TOKEN_TIMEOUT_SEC,

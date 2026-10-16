@@ -32,6 +32,7 @@ npm run qa:game -- gen --brief scripts/qa-game/briefs/campus-reunion-romance.jso
 - 모든 역할(계획·실행·시각·작문·시공·감독)이 그 한 모델로 간다. 제공자 id 는 `openai-compat:qa-gen`, 엔드포인트 정의는 프로세스 메모리에만 있다(`~/.oprn/openai-compat-endpoints.json` 을 쓰지 않는다).
 - 허용 `gemini-4-argon*`·차단 `claude-*`(편집기 설정과 같은 판정, `--compat-allow/--compat-block` 으로 바꿈). 패턴 밖 모델은 폴백 없이 거절한다.
 - 키를 읽을 환경변수는 `--compat-key-env`(기본 `OPRN_LIVE_KEY`). 오류 문장은 키를 `***` 로 가린다. 환경변수 `QA_COMPAT_BASE`·`QA_COMPAT_MODEL` 로도 줄 수 있다. 구현 `scripts/qa-game/lib/compatProvider.ts`.
+- 이미지 **입력**은 기본 켜짐(`--compat-no-images` 로 끔). 끄면 타일셋 참고문서의 그림이 모델에 안 가서 선행 읽기 게이트(그림 전달 확인)를 영영 못 넘고 `paint_tiles`·`stamp_tileset_object` 가 계속 거절된다(2026-10-16 첫 시험에서 도구 실패의 절반이 이것이었다).
 - 이미지 생성(타이틀 키아트 등)은 이 연결을 타지 않는다(`QA_IMAGE_PROVIDER` 별개).
 
 ### replay 의 한계

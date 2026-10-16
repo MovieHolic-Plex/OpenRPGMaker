@@ -28,6 +28,11 @@ describe("qa-game gen 사용자 지정 연결", () => {
     expect(() => buildQaCompatSetup({ baseUrl: "http://127.0.0.1:8318/v1", model: "claude-opus-4", env })).toThrow(/허용 패턴|차단/u);
   });
 
+  it("이미지 입력은 기본 켜짐 — 꺼지면 참고문서 그림 게이트를 못 넘는다", () => {
+    expect(buildQaCompatSetup({ baseUrl: "http://127.0.0.1:8318/v1", model: "gemini-4-argon-high", env }).endpoint.supportsImages).toBe(true);
+    expect(buildQaCompatSetup({ baseUrl: "http://127.0.0.1:8318/v1", model: "gemini-4-argon-high", env, supportsImages: false }).endpoint.supportsImages).toBe(false);
+  });
+
   it("공개 주소에 http 는 거절한다", () => {
     expect(() => buildQaCompatSetup({ baseUrl: "http://example.com/v1", model: "gemini-4-argon-high", env })).toThrow();
   });
