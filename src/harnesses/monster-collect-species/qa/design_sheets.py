@@ -133,16 +133,18 @@ def pick(out: str):
             cells = []
             for c in record["candidates"]:
                 im = load_png(run_dir / c["sprite"])
+                if im.size != (64, 64):  # 112 캔버스로 만든 옛 후보는 현재 64 캔버스 규격으로 다시 맞춘 것을 쓴다(refit)
+                    pass
                 m = mask64(im)
                 is_pick = c["k"] == e["candidate"]
-                cells.append(f'<div class="cand{" pick" if is_pick else ""}"><div class="art"><img src="{uri(im)}" width="224" height="224"></div>'
+                cells.append(f'<div class="cand{" pick" if is_pick else ""}"><div class="art"><img src="{uri(im)}" width="{im.width * (256 // im.width)}" height="{im.height * (256 // im.width)}"></div>'
                              f'<div class="row"><div class="sil"><img src="{uri(mask_img(m))}" width="64" height="64"></div><span class="tag">{c["k"]}{" · 선택" if is_pick else ""}</span></div></div>')
                 if is_pick and side == "front": chosen[sid] = m
             before = e.get("before")
             before_html = ""
             if before:
                 bim = load_png(git_bytes(before, f"public/assets/harnesses/monster-collect-species/{sid}/{side}.png"))
-                before_html = f'<div class="cand"><div class="art"><img src="{uri(bim)}" width="224" height="224"></div><span class="tag">이전(재작업 전)</span></div>'
+                before_html = f'<div class="cand"><div class="art"><img src="{uri(bim)}" width="{bim.width * (256 // bim.width)}" height="{bim.height * (256 // bim.width)}"></div><span class="tag">이전(재작업 전, {bim.width}px 캔버스)</span></div>'
             keep = "기존 유지 — 새 후보가 분명히 더 낫지 않았다" if e.get("keep") else ""
             blocks.append(f'<h2>{sid} · {seed[sid]["name"]} · {"앞모습" if side == "front" else "뒷모습"} <span class="m">run {e["run"]}</span></h2>'
                           f'<p class="s">시그니처: {seed[sid]["signature"]}</p><div class="cands">{before_html}{"".join(cells)}</div>'

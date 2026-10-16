@@ -132,7 +132,7 @@ function pickedSprite(ledger: MonsterLedger, species: SpeciesSeed, which: Sprite
 }
 
 /**
- * 줄 격자 → 112 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞추고,
+ * 줄 격자 → 캔버스 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞추고,
  * 공격·피격은 뒷발(공격 방향 반대쪽 끝)을 고정한다 — 덤빈 거리가 프레임 안에 남는다.
  */
 function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaImage, which: SpriteSide, stage: 1 | 2 | 3, base: RgbaImage) {
@@ -179,7 +179,7 @@ function sheetHtml(species: SpeciesSeed, which: SpriteSide, id: string, candidat
   // 실루엣 테스트: 같은 그림을 검정 단색 마스크 64px 로도 보여 준다 (시그니처만으로 종이 구별되는지 — 디자인 규칙 ④)
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
-    return `<figure><img src="${c.sprite}" width="336" height="336"><div class="sil"><img class="mask" src="${c.sprite}" width="64" height="64"> <img class="mask" src="${c.sprite}" width="112" height="112"></div><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
+    return `<figure><img src="${c.sprite}" width="${SPRITE_CANVAS * 5}" height="${SPRITE_CANVAS * 5}"><div class="sil"><img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS}" height="${SPRITE_CANVAS}"> <img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS * 2}" height="${SPRITE_CANVAS * 2}"></div><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
   }).join("");
   return `<!doctype html><meta charset="utf-8"><title>${species.name} ${which} ${id}</title>
 <style>body{margin:0;background:#15171d;color:#dfe3ea;font:14px system-ui,sans-serif;padding:12px}main{display:flex;flex-wrap:wrap;gap:10px}
@@ -223,22 +223,22 @@ function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSi
   writeFileSync(join(dir, "run.json"), JSON.stringify(record, null, 2) + "\n");
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
-    return `<figure><div class="play" style="background-image:url(${c.strip})"></div><img src="${c.strip}" height="112"><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
+    return `<figure><div class="play" style="background-image:url(${c.strip})"></div><img src="${c.strip}" height="${SPRITE_CANVAS * 2}"><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
   }).join("");
   writeFileSync(join(dir, "sheet.html"), `<!doctype html><meta charset="utf-8"><title>${species.name} ${which} ${actionId} ${id}</title>
 <style>body{margin:0;background:#15171d;color:#dfe3ea;font:14px system-ui,sans-serif;padding:12px}main{display:flex;flex-wrap:wrap;gap:10px}
 figure{margin:0;background:#d6e4cd;color:#1d2a1d;padding:6px}img{image-rendering:pixelated;display:block}ul{margin:4px 0;padding-left:16px}.error{color:#b00}.warn{color:#8a5a00}
 ${playCss(action.frames, action.frameMs)}</style>
 <h1>${species.name} (${species.id}) · ${which === "front" ? "앞모습" : "뒷모습"} · ${actionId} · run ${id}</h1>
-<p>기준: <img src="base.png" width="112" style="display:inline;background:#d6e4cd"></p><main>${cells}</main>`);
+<p>기준: <img src="base.png" width="${SPRITE_CANVAS * 2}" style="display:inline;background:#d6e4cd"></p><main>${cells}</main>`);
   console.log(`후보 ${candidates.length}개 → ${relativeToRepo(join(dir, "sheet.html"))}`);
   console.log(`고르기: npm run harness -- ${MONSTER_COLLECT_SPECIES_HARNESS.id} pick --species ${species.id} --side ${which} --action ${actionId} --run ${id} --candidate <번호>`);
   return id;
 }
 
 /** 스트립을 CSS 로 재생 (GIF 인코더 없이). 3배 = 내 몬스터 전투 배율 */
-function playCss(frames: number, frameMs: number, scale = 3, cls = "play"): string {
-  const w = 112 * scale;
+function playCss(frames: number, frameMs: number, scale = 2, cls = "play"): string {
+  const w = SPRITE_CANVAS * scale;
   return `.${cls}{width:${w}px;height:${w}px;background-size:${w * frames}px ${w}px;image-rendering:pixelated;animation:${cls}-${frames} ${frames * frameMs}ms steps(${frames}) infinite}
 @keyframes ${cls}-${frames}{from{background-position-x:0}to{background-position-x:-${w * frames}px}}`;
 }
@@ -588,7 +588,7 @@ function stagePreview(args: Args): void {
         const name = `${species.id}-${which}-${state}.png`;
         copyFileSync(join(PATHS.bundle, species.id, entry.path), join(dir, name));
         const cls = `p-${species.id}-${which}-${state}`;
-        css.push(playCss(entry.frames, entry.frameMs, which === "back" ? 3 : 2, cls));
+        css.push(playCss(entry.frames, entry.frameMs, 2, cls));
         cells.push(`<figure><div class="${cls}" style="background-image:url(${name})"></div><figcaption>${which === "front" ? "앞" : "뒤"} · ${state} · ${entry.frames}장 ${entry.frameMs}ms${entry.loop ? " 반복" : ""}</figcaption></figure>`);
       }
     }

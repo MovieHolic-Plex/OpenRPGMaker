@@ -87,7 +87,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/harnesses/monster-collect-species/harness.ts` | 매니페스트 (범위 `monster-collect`) |
 | `src/harnesses/monster-collect-species/pixel/grid.ts` | 생성 그림 속 픽셀 격자 찾기 → 칸 최빈 색 |
 | `src/harnesses/monster-collect-species/pixel/tidy.ts` | 마젠타 번짐·작은 섬 제거, 20색 합치기, 외톨이 점 흡수 |
-| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 112 캔버스 바닥 정렬 |
+| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 64 캔버스 바닥 정렬 |
 | `src/harnesses/monster-collect-species/pixel/pipeline.ts` | `pixelize` · `toSprite` · `cleanReference` (브라우저·노드 공용 입구) |
 | `src/harnesses/monster-collect-species/prompts/prompts.ts` | 앞모습·뒷모습·진화형 프롬프트 |
 | `src/harnesses/monster-collect-species/checks/checks.ts` | 자동 검사 |
@@ -99,9 +99,9 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/assets/harnessMonsterBundle.json` · `src/assets/harnessMonsterArt.ts` | 런타임 번들 목록(바이트 없음, `build`/`manifest` 가 씀) · 런타임 입구(리소스 id·URL·대기 스트립·캠페인 종 대응) |
 | `harness-data/monster-collect-species/ledger.json` | 하네스가 쓰는 선택 기록 (원본 sha256·프롬프트·블록 크기) |
 | `harness-data/monster-collect-species/grids/<종>-<면>.png` | 고른 후보의 격자 도트(칸 하나 = 픽셀 하나). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (112×112) |
+| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (64×64, 2026-10-16 전엔 112) |
 | `harness-data/monster-collect-species/grids/<종>-<면>-<동작>.png` | 고른 동작 줄의 격자 도트 (N 프레임이 한 장). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(112×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
+| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(64×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
 
 ## 디자인 규칙 (2026-10-16 — 외부 시험자 지적 이후)
 
@@ -125,6 +125,15 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 - 후보 시트·점검표 생성기: `src/harnesses/monster-collect-species/qa/design_sheets.py` (`audit` · `pick`).
 - 조수가 새 종·계통을 지을 때의 같은 규칙: `src/ai/piAgent/monsterGameRequest.ts` `MONSTER_GAME_PRODUCTION_PROMPT` 끝의 「종 디자인 규칙」 문단.
 - 아래 「왜 이렇게 만드는가」의 「마스코트·치비·볼터치 금지」는 2026-10-01 시안의 이력이다. 지금은 **볼터치·스티커 금지만** 남고 치비 비례(1단계)는 요구한다.
+
+### 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
+
+- **한 문장**: 논리 화소 1 = 화면 2px(화면 480×320 = GBA 240×160 의 2배). 몬스터 그림 한 도트 = 논리 화소 하나, 전투 표시 **64 캔버스 → 128px(정확히 2배)**.
+- 캔버스 **64×64**(옛 112: 정수배가 1배뿐이라 D12 비정수 128 이 났다), 몸 내용 **긴 변 56 이내**(`MAX_INK_SIDE`), 바닥 정렬, idle 스트립 64×N. 몸집 목표 `BODY_SIZE` front 46 · back 50(진화 단계 ×1.08·1.15).
+- 생성기가 그린 도트(블록 7~15px → 60~130칸)는 `fitSprite` 가 64 캔버스에 맞게 줄인다(정수배에 0.15 안이면 정수, 아니면 비정수). 종마다 원본 블록이 달라도 **최종 스프라이트는 전 종이 같은 64 격자**다. `grid` 단계가 종별 원본 칸 수→줄인 배율을 보여 준다(실측: 앞 14·뒤 14 중 줄임 1.5~2배).
+- 거칠어지는 건 GBA 격자와 같아 의도한 것이다 — 그래서 시그니처와 실루엣이 64px 에서도 읽히는지가 더 중요하다(디자인 규칙 ④).
+- 규격이 바뀌었을 때 이미 만든 후보를 다시 맞추려면 `refit [--species]`(생성 없음).
+- 런타임의 정수배 표시(그림 크기에서 배율 계산)는 별도 작업이다(D12). 매니페스트 `canvas` 가 64 이므로 `harnessMonsterArt.ts` 는 스트립 셀 폭을 64 로 읽는다.
 
 ## 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
 
@@ -193,7 +202,9 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 | 항목 | 기준 | 수준 |
 |---|---|---|
-| 캔버스 | 112×112, 바닥 정렬 | 오류 |
+| 캔버스 | 64×64, 바닥 정렬 | 오류 |
+| 몸 크기 | 긴 변 56 이내(격자 계약) | 오류 |
+| 실루엣 겹침 | 앞모습 둘의 64px 마스크 IoU 0.75 이상 | 경고(`check`) |
 | 색 수 | `style.maxColors`(20) 이하 | 오류 |
 | 마젠타 기운 점 | 0 | 오류 |
 | 윤곽 | 실루엣 가장자리 칸의 85% 이상이 어두운 선 | 경고 |
@@ -208,7 +219,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 ## 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
 
-포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
+(옛 112 캔버스 시절 시안) 포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
 상대 숨쉬기 찌그러짐(`battler-breathe`)을 끈다. 2026-10-01 실제 플레이어 화면에 주입해 확인했다(명령 선택 화면만 — 공격·피격·기절·포획 모션은 미확인).
 엔진 반영 대상은 `src/styles/runtime/battle/20-pokemon-skin.css`. 주입 캡처는 시안 녹화기(qa-runs/monster-viz/record.mjs, gitignore — `INJECT_CSS`·`OVERRIDES` 환경 변수)로 했다 — 하네스 `qa/` 로 옮기는 건 다음 작업.
 
