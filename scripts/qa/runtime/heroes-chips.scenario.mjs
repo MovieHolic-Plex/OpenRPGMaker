@@ -3,7 +3,7 @@
 // 픽스처는 실물 AI 도구(place_npc)로 굽는다(heroes-chips-fixture.mts):
 //   npx vite-node --script scripts/qa/runtime/heroes-chips-fixture.mts --out tmp/heroes-chips.json
 //   node scripts/runtime-qa.mjs --scenario heroes-chips --project tmp/heroes-chips.json
-// 시작 (14,18), 아래 (10..17,21) 에 칸 0~7 을 정면으로 세우고, (12,18)·(16,18) 의 로봇·정찰병은 배회한다.
+// 새 프로젝트(20×15, 시작 10,8): 아래 (6..13,11) 에 칸 0~7 을 정면으로 세우고, (7,8)·(13,8) 의 로봇·정찰병은 배회한다.
 // 게임 시간을 직접 밀어(stepFrames) 배회 NPC 의 걷기 프레임이 돌아가는 장면을 시간 순으로 찍는다 — 기대 좌표 게이트 없이 눈으로 본다.
 
 const advance = (frames) => [
@@ -20,13 +20,17 @@ export const heroesChipsScenario = {
   beats: [
     {
       id: "field-start",
-      note: "새 게임 → 시작 (14,18). 아래 줄에 Heroes1 칸 0~7 이 정면으로 서 있고 로봇·정찰병이 둘레에서 배회한다",
+      note: "새 게임 → 시작 (10,8). 아래 줄에 Heroes1 칸 0~7 이 정면으로 서 있고 로봇·정찰병이 둘레에서 배회한다",
       ops: [
         { kind: "key", key: "Enter" },
         { kind: "waitFor", testid: "title-screen", state: "absent" },
-        { kind: "waitForRuntime" },
+        // 기본 오프닝 컷신이 끝나야 입력이 열린다(ct-field 시나리오와 같은 절차).
+        { kind: "waitFor", testid: "cinematic-sequence", state: "present", timeoutMs: 30_000 },
+        { kind: "pressUntil", key: "Enter", testid: "cinematic-sequence", state: "absent", maxPresses: 40, timeoutMs: 60_000 },
+        { kind: "waitForRuntime", timeoutMs: 120_000 },
+        { kind: "waitFor", testid: "cinematic-sequence", state: "absent", timeoutMs: 30_000 },
         { kind: "seed", seed: 1 },
-        { kind: "hold", dir: "down", ms: 420 },
+        { kind: "hold", dir: null, ms: 3500 },
       ],
       expect: { testidAbsent: ["dialogue-box"] },
       shot: true,
