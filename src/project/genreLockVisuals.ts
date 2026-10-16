@@ -159,7 +159,7 @@ function familyLabel(project: Project, kind: VisualKind, id: string): string {
   }
 }
 
-function allowedLabels(project: Project, active: ActiveGenreLock, kind: VisualKind): string {
+function allowedLabels(active: ActiveGenreLock, kind: VisualKind): string {
   if (kind === "face") return [...(active.allowedFaces ?? [])].map((family) => FACE_FAMILY_LABELS[family as keyof typeof FACE_FAMILY_LABELS] ?? family).join("·");
   const prefix = `${kind}:`;
   const labels = kind === "battler" ? BATTLER_FAMILY_LABELS : kind === "trainer" ? TRAINER_ART_FAMILY_LABELS : BACKDROP_FAMILY_LABELS;
@@ -271,7 +271,7 @@ function trainerRoleFor(project: Project, troopId: string, troopName: string): s
       if (/물 도장/u.test(semantic.label)) return "gym_water";
       if (/도장 보스|관장/u.test(semantic.label)) return undefined;
       if (semantic.age === "elder") return "elder";
-      if (semantic.gender === "female" && semantic.age !== "elder") return "girl";
+      if (semantic.gender === "female") return "girl";
       if (semantic.gender === "male" && (semantic.age === "child" || semantic.age === "youth")) return "boy";
     }
   }
@@ -331,7 +331,7 @@ export function genreLockVisualRejection(project: Project, args: { toolName: str
   // 적 레코드의 그림이 종(species)에서 물려받은 것이면 도구 호출 인자로는 못 고친다 — 종의 그림을 먼저 허용 그림으로 바꾸라고 알린다.
   const enemy = violation.kind === "battler" && violation.owner.startsWith("enemy:") ? project.database.enemies.find((entry) => entry.id === violation.owner.slice(6)) : undefined;
   const inherited = enemy?.speciesId ? ` 이 적은 몬스터 종 ${enemy.speciesId} 의 그림을 물려받았다 — define_monster_species 로 그 종의 graphic.monsterResourceId 를 허용 그림으로 바꾼 뒤 다시 부르라.` : "";
-  return `장르 잠금(${active.def.label}): 이 프로젝트는 ${visuals.kitNoun}(${KIND_LABELS[violation.kind]}: ${allowedLabels(project, active, violation.kind)})만 새 그림에 쓴다.${inherited} `
+  return `장르 잠금(${active.def.label}): 이 프로젝트는 ${visuals.kitNoun}(${KIND_LABELS[violation.kind]}: ${allowedLabels(active, violation.kind)})만 새 그림에 쓴다.${inherited} `
     + `${args.toolName} 이 ${violation.where} 의 ${KIND_LABELS[violation.kind]} 칸(${violation.slot})에 ${label} 을 쓰려 해 거부했다 — 다른 그림으로 바꿔 넣지 않았다. `
     + (alternative ? `가장 가까운 허용 그림: ${alternative.id}「${alternative.label}」${alternative.note ? ` (${alternative.note})` : ""} — 이것으로 다시 부르라. ` : "")
     + `list_resources 는 허용 그림만 보여 준다. 사용자가 정말 이 그림을 원하면 장르 잠금을 풀어야 한다(${active.def.relockHint}에서 끈다) — 조수가 임의로 풀지 않는다.`;
