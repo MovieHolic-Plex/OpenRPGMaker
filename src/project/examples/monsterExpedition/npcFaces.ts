@@ -9,6 +9,8 @@ import type { Project } from "@/project/types";
 
 const P1 = "tex_scarloxy_charset_people1";
 const P2 = "tex_scarloxy_charset_people2";
+/** 변형 직군 칩 ScarloxyPeople3 — 5번은 흰 가운 「박사」(성인 남성). 오프닝 흉상(박사)과 같은 직군으로 읽히게 하는 연구소 박사 칩(3차 적대 감사 D34). 새 그림 없음. */
+const P3 = "tex_oprn_charset_scarloxy_people3";
 type Chip = readonly [string, number];
 const chip = (sheet: string, index: number): Chip => [sheet, index];
 const key = (c: Chip): string => `${c[0]}#${c[1]}`;
@@ -51,7 +53,7 @@ function preference(eventId: string, gymType: string | undefined, leagueType: st
   if ((m = /_grunt_(\d)$/u.exec(eventId))) return rotate(GRUNT, Number(m[1]) + (hash(eventId.replace(/_grunt_\d$/u, "")) % GRUNT.length));
   if (/_nurse$/u.test(eventId)) return [chip(P1, 3), chip(P1, 4)];
   if (/_shop$/u.test(eventId)) return [chip(P1, 6), chip(P1, 2), chip(P1, 1)];
-  if (/professor$/u.test(eventId)) return [chip(P1, 6), chip(P1, 2)];
+  if (/professor$/u.test(eventId)) return [chip(P3, 5), chip(P1, 6), chip(P1, 2)];
   if (/(?:^|_)(?:teacher|curator|captain|researcher)$/u.test(eventId)) return [chip(P1, 2), chip(P1, 6), chip(P1, 5)];
   if (/(?:^|_)(?:guide|gym_guide|return_home|trail_sign)$/u.test(eventId) || /^sign_/u.test(eventId)) return rotate([chip(P1, 6), chip(P1, 2), chip(P1, 1), chip(P1, 4)], hash(eventId) % 4);
   return rotate(RESIDENT, hash(eventId) % RESIDENT.length);
