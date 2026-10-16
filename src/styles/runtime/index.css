@@ -65,6 +65,7 @@
 @import "./juice.css" layer(runtime);
 @import "../dialogue.css" layer(runtime);
 @import "../dialogueStyles.css" layer(runtime);
+@import "../dialogueReading.css" layer(runtime);
 @import "./zoneFeedback.css" layer(runtime);
 @import "./handSlot.css" layer(runtime);
 @import "./minimap.css" layer(runtime);

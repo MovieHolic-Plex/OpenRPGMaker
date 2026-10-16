@@ -315,6 +315,10 @@ export interface PlaySessionLike {
   friendship?: Record<string, number>;
   relationships?: Record<string, RelationshipState>;
   galleryUnlocks?: string[];
+  /** 지난 대사 기록(백로그) — 최근 N건 링 버퍼. meta.oprnDialogueSystem.backlog 가 켜진 게임만 쌓인다. 세이브에 실린다. project/dialogueSystem.ts */
+  dialogueBacklog?: import("@/project/dialogueSystem").BacklogEntry[];
+  /** 읽은 글 표시(화자+본문 해시). 「읽은 글만 스킵」 판정에 쓴다. 상한 READ_FLAG_LIMIT. */
+  dialogueRead?: string[];
   dailyGifts?: Record<string, string>;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];

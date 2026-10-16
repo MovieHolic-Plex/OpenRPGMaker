@@ -7,6 +7,7 @@
 //     켜면 맵 칩셋뿐 아니라 인물 칩도 현대 연애 칩 Modern1~3 로 묶고(주인공 기본 외형 포함), ESC 메뉴는 전투 능력치 대신 호감도 중심(relationshipMenu.ts)이 된다
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
 //  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
+import { romanceDialogueSystem } from "./dialogueSystem";
 import { DEADLINE_ENDING_COMMON_EVENT_ID, installDeadlineEnding, type DeadlineTier } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
@@ -121,6 +122,11 @@ export function applyRomanceDefaults(project: Project): string[] {
   const start = project.maps[project.startMapId];
   if (!system.genreLock && start && GENRE_LOCK_PRESETS.romance.families.includes(tilesetFamily(project, start.tilesetId))) {
     if (enableGenreLockSettled(project, "romance")) applied.push("genreLock");
+  }
+  // 대사창 읽기 보조(백로그·오토·스킵·숨기기): 저작이 없을 때만 연애 기본 구성을 명시 저작으로 심는다(2026-10-17). 저작자가 정한 값은 건드리지 않는다.
+  if (!project.meta.oprnDialogueSystem) {
+    project.meta.oprnDialogueSystem = romanceDialogueSystem();
+    applied.push("dialogueSystem");
   }
   // 시작 맵 BGM: 비어 있을 때만. 연애 전용 곡은 카탈로그에 없어 가장 가까운 잔잔한 일상 곡을 고른다.
   if (start && !start.bgm) {

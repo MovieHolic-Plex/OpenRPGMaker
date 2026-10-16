@@ -17,6 +17,7 @@ import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeGalleryUnlocks } from "@/project/gallery";
+import { normalizeBacklog, normalizeReadKeys, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { currentChapterLabel } from "@/project/newGamePlus";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -217,6 +218,8 @@ export type SaveSnapshot = {
     readonly friendship?: PlaySession["friendship"];
     readonly relationships?: PlaySession["relationships"];
     readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
+    readonly dialogueBacklog?: PlaySession["dialogueBacklog"];
+    readonly dialogueRead?: PlaySession["dialogueRead"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly socialLoop?: PlaySession["socialLoop"];
@@ -491,6 +494,8 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       friendship: structuredClone(session.friendship ?? {}),
       relationships: structuredClone(session.relationships ?? {}),
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
+      dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
+      dialogueRead: normalizeReadKeys(session.dialogueRead),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       ...(session.socialLoop ? { socialLoop: structuredClone(session.socialLoop) } : {}),
@@ -773,6 +778,13 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   const galleryUnlocks = normalizeGalleryUnlocks(snapshot.session.galleryUnlocks);
   if (galleryUnlocks) session.galleryUnlocks = galleryUnlocks;
   else delete session.galleryUnlocks;
+  // 백로그는 불러온 뒤에도 남는다. 옛 세이브(필드 없음)는 빈 기록으로 시작한다. 한도는 프로젝트 설정으로 다시 자른다.
+  const dialogueBacklog = normalizeBacklog(snapshot.session.dialogueBacklog, resolveDialogueSystem(project)?.backlog.limit);
+  if (dialogueBacklog) session.dialogueBacklog = dialogueBacklog;
+  else delete session.dialogueBacklog;
+  const dialogueRead = normalizeReadKeys(snapshot.session.dialogueRead);
+  if (dialogueRead) session.dialogueRead = dialogueRead;
+  else delete session.dialogueRead;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (snapshot.session.socialLoop) session.socialLoop = structuredClone(snapshot.session.socialLoop);
@@ -1270,6 +1282,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
       relationships: normalizeRelationships(session.relationships),
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
+      dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
+      dialogueRead: normalizeReadKeys(session.dialogueRead),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       ...(isSocialLoopDayState(session.socialLoop) ? { socialLoop: session.socialLoop } : {}),

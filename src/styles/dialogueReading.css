@@ -1,0 +1,217 @@
+/* === 대사창 읽기 보조: 단추 줄 · 백로그 · 숨기기 (2026-10-17, 미연시 시스템 UI 1단계) ===
+   저작된 대사 시스템(meta.oprnDialogueSystem · 연애 기본 구성)에서만 DOM 이 생긴다. 옛 프로젝트에는 아무 영향이 없다.
+   단추 줄은 상자 위(아래 위치 창) 또는 아래(위쪽 위치 창)에 붙고, 상자 안 글을 가리지 않는다. */
+
+.dialogue-bar {
+  align-items: center;
+  bottom: calc(100% + 2px);
+  display: flex;
+  font-family: var(--runtime-dialogue-font);
+  gap: 3px;
+  justify-content: flex-end;
+  pointer-events: auto;
+  position: absolute;
+  right: 4px;
+  z-index: 3;
+}
+
+.dialogue-overlay.position-top .dialogue-bar,
+.dialogue-overlay.position-center .dialogue-bar {
+  bottom: auto;
+  top: calc(100% + 2px);
+}
+
+/* 소지금 창이 같은 자리를 쓴다 — 비켜 준다. */
+.dialogue-overlay:has(.dialogue-gold-window) .dialogue-bar {
+  right: 104px;
+}
+
+.dialogue-bar-btn {
+  align-items: center;
+  background: rgba(8, 12, 22, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 3px;
+  color: var(--runtime-dialogue-text, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 7px;
+  gap: 2px;
+  line-height: 1;
+  padding: 2px 4px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
+}
+
+.dialogue-bar-btn:hover,
+.dialogue-bar-btn:focus-visible {
+  background: rgba(40, 60, 100, 0.9);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.dialogue-bar-btn.is-on,
+.dialogue-bar-btn[aria-pressed="true"] {
+  background: var(--runtime-window-highlight, #f2c14e);
+  border-color: var(--runtime-window-highlight, #f2c14e);
+  color: #14161f;
+  text-shadow: none;
+}
+
+.dialogue-bar-key {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: 6px;
+  padding: 0 2px;
+}
+
+.dialogue-bar-btn.is-on .dialogue-bar-key,
+.dialogue-bar-btn[aria-pressed="true"] .dialogue-bar-key {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.dialogue-bar-notice {
+  background: rgba(8, 12, 22, 0.86);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 3px;
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 7px;
+  opacity: 0;
+  padding: 2px 4px;
+  transition: opacity 120ms ease;
+}
+
+.dialogue-bar-notice.is-visible {
+  opacity: 1;
+}
+
+/* 숨기기: 대사창과 어둠막을 걷고 아무 키나 누르면 돌아온다. 글자 타이핑은 뒤에서 계속된다. */
+.dialogue-overlay[data-dialogue-hidden],
+.dialogue-scrim[data-dialogue-hidden] {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.dialogue-overlay[data-dialogue-hidden] * {
+  pointer-events: none;
+}
+
+/* === 백로그 전체 화면 === */
+.dialogue-backlog {
+  backdrop-filter: blur(3px);
+  background: rgba(6, 10, 18, 0.97);
+  box-sizing: border-box;
+  color: var(--runtime-dialogue-text, #fff);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  inset: 0;
+  padding: 8px 12px;
+  pointer-events: auto;
+  position: absolute;
+  z-index: 60;
+}
+
+.dialogue-backlog-head {
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 3px;
+}
+
+.dialogue-backlog-title {
+  font-size: 1.05em;
+}
+
+.dialogue-backlog-count {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.8em;
+}
+
+.dialogue-backlog-hint {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.8em;
+  margin-left: auto;
+}
+
+.dialogue-backlog-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  min-height: 0;
+  outline: none;
+  overflow-y: auto;
+  padding: 0 2px 0 0;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+  scrollbar-width: thin;
+}
+
+.dialogue-backlog-entry {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.dialogue-backlog-speaker {
+  color: var(--runtime-window-highlight, #f2c14e);
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-entry.no-speaker .dialogue-backlog-text,
+.dialogue-backlog-entry[data-context="narration"] .dialogue-backlog-text {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-style: italic;
+}
+
+.dialogue-backlog-text {
+  white-space: pre-wrap;
+}
+
+.dialogue-backlog-entry.is-choice {
+  border-left: 2px solid var(--runtime-window-highlight, #f2c14e);
+  padding-left: 4px;
+}
+
+.dialogue-backlog-prompt {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-picked {
+  color: var(--runtime-window-highlight, #f2c14e);
+  display: flex;
+  gap: 4px;
+}
+
+.dialogue-backlog-mark {
+  flex: 0 0 auto;
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-empty {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+}
+
+.dialogue-backlog-close {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  margin-top: 4px;
+  padding: 2px 8px;
+}
+
+.dialogue-backlog-close:hover,
+.dialogue-backlog-close:focus-visible {
+  background: rgba(255, 255, 255, 0.22);
+}

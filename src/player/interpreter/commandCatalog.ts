@@ -455,6 +455,8 @@ function killParty(state: InterpreterState): void {
 
 // 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
 const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+// 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
+const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
 
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
   return ending.conditions.every((condition) => condition.kind === "newGamePlus"
@@ -492,6 +494,9 @@ function triggerEnding(
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
   const epilogueCommands = compileEndingEpilogue(state, ending);
+  for (const epilogueCommand of epilogueCommands) {
+    if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
+  }
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
@@ -575,6 +580,7 @@ export function executeCommand(
         ...(command.container ? { container: command.container } : {}),
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
+        ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
       });
     case "choices":
       return pause("choices", {

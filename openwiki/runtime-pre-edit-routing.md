@@ -854,3 +854,14 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 주인공이 화면 아래쪽이면 대사창이 위로 간다(`preventObscuringPlayer`, `effectivePosition`). 흉상(`.dialogue-face-bust`)은 기본적으로 상자 **위**로 서는데
 위쪽 상자는 화면 맨 위라 머리가 화면 밖으로 잘렸다(카페 안 유진, 허리까지만 보임). `.dialogue-overlay.position-top` 에서는 흉상을 상자 **아래**로 매달고
 글 여백(`padding-inline`)을 없앤다. 전신 초상(`dialogue-face-full`)은 위쪽 상자에서 흉상 크기로 줄인다(아래 절반의 주인공을 덜 가리려고). 규칙은 src/styles/dialogue.css.
+
+
+## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+
+- **옵트인 저작.** `meta.oprnDialogueSystem`(순수 모듈 `src/project/dialogueSystem.ts`)이 없고 관계 중심 게임도 아니면 대사창·ESC 메뉴·설정 화면은 예전과 바이트 단위로 같다(예전 hover 「기록」 단추·세션 로그 포함, 설정은 8줄 그대로). 켜지면 `dialogue.ts` 가 `createDialogueControlBar`(오토 A · 스킵 S · 백로그 L · 숨기기 H, Ctrl 누르는 동안 스킵), `dialogueBacklogView`(전체 화면, 휠·방향키·Esc, 캡처 단계에서 키를 삼킴)를 붙인다.
+- **저장.** 세션 `dialogueBacklog`(링 버퍼, 항목 line/choice, 저작 limit 20~500 기본 100)와 `dialogueRead`(화자+본문 FNV-1a 키, 상한 4000)는 세이브에 들어가고 저장·불러오기·파싱 모두에서 `normalizeBacklog`/`normalizeReadKeys` 로 다시 자른다(손댄 세이브도 상한을 넘지 못함). 전투 안 대사는 `reading:"off"` 라 합성 세션에 기록하지 않는다.
+- **안전 규칙(순수 함수 `skipVerdict`·`stopsReading`·`stepStopReason`).** 오토·스킵은 선택지·숫자 입력·이름 입력·상점·전이·전투 진입·세이브/불러오기 메뉴·타이틀·게임 오버에서 멈춘다. 스킵은 선택지를 대신 고르지 않고, 엔딩 에필로그(인터프리터가 WeakSet 으로 표시, `endingEpilogue`)와 넘기기 금지 글을 넘지 않으며, 범위가 `read` 면 읽지 않은 줄에서 멈추고 이유를 알림으로 보인다. 오토 대기는 글자 수에 비례(`autoAdvanceDelayMs`, 속도 느림·보통·빠름). 숨기기는 아무 키나 누르면 돌아오며 닫힘·장면 전환은 오토·스킵을 끈다.
+- **글자 언어.** 편집기 i18n 계층은 에디터 전용이라 런타임은 별도 네 언어 표 `src/player/dialogueUiStrings.ts` 를 쓴다. 언어는 저작 `language`(기본 ko, auto = 기기 언어)가 정하고, 새 글자는 네 언어를 모두 채운다(`test/dialogueSystem.test.ts` 가 빈 칸·자리표시자 불일치를 막는다). 게임 본문은 번역하지 않는다.
+- **투명도.** 기기 설정 `windowOpacity` 는 계산된 배경색·그라데이션의 알파를 곱해 적용한다(`dialogueWindowOpacity.ts`). 글자·테두리는 그대로.
+- **CSS.** `src/styles/dialogueReading.css`(runtime/index.css 가 `layer(runtime)` 으로 불러옴, `test/playerRuntimeCss.test.ts` 의 RUNTIME_IMPORTS 에 등록). 기존 실패 3건(`retro2003` 스킨·`.status-menu-body` 누락, 임포트 개수 68 대 72)은 main 에서 이미 빨갛다 — 이 변경과 무관.
+- **시각 QA.** `npm run qa:runtime -- --scenario romance-vn-system --project <fixture>/project.json`(고정 장면 `scripts/qa/runtime/romance-vn-system-fixture.mts <outDir> [ko|en] [opacity]`). 크로미움이 백지(ERR_NETWORK_CHANGED)면 `unshare -rn` 안에서 실행. 증거 `verify-shots/runtime-qa/romance-vn-system{,-en}/`.
