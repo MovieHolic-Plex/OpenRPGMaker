@@ -100,7 +100,7 @@ export interface PiAgentRequest {
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
   readonly readOnly?: boolean;
-  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). 팀은 하위 에이전트마다 같은 값이 걸린다. */
+  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). 팀에서는 팀 전체 벽시계 상한이다 — 하위 에이전트는 팀 시작 뒤 남은 시간만 받는다(장기 목표 제외). */
   readonly timeoutMs?: number;
 }
 export interface PiAgentStats {

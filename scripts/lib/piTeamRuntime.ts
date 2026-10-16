@@ -120,6 +120,14 @@ const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
 /** 검수 팀원이 의도 목록과 상관없이 쥐는 확인 도구. */
 const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
 
+/** 이 값 아래로는 남은 시간을 줄이지 않는다 — 0 이하를 넘기면 런타임이 기본 상한으로 돌아가거나 즉시 죽는다. */
+const TEAM_MIN_CHILD_TIMEOUT_MS = 1_000;
+
+/** 팀 전체 상한 중 하위 에이전트가 쓸 수 있는 남은 시간(ms). */
+export function teamTimeoutLeftMs(totalMs: number, startedAt: number, now: number): number {
+  return Math.max(TEAM_MIN_CHILD_TIMEOUT_MS, totalMs - Math.max(0, now - startedAt));
+}
+
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
@@ -223,8 +231,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       check();
       return unsubscribe;
     },
-    // 규약: 팀은 하위 에이전트마다 같은 상한이 걸린다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 요청의 상한이 팀장에게만 적용된다.
-    ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+    // 규약: 요청의 상한은 팀 전체 벽시계 상한이다. 하위 에이전트는 팀이 시작한 뒤 남은 시간만 받는다.
+    // 예전엔 에이전트마다 상한 전체를 받아, 팀장이 일찍 끝나거나 뒤늦게 뜬 시공·검수·첫 플레이 단계가 상한을 넘어
+    // 계속 돌았다(실측 R04: 1380초 상한에 1611초). 장기 목표(goalCampaign)는 자기 45분을 에이전트마다 따로 쓴다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 상한이 팀장에게만 걸린다.
+    ...(options.timeoutMs !== undefined ? { timeoutMs: goalCampaign ? options.timeoutMs : teamTimeoutLeftMs(options.timeoutMs, started, Date.now()) } : {}),
     onEvent: (event) => {
       const row = progress.get(agentId);
       if (row) {

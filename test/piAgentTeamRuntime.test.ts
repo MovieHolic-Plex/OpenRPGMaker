@@ -7,7 +7,7 @@ import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
 import { commitChangeset, runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { runPiTeam, type RunPiTeamOptions } from "../scripts/lib/piTeamRuntime";
+import { runPiTeam, teamTimeoutLeftMs, type RunPiTeamOptions } from "../scripts/lib/piTeamRuntime";
 
 function seeded(): Project {
   const ctx = { project: createBlankProject() };
@@ -345,7 +345,7 @@ describe("팀 런타임 — 실행 상한", () => {
 
   // 깨질 것: 규약(protocol.ts)은 「팀은 하위 에이전트마다 같은 값이 걸린다」 고 말하는데, child() 가 timeoutMs 를
   // 빠뜨리면 시공·검수는 런타임 기본값으로 돌아 사용자가 올린 상한이 팀장에게만 적용된다.
-  it("timeoutMs 가 팀장·시공·검수 하위 에이전트에 그대로 실린다", async () => {
+  it("timeoutMs 는 팀 전체 상한으로 팀장·시공·검수에 남은 시간만큼 실린다", async () => {
     const seen: (number | undefined)[] = [];
     const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[]; timeoutMs?: number }): Promise<PiAgentDoneEvent> => {
       seen.push(opts.timeoutMs);
@@ -367,8 +367,18 @@ describe("팀 런타임 — 실행 상한", () => {
     };
 
     await runPiTeam(request(seeded()), { runAgent: runAgent as RunPiTeamOptions["runAgent"], timeoutMs: 1234 });
-    // 팀장 → 시공 → 검수 순으로 셋이 돌았고, 셋 다 같은 상한을 받았다.
-    expect(seen).toEqual([1234, 1234, 1234]);
+    // 팀장 → 시공 → 검수 순으로 셋이 돌았고, 셋 다 상한을 받되 늘어나지 않는다(팀 시작 뒤 남은 시간).
+    expect(seen).toHaveLength(3);
+    for (const value of seen) expect(value).toBeGreaterThan(0);
+    for (const value of seen) expect(value!).toBeLessThanOrEqual(1234);
+    expect(seen[1]!).toBeLessThanOrEqual(seen[0]!);
+    expect(seen[2]!).toBeLessThanOrEqual(seen[1]!);
+  });
+
+  it("teamTimeoutLeftMs: 시작 뒤 지난 시간을 빼고 바닥은 1초다", () => {
+    expect(teamTimeoutLeftMs(1380_000, 1_000, 231_000)).toBe(1150_000);
+    expect(teamTimeoutLeftMs(1380_000, 1_000, 1_700_000)).toBe(1000);
+    expect(teamTimeoutLeftMs(5_000, 10_000, 9_000)).toBe(5_000);
   });
 });
 
