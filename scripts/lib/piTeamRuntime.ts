@@ -33,7 +33,7 @@ import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCa
 import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
-import { jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
+import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
 import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
@@ -206,6 +206,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const assignedTask = new Map<string, string>();
   /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
   let romanceRejections = 0;
+  let jrpgChatRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -802,6 +803,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${romanceRejections}/2). ${romanceGaps.join(" / ")} — 제목·부제는 set_title_screen, 호감에 따라 갈리는 엔딩은 define_ending(friendshipAtLeast·priority)+set_deadline_ending 으로 만듭니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
           }
         }
+        // JRPG 도 같은 구멍이 있었다 — 위 JRPG 가드는 기획서 프롬프트(segmentGate)에서만 돌아, 채팅 한 줄(「크로노 트리거 같은 JRPG 만들어 줘」)로 지으면
+        // 파티 능력치 동일·보스 무해·제목 카드뿐인 오프닝이 그대로 통과했다(jrpg-loop-1 ct1: 같은 프로젝트에 qa:game check 경고 4건). 거절은 두 번까지, 그 뒤에는 보고에 남기고 받는다.
+        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, request.task)) {
+          const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: request.task });
+          if (jrpgGaps.length) {
+            jrpgChatRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `JRPG 마무리 미완(${jrpgChatRejections}/2): ${jrpgGaps.join(" / ")}` } });
+            throw new Error(`JRPG 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${jrpgChatRejections}/2). ${jrpgGaps.join(" / ")} — 담당에게 수정을 배정하고 wait_agents 로 결과를 받은 뒤 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
+        }
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
           throw new Error('현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요.');
         }
@@ -825,6 +836,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (stillGaps.length) finished += `\n남은 마무리 항목: ${stillGaps.join(" / ")}`;
         const romanceLeft = !segmentGate && !request.readOnly ? romanceCompletionGaps(working, { task: request.task }) : [];
         if (romanceLeft.length) finished += `\n남은 연애 게임 마무리 항목: ${romanceLeft.join(" / ")}`;
+        const jrpgLeft = !segmentGate && !request.readOnly && jrpgCompletionGateApplies(working, request.task) ? jrpgCompletionGaps(working, undefined, { task: request.task }) : [];
+        if (jrpgLeft.length) finished += `\n남은 JRPG 마무리 항목: ${jrpgLeft.join(" / ")}`;
         const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
