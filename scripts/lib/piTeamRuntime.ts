@@ -62,6 +62,11 @@ export interface RunPiTeamOptions extends RunPiAgentOptions {
    * oh-my-pi 코어가 모듈 그래프에 딸려 들어와 Node/vitest 에서 이 파일을 열 수 없다.
    */
   readonly runAgent?: RunPiAgentFn;
+  /**
+   * finish 가 429 로 끊긴 배정을 자동으로 한 번 다시 맡기기 전에 쉬는 시간(ms). 제공자가 알려 준 retry-after(없으면 undefined)를 받는다.
+   * 비우면 기본값(rateLimitBackoffMs). 테스트는 0 을 돌려주는 함수를 넣는다.
+   */
+  readonly rateLimitBackoffMs?: (retryAfterMs: number | undefined) => number;
 }
 
 type AgentState = "실행 중" | "완료" | "실패";
@@ -84,6 +89,22 @@ export function rateLimitedUnresolved(outcomes: ReadonlyMap<string, { readonly a
   return all.filter((outcome, index) => !outcome.ok && isRateLimitMessage(outcome.summary)
     && !all.slice(index + 1).some((other) => other.ok && other.mapId === outcome.mapId));
 }
+
+/** 429 오류 문구의 `retry-after-ms=299000` — 제공자가 알려 준 쿨다운. 없으면 undefined. */
+export function retryAfterHintMs(message: string): number | undefined {
+  const ms = /retry-after-ms\s*[=:]\s*(\d+)/iu.exec(message);
+  if (ms) return Number(ms[1]) > 0 ? Number(ms[1]) : undefined;
+  const sec = /retry[- ]after\s*[=:]?\s*(\d+)\s*s\b/iu.exec(message);
+  return sec && Number(sec[1]) > 0 ? Number(sec[1]) * 1000 : undefined;
+}
+
+/** 쿨다운 기본 쉼. 제공자 힌트가 있으면 그만큼(+5초), 없으면 60초. 한 번의 재시도가 팀 전체를 오래 붙잡지 않게 330초로 막는다(실측: 쿨다운 299초). */
+export function rateLimitBackoffMs(retryAfterMs: number | undefined): number {
+  return Math.min(330_000, retryAfterMs !== undefined ? retryAfterMs + 5_000 : 60_000);
+}
+
+/** 자동 재시도에 쓸 시간이 팀 남은 시간에 이만큼은 있어야 한다 — 쉬고 나서 바로 상한에 걸리는 재시도는 하지 않는다. */
+const RATE_LIMIT_RETRY_MIN_LEFT_MS = 120_000;
 
 interface AgentOutcome {
   readonly agentId: string;
@@ -179,6 +200,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let segmentRejections = 0;
   /** finish 가 429 로 끊긴 배정을 한 번 돌려보냈는지 — 두 번째 finish 는 남은 일을 보고에 적고 받는다. */
   let rateLimitRejected = false;
+  /** 429 로 끊긴 배정을 finish 가 자동으로 한 번 다시 맡겼는지(재시도는 팀 실행에 한 번뿐). */
+  let rateLimitAutoRetried = false;
+  /** 배정 id → 원래 task 문구. 429 자동 재시도가 같은 일을 다시 맡길 때 쓴다. */
+  const assignedTask = new Map<string, string>();
   /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
   let romanceRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
@@ -381,6 +406,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
+    assignedTask.set(agentId, task);
     const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     if (coreFirst) firstBuildAssignments += 1;
     counters.builder += 1;
@@ -726,6 +752,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        // 429 로 끊긴 배정은 쿨다운을 쉰 뒤 같은 일을 한 번 자동으로 다시 맡긴다 — 아래 검사들이 다시 한 일의 결과를 보게 맨 앞에 둔다.
+        await retryRateLimitedAssignments();
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
@@ -805,6 +833,49 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       },
     },
   ];
+
+  /**
+   * finish 시점에 429 로 끊긴 채 다시 맡겨지지 않은 배정(rateLimitedUnresolved)을 한 번만 자동 재시도한다.
+   * 일반 가드(finish 가 팀장에게 돌려보내 재배정을 시킴)는 그대로 남고, 이 재시도가 먼저 한 번 돈다 — 팀장 모델이 재배정을
+   * 잊거나 같은 쿨다운에 또 맞는 일을 줄인다(romance-real-2 b1/b2: 검수 단계에서 429 로 잘린 채 끝남, jrpg J04).
+   * 쉬는 시간은 제공자 retry-after(없으면 60초, 최대 330초). 팀 남은 시간이 모자라거나 사용자가 중단했으면 하지 않는다.
+   */
+  async function retryRateLimitedAssignments(): Promise<void> {
+    if (rateLimitAutoRetried || request.readOnly || options.readOnlyTools || options.signal?.aborted) return;
+    const cutOff = rateLimitedUnresolved(outcomes);
+    if (cutOff.length === 0) return;
+    rateLimitAutoRetried = true;
+    const hint = Math.max(0, ...cutOff.map((outcome) => retryAfterHintMs(outcome.summary) ?? 0)) || undefined;
+    const wait = (options.rateLimitBackoffMs ?? rateLimitBackoffMs)(hint);
+    if (options.timeoutMs !== undefined && teamTimeoutLeftMs(options.timeoutMs, started, Date.now()) < wait + RATE_LIMIT_RETRY_MIN_LEFT_MS) {
+      emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `사용 한도(429)로 끊긴 배정 ${cutOff.length}건 — 팀 남은 시간이 모자라 자동 재시도를 건너뜁니다.` } });
+      return;
+    }
+    emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `사용 한도(429)로 끊긴 배정 ${cutOff.length}건을 ${Math.round(wait / 1000)}초 쉰 뒤 한 번 다시 맡깁니다: ${cutOff.map((outcome) => `${outcome.agentId}(${outcome.mapId ?? "프로젝트 공통"})`).join(", ")}` } });
+    if (wait > 0) await new Promise<void>((resolve) => {
+      const timer = setTimeout(done, wait);
+      function done(): void { clearTimeout(timer); options.signal?.removeEventListener("abort", done); resolve(); }
+      options.signal?.addEventListener("abort", done, { once: true });
+    });
+    if (options.signal?.aborted) return;
+    const launched: Promise<AgentOutcome>[] = [];
+    for (const outcome of cutOff) {
+      const original = outcome.mapId ? assignedTask.get(outcome.agentId) : tasks.get(outcome.agentId)?.task;
+      if (!original) continue;
+      const task = `[사용 한도(429)로 끊긴 배정의 자동 재시도] 이전 시도가 도중에 끊겼다. 프로젝트에 이미 반영된 부분은 다시 만들지 말고 현재 상태를 먼저 읽어, 남은 일만 이어서 한다.\n원래 배정: ${original}`;
+      const kind = outcome.mapId ? undefined : tasks.get(outcome.agentId);
+      try {
+        const member = [...builders, ...reviewers].find((candidate) => candidate.id === outcome.member) ?? builders[0]!;
+        const launchedRow = outcome.mapId ? startAssign(outcome.mapId, task, member) : startTask(task, kind?.mode ?? "project", member);
+        const agentId = (launchedRow as { agentId?: unknown }).agentId;
+        const entry = typeof agentId === "string" ? inflight.find((candidate) => candidate.agentId === agentId) : undefined;
+        if (entry) launched.push(entry.promise as Promise<AgentOutcome>);
+      } catch (error) {
+        emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `자동 재시도를 시작하지 못했습니다(${outcome.agentId}): ${error instanceof Error ? error.message : String(error)}` } });
+      }
+    }
+    await Promise.all(launched);
+  }
 
   async function reviewFirstPlay(): Promise<void> {
     const receipt = firstPlay!;

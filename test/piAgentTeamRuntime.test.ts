@@ -793,3 +793,57 @@ describe("팀 마을 완료 상태", () => {
     expect(events.some(event => event.type === "agent_done" && event.agentId.startsWith("orchestrator-") && !event.ok)).toBe(true);
   });
 });
+
+describe("팀 런타임 — 429 자동 재시도(finish 단계)", () => {
+  // 깨질 것: 시공 팀원이 429 로 죽은 채 팀장이 finish 하면 일이 안 된 채로 끝났다(romance-real-2 b1/b2, jrpg-real-1 J04).
+  // 일반 가드(#2752)는 팀장에게 되돌려 재배정을 시킬 뿐이라, 팀장이 잊으면 그대로 끝났다.
+  function scenario(failTimes: number) {
+    const builderRuns: { task: string }[] = [];
+    let finishCalls = 0;
+    const events: PiAgentEvent[] = [];
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }): Promise<PiAgentDoneEvent> => {
+      const extra = opts.extraTools ?? [];
+      if (extra.some((tool) => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "집을 짓는다", member: "builder" });
+        await callTool(extra, "wait_agents", {});
+        finishCalls += 1;
+        await callTool(extra, "finish", { report: "끝" });
+        return doneWith(req.project);
+      }
+      if (extra.some((tool) => tool.name === "report_review")) {
+        await extra.find((tool) => tool.name === "report_review")!.execute("call", { ok: true, findings: [] });
+        return doneWith(req.project);
+      }
+      builderRuns.push({ task: req.task });
+      if (builderRuns.length <= failTimes) throw new Error("429 All credentials for model gemini-4-argon-high are cooling down via provider antigravity retry-after-ms=299000");
+      return doneWith(built(req.project, "map_a", "지어짐"), ["maps.map_a"]);
+    };
+    return { runAgent, builderRuns, events, finishCalls: () => finishCalls };
+  }
+
+  it("한 번 429 로 끊기면 finish 가 쉰 뒤 같은 맵을 한 번 다시 맡기고, 성공하면 보고에 끊김이 남지 않는다", async () => {
+    const s = scenario(1);
+    const backoffs: (number | undefined)[] = [];
+    const done = await runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], onEvent: (e) => s.events.push(e), rateLimitBackoffMs: (hint) => { backoffs.push(hint); return 0; } });
+    expect(s.builderRuns).toHaveLength(2);
+    expect(s.builderRuns[1]!.task).toContain("자동 재시도");
+    expect(s.builderRuns[1]!.task).toContain("집을 짓는다");
+    expect(backoffs).toEqual([299000]);
+    expect(done.project.maps.map_a!.name).toBe("지어짐");
+    const report = s.events.filter((e) => e.type === "team_report").map((e) => (e as { text: string }).text).join("\n");
+    expect(report).not.toContain("끊겨 끝내지 못한 배정");
+    expect(s.finishCalls()).toBe(1);
+  });
+
+  it("재시도도 429 면 한 번만 시도하고, 일반 가드가 팀장에게 돌려보낸다(무한 재시도 없음)", async () => {
+    const s = scenario(99);
+    await expect(runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], rateLimitBackoffMs: () => 0 })).rejects.toThrow(/사용 한도\(429\)/);
+    expect(s.builderRuns).toHaveLength(2);
+  });
+
+  it("429 가 없으면 재시도하지 않는다", async () => {
+    const s = scenario(0);
+    await runPiTeam(request(seeded()), { runAgent: s.runAgent as RunPiTeamOptions["runAgent"], rateLimitBackoffMs: () => 0 });
+    expect(s.builderRuns).toHaveLength(1);
+  });
+});
