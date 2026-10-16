@@ -47,13 +47,23 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
     theme: "hearts", font: "pixel", ...(previous?.menuStyle ? { menuStyle: previous.menuStyle } : {}),
     vitals: false, clock: true, tools: false, objective: false, hideEmpty: true,
     widgets: [
-      // 호감 목록: 호감이 기록된 사람을 높은 순으로 셋까지(이름 + 하트). 한 사람뿐이면 한 줄.
-      // 판 위에 놓이는 글자라 숲·건물과 겹치면 읽히지 않는다 — 셋 다 어두운 판(panel dark)에 얹는다. 이름 칸은 「한서연」 같은 세 글자 + 하트 다섯 칸이 한 줄에 들어갈 폭.
-      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 8, width: 150, height: 22, color: "#f4d17b", panel: "dark" }),
-      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 34, width: 150, height: 58, slots: 3, color: "#ef6a68", showValue: false, max: 100, panel: "dark" }),
-      w("clock", { kind: "clock", label: "", anchor: "top-right", width: 84, height: 48, panel: "dark" }),
+      // 2026-10-16 R06: 호감 목록·남은 시간 판이 지도 위쪽과 실내 위쪽을 상시 덮었다. 이제 이 둘은 값이 바뀐 뒤 3초만(대화가 끝나 HUD 가 다시 보일 때) 뜬다 —
+      // 평소 화면은 모서리 시계 칩 하나뿐이고, 그 칩도 플레이어가 위쪽에 서면 아래쪽으로 옮겨 간다(autoAvoid). 전체 목록은 ESC 「호감도」.
+      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 6, width: 132, height: 20, color: "#f4d17b", panel: "dark", condition: "changed" }),
+      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 30, width: 132, height: 58, slots: 3, color: "#ef6a68", showValue: false, max: 100, panel: "dark", condition: "changed" }),
+      w("clock", { kind: "clock", label: "", shape: "number", anchor: "top-right", x: 6, y: 6, width: 104, height: 22, panel: "dark", autoAvoid: true }),
     ],
   };
+}
+
+/** 2026-10-16 이전 기본 HUD(호감 목록·남은 시간이 항상 떠 지도를 덮던 배치)인가. 저작자가 손댄 위젯 수·id·조건이 다르면 아니다. */
+export function isLegacyRomanceHud(hud: FieldHudConfig | undefined): boolean {
+  const widgets = hud?.widgets;
+  if (!widgets || widgets.length !== 3) return false;
+  const byId = new Map(widgets.map(widget => [widget.id, widget]));
+  const slots = byId.get("slots-left"), affection = byId.get("affection"), clock = byId.get("clock");
+  if (!slots || !affection || !clock) return false;
+  return slots.condition === "always" && affection.condition === "always" && clock.height >= 40 && affection.y === 34 && slots.y === 8;
 }
 
 /** 연애 프로젝트에 결정론 기본값을 깐다. 깐 항목 이름을 돌려준다(이미 있던 것은 목록에 없다). */
@@ -89,8 +99,8 @@ export function applyRomanceDefaults(project: Project): string[] {
     ];
     if (installDeadlineEnding(project, ROMANCE_DEADLINE_DAYS, tiers)) applied.push("deadlineEnding");
   }
-  // HUD: 저작자가 위젯을 직접 정하지 않았을 때만.
-  if (system.fieldHud?.widgets === undefined) {
+  // HUD: 저작자가 위젯을 직접 정하지 않았을 때만. 지도를 덮던 옛 기본 배치(조건 없는 세 판)는 새 배치로 바꾼다.
+  if (system.fieldHud?.widgets === undefined || isLegacyRomanceHud(system.fieldHud)) {
     system.fieldHud = romanceHudConfig(system.fieldHud);
     applied.push("fieldHud");
   }

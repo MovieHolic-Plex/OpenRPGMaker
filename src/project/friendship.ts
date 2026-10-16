@@ -287,8 +287,14 @@ export type FriendshipListEntry = {
 
 /** 호칭 꼬리(「한서연 선배」의 「선배」) — HUD 처럼 좁은 곳은 이름만 쓴다. 호칭만 남는 이름(「선생님」)은 그대로 둔다. */
 export function friendshipShortName(name: string): string {
-  const short = name.trim().replace(/\s+(선배|후배|님|씨|선생님?|교수님?|사장님|점장님|쌤|오빠|언니|누나|형)$/u, "");
-  return short.length >= 2 ? short : name.trim();
+  // 「하린 (운영자)」 같은 괄호 설명은 HUD 에서 잘려 「하린 (운…」 이 되던 것(연애 R06) — 괄호 뒤는 버린다.
+  const plain = name.trim().replace(/\s*[(（\[【].*$/u, "").trim() || name.trim();
+  let short = plain.replace(/\s+(선배|후배|님|씨|선생님?|교수님?|사장님|점장님|쌤|오빠|언니|누나|형)$/u, "");
+  // 「바리스타 선배 도윤」·「산책객 민호」 처럼 직함이 앞에 붙은 한글 이름은 마지막 낱말(이름)만.
+  const words = short.split(/\s+/u);
+  const last = words[words.length - 1] ?? "";
+  if (words.length > 1 && /^[가-힣]{2,4}$/u.test(last)) short = last;
+  return short.length >= 2 ? short : plain;
 }
 
 const eventNameByCharacter = new WeakMap<object, Map<string, string>>();
