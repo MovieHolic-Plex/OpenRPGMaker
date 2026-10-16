@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.244.2 — 2026-10-17
+
+### 수정
+
+- **battle** — walk-chip sheet set as battle sheet no longer renders a crowd (#2793) (`b4d30c8`)
+- **battle** — retro2003 skill list uses full-width host and Korean element badges (#2773) (`de086ef`)
+- **ai** — JRPG completion gate also applies to chat-line requests (balance, opening) (#2774) (`0e9ddf5`)
+- **ai** — intent notes no longer count as monster-game signals (FF6-style request hijacked into a Pokemon campaign) (#2784) (`ac799cb`)
+- **dialogue** — reading system adversarial-review repairs (D1-D8, D11, D12) (#2792) (`9d337d2`)
+
 ## 0.244.1 — 2026-10-17
 
 ### 수정
