@@ -89,8 +89,6 @@ export function shadowedBareEndings(project: Project, sites: EndingCallSites = e
 }
 
 export function checkRomanceEndings(project: Project): Finding[] {
-  const endings = project.endings ?? [];
-  if (endings.length === 0) return [];
   const findings: Finding[] = [];
   const sites = endingCallSites(project);
   const branches = friendshipBranchCount(project, sites);

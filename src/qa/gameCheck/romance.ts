@@ -164,7 +164,13 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish 가 이것을 막는다(scripts/lib/piTeamRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
 const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine"]);
+/** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
+const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine"]);
+const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";
 export function romanceCompletionGaps(project: Project): string[] {
   if (project.gameDesignBrief?.interview?.genre !== "romance") return [];
-  return checkRomance(project).filter((finding) => COMPLETION_CODES.has(finding.code)).map((finding) => finding.message);
+  const singleScene = (project.endings ?? []).some((ending) => ending.id === SINGLE_SCENE_ENDING_ID);
+  return checkRomance(project)
+    .filter((finding) => COMPLETION_CODES.has(finding.code) && !(singleScene && ENDING_CODES.has(finding.code)))
+    .map((finding) => finding.message);
 }
