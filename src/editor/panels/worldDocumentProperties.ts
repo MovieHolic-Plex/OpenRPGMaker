@@ -63,21 +63,32 @@ export function worldPopoverChip(options: WorldPopoverChipOptions): HTMLDetailsE
  */
 export function wirePopoverDismiss(details: HTMLDetailsElement, trigger: HTMLElement, onToggle: () => void): void {
   const closeOnOutside = (event: Event): void => {
-    if (!details.isConnected) { document.removeEventListener("pointerdown", closeOnOutside, true); return; }
+    if (!details.isConnected) { stopListening(); return; }
     if (event.target instanceof Node && details.contains(event.target)) return;
     details.open = false;
   };
-  details.addEventListener("toggle", () => {
-    document.removeEventListener("pointerdown", closeOnOutside, true);
-    if (details.open) document.addEventListener("pointerdown", closeOnOutside, true);
-    onToggle();
-  });
-  details.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape" || !details.open) return;
+  // Esc 는 window 캡처에서 먼저 받는다 — 자료집 창은 modalStack 이 document 캡처에서 Esc 를 가져가 창째 닫으므로,
+  // 팝오버가 열려 있는 동안만 그보다 앞에서 팝오버 하나만 닫는다.
+  const closeOnEscape = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape") return;
+    if (!details.isConnected || !details.open) { stopListening(); return; }
     event.preventDefault();
     event.stopPropagation();
+    const hadFocus = details.contains(document.activeElement);
     details.open = false;
-    trigger.focus();
+    if (hadFocus) trigger.focus();
+  };
+  const stopListening = (): void => {
+    document.removeEventListener("pointerdown", closeOnOutside, true);
+    window.removeEventListener("keydown", closeOnEscape, true);
+  };
+  details.addEventListener("toggle", () => {
+    stopListening();
+    if (details.open) {
+      document.addEventListener("pointerdown", closeOnOutside, true);
+      window.addEventListener("keydown", closeOnEscape, true);
+    }
+    onToggle();
   });
 }
 
