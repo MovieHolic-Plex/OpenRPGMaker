@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.239.2 — 2026-10-16
+
+### 수정
+
+- **player,menu** — blackout uses the dialogue-window skin and recovery centre; bag footer duplicate removed (D31, D32) (#2747) (`ab7dd2c`)
+- **player** — empty-party battle admission goes through the game dialogue window once (D30) (#2746) (`a6ae44e`)
+- **player** — title resume and load-panel focus follow the newest save (manual or auto), not always the autosave (D29) (#2745) (`b38ab2c`)
+
 ## 0.239.1 — 2026-10-16
 
 ### 수정
