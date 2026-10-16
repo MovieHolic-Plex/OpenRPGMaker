@@ -180,3 +180,17 @@
 .ending-hall-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ending-hall-level { color: #586858; }
 
+
+/* 에메랄드 블랙아웃(D31): 검은 바탕 + 필드 대사창과 같은 문장창(아래 80px) + 제목. Galmuri9 18px 격자 글꼴, 정수 좌표. */
+.terminal-scene[data-monster-style="emerald"] .blackout-title {
+  position: absolute; top: 112px; left: 0; right: 0; text-align: center;
+  font: 36px/48px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0;
+  color: #f8f0c8; text-shadow: 2px 2px #284050;
+  animation: terminal-reveal 650ms ease-out both;
+}
+.terminal-scene[data-monster-style="emerald"] .blackout-message {
+  top: auto; bottom: 0; left: 0; right: 0; height: 80px; box-sizing: border-box; padding: 12px 28px;
+  background: #f8f8e8; border: 4px solid #487068; box-shadow: inset 0 0 0 4px #a8c0a0; border-radius: 0;
+  color: #384840; text-align: left; text-shadow: none; white-space: pre-wrap; word-break: keep-all; overflow-wrap: break-word; overflow: hidden;
+  font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0;
+}

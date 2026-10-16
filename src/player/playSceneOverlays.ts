@@ -161,11 +161,20 @@ export function playGameOverPresentation(terminal: TerminalScene, project: Proje
       terminal.phase("blackout-message");
       addBackground(terminal, settings?.backgroundResourceId, undefined, project);
       const body = textNode("div", "blackout-message", message ?? settings?.message ?? (outcome === "recover" ? "더는 싸울 수 없었다.\n눈앞이 캄캄해졌다…" : settings?.title ?? "이야기가 끝났습니다."));
+      const emerald = isEmeraldMonsterStyle(project);
+      // 에메랄드 몬스터 게임(D31): 검은 바탕 위 시스템 글꼴 한 줄이 아니라 필드 대사창과 같은 문장창 + Galmuri9 18px 격자 글꼴,
+      // 그 위에 「다시 시작할 수 있어」 제목. 창은 화면 아래 80px(논리 40px)로 대사창과 같은 자리·같은 격자다.
+      if (emerald) {
+        terminal.root.dataset.monsterStyle = "emerald";
+        const heading = settings?.title && outcome === "recover" ? textNode("div", "blackout-title", settings.title) : undefined;
+        if (heading) terminal.root.append(heading);
+      }
       terminal.root.append(body);
       // Readable beat before automatic recovery; no GAME OVER or retry menu.
       if (!await terminal.wait(timing?.messageHoldMs ?? 2200)) return;
       terminal.phase("silence");
       body.remove();
+      terminal.root.querySelector(".blackout-title")?.remove();
       if (!await terminal.wait(500)) return;
       if (outcome === "title") { await exitTerminal(terminal, () => scene.returnToTitle()); return; }
       terminal.root.querySelector<HTMLAudioElement>("audio[data-terminal-music]")?.pause();
