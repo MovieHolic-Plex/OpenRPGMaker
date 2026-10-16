@@ -4,11 +4,21 @@ export function endingConditionKey(conditions: readonly (Condition | EndingCondi
   return conditions.map(normalizeConditionKey).sort().join("|");
 }
 
-export function collectEndingWarnings(endings: readonly EndingDef[]): string[] {
+export interface EndingWarningOptions {
+  /**
+   * priority 가 결과를 정하는가. 런타임은 endingId 없는 triggerEnding(조건으로 고르기)에서만 priority 로 엔딩을 고른다 —
+   * 이름을 지정한 호출(연애·기한 엔딩이 쓰는 방식)은 priority 와 무관하다. false 면 「같은 조건·priority」 경고를 내지 않는다.
+   * 기본 true(호출 방식을 모를 때는 예전처럼 경고).
+   */
+  readonly priorityMatters?: boolean;
+}
+
+export function collectEndingWarnings(endings: readonly EndingDef[], options: EndingWarningOptions = {}): string[] {
   const warnings: string[] = [];
   for (const ending of endings) {
     warnings.push(...conditionConflictWarnings(ending));
   }
+  if (options.priorityMatters === false) return warnings;
   const byConditions = new Map<string, EndingDef[]>();
   for (const ending of endings) {
     const key = endingConditionKey(ending.conditions);

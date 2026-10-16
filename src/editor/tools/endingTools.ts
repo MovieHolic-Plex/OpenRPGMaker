@@ -56,7 +56,13 @@ function commandsCallEndingId(commands: readonly Command[] | undefined, endingId
 /** endingId 없는 triggerEnding — 조건으로 엔딩을 고르므로 모든 조건 엔딩이 이 경로로 열릴 수 있다. */
 function projectHasBareTriggerEnding(project: Project): boolean {
   const bare = (commands: readonly Command[] | undefined): boolean =>
-    (commands ?? []).some(command => command?.kind === "triggerEnding" && !command.endingId);
+    (commands ?? []).some((command) => {
+      if (!command || typeof command !== "object") return false;
+      if (command.kind === "triggerEnding" && !command.endingId) return true;
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      return nested.some(bare);
+    });
   for (const map of Object.values(project.maps ?? {})) {
     for (const event of map.events ?? []) {
       if (bare(event.commands) || (event.pages ?? []).some(page => bare(page.commands))) return true;
@@ -158,7 +164,8 @@ const defineEnding: ToolDefinition = {
     const warnings = [
       ...flagWarnings,
       ...epilogueWarnings,
-      ...collectEndingWarnings(draft.endings),
+      // priority 는 endingId 없는 triggerEnding 만 가른다 — 이름으로 부르는 엔딩(연애·기한)에는 「가려집니다」 경고가 소음이다.
+      ...collectEndingWarnings(draft.endings, { priorityMatters: projectHasBareTriggerEnding(draft) }),
       ...(projectTriggersEnding(draft) ? [] : [
         "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
           + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`
@@ -305,7 +312,7 @@ const listEndings: ToolDefinition = {
   },
   run(project): ToolExecResult {
     const endings = project.endings ?? [];
-    const warnings = collectEndingWarnings(endings);
+    const warnings = collectEndingWarnings(endings, { priorityMatters: projectHasBareTriggerEnding(project) });
     return {
       summary: `엔딩 ${endings.length}개`,
       data: { endings, warnings },
