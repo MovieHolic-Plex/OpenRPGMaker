@@ -1577,12 +1577,14 @@ function nextRewardPolicy(
   const levelGapPenalty = patch.levelGapPenalty ?? current?.levelGapPenalty === true;
   // 이 토글 화면에 없는 칸(expShare·trainerPrizePerLevel)은 조수·도구가 저작한 값이므로 그대로 둔다.
   const expShare = current?.expShare === true;
+  const expSplitAlive = current?.expSplitAlive === true;
   const prize = current?.trainerPrizePerLevel ?? 0;
-  if (!participationOnly && !levelGapPenalty && !expShare && prize <= 0) return undefined;
+  if (!participationOnly && !levelGapPenalty && !expShare && !expSplitAlive && prize <= 0) return undefined;
   return {
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
     ...(expShare ? { expShare: true } : {}),
+    ...(expSplitAlive ? { expSplitAlive: true } : {}),
     ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
