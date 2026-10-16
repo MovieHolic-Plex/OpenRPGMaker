@@ -1,0 +1,25 @@
+{
+ "key": "sc-boss-rock",
+ "name": "바위 도장 보스",
+ "head": "Scarloxy2:1",
+ "body": "Scarloxy2:1",
+ "recolor": [
+  {
+   "region": "*",
+   "hue": [
+    85,
+    175
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 28,
+    "s": 0.7,
+    "v": 0.95
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

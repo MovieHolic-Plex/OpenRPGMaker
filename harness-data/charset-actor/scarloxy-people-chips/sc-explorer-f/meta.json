@@ -1,81 +1,55 @@
 {
  "key": "sc-explorer-f",
- "name": "탐험가(여)",
- "head": "Scarloxy1:4",
- "body": "Scarloxy2:1",
- "recolor": [
-  {
-   "region": "H",
-   "hue": [
-    340,
-    360
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 120,
-    "s": 0.8,
-    "v": 0.8
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    0,
-    12
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 120,
-    "s": 0.8,
-    "v": 0.8
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    0,
-    30
-   ],
-   "smin": 0.12,
-   "vmin": 0.3,
-   "to": {
-    "hue": 22,
-    "sat": 0.72,
-    "v": 1.2
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    75,
-    175
-   ],
-   "smin": 0.2,
-   "to": {
-    "hue": 25,
-    "s": 0.6,
-    "v": 0.9
-   }
-  },
-  {
-   "region": "B",
-   "hue": [
-    40,
-    75
-   ],
-   "smin": 0.2,
-   "to": {
-    "hue": 28,
-    "s": 0.5,
-    "v": 0.95
-   }
-  }
- ],
+ "arch": "sp3-explorer-f",
+ "base": "Scarloxy1:4",
+ "variant": "**T 는 paint 하지 말고 recolor 만**(잡색 점 방지). 갈래머리를 주황빛 갈색 3톤으로, 갈래 리본(빨강)을 초록으로 recolor, 노란 웃옷 전부를 황토(카키) 단일 계열 3톤으로, 웃옷과 어깨에 있는 분홍·하늘색·노랑 포인트 글자(배낭·소매)는 모두 갈색 가죽 색 3톤으로 recolor, 분홍 반바지를 올리브색 3톤으로, 신발은 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
  "ok": true,
- "errors": [],
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
  "warnings": [
-  "한 프레임에만 나오는 색 I — 걸을 때 깜빡일 수 있다",
-  "면제: edge"
+  "한 프레임에만 나오는 색 x — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 acdghikmopqtuw"
  ],
- "model": "script-compose(no model call)"
+ "metrics": {
+  "added_up0": 9,
+  "added_up1": 10,
+  "added_up2": 10,
+  "added_right0": 10,
+  "added_right1": 10,
+  "added_right2": 10,
+  "added_down0": 9,
+  "added_down1": 10,
+  "added_down2": 10,
+  "added_left0": 10,
+  "added_left1": 10,
+  "added_left2": 10,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 12,
+  "cross_base": 12,
+  "lone": 268,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.418,
+  "nearest": "ScarloxyPeople9#4"
+ },
+ "repairs": {
+  "dropped_stray_px": 0,
+  "hole_filled_px": 2,
+  "sanitized": {}
+ },
+ "run": "r8/sp3-explorer-f-c",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "결함 없음. 카키 상의·올리브 하의·등 배낭이 4방향 일관, 걸음 프레임 색 일치."
+ }
 }

@@ -1,0 +1,120 @@
+{
+ "palette": {
+  "A": "#1c1518",
+  "B": "#2b2024",
+  "C": "#3d2f33",
+  "D": "#564348",
+  "E": "#192647",
+  "F": "#2b4275",
+  "G": "#4668a8",
+  "H": "#58627a",
+  "I": "#adb8cc",
+  "J": "#d7deeb",
+  "K": "#f7f9fc",
+  "L": "#2e1c16",
+  "M": "#4f3126",
+  "N": "#704838"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "A",
+    "f": "A",
+    "c": "B",
+    "i": "C",
+    "p": "D",
+    "r": "B",
+    "n": "A",
+    "a": "E",
+    "e": "F",
+    "l": "G"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "u": "K",
+    "w": "K",
+    "o": "J",
+    "q": "J",
+    "k": "I",
+    "t": "K",
+    "m": "J",
+    "d": "H",
+    "f": "H",
+    "h": "H",
+    "g": "E",
+    "b": "A"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "f": "E",
+    "g": "E",
+    "h": "E",
+    "a": "E",
+    "k": "F",
+    "m": "F",
+    "e": "F",
+    "t": "G",
+    "l": "G",
+    "u": "G",
+    "x": "J",
+    "s": "I"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "L",
+    "e": "M",
+    "l": "N",
+    "x": "K",
+    "s": "J"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "21": "......huuwJnnnJwuuh.....",
+    "22": ".....htJoqGFGFGqoJth....",
+    "23": ".....hmJkqFEuEFqkJmh....",
+    "24": "....fvrhgoFEuEJoghrvf..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "21": "......huugGFGFGguuh.....",
+    "22": ".....htJgkkFEFkJgJth....",
+    "23": ".....hmJgqqEKEqqgJmh...."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "21": "......gkqouvvvvd........",
+    "22": "......gkhtJoqFGod.......",
+    "23": "......gkmtIJqFEud.......",
+    "24": "......gfvrrgJuFujf......"
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "21": "........dvvwJJIEkg......",
+    "22": ".......doGFqoJthkg......",
+    "23": ".......duEFqJKJmgg......",
+    "24": "......fjFuJErrrvEg......"
+   }
+  }
+ ]
+}

@@ -160,7 +160,7 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   결과: 주문 48건 중 43건 통과(90%, 1차 33%), 3회 안 40건, 429 0회. 같은 직군에서 a 가 5회 안에 못 통과하면 다른 뼈대 b 로 바꿨고 5직군 모두 b 로 통과했다.
 - 스크립트 칩(`scarloxy_compose.py`, 레시피 `scarloxy-people/recipes-2.json`)은 `lock: true` 로 **얼굴·눈·피부·손 고정 칸을 recolor 에서 제외**하고(`face_fixed`) 12프레임 화소 동일을 빌드 때 검사한다. 1차 레시피(lock 없음)는 그대로 다시 구우면 화소 동일(`build` 확인)이라 건드리지 않았다.
 - 설치 관문: `scarloxy_lock.py` — 최종 격자만 보고 12프레임의 얼굴·피부·손 고정 칸(Argon 은 뼈대 분할의 F 칸 전부, 스크립트는 `face_fixed`+몸 주인 맨살)을 원본과 화소 대조. `install_scarloxy_people.py` 는 시트 5~ 에 이것을 건다. 신규 45종 33,639칸 모두 일치.
-  **알림:** 같은 검사를 1차 설치 25종에 돌리면 스크립트 칩 12종(도장 보스 얼음·전기·바위·에스퍼, 단원 남·여, 경찰관, 연구원, 탐험가(여), 여학생, 어린이, 신관)에서 24~142화소(눈썹·손 그림자 색)가 부위 색 바꾸기에 같이 칠해져 있다. 승인된 불변분이라 건드리지 않았다.
+  **알림:** 같은 검사를 1차 설치 25종에 돌리면 스크립트 칩 12종(도장 보스 얼음·전기·바위·에스퍼, 단원 남·여, 경찰관, 연구원, 탐험가(여), 여학생, 어린이, 신관)에서 24~142화소(눈썹·손 그림자 색)가 부위 색 바꾸기에 같이 칠해져 있다. 승인된 불변분이라 건드리지 않았다. → 3차(아래 절)에서 11종을 재제작했다(단원 남 1종만 기존 칩 유지).
 - 칩을 뺄 때: 칸 번호는 덧붙이기 전용이라 시트를 당기지 않는다. 설치 명단(`scarloxy-people-install.json`)의 그 행을 `{"vacant": true, key, id, name, reason}` 로 바꾸고 `install_scarloxy_people.py` 를 다시 돌리면 그 칸은 투명으로 남고 `scarloxyPeopleCharsets.json`·카탈로그·의미표·조수 검색에서 빠진다(다른 칸 화소 불변, `--check` 가 확인). `scarloxy_collect.py` 는 vacant 의 key 를 이미 쓴 것으로 보아 다시 채택하지 않는다.
 - 거름: `scarloxy_collect.py` 가 채택 매니페스트(`scarloxy-people/round2.json`)를 받아 ① chips 폴더로 복사 ② 고정 검사 ③ 가장 가까운 칩과 다른 화소 30% 미만 거절(`round2-distinct.json`) ④ 명단에 덧붙임(5번 시트부터 8칸씩). 사람은 `~/claude-viz/monster-people-chips-2.html`(`scarloxy_sheet2.py`)에서 **버릴 번호만** 말한다.
 - 굽기·재실행: `python3 src/harnesses/charset-actor/install_scarloxy_people.py` (`--check` 화소·명단 동일). Argon 재주문 한 줄:
@@ -168,3 +168,21 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - 배선: 시트 수는 명단의 `sheets` 에서 나오므로 카탈로그·의미표·리졸버·참조 검증·`charsetFamily`·`catalog_sources.py` 는 코드 변경 없이 10시트를 읽는다. 바뀐 것: `genreLock.ts` 안내 문장(1~10, 직군 목록), `test/genreLockCharsets.test.ts`(새 시트 칩 허용·RTP 거절 테스트 추가), 포털 표면 기준선(`ScarloxyPeople# (ScarloxyPeople)` 10항목).
 - 검증(출하 경로): `scarloxy-people-chips-fixture.mts --part 0|1` + `scarloxy-people-chips.scenario.mjs`(`node scripts/runtime-qa.mjs --scenario scarloxy-people-chips --project tmp/scarloxy-people-chips[-2].json --out verify-shots/runtime-qa/<이름>`, 판마다 35칸 5줄×7열)로 70칸 전수 렌더, `scarloxy-people-chips-persist.mts`(몬스터 잠금 프로젝트 새·옛 두 판: 새 직군 칩 place_npc 허용 · RTP 칩 거절 · 임시 SQLite 저장·재로드). vitest/gates 는 실행하지 않았다.
 - 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-10」.
+
+## 몬스터 세계 사람 칩 3차 — 1차 스크립트 칩 12종 재제작 (2026-10-16)
+
+2차 시트가 「1차 스크립트 칩 12종은 새 12프레임 고정 검사를 통과하지 못한다」(눈썹·눈 둘레·손 그림자까지 부위 색 바꾸기에 같이 칠해짐, 24~142칸)고 알렸고, 사용자가 새 방식으로 다시 만들라고 했다.
+12종 = 얼음·전기·바위·에스퍼 도장 보스, 단원 남·여, 경찰관, 연구원, 탐험가(여), 여학생, 신관, 어린이(여). **같은 id·같은 칸 번호(ScarloxyPeople1~3)** 에서 그림만 바꾸고 직군·이름·태그·성별·나이는 그대로다. 설명(`desc`)만 새 그림에 맞게 고쳤다.
+
+- 결과: **11종 교체, 1종(단원 남) 유지.** 교체분은 얼굴·피부·손 12프레임 고정 검사(`scarloxy_lock.py`) 어긋남 0, 독립 판정(tile-artist, 8점 이상만 PASS) 통과. 단원(남)은 후보 8건 모두 8점 미만(최고 7: 방향마다 붉은 무늬가 다르고 옆모습 모자 모양이 바뀜)이라 기존 칩을 남겼다 — 억지로 교체하지 않는다.
+  ScarloxyPeople4~10 시트와 교체하지 않은 칸은 화소까지 같다(설치 도구의 칸 화소 해시 + 시트 대조로 확인).
+- 도구: 주문서 `harness-data/charset-actor/scarloxy-people-spec-3.json`(직군당 뼈대 후보 a~e, 옛 칩과 같은 색 방향), 드라이버는 2차의 `scarloxy_argon2.py` 를 이어 쓴다. 이번에 고친 것:
+  (1) **걷기 프레임에만 나오는 베이스 글자**(붉은 신발·바지 점)가 서 있는 그림 글자 표에 없어 recolor 되지 않고 걸을 때만 깜박였다 → 글자 표를 12프레임 전체로 만들고, 빠진 글자는 같은 부위에서 색이 가장 가까운 recolor 글자의 새 색으로 자동 따라 바꾼다(`complete_recolor`, 되돌림 기록은 meta.repairs.sanitized). 첫 독립 판정에서 7칩 공통 결함이었고 고친 뒤 사라졌다.
+  (2) `scarloxy_distinct.py` 는 환경변수 `SPC_EXCLUDE`(쉼표 목록, 예 `ScarloxyPeople1#0`)에 든 칸을 비교에서 뺀다 — 곧 교체될 옛 칸과 「너무 비슷하다」로 거절되지 않게.
+  (3) `scarloxy_redo.py stage <manifest>` 가 채택분(`scarloxy-people/redo.json`)을 `scarloxy-people-chips/<key>/` 로 덮고(옛 격자·meta 는 `chip.v1.chr.txt`·`meta.v1.json` 으로 보존) 고정 검사를 걸고 설치 명단 항목에 `redo` 표시를 단다. `compare` 는 옛/새 8배 대조 PNG 를 만든다.
+  (4) `install_scarloxy_people.py` 는 명단 항목에 `redo` 가 있는 칸만 같은 id·칸에서 화소가 바뀌는 것을 허용하고(나머지는 여전히 거절) 그 칸에 고정 검사를 건다. `--check` 로 시트·명단 일치 확인.
+- 판정 운용 주의: 독립 판정 에이전트가 표 대신 「끝났다」 한 줄만 돌려주는 일이 잦아 표를 메시지 본문에 쓰라고 다시 요구해야 했다. 판정 입력은 `전/후 8배 4방향 PNG + 12프레임 6배 PNG`(`scarloxy_redo.py compare` 와 `scarloxy_sheet2.frames1x`).
+- 재실행: `SPC_EXCLUDE=<옛 칸들> CTFF6_PART_OUT=$HOME/spc-runs/redo SPC_ACCEPT_DIR=$HOME/spc-runs/redo/accepted-<판> SPC_DISTINCT_MIN=0.40 OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" python3 src/harnesses/charset-actor/scarloxy_argon2.py draw --spec harness-data/charset-actor/scarloxy-people-spec-3.json --run <이름> --label sp3-<직군>-<a~e> --par 1`
+  (`SPC_ACCEPT_DIR` 를 판마다 새로 줘야 같은 직군의 다른 후보끼리 「방금 채택된 칩과 비슷하다」로 거절되지 않는다.)
+- 증거 시트: `~/claude-viz/monster-people-chips-3.html`(`scarloxy_sheet3.py`).
+- 저작권·출처 변동 없음(Scarloxy MPWSP01 CC BY 4.0 변형, 칸 번호·id 동일). vitest/gates 는 실행하지 않았다.

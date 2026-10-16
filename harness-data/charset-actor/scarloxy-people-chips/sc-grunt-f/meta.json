@@ -1,53 +1,64 @@
 {
  "key": "sc-grunt-f",
- "name": "단원(여)",
- "head": "Scarloxy1:4",
- "body": "Scarloxy2:0",
- "recolor": [
-  {
-   "region": "H",
-   "hue": [
-    0,
-    30
-   ],
-   "smin": 0.12,
-   "vmin": 0.4,
-   "to": {
-    "hue": 285,
-    "s": 0.5,
-    "v": 0.75
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    335,
-    20
-   ],
-   "smin": 0.3,
-   "to": {
-    "s": 0.15,
-    "v": 0.45
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    20,
-    55
-   ],
-   "smin": 0.3,
-   "to": {
-    "hue": 0,
-    "s": 1.1
-   }
-  }
- ],
+ "arch": "sp3-grunt-f",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 짙은 보라 3톤으로, 갈래 묶음 리본(빨강)을 연보라로 recolor, 노란 웃옷을 검은 코트로 recolor 하고 가슴·배에 붉은 가로 띠 2줄(T paint 네 방향 각각), 분홍 반바지를 검정, 신발은 어두운 회색. 리본은 머리보다 훨씬 밝은 연보라 3칸 덩어리로 또렷이(H paint), 붉은 띠는 가슴 한 줄 + 배 한 줄 두 줄로 굵게.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
  "ok": true,
- "errors": [],
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
  "warnings": [
-  "한 프레임에만 나오는 색 Gk — 걸을 때 깜빡일 수 있다",
-  "면제: edge"
+  "한 프레임에만 나오는 색 x — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 acdghikmopqtuw"
  ],
- "model": "script-compose(no model call)"
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 4,
+  "cross_base": 12,
+  "lone": 238,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.506,
+  "nearest": "accepted:sp3-schoolgirl-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 3,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 352,
+   "left 줄 8 이 24글자가 아니라 버림": 1,
+   "down 줄 24 이 24글자가 아니라 버림": 1,
+   "up 줄 24 이 24글자가 아니라 버림": 1,
+   "right 줄 20 이 24글자가 아니라 버림": 1,
+   "right 줄 24 이 24글자가 아니라 버림": 1,
+   "left 줄 20 이 24글자가 아니라 버림": 1,
+   "left 줄 24 이 24글자가 아니라 버림": 1
+  }
+ },
+ "run": "r5/sp3-grunt-f-a",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 오른쪽 걸음 2열 팔 위 어두운 붉은 점 하나(경미)."
+ }
 }

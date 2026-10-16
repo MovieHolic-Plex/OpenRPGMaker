@@ -1,0 +1,125 @@
+{
+ "palette": {
+  "u": "#432868",
+  "v": "#6b449c",
+  "w": "#9468c8",
+  "x": "#c29bf0",
+  "y": "#4a206a",
+  "z": "#7a3ca8",
+  "A": "#ad66d9",
+  "B": "#d8ccf0",
+  "C": "#f8f0ff",
+  "D": "#7a2058",
+  "E": "#c85890",
+  "F": "#f89cc0",
+  "G": "#ffc8e0",
+  "H": "#6b322b",
+  "I": "#ba7b5e",
+  "J": "#dca97e"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "j": "w",
+    "o": "x",
+    "d": "D",
+    "h": "E",
+    "n": "F",
+    "q": "G",
+    "l": "J",
+    "i": "I"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "j": "w",
+    "o": "x",
+    "a": "y",
+    "e": "z",
+    "k": "A",
+    "m": "B",
+    "r": "C",
+    "b": "H",
+    "d": "D",
+    "n": "F"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "e": "z",
+    "k": "A",
+    "m": "B",
+    "r": "C",
+    "d": "D",
+    "h": "E",
+    "n": "F"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "d": "D"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "1": "..........uu.uu.........",
+    "2": ".........uvxwxvu........",
+    "3": "........cgjjcjjgc.......",
+    "4": ".......cojjjgjjjoc......",
+    "5": "......cojjjjDjjjjoc.....",
+    "6": ".....coojgjjGjjgjooc....",
+    "7": ".ddddgooogjjDjjgooogdddd"
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "1": "..........cc.cc.........",
+    "2": "........cgjjcjjgc.......",
+    "3": ".......cojjjgjjjoc......",
+    "4": "......cojjjjgjjjjoc.....",
+    "5": ".....coojjjjjjjjjooc....",
+    "6": ".ddddgooojjjjjjjooogdddd"
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "1": "..........uuuuuuu.......",
+    "2": ".........uvwwwwwvu......",
+    "3": "........cgjjjjjjjgc.....",
+    "4": ".......cjjjjjjjjjDGc....",
+    "5": "......cojjjjjjjjjDGgc...",
+    "6": ".....cjoojjjjjggjjggc..."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "1": ".......uuuuuuu..........",
+    "2": "......uvwwwwwvu.........",
+    "3": ".....cgjjjjjjjgc........",
+    "4": "....cGDjjjjjjjjjc.......",
+    "5": "...cgGDjjjjjjjjjoc......",
+    "6": "...cggjjggjjjjjoojc....."
+   }
+  }
+ ]
+}
