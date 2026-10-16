@@ -41,8 +41,7 @@ npm run harness -- monster-collect-species preview                      # 대기
 npm run harness -- monster-collect-species import --species sparkit --side front --raw <PNG> --block 8 # 검토한 격자 고정
 ```
 
-- 후보 비교 시트는 `qa-runs/harnesses/monster-collect-species/<종>/<front|back>/<run>/sheet.html`. **고르는 건 사람이다.**
-  에이전트는 시트를 사용자에게 보여 주고(claude-viz 등) 번호를 받는다. 직접 고르지 않는다.
+- 후보 비교 시트는 `qa-runs/harnesses/monster-collect-species/<종>/<front|back>/<run>/sheet.html`(64px 실루엣 마스크 포함). 2026-10-16 이후 고르는 건 **감독**이다(아래 「디자인 규칙」) — 시트를 사용자에게 보여 주고 번호를 받는 단계는 두지 않는다. 작업 에이전트는 기준으로 골라 근거를 적는다.
 - 새 종은 `harness-data/monster-collect-species/seed.json` 에 먼저 적는다. 진화형은 `evolvesFrom` 을 적으면 앞 단계 앞모습을 참고로 그린다(앞 단계를 먼저 골라야 한다).
 - **시험 실행은 모래상자에서**: `MONSTER_HARNESS_SANDBOX=<폴더>` 를 주면 시드(`<폴더>/data/seed.json`)·기록·격자·번들·산출물이 전부 그 폴더 아래로 간다. 커밋된 `seed.json`·`ledger.json`·번들을 건드리지 않는다. 에이전트가 시험 삼아 고르는 건 여기서만 한다.
 - 이미지 서버: god-tibo-imagen `POST /v1/generate/json`, 주소 `OPRN_HARNESS_IMAGE_URL`(기본 `http://mdc-server:8091`). 502 `MISSING_IMAGE_GENERATION_OUTPUT` 이 흔해 한 번 재시도한다.
@@ -88,7 +87,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/harnesses/monster-collect-species/harness.ts` | 매니페스트 (범위 `monster-collect`) |
 | `src/harnesses/monster-collect-species/pixel/grid.ts` | 생성 그림 속 픽셀 격자 찾기 → 칸 최빈 색 |
 | `src/harnesses/monster-collect-species/pixel/tidy.ts` | 마젠타 번짐·작은 섬 제거, 20색 합치기, 외톨이 점 흡수 |
-| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 112 캔버스 바닥 정렬 |
+| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 64 캔버스 바닥 정렬 |
 | `src/harnesses/monster-collect-species/pixel/pipeline.ts` | `pixelize` · `toSprite` · `cleanReference` (브라우저·노드 공용 입구) |
 | `src/harnesses/monster-collect-species/prompts/prompts.ts` | 앞모습·뒷모습·진화형 프롬프트 |
 | `src/harnesses/monster-collect-species/checks/checks.ts` | 자동 검사 |
@@ -100,9 +99,41 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/assets/harnessMonsterBundle.json` · `src/assets/harnessMonsterArt.ts` | 런타임 번들 목록(바이트 없음, `build`/`manifest` 가 씀) · 런타임 입구(리소스 id·URL·대기 스트립·캠페인 종 대응) |
 | `harness-data/monster-collect-species/ledger.json` | 하네스가 쓰는 선택 기록 (원본 sha256·프롬프트·블록 크기) |
 | `harness-data/monster-collect-species/grids/<종>-<면>.png` | 고른 후보의 격자 도트(칸 하나 = 픽셀 하나). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (112×112) |
+| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (64×64, 2026-10-16 전엔 112) |
 | `harness-data/monster-collect-species/grids/<종>-<면>-<동작>.png` | 고른 동작 줄의 격자 도트 (N 프레임이 한 장). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(112×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
+| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(64×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
+
+## 디자인 규칙 (2026-10-16 — 외부 시험자 지적 이후)
+
+지적 원문: 「디자인이 별로다. 귀여운 게 포인트인 것 같은데 귀엽지 않고, 강력해 보이는 건 좋은데 특징이 없다. 포켓몬은 어딘가 특출나게 강조된 곳이 있다
+(피카츄의 번개 꼬리, 글라이온의 꼬리 끝 독침, 조로아크의 이족보행 늑대인간 느낌과 큰 갈기). 캐릭터 디자인을 더 고민해야 한다.」
+원인: 이전 프롬프트가 「NOT chibi, NOT kawaii, believable creature anatomy, eyes small and sharp」 라고 못 박아 **실사적 비례의 평평하게 균형 잡힌 동물**만 나왔고
+(시드 design 에도 시그니처 요구가 없었다), 선택 기준은 「귀엽다」 한 문장 + 기계 경고(윤곽 약함·외톨이 점)뿐이라 「한 가지 과장」과 「귀여움의 비례」를 아무도 검증하지 않았다.
+점검표: `~/claude-viz/monster-design-audit-1.html` (15종 시그니처 ○3 △9 ×3, 귀여움·위압감 ○3 △7 ×5, 실루엣 ○5 △7 ×3; frondhare 는 leafling 의 알파 100% 복제).
+
+| # | 규칙 | 어디서 강제되나 |
+|---|---|---|
+| ① | **시그니처**: 종마다 몸에 비해 한 부위만 크게 과장(꼬리 모양·침·갈기·귀·등껍질·뿔 …). 원작 특징 베끼기 금지 | 시드 `signature`(필수, `validateSeed`) → `frontPrompt` 「SIGNATURE FEATURE」, 뒷모습·동작 프롬프트도 유지 문장 |
+| ② | **1단계는 chibi 비례**: 머리 40~50%·큰 눈(하이라이트 2칸)·짧고 통통한 몸·둥근 실루엣. 귀여움은 비례와 눈에서, 홍조·하트·스티커·반짝이는 장식은 금지 | `proportionClause(stage 1)` |
+| ③ | **진화마다 시그니처가 커지거나 형태가 바뀜**. 최종형은 위압감(머리 25~35%·이족·갈기·무기 같은 장식), 같은 윤곽에 색만 바꾼 복제 금지 | `proportionClause(stage ≥2)` + `evolutionPrompt` |
+| ④ | **실루엣 테스트**: 검정 마스크 64px 에서 종이 구별. 후보 시트가 64px·112px 마스크를 같이 보여 주고, `check` 가 겹침(IoU) 0.75 이상 짝을 경고 | `sheetHtml`, `checks.ts similarSilhouettes` |
+| ⑤ | **색**: 몸 색 3~4개(+명암 2~3톤) + **포인트 색 1개**(시그니처에만) | 시드 `accent`·`palette` → `colorClause` |
+
+- 시드 `design` 은 체형·몸 무늬·자세, `signature` 는 한 문장 영어, `accent` 는 포인트 색. 진화형 design 은 앞 단계와 **자세·비례가 다르게** 적는다(예: 네발 → 이족).
+- 프롬프트 판본은 `DESIGN_RULES_VERSION`(prompts.ts). 규칙을 바꾸면 올린다.
+- 후보 선택은 2026-10-16 이후 **감독이** 한다(사용자에게 고르게 하지 않는다). 위 다섯 기준으로 1장을 골라 `pick --note` 와 `harness-data/monster-collect-species/design-v2-picks.json` 에 근거 한 줄을 남긴다. 새 후보가 분명히 더 낫지 않으면 기존 그림을 유지하고 `keep` 으로 적는다.
+- 후보 시트·점검표 생성기: `src/harnesses/monster-collect-species/qa/design_sheets.py` (`audit` · `pick`).
+- 조수가 새 종·계통을 지을 때의 같은 규칙: `src/ai/piAgent/monsterGameRequest.ts` `MONSTER_GAME_PRODUCTION_PROMPT` 끝의 「종 디자인 규칙」 문단.
+- 아래 「왜 이렇게 만드는가」의 「마스코트·치비·볼터치 금지」는 2026-10-01 시안의 이력이다. 지금은 **볼터치·스티커 금지만** 남고 치비 비례(1단계)는 요구한다.
+
+### 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
+
+- **한 문장**: 논리 화소 1 = 화면 2px(화면 480×320 = GBA 240×160 의 2배). 몬스터 그림 한 도트 = 논리 화소 하나, 전투 표시 **64 캔버스 → 128px(정확히 2배)**.
+- 캔버스 **64×64**(옛 112: 정수배가 1배뿐이라 D12 비정수 128 이 났다), 몸 내용 **긴 변 56 이내**(`MAX_INK_SIDE`), 바닥 정렬, idle 스트립 64×N. 몸집 목표 `BODY_SIZE` front 46 · back 50(진화 단계 ×1.08·1.15).
+- 생성기가 그린 도트(블록 7~15px → 60~130칸)는 `fitSprite` 가 64 캔버스에 맞게 줄인다(정수배에 0.15 안이면 정수, 아니면 비정수). 종마다 원본 블록이 달라도 **최종 스프라이트는 전 종이 같은 64 격자**다. `grid` 단계가 종별 원본 칸 수→줄인 배율을 보여 준다(실측: 앞 14·뒤 14 중 줄임 1.5~2배).
+- 거칠어지는 건 GBA 격자와 같아 의도한 것이다 — 그래서 시그니처와 실루엣이 64px 에서도 읽히는지가 더 중요하다(디자인 규칙 ④).
+- 규격이 바뀌었을 때 이미 만든 후보를 다시 맞추려면 `refit [--species]`(생성 없음).
+- 런타임의 정수배 표시(그림 크기에서 배율 계산)는 별도 작업이다(D12). 매니페스트 `canvas` 가 64 이므로 `harnessMonsterArt.ts` 는 스트립 셀 폭을 64 로 읽는다.
 
 ## 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
 
@@ -171,7 +202,9 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 | 항목 | 기준 | 수준 |
 |---|---|---|
-| 캔버스 | 112×112, 바닥 정렬 | 오류 |
+| 캔버스 | 64×64, 바닥 정렬 | 오류 |
+| 몸 크기 | 긴 변 56 이내(격자 계약) | 오류 |
+| 실루엣 겹침 | 앞모습 둘의 64px 마스크 IoU 0.75 이상 | 경고(`check`) |
 | 색 수 | `style.maxColors`(20) 이하 | 오류 |
 | 마젠타 기운 점 | 0 | 오류 |
 | 윤곽 | 실루엣 가장자리 칸의 85% 이상이 어두운 선 | 경고 |
@@ -186,7 +219,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 ## 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
 
-포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
+(옛 112 캔버스 시절 시안) 포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
 상대 숨쉬기 찌그러짐(`battler-breathe`)을 끈다. 2026-10-01 실제 플레이어 화면에 주입해 확인했다(명령 선택 화면만 — 공격·피격·기절·포획 모션은 미확인).
 엔진 반영 대상은 `src/styles/runtime/battle/20-pokemon-skin.css`. 주입 캡처는 시안 녹화기(qa-runs/monster-viz/record.mjs, gitignore — `INJECT_CSS`·`OVERRIDES` 환경 변수)로 했다 — 하네스 `qa/` 로 옮기는 건 다음 작업.
 

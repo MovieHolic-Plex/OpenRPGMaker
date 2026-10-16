@@ -1,5 +1,5 @@
 {
-  "canvas": 112,
+  "canvas": 64,
   "direction": {
     "front": {
       "x": -1,
@@ -32,13 +32,13 @@
   },
   "emit": {
     "front": {
-      "x": 19,
-      "y": 55,
+      "x": 10,
+      "y": 33,
       "source": "auto"
     },
     "back": {
-      "x": 92,
-      "y": 18,
+      "x": 54,
+      "y": 21,
       "source": "auto"
     }
   }
