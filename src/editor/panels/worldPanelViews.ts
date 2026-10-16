@@ -141,7 +141,7 @@ export function renderMain(
       el("div", {
         class: "world-tabbar",
         children: [
-          renderTabs(state, refresh),
+          renderTabs(state, world, refresh),
           el("span", {
             class: "world-result-count",
             text: `${visibleEntities(world.entities, state.tab, state.search).length}개 문서`,
@@ -167,28 +167,43 @@ export function renderMain(
   });
 }
 
-/** 종류 필터 — 한 줄 가로 스크롤(CSS). 단추는 그대로 늘 보이고, 고른 종류는 보이는 자리로 스크롤된다. */
-function renderTabs(state: WorldPanelState, refresh: () => void): HTMLElement {
-  return el("nav", {
-    class: "world-tabs",
-    attrs: { "aria-label": "설정집 탭" },
-    children: TABS.map((tab) =>
-      el("button", {
-        class: `world-tab${state.tab === tab.key ? " active" : ""}`,
-        text: tab.label,
-        attrs: { type: "button", "aria-pressed": String(state.tab === tab.key) },
-        dataset: { testid: `world-tab-${tab.key}` },
-        on: {
-          click: () => {
-            state.tab = tab.key;
-            state.documentOpen = false;
-            if (isWorldEntityType(tab.key)) state.addType = tab.key;
-            setPersistedCodexView(state.tab, state.selectedId);
-            refresh();
+/**
+ * 종류 필터. 버튼 아홉 개가 목록 위를 두 줄 차지하던 것을 「분류 전체 ▾」 한 칩으로 접는다.
+ * 버튼(`world-tab-*`)은 그대로 팝오버 안에 있고, 고르면 닫힌다.
+ */
+function renderTabs(state: WorldPanelState, world: ProjectWorld, refresh: () => void): HTMLElement {
+  const toggle = popoverToggle(() => state.openPopover, (id) => { state.openPopover = id; }, "category");
+  const active = TABS.find((tab) => tab.key === state.tab);
+  return worldPopoverChip({
+    label: `분류 ${active?.label ?? "전체"}`,
+    title: "문서 종류별로 거르기",
+    testid: "world-category",
+    ...toggle,
+    body: [el("nav", {
+      class: "world-tabs",
+      attrs: { "aria-label": "설정집 탭" },
+      children: TABS.map((tab) =>
+        el("button", {
+          class: `world-tab${state.tab === tab.key ? " active" : ""}`,
+          attrs: { type: "button", "aria-pressed": String(state.tab === tab.key) },
+          dataset: { testid: `world-tab-${tab.key}` },
+          children: [
+            el("span", { text: tab.label }),
+            el("span", { class: "world-tab-count", text: String(visibleEntities(world.entities, tab.key, "").length), attrs: { "aria-hidden": "true" } }),
+          ],
+          on: {
+            click: () => {
+              state.tab = tab.key;
+              state.documentOpen = false;
+              state.openPopover = undefined;
+              if (isWorldEntityType(tab.key)) state.addType = tab.key;
+              setPersistedCodexView(state.tab, state.selectedId);
+              refresh();
+            },
           },
-        },
-      })
-    ),
+        })
+      ),
+    })],
   });
 }
 

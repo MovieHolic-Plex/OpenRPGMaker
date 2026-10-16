@@ -184,7 +184,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
     wrap.append(el("p", {
       class: "world-canon-ai-lead",
-      text: "조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 속성의 「AI가 읽는 것」). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
+      text: "조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 위쪽 「AI가 읽는 것」 칩). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.",
     }));
     const grid = el("div", { class: "world-canon-ai-grid" });
     aiRefs.tiles = new Map();
@@ -198,7 +198,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       grid.append(item);
     }
     aiRefs.pre = el("pre", { class: "world-ai-preview world-canon-ai-pre", dataset: { testid: "world-canon-ai-panel-preview" } });
-    wrap.append(grid, renderWorldAiReachPanel({ open: aiReachOpen.get(host) ?? true, onToggle: (open) => aiReachOpen.set(host, open), probe: aiProbe }), sectionCard({
+    wrap.append(grid, renderWorldAiReachPanel({ open: aiReachOpen.get(host) ?? false, onToggle: (open) => aiReachOpen.set(host, open), probe: aiProbe }), sectionCard({
       title: "조수 프롬프트 투영",
       hint: "이름·전제·톤·없는 것·법칙 + 본문 발췌",
       children: [aiRefs.pre],
