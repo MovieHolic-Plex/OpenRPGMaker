@@ -1,6 +1,6 @@
 import type { ActivityVisual } from "../activityVisual";
 import type { PiApplyMode } from "./applyMode";
-import type { SpecialistModels } from "../modelRoles";
+import type { RoleModel, SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
@@ -34,6 +34,11 @@ export interface PiAgentRequest {
   /** The user's image slot, inherited by every specialist; credentials stay on the companion. */
   readonly imageProvider?: string;
   readonly imageModel?: string;
+  /**
+   * 도트를 찍는 텍스트 모델(설정의 «도트 저작 모델»). 클라이언트가 **해석한 값**을 싣는다 — 저장값이 없는 옛 설정은 계획·최종 판단 모델이다
+   * (설정을 새로 만들지 않는다). 워커의 낱장 도트 찍기(src/ai/dotTextArt.ts)가 쓴다. 비면 roleModels.deep → 실행 모델.
+   */
+  readonly pixelModel?: RoleModel;
   readonly provider: string;
   /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
   readonly projectKey?: string;

@@ -18,6 +18,7 @@ export function prepareImageAssetRequest(args: Record<string, unknown>): {
   readonly prompt: string;
   readonly name: string;
   readonly tags: string[];
+  readonly pixel: boolean;
 } {
   const kind = IMAGE_ASSET_KINDS.find(entry => entry === args.kind);
   if (!kind) throw new ToolError(`kind는 ${IMAGE_ASSET_KINDS.join("/")} 중 하나여야 합니다.`, { code: "invalid-kind" });
@@ -36,7 +37,14 @@ export function prepareImageAssetRequest(args: Record<string, unknown>): {
     throw new ToolError("tags는 태그당 1~64자인 문자열 배열(최대 32개)이어야 합니다.", { code: "invalid-args" });
   }
   const tags = Array.isArray(args.tags) ? [...new Set((args.tags as string[]).map(tag => tag.trim()))] : [];
-  return { kind, prompt, name, tags };
+  if (args.pixel !== undefined && typeof args.pixel !== "boolean") {
+    throw new ToolError("pixel은 true/false 여야 합니다.", { code: "invalid-args" });
+  }
+  const pixel = args.pixel === true;
+  if (pixel && kind !== "picture") {
+    throw new ToolError("pixel:true 는 kind='picture'(아이콘·소품)에만 쓸 수 있습니다. 타이틀·배경은 도트 격자로 찍지 않습니다.", { code: "invalid-args" });
+  }
+  return { kind, prompt, name, tags, pixel };
 }
 
 const IMAGE_ASSET_SCHEMA: JsonSchema = {
@@ -47,6 +55,7 @@ const IMAGE_ASSET_SCHEMA: JsonSchema = {
     kind: { type: "string", enum: [...IMAGE_ASSET_KINDS], description: "picture=아이콘/소품, title=타이틀 배경, backdrop=맵·전투 배경. 몬스터 그림은 만들지 않는다 — list_monster_resources 의 도트 몬스터를 쓴다" },
     prompt: { type: "string", minLength: PROMPT_MIN_LENGTH, maxLength: 4000, description: "만들 그림의 구체적인 설명" },
     name: { type: "string", maxLength: 120, description: "리소스 표시 이름(생략 시 자동 생성)" },
+    pixel: { type: "boolean", description: "kind='picture' 만. true=도트 아이콘·소품 — 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트 모델)이 32px 격자를 직접 찍어 투명 PNG 로 만든다(32×32 이하 작은 그림). 생략/false=일러스트풍 그림(이미지 모델)." },
     tags: { type: "array", items: { type: "string", minLength: 1, maxLength: 64 }, description: "리소스 검색 태그 1~32개(선택)." },
   },
 };
@@ -56,7 +65,7 @@ const generateImageAsset: ToolDefinition = {
   description:
     "범용 그림 리소스를 이미지 모델로 만든다. kind에 따라 아이템 아이콘(picture), 타이틀(title), 맵·전투 배경(backdrop)을 만들며, "
     + "성공하면 등록한 resourceId를 반환한다. 반환된 id를 upsert_item의 item.iconResourceId, set_title_screen, set_game_over 등에 연결한다. 몬스터 그림은 만들 수 없다 — 전투는 도트 측면이라 list_monster_resources 의 도트 몬스터 140종에서 고른다. "
-    + "그림 안에 글자·로고·버튼·워터마크를 넣지 않는다.",
+    + "kind=picture 에 pixel:true 를 주면 도트 아이콘·소품이다 — 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트 모델)이 32px 격자를 찍어 투명 PNG 로 만든다. 그림 안에 글자·로고·버튼·워터마크를 넣지 않는다.",
   mode: "read",
   parameters: IMAGE_ASSET_SCHEMA,
   run(_project, args): ToolExecResult {
@@ -67,6 +76,11 @@ const generateImageAsset: ToolDefinition = {
     };
   },
 };
+
+/** 도트 저작 모델(텍스트)에게 주는 아이콘·소품 설명. 배경은 투명이고 글자·틀·그림자는 없다. */
+export function imageAssetDotPrompt(prompt: string): string {
+  return `A single small game icon or prop for a 2D top-down JRPG: ${JSON.stringify(prompt.replace(/\s+/gu, " ").trim())}. Centered, clean dark outline, flat saturated colors with 3-4 tone shading, no text, no frame, no shadow, transparent background.`;
+}
 
 export function imageAssetPrompt(kind: ImageAssetKind, prompt: string): string {
   return [
