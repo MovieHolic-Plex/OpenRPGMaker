@@ -51,6 +51,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
+  // 연애(현대 캠퍼스) 타이틀 — 벚꽃 교정 옥상 노을, 교복 둘이 난간에서 교정을 내려다본다(2026-10-16, gpt-image-2.5-sunburst 로 만든 큰 그림).
+  "oprn-title-romance-campus": "/assets/generated/title/romance-campus-spring.jpg",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",
   // ── 구 id 별칭 (읽기 호환. 새로 쓸 때는 위 id 를 쓴다) ──────────────
   "rpg-zzu-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
