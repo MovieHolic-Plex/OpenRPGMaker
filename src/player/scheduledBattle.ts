@@ -70,11 +70,11 @@ export function resumeScheduledBattle(scene: PlaySceneContext, key: string, proc
     delete process.pendingBattle;
     if (result === 'defeat' && !pending.step.canLose) { process.stopped = true; return; }
     consume(scene, key, process, process.interpreter.resume(result));
-  }).catch((error: unknown) => {
+  }).catch(async (error: unknown) => {
     console.error('[player] scheduled battle failed', error);
     if (valid() && lease.current()) {
       process.stopped = true;
-      return showBattleAdmissionError(scene, error);
+      await showBattleAdmissionError(scene, error);
     }
   }).finally(() => lease.release()); // The token itself refuses to release any replacement owner.
 }
