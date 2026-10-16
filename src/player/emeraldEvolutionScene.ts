@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import { bindEmeraldBattleSurface } from '@/player/emeraldSurfaces';
 import { emitBattleJuice, playBattleCue } from '@/player/battleJuice';
+import { playMonsterSfx } from '@/player/monsterSfx';
 import { monsterSpeciesById } from '@/project/monsterCollection';
 import type { Project } from '@/project/types';
 import { withJosa } from '@/util/josa';
@@ -104,9 +105,11 @@ async function playOne(host: HTMLElement, project: Project, entry: EmeraldEvolut
   };
   try {
     await sleep(250, controller.signal);
+    // 몬스터 장르 소리 세트(원본 칩튠 합성): 시작 → 변신 중 → 완료. 세트가 없는 프로젝트는 예전 승리음 그대로.
+    const monsterSet = playMonsterSfx(project, 'evolve-before');
     await say(`어라? ${entry.name}의 모습이…!`, 900);
     // 실루엣 점멸: 간격이 점점 줄어든다(400ms → 60ms). 흰 실루엣일 때 모양이 바뀐다.
-    playBattleCue('victory');
+    if (!(monsterSet && playMonsterSfx(project, 'evolve-during'))) playBattleCue('victory');
     const swaps = [420, 360, 300, 250, 200, 160, 130, 100, 80, 70, 60, 60, 60, 60];
     let showNew = false;
     for (const gap of swaps) {
@@ -123,7 +126,7 @@ async function playOne(host: HTMLElement, project: Project, entry: EmeraldEvolut
     await sleep(180, controller.signal);
     sprite.dataset.silhouette = 'false';
     const toName = monsterSpeciesById(project, entry.toSpeciesId)?.name ?? '새로운 모습';
-    emitBattleJuice('victory', root);
+    if (!(monsterSet && playMonsterSfx(project, 'evolve-after'))) emitBattleJuice('victory', root);
     await say(`축하합니다! ${withJosa(entry.name, '은/는')} ${toName}${roJosa(toName)} 진화했다!`, 1800);
   } finally {
     window.removeEventListener('keydown', onKey, true);

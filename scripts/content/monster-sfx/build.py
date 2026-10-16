@@ -36,6 +36,16 @@ REF_DIR = Path(os.environ.get("MONSTER_SFX_REF_DIR", str(Path.home() / "claude-v
 OGG_QUALITY = "5"
 
 
+ONLY_SET = int(os.environ["SFX_SET"]) if os.environ.get("SFX_SET") else None
+
+
+def ids_in_scope() -> list[str]:
+    """SFX_SET=2 limits select/render to the second batch (briefs with "set": 2); unset = the first batch + everything."""
+    if ONLY_SET is None:
+        return [i for i, b in BRIEFS.items() if b.get("set", 1) == 1]
+    return [i for i, b in BRIEFS.items() if b.get("set", 1) == ONLY_SET]
+
+
 def expect_for(b: dict) -> dict:
     return {"dur": b["dur"], "max_trail_ms": b.get("max_trail", 60), "centroid": b["centroid"]}
 
@@ -88,7 +98,7 @@ def score(sound_id: str):
 def cmd_select() -> None:
     FINAL.mkdir(exist_ok=True)
     report = {}
-    for sid in BRIEFS:
+    for sid in ids_in_scope():
         rows = score(sid)
         ok = [r for r in rows if not r["problems"]]
         ok.sort(key=lambda r: r["score"])
@@ -102,7 +112,7 @@ def cmd_select() -> None:
         run.pop("metrics", None)
         (FINAL / f"{sid}.run.json").write_text(json.dumps(run, indent=1, ensure_ascii=False))
         print(f"{sid}: {len(ok)}/{len(rows)} pass -> {win['cand']} score {win['score']} {win['notes']}")
-    (HERE / "select-report.json").write_text(json.dumps(report, indent=1, ensure_ascii=False))
+    (HERE / f"select-report{ONLY_SET or ''}.json").write_text(json.dumps(report, indent=1, ensure_ascii=False))
 
 
 def encode_ogg(wav: Path, ogg: Path) -> None:
@@ -119,7 +129,9 @@ def cmd_render() -> None:
     wav_dir = Path(os.environ["MONSTER_SFX_WAV_DIR"]) if os.environ.get("MONSTER_SFX_WAV_DIR") else None
     if wav_dir:
         wav_dir.mkdir(parents=True, exist_ok=True)
-    manifest = {
+    manifest_path = OUT / "manifest.json"
+    existing = json.loads(manifest_path.read_text()) if manifest_path.exists() else None
+    manifest = existing if existing else {
         "format": 1,
         "license": "CC0-1.0",
         "originality": "Synthesised from numeric patches (pulse/triangle/wave/LFSR-noise oscillators and envelopes). No recording, sample, "
@@ -130,7 +142,8 @@ def cmd_render() -> None:
         "sampleRate": 44100, "channels": 1, "codec": f"vorbis q{OGG_QUALITY}",
         "sounds": {},
     }
-    for sid, b in BRIEFS.items():
+    for sid in ids_in_scope():
+        b = BRIEFS[sid]
         pf = FINAL / f"{sid}.json"
         if not pf.exists():
             continue
@@ -160,7 +173,7 @@ def cmd_render() -> None:
             "patch": patch,
         }
         print(f"{sid}: {ogg.stat().st_size} B  {m['duration_s']}s  pk {m['peak_dbfs']}  rms {m['rms_active_dbfs']}  gate {'pass' if not problems else problems}")
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n")
+    manifest_path.write_text(json.dumps(manifest, indent=1, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":

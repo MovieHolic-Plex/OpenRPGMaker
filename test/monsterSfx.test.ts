@@ -11,8 +11,9 @@ import {
   monsterSfxRuntimeResourceIds,
   usesMonsterSfxSet,
 } from "@/assets/monsterSfxAssets";
+import { WEATHER_CONTINUE_LINES, WEATHER_END_LINES, WEATHER_START_LINES } from "@/battle/weather";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { monsterBattleCue } from "@/player/monsterSfx";
+import { createMonsterDialogueTick, monsterBattleCue, monsterTimelineCue } from "@/player/monsterSfx";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import { createBlankProject } from "@/project/defaults";
 import { collectWebExportAssets } from "@/project/webExportAssets";
@@ -84,6 +85,45 @@ describe("monster-collection default sound set", () => {
     for (const untouched of ["hit-miss", "hit-heal", "defend", "attack-swing", "escape", "victory", "defeat"] as const) {
       expect(monsterBattleCue(untouched), untouched).toBeUndefined();
     }
+  });
+
+  it("maps timeline entries to status, stat-stage and weather-start cues", () => {
+    const states = [
+      { id: "st-psn", gen1MajorStatus: "poison" as const },
+      { id: "st-tox", gen1MajorStatus: "toxic" as const },
+      { id: "st-brn", gen1MajorStatus: "burn" as const },
+      { id: "st-par", gen1MajorStatus: "paralysis" as const },
+      { id: "st-slp", gen1MajorStatus: "sleep" as const },
+      { id: "st-frz", gen1MajorStatus: "freeze" as const },
+      { id: "st-cnf", volatileStatus: "confusion" as const },
+      { id: "st-none" },
+    ];
+    const added = (stateId: string) => monsterTimelineCue({ kind: "stateAdded", stateId }, states);
+    expect(added("st-psn")).toBe("status-poison");
+    expect(added("st-tox")).toBe("status-poison");
+    expect(added("st-brn")).toBe("status-burn");
+    expect(added("st-par")).toBe("status-paralysis");
+    expect(added("st-slp")).toBe("status-sleep");
+    expect(added("st-cnf")).toBe("status-confusion");
+    expect(added("st-frz")).toBeUndefined();
+    expect(added("st-none")).toBeUndefined();
+    expect(added("unknown")).toBeUndefined();
+    expect(monsterTimelineCue({ kind: "stateRemoved", stateId: "st-psn" }, states)).toBeUndefined();
+    const stage = (before: number, after: number) => ({ kind: "special" as const, statStage: { stat: "attack" as const, before, after, requested: after - before } });
+    expect(monsterTimelineCue(stage(0, 1), states)).toBe("stat-up");
+    expect(monsterTimelineCue(stage(0, -2), states)).toBe("stat-down");
+    expect(monsterTimelineCue(stage(6, 6), states)).toBeUndefined();
+    for (const kind of ["rain", "sun", "sandstorm", "hail"] as const) {
+      const start = { kind: "special" as const, weatherKind: kind, weatherAfter: { kind, turnsLeft: 5 }, message: WEATHER_START_LINES[kind] };
+      expect(monsterTimelineCue(start, states), kind).toBe({ rain: "weather-rain", sun: "weather-sun", sandstorm: "weather-sand", hail: "weather-hail" }[kind]);
+      expect(monsterTimelineCue({ ...start, message: WEATHER_CONTINUE_LINES[kind] }, states), kind).toBeUndefined();
+      expect(monsterTimelineCue({ ...start, weatherAfter: null, message: WEATHER_END_LINES[kind] }, states), kind).toBeUndefined();
+    }
+  });
+
+  it("dialogue tick only exists for monster projects and only on voiced characters", () => {
+    expect(createMonsterDialogueTick(createBlankProject()).speak("가")).toBeUndefined();
+    expect(() => createMonsterDialogueTick(monsterProject()).speak("가")).not.toThrow();
   });
 
   it("menu sounds: monster projects get the set, other genres keep the RTP sounds, authored sounds win", () => {

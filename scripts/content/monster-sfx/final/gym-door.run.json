@@ -1,0 +1,19 @@
+{
+ "id": "gym-door",
+ "cand": 2,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "d2ee46d0fdaa1e00",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 220.0 ms > 200"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

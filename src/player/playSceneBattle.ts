@@ -220,7 +220,10 @@ export async function playBattle(
         : createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
       const entryTransition = newTransition();
       // 몬스터 장르: 야생 조우 전환음(소리 세트가 없는 장르는 예전처럼 무음).
-      playMonsterSfx(project, "encounter");
+      if (playMonsterSfx(project, "encounter")) {
+        // 전환음(약 0.9초)이 끝난 뒤 전투 시작 짧은 팡파레.
+        window.setTimeout(() => { playMonsterSfx(project, "battle-start"); }, 950);
+      }
       // 전투 DOM 의 첫 스타일·레이아웃(수백 줄 CSS 를 처음 매칭)과 SE 디코드 요청을 진입 커버(번쩍임) 동안 치른다.
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
       preloadBattleJuiceSamples();

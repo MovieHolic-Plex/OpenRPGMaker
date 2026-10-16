@@ -54,7 +54,7 @@ import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
 import { usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
-import { playMonsterSfx } from "@/player/monsterSfx";
+import { monsterTimelineCue, playMonsterSfx } from "@/player/monsterSfx";
 import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -486,6 +486,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       captureEntryActive = entry.kind === "capture";
       // 도감 등록 문장이 뜨는 순간의 징글.
       if (entry.kind === "special" && entry.aside === "dex") playBattleSfx("dex");
+      // 몬스터 장르: 상태 이상 걸림·능력 단계 변화·날씨 시작 소리(다른 장르는 playMonsterSfx 가 false 라 무음 변화 없음).
+      const timelineCue = monsterTimelineCue(entry, store.getCurrent().database.states);
+      if (timelineCue) playMonsterSfx(store.getCurrent(), timelineCue);
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;

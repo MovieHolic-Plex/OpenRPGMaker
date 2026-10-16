@@ -14,6 +14,13 @@ export const MONSTER_SFX_CUES = [
   "hit-weak", "hit-normal", "hit-super",
   "ball-throw", "ball-shake", "ball-break", "capture-success",
   "level-up", "faint", "center-heal", "encounter",
+  // 2차 세트(진화·획득·상태 이상·날씨·필드)
+  "evolve-before", "evolve-during", "evolve-after", "badge-get", "item-get", "shop-buy",
+  "status-poison", "status-burn", "status-paralysis", "status-sleep", "status-confusion",
+  "stat-up", "stat-down",
+  "weather-rain", "weather-sun", "weather-sand", "weather-hail",
+  "walk-grass", "dialogue-tick", "crit", "battle-start", "door-open", "gym-door",
+  "hm-rock-smash", "hm-cut", "hm-surf",
 ] as const;
 export type MonsterSfxCue = (typeof MONSTER_SFX_CUES)[number];
 
@@ -33,6 +40,32 @@ export const MONSTER_SFX_TITLES: Readonly<Record<MonsterSfxCue, string>> = {
   "faint": "기절",
   "center-heal": "센터 회복",
   "encounter": "야생 조우 전환",
+  "evolve-before": "진화 · 시작",
+  "evolve-during": "진화 · 변신 중",
+  "evolve-after": "진화 · 완료",
+  "badge-get": "배지 획득",
+  "item-get": "아이템 획득",
+  "shop-buy": "상점 구매",
+  "status-poison": "상태 이상 · 독",
+  "status-burn": "상태 이상 · 화상",
+  "status-paralysis": "상태 이상 · 마비",
+  "status-sleep": "상태 이상 · 잠듦",
+  "status-confusion": "상태 이상 · 혼란",
+  "stat-up": "능력 상승",
+  "stat-down": "능력 하락",
+  "weather-rain": "날씨 · 비",
+  "weather-sun": "날씨 · 쾌청",
+  "weather-sand": "날씨 · 모래바람",
+  "weather-hail": "날씨 · 싸라기눈",
+  "walk-grass": "풀숲 걷기",
+  "dialogue-tick": "대사 글자",
+  "crit": "급소 타격",
+  "battle-start": "전투 시작",
+  "door-open": "문 열림",
+  "gym-door": "체육관 문",
+  "hm-rock-smash": "비전 · 바위 깨기",
+  "hm-cut": "비전 · 풀 베기",
+  "hm-surf": "비전 · 파도타기",
 };
 
 export function monsterSfxResourceId(cue: MonsterSfxCue): string {

@@ -178,8 +178,8 @@ def validate(patch: dict) -> None:
     if extra:
         raise PatchError(f"unknown top-level keys {sorted(extra)} (allowed {sorted(TOP_KEYS)})")
     dur = patch.get("duration")
-    if not isinstance(dur, (int, float)) or not 0.03 <= dur <= 4.0:
-        raise PatchError("duration (seconds, total length incl. tail) must be a number 0.03..4.0")
+    if not isinstance(dur, (int, float)) or not 0.03 <= dur <= 6.0:
+        raise PatchError("duration (seconds, total length incl. tail) must be a number 0.03..6.0")
     voices = patch.get("voices")
     if not isinstance(voices, list) or not 1 <= len(voices) <= 6:
         raise PatchError("voices must be a list of 1..6 voices")

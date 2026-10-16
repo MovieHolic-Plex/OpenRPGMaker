@@ -9,6 +9,7 @@ import { goodsIndex, type ShopGoods } from '@/player/playSceneShopGoods';
 import { affordableQuantityMax, type ShopMode } from '@/player/playSceneShopParts';
 import { installPlayPointerBlocker } from '@/player/playInputBlocker';
 import { emitRuntimeJuice } from '@/player/runtimeJuice';
+import { playMonsterSfx } from '@/player/monsterSfx';
 import { renderEmeraldShop, type EmeraldShopAction, type EmeraldShopPhase } from '@/player/emeraldShopDom';
 import { attachEmeraldShopInput } from '@/player/emeraldShopInput';
 import type { ShopStep } from '@/player/playSceneShop';
@@ -133,7 +134,11 @@ export function playEmeraldShop(options: {
         // Consume pending BEFORE the sole atomic commit: re-entry cannot buy twice.
         const deal = pending; pending = undefined;
         const result = options.transact(deal.item, deal.mode, deal.count, merchantGold);
-        if (result.ok) { merchantGold = result.merchantGold; completed = true; sound('menu-confirm'); }
+        if (result.ok) {
+          merchantGold = result.merchantGold; completed = true;
+          // 몬스터 장르: 구매 성공은 동전 소리(판매·세트 없는 장르는 예전 결정음).
+          if (!(deal.mode === 'buy' && playMonsterSfx(store.getCurrent(), 'shop-buy'))) sound('menu-confirm');
+        }
         else sound('menu-invalid');
         phase = 'receipt'; message = result.status; render();
       } else if (phase === 'receipt') { sound('menu-confirm'); returnToItems(); }

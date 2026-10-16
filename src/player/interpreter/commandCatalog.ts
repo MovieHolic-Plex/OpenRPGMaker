@@ -1,5 +1,6 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
 import { playMonsterSfx } from "@/player/monsterSfx";
+import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
@@ -598,7 +599,12 @@ export function executeCommand(
     }
     case "setSwitch": {
       const next = resolveSwitchValue(state.session, command.switchId, command.value);
+      const wasOn = getSwitch(state.session, command.switchId);
       setSwitch(state.session, command.switchId, next);
+      // 몬스터 장르: 캠페인 배지 스위치가 새로 켜지면 배지 획득 팡파레.
+      if (next && !wasOn && state.project && monsterCampaign(state.project)?.badges.some((badge) => badge.switchId === command.switchId)) {
+        playMonsterSfx(state.project, "badge-get");
+      }
       return resumeNext(frame);
     }
     case "setVariable":
@@ -927,7 +933,9 @@ export function executeCommand(
       const amount = typeof command.amount === "number"
         ? command.amount
         : state.session.variables[command.amount.id] ?? 0;
-      changeItem(state.session, command.itemId, command.op, amount);
+      const gained = changeItem(state.session, command.itemId, command.op, amount);
+      // 몬스터 장르: 아이템을 얻었을 때(=, += 로 늘었고 amount>0) 획득 소리.
+      if (gained && state.project && command.op !== "-=" && amount > 0) playMonsterSfx(state.project, "item-get");
       return resumeNext(frame);
     }
     case "craftRecipe": {

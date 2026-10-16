@@ -1,0 +1,13 @@
+{
+ "id": "battle-start",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "a32c68fa15c3531d",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

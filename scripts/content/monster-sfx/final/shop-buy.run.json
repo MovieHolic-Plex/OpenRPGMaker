@@ -1,0 +1,19 @@
+{
+ "id": "shop-buy",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "b17b9d0ab54b7040",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 175.0 ms > 100"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}
