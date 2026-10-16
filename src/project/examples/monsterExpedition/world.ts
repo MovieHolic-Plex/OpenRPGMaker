@@ -486,6 +486,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return Array.from({ length: count }, (_, i) => roster[i % roster.length]!.id);
   }
 
+  /** 관장은 타입 간판 종(pickSpecies 의 첫 칸)을 마지막에 내보낸다 — 첫 칸이 스타터와 같은 종 거울이 되지 않고, 간판이 가장 높은 레벨로 끝에 선다(D35). */
+  const aceLast = (ids: string[]): string[] => ids.length > 1 ? [...ids.slice(1), ids[0]!] : ids;
+
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
 
   function wild(map: GameMap, habitat: string, level: number, accent?: string): string[] {
@@ -772,7 +775,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     }
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
     if (key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
-    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
+    battle(map, "leader", g.leader, leader, aceLast(pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3)), g.level, `mx_badge_${i + 1}`, g.before,
       // 관장 대사 → 배지 획득 연출(섬광·징글·떠오르는 배지, project/monsterBadgeCeremony.ts) → 보상. 배지 스위치는 승리 스위치가 이미 켠 뒤다.
       [text(g.after, g.leader), ...badgeAwardCommands({ badgeName: g.badge, badgeIndex: i + 1, badgeTotal: gymCount, type: gymType(i, g), fanfareResourceId: audio.victory }),
         { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), gain("mx_revive", 1), text("부활의 깃털도 건네받았다. 다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle, false, 2);
