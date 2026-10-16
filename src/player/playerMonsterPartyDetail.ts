@@ -1,3 +1,4 @@
+import { MONSTER_NICKNAME_MAX, monsterGenderLabel } from "@/project/monsterIdentity";
 import { abilityEffectText } from "@/battle/abilities";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -102,16 +103,20 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
   // 쪽 나눔은 에메랄드 요약 화면(480×320 한 장)에서만 쓴다 — 다른 스킨은 기존처럼 한 목록에 모두 둔다.
   const page = isEmeraldMonsterStyle(options.project) && options.onMonsterCollect ? options.monsterCollect?.summaryPage ?? "stats" : undefined;
   const paged = page !== undefined;
+  const showGenderRow = Boolean(raw.gender) && entry.stateNames.length === 0 && paged;
   const info: StatusMenuDetailEntry[] = [
     infoRow(paged, { label: "타입", value: entry.typeLabel, attributes: { "data-summary-half": "true" } }),
-    infoRow(paged, { label: "상태", value: entry.stateNames.join(" · ") || "정상", attributes: { "data-summary-half": "true" } }),
+    // 쪽 한 장에는 반쪽 줄이 짝으로 들어간다 — 상태가 정상이면 성별이 그 자리를 쓰고, 상태 이상이면 상태가 먼저다(성별은 목록에서 보인다).
+    ...(showGenderRow
+      ? [infoRow(paged, { label: "성별", value: monsterGenderLabel(raw), testId: "status-menu-monster-gender", attributes: { "data-summary-half": "true" } })]
+      : [infoRow(paged, { label: "상태", value: entry.stateNames.join(" · ") || "정상", attributes: { "data-summary-half": "true" } })]),
     ...caughtBallEntries(options, raw.instanceId).map((row) => infoRow(paged, row)),
     // 특성은 효과 설명이 길어 줄 안에 못 담는다 — 커서가 멈추게 두고 설명은 아래 안내 창이 읽어 준다.
     ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
   ];
   const stats: StatusMenuDetailEntry[] = [
     infoRow(paged, { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", ...(paged ? { attributes: { "data-summary-half": "true" } } : {}) }),
-    ...(paged ? [infoRow(paged, { label: "다음", value: entry.nextLevel ? `${entry.nextLevel.remaining}` : "최대", description: "다음 레벨까지 필요한 경험치", testId: "status-menu-monster-next-level", attributes: { "data-summary-half": "true" } })] : []),
+    ...(paged ? [infoRow(paged, { label: "다음 Lv", value: entry.nextLevel ? `${entry.nextLevel.remaining}` : "최대", testId: "status-menu-monster-next-level", attributes: { "data-summary-half": "true" } })] : []),
     infoRow(paged, { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", attributes: { "data-summary-half": "true" } }),
     infoRow(paged, { label: "방어", value: String(entry.stats.defense), attributes: { "data-summary-half": "true" } }),
     infoRow(paged, { label: "특공", value: String(entry.stats.mind), attributes: { "data-summary-half": "true" } }),
@@ -135,6 +140,18 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
       testId: `status-menu-monster-release-${raw.instanceId}`,
       onActivate: () => options.onMonsterCollect?.(askRelease ? { kind: "release", instanceId: raw.instanceId } : { kind: "releaseAsk", instanceId: raw.instanceId }) },
   ] : [];
+  const renaming = options.monsterCollect?.renameId === raw.instanceId;
+  const renameEntry: StatusMenuDetailEntry[] = renaming ? [{
+    label: "별명", value: "", testId: `status-menu-monster-rename-${raw.instanceId}`, attributes: { monsterRename: "true" },
+    textInput: {
+      label: "별명", value: raw.nickname ?? "", maxLength: MONSTER_NICKNAME_MAX,
+      onCommit: (name) => options.onMonsterCollect?.({ kind: "rename", instanceId: raw.instanceId, name }),
+      onCancel: () => options.onMonsterCollect?.({ kind: "cancelRename" }),
+    },
+  }] : options.onMonsterCollect ? [{
+    label: "별명 바꾸기", value: raw.nickname ?? "—", description: `최대 ${MONSTER_NICKNAME_MAX}글자. 비우면 종 이름으로 돌아갑니다`,
+    testId: `status-menu-monster-rename-${raw.instanceId}`, onActivate: () => options.onMonsterCollect?.({ kind: "startRename", instanceId: raw.instanceId }),
+  }] : [];
   const back: StatusMenuDetailEntry = { label: inBox ? "← 보관함" : "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) };
   const cycle: StatusMenuDetailEntry[] = page ? [{
     label: `${MONSTER_SUMMARY_PAGE_LABEL[page]} ▶ ${MONSTER_SUMMARY_PAGE_LABEL[nextMonsterSummaryPage(page)]}`, value: `${MONSTER_SUMMARY_PAGES.indexOf(page) + 1}/${MONSTER_SUMMARY_PAGES.length}`,
@@ -146,7 +163,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
     ? [back, ...info, ...stats, ...moves, heldItemEntry(options, raw.instanceId), moveEntry]
     : page === "stats" ? [back, ...cycle, ...info, ...stats]
     : page === "moves" ? [back, ...cycle, ...moves]
-    : [back, ...cycle, heldItemEntry(options, raw.instanceId), ...swapEntry, moveEntry, ...boxEntries];
-  return { title: `${entry.name} · Lv.${raw.level}`, layout: isEmeraldMonsterStyle(options.project) ? "campaign-summary" : "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name } : undefined,
+    : [back, ...cycle, ...renameEntry, heldItemEntry(options, raw.instanceId), ...swapEntry, moveEntry, ...boxEntries];
+  return { title: `${raw.shiny ? "★ " : ""}${entry.name} · Lv.${raw.level}`, layout: isEmeraldMonsterStyle(options.project) ? "campaign-summary" : "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name, ...(raw.shiny ? { shiny: true } : {}) } : undefined,
     entries, hint: inBox ? "↑↓ 항목 확인 · Esc 보관함" : "↑↓ 항목 확인 · Esc 몬스터 목록" };
 }

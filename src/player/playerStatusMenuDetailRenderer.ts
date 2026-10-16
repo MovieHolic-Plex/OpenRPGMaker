@@ -75,6 +75,7 @@ export function renderStatusMenuDetailPanel(
   if (detail.artwork) {
     panel.append(el("figure", {
       class: "life-ledger-artwork",
+      ...(detail.artwork.shiny ? { dataset: { monsterShiny: "true" } } : {}),
       children: [el("img", {
         attrs: { src: detail.artwork.src, alt: detail.artwork.alt },
         dataset: { testid: "life-ledger-artwork" },
@@ -219,6 +220,25 @@ function renderDetailEntry(options: {
         dataset: detailEntryDataset(entry, undefined),
       });
   if (selected) row.classList.add("selected");
+  if (entry.textInput) {
+    const field = entry.textInput;
+    const input = el("input", {
+      class: "status-menu-text-input",
+      attrs: { type: "text", maxlength: String(field.maxLength), value: field.value, "aria-label": field.label, autocomplete: "off", spellcheck: "false" },
+      dataset: { testid: "status-menu-text-input" },
+    }) as HTMLInputElement;
+    input.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      if (event.isComposing) return;
+      if (event.key === "Enter") { event.preventDefault(); field.onCommit(input.value); }
+      else if (event.key === "Escape") { event.preventDefault(); field.onCancel(); }
+    });
+    row.classList.add("with-text-input");
+    row.append(el("span", { class: "status-menu-detail-label", text: field.label }), input);
+    // 행이 붙은 다음 틱에 포커스(렌더 중에는 아직 문서에 없다).
+    queueMicrotask(() => { if (input.isConnected) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); } });
+    return row;
+  }
   if (entry.vitals) {
     if (entry.face) row.append(renderDetailFace(project, entry.face, entry.attributes?.partySlot === undefined ? 24 : entry.attributes.partySlot === "0" ? 64 : 32));
     row.append(el("span", { class: "status-menu-target-name", text: entry.label }));

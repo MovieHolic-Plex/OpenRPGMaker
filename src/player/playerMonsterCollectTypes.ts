@@ -17,6 +17,8 @@ export type MonsterCollectUi = {
   readonly boxMoveSourceId?: string;
   /** 놓아주기 확인을 한 번 거친 몬스터(두 번째 선택에서 실제로 놓아준다). */
   readonly releaseConfirmId?: string;
+  /** 별명을 바꾸는 중인 몬스터. 있으면 요약 화면 위에 입력창이 뜬다. */
+  readonly renameId?: string;
 };
 
 export type MonsterCollectAction =
@@ -29,7 +31,10 @@ export type MonsterCollectAction =
   | { readonly kind: "cancelBoxMove" }
   | { readonly kind: "boxPlace"; readonly sourceId: string; readonly slot: number }
   | { readonly kind: "releaseAsk"; readonly instanceId: string }
-  | { readonly kind: "release"; readonly instanceId: string };
+  | { readonly kind: "release"; readonly instanceId: string }
+  | { readonly kind: "startRename"; readonly instanceId: string }
+  | { readonly kind: "rename"; readonly instanceId: string; readonly name: string }
+  | { readonly kind: "cancelRename" };
 
 export const MONSTER_SUMMARY_PAGE_LABEL: Readonly<Record<MonsterSummaryPage, string>> = { stats: "능력치", moves: "기술", manage: "관리" };
 

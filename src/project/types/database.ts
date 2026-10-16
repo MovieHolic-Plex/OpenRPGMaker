@@ -846,6 +846,8 @@ export interface MonsterSpeciesRecord {
   evolutions?: MonsterEvolutionRecord[];
   /** 도감 설명(선택). 원정 정의(monsterCampaign)가 없는 수집 게임의 도감이 쓴다 — 원정 노트가 있으면 그쪽이 우선. */
   dexNote?: string;
+  /** 암컷 비율 0~1(0 = 수컷만, 1 = 암컷만). 생략 = 무성(성별 표시 없음). */
+  genderRatio?: number;
   /** 특성(선택). 생략 = 특성 없음(기존 동작). gen1 전투 모델에서만 적용된다. */
   ability?: MonsterAbility;
 }
@@ -1974,6 +1976,8 @@ export interface SystemRecords {
   /** Opt-in sell price overrides. */
   /** 도망 성공 뒤 야생 조우를 건너뛰는 걸음 수(0~99, 0 = 끔). 생략 = 몬스터 파티 게임은 4, 다른 장르는 0. project/encounterGuard.ts. */
   escapeGraceSteps?: number;
+  /** 색이 다른 개체 확률 1/N(2~65536). 생략 = 나오지 않음. */
+  shinyRate?: number;
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
   /** Opt-in life-sim energy pool. */
   energy?: EnergySystemConfig;

@@ -40,6 +40,8 @@ export type StatusMenuDetailEntry = {
   readonly facts?: readonly StatusMenuDetailFact[];
   /** Semantic DOM attributes for state/behavior assertions (not prose). */
   readonly attributes?: Readonly<Record<string, string>>;
+  /** 글자 입력 행(별명 짓기). 값은 Enter 로 확정, Esc 로 취소 — 키는 입력창이 받고 게임 키로 새지 않는다. */
+  readonly textInput?: { readonly value: string; readonly maxLength: number; readonly label: string; readonly onCommit: (value: string) => void; readonly onCancel: () => void };
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
@@ -70,7 +72,7 @@ export type StatusMenuDetail = {
   /** gallery: 고른 그림을 목록 위에 크게 둔다. */
   readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary" | "campaign-box";
   readonly regionMap?: import("@/player/playerMonsterCampaignMenu").CampaignRegionMap;
-  readonly artwork?: { readonly src: string; readonly alt: string };
+  readonly artwork?: { readonly src: string; readonly alt: string; readonly shiny?: boolean };
   /** 도감 목록의 진행 막대(발견·포획·전체). 제목 줄에 겹쳐 그린다. */
   readonly meter?: { readonly seen: number; readonly caught: number; readonly total: number };
   readonly tabs?: readonly {

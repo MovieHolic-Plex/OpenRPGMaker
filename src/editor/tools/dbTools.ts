@@ -707,6 +707,7 @@ const monsterSpeciesRecordSchema = objectSchema({
   evolutions: arrayOf(monsterEvolutionSchema),
   ability: monsterAbilitySchema,
   dexNote: stringSchema("도감 설명 한두 문장(200자 이내). 원정 정의(monsterCampaign) 없는 수집 게임의 도감에 나온다 — 있으면 원정 노트가 우선"),
+  genderRatio: numberSchema("암컷 비율 0~1(0=수컷만, 0.5=반반, 1=암컷만). 생략하면 무성 — 성별 표시 없음. 받는 순간 개체 번호에서 결정적으로 정해진다"),
 }) as RecordSchema;
 
 const cropStageSchema = objectSchema({ days: integerSchema("단계 소요일") });

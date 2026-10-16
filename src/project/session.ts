@@ -116,6 +116,10 @@ export type MonsterInstance = {
   readonly instanceId: MonsterInstanceId;
   readonly speciesId: MonsterSpeciesId;
   readonly nickname?: string;
+  /** 성별(종에 genderRatio 가 있을 때만). 생략 = 무성. */
+  readonly gender?: "male" | "female";
+  /** 색이 다른 개체(system.shinyRate 가 있을 때만 나온다). */
+  readonly shiny?: true;
   readonly level: number;
   readonly exp: number;
   readonly currentHp?: number;

@@ -434,13 +434,14 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] :is(.status-menu-target-state, .status-menu-target-vital.mp) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-track { height: 6px; background: #586858; margin-top: 4px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-fill { background: #68c084; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 160px; height: 32px; background: #f8f8e8; font-size: 18px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 168px; height: 32px; background: #f8f8e8; font-size: 18px; display: flex; align-items: center; justify-content: space-between; gap: 4px; padding: 0 4px; box-sizing: border-box; white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] > * { position: static; width: auto; margin: 0; flex: none; }
 /* 작은 칸 다섯은 그림이 칸 높이(36px)보다 커서 아래가 잘렸다 — 32px 아이콘으로 맞춘다(첫 칸의 큰 그림은 그대로). */
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 18px 14px; align-content: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 20px 20px; align-content: center; row-gap: 0; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-detail-face { width: 32px; height: 32px; background-size: contain; background-position: center; align-self: center; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { line-height: 18px; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-vital { line-height: 14px; align-self: center; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-track { margin-top: 2px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { line-height: 20px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-vital { line-height: 20px; align-self: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-track { margin-top: 0; }
 /* 지닌 도구가 있는 칸은 아이콘 오른쪽 아래에 작은 알 표시. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face { position: relative; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face::after { content: ""; position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; background: linear-gradient(indianred 0 45%, currentColor 45% 55%, white 55%); }
@@ -661,3 +662,19 @@
 .player-layout.system-shell .oprn-load-panel[data-monster-style="emerald"] .oprn-load-slot { border: 2px solid transparent; }
 .player-layout.system-shell .oprn-load-panel[data-monster-style="emerald"] .oprn-load-slot:is(:hover, :focus-visible), .player-layout.system-shell .oprn-load-panel[data-monster-style="emerald"] .oprn-load-slot.selected { border-color: darkslategray; background: color-mix(in srgb, darkseagreen 28%, ivory); }
 .player-layout.system-shell .oprn-load-panel[data-monster-style="emerald"] .oprn-load-slot-meta, .player-layout.system-shell .oprn-load-panel[data-monster-style="emerald"] .oprn-load-slot-monster { color: inherit; font-size: 14px; line-height: 18px; opacity: 0.85; }
+
+/* 몬스터 정체성: 색이 다른 개체는 새 그림 없이 색조만 돌린다(★ 는 이름 앞 글자). 별명 입력 행은 목록 줄과 같은 높이. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail .life-ledger-artwork[data-monster-shiny="true"] img { filter: hue-rotate(150deg) saturate(1.2); }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-row.with-text-input { align-items: center; display: flex; gap: 6px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-text-input {
+  background: ivory; border: 2px solid currentColor; border-radius: 0; box-sizing: border-box; color: inherit;
+  flex: 1 1 auto; font: inherit; height: 28px; min-width: 0; outline: 0; padding: 0 6px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-shiny="true"] .status-menu-detail-face { filter: hue-rotate(150deg) saturate(1.2); }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-row.with-text-input .status-menu-detail-label { flex: none; white-space: nowrap; }
+/* 성별 글자는 픽셀 글꼴에 작게만 들어 있어(♀ 가 「우」처럼 보인다) 이름 뒤에 시스템 글꼴로 붙인다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender] .status-menu-target-name::after { font: 700 16px/1 system-ui, sans-serif; margin-left: 3px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender="male"] .status-menu-target-name::after { content: "\2642"; color: royalblue; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender="female"] .status-menu-target-name::after { content: "\2640"; color: crimson; }

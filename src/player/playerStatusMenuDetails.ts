@@ -810,10 +810,10 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       const slotNote = swapSourceId
         ? raw.instanceId === swapSourceId ? "바꿀 동료를 고르세요. 이 동료를 다시 고르면 취소합니다" : `${withJosa(member.name, "와/과")} 자리를 바꿉니다`
         : [member.stateNames.join(" · ") || "정상", heldName ? `지닌 도구 ${heldName}` : ""].filter(Boolean).join(" · ");
-      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: slotNote,
+      return { label: `${raw.shiny ? "★" : ""}${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: slotNote,
         testId: `status-menu-monster-${raw.instanceId}`,
         attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp),
-          ...(heldName ? { partyHeld: "true" } : {}), ...(raw.instanceId === swapSourceId ? { partySwapSource: "true" } : {}) },
+          ...(heldName ? { partyHeld: "true" } : {}), ...(raw.shiny ? { monsterShiny: "true" } : {}), ...(raw.gender ? { monsterGender: raw.gender } : {}), ...(raw.instanceId === swapSourceId ? { partySwapSource: "true" } : {}) },
         vitals: { hp: member.hp, maxHp: member.maxHp, hpAfter: member.hp, mp: 0, maxMp: 0, mpAfter: 0, stateNames: member.stateNames },
         face: { resourceId: monsterMenuIconResourceId(options.project, member.species?.graphic.monsterResourceId), alt: member.name, testId: `status-menu-monster-art-${raw.instanceId}` },
         onActivate: activateMonster(raw.instanceId) };

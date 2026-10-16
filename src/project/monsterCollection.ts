@@ -1,3 +1,4 @@
+import { normalizeGenderRatio, rollMonsterIdentity } from "@/project/monsterIdentity";
 import type { Rng } from "@/util/rng";
 import { mulberry32 } from "@/util/rng";
 import { ACTOR_LEVEL_MAX, totalExpForLevel } from "@/project/actorModel";
@@ -40,6 +41,9 @@ export type GiveMonsterInput = {
   readonly skillPp?: Readonly<Record<SkillId, number>>;
   /** 포획에 쓴 볼(아이템 id). */
   readonly caughtBallId?: string;
+  /** 직접 정할 때(이벤트·이관). 생략하면 종 genderRatio·system.shinyRate 로 개체 번호에서 정해진다. */
+  readonly gender?: "male" | "female";
+  readonly shiny?: boolean;
 };
 
 export type GiveMonsterResult =
@@ -118,6 +122,7 @@ export function normalizeMonsterSpeciesRecord(
     evolutions: evolutions.length > 0 ? evolutions : undefined,
     ...(ability ? { ability } : {}),
     ...(typeof record.dexNote === "string" && record.dexNote.trim() ? { dexNote: record.dexNote.trim().slice(0, 200) } : {}),
+    ...(normalizeGenderRatio(record.genderRatio) !== undefined ? { genderRatio: normalizeGenderRatio(record.genderRatio) } : {}),
   };
 }
 
@@ -178,6 +183,13 @@ export function rollMonsterIvs(rng: Rng): MonsterInstanceIvs {
     def: rollIv(rng),
     spd: rollIv(rng),
   };
+}
+
+function identityOf(project: Project, species: MonsterSpeciesRecord, input: GiveMonsterInput, seedKey: string): { gender?: "male" | "female"; shiny?: true } {
+  const rolled = rollMonsterIdentity(project, species, seedKey);
+  const gender = input.gender ?? rolled.gender;
+  const shiny = input.shiny ?? rolled.shiny === true;
+  return { ...(gender ? { gender } : {}), ...(shiny ? { shiny: true as const } : {}) };
 }
 
 export function deterministicMonsterIvs(seed: string | number): MonsterInstanceIvs {
@@ -249,6 +261,7 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     skillIds: input.skillIds ? [...input.skillIds] : undefined,
     skillPp: input.skillPp ? { ...input.skillPp } : undefined,
     ...(input.caughtBallId ? { caughtBallId: input.caughtBallId } : {}),
+    ...identityOf(project, species, input, `${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
   };
   const maxHp = monsterMaxHpFor(project, species, instance);
   const hydrated = normalizeMonsterInstanceBattleState(project, {
