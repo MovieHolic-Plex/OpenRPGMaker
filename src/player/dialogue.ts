@@ -16,6 +16,7 @@ import {
   DIALOGUE_LINES_PER_PAGE,
   fallbackMeasureDialogueText,
   paginateDialogueSegments,
+  type DialoguePage,
   type DialogueTextControl,
   type DialogueTextFx,
   type DialogueTextMeasure,
@@ -626,16 +627,25 @@ export function createDialogueUI(
         // offsetHeight 가 나오고, 줄 수를 세기 **전**이라야 그 줄 수가 실제 본문 칸을 본다.
         if (nameplate && !balloon) reserveSpeakerInset(box, nameplate);
         const measure = createDialogueTextMeasure(bodyEl);
-        pages = paginateDialogueSegments(segmentsAll, {
-          maxWidth: balloon
-            ? DIALOGUE_BALLOON_TEXT_WIDTH
-            : overlay.dataset.monsterStyle === "emerald" && bodyEl.clientWidth > 0
-              ? bodyEl.clientWidth
-              : dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
-          measure,
-          maxLines: balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl),
-          fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
-        });
+        const baseWidth = balloon
+          ? DIALOGUE_BALLOON_TEXT_WIDTH
+          : overlay.dataset.monsterStyle === "emerald" && bodyEl.clientWidth > 0
+            ? bodyEl.clientWidth
+            // 상수로 계산한 폭은 상자의 실제 안쪽 폭보다 몇 px 넓을 수 있다(jrpg-real-1 J07: 282 대 280).
+            // 실제 레이아웃이 있으면 둘 중 좁은 쪽을 쓴다 — 넓게 재면 40자 줄이 DOM 에서 한 번 더 접혀 4번째 줄이 잘린다.
+            : Math.min(
+              dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
+              measuredBodyContentWidth(bodyEl) ?? Number.POSITIVE_INFINITY,
+            );
+        const maxLines = balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl);
+        pages = paginateDialogueSegments(segmentsAll, { maxWidth: baseWidth, measure, maxLines, fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH });
+        // 안전망: 글꼴 폭 측정이 실제 렌더와 어긋나 한 줄이 더 접히면 페이지가 상자보다 길어진다. 실제로 붙여 보고
+        // 넘치면 폭을 조금씩 줄여 다시 나눈다(글이 소리 없이 잘리는 것보다 줄이 조금 일찍 접히는 편이 낫다).
+        if (!balloon) {
+          for (let shrink = 1; shrink <= 8 && dialoguePagesOverflowBody(bodyEl, pages); shrink += 1) {
+            pages = paginateDialogueSegments(segmentsAll, { maxWidth: Math.max(1, baseWidth - shrink * 4), measure, maxLines, fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH });
+          }
+        }
       };
 
       mount(useBalloon);
@@ -1506,6 +1516,31 @@ function createDialogueTextMeasure(reference: HTMLElement): DialogueTextMeasure 
     const width = context.measureText(text).width;
     return Number.isFinite(width) && width >= 0 ? width : fallback(text);
   };
+}
+
+/** 본문 칸의 실제 글자 폭(padding 제외). 레이아웃이 없으면 undefined. */
+function measuredBodyContentWidth(bodyEl: HTMLElement): number | undefined {
+  const view = bodyEl.ownerDocument?.defaultView;
+  const width = bodyEl.clientWidth;
+  if (!view || !Number.isFinite(width) || width <= 0) return undefined;
+  const style = view.getComputedStyle(bodyEl);
+  const inner = width - (parseFloat(style.paddingLeft) || 0) - (parseFloat(style.paddingRight) || 0);
+  return inner > 0 ? inner : undefined;
+}
+
+/** 각 페이지를 본문 칸에 실제로 붙여 보고 세로로 넘치는 페이지가 있는지 본다(레이아웃이 없으면 false). */
+function dialoguePagesOverflowBody(bodyEl: HTMLElement, pages: readonly DialoguePage[]): boolean {
+  if (!bodyEl.clientHeight || bodyEl.clientHeight <= 0) return false;
+  const saved = bodyEl.textContent;
+  try {
+    for (const page of pages) {
+      bodyEl.textContent = page.segments.map((segment) => segment.text).join("");
+      if (bodyEl.scrollHeight > bodyEl.clientHeight + 1) return true;
+    }
+    return false;
+  } finally {
+    bodyEl.textContent = saved;
+  }
 }
 
 function dialogueBox(extraClass: string, testId: string): HTMLElement {

@@ -19,6 +19,7 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
+import { fitTitleSubtitle, fitTitleText, type TitleFit } from "@/player/titleTextFit";
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
@@ -193,6 +194,7 @@ export function renderTitleScreen(
     for (const node of titleNodes) node.dataset.logoStyle = settings.logoStyle;
     title.dataset.logoStyle = settings.logoStyle;
   }
+  const titleFit = fitTitleTextNodes(titleNodes, settings);
   if (playIntro) applyTitleIntroToLogoNodes(titleNodes, settings.intro);
   title.append(...titleNodes);
   // 조작 안내 줄은 그리지 않는다 — 키아트 하단을 가리고, 메뉴 커서가 이미 선택을 보여 준다.
@@ -202,7 +204,7 @@ export function renderTitleScreen(
   title.append(menu);
   // 로고 질감을 고른 오프닝은 키아트와 부딪히는 기본 문구 대신 저자의 부제만 쓴다.
   if (settings.logoStyle) {
-    if (settings.logoSubtitle) title.append(renderTitleLogoSubtitle(settings));
+    if (settings.logoSubtitle) title.append(renderTitleLogoSubtitle(settings, titleFit));
   } else {
     title.append(renderTitleEditorialCopy());
   }
@@ -425,14 +427,39 @@ export function renderTitleEffectsLayer(
   return canvas;
 }
 
-function renderTitleLogoSubtitle(settings: TitleScreenSettings): HTMLElement {
+/** 제목 글자 크기·줄 수를 화면 폭에 맞춘다(J05). 글자 질감 로고(큰 제목)만 — 일반 편집 글꼴 제목은 CSS 폭 한도(72%)와 keep-all 줄바꿈이 맡는다. */
+function fitTitleTextNodes(nodes: readonly HTMLElement[], settings: TitleScreenSettings): TitleFit | null {
+  if (!settings.logoStyle) return null;
+  const node = nodes.find((candidate) => candidate.dataset.testid === "title-text");
+  if (!node) return null;
+  const fit = fitTitleText(settings.title, { left: settings.layout.titleX, basePx: 27, letterSpacingEm: 0.06 });
+  node.style.fontSize = `${fit.fontPx}px`;
+  node.style.whiteSpace = fit.lines > 1 ? "normal" : "nowrap";
+  node.style.maxWidth = `${fit.availablePx}px`;
+  node.style.width = "max-content";
+  node.style.textWrap = "balance";
+  node.dataset.titleLines = String(fit.lines);
+  return fit;
+}
+
+function renderTitleLogoSubtitle(settings: TitleScreenSettings, titleFit: TitleFit | null): HTMLElement {
   const node = el("div", {
     class: "rm-title-logo-subtitle",
     text: settings.logoSubtitle ?? "",
     dataset: { testid: "title-logo-subtitle", logoStyle: settings.logoStyle ?? "plain" },
   });
   node.style.left = logicalX(settings.layout.titleX);
-  node.style.top = `calc(${logicalY(settings.layout.titleY)} + 3.4em)`;
+  // 제목이 몇 줄이든 그 바로 아래 — 고정 3.4em 은 두 줄 제목과 겹친다. 제목 박스 높이 = 줄 수 × 글자 크기 × 1.1.
+  const lines = titleFit?.lines ?? 1;
+  const titleHeightPx = titleFit ? Math.round(titleFit.fontPx * 1.1 * lines) : 27;
+  node.style.top = `calc(${logicalY(settings.layout.titleY)} + ${titleHeightPx + 3}px)`;
+  const fit = fitTitleSubtitle(settings.logoSubtitle ?? "", { left: settings.layout.titleX, basePx: 8, baseSpacingEm: 0.32 });
+  node.style.letterSpacing = `${fit.letterSpacingEm}em`;
+  node.style.maxWidth = `${fit.availablePx}px`;
+  if (fit.lines > 1) {
+    node.style.whiteSpace = "normal";
+    node.style.lineHeight = "1.35";
+  }
   return node;
 }
 
