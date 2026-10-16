@@ -1362,31 +1362,6 @@
    }
   },
   {
-   "id": "scarloxy-student-gakuran",
-   "name": "남학생 · 검은 학생복 학생모",
-   "desc": "학생모, 목깃 높은 검은 학생복과 금 단추, 검은 바지.",
-   "genre": "몬스터 수집",
-   "role": "학생",
-   "gender": "male",
-   "age": "youth",
-   "tags": [
-    "학생",
-    "남학생",
-    "교복",
-    "학생복",
-    "학생모"
-   ],
-   "sheet": 8,
-   "index": 3,
-   "source": {
-    "harnessKey": "sc2-student-gakuran",
-    "model": "gemini-4-argon-high",
-    "baseChip": "Scarloxy1:5",
-    "gridSha256": "a3381aacb6d3dd97a00ca803f064d939c931a0f700b171043510034de780dc09",
-    "slotRgbaSha256": "d0b9775c57857e9208eeeedd5b60da7a03fea4d6e81b791f088cb5dbb34af81e"
-   }
-  },
-  {
    "id": "scarloxy-station",
    "name": "역무원 · 남색 제복 붉은 띠 모자",
    "desc": "붉은 띠를 두른 남색 제복모, 남색 제복과 금 버클, 남색 하의.",

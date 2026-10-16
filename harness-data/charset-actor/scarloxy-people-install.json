@@ -981,21 +981,11 @@
      "genre": "몬스터 수집"
     },
     {
+     "vacant": true,
      "key": "sc2-student-gakuran",
      "id": "scarloxy-student-gakuran",
      "name": "남학생 · 검은 학생복 학생모",
-     "desc": "학생모, 목깃 높은 검은 학생복과 금 단추, 검은 바지.",
-     "role": "학생",
-     "gender": "male",
-     "age": "youth",
-     "tags": [
-      "학생",
-      "남학생",
-      "교복",
-      "학생복",
-      "학생모"
-     ],
-     "genre": "몬스터 수집"
+     "reason": "사용자 검토에서 제외(2026-10-16): ScarloxyPeople8#3 남학생·검은 학생복 학생모. 칸 번호는 덧붙이기 전용이라 칸을 비워 두고(투명) 명단·카탈로그에서는 뺀다."
     },
     {
      "key": "sc2-station",

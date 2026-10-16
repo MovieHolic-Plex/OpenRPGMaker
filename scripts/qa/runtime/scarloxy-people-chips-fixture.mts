@@ -1,9 +1,9 @@
-// scarloxy-people-chips.scenario.mjs 픽스처 생성기 — 실물 AI 도구(place_npc)로 ScarloxyPeople1~10 걷기 칩 전 칩(70칸)을 35칸씩 두 판(--part 0|1)으로 5줄×7칸 격자에 세운다(칸 사이 3타일 — 스프라이트 1.5타일 폭이 겹치지 않게).
+// scarloxy-people-chips.scenario.mjs 픽스처 생성기 — 실물 AI 도구(place_npc)로 ScarloxyPeople1~10 걷기 칩 전 칩(69칸)을 35칸씩 두 판(--part 0|1)으로 5줄×7칸 격자에 세운다(칸 사이 3타일 — 스프라이트 1.5타일 폭이 겹치지 않게).
 //
 //   npx vite-node --script scripts/qa/runtime/scarloxy-people-chips-fixture.mts --out tmp/scarloxy-people-chips.json --part 0
 //   npx vite-node --script scripts/qa/runtime/scarloxy-people-chips-fixture.mts --out tmp/scarloxy-people-chips-2.json --part 1   (압축 직렬화 ~67MB: 들여쓴 114MB 는 Playwright 파이프 상한 100MB 를 넘어 브라우저가 죽는다)
 //
-// 무엇을 보는가: 번들 시트 tex_oprn_charset_scarloxy_people1~10 의 70칸이 출하 플레이어에서 NPC 그림으로 그려지는지(정지 격자(판마다 35칸), 둘은 배회). 새 프로젝트(createBlankProject) 기준.
+// 무엇을 보는가: 번들 시트 tex_oprn_charset_scarloxy_people1~10 의 69칸이 출하 플레이어에서 NPC 그림으로 그려지는지(정지 격자(판마다 35칸), 둘은 배회). 새 프로젝트(createBlankProject) 기준.
 import { writeFileSync } from "node:fs";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";

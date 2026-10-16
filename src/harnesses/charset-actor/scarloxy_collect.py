@@ -72,7 +72,7 @@ def main():
     runs = Path(a.runs)
     manifest = json.loads(Path(a.manifest).read_text(encoding='utf-8'))
     install = json.loads(INSTALL.read_text(encoding='utf-8'))
-    have = {c['key'] for s in install['sheets'] for c in s['characters']}
+    have = {c['key'] for s in install['sheets'] for c in s['characters']}   # vacant(사용자가 뺀 칸)도 key 를 가지므로 다시 채택되지 않는다
     todo = [e for e in manifest['chips'] if e['key'] not in have]
     for e in todo:
         stage(e, runs)
@@ -112,7 +112,7 @@ def main():
     # ④ 덧붙이기
     sheets = install['sheets']
     for e in todo:
-        if sheets[-1]['n'] < 5 or len(sheets[-1]['characters']) >= 8:   # ScarloxyPeople1~4 는 불변: 새 칩은 5번 시트부터
+        if sheets[-1]['n'] < 5 or len(sheets[-1]['characters']) >= 8:   # vacant 칸도 한 칸으로 센다   # ScarloxyPeople1~4 는 불변: 새 칩은 5번 시트부터
             sheets.append(dict(n=sheets[-1]['n'] + 1, characters=[]))
         sheets[-1]['characters'].append(dict(key=e['key'], id=e['id'], name=e['name'], desc=e['desc'], role=e['role'], gender=e.get('gender'), age=e.get('age'),
                                              tags=e['tags'], genre='몬스터 수집'))

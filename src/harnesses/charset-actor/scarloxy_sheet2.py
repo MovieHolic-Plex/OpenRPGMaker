@@ -122,6 +122,7 @@ def main():
     frows = ''.join(f'<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>' for r in fails)   # 노트는 우리가 쓴 HTML 조각이다
     cause = ''.join(f'<tr><td>{r[0]}</td><td>{r[1]}</td></tr>' for r in notes.get('causes', []))
     stats = notes.get('stats', '')
+    removed_box = f'<div class="box ask">{notes["removed"]}</div>' if notes.get('removed') else ''
     page = f'''<!doctype html><html lang="ko"><meta charset="utf-8"><title>몬스터 세계 사람 칩 2차 — Scarloxy 변형 {len(new)}종</title>
 <style>body{{background:#161a1d;color:#e6e6e6;font:15px/1.5 system-ui,sans-serif;margin:0;padding:24px 32px}}h1{{margin:0 0 6px}}h2{{margin:28px 0 6px;border-bottom:1px solid #3a4248;padding-bottom:4px}}
 table{{border-collapse:collapse;margin:8px 0;max-width:1180px}}td,th{{border:1px solid #333c43;padding:5px 10px;vertical-align:top;font-size:13px}}th{{background:#1f272c;text-align:left}}
@@ -132,6 +133,7 @@ table{{border-collapse:collapse;margin:8px 0;max-width:1180px}}td,th{{border:1px
 <h1>몬스터 세계 사람 칩 2차 — Scarloxy 변형 신규 {len(new)}종 (총 {len(roster) + 10}명 허용)</h1>
 <div class="box">신규 <b>{len(new)}종</b> = <span class="tag argon">실제 Argon {len(argon)}</span> + <span class="tag script">스크립트 {len(script)}</span>. 기존 25종(ScarloxyPeople1~4)은 한 화소도 바꾸지 않았고, 칸 번호는 ScarloxyPeople5 부터 덧붙였다.
 뼈대는 Scarloxy MPWSP01 People1~2 의 10명(CC BY 4.0). 사람 칩이라 3/4 관문(object-gate)은 해당 없음. 모든 칩은 얼굴·피부·손 12프레임 화소 고정 검사를 통과했고, 서로 너무 비슷한 칩은 걸렀다(다른 화소 {notes.get("min_pct", 30)}% 미만 제외).<br>{stats}</div>
+{removed_box}
 <h2>직군 표 — 요청한 빈 직군과 결과</h2><table><tr><th>직군</th><th>결과</th><th>칩</th></tr>{rows}</table>
 <h2>못 채운 것과 이유</h2><table><tr><th>직군/후보</th><th>이유</th><th>대안</th></tr>{frows}</table>
 <h2>1차에서 Argon 이 3회 안에 못 통과한 원인과 이번 대응</h2><table><tr><th>원인</th><th>대응(scarloxy_argon2.py)</th></tr>{cause}</table>

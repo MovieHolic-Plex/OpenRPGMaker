@@ -146,9 +146,9 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   → 통과분을 `scarloxy-people-chips/<key>/` 로 복사하고 `scarloxy-people-install.json` 에 덧붙인 뒤 `install_scarloxy_people.py`.
 - 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-4」. `test/fixtures/eventEditorPortalSurface.baseline.json` 에 `ScarloxyPeople# (ScarloxyPeople)` 4항목을 손으로 덧붙였다(포털 표면 게이트 미실행).
 
-## 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 45종 (2026-10-16)
+## 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 44종 (2026-10-16)
 
-사용자가 1차 25종(ScarloxyPeople1~4)을 「다 괜찮다, 늘려도 된다」로 승인해 같은 방식·화풍으로 45종을 **덧붙였다**(총 70칸 + 원본 10 = 80명 허용). 1차는 스크립트 21 + Argon 4 였고, 이번은 **Argon 36 + 스크립트 9**.
+사용자가 1차 25종(ScarloxyPeople1~4)을 「다 괜찮다, 늘려도 된다」로 승인해 같은 방식·화풍으로 45종을 덧붙였고 사용자 검토에서 1종(ScarloxyPeople8#3 남학생·검은 학생복 학생모)이 빠져 **44종**이 남았다(총 69칸 + 원본 10 = 80명 허용). 1차는 스크립트 21 + Argon 4 였고, 이번은 **Argon 35 + 스크립트 9**.
 사람 칩이라 3/4 관문(object-gate)은 해당 없음. 기존 25종은 시트 PNG·명단 항목이 바이트 동일(`install_scarloxy_people.py --check`), 칸 번호는 시트 5부터(4번 시트의 빈 7칸은 두었다).
 
 - 1차에서 Argon 이 3회 안에 못 통과한 원인과 대응 — 드라이버 `scarloxy_argon2.py`(주문서 `harness-data/charset-actor/scarloxy-people-spec-2.json`, 직군별 후보 a/b = 다른 뼈대):
@@ -161,6 +161,7 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - 스크립트 칩(`scarloxy_compose.py`, 레시피 `scarloxy-people/recipes-2.json`)은 `lock: true` 로 **얼굴·눈·피부·손 고정 칸을 recolor 에서 제외**하고(`face_fixed`) 12프레임 화소 동일을 빌드 때 검사한다. 1차 레시피(lock 없음)는 그대로 다시 구우면 화소 동일(`build` 확인)이라 건드리지 않았다.
 - 설치 관문: `scarloxy_lock.py` — 최종 격자만 보고 12프레임의 얼굴·피부·손 고정 칸(Argon 은 뼈대 분할의 F 칸 전부, 스크립트는 `face_fixed`+몸 주인 맨살)을 원본과 화소 대조. `install_scarloxy_people.py` 는 시트 5~ 에 이것을 건다. 신규 45종 33,639칸 모두 일치.
   **알림:** 같은 검사를 1차 설치 25종에 돌리면 스크립트 칩 12종(도장 보스 얼음·전기·바위·에스퍼, 단원 남·여, 경찰관, 연구원, 탐험가(여), 여학생, 어린이, 신관)에서 24~142화소(눈썹·손 그림자 색)가 부위 색 바꾸기에 같이 칠해져 있다. 승인된 불변분이라 건드리지 않았다.
+- 칩을 뺄 때: 칸 번호는 덧붙이기 전용이라 시트를 당기지 않는다. 설치 명단(`scarloxy-people-install.json`)의 그 행을 `{"vacant": true, key, id, name, reason}` 로 바꾸고 `install_scarloxy_people.py` 를 다시 돌리면 그 칸은 투명으로 남고 `scarloxyPeopleCharsets.json`·카탈로그·의미표·조수 검색에서 빠진다(다른 칸 화소 불변, `--check` 가 확인). `scarloxy_collect.py` 는 vacant 의 key 를 이미 쓴 것으로 보아 다시 채택하지 않는다.
 - 거름: `scarloxy_collect.py` 가 채택 매니페스트(`scarloxy-people/round2.json`)를 받아 ① chips 폴더로 복사 ② 고정 검사 ③ 가장 가까운 칩과 다른 화소 30% 미만 거절(`round2-distinct.json`) ④ 명단에 덧붙임(5번 시트부터 8칸씩). 사람은 `~/claude-viz/monster-people-chips-2.html`(`scarloxy_sheet2.py`)에서 **버릴 번호만** 말한다.
 - 굽기·재실행: `python3 src/harnesses/charset-actor/install_scarloxy_people.py` (`--check` 화소·명단 동일). Argon 재주문 한 줄:
   `OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" CTFF6_PART_OUT=$HOME/spc-runs python3 src/harnesses/charset-actor/scarloxy_argon2.py draw --spec harness-data/charset-actor/scarloxy-people-spec-2.json --run sp2-r5 --label sp2-clerk-m-a --par 2`
