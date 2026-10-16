@@ -701,3 +701,6 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-label { justify-self: stretch; }
 /* 보관함 보기 단추는 160px 한 칸에 라벨·수가 다 들어가는 행이라 줄이지 않는다. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-testid="status-menu-monster-toggle"] :is(.status-menu-detail-label, .status-menu-detail-value) { overflow: visible; text-overflow: clip; margin-left: 0; }
+
+/* 가방(D32): 설명은 왼쪽 쇼케이스 창이 이미 3줄로 보여 준다 — 푸터에 같은 설명을 한 줄로 또 놓으면 창 밖에서 「…」로 잘렸다. 결과·오류 문장은 그대로 보인다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-message[data-message-kind="description"] { visibility: hidden; }
