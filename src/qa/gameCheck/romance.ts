@@ -254,7 +254,11 @@ export function isRomanceGameRequest(text: string | undefined | null): boolean {
   if (typeof text !== "string") return false;
   // 장르 프리셋 지시문에 실린 제작 매뉴얼은 사용자 요청이 아니다(openingProduction.withoutAuthoringPresetManual 과 같은 처리).
   text = text.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, "");
-  return /연애|로맨스|romance|dating|소개팅|썸\s?타/iu.test(text) && /만들|제작|짜 ?줘|구현/u.test(text) && /게임|시뮬|game|sim/iu.test(text);
+  if (!/연애|로맨스|romance|dating|소개팅|썸\s?타/iu.test(text) || !/게임|시뮬|game|sim/iu.test(text)) return false;
+  if (/만들|제작|짜 ?줘|구현/u.test(text)) return true;
+  // 동사 없이 소재만 적은 한 줄(「고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩」)도 제작 요청이다 — romance-loop-1 R1 에서 이 문장은 완료 검사가
+  // 통째로 꺼져 기본 제목 「새 게임」·기본 부제·뼈대 자리표시·인물별 엔딩 없음이 그대로 통과했다. 고치기·질문·설명 요청만 뺀다.
+  return !/고쳐|고치|수정|바꿔|바꾸|버그|왜\s|어떻게|뭐야|설명|알려|넓혀|지워|삭제|확인해|점검/u.test(text);
 }
 
 export function romanceCompletionGaps(project: Project, options: { readonly task?: string } = {}): string[] {

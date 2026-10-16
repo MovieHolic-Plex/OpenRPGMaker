@@ -140,3 +140,10 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - 도구 `set_deadline_ending`(src/editor/tools/endingTools.ts): 마지막 tiers 항목의 엔딩에 conditions 가 있으면 `deadline-default-conditioned` 로 거절하고 고치는 법을 알려 준다.
 - 검사 `romance-deadline-no-fallback`(src/qa/gameCheck/romance.ts, 완료 조건 목록 COMPLETION_CODES): onDayEnd 공통 이벤트의 `variable >= N` fork 의 then 쪽 마지막 else 가 조건 없는 엔딩으로 닫히지 않으면 경고.
   호감 문턱 fork 의 then 쪽 엔딩은 그 문턱이 지킨다고 보고 마지막 else 만 본다.
+
+
+## 동사 없는 한 줄 요청도 완료 검사를 받는다 (2026-10-17 romance-loop-1, R1 rom-c — R03 재발)
+
+`isRomanceGameRequest`(src/qa/gameCheck/romance.ts)가 「만들·제작·짜줘·구현」 동사를 요구해서, 「고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩」 처럼 소재만 적은 한 줄은
+완료 검사(`romanceCompletionGaps`)가 통째로 꺼졌다. 실제 Argon 결과가 기본 제목 「새 게임」·기본 부제·뼈대 자리표시·인물별 엔딩 없음 그대로 finish 를 통과했다.
+이제 연애+게임 낱말이 있으면 제작 요청으로 보고, 고치기·삭제·질문 낱말(고쳐·수정·바꿔·버그·왜·어떻게·설명·알려·넓혀·지워·삭제·확인해·점검)이 든 문장만 뺀다.

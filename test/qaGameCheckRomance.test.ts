@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkRomance, isRomanceCheckTarget } from "@/qa/gameCheck/romance";
+import { checkRomance, isRomanceCheckTarget, isRomanceGameRequest } from "@/qa/gameCheck/romance";
 import { createBlankProject } from "@/project/defaults";
 import type { GameEvent, Project } from "@/project/types";
 
@@ -82,5 +82,12 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect(codes(project)).toContain("romance-deadline-no-fallback");
     (project.endings![1] as { conditions: unknown[] }).conditions = [];
     expect(codes(project)).not.toContain("romance-deadline-no-fallback");
+  });
+
+  it("동사 없이 소재만 적은 한 줄도 제작 요청이고, 고치기·삭제 요청은 아니다", () => {
+    expect(isRomanceGameRequest("고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩")).toBe(true);
+    expect(isRomanceGameRequest("카페 아르바이트 로맨스 게임 만들어 줘")).toBe(true);
+    expect(isRomanceGameRequest("연애 게임 맵 좀 고쳐줘")).toBe(false);
+    expect(isRomanceGameRequest("던전 RPG 만들어 줘")).toBe(false);
   });
 });
