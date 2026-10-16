@@ -50,7 +50,7 @@
   적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
 - **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.
 - `set_party` 는 `scope` 생략 시 `start`(경고). `script_cutscene` 의 `{say:"…"}` 줄임 비트는 `kind:"say"` 로 보강하고 kind 오류는 쓸 수 있는 kind 목록을 준다.
-- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`weather`·`shiny`·`terrain`: 이유 문구 포함 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). `conditions.locationId`(맵 로케이션 id/이름)는 스키마에 선언해 실제로 저장한다. 레벨 범위·날씨·이로치는 포켓몬 라인 작업에서 필드를 만들 때까지 거절이 정상이다.
+- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`level`·`weather`·`shiny`·`terrain`·`terrainTag`·`location`: 이유 문구와 올바른 이름을 함께 준다 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). 지금 받는 칸은 항목 `troopId`·`weight`·`levelMin`/`levelMax`·`conditions`, 조건 `switchId`·`variableId`·`atLeast`·`minPartyLevel`/`maxPartyLevel`·`region`·`locationId`(맵 로케이션 id/이름)·`terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭)·`timePhase`·`season`이다. 야생 레벨 범위 `levelMin`/`levelMax`(1~99, 종 몬스터 적 트룹만 — 아니면 거절)는 항목 바로 아래이고 뽑힐 때마다 그 범위에서 굴린다; 고정 레벨은 둘에 같은 값. 날씨(`weather`)·이로치(`shiny`) 조건은 아직 없어 거절이 정상이다.
 
 ## 빈 잔디 맵 방지 — create_map themeScene · check_map_emptiness (2026-10-15 FF6 감사 #35)
 

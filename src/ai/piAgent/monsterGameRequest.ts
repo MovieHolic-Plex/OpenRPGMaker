@@ -1,9 +1,20 @@
-/** Shared by the browser intent route and the actual worker, before model prose. */
-function requestsNamedMonsterCampaign(task: string): boolean {
+/**
+ * 「게임 한 편」을 가리키는 말. 게임·캠페인뿐 아니라 「RPG」「포켓몬 라이크」처럼 장르 이름으로 부르는 경우를 포함한다(2026-10-16 깊이 감사 ②③: 「…몬스터 수집 RPG」·「…포켓몬 라이크」가 null 로 샜다).
+ * 「로그라이크」「소울라이크」의 라이크는 장르 접미가 아니라 다른 장르 이름이므로 뺀다. 이 낱말만으로는 몬스터 요청이 되지 않는다 — 호출부가 몬스터·포켓몬 신호를 따로 요구한다.
+ */
+const WHOLE_GAME_RE = /게임|캠페인|\bgame\b|\bcampaign\b|장르 프리셋:|\brpgs?\b|라이크|(?:pok[eé]mon|monster|creature)[\s-]*like\b/iu;
+const ACTION_RE = /만들|제작|생성|개선|보수|고쳐|손봐|바꿔|바꾸|create|build|make|repair|improve|convert|update/iu;
+const QUESTION_RE = /어떻게|무엇|뭐야|알려|설명|추천|가능해|할 수 있|\bhow\b|\bexplain\b|\brecommend|\bcan (?:i|we)\b|(?:만들|제작|생성).{0,8}(?:수 있|가능)/iu;
+function mentionsWholeGame(task: string): boolean {
+  return WHOLE_GAME_RE.test(task.replace(/로그라이크|소울라이크|roguelike|soulslike/giu, ''));
+}
+
+/** Shared by the browser intent route and the actual worker, before model prose. blank = 비어 있는 새 프로젝트(동사 없는 소개 문장도 요청으로 받는다). */
+function requestsNamedMonsterCampaign(task: string, blank = false): boolean {
   const reference = /포켓몬(?:스터)?|pok[eé]mon|에메랄드|\bemerald\b|장르 프리셋:.*몬스터/iu.test(task);
-  const wholeGame = /게임|캠페인|\bgame\b|\bcampaign\b|장르 프리셋:/iu.test(task);
-  const action = /만들|제작|생성|개선|보수|고쳐|손봐|바꿔|바꾸|create|build|make|repair|improve|convert|update/iu.test(task);
-  const question = /어떻게|무엇|뭐야|알려|설명|가능해|할 수 있|\bhow\b|\bexplain\b|\bcan (?:i|we)\b|(?:만들|제작|생성).{0,8}(?:수 있|가능)/iu.test(task);
+  const wholeGame = mentionsWholeGame(task);
+  const action = ACTION_RE.test(task) || blank;
+  const question = QUESTION_RE.test(task);
   const excluded = /포켓몬(?:스터)?\s*(?:말고|없이)|(?:without|not)\s+pok[eé]mon/iu.test(task);
   const otherReference=/포켓몬(?:스터)?\s*(?:레드|블루|옐로|골드|실버|크리스탈|루비|사파이어|다이아|펄|플래티넘|블랙|화이트|소드|실드|레전드)|pok[eé]mon\s+(?:red|blue|yellow|gold|silver|crystal|ruby|sapphire|diamond|pearl|platinum|black|white|sword|shield|legends)|에메랄드\s*(?:말고|제외)|(?:without|not)\s+emerald/iu.test(task);
   return reference && wholeGame && action && !question && !excluded && !otherReference;
@@ -48,17 +59,16 @@ export type MonsterGameRequestKind = 'campaign' | 'tournament' | 'expedition' | 
  * blank = 비어 있는 새 프로젝트 — 「…게임이야」처럼 동사 없이 설명만 하는 새 게임 소개를 요청으로 받아들이는 근거(저작된 게임에는 쓰지 않는다).
  */
 export function classifyMonsterGameRequest(task: string, blank = false): MonsterGameRequestKind {
-  const question = /어떻게|무엇|뭐야|알려|설명|가능해|할 수 있|\bhow\b|\bexplain\b|\bcan (?:i|we)\b|(?:만들|제작|생성).{0,8}(?:수 있|가능)/iu.test(task);
-  if (question) return null;
-  const wholeGame = /게임|캠페인|\bgame\b|\bcampaign\b|장르 프리셋:/iu.test(task);
-  const action = /만들|제작|생성|개선|보수|고쳐|손봐|바꿔|바꾸|create|build|make|repair|improve|convert|update/iu.test(task);
+  if (QUESTION_RE.test(task)) return null;
+  const wholeGame = mentionsWholeGame(task);
+  const action = ACTION_RE.test(task);
   const monsterish = hasMonsterCollectIntent(task);
   const pokemonish = POKEMON_WORD.test(task);
-  if (!wholeGame || !(action || blank)) return pokemonish && requestsNamedMonsterCampaign(task) && !TOURNAMENT.test(task) && !NO_CAPTURE.test(task) ? 'campaign' : null;
+  if (!wholeGame || !(action || blank)) return pokemonish && requestsNamedMonsterCampaign(task, blank) && !TOURNAMENT.test(task) && !NO_CAPTURE.test(task) ? 'campaign' : null;
   if (!monsterish && !pokemonish) return null;
   if (TOURNAMENT.test(task) || NO_CAPTURE.test(task)) return 'tournament';
   if (NO_GYM.test(task)) return 'expedition';
-  if (pokemonish) return requestsNamedMonsterCampaign(task) ? 'campaign' : null;
+  if (pokemonish) return requestsNamedMonsterCampaign(task, blank) ? 'campaign' : null;
   return 'campaign';
 }
 
@@ -115,7 +125,7 @@ export function monsterScaleNote(task: string): string {
   return parts.length ? `\n[요청에서 읽은 규모] build_monster_game 에 ${parts.join(', ')} 를 그대로 넘긴다 — 빠뜨리면 기본 8관 90맵 캠페인으로 지어져 요청과 어긋나고 완료 검사가 막는다.` : '';
 }
 
-export const MONSTER_GAME_INITIAL_TOOLS = ['get_project_summary','read_game_systems','read_monster_game','configure_monster_style','build_monster_game','configure_monster_campaign','review_monster_game','review_game_systems','get_opening','review_opening','show_opening_image','find_tools','define_monster_families','rename_monster_species','place_trainer','set_type_chart','set_encounter_table'] as const;
+export const MONSTER_GAME_INITIAL_TOOLS = ['get_project_summary','read_game_systems','read_monster_game','configure_monster_style','build_monster_game','configure_monster_campaign','review_monster_game','review_game_systems','get_opening','review_opening','show_opening_image','find_tools','define_monster_families','rename_monster_species','place_trainer','set_type_chart','set_encounter_table','upsert_skill','upsert_item','upsert_state','define_monster_species','place_field_obstacle','configure_fishing'] as const;
 export const MONSTER_GAME_PRODUCTION_PROMPT = `[전체 몬스터 게임 제작]
 포켓몬형 전체 게임 요청은 에메랄드 참고 프로필을 기본으로 사용한다. read_monster_game/read_game_systems로 실제 현재 내용을 읽고 configure_monster_style(reference:emerald)를 적용한다.
 빈 프로젝트에는 build_monster_game(mode:create)를 사용한다. 기획서·요청에 고유명(지방·시작 마을·박사·첫 도로·첫 체육관·첫 관장·첫 배지, 게임 제목)이 있으면 title 과 names 로 그대로 넘긴다 — 넘기지 않으면 기본 이름(별싹 마을·천문박사·유림)이 남는다. 시작 마을이 사막·눈·바닷가·화산(용암·재·화산 섬)으로 적혀 있으면 startTheme(desert|snow|coast|volcano)도 넘긴다 — 빠뜨리면 사막 기획인데 풀밭 마을에서 시작한다. 체육관 이름·관장·배지·타입이 기획서에 있으면 names.gyms 에 1관부터 순서대로(타입은 바위→rock, 물→water…) 넘긴다 — 이름만 「바위 체육관」이고 관장이 풀 몬스터를 내보내지 않게. 첫 도로 트레이너 직업명은 names.firstRouteTrainers. 이미 캠페인이 있으면 mode:repair로 보수한다. 저작 게임을 전부 버린다고 명시한 요청만 replace:true로 전체를 교체한다. 설정 도구만 실행하거나 작은 시작 예제만 만들어 전체 게임 완료로 보고하지 않는다.
@@ -127,7 +137,11 @@ startTheme 는 시작 마을·1번길·전투 배경뿐 아니라 타이틀 키�
 마지막 변경 뒤 read_monster_game 및 review_monster_game, read_game_systems 및 review_game_systems, review_opening을 실제로 실행한다. 완료 검사 문제는 도구로 해결하며 요청한 규모(기본은 72맵/60종/8관)를 축소하지 않는다.
 구조 검토는 플레이/청취/저장 검증이 아니다. 실제 이동·스타터·조우·포획·회복·상점 거래·배지·저장/Continue와 정본 저장 재로드는 별도로 확인하며 미검증 범위를 보고한다. 전투는 현재gen1 규칙이며 에메랄드의 모든 규칙을 구현했다고 말하지 않는다.
 도로·체육관에 트레이너를 더하라는 요청은 place_trainer(시야선에 들면 「!」 후 배틀, 한 호출), 악·강철·페어리가 있는 18타입은 set_type_chart {preset:'gen3'|'gen6'}, 야생 레벨 범위·풀숲 칸에서만 나오는 조우는 set_encounter_table 의 levelMin/levelMax·conditions.terrainId('terrain_grass')로 한다.
-울음·칼춤·연막 같은 능력 변화 기술은 upsert_skill 의 statStageEffects([{stat:'attack'|'defense'|'spAttack'|'spDefense'|'speed'|'accuracy'|'evasion', stages:-6~+6, chance?, target?:'self'}])로 한다 — 포켓몬식 단계(전투 한 번, 교체하면 초기화)이고 상태(state_attack_up)로 흉내 내지 않는다.`;
+울음·칼춤·연막 같은 능력 변화 기술은 upsert_skill 의 statStageEffects([{stat:'attack'|'defense'|'spAttack'|'spDefense'|'speed'|'accuracy'|'evasion', stages:-6~+6, chance?, target?:'self'}])로 한다 — 포켓몬식 단계(전투 한 번, 교체하면 초기화)이고 상태(state_attack_up)로 흉내 내지 않는다.
+독·맹독·화상·수면·얼음·마비는 upsert_state 의 gen1MajorStatus('poison'|'toxic'|'burn'|'sleep'|'freeze'|'paralysis'), 혼란은 volatileStatus:'confusion'(removalCondition '전투 종료')로 정의하고, 거는 쪽은 upsert_skill stateEffects([{stateId, chance, operation:'add'}])로 한다 — 상태 이름만 「독」이라 붙이고 hpDamagePercentPerTurn 으로 흉내 내면 이중 피해다.
+종마다 하나인 특성은 define_monster_species(또는 define_monster_families 의 각 종)의 ability {name(직접 지은 이름), kind:'immuneType'|'resistType'|'boostLowHp'|'immuneStatus'|'contactStatus'|'statMultiplier'|'endure', …}로 한다. 지닌 물건(열매·강화 도구·버티기·재생)은 upsert_item 의 heldEffect {kind:'healBelow'|'cureStatus'|'boostType'|'endureOnce'|'regen', …}로 한다 — 둘 다 type 은 system.typeChart.types 값이고, 틀린 종류·빠진 매개변수는 허용 값과 함께 거절된다.
+날씨 기술(쾌청·비·모래바람·싸라기눈)은 upsert_skill 의 weather {kind:'sun'|'rain'|'sandstorm'|'hail', turns?:3~8}에 scope:'self'·effect {kind:'support'}·elementId 를 맞춰 정한다(맵·트룹의 날씨 설정이 아니다 — upsert_life_system 은 일상 날씨이고 전투 날씨가 아니다). 그물·퀵·타이머·리피트 볼 같은 조건부 포획볼은 upsert_item 의 captureProfile.condition {kind:'type'|'firstTurn'|'turns'|'repeat', multiplier, types?, step?}로 한다.
+길을 막는 비전머신(HM) 필드 기술은 place_field_obstacle(kind: tree|rock|water|waterfall|dark)로 하고, 길이 정말 닫히려면 도로 폭 전체를 막아야 한다 — 한 칸만 놓으면 우회로가 남으니 check_reachability 로 우회가 없는지 확인한다. 기술머신을 배울 수 있는 종 제한은 define_monster_species 의 machineSkillIds 로 한다. 낚시는 configure_fishing 의 낚시터 catches 로 한다(fishId 는 database.fishSpecies 어종).`;
 
 /** 포켓몬 낱말 없이 몬스터 수집·체육관 게임을 말했을 때 캠페인 프롬프트 뒤에 붙는다. */
 export const MONSTER_FREE_CAMPAIGN_NOTE = `
