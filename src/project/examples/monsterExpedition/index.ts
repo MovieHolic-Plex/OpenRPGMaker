@@ -1,3 +1,4 @@
+import { assignTrainerSprites } from "./trainerArt";
 import { createExpeditionSeed } from "./seed";
 import { configureScarloxyPokemonDemoProject } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { configureExpeditionRoster } from "./roster";
@@ -78,6 +79,8 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   }
   // 캐릭터 칩도 장르 잠금 표(monster-collect)에 맞춘다: RTP 사람 칩 → 몬스터 테이밍 트레이너 칩(같은 인물은 늘 같은 칩, 성별·나이가 가까운 것). 이 프로젝트는 방금 생성한 것이라 바꿔도 저작자 그림을 해치지 않는다.
   remapCharsetsToPreset(project, "monster-collect");
+  // 트레이너 전투 인물 그림(번들 그림 role id) — 시각 QA D03: 67개 troop 전부 비어 있어 상대·주인공 그림과 등장 연출이 없었다.
+  assignTrainerSprites(project);
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

@@ -1,3 +1,4 @@
+import { assignTrainerSprites } from "./trainerArt";
 import { createExpeditionSeed } from "./seed";
 import { configureScarloxyPokemonDemoProject } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { configureExpeditionRoster } from "./roster";
@@ -73,6 +74,7 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
   configureEmeraldMonsterTitle(project, monsterTitleThemeFromStart(options.startTheme));
   if (project.system.titleScreen) { project.system.titleScreen.title = title; project.system.titleScreen.logoSubtitle = expedition ? "체육관 없는 도감 탐험" : "포획 없는 토너먼트"; }
   remapCharsetsToPreset(project, "monster-collect");
+  assignTrainerSprites(project);
   const serialized = serialize(project);
   return { project: deserialize(serialized), serialized, manifest };
 }

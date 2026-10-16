@@ -14,6 +14,7 @@ import { renameCampaign, type CampaignNames } from '@/project/examples/monsterEx
 import { replaceProjectContents } from './historyTools';
 import { reviewMonsterGame } from './monsterGameReview';
 import { isUntouchedDefaultOpening } from '@/project/defaults/defaultOpeningSequence';
+import { assignTrainerSprites } from '@/project/examples/monsterExpedition/trainerArt';
 import type { Project } from '@/project/types';
 
 let campaignBuilder: typeof import('@/project/examples/monsterExpedition')['createMonsterExpedition'] | undefined;
@@ -39,6 +40,8 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       configureMonsterPresentation(p);configureEmeraldMonsterStyle(p);
       const moved=p.system.monsterCampaign.id==='starlight-islands'?repairExpeditionNpcLayout(p):[];
       if(p.system.monsterCampaign.id==='starlight-islands'){repairExpeditionResidents(p);repairExpeditionShopPrices(p);}
+      // 인물 그림이 비어 있던 옛 캠페인의 트레이너 troop 만 채운다(이미 고른 그림은 두는다).
+      assignTrainerSprites(p);
       configureEmeraldMonsterCast(p);
       const updatedCreatureAssets = configureEmeraldMonsterCreatureArt(p, args.replaceCreatureArt === true).length;
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
