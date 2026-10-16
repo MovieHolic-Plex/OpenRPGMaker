@@ -41,6 +41,7 @@ describe("charset 계열 분류", () => {
     expect(charsetFamilyOf(undefined, "easyrpg-charset-monster2")).toBe("rtp-creature");
     expect(charsetFamilyOf(undefined, "tex_easyrpg_charset_object1")).toBe("object");
     expect(charsetFamilyOf(undefined, "tex_oprn_charset_wizarding3")).toBe("wizarding");
+    expect(charsetFamilyOf(undefined, "tex_oprn_charset_heroes1")).toBe("heroes");
     expect(charsetFamilyOf(undefined, "shared_charset_actor_abc")).toBe("shared-actor");
   });
 });
@@ -106,6 +107,7 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
     expect(genreLockAllowsCharset(project, "easyrpg-charset-monster4")).toBe(true);
     expect(genreLockAllowsCharset(project, "tex_easyrpg_charset_people1")).toBe(false);
     expect(genreLockAllowsCharset(project, "tex_oprn_charset_wizarding1")).toBe(false);
+    expect(genreLockAllowsCharset(project, "tex_oprn_charset_heroes1")).toBe(false);
   });
 
   it("사용자 손 편집 경로(assistantRun 아님)와 잠금 해제 뒤에는 막지 않는다", () => {

@@ -69,7 +69,7 @@ export function genreLockCharsetViolations(before: Project, after: Project): Cha
   return out;
 }
 
-const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people"]);
+const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people", "heroes"]);
 const CREATURE_TAGS = ["몬스터", "동물", "생물"];
 
 function isCreatureEntry(entry: CharsetSemanticEntry | undefined): boolean {

@@ -9,6 +9,7 @@ export type CharsetFamilyId =
   | "oprn-creature"     // OPRN 자체 제작 몬스터 칩: Monster4~6 · 몬스터 수집 하네스 따라다니기 칩
   | "rtp-creature"      // RTP Monster1~3 · Animal · 농장 동물 — 판타지 RPG 몬스터·동물(포켓몬풍 아님)
   | "object"            // 문·상자·표지·탈것·템플릿 같은 기능 칩(사람이 아님)
+  | "heroes"           // OPRN Heroes1 — 시간여행·제국군 직업 인물(CT·FF6풍, 포켓몬풍 아님)
   | "wizarding"         // 마법 학교 인물·생물 칩
   | "shared-actor"      // 공용 캐릭터 공방(charset-actor)에서 사람이 남긴 칩
   | "uploaded"          // 이 프로젝트에 사용자가 올린 칩
@@ -20,6 +21,7 @@ export const CHARSET_FAMILY_LABELS: Readonly<Record<CharsetFamilyId, string>> = 
   "oprn-creature": "OPRN 몬스터 칩",
   "rtp-creature": "RTP 몬스터·동물 칩",
   object: "기물·탈것 칩",
+  heroes: "CT·FF6풍 영웅 칩",
   wizarding: "마법 학교 칩",
   "shared-actor": "공용 공방 캐릭터",
   uploaded: "업로드한 칩",
@@ -45,6 +47,7 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s)) return "oprn-creature";
   if (/^easyrpg-charset-monster\d+$/u.test(s) || s === "easyrpg-charset-animal" || /^farming-charset-/u.test(s)) return "rtp-creature";
   if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s)) return "object";
+  if (/^oprn-charset-heroes\d+$/u.test(s)) return "heroes";
   if (/^oprn-charset-wizarding\d+$/u.test(s)) return "wizarding";
   if (project?.assets?.uploaded?.[idOrTextureKey]?.kind === "charset") return "uploaded";
   return "other";
