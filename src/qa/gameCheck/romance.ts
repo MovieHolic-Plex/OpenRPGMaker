@@ -162,12 +162,11 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   // 3b) 선택지가 달린 조사 이벤트가 눈에 안 보이는 칸에 서 있나(romance-real-2 R14: 「설레는 약속 게시판」이 그림 없는 투명 이벤트 + 빈 바닥).
   //     호감을 올리는 선택의 입구인데 플레이어가 무엇을 조사할지 알 수 없다. 인물(그림 칩 검사는 위 romance-npc-invisible)은 제외.
   const hiddenChoice: string[] = [];
-  for (const map of maps) for (const event of map.events) {
-    if (isPersonEvent(event)) continue;
-    const page = event.pages?.[0];
-    if (!page || page.trigger?.kind !== "action") continue;
+  for (const ref of allPages(project)) {
+    const { map, event, page } = ref;
+    if (!map || !event || !page || ref.pageIndex !== 0 || isPersonEvent(event) || page.trigger?.kind !== "action") continue;
     let hasChoices = false;
-    visitPageCommands(page, (visit) => { if (visit.command.kind === "choices") hasChoices = true; });
+    visitPageCommands(ref, (visit) => { if (visit.command.kind === "choices") hasChoices = true; });
     if (!hasChoices) continue;
     const g = page.graphic as { transparent?: boolean; sprite?: unknown; appearanceId?: string; characterResourceId?: string } | undefined;
     const drawn = g !== undefined && g.transparent !== true && (g.sprite !== undefined || g.appearanceId !== undefined || g.characterResourceId !== undefined);
@@ -188,7 +187,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     const command = visit.command;
     if (command.kind !== "text" || typeof command.body !== "string") return;
     // 「[이름]」 줄 머리표, 또는 speaker 칸과 같은 이름이 「이름:」 로 본문 앞에 또 붙은 줄(romance-real-2 R07: `한지훈: "반가워!"`).
-    const echoed = stripSpeakerEcho(command.body, command.speaker) !== command.body;
+    const echoed = stripSpeakerEcho(command.body, typeof command.speaker === "string" ? command.speaker : undefined) !== command.body;
     if (echoed || /^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
   });
   if (doubled > 0) {
