@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.243.0 — 2026-10-17
+
+### 기능
+
+- **portraits** — paired bust and full-body portraits for the remaining 12 modern romance chips (#2777) (`f30e20d`)
+
+### 수정
+
+- **romance** — 동사 없이 소재만 적은 연애 게임 요청도 완료 검사를 받는다 (R03 재발) (#2781) (`0bea0ae`)
+- **romance** — 기한 엔딩의 기본 결말이 조건 달린 엔딩이면 거절·검사 (아무도 안 만나면 끝나지 않던 구멍) (#2780) (`c7d28af`)
+- **dialogue** — 위쪽 대사창의 흉상·전신 초상이 화면 밖으로 잘리던 것을 상자 아래로 매단다 (#2779) (`4cd0b37`)
+
 ## 0.242.2 — 2026-10-17
 
 ### 수정
