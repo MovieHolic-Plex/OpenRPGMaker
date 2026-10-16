@@ -35,6 +35,7 @@ import {
   readSaveSlot,
   snapshotLoadBlocker,
   setSavePublication,
+  type LatestSave,
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { resetAutosaveDebounce } from "@/player/autosave";
@@ -657,15 +658,35 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeMenu();
   };
 
-  // 타이틀 메뉴에 "이어하기"를 노출할지 — 오토세이브가 실제 파싱 가능한 상태일 때만.
-  const isAutosaveAvailable = (): boolean => {
+  // 타이틀 「이어하기」가 부를 저장 — 수동 칸과 자동 저장 중 savedAt 이 가장 새 것(D29).
+  // 자동 저장만 읽으면 스타터를 받은 뒤 한 수동 저장을 못 불러 스타터 이전 판으로 돌아갔다.
+  // 가장 새 저장이 불러올 수 없으면(맵 없음 등) 불러올 수 있는 자동 저장으로 물러난다.
+  const resumableSave = (): LatestSave | undefined => {
     try {
-      const result = readAutosave(window.localStorage);
-      return result.kind === "present" && snapshotLoadBlocker(store.getCurrent(), result.snapshot) === null;
+      const latest = readLatestSave(window.localStorage);
+      if (latest && snapshotLoadBlocker(store.getCurrent(), latest.snapshot) === null) return latest;
+      const auto = readAutosave(window.localStorage);
+      if (auto.kind === "present" && snapshotLoadBlocker(store.getCurrent(), auto.snapshot) === null) {
+        return { source: "autosave", snapshot: auto.snapshot };
+      }
     } catch {
-      return false;
+      // 저장소 접근 실패는 «이어할 저장 없음».
     }
+    return undefined;
   };
+
+  const loadLatest = (fromTitle: boolean): void => {
+    const latest = resumableSave() ?? readLatestSave(window.localStorage);
+    if (!latest) {
+      renderLoad(fromTitle, "불러올 저장이 없습니다");
+      return;
+    }
+    if (latest.source === "autosave") loadAutosave(fromTitle);
+    else loadSlot(latest.slot, fromTitle);
+  };
+
+  // 타이틀 메뉴에 "이어하기"를 노출할지 — 불러올 수 있는 저장이 하나라도 있을 때만.
+  const isAutosaveAvailable = (): boolean => resumableSave() !== undefined;
 
   // 켜 두었고 클리어 기록이 있을 때만 타이틀 항목 이름을 돌려준다(없으면 항목이 숨는다).
   const newGamePlusTitleLabel = (): string | undefined => {
@@ -706,10 +727,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const slots = Array.from(panel.querySelectorAll<HTMLElement>("[data-testid^='save-slot-']"))
       .filter((el) => el.tagName === "BUTTON");
     const back = panel.querySelector<HTMLElement>("[data-testid='player-load-back']");
+    // 첫 포커스는 savedAt 이 가장 새 칸 — 방금 한 저장이 맨 위 자동 저장보다 새것이면 그 칸이다(D29).
+    const latest = resumableSave();
+    const latestTestId = latest ? (latest.source === "autosave" ? "save-slot-auto" : `save-slot-${latest.slot}`) : undefined;
+    const latestIndex = latestTestId ? slots.findIndex((el) => el.dataset.testid === latestTestId) : -1;
     loadDetach?.();
     loadDetach = attachCursorMenu(panel, {
       items: back ? [...slots, back] : slots,
       cancelEl: back,
+      ...(latestIndex > 0 ? { initialIndex: latestIndex } : {}),
     });
   };
 
@@ -1053,7 +1079,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         startGame({ safeMode: options.safeMode === true, newGamePlus: true });
         return;
       case "resume":
-        loadAutosave(true);
+        loadLatest(true);
         return;
       case "continueGame":
         renderLoad(true);
