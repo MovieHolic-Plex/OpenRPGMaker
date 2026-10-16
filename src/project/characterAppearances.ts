@@ -1,9 +1,25 @@
 import { charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { findSharedPortrait, sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { nestedCommandLists } from "./authoredCommandIndex";
 import type { ActorRecord, CharacterAppearanceRecord, Command, EventPageGraphic, FaceGraphic, Project } from "./types";
 
 export function getCharacterAppearance(project: Pick<Project, "database">, appearanceId: string | undefined): CharacterAppearanceRecord | undefined {
   return appearanceId === undefined ? undefined : project.database.characterAppearances?.find((record) => record.id === appearanceId);
+}
+
+/**
+ * 외형에 흉상·전신·얼굴 칸이 비어 있어도 걷기 칩의 검토된 짝이 공용 흉상·전신이면 그 인물의 그림을 돌려준다.
+ * 현대 연애 인물 칩 12종이 이 경우다(48px 얼굴이 없고 대응표가 흉상 base 를 짝으로 잇는다, 2026-10-16) —
+ * 칩만 고른 외형 레코드에도 같은 인물의 흉상·전신이 따라온다. 얼굴이 낱장인 판타지 칩에는 영향이 없다.
+ */
+function pairedPortraitSlot(appearance: CharacterAppearanceRecord | undefined, mode: "bust" | "full"): { readonly resourceId: string } | undefined {
+  const charset = appearance?.charset;
+  if (!charset) return undefined;
+  const paired = findSharedPortrait(reviewedFaceIdForCharset(charset.resourceId, charset.characterIndex));
+  if (!paired) return undefined;
+  const id = sharedPortraitId(paired.setId, mode, "base");
+  return findSharedPortrait(id) ? { resourceId: id } : undefined;
 }
 
 export function resolveAppearancePortrait(
@@ -13,13 +29,17 @@ export function resolveAppearancePortrait(
 ): FaceGraphic | undefined {
   const appearance = getCharacterAppearance(project, appearanceId);
   // 전신 → 흉상 → 얼굴 순으로 내려간다. 표시 방식은 실제로 고른 칸을 따른다.
-  const full = presentation === "full" ? appearance?.full : undefined;
+  // 칸이 비었으면 걷기 칩의 짝 초상(pairedPortraitSlot)이 그 자리를 채운다 — 얼굴 요청에도 흉상이 대신 선다(짝에 얼굴 낱장이 없으므로).
+  const full = presentation === "full" ? appearance?.full ?? pairedPortraitSlot(appearance, "full") : undefined;
   const bust = presentation !== "face" ? appearance?.bust : undefined;
   const slot = full ?? bust ?? appearance?.face;
-  if (!slot) return undefined;
+  const paired = slot ? undefined : pairedPortraitSlot(appearance, "bust");
+  const chosen = slot ?? paired;
+  if (!chosen) return undefined;
+  const portraitMode = full ? "full" : bust || paired ? "bust" : "face";
   return {
-    resourceId: slot.resourceId,
-    presentation: full ? "full" : bust ? "bust" : "face",
+    resourceId: chosen.resourceId,
+    presentation: portraitMode,
     position: "left",
     flipHorizontally: false,
   };

@@ -3,7 +3,7 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
-import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
+import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { jrpgHeroesCharsetHint, queryNpcGraphics } from "@/assets/charsetQuery";
@@ -448,7 +448,7 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const portraits = SHARED_PORTRAIT_ASSETS.filter(asset => !project.assets.uploaded?.[asset.id]).map((asset) => ({
     id: asset.id,
     label: faceReferenceMetadata(asset.id, asset.name, project).name,
-    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
     haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
   const basePortraits = portraits.filter(asset => asset.id.endsWith("-base"));
@@ -507,7 +507,8 @@ const listNpcGraphics: ToolDefinition = {
         if (!face) return [];
         if (project.assets.uploaded?.[face.resourceId]) return [{ mode: "face", resourceId: face.resourceId, note: "사용자 업로드 그림" }];
         const setId = sharedExpressionSetIdOf(face.resourceId);
-        return [{ mode: "face", resourceId: face.resourceId }, ...SHARED_PORTRAIT_ASSETS
+        // 현대 연애 칩의 짝은 48px 얼굴이 아니라 흉상 base 다 — 같은 그림을 「face」로 한 번 더 싣지 않는다.
+        return [...(findSharedPortrait(face.resourceId) ? [] : [{ mode: "face", resourceId: face.resourceId }]), ...SHARED_PORTRAIT_ASSETS
           .filter((asset) => asset.setId === setId && asset.expression === "base")
           .map((asset) => ({ mode: asset.mode, resourceId: asset.id, note: sharedPortraitReferenceNote(asset.setId) }))];
       })(),

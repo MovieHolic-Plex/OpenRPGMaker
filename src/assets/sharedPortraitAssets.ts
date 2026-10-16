@@ -45,7 +45,29 @@ export function sharedPortraitId(setId: string, mode: SharedPortraitMode, expres
   return `${setId}-${mode}-${expression}`;
 }
 
-export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = FACE_EXPRESSION_SETS.flatMap((set) => {
+/**
+ * 현대 연애 인물 칩(Modern1~3) 짝 초상(2026-10-16, scripts/content/portraits/modern_portraits.py).
+ * 현대 칩에는 48px 얼굴이 없다 — 칩이 정답이고 흉상·전신을 새로 그렸다. 줄기는 `modern-<칩 id 뒤쪽>`(칩 id 와 1:1)이고
+ * 표정은 기본·기쁨·놀람·슬픔·당황 5개뿐이다(나머지 11표정은 2단계, 없는 표정은 대사가 기본 그림으로 폴백한다).
+ * 대응표(sharedCharacterGraphics.json)가 칩 → 이 세트의 흉상 base 를 「얼굴」로 잇는다.
+ */
+export const MODERN_PORTRAIT_EXPRESSIONS = ["base", "happy", "surprised", "sad", "embarrassed"] as const satisfies readonly SharedPortraitExpression[];
+export const MODERN_PORTRAIT_SETS: readonly { readonly stem: string; readonly name: string }[] = [
+  { stem: "modern-uni-boy-navy", name: "남학생 · 남색 블레이저" },
+  { stem: "modern-uni-boy-sidetail", name: "남학생 · 옆머리 묶음" },
+  { stem: "modern-uni-girl-navy", name: "여학생 · 남색 블레이저" },
+  { stem: "modern-uni-girl-sailor", name: "여학생 · 세일러복" },
+  { stem: "modern-uni-girl-twintail", name: "여학생 · 양갈래" },
+  { stem: "modern-casual-boy-hoodie", name: "캐주얼 남 · 회색 후드티" },
+  { stem: "modern-casual-girl-mint", name: "캐주얼 여 · 민트 원피스" },
+  { stem: "modern-suit-boy-navy", name: "정장 남 · 네이비" },
+  { stem: "modern-suit-girl-navy", name: "정장 여 · 남색" },
+  { stem: "modern-apron-brown", name: "카페 점원 · 갈색 앞치마" },
+  { stem: "modern-teacher-tweed", name: "교수 · 트위드 재킷" },
+  { stem: "modern-teacher-cardigan", name: "여선생 · 버건디 카디건" },
+];
+
+const faceSetPortraits = FACE_EXPRESSION_SETS.flatMap((set) => {
   const folder = set.id.replace(/^shared-/u, "").replace(/-expressions$/u, "");
   return SHARED_PORTRAIT_MODES.flatMap((mode) => SHARED_PORTRAIT_EXPRESSIONS.map((expression) => ({
     id: sharedPortraitId(set.id, mode, expression),
@@ -56,6 +78,18 @@ export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = FACE_EXPRE
     expression,
   })));
 });
+const modernPortraits = MODERN_PORTRAIT_SETS.flatMap((set) => {
+  const setId = `shared-${set.stem}-expressions`;
+  return SHARED_PORTRAIT_MODES.flatMap((mode) => MODERN_PORTRAIT_EXPRESSIONS.map((expression) => ({
+    id: sharedPortraitId(setId, mode, expression),
+    name: `${set.name} · ${MODE_LABELS[mode]} ${SHARED_PORTRAIT_EXPRESSION_LABELS[expression]}`,
+    path: `assets/shared/portraits/${set.stem}/${mode}-${expression}.png`,
+    setId,
+    mode,
+    expression,
+  })));
+});
+export const SHARED_PORTRAIT_ASSETS: readonly SharedPortraitAsset[] = [...faceSetPortraits, ...modernPortraits];
 
 const BY_ID = new Map(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, asset]));
 const ORIGINAL_FACE_SETS = new Map(expressionSources.map(source => [
@@ -87,16 +121,30 @@ export function resolveSharedPortraitUrl(resourceId: string): string | null {
   return asset ? `/${asset.path}` : null;
 }
 
-/** 같은 세트·같은 모양의 다른 표정. 공용 초상이 아니면 undefined. */
+/** 같은 세트·같은 모양의 다른 표정. 공용 초상이 아니거나 그 세트에 그 표정이 없으면 undefined. */
 export function sharedPortraitWithExpression(resourceId: string | undefined, expression: SharedPortraitExpression): string | undefined {
   const asset = findSharedPortrait(resourceId);
-  return asset ? sharedPortraitId(asset.setId, asset.mode, expression) : undefined;
+  const id = asset ? sharedPortraitId(asset.setId, asset.mode, expression) : undefined;
+  return id && BY_ID.has(id) ? id : undefined;
+}
+
+/** 48px 얼굴 낱장(-00~-15)이 있는 세트인가. 현대 연애 세트는 흉상·전신뿐이다. */
+export function sharedPortraitSetHasFaceCells(setId: string): boolean {
+  return FACE_EXPRESSION_SETS.some((set) => set.id === setId);
+}
+
+/** 이 세트에 실제로 그려져 있는 표정(공용 76종은 16개, 현대 연애 세트는 5개). */
+export function sharedPortraitExpressionsOfSet(setId: string): readonly SharedPortraitExpression[] {
+  const found = new Set(SHARED_PORTRAIT_ASSETS.filter((asset) => asset.setId === setId).map((asset) => asset.expression));
+  return SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => found.has(expression));
 }
 
 /** 공용 초상 하나가 참조되면 런타임이 대사 표정으로 바꿔 쓸 수 있는 같은 모양 5장(내보내기용). */
 export function sharedPortraitExpressionSiblings(resourceId: string): readonly string[] {
   const asset = findSharedPortrait(resourceId);
-  return asset ? SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS.map((expression) => sharedPortraitId(asset.setId, asset.mode, expression)) : [];
+  return asset
+    ? SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS.map((expression) => sharedPortraitId(asset.setId, asset.mode, expression)).filter((id) => BY_ID.has(id))
+    : [];
 }
 
 /** 표정 세트 id → 그 세트의 흉상·전신 10장. */
@@ -129,5 +177,7 @@ export function dialogueFaceForEmotion(
   if (!base) return profileFace ?? baseResourceId;
   if (profileFace && /-(?:bust|full)\b|^generated-face-/u.test(profileFace)) return profileFace;
   if (!emotion || !(SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS as readonly string[]).includes(emotion)) return baseResourceId;
-  return sharedPortraitId(base.setId, base.mode, emotion as SharedPortraitExpression);
+  const next = sharedPortraitId(base.setId, base.mode, emotion as SharedPortraitExpression);
+  // 표정이 일부만 그려진 세트(현대 연애 5표정 — 분노 없음)는 없는 표정에서 기본 그림에 머문다(깨진 이미지 금지).
+  return BY_ID.has(next) ? next : baseResourceId;
 }
