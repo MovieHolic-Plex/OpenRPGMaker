@@ -13345,7 +13345,7 @@
 "추격자가 지금 쫓는 중인지 봅니다. 이벤트 id 를 비우면 누구든.":"Checks whether a chaser is currently chasing. Leave the event id empty for any chaser.",
 "추론":"Deduction",
 "추론 {0}회":"{0} deductions",
-"추론 강도":"Deduction intensity",
+"추론 강도":"Reasoning",
 "추론 중…":"Reasoning…",
 "추론 펼치기/접기":"Expand/Collapse reasoning",
 "추론한 내용":"Reasoning content",
