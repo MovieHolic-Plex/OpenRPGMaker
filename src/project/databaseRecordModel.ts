@@ -1,3 +1,4 @@
+import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
 import { normalizeRepelSteps } from "@/project/encounterGuard";
@@ -350,6 +351,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   { const boxNames = normalizeMonsterBoxNames(system.monsterBoxNames); if (boxNames) records.monsterBoxNames = boxNames; }
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
+  // 색이 다른 개체 확률 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const shinyRate = normalizeShinyRate(system.shinyRate); if (shinyRate !== undefined) records.shinyRate = shinyRate; }
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;
   // 연애 하루 루프(옵트인). 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다(2026-10-16 런타임 QA 실측).
   if (system.socialLoop && typeof system.socialLoop === "object") {

@@ -207,6 +207,8 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (!isRecord(instance)) return false;
     if (instance.instanceId !== instanceId || typeof instance.speciesId !== "string") return false;
     if (instance.nickname !== undefined && typeof instance.nickname !== "string") return false;
+    if (instance.gender !== undefined && instance.gender !== "male" && instance.gender !== "female") return false;
+    if (instance.shiny !== undefined && instance.shiny !== true) return false;
     if (typeof instance.level !== "number" || !Number.isFinite(instance.level)) return false;
     if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
     if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;

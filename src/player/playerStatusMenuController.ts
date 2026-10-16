@@ -39,6 +39,7 @@ import { closeGalleryViewer, galleryViewerIsOpen, stepGalleryViewer } from "@/pl
 import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
 import { withJosa } from "@/util/josa";
+import { renameMonster } from "@/project/monsterIdentity";
 import { monsterDisplayName, moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill, swapMonsterPartyOrder } from "@/project/monsterCollection";
 import type { MonsterCollectAction, MonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
 import type { MonsterDexPage } from "@/player/playerMonsterDexTypes";
@@ -91,6 +92,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
   let monsterSwapSourceId: string | undefined;
+  let monsterRenameId: string | undefined;
   let monsterSummaryPage: MonsterSummaryPage = "stats";
   let boxIndex = 0;
   let boxMoveSourceId: string | undefined;
@@ -134,6 +136,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     monsterInstanceId = undefined;
     monsterView = "party";
     monsterSwapSourceId = undefined;
+    monsterRenameId = undefined;
     monsterSummaryPage = "stats";
     boxIndex = 0;
     boxMoveSourceId = undefined;
@@ -195,7 +198,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       dexPage,
       monsterInstanceId,
       monsterView,
-      monsterCollect: { swapSourceId: monsterSwapSourceId, summaryPage: monsterSummaryPage, boxIndex, boxMoveSourceId, releaseConfirmId },
+      monsterCollect: { swapSourceId: monsterSwapSourceId, summaryPage: monsterSummaryPage, boxIndex, boxMoveSourceId, releaseConfirmId, renameId: monsterRenameId },
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
         () => options.getActiveScene(),
@@ -734,6 +737,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     monsterSwapSourceId = undefined;
     boxMoveSourceId = undefined;
     releaseConfirmId = undefined;
+    monsterRenameId = undefined;
     monsterView = monsterView === "party" ? "box" : "party";
     options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
   }
@@ -768,6 +772,26 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         }
         const message = result.ok ? `${withJosa(sourceName, "와/과")} ${targetName}의 자리를 바꿨습니다` : result.reason === "same" ? "같은 동료입니다" : "파티 동료만 자리를 바꿀 수 있습니다";
         options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+        return;
+      }
+      case "startRename":
+        monsterRenameId = action.instanceId;
+        options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+        return;
+      case "cancelRename":
+        monsterRenameId = undefined;
+        options.emitMenuJuice("menu-back", renderMenu(undefined, "monsters"));
+        return;
+      case "rename": {
+        monsterRenameId = undefined;
+        const project = store.getCurrent();
+        const result = renameMonster(session, action.instanceId, action.name);
+        if (result.ok) {
+          scene.refreshRuntimeSurfaces();
+          scene.syncRuntimeState();
+        }
+        const shown = monsterDisplayName(project, session.monsterInstances[action.instanceId]);
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(result.ok ? (result.nickname ? `별명을 ${shown}(으)로 정했습니다` : `별명을 지웠습니다 — ${shown}`) : "몬스터를 찾을 수 없습니다", "monsters"));
         return;
       }
       case "summaryPage":
@@ -1086,6 +1110,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
         return false;
       case "monsters":
+        if (monsterRenameId) { monsterRenameId = undefined; return true; }
         if (monsterSwapSourceId) { monsterSwapSourceId = undefined; return true; }
         if (boxMoveSourceId) { boxMoveSourceId = undefined; return true; }
         if (releaseConfirmId) { releaseConfirmId = undefined; return true; }
@@ -1239,7 +1264,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "region-map": return "region-map";
       case "campaign-progress": return "campaign-progress";
       case "monsters":
-        return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}` : monsterSwapSourceId ? "swap" : boxMoveSourceId ? "boxmove" : "list"}`;
+        return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}${monsterRenameId ? ":rename" : ""}` : monsterSwapSourceId ? "swap" : boxMoveSourceId ? "boxmove" : "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":

@@ -157,3 +157,14 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 - **불러오기 패널 에메랄드 스킨** — `playerLoadPanel` 이 `dataset.monsterStyle="emerald"` 를 달고 `emeraldSurfaces.css` 끝의 블록(크림 창·진한 청록 글자)이 덮는다. 색은 이름 색·color-mix 만(새 hex 없음).
 - 프로브: `QA_STARTER=scripts/qa/runtime/collect-menu-starter.after.mjs … --lab`, `QA_AFTER=…collect-menu-save.after.mjs`, `…collect-menu-load.after.mjs`(저장 후 새로고침 — 프로브가 saveNamespace 를 sessionStorage 에 고정해 새로고침 뒤에도 같은 칸을 읽는다).
 - 한계: 이어하기(오토세이브) 카드도 같은 줄을 쓰지만 이번 캡처는 수동 칸만. 메뉴 구성(「이어하기」가 필드 메뉴에 없음 — 저장만 있음)은 바꾸지 않았다. 단위 시험 `test/monsterCollectStarterSave.test.ts` 는 작성만 했고 미실행.
+
+## 개체 정체성: 별명·성별·색이 다른 개체 (2026-10-16, poke-sys-collect)
+
+- 데이터(모두 선택 필드, 없으면 기존 동작): `MonsterInstance.gender`("male"|"female")·`shiny`(true), 종 `genderRatio`(암컷 비율 0~1, 없으면 무성), `system.shinyRate`(1/N, 2~65536, 없으면 안 나옴). `databaseRecordModel` 화이트리스트·`shapeDatabaseFields`·`saveSlotValidation` 셋에 모두 올렸다.
+- 굴리기: `src/project/monsterIdentity.ts` `rollMonsterIdentity` — `giveMonster` 안에서 (게임 시드 + 개체 번호 + 종)으로 결정적(IV 와 같은 방식). 입력 `gender`/`shiny` 로 덮을 수 있다. **포획은 잡는 순간 개체 번호로 굴린다 — 전투 화면에 보인 야생 개체와 같은 값이 아니다(전투 쪽 표시는 안 했다).**
+- 조수: `define_monster_species.genderRatio`, `configure_monster_system.shinyRate`(0 = 끔). `toolCapabilityIndex` 의 `monster-collection-ui` 정책 문장에 한 줄.
+- 화면(에메랄드): 파티 목록 이름 앞 ★(색이 다른 개체) + 이름 뒤 ♂(royalblue)·♀(crimson) — **픽셀 글꼴(Galmuri9)의 ♀ 는 「우」처럼 보여서 글자열에 넣지 않고 `[data-monster-gender] .status-menu-target-name::after` 로 시스템 글꼴로 붙인다.** 색이 다른 개체의 그림은 새 그림 없이 `filter: hue-rotate(150deg)`(목록 얼굴·요약 큰 그림). 요약 능력치 쪽에 「성별 수컷/암컷」 반쪽 줄(상태 이상이 있으면 상태가 그 자리를 쓴다).
+- 별명: 요약 「관리」 쪽 「별명 바꾸기」 → 같은 줄이 글자 입력(`StatusMenuDetailEntry.textInput`, 최대 8글자, Enter 확정 / Esc 취소, 비우면 종 이름). 게임 키 핸들러는 `isTextEntryTarget` 로 입력창의 글자를 이미 거른다 — 입력창은 keydown 을 stopPropagation. `renameMonster` 순수 함수.
+- 같이 고친 것: #2711(Galmuri9 18px) 뒤로 작은 파티 칸 다섯의 이름/HP 두 줄이 겹쳐 있었다(`grid-template-rows 18px 14px` → 20px 20px, vital 줄 높이 20px) · 「보관함 보기 / 6마리」 겹침(flex 로) · 요약의 「다음 레벨까지」 줄 바꿈(「다음 Lv」).
+- 프로브: `QA_PROJECT_PATCH=/tmp/psc/identity.patch.mjs QA_AFTER=scripts/qa/runtime/collect-menu-identity.after.mjs`(패치는 모든 종 genderRatio 0.5·shinyRate 2). 단위 시험 `test/monsterCollectIdentity.test.ts` 작성만, 미실행.
+- **④ 알·부화 — 구현하지 않았다. 최소 설계안**: `MonsterInstance.egg?: { stepsLeft: number; speciesId }` 로 「알」 개체를 파티에 둔다(전투 불참·메뉴엔 「알」 이름과 남은 걸음 막대). 걸음 수는 `session.stepCount`(이미 있는 걸음 카운터)가 줄이고 0 이 되면 `giveMonster` 처럼 같은 개체 번호로 종 개체로 바뀌며 도감 포획 기록. 알을 얻는 길은 이벤트 명령 한 칸(`giveMonster` 에 `egg:true`) 하나로 충분하고, 교배는 별도 설계가 필요하다. **알 그림이 번들에 없다** — 새 그림 금지 규칙과 맞부딪히므로 사람이 알 그림을 정한 뒤에 만든다.
