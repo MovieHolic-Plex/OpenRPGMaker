@@ -10,7 +10,7 @@ import { requestTeamStop, subscribeTeamActivity } from "@/ai/piAgent/teamActivit
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { store } from "@/project/store";
-import { jobNumber, jobTone } from "@/editor/aiJobNumbers";
+import { adoptJobNumber, jobNumber, jobTone } from "@/editor/aiJobNumbers";
 import { teamObservation } from "./aiTeamObservation";
 
 export type PresenceState = "waiting" | "working" | "review" | "draft" | "applied" | "failed";
@@ -321,6 +321,8 @@ function publish(): void {
   const next: Presence[] = [];
   for (const p of [...chat, ...background, ...regions]) {
     if (dismissed.has(p.id)) continue;
+    const handoff = /^bg(\d+):/.exec(p.id);
+    if (handoff) adoptJobNumber(`p:${p.id}`, `p:bg${handoff[1]}`);
     const no = jobNumber(`p:${p.id}`);
     const tone = jobTone(no);
     const candidate = p.no === no && p.tone === tone ? p : { ...p, no, tone };

@@ -23,6 +23,18 @@ export function jobNumber(key: string): number {
   return assigned;
 }
 
+/**
+ * 열쇠가 바뀌어도 같은 일이면 번호를 잇는다 — 다른 맵 일은 차례를 기다릴 때 `bg<표>` 였다가 보드가 오면 `bg<표>:<에이전트>` 가 된다.
+ * `from` 이 번호를 갖고 있고 `to` 는 아직 없을 때만 `from` 의 번호를 `to` 로 옮긴다(번호가 건너뛰어 지도·목록이 어긋나 보이지 않게).
+ */
+export function adoptJobNumber(to: string, from: string): void {
+  if (numbers.has(to)) return;
+  const known = numbers.get(from);
+  if (known === undefined) return;
+  numbers.delete(from);
+  numbers.set(to, known);
+}
+
 /** 번호를 새로 주지 않고 본다. */
 export function peekJobNumber(key: string): number | undefined {
   return numbers.get(key);
