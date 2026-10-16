@@ -86,7 +86,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   }
 
   // 3) 인물이 화면에 보이나 · 서로 다른 인물이 같은 칩인가.
-  const invisible = people.filter(({ event }) => !event.pages.some((page) => page.graphic?.transparent !== true && chipOf(page) !== undefined));
+  const invisible = people.filter(({ event }) => !(event.pages ?? []).some((page) => page.graphic?.transparent !== true && chipOf(page) !== undefined));
   if (invisible.length > 0) {
     const names = invisible.slice(0, 6).map(({ event }) => event.name ?? event.id).join(", ");
     findings.push({
@@ -96,7 +96,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   }
   const byChip = new Map<string, Set<string>>();
   for (const { event } of people) {
-    const chip = event.pages.map(chipOf).find((c): c is string => c !== undefined);
+    const chip = (event.pages ?? []).map(chipOf).find((c): c is string => c !== undefined);
     if (!chip) continue;
     const who = event.characterId?.trim() || event.name || event.id;
     byChip.set(chip, (byChip.get(chip) ?? new Set()).add(who));
