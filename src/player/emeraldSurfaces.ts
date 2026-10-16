@@ -17,7 +17,9 @@ export function bindEmeraldBattleSurface(host: HTMLElement, scene: HTMLElement):
   const sync = (): void => {
     const width = host.clientWidth || host.offsetWidth || 480;
     const height = host.clientHeight || host.offsetHeight || 320;
-    const scale = Math.min(width / 480, height / 320);
+    // 정수 배율만(픽셀 격자 계약). 1 미만으로 줄어드는 작은 창만 비정수를 허용한다.
+    const fit = Math.min(width / 480, height / 320);
+    const scale = fit < 1 ? fit : Math.floor(fit);
     scene.style.setProperty('--battle-stage-scale', String(scale));
     scene.style.setProperty('--battle-stage-offset-x', `${Math.max(0, (width - 480 * scale) / 2)}px`);
     scene.style.setProperty('--battle-stage-offset-y', `${Math.max(0, (height - 320 * scale) / 2)}px`);

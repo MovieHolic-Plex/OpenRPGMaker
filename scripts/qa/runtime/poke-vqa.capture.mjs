@@ -42,7 +42,43 @@ await page.addInitScript(() => {
 await page.route("**/__runtime-qa/project.json", (route) => route.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 
 const present = (id) => page.locator(`[data-testid="${id}"]`).count().then((n) => n > 0);
-const snap = async (name) => { await page.screenshot({ path: join(out, name + ".png") }); report.shots.push(name); };
+/** 화면에 보이는 그림·글자·테두리의 「논리 1픽셀 = 화면 몇 픽셀」 실측(픽셀 그리드 통일용). 480×320 뷰포트이므로 화면 픽셀 = 논리 픽셀(1×)이다. */
+const gridMetrics = () => page.evaluate(() => {
+  const vis = (n) => { const r = n.getBoundingClientRect(); const c = getComputedStyle(n); return r.width > 0 && r.height > 0 && c.visibility !== "hidden" && c.display !== "none" && Number(c.opacity) > 0.05 && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight; };
+  const round = (v) => Math.round(v * 100) / 100;
+  const images = [];
+  for (const n of document.querySelectorAll("img")) {
+    if (!vis(n) || !n.naturalWidth) continue;
+    const r = n.getBoundingClientRect();
+    // 오프스크린 스프라이트 스트립(background 로 그리는 idle)은 data-battler-anim 이 붙은 상자다 — 상자 크기로 잰다.
+    images.push({ id: n.dataset.testid || n.className.toString().slice(0, 48) || n.alt.slice(0, 20), nat: [n.naturalWidth, n.naturalHeight], shown: [round(r.width), round(r.height)], scale: round(r.width / n.naturalWidth), anim: n.dataset.battlerAnim ?? undefined, src: (n.currentSrc || "").split("/").slice(-2).join("/") });
+  }
+  for (const n of document.querySelectorAll("canvas")) { if (!vis(n)) continue; const r = n.getBoundingClientRect(); images.push({ id: "canvas", nat: [n.width, n.height], shown: [round(r.width), round(r.height)], scale: round(r.width / n.width) }); }
+  const fonts = new Map();
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let t = walker.nextNode(); t; t = walker.nextNode()) {
+    const text = (t.nodeValue ?? "").trim();
+    const n = t.parentElement;
+    if (!text || !n || !vis(n) || ["SCRIPT", "STYLE"].includes(n.tagName)) continue;
+    const c = getComputedStyle(n);
+    const key = `${c.fontFamily.split(",")[0].replace(/["']/g, "")} ${c.fontSize}`;
+    const row = fonts.get(key) ?? { key, count: 0, sample: text.slice(0, 16) };
+    row.count += 1; fonts.set(key, row);
+  }
+  const borders = [];
+  for (const n of document.querySelectorAll("[class*='window'], [class*='box'], [class*='panel'], [class*='hud'], [class*='status-menu-footer'], [class*='dialogue']")) {
+    if (!vis(n)) continue;
+    const c = getComputedStyle(n);
+    const w = parseFloat(c.borderTopWidth);
+    if (w > 0 && c.borderTopStyle !== "none") borders.push({ cls: n.className.toString().slice(0, 44), border: w, style: c.borderTopStyle });
+  }
+  const sc = window.__oprnHooksScene;
+  const spr = (k, n) => n ? { who: k, tex: n.texture?.key, frame: [n.frame?.width, n.frame?.height], display: [round(n.displayWidth), round(n.displayHeight)], scale: [round(n.scaleX), round(n.scaleY)] } : undefined;
+  const sprites = sc ? [spr("player", sc.player), ...[...(sc.followerSprites?.values() ?? [])].slice(0, 1).map((n) => spr("follower", n)), ...[...(sc.eventSprites?.entries() ?? [])].slice(0, 3).map(([k, n]) => spr("event:" + k.slice(-18), n))].filter(Boolean) : undefined;
+  const scene = document.querySelector('[data-testid="battle-scene"]');
+  return { sprites, viewport: [innerWidth, innerHeight], dpr: devicePixelRatio, images, fonts: [...fonts.values()], borders: borders.slice(0, 16), stageScale: scene?.dataset.battleStageScale, camera: window.__oprnCamera?.() };
+});
+const snap = async (name) => { await page.screenshot({ path: join(out, name + ".png") }); report.shots.push(name); if (process.env.GRID) { report.metrics ??= {}; report.metrics[name] = await gridMetrics().catch((e) => String(e)); } };
 const settled = async (done) => { for (let k = 0; k < 4; k++) { if (!(await done())) return false; await page.waitForTimeout(200); } return true; };
 const pressEnterUntil = async (done, max = 40, ms = 250) => { for (let i = 0; i < max; i++) { if (await settled(done)) return true; await page.keyboard.press("Enter"); await page.waitForTimeout(ms); } return settled(done); };
 const teleport = async (mapId, x, y) => {
@@ -184,6 +220,7 @@ async function sceneTown() {
     try { await teleport(id, spot.x, spot.y); } catch { report.errors.push(`teleport failed ${id}`); continue; }
     await page.waitForTimeout(500);
     await snap(`town_${name}`);
+    if (name === "home") { const ev = project.maps[id].events.find((e) => /resident|local|guide/.test(e.id)); const bs = ev && besideOf(id, ev); if (bs) { await teleport(id, bs.x, bs.y); await talk(bs.dir); await page.waitForTimeout(900); await snap("town_dialogue"); await dismissAll(); } }
     report.towns = { ...(report.towns ?? {}), [name]: spot.n };
   }
 }
@@ -217,22 +254,44 @@ async function sceneDex() {
   await page.keyboard.press("Escape");
   await page.waitForTimeout(700);
   await snap("menu");
-  const items = page.locator('[data-testid^="field-menu-"], [role="menuitem"]');
-  report.menuItems = await items.evaluateAll((els) => els.map((e) => e.getAttribute("data-testid") + ":" + (e.textContent ?? "").trim().slice(0, 12)));
-  const dex = page.locator('[data-testid="field-menu-command-monster-dex"], [data-testid*="dex"]').first();
-  if (await dex.count()) { await dex.click(); await page.waitForTimeout(900); await snap("dex"); await page.keyboard.press("ArrowDown"); await page.keyboard.press("Enter"); await page.waitForTimeout(700); await snap("dex_detail"); }
-  await page.keyboard.press("Escape"); await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+  // 첫 항목이 도감이다(선택 상태). 키보드 전용 입력이라 클릭하지 않는다.
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(900);
+  await snap("dex");
+  report.dexGeometry = await page.evaluate(() => {
+    const box = (sel) => [...document.querySelectorAll(sel)].map((n) => { const b = n.getBoundingClientRect(); const c = getComputedStyle(n); return { sel, x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height), sh: n.scrollHeight, ch: n.clientHeight, ov: c.overflowY, font: c.font.slice(0, 40) }; });
+    return [...box(".oprn-status-menu .status-menu-detail"), ...box(".oprn-status-menu .status-menu-detail-title"), ...box(".oprn-status-menu .status-menu-detail-list"), ...box(".oprn-status-menu .status-menu-detail-showcase"), ...box(".oprn-status-menu .status-menu-showcase-description"), ...box(".oprn-status-menu .status-menu-footer"), ...box(".oprn-status-menu .status-menu-message"), ...box(".oprn-status-menu .status-menu-detail-hint"), ...box(".oprn-status-menu .status-menu-detail-row")].slice(0, 30);
+  });
+  for (let i = 0; i < 3; i++) { await page.keyboard.press("ArrowDown"); await page.waitForTimeout(150); }
+  await snap("dex_list");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(900);
+  await snap("dex_detail");
+  await page.keyboard.press("Escape"); await page.keyboard.press("Escape"); await page.keyboard.press("Escape"); await page.waitForTimeout(400);
+}
+
+const stepMoves = async (dir) => { const b = await page.evaluate(() => window.__oprnDebug.readLive()); await page.evaluate((d) => window.__oprnInput.dir(d), dir); await page.waitForTimeout(280); await page.evaluate(() => window.__oprnInput.dir(null)); await page.waitForTimeout(250); const a = await page.evaluate(() => window.__oprnDebug.readLive()); return a.x !== b.x || a.y !== b.y; };
+
+/** 야생 조우를 건다: WILD_CELLS(bun scripts/qa/poke-audit-fix/wild-cells.mts 의 출력)의 풀숲 칸에서 좌우로 걷는다. 전투가 시작되면 true. */
+async function findWild() {
+  const cells = process.env.WILD_CELLS ? JSON.parse(await readFile(resolve(process.env.WILD_CELLS), "utf8")) : [];
+  const route = project.maps["mx_map_meadow"];
+  for (const [x, y] of cells.slice(Math.floor(cells.length / 3))) {
+    if (!free(route.id, x, y) || !free(route.id, x + 1, y)) continue;
+    const ok = await teleport(route.id, x, y).then(() => true, () => false);
+    if (!ok) continue;
+    for (let i = 0; i < 40; i++) {
+      await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right");
+      await page.waitForTimeout(260);
+      await page.evaluate(() => window.__oprnInput.dir(null));
+      if (await present("battle-scene")) return true;
+    }
+  }
+  return false;
 }
 
 async function sceneWild() {
-  const route = project.maps["mx_map_meadow"];
-  const habitat = route.locations.find((l) => l.id === "mx_map_meadow_habitat");
-  const cands = [];
-  for (let y = habitat.y; y < habitat.y + habitat.h; y++) for (let x = habitat.x; x < habitat.x + habitat.w - 1; x++) if (free(route.id, x, y) && free(route.id, x + 1, y)) cands.push({ x, y });
-  const c = cands[Math.floor(cands.length / 2)];
-  await teleport(route.id, c.x, c.y);
-  let enc = false;
-  for (let i = 0; i < 200 && !enc; i++) { await page.evaluate((d) => window.__oprnInput.dir(d), i % 2 ? "left" : "right"); await page.waitForTimeout(260); await page.evaluate(() => window.__oprnInput.dir(null)); enc = await present("battle-scene"); }
+  const enc = await findWild();
   step("wild", enc);
   await waitCmd(60000);
   await page.waitForTimeout(800);

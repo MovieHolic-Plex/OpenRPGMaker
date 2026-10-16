@@ -18,7 +18,7 @@
 `exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는
 1280×900 창에 960×720만 그렸다(면적 60%). fit은 원래 화면 비율을 유지하며 창의 최대 contain
 배율을 쓴다(320×240이면 1200×900). 게임/UI를 자르거나 늘려 왜곡하지 않는다. 정수 배율을
-명시한 다른 호스트의 선택은 유효하다. 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
+명시한 다른 호스트의 선택은 유효하다. 단 에메랄드 몬스터 프로젝트(`isEmeraldMonsterStyle`)는 픽셀 격자 계약(`emerald-runtime-surfaces.md`)에 따라 `integer`로 부팅한다(창이 남으면 여백). 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
 넘기지 않고 출하 player.html에서 자연 재생/첫 조작을 녹화한다.
 
 생성 원화 타이틀의 효과 캔버스는 `backgroundRendering:smooth`를 상속하고,

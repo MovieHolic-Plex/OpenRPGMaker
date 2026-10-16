@@ -102,3 +102,6 @@
 .hud-flower-center { background:#602139; box-shadow:0 0 0 1px #db8a94; }
 .hud-widget[data-empty="true"] .hud-flower { filter:grayscale(1) drop-shadow(0 1px 1px #140e1b); opacity:.6; }
 .play-stage[data-field-hud="chase"] > .minimap-root { display:none; }
+/* 픽셀 격자 계약: 수집 테마(에메랄드 몬스터)는 Galmuri9 를 18px(정확히 2배)로 쓴다. 9px 는 도트 절반 크기다. 상자 크기는 저작 값(위젯 w/h)을 그대로 따르고 안쪽 여백만 줄인다. */
+.field-hud[data-theme="collector"][data-font="pixel"] :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect,.hud-rel-name,.hud-text) { font-size:18px; line-height:20px; }
+.field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { padding:2px 8px; }
