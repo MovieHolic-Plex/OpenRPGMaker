@@ -848,3 +848,9 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 지원하는 288×256 업로드 charset을 사용하며, upload id와 같은 SpriteDef에 발 기준점을
 기록하면 생성/자원 변경/세션 복원에 반영한다. 다른 키의 upload alias 또는 자유 크기
 행동 시트가 주인공 걷기 자원이 되는 기능은 포함하지 않는다.
+
+## 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+
+주인공이 화면 아래쪽이면 대사창이 위로 간다(`preventObscuringPlayer`, `effectivePosition`). 흉상(`.dialogue-face-bust`)은 기본적으로 상자 **위**로 서는데
+위쪽 상자는 화면 맨 위라 머리가 화면 밖으로 잘렸다(카페 안 유진, 허리까지만 보임). `.dialogue-overlay.position-top` 에서는 흉상을 상자 **아래**로 매달고
+글 여백(`padding-inline`)을 없앤다. 전신 초상(`dialogue-face-full`)은 위쪽 상자에서 흉상 크기로 줄인다(아래 절반의 주인공을 덜 가리려고). 규칙은 src/styles/dialogue.css.

@@ -548,6 +548,25 @@
   transform: scaleX(-1);
 }
 
+/* 위쪽 대사창(주인공이 화면 아래쪽이라 상자가 위로 간 경우): 흉상이 상자 **위**로 서면 화면 밖으로 잘려 머리가 안 보인다
+   (romance-loop-1 실측: 카페 안 유진, 상자 위쪽 8px 패딩 위로 112px 흉상이 올라가 허리까지만 보임).
+   위쪽 상자에서는 흉상을 상자 **아래**로 매달아 머리부터 전부 보이게 한다. */
+.dialogue-overlay.position-top .dialogue-face.dialogue-face-bust {
+  background-position: top center;
+  bottom: auto;
+  top: calc(100% - 6px);
+}
+
+/* 상자 아래로 내려온 초상은 글 여백을 쓰지 않는다(여백만 비어 보인다). 전신은 주인공 쪽(아래 절반)을 덜 가리게 흉상 크기로 줄인다. */
+.dialogue-overlay.position-top .dialogue-box.has-bust-face .dialogue-content.has-bust {
+  padding-inline: 0;
+}
+
+.dialogue-overlay.position-top .dialogue-face.dialogue-face-bust.dialogue-face-full {
+  height: var(--runtime-dialogue-bust-height);
+  width: var(--runtime-dialogue-bust-width);
+}
+
 .dialogue-content.has-bust {
   grid-template-columns: minmax(0, 1fr) !important;
 }
