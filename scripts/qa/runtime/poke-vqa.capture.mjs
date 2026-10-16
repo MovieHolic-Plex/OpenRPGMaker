@@ -31,7 +31,9 @@ const projectJson = JSON.stringify(project);
 
 const server = await startPlayerQaServer({ logLevel: "error" });
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--disable-background-timer-throttling", "--disable-renderer-backgrounding"] });
-const context = await browser.newContext({ viewport: { width: 480, height: 320 }, deviceScaleFactor: 1 });
+// VP=960x640 같은 창 크기와 DSF(기본 1)로 큰 화면의 정수 배율도 잰다. 기본은 원본 480×320 1×.
+const [VW, VH] = (process.env.VP ?? "480x320").split("x").map(Number);
+const context = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: Number(process.env.DSF ?? 1) });
 const page = await context.newPage();
 page.on("pageerror", (e) => report.errors.push(String(e?.message ?? e)));
 page.on("console", (m) => { if (m.type() === "error") report.errors.push("console: " + m.text()); });
@@ -51,7 +53,7 @@ const gridMetrics = () => page.evaluate(() => {
     if (!vis(n) || !n.naturalWidth) continue;
     const r = n.getBoundingClientRect();
     // 오프스크린 스프라이트 스트립(background 로 그리는 idle)은 data-battler-anim 이 붙은 상자다 — 상자 크기로 잰다.
-    images.push({ id: n.dataset.testid || n.className.toString().slice(0, 48) || n.alt.slice(0, 20), nat: [n.naturalWidth, n.naturalHeight], shown: [round(r.width), round(r.height)], scale: round(r.width / n.naturalWidth), anim: n.dataset.battlerAnim ?? undefined, src: (n.currentSrc || "").split("/").slice(-2).join("/") });
+    images.push({ id: n.dataset.testid || n.className.toString().slice(0, 48) || n.alt.slice(0, 20), nat: [n.naturalWidth, n.naturalHeight], shown: [round(r.width), round(r.height)], at: [round(r.left), round(r.top)], scale: round(r.width / n.naturalWidth), anim: n.dataset.battlerAnim ?? undefined, src: (n.currentSrc || "").split("/").slice(-2).join("/") });
   }
   for (const n of document.querySelectorAll("canvas")) { if (!vis(n)) continue; const r = n.getBoundingClientRect(); images.push({ id: "canvas", nat: [n.width, n.height], shown: [round(r.width), round(r.height)], scale: round(r.width / n.width) }); }
   const fonts = new Map();
@@ -66,11 +68,11 @@ const gridMetrics = () => page.evaluate(() => {
     row.count += 1; fonts.set(key, row);
   }
   const borders = [];
-  for (const n of document.querySelectorAll("[class*='window'], [class*='box'], [class*='panel'], [class*='hud'], [class*='status-menu-footer'], [class*='dialogue']")) {
+  for (const n of document.querySelectorAll("[class*='window'], [class*='box'], [class*='panel'], [class*='hud'], [class*='status-menu-footer'], [class*='dialogue'], [class*='narration']")) {
     if (!vis(n)) continue;
     const c = getComputedStyle(n);
     const w = parseFloat(c.borderTopWidth);
-    if (w > 0 && c.borderTopStyle !== "none") borders.push({ cls: n.className.toString().slice(0, 44), border: w, style: c.borderTopStyle });
+    if (w > 0 && c.borderTopStyle !== "none") { const r = n.getBoundingClientRect(); borders.push({ cls: n.className.toString().slice(0, 44), border: w, style: c.borderTopStyle, rect: [round(r.left), round(r.top), round(r.width), round(r.height)] }); }
   }
   const sc = window.__oprnHooksScene;
   const spr = (k, n) => n ? { who: k, tex: n.texture?.key, frame: [n.frame?.width, n.frame?.height], display: [round(n.displayWidth), round(n.displayHeight)], scale: [round(n.scaleX), round(n.scaleY)] } : undefined;
