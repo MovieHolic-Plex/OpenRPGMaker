@@ -26,7 +26,8 @@ function requestsNamedMonsterCampaign(task: string, blank = false): boolean {
 // 자유 경로는 칩셋이 버들항·사막·숲 섞임이었다. 몬스터를 모으거나 몬스터끼리 싸우는 게임이라는 말이 분명하면 같은 제작 경로(몬스터 칩셋·gen1 룰)로 보낸다.
 // 낱말 하나가 아니라 의도 신호로 판정한다 — 「몬스터」만으로는 일반 RPG 의 적도 되므로, 몬스터를 모으고·키우고·겨루는 제도(포획·도감·체육관·진화·조련사)가 한 가지 이상 함께 있어야 한다.
 // 포켓몬 낱말은 그 자체로 충분한 신호다. 헌터·서바이벌·호러·액션 같은 다른 장르의 몬스터는 건드리지 않는다.
-const MONSTER_SUBJECT = /몬스터|monster|조련사|테이머|\btamer|크리처|\bcreature/iu;
+// 괴물·야생 동물도 「몬스터」의 다른 이름이다(2026-10-16 3차 적대 감사: 「괴물 키우고 배틀하는 게임」「야생 동물 잡아서 싸우는 RPG」). 호러·서바이벌·사냥은 FREE_NOT_COLLECT 가 먼저 걸러 낸다.
+const MONSTER_SUBJECT = /몬스터|monster|조련사|테이머|\btamer|크리처|\bcreature|괴물|야생\s*(?:의\s*)?(?:동물|생물|짐승)|wild\s+(?:animals?|creatures?|beasts?)/iu;
 const MONSTER_SYSTEM_SIGNALS: readonly RegExp[] = [
   /포획|잡아\s*(?:서|모|보)|잡을\s*수|수집|모으|\bcapture|\bcollect/iu,
   /도감|\bpok[eé]dex|\bdex\b/iu,
@@ -35,6 +36,8 @@ const MONSTER_SYSTEM_SIGNALS: readonly RegExp[] = [
   /트레이너|조련|테이머|\btrainer|\btamer/iu,
   /종\s*(?:을|를)?\s*(?:정의|추가|만들)|몬스터\s*종|\bspecies\b/iu,
   /대전|배틀|대회|토너먼트|\bbattle\b|\btournament/iu,
+  // 리그 우승·챔피언 도전(「리그 우승 노리는 트레이너 이야기」). 스포츠 리그는 SPORT_LEAGUE 로 먼저 지운다.
+  /리그.{0,8}(?:우승|제패|챔피언|도전|정상)|챔피언\s*(?:리그|도전|자리|에\s*도전)|\bleague\b.{0,16}(?:champion|title|trophy)|champion\s*league/iu,
   // 함께 다니며 모험하는 동료 몬스터(「몬스터와 함께 모험하는 RPG」) — 2026-10-16 잠금 누수 감사 #1.
   /(?:몬스터|monsters?)\s*(?:와|과|랑|이랑|를|을)?\s*(?:함께|같이|동료|파트너|친구|컴패니언|companions?|partners?|friends?)|(?:함께|같이)\s*(?:모험|여행|성장)|(?:with|alongside)\s+(?:your\s+|a\s+|their\s+)?monsters?\b/iu,
 ];
@@ -45,7 +48,11 @@ const FREE_NOT_COLLECT = /몬스터\s*헌터|monster\s*hunter|좀비|호러|공�
 // 몬스터·포켓몬이라는 낱말 없이 이 장르를 가리키는 말. 항목 하나만 있어도 의도가 선다 — 다른 뜻으로도 쓰이는 낱말(체육관·트레이너·수집형)은 옆말 조건을 붙였다.
 // 문장 정규식 하나에 걸지 않고 사전으로 두므로 새 낱말은 이 표에 한 줄을 더하면 된다. 요청이 이 표를 못 타도 몬스터 전용 도구의 첫 성공이 같은 잠금을 건다(toolRunner → lockOnFirstMonsterTool).
 const SCHOOL_OR_FITNESS = /(?:학교|농구|배구|헬스|피트니스|운동|퍼스널|\bpt\b)\s*(?:체육관|트레이너)|(?:personal|fitness|school|gym)\s+trainers?|\b(?:school|basketball|fitness)\s+gym\b/iu;
+/** 스포츠 리그(축구·야구·e스포츠…) — 「리그 우승」 신호를 몬스터 의도로 읽지 않도록 먼저 지운다. */
+const SPORT_LEAGUE = /(?:축구|야구|농구|배구|하키|골프|테니스|e\s*스포츠|이스포츠|프로|풋살|리그\s*오브\s*레전드|롤)\s*(?:\S{0,4}\s*)?리그|(?:soccer|football|baseball|basketball|hockey|esports?|premier|nba|nfl)\s+(?:league)|league\s+of\s+legends/giu;
 const MONSTER_REFERENCE_TERMS: readonly RegExp[] = [
+  // 마을 사이를 오가며 동료를 모으는 구조(「마을 사이를 오가며 동료를 모으는 게임」) — 동료 모으기와 마을 오가기가 함께 있을 때만. 동료 모으기만으로는 일반 파티 RPG 다.
+  /(?=[\s\S]*동료\s*(?:를|을|들을)?\s*(?:모으|모아|수집|영입))(?=[\s\S]*(?:마을|도시|\btowns?\b|\bvillages?\b)\S{0,4}\s*(?:사이|간|를\s*오가|을\s*오가|\s*오가|을\s*돌|를\s*돌|\s*between))/iu,
   /디지몬|\bdigimon\b|digital\s*monsters?|다마고치|tamagotchi|테이머|\btamers?\b/iu,
   // 체육관을 도는·관장·배지 — 학교 체육관이 아니라 체육관 순회 구조.
   /체육관\s*(?:을|를)?\s*(?:도|돌|순회|순례|도전|깨|격파|정복|여행)|체육관.{0,8}(?:관장|배지)|(?:관장|배지).{0,8}체육관|\bgym\s*(?:leaders?|badges?|challenge|hopping)/iu,
@@ -63,7 +70,7 @@ const CAMPAIGN_WORDS = /체육관|배지|도감|포획|수집|\bgym|capture|coll
 export function hasMonsterCollectIntent(task: string): boolean {
   if (FREE_NOT_COLLECT.test(task)) return false;
   if (POKEMON_WORD.test(task)) return true;
-  const scrubbed = task.replace(SCHOOL_OR_FITNESS, " ");
+  const scrubbed = task.replace(SCHOOL_OR_FITNESS, " ").replace(SPORT_LEAGUE, " ");
   if (MONSTER_REFERENCE_TERMS.some(re => re.test(scrubbed)) || TRAINER_SETTING.test(scrubbed)) return true;
   const signals = MONSTER_SYSTEM_SIGNALS.filter(re => re.test(scrubbed)).length;
   return MONSTER_SUBJECT.test(scrubbed) ? signals >= 1 : signals >= 2;
