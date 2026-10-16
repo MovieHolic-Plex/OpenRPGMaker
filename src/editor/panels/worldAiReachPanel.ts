@@ -7,6 +7,7 @@ import { normalizeProjectWorld } from "@/project/world/guards";
 import { isWikiActivityRecord } from "@/project/world/activity";
 import type { WorldEntity } from "@/project/world/types";
 import { el } from "@/util/dom";
+import { wirePopoverDismiss } from "./worldDocumentProperties";
 
 const NAME_LIST_LIMIT = 10;
 
@@ -15,6 +16,8 @@ export type WorldAiReachPanelOptions = {
   readonly onToggle: (open: boolean) => void;
   /** 질문 입력 상태를 리렌더 너머로 이어 주는 저장소(없으면 패널이 새로 그려질 때 비운다). */
   readonly probe?: { query: string };
+  /** `chip` = 속성 칩 바 안의 한 칩(요약은 「AI 공개 39개 · 숨김 1개」 한 줄, 펼치면 팝오버). 기본은 제자리에서 펼치는 패널. */
+  readonly variant?: "chip" | "panel";
 };
 
 const num = (value: number): string => value.toLocaleString("en-US");
@@ -29,6 +32,15 @@ export function worldAiReachSummaryParts(reach: WorldAiReach): readonly string[]
     `문서 공개 ${reach.documents.reads}개`,
     `숨김 ${reach.documents.hidden}개`,
     `미작성 ${reach.documents.blank}개`,
+  ];
+}
+
+/** 칩 바용 짧은 요약: 문서 공개·숨김만, 미작성은 있을 때만. */
+export function worldAiReachChipParts(reach: WorldAiReach): readonly string[] {
+  return [
+    `AI 공개 ${reach.documents.reads}개`,
+    `숨김 ${reach.documents.hidden}개`,
+    ...(reach.documents.blank > 0 ? [`미작성 ${reach.documents.blank}개`] : []),
   ];
 }
 
@@ -131,30 +143,46 @@ export function renderWorldAiReachPanel(options: WorldAiReachPanelOptions): HTML
     ],
   });
 
+  const chipVariant = options.variant === "chip";
+  const summaryParts = chipVariant ? worldAiReachChipParts(reach) : worldAiReachSummaryParts(reach);
   const details = el("details", {
-    class: "world-ai-reach",
+    class: chipVariant ? "world-ai-reach world-chip-pop align-end" : "world-ai-reach",
     attrs: { ...(options.open ? { open: "" } : {}) },
     dataset: { testid: "world-ai-reach" },
     children: [
       el("summary", {
+        ...(chipVariant ? { class: "world-chip world-chip-trigger", attrs: { title: "AI가 읽는 것" } } : {}),
         children: [
-          el("strong", { text: "AI가 읽는 것" }),
+          ...(chipVariant ? [] : [el("strong", { text: "AI가 읽는 것" })]),
           el("span", {
             class: "world-ai-reach-summary",
             dataset: { testid: "world-ai-reach-summary" },
-            children: worldAiReachSummaryParts(reach).map((part) => el("span", { class: "world-ai-reach-chip", text: part })),
+            children: summaryParts.map((part) => el("span", { class: "world-ai-reach-chip", text: part })),
           }),
         ],
       }),
-      body,
+      chipVariant
+        ? el("div", {
+          class: "world-chip-pop-body",
+          attrs: { role: "group", "aria-label": "AI가 읽는 것" },
+          children: [el("strong", { class: "world-ai-reach-title", text: "AI가 읽는 것" }), body],
+        })
+        : body,
     ],
   });
   // 처음부터 open 속성을 달고 만들면 브라우저가 토글 이벤트를 한 번 쏜다 — 사용자의 조작이 아니므로 기록하지 않는다.
   let lastOpen = options.open;
-  details.addEventListener("toggle", () => {
+  const onToggle = (): void => {
     if (details.open === lastOpen) return;
     lastOpen = details.open;
     options.onToggle(details.open);
-  });
+  };
+  if (chipVariant) {
+    const trigger = details.querySelector("summary");
+    if (trigger) wirePopoverDismiss(details, trigger as HTMLElement, onToggle);
+    else details.addEventListener("toggle", onToggle);
+  } else {
+    details.addEventListener("toggle", onToggle);
+  }
   return details;
 }

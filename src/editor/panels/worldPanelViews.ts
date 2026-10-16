@@ -34,12 +34,10 @@ import {
   toggleEntityLock,
   toggleEntityVisibility,
   visibleEntities,
-  worldPropertiesOpen,
 } from "./worldManager";
 import { renderRefEditor, renderRefJumps } from "./worldRefEditor";
 import { renderRelationEditor } from "./worldRelationEditor";
-import { worldDocumentProperties } from "./worldDocumentProperties";
-import { renderWorldAiReachPanel } from "./worldAiReachPanel";
+import { popoverToggle, worldPopoverChip, worldPropertyBar } from "./worldDocumentProperties";
 
 export function renderHeader(state: WorldPanelState, refresh: () => void, options: WorldPanelOptions): HTMLElement {
   const search = el("input", {
@@ -140,12 +138,17 @@ export function renderMain(
   const browser = el("section", {
     class: "world-browser",
     children: [
-      renderTabs(state, refresh),
-      el("span", {
-        class: "world-result-count",
-        text: `${visibleEntities(world.entities, state.tab, state.search).length}개 문서`,
-        attrs: { role: "status" },
-        dataset: { testid: "world-result-count" },
+      el("div", {
+        class: "world-tabbar",
+        children: [
+          renderTabs(state, world, refresh),
+          el("span", {
+            class: "world-result-count",
+            text: `${visibleEntities(world.entities, state.tab, state.search).length}개 문서`,
+            attrs: { role: "status" },
+            dataset: { testid: "world-result-count" },
+          }),
+        ],
       }),
       renderCardGrid(state, world, project, lint, refresh),
       ...(state.tab === "faction" || state.tab === "place-faction" ? [el("details", {
@@ -164,27 +167,43 @@ export function renderMain(
   });
 }
 
-function renderTabs(state: WorldPanelState, refresh: () => void): HTMLElement {
-  return el("nav", {
-    class: "world-tabs",
-    attrs: { "aria-label": "설정집 탭" },
-    children: TABS.map((tab) =>
-      el("button", {
-        class: `world-tab${state.tab === tab.key ? " active" : ""}`,
-        text: tab.label,
-        attrs: { type: "button", "aria-pressed": String(state.tab === tab.key) },
-        dataset: { testid: `world-tab-${tab.key}` },
-        on: {
-          click: () => {
-            state.tab = tab.key;
-            state.documentOpen = false;
-            if (isWorldEntityType(tab.key)) state.addType = tab.key;
-            setPersistedCodexView(state.tab, state.selectedId);
-            refresh();
+/**
+ * 종류 필터. 버튼 아홉 개가 목록 위를 두 줄 차지하던 것을 「분류 전체 ▾」 한 칩으로 접는다.
+ * 버튼(`world-tab-*`)은 그대로 팝오버 안에 있고, 고르면 닫힌다.
+ */
+function renderTabs(state: WorldPanelState, world: ProjectWorld, refresh: () => void): HTMLElement {
+  const toggle = popoverToggle(() => state.openPopover, (id) => { state.openPopover = id; }, "category");
+  const active = TABS.find((tab) => tab.key === state.tab);
+  return worldPopoverChip({
+    label: `분류 ${active?.label ?? "전체"}`,
+    title: "문서 종류별로 거르기",
+    testid: "world-category",
+    ...toggle,
+    body: [el("nav", {
+      class: "world-tabs",
+      attrs: { "aria-label": "설정집 탭" },
+      children: TABS.map((tab) =>
+        el("button", {
+          class: `world-tab${state.tab === tab.key ? " active" : ""}`,
+          attrs: { type: "button", "aria-pressed": String(state.tab === tab.key) },
+          dataset: { testid: `world-tab-${tab.key}` },
+          children: [
+            el("span", { text: tab.label }),
+            el("span", { class: "world-tab-count", text: String(visibleEntities(world.entities, tab.key, "").length), attrs: { "aria-hidden": "true" } }),
+          ],
+          on: {
+            click: () => {
+              state.tab = tab.key;
+              state.documentOpen = false;
+              state.openPopover = undefined;
+              if (isWorldEntityType(tab.key)) state.addType = tab.key;
+              setPersistedCodexView(state.tab, state.selectedId);
+              refresh();
+            },
           },
-        },
-      })
-    ),
+        })
+      ),
+    })],
   });
 }
 
@@ -261,7 +280,11 @@ function renderWorldCard(
   };
   return el("article", {
     class: `world-card${state.selectedId === entity.id ? " active" : ""}`,
-    attrs: { title: entity.name || "(이름 없음)", tabindex: "0", role: "button", "aria-label": entity.name || "(이름 없음)" },
+    attrs: {
+      // 요약은 선택한 행에서만 보인다 — 나머지 행은 마우스를 올리면 툴팁으로 읽는다.
+      title: entity.summary ? `${entity.name || "(이름 없음)"} — ${entity.summary}` : entity.name || "(이름 없음)",
+      tabindex: "0", role: "button", "aria-label": entity.name || "(이름 없음)",
+    },
     dataset: { testid: `world-card-${entity.id}`, entityId: entity.id, entityType: entity.type },
     on: {
       click: selectCard,
@@ -324,12 +347,47 @@ function renderWikiPane(
       children: [
         el("h3", { text: hasDocuments ? "읽고 쓸 문서를 선택하세요" : "세계의 첫 이야기를 남겨보세요" }),
         el("p", { text: hasDocuments ? "목록에서 문서를 열거나 새 문서를 추가할 수 있습니다." : "인물, 장소, 사건을 하나씩 연결해 설정집을 만듭니다." }),
-        aiReachPanel(state, false),
       ],
     });
   }
   const issues = lint.byEntityId.get(entity.id) ?? [];
   const relations = relationsForEntity(world, entity.id);
+  const aiHidden = isAiHiddenEntity(entity);
+  const pop = (id: string) => popoverToggle(() => state.openPopover, (next) => { state.openPopover = next; }, id);
+  const provenance = renderWikiProvenance(entity, world, pop("provenance"));
+  const refs = entity.refs ?? [];
+  const bar = worldPropertyBar([
+    el("span", { class: "world-chip static world-type-badge", text: ENTITY_TYPE_LABELS[entity.type], attrs: { title: "종류" } }),
+    // 태그는 작가의 글이다 — 화면 번역 대상이 아니다.
+    ...(entity.tags ?? []).map((tag) => el("span", { class: "world-chip static world-tag", text: tag, attrs: { "data-i18n-skip": "" } })),
+    el("button", {
+      class: `world-chip world-visibility-button${aiHidden ? " hidden" : ""}`,
+      text: aiHidden ? "AI 숨김" : "AI 공개",
+      attrs: {
+        type: "button",
+        "aria-pressed": String(aiHidden),
+        title: aiHidden
+          ? "이 문서는 AI에게 보내지 않습니다. 누르면 다시 공개합니다"
+          : "이 문서는 AI가 읽을 수 있습니다. 누르면 AI에게 숨깁니다",
+      },
+      dataset: { testid: "world-visibility-toggle", entityId: entity.id },
+      on: {
+        click: () => {
+          toggleEntityVisibility(entity.id);
+          refresh();
+        },
+      },
+    }),
+    worldPopoverChip({
+      label: `연결 ${relations.length + refs.length}`,
+      body: [renderRelationChips(relations, world, entity.id, state, refresh), renderRefJumps(refs, project)],
+      testid: "world-links-chip",
+      title: "문서 관계와 연결된 게임 항목",
+      ...pop("links"),
+    }),
+    ...provenance,
+    ...wikiRetrievalNote(worldDocumentAiState(entity)),
+  ]);
   return el("article", {
     class: "world-wiki-view",
     dataset: { testid: "world-wiki-view", entityId: entity.id },
@@ -340,7 +398,6 @@ function renderWikiPane(
           el("div", {
             class: "world-wiki-heading",
             children: [
-              el("span", { class: "world-type-badge", text: ENTITY_TYPE_LABELS[entity.type] }),
               el("h3", { text: entity.name || "(이름 없음)" }),
               el("p", { text: entity.summary || "요약 없음" }),
             ],
@@ -348,24 +405,6 @@ function renderWikiPane(
           el("div", {
             class: "world-wiki-actions",
             children: [
-              el("button", {
-                class: `world-visibility-button${isAiHiddenEntity(entity) ? " hidden" : ""}`,
-                text: isAiHiddenEntity(entity) ? "AI 숨김" : "AI 공개",
-                attrs: {
-                  type: "button",
-                  "aria-pressed": String(isAiHiddenEntity(entity)),
-                  title: isAiHiddenEntity(entity)
-                    ? "이 문서는 AI에게 보내지 않습니다. 누르면 다시 공개합니다"
-                    : "이 문서는 AI가 읽을 수 있습니다. 누르면 AI에게 숨깁니다",
-                },
-                dataset: { testid: "world-visibility-toggle", entityId: entity.id },
-                on: {
-                  click: () => {
-                    toggleEntityVisibility(entity.id);
-                    refresh();
-                  },
-                },
-              }),
               el("button", {
                 class: `world-lock-button${entity.locked ? " locked" : ""}`,
                 text: entity.locked ? "잠김" : "열림",
@@ -409,27 +448,20 @@ function renderWikiPane(
       el("div", {
         class: "world-document-layout",
         children: [
+          bar,
           el("div", { class: "world-document-content", children: [
             ...(issues.length ? [renderIssueList(issues, [])] : []),
-            ...renderWikiProvenance(entity, world),
             renderMarkdownBody(entity.body ?? ""),
           ] }),
-          worldDocumentProperties([
-            aiReachPanel(state),
-            renderTagList(entity.tags ?? []),
-            renderRelationChips(relations, world, entity.id, state, refresh),
-            renderRefJumps(entity.refs ?? [], project),
-            wikiRetrievalHint(worldDocumentAiState(entity)),
-          ], worldPropertiesOpen(state), (open) => { state.propertiesOpen = open; }),
         ],
       }),
     ],
   });
 }
 
-/** 속성 레일(272px)에서는 요약 한 줄만 보이게 접어 두고, 빈 화면처럼 넓은 자리에서는 펼친다. */
-function aiReachPanel(state: WorldPanelState, inRail = true): HTMLElement {
-  return renderWorldAiReachPanel({ open: state.aiReachOpen ?? !inRail, onToggle: (open) => { state.aiReachOpen = open; }, probe: state.aiProbe });
+/** 평소(AI가 읽는 문서)에는 안내를 띄우지 않는다 — 숨김·미작성일 때만 칩 바 끝에 한 줄로 알린다. */
+function wikiRetrievalNote(state: WorldDocumentAiState): HTMLElement[] {
+  return state === "reads" ? [] : [wikiRetrievalHint(state)];
 }
 
 function wikiRetrievalHint(state: WorldDocumentAiState): HTMLElement {
@@ -438,16 +470,20 @@ function wikiRetrievalHint(state: WorldDocumentAiState): HTMLElement {
     : state === "blank"
       ? "요약과 본문이 비어 있어 AI에게 보낼 내용이 없습니다."
       : "제작 조수는 현재 요청과 관련된 위키 문서만 제한된 분량으로 참고합니다. 본문·연결·출처가 포함될 수 있으며, 대체된 지침은 현재 지침으로 사용하지 않습니다.";
-  return el("p", { class: "world-muted", dataset: { testid: "world-ai-state-hint", aiState: state }, text });
+  return el("p", { class: "world-muted world-prop-note", attrs: { title: text }, dataset: { testid: "world-ai-state-hint", aiState: state }, text });
 }
 
-function renderWikiProvenance(entity: WorldEntity, world: ProjectWorld): HTMLElement[] {
+function renderWikiProvenance(
+  entity: WorldEntity,
+  world: ProjectWorld,
+  toggle: { readonly open: boolean; readonly onToggle: (open: boolean) => void },
+): HTMLElement[] {
   const wiki = entity.wiki;
   if (!wiki) return [];
   const basis = { explicit: "명시한 내용", inferred: "추론한 내용", observed: "적용 결과로 확인" }[wiki.basis];
   const kind = { declaration: "제작 선언", knowledge: "프로젝트 지식", progress: "진행 기록" }[wiki.kind];
   const successors = world.entities.filter((entry) => entry.wiki?.supersedes?.includes(entity.id));
-  return [el("section", {
+  const detail = el("section", {
     class: "world-edit-section",
     dataset: { testid: "world-wiki-provenance", basis: wiki.basis, kind: wiki.kind, superseded: String(successors.length > 0) },
     children: [
@@ -476,6 +512,15 @@ function renderWikiProvenance(entity: WorldEntity, world: ProjectWorld): HTMLEle
         ],
       }),
     ],
+  });
+  // 늘 보이는 것은 「종류 · 근거」 한 칩뿐이다. 대체된 문서만 경고색으로 눈에 띄게 한다.
+  return [worldPopoverChip({
+    label: successors.length ? "대체된 문서" : `${kind} · ${basis}`,
+    body: [detail],
+    testid: "world-provenance-chip",
+    title: "문서 출처와 현재 지침 여부",
+    ...(successors.length ? { tone: "warn" as const } : {}),
+    ...toggle,
   })];
 }
 
@@ -523,10 +568,12 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
     attrs: { "aria-label": "공개 범위" },
     dataset: { testid: "world-edit-visibility" },
   }) as HTMLSelectElement;
-  visibilitySelect.append(
-    option("public", "공개 — AI가 읽을 수 있음", draft.visibility === "public"),
-    option("ai-hidden", "비밀 — AI에게 보내지 않음", draft.visibility === "ai-hidden"),
-  );
+  // 칩 한 칸에 들어가도록 짧은 글자를 보이고, 풀어 쓴 설명은 항목 툴팁으로 둔다.
+  const publicOption = option("public", "AI 공개", draft.visibility === "public");
+  publicOption.title = "공개 — AI가 읽을 수 있음";
+  const hiddenOption = option("ai-hidden", "AI 숨김", draft.visibility === "ai-hidden");
+  hiddenOption.title = "비밀 — AI에게 보내지 않음";
+  visibilitySelect.append(publicOption, hiddenOption);
   visibilitySelect.value = draft.visibility;
 
   const syncDraft = (): void => {
@@ -543,6 +590,27 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
     control.addEventListener("input", syncDraft);
     control.addEventListener("change", syncDraft);
   }
+
+  const pop = (id: string) => popoverToggle(() => state.openPopover, (next) => { state.openPopover = next; }, id);
+  const linkCount = draft.refs.length + draft.relations.filter((relation) => relation.a === draft.id || relation.b === draft.id).length;
+  // 속성은 본문 위 한 줄 칩 바에 둔다: 짧은 값은 칩 안 입력, 긴 편집기(연결)는 팝오버.
+  const bar = worldPropertyBar([
+    field("종류", typeSelect),
+    field("태그", tagsInput),
+    field("공개 범위", visibilitySelect),
+    labelWithControl("편집 잠금", lockedInput),
+    worldPopoverChip({
+      label: `연결 ${linkCount}`,
+      body: [
+        renderRefEditor(draft, project, syncDraft, refresh),
+        renderRelationEditor(draft, world, syncDraft, refresh),
+      ],
+      testid: "world-links-chip",
+      title: "문서 관계와 연결된 게임 항목",
+      ...pop("links"),
+    }),
+    ...wikiRetrievalNote(draft.visibility === "ai-hidden" ? "hidden" : "reads"),
+  ]);
 
   return el("article", {
     class: "world-wiki-view world-edit-view",
@@ -601,6 +669,7 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
       el("div", {
         class: "world-document-layout",
         children: [
+          bar,
           el("div", { class: "world-document-content world-edit-fields", children: [
             nameInput,
             field("한 줄 요약", summaryInput),
@@ -612,16 +681,6 @@ function renderEditPane(state: WorldPanelState, world: ProjectWorld, project: Pr
                 : "수동 저장은 출처 이력에 추가됩니다. 제목·요약·본문을 바꾸면 기존 자동 전투 방식 지정은 해제됩니다.",
             })] : []),
           ] }),
-          worldDocumentProperties([
-            aiReachPanel(state),
-            field("종류", typeSelect),
-            field("태그", tagsInput),
-            field("공개 범위", visibilitySelect),
-            labelWithControl("편집 잠금", lockedInput),
-            renderRefEditor(draft, project, syncDraft, refresh),
-            renderRelationEditor(draft, world, syncDraft, refresh),
-            wikiRetrievalHint(draft.visibility === "ai-hidden" ? "hidden" : "reads"),
-          ], worldPropertiesOpen(state), (open) => { state.propertiesOpen = open; }),
         ],
       }),
     ],
@@ -652,14 +711,6 @@ function renderIssueList(entityIssues: readonly LintIssue[], globalIssues: reado
 
 function renderGlobalLint(lint: WorldLintSummary): HTMLElement {
   return renderIssueList([], lint.global.length > 0 ? lint.global : lint.all.filter((issue) => issue.code === "world-npc-unregistered" || issue.code === "world-item-unregistered"));
-}
-
-function renderTagList(tags: readonly string[]): HTMLElement {
-  if (tags.length === 0) return el("div", { class: "world-tags empty", text: "태그 없음" });
-  return el("div", {
-    class: "world-tags",
-    children: tags.map((tag) => el("span", { class: "world-tag", text: tag })),
-  });
 }
 
 function renderMarkdownBody(body: string): HTMLElement {
