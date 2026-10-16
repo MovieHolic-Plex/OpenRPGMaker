@@ -10,13 +10,14 @@
 
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { MAP_TOOLS, cloneMapIntoProject } from "./mapTools";
+import { applyVariantLook, resolveVariantLook, VARIANT_LOOKS, type VariantLookReport } from "./mapVariantLook";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
 import { requireMap } from "./mapHelpers";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { assertMapIdAvailable } from "./mapHelpers";
 
-const VARIANT_KEYS = ["id", "name", "era", "tilesetId", "tileRemap", "tileOverrides", "removeEvents"] as const;
+const VARIANT_KEYS = ["id", "name", "era", "look", "tilesetId", "tileRemap", "tileOverrides", "removeEvents"] as const;
 const OVERRIDE_KEYS = ["layer", "rect", "cells", "tile"] as const;
 const REMAP_KEYS = ["from", "to"] as const;
 const RESYNC_KEYS = ["variantId", "sourceMapId", "rects", "layers", "tileRemap", "tileOverrides"] as const;
@@ -112,6 +113,7 @@ type VariantReport = {
   removedTimeGates: { sourceEventId: string; name?: string; x: number; y: number; leadsTo: string[] }[];
   relinkedDoors: { variantEventId: string; interiorMapId: string; clonedFrom: string }[];
   tilesRemapped: number; tilesOverridden: number;
+  look?: VariantLookReport;
 };
 
 function relinkDoors(draft: Project, source: GameMap, variant: GameMap, report: VariantReport, warnings: string[]): void {
@@ -196,6 +198,11 @@ function createVariant(draft: Project, source: GameMap, raw: Record<string, unkn
   }
   if (options.relink) relinkDoors(draft, source, copy, report, warnings);
 
+  // 시대 겉모습 프리셋(조명·안개·건물 철거·폐허 소품) — 조수가 준 tileRemap·tileOverrides 가 이 뒤에 적용돼 항상 이긴다.
+  const look = resolveVariantLook({ look: raw.look, era: raw.era, name: raw.name, id });
+  if (look !== null && typeof look === "object") throw new ToolError(`${label}: ${look.error}`, { code: "invalid-args" });
+  if (look !== null) report.look = applyVariantLook(draft, copy, look, warnings, label);
+
   if (raw.tileOverrides !== undefined) {
     if (!Array.isArray(raw.tileOverrides)) throw new ToolError(`${label}.tileOverrides 는 배열이어야 합니다.`, { code: "invalid-args" });
     const applied = applyTileOverrides(draft, id, raw.tileOverrides as TileOverride[], label);
@@ -241,10 +248,11 @@ const deriveMapVariant: ToolDefinition = {
   name: "derive_map_variant",
   description:
     "「같은 지리의 다른 시대」를 만든다 — 맵 하나를 복제해 시대별 변형 맵을 한 번에 만든다(현대 마을 → 중세 마을 → 미래 마을, 같은 길·같은 건물 자리). "
-    + "{sourceMapId, variants:[{id, name?, era?, tilesetId?, tileRemap?:[{from,to}], tileOverrides?:[{layer,rect|cells,tile}], removeEvents?:[원본 이벤트 id 또는 이름]}], gates?:[create_time_gate 인자…], relinkDoors?, timeGates?} "
+    + "{sourceMapId, variants:[{id, name?, era?, tilesetId?, look?:ruin|past|future|none, tileRemap?:[{from,to}], tileOverrides?:[{layer,rect|cells,tile}], removeEvents?:[원본 이벤트 id 또는 이름]}], gates?:[create_time_gate 인자…], relinkDoors?, timeGates?} "
     + "복제 규칙: 이벤트 id 는 새로 매겨지고 이벤트끼리의 참조(moveEvent·callMapEvent·showAnimation 등)는 복제본 id 로 다시 이어진다. 결과 data.variants[].eventIdMap 이 원본 id → 변형 id 표라서 이후 patch_event_page·upsert_event 로 변형 이벤트를 고칠 때 쓴다. "
     + "시간문(create_time_gate 가 만든 문)은 복제본에서 원본 파트너를 가리키므로 기본(timeGates:'drop')으로 떼어 내고, 같은 호출의 gates 로 변형끼리 새로 잇는다(gates 의 a/b mapId 에 방금 만든 변형 id 를 쓴다). 'keep' 은 그대로 복제. "
     + "relinkDoors:true 는 집·상점 문이 가는 실내 맵(돌아오는 문이 원본 마을로 가는 것)을 변형 이름으로 복제해 변형 마을로 다시 잇는다. "
+    + "시대 겉모습(눈으로 구별되는 변형): 변형마다 look 프리셋이 자동으로 걸린다 — ruin(붕괴·폐허: 어둡고 짙은 안개 + 건물 약 60% 철거 + 돌무더기·부러진 기둥), past(과거: 호박색 햇살 + 건물 일부 철거 + 모닥불·돌탑), future(미래: 청색 조명 + 건물 일부 철거 + 오벨리스크·혼천의). look 을 생략하면 era·name·id 낱말(과거·고대·미래·붕괴·폐허 …)로 고르고 해당이 없으면 안 건다; \"none\" 으로 끈다. 새 그림 없이 칩셋에 이미 있는 조각만 쓴다(건물 배치 기록이 있는 마을 맵에서만 철거, 아니면 조명·안개만). 결과 data.variants[].look 에 철거·배치 수가 나온다. 그래도 같은 지형으로 보이면 tileRemap·tileOverrides 로 더 바꾼다. "
     + "시대 차이는 tileRemap(전 층 일괄 치환: 기와지붕→폐허 지붕)·tileOverrides(영역·셀 칠하기, layer 1|2|3|4 또는 lower|upper)·removeEvents 로 준다. 칩셋을 바꾸는 변형(tilesetId)은 타일 번호가 칩셋마다 달라 tileRemap 이나 다시 칠하기가 반드시 필요하다. "
     + "변형이 어긋난 뒤 원본 지리를 다시 맞출 때는 resync:{variantId, rects:[{x,y,w,h}], layers?, tileRemap?, tileOverrides?} — 영역을 원본에서 다시 복사하고(copy_map_region) 시대별 덮어쓰기를 다시 적용한다(영역 안 이벤트는 건드리지 않는다). "
     + "알 수 없는 키는 거절한다. 결과 뒤 check_reachability 로 시대별 통행을 확인하고 get_map_region/show_map_region 으로 원본 해상도 그림을 눈으로 확인한다.",
@@ -260,6 +268,7 @@ const deriveMapVariant: ToolDefinition = {
           type: "object",
           properties: {
             id: { type: "string" }, name: { type: "string" }, era: { type: "string" }, tilesetId: { type: "string" },
+            look: { type: "string", enum: [...VARIANT_LOOKS, "none"], description: "시대 겉모습 프리셋. 생략하면 era·name·id 낱말로 자동 선택, none 이면 끔" },
             tileRemap: { type: "array", items: { type: "object", properties: { from: { type: "integer" }, to: { type: "integer" } }, required: ["from", "to"] } },
             tileOverrides: {
               type: "array",

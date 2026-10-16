@@ -47,7 +47,7 @@ export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 �
 JRPG(크로노 트리거·FF6·클래식 판타지)의 주인공·동료 걷기 칩은 list_resources({kind:"charset",query:"heroes"}) 로 CT·FF6풍 영웅 칩 Heroes1(8종, textureKey tex_oprn_charset_heroes1)을 먼저 보고 어울리는 칸을 characterResourceId:"oprn-charset-heroes1"+characterIndex 로 지정한다 — RTP Actor 는 어울리는 칸이 없을 때만 쓴다(Heroes1 에는 짝 얼굴이 없으니 얼굴은 list_resources faceset 에서 따로 고른다).
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
-시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
+시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era:"past"|"future"|"ruin"…,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고 — 변형마다 시대 겉모습(조명 색조·안개·건물 철거·폐허/야영 조각)이 자동으로 걸리니 era 에 과거·미래·붕괴 낱말을 넣고, 결과 뒤 show_map_region 으로 현재 맵과 눈으로 구별되는지 확인하며 부족하면 tileOverrides 로 더 바꾼다, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
 완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다.
 마지막 저작 후 모든 관련 맵 전체를 show_map_region(최대 24×24이므로 큰 맵은 분할 조회)으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
 
