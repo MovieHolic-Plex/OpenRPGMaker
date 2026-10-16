@@ -107,11 +107,22 @@ function textureShortKey(textureKey: string): string {
   return textureKey.replace(/^tex_easyrpg_charset_/, "");
 }
 
+/** CT·FF6풍 영웅 칩(Heroes1~) — 주인공·동료 후보로 먼저 보여 준다. */
+function isHeroesEntry(entry: CharsetSemanticEntry): boolean {
+  return entry.textureKey.startsWith("tex_oprn_charset_heroes");
+}
+
+/** 영웅·주인공 질의에서 Heroes 칩이 RTP Actor 칩보다 앞에 오게 하는 가산점(순위 점수 1 미만의 index 보정보다 훨씬 크다). */
+const HEROES_FIRST_BONUS = 150;
+
 function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   if (entry.spriteType === 'uploaded') return entry.tags.includes('몬스터') ? 'monster' : entry.tags.includes('동물') ? 'animal' : 'people';
   if (entry.textureKey.startsWith('tex_scarloxy_charset_people') || entry.textureKey.startsWith('tex_oprn_charset_scarloxy_people')) return 'people';
   // 현대 연애 칩(Modern1~3)은 전부 사람이다. 이게 빠지면 "villager"/"npc" 같은 일반 질의가 0건이 된다.
   if (entry.textureKey.startsWith('tex_oprn_charset_modern')) return 'people';
+  // CT·FF6풍 영웅 칩(Heroes1)은 주인공·동료 칩이다 — "hero"/"actor"/"주인공" 같은 일반 질의에 RTP Actor 와 같은 분류로 나와야 한다.
+  // 전엔 아래에서 「object」로 떨어져 한 번도 검색되지 않았다(jrpg-real-1 J02).
+  if (isHeroesEntry(entry)) return 'actor';
   if (entry.textureKey.startsWith('tex_farming_charset_')) return 'animal';
   const shortKey = textureShortKey(entry.textureKey);
   const base = shortKey.replace(/\d+$/, "");
@@ -122,6 +133,12 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
 }
 
 function directTextureAlias(normalized: string, catalog: readonly CharsetSemanticEntry[]): string | null {
+  // "heroes"·"heroes1" — CT·FF6풍 영웅 칩 시트 전체(번들 접두사가 달라 아래 짧은 키 비교에 안 걸린다).
+  const heroesAlias = /^heroes(\d*)$/u.exec(normalized);
+  if (heroesAlias) {
+    const key = `tex_oprn_charset_heroes${heroesAlias[1] || "1"}`;
+    if (catalog.some((entry) => entry.textureKey === key)) return key;
+  }
   for (const entry of catalog) {
     const shortKey = textureShortKey(entry.textureKey).toLowerCase();
     if (normalized === entry.textureKey.toLowerCase()) return entry.textureKey;
@@ -203,6 +220,7 @@ function intentScore(entry: CharsetSemanticEntry, intent: QueryIntent): number {
   if (entry.gender && entry.gender !== "none" && intent.genders.has(entry.gender)) score += 90;
   if (entry.age && intent.ages.has(entry.age)) score += 90;
   if (intent.categories.has(categoryOf(entry))) score += 45;
+  if (intent.categories.has("actor") && isHeroesEntry(entry)) score += HEROES_FIRST_BONUS;
   score += tagScore(intent.tags, entry);
   return score;
 }
@@ -241,7 +259,8 @@ function exactAliasMatches(normalized: string, catalog: readonly CharsetSemantic
   const intent = intentFromQuery(normalized);
   return catalog
     .filter((entry) => categoryOf(entry) === category)
-    .map((entry, index) => ({ entry, score: 700 + intentScore(entry, intent) - index / 100 }));
+    .map((entry, index) => ({ entry, score: 700 + intentScore(entry, intent) - index / 100 + (category === "actor" && isHeroesEntry(entry) ? HEROES_FIRST_BONUS : 0) }))
+    .sort((a, b) => b.score - a.score);
 }
 
 function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS): NpcGraphicMatch[] {
@@ -364,4 +383,21 @@ export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {
 
 export function npcGraphicExampleLabels(limit = 12): string[] {
   return (activeCatalogFilter ? defaultNpcGraphics(catalogFor()) : defaultNpcGraphics()).slice(0, limit).map((match) => match.entry.label);
+}
+
+/**
+ * CT·FF6·클래식 JRPG 조수 안내 — 영웅 칩(Heroes1)이 지금 카탈로그에 보일 때만 한 줄을 돌려준다.
+ * 장르 잠금(몬스터·연애)이 카탈로그를 좁혀 영웅 칩이 안 보이면 null — 잠긴 장르에는 권하지 않는다.
+ * list_resources(charset)·list_npc_graphics 가 응답에 싣는다(jrpg-real-1 J02: RTP Actor 만 고르고 Heroes1 을 한 번도 안 썼다).
+ */
+export function jrpgHeroesCharsetHint(overrides?: readonly CharsetLabelOverride[], query?: string): string | null {
+  // 특정 인물을 찾는 질의(할머니·골렘…)에는 군더더기다 — 기본 목록·주인공·영웅·동료·JRPG 질의에만 싣는다.
+  const q = normalizeQuery(query ?? "");
+  if (q && q !== "*" && q !== "all" && q !== "전체" && !/hero|actor|주인공|영웅|용사|동료|party|파티|companion|jrpg|시간여행|crono|chrono|ff6|크로노/u.test(q)) return null;
+  const heroes = catalogFor(overrides).filter(isHeroesEntry);
+  if (heroes.length === 0) return null;
+  const list = heroes.map((entry) => `${entry.characterIndex}=${entry.label}`).join(", ");
+  return `JRPG(크로노 트리거·FF6·클래식)를 만드는 중이면 주인공·동료·주요 NPC 칩은 RTP Actor 보다 CT·FF6풍 영웅 칩 Heroes1 을 먼저 고른다 — `
+    + `textureKey ${heroes[0]!.textureKey}, characterIndex ${list}. query:"heroes" 로 전체를 본다. `
+    + `Heroes1 에는 짝 얼굴이 없으니 faceResourceId 는 list_resources(kind:"faceset") 에서 성별·머리색이 비슷한 얼굴을 고르거나 생략한다. 현대·연애·몬스터 수집 게임에는 해당 없다.`;
 }
