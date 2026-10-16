@@ -36,7 +36,9 @@ import type { PlaySession } from "@/project/session";
 import { closeGalleryViewer, galleryViewerIsOpen, stepGalleryViewer } from "@/player/galleryViewer";
 import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
-import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
+import { withJosa } from "@/util/josa";
+import { monsterDisplayName, moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill, swapMonsterPartyOrder } from "@/project/monsterCollection";
+import type { MonsterCollectAction, MonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
 import {
   adoptStatusMenuPanel,
   currentStatusMenu,
@@ -79,6 +81,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let campaignSpeciesId: string | undefined;
   let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
+  let monsterSwapSourceId: string | undefined;
+  let monsterSummaryPage: MonsterSummaryPage = "stats";
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let confirmToTitlePending = false;
@@ -114,6 +118,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     campaignSpeciesId = undefined;
     monsterInstanceId = undefined;
     monsterView = "party";
+    monsterSwapSourceId = undefined;
+    monsterSummaryPage = "stats";
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
@@ -169,6 +175,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       campaignSpeciesId,
       monsterInstanceId,
       monsterView,
+      monsterCollect: { swapSourceId: monsterSwapSourceId, summaryPage: monsterSummaryPage },
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
         () => options.getActiveScene(),
@@ -281,9 +288,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onSelectMonster: (instanceId) => {
           if (instanceId) rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
           monsterInstanceId = instanceId;
+          monsterSummaryPage = "stats";
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
         },
         onToggleMonsterView: toggleMonsterView,
+        onMonsterCollect: handleMonsterCollect,
         onMoveMonster: moveMonsterFromMenu,
         onTakeHeldItem: takeHeldItemFromMenu,
         onUseMonsterFieldSkill: useMonsterFieldSkillFromMenu,
@@ -619,8 +628,49 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function toggleMonsterView(): void {
     monsterInstanceId = undefined;
+    monsterSwapSourceId = undefined;
     monsterView = monsterView === "party" ? "box" : "party";
     options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+  }
+
+  /** 파티 자리 바꾸기·요약 쪽 넘기기. 상태는 여기만 바꾸고, 화면은 renderMenu 가 다시 그린다. */
+  function handleMonsterCollect(action: MonsterCollectAction): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    switch (action.kind) {
+      case "startSwap":
+        monsterSwapSourceId = action.instanceId;
+        monsterInstanceId = undefined;
+        monsterView = "party";
+        setDetailCursor(Math.max(0, session.monsterParty.indexOf(action.instanceId)));
+        options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+        return;
+      case "cancelSwap":
+        monsterSwapSourceId = undefined;
+        options.emitMenuJuice("menu-back", renderMenu(undefined, "monsters"));
+        return;
+      case "swap": {
+        monsterSwapSourceId = undefined;
+        const project = store.getCurrent();
+        const sourceName = monsterDisplayName(project, session.monsterInstances[action.sourceId]);
+        const targetName = monsterDisplayName(project, session.monsterInstances[action.targetId]);
+        const result = swapMonsterPartyOrder(session, action.sourceId, action.targetId, project);
+        if (result.ok) {
+          scene.refreshRuntimeSurfaces();
+          scene.syncRuntimeState();
+          setDetailCursor(Math.max(0, session.monsterParty.indexOf(action.sourceId)));
+        }
+        const message = result.ok ? `${withJosa(sourceName, "와/과")} ${targetName}의 자리를 바꿨습니다` : result.reason === "same" ? "같은 동료입니다" : "파티 동료만 자리를 바꿀 수 있습니다";
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+        return;
+      }
+      case "summaryPage":
+        monsterSummaryPage = action.page;
+        setDetailCursor(0);
+        options.emitMenuJuice("menu-select", renderMenu(undefined, "monsters"));
+        return;
+    }
   }
 
   function moveMonsterFromMenu(instanceId: string, to: "party" | "box"): void {
@@ -852,6 +902,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
         return false;
       case "monsters":
+        if (monsterSwapSourceId) { monsterSwapSourceId = undefined; return true; }
         if (monsterInstanceId) { monsterInstanceId = undefined; return true; }
         return false;
       case "region-map":
@@ -1002,7 +1053,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "region-map": return "region-map";
       case "campaign-progress": return "campaign-progress";
       case "monsters":
-        return `monsters:${monsterView}:${monsterInstanceId ?? "list"}`;
+        return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}` : monsterSwapSourceId ? "swap" : "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":
@@ -1032,6 +1083,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return Math.max(0, options.getActiveScene()?.getSession().partyActorIds.indexOf(formationActorId) ?? 0);
     }
     if (selectedCommand === "save" && confirmSaveSlot) return confirmSaveSlot - 1;
+    if (selectedCommand === "monsters" && monsterSwapSourceId) return Math.max(0, options.getActiveScene()?.getSession().monsterParty.indexOf(monsterSwapSourceId) ?? 0);
     return 0;
   }
 

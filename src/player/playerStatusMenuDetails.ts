@@ -670,6 +670,12 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const view = options.monsterView ?? "party";
   const ids = view === "party" ? options.session.monsterParty : options.session.monsterBox;
+  // 자리 바꾸기 중: 먼저 고른 몬스터가 파티에 있을 때만(없으면 평소 목록).
+  const swapSourceId = view === "party" && options.monsterCollect?.swapSourceId && options.session.monsterParty.includes(options.monsterCollect.swapSourceId)
+    ? options.monsterCollect.swapSourceId : undefined;
+  const activateMonster = (instanceId: string): (() => void) | undefined => swapSourceId
+    ? () => options.onMonsterCollect?.(instanceId === swapSourceId ? { kind: "cancelSwap" } : { kind: "swap", sourceId: swapSourceId, targetId: instanceId })
+    : options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined;
   const entries = [
     {
       label: view === "party" ? "보관함 보기" : "파티 보기",
@@ -687,9 +693,9 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         {
           label: monsterDisplayName(options.project, instance),
           value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-          description: "선택하면 현재 능력·기술·PP를 봅니다",
+          description: swapSourceId ? (instanceId === swapSourceId ? "이 동료의 자리 바꾸기를 취소합니다" : "선택하면 이 동료와 자리를 바꿉니다") : "선택하면 현재 능력·기술·PP를 봅니다",
           testId: `status-menu-monster-${instanceId}`,
-          onActivate: options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined,
+          onActivate: activateMonster(instanceId),
         },
         ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
           const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
@@ -728,14 +734,19 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       const raw = options.session.monsterInstances[ids[index] ?? ""];
       if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
       const member = monsterUiEntry(options.project, raw);
-      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
+      const heldName = raw.heldItemId ? options.project.database.items.find((item) => item.id === raw.heldItemId)?.name : undefined;
+      const slotNote = swapSourceId
+        ? raw.instanceId === swapSourceId ? "바꿀 동료를 고르세요. 이 동료를 다시 고르면 취소합니다" : `${withJosa(member.name, "와/과")} 자리를 바꿉니다`
+        : [member.stateNames.join(" · ") || "정상", heldName ? `지닌 도구 ${heldName}` : ""].filter(Boolean).join(" · ");
+      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: slotNote,
         testId: `status-menu-monster-${raw.instanceId}`,
-        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp) },
+        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp),
+          ...(heldName ? { partyHeld: "true" } : {}), ...(raw.instanceId === swapSourceId ? { partySwapSource: "true" } : {}) },
         vitals: { hp: member.hp, maxHp: member.maxHp, hpAfter: member.hp, mp: 0, maxMp: 0, mpAfter: 0, stateNames: member.stateNames },
         face: { resourceId: monsterMenuIconResourceId(options.project, member.species?.graphic.monsterResourceId), alt: member.name, testId: `status-menu-monster-art-${raw.instanceId}` },
-        onActivate: () => options.onSelectMonster?.(raw.instanceId) };
+        onActivate: activateMonster(raw.instanceId) };
     });
-    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
+    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: swapSourceId ? "맞바꿀 동료를 선택하세요. Esc 취소" : "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
   }
   return {
     title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",

@@ -434,6 +434,17 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-track { height: 6px; background: #586858; margin-top: 4px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot] .status-menu-target-fill { background: #68c084; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="party"] [data-testid="status-menu-monster-toggle"] { position: absolute; left: 0; bottom: 0; width: 160px; height: 32px; background: #f8f8e8; font-size: 14px; }
+/* 작은 칸 다섯은 그림이 칸 높이(36px)보다 커서 아래가 잘렸다 — 32px 아이콘으로 맞춘다(첫 칸의 큰 그림은 그대로). */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) { grid-template-columns: 36px 1fr; grid-template-rows: 18px 14px; align-content: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-detail-face { width: 32px; height: 32px; background-size: contain; background-position: center; align-self: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { line-height: 18px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-vital { line-height: 14px; align-self: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-track { margin-top: 2px; }
+/* 지닌 도구가 있는 칸은 아이콘 오른쪽 아래에 작은 알 표시. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face { position: relative; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-held="true"] .status-menu-detail-face::after { content: ""; position: absolute; right: 0; bottom: 0; width: 10px; height: 10px; box-sizing: border-box; border: 2px solid currentColor; border-radius: 50%; background: linear-gradient(indianred 0 45%, currentColor 45% 55%, white 55%); }
+/* 자리 바꾸기: 먼저 고른 칸을 점선 테두리로 표시한다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-swap-source="true"] { outline: 2px dashed currentColor; outline-offset: -6px; }
 /* Summary is an independent screen, with all known PP and pending decisions retained. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail { grid-template-columns: 176px 1fr; grid-template-rows: 24px minmax(0, 1fr); gap: 8px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-title { grid-column: 1 / -1; }
@@ -441,6 +452,10 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .life-ledger-artwork img { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-list { grid-column: 2; grid-row: 2; background: #f8f8e8; border: 2px solid #789080; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-row { font-size: 16px; }
+/* 요약 화면: 정보 줄은 두 칸짜리(공격|방어, 특공|속도, 타입|상태)로 모아 한 화면에 능력치가 다 보이게 한다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-list { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(25px, auto); align-content: start; column-gap: 0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-row { grid-column: 1 / -1; min-height: 25px; padding-top: 0; padding-bottom: 0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] .status-menu-detail-row[data-summary-half="true"] { grid-column: auto; padding-right: 6px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="summary"] :is(.status-menu-detail-label, .status-menu-detail-value) { font-size: 16px; }
 /* Bag: native left pocket/description and eight-row right list. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-header { display: none; }
