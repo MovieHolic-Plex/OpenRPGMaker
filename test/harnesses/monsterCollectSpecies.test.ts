@@ -5,10 +5,11 @@ import { afterAll, describe, expect, it, vi } from "vitest";
 import { chooseBlock, extractGrid } from "@/harnesses/monster-collect-species/pixel/grid";
 import { removeMagentaCasts, tidyCells } from "@/harnesses/monster-collect-species/pixel/tidy";
 import { downscaleBy } from "@/harnesses/monster-collect-species/pixel/downscale";
-import { chooseScale, fitSprite, SPRITE_CANVAS } from "@/harnesses/monster-collect-species/pixel/fit";
+import { chooseScale, fitSprite, MAX_INK_SIDE, SPRITE_CANVAS } from "@/harnesses/monster-collect-species/pixel/fit";
 import { cleanReference, pixelize } from "@/harnesses/monster-collect-species/pixel/pipeline";
 import { createImage, cropToInk, opaqueBounds, pixelAt, setPixel, type Rgba, type RgbaImage } from "@/harnesses/monster-collect-species/pixel/image";
-import { checkFrames, checkPair, checkSprite, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
+import { checkFrames, checkPair, checkSprite, silhouetteOverlap, similarSilhouettes, spriteStats } from "@/harnesses/monster-collect-species/checks/checks";
+import { backPrompt, evolutionPrompt, frontPrompt } from "@/harnesses/monster-collect-species/prompts/prompts";
 import { IDLE_PLAN, idleFrames } from "@/harnesses/monster-collect-species/anim/idle";
 import { poseForSkill } from "@/harnesses/monster-collect-species/anim/poses";
 import { checkDirection, directionShift } from "@/harnesses/monster-collect-species/checks/checks";
@@ -193,21 +194,25 @@ describe("monster-collect-species 도트화", () => {
     expect(spriteStats(small).outlineRatio).toBeGreaterThan(0.85);
   });
 
-  it("몸집 규칙: 납작한 종은 비정수, 정수배에 가까우면 정수, 작으면 그대로", () => {
-    expect(chooseScale(165, 94, "front")).toEqual({ kind: "fraction", width: 106 });
-    expect(chooseScale(152, 147, "front")).toEqual({ kind: "integer", factor: 2 });
-    expect(chooseScale(86, 68, "back")).toEqual({ kind: "keep" });
+  it("몸집 규칙: 64 캔버스(몸 56 이내) — 정수배에 가까우면 정수, 아니면 비정수, 작으면 그대로", () => {
+    expect(chooseScale(165, 94, "front")).toEqual({ kind: "integer", factor: 3 });
+    expect(chooseScale(152, 147, "front")).toEqual({ kind: "fraction", width: 47 });
+    expect(chooseScale(86, 68, "back")).toEqual({ kind: "fraction", width: 56 });
+    expect(chooseScale(40, 30, "back")).toEqual({ kind: "keep" });
+    // 올림으로 상한(56)을 넘는 정수 배율은 쓰지 않는다
+    const plan = chooseScale(170, 100, "front", 3);
+    expect(plan.kind).toBe("fraction");
   });
 
   it("진화 단계가 오를수록 같은 원본을 더 크게 남긴다", () => {
-    const width = (plan: ReturnType<typeof chooseScale>) => (plan.kind === "fraction" ? plan.width : plan.kind === "integer" ? Math.ceil(100 / plan.factor) : 100);
-    const sizes = ([1, 2, 3] as const).map((stage) => width(chooseScale(100, 100, "front", stage)));
-    expect(sizes).toEqual([80, 90, 100]);
-    // 긴 변 상한(108)이 먼저 걸리면 단계 차이가 사라진다 — 큰 원본은 2·3단계가 같은 크기가 될 수 있다
-    expect(width(chooseScale(160, 100, "front", 3))).toBe(108);
+    const width = (plan: ReturnType<typeof chooseScale>) => (plan.kind === "fraction" ? plan.width : plan.kind === "integer" ? Math.ceil(120 / plan.factor) : 120);
+    const sizes = ([1, 2, 3] as const).map((stage) => width(chooseScale(120, 120, "front", stage)));
+    expect(sizes).toEqual([46, 50, 53]);
+    // 긴 변 상한(56)이 먼저 걸리면 단계 차이가 사라진다 — 큰 원본은 2·3단계가 같은 크기가 될 수 있다
+    expect(width(chooseScale(170, 100, "front", 3))).toBe(56);
   });
 
-  it("112 캔버스에 가운데·바닥 정렬로 맞추고 검사를 통과한다", () => {
+  it("64 캔버스에 가운데·바닥 정렬로 맞추고 검사를 통과한다", () => {
     const { sprite: out } = fitSprite(sprite, "front");
     expect(out.width).toBe(SPRITE_CANVAS);
     expect(out.height).toBe(SPRITE_CANVAS);
@@ -372,7 +377,13 @@ describe("monster-collect-species 애니메이션", () => {
 describe("monster-collect-species 시드·레지스트리", () => {
   it("커밋된 seed.json 이 유효하고 잘못된 시드는 거부한다", () => {
     const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
-    expect(seed.species.map((s) => s.id)).toEqual(["sparkit", "aqualing", "leafling"]);
+    expect(seed.species.map((s) => s.id).slice(0, 3)).toEqual(["sparkit", "aqualing", "leafling"]);
+    // 디자인 규칙 ①: 종마다 시그니처(과장한 한 부위)와 포인트 색이 있다
+    for (const species of seed.species) {
+      expect(species.signature.length, `${species.id} signature`).toBeGreaterThan(30);
+      expect(species.accent, `${species.id} accent`).toBeTruthy();
+    }
+    expect(() => validateSeed({ version: 1, style: seed.style, animation: seed.animation, species: [{ ...seed.species[0], signature: "" }] })).toThrow("signature");
     const base = { version: 1, style: seed.style, animation: seed.animation };
     expect(() => validateSeed({ ...base, species: [seed.species[0], seed.species[0]] })).toThrow("중복");
     expect(() => validateSeed({ ...base, species: [{ ...seed.species[0], id: "evo", stage: 2, evolvesFrom: "nope" }] })).toThrow("evolvesFrom");
@@ -383,6 +394,63 @@ describe("monster-collect-species 시드·레지스트리", () => {
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, kind: "dance" } } }, species: seed.species })).toThrow("kind");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, actions: { spin: { ...seed.animation.actions.tackle, keys: { contact: 4 } } } }, species: seed.species })).toThrow("keys");
     expect(() => validateSeed({ ...base, animation: { ...seed.animation, direction: { front: { x: 1, y: 1 }, back: { x: 1, y: -1 } } }, species: seed.species })).toThrow("마주 봐야");
+  });
+
+  it("디자인 규칙 프롬프트: 1단계는 chibi 비례·시그니처 강조, 진화형은 위압감, 「NOT chibi」는 없다", () => {
+    const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
+    const first = seed.species.find((s) => s.stage === 1)!;
+    const evolved = seed.species.find((s) => s.stage === 2)!;
+    const front = frontPrompt(seed.style, first);
+    expect(front).toContain("SIGNATURE FEATURE");
+    expect(front).toContain(first.signature);
+    expect(front).toContain("40-50%");
+    expect(front).toContain("Silhouette test");
+    expect(front).toContain("ONE vivid accent color");
+    expect(front).not.toContain("NOT chibi");
+    expect(front).not.toContain("NOT kawaii");
+    const evolvedFront = frontPrompt(seed.style, evolved);
+    expect(evolvedFront).toContain("imposing");
+    expect(evolvedFront).not.toContain("40-50%");
+    expect(evolutionPrompt(seed.style, evolved, "Prev")).toContain("NOT the same silhouette with a recolor");
+    expect(backPrompt(first)).toContain(first.signature);
+    expect(backPrompt(first)).toContain("chibi proportions");
+    expect(backPrompt()).not.toContain("signature feature");
+  });
+
+  it("실루엣 테스트: 같은 윤곽은 1.0 으로 걸리고 다른 윤곽은 걸리지 않는다", () => {
+    const a = sampleSprite(36, 28);
+    const tall = sampleSprite(20, 40);
+    expect(silhouetteOverlap(a, a)).toBeCloseTo(1, 5);
+    expect(silhouetteOverlap(a, tall)).toBeLessThan(0.75);
+    const pairs = similarSilhouettes([{ id: "a", image: a }, { id: "b", image: a }, { id: "c", image: tall }]);
+    expect(pairs.map((p) => `${p.a}-${p.b}`)).toEqual(["a-b"]);
+  });
+
+  it("격자 계약: 캔버스 64·몸 56 이내·바닥 정렬, 한 도트 = 캔버스 한 칸", () => {
+    expect([SPRITE_CANVAS, MAX_INK_SIDE]).toEqual([64, 56]);
+    const big = sampleSprite(120, 90);
+    const { sprite: out, ink } = fitSprite(big, "front", 3);
+    expect(out.width).toBe(64);
+    expect(Math.max(ink.width, ink.height)).toBeLessThanOrEqual(MAX_INK_SIDE);
+    expect(checkSprite(out, 20).issues.filter((i) => i.level === "error")).toEqual([]);
+    const oversize = createImage(64, 64);
+    for (let y = 8; y < 64; y += 1) for (let x = 3; x < 61; x += 1) setPixel(oversize, x, y, [200, 100, 50, 255]);
+    expect(checkSprite(oversize, 20).issues.map((i) => i.message).join(" ")).toContain("격자 계약");
+  });
+
+  it("커밋된 번들: 64 캔버스·몸 56 이내이고 앞모습 실루엣이 서로 구별된다 (디자인 규칙 ④·격자 계약)", () => {
+    const seed = validateSeed(JSON.parse(readFileSync(join(ROOT, "harness-data/monster-collect-species/seed.json"), "utf8")));
+    const fronts: { id: string; image: RgbaImage }[] = [];
+    for (const species of seed.species) {
+      for (const which of ["front", "back"] as const) {
+        const image = readPng(join(ROOT, "public/assets/harnesses/monster-collect-species", species.id, `${which}.png`));
+        expect([image.width, image.height], `${species.id} ${which}`).toEqual([SPRITE_CANVAS, SPRITE_CANVAS]);
+        const ink = cropToInk(image);
+        expect(Math.max(ink.width, ink.height), `${species.id} ${which}`).toBeLessThanOrEqual(MAX_INK_SIDE);
+        if (which === "front") fronts.push({ id: species.id, image });
+      }
+    }
+    expect(similarSilhouettes(fronts)).toEqual([]);
   });
 
   it("장르 범위: 몬스터 수집 프로젝트에서만 보인다", () => {

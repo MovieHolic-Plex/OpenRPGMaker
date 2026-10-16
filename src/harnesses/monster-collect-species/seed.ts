@@ -66,8 +66,17 @@ export type SpeciesSeed = {
    * 생략하면 번들에만 남고 캠페인에는 쓰이지 않는다. 캠페인 종 하나에 하네스 종 하나만 붙는다.
    */
   campaignSpeciesId?: string;
-  /** 영어 디자인 설명 (생성 프롬프트에 들어간다) */
+  /** 영어 디자인 설명 (생성 프롬프트에 들어간다). 체형·몸 무늬·자세 — 시그니처는 아래 signature 로 따로 적는다. */
   design: string;
+  /**
+   * 시그니처 — 몸에 비해 **한 부위만** 크게 과장한 특징(꼬리 모양·침·갈기·귀·등껍질·뿔 등). 영어 한 문장, 필수.
+   * 프롬프트가 「가장 눈에 띄는 한 곳」으로 강조하고, 실루엣(검정 마스크)만 봐도 종이 구별돼야 한다.
+   * 진화형은 앞 단계 시그니처가 더 커지거나 형태가 바뀌어야 한다(2026-10-16 외부 시험자 지적: 「어딘가 특출나게 강조된 곳이 없다」).
+   * 원작 몬스터의 특징을 베끼지 않는다(오리지널).
+   */
+  signature: string;
+  /** 포인트 색 하나 — 시그니처에만 쓰는 선명한 색. 몸 색 3~4개(palette) + 포인트 1개 */
+  accent?: string;
   palette?: string;
   /** 대기 애니메이션에서 따로 흔들 부위 (불꽃 꼬리 등) */
   motion?: IdleMotion;
@@ -135,6 +144,7 @@ export function validateSeed(value: unknown): MonsterSeed {
     if (ids.has(species.id)) throw new Error(`종 id 중복: ${species.id}`);
     ids.add(species.id);
     if (!species.design?.trim()) throw new Error(`종 ${species.id} 에 design 설명이 없다`);
+    if (!species.signature?.trim()) throw new Error(`종 ${species.id} 에 signature(한 부위를 과장한 특징)가 없다 — 평평하게 균형 잡힌 동물은 종이 구별되지 않는다`);
     if (![1, 2, 3].includes(species.stage)) throw new Error(`종 ${species.id} stage 는 1~3`);
     if (species.campaignSpeciesId !== undefined) {
       if (!/^[a-z][a-z0-9_]*$/.test(species.campaignSpeciesId)) throw new Error(`종 ${species.id} campaignSpeciesId 는 소문자·숫자·밑줄: ${species.campaignSpeciesId}`);

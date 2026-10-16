@@ -1,7 +1,7 @@
 /** 번들 스프라이트 자동 검사. 사람 눈 검수(닮은꼴·자세)를 대신하지 않는다 — 기계로 잡을 수 있는 결함만. */
 import { isOpaque, opaqueBounds, pixelAt, rgbKey, type Rgba, type RgbaImage } from "../pixel/image";
 import { isMagentaCast, labDistance, oklabCached } from "../pixel/oklab";
-import { SPRITE_CANVAS } from "../pixel/fit";
+import { MAX_INK_SIDE, SPRITE_CANVAS } from "../pixel/fit";
 
 export type CheckIssue = { level: "error" | "warn"; message: string };
 
@@ -68,11 +68,13 @@ export function checkSprite(image: RgbaImage, maxColors: number): { stats: Sprit
   if (stats.ink.width === 0) issues.push({ level: "error", message: "그림이 비었다" });
   const box = opaqueBounds(image);
   if (box && box.y + box.height !== image.height) issues.push({ level: "error", message: "바닥 정렬이 아니다 (발이 캔버스 바닥에 닿아야 한다)" });
+  // 격자 계약: 몸 내용은 캔버스 안쪽 4칸 여백 안 (긴 변 MAX_INK_SIDE)
+  if (stats.ink.width > MAX_INK_SIDE || stats.ink.height > MAX_INK_SIDE) issues.push({ level: "error", message: `몸이 ${stats.ink.width}x${stats.ink.height} — 격자 계약은 긴 변 ${MAX_INK_SIDE} 이내` });
   if (stats.colors > maxColors) issues.push({ level: "error", message: `색 ${stats.colors}개 > ${maxColors}` });
   if (stats.magentaPixels > 0) issues.push({ level: "error", message: `마젠타 기운 점 ${stats.magentaPixels}개` });
   if (stats.outlineRatio < 0.85) issues.push({ level: "warn", message: `윤곽이 약하다 (가장자리 어두운 칸 ${(stats.outlineRatio * 100).toFixed(0)}%)` });
   if (stats.orphanRatio > 0.12) issues.push({ level: "warn", message: `외톨이 점 ${(stats.orphanRatio * 100).toFixed(1)}% — 색이 잘게 갈라졌다` });
-  if (Math.sqrt(stats.ink.width * stats.ink.height) < 55) issues.push({ level: "warn", message: `몸집이 작다 (${stats.ink.width}x${stats.ink.height})` });
+  if (Math.sqrt(stats.ink.width * stats.ink.height) < 30) issues.push({ level: "warn", message: `몸집이 작다 (${stats.ink.width}x${stats.ink.height})` });
   return { stats, issues };
 }
 
@@ -186,4 +188,56 @@ export function directionShift(frames: RgbaImage[], sign: number, edgeSide = sig
 export function checkDirection(frames: RgbaImage[], sign: number, label: string, minShift = 2, edgeSide = sign): CheckIssue[] {
   const shift = directionShift(frames, sign, edgeSide);
   return shift >= minShift ? [] : [{ level: "warn", message: `${label} 방향(${sign > 0 ? "오른쪽" : "왼쪽"})으로 나가지 않는다 (윗몸 앞 끝 최대 ${shift.toFixed(0)}칸 < ${minShift})` }];
+}
+
+/**
+ * 실루엣 테스트 (디자인 규칙 ④, 2026-10-16): 그림을 알파 마스크로만 만들어 긴 변 60px → 64px 캔버스(가운데)에 놓고 두 종의 겹침(IoU)을 잰다.
+ * 같은 윤곽이면 검정 마스크 64px 에서 종이 구별되지 않는다. 0.75 이상이면 경고(실측: leafling↔frondhare 1.00 = 진화형이 1단계 복제,
+ * 도마뱀형 sparkit↔zaptoe 0.66). 숫자는 눈 판정을 대체하지 않는다 — 경고가 없어도 시그니처가 약할 수 있다.
+ */
+export const SILHOUETTE_SIZE = 64;
+export const SILHOUETTE_FIT = 60;
+export const SILHOUETTE_SIMILAR = 0.75;
+
+export function silhouetteMask(image: RgbaImage): Uint8Array {
+  const out = new Uint8Array(SILHOUETTE_SIZE * SILHOUETTE_SIZE);
+  const box = opaqueBounds(image);
+  if (!box) return out;
+  const scale = SILHOUETTE_FIT / Math.max(box.width, box.height);
+  const w = Math.max(1, Math.round(box.width * scale));
+  const h = Math.max(1, Math.round(box.height * scale));
+  const ox = Math.floor((SILHOUETTE_SIZE - w) / 2);
+  const oy = Math.floor((SILHOUETTE_SIZE - h) / 2);
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const sx = box.x + Math.min(box.width - 1, Math.floor((x + 0.5) / scale));
+      const sy = box.y + Math.min(box.height - 1, Math.floor((y + 0.5) / scale));
+      if (isOpaque(image, sx, sy)) out[(oy + y) * SILHOUETTE_SIZE + ox + x] = 1;
+    }
+  }
+  return out;
+}
+
+export function silhouetteOverlap(a: RgbaImage, b: RgbaImage): number {
+  const ma = silhouetteMask(a);
+  const mb = silhouetteMask(b);
+  let inter = 0;
+  let union = 0;
+  for (let i = 0; i < ma.length; i += 1) {
+    if (ma[i] && mb[i]) inter += 1;
+    if (ma[i] || mb[i]) union += 1;
+  }
+  return union === 0 ? 0 : inter / union;
+}
+
+/** 종 목록의 앞모습끼리 모두 비교해 윤곽이 닮은 짝을 돌려준다 (IoU 내림차순) */
+export function similarSilhouettes(sprites: { id: string; image: RgbaImage }[], threshold = SILHOUETTE_SIMILAR): { a: string; b: string; iou: number }[] {
+  const pairs: { a: string; b: string; iou: number }[] = [];
+  for (let i = 0; i < sprites.length; i += 1) {
+    for (let j = i + 1; j < sprites.length; j += 1) {
+      const iou = silhouetteOverlap(sprites[i]!.image, sprites[j]!.image);
+      if (iou >= threshold) pairs.push({ a: sprites[i]!.id, b: sprites[j]!.id, iou });
+    }
+  }
+  return pairs.sort((x, y) => y.iou - x.iou);
 }
