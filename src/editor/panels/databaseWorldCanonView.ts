@@ -9,8 +9,7 @@ import {
   WORLD_CANON_TONE_LABELS,
 } from "@/editor/panels/databaseWorldCanonFields";
 import { detailPane, inspectorTabs, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
-import { worldDocumentProperties } from "./worldDocumentProperties";
-import { worldPropertiesOpen } from "./worldManager";
+import { popoverToggle, worldPopoverChip, worldPropertyBar } from "./worldDocumentProperties";
 import { renderWorldAiReachPanel } from "./worldAiReachPanel";
 import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { composeBodyWithDraft, mergeInterviewPatch, requestWorldCanonInterview, requestWorldCanonBodyDraft, type BodyDraftMode } from "@/ai/worldCanonInterview";
@@ -31,7 +30,7 @@ import {
 } from "@/project/world/canon";
 import { el } from "@/util/dom";
 
-const propertiesOpen = new WeakMap<HTMLElement, boolean>();
+const openPopover = new WeakMap<HTMLElement, string | undefined>();
 const aiReachOpen = new WeakMap<HTMLElement, boolean>();
 const aiProbe: { query: string } = { query: "" };
 const activeSpreadTab = new WeakMap<HTMLElement, string>();
@@ -116,37 +115,45 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     if (aiRefs.pre) aiRefs.pre.textContent = section;
     updateAiTiles();
   };
-  const aiDetails = el("details", {
-    class: "world-ai-scope",
-    children: [el("summary", { text: "AI 미리보기 — 이 세계(세계관 고정)" }), aiPreview],
-    on: { toggle: updateAiPreview },
-  });
   updateAiPreview();
-  const properties = worldDocumentProperties([
-    sectionCard({
-      title: "문서 설정",
-      children: [
-        segmentedControl("작성 상태", "db-world-canon-status", canon.status, [
-          { id: "draft", name: "초안" }, { id: "canon", name: "확정" },
-        ], (value) => {
-          if (value !== "draft" && value !== "canon") return;
-          recordProjectSnapshot("세계관 상태");
-          writeCanon({ status: value });
-          updateAiPreview();
-        }),
-        segmentedControl("공개 범위", "db-world-canon-visibility", canon.visibility, [
-          { id: "public", name: "공개" }, { id: "secret", name: "비밀" },
-        ], (value) => {
-          if (value !== "public" && value !== "secret") return;
-          recordProjectSnapshot("세계관 공개 범위");
-          writeCanon({ visibility: value });
-          updateAiPreview();
-        }),
-        el("p", { class: "world-muted", text: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다. AI에게도 숨기려면 설정집 문서의 「공개 범위」를 쓰세요." }),
-      ],
+  // 속성은 본문 위 한 줄 칩 바 — 두 칸짜리 선택(작성 상태·공개 범위)은 칩 안에서 바로 고르고,
+  // 길어지는 「AI 미리보기」는 팝오버로 접는다. 비밀의 뜻풀이는 비밀을 골랐을 때만 한 줄로 보인다.
+  const pop = (id: string) => popoverToggle(() => openPopover.get(host), (next) => openPopover.set(host, next), id);
+  const secretNote = el("p", {
+    class: "world-muted world-prop-note",
+    text: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다. AI에게도 숨기려면 설정집 문서의 「공개 범위」를 쓰세요.",
+    attrs: { title: "비밀 설정도 AI는 참고하지만, 플레이어 대사에 직접 공개하지 않도록 지시합니다. AI에게도 숨기려면 설정집 문서의 「공개 범위」를 쓰세요." },
+    dataset: { testid: "world-canon-secret-note" },
+  });
+  secretNote.hidden = canon.visibility !== "secret";
+  const properties = worldPropertyBar([
+    segmentedControl("작성 상태", "db-world-canon-status", canon.status, [
+      { id: "draft", name: "초안" }, { id: "canon", name: "확정" },
+    ], (value) => {
+      if (value !== "draft" && value !== "canon") return;
+      recordProjectSnapshot("세계관 상태");
+      writeCanon({ status: value });
+      updateAiPreview();
     }),
-    aiDetails,
-  ], propertiesOpen.get(host) ?? worldPropertiesOpen({ propertiesOpen: undefined }), (open) => propertiesOpen.set(host, open));
+    segmentedControl("공개 범위", "db-world-canon-visibility", canon.visibility, [
+      { id: "public", name: "공개" }, { id: "secret", name: "비밀" },
+    ], (value) => {
+      if (value !== "public" && value !== "secret") return;
+      recordProjectSnapshot("세계관 공개 범위");
+      writeCanon({ visibility: value });
+      secretNote.hidden = value !== "secret";
+      updateAiPreview();
+    }),
+    worldPopoverChip({
+      label: "AI 미리보기",
+      title: "이 세계(세계관 고정) 설정이 AI에 이렇게 전달됩니다",
+      body: [aiPreview],
+      testid: "world-canon-ai-scope",
+      align: "end",
+      ...pop("ai-preview"),
+    }),
+    secretNote,
+  ]);
 
   // ---- 탭 구성: 본문(도화지)이 첫 화면의 주인공이다 ----
   // 세계 개요를 클릭하면 폼이 아니라 쓰기 시작할 수 있는 도화지가 먼저 보여야 한다(2026-09-22 사용자 피드백).
@@ -225,11 +232,11 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
         body: [el("div", {
           class: "world-document-layout",
           children: [
+            properties,
             el("div", {
               class: "world-document-content",
               children: [tabs],
             }),
-            properties,
           ],
         })],
       }),
