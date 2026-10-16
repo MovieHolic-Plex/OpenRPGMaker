@@ -15,7 +15,7 @@ import { rewardActorIds } from "@/battle/rewardPolicy";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
-import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
+import { emeraldBattlerName, emeraldMoveLine, emeraldNarrationActive, emeraldOutcomeLine, emeraldResultRows, emeraldShortName, type EmeraldResultRow } from "@/player/emeraldBattleNarration";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -40,7 +40,7 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
     step: "command",
     lines: [
       openingLine ?? (snapshot.forcedSwitchActorId && store.getCurrent().system.battleUiStyle === "pokemon" ? "다음은 누구를\n내보낼까?"
-        : actor ? `${withJosa(actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
+        : actor ? `${withJosa(emeraldNarrationActive() ? emeraldShortName(actor.name) : actor.name, "은/는")}${store.getCurrent().system.battleUiStyle === "pokemon" ? "\n" : " "}무엇을 할까?` : "게이지가 차는 중입니다."),
     ],
     activeActorRecordId: actor?.recordId,
   };
@@ -53,7 +53,7 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
     return {
       step: "intro",
       trainerIntroduction: true,
-      lines: [`${withJosa(troop.name, "이/가")} 승부를 걸어왔다!`],
+      lines: [`${withJosa(emeraldNarrationActive() ? emeraldShortName(troop.name) : troop.name, "이/가")} 승부를 걸어왔다!`],
       activeActorRecordId: snapshot.activeActorId,
     };
   }
@@ -61,7 +61,8 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
   // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
   // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).
   const counts = new Map<string, number>();
-  for (const enemy of living) counts.set(enemy.name, (counts.get(enemy.name) ?? 0) + 1);
+  const introName = (name: string): string => (emeraldNarrationActive() ? emeraldShortName(name) : name);
+  for (const enemy of living) counts.set(introName(enemy.name), (counts.get(introName(enemy.name)) ?? 0) + 1);
   const names = [...counts.entries()].map(([name, count]) => (count > 1 ? `${name} ×${count}` : name));
   const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
   // 전원이 몬스터 종(speciesId)인 트룹에만 "야생의"를 붙인다 — 인간형/보스 트룹까지
@@ -83,7 +84,7 @@ export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorSt
   return {
     step: "intro",
     ...(trainer ? { trainerSendOut: "hero" as const } : {}),
-    lines: [`가라, ${lead.name}!`],
+    lines: [`가라, ${emeraldNarrationActive() ? emeraldShortName(lead.name) : lead.name}!`],
     activeActorRecordId: snapshot.activeActorId,
   };
 }
@@ -222,7 +223,7 @@ export function actorCommandDirectorState(
     ? after.actors.find((candidate) => candidate.recordId === command.targetActorId)?.name
     : undefined;
   const lines = emeraldSwitchIn ? [`가라! ${emeraldSwitchIn}!`] : emeraldMove
-    ? [emeraldMoveLine(actor.name, command.kind === "skill" ? skillName(command.skillId) : undefined), ...(emeraldOutcome ? [emeraldOutcome] : [])]
+    ? [emeraldMoveLine(emeraldShortName(actor.name), command.kind === "skill" ? skillName(command.skillId) : undefined), ...(emeraldOutcome ? [emeraldOutcome] : [])]
     : [
       commandLine(command, actor, before),
       impactLine(command, target, impact, result, after, effect),
@@ -932,7 +933,7 @@ function commandLine(command: ActorCommand, actor: BattleBattlerSnapshot | undef
 
 function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: BattleBattlerSnapshot | undefined): string {
   if (!result) return "포획을 시도했다.";
-  if (result.success) return `신난다! ${withJosa(target?.name ?? "몬스터", "을/를")} 잡았다!`;
+  if (result.success) return `신난다! ${withJosa(emeraldNarrationActive() ? emeraldShortName(target?.name ?? "몬스터") : target?.name ?? "몬스터", "을/를")} 잡았다!`;
   switch (result.blockedReason) {
     case "uncapturable":
       return "이 전투에서는 포획할 수 없다.";

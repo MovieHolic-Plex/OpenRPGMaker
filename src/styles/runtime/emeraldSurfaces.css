@@ -152,7 +152,10 @@
   white-space: nowrap;
   grid-area: 1 / 1;
 }
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-level, .battle-actor-level) { font-size: 18px; line-height: 24px; color: #384840; float: right; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-level, .battle-actor-level) { font-size: 18px; line-height: 24px; color: #384840; flex: none; margin-left: auto; padding-left: 8px; }
+/* 긴 이름·별명은 「…」로 줄고 Lv 는 항상 남는다(D21). 이름 글자만 줄어드는 칸이라 Lv 가 상자 밖으로 밀리지 않는다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-name, .battle-party .battle-actor-name) { display: flex; align-items: baseline; min-width: 0; overflow: hidden; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-name-text { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-level { display: inline-flex; gap: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-actor-level > * { margin: 0; padding: 0; font: inherit; color: inherit; background: none; border: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-bar, .battle-party .battle-stat-bar-hp, .battle-party:has(> .battle-actor-status:only-child) .battle-stat-bar-hp) {
@@ -176,10 +179,15 @@
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons { grid-area: 2 / 1; justify-self: start; align-self: center; display: flex; gap: 2px; position: static; margin: 0; z-index: 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons :is(.battle-status-icon, .battle-stage-pill, .battle-held-pill) { font: 18px/20px var(--runtime-pixel-font); min-width: 30px; height: 20px; padding: 0 3px; border: 0; border-radius: 2px; box-shadow: none; box-sizing: border-box; letter-spacing: 0; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons .battle-status-icon-death { display: none; }
-/* 능력치 단계 알약(ATK↑2)이 있으면 알약 묶음이 HP 막대 줄(2행)에서 3행으로 내려온다 — 막대 앞 「HP」 글자와 겹치지 않고, 내 몬스터 상자에서는 오른쪽 HP 숫자와 같은 줄 왼쪽에 앉는다. */
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] :is(.battle-enemy-list-row, .battle-party .battle-actor-status) > .battle-status-icons[data-has-stages="true"] { grid-row: 3; flex-wrap: wrap; }
+/* 능력치 단계 알약(ATK↑2)이 있으면 알약 묶음이 HP 막대 줄(2행)에서 내려온다 — 막대 앞 「HP」 글자와 겹치지 않는다.
+   적 상자는 3행(HP 숫자가 없다). 내 몬스터 상자는 3행이 HP 숫자(206/206)라서 알약만 4행에 따로 둔다 — 단계가 ±6 으로 4개 겹쳐 두 줄로 감겨도 숫자를 덮지 않고 상자가 그만큼 자란다(D17). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-enemy-list-row > .battle-status-icons[data-has-stages="true"] { grid-row: 3; flex-wrap: wrap; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status > .battle-status-icons[data-has-stages="true"] { grid-row: 4; flex-wrap: wrap; row-gap: 4px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-status-icons[data-has-stages="true"]) { grid-template-rows: 24px 10px auto auto; }
 /* 내 몬스터 상자 EXP 바: 상자 맨 아래 가는 줄(3세대). 승리 결과 단계에서 보상만큼 차오른다(syncExpBar). */
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp) { grid-template-rows: 24px 10px auto 8px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-actor-exp):has(> .battle-status-icons[data-has-stages="true"]) { grid-template-rows: 24px 10px auto auto 8px; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-status:has(> .battle-status-icons[data-has-stages="true"]) .battle-actor-exp { grid-area: 5 / 1; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp { grid-area: 4 / 1; align-self: end; position: relative; height: 6px; box-sizing: border-box; background: #384840; border: 1px solid #384840; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp-fill { display: block; height: 100%; width: var(--battle-exp, 0%); background: #40a8e8; transition: width 1.2s linear; }
 .battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"] .battle-party .battle-actor-exp[data-exp-reset="true"] .battle-actor-exp-fill { transition: none; }
@@ -678,3 +686,17 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender] .status-menu-target-name::after { font: 700 16px/1 system-ui, sans-serif; margin-left: 3px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender="male"] .status-menu-target-name::after { content: "\2642"; color: royalblue; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-monster-gender="female"] .status-menu-target-name::after { content: "\2640"; color: crimson; }
+
+/* 수리 2판(D20·D24): 칸에 안 맞는 긴 글자는 겹치지 않고 「…」로 줄인다. */
+/* D20: 전투불능 알약이 칸 위 경계(top:-12px)에 걸려 윗부분이 잘렸다 — 칸 안 오른쪽 위에 앉히고, 이름은 알약 앞에서 줄인다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-states.has-state { top: 2px; line-height: 16px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]) .status-menu-target-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-party-slot]:not([data-party-slot="0"]):has(.status-menu-target-states.has-state) .status-menu-target-name { padding-right: 80px; }
+/* D24: 라벨·값 두 칸 행(가방 이름+수량, 동료 상세 라벨+값)에서 긴 라벨이 옆 칸 글자와 겹치지 않는다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-copy { min-width: 0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] :is(.status-menu-detail-label, .status-menu-detail-value) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-value { margin-left: 8px; }
+/* 공용 규칙이 라벨에 justify-self:start 를 줘서 칸 폭이 아니라 글자 폭(468px)으로 자란다 — 칸에 맞춰야 말줄임이 걸린다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .status-menu-detail-label { justify-self: stretch; }
+/* 보관함 보기 단추는 160px 한 칸에 라벨·수가 다 들어가는 행이라 줄이지 않는다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] [data-testid="status-menu-monster-toggle"] :is(.status-menu-detail-label, .status-menu-detail-value) { overflow: visible; text-overflow: clip; margin-left: 0; }

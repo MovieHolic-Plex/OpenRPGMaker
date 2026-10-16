@@ -26,7 +26,7 @@ import {
   resultDirectorState,
 } from "@/player/battleDirectorDom";
 import { disambiguatedBattlerName } from "@/player/battleCommandDom";
-import { emeraldBattlerName, emeraldFaintLine, emeraldIntroSendOut, emeraldMajorStatusLine, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
+import { emeraldBattlerName, emeraldShortName, emeraldFaintLine, emeraldIntroSendOut, emeraldMajorStatusLine, emeraldNarrationActive, emeraldTrainerSendOutLine, emeraldTrainerTroop } from "@/player/emeraldBattleNarration";
 
 export const BATTLE_INTRO_MS = 1_200;
 /** 포획 결과 문장 최소 체류(ms, 템포·배속 적용 후). */
@@ -772,7 +772,7 @@ export function createBattleSequencer(
       const trainer = enemySide && emeraldNarrationActive() ? emeraldTrainerTroop(snapshot) : undefined;
       if (trainer && next) return { step: "acting", lines: [emeraldTrainerSendOutLine(trainer.name, next.name)], targetId: entry.targetId };
       if (next) {
-        const line = !enemySide && emeraldNarrationActive() ? `가라! ${next.name}!`
+        const line = !enemySide && emeraldNarrationActive() ? `가라! ${emeraldShortName(next.name)}!`
           : `${withJosa(disambiguatedBattlerName(next, enemySide ? snapshot.enemies : snapshot.actors), "이/가")} ${enemySide ? "나타났다!" : "나섰다!"}`;
         return { step: "acting", lines: [line], targetId: entry.targetId };
       }
