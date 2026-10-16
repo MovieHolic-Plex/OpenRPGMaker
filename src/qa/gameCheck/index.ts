@@ -5,6 +5,7 @@
 import type { Project } from "@/project/types";
 import { simulateBattle } from "@/battle/simulate";
 import { runAutoPlay } from "./autoPlay";
+import { runDeadlineAutoPlay } from "./deadline";
 import { briefTextOf, checkBriefConformance } from "./brief";
 import { checkCommands } from "./commands";
 import { diffLoadNormalization } from "./loadDiff";
@@ -70,6 +71,14 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
       }
     };
     autoPlay = play(false)!;
+    let deadlineRuns: readonly AutoPlayRun[] = [];
+    // onDayEnd 공통 이벤트가 부르는 기한 엔딩(연애 등) — 맵 이벤트 목표만 보는 위 자동 플레이가 걸어 보지 않는 구멍을 메운다.
+    try {
+      const deadline = runDeadlineAutoPlay(project);
+      if (deadline) { deadlineRuns = deadline.runs; findings.push(...deadline.findings); }
+    } catch (error) {
+      findings.push({ severity: "warning", code: "deadline-autoplay-exception", message: `기한 엔딩 자동 플레이 중 예외: ${error instanceof Error ? error.message : String(error)}` });
+    }
     // 자동 플레이는 회복·레벨 관리를 하지 않는다 — 무작위 인카운터를 연달아 맞고 진 것은 「끝까지 못 간다」가 아니라
     // 소모전 신호다(2026-09-24 JRPG 도그푸딩: 포션·여관 없이 광산 세 층을 걷다 쓰러졌다).
     // 인카운터 직전마다 회복하며(여관·포션을 쓰는 플레이어) 다시 돌려 끝까지 가면 그 실행은 막힘 대신 경고로 낸다.
@@ -185,6 +194,8 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
         ...(run.failure.where ? { where: run.failure.where } : {}),
       });
     }
+    // 기한 엔딩 판은 「어느 한 판이라도 닿는가」로 위에서 이미 판정했다(인물 하나에 집중하는 판이 문턱에 못 닿는 것은 막힘이 아니다).
+    if (deadlineRuns.length) autoPlay = { ...autoPlay, runs: [...autoPlay.runs, ...deadlineRuns] };
   }
   const sorted = dedupe(findings).sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
   const counts = { blocker: 0, warning: 0, info: 0 } as Record<FindingSeverity, number>;
