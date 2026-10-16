@@ -55,7 +55,7 @@ def auto_spec(key, skin=None, waist=25, shoe_top=29, ytweak=0):
         return r
     r24 = ext(24) or (6, 17)
     hands_ = hands([(r24[0], 24), (r24[0] + 1, 24)], [(r24[1] - 1, 24), (r24[1], 24)],
-                   [(P.row_extent(fr[('right', 1)], 24) or (8, 15))[0] + 1, 24], [(P.row_extent(fr[('left', 1)], 24) or (8, 15))[1] - 1, 24])
+                   [((P.row_extent(fr[('right', 1)], 24) or (8, 15))[0] + 1, 24)], [((P.row_extent(fr[('left', 1)], 24) or (8, 15))[1] - 1, 24)])
     return dict(face=face, t_start=t_start, waist=waist, shoe_top=shoe_top, skin=''.join(sorted(sk)), hands=hands_)
 
 
@@ -65,8 +65,8 @@ AUTO_BASES = {'Actor2:1': dict(skin='uw'), 'Actor2:0': dict(skin='qr'), 'Actor4:
 OVERRIDE_FACE = {
     'Actor2:1': {'down': (7, 13, 16, 17), 'right': (11, 13, 16, 17), 'left': (7, 13, 12, 17)},
     'Actor2:0': {'down': (7, 12, 16, 17), 'right': (11, 12, 16, 17), 'left': (7, 12, 12, 17)},
-    'Actor4:6': {'down': (8, 12, 15, 18), 'right': (11, 12, 17, 18), 'left': (7, 12, 12, 18)},
-    'Actor4:3': {'down': (8, 12, 16, 18), 'right': (11, 12, 17, 18), 'left': (7, 12, 12, 18)},
+    'Actor4:6': {'down': (9, 13, 14, 18), 'right': (13, 13, 17, 18), 'left': (6, 13, 10, 18)},
+    'Actor4:3': {'down': (9, 14, 14, 18), 'right': (12, 14, 17, 18), 'left': (6, 14, 11, 18)},
     'People5:1': {'down': (7, 14, 16, 19), 'right': (10, 14, 16, 19), 'left': (7, 14, 13, 19)},
     'Actor3:3': {'down': (8, 13, 16, 18), 'right': (10, 13, 16, 18), 'left': (7, 13, 12, 18)},
 }

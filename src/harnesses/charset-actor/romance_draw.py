@@ -49,6 +49,19 @@ anchors.txt·anchors_6x.png 는 장비용이라 **이번에는 무시한다(gear
 
 
 A.prompt = prompt
+_orig_make = A.make_candidate
+
+
+def make_candidate(spec, cand, key, run_dir, model):
+    try:
+        return _orig_make(spec, cand, key, run_dir, model)
+    except Exception as e:  # noqa: BLE001 — 한 후보의 예외가 전체 실행을 죽이지 않게
+        import traceback
+        traceback.print_exc()
+        return dict(key=key, ok=False, attempts=[dict(errors=[repr(e)])])
+
+
+A.make_candidate = make_candidate
 
 if __name__ == '__main__':
     A.main()
