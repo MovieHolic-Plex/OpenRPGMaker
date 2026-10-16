@@ -1,4 +1,17 @@
 /**
+ * composePiTask 가 사용자 글과 의도 메모(모험 지침·참조 작품·시공 노트…) 사이에 끼우는 경계선.
+ * 메모는 사용자 글이 아니다 — 거기 적힌 「몬스터」「포켓몬풍」「트레이너」「수집」 같은 낱말을 몬스터 신호로 읽으면
+ * 「FF6 같은 게임… 동료들을 다시 모으는 이야기」가 포켓몬형 캠페인(build_monster_game)으로 납치된다(jrpg-loop-1 ff1: 완료 검사가 센터·도감을 요구).
+ */
+export const INTENT_NOTE_BOUNDARY = "\n\n[의도 메모 — 아래는 사용자 글이 아니라 시스템 지침]\n";
+
+/** 사용자 글만 돌려준다(경계선 뒤 의도 메모를 뺀다). 경계선이 없으면 그대로. */
+export function withoutIntentNote(task: string): string {
+  const at = task.indexOf(INTENT_NOTE_BOUNDARY);
+  return at < 0 ? task : task.slice(0, at);
+}
+
+/**
  * 「게임 한 편」을 가리키는 말. 게임·캠페인뿐 아니라 「RPG」「포켓몬 라이크」처럼 장르 이름으로 부르는 경우를 포함한다(2026-10-16 깊이 감사 ②③: 「…몬스터 수집 RPG」·「…포켓몬 라이크」가 null 로 샜다).
  * 「로그라이크」「소울라이크」의 라이크는 장르 접미가 아니라 다른 장르 이름이므로 뺀다. 이 낱말만으로는 몬스터 요청이 되지 않는다 — 호출부가 몬스터·포켓몬 신호를 따로 요구한다.
  */
@@ -67,7 +80,8 @@ const CARE_ONLY = /다마고치|tamagotchi|펫\s*(?:을|를)?\s*(?:키우|육성
 const CAMPAIGN_WORDS = /체육관|배지|도감|포획|수집|\bgym|capture|collect|pok[eé]dex/iu;
 
 /** 몬스터 수집·육성·대전 의도가 있는가(요청 문장 기준). 포켓몬 낱말이 없어도 신호가 둘 이상 겹치면 참. */
-export function hasMonsterCollectIntent(task: string): boolean {
+export function hasMonsterCollectIntent(rawTask: string): boolean {
+  const task = withoutIntentNote(rawTask);
   if (FREE_NOT_COLLECT.test(task)) return false;
   if (POKEMON_WORD.test(task)) return true;
   const scrubbed = task.replace(SCHOOL_OR_FITNESS, " ").replace(SPORT_LEAGUE, " ");
@@ -87,7 +101,8 @@ export type MonsterGameRequestKind = 'campaign' | 'tournament' | 'expedition' | 
  * 몬스터 게임 제작 요청의 종류. tournament = 포획 없는 대회형(build_monster_tournament), campaign = 수집·체육관 캠페인(build_monster_game).
  * blank = 비어 있는 새 프로젝트 — 「…게임이야」처럼 동사 없이 설명만 하는 새 게임 소개를 요청으로 받아들이는 근거(저작된 게임에는 쓰지 않는다).
  */
-export function classifyMonsterGameRequest(task: string, blank = false): MonsterGameRequestKind {
+export function classifyMonsterGameRequest(rawTask: string, blank = false): MonsterGameRequestKind {
+  const task = withoutIntentNote(rawTask);
   if (QUESTION_RE.test(task)) return null;
   const wholeGame = mentionsWholeGame(task);
   const action = ACTION_RE.test(task);
@@ -104,7 +119,8 @@ export function classifyMonsterGameRequest(task: string, blank = false): Monster
 }
 
 /** 포켓몬·에메랄드를 말한 전체 게임 제작(대회형·포획 없음 요청은 제외 — 그쪽은 build_monster_tournament). */
-export function requestsEmeraldMonsterGame(task: string): boolean {
+export function requestsEmeraldMonsterGame(rawTask: string): boolean {
+  const task = withoutIntentNote(rawTask);
   return requestsNamedMonsterCampaign(task) && !TOURNAMENT.test(task) && !NO_CAPTURE.test(task);
 }
 
