@@ -31,7 +31,7 @@ export const ROMANCE_TITLE_ARTS: readonly RomanceTitleArt[] = [
   { id: "oprn-title-romance-cafe", setting: "cafe", label: "노을 카페 테라스", keywords: /카페|커피|바리스타|라떼|디저트|베이커리|브런치|café|cafe/giu },
   { id: "oprn-title-romance-school", setting: "school", label: "저녁 학교 복도 창가", keywords: /학원|고등학교|고교|중학교|교실|교복|야자|학생회|반장|입시|수능|담임|보충수업|hagwon/giu },
   { id: "oprn-title-romance-office", setting: "office", label: "황혼 사옥 옥상", keywords: /회사|직장|사무실|출근|퇴근|사내|오피스|야근|상사|동기 사원|신입 사원|인턴|office/giu },
-  { id: "oprn-title-romance-town", setting: "town", label: "황혼 바닷가 마을", keywords: /이웃|마을|동네|시골|바닷가|섬|골목|항구|해변|귀촌|한옥|이웃마을/giu },
+  { id: "oprn-title-romance-town", setting: "town", label: "황혼 바닷가 마을", keywords: /이웃마을|바닷가|해변|항구|어촌|섬마을|시골|귀촌|한옥|등대|갯마을|해안/giu },
 ];
 
 function setting(id: string | undefined): RomanceTitleArt | undefined {
@@ -42,14 +42,14 @@ function setting(id: string | undefined): RomanceTitleArt | undefined {
  * 기획·요청 문장이 가리키는 소재의 키아트. 소재 낱말이 하나도 없거나 캠퍼스가 이기면 undefined(= 기본 캠퍼스 그림이 맞다).
  * 「대학 카페 알바」처럼 섞이면 낱말이 더 많은 쪽이 이기고 동률이면 캠퍼스를 둔다.
  */
-export function romanceTitleArtForText(text: string | undefined | null): RomanceTitleArt | undefined {
+export function romanceTitleArtForText(text: string | undefined | null, includeCampus = false): RomanceTitleArt | undefined {
   if (typeof text !== "string") return undefined;
   // 장르 프리셋 지시문에 실린 제작 매뉴얼은 사용자 요청이 아니다(그 안의 「캠퍼스」 같은 낱말을 세지 않는다).
   text = text.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, "");
   if (!text.trim()) return undefined;
   const score = (art: RomanceTitleArt) => (text.match(new RegExp(art.keywords.source, "giu")) ?? []).length;
   const campus = ROMANCE_TITLE_ARTS[0]!;
-  let best: RomanceTitleArt | undefined;
+  let best: RomanceTitleArt | undefined = includeCampus && score(campus) > 0 ? campus : undefined;
   let bestScore = score(campus);
   for (const art of ROMANCE_TITLE_ARTS.slice(1)) {
     const value = score(art);
@@ -58,10 +58,15 @@ export function romanceTitleArtForText(text: string | undefined | null): Romance
   return best;
 }
 
-/** 지금 타이틀이 캠퍼스 기본 그림인데 문장은 다른 소재면 바꿔야 할 그림을 돌려준다. 저작자가 다른 그림을 골랐으면(생성·업로드 포함) 건드리지 않는다. */
+/** 지금 타이틀이 소재 키아트 중 하나인데 문장은 다른 소재를 더 강하게 가리키면 바꿔야 할 그림을 돌려준다(캠퍼스 기본이든 조수가 고른 엉뚱한 소재 그림이든). 저작자가 고른 생성·업로드 그림은 건드리지 않는다. */
 export function romanceTitleArtSettingGap(backgroundResourceId: string | undefined, text: string | undefined | null): RomanceTitleArt | undefined {
-  if (backgroundResourceId !== ROMANCE_TITLE_RESOURCE_ID) return undefined;
-  return romanceTitleArtForText(text);
+  const current = setting(backgroundResourceId);
+  if (!current) return undefined;
+  const best = romanceTitleArtForText(text, true);
+  if (!best || best.id === current.id) return undefined;
+  const clean = typeof text === "string" ? text.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, "") : "";
+  const count = (art: RomanceTitleArt) => (clean.match(new RegExp(art.keywords.source, "giu")) ?? []).length;
+  return count(best) > count(current) ? best : undefined;
 }
 
 export function isRomanceTitleArtId(id: string | undefined): boolean {
