@@ -2228,10 +2228,21 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
     orb.classList.remove("battle-orb-shake");
     if (success) {
       orb.classList.add("battle-orb-caught");
+      playMonsterSfxNow("capture-success");
+      for (let i = 0; i < 6; i += 1) {
+        const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
+        spawn("battle-capture-spark", 620, (node) => {
+          node.style.setProperty("--spark-dx", `${Math.round(Math.cos(angle) * 46)}px`);
+          node.style.setProperty("--spark-dy", `${Math.round(Math.sin(angle) * 46)}px`);
+        });
+      }
+    } else {
+      orb.classList.add("battle-orb-burst");
+      target.classList.remove("battle-capture-absorbed");
       target.classList.add("battle-capture-escaped");
       at(() => target.classList.remove("battle-capture-escaped"), 420);
       spawn("battle-capture-flash battle-capture-flash-escape", 340);
-      sound?.("escape");
+      playMonsterSfxNow("ball-break");
     }
   }, clock);
   const total = clock + 420;
