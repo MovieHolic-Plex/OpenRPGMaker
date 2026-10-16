@@ -358,7 +358,8 @@ function renderWikiPane(
   const refs = entity.refs ?? [];
   const bar = worldPropertyBar([
     el("span", { class: "world-chip static world-type-badge", text: ENTITY_TYPE_LABELS[entity.type], attrs: { title: "종류" } }),
-    ...(entity.tags ?? []).map((tag) => el("span", { class: "world-chip static world-tag", text: tag })),
+    // 태그는 작가의 글이다 — 화면 번역 대상이 아니다.
+    ...(entity.tags ?? []).map((tag) => el("span", { class: "world-chip static world-tag", text: tag, attrs: { "data-i18n-skip": "" } })),
     el("button", {
       class: `world-chip world-visibility-button${aiHidden ? " hidden" : ""}`,
       text: aiHidden ? "AI 숨김" : "AI 공개",
