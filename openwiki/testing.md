@@ -2178,3 +2178,10 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 ## 몬스터 마을 시스템 시각 QA (2026-10-16)
 
 `scripts/qa/runtime/monster-town.mjs <project.json> [outDir]` — 출하 플레이어(player.html)에서 상점(`TOWN_STAGE=shop`: 메뉴·수량·소지금·판매)·센터(`center`: 맡김→볼→섬광→회복 연속 프레임 + `__oprnAudioObserved` 소리 도착)를 실제 입력으로 본다(트레이너 단계 `trainer`·`emote` 는 트레이너 그림 PR 이 쓴다). 픽스처는 `bun src/harnesses/assistant-capability/node/buildMonsterFixture.ts <out.json>`. 함정: 세로 시선 트레이너가 맵 윗가장자리(y<8)에 있으면 「!」가 화면 밖으로 잘린다(트레이너 y≥8 을 쓴다). 서버 부하가 크면 애니메이션 프레임 간격이 늘어나 섬광 타이밍은 판정할 수 없다. 출력은 `verify-shots/runtime-qa/monster-town/SUMMARY.md` 먼저.
+
+## 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
+
+- 실제 Argon(8318)은 `gemini-4-argon-high` 한도 소진(HTTP 429)이라 **조수 대용**(Sonnet 5.5 역할극, `scripts/oprn-tools.mjs --assistant`)으로 `place_npc`×5·`define_ending`×4·`set_deadline_ending`·`set_title_screen` 을 실행했다. 지형은 앞선 실제 Argon 판(`romance-3/qa-runs/real-1`)의 타일을 이식한 합성본 — Argon 점수와 비교하지 않는다.
+- `deadline.ts` 자동 플레이는 선택지로 시작하는 대화에서 첫 선택지를 고른다(`choose 0`). 이전에는 선택지가 열린 채 끝나지 않아 호감이 0 으로 남았고, 어떤 인물에 집중해도 「모두의 봄」 하나만 닿았다 — 호감 엔딩이 모두 닿는지가 이제 검사된다.
+- `scripts/qa/romance-real/proof.mts` 는 인물마다 곁에 설 수 있는 통행 칸(`stand`)을 계산하고, `romance-real.scenario.mjs` 는 실내 인물들을 차례로 만난 뒤(07b) ESC 호감 목록(07c)을 찍는다. 책상에 막힌 아래 칸으로 가면 말 걸기가 실패한다.
+- 이 세션은 vitest·gates 를 돌리지 않았다. `test/romanceFix3.test.ts` 는 작성만 했다(미실행).

@@ -56,6 +56,10 @@ export function reconcileSharedFaceWithCharset(faceResourceId: string, idOrTextu
   readonly faceResourceId: string | null; readonly warning?: string;
 } {
   const row = sharedCharsetRow(idOrTextureKey, characterIndex);
+  // 현대 연애 인물 칩은 짝 얼굴이 없다(reviewedCharsetFaces.ts) — 번들 얼굴을 붙이지 않는다.
+  if (!row && /^tex_oprn_charset_modern\d+$/u.test(findCharsetAsset(idOrTextureKey)?.textureKey ?? idOrTextureKey) && sharedFaceRow(faceResourceId)) {
+    return { faceResourceId: null, warning: `현대 연애 인물 칩 ${idOrTextureKey}#${characterIndex} 에는 맞는 번들 얼굴이 없어 얼굴 ${faceResourceId} 를 붙이지 않았습니다. 얼굴이 꼭 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만드세요.` };
+  }
   if (!row || !sharedFaceRow(faceResourceId)) return { faceResourceId };
   if (row.status === "mapped" && row.faceResourceId === faceResourceId) return { faceResourceId };
   const target = row.status === "mapped" ? row.faceResourceId : null;

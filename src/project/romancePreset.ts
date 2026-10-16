@@ -3,12 +3,14 @@
 // 전부 옵트인 필드이고 이미 저작자가 정한 값은 덮지 않는다(??=). 새 그림은 만들지 않는다 — 번들 그림만 고른다.
 //  1) 하루 루프: 시간 시스템(강제 취침) + socialLoop(하루 칸 3, 사람별 호감 상한 20)
 //  2) 호감 하트 HUD: 전투 체력 하트 대신 인물 호감을 하트로, 남은 대화 칸과 시계를 글자로
-//  3) 장르 잠금(romance): 시작 맵이 현대 학교·도시 계열일 때만 켠다 — 환상 무대의 연애(궁정·마법 학교)는 잠그지 않는다
+//  3) 장르 잠금(romance): 시작 맵이 현대 학교·도시 계열일 때만 켠다 — 환상 무대의 연애(궁정·마법 학교)는 잠그지 않는다.
+//     켜면 맵 칩셋뿐 아니라 인물 칩도 현대 연애 칩 Modern1~3 로 묶고(주인공 기본 외형 포함), ESC 메뉴는 전투 능력치 대신 호감도 중심(relationshipMenu.ts)이 된다
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
 //  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
 import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR } from "@/project/gameTime";
 import { DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP, DEFAULT_SOCIAL_SLOTS_PER_DAY } from "@/project/socialLoop";
-import { enableGenreLock, GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
+import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { normalizeHudWidget, type FieldHudConfig } from "@/project/fieldHud";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
@@ -24,6 +26,9 @@ export const ROMANCE_TITLE_RESOURCE_ID = "oprn-title-romance-campus";
 /** 코드가 기본으로 깔아 둔(= 저작자가 안 고른) 타이틀 배경. 이 값일 때만 바꾼다(옛 연애 기본 포함). */
 const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field", "oprn-still-moon-meadow"]);
 
+/** 연애 기본 타이틀 부제 — 「A NEW ADVENTURE」 모험 문구를 대신한다. */
+export const ROMANCE_TITLE_SUBTITLE = "마음이 닿는 계절";
+
 export const ROMANCE_MINUTES_PER_REAL_SECOND = 0.1;
 
 export function isRomanceInterviewProject(project: Project): boolean {
@@ -38,9 +43,10 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
     vitals: false, clock: true, tools: false, objective: false, hideEmpty: true,
     widgets: [
       // 호감 목록: 호감이 기록된 사람을 높은 순으로 셋까지(이름 + 하트). 한 사람뿐이면 한 줄.
-      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 8, width: 128, height: 20, color: "#f4d17b" }),
-      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 30, width: 128, height: 56, slots: 3, color: "#ef6a68", showValue: false, max: 100 }),
-      w("clock", { kind: "clock", label: "", anchor: "top-right", width: 76, height: 44 }),
+      // 판 위에 놓이는 글자라 숲·건물과 겹치면 읽히지 않는다 — 셋 다 어두운 판(panel dark)에 얹는다. 이름 칸은 「한서연」 같은 세 글자 + 하트 다섯 칸이 한 줄에 들어갈 폭.
+      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 8, width: 150, height: 22, color: "#f4d17b", panel: "dark" }),
+      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 34, width: 150, height: 58, slots: 3, color: "#ef6a68", showValue: false, max: 100, panel: "dark" }),
+      w("clock", { kind: "clock", label: "", anchor: "top-right", width: 84, height: 48, panel: "dark" }),
     ],
   };
 }
@@ -78,10 +84,17 @@ export function applyRomanceDefaults(project: Project): string[] {
     system.titleScreen = { ...title, backgroundResourceId: ROMANCE_TITLE_RESOURCE_ID, backgroundFit: "cover" };
     applied.push("titleScreen");
   }
+  // 타이틀 문구: 기본 「A NEW ADVENTURE / 이야기가 시작되는 곳」은 모험 게임 문구다(연애 첫 실측: 연애 그림 위에 그대로 남음). 글자 질감을 정하면 그 기본 문구가 숨고 부제만 남는다.
+  // 제목 자체는 조수가 게임에 맞게 정한다(configure_title_screen title) — 코드는 기본 문구만 걷고 부드러운 부제를 둔다. 저작자가 정한 값은 건드리지 않는다.
+  const copy = system.titleScreen;
+  if (copy && copy.logoStyle === undefined && copy.logoSubtitle === undefined && copy.backgroundResourceId === ROMANCE_TITLE_RESOURCE_ID) {
+    system.titleScreen = { ...copy, logoStyle: "glow", logoSubtitle: ROMANCE_TITLE_SUBTITLE };
+    applied.push("titleCopy");
+  }
   // 장르 잠금: 시작 맵이 허용 계열(현대 학교·도시)일 때만.
   const start = project.maps[project.startMapId];
   if (!system.genreLock && start && GENRE_LOCK_PRESETS.romance.families.includes(tilesetFamily(project, start.tilesetId))) {
-    if (enableGenreLock(project, "romance")) applied.push("genreLock");
+    if (enableGenreLockSettled(project, "romance")) applied.push("genreLock");
   }
   // 시작 맵 BGM: 비어 있을 때만. 연애 전용 곡은 카탈로그에 없어 가장 가까운 잔잔한 일상 곡을 고른다.
   if (start && !start.bgm) {

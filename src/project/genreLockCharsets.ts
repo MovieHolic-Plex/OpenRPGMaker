@@ -61,7 +61,8 @@ function rankedAlternatives(project: Pick<Project, "assets">, families: Readonly
     .filter((entry) => {
       const entryFamily = charsetFamilyOf(project, entry.textureKey);
       if (!families.has(entryFamily)) return false;
-      return wantsPeople ? entryFamily === "scarloxy-people" || entryFamily === "rtp-people" : entryFamily === "oprn-creature" || entryFamily === "rtp-creature";
+      // 허용 계열 안에서 사람이면 사람 칩 계열(트레이너·RTP·현대 인물 …) 어느 것이든 후보다 — 몬스터 잠금은 Scarloxy 만, 연애 잠금은 Modern 만 허용 목록에 있어 서로 섞이지 않는다.
+      return wantsPeople ? PEOPLE_FAMILIES.has(entryFamily) : entryFamily === "oprn-creature" || entryFamily === "rtp-creature";
     })
     .map((entry) => ({ entry, score: score(entry) }))
     .sort((a, b) => b.score - a.score);

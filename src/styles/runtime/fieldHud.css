@@ -48,6 +48,8 @@
 .hud-party-fill { height:100%; background:var(--hud-accent); }
 .hud-party-value { font-size:5px; margin-top:2px; }
 .hud-widget[data-kind="party"][data-source="friendship"] { justify-content:flex-start; gap:2px; }
+/* 호감 목록은 사람 수만큼만 판이 자란다 — 한 사람뿐인데 세 줄 높이의 어두운 판이 지도를 덮던 것(연애 두 번째 측정). 위쪽 칸 수 위젯과 겹치지 않게 y 는 그대로 둔다. */
+.hud-widget[data-kind="party"][data-source="friendship"][data-panel="dark"] { height:auto !important; min-height:0 !important; }
 .hud-rel-row { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:14px; }
 .hud-rel-name { font-size:7px; line-height:1.1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
 .field-hud:is([data-font="pixel"],[data-font="round"]) .hud-rel-name { font-size:9px; line-height:1; letter-spacing:0; }

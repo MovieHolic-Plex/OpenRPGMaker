@@ -512,7 +512,15 @@ const listNpcGraphics: ToolDefinition = {
       },
     }));
     const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
-    return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };
+    return {
+      summary: `NPC 그래픽 ${matches.length}개 조회(${label})`,
+      data: {
+        matches,
+        ...(matches.length === 0 && query && query.trim().length > 0
+          ? { hint: "0건이다. 검색어는 낱말 하나로(예: 여학생, 남학생, 카페 점원, 교수, 정장) 줄이거나 query 를 생략해 기본 후보를 본다. 여러 낱말을 공백으로 이으면 모두 맞아야 한다." }
+          : {}),
+      },
+    };
   },
 };
 

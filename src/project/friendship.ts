@@ -285,6 +285,12 @@ export type FriendshipListEntry = {
   readonly displayName?: string;
 };
 
+/** 호칭 꼬리(「한서연 선배」의 「선배」) — HUD 처럼 좁은 곳은 이름만 쓴다. 호칭만 남는 이름(「선생님」)은 그대로 둔다. */
+export function friendshipShortName(name: string): string {
+  const short = name.trim().replace(/\s+(선배|후배|님|씨|선생님?|교수님?|사장님|점장님|쌤|오빠|언니|누나|형)$/u, "");
+  return short.length >= 2 ? short : name.trim();
+}
+
 const eventNameByCharacter = new WeakMap<object, Map<string, string>>();
 
 /**

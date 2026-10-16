@@ -5,7 +5,7 @@
 // 호감 문턱이 막혀 있어도, 엔딩 정의가 통째로 없어도 같은 결과). 여기서는 인물 하나에 집중하는 판들과 아무도 안 만나는 판을
 // 헤드리스 러너로 끝까지 돌려, 공통 이벤트가 부르는 엔딩이 하나라도 닿는지·어떤 엔딩이 어떤 판으로 닿는지 센다.
 //
-// 한계: 인물에게 말 걸기(talkFriendship)만 쓴다 — 선택지로 호감을 올리는 엔딩은 맵 이벤트 목표 쪽(runAutoPlay)이 본다.
+// 한계: 인물에게 말 걸기(talkFriendship)만 쓴다(선택지로 시작하는 대화는 첫 선택지를 고른다) — 선택지로 호감을 올리는 엔딩은 맵 이벤트 목표 쪽(runAutoPlay)이 본다.
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { canMove, isPassable } from "@/project/collision";
@@ -62,6 +62,11 @@ function standBeside(project: Project, mapId: string, x: number, y: number): { x
   return undefined;
 }
 
+function hasChoices(project: Project, npc: Npc): boolean {
+  const event = project.maps[npc.mapId]?.events.find((entry) => entry.id === npc.eventId);
+  return !!event && JSON.stringify(event.pages ?? []).includes('"kind":"choices"');
+}
+
 /** 한 판: 인물(characterId)에 집중하거나(null = 아무도 안 만남) 하루 칸을 다 쓰며 기한 엔딩이 올 때까지. */
 function playStrategy(project: Project, focus: Npc | null, slots: number): AutoPlayRun {
   const started = Date.now();
@@ -90,7 +95,10 @@ function playStrategy(project: Project, focus: Npc | null, slots: number): AutoP
         steps.push({ goal: `${n}일째 ${focus.name} 만나기`, ok: false, detail: `${focus.name}이 선 자리(${at.mapId} ${at.x},${at.y}) 옆에 설 통행 칸이 없습니다.`, mapId: at.mapId, x: at.x, y: at.y });
         return fail("옆에 설 칸 없음");
       }
-      result = run([{ kind: "set", mapId: at.mapId, x: stand.x, y: stand.y, facing: stand.facing }, { kind: "interact", eventId: focus.eventId }]);
+      const approach: SceneStep[] = [{ kind: "set", mapId: at.mapId, x: stand.x, y: stand.y, facing: stand.facing }, { kind: "interact", eventId: focus.eventId }];
+      // 선택지로 시작하는 대화는 첫 선택지를 골라야 끝난다(끝나야 호감이 오른다). 선택지가 없으면 choose 가 거절되니 그대로 다시 한다.
+      result = hasChoices(project, focus) ? run([...approach, { kind: "choose", index: 0 }]) : run(approach);
+      if (!result.ok && /대기 중 선택지가 없습니다/.test(result.failureReason ?? "")) result = run(approach);
       if (result.finalState.endingsReached.length) break;
       if (!result.ok) {
         steps.push({ goal: `${n}일째 ${focus.name}와 대화`, ok: false, detail: result.failureReason ?? "대화 실패", mapId: at.mapId, x: at.x, y: at.y });

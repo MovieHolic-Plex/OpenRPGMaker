@@ -237,6 +237,21 @@ export function usedCharsetGraphicKeysOnMap(map: {
   return used;
 }
 
+/**
+ * 프로젝트 전체 맵에서 이미 쓰인 걷기 칩 키(시트+인물 번호) — 같은 이름의 이벤트(`exceptName`, 같은 사람이 다른 맵에 다시 선 것)는 뺀다.
+ * 허용 칩이 적은 장르 잠금(현대 연애 24칸 · 몬스터 수집 10칸) 아래에서 맵이 달라도 서로 다른 인물이 같은 얼굴이 되지 않게 고르는 데 쓴다.
+ */
+export function usedCharsetGraphicKeysOnProject(project: {
+  readonly maps: Readonly<Record<string, { readonly events: readonly { readonly name?: string; readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[] }>>;
+}, exceptName?: string): Set<string> {
+  const used = new Set<string>();
+  const except = exceptName?.trim();
+  for (const map of Object.values(project.maps)) {
+    for (const key of usedCharsetGraphicKeysOnMap({ events: map.events.filter((event) => !except || event.name?.trim() !== except) })) used.add(key);
+  }
+  return used;
+}
+
 /** 이 맵에서 같은 걷기 칩(시트+인물 번호)을 첫 페이지 그림으로 쓰는 이벤트 수. */
 export function usedCharsetGraphicKeysOnMapCount(map: {
   readonly events: readonly { readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[];

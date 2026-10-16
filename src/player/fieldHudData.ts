@@ -3,7 +3,7 @@ import type { PlaySession } from "@/project/session";
 import type { HudWidget } from "@/project/fieldHud";
 import { formatGameClock } from "@/project/gameTime";
 import { friendshipDisplayMax, resolveSocialLoop, socialSlotsLeft } from "@/project/socialLoop";
-import { friendshipDisplayName } from "@/project/friendship";
+import { friendshipDisplayName, friendshipShortName } from "@/project/friendship";
 import { handSlotCurrent, handSlotEntries, handSlotIndex } from "./handSlot";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { resolveActorFaceResourceId, resolveActorName } from "@/project/sessionActorCommands";
@@ -28,7 +28,7 @@ export function readHudWidget(widget: HudWidget, project: Project, session: Play
     const max = Math.max(1, friendshipDisplayMax(project) ?? widget.max);
     const ranked = Object.keys(all).map(key => ({ key, value: Math.max(0, Math.trunc(all[key] ?? 0)) }))
       .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key)).slice(0, widget.slots);
-    const entries: HudEntry[] = ranked.map(row => ({ name: friendshipDisplayName(project, row.key) ?? row.key, value: Math.min(max, row.value), max, key: row.key }));
+    const entries: HudEntry[] = ranked.map(row => ({ name: friendshipShortName(friendshipDisplayName(project, row.key) ?? row.key), value: Math.min(max, row.value), max, key: row.key }));
     return { available: true, value: entries.length, max: Math.max(1, widget.slots), entries };
   }
   if (widget.kind === "party") return { ...read(session.partyActorIds.length), entries: session.partyActorIds.slice(0, widget.slots).flatMap(id => {

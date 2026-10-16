@@ -29,6 +29,17 @@ proof.spots.slice(0, 4).forEach((spot, i) => beats.push({
   id: `07-map-${i + 1}`, note: `${spot.name} (${spot.width}×${spot.height}) 순간이동`, shot: true,
   ops: [{ kind: "teleport", mapId: spot.mapId, x: spot.x, y: spot.y }, ...settle], expect: { mapId: spot.mapId },
 }));
+// 여러 사람을 만난 뒤의 ESC 호감 목록·HUD 하트 판 — 실내 인물 곁(아래 칸)으로 순간이동해 말을 걸고 대사를 끝까지 넘긴다(선택지는 첫 항목).
+const people = proof.spots.flatMap((spot) => spot.npcs.filter((npc) => npc.visible && npc.stand).map((npc) => ({ ...npc, mapId: spot.mapId }))).slice(0, 4);
+people.forEach((npc, i) => beats.push({
+  id: `07b-meet-${i + 1}`, note: `${npc.name} 에게 말 걸기`, shot: i === people.length - 1,
+  ops: [{ kind: "teleport", mapId: npc.mapId, x: npc.stand.x, y: npc.stand.y }, ...settle, { kind: "face", dir: npc.stand.face }, { kind: "action" },
+    { kind: "waitFor", testid: "dialogue-box", state: "present" }, ...stable,
+    { kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 24 }, ...settle], expect: {},
+}));
+if (people.length) beats.push({ id: "07c-esc-many", note: "여러 사람을 만난 뒤 ESC 호감 목록", shot: true,
+  ops: [key("Escape"), { kind: "waitFor", testid: "main-menu", state: "present" }, ...stable], expect: { testidPresent: ["main-menu"] } },
+  { id: "07d-esc-close", note: "메뉴 닫기", shot: false, ops: [{ kind: "pressUntil", key: "Escape", testid: "main-menu", state: "absent", maxPresses: 4 }, ...settle], expect: {} });
 // 엔딩 — 뼈대 끝 이벤트 옆으로 순간이동해 말을 걸고 대사를 넘긴다(자동 플레이가 이미 엔딩 도달을 증명, 여기선 화면만 본다).
 try {
   const raw = JSON.parse(fs.readFileSync(projectFixture, "utf8"));
