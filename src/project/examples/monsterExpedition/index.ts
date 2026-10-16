@@ -1,5 +1,6 @@
 import { assignTrainerSprites } from "./trainerArt";
 import { createExpeditionSeed } from "./seed";
+import { distributeNpcCharsets } from "./npcFaces";
 import { configureScarloxyPokemonDemoProject } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { configureExpeditionRoster } from "./roster";
 import { configureExpeditionAudio } from "./audio";
@@ -81,6 +82,8 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   assignTrainerSprites(project);
   // 캐릭터 칩도 장르 잠금 표(monster-collect)에 맞춘다: RTP 사람 칩 → 몬스터 테이밍 트레이너 칩(같은 인물은 늘 같은 칩, 성별·나이가 가까운 것). 이 프로젝트는 방금 생성한 것이라 바꿔도 저작자 그림을 해치지 않는다.
   remapCharsetsToPreset(project, "monster-collect");
+  // 같은 장르 칩 10칸 안에서 역할별로 얼굴을 나눈다(시각 QA D02).
+  distributeNpcCharsets(project);
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

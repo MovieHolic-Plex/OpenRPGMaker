@@ -1,5 +1,6 @@
 import { assignTrainerSprites } from "./trainerArt";
 import { createExpeditionSeed } from "./seed";
+import { distributeNpcCharsets } from "./npcFaces";
 import { configureScarloxyPokemonDemoProject } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { configureExpeditionRoster } from "./roster";
 import { configureExpeditionAudio } from "./audio";
@@ -75,6 +76,8 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
   assignTrainerSprites(project);
   if (project.system.titleScreen) { project.system.titleScreen.title = title; project.system.titleScreen.logoSubtitle = expedition ? "체육관 없는 도감 탐험" : "포획 없는 토너먼트"; }
   remapCharsetsToPreset(project, "monster-collect");
+  // 같은 장르 칩 10칸 안에서 역할별로 얼굴을 나눈다(시각 QA D02).
+  distributeNpcCharsets(project);
   const serialized = serialize(project);
   return { project: deserialize(serialized), serialized, manifest };
 }
