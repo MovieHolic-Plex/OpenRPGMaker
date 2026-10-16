@@ -11,7 +11,8 @@ const enter = { kind: "key", key: "Enter" };
 const beats = [{ id: "01-start", shot: false, ops: [enter, { kind: "waitForRuntime" }, ...settle, ...settle], expect: {} }];
 proof.steps.forEach((s, i) => {
   beats.push({ id: `0${i + 2}a-walk-${i}`, shot: false, ops: [{ kind: "playerRoute", moves: s.moves }, { kind: "waitForPosition", mapId: s.mapId, x: s.x, y: s.y, timeoutMs: 60000 }, ...stable], expect: {} });
-  beats.push({ id: `0${i + 2}b-talk-${i}`, note: `${s.name} 와 대화`, shot: true, ops: [{ kind: "face", dir: s.face }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present" }, { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.95 }, ...stable, enter, ...stable, enter, ...stable], expect: {} });
+  beats.push({ id: `0${i + 2}b-talk-${i}`, note: `${s.name} 와 대화(첫 Enter 로 타이핑을 끝낸 모습)`, shot: true, ops: [{ kind: "face", dir: s.face }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present" }, { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.95 }, ...stable, enter, ...stable], expect: {} });
+  beats.push({ id: `0${i + 2}b2-talk-${i}`, note: `${s.name} 본문 둘째 쪽`, shot: false, ops: [enter, ...stable, enter, ...stable], expect: {} });
   beats.push({ id: `0${i + 2}c-done-${i}`, note: `${s.name} 대사 끝 — HUD`, shot: true, ops: [{ kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 30 }, ...settle], expect: {} });
 });
 for (let i = 1; i <= 6; i += 1) {
