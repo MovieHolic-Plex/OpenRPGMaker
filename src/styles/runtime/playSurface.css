@@ -337,7 +337,7 @@
 }
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"][data-showcase="monster"] .cinematic-image {left:14px;}
 /* 소개 몬스터: 상자는 정수 배율 변수(--art-box-*)가 정하고, 위치는 2px 격자의 정수 좌표다. 예전 55%·24% 는 264px·75.8px 소수 좌표라 도트가 격자에서 반 칸 어긋났다(시각 QA 2026-10-16). */
-.cinematic-sequence[data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-creature {left:272px;top:76px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);}
+.cinematic-sequence[data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-creature {left:272px;top:56px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);}
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-creature {
   position:absolute;left:268px;top:72px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);object-fit:contain;image-rendering:pixelated;z-index:1;
 }
