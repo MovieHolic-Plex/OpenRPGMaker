@@ -5,6 +5,28 @@
 
 <!-- releases -->
 
+## 0.238.0 — 2026-10-16
+
+### 기능
+
+- **ai** — monster-collect genre lock covers faces, monster battlers, trainer art and battle backdrops (#2688) (`515e4be`)
+- **world-ui** — compact codex — property rail replaced by chip bar, one-line stats (2/2) (#2686) (`83f47a9`)
+- **ai-settings** — image section as two use-cards (picture / pixel), details folded (#2685) (`3b9174a`)
+- **ai** — HM obstacle detour check + span/fullWidth, define_monster_families ability/ids, scene-test HM prerequisites (#2681) (`76c3dc1`)
+- **ai** — monster-game guidance, routing and find_tools aliases for battle-depth features (#2678) (`058ca94`)
+- **romance** — 2nd repair - multi-person loop, deadline-ending autoplay in qa:game check, social NPC defaults (#2677) (`5d130eb`)
+- **romance** — campus-spring rooftop sunset as the romance default title (candidate C) (#2676) (`ec568d8`)
+- **genre-lock** — lock character chips to the monster family + thin genre marker (#2683) (`eb86e6e`)
+- **charset** — install pick-6 adopted 8 CT/FF6-style hero chips as bundled sheet Heroes1 (+ charset-actor Argon part-edit harness) (#2682) (`74aa0d0`)
+- **genre-lock** — monster-collect lock is the default for projects that start as monster collection (#2675) (`b02bbf7`)
+- **ai** — route image purposes per 2026-10-16 decisions; single-shot pixel art by the pixel text model (#2674) (`ea393a5`)
+
+### 수정
+
+- **ci** — clear the genre-lock typecheck failures (`623835e`)
+- **monster** — 3-gym champion balance + fishing monster encounters (poke audit #7, #9) (#2684) (`5671405`)
+- **ai** — narrow the dot-text surface when resolving an image route (`c7bf93c`)
+
 ## 0.237.1 — 2026-10-16
 
 ### 수정
