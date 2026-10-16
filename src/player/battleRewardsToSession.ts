@@ -11,6 +11,7 @@ import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import { monsterCampaign, recordMonsterSeen, recordMonsterCaught, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } from "@/project/monsterCollection";
+import { addMonsterEvs, monsterStatRulesOf } from "@/project/monsterStatRules";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -114,6 +115,14 @@ export function applyBattleRewardsToSession(
     : snapshotInstanceIds.length > 0
       ? snapshotInstanceIds
       : undefined;
+  // 노력치(옵트인 system.monsterStatRules.evs): 승리한 참전 몬스터가 쓰러뜨린 적 종의 evYield 를 받는다. 경험치보다 먼저 쌓아 레벨업 때 새 능력치에 반영된다.
+  if (outcome.monsterPartyMode === true && outcome.result === "victory" && outcome.rewards.monsterEvGain && monsterStatRulesOf(project).evs) {
+    const gainers = (participantInstanceIds ?? session.monsterParty).filter((id) => session.monsterInstances[id] !== undefined);
+    for (const id of gainers) {
+      const instance = session.monsterInstances[id]!;
+      session.monsterInstances[id] = { ...instance, evs: addMonsterEvs(instance.evs, outcome.rewards.monsterEvGain) };
+    }
+  }
   // 경험치 분배(system.rewardPolicy.expSplitAlive): 쓰러지지 않은 참전자만 총량을 나눠 받는다. 꺼져 있으면 plan 이 입력 그대로다.
   const aliveBattlerIds = new Set((outcome.actors ?? []).filter((actor) => actor.hp > 0).flatMap((actor) => [actor.recordId, ...(actor.monsterInstanceId ? [actor.monsterInstanceId] : [])]));
   const expPlan = outcome.monsterPartyMode === true

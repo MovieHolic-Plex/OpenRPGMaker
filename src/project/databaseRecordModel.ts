@@ -340,6 +340,13 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
   if (companions) records.companions = companions;
   records.rewardPolicy = normalizeRewardPolicy(system.rewardPolicy);
+  // 능력치 심화(성격·노력치). 켠 축만 저장한다 — 둘 다 꺼지면 필드를 두지 않아 기존 프로젝트의 저장 바이트가 그대로다.
+  if (system.monsterStatRules && (system.monsterStatRules.natures === true || system.monsterStatRules.evs === true)) {
+    records.monsterStatRules = {
+      ...(system.monsterStatRules.natures === true ? { natures: true } : {}),
+      ...(system.monsterStatRules.evs === true ? { evs: true } : {}),
+    };
+  }
   if (typeof system.captureShakesVariableId === "string" && system.captureShakesVariableId.trim()) {
     records.captureShakesVariableId = system.captureShakesVariableId.trim();
   }

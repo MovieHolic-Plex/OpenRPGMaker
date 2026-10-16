@@ -28,6 +28,7 @@ const configureMonsterSystem: ToolDefinition = {
       shinyRate: { type: 'integer', description: '색이 다른 개체가 나올 확률 1/N (N = 2~65536, 예: 4096). 0 이면 끈다(나오지 않음). 생략하면 기존 값을 둔다. 받는 순간 개체 번호에서 결정적으로 정해지며 메뉴에서 ★ 로 표시된다.' },
       escapeGraceSteps: { type: 'integer', description: '도망에 성공한 뒤 야생 조우가 나오지 않는 걸음 수(0~99, 0 = 끔). 생략하면 기존 값을 두고, 값이 없으면 몬스터 파티 게임은 기본 4걸음이다.' },
       boxNames: { type: 'array', items: { type: 'string' }, description: '보관함(PC) 상자 이름 — 첫 상자부터 순서대로(최대 8글자, 빈 문자열 = 「상자 N」 그대로). 비운 배열 [] 이면 모두 기본 이름. 상자는 최소 8개, 보관 수가 늘면 자동으로 늘어난다. 화면은 place_monster_pc 로 놓은 PC 에서 열린다.' },
+      statRules: { type: 'object', description: '능력치 심화(옵트인, 생략 = 그대로). {natures?: boolean, evs?: boolean} 주지 않은 축은 현재 값을 유지한다. natures = 새로 얻는 몬스터마다 성격(공격·방어·특공·속도 중 하나 +10% 하나 −10%, 요약 화면에 「성격」 줄), evs = 승리하면 쓰러뜨린 적 종의 evYield(define_monster_species)가 참전 몬스터에게 쌓여 능력치 +floor(EV/4)(한 종목 255·합 510). 둘 다 false 면 규칙 필드를 지운다.', properties: { natures: { type: 'boolean' }, evs: { type: 'boolean' } }, additionalProperties: false },
       captureShakesVariableId: { type: 'string', description: '포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 담을 변수 id(create_variable 로 먼저 만든다). 이벤트(전투 뒤 분기)가 읽어 「아깝다!」 같은 반응을 만든다. 빈 문자열이면 기록을 끈다. 화면 연출은 바뀌지 않는다.' },
     },
     required: ["enabled"],
@@ -71,6 +72,17 @@ const configureMonsterSystem: ToolDefinition = {
       if (!Array.isArray(args.boxNames) || args.boxNames.some((name) => typeof name !== 'string')) throw new ToolError('boxNames 는 문자열 배열입니다. 예: ["들판","숲","물가"]', { code: 'invalid-args' });
       const names = normalizeMonsterBoxNames(args.boxNames);
       if (names) draft.system.monsterBoxNames = names; else delete draft.system.monsterBoxNames;
+    }
+    if (args.statRules !== undefined) {
+      const patch = args.statRules as { natures?: unknown; evs?: unknown } | null;
+      if (!patch || typeof patch !== 'object' || Array.isArray(patch)) throw new ToolError('statRules 는 {natures?: boolean, evs?: boolean} 객체여야 합니다.', { code: 'invalid-args' });
+      for (const key of ['natures', 'evs'] as const) {
+        if (patch[key] !== undefined && typeof patch[key] !== 'boolean') throw new ToolError(`statRules.${key} 는 true/false 여야 합니다.`, { code: 'invalid-args' });
+      }
+      const natures = typeof patch.natures === 'boolean' ? patch.natures : draft.system.monsterStatRules?.natures === true;
+      const evs = typeof patch.evs === 'boolean' ? patch.evs : draft.system.monsterStatRules?.evs === true;
+      if (natures || evs) draft.system.monsterStatRules = { ...(natures ? { natures: true } : {}), ...(evs ? { evs: true } : {}) };
+      else delete draft.system.monsterStatRules;
     }
     if (args.captureShakesVariableId !== undefined) {
       const variableId = typeof args.captureShakesVariableId === 'string' ? args.captureShakesVariableId.trim() : '';

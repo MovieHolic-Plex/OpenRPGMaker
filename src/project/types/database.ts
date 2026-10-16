@@ -870,6 +870,10 @@ export interface MonsterSpeciesRecord {
   genderRatio?: number;
   /** 특성(선택). 생략 = 특성 없음(기존 동작). gen1 전투 모델에서만 적용된다. */
   ability?: MonsterAbility;
+  /**
+   * 노력치 보상(선택, system.monsterStatRules.evs 일 때만): 이 종을 쓰러뜨리면 승리한 참전 몬스터가 받는 노력치. 종목당 0~3, 합계 3 이하. 생략 = 없음.
+   */
+  evYield?: { hp?: number; atk?: number; def?: number; spd?: number };
 }
 
 export interface CropStageRecord {
@@ -1998,6 +2002,11 @@ export interface SystemRecords {
   escapeGraceSteps?: number;
   /** 색이 다른 개체 확률 1/N(2~65536). 생략 = 나오지 않음. */
   shinyRate?: number;
+  /**
+   * 몬스터 능력치 심화(옵트인): natures = 성격(공격·방어·특공·속도 중 하나 +10%, 하나 −10%), evs = 노력치(승리 때 종의 evYield 만큼 쌓여 능력치에 +floor(EV/4)).
+   * 생략 = 둘 다 꺼짐(기존 능력치 공식·저장 바이트 그대로). project/monsterStatRules.ts.
+   */
+  monsterStatRules?: { natures?: boolean; evs?: boolean };
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
   /** Opt-in life-sim energy pool. */
   energy?: EnergySystemConfig;

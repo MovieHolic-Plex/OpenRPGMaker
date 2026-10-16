@@ -74,6 +74,8 @@ import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1Ty
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
+import { monsterEvYieldOf, monsterStatRulesOf } from "@/project/monsterStatRules";
+import type { MonsterInstanceEvs } from "@/project/session";
 import {
   applyStateEffects,
   agilityMultiplierForStates,
@@ -553,6 +555,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     enemyLevel?: number;
     levelUps: BattleLevelUpResult[];
     monsterLevelUps: MonsterLevelUpPreview[];
+    monsterEvGain?: Partial<MonsterInstanceEvs>;
     tp?: number;
     ap?: number;
     rageEnemyIds?: string[];
@@ -2384,7 +2387,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ...(usePartyMonsters && options.partyMonsters?.length ? {
           monsterCollection: {
             instances: Object.fromEntries(options.partyMonsters.map(instance => [instance.instanceId, {
-              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp, ...(instance.ivs ? { ivs: instance.ivs } : {}),
+              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp, ...(instance.ivs ? { ivs: instance.ivs } : {}), ...(instance.nature ? { nature: instance.nature } : {}), ...(instance.evs ? { evs: instance.evs } : {}),
             }])),
           },
         } : {}),
@@ -4965,6 +4968,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     rewards.levelUps = usePartyMonsters ? [] : computeLevelUpPreview(collected.exp, collected.enemyLevel);
     rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
+    // 노력치(옵트인): 쓰러뜨린 적 종의 evYield 합. 규칙이 꺼져 있거나 얻을 것이 없으면 필드를 두지 않는다(스냅샷 모양 그대로).
+    if (usePartyMonsters && monsterStatRulesOf(options.project).evs) {
+      const gain = monsterEvYieldOf(enemies.filter((enemy) => !enemy.hidden && enemy.captured !== true && enemy.hp <= 0).map((enemy) => monsterSpeciesForEnemy(options.project, options.project.database.enemies.find((record) => record.id === enemy.recordId))));
+      if (gain) rewards.monsterEvGain = gain;
+    }
     if (collected.tp && !usePartyMonsters) {
       rewards.tp = collected.tp;
       const techLearned = computeTechLearnedPreview(collected.tp, rewards.levelUps);

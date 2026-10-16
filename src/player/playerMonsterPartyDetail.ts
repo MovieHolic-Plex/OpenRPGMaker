@@ -5,6 +5,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { captureConditionLabel } from "@/battle/captureBalls";
 import { heldEffectText } from "@/battle/heldItems";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
+import { monsterNatureById, monsterNatureEffectText, monsterStatRulesOf } from "@/project/monsterStatRules";
 import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterMenuIconResourceId, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 import { MONSTER_SUMMARY_PAGES, MONSTER_SUMMARY_PAGE_LABEL, nextMonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
@@ -69,6 +70,14 @@ function caughtBallEntries(options: StatusMenuDetailOptions, instanceId: string)
   }];
 }
 
+/** 「성격」 줄 — system.monsterStatRules.natures 가 켜진 프로젝트에서만. 올리고 내리는 능력치를 같이 보인다. */
+function natureEntries(options: StatusMenuDetailOptions, instanceId: string): StatusMenuDetailEntry[] {
+  if (!monsterStatRulesOf(options.project).natures) return [];
+  const nature = monsterNatureById(options.session.monsterInstances[instanceId]?.nature);
+  if (!nature) return [];
+  return [{ label: "성격", value: nature.name, description: monsterNatureEffectText(nature), testId: `status-menu-monster-nature-${instanceId}`, onActivate: readOnly }];
+}
+
 /** 「지닌 도구」 줄 — 지닌 도구와 효과를 보이고, 고르면(파티 몬스터만) 가방으로 되돌린다. */
 function heldItemEntry(options: StatusMenuDetailOptions, instanceId: string): StatusMenuDetailEntry {
   const held = options.session.monsterInstances[instanceId]?.heldItemId;
@@ -110,6 +119,8 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
     ...(showGenderRow
       ? [infoRow(paged, { label: "성별", value: monsterGenderLabel(raw), testId: "status-menu-monster-gender", attributes: { "data-summary-half": "true" } })]
       : [infoRow(paged, { label: "상태", value: entry.stateNames.join(" · ") || "정상", attributes: { "data-summary-half": "true" } })]),
+    // 성격은 특성 줄처럼 커서가 멈추고, 올리고 내리는 능력치는 아래 안내 창이 읽어 준다(반줄에 넣으면 설명이 다른 줄 위로 겹친다).
+    ...natureEntries(options, raw.instanceId),
     ...caughtBallEntries(options, raw.instanceId).map((row) => infoRow(paged, row)),
     // 특성은 효과 설명이 길어 줄 안에 못 담는다 — 커서가 멈추게 두고 설명은 아래 안내 창이 읽어 준다.
     ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),

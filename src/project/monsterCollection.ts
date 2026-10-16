@@ -18,7 +18,8 @@ import type {
   MonsterSpeciesRecord,
   Project,
 } from "@/project/types";
-import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceEvs, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import { addMonsterEvs, clampMonsterEvs, monsterNatureById, monsterStatRulesOf, natureIdFromSeed, type MonsterNatureStat } from "@/project/monsterStatRules";
 import { recordMonsterCaught } from "@/project/monsterJournal";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { transitionItemState } from "@/project/itemTransitions";
@@ -32,6 +33,8 @@ export type GiveMonsterInput = {
   readonly nickname?: string;
   readonly exp?: number;
   readonly ivs?: MonsterInstanceIvs;
+  /** 성격 id(monsterStatRules). system.monsterStatRules.natures 일 때만 쓰인다. */
+  readonly nature?: string;
   readonly friendship?: number;
   readonly caughtAt?: MonsterCaughtAt;
   readonly currentHp?: number;
@@ -109,6 +112,7 @@ export function normalizeMonsterSpeciesRecord(
   const evolutions = normalizeEvolutions(record.evolutions);
   const machineSkillIds = uniqueSkillIds((Array.isArray(record.machineSkillIds) ? record.machineSkillIds : []).filter((id): id is SkillId => typeof id === "string" && id.trim() !== "").map((id) => id.trim() as SkillId));
   const ability = normalizeMonsterAbility(record.ability);
+  const evYield = normalizeEvYield(record.evYield);
   return {
     id: record.id,
     name: textOrDefault(record.name, "몬스터"),
@@ -121,9 +125,23 @@ export function normalizeMonsterSpeciesRecord(
     machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
     ...(ability ? { ability } : {}),
+    ...(evYield ? { evYield } : {}),
     ...(typeof record.dexNote === "string" && record.dexNote.trim() ? { dexNote: record.dexNote.trim().slice(0, 200) } : {}),
     ...(normalizeGenderRatio(record.genderRatio) !== undefined ? { genderRatio: normalizeGenderRatio(record.genderRatio) } : {}),
   };
+}
+
+/** 종목당 0~3, 합계 3 이하로 자른다. 전부 0 이면 필드를 두지 않는다(저장 바이트 그대로). */
+function normalizeEvYield(value: MonsterSpeciesRecord["evYield"]): MonsterSpeciesRecord["evYield"] {
+  if (!value || typeof value !== "object") return undefined;
+  const out: { hp?: number; atk?: number; def?: number; spd?: number } = {};
+  let left = 3;
+  for (const key of ["hp", "atk", "def", "spd"] as const) {
+    const raw = value[key];
+    const amount = typeof raw === "number" && Number.isFinite(raw) ? Math.max(0, Math.min(3, Math.trunc(raw), left)) : 0;
+    if (amount > 0) { out[key] = amount; left -= amount; }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 export type CaptureModel = "rm2k3" | "gen1";
@@ -253,6 +271,8 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     // at their level's floor; explicit values (including zero) remain authored.
     exp: Math.max(0, Math.trunc(input.exp ?? totalExpForLevel(species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, level))),
     ivs: input.ivs ?? deterministicMonsterIvs(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
+    // 성격(옵트인): 인스턴스 id 가 같으면 같은 성격. 규칙이 꺼진 프로젝트는 필드를 두지 않는다(저장 바이트 그대로).
+    ...(monsterStatRulesOf(project).natures ? { nature: monsterNatureById(input.nature) ? input.nature : natureIdFromSeed(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}:nature`) } : {}),
     friendship: clampInteger(input.friendship ?? 70, 0, 255),
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
     currentHp: input.currentHp,
@@ -837,33 +857,57 @@ export interface MonsterBattleStats {
   readonly agility: number;
 }
 
-// 포켓몬 유사 스탯 공식(EV 없음, IV 0~15):
-//   HP     = floor((2*base + iv) * level / 100) + level + 10
-//   기타   = floor((2*base + iv) * level / 100) + 5
-// MP는 원작에 대응이 없어 base를 레벨로 완만 스케일한다. mind는 IV가 없어 iv=0.
+// 포켓몬 유사 스탯 공식(IV 0~15, EV·성격은 옵트인):
+//   HP     = floor((2*base + iv + floor(ev/4)) * level / 100) + level + 10
+//   기타   = floor(floor((2*base + iv + floor(ev/4)) * level / 100) + 5) * 성격 보정(0.9/1/1.1))
+// EV·성격(extras)을 안 주면(기본) 예전 식 그대로다. MP는 원작에 대응이 없어 base를 레벨로 완만 스케일한다. mind는 IV가 없어 iv=0.
+export type MonsterStatExtras = {
+  readonly nature?: string;
+  readonly evs?: Partial<MonsterInstanceEvs>;
+};
+
 export function monsterBattleStatsForSpecies(
   species: MonsterSpeciesRecord | undefined,
   level: number,
-  ivs: MonsterInstance["ivs"]
+  ivs: MonsterInstance["ivs"],
+  extras?: MonsterStatExtras
 ): MonsterBattleStats {
   const base = species?.baseStats;
   const lv = clampInteger(level, 1, ACTOR_LEVEL_MAX);
-  const other = (statBase: number, iv: number): number =>
-    Math.max(1, Math.floor((2 * statBase + iv) * lv / 100) + 5);
-  const hp = Math.floor((2 * (base?.maxHp ?? 1) + (ivs?.hp ?? 0)) * lv / 100) + lv + 10;
+  const nature = monsterNatureById(extras?.nature);
+  const evs = extras?.evs ? clampMonsterEvs(extras.evs) : undefined;
+  // 성격 ±10%: 능력치가 작은 게임(한 자리 능력치)에서도 보이도록 최소 ±1 은 움직인다. 두 자리 이상에서는 floor(raw*1.1)/floor(raw*0.9)와 같다.
+  const natured = (raw: number, stat: MonsterNatureStat): number => {
+    if (nature?.up === stat) return Math.max(Math.floor(raw * 1.1), raw + 1);
+    if (nature?.down === stat) return Math.max(1, Math.min(Math.floor(raw * 0.9), raw - 1));
+    return raw;
+  };
+  const other = (statBase: number, iv: number, ev: number, stat: MonsterNatureStat): number => {
+    const raw = Math.floor((2 * statBase + iv + Math.floor(ev / 4)) * lv / 100) + 5;
+    return Math.max(1, natured(raw, stat));
+  };
+  const hp = Math.floor((2 * (base?.maxHp ?? 1) + (ivs?.hp ?? 0) + Math.floor((evs?.hp ?? 0) / 4)) * lv / 100) + lv + 10;
   return {
     maxHp: Math.max(1, hp),
     maxMp: Math.max(0, Math.floor((base?.maxMp ?? 0) * (1 + lv / 50))),
-    attack: other(base?.attack ?? 1, ivs?.atk ?? 0),
-    defense: other(base?.defense ?? 1, ivs?.def ?? 0),
-    mind: other(base?.mind ?? 1, 0),
-    agility: other(base?.agility ?? 1, ivs?.spd ?? 0),
+    attack: other(base?.attack ?? 1, ivs?.atk ?? 0, evs?.atk ?? 0, "attack"),
+    defense: other(base?.defense ?? 1, ivs?.def ?? 0, evs?.def ?? 0, "defense"),
+    mind: other(base?.mind ?? 1, 0, 0, "mind"),
+    agility: other(base?.agility ?? 1, ivs?.spd ?? 0, evs?.spd ?? 0, "agility"),
   };
+}
+
+/** 프로젝트 규칙이 켜져 있을 때만 인스턴스의 성격·노력치를 공식에 넘긴다(꺼져 있으면 undefined = 예전 식). */
+export function monsterStatExtrasFor(project: Pick<Project, "system">, instance: Pick<MonsterInstance, "nature" | "evs"> | undefined): MonsterStatExtras | undefined {
+  if (!instance) return undefined;
+  const rules = monsterStatRulesOf(project);
+  if (!rules.natures && !rules.evs) return undefined;
+  return { ...(rules.natures && instance.nature ? { nature: instance.nature } : {}), ...(rules.evs && instance.evs ? { evs: instance.evs } : {}) };
 }
 
 /** 인스턴스의 전투 유효 스탯(종족+레벨+IV). 전투 배틀러 생성에 사용. */
 export function monsterBattleStats(project: Project, instance: MonsterInstance): MonsterBattleStats {
-  return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs);
+  return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs, monsterStatExtrasFor(project, instance));
 }
 
 /**
@@ -877,8 +921,8 @@ export function monsterStatAtLevel(base: number, iv: number, level: number, _gro
   return Math.max(1, Math.floor((2 * base + iv) * lv / 100) + 5);
 }
 
-function monsterMaxHpFor(_project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
-  return monsterBattleStatsForSpecies(species, instance.level, instance.ivs).maxHp;
+function monsterMaxHpFor(project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
+  return monsterBattleStatsForSpecies(species, instance.level, instance.ivs, monsterStatExtrasFor(project, instance)).maxHp;
 }
 
 function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {

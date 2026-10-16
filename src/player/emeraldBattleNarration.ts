@@ -1,6 +1,6 @@
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { MONSTER_PARTY_MAX, monsterBattleStatsForSpecies, monsterSpeciesById } from "@/project/monsterCollection";
+import { MONSTER_PARTY_MAX, monsterBattleStatsForSpecies, monsterSpeciesById, monsterStatExtrasFor } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { withJosa } from "@/util/josa";
@@ -133,8 +133,9 @@ function levelUpStatRows(snapshot: BattleSnapshot, levelUp: { readonly instanceI
   if (!instance) return [];
   const species = monsterSpeciesById(store.getCurrent(), instance.speciesId);
   if (!species) return [];
-  const before = monsterBattleStatsForSpecies(species, levelUp.fromLevel, instance.ivs);
-  const after = monsterBattleStatsForSpecies(species, levelUp.toLevel, instance.ivs);
+  const extras = monsterStatExtrasFor(store.getCurrent(), instance);
+  const before = monsterBattleStatsForSpecies(species, levelUp.fromLevel, instance.ivs, extras);
+  const after = monsterBattleStatsForSpecies(species, levelUp.toLevel, instance.ivs, extras);
   const defs: readonly [string, "maxHp" | "attack" | "defense" | "mind" | "agility"][] = [
     ["체력", "maxHp"], ["공격", "attack"], ["방어", "defense"], ["지능", "mind"], ["민첩", "agility"],
   ];

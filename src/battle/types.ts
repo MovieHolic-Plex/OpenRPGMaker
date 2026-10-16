@@ -20,7 +20,7 @@ import type {
 } from "@/project/types";
 import type { RelationshipState } from "@/project/relationshipState";
 import type { BattleResult, GameTime } from "@/project/gameTime";
-import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
+import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceEvs, MonsterInstanceIvs } from "@/project/session";
 import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
@@ -530,6 +530,8 @@ export interface BattleRewardsSnapshot {
   // 파티 몬스터(battleParty: "monsters") 경로의 레벨업 미리보기. levelUps 는 액터 전용이라
   // 몬스터가 싸운 전투는 성장 피드백이 화면에 전혀 나오지 않았다.
   readonly monsterLevelUps?: readonly MonsterLevelUpPreview[];
+  /** system.monsterStatRules.evs 일 때만: 쓰러뜨린 적 종들의 evYield 합(승리한 참전 몬스터 한 마리가 받는 노력치). 없으면 생략. */
+  readonly monsterEvGain?: Partial<MonsterInstanceEvs>;
   /** 기술 포인트(트룹 합계). 살아남은 파티원 전원이 받는다. 저작된 TP 가 없으면 생략. */
   readonly tp?: number;
   /** TP 로 새로 배우는 기술 미리보기(결과 화면용). 세션 적립은 battleRewardsToSession 이 같은 규칙으로 한다. */
@@ -550,7 +552,7 @@ export interface BattleScreenState {
 export interface BattleEventStateSnapshot {
   /** Read-only pre-reward party EXP, for the result gauge; never written back as a reward. */
   readonly monsterCollection?: {
-    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp" | "ivs">>>;
+    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp" | "ivs" | "nature" | "evs">>>;
   };
   /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
   readonly screen?: BattleScreenState;
