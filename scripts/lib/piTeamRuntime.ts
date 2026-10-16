@@ -33,6 +33,7 @@ import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCa
 import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
+import { jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
 import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
@@ -70,6 +71,18 @@ interface AgentProgress {
   toolCalls: number;
   toolErrors: number;
   lastLine: string;
+}
+
+/** 사용 한도·429 로 끊긴 오류인가(실제 Argon 시험에서 작업자가 429 로 죽은 채 팀이 끝났다). */
+export function isRateLimitMessage(message: string): boolean {
+  return /\b429\b|rate.?limit|too many requests|resource.?exhausted|quota|사용 한도|한도에 도달/iu.test(message);
+}
+
+/** 429 로 끊겼고, 같은 맵(없으면 프로젝트 공통)을 이후에 성공적으로 다시 맡기지도 않은 배정. outcomes 는 끝난 순서(Map 삽입 순서)다. */
+export function rateLimitedUnresolved(outcomes: ReadonlyMap<string, { readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly summary: string }>): { readonly agentId: string; readonly mapId: string | null; readonly summary: string }[] {
+  const all = [...outcomes.values()];
+  return all.filter((outcome, index) => !outcome.ok && isRateLimitMessage(outcome.summary)
+    && !all.slice(index + 1).some((other) => other.ok && other.mapId === outcome.mapId));
 }
 
 interface AgentOutcome {
@@ -156,6 +169,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let reviewedFirstScene: string | undefined;
   let firstBuildAssignments = 0;
   let segmentRejections = 0;
+  /** finish 가 429 로 끊긴 배정을 한 번 돌려보냈는지 — 두 번째 finish 는 남은 일을 보고에 적고 받는다. */
+  let rateLimitRejected = false;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -729,6 +744,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${segmentRejections}): ${romanceGaps.join(" / ")}` } });
             throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${romanceGaps.join(" / ")} — 호감에 따라 갈리는 엔딩은 set_deadline_ending 으로 만들 수 있습니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
           }
+          // JRPG 도 같은 방식 — 기본 제목·빈 시작 마을·부르지 않는 엔딩(jrpg-real-1 J04/J05)은 뼈대 엔딩 도달만으로 통과하던 구멍이다.
+          const jrpgGaps = jrpgCompletionGaps(working);
+          if (jrpgGaps.length) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `JRPG 마무리 미완(${segmentRejections}): ${jrpgGaps.join(" / ")}` } });
+            throw new Error(`JRPG 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${jrpgGaps.join(" / ")} — 고친 뒤 wait_agents 로 결과를 받고 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
         }
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
           throw new Error('현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요.');
@@ -737,11 +759,20 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           const progress = inspectGoalCampaign(working);
           if (progress.issues.length) throw new Error("장기 목표 미완료: " + progress.issues.join(" / ") + ". 부족한 장소와 콘텐츠를 제작한 뒤 다시 finish 하세요.");
         }
+        // 작업자가 한도(429)로 끊겼는데 같은 맵을 다시 맡기지 않았다면 그 일은 안 된 채로 남았다 — 한 번은 돌려보내 재배정·보고를 시킨다.
+        const cutOff = rateLimitedUnresolved(outcomes);
+        if (cutOff.length && !rateLimitRejected) {
+          rateLimitRejected = true;
+          throw new Error(`작업자 ${cutOff.length}명이 사용 한도(429)로 끊겨 일이 끝나지 않았습니다: ${cutOff.map((outcome) => `${outcome.agentId}(${outcome.mapId ?? "프로젝트 공통"}): ${outcome.summary.slice(0, 120)}`).join(" / ")}. 같은 맵에 assign_map_agent 로 남은 일을 다시 맡기고 wait_agents 로 받은 뒤 finish 하세요. 다시 맡길 수 없으면 한 번 더 finish 하면 남은 일을 보고에 적고 끝납니다.`);
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
         finishAccepted = true;
         if (seamErrors.length > 0) finished += `
 남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
+        if (cutOff.length) finished += `\n사용 한도(429)로 끊겨 끝내지 못한 배정 ${cutOff.length}건 — 남은 일: ${cutOff.map((outcome) => `${outcome.mapId ?? "프로젝트 공통"} (${outcome.agentId})`).join(", ")}. 다시 요청하면 이어서 만듭니다.`;
+        const stillGaps = [...(segmentGate ? jrpgCompletionGaps(working) : []), ...(segmentGate ? romanceCompletionGaps(working) : [])];
+        if (stillGaps.length) finished += `\n남은 마무리 항목: ${stillGaps.join(" / ")}`;
         const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
