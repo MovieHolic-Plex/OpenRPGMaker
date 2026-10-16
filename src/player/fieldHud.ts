@@ -6,7 +6,7 @@ import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
 import { drawHudWidget, hudNode } from "./fieldHudRender";
 export type { HudRuntimeContext } from "./fieldHudData";
-interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number }
+interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number; changedPending?: boolean }
 /** Same renderer for authoring preview and shipped player; input belongs to the editor only. */
 export class FieldHud {
   readonly root = hudNode("field-hud");
@@ -51,7 +51,9 @@ export class FieldHud {
       const mount = this.mounts.get(widget.id)!;
       const reading = readHudWidget(widget, project, session, context);
       const readingSignature = JSON.stringify(reading);
-      if (mount.readingSignature !== undefined && mount.readingSignature !== readingSignature) mount.changedAt = now;
+      if (mount.readingSignature !== undefined && mount.readingSignature !== readingSignature) { mount.changedAt = now; mount.changedPending = widget.condition === "changed"; }
+      // 대화·메뉴가 HUD 를 가리는 동안 바뀐 값은 다시 보일 때부터 3초를 센다(말 걸기 직후의 호감 변화를 놓치지 않게).
+      if (mount.changedPending && this.root.offsetParent !== null) { mount.changedAt = now; mount.changedPending = false; }
       mount.readingSignature = readingSignature;
       const condition = widget.condition === "always" ||
         (widget.condition === "damaged" && reading.value < reading.max) ||

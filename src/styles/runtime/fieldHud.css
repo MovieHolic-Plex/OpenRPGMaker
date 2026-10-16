@@ -24,6 +24,8 @@
 .hud-heart-fill { height:100%; background:var(--hud-accent); }
 .hud-widget[data-kind="clock"] { text-align:right; gap:4px; }
 .hud-date { font-size:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hud-widget[data-kind="clock"][data-shape="number"] { flex-direction:row; align-items:center; justify-content:flex-end; gap:6px; padding:2px 6px; }
+.field-hud[data-font="pixel"] .hud-widget[data-kind="clock"][data-shape="number"] .hud-time { font-size:11px; }
 .hud-time { font-size:15px; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:.3px; }
 .hud-text { font-size:12px; line-height:1.15; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hud-widget[data-kind="text"] { flex-direction:row; align-items:center; justify-content:space-between; gap:4px; }
