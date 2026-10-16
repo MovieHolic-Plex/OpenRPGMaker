@@ -1,6 +1,6 @@
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import { monsterBattleStatsForSpecies, monsterSpeciesById } from "@/project/monsterCollection";
+import { MONSTER_PARTY_MAX, monsterBattleStatsForSpecies, monsterSpeciesById } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { withJosa } from "@/util/josa";
@@ -135,9 +135,13 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
   if (snapshot.result !== "victory") return [];
   const rows: EmeraldResultRow[] = [];
   // 포획: 「신난다! ○○를 잡았다!」는 포획 연출이 말했다 — 결과 쪽은 새 동료 한 줄(경험치 0·상금 0 줄은 없다).
+  // 파티가 가득 차 있으면(전투에 나온 몬스터 + 대기 몬스터 = 파티) 새 동료는 보관함으로 간다 — giveMonster 의 규칙과 같다.
+  let partyCount = [...snapshot.actors, ...snapshot.reserveActors].filter((actor) => actor.monsterInstanceId).length;
   for (const caught of snapshot.capturedMonsters) {
     const name = project.database.monsterSpecies?.find((species) => species.id === caught.speciesId)?.name;
-    if (name) rows.push({ kind: "msg", label: `${withJosa(name, "은/는")} 새 동료가 되었다!`, value: "" });
+    if (!name) continue;
+    if (partyCount >= MONSTER_PARTY_MAX) rows.push({ kind: "msg", label: `${withJosa(name, "은/는")} 보관함으로 보내졌다!`, value: "" });
+    else { rows.push({ kind: "msg", label: `${withJosa(name, "은/는")} 새 동료가 되었다!`, value: "" }); partyCount += 1; }
   }
   const trainer = emeraldTrainerTroop(snapshot);
   if (trainer) rows.push({ kind: "msg", label: `${trainer.name}에게 이겼다!`, value: "" });

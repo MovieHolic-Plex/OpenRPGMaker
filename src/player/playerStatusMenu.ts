@@ -164,7 +164,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: !detail.layout?.startsWith("campaign-") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;

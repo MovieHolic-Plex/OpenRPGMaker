@@ -232,7 +232,7 @@ export function mapIdCreatedByCall(call: ProposedCall): string | null {
 }
 
 export function eventIdsCreatedByCall(call: ProposedCall): readonly string[] {
-  if (call.name === "place_npc" || call.name === "place_battle_blocker" || call.name === "place_field_enemy" || call.name === "place_trainer" || call.name === "place_monster_center" || call.name === "place_field_obstacle") {
+  if (call.name === "place_npc" || call.name === "place_battle_blocker" || call.name === "place_field_enemy" || call.name === "place_trainer" || call.name === "place_monster_center" || call.name === "place_monster_pc" || call.name === "place_field_obstacle") {
     const fromData = isRecord(call.result.data) && typeof call.result.data.eventId === "string" ? call.result.data.eventId : null;
     const fromArgs = typeof call.args.id === "string" ? call.args.id : null;
     return fromData ?? fromArgs ? [fromData ?? fromArgs ?? ""] : [];

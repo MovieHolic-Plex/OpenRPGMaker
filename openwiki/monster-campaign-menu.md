@@ -140,3 +140,12 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 **QA.** `node scripts/qa/runtime/monster-badge.mjs <project.json> [outDir]` (player.html 직접 스크립트; 크로미움이 백지면 `unshare -rn` 으로 감싼다).
 시작 → 교수 → 1관 관장 실제 입력 전투 → 연출 프레임 연속 캡처(`frames/`, `frames.json`) → ESC 메뉴 → 배지 화면. 디버그 쓰기는 SUMMARY 에 적힌다
 (맵 텔레포트·퍼즐 스위치·리더 레벨 ≥14). `BADGE_QA_MENU_ONLY=1` 은 연출을 건너뛰고 배지 스위치만 켜 배지 화면만 찍는다. 헤드리스(swiftshader)에서는 프레임이 초당 1~2장이라 떠오르는 구간은 1~2장만 잡힌다.
+
+## 보관함(PC) 상자 화면 (2026-10-16, poke-sys-collect)
+
+- 정본은 그대로 `session.monsterBox`(평평한 id 배열). 상자·칸은 `src/project/monsterBox.ts` 가 계산한다 — 30칸(6×5)·최소 8상자·넘치면 상자가 늘어난다(포획을 막지 않는다). 칸 번호는 개체의 선택 필드 `boxSlot`(없거나 겹치면 첫 빈 칸). 사용자가 한 칸이라도 옮기면 `placeBoxMonster` 가 전부 굳히고 빈 칸이면 이동·찬 칸이면 자리 바꿈.
+- 상자 이름 = 저작 `system.monsterBoxNames`(`configure_monster_system {boxNames}`; `databaseRecordModel` 화이트리스트·`shapeDatabaseFields` 검사 둘 다 필요). 비면 「상자 N」.
+- 화면: `playerMonsterBoxDetail.ts`(레이아웃 `campaign-box`, 항목 = 머리 ◀ 이름 ▶ 3개 + 30칸), 커서 규칙 `playerMonsterBoxGrid.ts`(순수), 컨트롤러 `boxGridActive`/`stepBox`. 다른 칸으로 옮기기(`startBoxMove`→`boxPlace`)·파티로 데려가기·놓아주기(2단계 확인, 지닌 도구는 가방으로, 도감 기록은 유지). 파티의 마지막 한 마리는 맡기지 않는다.
+- 필드 PC: 새 명령이 아니라 「메뉴 화면 열기」(`m2-078`) 에 `fields.screen='monster-box'`. `commandCatalog` 가 `openMenuScreen{screen}` 으로, `player.ts` 가 `statusMenu.openMonsterBox()`(단독 열기, `pcMode` — Esc 로 닫으면 이벤트 이어짐). 조수 도구 `place_monster_pc`(투명 이벤트, 이미 있는 컴퓨터 그림 위).
+- 파티가 가득 찬 뒤 포획하면 에메랄드 결과 문구에 「…는 보관함으로 보내졌다!」.
+- 한계: 비 에메랄드 스킨은 옛 평평한 목록. PC 그림은 새로 만들지 않았다. 증거 http://mdc-server:18301/poke-sys-collect-1.html. 단위 시험 `test/monsterCollectBox.test.ts` 는 작성만 했고 미실행.

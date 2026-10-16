@@ -44,6 +44,7 @@ import {
   type TimeSystemConfig,
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeMonsterBoxNames } from "@/project/monsterBox";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
@@ -345,6 +346,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (system.skillSystem !== undefined) records.skillSystem = { enabled: system.skillSystem.enabled === true };
   if (system.monsterCollection !== undefined) records.monsterCollection = system.monsterCollection === true;
   if (system.monsterCampaign) records.monsterCampaign = structuredClone(system.monsterCampaign);
+  // 보관함 상자 이름 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const boxNames = normalizeMonsterBoxNames(system.monsterBoxNames); if (boxNames) records.monsterBoxNames = boxNames; }
   if (fonts) records.fonts = fonts;
   if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
   if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;

@@ -11,13 +11,25 @@ export type MonsterCollectUi = {
   readonly swapSourceId?: string;
   /** 요약 화면의 쪽. 생략 = 모든 칸을 한 목록에(에메랄드 스킨이 아닌 화면의 기존 모양). */
   readonly summaryPage?: MonsterSummaryPage;
+  /** 보관함 화면에서 보고 있는 상자(0부터). 생략 = 0. */
+  readonly boxIndex?: number;
+  /** 「다른 칸으로 옮기기」 중 집어 든 보관함 몬스터. 있으면 다음 칸 선택이 그 몬스터를 놓는다. */
+  readonly boxMoveSourceId?: string;
+  /** 놓아주기 확인을 한 번 거친 몬스터(두 번째 선택에서 실제로 놓아준다). */
+  readonly releaseConfirmId?: string;
 };
 
 export type MonsterCollectAction =
   | { readonly kind: "startSwap"; readonly instanceId: string }
   | { readonly kind: "swap"; readonly sourceId: string; readonly targetId: string }
   | { readonly kind: "cancelSwap" }
-  | { readonly kind: "summaryPage"; readonly page: MonsterSummaryPage };
+  | { readonly kind: "summaryPage"; readonly page: MonsterSummaryPage }
+  | { readonly kind: "boxStep"; readonly delta: -1 | 1 }
+  | { readonly kind: "startBoxMove"; readonly instanceId: string }
+  | { readonly kind: "cancelBoxMove" }
+  | { readonly kind: "boxPlace"; readonly sourceId: string; readonly slot: number }
+  | { readonly kind: "releaseAsk"; readonly instanceId: string }
+  | { readonly kind: "release"; readonly instanceId: string };
 
 export const MONSTER_SUMMARY_PAGE_LABEL: Readonly<Record<MonsterSummaryPage, string>> = { stats: "능력치", moves: "기술", manage: "관리" };
 

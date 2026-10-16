@@ -81,7 +81,7 @@ export type StepResult =
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
-  | { kind: "openMenuScreen" }
+  | { kind: "openMenuScreen"; screen?: "monster-box" }
   | { kind: "openLoadMenu" }
   | {
       kind: "pathfindMove";

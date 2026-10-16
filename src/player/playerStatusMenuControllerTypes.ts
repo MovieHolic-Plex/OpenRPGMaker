@@ -21,6 +21,8 @@ export type PlayerStatusMenuController = {
   readonly reset: () => void;
   readonly renderMenu: (message?: string, selectedCommand?: StatusMenuCommandId) => HTMLElement | null;
   readonly openSaveMenu: () => void;
+  /** 이벤트의 「메뉴 화면 열기」(screen:monster-box)가 보관함(PC) 화면을 바로 연다. */
+  readonly openMonsterBox: () => void;
   /** Opens the life ledger on the recovery tab when session claims remain. */
   readonly openLifeRecoveryLedger: () => void;
   readonly toggleMenu: () => void;

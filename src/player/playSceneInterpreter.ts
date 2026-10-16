@@ -534,7 +534,7 @@ async function consumeBlockingStep(
       dialogue.hide();
       const session = scene.session;
       const callback: unknown = scene.game.registry.get(step.kind);
-      if (typeof callback === "function") await callback();
+      if (typeof callback === "function") await callback(step.kind === "openMenuScreen" ? step.screen : undefined);
       return scene.session === session ? resumeInterpreter(interpreter) : { kind: "done" };
     }
     case "spawnFieldEnemy":

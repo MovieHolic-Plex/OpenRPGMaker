@@ -520,7 +520,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         }
       });
       game.registry.set("openSaveMenu", () => openEventMenu(layout, statusMenu.openSaveMenu));
-      game.registry.set("openMenuScreen", () => openEventMenu(layout, () => {
+      game.registry.set("openMenuScreen", (screen?: string) => openEventMenu(layout, () => {
+        if (screen === "monster-box") { statusMenu.openMonsterBox(); return; }
         statusMenu.reset();
         statusMenu.renderMenu();
       }));

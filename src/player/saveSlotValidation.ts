@@ -219,6 +219,7 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
     if (instance.caughtBallId !== undefined && typeof instance.caughtBallId !== "string") return false;
+    if (instance.boxSlot !== undefined && !(Number.isInteger(instance.boxSlot) && (instance.boxSlot as number) >= 0)) return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);
   });
 }

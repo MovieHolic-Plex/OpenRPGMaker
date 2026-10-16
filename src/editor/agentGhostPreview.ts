@@ -328,6 +328,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "place_trainer":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_trainer", "시야선 트레이너 배치"));
       break;
+    case "place_monster_pc":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_monster_pc", "보관함 PC 배치"));
+      break;
     case "place_chest":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_chest", "보물상자 배치"));
       break;

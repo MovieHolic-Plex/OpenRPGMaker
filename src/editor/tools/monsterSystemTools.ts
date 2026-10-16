@@ -3,6 +3,7 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
 import { disableGenreLock, genreLockReleasedNotice } from "@/project/genreLock";
 import { enableGenreLockSettled } from "@/project/genreLockCharsets";
+import { normalizeMonsterBoxNames } from "@/project/monsterBox";
 
 // 몬스터 수집/포획 + 몬스터 전투 파티 모드를 켜고 끄는 저작 도구.
 // 두 플래그는 별개 축이다:
@@ -24,6 +25,7 @@ const configureMonsterSystem: ToolDefinition = {
       presentation: { type: "string", enum: ["preserve", "collector"], description: "생략/preserve는 기존 화면 설정 유지. collector는 몬스터 수집용 메뉴/HUD를 설정하고 미수정 기본 오프닝만 끈다." },
       rules: { type:'string', enum:['preserve','gen1'], description:'gen1은 몬스터 대치 전투 규칙과 화면을 함께 설정하고, 패배 규칙이 아직 없으면 포켓몬식 블랙아웃(마지막 회복 센터 귀환 + 소지금 절반)을 심는다. 생략/preserve는 기존 규칙 유지.' },
       escapeGraceSteps: { type: 'integer', description: '도망에 성공한 뒤 야생 조우가 나오지 않는 걸음 수(0~99, 0 = 끔). 생략하면 기존 값을 두고, 값이 없으면 몬스터 파티 게임은 기본 4걸음이다.' },
+      boxNames: { type: 'array', items: { type: 'string' }, description: '보관함(PC) 상자 이름 — 첫 상자부터 순서대로(최대 8글자, 빈 문자열 = 「상자 N」 그대로). 비운 배열 [] 이면 모두 기본 이름. 상자는 최소 8개, 보관 수가 늘면 자동으로 늘어난다. 화면은 place_monster_pc 로 놓은 PC 에서 열린다.' },
       captureShakesVariableId: { type: 'string', description: '포획 던지기마다 흔들린 횟수(0~3, 잡히면 4)를 담을 변수 id(create_variable 로 먼저 만든다). 이벤트(전투 뒤 분기)가 읽어 「아깝다!」 같은 반응을 만든다. 빈 문자열이면 기록을 끈다. 화면 연출은 바뀌지 않는다.' },
     },
     required: ["enabled"],
@@ -54,6 +56,11 @@ const configureMonsterSystem: ToolDefinition = {
     if (args.escapeGraceSteps !== undefined) {
       if (typeof args.escapeGraceSteps !== 'number' || !Number.isInteger(args.escapeGraceSteps) || args.escapeGraceSteps < 0 || args.escapeGraceSteps > 99) throw new ToolError('escapeGraceSteps 는 0~99 의 정수여야 합니다.', { code: 'invalid-args' });
       draft.system.escapeGraceSteps = args.escapeGraceSteps;
+    }
+    if (args.boxNames !== undefined) {
+      if (!Array.isArray(args.boxNames) || args.boxNames.some((name) => typeof name !== 'string')) throw new ToolError('boxNames 는 문자열 배열입니다. 예: ["들판","숲","물가"]', { code: 'invalid-args' });
+      const names = normalizeMonsterBoxNames(args.boxNames);
+      if (names) draft.system.monsterBoxNames = names; else delete draft.system.monsterBoxNames;
     }
     if (args.captureShakesVariableId !== undefined) {
       const variableId = typeof args.captureShakesVariableId === 'string' ? args.captureShakesVariableId.trim() : '';

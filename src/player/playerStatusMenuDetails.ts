@@ -4,6 +4,7 @@ import { roJosa, withJosa } from "@/util/josa";
 import { repelStepsLeft } from "@/project/encounterGuard";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
+import { monsterBoxDetail } from "@/player/playerMonsterBoxDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
 import { monsterCampaign, monsterDexSpeciesIds, monsterJournalEntry } from '@/project/monsterJournal';
@@ -795,8 +796,11 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ];
     }),
   ];
+  // 보관함(PC)은 에메랄드 스킨에서 상자 격자로 보인다. 요약이 열려 있으면 요약이 먼저다.
+  const boxScreen = isEmeraldMonsterStyle(options.project) && view === "box" && Boolean(options.onMonsterCollect);
   const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
   if (detail) return detail;
+  if (boxScreen) return monsterBoxDetail(options);
   if (isEmeraldMonsterStyle(options.project) && view === "party") {
     const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index): StatusMenuDetailEntry => {
       const raw = options.session.monsterInstances[ids[index] ?? ""];

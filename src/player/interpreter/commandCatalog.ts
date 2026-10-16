@@ -298,7 +298,8 @@ function executeM2Command(
     return pause("openSaveMenu", { kind: "openSaveMenu" });
   }
   if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("openMenuScreen", { kind: "openMenuScreen" });
+    // fields.screen 은 선택 — 'monster-box' 면 메뉴 대신 보관함(PC) 화면을 연다. 생략하면 이전과 같은 단계 모양.
+    return pause("openMenuScreen", { kind: "openMenuScreen", ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}) });
   }
   if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("openLoadMenu", { kind: "openLoadMenu" });
