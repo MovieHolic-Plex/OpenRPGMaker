@@ -116,7 +116,7 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {
-      showBattleAdmissionError(scene, error);
+      await showBattleAdmissionError(scene, error);
     }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {

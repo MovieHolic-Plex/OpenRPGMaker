@@ -9,7 +9,7 @@ import { createTerminalScene, type TerminalScene } from "@/player/terminalScene"
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { dialogueHost } from "@/player/playSceneDom";
+import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
@@ -42,12 +42,38 @@ export function clearRuntimeOverlay(scene: PlaySceneContext, testId: string): vo
   overlay.remove();
 }
 
-/** Mark only a recoverable empty-party admission error for later party restoration. */
-export function showBattleAdmissionError(scene: PlaySceneContext, error: unknown): void {
-  scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투를 시작할 수 없습니다. 전투 설정을 확인하세요.');
+/** 파티가 비어 싸울 수 없을 때 플레이어가 듣는 말 — 게임 대사창 문장(시스템 토스트가 아니다). */
+const EMPTY_PARTY_NOTICE = "몬스터가 한 마리도 없어서 승부할 수 없다.\n먼저 박사님께 스타터를 받아 오자.";
+
+/**
+ * 전투 입장 거부를 보여 준다. 몬스터 파티가 빈 경우는 어두운 시스템 토스트 대신 게임 대사창으로 **한 번** 말하고 닫는다(D30).
+ * 그 밖의 입장 오류(적 그룹 없음 등)는 저작 오류라 기존처럼 runtime-error 오버레이로 남긴다.
+ * 대사창을 기다리는 동안 호출부의 입력 잠금이 유지되므로, 닫힌 뒤에야 걷기·조사가 돌아온다.
+ */
+export async function showBattleAdmissionError(scene: PlaySceneContext, error: unknown): Promise<void> {
   if (error instanceof BattleAdmissionError && error.code === 'BATTLE_MONSTER_PARTY_EMPTY') {
+    const dialogue = dialogueUi(scene);
+    if (dialogue) {
+      try {
+        await dialogue.showText({
+          body: EMPTY_PARTY_NOTICE,
+          textContext: { session: scene.session, project: store.getCurrent() },
+          playerTileY: scene.tileY,
+          mapHeight: scene.map.height,
+        });
+      } catch (dialogueError) {
+        // 씬이 닫히거나 교체되며 대사가 취소된 경우 — 조용히 끝낸다.
+        if (!(dialogueError instanceof DOMException && dialogueError.name === 'AbortError')) throw dialogueError;
+      } finally {
+        dialogue.close();
+      }
+      return;
+    }
+    scene.showRuntimeOverlay('runtime-error', error.message);
     dialogueHost(scene)?.querySelector<HTMLElement>("[data-testid='runtime-error']")?.setAttribute('data-recovery', 'monster-party');
+    return;
   }
+  scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투를 시작할 수 없습니다. 전투 설정을 확인하세요.');
 }
 
 /** A rejected empty-party battle is recoverable; keep other runtime errors intact. */
