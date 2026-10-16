@@ -13,6 +13,7 @@ import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool } from "@/project/genreLock";
 import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
+import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -193,10 +194,30 @@ function rejectGenreLockCharsets(ctx: ToolContext, tool: ToolDefinition, before:
   }
 }
 
-/** 조수 실행 중 장르 잠금이 캐릭터 칩을 잠그면 그림 검색·기본 선택을 허용 칩으로 좁힌다(동기 도구 실행 구간만). */
+/**
+ * 장르 잠금(얼굴·전투 그림): 조수·도구가 새로 고르거나 바꾼 얼굴·몬스터 전투 그림·트레이너 전투 그림·전투 배경이 허용 계열 밖이면, 가장 가까운 허용 그림이 있을 때는 거부하고
+ * 맞는 허용 그림이 없는 칸은 비워 「생성 대기」로 저장한다(경고로 알린다) — 판정은 enforceGenreLockVisuals 하나. 그림 없이 새로 생긴 트레이너 적 그룹에는 근거가 확실한 번들 그림을 채운다.
+ * 통째로 들이는 도구(placesCuratedCast·allowsTilesetChange·라이브러리 가져오기)는 막지 않고 개수만 경고한다. 이미 있던 그림·편집기 직접 편집(ctx.assistantRun 아님)은 건드리지 않는다.
+ */
+function rejectGenreLockVisuals(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return enforceGenreLockVisuals(before, draft, {
+      toolName: tool.name,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof GenreLockVisualError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/** 조수 실행 중 장르 잠금이 캐릭터 칩·얼굴·전투 그림을 잠그면 그림 검색·기본 선택을 허용 그림으로 좁힌다(동기 도구 실행 구간만). */
 function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T): T {
   const filter = ctx.assistantRun ? genreLockCharsetCatalogFilter(project) : undefined;
-  return filter ? withNpcGraphicCatalogFilter(filter, run) : run();
+  const visual = ctx.assistantRun ? genreLockVisualCatalogFilter(project) : undefined;
+  const inner = filter ? () => withNpcGraphicCatalogFilter(filter, run) : run;
+  return visual ? withGenreLockVisualCatalog(visual, inner) : inner();
 }
 
 /**
@@ -474,6 +495,8 @@ export function runToolDefinition(
       if (lockWarnings.length) exec = { ...exec, warnings: [...lockWarnings, ...(exec.warnings ?? [])] };
       const charsetWarnings = rejectGenreLockCharsets(ctx, tool, before, draft);
       if (charsetWarnings.length) exec = { ...exec, warnings: [...charsetWarnings, ...(exec.warnings ?? [])] };
+      const visualWarnings = rejectGenreLockVisuals(ctx, tool, before, draft);
+      if (visualWarnings.length) exec = { ...exec, warnings: [...visualWarnings, ...(exec.warnings ?? [])] };
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

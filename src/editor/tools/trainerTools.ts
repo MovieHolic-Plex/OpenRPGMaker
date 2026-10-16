@@ -23,7 +23,7 @@ const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1]
 const FACINGS = ['up', 'down', 'left', 'right'] as const;
 const EMOTES = ['exclamation', 'anger', 'question', 'none'] as const;
 const DEFAULT_SIGHT = 4;
-const KEYS = ['mapId', 'x', 'y', 'name', 'troopId', 'team', 'facing', 'sightRange', 'emote', 'approachSpeed', 'before', 'after', 'rematchLine', 'rematch', 'rewardGold', 'rewardItems', 'winSwitchId', 'canEscape', 'graphic', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'name', 'troopId', 'team', 'facing', 'sightRange', 'emote', 'approachSpeed', 'before', 'after', 'rematchLine', 'rematch', 'rewardGold', 'rewardItems', 'winSwitchId', 'canEscape', 'graphic', 'trainerSprite', 'id'] as const;
 
 const isDir = (value: unknown): value is Dir => typeof value === 'string' && Object.hasOwn(DIRS, value);
 
@@ -149,6 +149,10 @@ export const TRAINER_TOOLS: readonly ToolDefinition[] = [
       winSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 문 열림·진행 조건으로 쓸 수 있다' },
       canEscape: { type: 'boolean', description: '도망 허용(기본 false — 트레이너전은 도망 불가)' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략=사람(트레이너) 도트 자동 선택. 새 그림·생성 인물은 만들지 않는다' },
+      trainerSprite: { type: 'object', additionalProperties: false, description: '전투 화면의 트레이너 인물 그림(몬스터 대치 전투 소개·볼 던지기). 생략=연출 없이 시작(몬스터 수집 장르 잠금 중에는 이름·걷기 칩으로 근거가 확실한 번들 그림을 채운다)', properties: {
+        front: { type: 'string', description: '상대 앞모습: 번들 역할 id(boy·girl·fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder) 또는 업로드 그림 id' },
+        back: { type: 'string', description: '내 뒷모습: 번들 역할 id(hero_m·hero_f) 또는 업로드 그림 id(생략=hero_m)' },
+      }, required: ['front'] },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y']),
     invalidArgsHint: '대사는 before(전투 전)·after(승리 후), 보상은 rewardGold·rewardItems[{itemId,amount}], 파티는 troopId 또는 team[{speciesId,level}], 시선은 facing·sightRange. 그 밖의 칸은 받지 않습니다.',
@@ -215,6 +219,16 @@ export const TRAINER_TOOLS: readonly ToolDefinition[] = [
         if (troop.trainerBattle !== true) warnings.push(`적 그룹 '${troopId}' 는 trainerBattle:true 가 아니라 이 트레이너의 몬스터를 포획할 수 있습니다 — upsert_troop {id:'${troopId}', trainerBattle:true, uncapturable:true}.`);
       } else {
         troopId = buildTrainerTroop(draft, id, name, parseTeam(draft, args.team), warnings, args.rewardGold !== undefined);
+      }
+
+      if (args.trainerSprite !== undefined) {
+        const sprite = args.trainerSprite as Record<string, unknown> | null;
+        const front = sprite && typeof sprite === 'object' && !Array.isArray(sprite) && typeof sprite.front === 'string' ? sprite.front.trim() : '';
+        if (!sprite || !front) throw new ToolError('trainerSprite 는 {front, back?} 객체이고 front 가 필요합니다. 예: {"front":"boy","back":"hero_m"}', { code: 'invalid-args' });
+        for (const key of Object.keys(sprite)) if (key !== 'front' && key !== 'back') throw new ToolError(`trainerSprite.${key} 는 받지 않는 칸입니다 — front, back 만.`, { code: 'unknown-trainer-field' });
+        const back = typeof sprite.back === 'string' && sprite.back.trim() ? sprite.back.trim() : 'hero_m';
+        const troopRecord = draft.database.troops.find((entry) => entry.id === troopId);
+        if (troopRecord) troopRecord.trainerSprite = { front, back };
       }
 
       // 그림 — 사람(트레이너) 도트

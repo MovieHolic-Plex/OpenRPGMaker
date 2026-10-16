@@ -620,6 +620,12 @@ const troopRecordSchema = objectSchema({
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
   trainerBattle: booleanSchema(),
+  trainerSprite: objectSchema({
+    front: stringSchema("트레이너 전투 그림(상대 앞모습): 번들 역할 id(boy·girl·fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder) 또는 업로드 그림 id"),
+    back: stringSchema("내 뒷모습: 번들 역할 id(hero_m·hero_f) 또는 업로드 그림 id. 생략하면 기본 주인공 뒷모습"),
+    throw: stringSchema("상대 볼 던지기 시트(업로드 그림 id, 선택)"),
+    backThrow: stringSchema("내 볼 던지기 시트(업로드 그림 id, 선택)"),
+  }, "트레이너 전투 인물 그림(몬스터 대치 전투의 소개·볼 던지기 연출). trainerBattle:true 일 때만 쓰인다. 생략하면 연출 없이 시작한다 — 몬스터 수집 장르 잠금이 켜져 있으면 이름·걷기 칩으로 근거가 확실한 번들 그림을 채운다."),
   previewBackgroundResourceId: stringSchema(BATTLE_BACKDROP_ID_HINT),
   backdropAnimation: objectSchema({
     scrollX: { type: "number", minimum: -400, maximum: 400, description: "가로 스크롤 px/초(양수 = 오른쪽)" },
@@ -1577,7 +1583,7 @@ const upsertEnemy: ToolDefinition = {
     const warnings: string[] = [...repaired.notes];
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
-    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
+    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined, { pendingWhenLocked: true });
     // 몬스터 파티 게임: 플레이어 몬스터는 종족+레벨 공식으로 싸운다. 종이 있는 적도 같은 공식이어야 레벨이 곧 강함이다.
     // 2026-09-24 몬스터 수집 gen5: 모델이 적 stats 를 공식의 약 2배(Lv4 박쥐 HP 30·공 12 ↔ 공식 HP 15·공 8)로 적어
     // Lv5 스타터가 첫 동굴 박쥐에게 졌고, 보스 하한은 액터 파티(HP 514) 기준으로 관장 공격을 18→266 으로 올렸다.
@@ -1749,7 +1755,7 @@ const defineMonsterSpecies: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (abilityWarning) warnings.push(abilityWarning);
-    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
+    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined, { pendingWhenLocked: true });
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {
       summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,

@@ -39,6 +39,23 @@
 - **스키마 영향**: 엄격 검증(`shapeDatabaseFields`)에 `allowedCharsetFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다.**
 - **알려진 빈틈**: 번들에 포켓몬/GBA풍 **사람 트레이너 걷기 칩이 없다**(Scarloxy 사람 칩 10개뿐이라 캠페인 NPC 는 돌려 쓴다). 닌텐도 원작 파생 후보(`pokemon-character-casting`)는 공개 저장소에 커밋할 수 없다. `emeraldMonsterCast.THEME_CASTS` 는 비어 있다.
 - 테스트(미실행): `test/genreLockCharsets.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 26항목): `bun scripts/qa/monster-lock-charset-evidence.mts <out.json>`.
+
+### 얼굴·전투 그림(faceset·battler·트레이너·배경)도 같은 잠금 (2026-10-16)
+
+「몬스터 칩은 charset·faceset·battle 전부 락」 결정의 나머지 둘. 맵 칩셋(#2675)·걷기 칩(#2683)과 **같은 구조**(표 → 켤 때 프로젝트로 복사 → 조수 경로 diff 판정 → 가장 가까운 허용 대안)다.
+
+- **계열 분류** `src/project/visualFamily.ts` — 리소스 id 모양만 본다(무거운 번들 표를 끌어오지 않는다). 얼굴 `fantasy-people-face`·`fantasy-creature-face`·`scarloxy-face`·`oprn-creature-face`, 몬스터 전투 그림 `scarloxy-monster`·`harness-monster`·`generic-enemy`, 트레이너 `oprn-trainer`(`public/assets/battle-trainers/index.json` 14역할), 배경 `scarloxy-backdrop`·`emerald-terrain`·`oprn-scenery`·`pokemon-backdrop`·`rtp-backdrop`·`retired-backdrop`, 업로드·생성은 `uploaded`, 그 외 `other`. 전투 UI 스킨은 `skin:<id>`.
+- **표** `GENRE_LOCK_PRESETS[...].visuals?`(`GenreLockVisualDef`) — `monster-collect` 만 채움. 허용: 얼굴(scarloxy·oprn-creature·fantasy-creature·uploaded·other), 전투 그림(scarloxy-monster·harness-monster·uploaded·other), 트레이너(oprn-trainer·uploaded), 배경(scarloxy·emerald·oprn-scenery·pokemon·uploaded·other), 스킨(pokemon·retro2003). RTP 몬스터·동물 얼굴은 허용 RTP 생물 칩의 **짝 얼굴**이라 허용. **romance 는 `visuals` 가 없어 동작·저장 바이트가 그대로다.**
+- **저장 필드** `system.genreLock.allowedFaceFamilies`(목록)·`allowedBattleFamilies`(접두 `battler:`/`trainer:`/`backdrop:`/`skin:` 한 목록). 켤 때 표에서 복사, 필드 없는 옛 잠금은 표를 따르고 다시 켜면 채워진다. 기존 프로젝트·이미 칠한 그림은 안 건드린다. 기본 주인공(손대지 않은 것만)은 짝 얼굴(`generated-faceset-missing-scarloxy-00`)도 받는다.
+- **판정** `src/project/genreLockVisuals.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 얼굴(`actor.faceResourceId`·`changeFace`·이벤트/공용/전투 페이지 `face`·`characterAppearances[].face/bust/full`)·적/종 전투 그림(`enemy.monsterResourceId`·`species.graphic.monsterResourceId/backResourceId`)·`TroopRecord.trainerSprite`·전투 배경(`troop.previewBackgroundResourceId`·`map.battleBackground`·`terrain.battleBackgroundResourceId`·`backdropLayers`)·`battleUiStyle` 만 본다. toolRunner 가 걷기 칩 판정 다음에 `enforceGenreLockVisuals` 를 부른다(`ctx.assistantRun` 만, 손 편집은 안 막음, 통째 도구는 `lenient` 로 개수만 경고).
+- **거부 vs 생성 대기**: 허용 밖 그림인데 **가까운 허용 그림이 있으면** `GenreLockVisualError`(code `genre-lock`)로 거부하고 대안을 알린다(예: `generated-enemy-slime-01` → `scarloxy-monster-finiette`). **허용 그림이 아예 없으면 거부하지 않고** 그 칸을 비운 채 「생성 대기」 경고를 남긴다(얼굴 → `generate_character_appearance` 생성형 초상, 전투 그림·트레이너 → 사람이 고르는 `monster-collect-species`/`battle-trainer-sprites` 하네스). 그림을 지어내거나 닌텐도 원작 그림으로 때우지 않는다. 그림 생략 시 `ensureMonsterGraphic` 이 허용 계열에서 고르고(`pendingWhenLocked`: dbTools 의 `upsert_enemy`·`define_monster_species`), 없으면 비운다.
+- **트레이너 그림**: `upsert_troop` 스키마에 `trainerSprite{front,back?,throw?,backThrow?}` 를 열었고(전엔 조수가 못 정했다) `place_trainer` 에 `trainerSprite{front,back?}` 선택 인자를 더했다. 새 트레이너 전투(`trainerBattle`)에 그림이 없고 이름·걷기 칩이 번들 역할과 분명히 맞으면(소녀→girl 등, back 기본 hero_m) 채우고, 아니면 생성 대기. `mx_troop_*`(캠페인)는 필드 이벤트 걷기 칩에서 읽는 기존 규칙이라 건드리지 않는다.
+- **카탈로그**: 조수 실행 동안 `list_resources`(faceset·monster·backdrop)와 이름→그림 대응(`monsterGraphicAssignment`)이 허용 그림만 보인다(`withCharsetCatalog` 가 같이 설정). 사용자 손 경로는 전부 보인다.
+- **검사·표시**: `check_genre_lock` 이 `visuals{faceFamilies, battleFamilies, outsiders, pending}` 를 보고한다. DB 시스템 탭 배지에 요약. 프롬프트에는 「얼굴·전투 그림도 이 장르 계열만」 한 줄(`genreLockPromptNote`·`genreLockShortNote`).
+- **정책 충돌 없음**: 전투 UI 스킨은 지금 `pokemon`·`retro2003` 둘 다 허용이라 막을 게 없다(정면 스킨은 #1877 에서 삭제). 측면 전투 정책·gen1 스킨과 부딪히지 않는다.
+- **스키마 영향**: 엄격 검증에 `allowedFaceFamilies`·`allowedBattleFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다**(#2683 의 `allowedCharsetFamilies` 와 같다).
+- **알려진 빈틈**: `ActorRecord.battleCharacterResourceId`·`species.graphic.fieldGraphic` 은 잠그지 않았다. Scarloxy 흉상·전신은 없어 흉상·전신은 생성 대기뿐이다. 허용 몬스터 그림은 Scarloxy 19 + 하네스 15종(앞·뒤)·트레이너 앞모습 10역할이라 대부분 종·트레이너는 대기로 간다. 기본 DB 풀(배우·적)의 RTP 얼굴·일반 적 그림은 그대로다.
+- 테스트(미실행): `test/genreLockVisuals.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 35항목): `bun scripts/qa/monster-lock-visuals-evidence.mts <out.json>`.
 - 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
 
 ## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)

@@ -4,6 +4,7 @@
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
 import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
+import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
@@ -610,6 +611,13 @@ const listResources: ToolDefinition = {
         if (exactSheets.size) all = raw.filter(row => exactSheets.has(row.nativeGraphic.sprite.id));
         else all.push(...raw);
       }
+    }
+    // 장르 잠금(조수 실행 중): 얼굴·몬스터·전투 배경 검색은 허용 계열 그림만 보여 준다(허용 밖 그림은 목록에서 아예 빠진다).
+    const visualFilter = activeGenreLockVisualCatalog();
+    if (visualFilter) {
+      if (kind === "faceset") all = all.filter((entry) => visualFilter.face(entry.id));
+      else if (kind === "monster") all = all.filter((entry) => visualFilter.battler(entry.id));
+      else if (kind === "backdrop") all = all.filter((entry) => visualFilter.backdrop(entry.id.replace(/^backdrop:/u, "")));
     }
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined
