@@ -74,6 +74,16 @@ describe("build_hand_interior_room layout", () => {
     expect(again.ok, again.summary).toBe(true);
   });
 
+  it("layout 이면 floor·wall 을 안 줘도 방 견본의 바닥·벽면을 바탕으로 짓는다", () => {
+    const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", name: "집", layout: { program: "house-1f", seed: 2 } });
+    expect(r.ok, r.summary).toBe(true);
+  });
+
+  it("layout·rooms 없이 plan 만 주면서 floor·wall 이 없으면 거부한다", () => {
+    const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", plan: ["#####", "#...#", "#...#", "#...#", "##.##"] });
+    expect(r.ok).toBe(false);
+  });
+
   it("견본 가구가 거의 다 들어간다", () => {
     for (const seed of [2, 3, 4]) {
       const r = runTool(blank(), "build_hand_interior_room", { tileset: "jp_city", name: "집", floor: "flooring", wall: "cloth", layout: { program: "house-1f", seed } });

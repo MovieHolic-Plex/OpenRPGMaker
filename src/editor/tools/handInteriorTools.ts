@@ -537,7 +537,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         x: { type: "integer" }, y: { type: "integer" }, toMapId: { type: "string" }, toX: { type: "integer" }, toY: { type: "integer" }, direction: { type: "string", enum: ["up", "down", "left", "right"] },
       }, required: ["x", "y", "toMapId", "toX", "toY"], additionalProperties: false } },
     },
-    required: ["floor", "wall"],
+    // floor·wall 은 layout 없이 plan·rooms 로 직접 지을 때만 필수다 — 도구가 run() 에서 확인한다(layout 이면 방 견본이 정한다).
+    required: [],
     additionalProperties: false,
   },
   invalidArgsExample: { name: "빵집", plan: ["##########", "#....#####", "#....#####", "#....#####", "#........#", "#........#", "####.#####"], floor: "plank", wall: "plaster", objects: [{ id: "bread oven", x: 1, y: 3 }] },
@@ -573,6 +574,24 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false };
       const { layout: _l, ...rest } = args;
       args = { ...rest, rooms: c.rooms, connect: c.connect, exit: c.exit };
+    }
+    // floor·wall 은 방에 따로 없는 칸의 바탕이다. layout·rooms 면 방 견본/방 목록이 정하므로 안 줘도 된다(2026-10-16 실조수: program 만 줘도 필수였다) —
+    // 가장 많이 쓰인 방 바닥·벽면을 바탕으로 쓰고 알린다. plan 으로 직접 지을 때만 필수.
+    {
+      const bag = args as unknown as Record<string, unknown>;
+      const roomList = (Array.isArray(bag.rooms) ? bag.rooms : []) as ReadonlyArray<{ floor?: string; wall?: string }>;
+      const baseOf = (key: "floor" | "wall"): string | undefined => {
+        const counts = new Map<string, number>();
+        for (const room of roomList) { const id = room?.[key]; if (typeof id === "string" && id) counts.set(id, (counts.get(id) ?? 0) + 1); }
+        return [...counts].sort((x, y) => y[1] - x[1])[0]?.[0] ?? (roomList.length ? Object.keys(key === "floor" ? spec.floors : spec.walls)[0] : undefined);
+      };
+      for (const key of ["floor", "wall"] as const) {
+        if (typeof bag[key] === "string" && bag[key]) continue;
+        const base = baseOf(key);
+        if (!base) throw new ToolError("floor·wall(바탕 바닥·벽면 id)을 준다 — layout:{program|rooms} 이나 rooms 로 방 구성을 주면 생략해도 된다. id 는 list_hand_interior_parts 로 본다.", { code: "floor-wall-missing" });
+        bag[key] = base;
+        fitNotes.push(`${key} 를 안 줘서 방들의 ${key === "floor" ? "바닥" : "벽면"} "${base}" 을 바탕으로 썼다`);
+      }
     }
     // rooms(방 사각형 + 이을 쌍)면 평면·칸막이·문 틈·방별 바닥/벽면·문 기물을 계산해 plan 으로 바꾼다.
     let composed: ReturnType<typeof withComposedRooms>["composed"];
