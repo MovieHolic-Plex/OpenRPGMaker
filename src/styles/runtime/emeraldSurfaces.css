@@ -509,6 +509,12 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description { display: block; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description .status-menu-detail-copy { display: block; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description .status-menu-detail-description { display: block; white-space: normal; line-height: 20px; }
+/* 배지·목표 첫 줄(다음 목표): 설명이 두 줄이라 32px 행에 라벨과 겹쳐 잘렸다 — 행에는 라벨만 두고 설명은 아래 안내 창이 보여 준다.
+   안내 창도 두 줄이 들어가게 캠페인 화면에서만 글줄을 줄인다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail [data-testid="campaign-next-objective"] :is(.status-menu-detail-description, .status-menu-detail-value) { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:has(.campaign-menu-detail) .status-menu-message { font: 14px/18px var(--runtime-pixel-font); }
+/* 아직 못 받은 배지는 흐리게 — 받은 배지(아이콘 있음)가 한눈에 구분된다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail [data-badge-acquired="false"] :is(.status-menu-detail-label, .status-menu-detail-value) { opacity: 0.55; }
 /* Dialogue box width/height is measured before pagination; two Korean lines page safely. */
 .dialogue-scrim[data-monster-style="emerald"] { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {

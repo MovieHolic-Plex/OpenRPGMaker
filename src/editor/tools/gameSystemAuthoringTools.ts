@@ -5,6 +5,7 @@ import { FIELD_MENU_COMMANDS, collectorFieldMenu, validateFieldMenu, fieldMenu, 
 import { validateMonsterCampaign } from '@/project/io/shapeMonsterCampaign';
 import { monsterCampaign } from '@/project/monsterJournal';
 import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsistency';
+import { installBadgeCeremonies } from '@/project/monsterBadgeCeremony';
 import { resizeCampaignGyms } from '@/project/examples/monsterExpedition/resizeGyms';
 import { listStatusMenuCommandIds, listStatusMenuRailIds, statusMenuRailLabel } from '@/player/playerStatusMenuModel';
 import type { Project } from '@/project/types';
@@ -59,18 +60,20 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       dexRegisteredText:{type:'string',description:'새 종을 처음 잡았을 때 전투에 뜨는 도감 등록 문장. {name} 은 종 이름. 80자 이하. 빈 문자열이면 기본 문장(「{name}의 데이터가 도감에 등록되었다!」)으로 되돌린다.'},
       speciesIds:{type:'array',items:str},
       speciesNotes:{type:'array',items:{type:'object',additionalProperties:false,properties:{speciesId:str,note:str},required:['speciesId','note']}},
-      badges:{type:'array',items:{type:'object',additionalProperties:false,properties:{id:str,name:str,switchId:str,cityMapId:str},required:['id','name','switchId','cityMapId']}},
+      badges:{type:'array',items:{type:'object',additionalProperties:false,properties:{id:str,name:str,switchId:str,cityMapId:str,iconResourceId:{type:'string',description:'배지 아이콘(번들 아이콘·그림 리소스 id). 생략하면 배지 화면이 기본 배지 아이콘을 쓴다.'}},required:['id','name','switchId','cityMapId']}},
       locations:{type:'array',items:{type:'object',additionalProperties:false,properties:{mapId:str,name:str,x:{type:'number'},y:{type:'number'},kind:{type:'string',enum:['town','route','dungeon','league']}},required:['mapId','name','x','y','kind']}},
       objectives:{type:'array',items:{type:'object',additionalProperties:false,properties:{id:str,title:str,switchId:str,requiresSwitchId:str},required:['id','title','switchId']}},
     }},
     badgeCount:{type:'integer',minimum:0,maximum:8,description:'체육관(배지) 수를 이 수로 줄인다 — 정의뿐 아니라 관장 이벤트·잠금·서사도 함께. 늘리지는 못한다.'},
     allowShrink:{type:'boolean',description:'도감 종·배지·지도 위치·목표 수를 줄이는 변경을 허용한다(기본 거부).'},
+    badgeCeremony:{type:'object',additionalProperties:false,description:'체육관 관장 승리 분기에 「배지 획득」 연출(섬광→징글→배지가 떠올라 빛남→「○○를 받았다!」)을 심거나 걷는다. 배지 스위치를 켜는 setSwitch 바로 뒤에 들어가며 다시 부르면 갈아 끼운다(멱등). build_monster_game 으로 지은 관장은 이미 들어 있다.',properties:{badgeId:{type:'string',description:'이 배지만. 생략하면 모든 배지.'},remove:{type:'boolean',description:'연출만 걷어 낸다(스위치·보상은 그대로).'},line:{type:'string',description:'마지막 문장(기본 「○○를 받았다!」).'}}},
   },[]),(p,args)=>{
     const current=p.system.monsterCampaign;
     const raw=(args.definition??{}) as Record<string,unknown>;
     const allowShrink=args.allowShrink===true;
+    const ceremonyArg=args.badgeCeremony as {badgeId?:string;remove?:boolean;line?:string}|undefined;
     if(!current&&(args.badgeCount!==undefined||!Object.keys(raw).length))throw new ToolError('몬스터 캠페인 정의가 없습니다 — definition 에 id·name·speciesIds·badges·locations·objectives 를 모두 넣어 만드세요.',{code:'invalid-args'});
-    if(args.badgeCount===undefined&&!Object.keys(raw).length)throw new ToolError('바꿀 내용이 없습니다 — definition 또는 badgeCount 를 주세요.',{code:'invalid-args'});
+    if(args.badgeCount===undefined&&!Object.keys(raw).length&&!ceremonyArg)throw new ToolError('바꿀 내용이 없습니다 — definition·badgeCount·badgeCeremony 중 하나를 주세요.',{code:'invalid-args'});
     const before=checkMonsterCampaignDefinition(p).filter(f=>f.severity==='blocker').map(f=>f.code+f.message);
     const notice:string[]=[];
     try{
@@ -115,6 +118,10 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       if(next.plan||raw.badges!==undefined)next.plan={...(next.plan??{gyms:next.badges.length,species:next.speciesIds.length,maps:0,links:0}),gyms:next.badges.length};
       if(next.plan&&raw.speciesIds!==undefined)next.plan={...next.plan,species:Math.min(next.plan.species,next.speciesIds.length)};
       p.system.monsterCampaign=next;
+      if(ceremonyArg){
+        const r=installBadgeCeremonies(p,ceremonyArg);
+        notice.push(`배지 연출 ${r.installed.length?`심음(${r.installed.join('·')})`:''}${r.removed.length?`걷음(${r.removed.join('·')})`:''}${r.missing.length?` — 스위치를 켜는 관장 이벤트가 없어 못 심음(${r.missing.join('·')})`:''}`.trim());
+      }
       // 정의가 실제 지은 이벤트·도감과 어긋나는 새 문제를 만들었다면 거부한다(이미 있던 문제는 그대로 둔다).
       const introduced=checkMonsterCampaignDefinition(p).filter(f=>f.severity==='blocker'&&!before.includes(f.code+f.message));
       if(introduced.length)throw Error('정의가 실제로 지은 게임과 어긋납니다: '+introduced.map(f=>f.message).join(' / '));

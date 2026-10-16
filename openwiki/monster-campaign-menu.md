@@ -116,3 +116,27 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 - 진행 막대: 목록 머리 오른쪽 「N% 완성」+ 발견(연한)/포획(진한) 두 겹 막대(`detail.meter`).
 - 조수: `toolCapabilityIndex` 의 `monster-collection-ui` 레시피, find_tools 별칭 「도감」, 점검 `gameSystemAuthoringTools.issues` 가 도감 항목에 원정 정의 **또는** monsterCollection 을 요구.
 - 화면 증거 스크립트: `node scripts/qa/runtime/collect-menu.probe.mjs --stages dex` (`QA_AFTER=scripts/qa/runtime/collect-menu-dex.after.mjs` 로 쪽·야생 종, `QA_PROJECT_PATCH` 로 원정 정의 제거본). 원정 정의를 지울 땐 `meta.oprnCinematicTimelines.monsterCampaign` 캡슐도 같이 지워야 로드 때 되살아나지 않는다.
+
+## 배지 획득 연출과 배지 스위치 규칙 (2026-10-16)
+
+**스위치 규칙(진행 게이팅의 정본).** 배지 N 의 스위치 id 는 `mx_badge_N`(N 은 1부터)이고, 실제 id 의 정본은
+`system.monsterCampaign.badges[i].switchId` 다. 배지에 매달린 모든 것(문·길 잠금·NPC 대사·HM 장애물의 `requiresBadge`)은 이 스위치를 읽는다 —
+번호를 문자열로 지어내지 말고 캠페인 정의에서 읽어라. 스위치를 켜는 것은 관장전 승리 분기(`battle()` 의 승리 스위치)이고 연출은 켜지 않는다.
+
+**연출 레시피.** `src/project/monsterBadgeCeremony.ts` 의 `badgeAwardCommands()` 하나가 모양을 정한다:
+흰 섬광(`m2-047-flash-screen`) → 징글 ME(프로젝트 승리 ME) + 반짝 효과음 → 번들 아이콘(`cc0-jetrel-*`, 32px)을 그림 표시로 4배 키워 아래에서 떠오르게
++ 같은 그림을 더하기 합성으로 640% 깔아 빛나게(`mx_badge_halo`/`mx_badge_medal`) → 반짝임 파티클 → 「○○를 받았다!」 → 「배지 케이스에 N/M번째 배지가 채워졌다.」 → 그림 치우기.
+새 런타임 개념·새 도트는 없다 — 기존 이벤트 명령만 조립한 배열이다. 대사 상자는 `position:"bottom"` 으로 고정한다(자동이면 위로 올라가 배지를 덮는다).
+아이콘은 체육관 타입으로 고르며(`badgeIconResourceId(type)`), 캠페인 정의의 선택 필드 `badges[].iconResourceId` 에 저장돼 배지 화면이 받은 배지 앞에 같은 그림을 보여 준다
+(없으면 `cc0-jetrel-badge`). 기본값(필드 없음)에서는 직렬화에 나타나지 않는다. 참조 검사(`references.ts`)가 아이콘 id 가 실제 리소스인지 확인한다.
+
+**연결.** `build_monster_game`(world.ts 관장 승리 분기, 관마다 한 번) · 조수 `configure_monster_campaign {badgeCeremony:{badgeId?, remove?, line?}}`
+(= `installBadgeCeremonies`, 스위치 setSwitch 바로 뒤에 심고 다시 부르면 갈아 끼움; 스위치를 켜는 이벤트가 없으면 missing 으로 알림) ·
+`definition.badges[].iconResourceId`. 조수 색인은 `toolCapabilityIndex.ts` 의 `monster-badges`, find_tools 별칭은 「배지·뱃지·배지 연출」.
+
+**배지 화면(「배지·목표」).** 받은 배지 행은 아이콘이 붙고 못 받은 행은 흐리다. 첫 줄 「다음 목표」는 라벨만 보이고 설명은 아래 안내 창이 한 줄로 보여 준다
+(에메랄드 스킨 CSS: 설명이 32px 행에서 라벨과 겹치던 것을 고쳤다).
+
+**QA.** `node scripts/qa/runtime/monster-badge.mjs <project.json> [outDir]` (player.html 직접 스크립트; 크로미움이 백지면 `unshare -rn` 으로 감싼다).
+시작 → 교수 → 1관 관장 실제 입력 전투 → 연출 프레임 연속 캡처(`frames/`, `frames.json`) → ESC 메뉴 → 배지 화면. 디버그 쓰기는 SUMMARY 에 적힌다
+(맵 텔레포트·퍼즐 스위치·리더 레벨 ≥14). `BADGE_QA_MENU_ONLY=1` 은 연출을 건너뛰고 배지 스위치만 켜 배지 화면만 찍는다. 헤드리스(swiftshader)에서는 프레임이 초당 1~2장이라 떠오르는 구간은 1~2장만 잡힌다.

@@ -22,6 +22,7 @@ import { repairExpeditionNpcLayout } from "./npcLayout";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
+import { badgeAwardCommands, badgeIconResourceId } from "@/project/monsterBadgeCeremony";
 
 type Point = { x: number; y: number };
 type Template = { width: number; height: number; lower: number[]; upper: number[]; tilesetId: string; run: string;
@@ -748,7 +749,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
     if (key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
     battle(map, "leader", g.leader, leader, pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
-      [text(g.after, g.leader), { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text(`${g.badge}를 받았다! 다음 길이 열렸다.`)], puzzleSwitch, audio.trainerBattle);
+      // 관장 대사 → 배지 획득 연출(섬광·징글·떠오르는 배지, project/monsterBadgeCeremony.ts) → 보상. 배지 스위치는 승리 스위치가 이미 켠 뒤다.
+      [text(g.after, g.leader), ...badgeAwardCommands({ badgeName: g.badge, badgeIndex: i + 1, badgeTotal: gymCount, type: gymType(i, g), fanfareResourceId: audio.victory }),
+        { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text("다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle);
     // 체육관 졸개 트레이너(3세대 문법: 퍼즐 → 졸개들 → 관장). 입구에서 관장까지의 선을 따라 3~4명을 세우고 모두 시야선으로 걸어온다.
     // 관장 이벤트를 놓기 전에는 졸개를 놓지 않는다 — 관장 칸은 이미 예약되어 있어야 졸개가 그 자리를 피한다.
     const gruntCount = i < 3 ? 3 : 4;
@@ -853,7 +856,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.mapTree = { mapId: hometown.id, children: Object.values(project.maps).filter(m => m.id !== hometown.id).map(m => ({ mapId: m.id, children: [] })) };
   project.system.monsterCampaign = { id: "starlight-islands", name: "별빛섬 몬스터 원정", speciesIds: EXPEDITION_SPECIES.map(s => s.id),
     speciesNotes: Object.fromEntries(EXPEDITION_SPECIES.map(s => [s.id, s.description])),
-    badges: gymPersonas.map((g, i) => ({ id: `badge_${i + 1}`, name: g.badge, switchId: `mx_badge_${i + 1}`, cityMapId: id(g.town) })),
+    badges: gymPersonas.map((g, i) => ({ id: `badge_${i + 1}`, name: g.badge, switchId: `mx_badge_${i + 1}`, cityMapId: id(g.town), iconResourceId: badgeIconResourceId(gymType(i, g)) })),
     locations: [...towns.map(t => ({ mapId: id(t.key), name: lookTown(t).name, x: t.x, y: t.y, kind: "town" as const })),
       ...routes.map((r, i) => ({ mapId: id(r.key), name: r.name, x: (towns[i]!.x + towns[i + 1]!.x) / 2, y: (towns[i]!.y + towns[i + 1]!.y) / 2, kind: "route" as const })),
       { mapId: observatory.id, name: observatory.name, x: 4, y: 2, kind: "dungeon" }, ...(league[0] ? [{ mapId: league[0].id, name: "별빛 리그", x: 4, y: 0, kind: "league" as const }] : [])],

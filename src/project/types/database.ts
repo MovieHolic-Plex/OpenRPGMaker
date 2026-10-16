@@ -1797,7 +1797,11 @@ export interface MonsterCampaignConfig {
   dexRegisteredText?: string;
   speciesIds: string[];
   speciesNotes: Record<string, string>;
-  badges: { id: string; name: string; switchId: string; cityMapId: string }[];
+  /**
+   * 배지. switchId 가 진행 게이팅의 정본이다(관장 승리가 켠다 — build_monster_game 은 `mx_badge_N`, N 은 1부터).
+   * iconResourceId = 배지 그림(번들 아이콘 id, 선택): 배지 획득 연출과 배지 화면이 쓴다. 생략하면 연출·화면은 기본 배지 아이콘.
+   */
+  badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: "town" | "route" | "dungeon" | "league" }[];
   objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
 }
