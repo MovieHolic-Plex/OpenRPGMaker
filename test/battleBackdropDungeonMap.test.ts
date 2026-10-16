@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults/createBlankProject";
+import { createBlankProject } from "@/project/defaults";
 import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
 import type { Project } from "@/project/types";
 
