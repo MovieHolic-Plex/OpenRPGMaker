@@ -3,6 +3,7 @@
 // 계획은 도구 이름 없는 산문, 실행은 paint_road 5번으로 16턴 소진). 여기서 본문이 읽는 문자열을 고정한다.
 import { describe, expect, it } from "vitest";
 import { buildPiIntentNote, composePiTask } from "@/ai/piAgent/executionRoute";
+import { INTENT_NOTE_BOUNDARY } from "@/ai/piAgent/monsterGameRequest";
 import { emptyIntentDeclaration, type IntentDeclaration } from "@/ai/intentDeclaration";
 import { asVillageDesign } from "@/project/villageDesign";
 
@@ -154,6 +155,6 @@ describe("Pi 턴 의도 노트", () => {
   it("지시문 뒤에 노트를 붙인다 — 사용자 문장이 먼저, 노트가 뒤", () => {
     const task = composePiTask("마을을 만들어달라", "[의도] 야외 시공");
     expect(task.startsWith("마을을 만들어달라")).toBe(true);
-    expect(task).toBe("마을을 만들어달라\n\n[의도] 야외 시공");
+    expect(task).toBe(`마을을 만들어달라${INTENT_NOTE_BOUNDARY}[의도] 야외 시공`);
   });
 });

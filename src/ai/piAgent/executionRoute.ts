@@ -34,6 +34,7 @@ import {
 } from "@/ai/intentDeclaration";
 import type { Project } from "@/project/types";
 import type { PiAgentThinkingLevel } from "./protocol";
+import { INTENT_NOTE_BOUNDARY } from "./monsterGameRequest";
 
 export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
 /** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
@@ -172,5 +173,5 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
  * 문장)를 그대로 쓰고, 모델에 가는 문자열만 이걸 쓴다.
  */
 export function composePiTask(task: string, intentNote: string | null | undefined): string {
-  return intentNote ? `${task}\n\n${intentNote}` : task;
+  return intentNote ? `${task}${INTENT_NOTE_BOUNDARY}${intentNote}` : task;
 }
