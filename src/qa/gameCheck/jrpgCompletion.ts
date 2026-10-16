@@ -78,7 +78,7 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   let balance: ReturnType<typeof checkJrpg> = [];
   try { balance = checkJrpg(project); } catch { balance = []; }
   for (const finding of balance) {
-    if (BALANCE_CODES.has(finding.code)) gaps.push(`${finding.message} — 배우·적 능력치는 database 도구(배우 parameterCurves·적 그룹의 적 능력치)로 고치세요.`);
+    if (BALANCE_CODES.has(finding.code)) gaps.push(`${finding.message} — 배우 능력치는 upsert_actor 의 parameterCurves, 적 능력치는 upsert_enemy 의 stats 로 고치세요.`);
   }
   return gaps;
 }
