@@ -45,6 +45,7 @@ import {
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
+  usedCharsetGraphicKeysOnMapCount,
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
@@ -1432,6 +1433,11 @@ const placeNpc: ToolDefinition = {
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
     });
+    // 같은 칩이 한 맵에 3번째로 나오면 알린다(poke-adv-lock-1 #8: 허용 칩이 적은 잠금 아래에서 NPC 가 한 칩으로 몰렸다). 막지 않고, 다른 인물 칩을 고르게 한다.
+    if (!graphic.transparent && graphic.sprite?.id) {
+      const sameChip = usedCharsetGraphicKeysOnMapCount(map, graphic);
+      if (sameChip >= 2) normalizationWarnings.push(`같은 걷기 칩(${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex})이 이 맵에 이미 ${sameChip}명 있어 ${sameChip + 1}번째가 됩니다 — 한 화면에 같은 얼굴이 셋 이상이면 어색합니다. list_npc_graphics 로 다른 인물 칩을 골라 graphic 으로 주세요(query 를 생략하거나 "villager" 로 두면 쓰이지 않은 칩이 먼저 골라집니다).`);
+    }
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
     const similar = existingNpc ?? (actionGuide ? undefined : findNearbySimilarNpc(map, x, y, name, 2));
