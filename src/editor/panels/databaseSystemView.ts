@@ -51,7 +51,7 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
-import { disableGenreLock, enableGenreLock, genreLockReport } from "@/project/genreLock";
+import { disableGenreLock, enableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
@@ -1703,7 +1703,7 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const lock = project.system.genreLock;
   const report = genreLockReport(project);
   const lockPreset = lock?.preset ?? (project.gameDesignBrief?.interview?.genre === "romance" ? "romance" : "monster-collect");
-  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋만 새로 쓴다";
+  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋·캐릭터 칩만 새로 쓴다";
   const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
     recordProjectSnapshot();
     store.update((draft) => {
@@ -1717,6 +1717,7 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
     dataset: { testid: "db-genre-lock-badge" },
     text: !lock ? "꺼짐 — 조수가 다른 계열 칩셋으로 맵을 만들 수 있다."
       : `잠금 중(${lock.mode === "warn" ? "경고만" : "강제"}) · 허용 칩셋 ${report.allowedTilesets.length}개`
+        + (genreLockAllowedCharsetLabels(project).length ? ` · 캐릭터 칩: ${genreLockAllowedCharsetLabels(project).join("·")}` : "")
         + (report.violations.length ? ` · 허용 밖 맵 ${report.violations.length}개(손으로 칠한 것은 막지 않는다)` : "")
         + (report.preexisting.length ? ` · 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개` : ""),
   });

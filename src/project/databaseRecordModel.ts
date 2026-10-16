@@ -223,7 +223,9 @@ function normalizeGenreLock(value: unknown): GenreLock | undefined {
   const families = Array.isArray(raw.allowedFamilies) ? raw.allowedFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0) : [];
   if (!families.length) return undefined;
   const mapIds = Array.isArray(raw.grandfatheredMapIds) ? [...new Set(raw.grandfatheredMapIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
-  return { preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)], ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}) };
+  // 허용 캐릭터 칩 계열(2026-10-16) — 없으면 없는 채로 둔다(이전에 켠 잠금은 프리셋 표를 따른다. 저장 바이트 불변).
+  const charsetFamilies = Array.isArray(raw.allowedCharsetFamilies) ? [...new Set(raw.allowedCharsetFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  return { preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)], ...(charsetFamilies.length ? { allowedCharsetFamilies: charsetFamilies } : {}), ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}) };
 }
 
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
