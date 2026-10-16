@@ -338,6 +338,19 @@ def anchor_for(key, bframes, spec, kind, side, d, f):
     return (x, y), ('front' if d == 'up' else 'behind'), {(x, y)}
 
 
+def side_out_anchor(key, bframes, spec, side, d, f):
+    """옆모습의 가까운 손에 든 막대형(창·지팡이): 자루는 몸통을 가로지르지 않고 손에서 몸 앞 바깥으로 나온다.
+    앵커 = 손 줄의 몸 앞쪽 가장자리 칸(몸 칸이라 가려짐). 스프라이트는 몸 뒤 레이어('outside': 몸 밖 빈 칸에만 보임)로 그려지고,
+    손 칸 + 그 줄의 가장자리 칸을 앵커 칸(= 쥔 곳)으로 삼는다."""
+    rows = bframes[(d, f)]
+    near = hand_cells(key, bframes, d, f, 'near', spec)
+    y = sorted(c[1] for c in near)[len(near) // 2]
+    ext = row_extent(rows, y)
+    x = ext[1] if d == 'right' else ext[0]
+    cells = set(near) | {(x, yy) for yy in {c[1] for c in near} if row_extent(rows, yy) and (row_extent(rows, yy)[1] if d == 'right' else row_extent(rows, yy)[0]) == x}
+    return (x, y), 'outside', cells
+
+
 def anchor_table(key):
     nk, sk = split_key(key)
     pal, bframes = H.base_of(nk)
@@ -353,6 +366,10 @@ def anchor_table(key):
                 (x, y), mode, cells = anchor_for(nk, bframes, spec, kind, side, d, 1)
                 row.append(f'{d}=({x},{y}) {mode}')
             lines.append(f'  kind={kind}{"" if kind == "back" else " side=" + side}: ' + ' · '.join(row))
+            if kind == 'held' and side == 'R':
+                (ox, oy), _, _ = side_out_anchor(nk, bframes, spec, 'R', 'right', 1)
+                (lx, ly), _, _ = side_out_anchor(nk, bframes, spec, 'R', 'left', 1)
+                lines.append(f'  막대형(높이 8줄 이상) held 의 옆모습: right 의 가까운 손 앵커는 몸 앞 가장자리 ({ox},{oy}) · left 는 ({lx},{ly}) — 자루는 이 칸에서 몸 **바깥**으로 나오고 몸 칸은 덮지 못한다(몸이 가림)')
     return '\n'.join(lines), spec, bframes
 
 
@@ -489,9 +506,13 @@ def apply_edits(key, edit, overrides=None):
             if npx > 120 or len(rows_) > 26 or max(len(r) for r in rows_) > 12:
                 errs.append(f'gear[{i}] {name} {d}: 스프라이트가 너무 크다(120칸·12×26 이하, 지금 {npx}칸)')
                 continue
+            rod = gkind == 'held' and len(rows_) >= 8
             for f in range(3):
                 (ax, ay), mode, acells = anchor_for(key, bframes, spec, gkind, side, d, f)
+                if rod and d in ('right', 'left') and side_slot(d, side) == 'near':
+                    (ax, ay), mode, acells = side_out_anchor(key, bframes, spec, side, d, f)
                 vis = set()
+                under = set()
                 for dy, row in enumerate(rows_):
                     for dx, ch in enumerate(row):
                         if ch in ('.', ' '):
@@ -502,15 +523,18 @@ def apply_edits(key, edit, overrides=None):
                         if not (1 <= x < FW - 1 and 1 <= y < FH - 1):
                             continue
                         if (x, y) in acells and gkind == 'held' and mode == 'front':
+                            under.add((x, y))
                             continue                       # 손은 무기 위에 그려진다(손 칸은 베이스 그대로)
                         lab = labels[(d, f)][y][x]
                         if lab == 'F':
                             continue                       # 얼굴·맨살은 어떤 장비도 덮지 못한다
-                        if bframes[(d, f)][y][x] != T and mode == 'behind':
+                        if bframes[(d, f)][y][x] != T and mode in ('behind', 'outside'):
+                            if mode == 'outside':
+                                under.add((x, y))
                             continue                       # 몸 뒤: 몸 밖 빈 칸에만 보인다
                         setpx((d, f), x, y, ch, 'gear')
                         vis.add((x, y))
-                gear_info.setdefault(name, {})[(d, f)] = dict(anchor=(ax, ay), mode=mode, cells=acells, vis=vis, kind=gkind)
+                gear_info.setdefault(name, {})[(d, f)] = dict(anchor=(ax, ay), mode=mode, cells=acells, vis=vis, kind=gkind, rod=rod, under=under, rows=len(rows_))
     out = {k: [''.join(r) for r in rows] for k, rows in new.items()}
     report = dict(info=info, errors=errs, gear=gear_info)
     return pal, out, bframes, bpal, labels, zones, changed, kind, report
@@ -646,7 +670,24 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다 — 이 방향·모드({gi["mode"]})에서 몸에 가려 안 보인다(grip {gi["anchor"]})')
                 continue
             need = {'held': 10, 'hip': 8, 'back': 8}[gi['kind']]
-            if gi['mode'] == 'front' and len(vis) < need:
+            if gi.get('rod'):
+                rows_b = bframes[(d, f)]
+                if gi['mode'] == 'outside':
+                    if len(vis) < 10:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 보이는 자루가 {len(vis)}칸뿐이다(최소 10) — 옆모습 자루는 몸 앞 바깥으로 나와 눈에 보여야 한다')
+                    hidden = len(gi['under'])
+                    if hidden > 0.5 * (hidden + len(vis)):
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 자루의 {hidden}칸이 몸에 가려진다(절반 이하) — 자루를 몸 앞 바깥 쪽으로 더 내라')
+                    inside = [(x, y) for (x, y) in vis if (ex := row_extent(rows_b, y)) and ex[0] <= x <= ex[1]]
+                    if inside:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 옆모습 자루가 몸통 실루엣 안 {sorted(inside)[:3]} 을 지난다 — 자루는 몸을 가로지르지 않고 손에서 바깥으로 나와야 한다')
+                elif d in ('down', 'up') and gi['mode'] == 'front':
+                    if len(gi['under']) < 2:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 손 칸에 겹치는 자루 칸이 {len(gi["under"])}칸이다(최소 2) — 주먹이 자루를 감싸 쥐어야 한다(grip 을 손 안쪽 열에 둔다)')
+                    outside = [(x, y) for (x, y) in vis if not ((ex := row_extent(rows_b, y)) and ex[0] <= x <= ex[1])]
+                    if len(outside) < 0.4 * len(vis):
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 자루 {len(vis)}칸 중 {len(outside)}칸만 몸 실루엣 밖이다(40% 이상) — 자루는 몸 옆으로 걸쳐 나와야 하고 몸 위에 서 있으면 안 된다')
+            if gi['mode'] in ('front', 'outside') and len(vis) < need and gi['mode'] == 'front':
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다(최소 {need}) — 1칸 폭 막대·너무 작은 장비는 손에 쥔 것으로 읽히지 않는다. 키워라')
             if gi['kind'] == 'held' and gi['mode'] == 'front':
                 thick = sum(1 for (x, y) in vis if (x + 1, y) in vis or (x - 1, y) in vis)
