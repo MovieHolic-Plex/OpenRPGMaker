@@ -97,6 +97,43 @@ const getStarter = async () => {
 const openMenu = async () => { await page.keyboard.press("x"); await page.waitForSelector("[data-testid='main-menu']", { timeout: 8000 }); await page.waitForTimeout(300); };
 
 const cases = {
+  async d34() {
+    await newGame(); await startNewGame();
+    const lab = Object.values(project.maps).find((map) => map.events.some((event) => /professor/.test(event.id)));
+    const professor = lab.events.find((event) => /professor/.test(event.id));
+    const spot = besideOf(lab.id, professor);
+    const far = [3, 4, 2].map((dy) => ({ x: professor.x, y: professor.y + dy })).find((p) => free(lab.id, p.x, p.y)) ?? spot;
+    await teleport(lab.id, far.x, far.y);
+    await page.waitForTimeout(800);
+    await shot("01-lab");
+    await teleport(lab.id, spot.x, spot.y);
+    await page.waitForTimeout(500);
+    const g = professor.pages[0].graphic;
+    step("professor-chip", true, `박사 칩 ${g.sprite?.id} pattern ${g.pattern}`);
+    await talk(spot.dir);
+    await page.waitForSelector("[data-testid='dialogue-box']", { timeout: 15000 });
+    await page.waitForTimeout(600);
+    await shot("02-talk");
+  },
+
+  async d35() {
+    await newGame(); await startNewGame(); await getStarter();
+    const gym = Object.values(project.maps).find((map) => /_gym$/.test(map.id) && map.events.some((e) => /_leader$/.test(e.id)));
+    const leader = gym.events.find((e) => /_leader$/.test(e.id));
+    report.debugWrites.push("setSwitch mx_gym_1_puzzle");
+    await page.evaluate(() => window.__oprnDebug.setSwitch("mx_gym_1_puzzle", true));
+    const spot = besideOf(gym.id, leader);
+    await teleport(gym.id, spot.x, spot.y);
+    await talk(spot.dir);
+    await shot("01-talk");
+    const began = await pressEnterUntil(() => present("battle-scene"), 40);
+    step("battle-began", began, `관장 ${leader.id}`);
+    await page.waitForTimeout(3500);
+    await shot("02-battle");
+    const troop = project.database.troops.find((t) => t.id === `mx_troop_${gym.id}_leader`);
+    step("party", true, troop.enemyIds.map((id) => { const e = project.database.enemies.find((x) => x.id === id); return `${e.name} Lv${e.level}`; }).join(", "));
+  },
+
   async d32() {
     await newGame(); await startNewGame(); await getStarter();
     await openMenu();
