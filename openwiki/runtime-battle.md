@@ -2105,3 +2105,16 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
   55% 얼리기 기술 하나에 1관에서 전멸했다. 녹음 굴림이 전투 난수를 한 바이트 쓰므로 그 뒤 전투 결과가 달라진다.
 - 헤드리스 몬스터 전술(`sceneTestRunner` `actHeadless`)은 리더 체력이 60% 아래이고 다음 한 방(예상 ×1.5 + 화상·독 한 틱)에 쓰러질 수 있으면
   자기 회복 기술을 먼저 쓴다 — 챔피언 앞에서 명중 90% 기술이 빗나가고 급소·화상에 반 체력으로 쓰러져 열 번 연속 졌다.
+
+### 레벨업 기술 배우기·잊기 장면 (2026-10-16)
+
+- 몬스터는 기술을 4개(`MONSTER_SKILL_MAX`)까지 안다. 레벨업 습득 기술이 칸에 안 들어가면 `pendingSkillIds` 로 보류된다(`applyLearnedMonsterSkills`).
+  이전에는 이 보류 기술에도 결과 문장이 「○○는 △△를 배웠다!」라고 말해서 거짓이었고, 고르는 곳은 메뉴(`playerStatusMenuDetails`)뿐이었다.
+- `MonsterLevelUpPreview.overflowSkillIds`(`previewMonsterExperience`, `splitLearnedMonsterSkills` 와 같은 순서·기준)가 칸이 모자란 기술만 가린다.
+  비면 필드가 없다. 에메랄드 결과 문장(`emeraldResultRows`)은 이 기술을 「배웠다!」에서 뺀다.
+- 에메랄드 몬스터 스타일의 승리 뒤 `playSceneBattle.onResult` 가 진화 장면보다 먼저 `emeraldMoveLearnScene.playEmeraldMoveLearns` 를 연다:
+  「○○는 △△를 배우고 싶어 한다! 하지만 기술이 4개라 더 배울 수 없다!」 → 예/아니오 → 네 기술 목록 → 「A를 잊고 △△를 배웠다!」.
+  X/Esc 는 한 단계 뒤로, 아니오 = 「배우기를 미뤘다」(보류로 남아 메뉴의 몬스터 화면에서 다시 정한다 — 데이터를 잃지 않는다).
+  `unforgettable` 기술은 줄이 흐리고 고르면 거절 문장. 장면은 결정만 돌려주고, 세션 반영은 `applyBattleRewardsToSession` 뒤에
+  `replacePendingMonsterSkill` 로 한다(취소·중단이면 미룸). 다른 전투 스킨은 이전 그대로 메뉴 경로다.
+- 증거 장면: `scripts/qa/runtime/poke-battle-sys.probe.mjs learnForget`(원 해상도 960×640, `verify-shots/poke-sys-battle/pa*.png`).

@@ -159,7 +159,10 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
     if (statRows.length > 0) rows.push({ kind: "msg", label: levelLine, value: "", stats: statRows[0]!.stats });
     else rows.push({ kind: "msg", label: levelLine, value: "" });
     if (statRows.length > 1) rows.push(statRows[1]!);
+    // 칸이 모자라 보류로 간 기술은 「배웠다!」가 아니다 — 배우기·잊기 장면(emeraldMoveLearnScene)이 따로 말한다.
+    const overflow = new Set(levelUp.overflowSkillIds ?? []);
     for (const skillId of levelUp.learnedSkillIds) {
+      if (overflow.has(skillId)) continue;
       rows.push({ kind: "msg", label: `${withJosa(levelUp.name, "은/는")} ${withJosa(skillName(skillId), "을/를")} 배웠다!`, value: "" });
     }
   }
