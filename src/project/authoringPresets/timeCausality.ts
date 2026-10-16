@@ -6,7 +6,7 @@ export function timeCausalityPresets(p: PresetFactory) {
       '시간의 문으로 번성한 성과 미래의 폐허를 오간다.', ['시대', '시간의 문', '크로노', 'chrono'],
       ['위치: 과거 맵 ↔ 미래 맵', '시대 정보: 이동에 따라 표시'], [
         ['시대별 장소', '기존 시대 맵과 좌표를 읽고 필요한 맵만 추가한다.', '분리된 실제 시대 맵', ['create_map']],
-        ['시간의 문', '같은 장소의 시대 변형은 derive_map_variant 로 한 번에 파생(이벤트 참조 자동 보정·타일 덮어쓰기)하고, create_time_gate 로 왕복 이동을 연결한다. 조건부로 열려면 unlockWhen/lockedMessage, 연출은 effect.', '발견 가능한 왕복 게이트', ['create_time_gate', 'paint_tiles']],
+        ['시간의 문', '같은 장소의 시대 변형은 derive_map_variant 로 한 번에 파생(이벤트 참조 자동 보정·타일 덮어쓰기, era 낱말에 따라 조명·안개·건물 철거·폐허 조각 같은 시대 겉모습이 자동으로 걸린다 — 현재 맵과 눈으로 구별되는지 show_map_region 으로 확인)하고, create_time_gate 로 왕복 이동을 연결한다. 조건부로 열려면 unlockWhen/lockedMessage, 연출은 effect.', '발견 가능한 왕복 게이트', ['create_time_gate', 'paint_tiles']],
         ['시대 안내', '시대 전환 시 실제 장 변수와 chapter 이름표를 연결한다.', '위치와 맞는 시대 정보', ['manage_flag_slot', 'set_project_settings', 'upsert_event']],
       ], ['왕복해 정확한 시대·좌표에 도착한다.', '게이트가 눈에 보이고 착지 뒤 자동 재이동하지 않는다.', '시대 표시와 실제 맵이 일치한다.']),
     p('time-causality', 'past-world-change', '과거 행동으로 미래 길 변경', '과거에서 한 행동이 미래의 통행을 바꾼다.',
