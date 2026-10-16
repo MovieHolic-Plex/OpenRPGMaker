@@ -61,6 +61,19 @@ describe("derive_map_variant 시대 겉모습(J03)", () => {
     expect(map.upperTiles.filter((tile) => tile === 555).length).toBe(0);
   });
 
+  it("철거한 건물 자리의 2·4층 덧그림 지붕 조각도 지운다(허공에 남던 지붕)", () => {
+    const { draft, map } = townDraft();
+    const cells = map.width * map.height;
+    map.lowerOverlayTiles = new Array(cells).fill(-1);
+    map.upperOverlayTiles = new Array(cells).fill(-1);
+    for (const x of [2, 12]) for (let row = 0; row < 5; row += 1) for (let col = 0; col < 6; col += 1) map.upperOverlayTiles[(3 + row) * map.width + x + col] = 901;
+    map.upperOverlayTiles[0] = 902; // 건물 밖 덧그림은 그대로
+    const report = applyVariantLook(draft, map, "ruin", [], "variants[o]");
+    expect(report.demolishedBuildings).toBeGreaterThanOrEqual(1);
+    expect(map.upperOverlayTiles.filter((tile) => tile === 901).length).toBeLessThan(60);
+    expect(map.upperOverlayTiles[0]).toBe(902);
+  });
+
   it("같은 변형 id 는 언제나 같은 철거·배치가 나온다", () => {
     const first = townDraft();
     const second = townDraft();

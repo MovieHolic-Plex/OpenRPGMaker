@@ -62,6 +62,9 @@ function resolveBattleBackdropId(input: {
   // 아무도 배경을 정하지 않은 던전·동굴 맵은 숲이 아니라 동굴이다(고대 지하묘지의 박쥐 전투가 숲에서 벌어졌다).
   const dungeonBg = dungeonBattleBackground(input.project, input.location?.mapId);
   if (dungeonBg) return dungeonBg;
+  // 마을·도시·폐허·사막으로 읽히는 맵 이름도 숲이 아니다(jrpg-loop-1 ct1: 안개 낀 「멸망한 폐허 크로노폴리스」의 보스전이 울창한 숲에서 벌어졌다).
+  const placeBg = placeNameBattleBackground(input.project, input.location?.mapId);
+  if (placeBg) return placeBg;
   if (troopBg) return troopBg;
   return input.project.system.battleUiStyle === "pokemon"
     ? POKEMON_BATTLE_BACKDROP_ID
@@ -96,6 +99,22 @@ export function dungeonBattleBackground(project: Project, mapId: string | undefi
   const map = mapId ? project.maps[mapId] : undefined;
   if (!map) return undefined;
   if (DUNGEON_MAP_NAME.test(map.name ?? "") || DUNGEON_TILESET_ID.test(map.tilesetId ?? "")) return "battle-scenery-cave";
+  return undefined;
+}
+
+const FOREST_MAP_NAME = /숲|삼림|밀림|수풀|forest|woods?\b/iu;
+const DESERT_MAP_NAME = /사막|오아시스|모래|desert|oasis/iu;
+const OPEN_PLACE_MAP_NAME = /마을|도시|항구|성채|성곽|성문|광장|거리|시가지|폐허|town|city|village|harbou?r|ruins?\b|plaza/iu;
+
+/**
+ * 맵 이름이 곧 장소의 성격이다. 숲이라는 낱말이 있으면 숲 그대로(undefined), 사막은 사막, 마을·도시·폐허는 하늘이 트인 평원 겹 배경.
+ * 눈·던전은 앞선 단계(기후·던전)가 이미 정했으므로 여기 오지 않는다.
+ */
+export function placeNameBattleBackground(project: Project, mapId: string | undefined): string | undefined {
+  const name = (mapId ? project.maps[mapId]?.name : undefined) ?? "";
+  if (!name || FOREST_MAP_NAME.test(name)) return undefined;
+  if (DESERT_MAP_NAME.test(name)) return "battle-scenery-desert";
+  if (OPEN_PLACE_MAP_NAME.test(name)) return "battle-scenery-plains";
   return undefined;
 }
 

@@ -145,6 +145,24 @@ export type VariantLookReport = {
 };
 
 /**
+ * 철거한 건물 자리의 2층·4층 덧그림을 지운다. restoreStructurePlacementTiles 는 1·3층만 되돌려서,
+ * 지붕·처마가 덧그림(4층)으로 올라간 건물은 철거 뒤에도 지붕 조각이 허공에 남았다(jrpg-loop-1 ct1 미래 맵).
+ * 4층은 처마가 건물 폭 밖으로 나오므로 오른쪽 한 칸을 더 지운다. 길 가장자리 덧그림은 건드리지 않는다(위 영역 밖).
+ */
+function clearDemolishedOverlays(copy: GameMap, placement: { x: number; y: number; w: number; h: number }): void {
+  for (let row = 0; row < placement.h; row += 1) {
+    for (let column = 0; column <= placement.w; column += 1) {
+      const x = placement.x + column;
+      const y = placement.y + row;
+      if (x < 0 || y < 0 || x >= copy.width || y >= copy.height) continue;
+      const index = y * copy.width + x;
+      if (column < placement.w && copy.lowerOverlayTiles && copy.lowerOverlayTiles[index] !== undefined) copy.lowerOverlayTiles[index] = -1;
+      if (copy.upperOverlayTiles && copy.upperOverlayTiles[index] !== undefined) copy.upperOverlayTiles[index] = -1;
+    }
+  }
+}
+
+/**
  * 변형 맵 `copy` 에 시대 프리셋을 건다. `copy` 는 cloneMapIntoProject 로 방금 복제한 맵이고,
  * 건물 철거는 복제본이 가진 structurePlacements 의 `before` 로 한다.
  */
@@ -184,6 +202,7 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     const doorIds = new Set(inside.map((event) => event.id));
     copy.events = copy.events.filter((event) => !doorIds.has(event.id));
     restoreStructurePlacementTiles(copy, placement);
+    clearDemolishedOverlays(copy, placement);
     removeStructurePlacement(copy, placement.id);
     report.demolishedBuildings += 1;
 
