@@ -31,11 +31,17 @@ export function parseSharedCharacterGraphicsDocument(value: unknown): CharacterG
     return Object.keys(left).length === Object.keys(right).length
       && Object.keys(left).every(key => equal(left[key], right[key]));
   };
-  return schema.parse({ ...document,
-    mappings: document.mappings.map(row => corrections.mappings.find(change => equal(row, change.before))?.after ?? row),
-    faces: document.faces.map(row => corrections.faces.find(change => equal(row, change.before))?.after ?? row),
-  });
+  const mappings = document.mappings.map(row => corrections.mappings.find(change => equal(row, change.before))?.after ?? row);
+  const faces = document.faces.map(row => corrections.faces.find(change => equal(row, change.before))?.after ?? row);
+  // 번들이 나중에 더한 현대 연애 칩 짝(2026-10-16 흉상·전신): 호스트에 이미 저장된 옛 대응표에는 이 행이 없다 — 없는 행만 채운다.
+  // 사용자가 같은 칸을 이미 고쳐 두었으면(행이 있으면) 건드리지 않는다.
+  const have = new Set(mappings.map(row => `${row.textureKey}#${row.characterIndex}`));
+  const haveFaces = new Set(faces.map(row => row.resourceId));
+  const addedMappings = (reviewedCatalog.mappings as typeof mappings).filter(row => BUNDLED_FORWARD_FILL.test(row.textureKey) && !have.has(`${row.textureKey}#${row.characterIndex}`));
+  const addedFaces = (reviewedCatalog.faces as typeof faces).filter(row => addedMappings.some(m => m.faceResourceId === row.resourceId) && !haveFaces.has(row.resourceId));
+  return schema.parse({ ...document, mappings: [...mappings, ...addedMappings], faces: [...faces, ...addedFaces] });
 }
+const BUNDLED_FORWARD_FILL = /^tex_oprn_charset_modern\d+$/u;
 
 export function emptySharedCharacterGraphics(): CharacterGraphicsDocument {
   return { schema: "oprn-npc-face-mapping", version: 2, mappings: [], faces: [] };

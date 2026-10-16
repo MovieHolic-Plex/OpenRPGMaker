@@ -186,7 +186,9 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       kitNoun: "현대 연애 인물 칩",
       playerDefault: { resourceId: "oprn-charset-modern2", characterIndex: 2 },
       promptLine: "캐릭터 그림(주인공·공략 인물·학생·점원 걷기 그림)도 이 장르 칩만 쓴다 — 현대 연애 인물 칩 Modern1~3(oprn-charset-modern1~3, 칸 0~7): 남녀 교복(남색·회색 블레이저·세일러복·여름 교복), 캐주얼 사복(후드티·원피스·재킷), 정장, 카페 점원 앞치마, 선생·교수. "
-        + "list_npc_graphics 에서 「여학생」「남학생」「카페 점원」「교수」 같은 말로 찾고, 인물마다 서로 다른 칸을 고른다(같은 사람이 다른 맵에 다시 나올 때만 같은 칸).",
+        + "list_npc_graphics 에서 「여학생」「남학생」「카페 점원」「교수」 같은 말로 찾고, 인물마다 서로 다른 칸을 고른다(같은 사람이 다른 맵에 다시 나올 때만 같은 칸). "
+        + "대화 초상: 교복·사복·정장·카페 점원·선생 12종(남색 블레이저 남·옆머리 남·남색 블레이저 여·세일러복·양갈래·후드티 남·민트 원피스·네이비 정장 남·남색 정장 여·갈색 앞치마·트위드 교수·버건디 카디건 선생)은 칩과 같은 인물의 흉상·전신이 짝으로 있다 — "
+        + "list_npc_graphics 의 face(흉상 base)와 portraitOptions 를 그대로 쓰고 다른 얼굴을 붙이지 않는다(NPC 를 놓으면 짝 흉상이 대사에 자동으로 따라 붙는다). 전신은 changeFace 에 portraitOptions 의 전신 id 를 쓰고, 표정은 id 끝의 -base 를 happy·surprised·sad·embarrassed 로 바꾼다(그 밖의 emotion 은 기본 그림).",
       enforceLine: "RTP Actor·People 판타지 칩·영웅·마법 학교·몬스터 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
     },
     defaultTilesetId: "modern_city",
