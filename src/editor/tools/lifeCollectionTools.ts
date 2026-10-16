@@ -15,11 +15,13 @@ import {
 } from "@/project/p2FoundationRecords";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { isWeatherKind } from "@/project/p1FoundationRecords";
+import { wildTroopIdForSpecies } from "@/project/wildTroops";
 import type {
   BundleRewardDefinition,
   CollectionSystemConfig,
   FishSpeciesRecord,
   FishingCatchRule,
+  FishingMonsterCatchRule,
   FishingSpotDefinition,
   FishingSystemConfig,
   ForageAreaDefinition,
@@ -208,7 +210,7 @@ const deleteFishSpecies: ToolDefinition = {
         ...fishing,
         spots: fishing.spots
           .map((spot) => ({ ...spot, catches: spot.catches.filter((rule) => rule.fishId !== id) }))
-          .filter((spot) => spot.catches.length > 0),
+          .filter((spot) => spot.catches.length > 0 || (spot.monsterCatches?.length ?? 0) > 0),
       };
     }
     return { summary: `어종 ${id} 삭제`, data: { id } };
@@ -233,15 +235,46 @@ function parseCatch(raw: unknown, draft: Project): FishingCatchRule {
   };
 }
 
+function parseMonsterCatch(raw: Record<string, unknown>, draft: Project): FishingMonsterCatchRule {
+  if (raw.fishId !== undefined) throw new ToolError("catches 항목은 fishId(아이템 어종)와 speciesId(몬스터) 중 하나만 가질 수 있습니다.", { code: "invalid-args" });
+  const speciesIds = (draft.database.monsterSpecies ?? []).map((species) => species.id);
+  const speciesId = requireKnownId("catches.speciesId", raw.speciesId, speciesIds);
+  if (!wildTroopIdForSpecies(draft, speciesId)) {
+    throw new ToolError(`catches.speciesId ${speciesId} 의 야생 무리(그 종 적이 든 troop)가 없습니다. 먼저 define_monster_families 의 spawn 으로 야생 개체를 만드세요.`, { code: "invalid-args" });
+  }
+  const seasons = parseEnumArray<Season>(raw.seasons, isSeason, SEASONS, "catches.seasons");
+  const timePhases = parseEnumArray<TimePhase>(raw.timePhases, isTimePhase, TIME_PHASES, "catches.timePhases");
+  const weatherKinds = parseEnumArray<WeatherKind>(raw.weatherKinds, isWeatherKind, WEATHER_KINDS, "catches.weatherKinds");
+  const levelMin = optionalInteger(raw, "levelMin", "catches", 1);
+  const levelMax = optionalInteger(raw, "levelMax", "catches", 1);
+  if (levelMin !== undefined && levelMax !== undefined && levelMin > levelMax) {
+    throw new ToolError(`catches.levelMin(${levelMin}) 은 levelMax(${levelMax}) 보다 클 수 없습니다.`, { code: "invalid-args" });
+  }
+  return {
+    speciesId,
+    weight: optionalInteger(raw, "weight", "catches", 1) ?? 1,
+    ...(levelMin !== undefined ? { levelMin } : {}),
+    ...(levelMax !== undefined ? { levelMax } : {}),
+    ...(seasons ? { seasons } : {}),
+    ...(timePhases ? { timePhases } : {}),
+    ...(weatherKinds ? { weatherKinds } : {}),
+  };
+}
+
 function parseSpot(raw: unknown, draft: Project): FishingSpotDefinition {
   if (!isRecord(raw)) throw new ToolError("spots 항목은 객체여야 합니다.", { code: "invalid-args" });
   const name = optionalText(raw.name);
+  // catches[] 한 배열에서 speciesId 항은 몬스터 낚시(monsterCatches), fishId 항은 아이템 어종으로 가른다.
+  const entries = parseArray(raw.catches, "spots.catches");
+  const isMonsterEntry = (entry: unknown): entry is Record<string, unknown> => isRecord(entry) && entry.speciesId !== undefined;
+  const monsterCatches = entries.filter(isMonsterEntry).map((entry) => parseMonsterCatch(entry, draft));
   return {
     id: requireString(raw, "id", "spots"),
     ...(name ? { name } : {}),
     mapId: requireKnownId("spots.mapId", raw.mapId, mapIds(draft)),
     area: parseRect(raw.area, "spots.area"),
-    catches: parseArray(raw.catches, "spots.catches").map((rule) => parseCatch(rule, draft)),
+    catches: entries.filter((entry) => !isMonsterEntry(entry)).map((rule) => parseCatch(rule, draft)),
+    ...(monsterCatches.length > 0 ? { monsterCatches } : {}),
   };
 }
 
@@ -251,7 +284,8 @@ const configureFishing: ToolDefinition = {
     "낚시 시스템(system.fishing)을 설정한다: enabled·energyCost·낚시터(맵/영역/어획 표). " +
     "부분 패치다 — 보내지 않은 필드는 그대로 두고, 형제 시스템(박물관/채집/도감)은 건드리지 않는다. " +
     "spots 는 같은 id 만 교체하고 기존 낚시터는 유지한다(전체 교체는 replaceSpots:true). " +
-    "mapId 는 project.maps, catches[].fishId 는 database.fishSpecies 만 허용.",
+    "mapId 는 project.maps, catches[].fishId 는 database.fishSpecies 만 허용. " +
+    "몬스터를 낚게 하려면 catches[] 항에 fishId 대신 speciesId(+levelMin/levelMax)를 쓴다 — 낚으면 아이템 대신 그 종의 야생 전투가 열리고, 어종과 같은 가중치 풀에서 뽑힌다(그 종의 야생 무리가 먼저 있어야 한다: define_monster_families spawn).",
   mode: "write",
   parameters: {
     type: "object",

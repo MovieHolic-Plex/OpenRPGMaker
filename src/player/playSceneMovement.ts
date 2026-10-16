@@ -763,7 +763,13 @@ function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: nu
   const result = interactWithLifeField(store.getCurrent(), scene.session, { mapId: scene.map.id, x, y });
   if (result.kind === "unhandled") return false;
   if (result.kind === "refused") showFarmFeedbackMessage(scene, result.message);
-  else {
+  else if (result.kind === "encounter") {
+    // 낚시에 몬스터가 걸렸다: 걷다 만나는 야생과 같은 전투 경로(뒤 이벤트·패배 처리 포함)로 싸운다.
+    scene.lastActionTargetKey = "";
+    scene.syncRuntimeState?.();
+    const full = scene as unknown as PlaySceneContext;
+    if (typeof full.playBattle === "function") void runRandomEncounterBattle(full, result.troopId, result.level);
+  } else {
     scene.lastActionTargetKey = "";
     scene.refreshRuntimeSurfaces?.();
     scene.syncRuntimeState?.();

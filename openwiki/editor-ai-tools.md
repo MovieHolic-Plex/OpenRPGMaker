@@ -3213,6 +3213,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 2026-10-14 자유도 감사(`~/claude-viz/monster-free.html`)에서 `build_monster_game` 은 늘 72맵·60종·8체육관·142연결을 만들고
 검수(`monsterGameReview.ts`)도 그 상수로 막았다 — 「체육관 3개」「체육관 없이」를 말해도 8관 캠페인이 나왔다.
 
+- **몬스터 낚시 (2026-10-16, 깊이 감사 #9):** `configure_fishing` 의 `catches[]` 항에 `fishId` 대신 `speciesId`(+`levelMin/levelMax`·계절·시간대·날씨)를 쓰면 낚였을 때 아이템 대신 그 종의 야생 전투가 열린다. 저장 형태는 `FishingSpotDefinition.monsterCatches`(어종 `catches` 와 한 가중치 풀에서 함께 뽑힌다). 도구는 종 id 존재와 그 종 적이 든 비트레이너 troop(`src/project/wildTroops.ts` `wildTroopIdForSpecies`, `define_monster_families spawn` 이 만드는 `troop_wild_<종>` 포함)이 없으면 거절한다. 런타임은 `attemptFishingCatch` 가 `{kind:'encounter',troopId,level}` 를 돌려주고 `interactWithLifeField` 가 같은 모양으로 전달해 플레이 장면(`runRandomEncounterBattle`)·`run_scene_test`(`fishing encounter <종> … : victory`) 둘 다 야생 인카운터와 같은 전투 경로로 싸운다. 참조 검수·복구(`io/references.ts`)는 사라진 종·무리를 가리키는 `monsterCatches` 항을 버린다. 확인: `bun scripts/qa/poke-audit-fix/fishing-probe.mts`.
+
 - **규모 인자:** `build_monster_game(create)` 의 `gymCount`(0..8, 기본 8)·`speciesCount`(6..60, 기본 60). 기본(인자 없음)은 이전과
   바이트 단위로 같다(여섯 옵션 변형 sha 비교로 확인). 만드는 쪽은 `src/project/examples/monsterExpedition/campaignPlan.ts`
   (`campaignShape`·`campaignLevels`·`retellForGymCount`) 한 곳이 정한다 — N관은 마을 1..N, 4관부터 박물관, 5관부터 밤막회사 지부,

@@ -26,14 +26,16 @@ export const FISH_SPECIES_SCHEMA: JsonSchema = {
 export const FISHING_CATCH_SCHEMA: JsonSchema = {
   type: "object",
   properties: {
-    fishId: { type: "string", description: "database.fishSpecies 의 어종 id" },
+    fishId: { type: "string", description: "database.fishSpecies 의 어종 id (아이템을 낚는 항). speciesId 와 둘 중 하나만" },
+    speciesId: { type: "string", description: "몬스터를 낚는 항: database.monsterSpecies 의 종 id. 낚으면 아이템 대신 그 종의 야생 전투가 열린다(그 종의 야생 무리가 먼저 있어야 함 — define_monster_families spawn)" },
+    levelMin: { type: "integer", description: "speciesId 항 전용: 낚인 몬스터의 레벨 하한(1~99). 생략하면 야생 적 레코드 레벨" },
+    levelMax: { type: "integer", description: "speciesId 항 전용: 레벨 상한(1~99)" },
     weight: { type: "integer", description: "가중치(1 이상). 생략 시 1" },
     seasons: { type: "array", description: "생략 시 모든 계절", items: { type: "string", enum: [...SEASONS] } },
     timePhases: { type: "array", description: "생략 시 모든 시간대", items: { type: "string", enum: [...TIME_PHASES] } },
     weatherKinds: { type: "array", description: "생략 시 모든 날씨", items: { type: "string", enum: [...WEATHER_KINDS] } },
     minSkillLevel: { type: "integer", description: "요구 낚시 스킬 레벨(1~99)" },
   },
-  required: ["fishId"],
   additionalProperties: false,
 };
 
