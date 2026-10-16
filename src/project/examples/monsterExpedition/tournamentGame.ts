@@ -1,5 +1,5 @@
-import { distributeNpcCharsets } from "./npcFaces";
 import { createExpeditionSeed } from "./seed";
+import { distributeNpcCharsets } from "./npcFaces";
 import { configureScarloxyPokemonDemoProject } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { configureExpeditionRoster } from "./roster";
 import { configureExpeditionAudio } from "./audio";
