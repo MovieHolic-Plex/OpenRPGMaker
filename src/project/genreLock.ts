@@ -7,10 +7,13 @@
 // 캐릭터 칩 잠금(2026-10-16): 프리셋 표의 `charsets` 가 있으면 같은 잠금이 캐릭터 칩(플레이어·NPC·트레이너·이벤트 그림)도 허용 계열로 묶는다 —
 // 맵 칩셋과 같은 구조(허용 목록은 켤 때 표에서 복사, 정본은 프로젝트). `charsets` 가 없는 프리셋(연애)은 캐릭터를 건드리지 않는다.
 // 판정 함수는 여기(`genreLockAllowsCharset`), 실행기 거부·대안 안내는 genreLockCharsets.ts 가 맡는다.
+// 얼굴·전투 그림 잠금(2026-10-16): 프리셋 표의 `visuals` 가 있으면 같은 잠금이 얼굴·흉상·전신(faceset)과 전투 그림(몬스터 앞·뒷모습·트레이너 전투 그림·전투 배경·전투 화면 스킨)도
+// 허용 계열로 묶는다 — 허용 목록은 켤 때 표에서 복사(정본은 프로젝트). 계열 분류는 visualFamily.ts, 판정·거부·대안·생성 대기 안내는 genreLockVisuals.ts 가 맡는다.
 
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { CHARSET_FAMILY_LABELS, charsetFamilyOf, type CharsetFamilyId } from "./charsetFamily";
 import { tilesetFamily, tilesetFamilyLabel } from "./tilesetFamily";
+import type { BackdropFamilyId, BattlerFamilyId, FaceFamilyId, TrainerArtFamilyId } from "./visualFamily";
 import type { GameMap, Project } from "./types";
 
 export type GenreLockPresetId = "monster-collect" | "romance";
@@ -28,6 +31,17 @@ export interface GenreLock {
    * 표에 `charsets` 가 없는 프리셋은 캐릭터를 잠그지 않는다. 이미 그려진 그림은 건드리지 않고 조수가 새로 고르는 그림만 막는다.
    */
   readonly allowedCharsetFamilies?: readonly string[];
+  /**
+   * 켤 때 표에서 복사한 허용 얼굴·흉상·전신 계열(visualFamily.ts FaceFamilyId). 없으면(2026-10-16 이전에 켠 잠금) 프리셋 표의 값을 따른다 —
+   * 표에 `visuals` 가 없는 프리셋은 얼굴을 잠그지 않는다. 이미 그려진 얼굴은 건드리지 않고 조수가 새로 고르는 그림만 막는다.
+   */
+  readonly allowedFaceFamilies?: readonly string[];
+  /**
+   * 켤 때 표에서 복사한 허용 전투 그림 계열. 한 목록에 접두사로 갈라 담는다 —
+   * `battler:<계열>`(몬스터 전투 그림) · `trainer:<계열>`(트레이너 전투 그림) · `backdrop:<계열>`(전투 배경) · `skin:<id>`(전투 화면 스킨).
+   * 없으면 프리셋 표의 값을 따른다(`visuals` 가 없는 프리셋은 전투 그림을 잠그지 않는다).
+   */
+  readonly allowedBattleFamilies?: readonly string[];
   /** 켤 때 이미 허용 밖 칩셋이던 맵 id — 「잠금 이전부터 있던」 맵으로 따로 보고한다(막지 않는다). */
   readonly grandfatheredMapIds?: readonly string[];
 }
@@ -53,6 +67,28 @@ interface GenreLockCharsetDef {
   readonly enforceLine: string;
 }
 
+/** 얼굴·전투 그림 잠금 표(2026-10-16). 프리셋 표에 `visuals` 가 없으면 이 장르는 얼굴·전투 그림을 잠그지 않는다. */
+export interface GenreLockVisualDef {
+  /** 허용 얼굴·흉상·전신 계열. */
+  readonly faces: readonly FaceFamilyId[];
+  /** 허용 몬스터 전투 그림 계열(적·종의 앞모습·뒷모습). */
+  readonly battlers: readonly BattlerFamilyId[];
+  /** 허용 트레이너 전투 그림 계열(`TroopRecord.trainerSprite`). */
+  readonly trainerArt: readonly TrainerArtFamilyId[];
+  /** 허용 전투 배경 계열(적 그룹·지형·맵). */
+  readonly backdrops: readonly BackdropFamilyId[];
+  /** 허용 전투 화면 스킨 id(`system.battleUiStyle`). 이미 있는 값은 건드리지 않고 허용 밖으로 **바꾸는** 것만 막는다. */
+  readonly skins: readonly string[];
+  /** 안내 문장에 쓰는 이름. */
+  readonly kitNoun: string;
+  /** 조수 안내 문장 — 얼굴·흉상이 어디 있는지. */
+  readonly faceLine: string;
+  /** 조수 안내 문장 — 전투 그림이 어디 있고, 없으면 어떻게 하는지. */
+  readonly battleLine: string;
+  /** 잠금이 강제 중일 때만 붙는 문장(거부·목록 필터). */
+  readonly enforceLine: string;
+}
+
 interface GenreLockPresetDef {
   readonly label: string;
   /** 안내 문장에 쓰는 이름(「몬스터 칩셋」). */
@@ -62,6 +98,8 @@ interface GenreLockPresetDef {
   readonly families: readonly string[];
   /** 캐릭터 칩 잠금(없으면 이 장르는 캐릭터를 잠그지 않는다). */
   readonly charsets?: GenreLockCharsetDef;
+  /** 얼굴·전투 그림 잠금(없으면 이 장르는 얼굴·전투 그림을 잠그지 않는다). */
+  readonly visuals?: GenreLockVisualDef;
   /** tilesetId 를 생략한 맵 생성 도구에 넣는 기본 칩셋. */
   readonly defaultTilesetId: string;
   /** 허용 밖 칩셋을 시도했을 때 가장 가까운 허용 칩셋(앞에서부터 처음 맞는 것). 마지막은 defaultTilesetId 로 물러난다. */
@@ -89,6 +127,26 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스), "
         + "몬스터·동물은 OPRN 몬스터 칩(Monster4~6)·몬스터 수집 따라다니기 칩·RTP 동물이다.",
       enforceLine: "RTP Actor·People·마법 학교·공용 공방 사람 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
+    },
+    // 얼굴·전투 그림(2026-10-16): 사람 얼굴은 Scarloxy 트레이너 얼굴 10칸·OPRN 몬스터 얼굴뿐이고(RTP 몬스터·동물 얼굴은 허용 걷기 칩의 짝이라 허용), RTP Actor·People 얼굴·공용 표정 세트 흉상·전신(사람)은 막는다.
+    // 전투 그림은 Scarloxy 몬스터·하네스 몬스터(앞·뒤)·트레이너 번들(battle-trainers)·에메랄드풍/Scarloxy/겹 배경만 허용하고, 일반 JRPG 적(슬라임·박쥐·골렘 …)·RTP 배경은 막는다.
+    // 한계(2026-10-16 실측): 허용 몬스터 그림은 Scarloxy 19종 + 하네스 15종(앞·뒤), 트레이너 번들 앞모습 10역할·뒷모습 2역할이다 — 모자라는 칸은 거부하지 않고 「생성 대기」(그림 없이 저장)로 둔다.
+    visuals: {
+      faces: ["scarloxy-face", "oprn-creature-face", "fantasy-creature-face", "uploaded", "other"],
+      battlers: ["scarloxy-monster", "harness-monster", "uploaded", "other"],
+      trainerArt: ["oprn-trainer", "uploaded"],
+      backdrops: ["scarloxy-backdrop", "emerald-terrain", "oprn-scenery", "pokemon-backdrop", "uploaded", "other"],
+      // 전투 화면 스킨은 지금 둘뿐이다(몬스터 대치 pokemon · 도트 측면 retro2003 — 정면 스킨은 2026-10-02 에 지웠다). 몬스터 수집은 둘 다 쓴다.
+      // 새 스킨이 생기면 이 목록에 넣기 전까지 몬스터 프로젝트로는 바뀌지 않는다(허용 밖 스킨으로 「바꾸는」 것만 막는다).
+      skins: ["pokemon", "retro2003"],
+      kitNoun: "몬스터 수집 얼굴·전투 그림",
+      faceLine: "얼굴·흉상·전신 초상도 이 장르 것만 쓴다 — 사람은 Scarloxy 트레이너 얼굴(generated-faceset-missing-scarloxy-00~09: 걷기 칩과 짝으로 자동 붙는다), 몬스터는 OPRN·RTP 몬스터 얼굴이다. "
+        + "맞는 얼굴이 없으면 판타지 사람 얼굴로 때우지 말고 얼굴 없이 두거나 캐릭터 외형 DB 에 외형을 만들어 generate_character_appearance 로 사용자가 후보를 받게 한다.",
+      battleLine: "전투 그림도 이 장르 것만 쓴다 — 몬스터는 list_resources(kind:monster)의 Scarloxy 몬스터·하네스 몬스터(앞·뒷모습)이고 일반 JRPG 적 그림(slime·bat·golem …)은 거부된다, "
+        + "트레이너 전투 그림은 troop.trainerSprite 에 battle-trainers 역할 id(앞모습 boy·girl·fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder, 뒷모습 hero_m·hero_f)를, "
+        + "전투 배경은 battle-scenery-*·scarloxy-backdrop-*·emerald:<갈래> 를, 전투 화면은 몬스터 대치(pokemon)·도트 측면(retro2003)만 쓴다. "
+        + "맞는 몬스터·트레이너 그림이 없으면 지어내거나 일반 적 그림으로 바꾸지 말고 그림 없이 저장한다 — 「생성 대기」로 check_genre_lock 에 남고, 새 그림은 사람이 고르는 하네스(monster-collect-species · battle-trainer-sprites)에서 만든다.",
+      enforceLine: "허용 밖 얼굴·몬스터·트레이너·배경 그림은 거부되고(가장 가까운 허용 그림을 알려 준다), list_resources 는 허용 그림만 보여 준다.",
     },
     defaultTilesetId: "monster_overworld",
     alternatives: [
@@ -140,6 +198,23 @@ export interface ActiveGenreLock {
   readonly allowed: ReadonlySet<string>;
   /** 허용 캐릭터 칩 계열. undefined = 이 잠금은 캐릭터를 잠그지 않는다. */
   readonly allowedCharsets: ReadonlySet<string> | undefined;
+  /** 허용 얼굴 계열. undefined = 이 잠금은 얼굴을 잠그지 않는다. */
+  readonly allowedFaces: ReadonlySet<string> | undefined;
+  /** 허용 전투 그림 계열(접두사 `battler:`·`trainer:`·`backdrop:`·`skin:`). undefined = 이 잠금은 전투 그림을 잠그지 않는다. */
+  readonly allowedBattle: ReadonlySet<string> | undefined;
+}
+
+/** 표의 얼굴·전투 그림 허용 목록을 저장 형태로 편다. */
+export function genreLockVisualFamilyLists(def: GenreLockVisualDef): { readonly faces: readonly string[]; readonly battle: readonly string[] } {
+  return {
+    faces: [...def.faces],
+    battle: [
+      ...def.battlers.map((id) => `battler:${id}`),
+      ...def.trainerArt.map((id) => `trainer:${id}`),
+      ...def.backdrops.map((id) => `backdrop:${id}`),
+      ...def.skins.map((id) => `skin:${id}`),
+    ],
+  };
 }
 
 /** 프리셋 표의 허용 캐릭터 칩 계열(저장본이 아니라 표). 캐릭터를 안 잠그는 장르는 undefined. 방금 생성한 프로젝트를 표에 맞출 때 쓴다. */
@@ -158,7 +233,13 @@ export function activeGenreLock(project: Pick<Project, "system">): ActiveGenreLo
   if (!lock || !isGenreLockPresetId(lock.preset)) return undefined;
   const def = GENRE_LOCK_PRESETS[lock.preset];
   const charsets = lockedCharsetFamilies(lock, def);
-  return { lock, def, allowed: new Set(lock.allowedFamilies), allowedCharsets: charsets ? new Set(charsets) : undefined };
+  const visuals = def.visuals ? genreLockVisualFamilyLists(def.visuals) : undefined;
+  const faces = visuals ? (lock.allowedFaceFamilies ?? visuals.faces) : undefined;
+  const battle = visuals ? (lock.allowedBattleFamilies ?? visuals.battle) : undefined;
+  return {
+    lock, def, allowed: new Set(lock.allowedFamilies), allowedCharsets: charsets ? new Set(charsets) : undefined,
+    allowedFaces: faces ? new Set(faces) : undefined, allowedBattle: battle ? new Set(battle) : undefined,
+  };
 }
 
 /** 조수·도구 경로에서 거부해야 하는 잠금인가. */
@@ -266,19 +347,30 @@ export function enableGenreLock(project: Project, preset: GenreLockPresetId, mod
   if (existing && existing.preset === preset && existing.mode === mode) {
     // 캐릭터 칩 잠금이 생기기 전(2026-10-16 이전)에 켠 잠금 — 표의 허용 계열을 저장본에 복사해 정본으로 만든다(맵 잠금은 그대로).
     if (def.charsets && !existing.allowedCharsetFamilies) {
-      project.system.genreLock = { ...existing, allowedCharsetFamilies: [...def.charsets.families] };
+      project.system.genreLock = { ...existing, allowedCharsetFamilies: [...def.charsets.families], ...visualFamiliesOf(def) };
       applyGenreLockCharsetDefaults(project, def);
+      return true;
+    }
+    // 얼굴·전투 그림 잠금(2026-10-16)이 생기기 전에 켠 잠금 — 표의 허용 계열을 저장본에 복사해 정본으로 만든다(맵·캐릭터 잠금은 그대로).
+    if (def.visuals && !existing.allowedFaceFamilies) {
+      project.system.genreLock = { ...existing, ...visualFamiliesOf(def) };
       return true;
     }
     return false;
   }
   if (!Object.values(project.tilesets).some((tileset) => def.families.includes(tilesetFamily(project, tileset.id)))) return false;
   const keep = existing && existing.preset === preset ? existing.grandfatheredMapIds : undefined;
-  project.system.genreLock = { preset, mode, allowedFamilies: [...def.families], ...(def.charsets ? { allowedCharsetFamilies: [...def.charsets.families] } : {}) };
+  project.system.genreLock = { preset, mode, allowedFamilies: [...def.families], ...(def.charsets ? { allowedCharsetFamilies: [...def.charsets.families] } : {}), ...visualFamiliesOf(def) };
   const grandfathered = keep ? [...keep] : Object.values(project.maps).filter((map) => genreLockMapViolation(project, map)).map((map) => map.id);
   if (grandfathered.length) project.system.genreLock = { ...project.system.genreLock, grandfatheredMapIds: grandfathered };
   applyGenreLockCharsetDefaults(project, def);
   return true;
+}
+
+function visualFamiliesOf(def: GenreLockPresetDef): { allowedFaceFamilies?: string[]; allowedBattleFamilies?: string[] } {
+  if (!def.visuals) return {};
+  const lists = genreLockVisualFamilyLists(def.visuals);
+  return { allowedFaceFamilies: [...lists.faces], allowedBattleFamilies: [...lists.battle] };
 }
 
 /** 기본 주인공 배우 id(defaults/constants 의 DEFAULT_ACTOR_ID — 그 파일은 무거워 값만 적는다). */
@@ -302,6 +394,11 @@ function applyGenreLockCharsetDefaults(project: Project, def: GenreLockPresetDef
   hero.characterResourceId = charsets.playerDefault.resourceId;
   hero.characterIndex = charsets.playerDefault.characterIndex;
   if (hero.faceResourceId !== undefined && hero.faceResourceId === pairedFace) delete hero.faceResourceId;
+  // 얼굴 잠금이 있으면 새 걷기 칩의 검토된 짝 얼굴을 입힌다 — 얼굴 없이 두면 대사 초상이 비고, 옛 기본 얼굴은 허용 밖이다. 저작자가 고른 다른 얼굴은 남긴다.
+  if (def.visuals && hero.faceResourceId === undefined) {
+    const nextFace = reviewedFaceIdForCharset(charsets.playerDefault.resourceId, charsets.playerDefault.characterIndex);
+    if (nextFace) hero.faceResourceId = nextFace;
+  }
   return true;
 }
 
@@ -353,6 +450,7 @@ export function genreLockPromptNote(project: Project): string | null {
   return `[장르 잠금 — ${active.def.label}]
 이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`
     + (active.def.charsets ? `\n${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : "")
+    + (active.def.visuals ? `\n${active.def.visuals.faceLine}\n${active.def.visuals.battleLine} ${active.def.visuals.enforceLine}` : "")
     + (active.def.promptExtra ? `\n${active.def.promptExtra}` : "");
 }
 
@@ -364,7 +462,8 @@ export function genreLockShortNote(project: Project): string | null {
   const active = enforcingGenreLock(project);
   if (!active) return null;
   return `[장르 잠금 — ${active.def.label}] 이 프로젝트는 ${active.def.label} 게임으로 잠겨 있다: 새 맵은 ${allowedLabels(project, active)} 칩셋 계열만`
-    + (active.def.charsets ? `. ${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : ".");
+    + (active.def.charsets ? `. ${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : ".")
+    + (active.def.visuals ? ` 얼굴·흉상·전투 그림(몬스터·트레이너·전투 배경·전투 화면)도 이 장르 계열만 — ${active.def.visuals.enforceLine}` : "");
 }
 
 /** 몬스터 전용 도구가 처음 성공하면 남기는 장르 표지 — 잠금(맵 칩셋 거부)을 소급해 걸지 않는 대신 이 표지만 남긴다. */

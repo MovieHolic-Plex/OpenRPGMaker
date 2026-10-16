@@ -133,11 +133,13 @@ export function validateSystem(value: unknown): void {
   }
   if (system.genreLock !== undefined) {
     const genreLock = requireRecord("system.genreLock", system.genreLock);
-    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "allowedCharsetFamilies", "grandfatheredMapIds"]);
+    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "allowedCharsetFamilies", "allowedFaceFamilies", "allowedBattleFamilies", "grandfatheredMapIds"]);
     assert(isGenreLockPresetId(genreLock.preset), `system.genreLock.preset is not a supported lock preset: ${String(genreLock.preset)}`);
     assert(genreLock.mode === "enforce" || genreLock.mode === "warn", "system.genreLock.mode must be enforce or warn.");
     for (const [index, family] of requireArray("system.genreLock.allowedFamilies", genreLock.allowedFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFamilies[${index}]`, family);
     if (genreLock.allowedCharsetFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedCharsetFamilies", genreLock.allowedCharsetFamilies).entries()) requireNonBlankString(`system.genreLock.allowedCharsetFamilies[${index}]`, family);
+    if (genreLock.allowedFaceFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedFaceFamilies", genreLock.allowedFaceFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFaceFamilies[${index}]`, family);
+    if (genreLock.allowedBattleFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedBattleFamilies", genreLock.allowedBattleFamilies).entries()) requireNonBlankString(`system.genreLock.allowedBattleFamilies[${index}]`, family);
     if (genreLock.grandfatheredMapIds !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredMapIds", genreLock.grandfatheredMapIds).entries()) requireNonBlankString(`system.genreLock.grandfatheredMapIds[${index}]`, id);
   }
   if (system.titleScreen !== undefined) {
