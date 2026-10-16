@@ -171,6 +171,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let segmentRejections = 0;
   /** finish 가 429 로 끊긴 배정을 한 번 돌려보냈는지 — 두 번째 finish 는 남은 일을 보고에 적고 받는다. */
   let rateLimitRejected = false;
+  /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
+  let romanceRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -738,11 +740,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
           }
           // 연애 인터뷰 게임은 뼈대 엔딩만으로 끝낼 수 없다 — 자리표시 이름·단일 가짜 엔딩·기본 제목이 남았으면 한 번 더 고치게 한다(두 번 거절 뒤에는 보고에 남기고 받는다).
-          const romanceGaps = romanceCompletionGaps(working);
+          const romanceGaps = romanceCompletionGaps(working, { task: request.task });
           if (romanceGaps.length) {
             segmentRejections += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${segmentRejections}): ${romanceGaps.join(" / ")}` } });
-            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${romanceGaps.join(" / ")} — 호감에 따라 갈리는 엔딩은 set_deadline_ending 으로 만들 수 있습니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
+            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${romanceGaps.join(" / ")} — 제목·부제는 set_title_screen, 호감에 따라 갈리는 엔딩은 define_ending(friendshipAtLeast·priority)+set_deadline_ending 으로 만들 수 있습니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
           }
           // JRPG 도 같은 방식 — 기본 제목·빈 시작 마을·부르지 않는 엔딩(jrpg-real-1 J04/J05)은 뼈대 엔딩 도달만으로 통과하던 구멍이다.
           const jrpgGaps = jrpgCompletionGaps(working);
@@ -750,6 +752,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             segmentRejections += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `JRPG 마무리 미완(${segmentRejections}): ${jrpgGaps.join(" / ")}` } });
             throw new Error(`JRPG 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${jrpgGaps.join(" / ")} — 고친 뒤 wait_agents 로 결과를 받고 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
+        }
+        // 연애 게임 요청은 프리셋 첫 생성이 아니어도(채팅 한 줄·기획서 없음) 같은 마무리 검사를 받는다 — 기본 제목·기본 부제·뼈대 자리표시·호감과 무관한 단일 엔딩·농장 타이틀 그림이 통과하던 구멍(romance-real-2 R03).
+        // 구간 게이트 안의 연애 검사(위)와 같은 목록이고, 거절은 두 번까지 — 그 뒤에는 남은 항목을 보고에 적고 받는다.
+        if (!segmentGate && romanceRejections < 2 && !request.readOnly) {
+          const romanceGaps = romanceCompletionGaps(working, { task: request.task });
+          if (romanceGaps.length) {
+            romanceRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${romanceRejections}/2): ${romanceGaps.join(" / ")}` } });
+            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${romanceRejections}/2). ${romanceGaps.join(" / ")} — 제목·부제는 set_title_screen, 호감에 따라 갈리는 엔딩은 define_ending(friendshipAtLeast·priority)+set_deadline_ending 으로 만듭니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
           }
         }
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
@@ -771,8 +783,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (seamErrors.length > 0) finished += `
 남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
         if (cutOff.length) finished += `\n사용 한도(429)로 끊겨 끝내지 못한 배정 ${cutOff.length}건 — 남은 일: ${cutOff.map((outcome) => `${outcome.mapId ?? "프로젝트 공통"} (${outcome.agentId})`).join(", ")}. 다시 요청하면 이어서 만듭니다.`;
-        const stillGaps = [...(segmentGate ? jrpgCompletionGaps(working) : []), ...(segmentGate ? romanceCompletionGaps(working) : [])];
+        const stillGaps = [...(segmentGate ? jrpgCompletionGaps(working) : []), ...(segmentGate ? romanceCompletionGaps(working, { task: request.task }) : [])];
         if (stillGaps.length) finished += `\n남은 마무리 항목: ${stillGaps.join(" / ")}`;
+        const romanceLeft = !segmentGate && !request.readOnly ? romanceCompletionGaps(working, { task: request.task }) : [];
+        if (romanceLeft.length) finished += `\n남은 연애 게임 마무리 항목: ${romanceLeft.join(" / ")}`;
         const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;

@@ -13,6 +13,7 @@ import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool, monsterToolStartsLock } from "@/project/genreLock";
 import { applyMonsterIntentStart } from "@/project/genrePresets";
+import { isRomanceTitleTarget, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
 import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
@@ -225,6 +226,15 @@ function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T)
  * 장르 잠금 중 tilesetId 를 생략한 create_map 류 호출의 기본 칩셋이 허용 밖이면(보는 맵이 잠금 이전부터 있던 다른 계열이어도) 허용 칩셋으로 대체하고 경고를 남긴다.
  * 모델이 tilesetId 를 직접 적었으면 건드리지 않는다 — 그것은 아래 거부 경로가 막는다(무음 대체 금지).
  */
+/** 연애 게임의 타이틀 배경을 농장·모험 같은 어울리지 않는 번들 그림으로 바꾸는 호출은 거부한다(romanceTitleArt.ts). 이미 그렇던 것은 건드리지 않는다. */
+function rejectRomanceTitleMismatch(ctx: ToolContext, before: Project, draft: Project): void {
+  if (!ctx.assistantRun || !isRomanceTitleTarget(draft)) return;
+  const next = draft.system.titleScreen?.backgroundResourceId;
+  if (next === before.system.titleScreen?.backgroundResourceId) return;
+  const mismatch = romanceTitleMismatch(next);
+  if (mismatch) throw new ToolError(romanceTitleMismatchMessage(mismatch), { code: "romance-title-art" });
+}
+
 function genreLockedDefaultTileset(ctx: ToolContext, tool: ToolDefinition, original: Record<string, unknown>, args: Record<string, unknown>): { args: Record<string, unknown>; note?: string } {
   if (!ctx.assistantRun || !tool.defaultTilesetId || !enforcingGenreLock(ctx.project)) return { args };
   if (typeof original.tilesetId === "string" && original.tilesetId.trim().length > 0) return { args };
@@ -501,6 +511,7 @@ export function runToolDefinition(
       if (charsetWarnings.length) exec = { ...exec, warnings: [...charsetWarnings, ...(exec.warnings ?? [])] };
       const visualWarnings = rejectGenreLockVisuals(ctx, tool, before, draft);
       if (visualWarnings.length) exec = { ...exec, warnings: [...visualWarnings, ...(exec.warnings ?? [])] };
+      rejectRomanceTitleMismatch(ctx, before, draft);
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

@@ -104,3 +104,12 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **`set_deadline_ending`**: `tiers` 생략 시 뼈대 세 엔딩 사용, `characterId:"*"` 허용. 히로인별 결말은 `define_ending` 후 tiers 맨 위에 `{endingId, friendshipAtLeast, characterId}` 로 얹는다.
 - **호감 변수 읽기 호환** (`src/project/affectionVariables.ts`): 이름이 「인물 호감도」 모양(예: 「윤서연 호감도」)이고 그 인물이 프로필 displayName·이벤트 이름으로 하나로 정해지면, 런타임 `setVariable`(commandCatalog)이 변수의 **변화량(Δ)** 을 그 인물 `friendship` 에도 더한다 → 선택지가 올린 호감이 ESC 관계 화면·호감 HUD·`friendshipAtLeast`·엔딩에 그대로 반영된다. 변수 자체와 변수 조건은 그대로 동작한다. 인물을 못 정한 호감 변수는 `romance-affection-variable-unmapped` 경고(완료 조건). 정식 경로는 `changeFriendship({npcKey, delta})` 다(조수 지시문·`schemaShapes` 가 그렇게 안내).
 - **검사** (`src/qa/gameCheck/romanceEndings.ts`): `romance-endings-unbranched`(호감으로 갈리는 엔딩 <3), `romance-ending-shadowed`(어떤 호감 상태에서도 못 이기는 엔딩), `romance-endings-not-per-heroine`(호감 대화 인물 ≥2인데 엔딩이 특정 인물을 안 겨눔). 모두 `romanceCompletionGaps`(finish 게이트) 대상. 기한 엔딩 자동 플레이(`deadline.ts`)는 인물 집중·아무도 안 만남에 더해 **호감 문턱 상태(딱 문턱 / 한 칸 모자람)에서 시작하는 판**을 돌려 문턱 엔딩을 하나씩 연다. autoPlay 는 `*` 키를 인식하고, 이름 없는 triggerEnding 의 목표를 호감 문턱 없는 기본 결말로 둔다(`bareEndingTarget`).
+||||||| parent of c212daf6f0 (docs(openwiki): romance title/finish-gate/ending-kicker contracts)
+
+
+## 제목 · 완료 게이트 · 엔딩 화면 작은 줄 (2026-10-16 romance-fix-4, R03/R05/R08)
+
+- **완료 게이트가 채팅 한 줄 경로에서도 걸린다 (R03)**: `romanceCompletionGaps(project, { task })` 는 인터뷰(`gameDesignBrief`)가 없어도 요청 글이 연애 게임 제작이면(`isRomanceGameRequest`: 연애·로맨스·소개팅… + 만들기 + 게임) 연애 프로젝트로 본다. 단일 에이전트는 `PiRomanceProduction`(`src/ai/piAgent/romanceProduction.ts`, `piAgentRuntime.ts` 완료 루프), 팀은 `piTeamRuntime.ts` finish 의 독립 블록(`romanceRejections < 2`, 구간 게이트와 별개)이 같은 목록으로 돌려보낸다. 새 완료 코드: `romance-default-subtitle`(「마음이 닿는 계절」 그대로), `romance-title-art-mismatch`. 도구 이름은 `set_title_screen`(`configure_title_screen` 은 없다).
+- **제목 그림 잠금**: 연애 잠금 프로젝트에서 조수가 제목 배경을 연애 허용 목록(`romanceTitleArt.ts` `ROMANCE_TITLE_BACKGROUNDS`) 밖의 번들 그림(농장 등)으로 바꾸면 `toolRunner.ts rejectRomanceTitleMismatch` 가 `romance-title-art` 로 거절한다. 사용자가 올린 그림은 막지 않는다.
+- **긴 제목 (R05)**: `title.css` 의 제목 `max-width` 가 제목 왼쪽(`--title-left`, `titleScreen.ts` 가 설정)에서 오른쪽 가장자리까지만 쓰고 줄을 바꾼다.
+- **엔딩 화면 위 작은 줄 (R08)**: `EndingPresentation.kicker`(≤24자, `define_ending.presentation.kicker`). 비우면 연애 프로젝트(`usesRelationshipMenu`)는 「두 사람의 이야기」, 어두운 톤은 「이야기의 끝」, 나머지는 「우리의 여정」.

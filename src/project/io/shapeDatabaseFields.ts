@@ -312,6 +312,10 @@ export function validateGameOverSettings(value: unknown, label = "system.gameOve
   for (const key of ["title", "message", "retryLabel", "titleLabel"]) {
     if (settings[key] !== undefined) requireString(`${label}.${key}`, settings[key]);
   }
+  if (settings.kicker !== undefined) {
+    requireString(`${label}.kicker`, settings.kicker);
+    assert((settings.kicker as string).length <= 24, `${label}.kicker is too long.`);
+  }
   if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
 }
 
@@ -919,7 +923,7 @@ function assertFiniteNumberInRange(label: string, value: unknown, min: number, m
 
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker"]);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.tone !== undefined) assert(settings.tone === "warm" || settings.tone === "dark", `${label}.tone is invalid.`);
   if (settings.credits !== undefined) {
