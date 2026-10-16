@@ -159,7 +159,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
   const sideParty = skin.sideParty && !snapshot.relationship && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
@@ -352,6 +352,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "relationships": return "∞";
     case "gallery": return "▣";
     case "life-ledger": return "▦";
+    case "backlog": return "≡";
     case "save": return "↓";
     case "load": return "↑";
     case "wait": return "Ⅱ";
@@ -384,6 +385,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "relationships": return "world";
     case "gallery": return "map";
     case "life-ledger": return "book-magic";
+    case "backlog": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
     case "wait": return "clock";
@@ -424,6 +426,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "relationships":
     case "gallery":
     case "life-ledger":
+    case "backlog":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:

@@ -1,3 +1,4 @@
+import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -397,6 +398,8 @@ async function consumeBlockingStep(
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
+  // 오토·스킵은 사람이 직접 고르거나 장면이 바뀌는 단계(선택지·이동·전투·상점·엔딩…)에서 반드시 멈춘다(project/dialogueSystem.ts stopsReading).
+  if (stopsReading(step.kind)) dialogue.stopReading?.(stepStopReason(step.kind));
   switch (step.kind) {
     case "text": {
       const project = store.getCurrent();
@@ -425,6 +428,7 @@ async function consumeBlockingStep(
         autoAdvance: step.autoAdvance === true,
         emotion: step.emotion,
         ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
+        ...(step.endingEpilogue ? { endingEpilogue: true } : {}),
       });
       {
         const skipped = skipController.takeResult();

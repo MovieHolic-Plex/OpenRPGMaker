@@ -1,4 +1,13 @@
-import { playerTextDelay } from '@/player/playerPreferences';
+import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
+import { createDialogueControlBar, type DialogueBarAction, type DialogueControlBar } from '@/player/dialogueControlBar';
+import { backlogViewIsOpen, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
+import { dialogueUiText } from '@/player/dialogueUiStrings';
+import { applyWindowOpacity } from '@/player/dialogueWindowOpacity';
+import {
+  SKIP_STEP_DELAY_MS, appendBacklog, autoAdvanceDelayMs, dialogueReadKey, dialogueSystemHasControls, isDialogueRead, markDialogueRead,
+  normalizeBacklog, resolveDialogueSystem, skipVerdict,
+  type AuthoredDialogueSystem, type BacklogHost, type ReadingStopReason,
+} from '@/project/dialogueSystem';
 import { cancelChoiceIndex } from '@/project/choiceCancellation';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
@@ -39,7 +48,7 @@ import { prefersReducedMotion } from "@/player/characterLanding";
 import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
-import { playLineVoice, stopLineVoice } from "@/player/lineVoice";
+import { lineVoiceActive, playLineVoice, stopLineVoice } from "@/player/lineVoice";
 import { createDialogueVoice, type DialogueVoicePlayer as DialoguePlayerVoice } from "@/player/dialogueVoice";
 import { createMonsterDialogueTick } from "@/player/monsterSfx";
 import {
@@ -73,6 +82,11 @@ type DialogueSurfaceSettings = {
    * 생략하면 프로젝트 기본 스타일 + 화자 이름으로 찾은 프로필을 쓴다.
    */
   readonly look?: DialogueLook;
+  /**
+   * 'off' 면 읽기 보조(백로그 기록·읽은 글 표시·오토·스킵·숨기기 단추)를 이 요청에 쓰지 않는다.
+   * 전투 중 이벤트 대사처럼 세션에 속하지 않는 임시 문맥이 저장되는 백로그에 섞이지 않게 한다.
+   */
+  readonly reading?: "off";
 };
 
 export type DialogueTextContext = {
@@ -87,6 +101,8 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly face?: FaceGraphic;
   /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
   readonly autoAdvance?: boolean;
+  /** 엔딩 에필로그의 글. 스킵은 이 글을 절대 건너뛰지 않는다(interpreter text 단계의 endingEpilogue). */
+  readonly endingEpilogue?: boolean;
   /**
    * 「문장 표시」 커맨드의 연출 선택자. 감정 이름이 그대로 연출 프로파일을 고른다
    * (src/player/dialoguePresentation.ts). 모르는 값과 빈 값은 neutral 로 떨어진다.
@@ -229,6 +245,10 @@ export interface DialogueUI {
   closeLog(): void;
   /** 이 플레이 세션에서 본 대사(오래된 것부터, 최대 200줄). */
   dialogueLog(): readonly DialogueLogEntry[];
+  /** 오토·스킵을 멈춘다(선택지·장면 전환·전투 같은 경계에서 호출). 켜져 있지 않으면 아무 일도 없다. 생략 가능한 멤버 — 테스트 대역은 안 갖는다. */
+  stopReading?(reason: ReadingStopReason): void;
+  /** 지금 읽기 모드. */
+  readingMode?(): "off" | "auto" | "skip";
 }
 
 /** 지연 실행 주입 구멍. 취소 함수를 돌려준다. createBattleTransition 과 같은 형태. */
@@ -270,6 +290,10 @@ export function createDialogueUI(
     clearChildren(overlay);
     resetOverlay(overlay);
     resetScrim(scrim);
+    delete overlay.dataset.dialogueHidden;
+    delete scrim.dataset.dialogueHidden;
+    hiddenByUser = false;
+    currentBar = undefined;
   };
 
   /**
@@ -324,13 +348,54 @@ export function createDialogueUI(
     }, enterMs);
   };
 
+  // ── 읽기 보조(오토·스킵·숨기기) 상태 ───────────────────────────────────────────
+  // 저작(meta.oprnDialogueSystem·연애 기본 구성)이 있을 때만 켜진다. 없으면 아래 값은 전부 쉬고 옛 동작 그대로다.
+  type ReadingMode = "off" | "auto" | "skip";
+  let readingMode: ReadingMode = "off";
+  let ctrlSkip = false;
+  let hiddenByUser = false;
+  let currentBar: DialogueControlBar | undefined;
+  /** 지금 떠 있는 대사 한 줄의 읽기 보조 손잡이. */
+  let onBarAction: (action: DialogueBarAction) => void = () => {};
+  let activeReading: { readonly reevaluate: () => void; readonly clearTimer: () => void; readonly toggle: (mode: "auto" | "skip") => void; readonly openBacklog: () => void; readonly setHidden: (value: boolean) => void } | undefined;
+  /** 마지막으로 쓴 백로그 문맥. ESC 메뉴·openLog() 가 같은 화면을 연다. */
+  let lastBacklog: { readonly host: BacklogHost; readonly system: AuthoredDialogueSystem } | undefined;
+  const isSkipping = (): boolean => readingMode === "skip" || ctrlSkip;
+  const syncBar = (): void => currentBar?.sync({ auto: readingMode === "auto", skip: isSkipping() });
+  const NOTICE_KEY = { choices: "notice.choices", ending: "notice.ending", unread: "notice.unread", locked: "notice.locked", boundary: "notice.boundary" } as const;
+  let noticeSystem: AuthoredDialogueSystem | undefined;
+  const stopReading = (reason: ReadingStopReason): void => {
+    const was = readingMode !== "off" || ctrlSkip;
+    readingMode = "off";
+    ctrlSkip = false;
+    activeReading?.clearTimer();
+    syncBar();
+    if (!was) return;
+    overlay.dataset.readingStop = reason;
+    if (reason in NOTICE_KEY) currentBar?.notice(dialogueUiText(noticeSystem, NOTICE_KEY[reason as keyof typeof NOTICE_KEY]));
+  };
+  const setHiddenState = (value: boolean): void => {
+    hiddenByUser = value;
+    if (value) overlay.dataset.dialogueHidden = "1";
+    else delete overlay.dataset.dialogueHidden;
+    if (value) scrim.dataset.dialogueHidden = "1";
+    else delete scrim.dataset.dialogueHidden;
+  };
+
   // ── 대화 기록(백로그) ──────────────────────────────────────────────────────
-  // 이 UI 가 살아 있는 동안(한 플레이 세션) 본 대사를 모은다. 저장 파일에는 넣지 않는다.
+  // 옛 방식: 이 UI 가 살아 있는 동안(한 플레이 세션) 본 대사를 모은다. 저장 파일에는 넣지 않는다.
+  // 새 방식(저작된 대사 시스템에서 백로그가 켜졌을 때): 세션의 dialogueBacklog 링 버퍼에 쓰고 세이브에 실린다. 둘은 같은 줄을 따로 센다.
   const logEntries: DialogueLogEntry[] = [];
   let logPanel: HTMLElement | undefined;
-  const recordLog = (request: DialogueTextRequest, look: DialogueLook): void => {
+  /** 이 요청에 적용할 대사 시스템. reading:'off' 면 없다. */
+  const systemFor = (request: { readonly reading?: "off" }): AuthoredDialogueSystem | undefined =>
+    request.reading === "off" ? undefined : resolveDialogueSystem(store.getCurrent());
+  /** 백로그·읽은 글 표시가 쓸 세션. 가짜 세션(전투 임시 문맥)은 reading:'off' 로 걸러진다. */
+  const sessionHostFor = (request: { readonly textContext?: DialogueTextContext }): BacklogHost | undefined =>
+    (request.textContext?.session as unknown as BacklogHost | undefined) ?? undefined;
+  const recordLog = (request: DialogueTextRequest, look: DialogueLook): { readonly text: string; readonly speaker?: string } | undefined => {
     const text = parseDialogueText(request.body, request.textContext).map((segment) => segment.text).join("").trim();
-    if (!text) return;
+    if (!text) return undefined;
     const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker);
     logEntries.push({
       text,
@@ -339,13 +404,40 @@ export function createDialogueUI(
       ...(look.nameColor ? { color: look.nameColor } : {}),
     });
     if (logEntries.length > DIALOGUE_LOG_LIMIT) logEntries.splice(0, logEntries.length - DIALOGUE_LOG_LIMIT);
+    const system = systemFor(request);
+    const host = sessionHostFor(request);
+    if (system?.backlog.enabled && host) {
+      appendBacklog(host, { kind: "line", text, ...(speaker ? { speaker } : {}), ...(look.nameColor ? { color: look.nameColor } : {}), ...(look.context ? { context: look.context } : {}) }, system.backlog.limit);
+      lastBacklog = { host, system };
+    }
+    return { text, ...(speaker ? { speaker } : {}) };
+  };
+  const recordChoice = (request: DialogueChoicesRequest, index: number): void => {
+    const system = systemFor(request);
+    const host = sessionHostFor(request);
+    if (!system?.backlog.enabled || !host) return;
+    const plain = (text: string): string => parseDialogueText(text, request.textContext).map((segment) => segment.text).join("").trim();
+    const option = request.options[index];
+    const picked = option ? plain(option.text) : dialogueUiText(system, "backlog.cancel");
+    if (!picked) return;
+    const prompt = request.prompt ? plain(request.prompt) : "";
+    appendBacklog(host, { kind: "choice", picked, ...(prompt ? { prompt } : {}) }, system.backlog.limit);
+    lastBacklog = { host, system };
   };
   const closeLog = (): void => {
     logPanel?.remove();
     logPanel = undefined;
+    closeBacklogView();
+  };
+  const openNewBacklog = (): boolean => {
+    if (!lastBacklog) return false;
+    const { host: sessionHost, system } = lastBacklog;
+    openBacklogView({ host, entries: normalizeBacklog(sessionHost.dialogueBacklog, system.backlog.limit) ?? [], system });
+    return true;
   };
   const openLog = (): void => {
     closeLog();
+    if (openNewBacklog()) return;
     const list = el("ol", { class: "dialogue-log-list" });
     for (const entry of logEntries) {
       const item = el("li", {
@@ -391,7 +483,8 @@ export function createDialogueUI(
     if (isDialogueLogKey(e.key, e.code)) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      openLog();
+      if (activeReading) activeReading.openBacklog();
+      else openLog();
       return true;
     }
     return false;
@@ -483,6 +576,9 @@ export function createDialogueUI(
   function showText(rawRequest: DialogueTextRequest): Promise<void> {
     const request = withoutSpeakerEcho(rawRequest);
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
+    const system = systemFor(request);
+    if (request.reading !== "off") setAuthoredPreferenceDefaults(system?.defaults);
+    noticeSystem = system;
     const voiceFile = request.voiceResourceId?.trim();
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
@@ -499,7 +595,7 @@ export function createDialogueUI(
       let look = requestedLook;
       // 말풍선은 머리 위 기준점이 있어야 그린다. 없으면(편집기 미리보기·플레이어 이벤트 밖) 상자다.
       let useBalloon = look.container === "balloon" && request.anchor?.() !== undefined;
-      recordLog(request, look);
+      const recorded = recordLog(request, look);
       const speakerKey = request.speaker?.trim() || request.speakerKey || "";
       const profile = dialoguePresentationProfile(request.emotion, {
         reducedMotion: resolveReducedMotion(request.reducedMotion),
@@ -618,11 +714,20 @@ export function createDialogueUI(
         });
         logButton.addEventListener("click", (event) => {
           event.stopPropagation();
-          if (logPanel) closeLog();
+          if (logPanel || backlogViewIsOpen()) closeLog();
+          else if (activeReading) activeReading.openBacklog();
           else openLog();
         });
-        if (!balloon) box.append(logButton);
+        if (!balloon && system && dialogueSystemHasControls(system)) {
+          // 저작된 대사 시스템: 오토·스킵·백로그·숨기기 단추 줄이 옛 「기록」 단추를 대신한다.
+          currentBar = createDialogueControlBar(system, (action) => onBarAction(action));
+          if (currentBar) {
+            box.append(currentBar.root);
+            syncBar();
+          }
+        } else if (!balloon) box.append(logButton);
         overlay.append(box);
+        if (system) applyWindowOpacity(box, getEffectiveReadingPreferences(system.defaults).windowOpacity);
         // 상자 뒤 초상은 상자 **다음** 형제여야 퇴장 연출 선택자(`~`)가 닿는다. 쌓임은 z-index 가 정한다.
         overlay.append(...behindPortraits);
         // 이름표가 본문 첫 줄을 덮지 않게 여백을 재서 심는다. 오버레이에 붙인 **뒤**라야
@@ -824,6 +929,7 @@ export function createDialogueUI(
         cursor.textContent = last ? "■" : "▼";
         cursor.classList.toggle("is-end", last);
         box.classList.add("page-ready");
+        scheduleReading();
       };
       const consumeRemainingPage = (): void => {
         clearTimeout(timer);
@@ -888,6 +994,7 @@ export function createDialogueUI(
       };
       const startPage = (nextPageIndex: number): void => {
         clearTimeout(timer);
+        clearReadTimer();
         pageIndex = nextPageIndex;
         visibleChars = 0;
         tokenIndex = 0;
@@ -906,9 +1013,12 @@ export function createDialogueUI(
         }
         startMouth();
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
+        // 스킵 중이면 이 쪽을 바로 채운다(안전 규칙에 걸리면 여기서 스킵이 꺼지고 평소처럼 흐른다).
+        if (system && isSkipping()) reevaluate();
       };
       const advance = () => {
-        if (settled || logPanel) return;
+        if (settled || logPanel || hiddenByUser || backlogViewIsOpen()) return;
+        clearReadTimer();
         if (waitingForControl) {
           waitingForControl = false;
           typing = true;
@@ -931,9 +1041,187 @@ export function createDialogueUI(
         beginExit(box, profile.exitMs);
         resolve();
       };
+      // ── 읽기 보조: 오토·스킵·숨기기 ────────────────────────────────────────────
+      // 안전 규칙은 순수 함수(project/dialogueSystem.ts skipVerdict·stopsReading)가 정하고, 여기는 그 답대로 타이머를 돌린다.
+      // 선택지·엔딩 에필로그·[넘기기금지] 글·(읽은 글만 범위의) 안 읽은 글에서는 스킵이 꺼지고, 오토·스킵은 선택지를 절대 고르지 않는다.
+      const sessionHost = sessionHostFor(request);
+      const lineKey = dialogueReadKey(recorded?.speaker, recorded?.text ?? "");
+      // 빈 글(제어 태그뿐)은 읽을 것이 없으니 읽은 글로 친다.
+      const wasRead = !recorded || (system !== undefined && sessionHost !== undefined && isDialogueRead(sessionHost, lineKey));
+      if (system?.skip.enabled && sessionHost && recorded) markDialogueRead(sessionHost, lineKey);
+      const lockedLine = segmentsAll.some((segment) => segment.controlsBefore?.some((control) => control.kind === "lock" && control.on) === true);
+      let readTimer = 0;
+      const clearReadTimer = (): void => {
+        if (readTimer) window.clearTimeout(readTimer);
+        readTimer = 0;
+      };
+      const readingBlocked = (): boolean =>
+        hiddenByUser || backlogViewIsOpen() || logPanel !== undefined || (typeof document !== "undefined" && document.hidden)
+        || (readingMode === "auto" && lineVoiceActive());
+      const readAdvance = (): void => {
+        readTimer = 0;
+        if (settled) return;
+        if (readingBlocked()) {
+          readTimer = window.setTimeout(readAdvance, 250);
+          return;
+        }
+        advance();
+      };
+      /** 스킵이 이 줄을 지나가도 되는가. 안 되면 스킵을 끄고 false. */
+      const skipAllowed = (): boolean => {
+        if (!system) return false;
+        const verdict = skipVerdict({
+          enabled: system.skip.enabled,
+          scope: getEffectiveReadingPreferences(system.defaults).skipScope,
+          isRead: wasRead,
+          endingEpilogue: request.endingEpilogue === true,
+          lockedText: lockedLine,
+        });
+        if (verdict.ok) return true;
+        stopReading(verdict.reason);
+        return false;
+      };
+      const scheduleReading = (): void => {
+        clearReadTimer();
+        if (settled || typing || waitingForControl || !system || request.autoAdvance === true) return;
+        if (isSkipping()) {
+          if (skipAllowed()) readTimer = window.setTimeout(readAdvance, SKIP_STEP_DELAY_MS);
+        } else if (readingMode === "auto") {
+          readTimer = window.setTimeout(readAdvance, autoAdvanceDelayMs(pageChars.length, getEffectiveReadingPreferences(system.defaults).autoSpeed));
+        }
+      };
+      const reevaluate = (): void => {
+        if (settled || !system) return;
+        if (isSkipping()) {
+          if (!skipAllowed()) return;
+          if (waitingForControl) {
+            waitingForControl = false;
+            typing = true;
+            box.classList.remove("page-ready");
+            consumeRemainingPage();
+            return;
+          }
+          if (typing && !locked) {
+            consumeRemainingPage();
+            return;
+          }
+        }
+        scheduleReading();
+      };
+      const toggleMode = (mode: "auto" | "skip"): void => {
+        if (settled || !system) return;
+        if (mode === "auto" && !system.auto.enabled) return;
+        if (mode === "skip" && !system.skip.enabled) return;
+        readingMode = readingMode === mode ? "off" : mode;
+        delete overlay.dataset.readingStop;
+        syncBar();
+        if (readingMode === "off") clearReadTimer();
+        reevaluate();
+      };
+      let dropHiddenListeners = (): void => {};
+      const setHidden = (value: boolean): void => {
+        if (settled || !system) return;
+        if (!value) {
+          dropHiddenListeners();
+          setHiddenState(false);
+          scheduleReading();
+          return;
+        }
+        // 자동으로 넘어가는 줄(autoAdvance)은 숨겨 두면 사용자가 못 읽고 지나가므로 숨길 수 없다.
+        if (!system.hideButton.enabled || request.autoAdvance === true || hiddenByUser || backlogViewIsOpen()) return;
+        stopReading("manual");
+        setHiddenState(true);
+        const swallow = (event: Event): void => {
+          event.preventDefault();
+          event.stopPropagation();
+        };
+        const onPointer = (event: Event): void => {
+          swallow(event);
+          dropHiddenListeners();
+          setHiddenState(false);
+          scheduleReading();
+          // 같은 누름의 click 이 게임(맵 터치 이동)에 닿지 않게 한 번 삼킨다.
+          const swallowClick = (clickEvent: Event): void => {
+            swallow(clickEvent);
+            host.removeEventListener("click", swallowClick, true);
+          };
+          host.addEventListener("click", swallowClick, true);
+          window.setTimeout(() => host.removeEventListener("click", swallowClick, true), 500);
+        };
+        const onHiddenKey = (event: KeyboardEvent): void => {
+          if (event.key === "Control" || event.key === "Shift" || event.key === "Alt" || event.key === "Meta") return;
+          swallow(event);
+          event.stopImmediatePropagation();
+          dropHiddenListeners();
+          setHiddenState(false);
+          scheduleReading();
+        };
+        host.addEventListener("pointerdown", onPointer, true);
+        document.addEventListener("keydown", onHiddenKey, true);
+        dropHiddenListeners = (): void => {
+          host.removeEventListener("pointerdown", onPointer, true);
+          document.removeEventListener("keydown", onHiddenKey, true);
+          dropHiddenListeners = (): void => {};
+        };
+      };
+      const openBacklogForLine = (): void => {
+        if (settled) return;
+        stopReading("manual");
+        if (hiddenByUser) setHidden(false);
+        if (system?.backlog.enabled && sessionHost) {
+          lastBacklog = { host: sessionHost, system };
+          closeLog();
+          openNewBacklog();
+        } else if (logPanel) closeLog();
+        else openLog();
+      };
+      const readingHandle = { reevaluate, clearTimer: clearReadTimer, toggle: toggleMode, openBacklog: openBacklogForLine, setHidden };
+      activeReading = readingHandle;
+      onBarAction = (action) => {
+        if (action === "auto" || action === "skip") toggleMode(action);
+        else if (action === "backlog") openBacklogForLine();
+        else setHidden(true);
+      };
+
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
         if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
+        if (system) {
+          // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
+          if (ctrlSkip && !e.ctrlKey) { ctrlSkip = false; syncBar(); }
+          if (hiddenByUser) {
+            // 숨김 중 아무 키나 누르면 돌아온다. 그 키는 게임에 닿지 않는다.
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            setHidden(false);
+            return;
+          }
+          if (e.key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
+            ctrlSkip = true;
+            delete overlay.dataset.readingStop;
+            syncBar();
+            reevaluate();
+            return;
+          }
+          if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+            const shortcut = e.code === "KeyA" ? "auto" : e.code === "KeyS" ? "skip" : e.code === "KeyH" ? "hide" : undefined;
+            const enabled = shortcut === "auto" ? system.auto.enabled : shortcut === "skip" ? system.skip.enabled : shortcut === "hide" ? system.hideButton.enabled : false;
+            if (shortcut && enabled) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              if (shortcut === "hide") setHidden(true);
+              else toggleMode(shortcut);
+              return;
+            }
+          }
+          // 오토·스킵 중 결정키·취소키는 읽기 보조만 끈다(글을 넘기지도, 메뉴를 열지도 않는다).
+          if (readingMode !== "off" && (isDialogueAdvanceKey(e.key) || e.key === "Escape")) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            stopReading("manual");
+            return;
+          }
+        }
         if (handleLogKey(e)) return;
         if (isDialogueAdvanceKey(e.key)) {
           e.preventDefault();
@@ -941,12 +1229,45 @@ export function createDialogueUI(
           advance();
         }
       };
+      const onKeyUp = (e: KeyboardEvent): void => {
+        if (e.key === "Control" && ctrlSkip) {
+          ctrlSkip = false;
+          syncBar();
+          scheduleReading();
+        }
+      };
+      const onBlur = (): void => {
+        if (!ctrlSkip) return;
+        ctrlSkip = false;
+        syncBar();
+        scheduleReading();
+      };
+      const onBoxClick = (): void => {
+        // 오토·스킵 중 클릭은 읽기 보조만 끈다.
+        if (readingMode !== "off" || ctrlSkip) {
+          stopReading("manual");
+          return;
+        }
+        advance();
+      };
+      const onBoxWheel = (e: WheelEvent): void => {
+        // 휠을 위로 굴리면 백로그(저작된 시스템에서 켜졌을 때만).
+        if (e.deltaY >= 0 || !system?.backlog.enabled || settled) return;
+        e.preventDefault();
+        openBacklogForLine();
+      };
       const cleanup = () => {
         cancelEnter();
         clearTimeout(timer);
+        clearReadTimer();
+        dropHiddenListeners();
+        if (activeReading === readingHandle) activeReading = undefined;
+        document.removeEventListener("keyup", onKeyUp);
+        if (typeof window !== "undefined") window.removeEventListener("blur", onBlur);
+        box.removeEventListener("wheel", onBoxWheel);
         stopMouth();
         if (balloonRaf && typeof cancelAnimationFrame === "function") cancelAnimationFrame(balloonRaf);
-        box.removeEventListener("click", advance);
+        box.removeEventListener("click", onBoxClick);
         document.removeEventListener("keydown", onKey);
         request.signal?.removeEventListener("abort", abort);
         if (cancelActiveText === abort) cancelActiveText = undefined;
@@ -961,8 +1282,11 @@ export function createDialogueUI(
       };
       cancelActiveText = abort;
       request.signal?.addEventListener("abort", abort, { once: true });
-      box.addEventListener("click", advance);
+      box.addEventListener("click", onBoxClick);
+      box.addEventListener("wheel", onBoxWheel, { passive: false });
       document.addEventListener("keydown", onKey);
+      document.addEventListener("keyup", onKeyUp);
+      if (typeof window !== "undefined") window.addEventListener("blur", onBlur);
       startPage(0);
     });
   }
@@ -970,6 +1294,10 @@ export function createDialogueUI(
   function showChoices(request: DialogueChoicesRequest): Promise<number> {
     if (request.signal?.aborted) return Promise.reject(new DOMException("Choice cancelled", "AbortError"));
     // 대사 직후 선택지는 같은 창 세션이다 — 여기서 진입 연출을 다시 재생하면 안 된다.
+    const system = systemFor(request);
+    if (request.reading !== "off") setAuthoredPreferenceDefaults(system?.defaults);
+    // 선택지는 사람이 직접 고른다 — 오토·스킵은 여기서 반드시 멈춘다.
+    stopReading("choices");
     const wasOpen = takeOverOverlay();
     return new Promise<number>((resolve, reject) => {
       const position = applyOverlayPosition(overlay, request);
@@ -1009,6 +1337,7 @@ export function createDialogueUI(
       };
       const finish = (index: number): void => {
         if (settled) return;
+        recordChoice(request, index);
         cleanup();
         beginExit(choicesWindow, choicesProfile.exitMs);
         resolve(index);
@@ -1097,6 +1426,7 @@ export function createDialogueUI(
 
       choicesWindow.append(choicesEl);
       overlay.append(choicesWindow);
+      if (system) applyWindowOpacity(choicesWindow, getEffectiveReadingPreferences(system.defaults).windowOpacity);
       setSelected(0);
       beginEnter(choicesWindow, choicesProfile.enterMs, !wasOpen);
     });
@@ -1104,6 +1434,7 @@ export function createDialogueUI(
 
   /** 즉시 컷. 퇴장 예약이 걸려 있으면 취소하고 바로 비운다. */
   function hide(): void {
+    stopReading("boundary");
     stopLineVoice();
     cancelActiveText?.();
     cancelActiveChoice?.();
@@ -1119,6 +1450,7 @@ export function createDialogueUI(
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
   function close(): void {
+    stopReading("boundary");
     cancelActiveText?.();
     cancelActiveChoice?.();
     const box = overlay.querySelector<HTMLElement>(".dialogue-box");
@@ -1133,6 +1465,7 @@ export function createDialogueUI(
     showText,
     showChoices,
     showNumberInput: (request) => {
+      stopReading("choices");
       takeOverOverlay();
       return showNumberInput(overlay, request, { applyTextSettings, resetOverlay });
     },
@@ -1141,6 +1474,8 @@ export function createDialogueUI(
     openLog,
     closeLog,
     dialogueLog: () => [...logEntries],
+    stopReading,
+    readingMode: () => (isSkipping() ? "skip" : readingMode),
   };
 }
 

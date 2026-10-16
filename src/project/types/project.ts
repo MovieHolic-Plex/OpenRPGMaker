@@ -795,6 +795,8 @@ export interface Project {
     oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory';portraitResourceId?:string;portraitMotion?:import('../openingPortraitMotion').OpeningPortraitMotion};
     oprnShopPreset?: import('./events').ShopUiPreset;
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
+    /** 대사창 읽기 보조(백로그·오토·스킵·숨기기) 저작. 없으면 옛 동작(연애 게임은 기본 구성). project/dialogueSystem.ts */
+    oprnDialogueSystem?: import('../dialogueSystem').AuthoredDialogueSystem;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;

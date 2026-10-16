@@ -45,6 +45,9 @@ import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
 import { openGalleryViewer } from "@/player/galleryViewer";
+import { openBacklogView } from "@/player/dialogueBacklogView";
+import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax } from "@/project/socialLoop";
@@ -72,7 +75,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   if (isStatusMenuGroupEntryId(options.selectedCommand)) return groupDetail(options, options.selectedCommand);
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
-    case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
+    case "options": return createPlayerOptionsDetail(options.onOptionsChanged, options.project);
     case 'trainer-card': {
       const { project, session } = options;
       const campaign = monsterCampaign(project), ids = monsterDexSpeciesIds(project);
@@ -102,6 +105,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "gallery": return galleryDetail(options.project, options.session);
+    case "backlog": return backlogDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
       session: options.session,
@@ -144,6 +148,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
   gallery: "모아 둔 그림을 다시 봅니다.",
+  backlog: "지난 대사와 고른 선택지를 다시 읽습니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
@@ -883,6 +888,36 @@ function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail
     }),
     emptyLabel: "아직 열린 그림이 없습니다.",
     hint: "결정 키로 화면 가득 봅니다. 연 뒤 좌우로 넘깁니다.",
+  };
+}
+
+/** 백로그 — 전체 화면 뷰어를 열고, 아래에 가장 최근 대사 몇 줄을 미리 보인다. 데이터는 세이브에 실린 session.dialogueBacklog. */
+function backlogDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const system = resolveDialogueSystem(project);
+  const text = (key: Parameters<typeof dialogueUiText>[1], ...args: readonly (string | number)[]) => dialogueUiText(system, key, ...args);
+  if (!system?.backlog.enabled) {
+    return { title: text("menu.backlog"), entries: [], emptyLabel: text("menu.backlogDisabled") };
+  }
+  const log = normalizeBacklog(session.dialogueBacklog, system.backlog.limit) ?? [];
+  const recent = log.slice(-5).reverse();
+  return {
+    title: text("menu.backlog"),
+    entries: [
+      {
+        label: text("menu.backlogOpen"),
+        value: text("backlog.count", log.length),
+        testId: "status-menu-backlog-open",
+        onActivate: () => openBacklogView({ host: (document.querySelector(".play-stage") as HTMLElement | null) ?? document.body, entries: log, system }),
+      },
+      ...recent.map((entry, index) => ({
+        label: entry.kind === "choice" ? `▶ ${text("backlog.choice")}` : entry.speaker ?? "—",
+        value: "",
+        description: entry.kind === "choice" ? entry.picked : entry.text,
+        testId: `status-menu-backlog-recent-${index}`,
+      })),
+    ],
+    emptyLabel: text("backlog.empty"),
+    hint: text("menu.backlogHint"),
   };
 }
 

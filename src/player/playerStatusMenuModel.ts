@@ -10,6 +10,8 @@ import { currentChapterLabel } from "@/project/newGamePlus";
 import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
@@ -36,7 +38,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -253,6 +255,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     if (id === "quests" && relationship) return (project.quests?.length ?? 0) > 0;
     if (id === "gallery") return isGalleryEnabled(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
+    // 백로그는 저작된 대사 시스템에서 켠 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
+    if (id === "backlog") return backlogEnabled(project);
     if (id === "save") return !saveDisabled;
     return true;
   });
@@ -396,6 +400,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "relationships": return "관계";
     case "gallery": return galleryMenuLabel(project);
     case "life-ledger": return "생활 장부";
+    case "backlog": return dialogueUiText(resolveDialogueSystem(project), "menu.backlog");
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.
@@ -481,6 +486,8 @@ export function statusMenuCommandSummary(
       return "";
     case "gallery":
       return `${listGalleryUnlocks(session).length}장`;
+    case "backlog":
+      return dialogueUiText(resolveDialogueSystem(project), "backlog.count", normalizeBacklog(session.dialogueBacklog)?.length ?? 0);
     case "party-menu": {
       const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
       return crit > 0 ? `위험 ${crit} · ${countLabel}` : `${countLabel} 양호`;

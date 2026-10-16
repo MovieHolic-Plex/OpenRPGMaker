@@ -1,34 +1,72 @@
 import { getAudioEngine } from '@/player/audio';
-import { getPlayerPreferences, updatePlayerPreferences, type PlayerPreferences } from '@/player/playerPreferences';
+import { getEffectiveReadingPreferences, getPlayerPreferences, setAuthoredPreferenceDefaults, updatePlayerPreferences, type PlayerPreferences } from '@/player/playerPreferences';
+import { dialogueUiText } from '@/player/dialogueUiStrings';
+import { resolveDialogueSystem, type DialogueSpeed } from '@/project/dialogueSystem';
 import type { StatusMenuDetail, StatusMenuDetailEntry } from '@/player/playerStatusMenuDetailTypes';
+import type { Project } from '@/project/types';
 
-export function createPlayerOptionsDetail(onChanged?: (message?: string) => void): StatusMenuDetail {
+const NEXT_SPEED: Record<DialogueSpeed, DialogueSpeed> = { normal: 'fast', fast: 'slow', slow: 'normal' };
+const OPACITY_STEPS = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4] as const;
+
+/**
+ * 설정 화면. project 를 주고 그 게임에 대사 시스템(meta.oprnDialogueSystem·연애 기본 구성)이 있으면 오토 속도·스킵 범위·대사창 투명도가 더해지고
+ * 글자가 저작한 언어로 나온다. 없으면 예전 화면 그대로다(옛 프로젝트 불변).
+ */
+export function createPlayerOptionsDetail(onChanged?: (message?: string) => void, project?: Project): StatusMenuDetail {
+  const system = resolveDialogueSystem(project);
+  setAuthoredPreferenceDefaults(system?.defaults);
+  const text = (key: Parameters<typeof dialogueUiText>[1]) => dialogueUiText(system, key);
   const prefs = getPlayerPreferences();
+  const effective = getEffectiveReadingPreferences(system?.defaults, prefs);
   const change = (patch: Partial<PlayerPreferences>) => {
     const saved = updatePlayerPreferences(patch);
     const next = getPlayerPreferences();
     const audio = getAudioEngine();
     audio.setVolume('bgm', next.bgm);
     audio.setVolume('se', next.se);
-    onChanged?.(saved ? '이 기기에 설정을 저장했습니다.' : '현재 실행에 적용했습니다. 기기 저장소에 저장하지 못했습니다.');
+    onChanged?.(saved ? text('option.saved') : text('option.savedSession'));
   };
-  const groupLabel = { bgm: '배경 음악', se: '효과음', voice: '대사 목소리' } as const;
+  const groupLabel = { bgm: text('option.bgm'), se: text('option.se'), voice: text('option.voice') } as const;
+  const speedLabel = (speed: DialogueSpeed) => text(`value.${speed}`);
   const entries: StatusMenuDetailEntry[] = (['bgm', 'se', 'voice'] as const).flatMap(group =>
     ([-1, 1] as const).map(delta => ({
-      label: `${groupLabel[group]} ${delta < 0 ? '줄이기' : '늘리기'}`,
+      label: `${groupLabel[group]} ${delta < 0 ? text('option.down') : text('option.up')}`,
       value: `${Math.round(prefs[group] * 100)}%`,
-      description: '10%씩 조절합니다. 0%는 음소거입니다.',
+      description: text('option.volumeHint'),
       testId: `player-option-${group}-${delta < 0 ? 'down' : 'up'}`,
       onActivate: () => change({ [group]: Math.round((prefs[group] + delta * 0.1) * 10) / 10 }),
     })));
   entries.push({
-    label: '대사 속도', value: { slow: '느리게', normal: '보통', fast: '빠르게' }[prefs.textSpeed],
-    description: '선택하면 보통 → 빠르게 → 느리게 순서로 바뀝니다.', testId: 'player-option-text-speed',
-    onActivate: () => change({ textSpeed: prefs.textSpeed === 'normal' ? 'fast' : prefs.textSpeed === 'fast' ? 'slow' : 'normal' }),
-  }, {
-    label: '메뉴 움직임 줄이기', value: prefs.reduceMenuMotion ? '켜짐' : '꺼짐',
-    description: 'ESC 메뉴 전환의 이동 효과를 줄입니다. 운영체제의 감소 설정도 존중합니다.',
+    label: text('option.textSpeed'), value: speedLabel(effective.textSpeed),
+    description: text('option.textSpeedHint'), testId: 'player-option-text-speed',
+    onActivate: () => change({ textSpeed: NEXT_SPEED[effective.textSpeed] }),
+  });
+  if (system?.auto.enabled) {
+    entries.push({
+      label: text('option.autoSpeed'), value: speedLabel(effective.autoSpeed),
+      description: text('option.autoSpeedHint'), testId: 'player-option-auto-speed',
+      onActivate: () => change({ autoSpeed: NEXT_SPEED[effective.autoSpeed] }),
+    });
+  }
+  if (system?.skip.enabled) {
+    entries.push({
+      label: text('option.skipScope'), value: effective.skipScope === 'read' ? text('value.scopeRead') : text('value.scopeAll'),
+      description: text('option.skipScopeHint'), testId: 'player-option-skip-scope',
+      onActivate: () => change({ skipScope: effective.skipScope === 'read' ? 'all' : 'read' }),
+    });
+  }
+  if (system) {
+    const index = OPACITY_STEPS.findIndex(step => Math.abs(step - effective.windowOpacity) < 0.05);
+    entries.push({
+      label: text('option.windowOpacity'), value: `${Math.round(effective.windowOpacity * 100)}%`,
+      description: text('option.windowOpacityHint'), testId: 'player-option-window-opacity',
+      onActivate: () => change({ windowOpacity: OPACITY_STEPS[(Math.max(0, index) + 1) % OPACITY_STEPS.length] }),
+    });
+  }
+  entries.push({
+    label: text('option.menuMotion'), value: prefs.reduceMenuMotion ? text('value.on') : text('value.off'),
+    description: text('option.menuMotionHint'),
     testId: 'player-option-menu-motion', onActivate: () => change({ reduceMenuMotion: !prefs.reduceMenuMotion }),
   });
-  return { title: '설정', entries, hint: '이 기기에 저장 · 게임 저장 파일과 별개 · Enter 변경 · Esc 돌아가기' };
+  return { title: text('option.title'), entries, hint: text('option.footer') };
 }

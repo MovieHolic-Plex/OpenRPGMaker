@@ -1,7 +1,11 @@
 import { SHOP_UI_PRESETS, effectiveShopUiPreset, isShopUiPreset } from '@/project/shopUiPresets';
 import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
-import { FIELD_MENU_COMMANDS, collectorFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu } from '@/project/fieldMenu';
+import { FIELD_MENU_COMMANDS, collectorFieldMenu, romanceFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from '@/project/fieldMenu';
+import {
+  BACKLOG_LIMIT_MAX, BACKLOG_LIMIT_MIN, DIALOGUE_SPEEDS, DIALOGUE_UI_LANGUAGES, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN,
+  backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
+} from '@/project/dialogueSystem';
 import { validateMonsterCampaign } from '@/project/io/shapeMonsterCampaign';
 import { monsterCampaign } from '@/project/monsterJournal';
 import { defaultObedienceCaps } from '@/project/badgeProgress';
@@ -21,6 +25,8 @@ function issues(p:Project):string[]{
   if(monsterParty&&!fieldMenu(p))errors.push('수집 게임의 ESC 항목/순서가 저작되지 않았습니다. 기본 범용 메뉴가 표시됩니다.');
   if(fieldMenu(p)?.entries.some(e=>['region-map','campaign-progress'].includes(e.command))&&!c)errors.push('지도·배지 항목에는 실제 캠페인 정의가 필요합니다.');
   if(fieldMenu(p)?.entries.some(e=>e.command==='monster-dex')&&!c&&s.monsterCollection!==true)errors.push('도감 항목에는 캠페인 정의 또는 포획(monsterCollection) 설정이 필요합니다.');
+  if(fieldMenu(p)?.entries.some(e=>e.command==='backlog')&&!backlogEnabled(p))errors.push('ESC 메뉴에 백로그 항목이 있지만 대사 시스템의 백로그가 꺼져 있어 항목이 보이지 않습니다. set_dialogue_system {backlog:true} 로 켜거나 메뉴에서 빼세요.');
+  if(backlogEnabled(p)&&fieldMenu(p)&&!fieldMenu(p)?.entries.some(e=>e.command==='backlog'))errors.push('대사 시스템의 백로그는 켜져 있지만 저작된 ESC 메뉴에 백로그 항목이 없습니다. 대사창 단추·L 키로는 열리지만 메뉴로는 못 엽니다. configure_field_menu {preset:"custom", add:[{command:"backlog",label:"백로그"}]} 로 넣으세요.');
   if(monsterParty&&s.monsterCollection===undefined)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다. 포획 없는 대회형이면 configure_monster_system(enabled:true, capture:false) 로 포획 없음을 선언하세요.');
   if(s.opening?.musicResourceId&&!p.assets.uploaded[s.opening.musicResourceId]?.ref&&!p.assets.uploaded[s.opening.musicResourceId]?.dataUrl && s.opening.musicResourceId.startsWith('composed_music_'))errors.push('저작 음악의 실제 바이트가 없습니다.');
   return errors;
@@ -30,6 +36,7 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
   player:{mapId:p.startMapId,x:p.startPos.x,y:p.startPos.y,positionSource:'authored-start',actorId:trainer?.id,name:trainer?.name,characterResourceId:trainer?.characterResourceId,characterIndex:trainer?.characterIndex??0,companions:(session.monsterParty??[]).length},
   battle:{collection:p.system.monsterCollection===true,party:p.system.battleParty??(p.system.monsterBattleParty?'monsters':'actors'),rules:p.system.battleModel??'rm2k3',skin:p.system.battleUiStyle},
   fieldMenu:{style:p.system.fieldHud?.menuStyle&&p.system.fieldHud.menuStyle!=='project'?p.system.fieldHud.menuStyle:p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
+  dialogueSystem:{authored:p.meta.oprnDialogueSystem??null,effective:resolveDialogueSystem(p)??null,source:p.meta.oprnDialogueSystem?'authored':resolveDialogueSystem(p)?'relationship-default':'legacy-none'},
   shop:{sellPriceOverrides:p.system.sellPrices??[],projectPreset:p.meta.oprnShopPreset??null,eventPresetCounts:(()=>{const counts:Record<string,number>={};const walk=(commands:unknown[])=>{for(const raw of commands){if(!raw||typeof raw!=='object')continue;const command=raw as Record<string,unknown>;if(command.kind==='shop'){const preset=effectiveShopUiPreset(command as {shopUiPreset?:import('@/project/types').ShopUiPreset},p);counts[preset]=(counts[preset]??0)+1;}for(const v of Object.values(command))if(Array.isArray(v))walk(v);}};for(const map of Object.values(p.maps))for(const event of map.events)for(const page of event.pages??[])walk(page.commands);return counts;})()},
   hud:p.system.fieldHud, campaign:c?{id:c.id,name:c.name,species:c.speciesIds.length,badges:c.badges.length,locations:c.locations.length,objectives:c.objectives.length}:null,
   audio:{title:p.system.titleScreen?.musicResourceId,opening:p.system.opening?.musicResourceId,field:p.system.defaultBgmResourceId,battle:p.system.battleBgmResourceId,victory:p.system.battleVictoryMeResourceId,menu:p.meta.oprnMenuSounds,composed:Object.keys(p.meta.oprnMusicScores??{})},
@@ -43,17 +50,90 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     else throw new ToolError('상점 스킨 오류.',{code:'invalid-args'});
     return {summary:'상점 표현을 저장했습니다. 실제 거래 검증은 별도입니다.',data:systemView(p)};
   }),
-  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
-    const preset=String(args.preset);if(!['collector','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류.',{code:'invalid-args'});
+  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정, romance는 호감도/일정/소지품/백로그/저장/불러오기/설정/타이틀로. custom 은 entries 전체를 지정하거나, 지금 메뉴에 add(추가)/remove(삭제)만 얹는다. 백로그 항목을 넣으면 대사 시스템의 백로그도 함께 켠다. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','romance','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},add:{type:'array',description:'custom 전용. 지금 메뉴에 덧붙일 항목(저장 앞, 타이틀로 앞에 들어간다).',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},remove:{type:'array',description:'custom 전용. 지금 메뉴에서 뺄 항목.',items:{type:'string',enum:[...FIELD_MENU_COMMANDS]}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
+    const preset=String(args.preset);if(!['collector','romance','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류: preset 은 collector|romance|default|custom 중 하나여야 합니다.',{code:'invalid-args'});
     // Presets own their entries; structured model providers may emit optional arrays.
     // Custom explicitly owns user labels/order. Preset entries are not a mutation input.
-    const next=preset==='default'?undefined:preset==='collector'?collectorFieldMenu():{version:1,entries:structuredClone(args.entries)} as AuthoredFieldMenu;
-    if(next)try{validateFieldMenu(next);}catch(e){throw new ToolError(String(e),{code:'invalid-args'});}
-    if(args.style!==undefined&&!['field-list','pixel','classic','sheet','workbench'].includes(String(args.style)))throw new ToolError('메뉴 스타일 오류.',{code:'invalid-args'});
+    let next:AuthoredFieldMenu|undefined;
+    const notice:string[]=[];
+    if(preset==='default')next=undefined;
+    else if(preset==='collector')next=collectorFieldMenu();
+    else if(preset==='romance')next=romanceFieldMenu();
+    else{
+      const adds=Array.isArray(args.add)?args.add as {command:FieldMenuCommand;label:string}[]:[];
+      const removes=Array.isArray(args.remove)?(args.remove as unknown[]).map(String):[];
+      if(args.entries===undefined&&adds.length===0&&removes.length===0)throw new ToolError('custom 메뉴에는 entries(전체 목록) 또는 add/remove 가 필요합니다. 예: {preset:"custom", add:[{command:"backlog",label:"백로그"}]}',{code:'invalid-args'});
+      if(args.entries!==undefined&&!Array.isArray(args.entries))throw new ToolError('entries 는 {command,label} 배열이어야 합니다.',{code:'invalid-args'});
+      const base:AuthoredFieldMenu=args.entries!==undefined?{version:1,entries:structuredClone(args.entries as AuthoredFieldMenu['entries'])}:{version:1,entries:structuredClone((fieldMenu(p)??{version:1,entries:[]}).entries)};
+      if(args.entries===undefined&&base.entries.length===0)throw new ToolError('지금 저작된 메뉴가 없어 add/remove 의 기준이 없습니다. preset:"romance"|"collector" 로 먼저 만들거나 entries 전체를 주세요.',{code:'invalid-args'});
+      for(const cmd of removes)if(!(FIELD_MENU_COMMANDS as readonly string[]).includes(cmd))throw new ToolError(`remove 에 알 수 없는 항목 ${cmd}. 허용: ${FIELD_MENU_COMMANDS.join(', ')}`,{code:'invalid-args'});
+      base.entries=base.entries.filter(e=>!removes.includes(e.command));
+      for(const row of adds){
+        if(!row||typeof row!=='object'||!(FIELD_MENU_COMMANDS as readonly string[]).includes(row.command))throw new ToolError(`add 에 알 수 없는 항목 ${String((row as {command?:unknown})?.command)}. 허용: ${FIELD_MENU_COMMANDS.join(', ')}`,{code:'invalid-args'});
+        if(base.entries.some(e=>e.command===row.command)){notice.push(`${row.command} 는 이미 메뉴에 있어 건너뜀`);continue;}
+        const at=base.entries.findIndex(e=>e.command==='save'||e.command==='to-title');
+        base.entries.splice(at<0?base.entries.length:at,0,{command:row.command,label:row.label});
+      }
+      next=base;
+    }
+    if(next)try{validateFieldMenu(next);}catch(e){throw new ToolError(`${String(e)} — 항목은 1~12개, 표시 이름은 1~12자(앞뒤 공백·줄바꿈 없음), 항목 중복 금지, to-title 은 마지막이어야 합니다.`,{code:'invalid-args'});}
+    if(args.style!==undefined&&!['field-list','pixel','classic','sheet','workbench'].includes(String(args.style)))throw new ToolError('메뉴 스타일 오류: field-list|pixel|classic|sheet|workbench 중 하나.',{code:'invalid-args'});
     if(next)p.meta.oprnFieldMenu=next;else delete p.meta.oprnFieldMenu;
     p.system.menuUiStyle=args.style as Project['system']['menuUiStyle']??(preset==='default'?'pixel':'field-list');
     if(p.system.fieldHud)p.system.fieldHud.menuStyle=p.system.menuUiStyle==='field-list'?'field-list':'project';
-    return {summary:'ESC 메뉴를 실제 기능 ID에 연결했습니다. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.',data:systemView(p)};
+    // 백로그 항목은 백로그가 켜져 있어야 보인다 — 메뉴에 넣었으면 같이 켠다(조용히 안 보이는 항목을 만들지 않는다).
+    if(next?.entries.some(e=>e.command==='backlog')&&!backlogEnabled(p)){
+      p.meta.oprnDialogueSystem=mergeDialogueSystem(resolveDialogueSystem(p),{backlog:true});
+      notice.push('메뉴에 백로그가 있어 대사 시스템의 백로그를 켰습니다');
+    }
+    return {summary:`ESC 메뉴를 실제 기능 ID에 연결했습니다${notice.length?' — '+notice.join('; '):''}. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.`,data:systemView(p)};
+  }),
+  tool('set_dialogue_system','대사창 읽기 보조를 저작: 백로그(지난 대사·고른 선택지, 세이브에 저장)·오토·스킵(읽은 글만/전부)·숨기기 단추와 시작 설정(대사 속도·오토 속도·스킵 범위·대사창 투명도)·단추 글자 언어. 연애·관계 중심·비주얼노벨형 게임은 이미 전부 켜져 있어 호출이 필요 없고, 끄거나 조정할 때만 쓴다. JRPG 등 다른 장르도 켤 수 있다. 주어진 칸만 바꾼다. 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추므로 안전 규칙은 설정 항목이 아니다. 플레이어 기기 설정이 있으면 그것이 이긴다.','write',schema({
+    preset:{type:'string',enum:['romance','default'],description:'romance: 네 기능을 모두 켠 연애 기본 구성에서 시작. default: 저작을 지우고 자동 판정(관계 중심 게임은 기본 구성, 그 밖은 옛 동작)으로 되돌린다.'},
+    backlog:{type:'boolean',description:'백로그(최근 N건 링 버퍼, 저장됨).'},
+    backlogLimit:{type:'integer',minimum:BACKLOG_LIMIT_MIN,maximum:BACKLOG_LIMIT_MAX,description:`백로그에 남길 줄 수 ${BACKLOG_LIMIT_MIN}~${BACKLOG_LIMIT_MAX}, 기본 100.`},
+    auto:{type:'boolean',description:'오토 진행 단추·A 키.'},
+    skip:{type:'boolean',description:'스킵 단추·S 키·Ctrl 누르는 동안 스킵.'},
+    hideButton:{type:'boolean',description:'숨기기 단추·H 키.'},
+    language:{type:'string',enum:[...DIALOGUE_UI_LANGUAGES],description:'단추·백로그·설정 화면 글자 언어. ko 기본, auto 는 기기 언어. 게임 본문은 번역되지 않는다.'},
+    defaults:{type:'object',additionalProperties:false,description:'플레이어가 아직 정하지 않았을 때의 시작 설정.',properties:{
+      textSpeed:{type:'string',enum:[...DIALOGUE_SPEEDS]},autoSpeed:{type:'string',enum:[...DIALOGUE_SPEEDS]},skipScope:{type:'string',enum:[...SKIP_SCOPES],description:'read=읽은 글만, all=전부(선택지·엔딩 제외).'},
+      windowOpacity:{type:'number',minimum:WINDOW_OPACITY_MIN,maximum:WINDOW_OPACITY_MAX,description:`대사창 배경 불투명도 ${WINDOW_OPACITY_MIN}~${WINDOW_OPACITY_MAX}.`}}},
+  },[]),(p,args)=>{
+    const fail=(message:string):never=>{throw new ToolError(message,{code:'invalid-args'});};
+    const allowed=['preset','backlog','backlogLimit','auto','skip','hideButton','language','defaults'];
+    const unknown=Object.keys(args).filter(k=>!allowed.includes(k));
+    if(unknown.length)fail(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${allowed.join(', ')}.`);
+    if(args.preset!==undefined&&args.preset!=='romance'&&args.preset!=='default')fail('preset 은 romance 또는 default 여야 합니다.');
+    for(const key of ['backlog','auto','skip','hideButton'] as const)if(args[key]!==undefined&&typeof args[key]!=='boolean')fail(`${key} 는 true/false 여야 합니다(문자열 "true" 가 아님).`);
+    if(args.backlogLimit!==undefined&&(typeof args.backlogLimit!=='number'||!Number.isInteger(args.backlogLimit)||args.backlogLimit<BACKLOG_LIMIT_MIN||args.backlogLimit>BACKLOG_LIMIT_MAX))fail(`backlogLimit 는 ${BACKLOG_LIMIT_MIN}~${BACKLOG_LIMIT_MAX} 사이 정수여야 합니다(기본 100). 받은 값: ${JSON.stringify(args.backlogLimit)}.`);
+    if(args.language!==undefined&&!(DIALOGUE_UI_LANGUAGES as readonly string[]).includes(String(args.language)))fail(`language 는 ${DIALOGUE_UI_LANGUAGES.join('|')} 중 하나여야 합니다. 받은 값: ${JSON.stringify(args.language)}.`);
+    let defaults:DialogueSystemPatch['defaults']|undefined;
+    if(args.defaults!==undefined){
+      const raw=args.defaults as Record<string,unknown>;
+      if(!raw||typeof raw!=='object'||Array.isArray(raw))fail('defaults 는 {textSpeed, autoSpeed, skipScope, windowOpacity} 객체여야 합니다.');
+      const badKey=Object.keys(raw).find(k=>!['textSpeed','autoSpeed','skipScope','windowOpacity'].includes(k));
+      if(badKey)fail(`defaults 에 알 수 없는 칸 ${badKey}. 허용: textSpeed, autoSpeed, skipScope, windowOpacity.`);
+      for(const key of ['textSpeed','autoSpeed'] as const)if(raw[key]!==undefined&&!(DIALOGUE_SPEEDS as readonly string[]).includes(String(raw[key])))fail(`defaults.${key} 는 ${DIALOGUE_SPEEDS.join('|')} 중 하나여야 합니다. 받은 값: ${JSON.stringify(raw[key])}.`);
+      if(raw.skipScope!==undefined&&!(SKIP_SCOPES as readonly string[]).includes(String(raw.skipScope)))fail(`defaults.skipScope 는 ${SKIP_SCOPES.join('|')} 중 하나여야 합니다(read=읽은 글만, all=전부). 받은 값: ${JSON.stringify(raw.skipScope)}.`);
+      if(raw.windowOpacity!==undefined&&(typeof raw.windowOpacity!=='number'||!Number.isFinite(raw.windowOpacity)||raw.windowOpacity<WINDOW_OPACITY_MIN||raw.windowOpacity>WINDOW_OPACITY_MAX))fail(`defaults.windowOpacity 는 ${WINDOW_OPACITY_MIN}~${WINDOW_OPACITY_MAX} 사이 숫자여야 합니다(1=불투명). 받은 값: ${JSON.stringify(raw.windowOpacity)}.`);
+      defaults=raw as DialogueSystemPatch['defaults'];
+    }
+    const patch:DialogueSystemPatch={...(args.backlog!==undefined?{backlog:args.backlog as boolean}:{}),...(args.backlogLimit!==undefined?{backlogLimit:args.backlogLimit as number}:{}),...(args.auto!==undefined?{auto:args.auto as boolean}:{}),...(args.skip!==undefined?{skip:args.skip as boolean}:{}),...(args.hideButton!==undefined?{hideButton:args.hideButton as boolean}:{}),...(args.language!==undefined?{language:args.language as DialogueSystemPatch['language']}:{}),...(defaults?{defaults}:{})};
+    const notice:string[]=[];
+    if(args.preset==='default'&&Object.keys(patch).length===0){
+      delete p.meta.oprnDialogueSystem;
+      return {summary:`대사 시스템 저작을 지웠습니다. 이제 자동 판정입니다(${resolveDialogueSystem(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).`,data:systemView(p)};
+    }
+    const base=args.preset==='romance'?mergeDialogueSystem(undefined,{backlog:true,auto:true,skip:true,hideButton:true}):args.preset==='default'?undefined:resolveDialogueSystem(p);
+    const next=mergeDialogueSystem(base,patch);
+    try{validateDialogueSystem(next);}catch(e){fail(`${e instanceof Error?e.message:String(e)}`);}
+    p.meta.oprnDialogueSystem=next;
+    const menu=fieldMenu(p);
+    if(next.backlog.enabled&&menu&&!menu.entries.some(e=>e.command==='backlog'))notice.push('저작된 ESC 메뉴에 백로그 항목이 없습니다 — 메뉴로도 열려면 configure_field_menu {preset:"custom", add:[{command:"backlog",label:"백로그"}]}');
+    if(!next.backlog.enabled&&menu?.entries.some(e=>e.command==='backlog'))notice.push('ESC 메뉴의 백로그 항목은 백로그가 꺼져 있는 동안 보이지 않습니다');
+    if(!next.backlog.enabled&&!next.auto.enabled&&!next.skip.enabled&&!next.hideButton.enabled)notice.push('네 기능이 모두 꺼졌습니다. 대사창 단추 줄이 사라지고 옛 「기록」 단추만 남습니다');
+    return {summary:`대사창 읽기 보조를 저장했습니다(백로그 ${next.backlog.enabled?`${next.backlog.limit}줄`:'꺼짐'}, 오토 ${next.auto.enabled?'켜짐':'꺼짐'}, 스킵 ${next.skip.enabled?'켜짐':'꺼짐'}, 숨기기 ${next.hideButton.enabled?'켜짐':'꺼짐'}, 언어 ${next.language})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 검증은 별도입니다.`,data:systemView(p)};
   }),
   tool('configure_monster_campaign','도감 순서·생태 설명·배지 스위치·지도 좌표·진행 목표를 실제 데이터/맵/스위치와 검증해 저장. 주어진 칸만 바꾼다(나머지는 유지). 줄이는 변경은 allowShrink:true 가 있어야 하고, 배지 수를 줄이려면 badgeCount 로 체육관 이벤트까지 함께 줄인다. 정의가 실제 지은 이벤트와 어긋나면 거부한다. 런타임 진행 상태는 바꾸지 않음.','write',schema({
     definition:{type:'object',additionalProperties:false,description:'바꿀 칸만 넣는다. 넣은 배열은 그 칸 전체를 대체한다(항목을 하나 고칠 때도 나머지를 함께 보낸다 — 먼저 read_game_systems).',properties:{

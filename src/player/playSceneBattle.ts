@@ -286,7 +286,7 @@ export async function playBattle(
             if (!dialogue) return Promise.reject(new Error("Battle text input host missing"));
             const eventState = runtime.snapshot().eventState;
             return dialogue.showText({
-              ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height,
+              ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },
@@ -298,7 +298,7 @@ export async function playBattle(
             return dialogue.showChoices({
               prompt: request.prompt, options: request.options.map(option => ({ ...option })),
               cancelBehavior: request.cancelBehavior, signal: inputSignal,
-              settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height,
+              settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },

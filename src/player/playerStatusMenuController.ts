@@ -36,6 +36,7 @@ import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { closeGalleryViewer, galleryViewerIsOpen, stepGalleryViewer } from "@/player/galleryViewer";
+import { backlogViewIsOpen, closeBacklogView } from "@/player/dialogueBacklogView";
 import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
 import { withJosa } from "@/util/josa";
@@ -413,6 +414,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
 
   const toggleMenu = (): void => {
+    if (backlogViewIsOpen()) {
+      closeBacklogView();
+      return;
+    }
     if (galleryViewerIsOpen()) {
       closeGalleryViewer();
       return;
@@ -427,6 +432,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     if (menu) {
       closeGalleryViewer();
+      closeBacklogView();
       options.closeMenuWithJuice();
       return;
     }
@@ -1001,6 +1007,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "backlog":
       case "life-ledger":
         resetSubscreenState();
         mode = "function";
@@ -1128,6 +1135,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "backlog":
       case "life-ledger":
       case "row":
       case "status":
@@ -1274,6 +1282,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "backlog":
       case "life-ledger":
       case "row":
       case "status":

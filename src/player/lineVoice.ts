@@ -31,3 +31,8 @@ export function playLineVoice(url: string): void {
     },
   );
 }
+
+/** 줄 음성이 아직 재생 중인가. 오토는 음성이 끝나기 전에 다음 줄로 넘기지 않는다. */
+export function lineVoiceActive(): boolean {
+  return current !== undefined && !current.ended && !current.paused;
+}

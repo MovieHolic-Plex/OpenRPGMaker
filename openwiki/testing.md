@@ -2185,3 +2185,9 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 - `deadline.ts` 자동 플레이는 선택지로 시작하는 대화에서 첫 선택지를 고른다(`choose 0`). 이전에는 선택지가 열린 채 끝나지 않아 호감이 0 으로 남았고, 어떤 인물에 집중해도 「모두의 봄」 하나만 닿았다 — 호감 엔딩이 모두 닿는지가 이제 검사된다.
 - `scripts/qa/romance-real/proof.mts` 는 인물마다 곁에 설 수 있는 통행 칸(`stand`)을 계산하고, `romance-real.scenario.mjs` 는 실내 인물들을 차례로 만난 뒤(07b) ESC 호감 목록(07c)을 찍는다. 책상에 막힌 아래 칸으로 가면 말 걸기가 실패한다.
 - 이 세션은 vitest·gates 를 돌리지 않았다. `test/romanceFix3.test.ts` 는 작성만 했다(미실행).
+
+## 대사창 읽기 보조 검증 (2026-10-17)
+
+- 집중 테스트(전체 스위트 금지): `node scripts/run-vitest.mjs test/dialogueSystem.test.ts test/dialogueReading.test.ts test/dialogueSystemTool.test.ts test/dialogueSystemMenu.test.ts test/playerRuntimeCss.test.ts test/feature16PlayerPreferences.test.ts`. 앞 네 개와 feature16 은 통과, `playerRuntimeCss` 는 main 에서도 3건 실패(위 runtime 절).
+- 알려진 함정: 읽은 글·백로그 테스트는 `playerPreferences` 를 쓰므로 `textSpeedChosen` 등을 테스트 사이에 초기화한다(앞 테스트의 값이 새어 나가 feature16 이 깨졌다). 도구 테스트는 `runTool` 의 일반 타입 오류 문구에 맞추지 말고 거절 사실을 본다. 시험 도중 happy-dom 의 animation-cancel unhandled rejection 은 기존 현상이다.
+- 런타임 시각 QA 시나리오 `scripts/qa/runtime/romance-vn-system.scenario.mjs` 는 고정 개수의 Enter 대신 `pressUntil` 로 상태를 기다린다(두 번째 Enter 가 선택지 0 을 확정하는 사고를 막기 위해).

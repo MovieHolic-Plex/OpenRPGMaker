@@ -111,6 +111,7 @@ const RUNTIME_IMPORTS = [
   "./juice.css",
   "../dialogue.css",
   "../dialogueStyles.css",
+  "../dialogueReading.css",
   "./zoneFeedback.css",
   "./handSlot.css",
   "./minimap.css",

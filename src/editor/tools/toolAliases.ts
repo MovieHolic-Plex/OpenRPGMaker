@@ -109,6 +109,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["되돌리", "undo", "revert", "롤백"], tools: ["revert_last_edit", "list_edit_history"], label: "되돌리기" },
   { terms: ["도감", "pokedex", "dex", "몬스터 도감", "생태 설명", "dex note"], tools: ["define_monster_species", "define_monster_families", "read_monster_game"], label: "몬스터 도감" },
   { terms: ["게임 시스템", "메뉴 구성", "game systems", "menu"], tools: ["read_game_systems", "configure_game_systems", "configure_field_menu"], label: "게임 시스템" },
+  { terms: ["백로그", "오토", "스킵", "대사 기록", "대사창 숨기", "읽은 글", "미연시", "비주얼노벨", "backlog", "auto mode", "skip mode", "hide window", "text log", "visual novel"], tools: ["set_dialogue_system", "configure_field_menu", "read_game_systems"], label: "대사창 읽기 보조(백로그·오토·스킵)" },
 ];
 
 /** 질의(소문자)에 별칭 항목의 낱말이 하나라도 부분 문자열로 들어 있는지. 짧은 영어 낱말(2자 이하)은 낱말 경계로만 본다. */

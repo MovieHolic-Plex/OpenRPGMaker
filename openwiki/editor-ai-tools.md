@@ -3396,3 +3396,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **ESC 메뉴.** `usesRelationshipMenu()`(`relationshipMenu.ts`)가 참이면 `fieldMenu()` 가 `romanceFieldMenu()`(호감도·소지품·저장·불러오기·설정·타이틀로)를, 상태 메뉴 첫 화면이 HP/MP/EX 대신 호감 목록(`renderRelationshipOverview`)을 낸다. 저작자가 직접 정한 `meta.oprnFieldMenu` 의 항목은 그대로 따른다.
 - **HUD.** 호감 판은 `panel: "dark"`, 이름은 `friendshipShortName`(「한서연 선배」→「한서연」, 2026-10-16: 괄호 설명과 앞 직함도 뗀다 — 「바리스타 선배 도윤」→「도윤」), `fieldHud.css` 가 호감 판 높이를 사람 수에 맞춘다. **기본 배치(2026-10-16 R06)**: 남은 시간·호감 목록은 `condition:"changed"`(값이 바뀐 뒤 3초, 대화·메뉴가 가리는 동안 바뀐 값은 다시 보일 때부터 센다 — `fieldHud.ts` `changedPending`), 시계는 모서리 작은 칩(`shape:"number"`, `autoAvoid`). 평소 지도·실내 위쪽을 덮지 않는다. 옛 기본 배치(조건 없는 세 판)는 `isLegacyRomanceHud` 로 알아보고 `applyRomanceDefaults` 가 새 배치로 바꾼다.
 - **한계(미해결).** 상단 HUD 판이 맵 왼쪽 위를 덮는 것(구석 NPC 가림), 상태 메뉴의 긴 맵 이름 말줄임, Modern 칩 전용 얼굴 없음(얼굴 짝 없음 → 대사 얼굴 미표시), 실제 Argon 재측정(429 한도).
+
+## `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
+
+- 정본 저작 데이터는 `project.meta.oprnDialogueSystem`(`src/project/dialogueSystem.ts`, v1). 도구는 부분 패치만 받는다: `language`(ko|en|ja|zh|auto), `backlog`/`auto`/`skip`/`hideButton`(boolean), `backlogLimit`(정수 20~500), `defaults{textSpeed·autoSpeed slow|normal|fast, skipScope read|all, windowOpacity 0.4~1}`. 자유 키 객체 없음(Gemini 400 방지), `additionalProperties:false`. 범위 밖 값은 고칠 방법을 담아 거절하고 저장 직전 `validateDialogueSystem` 이 한 번 더 막는다. 모르는 칸은 조용히 버리지 않는다.
+- 저작이 없으면 옛 동작 그대로다. **관계 중심(연애) 게임만** 저작 없이도 기본 구성(네 기능 전부 켬)을 받는다(`resolveDialogueSystem`). 연애 프리셋(`romancePreset.ts`)은 저작본을 심고, `configure_field_menu` 의 romance/add/remove 와 `백로그` 명령이 같은 판정을 쓴다. 기능이 꺼진 게임의 ESC 메뉴에는 백로그 줄이 없다.
+- 연결 지점: `aiToolLabels.ts` 라벨, `toolAliases.ts`, `gameSystemProduction.ts`(완료 가드: 연애 게임이면 백로그 꺼짐을 지적), `scripts/lib/piAgentRuntime.ts`, 안내 문서 `gameAuthoringPresets/romance.md` 한 문단.
+- 사용자 기기 설정(텍스트 속도·오토 속도·스킵 범위·투명도)은 저작값이 아니라 `playerPreferences` 이고, 저작 `defaults` 는 기기 값이 없을 때의 시작값이다.
