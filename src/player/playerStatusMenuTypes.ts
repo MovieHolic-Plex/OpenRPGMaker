@@ -5,6 +5,7 @@ import type { ActorInitialEquipment, Project } from "@/project/types";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
+import type { MonsterCollectAction, MonsterCollectUi } from "@/player/playerMonsterCollectTypes";
 
 export type PlayerStatusMenuActions = {
   readonly onInventoryViewChange?: (view: InventoryView) => void;
@@ -36,6 +37,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly onToggleMonsterView: () => void;
+  readonly onMonsterCollect?: (action: MonsterCollectAction) => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
   readonly onTakeHeldItem?: (instanceId: string) => void;
   readonly onUseMonsterFieldSkill?: (instanceId: string, skillId: string) => void;
@@ -70,6 +72,7 @@ export type PlayerStatusMenuOptions = {
   readonly campaignSpeciesId?: string;
   readonly monsterInstanceId?: string;
   readonly monsterView?: "party" | "box";
+  readonly monsterCollect?: MonsterCollectUi;
   readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly readLive?: import("@/project/spatialOccupancy").SpatialLiveContextReader;
   readonly placementDirection?: import("@/project/types").Dir;

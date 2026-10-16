@@ -95,3 +95,14 @@ keep playbackVerified:false. This does not establish native gameplay or hearing.
 ## Emerald authored presentation
 
 See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×320 field menu, six-slot monster party, independent summary/current PP, bag/context/target geometry, icon fallback and standalone browser evidence contract. Campaign data and the existing menu controller remain the semantic owners.
+
+## 파티 화면: 자리 바꾸기·요약 쪽 (2026-10-16, poke-sys-collect)
+
+- 파티 순서의 정본은 `session.monsterParty` 배열 순서다(맨 앞 = 선두 출전). `swapMonsterPartyOrder`(`monsterCollection.ts`)가 두 자리를 맞바꾸고,
+  박스 몬스터·같은 몬스터는 거절한다. 메뉴 경로: 요약 「관리」 쪽 → 자리 바꾸기 → 맞바꿀 동료 고르기(Esc/같은 동료 다시 = 취소).
+- 수집 화면 하위 상태(`swapSourceId`·`summaryPage`)는 `playerMonsterCollectTypes.ts` 한 곳에 있고 컨트롤러가 갖는다.
+  상세 빌더는 `StatusMenuDetailOptions.monsterCollect`(읽기)와 `onMonsterCollect`(동작) 두 칸으로만 받는다.
+- 요약은 에메랄드 스킨에서만 쪽(능력치 → 기술 → 관리)으로 나뉜다(`onMonsterCollect` 가 연결되고 스타일이 에메랄드일 때). 그 밖의 스킨·옛 테스트는 한 목록 그대로.
+- 지닌 도구가 있는 칸은 `data-party-held`, 자리 바꾸기의 먼저 고른 칸은 `data-party-swap-source` 로 CSS 가 표시한다.
+- 캡처: `node scripts/qa/runtime/collect-menu.probe.mjs --stages party,summary` 와 `QA_AFTER=scripts/qa/runtime/collect-menu-party.after.mjs … --stages none`.
+  예제 프로젝트는 `node scripts/content/build-monster-expedition.mjs /tmp/psc/exp /tmp/psc/evidence` 로 먼저 만든다.

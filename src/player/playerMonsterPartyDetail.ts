@@ -6,6 +6,7 @@ import { heldEffectText } from "@/battle/heldItems";
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
 import { monsterBoxUnavailableReason, monsterMoveDescription, monsterPartyEntries, monsterMenuIconResourceId, monsterTypeLabel, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
+import { MONSTER_SUMMARY_PAGES, MONSTER_SUMMARY_PAGE_LABEL, nextMonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
 
 const readOnly = () => undefined;
 
@@ -80,6 +81,11 @@ function heldItemEntry(options: StatusMenuDetailOptions, instanceId: string): St
   };
 }
 
+/** 쪽 나눔 화면의 정보 줄은 커서가 멈추지 않는다 — 읽기만 하는 줄을 ↑↓로 하나씩 지나가게 하지 않는다. */
+function infoRow(paged: boolean, entry: StatusMenuDetailEntry): StatusMenuDetailEntry {
+  return paged ? { ...entry, onActivate: undefined } : { ...entry, onActivate: readOnly };
+}
+
 export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingChoices: readonly StatusMenuDetailEntry[]): StatusMenuDetail | undefined {
   const instanceId = options.monsterInstanceId;
   const view = options.monsterView ?? "party";
@@ -91,22 +97,44 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
   const target = view === "party" ? "box" : "party";
   const reason = target === "box" ? monsterBoxUnavailableReason(options.project, options.session, raw.instanceId)
     : options.session.monsterParty.length >= MONSTER_PARTY_MAX ? "파티가 가득 찼습니다" : undefined;
+  // 쪽 나눔은 에메랄드 요약 화면(480×320 한 장)에서만 쓴다 — 다른 스킨은 기존처럼 한 목록에 모두 둔다.
+  const page = isEmeraldMonsterStyle(options.project) && options.onMonsterCollect ? options.monsterCollect?.summaryPage ?? "stats" : undefined;
+  const paged = page !== undefined;
+  const info: StatusMenuDetailEntry[] = [
+    infoRow(paged, { label: "타입", value: entry.typeLabel, attributes: { "data-summary-half": "true" } }),
+    infoRow(paged, { label: "상태", value: entry.stateNames.join(" · ") || "정상", attributes: { "data-summary-half": "true" } }),
+    ...caughtBallEntries(options, raw.instanceId).map((row) => infoRow(paged, row)),
+    // 특성은 효과 설명이 길어 줄 안에 못 담는다 — 커서가 멈추게 두고 설명은 아래 안내 창이 읽어 준다.
+    ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
+  ];
+  const stats: StatusMenuDetailEntry[] = [
+    infoRow(paged, { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", ...(paged ? { attributes: { "data-summary-half": "true" } } : {}) }),
+    ...(paged ? [infoRow(paged, { label: "다음", value: entry.nextLevel ? `${entry.nextLevel.remaining}` : "최대", description: "다음 레벨까지 필요한 경험치", testId: "status-menu-monster-next-level", attributes: { "data-summary-half": "true" } })] : []),
+    infoRow(paged, { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", attributes: { "data-summary-half": "true" } }),
+    infoRow(paged, { label: "방어", value: String(entry.stats.defense), attributes: { "data-summary-half": "true" } }),
+    infoRow(paged, { label: "특공", value: String(entry.stats.mind), attributes: { "data-summary-half": "true" } }),
+    infoRow(paged, { label: "속도", value: String(entry.stats.agility), attributes: { "data-summary-half": "true" } }),
+  ];
+  const moves: StatusMenuDetailEntry[] = [...monsterKnownMoveEntries(options, raw.instanceId), ...pendingChoices];
+  const moveEntry: StatusMenuDetailEntry = { label: target === "box" ? "보관함으로 이동" : "파티로 이동", value: reason ? "이동 불가" : "", description: reason ?? "선택하면 이 몬스터를 이동합니다", unavailableReason: reason,
+    testId: `status-menu-monster-move-${raw.instanceId}`, onActivate: () => options.onMoveMonster?.(raw.instanceId, target) };
+  const swappable = view === "party" && options.session.monsterParty.length > 1 && Boolean(options.onMonsterCollect);
+  const swapEntry: StatusMenuDetailEntry[] = swappable ? [{
+    label: "자리 바꾸기", value: "", description: "파티에서 맞바꿀 동료를 고릅니다. 맨 앞 동료가 먼저 나갑니다.",
+    testId: `status-menu-monster-swap-${raw.instanceId}`, onActivate: () => options.onMonsterCollect?.({ kind: "startSwap", instanceId: raw.instanceId }),
+  }] : [];
+  const back: StatusMenuDetailEntry = { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) };
+  const cycle: StatusMenuDetailEntry[] = page ? [{
+    label: `${MONSTER_SUMMARY_PAGE_LABEL[page]} ▶ ${MONSTER_SUMMARY_PAGE_LABEL[nextMonsterSummaryPage(page)]}`, value: `${MONSTER_SUMMARY_PAGES.indexOf(page) + 1}/${MONSTER_SUMMARY_PAGES.length}`,
+    description: "선택하면 다음 쪽으로 넘어갑니다",
+    testId: "status-menu-monster-page", attributes: { "data-summary-page": page },
+    onActivate: () => options.onMonsterCollect?.({ kind: "summaryPage", page: nextMonsterSummaryPage(page) }),
+  }] : [];
+  const entries: StatusMenuDetailEntry[] = page === undefined
+    ? [back, ...info, ...stats, ...moves, heldItemEntry(options, raw.instanceId), moveEntry]
+    : page === "stats" ? [back, ...cycle, ...info, ...stats]
+    : page === "moves" ? [back, ...cycle, ...moves]
+    : [back, ...cycle, heldItemEntry(options, raw.instanceId), ...swapEntry, moveEntry];
   return { title: `${entry.name} · Lv.${raw.level}`, layout: isEmeraldMonsterStyle(options.project) ? "campaign-summary" : "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name } : undefined,
-    entries: [
-      { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) },
-      { label: "타입", value: entry.typeLabel, onActivate: readOnly },
-      { label: "상태", value: entry.stateNames.join(" · ") || "정상", onActivate: readOnly },
-      ...caughtBallEntries(options, raw.instanceId),
-      ...(entry.species?.ability ? [{ label: "특성", value: entry.species.ability.name, description: abilityEffectText(entry.species.ability, (id) => monsterTypeLabel(options.project, [id]) || id), testId: "status-menu-monster-ability", onActivate: readOnly }] : []),
-      { label: "HP", value: `${entry.hp}/${entry.maxHp}`, testId: "status-menu-monster-current-hp", onActivate: readOnly },
-      { label: "공격", value: String(entry.stats.attack), testId: "status-menu-monster-current-stats", onActivate: readOnly },
-      { label: "방어", value: String(entry.stats.defense), onActivate: readOnly },
-      { label: "특공", value: String(entry.stats.mind), onActivate: readOnly },
-      { label: "속도", value: String(entry.stats.agility), onActivate: readOnly },
-      ...monsterKnownMoveEntries(options, raw.instanceId),
-      ...pendingChoices,
-      heldItemEntry(options, raw.instanceId),
-      { label: target === "box" ? "보관함으로 이동" : "파티로 이동", value: reason ? "이동 불가" : "", description: reason ?? "선택하면 이 몬스터를 이동합니다", unavailableReason: reason,
-        testId: `status-menu-monster-move-${raw.instanceId}`, onActivate: () => options.onMoveMonster?.(raw.instanceId, target) },
-    ], hint: "↑↓ 능력·현재 PP 확인 · Esc 몬스터 목록" };
+    entries, hint: "↑↓ 항목 확인 · Esc 몬스터 목록" };
 }

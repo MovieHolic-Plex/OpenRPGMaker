@@ -104,6 +104,7 @@ export type StatusMenuDetailOptions = {
   readonly monsterInstanceId?: string;
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly monsterView?: "party" | "box";
+  readonly monsterCollect?: import("@/player/playerMonsterCollectTypes").MonsterCollectUi;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;
@@ -133,6 +134,8 @@ export type StatusMenuDetailOptions = {
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
+  /** 파티 자리 바꾸기 같은 수집 화면 동작. */
+  readonly onMonsterCollect?: (action: import("@/player/playerMonsterCollectTypes").MonsterCollectAction) => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
   /** 몬스터가 지닌 도구를 가방으로 되돌린다. */
   readonly onTakeHeldItem?: (instanceId: string) => void;

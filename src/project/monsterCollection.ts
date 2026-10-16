@@ -287,6 +287,24 @@ export function moveMonster(
   return { ok: true, from, to };
 }
 
+export type SwapMonsterPartyResult =
+  | { readonly ok: true }
+  | { readonly ok: false; readonly reason: "notInParty" | "same" };
+
+/** 파티 안의 두 몬스터 자리를 맞바꾼다(맨 앞 = 먼저 출전하는 선두). 박스 몬스터·같은 몬스터는 거절한다. */
+export function swapMonsterPartyOrder(session: PlaySession, aId: string, bId: string, project?: Project): SwapMonsterPartyResult {
+  ensureMonsterSessionFields(session);
+  if (aId === bId) return { ok: false, reason: "same" };
+  const a = session.monsterParty.indexOf(aId), b = session.monsterParty.indexOf(bId);
+  if (a < 0 || b < 0) return { ok: false, reason: "notInParty" };
+  const next = [...session.monsterParty];
+  next[a] = bId;
+  next[b] = aId;
+  session.monsterParty = next;
+  if (project) syncMonsterPartyFollowers(project, session);
+  return { ok: true };
+}
+
 export function monsterDisplayName(project: Project, instance: MonsterInstance | undefined): string {
   if (!instance) return "몬스터";
   if (instance.nickname) return instance.nickname;
