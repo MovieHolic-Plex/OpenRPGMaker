@@ -55,6 +55,22 @@ export function renderStatusMenuDetailPanel(
     text: detail.title,
     dataset: { testid: "status-menu-detail-title" },
   }));
+  if (detail.meter && detail.meter.total > 0) {
+    const { seen, caught, total } = detail.meter;
+    const percent = (count: number): string => `${Math.round((count / total) * 100)}%`;
+    panel.append(el("div", {
+      class: "campaign-dex-meter",
+      attrs: { role: "progressbar", "aria-label": `도감 완성도 ${percent(caught)}`, "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(caught) },
+      dataset: { testid: "campaign-dex-meter", seen: String(seen), caught: String(caught), total: String(total) },
+      children: [
+        el("span", { class: "campaign-dex-meter-label", text: `${percent(caught)} 완성` }),
+        el("span", { class: "campaign-dex-meter-track", children: [
+          el("i", { class: "campaign-dex-meter-seen", attrs: { style: `width:${percent(seen)}` } }),
+          el("i", { class: "campaign-dex-meter-caught", attrs: { style: `width:${percent(caught)}` } }),
+        ] }),
+      ],
+    }));
+  }
   if (detail.regionMap) panel.append(renderCampaignRegionMap(detail.regionMap));
   if (detail.artwork) {
     panel.append(el("figure", {

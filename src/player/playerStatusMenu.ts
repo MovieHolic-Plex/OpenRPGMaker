@@ -67,6 +67,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   if (emerald) {
     panel.dataset.emeraldPage = selectedCommand === "monsters"
       ? options.monsterInstanceId ? "summary" : options.monsterView === "box" ? "box" : "party"
+      : selectedCommand === "monster-dex"
+        ? options.campaignSpeciesId ? "dex-detail" : "dex-list"
       : selectedCommand === "items"
         ? options.targetItemId ? "item-target" : options.itemActionId ? "item-context" : "bag"
         : selectedCommand;
@@ -101,6 +103,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onSelectBattleReport: options.actions.onSelectBattleReport,
     campaignSpeciesId: options.campaignSpeciesId,
     onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
+    dexPage: options.dexPage,
+    onDexPage: options.actions.onDexPage,
     monsterView: options.monsterView,
     monsterInstanceId: options.monsterInstanceId,
     monsterCollect: options.monsterCollect,

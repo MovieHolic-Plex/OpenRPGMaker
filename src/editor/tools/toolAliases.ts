@@ -102,6 +102,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["시작 아이템", "시작 골드", "초기 자금", "starting gold", "starting items"], tools: ["set_session_start"], label: "시작 소지품" },
   { terms: ["이미지 생성", "그림 생성", "일러스트", "generate image", "illustration"], tools: ["generate_image_asset", "generate_cutscene_art"], label: "이미지 생성" },
   { terms: ["되돌리", "undo", "revert", "롤백"], tools: ["revert_last_edit", "list_edit_history"], label: "되돌리기" },
+  { terms: ["도감", "pokedex", "dex", "몬스터 도감", "생태 설명", "dex note"], tools: ["define_monster_species", "define_monster_families", "read_monster_game"], label: "몬스터 도감" },
   { terms: ["게임 시스템", "메뉴 구성", "game systems", "menu"], tools: ["read_game_systems", "configure_game_systems", "configure_field_menu"], label: "게임 시스템" },
 ];
 

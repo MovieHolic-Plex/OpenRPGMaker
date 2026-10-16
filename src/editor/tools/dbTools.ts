@@ -692,6 +692,7 @@ const monsterSpeciesRecordSchema = objectSchema({
   machineSkillIds: stringArraySchema("기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술 id. 비우면 제한 없음(모든 종이 배운다). 값이 있으면 이 기술만 — 예: 파도타기는 물 종만"),
   evolutions: arrayOf(monsterEvolutionSchema),
   ability: monsterAbilitySchema,
+  dexNote: stringSchema("도감 설명 한두 문장(200자 이내). 원정 정의(monsterCampaign) 없는 수집 게임의 도감에 나온다 — 있으면 원정 노트가 우선"),
 }) as RecordSchema;
 
 const cropStageSchema = objectSchema({ days: integerSchema("단계 소요일") });

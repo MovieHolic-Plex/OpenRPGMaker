@@ -5,7 +5,7 @@ import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonste
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
-import { monsterCampaign, monsterJournalEntry } from '@/project/monsterJournal';
+import { monsterCampaign, monsterDexSpeciesIds, monsterJournalEntry } from '@/project/monsterJournal';
 import { inventoryViewEntries } from '@/player/playerInventoryView';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
@@ -70,7 +70,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
     case 'trainer-card': {
       const { project, session } = options;
-      const campaign = monsterCampaign(project), ids = campaign?.speciesIds ?? [];
+      const campaign = monsterCampaign(project), ids = monsterDexSpeciesIds(project);
       const leader = project.database.actors.find(a => a.id === session.partyActorIds[0]);
       const trainer = leader ?? project.database.actors[0];
       return { title: `원정 수첩 · ${trainer ? resolveActorName(session, trainer) : '여행자'}`, entries: [

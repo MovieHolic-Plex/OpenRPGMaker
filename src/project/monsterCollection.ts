@@ -115,6 +115,7 @@ export function normalizeMonsterSpeciesRecord(
     machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
     ...(ability ? { ability } : {}),
+    ...(typeof record.dexNote === "string" && record.dexNote.trim() ? { dexNote: record.dexNote.trim().slice(0, 200) } : {}),
   };
 }
 

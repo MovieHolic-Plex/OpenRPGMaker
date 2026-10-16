@@ -39,6 +39,7 @@ import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
 import { withJosa } from "@/util/josa";
 import { monsterDisplayName, moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill, swapMonsterPartyOrder } from "@/project/monsterCollection";
 import type { MonsterCollectAction, MonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
+import type { MonsterDexPage } from "@/player/playerMonsterDexTypes";
 import {
   adoptStatusMenuPanel,
   currentStatusMenu,
@@ -79,6 +80,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
   let campaignSpeciesId: string | undefined;
+  let dexPage: MonsterDexPage = "info";
   let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
   let monsterSwapSourceId: string | undefined;
@@ -116,6 +118,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     formationActorId = undefined;
     battleReportIndex = undefined;
     campaignSpeciesId = undefined;
+    dexPage = "info";
     monsterInstanceId = undefined;
     monsterView = "party";
     monsterSwapSourceId = undefined;
@@ -173,6 +176,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       formationActorId,
       battleReportIndex,
       campaignSpeciesId,
+      dexPage,
       monsterInstanceId,
       monsterView,
       monsterCollect: { swapSourceId: monsterSwapSourceId, summaryPage: monsterSummaryPage },
@@ -283,7 +287,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onSelectCampaignSpecies: (speciesId) => {
           if (speciesId) rememberDetailCursorFromTestId(`campaign-dex-${speciesId}`);
           campaignSpeciesId = speciesId;
+          dexPage = "info";
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monster-dex"));
+        },
+        onDexPage: (page) => {
+          dexPage = page;
+          setDetailCursor(1);
+          options.emitMenuJuice("menu-select", renderMenu(undefined, "monster-dex"));
         },
         onSelectMonster: (instanceId) => {
           if (instanceId) rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
@@ -1049,7 +1059,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
         return formationActorId ? `formation:${formationActorId}:moving` : "formation:list";
-      case "monster-dex": return `monster-dex:${campaignSpeciesId ?? "list"}`;
+      case "monster-dex": return `monster-dex:${campaignSpeciesId ? `${campaignSpeciesId}:${dexPage}` : "list"}`;
       case "region-map": return "region-map";
       case "campaign-progress": return "campaign-progress";
       case "monsters":

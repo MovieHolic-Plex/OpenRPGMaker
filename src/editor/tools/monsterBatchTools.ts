@@ -121,6 +121,11 @@ function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, tak
     const note = typeof stages[i]!.note === 'string' && (stages[i]!.note as string).trim() ? (stages[i]!.note as string).trim() : `${record.name}: ${(record.types ?? []).join('·')} 타입 몬스터.`;
     campaign.speciesNotes[record.id] = note;
   });
+  // 원정 정의가 없는 수집 게임: 도감은 종 레코드 전부를 훑고, 설명은 종 레코드의 dexNote 에서 읽는다.
+  else records.forEach((record, i) => {
+    const note = typeof stages[i]!.note === 'string' ? (stages[i]!.note as string).trim() : '';
+    if (note) record.dexNote = note.slice(0, 200);
+  });
   for (const record of records) {
     const at = list.findIndex(s => s.id === record.id);
     if (at >= 0) list[at] = record; else list.push(record);

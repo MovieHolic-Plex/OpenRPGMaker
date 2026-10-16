@@ -829,6 +829,8 @@ export interface MonsterSpeciesRecord {
    */
   machineSkillIds?: SkillId[];
   evolutions?: MonsterEvolutionRecord[];
+  /** 도감 설명(선택). 원정 정의(monsterCampaign)가 없는 수집 게임의 도감이 쓴다 — 원정 노트가 있으면 그쪽이 우선. */
+  dexNote?: string;
   /** 특성(선택). 생략 = 특성 없음(기존 동작). gen1 전투 모델에서만 적용된다. */
   ability?: MonsterAbility;
 }
