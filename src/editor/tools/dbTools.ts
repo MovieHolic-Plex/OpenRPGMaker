@@ -1,3 +1,5 @@
+import { withJosa } from "@/util/josa";
+import { starterChoiceCommands } from "@/project/starterChoice";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { CAPTURE_CONDITION_KINDS, CAPTURE_CONDITION_MAX_MULTIPLIER, CAPTURE_CONDITION_MIN_MULTIPLIER } from "@/battle/captureBalls";
@@ -40,7 +42,6 @@ import type {
   ActorRecord,
   BattleAnimationRecord,
   ClassRecord,
-  Command,
   CommonEvent,
   CropRecord,
   EnemyRecord,
@@ -1936,7 +1937,7 @@ const setTypeChart: ToolDefinition = {
 
 const giveStarterMonsters: ToolDefinition = {
   name: "give_starter_monsters",
-  description: "스타팅 몬스터 3종 선택 이벤트를 생성한다. 각 선택지는 giveMonster를 실행하고 셀프스위치 A로 재지급을 막는다.",
+  description: "스타팅 몬스터 3종 선택 이벤트를 생성한다. 고르면 앞모습 그림·이름·속성·도감 설명을 보여 주고 「정할까요?」 예/아니오를 거친 뒤(아니오면 처음 목록으로) giveMonster를 실행하며, 셀프스위치 A로 재지급을 막는다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2880,16 +2881,14 @@ function starterMonsterEvent(
   project: Project,
   input: { readonly mapId: string; readonly eventId: string; readonly x: number; readonly y: number; readonly name: string; readonly speciesIds: readonly string[] }
 ): GameEvent {
-  const options = input.speciesIds.map((speciesId) => {
-    const species = project.database.monsterSpecies?.find((entry) => entry.id === speciesId);
-    return {
-      text: species?.name ?? speciesId,
-      branch: [
-        { kind: "giveMonster", speciesId, level: 5, nickname: species?.name },
-        { kind: "text", body: `${species?.name ?? speciesId}와 함께 여행을 시작합니다.` },
-        { kind: "setSelfSwitch", key: "A", value: true },
-      ] satisfies Command[],
-    };
+  // 한 마리씩 앞모습·속성·설명을 보여 주고 「정할까요?」 확인을 거친다(starterChoice.ts).
+  const chooseCommands = starterChoiceCommands(project, {
+    speciesIds: input.speciesIds,
+    prompt: "처음 함께할 몬스터를 고르세요.",
+    afterGive: (_speciesId, name) => [
+      { kind: "text", body: `${withJosa(name, "와/과")} 함께 여행을 시작합니다.` },
+      { kind: "setSelfSwitch", key: "A", value: true },
+    ],
   });
   return {
     id: input.eventId,
@@ -2907,14 +2906,7 @@ function starterMonsterEvent(
         priority: "same",
         overlapForbidden: true,
         movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [
-          {
-            kind: "choices",
-            prompt: "처음 함께할 몬스터를 고르세요.",
-            options,
-            cancelBehavior: "disallow",
-          },
-        ],
+        commands: chooseCommands,
       },
       {
         id: `${input.eventId}_claimed`,

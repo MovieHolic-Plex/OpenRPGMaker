@@ -1,3 +1,4 @@
+import { starterChoiceCommands } from "@/project/starterChoice";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { canMove, isPassableLanding } from "@/project/collision";
 import { slideRuleAt } from "@/project/slideTiles";
@@ -679,9 +680,11 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   connect(finalTownMap, observatory, "mx_badge_8");
   if (league[0]) connect(finalTownMap, league[0], "mx_story_beacon");
 
-  const starterCommands: Command[] = [{ kind: "choices", prompt: "첫 동료를 선택하자", options: EXPEDITION_STARTERS.map(sid => ({ text: speciesById.get(sid)!.name,
-    branch: [{ kind: "giveMonster", speciesId: sid, level: 5 }, sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5), gain("mx_revive", 1), gain("mx_candy", 1),
-      text("첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 보렴.", "천문박사"), text("여덟 지역의 약속을 모아, 빛을 잃어 가는 별의 등대를 다시 밝혀 주었으면 한단다.", "천문박사")] })), cancelBehavior: "disallow" }];
+  const starterCommands: Command[] = starterChoiceCommands(project, {
+    speciesIds: EXPEDITION_STARTERS, notes: Object.fromEntries(EXPEDITION_SPECIES.map(s => [s.id, s.description])), speaker: "천문박사",
+    afterGive: (sid) => [sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5), gain("mx_revive", 1), gain("mx_candy", 1),
+      text("첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 보렴.", "천문박사"), text("여덟 지역의 약속을 모아, 빛을 잃어 가는 별의 등대를 다시 밝혀 주었으면 한단다.", "천문박사")],
+  });
   npc(lab, "professor", "천문박사", "몬스터들은 오래전부터 별빛섬의 여덟 등불을 지켜 왔단다. 밤막회사가 빛을 가져가면서 섬의 균형이 무너지고 있어.", { x: 7, y: 5 },
     [{ kind: "fork", condition: condition("mx_starter"), then: [text("메뉴의 「도감」에서 만난 동료를, 「배지」에서 현재 목표를 볼 수 있단다. 여덟 관장의 약속을 모아 보렴.", "천문박사")], else: starterCommands }], 5);
   npc(school, "teacher", "선생님", "싸운다 → 기술 선택 → 상대 선택. 몬스터가 쓰러지면 교체해야 해요. 포획은 상대 체력을 낮춘 뒤 시도해 보세요. 메뉴의 몬스터 화면에서는 보관함 이동과 새 기술 교체도 할 수 있어요.", { x: 7, y: 5 }, [{ kind: "fork", condition: condition("mx_school_gift"), then: [], else: [gain("item_potion", 1), sw("mx_school_gift")] }], 5);

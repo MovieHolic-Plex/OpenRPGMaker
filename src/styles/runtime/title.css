@@ -815,3 +815,9 @@
     animation: none !important;
   }
 }
+
+/* 몬스터 수집 게임 저장 칸 요약(도감·배지·파티) — 둘째 줄 아래 한 줄. */
+.player-layout.system-shell .oprn-load-slot-monster {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--runtime-font-size-9);
+}

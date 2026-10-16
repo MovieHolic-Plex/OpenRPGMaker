@@ -1071,6 +1071,13 @@ function saveSlotEntryParts(
       if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
       if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
       if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
+      const monster = slot.snapshot.monsterSummary;
+      if (monster) {
+        // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
+        const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
+        const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
+        return { value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨", description: where.filter(Boolean).join(" / ") };
+      }
       return {
         value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨",
         description: parts.join(" / "),

@@ -1,3 +1,4 @@
+import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
 import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
 import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
@@ -138,6 +139,8 @@ export type SaveSnapshot = {
   /** 저장 당시 장(시대) 이름. system.chapter 가 없거나 이름표 없는 값이면 생략. */
   readonly chapterLabel?: string;
   readonly playTimeSeconds?: number;
+  /** 몬스터 수집 게임의 저장 칸 요약(도감·배지·파티). 다른 장르는 생략. */
+  readonly monsterSummary?: MonsterSaveSummary;
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
@@ -407,6 +410,10 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       return chapterLabel ? { chapterLabel } : {};
     })(),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+    ...(() => {
+      const monsterSummary = monsterSaveSummary(project, session);
+      return monsterSummary ? { monsterSummary } : {};
+    })(),
     session: {
       switches: structuredClone(session.switches),
       selfSwitches: structuredClone(session.selfSwitches),
@@ -1029,6 +1036,10 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
       ...(typeof value.chapterLabel === "string" && value.chapterLabel ? { chapterLabel: value.chapterLabel } : {}),
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
+      ...(() => {
+        const monsterSummary = readMonsterSaveSummary(value.monsterSummary);
+        return monsterSummary ? { monsterSummary } : {};
+      })(),
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,
       session: parsed.session,
