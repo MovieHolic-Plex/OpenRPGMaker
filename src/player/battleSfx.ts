@@ -18,7 +18,9 @@ export type BattleSfxKind =
   | "faint"
   | "victory"
   | "escape"
-  | "defeat";
+  | "defeat"
+  // 도감 등록 문장 징글(2026-10-16). 던지기·흔들림·잡힘·탈출 소리는 monster-sfx 세트(playMonsterSfxNow)가 맡는다.
+  | "dex";
 
 let ctx: AudioContext | undefined;
 let master: GainNode | undefined;
@@ -161,6 +163,10 @@ export function playBattleSfx(kind: BattleSfxKind): void {
     case "escape":
       noise({ duration: 0.14, gain: 0.25, filterFrom: 800, filterTo: 2400, seed: 0x455343 });
       tone({ freq: 420, at: 0.05, duration: 0.12, gain: 0.2, slideTo: 760 });
+      return;
+    case "dex":
+      [784, 988, 784, 1175].forEach((freq, index) => tone({ freq, type: "triangle", at: index * 0.1, duration: 0.12, gain: 0.26 }));
+      tone({ freq: 1568, type: "sine", at: 0.42, duration: 0.28, gain: 0.2 });
       return;
     case "defeat":
       tone({ freq: 220, type: "triangle", duration: 0.3, gain: 0.3 });

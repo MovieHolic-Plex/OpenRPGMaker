@@ -1791,6 +1791,8 @@ export interface MonsterCampaignConfig {
   name: string;
   /** 생략 = 옛 고정 계약. */
   plan?: MonsterCampaignPlan;
+  /** 새 종을 처음 잡았을 때 전투에 뜨는 도감 등록 문장. `{name}` 은 종 이름. 생략 = 「{name}의 데이터가 도감에 등록되었다!」. */
+  dexRegisteredText?: string;
   speciesIds: string[];
   speciesNotes: Record<string, string>;
   badges: { id: string; name: string; switchId: string; cityMapId: string }[];

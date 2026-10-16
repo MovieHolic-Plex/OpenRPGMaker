@@ -945,15 +945,21 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
     case "missingTarget":
       return "포획할 대상이 없다.";
     case undefined:
-      if (emeraldNarrationActive()) {
-        const shakes = result.shakes ?? 3;
-        return shakes <= 0 ? "안 돼! 몬스터가 구슬에서 빠져나왔다!"
-          : shakes === 1 ? "아앗! 잡은 줄 알았는데!"
-          : shakes === 2 ? "아깝다! 거의 잡을 뻔했는데!"
-          : "아아, 조금만 더 했으면 잡았는데!";
-      }
-      return "아앗, 아깝다! 몬스터가 구슬에서 빠져나왔다!";
+      return captureFailLine(result.shakes ?? 3, result.roll, emeraldNarrationActive());
   }
+}
+
+/** 흔들린 횟수별 실패 문장. 에메랄드는 3세대 문장 그대로, 다른 스킨은 같은 뜻의 변형 둘을 굴림 값으로 번갈아 쓴다(같은 문장만 반복되던 결함). */
+const CAPTURE_FAIL_LINES: readonly (readonly [string, string, string])[] = [
+  ["안 돼! 몬스터가 구슬에서 빠져나왔다!", "구슬이 열리자마자 몬스터가 튀어나왔다!", "으악, 구슬이 소용없다! 몬스터가 뛰쳐나왔다!"],
+  ["아앗! 잡은 줄 알았는데!", "앗, 구슬이 한 번 흔들리더니 열려 버렸다!", "한 번 흔들리다 말았다! 몬스터가 빠져나왔다!"],
+  ["아깝다! 거의 잡을 뻔했는데!", "두 번이나 흔들렸는데… 아깝다!", "조금만 더! 몬스터가 구슬을 박차고 나왔다!"],
+  ["아아, 조금만 더 했으면 잡았는데!", "세 번 흔들렸는데 열려 버렸다! 정말 아깝다!", "다 잡은 줄 알았는데! 몬스터가 구슬에서 빠져나왔다!"],
+];
+export function captureFailLine(shakes: number, roll: number | undefined, emerald: boolean): string {
+  const row = CAPTURE_FAIL_LINES[Math.max(0, Math.min(3, Math.trunc(shakes)))]!;
+  if (emerald) return row[0];
+  return row[1 + (Math.floor((roll ?? 0) * 997) % 2)]!;
 }
 
 /**

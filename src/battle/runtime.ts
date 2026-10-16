@@ -3024,6 +3024,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return effects;
   }
 
+  const dexAnnouncedSpecies = new Set<string>();
   function applyCapture(user: MutableBattler, captureItemId: ItemId, targetEnemyId: string): void {
     const finish = (next: BattleCaptureResultSnapshot): void => {
       lastCaptureResult = next;
@@ -3139,7 +3140,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actionLog.push({ userRecordId: user.recordId, targetId: target.id, hit: true, amount: 0, critical: false });
     lastActionResult = actionLog[actionLog.length - 1];
     options.onMonsterCaptured?.(capture);
-    finish({ targetId: target.id, captureItemId, success: true, rate, roll, shakes, speciesId: species.id });
+    // 도감에 처음 오르는 종이면 등록 문장을 한 줄 남긴다. 영수증(mx_caught_)은 여기서 찍지 않는다 — 캠페인 포획은 승리·도주 커밋 때
+    // giveMonster 가 찍는다(패배로 버려지는 포획이 도감에 남지 않게). 같은 전투에서 같은 종을 또 잡아도 문장은 한 번만.
+    const campaign = options.project.system.monsterCampaign;
+    const newDexEntry = campaign?.speciesIds.includes(species.id) === true
+      && battleEventState.switches[`mx_caught_${species.id}`] !== true
+      && !(options.partyMonsters ?? []).some((instance) => instance.speciesId === species.id)
+      && !dexAnnouncedSpecies.has(species.id);
+    if (newDexEntry) dexAnnouncedSpecies.add(species.id);
+    finish({ targetId: target.id, captureItemId, success: true, rate, roll, shakes, speciesId: species.id, ...(newDexEntry ? { newDexEntry: true } : {}) });
+    if (newDexEntry) {
+      const text = campaign?.dexRegisteredText?.trim() || "{name}의 데이터가 도감에 등록되었다!";
+      recordTimeline({
+        kind: "special", side: "actor", userRecordId: user.recordId, targetId: target.id,
+        message: text.replace(/\{name\}/gu, species.name), aside: "dex",
+      });
+    }
   }
 
   /** SkillRecord.hpCostPercent: 시전 대가로 최대 HP 의 N% 를 잃는다(1 밑으로는 안 깎음). 화면에 숫자가 뜨게 타임라인에 남긴다. */

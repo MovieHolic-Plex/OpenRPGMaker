@@ -6,6 +6,7 @@ import type { Project } from '@/project/types';
 export type MonsterCampaignDefinition = {
   id: string;
   name: string;
+  dexRegisteredText?: string;
   speciesIds: string[];
   speciesNotes: Record<string, string>;
   badges: { id: string; name: string; switchId: string; cityMapId: string }[];

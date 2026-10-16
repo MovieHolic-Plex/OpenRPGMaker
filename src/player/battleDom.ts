@@ -484,6 +484,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onTimelineEntry(entry) {
       setBattleMotionContext(field, options.runtime.snapshot());
       captureEntryActive = entry.kind === "capture";
+      // 도감 등록 문장이 뜨는 순간의 징글.
+      if (entry.kind === "special" && entry.aside === "dex") playBattleSfx("dex");
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
