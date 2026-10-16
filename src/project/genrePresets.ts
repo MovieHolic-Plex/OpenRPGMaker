@@ -9,6 +9,7 @@ import {
 } from "@/project/gameTime";
 import { applyBattleMethod } from "@/project/battleMethod";
 import type { Project } from "@/project/types";
+import { JRPG_CLASSIC_FIELD_HUD } from "@/project/fieldHud";
 import type { GenrePackId } from "@/project/genrePackId";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { markMonsterGenre } from "@/project/genreLock";
@@ -114,6 +115,8 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       // 전투 화면은 기본 도트 측면(retro2003, 저장하지 않음) — 2026-10-02 측면 스킨을 하나로 줄였다.
       system.menuUiStyle ??= "party-first";
       system.companions ??= { maxCompanions: 3, formation: "line" };
+      // 클래식 JRPG 는 탐색 화면을 비운다(능력치·소지품은 ESC 메뉴). 기본 HUD(작은 하트 + 「514 / 514」)는 액션 게임용이라 지도·실내 위쪽을 덮었다(jrpg-real-1 J09).
+      system.fieldHud ??= { ...JRPG_CLASSIC_FIELD_HUD };
       break;
     case "story-cutscene":
       break;

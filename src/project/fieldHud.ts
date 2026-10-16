@@ -120,3 +120,11 @@ export function resolvedHudWidgets(config: FieldHudConfig): HudWidget[] {
   if (config.widgets !== undefined) return config.widgets;
   return hudPreset(config.theme).filter(w => (w.source !== "hp" || config.vitals) && (w.kind !== "clock" || config.clock) && (w.source !== "tools" || config.tools)).map(w => w.source === "tools" ? { ...w, hideEmpty: config.hideEmpty } : w);
 }
+
+/** 클래식 JRPG 의 필드 HUD — 프리셋 위젯이 없는 「고전 JRPG」 테마. 저작자가 정한 fieldHud 가 없을 때만 쓴다(jrpg-real-1 J09: 기본 하트 HUD 가 지도 위쪽을 덮었다). */
+export const JRPG_CLASSIC_FIELD_HUD: FieldHudConfig = { theme: "classic", vitals: true, clock: true, tools: true, objective: false, hideEmpty: true };
+
+/** 저장된 fieldHud 가 없는 파티 모험 JRPG 는 프리셋을 거치기 전에 만든 프로젝트·헤드리스 생성물도 같은 클래식 HUD 로 본다. */
+export function effectiveFieldHud(project: { readonly system: { readonly fieldHud?: FieldHudConfig; readonly genre?: string } }): FieldHudConfig | undefined {
+  return project.system.fieldHud ?? (project.system.genre === "adventure-jrpg" ? JRPG_CLASSIC_FIELD_HUD : undefined);
+}

@@ -1,6 +1,6 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
+import { effectiveFieldHud, normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
@@ -19,10 +19,11 @@ export class FieldHud {
     this.root.dataset.testid = "field-hud"; host.append(this.root);
   }
   update(project: Project, session: PlaySession, context: HudRuntimeContext = {}): void {
-    if (this.configSource !== project.system.fieldHud || !this.initialized) {
+    const hudSource = effectiveFieldHud(project);
+    if (this.configSource !== hudSource || !this.initialized) {
       this.initialized = true;
-      this.configSource = project.system.fieldHud;
-      this.config = normalizeFieldHud(project.system.fieldHud);
+      this.configSource = hudSource;
+      this.config = normalizeFieldHud(hudSource);
       this.widgets = resolvedHudWidgets(this.config);
       const wanted = new Set(this.widgets.map(w => w.id));
       for (const [id, mount] of this.mounts) if (!wanted.has(id)) { mount.node.remove(); this.mounts.delete(id); }

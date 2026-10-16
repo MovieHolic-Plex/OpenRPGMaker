@@ -10,11 +10,14 @@ import { SEGMENT_END_ENDING_ID, SEGMENT_ROUTE_MAP_ID } from "@/project/playableS
 import type { Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import { visitAllCommands } from "./walk";
+import { checkJrpg } from "./jrpg";
 
 const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트", "New Game", "New Project"]);
 const TIME_BRIEF = /시간|시대|과거|미래|타임|평행|크로노|time|chrono|era\b/iu;
 /** 시작 마을에서 말을 거는 인물의 최소 수 — 촌장 하나로는 마을이 아니다. */
 export const START_TOWN_MIN_TALKERS = 2;
+/** checkJrpg 경고 중 «끝내도 되나» 를 막는 전투 균형 코드. */
+const BALANCE_CODES = new Set(["jrpg-party-identical-stats", "jrpg-boss-not-threatening", "jrpg-boss-unwinnable", "jrpg-encounters-harmless", "jrpg-encounters-wipe-party"]);
 
 function isJrpg(project: Project): boolean {
   return project.system?.genre === "adventure-jrpg" || project.gameDesignBrief?.presetId === "adventure-jrpg";
@@ -67,6 +70,15 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   }
   if (TIME_BRIEF.test(briefText) && !endings.some((ending) => ending.id !== SEGMENT_END_ENDING_ID && (named.has(ending.id) || autoSelects))) {
     gaps.push("시간·시대 이야기를 요청했는데 호출되는 엔딩이 뼈대의 「첫 구간 끝」 뿐입니다 — 시간 이야기를 맺는 엔딩(define_ending)을 만들고 마지막 사건에서 triggerEnding 으로 부르세요.");
+  }
+
+  // 4) 전투 균형 — 파티원이 전부 같은 몸이거나, 보스가 피해를 못 주거나 이길 수 없으면 「끝」까지 갈 수는 있어도 게임이 아니다(jrpg-real-1 J06:
+  //    파티 Lv1 스탯 동일 · 보스 21~57입력에 승리). 모의전은 즉시 끝난다(3판, 고정 시드).
+  // 검사기가 던지면(DB 가 덜 만들어진 프로젝트) finish 를 막지 않는다 — 균형 검사는 보너스지 필수 구조 검사가 아니다.
+  let balance: ReturnType<typeof checkJrpg> = [];
+  try { balance = checkJrpg(project); } catch { balance = []; }
+  for (const finding of balance) {
+    if (BALANCE_CODES.has(finding.code)) gaps.push(`${finding.message} — 배우 능력치는 upsert_actor 의 parameterCurves, 적 능력치는 upsert_enemy 의 stats 로 고치세요.`);
   }
   return gaps;
 }

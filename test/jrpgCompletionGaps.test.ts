@@ -31,6 +31,10 @@ describe("jrpgCompletionGaps", () => {
     expect(jrpgCompletionGaps(project, "시간을 넘나드는 이야기").some((gap) => gap.includes("첫 구간 끝"))).toBe(true);
   });
 
+  it("a project with no database does not throw out of the balance check (jrpg-real-1 J06 gate is best-effort)", () => {
+    expect(() => jrpgCompletionGaps(jrpg(), "")).not.toThrow();
+  });
+
   it("ignores non-JRPG projects", () => {
     expect(jrpgCompletionGaps({ system: { genre: "monster-collect" }, maps: {}, startMapId: "x" } as unknown as Project, "")).toEqual([]);
   });
