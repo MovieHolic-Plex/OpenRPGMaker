@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyVariantLook, resolveVariantLook } from "@/editor/tools/mapVariantLook";
+import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { appendStructurePlacement, captureStructureTiles } from "@/project/structurePlacements";
 import type { GameMap, Project } from "@/project/types";
 
@@ -72,6 +73,30 @@ describe("derive_map_variant 시대 겉모습(J03)", () => {
     expect(report.demolishedBuildings).toBeGreaterThanOrEqual(1);
     expect(map.upperOverlayTiles.filter((tile) => tile === 901).length).toBeLessThan(60);
     expect(map.upperOverlayTiles[0]).toBe(902);
+  });
+
+  it("철거한 건물의 그림자 띠(2층 덧그림, 오른쪽·아랫줄)도 지운다", () => {
+    const { draft, map } = townDraft();
+    const cells = map.width * map.height;
+    map.lowerOverlayTiles = new Array(cells).fill(-1);
+    const shadow = BEODEUL_NATURE.shadows["bd-house-2"] ?? Object.values(BEODEUL_NATURE.shadows)[0]!;
+    const kitIds = Object.keys(BEODEUL_NATURE.shadows);
+    // 건물 두 채의 kitId 를 그림자 사전에 있는 이름으로 바꿔 두고 그 그림자 칸에 덧그림을 깐다.
+    map.structurePlacements = map.structurePlacements!.map((placement, n) => ({ ...placement, kitId: kitIds[n]! }));
+    const shadowCellsOf = (placement: { x: number; y: number; kitId: string }) => {
+      const sh = BEODEUL_NATURE.shadows[placement.kitId]!;
+      const out: number[] = [];
+      sh.rows.forEach((row, j) => row.forEach((tile, i) => { if (tile >= 0) out.push((placement.y + sh.dy + j) * map.width + placement.x + sh.dx + i); }));
+      return out.filter((index) => index >= 0 && index < cells);
+    };
+    const all = map.structurePlacements!.flatMap((placement) => shadowCellsOf(placement));
+    for (const index of all) map.lowerOverlayTiles[index] = 30286;
+    map.lowerOverlayTiles[0] = 30999; // 건물 밖 덧그림은 그대로
+    const report = applyVariantLook(draft, map, "ruin", [], "variants[s]");
+    expect(report.demolishedBuildings).toBeGreaterThanOrEqual(1);
+    expect(map.lowerOverlayTiles.filter((tile) => tile === 30286).length).toBeLessThan(all.length);
+    expect(map.lowerOverlayTiles[0]).toBe(30999);
+    expect(shadow).toBeDefined();
   });
 
   it("같은 변형 id 는 언제나 같은 철거·배치가 나온다", () => {
