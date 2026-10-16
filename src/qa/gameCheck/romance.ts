@@ -17,6 +17,7 @@ import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
 import { checkPerHeroineEndings, checkRomanceEndings } from "./romanceEndings";
 import { allPages, visitPageCommands } from "./walk";
+import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 
 const ROMANCE_BRIEF = /연애|로맨스|호감|고백|romance|dating/iu;
 /** 뼈대가 깔아 두는 자리표시 이름 — 기획에 맞게 바꿨어야 하는 것들. */
@@ -164,12 +165,14 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   for (const page of allPages(project)) visitPageCommands(page, (visit) => {
     const command = visit.command;
     if (command.kind !== "text" || typeof command.body !== "string") return;
-    if (/^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
+    // 「[이름]」 줄 머리표, 또는 speaker 칸과 같은 이름이 「이름:」 로 본문 앞에 또 붙은 줄(romance-real-2 R07: `한지훈: "반가워!"`).
+    const echoed = stripSpeakerEcho(command.body, command.speaker) !== command.body;
+    if (echoed || /^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
   });
   if (doubled > 0) {
     findings.push({
       severity: "warning", code: "romance-speaker-in-body",
-      message: `대사 ${doubled}줄의 본문이 「[이름]」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 대사창에 이름이 두 번 보입니다.`,
+      message: `대사 ${doubled}줄의 본문이 「[이름]」·「이름:」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 재생 화면은 이름표와 같은 이름의 머리표를 걷어 주지만 저작 데이터는 깨끗해야 합니다.`,
     });
   }
   return findings;
