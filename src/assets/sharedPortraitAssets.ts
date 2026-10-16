@@ -46,7 +46,7 @@ export function sharedPortraitId(setId: string, mode: SharedPortraitMode, expres
 }
 
 /**
- * 현대 연애 인물 칩(Modern1~3) 짝 초상(2026-10-16, scripts/content/portraits/modern_portraits.py).
+ * 현대 연애 인물 칩(Modern1~3) 24종 짝 초상(2026-10-16 1차 12종 · 2026-10-17 나머지 12종, scripts/content/portraits/modern_portraits.py).
  * 현대 칩에는 48px 얼굴이 없다 — 칩이 정답이고 흉상·전신을 새로 그렸다. 줄기는 `modern-<칩 id 뒤쪽>`(칩 id 와 1:1)이고
  * 표정은 기본·기쁨·놀람·슬픔·당황 5개뿐이다(나머지 11표정은 2단계, 없는 표정은 대사가 기본 그림으로 폴백한다).
  * 대응표(sharedCharacterGraphics.json)가 칩 → 이 세트의 흉상 base 를 「얼굴」로 잇는다.
@@ -65,6 +65,18 @@ export const MODERN_PORTRAIT_SETS: readonly { readonly stem: string; readonly na
   { stem: "modern-apron-brown", name: "카페 점원 · 갈색 앞치마" },
   { stem: "modern-teacher-tweed", name: "교수 · 트위드 재킷" },
   { stem: "modern-teacher-cardigan", name: "여선생 · 버건디 카디건" },
+  { stem: "modern-uni-boy-grey", name: "남학생 · 회색 블레이저" },
+  { stem: "modern-uni-boy-summer", name: "남학생 · 여름 교복" },
+  { stem: "modern-uni-girl-bun", name: "여학생 · 올림머리 카디건" },
+  { stem: "modern-uni-girl-long", name: "여학생 · 긴 머리 회색 블레이저" },
+  { stem: "modern-casual-boy-mustard", name: "캐주얼 남 · 머스터드 스웨트셔츠" },
+  { stem: "modern-casual-boy-olive", name: "캐주얼 남 · 올리브 재킷" },
+  { stem: "modern-casual-girl-pink", name: "캐주얼 여 · 분홍 후드티" },
+  { stem: "modern-casual-girl-lavender", name: "캐주얼 여 · 라벤더 블라우스" },
+  { stem: "modern-casual-girl-stripe", name: "캐주얼 여 · 줄무늬 티" },
+  { stem: "modern-suit-boy-charcoal", name: "정장 남 · 차콜" },
+  { stem: "modern-apron-navy", name: "카페 점원 · 남색 앞치마" },
+  { stem: "modern-apron-olive", name: "카페 점원 · 올리브 앞치마" },
 ];
 
 const faceSetPortraits = FACE_EXPRESSION_SETS.flatMap((set) => {
