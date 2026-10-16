@@ -80,3 +80,16 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 ## 연애 인터뷰 기본값 (2026-10-16, 5번)
 
 `src/project/romancePreset.ts` `applyRomanceDefaults(project)` — 인터뷰 장르가 `romance` 일 때만(결정론, 이미 있던 설정은 건드리지 않는다): 시간 시스템(0.1분/초·강제 취침), `socialLoop`, 호감 하트 HUD(`fieldHud` 위젯 소스 `friendship`·`socialSlots` 추가, 글자·CSS 만), 타이틀 배경(`oprn-still-moon-meadow` — 새 그림 없음, 눈 덮인 마을 기본값 대체), 장르 잠금 `romance`(`genreLock.ts` `GENRE_LOCK_PRESETS.romance`: 허용 계열 oprn-campus/oprn-modern/oprn-jp, 몬스터 잠금 #2625 과 같은 구조, 조수 실행에서만 강제). 호출처: `projectInterviewStartup.ts`·`welcomeGenreSystemPresetAction.ts`.
+
+## 다인 루프 뼈대 · 2차 수리 (2026-10-16)
+
+모두 선택 `socialLoop` 안쪽이다 — 저장 바이트·다른 장르 불변. 새 그림 없음(타이틀은 별도 PR, 아래).
+
+- **HUD 호감 목록**: 위젯 `kind:"party"`·`source:"friendship"` 은 호감이 기록된 사람이 둘 이상이면 「이름 + 하트」 줄 목록(`fieldHudData.ts` friends 분기·`fieldHudRender.ts` `hud-rel-row`·`fieldHud.css`), 한 명이면 예전 게이지 하나. 표시 상한은 `socialLoop.ts` `friendshipDisplayMax(project)`(socialLoop 켠 프로젝트 = 100, 아니면 기본 1000 단계). 이름은 `friendship.ts` `friendshipDisplayName`(프로필 `displayName` → 이벤트 `name`).
+- **ESC 관계 탭 버그**: 「관계」 는 접힌 묶음(기록) 아래 항목이라 `renderMenu` 가 「available 에 없다」며 items 로 되돌렸다 → `listStatusMenuCommandIds` 에 있으면 허용(`playerStatusMenuController.ts`).
+- **`set_deadline_ending` 인물별 문턱**: `tiers[].characterId` — 다인 연애에서 「그 사람 호감이 문턱 이상 → 그 사람과의 결말」, 위에서부터 처음 맞는 항목이 이긴다.
+- **시간표에 요일은 없다**: `NpcScheduleWhen` = timePhase·hourRange·season·dayRange. 요일마다 다른 만남은 NPC 이벤트 페이지의 `weekday` 조건(0=일..6=토, 시작 월요일)으로 나눈다. 「일일 이벤트 풀」 = 페이지 풀(요일·호감 조건), 무작위 프리미티브는 없다 — 결정론이다. 도구 설명 오기(「요일은 GameTime에 없으므로」)를 고쳤다.
+- **`talkFriendship` 인물은 기본 제자리**(`eventTools.ts` `resolveSocialNpcMovement`): 이름 추론이 배회(random)로 두면 시간표 자리에 서 있어야 할 사람이 칸을 벗어나고 한 칸 폭 길을 막는다. 배회는 `movement:"random"` 명시. `make_villager` 는 새 이벤트에 `name` 을 단다(없으면 HUD·ESC 가 characterId 를 보였다). 호감 대화·피드백의 말하는 이름은 상태 페이지 제목이 아니라 이벤트 이름(`characterProfiles.ts` `resolveCharacterSpeaker`).
+- **`qa:game check` 가 기한 엔딩을 걷는다**(`src/qa/gameCheck/deadline.ts`): `runAutoPlay` 의 목표는 맵 이벤트 페이지 안 `triggerEnding` 뿐이라 `onDayEnd` 공통 이벤트가 고르는 기한 엔딩은 걸어 본 적이 없다(문턱을 400 으로 막아도·엔딩이 하나도 안 닿아도 「막힘 0」). 이제 인물 한 명에게 집중하는 판들 + 아무도 안 만나는 판을 헤드리스 러너로 끝까지 돌려 어떤 엔딩이 닿는지 센다. 어느 판도 못 닿으면 막힘 `deadline-ending-unreachable`, 정의된 엔딩 중 안 닿은 것은 경고 `deadline-ending-unplayed`(집중 판은 휴리스틱이라 막힘이 아니다). 한계: 말 걸기 호감만 쓴다(선택지로 올리는 문턱은 맵 목표 쪽 자동 플레이).
+- **프로브·시나리오**: `scripts/qa/romance-fix2/` — `multi-fixture.mts`+`runtime/romance-multi`(3인·시간대 위치·요일 페이지·ESC 관계 21비트), `playthrough.mts`(인물별 끝까지 플레이), `run-proof.mts`+`runtime/romance-run`(조수가 지은 한 편의 캡처), `save-reload.mjs`(시험 SQLite 폴더 저장→재로드), `assistant-runs/`(조수 대용 3판의 도구 호출 목록).
+- **타이틀 = 후보 C 확정**(옥상 노을, 교복 둘이 난간에서 교정을 내려다봄): 생성형 큰 그림 한 장, `ROMANCE_TITLE_RESOURCE_ID = "oprn-title-romance-campus"`(별도 PR #2676, 노부부 벽난로 그림을 대체). 사용자에게 고르게 하는 단계는 없다.
