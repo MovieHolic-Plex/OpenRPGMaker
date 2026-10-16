@@ -3,6 +3,7 @@ import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow
 import { applyDifficultyToEnemyBattlers, difficultyRate, scaleByDifficulty } from "@/project/difficulty";
 import { applySkillLoadoutsToBattlers } from "@/project/skillLoadout";
 import { evaluateDamageFormula, formulaBattlerContext } from "@/battle/damageFormula";
+import { fixedDamageAmount, recoilDamageFor, rollMultiHitCount } from "@/project/skillBattleRules";
 import { predictSkillDamageFor } from "@/battle/battlePredict";
 import { combatConditionMet } from "@/battle/combatConditions";
 import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
@@ -511,6 +512,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let eventChoice: BattleEventChoiceSnapshot | undefined;
   let eventPause: BattleEventPauseSnapshot | undefined;
   let afterBattleEvents: (() => void) | undefined;
+  /** 풀죽음(SkillRecord.flinchChance)으로 이번 라운드 자기 차례를 잃은 배틀러 id. 라운드가 끝나면 비운다(저장 안 함). */
+  const flinchedBattlerIds = new Set<string>();
   let strictResolution: { readonly round: number; readonly actions: StrictQueuedAction[]; index: number; grantedExtraActions: number } | undefined;
   let drainingStrictActions = false;
   let escaped = false;
@@ -841,6 +844,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function prepareGen1CombatAction(battler: MutableBattler): boolean {
+    if (flinchedBattlerIds.delete(battler.id)) {
+      recordTimeline({ kind: "incapacitated", side: battlerSide(battler), userRecordId: battler.recordId, targetId: battler.id, flinch: true });
+      if (gen1) applyGen1Residual(battler);
+      return false;
+    }
     if (!gen1) return true;
     const beforeStatus = gen1MajorStatusOf(battler);
     const stepped = stepGen1MajorStatus({
@@ -1034,6 +1042,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       readonly hitMultiplier?: number;
       readonly damageFormula?: string;
       readonly affects?: "hp" | "mp";
+      /** SkillRecord.fixedDamage 를 푼 양. 있으면 피해 식·급소·날씨 대신 이 값(타입 무효면 0). */
+      readonly fixedDamage?: number;
     },
   ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean; readonly effectiveness: number } {
     const magical = usesMagicalDefense(options.project, move.elementId);
@@ -1104,6 +1114,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const boostedDamage = heldBoost === 100 ? weatherDamage : Math.max(weatherDamage > 0 ? 1 : 0, Math.floor(weatherDamage * heldBoost / 100));
     const abilityPercent = abilityDamagePercent({ ability: userAbility, hp: user.hp, maxHp: user.maxHp }, { ability: targetAbility }, move.elementId);
     let dealt = formationDamage(Math.round(scaleDamageByPercent(boostedDamage, abilityPercent) * (move.hitMultiplier ?? 1)), user.row, target.row, magical ? "mind" : "attack", "damage");
+    // 고정 피해: 난수 바이트는 보통 기술과 똑같이 쓰고(명중·급소 굴림) 양만 바꾼다. 타입 무효(0 배)면 0.
+    const fixedHit = move.fixedDamage !== undefined && resource === "hp";
+    if (fixedHit) dealt = effectiveness === 0 ? 0 : move.fixedDamage!;
     if (resource === "hp") {
       const endured = abilityEndureDamage(targetAbility, before, target.maxHp, dealt);
       if (endured.endured && targetAbility) {
@@ -1121,7 +1134,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
     }
     target[resource] = Math.max(0, before - dealt);
-    return { hit: true, amount: before - target[resource], critical: resolved.critical, effectiveness };
+    return { hit: true, amount: before - target[resource], critical: fixedHit ? false : resolved.critical, effectiveness };
   }
 
   function recordIncapacitated(battler: MutableBattler): void {
@@ -2153,6 +2166,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function completeStrictRound(round: number): void {
+    flinchedBattlerIds.clear();
     tickBattleWeather();
     advanceBattleSkillCooldowns([...actors, ...enemies]);
     for (const actor of actors) actor.defending = false;
@@ -3220,6 +3234,50 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     });
   }
 
+  /**
+   * SkillRecord.recoilPercent·flinchChance: 명중해서 피해를 줬을 때만. 반동은 시전자 자신 대상 damage 엔트리(aside recoil)로
+   * 남겨 HP 바가 줄고, 풀죽음은 대상이 이번 라운드에 아직 움직일 차례가 남아 있을 때만 굴린다(strict 턴제).
+   */
+  function applySkillRecoilAndFlinch(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+    dealt: number,
+    commandKind: BattleTimelineEntrySnapshot["commandKind"],
+  ): void {
+    if (!skill || dealt <= 0) return;
+    const recoil = user.hp > 0 ? Math.min(user.hp, recoilDamageFor(skill.recoilPercent, dealt)) : 0;
+    if (recoil > 0) {
+      user.hp -= recoil;
+      recordTimeline({
+        kind: "damage",
+        side: battlerSide(user),
+        userRecordId: user.recordId,
+        targetId: user.id,
+        commandKind,
+        hit: true,
+        amount: recoil,
+        critical: false,
+        skillName: skill.name,
+        skillId: skill.id,
+        resource: "hp",
+        aside: "recoil",
+      });
+      recordTimeline({ kind: "special", side: battlerSide(user), userRecordId: user.recordId, targetId: user.id, message: `${withJosa(user.name, "은/는")} 반동 피해를 입었다!`, recoil: true });
+    }
+    const chance = skill.flinchChance ?? 0;
+    if (chance > 0 && target !== user && target.hp > 0 && !flinchedBattlerIds.has(target.id) && actsLaterThisRound(target)) {
+      const passed = chance >= 100 || (gen1 ? gen1EffectChanceSucceeds(chance, nextGen1Byte) : rng() * 100 < chance);
+      if (passed) flinchedBattlerIds.add(target.id);
+    }
+  }
+
+  /** strict 라운드에서 이 배틀러의 행동이 아직 큐에 남아 있는가(풀죽음은 아직 안 움직인 상대에게만 먹는다). */
+  function actsLaterThisRound(battler: MutableBattler): boolean {
+    return strictResolution?.actions.slice(strictResolution.index).some((queued) =>
+      queued.side === "actor" ? queued.actor.id === battler.id : queued.enemy.id === battler.id) === true;
+  }
+
   function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
     const skill = lookupSkill(skillId);
     if (!skill) return;
@@ -3951,7 +4009,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const hpBeforeCast = target.hp;
     let firstHit = true;
     gaugeShiftedTargetId = undefined;
-    const sequence = skill?.hitSequence ?? [1];
+    const randomHits = skill?.hitSequence ? undefined : rollMultiHitCount(skill?.multiHit, rng);
+    const sequence = skill?.hitSequence ?? (randomHits ? Array.from({ length: randomHits }, () => 1) : [1]);
+    let landedHits = 0;
     for (let index = 0; index < sequence.length; index++) {
       let multiplier = sequence[index]!;
       if (index > 0 && (g?.followOnHit || p === "swap") && !firstHit) break;
@@ -3990,6 +4050,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         multiplier * powerMultiplier,
       );
       if (index === 0) firstHit = lastActionResult?.hit === true;
+      if (lastActionResult?.hit && (lastActionResult.amount ?? 0) > 0) landedHits += 1;
       if (last && g?.consumeMarks && mark && lastActionResult?.hit)
         gimmicks.remove(mark);
       if (
@@ -4005,6 +4066,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         gimmicks.set(status);
       }
     }
+    if (randomHits && landedHits > 0) recordSpecial(user, target, `${landedHits}번 맞았다!`);
     if (skill && g) {
       if (
         firstHit &&
@@ -4252,6 +4314,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     // MP 흡수는 상대가 실제로 잃은 MP 까지만(HP 흡수는 굴린 피해 그대로 — battleSkillVitals 정책).
     if (result.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(result.amount, mpBefore - target.mp) : result.amount, affects, commandKind);
+    if (result.hit && effectKind === "damage" && affects === "hp") applySkillRecoilAndFlinch(user, target, skill, result.amount, commandKind);
     if (result.hit && effectKind === "damage" && statistic === "attack") queueStateCounter(user, target);
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.
@@ -4307,6 +4370,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           hitMultiplier,
           damageFormula: skill?.damageFormula,
           affects,
+          fixedDamage: fixedDamageAmount(skill?.fixedDamage, user.level),
         })
       : !accuracyHit
         ? { hit: false, amount: 0, critical: false, effectiveness: 1 }
@@ -4345,6 +4409,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     flushAbilityNotes(user, target);
     // 흡수(drainPercent)는 gen1 규칙에서도 먹는다 — 예전엔 대가만 깎이고 회복은 조용히 빠졌다.
     if (applied.hit && effectKind === "damage") applySkillDrain(user, skill, affects === "mp" ? Math.min(applied.amount, gen1MpBefore - target.mp) : applied.amount, affects, commandKind);
+    if (applied.hit && effectKind === "damage" && affects === "hp") applySkillRecoilAndFlinch(user, target, skill, applied.amount, commandKind);
     const defrosted = applied.hit
       && effectKind === "damage"
       && applied.amount > 0

@@ -1,3 +1,4 @@
+import { MULTI_HIT_LIMIT, normalizeFixedDamage } from "@/project/skillBattleRules";
 import { withJosa } from "@/util/josa";
 import { starterChoiceCommands } from "@/project/starterChoice";
 import { ensureNamedSwitch } from "./flagHelpers";
@@ -857,6 +858,20 @@ const skillRecordSchema = objectSchema({
   drainPercent: integerSchema(
     "준 피해의 N% 만큼 시전자가 회복(0~100, 0=없음, affects mp 면 MP). 흡수·흡혈계 기술. 피해를 주는 기술에만 의미가 있다",
   ),
+  recoilPercent: integerSchema(
+    "반동 0~100(0=없음): 준 피해의 N% 를 시전자도 입는다(피해가 1 이상일 때만, 최소 1, 타마다). 몸통박치기·이판사판처럼 센 기술의 대가. 피해를 주는 기술에만 의미가 있다",
+  ),
+  fixedDamage: objectSchema(
+    { mode: { type: "string", enum: ["level", "amount"] }, amount: integerSchema("mode=amount 일 때의 고정 피해(1~999)") },
+    "고정 피해(gen1 전투 모델): 능력치·급소·날씨와 상관없이 정해진 양만 준다. {mode:'level'} = 시전자 레벨만큼(지구던지기·나이트헤드), {mode:'amount', amount:40} = 고정값(용의분노). 명중 판정과 타입 무효(상성 0 배)는 그대로. 해제 = null",
+  ),
+  multiHit: objectSchema(
+    { min: integerSchema("최소 타수 2~5"), max: integerSchema("최대 타수 min~5") },
+    "연속 기술: 한 번 쓰면 min~max 번 무작위로 맞힌다(2~5 면 2·3번 각 3/8, 4·5번 각 1/8). hitSequence 를 이미 줬으면 그쪽이 이긴다. 대상이 쓰러지면 멈추고 끝에 「N번 맞았다!」. 해제 = null",
+  ),
+  flinchChance: integerSchema(
+    "풀죽음 0~100(0=없음): 피해를 주면 이 확률로 대상이 이번 라운드의 자기 차례를 잃는다(대상이 아직 움직이지 않았을 때만, strict 턴제). 선공 기술(movePriority)과 짝으로 쓴다",
+  ),
   gaugeShift: integerSchema(
     "게이지 밀기 -100~100(0=없음). 명중한 대상의 ATB 행동 게이지를 옮긴다 — 음수 = 늦추기(시간 화살·발 묶기), 양수 = 아군을 앞당기기(재촉). 타마다 적용. ATB(gauge) 전투 전용",
   ),
@@ -1441,6 +1456,28 @@ function validateStatStageEffects(value: unknown): void {
   }
 }
 
+/** 반동·고정 피해·연속 타수·풀죽음 검사 — 정규화가 조용히 버리면 「넣었다」고 보고하고 일반 기술이 된다. */
+function validateSkillBattleRules(record: Record<string, unknown>): void {
+  const percent = (key: "recoilPercent" | "flinchChance") => {
+    const value = record[key];
+    if (value === undefined || value === null) return;
+    if (typeof value !== "number" || !Number.isFinite(value) || value < 0 || value > 100) throw new ToolError(`skill.${key} 는 0~100 정수입니다(받은 값: ${JSON.stringify(value)}).`, { code: "invalid-skill-battle-rules" });
+  };
+  percent("recoilPercent");
+  percent("flinchChance");
+  const fixed = record.fixedDamage;
+  if (fixed !== undefined && fixed !== null) {
+    const ok = normalizeFixedDamage(fixed) !== undefined;
+    if (!ok) throw new ToolError(`skill.fixedDamage 는 {mode:"level"} 또는 {mode:"amount", amount:1~999} 입니다(받은 값: ${JSON.stringify(fixed)}). 해제 = null.`, { code: "invalid-skill-battle-rules" });
+  }
+  const multi = record.multiHit;
+  if (multi !== undefined && multi !== null) {
+    const raw = multi as { min?: unknown; max?: unknown };
+    const inRange = (value: unknown) => typeof value === "number" && Number.isInteger(value) && value >= 2 && value <= MULTI_HIT_LIMIT;
+    if (!inRange(raw.min) || !inRange(raw.max) || (raw.min as number) > (raw.max as number)) throw new ToolError(`skill.multiHit 는 {min, max} 이고 2 ≤ min ≤ max ≤ ${MULTI_HIT_LIMIT} 입니다(받은 값: ${JSON.stringify(multi)}). 해제 = null.`, { code: "invalid-skill-battle-rules" });
+  }
+}
+
 /**
  * 연계기·위치 범위기 패치 검사. 정규화가 조용히 버리면 모델은 「연계기를 넣었다」고 보고하고 실제로는 일반 기술이 된다 —
  * 없는 배우·인원 수·반경은 사유와 허용 예시를 담아 거부한다.
@@ -1449,6 +1486,7 @@ function validateSkillTechPatch(draft: Project, patch: unknown): void {
   if (!patch || typeof patch !== "object" || Array.isArray(patch)) return;
   const record = patch as Record<string, unknown>;
   if (record.statStageEffects !== undefined) validateStatStageEffects(record.statStageEffects);
+  validateSkillBattleRules(record);
   if (record.comboActorIds !== undefined) {
     const ids = Array.isArray(record.comboActorIds) ? record.comboActorIds : null;
     if (!ids || ids.some((id) => typeof id !== "string" || !id.trim())) {

@@ -408,9 +408,13 @@ export interface BattleTimelineEntrySnapshot {
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
-  readonly aside?: "hpCost" | "drain" | "dex";
+  readonly aside?: "hpCost" | "drain" | "dex" | "recoil";
   /** Conditional choreography follows the rule outcome, including preparation and follow-up cancellation. */
   readonly gimmick?: {pattern:import("@/battle/battleMotionProgram").BattleMotionPattern;triggered:boolean;allyId?:string;source?:"periodic"};
+  /** 반동(SkillRecord.recoilPercent) 뒤의 special 줄. 표시 계층이 표시 이름(야생·상대 접두)으로 「…는 반동 피해를 입었다!」를 만든다. */
+  readonly recoil?: true;
+  /** incapacitated 엔트리: 상태 이상이 아니라 풀죽음(SkillRecord.flinchChance)으로 차례를 잃었다. */
+  readonly flinch?: true;
   /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
   readonly charge?: true;
   readonly stateId?: string;
