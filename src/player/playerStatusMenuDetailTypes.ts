@@ -68,7 +68,7 @@ export type StatusMenuDetail = {
   readonly emptyLabel?: string;
   readonly hint?: string;
   /** gallery: 고른 그림을 목록 위에 크게 둔다. */
-  readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary";
+  readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary" | "campaign-box";
   readonly regionMap?: import("@/player/playerMonsterCampaignMenu").CampaignRegionMap;
   readonly artwork?: { readonly src: string; readonly alt: string };
   /** 도감 목록의 진행 막대(발견·포획·전체). 제목 줄에 겹쳐 그린다. */

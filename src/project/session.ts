@@ -135,6 +135,8 @@ export type MonsterInstance = {
   readonly caughtAt: MonsterCaughtAt;
   /** 이 몬스터를 잡은 볼(아이템 id). 생략 = 선물·시작 몬스터 등 포획이 아닌 입수. 메뉴가 볼 이름·아이콘을 보인다. */
   readonly caughtBallId?: string;
+  /** 보관함(PC 상자)에서 앉은 절대 칸 번호(상자×30+칸). 생략 = 보관 순서대로 첫 빈 칸. project/monsterBox.ts 가 읽고 쓴다. */
+  readonly boxSlot?: number;
 };
 
 export type FarmPlotState = {

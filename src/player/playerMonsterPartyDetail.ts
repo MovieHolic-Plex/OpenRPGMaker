@@ -125,7 +125,17 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
     label: "자리 바꾸기", value: "", description: "파티에서 맞바꿀 동료를 고릅니다. 맨 앞 동료가 먼저 나갑니다.",
     testId: `status-menu-monster-swap-${raw.instanceId}`, onActivate: () => options.onMonsterCollect?.({ kind: "startSwap", instanceId: raw.instanceId }),
   }] : [];
-  const back: StatusMenuDetailEntry = { label: "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) };
+  const inBox = view === "box" && Boolean(options.onMonsterCollect) && options.session.monsterBox.includes(raw.instanceId);
+  const askRelease = options.monsterCollect?.releaseConfirmId === raw.instanceId;
+  const boxEntries: StatusMenuDetailEntry[] = inBox ? [
+    { label: "다른 칸으로 옮기기", value: "", description: "보관함에서 옮길 칸을 고릅니다. 다른 상자의 칸도 됩니다.",
+      testId: `status-menu-monster-boxmove-${raw.instanceId}`, onActivate: () => options.onMonsterCollect?.({ kind: "startBoxMove", instanceId: raw.instanceId }) },
+    { label: askRelease ? "정말 놓아주기?" : "놓아주기", value: askRelease ? "한 번 더" : "",
+      description: askRelease ? "한 번 더 선택하면 되돌릴 수 없습니다. Esc 취소" : "자연으로 돌려보냅니다. 지닌 도구는 가방으로 돌아옵니다.",
+      testId: `status-menu-monster-release-${raw.instanceId}`,
+      onActivate: () => options.onMonsterCollect?.(askRelease ? { kind: "release", instanceId: raw.instanceId } : { kind: "releaseAsk", instanceId: raw.instanceId }) },
+  ] : [];
+  const back: StatusMenuDetailEntry = { label: inBox ? "← 보관함" : "← 몬스터 목록", value: "", testId: "status-menu-monster-back", onActivate: () => options.onSelectMonster?.(undefined) };
   const cycle: StatusMenuDetailEntry[] = page ? [{
     label: `${MONSTER_SUMMARY_PAGE_LABEL[page]} ▶ ${MONSTER_SUMMARY_PAGE_LABEL[nextMonsterSummaryPage(page)]}`, value: `${MONSTER_SUMMARY_PAGES.indexOf(page) + 1}/${MONSTER_SUMMARY_PAGES.length}`,
     description: "선택하면 다음 쪽으로 넘어갑니다",
@@ -136,7 +146,7 @@ export function monsterInstanceDetail(options: StatusMenuDetailOptions, pendingC
     ? [back, ...info, ...stats, ...moves, heldItemEntry(options, raw.instanceId), moveEntry]
     : page === "stats" ? [back, ...cycle, ...info, ...stats]
     : page === "moves" ? [back, ...cycle, ...moves]
-    : [back, ...cycle, heldItemEntry(options, raw.instanceId), ...swapEntry, moveEntry];
+    : [back, ...cycle, heldItemEntry(options, raw.instanceId), ...swapEntry, moveEntry, ...boxEntries];
   return { title: `${entry.name} · Lv.${raw.level}`, layout: isEmeraldMonsterStyle(options.project) ? "campaign-summary" : "campaign-dex", artwork: artwork ? { src: artwork, alt: entry.name } : undefined,
-    entries, hint: "↑↓ 항목 확인 · Esc 몬스터 목록" };
+    entries, hint: inBox ? "↑↓ 항목 확인 · Esc 보관함" : "↑↓ 항목 확인 · Esc 몬스터 목록" };
 }

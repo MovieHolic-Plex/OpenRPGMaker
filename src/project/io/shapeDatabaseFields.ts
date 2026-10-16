@@ -154,6 +154,10 @@ export function validateSystem(value: unknown): void {
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
   if (system.escapeGraceSteps !== undefined) requireNumber("system.escapeGraceSteps", system.escapeGraceSteps);
+  if (system.monsterBoxNames !== undefined) {
+    requireArray("system.monsterBoxNames", system.monsterBoxNames);
+    (system.monsterBoxNames as unknown[]).forEach((name, index) => requireString(`system.monsterBoxNames[${index}]`, name));
+  }
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);

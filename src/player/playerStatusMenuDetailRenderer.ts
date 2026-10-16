@@ -275,6 +275,7 @@ function renderDetailEntry(options: {
 
 /** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
 function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
+  if (entry.attributes?.boxNav !== undefined) return null; // 보관함 머리 줄(◀ 이름 ▶)은 그릴 그림이 없다.
   if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta && !entry.facts?.length) return null;
   const art = entry.icon
     ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })

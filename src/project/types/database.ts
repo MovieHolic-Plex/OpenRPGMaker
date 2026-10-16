@@ -1940,6 +1940,8 @@ export interface SystemRecords {
   gameOvers?: import("../cinematicSettings").GameOverDefinition[];
   defaultGameOverId?: string;
   monsterCollection?: boolean;
+  /** 보관함(PC) 상자 이름(상자 1번부터, 최대 8글자). 생략·빈 칸 = 「상자 N」. project/monsterBox.ts. */
+  monsterBoxNames?: string[];
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;
   giftSystem?: boolean;

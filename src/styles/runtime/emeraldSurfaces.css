@@ -532,6 +532,34 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:has(.campaign-menu-detail) .status-menu-message { font: 14px/18px var(--runtime-pixel-font); }
 /* 아직 못 받은 배지는 흐리게 — 받은 배지(아이콘 있음)가 한눈에 구분된다. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail [data-badge-acquired="false"] :is(.status-menu-detail-label, .status-menu-detail-value) { opacity: 0.55; }
+/* 보관함(PC): 머리 줄 [◀ 상자 이름 ▶] + 6×5 칸. 칸은 그림만 보이고 이름·레벨은 아래 설명창이 읽어 준다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-header { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail { top: 16px; bottom: 76px; grid-template-columns: 1fr 140px; column-gap: 8px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-title { grid-column: 1 / -1; font-size: 16px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase { grid-column: 2; grid-row: 2; align-self: stretch; padding: 6px; display: grid; align-content: start; justify-items: center; text-align: center; overflow: hidden; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase .status-menu-showcase-frame { width: 64px; height: 64px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase .status-menu-showcase-frame .status-menu-showcase-art { width: 64px; height: 64px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase .status-menu-showcase-description { font-size: 14px; line-height: 18px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-footer { height: 60px; padding: 2px 12px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-message { font: 16px/20px var(--runtime-pixel-font); display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-list { display: grid; grid-template-columns: repeat(6, 1fr); grid-auto-rows: 30px; gap: 2px; align-content: start; overflow: hidden; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row { min-height: 30px; height: 30px; padding: 0; box-sizing: border-box; display: grid; place-items: center; border: 2px solid transparent; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-nav] { grid-template-columns: 1fr; text-align: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-nav="name"] { grid-column: span 4; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-nav="name"] .status-menu-detail-copy { grid-template-columns: max-content max-content; justify-content: center; column-gap: 12px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-nav="name"] .status-menu-detail-value { grid-column: 2; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell] { border-color: currentColor; background: transparent; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell].selected { border-style: dashed; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell] .status-menu-detail-copy { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell] .status-menu-detail-face { width: 24px; height: 24px; background-size: contain; background-position: center; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row::before { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell].selected { background: color-mix(in srgb, currentColor 16%, transparent); }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase .status-menu-showcase-value { white-space: pre-line; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-showcase .status-menu-showcase-description { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-empty="true"] { opacity: 0.45; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-empty="true"]::after { content: "·"; font: 18px/18px var(--runtime-pixel-font); }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-cell][data-party-fainted="true"] .status-menu-detail-face { opacity: 0.55; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="box"] .status-menu-detail-row[data-box-move-source="true"] { outline: 2px dashed currentColor; outline-offset: -5px; }
 /* Dialogue box width/height is measured before pagination; two Korean lines page safely. */
 .dialogue-scrim[data-monster-style="emerald"] { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
