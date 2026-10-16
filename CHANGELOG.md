@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.241.0 — 2026-10-16
+
+### 기능
+
+- **romance** — 호감으로 갈리는 엔딩 셋 + 호감 변수 통일 (romance-real-2 R01/R02) (#2760) (`385d223`)
+- **portraits** — paired bust and full-body portraits for 12 modern romance chips (#2759) (`23dd38a`)
+- **ai** — JRPG 완료 가드 + 429 로 끊긴 배정 되돌리기 (jrpg-real-1 J04/J05) (#2752) (`07998ea`)
+- **ai** — derive_map_variant gives each era variant a visible look (light tint, fog, demolished buildings, ruin/camp props) (#2744) (`7dd8937`)
+- **ai** — JRPG hero/party charset search puts Heroes1 (CT·FF6 hero chips) first and tells the assistant to use it (#2740) (`2007d38`)
+
+### 수정
+
+- **romance** — HUD 가 지도·실내 위쪽을 덮지 않게, HUD 이름 짧게 (R06/R09) (#2762) (`0e44f1d`)
+- **romance** — 제목·부제 완료 게이트(채팅 한 줄 경로 포함), 제목 그림 잠금, 긴 제목, 엔딩 작은 줄 (R03/R05/R08) (#2761) (`a955c43`)
+- **battle** — 맵이 전투 배경을 정한다 — 던전 숲 배경(J08), 상자 대사 조사(J10) (#2755) (`c929a64`)
+- **player** — title text/subtitle fit the 320px stage; dialogue pages re-split when the real body is narrower (jrpg-real-1 J05/J07) (#2751) (`b4ff6ec`)
+- **player** — screen-distortion shader no longer redefines SHADER_NAME; failed shader compile skips the effect instead of freezing the screen (#2739) (`d4325bf`)
+
 ## 0.240.0 — 2026-10-16
 
 ### 기능
