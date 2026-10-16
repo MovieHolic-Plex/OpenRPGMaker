@@ -128,12 +128,12 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 
   const titleArtMismatch = romanceTitleMismatch(project.system?.titleScreen?.backgroundResourceId);
   if (titleArtMismatch) findings.push({ severity: "warning", code: "romance-title-art-mismatch", message: romanceTitleMismatchMessage(titleArtMismatch) });
-  // 타이틀이 벚꽃 캠퍼스 기본 그림인데 기획은 카페·학원·회사·마을이면 소재에 맞는 키아트로 바꾸게 한다(romance-loop-1 R1-06).
+  // 타이틀이 소재와 다른 그림(벚꽃 캠퍼스 기본이거나 엉뚱한 소재)인데 기획은 카페·학원·회사·마을이면 소재에 맞는 키아트로 바꾸게 한다(romance-loop-1 R1-06).
   const settingArt = romanceTitleArtSettingGap(project.system?.titleScreen?.backgroundResourceId, briefText);
   if (settingArt) {
     findings.push({
       severity: "warning", code: "romance-title-art-setting",
-      message: `타이틀 배경이 벚꽃 캠퍼스 기본 그림인데 기획은 다른 장소(${settingArt.label})입니다 — set_title_screen {backgroundResourceId:"${settingArt.id}"} 로 소재에 맞는 그림으로 바꾸세요(전용 그림을 만들었으면 generate_title_art).`,
+      message: `타이틀 배경이 이 게임 소재와 다른 그림인데 기획은 ${settingArt.label} 쪽입니다 — set_title_screen {backgroundResourceId:"${settingArt.id}"} 로 소재에 맞는 그림으로 바꾸세요(전용 그림을 만들었으면 generate_title_art).`,
     });
   }
 

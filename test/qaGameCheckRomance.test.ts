@@ -111,4 +111,12 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     (project.system.titleScreen as { backgroundResourceId: string }).backgroundResourceId = "oprn-title-romance-cafe";
     expect(checkRomance(project, "카페 아르바이트 로맨스 게임 만들어 줘").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
   });
+
+  it("다른 소재의 키아트가 걸려 있어도(카페 기획에 마을 그림) 완료 조건 경고를 준다", () => {
+    const project = romanceProject();
+    project.system.titleScreen = { ...(project.system.titleScreen ?? {}), backgroundResourceId: "oprn-title-romance-town" } as never;
+    const got = checkRomance(project, "카페 아르바이트 로맨스 게임 만들어 줘").find((finding) => finding.code === "romance-title-art-setting");
+    expect(got?.message).toContain("oprn-title-romance-cafe");
+    expect(checkRomance(project, "바닷가 이웃마을 썸 연애 게임").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
+  });
 });

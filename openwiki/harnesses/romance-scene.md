@@ -157,7 +157,8 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 
 - 허용 목록(`ROMANCE_TITLE_BACKGROUNDS`)에 넷을 더했다 — 조수가 `set_title_screen` 으로 고를 수 있고, 목록 밖 번들 그림 거부(`romanceTitleMismatch`)는 그대로다(키아트 잠금 계약 유지).
 - `romanceTitleArtForText`(src/project/romanceTitleArt.ts): 기획·요청 문장의 소재 낱말(카페·학원·회사·마을…)을 세어 캠퍼스보다 많이 나온 소재를 고른다. 동률·무소재는 캠퍼스 기본.
+- 마을 낱말은 「이웃마을·바닷가·시골·한옥…」처럼 좁게 잡는다 — 「이웃 동네 카페」 요청이 마을로 갔던 실측(rom-b, round 2).
 - 프리셋(`applyRomanceDefaults`): 코드 기본 타이틀일 때 기획서 소재로 키아트를 고른다. 채팅 한 줄 경로는 완료 검사 `romance-title-art-setting`(COMPLETION_CODES)이
-  「타이틀이 캠퍼스 기본인데 기획은 다른 소재」일 때 정확한 id 와 함께 finish 를 막는다. 저작자가 다른 그림(생성·업로드)을 고른 타이틀은 건드리지 않는다.
+  「타이틀이 소재와 다른 그림(캠퍼스 기본이거나, 카페 기획에 마을 그림처럼 다른 소재 그림이 기획 낱말을 더 많이 세는 쪽에 밀릴 때)」일 때 정확한 id 와 함께 finish 를 막는다. 저작자가 다른 그림(생성·업로드)을 고른 타이틀은 건드리지 않는다.
 - R1-05(기한 엔딩이 빠른 Enter 연타에서 늦게 열림): 대화 한 번당 칸 하나, 칸 3개가 하루. 14일째 하루 끝에서 엔딩은 slow·fast·spam 모두 즉시 열렸다(var_days_elapsed 13에서 시작). 이전 관측은 측정용 드라이버가
   Enter(= 행동 키)로 다음 대화를 연타해 한 반복 안에 여러 하루가 지나간 것으로 보이며 제품 결함으로 재현하지 못했다. 「Text cancelled」 는 하루 끝 취침이 열린 대사를 가져갈 때의 정상 AbortError(playSceneInterpreter 주석)다.
