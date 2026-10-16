@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T05:27:26.388Z",
+  "generatedAt": "2026-10-16T15:45:42.150Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -42,7 +42,7 @@
       "hubs": 0
     },
     "runtime": {
-      "important": 70,
+      "important": 73,
       "unlayered": 0,
       "hubs": 0
     },
@@ -1899,7 +1899,6 @@
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region.is-cornered .ai-map-region-tag|ai-map-region-tag",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region.is-cornered|ai-map-region",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region.is-pulse|ai-map-region",
-    "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region[data-covered=\"1\"].is-cornered[data-state=\"draft\"]|ai-map-region",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region[data-covered=\"1\"].is-cornered[data-state=\"review\"]|ai-map-region",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region[data-state=\"draft\"]|ai-map-region",
     "R2|database/tabs-b-assistant-panel/34-ai-presence.css|.ai-map-region[data-state=\"failed\"]|ai-map-region",
