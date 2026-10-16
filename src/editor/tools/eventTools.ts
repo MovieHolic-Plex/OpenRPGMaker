@@ -59,6 +59,7 @@ import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } 
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
 import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
 import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
+import { withJosa } from "@/util/josa";
 import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
@@ -3238,7 +3239,7 @@ export const placeChest: ToolDefinition = {
     const openCommands: Command[] = [
       ...chestOpenCommands(id, graphic),
       ...lootGrantCommands({ itemId, gold }),
-      { kind: "text", body: `보물상자를 열었다! ${rewardText} 를 손에 넣었다.` },
+      { kind: "text", body: `보물상자를 열었다! ${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 손에 넣었다.` },
       { kind: "setSelfSwitch", key: "A", value: true } as Command,
     ];
     const event: GameEvent = {
