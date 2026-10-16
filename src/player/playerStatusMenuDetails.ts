@@ -14,7 +14,7 @@ import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
-import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
+import { activeItemEffects } from "@/project/itemUsage";
 import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 import { previewCareItem } from "@/project/monsterCare";
 import { actorOwnedSkillIds } from '@/project/growth/runtime';

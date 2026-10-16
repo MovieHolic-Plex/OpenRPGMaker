@@ -1,5 +1,5 @@
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
-import { applyCareItem, previewCareItem, type CareEvolution } from "@/project/monsterCare";
+import { applyCareItem, type CareEvolution } from "@/project/monsterCare";
 import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
 import { evolveMonster, monsterSpeciesById, previewMonsterItemEvolution } from "@/project/monsterCollection";
 import { roJosa, withJosa } from "@/util/josa";
