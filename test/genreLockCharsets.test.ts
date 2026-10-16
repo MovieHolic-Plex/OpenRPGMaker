@@ -221,8 +221,18 @@ describe("생성한 캠페인 맞추기", () => {
       return `${graphic.sprite!.id}#${decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex}`;
     });
     expect(chips[0]).toBe(chips[1]);                                  // 같은 원래 칩 → 같은 새 칩
-    expect(chips.every((chip) => chip.startsWith("tex_scarloxy_charset_people"))).toBe(true);
+    expect(chips.every((chip) => chip.startsWith("tex_scarloxy_charset_people") || chip.startsWith("tex_oprn_charset_scarloxy_people"))).toBe(true);   // 원본 People1~2 와 그 변형 ScarloxyPeople
     expect(chips[2]).not.toBe(chips[0]);                              // 관장 → 보스 칩
     expect(remapCharsetsToPreset(project, "romance").pagesChanged).toBe(0);   // 캐릭터를 안 잠그는 장르는 바꾸지 않는다
+  });
+  it("Scarloxy 변형 사람 칩(ScarloxyPeople)은 몬스터 수집 잠금이 허용하고 RTP 사람 칩은 여전히 거부한다", () => {
+    expect(charsetFamilyOf(undefined, "tex_oprn_charset_scarloxy_people1")).toBe("scarloxy-people");
+    expect(charsetFamilyOf(undefined, "oprn-charset-scarloxy-people3")).toBe("scarloxy-people");
+    const ctx = ctxOf(lockedProject());
+    const nurse = placeNpc(ctx, "간호사", 4, { graphic: { textureKey: "tex_oprn_charset_scarloxy_people1", characterIndex: 3 } });
+    expect(nurse.ok).toBe(true);
+    const denied = placeNpc(ctx, "판타지 청년", 6, { graphic: RTP_YOUTH });
+    expect(denied.ok).toBe(false);
+    expect(denied.issues?.[0]?.code).toBe("genre-lock");
   });
 });

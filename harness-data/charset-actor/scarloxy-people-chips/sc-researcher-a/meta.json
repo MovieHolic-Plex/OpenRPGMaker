@@ -1,0 +1,63 @@
+{
+ "key": "sc-researcher-a",
+ "name": "연구원",
+ "head": "Scarloxy1:5",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "vmax": 0.55,
+   "to": {
+    "hue": 215,
+    "s": 0.5,
+    "v": 0.7
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "s": 0.07,
+    "v": 1.4
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    20,
+    55
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 178
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    190,
+    215
+   ],
+   "smin": 0.15,
+   "to": {
+    "hue": 210,
+    "v": 1.5
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다"
+ ],
+ "model": "script-compose(no model call)"
+}

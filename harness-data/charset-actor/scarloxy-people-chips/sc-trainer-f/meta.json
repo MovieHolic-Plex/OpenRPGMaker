@@ -1,0 +1,38 @@
+{
+ "key": "sc-trainer-f",
+ "name": "여자 트레이너",
+ "head": "Scarloxy1:4",
+ "body": "Scarloxy1:0",
+ "recolor": [
+  {
+   "region": "T",
+   "gray": [
+    0.85,
+    1.0
+   ],
+   "to": {
+    "hue": 330,
+    "sat": 0.25
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 220,
+    "s": 0.7,
+    "v": 0.85
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "면제: edge"
+ ],
+ "model": "script-compose(no model call)"
+}

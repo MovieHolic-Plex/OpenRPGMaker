@@ -1,0 +1,159 @@
+{
+ "palette": {
+  "s": "#224528",
+  "u": "#35683d",
+  "v": "#4b8c55",
+  "w": "#664026",
+  "x": "#9e6939",
+  "y": "#634625",
+  "z": "#99703b",
+  "A": "#cfa25d",
+  "B": "#4a3219",
+  "C": "#7d562d",
+  "D": "#a67642",
+  "E": "#3d2616",
+  "G": "#5c3b21",
+  "I": "#855733"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "e": "s",
+    "n": "u",
+    "q": "v",
+    "g": "w",
+    "k": "x"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "i": "y",
+    "p": "z",
+    "r": "A"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "B",
+    "f": "C",
+    "l": "D"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "b": "E",
+    "d": "G",
+    "g": "G",
+    "k": "I"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "20": ".......cozhhhhhzoc......",
+    "21": "......coomzjjjzmooc.....",
+    "22": "......hmjmAAyAAmjmh.....",
+    "23": ".....cmmcCDyADDCcmmc....",
+    "24": "....commcCCyACCCcmmoc...",
+    "25": "....cojmczzzyzzzcmjoc..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "20": ".......cozmjjjmzoc......",
+    "21": "......coomzmmmzmooc.....",
+    "22": "......hmjjAAzAAjjmh.....",
+    "23": ".....cmjcuyyzyyucjmc....",
+    "24": "....commczAAzAAzcmmoc..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "21": "........hoomzoy.........",
+    "22": ".......cmmjhAAzy........",
+    "23": ".......hmjhyCDzy........",
+    "24": "......commczCCAhc.......",
+    "25": "......cmjmczzzAhc......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "21": ".........yozmooh........",
+    "22": "........yzAAhjmmc.......",
+    "23": "........yzDCzhjmh.......",
+    "24": ".......chACCzcmmoc......",
+    "25": ".......chAzzzcmjmc......"
+   }
+  }
+ ],
+ "gear": [
+  {
+   "name": "ranger_pouch",
+   "kind": "hip",
+   "side": "R",
+   "sprites": {
+    "down": {
+     "rows": [
+      "EEE",
+      "GIG",
+      "GGG",
+      "EEE"
+     ],
+     "grip": [
+      1,
+      1
+     ]
+    },
+    "up": {
+     "rows": [
+      "EEE",
+      "GIG",
+      "GGG",
+      "EEE"
+     ],
+     "grip": [
+      1,
+      1
+     ]
+    },
+    "right": {
+     "rows": [
+      "EEEE",
+      "GIxG",
+      "GGGG",
+      "EEEE"
+     ],
+     "grip": [
+      2,
+      1
+     ]
+    },
+    "left": {
+     "rows": [
+      "EEEE",
+      "GIGG",
+      "GGGG",
+      "EEEE"
+     ],
+     "grip": [
+      2,
+      1
+     ]
+    }
+   }
+  }
+ ]
+}

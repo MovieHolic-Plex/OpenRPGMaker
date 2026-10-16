@@ -1,0 +1,49 @@
+{
+ "key": "sc-fisher-a",
+ "name": "낚시꾼",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy1:6",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    90,
+    160
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 48,
+    "s": 0.95,
+    "v": 1.25
+   }
+  },
+  {
+   "region": "T",
+   "gray": [
+    0.85,
+    1.0
+   ],
+   "to": {
+    "hue": 205,
+    "sat": 0.35
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    60,
+    140
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 35,
+    "s": 0.7,
+    "v": 0.9
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

@@ -109,7 +109,7 @@ function textureShortKey(textureKey: string): string {
 
 function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   if (entry.spriteType === 'uploaded') return entry.tags.includes('몬스터') ? 'monster' : entry.tags.includes('동물') ? 'animal' : 'people';
-  if (entry.textureKey.startsWith('tex_scarloxy_charset_people')) return 'people';
+  if (entry.textureKey.startsWith('tex_scarloxy_charset_people') || entry.textureKey.startsWith('tex_oprn_charset_scarloxy_people')) return 'people';
   // 현대 연애 칩(Modern1~3)은 전부 사람이다. 이게 빠지면 "villager"/"npc" 같은 일반 질의가 0건이 된다.
   if (entry.textureKey.startsWith('tex_oprn_charset_modern')) return 'people';
   if (entry.textureKey.startsWith('tex_farming_charset_')) return 'animal';

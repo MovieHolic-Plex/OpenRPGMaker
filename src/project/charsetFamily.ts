@@ -5,7 +5,7 @@
 
 export type CharsetFamilyId =
   | "rtp-people"        // EasyRPG RTP Actor1~4 · People1~5 — 판타지 RPG 사람 칩(포켓몬풍 아님)
-  | "scarloxy-people"   // Scarloxy MPWSP01 People1~2 — 몬스터 테이밍 팩의 트레이너·도장 보스
+  | "scarloxy-people"   // Scarloxy MPWSP01 People1~2 + 그 뼈대에서 변형한 OPRN ScarloxyPeople1~ — 몬스터 수집의 트레이너·직군·도장 보스
   | "oprn-creature"     // OPRN 자체 제작 몬스터 칩: Monster4~6 · 몬스터 수집 하네스 따라다니기 칩
   | "rtp-creature"      // RTP Monster1~3 · Animal · 농장 동물 — 판타지 RPG 몬스터·동물(포켓몬풍 아님)
   | "object"            // 문·상자·표지·탈것·템플릿 같은 기능 칩(사람이 아님)
@@ -45,7 +45,8 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   const s = shape(idOrTextureKey);
   if (s.startsWith("shared-charset-actor-")) return "shared-actor";
   if (/^easyrpg-charset-(actor|people)\d+$/u.test(s)) return "rtp-people";
-  if (/^scarloxy-charset-people\d+$/u.test(s)) return "scarloxy-people";
+  // 원본 People1~2 와, 그 뼈대에서 변형해 늘린 칩 ScarloxyPeople<n>(2026-10-16) 모두 같은 계열이다 — 몬스터 수집 잠금이 둘 다 허용한다.
+  if (/^(?:scarloxy-charset-people|oprn-charset-scarloxy-people)\d+$/u.test(s)) return "scarloxy-people";
   if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s)) return "oprn-creature";
   if (/^easyrpg-charset-monster\d+$/u.test(s) || s === "easyrpg-charset-animal" || /^farming-charset-/u.test(s)) return "rtp-creature";
   if (/^easyrpg-charset-(object\d+|vehicles?|template)$/u.test(s)) return "object";

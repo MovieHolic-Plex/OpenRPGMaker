@@ -1,0 +1,38 @@
+{
+ "key": "sc-boss-esper",
+ "name": "에스퍼 도장 보스",
+ "head": "Scarloxy1:7",
+ "body": "Scarloxy1:7",
+ "recolor": [
+  {
+   "region": "*",
+   "hue": [
+    150,
+    200
+   ],
+   "smin": 0.15,
+   "to": {
+    "hue": 272,
+    "s": 0.75,
+    "v": 0.95
+   }
+  },
+  {
+   "region": "*",
+   "hue": [
+    200,
+    230
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 262,
+    "s": 0.8,
+    "v": 0.7
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

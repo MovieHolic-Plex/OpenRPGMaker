@@ -1,0 +1,673 @@
+{
+ "version": 1,
+ "sheets": 4,
+ "sheetName": "ScarloxyPeople{n} · Scarloxy 변형 인물 · OPRN",
+ "selection": {
+  "by": "user-delegated-to-supervisor",
+  "note": "2026-10-16 사용자 「몬스터 사람 칩은 Scarloxy 칩에서 변형해 늘린다」 + 감독 위임(「직접 걸러 설치」). 모델 호출 없는 스크립트 변형(머리 이식 + 부위 색 바꾸기) 후보 22종 중 8배 눈 검수와 서로 구별 기준(가장 가까운 칩과 화소 27% 이상 다름)을 통과한 21종. 칸 번호는 덧붙이기 전용. | 2차(2026-10-16, 8318 스트리밍 gemini-4-argon-high 실제 Argon 부분 편집): 12 후보 중 4종 채택(박사·남학생·요리사·레인저). 학생·요리사는 Argon edit.json 그대로 + 몸 안쪽 1~4px 구멍만 스크립트로 메움(scarloxy_repair.py, 하네스 재검증 통과). 기각: 뱃사람(기존 칩과 거의 같음 0.39)·연구원(여)(뒷모습 덩어리)·상인·수영 선수·등산가·단원·노인·도장 보스(땅)(하네스 거절 또는 3회 안에 통과 못 함).",
+  "notAdopted": [
+   "sc-professor-a(흰 머리 소년처럼 읽힘)",
+   "sc-student-m(밋밋)",
+   "sc-swimmer-a(남성 머리에 두른 상의 어색)",
+   "sc-merchant-a(구별 약함)",
+   "sc-student-f·sc-swimmer-f(머리·몸 윤곽 검사 불합격 후 재설계)",
+   "sp-sailor-a(Argon, 뼈대와 화소 61% 같음)",
+   "sp-scientist-f-a(Argon, 뒷모습이 거대한 덩어리)",
+   "sp-merchant/swimmer/hiker-pack/grunt/elder/gym-ground(Argon, 하네스 거절)"
+  ]
+ },
+ "characters": [
+  {
+   "id": "scarloxy-officer-navy",
+   "name": "경찰관 · 남색 제복",
+   "desc": "남색 야구모자와 남색 제복, 어깨와 가슴에 금빛 띠, 어두운 바지. 머리는 갈색.",
+   "genre": "몬스터 수집",
+   "role": "경찰·경비",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "경찰",
+    "경찰관",
+    "순경",
+    "제복",
+    "경비",
+    "남색",
+    "치안"
+   ],
+   "sheet": 1,
+   "index": 0,
+   "source": {
+    "harnessKey": "sc-officer-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:0 + body Scarloxy2:0",
+    "gridSha256": "4b1b75c99b7548776ee38a84f70a293111c131b03bab058d8440db45d16a6115",
+    "slotRgbaSha256": "a706c609065f96a7ccddc5ca83e07ea1c870428cff7f6a29d5086f0783382e30"
+   }
+  },
+  {
+   "id": "scarloxy-researcher-white",
+   "name": "연구원 · 흰 가운",
+   "desc": "보라색 짧은 머리, 청록 띠를 두른 흰 가운과 흰 바지.",
+   "genre": "몬스터 수집",
+   "role": "연구원·박사 조수",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "연구원",
+    "연구소",
+    "조수",
+    "과학자",
+    "백의",
+    "흰 가운",
+    "박사"
+   ],
+   "sheet": 1,
+   "index": 1,
+   "source": {
+    "harnessKey": "sc-researcher-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:5 + body Scarloxy2:0",
+    "gridSha256": "7788864669d51452a5ca923d9cd6b8ed8ac40fb67302321e16777671150481b8",
+    "slotRgbaSha256": "1009f417ec9bd17e211bfd898dcf4f509e9c2a399f635aea66f19d2fac07f9af"
+   }
+  },
+  {
+   "id": "scarloxy-nurse-white",
+   "name": "간호사 · 분홍 머리 흰 드레스",
+   "desc": "분홍 긴 머리와 분홍 귀 장식, 흰 드레스와 분홍 치맛단. 긴 머리 한 명.",
+   "genre": "몬스터 수집",
+   "role": "간호사·치료사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "간호사",
+    "회복",
+    "센터",
+    "병원",
+    "치료",
+    "분홍",
+    "흰옷"
+   ],
+   "sheet": 1,
+   "index": 2,
+   "source": {
+    "harnessKey": "sc-nurse-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:7 + body Scarloxy1:7",
+    "gridSha256": "b78c336a0785add93bf8122fa8879402d9efaae7fd2640d8056490b068b0827a",
+    "slotRgbaSha256": "4dea2e4f96894f8c78845f5b82f47e5a3f4124dc02822be86a79cfc17a362503"
+   }
+  },
+  {
+   "id": "scarloxy-grunt-black",
+   "name": "단원 · 검은 코트(남)",
+   "desc": "보라색 벙거지, 검은 코트에 붉은 띠, 어두운 신발.",
+   "genre": "몬스터 수집",
+   "role": "악당 조직 단원",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "단원",
+    "악당",
+    "조직원",
+    "검은 코트",
+    "불량배",
+    "악의 조직"
+   ],
+   "sheet": 1,
+   "index": 3,
+   "source": {
+    "harnessKey": "sc-grunt-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:2 + body Scarloxy2:0",
+    "gridSha256": "eab530264af4190873a2ba1d000c52eec01794d2f42fb53f07d28e294f9c1584",
+    "slotRgbaSha256": "efab5778b1aeeecad1a160d9aed683f8d43070964bfb6c85a4de4ebb11ba857c"
+   }
+  },
+  {
+   "id": "scarloxy-grunt-black-f",
+   "name": "단원 · 검은 코트(여)",
+   "desc": "짙은 보라 갈래머리와 보라 리본, 검은 코트에 붉은 띠.",
+   "genre": "몬스터 수집",
+   "role": "악당 조직 단원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "단원",
+    "악당",
+    "조직원",
+    "검은 코트",
+    "갈래머리",
+    "악의 조직"
+   ],
+   "sheet": 1,
+   "index": 4,
+   "source": {
+    "harnessKey": "sc-grunt-f",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:4 + body Scarloxy2:0",
+    "gridSha256": "a5c1d8d485abdc573bbbf1e4ef6f9c144e749eada278ddf320aac09b69072be5",
+    "slotRgbaSha256": "ab4093854ac23679f26d3bbe735f1dba457654a5c1e6032e9368b99867521813"
+   }
+  },
+  {
+   "id": "scarloxy-fisher-khaki",
+   "name": "낚시꾼 · 카키 모자",
+   "desc": "카키색 버킷 모자, 하늘색 민소매, 황갈색 반바지. 갈색 피부.",
+   "genre": "몬스터 수집",
+   "role": "낚시꾼·주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "낚시꾼",
+    "낚시",
+    "바닷가",
+    "모자",
+    "카키",
+    "주민"
+   ],
+   "sheet": 1,
+   "index": 5,
+   "source": {
+    "harnessKey": "sc-fisher-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:2 + body Scarloxy1:6",
+    "gridSha256": "3618b187e636688ba4b881151a29a38e47393d79516b6922ce740c162f26288c",
+    "slotRgbaSha256": "aa9db4821369c6460459857a5cef830377be8bf8e97724f92ba97c03accfa5fc"
+   }
+  },
+  {
+   "id": "scarloxy-camper-straw",
+   "name": "캠퍼 · 밀짚모자",
+   "desc": "밀짚모자, 주황 배낭과 초록 줄무늬 조끼, 갈색 바지, 붉은 신발.",
+   "genre": "몬스터 수집",
+   "role": "캠퍼·야영객",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "캠퍼",
+    "야영",
+    "배낭",
+    "밀짚모자",
+    "소풍",
+    "여행자"
+   ],
+   "sheet": 1,
+   "index": 6,
+   "source": {
+    "harnessKey": "sc-camper-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:6 + body Scarloxy1:0",
+    "gridSha256": "ed8c35e5b4a3bfac510b910b6fcf7f267edc330b60a5b4833a1b50f7fff3966a",
+    "slotRgbaSha256": "09fdb6aae2938dab8a1a596cb618a7b320488a825536d60d8227d9ee961e1fc2"
+   }
+  },
+  {
+   "id": "scarloxy-hiker-brown",
+   "name": "등산가 · 갈색 모자",
+   "desc": "갈색 모자, 보라 머리, 주황 배낭과 붉은 멜빵, 초록 바지.",
+   "genre": "몬스터 수집",
+   "role": "등산가·여행자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "등산가",
+    "등산",
+    "산",
+    "배낭",
+    "모자",
+    "여행자"
+   ],
+   "sheet": 1,
+   "index": 7,
+   "source": {
+    "harnessKey": "sc-hiker-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:2 + body Scarloxy1:0",
+    "gridSha256": "c36df3eb2c060eff3e26656d41599388868f92f37387f9c035bd90d40d51c37a",
+    "slotRgbaSha256": "22551515337b32e09b34999473c6e6c84b36bab4acd04ede3c6853730561294e"
+   }
+  },
+  {
+   "id": "scarloxy-bugcatcher-green",
+   "name": "곤충채집 소년",
+   "desc": "밀짚모자에 초록 띠, 초록 머리, 청록 웃옷과 올리브 반바지, 흰 신발.",
+   "genre": "몬스터 수집",
+   "role": "곤충채집 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "곤충채집",
+    "곤충",
+    "소년",
+    "밀짚모자",
+    "여름",
+    "숲"
+   ],
+   "sheet": 2,
+   "index": 0,
+   "source": {
+    "harnessKey": "sc-bugcatcher-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:6 + body Scarloxy1:5",
+    "gridSha256": "19baa0df82dd3cf54a30d449dacb0372fda7fd6f9fda161ec32a167a99be1184",
+    "slotRgbaSha256": "2283ec885b4c0d8bf3f6df041bcda6580264b47dd1cb9e878e2319bd850ef464"
+   }
+  },
+  {
+   "id": "scarloxy-forester-green",
+   "name": "숲지기 · 초록 튜닉",
+   "desc": "금발 머리, 초록 튜닉과 올리브 바지, 연두 장화.",
+   "genre": "몬스터 수집",
+   "role": "숲지기·산림 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "숲지기",
+    "산림",
+    "튜닉",
+    "금발",
+    "주민",
+    "초록"
+   ],
+   "sheet": 2,
+   "index": 1,
+   "source": {
+    "harnessKey": "sc-forester-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:1 + body Scarloxy2:1",
+    "gridSha256": "91ae53ec097e13cf1d3e9ea4a98fa53f8036956b9dfedd87e40f242b86189ef5",
+    "slotRgbaSha256": "489e813ce65873fed68d90ba24c5eedc8af3fa0414decf26bed675151be267e7"
+   }
+  },
+  {
+   "id": "scarloxy-explorer-f-khaki",
+   "name": "탐험가 · 황토 옷(여)",
+   "desc": "주황 갈색 갈래머리에 초록 리본, 황토색 탐험복과 올리브 바지.",
+   "genre": "몬스터 수집",
+   "role": "탐험가·조사원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "탐험가",
+    "조사원",
+    "갈래머리",
+    "탐험복",
+    "황토",
+    "여행자"
+   ],
+   "sheet": 2,
+   "index": 2,
+   "source": {
+    "harnessKey": "sc-explorer-f",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:4 + body Scarloxy2:1",
+    "gridSha256": "e3c04b843d90efa0752f8d4df158b3521f04c8e63a5f24297180acfd16a114d3",
+    "slotRgbaSha256": "fedef4c579555431e2f97b939583bea93f04273c6621aa4446bd0e87ecdd699c"
+   }
+  },
+  {
+   "id": "scarloxy-rival-red",
+   "name": "라이벌 · 붉은 모자",
+   "desc": "붉은 야구모자, 남색 재킷, 회색 바지, 주황 배낭과 붉은 멜빵.",
+   "genre": "몬스터 수집",
+   "role": "라이벌 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "라이벌",
+    "트레이너",
+    "붉은 모자",
+    "배낭",
+    "소년",
+    "경쟁자"
+   ],
+   "sheet": 2,
+   "index": 3,
+   "source": {
+    "harnessKey": "sc-rival-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:0 + body Scarloxy1:0",
+    "gridSha256": "e425839dfc8b9b6d92e476a9350b06b8d8dbb8b7678890f17d03b3c7b6eb3a81",
+    "slotRgbaSha256": "bc1898ac4c1801af20845c6d78d78e570b5ad3200d6392b564828eca4f273285"
+   }
+  },
+  {
+   "id": "scarloxy-trainer-f-pink",
+   "name": "여자 트레이너 · 분홍 재킷",
+   "desc": "갈색 갈래머리와 붉은 리본, 분홍 재킷, 남색 바지, 주황 배낭.",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "트레이너",
+    "소녀",
+    "갈래머리",
+    "배낭",
+    "분홍",
+    "주인공"
+   ],
+   "sheet": 2,
+   "index": 4,
+   "source": {
+    "harnessKey": "sc-trainer-f",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:4 + body Scarloxy1:0",
+    "gridSha256": "f4a28b919db33fdf43c414a9e1c40a6973d68f82130b82dbfa0d396863993f9e",
+    "slotRgbaSha256": "97bacf36d89b5be170516f52e7f84edaf6aaf03afea884a1b9ab9d4b39474b5c"
+   }
+  },
+  {
+   "id": "scarloxy-schoolgirl-navy",
+   "name": "여학생 · 남색 리본",
+   "desc": "검은빛 갈래머리와 남색 리본, 흰 블라우스에 남색 겉옷, 남색 치마 같은 하의.",
+   "genre": "몬스터 수집",
+   "role": "학생",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "여학생",
+    "학생",
+    "학교",
+    "교복",
+    "갈래머리",
+    "남색"
+   ],
+   "sheet": 2,
+   "index": 5,
+   "source": {
+    "harnessKey": "sc-schoolgirl-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:4 + body Scarloxy1:4",
+    "gridSha256": "3aa1cab4805f31bb6c51641ecdee1d80eb7c19f96a60607e5acde08b10bf56d1",
+    "slotRgbaSha256": "c5347ae87cf1434df45f44e8fc9caa72612620237fdcab98d0a1a341deea17a0"
+   }
+  },
+  {
+   "id": "scarloxy-priestess-white",
+   "name": "신관 · 청록 로브",
+   "desc": "금발 긴 머리, 분홍 귀 장식, 청록색 로브와 분홍 치맛단.",
+   "genre": "몬스터 수집",
+   "role": "신관·성직자",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "신관",
+    "성직자",
+    "사제",
+    "로브",
+    "금발",
+    "청록",
+    "교회"
+   ],
+   "sheet": 2,
+   "index": 6,
+   "source": {
+    "harnessKey": "sc-priestess-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:7 + body Scarloxy1:7",
+    "gridSha256": "71aff6a4676c420cf2d234eb82aae99cf8bdd82b4b107a4f75e97bc14d4c0f4b",
+    "slotRgbaSha256": "e5871daa61bbb2bb9ff0cdee08288c175234df7482c73e1cdc9eccd6791427a4"
+   }
+  },
+  {
+   "id": "scarloxy-boss-ice",
+   "name": "얼음 도장 보스",
+   "desc": "하늘색 불꽃 머리, 검은 가면, 연하늘 코트와 은빛 띠.",
+   "genre": "몬스터 수집",
+   "role": "도장 보스(얼음)",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "보스",
+    "관장",
+    "얼음",
+    "도장",
+    "하늘색",
+    "트레이너"
+   ],
+   "sheet": 2,
+   "index": 7,
+   "source": {
+    "harnessKey": "sc-boss-ice",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy2:0 + body Scarloxy2:0",
+    "gridSha256": "ce5e5dcc743f6fe49af14aa3c1f880346afe511bb665017e7edd53d7dad502cd",
+    "slotRgbaSha256": "212c7435b6ee6007ea761efc6ed176886c05fb63e6e2de38127b986d37400e82"
+   }
+  },
+  {
+   "id": "scarloxy-boss-electric",
+   "name": "전기 도장 보스",
+   "desc": "노란 불꽃 머리, 검은 가면, 검정 코트에 노란 띠.",
+   "genre": "몬스터 수집",
+   "role": "도장 보스(전기)",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "보스",
+    "관장",
+    "전기",
+    "도장",
+    "노랑",
+    "트레이너"
+   ],
+   "sheet": 3,
+   "index": 0,
+   "source": {
+    "harnessKey": "sc-boss-electric",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy2:0 + body Scarloxy2:0",
+    "gridSha256": "0941b05ddc6476761fe926b305ef4e1215055d610dbb12ffc4e6ec2c38056460",
+    "slotRgbaSha256": "44d69fbcd7c355baa9fefde49d7f69e70d3842e3e6db886088cbd210dad0099e"
+   }
+  },
+  {
+   "id": "scarloxy-boss-rock",
+   "name": "바위 도장 보스",
+   "desc": "갈색 잎 모양 머리, 황토색 튜닉, 올리브 바지.",
+   "genre": "몬스터 수집",
+   "role": "도장 보스(바위)",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "보스",
+    "관장",
+    "바위",
+    "도장",
+    "황토",
+    "트레이너"
+   ],
+   "sheet": 3,
+   "index": 1,
+   "source": {
+    "harnessKey": "sc-boss-rock",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy2:1 + body Scarloxy2:1",
+    "gridSha256": "f971071275de83bf127e17a3c3648fb64b20e9fe7e0a23082a0dd450e842a6b7",
+    "slotRgbaSha256": "f061d591205890c8662f96862e36c666995f59014b606d10db415d994a938ea0"
+   }
+  },
+  {
+   "id": "scarloxy-boss-esper",
+   "name": "에스퍼 도장 보스",
+   "desc": "보라 긴 머리와 분홍 귀 장식, 보라 드레스.",
+   "genre": "몬스터 수집",
+   "role": "도장 보스(에스퍼)",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "보스",
+    "관장",
+    "에스퍼",
+    "도장",
+    "보라",
+    "트레이너"
+   ],
+   "sheet": 3,
+   "index": 2,
+   "source": {
+    "harnessKey": "sc-boss-esper",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:7 + body Scarloxy1:7",
+    "gridSha256": "512609bf02a03eb09be8d199c00f5066ff290646e65055960707fabe6048c7ae",
+    "slotRgbaSha256": "f04387c9f42292cae0c36aa3d489914cf9c67f16f94a26dd6fe250f78821802e"
+   }
+  },
+  {
+   "id": "scarloxy-kid-blonde",
+   "name": "어린이 · 금발 갈래머리",
+   "desc": "금발 갈래머리와 초록 리본, 연분홍 웃옷, 노란 하의, 붉은 신발.",
+   "genre": "몬스터 수집",
+   "role": "어린이 주민",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "어린이",
+    "아이",
+    "소녀",
+    "금발",
+    "주민",
+    "갈래머리"
+   ],
+   "sheet": 3,
+   "index": 3,
+   "source": {
+    "harnessKey": "sc-kid-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:4 + body Scarloxy1:4",
+    "gridSha256": "b4844a13c9acdabbdf7d027fbc7a24513e655d5a36ce6b0603a7692406da5f75",
+    "slotRgbaSha256": "535c4a91767fbb30b51918c439fbbb60810a35a49f35f911e71c3007deaa2383"
+   }
+  },
+  {
+   "id": "scarloxy-beach-bikini",
+   "name": "해변 관광객",
+   "desc": "밀짚모자, 노란 비키니 상의와 하늘색 짧은 하의, 갈색 피부.",
+   "genre": "몬스터 수집",
+   "role": "해변 관광객",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "해변",
+    "관광객",
+    "수영복",
+    "바닷가",
+    "휴양",
+    "밀짚모자"
+   ],
+   "sheet": 3,
+   "index": 4,
+   "source": {
+    "harnessKey": "sc-beach-a",
+    "model": "script-compose(no model call)",
+    "baseChip": "head Scarloxy1:6 + body Scarloxy1:1",
+    "gridSha256": "413ba5bd347d3100656728f100e1392740dcf816025a8ec54ce6dcb56e4c7cd9",
+    "slotRgbaSha256": "0155ec3f870e3196e2f89be4b65342f583806a1b1a7fe2f594ab8a1b664c3e39"
+   }
+  },
+  {
+   "id": "scarloxy-doctor",
+   "name": "박사 · 흰 가운",
+   "desc": "밤색 머리, 어깨까지 올라온 큰 흰 가운 깃과 청록 포인트, 회색 바지.",
+   "genre": "몬스터 수집",
+   "role": "연구소장",
+   "gender": "male",
+   "age": "adult",
+   "tags": [
+    "박사",
+    "연구소장",
+    "가운",
+    "흰 가운",
+    "연구",
+    "과학자"
+   ],
+   "sheet": 3,
+   "index": 5,
+   "source": {
+    "harnessKey": "sc-doctor-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:3",
+    "gridSha256": "0d19d2684605df15cc8a7042fee614980c811ab714194dcd3f8c899fd4e980dd",
+    "slotRgbaSha256": "543753309ce417d6ce9895d92ae8ba91bdcb24878a8f2ac53c14974ed21c0d88"
+   }
+  },
+  {
+   "id": "scarloxy-student-m",
+   "name": "학생 · 흰 셔츠 붉은 넥타이(남)",
+   "desc": "검은빛 뾰족 머리, 흰 반팔 셔츠와 붉은 넥타이, 남색 반바지.",
+   "genre": "몬스터 수집",
+   "role": "학생",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "학생",
+    "남학생",
+    "교복",
+    "넥타이",
+    "소년"
+   ],
+   "sheet": 3,
+   "index": 6,
+   "source": {
+    "harnessKey": "sc-student-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:5",
+    "gridSha256": "fb23802d9d9dac2f262c95ec922be1d48bbd32581fda4da3d0d341c5c8568fbb",
+    "slotRgbaSha256": "e0cccc211ea51fc13dddd255becef15b3d1aa7fc728faacc669e7d2882970878"
+   }
+  },
+  {
+   "id": "scarloxy-chef",
+   "name": "요리사 · 높은 흰 모자",
+   "desc": "높게 솟은 흰 요리모자, 갈색 곱슬머리, 흰 요리복, 회색 바지.",
+   "genre": "몬스터 수집",
+   "role": "식당 주인",
+   "gender": null,
+   "age": null,
+   "tags": [
+    "요리사",
+    "식당",
+    "주방",
+    "흰 모자",
+    "주인"
+   ],
+   "sheet": 3,
+   "index": 7,
+   "source": {
+    "harnessKey": "sc-chef-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:2",
+    "gridSha256": "ae35fce1b80988d62ea46e63aafb679f4a9989af7e6368c8947ea1d5b7d05f77",
+    "slotRgbaSha256": "d011c3420dadb908a7d760c9cf9b76edb1be15791c42037e8a3c7e95736dd8b7"
+   }
+  },
+  {
+   "id": "scarloxy-ranger",
+   "name": "레인저 · 초록 챙 모자",
+   "desc": "챙 넓은 초록 모자, 황토색 조끼, 갈색 반바지와 갈색 피부.",
+   "genre": "몬스터 수집",
+   "role": "공원 관리인",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "레인저",
+    "공원",
+    "관리인",
+    "초록 모자",
+    "숲",
+    "자연"
+   ],
+   "sheet": 4,
+   "index": 0,
+   "source": {
+    "harnessKey": "sc-ranger-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:6",
+    "gridSha256": "8622cef97e6a72fc5325f2ad12a540dabb00bf3f594b6e8967808425585d3b60",
+    "slotRgbaSha256": "d46cfdf4b9c5b534e932ee30e474ddca5d8b9170e68cb5bf9da5cb89b9ad3ec2"
+   }
+  }
+ ]
+}
