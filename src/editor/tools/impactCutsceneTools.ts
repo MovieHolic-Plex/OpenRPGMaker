@@ -5,9 +5,11 @@
 import { sharedFaceIdForCharset as reviewedFaceIdForCharset } from "@/project/sharedCharacterFaceResolver";
 import { cropCharsetFrames, CHARSET_FRAME_ROLES, type CharsetFramePictures, type CharsetFrameRole } from "@/editor/cutsceneArt/charsetFrames";
 import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
+import type { Project } from "@/project/types";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
 import { EVENT_TOOLS } from "./eventTools";
 import { requireMap } from "./mapHelpers";
+import { cutsceneHeroChipError, defaultCutsceneCharset, heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const IMPACT_CUTSCENE_TOOL = "script_cutscene_impact";
@@ -18,7 +20,6 @@ export const CUTSCENE_WHITE_RESOURCE_ID = "cutscene_white_screen";
 
 /** 기본 효과음(OpenGameArt CC0 타격). */
 const DEFAULT_IMPACT_SE = "cc0-se-osx-hit-03";
-const DEFAULT_CHARSET = "tex_easyrpg_charset_actor1";
 
 type RecordValue = Record<string, unknown>;
 
@@ -165,15 +166,14 @@ export function buildImpactChoreography(input: ImpactChoreographyInput): ImpactC
 const preparedCharacters = new Map<string, CharsetFramePictures | { readonly error: string }>();
 const characterKey = (resourceId: string, index: number): string => `${resourceId}:${index}`;
 
-function characterArg(args: Record<string, unknown>): { resourceId: string; characterIndex: number } | undefined {
+function characterArg(args: Record<string, unknown>, project?: Project): { resourceId: string; characterIndex: number } | undefined {
   const raw = args.victimCharacter;
   if (raw === undefined || raw === null) return undefined;
   if (typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("victimCharacter 는 {resourceId, characterIndex} 객체여야 합니다.", { code: "invalid-args" });
   const record = raw as RecordValue;
-  const resourceId = typeof record.resourceId === "string" && record.resourceId.trim() ? record.resourceId.trim() : DEFAULT_CHARSET;
-  if (!/actor[1-4]$/iu.test(resourceId)) {
-    throw new ToolError(`victimCharacter 는 캐릭터셋 Actor1~4 에서 고릅니다('${resourceId}' 아님) — 예: {resourceId:'tex_easyrpg_charset_actor1', characterIndex:0}(인물 0~7번). 선택한 인물로 맵 위 주인공 그래픽도 맞춰 줍니다.`, { code: "invalid-args" });
-  }
+  const resourceId = typeof record.resourceId === "string" && record.resourceId.trim() ? record.resourceId.trim() : defaultCutsceneCharset(project);
+  const chipError = cutsceneHeroChipError(project, resourceId, "victimCharacter");
+  if (chipError) throw new ToolError(chipError, { code: "invalid-args" });
   const index = typeof record.characterIndex === "number" && Number.isFinite(record.characterIndex) ? Math.trunc(record.characterIndex) : 0;
   return { resourceId, characterIndex: Math.max(0, Math.min(7, index)) };
 }
@@ -185,7 +185,7 @@ const scriptCutsceneImpact: ToolDefinition = {
   description:
     "탈것이 인물에게 돌진해 부딪히는 충돌 컷신(트럭 사고 등)을 한 번에 만든다. 맵 타일·NPC 이동 없이 picture 로 처리하며 모든 그림은 게임 해상도 100% 배율이다. "
     + "먼저 generate_cutscene_art 로 배경(role:backdrop)과 탈것(role:sprite, tiles 로 크기)을 만들고 그 resourceId 를 넣는다. "
-    + "피해자는 생성하지 않고 게임 캐릭터셋의 인물을 쓴다 — victimCharacter 는 캐릭터셋 Actor1~4 에서 한 명을 고른다(예 tex_easyrpg_charset_actor1 번호 0~7, 생략하면 Actor1 0번) — 고른 인물로 맵 위 주인공 그래픽도 자동으로 맞춰져 컷신 속 인물과 이세계의 주인공이 같은 사람이 된다. 걷기 프레임이 진짜로 교체된다. "
+    + "피해자는 생성하지 않고 게임 캐릭터셋의 인물을 쓴다 — victimCharacter 는 캐릭터셋 Actor1~4 에서 한 명을 고른다(예 tex_easyrpg_charset_actor1 번호 0~7, 생략하면 Actor1 0번; 장르 잠금이 캐릭터 칩을 잠근 프로젝트(몬스터 수집 등)에서는 허용 칩만 — 예 tex_scarloxy_charset_people1 번호 0~7, 생략하면 그 장르 기본 주인공 칩) — 고른 인물로 맵 위 주인공 그래픽도 자동으로 맞춰져 컷신 속 인물과 이세계의 주인공이 같은 사람이 된다. 걷기 프레임이 진짜로 교체된다. "
     + "도구가 좌표·타이밍을 계산한다: 인물이 보도에서 걸어 나오고 → 경적 대사 → 탈것이 달려와 닿는 순간 효과음·플래시·화면 흔들림 → 인물이 회전하며 날아가고 → 화면이 하얗게 덮이며 afterLines 내레이션. "
     + "roadTop·roadBottom 은 배경 그림에서 도로 띠의 위·아래 끝이 화면 높이의 몇 %인지(0~1)로, 생성 결과 그림을 보고 읽어 넣는다. vehicleFacing 은 탈것 그림이 바라보는 방향(left 면 오른쪽에서 들어온다). "
     + "끝난 뒤 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. 엔딩/이세계 이동 등 이후 연출은 같은 이벤트에 이어 붙이지 말고 별도 처리한다.",
@@ -232,14 +232,14 @@ const scriptCutsceneImpact: ToolDefinition = {
     victimCharacter: { resourceId: "tex_easyrpg_charset_actor1", characterIndex: 0 }, roadTop: 0.48, roadBottom: 0.82,
     beforeLines: ["오늘도 야근이었다."], afterLines: ["……쿵.", "눈을 떴을 때, 세상은 새하얗게 비어 있었다."],
   },
-  async prepare(args): Promise<void> {
-    const character = characterArg(args);
+  async prepare(args, project): Promise<void> {
+    const character = characterArg(args, project);
     if (!character) return;
     const key = characterKey(character.resourceId, character.characterIndex);
     if (preparedCharacters.get(key) && !("error" in preparedCharacters.get(key)!)) return;
     try {
       // prepare 는 프로젝트를 받지 못한다 — 번들 캐릭터셋(tex_easyrpg_*)은 프로젝트 없이 풀린다. 업로드 캐릭터셋은 지원하지 않는다.
-      preparedCharacters.set(key, await cropCharsetFrames(undefined, character.resourceId, character.characterIndex));
+      preparedCharacters.set(key, await cropCharsetFrames(project, character.resourceId, character.characterIndex));
     } catch (error) {
       preparedCharacters.set(key, { error: error instanceof Error ? error.message : String(error) });
     }
@@ -253,7 +253,7 @@ const scriptCutsceneImpact: ToolDefinition = {
     for (const [field, id] of [["backdropResourceId", backdropId], ["vehicleResourceId", vehicleId]] as const) {
       if (!draft.assets.uploaded[id]) throw new ToolError(`${field} '${id}' 는 등록된 그림이 아닙니다 — generate_cutscene_art 의 결과 id 를 쓰세요.`, { code: "unknown-resource" });
     }
-    const character = characterArg(args);
+    const character = characterArg(args, draft);
     let victim: VictimFrames;
     if (character) {
       const prepared = preparedCharacters.get(characterKey(character.resourceId, character.characterIndex));
@@ -313,7 +313,7 @@ const scriptCutsceneImpact: ToolDefinition = {
     if (character) {
       const hero = draft.database.actors.find((actor) => actor.id === "actor_hero") ?? draft.database.actors[0];
       if (hero) {
-        hero.characterResourceId = character.resourceId.replace(/^tex_easyrpg_charset_/u, "easyrpg-charset-");
+        hero.characterResourceId = heroCharacterResourceId(character.resourceId);
         hero.characterIndex = character.characterIndex;
         const face = reviewedFaceIdForCharset(hero.characterResourceId, character.characterIndex);
         if (face) hero.faceResourceId = face;
