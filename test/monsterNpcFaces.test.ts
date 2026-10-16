@@ -37,4 +37,29 @@ describe('monster campaign NPC faces', () => {
       if (shop) expect(shop[1]).not.toBe(face);
     }
   });
+
+  // 3차 적대 감사 D34: 오프닝 흉상은 박사인데 연구소 NPC 칩은 밀짚모자 청년이었다. 기존 변형 직군 칩 「박사 · 흰 가운」(ScarloxyPeople3 #5)을 쓴다. 이 테스트는 작성만 하고 실행하지 않았다.
+  it('gives the lab professor the existing white-coat doctor chip, not the straw hat', () => {
+    const professors = Object.values(project.maps).flatMap((map) => map.events.filter((event) => event.id.endsWith('_professor')));
+    expect(professors.length).toBeGreaterThan(0);
+    for (const event of professors) {
+      const graphic = event.pages![0]!.graphic!;
+      expect(graphic.sprite?.id).toBe('tex_oprn_charset_scarloxy_people3');
+      expect(decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex).toBe(5);
+    }
+  });
+
+  // D35: 관장 파티가 같은 종을 되풀이하고 졸개와 같은 레벨 한 줄이었다.
+  it('gym leaders field distinct species with a higher-level ace', () => {
+    const { database } = project;
+    const leaders = database.troops.filter((troop) => /_gym_leader$/u.test(troop.id));
+    expect(leaders.length).toBeGreaterThan(0);
+    for (const troop of leaders) {
+      const enemies = troop.enemyIds.map((id) => database.enemies.find((enemy) => enemy.id === id)!);
+      const species = enemies.map((enemy) => enemy.speciesId);
+      expect(new Set(species).size, troop.id).toBe(species.length);
+      const levels = enemies.map((enemy) => enemy.level ?? 0);
+      expect(levels.at(-1)!, troop.id).toBeGreaterThan(levels[0]!);
+    }
+  });
 });
