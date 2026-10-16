@@ -70,11 +70,15 @@ describe("몬스터 수집 의도 사전(hasMonsterCollectIntent)", () => {
     // 기존 표본이 계속 참이어야 한다.
     "포켓몬 라이크 만들어 줘", "RPG 몬스터 수집", "몬스터를 잡아서 키우는 게임", "몬스터 도감 채우는 게임 만들어줘", "monster collecting game", "creature collector RPG please",
     "몬스터 수집 마을 만들어 줘", "장르 프리셋: 몬스터 수집", "monster taming adventure with gyms", "pet raising game",
+    // 3차 적대 감사(2026-10-16) D·라우팅: 몬스터·포켓몬 낱말 없이 말한 네 문장.
+    "괴물 키우고 배틀하는 게임", "야생 동물 잡아서 싸우는 RPG", "리그 우승 노리는 트레이너 이야기", "마을 사이를 오가며 동료를 모으는 게임",
   ];
   const negatives = [
     "연애 시뮬레이션 RPG 만들어 줘", "일반 판타지 RPG 게임 만들어 줘", "몬스터 헌터 같은 RPG 만들어 줘", "로그라이크 RPG 만들어 줘", "좀비 서바이벌 RPG", "소울라이크 몬스터 헌터 게임",
     "헬스 트레이너가 나오는 연애 게임", "학교 체육관에서 만나는 연애 게임", "체육관 맵 만들어 줘", "카드 수집형 게임 만들어 줘", "아이템 수집형 던전 RPG", "던전에 몬스터 배치해 줘",
     "펫샵이 있는 마을 만들어 줘", "personal trainer romance game", "농장 동물 돌보는 게임", "보물 수집 퍼즐", "몬스터를 쓰러뜨리는 던전 RPG",
+    "축구 리그 우승을 노리는 감독 시뮬레이션", "야구 리그 우승 노리는 트레이너 이야기", "마을 사이를 오가는 상인 게임", "동료와 함께 던전을 도는 RPG", "동료를 모으는 JRPG",
+    "괴물이 나오는 공포 게임", "괴물을 물리치는 던전 RPG", "야생 동물을 사냥해 요리하는 서바이벌", "야생 동물 보호 농장 게임",
   ];
   it.each(positives)("의도로 읽는다: %s", (text) => expect(hasMonsterCollectIntent(text)).toBe(true));
   it.each(negatives)("의도가 아니다: %s", (text) => expect(hasMonsterCollectIntent(text)).toBe(false));
@@ -107,7 +111,7 @@ describe("키트·잠금 신호(classifyPlainPiTurn.monsterKit)", () => {
   it("몬스터가 아닌 /goal 은 monsterKit 이 없다", async () => {
     expect((await run("/goal 연애 시뮬레이션 첫 게임을 만들어줘")).monsterKit).toBeUndefined();
   });
-  it.each(["체육관 도는 게임", "테이머 RPG 만들어줘", "수집형 RPG 만들어줘", "몬스터와 함께 모험하는 RPG", "디지몬 같은 게임", "pocket monsters clone"])("캠페인 경로가 monsterKit 을 낸다: %s", async (text) => {
+  it.each(["체육관 도는 게임", "테이머 RPG 만들어줘", "수집형 RPG 만들어줘", "몬스터와 함께 모험하는 RPG", "디지몬 같은 게임", "pocket monsters clone", "괴물 키우고 배틀하는 게임", "야생 동물 잡아서 싸우는 RPG", "마을 사이를 오가며 동료를 모으는 게임"])("캠페인 경로가 monsterKit 을 낸다: %s", async (text) => {
     expect((await run(text)).monsterKit).toBe(true);
   });
 });
