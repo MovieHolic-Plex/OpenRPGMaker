@@ -1,0 +1,50 @@
+{
+ "key": "tt-scrap-robot-a",
+ "arch": "tt-scrap-robot",
+ "base": "People4:4",
+ "variant": "고철 로봇: 머리를 구리색·쇠색 금속 구체로, 머리 위 둥근 안테나, 눈 줄은 유리창(눈 상자 둘만 고정), 상자형 몸통은 녹슨 구리+쇠색, 가슴 해치와 나사, 한 팔 집게.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdegjklmnopqrtuvwx"
+   ],
+   "at": "2026-10-16T04:16:17"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행 · 눈 줄 상자 좁힘 재시도",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdegjklmnopqrtuvwx"
+ ],
+ "metrics": {
+  "added_up0": 41,
+  "added_up1": 40,
+  "added_up2": 40,
+  "added_right0": 26,
+  "added_right1": 16,
+  "added_right2": 36,
+  "added_down0": 39,
+  "added_down1": 37,
+  "added_down2": 37,
+  "added_left0": 12,
+  "added_left1": 20,
+  "added_left2": 28,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.998,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 6,
+  "cross_base": 6,
+  "lone": 294,
+  "lone_base": 235
+ }
+}

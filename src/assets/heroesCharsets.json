@@ -1,0 +1,289 @@
+{
+ "version": 1,
+ "sheets": 1,
+ "sheetName": "Heroes1 · 시간여행·제국군 직업 인물 · OPRN",
+ "selection": {
+  "by": "user-delegated-to-supervisor",
+  "note": "사용자가 2026-10-16 「pick-6 는 니 추천대로 해」 라고 위임했고, 감독이 시트 chips-ct-ff6-pick-6.html 에서 8종을 채택했다. 사람 결정이며 이 파일의 순서(칸 번호)는 덧붙이기 전용이다.",
+  "notAdopted": [
+   "tt-scrap-robot-b",
+   "iw-steam-armor-a",
+   "iw-legion-soldier-a",
+   "tt-hero-boy-a"
+  ]
+ },
+ "characters": [
+  {
+   "id": "heroes-tt-amphibian-knight",
+   "name": "양서 기사",
+   "desc": "남청색 판금 투구에 눈 돌기 두 개가 솟았고 얼굴이 투구 아래로 보인다. 은회색 어깨받이, 어깨에서 늘어진 짙은 남색 망토, 허리 오른쪽에 긴 칼.",
+   "genre": "시간여행",
+   "role": "검사 동료",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "기사",
+    "검사",
+    "투구",
+    "판금",
+    "망토",
+    "칼",
+    "시간여행",
+    "중세",
+    "동료",
+    "knight",
+    "swordsman",
+    "armor",
+    "time travel"
+   ],
+   "sheet": 1,
+   "index": 0,
+   "source": {
+    "harnessKey": "tt-amphibian-knight-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "People3:7",
+    "gridSha256": "702b2874ee754de845355164b45c30973e55071118622df947d4aeca031d3a4b",
+    "slotRgbaSha256": "829a43edb138eb715f597b9b5280989e18f60317ebf1157ea51f2b8496428230"
+   }
+  },
+  {
+   "id": "heroes-tt-stone-age-girl",
+   "name": "원시 전사 소녀",
+   "desc": "밤갈색 머리를 땋아 묶은 맨머리 소녀. 털가죽 어깨 망토와 짧은 가죽 치마, 목에 뼈 목걸이, 허리 오른쪽에 뼈 단검, 맨발.",
+   "genre": "시간여행",
+   "role": "근접 전사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "소녀",
+    "전사",
+    "원시인",
+    "원시 시대",
+    "털가죽",
+    "뼈",
+    "단검",
+    "땋은 머리",
+    "시간여행",
+    "선사",
+    "barbarian",
+    "primitive",
+    "tribal",
+    "warrior girl"
+   ],
+   "sheet": 1,
+   "index": 1,
+   "source": {
+    "harnessKey": "tt-stone-age-girl-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Actor3:3",
+    "gridSha256": "92a90a3e6665bd674e83e680defef6b9fddd51b924d50ba8fb928f037e09fce7",
+    "slotRgbaSha256": "ca34c98dc5ce5c4620318ff9342bc2799a077c56d77667cc9ca47405473ed50b"
+   }
+  },
+  {
+   "id": "heroes-tt-spell-girl",
+   "name": "마법사 소녀",
+   "desc": "높게 묶은 은청색 머리에 별 머리핀, 넓은 소매의 보라 로브와 짧은 치마, 목에 큰 분홍 리본, 허리 오른쪽에 두루마리 주머니.",
+   "genre": "시간여행",
+   "role": "마법 동료",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "소녀",
+    "마법사",
+    "마녀",
+    "로브",
+    "별",
+    "리본",
+    "두루마리",
+    "보라",
+    "시간여행",
+    "동료",
+    "mage",
+    "witch",
+    "wizard girl",
+    "sorceress"
+   ],
+   "sheet": 1,
+   "index": 2,
+   "source": {
+    "harnessKey": "tt-spell-girl-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Actor1:6",
+    "gridSha256": "732dc8714e992e5f8adb1f6a259e55677c9ec617abdca5319aa2c1a1bbdeda50",
+    "slotRgbaSha256": "45f28ce904d197e519f016b6719387bea4fa010c9acde640287519d3116bf736"
+   }
+  },
+  {
+   "id": "heroes-tt-scrap-robot",
+   "name": "고철 로봇",
+   "desc": "구리색과 쇠색 금속 구체 머리에 머리 위 둥근 안테나, 푸른 유리창 눈 둘. 녹슨 구리와 쇠색 상자형 몸통, 가슴 해치와 나사, 한쪽 팔은 집게.",
+   "genre": "시간여행",
+   "role": "기계 동료",
+   "gender": "none",
+   "age": null,
+   "tags": [
+    "로봇",
+    "기계",
+    "고철",
+    "구리",
+    "안테나",
+    "집게",
+    "미래",
+    "시간여행",
+    "동료",
+    "robot",
+    "machine",
+    "automaton",
+    "android",
+    "scrap"
+   ],
+   "sheet": 1,
+   "index": 3,
+   "source": {
+    "harnessKey": "tt-scrap-robot-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "People4:4",
+    "gridSha256": "5261ee4e56028eb45fcbfebb0344dceae8cb58d02b75224b6b57042044929bfa",
+    "slotRgbaSha256": "4ddfcce39a8b549ece020836ba9467b738998280d07e8ad20087f3dee3a918f2"
+   }
+  },
+  {
+   "id": "heroes-iw-rogue-scout",
+   "name": "도적 정찰병",
+   "desc": "모래색과 짙은 갈색 두건에 머리띠, 얼굴 아래를 가린 목도리, 가죽 어깨 조끼, 허리 양쪽에 단검 두 자루.",
+   "genre": "모험",
+   "role": "도적·모험가",
+   "gender": null,
+   "age": null,
+   "tags": [
+    "도적",
+    "정찰병",
+    "모험가",
+    "두건",
+    "목도리",
+    "가죽 조끼",
+    "단검",
+    "암살자",
+    "척후",
+    "rogue",
+    "thief",
+    "scout",
+    "ranger",
+    "assassin"
+   ],
+   "sheet": 1,
+   "index": 4,
+   "source": {
+    "harnessKey": "iw-rogue-scout-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Actor3:2",
+    "gridSha256": "e637bbde545db11156fd8446ef6b747a290fefe852a8205266e8696c863a5d70",
+    "slotRgbaSha256": "efb0a2948a664ec26b47f4c8024ad437612062328a6a6aec4de6f2e330de6d57"
+   }
+  },
+  {
+   "id": "heroes-iw-spell-girl",
+   "name": "연보라 마법사",
+   "desc": "연보라 긴 머리를 낮은 한 갈래로 묶고 이마에 얇은 금속 머리띠. 흰 망토와 군청색 짧은 원피스, 가슴에 작은 보석, 흰 장갑.",
+   "genre": "제국군",
+   "role": "마법 소녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "소녀",
+    "마법사",
+    "마법 소녀",
+    "연보라",
+    "머리띠",
+    "흰 망토",
+    "원피스",
+    "보석",
+    "제국",
+    "mage",
+    "witch",
+    "sorceress",
+    "magic girl"
+   ],
+   "sheet": 1,
+   "index": 5,
+   "source": {
+    "harnessKey": "iw-spell-girl-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "Actor4:6",
+    "gridSha256": "b1b893bc0db3f80118717ca7ea939add743b1ac9e2fb5e4a79d5ba4dc8ff74e7",
+    "slotRgbaSha256": "7af20c99da0a77741f830118023a284d1dddd58492d255f9b5c0a0426186d9a8"
+   }
+  },
+  {
+   "id": "heroes-iw-old-general",
+   "name": "노장군",
+   "desc": "흰 머리와 풍성한 흰 콧수염, 어깨에 금술이 달린 짙은 남색 군복, 가슴에 훈장 두 줄, 어깨에 붉은 짧은 망토, 허리 오른쪽에 지휘봉.",
+   "genre": "제국군",
+   "role": "원로 지휘관",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "장군",
+    "노인",
+    "노장군",
+    "지휘관",
+    "군복",
+    "훈장",
+    "수염",
+    "흰 머리",
+    "제국군",
+    "원수",
+    "general",
+    "commander",
+    "old man",
+    "officer",
+    "veteran"
+   ],
+   "sheet": 1,
+   "index": 6,
+   "source": {
+    "harnessKey": "iw-old-general-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "People3:4",
+    "gridSha256": "5467af2d94ea49f5e0f5d51cd66072769fd3f33baf1cda12714516817da9e2e1",
+    "slotRgbaSha256": "e0b1c607e683ae5d8536bd67ac96116de250bf5cf12b34dabcd2dd96839173ff"
+   }
+  },
+  {
+   "id": "heroes-iw-stage-singer",
+   "name": "무대 가수",
+   "desc": "풍성하게 올린 금빛 갈색 머리에 작은 깃털 머리장식, 소매가 부푼 짙은 남색 드레스와 은색 허리띠, 반짝이는 장식 한두 점, 왼손에 깃털 부채.",
+   "genre": "공연",
+   "role": "가수·연극 배우",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "가수",
+    "오페라",
+    "무대",
+    "배우",
+    "드레스",
+    "깃털",
+    "부채",
+    "공연",
+    "연극",
+    "singer",
+    "opera",
+    "diva",
+    "performer",
+    "actress",
+    "dress"
+   ],
+   "sheet": 1,
+   "index": 7,
+   "source": {
+    "harnessKey": "iw-stage-singer-a",
+    "model": "gemini-4-argon-high",
+    "baseChip": "People3:3",
+    "gridSha256": "5a943ad4d8d0199b9ab94d96cd301930bd23e9031ab953d29de3815a729910b6",
+    "slotRgbaSha256": "91d2172eab7e360d44263f808d1ad6cffe221c79d23074ca2c2761d2693a6ad2"
+   }
+  }
+ ]
+}

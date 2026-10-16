@@ -1,0 +1,251 @@
+{
+  "palette": {
+    "S": "#ecd49e",
+    "D": "#cfb074",
+    "C": "#a6864c",
+    "B": "#583f20",
+    "V": "#28180e",
+    "W": "#462b19",
+    "X": "#613d22",
+    "Y": "#9c663c",
+    "G": "#f2c96b",
+    "H": "#b88933",
+    "M": "#d8e2e8",
+    "N": "#7c8b96",
+    "R": "#8c3b23",
+    "Q": "#542112"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "a": "V",
+        "b": "V",
+        "c": "B",
+        "e": "D",
+        "j": "C",
+        "n": "S"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "a": "V",
+        "b": "V",
+        "c": "W",
+        "d": "W",
+        "e": "C",
+        "f": "X",
+        "g": "W",
+        "h": "W",
+        "j": "D",
+        "k": "Y",
+        "m": "Y",
+        "n": "X",
+        "p": "H"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "V",
+        "b": "V",
+        "c": "B",
+        "d": "W",
+        "e": "C",
+        "f": "X",
+        "g": "W",
+        "h": "Q",
+        "j": "D",
+        "k": "Y",
+        "m": "Y",
+        "n": "R",
+        "p": "H"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "a": "V",
+        "b": "V",
+        "c": "V",
+        "d": "W",
+        "e": "B",
+        "f": "X",
+        "k": "Y"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "8": "........bcSSSecb........",
+        "9": ".......bSSSeeeccb.......",
+        "10": "......bVYYXGHXXWVb......",
+        "11": "......VYYXXGHXXWWV......",
+        "12": ".....bVWWXXXXXXWWVb.....",
+        "17": "......aVSSDDDDCCVa......"
+      }
+    },
+    {
+      "dir": "up",
+      "region": "H",
+      "rows": {
+        "8": "........bcSSSecb........",
+        "9": ".......bSSSeeeccb.......",
+        "10": "......bVYYYXXXWWVb......",
+        "11": "......VYYXXVWXXWWV......",
+        "12": ".....bVWWXVYWWXWWVb.....",
+        "13": ".....bSSeeXVVWeeeeb....."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "8": ".......bcSSSeeecb.......",
+        "9": ".....bbSSSSeeeeccb......",
+        "10": ".....bVYYYXXWWGHV.......",
+        "11": "......bVYYXXWWGHV.......",
+        "12": "......bVWWXXXXWWV.......",
+        "17": ".......abaVCSSDDB......."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "8": ".......bcSSSeeecb.......",
+        "9": "......bSSSeeeecccbb.....",
+        "10": ".......VHGWWXXYYYVb.....",
+        "11": ".......VHGWWXXYYVb......",
+        "12": ".......VWWXXXXWWVb......",
+        "17": ".......BSSDDCVaba......."
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "18": ".....dfaSSDDCBBjafd.....",
+        "19": "....dfmfaVSDDCVafmfd....",
+        "20": "....fDCVVYXGHXWVBCXf....",
+        "21": ".....bDCVYXWDCWXVCb....."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "18": ".....dfaVSSDDCBVafd.....",
+        "19": "....dfmfaVYYXXWafmfd....",
+        "20": "....fDCVVYYXXXWWBCXf....",
+        "21": ".....bDCVYYXXWWXVCb....."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "18": ".......adfaSSDDB........",
+        "19": ".......dfmfaVSDDB.......",
+        "20": ".......WYXXVXGHW........",
+        "21": "........bSDCVYXW........"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "18": "........BDDSdafda.......",
+        "19": ".......BDDSVafmfd.......",
+        "20": "........WHGXVXXYW.......",
+        "21": "........WXYVCDSb........"
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "dagger_r",
+      "kind": "hip",
+      "side": "R",
+      "sprites": {
+        "down": {
+          "rows": [
+            "....GH",
+            "...MNH",
+            ".VRQN.",
+            "VQQV.."
+          ],
+          "grip": [2, 2]
+        },
+        "up": {
+          "rows": [
+            "HG....",
+            "HNM...",
+            ".NQRV.",
+            "..VQQV"
+          ],
+          "grip": [3, 2]
+        },
+        "right": {
+          "rows": [
+            "....HG",
+            "...MNH",
+            ".VRQN.",
+            "VQQV.."
+          ],
+          "grip": [3, 2]
+        },
+        "left": {
+          "rows": [
+            "Q"
+          ],
+          "grip": [0, 0]
+        }
+      }
+    },
+    {
+      "name": "dagger_l",
+      "kind": "hip",
+      "side": "L",
+      "sprites": {
+        "down": {
+          "rows": [
+            "HG....",
+            "HNM...",
+            ".NQRV.",
+            "..VQQV"
+          ],
+          "grip": [3, 2]
+        },
+        "up": {
+          "rows": [
+            "....GH",
+            "...MNH",
+            ".VRQN.",
+            "VQQV.."
+          ],
+          "grip": [2, 2]
+        },
+        "right": {
+          "rows": [
+            "Q"
+          ],
+          "grip": [0, 0]
+        },
+        "left": {
+          "rows": [
+            "GH....",
+            "HNM...",
+            ".NQRV.",
+            "..VQQV"
+          ],
+          "grip": [2, 2]
+        }
+      }
+    }
+  ]
+}

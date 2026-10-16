@@ -1,0 +1,50 @@
+{
+ "key": "iw-spell-girl-a",
+ "arch": "iw-spell-girl",
+ "base": "Actor4:6",
+ "variant": "연보라 긴 머리를 낮은 한 갈래로 묶음(뒷모습에서 허리 아래로 길게), 얇은 금속 머리띠, 흰 망토(어깨 구역 t)와 군청색 짧은 원피스, 가슴에 작은 보석. 장비 없음.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bghmnsw"
+   ],
+   "at": "2026-10-16T03:58:52"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bghmnsw"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.995,
+   "T": 0.99,
+   "B": 0.996,
+   "S": 0.951
+  },
+  "cross": 7,
+  "cross_base": 27,
+  "lone": 468,
+  "lone_base": 416
+ }
+}
