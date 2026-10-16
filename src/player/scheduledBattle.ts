@@ -74,7 +74,7 @@ export function resumeScheduledBattle(scene: PlaySceneContext, key: string, proc
     console.error('[player] scheduled battle failed', error);
     if (valid() && lease.current()) {
       process.stopped = true;
-      showBattleAdmissionError(scene, error);
+      return showBattleAdmissionError(scene, error);
     }
   }).finally(() => lease.release()); // The token itself refuses to release any replacement owner.
 }

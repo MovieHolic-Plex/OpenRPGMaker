@@ -77,6 +77,8 @@ export type RunCommandsOptions = {
   readonly allowNested?: boolean;
   readonly isCurrent?: () => boolean;
   readonly onComplete?: () => void;
+  /** 전투 입장 거부처럼 호스트가 처리한 실패로 끝났을 때(완료 영수증은 남기지 않는다). */
+  readonly onHandledFailure?: () => void;
   readonly continueAfterTransfer?: boolean;
 };
 
@@ -308,6 +310,7 @@ export async function runCommands(
     if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
       observe("completed"); if (!lostBattle) options.onComplete?.();
     } else observe(handledFailure ? "failed" : "cancelled");
+    if (handledFailure) options.onHandledFailure?.();
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError"
       && (!current() || scene.sys?.isActive() === false)) { observe("cancelled"); return; }
@@ -612,7 +615,7 @@ async function consumeBlockingStep(
       } catch (error) {
         onHandledFailure();
         console.error("[player] event battle failed", error);
-        showBattleAdmissionError(scene, error);
+        await showBattleAdmissionError(scene, error);
         return { kind: "done" }; // Do not resume the interpreter or invent a battle result.
       }
     }
