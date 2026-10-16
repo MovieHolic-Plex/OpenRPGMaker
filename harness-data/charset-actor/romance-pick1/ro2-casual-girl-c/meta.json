@@ -1,0 +1,51 @@
+{
+ "key": "ro2-casual-girl-c",
+ "arch": "ro2-casual-girl",
+ "base": "Actor4:6",
+ "variant": "라벤더 블라우스(소매 전체 같은 색) + 크림 롱스커트 + 갈색 신발. 머리는 짙은 갈색 긴 머리(보라 제거).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 3,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdghlmnopsuw"
+   ],
+   "at": "2026-10-16T14:35:18"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdghlmnoprsuw"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.977,
+   "T": 0.945,
+   "B": 0.932,
+   "S": 0.95
+  },
+  "cross": 28,
+  "cross_base": 27,
+  "lone": 261,
+  "lone_base": 416
+ },
+ "reapplied": true
+}

@@ -1,0 +1,137 @@
+{
+  "palette": {
+    "u": "#14161d",
+    "v": "#222632",
+    "w": "#323846",
+    "x": "#444c5e",
+    "y": "#566075",
+    "C": "#252b35",
+    "G": "#343c4a",
+    "J": "#475264",
+    "N": "#5c6a80",
+    "W": "#f4f7fa",
+    "V": "#cad4e0",
+    "K": "#12151c",
+    "D": "#202530"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "b": "u",
+        "h": "v",
+        "k": "w",
+        "m": "x",
+        "p": "y",
+        "e": "v",
+        "i": "w"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "b": "u",
+        "h": "v",
+        "k": "w",
+        "m": "x",
+        "p": "y",
+        "c": "C",
+        "g": "G",
+        "e": "G",
+        "i": "G",
+        "j": "J",
+        "n": "N"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "u",
+        "b": "C",
+        "c": "C",
+        "g": "G",
+        "e": "G",
+        "j": "J",
+        "i": "J",
+        "n": "N",
+        "o": "C"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "a": "u",
+        "d": "K",
+        "o": "w"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "11": "......bbhhwvuvwhbb......"
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "11": "......bhkhhmhhwvuu......"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "11": "......uuvwhhmhhkhb......"
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "19": "......gnjCWqqVCjng......",
+        "20": ".....gjngCWrqVCgnjg.....",
+        "21": ".....jnjbCWDKVCbjnj.....",
+        "22": "....gjjgeCWDKVCegjjg....",
+        "23": "....drrdcNJDKJGcdrrd....",
+        "24": "....dqodgNJCCJGgdoqd...."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "23": "....drrdcNJGGJNcdrrd...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "18": "....bkb.bgCWoddd........",
+        "19": "....bkh.gjCWCoK.........",
+        "20": ".....hh.gnngCDqK........",
+        "21": ".....bhgjnjgnCDK........",
+        "22": "......bgjjgbjCDK........",
+        "23": ".......drrdNJGCK........",
+        "24": ".......dqodgNJGC........"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "18": "........dddoVCgb.bkb....",
+        "19": ".........KoCVCjg.hkb....",
+        "20": "........KqDCgnng.hh.....",
+        "21": "........KDCjgjnjghb.....",
+        "22": "........KDCgbgjjgb......",
+        "23": "........KCJNJdrrd.......",
+        "24": "........CGJNgdoqd......."
+      }
+    }
+  ]
+}

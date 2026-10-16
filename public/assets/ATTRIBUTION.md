@@ -416,3 +416,17 @@ The base chip per character is recorded in `src/assets/heroesCharsets.json` (`so
 - Selection record: the eight were chosen from the harness candidate sheet by the supervisor under the user's explicit delegation ("pick-6 는 니 추천대로 해", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
 - No Square Enix / Capcom artwork and no pixel of any other game is used; the character ideas are generic class archetypes (no existing character is copied).
 License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
+
+## Modern1-3 walking chips — modern romance characters (2026-10-16)
+
+`generated/charsets/Modern1.png`, `Modern2.png`, `Modern3.png` (288×256 each, 8 characters × 3 patterns × 4 directions, 24 chips) hold modern-life walking chips from the `charset-actor` harness (`src/harnesses/charset-actor/`):
+school-uniform boys and girls (blazer, summer vest, sailor, cardigan, twin tails, bun, long hair), casual boys and girls (sweatshirt, hoodie, jacket, dress, blouse, striped tee), suits, cafe-apron staff, and teacher/professor.
+**Each chip is derived from an EasyRPG RTP character sheet** (`CharSet/Actor2`, `Actor3`, `Actor4`, `People1`, `People5`): the harness keeps the base chip's face, skin, hands, body proportions, legs and walk poses
+and rewrites only the hair and the top/bottom/shoe colours and shapes inside region masks (edits by a model, `gemini-4-argon-high`, then verified frame-by-frame against the base; no carried gear/props).
+Three chips (cafe apron navy and olive, suit girl navy; `source.model` starts with `script-colorvar`) are scripted hue/value variants of a model-edited chip, produced without a model call and passed through the same verification.
+The base chip per character is recorded in `src/assets/modernCharsets.json` (`source.baseChip`).
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP — Creative Commons Attribution 4.0 International; credit lines: `public/assets/easyrpg/AUTHORS.md`. The CC BY 4.0 credit above applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`.
+- Final pixel grids and edit commands: `harness-data/charset-actor/romance-pick1/<key>/` (`chip.chr.txt`, `edit.json`, `meta.json`); baked by `src/harnesses/charset-actor/install_modern_romance.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: the 24 were filtered from 36 harness candidates by the author (chip-set grain match, torso, no clothing clipping, 12-frame identity) under the user's explicit delegation ("no picking, filter by your own criteria", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
+- No image-generation output and no pixel of any other game is used.
+License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.

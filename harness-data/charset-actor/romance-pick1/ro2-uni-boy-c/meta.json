@@ -1,0 +1,51 @@
+{
+ "key": "ro2-uni-boy-c",
+ "arch": "ro2-uni-boy",
+ "base": "Actor2:0",
+ "variant": "네이비 블레이저 + 흰 셔츠 + 회색 넥타이, 짙은 회색 바지. 머리는 검은색, 옆 꼬리 머리(베이스 모양)는 유지해 개성 있는 학생으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cegijn"
+   ],
+   "at": "2026-10-16T12:39:15"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cegijn"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.944,
+   "T": 0.839,
+   "B": 0.621,
+   "S": 0.803
+  },
+  "cross": 9,
+  "cross_base": 5,
+  "lone": 316,
+  "lone_base": 379
+ },
+ "reapplied": true
+}

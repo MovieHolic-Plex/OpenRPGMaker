@@ -1,0 +1,51 @@
+{
+ "key": "ro2-uni-girl-a",
+ "arch": "ro2-uni-girl",
+ "base": "People5:1",
+ "variant": "양갈래 머리 여학생: 네이비 블레이저 + 붉은 리본 + 체크 느낌 치마(남색 + 한 줄 밝은 줄), 흰 양말·로퍼. 머리는 어두운 갈색(주황 제거), 양갈래 모양 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cehijmnqrtv"
+   ],
+   "at": "2026-10-16T13:55:29"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cehijmnqrtv"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.989,
+   "T": 0.812,
+   "B": 0.679,
+   "S": 1.0
+  },
+  "cross": 8,
+  "cross_base": 17,
+  "lone": 309,
+  "lone_base": 308
+ },
+ "reapplied": true
+}

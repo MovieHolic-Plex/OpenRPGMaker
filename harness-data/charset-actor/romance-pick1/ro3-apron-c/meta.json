@@ -1,0 +1,50 @@
+{
+ "key": "ro3-apron-c",
+ "arch": "ro-apron",
+ "base": "People5:5",
+ "variant": "색 변형(스크립트): 카페 점원 — 올리브 녹색 앞치마 + 흰 셔츠 + 자홍빛 적갈색 머리. ro-apron-a 와 같은 모양·다른 색.",
+ "model": "script-colorvar(of gemini-4-argon-high)",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": null,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 DHbdfghijklnoqrsty"
+   ]
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 DHbdfghijklnoqrsty"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.856,
+   "T": 0.878,
+   "B": 0.957
+  },
+  "cross": 5,
+  "cross_base": 7,
+  "lone": 277,
+  "lone_base": 251
+ },
+ "reapplied": true,
+ "colorvar_of": "ro-apron-a"
+}

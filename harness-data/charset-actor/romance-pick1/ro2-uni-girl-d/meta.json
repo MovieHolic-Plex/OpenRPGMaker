@@ -1,0 +1,51 @@
+{
+ "key": "ro2-uni-girl-d",
+ "arch": "ro2-uni-girl",
+ "base": "Actor4:6",
+ "variant": "긴 머리 여학생: 회색 블레이저 + 버건디 리본 + 짙은 회색 치마 + 검은 로퍼. 머리는 짙은 밤색 긴 머리(보라 제거).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdghklmnpswx"
+   ],
+   "at": "2026-10-16T14:06:46"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdghklmnprswx"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.975,
+   "T": 0.945,
+   "B": 0.936,
+   "S": 1.0
+  },
+  "cross": 29,
+  "cross_base": 27,
+  "lone": 287,
+  "lone_base": 416
+ },
+ "reapplied": true
+}
