@@ -232,6 +232,12 @@ function remapDefaultRosterActors(project: Project, active: ActiveGenreLock): nu
   let changed = 0;
   for (const actor of project.database.actors) {
     const base = defaults.get(actor.id);
+    // 주인공: 걷기 칩·얼굴은 enableGenreLock 이 맞추지만, 칩이 이미 허용 계열인 주인공(몬스터 캠페인의 Scarloxy 트레이너)은 그 길이 일찍 끝나
+    // 옛 RTP Actor1 전투 시트(charset-battler-actor1-0)가 남았다(감사 3판 lock #6). 허용 밖 걷기 칩 출처의 전투 그림만 비운다.
+    if (actor.id === "actor_hero" && actor.battleCharacterResourceId !== undefined) {
+      const heroBattler = battlerSourceChip(actor.battleCharacterResourceId);
+      if (heroBattler && !allowed.has(charsetFamilyOf(project, heroBattler.resourceId))) { delete actor.battleCharacterResourceId; changed += 1; }
+    }
     if (actor.id === "actor_hero" || !base || !actor.characterResourceId) continue;
     // 저작자가 바꾼 배우는 두는다 — 기본 칩 그대로인 배우만 기본 명단이다.
     if (actor.characterResourceId !== base.characterResourceId || (actor.characterIndex ?? 0) !== (base.characterIndex ?? 0)) continue;
@@ -252,6 +258,7 @@ function remapDefaultRosterActors(project: Project, active: ActiveGenreLock): nu
       touched = true;
     }
     // 얼굴: 허용 밖 얼굴이면 새 걷기 칩의 검토된 짝 얼굴로, 짝이 없으면 비운다(옛 칩의 얼굴이 새 칩과 어긋난 채 남지 않는다).
+    // (동물 배우 7명의 People2 8~15 얼굴은 계열표상 「생물 얼굴」이라 허용이고, 비워 두어도 normalizeActorRecord 가 검토된 짝으로 다시 채운다 — 감사 3판 lock #4 메모.)
     if (actor.faceResourceId !== undefined && active.allowedFaces && !active.allowedFaces.has(faceFamilyOf(project, actor.faceResourceId))) {
       const paired = reviewedFaceIdForCharset(actor.characterResourceId, actor.characterIndex ?? 0);
       if (paired && active.allowedFaces.has(faceFamilyOf(project, paired))) actor.faceResourceId = paired; else delete actor.faceResourceId;
