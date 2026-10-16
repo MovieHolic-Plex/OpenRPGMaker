@@ -14,6 +14,7 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { configureEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening";
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
+import { remapCharsetsToPreset } from "@/project/genreLockCharsets";
 import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
@@ -26,10 +27,9 @@ export interface ExpeditionOptions { readonly firstGymType?: string; readonly gy
 export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   const project = createExpeditionSeed();
   const hero = project.database.actors.find(a => a.id === DEFAULT_ACTOR_ID)!;
-  const character = hero.characterResourceId;
   configureScarloxyPokemonDemoProject(project);
   configureMonsterPresentation(project);
-  hero.characterResourceId = character;
+  // 주인공 걷기 그림은 몬스터 테이밍 팩 트레이너(Scarloxy People1 0번)로 둔다 — 예전에는 여기서 기본 Actor1 로 되돌렸다(2026-10-16 장르 잠금 charset).
   hero.characterIndex = 0;
   hero.name = "여행자";
   project.meta.title = "별빛섬 몬스터 원정";
@@ -76,6 +76,8 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
     for (const map of Object.values(project.maps)) for (const e of map.events) count(e.pages ?? e.commands);
     project.system.monsterCampaign!.plan = planFromBuilt({ gyms: gymCount, species: project.system.monsterCampaign!.speciesIds.length, maps: Object.keys(project.maps).length, links });
   }
+  // 캐릭터 칩도 장르 잠금 표(monster-collect)에 맞춘다: RTP 사람 칩 → 몬스터 테이밍 트레이너 칩(같은 인물은 늘 같은 칩, 성별·나이가 가까운 것). 이 프로젝트는 방금 생성한 것이라 바꿔도 저작자 그림을 해치지 않는다.
+  remapCharsetsToPreset(project, "monster-collect");
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);

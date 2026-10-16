@@ -11,7 +11,9 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
-import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage } from "@/project/genreLock";
+import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool } from "@/project/genreLock";
+import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
+import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -171,6 +173,30 @@ function rejectGenreLockViolation(ctx: ToolContext, before: Project, draft: Proj
     if (cause instanceof GenreLockError) throw new ToolError(cause.message, { code: "genre-lock", mapId: cause.mapId });
     throw cause;
   }
+}
+
+/**
+ * 장르 잠금(캐릭터 칩): 조수·도구가 새로 고르거나 바꾼 걷기 그림(이벤트 페이지·배우)이 허용 계열 밖이면 거부한다 — 판정은 assertGenreLockCharsets 하나.
+ * 캠페인 생성·장소 가져오기처럼 프로젝트 내용을 통째로 들이는 도구(placesCuratedCast·allowsTilesetChange·라이브러리 가져오기)는 막지 않고 개수만 경고한다.
+ * 이미 있던 그림은 건드리지 않는다. 편집기 직접 편집·콘텐츠 스크립트(ctx.assistantRun 아님)는 막지 않는다.
+ */
+function rejectGenreLockCharsets(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return assertGenreLockCharsets(before, draft, {
+      toolName: tool.name,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof GenreLockCharsetError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/** 조수 실행 중 장르 잠금이 캐릭터 칩을 잠그면 그림 검색·기본 선택을 허용 칩으로 좁힌다(동기 도구 실행 구간만). */
+function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T): T {
+  const filter = ctx.assistantRun ? genreLockCharsetCatalogFilter(project) : undefined;
+  return filter ? withNpcGraphicCatalogFilter(filter, run) : run();
 }
 
 /**
@@ -405,7 +431,7 @@ export function runToolDefinition(
 
   if (tool.mode === "read") {
     try {
-      const exec = tool.run(ctx.project, normalizedArgs);
+      const exec = withCharsetCatalog(ctx, ctx.project, () => tool.run(ctx.project, normalizedArgs));
       const warnings = [...(prunedNote ? [prunedNote] : []), ...(exec.warnings ?? [])];
       return {
         ok: true,
@@ -436,7 +462,9 @@ export function runToolDefinition(
     // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 거부, DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
     const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
-    exec = tool.run(draft, guarded?.args ?? normalizedArgs);
+    exec = withCharsetCatalog(ctx, before, () => tool.run(draft, guarded?.args ?? normalizedArgs));
+    // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
+    if (monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
@@ -444,6 +472,8 @@ export function runToolDefinition(
     if (!GENRE_LOCK_EXEMPT_TOOLS.has(name)) {
       const lockWarnings = rejectGenreLockViolation(ctx, before, draft, name);
       if (lockWarnings.length) exec = { ...exec, warnings: [...lockWarnings, ...(exec.warnings ?? [])] };
+      const charsetWarnings = rejectGenreLockCharsets(ctx, tool, before, draft);
+      if (charsetWarnings.length) exec = { ...exec, warnings: [...charsetWarnings, ...(exec.warnings ?? [])] };
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

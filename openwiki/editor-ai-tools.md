@@ -23,6 +23,22 @@
 - **끄는 곳**: `configure_monster_system(enabled:false)` 는 잠금도 풀며 결과 경고 「장르 잠금 해제됨: …」(채팅에 보임)와 편집 감사 로그 필드 `system.genreLock before:"enforce" after:"released"`(`applyChangesetToStore.applyAnnotation`)를 남긴다. 체크박스는 라벨 「장르 잠금 끄기」로 기록된다.
 - **검사**: `check_genre_lock`(읽기 도구, `genreLockTools.ts`) — 허용 칩셋·잠금 이후 위반 맵·**잠금 이전부터 있던 허용 밖 맵**을 나눠 보고한다. `projectLint` `opt-in:genre-lock-violation`(잠금 이후 위반만) · `qa:game` monster 검사의 `genre-lock-violation`(warning)/`genre-lock-preexisting`(info).
 - **헤드리스 시험**: `node scripts/oprn-tools.mjs --assistant [--current-map <id>] [--approve-family <family>] --project p.json --write <tool> '<args>'` 가 `assistantRun` 문맥으로 실행기를 부른다(조수 대용 역할극용). SQLite 저장→재로드 증거는 `node scripts/qa/genre-lock-persist.mjs [--from project.json] [projectDir]`.
+
+### 캐릭터 칩(걷기 그림)도 같은 잠금 + 장르 표지 `system.genre` (2026-10-16)
+
+「한 번 포켓몬 라이크로 시작한 프로젝트는 플레이어·NPC 도 기본 Actor1/People1 이 아니라 그 장르 칩이어야 한다」는 요구로, 맵 칩셋 잠금과 **같은 구조**를 캐릭터 칩에 붙였다.
+
+- **계열 분류** `src/project/charsetFamily.ts` — 리소스 id·텍스처 키의 모양만 보고(charsetCatalog 를 불러오지 않는다) `rtp-people`·`scarloxy-people`·`oprn-creature`·`rtp-creature`·`object`·`wizarding`·`shared-actor`·`uploaded`·`other` 로 가른다. 새 번들 시트가 생기면 이 표에 한 줄을 더한다(모르는 번들은 `other`).
+- **표는 프리셋마다**: `GENRE_LOCK_PRESETS[...].charsets?`(`GenreLockCharsetDef`: 허용 `families`·`kitNoun`·`playerDefault`·`promptLine`·`enforceLine`). `monster-collect` 만 채워져 있다(Scarloxy 트레이너·OPRN/RTP 몬스터·기물·업로드·기타). **romance 는 `charsets` 가 없으므로 동작·저장 바이트가 그대로다.** 켤 때 허용 목록을 `system.genreLock.allowedCharsetFamilies` 로 복사한다(정본은 프로젝트). 이 필드가 없는 옛 잠금은 표를 따르고, 같은 잠금을 다시 켜면 필드가 채워진다.
+- **켤 때 기본값**: `enableGenreLock` 이 **손대지 않은 기본 주인공(`actor_hero`=Actor1 #0)만** 프리셋 `playerDefault`(Scarloxy People1 #0)로 바꾼다. 저작자가 이미 바꾼 주인공·기존 NPC 는 그대로(기존 프로젝트 불변).
+- **조수 경로 강제** `genreLockCharsets.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 이벤트 페이지 `graphic.sprite`·배우 `characterResourceId`·공용 이벤트의 걷기 그림만 본다(이미 있던 그림은 위반이 아니다). 허용 밖이면 `genre-lock` 이슈로 거부하고 가장 가까운 허용 칩(`graphic:{textureKey,characterIndex}`)과 푸는 법을 메시지에 싣는다 — 무음 대체 없음. 캠페인 생성·`import_region_reference` 같은 통째 도구(`lenient`)는 막지 않고 경고만. 사용자 손 편집(`assistantRun` 아님)은 막지 않는다. 해제 경로는 맵 잠금과 같다(`configure_monster_system(enabled:false)`·자료집 체크박스).
+- **기본·일반 질의는 허용 칩만**: 도구 실행 동안 `withNpcGraphicCatalogFilter`(`assets/charsetQuery.ts`)가 카탈로그를 허용 칩으로 좁힌다 → 그림을 생략한 `place_npc`·`place_trainer`·`graphic:{query:"villager"}` 와 `list_npc_graphics` 가 허용 칩만 본다. 허용 칩에 없는 구체 검색(「할머니」)은 다른 그림으로 대체하지 않고 잠금 힌트와 함께 거부한다(`eventCompile.ts`).
+- **프롬프트**: 잠금 덩어리에 「캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다」 줄(+허용 계열·가까운 대안 안내)이 붙는다. 공간 시공 프롬프트는 전체 덩어리(`genreLockPromptNote`), 비공간 턴은 짧은 줄(`genreLockShortNote`)이라 **매 턴** 실린다.
+- **장르 표지(얇은 표지) `system.genre="monster-collect"`**: 이미 맵이 있는 프로젝트를 소급 잠금하는 안과 표지+프롬프트 주입 안을 비교해 **후자를 골랐다** — `system.genre` 는 던전 「pokemon」 경로 기본값·공방 하네스 선택을 정하므로, 암묵적 도구 호출만으로 프로젝트를 잠그면 저작자 기존 맵·칩을 놀라게 한다(소급 잠금 금지). 몬스터 전용 도구(`MONSTER_MARKER_TOOLS` + `configure_monster_system(enabled!==false)`)가 성공하면 `genre` 가 비어 있을 때만 표지를 적고(다른 장르는 덮어쓰지 않는다), 잠금이 없는 표지 프로젝트의 조수 프롬프트에는 `genreMarkerNote` 안내가 **막지 않고 알리기만** 한다. 의도 시작(`applyMonsterIntentStart`)·프리셋은 잠금과 함께 표지를 남긴다. 부작용: `system.genre` 가 생기면 lint `opt-in:genre-monster-collect-no-collection` 후보와 던전 기본 경로가 바뀔 수 있다.
+- **캠페인 생성본** `remapCharsetsToPreset`(`build_monster_expedition`·`tournament` 예제가 직렬화 전에 부른다): 방금 생성한 프로젝트의 허용 밖 사람 칩을 가장 비슷한 허용 칩으로 옮긴다(같은 원래 칩은 같은 새 칩, 관장·보스는 `보스` 태그 우선). 주인공은 Actor1 로 되돌리지 않고 Scarloxy 로 남긴다. 저작자가 그린 기존 프로젝트에는 쓰지 않는다.
+- **스키마 영향**: 엄격 검증(`shapeDatabaseFields`)에 `allowedCharsetFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다.**
+- **알려진 빈틈**: 번들에 포켓몬/GBA풍 **사람 트레이너 걷기 칩이 없다**(Scarloxy 사람 칩 10개뿐이라 캠페인 NPC 는 돌려 쓴다). 닌텐도 원작 파생 후보(`pokemon-character-casting`)는 공개 저장소에 커밋할 수 없다. `emeraldMonsterCast.THEME_CASTS` 는 비어 있다.
+- 테스트(미실행): `test/genreLockCharsets.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 26항목): `bun scripts/qa/monster-lock-charset-evidence.mts <out.json>`.
 - 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
 
 ## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)

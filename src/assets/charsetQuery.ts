@@ -205,8 +205,26 @@ function intentScore(entry: CharsetSemanticEntry, intent: QueryIntent): number {
   return score;
 }
 
+/**
+ * 장르 잠금(캐릭터 칩) 중 조수 도구 실행이 걷는 동안만 켜지는 카탈로그 필터. 켜져 있으면 허용 칩만 검색·기본 선택에 나온다.
+ * 동기 실행 구간에서만 쓴다(try/finally 로 되돌린다) — 중간에 await 하는 비동기 도구에는 걸지 않는다.
+ */
+let activeCatalogFilter: ((entry: CharsetSemanticEntry) => boolean) | undefined;
+
+export function withNpcGraphicCatalogFilter<T>(filter: ((entry: CharsetSemanticEntry) => boolean) | undefined, run: () => T): T {
+  const previous = activeCatalogFilter;
+  activeCatalogFilter = filter;
+  try { return run(); } finally { activeCatalogFilter = previous; }
+}
+
+/** 지금 장르 잠금이 그림 검색을 허용 칩으로 좁히고 있는가(검색 실패 안내 문구가 갈린다). */
+export function npcGraphicCatalogIsFiltered(): boolean {
+  return activeCatalogFilter !== undefined;
+}
+
 function catalogFor(overrides?: readonly CharsetLabelOverride[]): readonly CharsetSemanticEntry[] {
-  return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], overrides);
+  const all = applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], overrides);
+  return activeCatalogFilter ? all.filter(activeCatalogFilter) : all;
 }
 
 function exactAliasMatches(normalized: string, catalog: readonly CharsetSemanticEntry[]): NpcGraphicMatch[] | null {
@@ -343,5 +361,5 @@ export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {
 }
 
 export function npcGraphicExampleLabels(limit = 12): string[] {
-  return defaultNpcGraphics().slice(0, limit).map((match) => match.entry.label);
+  return (activeCatalogFilter ? defaultNpcGraphics(catalogFor()) : defaultNpcGraphics()).slice(0, limit).map((match) => match.entry.label);
 }

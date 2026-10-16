@@ -4,7 +4,12 @@
 // 판정 함수는 여기 하나(`genreLockMapViolation` / `genreLockAllowsTileset`)이고, 실행기(toolRunner)·도구 노출·검사 도구·DB 화면이 같은 것을 쓴다.
 // 강제 대상은 조수·도구 경로(ToolContext.assistantRun)뿐이다 — 사용자가 편집기에서 손으로 칠하는 것은 막지 않고 경고만 한다.
 // 장르별 허용 계열은 아래 표(데이터)에 둔다. monster-collect(2026-10-15)에 이어 romance(2026-10-16, 현대 학교·도시 무대의 연애 게임)가 같은 구조로 켠다.
+// 캐릭터 칩 잠금(2026-10-16): 프리셋 표의 `charsets` 가 있으면 같은 잠금이 캐릭터 칩(플레이어·NPC·트레이너·이벤트 그림)도 허용 계열로 묶는다 —
+// 맵 칩셋과 같은 구조(허용 목록은 켤 때 표에서 복사, 정본은 프로젝트). `charsets` 가 없는 프리셋(연애)은 캐릭터를 건드리지 않는다.
+// 판정 함수는 여기(`genreLockAllowsCharset`), 실행기 거부·대안 안내는 genreLockCharsets.ts 가 맡는다.
 
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { CHARSET_FAMILY_LABELS, charsetFamilyOf, type CharsetFamilyId } from "./charsetFamily";
 import { tilesetFamily, tilesetFamilyLabel } from "./tilesetFamily";
 import type { GameMap, Project } from "./types";
 
@@ -18,6 +23,11 @@ export interface GenreLock {
   readonly mode: GenreLockMode;
   /** 켤 때 표에서 복사한 허용 계열. 이 목록이 정본이다(표가 나중에 바뀌어도 이미 켠 프로젝트는 그대로). */
   readonly allowedFamilies: readonly string[];
+  /**
+   * 켤 때 표에서 복사한 허용 캐릭터 칩 계열(charsetFamily.ts). 없으면(2026-10-16 이전에 켠 잠금) 프리셋 표의 값을 따른다 —
+   * 표에 `charsets` 가 없는 프리셋은 캐릭터를 잠그지 않는다. 이미 그려진 그림은 건드리지 않고 조수가 새로 고르는 그림만 막는다.
+   */
+  readonly allowedCharsetFamilies?: readonly string[];
   /** 켤 때 이미 허용 밖 칩셋이던 맵 id — 「잠금 이전부터 있던」 맵으로 따로 보고한다(막지 않는다). */
   readonly grandfatheredMapIds?: readonly string[];
 }
@@ -29,6 +39,20 @@ interface Alternative {
   readonly use: string;
 }
 
+/** 장르가 캐릭터 칩(걷기 그림)도 잠글 때의 표. */
+interface GenreLockCharsetDef {
+  /** 허용 캐릭터 칩 계열. */
+  readonly families: readonly CharsetFamilyId[];
+  /** 안내 문장에 쓰는 이름. */
+  readonly kitNoun: string;
+  /** 손대지 않은 기본 주인공에게 입히는 걷기 그림(켤 때 한 번). 허용 계열 안의 번들 칩이어야 한다. */
+  readonly playerDefault: { readonly resourceId: string; readonly characterIndex: number };
+  /** 조수 안내 문장(사람·몬스터 칩이 어디 있는지). */
+  readonly promptLine: string;
+  /** 잠금이 강제 중일 때만 붙는 문장(거부·목록 필터). */
+  readonly enforceLine: string;
+}
+
 interface GenreLockPresetDef {
   readonly label: string;
   /** 안내 문장에 쓰는 이름(「몬스터 칩셋」). */
@@ -36,6 +60,8 @@ interface GenreLockPresetDef {
   /** 잠금을 다시 켜는 방법(해제 안내 문장). */
   readonly relockHint: string;
   readonly families: readonly string[];
+  /** 캐릭터 칩 잠금(없으면 이 장르는 캐릭터를 잠그지 않는다). */
+  readonly charsets?: GenreLockCharsetDef;
   /** tilesetId 를 생략한 맵 생성 도구에 넣는 기본 칩셋. */
   readonly defaultTilesetId: string;
   /** 허용 밖 칩셋을 시도했을 때 가장 가까운 허용 칩셋(앞에서부터 처음 맞는 것). 마지막은 defaultTilesetId 로 물러난다. */
@@ -53,6 +79,17 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     kitNoun: "몬스터 칩셋",
     relockHint: "configure_monster_system(enabled:true) 또는 자료집 시스템 탭의 「장르 칩셋 잠금」",
     families: ["oprn-monster", "oprn-monster-emerald"],
+    // 캐릭터 칩(2026-10-16): 사람은 몬스터 테이밍 팩(Scarloxy) 트레이너·도장 보스, 생물은 OPRN 몬스터·몬스터 수집 따라다니기 칩이다.
+    // RTP Monster1~3·Animal 은 생물이라 허용하지만 RTP Actor·People(판타지 사람)·마법 학교·공용 공방 사람 칩은 막는다.
+    // 한계(2026-10-16 실측): 저장소에 들어 있는 몬스터 수집용 사람 걷기 칩은 Scarloxy 10칸(People1 8 + People2 2)뿐이다 — 닌텐도 원작 판형은 공개 저장소에 둘 수 없다.
+    charsets: {
+      families: ["scarloxy-people", "oprn-creature", "rtp-creature", "object", "uploaded", "other"],
+      kitNoun: "몬스터 수집 캐릭터 칩",
+      playerDefault: { resourceId: "scarloxy-charset-people1", characterIndex: 0 },
+      promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스), "
+        + "몬스터·동물은 OPRN 몬스터 칩(Monster4~6)·몬스터 수집 따라다니기 칩·RTP 동물이다.",
+      enforceLine: "RTP Actor·People·마법 학교·공용 공방 사람 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
+    },
     defaultTilesetId: "monster_overworld",
     alternatives: [
       { pattern: /gym|league|체육관|리그/iu, tilesetId: "monster_gyms", use: "체육관·리그 홀" },
@@ -101,13 +138,27 @@ export interface ActiveGenreLock {
   readonly lock: GenreLock;
   readonly def: GenreLockPresetDef;
   readonly allowed: ReadonlySet<string>;
+  /** 허용 캐릭터 칩 계열. undefined = 이 잠금은 캐릭터를 잠그지 않는다. */
+  readonly allowedCharsets: ReadonlySet<string> | undefined;
+}
+
+/** 프리셋 표의 허용 캐릭터 칩 계열(저장본이 아니라 표). 캐릭터를 안 잠그는 장르는 undefined. 방금 생성한 프로젝트를 표에 맞출 때 쓴다. */
+export function genreLockCharsetFamiliesOfPreset(preset: GenreLockPresetId): readonly CharsetFamilyId[] | undefined {
+  return GENRE_LOCK_PRESETS[preset].charsets?.families;
+}
+
+/** 이 잠금이 지키는 캐릭터 칩 계열(저장본 우선, 없으면 프리셋 표). 캐릭터를 안 잠그는 장르는 undefined. */
+function lockedCharsetFamilies(lock: GenreLock, def: GenreLockPresetDef): readonly string[] | undefined {
+  return def.charsets ? (lock.allowedCharsetFamilies ?? def.charsets.families) : undefined;
 }
 
 /** 켜져 있는 잠금(모르는 preset 이면 없는 것으로 본다). */
 export function activeGenreLock(project: Pick<Project, "system">): ActiveGenreLock | undefined {
   const lock = project.system?.genreLock;
   if (!lock || !isGenreLockPresetId(lock.preset)) return undefined;
-  return { lock, def: GENRE_LOCK_PRESETS[lock.preset], allowed: new Set(lock.allowedFamilies) };
+  const def = GENRE_LOCK_PRESETS[lock.preset];
+  const charsets = lockedCharsetFamilies(lock, def);
+  return { lock, def, allowed: new Set(lock.allowedFamilies), allowedCharsets: charsets ? new Set(charsets) : undefined };
 }
 
 /** 조수·도구 경로에서 거부해야 하는 잠금인가. */
@@ -126,6 +177,27 @@ export function genreLockAllowsTileset(project: Project, tilesetId: string, appr
   if (!active) return true;
   const family = tilesetFamily(project, tilesetId);
   return active.allowed.has(family) || approved.includes(family);
+}
+
+/**
+ * 이 캐릭터 칩(리소스 id 또는 텍스처 키)이 잠금 허용 계열인가. 잠금이 없거나 이 장르가 캐릭터를 안 잠그면 항상 true.
+ * 투명 그림·칩이 아닌 그림은 호출부가 거른다.
+ */
+export function genreLockAllowsCharset(project: Pick<Project, "system" | "assets">, idOrTextureKey: string): boolean {
+  const active = activeGenreLock(project);
+  if (!active?.allowedCharsets) return true;
+  return active.allowedCharsets.has(charsetFamilyOf(project, idOrTextureKey));
+}
+
+/** 캐릭터 칩 계열 이름(안내·거부 메시지용). */
+export function genreLockCharsetFamilyLabel(project: Pick<Project, "assets">, idOrTextureKey: string): string {
+  return CHARSET_FAMILY_LABELS[charsetFamilyOf(project, idOrTextureKey)];
+}
+
+/** 허용 캐릭터 칩 계열 이름들(안내용). 캐릭터를 안 잠그면 빈 배열. */
+export function genreLockAllowedCharsetLabels(project: Pick<Project, "system">): string[] {
+  const active = activeGenreLock(project);
+  return active?.allowedCharsets ? [...active.allowedCharsets].map((id) => CHARSET_FAMILY_LABELS[id as CharsetFamilyId] ?? id) : [];
 }
 
 /** 맵 하나가 허용 밖인가. 세계 지도 전용 칩셋·지도 그림 시트는 장르와 무관한 도구라 통과한다. */
@@ -191,12 +263,45 @@ export function genreLockRejection(project: Project, args: { toolName: string; m
 export function enableGenreLock(project: Project, preset: GenreLockPresetId, mode: GenreLockMode = "enforce"): boolean {
   const def = GENRE_LOCK_PRESETS[preset];
   const existing = project.system.genreLock;
-  if (existing && existing.preset === preset && existing.mode === mode) return false;
+  if (existing && existing.preset === preset && existing.mode === mode) {
+    // 캐릭터 칩 잠금이 생기기 전(2026-10-16 이전)에 켠 잠금 — 표의 허용 계열을 저장본에 복사해 정본으로 만든다(맵 잠금은 그대로).
+    if (def.charsets && !existing.allowedCharsetFamilies) {
+      project.system.genreLock = { ...existing, allowedCharsetFamilies: [...def.charsets.families] };
+      applyGenreLockCharsetDefaults(project, def);
+      return true;
+    }
+    return false;
+  }
   if (!Object.values(project.tilesets).some((tileset) => def.families.includes(tilesetFamily(project, tileset.id)))) return false;
   const keep = existing && existing.preset === preset ? existing.grandfatheredMapIds : undefined;
-  project.system.genreLock = { preset, mode, allowedFamilies: [...def.families] };
+  project.system.genreLock = { preset, mode, allowedFamilies: [...def.families], ...(def.charsets ? { allowedCharsetFamilies: [...def.charsets.families] } : {}) };
   const grandfathered = keep ? [...keep] : Object.values(project.maps).filter((map) => genreLockMapViolation(project, map)).map((map) => map.id);
   if (grandfathered.length) project.system.genreLock = { ...project.system.genreLock, grandfatheredMapIds: grandfathered };
+  applyGenreLockCharsetDefaults(project, def);
+  return true;
+}
+
+/** 기본 주인공 배우 id(defaults/constants 의 DEFAULT_ACTOR_ID — 그 파일은 무거워 값만 적는다). */
+const DEFAULT_HERO_ACTOR_ID = "actor_hero";
+const PRISTINE_HERO_CHARSETS: ReadonlySet<string> = new Set(["easyrpg-charset-actor1", "tex_easyrpg_charset_actor1"]);
+
+/**
+ * 잠금이 켜질 때 장르 기본 걷기 그림을 입힌다 — **손대지 않은 기본 주인공**(기본 배우 id·기본 Actor1 0번 칸)에게만, 한 번.
+ * 저작자가 바꾼 배우·다른 배우·이벤트 그림은 그대로 둔다(새 장르를 켜도 이미 그린 그림은 안 바뀐다).
+ * 기본 얼굴은 Actor1 걷기 그림의 짝이라 새 칩과 안 맞으므로 그 기본 짝일 때만 비운다(저작자가 고른 얼굴은 남긴다).
+ */
+function applyGenreLockCharsetDefaults(project: Project, def: GenreLockPresetDef): boolean {
+  const charsets = def.charsets;
+  if (!charsets) return false;
+  const hero = project.database.actors.find((actor) => actor.id === DEFAULT_HERO_ACTOR_ID);
+  if (!hero) return false;
+  if (hero.characterResourceId !== undefined && !PRISTINE_HERO_CHARSETS.has(hero.characterResourceId)) return false;
+  if ((hero.characterIndex ?? 0) !== 0) return false;
+  if (hero.characterResourceId === charsets.playerDefault.resourceId) return false;
+  const pairedFace = reviewedFaceIdForCharset(hero.characterResourceId ?? "easyrpg-charset-actor1", 0);
+  hero.characterResourceId = charsets.playerDefault.resourceId;
+  hero.characterIndex = charsets.playerDefault.characterIndex;
+  if (hero.faceResourceId !== undefined && hero.faceResourceId === pairedFace) delete hero.faceResourceId;
   return true;
 }
 
@@ -247,7 +352,55 @@ export function genreLockPromptNote(project: Project): string | null {
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `[장르 잠금 — ${active.def.label}]
 이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`
+    + (active.def.charsets ? `\n${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : "")
     + (active.def.promptExtra ? `\n${active.def.promptExtra}` : "");
+}
+
+/**
+ * 공간 시공이 아닌 턴(대사·가격·이름 고치기 — 긴 잠금 덩어리를 싣지 않는 실행)에도 매번 싣는 한 줄 표지.
+ * 잠금이 강제 중이면 짧은 안내, 잠금 없이 장르 표지만 있으면 표지 안내(genreMarkerNote). 둘 다 아니면 null.
+ */
+export function genreLockShortNote(project: Project): string | null {
+  const active = enforcingGenreLock(project);
+  if (!active) return null;
+  return `[장르 잠금 — ${active.def.label}] 이 프로젝트는 ${active.def.label} 게임으로 잠겨 있다: 새 맵은 ${allowedLabels(project, active)} 칩셋 계열만`
+    + (active.def.charsets ? `. ${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : ".");
+}
+
+/** 몬스터 전용 도구가 처음 성공하면 남기는 장르 표지 — 잠금(맵 칩셋 거부)을 소급해 걸지 않는 대신 이 표지만 남긴다. */
+export const MONSTER_MARKER_GENRE = "monster-collect" as const;
+
+/**
+ * 몬스터 전용 도구(configure_monster_system(enabled:true)·build_monster_*·define_monster_*·place_trainer·set_encounter_table …)가 성공했는데
+ * 프로젝트에 선언 장르가 없으면 system.genre 만 적어 둔다. 맵·칩셋·그림은 건드리지 않고, 다른 장르가 이미 선언돼 있으면 덮지 않는다.
+ * 빈 시작 맵 조건(잠금은 빈 프로젝트에서만 걸린다) 때문에 잠금이 못 걸리는 프로젝트도 「몬스터 수집 게임」이라는 기록은 남는다.
+ */
+export function markMonsterGenre(project: Project): boolean {
+  if (project.system.genre !== undefined) return false;
+  project.system.genre = MONSTER_MARKER_GENRE;
+  return true;
+}
+
+/** 이 도구 호출이 「몬스터 수집 게임이다」라는 표지를 남겨야 하는가(이름과 인자로만 판정 — 읽기 도구·끄기 호출은 아니다). */
+export function monsterMarkerTool(toolName: string, args: Readonly<Record<string, unknown>>): boolean {
+  if (toolName === "configure_monster_system") return args.enabled !== false;
+  return MONSTER_MARKER_TOOLS.has(toolName);
+}
+const MONSTER_MARKER_TOOLS: ReadonlySet<string> = new Set([
+  "build_monster_game", "build_monster_tournament", "build_monster_expedition", "define_monster_species", "define_monster_families", "rename_monster_species",
+  "give_starter_monsters", "place_trainer", "set_encounter_table", "configure_monster_style",
+]);
+
+/**
+ * 잠금이 없을 때의 장르 표지 안내. 몬스터 수집 표지(system.genre)가 있는데 잠금이 없으면 — 기존 맵 때문에 못 걸었거나 사용자가 풀었다 —
+ * 조수가 매 턴 「이 프로젝트는 몬스터 수집 게임」이라는 걸 알게 한다. 막지는 않는다(안내만).
+ */
+export function genreMarkerNote(project: Project): string | null {
+  if (project.system.genre !== MONSTER_MARKER_GENRE || activeGenreLock(project)) return null;
+  const def = GENRE_LOCK_PRESETS["monster-collect"];
+  return `[장르 표지 — ${def.label}] 이 프로젝트는 몬스터 수집 게임으로 정해져 있다(system.genre). 칩셋·캐릭터 잠금은 꺼져 있다(기존 맵이 다른 계열이거나 사용자가 풀었다) — 막지는 않지만, `
+    + `사용자가 다른 풍경·그림을 시키지 않았다면 새 맵은 monster_* 칩셋 계열로 만든다. ${def.charsets!.promptLine} `
+    + `잠금을 다시 켜려면 ${def.relockHint}.`;
 }
 
 /** 프로젝트를 통째로 갈아 끼우거나 되돌리는 도구 — 결과가 새 프로젝트/이전 상태라 잠금 판정 대상이 아니다. */
