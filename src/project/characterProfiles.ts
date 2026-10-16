@@ -5,7 +5,10 @@ export type CharacterBirthday = { readonly season: Season; readonly day: number 
 
 /** Automatic feedback labels share the linked resident identity; page names remain the fallback. */
 export function resolveCharacterSpeaker(project: Project, event: GameEvent): string | undefined {
-  return getCharacterProfile(project, event.characterId)?.displayName ?? event.pages?.[0]?.name;
+  // 인물(characterId)이 있는 이벤트는 상태 페이지 제목(「수현 · 첫 만남」)이 아니라 이벤트의 고정된 이름을 말하는 이름으로 쓴다
+  // (조수가 인물 프로필을 안 만들어도 대화창 이름표가 사람 이름이다 — 2026-10-16 연애 시험 캡처에서 「한하린 · 첫인상」으로 보였다).
+  const authoredName = event.characterId?.trim() ? event.name?.trim() : undefined;
+  return getCharacterProfile(project, event.characterId)?.displayName ?? (authoredName || undefined) ?? event.pages?.[0]?.name;
 }
 
 /** Opt-in project.characters[characterId] lookup. Empty/missing characterId → undefined. */
