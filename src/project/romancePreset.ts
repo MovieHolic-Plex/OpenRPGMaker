@@ -5,11 +5,13 @@
 //  2) 호감 하트 HUD: 전투 체력 하트 대신 인물 호감을 하트로, 남은 대화 칸과 시계를 글자로
 //  3) 장르 잠금(romance): 시작 맵이 현대 학교·도시 계열일 때만 켠다 — 환상 무대의 연애(궁정·마법 학교)는 잠그지 않는다
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
+//  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
 import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR } from "@/project/gameTime";
 import { DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP, DEFAULT_SOCIAL_SLOTS_PER_DAY } from "@/project/socialLoop";
 import { enableGenreLock, GENRE_LOCK_PRESETS } from "@/project/genreLock";
 import { normalizeHudWidget, type FieldHudConfig } from "@/project/fieldHud";
 import { tilesetFamily } from "@/project/tilesetFamily";
+import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
 import type { Project } from "@/project/types";
 
 /**
@@ -80,6 +82,11 @@ export function applyRomanceDefaults(project: Project): string[] {
   const start = project.maps[project.startMapId];
   if (!system.genreLock && start && GENRE_LOCK_PRESETS.romance.families.includes(tilesetFamily(project, start.tilesetId))) {
     if (enableGenreLock(project, "romance")) applied.push("genreLock");
+  }
+  // 시작 맵 BGM: 비어 있을 때만. 연애 전용 곡은 카탈로그에 없어 가장 가까운 잔잔한 일상 곡을 고른다.
+  if (start && !start.bgm) {
+    start.bgm = { mode: "custom", resourceId: recommendMapBgm(start.name, 1, undefined, { fallbackTheme: "everyday" }) };
+    applied.push("startMapBgm");
   }
   return applied;
 }

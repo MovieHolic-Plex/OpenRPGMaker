@@ -25,6 +25,7 @@ import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations
 const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';
 import { roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
 import { genId } from "@/util/id";
+import { assignCreatedMapBgm } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 // 바닥·벽면·천장 id 를 enum 으로 연다 — 자유 문자열이면 모델이 wood·stone·brick 처럼 그럴듯한 이름을 지어
@@ -37,6 +38,8 @@ const FLOOR_IDS = [...uniq((s) => s.floors), "floor"];
 const WALL_IDS = [...uniq((s) => s.walls), "wall"];
 const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
+/** 새 실내 맵에 BGM 을 자동으로 고르는 현대 칩셋. */
+const MODERN_BGM_TILESETS: ReadonlySet<string> = new Set(["modern_campus", MODERN_CITY_INTERIOR_TILESET_ID, JP_INTERIOR_TILESET_ID]);
 const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 사무실·회의실·편의점·아파트·병원 병동·빌딩 로비·카페·은행·지하철 대합실·창고 — layout:{program:"office-floor"|"konbini"|"apartment"|"hospital-ward"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
@@ -654,6 +657,9 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
       for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
     }
+    // 현대 실내(캠퍼스·도시·일본 도시)를 새로 지을 때 BGM 이 비면 맵 이름으로 곡을 고른다 — 연애·학원물 실내가 무음으로 남던 구멍(2026-10-16 실제 Argon 시험).
+    // 다시 짓는 맵(replace)은 저작자가 정했을 수 있으니 건드리지 않는다. 환상 실내(손 도트 v5 등)는 그대로 둔다.
+    if (!existing && !map.bgm && MODERN_BGM_TILESETS.has(tilesetId)) assignCreatedMapBgm(map, {}, { draft, fallbackTheme: "everyday" });
     draft.maps[mapId] = map;
     const trimNote = trimmed.trimmed
       ? `평면 바깥 막힌 여백을 잘라 ${built.width}×${built.height} 로 지었다 — 입력 좌표는 왼쪽 ${trimmed.dx}·위 ${trimmed.dy} 칸만큼 옮겨졌다. 이후 이 맵 좌표는 새 기준을 쓴다.`
