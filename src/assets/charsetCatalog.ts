@@ -9,6 +9,7 @@ import { HARNESS_MONSTER_CHARSET_ASSETS } from "@/assets/harnessMonsterArt";
 import { OPRN_MONSTER_CHARSET_ASSETS } from "@/assets/oprnMonsterCharsets";
 import { SCARLOXY_CHARSET_ASSETS } from "@/assets/scarloxyPack";
 import { HEROES_CHARSET_ASSETS } from "@/assets/heroesCharsets";
+import { MODERN_CHARSET_ASSETS } from "@/assets/modernCharsets";
 import { WIZARDING_CHARSET_ASSETS } from "@/assets/wizardingCharsets";
 import type { UploadedAsset } from "@/project/types";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
@@ -21,6 +22,7 @@ export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...HARNESS_MONSTER_CHARSET_ASSETS,
   ...WIZARDING_CHARSET_ASSETS,
   ...HEROES_CHARSET_ASSETS,
+  ...MODERN_CHARSET_ASSETS,
 ];
 
 /**

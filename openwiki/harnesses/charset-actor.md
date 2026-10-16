@@ -93,7 +93,7 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 `argon_part.py`(RTP Actor/People 베이스 칩의 머리·옷·장비만 마스크 안에서 고치는 Argon high 편집)로 만든 후보 중 pick-6 에서
 **사용자가 「니 추천대로」 라고 위임**해 감독이 채택한 8종(양서 기사·원시 전사 소녀·마법사 소녀·고철 로봇·도적 정찰병·연보라 마법사·노장군·무대 가수)을
 **마법 학교 Wizarding 시트와 같은 경로**로 번들에 설치했다. 사람이 고른 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다.
-채택 안 한 것: `tt-scrap-robot-b`, `iw-steam-armor-a`(재작업 대기), `iw-legion-soldier-a`·`tt-hero-boy-a`(무기 수정 중), 현대 연애 후보(미결정).
+채택 안 한 것: `tt-scrap-robot-b`, `iw-steam-armor-a`(재작업 대기), `iw-legion-soldier-a`·`tt-hero-boy-a`(무기 수정 중), 현대 연애 후보(→ 아래 Modern1~3 절).
 
 - 입력(재생성 금지): `harness-data/charset-actor/ct-ff6-pick6/<key>/{chip.chr.txt,edit.json,meta.json}` — 하네스 최종 격자. 명단·순서(칸 번호, **덧붙이기 전용**)·이름·설명·태그: `harness-data/charset-actor/ct-ff6-install.json`.
 - 굽기: `python3 src/harnesses/charset-actor/install_ct_ff6.py` → `public/assets/generated/charsets/Heroes1.png`(288×256 RGBA, 8명) + `src/assets/heroesCharsets.json`(칸별 RGBA SHA-256·격자 SHA-256·베이스 칩 계보).
@@ -107,3 +107,20 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - 검증 스크립트: `scripts/qa/runtime/heroes-chips-fixture.mts` + `heroes-chips.scenario.mjs`(출하 플레이어에서 8칸 줄 세우기 + 배회 2명; `npm run qa:runtime` 경로, 픽스처는 압축 직렬화 — 들여쓴 114MB 는 Playwright 파이프 100MB 상한을 넘어 브라우저가 죽는다) ·
   `heroes-chips-persist.mts`(임시 SQLite 폴더에 새/옛 프로젝트를 저장하고 다른 핸들로 재로드). 이 세션에서 vitest/gates/전체 typecheck 는 실행하지 않았다.
   `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `Heroes# (Heroes)` 한 항목을 손으로 덧붙였다(포털 표면 게이트는 미실행).
+
+## 현대 연애물 인물 칩 Modern1~3 — 24종의 공용 번들 설치 (2026-10-16)
+
+`argon_part.py` 와 같은 부분 편집 규칙(RTP Actor/People 베이스 칩의 **상의·하의·신발·머리**만 마스크 안에서 고침, 얼굴·피부·손 고정, 소품 없음, Argon high)으로
+현대 연애물 인물을 만들었다. 사용자가 「고르지 않는다, 기준으로 직접 거르라」 고 위임해 제작자가 36 후보 중 24종을 걸러 설치했다
+(기준: 칩셋 결 일치·몸통 읽힘·옷이 얼굴/손에 잘리지 않음·12프레임 동일성; 시트 `~/claude-viz/chips-modern-romance-2.html`).
+교복 남·여 9 · 캐주얼 남·여 7 · 정장 3 · 카페 점원 3 · 선생·교수 2. 사람 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다.
+
+- 드라이버(공유 파일 수정 없이 argon_part 를 감쌈): `romance_draw.py`(현대 의복 프롬프트·소품 없음) · `romance_specs.py`(새 베이스 분할 SPECS: Actor4:0·People1:1/5·People5:1/5·Actor4:1·Actor2:0/1·Actor4:3/6·Actor3:3 — 얼굴 상자를 좁게 잡아야 뺨에 옛 머리색이 안 남는다) ·
+  `romance_apply.py`·`romance_reapply.py`(모델 호출 없이 edit.json 을 다시 적용·검증) · `romance_colorvar.py`(모델 호출 없는 **색 변형**: 모델이 새로 정한 팔레트 글자만 부위별 HSV 변환 → 같은 하네스 검증) · `romance_sheet.py`·`romance_base_sheet.py`·`romance_batch_review.py`(시트·비교).
+- 입력(재생성 금지): `harness-data/charset-actor/romance-pick1/<key>/{chip.chr.txt,edit.json,meta.json}`. 명단·순서(칸 번호, **덧붙이기 전용**): `harness-data/charset-actor/romance-install.json`. 눈 판정 기록: `romance-notes.json`·`romance-notes-final.json`.
+- 굽기: `python3 src/harnesses/charset-actor/install_modern_romance.py` → `public/assets/generated/charsets/Modern{1,2,3}.png`(288×256 RGBA, 시트당 8명) + `src/assets/modernCharsets.json`. `--check` 는 화소 동일 확인, 바뀐 칸·번호는 `--force` 없이는 거절.
+- 배선(Heroes 와 같은 5곳 + 계열): `src/assets/modernCharsets.ts` → `charsetCatalog.ts` · `charsetSemantics.ts` · `generatedAssetResourceResolver.ts` · `project/io/resourceReferenceValidation.ts`, 그리고 `project/charsetFamily.ts`(새 계열 `modern`)·`genreLockCharsets.ts`(사람 계열)·`catalog_sources.py`(공방 순환 입력 제외).
+  id `oprn-charset-modern<n>` · textureKey `tex_oprn_charset_modern<n>` · 그룹 `Modern`. 조수는 「남학생·여학생·세일러·후드티·정장·앞치마·카페 점원·교수」 같은 말로 찾는다.
+- **Argon 계정 쿼터(429, 약 127시간 뒤 재설정)** 로 마지막 라운드 후보 7종(캐주얼 여 e·정장 여 a~c·앞치마 a~c)은 모델로 못 만들었다. 대신 앞치마 2·정장 여 1은 스크립트 색 변형(`source.model` 이 `script-colorvar(...)`)이다. 쿼터가 풀리면 `romance-modern-2.json` 의 해당 후보를 `romance_draw.py` 로 다시 돌려 시트 4(Modern4)부터 덧붙인다.
+- 베이스 칩이 RTP(CC BY 4.0)라 `public/assets/ATTRIBUTION.md` 「Modern1-3」 절에 출처·크레딧·선택 기록을 둔다.
+- `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `Modern# (Modern)` 3항목을 손으로 덧붙였다(포털 표면 게이트는 미실행).

@@ -1,6 +1,6 @@
 {
  "version": 1,
- "title": "현대 연애물 인물 걷기 칩 Modern1~4 (26종)",
+ "title": "현대 연애물 인물 걷기 칩 Modern1~3 (24종)",
  "group": "Modern",
  "sheets": [
   {
@@ -468,7 +468,7 @@
      "genre": "현대 연애",
      "role": "직장인",
      "gender": "male",
-     "age": "adult",
+     "age": "middle",
      "desc": "네이비 정장 재킷, 파란 넥타이, 같은 색 바지, 검은 구두. 어두운 머리.",
      "tags": [
       "남자",
@@ -494,7 +494,7 @@
      "genre": "현대 연애",
      "role": "직장인",
      "gender": "male",
-     "age": "adult",
+     "age": "middle",
      "desc": "검은 머리를 옆으로 묶고 차콜 정장, 흰 셔츠 줄, 검은 넥타이, 검은 바지.",
      "tags": [
       "남자",
@@ -514,71 +514,18 @@
      ]
     },
     {
-     "id": "modern-suit-girl-charcoal",
-     "key": "ro-suit-girl-a",
-     "name": "정장 여 · 차콜",
-     "genre": "현대 연애",
-     "role": "직장인",
-     "gender": "female",
-     "age": "adult",
-     "desc": "짙은 갈색 머리에 차콜 재킷, 흰 칼라, 같은 색 슬랙스.",
-     "tags": [
-      "여자",
-      "정장",
-      "차콜",
-      "슬랙스",
-      "정장",
-      "직장인",
-      "회사",
-      "연애",
-      "현대",
-      "suit",
-      "office",
-      "businessman",
-      "romance",
-      "modern"
-     ]
-    },
-    {
      "id": "modern-suit-girl-navy",
      "key": "ro3-suit-girl-b",
      "name": "정장 여 · 남색",
      "genre": "현대 연애",
      "role": "직장인",
      "gender": "female",
-     "age": "adult",
+     "age": "middle",
      "desc": "짙은 갈색 머리에 남색 정장 재킷과 슬랙스, 흰 칼라.",
      "tags": [
       "여자",
       "정장",
       "남색",
-      "슬랙스",
-      "정장",
-      "직장인",
-      "회사",
-      "연애",
-      "현대",
-      "suit",
-      "office",
-      "businessman",
-      "romance",
-      "modern"
-     ]
-    },
-    {
-     "id": "modern-suit-girl-beige",
-     "key": "ro3-suit-girl-c",
-     "name": "정장 여 · 베이지 브라운",
-     "genre": "현대 연애",
-     "role": "직장인",
-     "gender": "female",
-     "age": "adult",
-     "desc": "짙은 갈색 머리에 베이지 브라운 정장 재킷과 슬랙스, 흰 칼라.",
-     "tags": [
-      "여자",
-      "정장",
-      "베이지",
-      "브라운",
       "슬랙스",
       "정장",
       "직장인",
@@ -669,13 +616,7 @@
       "romance",
       "modern"
      ]
-    }
-   ]
-  },
-  {
-   "n": 4,
-   "name": "Modern4 · 현대 연애 인물 · OPRN",
-   "characters": [
+    },
     {
      "id": "modern-teacher-tweed",
      "key": "ro2-teacher-a",
@@ -683,7 +624,7 @@
      "genre": "현대 연애",
      "role": "선생·교수",
      "gender": null,
-     "age": "adult",
+     "age": "middle",
      "desc": "짙은 갈색 머리에 갈색 트위드 재킷, 크림 칼라, 와인색 넥타이, 짙은 회색 바지.",
      "tags": [
       "교수",
@@ -708,7 +649,7 @@
      "genre": "현대 연애",
      "role": "선생·교수",
      "gender": "female",
-     "age": "adult",
+     "age": "middle",
      "desc": "갈색 단발에 크림 칼라, 버건디 카디건, 짙은 회색 하의.",
      "tags": [
       "선생",
@@ -730,7 +671,7 @@
  ],
  "selection": {
   "by": "user-delegated-to-supervisor",
-  "note": "사용자가 2026-10-16 「고르기는 원하지 않는다, 기준으로 직접 거르라」 고 위임했고, 감독 위임 아래 제작자가 칩셋 결 일치·몸통·옷 잘림 없음·12프레임 동일성 기준으로 후보 36종 중 26종을 거른 결과다(시트 chips-modern-romance-2.html). 칸 번호는 덧붙이기 전용이다.",
+  "note": "사용자가 2026-10-16 「고르기는 원하지 않는다, 기준으로 직접 거르라」 고 위임했고, 감독 위임 아래 제작자가 칩셋 결 일치·몸통·옷 잘림 없음·12프레임 동일성 기준으로 후보 36종 중 24종을 거른 결과다(시트 chips-modern-romance-2.html). 칸 번호는 덧붙이기 전용이다. 시트 3장×8칸을 빈 칸 없이 채우려고 정장 여 차콜(보통)·베이지 브라운(보통, 색 변형) 둘을 뺐다.",
   "notAdopted": [
    "ro-teacher-a",
    "ro-teacher-b",
@@ -741,7 +682,9 @@
    "ro2-uni-girl-b",
    "ro2-suit-boy-b",
    "ro2-teacher-b",
-   "ro2-teacher-d"
+   "ro2-teacher-d",
+   "ro-suit-girl-a",
+   "ro3-suit-girl-c"
   ]
  }
 }
