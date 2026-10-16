@@ -19,6 +19,7 @@ import { repairExpeditionShopPrices } from './shopPrices';
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { EXPEDITION_HERO_BACK, expeditionTrainerFront, gymLeaderArt, typeArt } from "./trainerArt";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
@@ -103,6 +104,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.maps = {};
   project.mapConnections = [];
   const manifest: ExpeditionManifest = { maps: [], links: [], battles: [], devices: [] };
+  /** 맵 id → 그 맵 대표 트레이너(관장·사천왕·악당 두목)의 전투 그림 역할. battle() 이 읽는다. */
+  const trainerArtByMap = new Map<string, string>();
   const sources = new Map<string, Template>();
   const entries = new Map<string, Point>();
   const reserved = new Map<string, Set<string>>();
@@ -517,6 +520,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], wantedRequired?: string, track: string = audio.trainerBattle, sight = false): GameEvent {
     const required = gate(wantedRequired);
     const tid = troop(name, `${map.id}_${suffix}`, ids, level, true);
+    // 전투 소개 그림 — 번들 트레이너 그림을 적 그룹에 배정해 슬라이드 인트로가 뜨게 한다(없으면 소개 없이 시작).
+    const front = expeditionTrainerFront(suffix, name, trainerArtByMap.get(map.id));
+    if (front) project.database.troops.find(entry => entry.id === tid)!.trainerSprite = { front, back: EXPEDITION_HERO_BACK };
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [battleMusic(), ...(winSwitch ? [sw(winSwitch)] : []), ...win, music(map.bgm!.resourceId!)],
@@ -569,16 +575,20 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return { ...g, name, badge, after, leader: source.leader, before: source.before, level: levels.gym(i + 1) };
   }).slice(0, gymCount);
   const gymMaps = new Map(gymPersonas.map((g, i) => [g.town, make(`${g.town}_gym`, g.name, `gyms/gym_${gymKeys[i]}`, "gym", "interior")]));
+  // 체육관 관장·리그 방별 전투 그림(trainerArt.ts) — battle() 이 맵 id 로 찾는다.
+  for (const [i, g] of gymPersonas.entries()) trainerArtByMap.set(gymMaps.get(g.town)!.id, gymLeaderArt(gymKeys[i]!));
   const lab = make("lab", "천문박사의 연구소", "rooms/lab", "town", "interior");
   const museum = shape.museum ? make("museum", "별의 역사 박물관", "rooms/museum", "town", "interior") : undefined;
   const school = make("school", "조련사 학교", "rooms/school", "town", "interior");
   const hideout = shape.hideout ? make("hideout", "밤막회사 · 별빛 연구소", "dungeon/hideout", "cave", "dungeon") : undefined;
   const observatory = make("observatory", "옛 별 관측탑", "dungeon/ruins", "league", "dungeon");
+  trainerArtByMap.set(observatory.id, "scientist");
   // 리그 방: 7·8관 사천왕 넷+챔피언, 4~6관 사천왕 둘+챔피언, 1~3관 챔피언만, 0관 없음(관측탑 보스가 엔딩).
   const LEAGUE_ROOMS = [{ key: "ice", type: "ice", name: "사천왕 · 서리" }, { key: "ghost", type: "ghost", name: "사천왕 · 등불" }, { key: "dark", type: "fighting", name: "사천왕 · 기백" },
     { key: "dragon", type: "dragon", name: "사천왕 · 용빛" }, { key: "champ", type: undefined, name: "챔피언 · 나루" }] as const;
   const leagueRooms = (shape.leagueRooms >= 5 ? [0, 1, 2, 3, 4] : shape.leagueRooms >= 3 ? [1, 3, 4] : shape.leagueRooms >= 1 ? [4] : []).map(i => LEAGUE_ROOMS[i]!);
   const league = leagueRooms.map((room, i) => make(`league_${i}`, room.key !== "champ" ? `별빛 리그 · 사천왕 ${i + 1}` : "별빛 리그 · 챔피언", `rooms/league_${room.key}`, "league", "interior"));
+  for (const [i, room] of leagueRooms.entries()) trainerArtByMap.set(league[i]!.id, room.key === "champ" ? "hero_f_front" : typeArt(room.type));
 
   for (const [i, t] of towns.entries()) {
     const map = townMaps.get(t.key)!;

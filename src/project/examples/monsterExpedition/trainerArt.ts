@@ -141,3 +141,56 @@ export function assignTrainerSprites(project: Project): TrainerArtAssignment[] {
   }
   return out;
 }
+
+// ---------------------------------------------------------------------------------------------
+// 이벤트 생성 시점 배정(world.ts·tournament.ts 의 battle()) — 맵 역할(관장·리그·두목)과 접미사·이름으로 번들 앞모습을 고른다.
+// 위 assignTrainerSprites 는 trainerSprite 가 이미 있는 troop 을 건너뛰므로, 여기서 먼저 채운 것이 우선하고 나머지(타입 기반)가 뒤를 메운다.
+// 번들 public/assets/battle-trainers/<역할>/front.png 만 쓴다(새 그림 없음). 번들에 맞는 인물이 없는 타입은 가장 가까운 직업으로 잇는다.
+// ---------------------------------------------------------------------------------------------
+
+/** 내 뒷모습(번들 hero_m·hero_f) — 캠페인 주인공 기본. */
+export const EXPEDITION_HERO_BACK = "hero_m";
+
+/** 체육관 열쇠(gyms/gym_<키>) → 관장 전투 그림. */
+const GYM_LEADER_ART: Readonly<Record<string, string>> = {
+  water: "gym_water", dojo: "gym_rock", grass: "girl", fire: "punk", psychic: "scientist", ice: "elder", ghost: "punk", dragon: "hiker",
+};
+/** 타입 → 리그 사천왕·전문가 그림(체육관 열쇠가 아닌 타입 이름으로 고른 경우). */
+const TYPE_ART: Readonly<Record<string, string>> = {
+  water: "gym_water", ice: "gym_water", rock: "gym_rock", ground: "gym_rock", fighting: "gym_rock", steel: "gym_rock", normal: "gym_rock",
+  grass: "girl", bug: "bug_catcher", fire: "punk", dark: "punk", poison: "punk", ghost: "punk",
+  psychic: "scientist", electric: "scientist", fairy: "girl", dragon: "hiker", flying: "hiker",
+};
+const GRUNT_ART = ["boy", "girl", "hiker", "bug_catcher"] as const;
+const ROUTE_NAME_ART: readonly (readonly [RegExp, string])[] = [[/소년/u, "boy"], [/소녀|아가씨/u, "girl"], [/연구/u, "scientist"], [/낚시/u, "fisher"], [/등산|조련사/u, "hiker"]];
+
+/**
+ * 이름·직업 말만으로 번들 앞모습 역할을 고른다(조수가 place_trainer 로 놓은 트레이너의 기본 배정). 근거가 없으면 undefined — 지어내지 않는다.
+ * 번들 역할: boy·girl·fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder.
+ */
+export function inferTrainerRoleFromName(name: string): string | undefined {
+  const keyword: readonly (readonly [RegExp, string])[] = [
+    [/물 도장|물 관장|water gym/iu, "gym_water"], [/바위 도장|바위 관장|rock gym/iu, "gym_rock"], [/낚시|fisher/iu, "fisher"], [/등산|hiker/iu, "hiker"],
+    [/곤충|채집|bug catcher/iu, "bug_catcher"], [/연구|박사|scientist/iu, "scientist"], [/불량|펑크|punk/iu, "punk"], [/노인|할아버지|할머니|elder/iu, "elder"],
+    [/소녀|아가씨|girl/iu, "girl"], [/소년|boy/iu, "boy"],
+  ];
+  return keyword.find(([pattern]) => pattern.test(name))?.[1];
+}
+
+export const gymLeaderArt = (gymKey: string): string => GYM_LEADER_ART[gymKey] ?? "gym_rock";
+export const typeArt = (type: string | undefined): string => (type && TYPE_ART[type]) || "elder";
+
+/**
+ * 트레이너 이벤트 접미사·이름·맵 역할로 앞모습 역할을 고른다. 모르면 undefined(그림 없이 — 전투는 소개 없이 시작).
+ * @param mapArt 체육관·리그 맵에서 미리 정해 둔 관장 그림(맵 id → 역할)
+ */
+export function expeditionTrainerFront(suffix: string, name: string, mapArt?: string): string | undefined {
+  if (suffix === "leader" || suffix === "league_challenge") return mapArt;
+  const grunt = /^grunt_(\d+)$/u.exec(suffix);
+  if (grunt) return GRUNT_ART[Number(grunt[1]) % GRUNT_ART.length];
+  if (/^company_/u.test(suffix)) return "scientist";
+  if (suffix === "boss") return mapArt ?? "punk";
+  if (suffix === "rival" || suffix === "rival_start") return "hero_f_front";
+  if (/^sparring_/u.test(suffix) || /^trainer_/u.test(suffix) || suffix === "round") return ROUTE_NAME_ART.find(([pattern]) => pattern.test(name))?.[1] ?? GRUNT_ART[(name.length + suffix.length) % 2];
+  return mapArt;
+}

@@ -16,6 +16,7 @@ import { repairExpeditionShopPrices } from "./shopPrices";
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { repairExpeditionResidents } from "./residents";
 import { repairExpeditionNpcLayout } from "./npcLayout";
+import { EXPEDITION_HERO_BACK, expeditionTrainerFront } from "./trainerArt";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
 
 type Point = { x: number; y: number };
@@ -360,6 +361,9 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
 
   function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], required?: string, track: string = audio.trainerBattle): GameEvent {
     const tid = troop(name, `${map.id}_${suffix}`, ids, level, true);
+    // 전투 소개 그림 — 번들 트레이너 그림(trainerArt.ts). 이름·접미사로 못 고르면 소개 없이 시작한다.
+    const front = expeditionTrainerFront(suffix, name, suffix === "boss" ? "gym_rock" : undefined);
+    if (front) project.database.troops.find(entry => entry.id === tid)!.trainerSprite = { front, back: EXPEDITION_HERO_BACK };
     const intro = [text(before, name), battleMusic(track)];
     const fight: Command = { kind: "battleProcessing", troopId: tid, canEscape: false, canLose: true, branchOnResult: true,
       victoryBranch: [battleMusic(), ...(winSwitch ? [sw(winSwitch)] : []), ...win, music(map.bgm!.resourceId!)],

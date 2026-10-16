@@ -122,6 +122,9 @@ see `pokemon-like-field-kit.md` for approval, canonical adoption and player proo
 - 진화: `emeraldEvolutionScene.ts`가 `previewMonsterEvolution`(레벨·우정 조건만, 아이템 진화 제외)으로 전투 화면이 닫히기 전에 실루엣 교체 장면을 연다. 규칙 적용은 여전히 `applyBattleRewardsToSession`.
 - 레벨업 상자: `emeraldResultRows`가 레벨 문장 줄에 `stats`(오른 양 → 새 수치 두 장)를 싣고, 마지막으로 공개된 줄에 붙은 것만 `.battle-levelup-stats`로 문장 창 위에 보인다. 수치는 `monsterBattleStatsForSpecies`(종족·레벨·IV) 차이이며 `snapshot.eventState.monsterCollection.instances[*].ivs`를 읽는다. 기술 교체 선택은 아직 없다.
 - 트레이너 연출: `TroopRecord.trainerSprite`(`front`/`back`/`throw?`)가 있을 때만 슬라이드 인·볼 던지기, 없으면 연출 없이 시작.
+  - **캠페인 배정(2026-10-16)**: `src/project/examples/monsterExpedition/trainerArt.ts` 가 번들 `public/assets/battle-trainers/<역할>/front.png` 역할만 쓴다(새 그림 없음). 체육관 관장은 `gymLeaderArt`, 리그·두목·관측탑은 `trainerArtByMap`(world.ts)·`typeArt`, 부하(grunt_N)·회사원·길 트레이너는 접미사·이름으로. `back` 은 `EXPEDITION_HERO_BACK`(hero_m — 기본값 `oprn_emerald_trainer_hero_back` 은 번들 파일이 없어 반드시 명시). 필드 걷기 칩은 아직 전부 people1 6번이라 전투 그림과 모양이 다르다(알려진 한계).
+  - 조수 `place_trainer` 는 `trainerSprite` 를 안 주면 이름의 직업 말(`inferTrainerRoleFromName`)로 같은 번들을 배정하고 경고로 알린다.
+  - 시각 QA: `TOWN_STAGE=trainer|emote node scripts/qa/runtime/monster-town.mjs <project.json>` — 시야선 진입 → 「!」 → 접근 → 대사 → 소개 슬라이드 → 승리 서술·상금 → 승리 후 대사.
 
 ## 픽셀 격자 계약 (2026-10-16, 시각 QA D12)
 
