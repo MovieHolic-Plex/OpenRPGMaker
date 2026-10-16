@@ -2148,3 +2148,25 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
   자료집 기술 편집(`databaseCombatRuleFields`)에도 칸이 있다(고급 칸 접힘은 값이 있으면 열린다).
 - 한계: 고정 피해는 gen1 만. 적(야생·트레이너)도 같은 기술을 쓰면 같은 규칙을 탄다. 비 strict 흐름에서는 풀죽음이 라운드 개념이 없어 먹지 않는다(`strictResolution` 없음).
 - 시각 QA: `scripts/qa/runtime/poke-battle-sys-d.probe.mjs`(player.html, 장면 fixedDamage·multiHit·recoil·flinch). 테스트 `test/skillBattleRules.test.ts` 는 작성만 했고 미실행.
+
+### 더블 배틀(2대2) 설계 메모 — 구현하지 않았다 (2026-10-16)
+
+**지금 상태(실측, `activeSlots` 2 로 강제한 에메랄드 트레이너 전 캡처 `verify-shots/poke-sys-battle/ad1-double-attempt.png`).**
+- 일반 RPG 모델(`battleModel` 비 gen1)은 이미 여러 명이 동시에 싸운다 — `activeSlots`(`TroopRecord.activeSlots` > `system.activeSlots` > 파티 수, `battleFormation.ts`)만큼 `activeActorIds` 가 차고 적도 `visibleEnemies()` 가 여럿이다. 대상 선택(`targetSelection`·`battleTargetResolver.ts`)과 범위 기술(`scope: allEnemies/allAllies`)도 있다.
+- **에메랄드·포켓몬 경로는 구조적으로 1대1이다.** `singleFileEnemies = gen1 || (pokemon 스킨 && troop.activeSlots<=1 && 적 여럿 && 전부 종 있음)` 이라 `battleModel==="gen1"` 이면 적은 항상 한 마리씩만 나온다(`visibleEnemies()`·`promoteNextGen1Enemy`·`gen1EnemyOrderIds`).
+  `formationActiveSlots` 도 gen1 에서 기본 1. 그래서 `activeSlots: 2` 만 올리면 아군 HUD 가 두 칸으로 쌓이지만(캡처 하단 두 상자) 적은 한 칸이고, 두 번째 적·대상 고르기는 없다.
+- 에메랄드 HUD(`emeraldSurfaces.css` 의 `.battle-enemy-list-row`/`.battle-party .battle-actor-status`)는 상자 하나를 전제로 위치를 잡는다 — 둘이면 아군 상자가 서로 겹쳐 오른쪽 아래에서 위로 밀려 오른다.
+
+**원작이 하는 일(더블 배틀 규칙).** 아군 2·적 2가 동시에 서고, 매 라운드 각자 기술/교체/가방을 고른다. 단일 대상 기술은 대상(적 둘·아군 하나)을 고르고, 범위 기술(`allEnemies`)은 모두 맞는다(여럿 맞으면 피해 0.75 배). 한쪽이 쓰러지면 대기 몬스터가 그 칸에 들어온다. 경험치는 참전한 모두가 나눈다.
+
+**구현 단계 제안(작은 PR 여러 개, 각각 옵트인 = `activeSlots>=2` 인 트룹만).**
+1. **런타임 1대1 가정 풀기.** `singleFileEnemies` 를 「트룹이 `activeSlots>=2` 면 끈다」로 좁히고, `visibleEnemies()` 가 최대 `activeSlots` 마리를 돌려주게 한다. 뒤 대기 적은 `gen1EnemyOrderIds` 순서로 쓰러진 칸에 채운다(`promoteNextGen1Enemy` 를 칸 단위로).
+   `formationActiveSlots` 가 gen1+pokemon 스킨에서도 `system.activeSlots` 를 따르게 한다. 단일 대전 트룹(`activeSlots<=1`)의 기존 경로는 그대로 — 바이트·난수열 불변이 조건.
+2. **대상 고르기.** 단일 대상 기술은 `targetSelection`(이미 있음)을 에메랄드 화면에서 열어 적 둘 중 하나를 고른다(좌우 키, 선택된 적 HUD 에 커서). 적의 단일 대상 기술은 아군 둘 중 하나를 `chooseBasicEnemyTarget`/`refreshedEnemyTargetId` 로 정한다(이미 있음).
+3. **범위 기술 감쇠.** `scope: allEnemies/allAllies` 로 여럿이 맞으면 피해 ×0.75 — `SkillRecord` 에 규칙 필드를 새로 만들지 말고 `rewardPolicy` 옆 `system.doubleBattle {spreadPenalty?: number}` 한 곳에 둔다(없으면 기존 감쇠 없음).
+4. **교체·쓰러짐.** 칸 하나가 쓰러지면 그 칸만 `forceSwitch`(이미 있는 강제 교체 선택창을 칸 번호로 열기). 라운드 안 순서는 `strictRoundActions` 가 이미 모든 행동을 속도·우선도로 정렬하므로 칸 수만큼 행동이 늘기만 한다(풀죽음 `flinchedBattlerIds` 도 칸 기준으로 그대로 동작).
+5. **경험치.** `participatingActorIds` 가 이미 참전자 집합 — `monsterExpPlan`(옵트인 `expSplitAlive`)과 그대로 맞물린다.
+6. **화면.** 에메랄드 HUD 를 두 칸 레이아웃으로: 적 상자 둘 위 좌측 세로, 아군 상자 둘 아래 우측 세로, 몬스터 그림 앵커(`battleEnemyFit.ts`·`battleAnimationAnchor.ts`)를 두 자리 좌표로. 이 단계가 가장 크다 — 새 도트 그림은 필요 없지만 앵커·겹침 검수에 원본 해상도 캡처 루프가 필요하다.
+7. **조수.** `place_trainer` 에 `double: true`(적 2마리 이상 + `activeSlots: 2`)를 추가하고 `toolCapabilityIndex` 의 monster-field-rules 정책에 한 줄. 도구가 만들지 못하는 더블 트룹은 쓰지 않는다.
+
+**막는 것(하지 않은 이유).** 6번 화면 작업이 에메랄드 HUD·앵커·진행 비트(`battleSequencer`)를 동시에 건드려 한 PR 로 안전하게 검증할 수 없다. 이번 범위는 어휘·규칙 PR 을 먼저 끝내는 것이어서 메모로만 남긴다.
