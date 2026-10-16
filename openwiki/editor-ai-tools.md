@@ -3251,6 +3251,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
 - 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
 - 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+- **우회로·폭 (2026-10-16 깊이 감사 #5)**: rock·tree 는 기본 한 칸이라 도로가 넓으면 옆으로 돌아 기술 없이 지나갔다(8칸 폭 도로에 한 칸 = 성공 응답). 이제 `span`(1..16, `direction` 방향 칸 수)·`fullWidth:true`(`(x,y)` 를 지나는 걸을 수 있는 칸 전체, 폭이 16 을 넘는 광장은 거절)를 받고, 막은 칸마다 이벤트 하나(`id`, `id_c2`…)가 같은 열림 스위치를 공유해 어느 칸 앞에서 기술을 써도 줄 전체가 열린다. 놓은 뒤 막은 칸 곁의 걸을 수 있는 덩이들이 장애물 없이도 이어지는지(3칸 이상 덩이 둘 이상으로 갈라지는지) 재서 `data.bypass`(true=우회 가능)·`data.roadWidth` 와 「우회로가 있습니다」 경고(필요한 `fullWidth`/`span` 안내)를 돌려준다. 같은 `id` 로 다시 부르면 보조 이벤트도 되돌려 치운다. water·waterfall·dark 는 종전과 같다. 검증: `scripts/qa/poke-audit-fix/obstacle-probe.mts`.
+- `run_scene_test` 설명에 HM 체인 선행 조건(새 세션의 몬스터 파티는 비어 있음 → 스타터 이벤트를 먼저 지나기, 가방에 TM 넣기, useItem 대상 규칙, choose 는 대기 선택지가 있을 때만)을 적었다. `define_monster_families` 는 계통·단계별 `ability`(`define_monster_species` 와 같은 검증)·`machineSkillIds` 를 받고 응답 summary 와 `data.speciesIds`/`data.created[].species` 에 만든 id 를 돌려준다.
 
 
 ## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
