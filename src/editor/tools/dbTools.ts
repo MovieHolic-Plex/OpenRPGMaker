@@ -663,7 +663,7 @@ const monsterSpeciesGraphicSchema = objectSchema({
   }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
 });
 
-const monsterAbilitySchema = objectSchema({
+export const monsterAbilitySchema = objectSchema({
   name: stringSchema("특성 이름(최대 20자). 원작 특성 이름을 그대로 쓰지 말고 게임 고유 이름으로"),
   description: stringSchema("한 줄 설명. 생략하면 효과에서 자동 생성"),
   kind: { type: "string", enum: [...MONSTER_ABILITY_KINDS], description: "immuneType=타입 기술 무효(healPercent 있으면 흡수 회복) · resistType=타입 피해 percent% · boostLowHp=HP 1/3 이하에서 같은 타입 기술 percent% · immuneStatus=상태 면역 · contactStatus=물리 피해를 받으면 percent% 확률로 공격자에게 status · statMultiplier=능력 percent% · endure=가득 찬 HP 에서 한 번 버티기" },
@@ -1689,7 +1689,7 @@ const upsertTroop: ToolDefinition = {
 };
 
 /** ability 를 줬는데 정규화가 버렸으면(필수 매개변수 누락·모르는 종류) 이유와 허용 값을 담아 거절한다. 조용히 특성 없는 종이 되지 않게. */
-function validateSpeciesAbility(draft: Project, raw: unknown, record: MonsterSpeciesRecord): string | undefined {
+export function validateSpeciesAbility(draft: Project, raw: unknown, record: MonsterSpeciesRecord): string | undefined {
   if (raw === undefined || raw === null) return undefined;
   const code = "invalid-species-ability";
   if (!record.ability) {
