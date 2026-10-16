@@ -1,0 +1,50 @@
+{
+ "key": "ro-apron-a",
+ "arch": "ro-apron",
+ "base": "People5:5",
+ "variant": "흰 셔츠 소매 + 짙은 갈색 앞치마(가슴 앞치마 끈 보임, 몸통 가운데) + 검은 긴 스커트. 머리는 밤색(올림머리 모양 유지).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bdfghijklnoqrsty"
+   ],
+   "at": "2026-10-16T03:23:36"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bdfghijklnoqrsty"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.856,
+   "T": 0.878,
+   "B": 0.957
+  },
+  "cross": 7,
+  "cross_base": 7,
+  "lone": 253,
+  "lone_base": 251
+ },
+ "reapplied": true
+}

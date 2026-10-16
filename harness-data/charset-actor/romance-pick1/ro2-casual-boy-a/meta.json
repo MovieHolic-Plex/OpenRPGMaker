@@ -1,0 +1,51 @@
+{
+ "key": "ro2-casual-boy-a",
+ "arch": "ro2-casual-boy",
+ "base": "Actor2:1",
+ "variant": "머스터드(진노랑) 스웨트셔츠 + 짙은 청바지 + 흰 스니커즈. 머리는 밝은 밤색(주황 제거), 모양은 베이스 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bdeghikmorst"
+   ],
+   "at": "2026-10-16T12:46:00"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bdeghikmorst"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.99,
+   "T": 0.991,
+   "B": 0.872,
+   "S": 0.826
+  },
+  "cross": 15,
+  "cross_base": 14,
+  "lone": 406,
+  "lone_base": 489
+ },
+ "reapplied": true
+}

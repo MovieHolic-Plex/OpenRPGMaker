@@ -1,0 +1,130 @@
+{
+  "palette": {
+    "G": "#24140c",
+    "H": "#382014",
+    "I": "#4e2f1e",
+    "J": "#643e28",
+    "K": "#7a4e34",
+    "L": "#3d424c",
+    "M": "#565c68",
+    "N": "#767d8a",
+    "O": "#969da9",
+    "P": "#b4bac6",
+    "Q": "#eef1f6",
+    "R": "#14161c",
+    "S": "#222630",
+    "T": "#313744",
+    "U": "#424958",
+    "V": "#f4f6fa",
+    "W": "#dce1ea",
+    "X": "#abb3c2",
+    "Y": "#6e7787"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "j": "G",
+        "f": "G",
+        "p": "G",
+        "r": "H",
+        "w": "I",
+        "D": "J",
+        "E": "K"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "j": "G",
+        "r": "H",
+        "w": "I",
+        "D": "J",
+        "E": "K",
+        "d": "L",
+        "e": "L",
+        "i": "L",
+        "c": "M",
+        "p": "M",
+        "g": "M",
+        "n": "M",
+        "h": "N",
+        "o": "N",
+        "y": "N",
+        "l": "O",
+        "s": "O",
+        "v": "O",
+        "z": "O",
+        "F": "P"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "R",
+        "b": "R",
+        "i": "R",
+        "m": "S",
+        "h": "S",
+        "l": "S",
+        "u": "T",
+        "A": "U",
+        "g": "M",
+        "n": "M",
+        "y": "M",
+        "F": "M"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "l": "V",
+        "h": "W",
+        "a": "X",
+        "b": "Y"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "19": "....pzpzFFMqqMFFzpzp....",
+        "20": ".....eszpMQxxQMpzse.....",
+        "21": "....pFsodNQNNQNdosFp....",
+        "22": "....eooedOLLLLNdeooe....",
+        "23": "....evsecLOONNLcesve....",
+        "24": "....fBFfiMMMMMMifFBf...."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "21": "....pFsodoMMMModosFp....",
+        "23": "....evsedNOOOONdesve...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "21": ".......pFsodsoQM........",
+        "22": ".......eooedsoLL........",
+        "23": ".......evsecMLOM........",
+        "24": ".......fBFfgMMML........"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "21": "........MQosdosFp.......",
+        "22": "........LLosdeooe.......",
+        "23": "........MOLMcesve.......",
+        "24": "........LMMMgfFBf......."
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+ "key": "ro2-suit-boy-a",
+ "arch": "ro2-suit-boy",
+ "base": "Actor2:0",
+ "variant": "차콜 정장 + 흰 셔츠 + 검은 넥타이 + 같은 색 바지 + 검은 구두. 머리는 검은색, 옆 꼬리는 깔끔하게 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cegijn"
+   ],
+   "at": "2026-10-16T13:11:37"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cegijn"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.944,
+   "T": 0.832,
+   "B": 0.832,
+   "S": 1.0
+  },
+  "cross": 6,
+  "cross_base": 5,
+  "lone": 327,
+  "lone_base": 379
+ },
+ "reapplied": true
+}

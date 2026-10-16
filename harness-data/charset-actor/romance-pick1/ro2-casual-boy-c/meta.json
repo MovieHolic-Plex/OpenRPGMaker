@@ -1,0 +1,51 @@
+{
+ "key": "ro2-casual-boy-c",
+ "arch": "ro2-casual-boy",
+ "base": "Actor2:0",
+ "variant": "흰 티셔츠 위에 올리브 그린 재킷(앞 지퍼 줄) + 베이지 치노 바지 + 갈색 신발. 머리는 검은색, 옆 꼬리 머리 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cegijn"
+   ],
+   "at": "2026-10-16T12:57:40"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cegijn"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.944,
+   "T": 0.822,
+   "B": 0.832,
+   "S": 1.0
+  },
+  "cross": 6,
+  "cross_base": 5,
+  "lone": 324,
+  "lone_base": 379
+ },
+ "reapplied": true
+}

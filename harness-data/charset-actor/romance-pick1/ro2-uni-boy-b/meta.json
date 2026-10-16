@@ -1,0 +1,51 @@
+{
+ "key": "ro2-uni-boy-b",
+ "arch": "ro2-uni-boy",
+ "base": "Actor4:0",
+ "variant": "여름 교복: 흰 반팔 셔츠 + 베이지 니트 조끼 + 짙은 녹색 넥타이, 회색 바지, 검은 구두. 머리는 밝은 밤색(남색 제거), 모양은 베이스 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdefgiklmnpqstuvz"
+   ],
+   "at": "2026-10-16T12:28:04"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdefgiklmnpqstuvz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.875,
+   "T": 0.86,
+   "B": 0.877,
+   "S": 0.844
+  },
+  "cross": 10,
+  "cross_base": 15,
+  "lone": 283,
+  "lone_base": 323
+ },
+ "reapplied": true
+}
