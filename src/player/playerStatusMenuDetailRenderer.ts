@@ -29,6 +29,12 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   // 사이드 열이 있으면 쇼케이스는 그 안에 산다(순서는 CSS order 가 정한다 — 쇼케이스 위, 파티 미니 아래).
   if (next) (panel.querySelector(".status-menu-detail-side") ?? panel).append(next);
   panel.classList.toggle("has-showcase", Boolean(next));
+  // 푸터 문장이 이 항목의 설명 그대로면 표시해 둔다 — 쇼케이스가 같은 설명을 이미 그리는 화면에서 CSS 가 푸터 사본을 숨긴다(D32).
+  const footer = panel.closest(".oprn-status-menu")?.querySelector<HTMLElement>(".status-menu-message");
+  if (footer) {
+    if (entry?.unavailableReason ?? entry?.description) footer.dataset.messageKind = "description";
+    else delete footer.dataset.messageKind;
+  }
   return entry?.unavailableReason ?? entry?.description ?? detail.hint;
 }
 

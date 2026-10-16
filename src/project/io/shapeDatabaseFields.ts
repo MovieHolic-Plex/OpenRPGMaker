@@ -291,7 +291,7 @@ function validateCinematicSequence(label: string, value: unknown): void {
 
 export function validateGameOverSettings(value: unknown, label = "system.gameOver"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId", "goldLossPercent"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "recoveryFallback", "outcome", "timing", "musicResourceId", "goldLossPercent"]);
   if (settings.goldLossPercent !== undefined) assert(Number.isInteger(settings.goldLossPercent) && Number(settings.goldLossPercent) >= 0 && Number(settings.goldLossPercent) <= 100, `${label}.goldLossPercent must be an integer in 0..100.`);
   if (settings.outcome !== undefined) assert(settings.outcome === "menu" || settings.outcome === "recover" || settings.outcome === "title", `${label}.outcome is invalid.`);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
@@ -301,11 +301,12 @@ export function validateGameOverSettings(value: unknown, label = "system.gameOve
     for (const [key, value] of Object.entries(timing)) assert(Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) <= 120000, `${label}.timing.${key} must be an integer in 0..120000.`);
   }
   if (settings.presentation !== undefined) assert(typeof settings.presentation === "string" && ["classic", "horror", "blackout"].includes(settings.presentation), `${label}.presentation is invalid.`);
-  if (settings.recovery !== undefined) {
-    const recovery = requireRecord(`${label}.recovery`, settings.recovery);
-    requireOnlyFields(`${label}.recovery`, recovery, ["mapId", "x", "y"]);
-    requireNonBlankString(`${label}.recovery.mapId`, recovery.mapId);
-    for (const key of ["x", "y"]) assert(Number.isSafeInteger(recovery[key]) && Number(recovery[key]) >= 0, `${label}.recovery.${key} must be a nonnegative integer.`);
+  for (const field of ["recovery", "recoveryFallback"] as const) {
+    if (settings[field] === undefined) continue;
+    const recovery = requireRecord(`${label}.${field}`, settings[field]);
+    requireOnlyFields(`${label}.${field}`, recovery, ["mapId", "x", "y"]);
+    requireNonBlankString(`${label}.${field}.mapId`, recovery.mapId);
+    for (const key of ["x", "y"]) assert(Number.isSafeInteger(recovery[key]) && Number(recovery[key]) >= 0, `${label}.${field}.${key} must be a nonnegative integer.`);
   }
   if (settings.sequence !== undefined) validateCinematicSequence(`${label}.sequence`, settings.sequence);
   for (const key of ["title", "message", "retryLabel", "titleLabel"]) {

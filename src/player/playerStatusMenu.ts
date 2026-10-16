@@ -240,7 +240,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
-      skin.railColumns, skin.id === "field-list"
+      skin.railColumns, skin.id === "field-list",
+      options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -776,14 +777,15 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 function renderFooter(
   mode: "main" | "function",
   message: string | undefined,
-  railColumns: number, compact = false
+  railColumns: number, compact = false,
+  messageKind?: "description"
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
     class: "status-menu-message",
     text: message ?? "",
     attrs: { role: "status" },
-    dataset: { testid: "status-menu-message" },
+    dataset: { testid: "status-menu-message", ...(messageKind ? { messageKind } : {}) },
   }));
   footer.append(el("span", {
     class: "status-menu-controls",

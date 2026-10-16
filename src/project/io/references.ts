@@ -262,10 +262,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   }
   if (project.system.defaultGameOverId && !project.system.gameOvers?.some(row => row.id === project.system.defaultGameOverId)) issues.push("system.defaultGameOverId does not exist.");
   for (const settings of [project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)]) {
-    const recovery = settings?.recovery;
-    if (!recovery) continue;
-    const map = project.maps[recovery.mapId];
-    if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push("system.gameOver.recovery must point inside an existing map.");
+    for (const [field, recovery] of [["recovery", settings?.recovery], ["recoveryFallback", settings?.recoveryFallback]] as const) {
+      if (!recovery) continue;
+      const map = project.maps[recovery.mapId];
+      if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push(`system.gameOver.${field} must point inside an existing map.`);
+    }
   }
   check(() => collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues));
   check(() => validateEndings(project, switchIds, variableIds, issues));

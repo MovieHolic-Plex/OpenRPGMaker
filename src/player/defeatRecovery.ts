@@ -10,6 +10,7 @@ export function createDefeatRecovery(project: Project, session: PlaySession, set
   const checkpoint = getSessionCheckpoint(session);
   const destination = settings?.recovery
     ?? (checkpoint ? { mapId: checkpoint.session.currentMapId, x: checkpoint.session.x, y: checkpoint.session.y } : undefined)
+    ?? settings?.recoveryFallback
     ?? { mapId: project.startMapId, ...project.startPos };
   const map = project.maps[destination.mapId];
   if (!map || !Number.isSafeInteger(destination.x) || !Number.isSafeInteger(destination.y)

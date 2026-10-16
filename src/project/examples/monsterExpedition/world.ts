@@ -882,7 +882,12 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   project.endings = [{ id: "mx_ending_starlight", name: gymCount >= FULL_GYMS ? "여덟 빛의 약속" : gymCount > 0 ? `${gymWord(gymCount)} 빛의 약속` : "별빛섬의 등대", conditions: [condition("mx_ending")], priority: 100,
     presentation: { tone: "warm", musicResourceId: audio.ending, credits: "별빛섬 몬스터 원정\n기획·맵·이벤트: OPRN Studio\n몬스터·타일·음악: 오리지널 좌표 도트와 작곡\n함께 걸어 준 모든 동료에게" } }];
   // 야생에게 지면 원작처럼 마지막으로 들른 회복 센터(직원의 checkpointSave)에서 깨어난다. 들른 적이 없으면 집.
-  project.system.gameOver = { outcome: "recover", presentation: "blackout", goldLossPercent: 50, title: "다시 시작할 수 있어", message: "소지금의 절반을 잃었지만, 동료들과 함께 회복 센터에서 쉬었다." };
+  // 마지막 체크포인트는 불러오기 뒤에 사라지고 센터에 들른 적도 없을 수 있다 — 그때 「센터에서 쉬었다」인데 시작 길로 가지 않도록
+  // 첫 마을 회복 센터 직원 앞을 물러날 자리로 둔다(D31). 체크포인트가 있으면 그쪽이 먼저다.
+  const firstCenter = project.maps[id(`${towns[0]!.key}_center`)];
+  const firstNurse = firstCenter?.events.find(e => /_center_nurse$/.test(e.id));
+  project.system.gameOver = { outcome: "recover", presentation: "blackout", goldLossPercent: 50, title: "다시 시작할 수 있어", message: "소지금의 절반을 잃었지만, 동료들과 함께 회복 센터에서 쉬었다.",
+    ...(firstCenter && firstNurse ? { recoveryFallback: { mapId: firstCenter.id, x: firstNurse.x, y: firstNurse.y + 1 } } : {}) };
   project.system.startActorIds = [DEFAULT_ACTOR_ID];
   project.session.partyActorIds = [DEFAULT_ACTOR_ID];
   project.system.sellPrices = [...(project.system.sellPrices ?? []).filter(p => p.itemId !== "item_capture_orb"), { itemId: "item_capture_orb", price: 0 }];

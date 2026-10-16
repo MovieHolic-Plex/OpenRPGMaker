@@ -1194,7 +1194,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   function rejectInput(message = "선택할 수 없습니다"): true {
     const panel = currentMenu();
     const status = panel?.querySelector<HTMLElement>(".status-menu-message");
-    if (status) status.textContent = message;
+    if (status) { status.textContent = message; delete status.dataset.messageKind; }
     options.emitMenuJuice("menu-invalid", panel);
     return true;
   }
