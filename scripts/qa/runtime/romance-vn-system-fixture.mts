@@ -1,5 +1,5 @@
 // 런타임 QA 입력: 연애 프로젝트에 대사 읽기 보조(백로그·오토·스킵·숨기기) 시험용 인물과 대화를 얹는다(헤드리스 도구 경로, 모델 없음).
-//   bun scripts/qa/runtime/romance-vn-system-fixture.mts <outDir> [language] [windowOpacity]
+//   bun scripts/qa/runtime/romance-vn-system-fixture.mts <outDir> [language] [windowOpacity] [bustSide: left|right]
 // 출력: <outDir>/project.json, <outDir>/proof.json (시나리오가 읽는다).
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createNewProjectSeed } from "../../../src/editor/genrePacks.ts";
@@ -12,7 +12,7 @@ import { canMove, isPassable } from "../../../src/project/collision.ts";
 import { mergeDialogueSystem, resolveDialogueSystem } from "../../../src/project/dialogueSystem.ts";
 import { withVerifiedPlayableSegment } from "../../../src/project/playableSegment.ts";
 import type { Project } from "../../../src/project/types.ts";
-const [outDir, language = "ko", opacityArg] = process.argv.slice(2) as [string, string?, string?];
+const [outDir, language = "ko", opacityArg, bustSide] = process.argv.slice(2) as [string, string?, string?, string?];
 mkdirSync(outDir, { recursive: true });
 const input = JSON.parse(readFileSync("scripts/qa-game/briefs/campus-reunion-romance.json", "utf8"));
 const choice = newProjectChoiceById(input.presetId)!;
@@ -56,6 +56,8 @@ if (!r.ok) throw new Error(JSON.stringify(r));
 const live = (ctx as any).project as Project;
 if (language !== "ko" || opacityArg) live.meta.oprnDialogueSystem = mergeDialogueSystem(resolveDialogueSystem(live), { language: language as never, ...(opacityArg ? { defaults: { windowOpacity: Number(opacityArg) } } : {}) });
 const npc = live.maps[map.id]!.events.find((e) => e.name === "서수현")!;
+// 네 번째 인자 right 면 흉상을 오른쪽에 둔다(단추 줄과 겹침 확인용).
+if (bustSide === "right") for (const page of (npc as any).pages ?? []) for (const cmd of page.commands) if (cmd.kind === "changeFace") cmd.position = "right";
 const adj = dirs.map(([d, dx, dy]) => ({ d, x: npc.x - dx, y: npc.y - dy })).find((a) => prev.has(key(a.x, a.y)) && !(a.x === npc.x && a.y === npc.y))!;
 const moves: { kind: "move"; dir: string }[] = [];
 for (let c = key(adj.x, adj.y); prev.get(c)!.from >= 0; c = prev.get(c)!.from) moves.unshift({ kind: "move", dir: prev.get(c)!.dir });

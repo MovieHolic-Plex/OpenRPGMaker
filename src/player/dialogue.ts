@@ -1,6 +1,6 @@
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
 import { createDialogueControlBar, type DialogueBarAction, type DialogueControlBar } from '@/player/dialogueControlBar';
-import { backlogViewIsOpen, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
+import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
 import { applyWindowOpacity } from '@/player/dialogueWindowOpacity';
 import {
@@ -136,6 +136,10 @@ export type DialogueLogEntry = {
 };
 
 const DIALOGUE_LOG_LIMIT = 200;
+/** 휠 위로 백로그 열기: 닫은 뒤 이 시간은 다시 안 열고, 이 시간 안에 문턱만큼 쌓여야 연다(관성 스크롤·핀치 오작동 방지). */
+const WHEEL_REOPEN_COOLDOWN_MS = 450;
+const WHEEL_OPEN_WINDOW_MS = 300;
+const WHEEL_OPEN_THRESHOLD = 40;
 /** 말풍선 본문 폭(논리 px). 넘으면 줄을 바꾸고, 세 줄을 넘으면 상자로 간다. */
 const DIALOGUE_BALLOON_TEXT_WIDTH = 150;
 const DIALOGUE_BALLOON_MAX_LINES = 3;
@@ -393,7 +397,7 @@ export function createDialogueUI(
   /** 백로그·읽은 글 표시가 쓸 세션. 가짜 세션(전투 임시 문맥)은 reading:'off' 로 걸러진다. */
   const sessionHostFor = (request: { readonly textContext?: DialogueTextContext }): BacklogHost | undefined =>
     (request.textContext?.session as unknown as BacklogHost | undefined) ?? undefined;
-  const recordLog = (request: DialogueTextRequest, look: DialogueLook): { readonly text: string; readonly speaker?: string } | undefined => {
+  const recordLog = (request: DialogueTextRequest, look: DialogueLook, toBacklog = true): { readonly text: string; readonly speaker?: string } | undefined => {
     const text = parseDialogueText(request.body, request.textContext).map((segment) => segment.text).join("").trim();
     if (!text) return undefined;
     const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker);
@@ -406,7 +410,7 @@ export function createDialogueUI(
     if (logEntries.length > DIALOGUE_LOG_LIMIT) logEntries.splice(0, logEntries.length - DIALOGUE_LOG_LIMIT);
     const system = systemFor(request);
     const host = sessionHostFor(request);
-    if (system?.backlog.enabled && host) {
+    if (toBacklog && system?.backlog.enabled && host) {
       appendBacklog(host, { kind: "line", text, ...(speaker ? { speaker } : {}), ...(look.nameColor ? { color: look.nameColor } : {}), ...(look.context ? { context: look.context } : {}) }, system.backlog.limit);
       lastBacklog = { host, system };
     }
@@ -497,7 +501,8 @@ export function createDialogueUI(
   host.append(ambientLayer);
   const activeBarks = new Map<string, () => void>();
   const showAmbient = (request: DialogueTextRequest, look: DialogueLook): void => {
-    recordLog(request, look);
+    // 흘림·bark 앰비언트 대사는 세션 백로그(세이브)에 쓰지 않는다 — 순찰 NPC 가 링 버퍼를 채우지 못하게(2026-10-17 적대 리뷰 D11).
+    recordLog(request, look, false);
     const segments = parseDialogueText(request.body, request.textContext);
     const chars = segments.flatMap((segment) => Array.from(segment.text));
     const lifetime = Math.min(7000, Math.max(2200, 1600 + chars.length * 90));
@@ -1151,6 +1156,8 @@ export function createDialogueUI(
         const onHiddenKey = (event: KeyboardEvent): void => {
           if (event.key === "Control" || event.key === "Shift" || event.key === "Alt" || event.key === "Meta") return;
           swallow(event);
+          // H 를 꾹 누르면 반복 keydown 이 숨김을 바로 되돌려 깜빡였다(적대 리뷰 D6). 반복은 삼키기만 한다.
+          if (event.repeat) { event.stopImmediatePropagation(); return; }
           event.stopImmediatePropagation();
           dropHiddenListeners();
           setHiddenState(false);
@@ -1186,6 +1193,8 @@ export function createDialogueUI(
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
         if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
+        // Tab 으로 포커스된 읽기 도구 단추에서 Enter/Space 는 그 단추를 누르는 것이다(대사를 넘기면 안 된다 — 적대 리뷰 D2).
+        if ((e.key === "Enter" || e.key === " ") && e.target instanceof Element && e.target.closest(".dialogue-bar-btn")) return;
         if (system) {
           // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
           if (ctrlSkip && !e.ctrlKey) { ctrlSkip = false; syncBar(); }
@@ -1250,9 +1259,18 @@ export function createDialogueUI(
         }
         advance();
       };
+      let wheelUp = 0;
+      let wheelAt = 0;
       const onBoxWheel = (e: WheelEvent): void => {
         // 휠을 위로 굴리면 백로그(저작된 시스템에서 켜졌을 때만).
         if (e.deltaY >= 0 || !system?.backlog.enabled || settled) return;
+        // 트랙패드 핀치(ctrlKey)와 백로그를 닫은 직후의 관성 스크롤은 열기가 아니다. 짧은 시간 안에 쌓인 위로 굴림이 문턱을 넘어야 연다(적대 리뷰 D5).
+        if (e.ctrlKey || backlogRecentlyClosed(WHEEL_REOPEN_COOLDOWN_MS)) return;
+        const now = Date.now();
+        wheelUp = now - wheelAt > WHEEL_OPEN_WINDOW_MS ? -e.deltaY : wheelUp - e.deltaY;
+        wheelAt = now;
+        if (wheelUp < WHEEL_OPEN_THRESHOLD) return;
+        wheelUp = 0;
         e.preventDefault();
         openBacklogForLine();
       };

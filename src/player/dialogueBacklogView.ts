@@ -9,6 +9,12 @@ import { el } from "@/util/dom";
 
 type ViewState = { readonly root: HTMLElement; readonly list: HTMLElement; readonly onKey: (event: KeyboardEvent) => void; readonly onClose?: () => void };
 let view: ViewState | undefined;
+let closedAt = -Infinity;
+
+/** 백로그를 닫은 지 ms 안인가(휠 관성으로 곧바로 다시 열리지 않게). */
+export function backlogRecentlyClosed(ms: number): boolean {
+  return Date.now() - closedAt < ms;
+}
 
 export function backlogViewIsOpen(): boolean {
   return view !== undefined;
@@ -18,6 +24,7 @@ export function closeBacklogView(): void {
   const current = view;
   if (!current) return;
   view = undefined;
+  closedAt = Date.now();
   document.removeEventListener("keydown", current.onKey, true);
   current.root.remove();
   current.onClose?.();

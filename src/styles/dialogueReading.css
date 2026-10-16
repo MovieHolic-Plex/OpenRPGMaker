@@ -26,6 +26,16 @@
   right: 104px;
 }
 
+/* 오른쪽 흉상은 상자 위로 솟아 오른쪽 정렬 단추 줄과 겹친다 — 흉상이 오른쪽이면 줄을 왼쪽으로 뒤집는다(적대 리뷰 D7). */
+.dialogue-box.bust-right .dialogue-bar,
+.dialogue-overlay.has-bust-face:has(.dialogue-box.bust-right) .dialogue-bar {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  left: 4px;
+  max-width: 62%;
+  right: auto;
+}
+
 .dialogue-bar-btn {
   align-items: center;
   background: rgba(8, 12, 22, 0.78);
@@ -38,6 +48,7 @@
   font-size: 7px;
   gap: 2px;
   line-height: 1;
+  white-space: nowrap;
   padding: 2px 4px;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.8);
 }
@@ -214,4 +225,35 @@
 .dialogue-backlog-close:hover,
 .dialogue-backlog-close:focus-visible {
   background: rgba(255, 255, 255, 0.22);
+}
+
+/* 터치 화면·좁은 창: 스테이지가 배율로 줄어 7px 단추가 16px 안팎이 된다 — 실제 화면에서 약 44px 터치 면을 보장한다(적대 리뷰 D4). */
+@media (pointer: coarse), (max-width: 600px) {
+  .dialogue-bar {
+    flex-wrap: wrap;
+    gap: calc(6px / var(--play-scale, 1));
+  }
+
+  /* 알림은 단추 줄 위에 따로 한 줄 — 단추 글자가 세로로 접히지 않게. */
+  .dialogue-bar-notice {
+    flex: 0 0 100%;
+  }
+
+  .dialogue-bar-btn {
+    font-size: calc(13px / var(--play-scale, 1));
+    gap: calc(4px / var(--play-scale, 1));
+    min-height: calc(44px / var(--play-scale, 1));
+    min-width: calc(44px / var(--play-scale, 1));
+    padding: calc(4px / var(--play-scale, 1)) calc(9px / var(--play-scale, 1));
+  }
+
+  .dialogue-bar-key {
+    font-size: calc(10px / var(--play-scale, 1));
+    padding: 0 calc(3px / var(--play-scale, 1));
+  }
+
+  .dialogue-bar-notice {
+    font-size: calc(12px / var(--play-scale, 1));
+    padding: calc(4px / var(--play-scale, 1)) calc(8px / var(--play-scale, 1));
+  }
 }

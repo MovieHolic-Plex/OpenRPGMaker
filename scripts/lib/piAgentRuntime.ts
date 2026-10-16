@@ -2,7 +2,7 @@ import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduct
 import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
-import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
+import { GAME_SYSTEM_REQUEST_PATTERN, PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
 import { PiRomanceProduction } from '../../src/ai/piAgent/romanceProduction.ts';
 import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
@@ -585,7 +585,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}
-  if (/시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b|백로그|오토|스킵|대사 기록|미연시|backlog/iu.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','set_dialogue_system','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
+  if (GAME_SYSTEM_REQUEST_PATTERN.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','set_dialogue_system','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
   for (const name of PI_PRESENTATION_GENERATORS) {
     if (!registryTools.some(tool => tool.name === name)) continue;
     const shape = shapeFor(name);

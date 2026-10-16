@@ -865,3 +865,14 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - **투명도.** 기기 설정 `windowOpacity` 는 계산된 배경색·그라데이션의 알파를 곱해 적용한다(`dialogueWindowOpacity.ts`). 글자·테두리는 그대로.
 - **CSS.** `src/styles/dialogueReading.css`(runtime/index.css 가 `layer(runtime)` 으로 불러옴, `test/playerRuntimeCss.test.ts` 의 RUNTIME_IMPORTS 에 등록). 기존 실패 3건(`retro2003` 스킨·`.status-menu-body` 누락, 임포트 개수 68 대 72)은 main 에서 이미 빨갛다 — 이 변경과 무관.
 - **시각 QA.** `npm run qa:runtime -- --scenario romance-vn-system --project <fixture>/project.json`(고정 장면 `scripts/qa/runtime/romance-vn-system-fixture.mts <outDir> [ko|en] [opacity]`). 크로미움이 백지(ERR_NETWORK_CHANGED)면 `unshare -rn` 안에서 실행. 증거 `verify-shots/runtime-qa/romance-vn-system{,-en}/`.
+
+### 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+
+- 저장된 대사 속도: `normalizePlayerPreferences` 가 표식(`textSpeedChosen`) 없는 예전 저장본의 느림/빠름을 한 번 「직접 고른 값」으로 승격한다(연애 기본 시작값에 덮이지 않게). 보통은 구별할 수 없어 저작 시작값을 따른다.
+- 입력: 포커스된 `.dialogue-bar-btn` 의 Enter/Space 는 대사를 넘기지 않는다. H 반복 keydown 은 숨김을 되돌리지 않는다. 휠 위 백로그 열기는 `ctrlKey`(핀치) 무시 · 닫은 뒤 450ms 쿨다운 · 300ms 안 누적 40 문턱(`dialogue.ts` WHEEL_*).
+- 앰비언트(흘림·코너·bark) 대사는 세션 백로그(세이브)에 쓰지 않는다 — `recordLog(request, look, false)`.
+- 창 투명도: 스킨 그림이 창을 채우는(border-image) 스타일(classic)은 설정 행을 숨기고 `applyWindowOpacity` 도 아무것도 하지 않는다.
+- 레이아웃: `(pointer: coarse), (max-width: 600px)` 에서 단추는 `calc(44px / var(--play-scale))` 터치 면, 알림은 단추 줄 위 한 줄. 흉상이 오른쪽이면 줄이 왼쪽 정렬·폭 62%로 감싼다. 증거 `verify-shots/runtime-qa/romance-vn-system-mobile/`(시나리오 `romance-vn-system-mobile`, 픽스처 네 번째 인자 `right`).
+- 글자: ESC 메뉴 하단 조작 안내(`statusMenuControls(…, system)`)와 레일 「백로그」 기본 라벨은 대사 시스템이 있는 게임에서 저작 언어로 나온다(없으면 예전 한국어). 죽은 키 `notice.hiddenRestore` 삭제.
+- 조수: 시스템 도구 초기 선언 낱말은 `GAME_SYSTEM_REQUEST_PATTERN`(`gameSystemProduction.ts`)에 모았고 영·일·중 낱말을 더했다.
+- 알림(릴리스 노트용): 백로그 항목을 저작한 ESC 메뉴가 든 프로젝트는 이전 빌드에서 열리지 않는다. 기존 연애(관계 메뉴) 프로젝트는 저작 없이도 기본 구성이 켜져 대사창 단추 줄·ESC 백로그·설정 3행이 새로 생긴다(비연애 프로젝트는 불변).
