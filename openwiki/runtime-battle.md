@@ -294,6 +294,8 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 [캐릭터 전투 동작](character-battle-motion.md)을 따른다. 공용 연출과 통상 공격이 같은 프로필을 읽으며
 기존 마법 영창과 직접 저작 경로를 보존한다.
 
+- **걷기 칩 시트를 전투 시트로 적으면 무시한다(jrpg-loop-1)**: `resolvePartyBattleCharset`(charsetBattlers.ts)은 `battleCharacterResourceId` 가 걷기 칩 시트(`characterResourceId` 와 같거나 `oprn-charset-*`·`easyrpg-charset-*`)이고 전투 전용 칩(`charset-battler-*`)이 아니면 저작 시트로 치지 않는다 — 그대로 그리면 288×256 시트가 작은 칸 수백 개로 깔려 전투 화면 오른쪽이 군중이 됐다(조수가 `oprn-charset-heroes1` 을 양쪽에 적은 ct2). easyrpg 칩이면 대응 전투 칩으로, 아니면 호출자의 기본 도트(`retroFallbackPartyBattler`)로 물러난다.
+
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 - **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
 

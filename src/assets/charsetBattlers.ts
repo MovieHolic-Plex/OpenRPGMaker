@@ -96,7 +96,13 @@ export function resolvePartyBattleCharset(actor: {
   readonly characterResourceId?: string;
   readonly characterIndex?: number;
 }, retro = false): string | undefined {
-  const authored = actor.battleCharacterResourceId;
+  // 걷기 칩 시트(288×256, 8명)를 전투 시트로 적어 둔 경우는 저작 시트가 아니다 — 그대로 그리면 시트 전체가 작은 칸 수백 개로 깔린다
+  // (jrpg-loop-1 ct2: 조수가 battleCharacterResourceId 에 characterResourceId 와 같은 oprn-charset-heroes1 을 넣어 전투 화면 오른쪽이 군중이 됐다).
+  // 전투 전용 칩(charset-battler-*)은 그대로 통과한다. 걷기 칩 대응이 없으면 호출자의 기본 도트로 물러난다.
+  const rawAuthored = actor.battleCharacterResourceId;
+  const walkSheetAsBattle = rawAuthored !== undefined && !charsetBattler(rawAuthored)
+    && (rawAuthored === actor.characterResourceId || /^(?:oprn|easyrpg)-charset-/u.test(rawAuthored));
+  const authored = walkSheetAsBattle ? undefined : rawAuthored;
   const generatedHero = authored === "hero" || authored?.startsWith("generated-actor-hero-");
   if (authored && !generatedHero) return authored;
   return charsetBattlerForCharacter(actor.characterResourceId, actor.characterIndex)
