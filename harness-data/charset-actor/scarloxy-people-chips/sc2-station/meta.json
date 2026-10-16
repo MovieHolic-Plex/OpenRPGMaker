@@ -1,0 +1,49 @@
+{
+ "key": "sc2-station",
+ "arch": "sp2-station",
+ "base": "Scarloxy1:2",
+ "variant": "초록 벙거지를 짙은 남색 제복모로 recolor 하고 붉은 띠 한 줄(H paint), 민소매를 남색 제복(T 전체 recolor)으로, 가슴 금색 단추 두 줄, 바지는 남색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 4,
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 bfiqz"
+ ],
+ "metrics": {
+  "added_up0": 20,
+  "added_up1": 34,
+  "added_up2": 32,
+  "added_right0": 34,
+  "added_right1": 35,
+  "added_right2": 31,
+  "added_down0": 20,
+  "added_down1": 30,
+  "added_down2": 30,
+  "added_left0": 34,
+  "added_left1": 35,
+  "added_left2": 31,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.97,
+   "S": 1.0
+  },
+  "cross": 3,
+  "cross_base": 3,
+  "lone": 252,
+  "lone_base": 209
+ },
+ "distinct": {
+  "score": 0.464,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 49,
+  "hole_filled_px": 10,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-station-b"
+}

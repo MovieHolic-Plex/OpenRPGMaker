@@ -1,0 +1,128 @@
+{
+ "palette": {
+  "s": "#3b4048",
+  "t": "#7a828e",
+  "u": "#a5adb8",
+  "v": "#d8dde4",
+  "w": "#f2f5f8",
+  "x": "#3d2214",
+  "y": "#6b3e26",
+  "z": "#8f5638",
+  "A": "#b0724e",
+  "B": "#e6dec8",
+  "C": "#b8ae96",
+  "D": "#332b28",
+  "E": "#574a44",
+  "F": "#786860",
+  "G": "#96857b",
+  "H": "#2b1d16",
+  "I": "#4d3427",
+  "J": "#6e4c3b",
+  "K": "#8a624d"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "s",
+    "a": "s",
+    "d": "t",
+    "f": "u",
+    "h": "u",
+    "k": "v",
+    "m": "w"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "x",
+    "c": "x",
+    "d": "y",
+    "i": "y",
+    "p": "z",
+    "q": "A"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "D",
+    "b": "D",
+    "c": "D",
+    "d": "E",
+    "f": "E",
+    "h": "F",
+    "p": "F",
+    "q": "G"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "b": "H",
+    "f": "I",
+    "p": "I",
+    "k": "J",
+    "q": "J",
+    "m": "K"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "8": "......bkuvvvvvvvukb.....",
+    "10": ".....ahauvvvvvvvuaha....",
+    "11": ".....ahatuvvvvvutaha...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "8": "......bkuvvvvvvvukb.....",
+    "10": ".....ahtuvvvvvvvutha....",
+    "11": ".....ahhtuvvvvvuthha....",
+    "12": "....aadhhuvvvvvuhhdaa..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "8": "......bkuvvvvvvvukb.....",
+    "10": "....ahhtuvvvvvvvutda....",
+    "11": "....ahhtuvvvvvvvutda...."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "8": ".....bkuvvvvvvvukb......",
+    "10": "....adtuvvvvvvvuthha....",
+    "11": "....adtuvvvvvvvuthha...."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "19": "......coozAzBBzAooc.....",
+    "20": "......gnjyzBBBzyjng.....",
+    "21": ".....cnngxyyCyyxgnnc....",
+    "22": ".....gnjxynnnnnyxjng...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "22": ".....gnjxynnnnnyxjng...."
+   }
+  }
+ ]
+}

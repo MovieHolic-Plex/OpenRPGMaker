@@ -1,0 +1,49 @@
+{
+ "key": "sc2-fishing-contest",
+ "arch": "sp2-fishing-contest",
+ "base": "Scarloxy1:2",
+ "variant": "초록 벙거지를 베이지 버킷햇으로 recolor, 흰 민소매를 청색 조끼로 + 가슴 주머니 2개(T paint), 보라 바지를 카키로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 bfiq"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.97,
+   "S": 1.0
+  },
+  "cross": 1,
+  "cross_base": 3,
+  "lone": 233,
+  "lone_base": 209
+ },
+ "distinct": {
+  "score": 0.459,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 26,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-fishing-contest-b"
+}

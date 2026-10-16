@@ -12,12 +12,14 @@ import json
 import os
 import re
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
 BASE_URL = os.environ.get('CHR_ARGON_BASE_URL', 'http://127.0.0.1:8318/v1')
 TIMEOUT = int(os.environ.get('CHR_ARGON_HTTP_TIMEOUT', '900'))
-IMAGES = ('base_6x.png', 'masks_4x.png', 'rtp_style_4x.png')
+IMAGES = ('base_6x.png', 'masks_4x.png') if os.environ.get('CHR_ARGON_STYLE_IMAGE', '0') != '1' else ('base_6x.png', 'masks_4x.png', 'rtp_style_4x.png')   # rtp_style_4x 는 다른 칩셋 그림이라 Scarloxy 주문에서는 기본으로 빼 혼동을 줄인다(2026-10-16 2차)
+BACKOFF = (60, 120, 240)   # 429·5xx·연결 오류 때 기다리는 초(다른 에이전트도 8318 을 쓴다)
 TEXTS = ('palette.json', 'base_down_1.txt', 'base_up_1.txt', 'base_right_1.txt', 'base_left_1.txt',
          'mask_down_1.txt', 'mask_up_1.txt', 'mask_right_1.txt', 'mask_left_1.txt', 'edit.json')
 
@@ -75,17 +77,32 @@ def extract_json(text):
 
 
 def run_argon_http(cwd, text, label, model):
-    """argon_part.run_agy 와 같은 시그니처·반환(code, out)."""
+    """argon_part.run_agy 와 같은 시그니처·반환(code, out). 429·5xx·연결 오류·빈 응답은 60→120→240초 백오프로 다시 부른다."""
     assert model.startswith('gemini-4-argon'), model
     t0 = time.time()
-    try:
-        answer = stream_chat(model, _message(cwd, text))
-        edit = extract_json(answer)
-        (Path(cwd) / 'edit.json').write_text(json.dumps(edit, ensure_ascii=False, indent=1), encoding='utf-8')
-        code, out = 0, answer
-    except Exception as e:  # noqa: BLE001 — 키가 오류 문자열에 섞이지 않게 형식만 남긴다
-        code, out = 1, f'{type(e).__name__}: {str(e)[:300]}'
-    (Path(cwd) / f'argon-http-{label}.log').write_text('exit=%s sec=%.0f\n%s' % (code, time.time() - t0, out[-4000:]))
+    code, out, tries = 1, '', 0
+    for wait in (0,) + BACKOFF:
+        if wait:
+            time.sleep(wait)
+        tries += 1
+        try:
+            answer = stream_chat(model, _message(cwd, text))
+            edit = extract_json(answer)
+            (Path(cwd) / 'edit.json').write_text(json.dumps(edit, ensure_ascii=False, indent=1), encoding='utf-8')
+            code, out = 0, answer
+            break
+        except urllib.error.HTTPError as e:   # 키가 오류 문자열에 섞이지 않게 상태 코드만 남긴다
+            code, out = 1, f'HTTP {e.code}'
+            if e.code not in (429, 500, 502, 503, 504):
+                break
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            code, out = 1, f'{type(e).__name__}'
+        except ValueError as e:   # JSON 을 못 읽은 답: 한 번 더 부른다(같은 요청)
+            code, out = 2, f'ValueError(JSON): {str(e)[:200]}'
+        except Exception as e:  # noqa: BLE001
+            code, out = 1, f'{type(e).__name__}: {str(e)[:200]}'
+            break
+    (Path(cwd) / f'argon-http-{label}.log').write_text('exit=%s sec=%.0f tries=%d\n%s' % (code, time.time() - t0, tries, out[-4000:]))
     return code, out
 
 

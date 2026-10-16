@@ -1,0 +1,110 @@
+{
+ "palette": {
+  "u": "#1c386b",
+  "v": "#2b5b9e",
+  "w": "#4785d1",
+  "x": "#7cb5f5",
+  "y": "#b3dcff",
+  "z": "#15223d",
+  "A": "#243a63",
+  "B": "#38568a",
+  "C": "#1a3b70",
+  "D": "#3468b8",
+  "E": "#5c99eb"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "e": "u",
+    "b": "u",
+    "j": "v",
+    "k": "v",
+    "n": "w",
+    "o": "w",
+    "q": "x"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "u",
+    "b": "u",
+    "e": "u",
+    "c": "v",
+    "j": "v",
+    "f": "w",
+    "n": "x"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "b": "z",
+    "d": "z",
+    "g": "A",
+    "l": "A",
+    "r": "B"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "b": "C",
+    "d": "C",
+    "i": "D",
+    "m": "E"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "2": "..........uuuuu.........",
+    "3": "........uuwwwwwuu.......",
+    "4": ".......uwwxxwwwwwu......",
+    "5": "......uwxyyxwwwwwwu.....",
+    "6": ".....uwxxyywwwwwwwwu....",
+    "7": ".....uwxxwwwwwwwwwwu...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "2": ".........uuuuu..........",
+    "3": ".......uuwwwwwuu........",
+    "4": "......uwwwwwwwxwu.......",
+    "5": ".....uwwwwwwwxyywu......",
+    "6": "....uwwwwwwwwxxyywu.....",
+    "7": "....uwwwwwwwwwxxwwu....."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "2": ".........uuuuu..........",
+    "3": ".......uuwwwwwuu........",
+    "4": "......uwwwwwwwxwu.......",
+    "5": ".....uwwwwwwwxyywu......",
+    "6": "....uwwwwwwwwxxyywu.....",
+    "7": "....uwwwwwwwwwxxwwu....."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "2": ".........uuuuu..........",
+    "3": ".......uuwwwwwuu........",
+    "4": "......uwxwwwwwwwu.......",
+    "5": ".....uwyyxwwwwwwwu......",
+    "6": "....uwyyxxwwwwwwwwu.....",
+    "7": "....uwwxxwwwwwwwwwu....."
+   }
+  }
+ ]
+}

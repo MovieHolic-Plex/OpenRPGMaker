@@ -1,0 +1,52 @@
+{
+ "key": "sc2-lab-assistant-m",
+ "name": "연구소 조수(남)",
+ "head": "Scarloxy1:5",
+ "body": "Scarloxy2:1",
+ "recolor": [
+  {
+   "region": "T",
+   "to": {
+    "sat": 0.07,
+    "v": 1.3
+   },
+   "hue": [
+    75,
+    175
+   ],
+   "smin": 0.1
+  },
+  {
+   "region": "T",
+   "to": {
+    "hue": 200,
+    "s": 0.45,
+    "v": 0.8
+   },
+   "hue": [
+    35,
+    60
+   ],
+   "smin": 0.15
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 215,
+    "s": 0.3,
+    "v": 0.6
+   },
+   "hue": [
+    60,
+    100
+   ],
+   "smin": 0.1
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "고정 검사: 12프레임 493칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-lab-assistant-m"
+}

@@ -1,0 +1,48 @@
+{
+ "key": "sc2-gym-water",
+ "arch": "sp2-gym-water",
+ "base": "Scarloxy1:3",
+ "variant": "긴 보라 머리를 청록(밝은 청록 3톤)으로 바꾸고 머리 위 h 구역에 물방울 모양 장식 한 덩어리(H paint, 하늘색), 남색 웃옷을 파란 가운으로, 분홍 십자 무늬는 흰색, 하의는 짙은 청색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 acgn"
+ ],
+ "metrics": {
+  "added_up0": 13,
+  "added_up1": 20,
+  "added_up2": 16,
+  "added_right0": 11,
+  "added_right1": 14,
+  "added_right2": 14,
+  "added_down0": 8,
+  "added_down1": 20,
+  "added_down2": 16,
+  "added_left0": 11,
+  "added_left1": 14,
+  "added_left2": 14,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.926,
+   "S": 1.0
+  },
+  "cross": 1,
+  "cross_base": 0,
+  "lone": 315,
+  "lone_base": 249
+ },
+ "distinct": {
+  "score": 0.669,
+  "nearest": "scarloxy-charset-people1#3"
+ },
+ "repairs": {
+  "dropped_stray_px": 48,
+  "hole_filled_px": 2,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-gym-water-a"
+}

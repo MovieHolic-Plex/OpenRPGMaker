@@ -1,0 +1,200 @@
+{
+ "palette": {
+  "A": "#12172e",
+  "B": "#1f2b52",
+  "C": "#31447d",
+  "D": "#4c68b0",
+  "G": "#704a14",
+  "H": "#ad7621",
+  "I": "#e0ac38",
+  "J": "#fae078",
+  "M": "#381224",
+  "N": "#63203d",
+  "O": "#94355c",
+  "P": "#c25580",
+  "R": "#47141e",
+  "S": "#7a2031",
+  "T": "#ad3146",
+  "U": "#d6566b"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "a": "A",
+    "d": "B",
+    "k": "C",
+    "p": "D",
+    "v": "B",
+    "s": "J",
+    "c": "A",
+    "f": "G",
+    "g": "H",
+    "m": "I",
+    "o": "J",
+    "b": "M",
+    "e": "M",
+    "h": "N",
+    "j": "O",
+    "r": "A"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "v": "B",
+    "r": "C",
+    "i": "A",
+    "a": "A",
+    "d": "B",
+    "k": "C",
+    "c": "R",
+    "e": "A",
+    "b": "M",
+    "g": "S",
+    "m": "T",
+    "f": "G",
+    "n": "H",
+    "s": "I"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "A",
+    "d": "B",
+    "e": "A",
+    "f": "G",
+    "n": "H",
+    "g": "S",
+    "c": "A"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "c": "G",
+    "e": "G",
+    "g": "S",
+    "m": "H",
+    "o": "I",
+    "v": "J",
+    "r": "B"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "1": "....GG.............GG...",
+    "2": "....GIG....GGG....GIG...",
+    "3": "....GIJG..GJJJG..GJIG...",
+    "4": "....GJJG.adGJGda.GJJG...",
+    "5": ".....GJIakppGppkaIJG....",
+    "6": ".....GGakkkpppkkkaGG....",
+    "10": "....MbhjcBBBBBBbcjhbM...",
+    "11": "....MbjjjcBoooBcjjjbM..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "1": "....GG.............GG...",
+    "2": "....GIG....GGG....GIG...",
+    "3": "....GIJG..GJJJG..GJIG...",
+    "4": "....GJJG.adGJGda.GJJG...",
+    "5": ".....GJIakppGppkaIJG....",
+    "6": ".....GGakkkpppkkkaGG....",
+    "10": "....MbhjjdddddddjjhbM...",
+    "11": "....MbjjjjjjjjjjjjjbM..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "1": "......GG.....GG.........",
+    "2": "......GIG....GIG........",
+    "3": "......GJJGaaaaJIG.......",
+    "4": "......GJIGdkpppJG.......",
+    "5": ".......akkGIJppka.......",
+    "6": "......akkkkGGGkkka......",
+    "10": "...MbhjjhbhjcBBBBBBBc...",
+    "11": "...Mbjjjbjjjjcccccccc..."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "1": ".........GG.....GG......",
+    "2": "........GIG....GIG......",
+    "3": ".......GIJaaaaGJJG......",
+    "4": ".......GJpppkdGIJG......",
+    "5": ".......akkppJIGkka......",
+    "6": "......akkkGGGkkkka......",
+    "10": "...cBBBBBBBcjhbhjjhbM...",
+    "11": "...ccccccccjjjjbjjjbM..."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "17": ".....RTTmllllllTmTR.....",
+    "18": ".....RTTTmqqqqmmTTR.....",
+    "19": "....Aivncmrrrmcnvii.....",
+    "20": "....ACvvsmvvvmsvvCA.....",
+    "21": "...ACCvrskmvmksrvCCi....",
+    "22": "...ACCvinkmvmknivCCi....",
+    "23": "..AAeuttadkmvmkdattueAA.",
+    "24": "..AAeuqtadkgrgkdatqueAA."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "17": ".....RTTmTTTTTTTmTR.....",
+    "18": ".....RTTTTTTTTTTTTR.....",
+    "19": "....AivnfBCCCBfnvii.....",
+    "20": "....ACvfnCCCrCnfvCA.....",
+    "21": "...ACCvfnCCJCrnfvCCi....",
+    "22": "...ACCvffnCJJJCnffvCCA..",
+    "23": "..AAeuttfBBCCCBBfttueAA.",
+    "24": "..AAeuqtfBBBBBBBftqueAA."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "17": "......RTTmmTqlee........",
+    "18": ".....RTTTTTmttl.........",
+    "19": "....ACsivncmrrii........",
+    "20": "....ACsrvvsmmvii........",
+    "21": "...ACCsivvrskmvi........",
+    "22": "...ACCnivvinkmvi........",
+    "23": "...ACfeuttadkmvle.......",
+    "24": "...AAfetqtadkgrle......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "17": "........eelqTmmTTR......",
+    "18": ".........lttmTTTTTR.....",
+    "19": "........iirrmcnvisCA....",
+    "20": "........iivmmsvvrsCA....",
+    "21": "........ivmksrvvisCCA...",
+    "22": "........ivmknivvinCCA...",
+    "23": ".......elvmkdattuefCA...",
+    "24": ".......elrgkdatqtefAA..."
+   }
+  }
+ ]
+}

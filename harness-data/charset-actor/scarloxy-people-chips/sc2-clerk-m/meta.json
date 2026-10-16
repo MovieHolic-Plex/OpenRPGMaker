@@ -1,0 +1,48 @@
+{
+ "key": "sc2-clerk-m",
+ "arch": "sp2-clerk-m",
+ "base": "Scarloxy1:5",
+ "variant": "머리 위 h 구역에 짧은 챙이 앞으로 나온 청록 캡모자(H paint 로 머리를 덮고 이마 위 한 줄은 챙)를 올린다. 상의 T 를 흰 셔츠로 바꾸고 그 위에 청록 앞치마(T paint: 가슴 아래부터 허리까지 중앙에 앞치마 면, 어깨끈 2줄, 네 방향 각각). 반바지는 갈색, 머리색은 밤색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Jcdf"
+ ],
+ "metrics": {
+  "added_up0": 23,
+  "added_up1": 24,
+  "added_up2": 24,
+  "added_right0": 27,
+  "added_right1": 27,
+  "added_right2": 27,
+  "added_down0": 22,
+  "added_down1": 22,
+  "added_down2": 15,
+  "added_left0": 28,
+  "added_left1": 28,
+  "added_left2": 28,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.893,
+   "S": 0.982
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 232,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.625,
+  "nearest": "ScarloxyPeople3#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 15,
+  "hole_filled_px": 6,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-clerk-m-a"
+}

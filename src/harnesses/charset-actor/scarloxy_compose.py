@@ -97,7 +97,7 @@ def compose_frame(hg, hcut, bg, bcut, hbob, bbob):
                 headpix.add((nx, ny))
             else:
                 raise ValueError(f'머리 화소가 칸 밖으로 나간다({nx},{ny})')
-    return out, headpix
+    return out, headpix, (dx, dy)
 
 
 def bob(g, d, f):
@@ -110,13 +110,39 @@ def mirror(g):
     return [list(reversed(row)) for row in g]
 
 
+def face_fixed(head_key, d, f, bob):
+    """머리 주인의 고정 칸(원래 좌표) → {(x,y): 색 hex}. 얼굴 상자 안에서 ① 맨살 글자 ② 머리카락에 안 쓰인 글자(눈·눈동자·볼터치) ③ 상자 가운데 열(눈썹·눈 둘레)을 고정한다.
+    상자 양끝 2열의 머리카락 글자(옆머리)만 머리 색 바꾸기를 받는다. 2026-10-16 2차(스크립트 칩 12프레임 고정 검사)에서 추가 — 기존 21종은 이 규칙 이전 판이라 다시 굽지 않는다."""
+    pal, fr, lab, _, info = P.segment(head_key)
+    boxes = P.SPECS[head_key]['face'].get(d)
+    boxes = [] if not boxes else (list(boxes) if isinstance(boxes[0], (tuple, list)) else [boxes])
+    skin = set(P.SPECS[head_key].get('skin', ''))
+    rows = fr[(d, f)]
+    top = min((b[1] for b in boxes), default=0) + bob
+    hair = {rows[y][x] for y in range(0, top) for x in range(FW) if rows[y][x] != T} - skin
+    out = {}
+    for (x0, y0, x1, y1) in boxes:
+        for y in range(y0 + bob, y1 + bob + 1):
+            for x in range(x0, x1 + 1):
+                if not (0 <= y < FH) or rows[y][x] == T:
+                    continue
+                c = rows[y][x]
+                interior = x0 + 2 <= x <= x1 - 2
+                if c in skin or c not in hair or interior:
+                    out[(x, y)] = hexc(pal[c])
+    return out
+
+
 def compose(head_key, body_key):
     hg, bg = grid_of(head_key), grid_of(body_key)
     hcut, bcut = cut_of(head_key), cut_of(body_key)
     hs, bs = SKIN_OF_BASE[head_key], SKIN_OF_BASE[body_key]
     smap = SKIN_MAP.get((bs, hs), {}) if bs != hs else {}
-    frames, heads = {}, {}
+    frames, heads, fixed = {}, {}, {}
     sil = lambda g, k: [''.join('x' if c else '.' for c in row) for row in g[k]]
+    bspec = P.SPECS[body_key]
+    _, bfr, blab, _, _ = P.segment(body_key)
+    bpal = H.base_of(body_key)[0]
     for d in DIRS:   # 왼쪽도 베이스 자기 프레임을 쓴다(원본이 거울에서 1px 어긋나는 칩이 있다)
         for f in range(3):
             body = bg[(d, f)]
@@ -124,12 +150,18 @@ def compose(head_key, body_key):
                 body = [[smap.get(c, c) if c else None for c in row] for row in body]
             bb = C.bob_of(sil(bg, (d, 1)), sil(bg, (d, f))) if f != 1 else 0
             hb = C.bob_of(sil(hg, (d, 1)), sil(hg, (d, f))) if f != 1 else 0
-            out, hp = compose_frame(hg[(d, f)], hcut, body, bcut, hb, bb)
+            out, hp, (dx, dy) = compose_frame(hg[(d, f)], hcut, body, bcut, hb, bb)
             frames[(d, f)], heads[(d, f)] = out, hp
-    return frames, heads
+            fx = {(x + dx, y + dy): c for (x, y), c in face_fixed(head_key, d, f, hb).items() if y < hcut + hb}
+            for y in range(bcut + bb, FH):          # 몸 주인의 맨살·손(F) 칸: 피부 계열 변환값으로 고정
+                for x in range(FW):
+                    if blab[(d, f)][y][x] == 'F' and bfr[(d, f)][y][x] != T:
+                        fx[(x, y)] = body[y][x]
+            fixed[(d, f)] = fx
+    return frames, heads, fixed
 
 
-def labels(body_key, frames, heads):
+def labels(body_key, frames, heads, fixed=None):
     sp = P.SPECS[body_key]
     waist, shoe = sp['waist'], sp['shoe_top']
     lab = {}
@@ -141,6 +173,8 @@ def labels(body_key, frames, heads):
                 c = g[y][x]
                 if not c:
                     r.append(None)
+                elif fixed is not None and (x, y) in fixed[k]:
+                    r.append('F')
                 elif (x, y) in heads[k]:
                     r.append('H')
                 elif y < waist:
@@ -204,7 +238,7 @@ def recolor(frames, lab, rules):
                 if key not in cache:
                     new = None
                     for rule in rules:
-                        if rule['region'] not in ('*', region):
+                        if region == 'F' or rule['region'] not in ('*', region):
                             continue
                         new = recolor_rule(c, rule)
                         if new:
@@ -284,13 +318,30 @@ def check(pal, rows, body_key, head_key=None, waive=()):
     return errs, warns
 
 
+def lock_check(pal, rows, fixed):
+    """얼굴·피부·손 12프레임 화소 고정 검사(스크립트 칩). 고정 칸마다 결과 색이 원본(피부 계열 변환 뒤)과 같아야 한다 → (errors, 요약)."""
+    errs, n = [], 0
+    for (d, f), fx in fixed.items():
+        grid = rows[(d, f)]
+        for (x, y), want in fx.items():
+            n += 1
+            c = grid[y][x]
+            got = hexc(pal[c]) if c != T else None
+            if got != want:
+                errs.append(f'{d} {f} ({x},{y}): 고정 칸(얼굴·피부·손)이 {want} → {got} 로 바뀌었다')
+    return errs[:6], f'고정 검사: 12프레임 {n}칸(얼굴·눈·피부·손) 화소 동일 — ' + ('통과' if not errs else f'실패 {len(errs)}+')
+
+
 def build_one(rec):
-    frames, heads = compose(rec['head'], rec['body'])
-    lab = labels(rec['body'], frames, heads)
+    frames, heads, fixed = compose(rec['head'], rec['body'])
+    lab = labels(rec['body'], frames, heads, fixed if rec.get('lock') else None)
     if rec.get('recolor'):
         frames = recolor(frames, lab, rec['recolor'])
     pal, rows = to_chr(frames)
     errs, warns = check(pal, rows, rec['body'], rec['head'], rec.get('waive', ()))
+    if rec.get('lock'):
+        lerrs, lsum = lock_check(pal, rows, fixed)
+        errs, warns = errs + lerrs, warns + [lsum]
     return pal, rows, errs, warns
 
 
@@ -299,7 +350,7 @@ def cmd_roundtrip(a):
     for key in [f'Scarloxy1:{i}' for i in range(8)] + ['Scarloxy2:0', 'Scarloxy2:1']:
         if key in LONG_HAIR:
             continue
-        frames, heads = compose(key, key)
+        frames, heads, _ = compose(key, key)
         base = grid_of(key)
         diff = sum(1 for d in ('up', 'right', 'down') for f in range(3) for y in range(FH) for x in range(FW) if frames[(d, f)][y][x] != base[(d, f)][y][x])
         print(key, 'identical' if diff == 0 else f'{diff} px differ')

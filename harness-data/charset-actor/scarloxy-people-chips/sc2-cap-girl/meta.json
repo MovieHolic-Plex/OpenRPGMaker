@@ -1,0 +1,54 @@
+{
+ "key": "sc2-cap-girl",
+ "name": "캡 소녀",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy1:4",
+ "recolor": [
+  {
+   "region": "H",
+   "to": {
+    "hue": 320,
+    "s": 0.6,
+    "v": 0.9
+   },
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "T",
+   "to": {
+    "hue": 185,
+    "s": 0.5,
+    "v": 0.9
+   },
+   "hue": [
+    40,
+    60
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 270,
+    "s": 0.5,
+    "v": 0.7
+   },
+   "hue": [
+    300,
+    350
+   ],
+   "smin": 0.2
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "면제: edge",
+  "고정 검사: 12프레임 595칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-cap-girl"
+}

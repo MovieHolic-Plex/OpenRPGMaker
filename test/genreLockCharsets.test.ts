@@ -235,4 +235,15 @@ describe("생성한 캠페인 맞추기", () => {
     expect(denied.ok).toBe(false);
     expect(denied.issues?.[0]?.code).toBe("genre-lock");
   });
+  it("Scarloxy 변형 사람 칩 2차(ScarloxyPeople5~10)도 같은 계열이라 허용되고 RTP 사람 칩은 계속 거부된다", () => {
+    for (const n of [5, 8, 10]) expect(charsetFamilyOf(undefined, `tex_oprn_charset_scarloxy_people${n}`)).toBe("scarloxy-people");
+    expect(charsetFamilyOf(undefined, "oprn-charset-scarloxy-people10")).toBe("scarloxy-people");
+    const ctx = ctxOf(lockedProject());
+    const clerk = placeNpc(ctx, "점원", 5, { graphic: { textureKey: "tex_oprn_charset_scarloxy_people5", characterIndex: 0 } });
+    expect(clerk.ok).toBe(true);
+    const boss = placeNpc(ctx, "드래곤 도장 보스", 7, { graphic: { textureKey: "tex_oprn_charset_scarloxy_people8", characterIndex: 1 } });
+    expect(boss.ok).toBe(true);
+    const denied = placeNpc(ctx, "판타지 청년", 9, { graphic: RTP_YOUTH });
+    expect(denied.ok).toBe(false);
+  });
 });

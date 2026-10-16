@@ -1,0 +1,48 @@
+{
+ "key": "sc2-lifeguard",
+ "arch": "sp2-lifeguard",
+ "base": "Scarloxy1:1",
+ "variant": "금발 위에 흰 선캡(h 구역 H paint: 둥근 윗면 + 앞으로 나온 챙), 머리색은 갈색, 붉은 상의를 흰 구조 조끼(T paint 가슴 중앙 붉은 십자 3×3칸), 흰 반바지는 붉은색, 신발은 흰색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdgn"
+ ],
+ "metrics": {
+  "added_up0": 6,
+  "added_up1": 6,
+  "added_up2": 6,
+  "added_right0": 20,
+  "added_right1": 20,
+  "added_right2": 20,
+  "added_down0": 6,
+  "added_down1": 6,
+  "added_down2": 6,
+  "added_left0": 18,
+  "added_left1": 18,
+  "added_left2": 14,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.956,
+   "B": 0.916,
+   "S": 1.0
+  },
+  "cross": 11,
+  "cross_base": 11,
+  "lone": 234,
+  "lone_base": 177
+ },
+ "distinct": {
+  "score": 0.659,
+  "nearest": "accepted:sp2-gym-fighting-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 43,
+  "hole_filled_px": 2,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-lifeguard-a"
+}

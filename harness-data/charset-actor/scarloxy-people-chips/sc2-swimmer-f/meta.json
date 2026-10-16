@@ -1,0 +1,50 @@
+{
+ "key": "sc2-swimmer-f",
+ "arch": "sp2-swimmer-f",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 분홍 수영모로 칠하되(H recolor 전부 분홍 3톤) 갈래 묶음 윤곽은 둥글게 H paint 로 정리, 노란 웃옷을 연한 보라 수영복 상의, 분홍 반바지를 보라 수영복 하의로 recolor.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdghikmopqtw"
+ ],
+ "metrics": {
+  "added_up0": 14,
+  "added_up1": 14,
+  "added_up2": 14,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 14,
+  "added_down1": 14,
+  "added_down2": 14,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.784,
+   "S": 1.0
+  },
+  "cross": 13,
+  "cross_base": 12,
+  "lone": 216,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.82,
+  "nearest": "accepted:sp2-clerk-f-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 24,
+  "hole_filled_px": 4,
+  "sanitized": {
+   "베이스 몸 칸을 비운 것을 되돌림": 1
+  }
+ },
+ "run": "sp2-r1/sp2-swimmer-f-a"
+}

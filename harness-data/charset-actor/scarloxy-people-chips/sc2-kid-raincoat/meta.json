@@ -1,0 +1,48 @@
+{
+ "key": "sc2-kid-raincoat",
+ "arch": "sp2-kid-raincoat",
+ "base": "Scarloxy1:5",
+ "variant": "보라 머리를 노란 후드로 칠하고(H 전부 노랑 3톤, 머리 윗선 H paint 로 둥글게 후드 모양), 민트 민소매를 노란 우비로 recolor, 가슴 중앙 단추 한 줄(T paint 흰색), 주황 반바지는 파랑, 신발은 파랑.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdf"
+ ],
+ "metrics": {
+  "added_up0": 21,
+  "added_up1": 20,
+  "added_up2": 20,
+  "added_right0": 19,
+  "added_right1": 19,
+  "added_right2": 19,
+  "added_down0": 20,
+  "added_down1": 20,
+  "added_down2": 21,
+  "added_left0": 19,
+  "added_left1": 19,
+  "added_left2": 19,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.893,
+   "S": 0.982
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 197,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.529,
+  "nearest": "accepted:sp2-capture-contest-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 20,
+  "hole_filled_px": 6,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-kid-raincoat-a"
+}

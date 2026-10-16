@@ -1,0 +1,49 @@
+{
+ "key": "sc2-gym-ground",
+ "arch": "sp2-gym-ground",
+ "base": "Scarloxy2:1",
+ "variant": "초록 잎 머리를 노란 안전모로 바꾼다: H 의 초록 전부를 노랑·주황 3톤으로 recolor 하고 h 구역에 둥글게 덮고 챙 한 줄(H paint). 연두 튜닉을 황토색 작업복으로 recolor, 가슴에 큰 사각 주머니 2개와 어깨끈(T paint), 올리브 바지는 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "한 프레임에만 나오는 색 c — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 BCdeos"
+ ],
+ "metrics": {
+  "added_up0": 27,
+  "added_up1": 35,
+  "added_up2": 15,
+  "added_right0": 28,
+  "added_right1": 31,
+  "added_right2": 31,
+  "added_down0": 27,
+  "added_down1": 35,
+  "added_down2": 15,
+  "added_left0": 28,
+  "added_left1": 28,
+  "added_left2": 28,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.982,
+   "B": 0.938,
+   "S": 0.991
+  },
+  "cross": 4,
+  "cross_base": 0,
+  "lone": 238,
+  "lone_base": 273
+ },
+ "distinct": {
+  "score": 0.726,
+  "nearest": "ScarloxyPeople3#1"
+ },
+ "repairs": {
+  "dropped_stray_px": 84,
+  "hole_filled_px": 6,
+  "sanitized": {}
+ },
+ "run": "sp2-t1/sp2-gym-ground-a"
+}

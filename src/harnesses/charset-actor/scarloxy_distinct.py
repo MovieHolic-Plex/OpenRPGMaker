@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """후보 칩이 이미 있는 Scarloxy 칩(뼈대 10 + 설치분)과 얼마나 다른가. 사용: scarloxy_distinct.py CHIP.png [...]
 실루엣(알파>0) 화소 중 가장 가까운 기존 칩과 L1 색차 60 초과인 비율(12프레임 평균, 걷기 가운데 칸)이다. 0.55 미만이면 「같은 사람 색만 다름」으로 본다."""
+import os
 import sys
 from pathlib import Path
 import numpy as np
@@ -24,6 +25,10 @@ def existing():
         res += [(f'{p.stem}#{i}', c) for i, c in enumerate(chars(p))]
     for p in sorted((ROOT / 'public/assets/generated/charsets').glob('ScarloxyPeople*.png')):
         res += [(f'{p.stem}#{i}', c) for i, c in enumerate(chars(p)) if c[:, :, 3].any()]
+    # 같은 런에서 이미 채택됐지만 아직 설치 전인 칩(SPC_ACCEPT_DIR/<key>.png, 72×128 한 칸)도 「이미 있는 칩」으로 센다.
+    extra = Path(os.environ.get('SPC_ACCEPT_DIR', os.path.expanduser('~/spc-runs/accepted')))
+    for p in sorted(extra.glob('*.png')) if extra.is_dir() else []:
+        res.append((f'accepted:{p.stem}', np.array(Image.open(p).convert('RGBA')).astype(int)))
     return res
 
 

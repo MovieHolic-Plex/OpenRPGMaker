@@ -1,4 +1,4 @@
-// Scarloxy 변형 사람 칩(ScarloxyPeople1~3, charsetFamily `scarloxy-people`)이 몬스터 수집 장르 잠금 아래에서 조수 경로(place_npc, assistantRun)로 놓이고,
+// Scarloxy 변형 사람 칩(ScarloxyPeople1~10, charsetFamily `scarloxy-people`)이 몬스터 수집 장르 잠금 아래에서 조수 경로(place_npc, assistantRun)로 놓이고,
 // SQLite 정본(project.sqlite)에 저장·재로드된 뒤에도 같은 그림·같은 해석 가능 url 로 읽히는지, 허용 밖 RTP 사람 칩은 여전히 거부되는지 본다.
 // 새 프로젝트(createBlankProject + monster-collect 프리셋)와 이 칩이 생기기 전에 저장된 잠금(허용 목록 사본이 같은 `scarloxy-people`)을 각각 임시 폴더에 저장한다.
 // 정본·LegacyDb 를 건드리지 않는다(임시 폴더만).
@@ -21,7 +21,7 @@ const root = dirArg >= 0 ? process.argv[dirArg + 1]! : "/tmp/spc-persist";
 rmSync(root, { recursive: true, force: true });
 mkdirSync(root, { recursive: true });
 
-const WANT = ["경찰관", "연구원", "간호사", "낚시꾼", "라이벌", "신관"] as const;
+const WANT = ["경찰관", "연구원", "간호사", "청록 앞치마 점원", "뱃사람", "역무원", "수영 선수", "드래곤 도장 보스"] as const;
 const report: Record<string, unknown>[] = [];
 const cases: Array<[string, () => Project]> = [
   ["new-project", () => { const p = createBlankProject(); applyGenrePreset(p, "monster-collect"); return p; }],

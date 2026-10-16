@@ -13,6 +13,7 @@
 칸 번호는 덧붙이기 전용이다: 이미 설치된 id 의 시트·칸·화소가 바뀌면 거절한다(--force 없이는 덮지 않는다). 명단은 harness-data/charset-actor/scarloxy-people-install.json.
 뼈대 칩은 Scarloxy MPWSP01(CC BY 4.0, 제작 Scarloxy / Ismael Garcia)이다 — public/assets/ATTRIBUTION.md 「ScarloxyPeople」 절을 함께 유지한다.
 사람 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다(해당 없음).
+2차(2026-10-16): 시트 5~ 의 칩은 Argon 부분 편집(scarloxy_argon2.py)·스크립트(scarloxy_compose.py)로 만들고 scarloxy_collect.py 가 명단에 덧붙인다. 설치·--check 는 scarloxy_lock.py 의 12프레임 화소 고정 검사를 통과해야 한다.
 """
 import argparse
 import hashlib
@@ -24,6 +25,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 import chr as C  # noqa: E402
+import scarloxy_lock as LOCK  # noqa: E402
 from PIL import Image  # noqa: E402
 
 SPEC = ROOT / 'harness-data/charset-actor/scarloxy-people-install.json'
@@ -37,7 +39,7 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def render(key):
+def render(key, n):
     grid = PICKS / key / 'chip.chr.txt'
     pal, _, frames = C.load(grid)
     errors = C.structural_errors(pal, frames)
@@ -54,6 +56,10 @@ def render(key):
         raise SystemExit(f'{key}: 하네스 meta.ok 가 아니다')
     if not (str(meta.get('model', '')).startswith('script-compose') or meta.get('model') in ('gemini-4-argon-high', 'gemini-4-argon-medium')):
         raise SystemExit(f'{key}: 저작 경로가 script-compose 나 Argon 이 아니다 ({meta.get("model")})')
+    if n >= 5:   # 2차(시트 5~): 설치 직전에 얼굴·피부·손 12프레임 화소 고정 검사를 다시 한다(1~4 는 1차 승인분이라 불변).
+        lock = LOCK.check(key)
+        if not lock['ok']:
+            raise SystemExit(f'{key}: 얼굴·피부·손 화소 고정 검사 실패 {lock["bad"]}칸 {lock["sample"]}')
     return image, grid.read_bytes(), meta
 
 
@@ -72,7 +78,7 @@ def main():
             raise SystemExit(f'ScarloxyPeople{n}: 한 시트는 8칸이다. 새 시트로 나눈다(기존 칸 번호 유지).')
         sheet = Image.new('RGBA', (COLS * SLOT_W, ROWS * SLOT_H), (0, 0, 0, 0))
         for index, row in enumerate(chars):
-            image, grid_bytes, meta = render(row['key'])
+            image, grid_bytes, meta = render(row['key'], n)
             sheet.paste(image, ((index % COLS) * SLOT_W, (index // COLS) * SLOT_H))
             entry = {
                 'id': row['id'], 'name': row['name'], 'desc': row['desc'], 'genre': row['genre'], 'role': row['role'],
