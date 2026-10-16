@@ -1,3 +1,4 @@
+import { normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
 import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
 import { normalizeHeldItemEffect } from "@/battle/heldItems";
@@ -705,6 +706,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(record.unforgettable === true ? { unforgettable: true } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
+    ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
+    ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
+    ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),
+    ...(Number.isFinite(record.flinchChance) && record.flinchChance! > 0 ? { flinchChance: clampInteger(record.flinchChance!, 0, 100) } : {}),
     ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
     ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
     ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),

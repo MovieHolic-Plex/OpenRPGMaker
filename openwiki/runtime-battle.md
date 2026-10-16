@@ -2118,3 +2118,21 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
   `unforgettable` 기술은 줄이 흐리고 고르면 거절 문장. 장면은 결정만 돌려주고, 세션 반영은 `applyBattleRewardsToSession` 뒤에
   `replacePendingMonsterSkill` 로 한다(취소·중단이면 미룸). 다른 전투 스킨은 이전 그대로 메뉴 경로다.
 - 증거 장면: `scripts/qa/runtime/poke-battle-sys.probe.mjs learnForget`(원 해상도 960×640, `verify-shots/poke-sys-battle/pa*.png`).
+
+### 기술 규칙 어휘: 고정 피해·연속 타수·반동·풀죽음 (2026-10-16)
+
+모두 `SkillRecord` 의 선택 필드다 — 없으면 기존 기술·기존 저장 바이트·난수열이 그대로다(`normalizeSkillRecord` 가 있을 때만 키를 쓴다).
+어휘·정규화·굴림은 `src/project/skillBattleRules.ts` 한 곳.
+
+- `fixedDamage {mode:"level"} | {mode:"amount",amount}` — 피해 식·급소·날씨 대신 정해진 양(지구던지기·용의분노). 명중 굴림과 타입 무효(상성 0 배 → 0)는 그대로.
+  **gen1 전투 모델만** 먹는다(`applyExactGen1Damage` 의 `fixedDamage`). 보통 기술과 같은 난수 바이트를 쓰므로 난수열 이동이 없다.
+- `multiHit {min,max}` (2~5) — 한 번 쓰면 무작위 타수(2~5 는 2·3 번 각 3/8, 4·5 번 각 1/8). `hitSequence` 가 있으면 그쪽이 이긴다. 규칙이 없으면 rng 를 쓰지 않는다.
+  대상이 쓰러지면 멈추고(`applySkillCast` 의 기존 break), 실제로 맞은 횟수를 `recordSpecial` 로 「N번 맞았다!」.
+- `recoilPercent` — 준 피해(타마다)의 N%, 최소 1 을 시전자가 입는다. 타임라인 `aside:"recoil"` damage 엔트리(시전자 자신 대상)라 HP 바가 줄고 연출 대상·타수로 세지 않는다(`retroSkillChoreography.isAside`).
+  gen1·비 gen1 둘 다 먹는다(`applySkillRecoilAndFlinch`).
+- `flinchChance` — 피해를 준 명중 뒤 확률(gen1 은 `gen1EffectChanceSucceeds`)로 대상이 **이번 라운드 자기 차례를 잃는다**. 대상이 이 라운드 큐에 아직 남아 있을 때만(`actsLaterThisRound`) 굴리므로 느린 시전자가 쓰면 아무 일도 없다 — 선공(`movePriority`)과 짝.
+  `flinchedBattlerIds` 는 라운드 끝(`completeStrictRound`)에 비우고 저장하지 않는다. 차례 때 `prepareGen1CombatAction` 이 `incapacitated{flinch:true}` 엔트리를 남기고 행동을 막는다(문장은 상태 이상 문장이 아니라 「…는 풀이 죽어 움직일 수 없다!」, `battleSequencer`).
+- 조수: `upsert_skill` 의 네 필드(`dbTools` 스키마 + `validateSkillBattleRules` 가 틀린 모양을 허용 값과 함께 거부). `toolCapabilityIndex` `monster-battle-depth` 정책에 어휘·쓰는 법·「상태로 흉내 내지 말 것」 추가.
+  자료집 기술 편집(`databaseCombatRuleFields`)에도 칸이 있다(고급 칸 접힘은 값이 있으면 열린다).
+- 한계: 고정 피해는 gen1 만. 적(야생·트레이너)도 같은 기술을 쓰면 같은 규칙을 탄다. 비 strict 흐름에서는 풀죽음이 라운드 개념이 없어 먹지 않는다(`strictResolution` 없음).
+- 시각 QA: `scripts/qa/runtime/poke-battle-sys-d.probe.mjs`(player.html, 장면 fixedDamage·multiHit·recoil·flinch). 테스트 `test/skillBattleRules.test.ts` 는 작성만 했고 미실행.

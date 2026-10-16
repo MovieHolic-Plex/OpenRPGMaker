@@ -722,11 +722,12 @@ export function createBattleSequencer(
 
   /** 능력치 단계 변화(statStage)가 실린 special 엔트리의 문장 — 에메랄드 문장 규칙이면 「상대/야생 이름」을 쓴다. 아니면 undefined. */
   function statStageLine(entry: BattleTimelineEntrySnapshot, snapshot: BattleSnapshot): string | undefined {
-    if (entry.kind !== "special" || !entry.statStage) return undefined;
+    if (entry.kind !== "special" || (!entry.statStage && !entry.recoil)) return undefined;
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
     if (!target) return undefined;
     const name = emeraldNarrationActive() ? emeraldBattlerName(target, snapshot) : disambiguatedBattlerName(target, peers);
+    if (entry.recoil || !entry.statStage) return `${withJosa(name, "은/는")} 반동 피해를 입었다!`;
     return statStageMessage(name, {
       stat: entry.statStage.stat,
       before: entry.statStage.before,
@@ -781,7 +782,7 @@ export function createBattleSequencer(
       : entry.kind === "stateRemoved" ? `${withJosa(stateLabel(entry.stateId), "이/가")} 풀렸다.`
       : entry.kind === "stateUpkeep" ? `상태 이상으로 ${entry.amount ?? 0} 피해를 입었다.`
       : entry.kind === "stateRecovery" ? `상태로 ${entry.amount ?? 0} 회복했다.`
-      : entry.kind === "incapacitated" ? "상태 이상으로 행동할 수 없다."
+      : entry.kind === "incapacitated" ? (entry.flinch ? "풀이 죽어 행동할 수 없다." : "상태 이상으로 행동할 수 없다.")
       : entry.kind === "switch" ? "전열을 교체했다."
       : entry.kind === "capture" ? (entry.success ? "포획에 성공했다!" : "포획에 실패했다.")
       : "행동을 실행했다.";
@@ -791,6 +792,11 @@ export function createBattleSequencer(
     // 3세대 문장: 「새싹토는 독의 피해를 입었다!」 — 「새싹토: 상태 이상으로 2 피해를 입었다.」는 숫자를 말하는 RPG 로그다.
     if (entry.kind === "stateUpkeep" && !entry.message && target && emeraldNarrationActive() && (entry.amount ?? 0) > 0) {
       return { step: "acting", lines: [`${withJosa(emeraldBattlerName(target, snapshot), "은/는")} ${stateLabel(entry.stateId)}의 피해를 입었다!`], targetId: entry.targetId };
+    }
+    // 풀죽음: 상태 이상이 아니라 이번 차례만 잃는다 — 걸려 있는 상태 문장으로 읽히면 안 된다.
+    if (entry.kind === "incapacitated" && entry.flinch && target) {
+      const who = emeraldNarrationActive() ? emeraldBattlerName(target, snapshot) : disambiguatedBattlerName(target, peers);
+      return { step: "acting", lines: [`${withJosa(who, "은/는")} 풀이 죽어 움직일 수 없다!`], targetId: entry.targetId };
     }
     // 3세대 주요 상태: 「새싹토는 얼어붙어서 움직일 수 없다!」·「새싹토의 얼음이 녹았다!」. 못 움직인 차례는 지금 걸린 주요 상태로 말한다.
     if (target && emeraldNarrationActive() && (entry.kind === "stateAdded" || entry.kind === "stateRemoved" || entry.kind === "incapacitated")) {
