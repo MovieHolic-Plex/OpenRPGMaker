@@ -10,7 +10,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
-import { disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
+import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -436,7 +436,7 @@ function syncEnemyListName(
 ): void {
   const name = row.querySelector<HTMLElement>(".battle-enemy-list-name");
   if (!name) return;
-  name.replaceChildren(document.createTextNode(disambiguatedBattlerName(enemy, enemies)));
+  name.replaceChildren(battleNameText(disambiguatedBattlerName(enemy, enemies)));
   if (!enemy.level) return;
   const level = document.createElement("span");
   level.className = "battle-enemy-list-level";

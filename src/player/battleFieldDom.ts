@@ -1589,6 +1589,14 @@ function setVitalNode(node: Element, kind: "hp" | "mp", value: number, max: numb
   valueNode.textContent = ` ${value}`;
 }
 
+/** HP 상자 이름 글자. 별도 상자로 감싸야 긴 이름만 「…」로 줄고 옆의 Lv 는 남는다(D21). */
+export function battleNameText(text: string): HTMLElement {
+  const node = document.createElement("span");
+  node.className = "battle-name-text";
+  node.textContent = text;
+  return node;
+}
+
 function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-actor-status";
@@ -1597,7 +1605,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
   const name = document.createElement("span");
   name.className = "battle-actor-name";
-  name.textContent = actor.name;
+  name.append(battleNameText(actor.name));
   if (actor.level) {
     const lv = document.createElement("span");
     lv.className = "battle-actor-level";
@@ -1978,7 +1986,9 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   const cluster = document.createElement("span");
   cluster.className = "battle-status-icons";
   cluster.dataset.hasStages = battler.statStages && !battler.defeated ? "true" : "false";
-  const states = battler.stateIds.slice(0, 4).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
+  // 에메랄드 HP 상자: 쓰러진 칸에는 화상·혼란 알약을 남기지 않는다 — 「전투불능」 하나로 충분하고 알약이 빈 HP 바 앞 「HP」 글자를 덮는다(D26).
+  const hideStatesWhenDefeated = battler.defeated && isEmeraldMonsterStyle(store.getCurrent());
+  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
   const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
   // 능력치 단계 알약(ATK↑2·SPE↓1): 쓰러진 배틀러는 단계를 보이지 않는다. 상태 알약 뒤에 붙고 같은 클러스터 안이라 스킨별 배치 규칙을 그대로 탄다.
   const stagePills = battler.defeated ? [] : STAT_STAGE_KEYS.flatMap((stat) => {

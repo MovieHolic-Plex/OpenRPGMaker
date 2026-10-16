@@ -22,13 +22,32 @@ export function emeraldTrainerTroop(snapshot: Pick<BattleSnapshot, "troopId">): 
   return troop?.trainerBattle === true ? { name: troop.name } : undefined;
 }
 
+/**
+ * 문장 창에 들어가는 이름 줄임(D22·D23). 문장 창은 두 줄이고 줄 폭은 전각 약 23자라, 20자 별명·긴 영어 이름이
+ * 문장에 통째로 들어가면 3줄이 되어 윗줄이 테두리에 걸린다. 3세대 이름 상한(10자)에 맞춰 전각 10자(= 20칸) 넘는 이름은 「…」로 줄인다.
+ * HP 상자·목록은 CSS 말줄임이 따로 맡는다 — 여기는 문장에 끼는 이름만.
+ */
+export const EMERALD_MESSAGE_NAME_CELLS = 20;
+export function emeraldShortName(name: string, maxCells: number = EMERALD_MESSAGE_NAME_CELLS): string {
+  let cells = 0;
+  let out = "";
+  for (const char of name) {
+    const width = /[\u1100-\u11ff\u2e80-\u9fff\uac00-\ud7af\uf900-\ufaff\uff00-\uffef\u3000-\u303f]/u.test(char) ? 2 : 1;
+    if (cells + width > maxCells) return `${out.trimEnd()}…`;
+    cells += width;
+    out += char;
+  }
+  return name;
+}
+
 /** 상대 몬스터 호칭. 아군이면 이름 그대로. */
 export function emeraldBattlerName(battler: BattleBattlerSnapshot | undefined, snapshot: BattleSnapshot): string {
   if (!battler) return "상대";
   const isEnemy = [...snapshot.enemies, ...(snapshot.departedEnemies ?? [])].some((enemy) => enemy.id === battler.id)
     && !snapshot.actors.some((actor) => actor.id === battler.id);
-  if (!isEnemy) return battler.name;
-  return `${emeraldTrainerTroop(snapshot) ? "상대" : "야생"} ${battler.name}`;
+  const name = emeraldShortName(battler.name);
+  if (!isEnemy) return name;
+  return `${emeraldTrainerTroop(snapshot) ? "상대" : "야생"} ${name}`;
 }
 
 /** 3세대 주요 상태 문장. 걸림·풀림·못 움직임. 주요 상태가 아니면 undefined(일반 문장으로). */
@@ -59,7 +78,7 @@ export function emeraldMajorStatusLine(phase: "added" | "removed" | "held", stat
 }
 
 export function emeraldMoveLine(userName: string, skillName: string | undefined): string {
-  return skillName && skillName !== "공격" ? `${userName}의 ${skillName}!` : `${userName}의 몸통박치기!`;
+  return skillName && skillName !== "공격" ? `${userName}의 ${emeraldShortName(skillName)}!` : `${userName}의 몸통박치기!`;
 }
 
 /** 기술 결과 한 줄. 보통 명중이면 빈 문자열(HP 바가 말한다). */
@@ -85,7 +104,7 @@ export function emeraldFaintLine(target: BattleBattlerSnapshot, snapshot: Battle
 }
 
 export function emeraldTrainerSendOutLine(trainerName: string, monsterName: string): string {
-  return `${withJosa(trainerName, "은/는")} ${withJosa(monsterName, "을/를")} 내보냈다!`;
+  return `${withJosa(emeraldShortName(trainerName), "은/는")} ${withJosa(emeraldShortName(monsterName), "을/를")} 내보냈다!`;
 }
 
 export function emeraldIntroSendOut(snapshot: BattleSnapshot): string | undefined {
@@ -140,21 +159,21 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
   for (const caught of snapshot.capturedMonsters) {
     const name = project.database.monsterSpecies?.find((species) => species.id === caught.speciesId)?.name;
     if (!name) continue;
-    if (partyCount >= MONSTER_PARTY_MAX) rows.push({ kind: "msg", label: `${withJosa(name, "은/는")} 보관함으로 보내졌다!`, value: "" });
-    else { rows.push({ kind: "msg", label: `${withJosa(name, "은/는")} 새 동료가 되었다!`, value: "" }); partyCount += 1; }
+    if (partyCount >= MONSTER_PARTY_MAX) rows.push({ kind: "msg", label: `${withJosa(emeraldShortName(name), "은/는")} 보관함으로 보내졌다!`, value: "" });
+    else { rows.push({ kind: "msg", label: `${withJosa(emeraldShortName(name), "은/는")} 새 동료가 되었다!`, value: "" }); partyCount += 1; }
   }
   const trainer = emeraldTrainerTroop(snapshot);
-  if (trainer) rows.push({ kind: "msg", label: `${trainer.name}에게 이겼다!`, value: "" });
+  if (trainer) rows.push({ kind: "msg", label: `${emeraldShortName(trainer.name)}에게 이겼다!`, value: "" });
   const exp = Math.max(0, Math.trunc(snapshot.rewards.exp));
   const levelUps = new Map((snapshot.rewards.monsterLevelUps ?? []).map((entry) => [entry.instanceId, entry]));
   for (const actor of snapshot.actors) {
     const instanceId = actor.monsterInstanceId;
     if (!instanceId || !snapshot.participatingActorIds.includes(instanceId) || actor.defeated) continue;
-    if (exp > 0) rows.push({ kind: "msg", label: `${withJosa(actor.name, "은/는")} 경험치를 ${exp} 얻었다!`, value: "" });
+    if (exp > 0) rows.push({ kind: "msg", label: `${withJosa(emeraldShortName(actor.name), "은/는")} 경험치를 ${exp} 얻었다!`, value: "" });
     const levelUp = levelUps.get(instanceId);
     if (!levelUp) continue;
     const statRows = levelUpStatRows(snapshot, levelUp);
-    const levelLine = `${withJosa(levelUp.name, "은/는")} ${withJosa(`레벨 ${levelUp.toLevel}`, "이/가")} 되었다!`;
+    const levelLine = `${withJosa(emeraldShortName(levelUp.name), "은/는")} ${withJosa(`레벨 ${levelUp.toLevel}`, "이/가")} 되었다!`;
     // 첫 상자(오른 양)는 레벨 문장과 같은 줄에 붙는다 — 문장 줄을 따로 쌓으면 상자가 한 박자 늦게 뜬다.
     if (statRows.length > 0) rows.push({ kind: "msg", label: levelLine, value: "", stats: statRows[0]!.stats });
     else rows.push({ kind: "msg", label: levelLine, value: "" });
@@ -163,7 +182,7 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
     const overflow = new Set(levelUp.overflowSkillIds ?? []);
     for (const skillId of levelUp.learnedSkillIds) {
       if (overflow.has(skillId)) continue;
-      rows.push({ kind: "msg", label: `${withJosa(levelUp.name, "은/는")} ${withJosa(skillName(skillId), "을/를")} 배웠다!`, value: "" });
+      rows.push({ kind: "msg", label: `${withJosa(emeraldShortName(levelUp.name), "은/는")} ${withJosa(emeraldShortName(skillName(skillId)), "을/를")} 배웠다!`, value: "" });
     }
   }
   if (snapshot.rewards.gold > 0) {
@@ -174,7 +193,7 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
   const items = new Map<string, number>();
   for (const itemId of snapshot.rewards.items) items.set(itemId, (items.get(itemId) ?? 0) + 1);
   for (const [itemId, count] of items) {
-    const name = project.database.items.find((item) => item.id === itemId)?.name ?? itemId;
+    const name = emeraldShortName(project.database.items.find((item) => item.id === itemId)?.name ?? itemId);
     rows.push({ kind: "msg", label: `${withJosa(count > 1 ? `${name} ${count}개` : name, "을/를")} 손에 넣었다!`, value: "" });
   }
   return rows;

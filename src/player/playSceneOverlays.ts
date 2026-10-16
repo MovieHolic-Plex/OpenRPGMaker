@@ -11,6 +11,8 @@ import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -218,16 +220,62 @@ function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationAc
   });
 }
 
+/**
+ * 에메랄드 몬스터 게임의 전당 등록 쪽(D04). 챔피언을 이긴 직후 내 파티를 한 줄씩 소개한다 — 3세대 엔딩의 「전당 등록!」.
+ * 파티 몬스터가 없으면 만들지 않는다.
+ */
+function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
+  const project = store.getCurrent();
+  if (!isEmeraldMonsterStyle(project)) return undefined;
+  const session = scene.session;
+  const cards = (session.monsterParty ?? []).slice(0, 6).flatMap((id) => {
+    const raw = session.monsterInstances?.[id];
+    if (!raw) return [];
+    const entry = monsterUiEntry(project, raw);
+    const url = resolveAssetResourceUrl(monsterMenuIconResourceId(project, entry.species?.graphic.monsterResourceId) ?? "", { project });
+    const card = textNode("div", "ending-hall-card", "");
+    card.dataset.testid = "ending-hall-card";
+    const face = textNode("span", "ending-hall-face", "");
+    if (url) face.style.backgroundImage = `url("${url}")`;
+    card.append(face, textNode("span", "ending-hall-name", entry.name), textNode("span", "ending-hall-level", `Lv${entry.instance.level}`));
+    return [card];
+  });
+  if (cards.length === 0) return undefined;
+  const hall = textNode("div", "ending-hall", "");
+  hall.dataset.testid = "ending-hall";
+  hall.append(textNode("div", "ending-hall-title", "전당 등록!"));
+  const grid = textNode("div", "ending-hall-grid", "");
+  grid.append(...cards);
+  hall.append(grid);
+  return hall;
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation): void {
   const terminal = createTerminalScene(scene, "ending", title || "엔딩");
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
+  if (isEmeraldMonsterStyle(store.getCurrent())) terminal.root.dataset.monsterStyle = "emerald";
   const run = async (): Promise<void> => {
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 900)) return;
     terminal.phase("silence");
     if (!await terminal.wait(600)) return;
     addBackground(terminal, presentation?.backgroundResourceId);
     playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
+    const hall = emeraldHallOfFame(scene);
+    if (hall) {
+      terminal.root.append(hall);
+      terminal.phase("hall");
+      if (!await terminal.wait(terminal.reducedMotion ? 0 : 1400)) return;
+      const hallHint = textNode("div", "game-over-hint", "Z / Enter 계속");
+      terminal.root.append(hallHint);
+      const advanced = await new Promise<boolean>((resolve) => {
+        terminal.signal.addEventListener("abort", () => resolve(false), { once: true });
+        terminal.keys((event) => { if (isCinematicAdvanceKey(normalizeKey(event.key))) { terminal.keys(); resolve(true); } });
+      });
+      if (!advanced) return;
+      hall.remove(); hallHint.remove();
+      if (!await terminal.wait(400)) return;
+    }
     const epilogue = textNode("div", "ending-epilogue", "");
     epilogue.append(textNode("div", "ending-kicker", presentation?.tone === "dark" ? "이야기의 끝" : "우리의 여정"));
     epilogue.append(textNode("h1", "ending-heading", title || "The End"));
