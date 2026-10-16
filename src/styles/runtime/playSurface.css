@@ -413,3 +413,17 @@
 }
 .cinematic-shot .cinematic-layer[data-depth='background'] { z-index: 1; }
 .cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }
+
+/* 폰 세로(D16): 무대는 가로 폭에 맞춰 0.8배로 줄 수밖에 없다(480 논리 폭 > 390 화면). 글자가 작게 보이는 대신
+   남는 아래 띠에 가로 보기를 권하는 안내를 둔다. 도트 격자 계약상 비정수 확대·세로 전용 레이아웃은 만들지 않는다. */
+.play-viewport[data-layout="portrait"]::after {
+  color: #98a090;
+  content: "가로로 돌리면 더 크게 보여요";
+  font: 18px/24px "Galmuri9", monospace;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: calc(var(--play-stage-top) + var(--play-logical-height) * var(--play-scale) + 16px);
+}

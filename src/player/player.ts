@@ -45,7 +45,7 @@ import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
 import { createPlaySurface } from "@/player/playSurface";
 import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
-import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
+import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
@@ -80,7 +80,7 @@ import {
 import { openLicenseDialog } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { AUDIO_HANDOFF_REGISTRY_KEY, getAudioEngine, playAudioCommand, stopAudioCommand, stopAllAudio } from "@/player/audio";
-import { installPlayPointerBlocker } from "@/player/playInputBlocker";
+import { installPlayPointerBlocker, installRightClickCancel } from "@/player/playInputBlocker";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import {
   mountPlayLoadingOverlay,
@@ -132,6 +132,10 @@ export type RenderPlayerOptions = {
   // 플레이 서피스 배율 정책. 내보낸 게임과 테스트 플레이는 fit으로 창에 맞춘다.
   // 명시적인 integer 호스트는 정수 배율을 유지한다.
   readonly surfaceScaleMode?: PlaySurfaceScaleMode;
+  // 마우스·터치 입력을 연다(D15). 기본은 키보드 전용이다 — RM2003 계열 게임은 호버·클릭을 일부러 막는다.
+  // 켜면 메뉴·전투 명령·대사 상자의 클릭이 키보드와 같은 핸들러를 타고, 오른쪽 클릭은 취소(Esc)가 되며,
+  // 터치 기기(coarse 포인터)에서는 가상 패드가 붙는다. 몬스터 수집 게임(에메랄드 프로필)이 쓴다.
+  readonly pointerInput?: boolean;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
   readonly autoStartRun?: boolean;
@@ -193,6 +197,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // teardownPlayer 이후에 호스트 버튼/F5 가 들어와도 새 런(타이머·리스너)을 만들지 않는다.
   let shellActive = true;
   const surfaceScaleMode: PlaySurfaceScaleMode = options.surfaceScaleMode ?? "integer";
+  const pointerInput = options.pointerInput === true;
   // 재시작용 시작 지점. 선택-이벤트 테스트는 호출자가 세션을 주므로 그 세션이 플레이 중
   // 이동하기 전인 마운트 시점의 스폰만 붙잡아 둔다.
   const restartSpawn: { readonly mapId: string; readonly x: number; readonly y: number } | undefined =
@@ -206,9 +211,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       : undefined);
   const layout = el("div", {
     class: "player-layout system-shell",
-    dataset: { playInputOwner: "keyboard-only" },
+    dataset: { playInputOwner: pointerInput ? "play-ui" : "keyboard-only" },
   });
+  if (pointerInput) layout.dataset.pointerInput = "true";
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
+  const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   main.append(layout);
 
   const stopGame = (): void => {
@@ -310,7 +317,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -322,7 +329,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
     // 합성 이벤트로 기존 키보드 입력 경로(이동/대사/메뉴)를 그대로 구동한다.
-    touchPad = createTouchPad(surface.stage);
+    touchPad = createTouchPad(pointerInput ? surface.viewport : surface.stage, pointerInput ? { enabled: isTouchDevice(), skin: "gba" } : undefined);
     if (preflight.blockers.length > 0) {
       // 고칠 수 없는 상태(맵 0개 등)는 Phaser 를 띄우지 않는다 — 왜 못 노는지를 그대로 말한다.
       presentRecovery(loading, run, {
@@ -684,7 +691,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter, { topAlignPortrait: pointerInput });
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
@@ -883,7 +890,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter, { topAlignPortrait: pointerInput });
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -951,7 +958,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const project = store.getCurrent(), sequence = project.system.opening;
     if (!sequence?.enabled || sequence.entry?.mode !== 'before-title' || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, undefined, { topAlignPortrait: pointerInput });
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
@@ -987,7 +994,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter, { topAlignPortrait: pointerInput });
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -1151,6 +1158,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     audioWarmup.dispose();
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
+    cleanupRightClickCancel();
     stopGame();
     audioEngine.setQaInstrumentation(false);
     clearChildren(layout);

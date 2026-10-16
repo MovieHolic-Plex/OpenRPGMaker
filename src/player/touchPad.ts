@@ -63,8 +63,15 @@ function dispatchKey(type: "keydown" | "keyup", key: string): void {
 
 // host(플레이 스테이지)에 가상 패드를 부착한다.
 // env 오버라이드가 명시적으로 true일 때만 부착한다. 그 외에는 no-op.
-export function createTouchPad(host: HTMLElement): TouchPadHandle {
-  if (touchControlsOverride() !== true) {
+export interface TouchPadOptions {
+  /** 호출부가 켠다(기기 판정 포함). 없으면 env 오버라이드만 따른다. */
+  readonly enabled?: boolean;
+  /** `gba`: 480×320 스테이지에 맞춘 작은 패드(D15). */
+  readonly skin?: "gba";
+}
+
+export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): TouchPadHandle {
+  if (options?.enabled !== true && touchControlsOverride() !== true) {
     return { cleanup: () => {} };
   }
 
@@ -228,7 +235,7 @@ export function createTouchPad(host: HTMLElement): TouchPadHandle {
 
   const pad = el("div", {
     class: "touch-pad",
-    dataset: { testid: "touch-pad", playInputOwner: "touch-controls" },
+    dataset: { testid: "touch-pad", playInputOwner: "touch-controls", ...(options?.skin ? { skin: options.skin } : {}) },
     children: [dpad, actions],
   });
   host.append(pad);
