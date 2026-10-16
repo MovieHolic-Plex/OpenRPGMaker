@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { jrpgCompletionGaps } from "@/qa/gameCheck/jrpgCompletion";
+import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "@/qa/gameCheck/jrpgCompletion";
 import { isRateLimitMessage, rateLimitedUnresolved } from "../scripts/lib/piTeamRuntime";
 import type { Project } from "@/project/types";
 
@@ -37,6 +37,29 @@ describe("jrpgCompletionGaps", () => {
 
   it("ignores non-JRPG projects", () => {
     expect(jrpgCompletionGaps({ system: { genre: "monster-collect" }, maps: {}, startMapId: "x" } as unknown as Project, "")).toEqual([]);
+  });
+});
+
+describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
+  it("applies to a chat-line JRPG request, not to an unrelated small edit", () => {
+    expect(jrpgCompletionGateApplies(jrpg(), "크로노 트리거처럼 시간여행 JRPG 만들어 줘")).toBe(true);
+    expect(jrpgCompletionGateApplies({ system: {} } as unknown as Project, "파이널판타지6 같은 게임 만들어 줘")).toBe(true);
+    expect(jrpgCompletionGateApplies(jrpg(), "여관 하나만 더 지어 줘")).toBe(false);
+    expect(jrpgCompletionGateApplies(jrpg(), "이 게임을 처음부터 다시 만들어 줘")).toBe(true);
+  });
+
+  it("flags an opening that is only the title card", () => {
+    const only = jrpg({ system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, opening: { enabled: true, scenes: [{ id: "s", kind: "text", narration: "— 새 게임 —", durationMs: 4200 }] } } });
+    expect(jrpgCompletionGaps(only, "").some((gap) => gap.includes("오프닝"))).toBe(true);
+    const written = jrpg({ system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, opening: { enabled: true, scenes: [{ id: "s", kind: "text", narration: "옛날 옛적에 별이 떨어졌다.", durationMs: 4200 }, { id: "t", kind: "text", narration: "— 버들나루의 봉인 —", durationMs: 4200 }] } } });
+    expect(jrpgCompletionGaps(written, "").some((gap) => gap.includes("오프닝"))).toBe(false);
+    const off = jrpg({ system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, opening: { enabled: false, scenes: [{ id: "s", kind: "text", narration: "— 새 게임 —" }] } } });
+    expect(jrpgCompletionGaps(off, "").some((gap) => gap.includes("오프닝"))).toBe(false);
+  });
+
+  it("uses the request text as part of the brief for the time-ending check", () => {
+    const project = jrpg({ endings: [{ id: "ending_first_segment", name: "첫 구간 끝" }] });
+    expect(jrpgCompletionGaps(project, "", { task: "과거와 미래를 오가는 RPG 만들어 줘" }).some((gap) => gap.includes("첫 구간 끝"))).toBe(true);
   });
 });
 

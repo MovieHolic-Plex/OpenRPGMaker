@@ -13,6 +13,10 @@ import { visitAllCommands } from "./walk";
 import { checkJrpg } from "./jrpg";
 
 const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트", "New Game", "New Project"]);
+/** 채팅 한 줄(「크로노 트리거 같은 시간여행 JRPG 만들어 줘」)로 온 JRPG 요청인가. 기획서 프롬프트가 아니어도 같은 완료 가드를 받게 한다. */
+const JRPG_TASK = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*트리거|파이널\s*판타지|\bff\s?(?:[0-9]{1,2}|[ivx]{1,4})\b|드래곤\s*퀘스트/iu;
+/** 이미 JRPG 인 프로젝트에서 게임 전체를 지으라는 요청인가(작은 수정 요청에는 가드를 걸지 않는다). */
+const WHOLE_GAME_TASK = /게임을?\s*(?:만들|제작|완성|지어|짜)|처음부터|전체를?\s*(?:만들|제작|완성)/u;
 const TIME_BRIEF = /시간|시대|과거|미래|타임|평행|크로노|time|chrono|era\b/iu;
 /** 시작 마을에서 말을 거는 인물의 최소 수 — 촌장 하나로는 마을이 아니다. */
 export const START_TOWN_MIN_TALKERS = 2;
@@ -23,15 +27,43 @@ function isJrpg(project: Project): boolean {
   return project.system?.genre === "adventure-jrpg" || project.gameDesignBrief?.presetId === "adventure-jrpg";
 }
 
-export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(project)): string[] {
-  if (!isJrpg(project)) return [];
+/**
+ * 채팅 한 줄 요청에도 JRPG 완료 가드를 거는가. 기획서 프롬프트(segmentGate)가 아니면 팀 finish 는 JRPG 가드를 한 번도 부르지 않아
+ * 파티 능력치 동일·보스 무해·기본 오프닝이 그대로 끝났다(jrpg-loop-1 ct1: check 경고 4건을 안고 finish 통과).
+ */
+export function jrpgCompletionGateApplies(project: Project, task = ""): boolean {
+  if (JRPG_TASK.test(task)) return true;
+  return isJrpg(project) && WHOLE_GAME_TASK.test(task);
+}
+
+/** 오프닝이 제목 카드(「— 제목 —」)뿐인가 — 도입을 쓰지 않은 채 끝낸 것이다. 사용자가 끈 오프닝(enabled:false)은 아니다. */
+function openingIsOnlyTitleCard(project: Project): boolean {
+  const opening = project.system?.opening;
+  if (!opening || opening.enabled === false) return false;
+  const scenes = opening.scenes ?? [];
+  if (scenes.length === 0) return false;
+  return scenes.every((scene) => {
+    const narration = typeof scene.narration === "string" ? scene.narration.trim() : "";
+    const hasPicture = "resourceId" in scene && Boolean((scene as { resourceId?: unknown }).resourceId);
+    return scene.kind === "text" && !hasPicture && /^[—–-]+\s*.+?\s*[—–-]+$/u.test(narration);
+  });
+}
+
+export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(project), options: { readonly task?: string } = {}): string[] {
+  if (!isJrpg(project) && !JRPG_TASK.test(options.task ?? "")) return [];
   const gaps: string[] = [];
+  if (options.task) briefText = `${briefText} ${options.task}`;
 
   // 1) 기본 제목.
   const title = (project.system?.titleScreen?.title ?? "").trim();
   const metaTitle = (project.meta?.title ?? "").trim();
   if (PLACEHOLDER_TITLES.has(title) || PLACEHOLDER_TITLES.has(metaTitle)) {
     gaps.push(`게임 제목이 기본값 「${title || metaTitle || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 짓고, 기본 부제(「A NEW ADVENTURE」)를 쓰지 않을 거면 logoStyle 을 정하세요.`);
+  }
+
+  // 1b) 오프닝 — 제목 카드 한 장(씨앗이 남긴 「— 새 게임 —」 포함)뿐이면 새 게임을 눌러도 검은 화면에 글자만 뜬다.
+  if (openingIsOnlyTitleCard(project)) {
+    gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜹니다. plan_opening/set_opening 으로 이 게임의 도입을 2~4컷(세계·발단·주인공) 써서 넣으세요.");
   }
 
   // 2) 시작 마을 인물 — 말을 거는 이벤트(text/say 명령이 있는 이벤트)가 시작 맵과, 문 하나로 닿는 마을(길 맵 제외)을 합쳐 최소 몇 명 있어야 한다.
