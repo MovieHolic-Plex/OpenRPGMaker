@@ -112,9 +112,7 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **제목 그림 잠금**: 연애 잠금 프로젝트에서 조수가 제목 배경을 연애 허용 목록(`romanceTitleArt.ts` `ROMANCE_TITLE_BACKGROUNDS`) 밖의 번들 그림(농장 등)으로 바꾸면 `toolRunner.ts rejectRomanceTitleMismatch` 가 `romance-title-art` 로 거절한다. 사용자가 올린 그림은 막지 않는다.
 - **긴 제목 (R05)**: `title.css` 의 제목 `max-width` 가 제목 왼쪽(`--title-left`, `titleScreen.ts` 가 설정)에서 오른쪽 가장자리까지만 쓰고 줄을 바꾼다.
 - **엔딩 화면 위 작은 줄 (R08)**: `EndingPresentation.kicker`(≤24자, `define_ending.presentation.kicker`). 비우면 연애 프로젝트(`usesRelationshipMenu`)는 「두 사람의 이야기」, 어두운 톤은 「이야기의 끝」, 나머지는 「우리의 여정」.
-||||||| parent of 686b6ba46b (docs(openwiki): romance HUD default layout and short names)
 
-||||||| parent of f6690b797c (docs(openwiki): romance HUD default layout and short names)
 
 
 ## HUD 가림 · 짧은 이름 (2026-10-16 romance-fix-4, R06/R09)
