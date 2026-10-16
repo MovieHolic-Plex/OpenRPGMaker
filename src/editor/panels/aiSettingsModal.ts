@@ -249,12 +249,14 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-config-image-model" },
   }) as HTMLSelectElement;
   const imageStatus = el("p", {
-    class: "ai-config-help",
+    class: "ai-config-help ai-card-status",
     attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-image-status" },
   });
-  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 선택과 무관하게 항상 보이고, GPT 가 아닌 동안에만
-  // 한 번에 바꾸는 버튼을 둔다 — 추천만 있고 바꿀 길이 제공자·모델 두 셀렉트를 차례로 건드리는 것뿐이면 불편하다.
+  // 로그인·제공 방식처럼 «고른 뒤에 읽는» 문단은 카드 안 「자세히」 로 접는다. 항상 보이는 줄은 상태 한 줄뿐이다.
+  const imageRouteNote = el("p", { class: "ai-config-help", dataset: { testid: "ai-config-image-route-note" } });
+  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 추천은 GPT 가 아닐 때만 한 줄로 보이고, 바꾸는 버튼이 곁에 붙는다 —
+  // 이미 GPT 면 말할 것이 없으므로 숨는다(예전 상자형 배너는 로그인 안내와 같은 상자 모양이라 겹쳐 보였다).
   const recommendedImage = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === CODEX_PROVIDER_ID && entry.supported);
   const useRecommendedImage = el("button", {
     class: "ai-assistant-action ai-config-recommend-action",
@@ -269,10 +271,7 @@ export function renderAiSettingsForm(options: {
     children: [
       el("p", {
         class: "ai-config-recommend-text",
-        children: [
-          el("strong", { text: "배경·대형 그림은 GPT 이미지 모델을 추천합니다." }),
-          el("span", { text: " 앵글·초점 지시를 더 잘 지키고 해상도도 높습니다. ChatGPT 계정 연결이 필요합니다." }),
-        ],
+        text: "GPT 이미지 모델을 권장합니다. 앵글·초점 지시를 더 잘 지키고 해상도도 높습니다.",
       }),
       useRecommendedImage,
     ],
@@ -280,6 +279,7 @@ export function renderAiSettingsForm(options: {
   const refreshImageRecommendation = (): void => {
     const onGpt = imageProvider.value === CODEX_PROVIDER_ID;
     imageRecommendation.dataset.state = onGpt ? "active" : "suggest";
+    imageRecommendation.hidden = onGpt || !recommendedImage;
     useRecommendedImage.hidden = onGpt || !recommendedImage;
   };
   const refreshImageStatus = (): void => {
@@ -287,9 +287,13 @@ export function renderAiSettingsForm(options: {
     const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
     imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
     imageStatus.textContent = entry?.supported
-      ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
-        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다.")
+      ? `${entry.providerLabel} 로그인이 필요합니다.`
       : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
+    const routeNote = entry?.supported && entry.providerId !== DEFAULT_IMAGE_PROVIDER_ID
+      ? "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다."
+      : "";
+    imageRouteNote.textContent = routeNote;
+    imageRouteNote.hidden = routeNote === "";
   };
   const refreshImageModels = (selected: string): void => {
     const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
@@ -325,14 +329,14 @@ export function renderAiSettingsForm(options: {
     children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
   }) as HTMLSelectElement;
   const pixelStatus = el("p", {
-    class: "ai-config-help",
+    class: "ai-config-help ai-card-status",
     attrs: { id: "ai-config-pixel-status", role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-pixel-status" },
   });
   const refreshPixelModels = (selected: string): void => {
     const brain = `${configForUltrabrain(config).model}`;
     pixelModelSelect.replaceChildren(
-      el("option", { attrs: { value: PIXEL_FOLLOW }, text: `계획·최종 판단 모델을 따라가기 (${brain})` }),
+      el("option", { attrs: { value: PIXEL_FOLLOW }, text: `계획 모델과 같게 (${brain})` }),
       ...PIXEL_MODEL_CHOICES.map(choice => el("option", {
         attrs: { value: pixelKey(choice.provider, choice.model) }, text: `${choice.providerLabel} · ${choice.label}`,
       })),
@@ -349,10 +353,10 @@ export function renderAiSettingsForm(options: {
     pixelEffort.disabled = following;
     const choice = PIXEL_MODEL_CHOICES.find(entry => pixelKey(entry.provider, entry.model) === pixelModelSelect.value);
     pixelStatus.textContent = following
-      ? "따로 고르지 않아 계획·최종 판단 모델이 공방의 도트 그리기를 맡습니다(기존 동작)."
+      ? "따로 고르지 않아 계획·최종 판단 모델이 그립니다."
       : choice?.model.startsWith("claude")
-        ? "Claude 모델은 Google 계정 연결로 씁니다. 계정에서 쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다."
-        : "선택한 모델의 계정 로그인이 필요합니다. 쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다.";
+        ? "Claude 모델은 Google 계정 연결로 씁니다."
+        : "선택한 모델의 계정 로그인이 필요합니다.";
   };
   refreshPixelModels(initialPixel.follows ? PIXEL_FOLLOW : pixelKey(initialPixel.model.provider, initialPixel.model.model));
   pixelEffort.value = initialPixel.model.thinkingLevel;
@@ -1126,17 +1130,30 @@ export function renderAiSettingsForm(options: {
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
         rolesDetails,
-        settingsSection("image", "이미지", "그림의 종류에 따라 쓰는 모델이 다릅니다. 이미지를 읽는 Vision과는 별도로 고릅니다.", [
-          settingsGroup("배경·대형 이미지 — 생성형 이미지 모델", "타이틀·오프닝·컷신·배경·초상처럼 그림 한 장을 통째로 그리는 용도입니다.", "image-large", [
-            settingsRow("이미지 생성 제공자", "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.", imageProvider),
-            settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
-            imageRecommendation,
+        settingsSection("image", "그림·도트 모델", "무엇을 만드느냐에 따라 쓰는 모델이 따로 있습니다.", [
+          settingsCard("image-large", "그림 (타이틀·배경·컷신·초상)", "이미지 생성 모델이 한 장을 통째로 그립니다.", [
+            settingsRow("제공자", "", imageProvider),
+            settingsRow("모델", "", imageModel),
             imageStatus,
+            imageRecommendation,
+            settingsDetails([
+              "인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다.",
+              imageRouteNote,
+              "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.",
+              "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.",
+              "이미지를 읽는 Vision 모델과는 별도로 고릅니다.",
+            ]),
           ]),
-          settingsGroup("도트 저작 — 텍스트 모델이 격자로 찍기", "타일셋·캐릭터셋·맵 기물 같은 도트는 이미지 모델이 아니라 텍스트 모델이 픽셀 격자(문자열 행)와 좌표를 직접 써서 만듭니다. 이미지 모델은 도트 눈금·색 수·3/4 시점을 지키지 못해 이 용도에는 쓰지 않습니다.", "image-dot", [
-            settingsRow("도트 저작 모델", "Argon 또는 Claude 계열을 고릅니다. 공방의 그리기 단계가 이 모델을 씁니다. 조수 채팅은 이 칸이 아니라 위 「역할별 모델」을 따릅니다.", pixelModelSelect),
-            settingsRow("도트 저작 추론 강도", "격자를 한 줄씩 맞추는 일이라 보통 이상을 권합니다.", pixelEffort),
+          settingsCard("image-dot", "도트 (타일·캐릭터·맵 기물)", "텍스트 모델이 격자를 한 줄씩 써서 찍습니다.", [
+            settingsRow("모델", "", pixelModelSelect),
+            settingsRow("추론 강도", "", pixelEffort),
             pixelStatus,
+            settingsDetails([
+              "공방의 그리기 단계가 이 모델을 씁니다. 조수 채팅은 이 칸이 아니라 위 「역할별 모델 직접 지정」을 따릅니다.",
+              "Argon 또는 Claude 계열을 고릅니다. 격자를 한 줄씩 맞추는 일이라 추론 강도는 보통 이상을 권합니다.",
+              "이미지 모델은 도트 눈금·색 수·3/4 시점을 지키지 못해 이 용도에는 쓰지 않습니다.",
+              "쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다.",
+            ]),
           ]),
         ]),
       ]),
@@ -1222,17 +1239,34 @@ function settingsSection(
   });
 }
 
-/** 한 절 안의 소제목 묶음 — 이미지 절이 «큰 그림»과 «도트» 두 갈래를 나란히 보여 줄 때 쓴다. */
-function settingsGroup(title: string, description: string, id: string, children: readonly HTMLElement[]): HTMLElement {
+/**
+ * 한 절 안의 «용도 카드» — 용도(제목 한 줄 + 설명 한 줄) 아래 모델 선택만 둔다.
+ * 그림과 도트처럼 같은 위계의 용도를 나란히 놓되, 서로 다른 상자 안에 가둬 컨트롤이 섞여 읽히지 않게 한다.
+ */
+function settingsCard(id: string, title: string, description: string, children: readonly HTMLElement[]): HTMLElement {
+  const titleId = `ai-settings-card-${id}-title`;
   return el("div", {
-    class: "ai-settings-subgroup",
+    class: "ai-settings-card",
+    attrs: { role: "group", "aria-labelledby": titleId },
     dataset: { testid: `ai-settings-group-${id}` },
     children: [
-      el("div", { class: "ai-settings-subgroup-head", children: [
-        el("h4", { text: title }),
+      el("div", { class: "ai-settings-card-head", children: [
+        el("h4", { text: title, attrs: { id: titleId } }),
         el("p", { text: description }),
       ] }),
       ...children,
+    ],
+  });
+}
+
+/** 카드 안 「자세히」 — 고른 뒤에 읽는 안내 문단을 접는다. 문자열은 문단으로 감싸고 요소는 그대로 넣는다. */
+function settingsDetails(items: ReadonlyArray<string | HTMLElement>): HTMLElement {
+  return el("details", {
+    class: "ai-settings-subdetails ai-card-details",
+    children: [
+      el("summary", { text: "자세히" }),
+      el("div", { class: "ai-card-details-body", children: items.map((item) =>
+        typeof item === "string" ? el("p", { class: "ai-config-help", text: item }) : item) }),
     ],
   });
 }
@@ -1243,7 +1277,7 @@ function settingsRow(label: string, description: string, control: HTMLElement): 
     children: [
       el("span", { class: "ai-config-row-copy", children: [
         el("span", { class: "ai-config-label", text: label }),
-        el("span", { class: "ai-config-help", text: description }),
+        ...(description ? [el("span", { class: "ai-config-help", text: description })] : []),
       ] }),
       el("span", { class: "ai-config-control", children: [control] }),
     ],
