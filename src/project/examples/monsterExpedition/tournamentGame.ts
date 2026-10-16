@@ -72,9 +72,9 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
     { id: "tour_intro_start", text: "먼저 접수처에서 첫 동료를 만나고,\n연습장에서 몸을 풀어 보렴." },
   ] });
   configureEmeraldMonsterTitle(project, monsterTitleThemeFromStart(options.startTheme));
+  assignTrainerSprites(project);
   if (project.system.titleScreen) { project.system.titleScreen.title = title; project.system.titleScreen.logoSubtitle = expedition ? "체육관 없는 도감 탐험" : "포획 없는 토너먼트"; }
   remapCharsetsToPreset(project, "monster-collect");
-  assignTrainerSprites(project);
   const serialized = serialize(project);
   return { project: deserialize(serialized), serialized, manifest };
 }
