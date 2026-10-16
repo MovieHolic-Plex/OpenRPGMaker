@@ -269,6 +269,16 @@ const setDeadlineEnding: ToolDefinition = {
     if (last.threshold !== undefined) {
       throw new ToolError("마지막 tiers 항목은 friendshipAtLeast 없이 기본 결말이어야 합니다 — 어느 문턱도 못 넘은 경우 결말이 없어 기한이 와도 게임이 끝나지 않습니다.", { code: "invalid-args" });
     }
+    // 기본 결말은 「아무도 안 만난 사람」의 마지막 안전망이다. 그 엔딩에 conditions 가 있으면 triggerEnding(endingId) 이 호출 시점에 조건을 다시 보고
+    // 거짓이면 다음 명령으로 넘어가 버려, 기한이 와도 게임이 끝나지 않는다(romance-loop-1 R1 「아무도 안 만남」: 기본 결말 「평범」 이 호감 ≥5 조건을 달고 있었다).
+    const lastEnding = (draft.endings ?? []).find((ending) => ending.id === last.endingId);
+    if (lastEnding && (lastEnding.conditions?.length ?? 0) > 0) {
+      throw new ToolError(
+        `기본 결말 '${last.endingId}'(마지막 tiers 항목)에 conditions 가 ${lastEnding.conditions!.length}개 있습니다 — 호출할 때도 조건을 다시 검사하므로, 호감이 낮은(아무도 안 만난) 플레이어는 기한이 와도 엔딩이 열리지 않아 게임이 끝나지 않습니다. `
+        + "define_ending 으로 그 엔딩의 conditions 를 [] 로 다시 정의하거나(문턱은 이 도구가 건다), 조건 없는 엔딩(예: 「혼자 보낸 학기」)을 기본 결말로 두세요.",
+        { code: "deadline-default-conditioned" },
+      );
+    }
     for (let index = 0; index < resolved.length - 1; index += 1) {
       if (resolved[index]!.threshold === undefined) {
         throw new ToolError(`tiers[${index}] 는 문턱이 없는데 뒤에 항목이 더 있습니다 — 기본 결말은 마지막에 하나만 둡니다.`, { code: "invalid-args" });

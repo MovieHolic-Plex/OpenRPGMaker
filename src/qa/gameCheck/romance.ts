@@ -12,7 +12,7 @@ import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
 import { romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
-import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
 import { checkPerHeroineEndings, checkRomanceEndings } from "./romanceEndings";
@@ -50,6 +50,43 @@ function personKey(event: GameEvent): string {
 
 function isPersonEvent(event: GameEvent): boolean {
   return Boolean(event.characterId?.trim()) || /^(ev_)?npc[_-]/u.test(event.id);
+}
+
+function containsTriggerEnding(commands: readonly Command[] | undefined): boolean {
+  return (commands ?? []).some((command) => command.kind === "triggerEnding"
+    || (command.kind === "fork" && (containsTriggerEnding((command as { then?: Command[] }).then) || containsTriggerEnding((command as { else?: Command[] }).else))));
+}
+
+/** 이 명령 줄이 끝까지 가면 반드시 엔딩이 열리는가 — triggerEnding(endingId) 은 그 엔딩의 conditions 를 다시 보고 거짓이면 넘어가므로 조건 없는 엔딩만 보장한다. */
+function guaranteesEnding(project: Project, commands: readonly Command[] | undefined): boolean {
+  for (const command of commands ?? []) {
+    if (command.kind === "triggerEnding") {
+      const ending = command.endingId ? (project.endings ?? []).find((entry) => entry.id === command.endingId) : undefined;
+      if (!command.endingId) return false;
+      if (ending && (ending.conditions?.length ?? 0) === 0) return true;
+      continue;
+    }
+    if (command.kind === "fork") {
+      // 호감 문턱 fork 의 then 쪽 엔딩은 그 문턱 조건이 지킨다 — 구멍은 마지막 else 가 닫혀 있느냐다.
+      const branch = command as { then?: Command[]; else?: Command[] };
+      if (containsTriggerEnding(branch.then) && guaranteesEnding(project, branch.else)) return true;
+    }
+  }
+  return false;
+}
+
+/** 기한(onDayEnd) 판정이 「N일째 이후 어떤 호감 상태여도」 엔딩을 부르는지 — 아무도 안 만난 플레이어가 영영 끝나지 않는 구멍(romance-loop-1 R1). */
+function deadlineWithoutFallback(project: Project): string | undefined {
+  const hook = project.system?.timeSystem?.onDayEnd;
+  const common = hook ? (project.commonEvents ?? []).find((entry) => entry.id === hook) : undefined;
+  if (!common) return undefined;
+  for (const command of common.commands as Command[]) {
+    if (command.kind !== "fork") continue;
+    const fork = command as { condition?: { kind?: string; op?: string; value?: unknown }; then?: Command[] };
+    if (fork.condition?.kind !== "variable" || fork.condition.op !== ">=") continue;
+    if (!guaranteesEnding(project, fork.then)) return `${common.name ?? common.id}`;
+  }
+  return undefined;
 }
 
 export function checkRomance(project: Project, briefText = briefTextOf(project)): Finding[] {
@@ -196,11 +233,18 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
       message: `대사 ${doubled}줄의 본문이 「[이름]」·「이름:」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 재생 화면은 이름표와 같은 이름의 머리표를 걷어 주지만 저작 데이터는 깨끗해야 합니다.`,
     });
   }
+  const noFallback = deadlineWithoutFallback(project);
+  if (noFallback) {
+    findings.push({
+      severity: "warning", code: "romance-deadline-no-fallback",
+      message: `기한 엔딩 「${noFallback}」 은 호감이 낮으면(아무도 안 만나면) 어떤 엔딩도 부르지 않습니다 — 기한이 와도 게임이 끝나지 않습니다. 마지막 기본 결말은 conditions 가 없는 엔딩이어야 합니다(define_ending 으로 conditions [] 로 다시 정의하거나 조건 없는 「혼자 보낸 학기」 같은 엔딩을 set_deadline_ending 마지막 tiers 에).`,
+    });
+  }
   return findings;
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
 const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";

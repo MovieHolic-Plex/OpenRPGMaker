@@ -66,4 +66,21 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     map.events.push(person);
     expect(codes(project)).toContain("romance-speaker-in-body");
   });
+  it("기한 엔딩의 마지막 기본 결말이 조건 달린 엔딩이면 짚고, 조건 없는 엔딩이면 조용하다", () => {
+    const project = romanceProject();
+    project.system.timeSystem = { enabled: true, onDayEnd: "ce_deadline" } as never;
+    project.endings = [
+      { id: "ending_han", name: "한", conditions: [{ kind: "friendshipAtLeast", npcKey: "han", value: 10 }], priority: 1 },
+      { id: "ending_normal", name: "평범", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 5 }], priority: 0 },
+    ] as never;
+    const chain = (fallback: string) => [{
+      kind: "fork", condition: { kind: "variable", variableId: "var_days", op: ">=", value: 14 },
+      then: [{ kind: "fork", condition: { kind: "friendshipAtLeast", npcKey: "han", value: 10 },
+        then: [{ kind: "triggerEnding", endingId: "ending_han" }], else: [{ kind: "triggerEnding", endingId: fallback }] }],
+    }];
+    project.commonEvents = [{ id: "ce_deadline", name: "기한", trigger: "none", commands: chain("ending_normal") }] as never;
+    expect(codes(project)).toContain("romance-deadline-no-fallback");
+    (project.endings![1] as { conditions: unknown[] }).conditions = [];
+    expect(codes(project)).not.toContain("romance-deadline-no-fallback");
+  });
 });

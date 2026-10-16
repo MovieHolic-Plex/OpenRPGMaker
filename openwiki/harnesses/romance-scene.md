@@ -130,3 +130,13 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **R15 짝 얼굴 없는 칩.** 얼굴이 없으면 대사창은 얼굴 칸 없이 본문이 전폭을 쓴다(캡처로 확인, 별도 폴백 코드 없음).
 - **429 자동 재시도(연애·JRPG 공용).** 팀 finish 는 429 로 끊긴 채 같은 맵에 다시 맡겨지지 않은 배정(`rateLimitedUnresolved`)이 있으면 제공자 쿨다운(`retry-after-ms`, 없으면 60초, 최대 330초)만큼 쉰 뒤 같은 맵·같은 task 로 **한 번** 다시 맡기고(`retryRateLimitedAssignments`) 끝나면 이어서 finish 검사를 한다. 팀 남은 시간이 쉬는 시간+120초 미만이면 건너뛴다. 다시 429 면 기존 가드(팀장에게 되돌려 재배정, #2752)가 그대로 걸린다. 증거: `scripts/qa/fix-leftovers/team-429-retry.mts`.
 - **못 고친 것.** R11(맵 구도: 아스팔트 띠·봄에 가을 나무·NPC 밀집은 모델의 배치 판단이라 코드 규칙으로 고칠 수 없다), R13(연애 전용 도구를 안 쓰는 것은 모델 선택 — 지시문 효과는 실 Argon 재측정으로만 판정), R16(측정 한계).
+
+## 기한 엔딩의 기본 결말은 조건이 없어야 한다 (2026-10-17 romance-loop-1, R1 「아무도 안 만남」)
+
+실제 Argon 캠퍼스 판(rom-a)에서 `qa:game check` 의 자동 플레이가 「아무도 안 만남: 40일을 보내도 기한 엔딩이 오지 않았습니다」 를 냈다.
+원인: `set_deadline_ending` 의 마지막(기본) 결말로 `ending_campus_normal`(호감 ≥5 조건 보유)을 줬는데, `triggerEnding(endingId)` 은 호출 시점에
+그 엔딩의 conditions 를 다시 검사하고 거짓이면 다음 명령으로 넘어간다 — 호감이 낮은 플레이어는 기한이 와도 엔딩이 열리지 않는다.
+
+- 도구 `set_deadline_ending`(src/editor/tools/endingTools.ts): 마지막 tiers 항목의 엔딩에 conditions 가 있으면 `deadline-default-conditioned` 로 거절하고 고치는 법을 알려 준다.
+- 검사 `romance-deadline-no-fallback`(src/qa/gameCheck/romance.ts, 완료 조건 목록 COMPLETION_CODES): onDayEnd 공통 이벤트의 `variable >= N` fork 의 then 쪽 마지막 else 가 조건 없는 엔딩으로 닫히지 않으면 경고.
+  호감 문턱 fork 의 then 쪽 엔딩은 그 문턱이 지킨다고 보고 마지막 else 만 본다.
