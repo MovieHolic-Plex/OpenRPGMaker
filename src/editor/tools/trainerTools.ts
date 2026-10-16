@@ -18,6 +18,7 @@ import { charsetFrameIndex, decodeCharsetFrameIndex } from '@/assets/easyrpgRtp'
 import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel } from '@/project/monsterCollection';
 import { demoEnemy, demoTroop } from '@/project/defaults/scarloxyDemoGame';
 import { expeditionEnemyActions } from '@/project/examples/monsterExpedition/enemyActions';
+import { EXPEDITION_HERO_BACK, inferTrainerRoleFromName } from '@/project/examples/monsterExpedition/trainerArt';
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
 const FACINGS = ['up', 'down', 'left', 'right'] as const;
@@ -149,7 +150,7 @@ export const TRAINER_TOOLS: readonly ToolDefinition[] = [
       winSwitchId: { type: 'string', description: '승리 시 켜지는 스위치(생략 시 자동 생성). 문 열림·진행 조건으로 쓸 수 있다' },
       canEscape: { type: 'boolean', description: '도망 허용(기본 false — 트레이너전은 도망 불가)' },
       graphic: { ...GRAPHIC_SPEC_SCHEMA, description: '생략=사람(트레이너) 도트 자동 선택. 새 그림·생성 인물은 만들지 않는다' },
-      trainerSprite: { type: 'object', additionalProperties: false, description: '전투 화면의 트레이너 인물 그림(몬스터 대치 전투 소개·볼 던지기). 생략=연출 없이 시작(몬스터 수집 장르 잠금 중에는 이름·걷기 칩으로 근거가 확실한 번들 그림을 채운다)', properties: {
+      trainerSprite: { type: 'object', additionalProperties: false, description: '전투 화면의 트레이너 인물 그림(몬스터 대치 전투 소개·볼 던지기). 생략하면 name 의 직업 말(소년·소녀·연구원·낚시꾼·등산가·곤충채집·불량·노인)에서 번들 그림을 자동 배정하고, 말이 없으면 연출 없이 시작', properties: {
         front: { type: 'string', description: '상대 앞모습: 번들 역할 id(boy·girl·fisher·hiker·bug_catcher·gym_rock·gym_water·scientist·punk·elder) 또는 업로드 그림 id' },
         back: { type: 'string', description: '내 뒷모습: 번들 역할 id(hero_m·hero_f) 또는 업로드 그림 id(생략=hero_m)' },
       }, required: ['front'] },
@@ -229,6 +230,16 @@ export const TRAINER_TOOLS: readonly ToolDefinition[] = [
         const back = typeof sprite.back === 'string' && sprite.back.trim() ? sprite.back.trim() : 'hero_m';
         const troopRecord = draft.database.troops.find((entry) => entry.id === troopId);
         if (troopRecord) troopRecord.trainerSprite = { front, back };
+      } else {
+        // 전투 그림을 안 줬으면 이름·직업 말(소년·연구원·등산가…)에서 번들 앞모습을 고른다 — 없으면 소개 연출 없이 시작(지어내지 않는다).
+        const troopRecord = draft.database.troops.find((entry) => entry.id === troopId);
+        const role = troopRecord && !troopRecord.trainerSprite ? inferTrainerRoleFromName(name) : undefined;
+        if (troopRecord && role) {
+          troopRecord.trainerSprite = { front: role, back: EXPEDITION_HERO_BACK };
+          warnings.push(`전투 그림 자동 배정: ${role}(앞모습)·${EXPEDITION_HERO_BACK}(뒷모습) — 이름 「${name}」에서 골랐습니다. 바꾸려면 trainerSprite:{front,back} 를 주세요.`);
+        } else if (troopRecord && !troopRecord.trainerSprite) {
+          warnings.push(`전투 그림 없음 — 이름 「${name}」로는 번들 트레이너를 고를 수 없어 전투가 소개 연출 없이 시작합니다. trainerSprite:{front:'boy'|'girl'|'fisher'|'hiker'|'bug_catcher'|'gym_rock'|'gym_water'|'scientist'|'punk'|'elder'} 를 주세요.`);
+        }
       }
 
       // 그림 — 사람(트레이너) 도트
