@@ -931,6 +931,8 @@ export type ConditionEvalContext = {
   readonly calendar?: ActorQueryOptions;
   /** 파티가 아는 스킬 집합(partyKnowsSkill). 프로젝트를 아는 호출측이 partyKnownSkillIds 로 만든다. */
   readonly partySkillIds?: () => ReadonlySet<string>;
+  /** 캠페인 배지 스위치 id(badgeCount). 프로젝트를 아는 호출측이 badgeContext 로 만든다. */
+  readonly badgeSwitchIds?: () => readonly string[];
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -996,6 +998,7 @@ export function evalCondition(
     case "actorState":
     case "partyLeader":
     case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -1006,7 +1009,7 @@ export function evalCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}) });
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}) });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":

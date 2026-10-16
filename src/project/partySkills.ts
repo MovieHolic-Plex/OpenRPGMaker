@@ -9,6 +9,7 @@ import { effectiveActorClassId } from "@/project/growth/lineage";
 import { actorOwnedSkillIds, type GrowthSession } from "@/project/growth/runtime";
 import { monsterSkillIds } from "@/project/monsterCollection";
 import type { MonsterInstance } from "@/project/session";
+import { badgeContext } from "@/project/badgeProgress";
 import type { Project } from "@/project/types";
 
 /** 파티 판정에 쓰는 세션 조각. PlaySession·PlaySessionLike 가 구조적으로 만족한다. */
@@ -46,9 +47,10 @@ export function partyKnownSkillIds(project: Project, session: PartySkillSession)
 }
 
 /** 조건 평가 문맥에 끼울 지연 해석기 — 프로젝트의 database 가 없으면(부분 프로젝트) 세션에 적힌 스킬만 본다. */
-export function partySkillContext(project: object | undefined, session: PartySkillSession): { readonly partySkillIds?: () => ReadonlySet<string> } {
+export function partySkillContext(project: object | undefined, session: PartySkillSession): { readonly partySkillIds?: () => ReadonlySet<string>; readonly badgeSwitchIds?: () => readonly string[] } {
   if (!project || !(project as { database?: unknown }).database) return {};
-  return { partySkillIds: () => partyKnownSkillIds(project as Project, session) };
+  // 같은 문맥에 캠페인 배지 스위치 목록(badgeCount 조건)도 싣는다 — 이 함수가 이미 모든 페이지 해석 호출처에 퍼져 있다.
+  return { partySkillIds: () => partyKnownSkillIds(project as Project, session), ...badgeContext(project) };
 }
 
 /** 이 스킬을 아는 파티 구성원(배우 id 또는 몬스터 인스턴스 id) — useFieldSkill 이 누가 쓸지 고를 때 쓴다. */

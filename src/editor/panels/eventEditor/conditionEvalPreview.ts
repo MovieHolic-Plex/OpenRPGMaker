@@ -136,6 +136,7 @@ function evaluatePreviewCondition(
     case "actorState":
     case "partyLeader":
     case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -192,6 +193,7 @@ function describeCondition(condition: Condition | undefined): string {
     case "actorState":
     case "partyLeader":
     case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":

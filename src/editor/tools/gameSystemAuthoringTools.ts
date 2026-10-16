@@ -4,6 +4,7 @@ import { ToolError } from './types';
 import { FIELD_MENU_COMMANDS, collectorFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu } from '@/project/fieldMenu';
 import { validateMonsterCampaign } from '@/project/io/shapeMonsterCampaign';
 import { monsterCampaign } from '@/project/monsterJournal';
+import { defaultObedienceCaps } from '@/project/badgeProgress';
 import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsistency';
 import { installBadgeCeremonies } from '@/project/monsterBadgeCeremony';
 import { resizeCampaignGyms } from '@/project/examples/monsterExpedition/resizeGyms';
@@ -67,13 +68,19 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     badgeCount:{type:'integer',minimum:0,maximum:8,description:'체육관(배지) 수를 이 수로 줄인다 — 정의뿐 아니라 관장 이벤트·잠금·서사도 함께. 늘리지는 못한다.'},
     allowShrink:{type:'boolean',description:'도감 종·배지·지도 위치·목표 수를 줄이는 변경을 허용한다(기본 거부).'},
     badgeCeremony:{type:'object',additionalProperties:false,description:'체육관 관장 승리 분기에 「배지 획득」 연출(섬광→징글→배지가 떠올라 빛남→「○○를 받았다!」)을 심거나 걷는다. 배지 스위치를 켜는 setSwitch 바로 뒤에 들어가며 다시 부르면 갈아 끼운다(멱등). build_monster_game 으로 지은 관장은 이미 들어 있다.',properties:{badgeId:{type:'string',description:'이 배지만. 생략하면 모든 배지.'},remove:{type:'boolean',description:'연출만 걷어 낸다(스위치·보상은 그대로).'},line:{type:'string',description:'마지막 문장(기본 「○○를 받았다!」).'}}},
+    obedienceLevelCaps:{type:'object',additionalProperties:false,description:'원작식 복종 레벨 상한(기본 꺼짐). 켜면 획득한 배지 수에 비해 레벨이 높은 내 몬스터는 전투에서 기술 명령을 거부한다(아이템·교체·도망·포획은 가능). enabled:false 는 규칙을 끈다(필드 제거). caps 를 생략하면 배지 0개 Lv20, 배지마다 +5 사다리를 쓴다. 배지 수는 badges[].switchId(mx_badge_N)가 켜진 개수. gen1 전투 모델에서만 동작.',properties:{
+      enabled:{type:'boolean'},
+      caps:{type:'array',maxItems:64,description:'badges 오름차순 [{badges:배지 수, maxLevel:그 배지 수에서 말을 듣는 최대 레벨}]',items:{type:'object',additionalProperties:false,properties:{badges:{type:'integer',minimum:0,maximum:64},maxLevel:{type:'integer',minimum:1,maximum:100}},required:['badges','maxLevel']}},
+      refuseLine:{type:'string',description:'거부 문장 틀({name}=몬스터 이름). 생략=원작식 기본 문장 넷을 돌려 쓴다'},
+    },required:['enabled']},
   },[]),(p,args)=>{
     const current=p.system.monsterCampaign;
     const raw=(args.definition??{}) as Record<string,unknown>;
     const allowShrink=args.allowShrink===true;
     const ceremonyArg=args.badgeCeremony as {badgeId?:string;remove?:boolean;line?:string}|undefined;
+    const obedienceArg=args.obedienceLevelCaps as {enabled?:boolean;caps?:{badges:number;maxLevel:number}[];refuseLine?:string}|undefined;
     if(!current&&(args.badgeCount!==undefined||!Object.keys(raw).length))throw new ToolError('몬스터 캠페인 정의가 없습니다 — definition 에 id·name·speciesIds·badges·locations·objectives 를 모두 넣어 만드세요.',{code:'invalid-args'});
-    if(args.badgeCount===undefined&&!Object.keys(raw).length&&!ceremonyArg)throw new ToolError('바꿀 내용이 없습니다 — definition·badgeCount·badgeCeremony 중 하나를 주세요.',{code:'invalid-args'});
+    if(args.badgeCount===undefined&&!Object.keys(raw).length&&!ceremonyArg&&!obedienceArg)throw new ToolError('바꿀 내용이 없습니다 — definition·badgeCount·badgeCeremony·obedienceLevelCaps 중 하나를 주세요.',{code:'invalid-args'});
     const before=checkMonsterCampaignDefinition(p).filter(f=>f.severity==='blocker').map(f=>f.code+f.message);
     const notice:string[]=[];
     try{
@@ -104,6 +111,17 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
         next.speciesNotes={...next.speciesNotes,...notes};
       }
       if(raw.speciesIds!==undefined)for(const id of Object.keys(next.speciesNotes))if(!next.speciesIds.includes(id))delete next.speciesNotes[id];
+      if(obedienceArg){
+        const previous=next.obedienceLevelCaps;
+        if(obedienceArg.enabled===false){delete next.obedienceLevelCaps;notice.push('복종 레벨 상한 끔');}
+        else{
+          if(next.badges.length===0&&!obedienceArg.caps)throw Error('배지가 없는 캠페인에는 caps 를 직접 주세요.');
+          next.obedienceLevelCaps={enabled:true,caps:obedienceArg.caps?JSON.parse(JSON.stringify(obedienceArg.caps)) as {badges:number;maxLevel:number}[]:previous?.caps.length?previous.caps:defaultObedienceCaps(next.badges.length),
+            ...(obedienceArg.refuseLine!==undefined?(obedienceArg.refuseLine.trim()?{refuseLine:obedienceArg.refuseLine.trim()}:{}):previous?.refuseLine?{refuseLine:previous.refuseLine}:{})};
+          if(p.system.battleModel!=='gen1')notice.push('주의: 복종 상한은 gen1 전투 모델에서만 동작합니다(configure_monster_system {rules:\'gen1\'}).');
+          notice.push(`복종 레벨 상한 켬(${next.obedienceLevelCaps.caps.map(c=>`배지${c.badges}→Lv${c.maxLevel}`).join(', ')})`);
+        }
+      }
       validateMonsterCampaign(next);
       if(next.speciesIds.length>512||next.badges.length>64||next.locations.length>1024||next.objectives.length>512)throw Error('캠페인 정의 상한 초과');
       const species=new Set((p.database.monsterSpecies??[]).map(r=>r.id)),switches=new Set(p.switches.map(r=>r.id));

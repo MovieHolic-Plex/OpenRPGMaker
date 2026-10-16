@@ -774,6 +774,7 @@ export function validateConditionShape(label: string, value: unknown): void {
       requireString(`${label}.skillId`, condition.skillId);
       if (condition.present !== undefined) requireBoolean(`${label}.present`, condition.present);
       return;
+    case "badgeCount":
     case "partySize":
     case "clearCount":
       requireString(`${label}.op`, condition.op);

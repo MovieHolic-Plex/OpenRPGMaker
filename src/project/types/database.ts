@@ -1803,6 +1803,19 @@ export interface MonsterCampaignPlan {
   links: number;
 }
 
+/**
+ * 원작식 복종 레벨 상한(선택 규칙, 기본 꺼짐 = 필드 없음). 획득한 배지 수에 따라 「이 레벨까지의 몬스터만 말을 듣는다」 상한이 오르고,
+ * 상한을 넘은 내 파티 몬스터는 전투에서 기술 명령을 거부한다(아이템·교체·도망·포획은 막지 않는다).
+ * 상한 = caps 중 badges ≤ 현재 배지 수인 마지막 항목의 maxLevel(없으면 첫 항목). 배지 수는 badges[].switchId 가 켜진 개수.
+ */
+export interface ObedienceLevelCaps {
+  enabled: boolean;
+  /** badges 오름차순. 예: [{badges:0,maxLevel:20},{badges:1,maxLevel:25}]. */
+  caps: { badges: number; maxLevel: number }[];
+  /** 거부 문장 틀. {name} 이 몬스터 이름으로 바뀐다. 생략 = 원작식 기본 문장 네 가지를 돌려 쓴다. */
+  refuseLine?: string;
+}
+
 export interface MonsterCampaignConfig {
   id: string;
   name: string;
@@ -1819,6 +1832,8 @@ export interface MonsterCampaignConfig {
   badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: "town" | "route" | "dungeon" | "league" }[];
   objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
+  /** 선택 규칙 — 생략 = 꺼짐(기존 프로젝트·저장 바이트 불변). */
+  obedienceLevelCaps?: ObedienceLevelCaps;
 }
 
 export interface SystemRecords {

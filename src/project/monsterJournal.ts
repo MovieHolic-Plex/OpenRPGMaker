@@ -12,6 +12,7 @@ export type MonsterCampaignDefinition = {
   badges: { id: string; name: string; switchId: string; cityMapId: string; iconResourceId?: string }[];
   locations: { mapId: string; name: string; x: number; y: number; kind: 'town' | 'route' | 'dungeon' | 'league' }[];
   objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
+  obedienceLevelCaps?: import('@/project/types/database').ObedienceLevelCaps;
 };
 
 export function monsterCampaign(project: Project): MonsterCampaignDefinition | undefined {

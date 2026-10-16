@@ -119,6 +119,11 @@ export type ActorQueryCondition =
    */
   | { kind: "partyKnowsSkill"; skillId: string; present?: boolean }
   | { kind: "partySize"; op: ConditionCompareOp; value: number }
+  /**
+   * 획득한 배지 수 비교(몬스터 캠페인 「배지 N개 이상」 게이트). 캠페인 정의 badges[].switchId 가 켜진 개수를 센다
+   * (정의가 없으면 mx_badge_N 규약 스위치). 해석할 배지가 없으면 0 으로 본다. 선택 조건이라 기존 프로젝트는 불변.
+   */
+  | { kind: "badgeCount"; op: ConditionCompareOp; value: number }
   /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
   | { kind: "facing"; subject: "player" | "event"; dir: Dir }
   /**

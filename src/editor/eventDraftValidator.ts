@@ -647,6 +647,7 @@ function validateCondition(
     case "actorState":
     case "partyLeader":
     case "partySize":
+    case "badgeCount":
     case "facing":
     case "relativeFacing":
     case "hiding":

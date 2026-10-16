@@ -22,6 +22,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { withJosa } from "@/util/josa";
+import { currentObedienceCap, obedienceRefusalLine } from "@/project/badgeProgress";
 import { captureConditionLine, captureConditionMultiplier } from "@/battle/captureBalls";
 import { applyStatStage, scaleByStage, shiftStatStage, statStageMessage, statStageOf } from "@/battle/statStages";
 import {
@@ -867,7 +868,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyGen1Residual(battler);
       return false;
     }
+    if (monsterRefusesOrders(battler)) {
+      // 원작식 복종: 배지 수에 비해 레벨이 높은 내 몬스터는 기술 명령을 무시한다(아이템·교체·도망·포획은 이 경로를 타지 않는다).
+      recordSpecial(battler, battler, obedienceRefusalLine(options.project.system.monsterCampaign?.obedienceLevelCaps, battler.name, turn));
+      applyGen1Residual(battler);
+      return false;
+    }
     return true;
+  }
+
+  /** obedienceLevelCaps 가 켜져 있고 이 파티 몬스터의 레벨이 현재 배지 수의 상한을 넘었는가(기본 꺼짐 = 항상 false). */
+  function monsterRefusesOrders(battler: MutableBattler): boolean {
+    if (battlerSide(battler) !== "actor" || !battler.monsterInstanceId) return false;
+    const cap = currentObedienceCap(options.project, sessionState.switches);
+    return cap !== undefined && (battler.level ?? 1) > cap;
   }
 
   function applyGen1Residual(battler: MutableBattler): void {

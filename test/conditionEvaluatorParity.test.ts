@@ -150,6 +150,11 @@ const CASES = {
     satisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorSkillIds = { actor_parity: ["skill_parity"] }; },
     nonSatisfying: (state) => { state.partyActorIds = ["actor_parity"]; state.actorSkillIds = { actor_parity: [] }; },
   },
+  badgeCount: {
+    condition: { kind: "badgeCount", op: ">=", value: 2 },
+    satisfying: (state) => { state.switches = { mx_badge_1: true, mx_badge_2: true }; },
+    nonSatisfying: (state) => { state.switches = { mx_badge_1: true, mx_badge_2: false }; },
+  },
   partyLeader: {
     condition: { kind: "partyLeader", actorId: "actor_parity" },
     satisfying: (state) => { state.partyActorIds = ["actor_parity", "actor_other"]; },

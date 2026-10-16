@@ -10,6 +10,7 @@ export const ACTOR_QUERY_CONDITION_MODE_OPTIONS = [
   { value: "actorState", label: "배우 상태 보유" },
   { value: "partyLeader", label: "선두 배우" },
   { value: "partyKnowsSkill", label: "파티가 아는 스킬(필드 기술)" },
+  { value: "badgeCount", label: "획득한 배지 수" },
   { value: "partySize", label: "파티 인원" },
   { value: "facing", label: "방향" },
   { value: "relativeFacing", label: "마주봄·등 뒤" },
@@ -63,6 +64,8 @@ export function defaultActorQueryCondition(kind: ActorQueryCondition["kind"]): A
       return { kind, actorId: firstActorId() };
     case "partyKnowsSkill":
       return { kind, skillId: firstFieldSkillId(), present: true };
+    case "badgeCount":
+      return { kind, op: ">=", value: 1 };
     case "partySize":
       return { kind, op: ">=", value: 2 };
     case "facing":
@@ -129,6 +132,8 @@ export function actorQueryConditionSummary(condition: ActorQueryCondition): stri
       return `선두가 ${actorName(condition.actorId)}`;
     case "partyKnowsSkill":
       return `파티가 「${skillName(condition.skillId)}」을(를) ${condition.present === false ? "모름" : "앎"}`;
+    case "badgeCount":
+      return `배지 ${condition.value}개 ${opLabel(condition.op)}`;
     case "partySize":
       return `파티 ${condition.value}명 ${opLabel(condition.op)}`;
     case "facing":
@@ -164,6 +169,8 @@ export function actorQueryConditionHint(kind: ActorQueryCondition["kind"]): stri
       return "파티 선두가 이 배우일 때 참. 리더에 따라 대사를 바꿀 때 씁니다.";
     case "partyKnowsSkill":
       return "파티의 배우(배운·직업·장비 스킬)나 몬스터 파티 누군가가 이 스킬을 알 때 참. 바위깨기·나무베기·서핑·플래시처럼 길을 막은 장애물을 여는 필드 기술 게이트에 씁니다. 판정을 '모름' 으로 하면 '아직 못 여는' 안내 페이지를 만들 수 있습니다.";
+    case "badgeCount":
+      return "몬스터 캠페인에서 지금까지 받은 배지 수를 비교합니다(캠페인 정의 badges[].switchId 가 켜진 개수 — 기본 규약은 mx_badge_N). 「배지 3개 이상이어야 열리는 문」 같은 게이트에 씁니다.";
     case "partySize":
       return "현재 파티 인원을 비교합니다.";
     case "facing":
@@ -243,11 +250,12 @@ export function renderActorQueryCondition(condition: ActorQueryCondition, onChan
         row("판정", bool(condition.present !== false, "앎", "모름", "event-condition-party-knows-skill-present", (present) => set({ present }))),
       );
       break;
+    case "badgeCount":
     case "partySize":
     case "clearCount":
       box.append(
         row("비교", sel(OPS, condition.op, `event-condition-${condition.kind}-op`, (op) => set({ op }))),
-        row(condition.kind === "partySize" ? "인원" : "횟수", num(condition.value, `event-condition-${condition.kind}-value`, (value) => set({ value }))),
+        row(condition.kind === "partySize" ? "인원" : condition.kind === "badgeCount" ? "배지 수" : "횟수", num(condition.value, `event-condition-${condition.kind}-value`, (value) => set({ value }))),
       );
       break;
     case "facing":

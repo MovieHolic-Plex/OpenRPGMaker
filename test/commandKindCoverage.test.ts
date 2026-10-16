@@ -157,6 +157,7 @@ function buildMinimalConditions(ids: {
     actorState: { kind: "actorState", actorId: "anyone", stateId: "state_test", present: true },
     partyLeader: { kind: "partyLeader", actorId: ids.actorId },
     partyKnowsSkill: { kind: "partyKnowsSkill", skillId: "skill_test", present: true },
+    badgeCount: { kind: "badgeCount", op: ">=", value: 1 },
     partySize: { kind: "partySize", op: ">=", value: 1 },
     facing: { kind: "facing", subject: "player", dir: "up" },
     relativeFacing: { kind: "relativeFacing", relation: "playerBehindEvent" },

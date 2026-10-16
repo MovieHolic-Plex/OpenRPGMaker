@@ -3,6 +3,7 @@
 // 한 곳에서만 해석한다: 페이지 조건(evalCondition)·조건 분기·Data Query 가 같은 함수를 쓴다.
 // 해석할 수 없는 대상(파티에 없는 배우, 빈 파티, 시계 없음)은 조건이면 거짓, 조회면 0 이다 —
 // 없는 대상을 참으로 통과시키면 삭제·편집 사고가 이벤트 폭주로 번진다(insideLocation 과 같은 원칙).
+import { earnedBadgeCount } from "@/project/badgeProgress";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorQueryCondition, ConditionCompareOp, Dir } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
@@ -22,6 +23,8 @@ export interface ActorQuerySession {
   readonly eventLocations?: Readonly<Record<string, { readonly x: number; readonly y: number; readonly direction?: Dir; readonly mapId: string }>>;
   readonly horror?: { readonly hiding?: unknown; readonly pursuits: Readonly<Record<string, { readonly active: boolean }>> };
   readonly flags: Readonly<Record<string, boolean>>;
+  /** 게임 스위치(badgeCount 가 배지 스위치를 센다). PlaySession·페이지 세션이 구조적으로 가진다. */
+  readonly switches?: Readonly<Record<string, boolean>>;
   readonly gameTime?: GameTime;
   readonly stringVariables?: Readonly<Record<string, string>>;
   readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
@@ -123,6 +126,11 @@ export interface ActorQueryOptions {
    * 직업·레벨·성장·몬스터 학습표는 프로젝트가 있어야 풀린다. 생략하면 세션에 이미 적힌 스킬(actorSkillIds·몬스터 skillIds)만 본다.
    */
   readonly partySkillIds?: () => ReadonlySet<string>;
+  /**
+   * 캠페인 배지 스위치 id 목록(badgeCount 조건). 호출측이 프로젝트로 넘긴다(badgeProgress.badgeContext).
+   * 생략하면 세션 스위치 중 `mx_badge_N` 규약 스위치를 센다.
+   */
+  readonly badgeSwitchIds?: () => readonly string[];
 }
 
 /** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
@@ -159,6 +167,8 @@ export function evalActorQueryCondition(
       const known = (options.partySkillIds?.() ?? sessionKnownSkillIds(session)).has(condition.skillId);
       return known === (condition.present !== false);
     }
+    case "badgeCount":
+      return compareVariableValue(earnedBadgeCount(session.switches, options.badgeSwitchIds?.()), condition.op, condition.value);
     case "partySize":
       return compareVariableValue(partySizeOf(session), condition.op, condition.value);
     case "facing": {
@@ -224,6 +234,7 @@ export const ACTOR_QUERY_CONDITION_KINDS = [
   "actorState",
   "partyLeader",
   "partyKnowsSkill",
+  "badgeCount",
   "partySize",
   "facing",
   "relativeFacing",
