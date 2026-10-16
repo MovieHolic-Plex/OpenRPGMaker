@@ -592,6 +592,9 @@ const itemRecordSchema = objectSchema({
   careProfile: careProfileSchema,
   heldEffect: heldEffectSchema,
   pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
+  repelSteps: integerSchema("벌레퇴치류: 쓰면 이 걸음 수(1~9999) 동안 야생 조우가 나오지 않는다. 필드 메뉴(가방)에서 쓰고 occasion 은 field, scope 는 none. 쓸 때 문장이 뜨고 걸음이 다하면 「효과가 사라졌다」 문장이 뜬다. 몬스터 수집(포켓몬류) 게임용"),
+  repelBelowLead: booleanSchema("repelSteps 와 함께: true 면 파티 선두 몬스터보다 레벨이 낮은 야생만 막는다(포켓몬식). 생략 = 전부 막는다"),
+  escapeTo: { type: "string", enum: ["entrance"], description: "탈출 로프류: entrance = 던전·동굴(맵 mapRole dungeon)에서 쓰면 마지막으로 들어온 입구 밖(없으면 시작 지점)으로 나간다. occasion 은 field, scope 는 none. 던전 밖에서는 「효과가 없다」, 전투 중에는 못 쓴다" },
 }) as RecordSchema;
 
 const enemyRecordSchema = objectSchema({
@@ -1229,6 +1232,21 @@ function validateItemHeldEffect(draft: Project, raw: unknown, record: ItemRecord
     : `지닌 도구는 전투 모델이 gen1 인 프로젝트(몬스터 수집 게임)에서만 작동합니다. 지금 battleModel 은 ${draft.system.battleModel ?? "기본(RM2K3)"} 이라 저장은 했지만 전투에서는 아무 효과가 없습니다.`;
 }
 
+/** repelSteps/escapeTo 를 줬는데 정규화가 버렸으면 거절하고, 쓸 수 없는 occasion·scope 는 경고한다. */
+function validateFieldUtilityItem(raw: { repelSteps?: unknown; escapeTo?: unknown; repelBelowLead?: unknown }, record: ItemRecord, warnings: string[]): void {
+  if (raw.repelSteps !== undefined && record.repelSteps === undefined) {
+    throw new ToolError("repelSteps 는 1 이상의 걸음 수(정수, 최대 9999)여야 합니다.", { code: "invalid-repel-steps" });
+  }
+  if (raw.escapeTo !== undefined && record.escapeTo === undefined) {
+    throw new ToolError("escapeTo 는 \"entrance\" 만 허용됩니다(던전 마지막 입구로 탈출).", { code: "invalid-escape-to" });
+  }
+  if (raw.repelBelowLead === true && record.repelSteps === undefined) warnings.push("repelBelowLead 는 repelSteps 와 함께일 때만 쓰입니다.");
+  if (record.repelSteps === undefined && record.escapeTo === undefined) return;
+  if (record.occasion !== "field" && record.occasion !== "always") warnings.push(`occasion 이 ${record.occasion} 라 필드 메뉴에서 쓸 수 없습니다 — 벌레퇴치·탈출 로프는 occasion:"field" 로 두세요.`);
+  if (record.scope !== "none") warnings.push(`scope 가 ${record.scope} 라 대상을 고르게 됩니다 — 벌레퇴치·탈출 로프는 scope:"none" 이 맞습니다.`);
+  if (record.escapeTo !== undefined && record.repelSteps !== undefined) warnings.push("repelSteps 와 escapeTo 를 한 아이템에 같이 쓰면 벌레퇴치가 먼저 적용됩니다 — 아이템을 나누세요.");
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -1257,6 +1275,7 @@ const upsertItem: ToolDefinition = {
     const heldWarning = validateItemHeldEffect(draft, (merged as { heldEffect?: unknown }).heldEffect, record);
     if (heldWarning) warnings.push(heldWarning);
     validateItemCareProfile((merged as { careProfile?: unknown }).careProfile, record);
+    validateFieldUtilityItem(merged as { repelSteps?: unknown; escapeTo?: unknown; repelBelowLead?: unknown }, record, warnings);
     coerceSwitchItem(record, warnings);
     coerceMonsterFieldItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);

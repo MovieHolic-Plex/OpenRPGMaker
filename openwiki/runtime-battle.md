@@ -21,6 +21,10 @@
 - 검증: `bun scripts/qa/poke-depth/balls.probe.mts`(엔진 4항목), `scripts/qa/runtime/poke-depth-balls.capture.mjs`(출하 플레이어 — 신속 구슬을 던져 잡고 상세에서 「포획 볼」 확인; LEGACY=1 이 「전」). 단위 `test/captureBalls.test.ts`(미실행).
 - 남은 것: 레벨·HP·상태·시간대 조건(다이브·네스트·듀스크 볼), 볼 종류별 도감 필터, 볼별 던지기·흔들림 연출, DB 편집기 볼 조건 칸, 볼마다 다른 그림. 도감 아이콘은 기존 `monsterMenuIconResourceId` 그대로.
 
+## 야생 조우 보호 — 도망 무적 걸음·벌레퇴치·탈출 로프 (2026-10-16, poke-sys ②)
+
+- 도망 성공 → `grantEscapeGrace`(`playSceneMovement`), 걸음마다 `tickEncounterGuard`(`project/encounterGuard.ts`)가 면제를 깎는다. 세션 필드 `encounterGuard` 하나(저장·불러오기 왕복, 비면 생략). 벌레퇴치 `ItemRecord.repelSteps/repelBelowLead`, 탈출 로프 `escapeTo`(던전 `mapRole` 에서만). 자세한 규칙·조수 경로·화면 증거는 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
 ## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
 
 - 데이터: `ItemRecord.heldEffect?: {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`(**선택 필드**, 생략=지닐 수 없는 아이템·저장 바이트 불변)와 `MonsterInstance.heldItemId?`(선택, 세이브 슬롯 검증 `isMonsterInstancesRecord`). 종류 다섯 enum — `healBelow`(HP 가 문턱 이하가 되면 먹고 회복, 1회용)·`cureStatus`(주요 상태가 걸리면 먹고 치료, 1회용)·`boostType`(같은 타입 기술 피해 percent 101~200)·`endureOnce`(가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀, 1회용)·`regen`(매 차례 말 최대 HP 의 percent 1~25 회복, 안 사라짐). 순수 규칙·정규화는 `src/battle/heldItems.ts`(`normalizeHeldItemEffect` 는 필수 매개변수가 빠지면 효과를 버린다).

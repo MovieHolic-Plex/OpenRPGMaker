@@ -31,6 +31,7 @@ import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { machineSkillOf, previewMonsterMachine, useItemFromMenu } from "@/player/playerItemUse";
+import { grantEscapeGrace, recordDungeonEntrance, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
 import { prepareFieldAbility, prepareMonsterFieldAbility } from "@/player/fieldAbility";
 import { partyMembersKnowingSkill, partySkillContext } from "@/project/partySkills";
 import { getSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
@@ -1064,6 +1065,18 @@ function runUseItemStep(state: RunnerState, itemId: string): string | null {
     : undefined;
   const result = useItemFromMenu(state.project, state.session, itemId, actorId, monsterId);
   state.log.push(`useItem ${itemId}: ${result.kind} ${result.message}`);
+  if (result.kind === "used" && result.transfer) {
+    // 탈출 로프 — 실제 플레이어가 메뉴를 닫고 transfer 명령을 도는 것과 같다.
+    recordDungeonEntrance(state.session, state.project.maps[state.session.currentMapId], state.project.maps[result.transfer.mapId], { x: state.session.x, y: state.session.y });
+    state.session.currentMapId = result.transfer.mapId;
+    state.session.x = result.transfer.x;
+    state.session.y = result.transfer.y;
+    resetRuntimeMapForRunner(state, result.transfer.mapId);
+    const targetMap = currentMap(state);
+    if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+    refreshChasers(state);
+    state.log.push(`escape rope → ${result.transfer.mapId} (${result.transfer.x},${result.transfer.y})`);
+  }
   return result.kind === "used" ? null : result.message;
 }
 
@@ -1406,6 +1419,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           const failure = runLocationTransitionTriggersForRunner(state, left);
           if (failure) return { stop: "failed", reason: failure };
         }
+        recordDungeonEntrance(state.session, state.project.maps[state.session.currentMapId], state.project.maps[step.mapId], { x: state.session.x, y: state.session.y });
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
@@ -2647,6 +2661,13 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
 function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map || state.gameOver || state.runtimeFailure) return null;
+  // 실제 플레이(maybeTriggerRandomEncounter)와 같이: 걸음마다 도망 무적·벌레퇴치 남은 수를 줄이고, 막힌 걸음엔 조우 판정을 건너뛴다.
+  const guard = tickEncounterGuard(state.session);
+  if (guard.expiredItemId !== undefined) {
+    state.log.push(`message: ${repelExpiredMessage(state.project, guard.expiredItemId)}`);
+    return null;
+  }
+  if (guard.suppress) { state.encounterAccumulator = 0; return null; }
   // 실제 플레이(maybeTriggerRandomEncounter)와 같이: 서 있는 칸의 지형 조우율(%)을 곱한다 — 숲 140%·길 40% 같은 세계 지형 값이 여기서도 듣는다.
   const rate = scaledEncounterRate(map.encounterRate ?? 0, terrainRecordAt(state.project, { mapId: map.id, x: state.session.x, y: state.session.y })?.record.encounterRatePercent);
   if (rate <= 0) return null;
@@ -2663,10 +2684,15 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
   state.encounterAccumulator = 0;
   const picked = pickEncounterForMap(map, state.session, position, undefined, state.project);
   if (!picked) return null;
+  if (guard.repelBelowLead) {
+    const lead = monsterBattlePartyOf(state.project, state.session).party.find((monster) => (monster.currentHp ?? 1) > 0);
+    if (repelBlocksWildLevel(troopWildLevel(state.project, picked.troopId, picked.level), lead?.level)) return null;
+  }
   const troopId = picked.troopId;
   if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
   const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false, ...(picked.level !== undefined ? { enemyLevel: picked.level } : {}) });
   state.session.battleResult = outcome;
+  if (outcome === "escape") grantEscapeGrace(state.project, state.session);
   state.log.push(`random encounter ${troopId}: ${outcome}`);
   if (outcome === "defeat" && !recoverFromDefeatForRunner(state)) {
     killPartyForRunner(state);

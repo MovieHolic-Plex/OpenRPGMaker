@@ -9,7 +9,7 @@ import { toggleSkillLoadout } from "@/project/skillLoadout";
 import { setAudioState } from "@/project/session";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
 import { itemCombinationPartners } from "@/player/playerStatusMenuDetails";
-import { runItemUsePage } from "@/player/playSceneInterpreter";
+import { runCommands, runItemUsePage } from "@/player/playSceneInterpreter";
 import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
@@ -555,6 +555,15 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       // 메뉴가 열린 채 자동 공통 이벤트(꿈에서 깨기)가 돌면 대사가 메뉴 아래에 묻힌다.
       options.layout.querySelector("[data-testid='main-menu']")?.remove();
       void fireAutoTriggers(scene as unknown as PlaySceneContext);
+      return;
+    }
+    if (result.kind === "used" && result.transfer) {
+      // 탈출 로프: 메뉴를 걷고 문장 → 던전 밖으로 이동(이벤트와 같은 전환 연출). 메뉴 아래에 문장이 묻히지 않게 한다.
+      options.closeMenu();
+      void runCommands(scene as unknown as PlaySceneContext, [
+        { kind: "text", body: result.message },
+        { kind: "transfer", mapId: result.transfer.mapId, x: result.transfer.x, y: result.transfer.y },
+      ]);
       return;
     }
     if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;

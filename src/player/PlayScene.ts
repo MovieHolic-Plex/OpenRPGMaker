@@ -62,6 +62,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { recordDungeonEntrance } from "@/project/encounterGuard";
 import { createWorldAtlasController } from './worldAtlasOverlay';
 import { visitAtlasMap } from '@/project/worldAtlas';
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
@@ -479,7 +480,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
+    // 던전에 들어가는 순간 바깥에서 서 있던 칸을 적는다(탈출 로프의 목적지). loadSceneMap 이 this.map 을 갈아치기 전에 읽는다.
+    const departure = this.map ? { map: this.map, at: { x: this.tileX, y: this.tileY } } : undefined;
     loadSceneMap(this, mapId, options);
+    // 세이브 복원·체크포인트 복귀(applyMapBgm:false)는 «들어온 것» 이 아니므로 저장된 입구를 그대로 둔다.
+    if (options?.applyMapBgm !== false && departure) recordDungeonEntrance(this.session, departure.map, this.map, departure.at);
     visitAtlasMap(store.getCurrent(), this.session, mapId);
     syncVehicleSprites(this);
     syncMapBackgroundLayers(this);

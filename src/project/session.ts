@@ -386,6 +386,8 @@ export interface PlaySession {
   monsterCareDaily?: Record<string, number>;
   /** Opt-in: currently equipped tool item id (hand). */
   equippedToolItemId?: string;
+  /** 야생 조우 보호(도망 뒤 무적 걸음·벌레퇴치·던전 입구). 값이 없으면 필드째 생략. project/encounterGuard.ts. */
+  encounterGuard?: import("@/project/encounterGuard").EncounterGuardState;
   /** Opt-in: chest storage by chest id. */
   chests?: Record<string, import("@/project/placeables").ChestState>;
   /** Opt-in: placed furniture/objects by map:x,y key. */

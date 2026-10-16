@@ -451,6 +451,8 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}${Number(levelUp) > 0 ? ` · 레벨 +${Number(levelUp)}` : ""}`;
     case "evolve": return "진화의 돌 · 맞는 몬스터를 진화시킨다";
     case "held": return `지닌 도구 · ${HELD_ITEM_KIND_LABELS[value as HeldItemEffectKind] ?? value}`;
+    case "repel": return `벌레퇴치 ${value}걸음${amount === "below-lead" ? " (선두보다 약한 야생만)" : ""}`;
+    case "escape": return "던전 입구로 탈출";
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;
     case "capture-cond": return `조건 ${value}`;
