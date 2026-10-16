@@ -129,6 +129,18 @@ function resolveNpcMovement(
       return WANDER;
   }
 }
+/**
+ * 말 걸어 호감을 쌓는 인물(talkFriendship)은 기본이 제자리다 — 이름 추론이 배회(random)로 두면 시간표 자리에 서 있어야 할 사람이
+ * 칸을 벗어나 돌아다니고(연애 시험 2026-10-16: 한 칸 폭 길의 인물이 걸어 나가 만나러 가는 길이 막혔다), 좁은 길에서는 길도 막는다.
+ * 배회시키려면 movement:"random" 을 명시한다. 시간표가 위치를 정하는 사회 루프 인물이 기본 대상이다.
+ */
+function resolveSocialNpcMovement(name: string, args: Record<string, unknown>, warnings: string[]): EventPage["movement"] {
+  if (args.talkFriendship === true && !(typeof args.movement === "string" && args.movement.trim())) {
+    warnings.push(`이동 추론 → fixed(제자리): '${name}' 은(는) 호감 대화 인물(talkFriendship)이라 시간표 자리에 서 있게 했습니다. 배회시키려면 movement:"random" 명시.`);
+    return PASSIVE;
+  }
+  return resolveNpcMovement(name, args.movement, warnings);
+}
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
 
 /** place_npc/make_villager face 인자 → FaceGraphic. 실제 배치된 charset 기준으로 맞춘다. */
@@ -1431,7 +1443,7 @@ const placeNpc: ToolDefinition = {
     if (pagesDefaulted) normalizationWarnings.push(pagesDefaulted);
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     // 명시 movement 우선, 생략 시 이름 아키타입 추론(guide 예외는 제자리).
-    const movement = actionGuide ? PASSIVE : resolveNpcMovement(name, args.movement, normalizationWarnings);
+    const movement = actionGuide ? PASSIVE : resolveSocialNpcMovement(name, args, normalizationWarnings);
     const faceArg = resolvePlaceNpcFaceArg(args.face);
     const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : pagesArg as SimplePage[], graphic, {
       movement,
@@ -1653,7 +1665,7 @@ const makeVillager: ToolDefinition = {
     const homeAdjusted = home.x !== homeRaw.x || home.y !== homeRaw.y;
     const warnings: string[] = [];
     if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
-    const villagerMovement = resolveNpcMovement(name, args.movement, warnings);
+    const villagerMovement = resolveSocialNpcMovement(name, args, warnings);
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
@@ -1757,6 +1769,7 @@ const makeVillager: ToolDefinition = {
       }
       if (shopStock) setShopStockOnEvent(event, shopStock);
       event.characterId = characterId;
+      if (!event.name?.trim()) event.name = name;
       if (args.schedule !== undefined || args.dailyRoutine !== undefined) {
         event.schedule = schedule.length > 0 ? schedule : undefined;
       }
@@ -1773,6 +1786,8 @@ const makeVillager: ToolDefinition = {
     } else {
       event = {
         id,
+        // 이름이 없으면 HUD 호감 목록·ESC 관계 탭이 사람 이름 대신 characterId 를 보인다(place_npc 는 처음부터 이름을 단다).
+        name,
         characterId,
         x: home.x,
         y: home.y,

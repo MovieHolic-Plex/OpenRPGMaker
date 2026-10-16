@@ -21,12 +21,14 @@ const pick = people[0]!;
 const firstPage = map.events.find((e) => e.id === pick.eventId)!.pages[0]!;
 const lineCount = (firstPage.commands ?? []).filter((c) => (c as { kind: string }).kind === "text").length;
 const hasChoices = (firstPage.commands ?? []).some((c) => (c as { kind: string }).kind === "choices");
+// 사람이 선 칸은 지나갈 수 없다(1칸 폭 길에 선 인물을 지나쳐 걷는 경로는 실제 플레이에서 막힌다).
+const occupied = new Set(people.map((p) => key(p.x, p.y)));
 const prev = new Map<number, { from: number; dir: string }>(); const q = [key(project.startPos.x, project.startPos.y)]; prev.set(q[0]!, { from: -1, dir: "" });
 for (let h = 0; h < q.length; h++) {
   const c = q[h]!; const cx = c % map.width, cy = Math.floor(c / map.width);
   for (const [d, dx, dy] of dirs) {
     const x = cx + dx, y = cy + dy;
-    if (x < 0 || y < 0 || x >= map.width || y >= map.height || prev.has(key(x, y))) continue;
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height || prev.has(key(x, y)) || occupied.has(key(x, y))) continue;
     if (!isPassable(project, map, x, y) || !canMove(project, map, cx, cy, x, y)) continue;
     prev.set(key(x, y), { from: c, dir: d }); q.push(key(x, y));
   }

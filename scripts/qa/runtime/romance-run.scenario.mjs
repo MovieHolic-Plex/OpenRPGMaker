@@ -23,7 +23,7 @@ export default {
     { id: "03-talk", note: `${pick.name}와 대화`, shot: true,
       ops: [{ kind: "face", dir: proof.face }, { kind: "action" }, { kind: "waitFor", testid: "dialogue-box", state: "present" }, { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.95 }, ...stable], expect: { testidPresent: ["dialogue-box"] } },
     { id: "04-feedback", note: "호감 +10 · 남은 시간 2", shot: true,
-      ops: [...Array.from({ length: proof.lineCount }, () => skipThenNext).flat(), { kind: "waitForText", testid: "dialogue-box", text: "남은 시간 2" }, { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.95 }, ...stable], expect: { testidPresent: ["dialogue-box"] } },
+      ops: [...Array.from({ length: proof.lineCount }, () => skipThenNext).flat(), ...(proof.hasChoices ? [{ kind: "waitFor", testid: "runtime-choices", state: "present" }, ...stable, enter, ...stable, ...skipThenNext] : []), { kind: "waitForText", testid: "dialogue-box", text: "남은 시간 2" }, { kind: "waitForVisible", testid: "dialogue-box", minAlpha: 0.95 }, ...stable], expect: { testidPresent: ["dialogue-box"] } },
     { id: "05-close", note: "대화를 닫는다 — 호감 하트", shot: true, ops: [enter, { kind: "waitFor", testid: "dialogue-box", state: "absent" }, ...settle], expect: { testidAbsent: ["dialogue-box"] } },
     { id: "06-esc-relationships", note: "ESC → 기록 → 관계", shot: true,
       ops: [key("Escape"), { kind: "waitFor", testid: "main-menu", state: "present" }, ...stable, key("ArrowDown", 4), key("ArrowRight"), ...stable, key("ArrowDown", 2), key("Enter"), ...stable],

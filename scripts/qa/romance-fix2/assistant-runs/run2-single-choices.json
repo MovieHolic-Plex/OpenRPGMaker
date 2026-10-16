@@ -1,0 +1,128 @@
+[
+ [
+  "define_ending",
+  {
+   "id": "ending_suhyun_together",
+   "name": "수현과 함께",
+   "conditions": [],
+   "priority": 5,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "수현",
+     "text": "그럼 오늘부터 우리, 같이 걷자."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_suhyun_friends",
+   "name": "좋은 친구",
+   "conditions": [],
+   "priority": 4,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "수현",
+     "text": "응, 기다릴게. 천천히 와도 돼."
+    }
+   ]
+  }
+ ],
+ [
+  "place_npc",
+  {
+   "mapId": "map_blank_start",
+   "x": 31,
+   "y": 20,
+   "name": "서수현",
+   "characterId": "char_suhyun",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "젊은 여성"
+   },
+   "pages": [
+    {
+     "name": "수현 · 첫 만남",
+     "lines": [
+      "어, 그 책… 나도 그 작가 좋아하는데.",
+      "서수현이야. 도서관 동아리 회장."
+     ],
+     "choices": [
+      {
+       "text": "같이 읽어 볼래요?",
+       "commands": [
+        {
+         "kind": "changeFriendship",
+         "delta": 10
+        },
+        {
+         "kind": "text",
+         "body": "수현이 반가운 듯 웃었다. 「좋아, 다음엔 내가 추천할게.」"
+        }
+       ]
+      },
+      {
+       "text": "그냥 지나가던 길이에요.",
+       "commands": [
+        {
+         "kind": "text",
+         "body": "수현이 조금 아쉬운 표정으로 고개를 끄덕였다."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "name": "수현 · 친해진 사이",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_suhyun",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "요즘 네가 오면 동아리가 밝아져.",
+      "내일 노을 질 때 분수 앞에서 볼래?"
+     ]
+    },
+    {
+     "name": "수현 · 고백",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_suhyun",
+       "value": 40
+      }
+     ],
+     "lines": [
+      "있잖아, 나 너 좋아해. 네 마음은 어때?"
+     ],
+     "choices": [
+      {
+       "text": "나도 좋아해요.",
+       "commands": [
+        {
+         "kind": "triggerEnding",
+         "endingId": "ending_suhyun_together"
+        }
+       ]
+      },
+      {
+       "text": "아직은 친구로 있고 싶어요.",
+       "commands": [
+        {
+         "kind": "triggerEnding",
+         "endingId": "ending_suhyun_friends"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+]
