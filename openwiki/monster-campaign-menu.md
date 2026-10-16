@@ -106,3 +106,13 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 - 지닌 도구가 있는 칸은 `data-party-held`, 자리 바꾸기의 먼저 고른 칸은 `data-party-swap-source` 로 CSS 가 표시한다.
 - 캡처: `node scripts/qa/runtime/collect-menu.probe.mjs --stages party,summary` 와 `QA_AFTER=scripts/qa/runtime/collect-menu-party.after.mjs … --stages none`.
   예제 프로젝트는 `node scripts/content/build-monster-expedition.mjs /tmp/psc/exp /tmp/psc/evidence` 로 먼저 만든다.
+
+## 도감 화면 (수집·관리 UI ② — 2026-10-16)
+
+- 도감 상세 빌더는 `src/player/playerMonsterDexDetail.ts` 로 옮겼다(`playerMonsterCampaignMenu.ts` 는 지도·배지만 남음). 쪽 상태 `dexPage`(생태 / 능력 / 기술)는 컨트롤러가 갖고 `playerMonsterDexTypes.ts` 가 타입이다. 쪽 나누기는 에메랄드 스킨에서만(`onDexPage` 가 넘어올 때) 켜지며 그 밖의 스킨은 기존 한 목록.
+- **원정 정의(`monsterCampaign`) 없이도 도감이 열린다**: `monsterDexSpeciesIds(project)` = 원정이 있으면 그 `speciesIds`, 없으면 `system.monsterCollection===true` 일 때만 `monsterSpecies` 전부, 아니면 `[]`. 발견·포획 기록(`recordMonsterSeen/Caught`)·전투 조우 기록·보상 되돌림이 모두 이 함수를 쓴다. 포획 없는 게임은 저장 바이트·메뉴 모두 그대로.
+- 설명 문구: `monsterDexNote` = 원정 `speciesNotes` 우선, 없으면 종 레코드의 선택 필드 `dexNote`(200자, `define_monster_species` · `define_monster_families` 단계 note). 옛 저장본은 필드가 없어 변하지 않는다.
+- 분포: `monsterSpeciesHabitats` 가 맵 `encounterTable`(없으면 `troopIds`) → 무리 → 적 → 종 으로 거슬러 올라 맵 이름을 모은다. 손으로 쓰지 않는다. 야생에서 안 나오는 종(스타터 등)은 「야생에서는 만날 수 없음」.
+- 진행 막대: 목록 머리 오른쪽 「N% 완성」+ 발견(연한)/포획(진한) 두 겹 막대(`detail.meter`).
+- 조수: `toolCapabilityIndex` 의 `monster-collection-ui` 레시피, find_tools 별칭 「도감」, 점검 `gameSystemAuthoringTools.issues` 가 도감 항목에 원정 정의 **또는** monsterCollection 을 요구.
+- 화면 증거 스크립트: `node scripts/qa/runtime/collect-menu.probe.mjs --stages dex` (`QA_AFTER=scripts/qa/runtime/collect-menu-dex.after.mjs` 로 쪽·야생 종, `QA_PROJECT_PATCH` 로 원정 정의 제거본). 원정 정의를 지울 땐 `meta.oprnCinematicTimelines.monsterCampaign` 캡슐도 같이 지워야 로드 때 되살아나지 않는다.

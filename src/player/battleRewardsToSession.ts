@@ -9,7 +9,7 @@ import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
-import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
+import { monsterCampaign, recordMonsterSeen, recordMonsterCaught, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
@@ -44,7 +44,7 @@ export function applyBattleRewardsToSession(
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
     // Transfer class, lineage and permanent skills before vitals. Never replay
     // arbitrary reclass: it would erase the earned promotion chain.
-    const journal = (monsterCampaign(project)?.speciesIds ?? []).map((speciesId) => ({
+    const journal = monsterDexSpeciesIds(project).map((speciesId) => ({
       speciesId, seen: session.switches[`mx_seen_${speciesId}`] === true, caught: session.switches[`mx_caught_${speciesId}`] === true,
     }));
     applyBattleClassOverridesToSession(session, outcome.eventState);

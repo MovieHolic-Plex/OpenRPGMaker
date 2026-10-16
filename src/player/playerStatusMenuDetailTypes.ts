@@ -71,6 +71,8 @@ export type StatusMenuDetail = {
   readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary";
   readonly regionMap?: import("@/player/playerMonsterCampaignMenu").CampaignRegionMap;
   readonly artwork?: { readonly src: string; readonly alt: string };
+  /** 도감 목록의 진행 막대(발견·포획·전체). 제목 줄에 겹쳐 그린다. */
+  readonly meter?: { readonly seen: number; readonly caught: number; readonly total: number };
   readonly tabs?: readonly {
     readonly id: string;
     readonly label: string;
@@ -105,6 +107,9 @@ export type StatusMenuDetailOptions = {
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly monsterView?: "party" | "box";
   readonly monsterCollect?: import("@/player/playerMonsterCollectTypes").MonsterCollectUi;
+  /** 도감 상세의 쪽(에메랄드 스킨에서만 쓴다). */
+  readonly dexPage?: import("@/player/playerMonsterDexTypes").MonsterDexPage;
+  readonly onDexPage?: (page: import("@/player/playerMonsterDexTypes").MonsterDexPage) => void;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;

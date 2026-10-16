@@ -5,7 +5,7 @@ import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
-import { monsterCampaign, monsterJournalEntry } from "@/project/monsterJournal";
+import { monsterCampaign, monsterJournalEntry, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { currentChapterLabel } from "@/project/newGamePlus";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
@@ -225,7 +225,8 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
     if (id === 'trainer-card') return Boolean(authored);
-    if (id === "monster-dex" || id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
+    if (id === "monster-dex") return monsterDexSpeciesIds(project).length > 0;
+    if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
     if (id === "relationships") return showRelationships;
     if (id === "gallery") return isGalleryEnabled(project);
@@ -418,7 +419,7 @@ export function statusMenuCommandSummary(
     case "monsters":
       return `${session.monsterParty.length}마리`;
     case "monster-dex": {
-      const ids = monsterCampaign(project)?.speciesIds ?? [];
+      const ids = monsterDexSpeciesIds(project);
       return `${ids.filter((id) => monsterJournalEntry(session, id).caught).length}/${ids.length}종`;
     }
     case "region-map": return project.maps[session.currentMapId]?.name ?? "";

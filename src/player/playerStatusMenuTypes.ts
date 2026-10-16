@@ -35,6 +35,7 @@ export type PlayerStatusMenuActions = {
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
+  readonly onDexPage?: (page: import("@/player/playerMonsterDexTypes").MonsterDexPage) => void;
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly onToggleMonsterView: () => void;
   readonly onMonsterCollect?: (action: MonsterCollectAction) => void;
@@ -70,6 +71,7 @@ export type PlayerStatusMenuOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly campaignSpeciesId?: string;
+  readonly dexPage?: import("@/player/playerMonsterDexTypes").MonsterDexPage;
   readonly monsterInstanceId?: string;
   readonly monsterView?: "party" | "box";
   readonly monsterCollect?: MonsterCollectUi;

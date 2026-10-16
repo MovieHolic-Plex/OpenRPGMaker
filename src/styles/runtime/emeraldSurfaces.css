@@ -481,6 +481,33 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail[data-campaign-page="map"] { grid-template-rows: 24px 160px minmax(0, 1fr); }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail[data-campaign-page="dex"]:has(.life-ledger-artwork) { grid-template-columns: 144px 1fr; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .campaign-menu-detail .life-ledger-artwork img { width: 128px; height: 128px; }
+/* 도감: 목록은 모든 줄 높이·글자 시작 위치를 같게, 발밑 설명창은 두 줄이 들어가게. 상세는 그림 | 쪽 목록 두 칸. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:is([data-emerald-page="dex-list"], [data-emerald-page="dex-detail"]) .status-menu-footer { height: 68px; padding: 2px 12px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:is([data-emerald-page="dex-list"], [data-emerald-page="dex-detail"]) .status-menu-message { font: 16px/20px var(--runtime-pixel-font); display: flex; align-items: center; justify-content: center; text-align: center; height: 100%; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:is([data-emerald-page="dex-list"], [data-emerald-page="dex-detail"]) .status-menu-detail { top: 16px; bottom: 80px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"]:is([data-emerald-page="dex-list"], [data-emerald-page="dex-detail"]) .status-menu-header { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-detail-list { grid-auto-rows: 32px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-detail-row { height: 32px; min-height: 32px; padding-top: 0; padding-bottom: 0; padding-left: 54px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-detail-row:has(> .status-menu-entry-icon) { padding-left: 18px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-entry-icon { width: 28px; height: 28px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-detail-row[data-dex-seen="false"] { opacity: 0.55; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .campaign-dex-meter { position: absolute; top: 0; right: 0; height: 24px; display: flex; align-items: center; gap: 6px; font: 16px/24px var(--runtime-pixel-font); color: inherit; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .campaign-dex-meter-track { position: relative; width: 72px; height: 10px; box-sizing: border-box; border: 2px solid currentColor; display: block; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .campaign-dex-meter-track > i { position: absolute; left: 0; top: 0; bottom: 0; display: block; background: currentColor; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .campaign-dex-meter-track > .campaign-dex-meter-seen { opacity: 0.3; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-list"] .status-menu-detail-title { padding-right: 150px; font-size: 16px; white-space: nowrap; overflow: hidden; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail { grid-template-columns: 160px 1fr; column-gap: 8px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-title { grid-column: 1 / -1; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .life-ledger-artwork { grid-column: 1; grid-row: 2; align-self: stretch; margin: 0; padding: 0; display: grid; place-items: center; border: 4px solid currentColor; box-sizing: border-box; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .life-ledger-artwork img { width: 128px; height: 128px; object-fit: contain; image-rendering: pixelated; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-list { grid-column: 2; grid-row: 2; display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(25px, auto); align-content: start; overflow-y: auto; border: 2px solid currentColor; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row { grid-column: 1 / -1; min-height: 25px; padding-top: 0; padding-bottom: 0; font-size: 16px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row[data-summary-half="true"] { grid-column: auto; padding-right: 12px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row[data-dex-block="true"] .status-menu-detail-label { display: none; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] :is(.status-menu-detail-label, .status-menu-detail-value, .status-menu-detail-description) { font-size: 16px; line-height: 22px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description { display: block; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description .status-menu-detail-copy { display: block; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="dex-detail"] .status-menu-detail-row.has-description .status-menu-detail-description { display: block; white-space: normal; line-height: 20px; }
 /* Dialogue box width/height is measured before pagination; two Korean lines page safely. */
 .dialogue-scrim[data-monster-style="emerald"] { display: none; }
 .dialogue-overlay[data-dialogue-style="handheld"][data-monster-style="emerald"] {
