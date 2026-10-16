@@ -170,3 +170,12 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 
 `checkEndingNpcReachable`(romanceEndings.ts)은 엔딩 조건·기한 fork 가 이름으로 겨눈 인물 키마다 호감이 오르는 곳(호감 대화 인물의 characterId · changeFriendship npcKey · 「인물 호감」 변수 주인)이 있는지 본다.
 없으면 경고 `romance-ending-npc-unreachable` 이고 COMPLETION_CODES 라 finish 를 막는다(한 장면 게임은 ENDING_CODES 로 면제). 키 이름이 다른 오타(`haru_street` vs `jihun`)도 같은 검사로 잡힌다.
+
+
+
+## 인물 엔딩 자동 생성 (2026-10-17 romance-loop-2, rom-c)
+
+학원물 한 판(호감 대화 인물 3명)이 시간 상한(2558초)까지 가서도 엔딩이 호감 구간(해피·평범·혼자) 셋뿐이었다 — 완료 검사(`romance-endings-not-per-heroine`)는 막았지만 모델이 인물 엔딩을 쓸 시간이 없었다.
+`set_deadline_ending` 을 tiers 없이 부르고(뼈대 해피 엔딩이 있고) 호감 대화 인물이 둘 이상이면, 도구가 인물마다 `ending_with_<characterId>`(「OO와 함께」, 호감 ≥60, priority 36, 기본 에필로그 한 줄)를 만들어
+tiers 맨 위에 얹고 그 뒤에 평범·혼자를 둔다. 이미 같은 id 엔딩이 있으면 건드리지 않는다(define_ending 으로 다시 쓴 것 보존). 결과 경고가 에필로그를 인물에 맞게 다시 쓰라고 알린다.
+NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, 완료 검사가 그대로 막는다.

@@ -9,6 +9,7 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
+import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
@@ -204,7 +205,7 @@ const setDeadlineEnding: ToolDefinition = {
     + "tiers 는 호감이 높은 것부터 [{endingId, friendshipAtLeast, characterId?}] 로 적고, 마지막 항목은 friendshipAtLeast 를 생략해 기본 결말로 둔다. "
     + "인물이 여럿이면(다인 연애) 항목마다 characterId 를 줘 「그 사람의 호감이 문턱 이상이면 그 사람과의 결말」 로 적는다 — 위에서부터 처음 맞는 항목이 이기므로 여러 명이 문턱을 넘으면 먼저 적은 인물이 이긴다(그래서 더 아끼는 결말·높은 문턱을 위에 둔다). "
     + `characterId 를 「${ANY_FRIENDSHIP_KEY}」 로 주면 「가장 호감이 높은 사람」 기준이다(인물이 아직 없을 때·인물 무관 평범/혼자 결말). `
-    + `tiers 를 생략하면 연애 뼈대의 세 엔딩(${ROMANCE_ENDING_HAPPY_ID} ≥${ROMANCE_ENDING_HAPPY_AT} → ${ROMANCE_ENDING_NORMAL_ID} ≥${ROMANCE_ENDING_NORMAL_AT} → ${SEGMENT_END_ENDING_ID}) 를 그대로 쓴다. 히로인별 결말은 define_ending 으로 먼저 정의한 뒤 tiers 맨 위에 그 인물 항목을 얹는다. `
+    + `tiers 를 생략하면(호감 대화 인물이 둘 이상이면 인물마다 「OO와 함께」 엔딩을 자동으로 만들어 맨 위에 얹고) 연애 뼈대의 엔딩(${ROMANCE_ENDING_HAPPY_ID} ≥${ROMANCE_ENDING_HAPPY_AT} → ${ROMANCE_ENDING_NORMAL_ID} ≥${ROMANCE_ENDING_NORMAL_AT} → ${SEGMENT_END_ENDING_ID}) 를 그대로 쓴다. 히로인별 결말은 define_ending 으로 먼저 정의한 뒤 tiers 맨 위에 그 인물 항목을 얹는다. `
     + "엔딩은 먼저 define_ending 으로 정의해 둔다(conditions 는 [] 로 둬도 된다 — 호감 문턱은 이 도구가 건다). 이 도구는 공통 이벤트 ce_deadline_ending 을 만들고 system.timeSystem.onDayEnd 로 연결한다. "
     + "이미 다른 onDayEnd 공통 이벤트가 있으면 그것을 먼저 부르고 이어서 기한 판정을 한다. 같은 호출을 다시 하면 갱신한다.",
   mode: "write",
@@ -245,8 +246,34 @@ const setDeadlineEnding: ToolDefinition = {
       { endingId: ROMANCE_ENDING_NORMAL_ID, friendshipAtLeast: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
       { endingId: SEGMENT_END_ENDING_ID },
     ];
+    // tiers 를 생략했는데 호감 대화 인물이 둘 이상이면 인물마다 엔딩을 만들어 맨 위에 얹는다(romance-loop-2 rom-c: 인물 3명인데 엔딩은 호감 구간뿐이었다).
+    const generated: string[] = [];
+    const heroineTiers: { endingId: string; friendshipAtLeast: number; characterId: string }[] = [];
+    if (args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)) {
+      const heroines = new Map<string, string>();
+      for (const map of Object.values(draft.maps ?? {})) for (const event of map.events ?? []) {
+        const key = event.characterId?.trim();
+        if (key && isTalkFriendshipEnabled(event) && !heroines.has(key)) heroines.set(key, (event.name ?? key).trim() || key);
+      }
+      if (heroines.size >= 2) {
+        draft.endings ??= [];
+        for (const [key, name] of heroines) {
+          const endingId = `ending_with_${key.replace(/[^A-Za-z0-9_]+/gu, "_")}`;
+          if (!draft.endings.some((ending) => ending.id === endingId)) {
+            draft.endings.push({
+              id: endingId, name: `${name}와 함께`, priority: 36,
+              conditions: [{ kind: "friendshipAtLeast", npcKey: key, value: ROMANCE_ENDING_HAPPY_AT }],
+              epilogue: [{ kind: "say", text: `${name}와(과) 마음이 닿은 채 이야기가 끝난다. 한 계절의 끝에서 두 사람의 거리는 처음과 전혀 다르다.` }],
+            });
+            generated.push(endingId);
+          }
+          heroineTiers.push({ endingId, friendshipAtLeast: ROMANCE_ENDING_HAPPY_AT, characterId: key });
+        }
+      }
+    }
     const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[]
-      : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID) ? skeletonTiers : [];
+      : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
+        ? [...heroineTiers, ...(heroineTiers.length > 0 ? skeletonTiers.slice(1) : skeletonTiers)] : [];
     if (tiers.length === 0) throw new ToolError("tiers 에 엔딩이 하나 이상 있어야 합니다.", { code: "invalid-args" });
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
     const known = new Set((draft.endings ?? []).map((ending) => ending.id));
@@ -295,6 +322,7 @@ const setDeadlineEnding: ToolDefinition = {
     if (index >= 0) draft.commonEvents[index] = event; else draft.commonEvents.push(event);
     draft.system.timeSystem = { ...timeSystem, onDayEnd: DEADLINE_ENDING_COMMON_EVENT_ID };
     const warnings = [
+      ...(generated.length ? [`인물 엔딩 ${generated.join(", ")} 을(를) 기본 문구로 만들었습니다 — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요(문턱은 이 도구가 건 호감 ${ROMANCE_ENDING_HAPPY_AT}).`] : []),
       ...(previousHook ? [`기존 onDayEnd '${previousHook}' 는 기한 판정 앞에서 먼저 실행하도록 이었습니다.`] : []),
       ...(timeSystem.forceSleep === true ? [] : ["forceSleep 이 꺼져 있으면 플레이어가 자지 않는 한 하루가 끝나지 않아 기한이 오지 않습니다 — 연애 게임은 하루 칸을 다 쓰면 자동으로 하루가 끝나도록 forceSleep 을 켜거나 잠자리 이벤트(sleepUntilMorning)를 두세요."]),
     ];

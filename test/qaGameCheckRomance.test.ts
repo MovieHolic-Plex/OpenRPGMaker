@@ -1,3 +1,4 @@
+import { runTool } from "@/editor/tools";
 import { describe, expect, it } from "vitest";
 import { checkRomance, isRomanceCheckTarget, isRomanceGameRequest } from "@/qa/gameCheck/romance";
 import { createBlankProject } from "@/project/defaults";
@@ -134,5 +135,26 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect(got?.message).not.toContain("char_a");
     map.events.find((event) => event.id === "b")!.talkFriendship = true;
     expect(codes(project)).not.toContain("romance-ending-npc-unreachable");
+  });
+
+
+
+  it("set_deadline_ending 은 tiers 를 생략하고 인물이 둘 이상이면 인물 엔딩을 만들어 맨 위에 얹는다", () => {
+    const ctx = { project: romanceProject() };
+    ctx.project.system.timeSystem = { enabled: true } as never;
+    const map = Object.values(ctx.project.maps)[0]!;
+    map.events.push(npc("a"), npc("b"));
+    ctx.project.endings = [
+      { id: "ending_first_segment", name: "혼자", conditions: [], priority: 0 },
+      { id: "ending_romance_happy", name: "해피", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 60 }], priority: 20 },
+      { id: "ending_romance_normal", name: "평범", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 25 }], priority: 10 },
+    ] as never;
+    const result = runTool(ctx, "set_deadline_ending", { days: 14 });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const ids = (ctx.project.endings ?? []).map((ending) => ending.id);
+    expect(ids).toContain("ending_with_char_a");
+    expect(ids).toContain("ending_with_char_b");
+    expect(JSON.stringify(ctx.project.commonEvents)).toContain("ending_with_char_a");
+    expect(checkRomance(ctx.project).some((finding) => finding.code === "romance-endings-not-per-heroine")).toBe(false);
   });
 });
