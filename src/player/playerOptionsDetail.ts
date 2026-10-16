@@ -55,7 +55,8 @@ export function createPlayerOptionsDetail(onChanged?: (message?: string) => void
       onActivate: () => change({ skipScope: effective.skipScope === 'read' ? 'all' : 'read' }),
     });
   }
-  if (system) {
+  // classic 창 스킨은 그림이 창을 채워 투명도가 듣지 않는다 — 효과 없는 행은 보이지 않는다(적대 리뷰 D3).
+  if (system && project?.system.dialogueStyle !== 'classic') {
     const index = OPACITY_STEPS.findIndex(step => Math.abs(step - effective.windowOpacity) < 0.05);
     entries.push({
       label: text('option.windowOpacity'), value: `${Math.round(effective.windowOpacity * 100)}%`,

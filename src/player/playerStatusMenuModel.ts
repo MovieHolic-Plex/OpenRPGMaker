@@ -379,7 +379,8 @@ function relationshipOverview(project: Project, session: PlaySession, leadName: 
 
 export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {
   const authored = project && fieldMenu(project)?.entries.find(row => row.command === commandId);
-  if (authored) return authored.label;
+  // 저작하지 않은 기본 라벨(연애 기본 메뉴의 「백로그」)은 저작한 언어로 보인다. 저작자가 직접 쓴 라벨은 그대로다.
+  if (authored) return commandId === "backlog" && authored.label === "백로그" ? dialogueUiText(resolveDialogueSystem(project), "menu.backlog") : authored.label;
   switch (commandId) {
     case 'trainer-card': return '원정 수첩';
     case "items": return "아이템";

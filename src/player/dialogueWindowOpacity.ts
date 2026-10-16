@@ -39,6 +39,8 @@ export function scaleCssAlpha(css: string, factor: number): string {
 export function applyWindowOpacity(box: HTMLElement, opacity: number | undefined): void {
   if (opacity === undefined || !(opacity < 0.995) || typeof getComputedStyle !== "function" || box.classList.contains("transparent")) return;
   const computed = getComputedStyle(box);
+  // 창 스킨 그림(classic 의 border-image fill)이 상자를 채우면 배경 알파를 낮춰도 가려진다 — 효과가 없으면서 「적용됨」 표시를 남기지 않는다(적대 리뷰 D3).
+  if (computed.borderImageSource && computed.borderImageSource !== "none") return;
   const color = computed.backgroundColor;
   const image = computed.backgroundImage;
   if (color && color !== "transparent" && !/\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/.test(color)) box.style.backgroundColor = scaleCssAlpha(color, opacity);

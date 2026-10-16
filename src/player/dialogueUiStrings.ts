@@ -10,11 +10,12 @@ export type DialogueUiKey =
   | "bar.label" | "bar.auto" | "bar.skip" | "bar.backlog" | "bar.hide"
   | "backlog.title" | "backlog.hint" | "backlog.empty" | "backlog.choice" | "backlog.cancel" | "backlog.count" | "backlog.close"
   | "menu.backlog" | "menu.backlogOpen" | "menu.backlogHint" | "menu.backlogDisabled"
-  | "notice.unread" | "notice.choices" | "notice.ending" | "notice.boundary" | "notice.locked" | "notice.hiddenRestore"
+  | "notice.unread" | "notice.choices" | "notice.ending" | "notice.boundary" | "notice.locked"
   | "option.autoSpeed" | "option.autoSpeedHint" | "option.skipScope" | "option.skipScopeHint" | "option.windowOpacity" | "option.windowOpacityHint"
   | "value.slow" | "value.normal" | "value.fast" | "value.scopeRead" | "value.scopeAll" | "value.on" | "value.off"
   | "option.title" | "option.footer" | "option.saved" | "option.savedSession" | "option.bgm" | "option.se" | "option.voice" | "option.down" | "option.up" | "option.volumeHint"
-  | "option.textSpeed" | "option.textSpeedHint" | "option.menuMotion" | "option.menuMotionHint";
+  | "option.textSpeed" | "option.textSpeedHint" | "option.menuMotion" | "option.menuMotionHint"
+  | "controls.compact" | "controls.function" | "controls.grid" | "controls.list";
 
 type Row = Readonly<Record<SupportedLocale, string>>;
 
@@ -40,7 +41,6 @@ export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
   "notice.ending": { ko: "엔딩 앞에서 멈췄습니다", en: "Stopped before the ending", ja: "エンディングの前で止まりました", zh: "已在结局前停止" },
   "notice.boundary": { ko: "장면이 바뀌어 멈췄습니다", en: "Stopped at a scene change", ja: "場面が変わって止まりました", zh: "场景切换，已停止" },
   "notice.locked": { ko: "넘길 수 없는 글에서 멈췄습니다", en: "Stopped at text that cannot be skipped", ja: "飛ばせないテキストで止まりました", zh: "已在无法跳过的文本处停止" },
-  "notice.hiddenRestore": { ko: "아무 키나 누르면 돌아옵니다", en: "Press any key to return", ja: "何かキーを押すと戻ります", zh: "按任意键返回" },
   "option.autoSpeed": { ko: "오토 속도", en: "Auto speed", ja: "オート速度", zh: "自动速度" },
   "option.autoSpeedHint": { ko: "선택하면 보통 → 빠르게 → 느리게 순서로 바뀝니다. 글이 길수록 더 오래 기다립니다.", en: "Cycles Normal, Fast, Slow. Longer text waits longer.", ja: "選ぶと 普通→速い→遅い の順で切り替わります。長い文ほど長く待ちます。", zh: "依次切换 普通→快→慢。文字越长等待越久。" },
   "option.skipScope": { ko: "스킵 범위", en: "Skip range", ja: "スキップ範囲", zh: "跳过范围" },
@@ -63,6 +63,10 @@ export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
   "option.textSpeedHint": { ko: "선택하면 보통 → 빠르게 → 느리게 순서로 바뀝니다.", en: "Cycles Normal, Fast, Slow.", ja: "選ぶと 普通→速い→遅い の順で切り替わります。", zh: "依次切换 普通→快→慢。" },
   "option.menuMotion": { ko: "메뉴 움직임 줄이기", en: "Reduce menu motion", ja: "メニューの動きを減らす", zh: "减少菜单动效" },
   "option.menuMotionHint": { ko: "ESC 메뉴 전환의 이동 효과를 줄입니다. 운영체제의 감소 설정도 존중합니다.", en: "Reduces movement in ESC menu transitions. The system reduce-motion setting is also respected.", ja: "ESCメニュー切り替えの動きを減らします。OSの動き軽減設定にも従います。", zh: "减少ESC菜单切换的动效，同时遵循系统的减少动态设置。" },
+  "controls.compact": { ko: "↑↓ 이동 · Enter 선택\nEsc 닫기", en: "Up/Down move · Enter select\nEsc close", ja: "↑↓ 移動 · Enter 選択\nEsc 閉じる", zh: "↑↓ 移动 · Enter 选择\nEsc 关闭" },
+  "controls.function": { ko: "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로", en: "Up/Down move   Enter confirm   Left menu   Esc back", ja: "↑↓ 項目移動   Enter 決定   ← メニュー   Esc 戻る", zh: "↑↓ 移动项目   Enter 确定   ← 菜单   Esc 返回" },
+  "controls.grid": { ko: "↑↓←→ 이동   Enter 선택   Esc 게임으로", en: "Arrows move   Enter select   Esc to game", ja: "↑↓←→ 移動   Enter 選択   Esc ゲームへ", zh: "↑↓←→ 移动   Enter 选择   Esc 回到游戏" },
+  "controls.list": { ko: "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로", en: "Up/Down menu   Right / Enter select   Esc to game", ja: "↑↓ メニュー移動   → / Enter 選択   Esc ゲームへ", zh: "↑↓ 菜单移动   → / Enter 选择   Esc 回到游戏" },
   "value.slow": { ko: "느리게", en: "Slow", ja: "遅い", zh: "慢" },
   "value.normal": { ko: "보통", en: "Normal", ja: "普通", zh: "普通" },
   "value.fast": { ko: "빠르게", en: "Fast", ja: "速い", zh: "快" },

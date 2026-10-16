@@ -1,5 +1,8 @@
 import type { Project } from '../../project/types';
 import type { ToolResult } from '../../editor/tools/types';
+/** 게임 시스템(상점·ESC 메뉴·몬스터·음악·대사 읽기 보조 등) 요청으로 보고 시스템 도구를 처음부터 선언하게 하는 낱말(한·영·일·중). */
+export const GAME_SYSTEM_REQUEST_PATTERN = /시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b|백로그|오토|스킵|대사 기록|미연시|backlog|visual.?novel|auto.?(?:play|advance)|\bskip\b|(?:message|dialogue|dialog) (?:log|history)|バックログ|オート|スキップ|回顾|回顧|自动播放|自動播放|跳过|跳過|对话记录|對話記錄/iu;
+
 /** Completion evidence from actual tools, independent of the assistant's final text. */
 export class PiGameSystemProduction {
   requested = false;

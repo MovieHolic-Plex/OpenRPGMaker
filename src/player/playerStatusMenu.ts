@@ -1,3 +1,5 @@
+import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
   createPlayerStatusMenuSnapshot,
@@ -243,7 +245,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
-      options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined
+      options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
+      resolveDialogueSystem(options.project)
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -783,7 +786,8 @@ function renderFooter(
   mode: "main" | "function",
   message: string | undefined,
   railColumns: number, compact = false,
-  messageKind?: "description"
+  messageKind?: "description",
+  system?: AuthoredDialogueSystem,
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
@@ -794,17 +798,19 @@ function renderFooter(
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns, compact),
+    text: statusMenuControls(mode, railColumns, compact, system),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false): string {
-  if (compact && mode === "main") return "↑↓ 이동 · Enter 선택\nEsc 닫기";
-  if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false, system?: AuthoredDialogueSystem): string {
+  // 대사 시스템이 있는 게임(연애 기본 구성 포함)은 저작한 언어로, 없으면 예전 한국어 그대로다.
+  const text = (key: "controls.compact" | "controls.function" | "controls.grid" | "controls.list"): string => dialogueUiText(system, key);
+  if (compact && mode === "main") return text("controls.compact");
+  if (mode === "function") return text("controls.function");
   // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
-  return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";
+  return railColumns > 1 ? text("controls.grid") : text("controls.list");
 }
 
 function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {

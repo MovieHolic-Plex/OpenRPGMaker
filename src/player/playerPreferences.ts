@@ -36,7 +36,8 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
     ...(SKIP_SCOPES.includes(input.skipScope as SkipScope) ? { skipScope: input.skipScope as SkipScope } : {}),
     ...(typeof input.windowOpacity === 'number' && Number.isFinite(input.windowOpacity)
       ? { windowOpacity: Math.round(Math.max(WINDOW_OPACITY_MIN, Math.min(WINDOW_OPACITY_MAX, input.windowOpacity)) * 100) / 100 } : {}),
-    ...(input.textSpeedChosen === true ? { textSpeedChosen: true as const } : {}),
+    // 표식이 없던 예전 저장본(이 필드가 생기기 전)에서 보통이 아닌 속도는 플레이어가 직접 고른 값이다 — 한 번 승격해 연애 게임의 저작 시작값에 덮이지 않게 한다.
+    ...(input.textSpeedChosen === true || input.textSpeed === 'slow' || input.textSpeed === 'fast' ? { textSpeedChosen: true as const } : {}),
   };
 }
 function deviceStorage(): PreferenceStorage | undefined {
