@@ -1,5 +1,7 @@
 import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
+import { DEFAULT_BAG_POCKET, stepBagPocket } from "@/player/playerBagPockets";
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { actorOwnedSkillIds, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
 import { combineItems } from "@/project/craftRecipes";
@@ -57,6 +59,8 @@ import {
   useStatusMenuItem,
 } from "@/player/playerStatusMenuMutations";
 import { takeHeldItem } from "@/project/monsterHeldItems";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -70,6 +74,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   const detailCursors = new Map<string, number>();
   const detailScrolls = new Map<string, number>();
   let inventoryView: InventoryView = { ...DEFAULT_INVENTORY_VIEW };
+  let evolutionPlaying = false;
   let targetItemId: string | undefined;
   let itemActionId: string | undefined;
   let skillActorId: string | undefined;
@@ -196,6 +201,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       actions: {
         onOptionsChanged: (message) => { renderMenu(message, "options"); },
         onInventoryViewChange: (view) => {
+          if (view.pocket !== inventoryView.pocket) {
+            // 포켓을 바꾸면 새 목록의 첫 줄에서 시작한다(점·탭을 눌러 바꿔도 같다).
+            inventoryView = view;
+            detailCursors.set("items:list", 0);
+            options.emitMenuJuice("menu-select", renderMenu(undefined, "items"));
+            return;
+          }
           const control = view.filter !== inventoryView.filter ? "inventory-filter" : "inventory-sort";
           inventoryView = view;
           renderMenu(undefined, "items");
@@ -403,6 +415,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const handleKey = (key: RuntimeMenuKey): boolean => {
     if (!currentMenu()) return false;
+    // 진화 장면이 도는 동안 메뉴는 입력을 받지 않는다(장면이 확인키로 문장을 넘긴다).
+    if (evolutionPlaying) return true;
     if (galleryViewerIsOpen()) {
       if (isCancelMenuKey(key) || isConfirmMenuKey(key)) {
         closeGalleryViewer();
@@ -421,6 +435,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     const direction = directionForKey(key);
     if (mode === "function") {
+      // 몬스터 가방(목록 단계)에서는 좌우 키가 포켓을 넘긴다(←는 레일로 돌아가는 대신 Esc). 대상 선택·행동 화면은 그대로.
+      if ((direction === "left" || direction === "right") && bagPocketKeysActive()) {
+        stepPocket(direction === "left" ? -1 : 1);
+        return true;
+      }
       if (direction === "left") {
         focusMenuArea("main");
         options.emitMenuJuice("menu-back", currentMenu());
@@ -474,6 +493,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     return false;
   };
+
+  function bagPocketKeysActive(): boolean {
+    return selectedCommand === "items" && !targetItemId && !itemActionId && usesMonsterParty(store.getCurrent());
+  }
+
+  function stepPocket(delta: -1 | 1): void {
+    inventoryView = { ...inventoryView, pocket: stepBagPocket(inventoryView.pocket ?? DEFAULT_BAG_POCKET, delta) };
+    detailCursors.set("items:list", 0);
+    options.emitMenuJuice("menu-select", renderMenu(undefined, "items"));
+  }
 
   function saveSlot(slot: SaveSlotIndex): void {
     const scene = options.getActiveScene();
@@ -532,6 +561,20 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
     emitMutationResult(result, panel);
+    // 진화의 돌·이상한 사탕으로 진화했으면 3세대 진화 장면(모습이 바뀐다 → 축하 문장)을 메뉴 위에 보인다. 끝나면 새 모습으로 다시 그린다.
+    if (result.kind === "used" && result.evolutions?.length && isEmeraldMonsterStyle(store.getCurrent())) void playItemEvolutions(result.evolutions, result.message);
+  }
+
+  async function playItemEvolutions(entries: NonNullable<Extract<StatusMenuMutationResult, { kind: "used" }>["evolutions"]>, message: string): Promise<void> {
+    evolutionPlaying = true;
+    try {
+      await playEmeraldEvolutions(options.getPlayStage() ?? options.layout, store.getCurrent(), entries);
+    } catch {
+      // 장면이 실패해도 진화 결과는 이미 저장 상태에 반영돼 있다 — 메뉴를 새 모습으로 다시 그린다.
+    } finally {
+      evolutionPlaying = false;
+    }
+    if (currentMenu()) renderMenu(message, "items");
   }
 
   /** 정면·발밑 이벤트가 이 아이템을 받는가(itemUsed 페이지). 씬이 없으면 undefined. */

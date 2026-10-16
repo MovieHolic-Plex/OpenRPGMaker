@@ -42,3 +42,11 @@ function splitPair(pair: JosaPair): [string, string] {
       return ["을", "를"];
   }
 }
+
+/** 「로/으로」 — 받침이 없거나 ㄹ 받침이면 로. 한글이 아니면 로. */
+export function roJosa(word: string): string {
+  const code = word.trimEnd().charCodeAt(word.trimEnd().length - 1) - 0xac00;
+  if (code < 0 || code > 11171) return "로";
+  const final = code % 28;
+  return final === 0 || final === 8 ? "로" : "으로";
+}

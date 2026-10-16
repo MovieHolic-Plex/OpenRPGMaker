@@ -79,6 +79,18 @@ export type StatusMenuDetail = {
     readonly selected: boolean;
     readonly testId: string;
     readonly onActivate?: () => void;
+    /** 키보드 커서 순서에서는 빼고(좌우 키가 따로 전환한다) 눌러서만 고른다. */
+    readonly pointerOnly?: boolean;
+  }[];
+  /** 몬스터 수집 게임 가방의 포켓 목록 — 에메랄드 가방은 점으로, 그 밖의 스킨은 탭 줄로 그린다. */
+  readonly pockets?: readonly {
+    readonly id: string;
+    readonly label: string;
+    /** 이 포켓에 든 아이템 종류 수. */
+    readonly count: number;
+    readonly selected: boolean;
+    readonly testId: string;
+    readonly onActivate?: () => void;
   }[];
 };
 

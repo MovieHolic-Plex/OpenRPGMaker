@@ -1,3 +1,4 @@
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
   createPlayerStatusMenuSnapshot,
   isStatusMenuGroupEntryId,
@@ -72,7 +73,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       : selectedCommand === "items"
         ? options.targetItemId ? "item-target" : options.itemActionId ? "item-context" : "bag"
         : selectedCommand;
-    panel.dataset.bagPocket = options.inventoryView?.filter ?? "all";
+    panel.dataset.bagPocket = usesMonsterParty(options.project) ? options.inventoryView?.pocket ?? "items" : options.inventoryView?.filter ?? "all";
     panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
   }
   applySystemGraphic(panel);
@@ -172,6 +173,24 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     detailPanel.append(el("div", { class: "emerald-bag", attrs: { role: "img", "aria-label": "가방" }, children: [
       el("span", { class: "emerald-bag-handle" }), el("span", { class: "emerald-bag-pocket" }),
     ] }));
+    // 포켓 표시: 가방 그림 아래 점 다섯, 제목 양옆 ◀ ▶(좌우 키·누르기 모두 같은 전환). 목록 단계(행동 화면 제외)에서만 보인다.
+    const pockets = detail.pockets;
+    if (pockets?.length && !options.itemActionId) {
+      const at = Math.max(0, pockets.findIndex((pocket) => pocket.selected));
+      const arrow = (glyph: string, label: string, side: "prev" | "next", delta: number): HTMLElement => el("button", {
+        class: `emerald-bag-arrow emerald-bag-arrow-${side}`, text: glyph,
+        attrs: { type: "button", "aria-label": label, tabindex: "-1" }, dataset: { testid: `bag-pocket-${side}` },
+        on: { click: () => pockets[(at + delta + pockets.length) % pockets.length]?.onActivate?.() },
+      });
+      detailPanel.append(
+        arrow("◀", "이전 포켓", "prev", -1), arrow("▶", "다음 포켓", "next", 1),
+        el("div", { class: "emerald-bag-dots", attrs: { role: "tablist", "aria-label": "가방 포켓" }, children: pockets.map((pocket) => el("button", {
+          class: `emerald-bag-dot${pocket.selected ? " active" : ""}${pocket.count === 0 ? " empty" : ""}`,
+          attrs: { type: "button", role: "tab", "aria-selected": String(pocket.selected), "aria-label": `${pocket.label} ${pocket.count}종`, title: pocket.label, tabindex: "-1" },
+          dataset: { testid: pocket.testId }, on: { click: () => pocket.onActivate?.() },
+        })) }),
+      );
+    }
   }
   // 첫 화면이 작업 패널이 아닌 스킨(파티 퍼스트·허브·시트)은 main 모드에서 작업 패널을 그리지 않는다.
   const landingOnly = mode === "main" && skin.landing !== "work";

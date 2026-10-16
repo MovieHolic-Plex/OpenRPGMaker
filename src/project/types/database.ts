@@ -528,7 +528,14 @@ export interface ItemRecord {
   careProfile?: ItemCareProfile;
   /** 지닌 도구 효과(선택). 있으면 몬스터 파티 게임에서 파티 몬스터에게 지니게 할 수 있다(gen1 전투에서 적용). 생략 = 일반 아이템. */
   heldEffect?: HeldItemEffect;
+  /**
+   * 몬스터 파티 게임 가방 포켓을 직접 정한다(선택). 생략하면 captureProfile → 볼, 기술머신(learnedSkillId) → 기술머신,
+   * heldEffect → 지닌 도구, 쓸 곳 없는 never 아이템 → 중요한 물건, 나머지 → 도구로 정해진다. 다른 장르의 아이템 화면은 이 값을 쓰지 않는다.
+   */
+  pocket?: ItemBagPocket;
 }
+
+export type ItemBagPocket = "items" | "balls" | "machines" | "held" | "key";
 
 export type HeldItemEffectKind = "healBelow" | "cureStatus" | "boostType" | "endureOnce" | "regen";
 export type HeldItemStatus = "poison" | "burn" | "sleep" | "freeze" | "paralysis" | "any";
@@ -574,6 +581,8 @@ export interface ItemCareProfile {
   kind: "feed" | "toy";
   friendshipDelta: number;
   expDelta?: number;
+  /** 이상한 사탕: 개체 레벨을 이만큼 올린다(1~10). 경험치는 그 레벨의 문턱까지 채워지고 레벨업 기술·진화가 이어진다. 생략 = 올리지 않음. */
+  levelUp?: number;
 }
 
 export type FarmTool = "hoe" | "wateringCan" | "axe" | "pickaxe";
