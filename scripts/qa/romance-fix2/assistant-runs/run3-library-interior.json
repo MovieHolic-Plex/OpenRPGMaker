@@ -1,0 +1,239 @@
+[
+ [
+  "build_hand_interior_room",
+  {
+   "tileset": "modern_campus",
+   "mapId": "map_library",
+   "name": "중앙 도서관",
+   "floor": "mc-floor-parquet",
+   "wall": "mc-wall-class",
+   "layout": {
+    "program": "school-special-wing"
+   }
+  },
+  {
+   "n": 900
+  }
+ ],
+ [
+  "link_campus_interior",
+  {
+   "mapId": "map_blank_start",
+   "building": "hall-12",
+   "interiorMapId": "map_library"
+  },
+  {
+   "n": 900
+  }
+ ],
+ [
+  "make_villager",
+  {
+   "mapId": "map_library",
+   "name": "백서린",
+   "home": {
+    "x": 18,
+    "y": 6
+   },
+   "characterId": "char_seorin",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "젊은 여성"
+   },
+   "pages": [
+    {
+     "name": "서린 · 평일",
+     "conditions": [
+      {
+       "kind": "weekday",
+       "weekdays": [
+        1,
+        2,
+        3,
+        4,
+        5
+       ]
+      }
+     ],
+     "lines": [
+      "조용히, 여긴 도서관이야. ...아, 너구나.",
+      "시험 기간엔 이 자리가 제일 좋아."
+     ]
+    },
+    {
+     "name": "서린 · 주말",
+     "conditions": [
+      {
+       "kind": "weekday",
+       "weekdays": [
+        0,
+        6
+       ]
+      }
+     ],
+     "lines": [
+      "주말에도 나왔네? 나도 집보다 여기가 편해."
+     ]
+    },
+    {
+     "name": "서린 · 가까워짐",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_seorin",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "네가 앉는 자리, 이제 내 옆자리가 됐어.",
+      "이런 거, 나쁘지 않네."
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  "place_npc",
+  {
+   "mapId": "map_blank_start",
+   "x": 31,
+   "y": 20,
+   "name": "차예준",
+   "characterId": "char_yejun",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "청년 남성"
+   },
+   "pages": [
+    {
+     "name": "예준 · 첫인상",
+     "lines": [
+      "어? 신입이지? 차예준, 밴드 동아리 기타야.",
+      "오늘 저녁 연습실에 놀러 와."
+     ]
+    },
+    {
+     "name": "예준 · 가까워짐",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_yejun",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "네 앞에서만 연주하고 싶은 곡이 생겼어."
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_seorin",
+   "name": "서린과 도서관에서",
+   "conditions": [],
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "서린",
+     "text": "내년 시험 기간에도 옆자리, 비워 둘게."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_yejun",
+   "name": "예준의 무대",
+   "conditions": [],
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "예준",
+     "text": "다음 공연은 너를 위한 곡이야."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_solo",
+   "name": "각자의 길",
+   "conditions": [],
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "",
+     "text": "각자의 자리에서 한 학기가 저물었다."
+    }
+   ]
+  }
+ ],
+ [
+  "set_deadline_ending",
+  {
+   "days": 6,
+   "tiers": [
+    {
+     "endingId": "ending_seorin",
+     "friendshipAtLeast": 40,
+     "characterId": "char_seorin"
+    },
+    {
+     "endingId": "ending_yejun",
+     "friendshipAtLeast": 40,
+     "characterId": "char_yejun"
+    },
+    {
+     "endingId": "ending_solo"
+    }
+   ]
+  }
+ ],
+ [
+  "set_npc_schedule",
+  {
+   "mapId": "map_library",
+   "eventId": "@char_seorin",
+   "schedule": [
+    {
+     "when": {
+      "timePhase": "morning"
+     },
+     "at": {
+      "mapId": "map_library",
+      "x": 17,
+      "y": 5
+     },
+     "activity": "서고 열람석"
+    },
+    {
+     "when": {
+      "timePhase": "day"
+     },
+     "at": {
+      "mapId": "map_library",
+      "x": 17,
+      "y": 5
+     },
+     "activity": "서고 열람석"
+    },
+    {
+     "when": {
+      "timePhase": "evening"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 31,
+      "y": 19
+     },
+     "activity": "분수 광장 산책"
+    }
+   ]
+  }
+ ]
+]

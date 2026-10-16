@@ -35,9 +35,10 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
     theme: "hearts", font: "pixel", ...(previous?.menuStyle ? { menuStyle: previous.menuStyle } : {}),
     vitals: false, clock: true, tools: false, objective: false, hideEmpty: true,
     widgets: [
-      w("affection", { kind: "gauge", source: "friendship", label: "", shape: "hearts", width: 91, height: 22, color: "#ef6a68", showValue: false, max: 100 }),
+      // 호감 목록: 호감이 기록된 사람을 높은 순으로 셋까지(이름 + 하트). 한 사람뿐이면 한 줄.
+      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 8, width: 128, height: 20, color: "#f4d17b" }),
+      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 30, width: 128, height: 56, slots: 3, color: "#ef6a68", showValue: false, max: 100 }),
       w("clock", { kind: "clock", label: "", anchor: "top-right", width: 76, height: 44 }),
-      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 36, width: 118, height: 20, color: "#f4d17b" }),
     ],
   };
 }

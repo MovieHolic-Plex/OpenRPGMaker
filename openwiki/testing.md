@@ -2168,3 +2168,8 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 4. (참고) 러너 쪽 호감 대화 재현은 `applySocialTalkForRunner`(`socialLoop` 켠 프로젝트) — 별도 PR.
 
 **정밀성 확인(반례 3종이 여전히 막힌다)**: 호감을 올리는 세터를 지운 사본, `onDayEnd` 리셋을 지운 사본, 일정이 문 없는 맵으로 보내는 사본 → 모두 `autoplay-failed`. 입력·출력은 `~/romance-fix-work/item3/`. 알려진 한계: `talkFriendship`(대화 자체가 호감을 주는 이벤트)는 세터 방문이 없어 아직 계획에 못 쓴다.
+
+## 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
+
+실제 입력창 조수(Argon `gemini-4-argon`)는 한도 소진(HTTP 429 RESOURCE_EXHAUSTED, 복구 2026-10-21)이라 **조수 대용 = Claude Sonnet 5.5 high 역할극**(`scripts/oprn-tools.mjs` 와 같은 헤드리스 도구 코어에 `assistantRun:true`)으로 지었다. Argon 점수와 직접 비교하지 않는다. 씨앗은 `qa:game gen --text "대학 캠퍼스 연애 게임 만들어 줘"` 가 모델 호출 전에 쓰는 `seed.json`, 도구 호출 목록은 `scripts/qa/romance-fix2/assistant-runs/`.
+측정 4가지: `qa:game check` 막힘 수 · 자동 플레이로 닿는 엔딩 · 출하 플레이어 캡처(`runtime/romance-run`) · SQLite 저장→재로드(`save-reload.mjs`). 새로 알게 된 한계: `qa:game check` 는 기한 엔딩을 안 걸었다(`src/qa/gameCheck/deadline.ts` 가 메움). 상세·실측표는 `~/claude-viz/romance-fix-2.html` 의 보고서 근거.

@@ -3342,7 +3342,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## 연애 루프 도구 변경 (2026-10-16)
 
 - `place_npc` `talkFriendship`(true | {delta}) — 그 NPC 와의 대화 한 번이 호감과 하루 칸(`system.socialLoop` 이 켜졌을 때)을 쓴다. 정의에 없는 키를 주면 **조수 실행(`ctx.assistantRun`)에서는 오류**로 거부한다(예전엔 말없이 버려 「호감 대화가 안 켜진다」). 예제·직접 실행은 그대로.
-- `set_deadline_ending` — 「N일 뒤 결말 판정」: 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
+- `set_deadline_ending` — 「N일 뒤 결말 판정」(2026-10-16: `tiers[].characterId` 로 다인 문턱, 시간표는 요일 없음·페이지 `weekday` 조건 — `harnesses/romance-scene.md` 「2차 수리」): 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
 - 장르 잠금 프리셋 `romance` 추가 — 위 「장르 칩셋 잠금」과 같은 구조(허용 칩셋 계열 oprn-campus·oprn-modern·oprn-jp, 비허용 계열 시공 도구 숨김). 정의·기본값은 `openwiki/harnesses/romance-scene.md` 「연애 인터뷰 기본값」.
 
 

@@ -42,6 +42,7 @@ import { galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
 import { openGalleryViewer } from "@/player/galleryViewer";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import {
   isStatusMenuGroupEntryId,
@@ -803,7 +804,7 @@ function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail
 }
 
 function relationshipsDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const entries = listFriendshipEntries(session.friendship, undefined, undefined, project).map((entry) => ({
+  const entries = listFriendshipEntries(session.friendship, friendshipDisplayMax(project), undefined, project).map((entry) => ({
     label: entry.displayName ?? entry.key,
     value: entry.secondary,
     description: entry.label,

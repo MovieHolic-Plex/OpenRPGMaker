@@ -19,6 +19,7 @@ import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetail
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
+  listStatusMenuCommandIds,
   listStatusMenuGroupCommandIds,
   listStatusMenuRailIds,
   statusMenuRailIdForCommand,
@@ -140,7 +141,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
     const available = listStatusMenuRailIds(project, session);
-    selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    // 접힌 그룹 안의 명령(관계·임무·전투 기록…)은 레일 id 가 아니지만 보이는 명령이다 — 레일에 없다고 첫 항목(아이템)으로 되돌리면
+    // 기록 묶음이 둘 이상인 프로젝트(연애: 전투 기록·임무·관계)에서 그 명령을 열 수 없다.
+    const visibleCommands: readonly StatusMenuRailId[] = listStatusMenuCommandIds(project, session);
+    selectedCommand = available.includes(nextCommand) || visibleCommands.includes(nextCommand) ? nextCommand : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
