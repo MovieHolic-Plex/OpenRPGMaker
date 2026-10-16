@@ -164,17 +164,28 @@ async function sceneGym(index = 0) {
   await dismissAll();
 }
 
-async function sceneTown() {
-  for (const [id, x, y] of [["mx_map_prism", null, null], ["mx_map_home", null, null]]) {
-    const map = project.maps[id];
-    const px = Math.max(8, Math.min(map.width - 8, Math.round(map.width / 2))), py = Math.max(6, Math.min(map.height - 6, Math.round(map.height / 2)));
-    await teleport(id, px, py);
-    await snap(`town_${id.replace("mx_map_", "")}`);
+/** 한 화면(30×20칸)에 사람 이벤트가 가장 많이 모이는 자리 — 같은 얼굴이 몰려 보이는지 보기 좋다. */
+function crowdSpot(mapId) {
+  const map = project.maps[mapId];
+  const people = map.events.filter((e) => e.pages?.[0]?.graphic?.sprite?.id?.includes("charset") && !e.pages[0].graphic.transparent);
+  let best = null;
+  for (const c of people) {
+    const n = people.filter((e) => Math.abs(e.x - c.x) <= 13 && Math.abs(e.y - c.y) <= 8).length;
+    const spot = besideOf(mapId, c);
+    if (spot && (!best || n > best.n)) best = { n, ...spot };
   }
-  const gym = Object.keys(project.maps).filter((m) => /_gym$/.test(m))[1];
-  const g = project.maps[gym];
-  await teleport(gym, g.events.find((e) => /grunt_0$/.test(e.id)).x, g.events.find((e) => /grunt_0$/.test(e.id)).y + 2);
-  await snap("town_gym_grunts");
+  return best;
+}
+async function sceneTown() {
+  const gyms = Object.keys(project.maps).filter((m) => /_gym$/.test(m));
+  for (const [id, name] of [["mx_map_prism", "prism"], ["mx_map_harbor", "harbor"], ["mx_map_home", "home"], [gyms[1], "gym2"], [gyms[4], "gym5"]]) {
+    const spot = crowdSpot(id);
+    if (!spot) continue;
+    try { await teleport(id, spot.x, spot.y); } catch { report.errors.push(`teleport failed ${id}`); continue; }
+    await page.waitForTimeout(500);
+    await snap(`town_${name}`);
+    report.towns = { ...(report.towns ?? {}), [name]: spot.n };
+  }
 }
 
 async function sceneChampion() {
