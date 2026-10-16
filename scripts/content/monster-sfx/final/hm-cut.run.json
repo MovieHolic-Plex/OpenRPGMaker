@@ -1,0 +1,19 @@
+{
+ "id": "hm-cut",
+ "cand": 2,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "4d310b1d323e1a0a",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 110.0 ms > 100"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

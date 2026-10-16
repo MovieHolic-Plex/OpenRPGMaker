@@ -5,6 +5,10 @@ import {
   usesMonsterSfxSet,
   type MonsterSfxCue,
 } from "@/assets/monsterSfxAssets";
+import { WEATHER_START_LINES } from "@/battle/weather";
+import type { BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { SkillWeatherKind, StateRecord } from "@/project/types";
+import { isVoicedChar, type DialogueVoicePlayer } from "@/player/dialogueVoice";
 import { battleAudioContext } from "@/player/battleSfx";
 import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { getPlayerPreferences } from "@/player/playerPreferences";
@@ -25,6 +29,12 @@ const CUE_VOLUME: Readonly<Record<MonsterSfxCue, number>> = {
   "hit-weak": 0.4, "hit-normal": 0.4, "hit-super": 0.4,
   "ball-throw": 0.4, "ball-shake": 0.4, "ball-break": 0.4, "capture-success": 0.5,
   "level-up": 0.5, "faint": 0.4, "center-heal": 0.5, "encounter": 0.45,
+  "evolve-before": 0.5, "evolve-during": 0.45, "evolve-after": 0.5, "badge-get": 0.5, "item-get": 0.45, "shop-buy": 0.4,
+  "status-poison": 0.4, "status-burn": 0.4, "status-paralysis": 0.4, "status-sleep": 0.4, "status-confusion": 0.4,
+  "stat-up": 0.4, "stat-down": 0.4,
+  "weather-rain": 0.4, "weather-sun": 0.4, "weather-sand": 0.4, "weather-hail": 0.4,
+  "walk-grass": 0.25, "dialogue-tick": 0.2, "crit": 0.45, "battle-start": 0.45, "door-open": 0.4, "gym-door": 0.45,
+  "hm-rock-smash": 0.45, "hm-cut": 0.45, "hm-surf": 0.45,
 };
 
 /** 설정 메뉴 「효과음」 기본값(playerPreferences). 기본값일 때 큐별 크기가 그대로 나오게 나눈다 — 전투 타격음(battleJuice)은 설정을 안 곱하므로 기본 균형을 맞춘다. */
@@ -50,6 +60,63 @@ export function monsterBattleCue(
     case "faint": return "faint";
     default: return undefined;
   }
+}
+
+const WEATHER_CUE: Readonly<Record<SkillWeatherKind, MonsterSfxCue>> = {
+  rain: "weather-rain", sun: "weather-sun", sandstorm: "weather-sand", hail: "weather-hail",
+};
+
+/**
+ * 전투 타임라인 엔트리 → 몬스터 세트 큐(상태 이상 걸림·능력 단계 변화·날씨 시작). 해당 없으면 undefined.
+ * 순수 함수 — 상태 레코드의 gen1MajorStatus/volatileStatus 로 종류를 고른다(빙결은 세트에 없다).
+ */
+export function monsterTimelineCue(
+  entry: Pick<BattleTimelineEntrySnapshot, "kind" | "stateId" | "statStage" | "weatherKind" | "weatherAfter" | "message">,
+  states: ReadonlyArray<Pick<StateRecord, "id" | "gen1MajorStatus" | "volatileStatus">>,
+): MonsterSfxCue | undefined {
+  if (entry.kind === "stateAdded" && entry.stateId) {
+    const record = states.find((state) => state.id === entry.stateId);
+    if (record?.volatileStatus === "confusion") return "status-confusion";
+    switch (record?.gen1MajorStatus) {
+      case "poison": case "toxic": return "status-poison";
+      case "burn": return "status-burn";
+      case "paralysis": return "status-paralysis";
+      case "sleep": return "status-sleep";
+      default: return undefined;
+    }
+  }
+  if (entry.kind === "special") {
+    if (entry.statStage) {
+      if (entry.statStage.after > entry.statStage.before) return "stat-up";
+      if (entry.statStage.after < entry.statStage.before) return "stat-down";
+      return undefined;
+    }
+    // 날씨 시작 문장(지속·종료 엔트리와 구분: 시작만 weatherAfter 가 새로 켜진 날씨이고 메시지가 시작 문장이다).
+    if (entry.weatherKind && entry.weatherAfter && entry.message === WEATHER_START_LINES[entry.weatherKind]) return WEATHER_CUE[entry.weatherKind];
+  }
+  return undefined;
+}
+
+/**
+ * 몬스터 장르 기본 대사 글자 소리. 대사 목소리를 저작하지 않은(look.voice 없음) 몬스터 프로젝트에서만 쓴다.
+ * 글자 둘에 한 번, 최소 간격 60ms — 빠른 글자에서 윙윙거리지 않게 한다. 음 높이는 조금씩 흔든다.
+ */
+export function createMonsterDialogueTick(project: Project, random: () => number = Math.random): DialogueVoicePlayer {
+  if (!usesMonsterSfxSet(project)) return { speak() {} };
+  preloadBattleSamples([monsterSfxResourceId("dialogue-tick")]);
+  let count = 0;
+  let lastAt = -Infinity;
+  return {
+    speak(char: string): void {
+      if (!isVoicedChar(char)) return;
+      count += 1;
+      if (count % 2 === 0) return;
+      const now = performance.now();
+      if (now - lastAt < 60) return;
+      lastAt = now;
+      playMonsterSfx(project, "dialogue-tick", 1, 0.94 + random() * 0.12);
+    },
+  };
 }
 
 /** 큐 하나를 재생한다. 몬스터 세트를 쓰는 프로젝트가 아니거나 소리를 낼 수 없으면 false. */

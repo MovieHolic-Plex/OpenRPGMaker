@@ -1,0 +1,13 @@
+{
+ "id": "badge-get",
+ "cand": 2,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "4c7b488335caae85",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

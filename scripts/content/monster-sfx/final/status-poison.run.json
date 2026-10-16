@@ -1,0 +1,13 @@
+{
+ "id": "status-poison",
+ "cand": 2,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "d9e0a893d74b4f6c",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

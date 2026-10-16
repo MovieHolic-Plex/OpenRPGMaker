@@ -1,0 +1,13 @@
+{
+ "id": "weather-sun",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "9b0eceb0d05982a8",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

@@ -39,7 +39,8 @@ import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/pl
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { playLineVoice, stopLineVoice } from "@/player/lineVoice";
-import { createDialogueVoice } from "@/player/dialogueVoice";
+import { createDialogueVoice, type DialogueVoicePlayer as DialoguePlayerVoice } from "@/player/dialogueVoice";
+import { createMonsterDialogueTick } from "@/player/monsterSfx";
 import {
   DIALOGUE_TAG_COLORS,
   isNonBlockingContainer,
@@ -147,6 +148,13 @@ type DialoguePlaybackToken =
 export function dialogueSpeedDelayMs(value: number): number {
   const speed = Math.max(1, Math.min(20, Math.trunc(Number.isFinite(value) ? value : 3)));
   return speed * 8;
+}
+
+/** 글자 소리: 녹음된 줄 음성이 있으면 합성 없음, 저작한 목소리가 있으면 그것, 둘 다 없으면 몬스터 장르 기본 글자 소리(그 외 장르는 무음). */
+function dialogueVoiceFor(look: DialogueLook, voiceUrl: string | null): DialoguePlayerVoice {
+  if (voiceUrl) return createDialogueVoice({ ...look, voice: null });
+  if (look.voice) return createDialogueVoice(look);
+  return createMonsterDialogueTick(store.getCurrent());
 }
 
 function dialoguePlaybackTokens(segments: readonly DialogueTextSegment[]): DialoguePlaybackToken[] {
@@ -494,7 +502,7 @@ export function createDialogueUI(
         reducedMotion: resolveReducedMotion(request.reducedMotion),
       });
       activeExitMs = profile.exitMs;
-      let voice = createDialogueVoice(voiceUrl ? { ...look, voice: null } : look);
+      let voice = dialogueVoiceFor(look, voiceUrl);
       let box!: HTMLElement;
       let bodyEl!: HTMLElement;
       let cursor!: HTMLElement;
@@ -720,7 +728,7 @@ export function createDialogueUI(
           voicePitch: look.basePitch + (expression?.pitch ?? 0),
           ...(expression?.emote ? { emote: expression.emote } : {}),
         };
-        voice = createDialogueVoice(voiceUrl ? { ...look, voice: null } : look);
+        voice = dialogueVoiceFor(look, voiceUrl);
         const nextFace = findSharedPortrait(request.face?.resourceId)
           ? dialogueFaceForEmotion(request.face?.resourceId, emotion, expression?.face)
           : expression?.face;

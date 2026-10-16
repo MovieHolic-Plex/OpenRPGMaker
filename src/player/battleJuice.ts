@@ -150,7 +150,11 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   }
   // 몬스터 수집 장르의 기본 소리 세트(원본 칩튠 합성). 위의 저작 슬롯이 먼저고, 이 세트에 없는 사건(빗나감·회복 등)은 아래 기본 경로로 간다.
   const monsterCue = monsterBattleCue(event, shape?.tier);
-  if (monsterCue && playMonsterSfx(project, monsterCue)) return;
+  if (monsterCue && playMonsterSfx(project, monsterCue)) {
+    // 급소: 굉장한 타격음 위에 짧은 강조음을 얹는다.
+    if (event === "hit-critical") playMonsterSfx(project, "crit");
+    return;
+  }
   const primary = BATTLE_SFX[event];
   const fallback = SFX_FALLBACK[event];
   if (tryPlay(primary, shape)) return;

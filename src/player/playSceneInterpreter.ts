@@ -13,6 +13,7 @@ import {
   setAudioState,
   showPictureState,
 } from "@/project/session";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
@@ -514,6 +515,12 @@ async function consumeBlockingStep(
       const owner = foregroundOwner(scene);
       const finishTransfer = owner?.beginAuthoredTransfer(step.mapId);
       if (owner && !finishTransfer) return { kind: "done" };
+      // 몬스터 장르: 다른 맵으로 드나드는 문 소리(체육관 이름이면 무거운 문). 다른 장르는 무음 그대로.
+      if (step.mapId !== scene.map.id) {
+        const project = store.getCurrent();
+        const destinationName = project.maps[step.mapId]?.name ?? "";
+        playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open");
+      }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
       return resumeAfterSurface(scene, interpreter);

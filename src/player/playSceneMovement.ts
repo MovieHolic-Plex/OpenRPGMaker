@@ -21,6 +21,7 @@ import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -996,6 +997,8 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   }
   const map = scene.map;
   const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
+  // 몬스터 장르: 풀숲(조우 확률이 있는 지형) 한 걸음마다 바스락 소리.
+  if ((terrain?.record.encounterRatePercent ?? 0) > 0) playMonsterSfx(store.getCurrent(), "walk-grass");
   const baseRate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
   const rate = baseRate * difficultyRate(store.getCurrent().system, scene.session, "encounterRate");
   if (rate <= 0) return;

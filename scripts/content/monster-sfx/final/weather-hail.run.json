@@ -1,0 +1,13 @@
+{
+ "id": "weather-hail",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "c5d11dc52a831c5c",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

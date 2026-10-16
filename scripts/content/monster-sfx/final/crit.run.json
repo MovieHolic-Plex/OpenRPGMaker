@@ -1,0 +1,19 @@
+{
+ "id": "crit",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "9c5bc944d85f9776",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 115.0 ms > 60"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

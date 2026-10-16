@@ -44,7 +44,7 @@ ORIGINAL: invent your own tune and timbre; never reproduce a known game's melody
 Patch format (strict; unknown keys are errors):
 {
   "id": "<given id>",
-  "duration": <total seconds incl. tail, 0.03..4>,
+  "duration": <total seconds incl. tail, 0.03..6>,
   "seed": <int>,                      // noise register seed
   "voices": [                         // 1..6 voices, 160 notes max in total
     {

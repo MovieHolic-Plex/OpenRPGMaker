@@ -1,0 +1,13 @@
+{
+ "id": "item-get",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "99ebe15819ff6109",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}
