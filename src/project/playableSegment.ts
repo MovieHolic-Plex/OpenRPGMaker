@@ -24,7 +24,7 @@ import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
-import type { GameMap, Project } from "@/project/types";
+import type { Command, GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirection';
 import {
@@ -174,17 +174,20 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
       const next = structuredClone(ctx.project);
       const starter = next.maps[map.id]!.events.find((event) => event.id === SEGMENT_STARTER_EVENT_ID);
       let switched = 0;
-      for (const starterPage of starter?.pages ?? []) {
-        for (const command of starterPage.commands) {
+      // 스타팅 선택은 「고르기 → 정할까요? 예/아니오」 중첩이라 어느 깊이의 giveMonster 뒤에도 켠다.
+      const switchAfterGive = (commands: Command[]): void => {
+        for (const command of commands) {
           if (command.kind !== "choices") continue;
           for (const option of command.options) {
             const index = option.branch.findIndex((entry) => entry.kind === "giveMonster");
-            if (index < 0) continue;
-            option.branch.splice(index + 1, 0, { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true });
-            switched += 1;
+            if (index >= 0) {
+              option.branch.splice(index + 1, 0, { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true });
+              switched += 1;
+            } else switchAfterGive(option.branch);
           }
         }
-      }
+      };
+      for (const starterPage of starter?.pages ?? []) switchAfterGive(starterPage.commands);
       if (switched === 0) throw new Error("첫 구간 뼈대: 박사 이벤트에서 giveMonster 선택지를 찾지 못했습니다.");
       ctx.project = next;
     },

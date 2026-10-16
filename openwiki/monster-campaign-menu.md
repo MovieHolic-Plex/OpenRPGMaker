@@ -149,3 +149,11 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 - 필드 PC: 새 명령이 아니라 「메뉴 화면 열기」(`m2-078`) 에 `fields.screen='monster-box'`. `commandCatalog` 가 `openMenuScreen{screen}` 으로, `player.ts` 가 `statusMenu.openMonsterBox()`(단독 열기, `pcMode` — Esc 로 닫으면 이벤트 이어짐). 조수 도구 `place_monster_pc`(투명 이벤트, 이미 있는 컴퓨터 그림 위).
 - 파티가 가득 찬 뒤 포획하면 에메랄드 결과 문구에 「…는 보관함으로 보내졌다!」.
 - 한계: 비 에메랄드 스킨은 옛 평평한 목록. PC 그림은 새로 만들지 않았다. 증거 http://mdc-server:18301/poke-sys-collect-1.html. 단위 시험 `test/monsterCollectBox.test.ts` 는 작성만 했고 미실행.
+
+## 스타팅 고르기 확인 · 저장 칸 요약 (2026-10-16, poke-sys-collect)
+
+- **스타팅 확인창** — `src/project/starterChoice.ts` `starterChoiceCommands`: label → choices(종 목록) → 고르면 `showPicture`(앞모습, 좌표 x36 y84·scale 150 — **scale 은 퍼센트(100=1배), opacity 는 0~255**) → 이름·속성 대사 한 장 + 설명 한 장 → 「○○를 첫 동료로 정할까요?」 예/아니오. 예 = erasePicture + giveMonster + 이어붙일 명령(`afterGive`), 아니오 = erasePicture + `gotoLabel starter_pick`(첫 목록으로). 새 명령 종류 없음. `give_starter_monsters`(dbTools)와 모험 예제(monsterExpedition world/tournament) 모두 이 도우미를 쓴다. 설명은 `monsterDexNote`(원정 노트 > 종 dexNote)이고, 원정 정의가 아직 없는 예제는 `notes` 로 넘긴다.
+- **저장 칸 요약** — `src/project/monsterSaveSummary.ts`: 스냅샷의 선택 필드 `monsterSummary {caught,dexTotal,badges,badgeTotal,party,trainer?}`. `monsterDexSpeciesIds` 가 비면(다른 장르) 필드 자체를 쓰지 않아 저장 바이트가 같다. `saveSlots.ts` 의 `createSaveSnapshot`/`parseSnapshotValue` 가 쓰고 읽는다(모양이 틀리면 버리고 연다). 표시: 메뉴 저장 화면은 고른 칸의 쇼케이스에 「도감 · 배지 · 주인공 · 장소 · 시간 · 파티」(행의 오른쪽 값은 쇼케이스가 열리면 목록 폭이 좁아져 「저장됨」으로 둔다), 불러오기 패널 카드는 셋째 줄 `oprn-load-slot-monster`.
+- **불러오기 패널 에메랄드 스킨** — `playerLoadPanel` 이 `dataset.monsterStyle="emerald"` 를 달고 `emeraldSurfaces.css` 끝의 블록(크림 창·진한 청록 글자)이 덮는다. 색은 이름 색·color-mix 만(새 hex 없음).
+- 프로브: `QA_STARTER=scripts/qa/runtime/collect-menu-starter.after.mjs … --lab`, `QA_AFTER=…collect-menu-save.after.mjs`, `…collect-menu-load.after.mjs`(저장 후 새로고침 — 프로브가 saveNamespace 를 sessionStorage 에 고정해 새로고침 뒤에도 같은 칸을 읽는다).
+- 한계: 이어하기(오토세이브) 카드도 같은 줄을 쓰지만 이번 캡처는 수동 칸만. 메뉴 구성(「이어하기」가 필드 메뉴에 없음 — 저장만 있음)은 바꾸지 않았다. 단위 시험 `test/monsterCollectStarterSave.test.ts` 는 작성만 했고 미실행.

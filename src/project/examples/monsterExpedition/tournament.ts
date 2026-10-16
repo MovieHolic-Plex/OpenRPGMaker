@@ -1,3 +1,4 @@
+import { starterChoiceCommands } from "@/project/starterChoice";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { canMove, isPassableLanding } from "@/project/collision";
 import { slideRuleAt } from "@/project/slideTiles";
@@ -454,9 +455,11 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
       [text("사냥터의 주인이 고개를 끄덕였다. 도감에 이 땅의 모든 이야기가 기록되었다."), sw("mx_ending"), { kind: "checkpointSave", label: `${regionName} 완주` }, music(audio.ending), { kind: "triggerEnding", endingId: "mx_ending_hunt" }], "mx_rival_2", audio.league);
     npc(last, "return_home", "사냥터 안내원", "탐험을 마쳐도 사냥터는 그대로예요. 마을로 돌아가 도감을 더 채워 보세요.", { x: last.width - 8, y: last.height - 3 },
       [{ kind: "fork", condition: condition("mx_ending"), then: [transfer(hub, entries.get(hub.id)!)], else: [text("먼저 사냥터의 주인을 만나 주세요.")] }], 4);
-    const starter: Command[] = [{ kind: "choices", prompt: "첫 동료를 선택하자", options: EXPEDITION_STARTERS.map(sid => ({ text: speciesById.get(sid)!.name,
-      branch: [{ kind: "giveMonster", speciesId: sid, level: 5 }, sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5),
-        text("첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 도감을 채워 보렴.", registrarName)] })), cancelBehavior: "disallow" }];
+    const starter: Command[] = starterChoiceCommands(project, {
+      speciesIds: EXPEDITION_STARTERS, notes: Object.fromEntries(EXPEDITION_SPECIES.map(s => [s.id, s.description])), speaker: registrarName,
+      afterGive: (sid) => [sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5),
+        text("첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 도감을 채워 보렴.", registrarName)],
+    });
     npc(lab, "professor", registrarName, `${regionName}의 몬스터를 도감에 모두 기록하는 게 내 오랜 꿈이란다. 체육관은 없어 — 사냥터를 따라 걸으며 만나고, 잡고, 기록하렴.`, { x: 7, y: 5 },
       [{ kind: "fork", condition: condition("mx_starter"), then: [text("메뉴의 「도감」에서 만난 몬스터와 잡은 몬스터를 볼 수 있단다. 마지막 사냥터의 주인이 기다리고 있어.", registrarName)], else: starter }], 5);
     battle(lab, "rival_start", rivalName, nearest(lab, { x: lab.width - 5, y: lab.height - 5 }, connected(lab), true), pickSpecies("", 5, undefined, 1), 5,

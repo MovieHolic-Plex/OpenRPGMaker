@@ -26,7 +26,7 @@ const page = await browser.newPage({ viewport: { width: 960, height: 640 }, redu
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
 page.on('console', m => { if (process.env.QA_DEBUG && m.type() === 'error') console.log('console.error', m.text().slice(0, 200)); });
-await page.addInitScript(() => { window.__OPENRPG_BOOT__ = { projectUrl: '/__collect_project.json', saveNamespace: `collect-${Date.now()}`, qaInstrumentation: true }; });
+await page.addInitScript(() => { window.__OPENRPG_BOOT__ = { projectUrl: '/__collect_project.json', saveNamespace: (sessionStorage.__qaNs ??= `collect-${Date.now()}`), qaInstrumentation: true }; });
 await page.route('**/__collect_project.json', r => r.fulfill({ contentType: 'application/json', body }));
 const key = async (name, n = 1) => { for (let i = 0; i < n; i++) { await page.keyboard.press(name); await page.waitForTimeout(140); } };
 const shot = async name => { await page.waitForTimeout(250); await page.screenshot({ path: `${out}/${name}.png` }); console.log('shot', name); };
@@ -71,8 +71,11 @@ try {
   if (flag('lab')) {
     await page.evaluate(() => window.__oprnDebug.teleport('mx_map_lab', 7, 6)); await page.waitForTimeout(600);
     await page.evaluate(() => window.__oprnInput.face('up')); await key('z');
-    log.starterDrain = await drain(); await shot('02-starter-choices');
-    await key('Enter'); await drain(); await shot('03-starter-after');
+    if (process.env.QA_STARTER) await (await import(resolve(process.env.QA_STARTER))).default({ page, key, shot, drain, log });
+    else {
+      log.starterDrain = await drain(); await shot('02-starter-choices');
+      await key('Enter'); await drain(); await shot('03-starter-after');
+    }
   }
   await page.evaluate(async () => {
     const { giveMonster } = await import('/src/project/monsterCollection.ts');
