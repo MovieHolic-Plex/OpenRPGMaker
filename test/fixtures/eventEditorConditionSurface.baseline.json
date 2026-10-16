@@ -3167,8 +3167,8 @@
    ]
   },
   "labels": [
-   "비교이상이하같음다름초과미만",
    "배지 수",
+   "비교이상이하같음다름초과미만",
    "조건이 맞지 않을 때 처리 (그 외 분기)"
   ],
   "tags": {
@@ -3203,9 +3203,12 @@
   },
   "texts": {
    "event-command-edit-summary": "조건 분기",
+   "event-condition-badgeCount": "비교이상이하같음다름초과미만배지 수",
+   "event-condition-badgeCount-op": "이상이하같음다름초과미만",
+   "event-condition-badgeCount-value": "",
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "배지 #개 이상",
-   "event-condition-hint": "몬스터 캠페인에서 지금까지 받은 배지 수를 비교합니다(캠페인 정의 badges[].switchId 가 켜진 개수 — 기본 규약은 mx_badge_N). 「배지 3개 이상이어야 열리는 문」 같은 게이트에 씁니다.",
+   "event-condition-hint": "몬스터 캠페인에서 지금까지 받은 배지 수를 비교합니다(캠페인 정의 badges[].switchId 가 켜진 개수 — 기본 규약은 mx_badge_N). 「배지 #개 이상이어야 열리는 문」 같은 게이트에 씁니다.",
    "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
    "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
    "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
