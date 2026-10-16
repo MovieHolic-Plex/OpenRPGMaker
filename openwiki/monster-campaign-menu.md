@@ -168,3 +168,16 @@ See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×3
 - 같이 고친 것: #2711(Galmuri9 18px) 뒤로 작은 파티 칸 다섯의 이름/HP 두 줄이 겹쳐 있었다(`grid-template-rows 18px 14px` → 20px 20px, vital 줄 높이 20px) · 「보관함 보기 / 6마리」 겹침(flex 로) · 요약의 「다음 레벨까지」 줄 바꿈(「다음 Lv」).
 - 프로브: `QA_PROJECT_PATCH=/tmp/psc/identity.patch.mjs QA_AFTER=scripts/qa/runtime/collect-menu-identity.after.mjs`(패치는 모든 종 genderRatio 0.5·shinyRate 2). 단위 시험 `test/monsterCollectIdentity.test.ts` 작성만, 미실행.
 - **④ 알·부화 — 구현하지 않았다. 최소 설계안**: `MonsterInstance.egg?: { stepsLeft: number; speciesId }` 로 「알」 개체를 파티에 둔다(전투 불참·메뉴엔 「알」 이름과 남은 걸음 막대). 걸음 수는 `session.stepCount`(이미 있는 걸음 카운터)가 줄이고 0 이 되면 `giveMonster` 처럼 같은 개체 번호로 종 개체로 바뀌며 도감 포획 기록. 알을 얻는 길은 이벤트 명령 한 칸(`giveMonster` 에 `egg:true`) 하나로 충분하고, 교배는 별도 설계가 필요하다. **알 그림이 번들에 없다** — 새 그림 금지 규칙과 맞부딪히므로 사람이 알 그림을 정한 뒤에 만든다.
+
+
+## 성격·노력치 (옵트인, 2026-10-16)
+
+- `system.monsterStatRules {natures?, evs?}`(조수: `configure_monster_system {statRules}`) — 둘 다 꺼짐이 기본이고 꺼지면 필드가 없어
+  능력치 공식·저장 바이트가 이전 그대로다(`normalizeSystemRecords` 화이트리스트에 있다). 코드는 `src/project/monsterStatRules.ts`.
+- 공식(`monsterBattleStatsForSpecies(species, level, ivs, extras?)`): `floor((2*base + iv + floor(ev/4)) * lv / 100) + 5`(HP 는 `+ lv + 10`) 뒤 성격 ×1.1/×0.9(HP 제외, 능력치가 한 자리여도 최소 ±1 — `natured`).
+  `extras` 는 `monsterStatExtrasFor(project, instance)` 만이 만든다 — 규칙이 꺼져 있으면 undefined 라서 인스턴스에 값이 있어도 무시된다.
+- 성격 13종(중립 1 + 공격·방어·특공·속도 올림/내림 12): 새로 얻는 몬스터(`giveMonster`)가 인스턴스 id 씨앗으로 결정론적으로 받는다.
+  이미 가진 몬스터는 성격이 없는 채로(중립) 남는다. 이름은 오리지널 표기. 요약 화면(`monsterInstanceDetail` 능력 쪽)에 「성격」 줄이 뜬다(`data-summary-half`).
+- 노력치: `MonsterSpeciesRecord.evYield`(종목 0~3, 합 3)를 승리 때 `rewards.monsterEvGain`(쓰러뜨린 적 종 합)으로 싣고, `applyBattleRewardsToSession` 이
+  참전 몬스터에게 쌓는다(한 종목 255·합 510, `addMonsterEvs`). 경험치보다 먼저 쌓아 같은 승리의 레벨업 능력치 상자(`levelUpStatRows`)에 반영된다.
+- 한계: 야생·트레이너 적의 능력치는 이 규칙을 타지 않는다(`WILD_LEVEL_IVS` 고정). 능력치 상세 화면에 EV 수치 표시는 없다(요약 능력치 숫자에 이미 반영).

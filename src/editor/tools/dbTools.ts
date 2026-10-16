@@ -707,6 +707,9 @@ const monsterSpeciesRecordSchema = objectSchema({
   machineSkillIds: stringArraySchema("기술머신·비전머신(learnedSkillId 아이템)으로 가르칠 수 있는 기술 id. 비우면 제한 없음(모든 종이 배운다). 값이 있으면 이 기술만 — 예: 파도타기는 물 종만"),
   evolutions: arrayOf(monsterEvolutionSchema),
   ability: monsterAbilitySchema,
+  evYield: objectSchema({
+    hp: integerSchema("0~3"), atk: integerSchema("0~3"), def: integerSchema("0~3"), spd: integerSchema("0~3 (스피드)"),
+  }, "노력치 보상(system.monsterStatRules.evs 가 켜진 게임에서만 쓰인다): 이 종을 쓰러뜨리면 승리한 참전 몬스터가 받는 노력치. 종목당 0~3, 합계 3 이하로 잘린다. 비우면 없음. 원작처럼 약한 종이 낮은 값을 주는 정도로만 — 능력치는 +floor(EV/4)라 255 가 한계다."),
   dexNote: stringSchema("도감 설명 한두 문장(200자 이내). 원정 정의(monsterCampaign) 없는 수집 게임의 도감에 나온다 — 있으면 원정 노트가 우선"),
   genderRatio: numberSchema("암컷 비율 0~1(0=수컷만, 0.5=반반, 1=암컷만). 생략하면 무성 — 성별 표시 없음. 받는 순간 개체 번호에서 결정적으로 정해진다"),
 }) as RecordSchema;

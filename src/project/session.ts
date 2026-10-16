@@ -106,6 +106,14 @@ export type MonsterInstanceIvs = {
   readonly spd: number;
 };
 
+/** 노력치(옵트인, system.monsterStatRules.evs). 한 종목 255·합계 510. 생략 = 0. */
+export type MonsterInstanceEvs = {
+  readonly hp: number;
+  readonly atk: number;
+  readonly def: number;
+  readonly spd: number;
+};
+
 export type MonsterCaughtAt = {
   readonly mapId: MapId;
   readonly x: number;
@@ -133,6 +141,10 @@ export type MonsterInstance = {
   /** Learned moves awaiting a replace-or-reject choice when the active set is full. */
   readonly pendingSkillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
+  /** 성격 id(monsterStatRules.MONSTER_NATURES). 옵트인(system.monsterStatRules.natures) 프로젝트에서만 정해진다. 생략 = 중립. */
+  readonly nature?: string;
+  /** 노력치. 옵트인(system.monsterStatRules.evs) 프로젝트에서만 쌓인다. 생략 = 0. */
+  readonly evs?: MonsterInstanceEvs;
   /** 지니고 있는 도구(heldEffect 가 있는 아이템 id). 생략 = 없음. 열매는 전투에서 쓰면 비워진다. */
   readonly heldItemId?: string;
   readonly friendship: number;
