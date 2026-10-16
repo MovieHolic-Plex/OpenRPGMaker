@@ -61,7 +61,7 @@ def main2(a):
             vcls = {'합격권': 'ok', '보통': 'mid', '약함': 'weak'}.get(e['verdict'], '')
             m = meta.get('metrics', {})
             cards.append(
-                f'<div class="card" id="{e["key"]}"><div class="id">{e["key"]} <span class="v {vcls}">{html.escape(e["verdict"])}</span> <small>베이스 {meta["base"]} · Argon {meta["effort"]} · 시도 {len(meta["attempts"])}회 · {e["run"]}</small></div>'
+                f'<div class="card" id="{e["key"]}"><div class="id">{e["key"]} <span class="v {vcls}">{html.escape(e["verdict"])}</span> <small>베이스 {meta["base"]} · {"스크립트 색 변형(모델 호출 없음)" if str(meta.get("model","")).startswith("script") else "Argon " + str(meta["effort"]) + " · 시도 " + str(len(meta["attempts"])) + "회"}</small></div>'
                 f'<p class="var">{html.escape(meta["variant"])}</p>'
                 f'<div class="cmp"><div><img src="data:image/png;base64,{b64png(compare(bp, bf, pal, fr))}"><div class="cap">왼쪽 = 베이스 원본, 오른쪽 = 후보. 행 = 아래·오른쪽·위·왼쪽, 열 = 걸음 3프레임. 8×</div></div>'
                 f'<div><img src="data:image/gif;base64,{gif(pal, fr, 8)}"><div class="cap">후보 걷기 8×(네 방향 순환)</div></div></div>'
