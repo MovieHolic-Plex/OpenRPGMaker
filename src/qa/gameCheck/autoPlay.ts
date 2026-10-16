@@ -9,7 +9,7 @@
 import { canMove } from "@/project/collision";
 import { resolveEventPage as resolveEventPageRaw } from "@/project/io";
 import { actorKnownSkillIds, partyKnownSkillIds, partySkillContext, type PartySkillSession } from "@/project/partySkills";
-import { evalCondition, type PlaySession } from "@/project/session";
+import { ANY_FRIENDSHIP_KEY, evalCondition, friendshipValueOf, type PlaySession } from "@/project/session";
 import type { Condition, GameEvent, Project } from "@/project/types";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
 import { numberInputAnswer } from "@/testing/numberInputAnswer";
@@ -223,6 +223,17 @@ function commandsRunBefore(visit: CommandVisit): RawCommand[] {
   return out;
 }
 
+/**
+ * endingId 없는 triggerEnding 이 겨누는 엔딩. 보통은 priority 가 가장 높은 것이지만, 호감 문턱으로 갈리는 엔딩(연애 뼈대의 해피·평범·혼자)이 섞여 있으면
+ * 걸어서 닿는 목표는 호감 문턱이 없는 쪽(기본 결말)이다 — 문턱 엔딩은 호감을 쌓는 판에서만 닿으니 계획의 필수 선행으로 세면 안 된다
+ * (문턱별 도달은 romance 검사의 엔딩 분기 모의가 따로 본다).
+ */
+function bareEndingTarget(project: Project): NonNullable<Project["endings"]>[number] | undefined {
+  const ranked = [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+  const gated = (ending: (typeof ranked)[number]): boolean => ending.conditions.some((condition) => condition.kind === "friendshipAtLeast");
+  return ranked.some(gated) ? ranked.find((ending) => !gated(ending)) ?? ranked[0] : ranked[0];
+}
+
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
   // 엔딩 조건(호감)을 페이지 조건(요일)보다 먼저 채운다. 만남 잠금을 푸는 명령이
@@ -231,7 +242,7 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
     const namedId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
     const ending = namedId
       ? (project.endings ?? []).find((entry) => entry.id === namedId)
-      : [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+      : bareEndingTarget(project);
     // 이름 있는 triggerEnding 도 엔딩 conditions 를 선행으로 본다. 런타임이 조건 미달이면
     // 엔딩을 열지 않으므로, 호감 ≥ 6 없이 고백 선택지만 누르면 도달로 세면 안 된다.
     // 같은 실행 경로에서 triggerEnding 바로 앞에 켜는 스위치는 선행 조건이 아니다(2026-10-06 몬스터 원정:
@@ -269,7 +280,7 @@ function satisfiedAtStart(project: Project, req: Requirement): boolean {
     return start ? partyKnownSkillIds(project, { ...start, variables: start.variables ?? {}, partyActorIds: start.partyActorIds ?? [] } as PartySkillSession).has(req.id) : false;
   }
   if (req.kind === "map") return !mapGated(project, req.id);
-  if (req.kind === "friendship") return ((project.session as { friendship?: Record<string, number> } | undefined)?.friendship?.[req.npcKey] ?? 0) >= req.value;
+  if (req.kind === "friendship") return friendshipValueOf((project.session as { friendship?: Record<string, number> } | undefined)?.friendship, req.npcKey) >= req.value;
   if (req.kind === "variable" && req.op && req.value !== undefined) return compare(project.session?.variables?.[req.id] ?? 0, req.op, req.value);
   return false;
 }
@@ -324,7 +335,7 @@ function setterMatches(project: Project, req: Requirement, visit: CommandVisit):
     case "friendship": {
       if (c.kind !== "changeFriendship" || typeof c.delta !== "number" || c.delta <= 0) return false;
       const key = (typeof c.npcKey === "string" ? c.npcKey.trim() : "") || visit.page.event?.characterId?.trim() || "";
-      return key === req.npcKey;
+      return key === req.npcKey || req.npcKey === ANY_FRIENDSHIP_KEY;
     }
   }
 }
@@ -515,7 +526,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
               : req.kind === "skill" ? partyKnownSkillIds(project, session as unknown as PartySkillSession).has(req.id)
               : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
               : req.kind === "map" ? session.currentMapId === req.id
-              : req.kind === "friendship" ? (session.friendship?.[req.npcKey] ?? 0) >= req.value
+              : req.kind === "friendship" ? friendshipValueOf(session.friendship, req.npcKey) >= req.value
               : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
             ...(req.kind === "skill" && candidate.command.kind === "changeItem" && typeof candidate.command.itemId === "string" ? { useItemAfter: candidate.command.itemId } : {}),
             ...(threshold || friendshipGoal ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),

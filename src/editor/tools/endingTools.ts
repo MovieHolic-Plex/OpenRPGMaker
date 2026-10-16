@@ -7,6 +7,9 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID } from "@/project/deadlineEnding";
+import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
+import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
@@ -187,8 +190,7 @@ const defineEnding: ToolDefinition = {
   },
 };
 
-export const DEADLINE_ENDING_COMMON_EVENT_ID = "ce_deadline_ending";
-export const DEADLINE_ENDING_VARIABLE_ID = "var_days_elapsed";
+export { DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID };
 
 /**
  * 「N일 뒤 결말」 한 줄 경로(2026-10-16 연애 감사). 지금까지는 시간 시스템 → 변수 → 공통 이벤트 → fork → triggerEnding 을
@@ -201,6 +203,8 @@ const setDeadlineEnding: ToolDefinition = {
     "N일이 지나면 결말을 정한다(연애·관계 게임의 기한 엔딩). 시간 시스템이 켜져 있어야 한다 — 하루가 끝날 때마다 지난 날을 세고(변수 var_days_elapsed), days 번째 하루가 끝나면 tiers 를 위에서부터 보아 처음 맞는 엔딩을 실행한다. "
     + "tiers 는 호감이 높은 것부터 [{endingId, friendshipAtLeast, characterId?}] 로 적고, 마지막 항목은 friendshipAtLeast 를 생략해 기본 결말로 둔다. "
     + "인물이 여럿이면(다인 연애) 항목마다 characterId 를 줘 「그 사람의 호감이 문턱 이상이면 그 사람과의 결말」 로 적는다 — 위에서부터 처음 맞는 항목이 이기므로 여러 명이 문턱을 넘으면 먼저 적은 인물이 이긴다(그래서 더 아끼는 결말·높은 문턱을 위에 둔다). "
+    + `characterId 를 「${ANY_FRIENDSHIP_KEY}」 로 주면 「가장 호감이 높은 사람」 기준이다(인물이 아직 없을 때·인물 무관 평범/혼자 결말). `
+    + `tiers 를 생략하면 연애 뼈대의 세 엔딩(${ROMANCE_ENDING_HAPPY_ID} ≥${ROMANCE_ENDING_HAPPY_AT} → ${ROMANCE_ENDING_NORMAL_ID} ≥${ROMANCE_ENDING_NORMAL_AT} → ${SEGMENT_END_ENDING_ID}) 를 그대로 쓴다. 히로인별 결말은 define_ending 으로 먼저 정의한 뒤 tiers 맨 위에 그 인물 항목을 얹는다. `
     + "엔딩은 먼저 define_ending 으로 정의해 둔다(conditions 는 [] 로 둬도 된다 — 호감 문턱은 이 도구가 건다). 이 도구는 공통 이벤트 ce_deadline_ending 을 만들고 system.timeSystem.onDayEnd 로 연결한다. "
     + "이미 다른 onDayEnd 공통 이벤트가 있으면 그것을 먼저 부르고 이어서 기한 판정을 한다. 같은 호출을 다시 하면 갱신한다.",
   mode: "write",
@@ -208,10 +212,10 @@ const setDeadlineEnding: ToolDefinition = {
     type: "object",
     properties: {
       days: { type: "integer", description: "결말이 나는 날 수(1 이상). 시작일을 1일째로 세어, days 번째 하루가 끝날 때 판정한다." },
-      characterId: { type: "string", description: "호감을 읽을 기본 인물 키(place_npc/make_villager 의 characterId). 한 사람 기준이면 여기에 한 번만 적는다. 다인이면 tiers[].characterId 로 항목마다 적는다." },
+      characterId: { type: "string", description: `호감을 읽을 기본 인물 키(place_npc/make_villager 의 characterId, 「${ANY_FRIENDSHIP_KEY}」=가장 호감 높은 사람). 한 사람 기준이면 여기에 한 번만 적는다. 다인이면 tiers[].characterId 로 항목마다 적는다.` },
       tiers: {
         type: "array",
-        description: "위에서부터 처음 맞는 것이 실행된다. 마지막 항목은 friendshipAtLeast 없이 기본 결말.",
+        description: "위에서부터 처음 맞는 것이 실행된다. 마지막 항목은 friendshipAtLeast 없이 기본 결말. 생략하면 연애 뼈대의 해피·평범·혼자 세 엔딩.",
         items: {
           type: "object",
           properties: {
@@ -223,7 +227,7 @@ const setDeadlineEnding: ToolDefinition = {
         },
       },
     },
-    required: ["days", "tiers"],
+    required: ["days"],
   },
   invalidArgsExample: {
     days: 7,
@@ -236,7 +240,13 @@ const setDeadlineEnding: ToolDefinition = {
     if (!draft.system.timeSystem?.enabled) {
       throw new ToolError("시간 시스템이 꺼져 있어 기한을 셀 수 없습니다 — configure_time_system({enabled:true}) 를 먼저 부르세요.", { code: "time-system-required" });
     }
-    const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[] : [];
+    const skeletonTiers = [
+      { endingId: ROMANCE_ENDING_HAPPY_ID, friendshipAtLeast: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
+      { endingId: ROMANCE_ENDING_NORMAL_ID, friendshipAtLeast: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
+      { endingId: SEGMENT_END_ENDING_ID },
+    ];
+    const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[]
+      : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID) ? skeletonTiers : [];
     if (tiers.length === 0) throw new ToolError("tiers 에 엔딩이 하나 이상 있어야 합니다.", { code: "invalid-args" });
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
     const known = new Set((draft.endings ?? []).map((ending) => ending.id));
@@ -265,28 +275,12 @@ const setDeadlineEnding: ToolDefinition = {
       }
     }
     ensureNamedVariable(draft, DEADLINE_ENDING_VARIABLE_ID, "지난 날");
-    // 아래에서부터 중첩 fork 를 쌓는다: [문턱1 → e1, else [문턱2 → e2, else [기본]]].
-    let chain: Command[] = [{ kind: "triggerEnding", endingId: last.endingId }];
-    for (let index = resolved.length - 2; index >= 0; index -= 1) {
-      const tier = resolved[index]!;
-      chain = [{
-        kind: "fork",
-        condition: { kind: "friendshipAtLeast", npcKey: tier.characterId, value: tier.threshold! },
-        then: [{ kind: "triggerEnding", endingId: tier.endingId }],
-        else: chain,
-      }];
-    }
     const timeSystem = draft.system.timeSystem;
     const previousHook = timeSystem.onDayEnd && timeSystem.onDayEnd !== DEADLINE_ENDING_COMMON_EVENT_ID ? timeSystem.onDayEnd : undefined;
     if (previousHook && !draft.commonEvents.some((event) => event.id === previousHook)) {
       throw new ToolError(`system.timeSystem.onDayEnd '${previousHook}' 인 공통 이벤트가 없습니다.`, { code: "common-event-not-found" });
     }
-    const commands: Command[] = [
-      ...(previousHook ? [{ kind: "callCommonEvent", commonEventId: previousHook } as Command] : []),
-      { kind: "setVariable", variableId: DEADLINE_ENDING_VARIABLE_ID, op: "+=", value: 1 } as Command,
-      { kind: "fork", condition: { kind: "variable", variableId: DEADLINE_ENDING_VARIABLE_ID, op: ">=", value: days }, then: chain },
-    ];
-    const event = { id: DEADLINE_ENDING_COMMON_EVENT_ID, name: `기한 엔딩 판정(${days}일)`, trigger: "none" as const, commands };
+    const event = buildDeadlineEndingEvent(days, resolved, previousHook);
     const index = draft.commonEvents.findIndex((entry) => entry.id === DEADLINE_ENDING_COMMON_EVENT_ID);
     if (index >= 0) draft.commonEvents[index] = event; else draft.commonEvents.push(event);
     draft.system.timeSystem = { ...timeSystem, onDayEnd: DEADLINE_ENDING_COMMON_EVENT_ID };
