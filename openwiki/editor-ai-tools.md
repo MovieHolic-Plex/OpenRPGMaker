@@ -2632,6 +2632,10 @@ walkthrough rather than treating a successful tool call as runtime proof.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
 
+**`pixel:true` (2026-10-16, kind=picture 만):** 도트 아이콘·소품을 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트)이 32px 격자로 찍어 투명 PNG 로 만든다
+(용도 `chat-pixel-art`, `src/editor/imageAssetGeneration.ts` → `src/ai/dotTextArt.ts`). 생략·false 는 종전 그대로 이미지 모델이다. 다른 kind 와 쓰면 `invalid-args`.
+같은 날 컷신 `generate_cutscene_art role:sprite style:game` 도 도트 저작 모델로 옮겼다 — 근거·결정 5건은 `openwiki/editor-ai-panel.md` 「이미지 용도 분리 → 결정 (2026-10-16)」.
+
 ## Feature16 combat and climate authoring tools (2026-09-21)
 
 `upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
