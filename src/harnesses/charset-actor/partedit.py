@@ -552,7 +552,7 @@ def apply_edits(key, edit, overrides=None):
             if npx > 120 or len(rows_) > 26 or max(len(r) for r in rows_) > 12:
                 errs.append(f'gear[{i}] {name} {d}: 스프라이트가 너무 크다(120칸·12×26 이하, 지금 {npx}칸)')
                 continue
-            rod = gkind == 'held' and len(rows_) >= 8
+            rod = gkind == 'held' and bool(g.get('rod'))     # 막대형(창·지팡이)은 "rod": true 로 명시해야 쥠 검사를 받는다
             for f in range(3):
                 zone, hy0, hy1 = set(), None, None
                 if rod:
