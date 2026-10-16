@@ -5,6 +5,65 @@
 
 <!-- releases -->
 
+## 0.239.0 — 2026-10-16
+
+### 기능
+
+- **monster** — opt-in natures and EVs (monsterStatRules), evYield, summary nature row (#2732) (`49c4bd1`)
+- **monster** — say why running is blocked; expSplitAlive 3rd-gen exp split (opt-in); result text names every participant (#2729) (`c089808`)
+- **battle** — skill rule vocabulary — fixed damage, random multi-hit, recoil, flinch (#2736) (`f6ee6ea`)
+- **player** — mouse/touch input, portrait layout and emerald loading screen for monster games (D15 D16 D25 D27) (#2734) (`ca033b9`)
+- **monster** — Scarloxy People 변형 사람 칩 25종(ScarloxyPeople1~4) — 스크립트 21 + 실 Argon 4 (#2733) (`bb91f4c`)
+- **romance** — modern chips under the genre lock, relationship ESC menu, romance skeleton + finish gate, HUD names/panel, project-wide chip spread (#2731) (`df5f357`)
+- **monster** — level-up learn/forget scene + stop falsely saying 배웠다 (#2724) (`1044a82`)
+- **monsters** — nickname rename input, gender, shiny marker; fix party rows overlap after 18px font (#2730) (`3ca1a34`)
+- **monsters** — starter confirmation (preview + type + note + yes/no) and save-slot summaries (dex/badges/party), emerald load panel (#2727) (`d86e5e2`)
+- **monsters** — PC 보관함 상자 화면 (30칸 상자·옮기기·놓아주기·필드 PC) (#2725) (`571d860`)
+- **monster-opening** — generated professor bust replaces the chip-on-pedestal intro (#2720) (`0850a0a`)
+- **monster-sfx** — 26 more original chip sounds (evolution, badge, items, status, weather, field) wired to monster projects (#2716) (`2d3dcfb`)
+- **monster** — badgeCount condition, place_badge_gate tool, original-style obedience level caps (#2713) (`efe771d`)
+- **monster** — wild encounter guard — flee grace steps, repel, escape rope, fishing flow (#2712) (`f8863bc`)
+- **ai** — place_npc warns when the same walk chip becomes the third on a map (monster-lock variety prep) (#2722) (`315d63c`)
+- **monster** — HM end-to-end — badge gating, examine 'use it?' prompt, giver chest, proven in the shipped player (#2708) (`f9cd137`)
+- **charset** — modern romance chips Modern1-3 (24 chips: uniform/casual/suit/cafe/teacher) (#2723) (`b91bc77`)
+- **monster** — field item use (revive/PP/rare candy/evolution stone) + bag pockets (#2707) (`60e4760`)
+- **monster** — bundled trainer battle art for campaign trainers + place_trainer auto-assign (#2706) (`e334a7b`)
+- **monster** — gym badge ceremony recipe (flash, jingle, rising bundled icon with glow), badge-case icons, configure_monster_campaign {badgeCeremony} (#2701) (`835b6f5`)
+- **runtime** — pixel grid contract - integer monster display, Galmuri9 18px, integer window (D12 + D08 part) (#2711) (`a724e2d`)
+- **monster-ui** — dex without campaign, paged detail, habitat line, progress meter, even list rows (#2714) (`ab397f0`)
+- **monster** — open-purse mart + center heal ritual (place_monster_center) (#2705) (`789a147`)
+- **battle** — capture throw shows the hero, dex registration line, stronger shake, varied failure lines (poke-sys 7) (#2704) (`b588667`)
+- **monster-art** — design v2 - signature/chibi/silhouette rules + 15 species redrawn on the 64px grid (#2710) (`8d37923`)
+- **monster-ui** — party swap order, paged summary, clipped-icon fix, held-item badge (#2700) (`04be155`)
+- **qa-game** — romance conformance warnings for qa:game check (#2698) (`ad48191`)
+- **qa-game** — gen --compat-base runs the real assistant path on an OpenAI-compatible endpoint (Argon via 8318) (#2687) (`5224d19`)
+- **ai** — everyday-place BGM rule (campus/classroom/cafe/office) + auto BGM for new modern interiors + romance start map BGM (#2695) (`201df1e`)
+- **monster** — spread campaign NPC faces by role over the genre chips, never the player chip (poke vqa D02) (#2693) (`6cb22d6`)
+- **monster** — bundled trainer pictures on every campaign trainer troop (poke vqa D03) (#2690) (`ec7425a`)
+- **monster-sfx** — original chip-synth default sound set for monster-collection games (15 cues) (#2697) (`ad718cf`)
+- **ai-ui** — 작업 목록 하나로 — 드래그·팀·바로 깔기·이벤트·대화를 한 목록에, 렉 없이 (B안 2단계 안 A) (#2696) (`1b8eefb`)
+
+### 수정
+
+- **ai** — repair broken string literal in toolCapabilityIndex (#2736 merge left a stray quote before SKILL RULES) (#2738) (`0b3f277`)
+- **battle-ui** — stage pills, long-name ellipsis, fainted box, lists, emerald ending hall of fame (D04 D13 D17 D20-D24 D26 D27) (#2735) (`9f79af1`)
+- **monster-opening** — lift the introduced monster so the whole sprite shows above the dialogue window (#2728) (`26459a1`)
+- **monster-opening** — put professor, introduced monster and dialogue window on the 2px dot grid; tidy bust to monster style (#2726) (`5e194b4`)
+- **ai** — cutscene stage/impact tools pick the hero chip from the genre lock's allowed chips (monster-collect: Scarloxy people), not only RTP Actor1~4 (#2721) (`3245ee0`)
+- **genre-lock** — late-added charsets, default roster and follower/party actors settle to allowed chips (#2719) (`58aec4b`)
+- **ai** — first monster-only tool call on a blank new project opens the monster kit and locks the genre; place_npc graphic accepts resourceId (#2718) (`9daff09`)
+- **ai** — monster-intent dictionary so gym-hopping, tamer, collection-RPG, pet-raising, Digimon, pocket-monsters-clone and /goal monster goals turn the monster kit and lock on (#2717) (`c9f04a7`)
+- **ci** — treat missing event pages as no romance NPC graphic (`486fb1f`)
+- **ai-settings** — Argon preset turns image input on (reference gate needs delivered pictures) (#2694) (`d2fe38e`)
+- **ai** — define_ending no longer warns 'unreachable' for named endings; build_hand_interior_room floor/wall optional when layout/rooms given (#2692) (`3ed617b`)
+- **monster** — campaign creation names the game instead of keeping the blank-project default title (poke vqa D05) (#2691) (`a44ea62`)
+- **ci** — record the work-list colors in the CSS budget and winners (`c7aec81`)
+- **ci** — record the settings cards and world chip bar in the CSS gates (`f76a7c7`)
+
+### 문서
+
+- **openwiki** — double battle (2v2) design memo — current state and staged plan (#2737) (`02e12ee`)
+
 ## 0.238.0 — 2026-10-16
 
 ### 기능
