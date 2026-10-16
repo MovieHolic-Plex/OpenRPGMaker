@@ -211,3 +211,26 @@
   outline: var(--focus-outline);
   outline-offset: var(--stroke-2);
 }
+
+/* 에메랄드 게임의 불러오기 화면(D25): 게임 창 스킨(크림 창·진한 테두리)과 Galmuri9 18px, 칸 막대. 어두운 유리 카드·원형 스피너·가는 글꼴은 이 게임 밖의 것이다. */
+.player-layout[data-monster-style="emerald"] .play-loading-overlay { background: #182018; }
+.player-layout[data-monster-style="emerald"] .play-loading-card {
+  background: #f8f8e8;
+  border: 4px solid #486050;
+  box-shadow: 4px 4px #90a080;
+  box-sizing: border-box;
+  gap: 8px;
+  max-width: none;
+  min-width: 264px;
+  padding: 12px 20px;
+}
+.player-layout[data-monster-style="emerald"] .play-loading-spinner,
+.player-layout[data-monster-style="emerald"] .play-loading-hint,
+.player-layout[data-monster-style="emerald"] .play-loading-stage { display: none; }
+.player-layout[data-monster-style="emerald"] .play-loading-message { color: #384840; font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
+.player-layout[data-monster-style="emerald"] .play-loading-bar { background: #f8f8e8; border: 2px solid #586058; border-radius: 0; box-sizing: border-box; height: 10px; width: 160px; }
+.player-layout[data-monster-style="emerald"] .play-loading-bar-fill { background: #48b888; border-radius: 0; }
+.player-layout[data-monster-style="emerald"] .play-loading-bar.is-indeterminate .play-loading-bar-fill { animation-timing-function: steps(8, end); width: 40px; }
+.player-layout[data-monster-style="emerald"] .play-loading-overlay.is-error .play-loading-message { color: #c85048; }
+.player-layout[data-monster-style="emerald"] .play-loading-overlay.is-error .play-loading-bar-fill { background: #c85048; }
+

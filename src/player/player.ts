@@ -213,7 +213,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     class: "player-layout system-shell",
     dataset: { playInputOwner: pointerInput ? "play-ui" : "keyboard-only" },
   });
-  if (pointerInput) layout.dataset.pointerInput = "true";
+  if (pointerInput) { layout.dataset.pointerInput = "true"; layout.dataset.monsterStyle = "emerald"; }
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   const cleanupRightClickCancel = pointerInput ? installRightClickCancel(layout) : () => {};
   main.append(layout);
