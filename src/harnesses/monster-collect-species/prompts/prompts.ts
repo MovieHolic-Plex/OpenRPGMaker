@@ -14,36 +14,42 @@ import type { ActionContract, ScreenVector, SpeciesSeed, StyleContract } from ".
  * 최종형은 위압감 ④ 실루엣(검정 마스크 64px)으로 종이 구별 ⑤ 몸 색 3~4개 + 포인트 1개. 문서 openwiki/harnesses/monster-collect-species.md 「디자인 규칙」.
  * 귀여움은 비례와 눈에서 나온다 — 홍조·스티커·하트·반짝이는 장식은 여전히 금지(마스코트 스티커처럼 나온 2026-10-01 실패).
  */
-export const DESIGN_RULES_VERSION = 3;
+export const DESIGN_RULES_VERSION = 4;
 
 /**
+ * 판본 4 (2026-10-16, 사용자 「하이라이트 없이 어두운 눈은 징그럽다, 귀여운 거 위주로」): 귀여움이 최우선, 흰 하이라이트는 필수(어두운 구슬눈 = 탈락),
+ * 1~2단계는 눈이 크고 반짝인다. 하이라이트가 64px 축소에서 먹히는 문제는 도트화 규칙(pixel/downscale.ts findHighlights·preserveHighlights)이 푼다.
+ *
  * 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」).
  * 판본 2 그림 30장 실측: 눈이 한 점으로 뭉개지거나(rootpig) 하이라이트가 없고(gustchick·aqualing 한쪽) 윤곽에 붙고(kilnclaw) 얼굴 자체가 안 읽히고(frondhare)
  * 줄기눈에 눈동자가 없고(coralpin) 뒷모습에 눈이 비쳤다. 「narrow sharp eyes」(진화형)가 눈 크기를 64px 에서 3화소 아래로 줄이는 주범이었다.
  * 하네스 검사(checks/eyes.ts)가 같은 수치를 쓴다: 주 눈 3×3 화소 이상 + 하이라이트 1화소 + 밝은 얼굴 위(윤곽선과 분리).
  */
 export function eyeClause(species: SpeciesSeed): string {
+  const big = species.stage <= 2
+    ? "BIG shiny round eyes (each pupil at least 6 art pixels wide and 6 tall, about a fifth of the head width - eyes are the biggest feature of the face)"
+    : "readable round eyes (each pupil at least 5 art pixels wide and 5 tall)";
   return [
     species.eyes
-      ? `EYES (very important, readable at 64 pixels): ${species.eyes}`
-      : "EYES (very important, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head.",
-    "Each eye is a solid dark round or oval pupil (dark brown or black, at least 4 art pixels wide and 4 tall, about a sixth of the head width) with a clearly visible pure-white highlight made of a 2x2 block of art pixels inside the upper-left of the pupil (big enough to survive being scaled down),",
+      ? `EYES (the most important part of cuteness, readable at 64 pixels): ${species.eyes}`
+      : "EYES (the most important part of cuteness, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head.",
+    `${big}: a solid dark round or oval pupil (dark brown or navy) with a pure-white shiny highlight made of a 2x2 block of art pixels in the upper-left of the pupil plus, when room allows, one more white pixel at the lower right - the highlight is MANDATORY, a dark bead eye without a white highlight is forbidden,`,
     "sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves.",
-    "Lively, alert, sweet expression; eyes are the clearest dark spots on the face.",
+    "Sweet, friendly, alive expression - sparkling eyes, a gentle face you want to befriend. NOT creepy: no compound or insect eyes, no slit or reptile pupils, no dead dark beads, no scowl, no bared teeth, no menacing glare.",
   ].join(" ");
 }
 
 function proportionClause(stage: 1 | 2 | 3): string {
   if (stage === 1) {
     return [
-      "PROPORTIONS (first-stage creature, must be genuinely cute): chibi proportions - the head is 40-50% of the total body height, large round glossy eyes",
-      "(each about a fifth of the head width, dark with one white highlight pixel), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette,",
-      "gentle sweet expression. The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin.",
+      "PROPORTIONS (first-stage creature, must be genuinely adorable): chibi proportions - the head is 40-50% of the total body height, a round head, large round glossy sparkling eyes",
+      "(each about a fifth of the head width, dark with a 2x2 white highlight), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette,",
+      "gentle sweet expression, smooth soft textures (no scaly, chitinous, insect-like or reptilian roughness on the face). The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin.",
     ].join(" ");
   }
   return [
-    "PROPORTIONS (evolved creature, must look imposing): the head is only 25-35% of the body height, determined fierce eyes that are still big and clearly readable (never tiny slits), longer limbs, a heavy powerful build,",
-    "a commanding stance (it may rear up on two legs), armor-like or mane-like decoration growing out of the body. It must look clearly more dangerous and more mature than its earlier stage.",
+    "PROPORTIONS (evolved creature, strong but still lovable): the head is 30-38% of the body height with BIG round shiny eyes (dark pupil, 2x2 white highlight, never tiny slits, never a scowl), longer limbs, a sturdy powerful build,",
+    "a confident brave stance (it may rear up on two legs), armor-like or mane-like decoration growing out of the body. It looks clearly stronger and more mature than its earlier stage but keeps a kind, charming face - a hero you want on your team, not a villain.",
   ].join(" ");
 }
 

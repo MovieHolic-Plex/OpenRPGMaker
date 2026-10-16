@@ -180,7 +180,7 @@
       ],
       "stage": 1,
       "campaignSpeciesId": "mx_species_pipbug",
-      "design": "A baby beetle: a huge domed olive-green shell with ridged plates sitting low on six tiny stubby legs, a small round brown face with big eyes peeking out at the front, two short bent antennae.",
+      "design": "A baby beetle: a huge domed olive-green shell with ridged plates sitting low on six tiny stubby legs, a small round soft cream-and-brown face with huge shiny eyes peeking out at the front, two short bent antennae.",
       "signature": "a big seedling growing from the top of the shell - a thick sprout stem with two huge broad leaves, together taller than the whole beetle, like a propeller",
       "accent": "fresh bright leaf green (only the sprout)",
       "palette": "olive green, brown, cream, dark green"
@@ -221,7 +221,7 @@
       "stage": 2,
       "evolvesFrom": "leafling",
       "campaignSpeciesId": "mx_species_frondhare",
-      "design": "The evolved form of the leafling fox: it now stands upright on two long legs like a wolf-man swordsman fox, a lean muscular body with a long muzzle and bold determined eyes (large, round enough to read clearly, with a bright highlight), the acorn cap grown into a small crown, a long leaf-blade tail like a green sword.",
+      "design": "The evolved form of the leafling fox: it now stands upright on two sturdy legs like a brave young swordsman fox, a slim body and a big round friendly face with a SHORT cute muzzle: the face is large, plain cream, fully visible and in front of the leaves, with big bright round eyes (large dark pupils with a 2x2 white sparkle) - the leaf mane grows only BEHIND and above the head like a collar and never covers the face, the acorn cap grown into a small crown, a long leaf-blade tail like a green sword.",
       "signature": "a huge flamboyant mane made of only about eight big broad leaves fanning out from its neck and shoulders like a peacock fan or lion's mane, taller than its head and wider than its body, in layered greens",
       "accent": "golden yellow (only the tips of the mane leaves)",
       "palette": "leaf green, cream, acorn brown, dark green"
@@ -236,7 +236,7 @@
       "stage": 2,
       "evolvesFrom": "sparkit",
       "campaignSpeciesId": "mx_species_kilnclaw",
-      "design": "The evolved form of the sparkit newt: a heavy imposing salamander brawler rearing up on two thick hind legs, huge muscular forearms ending in thick dark claws, charcoal-grey armor plates over the shoulders and back, ember-orange cracked skin with dark red stripes, fierce but big readable eyes (bold dark pupils with a bright highlight, never tiny slits), a spiked charcoal ridge down its neck.",
+      "design": "The evolved form of the sparkit newt: a sturdy chunky salamander brawler standing up on two thick hind legs with a big round friendly head and a short rounded snout, huge muscular forearms ending in thick dark claws, charcoal-grey armor plates over the shoulders and back, ember-orange cracked skin with dark red stripes, big bright round eyes (large dark pupils with a 2x2 white sparkle, brave but friendly, never tiny slits), a spiked charcoal ridge down its neck.",
       "signature": "a colossal flaming coal-club tail, far bigger than its head - a huge cracked charcoal mace-ball wrapped in a big crown of crisp pixel flames (flat colors, dark outline, not glowing), raised behind it like a war hammer",
       "accent": "bright yellow-orange (the flames and cracks)",
       "palette": "ember orange, charcoal grey, dark red, cream"
@@ -250,7 +250,7 @@
       "stage": 2,
       "evolvesFrom": "aqualing",
       "campaignSpeciesId": "mx_species_brookraft",
-      "design": "The evolved form of the aqualing axolotl: a big sturdy heavy amphibian standing on four thick webbed legs, bold determined eyes (large readable dark pupils with a bright highlight), a broad flat driftwood raft of bark planks lashed on its back like a barge, a blue body with a pale belly, a long thick fin-edged paddle tail.",
+      "design": "The evolved form of the aqualing axolotl: a big sturdy heavy amphibian standing on four thick webbed legs, big bright round eyes (large dark pupils with a 2x2 white sparkle, calm and kind), a broad flat driftwood raft of bark planks lashed on its back like a barge, a blue body with a pale belly, a long thick fin-edged paddle tail.",
       "signature": "a giant sail-like fan of coral-pink gill fronds, as tall as its whole body, flaring up and back from the head like a great frilled crown",
       "accent": "coral pink (only the gill fan)",
       "palette": "blue, pale cream, driftwood brown, coral pink"
@@ -267,7 +267,7 @@
       "signature": "one gigantic pincer shaped like an open clam shell, as big as its entire body, raised like a boxing glove, while the other claw stays tiny",
       "accent": "teal (the clam shell pincer and coral)",
       "palette": "rose pink, dark rose, pale cream, coral orange",
-      "eyes": "the two eyes sit on short stalks: each eyeball is a pale cream round ball (the light skin area) with a big dark round pupil at least 3 art pixels wide and ONE white highlight square inside it; both eyeballs clearly visible and fully separate from the dark outline."
+      "eyes": "the two eyes sit on short stalks: each eyeball is a pale cream round ball (the light skin area) with a big dark round pupil at least 5 art pixels wide and a 2x2 white highlight square inside it; both eyeballs clearly visible and fully separate from the dark outline."
     },
     {
       "id": "curlfin",

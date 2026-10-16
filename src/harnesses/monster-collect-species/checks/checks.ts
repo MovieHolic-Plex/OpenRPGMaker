@@ -62,7 +62,7 @@ export function spriteStats(image: RgbaImage): SpriteStats {
   };
 }
 
-export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSide): { stats: SpriteStats; issues: CheckIssue[] } {
+export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSide, stage: 1 | 2 | 3 = 1): { stats: SpriteStats; issues: CheckIssue[] } {
   const stats = spriteStats(image);
   const issues: CheckIssue[] = [];
   if (image.width !== SPRITE_CANVAS || image.height !== SPRITE_CANVAS) issues.push({ level: "error", message: `캔버스가 ${SPRITE_CANVAS}x${SPRITE_CANVAS} 가 아니다 (${image.width}x${image.height})` });
@@ -77,7 +77,7 @@ export function checkSprite(image: RgbaImage, maxColors: number, side?: SpriteSi
   if (stats.orphanRatio > 0.12) issues.push({ level: "warn", message: `외톨이 점 ${(stats.orphanRatio * 100).toFixed(1)}% — 색이 잘게 갈라졌다` });
   if (Math.sqrt(stats.ink.width * stats.ink.height) < 30) issues.push({ level: "warn", message: `몸집이 작다 (${stats.ink.width}x${stats.ink.height})` });
   // 눈 규칙(판본 3): 면을 알 때만. 앞모습 주 눈 탈락은 error(후보 탈락), 뒷모습 눈 비침은 warn
-  if (side && stats.ink.width > 0) issues.push(...checkEyes(image, side).issues);
+  if (side && stats.ink.width > 0) issues.push(...checkEyes(image, side, stage).issues);
   return { stats, issues };
 }
 
