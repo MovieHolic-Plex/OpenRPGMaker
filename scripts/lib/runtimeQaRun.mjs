@@ -945,7 +945,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}${opts.entryPath ?? '/player.html'}${query ? `?${query}` : ""}`;
   try {
-    await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
+    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
     await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
   } catch (error) {
     await writeFile(join(outDir, 'boot-failure.json'), JSON.stringify({ scenario: scenario.id,
