@@ -19,7 +19,7 @@ import type {
   Project,
 } from "@/project/types";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceEvs, MonsterInstanceIvs, PlaySession } from "@/project/session";
-import { addMonsterEvs, clampMonsterEvs, monsterNatureById, monsterStatRulesOf, natureIdFromSeed, type MonsterNatureStat } from "@/project/monsterStatRules";
+import { clampMonsterEvs, monsterNatureById, monsterStatRulesOf, natureIdFromSeed, type MonsterNatureStat } from "@/project/monsterStatRules";
 import { recordMonsterCaught } from "@/project/monsterJournal";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { transitionItemState } from "@/project/itemTransitions";
