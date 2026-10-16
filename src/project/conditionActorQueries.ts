@@ -11,6 +11,8 @@ import { SEASONS } from "@/project/gameTime";
 /** 조건 평가에 필요한 세션 조각. PlaySession 이 구조적으로 만족한다. */
 export interface ActorQuerySession {
   readonly partyActorIds: readonly string[];
+  /** 몬스터 수집 파티(있으면 「파티 인원」은 이 몬스터 수다 — 센터 회복 연출이 파티 수만큼 볼을 놓는다). */
+  readonly monsterParty?: readonly string[];
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorVitals: Readonly<Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>>;
   readonly actorStateIds?: Readonly<Record<string, readonly string[]>>;
@@ -131,6 +133,12 @@ export function sessionKnownSkillIds(session: ActorQuerySession & { readonly act
   return ids;
 }
 
+/** 파티 인원: 몬스터 수집 파티가 있으면 그 마리 수, 없으면 파티 배우 수(기존 동작). */
+function partySizeOf(session: ActorQuerySession): number {
+  const monsters = session.monsterParty?.length ?? 0;
+  return monsters > 0 ? monsters : session.partyActorIds.length;
+}
+
 export function evalActorQueryCondition(
   session: ActorQuerySession,
   condition: ActorQueryCondition,
@@ -152,7 +160,7 @@ export function evalActorQueryCondition(
       return known === (condition.present !== false);
     }
     case "partySize":
-      return compareVariableValue(session.partyActorIds.length, condition.op, condition.value);
+      return compareVariableValue(partySizeOf(session), condition.op, condition.value);
     case "facing": {
       if (condition.subject === "player") return (session.playerFacing ?? "down") === condition.dir;
       const pos = hostPosition(session, host);
@@ -265,7 +273,7 @@ export function sessionQueryValue(
       return index >= 0 ? index + 1 : 0;
     }
     case "partySize":
-      return session.partyActorIds.length;
+      return partySizeOf(session);
     case "playerFacing":
       return dirIndex(session.playerFacing ?? "down");
     case "playtimeSeconds":
