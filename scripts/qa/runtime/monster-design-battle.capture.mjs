@@ -36,7 +36,9 @@ await mkdir(out, { recursive: true });
 const report = { debugWrites: ["party monster injected per pair", "wild troop replaced by qa_troop_<species> (HP 500, attack 1)"], shots: [], errors: [] };
 const server = await startPlayerQaServer({ logLevel: "error" });
 const browser = await chromium.launch({ args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-features=NetworkChangeNotifier"] });
-const page = await (await browser.newContext({ viewport: { width: 960, height: 720 } })).newPage();
+// VP=480x320 같은 창 크기와 DSF 로 출하 원본 해상도도 잰다(기본 960x720).
+const [VW, VH] = (process.env.VP ?? "960x720").split("x").map(Number);
+const page = await (await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: Number(process.env.DSF ?? 1) })).newPage();
 page.on("pageerror", (e) => report.errors.push(String(e?.message ?? e)));
 await page.addInitScript(() => {
   try { localStorage.clear(); } catch { /* ignore */ }

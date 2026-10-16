@@ -32,13 +32,13 @@
   },
   "emit": {
     "front": {
-      "x": 13,
+      "x": 12,
       "y": 42,
       "source": "auto"
     },
     "back": {
-      "x": 50,
-      "y": 37,
+      "x": 48,
+      "y": 27,
       "source": "auto"
     }
   }

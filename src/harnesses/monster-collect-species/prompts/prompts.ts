@@ -14,18 +14,35 @@ import type { ActionContract, ScreenVector, SpeciesSeed, StyleContract } from ".
  * 최종형은 위압감 ④ 실루엣(검정 마스크 64px)으로 종이 구별 ⑤ 몸 색 3~4개 + 포인트 1개. 문서 openwiki/harnesses/monster-collect-species.md 「디자인 규칙」.
  * 귀여움은 비례와 눈에서 나온다 — 홍조·스티커·하트·반짝이는 장식은 여전히 금지(마스코트 스티커처럼 나온 2026-10-01 실패).
  */
-export const DESIGN_RULES_VERSION = 2;
+export const DESIGN_RULES_VERSION = 3;
+
+/**
+ * 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」).
+ * 판본 2 그림 30장 실측: 눈이 한 점으로 뭉개지거나(rootpig) 하이라이트가 없고(gustchick·aqualing 한쪽) 윤곽에 붙고(kilnclaw) 얼굴 자체가 안 읽히고(frondhare)
+ * 줄기눈에 눈동자가 없고(coralpin) 뒷모습에 눈이 비쳤다. 「narrow sharp eyes」(진화형)가 눈 크기를 64px 에서 3화소 아래로 줄이는 주범이었다.
+ * 하네스 검사(checks/eyes.ts)가 같은 수치를 쓴다: 주 눈 3×3 화소 이상 + 하이라이트 1화소 + 밝은 얼굴 위(윤곽선과 분리).
+ */
+export function eyeClause(species: SpeciesSeed): string {
+  return [
+    species.eyes
+      ? `EYES (very important, readable at 64 pixels): ${species.eyes}`
+      : "EYES (very important, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head.",
+    "Each eye is a solid dark round or oval pupil (dark brown or black, at least 4 art pixels wide and 4 tall, about a sixth of the head width) with a clearly visible pure-white highlight made of a 2x2 block of art pixels inside the upper-left of the pupil (big enough to survive being scaled down),",
+    "sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves.",
+    "Lively, alert, sweet expression; eyes are the clearest dark spots on the face.",
+  ].join(" ");
+}
 
 function proportionClause(stage: 1 | 2 | 3): string {
   if (stage === 1) {
     return [
       "PROPORTIONS (first-stage creature, must be genuinely cute): chibi proportions - the head is 40-50% of the total body height, large round glossy eyes",
-      "(each about a fifth of the head width, dark with two white highlight pixels), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette,",
+      "(each about a fifth of the head width, dark with one white highlight pixel), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette,",
       "gentle sweet expression. The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin.",
     ].join(" ");
   }
   return [
-    "PROPORTIONS (evolved creature, must look imposing): the head is only 25-35% of the body height, narrow determined eyes, longer limbs, a heavy powerful build,",
+    "PROPORTIONS (evolved creature, must look imposing): the head is only 25-35% of the body height, determined fierce eyes that are still big and clearly readable (never tiny slits), longer limbs, a heavy powerful build,",
     "a commanding stance (it may rear up on two legs), armor-like or mane-like decoration growing out of the body. It must look clearly more dangerous and more mature than its earlier stage.",
   ].join(" ");
 }
@@ -54,6 +71,7 @@ export function frontPrompt(style: StyleContract, species: SpeciesSeed): string 
     "Designed by a professional monster designer: a strong readable silhouette and ONE exaggerated signature feature - NOT a realistic zoological animal drawing, NOT a flat well-balanced animal.",
     proportionClause(species.stage),
     signatureClause(species),
+    eyeClause(species),
     colorClause(species),
     `Total at most ${style.maxColors - 6} colors. Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing.`,
     "Pose: three-quarter view turned to the LEFT, standing on its feet, head and chest facing left, tail on the right. NOT facing the viewer.",
@@ -75,7 +93,7 @@ export function backPrompt(species?: SpeciesSeed): string {
     "Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size)",
     "as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above,",
     "we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands.",
-    "The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible;",
+    "The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head);",
     "the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference",
     "(a four-legged creature stays on four legs). It is close to the camera and fills the picture.",
     species ? `Keep the exaggerated signature feature (${species.signature}) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind.` : "",
