@@ -53,7 +53,10 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
     let fresh:Project;
     try{fresh=campaignBuilder({...(Number.isInteger(args.gymCount)?{gymCount:args.gymCount as number}:{}),...(Number.isInteger(args.speciesCount)?{speciesCount:args.speciesCount as number}:{}),...(typeof args.firstGymType==='string'?{firstGymType:args.firstGymType}:{}),...(gymTypes?{gymTypes}:{}),...(['desert','snow','coast','volcano'].includes(String(args.startTheme))?{startTheme:args.startTheme as 'desert'|'snow'|'coast'|'volcano'}:{})}).project;}
     catch(error){if(/No roster habitat\/type/.test(String(error)))throw new ToolError(`그 레벨에 맞는 몬스터가 없는 체육관 타입입니다: ${String(error).replace(/^Error: /,'')}. 다른 타입을 고르거나 비워 두세요.`,{code:'monster-gym-type-unavailable'});throw error;}
-    fresh.meta.title=typeof args.title==='string'&&args.title.trim()?args.title.trim():p.meta.title;
+    // 제목: 인자 > 사용자가 정한 제목 > 기획 컨셉 제목 > 캠페인 자체 제목. 빈 프로젝트의 기본 이름 「새 프로젝트」를 게임 이름으로 쓰지 않는다(시각 QA D05: 타이틀이 「새 프로젝트」였다).
+    const userTitle=p.meta.title?.trim();
+    const conceptTitle=p.gameDesignBrief?.concept?.title?.trim();
+    fresh.meta.title=typeof args.title==='string'&&args.title.trim()?args.title.trim():userTitle&&userTitle!=='새 프로젝트'?userTitle:conceptTitle||fresh.meta.title;
     fresh.meta.author=p.meta.author;fresh.gameDesignBrief=p.gameDesignBrief;fresh.aiInstructions=p.aiInstructions;
     if(fresh.system.titleScreen)fresh.system.titleScreen.title=fresh.meta.title;
     configureMonsterPresentation(fresh);configureEmeraldMonsterStyle(fresh);configureEmeraldMonsterOpening(fresh,{titleTheme:monsterTitleThemeFromStart(typeof args.startTheme==='string'?args.startTheme:undefined)});
