@@ -141,6 +141,20 @@ function toolByName(list: readonly ToolDefinition[], name: string): ToolDefiniti
   return tool;
 }
 
+/** 다리 칸(x-1..x+1, 용암 띠 y-1..y)을 옆 용암 칸의 타일로 바꾸면 다리가 무너져 보인다. 용암 칸 번호는 홀짝 칸마다 다르다. */
+function bridgeCollapse(map: GameMap, x: number, y: number): { layer: "lower"; cells: { x: number; y: number; tile: number }[] } {
+  const cells: { x: number; y: number; tile: number }[] = [];
+  for (const cy of [y - 1, y]) {
+    for (const cx of [x - 1, x, x + 1]) {
+      let refX = cx - 2;
+      while (refX >= x - 1) refX -= 2;
+      if (refX < 0 || cx >= map.width || cy < 0 || cy >= map.height) continue;
+      cells.push({ x: cx, y: cy, tile: map.lowerTiles[cy * map.width + refX] ?? -1 });
+    }
+  }
+  return { layer: "lower", cells: cells.filter((c) => c.tile >= 0) };
+}
+
 function themeKitIds(theme: SceneTheme): string[] {
   return [...new Set(layoutFor(theme).stamps.map((st) => KIT + st.id))];
 }
@@ -257,9 +271,10 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         built.push(`마을 집 ${placed}채`);
       }
 
+      const collapse = theme === "lava_bridge" ? bridgeCollapse(map, x, y) : undefined;
       return {
-        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.`,
-        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length },
+        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"lower",x,y,tile} 을 적용한다.` : ""}`,
+        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}) },
         ...(warnings.length ? { warnings } : {}),
       };
     },
