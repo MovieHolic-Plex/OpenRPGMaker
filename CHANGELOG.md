@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.239.3 — 2026-10-16
+
+### 수정
+
+- **monster** — lab professor chip matches the opening bust; gym leaders field distinct species with a higher-level ace (D34, D35) (#2749) (`e36db26`)
+- **genre-lock,ai** — clear RTP hero battler under the monster lock; four monster-intent sentences turn on the kit (lock leak, routing) (#2748) (`a9363e0`)
+
 ## 0.239.2 — 2026-10-16
 
 ### 수정
