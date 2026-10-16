@@ -246,11 +246,13 @@ describe("생성한 캠페인 맞추기", () => {
     const denied = placeNpc(ctx, "판타지 청년", 9, { graphic: RTP_YOUTH });
     expect(denied.ok).toBe(false);
   });
-  it("사용자가 뺀 ScarloxyPeople8#3 칸은 비워 둔 채 의미표·카탈로그에 노출되지 않고 다른 칸 번호는 그대로다", async () => {
+  it("사용자가 뺀 ScarloxyPeople8#3·5#6 칸은 비워 둔 채 의미표·카탈로그에 노출되지 않고 다른 칸 번호는 그대로다", async () => {
     const { SCARLOXY_PEOPLE_CHARSET_SEMANTICS } = await import("@/assets/scarloxyPeopleCharsets");
     const sheet8 = SCARLOXY_PEOPLE_CHARSET_SEMANTICS.filter((entry) => entry.textureKey === "tex_oprn_charset_scarloxy_people8").map((entry) => entry.characterIndex);
     expect(sheet8).toEqual([0, 1, 2, 4, 5, 6, 7]);
-    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS.some((entry) => entry.tags?.includes("scarloxy-student-gakuran"))).toBe(false);
-    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(69);
+    const sheet5 = SCARLOXY_PEOPLE_CHARSET_SEMANTICS.filter((entry) => entry.textureKey === "tex_oprn_charset_scarloxy_people5").map((entry) => entry.characterIndex);
+    expect(sheet5).toEqual([0, 1, 2, 3, 4, 5, 7]);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS.some((entry) => entry.tags?.some((tag) => tag === "scarloxy-student-gakuran" || tag === "scarloxy-captain"))).toBe(false);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(68);
   });
 });

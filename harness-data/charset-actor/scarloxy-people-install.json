@@ -596,22 +596,11 @@
      "genre": "몬스터 수집"
     },
     {
+     "vacant": true,
      "key": "sc2-captain",
      "id": "scarloxy-captain",
      "name": "선장 · 흰 선장 모자",
-     "desc": "큰 흰 선장 모자(금빛 휘장), 남색 긴 코트와 금 단추·어깨 장식.",
-     "role": "선장",
-     "gender": "male",
-     "age": "middle",
-     "tags": [
-      "선장",
-      "뱃사람",
-      "항구",
-      "선장 모자",
-      "제복",
-      "남색"
-     ],
-     "genre": "몬스터 수집"
+     "reason": "사용자 검토에서 제외(2026-10-16): ScarloxyPeople5#6 선장 · 흰 선장 모자. 칸 번호는 덧붙이기 전용이라 칸을 비워 두고(투명) 명단·카탈로그에서는 뺀다."
     },
     {
      "key": "sc2-lifeguard",

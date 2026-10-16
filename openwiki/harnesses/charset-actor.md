@@ -146,9 +146,9 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   → 통과분을 `scarloxy-people-chips/<key>/` 로 복사하고 `scarloxy-people-install.json` 에 덧붙인 뒤 `install_scarloxy_people.py`.
 - 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-4」. `test/fixtures/eventEditorPortalSurface.baseline.json` 에 `ScarloxyPeople# (ScarloxyPeople)` 4항목을 손으로 덧붙였다(포털 표면 게이트 미실행).
 
-## 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 44종 (2026-10-16)
+## 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10, Argon 부분 편집 확대 43종 (2026-10-16)
 
-사용자가 1차 25종(ScarloxyPeople1~4)을 「다 괜찮다, 늘려도 된다」로 승인해 같은 방식·화풍으로 45종을 덧붙였고 사용자 검토에서 1종(ScarloxyPeople8#3 남학생·검은 학생복 학생모)이 빠져 **44종**이 남았다(총 69칸 + 원본 10 = 80명 허용). 1차는 스크립트 21 + Argon 4 였고, 이번은 **Argon 35 + 스크립트 9**.
+사용자가 1차 25종(ScarloxyPeople1~4)을 「다 괜찮다, 늘려도 된다」로 승인해 같은 방식·화풍으로 45종을 덧붙였고 사용자 검토에서 2종(ScarloxyPeople8#3 남학생·검은 학생복 학생모, ScarloxyPeople5#6 선장·흰 선장 모자)이 빠져 **43종**이 남았다(총 68칸 + 원본 10 = 78명 허용). 1차는 스크립트 21 + Argon 4 였고, 이번은 **Argon 34 + 스크립트 9**.
 사람 칩이라 3/4 관문(object-gate)은 해당 없음. 기존 25종은 시트 PNG·명단 항목이 바이트 동일(`install_scarloxy_people.py --check`), 칸 번호는 시트 5부터(4번 시트의 빈 7칸은 두었다).
 
 - 1차에서 Argon 이 3회 안에 못 통과한 원인과 대응 — 드라이버 `scarloxy_argon2.py`(주문서 `harness-data/charset-actor/scarloxy-people-spec-2.json`, 직군별 후보 a/b = 다른 뼈대):

@@ -1,4 +1,4 @@
-// ScarloxyPeople1~10 걷기 칩 69종 설치 확인 시나리오 (출하 플레이어 경로, 2026-10-16).
+// ScarloxyPeople1~10 걷기 칩 68종 설치 확인 시나리오 (출하 플레이어 경로, 2026-10-16).
 //
 // 픽스처는 실물 AI 도구(place_npc)로 굽는다(scarloxy-people-chips-fixture.mts):
 //   npx vite-node --script scripts/qa/runtime/scarloxy-people-chips-fixture.mts --out tmp/scarloxy-people-chips.json
