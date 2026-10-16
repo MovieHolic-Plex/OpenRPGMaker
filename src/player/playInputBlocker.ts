@@ -47,6 +47,20 @@ export function installPlayPointerBlocker(root: HTMLElement): () => void {
 }
 
 /**
+ * 마우스 입력을 연 게임(pointerInput)의 오른쪽 클릭 = 취소(Esc). 브라우저 문맥 메뉴는 띄우지 않는다.
+ * 키보드와 같은 경로를 쓰도록 document 에 합성 keydown/keyup 을 보낸다(touchPad.ts 와 같은 방식).
+ */
+export function installRightClickCancel(root: HTMLElement): () => void {
+  const controller = new AbortController();
+  root.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+    document.dispatchEvent(new KeyboardEvent("keyup", { key: "Escape", bubbles: true }));
+  }, { signal: controller.signal });
+  return () => controller.abort();
+}
+
+/**
  * 플레이 화면을 누르면 텍스트 필드에 갇힌 키보드 소유권을 되돌린다.
  *
  * 왜 여기인가(실측 2026-09-17): 편집기 타일 검색창에 포커스가 한 번 들어가면 테스트
