@@ -22,7 +22,7 @@ export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall
 type ObstacleKind = (typeof FIELD_OBSTACLE_KINDS)[number];
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'machine', 'hint', 'blockedText', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'id'] as const;
 
 /** 종류별 기본: 독자 기술 이름(원작 이름을 쓰지 않는다), 안내 대사, 칩셋 타일 라벨 패턴. */
 const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skillText: string; blocked: string; event: string; tile?: RegExp; pass?: RegExp; hmName: string }> = {
@@ -40,7 +40,7 @@ const schema = (properties: Record<string, JsonSchema>, required: string[]): Jso
 function rejectUnknownKeys(args: Record<string, unknown>): void {
   const hints: Record<string, string> = {
     skillId: 'requiresSkillId', skill: 'requiresSkillId', requires: 'requiresSkillId', hm: 'machine', item: 'machine', text: 'hint / blockedText', dialogue: 'hint / blockedText',
-    dir: 'direction', width: 'length', cells: '이 도구는 (x,y)에서 direction 으로 length 칸을 건넙니다', tileId: 'tile', type: 'kind', obstacle: 'kind',
+    dir: 'direction', width: 'rock·tree 는 span(칸 수) 또는 fullWidth:true(도로 폭 전체), water·waterfall 은 length', cells: '이 도구는 (x,y)에서 direction 으로 rock·tree 는 span 칸을 막고 water·waterfall 은 length 칸을 건넙니다', tileId: 'tile', type: 'kind', obstacle: 'kind',
   };
   for (const key of Object.keys(args)) {
     if ((KEYS as readonly string[]).includes(key)) continue;
@@ -74,6 +74,39 @@ function chosenTile(raw: unknown, name: string, count?: number): number | undefi
   if (!Number.isInteger(tile) || tile < 0) throw new ToolError(`${name} 은 0 이상의 칸 번호입니다. tile_query 로 번호를 확인하세요.`, { code: 'invalid-args' });
   if (count !== undefined && tile >= count) throw new ToolError(`${name} ${tile} 은 이 칩셋의 칸 범위(0~${count - 1}) 밖입니다. tile_query 로 번호를 확인하세요.`, { code: 'invalid-args' });
   return tile;
+}
+
+/** 도로 폭 상한 — 이보다 넓은 열린 땅은 한 줄 장애물로 닫을 수 없는 광장이다. */
+export const FIELD_OBSTACLE_MAX_SPAN = 16;
+
+/** (x,y) 를 지나는 가로·세로 걸을 수 있는 칸의 연속 구간. 도로는 긴 쪽으로 달리고 폭은 짧은 쪽이다. */
+function walkableRun(project: Project, map: GameMap, x: number, y: number, horizontal: boolean): { x: number; y: number }[] {
+  const [dx, dy] = horizontal ? [1, 0] : [0, 1];
+  let sx = x, sy = y;
+  while (inMapBounds(map, sx - dx, sy - dy) && isPassable(project, map, sx - dx, sy - dy) && (x - sx) + (y - sy) < 64) { sx -= dx; sy -= dy; }
+  const run: { x: number; y: number }[] = [];
+  let cx = sx, cy = sy;
+  while (inMapBounds(map, cx, cy) && isPassable(project, map, cx, cy) && run.length < 64) { run.push({ x: cx, y: cy }); cx += dx; cy += dy; }
+  return run;
+}
+
+/** 칸 하나에서 걸어 닿는 칸 전체(타일 통행만 본다 — 이벤트는 보지 않는다). */
+function reachableFrom(project: Project, map: GameMap, sx: number, sy: number): Set<number> {
+  const seen = new Set<number>([sy * map.width + sx]);
+  const queue: number[] = [sy * map.width + sx];
+  for (let head = 0; head < queue.length; head += 1) {
+    const at = queue[head]!;
+    const cx = at % map.width, cy = Math.floor(at / map.width);
+    for (const [dx, dy] of Object.values(DIRS)) {
+      const nx = cx + dx, ny = cy + dy;
+      if (!inMapBounds(map, nx, ny)) continue;
+      const key = ny * map.width + nx;
+      if (seen.has(key) || !canMove(project, map, cx, cy, nx, ny)) continue;
+      seen.add(key);
+      queue.push(key);
+    }
+  }
+  return seen;
 }
 
 /** 필드 스킬 레코드 — 있으면 필드 공통 이벤트가 이어졌는지만 맞추고, 없으면 독자 이름의 「잊을 수 없는」 스킬을 만든다. */
@@ -155,7 +188,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       '포켓몬식 필드 기술 게이트(비전머신 HM)를 한 호출로 만든다: 길을 막는 바위(rock)·덩굴 나무(tree)·물길(water)·폭포(waterfall)·어둠(dark). ' +
       '이 도구가 막는 지형(칩셋의 실제 타일), 조사하는 투명 이벤트(모르면 안내·아는 파티면 「쓰자」 안내), 필드 스킬(없으면 독자 이름으로 생성·잊을 수 없는 기술) + 그 스킬의 공통 이벤트(이 장애물만 연다), ' +
       '기술머신 아이템(몬스터 파티 게임에서는 파티 몬스터에게 가르친다)을 전부 만든다. 어떤 파티원(배우·몬스터)이 requiresSkillId 를 알아야 열린다(partyKnowsSkill). ' +
-      '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸 한 칸(바위·덩굴 타일을 깔아 막음), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 길목 칸(맵 전체를 어둡게 하고 그 칸에서 길을 막는다. 기술을 쓰거나 아는 파티가 입장하면 밝아지고 열림). ' +
+      '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸(바위·덩굴 타일을 깔아 막음; 기본 한 칸, 도로가 넓으면 span 칸 수나 fullWidth:true 로 폭 전체를 닫는다 — 한 칸만 놓으면 응답이 우회 가능(data.bypass:true)과 필요한 span 을 경고한다), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 길목 칸(맵 전체를 어둡게 하고 그 칸에서 길을 막는다. 기술을 쓰거나 아는 파티가 입장하면 밝아지고 열림). ' +
       '**기술을 가르칠 방법은 호출자가 잇는다**: data.itemId(기술머신)를 NPC·상자가 changeItem 으로 주게 하라(place_chest 나 upsert_event) — 자동 플레이(qa:game check)는 그 줄을 따라가 기술을 익힌 뒤 장애물 앞에서 쓴다. 몬스터마다 가르칠 수 있는 종을 제한하려면 define_monster_species.machineSkillIds. ' +
       '쓰지 말 것: 퍼즐 문·열쇠 문(compile_puzzle), 밀어서 움직이는 바위(place_pushable), 전투로 지키는 길목(place_battle_blocker).',
     parameters: schema({
@@ -168,14 +201,16 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       name: { type: 'string', description: '이벤트 이름(생략=종류별 기본)' },
       tile: { type: 'integer', description: 'rock·tree 에 깔 막는 칸 번호(생략=칩셋에서 자동). 칩셋에 없으면 필요 — tile_query' },
       passTile: { type: 'integer', description: 'water·waterfall 에서 기술을 쓰면 놓이는 다리·발판 칸 번호(생략=칩셋에서 나무다리·디딤돌 자동)' },
-      direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall: (x,y)에서 건너갈 방향(기본 right=물, up=폭포)' },
+      direction: { type: 'string', enum: ['up', 'down', 'left', 'right'], description: 'water·waterfall: (x,y)에서 건너갈 방향(기본 right=물, up=폭포). rock·tree 의 span: 막는 줄이 뻗는 방향(생략=도로 폭이 좁은 쪽 축)' },
       length: { type: 'integer', description: 'water·waterfall: 건널 칸 수 1..12(기본 water 3, waterfall 2)' },
+      span: { type: 'integer', description: `rock·tree: (x,y)에서 direction 방향으로 막는 칸 수 1..${FIELD_OBSTACLE_MAX_SPAN}(기본 1). 도로가 한 칸보다 넓으면 한 칸만 막은 장애물은 옆으로 우회된다 — 응답의 data.bypass 와 경고를 보라` },
+      fullWidth: { type: 'boolean', description: `rock·tree: true 면 (x,y)를 지나는 도로를 가로로(또는 direction 이 가리키는 축으로) 걸을 수 있는 칸 전체에 놓아 길을 완전히 닫는다(폭이 ${FIELD_OBSTACLE_MAX_SPAN}칸을 넘으면 광장이라 거절). span 과 함께 쓰지 않는다` },
       machine: { type: 'string', enum: ['hm', 'tm', 'none'], description: 'hm=사라지지 않는 비전서(기본) · tm=한 번 쓰면 없어지는 기술서 · none=아이템 안 만듦(NPC 가 learnSkill 로 줌)' },
       hint: { type: 'string', description: '파티가 기술을 알 때 조사하면 나오는 안내 대사(생략=기본)' },
       blockedText: { type: 'string', description: '파티가 기술을 모를 때 조사하면 나오는 대사(생략=종류별 기본)' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y', 'kind']),
-    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall), 여는 기술은 requiresSkillId, 대사는 hint(알 때)·blockedText(모를 때), 물길·폭포는 direction·length. 그 밖의 칸은 받지 않습니다.',
+    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall), 여는 기술은 requiresSkillId, 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length. 그 밖의 칸은 받지 않습니다.',
     invalidArgsExample: { mapId: 'map_route_3', x: 12, y: 9, kind: 'tree', skillName: '덩굴 가르기' },
     run(draft: Project, args: Record<string, unknown>): ToolExecResult {
       rejectUnknownKeys(args);
@@ -192,6 +227,12 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const direction: Dir = args.direction === undefined ? (k === 'waterfall' ? 'up' : 'right') : (isDir(args.direction) ? args.direction : (() => { throw new ToolError('direction 은 up|down|left|right 입니다.', { code: 'invalid-args' }); })());
       const length = args.length === undefined ? (k === 'waterfall' ? 2 : 3) : Number(args.length);
       if (!Number.isInteger(length) || length < 1 || length > 12) throw new ToolError('length 는 1..12 칸입니다.', { code: 'invalid-args' });
+      const span = args.span === undefined ? undefined : Number(args.span);
+      if (span !== undefined && (!Number.isInteger(span) || span < 1 || span > FIELD_OBSTACLE_MAX_SPAN)) throw new ToolError(`span 은 1..${FIELD_OBSTACLE_MAX_SPAN} 칸입니다.`, { code: 'invalid-args' });
+      if (args.fullWidth !== undefined && typeof args.fullWidth !== 'boolean') throw new ToolError('fullWidth 는 true/false 입니다.', { code: 'invalid-args' });
+      const fullWidth = args.fullWidth === true;
+      if (fullWidth && span !== undefined) throw new ToolError('span 과 fullWidth 는 함께 쓰지 않습니다 — 칸 수를 직접 정하려면 span, 도로 폭 전체면 fullWidth:true.', { code: 'invalid-args' });
+      if ((span !== undefined || fullWidth) && k !== 'rock' && k !== 'tree') throw new ToolError(`span·fullWidth 는 rock·tree 장애물에만 씁니다 — ${k} 는 ${k === 'dark' ? '한 칸 길목' : 'direction·length 로 건널 칸 수'}를 정합니다.`, { code: 'invalid-args' });
       const id = typeof args.id === 'string' && args.id.trim() ? args.id.trim() : genId('ev_obstacle');
       const eventName = typeof args.name === 'string' && args.name.trim() ? args.name.trim() : base.event;
       const warnings: string[] = [];
@@ -209,6 +250,14 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
           }
         }
       }
+      // span·fullWidth 로 늘린 칸의 보조 이벤트(`${id}_c<n>`)도 같은 방식으로 되돌리고 치운다.
+      const extraPrefix = `${id}_c`;
+      for (const extra of map.events.filter((entry) => entry.id.startsWith(extraPrefix) && /^\d+$/u.test(entry.id.slice(extraPrefix.length)))) {
+        for (const page of extra.pages ?? []) for (const command of page.commands) {
+          if (command.kind === 'changeTile' && command.mapId === map.id && command.x === extra.x && command.y === extra.y) writeLayer(map, command.layer, command.y * map.width + command.x, command.tile);
+        }
+      }
+      map.events = map.events.filter((entry) => !(entry.id.startsWith(extraPrefix) && /^\d+$/u.test(entry.id.slice(extraPrefix.length))));
       const occupied = map.events.find((entry) => entry.id !== id && entry.x === x && entry.y === y);
       if (occupied) throw new ToolError(`(${x}, ${y}) 에는 이미 이벤트 '${occupied.id}' 가 있습니다 — 다른 칸을 고르거나 remove_event 로 치우세요.`, { code: 'obstacle-occupied', mapId: map.id, x, y });
 
@@ -221,17 +270,69 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       let usedTile: number | undefined;
       let cells: { x: number; y: number }[] = [{ x, y }];
 
+      // rock·tree 는 칸마다 막는 타일 + 보조 이벤트를 둔다(칸마다 서서 바라보며 기술을 쓸 수 있어야 하므로). water·waterfall·dark 는 이벤트 하나.
+      const perCell: { x: number; y: number; clear: Command[] }[] = [];
+      let roadWidth: number | undefined;
+      let bypass: boolean | undefined;
       if (k === 'rock' || k === 'tree') {
         if (!isPassable(draft, map, x, y)) throw new ToolError(`(${x}, ${y}) 는 이미 막힌 칸입니다 — 바위·덩굴은 걸어갈 수 있는 길 칸에 놓아 길을 막습니다. get_map_region 으로 길 칸을 확인하세요.`, { code: 'obstacle-not-on-path', mapId: map.id, x, y });
         usedTile = chosenTile(args.tile, 'tile', draft.tilesets[map.tilesetId]?.count) ?? tilesByLabel(draft, map, base.tile!)[0];
         if (usedTile === undefined) throw new ToolError(`칩셋 '${map.tilesetId}' 에 ${k === 'tree' ? '자르기 나무' : '깨지는 바위'} 칸이 없습니다 — tile 로 막는 칸 번호를 직접 주세요(tile_query 로 '${k === 'tree' ? '나무·덤불' : '바위'}' 검색). 이 장애물은 monster_wild 칩셋 맵에서 그림까지 자동으로 깔립니다.`, { code: 'obstacle-tile-missing', mapId: map.id });
-        const layer = tileLayerOf(draft, map, usedTile);
-        const index = y * map.width + x;
-        const original = readLayer(map, layer, index);
-        writeLayer(scratch, layer, index, usedTile);
-        if (isPassable(probe, scratch, x, y)) throw new ToolError(`타일 ${usedTile} 은 통행 가능이라 길을 막지 못합니다 — 막히는 칸(바위·나무)을 tile 로 고르세요(tile_query).`, { code: 'obstacle-tile-passable', mapId: map.id });
-        writeLayer(map, layer, index, usedTile);
-        clearCommands.push({ kind: 'changeTile', mapId: map.id, layer, x, y, tile: original });
+        // 막는 줄의 축: direction 이 있으면 그 축, 없으면 도로 폭이 좁은 쪽(도로는 긴 쪽으로 달린다).
+        const horizontalRun = walkableRun(draft, map, x, y, true);
+        const verticalRun = walkableRun(draft, map, x, y, false);
+        const horizontal = isDir(args.direction) ? (args.direction === 'left' || args.direction === 'right') : horizontalRun.length <= verticalRun.length;
+        roadWidth = (horizontal ? horizontalRun : verticalRun).length;
+        let lineCells: { x: number; y: number }[] = [{ x, y }];
+        if (fullWidth) {
+          lineCells = horizontal ? horizontalRun : verticalRun;
+          if (lineCells.length > FIELD_OBSTACLE_MAX_SPAN) throw new ToolError(`(${x}, ${y}) 를 지나는 열린 땅이 ${lineCells.length} 칸 폭이라 fullWidth 로 닫을 수 없습니다(상한 ${FIELD_OBSTACLE_MAX_SPAN}) — 광장·들판입니다. 폭이 좁은 길목(get_map_region 으로 길이 좁아지는 곳)에 놓거나 span 으로 일부만 막으세요.`, { code: 'obstacle-too-wide', mapId: map.id, x, y });
+        } else if (span !== undefined && span > 1) {
+          const step = isDir(args.direction) ? DIRS[args.direction] : (horizontal ? DIRS.right : DIRS.down);
+          lineCells = Array.from({ length: span }, (_, i) => ({ x: x + step[0] * i, y: y + step[1] * i }));
+          const outside = lineCells.find((cell) => !inMapBounds(map, cell.x, cell.y));
+          if (outside) throw new ToolError(`(${x}, ${y}) 에서 ${span} 칸이면 맵 밖(${outside.x}, ${outside.y})입니다 — span 을 줄이거나 시작 칸·direction 을 바꾸세요.`, { code: 'obstacle-out-of-bounds', mapId: map.id });
+          const closed = lineCells.filter((cell) => !isPassable(draft, map, cell.x, cell.y));
+          if (closed.length) warnings.push(`span 줄의 ${closed.length} 칸은 이미 막혀 있어 타일을 깔지 않았습니다: ${closed.slice(0, 3).map((cell) => `(${cell.x},${cell.y})`).join(', ')}.`);
+          lineCells = lineCells.filter((cell) => isPassable(draft, map, cell.x, cell.y));
+        }
+        for (const cell of lineCells) {
+          const other = map.events.find((entry) => entry.id !== id && entry.x === cell.x && entry.y === cell.y);
+          if (other) throw new ToolError(`(${cell.x}, ${cell.y}) 에는 이미 이벤트 '${other.id}' 가 있습니다 — span·fullWidth 줄이 그 칸을 지납니다. 다른 위치를 고르거나 remove_event 로 치우세요.`, { code: 'obstacle-occupied', mapId: map.id, x: cell.x, y: cell.y });
+        }
+        for (const cell of lineCells) {
+          const layer = tileLayerOf(draft, map, usedTile);
+          const index = cell.y * map.width + cell.x;
+          const original = readLayer(map, layer, index);
+          writeLayer(scratch, layer, index, usedTile);
+          if (isPassable(probe, scratch, cell.x, cell.y)) throw new ToolError(`타일 ${usedTile} 은 통행 가능이라 길을 막지 못합니다 — 막히는 칸(바위·나무)을 tile 로 고르세요(tile_query).`, { code: 'obstacle-tile-passable', mapId: map.id });
+          writeLayer(map, layer, index, usedTile);
+          perCell.push({ x: cell.x, y: cell.y, clear: [{ kind: 'changeTile', mapId: map.id, layer, x: cell.x, y: cell.y, tile: original }] });
+        }
+        perCell.sort((a, b) => Number(b.x === x && b.y === y) - Number(a.x === x && a.y === y)); // 기본 이벤트(id)가 (x,y) 칸
+        cells = perCell.map((entry) => ({ x: entry.x, y: entry.y }));
+        // 우회로 판정 — 막은 칸 곁의 걸을 수 있는 칸들이 장애물을 둔 채로도 서로 이어지는가. 이어지면(큰 덩이가 하나뿐이면) 그냥 돌아 지나간다.
+        const sides = new Map<number, { x: number; y: number }>();
+        for (const cell of cells) {
+          for (const [dx, dy] of Object.values(DIRS)) {
+            const nx = cell.x + dx, ny = cell.y + dy;
+            if (inMapBounds(map, nx, ny) && isPassable(probe, scratch, nx, ny) && !cells.some((c) => c.x === nx && c.y === ny)) sides.set(ny * map.width + nx, { x: nx, y: ny });
+          }
+        }
+        if (sides.size >= 2) {
+          const blocks: Set<number>[] = [];
+          for (const [key, cell] of sides) {
+            if (blocks.some((block) => block.has(key))) continue;
+            blocks.push(reachableFrom(probe, scratch, cell.x, cell.y));
+          }
+          // 장애물 너머에 3칸도 안 되는 구석(막다른 한두 칸)만 떨어져 나오면 길을 닫은 것이 아니다.
+          const gated = blocks.filter((block) => block.size >= 3).length >= 2;
+          bypass = !gated;
+          if (bypass) {
+            const need = Math.min(roadWidth, FIELD_OBSTACLE_MAX_SPAN);
+            warnings.push(`우회로가 있습니다 — 도로 폭 ${roadWidth}칸 중 ${cells.length}칸만 막아 옆으로 돌아 지나갈 수 있어 게이트가 닫히지 않습니다(플레이어는 기술 없이 통과). ${roadWidth <= FIELD_OBSTACLE_MAX_SPAN ? `같은 id 로 다시 부르며 fullWidth:true(또는 span:${need})를 주어 폭 전체를 막으세요` : `폭이 ${roadWidth}칸으로 넓은 열린 땅입니다 — 폭이 좁은 길목으로 옮기세요`}; 숲·절벽·물이 길을 좁히는 곳이 좋습니다. check_reachability 로 장애물 너머가 막혀 있는지 확인하세요.`);
+          }
+        }
       } else if (k === 'water' || k === 'waterfall') {
         const [dx, dy] = DIRS[direction];
         cells = Array.from({ length }, (_, i) => ({ x: x + dx * i, y: y + dy * i }));
@@ -260,7 +361,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
 
       // 플레이어가 바라볼 칸이 있는가 — 곁 칸이 턱·벽이라 거기로 걸어 들어갈 수 없으면 기술을 쓸 자리가 없다(게이트가 영영 안 열린다).
       if (k !== 'dark') {
-        const standable = cells.length ? [cells[0]!] : [];
+        const standable = cells.length ? [cells[0]!] : [];  // rock·tree 는 cells[0] 이 (x,y)
         const faceable = standable.some((cell) => (['up', 'down', 'left', 'right'] as const).some((d) => {
           const nx = cell.x + DIRS[d][0], ny = cell.y + DIRS[d][1];
           if (cells.some((c) => c.x === nx && c.y === ny) || !inMapBounds(map, nx, ny) || !isPassable(draft, map, nx, ny)) return false;
@@ -296,30 +397,48 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       // 이벤트 페이지: 모름(막힘) → 앎(안내) → 열림 신호(스위치) 자동 처리 → 열린 뒤
       const knowsText = hint ?? (k === 'dark' ? `${skill.name}의 빛이 어둠을 몰아낸다.` : `${skill.name}(으)로 치울 수 있을 것 같다. 메뉴의 기술에서 ${skill.name}을(를) 쓰자.`);
       const knows = { kind: 'partyKnowsSkill', skillId: skill.id } as const;
+      const gatePages = (eventId: string, clear: Command[]): EventPage[] => [
+        { id: `${eventId}_blocked`, name: '막힘', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(`${blocked} ${skill.name}을(를) 쓸 수 있는 동료가 있다면…`)] },
+        { id: `${eventId}_know`, name: '기술을 앎', conditions: [knows], graphic: { transparent: true }, ...SOLID, commands: [text(knowsText)] },
+        {
+          id: `${eventId}_opening`, name: '열리는 중', conditions: [{ kind: 'switch', switchId: doneSwitchId, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
+          commands: [...clear, { kind: 'setSelfSwitch', key: 'B', value: true }],
+        },
+        { id: `${eventId}_open`, name: '열림', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [] },
+      ];
+      const eventIds: string[] = [];
       if (k === 'dark') {
         pages.push({
           id: `${id}_dark`, name: '어둠 밝히기', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
           commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${skill.name}을(를) 쓸 수 있는 동료가 있다면 밝힐 수 있을 것이다.`)] }],
         });
+        const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'auto' }, commands: [], pages };
+        assertEventShape(event, warnings, event, draft);
+        upsertEventIntoMap(map, event);
+        eventIds.push(id);
+      } else if (k === 'water' || k === 'waterfall') {
+        const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'action' }, commands: [], pages: gatePages(id, clearCommands) };
+        assertEventShape(event, warnings, event, draft);
+        upsertEventIntoMap(map, event);
+        eventIds.push(id);
       } else {
-        pages.push({ id: `${id}_blocked`, name: '막힘', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(`${blocked} ${skill.name}을(를) 쓸 수 있는 동료가 있다면…`)] });
-        pages.push({ id: `${id}_know`, name: '기술을 앎', conditions: [knows], graphic: { transparent: true }, ...SOLID, commands: [text(knowsText)] });
-        pages.push({
-          id: `${id}_opening`, name: '열리는 중', conditions: [{ kind: 'switch', switchId: doneSwitchId, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
-          commands: [...clearCommands, { kind: 'setSelfSwitch', key: 'B', value: true }],
+        // rock·tree: 막은 칸마다 이벤트 하나(첫 칸 = id, 나머지 = `${id}_c2`…). 어느 칸 앞에서 기술을 써도 같은 스위치로 줄 전체가 열린다.
+        perCell.forEach((entry, index) => {
+          const eventId = index === 0 ? id : `${id}_c${index + 1}`;
+          if (index > 0) ensureFieldCommonEvent(draft, commonEventId, skillName, eventId, [text(`${skillName}!`), { kind: 'setSwitch', switchId: doneSwitchId, value: true }]);
+          const event: GameEvent = { id: eventId, name: index === 0 ? eventName : `${eventName} ${index + 1}`, x: entry.x, y: entry.y, trigger: { kind: 'action' }, commands: [], pages: gatePages(eventId, entry.clear) };
+          assertEventShape(event, warnings, event, draft);
+          upsertEventIntoMap(map, event);
+          eventIds.push(eventId);
         });
-        pages.push({ id: `${id}_open`, name: '열림', conditions: [{ kind: 'selfSwitch', key: 'B', value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'action' }, commands: [] });
       }
-      const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: k === 'dark' ? 'auto' : 'action' }, commands: [], pages };
-      assertEventShape(event, warnings, event, draft);
-      upsertEventIntoMap(map, event);
 
       const sameSkill = draft.database.skills.filter((entry) => entry.unforgettable && entry.fieldCommonEventId).length;
       if (sameSkill > 8) warnings.push(`잊을 수 없는 필드 기술이 ${sameSkill}개입니다 — 몬스터는 기술이 넷뿐이라 비전머신이 많으면 전투 기술을 넣을 칸이 없습니다(보통 4~5개 이하).`);
       if (item) warnings.push(`아이템 ${item.id}(${item.name})을 만들었습니다 — 누가 주는지 이어야 합니다: NPC·상자 이벤트의 changeItem {itemId:'${item.id}', op:'+=', amount:1}. 파티 몬스터 하나가 가방에서 이 아이템을 써 기술을 익혀야 열립니다.`);
       return {
-        summary: `${map.name} (${x}, ${y}) 에 필드 장애물(${k}) '${eventName}' — 여는 기술 ${skill.name}(${skill.id})${item ? `, 기술 아이템 ${item.id}` : ''}${cells.length > 1 ? `, 건널 칸 ${cells.length}` : ''}`,
-        data: { eventId: id, kind: k, skillId: skill.id, commonEventId, itemId: item?.id, tile: usedTile, cells, x, y },
+        summary: `${map.name} (${x}, ${y}) 에 필드 장애물(${k}) '${eventName}' — 여는 기술 ${skill.name}(${skill.id})${item ? `, 기술 아이템 ${item.id}` : ''}${cells.length > 1 ? (k === 'water' || k === 'waterfall' ? `, 건널 칸 ${cells.length}` : `, 막은 칸 ${cells.length}`) : ''}${bypass === true ? ' — 우회로 있음(길이 닫히지 않음)' : bypass === false ? ' — 길이 닫힘' : ''}`,
+        data: { eventId: id, eventIds, kind: k, skillId: skill.id, commonEventId, itemId: item?.id, tile: usedTile, cells, x, y, ...(roadWidth !== undefined ? { roadWidth } : {}), ...(bypass !== undefined ? { bypass } : {}) },
         ...(warnings.length > 0 ? { warnings } : {}),
       };
     },

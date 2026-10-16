@@ -8,6 +8,7 @@ import { bases, buildMoves, learnset, EXPEDITION_EXP_CURVE } from '@/project/exa
 import { replacer } from '@/project/examples/monsterExpedition/campaignNames';
 import { isUntouchedDefaultTypeChart, typeChartForPreset } from '@/project/typeCharts';
 import { ensureMonsterGraphic, pickUnusedMonsterResource } from './monsterGraphicAssignment';
+import { monsterAbilitySchema, validateSpeciesAbility } from './dbTools';
 
 // 도감을 한 번에 채우는 배치 도구 둘. define_monster_species 는 한 종씩이라 100종 도감은 호출 100번 + 진화 순서 맞추기였다
 // (2026-10-14 자유도 감사: 154호출). 여기서는 계통 단위로 한 번에 정의하고, 계통마다 따로 검증해 일부가 실패해도 나머지는 남긴다.
@@ -17,8 +18,8 @@ const BASE_TYPES = new Set(['normal', 'fighting', 'flying', 'poison', 'ground', 
 const CAPTURE_RATES = [0.72, 0.42, 0.2];
 const MAX_FAMILIES = 40;
 
-interface StageArg { note?: unknown; monsterResourceId?: unknown; name?: unknown; id?: unknown; types?: unknown; evolveAtLevel?: unknown; baseStats?: unknown; appearanceTags?: unknown; skills?: unknown }
-interface FamilyArg { family?: unknown; types?: unknown; stages?: unknown; stats?: unknown }
+interface StageArg { ability?: unknown; machineSkillIds?: unknown; note?: unknown; monsterResourceId?: unknown; name?: unknown; id?: unknown; types?: unknown; evolveAtLevel?: unknown; baseStats?: unknown; appearanceTags?: unknown; skills?: unknown }
+interface FamilyArg { ability?: unknown; machineSkillIds?: unknown; family?: unknown; types?: unknown; stages?: unknown; stats?: unknown }
 interface Failure { family: string; reason: string }
 
 const asRecord = (v: unknown): Record<string, unknown> | undefined => v && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : undefined;
@@ -83,11 +84,20 @@ function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, tak
     const known = new Set(draft.database.skills.map(s => s.id));
     const missingSkill = learned.find(s => !known.has(s.skillId) || !Number.isFinite(s.level) || s.level < 1);
     if (missingSkill) throw new Error(`${name}: 존재하지 않는 skillId 또는 잘못된 level: ${JSON.stringify(missingSkill)}`);
+    // 특성·기술머신 제한: 단계에 적은 값이 계통 값을 덮는다. define_monster_species 와 같은 검증(허용 값을 알려 거절).
+    const abilityRaw = st.ability !== undefined ? st.ability : raw.ability;
+    const machineRaw = st.machineSkillIds !== undefined ? st.machineSkillIds : raw.machineSkillIds;
+    const machineSkillIds = machineRaw === undefined ? undefined : asStrings(machineRaw);
+    if (machineRaw !== undefined && !machineSkillIds) throw new Error(`${name}: machineSkillIds 는 기술 id 문자열 배열입니다`);
+    const unknownMachine = (machineSkillIds ?? []).filter(skillId => !known.has(skillId));
+    if (unknownMachine.length) throw new Error(`${name}: machineSkillIds 에 없는 기술 ${unknownMachine.join(', ')} — 기술(upsert_skill)을 먼저 만드세요`);
     records.push(normalizeMonsterSpeciesRecord({
-      id, name, types, graphic: { graphicHue: 0, transparent: false, flying: false, ...(typeof st.monsterResourceId === 'string' && st.monsterResourceId ? { monsterResourceId: st.monsterResourceId } : {}) },
+      id, name, types, ...(abilityRaw !== undefined ? { ability: abilityRaw } : {}), ...(machineSkillIds?.length ? { machineSkillIds } : {}), graphic: { graphicHue: 0, transparent: false, flying: false, ...(typeof st.monsterResourceId === 'string' && st.monsterResourceId ? { monsterResourceId: st.monsterResourceId } : {}) },
       baseStats, expCurve: { ...EXPEDITION_EXP_CURVE }, captureRate: CAPTURE_RATES[Math.min(i + (3 - stages.length), 2)]!,
       skillsByLevel: learned, evolutions: [],
     } as Partial<MonsterSpeciesRecord> & Pick<MonsterSpeciesRecord, 'id' | 'name'>));
+    const abilityWarning = validateSpeciesAbility(draft, abilityRaw, records[records.length - 1]!);
+    if (abilityWarning && !warnings.includes(abilityWarning)) warnings.push(abilityWarning);
   }
   for (const [i, record] of records.entries()) {
     if (i < records.length - 1) record.evolutions = [{ toSpeciesId: records[i + 1]!.id, requires: { level: typeof stages[i]!.evolveAtLevel === 'number' ? Math.round(stages[i]!.evolveAtLevel as number) : [16, 32][i]! } }];
@@ -122,7 +132,7 @@ function defineFamily(draft: Project, raw: FamilyArg, takenIds: Set<string>, tak
 interface SpawnArg { mapIds?: unknown; minLevel?: unknown; includeEvolved?: unknown }
 
 /** 새로 정의한 종을 야생 조우표에 올려 도감이 실제로 채워지게 한다 — 정의만 하고 어디서도 안 나오면 100종이 6종처럼 보인다. */
-function spawnInWild(draft: Project, created: { family: string; ids: string[] }[], spawn: SpawnArg): { placed: number; skipped: string[]; mapIds: string[] } {
+function spawnInWild(draft: Project, created: { family: string; ids: string[] }[], spawn: SpawnArg): { placed: number; skipped: string[]; mapIds: string[]; troopIds: string[] } {
   const mapIds = (asStrings(spawn.mapIds) ?? []).filter((id, i, all) => all.indexOf(id) === i);
   if (!mapIds.length) throw new ToolError('spawn.mapIds 가 비었습니다.', { code: 'invalid-args' });
   const missing = mapIds.filter(id => !draft.maps[id]);
@@ -130,6 +140,7 @@ function spawnInWild(draft: Project, created: { family: string; ids: string[] }[
   const minLevel = typeof spawn.minLevel === 'number' ? Math.max(2, Math.round(spawn.minLevel)) : 4;
   const species = new Map((draft.database.monsterSpecies ?? []).map(s => [s.id, s]));
   const skipped: string[] = [];
+  const troopIds: string[] = [];
   let placed = 0, cursor = 0;
   for (const { ids } of created) {
     let level = minLevel;
@@ -159,9 +170,10 @@ function spawnInWild(draft: Project, created: { family: string; ids: string[] }[
       map.encounterTable.push({ troopId, weight: 3, ...(inherited ? { conditions: { ...inherited } } : {}) });
       if (!map.encounterRate) map.encounterRate = 14;
       placed++;
+      troopIds.push(troopId);
     }
   }
-  return { placed, skipped, mapIds };
+  return { placed, skipped, mapIds, troopIds };
 }
 
 const defineMonsterFamilies: ToolDefinition = {
@@ -178,6 +190,8 @@ const defineMonsterFamilies: ToolDefinition = {
           family: { type: 'string', description: '계통 키(영문 소문자·숫자·밑줄, 예: otter_line). id 기본값 species_<family>_<단계>' },
           types: { type: 'array', items: { type: 'string' }, minItems: 1, maxItems: 2, description: '계통 기본 타입 1~2개(grass·fire·water 등 상성표 타입)' },
           stats: { type: 'array', items: { type: 'number' }, minItems: 5, maxItems: 5, description: '최종형 기준 [체력,공격,방어,특수,속도](각 1~255). 생략=85 균등' },
+          ability: { ...monsterAbilitySchema, description: '계통 모든 단계의 특성(종마다 하나). 단계의 ability 가 있으면 그것이 우선. 모양은 define_monster_species species.ability 와 같다 — name(직접 지은 이름)과 kind 필수. 모르는 종류·빠진 매개변수는 그 계통만 허용 값과 함께 실패' },
+          machineSkillIds: { type: 'array', items: { type: 'string' }, description: '계통 모든 단계가 기술머신·비전머신으로 배울 수 있는 기술 id(비우면 제한 없음). 단계의 값이 있으면 우선' },
           stages: { type: 'array', minItems: 1, maxItems: 3, description: '기본형부터 진화 순서', items: {
             type: 'object', additionalProperties: false, required: ['name'],
             properties: {
@@ -189,6 +203,8 @@ const defineMonsterFamilies: ToolDefinition = {
               note: { type: 'string', maxLength: 200, description: '도감 생태 설명 한두 문장(생략하면 이름·타입만 적은 기본 문장)' },
               monsterResourceId: { type: 'string', description: '카탈로그 몬스터 외형 id(list_resources kind:monster). 생략하면 이름·appearanceTags 로 찾는다' },
               appearanceTags: { type: 'array', items: { type: 'string' }, description: '그림 고르기용 겉모습 낱말(예: 새, 물가, 덩굴)' },
+              ability: { ...monsterAbilitySchema, description: '이 단계의 특성(계통 ability 를 덮는다)' },
+              machineSkillIds: { type: 'array', items: { type: 'string' }, description: '이 단계의 기술머신 제한(계통 값을 덮는다)' },
               skills: { type: 'array', description: '학습표를 직접 정할 때 [{level, skillId}]. 생략=타입 기본 학습표', items: { type: 'object', additionalProperties: false, required: ['level', 'skillId'], properties: { level: { type: 'integer', minimum: 1 }, skillId: { type: 'string' } } } },
             },
           } },
@@ -240,9 +256,13 @@ const defineMonsterFamilies: ToolDefinition = {
     if (spawnArg) spawned = spawnInWild(draft, created, spawnArg);
     const total = draft.database.monsterSpecies?.length ?? 0;
     const speciesCount = created.reduce((n, c) => n + c.ids.length, 0);
+    // 만든 종 id 를 응답에 그대로 돌려준다 — 모델이 id 를 추측해(species_<family>_<단계>) 이어지는 도구(upsert_enemy·place_trainer·define_monster_species)에서 실패하지 않게.
+    const speciesNames = new Map((draft.database.monsterSpecies ?? []).map(s => [s.id, s.name]));
+    const speciesIds = created.flatMap(c => c.ids);
+    const idPreview = created.slice(0, 6).map(c => `${c.family}=[${c.ids.join(', ')}]`).join(' · ') + (created.length > 6 ? ` … 외 ${created.length - 6}계통(전체 data.created)` : '');
     return {
-      summary: `${created.length}계통 ${speciesCount}종 정의${failed.length ? ` — ${failed.length}계통 실패(${failed.map(f => f.family).join(', ')}): data.failed 확인` : ''}. 도감 전체 ${total}종${spawned ? ` · 야생 조우 ${spawned.placed}건 배치(${spawned.mapIds.length}맵)` : ' · 야생 조우는 spawn 인자 또는 author_wild_route 로 따로 배치'}.`,
-      data: { created, failed, totalSpecies: total, ...(spawned ? { spawned } : {}) },
+      summary: `${created.length}계통 ${speciesCount}종 정의${failed.length ? ` — ${failed.length}계통 실패(${failed.map(f => f.family).join(', ')}): data.failed 확인` : ''}. 도감 전체 ${total}종${spawned ? ` · 야생 조우 ${spawned.placed}건 배치(${spawned.mapIds.length}맵)` : ' · 야생 조우는 spawn 인자 또는 author_wild_route 로 따로 배치'}. 만든 종 id: ${idPreview}.`,
+      data: { created: created.map(c => ({ ...c, species: c.ids.map(id => ({ id, name: speciesNames.get(id) ?? id })) })), speciesIds, failed, totalSpecies: total, ...(spawned ? { spawned } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },
