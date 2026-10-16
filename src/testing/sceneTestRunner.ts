@@ -1146,6 +1146,18 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
       return null;
     }
     const life = interactWithLifeField(state.project, state.session, target);
+    if (life.kind === "encounter") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
+      if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
+      const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId: life.troopId, canEscape: true, canLose: false, ...(life.level !== undefined ? { enemyLevel: life.level } : {}) });
+      state.session.battleResult = outcome;
+      state.log.push(`fishing encounter ${life.speciesId} (${life.troopId}${life.level !== undefined ? ` Lv${life.level}` : ""}): ${outcome}`);
+      if (outcome === "defeat" && !recoverFromDefeatForRunner(state)) {
+        killPartyForRunner(state);
+        state.gameOver = true;
+      }
+      return null;
+    }
     if (life.kind !== "unhandled") {
       if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
       state.log.push(`${life.source} ${life.kind}: ${life.kind === "success" ? life.itemId : life.reason}`);

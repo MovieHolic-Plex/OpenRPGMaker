@@ -356,6 +356,24 @@ function validateFishing(value: unknown): void {
       if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
       if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
     }
+    if (spot.monsterCatches !== undefined) {
+      const monsterCatches = requireArray(`${label}.monsterCatches`, spot.monsterCatches);
+      assert(monsterCatches.length <= P2_RULE_LIMIT, `${label}.monsterCatches must contain at most ${P2_RULE_LIMIT} records.`);
+      const seenSpecies = new Set<string>();
+      for (const [catchIndex, catchRaw] of monsterCatches.entries()) {
+        const catchLabel = `${label}.monsterCatches[${catchIndex}]`;
+        const rule = requireRecord(catchLabel, catchRaw);
+        const speciesId = requireNonBlankString(`${catchLabel}.speciesId`, rule.speciesId);
+        assert(!seenSpecies.has(speciesId), `${catchLabel}.speciesId is duplicated: ${speciesId}`);
+        seenSpecies.add(speciesId);
+        assertSafeIntegerInRange(`${catchLabel}.weight`, rule.weight, 1, P2_WEIGHT_MAX);
+        if (rule.levelMin !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMin`, rule.levelMin, 1, 99);
+        if (rule.levelMax !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMax`, rule.levelMax, 1, 99);
+        if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
+        if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
+        if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+      }
+    }
   }
 }
 
