@@ -466,7 +466,6 @@ function spotInspector(record: FishingSpotDefinition, project: Project, rerender
 
   cards.push(sectionCard({
     hint: `${record.catches.length}종 등록됨${record.monsterCatches?.length ? ` · 몬스터 ${record.monsterCatches.map((rule) => rule.speciesId).join(", ")} (도구로 편집)` : ""}`,
-    hint: `${record.catches.length}종 등록됨`,
     children: [
       el("div", {
         class: "db-ws-toolbar",
