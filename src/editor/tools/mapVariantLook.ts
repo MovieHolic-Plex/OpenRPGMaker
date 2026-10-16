@@ -34,9 +34,10 @@ type LookSpec = {
 const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   ruin: {
     label: "붕괴·폐허",
-    demolishRatio: 0.6,
+    // jrpg-loop-1(D8): 0.6·ambient 0.4 로는 「세계의 붕괴」가 안개 낀 마을 정도로만 보였다 — 건물 4채 중 3채를 무너뜨리고 한 단계 더 어둡게.
+    demolishRatio: 0.75,
     stampsPerSite: [5, 8],
-    ambient: 0.4,
+    ambient: 0.5,
     color: "#2e2a3c",
     fog: 0.9,
     kitIds: [
@@ -47,10 +48,12 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   },
   past: {
     label: "과거",
-    demolishRatio: 0.4,
-    stampsPerSite: [1, 3],
-    ambient: 0.52,
+    // jrpg-loop-1(D16): 시대 변형이 색조뿐이라 같은 마을로 읽혔다 — 건물을 더 걷어 내고(60%) 옛 야영·돌무더기를 자리마다 2~4개 놓고 옅은 아침 안개를 깐다.
+    demolishRatio: 0.6,
+    stampsPerSite: [2, 4],
+    ambient: 0.56,
     color: "#8a4608",
+    fog: 0.25,
     kitIds: [
       "bd-pick-deep-forest-path-campfire", "bd-pick-deep-forest-path-cairn", "bd-pick-deep-forest-path-cairn-s",
       "bd-pick-desert-oasis-rock", "bd-pick-coast-cliff-road-heath-a", "bd-pick-coast-cliff-road-heath-b", "bd-pick-deep-forest-path-stones-a",
@@ -58,9 +61,9 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   },
   future: {
     label: "미래",
-    demolishRatio: 0.4,
-    stampsPerSite: [1, 2],
-    ambient: 0.52,
+    demolishRatio: 0.55,
+    stampsPerSite: [2, 3],
+    ambient: 0.56,
     color: "#0c2c70",
     kitIds: [
       "bd-pick-volcano-cave-fire-crystal", "bd-pick-wizard-tower-moon-obelisk", "bd-pick-snowfield-lamp",
@@ -119,6 +122,11 @@ function isTransferDoor(event: GameEvent): boolean {
     return Object.values(record).some(visit);
   };
   return visit(event.pages ?? []) || visit(event.commands ?? []);
+}
+
+function isWaterCell(map: GameMap, tileset: { readonly tileMeta?: Readonly<Record<number, { readonly tags?: readonly string[] } | undefined>> } | undefined, index: number): boolean {
+  const tile = map.lowerTiles[index];
+  return tile !== undefined && tile >= 0 && (tileset?.tileMeta?.[tile]?.tags ?? []).includes("water");
 }
 
 function eventAt(map: GameMap, x: number, y: number): GameEvent | undefined {
@@ -190,7 +198,8 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
       let blocked = false;
       for (let row = 0; row < kit.height && !blocked; row += 1) {
         for (let col = 0; col < kit.width; col += 1) {
-          if (taken.has((y + row) * copy.width + x + col) || eventAt(copy, x + col, y + row)) { blocked = true; break; }
+          // 물 칸 위에는 폐허 조각을 놓지 않는다 — 받침 없는 물체로 커밋이 거절돼 변형 도구가 통째로 실패했다(jrpg-loop-2: 해안 건물 자리).
+          if (taken.has((y + row) * copy.width + x + col) || eventAt(copy, x + col, y + row) || isWaterCell(copy, tileset, (y + row) * copy.width + x + col)) { blocked = true; break; }
         }
       }
       if (blocked) continue;
