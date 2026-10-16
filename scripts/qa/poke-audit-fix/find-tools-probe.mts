@@ -11,7 +11,7 @@ const cases: readonly (readonly [string, string])[] = [
 ];
 let bad = 0;
 for (const [query, want] of cases) {
-  const result = findTools.run({} as never, { query } as never, {} as never) as { data?: { matches?: { name: string }[] } };
+  const result = findTools.run({} as never, { query } as never) as { data?: { matches?: { name: string }[] } };
   const top = (result.data?.matches ?? []).slice(0, 5).map((m) => m.name);
   const rank = top.indexOf(want);
   const ok = rank >= 0 && rank <= (query === "날씨" ? 2 : 1);

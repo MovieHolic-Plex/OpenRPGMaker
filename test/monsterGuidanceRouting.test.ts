@@ -46,7 +46,7 @@ describe("몬스터 요청 분류", () => {
 
 describe("find_tools 별칭", () => {
   const top = (query: string) => {
-    const result = getTool("find_tools")!.run({} as never, { query } as never, {} as never) as { data?: { matches?: { name: string }[] } };
+    const result = getTool("find_tools")!.run({} as never, { query } as never) as { data?: { matches?: { name: string }[] } };
     return (result.data?.matches ?? []).slice(0, 3).map((match) => match.name);
   };
   it.each([
