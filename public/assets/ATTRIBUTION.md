@@ -403,3 +403,16 @@ using repository-owned monster-collect battle-trainer pictures (`harness-data/ba
 style sample, then (current method, user-selected 2026-10-15) the result is downscaled smoothly to a 128x128 transparent canvas (displayed 1x); the earlier 64x64 grid-pixelized candidates (p4) were not selected. They contain no EasyRPG Actor1 pixels
 and no Nintendo artwork, and no sample is copied. Selection record: the method was chosen by the user; the hero, boy and girl pictures and the eight remaining roles were chosen by the supervisor under the user's explicit delegation ("pick whatever you recommend", 2026-10-15/16), recorded in `harness-data/battle-trainer-sprites/picks.json` (`by: user-delegated-to-supervisor`) and changeable by re-picking. Harness: `src/harnesses/battle-trainer-sprites/`.
 License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
+
+## Heroes1 walking chips — CT/FF6-style class characters (2026-10-16)
+
+`generated/charsets/Heroes1.png` (288×256, 8 characters × 3 patterns × 4 directions) holds eight walking chips from the `charset-actor` harness (`src/harnesses/charset-actor/`):
+Amphibian Knight, Stone-age Girl, Spell Girl, Scrap Robot, Rogue Scout, Lavender Mage, Old General, Stage Singer.
+**Each chip is derived from an EasyRPG RTP character sheet** (`CharSet/Actor1`, `Actor3`, `Actor4`, `People3`, `People4`): the harness keeps the base chip's face, body proportions, legs and walk poses
+and rewrites only the hair, clothing, colours and carried gear inside region masks (edits by a model, `gemini-4-argon-high`, then verified frame-by-frame against the base).
+The base chip per character is recorded in `src/assets/heroesCharsets.json` (`source.baseChip`).
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP — Creative Commons Attribution 4.0 International; credit lines: `public/assets/easyrpg/AUTHORS.md`. The CC BY 4.0 credit above applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`.
+- Final pixel grids and edit commands: `harness-data/charset-actor/ct-ff6-pick6/<key>/` (`chip.chr.txt`, `edit.json`, `meta.json`); baked by `src/harnesses/charset-actor/install_ct_ff6.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: the eight were chosen from the harness candidate sheet by the supervisor under the user's explicit delegation ("pick-6 는 니 추천대로 해", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
+- No Square Enix / Capcom artwork and no pixel of any other game is used; the character ideas are generic class archetypes (no existing character is copied).
+License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
