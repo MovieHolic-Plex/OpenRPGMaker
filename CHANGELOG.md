@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.244.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record the visual-novel reading colors in the CSS budget and winners (`51f3573`)
+- **ci** — record the extra face-option nodes in the event surface baselines (`94e926b`)
+
 ## 0.244.0 — 2026-10-17
 
 ### 기능
