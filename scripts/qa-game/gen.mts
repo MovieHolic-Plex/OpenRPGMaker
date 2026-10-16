@@ -7,6 +7,9 @@
 //       --ai-config <file>  역할 모델 설정 파일 통째로 덮기(조수 하네스 ai-configs 와 같은 형식)
 //       --autonomy balanced|autonomous|max   --apply default|auto|yolo   --timeout-ms N   --no-check
 //       --concept-card <card.json>  굽기 전 개념 카드를 이 실행에만 얹는다(슈퍼하네스 조수 시험)
+//       --compat-base <url> --compat-model <id>  사용자 지정(OpenAI 호환) 엔드포인트로 모든 역할을 돌린다(예: CLIProxyAPI 8318 의 gemini-4-argon-high).
+//           키는 환경변수 OPRN_LIVE_KEY(--compat-key-env 로 이름 변경)에서만 읽는다 — 파일·녹화·로그에 쓰지 않는다. 허용 gemini-4-argon*, 차단 claude-*(--compat-allow/--compat-block 쉼표 목록).
+//           환경변수 QA_COMPAT_BASE·QA_COMPAT_MODEL 로도 줄 수 있다. 부가: --compat-thinking low|medium|high --compat-reasoning none|field|suffix
 //       --text "<채팅 한 줄>"  기획 지시문 대신 조수 채팅에 친 문장 하나를 그대로 보낸다(씨앗은 --brief 의 새 프로젝트, 기획서는 뺀다)
 //
 // 브라우저 경로와 같은 함수를 부른다:
@@ -28,6 +31,8 @@ import { defaultTeamSpec } from "../../src/ai/piAgent/teamSpec.ts";
 import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
 import { createPiRunRecorder } from "./lib/recorder.ts";
+import { registerOpenAiCompatEndpoints } from "../lib/openAiCompatModel.ts";
+import { buildQaCompatSetup, QA_COMPAT_DEFAULT_KEY_ENV, type QaCompatSetup } from "./lib/compatProvider.ts";
 import { preloadKitStartPlaces } from "../../src/project/playableSegment.ts";
 import { buildBrowserSeed, type QaBrief } from "./lib/seed.ts";
 import { overrideConceptCards } from "../../src/ai/conceptCards.ts";
@@ -62,6 +67,12 @@ import { buildWorldmap as headlessBuildWorldmap } from "../lib/worldmapBuild.mjs
 setRegionReferenceDownloadLoader(async (url: string) => JSON.parse(readFileSync(`public${url}`, "utf8")));
 
 let ARGV: readonly string[] = process.argv.slice(2);
+/** --compat-base 로 켠 사용자 지정 연결. 있으면 그 제공자 키는 인증 저장소가 아니라 환경변수에서 온다. */
+let compat: QaCompatSetup | undefined;
+const resolveKey = (provider: string): Promise<string | undefined> =>
+  compat && provider === compat.providerId ? Promise.resolve(compat.apiKey) : resolveRequestApiKey(provider);
+/** 키 값이 오류 문장·로그로 새지 않게 가린다. */
+const redact = (text: string): string => (compat?.apiKey ? text.split(compat.apiKey).join("***") : text);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
 const flag = (name: string): boolean => ARGV.includes(`--${name}`);
 
@@ -75,7 +86,7 @@ function headlessChat(keys: Map<string, string | undefined>) {
     if (typeof req.temperature === "number") body.temperature = req.temperature;
     if (config.reasoningEffort && config.reasoningEffort !== "off") body.reasoning = { effort: config.reasoningEffort };
     const provider = config.providerId || "google-antigravity";
-    if (!keys.has(provider)) keys.set(provider, await resolveRequestApiKey(provider));
+    if (!keys.has(provider)) keys.set(provider, await resolveKey(provider));
     const { completion } = await completeProvider(provider, body, { apiKey: keys.get(provider), signal: req.signal }) as { completion: { choices: { message: ChatResult["message"]; finish_reason: string | null }[]; usage?: ChatResult["usage"] } };
     const choice = completion.choices[0]!;
     return { message: choice.message, finishReason: choice.finish_reason, ...(completion.usage ? { usage: completion.usage } : {}) };
@@ -84,7 +95,7 @@ function headlessChat(keys: Map<string, string | undefined>) {
 
 /** 동반 서비스 runAgent 와 같은 자격 해석: 제공자 키 + 역할 모델 제공자 키 + 웹 검색용 Codex 키. */
 async function agentKeys(request: PiAgentRequest, cache: Map<string, string | undefined>) {
-  const get = async (provider: string) => { if (!cache.has(provider)) cache.set(provider, await resolveRequestApiKey(provider)); return cache.get(provider); };
+  const get = async (provider: string) => { if (!cache.has(provider)) cache.set(provider, await resolveKey(provider)); return cache.get(provider); };
   const apiKey = await get(request.provider);
   const providerApiKeys: Record<string, string | undefined> = { [request.provider]: apiKey };
   for (const role of ["deep", "writer"] as const) {
@@ -109,9 +120,9 @@ function headlessToolImage(project: Project, toolName: string, data: unknown): s
 }
 
 function logLine(prefix: string, event: PiAgentEvent): void {
-  if (event.type === "tool_end") console.log(`${prefix} ${event.ok ? "OK  " : "FAIL"} ${event.name} — ${String(event.summary).replace(/\s+/g, " ").slice(0, 160)}`);
+  if (event.type === "error") console.log(`${prefix} ERROR ${redact(event.message).slice(0, 300)}`);
+  else if (event.type === "tool_end") console.log(`${prefix} ${event.ok ? "OK  " : "FAIL"} ${event.name} — ${String(event.summary).replace(/\s+/g, " ").slice(0, 160)}`);
   else if (event.type === "assistant") console.log(`${prefix} assistant: ${event.text.replace(/\s+/g, " ").slice(0, 200)}`);
-  else if (event.type === "error") console.log(`${prefix} ERROR ${event.message.slice(0, 300)}`);
   else if (event.type === "start") console.log(`${prefix} start ${event.provider}/${event.model} tools=${event.toolCount}`);
 }
 
@@ -122,6 +133,24 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   // edit_world_terrain 의 월드맵 빌드도 동반 앱 경로(/v1/worldmap/build)를 프로세스 안에서 부른다.
   setWorldmapBuilder(headlessBuildWorldmap);
   ARGV = argv;
+  compat = undefined;
+  const compatBase = arg("compat-base") ?? process.env.QA_COMPAT_BASE;
+  const compatModel = arg("compat-model") ?? process.env.QA_COMPAT_MODEL;
+  if (compatBase || compatModel) {
+    if (!compatBase || !compatModel) { console.error("--compat-base 와 --compat-model 은 같이 줘야 합니다."); return 2; }
+    const list = (name: string) => arg(name)?.split(",").map((p) => p.trim()).filter(Boolean);
+    try {
+      compat = buildQaCompatSetup({
+        baseUrl: compatBase, model: compatModel, keyEnv: arg("compat-key-env") ?? QA_COMPAT_DEFAULT_KEY_ENV,
+        ...(arg("compat-thinking") ? { thinkingLevel: arg("compat-thinking") as "low" | "medium" | "high" } : {}),
+        ...(arg("compat-reasoning") ? { reasoningMode: arg("compat-reasoning")! } : {}),
+        ...(list("compat-allow") ? { allowModels: list("compat-allow")! } : {}),
+        ...(list("compat-block") ? { blockModels: list("compat-block")! } : {}),
+      });
+    } catch (error) { console.error(`[compat] ${error instanceof Error ? error.message : String(error)}`); return 2; }
+    registerOpenAiCompatEndpoints({ [compat.providerId]: compat.endpoint });
+    console.log(`[compat] ${compat.endpoint.baseUrl} · ${compatModel} · 허용 ${compat.endpoint.allowModels.join(",")} · 차단 ${compat.endpoint.blockModels.join(",")} (키는 환경변수, 기록하지 않음)`);
+  }
   const briefFile = arg("brief");
   const out = arg("out");
   if (!briefFile || !out) { console.error("사용법: bun scripts/qa-game/gen.mts --brief <brief.json> --out qa-runs/<id>"); return 2; }
@@ -135,6 +164,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     ...defaultAiConfig(), ...(input.ai ?? {}),
     // --ai-config <file>: 조수 하네스와 같은 역할 모델 설정 파일(harness-data/assistant-capability/ai-configs/*.json)을 덮는다.
     ...(arg("ai-config") ? JSON.parse(fs.readFileSync(arg("ai-config")!, "utf8")) as Partial<AiConfig> : {}),
+    ...(compat ? compat.configPatch : {}),
     ...(arg("provider") ? { providerId: arg("provider")! } : {}),
     ...(arg("model") ? { model: arg("model")! } : {}),
     ...(arg("lite-model") ? { liteModel: arg("lite-model")! } : {}),
@@ -299,8 +329,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   } catch (error) {
     // 실패한 판도 그때까지 발행된 결과를 남긴다 — 어디까지 지어졌는지가 분석의 절반이다.
     fs.writeFileSync(path.join(out, "project.json"), serialize(store.getCurrent()));
-    fs.writeFileSync(path.join(out, "error.txt"), error instanceof Error ? error.stack ?? error.message : String(error));
-    stats.error = error instanceof Error ? error.message : String(error);
+    fs.writeFileSync(path.join(out, "error.txt"), redact(error instanceof Error ? error.stack ?? error.message : String(error)));
+    stats.error = redact(error instanceof Error ? error.message : String(error));
   } finally {
     recorder.close();
     const usage = (key: string) => ((stats[key] as { usage?: unknown } | undefined)?.usage);

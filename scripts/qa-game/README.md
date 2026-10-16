@@ -19,6 +19,21 @@ gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 �
 | `npm run qa:game -- replay qa-runs/<id>` | 모델 없이 `tools.jsonl` 을 `seed.json` 위에서 **지금의** 툴 코드로 다시 돌린다(레지스트리 셰이프 `resolvePiToolShape` = 참고 문서 게이트·맵 범위 가드, 쓰기마다 `createPiPublication` 체크포인트 = 스토어 커밋 게이트). `replay/project.json`·`tools.jsonl`·`diff.json`·`replay.txt` 를 쓰고 check 를 돌린다. 녹화와 ok·경고가 달라진 호출을 경고 차이(-녹화/+재생)와 함께 보고한다. `[vperf]` 같은 시간 계측 줄은 비교에서 뺀다. |
 | `npm run qa:game -- render qa-runs/<id>` | 모든 맵을 헤드리스로 `render/<mapId>.png` 에 그리고(에디터와 같은 `drawMapTileLayer`, 캔버스 대신 pngjs 버퍼), 썸네일·검사 지적·자동 플레이 경로·재생 요약·meta 를 담은 자체완결 `report.html`(이미지는 data URI)을 쓴다. 표식: 초록=시작 위치, 파랑=문, 빨강=전투, 노랑=엔딩, 보라=기타 이벤트. check·replay 를 먼저 돌려 두면 그 결과도 들어간다. |
 
+### 사용자 지정(OpenAI 호환) 연결로 gen 돌리기 — 예: CLIProxyAPI 8318 Argon (2026-10-16)
+
+Agy(Google Antigravity) 경로가 429 로 막혔을 때도 같은 조수 경로(의도 선언·계획·팀·시공)를 실제 모델로 잰다.
+
+```bash
+export OPRN_LIVE_KEY=$(cat ~/.config/oprn/live-key)      # 키는 환경변수로만 — 파일·인자·저장소에 두지 않는다
+npm run qa:game -- gen --brief scripts/qa-game/briefs/campus-reunion-romance.json --out qa-runs/real-1 \
+  --compat-base http://127.0.0.1:8318/v1 --compat-model gemini-4-argon-high --text "대학 캠퍼스 연애 게임 만들어 줘"
+```
+
+- 모든 역할(계획·실행·시각·작문·시공·감독)이 그 한 모델로 간다. 제공자 id 는 `openai-compat:qa-gen`, 엔드포인트 정의는 프로세스 메모리에만 있다(`~/.oprn/openai-compat-endpoints.json` 을 쓰지 않는다).
+- 허용 `gemini-4-argon*`·차단 `claude-*`(편집기 설정과 같은 판정, `--compat-allow/--compat-block` 으로 바꿈). 패턴 밖 모델은 폴백 없이 거절한다.
+- 키를 읽을 환경변수는 `--compat-key-env`(기본 `OPRN_LIVE_KEY`). 오류 문장은 키를 `***` 로 가린다. 환경변수 `QA_COMPAT_BASE`·`QA_COMPAT_MODEL` 로도 줄 수 있다. 구현 `scripts/qa-game/lib/compatProvider.ts`.
+- 이미지 생성(타이틀 키아트 등)은 이 연결을 타지 않는다(`QA_IMAGE_PROVIDER` 별개).
+
 ### replay 의 한계
 
 - 모델이 없으니 앞 호출 결과가 바뀌어도 뒤 호출 인자는 녹화 그대로다. 첫 차이 뒤의 차이는 연쇄 효과일 수 있다.
