@@ -3149,7 +3149,7 @@ function assertChestDrySurface(project: Project, map: GameMap, x: number, y: num
 
 // 보물상자: "상자를 열면 X 지급"을 셀프스위치 2페이지로 완결하는 프리셋.
 // (코퍼스 hidden-treasure-chest / chest-potion-reward가 "부분 가능"이던 갭 해소)
-const placeChest: ToolDefinition = {
+export const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
     "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +

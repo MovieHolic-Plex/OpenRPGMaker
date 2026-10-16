@@ -294,6 +294,8 @@ It requires an existing catalog; full generation without the option remains supp
 
 원정 게임은 `place_field_obstacle` 로 절단·괴력·파도타기류 게이트를 쓸 수 있다. 상세는 `editor-ai-tools.md` 「place_field_obstacle」. 요점: 몬스터가 필드 기술을 상태 메뉴에서 쓰고(MP 없음), 기술머신은 가방에서 파티 몬스터에게 쓰며(가득이면 교체 대기), `unforgettable` 필드 기술은 교체 후보에서 빠진다. 자동 플레이는 기술머신을 줍고 쓰는 줄까지 따라간다. 만들어진 체육관·길 기본 생성(`build_monster_game`)에는 아직 HM 게이트를 자동으로 넣지 않는다(조수가 `place_field_obstacle` 로 추가).
 
+**HM end-to-end 증명(2026-10-16)**: `bun scripts/qa/runtime/monster-hm-fixture.mts /tmp/hm.json` → `unshare -rn sh -c "ip link set lo up && node scripts/qa/runtime/monster-hm.mjs /tmp/hm.json <out>"`. 결과 `<out>/SUMMARY.md` 를 먼저 읽는다. `place_field_obstacle` 의 `requiresBadge`·`giverX/giverY`·조사 「쓸까?」는 `editor-ai-tools.md`. 몬스터 기술 목록의 필드 기술 설명은 한 줄(「필드 기술 — Enter 로 바라보는 앞에 쓴다」)이다 — 위력·성공률 줄은 설명 칸을 넘어 잘렸다.
+
 ## 필드·진행 규칙 1차 (2026-10-15, poke-fix-p — 감사 S 항목)
 
 감사(`audit-poke`)의 필드·진행 부족분. 새 규칙은 전부 옵트인이고 안 쓰는 프로젝트의 저장 바이트는 그대로다.
