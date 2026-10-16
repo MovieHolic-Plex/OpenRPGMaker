@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.242.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record new faces, chips, audio, and badge conditions in surface baselines (`3a22527`)
+
 ## 0.242.0 — 2026-10-17
 
 ### 기능
