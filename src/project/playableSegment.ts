@@ -24,6 +24,7 @@ import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
 import { isRomanceInterviewProject } from "@/project/romancePreset";
+import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { Command, GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -31,7 +32,13 @@ import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirectio
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
+  ROMANCE_ENDING_HAPPY_AT,
+  ROMANCE_ENDING_HAPPY_ID,
+  ROMANCE_ENDING_NAMES,
+  ROMANCE_ENDING_NORMAL_AT,
+  ROMANCE_ENDING_NORMAL_ID,
   ROMANCE_PLACEHOLDER_NAMES,
+  ROMANCE_SKELETON_ENDING_IDS,
   SEGMENT_END_ENDING_ID,
   SEGMENT_END_EVENT_ID,
   SEGMENT_KEY_SWITCH_ID,
@@ -54,6 +61,11 @@ const STARTER_SPECIES = ["species_leafling", "species_sparkit", "species_aqualin
 /** JRPG 문지기. 기본 DB 의 슬라임 무리는 시작 파티(Lv1 영웅)가 모의전 5/5 로 이긴다(2026-09-28 simulateBattle). */
 const JRPG_GATE_TROOP_ID = "troop_slime_pair";
 
+/** 연애 뼈대(호감 갈림 엔딩)를 가진 프로젝트인가 — 인터뷰 연애이거나 뼈대의 해피 엔딩이 있다(인터뷰 기록이 지워진 채팅 경로도 같게 본다). */
+export function isRomanceSkeletonProject(project: Project): boolean {
+  return isRomanceInterviewProject(project) || (project.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID);
+}
+
 export type PlayableSegmentVerdict =
   | { readonly ok: true; readonly endingId: string; readonly ms: number }
   | { readonly ok: false; readonly blockers: readonly string[]; readonly ms: number };
@@ -72,9 +84,12 @@ export function judgePlayableSegment(project: Project, options: { readonly budge
   }
   const started = Date.now();
   const report = runGameCheck(project, { autoPlayBudgetMs: options.budgetMs ?? 60_000 });
-  const reached = report.autoPlay?.runs.some((run) => run.ok && run.endingReached === SEGMENT_END_ENDING_ID) === true;
+  // 연애 뼈대는 엔딩이 호감으로 갈린다 — 자동 플레이는 아무도 안 만난 채 닿으니 대개 기본 결말이지만, 해피·평범에 닿아도 같은 구간 끝이다.
+  const accepted = isRomanceSkeletonProject(project) ? ROMANCE_SKELETON_ENDING_IDS : [SEGMENT_END_ENDING_ID];
+  const reachedRun = report.autoPlay?.runs.find((run) => run.ok && run.endingReached !== undefined && accepted.includes(run.endingReached));
+  const reached = reachedRun !== undefined;
   const ms = Date.now() - started;
-  if (reached) return { ok: true, endingId: SEGMENT_END_ENDING_ID, ms };
+  if (reached) return { ok: true, endingId: reachedRun!.endingReached ?? SEGMENT_END_ENDING_ID, ms };
   const blockers = report.findings.filter((finding) => finding.severity === "blocker").map((finding) => finding.message);
   if (!project.endings?.some((ending) => ending.id === SEGMENT_END_ENDING_ID)) blockers.unshift("첫 구간의 끝(" + SEGMENT_END_ENDING_ID + ") 엔딩이 없습니다.");
   if (report.autoPlay?.skipped) blockers.push("자동 플레이: " + report.autoPlay.skipped);
@@ -159,6 +174,8 @@ interface GenreSkeleton {
   /** 구간 끝 엔딩·이벤트 이름(생략하면 「첫 구간 끝」·「구간 끝」). 연애처럼 장르 말투가 필요한 뼈대만 쓴다. */
   readonly endingName?: string;
   readonly endEventName?: string;
+  /** 구간 끝 엔딩 말고 더 깔 엔딩(호감 갈림). 있으면 구간 끝 이벤트가 엔딩 id 없이 triggerEnding 해 조건·priority 로 고른다. */
+  readonly branchEndings?: readonly { readonly id: string; readonly name: string; readonly priority: number; readonly conditions: readonly unknown[]; readonly epilogue: string }[];
   /** 도구가 없는 마무리(시작 소지품 등). 복제본에 직접 쓴다. */
   readonly finish?: (project: Project) => void;
 }
@@ -457,10 +474,23 @@ const ROMANCE_SKELETON: GenreSkeleton = {
     });
   },
   lockedLine: "아직 이 길을 갈 이유를 모르겠다. 주변에서 단서를 찾아보자.",
-  endCommands: [{ kind: "text", body: "산책로 끝에서 누군가 이쪽을 돌아본다. 첫 만남이 여기서 시작된다." }],
-  epilogue: "첫 만남이 끝났다. 이어질 이야기는 이제 두 사람에게 달렸다.",
-  endingName: ROMANCE_PLACEHOLDER_NAMES[3],
+  endCommands: [{ kind: "text", body: "산책로 끝에서 누군가 이쪽을 돌아본다. 지금까지 쌓은 마음이 이 순간의 대답이 된다." }],
+  // 기본(조건 없는) 결말 = 혼자. 호감이 문턱에 못 닿았을 때 열린다. 해피·평범은 아래 branchEndings 가 누적 호감 문턱으로 깐다.
+  epilogue: "아직 누구에게도 마음을 전하지 못한 채 계절이 지났다. 다음 계절에는 먼저 말을 걸어 볼 수 있을까.",
+  endingName: ROMANCE_ENDING_NAMES.solo,
   endEventName: ROMANCE_PLACEHOLDER_NAMES[2],
+  branchEndings: [
+    {
+      id: ROMANCE_ENDING_HAPPY_ID, name: ROMANCE_ENDING_NAMES.happy, priority: 20,
+      conditions: [{ kind: "friendshipAtLeast", npcKey: ANY_FRIENDSHIP_KEY, value: ROMANCE_ENDING_HAPPY_AT }],
+      epilogue: "쌓아 온 시간이 한 사람의 이름으로 이어졌다. 이야기는 이제부터 두 사람의 것이다.",
+    },
+    {
+      id: ROMANCE_ENDING_NORMAL_ID, name: ROMANCE_ENDING_NAMES.normal, priority: 10,
+      conditions: [{ kind: "friendshipAtLeast", npcKey: ANY_FRIENDSHIP_KEY, value: ROMANCE_ENDING_NORMAL_AT }],
+      epilogue: "고백은 하지 못했지만 서로를 아끼는 사이가 되었다. 지금은 이 거리가 딱 좋다.",
+    },
+  ],
 };
 
 /**
@@ -508,13 +538,17 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
     conditions: [],
     epilogue: [{ kind: "say", speaker: "", text: skeleton.epilogue }],
   });
+  for (const branch of skeleton.branchEndings ?? []) {
+    tool(ctx, "define_ending", { id: branch.id, name: branch.name, priority: branch.priority, conditions: branch.conditions, epilogue: [{ kind: "say", speaker: "", text: branch.epilogue }] });
+  }
   tool(ctx, "upsert_event", {
     mapId: SEGMENT_ROUTE_MAP_ID,
     event: {
       id: SEGMENT_END_EVENT_ID, name: skeleton.endEventName ?? "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
       pages: [
         page(SEGMENT_END_EVENT_ID + "_locked", [{ kind: "text", body: skeleton.lockedLine }]),
-        page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],
+        // 호감 갈림 뼈대는 엔딩 id 없이 부른다 — 조건을 만족한 엔딩 중 priority 가 가장 높은 것이 열린다(마지막 선택지가 아니라 누적 호감이 결말을 가른다).
+        page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, skeleton.branchEndings?.length ? { kind: "triggerEnding" } : { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],
           [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }]),
       ],
     },

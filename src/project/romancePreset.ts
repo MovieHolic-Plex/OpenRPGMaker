@@ -7,6 +7,9 @@
 //     켜면 맵 칩셋뿐 아니라 인물 칩도 현대 연애 칩 Modern1~3 로 묶고(주인공 기본 외형 포함), ESC 메뉴는 전투 능력치 대신 호감도 중심(relationshipMenu.ts)이 된다
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
 //  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
+import { DEADLINE_ENDING_COMMON_EVENT_ID, installDeadlineEnding, type DeadlineTier } from "@/project/deadlineEnding";
+import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
+import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { DEFAULT_DAY_END_HOUR, DEFAULT_DAY_START_HOUR } from "@/project/gameTime";
 import { DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP, DEFAULT_SOCIAL_SLOTS_PER_DAY } from "@/project/socialLoop";
 import { GENRE_LOCK_PRESETS } from "@/project/genreLock";
@@ -30,6 +33,8 @@ const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-fi
 export const ROMANCE_TITLE_SUBTITLE = "마음이 닿는 계절";
 
 export const ROMANCE_MINUTES_PER_REAL_SECOND = 0.1;
+/** 기한 엔딩 — 이 날수째 하루가 저물면 누적 호감으로 결말이 갈린다(2026-10-16 R01: 하루 루프가 아무것도 소비하지 않았다). */
+export const ROMANCE_DEADLINE_DAYS = 14;
 
 export function isRomanceInterviewProject(project: Project): boolean {
   return project.gameDesignBrief?.interview?.genre === "romance";
@@ -73,6 +78,17 @@ export function applyRomanceDefaults(project: Project): string[] {
     system.socialLoop = { slotsPerDay: DEFAULT_SOCIAL_SLOTS_PER_DAY, dailyFriendshipCap: DEFAULT_SOCIAL_DAILY_FRIENDSHIP_CAP };
     applied.push("socialLoop");
   }
+  // 기한 엔딩: 뼈대의 해피·평범·혼자 엔딩이 있고 아직 기한 판정이 없을 때만. 하루 루프가 결말로 이어지게 한다.
+  if (system.timeSystem?.enabled && !system.timeSystem.onDayEnd
+    && (project.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
+    && !project.commonEvents.some((event) => event.id === DEADLINE_ENDING_COMMON_EVENT_ID)) {
+    const tiers: DeadlineTier[] = [
+      { endingId: ROMANCE_ENDING_HAPPY_ID, threshold: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
+      { endingId: ROMANCE_ENDING_NORMAL_ID, threshold: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
+      { endingId: SEGMENT_END_ENDING_ID },
+    ];
+    if (installDeadlineEnding(project, ROMANCE_DEADLINE_DAYS, tiers)) applied.push("deadlineEnding");
+  }
   // HUD: 저작자가 위젯을 직접 정하지 않았을 때만.
   if (system.fieldHud?.widgets === undefined) {
     system.fieldHud = romanceHudConfig(system.fieldHud);
@@ -85,7 +101,7 @@ export function applyRomanceDefaults(project: Project): string[] {
     applied.push("titleScreen");
   }
   // 타이틀 문구: 기본 「A NEW ADVENTURE / 이야기가 시작되는 곳」은 모험 게임 문구다(연애 첫 실측: 연애 그림 위에 그대로 남음). 글자 질감을 정하면 그 기본 문구가 숨고 부제만 남는다.
-  // 제목 자체는 조수가 게임에 맞게 정한다(configure_title_screen title) — 코드는 기본 문구만 걷고 부드러운 부제를 둔다. 저작자가 정한 값은 건드리지 않는다.
+  // 제목 자체는 조수가 게임에 맞게 정한다(set_title_screen title) — 코드는 기본 문구만 걷고 부드러운 부제를 둔다. 저작자가 정한 값은 건드리지 않는다.
   const copy = system.titleScreen;
   if (copy && copy.logoStyle === undefined && copy.logoSubtitle === undefined && copy.backgroundResourceId === ROMANCE_TITLE_RESOURCE_ID) {
     system.titleScreen = { ...copy, logoStyle: "glow", logoSubtitle: ROMANCE_TITLE_SUBTITLE };

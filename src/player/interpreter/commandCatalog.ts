@@ -21,6 +21,7 @@ import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
 import { partySkillContext } from "@/project/partySkills";
+import { affectionVariableOwner } from "@/project/affectionVariables";
 import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type ConditionEvalContext, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
@@ -608,14 +609,22 @@ export function executeCommand(
       }
       return resumeNext(frame);
     }
-    case "setVariable":
+    case "setVariable": {
+      const before = state.session.variables[command.variableId] ?? 0;
       setVariable(
         state.session,
         command.variableId,
         command.op,
         typeof command.value === "number" ? command.value : state.session.variables[command.value.id] ?? 0
       );
+      // 「인물 호감」 이름의 변수는 변화량을 그 인물의 engine friendship 에도 더한다 — 선택지가 올린 호감이 ESC·HUD·호감 엔딩에 그대로 보이게(affectionVariables.ts).
+      const owner = state.project ? affectionVariableOwner(state.project, command.variableId) : undefined;
+      if (owner) {
+        const delta = (state.session.variables[command.variableId] ?? 0) - before;
+        if (delta !== 0) changeFriendship(state.session, owner, delta);
+      }
       return resumeNext(frame);
+    }
     case "timer": {
       const timerId = command.timerId ?? "timer1";
       if (command.action === "set") setTimer(state.session, timerId, command.seconds ?? 0);

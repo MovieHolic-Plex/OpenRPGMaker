@@ -816,6 +816,19 @@ export function friendshipKey(
   return resolveSocialKey(host) ?? undefined;
 }
 
+/** 호감 조건·엔딩 문턱의 「가장 가까운 사람」 키 — 인물을 아직 모르는 뼈대 엔딩이 누적 호감으로 갈릴 때 쓴다. */
+export const ANY_FRIENDSHIP_KEY = "*";
+
+/** friendship 표에서 키의 값. 「*」 는 기록된 모든 사람 중 가장 높은 값(아무도 없으면 0). */
+export function friendshipValueOf(friendship: Readonly<Record<string, number>> | undefined, key: string): number {
+  if (key === ANY_FRIENDSHIP_KEY) {
+    let best = 0;
+    for (const value of Object.values(friendship ?? {})) if (Number.isFinite(value) && value > best) best = value;
+    return clampFriendship(best);
+  }
+  return clampFriendship(friendship?.[key] ?? 0);
+}
+
 export function getFriendship(
   session: PlaySessionLike,
   npcKey: string | undefined,
@@ -823,7 +836,7 @@ export function getFriendship(
 ): number {
   const key = friendshipKey(npcKey, host);
   if (!key) return 0;
-  return clampFriendship(session.friendship?.[key] ?? 0);
+  return friendshipValueOf(session.friendship, key);
 }
 
 export function changeFriendship(
@@ -833,7 +846,7 @@ export function changeFriendship(
   host?: SocialHost | string | null
 ): number {
   const key = friendshipKey(npcKey, host);
-  if (!key) return 0;
+  if (!key || key === ANY_FRIENDSHIP_KEY) return 0;
   session.friendship ??= {};
   const next = clampFriendship((session.friendship[key] ?? 0) + Math.trunc(Number.isFinite(delta) ? delta : 0));
   session.friendship[key] = next;

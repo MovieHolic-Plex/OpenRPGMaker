@@ -7,11 +7,13 @@
 //  - 인물 NPC 가 전부 투명 이벤트(화면에 아무도 안 보임) · 서로 다른 인물이 같은 칩
 //  - 대사 본문 앞에 「[이름]」 이 또 붙은 줄
 
+import { affectionVariableOwners, unmappedAffectionVariables } from "@/project/affectionVariables";
 import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
+import { checkPerHeroineEndings, checkRomanceEndings } from "./romanceEndings";
 import { allPages, visitPageCommands } from "./walk";
 
 const ROMANCE_BRIEF = /연애|로맨스|호감|고백|romance|dating/iu;
@@ -72,7 +74,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   if (PLACEHOLDER_TITLES.has((project.meta?.title ?? "").trim()) || PLACEHOLDER_TITLES.has((project.system?.titleScreen?.title ?? "").trim())) {
     findings.push({
       severity: "warning", code: "romance-default-title",
-      message: `게임 제목이 기본값 「${(project.system?.titleScreen?.title || project.meta?.title || "").trim() || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 정하세요(타이틀 화면에 그대로 나옵니다).`,
+      message: `게임 제목이 기본값 「${(project.system?.titleScreen?.title || project.meta?.title || "").trim() || "(비어 있음)"}」 그대로입니다 — set_title_screen {title} 로 이 게임의 이름을 정하세요(타이틀 화면에 그대로 나옵니다).`,
     });
   }
 
@@ -86,13 +88,31 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     visitPageCommands(page, (visit) => { if (visit.command.kind === "changeFriendship" || visit.command.kind === "talkFriendship") hit = true; });
     return hit;
   });
+  findings.push(...checkPerHeroineEndings(project, [...new Set(friendly.map(({ event }) => personKey(event)))]));
   if (friendly.length === 0 && !hasAffectionVariable && !touchesRelationship) {
     findings.push({
       severity: "warning", code: "romance-no-relationship",
       message: "연애 게임인데 호감이 쌓이는 인물(talkFriendship)도 호감 변수·호감 변경 명령도 없습니다 — 관계가 어떻게 변하는지 플레이어가 느낄 수 없습니다.",
     });
   }
+  // 호감을 「호감 변수」 로 올리는 저작: 이름이 「인물 호감」 모양이면 런타임이 같은 인물 friendship 에 변화량을 더해 ESC·HUD·엔딩에 보인다.
+  // 인물을 못 정한 호감 변수는 ESC·HUD 에 안 나오니 완료 조건이다(romance-real-2 R02).
+  const usedVariables = new Set<string>();
+  for (const page of allPages(project)) visitPageCommands(page, (visit) => { if (visit.command.kind === "setVariable" && typeof visit.command.variableId === "string") usedVariables.add(visit.command.variableId); });
+  const unmapped = unmappedAffectionVariables(project).filter((variable) => usedVariables.has(variable.id));
+  if (unmapped.length > 0) {
+    findings.push({
+      severity: "warning", code: "romance-affection-variable-unmapped",
+      message: `호감 변수 ${unmapped.slice(0, 4).map((variable) => `「${variable.name}」(${variable.id})`).join(", ")} 이(가) 어느 인물의 호감인지 알 수 없어 ESC 관계 화면·호감 HUD·호감 엔딩에 나오지 않습니다 — changeFriendship(npcKey=인물 characterId, delta) 로 바꾸거나 변수 이름을 「인물 이름 호감도」 로 정하세요.`,
+    });
+  } else if (usedVariables.size > 0 && affectionVariableOwners(project).size > 0 && ![...affectionVariableOwners(project).keys()].every((id) => !usedVariables.has(id))) {
+    findings.push({
+      severity: "info", code: "romance-affection-variable-compat",
+      message: "호감을 변수(setVariable)로 올리는 곳이 있습니다 — 읽기 호환으로 ESC·HUD·엔딩에는 반영되지만, 새 저작은 changeFriendship 을 쓰세요.",
+    });
+  }
   const endings = project.endings ?? [];
+  findings.push(...checkRomanceEndings(project));
   if (endings.length > 0 && endings.every((ending) => ending.id === SEGMENT_END_ENDING_ID)) {
     findings.push({
       severity: "warning", code: "romance-only-skeleton-ending",
@@ -143,8 +163,14 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish 가 이것을 막는다(scripts/lib/piTeamRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine"]);
+/** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
+const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine"]);
+const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";
 export function romanceCompletionGaps(project: Project): string[] {
   if (project.gameDesignBrief?.interview?.genre !== "romance") return [];
-  return checkRomance(project).filter((finding) => COMPLETION_CODES.has(finding.code)).map((finding) => finding.message);
+  const singleScene = (project.endings ?? []).some((ending) => ending.id === SINGLE_SCENE_ENDING_ID);
+  return checkRomance(project)
+    .filter((finding) => COMPLETION_CODES.has(finding.code) && !(singleScene && ENDING_CODES.has(finding.code)))
+    .map((finding) => finding.message);
 }

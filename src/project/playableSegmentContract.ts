@@ -18,6 +18,20 @@ export const SEGMENT_PARTNER_SWITCH_ID = SEGMENT_KEY_SWITCH_ID;
 /** 연애 뼈대의 자리표시 이름(길 맵 · 핵심 행동 이벤트 · 구간 끝 이벤트 · 구간 끝 엔딩). playableSegment.ts 의 ROMANCE_SKELETON 과 romance 검사가 같이 쓴다. */
 export const ROMANCE_PLACEHOLDER_NAMES = ["산책로", "떨어진 수첩", "산책로 끝", "첫 만남의 끝"] as const;
 
+/**
+ * 연애 뼈대의 호감 갈림 엔딩(2026-10-16 romance-real-2 R01). 연애 뼈대는 엔딩이 1개뿐이고 호감과 무관해 3판 모두 같은 결말이었다.
+ * 이제 구간 끝 이벤트는 엔딩을 이름으로 부르지 않고(endingId 없는 triggerEnding) 누적 호감으로 고른다 — 가장 높은 호감(「*」)이
+ * HAPPY 이상이면 해피, NORMAL 이상이면 평범, 아니면 혼자(= 뼈대 엔딩 ending_first_segment, 조건 없는 기본 결말).
+ * 인물이 정해진 뒤에는 히로인별 엔딩을 define_ending(friendshipAtLeast characterId) 로 더 높은 priority 에 얹는다.
+ */
+export const ROMANCE_ENDING_HAPPY_ID = "ending_romance_happy";
+export const ROMANCE_ENDING_NORMAL_ID = "ending_romance_normal";
+export const ROMANCE_ENDING_HAPPY_AT = 60;
+export const ROMANCE_ENDING_NORMAL_AT = 25;
+export const ROMANCE_ENDING_NAMES = { happy: "마음이 닿은 결말", normal: "좋은 사이로", solo: "혼자 걷는 길" } as const;
+/** 연애 뼈대가 깔아 두는 엔딩 id 셋 — 첫 구간 판정은 이 중 어느 것에 닿아도 합격으로 본다. */
+export const ROMANCE_SKELETON_ENDING_IDS: readonly string[] = [SEGMENT_END_ENDING_ID, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_ID];
+
 export type PlayableSegmentGenre = "monster-collect" | "adventure-jrpg" | "story-cutscene";
 
 /** 이 프로젝트의 장르에 결정적 뼈대가 있으면 그 장르. 첫 화면·새 프로젝트의 세 장르다. */

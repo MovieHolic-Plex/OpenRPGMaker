@@ -203,10 +203,11 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       /^(compose|link|build|list)_(desert_east|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
     ],
     // 연애 마무리 4가지(2026-10-16 실제 Argon 첫 측정에서 전부 빠졌다): 제목, 인물마다 다른 칩, 호감으로 갈리는 엔딩, 자리표시 이름.
-    promptExtra: "연애 게임 마무리: ① 게임 제목은 기본값(「새 게임」·「새 프로젝트」)으로 두지 말고 configure_title_screen {title} 로 이 게임의 이름을 정한다(제목 아래 부제는 이미 깔려 있다). "
+    promptExtra: "연애 게임 마무리: ① 게임 제목은 기본값(「새 게임」·「새 프로젝트」)으로 두지 말고 set_title_screen {title, logoSubtitle} 로 이 게임의 이름과 부제를 정한다 — 부제도 코드가 깔아 둔 「마음이 닿는 계절」 그대로 두지 말고 이 게임 내용에 맞게 바꾼다. "
       + "② 공략 인물·주요 NPC 는 서로 다른 칩 칸을 고른다 — 같은 맵에 같은 얼굴이 둘 이상이면 어색하다(같은 사람이 다른 맵에 다시 나올 때만 같은 칸). "
-      + "③ 엔딩은 뼈대의 자리표시 하나로 끝내지 않는다 — define_ending 으로 호감에 따라 갈리는 결말 2개 이상(예: 고백 성공 · 친구로 남음 · 혼자)을 만들고 set_deadline_ending 으로 기한과 호감 문턱을 잇는다. "
-      + "④ 뼈대가 둔 자리표시 이름(「산책로 끝」「떨어진 수첩」「첫 만남의 끝」)은 이 게임의 장소·사물·결말 이름으로 바꾼다. ESC 메뉴는 호감도·일정·소지품·저장·설정으로 이미 잠겨 있어 전투 능력치 메뉴를 만들지 않는다.",
+      + "③ 엔딩: 뼈대에는 이미 호감으로 갈리는 세 결말(해피 ≥60 · 평범 ≥25 · 혼자)과 14일 기한 판정이 깔려 있다 — 구간 끝 이벤트는 엔딩 id 없이 triggerEnding 해 누적 호감으로 고른다. 이 이름·대사를 이 게임에 맞게 고치고, 공략 인물이 둘 이상이면 인물마다 define_ending(예: 「OO와 함께」)을 만들어 set_deadline_ending 의 tiers 맨 위에 {endingId, friendshipAtLeast, characterId} 로 얹는다(마지막은 혼자·평범 기본 결말). 마지막 선택지가 결말을 정하게 만들지 않는다 — 결말은 누적 호감이 가른다. "
+      + "④ 호감은 changeFriendship(npcKey=인물 characterId, delta) 로 올린다 — 「OO 호감도」 변수(setVariable)를 따로 두지 않는다(ESC 관계 화면·호감 HUD·호감 엔딩은 friendship 만 읽는다). 선택지가 호감을 올리면 그 분기에 changeFriendship 을 넣는다. "
+      + "⑤ 뼈대가 둔 자리표시 이름(「산책로 끝」「떨어진 수첩」)은 이 게임의 장소·사물 이름으로 바꾼다. ESC 메뉴는 호감도·일정·소지품·저장·설정으로 이미 잠겨 있어 전투 능력치 메뉴를 만들지 않는다.",
   },
 };
 

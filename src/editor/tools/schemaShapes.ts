@@ -88,7 +88,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     variableId: { type: "string" },
     label: { type: "string" },
     key: { type: "string", description: "setSelfSwitch 키 A|B|C|D" },
-    delta: { type: "integer", description: "changeFriendship 변화량" },
+    delta: { type: "integer", description: "changeFriendship 변화량(호감은 변수가 아니라 이 명령으로 올린다 — ESC 관계 화면·호감 HUD·호감 엔딩이 이 값만 읽는다)" },
+    npcKey: { type: "string", description: "changeFriendship/getFriendship: 호감을 올릴 인물의 characterId(place_npc/make_villager 의 characterId). 비우면 이 이벤트의 characterId. 선택지 분기 안에서 인물을 고르는 장면이면 반드시 적는다." },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
     // enum 을 두지 않는다 — 같은 키를 changeFace(left·right)·displayTextSettings(top·center·bottom)도 쓴다.

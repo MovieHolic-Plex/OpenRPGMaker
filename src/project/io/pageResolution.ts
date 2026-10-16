@@ -1,7 +1,7 @@
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { compareVariableValue } from "../conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
-import { clampFriendship } from "../session";
+import { clampFriendship, friendshipValueOf } from "../session";
 import { resolveSocialKey } from "../socialKey";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "../roguelikeRun";
 import { evalRelationshipCondition, type RelationshipState } from "../relationshipState";
@@ -113,7 +113,7 @@ function evalPageCondition(
     case "friendshipAtLeast": {
       const npcKey = resolveSocialKey(event, condition.npcKey);
       if (!npcKey) return false;
-      return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+      return friendshipValueOf(session.friendship, npcKey) >= clampFriendship(condition.value);
     }
     case "relationshipAtLeast":
       return evalRelationshipCondition(session, condition, resolveSocialKey(event, condition.npcKey));
