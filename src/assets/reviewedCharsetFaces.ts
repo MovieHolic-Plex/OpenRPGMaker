@@ -37,8 +37,13 @@ export function canonicalCharsetTextureKey(idOrTextureKey: string): string {
 /** 대응표 행. 대응표가 모르는 그림이면 undefined(판단 보류). */
 export function reviewedCharsetFaceRow(idOrTextureKey: string, characterIndex = 0): ReviewedCharsetFace | undefined {
   if (!Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return undefined;
-  return ROWS.get(`${canonicalCharsetTextureKey(idOrTextureKey)}#${characterIndex}`);
+  const canonical = canonicalCharsetTextureKey(idOrTextureKey);
+  // 현대 연애 인물 칩 Modern1~3(2026-10-16): 몸은 현대 옷으로 다시 그렸지만 RTP 얼굴 시트(판타지 머리·옷)에는 짝이 없다 —
+  // 베이스 칩의 얼굴을 붙이면 머리색·성별이 어긋난 초상이 뜬다(연애 첫 실측: 금발 초상 + 갈색 머리 칩). 짝 얼굴이 생기기 전까지는 「얼굴 없음」이다.
+  if (MODERN_CHARSET_TEXTURE_KEY.test(canonical)) return { status: "no-face", faceResourceId: null };
+  return ROWS.get(`${canonical}#${characterIndex}`);
 }
+const MODERN_CHARSET_TEXTURE_KEY = /^tex_oprn_charset_modern\d+$/u;
 
 /** 짝 얼굴 id. 얼굴이 없어야 하거나 대응표가 모르면 undefined. */
 export function reviewedFaceIdForCharset(idOrTextureKey: string, characterIndex = 0): string | undefined {

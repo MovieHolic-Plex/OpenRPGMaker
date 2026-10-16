@@ -23,6 +23,7 @@ import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
+import { isRomanceInterviewProject } from "@/project/romancePreset";
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { Command, GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -30,6 +31,7 @@ import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirectio
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
+  ROMANCE_PLACEHOLDER_NAMES,
   SEGMENT_END_ENDING_ID,
   SEGMENT_END_EVENT_ID,
   SEGMENT_KEY_SWITCH_ID,
@@ -154,6 +156,9 @@ interface GenreSkeleton {
   /** 구간 끝에서 엔딩 앞에 도는 명령(JRPG 의 문지기 전투 등). */
   readonly endCommands: readonly unknown[];
   readonly epilogue: string;
+  /** 구간 끝 엔딩·이벤트 이름(생략하면 「첫 구간 끝」·「구간 끝」). 연애처럼 장르 말투가 필요한 뼈대만 쓴다. */
+  readonly endingName?: string;
+  readonly endEventName?: string;
   /** 도구가 없는 마무리(시작 소지품 등). 복제본에 직접 쓴다. */
   readonly finish?: (project: Project) => void;
 }
@@ -432,6 +437,32 @@ export async function preloadKitStartPlaces(): Promise<void> {
   await Promise.all(Object.values(KIT_START_PLACES).flat().map((id) => preloadRegionReferenceScene(id).catch(() => undefined)));
 }
 
+/** 연애 인터뷰 프로젝트의 뼈대 이름·대사(2026-10-16). 판타지 말투(「기억의 조각·기억의 길」)는 연애 게임에 어울리지 않아 자리표시도 연애 말투로 둔다 — 그래도 자리표시라서 romance 검사가 끝내 이름 바꾸기를 요구한다(이름은 playableSegmentContract.ts). */
+const ROMANCE_SKELETON: GenreSkeleton = {
+  ...SKELETONS["story-cutscene"],
+  routeName: ROMANCE_PLACEHOLDER_NAMES[0],
+  placeStarter(ctx, at) {
+    tool(ctx, "upsert_event", {
+      mapId: at.mapId,
+      event: {
+        id: SEGMENT_STARTER_EVENT_ID, name: ROMANCE_PLACEHOLDER_NAMES[1], x: at.x, y: at.y, trigger: { kind: "action" },
+        pages: [
+          page(SEGMENT_STARTER_EVENT_ID + "_look", [
+            { kind: "text", body: "누군가 떨어뜨린 수첩이다. 펼쳐 보니 낯익은 글씨가 적혀 있다." },
+            { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true },
+          ]),
+          page(SEGMENT_STARTER_EVENT_ID + "_seen", [{ kind: "text", body: "주인은 산책로 끝에서 기다릴 것 같다." }], [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }]),
+        ],
+      },
+    });
+  },
+  lockedLine: "아직 이 길을 갈 이유를 모르겠다. 주변에서 단서를 찾아보자.",
+  endCommands: [{ kind: "text", body: "산책로 끝에서 누군가 이쪽을 돌아본다. 첫 만남이 여기서 시작된다." }],
+  epilogue: "첫 만남이 끝났다. 이어질 이야기는 이제 두 사람에게 달렸다.",
+  endingName: ROMANCE_PLACEHOLDER_NAMES[3],
+  endEventName: ROMANCE_PLACEHOLDER_NAMES[2],
+};
+
 /**
  * 장르별 첫 구간 뼈대: 시작 맵의 핵심 행동 이벤트 → 동쪽 문 → 길 맵 → 길 끝의 구간 끝(핵심 행동의 스위치가 있어야 열림).
  * 맵·문·조우·이벤트·엔딩은 실제 편집 도구로 만든다 — 모델이 쓰는 것과 같은 검증(통행·착지·커밋 게이트)을 지난다.
@@ -445,7 +476,7 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   const genre = playableSegmentGenre(input);
   if (!genre) throw new Error("이 장르에는 첫 구간 뼈대가 없습니다: " + String(input.system.genre));
   if (hasPlayableSegmentSkeleton(input)) return input;
-  const skeleton = SKELETONS[genre];
+  const skeleton = genre === "story-cutscene" && isRomanceInterviewProject(input) ? ROMANCE_SKELETON : SKELETONS[genre];
   const start = input.maps[input.startMapId];
   if (!start) throw new Error("시작 맵이 없어 첫 구간 뼈대를 깔 수 없습니다.");
   const ctx = { project: structuredClone(input) };
@@ -473,14 +504,14 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   skeleton.placeStarter(ctx, { mapId: here.id, x: starter.x, y: starter.y });
   tool(ctx, "define_ending", {
     id: SEGMENT_END_ENDING_ID,
-    name: "첫 구간 끝",
+    name: skeleton.endingName ?? "첫 구간 끝",
     conditions: [],
     epilogue: [{ kind: "say", speaker: "", text: skeleton.epilogue }],
   });
   tool(ctx, "upsert_event", {
     mapId: SEGMENT_ROUTE_MAP_ID,
     event: {
-      id: SEGMENT_END_EVENT_ID, name: "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
+      id: SEGMENT_END_EVENT_ID, name: skeleton.endEventName ?? "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
       pages: [
         page(SEGMENT_END_EVENT_ID + "_locked", [{ kind: "text", body: skeleton.lockedLine }]),
         page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],

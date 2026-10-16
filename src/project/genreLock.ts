@@ -178,6 +178,16 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     kitNoun: "현대 칩셋",
     relockHint: "자료집 시스템 탭의 「장르 칩셋 잠금」",
     families: ["oprn-campus", "oprn-modern", "oprn-jp"],
+    // 캐릭터 칩(2026-10-16): 현대 연애 인물 칩 Modern1~3(교복·사복·정장·카페 점원·선생 24종)과 기능 칩·올린 칩·공방 칩만 새 인물에 쓴다.
+    // RTP Actor·People(판타지 사람)·CT·FF6풍 영웅·마법 학교·몬스터 칩은 막는다. 얼굴·전투 그림은 잠그지 않는다(연애는 전투 그림이 없고 얼굴은 검토된 짝 표를 따른다).
+    charsets: {
+      families: ["modern", "object", "uploaded"],
+      kitNoun: "현대 연애 인물 칩",
+      playerDefault: { resourceId: "oprn-charset-modern2", characterIndex: 2 },
+      promptLine: "캐릭터 그림(주인공·공략 인물·학생·점원 걷기 그림)도 이 장르 칩만 쓴다 — 현대 연애 인물 칩 Modern1~3(oprn-charset-modern1~3, 칸 0~7): 남녀 교복(남색·회색 블레이저·세일러복·여름 교복), 캐주얼 사복(후드티·원피스·재킷), 정장, 카페 점원 앞치마, 선생·교수. "
+        + "list_npc_graphics 에서 「여학생」「남학생」「카페 점원」「교수」 같은 말로 찾고, 인물마다 서로 다른 칸을 고른다(같은 사람이 다른 맵에 다시 나올 때만 같은 칸).",
+      enforceLine: "RTP Actor·People 판타지 칩·영웅·마법 학교·몬스터 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
+    },
     defaultTilesetId: "modern_city",
     alternatives: [
       { pattern: /campus|school|univers|academy|classroom|library|dorm|캠퍼스|학교|대학|교실|도서관|기숙|동아리|강의/iu, tilesetId: "modern_campus", use: "캠퍼스·학교(교정·교실·도서관·기숙사)" },
@@ -189,6 +199,11 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       /^apply_beodeul_/u,
       /^(compose|link|build|list)_(desert_east|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
     ],
+    // 연애 마무리 4가지(2026-10-16 실제 Argon 첫 측정에서 전부 빠졌다): 제목, 인물마다 다른 칩, 호감으로 갈리는 엔딩, 자리표시 이름.
+    promptExtra: "연애 게임 마무리: ① 게임 제목은 기본값(「새 게임」·「새 프로젝트」)으로 두지 말고 configure_title_screen {title} 로 이 게임의 이름을 정한다(제목 아래 부제는 이미 깔려 있다). "
+      + "② 공략 인물·주요 NPC 는 서로 다른 칩 칸을 고른다 — 같은 맵에 같은 얼굴이 둘 이상이면 어색하다(같은 사람이 다른 맵에 다시 나올 때만 같은 칸). "
+      + "③ 엔딩은 뼈대의 자리표시 하나로 끝내지 않는다 — define_ending 으로 호감에 따라 갈리는 결말 2개 이상(예: 고백 성공 · 친구로 남음 · 혼자)을 만들고 set_deadline_ending 으로 기한과 호감 문턱을 잇는다. "
+      + "④ 뼈대가 둔 자리표시 이름(「산책로 끝」「떨어진 수첩」「첫 만남의 끝」)은 이 게임의 장소·사물·결말 이름으로 바꾼다. ESC 메뉴는 호감도·일정·소지품·저장·설정으로 이미 잠겨 있어 전투 능력치 메뉴를 만들지 않는다.",
   },
 };
 

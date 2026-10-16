@@ -33,6 +33,7 @@ import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCa
 import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
+import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
 import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings, romanceStageFlatFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
@@ -720,6 +721,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             segmentRejections += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}): ${verdict.blockers.join(" / ")}` } });
             throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
+          }
+          // 연애 인터뷰 게임은 뼈대 엔딩만으로 끝낼 수 없다 — 자리표시 이름·단일 가짜 엔딩·기본 제목이 남았으면 한 번 더 고치게 한다(두 번 거절 뒤에는 보고에 남기고 받는다).
+          const romanceGaps = romanceCompletionGaps(working);
+          if (romanceGaps.length) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${segmentRejections}): ${romanceGaps.join(" / ")}` } });
+            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${romanceGaps.join(" / ")} — 호감에 따라 갈리는 엔딩은 set_deadline_ending 으로 만들 수 있습니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
           }
         }
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {

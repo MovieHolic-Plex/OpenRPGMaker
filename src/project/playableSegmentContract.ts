@@ -15,6 +15,9 @@ export const SEGMENT_KEY_SWITCH_ID = "sw_segment_key";
 /** @deprecated 몬스터 전용 이름. SEGMENT_KEY_SWITCH_ID 와 같다. */
 export const SEGMENT_PARTNER_SWITCH_ID = SEGMENT_KEY_SWITCH_ID;
 
+/** 연애 뼈대의 자리표시 이름(길 맵 · 핵심 행동 이벤트 · 구간 끝 이벤트 · 구간 끝 엔딩). playableSegment.ts 의 ROMANCE_SKELETON 과 romance 검사가 같이 쓴다. */
+export const ROMANCE_PLACEHOLDER_NAMES = ["산책로", "떨어진 수첩", "산책로 끝", "첫 만남의 끝"] as const;
+
 export type PlayableSegmentGenre = "monster-collect" | "adventure-jrpg" | "story-cutscene";
 
 /** 이 프로젝트의 장르에 결정적 뼈대가 있으면 그 장르. 첫 화면·새 프로젝트의 세 장르다. */

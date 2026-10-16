@@ -7,7 +7,9 @@ import { effectiveActorClassId } from "@/project/sessionClass";
 import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
 import { monsterCampaign, monsterJournalEntry, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { currentChapterLabel } from "@/project/newGamePlus";
-import { isGiftSystemEnabled } from "@/project/friendship";
+import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
@@ -200,7 +202,24 @@ export type PlayerStatusMenuPartyRow = {
 
 export type PartyVitalLevel = "crit" | "safe" | "warn";
 
+/** 관계 중심(연애) 게임의 메뉴 첫 화면 — 전투 수치 대신 호감 높은 순 몇 사람과 오늘 남은 시간. */
+export type RelationshipMenuRow = {
+  readonly key: string;
+  readonly name: string;
+  /** 하트 다섯 칸 글자(♥♥♡♡♡). */
+  readonly hearts: string;
+  readonly value: number;
+  readonly tierLabel?: string;
+};
+export type RelationshipMenuOverview = {
+  readonly leadName: string;
+  readonly timeLine?: string;
+  readonly rows: readonly RelationshipMenuRow[];
+};
+
 export type PlayerStatusMenuSnapshot = {
+  /** 관계 중심 게임이면 있다 — 있으면 렌더러는 HP/MP/EX 대신 이것을 그린다. */
+  readonly relationship?: RelationshipMenuOverview;
   readonly commands: readonly StatusMenuCommand[];
   readonly commandLabels: readonly string[];
   readonly partyRows: readonly PlayerStatusMenuPartyRow[];
@@ -219,6 +238,7 @@ export type StatusMenuSnapshotOptions = {
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
     isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
+  const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
   const saveDisabled = session.m2Runtime?.access?.save === false;
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
@@ -228,7 +248,9 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
     if (id === "monster-dex") return monsterDexSpeciesIds(project).length > 0;
     if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
-    if (id === "relationships") return showRelationships;
+    // 관계 중심 게임은 호감 기록이 아직 없어도 호감도 항목이 있다 — 비어 있어도 「아직 아무도」 가 보여야 한다. 일정은 퀘스트가 정의된 게임만.
+    if (id === "relationships") return showRelationships || relationship;
+    if (id === "quests" && relationship) return (project.quests?.length ?? 0) > 0;
     if (id === "gallery") return isGalleryEnabled(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
     if (id === "save") return !saveDisabled;
@@ -323,7 +345,9 @@ export function createPlayerStatusMenuSnapshot(
     };
   });
 
+  const relationship = usesRelationshipMenu(project) ? relationshipOverview(project, session, partyRows[0]?.name ?? "") : undefined;
   return {
+    ...(relationship ? { relationship } : {}),
     commands,
     commandLabels: commands.map((command) => command.label),
     partyRows,
@@ -332,6 +356,21 @@ export function createPlayerStatusMenuSnapshot(
     chapterLabel: currentChapterLabel(project, session),
     emptyPartyLabel: partyRows.length === 0 ? usesMonsterParty(project) ? "아직 동료가 없습니다" : "파티원이 없습니다" : null,
   };
+}
+
+const RELATIONSHIP_MENU_ROWS = 4;
+
+function relationshipOverview(project: Project, session: PlaySession, leadName: string): RelationshipMenuOverview {
+  const max = friendshipDisplayMax(project) ?? DEFAULT_FRIENDSHIP_MAX;
+  const rows = listFriendshipEntries(session.friendship, max, undefined, project)
+    .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key))
+    .slice(0, RELATIONSHIP_MENU_ROWS)
+    .map((entry): RelationshipMenuRow => {
+      const filled = Math.max(0, Math.min(5, Math.round((entry.value / Math.max(1, max)) * 5)));
+      return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}) };
+    });
+  const timeLine = socialLoopSummary(project, session);
+  return { leadName, ...(timeLine ? { timeLine } : {}), rows };
 }
 
 export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {

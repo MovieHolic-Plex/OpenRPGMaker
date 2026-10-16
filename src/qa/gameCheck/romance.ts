@@ -8,7 +8,7 @@
 //  - 대사 본문 앞에 「[이름]」 이 또 붙은 줄
 
 import { isTalkFriendshipEnabled } from "@/project/friendship";
-import { SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
+import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
@@ -16,7 +16,9 @@ import { allPages, visitPageCommands } from "./walk";
 
 const ROMANCE_BRIEF = /연애|로맨스|호감|고백|romance|dating/iu;
 /** 뼈대가 깔아 두는 자리표시 이름 — 기획에 맞게 바꿨어야 하는 것들. */
-const PLACEHOLDER_NAMES = new Set(["기억의 길", "기억의 조각", "구간 끝", "첫 구간 끝"]);
+const PLACEHOLDER_NAMES = new Set<string>(["기억의 길", "기억의 조각", "구간 끝", "첫 구간 끝", ...ROMANCE_PLACEHOLDER_NAMES.slice(1)]); // 첫 이름(길 맵 「산책로」)은 그대로 써도 어색하지 않아 자리표시로 치지 않는다
+/** 빈 프로젝트·인터뷰 시작이 남기는 기본 제목 — 연애 게임은 이 게임의 이름을 가져야 한다. */
+const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트"]);
 const AFFECTION_VARIABLE = /호감|friendship|affection|favou?r/iu;
 
 /** 연애 프로젝트인가 — 호감 하트 HUD(연애 기본값)·인터뷰 장르·기획 문장 중 하나. */
@@ -33,6 +35,12 @@ function chipOf(page: EventPage): string | undefined {
   if (g.characterResourceId) return `character:${g.characterResourceId}`;
   if (g.sprite?.id) return `sprite:${g.sprite.type ?? ""}:${g.sprite.id}:${g.pattern ?? 0}`;
   return undefined;
+}
+
+/** 한 사람을 가리키는 키 — 이름(「한서연 선배」)을 우선하고, 이름이 없으면 characterId·이벤트 id. 맵마다 characterId 에 _2 를 붙여도 같은 이름이면 한 사람이다. */
+function personKey(event: GameEvent): string {
+  const name = event.name?.trim();
+  return name || event.characterId?.trim() || event.id;
 }
 
 function isPersonEvent(event: GameEvent): boolean {
@@ -61,6 +69,13 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     });
   }
 
+  if (PLACEHOLDER_TITLES.has((project.meta?.title ?? "").trim()) || PLACEHOLDER_TITLES.has((project.system?.titleScreen?.title ?? "").trim())) {
+    findings.push({
+      severity: "warning", code: "romance-default-title",
+      message: `게임 제목이 기본값 「${(project.system?.titleScreen?.title || project.meta?.title || "").trim() || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 정하세요(타이틀 화면에 그대로 나옵니다).`,
+    });
+  }
+
   // 2) 호감이 쌓이는 인물 · 인물 엔딩.
   const people: { readonly map: GameMap; readonly event: GameEvent }[] = [];
   for (const map of maps) for (const event of map.events) if (isPersonEvent(event)) people.push({ map, event });
@@ -81,7 +96,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   if (endings.length > 0 && endings.every((ending) => ending.id === SEGMENT_END_ENDING_ID)) {
     findings.push({
       severity: "warning", code: "romance-only-skeleton-ending",
-      message: "엔딩이 뼈대의 「첫 구간 끝」 하나뿐입니다 — 연애 게임인데 관계에 따른 엔딩(고백 성공·실패·혼자)이 없습니다.",
+      message: "엔딩이 뼈대의 자리표시 엔딩(ending_first_segment) 하나뿐입니다 — 연애 게임인데 관계에 따른 엔딩(고백 성공·실패·혼자)이 없습니다.",
     });
   }
 
@@ -94,11 +109,12 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
       message: `인물 ${invisible.length}/${people.length}명이 그림 없는 투명 이벤트입니다(${names}${invisible.length > 6 ? " …" : ""}) — 화면에는 아무도 보이지 않습니다.`,
     });
   }
+  // 같은 인물이 맵마다 같은 모습으로 서는 것은 일관성이다(characterId 가 맵마다 달라도 같은 이름이면 한 사람) — 서로 다른 사람이 한 칩일 때만 중복이다.
   const byChip = new Map<string, Set<string>>();
   for (const { event } of people) {
     const chip = (event.pages ?? []).map(chipOf).find((c): c is string => c !== undefined);
     if (!chip) continue;
-    const who = event.characterId?.trim() || event.name || event.id;
+    const who = personKey(event);
     byChip.set(chip, (byChip.get(chip) ?? new Set()).add(who));
   }
   for (const [chip, who] of byChip) {
@@ -124,4 +140,11 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     });
   }
   return findings;
+}
+
+/** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish 가 이것을 막는다(scripts/lib/piTeamRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title"]);
+export function romanceCompletionGaps(project: Project): string[] {
+  if (project.gameDesignBrief?.interview?.genre !== "romance") return [];
+  return checkRomance(project).filter((finding) => COMPLETION_CODES.has(finding.code)).map((finding) => finding.message);
 }

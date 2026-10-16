@@ -9,7 +9,9 @@ import type { GameEvent, GameMap, Project } from "../../../src/project/types.ts"
 const [file, outDir] = process.argv.slice(2) as [string, string];
 mkdirSync(outDir, { recursive: true });
 const project = deserialize(readFileSync(file, "utf8")) as Project;
-const dirs = [["up", 0, -1], ["down", 0, 1], ["left", -1, 0], ["right", 1, 0]] as const;
+// 상대 옆에 서는 칸은 좌우를 먼저 본다 — 위아래에서 다가가면 24×32 걷기 그림이 16px 칸 둘에 걸쳐 머리 위에 머리가 얹힌 듯 겹쳐 찍힌다(연애 첫 측정 지적 ⑥).
+// BFS 이웃 순서와 도착 칸 고르기가 같은 배열을 쓰므로 순서만 바꾼다(결과 경로의 정당성은 같다).
+const dirs = [["left", -1, 0], ["right", 1, 0], ["down", 0, 1], ["up", 0, -1]] as const;
 
 const isNpc = (e: GameEvent) => Boolean(e.characterId) || /^(ev_)?npc[_-]/u.test(e.id);
 const visible = (e: GameEvent) => e.pages.some((p) => p.graphic?.transparent !== true && (p.graphic?.sprite !== undefined || p.graphic?.appearanceId !== undefined || p.graphic?.characterResourceId !== undefined));
@@ -54,7 +56,12 @@ const spots = Object.values(project.maps).filter((m) => m.id !== start.id).map((
     if (!best || d < best.d) best = { x, y, d };
   }
   return { mapId: m.id, name: m.name, width: m.width, height: m.height, x: best?.x ?? 1, y: best?.y ?? 1,
-    npcs: m.events.filter(isNpc).map((e) => ({ id: e.id, name: e.name, x: e.x, y: e.y, visible: visible(e) })) };
+    // stand: 그 인물 곁에서 말 걸 수 있는 통행 칸(좌우 먼저) — 책상·문턱에 막힌 아래 칸으로 가면 말 걸기가 안 된다.
+    npcs: m.events.filter(isNpc).map((e) => {
+      const near = dirs.map(([, dx, dy]) => ({ x: e.x - dx, y: e.y - dy, face: dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up" }))
+        .find((c) => c.x >= 0 && c.y >= 0 && c.x < m.width && c.y < m.height && isPassable(project, m, c.x, c.y) && canMove(project, m, c.x, c.y, e.x, e.y));
+      return { id: e.id, name: e.name, x: e.x, y: e.y, visible: visible(e), stand: near ?? null };
+    }) };
 });
 writeFileSync(`${outDir}/project.json`, serialize(project));
 writeFileSync(`${outDir}/proof.json`, JSON.stringify({

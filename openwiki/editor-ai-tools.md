@@ -3387,3 +3387,12 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
 - 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
 - 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
+## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
+
+- **인물 칩 = Modern1~3(24칸).** 장르 잠금 `romance` 에 `charsets`(families `modern`·`object`·`uploaded`, 주인공 기본 `oprn-charset-modern2` 칸 2)가 생겼고 `enableGenreLockSettled` 로 켠다(`romancePreset.ts`) — 켜는 순간 기본 로스터·주인공이 Modern 칩으로 옮겨진다. `charsetQuery.categoryOf()` 는 `tex_oprn_charset_modern*` 을 `people` 로 센다(이게 `object` 로 새서 「villager」「npc」 같은 일반 질의와 place_npc 기본값이 잠금 아래 0건이었다). `list_npc_graphics` 가 0건이면 `data.hint` 에 낱말 하나로 줄이라고 적는다(공백으로 이은 여러 낱말은 모두 맞아야 한다).
+- **칩 겹침.** `place_npc` 는 잠긴 연애 게임에서 프로젝트 전체의 이미 쓰인 칩을 피하고(`usedCharsetGraphicKeysOnProject`), 다른 사람이 쓰는 칩을 명시하면 경고한다. `qa:game check` 의 `romance-npc-duplicate-chip` 은 이름이 다른 사람 둘이 같은 칩일 때만 센다.
+- **뼈대 이름.** 연애용 뼈대(`ROMANCE_SKELETON`)는 「산책로 / 떨어진 수첩 / 산책로 끝 / 첫 만남의 끝」 — `ROMANCE_PLACEHOLDER_NAMES`. 팀 finish(`scripts/lib/piTeamRuntime.ts`)는 `romanceCompletionGaps()` 가 비어야 통과한다: 자리표시 이름이 그대로, 엔딩이 뼈대 하나뿐, 타이틀이 기본 문구면 거절(다른 거절과 횟수 공유, 최대 2회).
+- **ESC 메뉴.** `usesRelationshipMenu()`(`relationshipMenu.ts`)가 참이면 `fieldMenu()` 가 `romanceFieldMenu()`(호감도·소지품·저장·불러오기·설정·타이틀로)를, 상태 메뉴 첫 화면이 HP/MP/EX 대신 호감 목록(`renderRelationshipOverview`)을 낸다. 저작자가 직접 정한 `meta.oprnFieldMenu` 의 항목은 그대로 따른다.
+- **HUD.** 호감 판은 `panel: "dark"`, 이름은 `friendshipShortName`(「한서연 선배」→「한서연」), `fieldHud.css` 가 호감 판 높이를 사람 수에 맞춘다.
+- **한계(미해결).** 상단 HUD 판이 맵 왼쪽 위를 덮는 것(구석 NPC 가림), 상태 메뉴의 긴 맵 이름 말줄임, Modern 칩 전용 얼굴 없음(얼굴 짝 없음 → 대사 얼굴 미표시), 실제 Argon 재측정(429 한도).

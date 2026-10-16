@@ -158,7 +158,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
   const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
-  const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
+  const sideParty = skin.sideParty && !snapshot.relationship && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
@@ -227,7 +227,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ],
     }),
     ...(landingOnly
-      ? [skin.landing === "hub"
+      ? [snapshot.relationship
+        ? renderRelationshipOverview(options.project, options.session, snapshot)
+        : skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
           : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined, skin.partyStats === true)]
@@ -534,6 +536,46 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
   const characterIndex = override !== undefined ? sprite.characterIndex : requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
   applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
   return node;
+}
+
+// ── 관계 중심(연애) 게임의 첫 화면 — 전투 수치(HP·MP·EX·직업·Lv) 없이 주인공, 오늘 남은 시간, 호감 높은 순 몇 사람 ──
+function renderRelationshipOverview(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  const info = snapshot.relationship!;
+  const lead = snapshot.partyRows[0];
+  const overview = el("section", {
+    class: "status-menu-party-overview status-menu-rel-overview",
+    attrs: { "aria-label": "호감도" },
+    dataset: { testid: "status-menu-party-overview" },
+  });
+  overview.append(el("article", {
+    class: "status-menu-overview-row status-menu-rel-lead",
+    dataset: { testid: "status-menu-rel-lead" },
+    children: [
+      ...(lead ? [renderPartyCharacter(project, session, lead, 0, 30)] : []),
+      el("div", {
+        class: "status-menu-overview-info",
+        children: [
+          el("span", { class: "status-menu-actor-name", text: info.leadName || project.meta.title }),
+          ...(info.timeLine ? [el("span", { class: "status-menu-actor-subline", text: info.timeLine })] : []),
+        ],
+      }),
+    ],
+  }));
+  if (info.rows.length === 0) {
+    overview.append(el("div", { class: "status-menu-empty", text: "아직 마음을 나눈 사람이 없어요", dataset: { testid: "status-menu-rel-empty" } }));
+    return overview;
+  }
+  info.rows.forEach((row, index) => overview.append(el("div", {
+    class: "status-menu-rel-row",
+    attrs: { "aria-label": `${row.name} 호감 ${row.value}` },
+    dataset: { testid: `status-menu-rel-row-${index}` },
+    children: [
+      el("span", { class: "status-menu-rel-name", text: row.name }),
+      el("span", { class: "status-menu-rel-hearts", text: row.hearts }),
+      ...(row.tierLabel ? [el("span", { class: "status-menu-rel-tier", text: row.tierLabel })] : []),
+    ],
+  })));
+  return overview;
 }
 
 // ── 스킨 첫 화면: 파티 개요(party·sheet) ──
