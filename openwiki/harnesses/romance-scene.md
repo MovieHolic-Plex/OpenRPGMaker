@@ -113,3 +113,11 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **제목 그림 잠금**: 연애 잠금 프로젝트에서 조수가 제목 배경을 연애 허용 목록(`romanceTitleArt.ts` `ROMANCE_TITLE_BACKGROUNDS`) 밖의 번들 그림(농장 등)으로 바꾸면 `toolRunner.ts rejectRomanceTitleMismatch` 가 `romance-title-art` 로 거절한다. 사용자가 올린 그림은 막지 않는다.
 - **긴 제목 (R05)**: `title.css` 의 제목 `max-width` 가 제목 왼쪽(`--title-left`, `titleScreen.ts` 가 설정)에서 오른쪽 가장자리까지만 쓰고 줄을 바꾼다.
 - **엔딩 화면 위 작은 줄 (R08)**: `EndingPresentation.kicker`(≤24자, `define_ending.presentation.kicker`). 비우면 연애 프로젝트(`usesRelationshipMenu`)는 「두 사람의 이야기」, 어두운 톤은 「이야기의 끝」, 나머지는 「우리의 여정」.
+||||||| parent of 686b6ba46b (docs(openwiki): romance HUD default layout and short names)
+
+||||||| parent of f6690b797c (docs(openwiki): romance HUD default layout and short names)
+
+
+## HUD 가림 · 짧은 이름 (2026-10-16 romance-fix-4, R06/R09)
+
+호감 목록·남은 시간 판은 값이 바뀐 뒤 3초만, 시계는 모서리 칩 — 평소 지도·실내 위쪽을 덮지 않는다(자세한 건 `editor-ai-tools.md` 의 romance HUD 항목). 이름 줄임은 `friendshipShortName`(괄호·앞 직함 제거). 옛 기본 HUD 로 저장된 프로젝트는 `applyRomanceDefaults` 가 새 배치로 바꾼다. 못 고친 것: HUD 가 가린 실내 위쪽의 수리 후 캡처(야외 픽스처만 측정), R09 id 중복 인물(HUD 만 해결), R10 ESC 「타이틀로」 겹침.
