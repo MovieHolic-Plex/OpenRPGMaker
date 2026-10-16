@@ -1,7 +1,7 @@
 // 로컬 모의 서버: /chat(의도 라우팅·감사) + /run(Pi 에이전트 NDJSON). 모델 호출 없음.
 import { createServer } from "node:http";
 import { gunzipSync } from "node:zlib";
-export const PORT = 39871;
+export const PORT = Number(process.env.AIUI_MOCK_PORT ?? 39871);
 export const log = [];
 const heavyCache = new Map();
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
