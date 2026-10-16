@@ -9,6 +9,10 @@
 // EditScene 이 repositionEventAiQueuePins() 를 불러 노드는 두고 좌표만 고쳐 쓴다.
 
 import { editorState } from "@/editor/editorState";
+import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
+import { JOB_TONE_CSS, jobNumber, jobTone } from "@/editor/aiJobNumbers";
+import { yieldWhileGesture } from "@/editor/mapGestureState";
+import { createFrameBatch } from "@/util/frameBatch";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
@@ -50,6 +54,15 @@ let lastPrompt = PROMPT_EXAMPLES[0]!.prompt;
 let unsubscribe: (() => void) | null = null;
 let unsubscribeEditor: (() => void) | null = null;
 let trayCollapsed = false;
+const gestureYield: { off: (() => void) | null; timer: ReturnType<typeof setTimeout> | null } = { off: null, timer: null };
+const refreshBatch = createFrameBatch(() => {
+  yieldWhileGesture(() => { renderTray(); renderPins(); }, gestureYield);
+});
+
+/** 화면에 보이는 번호 — 작업 목록 행·지도 위 상자와 같은 번호(aiJobNumbers). 작업 id 와는 별개다. */
+function shownNumber(job: EventAiJob): number {
+  return jobNumber(`event:${job.id}`);
+}
 
 function canvasHost(): HTMLElement | null {
   const host = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
@@ -62,9 +75,9 @@ function currentMapId(): MapId | null {
   return editorState.get().currentMapId;
 }
 
-function cellRect(x: number, y: number, layer: HTMLElement): { left: number; top: number; size: number } {
+function cellRect(x: number, y: number, layer: HTMLElement, layerBounds?: DOMRect): { left: number; top: number; size: number } {
   const client = resolveRegionClientRect({ x, y, width: 1, height: 1 });
-  const bounds = layer.getBoundingClientRect?.();
+  const bounds = layerBounds ?? layer.getBoundingClientRect?.();
   if (client && bounds) return { left: client.x - bounds.left, top: client.y - bounds.top, size: client.width };
   const size = editorMapTileSize() * (editorState.get().zoom ?? 1);
   return { left: x * size, top: y * size, size };
@@ -79,29 +92,58 @@ function ensurePinLayer(): HTMLElement | null {
   return pinLayer;
 }
 
+/** 작업 id → 핀 노드. 핀이 달라지지 않은 이벤트는 DOM 을 건드리지 않는다(작업 20개가 단계마다 알려도 핀 20개를 다시 만들지 않는다). */
+const pinNodes = new Map<number, HTMLElement>();
+
 function renderPins(): void {
   const layer = ensurePinLayer();
   if (!layer) return;
   const mapId = currentMapId();
   const jobs = eventAiQueue.list().filter((job) => job.mapId === mapId && job.state !== "placed");
-  layer.replaceChildren(...jobs.map((job) => el("span", {
-    class: "event-ai-pin" + (job.id === selectedJobId ? " is-selected" : ""),
-    text: String(job.id),
-    dataset: { state: job.state, jobId: String(job.id), x: String(job.x), y: String(job.y), testid: "event-ai-pin" },
-  })));
-  repositionEventAiQueuePins();
+  const live = new Set<number>();
+  let structural = false;
+  for (const job of jobs) {
+    live.add(job.id);
+    const no = shownNumber(job);
+    let pin = pinNodes.get(job.id);
+    if (!pin || !pin.isConnected) {
+      pin = el("span", { class: "event-ai-pin", dataset: { testid: "event-ai-pin", jobId: String(job.id), x: String(job.x), y: String(job.y) } });
+      pinNodes.set(job.id, pin);
+      layer.append(pin);
+      structural = true;
+    }
+    const selected = job.id === selectedJobId;
+    if (pin.classList.contains("is-selected") !== selected) pin.classList.toggle("is-selected", selected);
+    if (pin.dataset.state !== job.state) pin.dataset.state = job.state;
+    const tone = jobTone(no);
+    if (pin.dataset.tone !== String(tone)) { pin.dataset.tone = String(tone); pin.style.setProperty("--event-ai-tone", JOB_TONE_CSS[tone]!); }
+    const text = String(no);
+    if (pin.textContent !== text) pin.textContent = text;
+  }
+  for (const [id, pin] of pinNodes) {
+    if (live.has(id)) continue;
+    pin.remove();
+    pinNodes.delete(id);
+    structural = true;
+  }
+  if (structural || jobs.length > 0) repositionEventAiQueuePins();
 }
 
 /** 카메라가 움직이면 EditScene 이 부른다. 노드는 그대로, 좌표만. */
 export function repositionEventAiQueuePins(): void {
   const layer = pinLayer;
   if (!layer?.isConnected) return;
-  for (const pin of layer.querySelectorAll<HTMLElement>(".event-ai-pin")) {
-    const rect = cellRect(Number(pin.dataset.x), Number(pin.dataset.y), layer);
-    pin.style.left = rect.left + "px";
-    pin.style.top = rect.top + "px";
-    pin.style.width = rect.size + "px";
-    pin.style.height = rect.size + "px";
+  const pins = layer.querySelectorAll<HTMLElement>(".event-ai-pin");
+  if (pins.length > 0) {
+    // 레이어 사각형은 한 번만 읽는다 — 핀마다 읽고 쓰면 핀 수만큼 강제 레이아웃이 돈다.
+    const bounds = layer.getBoundingClientRect?.();
+    for (const pin of pins) {
+      const rect = cellRect(Number(pin.dataset.x), Number(pin.dataset.y), layer, bounds);
+      const left = rect.left + "px"; const top = rect.top + "px"; const size = rect.size + "px";
+      if (pin.style.left !== left) pin.style.left = left;
+      if (pin.style.top !== top) pin.style.top = top;
+      if (pin.style.width !== size) { pin.style.width = size; pin.style.height = size; }
+    }
   }
   if (popover?.isConnected) placePopover(popover);
 }
@@ -139,7 +181,7 @@ function jobDetail(job: EventAiJob): HTMLElement {
   const header = el("div", {
     class: "event-ai-card-head",
     children: [
-      el("strong", { text: job.id + ". " + (job.draft?.title ?? "새 이벤트") }),
+      el("strong", { text: shownNumber(job) + ". " + (job.draft?.title ?? "새 이벤트") }),
       el("span", { text: where + " · " + STATE_LABEL[job.state] }),
     ],
   });
@@ -263,7 +305,7 @@ function renderTray(): void {
       attrs: { type: "button", role: "option", "aria-selected": String(job.id === selectedJobId) },
       dataset: { jobId: String(job.id), state: job.state, testid: "event-ai-job" },
       children: [
-        el("span", { class: "event-ai-job-no", dataset: { state: job.state }, text: String(job.id) }),
+        el("span", { class: "event-ai-job-no", dataset: { state: job.state }, attrs: { style: "--event-ai-tone:" + JOB_TONE_CSS[jobTone(shownNumber(job))]! }, text: String(shownNumber(job)) }),
         el("span", { class: "event-ai-job-title", text: (job.draft?.title ?? job.prompt) + " · " + job.x + "," + job.y }),
         el("span", { class: "event-ai-job-state", text: STATE_LABEL[job.state] }),
       ],
@@ -439,16 +481,29 @@ export function openEventAiPromptPopover(mapId: MapId, x: number, y: number): vo
   input.select();
 }
 
+/**
+ * 작업 목록 행의 「열기」 — 그 작업을 작업함에서 고르고 칸으로 간다(보이기만: 배치·버리기는 작업함의 J/K·Enter·X 흐름 그대로).
+ * 다른 맵의 작업이면 그 맵으로 간다.
+ */
+export function openEventAiJob(id: number): void {
+  const job = eventAiQueue.get(id);
+  if (!job) return;
+  trayCollapsed = false;
+  selectedJobId = id;
+  renderTray();
+  renderPins();
+  focusEditorRegion({ mapId: job.mapId, x: job.x, y: job.y, w: 1, h: 1 }, { highlight: true });
+  tray?.querySelector<HTMLElement>('[data-job-id="' + id + '"]')?.focus();
+}
+
 /** 편집기 부팅에서 부른다. 두 번 불러도 한 번만 붙는다. */
 export function mountEventAiQueueView(): void {
   watchEventAiQueueProject();
   ensureTray();
   ensurePinLayer();
   if (!unsubscribe) {
-    unsubscribe = eventAiQueue.subscribe(() => {
-      renderTray();
-      renderPins();
-    });
+    // 작업 단계마다(생성 시작·검증·재시도…) 알림이 온다 — 한 프레임에 한 번만 그리고, 사람이 지도를 드래그하는 동안은 끝날 때까지 미룬다.
+    unsubscribe = eventAiQueue.subscribe(() => refreshBatch.schedule());
   }
   if (!unsubscribeEditor) {
     let lastMap = currentMapId();
@@ -464,6 +519,8 @@ export function mountEventAiQueueView(): void {
 }
 
 export function unmountEventAiQueueView(): void {
+  refreshBatch.cancel();
+  pinNodes.clear();
   closeEventAiPromptPopover();
   unsubscribe?.();
   unsubscribe = null;

@@ -2,17 +2,17 @@
  * AI 존재감 — 지도 위 이름표 · 지도 아래 상태 줄 · 도크 받은함.
  * 색 번호(data-tone 0~3)는 이 세 표면과 팝오버가 같이 쓴다: 지도의 파란 상자 = 상태 줄의 파란 칩.
  */
-.ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox {
+.ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox, .ai-status-jobs, .ai-status-jobs-entry {
   --tone-0: #3b5bdb; --tone-1: #12a150; --tone-2: #c2410c; --tone-3: #7c3aed;
   font-family: var(--font-ui);
 }
 
 /* ── 지도 위 이름표 ── */
 .ai-map-presence { position: absolute; inset: 0; pointer-events: none; z-index: var(--z-canvas-chrome, 20); overflow: hidden; }
-.ai-map-region { --tone: var(--tone-0); position: absolute; border: 2px solid var(--tone); border-radius: 4px; background: color-mix(in srgb, var(--tone) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, #fff 55%, transparent); }
-.ai-map-region[data-tone="1"] { --tone: var(--tone-1); }
-.ai-map-region[data-tone="2"] { --tone: var(--tone-2); }
-.ai-map-region[data-tone="3"] { --tone: var(--tone-3); }
+.ai-map-region { --tone: var(--tone-0); --no-tone: var(--tone-0); position: absolute; border: 2px solid var(--tone); border-radius: 4px; background: color-mix(in srgb, var(--tone) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, #fff 55%, transparent); }
+.ai-map-region[data-tone="1"] { --tone: var(--tone-1); --no-tone: var(--tone-1); }
+.ai-map-region[data-tone="2"] { --tone: var(--tone-2); --no-tone: var(--tone-2); }
+.ai-map-region[data-tone="3"] { --tone: var(--tone-3); --no-tone: var(--tone-3); }
 .ai-map-region[data-state="waiting"] { border-style: dashed; }
 .ai-map-region[data-state="review"] { --tone: var(--warning, #d9840d); border-style: solid; border-width: 3px; }
 .ai-map-region[data-state="failed"] { --tone: var(--danger, #d92d20); }
@@ -21,7 +21,8 @@
 /* 이름표는 상자 안쪽 왼쪽 위 — 기존 「초안 완료」 말풍선(상자 위쪽 가운데)과 겹치지 않는다. */
 .ai-map-region-tag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 3px 9px; border-radius: 0 0 6px 0; background: var(--tone); color: #fff; font: 600 12px/1.4 var(--font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ai-map-region-tag b { font-weight: 700; }
-.ai-map-region-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; flex: 0 0 auto; }
+/* 번호 알약 — 상자 색이 검토(앰버)·실패(빨강)로 바뀌어도 자기 번호의 색을 지킨다(작업 목록의 같은 번호와 짝이 맞는다). */
+.ai-map-region-dot { flex: 0 0 auto; padding: 0 6px; border-radius: 999px; background: #fff; color: var(--no-tone); font: 700 11.5px/1.5 var(--font-ui); font-variant-numeric: tabular-nums; }
 /* 영역을 모를 때(도구가 아직 칸을 만지지 않은 구간)는 지도 왼쪽 위에 이름표만 쌓는다. */
 .ai-map-region.is-cornered { position: static; display: inline-flex; border: 0; background: none; box-shadow: none; animation: none; margin: 0 6px 6px 0; }
 .ai-map-region.is-cornered .ai-map-region-tag { position: static; margin: 0; border-radius: 6px; max-width: 320px; }
@@ -92,14 +93,8 @@
 .ai-status-chip[data-elsewhere="true"] { border-style: dashed; }
 .ai-status-chip.is-more { --tone: var(--text-3); }
 .ai-status-chip.is-more[data-attention="true"] { --tone: var(--warning, #d9840d); }
-.ai-status-pop:has(.ai-status-group) { width: 380px; max-height: min(70vh, 520px); overflow: auto; }
+/* 주의: 같은 이름 .ai-status-group 이 컴포저의 상태 묶음에도 있어 이 margin 이 거기에도 걸린다 — 작업 목록으로 옮기며 맵별 묶음 용도는 사라졌지만 규칙은 그대로 둔다(걸린 레이아웃을 바꾸지 않는다). */
 .ai-status-group { margin-top: 10px; }
-.ai-status-group h5 { margin: 0 0 4px; font: 700 12px var(--font-ui); color: var(--accent); }
-.ai-status-group h5 em { font-style: normal; font-weight: 500; color: var(--text-3); }
-.ai-status-row { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text-1); font: 13px var(--font-ui); text-align: left; cursor: pointer; }
-.ai-status-row:hover { background: var(--bg-inset); }
-.ai-status-row .ai-status-action { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
-.ai-status-row .ai-status-tag { margin-left: 0; flex: 0 0 auto; }
 
 /* ── 다른 스레드 트레이 — 메인 대화(로그) 밖에서 도는 실행 ── */
 .ai-side-threads { margin: 6px 10px 0; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-raised); font: 12px/1.5 var(--font-ui); color: var(--text-1); }
@@ -146,10 +141,59 @@ html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]
 .ai-status-summary[data-top="failed"] { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
 .ai-status-summary[data-top="running"] { background: var(--accent-muted); color: var(--accent); }
 .ai-status-pop-actions .ai-status-btn.is-primary { background: var(--accent); border-color: var(--accent); color: var(--bg-raised, #fff); }
-/* 접힌 레일 배지 — 일이 둘 이상이거나 확인·실패가 있을 때 개수를 말한다. */
-.ai-collapsed-restore-jobs { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; background: var(--accent); color: var(--bg-raised, #fff); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums; }
-.ai-collapsed-restore-jobs[hidden] { display: none; }
-.ai-collapsed-restore-jobs[data-top="review"] { background: var(--warning, #d9840d); }
-.ai-collapsed-restore-jobs[data-top="failed"] { background: var(--danger, #d92d20); }
 .ai-status-stamp { flex: 0 0 auto; padding: 4px 10px; border-radius: 999px; background: var(--accent-muted); color: var(--accent); font-size: 12px; font-weight: 600; white-space: nowrap; }
 .ai-status-stamp[hidden] { display: none; }
+
+/* ── 지도 위 번호 · 상태 줄 번호 (작업 목록의 번호와 같은 번호·같은 색) ── */
+.ai-status-no { flex: 0 0 auto; padding: 0 6px; border-radius: 999px; background: var(--tone); color: #fff; font: 700 11.5px/1.5 var(--font-ui); font-variant-numeric: tabular-nums; }
+
+/* ── 작업 목록 입구: 열린 도크 위쪽 버튼 · 접힌 레일 배지 ── */
+.ai-status-jobs-entry { --tone: var(--accent); flex: 0 0 auto; display: inline-flex; align-items: center; gap: 2px; border: 0; cursor: pointer; font: 700 12px/1.3 var(--font-ui); padding: 4px 10px; border-radius: 999px; background: var(--accent-muted); color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-status-jobs-entry[hidden] { display: none; }
+.ai-status-jobs-entry[data-top="review"] { background: var(--warning-muted, #fff1d6); color: var(--warning, #a65f00); }
+.ai-status-jobs-entry[data-top="failed"] { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
+.ai-status-jobs-entry:focus-visible { outline: var(--focus-outline); }
+.ai-status-jobs-entry.is-rail { position: absolute; top: 2px; right: 2px; z-index: 2; min-width: 20px; height: 20px; padding: 0 6px; justify-content: center; background: var(--accent); color: var(--bg-raised, #fff); box-shadow: 0 0 0 2px var(--bg-raised, #fff); }
+.ai-status-jobs-entry.is-rail[data-top="review"] { background: var(--warning, #d9840d); }
+.ai-status-jobs-entry.is-rail[data-top="failed"] { background: var(--danger, #d92d20); }
+.ai-chat-panel:not(.is-collapsed) > .ai-status-jobs-entry.is-rail { display: none; }
+
+/* ── 작업 목록 ──
+   한 행 = 번호 · 종류 · 한 줄 요약 · 맵 좌표 · 상태(글자) · 그 자리 버튼. 번호 색 = 지도 위 상자 색.
+   z-index 는 상태 줄 팝오버와 같은 층 — 목록은 지도 아래쪽 왼쪽에서 열려 도크를 가리지 않는다. */
+.ai-status-jobs { position: fixed; z-index: calc(var(--z-popover, 60) + 1); width: 460px; max-height: min(64vh, 560px); display: flex; flex-direction: column; box-sizing: border-box; padding: 10px 10px 8px; background: var(--bg-raised, #fff); border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop, 0 10px 30px rgba(20, 30, 60, .28)); color: var(--text-1); font-size: 13px; }
+.ai-status-jobs[hidden] { display: none; }
+.ai-status-jobs > header { display: flex; align-items: center; gap: 8px; padding: 0 4px 8px; }
+.ai-status-jobs h2 { margin: 0; font: 700 14px var(--font-ui); }
+.ai-status-jobs-count { color: var(--text-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ai-status-jobs-spacer { flex: 1; }
+.ai-status-jobs-body { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; min-height: 0; }
+.ai-status-jobs-empty { margin: 8px 4px; color: var(--text-3); }
+.ai-status-jobs-empty[hidden] { display: none; }
+.ai-status-job { --tone: var(--tone-0); display: flex; align-items: stretch; gap: 6px; border-radius: 8px; contain: content; }
+.ai-status-job[data-tone="1"] { --tone: var(--tone-1); }
+.ai-status-job[data-tone="2"] { --tone: var(--tone-2); }
+.ai-status-job[data-tone="3"] { --tone: var(--tone-3); }
+.ai-status-job[data-state="review"] { background: color-mix(in srgb, var(--warning, #d9840d) 10%, transparent); }
+.ai-status-job[data-state="failed"] { background: color-mix(in srgb, var(--danger, #d92d20) 8%, transparent); }
+.ai-status-job[data-state="applied"] { opacity: .65; }
+.ai-status-job-main { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: inherit; font: 13px var(--font-ui); text-align: left; cursor: pointer; }
+.ai-status-job-main:hover { background: var(--bg-inset); }
+.ai-status-job-main:focus-visible { outline: var(--focus-outline); }
+.ai-status-job-no { flex: 0 0 auto; min-width: 28px; padding: 1px 7px; border-radius: 999px; background: var(--tone); color: #fff; font: 700 12px/1.5 var(--font-ui); text-align: center; font-variant-numeric: tabular-nums; }
+.ai-status-job-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.ai-status-job-line { display: flex; align-items: baseline; gap: 6px; min-width: 0; }
+.ai-status-job-line.is-sub { color: var(--text-2); font-size: 12px; }
+.ai-status-job-kind { flex: 0 0 auto; padding: 0 6px; border-radius: 6px; background: var(--bg-inset); color: var(--text-2); font-size: 11px; font-weight: 600; }
+.ai-status-job-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.ai-status-job-action { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-status-job-map { flex: 0 0 auto; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--accent); }
+.ai-status-job-coords { flex: 0 0 auto; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.ai-status-job-state { flex: 0 0 auto; padding: 1px 8px; border-radius: 999px; background: var(--accent-muted); color: var(--accent); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.ai-status-job[data-state="review"] .ai-status-job-state { background: var(--warning-muted, #fff1d6); color: var(--warning, #a65f00); }
+.ai-status-job[data-state="failed"] .ai-status-job-state { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
+.ai-status-job[data-state="waiting"] .ai-status-job-state { background: var(--bg-inset); color: var(--text-2); }
+.ai-status-job[data-state="applied"] .ai-status-job-state, .ai-status-job[data-state="draft"] .ai-status-job-state { background: var(--success-muted, #e6f6ec); color: var(--success, #0b7a3c); }
+.ai-status-job-acts { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.ai-status-job-acts:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { .ai-status-dot.is-pulse, .ai-map-region.is-pulse { animation: none; } }

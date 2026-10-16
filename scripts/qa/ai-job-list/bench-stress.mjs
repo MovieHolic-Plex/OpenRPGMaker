@@ -116,7 +116,7 @@ for (let trial = 0; trial < trials; trial++) {
   await page.evaluate(() => window.__B.start());
   await page.waitForTimeout(1200);
   if (list === "open") {
-    const open = await page.evaluate(() => !!document.querySelector(".ai-status-pop:not([hidden]), .ai-job-list:not([hidden])"));
+    const open = await page.evaluate(() => !!document.querySelector(".ai-status-pop:not([hidden]), .ai-status-jobs:not([hidden])"));
     if (!open) await page.getByTestId("ai-status-summary").click().catch(() => {});
     await page.waitForTimeout(400);
   }
@@ -166,8 +166,8 @@ for (let trial = 0; trial < trials; trial++) {
       dragMoveP50: q(B.dragMoves, 0.5) === null ? null : +q(B.dragMoves, 0.5).toFixed(1), dragMoveP95: q(B.dragMoves, 0.95) === null ? null : +q(B.dragMoves, 0.95).toFixed(1), dragN: B.dragMoves.length,
       stampDrainMs: null,
       domTotal: document.querySelectorAll("*").length,
-      domAi: count(".ai-status-bar, .ai-status-pop, .ai-job-list, .ai-map-presence"),
-      popOpen: !!document.querySelector(".ai-status-pop:not([hidden]), .ai-job-list:not([hidden])"),
+      domAi: count(".ai-status-bar, .ai-status-pop, .ai-status-jobs, .ai-map-presence"),
+      popOpen: !!document.querySelector(".ai-status-pop:not([hidden]), .ai-status-jobs:not([hidden])"),
       status: document.querySelector(".ai-status-bar")?.innerText.replace(/\s+/g, " ").slice(0, 80) ?? null,
     };
   });

@@ -41,12 +41,6 @@ export function createDirectorRestoreButton(): HTMLButtonElement {
         attrs: { hidden: "" },
         dataset: { testid: "ai-collapsed-restore-count" },
       }),
-      // 접힌 채 돌고 있는 AI 작업 수 + 가장 급한 상태(확인 필요 > 실패 > 진행). 일이 둘 이상일 때만 보인다.
-      el("span", {
-        class: "ai-collapsed-restore-jobs",
-        attrs: { hidden: "", "aria-hidden": "true" },
-        dataset: { testid: "ai-collapsed-restore-jobs" },
-      }),
     ],
   }) as HTMLButtonElement;
 }
@@ -66,24 +60,6 @@ export function setRestoreButtonState(
     countNode.hidden = pendingCount <= 0;
     countNode.textContent = pendingCount > 0 ? String(pendingCount) : "";
   }
-}
-
-/**
- * 접힌 레일의 「몇 개 · 가장 급한 것」 배지. 접힌 도크는 지도 아래 줄이 열린 도크의 대화 카드를 대신하지만, 줄이 가려지는 폭에서도
- * 레일은 늘 보인다 — 일이 둘 이상이면 개수를, 확인·실패가 있으면 그 수를 앞세운다(2026-10-16: 드래그 영역·팀 레인이 「조수 하나」로 보이던 문제).
- * 읽는 원천은 aiPresence 요약 하나다. 숫자만 쓰므로 번역이 필요 없다(자세한 문장은 열린 뒤 상태 줄이 말한다).
- */
-export function setRestoreJobs(
-  button: HTMLElement,
-  summary: { readonly total: number; readonly review: number; readonly failed: number; readonly running: number; readonly top: "review" | "failed" | "running" | null },
-): void {
-  const node = button.querySelector<HTMLElement>(".ai-collapsed-restore-jobs");
-  if (!node) return;
-  const urgent = summary.review + summary.failed;
-  const show = summary.total >= 2 || urgent > 0;
-  node.hidden = !show;
-  node.textContent = show ? String(urgent > 0 ? urgent : summary.total) : "";
-  node.dataset.top = summary.top ?? "";
 }
 
 /**

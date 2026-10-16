@@ -10,6 +10,7 @@ import { requestTeamStop, subscribeTeamActivity } from "@/ai/piAgent/teamActivit
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { store } from "@/project/store";
+import { jobNumber, jobTone } from "@/editor/aiJobNumbers";
 import { teamObservation } from "./aiTeamObservation";
 
 export type PresenceState = "waiting" | "working" | "review" | "draft" | "applied" | "failed";
@@ -41,7 +42,9 @@ export interface Presence {
   readonly name: string;
   /** 검수처럼 지도를 읽기만 하는 역할이면 true — 지도 위 작업 영역을 가져가지 않는다. */
   readonly readsOnly: boolean;
-  /** 같은 실행 안에서 안정적인 색 번호(0~3). 지도 이름표·상태 줄 칩·받은함이 같은 색을 쓴다. */
+  /** 작업 번호 — 지도 위 이름표·작업 목록 행이 같은 번호를 쓴다(aiJobNumbers). publish 가 채운다. */
+  readonly no: number;
+  /** 번호에서 나온 색 번호(0~3). 지도 이름표·상태 줄 칩·받은함·작업 목록이 같은 색을 쓴다. */
   readonly tone: number;
   readonly state: PresenceState;
   readonly mapId: string | null;
@@ -53,6 +56,8 @@ export interface Presence {
   readonly startedAt: number | undefined;
   /** 내 차례·실패일 때 이유 한 줄(변경 요약 칩, 오류 문장). */
   readonly note?: string;
+  /** 지도를 드래그해서 시킨 대화 일이다(handleRegionHandoff 가 표식을 남긴다). region 은 그 드래그 영역. 작업 목록의 「드래그」 종류. */
+  readonly drag?: boolean;
   /** 최신이 앞. */
   readonly recent: readonly { readonly label: string; readonly failed: boolean; readonly running: boolean }[];
 }
@@ -91,26 +96,55 @@ function noteOf(state: PresenceState, agent: TeamBoardAgent, board: TeamBoardSta
   return "";
 }
 
+interface DragOrigin { readonly text: string; readonly mapId: string; readonly region: PresenceRegion; readonly at: number }
+const dragOrigins: DragOrigin[] = [];
+const DRAG_ORIGIN_TTL_MS = 30 * 60_000;
+
+/**
+ * 지도를 드래그해 시킨 대화 일의 표식 — 드래그 직후 같은 문장으로 시작한 실행을 「드래그」 일로 읽게 한다.
+ * 왜(2026-10-16): 드래그 AI 는 대화 턴이라 Presence 에는 영역이 없었다. 지도 위 상자가 드래그한 자리가 아니라 구석 이름표 → 초안 고스트가 생긴 뒤에야 따라붙었다.
+ */
+export function markDragOrigin(origin: { readonly text: string; readonly mapId: string; readonly region: PresenceRegion }): void {
+  const text = origin.text.trim();
+  if (!text) return;
+  const now = Date.now();
+  while (dragOrigins.length > 0 && now - dragOrigins[0]!.at > DRAG_ORIGIN_TTL_MS) dragOrigins.shift();
+  dragOrigins.push({ text, mapId: origin.mapId, region: { x: origin.region.x, y: origin.region.y, width: origin.region.width, height: origin.region.height }, at: now });
+  if (dragOrigins.length > 20) dragOrigins.shift();
+}
+
+function dragOriginFor(board: TeamBoardState): DragOrigin | undefined {
+  if (board.mode !== "single" || dragOrigins.length === 0) return undefined;
+  const task = board.task.trim();
+  if (!task) return undefined;
+  for (let i = dragOrigins.length - 1; i >= 0; i -= 1) if (task.includes(dragOrigins[i]!.text)) return dragOrigins[i];
+  return undefined;
+}
+
 export function derivePresences(board: TeamBoardState | null): readonly Presence[] {
   if (!board || board.phase === "버림") return [];
   if (board.agents.length === 0) {
     // 에이전트 행이 생기기 전의 준비 구간 — 비어 보이지 않게 하나는 그려 준다.
     if (board.phase !== "준비" && board.phase !== "실행 중") return [];
-    return [{ id: "run", source: "chat", name: "조수", readsOnly: false, tone: 0, state: "working", mapId: null, mapName: null, task: board.task,
+    return [{ id: "run", source: "chat", name: "조수", readsOnly: false, no: 0, tone: 0, state: "working", mapId: null, mapName: null, task: board.task,
       action: "생각 중", steps: 0, startedAt: undefined, recent: [] }];
   }
+  const origin = dragOriginFor(board);
   return board.agents.map((agent, index): Presence => {
     const observation = teamObservation(agent, board.trace);
     const state = stateOf(agent, board);
+    const dragged = origin !== undefined && agent.role !== "reviewer";
     return {
       id: agent.agentId,
       source: "chat",
       name: agent.roleLabel || agent.kindLabel || "조수",
       readsOnly: agent.role === "reviewer",
+      no: 0,
       tone: index % 4,
       state,
-      mapId: agent.mapId,
+      mapId: dragged ? origin.mapId : agent.mapId,
       mapName: agent.mapName,
+      ...(dragged ? { drag: true, region: origin.region } : {}),
       task: agent.task,
       action: actionOf(state, observation.action, board),
       ...(noteOf(state, agent, board) ? { note: noteOf(state, agent, board) } : {}),
@@ -243,24 +277,59 @@ function presencesForTicket(ticket: MapRunTicket, board: TeamBoardState | undefi
   const where = mapNameOf(ticket.mapKey);
   const base = { source: "background" as const, ticketId: ticket.id, readsOnly: false, mapId: where.mapId, mapName: where.mapName };
   if (board && board.agents.length > 0) {
-    return derivePresences(board).map((p, i) => ({ ...p, ...base, id: `bg${ticket.id}:${p.id}`, mapId: p.mapId ?? where.mapId, mapName: p.mapName ?? where.mapName, readsOnly: p.readsOnly, task: p.task || ticket.label, tone: i }));
+    return derivePresences(board).map((p, i) => ({ ...p, ...base, id: `bg${ticket.id}:${p.id}`, mapId: p.mapId ?? where.mapId, mapName: p.mapName ?? where.mapName, readsOnly: p.readsOnly, task: p.task || ticket.label, no: 0, tone: i }));
   }
   const waiting = ticket.status === "waiting";
   const action = !waiting ? "생각 중"
     : ticket.wait === "capacity" ? "동시에 도는 작업이 많아 기다리는 중"
     : ticket.wait === "exclusive" ? "팀 작업이 끝나길 기다리는 중"
     : `같은 맵 ${ticket.ahead + 1}번째로 기다리는 중`;
-  return [{ ...base, id: `bg${ticket.id}`, name: "조수", tone: 0, state: waiting ? "waiting" : "working", task: ticket.label,
+  return [{ ...base, id: `bg${ticket.id}`, name: "조수", no: 0, tone: 0, state: waiting ? "waiting" : "working", task: ticket.label,
     action, steps: 0, startedAt: ticket.startedAt ?? undefined, recent: [] }];
 }
 
+/** 두 Presence 가 화면에 같은 것을 말하는가 — 구독자를 깨울지 판정하는 데 쓴다. */
+function samePresence(a: Presence, b: Presence): boolean {
+  if (a === b) return true;
+  if (a.id !== b.id || a.source !== b.source || a.ticketId !== b.ticketId || a.name !== b.name || a.readsOnly !== b.readsOnly || a.drag !== b.drag || a.no !== b.no || a.tone !== b.tone
+    || a.state !== b.state || a.mapId !== b.mapId || a.mapName !== b.mapName || a.task !== b.task || a.action !== b.action || a.steps !== b.steps
+    || a.startedAt !== b.startedAt || a.note !== b.note) return false;
+  const ra = a.region; const rb = b.region;
+  if ((ra === undefined) !== (rb === undefined)) return false;
+  if (ra && rb && (ra.x !== rb.x || ra.y !== rb.y || ra.width !== rb.width || ra.height !== rb.height)) return false;
+  if (a.recent.length !== b.recent.length) return false;
+  for (let i = 0; i < a.recent.length; i += 1) {
+    const x = a.recent[i]!; const y = b.recent[i]!;
+    if (x.label !== y.label || x.failed !== y.failed || x.running !== y.running) return false;
+  }
+  return true;
+}
+
+/**
+ * 조수 이벤트 한 건마다 불린다(스트림 조각·도구 신호 — 초당 수십 번). 보드에서 다시 도출한 Presence 가 직전과 **화면에 보이는 값이 같으면**
+ * 같은 객체를 다시 쓰고, 목록 전체가 그대로면 구독자를 깨우지 않는다.
+ *
+ * 왜(2026-10-16 실측, 합성 스트림 N=10~20): 조각 이벤트 대부분은 이름·상태·한 줄 동작이 그대로인데도 구독자 일곱 곳(이름표·상태 줄·받은함·레일·…)이
+ * 매번 새 배열을 받아 비교·재그리기를 돌았다. 바뀐 일만 새 객체가 되면 구독자는 `===` 로 거르고, 아무것도 안 바뀐 이벤트는 여기서 끝난다.
+ */
 function publish(): void {
   const chat = boardPresences;
   const background = backgroundPresences();
   const regions = [...regionPresences.values()];
-  // 색은 표면 전체에서 겹치지 않게 순서대로 — 지도의 파란 상자 = 상태 줄의 파란 칩.
-  current = [...chat, ...background, ...regions].filter(p => !dismissed.has(p.id)).map((p, index) => ({ ...p, tone: index % 4 }));
-  for (const next of [...listeners]) next(current);
+  // 색은 번호에서 나온다(aiJobNumbers) — 지도의 파란 상자 = 상태 줄의 파란 칩 = 작업 목록의 파란 번호. 일이 끝나도 다른 일의 색이 밀리지 않는다.
+  const previous = new Map(current.map(item => [item.id, item]));
+  const next: Presence[] = [];
+  for (const p of [...chat, ...background, ...regions]) {
+    if (dismissed.has(p.id)) continue;
+    const no = jobNumber(`p:${p.id}`);
+    const tone = jobTone(no);
+    const candidate = p.no === no && p.tone === tone ? p : { ...p, no, tone };
+    const old = previous.get(p.id);
+    next.push(old && samePresence(old, candidate) ? old : candidate);
+  }
+  if (next.length === current.length && next.every((item, index) => item === current[index])) return;
+  current = next;
+  for (const listener of [...listeners]) listener(current);
 }
 
 const onRegionStatus = (event: Event): void => {
@@ -274,7 +343,7 @@ const onRegionStatus = (event: Event): void => {
   const waiting = detail.phase === "pending";
   const previous = regionPresences.get(key);
   regionPresences.set(key, {
-    id: `region-${key}`, source: "region", name: "영역 작업", readsOnly: false, tone: 0,
+    id: `region-${key}`, source: "region", name: "영역 작업", readsOnly: false, no: 0, tone: 0,
     state: waiting ? "waiting" : "working", mapId: detail.mapId, mapName: null,
     region: { x: detail.region.x, y: detail.region.y, width: detail.region.width, height: detail.region.height },
     task: "", action: waiting ? "차례를 기다리는 중" : "만드는 중",
@@ -290,7 +359,8 @@ export function currentPresences(): readonly Presence[] {
 /** 첫 구독자가 생길 때만 버스에 붙고, 마지막 구독자가 빠지면 뗀다. 구독 즉시 현재 값을 한 번 준다. */
 export function subscribeAiPresence(listener: Listener): () => void {
   listeners.add(listener);
-  if (!unsubscribeBoard) {
+  const first = !unsubscribeBoard;
+  if (first) {
     window.addEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
     const offBoard = subscribeTeamActivity(board => {
       boardPresences = derivePresences(board);
@@ -302,9 +372,9 @@ export function subscribeAiPresence(listener: Listener): () => void {
       offQueue();
       window.removeEventListener(REGION_TASK_STATUS_EVENT, onRegionStatus);
     };
-  } else {
-    listener(current);
   }
+  // 처음 붙을 때 값이 비어 있으면 publish 가 구독자를 깨우지 않는다(바뀐 게 없어서) — 구독 즉시 현재 값을 한 번은 준다.
+  listener(current);
   return () => {
     listeners.delete(listener);
     if (listeners.size === 0) {
