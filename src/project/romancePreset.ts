@@ -17,6 +17,7 @@ import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { normalizeHudWidget, type FieldHudConfig } from "@/project/fieldHud";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isRomanceTitleArtId, romanceTitleArtForText, ROMANCE_TITLE_RESOURCE_ID } from "@/project/romanceTitleArt";
 import type { Project } from "@/project/types";
 
 /**
@@ -25,7 +26,7 @@ import type { Project } from "@/project/types";
  * 위쪽 하늘이 넓어 로고 자리가 비고, 960×720 가운데 잘림에서도 인물 둘이 남는다.
  * 이전 기본(`oprn-still-moon-meadow` = 벽난로 앞 두 노인)은 캠퍼스 연애와 어울리지 않아 바꿨다 — 그 id 도 「손대지 않은 기본」으로 보아 다시 적용할 때 새 그림으로 바꾼다.
  */
-export const ROMANCE_TITLE_RESOURCE_ID = "oprn-title-romance-campus";
+export { ROMANCE_TITLE_RESOURCE_ID };
 /** 코드가 기본으로 깔아 둔(= 저작자가 안 고른) 타이틀 배경. 이 값일 때만 바꾼다(옛 연애 기본 포함). */
 const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field", "oprn-still-moon-meadow"]);
 
@@ -107,13 +108,16 @@ export function applyRomanceDefaults(project: Project): string[] {
   // 타이틀: 코드 기본값(눈 덮인 마을)일 때만.
   const title = system.titleScreen;
   if (title && (title.backgroundResourceId === undefined || UNTOUCHED_TITLE_BACKGROUNDS.has(title.backgroundResourceId))) {
-    system.titleScreen = { ...title, backgroundResourceId: ROMANCE_TITLE_RESOURCE_ID, backgroundFit: "cover" };
+    // 기획서가 카페·학원·회사·마을이면 그 소재의 키아트로 시작한다(R1-06). 소재 낱말이 없으면 벚꽃 캠퍼스.
+    const brief = project.gameDesignBrief;
+    const briefText = [brief?.summary ?? "", ...Object.values(brief?.answers ?? {}).map((answer) => answer?.text ?? "")].join("\n");
+    system.titleScreen = { ...title, backgroundResourceId: romanceTitleArtForText(briefText)?.id ?? ROMANCE_TITLE_RESOURCE_ID, backgroundFit: "cover" };
     applied.push("titleScreen");
   }
   // 타이틀 문구: 기본 「A NEW ADVENTURE / 이야기가 시작되는 곳」은 모험 게임 문구다(연애 첫 실측: 연애 그림 위에 그대로 남음). 글자 질감을 정하면 그 기본 문구가 숨고 부제만 남는다.
   // 제목 자체는 조수가 게임에 맞게 정한다(set_title_screen title) — 코드는 기본 문구만 걷고 부드러운 부제를 둔다. 저작자가 정한 값은 건드리지 않는다.
   const copy = system.titleScreen;
-  if (copy && copy.logoStyle === undefined && copy.logoSubtitle === undefined && copy.backgroundResourceId === ROMANCE_TITLE_RESOURCE_ID) {
+  if (copy && copy.logoStyle === undefined && copy.logoSubtitle === undefined && isRomanceTitleArtId(copy.backgroundResourceId)) {
     system.titleScreen = { ...copy, logoStyle: "glow", logoSubtitle: ROMANCE_TITLE_SUBTITLE };
     applied.push("titleCopy");
   }

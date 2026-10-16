@@ -10,7 +10,7 @@
 import { affectionVariableOwners, unmappedAffectionVariables } from "@/project/affectionVariables";
 import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
-import { romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
+import { romanceTitleArtSettingGap, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
@@ -128,6 +128,14 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 
   const titleArtMismatch = romanceTitleMismatch(project.system?.titleScreen?.backgroundResourceId);
   if (titleArtMismatch) findings.push({ severity: "warning", code: "romance-title-art-mismatch", message: romanceTitleMismatchMessage(titleArtMismatch) });
+  // 타이틀이 벚꽃 캠퍼스 기본 그림인데 기획은 카페·학원·회사·마을이면 소재에 맞는 키아트로 바꾸게 한다(romance-loop-1 R1-06).
+  const settingArt = romanceTitleArtSettingGap(project.system?.titleScreen?.backgroundResourceId, briefText);
+  if (settingArt) {
+    findings.push({
+      severity: "warning", code: "romance-title-art-setting",
+      message: `타이틀 배경이 벚꽃 캠퍼스 기본 그림인데 기획은 다른 장소(${settingArt.label})입니다 — set_title_screen {backgroundResourceId:"${settingArt.id}"} 로 소재에 맞는 그림으로 바꾸세요(전용 그림을 만들었으면 generate_title_art).`,
+    });
+  }
 
   // 2) 호감이 쌓이는 인물 · 인물 엔딩.
   const people: { readonly map: GameMap; readonly event: GameEvent }[] = [];
@@ -244,7 +252,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
 const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";

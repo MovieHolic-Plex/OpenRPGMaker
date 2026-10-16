@@ -55,6 +55,11 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
   // 연애(현대 캠퍼스) 타이틀 — 벚꽃 교정 옥상 노을, 교복 둘이 난간에서 교정을 내려다본다(2026-10-16, gpt-image-2.5-sunburst 로 만든 큰 그림).
   "oprn-title-romance-campus": "/assets/generated/title/romance-campus-spring.jpg",
+  // 소재별 연애 타이틀(2026-10-17 romance-loop-2, 같은 모델·같은 화풍). 후보 12장 중 독립 판정 + 감독 선택 — 출처: public/assets/generated/title/romance-keyart-provenance.json.
+  "oprn-title-romance-cafe": "/assets/generated/title/romance-cafe.jpg",
+  "oprn-title-romance-school": "/assets/generated/title/romance-school.jpg",
+  "oprn-title-romance-office": "/assets/generated/title/romance-office.jpg",
+  "oprn-title-romance-town": "/assets/generated/title/romance-town.jpg",
   // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
   "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",

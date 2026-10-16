@@ -147,3 +147,17 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 `isRomanceGameRequest`(src/qa/gameCheck/romance.ts)가 「만들·제작·짜줘·구현」 동사를 요구해서, 「고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩」 처럼 소재만 적은 한 줄은
 완료 검사(`romanceCompletionGaps`)가 통째로 꺼졌다. 실제 Argon 결과가 기본 제목 「새 게임」·기본 부제·뼈대 자리표시·인물별 엔딩 없음 그대로 finish 를 통과했다.
 이제 연애+게임 낱말이 있으면 제작 요청으로 보고, 고치기·삭제·질문 낱말(고쳐·수정·바꿔·버그·왜·어떻게·설명·알려·넓혀·지워·삭제·확인해·점검)이 든 문장만 뺀다.
+
+## 소재별 연애 타이틀 키아트 (2026-10-17 romance-loop-2, R1-06)
+
+카페·학원물 판에도 타이틀이 벚꽃 캠퍼스 그림 하나뿐이었다. 같은 모델·화풍(gpt-image-2.5-sunburst, mdc-server:8091 이미지 API, 16:9 빈 참고 그림으로 비율 고정)으로
+소재 4종을 더했다: `oprn-title-romance-cafe`(노을 카페 테라스) · `-school`(저녁 학교 복도 창가) · `-office`(황혼 사옥 옥상) · `-town`(황혼 바닷가 마을).
+파일 `public/assets/generated/title/romance-<소재>.jpg`, 해석 `generatedAssetResourceResolver.ts`, 목록 `generated-title-manifest.json`, 후보 12장·판정·선택 `romance-keyart-provenance.json`.
+후보 선택은 독립 판정(Sonnet 블라인드 읽기)과 감독이 한다 — 사용자 선택 단계를 두지 않는다. 생성 일러스트라 3/4 도트 관문 대상이 아니다.
+
+- 허용 목록(`ROMANCE_TITLE_BACKGROUNDS`)에 넷을 더했다 — 조수가 `set_title_screen` 으로 고를 수 있고, 목록 밖 번들 그림 거부(`romanceTitleMismatch`)는 그대로다(키아트 잠금 계약 유지).
+- `romanceTitleArtForText`(src/project/romanceTitleArt.ts): 기획·요청 문장의 소재 낱말(카페·학원·회사·마을…)을 세어 캠퍼스보다 많이 나온 소재를 고른다. 동률·무소재는 캠퍼스 기본.
+- 프리셋(`applyRomanceDefaults`): 코드 기본 타이틀일 때 기획서 소재로 키아트를 고른다. 채팅 한 줄 경로는 완료 검사 `romance-title-art-setting`(COMPLETION_CODES)이
+  「타이틀이 캠퍼스 기본인데 기획은 다른 소재」일 때 정확한 id 와 함께 finish 를 막는다. 저작자가 다른 그림(생성·업로드)을 고른 타이틀은 건드리지 않는다.
+- R1-05(기한 엔딩이 빠른 Enter 연타에서 늦게 열림): 대화 한 번당 칸 하나, 칸 3개가 하루. 14일째 하루 끝에서 엔딩은 slow·fast·spam 모두 즉시 열렸다(var_days_elapsed 13에서 시작). 이전 관측은 측정용 드라이버가
+  Enter(= 행동 키)로 다음 대화를 연타해 한 반복 안에 여러 하루가 지나간 것으로 보이며 제품 결함으로 재현하지 못했다. 「Text cancelled」 는 하루 끝 취침이 열린 대사를 가져갈 때의 정상 AbortError(playSceneInterpreter 주석)다.
