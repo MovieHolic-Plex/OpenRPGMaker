@@ -1,0 +1,205 @@
+{
+ "palette": {
+  "S": "#142e0e",
+  "W": "#1b3b12",
+  "T": "#468822",
+  "U": "#80c638",
+  "V": "#cc2218"
+ },
+ "recolor": [
+  {
+   "region": "T",
+   "map": {
+    "k": "S",
+    "q": "W",
+    "v": "T",
+    "B": "U"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "g": "l",
+    "h": "l",
+    "i": "l",
+    "k": "l",
+    "m": "w",
+    "n": "w",
+    "p": "w",
+    "r": "A",
+    "z": "A",
+    "I": "F",
+    "K": "F",
+    "q": "l",
+    "v": "w",
+    "B": "A"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "4": ".........llllll.........",
+    "5": "........lPPPPMMl........",
+    "6": ".......lPPPMMMMFl.......",
+    "7": "......ljCVVVVVVVjl......",
+    "8": "......lPPPPMMMMMFl......",
+    "9": "......llMMMMFFFFll......"
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "4": ".........llllll.........",
+    "5": "........lPPPPMMl........",
+    "6": ".......lPPPMMMMFl.......",
+    "7": "......ljCVVVVVVjl.......",
+    "8": "......lPPPPMMMMFl.......",
+    "9": "......llMMMMFFFll.......",
+    "10": ".......sJHHHHHHJs......."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "4": ".........llllll.........",
+    "5": "........lPPPPMMl........",
+    "6": ".......lPPPMMMMFl.......",
+    "7": "......ljCVVVVVVVjl......",
+    "8": "......lPPPPMMMMMMll.....",
+    "9": "......llMMMMFFFFFll.....",
+    "10": ".......sEJJJyyyHyyl....."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "4": ".........llllll.........",
+    "5": "........lPPPPMMl........",
+    "6": ".......lPPPMMMMFl.......",
+    "7": "......ljCVVVVVVVjl......",
+    "8": ".....llPPPPPMMMMMFl.....",
+    "9": ".....llMMMMMFFFFll......",
+    "10": ".....lyyHyyyJJJEs......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "18": "........aaajvqqS........"
+   }
+  }
+ ],
+ "gear": [
+  {
+   "name": "net",
+   "kind": "held",
+   "side": "R",
+   "sprites": {
+    "down": {
+     "grip": [4, 18],
+     "rows": [
+      ".lll..",
+      "lCQLl.",
+      "CLLQF.",
+      "CLLQF.",
+      "CLLQFl",
+      "CLLQFl",
+      "lCQLFl",
+      ".lQFFl",
+      "..lFwl",
+      "...Fwl",
+      "...Fwl",
+      "...Fwl",
+      "....Fw",
+      "....Fw",
+      "....Al",
+      "....Fw",
+      "....Fw",
+      "....Fw",
+      "....Fw"
+     ]
+    },
+    "up": {
+     "grip": [1, 18],
+     "rows": [
+      "..lll.",
+      ".lLQC.",
+      ".FQLLC",
+      ".FQLLC",
+      ".FQLLC",
+      ".FQLLC",
+      ".FQLCl",
+      ".lFQl.",
+      ".Fwl..",
+      ".Fw...",
+      ".Fw...",
+      "lFw...",
+      ".Fw...",
+      ".Fw...",
+      ".Al...",
+      ".Fw...",
+      ".Fw...",
+      ".Fw...",
+      ".Fw...",
+      ".Fw...",
+      ".ll..."
+     ]
+    },
+    "right": {
+     "grip": [6, 17],
+     "rows": [
+      ".llll..",
+      "lCLLQl.",
+      "CLLLLQF",
+      "CLLLLQF",
+      "CLLLLQF",
+      "lCLLQFl",
+      ".llllFw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Al",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....Fw",
+      ".....ll"
+     ]
+    },
+    "left": {
+     "grip": [2, 14],
+     "rows": [
+      "llllll..",
+      "lllQCLl.",
+      "llFQLLQl",
+      "llFQLLQl",
+      "llFQLLl.",
+      "llFQLl..",
+      "llFwl...",
+      "llFwl...",
+      "llFwl...",
+      "llFwl...",
+      "llAll...",
+      "llFwl...",
+      "llFwl...",
+      "llFwl...",
+      "llFwl...",
+      "llFwl...",
+      "lllll..."
+     ]
+    }
+   }
+  }
+ ]
+}

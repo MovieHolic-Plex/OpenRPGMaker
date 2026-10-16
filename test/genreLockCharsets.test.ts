@@ -42,6 +42,8 @@ describe("charset 계열 분류", () => {
     expect(charsetFamilyOf(undefined, "tex_easyrpg_charset_object1")).toBe("object");
     expect(charsetFamilyOf(undefined, "tex_oprn_charset_wizarding3")).toBe("wizarding");
     expect(charsetFamilyOf(undefined, "tex_oprn_charset_heroes1")).toBe("heroes");
+    expect(charsetFamilyOf(undefined, "tex_oprn_charset_monster_trainer1")).toBe("monster-trainer");
+    expect(charsetFamilyOf(undefined, "oprn-charset-monster-trainer2")).toBe("monster-trainer");
     expect(charsetFamilyOf(undefined, "shared_charset_actor_abc")).toBe("shared-actor");
   });
 });
@@ -73,7 +75,7 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
     for (const [name, x, extra] of [["길손", 4, {}], ["주민", 6, { graphic: { query: "villager" } }], ["마을 사람", 8, { graphic: { query: "주민" } }]] as const) {
       expect(placeNpc(ctx, name, x, extra).ok, name).toBe(true);
       const graphic = ctx.project.maps[ctx.project.startMapId]!.events.at(-1)!.pages[0]!.graphic;
-      expect(charsetFamilyOf(ctx.project, graphic.sprite!.id), name).toBe("scarloxy-people");
+      expect(["scarloxy-people", "monster-trainer"], name).toContain(charsetFamilyOf(ctx.project, graphic.sprite!.id));
     }
   });
 
@@ -108,6 +110,17 @@ describe("몬스터 잠금의 캐릭터 칩", () => {
     expect(genreLockAllowsCharset(project, "tex_easyrpg_charset_people1")).toBe(false);
     expect(genreLockAllowsCharset(project, "tex_oprn_charset_wizarding1")).toBe(false);
     expect(genreLockAllowsCharset(project, "tex_oprn_charset_heroes1")).toBe(false);
+  });
+
+  it("몬스터 트레이너 칩(monster-trainer 계열)은 허용하고, 계열이 더해지기 전에 저장된 잠금도 허용으로 합친다", () => {
+    const project = lockedProject();
+    expect(genreLockAllowsCharset(project, "tex_oprn_charset_monster_trainer1")).toBe(true);
+    expect(project.system.genreLock!.allowedCharsetFamilies).toContain("monster-trainer");
+    // 계열을 더하기 전에 켠 잠금: 저장본에는 monster-trainer 가 없다.
+    const old = lockedProject();
+    old.system.genreLock = { ...old.system.genreLock!, allowedCharsetFamilies: ["scarloxy-people", "oprn-creature", "rtp-creature", "object", "uploaded", "other"] };
+    expect(genreLockAllowsCharset(old, "tex_oprn_charset_monster_trainer1")).toBe(true);
+    expect(genreLockAllowsCharset(old, "tex_easyrpg_charset_people1")).toBe(false);
   });
 
   it("사용자 손 편집 경로(assistantRun 아님)와 잠금 해제 뒤에는 막지 않는다", () => {

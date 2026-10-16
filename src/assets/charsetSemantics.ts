@@ -9,6 +9,7 @@
 import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
 import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 import { HEROES_CHARSET_SEMANTICS } from "@/assets/heroesCharsets";
+import { MONSTER_TRAINER_CHARSET_SEMANTICS } from "@/assets/monsterTrainerCharsets";
 import { WIZARDING_CHARSET_SEMANTICS } from "@/assets/wizardingCharsets";
 import type { CharsetLabelOverride } from "@/project/types";
 
@@ -295,7 +296,7 @@ function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
   return { ...entry, appearance };
 }
 
-export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [...CHARSET_SEMANTICS_RAW, ...WIZARDING_CHARSET_SEMANTICS, ...HEROES_CHARSET_SEMANTICS].map(withAppearance);
+export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [...CHARSET_SEMANTICS_RAW, ...WIZARDING_CHARSET_SEMANTICS, ...HEROES_CHARSET_SEMANTICS, ...MONSTER_TRAINER_CHARSET_SEMANTICS].map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
   return [...CHARSET_SEMANTICS, ...sharedCharacterSemantics()].find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);

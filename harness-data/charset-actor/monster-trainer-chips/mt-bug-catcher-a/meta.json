@@ -1,0 +1,50 @@
+{
+ "key": "mt-bug-catcher-a",
+ "arch": "mt-bug-catcher",
+ "base": "People3:2",
+ "variant": "밀짚모자(머리 위 h 구역에 모자 윗부분과 챙, 모자색은 짚색 3톤, 모자 띠는 붉은색), 연두색 윗옷(파란 상의 T 리컬러), 황토색 반바지(남색 하의 B 리컬러), 오른손에 잠자리채(held 장비 R: 대나무 자루 2칸 폭, 끝에 동그란 그물 테와 연한 그물 면. 그물 머리는 쥔 손 위로 올라온다).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 BIKhikmnpqrvz"
+   ],
+   "at": "2026-10-16T14:03:04"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "오른손에 쥔 잠자리채(held R). 자루는 2칸 폭 대나무 막대이고 **주먹이 막대를 감싸 쥔다**: 스프라이트의 grip 칸은 자루 위의 칸이어야 하고, 자루가 grip 열을 따라 주먹 위·아래로 지나가야 한다(지난 판은 자루가 주먹 옆 칸에 떨어져 서 있어 손에 쥔 것으로 읽히지 않았다). 그물 머리는 자루 끝에서 머리 높이까지 올라온다(옆모습·위에서는 하네스가 알아서 몸 뒤로 가린다).",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 BIKhikmnpqrvz"
+ ],
+ "metrics": {
+  "added_up0": 83,
+  "added_up1": 87,
+  "added_up2": 94,
+  "added_right0": 72,
+  "added_right1": 60,
+  "added_right2": 39,
+  "added_down0": 91,
+  "added_down1": 90,
+  "added_down2": 66,
+  "added_left0": 55,
+  "added_left1": 90,
+  "added_left2": 100,
+  "changed_ratio": {
+   "H": 0.423,
+   "T": 0.829,
+   "B": 0.652,
+   "S": 0.0
+  },
+  "cross": 2,
+  "cross_base": 0,
+  "lone": 304,
+  "lone_base": 372
+ }
+}

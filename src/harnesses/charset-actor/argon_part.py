@@ -127,7 +127,7 @@ def prompt(spec, cand, pal, info, feedback, again):
     redo = 'edit.json 이 이미 있다(네가 쓴 직전 시도). 그것을 고쳐 거절 사유만 해결해라.\n' if again else 'edit.json 이 아직 없다. 새로 쓴다.\n'
     return f'''{NO_GEN}
 
-[과제] RPG Maker 2000 CharSet 규격(24×32) 걷기 칩 한 명을 **베이스 칩에서 의복·머리·장비만 고쳐서** 만든다. 크로노 트리거·FF6풍 RPG 의 「{spec['name']}」 원형이다.
+[과제] RPG Maker 2000 CharSet 규격(24×32) 걷기 칩 한 명을 **베이스 칩에서 의복·머리·장비만 고쳐서** 만든다. {spec.get('intro') or "크로노 트리거·FF6풍 RPG 의 「" + spec['name'] + "」 원형이다."}
 원작 게임의 실제 캐릭터를 베끼거나 닮게 그리지 않는다. 직업 원형만 독자 디자인으로 그린다.
 - 원형 설명: {spec['concept']}
 - 이번 후보의 방향: {cand['variant']}
@@ -231,7 +231,7 @@ def cmd_draw(a):
     run_dir.mkdir(parents=True, exist_ok=True)
     jobs = []
     for arch in spec['archetypes']:
-        arch = dict(arch, common=spec['common'])
+        arch = dict(arch, common=spec['common'], intro=(spec.get('intro') or '').replace('{name}', arch['name']))
         for i, cand in enumerate(arch['candidates']):
             key = f'{arch["id"]}-{"abcdefgh"[i]}'
             if a.label and key not in a.label:

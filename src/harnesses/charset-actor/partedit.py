@@ -193,6 +193,11 @@ SPECS['Actor3:0@robot'] = dict(SPECS['Actor3:0'], robot=True, skin='',
                                face={'down': [(9, 14, 10, 15), (13, 14, 14, 15)], 'right': [(13, 14, 15, 15)], 'left': [(8, 14, 10, 15)], 'up': None})
 
 
+# 몬스터 트레이너 칩(monster-trainer 계열) 베이스 분할 — 별도 파일.
+from trainer_specs import TRAINER_SPECS  # noqa: E402
+SPECS.update(TRAINER_SPECS)
+
+
 # 분할이 틀린 베이스는 여기서 보정한다(마스크 시트를 눈으로 본 뒤 적는다). 키 = 'Actor3:0' 꼴.
 OVERRIDES = {}
 
@@ -652,6 +657,15 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
                 thick = sum(1 for (x, y) in vis if (x + 1, y) in vis or (x - 1, y) in vis)
                 if thick < 0.5 * len(vis):
                     errs.append(f'장비 {name!r} {d} {f}: 막대가 1칸 폭이라 얇다(2칸 폭 칸이 {thick}/{len(vis)}) — 자루를 2칸 폭으로 그려야 손에 쥔 것으로 읽힌다')
+            if gi['kind'] == 'held' and gi['mode'] == 'front' and gi.get('through', True):
+                # 쥔 손이 보여야 한다(2026-10-16): 막대·자루는 주먹 칸을 **통과**해야 한다 — 손 칸 열 범위 안에서 주먹 위나 아래로 장비 칸이 이어진다.
+                # 옆 칸에 비스듬히 붙은 막대는 손 옆에 세워 둔 것으로 읽힌다(몸 옆에 떠 있는 장비와 같은 결함).
+                hx = [c[0] for c in gi['cells']]
+                hy = [c[1] for c in gi['cells']]
+                through = any(min(hx) <= x <= max(hx) and (y < min(hy) or y > max(hy)) for (x, y) in vis)
+                if not through:
+                    errs.append(f'장비 {name!r} {d} {f}: 자루가 주먹 칸(x {min(hx)}~{max(hx)}, y {min(hy)}~{max(hy)}) 위·아래로 이어지지 않는다 — 막대가 손 옆에 떨어져 서 있다. '
+                                f'스프라이트의 grip 칸을 막대 자루 위에 두고, 막대가 grip 열을 따라 위·아래로 지나가게 그려라(주먹이 막대를 감싸 쥔다)')
             near = any(max(abs(x - cx), abs(y - cy)) <= 1 for (x, y) in vis for (cx, cy) in gi['cells'])
             if not near:
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 앵커 칸 {sorted(gi["cells"])[:2]} 에 닿거나 겹치지 않는다 — 손에 쥐어지지 않고 따로 논다')

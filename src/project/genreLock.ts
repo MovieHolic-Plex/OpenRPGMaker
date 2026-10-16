@@ -43,6 +43,11 @@ interface Alternative {
 interface GenreLockCharsetDef {
   /** 허용 캐릭터 칩 계열. */
   readonly families: readonly CharsetFamilyId[];
+  /**
+   * 처음 배포(2026-10-16) 뒤에 표에 더한 계열. 이미 저장된 잠금의 allowedCharsetFamilies 는 켤 때의 사본이라 이 계열이 빠져 있다 —
+   * 저장본이 정본이라는 규칙은 지키되, 여기 적은 계열은 저장본에 없어도 허용으로 합친다(나중에 더한 번들 칩이 기존 프로젝트에서만 막히지 않게).
+   */
+  readonly lateFamilies?: readonly CharsetFamilyId[];
   /** 안내 문장에 쓰는 이름. */
   readonly kitNoun: string;
   /** 손대지 않은 기본 주인공에게 입히는 걷기 그림(켤 때 한 번). 허용 계열 안의 번들 칩이어야 한다. */
@@ -83,10 +88,12 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
     // RTP Monster1~3·Animal 은 생물이라 허용하지만 RTP Actor·People(판타지 사람)·마법 학교·공용 공방 사람 칩은 막는다.
     // 한계(2026-10-16 실측): 저장소에 들어 있는 몬스터 수집용 사람 걷기 칩은 Scarloxy 10칸(People1 8 + People2 2)뿐이다 — 닌텐도 원작 판형은 공개 저장소에 둘 수 없다.
     charsets: {
-      families: ["scarloxy-people", "oprn-creature", "rtp-creature", "object", "uploaded", "other"],
+      families: ["scarloxy-people", "monster-trainer", "oprn-creature", "rtp-creature", "object", "uploaded", "other"],
+      lateFamilies: ["monster-trainer"],
       kitNoun: "몬스터 수집 캐릭터 칩",
       playerDefault: { resourceId: "scarloxy-charset-people1", characterIndex: 0 },
-      promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스), "
+      promptLine: "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다 — 사람은 Scarloxy 트레이너 칩(scarloxy-charset-people1 0~7 · people2 0~1: 모자 트레이너·소년·소녀·농부·도장 보스)과 "
+        + "몬스터 트레이너 칩(oprn-charset-monster-trainer1 0~6: 주인공 남·여·라이벌·곤충채집 소년·등산가·낚시꾼·치유소 간호사), "
         + "몬스터·동물은 OPRN 몬스터 칩(Monster4~6)·몬스터 수집 따라다니기 칩·RTP 동물이다.",
       enforceLine: "RTP Actor·People·마법 학교·공용 공방 사람 칩은 거부되고, list_npc_graphics 는 허용 칩만 보여 준다.",
     },
@@ -149,7 +156,10 @@ export function genreLockCharsetFamiliesOfPreset(preset: GenreLockPresetId): rea
 
 /** 이 잠금이 지키는 캐릭터 칩 계열(저장본 우선, 없으면 프리셋 표). 캐릭터를 안 잠그는 장르는 undefined. */
 function lockedCharsetFamilies(lock: GenreLock, def: GenreLockPresetDef): readonly string[] | undefined {
-  return def.charsets ? (lock.allowedCharsetFamilies ?? def.charsets.families) : undefined;
+  if (!def.charsets) return undefined;
+  const saved = lock.allowedCharsetFamilies ?? def.charsets.families;
+  const late = (def.charsets.lateFamilies ?? []).filter((family) => !saved.includes(family));
+  return late.length ? [...saved, ...late] : saved;
 }
 
 /** 켜져 있는 잠금(모르는 preset 이면 없는 것으로 본다). */

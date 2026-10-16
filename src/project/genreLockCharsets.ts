@@ -69,7 +69,7 @@ export function genreLockCharsetViolations(before: Project, after: Project): Cha
   return out;
 }
 
-const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people", "heroes"]);
+const PEOPLE_FAMILIES: ReadonlySet<string> = new Set(["rtp-people", "shared-actor", "scarloxy-people", "monster-trainer", "heroes"]);
 const CREATURE_TAGS = ["몬스터", "동물", "생물"];
 
 function isCreatureEntry(entry: CharsetSemanticEntry | undefined): boolean {
@@ -92,7 +92,7 @@ function rankedAlternatives(project: Pick<Project, "assets">, families: Readonly
     .filter((entry) => {
       const entryFamily = charsetFamilyOf(project, entry.textureKey);
       if (!families.has(entryFamily)) return false;
-      return wantsPeople ? entryFamily === "scarloxy-people" || entryFamily === "rtp-people" : entryFamily === "oprn-creature" || entryFamily === "rtp-creature";
+      return wantsPeople ? entryFamily === "scarloxy-people" || entryFamily === "monster-trainer" || entryFamily === "rtp-people" : entryFamily === "oprn-creature" || entryFamily === "rtp-creature";
     })
     .map((entry) => ({ entry, score: score(entry) }))
     .sort((a, b) => b.score - a.score);

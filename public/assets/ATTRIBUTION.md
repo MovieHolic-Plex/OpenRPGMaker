@@ -416,3 +416,16 @@ The base chip per character is recorded in `src/assets/heroesCharsets.json` (`so
 - Selection record: the eight were chosen from the harness candidate sheet by the supervisor under the user's explicit delegation ("pick-6 는 니 추천대로 해", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
 - No Square Enix / Capcom artwork and no pixel of any other game is used; the character ideas are generic class archetypes (no existing character is copied).
 License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
+
+## MonsterTrainer1 walking chips — monster-collect trainers and town people (2026-10-16)
+
+`generated/charsets/MonsterTrainer1.png` (288x256, 7 characters x 3 patterns x 4 directions) holds seven walking chips from the `charset-actor` harness (`src/harnesses/charset-actor/`):
+protagonist (boy), protagonist (girl), rival, bug-catcher boy, hiker, angler, Healing Center nurse (generic job names, no existing character).
+**Each chip is derived from an EasyRPG RTP character sheet** (`CharSet/People1`, `People3`, `People4`, `Actor2`, `Actor4`; per-chip base in `src/assets/monsterTrainerCharsets.json` `source.baseChip`):
+the harness keeps the base chip's face, hands, body proportions, legs and walk poses and rewrites only hair, clothing, colours and carried gear inside region masks
+(edits by a model, `gemini-4-argon-high`, then re-verified frame-by-frame against the base: 12-frame invariance, protrusion, dither, palette size, held gear passing through the visible fist).
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP - Creative Commons Attribution 4.0 International; credit lines: `public/assets/easyrpg/AUTHORS.md`. The CC BY 4.0 credit applies to these derivatives.
+- Final pixel grids and edit commands: `harness-data/charset-actor/monster-trainer-chips/<key>/` (`chip.chr.txt`, `edit.json`, `meta.json`); baked by `src/harnesses/charset-actor/install_monster_trainer.py` without redrawing.
+- Selection record: candidates were filtered by the supervisor against the criteria above plus 8x/4x/1x eyeball checks of the 12 frames; no human picking step (`selection.by: supervisor-by-criteria` in the roster, user instruction 2026-10-16).
+- No Nintendo / Game Freak artwork and no pixel of any other game is used.
+License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.

@@ -1,0 +1,50 @@
+{
+ "key": "mt-hero-girl-a",
+ "arch": "mt-hero-girl",
+ "base": "People1:5",
+ "variant": "밤갈색 머리를 그대로 두고 초록 머리띠(머리 위 h 구역 얇게), 주황색 조끼(회색 상의 T 리컬러, 소매는 맨팔), 갈색 짧은 바지·장화 톤(B·S 리컬러), 허리 오른쪽에 작은 하늘색 가방(hip 장비 R).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cdegklopstwxz"
+   ],
+   "at": "2026-10-16T13:52:25"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cdegklopstwxz"
+ ],
+ "metrics": {
+  "added_up0": 9,
+  "added_up1": 10,
+  "added_up2": 2,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 2,
+  "added_down1": 10,
+  "added_down2": 6,
+  "added_left0": 1,
+  "added_left1": 7,
+  "added_left2": 9,
+  "changed_ratio": {
+   "H": 0.14,
+   "T": 0.743,
+   "B": 0.956,
+   "S": 0.791
+  },
+  "cross": 18,
+  "cross_base": 16,
+  "lone": 350,
+  "lone_base": 335
+ }
+}

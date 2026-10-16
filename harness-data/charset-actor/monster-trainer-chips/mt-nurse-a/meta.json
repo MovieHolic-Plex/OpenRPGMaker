@@ -1,0 +1,50 @@
+{
+ "key": "mt-nurse-a",
+ "arch": "mt-nurse",
+ "base": "Actor4:6",
+ "variant": "머리를 분홍색으로 리컬러(긴 머리 모양 유지), 이마 위에 작은 흰 간호 모자(머리 위 h 구역 페인트, 모자 가운데 작은 분홍 십자 금지·로고 금지), 흰 제복 원피스(파란 드레스 T 리컬러, 소매·허리띠 분홍), 흰 구두.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdghlnpsw"
+   ],
+   "at": "2026-10-16T13:35:43"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdghlnpsw"
+ ],
+ "metrics": {
+  "added_up0": 17,
+  "added_up1": 17,
+  "added_up2": 17,
+  "added_right0": 14,
+  "added_right1": 14,
+  "added_right2": 14,
+  "added_down0": 17,
+  "added_down1": 17,
+  "added_down2": 17,
+  "added_left0": 14,
+  "added_left1": 14,
+  "added_left2": 14,
+  "changed_ratio": {
+   "H": 0.995,
+   "T": 0.87,
+   "B": 0.911,
+   "S": 0.951
+  },
+  "cross": 12,
+  "cross_base": 27,
+  "lone": 357,
+  "lone_base": 416
+ }
+}

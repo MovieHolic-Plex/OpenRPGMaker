@@ -1,0 +1,159 @@
+{
+  "palette": {
+    "B": "#4a0b12",
+    "C": "#851421",
+    "D": "#bd2031",
+    "E": "#e3424d",
+    "F": "#2b170c",
+    "G": "#522d18",
+    "H": "#7d4828",
+    "I": "#a6653b",
+    "J": "#d4a349",
+    "K": "#423321",
+    "L": "#786042",
+    "M": "#ab8d67",
+    "N": "#d6ba94",
+    "O": "#4a1e08",
+    "P": "#8c380c",
+    "Q": "#c85a14",
+    "R": "#eb8224",
+    "U": "#263329",
+    "V": "#3e5242",
+    "W": "#5c7560",
+    "X": "#7a967e"
+  },
+  "recolor": [
+    {
+      "region": "T",
+      "map": {
+        "f": "O",
+        "k": "P",
+        "n": "Q",
+        "q": "R",
+        "d": "F",
+        "i": "G"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "g": "U",
+        "j": "U",
+        "o": "V",
+        "t": "W",
+        "x": "X"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "6": ".......BCCDDEEDCB.......",
+        "7": "......BCCDDEEDDCCB......",
+        "8": ".....cBclcclcelcc.......",
+        "13": "....cBCCDDEEEEDDCCBc....",
+        "14": ".....BCurwwyywwruCB....."
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "20": "........FGssssGF........",
+        "21": "......KLHGkyykGHMK......",
+        "22": ".....jotFGqqqqGFtoj....."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "H",
+      "rows": {
+        "6": ".......BCCDDEEDCB.......",
+        "7": "......BCCDDEEDDCCB......",
+        "8": ".....cBclcclcelcc.......",
+        "13": "....cBCCDDEECCDDCCBc...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "5": "........BCCDDEECB.......",
+        "6": ".......BCCDDEEDCB.......",
+        "7": "......cBclcccccel.......",
+        "13": "......cBCCDDEEEEDB......",
+        "14": "......ceBClurwwyg......."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "5": ".......BCDDEEDDCCB......",
+        "6": ".......BCDDEEDDCCB......",
+        "7": "......celceccclcBc......",
+        "13": ".......BDEEEEDDCCc......",
+        "14": ".......gywwrulCBec......"
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "backpack",
+      "kind": "hip",
+      "side": "L",
+      "sprites": {
+        "down": {
+          "rows": [
+            ".NK",
+            "MNK",
+            "MLK",
+            "GFF",
+            "..F",
+            "..F",
+            "..G"
+          ],
+          "grip": [2, 6]
+        },
+        "up": {
+          "rows": [
+            "..KKNNMMNNK",
+            "..KKLMGGMLK",
+            "..FFIIHHIIF",
+            "..FFIHJJHIF",
+            "G.FFGGGGGGF"
+          ],
+          "grip": [0, 4]
+        },
+        "right": {
+          "rows": [
+            ".KNNK..",
+            "KNMMMKK",
+            "KLMMLGG",
+            "FIIIHFF",
+            "FIIHHFF",
+            "FHHGGFF",
+            "FGGGGFF",
+            ".FFFF.."
+          ],
+          "grip": [5, 6]
+        },
+        "left": {
+          "rows": [
+            "....KNNK.",
+            "...KMMMNK",
+            "...GLMMLK",
+            "...FHIHHF",
+            "...FHHJGF",
+            "...FGGHGF",
+            "G..FGGGGF",
+            "....FFFF."
+          ],
+          "grip": [0, 6]
+        }
+      }
+    }
+  ]
+}

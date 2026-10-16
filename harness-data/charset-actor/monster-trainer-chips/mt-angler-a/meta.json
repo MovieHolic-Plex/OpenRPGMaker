@@ -1,0 +1,50 @@
+{
+ "key": "mt-angler-a",
+ "arch": "mt-angler",
+ "base": "Actor4:0",
+ "variant": "챙 넓은 베이지 낚시 모자(머리 위 h 구역 + 머리 윗줄 페인트), 올리브색 낚시 조끼(회색 상의 T 리컬러), 짙은 청록 바지, 갈색 장화, 오른손에 긴 대나무 낚싯대(held 장비 R: 자루 2칸 폭, 손 위로 높이 솟아 끝이 휘어짐, 끝에 가는 줄). 허리띠에 물고기 바구니는 달지 않는다.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 124,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 npst"
+   ],
+   "at": "2026-10-16T14:34:32"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 npst"
+ ],
+ "metrics": {
+  "added_up0": 79,
+  "added_up1": 73,
+  "added_up2": 61,
+  "added_right0": 54,
+  "added_right1": 66,
+  "added_right2": 84,
+  "added_down0": 63,
+  "added_down1": 73,
+  "added_down2": 55,
+  "added_left0": 85,
+  "added_left1": 67,
+  "added_left2": 56,
+  "changed_ratio": {
+   "H": 0.414,
+   "T": 0.263,
+   "B": 0.548,
+   "S": 0.432
+  },
+  "cross": 8,
+  "cross_base": 15,
+  "lone": 381,
+  "lone_base": 323
+ }
+}

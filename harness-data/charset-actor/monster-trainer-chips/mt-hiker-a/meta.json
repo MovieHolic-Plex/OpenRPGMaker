@@ -1,0 +1,50 @@
+{
+ "key": "mt-hiker-a",
+ "arch": "mt-hiker",
+ "base": "People4:1",
+ "variant": "붉은 두건(머리 위쪽 h 구역과 이마 위 한 줄, 곱슬 머리는 그대로 두고 두건만 얹음), 주황색 윗옷(녹색 상의 T 리컬러), 회녹색 바지(B 리컬러), 등에 큰 갈색 배낭과 말아 맨 침낭(back 장비).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 fknqx"
+   ],
+   "at": "2026-10-16T14:09:31"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 fknqx"
+ ],
+ "metrics": {
+  "added_up0": 18,
+  "added_up1": 18,
+  "added_up2": 18,
+  "added_right0": 50,
+  "added_right1": 53,
+  "added_right2": 57,
+  "added_down0": 21,
+  "added_down1": 25,
+  "added_down2": 19,
+  "added_left0": 52,
+  "added_left1": 56,
+  "added_left2": 53,
+  "changed_ratio": {
+   "H": 0.156,
+   "T": 0.718,
+   "B": 0.924,
+   "S": 0.0
+  },
+  "cross": 30,
+  "cross_base": 39,
+  "lone": 408,
+  "lone_base": 284
+ }
+}

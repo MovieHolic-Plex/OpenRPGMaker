@@ -1,0 +1,50 @@
+{
+ "key": "mt-rival-a",
+ "arch": "mt-rival",
+ "base": "Actor2:0",
+ "variant": "머리를 은회색 톤으로 리컬러(H 전체 명암 3톤 유지, 모양은 베이스 그대로), 보라색 점퍼(회색 상의 T 리컬러), 붉은 허리띠를 금색으로, 짙은 남색 바지·검은 장화. 뒷모습은 점퍼 등에 작은 금색 마름모 무늬(상의 T 페인트).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cegijn"
+   ],
+   "at": "2026-10-16T13:51:53"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cegijn"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.977,
+   "T": 0.809,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 5,
+  "cross_base": 5,
+  "lone": 404,
+  "lone_base": 379
+ }
+}

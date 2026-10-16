@@ -1,0 +1,50 @@
+{
+ "key": "mt-hero-boy-a",
+ "arch": "mt-hero-boy",
+ "base": "People1:0",
+ "variant": "청록색 야구모자(챙이 앞으로 나온 모자, 머리 위 h 구역+머리 앞쪽 페인트, 뒷모습은 모자 뒤 조임끈), 하늘색 점퍼(상의 T 리컬러, 흰 줄), 모래색 바지(B 리컬러), 등에 노란 배낭(back 장비: 위 방향에서는 등 전체가 보이고 다른 방향에서는 어깨 위로 배낭 윗부분만 삐져나옴).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 Bjmtx"
+   ],
+   "at": "2026-10-16T13:26:12"
+  }
+ ],
+ "delegated": "감독 선택(사용자 위임: 후보는 기준으로 거른다)",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Bjmtx"
+ ],
+ "metrics": {
+  "added_up0": 14,
+  "added_up1": 14,
+  "added_up2": 14,
+  "added_right0": 16,
+  "added_right1": 16,
+  "added_right2": 16,
+  "added_down0": 15,
+  "added_down1": 15,
+  "added_down2": 15,
+  "added_left0": 16,
+  "added_left1": 16,
+  "added_left2": 16,
+  "changed_ratio": {
+   "H": 0.466,
+   "T": 0.746,
+   "B": 0.878,
+   "S": 0.0
+  },
+  "cross": 0,
+  "cross_base": 13,
+  "lone": 412,
+  "lone_base": 361
+ }
+}

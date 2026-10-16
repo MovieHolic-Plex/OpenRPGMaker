@@ -1,0 +1,229 @@
+{
+  "palette": {
+    "D": "#261c10",
+    "E": "#7a6344",
+    "F": "#b2966e",
+    "G": "#dec59c",
+    "H": "#1e2611",
+    "I": "#37441f",
+    "J": "#566930",
+    "K": "#788f45",
+    "M": "#0b2429",
+    "N": "#144047",
+    "O": "#21616b",
+    "P": "#348591",
+    "R": "#4d2e18",
+    "S": "#734728",
+    "T": "#99643d",
+    "U": "#8f7838",
+    "V": "#c4ab5e"
+  },
+  "recolor": [
+    {
+      "region": "T",
+      "map": {
+        "d": "H",
+        "k": "I",
+        "p": "J",
+        "s": "K"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "d": "M",
+        "i": "N",
+        "n": "O",
+        "t": "P"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "j": "R",
+        "r": "S",
+        "w": "T"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "4": ".......DDDDDDDDDD.......",
+        "5": "......DDGGGGFFFFDD......",
+        "6": ".....DDGGGFFFFFEEDD.....",
+        "7": ".....DKKKKJJJJIIIID.....",
+        "8": "....DDGGGGFFFFFEEEDD....",
+        "9": "....DDDFFFEEEEEEEDDD...."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "H",
+      "rows": {
+        "4": ".......DDDDDDDDDD.......",
+        "5": "......DDGGGGFFFFDD......",
+        "6": ".....DDGGGFFFFFEEDD.....",
+        "7": ".....DKKKKJJJJIIIID.....",
+        "8": "....DDGGGGFFFFFEEEDD....",
+        "9": "....DDDFFFEEEEEEEDDD...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "4": ".......DDDDDDDDD........",
+        "5": "......DDGGGGFFFDD.......",
+        "6": ".....DDGGGFFFFEEDD......",
+        "7": ".....DKKKKJJJJIIID......",
+        "8": "....DDGGGGFFFFFEEDD.....",
+        "9": "....DDDFFFEEEEEEDDD....."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "4": "........DDDDDDDDD.......",
+        "5": ".......DDGGGGFFFDD......",
+        "6": "......DDGGGFFFFEEDD.....",
+        "7": "......DKKKKJJJJIIID.....",
+        "8": ".....DDGGGGFFFFFEEDD....",
+        "9": ".....DDDFFFEEEEEEDDD...."
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "fishing_rod",
+      "kind": "held",
+      "side": "R",
+      "sprites": {
+        "down": {
+          "rows": [
+            ".DDD.",
+            "DeDVD",
+            "e..UD",
+            "u..DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD",
+            "...VD",
+            "...UD",
+            "...DD"
+          ],
+          "grip": [4, 22]
+        },
+        "up": {
+          "rows": [
+            ".DDD.",
+            "DVDeD",
+            "DU..e",
+            "DD..u",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD...",
+            "DV...",
+            "DU...",
+            "DD..."
+          ],
+          "grip": [0, 22]
+        },
+        "right": {
+          "rows": [
+            ".DDD...",
+            "DeDVD..",
+            "e..UD..",
+            "u..DD..",
+            "...VD..",
+            "...UD..",
+            "...DD..",
+            "...VD..",
+            "...DD..",
+            "...DD..",
+            "...VD..",
+            "...UD..",
+            "...DD..",
+            "...VD..",
+            "...DD..",
+            "...DD..",
+            "...VDD.",
+            "...UDD.",
+            "...DDD.",
+            "...DDD.",
+            "....DDD",
+            "....UDD",
+            "....DVD",
+            "....UD.",
+            "....DD."
+          ],
+          "grip": [6, 22]
+        },
+        "left": {
+          "rows": [
+            "..DDD.",
+            ".DVDeD",
+            ".DU..u",
+            ".DD...",
+            ".DV...",
+            ".DU...",
+            ".DD...",
+            ".DV...",
+            ".DD...",
+            ".DD...",
+            ".DV...",
+            ".DU...",
+            ".DD...",
+            ".DV...",
+            ".DD...",
+            ".DD...",
+            ".DV...",
+            "DDV...",
+            "DDU...",
+            "DDD...",
+            "DDD...",
+            "DDD...",
+            "DDU...",
+            "DVD...",
+            ".DU...",
+            ".DD..."
+          ],
+          "grip": [1, 23]
+        }
+      }
+    }
+  ]
+}

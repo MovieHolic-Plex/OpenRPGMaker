@@ -107,3 +107,20 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - 검증 스크립트: `scripts/qa/runtime/heroes-chips-fixture.mts` + `heroes-chips.scenario.mjs`(출하 플레이어에서 8칸 줄 세우기 + 배회 2명; `npm run qa:runtime` 경로, 픽스처는 압축 직렬화 — 들여쓴 114MB 는 Playwright 파이프 100MB 상한을 넘어 브라우저가 죽는다) ·
   `heroes-chips-persist.mts`(임시 SQLite 폴더에 새/옛 프로젝트를 저장하고 다른 핸들로 재로드). 이 세션에서 vitest/gates/전체 typecheck 는 실행하지 않았다.
   `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `Heroes# (Heroes)` 한 항목을 손으로 덧붙였다(포털 표면 게이트는 미실행).
+
+## 몬스터 수집 트레이너·마을 인물 칩 MonsterTrainer1 (2026-10-16)
+
+사용자 결정: 「몬스터 칩은 charset·faceset·battle 전부 락. charset 은 Argon 으로 변형, faceset·battle 은 GPT 생성형 이미지」. 이 절은 **charset 만** 다룬다.
+번들에 사람 트레이너 걷기 칩이 없어 #2683 이 Scarloxy People 칩을 재사용하던 틈을 메운다. 방식은 Heroes1(#2682)과 같다(RTP 베이스 칩 + 부위 편집, `gemini-4-argon-high` 만).
+
+- 명세: `harness-data/charset-actor/monster-trainer-spec.json`(14원형: 주인공 남·여, 라이벌, 곤충채집 소년, 등산가, 낚시꾼, 수영 선수, 학생, 박사, 단원, 간부, 관장, 간호사, 점원). 베이스별 영역 SPECS 는 `trainer_specs.py`(`partedit.SPECS` 에 병합). 원작 이름·상표 금지, 직업 일반명만.
+- 그리기: `CTFF6_PART_OUT=<런 폴더> python3 src/harnesses/charset-actor/argon_part.py draw --spec harness-data/charset-actor/monster-trainer-spec.json --model gemini-4-argon-high --run <이름> --label mt-...`. 다른 모델 대용 금지.
+- **손에 든 장비 규칙(새, `partedit.verify`)**: `kind=held, mode=front` 장비는 자루가 주먹 칸을 위·아래로 통과해 보여야 한다. 옆면에서 몸을 가로지르거나 주먹 옆에 뜨면 불합격(채집망 pick-7/8 교훈).
+- 거르기: `install_monster_trainer.py collect <런...> --keys a,b --spec ...` 가 edit.json 을 다시 적용해 `chip.chr.txt` 와 12프레임 동일성을 독립 재검증한 뒤 `harness-data/charset-actor/monster-trainer-chips/<key>/` 로 복사한다(`meta.model` 이 argon-high/medium 이어야 함). 이후 감독이 8배·1배 12프레임을 눈으로 본다. **사람이 고르는 단계는 없다.**
+- 굽기: `python3 src/harnesses/charset-actor/install_monster_trainer.py`(`--check`·`--force`) → `public/assets/generated/charsets/MonsterTrainer1.png`(288x256, 현재 7명) + `src/assets/monsterTrainerCharsets.json`. 명단·순서(칸 번호, 덧붙이기 전용): `monster-trainer-install.json`. 증거 시트: `trainer_sheet.py` → `~/claude-viz/monster-trainer-chips-1.html`.
+- 배선: `src/assets/monsterTrainerCharsets.ts` → `charsetCatalog.ts`·`charsetSemantics.ts`·`generatedAssetResourceResolver.ts`·`project/io/resourceReferenceValidation.ts`, `catalog_sources.py`(`monster_trainer_catalog`). id `oprn-charset-monster-trainer1` · textureKey `tex_oprn_charset_monster_trainer1` · 그룹 `MonsterTrainer`.
+- 장르 잠금: `charsetFamily.ts` 에 가족 `monster-trainer`, `genreLock.ts` 의 monster-collect 허용 가족에 추가. 이미 저장된 옛 잠금은 허용 목록 사본을 갖고 있으므로 프리셋의 `lateFamilies` 가 읽을 때 새 가족을 합쳐 준다(이주 불필요). `genreLockCharsets.ts` 의 사람 가족 목록에도 포함.
+- **미설치(후속)**: 수영 선수(Actor3:5 베이스·수영모가 안 읽혀 불합격 2회), 학생(얼굴 상자 좁혀 재주문 필요), 박사·단원·간부·관장·점원(Argon 쿼터 소진으로 미주문). 쿼터는 2026-10-21T02:25Z 복구. 복구 뒤:
+  `CTFF6_PART_OUT=/home/main/mtc-runs python3 src/harnesses/charset-actor/argon_part.py draw --spec harness-data/charset-actor/monster-trainer-spec.json --model gemini-4-argon-high --run mt-r2 --label mt-swimmer-a --label mt-student-a --label mt-professor-a --label mt-grunt-a --label mt-admin-a --label mt-gym-leader-a --label mt-clerk-a`
+  → 눈 검수 → `install_monster_trainer.py collect ... --keys ...` → `monster-trainer-install.json` 에 덧붙이기(시트 1 의 8번째 칸이 비어 있고 이후는 MonsterTrainer2) → `install_monster_trainer.py` → `trainer_sheet.py` → `genreLock.ts` promptLine 갱신.
+- 검증: `scripts/qa/runtime/monster-trainer-chips-persist.mts`(임시 SQLite 폴더에 새/옛 잠금 프로젝트 저장 → `place_npc` 로 칩 배치·RTP 칩 거부 → 다른 핸들로 재로드; `npx vite-node --script ... --dir <폴더>`). vitest/gates/전체 typecheck 는 실행하지 않았다. `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `MonsterTrainer# (MonsterTrainer)` 를 손으로 덧붙였다(포털 표면 게이트 미실행).

@@ -16,7 +16,7 @@ import recipes as R
 CATALOG_FILES = ('charsetCatalog.ts', 'easyrpgRtp.ts', 'scarloxyPack.ts',
                  'farmingSprites.ts', 'oprnMonsterCharsets.ts', 'harnessMonsterArt.ts',
                  'harnessMonsterBundle.json', 'wizardingCharsets.ts',
-                 'wizardingCharsets.json', 'heroesCharsets.ts', 'heroesCharsets.json', 'sharedCharacterGraphics.json')
+                 'wizardingCharsets.json', 'heroesCharsets.ts', 'heroesCharsets.json', 'monsterTrainerCharsets.ts', 'monsterTrainerCharsets.json', 'sharedCharacterGraphics.json')
 WALKING_GROUPS = {'Actor', 'People', 'Monster', 'Animal', 'Scarloxy', 'Farm', 'Template'}
 
 
@@ -39,23 +39,35 @@ def wizarding_catalog(directory):
                  group=group[1]) for number in range(1, count + 1)]
 
 
-def heroes_catalog(directory):
-    """Baked CT/FF6 hero chip sheets (pick-6 adoption). Count lives in the roster, shape in the template."""
-    source = (directory / 'heroesCharsets.ts').read_text()
-    block = source.split('export const HEROES_CHARSET_ASSETS', 1)
+def roster_catalog(directory, ts_name, json_name, const_name, label):
+    """Baked charset-actor chip sheets (Heroes, MonsterTrainer). Count lives in the roster, shape in the template."""
+    source = (directory / ts_name).read_text()
+    block = source.split(f'export const {const_name}', 1)
     if len(block) != 2:
-        raise ValueError('직업 인물 캐릭터 원본 목록을 찾을 수 없습니다')
+        raise ValueError(f'{label} 캐릭터 원본 목록을 찾을 수 없습니다')
     body = block[1].split('satisfies', 1)[0]
     fields = dict(re.findall(r'(\w+):\s*`([^`]*)`', body))
     group = re.search(r'group:\s*"([^"]+)"', body)
-    count = json.loads((directory / 'heroesCharsets.json').read_text()).get('sheets')
+    count = json.loads((directory / json_name).read_text()).get('sheets')
+    if count == 0:
+        return []
     if not group or not isinstance(count, int) or count < 1 or not all(fields.get(key) and '${n}' in fields[key] for key in ('id', 'name', 'path', 'textureKey')):
-        raise ValueError('직업 인물 캐릭터 원본 목록 형식을 읽을 수 없습니다')
+        raise ValueError(f'{label} 캐릭터 원본 목록 형식을 읽을 수 없습니다')
     return [dict(id=fields['id'].replace('${n}', str(number)),
                  name=fields['name'].replace('${n}', str(number)),
                  path=fields['path'].replace('${n}', str(number)),
                  textureKey=fields['textureKey'].replace('${n}', str(number)),
                  group=group[1]) for number in range(1, count + 1)]
+
+
+def heroes_catalog(directory):
+    """Baked CT/FF6 hero chip sheets (pick-6 adoption)."""
+    return roster_catalog(directory, 'heroesCharsets.ts', 'heroesCharsets.json', 'HEROES_CHARSET_ASSETS', '직업 인물')
+
+
+def monster_trainer_catalog(directory):
+    """Baked monster-collect trainer / town NPC chip sheets (monster-trainer family)."""
+    return roster_catalog(directory, 'monsterTrainerCharsets.ts', 'monsterTrainerCharsets.json', 'MONSTER_TRAINER_CHARSET_ASSETS', '몬스터 트레이너')
 
 
 def harness_monster_charsets(directory):
@@ -76,7 +88,8 @@ def editor_catalog():
     providers = re.findall(r'\.\.\.([A-Z_]+)', (directory / 'charsetCatalog.ts').read_text().split('export const CHARSET_ASSETS:')[1].split('];')[0])
     expected = {'EASYRPG_CHARSET_ASSETS', 'SCARLOXY_CHARSET_ASSETS',
                 'FARMING_ANIMAL_CHARSET_ASSETS', 'OPRN_MONSTER_CHARSET_ASSETS',
-                'HARNESS_MONSTER_CHARSET_ASSETS', 'WIZARDING_CHARSET_ASSETS', 'HEROES_CHARSET_ASSETS'}
+                'HARNESS_MONSTER_CHARSET_ASSETS', 'WIZARDING_CHARSET_ASSETS', 'HEROES_CHARSET_ASSETS',
+                'MONSTER_TRAINER_CHARSET_ASSETS'}
     if set(providers) != expected:
         raise ValueError('에디터 캐릭터 카탈로그 공급자가 바뀌었습니다. 원본 목록 연결을 갱신하세요.')
     result = []
@@ -102,6 +115,7 @@ def editor_catalog():
     result.extend(harness_monster_charsets(directory))
     result.extend(wizarding_catalog(directory))
     result.extend(heroes_catalog(directory))
+    result.extend(monster_trainer_catalog(directory))
     if len({r['id'] for r in result}) != len(result):
         raise ValueError('에디터 원본 ID가 중복됐습니다')
     return result
@@ -154,6 +168,9 @@ def create(name='에디터 전체 캐릭터 원본'):
                 continue
             if entry['group'] == 'Heroes':
                 skipped.append(dict(assetId=entry['id'], reason='직업 인물 칩(pick-6 채택)은 이 공방의 산출물이다. 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
+                continue
+            if entry['group'] == 'MonsterTrainer':
+                skipped.append(dict(assetId=entry['id'], reason='몬스터 트레이너 칩은 이 공방의 산출물이다. 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
                 continue
             if entry['id'].startswith('oprn-charset-harness-monster'):
                 skipped.append(dict(assetId=entry['id'], reason='몬스터 수집 따라다니기 칩은 카탈로그에 연결돼 있고, 봉인된 20시트 걷기 원본에는 넣지 않는다'))
