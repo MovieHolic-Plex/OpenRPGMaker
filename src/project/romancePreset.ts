@@ -13,12 +13,14 @@ import { tilesetFamily } from "@/project/tilesetFamily";
 import type { Project } from "@/project/types";
 
 /**
- * 번들 타이틀 그림 중 연애에 가장 가까운 것(벽난로 곁 따뜻한 실내, 두 사람). 새 그림이 아니다 — `oprn-still-moon-meadow` 는 welcome/mini-03-moon.png.
- * 고르지 않은 것: `oprn-still-lullaby`(주택가) 는 알려진 게임 주인공을 닮은 인물이 있어 기본값으로 쓰지 않는다. 현대 캠퍼스·도시 연애 전용 타이틀은 번들에 없다 — 새 그림이 필요하다(만들지 않았다).
+ * 연애 기본 타이틀 — 벚꽃 교정 옥상의 노을, 교복 둘이 난간에 기대 교정을 내려다본다(후보 C, 감독 확정 2026-10-16).
+ * 생성형 이미지 모델(gpt-image-2.5-sunburst)로 만든 큰 그림이고 `public/assets/generated/title/romance-campus-spring.jpg` 에 있다.
+ * 위쪽 하늘이 넓어 로고 자리가 비고, 960×720 가운데 잘림에서도 인물 둘이 남는다.
+ * 이전 기본(`oprn-still-moon-meadow` = 벽난로 앞 두 노인)은 캠퍼스 연애와 어울리지 않아 바꿨다 — 그 id 도 「손대지 않은 기본」으로 보아 다시 적용할 때 새 그림으로 바꾼다.
  */
-export const ROMANCE_TITLE_RESOURCE_ID = "oprn-still-moon-meadow";
-/** 코드가 기본으로 깔아 둔(= 저작자가 안 고른) 타이틀 배경. 이 값일 때만 바꾼다. */
-const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field"]);
+export const ROMANCE_TITLE_RESOURCE_ID = "oprn-title-romance-campus";
+/** 코드가 기본으로 깔아 둔(= 저작자가 안 고른) 타이틀 배경. 이 값일 때만 바꾼다(옛 연애 기본 포함). */
+const UNTOUCHED_TITLE_BACKGROUNDS: ReadonlySet<string> = new Set(["oprn-title-field", "rpg-zzu-title-field", "oprn-still-moon-meadow"]);
 
 export const ROMANCE_MINUTES_PER_REAL_SECOND = 0.1;
 
@@ -33,9 +35,10 @@ export function romanceHudConfig(previous: FieldHudConfig | undefined): FieldHud
     theme: "hearts", font: "pixel", ...(previous?.menuStyle ? { menuStyle: previous.menuStyle } : {}),
     vitals: false, clock: true, tools: false, objective: false, hideEmpty: true,
     widgets: [
-      w("affection", { kind: "gauge", source: "friendship", label: "", shape: "hearts", width: 91, height: 22, color: "#ef6a68", showValue: false, max: 100 }),
+      // 호감 목록: 호감이 기록된 사람을 높은 순으로 셋까지(이름 + 하트). 한 사람뿐이면 한 줄.
+      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 8, width: 128, height: 20, color: "#f4d17b" }),
+      w("affection", { kind: "party", source: "friendship", label: "", shape: "hearts", y: 30, width: 128, height: 56, slots: 3, color: "#ef6a68", showValue: false, max: 100 }),
       w("clock", { kind: "clock", label: "", anchor: "top-right", width: 76, height: 44 }),
-      w("slots-left", { kind: "text", source: "socialSlots", label: "", y: 36, width: 118, height: 20, color: "#f4d17b" }),
     ],
   };
 }

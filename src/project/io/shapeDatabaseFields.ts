@@ -133,10 +133,13 @@ export function validateSystem(value: unknown): void {
   }
   if (system.genreLock !== undefined) {
     const genreLock = requireRecord("system.genreLock", system.genreLock);
-    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "grandfatheredMapIds"]);
+    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "allowedCharsetFamilies", "allowedFaceFamilies", "allowedBattleFamilies", "grandfatheredMapIds"]);
     assert(isGenreLockPresetId(genreLock.preset), `system.genreLock.preset is not a supported lock preset: ${String(genreLock.preset)}`);
     assert(genreLock.mode === "enforce" || genreLock.mode === "warn", "system.genreLock.mode must be enforce or warn.");
     for (const [index, family] of requireArray("system.genreLock.allowedFamilies", genreLock.allowedFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFamilies[${index}]`, family);
+    if (genreLock.allowedCharsetFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedCharsetFamilies", genreLock.allowedCharsetFamilies).entries()) requireNonBlankString(`system.genreLock.allowedCharsetFamilies[${index}]`, family);
+    if (genreLock.allowedFaceFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedFaceFamilies", genreLock.allowedFaceFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFaceFamilies[${index}]`, family);
+    if (genreLock.allowedBattleFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedBattleFamilies", genreLock.allowedBattleFamilies).entries()) requireNonBlankString(`system.genreLock.allowedBattleFamilies[${index}]`, family);
     if (genreLock.grandfatheredMapIds !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredMapIds", genreLock.grandfatheredMapIds).entries()) requireNonBlankString(`system.genreLock.grandfatheredMapIds[${index}]`, id);
   }
   if (system.titleScreen !== undefined) {
@@ -354,6 +357,24 @@ function validateFishing(value: unknown): void {
       if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
       if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
       if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+    }
+    if (spot.monsterCatches !== undefined) {
+      const monsterCatches = requireArray(`${label}.monsterCatches`, spot.monsterCatches);
+      assert(monsterCatches.length <= P2_RULE_LIMIT, `${label}.monsterCatches must contain at most ${P2_RULE_LIMIT} records.`);
+      const seenSpecies = new Set<string>();
+      for (const [catchIndex, catchRaw] of monsterCatches.entries()) {
+        const catchLabel = `${label}.monsterCatches[${catchIndex}]`;
+        const rule = requireRecord(catchLabel, catchRaw);
+        const speciesId = requireNonBlankString(`${catchLabel}.speciesId`, rule.speciesId);
+        assert(!seenSpecies.has(speciesId), `${catchLabel}.speciesId is duplicated: ${speciesId}`);
+        seenSpecies.add(speciesId);
+        assertSafeIntegerInRange(`${catchLabel}.weight`, rule.weight, 1, P2_WEIGHT_MAX);
+        if (rule.levelMin !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMin`, rule.levelMin, 1, 99);
+        if (rule.levelMax !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMax`, rule.levelMax, 1, 99);
+        if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
+        if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
+        if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+      }
     }
   }
 }

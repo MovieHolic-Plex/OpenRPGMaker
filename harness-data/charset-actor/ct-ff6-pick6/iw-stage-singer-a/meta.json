@@ -1,0 +1,50 @@
+{
+ "key": "iw-stage-singer-a",
+ "arch": "iw-stage-singer",
+ "base": "People3:3",
+ "variant": "풍성하게 올린 금빛 갈색 머리와 작은 깃털 머리장식(H·h), 소매가 부푼 짙은 남색 드레스(T 리컬러)와 은색 허리띠, 반짝이는 장식 한두 점, 왼손에 깃털 부채(held 장비 L, 손이 부채 자루를 쥠).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 BCEGILMNOcefghklmnpqsuvxz"
+   ],
+   "at": "2026-10-16T04:12:16"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 BCEGILMNOcefghklmnpqsuvxz"
+ ],
+ "metrics": {
+  "added_up0": 37,
+  "added_up1": 43,
+  "added_up2": 39,
+  "added_right0": 29,
+  "added_right1": 30,
+  "added_right2": 32,
+  "added_down0": 37,
+  "added_down1": 40,
+  "added_down2": 33,
+  "added_left0": 24,
+  "added_left1": 24,
+  "added_left2": 20,
+  "changed_ratio": {
+   "H": 0.985,
+   "T": 0.975,
+   "B": 0.914,
+   "S": 0.237
+  },
+  "cross": 1,
+  "cross_base": 0,
+  "lone": 303,
+  "lone_base": 360
+ }
+}

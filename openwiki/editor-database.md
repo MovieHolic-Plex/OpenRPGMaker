@@ -2483,3 +2483,14 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **「AI가 읽는 것」 패널.** `src/ai/worldAiReach.ts` 가 위 경로들의 **같은 함수**로 계산하고(화면용 근사식 금지), `worldAiReachPanel.ts` 가 그린다: 세계 개요(매 턴 고정·토큰), 채팅 조수(질문과 낱말이 겹치는 문서 최대 8개·6,000자), NPC 대사 작성기(600토큰 예산·생략 수), 대화로 설정 기록(참고 문서 수·상한 64), 「질문 시험」 입력(`world-ai-reach-probe`: 입력한 질문에 실제로 가는 문서 이름·토큰), 숨긴·미작성 문서 목록. 속성 레일에서는 한 줄 요약만 접어 두고(`aiReachOpen` 기본 접힘), 빈 설정집·세계 개요의 「조수에게 보내기」 탭에서는 펼친다. 처음부터 `open` 인 `<details>` 는 브라우저가 토글 이벤트를 한 번 쏘므로 **초기 이벤트는 상태에 기록하지 않는다**(기록하면 레일 기본값이 펼침으로 오염된다).
 - **연결 속성.** 관계 편집은 `<select>` 대신 이름 입력+`datalist` 자동 완성이다(`worldRelationEditor.ts`). 해석은 순수 모듈 `worldRelationTarget.ts`(`resolveRelationTarget`: id → 표시 이름 → 이름 대소문자 무시 → 유일한 부분 일치, 여럿이면 거절 문구, 같은 이름은 「이름 · id」로 구분). 저장되는 값은 기존과 같은 `relations[].b`(문서 id)다 — 저장 형태 불변.
 - 검증(2026-10-16, 에이전트 세션 규칙에 따라 vitest·gates·전체 typecheck 미실행): 범위 `tsc -p tsconfig.app.json --noEmit` 0, 헤드리스 11개 경로 누출 0(vite-node), 새 프로젝트·기존 프로젝트 ko/en 캡처, 임시 SQLite 폴더(`serve:project`) 저장→재로드에서 `visibility` 유지. 손으로 고친 기존 테스트(실행 안 함): `worldPanel.test.ts`·`worldviewCopy.test.ts`·`databaseWorldCodexStructure.test.ts`·`workshopSurfaces.test.ts`.
+
+### 세계관 화면 컴팩트화 2차 (2026-10-16) — 속성 레일 폐지, 칩 줄
+
+위 1단계의 「속성 레일」(`world-document-properties`, `propertiesOpen`, `aiReachOpen`, 1366px 자동 펼침)은 **2차에서 사라졌다**. 기능·저장·AI 공개 판정(`visibility.ts`, `computeWorldAiReach`)은 그대로이고 화면 구조만 바꿨다. 근거 그림: `~/claude-viz/world-ui-2.html`.
+
+- **구조.** 설정집은 CSS 그리드(`.world-panel-embedded`, 컨테이너 ≥800px)로 「목록 열 232px | 본문」. `.world-panel-main` 은 `display: contents` 라 갱신(refresh)이 `main` 만 갈아 끼워도 헤더의 검색 입력은 유지된다(포커스 보존) — **DOM 을 옮기지 말고 그리드 영역으로 배치할 것**. 툴바는 제목 + 통계 한 줄(`summaryLine`) + 「AI 공개 N개 · 숨김 N개」 칩(`world-ai-slot`, 구독 갱신은 `store.getCurrent()` 동일성으로 메모).
+- **칩 줄.** 본문 위 한 줄(`worldPropertyBar`): 유형·태그·AI 공개(읽기: 클릭 토글 `world-visibility-toggle`, 편집: 공개 범위 셀렉트)·연결·출처. 길거나 드문 것은 `worldPopoverChip`(`<details>`) 팝오버, 열림은 `state.openPopover`(한 번에 하나). **Esc 는 window 캡처로 받는다** — 자료집 창은 `modalStack` 이 document 캡처에서 Esc 를 가져가 창째 닫기 때문에(`wirePopoverDismiss`), 팝오버가 열려 있는 동안만 그보다 앞에서 팝오버 하나만 닫는다.
+- **분류 탭**은 칩 「분류 {label}」 팝오버(`world-category`) 안에 있다. 사용자 태그는 `data-i18n-skip`. 새 문구는 한국어가 키이며 en/ja/zh 는 기계 초안이다.
+- **세계 개요**는 레일 대신 한 줄 바(작성 상태·공개 범위·「AI 미리보기」 칩).
+- **측정(1440×900 / 1100×700, 문서 40개):** 한 화면 문서 6→17 / 3→11, 본문 칸 면적 31.5%→64% / 22.4%→52.3%.
+- 검증: 범위 tsc 0, 임시 SQLite 호스트 프로젝트에서 AI 숨김·공개 범위·연결·태그·세계 개요 비밀 저장→새 브라우저 재로드 일치. vitest·gates·e2e 미실행(`world-authoring-regression.spec.ts` 는 절차만 고쳐 두었고 실행하지 않음).

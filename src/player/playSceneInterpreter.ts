@@ -58,7 +58,7 @@ import { playCommandBattle } from "./commandBattle";
 import { claimForeground, foregroundOwner } from "./foregroundControl";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { advanceSocialSlotClock } from "@/player/socialSlotClock";
-import { resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
+import { friendshipDisplayMax, resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
 import { resolveTimeSystem } from "@/project/gameTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
@@ -190,7 +190,7 @@ async function runTalkPath(
   scene.setInputEnabled(false);
   try {
     const feedback = result.ok
-      ? formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship })
+      ? formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship, max: friendshipDisplayMax(project) })
         + (result.capped ? " (오늘은 이 사람에게서 얻을 수 있는 만큼 얻었다)" : "")
         + (result.slotsLeft !== undefined ? ` · 오늘 남은 시간 ${result.slotsLeft}` : "")
         + (endsDay ? " · 하루가 저문다." : "")

@@ -49,6 +49,7 @@ export type AiSurface =
   | "world-canon-body"
   | "tileset-analysis"
   | "workshop-draw"
+  | "pixel-draw"
   | "workshop-review";
 
 /** 표면이 쓰는 모델 티어. 조수 설정의 감독 모델(supervisor) 또는 실행 모델(lite). */
@@ -87,6 +88,7 @@ export const TILESET_ANALYSIS_MAX_TOKENS = 8192;
  * - `tileset-analysis`: 이미지를 읽는 감독 판단이라 감독 모델 + 매핑 JSON 전용 고정 예산.
  * - `workshop-draw`: 공방 그리기. 격자 JSON 이 길어 감독 모델 + 넉넉한 고정 예산(16384).
  *   설정의 «도트 저작 모델»(pixelModel, 텍스트 모델)이 저장돼 있으면 그 모델이 이긴다 — 없으면(옛 설정) 감독 모델 그대로.
+ * - `pixel-draw`: 낱장 도트 찍기(컷신 도트 소품·아이템 아이콘·조수 채팅 도트). workshop-draw 와 같은 예산·같은 «도트 저작 모델» 칸 — src/ai/dotTextImage.ts.
  * - `workshop-review`: 공방 검수. 그림을 읽는 판단이라 vision 역할 + 고정 예산(4096).
  */
 const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
@@ -105,6 +107,7 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   // 공방: 그리기는 격자 JSON 이 길어(48행 × 여러 번 고치기) 감독 모델 + 넉넉한 고정 예산,
   // 검수는 그림을 읽는 판단이라 tileset-analysis 처럼 vision 역할.
   "workshop-draw": { tier: "supervisor", maxTokens: 16384 },
+  "pixel-draw": { tier: "supervisor", maxTokens: 16384 },
   "workshop-review": { tier: "supervisor", maxTokens: 4096 },
 };
 
@@ -119,8 +122,9 @@ export function resolveSurfaceAiConfig(surface: AiSurface, base?: AiConfig): AiC
   const policy = SURFACE_POLICIES[surface];
   const source = base ?? loadAiConfig();
   const hasRoles = source.roleModels && Object.keys(source.roleModels).length > 0;
-  // 도트 저작 칸: 공방 그리기만 이 칸을 읽는다. 검수(workshop-review)는 그림을 읽는 일이라 시각(vision) 역할이다.
-  const pixelTiered = surface === "workshop-draw" ? configForPixel(source) : undefined;
+  // 도트 저작 칸: 공방 그리기·낱장 도트 찍기만 이 칸을 읽는다. 검수(workshop-review)는 그림을 읽는 일이라 시각(vision) 역할이다.
+  // 칸이 저장돼 있지 않으면(옛 설정) configForPixel 이 undefined 라 아래 기존 경로(계획·최종 판단 모델)로 간다 — 일괄 변환하지 않는다.
+  const pixelTiered = surface === "workshop-draw" || surface === "pixel-draw" ? configForPixel(source) : undefined;
   const tiered = pixelTiered ? { ...pixelTiered, maxTokens: source.maxTokens } : hasRoles
     ? surface === "tileset-analysis" || surface === "workshop-review" ? configForRole(source, "vision")
       : policy.tier === "lite" ? configForRole(source, "deep")

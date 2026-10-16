@@ -110,7 +110,7 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
         collectionRow(kind, record.id, record.name ?? record.id, summary(record), index, rerender)));
     };
     group("fish", current.database.fishSpecies ?? [], (record) => itemNames.get(record.itemId) ?? record.itemId);
-    group("fishing", current.system.fishing?.spots ?? [], (record) => `${record.catches.length}종`);
+    group("fishing", current.system.fishing?.spots ?? [], (record) => `${record.catches.length}종${record.monsterCatches?.length ? ` + 몬스터 ${record.monsterCatches.length}` : ""}`);
     group("forage", current.system.seasonalForage?.areas ?? [], (record) => `하루 ${record.dailySpawnCount}`);
     group("museum", current.system.museum?.rewards ?? [], (record) => record.minDonations ? `${record.minDonations}개` : `${record.requiredItemIds?.length ?? 0}종`);
     rowsHost.replaceChildren(...(rows.length ? rows : [lifeSearch
@@ -465,8 +465,7 @@ function spotInspector(record: FishingSpotDefinition, project: Project, rerender
   }
 
   cards.push(sectionCard({
-    title: "어획 표 관리",
-    hint: `${record.catches.length}종 등록됨`,
+    hint: `${record.catches.length}종 등록됨${record.monsterCatches?.length ? ` · 몬스터 ${record.monsterCatches.map((rule) => rule.speciesId).join(", ")} (도구로 편집)` : ""}`,
     children: [
       el("div", {
         class: "db-ws-toolbar",
@@ -1116,7 +1115,7 @@ function deleteRecord(kind: LifeCollectionKind, id: string, rerender: () => void
           ...draft.system.fishing,
           spots: draft.system.fishing.spots
             .map((spot) => ({ ...spot, catches: spot.catches.filter((row) => row.fishId !== id) }))
-            .filter((spot) => spot.catches.length > 0),
+            .filter((spot) => spot.catches.length > 0 || (spot.monsterCatches?.length ?? 0) > 0),
         };
       }
     }

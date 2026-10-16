@@ -1312,12 +1312,28 @@ export interface FishingCatchRule {
   readonly minSkillLevel?: number;
 }
 
+/**
+ * 낚으면 아이템 대신 몬스터 조우(야생 전투)가 되는 어획 규칙. 도감 종 speciesId 의 야생 무리로 싸운다.
+ * levelMin/levelMax 가 있으면 그 범위에서 굴린 레벨(조우표와 같은 의미), 없으면 적 레코드 레벨.
+ */
+export interface FishingMonsterCatchRule {
+  readonly speciesId: string;
+  readonly weight: number;
+  readonly levelMin?: number;
+  readonly levelMax?: number;
+  readonly seasons?: readonly Season[];
+  readonly timePhases?: readonly TimePhase[];
+  readonly weatherKinds?: readonly WeatherKind[];
+}
+
 export interface FishingSpotDefinition {
   readonly id: string;
   readonly name?: string;
   readonly mapId: MapId;
   readonly area: import("./project").Rect;
   readonly catches: readonly FishingCatchRule[];
+  /** 몬스터가 낚이는 규칙(선택). catches 의 어종과 같은 가중치 풀에서 함께 뽑힌다. */
+  readonly monsterCatches?: readonly FishingMonsterCatchRule[];
 }
 
 export interface FishingSystemConfig {

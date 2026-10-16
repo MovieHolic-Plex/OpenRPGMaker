@@ -43,6 +43,14 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["전투 연출", "배틀 애니", "전투 애니메이션", "battle animation", "battle fx", "효과"], tools: ["upsert_battle_animation", "read_directing_guide", "list_fx_sheets"], label: "전투 연출" },
   { terms: ["액션 전투", "action combat", "realtime battle"], tools: ["set_action_combat", "make_action_enemy", "run_action_combat_test"], label: "액션 전투" },
   { terms: ["비전머신", "필드 기술", "필드 스킬", "hidden machine", "field skill", "절단", "괴력", "파도타기", "폭포 오르기", "플래시", "덩굴", "물길 열기"], tools: ["place_field_obstacle", "upsert_skill", "run_scene_test"], label: "필드 기술 장애물(비전머신)" },
+  // ── 포켓몬식 몬스터 전투 깊이(2026-10-16 깊이 감사 #3): 검색하면 맞아 보이는 틀린 도구(날씨→일상 날씨 upsert_life_system, 조건부 볼→set_encounter_table)가 먼저 나오던 것을 바로잡는다 ──
+  { terms: ["특성", "몬스터 특성", "종 특성", "포켓몬 특성", "species ability", "immunetype", "resisttype", "boostlowhp", "immunestatus", "contactstatus", "statmultiplier"], tools: ["define_monster_species", "define_monster_families"], label: "몬스터 특성(species.ability)" },
+  { terms: ["맹독", "혼란", "독 걸", "독 피해", "독 데미지", "독상태", "badly poisoned", "toxic", "confusion", "volatilestatus", "gen1majorstatus", "화상 상태", "마비 상태", "수면 상태"], tools: ["upsert_state", "upsert_skill"], label: "몬스터 상태이상(독·맹독·혼란)" },
+  { terms: ["지닌 물건", "지닌 도구", "지니게", "들려 주", "held item", "helditem", "heldeffect", "held effect", "hold item", "열매"], tools: ["upsert_item", "define_monster_species"], label: "지닌 물건(heldEffect)" },
+  { terms: ["조건부 볼", "조건부 포획", "그물볼", "그물 볼", "퀵볼", "퀵 볼", "타이머볼", "타이머 볼", "리피트볼", "리피트 볼", "포획볼", "포획 볼", "net ball", "quick ball", "timer ball", "repeat ball", "capture ball", "capture condition", "captureprofile", "ballclass"], tools: ["upsert_item", "run_scene_test"], label: "조건부 포획볼(captureProfile.condition)" },
+  { terms: ["전투 날씨", "배틀 날씨", "몬스터 날씨", "포켓몬 날씨", "날씨 기술", "쾌청", "싸라기눈", "모래바람", "weather move", "battle weather", "sandstorm", "sunny day", "rain dance"], tools: ["upsert_skill", "define_monster_species", "simulate_battle"], label: "전투 날씨 기술(skill.weather)" },
+  { terms: ["날씨", "weather"], tools: ["upsert_life_system", "upsert_skill"], label: "날씨(일상 날씨 · 몬스터 전투 날씨 기술은 upsert_skill.weather)" },
+  { terms: ["낚시", "낚싯", "fishing", "fishing spot", "fishing rod"], tools: ["configure_fishing", "upsert_fish_species", "place_chest"], label: "낚시" },
   { terms: ["전투 막기", "길막", "장애물", "바위", "나무 베기", "blocker", "obstacle", "boulder", "rock"], tools: ["place_battle_blocker", "place_field_obstacle", "place_trap", "set_tile_passability"], label: "길 막는 장애물" },
   // ── 맵 ──
   { terms: ["새 맵", "맵 만들", "맵 생성", "맵 추가", "map create", "create map", "new map", "add map", "themescene", "테마 맵", "필드 맵", "필드 만들"], tools: ["create_map", "author_wild_route", "duplicate_map", "resize_map"], label: "맵 만들기(themeScene 으로 구성기까지 한 번에)" },

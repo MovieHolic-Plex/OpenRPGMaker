@@ -11,7 +11,7 @@ import { applyBattleMethod } from "@/project/battleMethod";
 import type { Project } from "@/project/types";
 import type { GenrePackId } from "@/project/genrePackId";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
-import { enableGenreLock } from "@/project/genreLock";
+import { enableGenreLock, markMonsterGenre } from "@/project/genreLock";
 
 export type GenrePresetId = GenrePackId;
 
@@ -50,6 +50,25 @@ export function openBlankStartOnMonsterKit(project: Project): void {
   found.map.tilesetId = found.kit.id;
   found.map.tileSize = found.kit.tileSize;
   found.map.lowerTiles.fill(0);
+}
+
+/**
+ * 몬스터 수집 의도(채팅 한 줄·헤드리스 첫 요청)가 들어온 **새 프로젝트**의 기본값: 몬스터 키트로 열고 장르 잠금(monster-collect)을 건다.
+ * 손대지 않은 빈 시작 맵 하나뿐인 프로젝트(needsMonsterKitStart)에서만 동작한다 — 맵을 몬스터 키트로 옮긴 뒤 잠금을 걸어 그 맵이 「이전부터 있던 맵」으로 안 잡힌다.
+ * 이미 게임이 있는 프로젝트는 건드리지 않는다: 다른 계열 맵이 있으면 사용자가 의도적으로 다른 장르 도구를 쓰는 것이고,
+ * 몬스터 맵뿐인데 잠금이 없으면 풀어 둔 것일 수 있다(다음 메시지가 되살리면 해제 경로가 무의미해진다).
+ * 다른 장르를 고른 새 프로젝트(system.genre 가 몬스터 수집이 아님)와 이미 다른 잠금(연애 등)이 있는 프로젝트는 키트만 열고 잠그지 않는다.
+ * 해제: configure_monster_system(enabled:false) 또는 자료집 시스템 탭의 「장르 칩셋 잠금」(결과·편집 기록에 「장르 잠금 해제됨」이 남는다).
+ * 잠금은 캐릭터 칩도 묶는다(2026-10-16): 손대지 않은 기본 주인공이 몬스터 테이밍 트레이너 칩으로 바뀐다(enableGenreLock).
+ */
+export function applyMonsterIntentStart(project: Project): { readonly opened: boolean; readonly locked: boolean } {
+  if (!needsMonsterKitStart(project)) return { opened: false, locked: false };
+  openBlankStartOnMonsterKit(project);
+  const { genre, genreLock } = project.system;
+  const locked = !genreLock && (genre === undefined || genre === "monster-collect") && enableGenreLock(project, "monster-collect");
+  // 잠금이 걸린 프로젝트는 선언 장르도 같이 남긴다(프리셋 경로와 같다) — 잠금이 풀려도 「몬스터 수집 게임」이라는 기록은 system.genre 에 있다.
+  if (locked) markMonsterGenre(project);
+  return { opened: true, locked };
 }
 
 export function applyGenrePreset(project: Project, id: GenrePresetId): void {

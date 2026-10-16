@@ -9,6 +9,7 @@ import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { configureEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { configureEmeraldMonsterOpening, configureEmeraldMonsterTitle } from "@/project/emeraldMonsterOpening";
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
+import { remapCharsetsToPreset } from "@/project/genreLockCharsets";
 import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 
 /**
@@ -19,13 +20,12 @@ import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 export function createMonsterTournament(options: TournamentOptions & { readonly title?: string } = {}) {
   const project = createExpeditionSeed();
   const hero = project.database.actors.find(a => a.id === DEFAULT_ACTOR_ID)!;
-  const character = hero.characterResourceId;
   configureScarloxyPokemonDemoProject(project);
   configureMonsterPresentation(project);
   // 체육관·배지가 없는 게임(대회형·탐험형)에는 「배지」 메뉴 칸이 없다 — 빈 배지 화면이 열리던 것을 뺀다. 목표는 「원정 수첩」(trainer-card)에서 본다.
   const menu = project.meta.oprnFieldMenu;
   if (menu) project.meta.oprnFieldMenu = { ...menu, entries: menu.entries.filter(e => e.command !== "campaign-progress") };
-  hero.characterResourceId = character;
+  // 주인공은 몬스터 테이밍 팩 트레이너(Scarloxy People1 0번) — 예전에는 기본 Actor1 로 되돌렸다(2026-10-16 장르 잠금 charset).
   hero.characterIndex = 0;
   hero.name = "여행자";
   const expedition = options.format === "expedition";
@@ -72,6 +72,7 @@ export function createMonsterTournament(options: TournamentOptions & { readonly 
   ] });
   configureEmeraldMonsterTitle(project, monsterTitleThemeFromStart(options.startTheme));
   if (project.system.titleScreen) { project.system.titleScreen.title = title; project.system.titleScreen.logoSubtitle = expedition ? "체육관 없는 도감 탐험" : "포획 없는 토너먼트"; }
+  remapCharsetsToPreset(project, "monster-collect");
   const serialized = serialize(project);
   return { project: deserialize(serialized), serialized, manifest };
 }

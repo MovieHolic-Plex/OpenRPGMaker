@@ -85,7 +85,7 @@ export interface PlainPiTurnClassification {
   readonly questionPromoted: boolean;
   readonly initialToolNames?: readonly string[];
   readonly intentNote: string | null;
-  /** 몬스터 수집 의도 — 호출자가 손대지 않은 빈 시작 맵을 몬스터 키트로 옮긴다(genrePresets.openBlankStartOnMonsterKit). */
+  /** 몬스터 수집 의도 — 호출자가 손대지 않은 빈 시작 맵을 몬스터 키트로 옮기고 장르 잠금을 건다(genrePresets.applyMonsterIntentStart). 전체 게임 제작 경로(build_monster_*)도 모델이 도구를 부르기 전에 같이 켠다. */
   readonly monsterKit?: boolean;
   /**
    * 이 턴을 어떻게 읽었는지 한 줄(`intent:llm mode=… construction=… → 마을 계약 …`). 활동 로그의 첫 상태 행이 된다.
@@ -140,7 +140,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const routingAudit = "intent:emerald-monster-game → 전체72맵/60종 제작";
     // One producer owns shared world/DB/session; never scatter a fresh campaign across map bundles.
     return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-      initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(input.text), routingAudit };
+      initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(input.text), routingAudit, monsterKit: true };
   }
   // 포켓몬 낱말 없이 말한 몬스터 수집 게임·포획 없는 대회형(2026-10-14 자유도 감사 #3·#5) — 자유 경로로 빠지면 칩셋이 버들항·사막·숲 섞임이었다.
   if (!plan.readOnly) {
@@ -149,17 +149,17 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     if (kind === 'tournament') {
       const routingAudit = "intent:monster-tournament → 포획 없는 대회형 제작";
       return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-        initialToolNames: [...MONSTER_TOURNAMENT_INITIAL_TOOLS], intentNote: MONSTER_TOURNAMENT_PROMPT, routingAudit };
+        initialToolNames: [...MONSTER_TOURNAMENT_INITIAL_TOOLS], intentNote: MONSTER_TOURNAMENT_PROMPT, routingAudit, monsterKit: true };
     }
     if (kind === 'expedition') {
       const routingAudit = "intent:monster-expedition → 체육관 없는 도감 탐험 제작";
       return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-        initialToolNames: [...MONSTER_EXPEDITION_INITIAL_TOOLS], intentNote: MONSTER_EXPEDITION_PROMPT, routingAudit };
+        initialToolNames: [...MONSTER_EXPEDITION_INITIAL_TOOLS], intentNote: MONSTER_EXPEDITION_PROMPT, routingAudit, monsterKit: true };
     }
     if (kind === 'campaign') {
       const routingAudit = "intent:monster-collect-free → 몬스터 칩셋 캠페인 제작";
       return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
-        initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + MONSTER_FREE_CAMPAIGN_NOTE + monsterScaleNote(input.text), routingAudit };
+        initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + MONSTER_FREE_CAMPAIGN_NOTE + monsterScaleNote(input.text), routingAudit, monsterKit: true };
     }
   }
   if (isGenrePresetBriefRequest(input.text)) {

@@ -17,7 +17,7 @@ function picture(url: string | undefined, name: string): HTMLElement {
 }
 export function drawHudWidget(node: HTMLElement, widget: HudWidget, reading: HudReading): void {
   node.replaceChildren();
-  node.dataset.kind = widget.kind; node.dataset.shape = widget.shape; node.dataset.panel = widget.panel;
+  node.dataset.kind = widget.kind; node.dataset.shape = widget.shape; node.dataset.panel = widget.panel; node.dataset.source = widget.source;
   node.style.setProperty("--hud-accent", widget.color);
   const value = Math.round(reading.value), max = Math.round(reading.max);
   const ratio = Math.max(0, Math.min(1, reading.value / reading.max));
@@ -73,6 +73,18 @@ export function drawHudWidget(node: HTMLElement, widget: HudWidget, reading: Hud
       slots.append(slot);
     }
     node.append(slots);
+  } else if (widget.kind === "party" && widget.source === "friendship") {
+    // 호감 목록: 이름 + 하트 다섯 칸(칸당 max/5). 한 줄에 한 사람.
+    for (const entry of reading.entries ?? []) {
+      const row = hudNode("hud-rel-row"), hearts = hudNode("hud-hearts");
+      const ratio = Math.max(0, Math.min(1, (entry.value ?? 0) / (entry.max || 1)));
+      for (let i = 0; i < 5; i++) {
+        const heart = hudNode("hud-heart"), fill = hudNode("hud-heart-fill");
+        fill.style.width = `${Math.max(0, Math.min(1, ratio * 5 - i)) * 100}%`; heart.append(fill); hearts.append(heart);
+      }
+      row.dataset.relation = entry.key ?? entry.name;
+      row.append(hudNode("hud-rel-name", entry.name), hearts); node.append(row);
+    }
   } else if (widget.kind === "party") {
     for (const entry of reading.entries ?? []) {
       const row = hudNode("hud-party-row"), body = hudNode("hud-party-body");

@@ -87,7 +87,11 @@ export function campaignLevels(gymsInput: number): CampaignLevels {
     gym,
     route: j => full ? [4, 10, 15, 20, 26, 32, 38, 44][Math.min(7, j - 1)]! : j <= 1 ? 4 : Math.max(5, gym(j) - 4),
     side: (t, original) => full ? original : Math.max(5, gym(t) + (original - orig(t))),
-    endgame: original => full ? original : Math.max(10, top + (original - 48)),
+    // 본래 곡선의 끝(48 이후: 관측탑·리그 방 50~58·희귀 몬스터 55)은 마지막 체육관 위로 최대 +10 이다 — 그 +10 은 체육관 8곳·길·사천왕 방 넷을 지나며 쌓인 경험을 전제로 한 값이다.
+    // 3관 캠페인에서 그대로 두면 챔피언(6마리)이 마지막 관장(21)보다 10 높은 31 이라 한 판에서 자라는 파티가 못 닿는다(2026-10-16 깊이 감사 c2: 자동 플레이 3회 모두 챔피언 패배).
+    // 체육관 곡선(gym())과 같은 비율 (top-9)/(48-9) 로 그 위쪽 간격도 줄인다. 사천왕 방이 없는 1~3관은 챔피언이 관측탑 바로 뒤라 중간에 키울 방이 없어 간격을 4분의 3 으로 더 줄인다
+    // (실측 3관: 챔피언 6마리 Lv23·24 통과, Lv25 패배 — 여유를 두고 23). 8관은 full 분기라 본래 곡선 그대로.
+    endgame: original => full ? original : Math.max(10, top + Math.round((original - 48) * (top - 9) / (48 - 9) * (campaignShape(gyms).leagueRooms >= 3 ? 1 : 0.75))),
   };
 }
 

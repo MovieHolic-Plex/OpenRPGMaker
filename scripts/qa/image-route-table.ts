@@ -31,7 +31,7 @@ for (const [name, config] of Object.entries(configs)) {
   for (const purpose of Object.keys(IMAGE_PURPOSES) as ImagePurpose[]) {
     const route = resolveImageRoute(purpose, config);
     rows.push({
-      설정: name, 용도: purpose, 갈래: route.kind,
+      설정: name, 용도: purpose, 갈래: route.kind, 표면: route.kind === "dot-text" ? route.surface : "",
       모델: route.kind === "generative" ? `${route.providerId} / ${route.model}`
         : route.kind === "dot-text" ? `${route.model.provider} / ${route.model.model} (${route.model.thinkingLevel})${route.follows ? " · 계획 모델 따라가기" : ""}`
         : "(생성 없음)",
@@ -47,7 +47,7 @@ const { createWorkerImageGenerator } = await import("../../scripts/lib/piPresent
 store.clear();
 saveAiConfig({ ...defaultAiConfig() });
 const wire: Array<{ purpose: string; sent: boolean; provider?: string; model?: string; refusal?: string }> = [];
-for (const purpose of ["title-art", "opening-still", "faceset", "tileset", "charset", "map-object", "interior-prop", "user-upload"] as ImagePurpose[]) {
+for (const purpose of ["title-art", "opening-still", "faceset", "tileset", "charset", "map-object", "interior-prop", "cutscene-sprite", "cutscene-illustration-sprite", "item-icon", "chat-pixel-art", "interview-scene", "concept-thumb", "user-upload"] as ImagePurpose[]) {
   let sent: { provider?: string; model?: string } | undefined;
   const fetchSpy = (async (_url: string, init?: RequestInit) => {
     sent = { provider: (init?.headers as Record<string, string>)["X-Oprn-Provider"], model: JSON.parse(String(init?.body)).model };
@@ -64,7 +64,7 @@ console.log("\n[generateAiImage 입구 — 네트워크 호출 여부]");
 console.table(wire);
 const workerRefusals: string[] = [];
 const workerGen = createWorkerImageGenerator({ imageProvider: "openai-codex", imageModel: "codex-image-default" } as never, () => undefined);
-for (const purpose of ["tileset", "charset"] as ImagePurpose[]) {
+for (const purpose of ["tileset", "charset", "cutscene-sprite", "item-icon", "chat-pixel-art"] as ImagePurpose[]) {
   try { await workerGen({ prompt: "x", purpose }); workerRefusals.push(`${purpose}: 통과(문제)`); } catch (e) { workerRefusals.push(`${purpose}: 거절 — ${(e as Error).message}`); }
 }
 console.log("\n[Bun 워커 생성기(타이틀·오프닝 도구)]\n" + workerRefusals.join("\n"));
@@ -73,7 +73,7 @@ console.log("\n[Bun 워커 생성기(타이틀·오프닝 도구)]\n" + workerRe
 const { resolveSurfaceAiConfig } = await import("../../src/ai/assistantEndpoint");
 const surfaces: Array<Record<string, string | number>> = [];
 for (const [name, config] of Object.entries(configs)) {
-  for (const surface of ["workshop-draw", "workshop-review"] as const) {
+  for (const surface of ["workshop-draw", "pixel-draw", "workshop-review"] as const) {
     const resolved = resolveSurfaceAiConfig(surface, config);
     surfaces.push({ 설정: name, 표면: surface, 제공자: resolved.providerId ?? "", 모델: resolved.model, 강도: resolved.reasoningEffort ?? "", 최대토큰: resolved.maxTokens });
   }

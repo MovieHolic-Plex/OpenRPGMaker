@@ -62,7 +62,7 @@ export class FieldHud {
         (widget.condition === "changed" && now - mount.changedAt < 3000);
       mount.node.hidden = !widget.enabled || !reading.available || !condition ||
         (widget.hideEmpty && ["slots", "timers", "party"].includes(widget.kind) && reading.value === 0);
-      if (widget.enabled && reading.available && widget.kind === "party") hpOwned = true;
+      if (widget.enabled && reading.available && widget.kind === "party" && widget.source !== "friendship") hpOwned = true;
       if (widget.enabled && reading.available && widget.kind === "gauge") {
         if (widget.source === "stamina") staminaOwned = true;
         if (widget.source === "hp") hpOwned = true;

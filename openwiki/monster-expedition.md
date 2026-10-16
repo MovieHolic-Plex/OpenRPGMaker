@@ -257,6 +257,8 @@ It requires an existing catalog; full generation without the option remains supp
 진행 잠금 `mx_badge_k>N` 을 마지막 배지로(0관은 `mx_starter`) 옮긴다. 0관은 체육관 없는 마을에 「조련사 회관」을 세우고 관측탑 보스가
 엔딩을 건다. `speciesCount<60` 은 쓰지 않는 계통을 통째로 덜어 낸다(`campaignSpecies.ts`). 결과 규모는 `system.monsterCampaign.plan`
 (`{gyms,species,maps,links}`)에 적히고 검수·`qa:game check` 가 그 계획과 정의-이벤트 일치(`monsterCampaignConsistency.ts`)를 본다.
+**끝 구간 곡선 (2026-10-16, 깊이 감사 #7):** `campaignLevels.endgame`(관측탑·리그 방·희귀 몬스터, 본래 48 이후)은 gymCount<8 에서 체육관 곡선과 같은 비율 `(top-9)/(48-9)` 로 간격을 줄인다. 사천왕 방이 없는 1~3관은 챔피언이 관측탑 바로 뒤라 그 사이에 키울 방이 없어 간격을 0.75 배로 더 줄인다.
+이전에는 간격 `original-48` 을 그대로 얹어 3관 챔피언(6마리)이 마지막 관장(Lv21)보다 10 높은 Lv31 이었고 자동 플레이 3회 모두 챔피언에서 졌다. 같은 곡선 안에서 챔피언 6마리 Lv23·24 는 통과, Lv25 는 패배(3관 실측) — 여유를 두고 23. gymCount 0..7 전부 `qa-game check` 통과, 8관은 `full` 분기라 곡선 그대로. **자동 플레이 기준(autoPlay)은 완화하지 않았다 — 생성 곡선만 고쳤다.** 알려진 별건(미수정): 사막 시작·3관은 세 번째 체육관 관장(선두 Lv42 대 Lv21)에서 전·후 모두 진다.
 측정(2026-10-14, 모델 없이): 0관 24맵·3관 32맵(눈 테마 41맵)·8관 90맵, 모두 몬스터 키트 시트(monster_overworld·gyms·rooms·dungeon…)만 쓴다.
 이미 지은 캠페인의 체육관을 줄이는 것은 `resizeGyms.ts`(`configure_monster_campaign badgeCount`). 상세는 `editor-ai-tools.md` 같은 날 절.
 검증(2026-10-14, 모델 없이 qa:game check + 자동 플레이): 체육관 0~8관 아홉 규모 모두 막힘 0·엔딩 도달. 2관은 마지막 마을(항구)의 관측탑·리그 문이 좁은 골목 안쪽 막다른 칸에

@@ -1,5 +1,5 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
-import { genreLockPromptNote } from "@/project/genreLock";
+import { genreLockPromptNote, genreLockShortNote, genreMarkerNote } from "@/project/genreLock";
 import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
@@ -26,8 +26,13 @@ import { desertEastPromptLines } from "../desertEastPolicy";
 import { snowNorthPromptLines } from "../snowNorthPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 
-function genreLockLines(project: Project): string[] {
-  const note = genreLockPromptNote(project);
+/**
+ * 장르 잠금·표지 줄. 공간 시공 실행은 긴 잠금 덩어리를 싣고, 그 밖의 실행(대사·가격·이름·NPC 그림 고치기)도 한 줄 표지는 매번 싣는다 —
+ * 「이 프로젝트는 몬스터 수집으로 잠겼다」는 사실과 캐릭터 그림 규칙(2026-10-16)은 NPC·배우를 만지는 비공간 턴에서 더 필요하다.
+ * 잠금도 표지도 없으면 빈 배열(프롬프트 불변).
+ */
+function genreLockLines(project: Project, spatial: boolean): string[] {
+  const note = (spatial ? genreLockPromptNote(project) : genreLockShortNote(project)) ?? genreMarkerNote(project);
   return note ? [note] : [];
 }
 
@@ -80,7 +85,7 @@ export function buildPiAgentSystemPrompt(
     ...scope,
     ...(spatial ? [`새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·사막이면 버들항 마을은 author_beodeul_town theme:"snow"·"desert" 로 짓고, 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`] : []),
     // 장르 잠금(옵트인) — 기본 칩셋 줄보다 뒤에 와서 이긴다. 잠금이 없으면 줄이 없다(프롬프트가 글자까지 같다).
-    ...(spatial ? genreLockLines(project) : []),
+    ...genreLockLines(project, spatial),
     ...(spatial ? [HAND_INTERIOR_POLICY_LINE] : []),
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),

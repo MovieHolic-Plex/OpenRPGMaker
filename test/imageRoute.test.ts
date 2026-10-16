@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { generateAiImage, ImageGenerationError } from "@/ai/imageGenerationClient";
-import { IMAGE_PURPOSES, imageRouteRefusal, isImagePurpose, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
+import { IMAGE_PURPOSES, imageRouteRefusal, isImagePurpose, isPixelDrawPurpose, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { DEFAULT_PIXEL_MODEL, PIXEL_MODEL_CHOICES, resolvePixelModel } from "@/ai/pixelModel";
 import { configForProviderSelection } from "@/ai/providerSelection";
@@ -15,7 +15,7 @@ const kindOf = (kind: string): ImagePurpose[] => purposes.filter((p) => IMAGE_PU
 describe("그림 용도 라우터", () => {
   it("세 갈래가 모두 있다", () => {
     expect(kindOf("generative").length).toBeGreaterThan(0);
-    expect(kindOf("dot-text")).toEqual(["tileset", "charset", "map-object", "interior-prop"]);
+    expect(kindOf("dot-text")).toEqual(["tileset", "charset", "map-object", "interior-prop", "cutscene-sprite", "item-icon", "chat-pixel-art"]);
     expect(kindOf("upload-only")).toEqual(["user-upload"]);
     expect(isImagePurpose("tileset")).toBe(true);
     expect(isImagePurpose("nope")).toBe(false);
@@ -33,6 +33,31 @@ describe("그림 용도 라우터", () => {
     expect(route).toMatchObject({ kind: "dot-text", surface: "workshop-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
     expect(DEFAULT_PIXEL_MODEL).toEqual({ provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" });
     expect(imageRouteRefusal(route as Exclude<typeof route, { kind: "generative" }>)).toContain("도트");
+  });
+  it("결정(2026-10-16): 컷신 도트 소품·아이템 아이콘·조수 도트는 낱장 도트 표면, 배경·인터뷰·썸네일·일러스트는 생성형 그대로", () => {
+    for (const purpose of ["cutscene-sprite", "item-icon", "chat-pixel-art"] as const) {
+      expect(isPixelDrawPurpose(purpose)).toBe(true);
+      expect(resolveImageRoute(purpose, defaultAiConfig())).toMatchObject({ kind: "dot-text", surface: "pixel-draw", follows: false, model: DEFAULT_PIXEL_MODEL });
+    }
+    for (const purpose of ["tileset", "charset", "map-object", "interior-prop"] as const) {
+      expect(isPixelDrawPurpose(purpose)).toBe(false);
+      expect(resolveImageRoute(purpose, defaultAiConfig())).toMatchObject({ surface: "workshop-draw" });
+    }
+    for (const purpose of ["cutscene-backdrop", "cutscene-illustration-sprite", "interview-scene", "concept-thumb"] as const) {
+      expect(IMAGE_PURPOSES[purpose].kind).toBe("generative");
+    }
+  });
+  it("옛 설정(pixelModel 없음)은 일괄 변환하지 않는다 — 낱장 도트도 계획 모델을 따라가고 설정은 비어 있다", () => {
+    localStorage.clear();
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", providerId: "openai-codex", model: "gpt-6.1-sol",
+      ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-6.1-sol", ultrabrainReasoningEffort: "medium",
+      roleModels: { deep: { provider: "openai-codex", model: "gpt-6.1-sol", thinkingLevel: "medium" } }, roleModelsPolicyVersion: 1 }));
+    const config = loadAiConfig();
+    expect(config.pixelModel).toBeUndefined();
+    expect(resolveImageRoute("item-icon", config)).toMatchObject({ kind: "dot-text", follows: true, surface: "pixel-draw" });
+    expect(resolveSurfaceAiConfig("pixel-draw", config)).toMatchObject({ providerId: "openai-codex", model: "gpt-6.1-sol", maxTokens: 16384 });
+    saveAiConfig({ ...defaultAiConfig(), pixelModel: { provider: "google-antigravity", model: "claude-sonnet-4-6", thinkingLevel: "high" }, modelSelectionOverrides: { pixel: true } });
+    expect(resolveSurfaceAiConfig("pixel-draw", loadAiConfig())).toMatchObject({ model: "claude-sonnet-4-6", reasoningEffort: "high" });
   });
   it("도트·업로드 용도로 generateAiImage 를 부르면 네트워크로 나가기 전에 거절한다", async () => {
     let called = 0;

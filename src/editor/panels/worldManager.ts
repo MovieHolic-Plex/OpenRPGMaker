@@ -52,28 +52,18 @@ export type WorldPanelState = {
   editError: string;
   documentOpen: boolean;
   gallery: boolean;
-  /** undefined = 아직 사용자가 정하지 않음 → 넓은 화면에서는 펼친다(`worldPropertiesOpen`). */
-  propertiesOpen: boolean | undefined;
-  /** 「AI가 읽는 것」 패널 펼침. undefined = 자리에 맞는 기본(빈 화면·세계 개요는 펼침, 좁은 속성 레일은 접힘). */
-  aiReachOpen: boolean | undefined;
+  /** 속성 칩 바에서 지금 펼쳐진 팝오버(ai·links·provenance·category). 다시 그려져도 열린 채 이어지게 여기 둔다. */
+  openPopover: string | undefined;
   /** 「AI가 읽는 것」 질문 시험 입력 — 리렌더 너머로 유지한다. */
   aiProbe: { query: string };
   onDraftChange?: () => void;
 };
 
-/** 이 폭 이상의 화면에서는 속성(AI 공개·AI가 읽는 것·연결)을 기본으로 펼친다. */
-export const WORLD_PROPERTIES_AUTO_OPEN_MIN_VIEWPORT = 1366;
-
-export function worldPropertiesOpen(state: Pick<WorldPanelState, "propertiesOpen">): boolean {
-  if (state.propertiesOpen !== undefined) return state.propertiesOpen;
-  return typeof window !== "undefined" && window.innerWidth >= WORLD_PROPERTIES_AUTO_OPEN_MIN_VIEWPORT;
-}
-
 export function createWorldPanelState(options: WorldPanelOptions = {}): WorldPanelState {
   return { tab: options.initialTab ?? "overview", search: "", selectedId: options.initialEntityId ?? null,
     addType: "character", editDraft: null, editError: "",
-    documentOpen: Boolean(options.initialEntityId), gallery: false, propertiesOpen: undefined,
-    aiReachOpen: undefined, aiProbe: { query: "" } };
+    documentOpen: Boolean(options.initialEntityId), gallery: false, openPopover: undefined,
+    aiProbe: { query: "" } };
 }
 
 export function hasWorldDraftChanges(state: WorldPanelState): boolean {

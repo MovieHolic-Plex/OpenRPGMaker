@@ -17,11 +17,45 @@
   4. `mode:"warn"` 은 거부 대신 경고만 낸다.
 - **조수에게 보이는 것을 좁힌다**: `find_tools` 결과·Pi 도구 목록(`toolAdapter.createPiToolset`)에서 비허용 계열 전용 시공 도구(`hiddenToolPatterns` — `author_beodeul_*`·`compose_*_map`·`link_*_interior`·`build_jp_city_*` 등)를 뺀다. 이름으로 직접 부르면 실행기가 `genre-lock` 으로 거부한다.
   `list_tileset_references`(tilesetId 생략)는 허용 계열 칩셋만 나열한다(직접 묻는 비허용 칩셋은 읽기 가능 + 경고). 시스템 프롬프트(`buildSystemPrompt`·`buildPiAgentSystemPrompt`)에 「장르 잠금」 한 덩어리가 붙는다 — 잠금이 없으면 줄이 없다.
-- **켜는 곳**: `applyGenrePreset("monster-collect")`(빈 시작 맵을 몬스터 키트로 옮긴 뒤) · `configure_monster_system(enabled:true)` · `build_monster_game/tournament/expedition` · 자료집 시스템 탭 「장르 칩셋 잠금」 체크박스(상태 배지: 잠금 이후 위반 맵 수·잠금 이전부터 있던 맵 수). 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다.
+- **켜는 곳**: `applyGenrePreset("monster-collect")`(빈 시작 맵을 몬스터 키트로 옮긴 뒤) · `configure_monster_system(enabled:true)` · `build_monster_game/tournament/expedition` · 자료집 시스템 탭 「장르 칩셋 잠금」 체크박스(상태 배지: 잠금 이후 위반 맵 수·잠금 이전부터 있던 맵 수). 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다. **몬스터 수집 기본값(2026-10-16)**: 몬스터 수집으로 시작된 새 프로젝트는 위 경로 어디로 들어와도 잠금이 켜진 채 시작한다 — 시작 장르(`createNewProjectSeed`→`applyGenrePreset`), 채팅 한 줄·헤드리스 첫 요청의 몬스터 수집 의도(`classifyPlainPiTurn` 의 `monsterKit` — 전체 제작 경로 `build_monster_*` 분류도 모델이 도구를 부르기 전에 같은 신호를 낸다 → `aiChatPanel`·`scripts/qa-game/gen.mts` 가 `applyMonsterIntentStart`). `applyMonsterIntentStart`(`project/genrePresets.ts`)는 **손대지 않은 빈 시작 맵 하나뿐인 프로젝트**만 몬스터 키트로 열고 잠근다(키트로 옮긴 뒤에 잠그므로 그 맵이 「이전부터 있던 맵」으로 안 잡힌다). 이미 게임이 있는 프로젝트(맵 여럿·이벤트·다른 계열 맵)·다른 장르를 고른 프로젝트·사용자가 푼 프로젝트는 건드리지 않는다 — 소급 잠금 없음. 몬스터 시작 예제는 버들항 마을 위에 서므로 `grandfatherGenreLockViolations` 로 그 맵을 「이전부터 있던 맵」에 적는다. 해제 경로는 그대로(`configure_monster_system(enabled:false)`·자료집 체크박스).
+- **잠금 중 허용 도구**: 숨기는 것은 버들항·캠퍼스·jp_city 등 비허용 계열 전용 파이프라인뿐이다. `build_monster_*`·`configure_monster_*`·`define_monster_*`·`place_trainer`·`place_field_obstacle`·`set_type_chart`·`set_encounter_table`·`set_shop_stock`·`upsert_skill/state/item`·`author_dungeon`·`create_map`(monster_* 7종) 등 포켓몬 라이크 제작 도구는 어느 것도 숨겨지거나 거부되지 않는다(`test/monsterLockDefault.test.ts`). 시스템 프롬프트의 잠금 덩어리 끝(`GENRE_LOCK_PRESETS['monster-collect'].promptExtra`)에 새 전투 기능(능력 단계 `statStageEffects` · 상태이상 `gen1MajorStatus` · 날씨 `weather` · 특성 `species.ability` · 지닌 물건 `heldEffect` · 조건부 포획볼 `captureProfile.condition`)과 HM 필드 기술(`place_field_obstacle`)이 설정되는 곳, 인자 모양을 읽는 레시피 이름이 한 줄로 실린다.
   켤 때 이미 허용 밖 칩셋이던 맵은 `grandfatheredMapIds` 에 기록해 막지 않고 따로 보고한다.
 - **끄는 곳**: `configure_monster_system(enabled:false)` 는 잠금도 풀며 결과 경고 「장르 잠금 해제됨: …」(채팅에 보임)와 편집 감사 로그 필드 `system.genreLock before:"enforce" after:"released"`(`applyChangesetToStore.applyAnnotation`)를 남긴다. 체크박스는 라벨 「장르 잠금 끄기」로 기록된다.
 - **검사**: `check_genre_lock`(읽기 도구, `genreLockTools.ts`) — 허용 칩셋·잠금 이후 위반 맵·**잠금 이전부터 있던 허용 밖 맵**을 나눠 보고한다. `projectLint` `opt-in:genre-lock-violation`(잠금 이후 위반만) · `qa:game` monster 검사의 `genre-lock-violation`(warning)/`genre-lock-preexisting`(info).
 - **헤드리스 시험**: `node scripts/oprn-tools.mjs --assistant [--current-map <id>] [--approve-family <family>] --project p.json --write <tool> '<args>'` 가 `assistantRun` 문맥으로 실행기를 부른다(조수 대용 역할극용). SQLite 저장→재로드 증거는 `node scripts/qa/genre-lock-persist.mjs [--from project.json] [projectDir]`.
+
+### 캐릭터 칩(걷기 그림)도 같은 잠금 + 장르 표지 `system.genre` (2026-10-16)
+
+「한 번 포켓몬 라이크로 시작한 프로젝트는 플레이어·NPC 도 기본 Actor1/People1 이 아니라 그 장르 칩이어야 한다」는 요구로, 맵 칩셋 잠금과 **같은 구조**를 캐릭터 칩에 붙였다.
+
+- **계열 분류** `src/project/charsetFamily.ts` — 리소스 id·텍스처 키의 모양만 보고(charsetCatalog 를 불러오지 않는다) `rtp-people`·`scarloxy-people`·`oprn-creature`·`rtp-creature`·`object`·`wizarding`·`shared-actor`·`uploaded`·`other` 로 가른다. 새 번들 시트가 생기면 이 표에 한 줄을 더한다(모르는 번들은 `other`).
+- **표는 프리셋마다**: `GENRE_LOCK_PRESETS[...].charsets?`(`GenreLockCharsetDef`: 허용 `families`·`kitNoun`·`playerDefault`·`promptLine`·`enforceLine`). `monster-collect` 만 채워져 있다(Scarloxy 트레이너·OPRN/RTP 몬스터·기물·업로드·기타). **romance 는 `charsets` 가 없으므로 동작·저장 바이트가 그대로다.** 켤 때 허용 목록을 `system.genreLock.allowedCharsetFamilies` 로 복사한다(정본은 프로젝트). 이 필드가 없는 옛 잠금은 표를 따르고, 같은 잠금을 다시 켜면 필드가 채워진다.
+- **켤 때 기본값**: `enableGenreLock` 이 **손대지 않은 기본 주인공(`actor_hero`=Actor1 #0)만** 프리셋 `playerDefault`(Scarloxy People1 #0)로 바꾼다. 저작자가 이미 바꾼 주인공·기존 NPC 는 그대로(기존 프로젝트 불변).
+- **조수 경로 강제** `genreLockCharsets.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 이벤트 페이지 `graphic.sprite`·배우 `characterResourceId`·공용 이벤트의 걷기 그림만 본다(이미 있던 그림은 위반이 아니다). 허용 밖이면 `genre-lock` 이슈로 거부하고 가장 가까운 허용 칩(`graphic:{textureKey,characterIndex}`)과 푸는 법을 메시지에 싣는다 — 무음 대체 없음. 캠페인 생성·`import_region_reference` 같은 통째 도구(`lenient`)는 막지 않고 경고만. 사용자 손 편집(`assistantRun` 아님)은 막지 않는다. 해제 경로는 맵 잠금과 같다(`configure_monster_system(enabled:false)`·자료집 체크박스).
+- **기본·일반 질의는 허용 칩만**: 도구 실행 동안 `withNpcGraphicCatalogFilter`(`assets/charsetQuery.ts`)가 카탈로그를 허용 칩으로 좁힌다 → 그림을 생략한 `place_npc`·`place_trainer`·`graphic:{query:"villager"}` 와 `list_npc_graphics` 가 허용 칩만 본다. 허용 칩에 없는 구체 검색(「할머니」)은 다른 그림으로 대체하지 않고 잠금 힌트와 함께 거부한다(`eventCompile.ts`).
+- **프롬프트**: 잠금 덩어리에 「캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다」 줄(+허용 계열·가까운 대안 안내)이 붙는다. 공간 시공 프롬프트는 전체 덩어리(`genreLockPromptNote`), 비공간 턴은 짧은 줄(`genreLockShortNote`)이라 **매 턴** 실린다.
+- **장르 표지(얇은 표지) `system.genre="monster-collect"`**: 이미 맵이 있는 프로젝트를 소급 잠금하는 안과 표지+프롬프트 주입 안을 비교해 **후자를 골랐다** — `system.genre` 는 던전 「pokemon」 경로 기본값·공방 하네스 선택을 정하므로, 암묵적 도구 호출만으로 프로젝트를 잠그면 저작자 기존 맵·칩을 놀라게 한다(소급 잠금 금지). 몬스터 전용 도구(`MONSTER_MARKER_TOOLS` + `configure_monster_system(enabled!==false)`)가 성공하면 `genre` 가 비어 있을 때만 표지를 적고(다른 장르는 덮어쓰지 않는다), 잠금이 없는 표지 프로젝트의 조수 프롬프트에는 `genreMarkerNote` 안내가 **막지 않고 알리기만** 한다. 의도 시작(`applyMonsterIntentStart`)·프리셋은 잠금과 함께 표지를 남긴다. 부작용: `system.genre` 가 생기면 lint `opt-in:genre-monster-collect-no-collection` 후보와 던전 기본 경로가 바뀔 수 있다.
+- **캠페인 생성본** `remapCharsetsToPreset`(`build_monster_expedition`·`tournament` 예제가 직렬화 전에 부른다): 방금 생성한 프로젝트의 허용 밖 사람 칩을 가장 비슷한 허용 칩으로 옮긴다(같은 원래 칩은 같은 새 칩, 관장·보스는 `보스` 태그 우선). 주인공은 Actor1 로 되돌리지 않고 Scarloxy 로 남긴다. 저작자가 그린 기존 프로젝트에는 쓰지 않는다.
+- **스키마 영향**: 엄격 검증(`shapeDatabaseFields`)에 `allowedCharsetFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다.**
+- **알려진 빈틈**: 번들에 포켓몬/GBA풍 **사람 트레이너 걷기 칩이 없다**(Scarloxy 사람 칩 10개뿐이라 캠페인 NPC 는 돌려 쓴다). 닌텐도 원작 파생 후보(`pokemon-character-casting`)는 공개 저장소에 커밋할 수 없다. `emeraldMonsterCast.THEME_CASTS` 는 비어 있다.
+- 테스트(미실행): `test/genreLockCharsets.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 26항목): `bun scripts/qa/monster-lock-charset-evidence.mts <out.json>`.
+
+### 얼굴·전투 그림(faceset·battler·트레이너·배경)도 같은 잠금 (2026-10-16)
+
+「몬스터 칩은 charset·faceset·battle 전부 락」 결정의 나머지 둘. 맵 칩셋(#2675)·걷기 칩(#2683)과 **같은 구조**(표 → 켤 때 프로젝트로 복사 → 조수 경로 diff 판정 → 가장 가까운 허용 대안)다.
+
+- **계열 분류** `src/project/visualFamily.ts` — 리소스 id 모양만 본다(무거운 번들 표를 끌어오지 않는다). 얼굴 `fantasy-people-face`·`fantasy-creature-face`·`scarloxy-face`·`oprn-creature-face`, 몬스터 전투 그림 `scarloxy-monster`·`harness-monster`·`generic-enemy`, 트레이너 `oprn-trainer`(`public/assets/battle-trainers/index.json` 14역할), 배경 `scarloxy-backdrop`·`emerald-terrain`·`oprn-scenery`·`pokemon-backdrop`·`rtp-backdrop`·`retired-backdrop`, 업로드·생성은 `uploaded`, 그 외 `other`. 전투 UI 스킨은 `skin:<id>`.
+- **표** `GENRE_LOCK_PRESETS[...].visuals?`(`GenreLockVisualDef`) — `monster-collect` 만 채움. 허용: 얼굴(scarloxy·oprn-creature·fantasy-creature·uploaded·other), 전투 그림(scarloxy-monster·harness-monster·uploaded·other), 트레이너(oprn-trainer·uploaded), 배경(scarloxy·emerald·oprn-scenery·pokemon·uploaded·other), 스킨(pokemon·retro2003). RTP 몬스터·동물 얼굴은 허용 RTP 생물 칩의 **짝 얼굴**이라 허용. **romance 는 `visuals` 가 없어 동작·저장 바이트가 그대로다.**
+- **저장 필드** `system.genreLock.allowedFaceFamilies`(목록)·`allowedBattleFamilies`(접두 `battler:`/`trainer:`/`backdrop:`/`skin:` 한 목록). 켤 때 표에서 복사, 필드 없는 옛 잠금은 표를 따르고 다시 켜면 채워진다. 기존 프로젝트·이미 칠한 그림은 안 건드린다. 기본 주인공(손대지 않은 것만)은 짝 얼굴(`generated-faceset-missing-scarloxy-00`)도 받는다.
+- **판정** `src/project/genreLockVisuals.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 얼굴(`actor.faceResourceId`·`changeFace`·이벤트/공용/전투 페이지 `face`·`characterAppearances[].face/bust/full`)·적/종 전투 그림(`enemy.monsterResourceId`·`species.graphic.monsterResourceId/backResourceId`)·`TroopRecord.trainerSprite`·전투 배경(`troop.previewBackgroundResourceId`·`map.battleBackground`·`terrain.battleBackgroundResourceId`·`backdropLayers`)·`battleUiStyle` 만 본다. toolRunner 가 걷기 칩 판정 다음에 `enforceGenreLockVisuals` 를 부른다(`ctx.assistantRun` 만, 손 편집은 안 막음, 통째 도구는 `lenient` 로 개수만 경고).
+- **거부 vs 생성 대기**: 허용 밖 그림인데 **가까운 허용 그림이 있으면** `GenreLockVisualError`(code `genre-lock`)로 거부하고 대안을 알린다(예: `generated-enemy-slime-01` → `scarloxy-monster-finiette`). **허용 그림이 아예 없으면 거부하지 않고** 그 칸을 비운 채 「생성 대기」 경고를 남긴다(얼굴 → `generate_character_appearance` 생성형 초상, 전투 그림·트레이너 → 사람이 고르는 `monster-collect-species`/`battle-trainer-sprites` 하네스). 그림을 지어내거나 닌텐도 원작 그림으로 때우지 않는다. 그림 생략 시 `ensureMonsterGraphic` 이 허용 계열에서 고르고(`pendingWhenLocked`: dbTools 의 `upsert_enemy`·`define_monster_species`), 없으면 비운다.
+- **트레이너 그림**: `upsert_troop` 스키마에 `trainerSprite{front,back?,throw?,backThrow?}` 를 열었고(전엔 조수가 못 정했다) `place_trainer` 에 `trainerSprite{front,back?}` 선택 인자를 더했다. 새 트레이너 전투(`trainerBattle`)에 그림이 없고 이름·걷기 칩이 번들 역할과 분명히 맞으면(소녀→girl 등, back 기본 hero_m) 채우고, 아니면 생성 대기. `mx_troop_*`(캠페인)는 필드 이벤트 걷기 칩에서 읽는 기존 규칙이라 건드리지 않는다.
+- **카탈로그**: 조수 실행 동안 `list_resources`(faceset·monster·backdrop)와 이름→그림 대응(`monsterGraphicAssignment`)이 허용 그림만 보인다(`withCharsetCatalog` 가 같이 설정). 사용자 손 경로는 전부 보인다.
+- **검사·표시**: `check_genre_lock` 이 `visuals{faceFamilies, battleFamilies, outsiders, pending}` 를 보고한다. DB 시스템 탭 배지에 요약. 프롬프트에는 「얼굴·전투 그림도 이 장르 계열만」 한 줄(`genreLockPromptNote`·`genreLockShortNote`).
+- **정책 충돌 없음**: 전투 UI 스킨은 지금 `pokemon`·`retro2003` 둘 다 허용이라 막을 게 없다(정면 스킨은 #1877 에서 삭제). 측면 전투 정책·gen1 스킨과 부딪히지 않는다.
+- **스키마 영향**: 엄격 검증에 `allowedFaceFamilies`·`allowedBattleFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다**(#2683 의 `allowedCharsetFamilies` 와 같다).
+- **알려진 빈틈**: `ActorRecord.battleCharacterResourceId`·`species.graphic.fieldGraphic` 은 잠그지 않았다. Scarloxy 흉상·전신은 없어 흉상·전신은 생성 대기뿐이다. 허용 몬스터 그림은 Scarloxy 19 + 하네스 15종(앞·뒤)·트레이너 앞모습 10역할이라 대부분 종·트레이너는 대기로 간다. 기본 DB 풀(배우·적)의 RTP 얼굴·일반 적 그림은 그대로다.
+- 테스트(미실행): `test/genreLockVisuals.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 35항목): `bun scripts/qa/monster-lock-visuals-evidence.mts <out.json>`.
 - 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
 
 ## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)
@@ -33,7 +67,7 @@
   적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
 - **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.
 - `set_party` 는 `scope` 생략 시 `start`(경고). `script_cutscene` 의 `{say:"…"}` 줄임 비트는 `kind:"say"` 로 보강하고 kind 오류는 쓸 수 있는 kind 목록을 준다.
-- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`weather`·`shiny`·`terrain`: 이유 문구 포함 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). `conditions.locationId`(맵 로케이션 id/이름)는 스키마에 선언해 실제로 저장한다. 레벨 범위·날씨·이로치는 포켓몬 라인 작업에서 필드를 만들 때까지 거절이 정상이다.
+- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`level`·`weather`·`shiny`·`terrain`·`terrainTag`·`location`: 이유 문구와 올바른 이름을 함께 준다 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). 지금 받는 칸은 항목 `troopId`·`weight`·`levelMin`/`levelMax`·`conditions`, 조건 `switchId`·`variableId`·`atLeast`·`minPartyLevel`/`maxPartyLevel`·`region`·`locationId`(맵 로케이션 id/이름)·`terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭)·`timePhase`·`season`이다. 야생 레벨 범위 `levelMin`/`levelMax`(1~99, 종 몬스터 적 트룹만 — 아니면 거절)는 항목 바로 아래이고 뽑힐 때마다 그 범위에서 굴린다; 고정 레벨은 둘에 같은 값. 날씨(`weather`)·이로치(`shiny`) 조건은 아직 없어 거절이 정상이다.
 
 ## 빈 잔디 맵 방지 — create_map themeScene · check_map_emptiness (2026-10-15 FF6 감사 #35)
 
@@ -2632,6 +2666,10 @@ walkthrough rather than treating a successful tool call as runtime proof.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
 
+**`pixel:true` (2026-10-16, kind=picture 만):** 도트 아이콘·소품을 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트)이 32px 격자로 찍어 투명 PNG 로 만든다
+(용도 `chat-pixel-art`, `src/editor/imageAssetGeneration.ts` → `src/ai/dotTextArt.ts`). 생략·false 는 종전 그대로 이미지 모델이다. 다른 kind 와 쓰면 `invalid-args`.
+같은 날 컷신 `generate_cutscene_art role:sprite style:game` 도 도트 저작 모델로 옮겼다 — 근거·결정 5건은 `openwiki/editor-ai-panel.md` 「이미지 용도 분리 → 결정 (2026-10-16)」.
+
 ## Feature16 combat and climate authoring tools (2026-09-21)
 
 `upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
@@ -3192,6 +3230,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 2026-10-14 자유도 감사(`~/claude-viz/monster-free.html`)에서 `build_monster_game` 은 늘 72맵·60종·8체육관·142연결을 만들고
 검수(`monsterGameReview.ts`)도 그 상수로 막았다 — 「체육관 3개」「체육관 없이」를 말해도 8관 캠페인이 나왔다.
 
+- **몬스터 낚시 (2026-10-16, 깊이 감사 #9):** `configure_fishing` 의 `catches[]` 항에 `fishId` 대신 `speciesId`(+`levelMin/levelMax`·계절·시간대·날씨)를 쓰면 낚였을 때 아이템 대신 그 종의 야생 전투가 열린다. 저장 형태는 `FishingSpotDefinition.monsterCatches`(어종 `catches` 와 한 가중치 풀에서 함께 뽑힌다). 도구는 종 id 존재와 그 종 적이 든 비트레이너 troop(`src/project/wildTroops.ts` `wildTroopIdForSpecies`, `define_monster_families spawn` 이 만드는 `troop_wild_<종>` 포함)이 없으면 거절한다. 런타임은 `attemptFishingCatch` 가 `{kind:'encounter',troopId,level}` 를 돌려주고 `interactWithLifeField` 가 같은 모양으로 전달해 플레이 장면(`runRandomEncounterBattle`)·`run_scene_test`(`fishing encounter <종> … : victory`) 둘 다 야생 인카운터와 같은 전투 경로로 싸운다. 참조 검수·복구(`io/references.ts`)는 사라진 종·무리를 가리키는 `monsterCatches` 항을 버린다. 확인: `bun scripts/qa/poke-audit-fix/fishing-probe.mts`.
+
 - **규모 인자:** `build_monster_game(create)` 의 `gymCount`(0..8, 기본 8)·`speciesCount`(6..60, 기본 60). 기본(인자 없음)은 이전과
   바이트 단위로 같다(여섯 옵션 변형 sha 비교로 확인). 만드는 쪽은 `src/project/examples/monsterExpedition/campaignPlan.ts`
   (`campaignShape`·`campaignLevels`·`retellForGymCount`) 한 곳이 정한다 — N관은 마을 1..N, 4관부터 박물관, 5관부터 밤막회사 지부,
@@ -3246,6 +3286,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
 - 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
 - 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+- **우회로·폭 (2026-10-16 깊이 감사 #5)**: rock·tree 는 기본 한 칸이라 도로가 넓으면 옆으로 돌아 기술 없이 지나갔다(8칸 폭 도로에 한 칸 = 성공 응답). 이제 `span`(1..16, `direction` 방향 칸 수)·`fullWidth:true`(`(x,y)` 를 지나는 걸을 수 있는 칸 전체, 폭이 16 을 넘는 광장은 거절)를 받고, 막은 칸마다 이벤트 하나(`id`, `id_c2`…)가 같은 열림 스위치를 공유해 어느 칸 앞에서 기술을 써도 줄 전체가 열린다. 놓은 뒤 막은 칸 곁의 걸을 수 있는 덩이들이 장애물 없이도 이어지는지(3칸 이상 덩이 둘 이상으로 갈라지는지) 재서 `data.bypass`(true=우회 가능)·`data.roadWidth` 와 「우회로가 있습니다」 경고(필요한 `fullWidth`/`span` 안내)를 돌려준다. 같은 `id` 로 다시 부르면 보조 이벤트도 되돌려 치운다. water·waterfall·dark 는 종전과 같다. 검증: `scripts/qa/poke-audit-fix/obstacle-probe.mts`.
+- `run_scene_test` 설명에 HM 체인 선행 조건(새 세션의 몬스터 파티는 비어 있음 → 스타터 이벤트를 먼저 지나기, 가방에 TM 넣기, useItem 대상 규칙, choose 는 대기 선택지가 있을 때만)을 적었다. `define_monster_families` 는 계통·단계별 `ability`(`define_monster_species` 와 같은 검증)·`machineSkillIds` 를 받고 응답 summary 와 `data.speciesIds`/`data.created[].species` 에 만든 id 를 돌려준다.
 
 
 ## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
@@ -3321,7 +3363,7 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## 연애 루프 도구 변경 (2026-10-16)
 
 - `place_npc` `talkFriendship`(true | {delta}) — 그 NPC 와의 대화 한 번이 호감과 하루 칸(`system.socialLoop` 이 켜졌을 때)을 쓴다. 정의에 없는 키를 주면 **조수 실행(`ctx.assistantRun`)에서는 오류**로 거부한다(예전엔 말없이 버려 「호감 대화가 안 켜진다」). 예제·직접 실행은 그대로.
-- `set_deadline_ending` — 「N일 뒤 결말 판정」: 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
+- `set_deadline_ending` — 「N일 뒤 결말 판정」(2026-10-16: `tiers[].characterId` 로 다인 문턱, 시간표는 요일 없음·페이지 `weekday` 조건 — `harnesses/romance-scene.md` 「2차 수리」): 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
 - 장르 잠금 프리셋 `romance` 추가 — 위 「장르 칩셋 잠금」과 같은 구조(허용 칩셋 계열 oprn-campus·oprn-modern·oprn-jp, 비허용 계열 시공 도구 숨김). 정의·기본값은 `openwiki/harnesses/romance-scene.md` 「연애 인터뷰 기본값」.
 
 

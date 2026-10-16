@@ -8,6 +8,8 @@ type LifeFieldTarget = { readonly mapId: string; readonly x: number; readonly y:
 export type LifeFieldInteractionResult =
   | { readonly kind: "unhandled" }
   | { readonly kind: "success"; readonly source: "forage" | "fishing"; readonly itemId: string }
+  /** 낚시에서 몬스터가 걸렸다 — 호출자(플레이 장면·시험 러너)가 troopId 로 야생 전투를 연다. */
+  | { readonly kind: "encounter"; readonly source: "fishing"; readonly speciesId: string; readonly troopId: string; readonly level?: number }
   | { readonly kind: "refused"; readonly source: "forage" | "fishing"; readonly reason: string; readonly message: string };
 
 /** Both input authorities call this after events/chests and before farming. */
@@ -20,6 +22,7 @@ export function interactWithLifeField(project: Project, session: PlaySession, ta
   }
   if (fishingSpotAt(project, target)) {
     const result = attemptFishingCatch(project, session, target);
+    if (result.ok && "kind" in result) return { kind: "encounter", source: "fishing", speciesId: result.speciesId, troopId: result.troopId, ...(result.level !== undefined ? { level: result.level } : {}) };
     return result.ok ? { kind: "success", source: "fishing", itemId: result.itemId }
       : { kind: "refused", source: "fishing", reason: result.reason, message: refusalMessage("fishing", result.reason) };
   }

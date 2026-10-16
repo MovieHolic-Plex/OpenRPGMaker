@@ -4472,7 +4472,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 이 하네스는 dev-showcase 경로다. 실제 Electron/호스트 저장 경로(`viewSubmit`, `saveMapPatch`)는 재지 않았다. 병목 1의 «저장 복제 건너뛰기» 는 하네스 환경 한정 효과다.
 - 하네스 한 번의 편차가 크다(팀 최대 정지 2~4 s 는 실행마다 다르다). 판정은 p95·Long Task 합·ACK 중앙값 같은 합계로 하고, 한 번의 최댓값으로 회귀를 선언하지 마라.
 
-## 이미지 용도 분리 — 배경·대형은 이미지 모델, 도트는 텍스트 모델 (2026-10-16)
+## 이미지 용도 분리 — 배경·대형은 이미지 모델, 도트는 텍스트 모델 (2026-10-16, 미결 5건 결정 2026-10-16)
 
 사용자 요청: 「AI 설정에서 이미지 생성 모델을 용도별로 분리. 배경·대형 이미지(타이틀·오프닝·컷신 스틸 등)는 GPT 생성형 이미지, 도트를 찍어야 하는 것(타일셋·캐릭터셋 등)은 Argon 또는 Claude(코드 손 도트).」
 
@@ -4482,8 +4482,9 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
   네트워크 호출 전에 `ImageGenerationError` 로 거절한다. purpose 는 서버로 보내지 않는다. purpose 가 없는 호출은 종전 그대로(설정의 이미지 모델 칸).
   모든 앱 안 호출처가 purpose 를 넘기는지는 `test/imageRoute.test.ts` 의 소스 스캔이 본다(**작성만 했고 이 작업에서는 실행하지 않았다**).
 - **도트 저작 모델**: `AiConfig.pixelModel`(`{provider, model, thinkingLevel}`) + `modelSelectionOverrides.pixel`. 이미지 모델이 아니라 **텍스트 모델**이
-  격자 문자열·좌표로 픽셀을 쓴다(`src/ai/pixelModel.ts`). 지금 이 칸을 읽는 곳은 `resolveSurfaceAiConfig("workshop-draw")` 하나다
-  (`src/ai/assistantEndpoint.ts`) — 공방 그리기. 검수(`workshop-review`)는 그림을 읽는 일이라 시각(vision) 역할 그대로다. **조수 채팅은 이 칸을 읽지 않는다.**
+  격자 문자열·좌표로 픽셀을 쓴다(`src/ai/pixelModel.ts`). 지금 이 칸을 읽는 곳은 `resolveSurfaceAiConfig` 의 두 표면이다
+  (`src/ai/assistantEndpoint.ts`) — `workshop-draw`(공방 그리기)와 `pixel-draw`(낱장 도트 찍기, 2026-10-16 추가, 아래 「결정」). 검수(`workshop-review`)는 그림을 읽는 일이라 시각(vision) 역할 그대로다.
+  **조수 채팅 본체(`chat` 표면)는 이 칸을 읽지 않는다** — 채팅이 부르는 «도트 찍는 도구» 가 `pixel-draw` 로 이 칸을 읽는다.
 - **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
   모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
   새 설정(`defaultAiConfig`)만 Google Gemini 4 Argon · 보통으로 시작한다. 이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않는다(`providerSelection.ts`).
@@ -4500,23 +4501,47 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | title-logo | 생성형 | `src/editor/titleLogoGeneration.ts:45` | 흰 바탕 로고 → 투명 잘라내기 |
 | title-depth | 생성형 | `src/editor/titleDepthGeneration.ts:84` | 흑백 깊이 지도(흐려도 됨) |
 | opening-still | 생성형 | `src/editor/openingImageGeneration.ts:110` | 오프닝·게임오버 스틸, 전경 레이어 |
-| cutscene-backdrop / cutscene-sprite | 생성형(**모호 1**) | `src/editor/tools/cutsceneArtTools.ts:154` | style:game 은 «16비트 도트» 를 요구한 뒤 게임 해상도로 줄인다 |
+| cutscene-backdrop | 생성형 | `src/editor/tools/cutsceneArtTools.ts` | 컷신 배경(도로 띠 빈 무대). style:game 이어도 이미지 모델 → 320×240 도트화 |
+| cutscene-illustration-sprite | 생성형 | 같은 파일 | style:illustration(회상·환영·꿈) 소품 컷아웃 |
+| **cutscene-sprite** | **도트(낱장)** | 같은 파일 `drawsGameSpriteAsDots` | **결정 1**: style:game 소품은 도트 저작 모델이 격자로 찍는다(`src/ai/dotTextImage.ts`) |
 | backdrop · title-picture · picture | 생성형 | `src/editor/imageAssetGeneration.ts:33`, `src/ai/imageGenerationQueue.ts:101`(필드 kind) | generate_image_asset · 「그림 표시」·피커 AI 칸 |
 | faceset | 생성형 | `src/ai/imageGenerationQueue.ts:101`(kind faceset) | 얼굴 바꾸기·배우 얼굴 칸 |
 | character-appearance | 생성형 | `src/editor/characterAppearanceGeneration.ts:105` | «hand-drawn 2D portrait, 도트 아님» 프롬프트 |
-| item-icon | 생성형(**모호 4**) | `src/editor/aiDatabaseGeneration.ts:288` | 아이템 아이콘 |
-| interview-scene | 생성형(**모호 2**) | `src/editor/interviewSceneGeneration.ts:45` | 도트 격자 검수까지 하지만 이미지 모델로 생성 |
-| concept-thumb | 생성형(**모호 3**) | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | «SNES 도트 썸네일» 을 이미지 모델에 요구 |
+| **item-icon** | **도트(낱장)** | `src/editor/aiDatabaseGeneration.ts`(DB 「AI 로 만들기」 아이템 그림) | **결정 3**: 32px 투명 도트 아이콘을 도트 저작 모델이 찍는다 |
+| **chat-pixel-art** | **도트(낱장)** | `src/editor/imageAssetGeneration.ts`(`generate_image_asset kind:picture pixel:true`) | **결정 4**: 조수 채팅이 도트로 달라고 한 아이콘·소품 |
+| interview-scene | 생성형 | `src/editor/interviewSceneGeneration.ts:45` | **결정 2 확정**: 도트 격자 검수까지 하지만 이미지 모델로 생성한다(유지) |
+| concept-thumb | 생성형 | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | **결정 2 확정**: «SNES 도트 썸네일» 이어도 이미지 모델로 생성한다(유지) |
 | tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
 | charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
 | user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
 | (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |
 | (제외) 컨셉 하네스 | 별도 경로 | `src/harnesses/game-concepts/node/draw.ts:12-13` | 노드 쪽이 `openai-codex`/`codex-image-default` 를 직접 고정 |
 
-### 사용자에게 물을 목록(결정 전에는 현재 동작 유지, 건드리지 않음)
+### 결정 (2026-10-16)
 
-1. 컷신 `style:game` 스프라이트·배경 — 도트 용도로 보고 막을까, 지금처럼 이미지 모델 → 도트화로 둘까.
-2. 새 게임 인터뷰 배경 — 도트 검수를 통과해야 쓰는데 이미지 모델로 생성한다. 도트 저작 모델로 옮길까.
-3. 컨셉 카드 썸네일 — 같은 질문(도트 썸네일을 이미지 모델에 요구).
-4. 아이템 아이콘 — 일러스트 아이콘으로 두나, 도트 아이콘으로 보나.
-5. 조수 채팅 중 도트 작업에도 도트 저작 모델을 쓸까(지금은 공방 그리기만). 옛 설정 사용자의 공방 그리기를 Argon 보통으로 일괄 전환할지도 같이.
+사용자가 「내 추천대로」 하라고 위임해 아래 다섯을 정했다. 코드·표·QA 출력은 이 결정을 따른다.
+
+1. **컷신 `style:game` 스프라이트 → 도트 텍스트 경로.** 용도 id `cutscene-sprite`(dot-text, 표면 `pixel-draw`). `generate_cutscene_art role:sprite style:game` 은 이미지 모델을 부르지 않고
+   도트 저작 모델이 `tiles×16`px 긴 변의 투명 PNG 를 격자로 찍는다. 긴 변 64 이하는 1배, 넘으면 칸이 64 이하가 되는 가장 작은 정수 배로 확대한다(타일 5칸 이상은 도트가 2~4배 굵어진다).
+   **컷신 배경(backdrop)은 생성형 그대로**이고, `style:illustration` 소품은 생성형(`cutscene-illustration-sprite`)이다.
+   이미지 생성기만 꽂힌 헤드리스 QA 하네스(`setCutsceneArtGenerator`, 도트 호출 없음)는 «준비된 그림을 그대로 쓰는 대역» 이라 옛 경로를 유지한다 — 앱·Bun 워커는 항상 도트 경로다
+   (워커는 시작 때 `setDotTextChat` 으로 요청에 실린 `pixelModel` 을 꽂는다).
+2. **인터뷰 장면 배경·컨셉 썸네일 = 생성형 유지(변경 없음, 확정).** `interview-scene`·`concept-thumb` 는 표에서 생성형 그대로다.
+3. **아이템 아이콘 → 도트 텍스트 경로로 전환했다.** DB 「AI 로 만들기」 의 아이템 그림은 `item-icon`(dot-text)이다. 32px 투명 PNG 라 흰 배경 지우기(`flattenGeneratedArtwork`)를 건너뛴다.
+   프롬프트(`artworkPromptFor`)는 흰 배경이 아니라 투명 배경을 요구한다. 구조상 막히는 부분은 없었다 — 한 장 한 번 호출이라 공방(후보·검수)을 거치지 않는다.
+4. **조수 채팅의 도트 찍기는 `pixelModel` 을 쓴다.** 새 용도 `chat-pixel-art`(dot-text, `pixel-draw`) + 도구 `generate_image_asset` 의 선택 인자 `pixel:true`(kind=picture 만): 32px 도트 아이콘·소품을
+   도트 저작 모델이 찍는다(생략하면 종전처럼 이미지 모델). 컷신 도트 소품(1)도 조수 채팅 도구라 같은 경로다. 채팅 본체(`chat` 표면, 감독 모델)는 그대로이고 도구 안에서만 도트 저작 모델을 부른다.
+   코드 손 도트 도구(`author_actor_charset`·`build_hand_interior_room` 등)는 모델 호출이 없는 결정적 도구라 이 설정과 무관하다.
+5. **레거시 설정은 일괄 변환하지 않는다.** `pixelModel` 이 저장돼 있지 않으면(옛 설정) 새 라우팅도 `follows`(계획·최종 판단 모델)로 간다 — `loadAiConfig` 는 칸을 만들지 않는다.
+   Argon 보통 기본값은 `defaultAiConfig()`(새 설정)와 사용자가 모델 탭에서 명시 선택한 값에만 적용된다. 워커 요청에는 클라이언트가 **해석한 값**(`resolvePixelModel`)을 싣는다(저장은 하지 않는다).
+
+#### 낱장 도트 입구 (`src/ai/dotTextImage.ts` · `dotTextArt.ts` · `dotTextBrowserChat.ts`)
+
+- `AiSurface "pixel-draw"` = 공방 `workshop-draw` 와 같은 예산(16384)·같은 «도트 저작 모델» 칸. 용도 표의 `surface` 필드(`workshop-draw` | `pixel-draw`)로 가른다(`isPixelDrawPurpose`).
+- `generateDotTextImage(request, chat)` 는 순수(llmClient·캔버스 없음): 시스템 프롬프트(정사각 칸·legend `#rrggbb` ≤24색·`.`=투명) → JSON 해석 → 줄 수·폭·legend 검사(틀리면 오류 글로 최대 2번 고치기) →
+  여백 자르기 → 정수 배 확대 → 무압축 deflate PNG. 끝까지 깨지면 `DotTextImageError` — 이미지 모델이나 다른 모델로 몰래 대체하지 않는다.
+- `generateDotArt({prompt, longSidePx, purpose})` 가 앱 입구다. 낱장 도트가 아닌 용도(생성형·공방·업로드)는 거절한다. 브라우저는 `dotTextBrowserChat`(동적 import)이 `resolveSurfaceAiConfig("pixel-draw")` 로 부르고,
+  Bun 워커는 `PiAgentRequest.pixelModel`(protocol.ts, 없으면 `roleModels.deep` → 실행 모델)을 `createWorkerDotTextChat`(piPresentationTools.ts)으로 꽂는다.
+- 이것은 «한 번에 한 장» 이라 정본 칩셋 그림이 아니다. 새 타일셋·기물은 공방(후보·검수·3/4 관문)을 쓴다. 낱장 도트는 `object-gate` 영수증 대상이 아니라 컷신 소품·아이콘 같은 프로젝트 리소스다.
+- 알려진 한계: 한 변 64 초과 소품은 확대라 도트가 굵다 / 모델이 한 변을 틀리게 세면 고치기 2번 뒤 실패(사용자에게 오류를 그대로 보인다) / 3/4 시점은 프롬프트 계약일 뿐 검수 관문이 없다.
+- 검증: `bun scripts/qa/image-route-table.ts`(용도별 표·입구 거절·표면 모델) — `pixel-draw` 줄과 새 용도 5개 포함. 단위 테스트는 `test/dotTextImage.test.ts`·`test/imageRoute.test.ts` 에 썼지만 **이 변경에서는 실행하지 않았다**.

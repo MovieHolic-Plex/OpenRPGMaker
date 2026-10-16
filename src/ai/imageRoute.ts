@@ -22,10 +22,19 @@ import type { RoleModel } from "./modelRoles";
  */
 export type ImageRouteKind = "generative" | "dot-text" | "upload-only";
 
+/**
+ * 도트(텍스트) 갈래가 쓰는 모델 표면. 둘 다 «도트 저작 모델» 칸(pixelModel)을 읽는다.
+ * - `workshop-draw` 공방: 후보·검수·사람 선택을 거쳐 정본 칩셋·기물에 굽는다.
+ * - `pixel-draw`   낱장: 모델이 한 번에 한 장(컷신 도트 소품·아이템 아이콘·조수 채팅의 도트 찍기)을 찍는다(src/ai/dotTextImage.ts).
+ */
+export type DotTextSurface = "workshop-draw" | "pixel-draw";
+
 interface PurposeSpec {
   readonly kind: ImageRouteKind;
   /** 화면·로그에 쓰는 한국어 이름. */
   readonly label: string;
+  /** dot-text 갈래만: 어느 표면으로 가는가(없으면 workshop-draw). */
+  readonly surface?: DotTextSurface;
 }
 
 export const IMAGE_PURPOSES = {
@@ -35,13 +44,13 @@ export const IMAGE_PURPOSES = {
   "title-depth": { kind: "generative", label: "타이틀 깊이 지도" },
   "opening-still": { kind: "generative", label: "오프닝·게임오버 스틸" },
   "cutscene-backdrop": { kind: "generative", label: "컷신 배경" },
-  "cutscene-sprite": { kind: "generative", label: "컷신 소품 컷아웃" },
+  // style:illustration(회상·환영·꿈)만 생성형이다. 맵·캐릭터와 한 화면에 나오는 style:game 소품(cutscene-sprite)은 아래 도트 용도로 간다(결정 2026-10-16).
+  "cutscene-illustration-sprite": { kind: "generative", label: "컷신 일러스트 컷아웃" },
   "backdrop": { kind: "generative", label: "전투·맵·시차 배경" },
   "title-picture": { kind: "generative", label: "타이틀 배경 그림" },
   "picture": { kind: "generative", label: "그림 표시·일반 그림" },
   "faceset": { kind: "generative", label: "얼굴·흉상 초상" },
   "character-appearance": { kind: "generative", label: "캐릭터 외형 초상·흉상" },
-  "item-icon": { kind: "generative", label: "아이템 아이콘" },
   "interview-scene": { kind: "generative", label: "새 게임 인터뷰 배경" },
   "concept-thumb": { kind: "generative", label: "컨셉 카드 썸네일" },
   // ── 텍스트 모델(도트 저작 모델): 격자 문자열로 찍는 도트 ───────────────────
@@ -49,6 +58,10 @@ export const IMAGE_PURPOSES = {
   "charset": { kind: "dot-text", label: "캐릭터셋(걷기 칩)" },
   "map-object": { kind: "dot-text", label: "맵 기물" },
   "interior-prop": { kind: "dot-text", label: "실내 기물" },
+  // 낱장 도트: 텍스트 모델이 한 번에 한 장 찍는다(src/ai/dotTextImage.ts). 정본 칩셋 그림이 아니라 소품·아이콘이다.
+  "cutscene-sprite": { kind: "dot-text", label: "컷신 도트 소품(style:game)", surface: "pixel-draw" },
+  "item-icon": { kind: "dot-text", label: "아이템 도트 아이콘", surface: "pixel-draw" },
+  "chat-pixel-art": { kind: "dot-text", label: "조수 채팅 도트 찍기", surface: "pixel-draw" },
   // ── 사용자 업로드만 ─────────────────────────────────────────────────────
   "user-upload": { kind: "upload-only", label: "사용자 업로드" },
 } as const satisfies Record<string, PurposeSpec>;
@@ -70,7 +83,7 @@ export type ImageRoute =
       /** 격자를 쓰는 텍스트 모델. follows = 저장값이 없어 계획·최종 판단 모델을 따라간다(옛 설정). */
       readonly model: RoleModel;
       readonly follows: boolean;
-      readonly surface: "workshop-draw";
+      readonly surface: DotTextSurface;
     }
   | { readonly kind: "upload-only"; readonly purpose: ImagePurpose };
 
@@ -94,15 +107,22 @@ export function resolveImageRoute(
   }
   if (spec.kind === "dot-text") {
     const pixel = resolvePixelModel(config);
-    return { kind: "dot-text", purpose, model: pixel.model, follows: pixel.follows, surface: "workshop-draw" };
+    const surface = "surface" in spec ? spec.surface : "workshop-draw";
+    return { kind: "dot-text", purpose, model: pixel.model, follows: pixel.follows, surface };
   }
   return { kind: "upload-only", purpose };
+}
+
+/** 이 용도가 «텍스트 모델이 낱장으로 찍는» 도트 갈래인가(공방이 아니라 `generateDotArt` 입구). */
+export function isPixelDrawPurpose(purpose: ImagePurpose): boolean {
+  const spec: PurposeSpec = IMAGE_PURPOSES[purpose];
+  return spec.kind === "dot-text" && spec.surface === "pixel-draw";
 }
 
 /** 이미지 모델로 만들 수 없는 용도에 보여 줄 안내. 도트·업로드 전용 용도가 생성 요청을 받았을 때. */
 export function imageRouteRefusal(route: Exclude<ImageRoute, { kind: "generative" }>): string {
   const label = IMAGE_PURPOSES[route.purpose].label;
   return route.kind === "dot-text"
-    ? `「${label}」은(는) 도트라서 이미지 모델로 만들지 않습니다. 공방에서 도트 저작 모델이 격자로 직접 찍습니다.`
+    ? `「${label}」은(는) 도트라서 이미지 모델로 만들지 않습니다. ${isPixelDrawPurpose(route.purpose) ? "도트 저작 모델(텍스트)이 격자로 직접 찍습니다." : "공방에서 도트 저작 모델이 격자로 직접 찍습니다."}`
     : `「${label}」은(는) 생성하지 않고 사용자가 올린 파일만 씁니다.`;
 }

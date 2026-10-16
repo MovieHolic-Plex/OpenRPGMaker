@@ -87,3 +87,23 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 기존 실행의 manifest는 JSON 내용이 같아도 재직렬화하지 않는다. 상위 주문은 파일 SHA에
 묶이므로 끝 개행 하나를 덧붙이는 것도 행동 제작 연결을 끊는다. bulk는 기존 내용이 다르면
 거절하고, 같으면 원래 바이트를 유지하며 새 snapshot일 때만 기록한다.
+
+## CT·FF6풍 직업 인물 칩 Heroes1 — pick-6 채택 8종의 공용 번들 설치 (2026-10-16)
+
+`argon_part.py`(RTP Actor/People 베이스 칩의 머리·옷·장비만 마스크 안에서 고치는 Argon high 편집)로 만든 후보 중 pick-6 에서
+**사용자가 「니 추천대로」 라고 위임**해 감독이 채택한 8종(양서 기사·원시 전사 소녀·마법사 소녀·고철 로봇·도적 정찰병·연보라 마법사·노장군·무대 가수)을
+**마법 학교 Wizarding 시트와 같은 경로**로 번들에 설치했다. 사람이 고른 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다.
+채택 안 한 것: `tt-scrap-robot-b`, `iw-steam-armor-a`(재작업 대기), `iw-legion-soldier-a`·`tt-hero-boy-a`(무기 수정 중), 현대 연애 후보(미결정).
+
+- 입력(재생성 금지): `harness-data/charset-actor/ct-ff6-pick6/<key>/{chip.chr.txt,edit.json,meta.json}` — 하네스 최종 격자. 명단·순서(칸 번호, **덧붙이기 전용**)·이름·설명·태그: `harness-data/charset-actor/ct-ff6-install.json`.
+- 굽기: `python3 src/harnesses/charset-actor/install_ct_ff6.py` → `public/assets/generated/charsets/Heroes1.png`(288×256 RGBA, 8명) + `src/assets/heroesCharsets.json`(칸별 RGBA SHA-256·격자 SHA-256·베이스 칩 계보).
+  `--check` 는 번들이 입력과 화소 동일한지만 확인한다. 이미 설치된 id 의 칸 번호·화소가 바뀌면 `--force` 없이는 거절한다(사용자가 본 그림 = 설치되는 그림).
+- 화소 동일성 증거: pick-6 시트 HTML 에 박힌 GIF(2×·8×)가 현재 격자를 다시 렌더한 GIF 와 바이트 단위로 일치하고, 시트 칸 == 하네스 `chip.png`.
+- 배선(`WIZARDING_*` 와 같은 5곳): `src/assets/heroesCharsets.ts`(자산·해석기·조수 검색 라벨) → `charsetCatalog.ts` · `charsetSemantics.ts` · `generatedAssetResourceResolver.ts` · `project/io/resourceReferenceValidation.ts`.
+  칩 카탈로그는 전역이라 새 프로젝트·기존 프로젝트가 같은 칩을 이주 없이 본다(`ensureBundled…` 불필요). id `oprn-charset-heroes1` · textureKey `tex_oprn_charset_heroes1` · 그룹 `Heroes`.
+- 태그에 원작 상표(Chrono Trigger·FF6)를 쓰지 않는다. 조수는 「양서 기사」「노장군」「무대 가수」「robot」 같은 말로 찾는다. 「도적」 단독은 기존 몬스터 별칭이 먼저 가로챈다(`도적 정찰병`·`rogue`·`thief` 는 Heroes 를 찾는다).
+- 베이스 칩이 RTP(CC BY 4.0)라 `public/assets/ATTRIBUTION.md` 「Heroes1」 절에 출처·크레딧·선택 기록(`by: user-delegated-to-supervisor`)을 둔다.
+- `catalog_sources.py` 는 새 공급자 `HEROES_CHARSET_ASSETS` 를 알고 있으며 봉인된 20시트 걷기 원본에는 넣지 않는다(공방 산출물이라 순환 입력 금지).
+- 검증 스크립트: `scripts/qa/runtime/heroes-chips-fixture.mts` + `heroes-chips.scenario.mjs`(출하 플레이어에서 8칸 줄 세우기 + 배회 2명; `npm run qa:runtime` 경로, 픽스처는 압축 직렬화 — 들여쓴 114MB 는 Playwright 파이프 100MB 상한을 넘어 브라우저가 죽는다) ·
+  `heroes-chips-persist.mts`(임시 SQLite 폴더에 새/옛 프로젝트를 저장하고 다른 핸들로 재로드). 이 세션에서 vitest/gates/전체 typecheck 는 실행하지 않았다.
+  `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `Heroes# (Heroes)` 한 항목을 손으로 덧붙였다(포털 표면 게이트는 미실행).

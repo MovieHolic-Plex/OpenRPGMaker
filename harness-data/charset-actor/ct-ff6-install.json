@@ -1,0 +1,60 @@
+{
+ "version": 1,
+ "title": "시간여행·제국군 직업 인물 걷기 칩 Heroes1 (pick-6 채택 8종)",
+ "sheet": { "n": 1, "name": "Heroes1 · 시간여행·제국군 직업 인물 · OPRN", "group": "Heroes" },
+ "selection": {
+  "by": "user-delegated-to-supervisor",
+  "note": "사용자가 2026-10-16 「pick-6 는 니 추천대로 해」 라고 위임했고, 감독이 시트 chips-ct-ff6-pick-6.html 에서 8종을 채택했다. 사람 결정이며 이 파일의 순서(칸 번호)는 덧붙이기 전용이다.",
+  "notAdopted": ["tt-scrap-robot-b", "iw-steam-armor-a", "iw-legion-soldier-a", "tt-hero-boy-a"]
+ },
+ "characters": [
+  {
+   "id": "heroes-tt-amphibian-knight", "key": "tt-amphibian-knight-a", "name": "양서 기사",
+   "genre": "시간여행", "role": "검사 동료", "gender": "male", "age": "youth",
+   "desc": "남청색 판금 투구에 눈 돌기 두 개가 솟았고 얼굴이 투구 아래로 보인다. 은회색 어깨받이, 어깨에서 늘어진 짙은 남색 망토, 허리 오른쪽에 긴 칼.",
+   "tags": ["기사", "검사", "투구", "판금", "망토", "칼", "시간여행", "중세", "동료", "knight", "swordsman", "armor", "time travel"]
+  },
+  {
+   "id": "heroes-tt-stone-age-girl", "key": "tt-stone-age-girl-a", "name": "원시 전사 소녀",
+   "genre": "시간여행", "role": "근접 전사", "gender": "female", "age": "youth",
+   "desc": "밤갈색 머리를 땋아 묶은 맨머리 소녀. 털가죽 어깨 망토와 짧은 가죽 치마, 목에 뼈 목걸이, 허리 오른쪽에 뼈 단검, 맨발.",
+   "tags": ["소녀", "전사", "원시인", "원시 시대", "털가죽", "뼈", "단검", "땋은 머리", "시간여행", "선사", "barbarian", "primitive", "tribal", "warrior girl"]
+  },
+  {
+   "id": "heroes-tt-spell-girl", "key": "tt-spell-girl-a", "name": "마법사 소녀",
+   "genre": "시간여행", "role": "마법 동료", "gender": "female", "age": "youth",
+   "desc": "높게 묶은 은청색 머리에 별 머리핀, 넓은 소매의 보라 로브와 짧은 치마, 목에 큰 분홍 리본, 허리 오른쪽에 두루마리 주머니.",
+   "tags": ["소녀", "마법사", "마녀", "로브", "별", "리본", "두루마리", "보라", "시간여행", "동료", "mage", "witch", "wizard girl", "sorceress"]
+  },
+  {
+   "id": "heroes-tt-scrap-robot", "key": "tt-scrap-robot-a", "name": "고철 로봇",
+   "genre": "시간여행", "role": "기계 동료", "gender": "none", "age": null,
+   "desc": "구리색과 쇠색 금속 구체 머리에 머리 위 둥근 안테나, 푸른 유리창 눈 둘. 녹슨 구리와 쇠색 상자형 몸통, 가슴 해치와 나사, 한쪽 팔은 집게.",
+   "tags": ["로봇", "기계", "고철", "구리", "안테나", "집게", "미래", "시간여행", "동료", "robot", "machine", "automaton", "android", "scrap"]
+  },
+  {
+   "id": "heroes-iw-rogue-scout", "key": "iw-rogue-scout-a", "name": "도적 정찰병",
+   "genre": "모험", "role": "도적·모험가", "gender": null, "age": null,
+   "desc": "모래색과 짙은 갈색 두건에 머리띠, 얼굴 아래를 가린 목도리, 가죽 어깨 조끼, 허리 양쪽에 단검 두 자루.",
+   "tags": ["도적", "정찰병", "모험가", "두건", "목도리", "가죽 조끼", "단검", "암살자", "척후", "rogue", "thief", "scout", "ranger", "assassin"]
+  },
+  {
+   "id": "heroes-iw-spell-girl", "key": "iw-spell-girl-a", "name": "연보라 마법사",
+   "genre": "제국군", "role": "마법 소녀", "gender": "female", "age": "youth",
+   "desc": "연보라 긴 머리를 낮은 한 갈래로 묶고 이마에 얇은 금속 머리띠. 흰 망토와 군청색 짧은 원피스, 가슴에 작은 보석, 흰 장갑.",
+   "tags": ["소녀", "마법사", "마법 소녀", "연보라", "머리띠", "흰 망토", "원피스", "보석", "제국", "mage", "witch", "sorceress", "magic girl"]
+  },
+  {
+   "id": "heroes-iw-old-general", "key": "iw-old-general-a", "name": "노장군",
+   "genre": "제국군", "role": "원로 지휘관", "gender": "male", "age": "elder",
+   "desc": "흰 머리와 풍성한 흰 콧수염, 어깨에 금술이 달린 짙은 남색 군복, 가슴에 훈장 두 줄, 어깨에 붉은 짧은 망토, 허리 오른쪽에 지휘봉.",
+   "tags": ["장군", "노인", "노장군", "지휘관", "군복", "훈장", "수염", "흰 머리", "제국군", "원수", "general", "commander", "old man", "officer", "veteran"]
+  },
+  {
+   "id": "heroes-iw-stage-singer", "key": "iw-stage-singer-a", "name": "무대 가수",
+   "genre": "공연", "role": "가수·연극 배우", "gender": "female", "age": "youth",
+   "desc": "풍성하게 올린 금빛 갈색 머리에 작은 깃털 머리장식, 소매가 부푼 짙은 남색 드레스와 은색 허리띠, 반짝이는 장식 한두 점, 왼손에 깃털 부채.",
+   "tags": ["가수", "오페라", "무대", "배우", "드레스", "깃털", "부채", "공연", "연극", "singer", "opera", "diva", "performer", "actress", "dress"]
+  }
+ ]
+}

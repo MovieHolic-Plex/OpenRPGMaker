@@ -1,0 +1,371 @@
+[
+ [
+  "place_npc",
+  {
+   "mapId": "map_blank_start",
+   "x": 20,
+   "y": 34,
+   "name": "한하린",
+   "characterId": "char_harin",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "젊은 여성"
+   },
+   "pages": [
+    {
+     "name": "하린 · 첫인상",
+     "lines": [
+      "어, 너 신입생이지? 나 한하린, 문예창작과 3학년이야.",
+      "캠퍼스 처음이면 길 잃기 쉬워. 궁금한 거 있으면 말 걸어."
+     ]
+    },
+    {
+     "name": "하린 · 가까워짐",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_harin",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "요즘 네 얼굴이 자꾸 떠올라. 이상하지?",
+      "오늘 수업 끝나고 같이 걸을래?"
+     ]
+    },
+    {
+     "name": "하린 · 마음",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_harin",
+       "value": 40
+      }
+     ],
+     "lines": [
+      "있잖아, 네 옆이 제일 편해.",
+      "이 학기가 끝나도 이렇게 같이 있고 싶어."
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  "place_npc",
+  {
+   "mapId": "map_blank_start",
+   "x": 28,
+   "y": 14,
+   "name": "강도윤",
+   "characterId": "char_doyun",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "청년 남성"
+   },
+   "pages": [
+    {
+     "name": "도윤 · 첫인상",
+     "lines": [
+      "아, 안녕. 강도윤. 건축과 대학원생이야.",
+      "여기 대강의동 앞 계단이 내 아지트라서 늘 있어."
+     ]
+    },
+    {
+     "name": "도윤 · 가까워짐",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_doyun",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "네가 오면 스케치가 잘 풀려.",
+      "오늘은 네 얼굴을 그려 봐도 될까?"
+     ]
+    },
+    {
+     "name": "도윤 · 마음",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_doyun",
+       "value": 40
+      }
+     ],
+     "lines": [
+      "이 도면에 네 자리를 그려 넣었어.",
+      "앞으로의 설계에도 네가 있으면 좋겠다."
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  "place_npc",
+  {
+   "mapId": "map_blank_start",
+   "x": 37,
+   "y": 34,
+   "name": "오지우",
+   "characterId": "char_jiu",
+   "talkFriendship": true,
+   "graphic": {
+    "query": "젊은 여성"
+   },
+   "pages": [
+    {
+     "name": "지우 · 첫인상",
+     "lines": [
+      "안녕! 오지우, 학과동 조교야. 서류 필요하면 나한테 와.",
+      "어쩌다 보니 캠퍼스에서 제일 오래 있는 사람이 됐지 뭐야."
+     ]
+    },
+    {
+     "name": "지우 · 가까워짐",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_jiu",
+       "value": 20
+      }
+     ],
+     "lines": [
+      "너한테만 말하는 건데, 사실 휴학 고민 중이었어.",
+      "들어줘서 고마워."
+     ]
+    },
+    {
+     "name": "지우 · 마음",
+     "conditions": [
+      {
+       "kind": "friendshipAtLeast",
+       "npcKey": "char_jiu",
+       "value": 40
+      }
+     ],
+     "lines": [
+      "요즘은 학교 오는 게 기다려져.",
+      "그게 누구 때문인지 알지?"
+     ]
+    }
+   ]
+  }
+ ],
+ [
+  "set_npc_schedule",
+  {
+   "mapId": "map_blank_start",
+   "eventId": "@char_harin",
+   "schedule": [
+    {
+     "when": {
+      "timePhase": "morning"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 20,
+      "y": 34
+     },
+     "activity": "강의동 앞"
+    },
+    {
+     "when": {
+      "timePhase": "day"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 31,
+      "y": 19
+     },
+     "activity": "광장 벤치"
+    },
+    {
+     "when": {
+      "timePhase": "evening"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 41,
+      "y": 14
+     },
+     "activity": "기숙사 앞"
+    }
+   ]
+  }
+ ],
+ [
+  "set_npc_schedule",
+  {
+   "mapId": "map_blank_start",
+   "eventId": "@char_doyun",
+   "schedule": [
+    {
+     "when": {
+      "timePhase": "morning"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 28,
+      "y": 14
+     },
+     "activity": "대강의동 계단"
+    },
+    {
+     "when": {
+      "timePhase": "day"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 16,
+      "y": 14
+     },
+     "activity": "연구동 앞"
+    },
+    {
+     "when": {
+      "timePhase": "evening"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 31,
+      "y": 19
+     },
+     "activity": "분수 광장"
+    }
+   ]
+  }
+ ],
+ [
+  "set_npc_schedule",
+  {
+   "mapId": "map_blank_start",
+   "eventId": "@char_jiu",
+   "schedule": [
+    {
+     "when": {
+      "timePhase": "morning"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 37,
+      "y": 34
+     },
+     "activity": "학과동 앞"
+    },
+    {
+     "when": {
+      "timePhase": "day"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 37,
+      "y": 34
+     },
+     "activity": "학과동 앞"
+    },
+    {
+     "when": {
+      "timePhase": "evening"
+     },
+     "at": {
+      "mapId": "map_blank_start",
+      "x": 20,
+      "y": 34
+     },
+     "activity": "강의동 앞"
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_harin",
+   "name": "하린과의 결말",
+   "conditions": [],
+   "priority": 3,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "하린",
+     "text": "학기가 끝나도, 우리 계속 이렇게 걷자."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_doyun",
+   "name": "도윤과의 결말",
+   "conditions": [],
+   "priority": 2,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "도윤",
+     "text": "이 도면의 마지막 선은 네가 그어 줘."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_jiu",
+   "name": "지우와의 결말",
+   "conditions": [],
+   "priority": 1,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "지우",
+     "text": "내일도 학과동에서 기다릴게."
+    }
+   ]
+  }
+ ],
+ [
+  "define_ending",
+  {
+   "id": "ending_friends",
+   "name": "그냥 친구로",
+   "conditions": [],
+   "priority": 0,
+   "epilogue": [
+    {
+     "kind": "say",
+     "speaker": "",
+     "text": "모두와 좋은 친구가 된 한 학기였다."
+    }
+   ]
+  }
+ ],
+ [
+  "set_deadline_ending",
+  {
+   "days": 5,
+   "tiers": [
+    {
+     "endingId": "ending_harin",
+     "friendshipAtLeast": 40,
+     "characterId": "char_harin"
+    },
+    {
+     "endingId": "ending_doyun",
+     "friendshipAtLeast": 40,
+     "characterId": "char_doyun"
+    },
+    {
+     "endingId": "ending_jiu",
+     "friendshipAtLeast": 40,
+     "characterId": "char_jiu"
+    },
+    {
+     "endingId": "ending_friends"
+    }
+   ]
+  }
+ ]
+]

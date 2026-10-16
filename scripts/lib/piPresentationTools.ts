@@ -16,6 +16,7 @@ import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
 import type { GenerateAiImageRequest } from '../../src/ai/imageGenerationClient';
 import { imageRouteRefusal, resolveImageRoute } from '../../src/ai/imageRoute';
+import type { DotTextChat } from '../../src/ai/dotTextImage';
 import type { Project } from '../../src/project/types';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
@@ -42,6 +43,21 @@ export function createWorkerImageGenerator(request: PiAgentRequest, keyFor: (pro
       }
     }
     return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
+  };
+}
+
+/**
+ * 워커의 낱장 도트 호출 — 요청에 실린 도트 저작 모델(없으면 deep 역할 → 실행 모델)로 텍스트 모델을 부른다.
+ * 이미지 모델은 부르지 않는다(src/ai/imageRoute.ts 의 dot-text 갈래).
+ */
+export function createWorkerDotTextChat(request: PiAgentRequest, keyFor: (provider: string) => string | undefined): DotTextChat {
+  const pixel = request.pixelModel ?? request.roleModels?.deep ?? { provider: request.provider, model: request.model ?? '', thinkingLevel: 'medium' as const };
+  return async (messages, signal) => {
+    const result = await completeProvider(pixel.provider, {
+      model: pixel.model, reasoning: { effort: pixel.thinkingLevel }, max_tokens: 16384, messages: [...messages],
+    }, { apiKey: keyFor(pixel.provider), ...(signal ? { signal } : {}) });
+    const content = result.completion.choices[0]?.message.content;
+    return { text: typeof content === 'string' ? content : '', model: pixel.model, provider: pixel.provider };
   };
 }
 

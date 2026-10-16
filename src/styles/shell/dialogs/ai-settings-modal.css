@@ -704,76 +704,109 @@
   line-height: 1.4;
 }
 
-/* 그림 모델 추천("그림은 GPT 를 강력히 추천") — 도움말 회색 글씨에 묻히지 않게 강조 색 테두리 상자로 둔다.
- * 이미 GPT 를 골랐으면(data-state=active) 바꾸기 버튼은 숨고 문구만 남는다. */
+/* 이미지 절의 용도 카드(그림 / 도트) — 품질 프리셋 카드와 같은 상자 언어(control-bg · subtle 테두리 · radius-m).
+ * 카드 = 용도 제목 한 줄 + 설명 한 줄 + 모델 선택. 로그인·제공 방식 문단은 카드 안 「자세히」 로 접힌다. */
+.ai-settings-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+}
+
+.ai-settings-card-head {
+  display: grid;
+  gap: 2px;
+  padding-bottom: var(--space-1);
+}
+
+.ai-settings-card-head h4,
+.ai-settings-card-head p {
+  margin: 0;
+}
+
+.ai-settings-card-head h4 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-card-head p {
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+/* 카드 안 행은 설명이 없어 낮다 — 라벨 | 셀렉트 한 줄. */
+.ai-settings-card .ai-config-row {
+  gap: var(--space-3);
+  grid-template-columns: minmax(64px, 96px) minmax(0, 1fr);
+  padding-block: var(--space-2);
+}
+
+/* 한 줄 상태(로그인 필요 · 따라가는 모델). 문제가 있을 때(지원 미확인)만 경고 색. */
+.ai-settings-form .ai-card-status {
+  margin: 0;
+  padding-block: var(--space-1);
+}
+
+.ai-card-status[data-availability="unsupported"] {
+  color: var(--warning);
+}
+
+/* 그림 모델 추천 — 상자가 아니라 한 줄. GPT 를 이미 골랐으면 숨는다(hidden). */
 .ai-config-recommend {
   align-items: center;
-  background: var(--accent-muted);
-  border: 1px solid var(--accent-border);
-  border-radius: var(--radius-m);
+  border-top: var(--stroke-1) solid var(--border-subtle);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-3);
   justify-content: space-between;
-  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
+}
+
+.ai-config-recommend[hidden] {
+  display: none;
 }
 
 .ai-config-recommend-text {
   color: var(--text-2);
-  flex: 1 1 240px;
+  flex: 1 1 220px;
   font-size: var(--font-size-sm);
-  line-height: 1.45;
+  line-height: 1.4;
   margin: 0;
-}
-
-.ai-config-recommend-text strong {
-  color: var(--text-1);
-  font-weight: var(--font-weight-semibold);
 }
 
 .ai-config-recommend-action[hidden] {
   display: none;
 }
 
-/* 이미지 절의 두 갈래(배경·대형 / 도트) — 소제목 + 한 줄 설명. 갈래 사이는 헤어라인으로만 가른다. */
-.ai-settings-subgroup {
+.ai-card-details {
+  border-top: 0;
+  margin-top: var(--space-1);
+}
+
+.ai-card-details > summary {
+  padding: var(--space-1) var(--space-2) var(--space-1) 0;
+}
+
+.ai-card-details-body {
   display: grid;
+  gap: var(--space-2);
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
 }
 
-.ai-settings-subgroup:first-child {
-  padding-top: var(--space-2);
-}
-
-.ai-settings-subgroup + .ai-settings-subgroup {
-  border-top: var(--stroke-1) solid var(--border-subtle);
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-}
-
-.ai-settings-subgroup-head {
-  display: grid;
-  gap: 2px;
-  padding-bottom: var(--space-1);
-}
-
-.ai-settings-subgroup-head h4,
-.ai-settings-subgroup-head p {
+.ai-card-details-body > .ai-config-help {
   margin: 0;
 }
 
-.ai-settings-subgroup-head h4 {
-  color: var(--text-1);
-  font-family: var(--font-ui);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-tight);
-}
-
-.ai-settings-subgroup-head p {
-  color: var(--text-2);
-  font-family: var(--font-ui);
-  font-size: 11px;
-  line-height: 1.45;
+.ai-card-details-body > .ai-config-help[hidden] {
+  display: none;
 }
 
 /* ── 연결 상태 ─────────────────────────────────────────────────────────── */

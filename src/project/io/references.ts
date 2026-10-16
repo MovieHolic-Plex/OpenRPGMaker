@@ -7,6 +7,7 @@ import { placementRecord } from "../spatialPlacements";
 import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
+import { wildTroopIdForSpecies } from "../wildTroops";
 import { structurePlacementBeforeIsWellFormed, structureRectFitsMap } from "../structurePlacements";
 import {
   collectCommandItemReferenceIds,
@@ -295,6 +296,10 @@ function validateP2SystemReferences(
     for (const rule of spot.catches) if (!fishIds.has(rule.fishId)) {
       issues.push(`system.fishing.spots ${spot.id}: fishId does not exist: ${rule.fishId}`);
     }
+    const speciesIds = new Set((project.database.monsterSpecies ?? []).map((species) => species.id));
+    for (const rule of spot.monsterCatches ?? []) {
+      if (!speciesIds.has(rule.speciesId)) issues.push(`system.fishing.spots ${spot.id}: monsterCatches speciesId does not exist: ${rule.speciesId}`);
+    }
   }
   for (const area of project.system.seasonalForage?.areas ?? []) {
     const map = project.maps[area.mapId];
@@ -478,7 +483,10 @@ function repairP2References(project: Project): void {
         const map = project.maps[spot.mapId];
         if (!mapIds.has(spot.mapId) || !map || !rectFitsMap(spot.area, map.width, map.height)) return [];
         const catches = spot.catches.filter((rule) => fishIds.has(rule.fishId));
-        return catches.length ? [{ ...spot, catches }] : [];
+        const monsterCatches = (spot.monsterCatches ?? []).filter((rule) => (project.database.monsterSpecies ?? []).some((species) => species.id === rule.speciesId) && wildTroopIdForSpecies(project, rule.speciesId) !== undefined);
+        const { monsterCatches: _dropped, ...rest } = spot;
+        void _dropped;
+        return catches.length || monsterCatches.length ? [{ ...rest, catches, ...(monsterCatches.length ? { monsterCatches } : {}) }] : [];
       }),
     };
   }

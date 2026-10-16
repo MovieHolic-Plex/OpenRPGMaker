@@ -5,6 +5,7 @@ import type {
   CollectionSystemConfig,
   FishSpeciesRecord,
   FishingCatchRule,
+  FishingMonsterCatchRule,
   FishingSpotDefinition,
   FishingSystemConfig,
   ForageAreaDefinition,
@@ -45,7 +46,8 @@ export function normalizeFishingSystem(value: FishingSystemConfig | undefined): 
     if (!id || !mapId || !area || seen.has(id)) return [];
     seen.add(id);
     const catches = normalizeCatchRules(raw.catches);
-    return [{ id, ...(cleanText(raw.name) ? { name: cleanText(raw.name) } : {}), mapId, area, catches }];
+    const monsterCatches = normalizeMonsterCatchRules(raw.monsterCatches);
+    return [{ id, ...(cleanText(raw.name) ? { name: cleanText(raw.name) } : {}), mapId, area, catches, ...(monsterCatches.length > 0 ? { monsterCatches } : {}) }];
   });
   const energyCost = optionalInteger(value.energyCost, 0, P2_COUNT_MAX);
   return { enabled: value.enabled === true, ...(energyCost !== undefined ? { energyCost } : {}), spots };
@@ -125,6 +127,31 @@ function normalizeCatchRules(value: unknown): FishingCatchRule[] {
       ...(raw.timePhases !== undefined ? { timePhases } : {}),
       ...(raw.weatherKinds !== undefined ? { weatherKinds } : {}),
       ...(minSkillLevel !== undefined ? { minSkillLevel } : {}),
+    }];
+  });
+}
+
+function normalizeMonsterCatchRules(value: unknown): FishingMonsterCatchRule[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  return value.slice(0, P2_RULE_LIMIT).flatMap((raw): FishingMonsterCatchRule[] => {
+    if (!isRecord(raw)) return [];
+    const speciesId = cleanId(raw.speciesId);
+    if (!speciesId || seen.has(speciesId)) return [];
+    seen.add(speciesId);
+    const weight = optionalInteger(raw.weight, 1, P2_WEIGHT_MAX);
+    if (weight === undefined) return [];
+    const levelMin = optionalInteger(raw.levelMin, 1, 99);
+    const levelMax = optionalInteger(raw.levelMax, 1, 99);
+    const seasons = uniqueEnums(raw.seasons, isSeason, SEASONS);
+    const timePhases = uniqueEnums(raw.timePhases, isTimePhase, TIME_PHASES);
+    const weatherKinds = uniqueEnums(raw.weatherKinds, isWeatherKind, ["none", "rain", "storm", "snow", "fog"] as const);
+    return [{ speciesId, weight,
+      ...(levelMin !== undefined ? { levelMin } : {}),
+      ...(levelMax !== undefined ? { levelMax } : {}),
+      ...(raw.seasons !== undefined ? { seasons } : {}),
+      ...(raw.timePhases !== undefined ? { timePhases } : {}),
+      ...(raw.weatherKinds !== undefined ? { weatherKinds } : {}),
     }];
   });
 }

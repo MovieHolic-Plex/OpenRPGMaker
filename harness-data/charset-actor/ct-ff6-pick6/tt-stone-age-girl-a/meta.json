@@ -1,0 +1,50 @@
+{
+ "key": "tt-stone-age-girl-a",
+ "arch": "tt-stone-age-girl",
+ "base": "Actor3:3",
+ "variant": "맨머리 땋은 머리(머리 색은 밤갈색), 털가죽 어깨 망토와 짧은 가죽 치마(상의 T 리컬러+어깨 구역), 뼈 목걸이, 허리 오른쪽에 뼈 단검(hip 장비 R, 칼집은 가죽).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 efhlmpqst"
+   ],
+   "at": "2026-10-16T03:31:25"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 efhlmpqst"
+ ],
+ "metrics": {
+  "added_up0": 9,
+  "added_up1": 10,
+  "added_up2": 10,
+  "added_right0": 1,
+  "added_right1": 1,
+  "added_right2": 2,
+  "added_down0": 9,
+  "added_down1": 10,
+  "added_down2": 10,
+  "added_left0": 8,
+  "added_left1": 9,
+  "added_left2": 7,
+  "changed_ratio": {
+   "H": 0.975,
+   "T": 1.0,
+   "B": 0.854,
+   "S": 0.985
+  },
+  "cross": 13,
+  "cross_base": 13,
+  "lone": 490,
+  "lone_base": 407
+ }
+}
