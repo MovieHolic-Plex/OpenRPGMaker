@@ -471,10 +471,27 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] :is(.status-menu-showcase-name, .status-menu-showcase-value, .status-menu-item-facts) { display: none; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-showcase-description { margin: 0; font: 18px/22px var(--runtime-pixel-font); overflow: visible; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-footer { inset: auto 8px 0 224px; height: 24px; border: 0; background: transparent; box-shadow: none; padding: 0; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-message { font-size: 18px; line-height: 16px; max-height: 24px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="bag"] .status-menu-message { font-size: 18px; line-height: 16px; max-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag { position: absolute; left: 56px; top: 72px; width: 112px; height: 112px; border: 8px solid #384840; box-shadow: inset 8px 0 #f8c068, inset -8px 0 #a06838; background: #d8a048; box-sizing: border-box; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-handle { position: absolute; left: 24px; top: -28px; width: 40px; height: 24px; border: 8px solid #384840; border-bottom: 0; box-sizing: border-box; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-pocket { position: absolute; left: 12px; bottom: 12px; right: 12px; height: 44px; border: 4px solid #785838; background: #e8b858; box-shadow: inset 0 4px #f8d888; }
+/* 가방 포켓(몬스터 수집 게임): 제목 양옆 ◀ ▶, 가방 그림 아래 점 다섯, 포켓마다 가방 색이 다르다. 그림 없이 CSS 로만 그린다. */
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] :is(.emerald-bag-arrow, .emerald-bag-dots) { position: absolute; z-index: 2; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-arrow { top: 22px; width: 0; height: 0; padding: 0; border: 0; background: transparent; font-size: 0; cursor: pointer; border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-arrow-prev { left: 28px; border-right: 10px solid #384840; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-arrow-next { left: 186px; border-left: 10px solid #384840; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-dots { left: 40px; width: 144px; top: 190px; height: 12px; display: flex; justify-content: center; gap: 10px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-dot { width: 12px; height: 12px; padding: 0; border: 2px solid #487068; background: #f8f8e8; box-sizing: border-box; cursor: pointer; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-dot.empty { border-color: #98b0a0; background: #d8e0d0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"] .emerald-bag-dot.active { background: #384840; border-color: #384840; box-shadow: 0 0 0 2px #f8f8e8, 0 0 0 4px #384840; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="balls"] .emerald-bag { background: #d85850; box-shadow: inset 8px 0 #f88880, inset -8px 0 #a03838; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="balls"] .emerald-bag-pocket { background: #e87870; border-color: #783838; box-shadow: inset 0 4px #f8a8a0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="machines"] .emerald-bag { background: #5898c8; box-shadow: inset 8px 0 #88c0e8 , inset -8px 0 #386898; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="machines"] .emerald-bag-pocket { background: #78b0d8; border-color: #285078; box-shadow: inset 0 4px #a8d0f0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="held"] .emerald-bag { background: #58a868; box-shadow: inset 8px 0 #88d098, inset -8px 0 #387848; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="held"] .emerald-bag-pocket { background: #78c088; border-color: #285838; box-shadow: inset 0 4px #a8e0b0; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="key"] .emerald-bag { background: #8868b8; box-shadow: inset 8px 0 #b090e0, inset -8px 0 #584088; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-bag-pocket="key"] .emerald-bag-pocket { background: #a080d0; border-color: #483070; box-shadow: inset 0 4px #c8b0f0; }
 /* These overlays retain all item effects, use restrictions and equipment comparison facts. */
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .status-menu-detail { background: #f8f8e8; border: 4px solid #487068; padding: 8px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-target"] .status-menu-detail-list { border: 4px solid #487068; background: #f8f8e8; }
@@ -586,7 +603,7 @@
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .status-menu-detail-list { position: absolute; left: 256px; right: 8px; top: 160px; bottom: 72px; height: auto; min-height: 0; max-height: none; grid-area: auto; margin: 0; border: 4px solid #487068; background: #f8f8e8; padding: 8px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .status-menu-detail-showcase { position: absolute; top: 136px; bottom: 32px; left: 8px; width: 224px; grid-area: auto; border: 0; background: #f8f8e8; padding: 8px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] :is(.status-menu-showcase-frame, .status-menu-showcase-name, .status-menu-showcase-value) { display: none; }
-.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .emerald-bag { top: 56px; left: 80px; width: 80px; height: 64px; }
+.oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .emerald-bag { top: 66px; left: 80px; width: 80px; height: 64px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .emerald-bag-pocket { height: 24px; bottom: 4px; left: 4px; right: 4px; }
 .oprn-status-menu.main-menu[data-menu-skin="field-list"][data-monster-style="emerald"][data-emerald-page="item-context"] .emerald-bag-handle { width: 32px; left: 16px; }
 

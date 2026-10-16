@@ -21,7 +21,7 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   const context = detailContexts.get(panel);
   if (!context) return undefined;
   const { project, detail } = context;
-  const tabCount = detail.tabs?.filter((tab) => tab.onActivate).length ?? 0;
+  const tabCount = detail.tabs?.filter((tab) => tab.onActivate && !tab.pointerOnly).length ?? 0;
   const entry = detail.entries.filter((row) => row.onActivate && !row.disabled)[index - tabCount];
   const existing = panel.querySelector(".status-menu-detail-showcase");
   const next = context.showcase && entry ? renderDetailShowcase(project, entry) : null;
@@ -89,15 +89,17 @@ export function renderStatusMenuDetailPanel(
       attrs: { role: "tablist", "aria-label": `${detail.title} 분류` },
     });
     for (const tab of detail.tabs) {
-      const actionIndex = tab.onActivate ? enabledActionIndex : undefined;
+      const keyboardTab = Boolean(tab.onActivate) && !tab.pointerOnly;
+      const actionIndex = keyboardTab ? enabledActionIndex : undefined;
       const button = el("button", {
-        class: "life-ledger-tab status-menu-detail-action",
+        class: tab.pointerOnly ? "life-ledger-tab" : "life-ledger-tab status-menu-detail-action",
         text: tab.label,
         attrs: {
           type: "button",
           role: "tab",
           "aria-selected": String(tab.selected),
           "aria-controls": "life-ledger-tab-panel",
+          ...(tab.pointerOnly ? { tabindex: "-1" } : {}),
         },
         dataset: {
           testid: tab.testId,
@@ -432,7 +434,7 @@ function formatItemEffectTokens(project: Project, tokens: readonly string[]): st
 
 function itemEffectTokenLabel(project: Project, token: string): string {
   if (token === "none") return "없음";
-  const [kind, raw, amount, extra] = token.split(":");
+  const [kind, raw, amount, extra, levelUp] = token.split(":");
   const value = decodeURIComponent(raw ?? "");
   switch (kind) {
     case "hp": return `HP +${value}`;
@@ -446,7 +448,8 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "skill": return `스킬 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "switch": return `장치 ${project.switches.find((entry) => entry.id === value)?.name || value}`;
-    case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}`;
+    case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}${Number(levelUp) > 0 ? ` · 레벨 +${Number(levelUp)}` : ""}`;
+    case "evolve": return "진화의 돌 · 맞는 몬스터를 진화시킨다";
     case "held": return `지닌 도구 · ${HELD_ITEM_KIND_LABELS[value as HeldItemEffectKind] ?? value}`;
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;

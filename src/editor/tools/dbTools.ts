@@ -549,6 +549,13 @@ const heldEffectSchema = objectSchema({
   percent: integerSchema("boostType 101~200(기본 120) · regen 1~25(기본 6)"),
 }, "지닌 도구 효과(포켓몬식). 파티 몬스터가 지니고 전투에서 발동한다. gen1 전투 모델에서만 작동. 이 필드를 주면 플레이어가 메뉴의 「도구」에서 몬스터에게 지닐 수 있다.");
 
+const careProfileSchema = objectSchema({
+  kind: { type: "string", enum: ["feed", "toy"], description: "feed=먹이 · toy=장난감. 둘 다 친밀도를 올린다(이상한 사탕·경험 사탕도 kind:\"feed\")" },
+  friendshipDelta: integerSchema("친밀도 증감(음수 가능, 0 가능)"),
+  expDelta: integerSchema("고정 경험치 +N(0 이상, 생략 가능)"),
+  levelUp: integerSchema("이상한 사탕: 레벨을 이만큼(1~10) 즉시 올린다. 레벨 문턱까지 경험치가 채워지고 새 기술·진화가 이어진다. 상한 레벨 개체에는 쓸 수 없다"),
+}, "몬스터 돌봄 아이템(파티 몬스터 1마리에게 메뉴에서 쓴다). type:\"special\" 일 때만 효과가 난다 — 다른 종류로 주면 special 로 바꾼다. 예: 이상한 사탕 {kind:\"feed\",friendshipDelta:0,levelUp:1}, 경험 사탕 {kind:\"feed\",friendshipDelta:1,expDelta:800}");
+
 const itemRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
@@ -569,8 +576,9 @@ const itemRecordSchema = objectSchema({
   healStateIds: stringArraySchema(),
   hpRecovery: recoverySchema,
   mpRecovery: recoverySchema,
+  ppRecovery: objectSchema({ flat: integerSchema(), percentMax: integerSchema() }, "몬스터가 배운 기술 각각의 PP 를 flat + 최대 PP×percentMax% 만큼 회복한다(에테르·엘릭서류). MP 회복과 별개. type:\"medicine\" 일 때만 효과가 난다"),
   onlyUsableInMenu: booleanSchema(),
-  onlyEffectiveOnDeadActors: booleanSchema(),
+  onlyEffectiveOnDeadActors: booleanSchema("true 면 쓰러진 대상에게만 쓴다 = 부활약(몬스터 게임: 쓰러진 파티 몬스터를 hpRecovery 만큼 되살린다). type:\"medicine\""),
   learnedSkillId: stringSchema(),
   activateSkillId: stringSchema(),
   usageMessage: { type: "string", enum: ["normal", "skill"] },
@@ -581,7 +589,9 @@ const itemRecordSchema = objectSchema({
   equipmentProfile: itemEquipmentProfileSchema,
   farmTool: { type: "string", enum: ["hoe", "wateringCan"] },
   captureProfile: captureProfileSchema,
+  careProfile: careProfileSchema,
   heldEffect: heldEffectSchema,
+  pocket: { type: "string", enum: ["items", "balls", "machines", "held", "key"], description: "몬스터 게임 가방 포켓을 직접 정한다(도구·볼·기술머신·지닌 도구·중요한 물건). 생략하면 captureProfile→볼, learnedSkillId→기술머신, heldEffect→지닌 도구, 쓸 곳 없는 아이템→중요한 물건, 나머지→도구로 자동 분류된다. 진화의 돌은 아이템을 만들고 종의 evolutions[].requires.itemId 로 가리키기만 하면 필드 메뉴에서 바로 쓴다(별도 필드 없음)" },
 }) as RecordSchema;
 
 const enemyRecordSchema = objectSchema({
@@ -1141,6 +1151,35 @@ function coerceSwitchItem(record: { type?: string; switchId?: string; capturePro
   warnings.push(`종류를 switch 로 바꿨습니다 — switchId "${switchId}" 는 type:"switch" 일 때만 메뉴에서 켜집니다.`);
 }
 
+/** careProfile 을 줬는데 정규화가 버렸으면(kind 가 feed/toy 가 아님) 거절한다 — 조용히 효과 없는 사탕이 되지 않게. */
+function validateItemCareProfile(raw: unknown, record: ItemRecord): void {
+  if (raw === undefined || raw === null || record.careProfile) return;
+  throw new ToolError(`careProfile 이 올바르지 않아 저장하지 않았습니다 — kind(feed|toy)가 필요합니다. 이상한 사탕은 {kind:"feed",friendshipDelta:0,levelUp:1}.`, { code: "invalid-care-profile" });
+}
+
+/**
+ * 몬스터 필드 아이템이 효과 없는 종류로 저장되지 않게 한다. careProfile 은 special, ppRecovery 는 medicine 일 때만 실행된다
+ * (activeItemEffects). 쓸 수 없는 때(battle/never)로 저장된 돌봄 아이템도 필드에서 쓰도록 맞춘다.
+ */
+function coerceMonsterFieldItem(record: ItemRecord, warnings: string[]): void {
+  if (record.careProfile) {
+    if (record.type !== "special") {
+      warnings.push(`careProfile 은 type:"special" 에서만 효과가 나서 종류를 ${record.type} → special 로 바꿨습니다.`);
+      record.type = "special";
+    }
+    if (record.occasion !== "field" && record.occasion !== "always") {
+      warnings.push(`돌봄 아이템은 메뉴(필드)에서 쓰므로 occasion 을 ${record.occasion} → field 로 바꿨습니다.`);
+      record.occasion = "field";
+      record.occasionField = true;
+      record.occasionBattle = false;
+    }
+  }
+  if (record.ppRecovery && record.type !== "medicine") {
+    warnings.push(`ppRecovery 는 type:"medicine" 에서만 효과가 나서 종류를 ${record.type} → medicine 으로 바꿨습니다.`);
+    record.type = "medicine";
+  }
+}
+
 function resolveIconResourceId(project: Project, record: { iconResourceId?: string }, label: string, warnings: string[]): void {
   const requested = record.iconResourceId;
   if (!requested) return;
@@ -1217,7 +1256,9 @@ const upsertItem: ToolDefinition = {
     validateItemCaptureCondition(draft, (merged as { captureProfile?: { condition?: unknown } }).captureProfile?.condition, record);
     const heldWarning = validateItemHeldEffect(draft, (merged as { heldEffect?: unknown }).heldEffect, record);
     if (heldWarning) warnings.push(heldWarning);
+    validateItemCareProfile((merged as { careProfile?: unknown }).careProfile, record);
     coerceSwitchItem(record, warnings);
+    coerceMonsterFieldItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);
     const outcome = upsertById(draft.database.items, record);

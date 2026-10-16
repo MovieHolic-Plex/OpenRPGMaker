@@ -6,7 +6,7 @@ import { charsetGraphic, demoEnemy, demoTroop } from "@/project/defaults/scarlox
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { EXPEDITION_AUDIO as audio } from "./audio";
-import { EXPEDITION_BALL_IDS, EXPEDITION_HELD_ITEM_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
+import { EXPEDITION_BALL_IDS, EXPEDITION_HELD_ITEM_IDS, EXPEDITION_STONE_IDS, EXPEDITION_SPECIES, EXPEDITION_STARTERS, EXPEDITION_LEGENDARIES } from "./roster";
 import { EXPEDITION_TOWNS as allTowns, EXPEDITION_GYMS as gyms, EXPEDITION_ROUTES as planRoutes, EXPEDITION_SIDE_AREAS as allSides } from "./worldPlan";
 import { campaignLevels, campaignShape, clampGymCount, FULL_GYMS, gymWord } from "./campaignPlan";
 import markerAssets from "./markers.json";
@@ -624,7 +624,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     npc(center, "nurse", "센터 직원", "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?", { x: center.width >> 1, y: 5 },
       monsterCenterCommands({ greeting: null, checkpointLabel: `${lookTown(t).name} 회복 센터`, audio: { me: audio.victory }, machineCells: [5, 6, 7, 8, 9, 10].map(x => ({ x: x + ((center.width >> 1) - 7), y: 3 })) }), 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
-      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
+      [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", "mx_revive", ...EXPEDITION_STONE_IDS, ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },
       [{ kind: "recoverAll" }, { kind: "fork", condition: { kind: "item", itemId: "item_capture_orb", present: false }, then: [gain("item_capture_orb", 3), text("구슬을 다 썼구나. 다시 시작할 수 있게 세 개를 챙겨 줄게.")] }], 2);
     if (i === 0) event(upstairs, "console", { x: 8, y: 3 }, [text("게임기다. 모험에서 돌아오면 또 하자.")], { graphic: invisible });
@@ -668,7 +668,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     npc(map, "researcher", "서식지 연구원", `${s.name}에는 길에서 만나기 힘든 몬스터가 살아요. 도감에 빈칸이 있다면 천천히 탐색해 보세요.`, s.key === "beach" ? { x: 14, y: 32 } : { x: 2, y: map.height - 4 }, [], 5);
     const at = nearest(map, { x: map.width - 4, y: 5 }, connected(map), true);
     const flag = `${map.id}_treasure`;
-    event(map, "treasure", at, [{ kind: "fork", condition: condition(flag), then: [text("빈 보관함이다.")], else: [gain("item_capture_orb", 3), gain("item_hi_potion", 1), sw(flag), text("포획구슬 세 개와 고급 회복약을 찾았다!")] }], { below: true, graphic: marker("chest") });
+    event(map, "treasure", at, [{ kind: "fork", condition: condition(flag), then: [text("빈 보관함이다.")], else: [gain("item_capture_orb", 3), gain("item_hi_potion", 1), gain("mx_candy", 1), sw(flag), text("포획구슬 세 개와 고급 회복약, 이상한 사탕 하나를 찾았다!")] }], { below: true, graphic: marker("chest") });
   }
 
   connect(townMaps.get("home")!, school);
@@ -679,7 +679,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
   if (league[0]) connect(finalTownMap, league[0], "mx_story_beacon");
 
   const starterCommands: Command[] = [{ kind: "choices", prompt: "첫 동료를 선택하자", options: EXPEDITION_STARTERS.map(sid => ({ text: speciesById.get(sid)!.name,
-    branch: [{ kind: "giveMonster", speciesId: sid, level: 5 }, sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5),
+    branch: [{ kind: "giveMonster", speciesId: sid, level: 5 }, sw("mx_starter"), sw(`mx_starter_${sid}`), gain("item_capture_orb", 10), gain("item_potion", 5), gain("mx_revive", 1), gain("mx_candy", 1),
       text("첫 동료와 만났다! 야생 전투에서는 「가방」의 포획구슬을 사용해 보렴.", "천문박사"), text("여덟 지역의 약속을 모아, 빛을 잃어 가는 별의 등대를 다시 밝혀 주었으면 한단다.", "천문박사")] })), cancelBehavior: "disallow" }];
   npc(lab, "professor", "천문박사", "몬스터들은 오래전부터 별빛섬의 여덟 등불을 지켜 왔단다. 밤막회사가 빛을 가져가면서 섬의 균형이 무너지고 있어.", { x: 7, y: 5 },
     [{ kind: "fork", condition: condition("mx_starter"), then: [text("메뉴의 「도감」에서 만난 동료를, 「배지」에서 현재 목표를 볼 수 있단다. 여덟 관장의 약속을 모아 보렴.", "천문박사")], else: starterCommands }], 5);
@@ -761,7 +761,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     battle(map, "leader", g.leader, leader, pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
       // 관장 대사 → 배지 획득 연출(섬광·징글·떠오르는 배지, project/monsterBadgeCeremony.ts) → 보상. 배지 스위치는 승리 스위치가 이미 켠 뒤다.
       [text(g.after, g.leader), ...badgeAwardCommands({ badgeName: g.badge, badgeIndex: i + 1, badgeTotal: gymCount, type: gymType(i, g), fanfareResourceId: audio.victory }),
-        { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), text("다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle);
+        { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), gain("mx_revive", 1), text("부활의 깃털도 건네받았다. 다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle);
     // 체육관 졸개 트레이너(3세대 문법: 퍼즐 → 졸개들 → 관장). 입구에서 관장까지의 선을 따라 3~4명을 세우고 모두 시야선으로 걸어온다.
     // 관장 이벤트를 놓기 전에는 졸개를 놓지 않는다 — 관장 칸은 이미 예약되어 있어야 졸개가 그 자리를 피한다.
     const gruntCount = i < 3 ? 3 : 4;

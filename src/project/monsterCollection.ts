@@ -54,6 +54,8 @@ export type EvolveMonsterInput = {
   readonly instanceId: string;
   readonly toSpeciesId?: MonsterSpeciesId;
   readonly allowItemEvolution?: boolean;
+  /** 지정하면 이 아이템을 요구하는 진화 경로만 쓴다(진화의 돌 — 같은 종으로 가는 레벨 경로가 먼저 걸려 돌이 안 쓰이는 일을 막는다). */
+  readonly itemId?: ItemId;
 };
 
 export type EvolveMonsterResult =
@@ -516,6 +518,54 @@ export function previewMonsterEvolution(
   return evolution ? { name: monsterDisplayName(project, instance), fromSpeciesId: species.id, toSpeciesId: evolution.toSpeciesId } : undefined;
 }
 
+/** 이 아이템(진화의 돌 등)이 어떤 종의 진화 조건에 쓰이는가. */
+export function isEvolutionItemId(project: Project, itemId: ItemId): boolean {
+  return (project.database.monsterSpecies ?? []).some((species) => (species.evolutions ?? []).some((evolution) => evolution.requires.itemId === itemId));
+}
+
+/** 이 개체에게 이 아이템을 쓰면 진화하는가(읽기 전용). 레벨·친밀도 조건은 그대로 따진다. 아이템 보유 여부는 보지 않는다. 개체가 없으면 undefined. */
+export function previewMonsterItemEvolution(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  itemId: ItemId,
+): { readonly name: string; readonly fromSpeciesId: MonsterSpeciesId; readonly toSpeciesId?: MonsterSpeciesId; readonly reason?: string } | undefined {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+  if (!instance || !species) return undefined;
+  const name = monsterDisplayName(project, instance);
+  const paths = (species.evolutions ?? []).filter((evolution) => evolution.requires.itemId === itemId && monsterSpeciesById(project, evolution.toSpeciesId));
+  if (paths.length === 0) return { name, fromSpeciesId: species.id, reason: "효과가 없습니다" };
+  const met = paths.find((evolution) => evolutionRequirementMet(session, instance, evolution.requires, true));
+  if (met) return { name, fromSpeciesId: species.id, toSpeciesId: met.toSpeciesId };
+  const need = paths[0]!.requires;
+  const reason = need.level !== undefined && instance.level < need.level ? `Lv.${need.level} 이상이어야 진화합니다` : "아직 진화할 준비가 되지 않았습니다";
+  return { name, fromSpeciesId: species.id, reason };
+}
+
+/** 이 레벨이 되면 일어날 진화를 끝까지(아이템 없는 조건만) 미리 센다 — 이상한 사탕이 Lv16·Lv34 를 한꺼번에 넘으면 두 번 진화한다. 세션은 바꾸지 않는다. */
+export function previewMonsterEvolutionChain(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  atLevel: number,
+): readonly MonsterSpeciesId[] {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  if (!instance) return [];
+  const chain: MonsterSpeciesId[] = [];
+  let speciesId = instance.speciesId;
+  for (let step = 0; step < 6; step += 1) {
+    const species = monsterSpeciesById(project, speciesId);
+    const evolution = species ? selectEvolution(project, session, { ...instance, speciesId, level: atLevel }, species, { instanceId, allowItemEvolution: false }) : undefined;
+    if (!evolution || chain.includes(evolution.toSpeciesId) || evolution.toSpeciesId === instance.speciesId) break;
+    chain.push(evolution.toSpeciesId);
+    speciesId = evolution.toSpeciesId;
+  }
+  return chain;
+}
+
 export function applyMonsterExperienceAndEvolution(
   project: Project,
   session: PlaySession,
@@ -892,6 +942,15 @@ export function monsterExpInLevelBand(species: MonsterSpeciesRecord, level: numb
   return Math.min(ceiling, Math.max(floor, Math.trunc(exp ?? 0)));
 }
 
+/** 이 개체를 `levels` 레벨 올리는 데 필요한 경험치(상한 레벨이면 0). 이상한 사탕이 레벨 문턱까지 정확히 채우는 데 쓴다. */
+export function monsterExpToRaiseLevels(species: MonsterSpeciesRecord, instance: Pick<MonsterInstance, "level" | "exp">, levels: number): { readonly toLevel: number; readonly exp: number } {
+  const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
+  const level = clampInteger(instance.level, 1, ACTOR_LEVEL_MAX);
+  const toLevel = clampInteger(level + Math.max(0, Math.trunc(levels)), 1, ACTOR_LEVEL_MAX);
+  if (toLevel <= level) return { toLevel: level, exp: 0 };
+  return { toLevel, exp: Math.max(1, totalExpForLevel(curve, toLevel) - monsterExpInLevelBand(species, level, instance.exp)) };
+}
+
 function monsterLevelForExp(species: MonsterSpeciesRecord, currentLevel: number, exp: number): number {
   const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
   let level = clampInteger(currentLevel, 1, ACTOR_LEVEL_MAX);
@@ -908,6 +967,7 @@ function selectEvolution(
 ): MonsterEvolutionRecord | undefined {
   const evolutions = (species.evolutions ?? [])
     .filter((evolution) => !input.toSpeciesId || evolution.toSpeciesId === input.toSpeciesId)
+    .filter((evolution) => !input.itemId || evolution.requires.itemId === input.itemId)
     .filter((evolution) => monsterSpeciesById(project, evolution.toSpeciesId));
   return evolutions.find((evolution) => evolutionRequirementMet(session, instance, evolution.requires, input.allowItemEvolution === true));
 }

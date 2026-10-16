@@ -109,6 +109,8 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: P
   // careProfile 은 monsterCare 런타임이 읽는 필드다. 화이트리스트에 빠져 있어서 어떤
   // 에디터 경로로도 저장되지 않았다(기본 카탈로그만 가질 수 있는 값이었다).
   if ("careProfile" in patch) record.careProfile = patch.careProfile;
+  if ("ppRecovery" in patch) record.ppRecovery = patch.ppRecovery;
+  if ("pocket" in patch) record.pocket = patch.pocket;
   database.items[index] = normalizeItemRecord(record);
 }
 

@@ -1,24 +1,27 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { captureConditionLabel } from "@/battle/captureBalls";
-import { withJosa } from "@/util/josa";
+import { roJosa, withJosa } from "@/util/josa";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
 import { monsterCampaign, monsterDexSpeciesIds, monsterJournalEntry } from '@/project/monsterJournal';
-import { inventoryViewEntries } from '@/player/playerInventoryView';
+import { DEFAULT_INVENTORY_VIEW, inventoryViewEntries } from '@/player/playerInventoryView';
+import { BAG_POCKETS, DEFAULT_BAG_POCKET, bagPocketCounts, bagPocketLabel } from '@/player/playerBagPockets';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
 import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
-import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
+import { activeItemEffects } from "@/project/itemUsage";
+import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
+import { previewCareItem } from "@/project/monsterCare";
 import { actorOwnedSkillIds } from '@/project/growth/runtime';
 import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
-import { machineSkillOf, menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
+import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -171,12 +174,12 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const authored = project.database.items.find((record) => record.id === itemId);
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
-  if (item && itemAllowsMenu(item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)));
+  if (item && itemAllowsFieldMenu(project, item)) {
+    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)) || isEvolutionStone(project, item));
     entries.push({
       label: item.heldEffect ? "지니게 하기" : "사용",
       value: "",
-      unavailableReason: menuItemUnavailableReason(item),
+      unavailableReason: menuItemUnavailableReason(item, project),
       testId: `status-menu-item-use-${itemId}`,
       ...(isEmeraldMonsterStyle(project) ? { icon: itemEntryIcon(item), description: item.description, facts: itemFacts(project, session, item) } : {}),
       onActivate: needsTarget && options.onSelectItemTarget
@@ -244,20 +247,60 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     const item = activeItemEffects(authoredItem);
     const careProfile = item.careProfile;
     if (careProfile) {
+      const speciesName = (id: string) => project.database.monsterSpecies?.find((species) => species.id === id)?.name ?? id;
       return {
         title: `대상 선택: ${item.name}`,
         entries: session.monsterParty.flatMap((instanceId) => {
           const instance = session.monsterInstances[instanceId];
           if (!instance) return [];
+          if (!careProfile.levelUp) {
+            return [{
+              label: monsterDisplayName(project, instance),
+              value: `Lv.${instance.level}  친밀도 ${instance.friendship}`,
+              testId: `status-menu-monster-${instanceId}`,
+              onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+            }];
+          }
+          // 이상한 사탕 — 「Lv a → b」 와 진화 연쇄를 미리 보인다. 상한 레벨 개체는 쓸 수 없다.
+          const preview = previewCareItem(project, session, item, instanceId);
+          const evolve = preview.evolveToSpeciesIds.length ? ` · ${preview.evolveToSpeciesIds.map(speciesName).join(" → ")} 진화` : "";
           return [{
-            label: monsterDisplayName(project, instance),
-            value: `Lv.${instance.level}  친밀도 ${instance.friendship}`,
+            label: `${monsterDisplayName(project, instance)}  Lv.${preview.level}${preview.levelAfter !== preview.level ? ` → ${preview.levelAfter}` : ""}`,
+            value: `친밀도 ${preview.friendship}${preview.friendshipAfter !== preview.friendship ? ` → ${preview.friendshipAfter}` : ""}`,
+            description: preview.reason ?? (preview.levelAfter !== preview.level ? `레벨이 ${preview.levelAfter - preview.level} 오릅니다${evolve}` : "효과가 없습니다"),
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
             testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterLevelUpTarget: "true" },
             onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
           }];
         }),
         emptyLabel: "대상이 없습니다",
-        hint: "사용할 대상을 선택하세요.",
+        hint: careProfile.levelUp ? "Enter 사용 · Esc 아이템 목록" : "사용할 대상을 선택하세요.",
+      };
+    }
+    if (isEvolutionStone(project, item)) {
+      // 진화의 돌 — 몬스터마다 「진화한다 → 이름 / 효과 없음 / 아직 레벨이 모자람」 을 사용 경로와 같은 판정으로 보인다.
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — 진화시킬 몬스터 선택`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewEvolutionStoneTarget(project, session, item, instanceId);
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: preview.reason ? "효과 없음" : `→ ${preview.toName ?? "진화"}`,
+            description: preview.reason ?? `${preview.toName ?? "새로운 모습"}${roJosa(preview.toName ?? "새로운 모습")} 진화합니다`,
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterEvolutionTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: (session.monsterParty ?? []).some((instanceId) => session.monsterInstances?.[instanceId] && !previewEvolutionStoneTarget(project, session, item, instanceId).reason)
+          ? "Enter 진화시키기 · Esc 아이템 목록" : "진화할 수 있는 몬스터가 없습니다 · Esc 목록",
       };
     }
     if (item.heldEffect) {
@@ -372,7 +415,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
-    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect));
+    const needsTarget = item.type !== "switch" && itemAllowsFieldMenu(project, item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || isEvolutionStone(project, item));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
       && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
@@ -393,7 +436,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       icon: itemEntryIcon(item),
       value: `${inventory.get(item.id) ?? 0}개`,
       description: item.description,
-      unavailableReason: menuItemUnavailableReason(item),
+      unavailableReason: menuItemUnavailableReason(item, project),
       facts: itemFacts(project, session, item),
       testId: `status-menu-item-${item.id}`,
       onActivate: needsTarget && options.onSelectItemTarget
@@ -404,7 +447,25 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { wornSummary, bagEntries } = usesMonsterParty(project)
     ? { wornSummary: undefined, bagEntries: [] } : ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
-  return { title: usesMonsterParty(project) ? "가방" : "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  const rows = inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange);
+  if (!usesMonsterParty(project)) return { title: "아이템", entries: rows, emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  // 몬스터 수집 게임 가방: 도구·볼·기술머신·지닐 도구·중요한 물건 포켓. 좌우 키(또는 점·탭을 눌러서)로 전환한다.
+  const view = options.inventoryView ?? DEFAULT_INVENTORY_VIEW;
+  const selectedPocket = view.pocket ?? DEFAULT_BAG_POCKET;
+  const counts = bagPocketCounts(project, session.inventory);
+  const pockets = BAG_POCKETS.map((pocket) => ({
+    id: pocket.id, label: pocket.label, count: counts[pocket.id], selected: pocket.id === selectedPocket, testId: `bag-pocket-${pocket.id}`,
+    onActivate: options.onInventoryViewChange ? () => options.onInventoryViewChange?.({ ...view, pocket: pocket.id }) : undefined,
+  }));
+  return {
+    title: bagPocketLabel(selectedPocket),
+    entries: rows,
+    pockets,
+    // 에메랄드 스킨은 가방 그림 아래 점으로 포켓을 보인다. 그 밖의 스킨은 목록 위 탭 줄(키보드 커서 순서에는 넣지 않는다).
+    ...(isEmeraldMonsterStyle(project) ? {} : { tabs: pockets.map((pocket) => ({ id: pocket.id, label: `${pocket.label} ${pocket.count}`, selected: pocket.selected, testId: pocket.testId, onActivate: pocket.onActivate, pointerOnly: true })) }),
+    emptyLabel: "아이템이 없습니다",
+    hint: "←→ 포켓 · ↑↓ 이동 · Enter 선택",
+  };
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
@@ -888,7 +949,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) ? "partyMonster"
+  const scope = item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) || isEvolutionStone(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -897,7 +958,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
     { id: "type", value: item.type },
     { id: "effects", value: itemEffectTokens(project, item).join(",") },
     {
-      id: "eligibility", value: itemEligibilityFact(item),
+      id: "eligibility", value: itemEligibilityFact(project, item),
       targeting: { scope, deadOnly: item.onlyEffectiveOnDeadActors },
       consumption: item.consumable
         ? { consumable: true, usesPerCopy, remainingCopyUses,
@@ -907,9 +968,9 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   ];
 }
 
-function itemEligibilityFact(item: ItemRecord): string {
+function itemEligibilityFact(project: Project, item: ItemRecord): string {
   if (item.occasion === "battle") return "battle";
-  if (item.occasion === "never" || !itemAllowsMenu(item)) return "unusable";
+  if (item.occasion === "never" || !itemAllowsFieldMenu(project, item)) return "unusable";
   if ((item.type === "medicine" || item.type === "book" || item.type === "seed")
     && (item.usableActorIds.length > 0 || item.usableClassIds.length > 0)) return "restricted";
   return "usable";
@@ -938,7 +999,8 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
   if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
   if (item.heldEffect) tokens.push(`held:${item.heldEffect.kind}`);
-  if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}`);
+  if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}:${item.careProfile.levelUp ?? 0}`);
+  if (isEvolutionStone(project, item)) tokens.push("evolve:stone");
   if (item.captureProfile) {
     tokens.push(project.system.battleModel === "gen1"
       ? `capture-class:${item.captureProfile.ballClass ?? "poke"}`

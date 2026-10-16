@@ -1,0 +1,192 @@
+/** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
+// 몬스터 수집 게임 가방: 포켓(도구·볼·기술머신·지닌 도구·중요한 물건)과 필드 아이템 대상 미리보기·사용·진화.
+// 시작 상태는 monster-bag-fixture.mts 가 심는다(파티 5마리·소지품). 시나리오는 실제 입력 키만 쓴다.
+//   bun src/harnesses/assistant-capability/node/buildMonsterFixture.ts /tmp/pk-items/base.json
+//   bun scripts/qa/runtime/monster-bag-fixture.mts /tmp/pk-items/base.json /tmp/pk-items/bag.json
+//   npm run qa:runtime -- --scenario monster-bag --project /tmp/pk-items/bag.json
+export const monsterBagScenario = {
+  id: "monster-bag",
+  projectFixture: "/tmp/pk-items/bag.json",
+  query: { e2eVitals: "1" },
+  beats: [
+    { id: "title", expect: { testidPresent: ["title-screen"] } },
+    {
+      id: "field-start",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitForRuntime" }],
+      expect: { testidAbsent: ["title-screen"] },
+    },
+    {
+      id: "intro-dismiss",
+      note: "새 게임 직후의 시작 대사(박사 도입)를 확인키로 넘긴다",
+      ops: [{ kind: "key", key: "Enter", times: 8 }, { kind: "waitFor", testid: "dialogue-box", state: "absent" }],
+      expect: { testidAbsent: ["dialogue-box"] },
+      shot: true,
+    },
+    {
+      id: "menu-open",
+      ops: [{ kind: "key", key: "x" }, { kind: "waitFor", testid: "main-menu", state: "present" }],
+      expect: { testidPresent: ["main-menu"] },
+      shot: true,
+    },
+    {
+      id: "bag-open",
+      note: "「가방」 — 도구 포켓",
+      ops: [{ kind: "key", key: "ArrowDown", times: 2 }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-item_potion", state: "present" }],
+      expect: { testidPresent: ["status-menu-item-item_potion"] },
+      shot: true,
+    },
+    ...[["balls", "볼"], ["machines", "기술머신"], ["held", "지닐 도구"], ["key", "중요한 물건"]].map(([id, label]) => ({
+      id: `pocket-${id}`,
+      note: `오른쪽 키로 ${label} 포켓`,
+      ops: [{ kind: "key", key: "ArrowRight" }, { kind: "waitForAttr", testid: "main-menu", attr: "data-bag-pocket", value: id }],
+      expect: {},
+      shot: true,
+    })),
+    {
+      id: "pocket-wrap-back",
+      note: "왼쪽 키 ×4 로 도구 포켓으로 돌아온다",
+      ops: [{ kind: "key", key: "ArrowLeft", times: 4 }, { kind: "waitForAttr", testid: "main-menu", attr: "data-bag-pocket", value: "items" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "potion-context",
+      note: "회복약 → 다른 행동 화면(사용)",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-item_potion", state: "present" }],
+      expect: { testidPresent: ["status-menu-item-use-item_potion"] },
+      shot: true,
+    },
+    {
+      id: "potion-targets",
+      note: "사용 → 파티 대상 줄(HP 미리보기·상태)",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "회복약" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "potion-used",
+      note: "독발도마에게 사용 — HP 가 채워진 화면",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-message", text: "회복" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "back-to-list",
+      note: "취소키로 목록까지 돌아온다",
+      ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-item-item_ether", state: "present" }],
+      expect: { testidPresent: ["status-menu-item-item_ether"] },
+      shot: true,
+    },
+    {
+      id: "ether-targets",
+      note: "기술 에테르 — 사용 → 대상 줄",
+      ops: [{ kind: "key", key: "ArrowDown", times: 1 }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-item_ether", state: "present" }, { kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "기술 에테르" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "ether-used",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-message", text: "사용했습니다" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "ether-back",
+      ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-item-mx_revive", state: "present" }],
+      expect: {},
+    },
+    {
+      id: "revive-targets",
+      note: "부활의 깃털 — 사용 → 대상 줄",
+      ops: [{ kind: "key", key: "ArrowDown", times: 4 }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-mx_revive", state: "present" }, { kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "부활의 깃털" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "revive-used",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-message", text: "사용했습니다" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "revive-back",
+      ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-item-mx_candy", state: "present" }],
+      expect: {},
+    },
+    {
+      id: "candy-targets",
+      note: "이상한 사탕 — 사용 → 대상 줄",
+      ops: [{ kind: "key", key: "ArrowDown", times: 1 }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-mx_candy", state: "present" }, { kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "이상한 사탕" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "candy-evolution",
+      note: "사탕으로 새싹이 레벨 16 → 진화 장면(메뉴 위에 겹쳐 뜬다)",
+      ops: [{ kind: "key", key: "Enter" }, { kind: "waitFor", testid: "emerald-evolution", state: "present" }],
+      expect: { testidPresent: ["emerald-evolution"] },
+      shot: true,
+    },
+    {
+      id: "candy-evolution-done",
+      note: "장면 끝 대사 — 진화한 모습",
+      ops: [{ kind: "waitForText", testid: "emerald-evolution", text: "축하합니다", timeoutMs: 60000 }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "candy-evolution-end",
+      note: "장면이 끝나면 메뉴가 다시 그려진다(진화 뒤 이름·Lv)",
+      ops: [{ kind: "waitFor", testid: "emerald-evolution", state: "absent", timeoutMs: 90000 }],
+      expect: { testidAbsent: ["emerald-evolution"] },
+      shot: true,
+    },
+    {
+      id: "stone-targets",
+      note: "번개의 돌 — 대상 줄에 «→ 진화할 모습» / «효과 없음»",
+      ops: [{ kind: "key", key: "Escape" }, { kind: "waitFor", testid: "status-menu-item-mx_stone_thunder", state: "present" }, { kind: "key", key: "ArrowDown" }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-mx_stone_thunder", state: "present" }, { kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "번개의 돌" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "stone-evolution",
+      note: "독발도마에게 사용 — 진화 장면",
+      ops: [{ kind: "key", key: "ArrowDown" }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "emerald-evolution", state: "present" }],
+      expect: { testidPresent: ["emerald-evolution"] },
+      shot: true,
+    },
+    {
+      id: "stone-evolution-done",
+      ops: [{ kind: "waitForText", testid: "emerald-evolution", text: "진화했다", timeoutMs: 60000 }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "stone-evolution-end",
+      ops: [{ kind: "waitFor", testid: "emerald-evolution", state: "absent", timeoutMs: 90000 }],
+      expect: { testidAbsent: ["emerald-evolution"] },
+      shot: true,
+    },
+    {
+      id: "stone-fire-evolved",
+      note: "돌은 아직 목록에 있다",
+      ops: [{ kind: "waitFor", testid: "status-menu-item-mx_stone_frost", state: "present" }],
+      expect: {},
+    },
+    {
+      id: "stone-noeffect-targets",
+      note: "서리의 돌 — 파티에 진화할 몬스터가 없다: 전부 «효과 없음»",
+      ops: [{ kind: "key", key: "ArrowDown" }, { kind: "key", key: "Enter" }, { kind: "waitFor", testid: "status-menu-item-use-mx_stone_frost", state: "present" }, { kind: "key", key: "Enter" }, { kind: "waitForText", testid: "status-menu-detail-title", text: "서리의 돌" }],
+      expect: {},
+      shot: true,
+    },
+    {
+      id: "stone-noeffect-try",
+      note: "효과 없는 대상에 확인키 — 돌은 그대로",
+      ops: [{ kind: "key", key: "Enter" }],
+      expect: {},
+      shot: true,
+    },
+  ],
+};
+export default monsterBagScenario;

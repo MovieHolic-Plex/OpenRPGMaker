@@ -840,3 +840,9 @@ storage remain supervisor integration work.
 ## 몬스터 센터 회복 연출 (2026-10-16)
 
 `src/project/monsterCenterRecipe.ts` 의 `monsterCenterCommands()` — 기존 이벤트 명령만(선택지·moveEvent dropIn·파티클 sparkle/heal·Flash Screen·ME/SE·recoverAll·checkpointSave). 「맡길까요 예/아니오 → 맡김 → 파티 수만큼 볼(partySize 분기) → 회복 ME + 섬광 3번 → recoverAll → 건강해졌어요 → 센터 기록」. 캠페인 센터(world.ts·tournament.ts)와 조수 `place_monster_center` 가 같은 레시피를 쓴다. `partySize` 조건은 `monsterParty` 가 비어 있지 않으면 몬스터 마릿수를 센다(`conditionActorQueries.partySizeOf`). 효과음은 번들 `easyrpg-sound-*`(.mid 음악 id 는 브라우저에서 안 울려 피한다). 시각 QA: `TOWN_STAGE=center|shop node scripts/qa/runtime/monster-town.mjs <project.json>`.
+
+## 몬스터 필드 아이템 사용과 가방 포켓 (2026-10-16, poke-sys-items)
+
+- 필드 메뉴(`playerItemUse.ts` `useItemFromMenu`): 회복약·상태약·PP 약은 기존 경로, 부활은 `onlyEffectiveOnDeadActors`, **이상한 사탕**(`careProfile.levelUp`)은 `applyCareItem` 이 필요한 경험치를 채워 레벨을 올리고 진화를 최대 5번 이어 간다(상한 레벨은 아이템을 쓰지 않고 `maxLevel` 거절). **진화의 돌**은 `evolveMonster({itemId, allowItemEvolution})` — 진화 못 하는 몬스터는 「효과가 없습니다」이고 돌은 남는다. 대상 줄 미리보기는 `previewCareItem`·`previewEvolutionStoneTarget` 이 사용 경로와 같은 판정이다(「Lv a → b」「→ 이름」「효과 없음」).
+- 진화가 일어나면 `MenuItemUseResult.evolutions` → 상태 메뉴 컨트롤러가 `playEmeraldEvolutions`(에메랄드 스타일일 때)를 메뉴 위에 재생하고 끝나면 메뉴를 다시 그린다(그동안 입력 차단).
+- 가방 화면: 몬스터 파티 게임은 분류 필터 대신 포켓 5개(도구·볼·기술머신·지닐 도구·중요한 물건)를 좌우 키(또는 ◀ ▶·점)로 넘긴다. 에메랄드 스킨은 포켓마다 가방 색이 다르다(CSS, `data-bag-pocket`). 시각 QA: `scripts/qa/runtime/monster-bag.scenario.mjs`(픽스처 `monster-bag-fixture.mts`).

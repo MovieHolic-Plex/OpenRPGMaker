@@ -137,7 +137,8 @@ export function itemEffectStory(project: Project, authoredRecord: ItemRecord): I
   if (record.captureProfile) effects.push(`포획 배율 ×${record.captureProfile.multiplier}`);
   if (record.careProfile) {
     const exp = record.careProfile.expDelta ? ` · 경험치 +${record.careProfile.expDelta}` : "";
-    effects.push(`몬스터 친밀도 ${signed(record.careProfile.friendshipDelta)}${exp}`);
+    const level = record.careProfile.levelUp ? ` · 레벨 +${record.careProfile.levelUp}` : "";
+    effects.push(`몬스터 친밀도 ${signed(record.careProfile.friendshipDelta)}${exp}${level}`);
   }
   if (record.farmTool) effects.push(`농사 도구: ${FARM_TOOL_LABELS[record.farmTool]}`);
   if (record.animationId) notes.push(`전투 연출: ${namedId(record.animationId, project.database.battleAnimations)}`);
@@ -473,7 +474,7 @@ function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => 
       const current = currentItem(record).careProfile;
       const next: ItemCareProfile | undefined = kind !== "feed" && kind !== "toy"
         ? undefined
-        : { kind, friendshipDelta: current?.friendshipDelta ?? 0, ...(current?.expDelta !== undefined ? { expDelta: current.expDelta } : {}) };
+        : { kind, friendshipDelta: current?.friendshipDelta ?? 0, ...(current?.expDelta !== undefined ? { expDelta: current.expDelta } : {}), ...(current?.levelUp !== undefined ? { levelUp: current.levelUp } : {}) };
       updateItemAndRefresh(record, { careProfile: next, ...(next ? { occasion: "field", occasionField: true, occasionBattle: false, onlyUsableInMenu: true } : {}) }, refreshStory);
       rerender();
     }),
@@ -489,6 +490,11 @@ function careCard(record: ItemRecord, rerender: () => void, refreshStory: () => 
         const { expDelta: _drop, ...rest } = current;
         updateItemAndRefresh(record, { careProfile: expDelta > 0 ? { ...rest, expDelta } : rest }, refreshStory);
       }, { min: 0, max: 9999 }),
+      numberField("레벨 올리기(이상한 사탕)", "db-field-item-care-level-up", care.levelUp ?? 0, (levelUp) => {
+        const current = currentItem(record).careProfile ?? care;
+        const { levelUp: _drop, ...rest } = current;
+        updateItemAndRefresh(record, { careProfile: levelUp > 0 ? { ...rest, levelUp } : rest }, refreshStory);
+      }, { min: 0, max: 10 }),
     );
   }
   return sectionCard({

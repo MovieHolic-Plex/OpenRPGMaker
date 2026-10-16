@@ -70,7 +70,7 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemBagPocket, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
 import { normalizeCaptureCondition } from "@/battle/captureBalls";
 import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
@@ -799,7 +799,13 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     captureProfile: normalizeCaptureProfile(record.captureProfile),
     careProfile: normalizeCareProfile(record.careProfile),
     ...(normalizeHeldItemEffect(record.heldEffect) ? { heldEffect: normalizeHeldItemEffect(record.heldEffect) } : {}),
+    ...(isItemBagPocket(record.pocket) ? { pocket: record.pocket } : {}),
   };
+}
+
+const ITEM_BAG_POCKETS: readonly string[] = ["items", "balls", "machines", "held", "key"];
+function isItemBagPocket(value: unknown): value is ItemBagPocket {
+  return typeof value === "string" && ITEM_BAG_POCKETS.includes(value);
 }
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
@@ -1084,10 +1090,14 @@ function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): It
   const expDelta = typeof profile.expDelta === "number" && Number.isFinite(profile.expDelta)
     ? Math.max(0, Math.trunc(profile.expDelta))
     : undefined;
+  const levelUp = typeof profile.levelUp === "number" && Number.isFinite(profile.levelUp) && profile.levelUp >= 1
+    ? Math.min(10, Math.trunc(profile.levelUp))
+    : undefined;
   return {
     kind: profile.kind,
     friendshipDelta,
     ...(expDelta !== undefined ? { expDelta } : {}),
+    ...(levelUp !== undefined ? { levelUp } : {}),
   };
 }
 
