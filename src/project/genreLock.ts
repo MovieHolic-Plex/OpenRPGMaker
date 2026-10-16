@@ -42,6 +42,8 @@ interface GenreLockPresetDef {
   readonly alternatives: readonly Alternative[];
   /** 조수에게 숨기는 비허용 계열 전용 파이프라인 도구 이름. */
   readonly hiddenToolPatterns: readonly RegExp[];
+  /** 시스템 프롬프트의 잠금 덩어리 끝에 붙는 장르 전용 안내(없으면 생략). 칩셋이 아니라 이 장르의 도구가 어디 있는지 알린다. */
+  readonly promptExtra?: string;
 }
 
 // 계열 id 는 monsterKit.ts(MONSTER_KIT_FAMILY)·emeraldMonsterKit.ts 와 같아야 한다 — 이 파일은 시트 데이터를 끌어오지 않으려고 문자열로 둔다.
@@ -65,6 +67,10 @@ export const GENRE_LOCK_PRESETS: Readonly<Record<GenreLockPresetId, GenreLockPre
       /^(compose|link|build|list)_(campus|desert_east|jp_city|modern_city|pirate_isles|prehistoric|sengoku_edo|sf_station|sky_island|snow_north|steampunk|gothic|wizarding)/u,
       /^apply_beodeul_/u,
     ],
+    // 몬스터 게임 제작 도구는 숨기지 않는다(위 패턴에 안 걸린다). 전투 깊이·필드 기술은 도구 인자 한 곳에서 정해진다 — 상태·이벤트로 흉내 내지 않는다.
+    promptExtra: "전투 깊이는 전용 필드로 정한다: 능력 단계 ±6 = upsert_skill statStageEffects · 상태이상(독·맹독·화상·수면·얼음·마비·혼란) = upsert_state gen1MajorStatus/volatileStatus · 날씨 = upsert_skill weather · "
+      + "특성 = define_monster_species species.ability · 지닌 물건 = upsert_item heldEffect · 조건부 포획볼 = upsert_item captureProfile.condition. 필드 기술(비전머신 HM)은 place_field_obstacle(바위·덩굴·물길·폭포·어둠). "
+      + "인자 모양은 find_tools 로 recipe(monster-battle-depth·monster-status-conditions·monster-weather·monster-abilities·monster-held-items·monster-capture-balls·monster-field-skills)를 찾아 읽는다.",
   },
   romance: {
     label: "현대 연애(학교·도시 무대)",
@@ -194,6 +200,19 @@ export function enableGenreLock(project: Project, preset: GenreLockPresetId, mod
   return true;
 }
 
+/**
+ * 이미 켜진 잠금에, 지금 허용 밖인 맵을 「잠금 이전부터 있던 맵」으로 적어 둔다(막지 않는다).
+ * 잠금을 먼저 켠 뒤 시작 예제처럼 프로젝트 내용을 통째로 갈아 끼운 경우에만 쓴다 — 안 하면 그 예제 맵이 곧바로 「잠금 이후 위반」으로 보고된다.
+ */
+export function grandfatherGenreLockViolations(project: Project): boolean {
+  const lock = project.system.genreLock;
+  if (!lock) return false;
+  const ids = genreLockViolations(project).map((violation) => violation.mapId).filter((id) => !(lock.grandfatheredMapIds ?? []).includes(id));
+  if (!ids.length) return false;
+  project.system.genreLock = { ...lock, grandfatheredMapIds: [...(lock.grandfatheredMapIds ?? []), ...ids] };
+  return true;
+}
+
 /** 잠금을 끈다. 켜져 있었으면 true. */
 export function disableGenreLock(project: Project): boolean {
   if (!project.system.genreLock) return false;
@@ -227,7 +246,8 @@ export function genreLockPromptNote(project: Project): string | null {
   const allowed = genreLockAllowedTilesets(project).map((t) => t.id).join(", ");
   const alts = active.def.alternatives.map((alt) => `${alt.use}→${alt.tilesetId}`).join(" · ");
   return `[장르 잠금 — ${active.def.label}]
-이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`;
+이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`
+    + (active.def.promptExtra ? `\n${active.def.promptExtra}` : "");
 }
 
 /** 프로젝트를 통째로 갈아 끼우거나 되돌리는 도구 — 결과가 새 프로젝트/이전 상태라 잠금 판정 대상이 아니다. */
