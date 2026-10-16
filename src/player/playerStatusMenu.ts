@@ -76,6 +76,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     panel.dataset.bagPocket = usesMonsterParty(options.project) ? options.inventoryView?.pocket ?? "items" : options.inventoryView?.filter ?? "all";
     panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
   }
+  // 도트 스킨 명령 창은 높이를 항목 수로 잡는다(pixelWindows.css --px-dock-h) — 7항목 연애 메뉴에서 「타이틀로」 가 창 밖으로 나갔다(R10).
+  panel.style.setProperty("--status-menu-command-count", String(snapshot.commands.length));
   applySystemGraphic(panel);
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
