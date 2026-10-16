@@ -13,16 +13,17 @@ import { normalizeItemRecord, normalizeSkillRecord } from '@/project/databaseRec
 import { entryCells } from '@/project/eventPassageBlock';
 import type { ChangeTileLayer, Command, Dir, EventPage, GameEvent, GameMap, ItemRecord, Project, SkillRecord } from '@/project/types';
 import { genId } from '@/util/id';
+import { withJosa } from '@/util/josa';
 import { inMapBounds, requireMap } from './mapHelpers';
 import { ensureNamedSwitch } from './flagHelpers';
-import { assertEventShape, upsertEventIntoMap } from './eventTools';
+import { assertEventShape, placeChest, upsertEventIntoMap } from './eventTools';
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from './types';
 
 export const FIELD_OBSTACLE_KINDS = ['rock', 'tree', 'water', 'dark', 'waterfall'] as const;
 type ObstacleKind = (typeof FIELD_OBSTACLE_KINDS)[number];
 
 const DIRS: Record<Dir, readonly [number, number]> = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
-const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'id'] as const;
+const KEYS = ['mapId', 'x', 'y', 'kind', 'requiresSkillId', 'skillName', 'name', 'tile', 'passTile', 'direction', 'length', 'span', 'fullWidth', 'machine', 'hint', 'blockedText', 'requiresBadge', 'requiresSwitchId', 'giverX', 'giverY', 'giverMapId', 'id'] as const;
 
 /** 종류별 기본: 독자 기술 이름(원작 이름을 쓰지 않는다), 안내 대사, 칩셋 타일 라벨 패턴. */
 const DEFAULTS: Record<ObstacleKind, { skillId: string; skillName: string; skillText: string; blocked: string; event: string; tile?: RegExp; pass?: RegExp; hmName: string }> = {
@@ -39,7 +40,7 @@ const schema = (properties: Record<string, JsonSchema>, required: string[]): Jso
 
 function rejectUnknownKeys(args: Record<string, unknown>): void {
   const hints: Record<string, string> = {
-    skillId: 'requiresSkillId', skill: 'requiresSkillId', requires: 'requiresSkillId', hm: 'machine', item: 'machine', text: 'hint / blockedText', dialogue: 'hint / blockedText',
+    skillId: 'requiresSkillId', skill: 'requiresSkillId', requires: 'requiresSkillId', hm: 'machine', item: 'machine', badge: 'requiresBadge(캠페인 배지 번호)/requiresSwitchId', badgeId: 'requiresBadge', giver: 'giverX·giverY(비전서 상자 위치)', chest: 'giverX·giverY', text: 'hint / blockedText', dialogue: 'hint / blockedText',
     dir: 'direction', width: 'rock·tree 는 span(칸 수) 또는 fullWidth:true(도로 폭 전체), water·waterfall 은 length', cells: '이 도구는 (x,y)에서 direction 으로 rock·tree 는 span 칸을 막고 water·waterfall 은 length 칸을 건넙니다', tileId: 'tile', type: 'kind', obstacle: 'kind',
   };
   for (const key of Object.keys(args)) {
@@ -169,11 +170,20 @@ function ensureMachineItem(draft: Project, skill: SkillRecord, kind: ObstacleKin
   if (found) return found;
   const record = normalizeItemRecord({
     id, name: DEFAULTS[kind].hmName.replace('비전서', machine === 'hm' ? '비전서' : '기술서'), type: 'book', learnedSkillId: skill.id, skillId: skill.id,
-    description: `${skill.name}을(를) 가르친다. ${machine === 'hm' ? '아무리 써도 없어지지 않고, 배운 기술은 잊을 수 없다.' : '한 번 쓰면 없어진다.'}`,
+    description: `${withJosa(skill.name, '을/를')} 가르친다. ${machine === 'hm' ? '아무리 써도 없어지지 않고, 배운 기술은 잊을 수 없다.' : '한 번 쓰면 없어진다.'}`,
     consumable: machine === 'tm', price: 0, occasion: 'always',
   } as Partial<ItemRecord> & Pick<ItemRecord, 'id' | 'name'>);
   draft.database.items.push(record);
   return record;
+}
+
+/** 메뉴·조사 어느 쪽에서 기술을 써도 같은 열림: 배지·스위치가 없으면 안내만 하고 열지 않는다. */
+function openByAbility(skillName: string, doneSwitchId: string, gates: readonly { switchId: string; label: string }[]): Command[] {
+  const open: Command[] = [text(`${skillName}!`), { kind: 'setSwitch', switchId: doneSwitchId, value: true }];
+  if (gates.length === 0) return open;
+  const [first, ...rest] = gates;
+  const inner: Command[] = rest.length ? openByAbility(skillName, doneSwitchId, rest) : open;
+  return [{ kind: 'fork', condition: { kind: 'switch', switchId: first!.switchId, value: true }, then: inner, else: [text(`아직 ${withJosa(first!.label, '이/가')} 없어 ${withJosa(skillName, '이/가')} 말을 듣지 않는다…`)] }];
 }
 
 const BASE_PAGE = { movement: { type: 'fixed', speed: 3, frequency: 3 } } as const;
@@ -189,7 +199,8 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       '이 도구가 막는 지형(칩셋의 실제 타일), 조사하는 투명 이벤트(모르면 안내·아는 파티면 「쓰자」 안내), 필드 스킬(없으면 독자 이름으로 생성·잊을 수 없는 기술) + 그 스킬의 공통 이벤트(이 장애물만 연다), ' +
       '기술머신 아이템(몬스터 파티 게임에서는 파티 몬스터에게 가르친다)을 전부 만든다. 어떤 파티원(배우·몬스터)이 requiresSkillId 를 알아야 열린다(partyKnowsSkill). ' +
       '길이 막혀 있는 칸(x,y)을 주면 된다 — rock·tree 는 걸어갈 수 있는 길 칸(바위·덩굴 타일을 깔아 막음; 기본 한 칸, 도로가 넓으면 span 칸 수나 fullWidth:true 로 폭 전체를 닫는다 — 한 칸만 놓으면 응답이 우회 가능(data.bypass:true)과 필요한 span 을 경고한다), water·waterfall 은 막힌 물·폭포 칸에서 시작해 direction 으로 length 칸(기술을 쓰면 다리·발판이 놓임), dark 는 걸을 수 있는 길목 칸(맵 전체를 어둡게 하고 그 칸에서 길을 막는다. 기술을 쓰거나 아는 파티가 입장하면 밝아지고 열림). ' +
-      '**기술을 가르칠 방법은 호출자가 잇는다**: data.itemId(기술머신)를 NPC·상자가 changeItem 으로 주게 하라(place_chest 나 upsert_event) — 자동 플레이(qa:game check)는 그 줄을 따라가 기술을 익힌 뒤 장애물 앞에서 쓴다. 몬스터마다 가르칠 수 있는 종을 제한하려면 define_monster_species.machineSkillIds. ' +
+      '**기술을 가르칠 방법**: giverX·giverY 를 주면 이 도구가 비전서 상자를 같이 놓는다(장애물보다 먼저 닿는 칸에). 안 주면 호출자가 data.itemId(기술머신)를 NPC·상자가 changeItem 으로 주게 하라(place_chest 나 upsert_event) — 자동 플레이(qa:game check)는 그 줄을 따라가 기술을 익힌 뒤 장애물 앞에서 쓴다. 몬스터마다 가르칠 수 있는 종을 제한하려면 define_monster_species.machineSkillIds. ' +
+      '**원작식 진행 게이팅**: requiresBadge(캠페인 배지 번호) 또는 requiresSwitchId 를 주면 그 배지·스위치가 있어야 기술이 말을 듣는다(조사해도 메뉴에서 써도 안내만 나오고 열리지 않는다). 조사하면 기술을 아는 파티는 「쓸까?」 선택지를 받는다. ' +
       '쓰지 말 것: 퍼즐 문·열쇠 문(compile_puzzle), 밀어서 움직이는 바위(place_pushable), 전투로 지키는 길목(place_battle_blocker).',
     parameters: schema({
       mapId: { type: 'string' },
@@ -208,9 +219,14 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       machine: { type: 'string', enum: ['hm', 'tm', 'none'], description: 'hm=사라지지 않는 비전서(기본) · tm=한 번 쓰면 없어지는 기술서 · none=아이템 안 만듦(NPC 가 learnSkill 로 줌)' },
       hint: { type: 'string', description: '파티가 기술을 알 때 조사하면 나오는 안내 대사(생략=기본)' },
       blockedText: { type: 'string', description: '파티가 기술을 모를 때 조사하면 나오는 대사(생략=종류별 기본)' },
+      requiresBadge: { type: 'integer', description: '원작식 진행 게이팅: 이 번호의 배지(몬스터 캠페인 badges[번호-1] 의 스위치, 없으면 mx_badge_번호)를 가진 뒤에만 기술이 말을 듣는다. 배지가 없으면 안내 대사만 나오고 열리지 않는다(메뉴에서 써도 마찬가지). 생략=배지 조건 없음' },
+      requiresSwitchId: { type: 'string', description: '배지 말고 임의의 스위치 id 로 게이팅(예: 이야기 진행 스위치). requiresBadge 와 함께 쓰면 둘 다 필요' },
+      giverX: { type: 'integer', description: '비전서(기술 아이템)를 주는 보물상자의 x — giverY 와 함께 주면 이 도구가 같은 맵(또는 giverMapId)에 상자를 놓아 획득 경로까지 한 번에 잇는다. 생략하면 호출자가 따로 이어야 한다(경고)' },
+      giverY: { type: 'integer', description: '비전서 상자의 y(giverX 와 함께)' },
+      giverMapId: { type: 'string', description: '비전서 상자를 놓을 맵 id(생략=장애물과 같은 맵). 장애물보다 먼저 닿을 수 있는 곳에 둘 것' },
       id: { type: 'string' },
     }, ['mapId', 'x', 'y', 'kind']),
-    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall), 여는 기술은 requiresSkillId, 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length. 그 밖의 칸은 받지 않습니다.',
+    invalidArgsHint: '종류는 kind(rock|tree|water|dark|waterfall), 여는 기술은 requiresSkillId, 대사는 hint(알 때)·blockedText(모를 때), 바위·덩굴은 span·fullWidth, 물길·폭포는 direction·length, 배지 제한은 requiresBadge, 비전서 상자는 giverX·giverY. 그 밖의 칸은 받지 않습니다.',
     invalidArgsExample: { mapId: 'map_route_3', x: 12, y: 9, kind: 'tree', skillName: '덩굴 가르기' },
     run(draft: Project, args: Record<string, unknown>): ToolExecResult {
       rejectUnknownKeys(args);
@@ -233,6 +249,24 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       const fullWidth = args.fullWidth === true;
       if (fullWidth && span !== undefined) throw new ToolError('span 과 fullWidth 는 함께 쓰지 않습니다 — 칸 수를 직접 정하려면 span, 도로 폭 전체면 fullWidth:true.', { code: 'invalid-args' });
       if ((span !== undefined || fullWidth) && k !== 'rock' && k !== 'tree') throw new ToolError(`span·fullWidth 는 rock·tree 장애물에만 씁니다 — ${k} 는 ${k === 'dark' ? '한 칸 길목' : 'direction·length 로 건널 칸 수'}를 정합니다.`, { code: 'invalid-args' });
+      // 원작식 게이팅: 배지(캠페인 badges[번호-1] 스위치) 또는 임의 스위치를 가진 뒤에만 기술이 말을 듣는다.
+      const gateSwitches: { switchId: string; label: string }[] = [];
+      if (args.requiresBadge !== undefined) {
+        const badgeNo = Number(args.requiresBadge);
+        if (!Number.isInteger(badgeNo) || badgeNo < 1 || badgeNo > 16) throw new ToolError('requiresBadge 는 배지 번호 1..16 입니다.', { code: 'invalid-args' });
+        const badge = draft.system.monsterCampaign?.badges?.[badgeNo - 1];
+        gateSwitches.push({ switchId: badge?.switchId ?? `mx_badge_${badgeNo}`, label: badge?.name ?? `${badgeNo}번째 배지` });
+      }
+      if (args.requiresSwitchId !== undefined) {
+        if (typeof args.requiresSwitchId !== 'string' || !args.requiresSwitchId.trim()) throw new ToolError('requiresSwitchId 는 스위치 id 문자열입니다.', { code: 'invalid-args' });
+        const switchId = args.requiresSwitchId.trim();
+        gateSwitches.push({ switchId, label: draft.switches.find((entry) => entry.id === switchId)?.name || switchId });
+      }
+      const giverX = args.giverX === undefined ? undefined : Number(args.giverX);
+      const giverY = args.giverY === undefined ? undefined : Number(args.giverY);
+      if ((giverX === undefined) !== (giverY === undefined)) throw new ToolError('giverX 와 giverY 는 함께 줍니다(비전서 상자 좌표).', { code: 'invalid-args' });
+      if (giverX !== undefined && (!Number.isInteger(giverX) || !Number.isInteger(giverY))) throw new ToolError('giverX·giverY 는 정수 좌표입니다.', { code: 'invalid-args' });
+      if (giverX !== undefined && machine === 'none') throw new ToolError("machine:'none' 이면 아이템이 없어 상자를 놓을 수 없습니다 — giverX·giverY 를 빼거나 machine 을 hm|tm 으로 하세요.", { code: 'invalid-args' });
       const id = typeof args.id === 'string' && args.id.trim() ? args.id.trim() : genId('ev_obstacle');
       const eventName = typeof args.name === 'string' && args.name.trim() ? args.name.trim() : base.event;
       const warnings: string[] = [];
@@ -390,16 +424,30 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
         if (found) found.commands = lit; else draft.commonEvents.push({ id: commonEventId, name: `필드 기술: ${skillName}`, trigger: 'none', commands: lit });
       } else {
         ensureNamedSwitch(draft, doneSwitchId, `필드 장애물 열림: ${eventName}`);
-        ensureFieldCommonEvent(draft, commonEventId, skillName, id, [text(`${skillName}!`), { kind: 'setSwitch', switchId: doneSwitchId, value: true }]);
+        for (const gate of gateSwitches) {
+          if (!draft.switches.some((entry) => entry.id === gate.switchId)) { ensureNamedSwitch(draft, gate.switchId, gate.label); warnings.push(`스위치 '${gate.switchId}'(${gate.label})가 없어 등록했습니다 — 이 스위치를 켜는 곳(체육관 승리·이벤트)이 있어야 열립니다.`); }
+        }
+        ensureFieldCommonEvent(draft, commonEventId, skillName, id, openByAbility(skillName, doneSwitchId, gateSwitches));
       }
       const item = machine === 'none' ? undefined : ensureMachineItem(draft, skill, k, machine);
 
       // 이벤트 페이지: 모름(막힘) → 앎(안내) → 열림 신호(스위치) 자동 처리 → 열린 뒤
-      const knowsText = hint ?? (k === 'dark' ? `${skill.name}의 빛이 어둠을 몰아낸다.` : `${skill.name}(으)로 치울 수 있을 것 같다. 메뉴의 기술에서 ${skill.name}을(를) 쓰자.`);
+      const knowsText = hint ?? (k === 'dark' ? `${skill.name}의 빛이 어둠을 몰아낸다.` : `${skill.name} 기술로 치울 수 있을 것 같다.`);
       const knows = { kind: 'partyKnowsSkill', skillId: skill.id } as const;
+      const gateConditions = gateSwitches.map((gate) => ({ kind: 'switch', switchId: gate.switchId, value: true }) as const);
+      const lackingText = `${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있지만 아직 ${withJosa(gateSwitches.map((gate) => gate.label).join('·'), '이/가')} 없어 말을 듣지 않는다…`;
+      // 조사하면 「쓸까?」를 묻는다(원작 필드 기술 대화) — 예 하면 메뉴에서 쓴 것과 같은 효과(스위치 → 열림 페이지)가 돈다.
+      const askToUse: Command[] = [
+        text(knowsText),
+        { kind: 'choices', prompt: `${withJosa(skill.name, '을/를')} 쓸까?`, options: [
+          { text: `${skill.name}!`, branch: [text(`${skill.name}!`), { kind: 'setSwitch', switchId: doneSwitchId, value: true }] },
+          { text: '그만둔다', branch: [] },
+        ] },
+      ];
       const gatePages = (eventId: string, clear: Command[]): EventPage[] => [
-        { id: `${eventId}_blocked`, name: '막힘', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(`${blocked} ${skill.name}을(를) 쓸 수 있는 동료가 있다면…`)] },
-        { id: `${eventId}_know`, name: '기술을 앎', conditions: [knows], graphic: { transparent: true }, ...SOLID, commands: [text(knowsText)] },
+        { id: `${eventId}_blocked`, name: '막힘', conditions: [], graphic: { transparent: true }, ...SOLID, commands: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있다면…`)] },
+        ...(gateConditions.length ? [{ id: `${eventId}_lacking`, name: '기술은 알지만 조건 부족', conditions: [knows], graphic: { transparent: true }, ...SOLID, commands: [text(lackingText)] } as EventPage] : []),
+        { id: `${eventId}_know`, name: '기술을 앎', conditions: [knows, ...gateConditions], graphic: { transparent: true }, ...SOLID, commands: askToUse },
         {
           id: `${eventId}_opening`, name: '열리는 중', conditions: [{ kind: 'switch', switchId: doneSwitchId, value: true }], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
           commands: [...clear, { kind: 'setSelfSwitch', key: 'B', value: true }],
@@ -410,7 +458,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
       if (k === 'dark') {
         pages.push({
           id: `${id}_dark`, name: '어둠 밝히기', conditions: [], graphic: { transparent: true }, ...PASS, trigger: { kind: 'auto' },
-          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${skill.name}을(를) 쓸 수 있는 동료가 있다면 밝힐 수 있을 것이다.`)] }],
+          commands: [{ kind: 'fork', condition: knows, then: [{ kind: 'setLighting', ambient: 0, transitionMs: 600 }, text(knowsText)], else: [text(`${blocked} ${withJosa(skill.name, '을/를')} 쓸 수 있는 동료가 있다면 밝힐 수 있을 것이다.`)] }],
         });
         const event: GameEvent = { id, name: eventName, x, y, trigger: { kind: 'auto' }, commands: [], pages };
         assertEventShape(event, warnings, event, draft);
@@ -425,7 +473,7 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
         // rock·tree: 막은 칸마다 이벤트 하나(첫 칸 = id, 나머지 = `${id}_c2`…). 어느 칸 앞에서 기술을 써도 같은 스위치로 줄 전체가 열린다.
         perCell.forEach((entry, index) => {
           const eventId = index === 0 ? id : `${id}_c${index + 1}`;
-          if (index > 0) ensureFieldCommonEvent(draft, commonEventId, skillName, eventId, [text(`${skillName}!`), { kind: 'setSwitch', switchId: doneSwitchId, value: true }]);
+          if (index > 0) ensureFieldCommonEvent(draft, commonEventId, skillName, eventId, openByAbility(skillName, doneSwitchId, gateSwitches));
           const event: GameEvent = { id: eventId, name: index === 0 ? eventName : `${eventName} ${index + 1}`, x: entry.x, y: entry.y, trigger: { kind: 'action' }, commands: [], pages: gatePages(eventId, entry.clear) };
           assertEventShape(event, warnings, event, draft);
           upsertEventIntoMap(map, event);
@@ -433,12 +481,22 @@ export const FIELD_OBSTACLE_TOOLS: readonly ToolDefinition[] = [
         });
       }
 
+      let giverNote = '';
+      if (item && giverX !== undefined && giverY !== undefined) {
+        const giverMap = typeof args.giverMapId === 'string' && args.giverMapId.trim() ? requireMap(draft, args.giverMapId.trim()) : map;
+        const chest = placeChest.run(draft, { mapId: giverMap.id, x: giverX, y: giverY, contents: { itemId: item.id }, name: `${item.name} 상자`, id: `${id}_giver` }) as ToolExecResult;
+        for (const warning of chest.warnings ?? []) warnings.push(`비전서 상자: ${warning}`);
+        const placed = chest.data as { x?: number; y?: number } | undefined;
+        giverNote = `, 비전서 상자 ${giverMap.id}(${placed?.x ?? giverX}, ${placed?.y ?? giverY})`;
+        if (giverMap.id === map.id) warnings.push('비전서 상자가 장애물과 같은 맵에 있습니다 — 플레이어가 장애물보다 먼저 닿을 수 있는 칸인지 확인하세요(check_reachability).');
+      }
       const sameSkill = draft.database.skills.filter((entry) => entry.unforgettable && entry.fieldCommonEventId).length;
       if (sameSkill > 8) warnings.push(`잊을 수 없는 필드 기술이 ${sameSkill}개입니다 — 몬스터는 기술이 넷뿐이라 비전머신이 많으면 전투 기술을 넣을 칸이 없습니다(보통 4~5개 이하).`);
-      if (item) warnings.push(`아이템 ${item.id}(${item.name})을 만들었습니다 — 누가 주는지 이어야 합니다: NPC·상자 이벤트의 changeItem {itemId:'${item.id}', op:'+=', amount:1}. 파티 몬스터 하나가 가방에서 이 아이템을 써 기술을 익혀야 열립니다.`);
+      if (item && giverNote === '') warnings.push(`아이템 ${item.id}(${item.name})을 만들었습니다 — 누가 주는지 이어야 합니다(다음에는 giverX·giverY 로 상자를 같이 놓을 수 있습니다): NPC·상자 이벤트의 changeItem {itemId:'${item.id}', op:'+=', amount:1}. 파티 몬스터 하나가 가방에서 이 아이템을 써 기술을 익혀야 열립니다.`);
+      if (item && !draft.database.items.some((entry) => entry.id === item.id && entry.learnedSkillId)) warnings.push(`아이템 ${item.id} 에 가르칠 기술이 없습니다.`);
       return {
-        summary: `${map.name} (${x}, ${y}) 에 필드 장애물(${k}) '${eventName}' — 여는 기술 ${skill.name}(${skill.id})${item ? `, 기술 아이템 ${item.id}` : ''}${cells.length > 1 ? (k === 'water' || k === 'waterfall' ? `, 건널 칸 ${cells.length}` : `, 막은 칸 ${cells.length}`) : ''}${bypass === true ? ' — 우회로 있음(길이 닫히지 않음)' : bypass === false ? ' — 길이 닫힘' : ''}`,
-        data: { eventId: id, eventIds, kind: k, skillId: skill.id, commonEventId, itemId: item?.id, tile: usedTile, cells, x, y, ...(roadWidth !== undefined ? { roadWidth } : {}), ...(bypass !== undefined ? { bypass } : {}) },
+        summary: `${map.name} (${x}, ${y}) 에 필드 장애물(${k}) '${eventName}' — 여는 기술 ${skill.name}(${skill.id})${item ? `, 기술 아이템 ${item.id}` : ''}${giverNote}${gateSwitches.length ? `, 조건 ${gateSwitches.map((gate) => gate.switchId).join('+')}` : ''}${cells.length > 1 ? (k === 'water' || k === 'waterfall' ? `, 건널 칸 ${cells.length}` : `, 막은 칸 ${cells.length}`) : ''}${bypass === true ? ' — 우회로 있음(길이 닫히지 않음)' : bypass === false ? ' — 길이 닫힘' : ''}`,
+        data: { eventId: id, eventIds, kind: k, skillId: skill.id, commonEventId, itemId: item?.id, ...(gateSwitches.length ? { requiresSwitchIds: gateSwitches.map((gate) => gate.switchId) } : {}), tile: usedTile, cells, x, y, ...(roadWidth !== undefined ? { roadWidth } : {}), ...(bypass !== undefined ? { bypass } : {}) },
         ...(warnings.length > 0 ? { warnings } : {}),
       };
     },

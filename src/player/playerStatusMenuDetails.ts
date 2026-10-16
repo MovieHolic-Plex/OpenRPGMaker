@@ -342,7 +342,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
           return [{
             label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
             value: preview.reason ? "배울 수 없음" : known >= 4 ? "교체해서 배움" : "배울 수 있음",
-            description: preview.reason ?? (known >= 4 ? "기술이 가득 찼습니다 — 가르치면 몬스터 목록에서 잊을 기술을 고릅니다" : `${skillName}을(를) 가르칩니다`),
+            description: preview.reason ?? (known >= 4 ? "기술이 가득 찼습니다 — 가르치면 몬스터 목록에서 잊을 기술을 고릅니다" : `「${skillName}」 기술을 가르칩니다`),
             disabled: Boolean(preview.reason),
             unavailableReason: preview.reason,
             testId: `status-menu-monster-${instanceId}`,
