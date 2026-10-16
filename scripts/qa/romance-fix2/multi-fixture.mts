@@ -11,7 +11,7 @@ const [file, outDir] = process.argv.slice(2) as [string, string];
 mkdirSync(outDir, { recursive: true });
 const project = deserialize(readFileSync(file, "utf8")) as Project;
 // 옛 단일 호감 게이지 HUD 가 깔린 입력이면 지우고 현재 기본값(호감 목록)을 다시 깐다. 이미 목록이면 그대로(멱등).
-if (project.system.fieldHud?.widgets?.some(w => w.id === "affection" && w.kind === "gauge")) delete (project.system as { fieldHud?: unknown }).fieldHud;
+if (!process.env.KEEP_OLD_HUD && project.system.fieldHud?.widgets?.some(w => w.id === "affection" && w.kind === "gauge")) delete (project.system as { fieldHud?: unknown }).fieldHud;
 const reapplied = applyRomanceDefaults(project);
 const ctx = { project, assistantRun: true } as { project: Project; assistantRun: boolean };
 const log: Record<string, unknown> = { reappliedDefaults: reapplied };
@@ -121,6 +121,7 @@ const steps = [
   { who: "char_yuna", at: S.lecture, adj: yunaMorning },
   { who: "char_minji", at: S.dept, adj: adjTo(S.dept.x, S.dept.y) },
   { who: "char_seoyeon", at: S.plaza, adj: adjTo(S.plaza.x, S.plaza.y) },
+  { who: "char_yuna", at: S.lecture, adj: yunaMorning }, // 이튿날 아침(화요일) 다시 유나
 ];
 let cur = start; const proofSteps: unknown[] = [];
 for (const s of steps) {

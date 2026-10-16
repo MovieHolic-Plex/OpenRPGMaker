@@ -18,7 +18,7 @@ const feedback = (text) => [{ kind: "waitForText", testid: "dialogue-box", text 
 const closeFeedback = [enter, { kind: "waitFor", testid: "dialogue-box", state: "absent" }, ...settle];
 const at = (eventId, spot) => ({ kind: "waitForEventAt", eventId, mapId, x: spot.x, y: spot.y, timeoutMs: 60000 });
 const walk = (step) => [{ kind: "playerRoute", moves: step.moves }, { kind: "waitForPosition", mapId, x: step.arrive.x, y: step.arrive.y, timeoutMs: 60000 }, ...stable];
-const [s1, s2, s3] = proof.steps;
+const [s1, s2, s3, s4] = proof.steps;
 export default {
   id: "romance-multi",
   projectFixture,
@@ -36,9 +36,19 @@ export default {
     { id: "08-feedback-minji", note: "호감 +10 · 남은 시간 1", shot: true, ops: [...skipThenNext, ...feedback("남은 시간 1")], expect: { testidPresent: ["dialogue-box"] } },
     { id: "09-evening", note: "저녁 — 유나 기숙사 앞·서연 광장·민지 강의동 앞. 호감 하트가 유나·민지 둘", shot: true,
       ops: [...closeFeedback, at(yuna, S.dorm), at(seoyeon, S.plaza), at(minji, S.lecture), ...settle], expect: { testidAbsent: ["dialogue-box"] } },
-    { id: "10-esc-menu", note: "ESC — 첫 화면", shot: true,
-      ops: [key("Escape"), { kind: "waitFor", testid: "main-menu", state: "present" }, ...stable], expect: { testidPresent: ["main-menu"] } },
-    { id: "11-esc-record", note: "ESC → 기록 묶음", shot: true, ops: [key("ArrowDown", 4), key("ArrowRight"), ...stable], expect: { testidPresent: ["main-menu"] } },
-    { id: "12-esc-relationships", note: "기록 → 관계 — 호감이 기록된 사람이 줄로 보인다", shot: true, ops: [key("ArrowDown", 2), key("Enter"), ...stable], expect: { testidPresent: ["status-menu-relationship-char_yuna", "status-menu-relationship-char_minji"] } },
+    { id: "10-walk-seoyeon", note: "저녁의 서연(광장 분수) 옆으로 걷는다", shot: true, ops: walk(s3), expect: { x: s3.arrive.x, y: s3.arrive.y } },
+    { id: "11-talk-seoyeon", note: "서연과 대화 — 마지막 칸", shot: true, ops: talk(s3.face), expect: { testidPresent: ["dialogue-box"] } },
+    { id: "12-feedback-seoyeon", note: "호감 +10 · 하루가 저문다", shot: true, ops: [...skipThenNext, ...feedback("하루가 저문다")], expect: { testidPresent: ["dialogue-box"] } },
+    { id: "13-next-day", note: "이튿날 아침(화요일) — 남은 시간 3/3 으로 되돌아가고, 세 사람이 다시 아침 자리(유나 강의동 앞·서연 대강의동 앞·민지 기숙사 앞)에 선다. 호감 하트는 셋",
+      shot: true, ops: [...closeFeedback, at(yuna, S.lecture), at(seoyeon, S.hall), at(minji, S.dorm), ...settle], expect: { testidAbsent: ["dialogue-box"] } },
+    { id: "14-walk-yuna-day2", note: "화요일 아침의 유나 옆으로 걷는다", shot: true, ops: walk(s4), expect: { x: s4.arrive.x, y: s4.arrive.y } },
+    { id: "15-talk-yuna-day2", note: "같은 사람, 다른 날 — 화요일은 동아리 모임 페이지(월요일의 수업 페이지가 아니다)", shot: true,
+      ops: [...talk(s4.face), { kind: "waitForText", testid: "dialogue-box", text: "동아리 모임" }], expect: { testidPresent: ["dialogue-box"] } },
+    { id: "16-feedback-yuna-day2", note: "유나 호감 20 → 문턱(20)에 닿는다", shot: true, ops: [...skipThenNext, ...feedback("남은 시간 2")], expect: { testidPresent: ["dialogue-box"] } },
+    { id: "17-close", note: "대화를 닫는다 — 하트 셋(유나 20·민지 10·서연 10)", shot: true, ops: closeFeedback, expect: { testidAbsent: ["dialogue-box"] } },
+    { id: "18-esc-menu", note: "ESC — 첫 화면", shot: true, ops: [key("Escape"), { kind: "waitFor", testid: "main-menu", state: "present" }, ...stable], expect: { testidPresent: ["main-menu"] } },
+    { id: "19-esc-record", note: "ESC → 기록 묶음", shot: true, ops: [key("ArrowDown", 4), key("ArrowRight"), ...stable], expect: { testidPresent: ["main-menu"] } },
+    { id: "20-esc-relationships", note: "기록 → 관계 — 호감이 기록된 사람이 높은 순으로 이름과 함께 보인다", shot: true, ops: [key("ArrowDown", 2), key("Enter"), ...stable],
+      expect: { testidPresent: ["status-menu-relationship-char_yuna", "status-menu-relationship-char_minji", "status-menu-relationship-char_seoyeon"] } },
   ],
 };
