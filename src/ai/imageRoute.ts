@@ -107,7 +107,8 @@ export function resolveImageRoute(
   }
   if (spec.kind === "dot-text") {
     const pixel = resolvePixelModel(config);
-    return { kind: "dot-text", purpose, model: pixel.model, follows: pixel.follows, surface: IMAGE_PURPOSES[purpose].surface ?? "workshop-draw" };
+    const surface = "surface" in spec ? spec.surface : "workshop-draw";
+    return { kind: "dot-text", purpose, model: pixel.model, follows: pixel.follows, surface };
   }
   return { kind: "upload-only", purpose };
 }
