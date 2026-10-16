@@ -22,11 +22,25 @@ if (proof.walk) {
     { id: "04-next", note: "한 줄 넘김", shot: true, ops: [enter, ...stable], expect: {} },
     { id: "05-esc", note: "대화를 닫고 ESC 메뉴", shot: true,
       ops: [{ kind: "pressUntil", key: "Enter", testid: "dialogue-box", state: "absent", maxPresses: 14 }, ...settle, key("Escape"), { kind: "waitFor", testid: "main-menu", state: "present" }, ...stable], expect: { testidPresent: ["main-menu"] } },
-    { id: "06-esc-close", note: "메뉴 닫기", shot: false, ops: [key("Escape"), key("Escape"), ...settle], expect: {} },
+    { id: "06-esc-close", note: "메뉴 닫기", shot: false, ops: [{ kind: "pressUntil", key: "Escape", testid: "main-menu", state: "absent", maxPresses: 4 }, ...settle], expect: {} },
   );
 }
 proof.spots.slice(0, 4).forEach((spot, i) => beats.push({
   id: `07-map-${i + 1}`, note: `${spot.name} (${spot.width}×${spot.height}) 순간이동`, shot: true,
   ops: [{ kind: "teleport", mapId: spot.mapId, x: spot.x, y: spot.y }, ...settle], expect: { mapId: spot.mapId },
 }));
+// 엔딩 — 뼈대 끝 이벤트 옆으로 순간이동해 말을 걸고 대사를 넘긴다(자동 플레이가 이미 엔딩 도달을 증명, 여기선 화면만 본다).
+try {
+  const raw = JSON.parse(fs.readFileSync(projectFixture, "utf8"));
+  const proj = raw.project ?? raw;
+  for (const [mapId, map] of Object.entries(proj.maps ?? {})) {
+    const evs = Array.isArray(map.events) ? map.events : Object.values(map.events ?? {});
+    const end = evs.find((e) => e.id === "ev_segment_end");
+    if (!end) continue;
+    beats.push({ id: "08-ending", note: `뼈대 끝 이벤트 「${end.name}」 에 말 걸기(열쇠 스위치 없는 상태)`, shot: true,
+      ops: [{ kind: "teleport", mapId, x: end.x - 1, y: end.y }, ...settle, { kind: "face", dir: "right" }, { kind: "action" },
+        { kind: "waitFor", testid: "dialogue-box", state: "present" }, ...stable], expect: {} });
+    break;
+  }
+} catch { /* 엔딩 비트는 선택 */ }
 export default { id: "romance-real", projectFixture, beats };
