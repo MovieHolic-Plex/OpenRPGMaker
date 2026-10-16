@@ -351,6 +351,45 @@ def side_out_anchor(key, bframes, spec, side, d, f):
     return (x, y), 'outside', cells
 
 
+def rod_anchor(key, bframes, spec, side, d, f):
+    """막대형 held 의 4방향 공통 앵커: → ((x,y), 'outside', 앵커 칸 집합, 주먹 구역, 손 줄 최소 y, 최대 y).
+    옆모습은 앞 손 줄의 몸 앞 가장자리, 위·아래는 그 손 줄의 몸 바깥쪽 가장자리가 앵커. 주먹 구역 = 옆모습은 손 줄±1·안쪽 4칸, 위·아래는 손 칸."""
+    if d in ('right', 'left'):
+        ns = near_side(d, side)
+        anc, mode, cells = side_out_anchor(key, bframes, spec, ns, d, f)
+        zone, y0, y1 = grip_zone(key, bframes, spec, d, f)
+        return anc, mode, cells, zone, y0, y1
+    rows = bframes[(d, f)]
+    slot = side_slot(d, side)
+    hc = hand_cells(key, bframes, d, f, slot, spec)
+    ys = sorted({c[1] for c in hc})
+    ym = ys[len(ys) // 2]
+    ext = row_extent(rows, ym)
+    x = ext[0] if slot == 'vl' else ext[1]
+    zone = {c for c in hc if rows[c[1]][c[0]] != T}
+    return (x, ym), 'outside', set(hc) | {(x, ym)}, zone, ys[0], ys[-1]
+
+
+def near_side(d, side):
+    """옆모습에서 앞(가까운) 손의 side 글자. 막대형은 옆모습에서 늘 가까운 손이 쥔다."""
+    return {'right': 'R', 'left': 'L'}.get(d, side)
+
+
+def grip_zone(key, bframes, spec, d, f):
+    """옆모습 막대형의 주먹 구역: 앞 손 칸의 줄 -1 ~ +1, 몸 앞 가장자리에서 안쪽 4칸. 여기는 몸 칸이어도 장비(주먹)를 그릴 수 있다(얼굴 F 칸 제외)."""
+    rows = bframes[(d, f)]
+    hc = hand_cells(key, bframes, d, f, 'near', spec)
+    ys = sorted({c[1] for c in hc})
+    zone = set()
+    for y in range(ys[0] - 1, ys[-1] + 2):
+        ext = row_extent(rows, y)
+        if not ext:
+            continue
+        xs = range(ext[1] - 4, ext[1] + 1) if d == 'right' else range(ext[0], ext[0] + 5)
+        zone |= {(x, y) for x in xs if rows[y][x] != T}
+    return zone, ys[0], ys[-1]
+
+
 def anchor_table(key):
     nk, sk = split_key(key)
     pal, bframes = H.base_of(nk)
@@ -369,7 +408,14 @@ def anchor_table(key):
             if kind == 'held' and side == 'R':
                 (ox, oy), _, _ = side_out_anchor(nk, bframes, spec, 'R', 'right', 1)
                 (lx, ly), _, _ = side_out_anchor(nk, bframes, spec, 'R', 'left', 1)
-                lines.append(f'  막대형(높이 8줄 이상) held 의 옆모습: right 의 가까운 손 앵커는 몸 앞 가장자리 ({ox},{oy}) · left 는 ({lx},{ly}) — 자루는 이 칸에서 몸 **바깥**으로 나오고 몸 칸은 덮지 못한다(몸이 가림)')
+                lines.append(f'  막대형(높이 8줄 이상) held 의 옆모습: right 의 가까운 손 앵커는 몸 앞 가장자리 ({ox},{oy}) · left 는 ({lx},{ly}) — 자루는 이 칸에서 몸 **바깥**으로 나오고 몸 칸은 덮지 못한다(몸이 가림). 예외 = 주먹 구역')
+                for dd, ss in (('down', 'R'), ('up', 'R')):
+                    (rx, ry), _, _, zz, y0_, y1_ = rod_anchor(nk, bframes, spec, 'R', dd, 1)
+                    lines.append(f'  막대형 {dd}: 앵커 = 손 줄의 몸 바깥 가장자리 ({rx},{ry}). 주먹 구역 = 손 칸 {sorted(zz)} (여기 몸 칸에는 주먹을 그릴 수 있다)')
+                for dd, ss in (('right', 'R'), ('left', 'L')):
+                    zz, y0_, y1_ = grip_zone(nk, bframes, spec, dd, 1)
+                    xs_ = sorted({x for x, _ in zz})
+                    lines.append(f'  주먹 구역 {dd}: x {xs_[0]}~{xs_[-1]}, y {y0_ - 1}~{y1_ + 1} 의 몸 칸(얼굴 칸 제외)에는 주먹을 그릴 수 있다. 앞 손 줄은 y {y0_}~{y1_}')
     return '\n'.join(lines), spec, bframes
 
 
@@ -508,11 +554,14 @@ def apply_edits(key, edit, overrides=None):
                 continue
             rod = gkind == 'held' and len(rows_) >= 8
             for f in range(3):
-                (ax, ay), mode, acells = anchor_for(key, bframes, spec, gkind, side, d, f)
-                if rod and d in ('right', 'left') and side_slot(d, side) == 'near':
-                    (ax, ay), mode, acells = side_out_anchor(key, bframes, spec, side, d, f)
+                zone, hy0, hy1 = set(), None, None
+                if rod:
+                    (ax, ay), mode, acells, zone, hy0, hy1 = rod_anchor(key, bframes, spec, side, d, f)
+                else:
+                    (ax, ay), mode, acells = anchor_for(key, bframes, spec, gkind, side, d, f)
                 vis = set()
                 under = set()
+                gripc = set()
                 for dy, row in enumerate(rows_):
                     for dx, ch in enumerate(row):
                         if ch in ('.', ' '):
@@ -529,12 +578,17 @@ def apply_edits(key, edit, overrides=None):
                         if lab == 'F':
                             continue                       # 얼굴·맨살은 어떤 장비도 덮지 못한다
                         if bframes[(d, f)][y][x] != T and mode in ('behind', 'outside'):
+                            if mode == 'outside' and (x, y) in zone:
+                                gripc.add((x, y))          # 주먹 구역: 몸 칸 위에 주먹을 그린다
+                                setpx((d, f), x, y, ch, 'gear')
+                                vis.add((x, y))
+                                continue
                             if mode == 'outside':
                                 under.add((x, y))
                             continue                       # 몸 뒤: 몸 밖 빈 칸에만 보인다
                         setpx((d, f), x, y, ch, 'gear')
                         vis.add((x, y))
-                gear_info.setdefault(name, {})[(d, f)] = dict(anchor=(ax, ay), mode=mode, cells=acells, vis=vis, kind=gkind, rod=rod, under=under, rows=len(rows_))
+                gear_info.setdefault(name, {})[(d, f)] = dict(anchor=(ax, ay), mode=mode, cells=acells, vis=vis, kind=gkind, rod=rod, under=under, rows=len(rows_), grip=gripc, zone=zone, hy=(hy0, hy1))
     out = {k: [''.join(r) for r in rows] for k, rows in new.items()}
     report = dict(info=info, errors=errs, gear=gear_info)
     return pal, out, bframes, bpal, labels, zones, changed, kind, report
@@ -672,21 +726,46 @@ def verify(key, pal, new, bframes, bpal, labels, zones, changed, kind, overrides
             need = {'held': 10, 'hip': 8, 'back': 8}[gi['kind']]
             if gi.get('rod'):
                 rows_b = bframes[(d, f)]
+                hy0, hy1 = gi['hy']
                 if gi['mode'] == 'outside':
-                    if len(vis) < 10:
-                        errs.append(f'막대형 장비 {name!r} {d} {f}: 보이는 자루가 {len(vis)}칸뿐이다(최소 10) — 옆모습 자루는 몸 앞 바깥으로 나와 눈에 보여야 한다')
+                    shaft = vis - gi['grip']
+                    if len(shaft) < 10:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 몸 밖으로 보이는 자루가 {len(shaft)}칸뿐이다(최소 10) — 옆모습 자루는 몸 앞 바깥에 눈에 보여야 한다')
                     hidden = len(gi['under'])
                     if hidden > 0.5 * (hidden + len(vis)):
                         errs.append(f'막대형 장비 {name!r} {d} {f}: 자루의 {hidden}칸이 몸에 가려진다(절반 이하) — 자루를 몸 앞 바깥 쪽으로 더 내라')
-                    inside = [(x, y) for (x, y) in vis if (ex := row_extent(rows_b, y)) and ex[0] <= x <= ex[1]]
+                    inside = [(x, y) for (x, y) in vis if (x, y) not in gi['zone'] and (ex := row_extent(rows_b, y)) and ex[0] <= x <= ex[1]]
                     if inside:
                         errs.append(f'막대형 장비 {name!r} {d} {f}: 옆모습 자루가 몸통 실루엣 안 {sorted(inside)[:3]} 을 지난다 — 자루는 몸을 가로지르지 않고 손에서 바깥으로 나와야 한다')
-                elif d in ('down', 'up') and gi['mode'] == 'front':
-                    if len(gi['under']) < 2:
-                        errs.append(f'막대형 장비 {name!r} {d} {f}: 손 칸에 겹치는 자루 칸이 {len(gi["under"])}칸이다(최소 2) — 주먹이 자루를 감싸 쥐어야 한다(grip 을 손 안쪽 열에 둔다)')
-                    outside = [(x, y) for (x, y) in vis if not ((ex := row_extent(rows_b, y)) and ex[0] <= x <= ex[1])]
-                    if len(outside) < 0.4 * len(vis):
-                        errs.append(f'막대형 장비 {name!r} {d} {f}: 자루 {len(vis)}칸 중 {len(outside)}칸만 몸 실루엣 밖이다(40% 이상) — 자루는 몸 옆으로 걸쳐 나와야 하고 몸 위에 서 있으면 안 된다')
+                    grip = gi['grip']
+                    if len(grip) < 4 or len({y for _, y in grip}) < 2 or len({x for x, _ in grip}) < 2:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 주먹이 없다(주먹 구역 {len(grip)}칸) — 그 방향의 주먹 구역(anchors.txt, 손 줄 y {hy0}~{hy1})에 주먹을 최소 4칸(2줄×2열 이상) 그려 자루를 감싸 쥐어야 한다. 아무것도 안 쥔 막대는 떠 보인다')
+                    shaft_letters = {c for c, _ in __import__('collections').Counter(new[(d, f)][y][x] for (x, y) in shaft).most_common(2)}
+                    fist = {(x, y) for (x, y) in grip if new[(d, f)][y][x] not in shaft_letters}
+                    gearcells = vis | gi['grip']
+                    cont = []
+                    for (x, y) in fist:
+                        nbr = [(x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (dx or dy)]
+                        nbr = [(u, v) for (u, v) in nbr if 0 <= u < FW and 0 <= v < FH and (u, v) not in gearcells and new[(d, f)][v][u] != T]
+                        nc = pal.get(new[(d, f)][y][x])
+                        cs = [sum((p - q) ** 2 for p, q in zip(nc[:3], pal[new[(d, f)][v][u]][:3])) ** 0.5 for (u, v) in nbr if pal.get(new[(d, f)][v][u])] if nc else []
+                        if cs:
+                            nb = [pal[new[(d, f)][v][u]] for (u, v) in nbr if pal.get(new[(d, f)][v][u])]
+                            warm_f = nc[2] - nc[0]
+                            warm_n = sum(c_[2] - c_[0] for c_ in nb) / len(nb)
+                            cont.append(sum(cs) / len(cs) if abs(warm_f - warm_n) >= 40 else 0)   # 같은 푸른 쇠색 계열이면 대비 0
+                    strong = [c_ for c_ in cont if c_ >= 85]
+                    if len(fist) < 4 or len(strong) < 4:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 주먹이 자루와 다른 색 칸 {len(fist)}칸, 그중 주변 갑옷·옷과 색조·명암이 뚜렷이 다른 칸 {len(strong)}칸(최소 4) — 주먹은 주변 옷과 확연히 다른 색(맨살 톤·가죽 갈색·황동·흰 장갑)의 새 팔레트 글자로, 자루 색과도 다르게 그려야 쥔 손으로 읽힌다. 갑옷과 같은 푸른 쇠색 주먹은 안 보인다')
+                    touch = any(max(abs(x - gx_), abs(y - gy_)) <= 1 for (x, y) in shaft for (gx_, gy_) in grip)
+                    if grip and not touch:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 자루가 주먹에 닿지 않는다 — 자루가 주먹을 통과해 이어져야 한다')
+                    above = [1 for (x, y) in shaft if y < hy0 - 1]
+                    below = [1 for (x, y) in shaft if y > hy1]
+                    if len(above) < 6:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 주먹 위로 이어진 자루가 {len(above)}칸뿐이다(최소 6, 창날까지 이어져야 한다)')
+                    if len(below) < 2:
+                        errs.append(f'막대형 장비 {name!r} {d} {f}: 주먹 아래로 이어진 자루가 {len(below)}칸뿐이다(최소 2) — 자루가 손에서 끊기면 안 된다(짚고 선 느낌)')
             if gi['mode'] in ('front', 'outside') and len(vis) < need and gi['mode'] == 'front':
                 errs.append(f'장비 {name!r} {d} {f}: 보이는 픽셀이 {len(vis)}칸뿐이다(최소 {need}) — 1칸 폭 막대·너무 작은 장비는 손에 쥔 것으로 읽히지 않는다. 키워라')
             if gi['kind'] == 'held' and gi['mode'] == 'front':
