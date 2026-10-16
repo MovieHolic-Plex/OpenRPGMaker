@@ -434,8 +434,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     });
   }
 
-  function troop(name: string, key: string, speciesIds: readonly string[], level: number, trainer: boolean): string {
+  function troop(name: string, key: string, speciesIds: readonly string[], baseLevel: number, trainer: boolean, aceBonus = 0): string {
     const enemyIds = speciesIds.map((speciesId, i) => {
+      // 마지막 칸(간판)만 aceBonus 만큼 높다 — 관장·간부가 앞선 졸개와 같은 레벨 한 줄이 아니게(D35).
+      const level = baseLevel + (speciesIds.length > 1 && i === speciesIds.length - 1 ? aceBonus : 0);
       const sid = `${key}_${i}`;
       const enemyId = `mx_enemy_${sid}`;
       const species = speciesById.get(speciesId);
@@ -473,8 +475,19 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     const representatives = [...pool].sort((a, b) => b.stage - a.stage).filter((s, i, all) => all.findIndex(other => other.family === s.family) === i);
     // 계통이 모자라면 같은 계통의 앞 단계로 채운다 — 7관과 사천왕이 같은 장막인형만 셋·넷 내보냈다(2026-10-06 시각 QA).
     const roster = [...representatives, ...[...pool].sort((a, b) => b.stage - a.stage).filter(s => !representatives.includes(s))];
+    // 그 타입으로 모자라면 같은 종을 되풀이하지 않고 다른 계통의 이른 종으로 채운다 — 1관 풀 타입 Lv9 이 새싹토 둘뿐이라 스타터와 같은 종 거울전이 되었다(3차 적대 감사 D35).
+    // 타입 요건은 첫 칸이 지키고(관장의 간판), 뒤 칸은 스타터 계통을 뺀 이른 종 중 서로 다른 계통을 단계 높은 순으로 쓴다.
+    if (roster.length < count) {
+      const taken = new Set(roster.map(s => s.family));
+      const fill = EXPEDITION_SPECIES.filter(s => s.stage > 0 && minimumLevel(s.id) <= level && !starterFamilies.has(s.family) && !roster.includes(s))
+        .sort((a, b) => Number(!!habitat && b.habitat === habitat) - Number(!!habitat && a.habitat === habitat) || b.stage - a.stage);
+      for (const s of fill) { if (roster.length >= count) break; if (!taken.has(s.family)) { roster.push(s); taken.add(s.family); } }
+    }
     return Array.from({ length: count }, (_, i) => roster[i % roster.length]!.id);
   }
+
+  /** 관장은 타입 간판 종(pickSpecies 의 첫 칸)을 마지막에 내보낸다 — 첫 칸이 스타터와 같은 종 거울이 되지 않고, 간판이 가장 높은 레벨로 끝에 선다(D35). */
+  const aceLast = (ids: string[]): string[] => ids.length > 1 ? [...ids.slice(1), ids[0]!] : ids;
 
   const neighbourHabitat: Record<string, string> = { grass: "forest", coast: "swamp" };
 
@@ -519,9 +532,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     return best;
   }
 
-  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], wantedRequired?: string, track: string = audio.trainerBattle, sight = false): GameEvent {
+  function battle(map: GameMap, suffix: string, name: string, at: Point, ids: string[], level: number, winSwitch: string | undefined, before: string, win: Command[], wantedRequired?: string, track: string = audio.trainerBattle, sight = false, aceBonus = 0): GameEvent {
     const required = gate(wantedRequired);
-    const tid = troop(name, `${map.id}_${suffix}`, ids, level, true);
+    const tid = troop(name, `${map.id}_${suffix}`, ids, level, true, aceBonus);
     // 전투 소개 그림 — 번들 트레이너 그림을 적 그룹에 배정해 슬라이드 인트로가 뜨게 한다(없으면 소개 없이 시작).
     const front = expeditionTrainerFront(suffix, name, trainerArtByMap.get(map.id));
     if (front) project.database.troops.find(entry => entry.id === tid)!.trainerSprite = { front, back: EXPEDITION_HERO_BACK };
@@ -762,10 +775,10 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     }
     const leader = { x: base.leader![0]!, y: base.leader![1]! };
     if (key === "ice") event(map, "ice_reached", { x: leader.x, y: leader.y + 1 }, [sw(puzzleSwitch)], { trigger: "playerTouch", below: true });
-    battle(map, "leader", g.leader, leader, pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3), g.level, `mx_badge_${i + 1}`, g.before,
+    battle(map, "leader", g.leader, leader, aceLast(pickSpecies("", g.level, gymType(i, g), i < 3 ? 2 : 3)), g.level, `mx_badge_${i + 1}`, g.before,
       // 관장 대사 → 배지 획득 연출(섬광·징글·떠오르는 배지, project/monsterBadgeCeremony.ts) → 보상. 배지 스위치는 승리 스위치가 이미 켠 뒤다.
       [text(g.after, g.leader), ...badgeAwardCommands({ badgeName: g.badge, badgeIndex: i + 1, badgeTotal: gymCount, type: gymType(i, g), fanfareResourceId: audio.victory }),
-        { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), gain("mx_revive", 1), text("부활의 깃털도 건네받았다. 다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle);
+        { kind: "changeGold", op: "+=", amount: (i + 1) * 600 }, gain("item_hi_potion", 2), gain("mx_revive", 1), text("부활의 깃털도 건네받았다. 다음 길이 열렸다.")], puzzleSwitch, audio.trainerBattle, false, 2);
     // 체육관 졸개 트레이너(3세대 문법: 퍼즐 → 졸개들 → 관장). 입구에서 관장까지의 선을 따라 3~4명을 세우고 모두 시야선으로 걸어온다.
     // 관장 이벤트를 놓기 전에는 졸개를 놓지 않는다 — 관장 칸은 이미 예약되어 있어야 졸개가 그 자리를 피한다.
     const gruntCount = i < 3 ? 3 : 4;
