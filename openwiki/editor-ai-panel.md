@@ -103,6 +103,33 @@
 - **바로 깔기 주문(`stampOrderQueue`)은 aiPresence 와 별개 파이프라인**이다 — 상태 줄이 그 개수(「바로 깔기 N개 진행 · M개 대기」)를 함께 센다(요약 총수·「멈춤」 포함). 주문 위치는 지도 위 번호 상자(`stampOrderRenderer`)가 그대로 말한다.
 - 증거: 드래그 전 흐름 harness `cap2.mjs`(드래그 → 칩 → 작업 → 초안 → 적용, 도크 열림/접힘/스튜디오 × 1440×900·1100×700), 팀 4명 `cap3.mjs team4`, 대화 1+영역 1+대기 1 `cap3.mjs multi` — gitignore `.playwright-mcp/`. 보고 `~/claude-viz/ai-ui-b1-2.html`.
 
+## 작업 목록 (안 A) — 다섯 줄기를 한 목록으로, 렉 없이 (2026-10-16)
+
+B안 2단계. 드래그·팀·바로 깔기·이벤트·대화가 제각기 있던 입구를 **「작업 목록」 하나**로 모았다. 행 = 번호 · 종류 · 한 줄 요약 · 맵 좌표 · 상태(글자) · 그 자리 버튼(확인·열기·멈춤).
+
+- **입구 셋, 목록 하나**: 지도 아래 상태 줄의 「작업 N개」(`aiStatusBar`), 접힌 레일의 개수 배지, 열린 도크 위쪽의 「작업 N」 버튼. 레일·도크 입구는 `aiJobEntry.createJobEntry("rail"|"dock")`. 예전 `ai-collapsed-restore-jobs` 배지와 상태 줄 팝오버의 그룹 행(`ai-status-row*`)은 삭제 — 같은 목록으로 통합.
+- **파일**: 모델 `panels/aiJobList.ts`(줄기 → `JobRow`), 화면 `panels/aiJobListView.ts`, 그 자리 동작 `panels/aiJobActions.ts`(`locateRow`·`stopRow`·`reviewButtons`), 번호 `editor/aiJobNumbers.ts`.
+- **번호 = 지도 상자 번호**: `aiJobNumbers.jobNumber(key)` 하나가 열쇠(`p:<presence id>` · `stamp:<주문 id>` · `event:<작업 id>`)마다 번호를 준다. 지도 위 영역 상자(`aiMapPresence` 의 `#N` 알약)·이벤트 핀·바로 깔기 주문 사각형·목록 행이 같은 번호·같은 색(`jobTone` = 번호에서 나옴, 4색 순환)을 쓴다. 살아 있는 열쇠가 하나도 없을 때만 1 부터 다시 센다.
+- **드래그 일 표시**: 드래그 AI 는 Pi 채팅 턴이라 `source: "chat"` 이다. `aiChatPanel.handleRegionHandoff` 가 `send()` 전에 `markDragOrigin` 으로 표시하고 `aiPresence` 가 `Presence.drag` 로 싣는다 → 행 종류 「드래그」.
+- **이벤트는 보이기만**: 이벤트 AI 작업함(`eventAiQueue`)은 행으로만 나온다(「열기」는 `openEventAiJob`). 우클릭 J/K 일괄 배치·별도 이벤트 패널·「적용 뒤 선택 유지」는 그대로.
+
+### 렉 방지 계약 (깨지 말 것)
+
+1. **프레임당 한 번**: `util/frameBatch.createFrameBatch`(rAF + 120ms 타이머 폴백, rAF 없는 환경은 동기). 줄기 구독은 「바뀌었다」만 표시하고 계산·DOM 은 다음 프레임에 한 번.
+2. **닫히면 비용 0**: 상태 줄·레일은 **요약**(`computeJobSummary`)만 읽는다. **행**(`buildJobRows`)은 목록이 열려 있을 때만 만들고 구독도 그때만(`subscribeJobRows`). 닫으면 행 DOM 을 버린다.
+3. **키 단위 diff**: 행 시그니처(`JobRow.sig`)가 같으면 직전 객체를 재사용 → 보는 쪽이 `===` 로 바뀐 행만 `textContent`/`dataset` 비교로 고친다. 순서가 바뀔 때만 `insertBefore`. 열 때 위치 한 번만 읽고 이후 강제 레이아웃 없음.
+4. **`aiPresence.publish` 중복 제거**(`samePresence`): 같은 내용이면 구독자를 부르지 않는다. 기존 병목은 이벤트마다 상태 줄이 `chipBudget()`(강제 레이아웃)을 렌더 중에 읽던 것 + 구독자 전부 재렌더였다.
+5. **제스처 양보**: `editor/mapGestureState` — 드래그·패닝 중에는 지도 핀·영역 상자·바로 깔기 사각형 갱신을 미룬다(`yieldWhileGesture`, 최대 1초). `EditScene.syncMapGestureFlag()` 가 `update()` 와 포인터 끝에서 플래그를 맞춘다. Phaser 쪽은 바뀐 영역만 다시 그린다(`stampOrderRenderer` 키 단위).
+6. 팀 사이드바·받은함·워크스페이스(`aiTeamSidebar`·`aiInbox`·`aiWorkspace`)는 아직 팀 이벤트마다 재렌더한다(미해결, 아래 측정 참고).
+
+### 접근성
+목록 `role="list"` · 행 `listitem`, 본 버튼은 ↑↓ Home End 로 이동(로빙 tabindex), Esc 로 닫고 입구 버튼에 초점을 돌려준다. 상태는 색이 아니라 글자(「일하는 중」「내 차례」…)와 `aria-label`. 지워지는 행에 초점이 있으면 이웃 행으로 옮긴다. 새 문구는 ko/en/ja/zh 카탈로그에 등록.
+
+### 측정 harness
+`scripts/qa/ai-job-list/`(`lib.mjs`·`mock.mjs`·`bench-stress.mjs`). 모델 호출 없이 합성 이벤트를 **실제 보드 리듀서(`reduceTeamBoard`) → `publishTeamActivity`/`reportBackgroundBoard`** 경로로 넣는다. 격리 netns 크로미움 필요(`playwright-err-network-changed` 메모). 지표: longtask 합·최대, 이벤트→DOM 지연(토큰을 화면 글에 박고 MutationObserver), 프레임 p95, 드래그 pointermove→rAF(근사), DOM 수. 사용법은 파일 머리 주석. 한계: 합성 이벤트(실 스트림 아님), 드래그 지표는 근사, 하나의 머신 부하(load 20~35)에서 전/후 시각이 다르다.
+
+CSS: 새 클래스는 `ai-status-jobs*` · `ai-status-job*` · `ai-status-no`(DB 면이 `ai-status-` 접두를 허용). 지도 위 `ai-map-*`·`event-ai-*` 는 기존 R2 부채 그대로.
+
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
 일반 편집기는 오른쪽 복원 레일 44px만 예약한다. AI 창은 지도 위에 380px(좁은 화면은

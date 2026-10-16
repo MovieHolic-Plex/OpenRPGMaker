@@ -16309,4 +16309,12 @@
 "{0}곳":"{0} places",
 "{0}건":"{0}",
 "프로젝트 지식 · 추론한 내용":"Project knowledge · Inferred",
-"조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 위쪽 「AI가 읽는 것」 칩). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.":"This is the fixed block the assistant reads every turn. Codex documents are not in it — they are passed separately, only when relevant to the question (the \"What the AI reads\" chip at the top of the codex). To change it, edit the matching field in the World settings tab."}
+"조수가 매 턴 읽는 고정 블록이다. 설정집 문서는 여기 없다 — 질문과 관련될 때만 따로 전달된다(설정집 위쪽 「AI가 읽는 것」 칩). 고치려면 세계 설정 탭에서 해당 필드를 수정하면 된다.":"This is the fixed block the assistant reads every turn. Codex documents are not in it — they are passed separately, only when relevant to the question (the \"What the AI reads\" chip at the top of the codex). To change it, edit the matching field in the World settings tab.",
+"돌고 있는 AI 작업이 없어요":"No AI jobs are running",
+"모든 AI 작업을 한 목록으로 봅니다":"See every AI job in one list",
+"드래그":"Drag",
+"다른 맵":"Other map",
+"배치 확인을 기다려요":"Waiting for placement review",
+"만들지 못했어요":"Could not create it",
+"나머지 작업 모두 보기":"See all remaining jobs",
+"AI 작업 목록":"AI job list"}

@@ -66,7 +66,8 @@ import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
 import { mountAiStatusBar } from "./aiStatusBar";
-import { reportBackgroundBoard, subscribeAiPresence, summarizeJobs } from "./aiPresence";
+import { markDragOrigin, reportBackgroundBoard } from "./aiPresence";
+import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
@@ -136,7 +137,7 @@ import { createDeckRail, deckStateOfTone, type DeckState } from "./aiDeckRail";
 import { regionFromToolCall, renderMapChip } from "./aiMapChip";
 import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
-import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState, setRestoreJobs } from "./aiDirectorChrome";
+import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { runStampPlace } from "@/editor/stampPlaceRunner";
 import {
@@ -3280,6 +3281,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       stampPlaceNow(text);
       return;
     }
+    // 드래그로 시킨 대화 일 — 작업 목록·지도 상자가 드래그한 자리를 그대로 쓰게 표식을 남긴다.
+    markDragOrigin({ text, mapId: detail.mapId, region: { x: detail.region.x, y: detail.region.y, width: detail.region.width, height: detail.region.height } });
     restoreComposer(text);
     void send();
   };
@@ -3366,7 +3369,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const rail = createDeckRail();
   // Primary actions stay in the header; secondary controls keep their original
   // handlers and popovers, but live in the labelled overflow menu.
-  rail.actions.append(composerShell.newChatButton, composerShell.menuToggle, collapseButton);
+  // 작업 목록 입구 — 열린 도크 위쪽(rail.actions)과 접힌 레일(collapsedRestore 옆). 둘 다 상태 줄의 「작업 N개」 와 같은 목록을 연다.
+  const dockJobEntry = createJobEntry("dock");
+  const railJobEntry = createJobEntry("rail");
+  rail.actions.append(dockJobEntry.button, composerShell.newChatButton, composerShell.menuToggle, collapseButton);
   const secondaryActions = el("div", { class: "ai-chat-secondary-actions" });
   for (const [button, label] of [
     [composerShell.conversationsButton, "이전 대화"],
@@ -3420,7 +3426,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       chatDock: "float",
       aiConversation: "empty",
     },
-    children: [toolbar, deck, collapsedRestore, collapsedUndo, stickyProposalZone],
+    children: [toolbar, deck, collapsedRestore, railJobEntry.button, collapsedUndo, stickyProposalZone],
   });
   teamPanel.onToggle((open) => panel.classList.toggle("is-team-open", open));
   panelRoot = panel;
@@ -3433,8 +3439,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI 존재감 세 표면 중 지도 쪽 둘 — 지도 위 이름표와 지도 아래 상태 줄. 같은 원천(aiPresence)만 본다.
   const unmountStatusBar = mountAiStatusBar();
   const unmountMapPresence = mountAiMapPresence();
-  // 접힌 레일 배지 — 같은 원천의 요약(개수·가장 급한 상태). 도크를 접어도 「몇 개가 돌고 있나」가 레일에서 읽힌다.
-  const offRailJobs = subscribeAiPresence(presences => setRestoreJobs(collapsedRestore, summarizeJobs(presences)));
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
@@ -4171,7 +4175,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     wideAssistant.dispose();
     unmountStatusBar();
     unmountMapPresence();
-    offRailJobs();
+    dockJobEntry.dispose();
+    railJobEntry.dispose();
     workspace.dispose();
     teamSidebar.dispose();
     suggestions.dispose();
