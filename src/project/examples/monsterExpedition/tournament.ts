@@ -13,6 +13,7 @@ import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine"
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from "./shopPrices";
+import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { repairExpeditionResidents } from "./residents";
 import { repairExpeditionNpcLayout } from "./npcLayout";
 import { fillAreaByUse } from "@/project/kitAreaFurnish";
@@ -495,8 +496,8 @@ export function authorTournamentWorld(project: Project, options: TournamentOptio
   if (!centerDoor || !martDoor || residential.length < 2) throw Error(`Hub lacks four public building entrances: ${JSON.stringify(doors)}`);
   attachRoom(hub, center, centerDoor); attachRoom(hub, mart, martDoor);
   attachRoom(hub, house, residential[0]!); attachRoom(hub, lab, residential[1]!);
-  npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
-    [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${hubName} 회복 센터` }, text("회복 완료! 메뉴에서 파티를 확인하세요.")], 3);
+  npc(center, "nurse", "센터 직원", "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?", { x: center.width >> 1, y: 5 },
+    monsterCenterCommands({ greeting: null, checkpointLabel: `${hubName} 회복 센터`, audio: { me: audio.victory }, machineCells: [5, 6, 7, 8, 9, 10].map(x => ({ x: x + ((center.width >> 1) - 7), y: 3 })) }), 3);
   npc(mart, "shop", "도구점 주인", expedition ? "포획구슬과 회복 도구를 챙겨 가세요." : "대회에서는 회복 도구가 큰 힘이 돼요. 필요한 만큼 챙겨 가세요.", { x: mart.width >> 1, y: 5 },
     [{ kind: "shop", itemIds: [...(expedition ? ["item_capture_orb", ...EXPEDITION_BALL_IDS] : []), "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
   npc(house, "resident", "엄마", expedition ? "탐험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : "경기에서 가장 중요한 건 동료들이 무사한 거야. 언제든 쉬어 가렴.", { x: 6, y: 5 }, [{ kind: "recoverAll" }], 2);

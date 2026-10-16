@@ -66,6 +66,9 @@ import { clampLevel, normalizeActorRecord } from "@/project/actorModel";
 
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
+/** 에메랄드풍 상점에서 merchantGold 를 저작하지 않았을 때 상인의 매입 지갑 — 사실상 무한(판매 수량은 소지 수에만 묶인다). */
+export const EMERALD_SHOP_OPEN_PURSE = GOLD_MAX;
+
 export function playShop(
   scene: PlaySceneContext,
   step: ShopStep,
@@ -94,15 +97,20 @@ export function playShop(
     return showShopNotice(scene, terms, "지금은 팔 물건이 없습니다.").then(failedResult);
   }
   // 방문마다 상인 소지금을 명령값(기본 100G) × 투자 레벨 배수로 초기화. 방문 중 매입/매도로 증감.
-  let merchantGold = beginShopVisit(scene, step, identity);
+  // 몬스터 수집(에메랄드풍) 상점은 포켓몬 마트처럼 주인 돈이 바닥나지 않는다 — merchantGold 를 저작하지 않았으면 매입 한도를 두지 않는다.
+  // (기본 100G 를 그대로 쓰면 판매 수량이 1~2개로 막혀 「상인의 돈이 부족합니다」가 뜬다. 저작자가 merchantGold 를 정했으면 그 값을 존중한다.)
+  const openPurse = emerald && step.merchantGold === undefined;
+  let merchantGold = openPurse ? EMERALD_SHOP_OPEN_PURSE : beginShopVisit(scene, step, identity);
   if (emerald) return playEmeraldShop({
     scene, step, stockItems, terms, merchantGold,
     transact: (item, mode, count, budget) => {
-      const result = handleShopTransaction(scene, item, mode, count, budget);
+      // 구매는 상인 지갑이 불어나는 쪽(merchantGold + 대금 ≤ GOLD_MAX 검사)이라 0 에서 시작하고, 판매는 가득 찬 지갑에서 낸다.
+      const result = handleShopTransaction(scene, item, mode, count, openPurse ? (mode === "buy" ? 0 : EMERALD_SHOP_OPEN_PURSE) : budget);
       if (result.ok && mode === "buy") accrueShopLoyalty(scene, step, item.price * clampQuantity(count));
-      return result;
+      // 열린 지갑은 거래마다 처음 값으로 되돌린다 — 구매금이 쌓여 GOLD_MAX 검사에 걸리지 않게.
+      return result.ok && openPurse ? { ...result, merchantGold: EMERALD_SHOP_OPEN_PURSE } : result;
     },
-    onFinish: budget => endShopVisit(scene, step, budget, identity),
+    onFinish: budget => { if (!openPurse) endShopVisit(scene, step, budget, identity); },
   });
   return new Promise((resolve) => {
     const overlay = createShopOverlay();

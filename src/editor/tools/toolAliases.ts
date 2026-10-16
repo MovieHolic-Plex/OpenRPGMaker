@@ -89,6 +89,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["퀘스트", "의뢰", "quest"], tools: ["define_quest", "create_quest", "verify_quest"], label: "퀘스트" },
   { terms: ["시간문", "시간 여행", "과거로", "time gate", "time travel", "time portal"], tools: ["create_time_gate", "create_transfer_pair"], label: "시간문" },
   { terms: ["세이브", "저장 지점", "savepoint", "save point"], tools: ["place_savepoint"], label: "세이브 포인트" },
+  { terms: ["센터", "포켓몬 센터", "몬스터 센터", "회복 센터", "간호사", "병원", "pokemon center", "monster center", "nurse", "heal center"], tools: ["place_monster_center", "place_savepoint"], label: "몬스터 센터(회복 연출)" },
   { terms: ["보물상자", "상자", "chest", "treasure"], tools: ["place_chest", "place_storage_chest"], label: "상자" },
   { terms: ["함정", "trap", "spike"], tools: ["place_trap"], label: "함정" },
   { terms: ["공통 이벤트", "common event", "field skill", "필드 스킬", "필드 기술", "field ability"], tools: ["upsert_common_event", "upsert_skill", "upsert_event"], label: "공통 이벤트·필드 스킬" },

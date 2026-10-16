@@ -16,6 +16,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
+import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
 import { repairExpeditionResidents } from './residents';
 import { repairExpeditionNpcLayout } from "./npcLayout";
 import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
@@ -609,8 +610,8 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       npc(gymRoom, "host", "이웃 주민", "체육관이 없는 섬이라 다들 도감을 채우며 지내요. 동료들이 지쳤다면 여기서 쉬었다 가요.", { x: 6, y: 5 }, [{ kind: "recoverAll" }], 5);
       npc(annexUp, "kid", "아이", "우리 동네엔 체육관이 없어도 도감 모으는 사람이 많아. 나도 도감 반은 채웠어!", { x: 6, y: 6 }, [], 1);
     }
-    npc(center, "nurse", "센터 직원", "수고했어요. 몬스터의 체력·상태·기술 횟수를 모두 회복해 드릴게요.", { x: center.width >> 1, y: 5 },
-      [{ kind: "recoverAll" }, { kind: "checkpointSave", label: `${lookTown(t).name} 회복 센터` }, text("회복 완료! 메뉴에서 파티와 보관함을 관리할 수 있어요.")], 3);
+    npc(center, "nurse", "센터 직원", "몬스터 센터에 어서 오세요! 동료들을 건강하게 해 드릴까요?", { x: center.width >> 1, y: 5 },
+      monsterCenterCommands({ greeting: null, checkpointLabel: `${lookTown(t).name} 회복 센터`, audio: { me: audio.victory }, machineCells: [5, 6, 7, 8, 9, 10].map(x => ({ x: x + ((center.width >> 1) - 7), y: 3 })) }), 3);
     npc(mart, "shop", "도구점 주인", "포획구슬과 회복 도구를 챙겨 가세요. 약은 메뉴에서 몬스터를 골라 사용할 수 있어요.", { x: mart.width >> 1, y: 5 },
       [{ kind: "shop", itemIds: ["item_capture_orb", ...EXPEDITION_BALL_IDS, "item_potion", "item_hi_potion", "item_ether", "item_antidote", "item_wake_herb", ...EXPEDITION_HELD_ITEM_IDS], allowSell: true, quantityMode: "select", shopUiPreset: "pixel" }], 1);
     npc(home, "resident", i === 0 ? "엄마" : "마을 주민", i === 0 ? "모험에서 가장 중요한 건 무사히 돌아오는 일이야. 언제든 쉬어 가렴." : lookTown(t).flavor, { x: 6, y: 5 },

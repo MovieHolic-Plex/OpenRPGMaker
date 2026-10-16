@@ -487,7 +487,7 @@ export function monsterMarkerTool(toolName: string, args: Readonly<Record<string
 }
 const MONSTER_MARKER_TOOLS: ReadonlySet<string> = new Set([
   "build_monster_game", "build_monster_tournament", "build_monster_expedition", "define_monster_species", "define_monster_families", "rename_monster_species",
-  "give_starter_monsters", "place_trainer", "set_encounter_table", "configure_monster_style",
+  "give_starter_monsters", "place_trainer", "place_monster_center", "set_encounter_table", "configure_monster_style",
 ]);
 
 /**

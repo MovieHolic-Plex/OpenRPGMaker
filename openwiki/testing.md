@@ -2173,3 +2173,8 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 
 실제 입력창 조수(Argon `gemini-4-argon`)는 한도 소진(HTTP 429 RESOURCE_EXHAUSTED, 복구 2026-10-21)이라 **조수 대용 = Claude Sonnet 5.5 high 역할극**(`scripts/oprn-tools.mjs` 와 같은 헤드리스 도구 코어에 `assistantRun:true`)으로 지었다. Argon 점수와 직접 비교하지 않는다. 씨앗은 `qa:game gen --text "대학 캠퍼스 연애 게임 만들어 줘"` 가 모델 호출 전에 쓰는 `seed.json`, 도구 호출 목록은 `scripts/qa/romance-fix2/assistant-runs/`.
 측정 4가지: `qa:game check` 막힘 수 · 자동 플레이로 닿는 엔딩 · 출하 플레이어 캡처(`runtime/romance-run`) · SQLite 저장→재로드(`save-reload.mjs`). 새로 알게 된 한계: `qa:game check` 는 기한 엔딩을 안 걸었다(`src/qa/gameCheck/deadline.ts` 가 메움). 상세·실측표는 `~/claude-viz/romance-fix-2.html` 의 보고서 근거.
+
+
+## 몬스터 마을 시스템 시각 QA (2026-10-16)
+
+`scripts/qa/runtime/monster-town.mjs <project.json> [outDir]` — 출하 플레이어(player.html)에서 상점(`TOWN_STAGE=shop`: 메뉴·수량·소지금·판매)·센터(`center`: 맡김→볼→섬광→회복 연속 프레임 + `__oprnAudioObserved` 소리 도착)를 실제 입력으로 본다(트레이너 단계 `trainer`·`emote` 는 트레이너 그림 PR 이 쓴다). 픽스처는 `bun src/harnesses/assistant-capability/node/buildMonsterFixture.ts <out.json>`. 함정: 세로 시선 트레이너가 맵 윗가장자리(y<8)에 있으면 「!」가 화면 밖으로 잘린다(트레이너 y≥8 을 쓴다). 서버 부하가 크면 애니메이션 프레임 간격이 늘어나 섬광 타이밍은 판정할 수 없다. 출력은 `verify-shots/runtime-qa/monster-town/SUMMARY.md` 먼저.
