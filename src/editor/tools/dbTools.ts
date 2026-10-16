@@ -2043,6 +2043,14 @@ const giveStarterMonsters: ToolDefinition = {
   },
 };
 
+/** 같은 능력치 곡선(여섯 항목의 Lv1·Lv99 값)을 가진 다른 배우 — 기본 곡선 그대로 만든 파티원을 즉시 알려 준다(jrpg-loop-1 D7). */
+function actorCurveTwin(actors: readonly ActorRecord[], record: ActorRecord): ActorRecord | undefined {
+  const keys = ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const;
+  const signature = (actor: ActorRecord): string => JSON.stringify(keys.map((key) => { const curve = actor.parameterCurves?.[key]; return curve ? [curve[0], curve[curve.length - 1]] : null; }));
+  const mine = signature(record);
+  return actors.find((other) => other.id !== record.id && signature(other) === mine);
+}
+
 const upsertActor: ToolDefinition = {
   name: "upsert_actor",
   description: "아군 액터 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -2073,6 +2081,10 @@ const upsertActor: ToolDefinition = {
       if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
     }
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
+    const twin = actorCurveTwin(draft.database.actors, record);
+    if (twin && !("parameterCurves" in actorPatch)) {
+      warnings.push(`배우 '${record.name}' 의 능력치 곡선이 '${twin.name}' 과 완전히 같습니다(기본 곡선) — 파티원이 전투에서 같은 몸이 됩니다. parameterCurves 를 [Lv1, Lv99] 로 역할별로 주세요. 예) 전사 maxHp [640,6200] defense [90,900] attack [70,780] mind [30,300] agility [45,500] maxMp [20,260] · 마법사 maxHp [380,3600] maxMp [75,980] mind [95,950] attack [40,420] defense [45,520] agility [55,600] · 도적 agility [85,950] attack [65,760] maxHp [470,4600].`);
+    }
     return {
       summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
       data: record,

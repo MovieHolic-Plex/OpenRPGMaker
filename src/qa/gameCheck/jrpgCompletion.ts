@@ -18,10 +18,15 @@ const JRPG_TASK = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*�
 /** 이미 JRPG 인 프로젝트에서 게임 전체를 지으라는 요청인가(작은 수정 요청에는 가드를 걸지 않는다). */
 const WHOLE_GAME_TASK = /게임을?\s*(?:만들|제작|완성|지어|짜)|처음부터|전체를?\s*(?:만들|제작|완성)/u;
 const TIME_BRIEF = /시간|시대|과거|미래|타임|평행|크로노|time|chrono|era\b/iu;
+/** 탈것(비공정·비행선) 요청 낱말. */
+const AIRSHIP_WORDS = /비공정|비행선|비행\s*정|에어\s*쉽|airship|탈것/iu;
+/** 세계가 무너진다·폐허가 된다는 요청 낱말 — 붕괴 전/후 맵 구조가 있어야 한다. */
+const COLLAPSE_WORDS = /붕괴|무너(?:져|지|진|뜨|졌)|폐허|멸망|몰락|world\s*collapse|apocalyp/iu;
+const RUIN_MAP_NAME = /붕괴|폐허|잔해|황폐|멸망|몰락|무너|ruin|collaps|wreck|devast/iu;
 /** 시작 마을에서 말을 거는 인물의 최소 수 — 촌장 하나로는 마을이 아니다. */
 export const START_TOWN_MIN_TALKERS = 2;
 /** checkJrpg 경고 중 «끝내도 되나» 를 막는 전투 균형 코드. */
-const BALANCE_CODES = new Set(["jrpg-party-identical-stats", "jrpg-boss-not-threatening", "jrpg-boss-unwinnable", "jrpg-encounters-harmless", "jrpg-encounters-wipe-party"]);
+const BALANCE_CODES = new Set(["jrpg-party-identical-stats", "jrpg-party-flat-roles", "jrpg-boss-not-threatening", "jrpg-boss-unwinnable", "jrpg-encounters-harmless", "jrpg-encounters-wipe-party"]);
 
 function isJrpg(project: Project): boolean {
   return project.system?.genre === "adventure-jrpg" || project.gameDesignBrief?.presetId === "adventure-jrpg";
@@ -102,6 +107,19 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   }
   if (TIME_BRIEF.test(briefText) && !endings.some((ending) => ending.id !== SEGMENT_END_ENDING_ID && (named.has(ending.id) || autoSelects))) {
     gaps.push("시간·시대 이야기를 요청했는데 호출되는 엔딩이 뼈대의 「첫 구간 끝」 뿐입니다 — 시간 이야기를 맺는 엔딩(define_ending)을 만들고 마지막 사건에서 triggerEnding 으로 부르세요.");
+  }
+
+  // 3b) 요청한 규모(jrpg-loop-1 D13) — 비공정을 말했는데 탈것이 없거나, 세계가 무너진다는 이야기인데 붕괴 후 맵이 없으면 요청의 핵심이 빠진 게임이다.
+  //     ff2 는 이 둘 없이 NPC 「비공정 기관사」 한 명으로 끝났다(몬스터 캠페인 보수에 시간을 쓴 탓 — D1).
+  if (AIRSHIP_WORDS.test(briefText) && !(project.system?.vehicles ?? []).some((vehicle) => vehicle.id === "airship")) {
+    gaps.push("비공정(비행선)을 요청했는데 탈것이 없습니다 — place_vehicle({vehicle:\"airship\", mapId, x, y, flightView:\"mode7\"}) 로 비행선을 세우고, 탈 수 있는 월드맵·착륙 지점(걸을 수 있는 칸)을 정하세요. NPC 이름에 「비공정」을 붙이는 것으로는 부족합니다.");
+  }
+  if (COLLAPSE_WORDS.test(briefText)) {
+    const ruinMaps = Object.values(project.maps ?? {}).filter((map) => RUIN_MAP_NAME.test(map.name ?? "") || ((map.defaultLighting?.ambient ?? 0) >= 0.45 && (map.climate && "weather" in map.climate && map.climate.weather === "fog")));
+    const otherMaps = Object.values(project.maps ?? {}).length - ruinMaps.length;
+    if (ruinMaps.length === 0 || otherMaps === 0) {
+      gaps.push("세계가 무너진다는 이야기인데 「붕괴 전/후」 맵 구조가 없습니다 — 같은 지리의 붕괴 후 변형을 derive_map_variant({sourceMapId, variants:[{id, name:\"… (붕괴 후)\", era:\"ruin\"}]}) 로 만들고(건물 철거·안개·어둠이 자동), create_time_gate 나 이벤트 transfer 로 붕괴 순간에 이어 붙이세요.");
+    }
   }
 
   // 4) 전투 균형 — 파티원이 전부 같은 몸이거나, 보스가 피해를 못 주거나 이길 수 없으면 「끝」까지 갈 수는 있어도 게임이 아니다(jrpg-real-1 J06:
