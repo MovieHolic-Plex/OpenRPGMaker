@@ -72,7 +72,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
-import { emeraldNarrationActive } from "@/player/emeraldBattleNarration";
+import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -1125,7 +1125,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (!next || next === current) return false;
     }
     setMenuCursor(snapshot, next, true);
+    clearFlashLine(snapshot);
     return true;
+  }
+
+  /** 도망 불가 안내처럼 잠깐 띄운 문장(directorState.flash)을 지우고 원래 「무엇을 할까?」로 돌린다. */
+  function clearFlashLine(snapshot: BattleSnapshot): void {
+    if (!directorState.flash) return;
+    directorState = commandPromptState(snapshot);
+    syncView();
   }
 
   function handleConfirm(snapshot: BattleSnapshot): boolean {
@@ -1151,6 +1159,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
     if (button.dataset.battleCommandInert === "true") {
       playBattleCue("command-cancel");
+      // 3세대처럼 도망갈 수 없는 이유를 문장 창에 말한다(회색 줄만 있으면 왜 안 되는지 알 수 없다). 커서를 옮기면 원래 안내로 돌아온다.
+      if (button.dataset.testid === "actor-command-run" && snapshot.phase === "actorCommand" && !snapshot.canEscape) {
+        directorState = { ...commandPromptState(snapshot, emeraldNoEscapeLine(snapshot)), flash: true };
+        syncView();
+      }
       return true;
     }
     button.click();
@@ -1937,6 +1950,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function shouldRefreshCommandPrompt(snapshot: BattleSnapshot, previous: BattleDirectorState): boolean {
+    // 도망 불가 같은 잠깐 안내(flash)는 커서를 옮길 때까지 남긴다 — 그 사이 다시 그려져도 덮지 않는다.
+    if (previous.flash && previous.activeActorRecordId === snapshot.activeActorId) return false;
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 

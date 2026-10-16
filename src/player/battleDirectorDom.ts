@@ -28,6 +28,8 @@ export interface BattleDirectorState {
   readonly lines: readonly string[];
   readonly activeActorRecordId?: string;
   readonly targetId?: string;
+  /** 잠깐 띄운 안내 문장(도망 불가 등). 커서를 옮기면 원래 명령 문장으로 돌아간다. */
+  readonly flash?: true;
 }
 
 export function initialBattleDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
@@ -981,8 +983,9 @@ function expGaugeProgress(snapshot: BattleSnapshot): { fromPct: number; toPct: n
     if (!(next > base)) return undefined;
     const current = monsterExpInLevelBand(species, instance.level, instance.exp);
     // Monster reward write-back uses collected EXP directly, for actual participants.
-    const gained = snapshot.participatingActorIds.includes(instance.instanceId)
-      ? Math.max(0, Math.trunc(snapshot.rewards.exp)) : 0;
+    // expSplitAlive 일 때는 한 마리 몫(monsterExp)이고, 쓰러진 선두는 0 이다(세션 적립 monsterExpPlan 과 같은 기준).
+    const gained = snapshot.participatingActorIds.includes(instance.instanceId) && (snapshot.rewards.monsterExp === undefined || !lead.defeated)
+      ? Math.max(0, Math.trunc(snapshot.rewards.monsterExp ?? snapshot.rewards.exp)) : 0;
     const clampPct = (value: number): number => Math.max(0, Math.min(100, value * 100));
     const levelUp = current + gained >= next;
     return {

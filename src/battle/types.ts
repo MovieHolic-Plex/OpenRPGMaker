@@ -520,6 +520,8 @@ export interface BattleLevelUpPreview {
 
 export interface BattleRewardsSnapshot {
   readonly exp: number;
+  /** rewardPolicy.expSplitAlive 일 때만: 몬스터 한 마리가 받는 경험치(총량 exp 를 쓰러지지 않은 참전자 수로 나눈 값). */
+  readonly monsterExp?: number;
   readonly gold: number;
   readonly items: readonly ItemId[];
   readonly enemyLevel?: number;

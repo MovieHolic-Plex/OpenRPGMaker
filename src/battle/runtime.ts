@@ -72,7 +72,7 @@ import { computeActorLevelUp, computeTechPointLearning } from "@/battle/battleLe
 import { computeApLearning } from "@/battle/battleEsperAp";
 import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
-import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
+import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
 import {
   applyStateEffects,
@@ -547,6 +547,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const participatingActorIds = new Set<ActorId>();
   const rewards: {
     exp: number;
+    monsterExp?: number;
     gold: number;
     items: ItemId[];
     enemyLevel?: number;
@@ -5033,7 +5034,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const instances = options.partyMonsters ?? [];
     if (instances.length === 0) return [];
     const participantIds = usePartyMonsters ? [...participatingActorIds] : undefined;
-    return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
+    const plan = monsterExpPlan(options.project.system.rewardPolicy, earnedExp, participantIds, new Set(actors.filter((actor) => actor.hp > 0).map((actor) => actor.recordId)));
+    if (options.project.system.rewardPolicy?.expSplitAlive === true && participantIds !== undefined) rewards.monsterExp = plan.exp;
+    return previewMonsterExperience(options.project, instances, plan.exp, plan.participantIds);
   }
 
   // Preview the same final battle authority that reward write-back applies.

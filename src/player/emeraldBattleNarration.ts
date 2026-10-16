@@ -103,6 +103,11 @@ export function emeraldFaintLine(target: BattleBattlerSnapshot, snapshot: Battle
   return `${withJosa(emeraldBattlerName(target, snapshot), "은/는")} 쓰러졌다!`;
 }
 
+/** 도망 불가 안내(3세대 문장): 트레이너 전은 「승부 도중…」, 그 밖(이벤트가 막은 전투)은 일반 문장. */
+export function emeraldNoEscapeLine(snapshot: Pick<BattleSnapshot, "troopId">): string {
+  return emeraldTrainerTroop(snapshot) ? "안돼! 승부 중에는\n도망칠 수 없어!" : "도망칠 수 없다!";
+}
+
 export function emeraldTrainerSendOutLine(trainerName: string, monsterName: string): string {
   return `${withJosa(emeraldShortName(trainerName), "은/는")} ${withJosa(emeraldShortName(monsterName), "을/를")} 내보냈다!`;
 }
@@ -164,9 +169,11 @@ export function emeraldResultRows(snapshot: BattleSnapshot, skillName: (skillId:
   }
   const trainer = emeraldTrainerTroop(snapshot);
   if (trainer) rows.push({ kind: "msg", label: `${emeraldShortName(trainer.name)}에게 이겼다!`, value: "" });
-  const exp = Math.max(0, Math.trunc(snapshot.rewards.exp));
+  // 경험치 분배(rewardPolicy.expSplitAlive)가 켜져 있으면 한 마리 몫(monsterExp)을 말한다.
+  const exp = Math.max(0, Math.trunc(snapshot.rewards.monsterExp ?? snapshot.rewards.exp));
   const levelUps = new Map((snapshot.rewards.monsterLevelUps ?? []).map((entry) => [entry.instanceId, entry]));
-  for (const actor of snapshot.actors) {
+  // 교체해서 대기로 물러난 참전자도 경험치를 받는다 — 앞에 선 한 마리만 말하면 나머지가 말없이 올랐다.
+  for (const actor of [...snapshot.actors, ...(snapshot.reserveActors ?? [])]) {
     const instanceId = actor.monsterInstanceId;
     if (!instanceId || !snapshot.participatingActorIds.includes(instanceId) || actor.defeated) continue;
     if (exp > 0) rows.push({ kind: "msg", label: `${withJosa(emeraldShortName(actor.name), "은/는")} 경험치를 ${exp} 얻었다!`, value: "" });

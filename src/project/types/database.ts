@@ -2190,6 +2190,11 @@ export interface RewardPolicy {
   levelGapPenalty?: boolean;
   /** 몬스터 파티 전투: 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다(경험치 나누기). 생략 = 나선 몬스터만. */
   expShare?: boolean;
+  /**
+   * 3세대식 경험치 분배(몬스터 파티 전투): 참전해 쓰러지지 않은 몬스터만 받고, 얻은 경험치를 그 수로 나눈다(1 미만이면 1).
+   * 생략 = 참전자 전원이 전액(쓰러진 참전자 포함) — 기존 동작.
+   */
+  expSplitAlive?: boolean;
   /** 트레이너 전 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식). 생략·0 = 적 레코드의 rewards.gold 합(저작 고정값). */
   trainerPrizePerLevel?: number;
 }

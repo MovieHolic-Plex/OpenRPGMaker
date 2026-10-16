@@ -2093,6 +2093,18 @@ Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (12
 
 Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.
 
+### 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
+
+- `canEscape:false`(트레이너 전 `place_trainer` 기본·이벤트가 막은 전투)에서 「도망간다」 줄은 회색(`aria-disabled`)이지만 이유를 말하지 않았다.
+  이제 그 줄에서 확인키를 누르면 문장 창이 이유를 말한다(`emeraldNoEscapeLine`: 트레이너 전은 「안돼! 승부 중에는 도망칠 수 없어!」, 그 밖은 「도망칠 수 없다!」).
+  `BattleDirectorState.flash` 가 붙은 이 안내는 커서를 옮기면 원래 「○○는 무엇을 할까?」로 돌아오고, 그 사이 다시 그려져도 덮이지 않는다(`shouldRefreshCommandPrompt`).
+  행동은 막힌 채 그대로다(런타임 `escape` 적법성은 바꾸지 않았다).
+- `system.rewardPolicy.expSplitAlive`(조수: `configure_game_systems rewardPolicy {expSplitAlive:true}`) — 3세대식 분배.
+  끄면(생략) 참전자 전원이 전액을 받고 **쓰러진 참전자도 받는다**(예전부터의 동작; 결과 문장은 쓰러진 줄을 빼고 말해 서로 달랐다).
+  켜면 참전해 쓰러지지 않은 몬스터만 총량을 그 수로 나눠 받는다(총량이 있으면 몫 최소 1). `battle/rewardPolicy.monsterExpPlan` 이 런타임 레벨업 미리보기·
+  세션 적립(`battleRewardsToSession`)·결과 문장(`snapshot.rewards.monsterExp`)의 단일 기준이다. `expShare`(벤치 절반)는 분배 몫의 절반으로 이어진다.
+  결과 문장은 교체로 대기에 물러난 참전자(`reserveActors`)도 한 줄씩 말한다.
+
 ### 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
 
 - 명령 대사(`actorCommandDirectorState`)는 이 액터의 결과 엔트리를 붙인다. 명령한 상대가 이미 쓰러져 런타임이 다음 상대로 돌렸으면
