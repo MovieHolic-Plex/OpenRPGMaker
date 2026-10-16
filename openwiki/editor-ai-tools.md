@@ -3373,3 +3373,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 
 - 포획 도구 하나에 선언형 조건 하나: `captureProfile.condition {kind, multiplier, types?, step?}`. `kind` enum = `type|firstTurn|turns|repeat`, `multiplier` 1.1~8, kind=type 은 `types`(system.typeChart.types 값 배열) 필수. **자유 키·자유 코드 없음.**
 - 거절: 모르는 종류·필수 매개변수 누락·상성표에 없는 타입 → `invalid-capture-condition`(허용 값을 담음). 레시피 `monster-capture-balls`. 볼 그림은 만들지 않는다 — 기존 `iconResourceId` 를 재사용한다.
+
+## `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
+
+- 새 스키마 필드(전부 선택, 기본값이면 저장 바이트에 안 나온다): `careProfile.levelUp`(1~10, 이상한 사탕), `ppRecovery {flat, percentMax}`(에테르류), `pocket`(`items|balls|machines|held|key`). `careProfile` 은 `type:"special"`, `ppRecovery` 는 `type:"medicine"` 에서만 실행되므로 `coerceMonsterFieldItem` 이 종류를 바꾸고 경고를 돌려준다. `careProfile` 이 올바르지 않으면 `invalid-care-profile`.
+- 부활 = `onlyEffectiveOnDeadActors:true` + `hpRecovery`(캠페인 기본 `mx_revive` 부활의 깃털). **진화의 돌은 별도 필드가 없다** — 아이템을 만들고 종의 `evolutions[].requires.itemId` 로 가리키면 `isEvolutionStone`(`monsterEvolutionItems.ts`)이 알아보고 필드 메뉴에서 쓴다.
+- 가방 포켓(`playerBagPockets.ts` `bagPocketOf`): `item.pocket` 이 먼저, 없으면 포획 도구→볼, 기술머신→기술머신, `heldEffect`→지닐 도구, `occasion never`·스위치·장비→중요한 물건, 나머지→도구. ItemType 은 보지 않는다. 몬스터 파티 게임에서만 켜지고 다른 장르의 아이템 화면(분류 필터)은 그대로다.
+- 조수 입구: `toolCapabilityIndex` 레시피 `monster-field-items`, `toolAliases`(부활약·진화의 돌·이상한 사탕·에테르·가방 포켓…), `monsterGameRequest` 지시문 한 줄. 자료집 아이템 카드에도 「레벨 올리기」 칸(`db-field-item-care-level-up`).
