@@ -163,8 +163,8 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
       const sprite = fit.sprite;
       writePng(join(dir, `grid-${k}.png`), grid);
       writePng(join(dir, `sprite-${k}.png`), sprite);
-      const issues = checkSprite(sprite, seed.style.maxColors, which).issues;
-      const eye = checkEyes(sprite, which);
+      const issues = checkSprite(sprite, seed.style.maxColors, which, species.stage as 1 | 2 | 3).issues;
+      const eye = checkEyes(sprite, which, species.stage as 1 | 2 | 3);
       candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues, eye: { pass: eye.pass, pair: eye.pair } });
     } catch (error) {
       console.error(`후보 ${k} 도트화 실패: ${error instanceof Error ? error.message : error}`);
@@ -488,8 +488,8 @@ function stageRefit(args: Args): void {
           const grid = readPng(join(base, id, c.grid));
           const sprite = toSprite(grid, which, species.stage).sprite;
           writePng(join(base, id, c.sprite), sprite);
-          c.issues = checkSprite(sprite, seed.style.maxColors, which).issues;
-          const eye = checkEyes(sprite, which);
+          c.issues = checkSprite(sprite, seed.style.maxColors, which, species.stage as 1 | 2 | 3).issues;
+          const eye = checkEyes(sprite, which, species.stage as 1 | 2 | 3);
           c.eye = { pass: eye.pass, pair: eye.pair };
         }
         writeFileSync(file, JSON.stringify(record, null, 2) + "\n");
@@ -524,8 +524,8 @@ function stageCheck(): number {
   for (const species of seed.species) {
     const front = existsSync(bundlePath(species.id, "front")) ? readPng(bundlePath(species.id, "front")) : null;
     const back = existsSync(bundlePath(species.id, "back")) ? readPng(bundlePath(species.id, "back")) : null;
-    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front").issues);
-    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back").issues);
+    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3).issues);
+    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back", species.stage as 1 | 2 | 3).issues);
     if (front && back) errors += printIssues(`${species.id} 앞·뒤`, checkPair(front, back));
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");
     if (!existsSync(manifestPath)) continue;

@@ -1,9 +1,10 @@
 /**
- * 눈 규칙 자동 검사 (DESIGN_RULES_VERSION 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」).
+ * 눈 규칙 자동 검사 (DESIGN_RULES_VERSION 4, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」→「하이라이트 없이 어두운 눈은 징그럽다, 귀여운 걸로」).
  *
  * 64px 캔버스에서 눈이 읽히려면 최소한 이만큼은 있어야 한다:
  *  - 눈 영역(어두운 눈동자 덩어리)이 3×3 화소 이상, 9×9 이하, 덩어리가 꽉 차 있다(막대·선·번짐이 아니다)
- *  - 눈동자 안이나 곁에 1화소 이상 하이라이트(눈동자보다 훨씬 밝은 점) — 생기는 여기서 나온다
+ *  - 눈동자 안에 1화소 이상 **흰 하이라이트**(L≥0.85 이고 눈동자보다 0.5 이상 밝은 점, 판본 4 격상) — 없으면 앞모습 후보 탈락. 어두운 구슬눈은 징그럽다.
+ *  - 1~2단계는 눈동자가 더 커야 귀엽다: 면적 ≥12 (3단계는 9)
  *  - 눈동자가 윤곽선(실루엣 가장자리 줄)과 한 덩어리로 합쳐지지 않았다 (합쳐지면 얼굴 윤곽에 뭉개진 점으로 보인다)
  *  - 두 눈이 보이면 크기가 크게 어긋나지 않는다(좌우 대칭 허용 오차)
  *  - 뒷모습에는 눈이 보이지 않는다 (눈 모양 + 하이라이트가 잡히면 경고)
@@ -24,7 +25,11 @@ export const EYE_RULES = {
   /** 어두운 화소 기준 OKLab L */
   darkL: 0.4,
   /** 하이라이트 = 눈동자 평균 L 보다 이만큼 밝은 화소 */
-  highlightGain: 0.3,
+  highlightGain: 0.5,
+  /** 하이라이트 최소 밝기(OKLab L) — 연갈색·노랑 같은 「살짝 밝은 점」은 흰 반짝임이 아니다 */
+  highlightMinL: 0.85,
+  /** 하이라이트는 흰색에 가까워야 한다(OKLab 채도 ≤ 이 값). 연갈색·크림 살갗(채도 0.06~0.09)은 반짝임이 아니다 */
+  highlightMaxChroma: 0.055,
   /** 두 눈 면적비 하한 (3/4 시점은 먼 쪽 눈이 작으므로 느슨) */
   symmetryMinRatio: 0.4,
   /** 두 눈으로 보는 y 차 */
@@ -33,6 +38,8 @@ export const EYE_RULES = {
   minSurround: 0.5,
   /** 앞모습 주 눈 면적 하한(3×3) · 둘째 눈 하한 · 뒷모습 경고 하한 */
   minPrimaryArea: 9,
+  /** 1~2단계 앞모습 주 눈 면적 하한 (귀여움: 큰 눈) */
+  minPrimaryAreaCute: 12,
   minSecondArea: 5,
   backEyeArea: 12,
   skinGain: 0.25,
@@ -129,7 +136,10 @@ export function detectEyes(image: RgbaImage): EyeReport {
       for (let y = box.y; y < box.y + box.height; y += 1) {
         for (let x = box.x; x < box.x + box.width; x += 1) {
           if (!isOpaque(image, x, y) || dark[y * width + x]) continue;
-          if (lightness(image, x, y) < pupilL + EYE_RULES.highlightGain) continue;
+          const p = pixelAt(image, x, y);
+          const lab = oklabCached(p[0], p[1], p[2]);
+          if (lab[0] < Math.max(EYE_RULES.highlightMinL, pupilL + EYE_RULES.highlightGain)) continue;
+          if (Math.hypot(lab[1], lab[2]) > EYE_RULES.highlightMaxChroma) continue;
           let touching = 0;
           for (const [ox, oy] of N4) if (inside(x + ox, y + oy) && dark[(y + oy) * width + x + ox]) touching += 1;
           if (touching >= 2) highlights += 1;
@@ -164,7 +174,7 @@ export function detectEyes(image: RgbaImage): EyeReport {
 }
 
 export type EyeVerdict = {
-  /** 앞모습: 주 눈(면적 ≥ minPrimaryArea, 하이라이트, 살갗에 둘러싸임)이 있다. 뒷모습: 눈 모양이 없다. */
+  /** 앞모습: 주 눈(면적 ≥ 12(1~2단계)/9, 흰 하이라이트, 살갗에 둘러싸임)이 있다. 뒷모습: 눈 모양이 없다. */
   pass: boolean;
   /** 앞모습: 주 눈 곁 같은 높이에 두 번째 눈(면적 ≥ minSecondArea)이 보인다 */
   pair: boolean;
@@ -177,7 +187,7 @@ export type EyeVerdict = {
  * 규칙 판정. 앞모습은 주 눈이 있어야 통과(탈락 = 판정 대상에서 뺀다), 두 눈은 「확인」으로만 기록(3/4 시점에서 먼 눈이 정당하게 가려질 수 있다).
  * 뒷모습은 큰 눈 모양(면적 12 이상)이 잡히면 경고. 화소 규칙은 필요조건일 뿐이다 — 눈의 자연스러움은 판정 모델이 본다.
  */
-export function checkEyes(image: RgbaImage, side: "front" | "back"): EyeVerdict {
+export function checkEyes(image: RgbaImage, side: "front" | "back", stage: 1 | 2 | 3 = 1): EyeVerdict {
   const report = detectEyes(image);
   const issues: CheckIssue[] = [];
   if (side === "back") {
@@ -186,17 +196,19 @@ export function checkEyes(image: RgbaImage, side: "front" | "back"): EyeVerdict 
     return { pass: big.length === 0, pair: false, report, issues };
   }
   const sorted = [...report.eyes].sort((a, b) => b.area - a.area);
-  const primary = sorted.find((e) => e.area >= EYE_RULES.minPrimaryArea);
+  const minArea = stage <= 2 ? EYE_RULES.minPrimaryAreaCute : EYE_RULES.minPrimaryArea;
+  const primary = sorted.find((e) => e.area >= minArea);
   if (!primary) {
     const why = report.dull.length > 0
-      ? "눈동자 덩어리는 있으나 하이라이트(밝은 1화소)가 없다 — 생기 없는 눈"
+      ? "눈동자 덩어리는 있으나 흰 하이라이트가 없다 — 어두운 구슬눈(징그러움)"
       : report.merged.length > 0
         ? "눈동자가 윤곽선에 붙어 뭉개졌다"
         : `눈 후보를 찾지 못했다 (눈동자 ${EYE_RULES.minSide}×${EYE_RULES.minSide} 이상 + 하이라이트 1화소, 밝은 얼굴 위)`;
     issues.push({ level: "error", message: `눈 규칙 탈락: ${why}` });
     return { pass: false, pair: false, report, issues };
   }
-  const second = sorted.find((e) => e !== primary && e.area >= EYE_RULES.minSecondArea && Math.abs(e.box.y - primary.box.y) <= EYE_RULES.pairDy && Math.abs(e.box.x - primary.box.x) <= 22);
+  const withDull = [...sorted, ...report.dull].sort((a, b) => b.area - a.area);
+  const second = withDull.find((e) => e !== primary && e.area >= EYE_RULES.minSecondArea && Math.abs(e.box.y - primary.box.y) <= EYE_RULES.pairDy && Math.abs(e.box.x - primary.box.x) <= 22);
   if (!second) issues.push({ level: "warn", message: "두 번째 눈이 확인되지 않는다 (한 눈만 보인다)" });
   else if (second.area / primary.area < EYE_RULES.symmetryMinRatio) issues.push({ level: "warn", message: `두 눈 크기가 크게 다르다 (${primary.area} vs ${second.area})` });
   return { pass: true, pair: Boolean(second), primary, report, issues };
