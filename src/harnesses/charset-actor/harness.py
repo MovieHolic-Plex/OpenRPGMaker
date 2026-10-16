@@ -39,6 +39,10 @@ RTP = ROOT / 'public' / 'assets' / 'easyrpg'
 ACTOR1 = RTP / 'charset' / 'Actor1.png'
 GRAPHICS = ROOT / 'src' / 'assets' / 'sharedCharacterGraphics.json'   # 칩 ↔ 얼굴 짝 정본
 BASE_SHEETS = ('Actor1', 'Actor2', 'Actor3', 'Actor4', 'People1', 'People2', 'People3', 'People4', 'People5')
+# Scarloxy MPWSP01 People1~2(CC BY 4.0, public/assets/scarloxy/)를 뼈대로 쓰는 시트(2026-10-16). 투명 배경이라 하네스 규약(배경 키 색)으로
+# 한 번 바꾼 사본을 둔다 — `scarloxy_people.py bases` 가 만든다. BASE_SHEETS 에 넣지 않는다(RTP 72명 전수 루프 calibrate·verify 가 이 시트를 읽지 않게).
+SCARLOXY_BASE_SHEETS = ('Scarloxy1', 'Scarloxy2')
+SCARLOXY_BASE_DIR = ROOT / 'harness-data' / 'charset-actor' / 'scarloxy-base'
 HDATA = ROOT / 'harness-data' / 'charset-actor'
 LAWN = HDATA / 'lawn16.png'
 DATA = Path(os.environ.get('CHR_HARNESS_DATA', os.path.expanduser('~/.local/share/oprn/charset-actor-harness')))
@@ -158,7 +162,7 @@ def norm_base(x):
             raise SystemExit(f'올린 그림 {iid} 이 없다({INPUTS})')
         return f'input:{iid}:{int(n)}'
     sheet, n = str(x).split(':')
-    if sheet not in BASE_SHEETS + ('Animal',):
+    if sheet not in BASE_SHEETS + SCARLOXY_BASE_SHEETS + ('Animal',):
         raise SystemExit(f'지원하지 않는 뼈대 칩셋: {sheet!r}')
     return f'{sheet}:{int(n)}'
 
@@ -169,6 +173,8 @@ def base_sheet(key):
         _, iid, n = k.split(':')
         return INPUTS / f'{iid}.png', int(n)
     sheet, n = k.split(':')
+    if sheet in SCARLOXY_BASE_SHEETS:
+        return SCARLOXY_BASE_DIR / f'{sheet}.png', int(n)
     return RTP / 'charset' / f'{sheet}.png', int(n)
 
 

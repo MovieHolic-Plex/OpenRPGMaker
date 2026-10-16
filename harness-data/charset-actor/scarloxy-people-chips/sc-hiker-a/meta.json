@@ -1,0 +1,36 @@
+{
+ "key": "sc-hiker-a",
+ "name": "등산가",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy1:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    90,
+    160
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 8,
+    "s": 0.9,
+    "v": 1.0
+   }
+  },
+  {
+   "region": "T",
+   "gray": [
+    0.85,
+    1.0
+   ],
+   "to": {
+    "hue": 22,
+    "sat": 0.55
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

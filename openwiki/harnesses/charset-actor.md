@@ -124,3 +124,24 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
 - **Argon 계정 쿼터(429, 약 127시간 뒤 재설정)** 로 마지막 라운드 후보 7종(캐주얼 여 e·정장 여 a~c·앞치마 a~c)은 모델로 못 만들었다. 대신 앞치마 2·정장 여 1은 스크립트 색 변형(`source.model` 이 `script-colorvar(...)`)이다. 쿼터가 풀리면 `romance-modern-2.json` 의 해당 후보를 `romance_draw.py` 로 다시 돌려 시트 4(Modern4)부터 덧붙인다.
 - 베이스 칩이 RTP(CC BY 4.0)라 `public/assets/ATTRIBUTION.md` 「Modern1-3」 절에 출처·크레딧·선택 기록을 둔다.
 - `test/fixtures/eventEditorPortalSurface.baseline.json` 의 NPC 모습 목록에 `Modern# (Modern)` 3항목을 손으로 덧붙였다(포털 표면 게이트는 미실행).
+
+## 몬스터 세계 사람 칩 ScarloxyPeople1~4 — 기존 Scarloxy People 칩 변형 25종 (2026-10-16)
+
+몬스터 수집 장르 잠금은 RTP 사람 칩을 막고 Scarloxy 계열(`scarloxy-people`)만 허용한다. 뼈대는 `public/assets/scarloxy/scarloxy-charset-people1.png`(8명)·`people2.png`(2명) **10명뿐**이라(16 아님)
+직군이 모자랐다. 앞서 RTP 기반 트레이너 칩(PR #2709)은 장르 잠금에 어긋나 닫았다. 새 칩은 그 10명에서 의복·머리·모자만 바꾼 변형이다. 사람 칩이라 3/4 관문(object-gate)은 해당 없음.
+
+- 변형 두 길. (1) 모델 없는 스크립트 `scarloxy_compose.py`: 한 인물의 머리 윗부분을 다른 인물 몸에 프레임별로 이식 + 부위 색 바꾸기(레시피 `harness-data/charset-actor/scarloxy-people/recipes.json`, 21종). `roundtrip` 이 뼈대 복원 화소 동일을 확인한다.
+  (2) 실제 Argon 부분 편집: `argon_part` 가 쓰던 Agy 를 8318 CLIProxy 스트리밍(`argon_http.py`, `stream:true` 만 동작·비스트림은 빈 응답, 키는 환경변수 `OPRN_LIVE_KEY` 에서만, 모델 `gemini-4-argon-*` 만)으로 바꿔 끼운 드라이버 `scarloxy_draw.py`
+  (뼈대 10명 마스크 `scarloxy_specs.py`, 주문서 `harness-data/charset-actor/scarloxy-people-spec.json`). 4종(박사·남학생·요리사·레인저) 채택. 12 후보 중 7은 하네스가 3회 안에 거절(대표 사유: 몸 안쪽 구멍·장비가 앵커에 안 닿음·마스크 밖 변경).
+  `scarloxy_repair.py` 는 Argon edit.json 은 그대로 두고 몸 안쪽 1~4px 구멍만 이웃 색으로 메운 뒤 같은 검증을 다시 건다(meta.repaired 에 기록).
+- 거름 기준: 뼈대(10)·설치분 어느 것과도 실루엣 화소 색이 일정 비율 이상 달라야 한다(`scarloxy_distinct.py`, 스크립트 27%·Argon 45%). 사람은 `~/claude-viz/monster-people-chips-1.html`(시트 `scarloxy_sheet.py`)에서 **버릴 번호만** 고른다.
+- 굽기: `python3 src/harnesses/charset-actor/install_scarloxy_people.py` → `public/assets/generated/charsets/ScarloxyPeople{1..4}.png`(288×256 RGBA, 시트당 8칸) + `src/assets/scarloxyPeopleCharsets.json`. 입력은 `scarloxy-people-chips/<key>/{chip.chr.txt,meta.json}`, 명단 `scarloxy-people-install.json`(칸 번호 **덧붙이기 전용**, 바뀐 칸은 `--force` 없이 거절). `--check` 는 화소·명단 동일 확인.
+- 배선: `src/assets/scarloxyPeopleCharsets.ts` → `charsetCatalog.ts`·`charsetSemantics.ts`·`generatedAssetResourceResolver.ts`·`project/io/resourceReferenceValidation.ts`·`charsetQuery.ts`, `project/charsetFamily.ts`(`oprn-charset-scarloxy-people<n>` 도 `scarloxy-people`), `genreLock.ts`, `catalog_sources.py`(공방 순환 입력 제외).
+  id `oprn-charset-scarloxy-people<n>` · textureKey `tex_oprn_charset_scarloxy_people<n>` · 그룹 `ScarloxyPeople`.
+- 검증(출하 경로): `scripts/qa/runtime/scarloxy-people-chips-fixture.mts` + `.scenario.mjs`(`node scripts/runtime-qa.mjs --scenario scarloxy-people-chips --project tmp/scarloxy-people-chips.json`, 픽스처는 압축 직렬화) ·
+  `scarloxy-people-chips-persist.mts`(몬스터 잠금 프로젝트에서 place_npc 허용·RTP 칩 거절·임시 SQLite 저장/재로드). `test/genreLockCharsets.test.ts` 에 계열·허용·거절 테스트를 썼으나 **이 세션에서 vitest/gates 는 실행하지 않았다**.
+- 알려진 한계: 얼굴(faceset)을 새 칩에 연결하지 않았다. 체형은 뼈대 한 가지(머리 큰 2.5등신)라 실루엣은 모자·머리·가운 깃으로만 바뀐다. 낚싯대·잠자리채 같은 손 소품은 뼈대에 손 칸 정의가 없어 쓰지 않는다. 빈 직군: 상점 점원·수영 선수·뱃사람·노인·땅/불/물 도장 보스.
+- **재실행 한 줄**(Argon 가 되면 다음 라운드. 8318 은 지금도 되며, Agy 쿼터가 풀리는 2026-10-21 이후는 `CHR_ARGON_BACKEND=agy` 도 가능):
+  `OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" CTFF6_PART_OUT=$HOME/spc-runs python3 src/harnesses/charset-actor/scarloxy_draw.py draw --spec harness-data/charset-actor/scarloxy-people-spec.json --model gemini-4-argon-high --run sp-r3 --label sp-merchant-a --label sp-swimmer-a`
+  → 통과분을 `scarloxy-people-chips/<key>/` 로 복사하고 `scarloxy-people-install.json` 에 덧붙인 뒤 `install_scarloxy_people.py`.
+- 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-4」. `test/fixtures/eventEditorPortalSurface.baseline.json` 에 `ScarloxyPeople# (ScarloxyPeople)` 4항목을 손으로 덧붙였다(포털 표면 게이트 미실행).

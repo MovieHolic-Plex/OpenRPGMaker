@@ -430,3 +430,16 @@ The base chip per character is recorded in `src/assets/modernCharsets.json` (`so
 - Selection record: the 24 were filtered from 36 harness candidates by the author (chip-set grain match, torso, no clothing clipping, 12-frame identity) under the user's explicit delegation ("no picking, filter by your own criteria", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
 - No image-generation output and no pixel of any other game is used.
 License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
+
+## ScarloxyPeople1-4 walking chips — monster-collect people derived from Scarloxy People1-2 (2026-10-16)
+
+`generated/charsets/ScarloxyPeople1.png`, `ScarloxyPeople2.png`, `ScarloxyPeople3.png`, `ScarloxyPeople4.png` (288×256 each, 8 character slots × 3 patterns × 4 directions, 25 chips) hold people walking chips for monster-collecting games
+(police officer, researcher, nurse, villain grunts, angler, camper, hiker, bug catcher, forester, explorer, rival, trainer, schoolgirl, child, priestess, beach visitor, four gym leaders, doctor, male student, chef, ranger).
+**Every chip is derived from the Scarloxy MPWSP01 People1/People2 character sheets** (`scarloxy/scarloxy-charset-people1.png`, `scarloxy-charset-people2.png`, ten characters) by (a) a script with no model call (21 chips) and (b) real Argon (`gemini-4-argon-high`, via the 8318 CLIProxy) part-editing under the same region-mask harness (4 chips: doctor, male student, chef, ranger; hair/hat/clothes only, face/skin/hands/body proportions pixel-locked, 12 frames verified; `argon_http.py`, `scarloxy_draw.py`):
+`src/harnesses/charset-actor/scarloxy_compose.py` (a) moves the head rows of one Scarloxy character (hat, hair, face) onto the body rows of another, frame by frame, and (b) shifts hues of hair/hat, top, bottom and shoe colours inside region masks.
+Head and body donor per chip are recorded in `harness-data/charset-actor/scarloxy-people/recipes.json` and in `src/assets/scarloxyPeopleCharsets.json` (`source.baseChip`).
+- Upstream: Scarloxy (Ismael Garcia), "Monster Taming Game Essentials" (MyPixelWorld Special Packs #01), https://scarloxy.itch.io/mpwsp01 — Creative Commons Attribution 4.0 International (see the Scarloxy section above). The CC BY 4.0 credit applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`. Changes were made (head transplants, recoloured clothing/hair).
+- Final pixel grids: `harness-data/charset-actor/scarloxy-people-chips/<key>/` (`chip.chr.txt`, `meta.json`); baked by `src/harnesses/charset-actor/install_scarloxy_people.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: 25 chips were filtered from the scripted and Argon candidates (four rounds) by the author by eye (8x per direction + 1x) under the user's delegation, `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
+- No image-generation output and no pixel of any other game is used.
+License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).

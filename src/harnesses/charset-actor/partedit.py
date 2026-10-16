@@ -193,6 +193,11 @@ SPECS['Actor3:0@robot'] = dict(SPECS['Actor3:0'], robot=True, skin='',
                                face={'down': [(9, 14, 10, 15), (13, 14, 14, 15)], 'right': [(13, 14, 15, 15)], 'left': [(8, 14, 10, 15)], 'up': None})
 
 
+# Scarloxy People1~2 뼈대(10명) 분할 — 별도 파일(2026-10-16).
+from scarloxy_specs import SCARLOXY_SPECS  # noqa: E402
+SPECS.update(SCARLOXY_SPECS)
+
+
 # 분할이 틀린 베이스는 여기서 보정한다(마스크 시트를 눈으로 본 뒤 적는다). 키 = 'Actor3:0' 꼴.
 OVERRIDES = {}
 

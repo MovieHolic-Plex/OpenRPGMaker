@@ -1,0 +1,36 @@
+{
+ "key": "sc-beach-a",
+ "name": "해변 관광객",
+ "head": "Scarloxy1:6",
+ "body": "Scarloxy1:1",
+ "recolor": [
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 45,
+    "s": 1.0,
+    "v": 1.1
+   }
+  },
+  {
+   "region": "B",
+   "gray": [
+    0.8,
+    1.0
+   ],
+   "to": {
+    "hue": 170,
+    "sat": 0.35
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

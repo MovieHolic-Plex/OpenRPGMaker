@@ -1,0 +1,49 @@
+{
+ "key": "sc-grunt-a",
+ "name": "단원",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    90,
+    160
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 280,
+    "s": 0.5,
+    "v": 0.55
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "s": 0.15,
+    "v": 0.45
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    20,
+    55
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 0,
+    "s": 1.1
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

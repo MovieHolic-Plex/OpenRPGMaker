@@ -1,0 +1,38 @@
+{
+ "key": "sc-officer-a",
+ "name": "경찰관",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 222,
+    "s": 0.9,
+    "v": 0.85
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 222,
+    "s": 0.8,
+    "v": 0.8
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

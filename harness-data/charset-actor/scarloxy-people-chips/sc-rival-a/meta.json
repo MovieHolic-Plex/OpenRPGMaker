@@ -1,0 +1,52 @@
+{
+ "key": "sc-rival-a",
+ "name": "라이벌",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy1:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 355,
+    "s": 0.85,
+    "v": 0.95
+   }
+  },
+  {
+   "region": "T",
+   "gray": [
+    0.88,
+    1.0
+   ],
+   "to": {
+    "hue": 225,
+    "sat": 0.6,
+    "vlin": [
+     0.1,
+     0.65
+    ]
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3,
+   "to": {
+    "s": 0.2,
+    "v": 1.05
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

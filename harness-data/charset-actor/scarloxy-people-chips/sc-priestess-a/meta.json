@@ -1,0 +1,52 @@
+{
+ "key": "sc-priestess-a",
+ "name": "신관",
+ "head": "Scarloxy1:7",
+ "body": "Scarloxy1:7",
+ "recolor": [
+  {
+   "region": "*",
+   "hue": [
+    150,
+    200
+   ],
+   "smin": 0.15,
+   "to": {
+    "hue": 42,
+    "s": 0.8,
+    "v": 1.15
+   }
+  },
+  {
+   "region": "*",
+   "hue": [
+    200,
+    230
+   ],
+   "smin": 0.2,
+   "vmax": 0.6,
+   "to": {
+    "hue": 178,
+    "s": 0.6,
+    "v": 0.5
+   }
+  },
+  {
+   "region": "*",
+   "hue": [
+    200,
+    230
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 176,
+    "s": 0.55,
+    "v": 0.8
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}
