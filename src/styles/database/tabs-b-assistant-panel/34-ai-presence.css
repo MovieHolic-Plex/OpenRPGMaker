@@ -157,6 +157,8 @@ html:not([data-ai-activity-level="detail"]):not([data-ai-activity-level="trace"]
 .ai-status-jobs-entry.is-rail[data-top="review"] { background: var(--warning, #d9840d); }
 .ai-status-jobs-entry.is-rail[data-top="failed"] { background: var(--danger, #d92d20); }
 .ai-chat-panel:not(.is-collapsed) > .ai-status-jobs-entry.is-rail { display: none; }
+/* 접힌 왼쪽 사이드 레일은 restore·undo 말고 모든 자식을 숨긴다(03-three-tier-ia.css) — 개수 배지만 다시 보이게(더 구체적인 선택자). */
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-status-jobs-entry.is-rail:not([hidden]) { display: inline-flex; }
 
 /* ── 작업 목록 ──
    한 행 = 번호 · 종류 · 한 줄 요약 · 맵 좌표 · 상태(글자) · 그 자리 버튼. 번호 색 = 지도 위 상자 색.

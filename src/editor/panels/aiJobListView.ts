@@ -6,7 +6,7 @@
 //  - 닫힌 동안 이 모듈은 행을 만들지도 구독하지도 않는다(요약만 입구 버튼이 읽는다).
 //  - 열려 있을 때 행은 키(JobRow.key)로 보관한다. 갱신은 **바뀐 행의 바뀐 칸만** 고친다(textContent·dataset 비교) — 이벤트마다 목록을 다시 만들지 않는다.
 //    행 순서는 이동이 필요할 때만 insertBefore 한다. 한 프레임에 한 번(aiJobList 의 프레임 묶음) 도착한다.
-//  - 열릴 때 위치를 한 번 읽는다. 이후 갱신은 레이아웃 읽기가 없다(강제 레이아웃 금지). 창 크기가 바뀔 때만 다시 읽는다.
+//  - 열릴 때 위치(와 위쪽으로 자라는 최대 높이)를 한 번 읽는다. 이후 갱신은 레이아웃 읽기가 없다(강제 레이아웃 금지). 창 크기가 바뀔 때만 다시 읽는다.
 //
 // 접근성: 목록은 role="list", 행은 listitem. 행의 본 버튼은 ↑↓ Home End 로 옮겨 다닌다(로빙 tabindex). 상태는 색이 아니라 글자(「일하는 중」「내 차례」…)로 말한다.
 
@@ -215,6 +215,8 @@ function place(): void {
   root.style.left = `${Math.max(8, Math.round(rect.left + 16))}px`;
   root.style.bottom = `${Math.max(8, Math.round(window.innerHeight - barTop + 10))}px`;
   root.style.maxWidth = `${Math.max(280, Math.round(rect.width - 32))}px`;
+  // 스튜디오처럼 지도 틀이 작아 상태 줄이 위쪽에 있으면 목록이 화면 위로 잘리지 않게 위 여백(8px)까지만 키운다.
+  root.style.maxHeight = `${Math.max(140, Math.min(560, Math.round(barTop - 10 - 8)))}px`;
 }
 
 function ensureRoot(): HTMLElement {

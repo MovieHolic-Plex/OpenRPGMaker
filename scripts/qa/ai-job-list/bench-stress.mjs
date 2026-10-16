@@ -1,5 +1,6 @@
 // AI 작업 N 개가 동시에 스트리밍될 때 메인 스레드·DOM 비용을 잰다 (모델 호출 없음 — 앱 안의 presence 원천에 합성 이벤트를 직접 넣는다).
 //
+// AIUI_MID=1 이면 측정 창 60% 지점(일이 한창 돌 때)에 mid-<...>.png 를 따로 찍는다(--shot 은 측정이 끝나 일이 멈춘 뒤의 화면).
 // 사용: AIUI_BASE=http://127.0.0.1:9909 AIUI_OUT=/tmp/x node bench-stress.mjs <N> <dock: open|folded|studio> <w> <h> <list: closed|open> [trials=3] [durMs=6000]
 //
 // 합성 구성(N 개): 영역 작업 R=floor(N/5)(지도 위 상자, 한 번 올리고 그대로) · 앞 턴 팀 에이전트 T=ceil((N-R)/2) · 다른 맵 배경 실행 B=N-R-T.
@@ -38,7 +39,7 @@ if (dock === "studio") { await page.getByTestId("topbar-ai-studio").click(); awa
 else await setDock(dock);
 
 // 합성 구동기 설치 — 모든 상태는 window.__B 에 둔다.
-await page.evaluate(async ({ n, TICK }) => {
+await page.evaluate(async ({ n, TICK, LOAF }) => {
   const P = await import("/src/editor/panels/aiPresence.ts");
   const Q = await import("/src/editor/aiMapRunQueue.ts");
   const TA = await import("/src/ai/piAgent/teamActivity.ts");
@@ -90,7 +91,8 @@ await page.evaluate(async ({ n, TICK }) => {
     B.regionIds = [];
   };
   // 관측기: longtask, 프레임 간격, 토큰 반영.
-  B.longtasks = []; B.frames = []; B.dragMoves = [];
+  B.longtasks = []; B.frames = []; B.dragMoves = []; B.loaf = [];
+  if (LOAF) try { new PerformanceObserver((l) => { for (const e of l.getEntries()) if (e.duration > 200) B.loaf.push({ d: Math.round(e.duration), blocking: Math.round(e.blockingDuration), scripts: e.scripts.map((x) => `${Math.round(x.duration)}ms ${x.invokerType} ${x.invoker} ${x.sourceURL.split('/').slice(-2).join('/')}:${x.sourceFunctionName}`) }); }).observe({ type: 'long-animation-frame', buffered: false }); } catch {}
   try { new PerformanceObserver((l) => { for (const e of l.getEntries()) B.longtasks.push(e.duration); }).observe({ type: "longtask", buffered: false }); } catch { B.noLongtask = true; }
   const re = /J(\d+)-(\d+)/g;
   const scan = (text, now) => { re.lastIndex = 0; let m; while ((m = re.exec(text))) { const key = m[0]; if (B.sent.has(key) && !B.seen.has(key)) B.seen.set(key, now); } };
@@ -106,7 +108,7 @@ await page.evaluate(async ({ n, TICK }) => {
   requestAnimationFrame(raf);
   // 입력→다음 프레임: pointermove 의 timeStamp 에서 그 뒤 첫 rAF 콜백까지.
   window.addEventListener("pointermove", (e) => { if (!B.drag) return; const t0 = e.timeStamp; requestAnimationFrame(() => requestAnimationFrame(() => B.dragMoves.push(performance.now() - t0))); }, true);
-}, { n, TICK: +(process.env.AIUI_TICK ?? 250) });
+}, { n, TICK: +(process.env.AIUI_TICK ?? 250), LOAF: !!process.env.AIUI_LOAF });
 
 if (list === "open") { await page.getByTestId("ai-status-summary").click().catch(() => console.log("summary missing (before start)")); }
 
@@ -151,7 +153,9 @@ for (let trial = 0; trial < trials; trial++) {
     await page.mouse.up();
     await page.evaluate(() => { window.__B.drag = false; });
   })();
-  if (STAMP) { r_stamp = await stampP.catch((e) => { console.log("stamp err", String(e).slice(0, 120)); return -1; }); await page.waitForTimeout(300); } else await page.waitForTimeout(durMs);
+  // 지도 쪽 포인터다운은(의도대로) 열린 목록·팝오버를 닫는다 — 드래그가 끝나면 다시 열어 「열린 채 스트리밍」 비용을 나머지 시간에 잰다.
+  if (list === "open" && !STAMP) { await dragP.catch(() => {}); const isOpen = await page.evaluate(() => !!document.querySelector(".ai-status-pop:not([hidden]), .ai-status-jobs:not([hidden])")); if (!isOpen) await page.getByTestId("ai-status-summary").click().catch(() => {}); }
+  if (STAMP) { r_stamp = await stampP.catch((e) => { console.log("stamp err", String(e).slice(0, 120)); return -1; }); await page.waitForTimeout(300); } else { await page.waitForTimeout(Math.floor(durMs * 0.6)); if (process.env.AIUI_MID) await page.screenshot({ path: `${out}/mid-${n}-${dock}-${w}x${h}-${list}.png` }); await page.waitForTimeout(Math.ceil(durMs * 0.4)); }
   await dragP.catch((e) => console.log("drag err", String(e).slice(0, 80)));
   const r = await page.evaluate(() => {
     const B = window.__B;
@@ -164,7 +168,7 @@ for (let trial = 0; trial < trials; trial++) {
       emitCostP95: q(B.emitCost, 0.95) === null ? null : +q(B.emitCost, 0.95).toFixed(2), emitCostTotalMs: +B.emitCost.reduce((a, b) => a + b, 0).toFixed(1), emitN: B.emitCost.length,
       framesN: B.frames.length, frameP95: q(B.frames, 0.95) === null ? null : +q(B.frames, 0.95).toFixed(1), jank50: B.frames.filter((f) => f > 50).length,
       dragMoveP50: q(B.dragMoves, 0.5) === null ? null : +q(B.dragMoves, 0.5).toFixed(1), dragMoveP95: q(B.dragMoves, 0.95) === null ? null : +q(B.dragMoves, 0.95).toFixed(1), dragN: B.dragMoves.length,
-      stampDrainMs: null,
+      stampDrainMs: null, loaf: B.loaf,
       domTotal: document.querySelectorAll("*").length,
       domAi: count(".ai-status-bar, .ai-status-pop, .ai-status-jobs, .ai-map-presence"),
       popOpen: !!document.querySelector(".ai-status-pop:not([hidden]), .ai-status-jobs:not([hidden])"),
