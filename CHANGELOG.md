@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.242.0 — 2026-10-17
+
+### 기능
+
+- **charset-actor** — remake the 12 first-round script people chips with Argon partial edits (11 replaced, 1 kept) (#2763) (`69639de`)
+
+### 수정
+
+- **ci** — record the runtime HUD and capture colors in the CSS gates (`52a90d1`)
+
 ## 0.241.0 — 2026-10-16
 
 ### 기능
