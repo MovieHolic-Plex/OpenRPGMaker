@@ -8548,9 +8548,9 @@
    "흉상"
   ],
   "tags": {
-   "button": 3885,
-   "div": 3899,
-   "img": 3879,
+   "button": 4005,
+   "div": 4019,
+   "img": 3999,
    "input": 5,
    "label": 5,
    "option": 6,
@@ -12592,8 +12592,8 @@
    "event-command-face-preview": "res#미리보기를 찾을 수 없습니다.",
    "event-command-face-preview-host": "res#미리보기를 찾을 수 없습니다."
   },
-  "testidCount": 3906,
-  "controlCount": 3893
+  "testidCount": 4026,
+  "controlCount": 4013
  },
  "choices": {
   "testids": [
