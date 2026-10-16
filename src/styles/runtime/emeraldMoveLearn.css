@@ -29,4 +29,4 @@
 .emerald-movelearn-row[data-cursor="true"]::before { visibility: visible; }
 .emerald-movelearn-sub { color: #688070; }
 /* 이 장면이 떠 있는 동안 아래 결과 창의 레벨업 능력치 상자는 가린다(문장 창과 겹쳐 잘려 보인다). */
-.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"]:has(~ .emerald-movelearn) .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] .battle-levelup-stats { display: none; }
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-movelearn-open="true"] .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] .battle-levelup-stats { display: none; }

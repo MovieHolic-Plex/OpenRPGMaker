@@ -36,8 +36,14 @@ export async function boot(viewport = { width: 960, height: 720 }, patch = undef
   await page.route("**/__poke/project.json", (route) => route.fulfill({ contentType: "application/json", body }));
   await page.goto(server.url + "/player.html?e2eVitals=1", { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="title-screen"]', { timeout: 280000 });
-  await page.keyboard.press("Enter");
-  await page.waitForFunction(() => window.__oprnDebug?.readState?.().currentMapId, undefined, { timeout: 280000 });
+  // 부하가 낮으면 제목 화면이 입력을 받기 전에 Enter 가 지나간다 — 입력 준비를 기다리며 다시 누른다.
+  await page.waitForTimeout(2500);
+  for (let attempt = 0; attempt < 30; attempt++) {
+    await page.keyboard.press("Enter");
+    const started = await page.waitForFunction(() => window.__oprnDebug?.readState?.().currentMapId, undefined, { timeout: 9000 }).then(() => true, () => false);
+    if (started) break;
+  }
+  await page.waitForFunction(() => window.__oprnDebug?.readState?.().currentMapId, undefined, { timeout: 120000 });
   // 시작 칸 앞에 QA 이벤트(ev_qa_*)가 있다 — 전투 중 z 가 필드 「조사」로도 새지 않게 이벤트 없는 칸으로 옮긴다.
   if (KIND === "exp") {
     // 출하 캠페인의 시작 연출(박사 소개·조작 안내 대사)은 Esc 로 건너뛴다 — 실제 입력. 대사 상자가 2초 동안 안 보일 때까지.

@@ -58,6 +58,9 @@ export async function playEmeraldMoveLearns(host: HTMLElement, project: Project,
   menu.hidden = true;
   root.append(menu, box);
   host.append(root);
+  // 아래 결과 창의 능력치 상자가 이 장면의 문장 창에 반쯤 가려 보이지 않게 표시해 둔다(emeraldMoveLearn.css).
+  const underlying = [...host.querySelectorAll<HTMLElement>('.battle-scene:not(.emerald-movelearn)')];
+  for (const node of underlying) node.dataset.movelearnOpen = 'true';
   const surface = bindEmeraldBattleSurface(host, root);
   const controller = new AbortController();
   const stop = (): void => controller.abort();
@@ -195,6 +198,7 @@ export async function playEmeraldMoveLearns(host: HTMLElement, project: Project,
     window.removeEventListener('keydown', onKey, true);
     signal?.removeEventListener('abort', stop);
     surface.cleanup();
+    for (const node of underlying) delete node.dataset.movelearnOpen;
     root.remove();
   }
   return decisions;
