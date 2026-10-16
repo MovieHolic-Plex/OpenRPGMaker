@@ -1,63 +1,57 @@
 {
  "key": "sc-researcher-a",
- "name": "연구원",
- "head": "Scarloxy1:5",
- "body": "Scarloxy2:0",
- "recolor": [
-  {
-   "region": "T",
-   "hue": [
-    335,
-    20
-   ],
-   "smin": 0.3,
-   "vmax": 0.55,
-   "to": {
-    "hue": 215,
-    "s": 0.5,
-    "v": 0.7
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    335,
-    20
-   ],
-   "smin": 0.3,
-   "to": {
-    "s": 0.07,
-    "v": 1.4
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    20,
-    55
-   ],
-   "smin": 0.3,
-   "to": {
-    "hue": 178
-   }
-  },
-  {
-   "region": "B",
-   "hue": [
-    190,
-    215
-   ],
-   "smin": 0.15,
-   "to": {
-    "hue": 210,
-    "v": 1.5
-   }
-  }
- ],
+ "arch": "sp3-researcher",
+ "base": "Scarloxy2:1",
+ "variant": "**paint 는 최소한만**. 초록 잎 머리를 짧은 보라 머리 3톤(밝은 보라·보라·짙은 보라)으로 recolor, 연두 튜닉(소매 포함)을 흰 연구 가운으로 recolor(흰색·연회색 3톤), 튜닉의 어두운 줄무늬 글자는 청록 띠 색으로 recolor, 올리브 바지를 흰색에 가까운 연회색으로, 신발은 짙은 회색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
  "ok": true,
- "errors": [],
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
  "warnings": [
-  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다"
+  "한 프레임에만 나오는 색 c — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 dejkmnos"
  ],
- "model": "script-compose(no model call)"
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 227,
+  "lone_base": 273
+ },
+ "distinct": {
+  "score": 0.76,
+  "nearest": "ScarloxyPeople5#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 0,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 126
+  }
+ },
+ "run": "r8/sp3-researcher-e",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 머리가 단발에서 뻗친 짧은 머리로 바뀌어 윤곽이 큼, 옆 방향 허리 뒤 가운 자락(모든 프레임 일관)."
+ }
 }

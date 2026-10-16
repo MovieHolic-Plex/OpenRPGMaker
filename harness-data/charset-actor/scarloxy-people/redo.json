@@ -1,0 +1,181 @@
+{
+ "chips": [
+  {
+   "key": "sc-officer-a",
+   "run": "r7",
+   "rkey": "sp3-officer-c",
+   "desc": "남색 제모(금빛 휘장)와 남색 제복, 가슴과 소매에 금빛 띠, 어두운 바지. 머리는 갈색.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 오른쪽·왼쪽 걸음 0·2열 팔·엉덩이 부근 남색 점이 조금 지저분(경미)."
+   },
+   "tried": {
+    "orders": 6,
+    "machine_ok": 6
+   }
+  },
+  {
+   "key": "sc-researcher-a",
+   "run": "r8",
+   "rkey": "sp3-researcher-e",
+   "desc": "보라색 뻗친 짧은 머리, 청록 띠를 두른 흰 가운과 연회색 바지.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 머리가 단발에서 뻗친 짧은 머리로 바뀌어 윤곽이 큼, 옆 방향 허리 뒤 가운 자락(모든 프레임 일관)."
+   },
+   "tried": {
+    "orders": 6,
+    "machine_ok": 6
+   }
+  },
+  {
+   "key": "sc-grunt-f",
+   "run": "r5",
+   "rkey": "sp3-grunt-f-a",
+   "desc": "짙은 보라 갈래머리와 연보라 리본, 검은 코트에 붉은 띠, 어두운 신발.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 오른쪽 걸음 2열 팔 위 어두운 붉은 점 하나(경미)."
+   },
+   "tried": {
+    "orders": 2,
+    "machine_ok": 2
+   }
+  },
+  {
+   "key": "sc-explorer-f",
+   "run": "r8",
+   "rkey": "sp3-explorer-f-c",
+   "desc": "주황 갈색 갈래머리에 초록 리본, 카키(황토) 탐험복과 올리브 바지, 등 배낭.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "결함 없음. 카키 상의·올리브 하의·등 배낭이 4방향 일관, 걸음 프레임 색 일치."
+   },
+   "tried": {
+    "orders": 5,
+    "machine_ok": 5
+   }
+  },
+  {
+   "key": "sc-schoolgirl-a",
+   "run": "r8",
+   "rkey": "sp3-schoolgirl-e",
+   "desc": "검은빛 갈래머리와 남색 리본, 흰 블라우스에 남색 타이, 남색 치마.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 오른쪽·왼쪽 걸음 프레임 흰 소매에 남색 얼룩점이 조금(경미)."
+   },
+   "tried": {
+    "orders": 6,
+    "machine_ok": 6
+   }
+  },
+  {
+   "key": "sc-priestess-a",
+   "run": "r5",
+   "rkey": "sp3-priestess-a",
+   "desc": "금발 긴 머리, 분홍 귀 장식, 청록색 로브와 분홍 치맛단.",
+   "verdict": {
+    "score": 9,
+    "pass": "PASS",
+    "text": "결함 거의 없음. 눈 위 청록 점이 살짝."
+   },
+   "tried": {
+    "orders": 2,
+    "machine_ok": 2
+   }
+  },
+  {
+   "key": "sc-boss-ice",
+   "run": "r6",
+   "rkey": "sp3-boss-ice-a",
+   "desc": "하늘색 뾰족 머리, 검은 가면, 연하늘 코트와 은빛 띠.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "결함 없음. 이마 줄 붉은 점은 베이스 고정 칸."
+   },
+   "tried": {
+    "orders": 6,
+    "machine_ok": 5
+   }
+  },
+  {
+   "key": "sc-boss-electric",
+   "run": "r7",
+   "rkey": "sp3-boss-electric-a",
+   "desc": "노란 불꽃 머리, 검은 가면, 어두운 남색 코트에 노란 띠.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "결함 없음. 노란 머리·어두운 코트·노란 띠가 4방향 일관, 이마 줄 붉은 점은 베이스 고정 칸."
+   },
+   "tried": {
+    "orders": 6,
+    "machine_ok": 6
+   }
+  },
+  {
+   "key": "sc-boss-rock",
+   "run": "r10",
+   "rkey": "sp3-boss-rock-d",
+   "desc": "갈색 뾰족 머리, 황토색 민소매 튜닉, 올리브 반바지.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 위 방향 양어깨 분홍·적색 얼룩 점, 옆 방향 튜닉 밑단 짙은 갈색 띠가 허리 윤곽을 살짝 끊음(경미)."
+   },
+   "tried": {
+    "orders": 8,
+    "machine_ok": 8
+   }
+  },
+  {
+   "key": "sc-boss-esper",
+   "run": "r5",
+   "rkey": "sp3-boss-esper-a",
+   "desc": "보라 긴 머리와 분홍 귀 장식, 보라 드레스.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "직군 읽힘. 앞모습 정수리 가르마 분홍 점, 눈 위 청록 점(경미)."
+   },
+   "tried": {
+    "orders": 2,
+    "machine_ok": 2
+   }
+  },
+  {
+   "key": "sc-kid-a",
+   "run": "r6",
+   "rkey": "sp3-kid-a",
+   "desc": "금발 갈래머리와 초록 리본, 연분홍 웃옷, 노란 하의, 붉은 신발.",
+   "verdict": {
+    "score": 8,
+    "pass": "PASS",
+    "text": "결함 없음. 옆 방향 초록 가방끈(기존 칩과 같은 구성)."
+   },
+   "tried": {
+    "orders": 3,
+    "machine_ok": 3
+   }
+  }
+ ],
+ "kept": [
+  {
+   "key": "sc-grunt-a",
+   "reason": "단원(남)은 Argon 재제작 후보 8건(뼈대 1:2·2:0·1:0 세 종, 프롬프트 5종 변형, 일부는 같은 주문 재시도 포함)을 만들었지만 독립 판정(tile-artist) 8점 이상이 하나도 안 나와 교체하지 않았다. 최고 7점(r10 e): 방향마다 붉은 무늬가 다르고(등 붉은 판 · 가슴 세로줄 · 어깨 낙서선) 옆 방향에서 둥근 보라 중절모가 앞챙 캡으로 바뀜. 뼈대 1:2(흰 민소매)는 코트가 맨 몸통처럼 읽혀 반려, 2:0 은 얼굴에 잡음이 낀다. 기존 칩이 그대로 남는다(얼굴·피부·손 고정 검사 기준에서는 24칸 어긋남 — 눈 본체는 같고 손 그림자 색만 다르다).",
+   "tried": {
+    "orders": 8,
+    "machine_ok": 7
+   }
+  }
+ ],
+ "selection_note": "3차(2026-10-16, 재제작): 1차 스크립트 칩 12종 중 11종을 Argon 부분 편집(눈·피부·손 12프레임 고정 검사 통과 + 독립 판정 8점 이상)으로 같은 id·칸 번호 그대로 교체. 단원(남) 1종은 판정 미달로 기존 칩 유지.",
+ "summary_html": "<div class=\"card\"><p><b>결과: 12종 중 11종 교체, 1종(단원 남) 유지.</b> 교체한 11종은 같은 id·같은 칸 번호(ScarloxyPeople1~3)에 그림만 바뀌었다 — 직군·이름·태그·성별·나이 그대로, 설명만 새 그림에 맞게 고쳤다. ScarloxyPeople4~10 시트와 나머지 칸은 화소까지 그대로다. 사람 칩이라 3/4 관문(object-gate)은 해당 없음.</p>\n<table class=\"sum\"><tr><th>기준</th><td>① 얼굴·피부·손 12프레임 화소 고정 검사(<code>scarloxy_lock.py</code>, 눈썹·눈 둘레·손 그림자 포함) 통과 — 교체 11종 모두 통과(610~948칸, 어긋남 0). 옛 칩은 이 검사에서 24~142칸 어긋났다(아래 카드의 「전」 수치).<br>\n② 독립 판정(tile-artist, Opus 5.5 medium, 읽기 전용): 직군이 읽히는가 + 결함 없음, <b>8점 이상만 PASS</b>. 11종 모두 8점 이상(신관 9). 판정자는 전/후 8배 4방향과 12프레임 6배를 직접 열어 봤다.<br>\n③ 서로 구별: 기존 칩과 다른 화소 37% 이상(최저 전기 보스 37%), 교체되는 옛 칸은 비교에서 뺐다.</td></tr>\n<tr><th>저작</th><td>실제 Argon gemini-4-argon-high(8318 스트리밍, 순차 1개, 429 응답 없음). 주문 60건(Argon 호출 102회, 429 응답 없음·재시도 1회) 중 하네스가 5회 안에 끝내 거절한 것 2건. 독립 판정 6회·후보 57건. 8점 미만은 설치하지 않았다.</td></tr>\n<tr><th>이번에 고친 도구</th><td><b>걷기 프레임에만 나오는 베이스 글자</b>(붉은 신발 점·바지 점)는 서 있는 그림 표에 없어 모델이 recolor 하지 못해 걸을 때만 깜박였다(첫 판정에서 7칩 공통 결함). <code>scarloxy_argon2.py</code> 가 글자 표를 12프레임 전부로 만들고, 빠진 글자는 가장 가까운 색 글자의 새 색으로 자동 따라 바꾼다(<code>complete_recolor</code>). 그 뒤 신발 깜박임 지적이 사라졌다. <code>scarloxy_distinct.py</code> 는 교체될 옛 칸을 비교에서 뺀다(<code>SPC_EXCLUDE</code>). 설치 도구는 명단의 <code>redo</code> 표시 칸만 같은 id·칸에서 그림이 바뀌게 허용하고 고정 검사를 건다.</td></tr></table>\n<p>고정 칸(눈·눈 둘레·이마 줄)은 원본 그대로라서 새 칩의 눈 색이 옛 칩과 다르고(예: 붉은 눈), 2:0 뼈대 보스(얼음·전기)의 이마 줄에 붉은 점이 남는다. 그것이 이번 기준이다.</p>\n<p><b>유지한 1종</b>: 단원(남) — 아래 맨 끝 카드. 되돌리거나 다른 칩으로 바꾸고 싶으면 버릴 번호만 말씀하세요(예: ScarloxyPeople2#5).</p></div>"
+}

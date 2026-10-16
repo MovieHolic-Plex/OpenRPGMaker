@@ -1,0 +1,79 @@
+{
+ "key": "sc-boss-electric",
+ "name": "전기 도장 보스",
+ "head": "Scarloxy2:0",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "vmax": 0.55,
+   "to": {
+    "hue": 30,
+    "s": 1.0,
+    "v": 0.55
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "vmax": 0.55,
+   "to": {
+    "hue": 235,
+    "s": 0.7,
+    "v": 0.5
+   }
+  },
+  {
+   "region": "H",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 50,
+    "s": 1.0,
+    "v": 1.15
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "s": 0.12,
+    "v": 0.4
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    20,
+    55
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 52,
+    "s": 1.0
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "한 프레임에만 나오는 색 k — 걸을 때 깜빡일 수 있다"
+ ],
+ "model": "script-compose(no model call)"
+}

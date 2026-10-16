@@ -1,91 +1,57 @@
 {
  "key": "sc-kid-a",
- "name": "어린이(여)",
- "head": "Scarloxy1:4",
- "body": "Scarloxy1:4",
- "recolor": [
-  {
-   "region": "H",
-   "hue": [
-    340,
-    360
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 130,
-    "s": 0.8,
-    "v": 0.8
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    0,
-    12
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 130,
-    "s": 0.8,
-    "v": 0.8
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    0,
-    30
-   ],
-   "smin": 0.12,
-   "vmin": 0.3,
-   "to": {
-    "hue": 44,
-    "sat": 0.62,
-    "v": 1.55
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    40,
-    60
-   ],
-   "smin": 0.3,
-   "to": {
-    "hue": 10,
-    "s": 0.7,
-    "v": 1.0
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    150,
-    215
-   ],
-   "smin": 0.15,
-   "to": {
-    "hue": 145,
-    "s": 0.8,
-    "v": 1.0
-   }
-  },
-  {
-   "region": "B",
-   "hue": [
-    300,
-    350
-   ],
-   "smin": 0.2,
-   "to": {
-    "hue": 40,
-    "s": 0.8,
-    "v": 1.05
-   }
-  }
- ],
+ "arch": "sp3-kid",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 금발 3톤(밝은 금·금·황토)으로, 리본(빨강)을 초록으로 recolor, 노란 웃옷을 연분홍으로, 분홍 반바지를 노랑으로 recolor, 신발은 붉은색 그대로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
  "ok": true,
- "errors": [],
- "warnings": [],
- "model": "script-compose(no model call)"
+ "harness": "scarloxy_argon2",
+ "attempts": 3,
+ "warnings": [
+  "한 프레임에만 나오는 색 x — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 acdghikmopqtuw"
+ ],
+ "metrics": {
+  "added_up0": 25,
+  "added_up1": 38,
+  "added_up2": 37,
+  "added_right0": 16,
+  "added_right1": 16,
+  "added_right2": 16,
+  "added_down0": 25,
+  "added_down1": 38,
+  "added_down2": 37,
+  "added_left0": 16,
+  "added_left1": 16,
+  "added_left2": 16,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 12,
+  "cross_base": 12,
+  "lone": 293,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.428,
+  "nearest": "ScarloxyPeople6#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 44,
+  "hole_filled_px": 2,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 4
+  }
+ },
+ "run": "r6/sp3-kid-a",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "결함 없음. 옆 방향 초록 가방끈(기존 칩과 같은 구성)."
+ }
 }

@@ -4,7 +4,7 @@
  "sheetName": "ScarloxyPeople{n} · Scarloxy 변형 인물 · OPRN",
  "selection": {
   "by": "user-delegated-to-supervisor",
-  "note": "2026-10-16 사용자 「몬스터 사람 칩은 Scarloxy 칩에서 변형해 늘린다」 + 감독 위임(「직접 걸러 설치」). 모델 호출 없는 스크립트 변형(머리 이식 + 부위 색 바꾸기) 후보 22종 중 8배 눈 검수와 서로 구별 기준(가장 가까운 칩과 화소 27% 이상 다름)을 통과한 21종. 칸 번호는 덧붙이기 전용. | 2차(2026-10-16, 8318 스트리밍 gemini-4-argon-high 실제 Argon 부분 편집): 12 후보 중 4종 채택(박사·남학생·요리사·레인저). 학생·요리사는 Argon edit.json 그대로 + 몸 안쪽 1~4px 구멍만 스크립트로 메움(scarloxy_repair.py, 하네스 재검증 통과). 기각: 뱃사람(기존 칩과 거의 같음 0.39)·연구원(여)(뒷모습 덩어리)·상인·수영 선수·등산가·단원·노인·도장 보스(땅)(하네스 거절 또는 3회 안에 통과 못 함). | 3차(2026-10-16, Argon 부분 편집 확대): 8318 스트리밍 gemini-4-argon-high 3.8~ 후보 중 눈 검수·화소 고정 검사·유사도 거름을 통과한 신규 칩을 ScarloxyPeople5~ 에 덧붙임.",
+  "note": "2026-10-16 사용자 「몬스터 사람 칩은 Scarloxy 칩에서 변형해 늘린다」 + 감독 위임(「직접 걸러 설치」). 모델 호출 없는 스크립트 변형(머리 이식 + 부위 색 바꾸기) 후보 22종 중 8배 눈 검수와 서로 구별 기준(가장 가까운 칩과 화소 27% 이상 다름)을 통과한 21종. 칸 번호는 덧붙이기 전용. | 2차(2026-10-16, 8318 스트리밍 gemini-4-argon-high 실제 Argon 부분 편집): 12 후보 중 4종 채택(박사·남학생·요리사·레인저). 학생·요리사는 Argon edit.json 그대로 + 몸 안쪽 1~4px 구멍만 스크립트로 메움(scarloxy_repair.py, 하네스 재검증 통과). 기각: 뱃사람(기존 칩과 거의 같음 0.39)·연구원(여)(뒷모습 덩어리)·상인·수영 선수·등산가·단원·노인·도장 보스(땅)(하네스 거절 또는 3회 안에 통과 못 함). | 3차(2026-10-16, Argon 부분 편집 확대): 8318 스트리밍 gemini-4-argon-high 3.8~ 후보 중 눈 검수·화소 고정 검사·유사도 거름을 통과한 신규 칩을 ScarloxyPeople5~ 에 덧붙임. | 3차(2026-10-16, 재제작): 1차 스크립트 칩 12종 중 11종을 Argon 부분 편집(눈·피부·손 12프레임 고정 검사 통과 + 독립 판정 8점 이상)으로 같은 id·칸 번호 그대로 교체. 단원(남) 1종은 판정 미달로 기존 칩 유지.",
   "notAdopted": [
    "sc-professor-a(흰 머리 소년처럼 읽힘)",
    "sc-student-m(밋밋)",
@@ -20,7 +20,7 @@
   {
    "id": "scarloxy-officer-navy",
    "name": "경찰관 · 남색 제복",
-   "desc": "남색 야구모자와 남색 제복, 어깨와 가슴에 금빛 띠, 어두운 바지. 머리는 갈색.",
+   "desc": "남색 제모(금빛 휘장)와 남색 제복, 가슴과 소매에 금빛 띠, 어두운 바지. 머리는 갈색.",
    "genre": "몬스터 수집",
    "role": "경찰·경비",
    "gender": "male",
@@ -38,16 +38,17 @@
    "index": 0,
    "source": {
     "harnessKey": "sc-officer-a",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:0 + body Scarloxy2:0",
-    "gridSha256": "4b1b75c99b7548776ee38a84f70a293111c131b03bab058d8440db45d16a6115",
-    "slotRgbaSha256": "a706c609065f96a7ccddc5ca83e07ea1c870428cff7f6a29d5086f0783382e30"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:0",
+    "gridSha256": "1d0aa9b72e2aa3aaf86ce82ca0f4e60711de95bfbf7043331850376a8247a36c",
+    "slotRgbaSha256": "60b35361703d07ce9bd526a8a5a55161ed4c384ec2df11807df19090052d5b73",
+    "redo": "2026-10-16"
    }
   },
   {
    "id": "scarloxy-researcher-white",
    "name": "연구원 · 흰 가운",
-   "desc": "보라색 짧은 머리, 청록 띠를 두른 흰 가운과 흰 바지.",
+   "desc": "보라색 뻗친 짧은 머리, 청록 띠를 두른 흰 가운과 연회색 바지.",
    "genre": "몬스터 수집",
    "role": "연구원·박사 조수",
    "gender": "male",
@@ -65,10 +66,11 @@
    "index": 1,
    "source": {
     "harnessKey": "sc-researcher-a",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:5 + body Scarloxy2:0",
-    "gridSha256": "7788864669d51452a5ca923d9cd6b8ed8ac40fb67302321e16777671150481b8",
-    "slotRgbaSha256": "1009f417ec9bd17e211bfd898dcf4f509e9c2a399f635aea66f19d2fac07f9af"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy2:1",
+    "gridSha256": "f90a07f217173740bf7506722f3aafcff0db6061c4bde82a6b38245578162551",
+    "slotRgbaSha256": "14b7350eed4ebf0f0643dec7a241aa36346d6bb844a49f2e6821e122b5d9054d",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -127,7 +129,7 @@
   {
    "id": "scarloxy-grunt-black-f",
    "name": "단원 · 검은 코트(여)",
-   "desc": "짙은 보라 갈래머리와 보라 리본, 검은 코트에 붉은 띠.",
+   "desc": "짙은 보라 갈래머리와 연보라 리본, 검은 코트에 붉은 띠, 어두운 신발.",
    "genre": "몬스터 수집",
    "role": "악당 조직 단원",
    "gender": "female",
@@ -144,10 +146,11 @@
    "index": 4,
    "source": {
     "harnessKey": "sc-grunt-f",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:4 + body Scarloxy2:0",
-    "gridSha256": "a5c1d8d485abdc573bbbf1e4ef6f9c144e749eada278ddf320aac09b69072be5",
-    "slotRgbaSha256": "ab4093854ac23679f26d3bbe735f1dba457654a5c1e6032e9368b99867521813"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:4",
+    "gridSha256": "47cedc26b69af473d12d53a16de8045d1200479b4f8e39fe1bd49110ddd20950",
+    "slotRgbaSha256": "fc7db3952fec09f9812e8c22a486b850c4ea64140b0b0c03db72e582b516b566",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -283,7 +286,7 @@
   {
    "id": "scarloxy-explorer-f-khaki",
    "name": "탐험가 · 황토 옷(여)",
-   "desc": "주황 갈색 갈래머리에 초록 리본, 황토색 탐험복과 올리브 바지.",
+   "desc": "주황 갈색 갈래머리에 초록 리본, 카키(황토) 탐험복과 올리브 바지, 등 배낭.",
    "genre": "몬스터 수집",
    "role": "탐험가·조사원",
    "gender": "female",
@@ -300,10 +303,11 @@
    "index": 2,
    "source": {
     "harnessKey": "sc-explorer-f",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:4 + body Scarloxy2:1",
-    "gridSha256": "e3c04b843d90efa0752f8d4df158b3521f04c8e63a5f24297180acfd16a114d3",
-    "slotRgbaSha256": "fedef4c579555431e2f97b939583bea93f04273c6621aa4446bd0e87ecdd699c"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:4",
+    "gridSha256": "cf2e74c5f7e8060ca655c0f87b51227ba5deb6b1148a349bf9499dcb01590764",
+    "slotRgbaSha256": "dc2af5114923f7ddfabe0187af3dea0753336275763357c30a4d1f8b29baf133",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -361,7 +365,7 @@
   {
    "id": "scarloxy-schoolgirl-navy",
    "name": "여학생 · 남색 리본",
-   "desc": "검은빛 갈래머리와 남색 리본, 흰 블라우스에 남색 겉옷, 남색 치마 같은 하의.",
+   "desc": "검은빛 갈래머리와 남색 리본, 흰 블라우스에 남색 타이, 남색 치마.",
    "genre": "몬스터 수집",
    "role": "학생",
    "gender": "female",
@@ -378,10 +382,11 @@
    "index": 5,
    "source": {
     "harnessKey": "sc-schoolgirl-a",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:4 + body Scarloxy1:4",
-    "gridSha256": "3aa1cab4805f31bb6c51641ecdee1d80eb7c19f96a60607e5acde08b10bf56d1",
-    "slotRgbaSha256": "c5347ae87cf1434df45f44e8fc9caa72612620237fdcab98d0a1a341deea17a0"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:4",
+    "gridSha256": "85bffc1856ff7fef5c4fe09936bf7de845e378f3e77274fb9df8e39930f40e54",
+    "slotRgbaSha256": "f6cf5921e7947aa6cdece5bac85ba14e3957b0a87042c190a22b54d6abcc2974",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -405,16 +410,17 @@
    "index": 6,
    "source": {
     "harnessKey": "sc-priestess-a",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:7 + body Scarloxy1:7",
-    "gridSha256": "71aff6a4676c420cf2d234eb82aae99cf8bdd82b4b107a4f75e97bc14d4c0f4b",
-    "slotRgbaSha256": "e5871daa61bbb2bb9ff0cdee08288c175234df7482c73e1cdc9eccd6791427a4"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:7",
+    "gridSha256": "0ddf8f5664cf725fc145f32624112f9344cab5757facdcdb710ed0ea0896732f",
+    "slotRgbaSha256": "482c74f1333de68c3144f1e996c4df0bcc42ceb1827287f6998d11e6d1e1aef7",
+    "redo": "2026-10-16"
    }
   },
   {
    "id": "scarloxy-boss-ice",
    "name": "얼음 도장 보스",
-   "desc": "하늘색 불꽃 머리, 검은 가면, 연하늘 코트와 은빛 띠.",
+   "desc": "하늘색 뾰족 머리, 검은 가면, 연하늘 코트와 은빛 띠.",
    "genre": "몬스터 수집",
    "role": "도장 보스(얼음)",
    "gender": "male",
@@ -431,16 +437,17 @@
    "index": 7,
    "source": {
     "harnessKey": "sc-boss-ice",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy2:0 + body Scarloxy2:0",
-    "gridSha256": "ce5e5dcc743f6fe49af14aa3c1f880346afe511bb665017e7edd53d7dad502cd",
-    "slotRgbaSha256": "212c7435b6ee6007ea761efc6ed176886c05fb63e6e2de38127b986d37400e82"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy2:0",
+    "gridSha256": "bdb4128812fe73e4144833044f81cf14ddb16cfba3298fc25d189f4088ab877b",
+    "slotRgbaSha256": "a0c9bc14d5e50b61e4d9eee8aa1810b6c2d24a702501828ead8b76bb69c046f0",
+    "redo": "2026-10-16"
    }
   },
   {
    "id": "scarloxy-boss-electric",
    "name": "전기 도장 보스",
-   "desc": "노란 불꽃 머리, 검은 가면, 검정 코트에 노란 띠.",
+   "desc": "노란 불꽃 머리, 검은 가면, 어두운 남색 코트에 노란 띠.",
    "genre": "몬스터 수집",
    "role": "도장 보스(전기)",
    "gender": "male",
@@ -457,16 +464,17 @@
    "index": 0,
    "source": {
     "harnessKey": "sc-boss-electric",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy2:0 + body Scarloxy2:0",
-    "gridSha256": "0941b05ddc6476761fe926b305ef4e1215055d610dbb12ffc4e6ec2c38056460",
-    "slotRgbaSha256": "44d69fbcd7c355baa9fefde49d7f69e70d3842e3e6db886088cbd210dad0099e"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy2:0",
+    "gridSha256": "e20aa363aab416ef033d1f8325601f741b249f3cad7b1701374f221f048f45f2",
+    "slotRgbaSha256": "b1ab8d5ddbc634bf6e7073567ae9d627ef4efe6080b0dd8eb4347303d5a90cec",
+    "redo": "2026-10-16"
    }
   },
   {
    "id": "scarloxy-boss-rock",
    "name": "바위 도장 보스",
-   "desc": "갈색 잎 모양 머리, 황토색 튜닉, 올리브 바지.",
+   "desc": "갈색 뾰족 머리, 황토색 민소매 튜닉, 올리브 반바지.",
    "genre": "몬스터 수집",
    "role": "도장 보스(바위)",
    "gender": "male",
@@ -483,10 +491,11 @@
    "index": 1,
    "source": {
     "harnessKey": "sc-boss-rock",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy2:1 + body Scarloxy2:1",
-    "gridSha256": "f971071275de83bf127e17a3c3648fb64b20e9fe7e0a23082a0dd450e842a6b7",
-    "slotRgbaSha256": "f061d591205890c8662f96862e36c666995f59014b606d10db415d994a938ea0"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:5",
+    "gridSha256": "719abbdd34b8fbbd68c0010b4c6f33f68841ec87cdeea2ecf58d6e037697dfc1",
+    "slotRgbaSha256": "c3669baa5cd6d9c90ba43d85ff86806d230eb9c5f736fb2a86dddb66f5d88c35",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -509,10 +518,11 @@
    "index": 2,
    "source": {
     "harnessKey": "sc-boss-esper",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:7 + body Scarloxy1:7",
-    "gridSha256": "512609bf02a03eb09be8d199c00f5066ff290646e65055960707fabe6048c7ae",
-    "slotRgbaSha256": "f04387c9f42292cae0c36aa3d489914cf9c67f16f94a26dd6fe250f78821802e"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:7",
+    "gridSha256": "742c2d7e286ace1d8ef153d19224dee5b88d5c845e3ac3659eeb436a09a12df8",
+    "slotRgbaSha256": "29b7f876770e045d2391ac695045e5a3933a158adcc9234e5176d9336923e291",
+    "redo": "2026-10-16"
    }
   },
   {
@@ -535,10 +545,11 @@
    "index": 3,
    "source": {
     "harnessKey": "sc-kid-a",
-    "model": "script-compose(no model call)",
-    "baseChip": "head Scarloxy1:4 + body Scarloxy1:4",
-    "gridSha256": "b4844a13c9acdabbdf7d027fbc7a24513e655d5a36ce6b0603a7692406da5f75",
-    "slotRgbaSha256": "535c4a91767fbb30b51918c439fbbb60810a35a49f35f911e71c3007deaa2383"
+    "model": "gemini-4-argon-high",
+    "baseChip": "Scarloxy1:4",
+    "gridSha256": "dcebbfd728661f397511a5b108818dca1c23ff0a994396460541949a8658a4e4",
+    "slotRgbaSha256": "0e3155aa52649e9dff07dd4475386d8dd2a6ff34db1d375bab66b544eb18c78b",
+    "redo": "2026-10-16"
    }
   },
   {

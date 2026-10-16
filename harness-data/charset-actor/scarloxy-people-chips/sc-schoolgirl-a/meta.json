@@ -1,106 +1,59 @@
 {
  "key": "sc-schoolgirl-a",
- "name": "여학생(아이)",
- "head": "Scarloxy1:4",
- "body": "Scarloxy1:4",
- "recolor": [
-  {
-   "region": "H",
-   "hue": [
-    0,
-    30
-   ],
-   "smin": 0.12,
-   "vmin": 0.4,
-   "to": {
-    "hue": 232,
-    "s": 0.35,
-    "v": 0.7
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    340,
-    360
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 225,
-    "s": 0.8,
-    "v": 0.9
-   }
-  },
-  {
-   "region": "H",
-   "hue": [
-    0,
-    12
-   ],
-   "smin": 0.6,
-   "to": {
-    "hue": 225,
-    "s": 0.8,
-    "v": 0.9
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    40,
-    60
-   ],
-   "smin": 0.3,
-   "to": {
-    "sat": 0.08,
-    "vlin": [
-     0.5,
-     0.5
-    ]
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    150,
-    215
-   ],
-   "smin": 0.15,
-   "to": {
-    "hue": 225,
-    "s": 0.7,
-    "v": 0.7
-   }
-  },
-  {
-   "region": "T",
-   "hue": [
-    300,
-    350
-   ],
-   "smin": 0.2,
-   "to": {
-    "hue": 225,
-    "s": 0.6,
-    "v": 0.8
-   }
-  },
-  {
-   "region": "B",
-   "hue": [
-    300,
-    350
-   ],
-   "smin": 0.2,
-   "to": {
-    "hue": 225,
-    "s": 0.7,
-    "v": 0.65
-   }
-  }
- ],
+ "arch": "sp3-schoolgirl",
+ "base": "Scarloxy1:4",
+ "variant": "갈래머리를 검정에 가까운 짙은 갈색 3톤으로, 리본(빨강)을 남색으로 recolor, 노란 웃옷 전부를 **흰 블라우스**(흰색·연회색 3톤)로 recolor 하고 가슴 가운데에 남색 리본 타이 한 점(T paint 3×3, 네 방향 각각), 분홍 반바지를 **짙은 남색 치마**로 recolor(블라우스와 치마가 흰색/남색으로 뚜렷이 갈라진다), 신발은 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
  "ok": true,
- "errors": [],
- "warnings": [],
- "model": "script-compose(no model call)"
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "한 프레임에만 나오는 색 x — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 acdghikmopqtuw"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 12,
+  "cross_base": 12,
+  "lone": 279,
+  "lone_base": 300
+ },
+ "distinct": {
+  "score": 0.592,
+  "nearest": "ScarloxyPeople5#1"
+ },
+ "repairs": {
+  "dropped_stray_px": 0,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 102,
+   "베이스 몸 칸을 비운 것을 되돌림": 5,
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 6
+  }
+ },
+ "run": "r8/sp3-schoolgirl-e",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 오른쪽·왼쪽 걸음 프레임 흰 소매에 남색 얼룩점이 조금(경미)."
+ }
 }

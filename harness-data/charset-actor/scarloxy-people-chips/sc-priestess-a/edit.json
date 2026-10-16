@@ -1,0 +1,97 @@
+{
+ "palette": {
+  "u": "#755129",
+  "v": "#b88a3d",
+  "w": "#e8c252",
+  "x": "#faea8c",
+  "y": "#91326f",
+  "z": "#d96ea3",
+  "A": "#fcb3cc",
+  "B": "#ffdbe8",
+  "C": "#1b5963",
+  "D": "#2e8f9c",
+  "E": "#55c7d1",
+  "F": "#98ebed",
+  "G": "#e3fafa",
+  "H": "#824035"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "j": "w",
+    "o": "x",
+    "d": "y",
+    "h": "z",
+    "n": "A",
+    "q": "B",
+    "l": "w",
+    "i": "v"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "j": "w",
+    "o": "x",
+    "a": "C",
+    "e": "D",
+    "k": "E",
+    "m": "F",
+    "r": "G",
+    "b": "H",
+    "d": "y",
+    "n": "A"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "c": "u",
+    "g": "v",
+    "e": "D",
+    "k": "E",
+    "m": "F",
+    "r": "G",
+    "d": "y",
+    "h": "z",
+    "n": "A"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "d": "y"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "19": "ggvgjjfliekxxkkeilfjjgjg"
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "19": "..gjgjjjgblliekkxxa.....",
+    "20": "..gggjjggbllfekkxva....."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "19": ".....axxkkeillbgjjjgjg..",
+    "20": ".....avxkkefllbggjjggg.."
+   }
+  }
+ ]
+}

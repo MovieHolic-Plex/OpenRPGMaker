@@ -1,0 +1,46 @@
+{
+ "sc-officer-a": {
+  "score": 0.45,
+  "nearest": "ScarloxyPeople8#1"
+ },
+ "sc-researcher-a": {
+  "score": 0.76,
+  "nearest": "ScarloxyPeople5#6"
+ },
+ "sc-grunt-f": {
+  "score": 0.57,
+  "nearest": "ScarloxyPeople2#5"
+ },
+ "sc-explorer-f": {
+  "score": 0.42,
+  "nearest": "ScarloxyPeople9#4"
+ },
+ "sc-schoolgirl-a": {
+  "score": 0.57,
+  "nearest": "ScarloxyPeople1#4"
+ },
+ "sc-priestess-a": {
+  "score": 0.69,
+  "nearest": "scarloxy-charset-people1#7"
+ },
+ "sc-boss-ice": {
+  "score": 0.63,
+  "nearest": "scarloxy-charset-people2#0"
+ },
+ "sc-boss-electric": {
+  "score": 0.37,
+  "nearest": "accepted:sp2-captain-a"
+ },
+ "sc-boss-rock": {
+  "score": 0.46,
+  "nearest": "ScarloxyPeople9#0"
+ },
+ "sc-boss-esper": {
+  "score": 0.7,
+  "nearest": "scarloxy-charset-people1#7"
+ },
+ "sc-kid-a": {
+  "score": 0.43,
+  "nearest": "ScarloxyPeople6#6"
+ }
+}

@@ -1,0 +1,81 @@
+{
+ "key": "sc-explorer-f",
+ "name": "탐험가(여)",
+ "head": "Scarloxy1:4",
+ "body": "Scarloxy2:1",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    340,
+    360
+   ],
+   "smin": 0.6,
+   "to": {
+    "hue": 120,
+    "s": 0.8,
+    "v": 0.8
+   }
+  },
+  {
+   "region": "H",
+   "hue": [
+    0,
+    12
+   ],
+   "smin": 0.6,
+   "to": {
+    "hue": 120,
+    "s": 0.8,
+    "v": 0.8
+   }
+  },
+  {
+   "region": "H",
+   "hue": [
+    0,
+    30
+   ],
+   "smin": 0.12,
+   "vmin": 0.3,
+   "to": {
+    "hue": 22,
+    "sat": 0.72,
+    "v": 1.2
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    75,
+    175
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 25,
+    "s": 0.6,
+    "v": 0.9
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    40,
+    75
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 28,
+    "s": 0.5,
+    "v": 0.95
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "한 프레임에만 나오는 색 I — 걸을 때 깜빡일 수 있다",
+  "면제: edge"
+ ],
+ "model": "script-compose(no model call)"
+}

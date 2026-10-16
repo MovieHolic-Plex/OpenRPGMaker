@@ -1,0 +1,91 @@
+{
+ "key": "sc-kid-a",
+ "name": "어린이(여)",
+ "head": "Scarloxy1:4",
+ "body": "Scarloxy1:4",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    340,
+    360
+   ],
+   "smin": 0.6,
+   "to": {
+    "hue": 130,
+    "s": 0.8,
+    "v": 0.8
+   }
+  },
+  {
+   "region": "H",
+   "hue": [
+    0,
+    12
+   ],
+   "smin": 0.6,
+   "to": {
+    "hue": 130,
+    "s": 0.8,
+    "v": 0.8
+   }
+  },
+  {
+   "region": "H",
+   "hue": [
+    0,
+    30
+   ],
+   "smin": 0.12,
+   "vmin": 0.3,
+   "to": {
+    "hue": 44,
+    "sat": 0.62,
+    "v": 1.55
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    40,
+    60
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 10,
+    "s": 0.7,
+    "v": 1.0
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    150,
+    215
+   ],
+   "smin": 0.15,
+   "to": {
+    "hue": 145,
+    "s": 0.8,
+    "v": 1.0
+   }
+  },
+  {
+   "region": "B",
+   "hue": [
+    300,
+    350
+   ],
+   "smin": 0.2,
+   "to": {
+    "hue": 40,
+    "s": 0.8,
+    "v": 1.05
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

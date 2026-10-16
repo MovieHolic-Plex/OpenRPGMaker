@@ -1,0 +1,53 @@
+{
+ "key": "sc-grunt-f",
+ "name": "단원(여)",
+ "head": "Scarloxy1:4",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    0,
+    30
+   ],
+   "smin": 0.12,
+   "vmin": 0.4,
+   "to": {
+    "hue": 285,
+    "s": 0.5,
+    "v": 0.75
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "s": 0.15,
+    "v": 0.45
+   }
+  },
+  {
+   "region": "T",
+   "hue": [
+    20,
+    55
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 0,
+    "s": 1.1
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "한 프레임에만 나오는 색 Gk — 걸을 때 깜빡일 수 있다",
+  "면제: edge"
+ ],
+ "model": "script-compose(no model call)"
+}

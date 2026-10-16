@@ -48,8 +48,8 @@ def facts(bkey):
     """부위별(H·T·B·S) 베이스 글자 표와 윤곽 글자. 모델이 「모든 원래 색을 바꿔라」를 실행할 수 있게 글자·색·칸 수를 적는다."""
     pal, frames, labels, zones, info = P.segment(bkey)
     reg, edge = {}, Counter()
-    for d in C.DIRS:
-        rows, lab = frames[(d, 1)], labels[(d, 1)]
+    for fk in frames:   # 12프레임 전부(걷기 프레임에만 나오는 글자도 표에 넣어야 모델이 recolor 한다 — 2026-10-16 3차)
+        rows, lab = frames[fk], labels[fk]
         for y in range(C.FH):
             for x in range(C.FW):
                 c = rows[y][x]
@@ -157,7 +157,42 @@ def sanitize(bkey, edit):
         keep.append(dict(p, rows=rows))
     edit = dict(edit, paint=keep)
     edit.pop('gear', None)
+    extra = complete_recolor(bkey, edit, pal, bframes, labels)
+    if extra:
+        notes[f'걷기 프레임에만 있는 베이스 글자 {sum(len(m) for _, m in extra)}개를 가장 가까운 색의 recolor 대상 글자로 따라 바꿈'] += 1
     return edit, dict(notes)
+
+
+def complete_recolor(bkey, edit, pal, bframes, labels):
+    """recolor 가 안 닿은 (부위, 베이스 글자)를 같은 부위에서 색이 가장 가까운 recolor 글자의 새 글자로 따라 바꾼다(edit 에 덧붙임).
+    서 있는 그림(걸음 1)에 없고 걷기 프레임(0·2)에만 나오는 글자는 모델이 못 봐서 베이스 색(붉은 신발 점 등)이 걸을 때만 깜박였다."""
+    letters = set(pal) | set((edit.get('palette') or {}).keys())
+    mapped = {}
+    for r in edit.get('recolor') or []:
+        if isinstance(r, dict):
+            for old, nw in (r.get('map') or {}).items():
+                mapped[(r.get('region'), old)] = nw
+    seen = {}
+    for fk, rows in bframes.items():
+        for y in range(C.FH):
+            for x in range(C.FW):
+                c, reg = rows[y][x], labels[fk][y][x]
+                if c != T and reg in 'HTBS':
+                    seen[(reg, c)] = seen.get((reg, c), 0) + 1
+    dist = lambda a, b: sum((u - v) ** 2 for u, v in zip(pal[a], pal[b]))
+    extra = {}
+    for (reg, c), n in sorted(seen.items(), key=lambda kv: -kv[1]):
+        if (reg, c) in mapped:
+            continue
+        near = [(dist(c, o), o) for (r2, o) in mapped if r2 == reg and o in pal and pal.get(o) is not None]
+        if not near:
+            continue
+        d, o = min(near)
+        if d <= 90 ** 2 * 3 or n <= 24:   # 색이 멀어도 12프레임 합쳐 24칸 이하인 작은 베이스 글자(목걸이 점·단추)는 잡색으로 남지 않게 가까운 recolor 글자로 따라 바꾼다
+            extra.setdefault(reg, {})[c] = mapped[(reg, o)]
+    if extra:
+        edit['recolor'] = list(edit.get('recolor') or []) + [dict(region=r, map=m) for r, m in extra.items()]
+    return list(extra.items())
 
 
 # ───────────────────────────── 한 시도 평가 ─────────────────────────────

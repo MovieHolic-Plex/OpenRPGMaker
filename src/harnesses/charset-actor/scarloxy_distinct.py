@@ -21,10 +21,11 @@ def chars(path):
 
 def existing():
     res = []
+    skip = {n for n in os.environ.get('SPC_EXCLUDE', '').split(',') if n}   # 재제작 때: 곧 교체될 옛 칸(예 ScarloxyPeople1#0)은 비교 대상에서 뺀다.
     for p in sorted((ROOT / 'public/assets/scarloxy').glob('scarloxy-charset-people*.png')):
         res += [(f'{p.stem}#{i}', c) for i, c in enumerate(chars(p))]
     for p in sorted((ROOT / 'public/assets/generated/charsets').glob('ScarloxyPeople*.png')):
-        res += [(f'{p.stem}#{i}', c) for i, c in enumerate(chars(p)) if c[:, :, 3].any()]
+        res += [(f'{p.stem}#{i}', c) for i, c in enumerate(chars(p)) if c[:, :, 3].any() and f'{p.stem}#{i}' not in skip]
     # 같은 런에서 이미 채택됐지만 아직 설치 전인 칩(SPC_ACCEPT_DIR/<key>.png, 72×128 한 칸)도 「이미 있는 칩」으로 센다.
     extra = Path(os.environ.get('SPC_ACCEPT_DIR', os.path.expanduser('~/spc-runs/accepted')))
     for p in sorted(extra.glob('*.png')) if extra.is_dir() else []:

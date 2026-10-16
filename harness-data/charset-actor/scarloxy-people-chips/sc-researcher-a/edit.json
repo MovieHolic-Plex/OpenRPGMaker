@@ -1,0 +1,122 @@
+{
+ "palette": {
+  "P": "#341d4a",
+  "Q": "#58357a",
+  "R": "#7e52a8",
+  "S": "#a579cf",
+  "C": "#4a5568",
+  "W": "#f5f7fa",
+  "G": "#d8e0e8",
+  "D": "#b0bcc8",
+  "T": "#165b68",
+  "U": "#248f9e",
+  "V": "#4cc3d1",
+  "X": "#262b33",
+  "Y": "#47505e",
+  "Z": "#6e7887"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "a": "P",
+    "f": "P",
+    "g": "Q",
+    "k": "R",
+    "n": "S",
+    "t": "S"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "C",
+    "b": "C",
+    "c": "C",
+    "e": "C",
+    "f": "C",
+    "m": "W",
+    "s": "W",
+    "h": "G",
+    "o": "G",
+    "j": "D",
+    "d": "T",
+    "g": "T",
+    "k": "U",
+    "n": "V"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "C",
+    "e": "C",
+    "f": "C",
+    "o": "G",
+    "k": "G",
+    "n": "G",
+    "g": "D",
+    "j": "D"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "X",
+    "e": "X",
+    "g": "X",
+    "o": "Y",
+    "k": "Y",
+    "j": "Y",
+    "s": "Z",
+    "n": "Z"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "20": ".....hmhmmmgmmmhmh......",
+    "21": "....essGmmgUVTmGsse.....",
+    "22": "....jooeTTUVUTTeooj.....",
+    "23": "...futtesWGaGWsettuf....",
+    "24": "...fuqtesWGCGWsetquf...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "20": ".....hmhmWWWWWmhmh......",
+    "21": "....essGmmWWWmmGsse.....",
+    "22": "....jooeTUUUUUTeooj.....",
+    "23": "...futtesWGoGWsettuf....",
+    "24": "...fuqtesWGoGWsetquf...."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "20": ".......cmmhmmmgc........",
+    "21": ".......essGmmUnT........",
+    "22": ".......jooeTUUTa........",
+    "23": "......futtesWGalf.......",
+    "24": "......ftqtesWGClf......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "20": "........cgmmmhmmc.......",
+    "21": "........TnUmmGsse.......",
+    "22": "........aTUUTeooj.......",
+    "23": ".......flaGWsettuf......",
+    "24": ".......flCGWsetqtf......"
+   }
+  }
+ ]
+}
