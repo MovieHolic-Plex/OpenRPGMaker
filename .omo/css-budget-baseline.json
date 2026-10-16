@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T22:45:02.653Z",
+  "generatedAt": "2026-10-16T05:46:09.127Z",
   "metrics": {
-    "hexLiterals": 2456,
+    "hexLiterals": 2474,
     "important": 300,
     "undefinedVars": 61,
     "globalRootFiles": 10,
@@ -61,7 +61,7 @@
       "src/styles/database/tabs-b-assistant-panel/30-tileset-change-card.css": 2,
       "src/styles/database/tabs-b-assistant-panel/31-map-run-card.css": 6,
       "src/styles/database/tabs-b-assistant-panel/33-store-card.css": 2,
-      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 52,
+      "src/styles/database/tabs-b-assistant-panel/34-ai-presence.css": 68,
       "src/styles/database/tabs-b-assistant-panel/assistant-deck.part-4.css": 2,
       "src/styles/database/tabs-b-assistant-panel/studio-mode-start-screen.part-4.css": 6,
       "src/styles/database/tabs-b-status-menu-base.css": 2,
@@ -104,6 +104,7 @@
       "src/styles/map/ai-canvas-activity.css": 31,
       "src/styles/map/core.part-2.css": 8,
       "src/styles/map/delayed-tooltip.css": 3,
+      "src/styles/map/event-ai-queue.css": 2,
       "src/styles/map/event-marker-tooltip.css": 15,
       "src/styles/map/from-database-tabs-b-assistant-panel-07-viewer-modal-settings.css": 6,
       "src/styles/map/from-shell-shell-density-part-1.css": 1,
