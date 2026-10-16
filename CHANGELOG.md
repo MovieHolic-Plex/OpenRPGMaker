@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.243.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record the hanging portrait dialogue layout in CSS winners (`076750c`)
+
 ## 0.243.0 — 2026-10-17
 
 ### 기능
