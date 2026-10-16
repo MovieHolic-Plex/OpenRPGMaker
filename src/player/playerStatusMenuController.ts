@@ -44,7 +44,6 @@ import type { MonsterCollectAction, MonsterSummaryPage } from "@/player/playerMo
 import type { MonsterDexPage } from "@/player/playerMonsterDexTypes";
 import { depositMonsterToBox, monsterBoxCount, monsterBoxName, monsterBoxSlotOf, placeBoxMonster, releaseMonsterFromBox, MONSTER_BOX_SIZE } from "@/project/monsterBox";
 import { BOX_HEADER_ENTRY_COUNT, moveBoxCursor, type BoxDirection } from "@/player/playerMonsterBoxGrid";
-import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import {
   adoptStatusMenuPanel,
   currentStatusMenu,
