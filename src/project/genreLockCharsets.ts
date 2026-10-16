@@ -67,6 +67,15 @@ function rankedAlternatives(project: Pick<Project, "assets">, families: Readonly
     .sort((a, b) => b.score - a.score);
 }
 
+/**
+ * 순위 맨 위와 «같은 급» 후보 — 점수가 같거나, 나이만 어긋난 후보(점수 1 차이, 성별·보스 가중은 같음).
+ * 점수 동률만 쓰면 성별·나이가 딱 맞는 칩이 하나뿐일 때 서로 다른 원본이 모두 그 한 칩으로 몰린다(poke-adv-lock-1 #8).
+ */
+function sameTierCandidates(ranked: readonly RankedCharset[]): RankedCharset[] {
+  const tier = ranked[0]!.score >> 1;
+  return ranked.filter((candidate) => (candidate.score >> 1) === tier);
+}
+
 export interface CharsetAlternative { readonly textureKey: string; readonly characterIndex: number; readonly label: string }
 
 /** 거부한 칩과 가장 비슷한 허용 칩(안내용). 잠금이 없거나 허용 칩이 없으면 undefined. */
@@ -178,7 +187,7 @@ export function remapCharsetsToPreset(project: Project, preset: GenreLockPresetI
         if (!target) {
           const ranked = rankedAlternatives(project, allowed, { resourceId: spriteId, characterIndex: decoded.characterIndex }, boss ? "보스" : undefined);
           if (!ranked.length) continue;
-          const top = ranked.filter((candidate) => candidate.score === ranked[0]!.score);
+          const top = sameTierCandidates(ranked);
           const least = top.reduce((best, candidate) => (usageOf(candidate) < usageOf(best) ? candidate : best), top[0]!);
           target = { textureKey: least.entry.textureKey, characterIndex: least.entry.characterIndex, label: least.entry.label };
           chosen.set(sourceKey, target);
@@ -232,7 +241,7 @@ function remapDefaultRosterActors(project: Project, active: ActiveGenreLock): nu
       if (!target) {
         const ranked = rankedAlternatives(project, allowed, { resourceId: actor.characterResourceId, characterIndex: actor.characterIndex ?? 0 });
         if (!ranked.length) continue;
-        const top = ranked.filter((candidate) => candidate.score === ranked[0]!.score);
+        const top = sameTierCandidates(ranked);
         target = top.reduce((best, candidate) => ((usage.get(keyOf(candidate)) ?? 0) < (usage.get(keyOf(best)) ?? 0) ? candidate : best), top[0]!);
         chosen.set(sourceKey, target);
         usage.set(keyOf(target), (usage.get(keyOf(target)) ?? 0) + 1);
