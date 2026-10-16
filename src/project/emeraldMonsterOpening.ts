@@ -1,7 +1,9 @@
-import type { Project, UploadedAsset } from './types';
-import professorArtwork from '../../public/assets/emerald-monster/professor-asset.json';
+import type { Project } from './types';
+import { EMERALD_PROFESSOR_BUST_RESOURCE_ID } from './emeraldProfessorArt';
 import { createStagTitleEffects, monsterTitleArt, monsterTitleThemeOf, type MonsterTitleTheme } from './emeraldMonsterTitleArt';
 import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
+
+export { EMERALD_PROFESSOR_BUST_RESOURCE_ID };
 
 export type EmeraldOpeningPage = { id: string; text: string; monsterSpeciesId?: string };
 
@@ -16,8 +18,7 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   /** 타이틀 키아트 테마(startTheme 에서). 생략하면 지금 프로젝트에서 추정(monsterTitleThemeOf). */
   titleTheme?: MonsterTitleTheme;
 } = {}): void {
-  const professor = professorArtwork as UploadedAsset;
-  project.assets.uploaded[professor.id] = { ...professor, meta: { ...professor.meta } };
+  const professorId = EMERALD_PROFESSOR_BUST_RESOURCE_ID;
   const species = project.database.monsterSpecies ?? [];
   const starter = ['grass', 'fire', 'water'].map(type => species.find(s => s.types?.includes(type)));
   const professorName = options.professorName ?? '천문박사';
@@ -36,24 +37,25 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
     if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
     const monster = page.monsterSpeciesId ? species.find(s => s.id === page.monsterSpeciesId) : undefined;
     if (page.monsterSpeciesId && !monster) throw Error(`Unknown showcase species: ${page.monsterSpeciesId}`);
-    return { id: page.id, kind: 'image' as const, resourceId: monster?.graphic.monsterResourceId ?? professor.id,
+    return { id: page.id, kind: 'image' as const, resourceId: monster?.graphic.monsterResourceId ?? professorId,
       durationMs: 0, motion: 'none' as const, narration: page.text };
   });
   const musicResourceId = options.musicResourceId ?? project.system.opening?.musicResourceId;
   project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
-  project.meta.oprnOpeningBook = { version: 1, sceneIds: scenes.map(s => s.id), ink: 'ivory', portraitResourceId: professor.id };
+  project.meta.oprnOpeningBook = { version: 1, sceneIds: scenes.map(s => s.id), ink: 'ivory', portraitResourceId: professorId };
   configureEmeraldMonsterPortraitMotion(project);
   configureEmeraldMonsterTitle(project, options.titleTheme);
 }
 
-/** 교수 초상 움직임 시트(pokemon-character-motion 산출)는 저작권 정리(2026-10-07)로 지웠다. 초상은 정지 그림으로 둔다. */
+/** 교수 초상 움직임 시트(pokemon-character-motion 산출)는 저작권 정리(2026-10-07)로 지웠다. 초상은 정지 그림으로 둔다.
+ *  옛 캠페인의 64×64 칩 초상(oprn_emerald_professor)도 보수 때 이 반신상으로 갈아 낀다. */
 export function configureEmeraldMonsterPortraitMotion(project: Project): void {
-  const professor = professorArtwork as UploadedAsset;
-  project.assets.uploaded[professor.id] = { ...professor, meta: { ...professor.meta } };
   const book = project.meta.oprnOpeningBook;
   if (!book || !project.system.opening) throw Error('An authored introduction is required before portrait motion');
+  // 옛 칩 초상이 장면 그림으로 남아 있으면 반신상과 달라 「몬스터 소개」로 오인된다 — 같이 갈아 낀다.
+  for (const scene of project.system.opening.scenes) if (scene.kind === 'image' && scene.resourceId === 'oprn_emerald_professor') scene.resourceId = EMERALD_PROFESSOR_BUST_RESOURCE_ID;
   const { portraitMotion: _removed, ...rest } = book;
-  project.meta.oprnOpeningBook = { ...rest, portraitResourceId: professor.id };
+  project.meta.oprnOpeningBook = { ...rest, portraitResourceId: EMERALD_PROFESSOR_BUST_RESOURCE_ID };
 }
 
 /** Shared original pixel key art; menu input and saved-game availability remain native. */
