@@ -1,0 +1,13 @@
+{
+ "id": "capture-success",
+ "cand": 3,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "4737cce985d04cd5",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

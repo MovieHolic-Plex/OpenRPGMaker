@@ -53,6 +53,8 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
+import { usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -126,9 +128,9 @@ const POKEMON_DAMAGE_TAIL_MS = 90;
 const POKEMON_RESULT_READ_FRAMES = 40;
 /** 상성별 타격음 모양 — 3세대 SE_KOUKA_L/M/H 를 같은 타격 샘플의 크기·높이로 옮겼다. */
 const POKEMON_EFFECTIVENESS_SHAPE: Readonly<Record<"weak" | "normal" | "super", BattleCueShape>> = {
-  weak: { volume: 0.6, rate: 1.22 },
-  normal: { volume: 1, rate: 1 },
-  super: { volume: 1.3, rate: 0.88 },
+  weak: { volume: 0.6, rate: 1.22, tier: "weak" },
+  normal: { volume: 1, rate: 1, tier: "normal" },
+  super: { volume: 1.3, rate: 0.88, tier: "super" },
 };
 
 export function destroyBattleSceneOnHost(host: HTMLElement): void {
@@ -1530,6 +1532,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
         flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
       }
+      // 몬스터 장르: 몬스터가 레벨이 올랐으면 승리음이 끝난 뒤 레벨 업 소리(다른 장르는 playMonsterSfx 가 false).
+      if (snapshot.result === "victory" && (snapshot.rewards.monsterLevelUps?.length ?? 0) > 0) {
+        scheduleBattleTimer(() => { if (!destroyed) playMonsterSfx(store.getCurrent(), "level-up"); }, 850);
+      }
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
@@ -1702,7 +1708,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 급소는 소리를 바꾸지 않는다(3세대 Cmd_effectivenesssound) — 「급소에 맞았다!」 문장이 말한다.
     const strikeSound = (): void => {
       emitBattleJuice("hit-damage", targetNode, POKEMON_EFFECTIVENESS_SHAPE[tier]);
-      if (tier === "super") scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55 / Math.max(0.2, speed));
+      // 굉장 = 같은 샘플을 한 번 더 낮게 — 몬스터 효과음 세트의 굉장 타격음은 두 번 치는 소리 하나로 만들어져 있어 겹치지 않는다.
+      if (tier === "super" && !usesMonsterSfxSet(store.getCurrent())) scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55 / Math.max(0.2, speed));
       if (hitFeel === "impact" && tier !== "weak") playBattleImpactLayer(pokemonHitPower(lostHp, maxHp, feedback.critical), feedback.critical);
     };
     scheduleBattleTimer(() => {

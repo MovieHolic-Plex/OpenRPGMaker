@@ -46,6 +46,7 @@ import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSh
 import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFieldAnchors } from "@/player/battleOnField";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { playMonsterSfxNow } from "@/player/monsterSfx";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
@@ -2141,19 +2142,23 @@ export function playCaptureCinematic(field: HTMLElement, targetId: string, succe
   };
   const ROCK_MS = 420;
   const REST_MS = 340;
+  // 몬스터 장르 기본 소리 세트(던지기·흔들림·성공·실패) — 다른 장르는 예전처럼 무음이다.
+  playMonsterSfxNow("ball-throw");
   at(() => target.classList.add("battle-capture-absorbed"), 460);
   let clock = 720;
   for (let i = 0; i < rocks; i += 1) {
-    at(() => { orb.classList.remove("battle-orb-shake"); void orb.offsetWidth; orb.classList.add("battle-orb-shake"); orb.dataset.rock = String(i + 1); }, clock);
+    at(() => { orb.classList.remove("battle-orb-shake"); void orb.offsetWidth; orb.classList.add("battle-orb-shake"); orb.dataset.rock = String(i + 1); playMonsterSfxNow("ball-shake"); }, clock);
     clock += ROCK_MS + REST_MS;
   }
   at(() => {
     orb.classList.remove("battle-orb-shake");
     if (success) {
       orb.classList.add("battle-orb-caught");
+      playMonsterSfxNow("capture-success");
     } else {
       orb.classList.add("battle-orb-burst");
       target.classList.remove("battle-capture-absorbed");
+      playMonsterSfxNow("ball-break");
     }
   }, clock);
   const total = clock + 420;

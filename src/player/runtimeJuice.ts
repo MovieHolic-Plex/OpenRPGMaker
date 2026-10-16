@@ -7,6 +7,7 @@ import type { SystemSeCue } from "@/project/systemAudioOverrides";
 import { playAudioCommand } from "@/player/audio";
 import { animateStatusMenuFeedback } from "@/player/playerStatusMenuMotion";
 import { preparedRuntimeAudioUrl } from './runtimeAudioWarmup';
+import { MONSTER_SFX_UI_CUE, monsterSfxResourceId, usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
 
 export type RuntimeJuiceEvent =
   | "menu-back"
@@ -66,7 +67,11 @@ export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogE
   const authored = cue === 'cursor' || cue === 'confirm' || cue === 'cancel' ? options.project?.meta.oprnMenuSounds?.[cue] : undefined;
   const override = options.soundResourceId?.trim() || authored;
   const selected = cue ? options.session?.systemAudioOverrides?.se?.[cue] : undefined;
-  const soundResourceId = selected?.resourceId ?? (override || spec.soundResourceId);
+  // 몬스터 수집 장르의 기본 UI 소리(원본 칩튠 합성). 저작된 소리(메뉴 소리·타이틀 소리·시스템 덮어쓰기)가 있으면 그쪽이 이긴다.
+  const projectForSfx = options.project ?? store.getCurrent();
+  const monsterCue = usesMonsterSfxSet(projectForSfx) ? MONSTER_SFX_UI_CUE[options.event] : undefined;
+  const defaultSound = monsterCue ? monsterSfxResourceId(monsterCue) : spec.soundResourceId;
+  const soundResourceId = selected?.resourceId ?? (override || defaultSound);
   const entry: RuntimeJuiceLogEntry = {
     event: spec.event,
     soundResourceId,

@@ -1,0 +1,19 @@
+{
+ "id": "faint",
+ "cand": 3,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "49b91966e3b3d884",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 185.0 ms > 150"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

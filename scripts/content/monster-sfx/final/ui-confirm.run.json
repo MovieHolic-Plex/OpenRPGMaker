@@ -1,0 +1,19 @@
+{
+ "id": "ui-confirm",
+ "cand": 3,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "aa463541447290d4",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 70.0 ms > 50"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

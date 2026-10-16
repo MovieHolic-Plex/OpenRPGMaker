@@ -1,4 +1,5 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
@@ -900,6 +901,8 @@ export function executeCommand(
       return resumeNext(frame);
     case "recoverAll":
       recoverAll(state.session, command.actorId, state.project);
+      // 몬스터 장르: 파티 전체 회복(센터)은 회복 징글. 개별 대상 회복·다른 장르는 소리 없음(예전 그대로).
+      if (state.project && !command.actorId) playMonsterSfx(state.project, "center-heal");
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);

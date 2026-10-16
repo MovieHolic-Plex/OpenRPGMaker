@@ -1,0 +1,13 @@
+{
+ "id": "ui-cancel",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "6ea63d1fbf0544f5",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}
