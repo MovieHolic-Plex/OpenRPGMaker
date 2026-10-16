@@ -32,7 +32,22 @@ export async function boot(viewport = { width: 960, height: 720 }, patch = undef
     window.__OPENRPG_BOOT__ = { projectUrl: "/__poke/project.json", saveNamespace: "poke-sys-battle", qaInstrumentation: true };
   });
   let body = projectJson;
-  if (patch) { const draft = JSON.parse(projectJson); patch(draft); body = JSON.stringify(draft); report.debugWrites.push("project patch: " + patch.toString().slice(0, 160)); }
+  {
+    // 시작 맵의 자동 대사(mx_intro_page)는 전투 중에도 돌아 전투 HUD 위에 문장 상자를 겹친다 — 프로브 인공물이라 대사 내용만 비운다(디버그 쓰기).
+    const draft = JSON.parse(projectJson);
+    let emptied = 0;
+    const walk = (node) => {
+      if (Array.isArray(node)) { node.forEach(walk); return; }
+      if (node && typeof node === "object") {
+        if (node.id === "mx_intro_page" && Array.isArray(node.commands)) { node.commands = []; emptied++; }
+        Object.values(node).forEach(walk);
+      }
+    };
+    walk(draft);
+    if (patch) { patch(draft); report.debugWrites.push("project patch: " + patch.toString().slice(0, 160)); }
+    body = JSON.stringify(draft);
+    report.debugWrites.push("mx_intro_page commands emptied x" + emptied);
+  }
   await page.route("**/__poke/project.json", (route) => route.fulfill({ contentType: "application/json", body }));
   await page.goto(server.url + "/player.html?e2eVitals=1", { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="title-screen"]', { timeout: 280000 });
@@ -81,7 +96,7 @@ export async function setParty(page, instances) {
 export async function settleField(page) {
   let quiet = 0;
   for (let i = 0; i < 60 && quiet < 6; i++) {
-    const open = await page.evaluate(() => Boolean(document.querySelector('[data-testid="dialogue-box"], [data-testid="cinematic-sequence"], .dialogue-box, .cinematic-skip')));
+    const open = await page.evaluate(() => Boolean(document.querySelector('[data-testid="dialogue-box"], [data-testid="cinematic-sequence"], .dialogue-box, .cinematic-skip, [data-testid="dialogue-corner"], .dialogue-ambient-body')));
     quiet = open ? 0 : quiet + 1;
     if (open) await page.keyboard.press("Escape");
     await page.waitForTimeout(400);
