@@ -11,7 +11,8 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
-import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool } from "@/project/genreLock";
+import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool, monsterToolStartsLock } from "@/project/genreLock";
+import { applyMonsterIntentStart } from "@/project/genrePresets";
 import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
 import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
@@ -483,7 +484,10 @@ export function runToolDefinition(
     // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 거부, DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
     const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
-    exec = withCharsetCatalog(ctx, before, () => tool.run(draft, guarded?.args ?? normalizedArgs));
+    // 라우팅이 몬스터 의도를 놓친 자유 경로: 빈 시작 맵뿐인 프로젝트에서 몬스터 전용 도구가 처음 불리면, 도구가 NPC·트레이너를 놓기 전에 몬스터 키트 시작 + 장르 잠금을 건다.
+    // 도구가 실패하면 draft 째로 버려지므로 「처음 성공하면」이다. 선언 장르가 이미 있거나(풀어 둔 프로젝트 포함) 맵이 있는 프로젝트는 건드리지 않는다.
+    const lockProject: Project = ctx.assistantRun && monsterToolStartsLock(name) && draft.system.genre === undefined && !draft.system.genreLock && applyMonsterIntentStart(draft).locked ? draft : before;
+    exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
