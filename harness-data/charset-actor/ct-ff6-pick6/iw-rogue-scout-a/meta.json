@@ -1,0 +1,50 @@
+{
+ "key": "iw-rogue-scout-a",
+ "arch": "iw-rogue-scout",
+ "base": "Actor3:2",
+ "variant": "모래색과 짙은 갈색 두건·머리띠, 가죽 어깨 조끼, 허리 양쪽에 단검 두 자루(hip 장비 R 과 L 각각, 칼자루가 보이게), 작은 주머니는 생략 가능.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 fghkm"
+   ],
+   "at": "2026-10-16T03:45:41"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 fghkm"
+ ],
+ "metrics": {
+  "added_up0": 7,
+  "added_up1": 10,
+  "added_up2": 7,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 7,
+  "added_down1": 10,
+  "added_down2": 6,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 2,
+  "cross_base": 2,
+  "lone": 303,
+  "lone_base": 300
+ }
+}

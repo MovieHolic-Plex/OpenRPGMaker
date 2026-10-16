@@ -1,0 +1,50 @@
+{
+ "key": "tt-amphibian-knight-a",
+ "arch": "tt-amphibian-knight",
+ "base": "People3:7",
+ "variant": "남청색 판금 투구(뿔은 눈 돌기 둘로 바꿈, 개구리색 초록은 포인트만), 은회색 어깨받이, 짙은 남색 망토 끝(어깨 구역 t), 허리 오른쪽에 긴 칼집(hip 장비 R, 칼자루가 허리 위로 보임).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 ABCEFGHJKLQRSTbdefghijklmopqrstvxyz"
+   ],
+   "at": "2026-10-16T03:30:29"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 ABCEFGHJKLQRSTbdefghijklmopqrstvxyz"
+ ],
+ "metrics": {
+  "added_up0": 58,
+  "added_up1": 59,
+  "added_up2": 50,
+  "added_right0": 16,
+  "added_right1": 10,
+  "added_right2": 9,
+  "added_down0": 50,
+  "added_down1": 59,
+  "added_down2": 57,
+  "added_left0": 17,
+  "added_left1": 23,
+  "added_left2": 17,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.985,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 382,
+  "lone_base": 484
+ }
+}

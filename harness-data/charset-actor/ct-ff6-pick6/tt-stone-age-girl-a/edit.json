@@ -1,0 +1,215 @@
+{
+  "palette": {
+    "W": "#261108",
+    "X": "#4a2110",
+    "Y": "#78371c",
+    "Z": "#a3522b",
+    "0": "#8a7f6d",
+    "1": "#d8d0be",
+    "2": "#fcf8ee",
+    "D": "#33180a",
+    "E": "#692d12",
+    "F": "#9e471e",
+    "G": "#cc6633",
+    "H": "#e6854d",
+    "K": "#38281c",
+    "L": "#634935",
+    "M": "#947255",
+    "N": "#c7ab89",
+    "I": "#78583c",
+    "J": "#ab8460",
+    "P": "#b86c40",
+    "Q": "#e69e6c"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "a": "W",
+        "c": "X",
+        "g": "Y",
+        "l": "Z",
+        "j": "X",
+        "m": "Y",
+        "p": "Z",
+        "t": "Z",
+        "v": "Z"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "a": "D",
+        "b": "D",
+        "d": "D",
+        "f": "E",
+        "k": "E",
+        "n": "F",
+        "o": "F",
+        "q": "G",
+        "s": "H",
+        "e": "I",
+        "h": "J",
+        "c": "X",
+        "j": "X",
+        "m": "Y"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "D",
+        "b": "D",
+        "e": "Q",
+        "f": "P",
+        "h": "E"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "a": "D",
+        "d": "E",
+        "f": "E",
+        "k": "P",
+        "n": "P",
+        "o": "Q"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "11": ".....aclcYZXXXYclca.....",
+        "12": ".....cXYYZdrdZYYXgc.....",
+        "14": ".....WZYgaauuacgYXW.....",
+        "15": ".....WYZgviuuivgZYW.....",
+        "16": ".....W10gruvvugc01W.....",
+        "17": "......YZcgrvvvucXY......"
+      }
+    },
+    {
+      "dir": "up",
+      "region": "H",
+      "rows": {
+        "12": ".....aglcaYZWZXYagc.....",
+        "13": ".....mcgcaZYWWYZacm.....",
+        "14": ".....jacgcYZWZYXccj.....",
+        "15": ".....accggZYWYZcgca.....",
+        "16": ".....acacg10WW01caa.....",
+        "17": "......aaaZYWWYZcac......"
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "11": "......cgcgclcYZXWa......",
+        "12": ".....cgcgcclZYXWW.......",
+        "14": ".....agWZYXggcaud.......",
+        "15": ".....WYZXdncgviun.......",
+        "16": "......W10drcgruvun......"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "11": "......aWXYZclcgcgc......",
+        "12": ".......WWXYZlccgcgc.....",
+        "14": ".......duacgcXYZaga.....",
+        "15": ".......nuivgcadXZYW.....",
+        "16": "......nuvugcard01W......"
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "18": ".....aaKL0dddd0LKaa.....",
+        "19": ".....fLMNM1rur1MNLf.....",
+        "20": ".....KLLMK02120KMLL.....",
+        "21": ".....drKLKD1H1DKLrd....."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "18": ".....aaKLmmcamjLKaa.....",
+        "19": ".....fLMNXYLMYXNMLf.....",
+        "20": ".....KLLMNMLKMLNMLL.....",
+        "21": ".....drKKLMNKNMLKrd....."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "18": "......mjKLMNMLdd........",
+        "19": "......mjLMNNMLr1........",
+        "20": "......jmKLLMKL021.......",
+        "21": "......jmKrKLD2Hek......."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "18": "........ddLMNMLKjm......",
+        "19": "........1rLMNNMLjm......",
+        "20": ".......120LKMLLKmj......",
+        "21": ".......keH2DLKrKmj......"
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "bone_dagger",
+      "kind": "hip",
+      "side": "R",
+      "sprites": {
+        "down": {
+          "rows": [
+            "..021",
+            ".0120",
+            ".DFGD",
+            "DFEED",
+            "01ED."
+          ],
+          "grip": [3, 2]
+        },
+        "up": {
+          "rows": [
+            "120..",
+            "0210.",
+            "DGED.",
+            "DFGED",
+            ".DE10"
+          ],
+          "grip": [1, 2]
+        },
+        "right": {
+          "rows": [
+            "..021.",
+            "..0120",
+            ".DFGGD",
+            "DFGED.",
+            "01ED.."
+          ],
+          "grip": [3, 2]
+        },
+        "left": {
+          "rows": [
+            "DFG.",
+            "DFED",
+            "DE10"
+          ],
+          "grip": [0, 1]
+        }
+      }
+    }
+  ]
+}
