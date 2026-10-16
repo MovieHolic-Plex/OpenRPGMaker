@@ -55,6 +55,7 @@ import { syncBattleBackdropLayers } from "@/player/battleBackdropLayersDom";
 import { pokemonBattleBackdropId } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID, normalizeBattleFieldBackgroundId } from "@/project/databaseEnemyTroopRecordModel";
 import type { RollingHpMeter } from "@/player/rollingHp";
+import { bindIntegerArtScale } from "@/player/monsterArtScale";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -1174,6 +1175,7 @@ function enemyButton(
     // 일반 스킨은 한 칸의 native 초상을, 도트 측면 스킨은 아래의 포즈 시트를 그린다.
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
+    bindIntegerArtScale(image);
     // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
     image.style.setProperty("--breathe-delay", `-${index * 730}ms`);
     // 도트 측면 전투: 도트 시트가 있는 적은 시트 칸으로 그린다(대기 루프·예비동작·돌진·착탄·피격·녹음).
@@ -1326,6 +1328,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
         applyIdleAnimationToImage(image, monsterResource);
         image.alt = `${actor.name} 몬스터`;
         image.src = url;
+        bindIntegerArtScale(image);
         node.append(image);
       }
     }

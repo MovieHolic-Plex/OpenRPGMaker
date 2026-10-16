@@ -122,3 +122,20 @@ see `pokemon-like-field-kit.md` for approval, canonical adoption and player proo
 - 진화: `emeraldEvolutionScene.ts`가 `previewMonsterEvolution`(레벨·우정 조건만, 아이템 진화 제외)으로 전투 화면이 닫히기 전에 실루엣 교체 장면을 연다. 규칙 적용은 여전히 `applyBattleRewardsToSession`.
 - 레벨업 상자: `emeraldResultRows`가 레벨 문장 줄에 `stats`(오른 양 → 새 수치 두 장)를 싣고, 마지막으로 공개된 줄에 붙은 것만 `.battle-levelup-stats`로 문장 창 위에 보인다. 수치는 `monsterBattleStatsForSpecies`(종족·레벨·IV) 차이이며 `snapshot.eventState.monsterCollection.instances[*].ivs`를 읽는다. 기술 교체 선택은 아직 없다.
 - 트레이너 연출: `TroopRecord.trainerSprite`(`front`/`back`/`throw?`)가 있을 때만 슬라이드 인·볼 던지기, 없으면 연출 없이 시작.
+
+## 픽셀 격자 계약 (2026-10-16, 시각 QA D12)
+
+**한 문장:** 화면 480×320 = GBA 240×160 의 정확히 2배라서 논리 화소 1 = 화면 2px 이고, 화면에 보이는 모든 도트(타일·칩·몬스터·인물·테두리·글꼴)는 이 2px 의 정수배이며 정수 배율로만 확대한다.
+
+| 요소 | 계약 | 구현 |
+|---|---|---|
+| 창 | 정수 배율만, 남는 창은 여백(letterbox). 1 미만으로 줄어드는 작은 창만 비정수 허용 | `exportEntry.ts` 가 에메랄드 프로젝트는 `surfaceScaleMode:'integer'`(다른 게임은 `fit` 그대로) · `bindEmeraldBattleSurface` 가 `floor` |
+| 타일·걷기 칩 | 16px 타일 ×2 카메라, 칩 24×32 ×2 | 기존(변경 없음) |
+| 몬스터 그림 | **캔버스 ≤64×64, 1 도트 = 1 논리 화소, 표시 128×128(2배)** · idle 스트립 프레임 64×N | `src/player/monsterArtScale.ts` `integerArtBox` — 상자 128 에 들어가는 최대 정수 배율. 64→128(2배), 112 캔버스→112(1배). `bindIntegerArtScale` 이 `--art-box-width/height`·`data-art-scale` 을 심고 CSS 가 읽는다. 오프닝 소개 몬스터(`.cinematic-creature`)도 같은 규칙 |
+| 글꼴 | Galmuri9 **18px**(9px 글리프 2배) 하나. 36px 는 제목 한정. 12·14·16·20·6.5·8px 와 Galmuri11(로드 안 됨→비도트 폴백)은 쓰지 않는다 | `emeraldSurfaces.css`·`playSurface.css`·`fieldHud.css`(collector 테마)·`monsterCampaignMenu.css` |
+| 테두리 | 2px 의 정수배(논리 1~2px) — 창 4px·안쪽 줄 2px·HUD/안내 2px | 기존 |
+| 인물 전투 그림(트레이너) | **미정합**: 번들 128×128 매끈한 그림(3000색+)이 1배로 그려져 도트가 2배 격자와 안 맞는다. 64 격자 도트 인물 그림이 생겨야 풀린다(그림 작업) | 이 계약의 열린 항목 |
+
+112 캔버스 종은 1배(112px)로 정수 표시되지만 도트 절반 크기(화면 1px 도트가 많다)라 격자에 완전히 맞지는 않는다. 새 몬스터 그림은 64 캔버스로 만든다(`monster-collect-species` 하네스의 112 캔버스는 이 계약에 맞춰 줄여야 한다).
+
+측정: `GRID=1 node scripts/qa/runtime/poke-vqa.capture.mjs <캠페인.json> <출력폴더> [장면]` — 이미지 원본/표시 배율·글꼴·테두리·Phaser 스프라이트 표시 크기를 `report.json` 의 `metrics` 에 남긴다(헤드리스 크롬은 `unshare -rn`).

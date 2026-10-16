@@ -11,6 +11,7 @@ import { getPlayerPreferences } from './playerPreferences';
 import { playOpeningAnimatic } from "./openingAnimaticRenderer";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
+import { bindIntegerArtScale } from './monsterArtScale';
 import { createOpeningPortraitMotion, type PortraitMotionPlayback } from './openingPortraitMotion';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
@@ -430,6 +431,7 @@ export function playCinematicSequence(options: {
           const creature = el('img', { class: 'cinematic-creature', attrs: { alt: '소개하는 몬스터', draggable: 'false' } });
           const creatureUrl = resolveAssetResourceUrl(scene.resourceId, { project });
           creature.addEventListener('error', () => { creature.remove(); fail('error'); }, { signal: lifetime.signal });
+          bindIntegerArtScale(creature);
           if (creatureUrl) creature.src = creatureUrl; else fail('error');
           root.dataset.showcase = 'monster';
           return creature;
