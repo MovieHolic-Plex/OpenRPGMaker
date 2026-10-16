@@ -35,7 +35,8 @@ import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
 import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
 import { readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
-import { createPiPresentationTool, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { setDotTextChat } from '../../src/ai/dotTextArt';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
@@ -242,7 +243,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
   // «/assets/…» 번들 그림(캐릭터셋 걷기 프레임)도 워커에는 fetch 가 없어 저장소 public/ 에서 읽는다.
   setCutsceneAssetFetcher(async url => `data:image/png;base64,${readBundledAsset(joinBundledAsset(process.cwd(), 'public', url.replace(/^\/+/u, '').split('?')[0]!)).toString('base64')}`);
-  setCutsceneArtGenerator(createWorkerImageGenerator(request, provider => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined)));
+  const workerKeyFor = (provider: string) => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined);
+  setCutsceneArtGenerator(createWorkerImageGenerator(request, workerKeyFor));
+  // 도트(컷신 style:game 소품·아이콘·generate_pixel_art)는 이미지 모델이 아니라 도트 저작 모델(텍스트)이 찍는다.
+  setDotTextChat(createWorkerDotTextChat(request, workerKeyFor));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {

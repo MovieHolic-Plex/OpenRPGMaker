@@ -38,6 +38,7 @@ import { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } from "../../src
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "../../src/ai/llmClient.ts";
 import { createLlmIntentDeclarer } from "../../src/ai/intentDeclarationClient.ts";
 import { resolveAutonomy, type AutonomyLevel } from "../../src/ai/autonomyLevels.ts";
+import { applyMonsterIntentStart, needsMonsterKitStart } from "../../src/project/genrePresets.ts";
 import { classifyPlainPiTurn, buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, withUltrabrainPlan } from "../../src/ai/piAgent/plainTurn.ts";
 import { composePiTask, DEFAULT_PI_TEAM } from "../../src/ai/piAgent/executionRoute.ts";
 import { normalizePiApplyMode } from "../../src/ai/piAgent/applyMode.ts";
@@ -156,7 +157,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   fs.writeFileSync(path.join(out, "seed.json"), serialize(seed));
   fs.writeFileSync(path.join(out, "instruction.txt"), instruction);
   store.replaceProject(seed);
-  const base = store.getCurrent();
+  let base = store.getCurrent();
   const currentMapId = base.startMapId;
   const differences: string[] = [
     "조화 검수(reviewMapHarmony)는 돌리지 않는다 — 캔버스 캡처가 필요하고, 기본 적용 모드에서는 결과를 바꾸지 않고 지적만 남긴다(auto 모드의 수리 루프는 미재현).",
@@ -179,6 +180,12 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
   });
   mark("intent", t0);
+  // 패널(aiChatPanel)과 같은 단계: 몬스터 수집 의도가 손대지 않은 빈 프로젝트에 오면 몬스터 키트로 열고 장르 잠금을 건다.
+  if (classified.monsterKit && needsMonsterKitStart(base)) {
+    store.update((draft) => { applyMonsterIntentStart(draft); }, { scope: "project", label: "몬스터 수집 의도: 시작 맵을 몬스터 키트로 + 장르 잠금", origin: "system" });
+    base = store.getCurrent();
+    differences.push("몬스터 수집 의도 → 시작 맵을 몬스터 키트로 옮기고 장르 잠금(monster-collect)을 걸었다(패널과 같은 applyMonsterIntentStart).");
+  }
   const command = plainPiCommand(instruction, classified.mode, currentMapId);
   const plan = classified.plan;
   const applyMode = normalizePiApplyMode(config.piApply);

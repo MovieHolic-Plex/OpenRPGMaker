@@ -3,7 +3,8 @@ import { MONSTER_CATALOG } from "@/assets/monsterCatalog";
 import { PIXEL_ENEMY_PORTRAIT_URLS } from "@/assets/pixelEnemyPortraits";
 import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import type { WorldCanon } from "@/project/world/canon";
-import { generateAiImage, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
+import { generateDotArt } from "@/ai/dotTextArt";
+import type { GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import type { ImagePurpose } from "@/ai/imageRoute";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
@@ -138,11 +139,15 @@ export function buildRecordPrompt(
 }
 
 // 그림은 아이템 아이콘만 만든다 — 몬스터는 고른 도트 몬스터를 쓰므로 몬스터 그림 문장은 지웠다(2026-10-02).
+/** 아이템 아이콘 한 장의 설명. 도트 저작 모델(텍스트)이 격자로 찍으므로 배경은 투명이다(결정 2026-10-16, imageRoute 의 item-icon). */
 export function artworkPromptFor(_kind: "item", name: string, brief: string): string {
   const subject = `${name} — ${brief}`;
-  return `A single 2D JRPG inventory item icon of ${subject}. Centered, front view, clean thick outline,`
-    + ` flat saturated colors, no text, no frame, no shadow, on a pure flat white background.`;
+  return `A single 2D JRPG inventory item icon of ${subject}. Centered, front view, clean thick dark outline,`
+    + ` flat saturated colors with 3-4 tone shading, no text, no frame, no shadow, transparent background.`;
 }
+
+/** 아이콘 한 변(px). 목록·상점 칸에 쓰는 작은 도트이고, 모델이 격자를 정확히 세는 크기다. */
+export const ITEM_ICON_PX = 32;
 
 function stripFence(text: string): string {
   const trimmed = text.trim();
@@ -284,9 +289,11 @@ export async function generateDatabaseRecordWithAi(
   // 그림은 아이템 아이콘만 만든다. 몬스터는 고른 도트 몬스터의 정지 그림을 보여 준다.
   if (input.withArtwork && input.kind === "item") {
     notify("artwork");
-    const generateImage = deps.generateImage ?? ((request) => generateAiImage(request));
+    // 아이템 아이콘은 도트다 — 이미지 모델이 아니라 도트 저작 모델(텍스트)이 격자로 찍는다(투명 PNG, 배경 지우기 불필요).
+    const generateImage = deps.generateImage ?? ((request) => generateDotArt({ ...request, purpose: "item-icon", longSidePx: ITEM_ICON_PX }));
     const image = await generateImage({ prompt: artworkPromptFor("item", name, brief), signal: input.signal, purpose: "item-icon" });
-    const flattened = deps.flattenArtwork ? await deps.flattenArtwork(image.dataUrl) : image.dataUrl;
+    const isDot = (image as { dot?: boolean }).dot === true;
+    const flattened = deps.flattenArtwork && !isDot ? await deps.flattenArtwork(image.dataUrl) : image.dataUrl;
     artwork = { resourceId: `${recordId}_art`, dataUrl: flattened };
     artworkModel = image.model;
   }

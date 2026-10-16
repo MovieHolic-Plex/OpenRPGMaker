@@ -1,6 +1,7 @@
 import { createNewProjectSeed } from "./genrePacks";
 import { newProjectChoiceById, type NewProjectChoiceId } from "./newProjectChoices";
 import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, START_SCREEN_RESOLUTIONS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
+import { grandfatherGenreLockViolations } from "@/project/genreLock";
 import type { Project } from "@/project/types";
 
 /** Existing authored village and playable-segment tools own all tile placement. */
@@ -43,6 +44,8 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
     }
     if (!playable) throw new Error("시작 예제를 준비하지 못했습니다. 다시 시도해 주세요.");
     project = playable;
+    // 몬스터 수집 시작 예제는 마을·길 뼈대(버들항 전용 도로 도구) 때문에 버들항 맵 위에 선다 — 장르 잠금은 이미 켜졌으니 그 맵을 「잠금 이전부터 있던 맵」으로 적어 둔다(안 하면 첫 화면부터 위반 맵으로 보고된다).
+    grandfatherGenreLockViolations(project);
     // The example opens on its actual map; its first Test Play does not require watching an unrelated opening.
     project.system.opening = { ...project.system.opening!, enabled: false };
     project.flags.starterExample = true;

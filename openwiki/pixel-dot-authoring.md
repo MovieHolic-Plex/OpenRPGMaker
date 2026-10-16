@@ -86,5 +86,5 @@ gates/vitest/typecheck는 세션 지침에 따라 실행하지 않는다.
 ## 설정의 도트 저작 모델 (2026-10-16)
 
 AI 설정 「모델 → 이미지」 의 «도트 저작» 칸(`AiConfig.pixelModel`)이 텍스트 모델(기본 Argon 보통, Claude 선택 가능)을 정한다. 도트는 이미지 모델로 만들지 않는다 —
-`src/ai/imageRoute.ts` 가 도트 용도의 `generateAiImage` 를 요청 전에 거절한다. 지금 이 칸을 읽는 곳은 공방 그리기(`workshop-draw`) 하나다.
+`src/ai/imageRoute.ts` 가 도트 용도의 `generateAiImage` 를 요청 전에 거절한다. 이 칸을 읽는 곳은 공방 그리기(`workshop-draw`)와 낱장 도트 찍기(`pixel-draw` — 컷신 style:game 소품·아이템 아이콘·`generate_image_asset pixel:true`)다.
 용도 분류표·옛 설정 호환·모호 항목은 `openwiki/editor-ai-panel.md` 「이미지 용도 분리」.

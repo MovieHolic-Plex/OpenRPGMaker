@@ -10,6 +10,7 @@ import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 import { defaultYieldToUi } from "../yieldToUi";
 import { loadAiConfig } from '../llmClient';
+import { resolvePixelModel } from '../pixelModel';
 
 export interface RunPiAgentClientOptions {
   /** Campaign supervisor retains the partial result to repair it; it must inspect production issues before completion. */
@@ -81,7 +82,8 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
   const imageConfig = loadAiConfig();
   request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
-    imageModel: request.imageModel ?? imageConfig.imageModel };
+    imageModel: request.imageModel ?? imageConfig.imageModel,
+    pixelModel: request.pixelModel ?? resolvePixelModel(imageConfig).model };
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();
