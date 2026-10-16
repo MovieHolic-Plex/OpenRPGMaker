@@ -1517,7 +1517,7 @@ function timeSystemOffWarnings(project: Project, scheduleCount: number): string[
 const setNpcSchedule: ToolDefinition = {
   name: "set_npc_schedule",
   description:
-    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다. 순찰·출근·귀가 같은 이동 시간표는 이 툴(NPC 를 여러 개 복제하지 말 것).",
+    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 시간표 when 에는 요일이 없다(dayRange 는 날짜 번호). 요일마다 다른 대사·반응은 시간표가 아니라 NPC 이벤트 페이지의 weekday 조건(0=일..6=토)으로 나눈다. 순찰·출근·귀가 같은 이동 시간표는 이 툴(NPC 를 여러 개 복제하지 말 것).",
   mode: "write",
   parameters: {
     type: "object",
