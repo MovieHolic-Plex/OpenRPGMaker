@@ -419,7 +419,7 @@
 .play-viewport[data-layout="portrait"]::after {
   color: #98a090;
   content: "가로로 돌리면 더 크게 보여요";
-  font: 18px/24px "Galmuri9", monospace;
+  font: 18px/24px "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   left: 0;
   pointer-events: none;
   position: absolute;

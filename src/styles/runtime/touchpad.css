@@ -117,7 +117,7 @@
   .touch-pad[data-skin="gba"] .touch-actions { right: max(12px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); gap: 12px; }
   .touch-pad[data-skin="gba"] .touch-dpad-base { width: 112px; height: 112px; }
   .touch-pad[data-skin="gba"] .touch-dpad-knob { width: 46px; height: 46px; }
-  .touch-pad[data-skin="gba"] .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font, "Galmuri9", monospace); }
+  .touch-pad[data-skin="gba"] .touch-action-btn { width: 56px; height: 56px; font: 18px/1 var(--runtime-pixel-font, "Galmuri9", "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif); }
   .touch-pad[data-skin="gba"] .touch-actions [data-testid="touch-action-a"] { width: 62px; height: 62px; }
   .touch-pad[data-skin="gba"] .touch-actions [data-testid="touch-action-b"] { margin-bottom: 16px; }
   .play-viewport:has(.play-stage [data-testid="battle-scene"], .play-stage > .dialogue-overlay:not(:empty)) > .touch-pad[data-skin="gba"] { visibility: hidden; }
