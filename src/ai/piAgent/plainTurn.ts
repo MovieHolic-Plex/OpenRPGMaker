@@ -123,13 +123,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // the small genre-preset first-build contract, including the headless generator path
   // that calls this classifier before it can build a ParsedPiCommand.
   if (isGoalCommand(input.text)) {
-    const routingAudit = "intent:skipped(goal) → 장기 캠페인 전체 저작";
+    // 몬스터 수집 목표(「/goal 장르 프리셋: 몬스터 수집」)도 키트·잠금을 켠다 — 라우팅을 건너뛰어도 첫 맵의 칩셋 계열은 지금 정해진다(2026-10-16 잠금 누수 감사 #1).
+    const monsterKit = hasMonsterCollectIntent(input.text);
+    const routingAudit = "intent:skipped(goal) → 장기 캠페인 전체 저작" + (monsterKit ? " · 몬스터 수집 의도 → 몬스터 키트" : "");
     return {
       mode: "team",
       plan: { ...plan, readOnly: false, planOnly: false, routineEdit: false, routingAudit },
       questionPromoted: false,
       intentNote: null,
       routingAudit,
+      ...(monsterKit ? { monsterKit } : {}),
     };
   }
   // 레거시 장르 프리셋 첫 요청(「장르 프리셋: …」)은 답이 정해져 있다. 새 웰컴 프리셋은 위에서

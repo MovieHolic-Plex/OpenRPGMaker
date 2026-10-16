@@ -2,7 +2,7 @@
  * 「게임 한 편」을 가리키는 말. 게임·캠페인뿐 아니라 「RPG」「포켓몬 라이크」처럼 장르 이름으로 부르는 경우를 포함한다(2026-10-16 깊이 감사 ②③: 「…몬스터 수집 RPG」·「…포켓몬 라이크」가 null 로 샜다).
  * 「로그라이크」「소울라이크」의 라이크는 장르 접미가 아니라 다른 장르 이름이므로 뺀다. 이 낱말만으로는 몬스터 요청이 되지 않는다 — 호출부가 몬스터·포켓몬 신호를 따로 요구한다.
  */
-const WHOLE_GAME_RE = /게임|캠페인|\bgame\b|\bcampaign\b|장르 프리셋:|\brpgs?\b|라이크|(?:pok[eé]mon|monster|creature)[\s-]*like\b/iu;
+const WHOLE_GAME_RE = /게임|캠페인|\bgame\b|\bcampaign\b|장르 프리셋:|\brpgs?\b|라이크|클론|\bclone\b|(?:pok[eé]mon|monster|creature)[\s-]*like\b/iu;
 const ACTION_RE = /만들|제작|생성|개선|보수|고쳐|손봐|바꿔|바꾸|create|build|make|repair|improve|convert|update/iu;
 const QUESTION_RE = /어떻게|무엇|뭐야|알려|설명|추천|가능해|할 수 있|\bhow\b|\bexplain\b|\brecommend|\bcan (?:i|we)\b|(?:만들|제작|생성).{0,8}(?:수 있|가능)/iu;
 function mentionsWholeGame(task: string): boolean {
@@ -11,7 +11,7 @@ function mentionsWholeGame(task: string): boolean {
 
 /** Shared by the browser intent route and the actual worker, before model prose. blank = 비어 있는 새 프로젝트(동사 없는 소개 문장도 요청으로 받는다). */
 function requestsNamedMonsterCampaign(task: string, blank = false): boolean {
-  const reference = /포켓몬(?:스터)?|pok[eé]mon|에메랄드|\bemerald\b|장르 프리셋:.*몬스터/iu.test(task);
+  const reference = /포켓몬(?:스터)?|pok[eé]mon|pocket\s*monsters?|포켓\s*몬스터|에메랄드|\bemerald\b|장르 프리셋:.*몬스터/iu.test(task);
   const wholeGame = mentionsWholeGame(task);
   const action = ACTION_RE.test(task) || blank;
   const question = QUESTION_RE.test(task);
@@ -32,19 +32,41 @@ const MONSTER_SYSTEM_SIGNALS: readonly RegExp[] = [
   /도감|\bpok[eé]dex|\bdex\b/iu,
   /체육관|관장|\bgym\b|배지/iu,
   /진화|\bevolv/iu,
-  /트레이너|조련|\btrainer/iu,
+  /트레이너|조련|테이머|\btrainer|\btamer/iu,
   /종\s*(?:을|를)?\s*(?:정의|추가|만들)|몬스터\s*종|\bspecies\b/iu,
   /대전|배틀|대회|토너먼트|\bbattle\b|\btournament/iu,
+  // 함께 다니며 모험하는 동료 몬스터(「몬스터와 함께 모험하는 RPG」) — 2026-10-16 잠금 누수 감사 #1.
+  /(?:몬스터|monsters?)\s*(?:와|과|랑|이랑|를|을)?\s*(?:함께|같이|동료|파트너|친구|컴패니언|companions?|partners?|friends?)|(?:함께|같이)\s*(?:모험|여행|성장)|(?:with|alongside)\s+(?:your\s+|a\s+|their\s+)?monsters?\b/iu,
 ];
-const POKEMON_WORD = /포켓몬(?:스터)?|pok[eé]mon|에메랄드|\bemerald\b/iu;
+const POKEMON_WORD = /포켓몬(?:스터)?|pok[eé]mon|pocket\s*monsters?|포켓\s*몬스터|에메랄드|\bemerald\b/iu;
 const FREE_NOT_COLLECT = /몬스터\s*헌터|monster\s*hunter|좀비|호러|공포|디펜스|서바이벌|액션\s*rpg|로그라이크|몬스터\s*(?:를|을)?\s*(?:쓰러|사냥|퇴치)/iu;
+
+// ── 낱말 사전(2026-10-16 잠금 누수 감사 #1: 몬스터 의도 문장 25개 중 10개가 키트·잠금을 못 켰다) ───────────────────────────────
+// 몬스터·포켓몬이라는 낱말 없이 이 장르를 가리키는 말. 항목 하나만 있어도 의도가 선다 — 다른 뜻으로도 쓰이는 낱말(체육관·트레이너·수집형)은 옆말 조건을 붙였다.
+// 문장 정규식 하나에 걸지 않고 사전으로 두므로 새 낱말은 이 표에 한 줄을 더하면 된다. 요청이 이 표를 못 타도 몬스터 전용 도구의 첫 성공이 같은 잠금을 건다(toolRunner → lockOnFirstMonsterTool).
+const SCHOOL_OR_FITNESS = /(?:학교|농구|배구|헬스|피트니스|운동|퍼스널|\bpt\b)\s*(?:체육관|트레이너)|(?:personal|fitness|school|gym)\s+trainers?|\b(?:school|basketball|fitness)\s+gym\b/iu;
+const MONSTER_REFERENCE_TERMS: readonly RegExp[] = [
+  /디지몬|\bdigimon\b|digital\s*monsters?|다마고치|tamagotchi|테이머|\btamers?\b/iu,
+  // 체육관을 도는·관장·배지 — 학교 체육관이 아니라 체육관 순회 구조.
+  /체육관\s*(?:을|를)?\s*(?:도|돌|순회|순례|도전|깨|격파|정복|여행)|체육관.{0,8}(?:관장|배지)|(?:관장|배지).{0,8}체육관|\bgym\s*(?:leaders?|badges?|challenge|hopping)/iu,
+  // 몬스터를 모으는 수집형 — 카드·아이템·장비 수집형은 다른 장르다.
+  /(?<!(?:카드|아이템|장비|보물|유물|무기|재료|스킨)\s{0,2})(?:수집형|collection\s*rpg|collect-?a-?thon)/iu,
+  /펫\s*(?:을|를)?\s*(?:키우|육성|기르|모으|수집)|\bpets?\s*(?:raising|training|collect\w*)|\braise\s+(?:a\s+)?pets?\b|virtual\s*pets?/iu,
+];
+/** 트레이너가 사는 마을·길을 말하는 문장(「트레이너가 돌아다니는 마을」) — 트레이너만으로는 헬스 트레이너일 수 있어 마을·도로 같은 무대 낱말이 함께 있어야 한다. */
+const TRAINER_SETTING = /(?:트레이너|\btrainers?\b)[\s\S]{0,20}(?:마을|도시|도로|길|town|village|route|city)|(?:마을|도시|도로|길|town|village|route|city)[\s\S]{0,20}(?:트레이너|\btrainers?\b)/iu;
+/** 몬스터를 모으거나 겨루지 않고 돌보기만 하는 말(다마고치·펫 키우기) — 키트·잠금은 켜되 8체육관 전체 캠페인으로는 보내지 않는다. */
+const CARE_ONLY = /다마고치|tamagotchi|펫\s*(?:을|를)?\s*(?:키우|육성|기르)|\bpets?\s*(?:raising|training)|virtual\s*pets?/iu;
+const CAMPAIGN_WORDS = /체육관|배지|도감|포획|수집|\bgym|capture|collect|pok[eé]dex/iu;
 
 /** 몬스터 수집·육성·대전 의도가 있는가(요청 문장 기준). 포켓몬 낱말이 없어도 신호가 둘 이상 겹치면 참. */
 export function hasMonsterCollectIntent(task: string): boolean {
   if (FREE_NOT_COLLECT.test(task)) return false;
-  const signals = MONSTER_SYSTEM_SIGNALS.filter(re => re.test(task)).length;
   if (POKEMON_WORD.test(task)) return true;
-  return MONSTER_SUBJECT.test(task) ? signals >= 1 : signals >= 2;
+  const scrubbed = task.replace(SCHOOL_OR_FITNESS, " ");
+  if (MONSTER_REFERENCE_TERMS.some(re => re.test(scrubbed)) || TRAINER_SETTING.test(scrubbed)) return true;
+  const signals = MONSTER_SYSTEM_SIGNALS.filter(re => re.test(scrubbed)).length;
+  return MONSTER_SUBJECT.test(scrubbed) ? signals >= 1 : signals >= 2;
 }
 
 const NO_CAPTURE = /포획\s*(?:은|이|도|를)?\s*(?:없|안\s*(?:해|함|하|돼|되)|금지|하지\s*(?:않|말))|잡(?:지|을\s*수)\s*(?:않|없)|no\s*capture|without\s*captur/iu;
@@ -66,6 +88,8 @@ export function classifyMonsterGameRequest(task: string, blank = false): Monster
   const pokemonish = POKEMON_WORD.test(task);
   if (!wholeGame || !(action || blank)) return pokemonish && requestsNamedMonsterCampaign(task, blank) && !TOURNAMENT.test(task) && !NO_CAPTURE.test(task) ? 'campaign' : null;
   if (!monsterish && !pokemonish) return null;
+  // 돌보기만 하는 말(다마고치·펫 키우기)은 키트·잠금(hasMonsterCollectIntent)만 켠다 — 체육관·도감·포획 말이 없으면 8체육관 캠페인은 짓지 않는다.
+  if (CARE_ONLY.test(task) && !pokemonish && !CAMPAIGN_WORDS.test(task)) return null;
   if (TOURNAMENT.test(task) || NO_CAPTURE.test(task)) return 'tournament';
   if (NO_GYM.test(task)) return 'expedition';
   if (pokemonish) return requestsNamedMonsterCampaign(task, blank) ? 'campaign' : null;
