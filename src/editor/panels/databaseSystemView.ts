@@ -51,6 +51,7 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
+import { linearObedienceCaps } from "@/project/badgeProgress";
 import { disableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
 import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { genreLockVisualSummary } from "@/project/genreLockVisuals";
@@ -428,6 +429,7 @@ function systemSectionNodes(
             else delete draft.system.monsterBattleParty;
           });
         }),
+        ...obedienceCapFields(project, rerender),
         checkboxField("클릭(탭)으로 걷기", "db-field-system-pointer-movement", project.system.pointerMovement === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.pointerMovement = true;
@@ -1727,6 +1729,43 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
         + (report.charsetPreexisting.length ? ` · 잠금 이전부터 있던 허용 밖 칩 ${report.charsetPreexisting.length}곳` : ""),
   });
   return el("div", { class: "db-genre-lock-field", children: [checkbox, badge] });
+}
+
+/** 원작식 복종 레벨 상한(몬스터 캠페인이 있을 때만). 켜면 기본 상한과 배지당 증가폭으로 일차 사다리를 만든다 — 세부 사다리는 조수 도구(configure_monster_campaign). */
+function obedienceCapFields(project: Project, rerender: () => void): HTMLElement[] {
+  const campaign = project.system.monsterCampaign;
+  if (!campaign) return [];
+  const rule = campaign.obedienceLevelCaps;
+  const base = rule?.caps[0]?.maxLevel ?? 20;
+  const step = rule && rule.caps.length > 1 ? Math.max(0, rule.caps[1]!.maxLevel - rule.caps[0]!.maxLevel) : 5;
+  const write = (enabled: boolean, nextBase: number, nextStep: number): void => {
+    updateSystem((draft) => {
+      const target = draft.system.monsterCampaign;
+      if (!target) return;
+      if (!enabled) delete target.obedienceLevelCaps;
+      else target.obedienceLevelCaps = { enabled: true, caps: linearObedienceCaps(target.badges.length, nextBase, nextStep), ...(target.obedienceLevelCaps?.refuseLine ? { refuseLine: target.obedienceLevelCaps.refuseLine } : {}) };
+    }, "system:monster-obedience");
+  };
+  const out: HTMLElement[] = [
+    checkboxField("복종 레벨 상한 (배지 수에 따라 몬스터가 명령을 거부)", "db-field-system-obedience-caps", rule?.enabled === true, (checked) => {
+      write(checked, base, step);
+      rerender();
+    }),
+  ];
+  if (rule?.enabled === true) {
+    out.push(
+      numberField("기본 상한 Lv (배지 0개)", "db-field-system-obedience-base", () => store.getCurrent().system.monsterCampaign?.obedienceLevelCaps?.caps[0]?.maxLevel ?? 20, (value) => {
+        if (Number.isFinite(value)) write(true, Math.max(1, Math.min(100, Math.round(value))), step);
+      }, { min: 1, max: 100 }),
+      numberField("배지 1개당 상한 증가 (Lv)", "db-field-system-obedience-step", () => {
+        const caps = store.getCurrent().system.monsterCampaign?.obedienceLevelCaps?.caps ?? [];
+        return caps.length > 1 ? Math.max(0, caps[1]!.maxLevel - caps[0]!.maxLevel) : 5;
+      }, (value) => {
+        if (Number.isFinite(value)) write(true, base, Math.max(0, Math.min(100, Math.round(value))));
+      }, { min: 0, max: 100 }),
+    );
+  }
+  return out;
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {

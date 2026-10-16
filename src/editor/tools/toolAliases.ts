@@ -54,6 +54,7 @@ export const TOOL_ALIASES: readonly ToolAlias[] = [
   { terms: ["전투 날씨", "배틀 날씨", "몬스터 날씨", "포켓몬 날씨", "날씨 기술", "쾌청", "싸라기눈", "모래바람", "weather move", "battle weather", "sandstorm", "sunny day", "rain dance"], tools: ["upsert_skill", "define_monster_species", "simulate_battle"], label: "전투 날씨 기술(skill.weather)" },
   { terms: ["날씨", "weather"], tools: ["upsert_life_system", "upsert_skill"], label: "날씨(일상 날씨 · 몬스터 전투 날씨 기술은 upsert_skill.weather)" },
   { terms: ["낚시", "낚싯", "fishing", "fishing spot", "fishing rod", "낚싯대", "낚시꾼", "물가 조우", "낚시 몬스터", "낚아서 잡"], tools: ["configure_fishing", "upsert_tool_action", "upsert_item", "upsert_fish_species", "place_chest"], label: "낚시(몬스터 어획 speciesId · 낚싯대 upsert_tool_action fish)" },
+  { terms: ["배지 문", "배지 게이트", "배지 N개", "배지 개 이상", "배지 필요", "챔피언로드", "문지기", "badge gate", "badge door", "victory road", "badgecount"], tools: ["place_badge_gate", "configure_monster_campaign"], label: "배지 게이트(배지 N개 이상 문지기)" },
   { terms: ["전투 막기", "길막", "장애물", "바위", "나무 베기", "blocker", "obstacle", "boulder", "rock"], tools: ["place_battle_blocker", "place_field_obstacle", "place_trap", "set_tile_passability"], label: "길 막는 장애물" },
   // ── 맵 ──
   { terms: ["새 맵", "맵 만들", "맵 생성", "맵 추가", "map create", "create map", "new map", "add map", "themescene", "테마 맵", "필드 맵", "필드 만들"], tools: ["create_map", "author_wild_route", "duplicate_map", "resize_map"], label: "맵 만들기(themeScene 으로 구성기까지 한 번에)" },
