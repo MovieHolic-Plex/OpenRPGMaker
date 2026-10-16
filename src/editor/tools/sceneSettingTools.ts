@@ -106,9 +106,6 @@ function layoutFor(theme: SceneTheme): Layout {
           s(`${SWAMP}reed-stack`, -2, 3),
           s(`${SWAMP}moss-log`, 2, 5),
           s(`${SWAMP}lantern`, -4, 2),
-          s(`${VOLCANO}steam-vent`, 3, -1),
-          s(`${VOLCANO}steam-vent`, 6, 1),
-          s(`${VOLCANO}steam-vent`, 5, -3),
           s(`${RUINS}column-temple-broken`, -3, -4),
           s(`${RUINS}rubble-temple`, -6, 0),
         ],
@@ -153,6 +150,28 @@ function bridgeCollapse(map: GameMap, x: number, y: number): { layer: "lower"; c
     }
   }
   return { layer: "lower", cells: cells.filter((c) => c.tile >= 0) };
+}
+
+/** 구역 가장자리까지 4칸 이하만 남으면 그 모서리는 맵 끝까지 잇는다 — 가는 풀밭 띠가 직선 경계로 남지 않게. */
+function snapToMapEdge(map: GameMap, r: { x: number; y: number; w: number; h: number }) {
+  const m = 4;
+  const x0 = r.x <= m ? 0 : r.x;
+  const y0 = r.y <= m ? 0 : r.y;
+  const x1 = map.width - (r.x + r.w) <= m ? map.width : r.x + r.w;
+  const y1 = map.height - (r.y + r.h) <= m ? map.height : r.y + r.h;
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+}
+
+/** 직사각형 바닥의 네 모서리를 계단식으로 깎아 반듯한 사각 패치로 보이지 않게 한다(맵 끝에 닿은 변은 그대로). */
+function roundedParts(r: { x: number; y: number; w: number; h: number }) {
+  if (r.w < 6 || r.h < 6) return [r];
+  const c = r.w >= 12 && r.h >= 8 ? 3 : 2;
+  return [
+    { x: r.x + c, y: r.y, w: r.w - 2 * c, h: r.h },
+    { x: r.x, y: r.y + c, w: r.w, h: r.h - 2 * c },
+    { x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 },
+    { x: r.x + 2, y: r.y + 1, w: r.w - 4, h: r.h - 2 },
+  ];
 }
 
 function themeKitIds(theme: SceneTheme): string[] {
@@ -221,15 +240,15 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       const built: string[] = [];
 
       const g = layout.ground;
-      const ground = clampRect(map, x - g.rx, y - g.ry, g.rx * 2 + 1, g.ry * 2 + 1);
-      fill.run(project, { mapId, rect: ground, material: g.material, clearUpper: true });
+      const ground = snapToMapEdge(map, clampRect(map, x - g.rx, y - g.ry, g.rx * 2 + 1, g.ry * 2 + 1));
+      for (const r of roundedParts(ground)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
       built.push(`바닥 ${g.material} ${ground.w}×${ground.h}`);
 
       for (const f of layout.fills) {
         const r = clampRect(map, x + f.dx, y + f.dy, f.w, f.h);
         if (r.w === 0 || r.h === 0) continue;
         try {
-          fill.run(project, { mapId, rect: r, material: f.material, clearUpper: true });
+          for (const part of roundedParts(r)) fill.run(project, { mapId, rect: part, material: f.material, clearUpper: true });
         } catch (error) {
           warnings.push(`${f.material} 칠하기 실패: ${error instanceof Error ? error.message : String(error)}`);
         }
