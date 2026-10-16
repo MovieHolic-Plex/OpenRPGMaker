@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.239.1 — 2026-10-16
+
+### 수정
+
+- **monster-art** — eye rules v3 and 15 default monsters redrawn (judge-picked) (#2741) (`860cecd`)
+
 ## 0.239.0 — 2026-10-16
 
 ### 기능
