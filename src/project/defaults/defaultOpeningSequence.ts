@@ -43,6 +43,11 @@ export function briefOpeningSequence(opening: CinematicSequence, motive: string,
 /** 첫 인터뷰 질문이 「이야기의 발단」 을 묻는 프리셋 — 그 답은 게임 안 서술로 읽힌다. */
 const PREMISE_EXPERIENCE_PRESETS: ReadonlySet<string> = new Set(["adventure-jrpg"]);
 const OPENING_MOTIVE_MAX = 90;
+/**
+ * 자리표시 답(「(채팅에서 정함)」「미정」「TBD」 …)은 오프닝 글이 아니다. jrpg-real-1 J12 에서 씨앗 brief 의 자리표시 문구가
+ * 그대로 오프닝 첫 글자로 떴다. 괄호로 전체를 감싼 짧은 답이나 미정을 뜻하는 낱말만 있는 답은 비운다(제목 카드만 남는다).
+ */
+const PLACEHOLDER_MOTIVE = /^[(（[].{0,40}[)）\]]$|채팅에서 정|^\s*(미정|추후|나중에)|\bTBD\b|\bTODO\b/iu;
 
 /**
  * 오프닝에 옮겨 적을 기획 문장. 다른 프리셋의 첫 질문은 감정·분위기(「뒤늦게 이해하는 충격」)이거나,
@@ -53,6 +58,7 @@ const OPENING_MOTIVE_MAX = 90;
 export function briefOpeningMotive(brief: Pick<GameDesignBrief, "presetId" | "answers">): string {
   if (!PREMISE_EXPERIENCE_PRESETS.has(brief.presetId)) return "";
   const text = (brief.answers.experience?.text ?? "").replace(/\s+/gu, " ").trim();
+  if (PLACEHOLDER_MOTIVE.test(text)) return "";
   if (text.length <= OPENING_MOTIVE_MAX) return text;
   const sentences = text.match(/[^.!?。…]+[.!?。…]+/gu) ?? [];
   let out = "";
