@@ -468,6 +468,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       reasoningSelect.value = preset.reasoningMode ?? "none";
       allowModels.value = (preset.allowModels ?? []).join("\n");
       blockModels.value = (preset.blockModels ?? []).join("\n");
+      images.input.checked = preset.supportsImages === true;
       refreshUrlNote();
       refreshReasoningHelp();
       refreshPatternNote();

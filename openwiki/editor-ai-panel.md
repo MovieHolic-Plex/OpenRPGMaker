@@ -4379,7 +4379,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 5. 워커 모델 구성(`resolveOpenAiCompatModel`) — 403.
 6. 호출 직전 모양 잡기(`shapeOpenAiCompatCall`) — 접미사가 붙은 최종 ID 도 같은 패턴을 지켜야 한다. `completeProvider`(작문 등)와 `piAgentRuntime`(조수) 둘 다 이 함수를 지난다.
 
-프리셋 「CLIProxyAPI · mdc-server (Argon 만)」은 `http://mdc-server:8318/v1`, 허용 `gemini-4-argon*`, 차단 `claude-*` 를 채운다(프리셋은 출발값일 뿐 바꿀 수 있다). 다른 프리셋: CLIProxyAPI(로컬 8317)·LiteLLM(4000)·Ollama(11434)·LM Studio(1234)·vLLM(8000)·OpenRouter·OpenAI.
+프리셋 「CLIProxyAPI · mdc-server (Argon 만)」은 `http://mdc-server:8318/v1`, 허용 `gemini-4-argon*`, 차단 `claude-*` 를 채운다(프리셋은 출발값일 뿐 바꿀 수 있다). **이미지 입력도 켠다**(2026-10-16): 꺼 두면 `read_tileset_reference` 의 참고 그림이 모델에 가지 않아 선행 읽기 게이트가 영영 안 풀리고 `paint_tiles`·`stamp_tileset_object` 가 계속 거절된다(실제 Argon 연애 시험에서 도구 실패의 절반). 다른 서버도 모델이 그림을 받으면 「이미지 입력」을 켜야 한다. 다른 프리셋: CLIProxyAPI(로컬 8317)·LiteLLM(4000)·Ollama(11434)·LM Studio(1234)·vLLM(8000)·OpenRouter·OpenAI.
 
 ### 추론 강도 세 방식 (엔드포인트별 `reasoningMode`)
 
