@@ -333,21 +333,22 @@
   background:radial-gradient(ellipse 48% 62% at 50% 46%,#fffdee 0%,rgba(255,253,238,.75) 45%,rgba(255,253,238,0) 100%);
 }
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-image {
-  inset:15px auto auto calc(50% - 122px);width:244px;height:194px;object-fit:contain;object-position:center bottom;image-rendering:pixelated;
+  inset:14px auto auto calc(50% - 122px);width:244px;height:194px;object-fit:contain;object-position:center bottom;image-rendering:pixelated;
 }
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-portrait-art="bust"][data-showcase="monster"] .cinematic-image {left:14px;}
-.cinematic-sequence[data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-creature {left:55%;top:24%;width:30%;height:40%;}
+/* 소개 몬스터: 상자는 정수 배율 변수(--art-box-*)가 정하고, 위치는 2px 격자의 정수 좌표다. 예전 55%·24% 는 264px·75.8px 소수 좌표라 도트가 격자에서 반 칸 어긋났다(시각 QA 2026-10-16). */
+.cinematic-sequence[data-monster-style="emerald"][data-portrait-art="bust"] .cinematic-creature {left:272px;top:76px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);}
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-creature {
   position:absolute;left:268px;top:72px;width:var(--art-box-width,128px);height:var(--art-box-height,128px);object-fit:contain;image-rendering:pixelated;z-index:1;
 }
 .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] .cinematic-narration {
-  top:auto;bottom:5%;left:3%;width:94%;min-height:25%;max-height:29%;padding:4px 14px 24px;
-  border:5px double #55615f;background:#fffef0;color:#303840;
+  top:auto;bottom:16px;left:14px;width:calc(100% - 28px - 40px);min-height:25%;max-height:29%;padding:4px 14px 24px;
+  border:6px double #55615f;background:#fffef0;color:#303840;
   font-family:"Galmuri9",monospace;font-size:18px;line-height:24px;
   box-shadow:inset 0 0 0 2px #baccc7;white-space:pre-wrap;text-align:left;
 }
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-book-hint {
-  width:auto;right:calc(3% + 20px);bottom:calc(5% + 10px);font:18px/20px "Galmuri9",monospace;color:#445450;z-index:3;
+  width:auto;right:34px;bottom:26px;font:18px/20px "Galmuri9",monospace;color:#445450;z-index:3;
 }
 .player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] {
   background-color: #0b5264;

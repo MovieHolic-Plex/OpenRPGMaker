@@ -39,3 +39,22 @@ describe("emerald opening professor bust", () => {
     expect(existsSync("public/assets/emerald-monster/professor-bust.png")).toBe(true);
   });
 });
+
+describe("emerald opening pixel grid (CSS contract)", () => {
+  const css = readFileSync("src/styles/runtime/playSurface.css", "utf8");
+  const motion = readFileSync("src/styles/runtime/emeraldOpeningMotion.css", "utf8");
+  it("sizes the introduced monster from the integer art box and places it on whole even pixels", () => {
+    const rule = css.split("\n").find((line) => line.includes('[data-portrait-art="bust"] .cinematic-creature'));
+    expect(rule).toBeDefined();
+    expect(rule).toContain("width:var(--art-box-width,128px)");
+    expect(rule).toContain("height:var(--art-box-height,128px)");
+    expect(rule).toMatch(/left:272px;top:76px/u);
+    expect(rule).not.toMatch(/%/u);
+  });
+  it("keeps idle bobs on 2px steps and the dialogue window inside the stage", () => {
+    expect(motion).toContain("emerald-creature-idle 3.2s steps(1, end)");
+    expect(motion).toMatch(/emerald-professor-idle[^}]*-2px/u);
+    expect(css).toContain("width:calc(100% - 28px - 40px)");
+    expect(css).toContain("border:6px double #55615f");
+  });
+});
