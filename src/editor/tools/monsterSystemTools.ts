@@ -1,7 +1,8 @@
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import { openBlankStartOnMonsterKit } from "@/project/genrePresets";
-import { disableGenreLock, enableGenreLock, genreLockReleasedNotice } from "@/project/genreLock";
+import { disableGenreLock, genreLockReleasedNotice } from "@/project/genreLock";
+import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 
 // 몬스터 수집/포획 + 몬스터 전투 파티 모드를 켜고 끄는 저작 도구.
 // 두 플래그는 별개 축이다:
@@ -68,7 +69,7 @@ const configureMonsterSystem: ToolDefinition = {
     }
     // 칩셋 계열은 첫 맵에서 정해진다 — 빈 시작 맵이 버들항이면 몬스터 게임 전체가 버들항으로 깔린다(손댄 맵은 건드리지 않는다).
     openBlankStartOnMonsterKit(draft);
-    const lockedNow = enableGenreLock(draft, "monster-collect");
+    const lockedNow = enableGenreLockSettled(draft, "monster-collect");
     const presentation = args.presentation === "collector" ? configureMonsterPresentation(draft) : undefined;
     return {
       summary: !capture

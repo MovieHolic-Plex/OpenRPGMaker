@@ -11,7 +11,8 @@ import { applyBattleMethod } from "@/project/battleMethod";
 import type { Project } from "@/project/types";
 import type { GenrePackId } from "@/project/genrePackId";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
-import { enableGenreLock, markMonsterGenre } from "@/project/genreLock";
+import { markMonsterGenre } from "@/project/genreLock";
+import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 
 export type GenrePresetId = GenrePackId;
 
@@ -65,7 +66,7 @@ export function applyMonsterIntentStart(project: Project): { readonly opened: bo
   if (!needsMonsterKitStart(project)) return { opened: false, locked: false };
   openBlankStartOnMonsterKit(project);
   const { genre, genreLock } = project.system;
-  const locked = !genreLock && (genre === undefined || genre === "monster-collect") && enableGenreLock(project, "monster-collect");
+  const locked = !genreLock && (genre === undefined || genre === "monster-collect") && enableGenreLockSettled(project, "monster-collect");
   // 잠금이 걸린 프로젝트는 선언 장르도 같이 남긴다(프리셋 경로와 같다) — 잠금이 풀려도 「몬스터 수집 게임」이라는 기록은 system.genre 에 있다.
   if (locked) markMonsterGenre(project);
   return { opened: true, locked };
@@ -89,7 +90,7 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       configureMonsterPresentation(project);
       openBlankStartOnMonsterKit(project);
       // 장르 잠금(옵트인): 이 프로젝트의 조수·도구가 새 맵에 쓰는 칩셋을 몬스터 계열로 묶는다. 빈 시작 맵을 옮긴 뒤에 켜야 그 맵이 「이전부터 있던 맵」으로 안 잡힌다.
-      enableGenreLock(project, "monster-collect");
+      enableGenreLockSettled(project, "monster-collect");
       break;
     case "farm-life":
       system.timeSystem = {

@@ -228,11 +228,14 @@ function normalizeGenreLock(value: unknown): GenreLock | undefined {
   // 허용 얼굴·전투 그림 계열(2026-10-16) — 없으면 없는 채로 둔다(이전에 켠 잠금은 프리셋 표를 따른다. 저장 바이트 불변).
   const strings = (value: unknown): string[] => Array.isArray(value) ? [...new Set(value.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
   const faceFamilies = strings(raw.allowedFaceFamilies), battleFamilies = strings(raw.allowedBattleFamilies);
+  // 켤 때 이미 허용 밖이던 캐릭터 칩 사용처(2026-10-16) — 없으면 없는 채로 둔다(저장 바이트 불변).
+  const charsetPaths = strings(raw.grandfatheredCharsetPaths);
   return {
     preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)],
     ...(charsetFamilies.length ? { allowedCharsetFamilies: charsetFamilies } : {}),
     ...(faceFamilies.length ? { allowedFaceFamilies: faceFamilies } : {}), ...(battleFamilies.length ? { allowedBattleFamilies: battleFamilies } : {}),
     ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}),
+    ...(charsetPaths.length ? { grandfatheredCharsetPaths: charsetPaths } : {}),
   };
 }
 

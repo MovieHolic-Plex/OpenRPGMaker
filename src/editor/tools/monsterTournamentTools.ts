@@ -1,4 +1,4 @@
-import { enableGenreLock } from '@/project/genreLock';
+import { enableGenreLockSettled } from '@/project/genreLockCharsets';
 import type { ToolDefinition } from './types';
 import { ToolError } from './types';
 import { replaceProjectContents } from './historyTools';
@@ -60,7 +60,7 @@ export const MONSTER_TOURNAMENT_TOOLS: readonly ToolDefinition[] = [
       const fresh = built.project;
       fresh.meta.author = p.meta.author; fresh.gameDesignBrief = p.gameDesignBrief; fresh.aiInstructions = p.aiInstructions;
       replaceProjectContents(p, fresh);
-      enableGenreLock(p, 'monster-collect');
+      enableGenreLockSettled(p, 'monster-collect');
       return {
         summary: `포획 없는 대회형 몬스터 게임을 생성했습니다 — ${Object.keys(p.maps).length}맵 · 본선 ${built.manifest.rounds}회전(결승 포함) · 연습장 · 우승 엔딩. 포획구슬·포획 커맨드 없음(monsterCollection=false 선언). 실제 플레이/저장은 별도로 확인하세요.`,
         data: { mode: 'create', format: 'tournament', capture: false, rounds: built.manifest.rounds, maps: Object.keys(p.maps).length, battles: built.manifest.battles.length, startTheme: theme ?? 'meadow', sessionPreserved: false },
@@ -102,7 +102,7 @@ export const MONSTER_TOURNAMENT_TOOLS: readonly ToolDefinition[] = [
       const fresh = built.project;
       fresh.meta.author = p.meta.author; fresh.gameDesignBrief = p.gameDesignBrief; fresh.aiInstructions = p.aiInstructions;
       replaceProjectContents(p, fresh);
-      enableGenreLock(p, 'monster-collect');
+      enableGenreLockSettled(p, 'monster-collect');
       const groundIds = Object.keys(p.maps).filter(id => id.startsWith('mx_map_ground_'));
       return {
         summary: `체육관 없는 도감 탐험 게임을 생성했습니다 — ${Object.keys(p.maps).length}맵 · 사냥터 ${built.manifest.rounds}곳 · 라이벌 · 마지막 사냥터 보스 · 엔딩. 포획·도감 있음. 도감을 더 채우려면 define_monster_families(spawn.mapIds=사냥터). 실제 플레이/저장은 별도로 확인하세요.`,

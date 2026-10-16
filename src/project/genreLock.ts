@@ -12,6 +12,7 @@
 
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import { CHARSET_FAMILY_LABELS, charsetFamilyOf, type CharsetFamilyId } from "./charsetFamily";
+import { battlerSourceChip, collectCharsetUses, type CharsetUse } from "./genreLockCharsetUses";
 import { tilesetFamily, tilesetFamilyLabel } from "./tilesetFamily";
 import type { BackdropFamilyId, BattlerFamilyId, FaceFamilyId, TrainerArtFamilyId } from "./visualFamily";
 import type { GameMap, Project } from "./types";
@@ -44,6 +45,11 @@ export interface GenreLock {
   readonly allowedBattleFamilies?: readonly string[];
   /** 켤 때 이미 허용 밖 칩셋이던 맵 id — 「잠금 이전부터 있던」 맵으로 따로 보고한다(막지 않는다). */
   readonly grandfatheredMapIds?: readonly string[];
+  /**
+   * 켤 때 이미 허용 밖 캐릭터 칩을 쓰던 사용처 경로(collectCharsetUses 의 키) — 「잠금 이전부터 있던 칩」으로 따로 보고한다(막지 않는다, 2026-10-16 잠금 누수 감사 #3).
+   * 조수 경로에서는 genreLockCharsets.settleCharsetsOnLock 이 손대지 않은 기본 명단 배우를 먼저 허용 칩으로 바꾸고 남은 것만 남긴다.
+   */
+  readonly grandfatheredCharsetPaths?: readonly string[];
 }
 
 interface Alternative {
@@ -275,6 +281,40 @@ export function genreLockCharsetFamilyLabel(project: Pick<Project, "assets">, id
   return CHARSET_FAMILY_LABELS[charsetFamilyOf(project, idOrTextureKey)];
 }
 
+/** 이 사용처가 잠금 허용인가 — 풀 수 없는 참조(없는 외형 id)는 항상 허용 밖이다. 잠금이 없거나 캐릭터를 안 잠그면 true. */
+export function genreLockAllowsCharsetUse(project: Pick<Project, "system" | "assets">, use: Pick<CharsetUse, "resourceId" | "unresolved">): boolean {
+  if (!activeGenreLock(project)?.allowedCharsets) return true;
+  return use.unresolved === undefined && genreLockAllowsCharset(project, use.resourceId);
+}
+
+/**
+ * 보고에 세는 사용처인가. 새 프로젝트가 장르와 무관하게 싣는 「기본 명단」 배우(100여 명)의 칩은 게임이 쓰지 않으면 세지 않는다 — 풀 전체를 위반으로 보고하면 항상 수십 건이라 쓸모가 없다
+ * (얼굴·전투 그림 보고의 genreLockVisualReport 와 같은 규칙). 시작 배우와 동료·파티 명령이 가리키는 배우(viaActor)는 센다.
+ */
+function reportableCharsetUse(project: Pick<Project, "system">, path: string): boolean {
+  const match = /^database\/actors\/([^/]+)\//u.exec(path);
+  return !match || (project.system.startActorIds ?? []).includes(match[1]!);
+}
+
+export interface GenreLockCharsetOutsider extends CharsetUse {
+  readonly path: string;
+  /** true = 잠금을 켤 때 이미 허용 밖이던 칩(막지 않는다). false = 잠금 이후에 생긴/바뀐 것(고쳐야 할 대상). */
+  readonly preexisting: boolean;
+}
+
+/** 지금 허용 밖 캐릭터 칩을 쓰는 사용처 전부(걷기 그림·배우 칩·동료/파티 명령이 가리키는 배우·전투 그림·옛 sprite·종 필드 그림). 캐릭터를 안 잠그는 잠금은 빈 배열. */
+export function genreLockCharsetOutsiders(project: Project): GenreLockCharsetOutsider[] {
+  const active = activeGenreLock(project);
+  if (!active?.allowedCharsets) return [];
+  const before = new Set(active.lock.grandfatheredCharsetPaths ?? []);
+  const out: GenreLockCharsetOutsider[] = [];
+  for (const [path, use] of collectCharsetUses(project)) {
+    if (genreLockAllowsCharsetUse(project, use) || !reportableCharsetUse(project, path)) continue;
+    out.push({ ...use, path, preexisting: before.has(path) });
+  }
+  return out;
+}
+
 /** 허용 캐릭터 칩 계열 이름들(안내용). 캐릭터를 안 잠그면 빈 배열. */
 export function genreLockAllowedCharsetLabels(project: Pick<Project, "system">): string[] {
   const active = activeGenreLock(project);
@@ -349,6 +389,7 @@ export function enableGenreLock(project: Project, preset: GenreLockPresetId, mod
     if (def.charsets && !existing.allowedCharsetFamilies) {
       project.system.genreLock = { ...existing, allowedCharsetFamilies: [...def.charsets.families], ...visualFamiliesOf(def) };
       applyGenreLockCharsetDefaults(project, def);
+      grandfatherCharsetOutsiders(project);
       return true;
     }
     // 얼굴·전투 그림 잠금(2026-10-16)이 생기기 전에 켠 잠금 — 표의 허용 계열을 저장본에 복사해 정본으로 만든다(맵·캐릭터 잠금은 그대로).
@@ -360,11 +401,35 @@ export function enableGenreLock(project: Project, preset: GenreLockPresetId, mod
   }
   if (!Object.values(project.tilesets).some((tileset) => def.families.includes(tilesetFamily(project, tileset.id)))) return false;
   const keep = existing && existing.preset === preset ? existing.grandfatheredMapIds : undefined;
+  const keepCharsets = existing && existing.preset === preset ? existing.grandfatheredCharsetPaths : undefined;
   project.system.genreLock = { preset, mode, allowedFamilies: [...def.families], ...(def.charsets ? { allowedCharsetFamilies: [...def.charsets.families] } : {}), ...visualFamiliesOf(def) };
   const grandfathered = keep ? [...keep] : Object.values(project.maps).filter((map) => genreLockMapViolation(project, map)).map((map) => map.id);
   if (grandfathered.length) project.system.genreLock = { ...project.system.genreLock, grandfatheredMapIds: grandfathered };
   applyGenreLockCharsetDefaults(project, def);
+  // 켜는 순간 이미 허용 밖이던 칩(맵 이벤트·기본 명단 배우·동료/파티 명령·전투 그림)을 「잠금 이전부터 있던 칩」으로 적어 둔다 — 막지 않고 따로 보고한다.
+  grandfatherCharsetOutsiders(project, keepCharsets);
   return true;
+}
+
+/** 칩 사용처 경로 목록 상한 — 통째로 들인 캠페인이 허용 밖 칩 수천 곳을 가져도 저장 줄이 안 커지게(넘으면 나머지는 「잠금 이후」로 센다). */
+const GRANDFATHERED_CHARSET_PATH_LIMIT = 1000;
+
+/** 켜져 있는 잠금에 지금 허용 밖인 칩 사용처를 「잠금 이전부터 있던」 것으로 적는다(keep 이 있으면 그 목록을 그대로 둔다). 캐릭터를 안 잠그는 장르는 아무것도 안 한다. */
+function grandfatherCharsetOutsiders(project: Project, keep?: readonly string[]): void {
+  const lock = project.system.genreLock;
+  const active = activeGenreLock(project);
+  if (!lock || !active?.allowedCharsets) return;
+  const paths = keep ? [...keep] : [...collectCharsetUses(project)].filter(([path, use]) => !genreLockAllowsCharsetUse(project, use) && reportableCharsetUse(project, path)).map(([path]) => path).slice(0, GRANDFATHERED_CHARSET_PATH_LIMIT);
+  if (paths.length) project.system.genreLock = { ...lock, grandfatheredCharsetPaths: paths };
+}
+
+/** 「잠금 이전부터 있던 칩」 목록을 지금 허용 밖인 사용처로 다시 쓴다 — 켠 직후 조수 경로가 기본 명단 배우를 허용 칩으로 바꾼 뒤 남은 것만 남기려고 쓴다(genreLockCharsets.settleCharsetsOnLock). */
+export function refreshGrandfatheredCharsets(project: Project): void {
+  const lock = project.system.genreLock;
+  if (!lock) return;
+  const { grandfatheredCharsetPaths: _drop, ...rest } = lock;
+  project.system.genreLock = rest;
+  grandfatherCharsetOutsiders(project);
 }
 
 function visualFamiliesOf(def: GenreLockPresetDef): { allowedFaceFamilies?: string[]; allowedBattleFamilies?: string[] } {
@@ -394,6 +459,10 @@ function applyGenreLockCharsetDefaults(project: Project, def: GenreLockPresetDef
   hero.characterResourceId = charsets.playerDefault.resourceId;
   hero.characterIndex = charsets.playerDefault.characterIndex;
   if (hero.faceResourceId !== undefined && hero.faceResourceId === pairedFace) delete hero.faceResourceId;
+  // 전투 그림(battleCharacterResourceId)도 새 걷기 칩 계열을 따른다 — 기본 주인공의 RTP Actor1 전투 시트가 남으면 사람 전투에서 RTP 마법사가 선다(잠금 누수 감사 #6).
+  // 허용 계열에는 사람 전투 시트가 없으므로 비워 폴백(도트 측면 기본)에 맡긴다. 저작자가 고른 허용 전투 그림은 남긴다.
+  const battlerChip = hero.battleCharacterResourceId !== undefined ? battlerSourceChip(hero.battleCharacterResourceId) : undefined;
+  if (battlerChip && !(charsets.families as readonly string[]).includes(charsetFamilyOf(project, battlerChip.resourceId))) delete hero.battleCharacterResourceId;
   // 얼굴 잠금이 있으면 새 걷기 칩의 검토된 짝 얼굴을 입힌다 — 얼굴 없이 두면 대사 초상이 비고, 옛 기본 얼굴은 허용 밖이다. 저작자가 고른 다른 얼굴은 남긴다.
   if (def.visuals && hero.faceResourceId === undefined) {
     const nextFace = reviewedFaceIdForCharset(charsets.playerDefault.resourceId, charsets.playerDefault.characterIndex);
@@ -410,8 +479,13 @@ export function grandfatherGenreLockViolations(project: Project): boolean {
   const lock = project.system.genreLock;
   if (!lock) return false;
   const ids = genreLockViolations(project).map((violation) => violation.mapId).filter((id) => !(lock.grandfatheredMapIds ?? []).includes(id));
-  if (!ids.length) return false;
-  project.system.genreLock = { ...lock, grandfatheredMapIds: [...(lock.grandfatheredMapIds ?? []), ...ids] };
+  const paths = genreLockCharsetOutsiders(project).filter((outsider) => !outsider.preexisting).map((outsider) => outsider.path);
+  if (!ids.length && !paths.length) return false;
+  project.system.genreLock = {
+    ...lock,
+    ...(ids.length ? { grandfatheredMapIds: [...(lock.grandfatheredMapIds ?? []), ...ids] } : {}),
+    ...(paths.length ? { grandfatheredCharsetPaths: [...(lock.grandfatheredCharsetPaths ?? []), ...paths].slice(0, GRANDFATHERED_CHARSET_PATH_LIMIT) } : {}),
+  };
   return true;
 }
 
@@ -441,6 +515,14 @@ export function genreLockViolations(project: Project, approved: readonly string[
   }));
 }
 
+/** 허용 밖 캐릭터 칩이 남아 있다는 한 줄(없으면 빈 문자열). 잠금 이전부터 있던 것은 막지 않고 알리기만 한다 — 사용자가 바꾸라고 하면 허용 칩으로 바꾼다. */
+function charsetOutsiderNote(project: Project): string {
+  const outsiders = genreLockCharsetOutsiders(project);
+  if (!outsiders.length) return "";
+  const before = outsiders.filter((outsider) => outsider.preexisting).length;
+  return `\n[허용 밖 캐릭터 칩 ${outsiders.length}곳 — 잠금 이전부터 있던 것 ${before}곳(막지 않았다) · 잠금 이후 ${outsiders.length - before}곳] check_genre_lock 로 위치를 읽고, 새로 만드는 인물은 허용 칩으로 쓴다. 이미 있던 칩은 사용자가 시킬 때만 바꾼다.`;
+}
+
 /** 시스템 프롬프트에 붙이는 한 덩어리. 잠금이 없으면 null. */
 export function genreLockPromptNote(project: Project): string | null {
   const active = enforcingGenreLock(project);
@@ -451,6 +533,7 @@ export function genreLockPromptNote(project: Project): string | null {
 이 프로젝트는 장르 잠금이 켜져 있다. 새 맵·마을·길·던전·실내는 ${allowedLabels(project, active)} 계열 칩셋(${allowed || "프로젝트에 아직 없음"})으로만 만든다. 버들항·숲·사막·jp_city·캠퍼스·조선 등 다른 계열 칩셋과 그 전용 파이프라인(author_beodeul_*, compose_*_map 등)은 보이지 않고 쓰면 거부된다 — 요청이 다른 풍경을 말하면 그 분위기를 ${active.def.kitNoun} 안에서 내거나(${alts}), 정말 필요하면 ask_tileset_change 로 사용자에게 묻는다.`
     + (active.def.charsets ? `\n${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : "")
     + (active.def.visuals ? `\n${active.def.visuals.faceLine}\n${active.def.visuals.battleLine} ${active.def.visuals.enforceLine}` : "")
+    + (active.def.charsets ? charsetOutsiderNote(project) : "")
     + (active.def.promptExtra ? `\n${active.def.promptExtra}` : "");
 }
 
@@ -463,7 +546,8 @@ export function genreLockShortNote(project: Project): string | null {
   if (!active) return null;
   return `[장르 잠금 — ${active.def.label}] 이 프로젝트는 ${active.def.label} 게임으로 잠겨 있다: 새 맵은 ${allowedLabels(project, active)} 칩셋 계열만`
     + (active.def.charsets ? `. ${active.def.charsets.promptLine} ${active.def.charsets.enforceLine}` : ".")
-    + (active.def.visuals ? ` 얼굴·흉상·전투 그림(몬스터·트레이너·전투 배경·전투 화면)도 이 장르 계열만 — ${active.def.visuals.enforceLine}` : "");
+    + (active.def.visuals ? ` 얼굴·흉상·전투 그림(몬스터·트레이너·전투 배경·전투 화면)도 이 장르 계열만 — ${active.def.visuals.enforceLine}` : "")
+    + (active.def.charsets ? charsetOutsiderNote(project) : "");
 }
 
 /** 몬스터 전용 도구가 처음 성공하면 남기는 장르 표지 — 잠금(맵 칩셋 거부)을 소급해 걸지 않는 대신 이 표지만 남긴다. */
@@ -569,13 +653,19 @@ export interface GenreLockReport {
   readonly violations: readonly GenreLockViolation[];
   /** 잠금을 켜기 전부터 있던 허용 밖 맵(막지 않는다 — 옮길지는 사용자가 정한다). */
   readonly preexisting: readonly GenreLockViolation[];
+  /** 잠금을 켠 뒤에 생긴/바뀐 허용 밖 캐릭터 칩(맵 이벤트·배우·동료/파티 명령·전투 그림). 캐릭터를 안 잠그는 장르는 빈 배열. */
+  readonly charsetViolations: readonly GenreLockCharsetOutsider[];
+  /** 잠금을 켜기 전부터 있던 허용 밖 캐릭터 칩(막지 않는다). */
+  readonly charsetPreexisting: readonly GenreLockCharsetOutsider[];
 }
 
 export function genreLockReport(project: Project, approved: readonly string[] = []): GenreLockReport {
   const active = activeGenreLock(project);
-  if (!active) return { active: false, allowedFamilies: [], allowedTilesets: [], violations: [], preexisting: [] };
+  if (!active) return { active: false, allowedFamilies: [], allowedTilesets: [], violations: [], preexisting: [], charsetViolations: [], charsetPreexisting: [] };
   const all = genreLockViolations(project, approved);
+  const chips = genreLockCharsetOutsiders(project);
   return {
+    charsetViolations: chips.filter((chip) => !chip.preexisting), charsetPreexisting: chips.filter((chip) => chip.preexisting),
     active: true, preset: active.lock.preset, mode: active.lock.mode, allowedFamilies: [...active.allowed],
     allowedTilesets: genreLockAllowedTilesets(project),
     violations: all.filter((v) => !v.preexisting), preexisting: all.filter((v) => v.preexisting),

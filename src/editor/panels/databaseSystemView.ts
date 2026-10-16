@@ -51,7 +51,8 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
-import { disableGenreLock, enableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
+import { disableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
+import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { genreLockVisualSummary } from "@/project/genreLockVisuals";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
@@ -1708,7 +1709,7 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
   const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
     recordProjectSnapshot();
     store.update((draft) => {
-      if (checked) enableGenreLock(draft, lockPreset);
+      if (checked) enableGenreLockSettled(draft, lockPreset, "enforce", { remapEvents: false });
       else disableGenreLock(draft);
     }, { scope: "system", label: checked ? "장르 잠금 켜기" : "장르 잠금 끄기" });
     rerender();
@@ -1721,7 +1722,9 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
         + (genreLockAllowedCharsetLabels(project).length ? ` · 캐릭터 칩: ${genreLockAllowedCharsetLabels(project).join("·")}` : "")
         + (genreLockVisualSummary(project) ? ` · 얼굴·전투 그림: ${genreLockVisualSummary(project)}` : "")
         + (report.violations.length ? ` · 허용 밖 맵 ${report.violations.length}개(손으로 칠한 것은 막지 않는다)` : "")
-        + (report.preexisting.length ? ` · 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개` : ""),
+        + (report.preexisting.length ? ` · 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개` : "")
+        + (report.charsetViolations.length ? ` · 허용 밖 캐릭터 칩 ${report.charsetViolations.length}곳(손으로 칠한 것은 막지 않는다)` : "")
+        + (report.charsetPreexisting.length ? ` · 잠금 이전부터 있던 허용 밖 칩 ${report.charsetPreexisting.length}곳` : ""),
   });
   return el("div", { class: "db-genre-lock-field", children: [checkbox, badge] });
 }
