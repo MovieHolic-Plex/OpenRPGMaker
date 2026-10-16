@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.240.0 — 2026-10-16
+
+### 기능
+
+- **charset-actor** — 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10 45종 (Argon 36) (#2743) (`d675d91`)
+- **monster-art** — cute-first judging, white-highlight-preserving pixelization (rules v4), 15 default monsters redrawn (#2754) (`57eef00`)
+
+### 수정
+
+- **charset-actor** — ScarloxyPeople5#6 선장·흰 선장 모자 제외 — 칸을 비워 두고 명단·카탈로그에서 뺌 (44 → 43종) (#2757) (`9eaccf3`)
+
 ## 0.239.3 — 2026-10-16
 
 ### 수정
