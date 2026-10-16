@@ -6,7 +6,7 @@
 import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
-import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { jrpgHeroesCharsetHint, queryNpcGraphics } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
 import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
@@ -473,6 +473,12 @@ function faceForNpcGraphic(textureKey: string, characterIndex: number): { readon
   return row?.status === "mapped" && row.faceResourceId ? { resourceId: row.faceResourceId, quality: row.quality } : null;
 }
 
+/** 일반 질의(주인공·영웅·기본 목록)에서만 JRPG 영웅 칩 안내를 붙인다 — 특정 인물을 찾는 질의에는 군더더기다. */
+function jrpgHeroesHintForNpcList(project: Project, query: string | undefined): { hint?: string } {
+  const hint = jrpgHeroesCharsetHint(project.charsetLabels, query);
+  return hint ? { hint } : {};
+}
+
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
   description: "NPC/캐릭터셋 후보의 실제 칩 이미지를 번호 순서로 보여주고 이름·외형·selectionId·nativeGraphic과 검토된 짝 얼굴(face)을 조회한다. 실제 그림을 보고 원하는 외형의 selectionId 또는 nativeGraphic을 그대로 쓴다. portraitOptions는 원본 얼굴에서 파생한 초상 후보다. 복장·장식 차이는 note를 확인한다. query는 자유 질의 가능(예: 할머니, 골렘, 기사). 상위 20개를 반환한다.",
@@ -518,7 +524,7 @@ const listNpcGraphics: ToolDefinition = {
         matches,
         ...(matches.length === 0 && query && query.trim().length > 0
           ? { hint: "0건이다. 검색어는 낱말 하나로(예: 여학생, 남학생, 카페 점원, 교수, 정장) 줄이거나 query 를 생략해 기본 후보를 본다. 여러 낱말을 공백으로 이으면 모두 맞아야 한다." }
-          : {}),
+          : jrpgHeroesHintForNpcList(project, query)),
       },
     };
   },
@@ -637,9 +643,10 @@ const listResources: ToolDefinition = {
         },
     );
     const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
+    const charsetHint = kind === "charset" ? jrpgHeroesCharsetHint(project.charsetLabels, args.query) : null;
     return {
       summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`,
-      data: { matches, total: all.length, nextOffset },
+      data: { matches, total: all.length, nextOffset, ...(charsetHint ? { hint: charsetHint } : {}) },
     };
   },
 };

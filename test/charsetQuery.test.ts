@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { charsetGraphicKey, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic } from "@/assets/charsetQuery";
+import { charsetGraphicKey, jrpgHeroesCharsetHint, pickNpcGraphic, queryNpcGraphics, resolveNpcGraphic, withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 
 describe("charsetQuery", () => {
   it("할머니 질의를 elder+female 엔트리로 해석한다", () => {
@@ -79,5 +79,28 @@ describe("charsetQuery", () => {
     expect(people).toHaveLength(10);
     expect(queryNpcGraphics("object", 100).some(match => match.entry.textureKey.startsWith("tex_scarloxy_"))).toBe(false);
     expect(queryNpcGraphics("animal", 100).filter(match => match.entry.textureKey.startsWith("tex_farming_")).map(match => match.entry.label).sort()).toEqual(["농장 닭", "농장 젖소"]);
+  });
+});
+
+describe("CT·FF6풍 영웅 칩(Heroes1) 검색 — jrpg-real-1 J02", () => {
+  it("hero·actor·주인공 같은 일반 질의가 Heroes1 을 RTP Actor 보다 앞에 보여 준다", () => {
+    for (const query of ["hero", "actor", "주인공", "영웅"]) {
+      const keys = queryNpcGraphics(query, 20).map((match) => match.entry.textureKey);
+      expect(keys.slice(0, 8).every((key) => key === "tex_oprn_charset_heroes1"), query).toBe(true);
+      expect(keys).toContain("tex_easyrpg_charset_actor1");
+    }
+  });
+  it("heroes·heroes1 은 시트 전체 8칸을 돌려준다", () => {
+    for (const query of ["heroes", "heroes1"]) {
+      expect(queryNpcGraphics(query, 20).map((match) => charsetGraphicKey(match.entry))).toEqual(
+        Array.from({ length: 8 }, (_, index) => `tex_oprn_charset_heroes1#${index}`),
+      );
+    }
+  });
+  it("장르 잠금이 영웅 칩을 가리면 안내도 없다", () => {
+    expect(jrpgHeroesCharsetHint(undefined, "hero")).toContain("tex_oprn_charset_heroes1");
+    expect(jrpgHeroesCharsetHint(undefined, "할머니")).toBeNull();
+    const hint = withNpcGraphicCatalogFilter((entry) => !entry.textureKey.startsWith("tex_oprn_charset_heroes"), () => jrpgHeroesCharsetHint(undefined, "hero"));
+    expect(hint).toBeNull();
   });
 });

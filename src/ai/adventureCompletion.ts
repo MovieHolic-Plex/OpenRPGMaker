@@ -44,6 +44,7 @@ export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 �
 선택지는 분기 안에 결과가 있어야 한다: place_npc는 choices:[{text,commands:[...]}], 네이티브 choices 명령은 options:[{text,branch:[...]}]. 합류(changeParty)·보스전(battleProcessing, 승리 분기에 setSwitch)·엔딩을 분기에 넣고 run_scene_test의 {kind:"choose",index}로 결과(partyIncludes·switchOn·endingReached)를 확인한다.
 기획에 엔딩이 있으면 define_ending으로 정의하고 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 {kind:"triggerEnding",endingId}를 넣는다. 페이지 조건으로 쓴 스위치는 어떤 분기의 setSwitch가 반드시 켜야 한다.
 아이템과 장비 모두 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
+JRPG(크로노 트리거·FF6·클래식 판타지)의 주인공·동료 걷기 칩은 list_resources({kind:"charset",query:"heroes"}) 로 CT·FF6풍 영웅 칩 Heroes1(8종, textureKey tex_oprn_charset_heroes1)을 먼저 보고 어울리는 칸을 characterResourceId:"oprn-charset-heroes1"+characterIndex 로 지정한다 — RTP Actor 는 어울리는 칸이 없을 때만 쓴다(Heroes1 에는 짝 얼굴이 없으니 얼굴은 list_resources faceset 에서 따로 고른다).
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
 시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
