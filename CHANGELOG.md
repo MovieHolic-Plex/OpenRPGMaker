@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.255.1 — 2026-10-18
+
+### 수정
+
+- **stamp-place** — 3-round adversarial visual QA repairs for town, city, and dungeon worldbuilding (#2864) (`774d4e5`)
+- **ci** — record the dual-fullbody veil text style in event surfaces (`305ae99`)
+
 ## 0.255.0 — 2026-10-18
 
 ### 기능
