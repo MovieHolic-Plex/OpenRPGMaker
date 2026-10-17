@@ -57,6 +57,14 @@ describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
     expect(jrpgCompletionGaps(off, "").some((gap) => gap.includes("오프닝"))).toBe(false);
   });
 
+  it("flags the seed fishing village (lighthouse) left under a non-harbor name — 6 of 6 loop projects kept it", () => {
+    const lighthouse = [{ kitId: "bd-pick-fishing-port-lighthouse", x: 1, y: 1 }];
+    const bad = jrpg({ maps: { m1: { id: "m1", name: "잿빛 설원 · 저항군 전초기지", structurePlacements: lighthouse, events: [] } } });
+    expect(jrpgCompletionGaps(bad, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(true);
+    const harbor = jrpg({ maps: { m1: { id: "m1", name: "푸른 항구 마을", structurePlacements: lighthouse, events: [] } } });
+    expect(jrpgCompletionGaps(harbor, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(false);
+  });
+
   it("uses the request text as part of the brief for the time-ending check", () => {
     const project = jrpg({ endings: [{ id: "ending_first_segment", name: "첫 구간 끝" }] });
     expect(jrpgCompletionGaps(project, "", { task: "과거와 미래를 오가는 RPG 만들어 줘" }).some((gap) => gap.includes("첫 구간 끝"))).toBe(true);
