@@ -179,3 +179,11 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 `set_deadline_ending` 을 tiers 없이 부르고(뼈대 해피 엔딩이 있고) 호감 대화 인물이 둘 이상이면, 도구가 인물마다 `ending_with_<characterId>`(「OO와 함께」, 호감 ≥60, priority 36, 기본 에필로그 한 줄)를 만들어
 tiers 맨 위에 얹고 그 뒤에 평범·혼자를 둔다. 이미 같은 id 엔딩이 있으면 건드리지 않는다(define_ending 으로 다시 쓴 것 보존). 결과 경고가 에필로그를 인물에 맞게 다시 쓰라고 알린다.
 NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, 완료 검사가 그대로 막는다.
+
+### 인물 엔딩은 인물을 놓는 순간 얹는다 (romance-loop-3)
+
+라운드 3 실측(rom-a): 모델이 `set_deadline_ending` 을 한 번도 부르지 않았다 — 프리셋이 깔아 둔 기한 판정(해피·평범·혼자)을 그대로 두고 인물 3명을 놓아 엔딩이 호감 구간 셋뿐이었다.
+그래서 도구 설명에만 맡기지 않고 `place_npc`/`make_villager` 가 성공할 때 `syncHeroineDeadline`(project/deadlineEnding.ts)이 호감 대화 인물 수를 세어, 둘 이상이면 프리셋 기본 판정에 한해 `ending_with_<characterId>` 를 만들어 맨 위에 얹는다.
+저자가 set_deadline_ending 으로 직접 짠 tiers(뼈대·인물 엔딩 밖 엔딩이 들어 있는 판정)는 건드리지 않는다. 같은 id 엔딩이 이미 있으면 그대로 둔다. `ensureHeroineEndings` 는 도구와 이 동기화가 같이 쓴다.
+팀 실행은 담당 맵 병합(mergeMapBundles)이 맵만 합쳐 place_npc 의 동기화가 병합본에는 없다 — 그래서 팀 `finish`(scripts/lib/piTeamRuntime.ts)도 완료 검사 앞에서 병합본에 `syncHeroineDeadline` 을 한 번 돌린다(rom-c 라운드 3 실측: 인물 3명, 인물 엔딩 0).
+검사 `romance-heroine-endings-uncalled`(romanceEndings.ts, COMPLETION_CODES): 특정 인물 호감을 보는 엔딩이 둘 이상인데 기한 판정(onDayEnd 공통 이벤트)이 그 엔딩을 하나도 부르지 않으면 짚는다 — 엔딩을 만들어도 기한 호출에 안 걸려 모두 「해피」로 끝나는 구멍(rom-c 라운드 3 실측).

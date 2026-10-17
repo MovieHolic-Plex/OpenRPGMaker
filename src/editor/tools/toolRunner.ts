@@ -1,4 +1,5 @@
 import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
+import { syncHeroineDeadline } from "@/project/deadlineEnding";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
 // 툴 실행기. runTool(ctx, name, args, {dryRun}) → ToolResult.
@@ -540,6 +541,11 @@ export function runToolDefinition(
     exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
+    // 연애: 호감 대화 인물이 둘 이상이 되면 프리셋이 깔아 둔 기한 판정에 인물별 엔딩을 얹는다(rom-c·rom-a: 모델이 set_deadline_ending 을 안 불러 인물 엔딩이 영영 없었다).
+    if (name === "place_npc" || name === "make_villager") {
+      const made = syncHeroineDeadline(draft);
+      if (made.length) exec = { ...exec, warnings: [`호감 대화 인물이 둘 이상이라 기한 판정에 인물 엔딩 ${made.join(", ")} 을(를) 얹었습니다(기본 에필로그) — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요.`, ...(exec.warnings ?? [])] };
+    }
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
