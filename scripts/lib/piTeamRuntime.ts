@@ -35,6 +35,7 @@ import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
 import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
+import { syncHeroineDeadline } from "../../src/project/deadlineEnding.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
 import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings, romanceStageFlatFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
@@ -755,6 +756,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
         // 429 로 끊긴 배정은 쿨다운을 쉰 뒤 같은 일을 한 번 자동으로 다시 맡긴다 — 아래 검사들이 다시 한 일의 결과를 보게 맨 앞에 둔다.
         await retryRateLimitedAssignments();
+        // 맵 묶음 병합은 맵만 합쳐 담당이 놓은 인물 수가 늘어도 프리셋 기한 판정에는 인물 엔딩이 안 얹힌 채 끝났다(romance-loop-3 rom-c) — 병합본에서 한 번 맞춘다.
+        if (!request.readOnly) {
+          const synced: Project = { ...working, endings: structuredClone(working.endings ?? []), commonEvents: structuredClone(working.commonEvents ?? []) };
+          const made = syncHeroineDeadline(synced);
+          if (made.length || JSON.stringify(synced.commonEvents) !== JSON.stringify(working.commonEvents)) {
+            working = synced;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `호감 대화 인물이 둘 이상이라 기한 판정에 인물별 엔딩을 얹었습니다${made.length ? `(새 엔딩 ${made.join(", ")})` : ""}.` } });
+          }
+        }
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
