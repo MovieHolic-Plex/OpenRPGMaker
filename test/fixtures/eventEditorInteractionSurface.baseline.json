@@ -15375,7 +15375,7 @@
     "패턴"
    ],
    "tags": {
-    "button": 56,
+    "button": 59,
     "div": 16,
     "fieldset": 2,
     "input": 8,
@@ -15383,7 +15383,7 @@
     "legend": 2,
     "option": 2,
     "select": 1,
-    "span": 45
+    "span": 48
    },
    "tagByTestid": {
     "event-command-edit-summary": "div",
@@ -15468,8 +15468,8 @@
     "event-command-edit-summary": "모습 바꾸기",
     "event-command-frame-walk-preview": ""
    },
-   "testidCount": 74,
-   "controlCount": 65
+   "testidCount": 77,
+   "controlCount": 68
   },
   "classes": [
    "active",
