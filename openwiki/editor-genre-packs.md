@@ -346,5 +346,7 @@ successful UI check.
   - **역할 곡선(jrpg-loop-1 D7)**: `upsert_actor` 가 기본 곡선 그대로 만든 배우가 다른 배우와 능력치 곡선이 같으면 경고(역할별 예시 곡선 포함)하고, `checkJrpg` 의 `jrpg-party-flat-roles`(파티 3명 이상·여섯 능력치 편차가 모두 15% 미만)를 완료 조건(`BALANCE_CODES`)에 넣었다.
   - **요청한 규모(D13)**: `jrpgCompletionGaps` 가 요청·기획서에 비공정·비행선·탈것 낱말이 있는데 `system.vehicles` 에 airship 이 없으면(place_vehicle), 붕괴·폐허·멸망 낱말이 있는데 붕괴 후 이름의 맵이 없거나 전부 붕괴 맵이면(derive_map_variant era:ruin) 막는다. ff2 는 NPC 「비공정 기관사」만 두고 탈것·붕괴 후 맵 없이 끝났다.
   - **자연어 요청에도 건다(jrpg-loop-1)**: `segmentGate` 는 장르 프리셋 브리프에서만 켜져 「크로노 트리거 같은」 한 줄 요청은 이 관문을 우회했다. `jrpgChatRejections`(piTeamRuntime.ts)가 요청 문장이 JRPG 작업이면(`jrpgCompletionGateApplies`) 같은 `jrpgCompletionGaps` 로 두 번까지 거절한다. 여는 장면이 제목 카드뿐이면 `opening` 결함으로 잡는다(`openingIsOnlyTitleCard`).
+    - **자동 플레이 막힘도 마무리 항목(jrpg-loop-2 ff1)**: 채팅 한 줄 경로는 첫 구간 판정(`judgePlayableSegment`)을 안 불러, 시간의 문이 절벽 위에 갇혀 `qa:game check` 막힘 1건인데도 finish 가 받아졌다. 뼈대(`hasPlayableSegmentSkeleton`)가 있으면 같은 판정의 막힌 곳을 `jrpgGaps` 에 더한다(거절 두 번까지).
+    - **씨앗 어촌 그대로(jrpg-loop-2)**: 실측 프로젝트 6/6 에서 씨앗 시작 맵(버들항 어촌, 등대 건물 `bd-pick-fishing-port-lighthouse`)이 다시 지어지지 않은 채 「잿빛 설원 · 저항군 전초기지」 같은 이름만 달고 남았다(ff1 은 그 맵이 시작 맵이라 첫 화면이 초록 항구). 항구·어촌 낱말이 없는 이름의 맵에 등대 표지가 있으면 `jrpgCompletionGaps` 가 마무리 항목으로 막는다(거절 두 번까지).
 - **J04 429 자동 재시도.** 팀 런타임이 finish 에서 429 로 끊긴 배정을 한 번 자동으로 다시 맡긴다(구현·증거는 `harnesses/romance-scene.md` 「429 자동 재시도」 — 연애와 같은 `piTeamRuntime.ts` 로직 하나다).
 - **못 고친 것.** J10 광산 바닥 질감: 바닥 키트(`floor-cave` 무작위 혼합 + `ground-rock` 덩이)의 그림 자체가 거칠다 — 팔레트·도트 문제라 새 도트 없이는 못 고친다(장르 관문 대상). J02/J03/J08/J12 는 앞선 PR 에서 처리.
