@@ -29,6 +29,14 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)
+
+`system` 탭(`src/editor/panels/databaseSystemView.ts`, `src/styles/database/studio-refresh.css`)의 상단 13칩 가로 줄을 왼쪽 세로 구획 목록(`184px | minmax(0, 1fr)`)으로 옮기고 소제목 3개(`규칙` / `보이는 것` / `시작·끝`)로 묶었다. 구획 DOM·testid(`db-system-nav-<slug>`, `data-system-section`)와 `requestSystemSection`·`DATABASE_SEARCH_DESTINATIONS` 경로는 그대로다.
+
+- **구획 순서와 소제목**: `overview`(개요) → **`규칙`**: `party`(초기 파티), `startup`(시작 설정), `optin`(기능 확장), `time`(시간), `typechart`(타입 상성) → **`보이는 것`**: `display`(화면), `menu`(게임 메뉴), `dialogue`(대화창), `hud`(인게임 HUD), `font`(폰트), `resources`(리소스) → **`시작·끝`**: `title`(타이틀).
+- **타이틀 4단계 바로가기 승격**: `title` 본문 오른쪽 위 가로 칩 5개(`db-title-workbench-jump`: 오프닝 효과·글자·배경·메뉴·연출·소리)를 본문에서 빼고 왼쪽 구획 목록의 `타이틀` 바로 아래 하위 묶음으로 올렸다(`title` 활성 시 표시, 클릭 시 해당 필드셋으로 스크롤하고 3단 크럼에 `타이틀 · <항목>` 표시).
+- **시각 규칙 R2·R3 적용**: 시스템 폼 필드 격자를 `132px | minmax(0, 1fr)`로 맞추고, `checkboxField`/`lockedCheckboxField`를 34×18 알약 스위치(`.db-toggle-switch > input.db-toggle-input[role="switch"]`)로 통일해 시작 설정 등에서 체크박스가 1,000px 카드 오른쪽 끝으로 밀리던 문제를 함께 없앴다.
+
 ## 자료집 장르 프로필 접기 — 「숨긴 탭 N개 · 모두 보기」 (2026-10-17, 메뉴 감사 PR-4)
 
 기본 DB 는 몬스터 106개·스킬 1,243개가 처음부터 들어 있어 기존 「빈 탭 접기」만으로는 연애·추리 프로젝트에서도 전투 9탭과 직업·스킬이 그대로 펼쳐져 있었다. `store.getCurrent().gameDesignBrief?.interview?.genre` 가 있는 프로젝트만 `GENRE_FOLD_PROFILE`(`databaseWayfinding.ts`)로 초기 접기를 더한다.

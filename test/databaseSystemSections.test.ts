@@ -37,13 +37,16 @@ function clickNav(host: FakeElement, slug: string): void {
 const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: string }[] = [
   { slug: "overview", testid: "db-system-studio" },
   { slug: "party", testid: "db-picker-system-start-actor" },
-  { slug: "display", testid: "db-field-system-resolution-preset" },
-  { slug: "font", testid: "db-field-system-font-ui" },
-  { slug: "resources", testid: "db-field-title-resource" },
   { slug: "startup", testid: "db-field-system-battle-flow" },
   { slug: "optin", testid: "db-field-system-skill-system" },
   { slug: "time", testid: "db-field-system-time-enabled" },
   { slug: "typechart", testid: "db-field-system-type-chart-types" },
+  { slug: "display", testid: "db-field-system-resolution-preset" },
+  { slug: "menu", testid: "db-system-menu-skin-grid" },
+  { slug: "dialogue", testid: "db-system-dialogue-style-section" },
+  { slug: "hud", testid: "db-system-field-hud-theme" },
+  { slug: "font", testid: "db-field-system-font-ui" },
+  { slug: "resources", testid: "db-field-title-resource" },
   { slug: "title", testid: "db-title-workbench" },
 ];
 
@@ -61,33 +64,56 @@ describe("database system section navigation", () => {
     cleanupDom = undefined;
   });
 
-  it("renders exactly 10 section nav buttons in order", () => {
+  it("renders 13 section nav buttons in order under 3 subheadings and lifts title jump links", () => {
     const host = renderSystem();
+    const nav = findByTestId(host, "db-system-section-nav")!;
     const buttons = sectionNavButtons(host);
     expect(buttons.map((button) => button.dataset.testid)).toEqual([
       "db-system-nav-overview",
       "db-system-nav-party",
-      "db-system-nav-display",
-      "db-system-nav-font",
-      "db-system-nav-resources",
       "db-system-nav-startup",
       "db-system-nav-optin",
       "db-system-nav-time",
       "db-system-nav-typechart",
+      "db-system-nav-display",
+      "db-system-nav-menu",
+      "db-system-nav-dialogue",
+      "db-system-nav-hud",
+      "db-system-nav-font",
+      "db-system-nav-resources",
       "db-system-nav-title",
     ]);
     expect(buttons.map((button) => button.textContent)).toEqual([
       "개요",
       "초기 파티",
-      "화면",
-      "폰트",
-      "리소스",
       "시작 설정",
       "기능 확장",
       "시간",
       "타입 상성",
+      "화면",
+      "게임 메뉴",
+      "대화창",
+      "인게임 HUD",
+      "폰트",
+      "리소스",
       "타이틀",
     ]);
+    expect(nav.querySelectorAll(".db-system-section-subhead").map((subhead) => subhead.textContent)).toEqual([
+      "규칙",
+      "보이는 것",
+      "시작·끝",
+    ]);
+    const jump = findByTestId(nav, "db-title-workbench-jump")!;
+    expect(jump.hidden).toBe(true);
+    expect(jump.querySelectorAll(".db-title-workbench-jump-link").map((link) => link.textContent)).toEqual([
+      "오프닝 효과",
+      "글자·배경",
+      "메뉴",
+      "연출",
+      "소리",
+    ]);
+    clickNav(host, "title");
+    expect(jump.hidden).toBe(false);
   });
 
   it("defaults to the overview section active and keeps the party editor hidden", () => {

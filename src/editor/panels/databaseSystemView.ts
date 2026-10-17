@@ -172,20 +172,24 @@ function consumeRequestedSystemSection(): RequestedSystemSection | undefined {
   return requested;
 }
 
-const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
+const SYSTEM_SECTION_ORDER: readonly {
+  readonly slug: SystemSectionSlug;
+  readonly label: string;
+  readonly subhead?: string;
+}[] = [
   { slug: "overview", label: "개요" },
-  { slug: "party", label: "초기 파티" },
-  { slug: "display", label: "화면" },
+  { slug: "party", label: "초기 파티", subhead: "규칙" },
+  { slug: "startup", label: "시작 설정" },
+  { slug: "optin", label: "기능 확장" },
+  { slug: "time", label: "시간" },
+  { slug: "typechart", label: "타입 상성" },
+  { slug: "display", label: "화면", subhead: "보이는 것" },
   { slug: "menu", label: "게임 메뉴" },
   { slug: "dialogue", label: "대화창" },
   { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
-  { slug: "startup", label: "시작 설정" },
-  { slug: "optin", label: "기능 확장" },
-  { slug: "time", label: "시간" },
-  { slug: "typechart", label: "타입 상성" },
-  { slug: "title", label: "타이틀" },
+  { slug: "title", label: "타이틀", subhead: "시작·끝" },
 ];
 
 export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () => undefined): void {
@@ -210,12 +214,12 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
     const active = document.activeElement;
     const focusId = active instanceof HTMLElement ? active.dataset.testid : undefined;
     const scrollTop = sectionHost.scrollTop;
-    const navScroll = nav.scrollLeft;
+    const navScroll = nav.scrollTop;
     rerender();
     const nextSections = host.querySelector<HTMLElement>(".db-system-sections");
     if (nextSections) nextSections.scrollTop = scrollTop;
     const nextNav = host.querySelector<HTMLElement>(".db-system-section-nav");
-    if (nextNav) nextNav.scrollLeft = navScroll;
+    if (nextNav) nextNav.scrollTop = navScroll;
     if (focusId) host.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus({ preventScroll: true });
   };
   const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, refresh, activeSlug);
@@ -252,8 +256,35 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
     class: "db-system-section-nav",
     dataset: { testid: "db-system-section-nav" },
     attrs: { "aria-label": "시스템 설정 섹션" },
+    on: {
+      keydown: (event: Event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(".db-system-section-button"));
+        const currentIndex = buttons.findIndex((button) => button === document.activeElement);
+        if (currentIndex < 0) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? buttons.length - 1
+            : (currentIndex + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
+        const target = buttons[nextIndex];
+        target?.focus();
+        target?.click();
+      },
+    },
   });
-  for (const { slug, label } of SYSTEM_SECTION_ORDER) {
+  for (const { slug, label, subhead } of SYSTEM_SECTION_ORDER) {
+    if (subhead) {
+      nav.append(
+        el("div", {
+          class: "db-system-section-subhead",
+          text: subhead,
+          attrs: { role: "presentation" },
+        }),
+      );
+    }
     nav.append(
       el("button", {
         class: `db-system-section-button${slug === activeSlug ? " active" : ""}`,
@@ -267,12 +298,17 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
         },
       }),
     );
+    if (slug === "title") {
+      nav.append(titleWorkbenchJumpNav(activeSlug, host, nav, sectionHost));
+    }
   }
   return nav;
 }
 
 /** 섹션 전환 핸들러 — DOM 토글만 수행하며 store.update/스냅샷을 만들지 않는다. */
 function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
+  const jump = nav.querySelector<HTMLElement>('[data-testid="db-title-workbench-jump"]');
+  if (jump) jump.hidden = slug !== "title";
   if (host.dataset.dbSystemSection === slug) return;
   host.dataset.dbSystemSection = slug;
   announceSystemSection(slug);
@@ -600,7 +636,6 @@ function systemSectionNodes(
             el("div", {
               class: "db-title-workbench-fields",
               children: [
-                titleWorkbenchJumpNav(),
                 titleScreenOpeningFieldset(titleScreen, rerender),
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
@@ -1788,10 +1823,20 @@ function obedienceCapFields(project: Project, rerender: () => void): HTMLElement
 }
 
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
-  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  const input = el("input", {
+    class: "db-toggle-input",
+    attrs: { type: "checkbox", role: "switch" },
+    dataset: { testid },
+  }) as HTMLInputElement;
   input.checked = checked;
   input.addEventListener("change", () => onChange(input.checked));
-  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
+  return el("label", {
+    class: "db-field",
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] }),
+    ],
+  });
 }
 
 function systemPreviewWell(label: string, resourceId: string | undefined): HTMLElement {
@@ -2209,12 +2254,19 @@ function titleScreenVariantsFieldset(titleScreen: TitleScreenSettings, project: 
 
 function lockedCheckboxField(label: string, testid: string, checked: boolean): HTMLElement {
   const input = el("input", {
-    attrs: { type: "checkbox", disabled: "true", ...(checked ? { checked: "true" } : {}) },
+    class: "db-toggle-input",
+    attrs: { type: "checkbox", role: "switch", disabled: "true", ...(checked ? { checked: "true" } : {}) },
     dataset: { testid },
   }) as HTMLInputElement;
   input.checked = checked;
   input.disabled = true;
-  return el("label", { class: "db-field db-field-locked", children: [el("span", { text: label }), input] });
+  return el("label", {
+    class: "db-field db-field-locked",
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] }),
+    ],
+  });
 }
 
 function patchTitleGraphic(
@@ -2490,8 +2542,13 @@ function refreshTitleEffectsLayer(): void {
   else stage.prepend(next);
 }
 
-/** 오른쪽 칸 맨 위의 바로가기 — 칸이 길어서 원하는 묶음으로 바로 뛴다. */
-function titleWorkbenchJumpNav(): HTMLElement {
+/** 왼쪽 구획 목록의 「타이틀」 아래 바로가기 — 본문 안 4단계 가로 칩을 한 단계 위로 올려 원하는 묶음으로 바로 뛴다. */
+function titleWorkbenchJumpNav(
+  activeSlug: SystemSectionSlug,
+  host: HTMLElement,
+  nav: HTMLElement,
+  sectionHost: HTMLElement,
+): HTMLElement {
   const targets = [
     ["오프닝 효과", "db-title-opening"],
     ["글자·배경", "db-title-workbench-display"],
@@ -2499,9 +2556,9 @@ function titleWorkbenchJumpNav(): HTMLElement {
     ["연출", "db-title-workbench-effects"],
     ["소리", "db-title-workbench-audio"],
   ] as const;
-  return el("nav", {
+  const jump = el("div", {
     class: "db-title-workbench-jump",
-    attrs: { "aria-label": "타이틀 설정 바로가기" },
+    attrs: { role: "group", "aria-label": "타이틀 설정 바로가기" },
     dataset: { testid: "db-title-workbench-jump" },
     children: targets.map(([label, testid]) =>
       el("button", {
@@ -2509,14 +2566,19 @@ function titleWorkbenchJumpNav(): HTMLElement {
         text: label,
         attrs: { type: "button" },
         on: {
-          click: (event: Event) => {
-            const root = (event.currentTarget as HTMLElement).closest(".db-title-workbench-fields");
-            root?.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          click: () => {
+            activateSystemSection("title", host, nav, sectionHost);
+            setDatabaseSubLocation("system", `타이틀 · ${label}`);
+            sectionHost
+              .querySelector<HTMLElement>(`[data-testid="${testid}"]`)
+              ?.scrollIntoView({ block: "start", behavior: "smooth" });
           },
         },
       }),
     ),
   });
+  jump.hidden = activeSlug !== "title";
+  return jump;
 }
 
 function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
