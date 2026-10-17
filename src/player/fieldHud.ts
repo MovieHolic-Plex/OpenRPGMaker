@@ -120,7 +120,8 @@ export class FieldHud {
           if (!blocked) break;
         }
       }
-      Object.assign(mount.node.style, { left: `${x}px`, top: `${y}px`, width: `${width}px`, height: `${height}px` });
+      const autoMapWidth = config.theme === "collector" && widget.source === "map";
+      Object.assign(mount.node.style, { left: `${x}px`, top: `${y}px`, width: autoMapWidth ? "auto" : `${width}px`, maxWidth: autoMapWidth ? `${size.width - x - 8}px` : "", height: `${height}px` });
       mount.node.dataset.avoiding = String(anchor !== widget.anchor);
     }
     this.host.dataset.hudStamina = String(staminaOwned);

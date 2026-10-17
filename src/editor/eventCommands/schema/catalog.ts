@@ -354,7 +354,7 @@ defineCommand({
   family: "map",
   label: "이동 경로",
   fields: {
-    eventId: f.record("대상 이벤트", "event"),
+    eventId: f.record("대상 이벤트", "event", { optional: true, allowEmpty: true }),
     // 이동 경로는 커맨드 시퀀스다 — 폼으로 표현되지 않는 대표 케이스.
     route: f.custom("경로", "moveRoute"),
   },

@@ -181,6 +181,13 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
   detailPanel.dataset.statusMenuCommand = selectedCommand;
+  if (emerald && panel.dataset.emeraldPage !== "party" && panel.dataset.emeraldPage !== "box") {
+    const listEl = detailPanel.querySelector<HTMLElement>(".status-menu-detail-list:not(:has(.with-vitals, .has-description))");
+    if (listEl) {
+      listEl.style.setProperty("--oprn-menu-row-step", "32px");
+      listEl.style.height = "min(100%, round(down, 100%, 32px))";
+    }
+  }
   if (emerald && selectedCommand === "items" && !options.targetItemId) {
     detailPanel.append(el("div", { class: "emerald-bag", attrs: { role: "img", "aria-label": "가방" }, children: [
       el("span", { class: "emerald-bag-handle" }), el("span", { class: "emerald-bag-pocket" }),
