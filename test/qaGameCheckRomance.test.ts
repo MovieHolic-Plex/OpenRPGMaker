@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { checkRomance, isRomanceCheckTarget, isRomanceGameRequest } from "@/qa/gameCheck/romance";
 import { createBlankProject } from "@/project/defaults";
+import { romanceTitleArtForText, ROMANCE_TITLE_BACKGROUNDS } from "@/project/romanceTitleArt";
 import type { GameEvent, Project } from "@/project/types";
 
 function romanceProject(): Project {
@@ -89,5 +90,33 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect(isRomanceGameRequest("카페 아르바이트 로맨스 게임 만들어 줘")).toBe(true);
     expect(isRomanceGameRequest("연애 게임 맵 좀 고쳐줘")).toBe(false);
     expect(isRomanceGameRequest("던전 RPG 만들어 줘")).toBe(false);
+  });
+  it("소재별 연애 타이틀: 기획 문장이 카페·학원·회사·마을이면 그 키아트를 권하고, 캠퍼스·무소재면 기본 그림이 맞다", () => {
+    expect(romanceTitleArtForText("카페 아르바이트 로맨스 게임 만들어 줘")?.setting).toBe("cafe");
+    expect(romanceTitleArtForText("고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩")?.setting).toBe("school");
+    expect(romanceTitleArtForText("회사 동기와의 사내 연애, 야근 뒤 옥상")?.setting).toBe("office");
+    expect(romanceTitleArtForText("바닷가 마을 이웃과의 연애")?.setting).toBe("town");
+    expect(romanceTitleArtForText("대학교 캠퍼스에서 시작하는 연애 시뮬레이션 만들어 줘")).toBeUndefined();
+    expect(romanceTitleArtForText("연애 게임")).toBeUndefined();
+    expect(romanceTitleArtForText("대학 동아리 카페 알바")?.setting).toBeUndefined(); // 캠퍼스 2점 vs 카페 1점
+    for (const setting of ["cafe", "school", "office", "town"]) expect(ROMANCE_TITLE_BACKGROUNDS).toContain(`oprn-title-romance-${setting}`);
+  });
+
+  it("타이틀이 기본 캠퍼스 그림인데 기획이 다른 소재면 완료 조건 경고, 다른 그림이면 조용하다", () => {
+    const project = romanceProject();
+    project.system.titleScreen = { ...(project.system.titleScreen ?? {}), backgroundResourceId: "oprn-title-romance-campus" } as never;
+    const got = checkRomance(project, "카페 아르바이트 로맨스 게임 만들어 줘").find((finding) => finding.code === "romance-title-art-setting");
+    expect(got?.message).toContain("oprn-title-romance-cafe");
+    expect(checkRomance(project, "대학교 캠퍼스 연애 시뮬레이션").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
+    (project.system.titleScreen as { backgroundResourceId: string }).backgroundResourceId = "oprn-title-romance-cafe";
+    expect(checkRomance(project, "카페 아르바이트 로맨스 게임 만들어 줘").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
+  });
+
+  it("다른 소재의 키아트가 걸려 있어도(카페 기획에 마을 그림) 완료 조건 경고를 준다", () => {
+    const project = romanceProject();
+    project.system.titleScreen = { ...(project.system.titleScreen ?? {}), backgroundResourceId: "oprn-title-romance-town" } as never;
+    const got = checkRomance(project, "카페 아르바이트 로맨스 게임 만들어 줘").find((finding) => finding.code === "romance-title-art-setting");
+    expect(got?.message).toContain("oprn-title-romance-cafe");
+    expect(checkRomance(project, "바닷가 이웃마을 썸 연애 게임").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
   });
 });
