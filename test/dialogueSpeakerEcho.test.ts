@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
+import { compileSimplePage, compileSimplePages } from "@/editor/tools/eventCompile";
 
 describe("stripSpeakerEcho — 이름표와 같은 이름이 본문 앞에 또 붙은 줄", () => {
   it("「이름: 따옴표 본문」 은 이름과 바깥 따옴표를 걷는다", () => {
@@ -26,5 +27,32 @@ describe("stripSpeakerEcho — 이름표와 같은 이름이 본문 앞에 또 �
   });
   it("화자가 없으면 그대로다", () => {
     expect(stripSpeakerEcho("안녕", undefined)).toBe("안녕");
+  });
+  it("compileSimplePage / compileSimplePages 가 lines 와 commands 의 화자 머리표를 저장 시점에 걷는다", () => {
+    const page = compileSimplePage(
+      "ev_p0",
+      "한서연 (도서관 선배)",
+      {
+        lines: ['한서연: "반가워!"'],
+        commands: [{ kind: "text", speaker: "한서연", body: "한서연: 안녕" }],
+      },
+      { transparent: true },
+      { injectFace: false },
+    );
+    expect(page.commands).toEqual([
+      { kind: "text", speaker: "한서연 (도서관 선배)", body: "반가워!" },
+      { kind: "text", speaker: "한서연", body: "안녕" },
+    ]);
+    const pages = compileSimplePages(
+      "ev",
+      "한서연",
+      [{ lines: ['한서연: "반가워!"'], commands: [{ kind: "text", speaker: "한서연", body: "한서연: 안녕" }] }],
+      { transparent: true },
+      { injectFace: false },
+    );
+    expect(pages[0]?.commands).toEqual([
+      { kind: "text", speaker: "한서연", body: "반가워!" },
+      { kind: "text", speaker: "한서연", body: "안녕" },
+    ]);
   });
 });
