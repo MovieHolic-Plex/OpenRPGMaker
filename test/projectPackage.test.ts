@@ -37,8 +37,8 @@ describe("project package", () => {
     expect(Array.from(bytes.slice(0, 2)).map((byte) => String.fromCharCode(byte)).join("")).toBe("PK");
     expect(names).toContain("project.json");
     expect(names).toContain("data/database.json");
-    expect(names).toContain("data/tilesets.json");
-    expect(names).toContain("metadata/ai-tile-labels.json");
+    expect(names).not.toContain("data/tilesets.json");
+    expect(names).not.toContain("metadata/ai-tile-labels.json");
     expect(names).toContain(`maps/${project.startMapId}.json`);
     expect(serialize(restored)).toBe(persistedForm(project));
   }, 15_000);

@@ -5,8 +5,7 @@
  */
 import type { StorePackManifest } from "@/assetStore/format";
 import { applyPackToProject, packAssetTargets, type ApplyContext, type ApplyResult } from "@/assetStore/pack";
-import { sniffMime, bytesToBase64 } from "@/assetStore/sniff";
-import { uploadedAssetForImport } from "@/editor/uploadedAssetStorage";
+import { MIME_EXTENSIONS, sniffMime } from "@/assetStore/sniff";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { projectRepository } from "@/project/persistence/repository";
 import { store } from "@/project/store";
@@ -35,22 +34,42 @@ export async function prepareStoreItem(slug: string): Promise<PreparedStoreItem>
     if (!bytes) throw new Error(`받은 팩에 파일이 빠졌습니다(${sha.slice(0, 12)}). 다시 받아 주세요.`);
     return bytes;
   };
-  const context = { slug, version: pkg.version, author: pkg.author, storeUrl: pkg.storeUrl, itemUrl: pkg.itemUrl, blob };
-  // 빈 문서로 먼저 넣어 본다 — 깨진 팩이면 여기서 멈추고 실제 프로젝트·저장소는 건드리지 않는다.
-  applyPackToProject({ tilesets: {}, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
   const repository = projectRepository();
   const storedRefs = new Map<string, NonNullable<UploadedAsset["ref"]>>();
   if (repository.supportsAssetRefs) {
     for (const { id, asset } of packAssetTargets(pkg.manifest, slug)) {
       const bytes = blob(asset.blob);
-      const mime = sniffMime(bytes) ?? asset.mime;
-      const stored = await uploadedAssetForImport({ repository, id, name: asset.name, kind: asset.kind, dataUrl: `data:${mime};base64,${bytesToBase64(bytes)}`, meta: asset.meta, mime });
+      const mime = sniffMime(bytes);
+      if (!mime || mime !== asset.mime) throw new Error(`${asset.name}: 받은 파일 형식이 팩 설명과 다릅니다.`);
+      const stored = await repository.assets.put(bytes, {
+        mime,
+        extension: MIME_EXTENSIONS[mime] ?? "bin",
+        originalName: asset.name,
+        kind: asset.kind,
+      });
       if (stored.ref) storedRefs.set(id, stored.ref);
     }
   }
-  return { manifest: pkg.manifest, version: pkg.version, context: { ...context, storedRefs } };
+  const restoredDataUrls = new Map<string, string>();
+  const context: ApplyContext = {
+    slug,
+    version: pkg.version,
+    author: pkg.author,
+    storeUrl: pkg.storeUrl,
+    itemUrl: pkg.itemUrl,
+    blob,
+    storedRefs,
+    restoredDataUrls,
+  };
+  // 빈 문서(번들 타일셋 참조만 공유)로 먼저 넣어 본다 — 깨진 팩이면 실제 프로젝트는 건드리지 않고, 복원한 dataUrl 은 캐시해 재사용한다.
+  const currentTilesets = store.getCurrent().tilesets;
+  const probeTilesets: Record<string, Project["tilesets"][string]> = {};
+  for (const id of Object.keys(pkg.manifest.content.tilesets)) {
+    if (currentTilesets[id]) probeTilesets[id] = currentTilesets[id]!;
+  }
+  applyPackToProject({ tilesets: probeTilesets, assets: { uploaded: {} } } as unknown as Project, pkg.manifest, context);
+  return { manifest: pkg.manifest, version: pkg.version, context };
 }
-
 /** 준비한 판본을 문서에 넣는다(동기). 패널은 store.update 안에서, 조수 도구는 draft 에서 부른다. */
 export function applyPreparedStoreItem(project: Project, prepared: PreparedStoreItem): ApplyResult {
   const result = applyPackToProject(project, prepared.manifest, prepared.context);

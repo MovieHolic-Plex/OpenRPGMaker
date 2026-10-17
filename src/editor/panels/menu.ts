@@ -25,6 +25,7 @@ import {
   createProjectPackage,
   ProjectPackageError,
   projectPackageFileName,
+  projectWithInlineUploadedMedia,
   readProjectPackage,
   LEGACY_RPGZZU_MIME,
   OPRN_MIME,
@@ -1030,7 +1031,7 @@ export async function exportProjectPackage(): Promise<void> {
       console.error("[export] flush before export failed:", error);
       toast("저장은 실패했지만 현재 상태를 내보냅니다", "info");
     });
-    const project = projectWithoutEventDrafts(store.getCurrent());
+    const project = await projectWithInlineUploadedMedia(projectWithoutEventDrafts(store.getCurrent()));
     const blob = createProjectPackage(project);
     downloadBlob(blob, projectPackageFileName(project));
     toast("내보냈습니다", "ok");
