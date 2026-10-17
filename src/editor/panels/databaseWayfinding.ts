@@ -4,6 +4,7 @@
 // 도착지는 이미 있는 화면(탭 + 시스템 구획 + 카드)을 가리킬 뿐이고, 새 화면을 만들지 않는다.
 import type { DatabaseTab } from "@/editor/panels/database";
 import type { SystemSectionSlug } from "@/editor/panels/databaseSystemView";
+import type { InterviewGenre } from "@/project/gameInterview";
 
 export type DatabaseSearchDestination = {
   readonly id: string;
@@ -141,4 +142,42 @@ export function recentDatabaseTabs(current: DatabaseTab, isKnownTab: (id: string
 export function resetDatabaseWayfindingMemory(): void {
   recentTabs = null;
   subLocation = null;
+}
+
+// ── 장르 프로필 접기 (PR-4) ───────────────────────────────────────────────────────
+// 기본 DB 는 레코드가 미리 채워져 있어(몬스터 106·스킬 1,243) 「빈 탭 접기」만으로는
+// 연애·추리 프로젝트에서도 전투 9탭·직업·스킬이 그대로 펼쳐져 있다.
+// `gameDesignBrief.interview.genre` 가 있는 프로젝트만 장르 프로필로 초기 접기를 더하고,
+// 없는 프로젝트(대부분의 시드·옛 프로젝트)는 숨김 0 이다.
+const BATTLE_PROFILE_TABS: readonly DatabaseTab[] = [
+  "enemies",
+  "monsterSpecies",
+  "troops",
+  "factions",
+  "elements",
+  "states",
+  "retroChoreographies",
+  "battleScreen",
+  "battleCommands",
+];
+
+const LIFE_PROFILE_TABS: readonly DatabaseTab[] = [
+  "crops",
+  "lifeCrafting",
+  "dailyWeather",
+  "farmAnimals",
+  "farmSpatial",
+  "lifeCollections",
+];
+
+export const GENRE_FOLD_PROFILE: Readonly<Record<InterviewGenre, readonly DatabaseTab[]>> = {
+  romance: [...BATTLE_PROFILE_TABS, ...LIFE_PROFILE_TABS, "classes", "skills"],
+  mystery: [...BATTLE_PROFILE_TABS, ...LIFE_PROFILE_TABS, "classes", "skills"],
+  adventure: [...LIFE_PROFILE_TABS, "monsterSpecies"],
+  monster: [...LIFE_PROFILE_TABS],
+};
+
+export function genreFoldedTabs(genre: InterviewGenre | undefined): readonly DatabaseTab[] {
+  if (!genre || !Object.prototype.hasOwnProperty.call(GENRE_FOLD_PROFILE, genre)) return [];
+  return GENRE_FOLD_PROFILE[genre];
 }

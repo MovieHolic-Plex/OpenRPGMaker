@@ -24,6 +24,7 @@ import {
 } from "@/editor/panels/databaseSkillAnimationStage";
 import { renderSystemTab, requestSystemSection } from "@/editor/panels/databaseSystemView";
 import {
+  genreFoldedTabs,
   matchSearchDestinations,
   recentDatabaseTabs,
   recordRecentDatabaseTab,
@@ -406,7 +407,8 @@ function isEmptyListTab(id: DatabaseTab): boolean {
 function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
   if (revealedEmptyGroupSlugs().has(group.slug)) return [];
   const active = primaryTab(activeTab);
-  return group.tabs.filter((id) => id !== active && isEmptyListTab(id));
+  const profileFolded = genreFoldedTabs(store.getCurrent().gameDesignBrief?.interview?.genre);
+  return group.tabs.filter((id) => id !== active && (isEmptyListTab(id) || profileFolded.includes(id)));
 }
 
 /** 그룹마다 빈 탭을 숨기고 「빈 탭 N개」 줄을 맞춘다. 데이터·활성 탭이 바뀔 때마다 다시 부른다.
@@ -415,6 +417,7 @@ function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
 function applyEmptyTabFold(header: HTMLElement): void {
   let group: DatabaseTabGroup | undefined;
   let folded = new Set<DatabaseTab>();
+  const profileFolded = genreFoldedTabs(store.getCurrent().gameDesignBrief?.interview?.genre);
   for (const child of railChildren(header)) {
     const classes = child.classList;
     if (!classes) continue;
@@ -460,7 +463,8 @@ function applyEmptyTabFold(header: HTMLElement): void {
     const names = [...folded].map((id) => tabFor(id).label);
     child.hidden = folded.size === 0;
     const [count, text] = Array.from(child.children) as HTMLElement[];
-    if (count) count.textContent = `빈 탭 ${folded.size}개`;
+    const hasProfileFold = group.tabs.some((id) => folded.has(id) && profileFolded.includes(id));
+    if (count) count.textContent = hasProfileFold ? `숨긴 탭 ${folded.size}개 · 모두 보기` : `빈 탭 ${folded.size}개`;
     if (text) text.textContent = names.join("·");
     child.setAttribute("title", `비어 있는 탭 펼치기 — ${names.join(", ")}`);
     child.setAttribute("aria-label", `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
@@ -579,6 +583,7 @@ export function databaseTabLabel(tab: DatabaseTab): string {
 
 export function renderDatabasePanel(container: HTMLElement): void {
   spatialDatabaseHost = container;
+  revealedEmptyGroups = null;
   const cache = tabRenderCaches.get(container);
   if (cache) for (const tab of cache.views.keys()) evictDatabaseTabView(cache, tab);
   disposeDatabasePreviewsIn(container);
