@@ -57,6 +57,15 @@ describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
     expect(jrpgCompletionGaps(off, "").some((gap) => gap.includes("오프닝"))).toBe(false);
   });
 
+  it("requires two joining companions when the request promises companions (ct2 had none)", () => {
+    const talk = (id: string, commands: unknown[]) => ({ id, name: id, x: 1, y: 2, pages: [{ id: `${id}_p`, trigger: { kind: "action" }, commands }] });
+    const none = jrpg();
+    expect(jrpgCompletionGaps(none, "", { task: "시대마다 동료를 만나는 RPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(true);
+    const two = jrpg({ maps: { m1: { id: "m1", name: "마을", events: [talk("a", [{ kind: "changeParty", action: "add", actorId: "x1" }]), talk("b", [{ kind: "changeParty", action: "add", actorId: "x2" }])] } } });
+    expect(jrpgCompletionGaps(two, "", { task: "시대마다 동료를 만나는 RPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
+    expect(jrpgCompletionGaps(none, "", { task: "그냥 JRPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
+  });
+
   it("uses the request text as part of the brief for the time-ending check", () => {
     const project = jrpg({ endings: [{ id: "ending_first_segment", name: "첫 구간 끝" }] });
     expect(jrpgCompletionGaps(project, "", { task: "과거와 미래를 오가는 RPG 만들어 줘" }).some((gap) => gap.includes("첫 구간 끝"))).toBe(true);
