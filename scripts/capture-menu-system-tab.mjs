@@ -36,7 +36,7 @@ async function open(romance) {
 }
 const shot = async (modal, name) => modal.screenshot({ path: `${OUT}/${MODE}${process.env.VIEWPORT ? "-" + process.env.VIEWPORT : ""}${process.env.LOCALE ? "-" + process.env.LOCALE : ""}-${name}.png` });
 const cards = async (page, name) => {
-  for (const card of ["dialogue", "extras"]) {
+  for (const card of ["dialogue", "look", "extras"]) {
     const node = page.getByTestId(`db-menu-system-${card}-card`);
     await node.scrollIntoViewIfNeeded();
     await node.screenshot({ path: `${OUT}/${MODE}${process.env.VIEWPORT ? "-" + process.env.VIEWPORT : ""}${process.env.LOCALE ? "-" + process.env.LOCALE : ""}-${name}-${card}-card.png` });
@@ -53,6 +53,8 @@ const project = (page, expr) => page.evaluate(expr);
   await page.getByTestId("db-menu-system-backlog").evaluate((el) => el.click());
   await page.getByTestId("db-menu-system-gallery").evaluate((el) => el.click());
   await shot(modal, "a3-general-after-toggles");
+  await page.getByTestId("db-menu-system-look-card").scrollIntoViewIfNeeded();
+  await shot(modal, "a4-general-look-legacy");
   await cards(page, "a3-general");
   console.log("general menuUiStyle", await project(page, () => window.__oprnEditorStore.getCurrent().system.menuUiStyle));
   await context.close();
@@ -73,6 +75,13 @@ const project = (page, expr) => page.evaluate(expr);
   await page.getByTestId("db-menu-system-label-items").fill("   ");
   await page.getByTestId("db-menu-system-label-items").press("Enter");
   await shot(modal, "b4-romance-rejected-label");
+  // 대사창 룩(#2816): 소재 기본 룩이 처음부터 보이고, 프리셋을 바꾸면 이 게임만의 룩이 된다.
+  await page.getByTestId("db-menu-system-look-card").scrollIntoViewIfNeeded();
+  await shot(modal, "b5-romance-look-default");
+  await page.getByTestId("db-menu-system-look-preset").selectOption("paper-note");
+  await page.getByTestId("db-menu-system-look-font").getByText("크게").click();
+  await shot(modal, "b6-romance-look-paper-note-large");
+  console.log("look", await project(page, () => JSON.stringify(window.__oprnEditorStore.getCurrent().meta.oprnVnLook)));
   await context.close();
 }
 await browser.close();

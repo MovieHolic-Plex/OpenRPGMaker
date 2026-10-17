@@ -97,11 +97,39 @@ describe("menuSystem 공용 규칙", () => {
     const project = createBlankProject();
     applyMenuSystemEdit(project, { menu: starterFieldMenu() });
     project.meta.oprnVnExtras = mergeVnExtras(undefined, { gallery: true });
+    project.endings = [{ id: "end_a", name: "A", priority: 1, conditions: [] }] as never; // 열 내용(본 엔딩 회상)이 있어야 짚는다
     const issue = menuSystemIssues(project).find((i) => i.id === "gallery-on-no-entry");
     expect(issue).toBeDefined();
     expect(issue!.tool).toContain("configure_field_menu");
     applyMenuSystemEdit(project, { menu: menuWithEntry(fieldMenu(project)!, "gallery") });
     expect(menuSystemIssues(project).some((i) => i.id === "gallery-on-no-entry")).toBe(false);
+  });
+
+  it("연애 기본 구성의 CG 0 은 경고하지 않고 작가가 갤러리를 직접 켠 경우만 짚는다", () => {
+    const project = createBlankProject();
+    project.system.genreLock = { preset: "romance" } as never;
+    expect(menuSystemIssues(project).some((i) => i.id === "gallery-no-cg")).toBe(false);
+    project.meta.oprnVnExtras = mergeVnExtras(undefined, { gallery: true });
+    expect(menuSystemIssues(project).some((i) => i.id === "gallery-no-cg")).toBe(true);
+  });
+
+  it("메뉴를 다시 적용해도 작가가 꺼 둔 갤러리·엔딩은 되돌리지 않고 알린다", () => {
+    const project = createBlankProject();
+    project.meta.oprnVnExtras = mergeVnExtras(undefined, { gallery: false, endings: false });
+    const notices = applyMenuSystemEdit(project, { menu: menuWithEntry(menuWithEntry(starterFieldMenu(), "gallery"), "endings") });
+    expect(resolveVnExtras(project)?.gallery.enabled).toBe(false);
+    expect(resolveVnExtras(project)?.endings.enabled).toBe(false);
+    expect(notices.join(" ")).toContain("꺼 둔 상태");
+  });
+
+  it("대사창 룩을 편집으로 저장·지우고 잘못된 프리셋은 거절한다", () => {
+    const project = createBlankProject();
+    applyMenuSystemEdit(project, { look: { version: 1, preset: "paper-note", fontScale: "large" } });
+    expect(project.meta.oprnVnLook).toEqual({ version: 1, preset: "paper-note", fontScale: "large" });
+    expect(() => validateMenuSystemEdit({ look: { version: 1, preset: "nope" } as never })).toThrow();
+    expect(describeMenuSystemError(new Error("vnLook: preset must be one of a|b"))).toContain("프리셋");
+    applyMenuSystemEdit(project, { look: null });
+    expect(project.meta.oprnVnLook).toBeUndefined();
   });
 
   it("어긋남 목록은 화면 문장에 도구 이름이 없고 도구 문장에는 고치는 호출이 있다", () => {
@@ -178,7 +206,7 @@ describe("메뉴·시스템 탭 (저장·되돌리기·재로드)", () => {
     store.replace(romanceProject());
     const host = render();
     expect(need(host, "db-menu-system-status").textContent).toContain("처음부터 켜져");
-    expect(menuSystemIssues(store.getCurrent()).map((i) => i.id)).toEqual(["endings-none", "gallery-no-cg"]); // 빈 프로젝트라 엔딩·그림이 없을 뿐, 메뉴와 기능은 어긋나지 않는다
+    expect(menuSystemIssues(store.getCurrent()).map((i) => i.id)).toEqual(["endings-none"]); // 빈 프로젝트라 엔딩이 없을 뿐, 메뉴와 기능은 어긋나지 않는다 — 연애 기본 구성은 CG 0 이어도 경고하지 않는다(리뷰 C1)
     const input = need(host, "db-menu-system-label-items");
     (input as unknown as { value: string }).value = "가방";
     input.dispatchEvent(new Event("change"));

@@ -5,6 +5,7 @@
 import { backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type AuthoredDialogueSystem } from "./dialogueSystem";
 import { FIELD_MENU_COMMANDS, collectorFieldMenu, fieldMenu, romanceFieldMenu, validateFieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from "./fieldMenu";
 import { galleryActive, listGallerySlots, mergeVnExtras, resolveVnExtras, validateVnExtras, type AuthoredVnExtras } from "./vnExtras";
+import { validateVnLook, type AuthoredVnLook } from "./vnLook";
 import type { Project } from "./types";
 
 /** 메뉴 항목을 새로 넣을 때 쓰는 기본 이름(12자 이하). 플레이어 기본 이름과 같은 말을 쓴다. */
@@ -59,9 +60,8 @@ export function menuSystemIssues(project: Project): readonly MenuSystemIssue[] {
  * 메뉴에 백로그·갤러리·엔딩 항목이 들어갔는데 그 기능이 꺼져 있으면 같이 켠다(조용히 안 보이는 항목을 만들지 않는다).
  * project 를 직접 고치고, 무엇을 켰는지 문장 목록을 돌려준다.
  * 작가가 이미 저작해 둔 갤러리·엔딩 설정(`oprnVnExtras`)은 메뉴를 다시 적용한다는 이유로 조용히 뒤집지 않는다 — 꺼 둔 기능은 알리기만 한다(리뷰 C6).
- * 단 `explicitNew`(이번 편집에서 새로 넣은 항목)는 사람이 지금 원한 것이니 켠다.
  */
-export function syncMenuFeatures(project: Project, menu: AuthoredFieldMenu | undefined, explicitNew: ReadonlySet<FieldMenuCommand> = new Set()): string[] {
+export function syncMenuFeatures(project: Project, menu: AuthoredFieldMenu | undefined): string[] {
   const notices: string[] = [];
   if (!menu) return notices;
   const has = (command: FieldMenuCommand): boolean => menu.entries.some((entry) => entry.command === command);
@@ -75,8 +75,8 @@ export function syncMenuFeatures(project: Project, menu: AuthoredFieldMenu | und
     const wantEndings = has("endings") && !vn?.endings.enabled;
     if (wantGallery || wantEndings) {
       const keepOff = project.meta.oprnVnExtras !== undefined;
-      const enableGallery = wantGallery && (!keepOff || explicitNew.has("gallery"));
-      const enableEndings = wantEndings && (!keepOff || explicitNew.has("endings"));
+      const enableGallery = wantGallery && !keepOff;
+      const enableEndings = wantEndings && !keepOff;
       const keptNames = [wantGallery && !enableGallery ? "갤러리" : "", wantEndings && !enableEndings ? "엔딩" : ""].filter(Boolean).join("·");
       if (enableGallery || enableEndings) {
         project.meta.oprnVnExtras = mergeVnExtras(vn, { ...(enableGallery ? { gallery: true } : {}), ...(enableEndings ? { endings: true } : {}) });
@@ -91,11 +91,9 @@ export function syncMenuFeatures(project: Project, menu: AuthoredFieldMenu | und
 /** 메뉴 저작 반영: 검증 → 저장(없으면 삭제=기본 메뉴) → 연동 켜기. 검증 실패는 던진다(프로젝트는 손대지 않는다). */
 export function applyFieldMenuAuthoring(project: Project, menu: AuthoredFieldMenu | undefined): string[] {
   if (menu) validateFieldMenu(menu);
-  const before = new Set((fieldMenu(project)?.entries ?? []).map((entry) => entry.command));
-  const added = new Set((menu?.entries ?? []).map((entry) => entry.command).filter((command) => !before.has(command)));
   if (menu) project.meta.oprnFieldMenu = menu;
   else delete project.meta.oprnFieldMenu;
-  return syncMenuFeatures(project, menu, added);
+  return syncMenuFeatures(project, menu);
 }
 
 /** 대사창 저작 반영: 검증 후 저장. undefined 면 저작을 지워 자동 판정으로 돌린다. */
@@ -169,6 +167,8 @@ export type MenuSystemEdit = {
   readonly menu?: AuthoredFieldMenu | null;
   readonly dialogue?: AuthoredDialogueSystem | null;
   readonly vn?: AuthoredVnExtras | null;
+  /** 대사창 룩(스킨) — `meta.oprnVnLook`. 지우면 연애 게임은 소재별 기본 룩, 그 밖은 옛 대사창. */
+  readonly look?: AuthoredVnLook | null;
 };
 
 /** 프로젝트를 건드리기 전에 편집 전체를 검증한다. 어긋나면 던진다 — 화면은 이 메시지를 그대로 보인다. */
@@ -176,6 +176,7 @@ export function validateMenuSystemEdit(edit: MenuSystemEdit): void {
   if (edit.menu) validateFieldMenu(edit.menu);
   if (edit.dialogue) validateDialogueSystem(edit.dialogue);
   if (edit.vn) validateVnExtras(edit.vn);
+  if (edit.look) validateVnLook(edit.look);
 }
 
 /** 검증된 편집을 반영하고, 연동으로 켠 기능 안내를 돌려준다. 메뉴가 새로 생기거나 사라질 때만 창 모양을 맞춘다. */
@@ -184,6 +185,10 @@ export function applyMenuSystemEdit(project: Project, edit: MenuSystemEdit): str
   const notices: string[] = [];
   if (edit.dialogue !== undefined) applyDialogueSystemAuthoring(project, edit.dialogue ?? undefined);
   if (edit.vn !== undefined) applyVnExtrasAuthoring(project, edit.vn ?? undefined);
+  if (edit.look !== undefined) {
+    if (edit.look) project.meta.oprnVnLook = edit.look;
+    else delete project.meta.oprnVnLook;
+  }
   if (edit.menu !== undefined) {
     const was = project.meta.oprnFieldMenu !== undefined;
     notices.push(...applyFieldMenuAuthoring(project, edit.menu ?? undefined));
@@ -199,6 +204,8 @@ export function describeMenuSystemError(error: unknown): string {
   if (/fieldMenu: version1 and 1\.\.12/.test(message)) return "메뉴 항목은 1~12개여야 합니다.";
   if (/fieldMenu: invalid or duplicate/.test(message)) return "같은 항목을 두 번 넣을 수 없습니다.";
   if (/fieldMenu: title return must be last/.test(message)) return "「타이틀로」는 항상 맨 끝에 있어야 합니다.";
+  if (/vnLook: preset must be/.test(message)) return "대사창 룩 프리셋이 목록에 없습니다.";
+  if (/vnLook: /.test(message)) return "대사창 룩 설정 값이 올바르지 않습니다.";
   const limit = /backlog\.limit integer (\d+)\.\.(\d+)/.exec(message);
   if (limit) return `백로그 줄 수는 ${limit[1]}~${limit[2]} 사이 정수여야 합니다.`;
   const opacity = /windowOpacity ([\d.]+)\.\.([\d.]+)/.exec(message);

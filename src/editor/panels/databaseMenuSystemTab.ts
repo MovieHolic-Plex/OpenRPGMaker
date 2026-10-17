@@ -47,6 +47,23 @@ import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { defaultVnExtras, listEndingRows, listGallerySlots, mergeVnExtras, resolveVnExtras, type VnExtrasPatch } from "@/project/vnExtras";
+import {
+  VN_CHOICE_STYLES,
+  VN_FONT_SCALES,
+  VN_LETTER_SPACINGS,
+  VN_LINE_SPACINGS,
+  VN_NAMEPLATES,
+  VN_PORTRAIT_ENTRANCES,
+  VN_PRESETS,
+  VN_PRESET_IDS,
+  VN_UI_THEMES,
+  VN_WAIT_ICONS,
+  mergeVnLook,
+  resolveVnLook,
+  type AuthoredVnLook,
+  type VnLookPatch,
+  type VnPresetId,
+} from "@/project/vnLook";
 import { el } from "@/util/dom";
 
 const LANGUAGE_NAMES: Readonly<Record<(typeof DIALOGUE_UI_LANGUAGES)[number], string>> = {
@@ -65,6 +82,16 @@ const SKIP_OPTIONS = [
   { id: "read", name: "읽은 글만" },
   { id: "all", name: "전부" },
 ] as const;
+const LOOK_NAMEPLATE_NAMES: Readonly<Record<(typeof VN_NAMEPLATES)[number], string>> = { tab: "위로 솟은 탭", pill: "둥근 알약", ribbon: "리본" };
+const LOOK_CHOICE_NAMES: Readonly<Record<(typeof VN_CHOICE_STYLES)[number], string>> = { bar: "가로 막대", card: "카드", bubble: "풍선" };
+const LOOK_WAIT_NAMES: Readonly<Record<(typeof VN_WAIT_ICONS)[number], string>> = { arrow: "화살표", heart: "하트", dot: "점" };
+const LOOK_SIZE_NAMES = { small: "작게", normal: "보통", large: "크게" } as const;
+const LOOK_SPACING_NAMES = { tight: "촘촘히", normal: "보통", loose: "넓게" } as const;
+const LOOK_LETTER_NAMES = { tight: "좁게", normal: "보통", wide: "넓게" } as const;
+const LOOK_ENTRANCE_NAMES = { none: "없음", fade: "서서히", slide: "미끄러져" } as const;
+const LOOK_UI_THEME_NAMES = { match: "룩과 같은 색", legacy: "예전 청색 창" } as const;
+const LOOK_PRESET_DEFAULT = "preset";
+const LOOK_LEGACY_OPTION = "legacy";
 const MENU_MAX_ENTRIES = 12;
 /** 설정이 어긋난 게 아니라 아직 채울 내용(엔딩·그림)이 없다는 안내 — 경고색이 아니라 안내색으로 보인다. */
 const CONTENT_ISSUES: ReadonlySet<string> = new Set(["endings-none", "gallery-no-cg"]);
@@ -116,11 +143,12 @@ function commit(label: string, edit: MenuSystemEdit, rerender: () => void, optio
   if (options.focus) refocus(options.focus);
 }
 
-function authoredFlags(project: Project): { readonly menu: boolean; readonly dialogue: boolean; readonly vn: boolean } {
+function authoredFlags(project: Project): { readonly menu: boolean; readonly dialogue: boolean; readonly vn: boolean; readonly look: boolean } {
   return {
     menu: project.meta.oprnFieldMenu !== undefined,
     dialogue: project.meta.oprnDialogueSystem !== undefined,
     vn: project.meta.oprnVnExtras !== undefined,
+    look: project.meta.oprnVnLook !== undefined,
   };
 }
 
@@ -338,6 +366,56 @@ function dialogueCard(project: Project, rerender: () => void): HTMLElement {
   return sectionCard({ title: "대사창", hint: sourceHint(authored, relationship && resolved !== undefined), testid: "db-menu-system-dialogue-card", children });
 }
 
+function lookCard(project: Project, rerender: () => void): HTMLElement {
+  const resolved = resolveVnLook(project);
+  const authored = project.meta.oprnVnLook !== undefined;
+  const relationship = usesRelationshipMenu(project);
+  const base: AuthoredVnLook | undefined = project.meta.oprnVnLook ?? (resolved ? { version: 1, preset: resolved.preset } : undefined);
+  const patchWith = (patch: VnLookPatch, focus: string): void => commit("대사창 룩 편집", { look: mergeVnLook(base, patch) }, rerender, { focus });
+  const presetDef = VN_PRESETS[resolved?.preset ?? "bar-tab"];
+  const optional = <T extends string>(names: Readonly<Record<T, string>>, ids: readonly T[], presetValue: T): readonly { readonly id: string; readonly name: string }[] => [
+    { id: LOOK_PRESET_DEFAULT, name: `프리셋 기본(${names[presetValue]})` },
+    ...ids.map((id) => ({ id, name: names[id] })),
+  ];
+  const authoredValue = <T extends string>(key: keyof AuthoredVnLook): T | typeof LOOK_PRESET_DEFAULT => (base?.[key] as T | undefined) ?? LOOK_PRESET_DEFAULT;
+  const children: HTMLElement[] = [
+    el("p", { class: "db-menu-system-lead", text: "대사창·ESC 메뉴·저장 화면의 모양(색·모서리·이름표·선택지)을 프리셋 하나로 고릅니다. 연애 게임은 소재(캠퍼스·카페·회사·바닷가·학원)에 맞는 룩이 처음부터 적용되어 있고, 다른 장르는 고르기 전까지 옛 대사창 그대로입니다." }),
+  ];
+  if (!resolved) {
+    children.push(
+      el("p", { class: "db-menu-system-lead", dataset: { testid: "db-menu-system-look-legacy" }, text: "지금은 옛 대사창을 씁니다. 프리셋을 고르면 이 게임의 대사창 룩이 됩니다." }),
+      selectField("대사창 룩", "db-menu-system-look-preset", LOOK_LEGACY_OPTION, [{ id: LOOK_LEGACY_OPTION, name: "옛 대사창(기본)" }, ...VN_PRESET_IDS.map((id) => ({ id, name: VN_PRESETS[id].label }))], (value) => {
+        if (value !== LOOK_LEGACY_OPTION) commit("대사창 룩 편집", { look: mergeVnLook(undefined, { preset: value as VnPresetId }) }, rerender, { focus: "db-menu-system-look-preset" });
+      }),
+    );
+    return sectionCard({ title: "대사창 룩", hint: sourceHint(false, false), testid: "db-menu-system-look-card", children });
+  }
+  children.push(
+    el("div", {
+      class: "db-menu-system-grid db-menu-system-look-grid",
+      children: [
+        selectField("프리셋", "db-menu-system-look-preset", resolved.preset, VN_PRESET_IDS.map((id) => ({ id, name: VN_PRESETS[id].label })), (value) => patchWith({ preset: value as VnPresetId }, "db-menu-system-look-preset")),
+        field("이 프리셋은", el("span", { class: "db-menu-system-counts db-menu-system-look-fit", dataset: { testid: "db-menu-system-look-fit" }, text: `${presetDef.description} (어울리는 곳: ${presetDef.fit})` })),
+        selectField("이름표 모양", "db-menu-system-look-nameplate", authoredValue("nameplate"), optional(LOOK_NAMEPLATE_NAMES, VN_NAMEPLATES, presetDef.nameplate), (value) => patchWith({ nameplate: value as VnLookPatch["nameplate"] }, "db-menu-system-look-nameplate")),
+        selectField("선택지 모양", "db-menu-system-look-choice", authoredValue("choiceStyle"), optional(LOOK_CHOICE_NAMES, VN_CHOICE_STYLES, presetDef.choiceStyle), (value) => patchWith({ choiceStyle: value as VnLookPatch["choiceStyle"] }, "db-menu-system-look-choice")),
+        selectField("다음 글 표시", "db-menu-system-look-wait", authoredValue("waitIcon"), optional(LOOK_WAIT_NAMES, VN_WAIT_ICONS, presetDef.waitIcon), (value) => patchWith({ waitIcon: value as VnLookPatch["waitIcon"] }, "db-menu-system-look-wait")),
+        segmentedControl("글자 크기", "db-menu-system-look-font", resolved.fontScale, VN_FONT_SCALES.map((id) => ({ id, name: LOOK_SIZE_NAMES[id] })), (value) => patchWith({ fontScale: value as VnLookPatch["fontScale"] }, "db-menu-system-look-font")),
+        segmentedControl("줄 간격", "db-menu-system-look-line", resolved.lineSpacing, VN_LINE_SPACINGS.map((id) => ({ id, name: LOOK_SPACING_NAMES[id] })), (value) => patchWith({ lineSpacing: value as VnLookPatch["lineSpacing"] }, "db-menu-system-look-line")),
+        segmentedControl("글자 간격", "db-menu-system-look-letter", resolved.letterSpacing, VN_LETTER_SPACINGS.map((id) => ({ id, name: LOOK_LETTER_NAMES[id] })), (value) => patchWith({ letterSpacing: value as VnLookPatch["letterSpacing"] }, "db-menu-system-look-letter")),
+        segmentedControl("초상 등장", "db-menu-system-look-entrance", resolved.portraitEntrance, VN_PORTRAIT_ENTRANCES.map((id) => ({ id, name: LOOK_ENTRANCE_NAMES[id] })), (value) => patchWith({ portraitEntrance: value as VnLookPatch["portraitEntrance"] }, "db-menu-system-look-entrance")),
+        segmentedControl("ESC 메뉴·저장 화면 색", "db-menu-system-look-ui-theme", resolved.uiTheme, VN_UI_THEMES.map((id) => ({ id, name: LOOK_UI_THEME_NAMES[id] })), (value) => patchWith({ uiTheme: value as VnLookPatch["uiTheme"] }, "db-menu-system-look-ui-theme")),
+      ],
+    }),
+    el("div", { class: "db-menu-system-toggles", children: [toggleSwitch("읽은 글을 옅은 색으로 구분", "db-menu-system-look-read-color", resolved.readColor, (checked) => patchWith({ readColor: checked }, "db-menu-system-look-read-color"))] }),
+  );
+  if (authored) {
+    children.push(resetButton(relationship ? "소재별 기본 룩으로 되돌리기" : "저작 지우기(옛 대사창으로)", "db-menu-system-look-reset", () => commit("대사창 룩 편집", { look: null }, rerender)));
+  } else {
+    children.push(noticeBar({ text: "아직 직접 고른 룩이 없어 소재에 맞는 기본 룩을 보여 주고 있습니다. 아무 칸이나 바꾸면 이 게임만의 룩이 됩니다.", tone: "info", testid: "db-menu-system-look-default-note" }));
+  }
+  return sectionCard({ title: "대사창 룩", hint: sourceHint(authored, relationship && resolved !== undefined), testid: "db-menu-system-look-card", children });
+}
+
 function extrasCard(project: Project, rerender: () => void): HTMLElement {
   const resolved = resolveVnExtras(project);
   const current = resolved ?? defaultVnExtras();
@@ -350,7 +428,7 @@ function extrasCard(project: Project, rerender: () => void): HTMLElement {
   const endingsOff = !current.endings.enabled;
   const inherit = current.language ?? "inherit";
   const children: HTMLElement[] = [
-    el("p", { class: "db-menu-system-lead", text: "새 그림은 만들지 않습니다. 이미 있는 「갤러리에 기록」 그림, 엔딩 정의, 저장 칸을 읽어 보여 줄 뿐입니다." }),
+    el("p", { class: "db-menu-system-lead", text: "새 그림은 만들지 않습니다. 이미 있는 「갤러리에 기록」 그림, 엔딩 정의, 저장 칸을 읽어 보여 줄 뿐입니다. 한 번 본 엔딩과 한 번 연 그림은 저장 칸이 아니라 이 기기에 남아, 다른 저장 칸·새 게임·옛 저장을 불러온 뒤에도 그대로 열려 있습니다." }),
     el("div", {
       class: "db-menu-system-toggles",
       children: [
@@ -382,7 +460,7 @@ function extrasCard(project: Project, rerender: () => void): HTMLElement {
 function introLine(project: Project): HTMLElement {
   const relationship = usesRelationshipMenu(project);
   const flags = authoredFlags(project);
-  const anyAuthored = flags.menu || flags.dialogue || flags.vn;
+  const anyAuthored = flags.menu || flags.dialogue || flags.vn || flags.look;
   const status = anyAuthored
     ? "이 게임에서 일부 또는 전부를 직접 저작했습니다."
     : relationship
@@ -427,7 +505,7 @@ export function renderMenuSystemTab(host: HTMLElement): void {
   }
   const issues = issuesBlock(project, rerender);
   if (issues) stack.append(issues);
-  stack.append(menuCard(project, rerender), dialogueCard(project, rerender), extrasCard(project, rerender));
+  stack.append(menuCard(project, rerender), dialogueCard(project, rerender), lookCard(project, rerender), extrasCard(project, rerender));
   form.append(heading, stack);
   host.append(form);
 }
