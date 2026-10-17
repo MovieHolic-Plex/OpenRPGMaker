@@ -44,7 +44,7 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
                'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
-               'interior_hospital', 'interior_school2', 'interior_office2']
+               'interior_hospital', 'interior_school2', 'interior_office2', 'shitamachi_pack']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')

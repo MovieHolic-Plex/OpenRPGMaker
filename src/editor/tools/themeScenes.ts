@@ -26,6 +26,7 @@ export interface ThemeScene {
   readonly extraArgs?: (map: { readonly width: number; readonly height: number }) => Record<string, unknown>;
 }
 
+import { flavorFromText } from "@/project/jpShitamachiStreet";
 import type { Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -52,8 +53,8 @@ export const THEME_SCENES: readonly ThemeScene[] = [
     about: "현대 도시 상점 거리", keywords: ["현대", "도심", "modern", "city street", "빌딩"] },
   { id: "campus", label: "캠퍼스", tilesetId: "modern_campus", tool: "compose_campus_grounds", styleParam: "style", styles: ["school", "university"], defaultStyle: "school",
     about: "학교·대학 캠퍼스 부지", keywords: ["캠퍼스", "학교", "대학", "campus", "school", "university"] },
-  { id: "jp_city", label: "일본 상점가", tilesetId: "jp_city", tool: "compose_jp_city_street", styleParam: "style", styles: ["shopping", "residential"], defaultStyle: "shopping",
-    about: "일본 상점가·주택가 거리", keywords: ["일본", "상점가", "주택가", "jp", "japan", "shotengai"] },
+  { id: "jp_city", label: "일본 상점가", tilesetId: "jp_city", tool: "compose_jp_city_street", styleParam: "style", styles: ["shopping", "residential", "shitamachi", "shotengai"], defaultStyle: "shopping",
+    about: "일본 상점가·주택가 거리 · shitamachi = 시타마치 상점가 골목 · shotengai = 쇼텐가이 아케이드 상가", keywords: ["일본", "상점가", "주택가", "골목", "시장", "아케이드", "시타마치", "jp", "japan", "shotengai", "shitamachi"] },
   { id: "wizarding", label: "마법 학교", tilesetId: "wizarding_world", tool: "build_wizarding_space", styleParam: "space",
     styles: ["shared", "owlery", "potions", "clocktower", "postoffice", "wandshop", "library", "greenhouse", "infirmary", "honeydukes", "carriage", "quidditch", "boathouse"], defaultStyle: "shared",
     about: "마법 학교 공간(13종)", keywords: ["마법학교", "마법 학교", "호그와트", "wizarding", "hogwarts"] },
@@ -89,7 +90,7 @@ const SIZES: Readonly<Record<string, Readonly<Record<string, readonly [number, n
   sengoku_edo: { castle_town: [56, 48], inn_street: [56, 40], samurai: [52, 36], castle: [44, 38], temple: [54, 38], village: [54, 42] },
   sf_station: { station: [44, 32], street: [48, 30], lab: [40, 30], moonbase: [48, 32] },
   campus: { school: [52, 40], university: [56, 44] },
-  jp_city: { shopping: [48, 32], residential: [48, 32] },
+  jp_city: { shopping: [48, 32], residential: [48, 32], shitamachi: [52, 34], shotengai: [52, 34] },
   beodeul_town: { river: [56, 44], coast: [56, 44], desert: [56, 44], snow: [56, 44], swamp: [56, 44], city: [60, 60] },
 };
 
@@ -153,7 +154,8 @@ export function runThemedMap(draft: Project, scene: ThemeScene, request: ThemedM
   if (!draft.tilesets[scene.tilesetId] && !sceneBuildsOwnMap(scene)) {
     throw new ToolError(`themeScene '${scene.id}' 는 칩셋 '${scene.tilesetId}' 이 필요한데 이 프로젝트에 없습니다 — 프로젝트의 타일셋(get_project_summary)에서 쓸 수 있는 장면을 고르거나, themeScene 없이 create_map 으로 만든 뒤 다른 칩셋 구성기를 쓰세요.`, { code: "tileset-not-found" });
   }
-  const style = request.style ?? scene.defaultStyle;
+  // 일본 거리: 스타일을 안 주면 맵 이름의 낱말(골목·상점가·시장·아케이드·일본 거리)로 시타마치·쇼텐가이 변형을 고른다.
+  const style = request.style ?? (scene.id === "jp_city" ? flavorFromText(request.name) : undefined) ?? scene.defaultStyle;
   const size = themeSceneDefaultSize(scene, style);
   const width = request.width ?? size.width;
   const height = request.height ?? size.height;
@@ -190,7 +192,7 @@ export function runThemedMap(draft: Project, scene: ThemeScene, request: ThemedM
 }
 
 const DUNGEON_STYLES: ReadonlySet<string> = new Set(["cave", "mine", "labyrinth", "catacomb", "sewer", "crypt", "cellar", "volcano_cave"]);
-const TOWN_STYLES: ReadonlySet<string> = new Set(["village", "market", "shopping", "residential", "castle_town", "inn_street", "bazaar", "harbor", "street", "city"]);
+const TOWN_STYLES: ReadonlySet<string> = new Set(["village", "market", "shopping", "residential", "shitamachi", "shotengai", "castle_town", "inn_street", "bazaar", "harbor", "street", "city"]);
 
 /** 장면 종류에서 분명한 맵 성격만 돌려준다(애매하면 undefined — 이름 추정에 맡긴다). */
 export function themeSceneMapRole(scene: ThemeScene, style: string | undefined): "town" | "dungeon" | undefined {

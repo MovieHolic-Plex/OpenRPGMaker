@@ -5,11 +5,11 @@
 import type { GameMap, Project } from "../../src/project/types.ts";
 
 const INFRA_AUTOTILES = ["jp-sidewalk-curb", "jp-lane-road", "jp-water-canal", "jp-rail-track", "jp-lane-center", "jp-lane-dash", "jp-crosswalk-ew", "jp-crosswalk-ns", "jp-tactile"];
-const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water"];
+const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water", "jp:shita-brick", "jp:shita-asphalt", "jp:shita-shade"];
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];      // 담·생울타리: 경계일 뿐 쓰임이 아니다(분모에서 뺀다)
 const FEATURE_AUTOTILES = ["jp-water-pond"];
 const BUILT_KIT = /^jp-(bldg|sf|recipe|house|shop|apt|mansion|office|tower|school|station|temple|shrine-hall|gas-office)/;
-const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform)/;
+const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform|gnd-)/;
 
 export interface LotEmptiness { readonly lot: number; readonly empty: number; readonly ratio: number; readonly mask: Uint8Array /* 0 제외 · 1 쓰임 있음 · 2 빈칸 */ }
 

@@ -3,6 +3,7 @@
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, type JpStreetStyle } from "@/project/jpCityStreetComposer";
+import { flavorAvailable } from "@/project/jpShitamachiStreet";
 import { fillLotUses } from "@/project/jpCityLotUse";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
@@ -31,7 +32,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). 칩셋이 jp_city 여야 한다" },
       seed: { type: "integer", minimum: 0, description: "거리 씨앗 — 다른 값이면 다른 거리. 생략하면 0" },
-      style: { type: "string", enum: ["shopping", "residential"] },
+      style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai"], description: "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·테라코타 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
       shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
@@ -65,7 +66,9 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     }
     if (map.width < 40 || map.height < 28) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — 40×28 이상으로 resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 짜려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
-    const style: JpStreetStyle = args.style === "residential" ? "residential" : "shopping";
+    const asked: JpStreetStyle = args.style === "residential" || args.style === "shitamachi" || args.style === "shotengai" ? args.style : "shopping";
+    const style: JpStreetStyle = (asked === "shitamachi" || asked === "shotengai") && !flavorAvailable(tileset, asked) ? "shopping" : asked;
+    const warnings = style !== asked ? [`이 칩셋에 ${asked} 키트가 아직 구워지지 않아 기본 상가 거리(shopping)로 짰다`] : [];
     const shops = Array.isArray(args.shops) ? args.shops.filter((s): s is string => typeof s === "string") : [];
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
 
@@ -90,6 +93,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     return {
       summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"}). 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).`,
       data: { mapId, seed, style, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
+      ...(warnings.length ? { warnings } : {}),
     };
   },
 };
