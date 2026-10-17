@@ -26,7 +26,9 @@
 }
 .relief-side-panel[hidden] { display: none; }
 .left-panel-stack[data-testid="left-palette-root"] > .palette-work-shell[hidden] { display: none !important; }
+.relief-side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .relief-side-panel h3 { margin: 0; font-size: 17px; line-height: 1.2; }
+.relief-side-back { flex: 0 0 auto; min-height: 26px; padding: 2px 8px; font: 600 11px/1.2 var(--font-ui); }
 .relief-side-subtitle { margin: 8px 0 -4px; font-size: 13px; line-height: 1.2; }
 .relief-side-description { margin: 0; color: var(--text-2); font-size: 12px; line-height: 1.45; }
 .relief-ramp-quick-action {

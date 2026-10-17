@@ -31,6 +31,7 @@ import { openTerrainHelpModal } from "./terrainHelpModal";
 import { openMapPropertiesDialog } from "./mapPropertiesDialog";
 import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
+import { selectSidebarLayer } from "./leftLayerSwitcher";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
   ["raise", "올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
@@ -467,12 +468,25 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   head.addEventListener("pointerup", () => { drag = null; });
   head.addEventListener("pointercancel", () => { drag = null; });
 
+  const sideHeader = el("div", {
+    class: "relief-side-head",
+    children: [
+      el("h3", { text: "지형 편집" }),
+      el("button", {
+        class: "btn relief-side-back",
+        text: "타일 그리기",
+        attrs: { type: "button", title: "타일 그리기 팔레트로 돌아가기" },
+        dataset: { testid: "relief-back-to-paint" },
+        on: { click: () => selectSidebarLayer("lower") },
+      }),
+    ],
+  });
   const sidePanel = el("section", {
     class: "relief-side-panel",
     attrs: { "aria-label": "지형 편집 설정" },
     dataset: { testid: "relief-side-panel" },
     children: [
-      el("h3", { text: "지형 편집" }),
+      sideHeader,
       el("p", { class: "relief-side-description", text: "왼쪽에서 붓을 고르고, 캔버스에서 드래그해 지형의 단을 바꿉니다." }),
       rampQuickAction,
       context,
@@ -484,8 +498,16 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   installDelayedTooltips(sidePanel);
   const syncSide = (state: EditorState): void => {
     const visible = state.tool === "relief" && state.layer !== "event";
+    let root = sidePanel.parentElement;
+    if (!root && typeof document !== "undefined") {
+      const paletteRoot = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+      if (paletteRoot) {
+        paletteRoot.querySelector<HTMLElement>('[data-testid="relief-side-panel"]')?.remove();
+        paletteRoot.append(sidePanel);
+        root = paletteRoot;
+      }
+    }
     sidePanel.hidden = !visible;
-    const root = sidePanel.parentElement;
     const tileSurface = root?.querySelector<HTMLElement>(":scope > .palette-work-shell");
     if (tileSurface) tileSurface.hidden = visible;
   };

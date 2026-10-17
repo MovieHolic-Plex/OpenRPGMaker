@@ -62,6 +62,10 @@ function closeMenuFromOutside(restoreFocus: boolean): void {
   if (restoreFocus) previous?.trigger.focus();
 }
 
+export function closeSidebarInspectionMenus(): void {
+  closeMenuFromOutside(false);
+}
+
 function isInsideOverflowSurface(target: EventTarget | null): boolean {
   if (typeof document === "undefined" || typeof Node === "undefined" || !(target instanceof Node)) return false;
   const surfaces = document.querySelectorAll(".oprn-toolbar-menu, .oprn-toolbar-dropdown");

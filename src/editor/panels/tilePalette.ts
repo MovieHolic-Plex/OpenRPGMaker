@@ -1,4 +1,4 @@
-import { el, clearChildren } from "@/util/dom";
+import { el } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { recentTilesView, recordRecentTile } from "@/editor/panels/tileBrushTools";
@@ -113,11 +113,37 @@ interface InPlacePalette {
   readonly sheet: HTMLElement;
 }
 
+function isAuxiliaryPaletteChild(node: Node): boolean {
+  if (!(node instanceof HTMLElement)) return false;
+  const testid = node.dataset.testid;
+  return testid === "relief-side-panel" || testid === "rule-audit-panel" || testid === "map-history-panel";
+}
+
+function clearNonAuxiliaryChildren(container: HTMLElement): void {
+  for (const child of Array.from(container.childNodes)) {
+    if (!isAuxiliaryPaletteChild(child)) child.remove();
+  }
+}
+
+function mountPaletteShell(container: HTMLElement, shell: HTMLElement): void {
+  clearNonAuxiliaryChildren(container);
+  const firstAux = Array.from(container.childNodes).find(isAuxiliaryPaletteChild) ?? null;
+  if (firstAux) container.insertBefore(shell, firstAux);
+  else container.append(shell);
+  ensureReliefSidePanel(container);
+}
+
 function findInPlacePalette(container: HTMLElement, key: string): InPlacePalette | null {
-  if (container.childNodes.length !== 1) return null;
-  const shell = container.firstElementChild;
-  if (!(shell instanceof HTMLElement) || shell.dataset.testid !== "palette-work-shell") return null;
-  if (shell.childNodes.length !== 1) return null;
+  let shell: HTMLElement | null = null;
+  for (const child of Array.from(container.childNodes)) {
+    if (isAuxiliaryPaletteChild(child)) continue;
+    if (shell === null && child instanceof HTMLElement && child.dataset.testid === "palette-work-shell") {
+      shell = child;
+      continue;
+    }
+    return null;
+  }
+  if (!shell || shell.childNodes.length !== 1) return null;
   const pane = shell.firstElementChild;
   if (!(pane instanceof HTMLElement) || pane.dataset.testid !== "palette-work-pane-paint") return null;
   const sheet = Array.from(pane.children).find(
@@ -238,7 +264,6 @@ export function renderTilePalette(container: HTMLElement): void {
   }
   // 시트가 제자리에 남으면 스크롤도 그대로다 — 스크롤 읽기(강제 레이아웃 ~65ms)와 복원을 건너뛴다.
   const previousPaletteScroll = inPlace ? null : readPaletteScroll(container);
-  if (!inPlace) clearChildren(container);
 
   if (state.layer === "event") {
     // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
@@ -261,7 +286,7 @@ export function renderTilePalette(container: HTMLElement): void {
     renderEventEditor(root);
     // 검사 컨트롤(⋯ 오버플로·핀)은 도구막대 행 끝에 있다(tileToolbar.ts) — 사이드바 아래 줄은 비웠다.
     shell.append(root);
-    container.append(shell);
+    mountPaletteShell(container, shell);
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
@@ -279,7 +304,7 @@ export function renderTilePalette(container: HTMLElement): void {
   });
   if (!map) {
     shell.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
-    container.append(shell);
+    mountPaletteShell(container, shell);
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
@@ -287,7 +312,7 @@ export function renderTilePalette(container: HTMLElement): void {
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) {
     shell.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
-    container.append(shell);
+    mountPaletteShell(container, shell);
     applyRovingTabindex(container);
     restoreFocus(container, focusSnapshot);
     return;
@@ -311,7 +336,7 @@ export function renderTilePalette(container: HTMLElement): void {
         renderPalettePreservingViewport();
       } catch (error) { status.textContent = error instanceof Error ? error.message : String(error); button.disabled = false; }
     };
-    pane.append(status, button); shell.append(pane); container.append(shell);
+    pane.append(status, button); shell.append(pane); mountPaletteShell(container, shell);
     applyRovingTabindex(container); restoreFocus(container, focusSnapshot); return;
   }
 
@@ -320,9 +345,10 @@ export function renderTilePalette(container: HTMLElement): void {
   if (inPlace && body.sheetSlot) {
     swapPaneAroundSheet(inPlace.pane, inPlace.sheet, body.root, body.sheetSlot);
     liveShell = inPlace.shell;
+    ensureReliefSidePanel(container);
   } else {
     shell.append(body.root);
-    container.append(shell);
+    mountPaletteShell(container, shell);
   }
   const palette: HTMLElement | null = body.palette;
 
@@ -502,7 +528,14 @@ function makePaletteSurface(input: {
   }
   const smart = paletteHasSmartCatalog(tileset);
   const smartView = smart ? currentPaletteView(tileset) : "tiles";
-  if (smart) root.append(makePaletteSmartTabs(tileset, renderPalettePreservingViewport));
+  if (smart) root.append(makePaletteSmartTabs(tileset, () => {
+    if (tileSearchRenderTimer !== null) {
+      clearTimeout(tileSearchRenderTimer);
+      tileSearchRenderTimer = null;
+    }
+    resetChipsetScroll = true;
+    renderPalettePreservingViewport();
+  }));
   if (smart && smartView !== "tiles") {
     const catalogBody = makePaletteSmartBody(tileset, renderPalettePreservingViewport, selectPaletteTile);
     root.append(catalogBody);
@@ -993,6 +1026,7 @@ export function syncMountedPaletteToolPick(): boolean {
     if (shape) shape.replaceWith(nextShape);
     else nextControls.after(nextShape);
   } else shape?.remove();
+  ensureReliefSidePanel(root);
   applyRovingTabindex(root);
   restoreFocus(root, focusSnapshot);
   rememberMountedPaletteInputs(root);
@@ -1090,9 +1124,11 @@ function preservePaletteViewport(action: () => void): void {
     action();
     return;
   }
+  const shouldResetSheet = resetChipsetScroll;
   const container = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   const palette = container ? paletteViewportElement(container) : null;
-  const scroll = container ? readPaletteScroll(container) : null;
+  const rawScroll = container ? readPaletteScroll(container) : null;
+  const scroll = rawScroll && shouldResetSheet ? { ...rawScroll, sheetLeft: 0, sheetTop: 0 } : rawScroll;
   const windowScroll = { x: window.scrollX, y: window.scrollY };
   action();
   const restore = (): void => {

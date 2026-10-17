@@ -200,11 +200,12 @@
 
 /* 왼쪽 활동 막대 「스토어」 */
 .left-store-pane { display: grid; gap: 8px; padding: 10px; }
+.left-store-pane[hidden] { display: none; }
 .left-store-title { margin: 0; font-size: 14px; }
 .left-store-lead { margin: 0; font-size: 12px; opacity: 0.8; }
-.left-store-guide { list-style: none; margin: 0; padding: 8px 10px; display: grid; gap: 5px; border: 1px solid var(--s-line); border-radius: 8px; background: var(--s-bg); color: var(--s-text-2); font-size: 11.5px; line-height: 1.45; }
+.left-store-guide { list-style: none; margin: 0; padding: 8px 10px; display: grid; gap: 5px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-inset); color: var(--text-2); font-size: 11.5px; line-height: 1.45; }
 .left-store-guide li { display: flex; gap: 4px; }
-.left-store-guide strong { flex: none; color: var(--s-text-1); }
+.left-store-guide strong { flex: none; color: var(--text-1); }
 .left-store-open { height: 36px; border: 0; border-radius: 6px; background: #f0b54a; color: #1b1406; font-weight: 700; font-size: 13px; cursor: pointer; }
 .left-store-open:hover { background: #f6c568; }
 

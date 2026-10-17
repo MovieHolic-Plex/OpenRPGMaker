@@ -122,4 +122,22 @@ describe("left activity bar", () => {
     expect(workspace.root.dataset.pane).toBe("props");
     expect(find("sidebar-props")?.getAttribute("aria-pressed")).toBe("true");
   });
+
+  it("returns from relief mode to paint tools without collapsing when sidebar-tools is clicked", () => {
+    mount();
+    editorState.set({ tool: "relief", layer: "lower" });
+    find("sidebar-tools")?.click();
+    expect(workspace.isCollapsed()).toBe(false);
+    expect(workspace.root.dataset.pane).toBe("tools");
+    expect(editorState.get().tool).toBe("paint");
+    expect(editorState.get().layer).toBe("lower");
+  });
+
+  it("switches to the store sidebar pane without forcing a full-screen store modal", () => {
+    mount();
+    find("sidebar-store")?.click();
+    expect(workspace.root.dataset.pane).toBe("store");
+    expect(find("left-store-pane")?.hidden).toBe(false);
+    expect(document.querySelector(".store-host")).toBeNull();
+  });
 });

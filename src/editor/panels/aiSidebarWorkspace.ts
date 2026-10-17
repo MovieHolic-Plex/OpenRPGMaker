@@ -1,8 +1,11 @@
 import { el } from "@/util/dom";
 import { deckIcon, type DeckIconName } from "./aiDeckIcons";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
+import { editorState } from "@/editor/editorState";
+import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { ruleAuditViolationCountCached, RULE_AUDIT_UPDATED_EVENT } from "@/editor/panels/ruleAuditPanel";
-import { openSidebarInspection } from "@/editor/panels/tileToolbarMenus";
+import { closeSidebarSurface } from "@/editor/panels/sidebarSurface";
+import { closeSidebarInspectionMenus, openSidebarInspection } from "@/editor/panels/tileToolbarMenus";
 import { store } from "@/project/store";
 
 import { createLeftPropsPane } from "./leftPropsPane";
@@ -61,13 +64,14 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     progress: item("flag", "진행", "sidebar-progress", () => activate("progress")),
     links: item("link", "연결", "sidebar-links", () => activate("links")),
     workshop: item("wrench", "공방", "sidebar-workshop", () => activate("workshop")),
-    store: item("shop", "에셋 스토어", "sidebar-store", () => {
-      activate("store");
-      void import("@/editor/assetStore/storeWorkspace").then(({ openAssetStore }) => openAssetStore("browse"));
-    }, "스토어"),
+    store: item("shop", "에셋 스토어", "sidebar-store", () => activate("store"), "스토어"),
   };
   const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
   const inspectButton = item("alert", "검사", "sidebar-inspect", () => {
+    const state = editorState.get();
+    if (state.layer === "event" || state.tool === "relief") {
+      selectSidebarLayer("lower");
+    }
     show("tools");
     openSidebarInspection("ruleAudit");
   });
@@ -101,7 +105,12 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   function sync(): void {
     root.classList.toggle("is-collapsed", collapsed);
     content.hidden = collapsed;
-    tools.hidden = collapsed || pane !== "tools";
+    const hideTools = collapsed || pane !== "tools";
+    if (hideTools) {
+      closeSidebarSurface();
+      closeSidebarInspectionMenus();
+    }
+    tools.hidden = hideTools;
     for (const [id, surface] of Object.entries(surfaces)) surface.root.hidden = collapsed || pane !== id;
     root.dataset.pane = pane;
     for (const id of PANES) {
@@ -130,6 +139,11 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     if (wasCollapsed) onResize();
   }
   function activate(next: Pane): void {
+    if (next === "tools" && editorState.get().tool === "relief") {
+      selectSidebarLayer("lower");
+      show("tools");
+      return;
+    }
     if (!collapsed && pane === next) {
       collapsed = true;
       sync();

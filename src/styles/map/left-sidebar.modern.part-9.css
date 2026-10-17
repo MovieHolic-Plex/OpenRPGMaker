@@ -209,7 +209,8 @@
 }
 
 .sidebar-paint-options .tile-brush-mode-row {
-  margin-left: auto;
+  flex: 0 0 92px;
+  margin-left: 0;
   gap: var(--space-1);
 }
 
