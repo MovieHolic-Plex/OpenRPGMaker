@@ -331,10 +331,9 @@ export { TAB_ICONS as DATABASE_TAB_ICONS };
 const GROUP_ICON_TAB: Readonly<Record<string, DatabaseTab>> = {
   lore: "worldCanon",
   party: "actors",
-  monster: "enemies",
-  battle: "elements",
-  life: "crops",
+  battle: "enemies",
   world: "spatialRegions",
+  life: "crops",
   system: "system",
 };
 

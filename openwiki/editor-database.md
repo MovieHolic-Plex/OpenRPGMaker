@@ -29,6 +29,23 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 자료집 6그룹 재배치·소제목·「게임 설정」 라벨 (2026-10-17, 메뉴 감사 PR-3)
+
+탭 id·testid·저장 데이터는 그대로다(마이그레이션 0). `TAB_GROUPS`(`src/editor/panels/database.ts`)를 7그룹에서 6그룹(이야기·파티·전투·맵·생활·시스템)으로 재배치하고, `system` 탭 라벨을 「시스템」→「게임 설정」으로 바꿨다(기존 검색어 「시스템」은 `LEGACY_TAB_SEARCH.system` 별칭으로 유지).
+
+| 그룹 라벨 | slug | 설명 툴팁(`title`) | 소속 탭 (순서 · 소제목) | 이동 내역 |
+|---|---|---|---|---|
+| 이야기 | `lore` | 무슨 이야기를 쓰나요? | `worldCanon`, `worldCodex`, `characters`, `commonEvents`, `[진행 값 (고급)]` `switches`, `variables` | 라벨 세계관→이야기; `characters`(생활에서), `commonEvents`·`switches`·`variables`(시스템에서) 편입 |
+| 파티 | `party` | 누가 나오고 무엇을 갖나요? | `actors`, `characterGraphics`, `classes`, `skills`, `items` | `characterGraphics`(시스템에서) 편입 |
+| 전투 | `battle` | 어떻게 싸우나요? | `[적]` `enemies`, `monsterSpecies`, `troops`, `factions` / `[규칙]` `elements`, `states` / `[화면·연출]` `retroChoreographies`, `battleScreen`, `battleCommands` | 옛 `monster` 그룹과 `battle`(전투 규칙) 합침 |
+| 맵 | `world` | 어디서 벌어지나요? | `spatialTiles`, `spatialObjects`, `spatialPlaces`, `spatialRegions`, `spatialWorlds` | 변경 없음 |
+| 생활 | `life` | 농사·제작·경영이 있나요? | `crops`, `lifeCrafting`, `dailyWeather`, `farmAnimals`, `farmSpatial`, `lifeCollections` | `characters`가 이야기로 이동 |
+| 시스템 | `system` | 게임 틀·화면·메뉴는? | `system`(라벨 「게임 설정」), `menuSystem`, `opening`, `gameOver`, `terms` | 이야기·파티로 4탭 이동, 그룹과 탭 이름 충돌(시스템 › 시스템) 해소 |
+
+- **slug 유지 이유**: `lore`·`party`·`battle`·`world`·`life`·`system` 다섯 slug를 그대로 두어 기존 e2e(`db-tab-group-lore`, `db-tab-group-battle` 등)와 `localStorage` `oprn:database.revealedEmptyTabGroups` 호환성을 지켰다(사라진 `monster` slug는 `revealedEmptyGroupSlugs`가 조용히 무시).
+- **레일 소제목(`.db-tab-subhead`)**: `.db-tab`이 아닌 평평한 직계 자식 행이다. `markViewedSection`(구획 표시), `applyTabFilter`(검색 중 숨김), `applyEmptyTabFold`(소제목 아래 탭이 전부 접히면 소제목도 함께 숨김), 좁은 56px/도크 아이콘 레일(`display: none`)과 맞물려 동작한다.
+- **아이콘·조수 밸런스·번역**: `databaseTabIcons.ts`의 `GROUP_ICON_TAB`에서 `monster`를 지우고 `battle` 대표 아이콘을 `enemies`로 맞췄다. `databaseAiBar.ts`의 `GROUP_BALANCE`는 6그룹 키(`lore` 추가, `monster`+`battle` 통합)로 갱신했다. `{en,ja,zh}.json`에 새 문구 10개(「게임 설정」, 소제목 3개, 그룹 툴팁 질문 6개)를 정렬 위치에 추가했다.
+
 ## 자료집 시각 깨짐·잘림 9건 수리 (2026-10-17, 메뉴 감사 PR-2)
 
 탭 id·그룹 구성·저장 데이터는 그대로다(`database.ts` 무변경). 메뉴 감사 부록 A의 시각 결함 9건(B1~B9)만 고쳤다.

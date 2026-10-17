@@ -130,12 +130,12 @@ function groupSlugOf(tab: DatabaseTab): string | null {
 
 // 그룹마다 「이 자리에서만 나올 수 있는」 밸런스 문장 하나.
 const GROUP_BALANCE: Readonly<Record<string, DatabaseAiSuggestion>> = {
+  lore: { id: "balance", label: "이야기·스위치 점검", prompt: "세계 설정·주민 관계와 스위치·변수에서 빠진 연결이나 이름이 모호한 것을 찾아줘" },
   party: { id: "balance", label: "성장 밸런스", prompt: "주인공·직업·스킬의 성장 곡선이 서로 맞는지 점검하고 어긋난 값을 고쳐줘" },
-  monster: { id: "balance", label: "난이도 맞추기", prompt: "선택한 몬스터를 중반 난이도에 맞춰 스탯과 보상을 조정해줘" },
-  battle: { id: "balance", label: "상태·속성 점검", prompt: "속성 상성표와 상태 효과 중 쓰이지 않거나 과한 것을 찾아줘" },
+  battle: { id: "balance", label: "난이도·상태·속성 점검", prompt: "선택한 몬스터를 중반 난이도에 맞춰 스탯·보상을 조정하고 속성 상성표와 상태 효과 중 과한 것을 찾아줘" },
   life: { id: "balance", label: "생활 루프 점검", prompt: "농사·제작·채집 데이터의 보상 순환이 막히는 곳을 찾아줘" },
   world: { id: "balance", label: "세계 규칙 점검", prompt: "생성 규칙과 타일셋 설정에서 서로 충돌하는 값을 찾아줘" },
-  system: { id: "balance", label: "스위치·변수 정리", prompt: "쓰이지 않는 스위치·변수와 이름이 모호한 것을 찾아줘" },
+  system: { id: "balance", label: "게임 설정 점검", prompt: "게임 설정·메뉴·오프닝·용어와 스위치·변수 연결에서 어긋난 구성을 찾아줘" },
 };
 
 const PROJECT_SUGGESTION: DatabaseAiSuggestion = {

@@ -18,7 +18,7 @@ test("monster action dialog validates visibly, preserves drafts and keyboard foc
     if (await page.getByTestId(id).isVisible()) await page.getByTestId(id).click();
   }
   await page.getByTestId("toolbar-database").click();
-  if (!await page.getByTestId("db-tab-enemies").isVisible()) await page.getByTestId("db-tab-group-monster").click();
+  if (!await page.getByTestId("db-tab-enemies").isVisible()) await page.getByTestId("db-tab-group-battle").click();
   await page.getByTestId("db-tab-enemies").click();
   const before = await recordState(page);
   expect(before.remote).toBe(false);

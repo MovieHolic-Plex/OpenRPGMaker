@@ -42,10 +42,10 @@ function mountPanel(tab: Parameters<typeof setDatabaseActiveTab>[0]): FakeElemen
 describe("party rail", () => {
   // Break caught: 승급 트리·스킬 트리·공유 외형을 레일에 다시 올리면 초보가 「직업」과 「직업 승급 트리」를
   // 다른 데이터로 읽는 7칸 레일로 되돌아간다.
-  it("keeps four primary destinations and routes the three views under their owner", () => {
+  it("keeps five primary party destinations and routes subviews under their owner", () => {
     const party = TAB_GROUPS.find((group) => group.slug === "party");
-    expect(party?.tabs).toEqual(["actors", "classes", "skills", "items"]);
-    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills" });
+    expect(party?.tabs).toEqual(["actors", "characterGraphics", "classes", "skills", "items"]);
+    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills", animations: "retroChoreographies" });
     expect(databaseTabPath("promotionTree")).toEqual(["classes", "promotionTree"]);
     expect(databaseTabPath("skillTrees")).toEqual(["skills", "skillTrees"]);
     expect(databaseTabPath("characterAppearances")).toEqual(["actors", "characterAppearances"]);

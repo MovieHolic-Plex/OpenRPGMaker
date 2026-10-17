@@ -161,7 +161,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "spatialRegions", label: "지역", testid: "db-tab-spatial-regions" },
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
-  { id: "system", label: "시스템", testid: "db-tab-system" },
+  { id: "system", label: "게임 설정", testid: "db-tab-system" },
   { id: "menuSystem", label: "메뉴·시스템", testid: "db-tab-menu-system" },
   { id: "opening", label: "오프닝", testid: "db-tab-opening" },
   { id: "gameOver", label: "게임 오버", testid: "db-tab-game-over" },
@@ -173,7 +173,9 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
 export type DatabaseTabGroup = {
   readonly label: string;
   readonly slug: string;
+  readonly description?: string;
   readonly tabs: readonly DatabaseTab[];
+  readonly subheadings?: Partial<Record<DatabaseTab, string>>;
 };
 
 // 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs 레지스트리에서 역참조하므로
@@ -183,22 +185,65 @@ export type DatabaseTabGroup = {
 // 둘이 이미 어긋나 있었다(`terrain` 이 tabOrder 에선 battleCommands 뒤, TAB_GROUPS 에선
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
-  { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
+  {
+    label: "이야기",
+    slug: "lore",
+    description: "무슨 이야기를 쓰나요?",
+    tabs: ["worldCanon", "worldCodex", "characters", "commonEvents", "switches", "variables"],
+    subheadings: {
+      switches: "진행 값 (고급)",
+    },
+  },
   // 공유 외형·승급 트리·스킬 트리는 레일 칸이 아니라 주인공·직업·스킬의 **보기**다
   // (PARTY_SUBVIEW_PARENT). 레일에 일곱 칸이 나란히 있으면 초보는 「직업」과 「직업 승급
   // 트리」, 「스킬」과 「스킬 트리」가 서로 다른 데이터인 줄 안다(2026-09-23 파티 UX 검토).
-  { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items"] },
-  { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
-    label: "전투 규칙",
+    label: "파티",
+    slug: "party",
+    description: "누가 나오고 무엇을 갖나요?",
+    tabs: ["actors", "characterGraphics", "classes", "skills", "items"],
+  },
+  {
+    label: "전투",
     slug: "battle",
+    description: "어떻게 싸우나요?",
     // 옛 전투 애니메이션(셀 편집)은 도트 연출의 하위 보기다 — 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을
     // 그리지 않고, 연출 없는 스킬의 대체용·몬스터 대치(포켓몬)에서만 쓴다(2026-10-02).
-    tabs: ["elements", "states", "retroChoreographies", "battleScreen", "battleCommands"],
+    tabs: [
+      "enemies",
+      "monsterSpecies",
+      "troops",
+      "factions",
+      "elements",
+      "states",
+      "retroChoreographies",
+      "battleScreen",
+      "battleCommands",
+    ],
+    subheadings: {
+      enemies: "적",
+      elements: "규칙",
+      retroChoreographies: "화면·연출",
+    },
   },
-  { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
-  { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
-  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "menuSystem", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
+  {
+    label: "맵",
+    slug: "world",
+    description: "어디서 벌어지나요?",
+    tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"],
+  },
+  {
+    label: "생활",
+    slug: "life",
+    description: "농사·제작·경영이 있나요?",
+    tabs: ["crops", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"],
+  },
+  {
+    label: "시스템",
+    slug: "system",
+    description: "게임 틀·화면·메뉴는?",
+    tabs: ["system", "menuSystem", "opening", "gameOver", "terms"],
+  },
 ];
 
 /** Facet editors hang off the tiles destination. Legacy map routes redirect below. */
@@ -347,11 +392,15 @@ function railChildren(header: HTMLElement): HTMLElement[] {
  * 새 프로젝트에서 두 탭이 「빈 탭 2개」 뒤에 숨어 세계관 그룹이 머리 글자만 남았다(2026-10-16 실측).
  * 카운트 배지는 그대로 0 이면 비운다(`refreshTabCounts`).
  */
-const NEVER_FOLDED_TABS: ReadonlySet<DatabaseTab> = new Set<DatabaseTab>(["worldCanon", "worldCodex"]);
+const NEVER_FOLDED_TABS: Partial<Record<DatabaseTab, true>> = {
+  worldCanon: true,
+  worldCodex: true,
+  characters: true,
+};
 
 /** 목록 탭인데 레코드가 0 개인 탭만 「빈 탭」 이다. null(목록 아님)은 빈 것이 아니다. */
 function isEmptyListTab(id: DatabaseTab): boolean {
-  return !NEVER_FOLDED_TABS.has(id) && databaseTabCount(id) === 0;
+  return !NEVER_FOLDED_TABS[id] && databaseTabCount(id) === 0;
 }
 
 function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
@@ -378,11 +427,30 @@ function applyEmptyTabFold(header: HTMLElement): void {
       const names = [...folded].map((id) => tabFor(id).label);
       child.setAttribute(
         "title",
-        folded.size > 0 ? `${group.label} — 빈 탭 펼치기: ${names.join(", ")}` : group.label,
+        folded.size > 0 ? `${group.label} — 빈 탭 펼치기: ${names.join(", ")}` : (group.description ?? group.label),
       );
       continue;
     }
     if (!group) continue;
+    if (classes.contains("db-tab-subhead")) {
+      const startTab = child.dataset.subheadFor as DatabaseTab | undefined;
+      const startIndex = startTab ? group.tabs.indexOf(startTab) : -1;
+      if (startIndex < 0) {
+        child.hidden = false;
+        continue;
+      }
+      let endIndex = group.tabs.length;
+      for (let i = startIndex + 1; i < group.tabs.length; i += 1) {
+        const nextTab = group.tabs[i]!;
+        if (group.subheadings?.[nextTab]) {
+          endIndex = i;
+          break;
+        }
+      }
+      const subTabs = group.tabs.slice(startIndex, endIndex);
+      child.hidden = subTabs.length > 0 && subTabs.every((id) => folded.has(id));
+      continue;
+    }
     if (classes.contains("db-tab")) {
       if (child.dataset.searchSecondary) continue;
       child.hidden = folded.has(child.dataset.tab as DatabaseTab);
@@ -533,7 +601,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
       // 그룹 머리는 이제 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
       // 펼친다(「빈 탭 N개」 줄과 같은 동작). div+onclick 이라 role/tabindex 를 주고
       // Enter/Space 를 직접 받는다 — <button> 은 기본 스타일이 달라 레일 모양이 흔들린다.
-      attrs: { title: group.label, role: "button", tabindex: "0" },
+      attrs: { title: group.description ?? group.label, role: "button", tabindex: "0" },
       dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
       // 라벨을 **별도 span 으로** 둔다. 라벨 계약(databaseNavMode·db-desktop-matrix)은
       // .db-tab-group-label 의 textContent 를 본다.
@@ -550,6 +618,14 @@ export function renderDatabasePanel(container: HTMLElement): void {
       },
     }));
     for (const id of group.tabs) {
+      const subhead = group.subheadings?.[id];
+      if (subhead) {
+        header.append(el("div", {
+          class: "db-tab-subhead",
+          dataset: { groupSlug: group.slug, subheadFor: id },
+          text: subhead,
+        }));
+      }
       appendTabButton(header, body, container, tabFor(id));
     }
     // 빈 탭 접기 줄. `.db-tab` 이 아니다 — 탭 버튼 계약(라벨·testid·포커스 순서 검사)은
@@ -725,6 +801,7 @@ function refreshTabCounts(container: HTMLElement): void {
 // 함께 숨긴다. DOM 계약(직계 자식 button.db-tab)은 유지 — hidden 토글만 한다.
 const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   items: "equipment",
+  system: "시스템",
   tilesets: "통행 지형",
   tilesetAutotile: "자동 연결 구성",
   tilesetUnlabeled: "타일 설명 타일 지식 단어장",
@@ -945,6 +1022,7 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
     // 검색 중에는 구획 머리와 「빈 탭」 줄을 숨기고, 빈 탭도 이름이 맞으면 보인다.
     if (
       child.classList.contains("db-tab-group")
+      || child.classList.contains("db-tab-subhead")
       || child.classList.contains("db-tab-fold")
       || child.classList.contains("db-recent-tabs")
     ) {
@@ -1106,7 +1184,7 @@ function markViewedSection(header: HTMLElement, slug: string): void {
     const classes = child.classList;
     if (!classes) continue;
     if (classes.contains("db-tab-group")) current = child.dataset.groupSlug ?? null;
-    else if (!classes.contains("db-tab") && !classes.contains("db-tab-fold")) continue;
+    else if (!classes.contains("db-tab") && !classes.contains("db-tab-fold") && !classes.contains("db-tab-subhead")) continue;
     // 개요와 검색 결과 보조 목적지는 구획 밖이다 — 늘 보인다.
     if (current === null || child.dataset.searchSecondary) {
       delete child.dataset.inView;
@@ -1129,7 +1207,7 @@ function buildGroupStrip(header: HTMLElement): HTMLElement {
     dataset: { testid: "db-group-strip" },
     children: TAB_GROUPS.map((group) => el("button", {
       class: "db-group-strip-btn",
-      attrs: { type: "button", title: group.label, "aria-pressed": "false" },
+      attrs: { type: "button", title: group.description ?? group.label, "aria-pressed": "false" },
       dataset: { testid: `db-group-strip-${group.slug}`, groupSlug: group.slug },
       children: [makeDatabaseGroupIcon(group.slug), el("span", { class: "db-group-strip-label", text: group.label })],
       on: { click: () => viewGroup(header, group.slug) },
