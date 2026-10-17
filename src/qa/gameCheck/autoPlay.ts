@@ -1469,25 +1469,16 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   return trace(goal.label, true, "완료", driver, visit.where);
 }
 
-/**
- * 같은 이벤트 페이지 최상위에서 이 명령보다 앞에 「엔딩 id 없는」 triggerEnding(호감으로 엔딩을 고르는 자동 선택)이 있는가.
- * 연애 마무리는 `triggerEnding`(자동) 뒤에 뼈대의 `triggerEnding ending_first_segment` 를 그대로 남기는 일이 많다 —
- * 자동 선택이 인물 엔딩에 닿으면 뒤 명령은 닿지 않는 게 정상이므로, 목표는 「어떤 엔딩이든 도달」로 본다.
- */
-function precededByAutoEnding(visit: CommandVisit): boolean {
-  if (visit.segments.length > 0) return false;
-  const at = visit.indexPath[0];
-  if (at === undefined) return false;
-  return visit.page.commands.slice(0, at).some((command) => command.kind === "triggerEnding" && typeof command.endingId !== "string");
-}
-
 export function endingGoal(visit: CommandVisit): Goal {
   const endingId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
   const title = typeof visit.command.title === "string" ? visit.command.title : undefined;
+  // 같은 실행 경로 앞에 다른 triggerEnding 이 있으면(연애의 자동 선택 뒤에 남은 ending_first_segment, 또는 JRPG 승리 분기에
+  // 엔딩 두 줄을 잇달아 둔 경우) 앞 엔딩이 먼저 실행돼 씬이 끝난다 — 어떤 엔딩이든 도달하면 충족으로 본다.
+  const precededByEnding = commandsRunBefore(visit).some((command) => command.kind === "triggerEnding");
   return {
     label: `엔딩 ${endingId ?? title ?? "(자동 선택)"} 도달`, visit,
     done: (_session, result) => visit.command.kind === "triggerEnding"
-      ? (endingId && !precededByAutoEnding(visit) ? result.finalState.endingsReached.includes(endingId) : result.finalState.endingsReached.length > 0)
+      ? (endingId && !precededByEnding ? result.finalState.endingsReached.includes(endingId) : result.finalState.endingsReached.length > 0)
       : false,
     verify: (_session, result) => (visit.command.kind === "ending"
       ? (result.log.some((line) => line.includes(`event ${visit.page.event?.id} start`)) ? null : "엔딩 이벤트가 실행되지 않았습니다.")
@@ -1610,11 +1601,11 @@ export function runAutoPlay(
     joinedActors.add(actorKey);
     joins.push(join);
   }
+  const joinPlans = joins.map((join) => planCriticalPath(project, join, joinGoal(project, join)));
+  const joinGoals = joinPlans.flatMap((joinPlan) => joinPlan.goals);
+  const joinUnresolved = joinPlans.flatMap((joinPlan) => joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`));
   if (joins.length > 0) {
-    const joinPlans = joins.map((join) => planCriticalPath(project, join, joinGoal(project, join)));
-    const goals = [...joinPlans.flatMap((joinPlan) => joinPlan.goals), ...plan.goals];
-    const unresolved = joinPlans.flatMap((joinPlan) => joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`));
-    runs.push(runPlan(project, "동료 합류 후", goals, deadline, [...unresolved, ...preamble]));
+    runs.push(runPlan(project, "동료 합류 후", [...joinGoals, ...plan.goals], deadline, [...joinUnresolved, ...preamble]));
   }
   // 나머지 엔딩도 하나씩 걸어 본다 — 추리의 오답 엔딩처럼 「다른 결말」이 소프트락인지는 첫 엔딩만 봐서는 모른다.
   const seenEndings = new Set([endingKey(target)]);
@@ -1623,8 +1614,19 @@ export function runAutoPlay(
     if (seenEndings.has(key) || seenEndings.size >= MAX_ENDING_RUNS || Date.now() > deadline) continue;
     seenEndings.add(key);
     const otherPlan = planCriticalPath(project, other, endingGoal(other));
-    runs.push(runPlan(project, `다른 엔딩 ${key}`, otherPlan.goals, deadline,
-      otherPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`)));
+    const otherPreamble = otherPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`);
+    const otherRun = runPlan(project, `다른 엔딩 ${key}`, otherPlan.goals, deadline, otherPreamble);
+    // 1인 시작 파티(COMPANION_WORDS)에서 다른 엔딩이 합류 없이 걸어가다 3~4인 기준 잡몹·보스에게 지는 거짓 막힘(jrpg-loop-4 ct2·ff2·ff1) —
+    // 첫 엔딩과 마찬가지로 동료를 먼저 데려간 실행을 시도해 끝까지 가거나 전투 단계까지 닿으면 그 결과를 채택한다.
+    if (!otherRun.ok && joinGoals.length > 0 && Date.now() <= deadline
+      && /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해/u.test(otherRun.failure?.detail ?? "")) {
+      const joinedOther = runPlan(project, `다른 엔딩 ${key}(동료 합류 후)`, [...joinGoals, ...otherPlan.goals], deadline, [...joinUnresolved, ...otherPreamble]);
+      if (joinedOther.ok || /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해/u.test(joinedOther.failure?.detail ?? "")) {
+        runs.push(joinedOther);
+        continue;
+      }
+    }
+    runs.push(otherRun);
   }
   return {
     targets: targets.map((visit) => ({ label: visit.command.kind === "triggerEnding" ? `triggerEnding ${String(visit.command.endingId ?? "(자동)")}` : `ending ${String(visit.command.title ?? "")}`, where: visit.where })),
