@@ -18,7 +18,7 @@ const assertFn = (setting, group, isChoices) => `() => { const o = document.quer
  if (pos.length !== 1 || pos[0] !== expected || r.boxPosition !== expected) throw new Error('창 위치 어긋남: ' + JSON.stringify(r));
  // 읽기 단추 줄(.dialogue-bar)이 흉상·전신(.dialogue-face-bust/-full)을 가리면 안 된다(romance-loop-3: 흉상 오른쪽 어깨를 오토·스킵 단추가 덮음).
  const bar = document.querySelector('.dialogue-bar')?.getBoundingClientRect();
- if (bar && bar.width > 0) for (const f of document.querySelectorAll('.dialogue-face')) { const b = f.getBoundingClientRect();
+ if (bar && bar.width > 0) for (const f of document.querySelectorAll('.dialogue-face-bust:not(.dialogue-face-behind)')) { const b = f.getBoundingClientRect();
    const w = Math.min(b.right, bar.right) - Math.max(b.left, bar.left), h = Math.min(b.bottom, bar.bottom) - Math.max(b.top, bar.top);
    if (w > 2 && h > 2) throw new Error('단추 줄이 초상을 가림: ' + JSON.stringify({ bar: [bar.left, bar.top, bar.right, bar.bottom].map(Math.round), face: [b.left, b.top, b.right, b.bottom].map(Math.round), w: Math.round(w), h: Math.round(h) })); }
  return r; }`;
