@@ -6,7 +6,6 @@
 // - 상태는 세이브하지 않는다. 맵에 들어올 때마다 처음부터(미리 90초 돌린 상태로) 시작한다.
 import type Phaser from "phaser";
 import { characterDepth } from "@/player/characterDepth";
-import { ensureModernCityVehicleTexture } from "@/player/modernCityTransitTexture";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -28,15 +27,11 @@ type TransitScene = PlaySceneContext & {
   transitShutdownHooked?: boolean;
 };
 
-function ensureFrames(scene: PlaySceneContext, phaser: Phaser.Scene, def: TransitVehicleDef): boolean {
+function ensureFrames(phaser: Phaser.Scene, def: TransitVehicleDef): boolean {
   const key = `transit-vehicle:${def.id}`;
   if (!phaser.textures.exists(key)) {
-    if (def.image.startsWith("mc-kit:")) {
-      if (!ensureModernCityVehicleTexture(scene, phaser, def, key)) return false;
-    } else {
-      void ensureSceneImageTexture(phaser, key, def.image);
-      return false;
-    }
+    void ensureSceneImageTexture(phaser, key, def.image);
+    return false;
   }
   const tex = phaser.textures.get(key);
   for (const [name, r] of Object.entries(def.frames)) {
@@ -56,7 +51,7 @@ export function syncTransitForMap(scene: PlaySceneContext): void {
   s.transitSim = scene.map?.transit?.routes?.length
     ? createTransitSim(scene.map.transit, { width: scene.map.width, height: scene.map.height })
     : undefined;
-  if (s.transitSim) for (const v of s.transitSim.vehicles) ensureFrames(scene, scene as unknown as Phaser.Scene, v.def);
+  if (s.transitSim) for (const v of s.transitSim.vehicles) ensureFrames(scene as unknown as Phaser.Scene, v.def);
   if (!s.transitShutdownHooked) {
     s.transitShutdownHooked = true;
     scene.events?.once?.("shutdown", () => { s.transitSprites?.forEach((sp) => sp.destroy()); s.transitSprites = undefined; s.transitPrevPos = undefined; s.transitSim = undefined; s.transitShutdownHooked = false; });
@@ -95,15 +90,20 @@ export function syncTransitSprites(scene: PlaySceneContext): void {
   const alive = new Set<number>();
   for (const v of sim.vehicles) {
     alive.add(v.key);
-    if (!ensureFrames(scene, phaser, v.def)) continue;
+    if (!ensureFrames(phaser, v.def)) continue;
     const pose = transitPose(sim, v);
     const lastPos = prevPos.get(v.key);
     const moving = lastPos === undefined || Math.abs(v.pos - lastPos) > 1e-5;
     prevPos.set(v.key, v.pos);
     const phase = Math.floor(v.pos * 4) & 3;
     let frameName: TransitFrameName = pose.dir;
+    // 방향지시등: 0.4초 켜짐 / 0.4초 꺼짐(시트에 _sigL/_sigR 칸이 있는 차만).
+    const blinkOn = pose.blinker && Math.floor(sim.clockSec / 0.4) % 2 === 0;
+    const sigFrame = pose.blinker ? (`${pose.dir}_sig${pose.blinker === "left" ? "L" : "R"}` as TransitFrameName) : null;
     if (pose.open && (pose.dir === "right" || pose.dir === "left") && v.def.frames[`${pose.dir}_open`]) {
       frameName = `${pose.dir}_open`;
+    } else if (blinkOn && sigFrame && v.def.frames[sigFrame]) {
+      frameName = sigFrame;
     } else if (!moving && v.def.frames[`${pose.dir}_brake` as TransitFrameName]) {
       frameName = `${pose.dir}_brake` as TransitFrameName;
     } else if (moving && v.def.frames[`${pose.dir}_${phase}` as TransitFrameName]) {

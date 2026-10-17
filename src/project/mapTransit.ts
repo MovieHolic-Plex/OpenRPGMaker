@@ -71,7 +71,8 @@ export type TransitFrameName =
   | "right_0" | "right_1" | "right_2" | "right_3"
   | "left_0" | "left_1" | "left_2" | "left_3"
   | "up_0" | "up_1" | "up_2" | "up_3"
-  | "down_0" | "down_1" | "down_2" | "down_3";
+  | "down_0" | "down_1" | "down_2" | "down_3"
+  | `${TransitDir}_sigL` | `${TransitDir}_sigR`;
 export interface TransitFrameRect { x: number; y: number; w: number; h: number; foot: { w: number; h: number } }
 export interface TransitVehicleDef {
   id: string;
@@ -84,20 +85,25 @@ export interface TransitVehicleDef {
   frames: Partial<Record<TransitFrameName, TransitFrameRect>>;
 }
 
-/** modern_city 차량: 동서 = 길이 L칸 × 2칸(L·16 × 32px), 남북 = 2칸 × L칸(32 × L·16px) — 90° 돌아도 크기가 그대로다. */
+/**
+ * modern_city 차량: 동서 = 길이 L칸 × 2칸(L·16 × 32px), 남북 = 2칸 × L칸(32 × L·16px) — 90° 돌아도 크기가 그대로다.
+ * 그림은 네 방향 모두 같은 도트 엔진(scripts/content/modern-city/vehicles)이 1:1 로 그린 차량별 시트
+ * `/assets/modern-city/vehicles/<id>.png` 다. 행 = right·left·up·down, 열 = 기본·_0~_3(바퀴)·_brake·_sigL·_sigR·_open(버스 동서).
+ */
+export const MODERN_VEHICLE_COLUMNS = ["", "_0", "_1", "_2", "_3", "_brake", "_sigL", "_sigR", "_open"] as const;
 function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, openDoor = false): TransitVehicleDef {
   const ewW = length * 16, ewH = 32, nsW = 32, nsH = length * 16;
   const ewFoot = { w: length, h: 2 }, nsFoot = { w: 2, h: length };
   const frames: Partial<Record<TransitFrameName, TransitFrameRect>> = {};
-  const suffixes = ["", "_0", "_1", "_2", "_3", "_brake"] as const;
+  const cols = MODERN_VEHICLE_COLUMNS.filter((s) => s !== "_open");
   for (const [dir, y] of [["right", 0], ["left", ewH]] as const) {
-    suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: ewW * i, y, w: ewW, h: ewH, foot: ewFoot }; });
-    if (openDoor) frames[`${dir}_open` as TransitFrameName] = { x: ewW * 6, y, w: ewW, h: ewH, foot: ewFoot };
+    cols.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: ewW * i, y, w: ewW, h: ewH, foot: ewFoot }; });
+    if (openDoor) frames[`${dir}_open` as TransitFrameName] = { x: ewW * cols.length, y, w: ewW, h: ewH, foot: ewFoot };
   }
   for (const [dir, y] of [["up", ewH * 2], ["down", ewH * 2 + nsH]] as const) {
-    suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: nsW * i, y, w: nsW, h: nsH, foot: nsFoot }; });
+    cols.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: nsW * i, y, w: nsW, h: nsH, foot: nsFoot }; });
   }
-  return { id, name, kind, length, image: `mc-kit:${id}`, width: Math.max(ewW * (openDoor ? 7 : 6), nsW * 6), height: ewH * 2 + nsH * 2, frames };
+  return { id, name, kind, length, image: `/assets/modern-city/vehicles/${id}.png`, width: Math.max(ewW * (cols.length + (openDoor ? 1 : 0)), nsW * cols.length), height: ewH * 2 + nsH * 2, frames };
 }
 
 export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
