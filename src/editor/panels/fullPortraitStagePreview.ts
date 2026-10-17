@@ -36,9 +36,9 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
   const scale = width / resolution.width;
   const height = Math.round(resolution.height * scale);
   const portraitHeight = Math.round(height * options.layout.heightRatio);
-  const portraitWidth = Math.round(portraitHeight * (options.veil ? 0.36 : PORTRAIT_ASPECT));
+  const portraitWidth = Math.round(portraitHeight * (options.veil ? 0.56 : PORTRAIT_ASPECT));
   const drop = Math.round(portraitHeight * options.layout.dropRatio);
-  const inset = Math.round((options.veil ? 4 : SIDE_INSET_PX) * scale);
+  const inset = Math.round((options.veil ? -4 : SIDE_INSET_PX) * scale);
   const url = resolveAssetResourceUrl(options.resourceId, { project });
   const right = options.position === "right";
   const portrait = url
@@ -53,6 +53,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
     height: `${portraitHeight}px`,
     bottom: `${-drop}px`,
     [right ? "right" : "left"]: `${inset}px`,
+    imageRendering: options.veil ? "auto" : "pixelated",
     transform: options.flipHorizontally ? "scaleX(-1)" : "",
   });
   const stageChildren: HTMLElement[] = [portrait];
@@ -70,7 +71,8 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
       height: `${portraitHeight}px`,
       bottom: `${-drop}px`,
       [right ? "left" : "right"]: `${inset}px`,
-      filter: "brightness(0.82) saturate(0.92)",
+      imageRendering: options.veil ? "auto" : "pixelated",
+      filter: options.veil ? "none" : "brightness(0.82) saturate(0.92)",
     });
     stageChildren.push(partnerNode);
   }
@@ -87,7 +89,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
           src: cornerUrl,
           alt: "",
           draggable: "false",
-          style: `width:${Math.round(48 * scale)}px;height:${Math.round(48 * scale)}px;object-fit:contain;object-position:center top;flex-shrink:0;image-rendering:pixelated;`,
+          style: `width:${Math.round(54 * scale)}px;height:${Math.round(54 * scale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-6px;`,
         },
         dataset: { testid: "full-portrait-stage-corner-face" },
       });
@@ -108,7 +110,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
       flexDirection: "row",
       alignItems: "center",
       gap: "8px",
-      background: "linear-gradient(180deg, rgba(8, 10, 18, 0.04) 0%, rgba(10, 13, 22, 0.68) 22%, rgba(10, 13, 22, 0.84) 60%, rgba(8, 10, 18, 0.92) 100%)",
+      background: "linear-gradient(180deg, rgba(10, 8, 16, 0) 0%, rgba(12, 10, 18, 0.24) 16%, rgba(14, 12, 22, 0.64) 36%, rgba(12, 10, 18, 0.85) 72%, rgba(8, 7, 14, 0.93) 100%)",
     });
   }
   stageChildren.push(boxNode);

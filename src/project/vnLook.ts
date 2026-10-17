@@ -91,7 +91,7 @@ export const VN_PRESETS: Readonly<Record<VnPresetId, VnPresetDefinition>> = {
     description: "화면 양쪽에 전신 스탠딩 초상을 함께 세우고, 하단에는 테두리 없는 반투명 다크 그라데이션 대화창을 겹칩니다.",
     fit: "연애 시뮬레이션 · 오토메 · 양쪽 전신 스탠딩 대화 장면",
     layout: "bar", nameplate: "pill", choiceStyle: "bar", waitIcon: "arrow",
-    tokens: { bg: "rgba(10, 12, 20, 0.84)", bgStrong: "rgba(8, 10, 18, 0.92)", border: "rgba(255, 255, 255, 0.14)", text: "#ffffff", textRead: "#b8c2d8", textShadow: "0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.82), 1px 1px 0 rgba(0, 0, 0, 0.92)", nameBg: "rgba(14, 18, 30, 0.88)", nameText: "#f7e7c4", accent: "#f3d28c", accentText: "#1b1405", accentInk: "#f5d99b", stage: "rgba(8, 10, 18, 0.80)", radius: 0, borderWidth: 0, shadow: "none", blur: 0 },
+    tokens: { bg: "rgba(10, 8, 16, 0.84)", bgStrong: "rgba(8, 7, 14, 0.92)", border: "rgba(255, 255, 255, 0.14)", text: "#ffffff", textRead: "#d0d6e8", textShadow: "0 1px 2px rgba(0, 0, 0, 0.98), 0 -1px 2px rgba(0, 0, 0, 0.92), 1px 0 2px rgba(0, 0, 0, 0.92), -1px 0 2px rgba(0, 0, 0, 0.92), 0 2px 6px rgba(0, 0, 0, 0.88)", nameBg: "transparent", nameText: "#ffecbe", accent: "#f3d28c", accentText: "#1b1405", accentInk: "#f5d99b", stage: "rgba(8, 10, 18, 0.80)", radius: 0, borderWidth: 0, shadow: "none", blur: 0 },
   },
   "bar-tab": {
     id: "bar-tab",
