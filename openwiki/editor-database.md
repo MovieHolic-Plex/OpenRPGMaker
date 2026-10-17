@@ -29,6 +29,17 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 자료집 길찾기 — 구획 낱말 검색·3단 크럼·최근 탭 (2026-10-17, 메뉴 감사 PR-1)
+
+탭 id·그룹 구성·저장 데이터는 그대로다. 코드는 `databaseWayfinding.ts`(데이터와 작은 상태, DOM 없음) 한 곳과 `database.ts`·`databaseModal.ts`·`databaseSystemView.ts` 의 연결선이다.
+
+- **구획 낱말 검색**: 레일 탭 검색이 탭 이름에 없는 낱말(「대사」「엔딩」「HUD」「타이틀」「호감」「저장」「시작 위치」…)을 `DATABASE_SEARCH_DESTINATIONS` 표에서도 찾는다. 결과는 「이 낱말이 있는 구획」 머리 아래 `.db-search-dest` 행(구획 이름 + `그룹 › 탭` 경로)이다. 시스템 구획은 `requestSystemSection` 으로, 메뉴·시스템 카드는 `scrollTestId` 로 착지한다. **낱말은 실제 화면에서 확인한 것만** 표에 둔다(영어는 기존 접두 검색 `act`·`retro`·`worldGen` 과 안 겹치게). 두 글자 미만은 찾지 않는다. 시작 위치는 자료집에서 고치는 값이 아니라(맵 속성) 개요의 「시작 지점」으로 보낸다.
+- **`.db-tab` 이 아니다**: 구획 행·「최근」 줄은 탭 버튼 계약(라벨=aria-label=title, testid, 카운트 배지, 빈 탭 접기, 활성 표시)의 밖에 둔다. 검색 정리는 `data-search-secondary` 를 재사용한다. 접힌 56px 아이콘 레일(컨테이너 799px 이하)에서는 두 줄 다 숨는다.
+- **3단 크럼**: `그룹 › 탭 › 구획`. 구획을 가진 탭은 지금 시스템 탭뿐이며, `renderSystemTab`·`activateSystemSection` 이 `setDatabaseSubLocation("system", 라벨)` 로 알린다. 다른 탭의 내부 탭(주인공 5·몬스터 4·종족 5·적 그룹 4·생활 10)은 각자 상태를 가져서 아직 크럼에 안 닿는다 — 후속.
+- **최근 탭**: `setDatabaseActiveTab` 이 `recordRecentDatabaseTab` 으로 적는다(`localStorage` `oprn:database.recentTabs`, 4개 보관·3개 표시, 지금 보는 탭·개요 제외, 프로젝트 무관). 레일 맨 위 `.db-recent-tabs`.
+- **키보드**: 검색 상자에서 ↓ 는 첫 결과로, Enter 는 첫 결과 열기, 결과 행 사이는 ↑↓, 맨 위에서 ↑ 는 검색 상자로. **Esc 는 검색어를 지우지 못한다** — `editor/ui/modalStack.ts` 가 document 캡처 단계에서 먼저 가져가 자료집을 닫는다(중첩 필드가 삼키지 못하게 한 의도된 설계). 결과 없음 안내는 `role="status"`.
+- 번역: 새 문구 8개를 `{en,ja,zh}.json` 에 넣었다. 경로는 조각마다 span(번역기는 조각 단위로 찾는다).
+
 ## 자료집 「메뉴·시스템」 탭 — ESC 메뉴·대사창·갤러리/엔딩/저장 카드 한 화면 (2026-10-17, 미연시 3단계)
 
 - 탭 id `menuSystem`, 라벨 「메뉴·시스템」, testid `db-tab-menu-system`, 그룹 「시스템」(`system` 바로 뒤). `databaseMenuSystemTab.ts` 의 `renderMenuSystemTab(host)`. 카드 셋:

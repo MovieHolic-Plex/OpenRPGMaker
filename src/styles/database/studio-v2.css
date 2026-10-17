@@ -83,6 +83,15 @@
   white-space: nowrap;
 }
 
+/* 크럼의 세 번째 칸(구획) — 탭 이름보다 한 단계 가볍게. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-crumb-section {
+  color: var(--db-studio-text-2);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-ai-toggle {
   align-items: center;
   background: var(--db-studio-surface);
