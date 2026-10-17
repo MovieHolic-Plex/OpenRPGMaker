@@ -260,6 +260,7 @@
     "event-command-text-style": [
      "",
      "glass",
+     "dual-fullbody-veil",
      "pixel-cinematic",
      "classic",
      "retro-black",
@@ -344,7 +345,7 @@
     "div": 34,
     "input": 2,
     "label": 3,
-    "option": 41,
+    "option": 42,
     "p": 2,
     "section": 2,
     "select": 5,
