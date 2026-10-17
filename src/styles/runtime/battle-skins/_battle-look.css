@@ -964,6 +964,14 @@
   top: 178px;
 }
 
+/* 기술·아이템 목록이 열린 동안은 창을 왼쪽으로 넓힌다. 「캐릭터 옆 창」(156px)·「키」(152px)·「사선」(210px)은 루트 명령 4~5개용 폭이라
+   22px 글자로 한글 두 자부터 「마…」 로 잘리고 MP 배지가 이름 자리를 먹었다(jrpg-loop-2 ct1 실측: 「마법탄」이 34px 칸에 갇힘).
+   오른쪽 끝(left+width)은 그대로 두고 왼쪽으로만 넓혀 파티 창·메시지 창 자리를 새로 덮지 않는다. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:is([data-look-command="actor"], [data-look-command="keys"], [data-look-command="fan"]):has(.battle-command-menu > .battle-submenu-header) .battle-command-host {
+  left: 150px;
+  width: 296px;
+}
+
 /* 위쪽 가로 */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="top"] .battle-command-host {
   --battle-command-row-height: 26px;

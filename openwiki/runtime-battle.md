@@ -2173,3 +2173,7 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
 7. **조수.** `place_trainer` 에 `double: true`(적 2마리 이상 + `activeSlots: 2`)를 추가하고 `toolCapabilityIndex` 의 monster-field-rules 정책에 한 줄. 도구가 만들지 못하는 더블 트룹은 쓰지 않는다.
 
 **막는 것(하지 않은 이유).** 6번 화면 작업이 에메랄드 HUD·앵커·진행 비트(`battleSequencer`)를 동시에 건드려 한 PR 로 안전하게 검증할 수 없다. 이번 범위는 어휘·규칙 PR 을 먼저 끝내는 것이어서 메모로만 남긴다.
+
+## 기술 목록 폭 — 룩 프리셋(actor·keys·fan)
+
+retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152px · fan 210px)에서 `_battle-look.css` 가 절대 배치와 고정 폭을 잡는다. 이 폭은 루트 명령 4~5개용이라 기술·아이템 목록(`.battle-submenu-header` 가 있는 메뉴)에서는 한글 두 자 이름도 「마…」 로 잘렸다(jrpg-loop-2 ct1 실측, #2773 의 `grid-column` 규칙은 이 절대 배치 앞에서 무력했다). 목록이 열린 동안만 `left:150px; width:296px` 로 왼쪽으로 넓힌다(오른쪽 끝은 그대로). 프리셋별 위치는 건드리지 않는다.
