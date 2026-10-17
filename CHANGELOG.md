@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.251.1 — 2026-10-17
+
+### 수정
+
+- **qa** — 사물 이름 NPC 에 사람 캐릭터 칩·흉상이 붙으면 완료 경고 romance-object-npc-bust (#2834) (`c83e7a2`)
+- **editor** — strip speaker echo from dialogue body in eventCompile (#2833) (`8158170`)
+- **dialogue** — 읽기 단추 줄이 왼쪽 흉상을 가리지 않게 (#2831) (`b592861`)
+
 ## 0.251.0 — 2026-10-17
 
 ### 기능
