@@ -6,6 +6,7 @@ import {
   BACKLOG_LIMIT_MAX, BACKLOG_LIMIT_MIN, DIALOGUE_SPEEDS, DIALOGUE_UI_LANGUAGES, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN,
   backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
 } from '@/project/dialogueSystem';
+import { galleryActive, mergeVnExtras, resolveVnExtras, romanceVnExtras, validateVnExtras, listGallerySlots, listEndingRows, type VnExtrasPatch } from '@/project/vnExtras';
 import { validateMonsterCampaign } from '@/project/io/shapeMonsterCampaign';
 import { monsterCampaign } from '@/project/monsterJournal';
 import { defaultObedienceCaps } from '@/project/badgeProgress';
@@ -27,6 +28,15 @@ function issues(p:Project):string[]{
   if(fieldMenu(p)?.entries.some(e=>e.command==='monster-dex')&&!c&&s.monsterCollection!==true)errors.push('도감 항목에는 캠페인 정의 또는 포획(monsterCollection) 설정이 필요합니다.');
   if(fieldMenu(p)?.entries.some(e=>e.command==='backlog')&&!backlogEnabled(p))errors.push('ESC 메뉴에 백로그 항목이 있지만 대사 시스템의 백로그가 꺼져 있어 항목이 보이지 않습니다. set_dialogue_system {backlog:true} 로 켜거나 메뉴에서 빼세요.');
   if(backlogEnabled(p)&&fieldMenu(p)&&!fieldMenu(p)?.entries.some(e=>e.command==='backlog'))errors.push('대사 시스템의 백로그는 켜져 있지만 저작된 ESC 메뉴에 백로그 항목이 없습니다. 대사창 단추·L 키로는 열리지만 메뉴로는 못 엽니다. configure_field_menu {preset:"custom", add:[{command:"backlog",label:"백로그"}]} 로 넣으세요.');
+  {
+    const vn=resolveVnExtras(p),menuEntries=fieldMenu(p)?.entries;
+    if(menuEntries?.some(e=>e.command==='gallery')&&!galleryActive(p))errors.push('ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {gallery:true} 로 켜거나 메뉴에서 빼세요.');
+    if(menuEntries?.some(e=>e.command==='endings')&&!vn?.endings.enabled)errors.push('ESC 메뉴에 엔딩 항목이 있지만 엔딩 목록이 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {endings:true} 로 켜거나 메뉴에서 빼세요.');
+    if(menuEntries&&vn?.endings.enabled&&!menuEntries.some(e=>e.command==='endings'))errors.push('엔딩 목록은 켜져 있지만 저작된 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. configure_field_menu {preset:"custom", add:[{command:"endings",label:"엔딩"}]} 로 넣으세요.');
+    if(vn?.endings.enabled&&(p.endings??[]).length===0)errors.push('엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 저작하세요.');
+    if(vn?.saveCards.enabled&&!backlogEnabled(p))errors.push('세이브 카드는 켜져 있지만 대사 백로그가 꺼져 있어 저장 칸에 마지막 대사 한 줄이 비어 보입니다(날짜만 나옵니다). set_dialogue_system {backlog:true} 로 켜세요.');
+    if(vn?.gallery.enabled&&listGallerySlots(p).length===0)errors.push('갤러리는 켜져 있지만 recordInGallery 로 기록되는 그림(showPicture)이 없어 CG 칸이 비어 있습니다.');
+  }
   if(monsterParty&&s.monsterCollection===undefined)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다. 포획 없는 대회형이면 configure_monster_system(enabled:true, capture:false) 로 포획 없음을 선언하세요.');
   if(s.opening?.musicResourceId&&!p.assets.uploaded[s.opening.musicResourceId]?.ref&&!p.assets.uploaded[s.opening.musicResourceId]?.dataUrl && s.opening.musicResourceId.startsWith('composed_music_'))errors.push('저작 음악의 실제 바이트가 없습니다.');
   return errors;
@@ -37,6 +47,7 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
   battle:{collection:p.system.monsterCollection===true,party:p.system.battleParty??(p.system.monsterBattleParty?'monsters':'actors'),rules:p.system.battleModel??'rm2k3',skin:p.system.battleUiStyle},
   fieldMenu:{style:p.system.fieldHud?.menuStyle&&p.system.fieldHud.menuStyle!=='project'?p.system.fieldHud.menuStyle:p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
   dialogueSystem:{authored:p.meta.oprnDialogueSystem??null,effective:resolveDialogueSystem(p)??null,source:p.meta.oprnDialogueSystem?'authored':resolveDialogueSystem(p)?'relationship-default':'legacy-none'},
+  vnExtras:{authored:p.meta.oprnVnExtras??null,effective:resolveVnExtras(p)??null,source:p.meta.oprnVnExtras?'authored':resolveVnExtras(p)?'relationship-default':'legacy-none',gallerySlots:listGallerySlots(p).length,endings:listEndingRows(p,[]).length},
   shop:{sellPriceOverrides:p.system.sellPrices??[],projectPreset:p.meta.oprnShopPreset??null,eventPresetCounts:(()=>{const counts:Record<string,number>={};const walk=(commands:unknown[])=>{for(const raw of commands){if(!raw||typeof raw!=='object')continue;const command=raw as Record<string,unknown>;if(command.kind==='shop'){const preset=effectiveShopUiPreset(command as {shopUiPreset?:import('@/project/types').ShopUiPreset},p);counts[preset]=(counts[preset]??0)+1;}for(const v of Object.values(command))if(Array.isArray(v))walk(v);}};for(const map of Object.values(p.maps))for(const event of map.events)for(const page of event.pages??[])walk(page.commands);return counts;})()},
   hud:p.system.fieldHud, campaign:c?{id:c.id,name:c.name,species:c.speciesIds.length,badges:c.badges.length,locations:c.locations.length,objectives:c.objectives.length}:null,
   audio:{title:p.system.titleScreen?.musicResourceId,opening:p.system.opening?.musicResourceId,field:p.system.defaultBgmResourceId,battle:p.system.battleBgmResourceId,victory:p.system.battleVictoryMeResourceId,menu:p.meta.oprnMenuSounds,composed:Object.keys(p.meta.oprnMusicScores??{})},
@@ -86,6 +97,14 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
       p.meta.oprnDialogueSystem=mergeDialogueSystem(resolveDialogueSystem(p),{backlog:true});
       notice.push('메뉴에 백로그가 있어 대사 시스템의 백로그를 켰습니다');
     }
+    // 갤러리·엔딩 항목도 같은 이유로 — 메뉴에 넣었으면 기능을 같이 켠다.
+    if(next?.entries.some(e=>e.command==='gallery'||e.command==='endings')){
+      const vn=resolveVnExtras(p),wantGallery=next.entries.some(e=>e.command==='gallery')&&!galleryActive(p),wantEndings=next.entries.some(e=>e.command==='endings')&&!vn?.endings.enabled;
+      if(wantGallery||wantEndings){
+        p.meta.oprnVnExtras=mergeVnExtras(vn,{...(wantGallery?{gallery:true}:{}),...(wantEndings?{endings:true}:{})});
+        notice.push(`메뉴에 ${[wantGallery?'갤러리':'',wantEndings?'엔딩':''].filter(Boolean).join('·')}가 있어 해당 기능을 켰습니다`);
+      }
+    }
     return {summary:`ESC 메뉴를 실제 기능 ID에 연결했습니다${notice.length?' — '+notice.join('; '):''}. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.`,data:systemView(p)};
   }),
   tool('set_dialogue_system','대사창 읽기 보조를 저작: 백로그(지난 대사·고른 선택지, 세이브에 저장)·오토·스킵(읽은 글만/전부)·숨기기 단추와 시작 설정(대사 속도·오토 속도·스킵 범위·대사창 투명도)·단추 글자 언어. 연애·관계 중심·비주얼노벨형 게임은 이미 전부 켜져 있어 호출이 필요 없고, 끄거나 조정할 때만 쓴다. JRPG 등 다른 장르도 켤 수 있다. 주어진 칸만 바꾼다. 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추므로 안전 규칙은 설정 항목이 아니다. 플레이어 기기 설정이 있으면 그것이 이긴다.','write',schema({
@@ -134,6 +153,39 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(!next.backlog.enabled&&menu?.entries.some(e=>e.command==='backlog'))notice.push('ESC 메뉴의 백로그 항목은 백로그가 꺼져 있는 동안 보이지 않습니다');
     if(!next.backlog.enabled&&!next.auto.enabled&&!next.skip.enabled&&!next.hideButton.enabled)notice.push('네 기능이 모두 꺼졌습니다. 대사창 단추 줄이 사라지고 옛 「기록」 단추만 남습니다');
     return {summary:`대사창 읽기 보조를 저장했습니다(백로그 ${next.backlog.enabled?`${next.backlog.limit}줄`:'꺼짐'}, 오토 ${next.auto.enabled?'켜짐':'꺼짐'}, 스킵 ${next.skip.enabled?'켜짐':'꺼짐'}, 숨기기 ${next.hideButton.enabled?'켜짐':'꺼짐'}, 언어 ${next.language})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 검증은 별도입니다.`,data:systemView(p)};
+  }),
+  tool('set_vn_extras','미연시 추가 화면을 저작: 갤러리(CG 잠금 표시 + 본 엔딩 회상)·엔딩 목록(엔딩 정의를 읽어 자동으로 채움, 인물별·결말 3종 체크리스트)·세이브 카드(날짜 + 마지막 대사 한 줄)·글자 언어. 연애·관계 중심 게임은 이미 전부 켜져 있어 호출이 필요 없고, 끄거나 조정할 때만 쓴다. 다른 장르도 켤 수 있다. 주어진 칸만 바꾼다. 새 그림은 만들지 않는다 — 갤러리는 showPicture recordInGallery 로 저작된 그림을, 엔딩 목록은 저작된 엔딩 정의를 읽는다. 플레이어 기기 설정·기존 저장은 그대로다.','write',schema({
+    preset:{type:'string',enum:['romance','default'],description:'romance: 세 기능을 모두 켠 연애 기본 구성에서 시작. default: 저작을 지우고 자동 판정(관계 중심 게임은 기본 구성, 그 밖은 옛 동작)으로 되돌린다.'},
+    gallery:{type:'boolean',description:'갤러리 확장(잠긴 CG 칸 표시·엔딩 회상). 끄면 옛 갤러리 동작(해금된 그림만, system.gallery 가 켜져 있을 때).'},
+    galleryShowLocked:{type:'boolean',description:'아직 안 연 CG 칸을 「잠김」으로 보일지(true) 감출지(false).'},
+    endings:{type:'boolean',description:'엔딩 목록 화면(ESC 메뉴 「엔딩」).'},
+    endingsHideUnseen:{type:'boolean',description:'아직 못 본 엔딩 이름을 「???」 로 가릴지(true) 이름을 미리 보일지(false).'},
+    saveCards:{type:'boolean',description:'세이브 칸에 마지막 대사 한 줄을 함께 보임.'},
+    language:{type:'string',enum:[...DIALOGUE_UI_LANGUAGES,'inherit'],description:'갤러리·엔딩 목록 글자 언어. inherit 는 대사 시스템 언어를 따른다(기본). 게임 본문은 번역되지 않는다.'},
+  },[]),(p,args)=>{
+    const fail=(message:string):never=>{throw new ToolError(message,{code:'invalid-args'});};
+    const allowed=['preset','gallery','galleryShowLocked','endings','endingsHideUnseen','saveCards','language'];
+    const unknown=Object.keys(args).filter(k=>!allowed.includes(k));
+    if(unknown.length)fail(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${allowed.join(', ')}.`);
+    if(args.preset!==undefined&&args.preset!=='romance'&&args.preset!=='default')fail('preset 은 romance 또는 default 여야 합니다.');
+    for(const key of ['gallery','galleryShowLocked','endings','endingsHideUnseen','saveCards'] as const)if(args[key]!==undefined&&typeof args[key]!=='boolean')fail(`${key} 는 true/false 여야 합니다(문자열 "true" 가 아님). 받은 값: ${JSON.stringify(args[key])}.`);
+    if(args.language!==undefined&&args.language!=='inherit'&&!(DIALOGUE_UI_LANGUAGES as readonly string[]).includes(String(args.language)))fail(`language 는 ${[...DIALOGUE_UI_LANGUAGES,'inherit'].join('|')} 중 하나여야 합니다. 받은 값: ${JSON.stringify(args.language)}.`);
+    const patch:VnExtrasPatch={...(args.gallery!==undefined?{gallery:args.gallery as boolean}:{}),...(args.galleryShowLocked!==undefined?{galleryShowLocked:args.galleryShowLocked as boolean}:{}),...(args.endings!==undefined?{endings:args.endings as boolean}:{}),...(args.endingsHideUnseen!==undefined?{endingsHideUnseen:args.endingsHideUnseen as boolean}:{}),...(args.saveCards!==undefined?{saveCards:args.saveCards as boolean}:{}),...(args.language!==undefined?{language:args.language as VnExtrasPatch['language']}:{})};
+    if(args.preset==='default'&&Object.keys(patch).length===0){
+      delete p.meta.oprnVnExtras;
+      return {summary:`미연시 추가 화면 저작을 지웠습니다. 이제 자동 판정입니다(${resolveVnExtras(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).`,data:systemView(p)};
+    }
+    const base=args.preset==='romance'?romanceVnExtras():args.preset==='default'?undefined:resolveVnExtras(p);
+    const next=mergeVnExtras(base,patch);
+    try{validateVnExtras(next);}catch(e){fail(`${e instanceof Error?e.message:String(e)}`);}
+    p.meta.oprnVnExtras=next;
+    const notice:string[]=[],menu=fieldMenu(p);
+    if(next.endings.enabled&&menu&&!menu.entries.some(e=>e.command==='endings'))notice.push('저작된 ESC 메뉴에 엔딩 항목이 없습니다 — 메뉴로 열려면 configure_field_menu {preset:"custom", add:[{command:"endings",label:"엔딩"}]}');
+    if(next.gallery.enabled&&menu&&!menu.entries.some(e=>e.command==='gallery'))notice.push('저작된 ESC 메뉴에 갤러리 항목이 없습니다 — configure_field_menu {preset:"custom", add:[{command:"gallery",label:"갤러리"}]}');
+    if(next.endings.enabled&&(p.endings??[]).length===0)notice.push('엔딩 정의가 아직 없어 목록이 비어 보입니다');
+    if(next.saveCards.enabled&&!backlogEnabled(p))notice.push('대사 백로그가 꺼져 있어 세이브 카드에 대사 한 줄은 나오지 않습니다');
+    if(next.gallery.enabled&&listGallerySlots(p).length===0)notice.push('recordInGallery 로 기록되는 그림이 없어 CG 칸이 비어 있습니다');
+    return {summary:`미연시 추가 화면을 저장했습니다(갤러리 ${next.gallery.enabled?(next.gallery.showLocked?'켜짐·잠금 표시':'켜짐·잠금 숨김'):'꺼짐'}, 엔딩 목록 ${next.endings.enabled?(next.endings.hideUnseen?'켜짐·미달성 가림':'켜짐·이름 공개'):'꺼짐'}, 세이브 카드 ${next.saveCards.enabled?'켜짐':'꺼짐'}, 언어 ${next.language??'대사 시스템을 따름'})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 검증은 별도입니다.`,data:systemView(p)};
   }),
   tool('configure_monster_campaign','도감 순서·생태 설명·배지 스위치·지도 좌표·진행 목표를 실제 데이터/맵/스위치와 검증해 저장. 주어진 칸만 바꾼다(나머지는 유지). 줄이는 변경은 allowShrink:true 가 있어야 하고, 배지 수를 줄이려면 badgeCount 로 체육관 이벤트까지 함께 줄인다. 정의가 실제 지은 이벤트와 어긋나면 거부한다. 런타임 진행 상태는 바꾸지 않음.','write',schema({
     definition:{type:'object',additionalProperties:false,description:'바꿀 칸만 넣는다. 넣은 배열은 그 칸 전체를 대체한다(항목을 하나 고칠 때도 나머지를 함께 보낸다 — 먼저 read_game_systems).',properties:{

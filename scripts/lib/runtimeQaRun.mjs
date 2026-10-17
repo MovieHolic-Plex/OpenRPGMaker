@@ -921,15 +921,17 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // exportEntry.ts 는 최상위에서 즉시 부팅하므로 주입은 addInitScript 여야 한다.
   // localStorage.clear() 는 이전 실행의 세이브가 타이틀 화면을 바꾸는 것을 막는다.
   await page.addInitScript(
-    ([projectUrl, saveNamespace]) => {
+    ([projectUrl, saveNamespace, storageSeed]) => {
       try {
         localStorage.clear();
+        // 시나리오가 「이 기기에 이미 있던 기록」(예: 본 엔딩)을 심는다. 키의 {ns} 는 세이브 이름 공간으로 바뀐다.
+        for (const [key, value] of Object.entries(storageSeed ?? {})) localStorage.setItem(key.replace("{ns}", saveNamespace), value);
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
       window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
-    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`],
+    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null],
   );
   if (!opts.projectUrl) {
     await page.route(PROJECT_ROUTE, (route) =>

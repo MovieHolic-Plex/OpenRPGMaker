@@ -198,3 +198,17 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 | 시스템 글자를 영어로 | `{language:"en"}` 만 전달 |
 
 5/5 도구 선택·인자가 맞았고(`read_game_systems` 먼저 → `set_dialogue_system` → `review_game_systems`) 기존 설정은 보존됐다. 한계: 범위 밖 요청(3번)에서 어시스턴트가 사용자에게 되묻지 않고 최대치로 대신 적용했다(보고는 정직). 조수 UI 입력창 경로·플레이 검수는 이 시험에 포함되지 않는다. 증거는 저장소 밖 로컬 `qa-runs/dlg-a1..a5`(gitignore).
+
+### 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+
+경로·키 규칙은 위와 같고 포트만 8319(flock 없음), 시드는 연애 프로젝트에서 `meta.oprnVnExtras` 를 지운 것(`output/qa/vn2/seed-novn.json`, 생성: `romance-vn-ui2-fixture.mts` 후 저작 삭제).
+
+| 문장 | 결과(저장된 `meta.oprnVnExtras`) |
+|---|---|
+| 갤러리·엔딩 목록·세이브 칸 대사 한 줄 켜 줘 | `set_vn_extras` 다섯 칸 전부 true → 세 기능 켜짐(기본값을 명시 저작으로 고정) |
+| 못 본 엔딩 이름도 미리 보이게 | `{endings:true, endingsHideUnseen:false}` → hideUnseen:false, 나머지 보존 |
+| 세이브 칸 대사 한 줄 꺼 줘, 나머지 그대로 | `{saveCards:false}` 하나만 → gallery·endings 보존, 보고 정확 |
+| 안 연 그림 칸 숨겨 줘 | **미검증** — 분류 호출이 Argon 지연(단순 호출 약 60초)으로 4번 모두 시간 초과 |
+| 갤러리·엔딩 글자를 일본어로 | **미검증** — 같은 이유 |
+
+3/3 완주분은 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았다. 시간 초과는 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)에서 났다 — 제공자가 느릴 때는 분류 한도가 병목이다. 통과로 세지 않는다.

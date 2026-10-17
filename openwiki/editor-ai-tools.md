@@ -3404,3 +3404,11 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 저작이 없으면 옛 동작 그대로다. **관계 중심(연애) 게임만** 저작 없이도 기본 구성(네 기능 전부 켬)을 받는다(`resolveDialogueSystem`). 연애 프리셋(`romancePreset.ts`)은 저작본을 심고, `configure_field_menu` 의 romance/add/remove 와 `백로그` 명령이 같은 판정을 쓴다. 기능이 꺼진 게임의 ESC 메뉴에는 백로그 줄이 없다.
 - 연결 지점: `aiToolLabels.ts` 라벨, `toolAliases.ts`, `gameSystemProduction.ts`(완료 가드: 연애 게임이면 백로그 꺼짐을 지적), `scripts/lib/piAgentRuntime.ts`, 안내 문서 `gameAuthoringPresets/romance.md` 한 문단.
 - 사용자 기기 설정(텍스트 속도·오토 속도·스킵 범위·투명도)은 저작값이 아니라 `playerPreferences` 이고, 저작 `defaults` 는 기기 값이 없을 때의 시작값이다.
+
+
+## `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+
+- 정본 저작 데이터는 `project.meta.oprnVnExtras`(`src/project/vnExtras.ts`, v1). 도구는 부분 패치만 받는다: `preset`(romance|default), `gallery`·`galleryShowLocked`·`endings`·`endingsHideUnseen`·`saveCards`(boolean), `language`(ko|en|ja|zh|auto|inherit). 자유 키 객체 없음, `additionalProperties:false`, 모르는 인자·잘못된 형식은 힌트가 붙은 `invalid-args` 로 거절한다. `preset:"default"` 단독은 저작을 지워 자동 판정으로 돌린다.
+- 연애(관계 중심) 게임은 저작 없이 세 기능이 이미 켜져 있다 — `read_game_systems` 의 `vnExtras`(authored/effective/source/gallerySlots/endings)를 먼저 읽는다. 새 그림은 만들지 않는다: 갤러리 칸 = `showPicture recordInGallery` 그림, 엔딩 목록 = 저작된 엔딩 정의.
+- `configure_field_menu` 로 갤러리·엔딩 항목을 넣으면 해당 기능도 같이 켠다(조용히 안 보이는 항목 방지). `review_game_systems`(issues)는 메뉴 항목과 기능 불일치, 엔딩 정의·CG 없음, 세이브 카드인데 백로그 꺼짐을 지적한다.
+- 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(갤러리·엔딩 목록·세이브 카드 낱말), `gameSystemProduction.ts`, `scripts/lib/piAgentRuntime.ts`(선언 낱말·시스템 프롬프트 한 문단), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단(+ `documents.json` 재생성: `node scripts/content/prepare-game-authoring-presets.mjs`), 연애 프리셋 `romancePreset.ts`.

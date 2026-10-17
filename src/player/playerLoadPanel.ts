@@ -44,6 +44,8 @@ export type SaveSlotCardModel = {
   readonly monster?: string;
   /** 오토세이브 카드 전용: 저장을 일으킨 트리거 표기("맵 이동"/"전투 승리"). */
   readonly trigger?: string;
+  /** 미연시 세이브 카드: 저장 시점의 마지막 대사 한 줄. */
+  readonly scene?: string;
 };
 
 export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElement {
@@ -175,6 +177,9 @@ function renderCardButton(
   if (model.monster) {
     button.append(el("span", { class: "oprn-load-slot-row oprn-load-slot-monster", text: model.monster, dataset: { testid: `${testId}-monster` } }));
   }
+  if (model.scene) {
+    button.append(el("span", { class: "oprn-load-slot-row oprn-load-slot-scene", text: `“${model.scene}”`, dataset: { testid: `${testId}-scene` } }));
+  }
   return button;
 }
 
@@ -188,6 +193,7 @@ export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
     playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
     savedAt: formatSavedAt(snapshot.savedAt) || undefined,
     ...monsterCardPart(snapshot),
+    ...(snapshot.sceneLine ? { scene: snapshot.sceneLine } : {}),
     trigger: autosaveTriggerLabel(snapshot.autosaveTrigger),
   };
 }
@@ -219,6 +225,7 @@ export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
         playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
         savedAt: formatSavedAt(snapshot.savedAt) || undefined,
         ...monsterCardPart(snapshot),
+        ...(snapshot.sceneLine ? { scene: snapshot.sceneLine } : {}),
       };
     }
     case "corrupt":

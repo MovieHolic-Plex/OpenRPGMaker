@@ -147,35 +147,3 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 `isRomanceGameRequest`(src/qa/gameCheck/romance.ts)가 「만들·제작·짜줘·구현」 동사를 요구해서, 「고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩」 처럼 소재만 적은 한 줄은
 완료 검사(`romanceCompletionGaps`)가 통째로 꺼졌다. 실제 Argon 결과가 기본 제목 「새 게임」·기본 부제·뼈대 자리표시·인물별 엔딩 없음 그대로 finish 를 통과했다.
 이제 연애+게임 낱말이 있으면 제작 요청으로 보고, 고치기·삭제·질문 낱말(고쳐·수정·바꿔·버그·왜·어떻게·설명·알려·넓혀·지워·삭제·확인해·점검)이 든 문장만 뺀다.
-
-## 소재별 연애 타이틀 키아트 (2026-10-17 romance-loop-2, R1-06)
-
-카페·학원물 판에도 타이틀이 벚꽃 캠퍼스 그림 하나뿐이었다. 같은 모델·화풍(gpt-image-2.5-sunburst, mdc-server:8091 이미지 API, 16:9 빈 참고 그림으로 비율 고정)으로
-소재 4종을 더했다: `oprn-title-romance-cafe`(노을 카페 테라스) · `-school`(저녁 학교 복도 창가) · `-office`(황혼 사옥 옥상) · `-town`(황혼 바닷가 마을).
-파일 `public/assets/generated/title/romance-<소재>.jpg`, 해석 `generatedAssetResourceResolver.ts`, 목록 `generated-title-manifest.json`, 후보 12장·판정·선택 `romance-keyart-provenance.json`.
-후보 선택은 독립 판정(Sonnet 블라인드 읽기)과 감독이 한다 — 사용자 선택 단계를 두지 않는다. 생성 일러스트라 3/4 도트 관문 대상이 아니다.
-
-- 허용 목록(`ROMANCE_TITLE_BACKGROUNDS`)에 넷을 더했다 — 조수가 `set_title_screen` 으로 고를 수 있고, 목록 밖 번들 그림 거부(`romanceTitleMismatch`)는 그대로다(키아트 잠금 계약 유지).
-- `romanceTitleArtForText`(src/project/romanceTitleArt.ts): 기획·요청 문장의 소재 낱말(카페·학원·회사·마을…)을 세어 캠퍼스보다 많이 나온 소재를 고른다. 동률·무소재는 캠퍼스 기본.
-- 마을 낱말은 「이웃마을·바닷가·시골·한옥…」처럼 좁게 잡는다 — 「이웃 동네 카페」 요청이 마을로 갔던 실측(rom-b, round 2).
-- 프리셋(`applyRomanceDefaults`): 코드 기본 타이틀일 때 기획서 소재로 키아트를 고른다. 채팅 한 줄 경로는 완료 검사 `romance-title-art-setting`(COMPLETION_CODES)이
-  「타이틀이 소재와 다른 그림(캠퍼스 기본이거나, 카페 기획에 마을 그림처럼 다른 소재 그림이 기획 낱말을 더 많이 세는 쪽에 밀릴 때)」일 때 정확한 id 와 함께 finish 를 막는다. 저작자가 다른 그림(생성·업로드)을 고른 타이틀은 건드리지 않는다.
-- R1-05(기한 엔딩이 빠른 Enter 연타에서 늦게 열림): 대화 한 번당 칸 하나, 칸 3개가 하루. 14일째 하루 끝에서 엔딩은 slow·fast·spam 모두 즉시 열렸다(var_days_elapsed 13에서 시작). 이전 관측은 측정용 드라이버가
-  Enter(= 행동 키)로 다음 대화를 연타해 한 반복 안에 여러 하루가 지나간 것으로 보이며 제품 결함으로 재현하지 못했다. 「Text cancelled」 는 하루 끝 취침이 열린 대사를 가져갈 때의 정상 AbortError(playSceneInterpreter 주석)다.
-
-## 엔딩이 겨눈 인물의 호감이 오를 곳 (2026-10-17 romance-loop-2, `romance-ending-npc-unreachable`)
-
-실측(rom-b, 카페 6인): 엔딩 10개 중 `ending_haru`·`ending_yuu` 는 카페 안 두 인물의 호감을 보는데, 그 인물의 선택지는 스위치만 켜고 talkFriendship·changeFriendship 이 없어
-호감이 0 에서 안 올랐다. 한 인물(지훈)은 characterId 가 `haru_street` 인데 엔딩은 `jihun` 을 봐 엔딩이 둘로 갈라졌다(`ending_jihun`/`ending_jihun_alt`). 자동 플레이는 경고(`deadline-ending-unplayed`)만 냈다.
-
-`checkEndingNpcReachable`(romanceEndings.ts)은 엔딩 조건·기한 fork 가 이름으로 겨눈 인물 키마다 호감이 오르는 곳(호감 대화 인물의 characterId · changeFriendship npcKey · 「인물 호감」 변수 주인)이 있는지 본다.
-없으면 경고 `romance-ending-npc-unreachable` 이고 COMPLETION_CODES 라 finish 를 막는다(한 장면 게임은 ENDING_CODES 로 면제). 키 이름이 다른 오타(`haru_street` vs `jihun`)도 같은 검사로 잡힌다.
-
-
-
-## 인물 엔딩 자동 생성 (2026-10-17 romance-loop-2, rom-c)
-
-학원물 한 판(호감 대화 인물 3명)이 시간 상한(2558초)까지 가서도 엔딩이 호감 구간(해피·평범·혼자) 셋뿐이었다 — 완료 검사(`romance-endings-not-per-heroine`)는 막았지만 모델이 인물 엔딩을 쓸 시간이 없었다.
-`set_deadline_ending` 을 tiers 없이 부르고(뼈대 해피 엔딩이 있고) 호감 대화 인물이 둘 이상이면, 도구가 인물마다 `ending_with_<characterId>`(「OO와 함께」, 호감 ≥60, priority 36, 기본 에필로그 한 줄)를 만들어
-tiers 맨 위에 얹고 그 뒤에 평범·혼자를 둔다. 이미 같은 id 엔딩이 있으면 건드리지 않는다(define_ending 으로 다시 쓴 것 보존). 결과 경고가 에필로그를 인물에 맞게 다시 쓰라고 알린다.
-NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, 완료 검사가 그대로 막는다.

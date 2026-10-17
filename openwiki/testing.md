@@ -2191,3 +2191,10 @@ ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructur
 - 집중 테스트(전체 스위트 금지): `node scripts/run-vitest.mjs test/dialogueSystem.test.ts test/dialogueReading.test.ts test/dialogueSystemTool.test.ts test/dialogueSystemMenu.test.ts test/playerRuntimeCss.test.ts test/feature16PlayerPreferences.test.ts`. 앞 네 개와 feature16 은 통과, `playerRuntimeCss` 는 main 에서도 3건 실패(위 runtime 절).
 - 알려진 함정: 읽은 글·백로그 테스트는 `playerPreferences` 를 쓰므로 `textSpeedChosen` 등을 테스트 사이에 초기화한다(앞 테스트의 값이 새어 나가 feature16 이 깨졌다). 도구 테스트는 `runTool` 의 일반 타입 오류 문구에 맞추지 말고 거절 사실을 본다. 시험 도중 happy-dom 의 animation-cancel unhandled rejection 은 기존 현상이다.
 - 런타임 시각 QA 시나리오 `scripts/qa/runtime/romance-vn-system.scenario.mjs` 는 고정 개수의 Enter 대신 `pressUntil` 로 상태를 기다린다(두 번째 Enter 가 선택지 0 을 확정하는 사고를 막기 위해).
+
+
+## 미연시 추가 화면 검증 (2026-10-17)
+
+- 집중 테스트(전체 스위트 금지): `node scripts/run-vitest.mjs test/vnExtras.test.ts` (순수 규칙·갤러리 잠금·엔딩 목록 상세·세이브 카드 저장/읽기·`set_vn_extras` 스키마와 거절·네 언어 표·옛 프로젝트 불변). 범위 tsc: `NODE_OPTIONS=--max-old-space-size=7000 npx tsc -p tsconfig.app.json --noEmit`.
+- 런타임 시각 QA `romance-vn-ui2`(ko·en): 대화로 CG 1장을 열고 → ESC 갤러리(잠긴 칸)·뷰어·엔딩 회상·엔딩 목록·저장·불러오기를 원 해상도로 본다. 이 기기에서 본 엔딩은 `scenario.localStorageSeed` 로 심는다. 타이틀 불러오기 카드는 같은 페이지에서 저장소를 덤프해 다시 심고 `page.reload` 하는 일회용 탐침으로 확인(`/tmp` 스크립트, 보존 안 함 — 증거는 `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`).
+- 함정: 타이틀로 돌아가기는 ESC 에서 한 번 더 `→` 로 확인 줄에 들어가야 한다. 타이틀 「불러오기」 단추는 오버레이에 가려 Playwright `click` 이 막히니 DOM `click()` 으로.

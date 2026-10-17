@@ -4,7 +4,8 @@ import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
-import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
+import { recordGalleryUnlock } from "@/project/gallery";
+import { galleryActive } from "@/project/vnExtras";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -733,7 +734,7 @@ export function executeCommand(
         ownerEventId: state.currentEventId,
       });
     case "showPicture":
-      if (command.recordInGallery === true && state.project && isGalleryEnabled(state.project)) {
+      if (command.recordInGallery === true && state.project && galleryActive(state.project)) {
         recordGalleryUnlock(state.session, command.resourceId);
       }
       return pause("showPicture", {
