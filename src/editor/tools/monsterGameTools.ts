@@ -10,6 +10,7 @@ import { configureMonsterPresentation } from '@/project/monsterPresentation';
 import { repairExpeditionNpcLayout } from '@/project/examples/monsterExpedition/npcLayout';
 import { repairExpeditionResidents } from '@/project/examples/monsterExpedition/residents';
 import { repairExpeditionShopPrices } from '@/project/examples/monsterExpedition/shopPrices';
+import { distributeNpcCharsets } from '@/project/examples/monsterExpedition/npcFaces';
 import { renameCampaign, type CampaignNames } from '@/project/examples/monsterExpedition/campaignNames';
 import { replaceProjectContents } from './historyTools';
 import { reviewMonsterGame } from './monsterGameReview';
@@ -47,6 +48,7 @@ export const MONSTER_GAME_TOOLS: readonly ToolDefinition[] = [
       if(args.replaceOpening===true||defaultOpening)configureEmeraldMonsterOpening(p);
       else if(p.meta.oprnOpeningBook?.portraitResourceId==='oprn_emerald_professor'&&!p.meta.oprnOpeningBook.portraitMotion)configureEmeraldMonsterPortraitMotion(p);
       enableGenreLockSettled(p,'monster-collect');
+      if(p.system.monsterCampaign.id==='starlight-islands')distributeNpcCharsets(p);
       if(JSON.stringify(p.session)!==session||JSON.stringify([p.startMapId,p.startPos])!==start)throw new ToolError('보수 중 세션/시작 위치가 바뀌었습니다.',{code:'monster-repair-state'});
       return {summary:'기존 전체 캠페인을 재생성하지 않고 에메랄드 프로필과 안전한 보수를 적용했습니다.',data:{...reviewMonsterGame(p),mode,sessionPreserved:true,movedEvents:moved,updatedCreatureAssets}};
     }

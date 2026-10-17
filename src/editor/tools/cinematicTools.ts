@@ -463,7 +463,7 @@ const reviewOpening: ToolDefinition = {
     const review = reviewOpeningAuthoring(project);
     const isKnown = catalogLookup(project);
     const missingMedia = review.scenes.flatMap(scene => [
-      ...(scene.resourceId && !isKnown(scene.kind === "video" ? "movie" : "image", scene.resourceId) ? [scene.resourceId] : []),
+      ...(scene.resourceId && (scene.kind === "video" ? !isKnown("movie", scene.resourceId) : !hasOpeningImage(project, scene.resourceId)) ? [scene.resourceId] : []),
       ...scene.imageResourceIds.filter(id => !hasOpeningImage(project, id)),
       ...(scene.narrationAudioResourceId && !isKnown("sound", scene.narrationAudioResourceId) ? [scene.narrationAudioResourceId] : []),
     ]);

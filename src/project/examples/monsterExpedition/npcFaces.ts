@@ -43,10 +43,10 @@ function preference(eventId: string, gymType: string | undefined, leagueType: st
   let m: RegExpExecArray | null;
   if (/_leader$/u.test(eventId)) return [...(gymType && TYPE_BOSS[gymType] ? [TYPE_BOSS[gymType]!] : []), ...BOSS_FALLBACK];
   if (/_league_challenge$/u.test(eventId)) {
-    if (/league_4_/u.test(eventId)) return [chip(P1, 5), chip(P1, 1)]; // 챔피언 나루 = 라이벌과 같은 사람
+    if (/league_4_/u.test(eventId)) return [chip(P1, 3), chip(P1, 4)]; // 챔피언 나루 = 라이벌과 같은 사람(여자 트레이너)
     return [...(leagueType && TYPE_BOSS[leagueType] ? [TYPE_BOSS[leagueType]!] : []), ...BOSS_FALLBACK];
   }
-  if (/_rival$/u.test(eventId)) return [chip(P1, 5), chip(P1, 1)];
+  if (/_rival$/u.test(eventId)) return [chip(P1, 3), chip(P1, 4)];
   if (/_boss$/u.test(eventId)) return [chip(P2, 0), chip(P1, 6), chip(P1, 5)];
   if (/_company_\d$/u.test(eventId)) return [chip(P1, 5), chip(P1, 2), chip(P1, 6)];
   if ((m = /_trainer_(\d)$/u.exec(eventId))) return rotate([chip(P1, 1), chip(P1, 5), chip(P1, 3)], Number(m[1]) % 3).concat(GRUNT);
@@ -85,7 +85,10 @@ export function distributeNpcCharsets(project: Project): number {
     // 보스급(관장·사천왕·라이벌·지부장)이 먼저 자기 칩을 잡는다 — 단원·주민이 관장의 어울리는 칩을 먼저 가져가지 않게.
     const bossFirst = [...map.events].sort((a, b) => Number(!/_(?:leader|league_challenge|rival|boss)$/u.test(a.id)) - Number(!/_(?:leader|league_challenge|rival|boss)$/u.test(b.id)));
     for (const event of bossFirst) {
-      const pages = (event.pages ?? []).filter((page) => page.graphic?.sprite?.id === P1 || page.graphic?.sprite?.id === P2);
+      const pages = (event.pages ?? []).filter((page) => {
+        const id = page.graphic?.sprite?.id;
+        return id === P1 || id === P2 || (typeof id === "string" && id.startsWith("tex_oprn_charset_scarloxy_people"));
+      });
       if (!pages.length || pages[0]!.graphic!.transparent) continue;
       const wanted = preference(event.id, gymType, leagueTypeOf(event.id));
       const candidates = [...wanted, ...RESIDENT, ...GRUNT, ...BOSS_FALLBACK].filter((c) => key(c) !== HERO);

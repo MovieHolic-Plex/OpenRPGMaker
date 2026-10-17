@@ -658,20 +658,24 @@ function learnPendingMoves(project: Project, session: PlaySession): PlaySession 
     const stab = (skillId: string) => types.includes(skillOf(skillId)?.elementId ?? "");
     const power = (skillId: string) => {
       const skill = skillOf(skillId);
-      return skill && skill.effect.kind === "damage" ? (skill.power ?? 0) * (stab(skillId) ? 1.5 : 1) : -1;
+      if (!skill) return -1;
+      return skill.effect.kind === "damage" ? (skill.power ?? 0) * (stab(skillId) ? 1.5 : 1) : 0;
     };
     for (const pending of instance.pendingSkillIds ?? []) {
       const known = instance.skillIds ?? [];
-      const keepsLastStab = (skillId: string) => stab(skillId) && !stab(pending) && known.filter(stab).length <= 1;
-      // 같은 속성 기술이 겹친 것부터 바꾼다 — 풀·에스퍼 스타터가 풀 기술 셋으로 채워져, 불꽃·비행·벌레를 낸 라이벌 챔피언에게
-      // 반감 기술만 들고 Lv93 로 열 번 졌다(2026-10-07 사막 기획서). 플레이어도 기술 범위를 남긴다.
-      const elementOf = (skillId: string) => skillOf(skillId)?.elementId ?? "";
-      const lastOfElement = (skillId: string) => elementOf(skillId) !== elementOf(pending) && known.filter((other) => elementOf(other) === elementOf(skillId)).length <= 1;
-      // 잊을 수 없는 기술(비전머신)은 후보가 아니다. 필드 기술(절단·파도타기)을 배우려는 대기는 위력과 상관없이 약한 기술과 바꾼다 —
-      // 거절하면 길을 여는 기술을 영영 잃어 필드 기술 문에서 막힌다.
-      const candidates = [...known].filter((skillId) => power(skillId) >= 0 && !keepsLastStab(skillId) && skillOf(skillId)?.unforgettable !== true);
-      const duplicated = candidates.filter((skillId) => !lastOfElement(skillId));
-      const weakest = (duplicated.length ? duplicated : candidates).sort((a, b) => power(a) - power(b))[0];
+      // 같은 속성 기술이 겹친 것부터 바꾼다 — 단, 비공격 기술이나 초반 약한 기술(위력 45 이하)은 먼저 바꾼다.
+      const candidates = [...known].filter((skillId) => {
+        if (power(skillId) < 0 || skillOf(skillId)?.unforgettable === true) return false;
+        return !(stab(skillId) && !stab(pending) && known.filter(stab).length <= 1);
+      });
+      const nonDamageOrWeak = candidates.filter((skillId) => (skillOf(skillId)?.power ?? 0) <= 45 || skillOf(skillId)?.effect.kind !== "damage");
+      const pendingElement = skillOf(pending)?.elementId ?? "";
+      const duplicated = candidates.filter((skillId) => {
+        const el = skillOf(skillId)?.elementId ?? "";
+        return el === pendingElement || known.filter((other) => (skillOf(other)?.elementId ?? "") === el).length > 1;
+      });
+      const pool = nonDamageOrWeak.length ? nonDamageOrWeak : duplicated.length ? duplicated : candidates;
+      const weakest = pool.sort((a, b) => power(a) - power(b))[0];
       const wantsField = Boolean(skillOf(pending)?.fieldCommonEventId);
       const replaced = weakest && (wantsField || power(pending) > power(weakest)) ? replacePendingMonsterSkill(project, instance, pending, weakest) : undefined;
       const settled = replaced?.ok ? replaced : rejectPendingMonsterSkill(instance, pending);
@@ -1242,16 +1246,17 @@ function healAtCenter(driver: Driver, nearMapId?: string): void {
     for (const event of map.events ?? []) {
       if (triggerOf(event, session) !== "action") continue;
       const commands = activeCommands(event, session);
-      if (!commands?.some((command) => command.kind === "recoverAll")) continue;
-      const route = routeTo(driver.project, session.currentMapId, map.id, session);
-      if (!route) continue;
-      const score = distance(map.id, route);
-      if (best && score >= best.score) continue;
+      if (!commands?.length) continue;
       const page = event.pages?.length ? resolveEventPage(event, session) : undefined;
       const ref: PageRef = { map, event, page, pageIndex: page ? event.pages!.indexOf(page) : -1, trigger: page?.trigger ?? event.trigger, conditions: page?.conditions ?? [], commands };
       let visit: CommandVisit | undefined;
       visitPageCommands(ref, (entry) => { if (!visit && entry.command.kind === "recoverAll") visit = entry; });
-      if (visit) best = { event, visit, route, score };
+      if (!visit) continue;
+      const route = routeTo(driver.project, session.currentMapId, map.id, session);
+      if (!route) continue;
+      const score = distance(map.id, route);
+      if (best && score >= best.score) continue;
+      best = { event, visit, route, score };
     }
   }
   if (!best) return;
