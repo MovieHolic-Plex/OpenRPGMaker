@@ -1,3 +1,4 @@
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import type { Project } from '@/project/types';
 import type { ToolDefinition } from './types';
 
@@ -5,8 +6,13 @@ import type { ToolDefinition } from './types';
 export function presentationArtIds(project: Project): string[] {
   return [...new Set([
     project.system.titleScreen?.backgroundResourceId,
-    ...(project.system.opening?.enabled ? project.system.opening.scenes
-      .filter(scene => scene.kind === 'image').flatMap(scene => [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]) : []),
+    ...(project.system.opening?.enabled ? project.system.opening.scenes.flatMap(scene =>
+      scene.kind === 'image'
+        ? [scene.resourceId, ...(scene.direction?.layers?.map(layer => layer.resourceId) ?? [])]
+        : scene.kind === 'animatic'
+          ? scene.composition.layers.filter(layer => layer.kind === 'image' && layer.role === 'background').map(layer => layer.resourceId)
+          : [],
+    ) : []),
   ].filter((id): id is string => Boolean(id)))];
 }
 
@@ -33,7 +39,7 @@ export const PRESENTATION_TOOLS: readonly ToolDefinition[] = [{
   parameters: { type: 'object', properties: {}, additionalProperties: false },
   run(project) {
     const ids = presentationArtIds(project);
-    const missing = ids.filter(id => !project.assets.uploaded[id]?.dataUrl && !project.assets.uploaded[id]?.ref);
+    const missing = ids.filter(id => !project.assets.uploaded[id]?.dataUrl && !project.assets.uploaded[id]?.ref && !resolveAssetResourceUrl(id, { project }));
     return { summary: `연결된 타이틀·오프닝 원화 ${ids.length}장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.`,
       data: { titleScreen: project.system.titleScreen ?? null, opening: project.system.opening ?? null,
         images: ids.map(resourceId => ({ resourceId, label: project.assets.uploaded[resourceId]?.name ?? resourceId })), missing } };

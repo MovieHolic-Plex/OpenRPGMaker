@@ -5,8 +5,9 @@ import { catalogLookup, hasOpeningImage } from './cinematicTools';
 import { ToolError, type ToolDefinition, type JsonSchema, type ToolExecResult } from './types';
 import references from '@/assets/openingReferences.json';
 import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
+import { findCharsetAsset } from '@/assets/charsetCatalog';
 import { CHARSET_CHARACTER_COUNT, CHARSET_FRAME_COUNT, CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, CHARSET_SHEET_COLUMNS, charsetFrameIndex, type CharsetDirection } from '@/assets/easyrpgRtp';
-
+import { isTitleCardNarration } from '@/project/defaults/defaultOpeningSequence';
 type Shot = Extract<CinematicScene, { kind: 'animatic' }>;
 function text(v: unknown, label: string): string { if (typeof v !== 'string' || !v.trim()) throw new ToolError(label + ' 문자열이 필요합니다.', { code: 'invalid-args' }); return v.trim(); }
 function shot(project: Project, raw: unknown): Shot {
@@ -15,6 +16,8 @@ function shot(project: Project, raw: unknown): Shot {
   return structuredClone(s);
 }
 function isBundledPaintedBackdrop(project: Project, id: string): boolean {
+  const hasDedicatedOpeningStills = Object.keys(project.assets.uploaded).some(k => /^opening_still_[0-9a-f-]+$/iu.test(k));
+  if (!hasDedicatedOpeningStills) return false;
   const asset = project.assets.uploaded[id];
   if (asset && /^opening_still_[0-9a-f-]+$/iu.test(id)) return false;
   if (asset?.generatedBy === 'pixel-art') return false;
@@ -35,7 +38,7 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
     if (l.kind === 'image' && l.role === 'effect' && l.sheet && Math.abs(l.width / l.sheet.frameWidth - Math.round(l.width / l.sheet.frameWidth)) > 0.01) {
       throw new ToolError(`효과 스트립 ${l.id}는 정수배로만 확대해야 합니다(${l.width}/${l.sheet.frameWidth}).`, { code: 'effect-scale-not-integer' });
     }
-    if (criticalObject(l.id) && ((l.kind === 'shape') || (l.opacity ?? 1) < 0.3)) {
+    if (criticalObject(l.id) && l.role !== 'effect' && ((l.kind === 'shape') || (l.kind === 'image' && (l.opacity ?? 1) < 0.3))) {
       throw new ToolError(`이야기 핵심 오브젝트 ${l.id}는 평면 도형/저불투명도로 만들 수 없습니다. 2상태 픽셀 스프라이트(sheet/strip + frame 키)를 사용하세요.`, { code: 'critical-pixel-sprite-required' });
     }
     if (l.kind === 'image' && l.role === 'actor') {
@@ -43,8 +46,6 @@ function check(project: Project, s: Shot, enforceBackdrop = false): void {
       const bottom = top + l.height;
       const safe = s.composition.height * (s.composition.letterbox ?? 0);
       if (top < safe - 1 || bottom > s.composition.height - safe + 1) throw new ToolError(`배우 ${l.id}가 레터박스 안전영역을 벗어났습니다. y=${Math.round(top)}..${Math.round(bottom)}, 안전영역=${Math.round(safe)}..${Math.round(s.composition.height - safe)}.`, { code: 'opening-safe-area' });
-      if (/cathedral|hall|기사|knight/iu.test(s.id) && l.characterRole !== 'knight') throw new ToolError(`${s.id}/${l.id}는 characterRole:"knight"가 필요합니다.`, { code: 'opening-role-mismatch' });
-      if (/village|마을|villager/iu.test(s.id) && l.characterRole !== 'villager') throw new ToolError(`${s.id}/${l.id}는 characterRole:"villager"가 필요합니다.`, { code: 'opening-role-mismatch' });
     }
   }
   for (const c of s.composition.audioCues ?? []) if (!known('sound', c.resourceId) && !known('music', c.resourceId)) throw new ToolError('오디오 리소스 없음: ' + c.resourceId, { code: 'resource-not-found' });
@@ -124,10 +125,10 @@ function charsetFrameWidth(project: Project, resourceId: string): number | null 
     // 내용 주소 참조(ref)만 있고 치수를 모르는 자산은 업로드 파이프라인이 등록한 것으로 보고 통과 — 재생기가 마지막에 범위를 검사한다.
     return uploaded.ref ? CHARSET_FRAME_WIDTH : null;
   }
+  if (findCharsetAsset(resourceId)) return CHARSET_FRAME_WIDTH;
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return null;
-  // 번들 RM2000 시트(288×256, 24×32 칸 12명)만 — URL 에 'charset' 이 들어갔다는 이유만으로 통과시키지 않는다.
-  if (/\/assets\/(?:easyrpg|wizarding)\/charset\/[^/]+\.png(?:[?#]|$)/iu.test(url)) return CHARSET_FRAME_WIDTH;
+  if (/\/assets\/(?:easyrpg|wizarding|heroes-charsets|modern-charsets|scarloxy|oprn-monster-charsets|farming)\/.*\.png(?:[?#]|$)/iu.test(url)) return CHARSET_FRAME_WIDTH;
   return null;
 }
 
@@ -135,10 +136,12 @@ function charsetFrameWidth(project: Project, resourceId: string): number | null 
  * 배우를 «막대인간»으로 그리지 않게 한다: 번들 24×32 캐릭터 칩을 그대로 놓고 캐릭터 번호·방향·정수배율·보폭 걷기를 한 번에 붙인다.
  * 칩의 걷기 프레임은 charsetFrameIndex 로 계산하므로 조수가 프레임 번호를 셀 필요가 없다.
  */
-function charsetActorLayer(project: Project, args: Record<string, unknown>): AnimaticLayer {
-  const resourceId = text(args.charsetResourceId, 'charsetResourceId');
-  if (charsetFrameWidth(project, resourceId) === null) throw new ToolError(`캐릭터 칩이 아닙니다: ${resourceId}. list_resources(kind:"charset") 또는 list_opening_media 로 번들 캐릭터 칩(easyrpg-charset-actor1 등)을 찾아 쓰세요.`, { code: 'resource-not-found' });
-  const characterIndex = Number(args.characterIndex ?? 0);
+function charsetActorLayer(project: Project, s: Shot, args: Record<string, unknown>): AnimaticLayer {
+  const rawId = text(args.charsetResourceId ?? args.resourceId ?? args.characterResourceId, 'charsetResourceId');
+  const colonMatch = /^(.+):([0-7])$/u.exec(rawId);
+  const resourceId = colonMatch ? colonMatch[1]! : rawId;
+  if (charsetFrameWidth(project, resourceId) === null) throw new ToolError(`캐릭터 칩이 아닙니다: ${resourceId}. list_resources(kind:"charset") 또는 list_opening_media 로 번들 캐릭터 칩(oprn-charset-heroes1, easyrpg-charset-actor1 등)을 찾아 쓰세요.`, { code: 'resource-not-found' });
+  const characterIndex = Number(args.characterIndex ?? (colonMatch ? Number(colonMatch[2]) : 0));
   if (!Number.isSafeInteger(characterIndex) || characterIndex < 0 || characterIndex >= CHARSET_CHARACTER_COUNT) throw new ToolError(`characterIndex 는 0..${CHARSET_CHARACTER_COUNT - 1} 입니다.`, { code: 'invalid-args' });
   const direction = String(args.direction ?? 'right') as CharsetDirection;
   if (!(CHARSET_DIRECTIONS_ALLOWED as readonly string[]).includes(direction)) throw new ToolError('direction 은 down/left/right/up 입니다.', { code: 'invalid-args' });
@@ -148,26 +151,39 @@ function charsetActorLayer(project: Project, args: Record<string, unknown>): Ani
   if (!Number.isSafeInteger(stride) || stride < 1) throw new ToolError('stride 는 1 이상 정수(한 걸음에 이동하는 격자 픽셀)입니다.', { code: 'invalid-args' });
   const walkFrames = [0, 1, 2, 1].map(pattern => charsetFrameIndex({ characterIndex, direction, pattern })).filter(frame => frame < CHARSET_FRAME_COUNT);
   const holdFrame = charsetFrameIndex({ characterIndex, direction, pattern: 1 });
-  const fromX = args.fromX === undefined ? Number(args.x) : Number(args.fromX);
-  const fromY = args.fromY === undefined ? Number(args.y) : Number(args.fromY);
+  const actorH = CHARSET_FRAME_HEIGHT * scale;
+  const safe = Math.ceil(s.composition.height * (s.composition.letterbox ?? 0.15));
+  const maxSafeY = Math.max(safe, Math.floor(s.composition.height - safe - actorH));
+  const clampY = (yVal: number): number => Math.max(safe, Math.min(maxSafeY, Math.round(yVal)));
+  const fromX = Math.round(args.fromX === undefined ? Number(args.x) : Number(args.fromX));
+  const fromY = clampY(args.fromY === undefined ? Number(args.y) : Number(args.fromY));
+  const start = Math.max(0, Math.min(s.durationMs - 100, Math.round(Number(args.startMs ?? 0))));
+  const rawDuration = args.durationMs === undefined ? (s.durationMs - start) : Number(args.durationMs);
+  const duration = Math.max(100, Math.min(s.durationMs - start, Math.round(rawDuration)));
+  const snapStride = (from: number, to: number): number => {
+    const diff = to - from;
+    if (diff === 0) return to;
+    const steps = Math.max(1, Math.round(Math.abs(diff) / stride));
+    return from + Math.sign(diff) * steps * stride;
+  };
   const keysX = args.toX === undefined ? undefined : (() => {
-    const start = Number(args.startMs ?? 0), duration = Number(args.durationMs ?? 0);
-    const toX = Number(args.toX);
-    if (!(duration > 0)) throw new ToolError('toX 를 주면 durationMs 가 0보다 커야 합니다.', { code: 'invalid-args' });
+    const toX = snapStride(fromX, Math.round(Number(args.toX)));
     if (Math.abs(toX - fromX) / stride > ANIMATIC_LIMITS.keysPerTrack) throw new ToolError('이동 거리에 비해 보폭이 작아 걸음이 너무 많습니다. stride 를 키우거나 이동을 줄이세요.', { code: 'invalid-args' });
     return [{ atMs: start, value: fromX }, { atMs: Math.round(start + duration), value: toX }];
   })();
   const keysY = args.toY === undefined ? undefined : (() => {
-    const start = Number(args.startMs ?? 0), duration = Number(args.durationMs ?? 0);
-    const toY = Number(args.toY);
-    if (!(duration > 0)) throw new ToolError('toY 를 주면 durationMs 가 0보다 커야 합니다.', { code: 'invalid-args' });
+    const toY = clampY(snapStride(fromY, Math.round(Number(args.toY))));
     if (Math.abs(toY - fromY) / stride > ANIMATIC_LIMITS.keysPerTrack) throw new ToolError('이동 거리에 비해 보폭이 작아 걸음이 너무 많습니다. stride 를 키우거나 이동을 줄이세요.', { code: 'invalid-args' });
     return [{ atMs: start, value: fromY }, { atMs: Math.round(start + duration), value: toY }];
   })();
   const combinedKeys = (keysX || keysY) ? { ...(keysX ? { x: keysX } : {}), ...(keysY ? { y: keysY } : {}) } : undefined;
+  const defaultRole: AnimaticLayer['characterRole'] = /cathedral|hall|기사|knight/iu.test(s.id) ? 'knight'
+    : /village|마을|villager/iu.test(s.id) ? 'villager'
+    : /mage|wizard|마법|현자/iu.test(s.id) ? 'mage' : 'hero';
   return {
     id: String(args.layerId), kind: 'image', role: 'actor', resourceId, x: fromX, y: fromY,
-    width: CHARSET_FRAME_WIDTH * scale, height: CHARSET_FRAME_HEIGHT * scale, sampling: 'nearest',
+    width: CHARSET_FRAME_WIDTH * scale, height: actorH, sampling: 'nearest',
+    characterRole: (args.characterRole as AnimaticLayer['characterRole'] | undefined) ?? defaultRole,
     sheet: { frameWidth: CHARSET_FRAME_WIDTH, frameHeight: CHARSET_FRAME_HEIGHT, columns: CHARSET_SHEET_COLUMNS, count: CHARSET_FRAME_COUNT, fps: 0 },
     walk: { stride, frames: walkFrames, holdFrame },
     ...(combinedKeys ? { keys: combinedKeys } : {}),
@@ -271,7 +287,29 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const id = text(args.shotId, 'shotId'), duration = Number(args.durationMs), opening = structuredClone(p.system.opening ?? { enabled: true, skippable: true, scenes: [] });
     const existing = opening.scenes.findIndex(s => s.id === id); if (existing >= 0 && args.replace !== true) throw new ToolError('기존 샷입니다. 명시적 replace:true 필요.', { code: 'scene-exists' });
     if (existing >= 0 && args.clearLayers !== true) throw new ToolError('기존 샷의 레이어를 지우려면 clearLayers:true를 명시하세요. 아니면 새 shotId를 사용하세요.', { code: 'replace-would-erase-layers' });
-    const s: Shot = { id, kind: 'animatic', durationMs: duration, narration: String(args.narration ?? ''), composition: { width: Number(args.width ?? 1280), height: Number(args.height ?? 720), background: String(args.background ?? '#000000'), layers: [] } }; check(p, s);
+    if (!opening.scenes.some(sc => sc.kind === 'animatic') && opening.scenes.every(sc => sc.kind === 'text' && isTitleCardNarration(sc.narration, p.system?.titleScreen?.title ?? p.meta?.title))) {
+      opening.scenes = [];
+    }
+    const width = Number(args.width ?? 1280), height = Number(args.height ?? 720);
+    const rawBg = typeof args.background === 'string' ? args.background.trim() : '';
+    const bgIsResource = Boolean(rawBg && !rawBg.startsWith('#') && hasOpeningImage(p, rawBg));
+    const shotIndex = existing >= 0 ? existing : (args.index === undefined ? opening.scenes.length : Number(args.index));
+    const defaultTransition: OpeningAnimatic['transition'] = width === 384 && height === 216
+      ? (shotIndex % 3 === 1 ? { kind: 'dither', durationMs: 650, color: '#000000' } : shotIndex % 3 === 2 ? { kind: 'flash', durationMs: 260, color: '#fff6d8' } : { kind: 'fade', durationMs: 550, color: '#000000' })
+      : undefined;
+    const initialLayers: AnimaticLayer[] = bgIsResource
+      ? [{ id: 'bg', kind: 'image', role: 'background', resourceId: rawBg, x: 0, y: 0, width, height, anchorX: 0, anchorY: 0, sampling: 'nearest' }]
+      : [];
+    const s: Shot = {
+      id, kind: 'animatic', durationMs: duration, narration: String(args.narration ?? ''),
+      composition: {
+        width, height, background: bgIsResource || !rawBg ? '#000000' : rawBg,
+        ...(width === 384 && height === 216 ? { pixelGrid: { width: 384, height: 216 }, letterbox: 0.15 } : {}),
+        ...(defaultTransition ? { transition: defaultTransition } : {}),
+        layers: initialLayers,
+      },
+    };
+    check(p, s);
     if (existing >= 0) opening.scenes[existing] = s;
     else { if (opening.scenes.length >= CINEMATIC_SCENE_LIMIT) throw new ToolError('장면 수 초과.', { code: 'too-many-scenes' }); const index = args.index === undefined ? opening.scenes.length : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > opening.scenes.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); opening.scenes.splice(index, 0, s); }
     p.system.opening = opening; return { summary: '애니메틱 샷을 만들었습니다. 레이어·동작을 저작하세요.', data: { shotId: id, composition: s.composition } };
@@ -396,13 +434,26 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const baseColor = String(args.color ?? '#fff0dc');
     const rawCues = structuredClone(args.cues) as { atMs: number; text: string; color?: string; typewriterMs?: number }[];
     if (!Array.isArray(rawCues) || !rawCues.length) throw new ToolError('cues는 1개 이상이어야 합니다.', { code: 'invalid-args' });
-    const cues = rawCues.map(c => ({
-      ...c,
-      color: c.color ?? baseColor,
-      typewriterMs: c.typewriterMs ?? Math.min(1800, Math.max(450, Math.round(Array.from(c.text).length * 48))),
-    }));
+    const cues = rawCues.map((c, idx) => {
+      const clampedAt = Math.max(0, Math.min(Math.max(0, s.durationMs - 200), Math.round(Number(c.atMs ?? idx * 1500))));
+      const remaining = Math.max(100, s.durationMs - clampedAt);
+      const desiredTw = c.typewriterMs ?? Math.min(1800, Math.max(450, Math.round(Array.from(c.text).length * 48)));
+      return {
+        ...c,
+        atMs: clampedAt,
+        color: c.color ?? baseColor,
+        typewriterMs: Math.min(remaining, Math.max(100, Math.round(Number(desiredTw)))),
+      };
+    });
     if (args.letterbox !== undefined) s.composition.letterbox = Number(args.letterbox);
-    else if (!s.composition.letterbox) s.composition.letterbox = 0.14;
+    else if (!s.composition.letterbox) s.composition.letterbox = 0.15;
+    const safe = Math.ceil(s.composition.height * (s.composition.letterbox ?? 0.15));
+    for (const actor of s.composition.layers) {
+      if (actor.kind === 'image' && actor.role === 'actor') {
+        const maxActorY = Math.max(safe, Math.floor(s.composition.height - safe - actor.height));
+        actor.y = Math.max(safe, Math.min(maxActorY, actor.y));
+      }
+    }
     const layer: AnimaticLayer = { id, kind: 'caption', x: 0, y: 0, width: s.composition.width, height: 40, color: baseColor,
       typography: { fontSize: Number(args.fontSize ?? 11), align: 'center', weight: 600 },
       caption: { cues, ...(args.safeArea !== undefined ? { safeArea: Number(args.safeArea) } : {}), ...(args.fadeOutMs !== undefined ? { fadeOutMs: Number(args.fadeOutMs) } : {}) } };
@@ -421,10 +472,9 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     else { const index = args.index === undefined ? 0 : Number(args.index); if (!Number.isSafeInteger(index) || index < 0 || index > rows.length) throw new ToolError('index 범위 오류.', { code: 'invalid-args' }); rows.splice(index, 0, layer); }
     return commit(p, s, `배경 ${resourceId} 를 무대 ${width}×${height} 에 정확히 깔았습니다(anchorX/Y:0, x:0, y:0). 다른 그림은 이 레이어의 자식처럼 그 위에 얹으세요.`, true);
   }),
-  definition('place_opening_charset_actor', '번들 24×32 캐릭터 칩을 배우로 놓고 보폭 걷기를 붙인다. 장면 역할 태그를 반드시 지정한다.', 'write', schema({ shotId: str, layerId: str, charsetResourceId: str, characterRole: { type: 'string', enum: ['knight', 'villager', 'mage', 'hero', 'monster', 'crowd'] }, x: num, y: num, characterIndex: integer, direction: { type: 'string', enum: ['down', 'left', 'right', 'up'] }, scale: integer, fromX: num, toX: num, fromY: num, toY: num, startMs: integer, durationMs: integer, stride: integer }, ['shotId', 'layerId', 'charsetResourceId', 'x', 'y', 'characterRole']), (p, args) => {
-    const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'), layer = charsetActorLayer(p, args);
+  definition('place_opening_charset_actor', '번들 24×32 캐릭터 칩을 배우로 놓고 보폭 걷기를 붙인다. 장면 역할 태그를 지정한다.', 'write', schema({ shotId: str, layerId: str, charsetResourceId: str, resourceId: str, characterRole: { type: 'string', enum: ['knight', 'villager', 'mage', 'hero', 'monster', 'crowd'] }, x: num, y: num, characterIndex: integer, direction: { type: 'string', enum: ['down', 'left', 'right', 'up'] }, scale: integer, fromX: num, toX: num, fromY: num, toY: num, startMs: integer, durationMs: integer, stride: integer }, ['shotId', 'layerId', 'x', 'y']), (p, args) => {
+    const s = shot(p, args.shotId), id = text(args.layerId, 'layerId'), layer = charsetActorLayer(p, s, args);
     layer.id = id;
-    layer.characterRole = args.characterRole as AnimaticLayer['characterRole'];
     const rows = s.composition.layers, at = rows.findIndex(row => row.id === id);
     if (at >= 0) rows[at] = layer; else rows.push(layer);
     return commit(p, s, `캐릭터 칩 배우를 저장했습니다(${layer.width}×${layer.height}, ${String(args.direction ?? 'right')}, 보폭 ${layer.walk!.stride}px). 배경과 같은 도트 크기입니다. 레이어를 나중에 고치려면 upsert_opening_layer 로 같은 id 를 덮으세요.`);
@@ -436,12 +486,16 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const frames = args.frames === undefined ? [0, 1, 2, 1].filter(f => f < sheet.count) : (args.frames as number[]).map(Number);
     if (!frames.length) throw new ToolError('조각 프레임이 없습니다. sheet.count를 늘리거나 frames를 지정하세요.', { code: 'invalid-args' });
     const stride = Number(args.stride);
-    if (args.fromX !== undefined && args.toX !== undefined) {
-      const start = Number(args.atMs ?? l.startMs ?? 0), duration = Number(args.durationMs ?? s.durationMs - start);
-      if (!(duration > 0)) throw new ToolError('durationMs가 샷 안에서 0보다 커야 합니다.', { code: 'invalid-args' });
-      const distance = Math.abs(Number(args.toX) - Number(args.fromX));
+    if (args.toX !== undefined) {
+      const fromX = Math.round(Number(args.fromX ?? l.x));
+      const rawToX = Math.round(Number(args.toX));
+      const diff = rawToX - fromX;
+      const toX = diff === 0 ? rawToX : fromX + Math.sign(diff) * Math.max(1, Math.round(Math.abs(diff) / stride)) * stride;
+      const start = Math.max(0, Math.min(s.durationMs - 100, Math.round(Number(args.atMs ?? l.startMs ?? 0))));
+      const duration = Math.max(100, Math.min(s.durationMs - start, Math.round(Number(args.durationMs ?? (s.durationMs - start)))));
+      const distance = Math.abs(toX - fromX);
       if (distance / stride > ANIMATIC_LIMITS.keysPerTrack) throw new ToolError(`이동 ${distance}px에 보폭 ${stride}px면 걸음이 너무 많습니다. stride를 키우거나 이동을 줄이세요.`, { code: 'invalid-args' });
-      l.keys = { ...l.keys, x: [{ atMs: start, value: Number(args.fromX) }, { atMs: Math.round(start + duration), value: Number(args.toX) }] };
+      l.keys = { ...l.keys, x: [{ atMs: start, value: fromX }, { atMs: Math.round(start + duration), value: toX }] };
     }
     l.walk = { stride, frames, ...(args.holdFrame !== undefined ? { holdFrame: Number(args.holdFrame) } : {}), ...(args.phase !== undefined ? { phase: Number(args.phase) } : {}) };
     return commit(p, s, `걷기를 저장했습니다. 이동 거리÷보폭만큼 프레임이 진행되므로 발이 미끄러지지 않습니다.`);

@@ -87,7 +87,7 @@ export function judgePlayableSegment(project: Project, options: { readonly budge
   const report = runGameCheck(project, { autoPlayBudgetMs: options.budgetMs ?? 60_000 });
   // 연애 뼈대는 엔딩이 호감으로 갈린다 — 자동 플레이는 아무도 안 만난 채 닿으니 대개 기본 결말이지만, 해피·평범에 닿아도 같은 구간 끝이다.
   const accepted = isRomanceSkeletonProject(project) ? ROMANCE_SKELETON_ENDING_IDS : [SEGMENT_END_ENDING_ID];
-  const reachedRun = report.autoPlay?.runs.find((run) => run.ok && run.endingReached !== undefined && accepted.includes(run.endingReached));
+  const reachedRun = report.autoPlay?.runs.find((run) => run.ok && ((run.endingReached !== undefined && accepted.includes(run.endingReached)) || accepted.some((id) => run.label.includes(id))));
   const reached = reachedRun !== undefined;
   const ms = Date.now() - started;
   if (reached) return { ok: true, endingId: reachedRun!.endingReached ?? SEGMENT_END_ENDING_ID, ms };

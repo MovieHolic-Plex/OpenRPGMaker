@@ -347,8 +347,9 @@ function openingImagesPngBase64(project: Project, data: { resourceId?: unknown; 
     ...(typeof data.resourceId === "string" ? [data.resourceId] : []),
     ...(Array.isArray(data.resourceIds) ? data.resourceIds.filter((id): id is string => typeof id === "string") : []),
   ].filter((id, index, all) => id && all.indexOf(id) === index);
-  const images = ids.map((id) => {
+  const images = ids.flatMap((id) => {
     const url = resolveAssetResourceUrl(id, { project });
+    if (url && (/^data:audio\//u.test(url) || /\.(?:wav|ogg|mp3|m4a|flac)(?:[?#]|$)/iu.test(url))) return [];
     const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
     const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
       : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
@@ -358,9 +359,9 @@ function openingImagesPngBase64(project: Project, data: { resourceId?: unknown; 
       const decoded = jpeg.decode(bytes, { useTArray: true, formatAsRGBA: true });
       const png = new PNG({ width: decoded.width, height: decoded.height });
       png.data = Buffer.from(decoded.data);
-      return png;
+      return [png];
     }
-    return PNG.sync.read(bytes);
+    return [PNG.sync.read(bytes)];
   });
   if (images.length === 0) {
     const blank = new PNG({ width: 320, height: 180 });
@@ -502,7 +503,7 @@ table{border-collapse:collapse;width:100%}td{border-bottom:1px solid #2a2d38;pad
 <p class=legend>표식: <span style="border-color:rgb(60,230,110)"></span>시작 위치 <span style="border-color:rgb(70,150,255)"></span>문 <span style="border-color:rgb(235,60,60)"></span>전투 <span style="border-color:rgb(255,200,40)"></span>엔딩 <span style="border-color:rgb(230,70,230)"></span>기타 이벤트</p>
 <h2>자동 플레이</h2>${autoHtml}
 <h2>검사 지적 ${report?.findings.length ?? 0}건</h2><table>${rows || "<tr><td>지적 없음</td></tr>"}</table>
-${input.toolFailures?.length ? `<h2>생성 중 실패한 툴 호출 ${input.toolFailures.length}건</h2><table>${input.toolFailures.map((f) => `<tr><td>#${f.order}</td><td><code>${esc(f.name)}</code></td><td>${esc(f.summary.replace(/\s+/gu, " ").slice(0, 400))}</td></tr>`).join("")}</table>` : ""}
+${input.toolFailures?.length ? `<h2>생성 중 실패한 툴 호출 ${input.toolFailures.length}건</h2><table>${input.toolFailures.map((f) => `<tr><td>#${f.order}</td><td><code>${esc(f.name)}</code></td><td>${esc(String(f.summary ?? "").replace(/\s+/gu, " ").slice(0, 400))}</td></tr>`).join("")}</table>` : ""}
 ${input.replay ? `<h2>재생</h2><pre>${esc(input.replay)}</pre>` : ""}
 <h2>맵</h2><div class=grid>${cards}</div>
 ${metaHtml}

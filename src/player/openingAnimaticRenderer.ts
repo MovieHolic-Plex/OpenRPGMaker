@@ -274,18 +274,18 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
   const fadeOutMs = next ? 0 : Math.min(caption.fadeOutMs ?? 300, Math.max(0, cueEnd - cue.atMs));
   const alpha = fadeOutMs > 0 ? Math.min(1, Math.max(0, (cueEnd - t) / fadeOutMs)) : 1;
   if (alpha <= 0) return;
-  const size = (l.typography?.fontSize ?? 12) * (snapping > 0 ? 1 / snapping : 1), typewriterMs = cue.typewriterMs ?? l.typography?.typewriterMs ?? 0;
+  const baseSize = (l.typography?.fontSize ?? 12) * (snapping > 0 ? 1 / snapping : 1), typewriterMs = cue.typewriterMs ?? l.typography?.typewriterMs ?? 0;
   const reveal = typewriterMs > 0 ? Math.min(1, Math.max(0, (t - cue.atMs) / typewriterMs)) : 1;
   const characters = Array.from(cue.text), shown = characters.slice(0, Math.ceil(characters.length * reveal)).join('');
   if (!shown) return;
   const bar = a.letterbox ?? 0, safeArea = caption.safeArea ?? 0.03;
-  // A bar caption lives inside the letterbox band (the reference framing); without a band it sits safeArea above the bottom edge.
-  const baseline = bar > 0
-    ? a.height * (1 - bar) + Math.max(0, (a.height * bar - size) / 2)
-    : a.height * (1 - safeArea) - size;
   const align = l.typography?.align ?? 'center';
   ctx.save();
   ctx.globalAlpha *= alpha;
+  ctx.font = `${l.typography?.weight ?? 600} ${baseSize}px system-ui, sans-serif`;
+  const maxW = Math.max(40, a.width - 12);
+  const needsWrap = !cue.text.includes('\n') && ctx.measureText(cue.text).width > maxW;
+  const size = needsWrap ? Math.max(9 * (snapping > 0 ? 1 / snapping : 1), Math.round(baseSize * 0.9)) : baseSize;
   ctx.font = `${l.typography?.weight ?? 600} ${size}px system-ui, sans-serif`;
   ctx.textAlign = align; ctx.textBaseline = 'top';
   let cueColor = cue.color ?? l.color ?? '#ffffff';
@@ -304,7 +304,31 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
   ctx.fillStyle = cueColor;
   ctx.shadowColor = 'rgba(0,0,0,0.92)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
   const x = align === 'center' ? a.width / 2 : align === 'right' ? a.width - size : size;
-  ctx.fillText(shown, x, baseline);
+  if (needsWrap) {
+    const mid = Math.floor(cue.text.length / 2);
+    let splitAt = -1;
+    for (let d = 0; d < cue.text.length; d += 1) {
+      if (mid + d < cue.text.length && cue.text[mid + d] === ' ') { splitAt = mid + d; break; }
+      if (mid - d >= 0 && cue.text[mid - d] === ' ') { splitAt = mid - d; break; }
+    }
+    if (splitAt > 0) {
+      const lineH = Math.round(size * 1.22);
+      const totalH = lineH * 2;
+      const y0 = bar > 0
+        ? a.height * (1 - bar) + Math.max(1, (a.height * bar - totalH) / 2)
+        : a.height * (1 - safeArea) - totalH;
+      const line1 = shown.length <= splitAt ? shown : cue.text.slice(0, splitAt);
+      const line2 = shown.length > splitAt ? shown.slice(splitAt + 1) : '';
+      ctx.fillText(line1, x, y0, maxW);
+      if (line2) ctx.fillText(line2, x, y0 + lineH, maxW);
+      ctx.restore();
+      return;
+    }
+  }
+  const baseline = bar > 0
+    ? a.height * (1 - bar) + Math.max(0, (a.height * bar - size) / 2)
+    : a.height * (1 - safeArea) - size;
+  ctx.fillText(shown, x, baseline, maxW);
   ctx.restore();
 }
 
@@ -471,6 +495,8 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
   const snap = (v: number) => snapping > 0 ? Math.round(v * snapping) / snapping : v;
   const snapSize = (v: number) => snapping > 0 ? Math.max(1 / snapping, Math.round(v * snapping) / snapping) : v;
   let cx = sampleAnimaticTrack(c?.keys?.x, cameraTime, c?.x ?? a.width / 2), cy = sampleAnimaticTrack(c?.keys?.y, cameraTime, c?.y ?? a.height / 2);
+  if (Math.abs(cx) <= a.width * 0.25) cx += a.width / 2;
+  if (Math.abs(cy) <= a.height * 0.25) cy += a.height / 2;
   const zoom = sampleAnimaticTrack(c?.keys?.zoom, cameraTime, c?.zoom ?? 1), rotation = sampleAnimaticTrack(c?.keys?.rotation, cameraTime, c?.rotation ?? 0);
   const shake = c?.shake;
   if (!reduced && shake && t >= shake.atMs && t < shake.atMs + shake.durationMs) {

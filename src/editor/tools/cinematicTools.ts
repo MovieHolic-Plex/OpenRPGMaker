@@ -1,4 +1,4 @@
-import { animaticResourceIds, validateOpeningAnimatic } from "@/project/openingAnimatic";
+import { animaticResourceIds, retimeOpeningAnimatic, validateOpeningAnimatic } from "@/project/openingAnimatic";
 import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES } from '@/project/cinematicPresentation';
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 import { parseCinematicDirection } from '@/project/cinematicDirection';
@@ -196,19 +196,25 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
 
   if (kind === "animatic") {
     let composition = scene.composition;
-    if (composition && typeof composition === 'object' && !Array.isArray(composition)
+    let effectiveDurationMs = durationMs;
+    const isAliasObject = composition && typeof composition === 'object' && !Array.isArray(composition)
       && Object.keys(composition as Record<string, unknown>).length === 1
-      && typeof (composition as Record<string, unknown>).shotId === 'string') {
-      const sourceId = String((composition as Record<string, unknown>).shotId);
+      && typeof (composition as Record<string, unknown>).shotId === 'string';
+    const isEmptyComposition = composition === undefined || (composition && typeof composition === 'object' && !Array.isArray(composition) && Object.keys(composition as Record<string, unknown>).length === 0);
+    if (isAliasObject || isEmptyComposition) {
+      const sourceId = isAliasObject ? String((composition as Record<string, unknown>).shotId) : common.id;
       const source = project.system.opening?.scenes.find(candidate => candidate.kind === 'animatic' && candidate.id === sourceId);
       if (!source || source.kind !== 'animatic') throw new ToolError(`animatic shotId를 찾을 수 없습니다: ${sourceId}`, { code: 'scene-not-found' });
-      composition = structuredClone(source.composition);
+      if (scene.durationMs === undefined || effectiveDurationMs === 0) effectiveDurationMs = source.durationMs;
+      composition = effectiveDurationMs !== source.durationMs && source.durationMs > 0 && effectiveDurationMs > 0
+        ? retimeOpeningAnimatic(source.composition, source.durationMs, effectiveDurationMs)
+        : structuredClone(source.composition);
     }
-    try { validateOpeningAnimatic(composition, durationMs); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+    try { validateOpeningAnimatic(composition, effectiveDurationMs); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
     if (scene.resourceId !== undefined || scene.motion !== undefined) throw new ToolError("animatic은 composition을 사용합니다.", { code: "invalid-args" });
     for (const layer of composition.layers) if (layer.kind === 'image' && !hasOpeningImage(project, layer.resourceId!)) throw new ToolError("그림 리소스 없음: " + layer.resourceId, { code: "resource-not-found" });
     for (const cue of composition.audioCues ?? []) if (!isKnown('sound', cue.resourceId) && !isKnown('music', cue.resourceId)) throw new ToolError("오디오 큐 리소스 없음: " + cue.resourceId, { code: "resource-not-found" });
-    return { ...common, kind: "animatic", composition: structuredClone(composition) };
+    return { ...common, durationMs: effectiveDurationMs, kind: "animatic", composition: structuredClone(composition) };
   }
   if (scene.composition !== undefined) throw new ToolError("composition은 animatic 전용입니다.", { code: "invalid-args" });
   if (kind === "text") {

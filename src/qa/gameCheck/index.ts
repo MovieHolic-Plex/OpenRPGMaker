@@ -93,13 +93,13 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     const downgrade = (run: AutoPlayRun) => { downgraded.add(run); return run; };
     // 몬스터 게임은 자동 플레이가 지면 수련하고 다시 도전한다 — 회복 없이 걷다 수련 횟수를 다 쓴 실행도 소모전 신호다.
     const monsterAttrition = isMonsterPartyGame(project);
-    const encounterDefeat = (run: AutoPlayRun) => !run.ok && (/random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "")
+    const encounterDefeat = (run: AutoPlayRun) => !run.ok && (/random encounter [^:]+: defeat|게임 오버 중에는 retryCheckpoint/u.test(run.failure?.detail ?? "")
       || (monsterAttrition && /전투 패배|수련|쓰러져/u.test(run.failure?.detail ?? "")));
     const bossDefeat = (run: AutoPlayRun) => !run.ok && /이벤트 전투에서 패배해/u.test(run.failure?.detail ?? "");
     const retry = autoPlay.runs.some(encounterDefeat) ? play(true)! : undefined;
     const allRuns = [...autoPlay.runs, ...(retry?.runs ?? [])];
     const anyEndingClears = allRuns.some((run) => run.ok);
-    const companionClears = allRuns.some((run) => run.ok && run.label === "동료 합류 후");
+    const companionClears = allRuns.some((run) => run.ok && (run.label === "동료 합류 후" || run.label.endsWith("(동료 합류 후)")));
     /** 동료 합류 후 실행이 보스 전투에서 졌는가 — 그때 오판이 아니면 오판(레벨 전제)으로 함께 낮춘다. */
     const companionBossLoss = (() => {
       const original = autoPlay.runs.find((run) => run.label === "동료 합류 후");
@@ -164,7 +164,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
         }
         // 동료를 데려간 실행이 보스까지 는 갔다면(레벨 전제 경고로 낮춤), 동료 없이 잡몹에서 진 기본 경로도
         // 「합류 전제 설계」의 한 축이다 — 한쪽만 막힘으로 남기면 같은 게임이 둘로 갈려 오판이 된다.
-        const soloOnly = run.label.startsWith("기본 경로") && (companionClears || companionBossDowngraded);
+        const soloOnly = (run.label.startsWith("기본 경로") || (run.label.startsWith("다른 엔딩") && !run.label.includes("동료 합류"))) && (companionClears || companionBossDowngraded);
         if (soloOnly) {
           findings.push({
             severity: "warning", code: "autoplay-encounter-attrition",

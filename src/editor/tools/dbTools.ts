@@ -2081,11 +2081,23 @@ const upsertActor: ToolDefinition = {
         !draft.database.battleCommands?.some((entry) => entry.id === id) && !klass?.battleCommands.some((entry) => entry.id === id));
       if (unknown.length > 0) warnings.push(`battleCommandIds 중 전역·직업 명령에 없는 id 는 전투 메뉴에서 빠집니다: ${unknown.join(", ")}`);
     }
-    const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     const twin = actorCurveTwin(draft.database.actors, record);
     if (twin && !("parameterCurves" in actorPatch)) {
-      warnings.push(`배우 '${record.name}' 의 능력치 곡선이 '${twin.name}' 과 완전히 같습니다(기본 곡선) — 파티원이 전투에서 같은 몸이 됩니다. parameterCurves 를 [Lv1, Lv99] 로 역할별로 주세요. 예) 전사 maxHp [640,6200] defense [90,900] attack [70,780] mind [30,300] agility [45,500] maxMp [20,260] · 마법사 maxHp [380,3600] maxMp [75,980] mind [95,950] attack [40,420] defense [45,520] agility [55,600] · 도적 agility [85,950] attack [65,760] maxHp [470,4600].`);
+      const roleHint = `${record.id} ${record.classId} ${record.name} ${record.nickname ?? ""}`;
+      const preset = record.id === "actor_hero" || record.classId === "class_hero"
+        ? { maxHp: [560, 5500], maxMp: [54, 480], attack: [84, 520], defense: [72, 460], mind: [64, 410], agility: [68, 430] }
+        : /mage|cleric|wizard|sorcer|archmage|priest|shrine|마도|마법|성직|무녀|현자|치유/iu.test(roleHint)
+          ? { maxHp: [410, 4000], maxMp: [96, 860], attack: [46, 300], defense: [50, 320], mind: [96, 600], agility: [62, 400] }
+          : /guard|knight|paladin|tank|heavy|수호|기사|방패|중갑|기병/iu.test(roleHint)
+            ? { maxHp: [640, 6200], maxMp: [28, 280], attack: [88, 540], defense: [92, 560], mind: [38, 260], agility: [44, 280] }
+            : /scout|thief|ranger|ninja|archer|hunter|정찰|도적|궁수|닌자|사냥/iu.test(roleHint)
+              ? { maxHp: [470, 4600], maxMp: [45, 420], attack: [76, 500], defense: [58, 380], mind: [52, 340], agility: [90, 580] }
+              : { maxHp: [530, 5200], maxMp: [62, 540], attack: [74, 490], defense: [66, 430], mind: [70, 450], agility: [72, 460] };
+      const expanded: Record<string, unknown> = { id: record.id, parameterCurves: preset };
+      expandShortParameterCurves(expanded, "actor", warnings);
+      if (expanded.parameterCurves) record.parameterCurves = expanded.parameterCurves as ActorRecord["parameterCurves"];
     }
+    const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
       summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
       data: record,

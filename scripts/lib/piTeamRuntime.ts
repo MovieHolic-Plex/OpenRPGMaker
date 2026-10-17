@@ -502,7 +502,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const snapshot = cloneProjectSharingSharedDictionaries(working);
         const done = await runAgent({
           ...request, ...exposureFor(member, mode === "read"), ...request.roleModels?.deep, mode: "single", project: snapshot,
-          mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
+          openingProduction: requestsOpeningProduction(request.task), mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length ? { toolDomains: member.toolDomains } : {}),
           systemPrompt: [

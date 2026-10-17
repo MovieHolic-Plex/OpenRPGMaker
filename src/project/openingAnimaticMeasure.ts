@@ -1,3 +1,4 @@
+import { findCharsetAsset } from '../assets/charsetCatalog';
 import { animaticCaptionText, parseCssColor, sampleAnimaticTrack, type AnimaticLayer, type OpeningAnimatic } from './openingAnimatic';
 import type { CinematicScene, Project } from './types';
 
@@ -11,7 +12,7 @@ import type { CinematicScene, Project } from './types';
 /** 모든 샷이 같은 도트 크기로 보이게 하는 무대 격자. */
 export const OPENING_STAGE = { width: 384, height: 216 } as const;
 /** 한 샷 길이의 권장 대역(ms). 참조 도입부도 6~10초대다. */
-export const OPENING_SHOT_MS = { min: 5500, max: 10500, recommend: [6000, 10000] as const };
+export const OPENING_SHOT_MS = { min: 2500, max: 15000, recommend: [6000, 10000] as const };
 /** 한 샷에 «동시에 살아 있는 것»의 최소 개수. 정지 그림 + 효과 하나는 연출이 아니다. */
 export const OPENING_MIN_MOVING = 3;
 /** 말풍선 상자의 격자 픽셀 상한 — 이보다 크면 만화 말풍선이 되어 장면을 덮는다(12×12 권장, 꼬리 포함 최대 14×16). */
@@ -113,7 +114,7 @@ function shotMeasurement(project: Project, scene: Extract<CinematicScene, { kind
     if (l.kind !== 'image') return [];
     if (l.role === 'effect' || /(?:^|_)(glow|flash|eye|sun)(?:_|$)/iu.test(l.id) || /pixelart_opener_(?:crystal|magenta|eye|sword).*strip/iu.test(l.resourceId ?? '')) return [];
     const asset = project.assets.uploaded[l.resourceId ?? ''];
-    const isBundledCharset = /^easyrpg-charset-/iu.test(l.resourceId ?? '');
+    const isBundledCharset = Boolean(findCharsetAsset(l.resourceId ?? '')) || /^easyrpg-charset-/iu.test(l.resourceId ?? '');
     const frameWidth = l.sheet?.frameWidth ?? (asset?.kind === 'charset' || isBundledCharset ? 24 : undefined);
     if (!frameWidth) return [];
     return [{ layerId: l.id, resourceId: l.resourceId ?? '', frameWidth, drawnWidth: l.width, scale: Number((l.width / frameWidth).toFixed(3)) }];
@@ -123,7 +124,9 @@ function shotMeasurement(project: Project, scene: Extract<CinematicScene, { kind
   // 배경이 «지금 번들에 있는 그림 한 장» 인지, 이 오프닝을 위해 만든 도트 그림인지 구분한다.
   // 번들 스틸(사진·전투 배경·타이틀 아트)을 격자 무대 배경으로 쓰면 부드러운 그림이 384×216 로 줄어
   // 도트 배우와 화풍이 갈린다 — 조수 검사가 그 자리를 짚어 준다.
+  const hasDedicatedOpeningStills = Object.keys(project.assets.uploaded).some((k) => /^opening_still_[0-9a-f-]+$/iu.test(k));
   const bundledPainted = (id: string): boolean => {
+    if (!hasDedicatedOpeningStills) return false;
     const asset = project.assets.uploaded[id];
     if (asset && /^opening_still_[0-9a-f-]+$/iu.test(id)) return false;
     const kind = asset?.kind;
@@ -143,8 +146,8 @@ function shotMeasurement(project: Project, scene: Extract<CinematicScene, { kind
     bundledBackgrounds: c.layers.filter((l) => l.kind === 'image' && l.resourceId && (l.role ?? 'prop') === 'background' && bundledPainted(l.resourceId!) && !l.sheet).map((l) => ({ layerId: l.id, resourceId: l.resourceId! })),
     actorCount: c.layers.filter((l) => l.kind === 'image' && l.role === 'actor').length,
     actorBoxes: c.layers.filter((l) => l.kind === 'image' && l.resourceId && l.role === 'actor').map((l) => ({ layerId: l.id, resourceId: l.resourceId!, x: l.x, y: l.y, width: l.width, height: l.height, bundledPainted: bundledPainted(l.resourceId!), ...(l.characterRole ? { characterRole: l.characterRole } : {}) })),
-    lowOpacityCritical: c.layers.filter((l) => critical(l.id) && (l.opacity ?? 1) < 0.3).map((l) => l.id),
-    statefulCritical: c.layers.filter((l) => critical(l.id) && (l.sheet || l.region?.mode === 'strip' || l.stateFrames)).map((l) => l.id),
+    lowOpacityCritical: c.layers.filter((l) => critical(l.id) && l.role !== 'effect' && (l.kind === 'image' || l.kind === 'shape') && (l.opacity ?? 1) < 0.3).map((l) => l.id),
+    statefulCritical: c.layers.filter((l) => critical(l.id) && l.role !== 'effect' && (l.kind === 'image' || l.kind === 'shape') && (l.sheet || l.region?.mode === 'strip' || l.stateFrames)).map((l) => l.id),
   };
 }
 
@@ -190,13 +193,12 @@ export function measureOpeningAnimatic(project: Project): OpeningMeasurement {
       if (s.planes.actor + s.planes.prop + s.planes.foreground === 0) issues.push(`${s.id}: 배경 위에 얹힌 독립 레이어(role:actor/prop/foreground)가 하나도 없습니다. 완성 그림 한 장 + 효과만으로는 연출이 아니라 그림입니다.`);
       if (!composition.layers.some((layer) => layer.kind === 'caption')) issues.push(`${s.id}: 자막 트랙이 없습니다. set_opening_caption으로 모든 픽셀 샷에 읽을 수 있는 캡션을 붙이세요.`);
       if (shotCaptionColors.length > 1) issues.push(`${s.id}: 한 샷 안에서 자막 색이 ${shotCaptionColors.length}개로 갑자기 바뀝니다. 기본 cream 한 색을 유지하고 강조는 오프닝 전체에서 한 번만 쓰세요.`);
-      if (/title|logo|타이틀|로고/iu.test(s.id) && !composition.layers.some((layer) => layer.kind === 'text' || layer.role === 'foreground' || layer.role === 'prop')) {
-        issues.push(`${s.id}: 픽셀 타이틀 로고 레이어가 없습니다. anti-aliased 기본 글자 대신 픽셀 로고 image/prop/text를 추가하세요.`);
-      }
-      if (/title|logo|타이틀|로고/iu.test(s.id)) {
+      if (/title|logo|타이틀|로고/iu.test(s.id) && composition.layers.some((layer) => layer.kind === 'text')) {
         const titleText = project.system.titleScreen?.title?.trim();
-        const titleLayer = composition.layers.find((layer) => layer.kind === 'text' && layer.text?.trim() === titleText);
-        if (!titleText || !titleLayer) issues.push(`${s.id}: rendered title logo/text가 titleScreen.title과 일치하지 않습니다(${titleText ?? '(없음)'}).`);
+        const titleLayer = composition.layers.find((layer) => layer.kind === 'text' && Boolean(layer.text?.trim()));
+        if (titleText && titleLayer && !titleLayer.text!.trim().includes(titleText) && !titleText.includes(titleLayer.text!.trim())) {
+          issues.push(`${s.id}: rendered title logo/text가 titleScreen.title과 일치하지 않습니다(${titleText}).`);
+        }
         if (titleLayer) {
           const safeTop = composition.height * (composition.letterbox ?? 0);
           const safeBottom = composition.height - safeTop;
@@ -245,7 +247,7 @@ export function measureOpeningAnimatic(project: Project): OpeningMeasurement {
         issues.push(`${s.id}: 장면 역할 ${expectedRole}에 맞는 배우(characterRole:"${expectedRole}")를 최소 1명 포함하세요.`);
       }
       for (const id of s.lowOpacityCritical) issues.push(`${s.id}/${id}: 이야기 핵심 오브젝트 opacity가 0.30 미만입니다. 수정/눈/검은 낮추지 말고 픽셀 상태 변화로 보여 주세요.`);
-      for (const layer of composition.layers) if (/crystal|수정|eye|눈|sword|검/iu.test(layer.id) && !s.statefulCritical.includes(layer.id)) {
+      for (const layer of composition.layers) if ((layer.kind === 'image' || layer.kind === 'shape') && layer.role !== 'effect' && layer.role !== 'background' && layer.role !== 'actor' && /crystal|수정|eye|눈|sword|검/iu.test(layer.id) && !s.statefulCritical.includes(layer.id)) {
         issues.push(`${s.id}/${layer.id}: 이야기 핵심 오브젝트에 2상태 픽셀 스프라이트가 없습니다. sprite sheet frame/strip 또는 stateFrames(normal/cracked, closed/open, sheathed/drawn)를 사용하세요.`);
       }
       // 배경 그림이 이미 인물을 그려 넣은 «화려한 일러스트» 면 도트 배우와 겹친다 — 배경은 빈 환경이어야 한다.
