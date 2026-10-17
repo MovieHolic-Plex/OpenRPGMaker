@@ -8,7 +8,7 @@
 // 결과는 rooms.ts 의 rooms·connect·exit 그대로다.
 import type { HandInteriorSpec } from "./builder";
 import type { HandInteriorConnect, HandInteriorRoom } from "./rooms";
-import { programKinds, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate } from "./templates";
+import { programKinds, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
 import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernPresets";
 
 type Pair = readonly [string, string] | { readonly a: string; readonly b: string };
@@ -24,13 +24,15 @@ export interface LayoutRequest {
   /** 칸막이 없이 트고 싶은 방 쌍. */
   readonly open?: readonly Pair[];
   readonly seed?: number;
+  readonly styleVariant?: InteriorStyleVariant;
   readonly maxWidth?: number; readonly maxHeight?: number;
 }
 export interface LayoutRoom extends HandInteriorRoom { readonly kind: string; readonly template?: string }
 export interface LayoutCandidate {
   readonly width: number; readonly height: number; readonly score: number;
-  readonly rooms: LayoutRoom[]; readonly connect: HandInteriorConnect[]; readonly exit: { readonly room: string };
+  readonly rooms: LayoutRoom[]; readonly connect: HandInteriorConnect[]; readonly exit: { readonly room: string; readonly x?: number; readonly width?: number };
   readonly notes: string[];
+  readonly styleVariant?: InteriorStyleVariant;
 }
 
 const DEFAULT_SIZE: Record<string, [number, number]> = {
@@ -100,6 +102,7 @@ const LEFT_DEFAULT: [string, string][] = [
   ["rest-kitchen-bar", "rest-live-stage"],
   ["gallery-paintings", "gallery-sculpture"],
   ["gallery-lobby", "gallery-shop"],
+  ["lecture", "seminar"],
 ];
 /** 이웃이면 문으로 함께 잇는 쌍(순환 동선). */
 const PREFER_DEFAULT: [string, string][] = [
@@ -123,6 +126,130 @@ const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   lecture: { h: "sc-classroom-door" }, seminar: { h: "sc-classroom-door" }, classroom: { h: "sc-classroom-door" }, council: { h: "sc-classroom-door" },
 };
 
+
+const STYLE_PALETTES: Readonly<Record<string, Readonly<Record<Exclude<InteriorStyleVariant, "A">, { readonly floors: Readonly<Record<string, string>>; readonly walls: Readonly<Record<string, string>> }>>>> = {
+  modern_city: {
+    B: {
+      floors: {
+        "mci-stone-lobby": "mci-wood-oak",
+        "mci-carpet-office": "mci-wood-oak",
+        "mci-vinyl-store": "mci-stone-lobby",
+        "mci-wood-oak": "mci-wood-dark",
+        "mci-wood-dark": "mci-stone-lobby",
+        "mci-tile-concourse": "mci-stone-lobby",
+        "mci-vinyl-hospital": "mci-stone-lobby",
+        "mci-tile-small": "mci-vinyl-store",
+        "mci-concrete": "mci-tile-concourse",
+      },
+      walls: {
+        "mci-wall-lobby": "mci-wall-home",
+        "mci-wall-office": "mci-wall-home",
+        "mci-wall-store": "mci-wall-brick",
+        "mci-wall-brick": "mci-wall-lobby",
+        "mci-wall-tile": "mci-wall-lobby",
+        "mci-wall-hospital": "mci-wall-home",
+        "mci-wall-home": "mci-wall-brick",
+      },
+    },
+    C: {
+      floors: {
+        "mci-stone-lobby": "mci-tile-concourse",
+        "mci-carpet-office": "mci-tile-concourse",
+        "mci-vinyl-store": "mci-tile-concourse",
+        "mci-wood-oak": "mci-carpet-office",
+        "mci-wood-dark": "mci-tile-concourse",
+        "mci-tile-concourse": "mci-concrete",
+        "mci-vinyl-hospital": "mci-tile-small",
+        "mci-tile-small": "mci-tile-concourse",
+      },
+      walls: {
+        "mci-wall-lobby": "mci-wall-tile",
+        "mci-wall-office": "mci-wall-lobby",
+        "mci-wall-store": "mci-wall-tile",
+        "mci-wall-brick": "mci-wall-metal",
+        "mci-wall-tile": "mci-wall-metal",
+        "mci-wall-hospital": "mci-wall-tile",
+        "mci-wall-home": "mci-wall-office",
+      },
+    },
+    D: {
+      floors: {
+        "mci-stone-lobby": "mci-wood-dark",
+        "mci-carpet-office": "mci-wood-dark",
+        "mci-vinyl-store": "mci-wood-oak",
+        "mci-wood-oak": "mci-stone-lobby",
+        "mci-wood-dark": "mci-carpet-office",
+        "mci-tile-concourse": "mci-wood-dark",
+        "mci-vinyl-hospital": "mci-vinyl-store",
+        "mci-tile-small": "mci-stone-lobby",
+      },
+      walls: {
+        "mci-wall-lobby": "mci-wall-brick",
+        "mci-wall-office": "mci-wall-brick",
+        "mci-wall-store": "mci-wall-home",
+        "mci-wall-brick": "mci-wall-home",
+        "mci-wall-tile": "mci-wall-lobby",
+        "mci-wall-hospital": "mci-wall-office",
+        "mci-wall-home": "mci-wall-lobby",
+      },
+    },
+  },
+  modern_campus: {
+    B: {
+      floors: { "mc-floor-lino": "mc-floor-parquet", "mc-floor-corridor": "mc-floor-lino", "mc-floor-parquet": "mc-floor-dorm" },
+      walls: { "mc-wall-class": "mc-wall-dorm", "mc-wall-corridor": "mc-wall-class", "mc-wall-dorm": "mc-wall-cafe" },
+    },
+    C: {
+      floors: { "mc-floor-lino": "mc-floor-corridor", "mc-floor-corridor": "mc-floor-cafe", "mc-floor-parquet": "mc-floor-lino" },
+      walls: { "mc-wall-class": "mc-wall-corridor", "mc-wall-corridor": "mc-wall-tile", "mc-wall-dorm": "mc-wall-corridor" },
+    },
+    D: {
+      floors: { "mc-floor-lino": "mc-floor-dorm", "mc-floor-corridor": "mc-floor-parquet", "mc-floor-parquet": "mc-floor-cafe" },
+      walls: { "mc-wall-class": "mc-wall-cafe", "mc-wall-corridor": "mc-wall-dorm", "mc-wall-dorm": "mc-wall-class" },
+    },
+  },
+  atlas_biome_interior: {
+    B: {
+      floors: { plank: "dplank", boards: "dplank", dplank: "plank", marble: "check", flag: "cobble", earth: "flag" },
+      walls: { plaster: "log", stone: "logdark", marblewall: "goldwood", log: "plaster" },
+    },
+    C: {
+      floors: { plank: "marble", boards: "flag", dplank: "check", marble: "dwarf", flag: "marble", earth: "cobble" },
+      walls: { plaster: "stone", stone: "marblewall", marblewall: "velvet", log: "stone" },
+    },
+    D: {
+      floors: { plank: "terra", boards: "plank", dplank: "boards", marble: "terra", flag: "dwarf", earth: "terra" },
+      walls: { plaster: "goldwood", stone: "plaster", marblewall: "gallery", log: "logdark" },
+    },
+  },
+  sengoku_edo: {
+    B: {
+      floors: { "se-floor-wood": "se-floor-tatami", "se-floor-tatami": "se-floor-tatami-gold", "se-floor-doma": "se-floor-wood" },
+      walls: { "se-wall-board": "se-wall-plaster", "se-wall-fusuma": "se-wall-shoji", "se-wall-plaster": "se-wall-fusuma" },
+    },
+    C: {
+      floors: { "se-floor-wood": "se-floor-tatami-gold", "se-floor-tatami": "se-floor-wood", "se-floor-doma": "se-floor-tatami" },
+      walls: { "se-wall-board": "se-wall-shoji", "se-wall-fusuma": "se-wall-fusuma-gold", "se-wall-plaster": "se-wall-board" },
+    },
+    D: {
+      floors: { "se-floor-wood": "se-floor-tatami", "se-floor-tatami": "se-floor-wood", "se-floor-tatami-gold": "se-floor-tatami" },
+      walls: { "se-wall-board": "se-wall-fusuma", "se-wall-fusuma": "se-wall-plaster", "se-wall-shoji": "se-wall-fusuma-gold" },
+    },
+  },
+};
+
+function remapMaterial(
+  tilesetId: string,
+  kind: "floors" | "walls",
+  id: string | undefined,
+  styleVariant: InteriorStyleVariant,
+  S: HandInteriorSpec,
+): string | undefined {
+  if (!id || styleVariant === "A") return id;
+  const next = STYLE_PALETTES[tilesetId]?.[styleVariant]?.[kind][id];
+  const table = kind === "floors" ? S.floors : S.walls;
+  return next && table[next] ? next : id;
+}
 function rng(seed: number) {
   let a = seed >>> 0;
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -307,34 +434,56 @@ function adjacency(rects: Map<string, Rect>): Edge[] {
 const matches = (w: Want, key: string) => w.id === key || w.kind === key;
 
 /** 배치 후보를 점수 순으로(낮을수록 좋다). */
-export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandInteriorSpec, count = 3): LayoutCandidate[] {
-  const wants = layoutWants(tilesetId, req);
+function buildCandidatesForVariant(
+  tilesetId: string,
+  req: LayoutRequest,
+  S: HandInteriorSpec,
+  styleVariant: InteriorStyleVariant,
+  limit: number,
+): LayoutCandidate[] {
+  const baseWants = layoutWants(tilesetId, req);
   const vary = programVariation(tilesetId, req);
-  const entrance = pickEntrance(wants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
+  const entrance = pickEntrance(baseWants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
+  const explicitFloorIds = new Set((req.rooms ?? []).filter((q) => q.floor).map((q) => q.id ?? q.kind));
+  const explicitWallIds = new Set((req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind));
+  const wants: Want[] = baseWants.map((w, idx) => {
+    const isEnt = w.id === entrance;
+    const addW = styleVariant === "C" ? (isEnt ? 4 : idx % 2 === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx % 2 === 1 ? 2 : 0) : 0;
+    const addH = styleVariant === "C" ? (!isEnt && idx === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx === 0 ? 1 : 0) : 0;
+    return {
+      ...w,
+      tw: w.tw + addW,
+      th: w.th + addH,
+      floor: explicitFloorIds.has(w.id) ? w.floor : remapMaterial(tilesetId, "floors", w.floor, styleVariant, S),
+      wall: explicitWallIds.has(w.id) ? w.wall : remapMaterial(tilesetId, "walls", w.wall, styleVariant, S),
+    };
+  });
   // program 이 위아래를 뒤집는 쌍은 기본 표의 반대 쌍을 뺀다(지하철역: 승강장이 대합실 위).
   const aboveRules: Pair[] = vary?.v.above
     ? [...ABOVE_DEFAULT.filter(([p, q]) => !vary.v.above!.some(([a, b]) => a === q && b === p)), ...vary.v.above]
     : ABOVE_DEFAULT;
   const byId = new Map(wants.map((w) => [w.id, w]));
-  const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map((x) => (Array.isArray(x) ? x : [(x as { a: string }).a, (x as { b: string }).b]) as readonly [string, string]).flatMap(([p, q]) =>
+  const pairTuple = (x: Pair): readonly [string, string] => ("a" in x ? [x.a, x.b] : x);
+  const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
-  const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT as Pair[])];
-  const openPairs = [...pairOf(req.open), ...pairOf(OPEN_DEFAULT as Pair[])];
+  const prefer = [...pairOf(req.prefer), ...pairOf(PREFER_DEFAULT)];
+  const openPairs = [...pairOf(req.open), ...pairOf(OPEN_DEFAULT)];
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
+  const mirrorHorizontal = req.styleVariant ? (styleVariant === "B" || styleVariant === "D") : (styleVariant === "B" || styleVariant === "D" || Boolean(vary?.flip));
+  const leftPairs = pairOf(LEFT_DEFAULT);
   const total = wants.reduce((s, w) => s + w.tw * w.th, 0);
-  const r = rng(req.seed ?? 1);
+  const variantSeedOffset = styleVariant === "A" ? 0 : styleVariant === "B" ? 101 : styleVariant === "C" ? 202 : 303;
+  const r = rng((req.seed ?? 1) + variantSeedOffset);
   const found = new Map<string, LayoutCandidate>();
   for (let trial = 0; trial < 600 && found.size < 60; trial++) {
     const order = [...wants];
     for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [order[i], order[j]] = [order[j]!, order[i]!]; }
-    const ar = 1.05 + r() * 0.75;
+    const ar = styleVariant === "C" ? 1.35 + r() * 0.55 : styleVariant === "D" ? 0.95 + r() * 0.45 : 1.05 + r() * 0.75;
     const slack = 1 + order.length * 0.06;
     let W = Math.max(...wants.map((w) => w.minW), Math.round(Math.sqrt(total * slack * ar)));
     let H = Math.max(...wants.map((w) => w.minH), Math.ceil(total * slack / W));
     if (req.maxWidth) W = Math.min(W, req.maxWidth - 2);
     if (req.maxHeight) H = Math.min(H, req.maxHeight - 2);
-    // 짝수 번 시도는 아래에서 위로(견본보다 작은 방이 없다), 홀수 번은 바깥 크기를 먼저 정하고 가르는 옛 방식 —
-    // 크기 제한(maxWidth·maxHeight)에 걸려 앞쪽이 안 될 때를 위해 남긴다.
     let rects: Map<string, Rect> | null;
     if (trial % 2 === 0) {
       const tree = buildTree(order, entrance, r);
@@ -344,18 +493,16 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     } else rects = slice({ x: 1, y: 1, w: W, h: H }, order, entrance, r);
     if (!rects) continue;
     trimToTarget(rects, wants, entrance, W, H);
-    { // 깎고 남은 빈 바깥 줄·열을 떼어 낸다
+    {
       const mx = Math.min(...[...rects.values()].map((q) => q.x)) - 1, my = Math.min(...[...rects.values()].map((q) => q.y)) - 1;
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }
     }
     const BW = Math.max(...[...rects.values()].map((q) => q.x + q.w)) + 1, BH = Math.max(...[...rects.values()].map((q) => q.y + q.h)) + 1;
     const edges = adjacency(rects);
-    // 문 나무: 출구 방에서 BFS — 원하는 쌍·트는 쌍·중심 방으로 가는 변을 먼저.
     const prio = (e: Edge, from: string) => {
       const to = e.a === from ? e.b : e.a;
       return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (HUB.test(byId.get(to)!.kind) ? 0 : 2);
     };
-    // 1단계는 출구 방·중심 방만 가지를 뻗고(끝방은 잎), 그래도 못 닿은 방이 있으면 2단계에서 끝방도 지나가게 한다(감점).
     const reached = new Set([entrance]); const tree: Edge[] = [];
     for (const allowLeafPass of [false, true]) {
       let frontier = [...reached];
@@ -372,7 +519,6 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     }
     if (reached.size !== wants.length) continue;
     const deg: Record<string, number> = {}; for (const e of tree) { deg[e.a] = (deg[e.a] ?? 0) + 1; deg[e.b] = (deg[e.b] ?? 0) + 1; }
-    // 원하는 쌍이 이웃이면 문을 더한다(나무 밖이어도)
     for (const [p, q] of prefer) {
       const e = edges.find((x) => (x.a === p && x.b === q) || (x.a === q && x.b === p));
       if (e && !tree.includes(e)) tree.push(e);
@@ -381,36 +527,34 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     const notes: string[] = [];
     for (const w of wants) {
       const rc = rects.get(w.id)!;
-      // 견본보다 작은 방은 가구가 다 안 들어가 크게 감점(2026-10-09: 줄인 부엌에서 가구 절반이 빠졌다), 큰 방은 덜.
       const short = Math.max(0, w.tw - rc.w) + Math.max(0, w.th - rc.h), extra = Math.max(0, rc.w - w.tw) + Math.max(0, rc.h - w.th);
       score += (short * 3 + extra * 1.5) / (w.tw + w.th) * 4;
       const asp = Math.max(rc.w / rc.h, rc.h / rc.w), maxAsp = Math.max(2.6, w.tw / w.th, w.th / w.tw);
       if (asp > maxAsp && !/hall|corridor/u.test(w.kind)) score += (asp - maxAsp) * 2;
     }
-    { // 건물 전체: 깎인 빈 자리가 많거나 너무 길쭉하면 감점(2026-10-09: 아래에서 위로 짜니 35×21·53×14 같은 건물이 1등이었다)
+    {
       const roomArea = [...rects.values()].reduce((a, q) => a + q.w * q.h, 0);
       score += Math.max(0, (BW - 2) * (BH - 2) - roomArea * 1.25) / total * 6;
       const basp = Math.max(BW / BH, BH / BW);
       if (basp > 1.7) score += (basp - 1.7) * 3;
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
-    for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;   // 트는 쌍(부엌↔거실…)은 붙어 있는 편이 좋다
+    for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;
     for (const [p, q] of pairOf(aboveRules)) {
       const up = rects.get(p)!, dn = rects.get(q)!;
       if (!edges.some((e) => e.kind === "h" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || up.y > dn.y) { score += 6; notes.push(`${p} 가 ${q} 바로 위가 아니다`); }
     }
-    for (const [p, q] of pairOf(LEFT_DEFAULT as Pair[])) {
+    for (const [p, q] of leftPairs) {
       const lft = rects.get(p)!, rgt = rects.get(q)!;
       if (!edges.some((e) => e.kind === "v" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || lft.x > rgt.x) { score += 6; notes.push(`${p} 가 ${q} 바로 왼쪽이 아니다`); }
     }
-    // 끝방(화장실·욕실·침실…)을 지나가야 하면 감점
     for (const w of wants) if (!HUB.test(w.kind) && w.id !== entrance && (deg[w.id] ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
+    const openSpan = styleVariant === "C" || styleVariant === "D" ? 5 : 3;
     const connect: HandInteriorConnect[] = tree.map((e) => {
       const A = byId.get(e.a)!, B = byId.get(e.b)!;
-      // 위·아래로 트는 쌍은 아래 방 북쪽 벽면을 살리려고 가운데 3칸만 튼다(현관 띠처럼 벽 없는 방이 아래면 전부).
       if (isOpen(e.a, e.b)) {
         const lower = rects.get(e.a)!.y > rects.get(e.b)!.y ? A : B;
-        return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span: 3 } : { a: e.a, b: e.b, open: true };
+        return e.kind === "h" && !/^(genkan|entrance)$/u.test(lower.kind) ? { a: e.a, b: e.b, open: true, span: openSpan } : { a: e.a, b: e.b, open: true };
       }
       const pick = (w: Want) => DOOR_OF[w.kind]?.[e.kind];
       const door = pick(A) ?? pick(B);
@@ -419,14 +563,54 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
     const rooms: LayoutRoom[] = wants.map((w) => {
       const rc = rects.get(w.id)!;
-      const x0 = vary?.flip ? BW - rc.x - rc.w : rc.x;
+      const x0 = mirrorHorizontal ? BW - rc.x - rc.w : rc.x;
       return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}) };
     });
-    const key = rooms.map((x) => `${x.id}:${x.x0},${x.y0},${x.x1},${x.y1}`).join("|");
-    if (!found.has(key)) found.set(key, { width: BW, height: BH, score: Math.round(score * 100) / 100, rooms, connect, exit: { room: entrance }, notes });
+    const exitRoom = rooms.find((rm) => rm.id === entrance) ?? rooms[0]!;
+    const exitW = exitRoom.x1 - exitRoom.x0 + 1;
+    const exitX = styleVariant === "B" && exitW >= 8
+      ? exitRoom.x0 + Math.max(2, Math.floor(exitW * 0.28))
+      : styleVariant === "C" && exitW >= 8
+        ? exitRoom.x0 + Math.min(exitW - 3, Math.floor(exitW * 0.72))
+        : styleVariant === "D" && exitW >= 8
+          ? exitRoom.x0 + Math.max(2, Math.floor(exitW * 0.36))
+          : undefined;
+    const key = `${styleVariant}|` + rooms.map((x) => `${x.id}:${x.x0},${x.y0},${x.x1},${x.y1}:${x.floor ?? ""}`).join("|");
+    if (!found.has(key)) {
+      found.set(key, {
+        width: BW,
+        height: BH,
+        score: Math.round(score * 100) / 100,
+        rooms,
+        connect,
+        exit: { room: entrance, ...(exitX !== undefined ? { x: exitX } : {}) },
+        notes,
+        styleVariant,
+      });
+    }
   }
   if (!found.size) throw new LayoutError(`방 ${wants.length}개를 ${req.maxWidth ?? "?"}×${req.maxHeight ?? "?"} 안에 배치하지 못했다 — 방 수를 줄이거나 크기 제한을 푼다`);
-  return [...found.values()].sort((a, b) => a.score - b.score).slice(0, count);
+  return [...found.values()].sort((a, b) => a.score - b.score).slice(0, limit);
+}
+
+/** 배치 후보를 점수 순으로(낮을수록 좋다). count>1 이고 styleVariant 미지정이면 A/B/C/D 구조·색감 변형을 차례로 담는다. */
+export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandInteriorSpec, count = 3): LayoutCandidate[] {
+  if (req.styleVariant || count <= 1) {
+    return buildCandidatesForVariant(tilesetId, req, S, req.styleVariant ?? "A", count);
+  }
+  const variants: readonly InteriorStyleVariant[] = ["A", "B", "C", "D"];
+  const out: LayoutCandidate[] = [];
+  for (const sv of variants) {
+    const cands = buildCandidatesForVariant(tilesetId, req, S, sv, 2);
+    if (cands[0]) out.push(cands[0]);
+  }
+  if (out.length < count) {
+    for (const extra of buildCandidatesForVariant(tilesetId, req, S, "A", count)) {
+      if (out.length >= count) break;
+      if (!out.includes(extra)) out.push(extra);
+    }
+  }
+  return out.slice(0, count);
 }
 
 /** 후보 미리보기 — 방마다 글자 하나(A,B,…), 칸막이 '#', 문 '+'. */

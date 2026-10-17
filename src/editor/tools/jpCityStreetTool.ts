@@ -70,7 +70,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 0;
 
     // 복제본에서 짠 뒤 성공하면 반영한다 — 중간 실패로 반쯤 지운 맵이 남지 않게.
-    const next = structuredClone(draft);
+    const next: Project = { ...draft, maps: { ...draft.maps, [mapId]: structuredClone(map) }, tilesets: { ...draft.tilesets, [map.tilesetId]: structuredClone(draft.tilesets[map.tilesetId]!) } };
     const target = next.maps[mapId]!;
     target.lowerTiles.fill(blankFillTileFor(JP_CITY_ID, 0, next.tilesets[map.tilesetId]!));
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }

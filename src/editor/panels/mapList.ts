@@ -14,6 +14,7 @@ import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { openMapShiftDialog } from "@/editor/panels/mapShiftDialog";
 import { collectMapInspection, type MapInspection } from "@/project/mapInspection";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { createSpacePresetSidebarPanel } from "@/editor/panels/spacePresetSidebarPanel";
 import {
   canReparentMap,
   findParentMapId,
@@ -177,7 +178,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
       class: "map-tree-explorer",
       dataset: { testid: "map-tree-explorer" },
       children: [
-        el("div", { class: "map-tree-explorer-list", children: [header, makeFilterField(mapCount), tree] }),
+        el("div", { class: "map-tree-explorer-list", children: [header, createSpacePresetSidebarPanel({ defaultExpanded: false, testidPrefix: "switcher-space-preset" }), makeFilterField(mapCount), tree] }),
         el("div", {
           class: "map-tree-explorer-detail",
           children: [renderMapInspector(inspectorViewFor(project, activeId))],
@@ -186,6 +187,9 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     }));
   } else {
     section.append(header);
+    if (container.dataset.testid !== "map-sidebar-list") {
+      section.append(createSpacePresetSidebarPanel({ defaultExpanded: false, testidPrefix: "dock-space-preset" }));
+    }
     section.append(makeFilterField(mapCount));
     section.append(tree);
   }

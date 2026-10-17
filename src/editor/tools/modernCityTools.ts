@@ -89,7 +89,7 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     let r;
     try { r = composeModernCityStreet({ width: map.width, height: map.height, seed, shops }, pal); }
     catch (e) { throw new ToolError(`거리를 짜지 못했다 — ${(e as Error).message}`, { code: "compose-failed", mapId }); }
-    const next = structuredClone(draft);
+    const next: Project = { ...draft, maps: { ...draft.maps, [mapId]: structuredClone(map) } };
     const target = next.maps[mapId]!;
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 2, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); clearTileStack(target, "lower", i); }
     target.lowerTiles = [...r.lower];

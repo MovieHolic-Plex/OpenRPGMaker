@@ -127,7 +127,7 @@ export const COMPOSE_CAMPUS_GROUNDS_TOOL: ToolDefinition = {
       throw new ToolError(`캠퍼스를 짜지 못했다 — ${(e as Error).message}`, { code: "compose-failed", mapId });
     }
 
-    const next = structuredClone(draft);
+    const next: Project = { ...draft, maps: structuredClone(draft.maps), mapTree: structuredClone(draft.mapTree) };
     const target = next.maps[mapId]!;
     for (let i = 0; i < target.lowerTiles.length; i++) { setLayerTileAt(target, 3, i, -1); setLayerTileAt(target, 4, i, -1); clearTileStack(target, "upper", i); }
     target.lowerTiles = [...r.lower];

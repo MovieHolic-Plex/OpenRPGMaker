@@ -576,7 +576,8 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
           entrance: { type: "string", description: "출구 방 id 또는 종류(생략 시 현관·입구·복도·가게 순)" },
           prefer: { type: "array", description: "문으로 바로 잇고 싶은 방 쌍 — a·b 는 방 id 또는 종류", items: PAIR },
           open: { type: "array", description: "칸막이 없이 트고 싶은 방 쌍(현관↔복도·부엌↔거실은 기본으로 튼다)", items: PAIR },
-          variant: { type: "integer", minimum: 0, description: "배치 후보 번호(0 = 가장 좋은 것). 결과가 마음에 안 들면 1·2 로 다시 짓는다" },
+          variant: { type: "integer", minimum: 0, description: "배치 후보 번호(0 = 가장 좋은 것). 결과가 마음에 안 들면 1·2·3 으로 다시 짓는다" },
+          styleVariant: { type: "string", enum: ["A", "B", "C", "D"], description: "구조·배치·바닥/벽 색감 변형(A=기본, B=동↔서 반전·웜 우드, C=광폭 오픈·쿨 스톤, D=비대칭 코너·다크 헤링본)" },
           seed: { type: "integer", minimum: 1, description: "다른 견본·다른 배치 묶음" },
           furnish: { type: "boolean", description: "방마다 견본 가구를 심는다(기본 true). false 면 빈 방만" },
           maxWidth: { type: "integer", minimum: 6 }, maxHeight: { type: "integer", minimum: 6 },
@@ -681,7 +682,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
-      try { cands = layoutCandidates(tilesetId, req, spec, Math.max(3, variant + 1)); }
+      try { cands = layoutCandidates(tilesetId, req, spec, Math.max(4, variant + 1)); }
       catch (error) { if (error instanceof LayoutError) throw new ToolError(error.message, { code: "layout-failed" }); throw error; }
       const c = cands[Math.min(variant, cands.length - 1)]!;
       picked = { c, variant: Math.min(variant, cands.length - 1), variants: cands.length, furnish: req.furnish !== false };
@@ -729,7 +730,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     let input = fitsGapDoors ? withDoormat(args as unknown as HandInteriorInput, shape) : args as unknown as HandInteriorInput;
     let furnished: ReturnType<typeof furnishRooms>["perRoom"] | undefined;
     if (picked?.furnish && composed) {
-      const f = furnishRooms(input, picked.c.rooms, composed, tilesetId, tileset, spec);
+      const f = furnishRooms(input, picked.c.rooms, composed, tilesetId, tileset, spec, picked.c.styleVariant ?? "A");
       input = f.input; furnished = f.perRoom;
     }
     let built;
