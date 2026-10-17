@@ -126,6 +126,8 @@ export interface HandInteriorLayers {
   readonly issues: HandInteriorIssue[];
   readonly reachable: number; readonly floorCells: number; readonly unreachedFloor: { x: number; y: number }[];
   readonly start: { x: number; y: number }[];
+  /** 벽면에 박은 엘리베이터 문·계단 앞 탈 자리(첫 바닥 줄, 조각 폭만큼) — 층 이동 출입구(create_transfer_pair)는 이 칸에 둔다. */
+  readonly travel: { label: string; x: number; y: number }[];
 }
 
 /** 평면 분석 — room2.analyse 와 같다. */
@@ -217,6 +219,15 @@ const SEATS = ["chair", "stool", "bar stool", "armchair", "sofa", "bench", "pew"
 /** room4.is_seat — 앉는 가구는 옆 가구의 「사용 칸」 노릇을 한다. */
 export function isSeatId(id: string, d?: Pick<SpecObject, "use">): boolean { return SEATS.some((s) => id.startsWith(s)) || !!d?.use?.includes("sit"); }
 
+/**
+ * 벽면에 박는 탈것(엘리베이터 문·벽 속 계단) 중 그림이 벽면 두 줄 높이뿐인 것. 첫 바닥 줄에 세우면 벽면 아랫줄과 바닥 줄에 반씩 걸쳐
+ * 벽면 윗줄이 비고 문이 바닥으로 튀어나왔다(2026-10-17 r4-rom-d 로비: modern_city mci-elevator·mci-stairs-up, up=16).
+ * 이런 조각은 벽면 두 줄에 딱 맞춰 그리고, 준 칸(첫 바닥 줄)은 그림 없이 비워 탈 자리로 둔다. up=32 탈것(다른 칩셋)은 벽면 두 줄 + 바닥 줄을 이미 덮는다.
+ */
+export function isFlushTravelPiece(d: Pick<SpecObject, "kind" | "use" | "up" | "h">): boolean {
+  return d.kind === "wall" && !!d.use?.includes("travel") && d.h === 1 && Math.ceil(d.up / 16) + d.h <= 2;
+}
+
 interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string }
 
 /**
@@ -260,23 +271,29 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     else if (!S.objects[o.id] && da && S.daises[`${da[1]} ${da[4]}`]) daises.push({ id: `${da[1]} ${da[4]}`, x: o.x, y: o.y, w: Number(da[2]), h: Number(da[3]) });
     else objects.push(o);
   }
+  /** 벽면에 딱 맞춰 박은 탈것: 벽면 칸 → 이름표(걸이와 겹치면 안 된다), 탈 자리(그 앞 첫 바닥 줄 칸). */
+  const flushFace = new Map<number, string>();
+  const landings: { i: number; label: string }[] = [];
   for (const o of objects) {
     const d = S.objects[o.id];
     if (!d) { issues.push({ severity: "error", code: "unknown-object", message: `물건 "${o.id}" 이 없다 — list_hand_interior_parts 로 id 를 찾는다`, x: o.x, y: o.y }); continue; }
     const label = `${d.ko}(${o.id}) @(${o.x},${o.y})`;
+    const flush = isFlushTravelPiece(d);
     // footprint rules (room4.check): floor/wall stand on floor; wall pieces need the north face; hangings on the upper face row
     if (d.kind === "floor" || d.kind === "wall") {
       for (let dy = 0; dy < d.h; dy++) for (let dx = 0; dx < d.w; dx++) {
         const x = o.x + dx, y = o.y + dy;
-        if (!A.isFloor(x, y) && d.stairs !== "up") issues.push({ severity: "error", code: "not-on-floor", message: `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
+        if (!A.isFloor(x, y) && (flush || d.stairs !== "up")) issues.push({ severity: "error", code: "not-on-floor", message: flush ? `${label} 앞 탈 자리 (${x},${y}) 가 바닥이 아니다 — 벽면 바로 아래 첫 바닥 줄 칸을 준다(그림은 그 위 벽면 두 줄에 박힌다)` : `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
         claim(x, y, label);
+        if (flush && inBounds(x, y)) landings.push({ i: y * W + x, label });
         if (isSeatId(o.id, d) && inBounds(x, y)) seats.add(y * W + x);
       }
       if (d.kind === "wall") for (let dx = 0; dx < d.w; dx++) {
         const x = o.x + dx;
-        if (!(o.y > 0 && A.face[o.y - 1]?.[x] === 2) && !issues.some((i) => i.message.startsWith(label))) issues.push(d.stairs === "up"
+        const faced = o.y > 0 && A.face[o.y - 1]?.[x] === 2 && (!flush || A.face[o.y - 2]?.[x] === 1);
+        if (!faced && !issues.some((i) => i.message.startsWith(label))) issues.push(d.stairs === "up"
           ? { severity: "error", code: "stairs-not-at-wall", message: `${label} 위로 가는 계단은 북쪽 벽 앞 첫 바닥 줄에 세운다(벽면 두 줄을 덮고 벽 속으로 오른다) — 방 가운데·옆벽 금지`, x, y: o.y }
-          : { severity: "error", code: "wall-piece-needs-face", message: `${label} 뒤(북쪽)에 벽면이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에`, x, y: o.y });
+          : { severity: "error", code: "wall-piece-needs-face", message: `${label} 뒤(북쪽)에 벽면${flush ? " 두 줄" : ""}이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에`, x, y: o.y });
       }
     } else if (d.kind === "hang") {
       const cols = Array.from({ length: Math.max(1, d.w) }, (_, dx) => o.x + dx);
@@ -297,11 +314,21 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
     } else if (d.stairs === "down") {
       for (let dy = 0; dy < Math.max(1, d.h); dy++) for (let dx = 0; dx < d.w; dx++) claim(o.x + dx, o.y + dy, label);
     }
-    const key = drawKey(d.kind, o.y, d.h);
+    // 벽면 높이 탈것은 한 줄 올려 벽면 두 줄에 그린다 — 준 칸(첫 바닥 줄)은 그림 없이 비어 탈 자리가 된다.
+    const lift = flush ? 1 : 0;
+    const key = drawKey(d.kind, o.y - lift, d.h);
     for (const [dx, dy, tile, layer] of d.cells) {
-      push(o.x + dx, o.y + dy, { key, tile, layer: layer as 2 | 3, label });
+      push(o.x + dx, o.y + dy - lift, { key, tile, layer: layer as 2 | 3, label });
+      if (flush && inBounds(o.x + dx, o.y + dy - lift)) flushFace.set((o.y + dy - lift) * W + o.x + dx, label);
       if (d.surface && dy >= 0 && dy < Math.max(1, d.h) && inBounds(o.x + dx, o.y + dy)) surfaceCells.add((o.y + dy) * W + o.x + dx);
     }
+  }
+  // 걸이(액자·시계·창)는 벽면에 박은 엘리베이터 문·계단과 같은 칸에 걸 수 없다 — 문 위에 액자가 덮였다.
+  for (const o of objects) {
+    const d = S.objects[o.id];
+    if (d?.kind !== "hang") continue;
+    const hit = d.cells.map(([dx, dy]) => [o.x + dx, o.y + dy] as const).find(([x, y]) => inBounds(x, y) && flushFace.has(y * W + x));
+    if (hit) issues.push({ severity: "error", code: "hang-over-travel", message: `${d.ko}(${o.id}) @(${o.x},${o.y}) 가 ${flushFace.get(hit[1] * W + hit[0])} 의 벽면 (${hit[0]},${hit[1]}) 을 덮는다 — 걸이는 옆 벽면으로`, x: hit[0], y: hit[1] });
   }
   for (const t of tables) {
     const d = S.tables[t.style];
@@ -408,6 +435,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (walk(i) && !seen.has(i)) unreachedFloor.push({ x, y });
     }
     if (unreachedFloor.length) issues.push({ severity: "warning", code: "unreached-floor", message: `출입구에서 닿지 못하는 빈 바닥 ${unreachedFloor.length}칸: ${unreachedFloor.slice(0, 10).map((c) => `(${c.x},${c.y})`).join(" ")} — 가구가 길을 막았거나 방이 닫혔다` });
+    for (const l of landings) if (!seen.has(l.i)) issues.push({ severity: "error", code: "travel-landing-unreached", message: `${l.label} 앞 탈 자리 (${l.i % W},${Math.floor(l.i / W)}) 에 출입구에서 닿지 못한다 — 앞을 막은 가구를 치운다`, x: l.i % W, y: Math.floor(l.i / W) });
     // every standing piece needs a reachable side — or a seat beside it that is itself reachable (room4.check seat_ok)
     const byLabel = new Map<string, number[]>();
     for (const [i, label] of footprint) (byLabel.get(label) ?? byLabel.set(label, []).get(label)!).push(i);
@@ -422,5 +450,6 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
       if (!ok) issues.push({ severity: "warning", code: "unreachable-piece", message: `${label} 옆에 닿는 칸이 없다 — 쓸 수 없는 가구` });
     }
   }
-  return { width: W, height: H, lowerTiles: lower, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, issues, reachable, floorCells, unreachedFloor, start };
+  return { width: W, height: H, lowerTiles: lower, lowerOverlayTiles: L2, upperTiles: L3, upperOverlayTiles: L4, issues, reachable, floorCells, unreachedFloor, start,
+    travel: landings.map((l) => ({ label: l.label, x: l.i % W, y: Math.floor(l.i / W) })) };
 }

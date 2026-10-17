@@ -9,7 +9,7 @@ import sengokuData from "@/assets/sengokuEdoRoomTemplates.json";
 // 같은 칩셋(atlas_biome_interior) 키라 펼치기로 합치면 v5 견본을 덮는다 → 배열·건물 목록을 이어 붙인다.
 import plusData from "@/assets/interiorPlusRoomTemplates.json";
 import type { HandInteriorSpec } from "./builder";
-
+import { MODERN_PRESET_DATA } from "./modernPresets";
 export interface InteriorTemplateItem {
   /** o 가구 · t 탁자 자동 타일 · g 탁상 물건 · l 줄(깔개 등) · d 단 */
   readonly t: "o" | "t" | "g" | "l" | "d";
@@ -33,17 +33,34 @@ interface TemplateData {
 const D0 = data as unknown as TemplateData;
 const DS = sengokuData as unknown as TemplateData;
 const DP = plusData as unknown as TemplateData;
-function mergeTemplateData(...all: TemplateData[]): TemplateData {
+const DM = MODERN_PRESET_DATA as unknown as TemplateData;
+const OVERRIDE_MODERN_MAPS: Readonly<Record<string, true>> = {
+  "office-floor": true,
+  lobby: true,
+  "office-1f": true,
+  "school-class-wing": true,
+  "university-lecture-wing": true,
+  "lecture-hall": true,
+};
+function mergeTemplateData(base: TemplateData, ...all: TemplateData[]): TemplateData {
   const templates: Record<string, InteriorRoomTemplate[]> = {};
   const programs: Record<string, Record<string, { map: string; kinds: readonly string[] }[]>> = {};
+  for (const [tid, list] of Object.entries(base.templates)) {
+    templates[tid] = list.filter((t) => !((tid === "modern_city" || tid === "modern_campus") && OVERRIDE_MODERN_MAPS[t.map]));
+  }
+  for (const [tid, byB] of Object.entries(base.programs)) {
+    for (const [b, maps] of Object.entries(byB)) {
+      const kept = maps.filter((m) => !((tid === "modern_city" || tid === "modern_campus") && OVERRIDE_MODERN_MAPS[m.map]));
+      if (kept.length) ((programs[tid] ??= {})[b] ??= []).push(...kept);
+    }
+  }
   for (const d of all) {
     for (const [tid, list] of Object.entries(d.templates)) (templates[tid] ??= []).push(...list);
     for (const [tid, byB] of Object.entries(d.programs)) for (const [b, maps] of Object.entries(byB)) ((programs[tid] ??= {})[b] ??= []).push(...maps);
   }
   return { templates, programs };
 }
-const D: TemplateData = mergeTemplateData(D0, DS, DP);
-
+const D: TemplateData = mergeTemplateData(D0, DS, DP, DM);
 export function roomTemplates(tilesetId: string): readonly InteriorRoomTemplate[] { return D.templates[tilesetId] ?? []; }
 export function roomPrograms(tilesetId: string) { return D.programs[tilesetId] ?? {}; }
 

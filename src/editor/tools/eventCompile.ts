@@ -269,9 +269,18 @@ export function usedCharsetGraphicKeysOnMapCount(map: {
   return count;
 }
 
+/**
+ * 대사 속 맨 좌표 괄호 「(40,13)」 를 걷는다 — 도구 결과의 좌표(문·접근칸·엘리베이터)를 조수가 그대로 대사에 옮겨
+ * 「북쪽 가운데 엘리베이터(8,4)를 타시면 됩니다」 처럼 플레이어에게 엔진 좌표가 보였다(2026-10-17 r4-rom-d).
+ */
+export function stripRawCoordinates(body: string): string {
+  const cleaned = body.replace(/[ \t]*[(（]\s*\d{1,3}\s*,\s*\d{1,3}\s*[)）]/gu, "");
+  return cleaned.trim() ? cleaned : body;
+}
+
 // 대사 한 줄을 text 커맨드로.
 function textCommand(speaker: string | undefined, body: string): Command {
-  const cleaned = stripSpeakerEcho(body, speaker);
+  const cleaned = stripRawCoordinates(stripSpeakerEcho(body, speaker));
   return speaker ? { kind: "text", speaker, body: cleaned } : { kind: "text", body: cleaned };
 }
 
@@ -429,6 +438,13 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
   }
   if (kind === "text" && typeof command.body === "string" && typeof command.speaker === "string") {
     command.body = stripSpeakerEcho(command.body, command.speaker);
+  }
+  if (kind === "text" && typeof command.body === "string") {
+    const bare = stripRawCoordinates(command.body);
+    if (bare !== command.body) {
+      command.body = bare;
+      warnings?.push(`SimplePage 정규화: ${path}.body 의 좌표 괄호 (x,y) 를 지웠습니다 — 대사에는 장소 이름(「북쪽 엘리베이터」)을 씁니다.`);
+    }
   }
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;

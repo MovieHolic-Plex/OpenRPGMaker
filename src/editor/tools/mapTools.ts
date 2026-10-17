@@ -8,6 +8,7 @@ import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/default
 import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";
+import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
@@ -2098,6 +2099,7 @@ const setMapProperties: ToolDefinition = {
       }
       map.name = nextName;
       changed.push(`이름='${map.name}'`);
+      sanitizeRiversidePromenade(draft, map);
     }
     if (typeof args.tilesetId === "string") {
       const tileset = draft.tilesets[args.tilesetId];

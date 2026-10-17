@@ -38,7 +38,7 @@ const DEFAULT_SIZE: Record<string, [number, number]> = {
   living: [8, 6], ldk: [8, 7], dining: [7, 6], great_hall: [12, 8], tavern: [10, 7], shop: [9, 6],
 };
 /** 지나다니는 방 — 문 나무의 가지가 여기서 뻗는다. 나머지(화장실·욕실·침실…)는 끝방이 되도록 점수를 준다. */
-const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|openoffice|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice)$/u;
+const HUB = /^(genkan|entrance|hall|corridor|ldk|living|great_hall|tavern|dining|waiting_room|.*_shop|shop|konbini|supermarket|chapel|throne_room|engine_hall|casino|theater|common|museum_lobby|museum_gallery|ship_crew|ship_gundeck|arena_floor|arena_stands|shoegenkan|lobby|elevatorhall|open-?office|concourse|postlobby|hosp-lobby|hosp-corridor|annexcorridor|towerlobby|freeoffice)$/u;
 // 손님이 드는 방(가게·주점·대청)이 복도보다 먼저 — 여관이 복도로 들어가 주점을 거치게 짜였다(2026-10-09).
 // jp_city 시설(2026-10-14): 학교 昇降口·사무 빌딩 로비·병원 외래 대기실이 거리 문 쪽 방.
 // 박물관은 매표 홀, 배는 선원 칸(위 갑판)·화물칸(아래 갑판), 투기장은 무기고(선수 입구)로 든다.
@@ -47,13 +47,26 @@ const ENTRANCE_ORDER = [/^genkan$/u, /^entrance$/u, /^(shoegenkan|lobby|hosp-lob
 /** 기본으로 트는 쌍(종류). */
 const OPEN_DEFAULT: [string, string][] = [["genkan", "hall"], ["genkan", "ldk"], ["genkan", "entrance"], ["kitchen", "ldk"], ["kitchen", "dining"], ["arena_stands", "arena_floor"]];
 /** 위·아래가 정해진 쌍(종류) — 앞 방이 뒷 방 바로 위(북쪽)에 붙어야 한다. 관중석은 모래 마당을 내려다본다(2026-10-14 조수 시험: 관중석이 마당 아래 딴 방으로 떨어졌다). */
-const ABOVE_DEFAULT: [string, string][] = [["arena_stands", "arena_floor"]];
-/** 일본 집 문 기물(사양에 있을 때만). */
+const ABOVE_DEFAULT: [string, string][] = [
+  ["arena_stands", "arena_floor"],
+  ["elevatorhall", "lobby"],
+  ["lounge", "lobby"],
+  ["open-office", "hall"],
+  ["meeting", "hall"],
+  ["lecture", "corridor"],
+  ["seminar", "corridor"],
+  ["classroom", "corridor"],
+  ["council", "corridor"],
+];
+/** 일본 집·현대 도시·캠퍼스 문 기물(사양에 있을 때만). */
 const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   toilet: { h: "door-open-toilet", v: "door-side-western" }, washitsu: { h: "fusuma-open", v: "door-side-sliding" },
   bath: { v: "door-side-sliding" }, dressing: { v: "door-side-sliding" }, unitbath: { h: "door-open-toilet", v: "door-side-western" },
-  // modern_city(도쿄풍 현대 도시) 실내 — 병동·대기 복도는 병원 미닫이, 뒷방·창고는 철문, 회의실은 유리문(그 사양에만 있는 mci- id).
-  ward: { h: "mci-door-hospital" }, waiting_room: { h: "mci-door-hospital" }, backroom: { h: "mci-door-steel" }, meeting: { h: "mci-door-glass" },
+  // modern_city(도쿄풍 현대 도시) 실내 — 병동·대기 복도는 병원 미닫이, 뒷방·창고는 철문, 회의실·로비·오피스는 유리문/나무문.
+  ward: { h: "mci-door-hospital" }, waiting_room: { h: "mci-door-hospital" }, backroom: { h: "mci-door-steel" },
+  meeting: { h: "mci-door-glass" }, "open-office": { h: "mci-door-glass" }, elevatorhall: { h: "mci-door-glass" }, lounge: { h: "mci-door-glass" }, pantry: { h: "mci-door-wood" },
+  // modern_campus(현대 학교·캠퍼스) 실내 — 강의실·세미나실·교실·학생회실은 교실 미닫이문.
+  lecture: { h: "sc-classroom-door" }, seminar: { h: "sc-classroom-door" }, classroom: { h: "sc-classroom-door" }, council: { h: "sc-classroom-door" },
 };
 
 function rng(seed: number) {

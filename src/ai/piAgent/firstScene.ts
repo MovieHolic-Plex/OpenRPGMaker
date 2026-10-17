@@ -26,6 +26,15 @@ const STORY_ROUTE_PROP = /^(bd-prop-(bench_wood|hedge|flowerbed|lamp_crook|lamp_
 export function storyRouteBrief(project: Project): string[] {
   const route = project.maps[SEGMENT_ROUTE_MAP_ID];
   if (playableSegmentGenre(project) !== 'story-cutscene' || !route) return [];
+  if (route.tilesetId === 'modern_city' || route.tilesetId === 'modern_campus') {
+    const hasRiverBand = route.height >= 15 && (route.lowerTiles[0] === 23 || route.lowerTiles[route.width * 3] === 23);
+    if (hasRiverBand) {
+      return [
+        `${SEGMENT_ROUTE_MAP_ID}(${route.name}, ${route.width}×${route.height})에는 이미 북쪽 4줄 강물(y=0..3)과 석축 제방(y=4), 강변 잔디·화단·가로수·가로등(y=5..8, 5~6칸 간격), 끊기지 않는 돌 산책로(y=9..12)가 깔려 있다. `
+          + 'stamp_layer_block 으로 강물을 1줄(y=0)로 줄이거나 NPC 밑에 3×2 벽돌 섬(20·21번)을 찍거나 보도를 벽돌로 끊지 않는다. 기획에 맞게 맵 이름·소품만 다듬는다.',
+      ];
+    }
+  }
   const kits = (project.tilesets[route.tilesetId]?.structureKits ?? []).filter(kit => STORY_ROUTE_PROP.test(kit.id));
   if (!kits.length) return [];
   return [

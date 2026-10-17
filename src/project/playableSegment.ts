@@ -19,13 +19,13 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
-import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
+import { paintMainStreet, paintRiversidePromenade, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
 import { isRomanceInterviewProject } from "@/project/romancePreset";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
-import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
+import { isWaterfrontRouteName, KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { Command, GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirection';
@@ -133,6 +133,10 @@ function paintRouteFor(ctx: { project: Project }, tilesetId: string, route: Rout
     try { tool(ctx, "fill_region", { mapId: SEGMENT_ROUTE_MAP_ID, rect, material }); }
     catch (error) { if (!optional) throw error; }
   }, style, plan, route);
+  const routeMap = ctx.project.maps[SEGMENT_ROUTE_MAP_ID];
+  if (routeMap && (plan.theme === "river" || isWaterfrontRouteName(routeMap.name))) {
+    paintRiversidePromenade(ctx.project, routeMap, plan);
+  }
 }
 
 /** 컨셉이 고른 칩셋(조선·마법 학교·일본 도시)으로 손대지 않은 빈 시작 맵을 옮긴다 — 조수는 보는 맵의 칩셋 계열을 따르므로 버들항 빈 맵에서는 컨셉의 칩셋이 영영 안 쓰인다. */
