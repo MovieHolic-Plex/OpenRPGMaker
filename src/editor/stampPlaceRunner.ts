@@ -36,6 +36,7 @@ import {
 } from "@/ai/stampPlanner";
 import { buildStampObjectIndex, sampleStampObjectNames } from "@/ai/stampObjects";
 import { describeStampEffect, eventHasVisibleArt, hasVisibleChange, measureStampEffect, type StampEffect } from "@/editor/stampEffect";
+import { expandSceneStep, stampSceneMenu } from "@/editor/stampScenes";
 import { forestTreeKindFromResolvedMaterial } from "@/editor/tools/forestDensity";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { applyToolSequenceToStore } from "@/editor/tools/applyChangesetToStore";
@@ -81,6 +82,8 @@ export interface StampRunInput {
   readonly waitForApply?: () => Promise<void>;
   /** 주입하면 연결 판정을 건너뛰고 이 함수로 모델을 부른다(테스트용). */
   readonly chat?: StampChatFn;
+  /** 장면 구성기 씨앗(테스트·재현용). 생략하면 부를 때마다 다른 값 — 같은 문장도 다른 장면이 나온다. */
+  readonly variation?: number;
 }
 
 export interface StampRunResult {
@@ -166,6 +169,7 @@ export function buildStampPlanFacts(
     ...(tileset ? { doorMaterials: doorLabels(tileset) } : {}),
     houseLooks: tileset ? quickHouseStyles(tileset).length || quickHouseCatalog(tileset).length || (tileset.id === "jp_city" ? 4 : 0) : 0,
     ...(placement ? { placement } : {}),
+    scenes: stampSceneMenu(project, map),
     objects,
     objectSamples: sampleStampObjectNames(objects, 36),
     isOpenCell: (x, y) => isOpenObjectCell(project, map, x, y),
@@ -404,6 +408,7 @@ const VISUAL_TOOLS: Readonly<Record<string, true>> = {
   place_terrain_house: true,
   build_jp_city_building: true,
   stamp_object: true,
+  compose_scene: true,
 };
 /** 도구 결과의 첫 경고 중 사람이 알아야 하는 것(그림 없음·투명) — 줄에 덧붙인다. */
 function invisibleWarning(result: ToolResult | undefined): string {
@@ -509,7 +514,8 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   }
   // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮기고, 던전 방·집·물건 칸은 **지금 맵**에서 고른다.
   const liveFacts = refreshFacts(deps, facts);
-  const expanded = settleAndExpandSteps(plan.steps, input.waitForApply ? liveFacts : facts, deps.getProject(), landingCheck(deps, input.mapId));
+  const variation = input.variation ?? Date.now();
+  const expanded = expandPlanSteps(plan.steps, input.waitForApply ? liveFacts : facts, deps.getProject(), landingCheck(deps, input.mapId), variation);
   plan = { ...plan, steps: expanded.steps, dropped: [...plan.dropped, ...expanded.dropped] };
   const lines: string[] = [...refusalLines];
   if (plan.dropped.length > 0) lines.push(`버린 단계: ${plan.dropped.join(", ")}`);
@@ -554,7 +560,7 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     }
     const repairFacts = { ...refreshFacts(deps, facts), repairRound: true };
     const parsed = parseStampPlan(repairRaw, repairFacts);
-    const repairedExpanded = settleAndExpandSteps(parsed.steps, repairFacts, deps.getProject(), landingCheck(deps, input.mapId));
+    const repairedExpanded = expandPlanSteps(parsed.steps, repairFacts, deps.getProject(), landingCheck(deps, input.mapId), variation + 1);
     repaired = repairedExpanded.steps;
     const droppedAgain = [...parsed.dropped, ...repairedExpanded.dropped];
     if (droppedAgain.length > 0) lines.push(`버린 단계: ${droppedAgain.join(", ")}`);
@@ -608,6 +614,20 @@ function refreshFacts(deps: StampRunDeps, facts: StampPlanFacts): StampPlanFacts
       }
     : {};
   return { ...facts, ...(placement ? { placement } : {}), ...probes };
+}
+
+/** 장면 구성 계획이면 구성기 호출로 바꾸고(좌표 펼치기 없음), 아니면 칸 단위 펼치기를 돌린다. */
+function expandPlanSteps(
+  steps: readonly StampStep[],
+  facts: StampPlanFacts,
+  project: Project,
+  fallbackLanding: (x: number, y: number) => boolean,
+  variation: number,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  const scene = steps[0]?.tool === "compose_scene" ? steps[0] : undefined;
+  if (!scene) return settleAndExpandSteps(steps, facts, project, fallbackLanding);
+  const composed = expandSceneStep(scene, project, variation);
+  return { steps: [...composed.steps, ...steps.slice(1)], dropped: composed.dropped };
 }
 
 /**
@@ -2004,5 +2024,5 @@ function cellOf(value: unknown): { x: number; y: number } | null {
 }
 
 function toCall(step: StampStep): ToolCall {
-  return { name: step.tool, args: { ...step.args } };
+  return { name: step.call ?? step.tool, args: { ...step.args } };
 }
