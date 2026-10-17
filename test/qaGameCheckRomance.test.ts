@@ -13,7 +13,7 @@ function romanceProject(): Project {
 const npc = (id: string, patch: Partial<GameEvent> & { chip?: string } = {}): GameEvent => ({
   id, name: id, x: 1, y: 1, trigger: { kind: "action" }, commands: [],
   characterId: `char_${id}`, talkFriendship: true,
-  pages: [{ id: `${id}_p0`, name: "p", conditions: [], trigger: { kind: "action" }, commands: [],
+  pages: [{ id: `${id}_p0`, name: "p", conditions: [], trigger: { kind: "action" }, commands: [], movement: { type: "fixed" },
     graphic: patch.chip ? { sprite: { type: "bundled", id: patch.chip }, pattern: 1 } : { transparent: true } }],
   ...patch,
 } as unknown as GameEvent);
