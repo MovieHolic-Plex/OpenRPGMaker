@@ -1106,8 +1106,14 @@ function fitNodeToFieldSprite(node: HTMLElement, spriteSelector: string, anchors
   const target = anchors.tileFy * canvas.height * ON_FIELD_SPRITE_TILES;
   // 원점 0 0 = 노드의 left/top = 발끝 앵커다. 노드는 transform: translate(-50%, -100%) 로 발끝을 그 점에 맞추는데,
   // 개별 scale 은 transform 과 곱해져 그 이동량까지 줄인다. 원점을 앵커 점에 두면 발끝이 제자리에 남는다.
+  const scaleVal = Number(Math.min(1, target / height).toFixed(4));
   node.style.transformOrigin = "0 0";
-  node.style.scale = String(Number(Math.min(1, target / height).toFixed(4)));
+  node.style.scale = String(scaleVal);
+  const chrome = node.querySelector<HTMLElement>(".battle-enemy-chrome");
+  if (chrome && scaleVal > 0 && scaleVal < 1) {
+    chrome.style.transformOrigin = "50% 100%";
+    chrome.style.scale = String(Number(Math.min(2.2, 1 / scaleVal).toFixed(4)));
+  }
   node.dataset.onFieldFitted = "true";
 }
 

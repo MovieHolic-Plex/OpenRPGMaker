@@ -116,7 +116,10 @@ function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, sn
     lines.push(line.trimEnd());
   }
   const x = align === 'center' ? l.width / 2 : align === 'right' ? l.width : 0;
-  for (const [i, line] of lines.entries()) { if ((i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,0.88)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
+  for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
+  ctx.restore();
 }
 function drawParticles(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
   const p = l.particles!, seconds = (t - (l.startMs ?? 0)) / 1000, speed = p.speed ?? (p.preset === 'rain' ? 500 : 35), size = p.size ?? 2;
@@ -157,7 +160,7 @@ function drawShaft(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, r
       if (alpha <= 0.02) continue;
       // Solid core with a dithered feather at the silhouette, so the beam keeps a pixel-art edge.
       if (alpha < 0.62 && !dithered(alpha, lx / cell, ly / cell)) continue;
-      ctx.fillStyle = withAlpha(color, Math.min(1, alpha * 1.5));
+      ctx.fillStyle = withAlpha(color, snapping > 0 ? (alpha >= 0.45 ? 0.94 : 0.72) : Math.min(1, alpha * 1.5));
       ctx.fillRect(lx, ly, column, cell);
     }
   }
@@ -172,7 +175,7 @@ function drawShaft(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, r
     // antialiased footprint of a rotated cell from spilling past the mask edge.
     for (let oy = 0; oy < size; oy += cell) for (let ox = 0; ox < size; ox += cell) {
       if (beamExtent(lx + ox + cell / 2, ly + oy + cell / 2, width, height, spread) < 0.75) continue;
-      ctx.fillStyle = withAlpha(color, Math.min(1, intensity * (0.35 + seedC * 0.65)));
+      ctx.fillStyle = withAlpha(color, snapping > 0 ? 0.92 : Math.min(1, intensity * (0.35 + seedC * 0.65)));
       ctx.fillRect(lx + ox, ly + oy, cell, cell);
     }
   }
@@ -200,7 +203,7 @@ function drawGlowPixel(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: numbe
       const falloff = distance <= inner ? 1 : 1 - (distance - inner) / (1 - inner);
       const alpha = intensity * falloff * falloff;
       if (alpha <= 0.04 || !dithered(alpha, lx / cell, ly / cell)) continue;
-      ctx.fillStyle = withAlpha(color, Math.min(1, alpha * 1.4));
+      ctx.fillStyle = withAlpha(color, snapping > 0 ? (alpha >= 0.4 ? 0.92 : 0.68) : Math.min(1, alpha * 1.4));
       ctx.fillRect(lx, ly, cell, cell);
     }
   }
@@ -332,25 +335,27 @@ function drawRegionLoop(ctx: CanvasRenderingContext2D, l: AnimaticLayer, image: 
     const wrap = region.wrap !== false, distance = (region.pixels ?? 1) * step;
     const isFullWidthHorizon = region.width >= source.width * 0.7 && region.height >= source.height * 0.65;
     if (isFullWidthHorizon && region.mode === 'scroll-x') {
-      // Prevent vertical cut-seam across full-scene architecture: pan the full region with overscan and scroll only the upper sky band (top 28%).
-      const panPx = Math.round(Math.sin(step * 0.08) * Math.min(18, Math.round(region.width * 0.03)));
-      const overW = Math.round(region.width * 1.07), overH = Math.round(region.height * 1.03);
-      p.drawImage(image, sx, sy, region.width, region.height, Math.round(-(overW - region.width) * 0.5 + panPx), Math.round(-(overH - region.height) * 0.5), overW, overH);
-      const skyH = Math.max(8, Math.round(region.height * 0.28));
-      const offset = modulo(distance, region.width);
-      p.save(); p.globalAlpha = 0.65; p.beginPath(); p.rect(0, 0, region.width, skyH); p.clip();
+      // Keep full-scene architecture locked 1:1 so background pixels never boil; scroll only the upper sky band (top 22%).
+      p.drawImage(image, sx, sy, region.width, region.height, 0, 0, region.width, region.height);
+      const skyH = Math.max(8, Math.round(region.height * 0.22));
+      const offset = Math.round(modulo(distance, region.width));
+      p.save(); p.beginPath(); p.rect(0, 0, region.width, skyH); p.clip();
       if (offset < region.width) {
         p.drawImage(image, sx + offset, sy, region.width - offset, skyH, 0, 0, region.width - offset, skyH);
-        if (wrap) p.drawImage(image, sx, sy, offset, skyH, region.width - offset, 0, offset, skyH);
+        if (wrap && offset > 0) p.drawImage(image, sx, sy, offset, skyH, region.width - offset, 0, offset, skyH);
       }
       p.restore();
     } else if (isFullWidthHorizon && region.mode === 'scroll-y') {
-      // Prevent horizontal wrap-seam across full-scene architecture: smooth overscan vertical pan instead of wrapping sky under ground.
-      const overW = Math.round(region.width * 1.04), overH = Math.round(region.height * 1.12);
-      const maxTravel = Math.max(1, overH - region.height);
-      const travel = Math.min(maxTravel, Math.abs(distance));
-      const oy = (region.pixels ?? 1) >= 0 ? -(maxTravel - travel) : -travel;
-      p.drawImage(image, sx, sy, region.width, region.height, Math.round(-(overW - region.width) * 0.5), Math.round(oy), overW, overH);
+      // Keep full-scene architecture locked 1:1; scroll only the top sky band horizontally by 1px steps instead of scaling the whole scene.
+      p.drawImage(image, sx, sy, region.width, region.height, 0, 0, region.width, region.height);
+      const skyH = Math.max(8, Math.round(region.height * 0.22));
+      const offset = Math.round(modulo(distance, region.width));
+      p.save(); p.beginPath(); p.rect(0, 0, region.width, skyH); p.clip();
+      if (offset < region.width) {
+        p.drawImage(image, sx + offset, sy, region.width - offset, skyH, 0, 0, region.width - offset, skyH);
+        if (wrap && offset > 0) p.drawImage(image, sx, sy, offset, skyH, region.width - offset, 0, offset, skyH);
+      }
+      p.restore();
     } else {
       const offset = wrap ? modulo(distance, region.mode === 'scroll-x' ? region.width : region.height) : distance;
       if (region.mode === 'scroll-x') {
@@ -408,28 +413,31 @@ function quantizePixelGrid(canvas: HTMLCanvasElement, composition: OpeningAnimat
       const key = (data[i]! << 16) | (data[i + 1]! << 8) | data[i + 2]!;
       counts.set(key, (counts.get(key) ?? 0) + 1);
     }
-    const fixed = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 48).map(([key]) => [(key >> 16) & 255, (key >> 8) & 255, key & 255] as const);
+    const fixed: PixelRgb[] = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 44).map(([key]) => [(key >> 16) & 255, (key >> 8) & 255, key & 255] as const);
+    for (const layer of composition.layers) {
+      const parsed = layer.color ? parseCssColor(layer.color) : null;
+      if (parsed) {
+        fixed.push([parsed[0], parsed[1], parsed[2]], [Math.round(parsed[0] * 0.68), Math.round(parsed[1] * 0.68), Math.round(parsed[2] * 0.68)]);
+      }
+    }
     for (let r = 0; r < 2; r += 1) for (let g = 0; g < 2; g += 1) for (let b = 0; b < 4; b += 1) fixed.push([r * 255, g * 255, b * 85] as const);
-    fixed.splice(-2, 2, [80, 192, 80], [80, 80, 192]);
-    palette = fixed;
+    fixed.splice(-3, 3, [192, 80, 80], [80, 192, 80], [80, 80, 192]);
+    palette = fixed.slice(0, 64);
     gridPalettes.set(composition, palette);
   }
-  const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
-  const nearest = (r: number, g: number, b: number, x: number, y: number): readonly [number, number, number] => {
-    let best = palette[0] ?? [0, 0, 0], second = best, distance = Infinity, secondDistance = Infinity;
+  const nearest = (r: number, g: number, b: number): readonly [number, number, number] => {
+    let best = palette[0] ?? [0, 0, 0], distance = Infinity;
+    const inputGreenish = g > Math.max(r, b) + 12;
     for (const color of palette) {
-      const d = (color[0] - r) ** 2 + (color[1] - g) ** 2 + (color[2] - b) ** 2;
-      if (d < distance) { secondDistance = distance; second = best; distance = d; best = color; }
-      else if (d < secondDistance) { secondDistance = d; second = color; }
+      const greenPenalty = !inputGreenish && color[1] > color[0] + 28 && color[1] > color[2] + 28 ? 18000 : 0;
+      const d = (color[0] - r) ** 2 + (color[1] - g) ** 2 + (color[2] - b) ** 2 + greenPenalty;
+      if (d < distance) { distance = d; best = color; if (d === 0) break; }
     }
-    if (distance === 0 || !Number.isFinite(secondDistance)) return best;
-    const blend = distance / Math.max(1, distance + secondDistance);
-    return blend > (bayer[(y % 4) * 4 + (x % 4)]! + 0.5) / 16 ? second : best;
+    return best;
   };
   for (let i = 0; i < data.length; i += 4) {
     if (data[i + 3] === 0) continue;
-    const pixel = i / 4, x = pixel % canvas.width, y = Math.floor(pixel / canvas.width);
-    const color = nearest(data[i]!, data[i + 1]!, data[i + 2]!, x, y);
+    const color = nearest(data[i]!, data[i + 1]!, data[i + 2]!);
     data[i] = color[0]; data[i + 1] = color[1]; data[i + 2] = color[2];
   }
   ctx.putImageData(image, 0, 0);
@@ -473,10 +481,13 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
   cx = snap(cx); cy = snap(cy);
   ctx.save(); try { ctx.setTransform(sx, 0, 0, sy, 0, 0); ctx.clearRect(0, 0, a.width, a.height);
   ctx.fillStyle = a.background ?? '#000000'; ctx.fillRect(0, 0, a.width, a.height);
-  const transition = a.transition, reveal = reduced ? 1 : transition?.durationMs ? Math.min(1, t / transition.durationMs) : 1;
+  const transition = a.transition;
+  const reveal = reduced ? 1 : transition?.durationMs
+    ? (snapping > 0 ? Math.max(0.28, Math.min(1, (t + 48) / transition.durationMs)) : Math.min(1, t / transition.durationMs))
+    : 1;
   ctx.save(); try {
   if (reveal < 1 && transition) {
-    if (transition.kind === 'fade') ctx.globalAlpha = reveal;
+    if (transition.kind === 'fade' && snapping === 0) ctx.globalAlpha = reveal;
     if (transition.kind === 'wipe-left' || transition.kind === 'wipe-right') { ctx.beginPath(); ctx.rect(transition.kind === 'wipe-left' ? a.width * (1 - reveal) : 0, 0, a.width * reveal, a.height); ctx.clip(); }
     if (transition.kind === 'iris') { ctx.beginPath(); ctx.arc(a.width / 2, a.height / 2, Math.hypot(a.width, a.height) / 2 * reveal, 0, Math.PI * 2); ctx.clip(); }
   }
@@ -484,10 +495,16 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
     if (overlayLayer(l)) continue;
     if (t < (l.startMs ?? 0) || l.endMs !== undefined && t >= l.endMs) continue;
     const at = reduced ? l.startMs ?? 0 : t, sample = (property: keyof NonNullable<AnimaticLayer['keys']>, fallback: number) => sampleAnimaticTrack(l.keys?.[property], at, fallback);
+    const lockGridBg = snapping > 0 && l.role === 'background' && l.kind === 'image' && l.width >= a.width && l.height >= a.height;
     ctx.save(); try {
-    if (l.space !== 'screen') { const p = l.parallax ?? 1; ctx.translate(a.width / 2, a.height / 2); ctx.rotate(-radians(rotation * p)); ctx.scale(zoom ** p, zoom ** p); ctx.translate(-(a.width / 2 + (cx - a.width / 2) * p), -(a.height / 2 + (cy - a.height / 2) * p)); }
-    ctx.translate(snap(sample('x', l.x)), snap(sample('y', l.y))); ctx.rotate(radians(sample('rotation', l.rotation ?? 0))); ctx.scale(sample('scaleX', l.scaleX ?? 1), sample('scaleY', l.scaleY ?? 1));
-    ctx.translate(-l.width * (l.anchorX ?? 0), -l.height * (l.anchorY ?? 0));
+    if (l.space !== 'screen' && !lockGridBg) { const p = l.parallax ?? 1; ctx.translate(a.width / 2, a.height / 2); ctx.rotate(-radians(rotation * p)); ctx.scale(zoom ** p, zoom ** p); ctx.translate(-(a.width / 2 + (cx - a.width / 2) * p), -(a.height / 2 + (cy - a.height / 2) * p)); }
+    const rawX = lockGridBg ? 0 : sample('x', l.x);
+    const rawY = lockGridBg ? 0 : sample('y', l.y);
+    const effectiveX = l.kind === 'text' && l.typography?.align === 'center' && l.anchorX === undefined && rawX >= a.width * 0.35 && rawX + l.width > a.width
+      ? Math.max(0, (a.width - l.width) / 2)
+      : rawX;
+    ctx.translate(snap(effectiveX), snap(rawY)); ctx.rotate(radians(lockGridBg ? 0 : sample('rotation', l.rotation ?? 0))); ctx.scale(lockGridBg ? 1 : sample('scaleX', l.scaleX ?? 1), lockGridBg ? 1 : sample('scaleY', l.scaleY ?? 1));
+    ctx.translate(-l.width * (lockGridBg ? 0 : (l.anchorX ?? 0)), -l.height * (lockGridBg ? 0 : (l.anchorY ?? 0)));
     ctx.globalAlpha *= sampleAnimaticTrack(l.keys?.opacity, t, l.opacity ?? 1); ctx.globalCompositeOperation = l.blend ?? 'source-over'; ctx.fillStyle = l.color ?? '#ffffff'; ctx.strokeStyle = l.color ?? '#ffffff';
     if (l.kind === 'image') {
       ctx.imageSmoothingEnabled = snapping > 0 ? false : (l.sampling ? l.sampling === 'linear' : !l.sheet);
@@ -516,12 +533,20 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
   } finally { ctx.restore(); }
   // Dither is an ordered dissolve, not a cross-fade: the stage background covers the cells that have
   // not been revealed yet, so this exposes the incoming shot over the background exactly like fade/wipe.
-  if (!reduced && transition?.kind === 'dither' && reveal < 1) {
-    const level = Math.min(DITHER_LEVELS - 1, Math.floor(reveal * DITHER_LEVELS));
-    const pattern = ctx.createPattern(ditherPattern(level, transition.color ?? a.background ?? '#000000'), 'repeat');
+  if (!reduced && (transition?.kind === 'dither' || (snapping > 0 && transition?.kind === 'fade')) && reveal < 1) {
+    const level = Math.max(1, Math.min(DITHER_LEVELS - 1, Math.floor(reveal * DITHER_LEVELS)));
+    const pattern = ctx.createPattern(ditherPattern(level, transition.color ?? a.background ?? '#0a0d14'), 'repeat');
     if (pattern) { ctx.imageSmoothingEnabled = false; ctx.fillStyle = pattern; ctx.fillRect(0, 0, a.width, a.height); }
   }
-  if (!reduced && transition?.kind === 'flash' && reveal < 1) { ctx.fillStyle = transition.color ?? '#ffffff'; ctx.globalAlpha = 1 - reveal; ctx.fillRect(0, 0, a.width, a.height); ctx.globalAlpha = 1; }
+  if (!reduced && transition?.kind === 'flash' && reveal < 1) {
+    if (snapping > 0) {
+      const level = Math.max(1, Math.min(DITHER_LEVELS - 1, Math.floor((0.35 + reveal * 0.65) * DITHER_LEVELS)));
+      const pattern = ctx.createPattern(ditherPattern(level, transition.color ?? '#fff6dc'), 'repeat');
+      if (pattern) { ctx.imageSmoothingEnabled = false; ctx.fillStyle = pattern; ctx.globalAlpha = (1 - reveal) * 0.55; ctx.fillRect(0, 0, a.width, a.height); ctx.globalAlpha = 1; }
+    } else {
+      ctx.fillStyle = transition.color ?? '#ffffff'; ctx.globalAlpha = 1 - reveal; ctx.fillRect(0, 0, a.width, a.height); ctx.globalAlpha = 1;
+    }
+  }
   if (a.letterbox) { const bar = snapping > 0 ? Math.round(a.height * a.letterbox * snapping) / snapping : a.height * a.letterbox; ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, a.width, bar); ctx.fillRect(0, a.height - bar, a.width, bar); }
   for (const l of a.layers) {
     if (!overlayLayer(l) || t < (l.startMs ?? 0) || l.endMs !== undefined && t >= l.endMs) continue;

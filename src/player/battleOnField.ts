@@ -156,12 +156,13 @@ export function onFieldEnemyPoint(
   authored?: readonly ({ readonly x?: number; readonly y?: number } | undefined)[],
 ): OnFieldPoint {
   const own = authored?.[index];
-  if (authored && authored.length === count && authored.every((entry) => entry && Number.isFinite(entry.x) && Number.isFinite(entry.y)) && own) {
+  if (authored && authored.length === count && authored.every((entry) => entry && Number.isFinite(entry.x)) && own) {
+    const ys = authored.map((entry, i) => (Number.isFinite(entry?.y) ? (entry!.y as number) : 156 + (i % 2) * 28));
     const cx = authored.reduce((sum, entry) => sum + entry!.x!, 0) / count;
-    const cy = authored.reduce((sum, entry) => sum + entry!.y!, 0) / count;
+    const cy = ys.reduce((sum, y) => sum + y, 0) / count;
     return {
       fx: anchors.enemy.fx + ((own.x! - cx) / ON_FIELD_UNITS_PER_TILE) * anchors.tileFx,
-      fy: anchors.enemy.fy + ((own.y! - cy) / ON_FIELD_UNITS_PER_TILE) * anchors.tileFy,
+      fy: anchors.enemy.fy + ((ys[index]! - cy) / ON_FIELD_UNITS_PER_TILE) * anchors.tileFy,
     };
   }
   return { fx: anchors.enemy.fx + (index - (count - 1) / 2) * anchors.tileFx, fy: anchors.enemy.fy };

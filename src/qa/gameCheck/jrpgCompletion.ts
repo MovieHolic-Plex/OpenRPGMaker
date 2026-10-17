@@ -60,6 +60,8 @@ export function openingIsOnlyTitleCard(opening: CinematicSequence | undefined, t
   if (!opening || opening.enabled === false) return false;
   const scenes = opening.scenes ?? [];
   if (scenes.length === 0) return false;
+  if (scenes.length === 1 && scenes[0]?.kind === "text") return true;
+  if (scenes.some((scene) => scene.kind === "image") && !scenes.some((scene) => scene.kind === "animatic" && Boolean(scene.composition?.pixelGrid))) return true;
   return scenes.every((scene) => scene.kind === "text" && typeof scene.narration === "string" && isTitleCardNarration(scene.narration, title));
 }
 
@@ -97,9 +99,11 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
     gaps.push(`게임 제목이 기본값 「${title || metaTitle || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 짓고, 기본 부제(「A NEW ADVENTURE」)를 쓰지 않을 거면 logoStyle 을 정하세요.`);
   }
 
-  // 1b) 오프닝 — 제목 카드 한 장(씨앗이 남긴 「— 새 게임 —」 포함)뿐이면 새 게임을 눌러도 검은 화면에 글자만 뜬다.
-  if (openingIsOnlyTitleCard(project.system?.opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
-    gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜹니다. plan_opening/set_opening 으로 이 게임의 도입을 2~4컷(세계·발단·주인공) 써서 넣으세요.");
+  // 1b) 오프닝 — 비어 있거나 제목/단문 카드 한 장, 또는 정지 그림 슬라이드뿐이고 #2852 도트 격자 애니메틱이 없으면 미완이다.
+  const opening = project.system?.opening;
+  const openingEmpty = Boolean(userTask) && opening?.enabled !== false && (opening?.scenes ?? []).length === 0;
+  if (openingEmpty || openingIsOnlyTitleCard(opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
+    gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐이거나 정지 슬라이드뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜨거나 정지 그림만 넘어갑니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background → place_opening_charset_actor 번들 24×32 캐릭터 칩 → set_opening_caption → set_opening → preview_opening_animatic → review_opening)로 이 게임의 도입을 2~4컷 써서 넣으세요.");
   }
 
   // 2) 시작 마을 인물 — 말을 거는 이벤트(text/say 명령이 있는 이벤트)가 시작 맵과, 문 하나로 닿는 마을(길 맵 제외)을 합쳐 최소 몇 명 있어야 한다.

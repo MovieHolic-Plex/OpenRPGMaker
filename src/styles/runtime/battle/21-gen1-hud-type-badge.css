@@ -21,6 +21,8 @@
 
 .battle-command-tag {
   align-self: flex-start;
+  flex: 0 0 auto;
+  white-space: nowrap;
   background: var(--battle-command-tag-bg, #6b7280);
   border-radius: 999px;
   color: #fff;

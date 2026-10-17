@@ -5,6 +5,7 @@ import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { worldCanonHasContent } from "@/project/world/canon";
 import { gameStructureProblems } from "./gameStructureGuard";
+import { OPENING_ANIMATIC_AUTHORING_TOOLS } from "./piAgent/openingProduction";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
 export interface AdventureRequirements {
@@ -24,7 +25,7 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   // A full RPG starts with its authored identity, not only maps and encounters.
   // Keep these in the preflight set so the first writer round can actually create
   // the protagonist's appearance/loadout and record the world/character canon.
-  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start",
+  return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start", ...OPENING_ANIMATIC_AUTHORING_TOOLS,
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_beodeul_town", "inspect_terrain", "place_terrain_house"] : []),
     // EasyRPG 던전 생성기는 폐기(retiredEasyRpgTilesets.ts). 던전은 author_dungeon(칩셋 어댑터), 어댑터가 못 짓는 장소는 등록 장소 가져오기.
@@ -48,7 +49,8 @@ JRPG(크로노 트리거·FF6·클래식 판타지)의 주인공·동료 걷기 
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
 시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era:"past"|"future"|"ruin"…,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고 — 변형마다 시대 겉모습(조명 색조·안개·건물 철거·폐허/야영 조각)이 자동으로 걸리니 era 에 과거·미래·붕괴 낱말을 넣고, 결과 뒤 show_map_region 으로 현재 맵과 눈으로 구별되는지 확인하며 부족하면 tileOverrides 로 더 바꾼다, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
-완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다.
+타이틀과 새로하기 오프닝도 #2852 레이어드 도트 애니메틱으로 함께 완성한다: set_title_screen + generate_title_art 로 작품 고유 타이틀을 구성하고, plan_opening(bible 포함, 3~4샷) → 샷마다 create_opening_animatic_shot(width:384,height:216) → set_opening_pixel_grid(384,216) → place_opening_background(generate_opening_image role:"backdrop" 또는 list_opening_media의 oprn-still-* 배경) → place_opening_charset_actor(번들 24×32 캐릭터 칩 배우) + apply_opening_walk → set_opening_region_loop / upsert_opening_light_fx / animate_opening_camera → set_opening_caption(레터박스 자막, 전 샷 #fff0dc 통일) → set_opening(composition:{shotId} 별칭으로 연결) → preview_opening_animatic(샷마다 시작·후반 2개 시각 표본 확인) → review_opening → show_title_opening 순서로 저작한다. 글자만 있는 내레이션 카드 한 장이나 정지 그림(kind:"image") 슬라이드만으로 끝내지 않는다.
+완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다 ④ 새로하기 오프닝이 #2852 레이어드 도트 애니메틱(kind:"animatic" + pixelGrid 384×216)으로 저장돼 있다.
 마지막 저작 후 모든 관련 맵 전체를 show_map_region(최대 24×24이므로 큰 맵은 분할 조회)으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
 
 function commands(map: GameMap): Array<{ event: GameMap["events"][number]; command: Command }> {

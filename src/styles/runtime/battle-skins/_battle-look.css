@@ -546,8 +546,8 @@
 /* 초상 카드 — 아래 줄, 얼굴 초상 + 이름 · HP · MP */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
-  left: 157px;
-  right: 9px;
+  left: 142px;
+  right: 8px;
   top: auto;
   bottom: 9px;
   height: 67px;
@@ -561,24 +561,24 @@
   position: relative;
   display: grid;
   grid-template-areas: ". name" ". hpnum" ". hpbar" ". mpnum" ". mpbar";
-  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
   grid-template-rows: 17px 19px 3px 15px 3px;
   column-gap: 0;
-  padding: 5px 10px 0 6px;
+  padding: 5px 6px 0 4px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"][data-look-party="cards"] .battle-party .battle-actor-status,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="cards"] .battle-party .battle-actor-status,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"][data-look-party="cards"] .battle-party .battle-actor-status {
-  clip-path: polygon(11px 0, 100% 0, calc(100% - 11px) 100%, 0 100%);
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-face,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-face,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-face {
   display: block;
   position: absolute;
-  left: 4px;
+  left: 2px;
   top: 0;
-  width: 56px;
+  width: 44px;
   height: 67px;
   border-radius: 0;
   box-shadow: none;
@@ -587,8 +587,9 @@
   background-size: cover;
   background-position: 50% 20%;
   image-rendering: pixelated;
-  -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent);
-  mask-image: linear-gradient(90deg, #000 55%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 94%);
+  mask-image: linear-gradient(90deg, #000 40%, transparent 94%);
+  opacity: 0.85;
   z-index: 0;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-name,
@@ -598,11 +599,15 @@
   z-index: 1;
   justify-self: end;
   align-self: center;
-  font-size: 15px;
-  line-height: 17px;
+  font-size: 13px;
+  line-height: 16px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp {
-  font-size: 19px;
+  font-size: 17px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp .battle-vital-max,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-mp .battle-vital-max {
@@ -968,8 +973,8 @@
    22px 글자로 한글 두 자부터 「마…」 로 잘리고 MP 배지가 이름 자리를 먹었다(jrpg-loop-2 ct1 실측: 「마법탄」이 34px 칸에 갇힘).
    오른쪽 끝(left+width)은 그대로 두고 왼쪽으로만 넓혀 파티 창·메시지 창 자리를 새로 덮지 않는다. */
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:is([data-look-command="actor"], [data-look-command="keys"], [data-look-command="fan"]):has(.battle-command-menu > .battle-submenu-header) .battle-command-host {
-  left: 150px;
-  width: 296px;
+  left: 84px;
+  width: 372px;
 }
 
 /* 위쪽 가로 */
@@ -1342,7 +1347,8 @@
   pointer-events: none;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-turns="on"] .battle-message-window {
-  left: 292px;
+  left: 244px;
+  right: 12px;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-turn-order {
   top: 82px;
@@ -1389,13 +1395,21 @@
   box-shadow: var(--look-panel-frame, var(--retro-frame));
   border-radius: var(--look-radius, 0);
   backdrop-filter: none;
-  padding: 1px 12px;
-  top: calc(100% - 6px);
+  padding: 1px 10px;
+  top: auto;
+  bottom: calc(100% + 4px);
+  max-width: 172px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"]:has(.battle-command-menu > .battle-submenu-header) .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  display: none;
 }
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy .battle-enemy-name {
   font-size: 13px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
+  max-width: 152px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox {
@@ -1432,4 +1446,9 @@
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-letterbox="on"] .battle-party,
 .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-letterbox="on"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
   bottom: 44px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-presentation="onField"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"][data-battle-presentation="onField"] {
+  background: transparent;
+  background-color: transparent;
 }

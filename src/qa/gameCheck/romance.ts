@@ -195,7 +195,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   if (openingEmpty || openingIsOnlyTitleCard(opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
     findings.push({
       severity: "warning", code: "romance-opening-title-card",
-      message: `오프닝이 ${openingEmpty ? "비어 있습니다" : "제목 카드뿐입니다"} — 새 게임을 누르면 바로 걷거나 검은 화면에 제목만 뜹니다. plan_opening/set_opening 으로 이 게임의 도입을 여러 장면(무대·주인공·첫 만남의 계기)으로 써 넣으세요.`,
+      message: `오프닝이 ${openingEmpty ? "비어 있습니다" : "제목 카드·단문 카드 한 장뿐이거나 정지 그림 슬라이드뿐입니다"} — 새 게임을 누르면 바로 걷거나 검은 화면에 제목만 뜹니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background → place_opening_charset_actor 번들 24×32 캐릭터 칩 → set_opening_caption → set_opening → preview_opening_animatic → review_opening)로 이 게임의 도입을 여러 장면(무대·주인공·첫 만남의 계기)으로 써 넣으세요.`,
     });
   }
 
@@ -375,7 +375,7 @@ export function isRomanceGameRequest(text: string | undefined | null): boolean {
   if (typeof text !== "string") return false;
   // 장르 프리셋 지시문에 실린 제작 매뉴얼은 사용자 요청이 아니다(openingProduction.withoutAuthoringPresetManual 과 같은 처리).
   text = text.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, "");
-  if (!/연애|로맨스|romance|dating|소개팅|썸\s?타/iu.test(text) || !/게임|시뮬|game|sim/iu.test(text)) return false;
+  if (!/연애|로맨스|미연시|romance|dating|소개팅|썸\s?타/iu.test(text) || !/게임|시뮬|연애물|로맨스물|미연시|학원물|캠퍼스물|game|sim/iu.test(text)) return false;
   if (/만들|제작|짜 ?줘|구현/u.test(text)) return true;
   // 동사 없이 소재만 적은 한 줄(「고등학교 학원물 연애 게임, 여러 명 중 한 명과 이어지는 엔딩」)도 제작 요청이다 — romance-loop-1 R1 에서 이 문장은 완료 검사가
   // 통째로 꺼져 기본 제목 「새 게임」·기본 부제·뼈대 자리표시·인물별 엔딩 없음이 그대로 통과했다. 고치기·질문·설명 요청만 뺀다.

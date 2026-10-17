@@ -239,9 +239,10 @@ export function measureOpeningAnimatic(project: Project): OpeningMeasurement {
         if (left < -OPENING_SAFE_MARGIN || left + actor.width > (s.grid?.width ?? composition.width) + OPENING_SAFE_MARGIN || top < safeTop - OPENING_SAFE_MARGIN || top + actor.height > safeBottom + OPENING_SAFE_MARGIN) {
           issues.push(`${s.id}/${actor.layerId}: 배우가 레터박스 안전영역 밖입니다(${Math.round(left)},${Math.round(top)} ${actor.width}×${actor.height}). ${safeTop}..${safeBottom} 안에 배치하세요.`);
         }
-        const expected = /cathedral|hall|기사|knight/iu.test(s.id) ? 'knight' : /village|마을|villager/iu.test(s.id) ? 'villager' : /mage|마법/iu.test(s.id) ? 'mage' : /cliff|절벽|hero|주인공/iu.test(s.id) ? 'hero' : undefined;
-        if (expected && actor.characterRole && actor.characterRole !== expected) issues.push(`${s.id}/${actor.layerId}: characterRole=${actor.characterRole}가 장면 역할 ${expected}와 맞지 않습니다.`);
-        if (expected && !actor.characterRole) issues.push(`${s.id}/${actor.layerId}: 장면 역할 ${expected}를 characterRole에 명시하세요.`);
+      }
+      const expectedRole = /cathedral|hall|기사|knight/iu.test(s.id) ? 'knight' : /village|마을|villager/iu.test(s.id) ? 'villager' : /mage|마법/iu.test(s.id) ? 'mage' : /cliff|절벽|hero|주인공/iu.test(s.id) ? 'hero' : undefined;
+      if (expectedRole && s.actorBoxes.length > 0 && !s.actorBoxes.some((actor) => actor.characterRole === expectedRole)) {
+        issues.push(`${s.id}: 장면 역할 ${expectedRole}에 맞는 배우(characterRole:"${expectedRole}")를 최소 1명 포함하세요.`);
       }
       for (const id of s.lowOpacityCritical) issues.push(`${s.id}/${id}: 이야기 핵심 오브젝트 opacity가 0.30 미만입니다. 수정/눈/검은 낮추지 말고 픽셀 상태 변화로 보여 주세요.`);
       for (const layer of composition.layers) if (/crystal|수정|eye|눈|sword|검/iu.test(layer.id) && !s.statefulCritical.includes(layer.id)) {
