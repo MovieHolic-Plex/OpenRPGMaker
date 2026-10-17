@@ -1,7 +1,7 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 
-const sections = ["overview", "party", "display", "menu", "font", "resources", "startup", "optin", "time", "typechart", "title"] as const;
+const sections = ["overview", "party", "startup", "optin", "time", "typechart", "display", "menu", "dialogue", "hud", "font", "resources", "title"] as const;
 for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
   test(`System settings workspace at ${viewport.width}x${viewport.height}`, async ({ page }) => {
     test.setTimeout(180_000);
@@ -19,9 +19,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     await page.getByTestId("db-tab-group-system").click();
     await page.getByTestId("db-tab-system").click();
     const nav = page.getByTestId("db-system-section-nav");
-    await expect(nav.locator(".db-system-section-button")).toHaveCount(11);
+    await expect(nav.locator(".db-system-section-button")).toHaveCount(13);
     const destinationTargets = await page.getByTestId("db-system-studio").locator("[data-system-target]").evaluateAll((buttons) => [...new Set(buttons.map((button) => (button as HTMLElement).dataset.systemTarget))].sort());
-    expect(destinationTargets).toEqual(sections.filter((slug) => slug !== "overview").sort());
+    expect(destinationTargets).toEqual(sections.filter((slug) => slug !== "overview" && slug !== "dialogue").sort());
     await expect(page.locator(".db-system-studio-rule-grid .db-system-studio-card")).toHaveCount(3);
     await expect(page.locator(".db-system-studio-card-detail")).toHaveCount(12);
     await expect(page.locator(".db-system-studio-impact-row")).toHaveCount(4);
@@ -33,7 +33,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     for (const slug of sections) {
       await page.getByTestId(`db-system-nav-${slug}`).click();
       await expect(page.locator(`[data-system-section="${slug}"]`)).toBeVisible();
-      await expect(page.locator(".db-system-section")).toHaveCount(11);
+      await expect(page.locator(".db-system-section")).toHaveCount(13);
       const facts = await page.evaluate(() => {
         const nav = document.querySelector<HTMLElement>(".db-system-section-nav")!;
         const body = document.querySelector<HTMLElement>(".db-system-sections")!;
@@ -48,7 +48,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
           bodyWidth: body.clientWidth,
           bodyScrollWidth: body.scrollWidth,
           sectionWidth: selected.getBoundingClientRect().width,
-          separate: navRect.bottom <= bodyRect.top + 1,
+          separate: navRect.right <= bodyRect.left + 1,
           footerVisible: footer.bottom <= innerHeight + 1,
           overflow: document.documentElement.scrollWidth > innerWidth,
         };
@@ -73,6 +73,6 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     await page.keyboard.press("Enter");
     await expect(page.locator('[data-system-section="party"]')).toBeVisible();
     await page.keyboard.press("Tab");
-    await expect(page.getByTestId("db-system-nav-display")).toBeFocused();
+    await expect(page.getByTestId("db-system-nav-startup")).toBeFocused();
   });
 }
