@@ -4,7 +4,10 @@
 // 모의: 엔딩이 이름 없는 triggerEnding(조건·priority 로 고르기)으로 열리는 경우, 호감 상태 몇 가지(아무도 / 한 사람이 문턱만큼 / 모두 문턱만큼)에서
 // 조건을 만족한 엔딩 중 priority 가 가장 높은 것을 고른다. 어떤 상태에서도 못 이기는 엔딩은 가려진 것이다.
 // 이름으로 부르는 호출(기한 엔딩의 fork)이 있는 엔딩은 이 모의로 판정하지 않는다 — 그 길은 fork 조건이 정한다.
+import { affectionVariableOwners } from "@/project/affectionVariables";
+import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ANY_FRIENDSHIP_KEY, clampFriendship, friendshipValueOf } from "@/project/session";
+import { resolveSocialKey } from "@/project/socialKey";
 import type { EndingCondition, EndingDef, Project } from "@/project/types";
 import type { Finding } from "./types";
 import { conditionLeaves, visitAllCommands } from "./walk";
@@ -130,5 +133,37 @@ export function checkPerHeroineEndings(project: Project, heroineNames: readonly 
     severity: "warning", code: "romance-endings-not-per-heroine",
     message: `호감 대화 인물이 ${heroineNames.length}명(${heroineNames.slice(0, 4).join(", ")})인데 어느 엔딩도 특정 인물의 호감을 보지 않습니다 — 누구와 가까워졌는지와 무관하게 같은 결말입니다. `
       + "인물마다 define_ending(예: 「OO와 함께」)을 만들고 set_deadline_ending 의 tiers 에 {endingId, friendshipAtLeast, characterId} 로 인물 항목을 얹으세요(맨 끝은 혼자·평범 기본 결말).",
+  }];
+}
+
+/** 호감을 실제로 올릴 수 있는 인물 키 — 호감 대화(talkFriendship) 인물 · changeFriendship 대상 · 「인물 호감」 변수 주인. */
+function friendshipWriterKeys(project: Project): Set<string> {
+  const keys = new Set<string>();
+  for (const map of Object.values(project.maps)) for (const event of map.events) {
+    if (!isTalkFriendshipEnabled(event)) continue;
+    const key = resolveSocialKey(event);
+    if (key) keys.add(key);
+  }
+  visitAllCommands(project, (visit) => {
+    if (visit.command.kind !== "changeFriendship") return;
+    const explicit = typeof visit.command.npcKey === "string" ? visit.command.npcKey.trim() : "";
+    const key = explicit || (visit.page.event ? resolveSocialKey(visit.page.event) : null);
+    if (key) keys.add(key);
+  });
+  for (const key of affectionVariableOwners(project).values()) keys.add(key);
+  return keys;
+}
+
+/** 엔딩·기한 판정이 겨눈 인물 키 중 어디서도 호감이 오르지 않는 것 — 그 인물 엔딩은 영영 못 본다(romance-loop-2 rom-b: 하루·유우 엔딩은 선택지가 스위치만 켜서 호감 0). */
+export function checkEndingNpcReachable(project: Project): Finding[] {
+  const targeted = endingFriendshipKeys(project);
+  if (targeted.size === 0) return [];
+  const writers = friendshipWriterKeys(project);
+  const dead = [...targeted].filter((key) => !writers.has(key));
+  if (dead.length === 0) return [];
+  return [{
+    severity: "warning", code: "romance-ending-npc-unreachable",
+    message: `엔딩이 호감을 보는 인물 ${dead.slice(0, 5).map((key) => `「${key}」`).join(", ")} 은(는) 호감이 오르는 곳이 없습니다(호감 대화 인물·changeFriendship·「인물 호감」 변수 어디에도 없음) — 그 인물 엔딩은 열리지 않습니다. `
+      + "그 인물 이벤트에 talkFriendship 을 켜거나 선택지에 changeFriendship(npcKey=그 characterId) 를 넣고, 엔딩 조건의 characterId 가 이벤트 characterId 와 같은지 확인하세요.",
   }];
 }

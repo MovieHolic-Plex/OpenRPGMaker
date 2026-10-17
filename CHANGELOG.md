@@ -21,6 +21,14 @@
 
 - **ci** — record the dialogue bar and retro skill-list layout in CSS winners (`5801ee9`)
 
+## 0.245.0 — 2026-10-17
+
+### 기능
+
+- **romance** — set_deadline_ending builds a per-heroine ending tier when tiers is omitted (#2794) (`cdf3622`)
+- **romance** — finish gate flags endings aimed at a heroine whose affection can never rise (#2789) (`1b2f797`)
+- **romance** — 소재별 연애 타이틀 키아트(카페·학원·회사·마을) + 소재 불일치 완료 검사 (R1-06) (#2783) (`a888468`)
+
 ## 0.244.2 — 2026-10-17
 
 ### 수정
