@@ -39,13 +39,17 @@ function isJrpg(project: Project): boolean {
   return project.system?.genre === "adventure-jrpg" || project.gameDesignBrief?.presetId === "adventure-jrpg";
 }
 
-/**
- * 채팅 한 줄 요청에도 JRPG 완료 가드를 거는가. 기획서 프롬프트(segmentGate)가 아니면 팀 finish 는 JRPG 가드를 한 번도 부르지 않아
- * 파티 능력치 동일·보스 무해·기본 오프닝이 그대로 끝났다(jrpg-loop-1 ct1: check 경고 4건을 안고 finish 통과).
- */
+/** 시스템이 덧붙인 `[의도 메모 — 아래는 사용자 글이 아니라 시스템 지침]` 뒤는 사용자 요청이 아니다(jrpg-loop-4 ff1·ff2:
+ * 지침 안의 「항구·포구·어촌」·「시대·평행세계」 낱말이 briefText 에 섞여 씨앗 어촌 면제·시간 엔딩 오탐을 냈다). */
+export function stripSystemIntentNote(task = ""): string {
+  const index = task.indexOf("[의도 메모");
+  return (index >= 0 ? task.slice(0, index) : task).trim();
+}
+
 export function jrpgCompletionGateApplies(project: Project, task = ""): boolean {
-  if (JRPG_TASK.test(task)) return true;
-  return isJrpg(project) && WHOLE_GAME_TASK.test(task);
+  const userTask = stripSystemIntentNote(task);
+  if (JRPG_TASK.test(userTask)) return true;
+  return isJrpg(project) && WHOLE_GAME_TASK.test(userTask);
 }
 
 /**
@@ -82,10 +86,10 @@ function reachableMapIds(project: Project): Set<string> {
 }
 
 export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(project), options: { readonly task?: string } = {}): string[] {
-  if (!isJrpg(project) && !JRPG_TASK.test(options.task ?? "")) return [];
+  const userTask = stripSystemIntentNote(options.task);
+  if (!isJrpg(project) && !JRPG_TASK.test(userTask)) return [];
   const gaps: string[] = [];
-  if (options.task) briefText = `${briefText} ${options.task}`;
-
+  if (userTask) briefText = `${briefText} ${userTask}`;
   // 1) 기본 제목.
   const title = (project.system?.titleScreen?.title ?? "").trim();
   const metaTitle = (project.meta?.title ?? "").trim();

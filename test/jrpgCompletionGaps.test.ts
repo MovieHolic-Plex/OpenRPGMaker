@@ -163,4 +163,27 @@ describe("동료 약속 (jrpg-loop-2 ct2)", () => {
     const gaps = jrpgCompletionGaps(prePopulated, "", { task: "시대마다 동료를 만나는 RPG" });
     expect(gaps.some((gap) => gap.includes("set_party") && gap.includes("시작 파티"))).toBe(true);
   });
+
+  it("strips [의도 메모] system guidance from options.task so coast/era instructions do not trigger harborExempt or TIME_BRIEF (jrpg-loop-4 ff1, ff2)", () => {
+    const seededHarbor = jrpg({
+      startMapId: "map_blank_start",
+      system: { genre: "adventure-jrpg", titleScreen: { title: "잿불의 성흔" } },
+      endings: [{ id: "ending_first_segment", name: "첫 구간 끝", conditions: [] }],
+      maps: {
+        map_blank_start: {
+          id: "map_blank_start",
+          name: "잿불 해안 거점 (구 버들항 유적)",
+          structurePlacements: [{ kitId: "bd-pick-fishing-port-lighthouse", x: 40, y: 20 }],
+          events: [
+            { id: "e1", name: "장로", x: 1, y: 1, pages: [{ id: "p1", trigger: { kind: "action" }, commands: [{ kind: "text", body: "가자" }] }] },
+            { id: "e2", name: "상인", x: 2, y: 1, pages: [{ id: "p2", trigger: { kind: "action" }, commands: [{ kind: "text", body: "물건" }, { kind: "triggerEnding", endingId: "ending_first_segment" }] }] },
+          ],
+        },
+      },
+    });
+    const taskWithIntentMemo = "파이널판타지6 같은 게임 만들어 줘. 세계가 한 번 무너지고, 흩어진 동료들을 다시 모으는 이야기로\n\n[의도 메모 — 아래는 사용자 글이 아니라 시스템 지침]\ntheme 은 말에서 고른다: 항구·포구·어촌·바닷가 = coast. 시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 derive_map_variant 를 쓴다.";
+    const gaps = jrpgCompletionGaps(seededHarbor, "", { task: taskWithIntentMemo });
+    expect(gaps.some((gap) => gap.includes("씨앗 어촌(등대·항구)"))).toBe(true);
+    expect(gaps.some((gap) => gap.includes("시간·시대 이야기를 요청했는데"))).toBe(false);
+  });
 });

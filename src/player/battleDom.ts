@@ -321,11 +321,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     applyFieldBackdrop(field, options.fieldBackdropUrl, initialSnapshot.backdropResourceId);
     root.dataset.battleBackdropKind = "field";
   }
-  if (options.onField) {
+  if (options.onField && options.fieldBackdropUrl) {
     root.dataset.battlePresentation = "onField";
     // 스테이지 전체에 스냅샷을 캔버스 사각형 그대로 깐다 — 필드 배경(cover)은 전장 박스에 맞춰 잘리므로
     // 필드 위 전투에서는 전장 배경을 비우고 스테이지 뒤판이 캔버스와 같은 자리에 그린다.
-    if (options.fieldBackdropUrl) mountOnFieldBackdrop(stage, options.onField.canvas, options.fieldBackdropUrl);
+    mountOnFieldBackdrop(stage, options.onField.canvas, options.fieldBackdropUrl);
   }
 
   // 개시 진형 배너: 첫 인트로 메시지에 한 줄만 덧붙인다(보통 개시는 그대로).
@@ -1294,7 +1294,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss && !lastDamageFeedback.label
         ? lastDamageFeedback.targetId
         : undefined,
-      onField: options.onField,
+      onField: options.fieldBackdropUrl ? options.onField : undefined,
       rollingHp,
       stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
       stageView: sequenceBusy ? pendingStageView(snapshot) : undefined,

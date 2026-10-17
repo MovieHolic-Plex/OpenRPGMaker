@@ -33,7 +33,7 @@ import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCa
 import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
-import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
+import { jrpgCompletionGateApplies, jrpgCompletionGaps, stripSystemIntentNote } from "../../src/qa/gameCheck/jrpgCompletion.ts";
 import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
 import { syncHeroineDeadline } from "../../src/project/deadlineEnding.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
@@ -815,8 +815,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // JRPG 도 같은 구멍이 있었다 — 위 JRPG 가드는 기획서 프롬프트(segmentGate)에서만 돌아, 채팅 한 줄(「크로노 트리거 같은 JRPG 만들어 줘」)로 지으면
         // 파티 능력치 동일·보스 무해·제목 카드뿐인 오프닝이 그대로 통과했다(jrpg-loop-1 ct1: 같은 프로젝트에 qa:game check 경고 4건). 거절은 두 번까지, 그 뒤에는 보고에 남기고 받는다.
-        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, request.task)) {
-          const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: request.task });
+        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task))) {
+          const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: stripSystemIntentNote(request.task) });
           // 채팅 한 줄 JRPG 는 첫 구간 게이트(segmentGate)를 안 타서 「끝까지 갈 수 없음」이 그대로 통과했다(jrpg-loop-2 ff1: 시간의 문이 절벽 위에 갇혀
           // qa:game check 막힘 1건인데 finish 가 받아졌다). 뼈대가 있으면 같은 자동 플레이 판정의 막힌 곳을 마무리 항목에 더한다.
           if (hasPlayableSegmentSkeleton(working)) {
