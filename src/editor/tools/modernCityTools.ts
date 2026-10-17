@@ -123,7 +123,8 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
     return {
       summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품·차 ${r.props.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + `건물: ${r.buildings.map((d) => `${d.name} 문(${d.doors[0]!.x},${d.doors[0]!.y})${d.program ? `→${d.program}` : ""}`).join(" · ")}.`
-        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote,
+        + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote
+        + " 좌표는 도구 인자용이다 — NPC 대사·안내 문구에는 (x,y) 대신 건물 이름·방향(「본사 정문」 「동쪽 끝」)을 쓴다.",
       data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length },
     };
   },

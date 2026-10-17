@@ -74,8 +74,19 @@ const THEME_WORDS: readonly (readonly [StartTheme, RegExp])[] = [
   ["desert", /사막|오아시스|모래|사구|desert|oasis/iu],
   ["swamp", /늪|습지|수상\s?마을|갈대|swamp|marsh|bog/iu],
   ["coast", /항구|포구|해안|바닷가|어촌|등대|섬|부두|port|harbou?r|coast|island/iu],
-  ["river", /강가|강변|나루|물레방아|방앗간|시냇|개울|river/iu],
+  ["river", /강가|강변|호숫가|수변|천변|강둑|둔치|나루|물레방아|방앗간|시냇|개울|river|riverside|waterfront/iu],
 ];
+
+/** 길·야외 맵 이름에 들어가면 강변·수변 산책로(물 3~4줄 + 석축 제방 + 연속 산책로)로 까는 낱말. */
+export const WATERFRONT_ROUTE_RE = /강변|강가|호숫가|수변|천변|강둑|둔치|나루|연못가|물가\s?길|수변\s?산책로|강변\s?산책로/u;
+const INDOOR_WATERFRONT_EXCLUDE_RE = /카페|집|실내|가게|식당|레스토랑|호텔|숙소|하숙|책방|서점|공방|도서관|마법학교|교실|강의실|로비|오피스|사무실/u;
+
+export function isWaterfrontRouteName(text: string | undefined): boolean {
+  if (!text) return false;
+  const trimmed = text.trim();
+  if (trimmed.length === 0 || INDOOR_WATERFRONT_EXCLUDE_RE.test(trimmed)) return false;
+  return WATERFRONT_ROUTE_RE.test(trimmed);
+}
 
 /** FNV-1a 32bit — 안정적이고 의존이 없다. */
 export function startHash(text: string): number {
@@ -119,8 +130,10 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   // 지형은 평지가 아닌 것 우선(늘 평지가 나오지 않게) — 시공기 기본과 같다. 넷 중 하나는 평지로 쉬게 한다.
   const terrain = rng() < 0.4 ? "flat" : terrains[0]!;
   const routeW = 22 + Math.floor(rng() * 13);   // 22..34
-  const routeH = 10 + Math.floor(rng() * 7);    // 10..16
-  const lo = 3, hi = routeH - 4;
+  const rawH = 10 + Math.floor(rng() * 7);    // 10..16
+  // 강변·물가 길은 물 3~4줄 + 제방 1줄 + 잔디 화단 + 넓은 산책로가 들어가야 하므로 최소 15줄 확보.
+  const routeH = theme === "river" ? Math.max(15, rawH) : rawH;
+  const lo = theme === "river" ? 8 : 3, hi = routeH - 4;
   const entryY = lo + Math.floor(rng() * (hi - lo + 1));
   // 입구와 끝 줄이 3칸 안에서 어긋나 길이 한 번 꺾인다(이야기 산책길 광장이 끝 줄 ±3 을 쓴다).
   const shift = Math.floor(rng() * 7) - 3;
@@ -163,7 +176,8 @@ export function inferStartTilesetHint(brief: GameDesignBrief | undefined): strin
 /** 프로젝트에서 구상을 낸다 — 뼈대(playableSegment)와 프롬프트가 같은 입력으로 같은 구상을 얻는다. */
 export function planStartForBrief(brief: GameDesignBrief | undefined, title: string): StartPlan {
   const hint = brief ? briefTilesetHint(brief.summary) ?? inferStartTilesetHint(brief) : undefined;
-  return planStart({ seedText: startSeedText(brief, title), stageText: brief?.summary, tilesetHint: hint });
+  const stageText = [brief?.summary, brief?.interview?.concept, brief?.interview?.notes, title].filter(Boolean).join("\n");
+  return planStart({ seedText: startSeedText(brief, title), stageText, tilesetHint: hint });
 }
 
 /** 칩셋마다 시작 맵을 짓는 길(조수 시스템 프롬프트의 칩셋 지침과 같은 도구 이름). 버들항 도구 author_beodeul_town 은 다른 칩셋에서 쓰지 않는다. */
