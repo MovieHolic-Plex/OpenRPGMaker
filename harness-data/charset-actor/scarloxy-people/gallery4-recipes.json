@@ -1,0 +1,1209 @@
+{
+ "note": "char-gen 갤러리 4(2026-10-17) 스크립트 합성 22종의 레시피 원본(char-gen 저장소 79fe270 examples/gallery/recipes/mix-NN.recipe.json). char-gen 의 합성기(머리 이식 + 부위 마스크 안 색조 이동, 모델 호출 없음)로 만들어졌고 이 저장소의 scarloxy_compose.py 와는 얼굴 고정 규칙이 달라(눈 색도 머리색을 따른다) 재생성하지 않는다 — 설치 그림은 최종 격자(chip.chr.txt)이며 화소 해시가 scarloxy-people/gallery4.json 에 고정돼 있다.",
+ "chips": [
+  {
+   "key": "mix-01",
+   "head": "Scarloxy1_1",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-02",
+   "head": "Scarloxy2_1",
+   "body": "Scarloxy1_0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 190
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 15
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 150
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-03",
+   "head": "Scarloxy2_1",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 280
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 175
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 260
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-04",
+   "head": "Scarloxy1_5",
+   "body": "Scarloxy1_2",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 190
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 15
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 150
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-05",
+   "head": "Scarloxy1_3",
+   "body": "Scarloxy2_1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 35
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 100
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 270
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-06",
+   "head": "Scarloxy1_1",
+   "body": "Scarloxy2_1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 130
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-07",
+   "head": "Scarloxy1_4",
+   "body": "Scarloxy1_5",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 280
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 175
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 260
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-08",
+   "head": "Scarloxy2_1",
+   "body": "Scarloxy1_2",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 15
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 260
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 40
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 120
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-09",
+   "head": "Scarloxy1_5",
+   "body": "Scarloxy2_1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 5
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 300
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 50
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 210
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-10",
+   "head": "Scarloxy1_5",
+   "body": "Scarloxy1_6",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 350
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-11",
+   "head": "Scarloxy1_0",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 210
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-12",
+   "head": "Scarloxy1_2",
+   "body": "Scarloxy1_4",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 90,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-13",
+   "head": "Scarloxy1_1",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220,
+      "sat": 0.08,
+      "v": 1.1
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 190,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-14",
+   "head": "Scarloxy2_1",
+   "body": "Scarloxy1_0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 190,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-15",
+   "head": "Scarloxy1_1",
+   "body": "Scarloxy1_0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45,
+      "v": 1.12
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 215,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 215,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-16",
+   "head": "Scarloxy1_3",
+   "body": "Scarloxy2_1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 200,
+      "sat": 0.5,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 260,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-17",
+   "head": "Scarloxy1_0",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 230,
+      "sat": 0.25,
+      "v": 0.55
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 90,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-18",
+   "head": "Scarloxy2_1",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 330,
+      "sat": 0.45,
+      "v": 0.9
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 330,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-19",
+   "head": "Scarloxy1_0",
+   "body": "Scarloxy1_4",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 200,
+      "sat": 0.5,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 45,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 220,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-20",
+   "head": "Scarloxy1_5",
+   "body": "Scarloxy1_4",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 215,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-21",
+   "head": "Scarloxy1_2",
+   "body": "Scarloxy2_1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 230,
+      "sat": 0.25,
+      "v": 0.55
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 30,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  },
+  {
+   "key": "mix-22",
+   "head": "Scarloxy1_5",
+   "body": "Scarloxy1_3",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 200,
+      "sat": 0.5,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.75
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 0,
+      "s": 0.7,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "S",
+     "hue": [
+      0,
+      360
+     ],
+     "smin": 0.18,
+     "to": {
+      "hue": 25,
+      "s": 0.8
+     }
+    }
+   ],
+   "waive": []
+  }
+ ]
+}

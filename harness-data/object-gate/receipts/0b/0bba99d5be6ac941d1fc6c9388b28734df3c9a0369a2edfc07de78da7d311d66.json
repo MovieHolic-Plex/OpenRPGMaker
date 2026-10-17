@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0bba99d5be6ac941d1fc6c9388b28734df3c9a0369a2edfc07de78da7d311d66",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "굴뚝에서 연기가 오르는 통나무 오두막",
+ "label": "snow-north/asm-cabin-smoke",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof and chimney",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered roof slope facing the camera spans rows 41 to 67 (~26 pixel rows), properly foreshortened in standard RPG Maker top-down 3/4 perspective above the front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered log cabin with chimney",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin shows a prominent south-facing snow-covered roof slope from row 42 to 68 (around 27 pixel rows tall) above the south front wall, correctly matching standard 3/4 top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered front slope of the cabin roof is clearly visible from row 41 to row 67 (~26 pixel rows) in standard 3/4 top-down perspective above the south-facing wall and door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4336
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log cabin with snow-covered roof and chimney",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large, foreshortened south-facing roof slope covered in snow spanning rows 42 to 67 (~26 pixels tall), meeting RPG Maker 3/4 top-down perspective requirements above the front log facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3359
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:03.324Z",
+ "cells": {
+  "16": [
+   "0bf197c694c76502",
+   "3a477a182ac47a3b",
+   "40018258428371d2",
+   "52e3ec342adba386",
+   "577954dbb95f8bbe",
+   "5dadaa3478946c16",
+   "7424f94654cf688f",
+   "88b2e749857c5dd8",
+   "9ccf21aac80db9bf",
+   "9fba1340248a8c73",
+   "ada672c9f4eccfcb",
+   "b82d0448b79255aa",
+   "c1ad615da7781fb8",
+   "e95e752f9ff33cf5"
+  ],
+  "24": [
+   "09e56744ceb26435",
+   "16e310f2613711c7",
+   "49cd08deda039197",
+   "5fa777b88518e5e7",
+   "8cb630d4afbda774",
+   "ae2d1e4dc59ecb7c",
+   "ce5a557a2227e5d0"
+  ],
+  "32": [
+   "1ccc2c674d7cf3cc",
+   "27f62145b9f56f05",
+   "31a4a1f6c3a9bb76",
+   "3a04e10dee828f00",
+   "5641cc018f750200",
+   "5e43a36e752e7768",
+   "67c3798795eb338a",
+   "6d398b192559d338",
+   "92e4561f0414cfb4",
+   "a1f3313d67844046",
+   "bc5b6b4ba3145b20",
+   "bff8d7c96570fdaf",
+   "d9da254cb36408ed",
+   "dc591977c5b79601",
+   "ed9d4956d98d3c44"
+  ],
+  "48": [
+   "8cc14ea3ff22dc2d",
+   "c7b2e2d3fcc38304"
+  ]
+ }
+}

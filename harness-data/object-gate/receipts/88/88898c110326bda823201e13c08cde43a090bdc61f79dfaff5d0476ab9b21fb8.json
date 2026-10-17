@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88898c110326bda823201e13c08cde43a090bdc61f79dfaff5d0476ab9b21fb8",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-4-L",
+ "label": "jp_city/street_hand/jp-sf-office-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building entrance door with side windows and lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance facade, including the central door frame and upper lintel, is rendered in a pure flat front elevation. The door frame header at rows 11-12 is only a 2px outline with zero visible top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4638
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office/building entrance with glass sliding doors and flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation (side-scroller style). The projecting door frame lintel at rows 11-12 is only a 2px flat dark bar with no top surface, and the threshold/sills are 1-2px flat lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4691
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sliding door entrance with flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance structure, lintels, and flanking windows are rendered in direct 2D architectural front elevation with no visible top surfaces (the lintel at row 11-12 is only a 2px flat outline/bar).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office building entrance facade with sliding glass doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance structure and its protruding central door frame are drawn in flat front elevation. The top lintel of the protruding frame (rows 11-12) is only a 2px dark band with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4232
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.650Z",
+ "cells": {
+  "16": [
+   "0e8a4ce22688a6e2",
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "4712aea3d0dbfb0f",
+   "659da1797ea32993",
+   "7700e71b22dfae61",
+   "ac7c95261176f44f",
+   "af2dc4917e1058b4",
+   "c125afcc4180df26",
+   "d50320c32e94db5a",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "2a63c4156a77b556",
+   "457cd0d85f37988a",
+   "45f16f905f9fe5ae",
+   "589214892d525cce",
+   "6d102a7417fbd343",
+   "80472aab78d383a7",
+   "8ebed162287371d3",
+   "96e89be48e23a238",
+   "9fd4ae75b7f072f0",
+   "a9d9371b6addcdc2",
+   "aa20a958b090f617",
+   "b33578dfbf923b80",
+   "b5283ddbfee8eaef",
+   "bd64bf33a9a47de6",
+   "bd9248e850b6e28f",
+   "e3747639deea0908",
+   "e406e0d842dce791",
+   "e7bf14953444d830"
+  ],
+  "32": [
+   "34c2c5d2aad14c33",
+   "38ff002ac29caa44",
+   "4f89e6ba66a34c7b",
+   "574cd0bd187cc98f",
+   "7705ec9a19080560",
+   "a4c636bf4384002f",
+   "d42d9e1fa5cb9c49",
+   "f145091af4a3bf44"
+  ],
+  "48": [
+   "7a4b8ea976b54cd3",
+   "7ceea95c3cc88b89",
+   "a54643ab750b8e62",
+   "b9cddbabaf1f94ec",
+   "e9831874a368be44",
+   "fac1a4762d1e25f6"
+  ]
+ }
+}

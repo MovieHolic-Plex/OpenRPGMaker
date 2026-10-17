@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3c658121a41ee10831777dda950cd38ec6e588d26a2c475e640a3ddbde54f82",
+ "width": 16,
+ "height": 16,
+ "kind": "figure",
+ "name": "globe on a wooden stand",
+ "label": "sky-island/si-globe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "globe sphere on stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden base at rows 14-15 is drawn in pure front elevation as a flat 7x2 pixel rectangle with no visible top surface (row 14 is just a 1px lighter line over a 1px darker line). The supporting brass arm is also drawn straight from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6368
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "globe sphere and wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden base is drawn as a flat 7x2 pixel rectangle (row 13 light brown, row 14 dark brown) with no visible top surface foreshortening, and the meridian ring is viewed directly from the side rather than in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4739
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "globe sphere and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The globe, support ring, and base are drawn in flat front elevation. The base plinth at rows 13-15 is a flat rectangle with no foreshortened top surface, and the meridian arm is drawn purely as a flat 2D side arc.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12038
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "globe sphere with meridian ring and wooden base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The meridian ring is drawn as a flat profile on the right edge rather than an ellipse tilted in 3/4 perspective, and the wooden plinth at rows 14-15 is a pure front elevation (1px brown strip over 1px dark brown base) with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4002
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "7a5e4077cff7126a"
+  ],
+  "24": [
+   "313961f072264f1a",
+   "334f44bc7db03fb7",
+   "7c8a2eda935e813c",
+   "9820b380ec057bd9",
+   "b4c5f1ecd4a45a5d",
+   "f067270a3e42ed15"
+  ],
+  "32": [
+   "517082ae61d39885",
+   "765a77dd6196944c",
+   "853fdf4075385ed6",
+   "96819fdc77ef12e3",
+   "a5a6c4a14d4c1c32",
+   "abde2710eca1894a"
+  ],
+  "48": [
+   "0a29af7ee48e49de",
+   "28756949623defd0",
+   "70960607d4beff2d",
+   "737b33e714e4bab4",
+   "b8d30df5df67fde9",
+   "e67bf872a6acebbf"
+  ]
+ }
+}

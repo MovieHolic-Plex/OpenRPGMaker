@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d84612d5c7eebec92f9ed599dd4d286dfb7d39b278d2fcdf5bcc28e408d53c78",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "목책(뾰족 통나무 셋, 동서 한 칸)",
+ "label": "snow-north/sn-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palisade logs with sharpened tips",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden palisade logs and crossbeam are drawn in pure front elevation: the pointed tips are flat 2D triangles with no top-down perspective, the horizontal crossbeam shows only a 1px top edge, and the bottom of the logs terminates flat horizontally.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palisade of three pointed wooden logs with horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed logs and horizontal crossbeam are drawn in pure front elevation with vertical shafts and 2D triangular points. There is no visible top surface or 3/4 angle foreshortening; only a 1px snow/highlight line exists on the crossbeam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6384
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palisade fence of three sharpened logs and a horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed logs and horizontal crossbeam are drawn in pure front elevation as if for a 2D side-scroller. The sharpened tips are flat 2D triangular silhouettes with no top-down conical foreshortening, and the horizontal crossbeam shows only a 1-2px snowy edge/highlight rather than a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7576
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palisade fence of three pointed wooden logs with a horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pointed logs and crossbeam are drawn in pure 2D front elevation. The pointed tips have 2D triangular contours with apexes at the top silhouette edge, and the crossbeam has at most a 1-2px line on top rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6092
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.508Z",
+ "cells": {
+  "16": [
+   "5836cfc47a99c73b",
+   "954dad4f4c050d3d"
+  ],
+  "24": [
+   "03c41af3178039d7",
+   "34ebb712b663bacb",
+   "3ea3584db8ce9605",
+   "5b303e9f05fe4c1f",
+   "74b260cb01a61708",
+   "834d83195ada2e9d",
+   "923c770594f6867d",
+   "98f255949580ff9c",
+   "9b44a36e7bc59cd5",
+   "a8fdddb3bd5f1133",
+   "af86899567f5f297",
+   "f9db79eb13f60ea6"
+  ],
+  "32": [
+   "1cffc17da8ad454b",
+   "2e8039c496b0e998",
+   "ff644cf3d6ea4797"
+  ],
+  "48": [
+   "320d5c701cb98c46",
+   "69b05a0ec127efab",
+   "75d3cd295072a84c",
+   "a0bebd1c53ad4344",
+   "a7a5e79413bc0608",
+   "d4ec666bc28049ad"
+  ]
+ }
+}

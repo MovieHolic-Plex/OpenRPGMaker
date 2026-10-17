@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf9ffa525d31a504ae304a6cc7e896c9ffde3253f20347bb17a732855f6b6456",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age stone table",
+ "label": "prehistoric/ph-stone-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone table slab with legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone tabletop is viewed from above across rows 1-8 (with objects resting flat on it), followed by a shaded front rim at rows 9-11 and front legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4582
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone slab table top on short stone legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone slab is clearly visible from rows 1 to 8, with the shaded front edge and supporting legs visible beneath from rows 9 to 14 in correct 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3647
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone slab table top and legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone table slab is clearly foreshortened and visible across rows 1 to 8, with the front edge (thickness) of the slab at rows 9-11 resting on two legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone slab table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone table occupies rows 2 to 9 (approx. 8 rows deep), with the front edge/lip shaded darker in rows 9-11 and supporting legs below at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4563
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "01a8f152d9fdabad",
+   "1ee85ef562e2f786"
+  ],
+  "24": [
+   "229cc286c56c9ae2",
+   "3a5008d49743a975",
+   "6804179eccfe953d",
+   "752d7194f77bc4fb",
+   "7c1686ef2acaf4a1",
+   "8569920190e36fa4",
+   "8c88094f1e595d87",
+   "9244ec01a2a2cfef",
+   "95f02a592303a88a",
+   "a265b416d464db56",
+   "e9764df1642a379e",
+   "eabdc414d77acb72"
+  ],
+  "32": [
+   "2a946e9b5e292d7f",
+   "9a5d352586242075"
+  ],
+  "48": [
+   "168a03a2e410b8f0",
+   "1e4fe68eddaaadf0",
+   "2028702b3325ef33",
+   "7ec9a14e6e436d0e",
+   "8e97ebb031b062d9",
+   "eff9993b46b7f1be"
+  ]
+ }
+}

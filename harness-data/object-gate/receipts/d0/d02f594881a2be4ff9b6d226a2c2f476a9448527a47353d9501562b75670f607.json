@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d02f594881a2be4ff9b6d226a2c2f476a9448527a47353d9501562b75670f607",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "세로 네온 간판(두꺼운 판 윗면 + 램프 테 + 칸마다 도형 + 고정 다리)",
+ "label": "sf-station/sf-street-sign-vertical",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0 to 6 show a clear 7-pixel tall top surface with mounting bracket detail above the front display face (rows 7 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7394
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical neon sign casing",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign housing is clearly visible across rows 1-6 with a mounting fixture on it, while the front face displaying the neon icons extends from row 8 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6633
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical neon sign box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign casing is clearly visible from rows 0 to 6 (7 pixels tall) with top-down detail, transitioning to the front display face from row 7 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6591
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical neon sign board casing",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign casing occupies rows 1-6 (about 6px tall) with a visible mounting bracket detail, while rows 7-30 show the vertical front display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6597
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.249Z",
+ "cells": {
+  "16": [
+   "6936f6b02e4c3ea2",
+   "e4509e52b655e21a"
+  ],
+  "24": [
+   "06960206473047b0",
+   "17588ddb2c1a900a",
+   "2f004d28280dd7d8",
+   "31105eb2bd2deea9",
+   "3be5d5a9b3629701",
+   "4b36b0177ecce8ab",
+   "c7cd9b4ea4fa6152",
+   "cf83c81401f465c9",
+   "d5ebb01bcdebdb76",
+   "d9c5499b1df9538f",
+   "e36d22818c71d638",
+   "ee33635b0aff3355"
+  ],
+  "32": [
+   "0aa1db926cb1f4dd",
+   "8b0ca8577ec07ef0",
+   "b457248cfba023c6"
+  ],
+  "48": [
+   "07a307f8bb34c40d",
+   "14e30e53f7564aa2",
+   "60eb538f4df0cfe2",
+   "73d2b6368f8b885c",
+   "d434ed93367936e8",
+   "e7103fbcd598c90f"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7110b8b14f51500ca54d771fecdb9fac3b786462c5ee03539d68565a7b6d14b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a top-down ground surface (grass island edge) bordering sky/water on the right, appropriately textured for top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface edge meeting sky/water; terrain tiles inherently show the ground plane from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass island terrain edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the eastern edge of a grass floating island / cliff top against a blue background across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3714
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass island edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat grassy ground bordering open sky/water on the right; correctly drawn from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4837
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.880Z",
+ "cells": {
+  "16": [
+   "59207dcc1976b314"
+  ],
+  "24": [
+   "05fbe1b18ba39e22",
+   "07713ab638cb2fdc",
+   "4c325dd8b78c666d",
+   "4fb63427284935ec",
+   "6fa4df61ba989067",
+   "eab1058a6a6c6b5c"
+  ],
+  "32": [
+   "00f80836f7a27474",
+   "0c5bef369fd40ed1",
+   "1c75aec08565da8d",
+   "1fedcc63032a4aad",
+   "43669b0a50b3e3e0",
+   "9350f09abe748dc3"
+  ],
+  "48": [
+   "047c220ad63c0846",
+   "068c08c6e6fe2ed0",
+   "0768ce4369e21c7c",
+   "0d3caf1ef9e0dd48",
+   "6f387c653cb1bd05",
+   "7386bf7d9d8e33c9"
+  ]
+ }
+}

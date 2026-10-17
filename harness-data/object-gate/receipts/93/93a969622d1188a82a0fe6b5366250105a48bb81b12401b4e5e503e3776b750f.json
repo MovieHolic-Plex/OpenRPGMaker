@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93a969622d1188a82a0fe6b5366250105a48bb81b12401b4e5e503e3776b750f",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 2)",
+ "label": "steampunk-city/sp-steam-vent-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal pipe vent / chimney stump emitting steam",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as a prominent ellipse from row 16 to 23 with a 6-pixel-deep dark opening interior visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4563
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short metal steam pipe / vent",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the metal vent is drawn as an open ellipse (rows 16-24) with a clearly visible dark interior cavity roughly 6 rows tall (rows 18-23), sitting atop a cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4722
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chimney segment / steam vent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney/vent is drawn in pure front elevation: the round opening (rows 17-23) faces directly south toward the camera (height 7px, width 6px) rather than being viewed from above as a horizontally foreshortened ellipse. The top edge of the chimney (row 15) is merely a 1px outline with no visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 10586
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal pipe/vent stump with rising steam",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe stump is drawn as an ellipse from row 15 to 24 with a 5-row visible dark interior opening (rows 18-22), properly foreshortened in 3/4 top-down view above the vertical front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4617
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.527Z",
+ "cells": {
+  "16": [
+   "acf6e6eff007aebd",
+   "c541bebe5d07ffa3"
+  ],
+  "24": [
+   "042bea053c67b4f2",
+   "109c22816d62b6f3",
+   "209395eb7b4a4eae",
+   "2cf31cb6b0b0c41d",
+   "3ece2998e1743f21",
+   "41cfb2ae8235dc85",
+   "7008cc3f2bef1409",
+   "7fcae5b46033a073",
+   "c7e2a4df4f740d83",
+   "caa08178885f7a20",
+   "cf99be05fd85d164",
+   "da8acbdb15826be4"
+  ],
+  "32": [
+   "6c5de2caf24b355e",
+   "74d12ac693b1d167",
+   "94156ef83bba39bd"
+  ],
+  "48": [
+   "2ecacbd22f47e1fe",
+   "4c2fa7935b3ffe86",
+   "684dad9ad9784165",
+   "b6df0bb813fb6cb7",
+   "e7be68e0e3406e29",
+   "f7161ce40aec1d31"
+  ]
+ }
+}

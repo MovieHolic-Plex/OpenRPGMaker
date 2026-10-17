@@ -1,4 +1,7 @@
+import { STAT_STAGE_ABBREVIATIONS, STAT_STAGE_KEYS, STAT_STAGE_LABELS } from "@/battle/statStages";
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
+import { WEATHER_GLYPHS, WEATHER_LABELS } from "@/battle/weather";
+import type { SkillWeatherKind } from "@/project/types";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
@@ -6,6 +9,7 @@ import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnem
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
+import { monsterExpBarProgress } from "@/player/battleExpBar";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { fitBattleEnemy } from "@/player/battleEnemyFit";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -42,6 +46,7 @@ import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSh
 import { onFieldEnemyPoint, onFieldPartyPoint, onFieldPointToAuthored, type OnFieldAnchors } from "@/player/battleOnField";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { playMonsterSfxNow } from "@/player/monsterSfx";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
@@ -50,6 +55,7 @@ import { syncBattleBackdropLayers } from "@/player/battleBackdropLayersDom";
 import { pokemonBattleBackdropId } from "@/battle/battleBackdrop";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID, normalizeBattleFieldBackgroundId } from "@/project/databaseEnemyTroopRecordModel";
 import type { RollingHpMeter } from "@/player/rollingHp";
+import { bindIntegerArtScale } from "@/player/monsterArtScale";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -149,6 +155,13 @@ function applyIdleAnimationToImage(image: HTMLImageElement, resourceId: string |
     image.style.removeProperty("--battler-anim-duration");
   });
   probe.src = url;
+  // 스킨 CSS 가 배경을 지워(`background: none`) 스트립이 안 그려지면 내용 이미지는 상자 밖이라 **투명한 적**이 된다(2026-10-15 포켓몬 스킨 실측).
+  // 붙은 직후 계산된 배경이 비어 있으면 표시를 걷어 정적 `src` 가 보이게 한다 — 새 스킨이 같은 함정을 만들어도 조용히 사라지지 않는다.
+  requestAnimationFrame(() => {
+    if (!image.isConnected || image.dataset.battlerAnim === undefined) return;
+    if (getComputedStyle(image).backgroundImage !== "none") return;
+    delete image.dataset.battlerAnim;
+  });
 }
 
 /**
@@ -300,10 +313,21 @@ export interface BattleFieldPresentation {
   /** 연출이 아직 재생하지 않은 상태 부여·해제를 되돌린 상태 목록. 스냅샷은 명령 즉시 해결돼
    *  「…에 걸렸다!」 비트 전에 배지가 먼저 붙었다(2026-09-29 실측). 없으면 스냅샷 그대로. */
   readonly stateView?: (battlerId: string, stateIds: readonly string[]) => readonly string[];
+  /** 아직 재생하지 않은 능력치 단계 변화를 되감은 단계(stateView 와 같은 장부). 없으면 스냅샷 그대로. */
+  readonly stageView?: (battlerId: string, stages: BattleBattlerSnapshot["statStages"]) => BattleBattlerSnapshot["statStages"];
+  /** 결과 문장이 나오는 단계. 이때부터 EXP 바가 승리 보상만큼 찬다. */
+  readonly resultShown?: boolean;
+  /** 재생 시점에 맞춘 날씨(null = 날씨 없음). undefined 면 스냅샷의 weather. 스냅샷은 명령 즉시 해결돼 날씨 문장보다 배지가 먼저 바뀐다. */
+  readonly weather?: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | null;
 }
 
 function presentedStateIds(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): readonly string[] {
   return presentation?.stateView ? presentation.stateView(battler.id, battler.stateIds) : battler.stateIds;
+}
+
+/** 지금 보여 줄 능력치 단계. 상태 배지와 같은 장부를 따라 「…이 올랐다!」 줄에서 알약이 바뀐다. */
+function presentedStatStages(battler: BattleBattlerSnapshot, presentation: BattleFieldPresentation | undefined): BattleBattlerSnapshot["statStages"] {
+  return presentation?.stageView ? presentation.stageView(battler.id, battler.statStages) : battler.statStages;
 }
 
 /** 지금 보여 줄 변신 그림. 상태 표시와 같은 장부(stateView)를 따라 「…에 걸렸다!」 줄에서 바뀌고 「풀렸다」 줄에서 돌아온다. */
@@ -339,9 +363,27 @@ export function syncBattleField(
   presentation?: BattleFieldPresentation,
 ): void {
   syncBackdrop(field, snapshot.backdropResourceId);
+  syncWeatherBadge(field, presentation?.weather !== undefined ? presentation.weather ?? undefined : snapshot.weather);
   syncEnemyGroup(field, snapshot, presentation);
   syncActorGroup(field, snapshot, presentation);
   if (feedback) showDamageFeedback(field, feedback);
+}
+
+/** 날씨 배지(쾌청·비·모래바람·싸라기눈 + 남은 차례). 글자와 색만 — 새 그림 없음. 날씨가 없으면 걷는다. */
+function syncWeatherBadge(field: HTMLElement, weather: { readonly kind: SkillWeatherKind; readonly turnsLeft: number } | undefined): void {
+  const existing = field.querySelector<HTMLElement>(".battle-weather-badge");
+  if (!weather) { existing?.remove(); return; }
+  const badge = existing ?? document.createElement("span");
+  if (!existing) {
+    badge.className = "battle-weather-badge";
+    badge.dataset.testid = "battle-weather-badge";
+    badge.setAttribute("role", "status");
+    field.append(badge);
+  }
+  badge.dataset.weather = weather.kind;
+  badge.dataset.turnsLeft = String(weather.turnsLeft);
+  badge.textContent = `${WEATHER_GLYPHS[weather.kind]} ${WEATHER_LABELS[weather.kind]} ${weather.turnsLeft}`;
+  badge.setAttribute("aria-label", `날씨: ${WEATHER_LABELS[weather.kind]}, ${weather.turnsLeft}차례 남음`);
 }
 
 /** 원장이 있으면 원장의 HP/사망을, 없으면 스냅샷 값을 쓴다. 연출이 상태를 앞지르지 않게
@@ -378,6 +420,34 @@ export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
   return group;
 }
 
+/** EXP 바: 평소엔 전투 시작 때 진행률. 결과 단계에서 승리 보상만큼 차고, 레벨이 오르면 끝까지 찬 뒤(바 전이 시간만큼 기다려)
+ *  새 레벨과 그 구간 진행률로 바꾼다(전이 없이 즉시 — 3세대처럼 바가 비었다가 다시 차오른다). */
+function syncExpBar(row: HTMLElement, actor: BattleBattlerSnapshot, snapshot: BattleSnapshot, presentation: BattleFieldPresentation | undefined): void {
+  const bar = row.querySelector<HTMLElement>(".battle-actor-exp");
+  if (!bar || !actor.monsterInstanceId) return;
+  const progress = monsterExpBarProgress(snapshot, actor.monsterInstanceId);
+  if (!progress) return;
+  const filled = presentation?.resultShown === true && snapshot.result === "victory";
+  if (!filled) {
+    bar.style.setProperty("--battle-exp", `${progress.fromPct}%`);
+    return;
+  }
+  if (row.dataset.expFilled === "true") return;
+  row.dataset.expFilled = "true";
+  bar.style.setProperty("--battle-exp", `${progress.toPct}%`);
+  if (!progress.levelUp) return;
+  scheduleBattleTimer(() => {
+    row.dataset.expRolledLevel = String(progress.afterLevel);
+    const level = row.querySelector(".battle-actor-level .battle-vital-value");
+    if (level) level.textContent = isEmeraldMonsterStyle(store.getCurrent()) ? `${progress.afterLevel}` : ` ${progress.afterLevel}`;
+    bar.dataset.expReset = "true";
+    bar.style.setProperty("--battle-exp", "0%");
+    void bar.offsetWidth;
+    delete bar.dataset.expReset;
+    bar.style.setProperty("--battle-exp", `${progress.afterPct}%`);
+  }, 1300);
+}
+
 export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   // 파티 패널은 마운트 시 한 번만 만들어지고 호출자가 요소 참조를 쥐고 있다. 교대(멤버 교체)로
   // 스냅샷의 액터 집합과 DOM 행 집합이 어긋나면, 새로 들어온 액터의 행은 없어 스킵되고 빠져나간
@@ -396,7 +466,8 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
     const level = row.querySelector(".battle-actor-level .battle-vital-value");
-    if (level && actor.level !== undefined) level.textContent = ` ${actor.level}`;
+    if (level && actor.level !== undefined && !row.dataset.expRolledLevel) level.textContent = ` ${actor.level}`;
+    syncExpBar(row, actor, snapshot, presentation);
     const presented = rollingVitals(actor, presentedState(actor, presentation), presentation);
     // 롤링 미터: 치명타를 맞고 미터가 아직 0 에 닿지 않은 아군. 스킨이 붉게 깜빡이게 그릴 수 있다.
     if (presented.dying) row.dataset.rollingHpDying = "true";
@@ -429,7 +500,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
     if (partyStatusRowsCarryIcons()) {
       // 이름 셀 안에 넣으면 rm2000 계열의 overflow:hidden + 고정 폭 열에 잘린다(실측:
       // 배지가 2px 조각으로만 보임) — 행의 직계 자식으로 달고 배치는 스킨 CSS 가 한다.
-      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
+      syncStatusIcons(row, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation), statStages: presentedStatStages(actor, presentation) });
     }
     let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
     if (snapshot.battleFlow === "strict") {
@@ -630,7 +701,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     node.dataset.battlerDefending = String(actor.defending);
     applyBattlerPose(node, presented.pose);
     // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다.
-    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
+    syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation), statStages: presentedStatStages(actor, presentation) });
     syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
     syncChargeMark(node, presented.defeated ? undefined : actor.charging);
     syncGimmickMarks(node,presented.defeated?[]:actor.gimmicks??[]);
@@ -689,7 +760,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   if (atbBar) atbBar.style.setProperty("--battle-stat", `${clampGauge(enemy.gauge)}%`);
   // KO 배지는 연출 원장(presented)을 따른다 — 스냅샷은 명령 즉시 해결돼 타격 연출 전에 이미 죽어 있다
   // (실측: 불꽃이 닿기 전 「KO 74/144」 가 떴다).
-  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
+  syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation), statStages: presentedStatStages(enemy, presentation) });
   syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
   syncChargeMark(node, presented.defeated ? undefined : enemy.charging);
   syncGimmickMarks(node,presented.defeated?[]:enemy.gimmicks??[]);
@@ -1002,7 +1073,7 @@ function onFieldEnemyPositions(
 ): readonly { x: number; y: number }[] | undefined {
   if (!anchors) return undefined;
   const positions = snapshot.enemies.map((_, index) =>
-    onFieldPointToAuthored(onFieldEnemyPoint(anchors, index, snapshot.enemies.length), anchors.canvas, group));
+    onFieldPointToAuthored(onFieldEnemyPoint(anchors, index, snapshot.enemies.length, snapshot.enemies.map((enemy) => ({ x: enemy.authoredX, y: enemy.authoredY }))), anchors.canvas, group));
   return positions.every((position) => position !== undefined) ? positions as { x: number; y: number }[] : undefined;
 }
 
@@ -1104,11 +1175,14 @@ function enemyButton(
     // 일반 스킨은 한 칸의 native 초상을, 도트 측면 스킨은 아래의 포즈 시트를 그린다.
     image.alt = `${enemy.name} 몬스터`;
     image.src = url;
+    bindIntegerArtScale(image);
     // CSS 숨쉬기(_battlers.css battler-breathe)의 위상을 적마다 어긋나게 — 같이 부풀면 한 덩이로 보인다.
     image.style.setProperty("--breathe-delay", `-${index * 730}ms`);
     // 도트 측면 전투: 도트 시트가 있는 적은 시트 칸으로 그린다(대기 루프·예비동작·돌진·착탄·피격·녹음).
     // src 는 원본 그대로 두고 배경으로 칸을 그린다 — 시트를 못 읽으면 표시를 걷어 원본이 다시 보인다.
     if (activeSkin().motionStyle === "retro") applyPixelEnemySheet(enemyNode, image, resourceId);
+    // 도트 시트가 없는 적은 대기 스트립이 등록돼 있으면 그것으로 숨쉰다(몬스터 수집 하네스 번들 종 그림). 미등록이면 아무 일도 없다.
+    if (!image.dataset.pixelSheet) applyIdleAnimationToImage(image, resourceId);
     enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);
@@ -1254,6 +1328,7 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
         applyIdleAnimationToImage(image, monsterResource);
         image.alt = `${actor.name} 몬스터`;
         image.src = url;
+        bindIntegerArtScale(image);
         node.append(image);
       }
     }
@@ -1514,6 +1589,14 @@ function setVitalNode(node: Element, kind: "hp" | "mp", value: number, max: numb
   valueNode.textContent = ` ${value}`;
 }
 
+/** HP 상자 이름 글자. 별도 상자로 감싸야 긴 이름만 「…」로 줄고 옆의 Lv 는 남는다(D21). */
+export function battleNameText(text: string): HTMLElement {
+  const node = document.createElement("span");
+  node.className = "battle-name-text";
+  node.textContent = text;
+  return node;
+}
+
 function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot["battleFlow"]): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-actor-status";
@@ -1522,7 +1605,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
   const name = document.createElement("span");
   name.className = "battle-actor-name";
-  name.textContent = actor.name;
+  name.append(battleNameText(actor.name));
   if (actor.level) {
     const lv = document.createElement("span");
     lv.className = "battle-actor-level";
@@ -1545,6 +1628,16 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   const face = actorFaceNode(actor);
   if (face) row.append(face);
   row.append(name, vitals, hpGauge, mpGauge);
+  // 3세대 내 몬스터 상자의 EXP 바(에메랄드 HUD 만 그린다). 값은 syncBattleParty 가 채운다.
+  if (actor.monsterInstanceId && isEmeraldMonsterStyle(store.getCurrent())) {
+    const exp = document.createElement("span");
+    exp.className = "battle-actor-exp";
+    exp.dataset.testid = `battle-actor-exp-${actor.recordId}`;
+    const fill = document.createElement("span");
+    fill.className = "battle-actor-exp-fill";
+    exp.append(fill);
+    row.append(exp);
+  }
   const types = battleTypeBadges(actor);
   if (types) row.append(types);
   const role = actorRoleNode(actor);
@@ -1767,6 +1860,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("petrify") || stateId.includes("stone")) return "petrify";
   if (stateId.includes("wet")) return "wet";
   if (stateId.includes("oil")) return "oiled";
+  if (stateId.includes("toxic")) return "toxic";
   if (stateId.includes("poison")) return "poison";
   if (stateId.includes("burn")) return "burn";
   if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
@@ -1774,7 +1868,7 @@ function stateIconToken(stateId: string): string {
   if (stateId.includes("paraly") || stateId.includes("bind")) return "paralysis";
   if (stateId.includes("blind") || stateId.includes("dark")) return "blind";
   if (stateId.includes("silence") || stateId.includes("mute")) return "silence";
-  if (stateId.includes("confuse") || stateId.includes("charm")) return "confuse";
+  if (stateId.includes("confus") || stateId.includes("charm")) return "confuse";
   if (stateId.includes("death") || stateId.includes("down") || stateId.includes("ko")) return "death";
   return "burst";
 }
@@ -1891,8 +1985,16 @@ export function syncStatusIcons(node: HTMLElement, battler: BattleBattlerSnapsho
 function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   const cluster = document.createElement("span");
   cluster.className = "battle-status-icons";
-  const states = battler.stateIds.slice(0, 4).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
+  cluster.dataset.hasStages = battler.statStages && !battler.defeated ? "true" : "false";
+  // 에메랄드 HP 상자: 쓰러진 칸에는 화상·혼란 알약을 남기지 않는다 — 「전투불능」 하나로 충분하고 알약이 빈 HP 바 앞 「HP」 글자를 덮는다(D26).
+  const hideStatesWhenDefeated = battler.defeated && isEmeraldMonsterStyle(store.getCurrent());
+  const states = (hideStatesWhenDefeated ? [] : battler.stateIds.slice(0, 4)).map((stateId) => ({ icon: stateIconToken(stateId), name: stateName(stateId) }));
   const entries = battler.defeated ? [{ icon: "death", name: "전투불능" }, ...states] : states;
+  // 능력치 단계 알약(ATK↑2·SPE↓1): 쓰러진 배틀러는 단계를 보이지 않는다. 상태 알약 뒤에 붙고 같은 클러스터 안이라 스킨별 배치 규칙을 그대로 탄다.
+  const stagePills = battler.defeated ? [] : STAT_STAGE_KEYS.flatMap((stat) => {
+    const stage = battler.statStages?.[stat] ?? 0;
+    return stage === 0 ? [] : [{ stat, stage }];
+  });
   for (const entry of entries) {
     const node = document.createElement("span");
     node.className = `battle-status-icon battle-status-icon-${entry.icon}`;
@@ -1903,6 +2005,31 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
     node.dataset.statusName = entry.name;
     node.setAttribute("role", "img");
     node.setAttribute("aria-label", entry.name);
+    cluster.append(node);
+  }
+  for (const { stat, stage } of stagePills) {
+    const node = document.createElement("span");
+    node.className = `battle-stage-pill battle-stage-pill-${stage > 0 ? "up" : "down"}`;
+    node.dataset.testid = `battle-stage-${battler.id}-${stat}`;
+    node.dataset.stageStat = stat;
+    node.dataset.stage = String(stage);
+    const arrows = Math.abs(stage);
+    node.textContent = `${STAT_STAGE_ABBREVIATIONS[stat]}${stage > 0 ? "↑" : "↓"}${arrows}`;
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `${STAT_STAGE_LABELS[stat]} ${stage > 0 ? "+" : ""}${stage}단계`);
+    cluster.append(node);
+  }
+  // 지닌 도구 알약(◆): 쓰러지지 않은 파티 몬스터가 아직 지닌 도구가 있을 때만. 열매는 쓰면 사라지므로 알약도 같이 사라진다.
+  if (battler.heldItemId && !battler.defeated) {
+    const held = store.getCurrent().database.items.find((item) => item.id === battler.heldItemId);
+    const node = document.createElement("span");
+    node.className = "battle-held-pill";
+    node.dataset.testid = `battle-held-${battler.id}`;
+    node.dataset.heldItemId = battler.heldItemId;
+    node.textContent = "◆";
+    node.title = held?.name ?? "지닌 도구";
+    node.setAttribute("role", "img");
+    node.setAttribute("aria-label", `지닌 도구: ${held?.name ?? battler.heldItemId}`);
     cluster.append(node);
   }
   return cluster;
@@ -2009,36 +2136,135 @@ function isGeneratedBattleActor(resourceId: string): boolean {
 }
 
 
+/** 던지는 사람(주인공 뒷모습) 그림 주소. 이 프로젝트의 트레이너가 이미 정한 뒷모습(troop.trainerSprite.back)을 먼저, 없으면 번들 hero_m.
+ *  업로드 그림 id 면 업로드 주소. 새 그림을 만들지 않고 battle-trainers 번들만 쓴다. */
+function captureThrowerUrl(): string {
+  const project = store.getCurrent();
+  const id = project.database.troops.find((troop) => troop.trainerSprite?.back)?.trainerSprite?.back ?? "hero_m";
+  if (project.assets.uploaded[id]) return resolveAssetResourceUrl(id, { project }) ?? "/assets/battle-trainers/hero_m/back.png";
+  return /^[a-z][a-z0-9_]*$/u.test(id) ? `/assets/battle-trainers/${id}/back.png` : "/assets/battle-trainers/hero_m/back.png";
+}
+
+/** 던지는 사람이 미끄러져 들어와 손을 휘두를 때까지(ms). 구슬은 이 뒤에 손에서 떠난다. */
+export const CAPTURE_THROWER_LEAD_MS = 320;
+
 /** 포획 구슬 시네마틱을 재생하고 총 소요 ms를 반환한다.
- *  투척(480ms) → 흡수(240ms) → 흔들림 3회(1,260ms) → 성공 반짝/실패 탈출(420ms). */
-export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean): number {
+ *  (포켓몬 스킨) 주인공이 왼쪽에서 들어와 던진다(320ms) → 투척(480ms) → 흡수(240ms, 흰 섬광) → 흔들림(성공은 3회, 실패는 런타임이 정한 0~3회, 한 번 420ms + 쉼 340ms) → 성공 반짝+별/실패 탈출(420ms).
+ *  다른 스킨은 던지는 사람 없이 왼쪽 아래에서 구슬이 날아간다(옛 연출). */
+export function playCaptureCinematic(field: HTMLElement, targetId: string, success: boolean, shakes?: 0 | 1 | 2 | 3): number {
   const target = findBattlerNode(field, targetId);
   if (!target) return 0;
+  const rocks = success ? 3 : Math.max(0, Math.min(3, shakes ?? 3));
+  const scene = field.closest<HTMLElement>(".battle-scene");
+  // 던지는 사람은 포켓몬 스킨의 일반 전투 화면에만 선다(온필드 전투는 필드 스프라이트가 자리를 맡는다).
+  const withThrower = scene?.dataset.battleUiStyle === "pokemon" && scene.dataset.battlePresentation !== "onField";
+  const lead = withThrower ? CAPTURE_THROWER_LEAD_MS : 0;
+  // 구슬이 날아가 앉는 곳 = 상대 몸통 한가운데(그림 상자의 발끝에서 28% 위). 발끝(--battle-node-y)에 앉으면 아군 HUD 상자에 절반이 가렸다.
+  const fieldRect = field.getBoundingClientRect();
+  const fieldScale = field.offsetWidth > 0 ? fieldRect.width / field.offsetWidth : 1;
+  const local = (rect: DOMRect, fx: number, fy: number): { x: number; y: number } => ({
+    x: (rect.left + rect.width * fx - fieldRect.left) / fieldScale,
+    y: (rect.top + rect.height * fy - fieldRect.top) / fieldScale,
+  });
+  const targetImage = target.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-image") ?? target;
+  const targetRect = targetImage.getBoundingClientRect();
+  const hasGeometry = fieldRect.width > 0 && targetRect.width > 0;
+  const toPoint = hasGeometry ? local(targetRect, 0.5, 0.84) : undefined;
+  const toX = toPoint ? `${toPoint.x.toFixed(1)}px` : (target.style.getPropertyValue("--battle-node-x") || "70%");
+  const toY = toPoint ? `${toPoint.y.toFixed(1)}px` : (target.style.getPropertyValue("--battle-node-y") || "35%");
+  const at = (fn: () => void, ms: number): void => {
+    scheduleBattleTimer(fn, ms);
+  };
+  const spawn = (className: string, life: number, setup?: (node: HTMLElement) => void): HTMLElement => {
+    const node = document.createElement("span");
+    node.className = className;
+    node.style.setProperty("--orb-to-x", toX);
+    node.style.setProperty("--orb-to-y", toY);
+    setup?.(node);
+    field.append(node);
+    at(() => node.remove(), life);
+    return node;
+  };
+  let thrower: HTMLImageElement | undefined;
+  let orbFrom: { x: string; y: string } | undefined;
+  if (withThrower) {
+    thrower = document.createElement("img");
+    thrower.className = "battle-capture-thrower";
+    thrower.dataset.testid = "battle-capture-thrower";
+    thrower.alt = "";
+    thrower.src = captureThrowerUrl();
+    // 내 몬스터가 서 있는 칸에 그대로 선다(그림 128px 정사각 = 몬스터 상자와 같은 크기).
+    const mine = field.querySelector<HTMLElement>(".battle-actor-group .battle-actor");
+    const mineRect = mine?.getBoundingClientRect();
+    if (mineRect && mineRect.width > 0 && fieldRect.width > 0) {
+      const box = local(mineRect, 0, 0);
+      thrower.style.left = `${box.x.toFixed(1)}px`;
+      thrower.style.top = `${box.y.toFixed(1)}px`;
+      thrower.style.bottom = "auto";
+      thrower.style.width = `${(mineRect.width / fieldScale).toFixed(1)}px`;
+      // 손: 그림의 오른쪽 위 3/4 지점(뒷모습이 손을 들고 있다) — 구슬은 여기서 떠난다.
+      const hand = local(mineRect, 0.78, 0.4);
+      orbFrom = { x: `${hand.x.toFixed(1)}px`, y: `${hand.y.toFixed(1)}px` };
+    }
+    field.append(thrower);
+    // 내 몬스터는 던지는 동안 자리를 비켜 준다(같은 자리에 주인공이 선다).
+    field.classList.add("battle-capture-thrower-active");
+    // 구슬이 손을 떠나 날아가는 동안 주인공이 팔을 거둬 나간다 — 흔들림 내내 서 있지 않는다.
+    at(() => thrower?.classList.add("battle-capture-thrower-out"), lead + 360);
+    at(() => { thrower?.remove(); field.classList.remove("battle-capture-thrower-active"); }, lead + 360 + 260);
+  }
   const orb = document.createElement("span");
   orb.className = "battle-capture-orb";
   orb.dataset.testid = "battle-capture-orb";
-  orb.style.setProperty("--orb-to-x", target.style.getPropertyValue("--battle-node-x") || "70%");
-  orb.style.setProperty("--orb-to-y", target.style.getPropertyValue("--battle-node-y") || "35%");
-  field.append(orb);
-  const timers: number[] = [];
-  const at = (fn: () => void, ms: number): void => {
-    timers.push(window.setTimeout(fn, ms));
-  };
-  at(() => target.classList.add("battle-capture-absorbed"), 460);
-  at(() => orb.classList.add("battle-orb-shake"), 720);
+  orb.dataset.shakes = String(rocks);
+  orb.style.setProperty("--orb-to-x", toX);
+  orb.style.setProperty("--orb-to-y", toY);
+  if (orbFrom) {
+    orb.classList.add("battle-capture-orb-from-hand");
+    orb.style.setProperty("--orb-from-x", orbFrom.x);
+    orb.style.setProperty("--orb-from-y", orbFrom.y);
+  }
+  // 구슬은 던지는 손짓이 끝난 뒤에 나타난다.
+  at(() => { field.append(orb); playMonsterSfxNow("ball-throw"); }, lead);
+  const ROCK_MS = 420;
+  const REST_MS = 340;
+  at(() => {
+    target.classList.add("battle-capture-absorbed");
+    spawn("battle-capture-flash", 340);
+  }, lead + 460);
+  let clock = lead + 720;
+  for (let i = 0; i < rocks; i += 1) {
+    at(() => { orb.classList.remove("battle-orb-shake"); void orb.offsetWidth; orb.classList.add("battle-orb-shake"); orb.dataset.rock = String(i + 1); playMonsterSfxNow("ball-shake"); }, clock);
+    clock += ROCK_MS + REST_MS;
+  }
   at(() => {
     orb.classList.remove("battle-orb-shake");
     if (success) {
       orb.classList.add("battle-orb-caught");
+      playMonsterSfxNow("capture-success");
+      for (let i = 0; i < 6; i += 1) {
+        const angle = (Math.PI * 2 * i) / 6 - Math.PI / 2;
+        spawn("battle-capture-spark", 620, (node) => {
+          node.style.setProperty("--spark-dx", `${Math.round(Math.cos(angle) * 46)}px`);
+          node.style.setProperty("--spark-dy", `${Math.round(Math.sin(angle) * 46)}px`);
+        });
+      }
     } else {
       orb.classList.add("battle-orb-burst");
       target.classList.remove("battle-capture-absorbed");
+      target.classList.add("battle-capture-escaped");
+      at(() => target.classList.remove("battle-capture-escaped"), 420);
+      spawn("battle-capture-flash battle-capture-flash-escape", 340);
+      playMonsterSfxNow("ball-break");
     }
-  }, 1980);
+  }, clock);
+  const total = clock + 420;
   at(() => {
     orb.remove();
+    thrower?.remove();
+    field.classList.remove("battle-capture-thrower-active");
     // 성공 시 런타임 스냅샷에서 적이 사라지므로 잔류 노드도 정리한다.
     if (success) target.remove();
-  }, 2400);
-  return 2400;
+  }, total);
+  return total;
 }

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5d3530353cbd5215d382cdedeec4d270949d439c6ec383f8b37e89ac6e1aa02",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "tavern keg rack: deep wooden top shelf with mugs on it, two ale kegs lying underneath with brass taps facing south, drip tray",
+ "label": "pirate-isles/pi-keg-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden keg rack with top shelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deep wooden top shelf is prominently visible across rows 3-7 (approx 5 rows tall) with mugs and cloth resting on its foreshortened horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4274
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden keg rack with top shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shelf shows a deep horizontal surface spanning rows 2 to 7 (6 rows) holding mugs, with its front edge facing south at rows 8-9 above the rack frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden keg rack with top shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deep wooden top shelf clearly displays its top horizontal surface across rows 2-7 with mugs and a cloth resting on it, properly foreshortened before its south front edge on rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden keg rack with top shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shelf surface is clearly foreshortened and visible across rows 3-8 (approx 6 rows deep) with mugs resting on it, leading to a front edge lip at rows 8-9 above the frame housing the two kegs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3861
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "8a49050cc3344927",
+   "a46619555c0e0c6e",
+   "aacd03b61e9ea09a",
+   "b2fe82bc832fd03d"
+  ],
+  "24": [
+   "09bc2b761e359f45",
+   "29733f6578b06379",
+   "2f408569ae0d49c3",
+   "384e13b8413980ef",
+   "43fcf8db7e740adc",
+   "4a292c705ac137d9",
+   "5364a114496f11da",
+   "54ccbc453a6e3f3f",
+   "57d612ba557e092f",
+   "693537c5c1698c46",
+   "6f12e6cf077c5b67",
+   "7077a6b7880e5a87",
+   "842e57e874b19882",
+   "84ecfe49c3e9b093",
+   "9c727ed2434b75b5",
+   "a7331a993a98b770",
+   "b2aa13403d9b94a5",
+   "b88b4ca68745f32a",
+   "ba7ff40a6be9e981",
+   "cf941358dc34296d",
+   "d62dd733c6336efe",
+   "ef5f761541dfde22",
+   "f37409289f8b0d92",
+   "f7ed750c925f79f5"
+  ],
+  "32": [
+   "e92837c73b32153a"
+  ],
+  "48": [
+   "19dd41b3361e9e03",
+   "6532d21e36308192",
+   "8afa98a77375f3d6",
+   "a6f1d6d647ed3b6b",
+   "e4f050bb7483a540",
+   "f4ab0b8f7a4b0f2c"
+  ]
+ }
+}

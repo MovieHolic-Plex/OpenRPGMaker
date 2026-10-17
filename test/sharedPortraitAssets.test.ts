@@ -6,6 +6,8 @@ import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/g
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import type { Project } from "@/project/types";
 import {
+  MODERN_PORTRAIT_EXPRESSIONS,
+  MODERN_PORTRAIT_SETS,
   SHARED_PORTRAIT_ASSETS,
   dialogueFaceForEmotion,
   findSharedPortrait,
@@ -15,9 +17,9 @@ import {
 } from "@/assets/sharedPortraitAssets";
 
 describe("공용 표정 세트 흉상·전신", () => {
-  it("76세트 × 2모양 × 16표정 = 2432장이고 파일이 모두 있다", () => {
+  it("76세트 × 2모양 × 16표정 + 현대 연애 24세트 × 2모양 × 5표정 = 2672장이고 파일이 모두 있다", () => {
     expect(FACE_EXPRESSION_SETS).toHaveLength(76);
-    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(2432);
+    expect(SHARED_PORTRAIT_ASSETS).toHaveLength(2432 + MODERN_PORTRAIT_SETS.length * 2 * MODERN_PORTRAIT_EXPRESSIONS.length);
     const missing = SHARED_PORTRAIT_ASSETS.filter((asset) => !existsSync(path.join("public", asset.path))).map((asset) => asset.path);
     expect(missing).toEqual([]);
   });
@@ -67,5 +69,21 @@ describe("공용 표정 세트 흉상·전신", () => {
     expect(resolveAppearancePortrait(noFull, "a", "full")).toMatchObject({ resourceId: "shared-people1-boy-expressions-bust-base", presentation: "bust" });
     const faceOnly = project({ face: { resourceId: "shared-people1-boy-expressions-00" } });
     expect(resolveAppearancePortrait(faceOnly, "a", "full")).toMatchObject({ resourceId: "shared-people1-boy-expressions-00", presentation: "face" });
+  });
+
+  it("현대 연애 칩은 짝 흉상·전신이 따라오고, 없는 표정은 기본 그림에 머문다", () => {
+    const bust = "shared-modern-uni-girl-navy-expressions-bust-base";
+    expect(dialogueFaceForEmotion(bust, "happy", undefined)).toBe("shared-modern-uni-girl-navy-expressions-bust-happy");
+    // 분노는 이 세트에 그려져 있지 않다 → 깨진 이미지 대신 기본 그림.
+    expect(dialogueFaceForEmotion(bust, "angry", undefined)).toBe(bust);
+    expect(sharedPortraitExpressionSiblings(bust)).toHaveLength(4);
+    const project = { database: { characterAppearances: [{ id: "m", name: "", description: "", charset: { resourceId: "oprn-charset-modern1", characterIndex: 4 } }] } } as unknown as Project;
+    expect(resolveAppearancePortrait(project, "m", "full")).toMatchObject({ resourceId: "shared-modern-uni-girl-navy-expressions-full-base", presentation: "full" });
+    expect(resolveAppearancePortrait(project, "m", "bust")).toMatchObject({ resourceId: bust, presentation: "bust" });
+    expect(resolveAppearancePortrait(project, "m", "face")).toMatchObject({ resourceId: bust, presentation: "bust" });
+    // 현대 칩 24종은 모두 짝이 있다(Modern1 #1 회색 블레이저도 2026-10-17 부터).
+    const second = { database: { characterAppearances: [{ id: "u", name: "", description: "", charset: { resourceId: "oprn-charset-modern1", characterIndex: 1 } }] } } as unknown as Project;
+    expect(resolveAppearancePortrait(second, "u", "full")).toMatchObject({ resourceId: "shared-modern-uni-boy-grey-expressions-full-base", presentation: "full" });
+    expect(MODERN_PORTRAIT_SETS).toHaveLength(24);
   });
 });

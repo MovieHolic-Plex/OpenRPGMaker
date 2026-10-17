@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4639ba9dba173431aa0e597dd5405c80e3da18bc224f10444a1d44074510c5ee",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station corridor floor with vertical cyan guide light strip, two variants",
+ "label": "sf-station/sf-deck-lane-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tile with guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Corridor floor terrain tiles viewed from above with embedded cyan light strips spanning the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8298
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station corridor floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles featuring cyan guide light strips viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station corridor floor tiles with vertical cyan guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed top-down across all 16 rows, correctly showing floor surface and light strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3785
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corridor floor tile with guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles shown entirely from the top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3436
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.507Z",
+ "cells": {
+  "16": [
+   "37240e7800ac426f",
+   "b8269e2b8e760448"
+  ],
+  "24": [
+   "0c0fac2cb98dcd0b",
+   "1db9abec725ecc63",
+   "37809c102021339b",
+   "46ad84a9b379e250",
+   "503af5fbbee90431",
+   "5369a0d7a232bffd",
+   "669333754e3adc22",
+   "71e8eb5844983332",
+   "7adf9892fcd3cb42",
+   "bb2e2dc19c47909c",
+   "beb595bed7d5060a",
+   "e9a39d119ec965bf"
+  ],
+  "32": [
+   "d0e6b3f5af2fcb3d",
+   "f7955981921c94c9"
+  ],
+  "48": [
+   "1457429556c14d9d",
+   "3b9d0f0cf604d4da",
+   "44eba3c2ed6eb504",
+   "871b555d8b1abbc8",
+   "bc075fb01e36e0e3",
+   "ea3eecf445b0659c"
+  ]
+ }
+}

@@ -21,7 +21,9 @@ export function createPlaySurface(
   resolution: Readonly<PlayResolution> = PLAY_RESOLUTION,
   scaleMode: PlaySurfaceScaleMode = "integer",
   displayFilter?: unknown,
+  options: { readonly topAlignPortrait?: boolean } = {},
 ): PlaySurface {
+  const topAlignPortrait = options.topAlignPortrait === true;
   const viewport = el("div", {
     class: "play-viewport",
     dataset: { testid: "play-viewport", scaleMode },
@@ -47,15 +49,15 @@ export function createPlaySurface(
     : null;
   filterObserver?.observe(stage, { childList: true });
 
-  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode));
+  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait));
   resizeObserver.observe(viewport);
-  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode));
+  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait));
 
   return {
     viewport,
     stage,
     phaserContainer,
-    sync: () => syncPlaySurfaceMetrics(viewport, resolution, scaleMode),
+    sync: () => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait),
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
@@ -86,11 +88,19 @@ function syncPlaySurfaceMetrics(
   viewport: HTMLElement,
   resolution: Readonly<PlayResolution>,
   scaleMode: PlaySurfaceScaleMode,
+  topAlignPortrait: boolean,
 ): void {
   const bounds = viewport.getBoundingClientRect();
   const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height);
+  let stageTop = placement.top;
+  // 세로로 긴 화면(폰 세로): 무대를 위쪽에 붙이고 아래 띠는 터치 패드·여백에 남긴다. 가운데 두면 위아래 검은 띠 둘로 갈라져 둘 다 못 쓴다(D16).
+  if (topAlignPortrait) {
+    const portrait = isPortraitViewport(bounds.width, bounds.height, resolution.width, resolution.height, scale);
+    viewport.dataset.layout = portrait ? "portrait" : "landscape";
+    if (portrait) stageTop = Math.min(stageTop, PORTRAIT_TOP_MARGIN);
+  }
   viewport.style.setProperty("--play-scale", String(scale));
   viewport.style.setProperty("--play-scale-x", String(scale));
   viewport.style.setProperty("--play-scale-y", String(scale));
@@ -101,8 +111,15 @@ function syncPlaySurfaceMetrics(
   viewport.style.setProperty("--play-visible-width", cssPx(crop.visibleWidth));
   viewport.style.setProperty("--play-visible-height", cssPx(crop.visibleHeight));
   viewport.style.setProperty("--play-stage-left", cssPx(placement.left));
-  viewport.style.setProperty("--play-stage-top", cssPx(placement.top));
+  viewport.style.setProperty("--play-stage-top", cssPx(stageTop));
   viewport.dataset.scale = scale.toFixed(3);
+}
+
+const PORTRAIT_TOP_MARGIN = 12;
+
+/** 가로 폭이 무대를 겨우 덮고 세로가 한참 남을 때만 세로 배치(남는 높이가 무대의 절반 이상). */
+function isPortraitViewport(w: number, h: number, logicalW: number, logicalH: number, scale: number): boolean {
+  return h - logicalH * scale >= logicalH * scale * 0.5 && w < logicalW * scale * 1.5 + 1;
 }
 
 function cssPx(value: number): string {

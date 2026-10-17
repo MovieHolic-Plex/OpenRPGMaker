@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b683c788e78dbb8b9f9921e3112afc61d67195dd145f7cf06d4b5ee4613499b7",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "신문 걸이대",
+ "label": "jp_city/interior_school2/sx-newspaper-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "newspaper rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire newspaper rack is drawn as a flat front elevation with zero top surface visible (row 0 is a black outline directly above the front face of the upper board).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "newspaper stand / rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the unit at row 0 has only an outline with no horizontal top surface visible from above. The entire rack and its display board are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6360
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "newspaper rack stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the rack has no visible horizontal surface (rows 0-1 directly show the vertical front face/board). The shelves and stand are drawn straight-on in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "newspaper display rack / stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the rack begins immediately at row 1 with the front-facing bulletin/display board, with only a 1px black outline at row 0 and no top surface visible. The shelves and newspaper slots are also rendered in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5866
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.341Z",
+ "cells": {
+  "16": [
+   "a9840be979ebe847",
+   "d4cda99aaa2fa95d"
+  ],
+  "24": [
+   "0efc3cfdb43c1ac0",
+   "262852ceb78a42cf",
+   "26bcf419ebcdd9ea",
+   "2a1646b770404f14",
+   "2c4bd595135a4a8c",
+   "5f6690c226589451",
+   "6f61a8ebdb140d60",
+   "8dbad3b22013cbbb",
+   "9ed1158298abf050",
+   "a89a9bc6f6e8d412",
+   "c0a02b37d94a5da8",
+   "c24c7c78d5f7ec04"
+  ],
+  "32": [
+   "4bc9030eeb2d8fff",
+   "7c51e7156a26adc6",
+   "f6c53f0dc74cdac8"
+  ],
+  "48": [
+   "595cb0f64f991b38",
+   "5a9db332a6dccaf5",
+   "6f5226c7864980bc",
+   "76336c839c30c938",
+   "ebb66e4ae2a19dfc",
+   "fe475a18f54c50ef"
+  ]
+ }
+}

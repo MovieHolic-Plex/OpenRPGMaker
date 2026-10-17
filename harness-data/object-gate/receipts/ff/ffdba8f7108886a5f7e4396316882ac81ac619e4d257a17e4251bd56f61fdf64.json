@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ffdba8f7108886a5f7e4396316882ac81ac619e4d257a17e4251bd56f61fdf64",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "증기 기관차(검은 보일러·놋쇠 띠·빨강 바퀴, 동쪽이 앞)",
+ "label": "steampunk-city/sp-locomotive",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam locomotive body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure 2D side-scrolling elevation. In 3/4 top-down perspective, an east-facing vehicle must show the top surfaces of its cab roof, boiler, and walkway from above; here there are 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5696
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam locomotive",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn as a flat 2D side elevation (side-scroller style). Horizontal surfaces such as the cab roof, boiler top, and running board show no visible top surface foreshortened from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7636
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train facing east is drawn in a pure side-scroller side elevation. The cab roof, boiler top, and walkway show 0 rows of visible top surface from above; the entire upper contour terminates in a flat 1px horizontal outline at row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6061
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam locomotive",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure 2D side-scroller/architectural elevation view. No horizontal top surfaces (cab roof, boiler top, or running board platform) are visible from above; the top edges end abruptly at row 1 with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5536
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:29.415Z",
+ "cells": {
+  "16": [
+   "198f7033cac37906",
+   "3b783c5299f5a05b",
+   "3e6a3026071c4c96",
+   "46374ee2e16d97fd",
+   "4be6051d2af25bfd",
+   "51a1a4c681fba1a5",
+   "622fe3ac6d144ba2",
+   "84dfd7d9fe78c3be",
+   "a7f155adbf9d86bf",
+   "b2c126a8d7673000",
+   "d035304e65c3dfec",
+   "d038fe3696a78cff",
+   "d525067a4f3061ac",
+   "d7436b6ab9340f33",
+   "f5cb9b7d5f6cf864"
+  ],
+  "24": [
+   "0ab0e729846b780b",
+   "0de829a3f1415cae",
+   "115a62029cc2065b",
+   "187ca8a8263a46bb",
+   "19115ea8d0522eb2",
+   "42a11ba419eecfd7",
+   "4b0494f211823140",
+   "61b3c0046ea653b6",
+   "63ed8a7cbd1f82d6",
+   "7cb2ab996dcae067",
+   "810bcd43d81974f1",
+   "8fcf34a050548fd9",
+   "8ff18c59595836c4",
+   "a6c069f49b64441a",
+   "aa28f0fd02932028",
+   "ac41ae4dadfa312e",
+   "c65c07619cdef004",
+   "c826229ecf8ae594",
+   "ce2d0ef6df5197c5",
+   "d624a9c8e34083fe",
+   "db9664d5a046c864",
+   "f23ff2f3e42fdebd",
+   "fad6250acc99a570",
+   "fadeab1aeb58957d"
+  ],
+  "32": [
+   "05f3386fe9faf2b5",
+   "0830f0390bffd3eb",
+   "128c1c48f69ac393",
+   "209329009aed7c38",
+   "237e627bd7f3407a",
+   "2a44d83b70e72dbf",
+   "31592ee2d477a713",
+   "3169d6efc2b1e999",
+   "356c8b34e52e52c5",
+   "3704b7df25a93c16",
+   "4ad4d50fa5cdf819",
+   "56412f916b0bfaba",
+   "5be06cb7e6bb87df",
+   "62c37e1342b7ff3f",
+   "6bda9523a7a1787e",
+   "7259393b0374861c",
+   "72fbc71145971bd4",
+   "755c0fb67210ef6f",
+   "768cc1ef1eed78ac",
+   "7ae5307a7bb819cd",
+   "7fad9ace12225055",
+   "8c09e78f26fb84da",
+   "8e455ab4e4692397",
+   "97794086f5227009",
+   "a5c554ad756a35f4",
+   "afbecf73d99130bc",
+   "bc03fc3b19348d0a",
+   "d86b1e7bfa594ec9",
+   "de305b7bbfabb556",
+   "e6355417cfeeeb88",
+   "e884ac2560ac37c4",
+   "e88ad7cbaa1899bc",
+   "ec2fd9c8fdfdd62f",
+   "ec32b9f8bd8f0581",
+   "eed3d6db9032e585",
+   "f0b8cb5440795517"
+  ],
+  "48": [
+   "0f55fd7eac3a2422",
+   "404a7a75638acf45",
+   "427b680ef348aee9",
+   "779c018196227f48",
+   "b5774f6e1265aafc",
+   "dbadd482e59dd4a7"
+  ]
+ }
+}

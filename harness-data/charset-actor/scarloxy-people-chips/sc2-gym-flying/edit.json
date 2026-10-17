@@ -1,0 +1,152 @@
+{
+ "palette": {
+  "s": "#1c384e",
+  "t": "#327399",
+  "u": "#55a8d4",
+  "v": "#8cd3f5",
+  "w": "#2d3748",
+  "x": "#a0aec0",
+  "y": "#cbd5e0",
+  "z": "#f7fafc",
+  "A": "#6b3822",
+  "B": "#9c6b3b",
+  "C": "#cf9c63"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "s",
+    "f": "t",
+    "k": "u",
+    "m": "v",
+    "a": "s",
+    "d": "t",
+    "h": "u"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "c": "A",
+    "a": "s",
+    "d": "t",
+    "i": "t",
+    "p": "u",
+    "q": "v"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "w",
+    "d": "x",
+    "h": "z",
+    "c": "A",
+    "b": "s",
+    "f": "t",
+    "q": "u",
+    "p": "t"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "b": "s",
+    "f": "t",
+    "k": "u",
+    "m": "v",
+    "p": "y",
+    "q": "z"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "1": ".......ss......ss.......",
+    "2": "......szzs....szzs......",
+    "3": "......szzsssssszzs......",
+    "4": ".......szzyvuuuys.......",
+    "9": "......svvvvvvvvvvvs.....",
+    "10": ".....sustuuuuuuutsus....",
+    "11": ".....susszzyyyzzssus...."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "1": ".......ss......ss.......",
+    "2": "......szzs....szzs......",
+    "3": "......szzsssssszzs......",
+    "4": ".......szzyvuuuys.......",
+    "9": "......svvvvvvvvvvvs.....",
+    "10": ".....sustuuuuuuutsus....",
+    "11": ".....suutzzzzzzztuus...."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "1": ".......ss...ss..........",
+    "2": "......szzs.szzs.........",
+    "3": "......szzssszzsss.......",
+    "4": ".......szzyzzyvvus......",
+    "9": ".....ssvvvvvvvvvvvs.....",
+    "10": "....suustuuuuuuutsts....",
+    "11": "....suuszzzzzzzzztts...."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "1": "..........ss...ss.......",
+    "2": ".........szzs.szzs......",
+    "3": ".......ssszzssszzs......",
+    "4": "......suvvzzyzzys.......",
+    "9": ".....svvvvvvvvvvvss.....",
+    "10": "....ststuuuuuuutsuus....",
+    "11": "....sttzzzzzzzzzsuus...."
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "17": "....ssssstgggggtsssss...",
+    "18": ".....szsouvjjjvuoszs....",
+    "19": "....sssooouvvvvuoozss..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "17": "....ssssszzzzzzzsssss...",
+    "18": ".....szszzzzzzzzzszs....",
+    "19": "....sssoozzyyyzzoozss..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "17": "....sssssstjjnAA........",
+    "18": ".....szsooonnng........."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "17": "........AAnjjtssssss....",
+    "18": ".........gnnnoooszs....."
+   }
+  }
+ ]
+}

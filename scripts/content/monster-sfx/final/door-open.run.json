@@ -1,0 +1,13 @@
+{
+ "id": "door-open",
+ "cand": 2,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "b2863457cadb5e2a",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

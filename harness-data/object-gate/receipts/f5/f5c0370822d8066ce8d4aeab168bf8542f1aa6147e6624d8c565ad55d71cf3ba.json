@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5c0370822d8066ce8d4aeab168bf8542f1aa6147e6624d8c565ad55d71cf3ba",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "닻 감는 고패 (capstan)",
+ "label": "atlas_biome_interior/plus/capstan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cylindrical drum with top cap and turn bars",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular cap of the capstan is clearly drawn as an ellipse foreshortened from above, spanning rows 8 to 16, showing both the top face and the vertical drum body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical wooden capstan drum with capstan bars",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular surface of the capstan is rendered as an ellipse spanning roughly 7 pixel rows (rows 9-15) with a central metal hub, atop a vertical cylindrical body (rows 16-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4695
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wooden drum / capstan cylinder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly rendered as a foreshortened ellipse spanning rows 8 to 16 (approx 8 rows), with central iron fitting and turning bars, above a curved south-facing cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3530
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden capstan drum",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical capstan features a clearly defined circular top surface spanning rows 8 to 15 (approx. 8 rows tall) with a central metal fitting, and a south-facing curved vertical body extending to row 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4579
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.900Z",
+ "cells": {
+  "16": [
+   "8f9d1eec24086fed",
+   "fa741f565a1fd1ec"
+  ],
+  "24": [
+   "3d3d1ea5816bb8ee",
+   "70f330bc6a28922f",
+   "80d38abca97cba33",
+   "820968f6e8534900",
+   "a05b4667b2dfb96c",
+   "b0f822ae54eeb3eb",
+   "e2b351cb9b04e76c",
+   "ead09ba18ba453df",
+   "f139cd5338d38fca"
+  ],
+  "32": [
+   "19a00a223f75c44a",
+   "4d3ac98da1a3257e",
+   "c808473213f5ef37"
+  ],
+  "48": [
+   "2aeaa2a0af6ddb43",
+   "464ef7ce54d8f3e1",
+   "737e9e800eab66e7",
+   "abac27ff532104aa",
+   "c129e24d943c433c",
+   "c8be4fdd55ca5612"
+  ]
+ }
+}

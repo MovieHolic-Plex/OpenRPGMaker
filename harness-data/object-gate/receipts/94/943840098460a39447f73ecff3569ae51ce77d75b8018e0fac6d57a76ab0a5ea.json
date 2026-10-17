@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "943840098460a39447f73ecff3569ae51ce77d75b8018e0fac6d57a76ab0a5ea",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torch bowl and handle",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening is drawn as an open ellipse from row 9 to 13 (5 pixel rows tall) revealing the glowing fire inside, viewed from above at ~45 degrees.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torch bowl and shaft",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl is viewed from above at ~45 degrees, displaying a foreshortened elliptical opening (rows 9-13, ~5 rows tall) filled with glowing fire/coals, resting atop the front-facing shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch bowl and handle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl is seen in clear 3/4 view with a visible elliptical opening (rows 9-13, ~5 rows tall) showing the burning fuel/fire from above, sitting atop the front face of the bowl and wooden handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5891
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch head / brazier bowl on a wooden pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl/head is drawn in clear 3/4 perspective with an elliptical top opening (rows 9-14, ~5 rows deep) revealing the glowing fire/coals within and showing the bowl's south front face beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5739
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.783Z",
+ "cells": {
+  "16": [
+   "9444252e16fc979b",
+   "fd9d3dbc2a5aa308"
+  ],
+  "24": [
+   "0b9aabf44ed42836",
+   "2463fda5f09b48a4",
+   "3703b40285bb4033",
+   "4192f7a947b7ce37",
+   "6364a6194f747666",
+   "753ecd079fc77bdd",
+   "9b1a2bb56268ee63",
+   "aafd516a772dcf8b",
+   "cbe1eda0ee7e4ecc",
+   "cde0534f5a591aa5",
+   "dc096eeba84094e8",
+   "f3f3700f7ffcf36f"
+  ],
+  "32": [
+   "10197bc9aa3ca5b7",
+   "4c9b05be36bc226e",
+   "fcc04bcf4f95561b"
+  ],
+  "48": [
+   "16a6569eb55d2dfa",
+   "393a10368deb294a",
+   "6673df20b8ab49df",
+   "95db62d55eebe895",
+   "b966872cc8c7189d",
+   "f324704a60346740"
+  ]
+ }
+}

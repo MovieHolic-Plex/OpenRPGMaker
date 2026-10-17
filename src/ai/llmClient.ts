@@ -1,6 +1,7 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
 import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
-import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
+import { configForRole, parseRoleModels, type RoleModel, type SpecialistModels } from "./modelRoles";
+import { DEFAULT_PIXEL_MODEL, parsePixelModel } from "./pixelModel";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
@@ -17,7 +18,8 @@ import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
-import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { getKnownOpenAiCompatEndpoint } from "@/ai/openAiCompat";
 import { companionTokenHeaders } from "@/ai/companionToken";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -55,8 +57,13 @@ export interface AiConfig {
   // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
   roleModels?: SpecialistModels;
+  /**
+   * 도트 저작 모델(타일셋·기물·캐릭터셋을 격자 문자열로 찍는 **텍스트 모델**, 이미지 모델 아님 — src/ai/pixelModel.ts).
+   * 없으면 기존 동작(공방 그리기가 계획·최종 판단 모델을 쓴다)을 그대로 둔다.
+   */
+  pixelModel?: RoleModel;
   /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
-  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image", true>>;
+  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "build" | "image" | "pixel", true>>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
   ultrabrainReasoningEffort?: "low" | "medium" | "high";
@@ -143,11 +150,9 @@ const LEGACY_DEFAULT_MAX_TOKENS = new Set([2048, 10240, 32768]);
 const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
 
 /**
- * 옛 공장 기본 모델. 2026-09-26 에 기본을 3.7-flash → 3.8-flash 로 옮길 때 상수·카탈로그만
- * 바뀌고 **저장된 설정에는 적용되지 않아**, 이미 저장된 사용자는 3.7 에 그대로 남았다
- * (loadAiConfig 는 저장값을 존중하고, 예전 방식만 소급 승격했다). 그래서 그 옛 공장 기본만
- * 새 기본으로 소급한다 — 사용자가 직접 고른 다른 모델(`gemini-9-...`·`glm-5.3` 등)은
- * 손대지 않는다.
+ * 옛 공장 기본 모델. 2026-09-26 에 기본을 3.7-flash → 3.8-flash 로, 2026-10-14 에 3.8-flash → 4-argon 으로
+ * 옮길 때 이미 저장된 설정이 옛 공장 기본에 그대로 남지 않도록 소급 승격한다 — 사용자가 직접 고른
+ * 다른 모델(`gemini-9-...`·`glm-5.3` 등)은 손대지 않는다.
  */
 const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tiered", "gemini-3.8-flash"]);
 
@@ -160,14 +165,14 @@ const RECOMMENDED_CODEX_MODEL = "gpt-6.1-sol";
 
 /** 각 제공자의 옛 공장 기본만 새 기본으로 승격한다. 그 밖의 저장값은 그대로 보존한다. */
 function promoteLegacyFactoryModel(model: string, providerId: string): string {
-  if (providerId === RECOMMENDED_OH_MY_PI_PROVIDER) return LEGACY_CODEX_FACTORY_MODELS.has(model) ? RECOMMENDED_CODEX_MODEL : model;
+  if (providerId === CODEX_PROVIDER_ID) return LEGACY_CODEX_FACTORY_MODELS.has(model) ? RECOMMENDED_CODEX_MODEL : model;
   if (providerId !== DEFAULT_OH_MY_PI_PROVIDER) return model;
   return LEGACY_FACTORY_MODELS.has(model) ? DEFAULT_MODEL : model;
 }
 
 function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
   const result: SpecialistModels = {};
-  for (const role of ["vision", "writer", "deep"] as const) {
+  for (const role of ["vision", "writer", "deep", "build"] as const) {
     const entry = roles[role];
     if (!entry) continue;
     result[role] = { ...entry, model: promoteLegacyFactoryModel(entry.model, entry.provider) };
@@ -197,23 +202,29 @@ function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
  */
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
-  // 새로 설정하는 사용자의 권장 조합(2026-10-07): 계획 gpt-6.1-sol high · 실행/시각 medium · 작문 Gemini.
-  // 작문 계정(Google)이 없으면 실행기가 작문을 실행 모델로 대신한다 — 연결을 강제하지 않는다.
+  // 새로 설정하는 사용자의 권장 조합(2026-10-14, 사용자 결정): 계획·실행·시각·작문·시공 모두 Google 의
+  // Gemini 4 Argon medium. 감독(ultrabrain) 검수만 high 로 둔다. ChatGPT 는 사용자가 고를 때만 쓴다 —
+  // 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다.
+  const argonMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" } as const;
   return {
     ...legacy,
     providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    model: RECOMMENDED_CODEX_MODEL,
-    liteModel: RECOMMENDED_CODEX_MODEL,
-    ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    ultrabrainModel: RECOMMENDED_CODEX_MODEL,
-    ultrabrainReasoningEffort: "high",
+    model: DEFAULT_MODEL,
+    liteModel: DEFAULT_LITE_MODEL,
+    reasoningEffort: "medium",
+    ultrabrainProviderId: DEFAULT_ULTRABRAIN_PROVIDER,
+    ultrabrainModel: DEFAULT_ULTRABRAIN_MODEL,
+    ultrabrainReasoningEffort: DEFAULT_ULTRABRAIN_EFFORT,
     imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
     imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
-      deep: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
-      vision: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
-      writer: { provider: DEFAULT_OH_MY_PI_PROVIDER, model: DEFAULT_MODEL, thinkingLevel: "medium" },
+      deep: { ...argonMedium },
+      vision: { ...argonMedium },
+      writer: { ...argonMedium },
+      build: { ...argonMedium },
     },
+    // 도트 저작(공방)은 텍스트 모델이 격자 문자열로 찍는다 — 이미지 모델 칸과 별개다(src/ai/pixelModel.ts).
+    pixelModel: { ...DEFAULT_PIXEL_MODEL },
     roleModelsPolicyVersion: 1,
   };
 }
@@ -367,15 +378,18 @@ export function loadAiConfig(): AiConfig {
       roleModels: parsed.roleModelsPolicyVersion === 1
         ? promoteLegacyRoleModels(parseRoleModels(parsed.roleModels))
         : withoutLegacySeededDeepRole(promoteLegacyRoleModels(parseRoleModels(parsed.roleModels)), providerId, liteModel || model),
+      // 도트 저작 칸: 저장된 값만 읽는다. 옛 설정에는 없으므로 비워 두고 기존 동작(계획 모델)을 유지한다.
+      ...(parsePixelModel(parsed.pixelModel) ? { pixelModel: parsePixelModel(parsed.pixelModel)! } : {}),
       // Old blobs cannot distinguish a user selection from an automatically seeded row.
       // Preserve every stored slot until the user explicitly chooses to align it.
       modelSelectionOverrides: Object.fromEntries(
-        (["ultrabrain", "vision", "writer", "deep", "build", "image"] as const).filter(slot => {
+        (["ultrabrain", "vision", "writer", "deep", "build", "image", "pixel"] as const).filter(slot => {
           if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
             return parsed.modelSelectionOverrides[slot] === true;
           }
           return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
             : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
+            : slot === "pixel" ? Boolean(parsed.pixelModel)
             : Boolean(parsed.roleModels?.[slot]);
         }).map(slot => [slot, true as const]),
       ),
@@ -622,7 +636,8 @@ export function providerCapability(
     supportsStreaming: true,
     supportsReasoningField: true,
     supportsMessageName: true,
-    maxTokensCeiling: config.providerId === ANTIGRAVITY_PROVIDER_ID ? GEMINI_MAX_OUTPUT_TOKENS : undefined,
+    maxTokensCeiling: config.providerId === ANTIGRAVITY_PROVIDER_ID ? GEMINI_MAX_OUTPUT_TOKENS
+      : getKnownOpenAiCompatEndpoint(config.providerId ?? "")?.maxOutputTokens,
   };
 }
 

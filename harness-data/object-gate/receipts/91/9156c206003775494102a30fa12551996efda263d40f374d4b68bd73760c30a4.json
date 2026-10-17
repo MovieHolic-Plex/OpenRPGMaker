@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9156c206003775494102a30fa12551996efda263d40f374d4b68bd73760c30a4",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "앰프 낮은 단(2칸, 검은 상자 둘)",
+ "label": "modern-campus-int/mc-amp-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "amplifier stack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifiers are drawn in a flat front elevation. Both the upper control panel and the lower speaker grille face directly toward the viewer with no horizontal top surface visible (only a 1px outline along row 8).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13899
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "amplifier stacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifier stacks are drawn in flat front elevation with speaker grilles and head controls facing directly forward. There is no visible top surface (0px) showing the depth of the cabinet or head from above, only a 1px top outline with rounded corners.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15753
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dual amplifier stack",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of each amplifier head is visible across rows 9-11 (3 pixel rows) with carrying handles viewed from above, resting on the south-facing control panels and speaker cabinets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7529
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "amplifier stack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The amplifier is drawn in pure front elevation with rounded top corners; there is only a 1px outline at row 8 and no visible foreshortened top surface showing the depth of the cabinet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10808
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.541Z",
+ "cells": {
+  "16": [
+   "010c707aa98848a0",
+   "1e45a9c75c9fa5dd"
+  ],
+  "24": [
+   "0807f7872e5aabef",
+   "0cb564abcb4b5257",
+   "26336d6ffe10eb43",
+   "312a75573347a7d8",
+   "339890961bd82e65",
+   "3c0bd7f574b20561",
+   "519a56acdd4380de",
+   "529945b66a177c32",
+   "59bb125339a2dfeb",
+   "8ea923bcd27c52d4",
+   "ba50d99d49c58ae4",
+   "c06da468e26c3b29",
+   "c1b1c992d328b724",
+   "c4e9970ade1a4087",
+   "d52df8f7842ba258",
+   "db2115b18ca1f071",
+   "dd7d762ab6ef2271",
+   "ff5e0fc8cb7156b3"
+  ],
+  "32": [
+   "db9eb9f39c2dc7a3"
+  ],
+  "48": [
+   "5cb824876cdce0fa",
+   "bb7a0be4fc502288",
+   "e827c6736a1ef53b",
+   "ea68037894f4ab26",
+   "eccdc5a8c5246e2a",
+   "f7885c8a87379773"
+  ]
+ }
+}

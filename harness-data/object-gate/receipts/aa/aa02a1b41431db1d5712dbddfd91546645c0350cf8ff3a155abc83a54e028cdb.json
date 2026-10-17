@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa02a1b41431db1d5712dbddfd91546645c0350cf8ff3a155abc83a54e028cdb",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "aquarium tank set in the back wall",
+ "label": "monster-rooms/mu_tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tank / water viewed from above spans rows 2-9 (~8 rows) above the horizontal divider frame at row 10, showing clear 3/4 top-down perspective over the front pane (rows 11-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main tank body features a clearly foreshortened top surface across rows 3-9 (7 rows tall) above the front face (rows 11-23) containing the fish and water interior.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5780
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The aquarium clearly depicts both its top surface/top view into the water (rows 2-9, ~8 rows tall) and its vertical south face (rows 11-23) showing the fish, plant, and sand floor in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "aquarium tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the aquarium is clearly shown in rows 2-9 (approx. 7-8 pixels tall) showing the water surface from above with light highlights, above the front glass face in rows 11-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7228
+  }
+ ],
+ "decidedAt": "2026-10-14T05:37:02.307Z",
+ "cells": {
+  "16": [
+   "40cfa1da9e98540b",
+   "4a63115a7ed5a499",
+   "68cc24186efd3a61",
+   "d895ff0f628ddb52"
+  ],
+  "24": [
+   "0a3889ea9b7c35af",
+   "11e5e5516e434503",
+   "1704173f8d98919a",
+   "321a59ee6bb28273",
+   "4b95fefb6122ab16",
+   "675e77ee96003646",
+   "77d507982eefcdb9",
+   "89e504b3f9b1b56a",
+   "a35466ab2af1ce71",
+   "abb3bd11a46b5a05",
+   "ad6b3f6ac24fa1ae",
+   "afffa5bb8946129c",
+   "be2eeb6c144afcbb",
+   "c754f3f58dc35950",
+   "c7e805744db16f10",
+   "cd376bf65b1d73d1",
+   "ce2f4ff1f42d9125",
+   "cff8a82add3181a6",
+   "de7fb1ad28b0b94c",
+   "e10e823723a42697",
+   "e9097e4a6dcd9451",
+   "efd1b22ad7f93845",
+   "f43c4d0248258b0a",
+   "f6db14b58a856822"
+  ],
+  "32": [
+   "cdec9b21296573ef"
+  ],
+  "48": [
+   "0813c72a79ac0c8f",
+   "56eea9526746aa8e",
+   "5d853a52152e8d69",
+   "719523ad99370e10",
+   "ce985aba709fb7e6",
+   "f3126fd39fd2c193"
+  ]
+ }
+}

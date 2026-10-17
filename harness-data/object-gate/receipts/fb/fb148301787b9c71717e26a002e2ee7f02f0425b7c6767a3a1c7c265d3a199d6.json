@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb148301787b9c71717e26a002e2ee7f02f0425b7c6767a3a1c7c265d3a199d6",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'gate' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden farm fence / gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal rails are drawn entirely in flat front elevation as if for a side-scroller. The post tops terminate at row 1 with a flat 1px outline and show no foreshortened top surface from the 45-degree camera angle, and the rails have no top planes visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12880
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence gate with vertical posts and two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn as a flat front architectural elevation. The horizontal rails only have 2px light bands (standard side-scroller/front-view shading, not foreshortened horizontal top planes), and the post caps/blocks show no receding top surface seen from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9130
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence gate frame with posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The left post displays a clearly foreshortened 3-row top surface (rows 2-4), and the horizontal rails feature distinct 2-row light top surfaces (e.g. rows 6-7 and 11-12) above their darker south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9665
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden gate / fence section with vertical posts and two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal rails are drawn entirely in flat front elevation with straight horizontal cap outlines at row 1. Neither the post tops nor the horizontal rails show a foreshortened top surface viewed from above (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18383
+  }
+ ],
+ "decidedAt": "2026-10-14T06:04:12.549Z",
+ "cells": {
+  "16": [
+   "fbd9b2be10b73c4b"
+  ],
+  "24": [
+   "23aa353efb922adc",
+   "29ec26afd4e1e614",
+   "517380339a23068e",
+   "610d4c0325aa7095",
+   "76f0afcd1215eaee",
+   "ed622d53f92f6609"
+  ],
+  "32": [
+   "86ab3aad72343276",
+   "9985011180b58143",
+   "9a9c78fb9f828152",
+   "a6ef41a5006c3330",
+   "c0db25dfc24dc7d4",
+   "d04a4138ce558d8d"
+  ],
+  "48": [
+   "4b46969846debd09",
+   "4c51c1f60223225b",
+   "8cb85f4f25b69e33",
+   "b6bca9ce685dc350",
+   "cb701f6286c1ad54",
+   "cfa134c71d9d54bf"
+  ]
+ }
+}

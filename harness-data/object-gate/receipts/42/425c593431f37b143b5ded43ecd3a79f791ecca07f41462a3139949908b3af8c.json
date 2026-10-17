@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "425c593431f37b143b5ded43ecd3a79f791ecca07f41462a3139949908b3af8c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "발권기",
+ "label": "modern_city/interior/mci-ticket-machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ticket vending machines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket vending machines are drawn in pure front elevation with a flat marquee at the top, a flat screen, and flat coin/ticket slots; no top horizontal surface is visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ticket vending machines (pair)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket vending machines are drawn in a direct 2D front elevation. There is no visible top surface foreshortened from above on the machine tops, header signs, or any shelf/ledge (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ticket vending machines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket vending machines are drawn in a flat orthographic front elevation with no visible top surface foreshortened from above (top edge terminates flatly at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket vending machines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket machines are drawn in pure front elevation with no visible top surface foreshortened from above. The cabinet tops, screens, and slots are rendered strictly head-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5074
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:56.354Z",
+ "cells": {
+  "16": [
+   "172c1d8b32451032",
+   "9166399ee31b34e7"
+  ],
+  "24": [
+   "003d888dc9f21deb",
+   "0d9893f74ee82d30",
+   "16368497c529060f",
+   "1aba95a2a4b84f17",
+   "228fa07ac1864260",
+   "250ad25ff96afcbd",
+   "5170854d8d535bd0",
+   "566864f32a396497",
+   "5a64d592ee77d4ca",
+   "6261e9d993118779",
+   "65f6b2581d1277cc",
+   "6b517dda9c022445",
+   "702c460a54d042f5",
+   "76dc42e2bb0ca7f6",
+   "80e5b3f52abb9f94",
+   "8787e5e012a5d790",
+   "a553386056d9f85e",
+   "b193682640fee298",
+   "b67e123ae0ad7913",
+   "bc4ac706104914f7",
+   "c2d21b2062ee6f2a",
+   "d4dd54ae8c1eb2b1",
+   "e1f40ccf760cec2b",
+   "e84ece6f2646b0ca"
+  ],
+  "32": [
+   "420085be37160a60"
+  ],
+  "48": [
+   "2086c37447e5a887",
+   "8d4b15c4576a4fdc",
+   "b7466e4403ff1858",
+   "c58047dbb39a89bc",
+   "cd1ea983ab5ba2fe",
+   "ddeb5afa44e1b4de"
+  ]
+ }
+}

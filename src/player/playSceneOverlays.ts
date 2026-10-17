@@ -9,8 +9,11 @@ import { createTerminalScene, type TerminalScene } from "@/player/terminalScene"
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { dialogueHost } from "@/player/playSceneDom";
+import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterMenuIconResourceId, monsterUiEntry } from "@/player/playerMonsterPartyModel";
 
 export function showRuntimeOverlay(
   scene: PlaySceneContext,
@@ -40,12 +43,38 @@ export function clearRuntimeOverlay(scene: PlaySceneContext, testId: string): vo
   overlay.remove();
 }
 
-/** Mark only a recoverable empty-party admission error for later party restoration. */
-export function showBattleAdmissionError(scene: PlaySceneContext, error: unknown): void {
-  scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투를 시작할 수 없습니다. 전투 설정을 확인하세요.');
+/** 파티가 비어 싸울 수 없을 때 플레이어가 듣는 말 — 게임 대사창 문장(시스템 토스트가 아니다). */
+const EMPTY_PARTY_NOTICE = "몬스터가 한 마리도 없어서 승부할 수 없다.\n먼저 박사님께 스타터를 받아 오자.";
+
+/**
+ * 전투 입장 거부를 보여 준다. 몬스터 파티가 빈 경우는 어두운 시스템 토스트 대신 게임 대사창으로 **한 번** 말하고 닫는다(D30).
+ * 그 밖의 입장 오류(적 그룹 없음 등)는 저작 오류라 기존처럼 runtime-error 오버레이로 남긴다.
+ * 대사창을 기다리는 동안 호출부의 입력 잠금이 유지되므로, 닫힌 뒤에야 걷기·조사가 돌아온다.
+ */
+export async function showBattleAdmissionError(scene: PlaySceneContext, error: unknown): Promise<void> {
   if (error instanceof BattleAdmissionError && error.code === 'BATTLE_MONSTER_PARTY_EMPTY') {
+    const dialogue = dialogueUi(scene);
+    if (dialogue) {
+      try {
+        await dialogue.showText({
+          body: EMPTY_PARTY_NOTICE,
+          textContext: { session: scene.session, project: store.getCurrent() },
+          playerTileY: scene.tileY,
+          mapHeight: scene.map.height,
+        });
+      } catch (dialogueError) {
+        // 씬이 닫히거나 교체되며 대사가 취소된 경우 — 조용히 끝낸다.
+        if (!(dialogueError instanceof DOMException && dialogueError.name === 'AbortError')) throw dialogueError;
+      } finally {
+        dialogue.close();
+      }
+      return;
+    }
+    scene.showRuntimeOverlay('runtime-error', error.message);
     dialogueHost(scene)?.querySelector<HTMLElement>("[data-testid='runtime-error']")?.setAttribute('data-recovery', 'monster-party');
+    return;
   }
+  scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투를 시작할 수 없습니다. 전투 설정을 확인하세요.');
 }
 
 /** A rejected empty-party battle is recoverable; keep other runtime errors intact. */
@@ -159,11 +188,20 @@ export function playGameOverPresentation(terminal: TerminalScene, project: Proje
       terminal.phase("blackout-message");
       addBackground(terminal, settings?.backgroundResourceId, undefined, project);
       const body = textNode("div", "blackout-message", message ?? settings?.message ?? (outcome === "recover" ? "더는 싸울 수 없었다.\n눈앞이 캄캄해졌다…" : settings?.title ?? "이야기가 끝났습니다."));
+      const emerald = isEmeraldMonsterStyle(project);
+      // 에메랄드 몬스터 게임(D31): 검은 바탕 위 시스템 글꼴 한 줄이 아니라 필드 대사창과 같은 문장창 + Galmuri9 18px 격자 글꼴,
+      // 그 위에 「다시 시작할 수 있어」 제목. 창은 화면 아래 80px(논리 40px)로 대사창과 같은 자리·같은 격자다.
+      if (emerald) {
+        terminal.root.dataset.monsterStyle = "emerald";
+        const heading = settings?.title && outcome === "recover" ? textNode("div", "blackout-title", settings.title) : undefined;
+        if (heading) terminal.root.append(heading);
+      }
       terminal.root.append(body);
       // Readable beat before automatic recovery; no GAME OVER or retry menu.
       if (!await terminal.wait(timing?.messageHoldMs ?? 2200)) return;
       terminal.phase("silence");
       body.remove();
+      terminal.root.querySelector(".blackout-title")?.remove();
       if (!await terminal.wait(500)) return;
       if (outcome === "title") { await exitTerminal(terminal, () => scene.returnToTitle()); return; }
       terminal.root.querySelector<HTMLAudioElement>("audio[data-terminal-music]")?.pause();
@@ -218,18 +256,71 @@ function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationAc
   });
 }
 
+/**
+ * 에메랄드 몬스터 게임의 전당 등록 쪽(D04). 챔피언을 이긴 직후 내 파티를 한 줄씩 소개한다 — 3세대 엔딩의 「전당 등록!」.
+ * 파티 몬스터가 없으면 만들지 않는다.
+ */
+function emeraldHallOfFame(scene: PlaySceneContext): HTMLElement | undefined {
+  const project = store.getCurrent();
+  if (!isEmeraldMonsterStyle(project)) return undefined;
+  const session = scene.session;
+  const cards = (session.monsterParty ?? []).slice(0, 6).flatMap((id) => {
+    const raw = session.monsterInstances?.[id];
+    if (!raw) return [];
+    const entry = monsterUiEntry(project, raw);
+    const url = resolveAssetResourceUrl(monsterMenuIconResourceId(project, entry.species?.graphic.monsterResourceId) ?? "", { project });
+    const card = textNode("div", "ending-hall-card", "");
+    card.dataset.testid = "ending-hall-card";
+    const face = textNode("span", "ending-hall-face", "");
+    if (url) face.style.backgroundImage = `url("${url}")`;
+    card.append(face, textNode("span", "ending-hall-name", entry.name), textNode("span", "ending-hall-level", `Lv${entry.instance.level}`));
+    return [card];
+  });
+  if (cards.length === 0) return undefined;
+  const hall = textNode("div", "ending-hall", "");
+  hall.dataset.testid = "ending-hall";
+  hall.append(textNode("div", "ending-hall-title", "전당 등록!"));
+  const grid = textNode("div", "ending-hall-grid", "");
+  grid.append(...cards);
+  hall.append(grid);
+  return hall;
+}
+
+function endingKicker(presentation?: EndingPresentation): string {
+  const own = presentation?.kicker?.trim();
+  if (own) return own;
+  if (presentation?.tone === "dark") return "이야기의 끝";
+  return usesRelationshipMenu(store.getCurrent()) ? "두 사람의 이야기" : "우리의 여정";
+}
+
 export function showEndingScreen(scene: PlaySceneContext, title: string, message: string, presentation?: EndingPresentation): void {
   const terminal = createTerminalScene(scene, "ending", title || "엔딩");
   if (!terminal) return;
   terminal.root.dataset.tone = presentation?.tone ?? "warm";
+  if (isEmeraldMonsterStyle(store.getCurrent())) terminal.root.dataset.monsterStyle = "emerald";
   const run = async (): Promise<void> => {
     if (!await terminal.wait(terminal.reducedMotion ? 0 : 900)) return;
     terminal.phase("silence");
     if (!await terminal.wait(600)) return;
     addBackground(terminal, presentation?.backgroundResourceId);
     playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
+    const hall = emeraldHallOfFame(scene);
+    if (hall) {
+      terminal.root.append(hall);
+      terminal.phase("hall");
+      if (!await terminal.wait(terminal.reducedMotion ? 0 : 1400)) return;
+      const hallHint = textNode("div", "game-over-hint", "Z / Enter 계속");
+      terminal.root.append(hallHint);
+      const advanced = await new Promise<boolean>((resolve) => {
+        terminal.signal.addEventListener("abort", () => resolve(false), { once: true });
+        terminal.keys((event) => { if (isCinematicAdvanceKey(normalizeKey(event.key))) { terminal.keys(); resolve(true); } });
+      });
+      if (!advanced) return;
+      hall.remove(); hallHint.remove();
+      if (!await terminal.wait(400)) return;
+    }
     const epilogue = textNode("div", "ending-epilogue", "");
-    epilogue.append(textNode("div", "ending-kicker", presentation?.tone === "dark" ? "이야기의 끝" : "우리의 여정"));
+    epilogue.append(textNode("div", "ending-kicker", endingKicker(presentation)));
     epilogue.append(textNode("h1", "ending-heading", title || "The End"));
     if (message) epilogue.append(textNode("div", "ending-message", message));
     terminal.root.append(epilogue);

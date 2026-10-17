@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "39e2c1fb6720c15fea5c3f264d4aca9c2bfc03f5f5bc5a10490781efa5367daf",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "campfire ringed with stones, burning logs",
+ "label": "pirate-isles/pi-campfire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fire pit ring",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring clearly forms an oval viewed from above, with interior logs and flames occupying rows 7-11 (approx 5 rows tall) and the front stones showing tops at rows 11-12 and south faces at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3716
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone ring with campfire logs inside",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn in foreshortened 3/4 view as an ellipse showing the interior opening (rows 8-11) filled with logs and flame, with clearly visible top surfaces of stones and front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2867
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone ring campfire",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone ring is drawn in proper 3/4 top-down perspective with the circular/oval interior cavity clearly visible (rows 7-10) containing logs and fire.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5086
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fire ring with logs and flame",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The campfire is drawn as an elliptical ring of stones viewed from above. The interior fire pit containing logs and fire spans rows 7-11 (about 5 rows of visible interior), and the front stones show both their top surfaces (rows 11-13) and front shading (row 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.585Z",
+ "cells": {
+  "16": [
+   "4a695d095d512081"
+  ],
+  "24": [
+   "1f1dbbbda9b734dc",
+   "33030af07dc3438e",
+   "93764ac0a07f0153",
+   "c83b527452e8b28f",
+   "d4d2e1e62b11278e",
+   "fa0975307a77f980"
+  ],
+  "32": [
+   "05462b26e548f6e2",
+   "2e2d7d3872c64fa6",
+   "48502b16a4fcc7a0",
+   "6f0ce72b0396a968",
+   "8dd653ab4ac80b39",
+   "cfc901cf73c19262"
+  ],
+  "48": [
+   "1c021a50754667c7",
+   "2416b8d2f3d5ad97",
+   "37a2c23554ff3120",
+   "3cd27b855aec94db",
+   "d58e9487cf4c9b3a",
+   "d6fc87706a9bad03"
+  ]
+ }
+}

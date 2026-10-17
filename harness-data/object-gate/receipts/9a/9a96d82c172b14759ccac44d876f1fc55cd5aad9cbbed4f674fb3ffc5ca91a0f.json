@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a96d82c172b14759ccac44d876f1fc55cd5aad9cbbed4f674fb3ffc5ca91a0f",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "stern-cabin leaded window: dark wood frame with small glass panes showing the sea, brass fittings, sill below",
+ "label": "pirate-isles/pi-ship-window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stern-cabin leaded window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted cabin window set flat against the north wall with leaded panes, brass fittings, and sill. As a flat wall-mounted feature, it correctly depicts the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5196
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "window frame and glass panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted leaded stern window set into a north wall. As a flat wall-mounted fixture viewed perpendicular to the wall plane in 3/4 top-down perspective, no top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stern cabin window frame and glass panes mounted on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted multi-pane window with dark wood frame and lower sill. As a flat wall-mounted fixture, it correctly faces south flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "leaded window in wood frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture drawn flat against the back wall as expected for north-wall JRPG windows, featuring a leaded glass grid and a bottom sill.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6113
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.596Z",
+ "cells": {
+  "16": [
+   "51349aaa53868442",
+   "db97f0c5b568a407"
+  ],
+  "24": [
+   "011ecad23a49248a",
+   "0202407832086132",
+   "275bde99e7f19c38",
+   "409b3601a777337a",
+   "610188f37eeadd12",
+   "63756b25397d69cd",
+   "7cfee471a96c335e",
+   "80a160cce5fbb1da",
+   "8235f63b638f533f",
+   "b85c130be18ac68b",
+   "b9393faf4febcfeb",
+   "f06d7412465d5904"
+  ],
+  "32": [
+   "e31acaab465a7f75",
+   "e87f53819b882d13"
+  ],
+  "48": [
+   "07ec8c0cbe4b06cb",
+   "0da35d8ea46fdbe2",
+   "49cdc39465a798c1",
+   "66a2b7f53beacd2e",
+   "db706b3e3fb819f0",
+   "ea1aace7be9a6f3d"
+  ]
+ }
+}

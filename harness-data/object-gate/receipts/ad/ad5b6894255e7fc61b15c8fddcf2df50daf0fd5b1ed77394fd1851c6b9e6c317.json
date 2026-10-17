@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad5b6894255e7fc61b15c8fddcf2df50daf0fd5b1ed77394fd1851c6b9e6c317",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "asphalt road with worn white zebra crosswalk bars, horizontal and vertical",
+ "label": "sf-station/sf-crosswalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road with crosswalk markings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting asphalt road surface with painted zebra crosswalk bars in both orientations, viewed directly from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4712
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface showing asphalt road with painted zebra crosswalk stripes in vertical and horizontal orientations; correctly depicted as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4933
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road crosswalk markings",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting asphalt road surface with worn white zebra stripes; flat ground planes correctly represent horizontal terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road with zebra crosswalk stripes",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting asphalt pavement with worn white zebra crosswalk markings; correctly rendered as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3900
+  }
+ ],
+ "decidedAt": "2026-10-13T16:10:30.408Z",
+ "cells": {
+  "16": [
+   "13cbbc0b9e3c4c52",
+   "f298260c4a58155f"
+  ],
+  "24": [
+   "0539dcbc396aebb4",
+   "090c02d90f070686",
+   "3149050f258302fd",
+   "53b8794eb0365fb1",
+   "5e958e8e02ad43cf",
+   "5fd93eb455f6e672",
+   "8db486df589d96a3",
+   "983f8e92928641e4",
+   "a46e95f02bc24ef7",
+   "b1bd286be05694c5",
+   "c77c3bc6e93ca763",
+   "ef387f3c2b40473e"
+  ],
+  "32": [
+   "6fe499400a13650f",
+   "b5beabd83dc8a4df"
+  ],
+  "48": [
+   "07a64b2cf3d362ed",
+   "4cd8f05ff313bcbf",
+   "5aeaf796e26e39d1",
+   "7c6f941ff5adba51",
+   "97c6ef7cf464fcd7",
+   "e233f2fb116f1ea5"
+  ]
+ }
+}

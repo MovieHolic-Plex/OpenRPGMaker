@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46ccea660450b81e76abfb19e30907c4ecb2905a02b9077aec443e0e5eec1776",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈밭(짐승 발자국)",
+ "label": "snow-north/sn-snow-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snowy ground tile with animal footprints",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting snow-covered ground indented with animal footprints across the 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow ground with animal tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a flat snowy ground surface with indented animal footprints seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow ground tile with animal footprints",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing snow texture and animal footprints across the entire 16x16 surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3799
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowy ground tile with animal footprints",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing snow texture and depressed animal footprints viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3459
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.950Z",
+ "cells": {
+  "16": [
+   "545dd56627073c69"
+  ],
+  "24": [
+   "6c27447047b834b0",
+   "bc2df9bb843e2d10",
+   "bd92cf424078b03e",
+   "f3894703d913b6ac",
+   "fa1db15b0590c7e2",
+   "fb6306fff459eb87"
+  ],
+  "32": [
+   "2c9eeca495757596",
+   "4517b46ee48f4bb9",
+   "5e2a72e3ed88666e",
+   "999cdc3b46d08a7e",
+   "de885bfdd0cd3ec9",
+   "e158563ad415f559"
+  ],
+  "48": [
+   "3bd0bf66570a2eb8",
+   "4341d6b1b0611163",
+   "600360aa9132955f",
+   "8902828449e8a77e",
+   "9daaa9aa5773ccb8",
+   "da7c057230519a51"
+  ]
+ }
+}

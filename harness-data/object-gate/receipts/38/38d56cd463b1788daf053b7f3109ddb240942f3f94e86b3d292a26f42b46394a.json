@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38d56cd463b1788daf053b7f3109ddb240942f3f94e86b3d292a26f42b46394a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 동쪽 난간(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge floor with east railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents a north-south bridge surface with cobblestone paving on the left and the top surface of the east stone railing on the right, fully visible from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge floor with east railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a north-south bridge edge terrain tile viewed from above, showing the stone pavement walkway on the west and the top surface of the east railing along the edge across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal stone bridge floor and east railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain bridge tile showing north-south stone bridge decking on the left and the top surface of the east railing on the right, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge deck with east railing running north-south",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Bridge pavement and top surface of the east railing running north-south occupy the full 16 rows of the tile viewed from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4718
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "70baff6823c6f7be"
+  ],
+  "24": [
+   "1b4e0aead865403f",
+   "20c23fa5d9a2b4de",
+   "2c53ea5db9f0fe62",
+   "51f0deba5d8aa223",
+   "530b86436115052d",
+   "e64b8160df02d04a"
+  ],
+  "32": [
+   "0afa44b6f45c251f",
+   "1596c17aaf475dc0",
+   "20474e2582e0f4be",
+   "481b5842d2fc918c",
+   "50e999dd7d46f962",
+   "567664fa552c9693"
+  ],
+  "48": [
+   "068978a5bd965371",
+   "36005c0afb428f75",
+   "81727c9667fc661b",
+   "9b381407101ce341",
+   "a28beb8bf153f62c",
+   "a819d3c0395682df"
+  ]
+ }
+}

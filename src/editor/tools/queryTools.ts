@@ -3,9 +3,10 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
-import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
+import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
+import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import { facePresentationForResource } from "@/project/facePresentation";
-import { queryNpcGraphics } from "@/assets/charsetQuery";
+import { jrpgHeroesCharsetHint, queryNpcGraphics } from "@/assets/charsetQuery";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { sharedCharsetRow, sharedCharacterGraphicsCatalog } from "@/project/sharedCharacterFaceResolver";
 import { faceReferenceMetadata, isAuthorableFaceReference } from "@/project/faceReferenceMetadata";
@@ -43,6 +44,7 @@ import { analyzeCityForm, cityFormAdvice } from "./cityForm";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
+import { flatGroundIssues } from "./mapEmptiness";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
@@ -127,7 +129,7 @@ const getProjectSummary: ToolDefinition = {
 };
 
 // 타일을 시맨틱 문자로 변환.
-function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
+export function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
   if (hasEvent) return "E";
   const i = y * map.width + x;
   const layers = cellLayerTiles(map, i);
@@ -227,17 +229,21 @@ const getMapRegion: ToolDefinition = {
         `영역 ${x1 - x0}×${y1 - y0}이 큼 — 다음엔 뷰포트 근처(≤24×24)로 좁혀 조회하세요. 호수는 data.water.bounds를 쓰세요.`,
       );
     }
+    // 모델이 격자를 손으로 세면 틀린다(실측 2026-10-13: 7칸을 나열하며 «총 6칸»). 세어서 준다.
+    const blockedCells: Array<{ x: number; y: number }> = [];
+    rows.forEach((row, dy) => [...row].forEach((glyph, dx) => { if (glyph === "#" && blockedCells.length < 400) blockedCells.push({ x: x0 + dx, y: y0 + dy }); }));
     const waterSummary = water
       ? `물 ${water.cellCount}칸 bounds=(${water.x},${water.y}) ${water.w}×${water.h}`
       : "물 0칸";
     return {
-      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
+      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, 통행 불가(#) ${blockedCells.length}칸, ${waterSummary}`,
       data: {
         // 읽은 맵 id 를 결과에 되돌려준다 — 수정 요청에서 모델이 "무엇을 읽었는지"와 "무엇에 쓸지"를
         // 다른 맵으로 잘못 잇는 사고를 줄인다(2026-08-29 modify 진단 근본원인 15).
         mapId: map.id,
         mapName: map.name,
         grid: rows,
+        blockedCells,
         legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물/호수", T: "나무", E: "이벤트" },
         events,
         water: water
@@ -442,7 +448,7 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const portraits = SHARED_PORTRAIT_ASSETS.filter(asset => !project.assets.uploaded?.[asset.id]).map((asset) => ({
     id: asset.id,
     label: faceReferenceMetadata(asset.id, asset.name, project).name,
-    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${SHARED_PORTRAIT_EXPRESSIONS.filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
+    description: `${sharedPortraitReferenceNote(asset.setId)} ${asset.mode === "full" ? "전신 — 대사 창 뒤에 크게 선다" : "흉상 — 대사 창 옆 초상"}. 얼굴 바꾸기에 이 id 를 쓰면 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 그림으로 바꾼다. 다른 표정은 끝의 -base 를 ${sharedPortraitExpressionsOfSet(asset.setId).filter((expression) => expression !== "base").join("·")} 로 바꾼다.`,
     haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
   const basePortraits = portraits.filter(asset => asset.id.endsWith("-base"));
@@ -465,6 +471,12 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
 function faceForNpcGraphic(textureKey: string, characterIndex: number): { readonly resourceId: string; readonly quality: string } | null {
   const row = sharedCharsetRow(textureKey, characterIndex);
   return row?.status === "mapped" && row.faceResourceId ? { resourceId: row.faceResourceId, quality: row.quality } : null;
+}
+
+/** 일반 질의(주인공·영웅·기본 목록)에서만 JRPG 영웅 칩 안내를 붙인다 — 특정 인물을 찾는 질의에는 군더더기다. */
+function jrpgHeroesHintForNpcList(project: Project, query: string | undefined): { hint?: string } {
+  const hint = jrpgHeroesCharsetHint(project.charsetLabels, query);
+  return hint ? { hint } : {};
 }
 
 const listNpcGraphics: ToolDefinition = {
@@ -495,7 +507,8 @@ const listNpcGraphics: ToolDefinition = {
         if (!face) return [];
         if (project.assets.uploaded?.[face.resourceId]) return [{ mode: "face", resourceId: face.resourceId, note: "사용자 업로드 그림" }];
         const setId = sharedExpressionSetIdOf(face.resourceId);
-        return [{ mode: "face", resourceId: face.resourceId }, ...SHARED_PORTRAIT_ASSETS
+        // 현대 연애 칩의 짝은 48px 얼굴이 아니라 흉상 base 다 — 같은 그림을 「face」로 한 번 더 싣지 않는다.
+        return [...(findSharedPortrait(face.resourceId) ? [] : [{ mode: "face", resourceId: face.resourceId }]), ...SHARED_PORTRAIT_ASSETS
           .filter((asset) => asset.setId === setId && asset.expression === "base")
           .map((asset) => ({ mode: asset.mode, resourceId: asset.id, note: sharedPortraitReferenceNote(asset.setId) }))];
       })(),
@@ -506,7 +519,15 @@ const listNpcGraphics: ToolDefinition = {
       },
     }));
     const label = query && query.trim().length > 0 ? `"${query}"` : "기본";
-    return { summary: `NPC 그래픽 ${matches.length}개 조회(${label})`, data: { matches } };
+    return {
+      summary: `NPC 그래픽 ${matches.length}개 조회(${label})`,
+      data: {
+        matches,
+        ...(matches.length === 0 && query && query.trim().length > 0
+          ? { hint: "0건이다. 검색어는 낱말 하나로(예: 여학생, 남학생, 카페 점원, 교수, 정장) 줄이거나 query 를 생략해 기본 후보를 본다. 여러 낱말을 공백으로 이으면 모두 맞아야 한다." }
+          : jrpgHeroesHintForNpcList(project, query)),
+      },
+    };
   },
 };
 
@@ -606,6 +627,13 @@ const listResources: ToolDefinition = {
         else all.push(...raw);
       }
     }
+    // 장르 잠금(조수 실행 중): 얼굴·몬스터·전투 배경 검색은 허용 계열 그림만 보여 준다(허용 밖 그림은 목록에서 아예 빠진다).
+    const visualFilter = activeGenreLockVisualCatalog();
+    if (visualFilter) {
+      if (kind === "faceset") all = all.filter((entry) => visualFilter.face(entry.id));
+      else if (kind === "monster") all = all.filter((entry) => visualFilter.battler(entry.id));
+      else if (kind === "backdrop") all = all.filter((entry) => visualFilter.backdrop(entry.id.replace(/^backdrop:/u, "")));
+    }
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined
         ? match
@@ -616,9 +644,10 @@ const listResources: ToolDefinition = {
         },
     );
     const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
+    const charsetHint = kind === "charset" ? jrpgHeroesCharsetHint(project.charsetLabels, args.query) : null;
     return {
       summary: `리소스 ${matches.length}개 검색됨("${args.query}", ${kind})`,
-      data: { matches, total: all.length, nextOffset },
+      data: { matches, total: all.length, nextOffset, ...(charsetHint ? { hint: charsetHint } : {}) },
     };
   },
 };
@@ -700,6 +729,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...projectLint(project, { reachability: toReachSpecs(args.reachability) }),
     ...lintTilesetPalettes(project),
     ...verifyPlacedTiles(project),
+    ...flatGroundIssues(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;
   const warnings = issues.filter((issue) => issue.severity === "warning").length;

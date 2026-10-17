@@ -1,0 +1,48 @@
+{
+ "key": "sc2-captain",
+ "arch": "sp2-captain",
+ "base": "Scarloxy1:0",
+ "variant": "모자를 흰 선장 모자로 바꾸고(청록 전부 흰·회색 recolor), 흰 재킷을 남색 코트로, 주황 배낭 줄·초록 바지는 남색·짙은 회색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 dfnpsv"
+ ],
+ "metrics": {
+  "added_up0": 41,
+  "added_up1": 53,
+  "added_up2": 53,
+  "added_right0": 41,
+  "added_right1": 41,
+  "added_right2": 41,
+  "added_down0": 36,
+  "added_down1": 53,
+  "added_down2": 53,
+  "added_left0": 41,
+  "added_left1": 41,
+  "added_left2": 41,
+  "changed_ratio": {
+   "H": 0.992,
+   "T": 1.0,
+   "B": 0.938,
+   "S": 0.982
+  },
+  "cross": 23,
+  "cross_base": 11,
+  "lone": 255,
+  "lone_base": 274
+ },
+ "distinct": {
+  "score": 0.521,
+  "nearest": "accepted:sp2-student-blazer-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 12,
+  "hole_filled_px": 7,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-captain-b"
+}

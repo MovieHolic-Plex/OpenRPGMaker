@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f88550afa3de20a883359e0d9e51824539407f1bf738041a4a1b0fd45fc43b4",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "조종 콘솔(윗면 계기 + 앞면 패널)",
+ "label": "sf-station/sf-console-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly shows both a 9-row top surface with embedded instruments/screens (rows 2-10) and a 4-row south-facing front panel (rows 11-14), correctly rendered in 3/4 top-down perspective without isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8030
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "control console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly shows its horizontal top surface (rows 2-10) with instrument screens and buttons viewed from above, alongside a distinct darker front face (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5745
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "control console desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly distinguishes a top horizontal surface (rows 2-9, 8px tall) containing instrument screens from a darker vertical south face below it (rows 11-14, 4px tall) with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5813
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "control console with instrument top deck and front panel",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console clearly depicts a top horizontal surface (rows 2-11, about 10px tall) housing displays and buttons seen from above, resting atop a darker vertical south-facing front panel (rows 12-14, 3px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7883
+  }
+ ],
+ "decidedAt": "2026-10-13T15:15:22.113Z",
+ "cells": {
+  "16": [
+   "b53e1f58e235864d",
+   "c6b62cb1b070d989"
+  ],
+  "24": [
+   "05c55718140252b4",
+   "3d17c59e55ed3eff",
+   "6b90e41f1f4dada1",
+   "7aa39786c82cc03a",
+   "7fef2a660fad48b6",
+   "8000b7c37cc8abac",
+   "a8b32a9696401b78",
+   "aa9f50d8357cc670",
+   "abdb6f657031448e",
+   "c9a6f9ccd55af7fb",
+   "ded873573a3d20f0",
+   "e6ba519f75ced481"
+  ],
+  "32": [
+   "33014840b5891dbc",
+   "573eb006e488adba"
+  ],
+  "48": [
+   "6d7a201c8487a0f1",
+   "88d3082b0249ff73",
+   "9146078dd690c833",
+   "b0be25610fe03825",
+   "d30a40dec0fb7a78",
+   "da731c3050e915fb"
+  ]
+ }
+}

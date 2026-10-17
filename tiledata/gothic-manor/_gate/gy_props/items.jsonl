@@ -1,0 +1,18 @@
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-tomb-round.png", "kind": "column", "name": "둥근 머리 묘비(두꺼운 돌·십자 새김)", "label": "gothic_manor/gm-tomb-round"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-tomb-broken.png", "kind": "column", "name": "부서진 묘비(그루터기 + 쓰러진 조각)", "label": "gothic_manor/gm-tomb-broken"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-tomb-cross.png", "kind": "column", "name": "돌 십자가 묘비", "label": "gothic_manor/gm-tomb-cross"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-tomb-chest.png", "kind": "box", "name": "돌 궤 무덤(뚜껑 윗면·조각 판)", "label": "gothic_manor/gm-tomb-chest"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-sarcophagus.png", "kind": "box", "name": "석관(박공 뚜껑·조각)", "label": "gothic_manor/gm-sarcophagus"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-grave-open.png", "kind": "flat", "name": "파헤친 무덤 구덩이(흙더미·삽)", "label": "gothic_manor/gm-grave-open"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-grave-mound.png", "kind": "organic", "name": "새 무덤 흙더미(나무 십자가)", "label": "gothic_manor/gm-grave-mound"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-urn.png", "kind": "container", "name": "받침 위 돌 항아리(장례 항아리)", "label": "gothic_manor/gm-urn"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-lantern-pillar.png", "kind": "column", "name": "등불 돌기둥(쇠 등롱)", "label": "gothic_manor/gm-lantern-pillar"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-bench.png", "kind": "seat", "name": "돌 벤치(쇠 다리)", "label": "gothic_manor/gm-bench"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-dead-tree.png", "kind": "organic", "name": "큰 고사목(뒤틀린 가지·옹이 구멍)", "label": "gothic_manor/gm-dead-tree"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-dead-tree-s.png", "kind": "organic", "name": "작은 고사목", "label": "gothic_manor/gm-dead-tree-s"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-stump.png", "kind": "organic", "name": "고목 그루터기(도끼)", "label": "gothic_manor/gm-stump"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-bramble.png", "kind": "organic", "name": "가시 덤불(마른 넝쿨·붉은 열매)", "label": "gothic_manor/gm-bramble"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-coffin.png", "kind": "box", "name": "나무 관(닫힘)", "label": "gothic_manor/gm-coffin"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-coffin-open.png", "kind": "container", "name": "열린 관(빈 안쪽·비스듬한 뚜껑)", "label": "gothic_manor/gm-coffin-open"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-statue-gargoyle.png", "kind": "figure", "name": "받침 위 가고일 석상", "label": "gothic_manor/gm-statue-gargoyle"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/gy_props/gm-bones.png", "kind": "debris", "name": "흩어진 뼈와 해골", "label": "gothic_manor/gm-bones"}

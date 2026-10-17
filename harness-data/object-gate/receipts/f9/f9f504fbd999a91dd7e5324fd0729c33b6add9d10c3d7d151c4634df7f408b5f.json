@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9f504fbd999a91dd7e5324fd0729c33b6add9d10c3d7d151c4634df7f408b5f",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽걸이 TV(대기실)",
+ "label": "jp_city/interior_hospital/hs-tv-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted television",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV displayed flat against the wall; permitted to be flat under the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11241
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted TV screen and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat TV mounted to a wall. For the wall_mounted kind, flat south-facing objects are explicitly permitted, so the absence of a visible top surface is correct and not a front-elevation failure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 34132
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted television screen and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV mounted flat on the north wall facing south. As a wall_mounted kind, a flat front-facing view is permitted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted TV",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted TV seen directly against the wall. As a wall-mounted object facing the viewer, flat front elevation without a visible top surface is expected and allowed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4625
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "0c756643673fa2fc",
+   "12ebf64b68369c81",
+   "2b20d4dd3d5da157",
+   "cdc2facafbcdaf09"
+  ],
+  "24": [
+   "0cff98a6eb76a57c",
+   "1fcfff3d81d91a05",
+   "23737b9ed4581be6",
+   "33de8e1e1bf62758",
+   "41b6255c327841ad",
+   "44783c80b4747975",
+   "5cef5679706e20ac",
+   "6847716472eb1527",
+   "711b4c4863c17a24",
+   "77cc7d9810226502",
+   "787451690a264273",
+   "798f46d92560edbf",
+   "7ec6fb35a33b2bb8",
+   "7f91ad49bde2fe7c",
+   "7faf0392f54721c1",
+   "917912761067dcf6",
+   "9e6199b14b625989",
+   "ae412f2efec55fd9",
+   "d1e5e8fab3c7f957",
+   "e5f2910bebf9e0f3",
+   "efc096961353f622",
+   "f129f8ddb03579d7",
+   "f36d5a5b89d0bc5d",
+   "f8b8dc0078c9ef2a"
+  ],
+  "32": [
+   "9feda07ab93c644e"
+  ],
+  "48": [
+   "23817d451d5b6191",
+   "3877d03b37a6306b",
+   "48ec422b70172ac5",
+   "62224bbb6aa00e47",
+   "9fcf02594a5f4f80",
+   "b228862970afaec0"
+  ]
+ }
+}

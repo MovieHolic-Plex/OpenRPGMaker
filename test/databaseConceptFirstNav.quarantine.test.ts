@@ -68,10 +68,10 @@ describe("concept-first Map navigation", () => {
   it("mounts six Map primary entries and moves common events to System, without a folder", () => {
     const host = renderHost();
     expect(TAB_GROUPS.find((group) => group.slug === "world")?.tabs).toEqual([
-      "spatialTiles", "spatialObjects", "spatialSpaces", "spatialPlaces", "spatialRegions", "spatialWorlds",
+      "spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds",
     ]);
-    expect(TAB_GROUPS.find((group) => group.slug === "system")?.tabs).toContain("commonEvents");
-    expect(databaseTabGroupLabel("commonEvents")).toBe(databaseTabGroupLabel("system"));
+    expect(TAB_GROUPS.find((group) => group.slug === "lore")?.tabs).toContain("commonEvents");
+    expect(databaseTabGroupLabel("commonEvents")).toBe(databaseTabGroupLabel("worldCanon"));
     expect(host.querySelector("[data-testid='db-tileset-folder']")).toBeNull();
     expect(host.querySelector("[data-folder-child]")).toBeNull();
     const rail = host.querySelector(".db-tabs")!;

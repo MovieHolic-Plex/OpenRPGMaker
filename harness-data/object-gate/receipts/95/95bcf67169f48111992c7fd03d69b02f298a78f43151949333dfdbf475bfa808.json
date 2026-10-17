@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95bcf67169f48111992c7fd03d69b02f298a78f43151949333dfdbf475bfa808",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "hibiscus bush with red flowers",
+ "label": "pirate-isles/pi-bush-hibiscus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rounded bush canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is shaded as a 3/4 top-down rounded volume, with lighter top surface spanning rows 2 to 7 transitioning into south-facing shadow in rows 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded bush dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is drawn as a spherical dome viewed from 3/4 overhead, with the top lit surface occupying rows 3-8 and darker underside shading towards rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume in 3/4 view with the upper dome (rows 2-7) clearly lit and visible from above, transitioning into shaded south-facing foliage (rows 8-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush foliage mound",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volumetric mound with a distinct top surface (rows 3-7) lit from above, transitioning into shaded lower southern slopes toward row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5510
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "84f0470961d0fdbc"
+  ],
+  "24": [
+   "248b61f2df790619",
+   "4cf94d37856147f8",
+   "57e762988d697248",
+   "613947d9db3240f2",
+   "63a9c00b535b1630",
+   "97be0c24ed303b8b"
+  ],
+  "32": [
+   "41494187b7ec37a0",
+   "4258983068e463d5",
+   "7c955796fb05ee6d",
+   "824ccd1275301808",
+   "93376f46f3c799e0",
+   "ffe5818b0bfe47e9"
+  ],
+  "48": [
+   "1c4e4995320848f7",
+   "611a681dbb2ed9b1",
+   "6c648b954f4042cb",
+   "759235cda3105777",
+   "83b2d5fb3a412ca4",
+   "b98bf496fc7472cc"
+  ]
+ }
+}

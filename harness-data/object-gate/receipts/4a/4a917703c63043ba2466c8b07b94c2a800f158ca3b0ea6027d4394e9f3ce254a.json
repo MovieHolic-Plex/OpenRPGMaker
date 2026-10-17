@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a917703c63043ba2466c8b07b94c2a800f158ca3b0ea6027d4394e9f3ce254a",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-tsukigime",
+ "label": "jp/jp-tsukigime",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard on two posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign is drawn in flat front elevation with a 1px outline on top (row 0) and no visible top surface or depth for the frame/board.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5919
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking sign board on two posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and its frame have only a 1px dark border at row 0 with no visible top surface foreshortened from above; it is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4684
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and its frame are drawn in complete flat front elevation with only a 1px outline at row 0 and no visible top surface or thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13300
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parking sign is drawn completely flat from the front; row 0 is a 1px outline with no visible top surface or depth showing from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3481
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.745Z",
+ "cells": {
+  "16": [
+   "5889abbdbcf6d4f6",
+   "5f032b79869daefa",
+   "b77bf0669b69b2f3",
+   "f25a244c60f17161"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "0946585302d7a3d2",
+   "135e80afbb12895c",
+   "26ba886fab7c4247",
+   "2ee9e01d296c5f38",
+   "39df306245b9e85e",
+   "3f4ec508dbd9801d",
+   "4afc6c5c46a4f988",
+   "53f5ac95ee674df0",
+   "604860efb7b503b3",
+   "669fab931783ad7c",
+   "7d72fda17070971d",
+   "842b307bb13ea8b4",
+   "86e1c070b4f1e811",
+   "8b44616605e22802",
+   "a0c5b9f57dc91671",
+   "afabcadff500d78e",
+   "b5ecb7c68352e533",
+   "ba26fa11775a4335",
+   "bb270b727a3d1750",
+   "da331ded643b445a",
+   "dfda9e951b75356b",
+   "e6d94c2e3109f65a",
+   "fa441c086239aee9"
+  ],
+  "32": [
+   "3a8bb26aed0bc35e"
+  ],
+  "48": [
+   "0fcc0826d9f4dfc1",
+   "6dcabb1cddec64f4",
+   "7d14ccae747e9dbd",
+   "8817b599ff74b819",
+   "96cc0a0d66a3c8fe",
+   "ca145fff628ef726"
+  ]
+ }
+}

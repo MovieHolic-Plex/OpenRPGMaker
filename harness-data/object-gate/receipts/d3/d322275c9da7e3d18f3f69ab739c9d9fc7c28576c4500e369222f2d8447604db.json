@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d322275c9da7e3d18f3f69ab739c9d9fc7c28576c4500e369222f2d8447604db",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "화단 흙(덮개 나무껍질)",
+ "label": "modern-campus/mc-bed-soil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soil/mulch ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting mulch or flowerbed soil spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3536
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground texture (bark mulch / soil)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting flowerbed mulch/soil filling the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3545
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soil/mulch ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground texture representing mulch/bark-covered flowerbed soil, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bark mulch soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground terrain tile representing flowerbed soil/bark mulch surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3992
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.865Z",
+ "cells": {
+  "16": [
+   "50cefc9e48e6bda4"
+  ],
+  "24": [
+   "146c54a410d8d4e6",
+   "1c3554b2a2c4b3e4",
+   "5c78ef3eda3ac7c9",
+   "85d129107fef5557",
+   "956f81d0f3e76796",
+   "f1516c00127e3ade"
+  ],
+  "32": [
+   "36de6ab2501f826a",
+   "3b83e0e56c9cf218",
+   "bdfc9e8812083ea5",
+   "d012318c1854220d",
+   "e64432ff3b9372da",
+   "efd857515cf6b6f9"
+  ],
+  "48": [
+   "185f33f5e3c7153f",
+   "5774e6df0f061f93",
+   "8d098bdd7995ff1b",
+   "b5347d9fb4c94cb4",
+   "beec266cc4bede95",
+   "c60a9788fe67cf43"
+  ]
+ }
+}

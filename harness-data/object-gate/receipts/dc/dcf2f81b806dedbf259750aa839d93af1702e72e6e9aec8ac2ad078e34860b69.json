@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dcf2f81b806dedbf259750aa839d93af1702e72e6e9aec8ac2ad078e34860b69",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷장(두 문, 놋쇠 손잡이)",
+ "label": "steampunk-city/sp-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe body",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is visible across rows 1–4 (4 pixels deep, with back edge shading, flat top plane, and highlighted front edge) above a 1px front lip (row 5) and under-lip cast shadow (row 6). Standard 3/4 top-down perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13837
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-door wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation. Rows 1-5 depict a front-facing crown molding/cornice with a bottom highlight (row 4) and undercut shadow (row 5) rather than a foreshortened top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe with double doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wardrobe is drawn in flat architectural front elevation. The upper section (rows 1-5) is a horizontal crown molding/cornice with highlight and shadow facing forward, rather than a top plane seen from above. Door panel insets are symmetrical top-to-bottom with no 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7490
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn strictly as a 2D architectural front elevation. Rows 1-6 depict a front-facing crown molding/cornice rather than a foreshortened top surface, and the doors, handles, and base are all rendered flat without any 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12228
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.533Z",
+ "cells": {
+  "16": [
+   "10bc6cfe46b478c3",
+   "91c3075cbedd7193",
+   "d10f89da4e2c49a4",
+   "f0e0881a5f71bf32"
+  ],
+  "24": [
+   "000ce1dd08c89652",
+   "0f2b019f9bd3df9c",
+   "1bbca4694bc480d8",
+   "2a67fd3106654317",
+   "3dafe0ea334a456c",
+   "54dd32fd384dfd1c",
+   "60229398a5f0b5d8",
+   "610e65b9bea5db4a",
+   "6f845dfb8d487b32",
+   "85a37f650e78adec",
+   "9a449292c175e256",
+   "a58977d29b87c90c",
+   "b872dfe08041ce9c",
+   "bad8ae7c1707076b",
+   "bbcb58f61c9122b0",
+   "bd2c691c4c337a7e",
+   "c48891a3134dd8e1",
+   "c75086d4110b520f",
+   "d5233eaa69607ef2",
+   "d8edacfe1c0a0f09",
+   "e1b402ae05bb56da",
+   "e30e37a80adeaa56",
+   "e347b2c638fdca6c",
+   "e6ba093d7f0723b9"
+  ],
+  "32": [
+   "6510160edb6bc186"
+  ],
+  "48": [
+   "006cfd80d13f7f3e",
+   "13db27ac384b365b",
+   "32c760a9379d3882",
+   "50fc9e11cf644dca",
+   "a356db87aad3b686",
+   "d88ff55c0a24926c"
+  ]
+ }
+}

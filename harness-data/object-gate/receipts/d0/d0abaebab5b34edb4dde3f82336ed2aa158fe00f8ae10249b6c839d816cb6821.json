@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0abaebab5b34edb4dde3f82336ed2aa158fe00f8ae10249b6c839d816cb6821",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "윤전 인쇄기(인쇄실)",
+ "label": "jp_city/interior_school2/sx-riso-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office printer / copy machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The printer is drawn in pure front elevation: the top is just a 1px outline at row 6, with the control panel, scanner/feeder, paper trays, and lower cabinet doors all facing directly toward the camera with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4792
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office printer / copy machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier is drawn in pure front elevation: the top section with screen, buttons, and scanner lid faces directly toward the viewer with 0 rows of visible top surface receding into the background.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4138
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office printer / copier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The copier/printer is drawn strictly from a front architectural elevation: the control panel, trays, and bottom cabinet doors face directly forward with zero top surface visible (only a 1px top outline at row 6).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4667
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office printer / photocopier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire copier machine (control panel, display screen, trays, and lower cabinet doors) is drawn in pure front elevation with 0px of top surface visible beneath the top outline at row 6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4371
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.917Z",
+ "cells": {
+  "16": [
+   "4263f577a7aa78dc",
+   "47b92fdbb28de0d7",
+   "65b12e9021cc2e3d",
+   "8b0806164f6b3d6f"
+  ],
+  "24": [
+   "14c51678fb07c770",
+   "24ec58cfa363630e",
+   "3a629c87a58d744a",
+   "44e288a5b367aa4b",
+   "583d9828f9c66654",
+   "5def4f005939b023",
+   "7bd6d281cb038695",
+   "8171d9f575a852af",
+   "869d47b8f4634ab2",
+   "87be57d363a3c7e7",
+   "9c6ab17a03ae9c9f",
+   "a4ae99630938eaba",
+   "a6a491867a223964",
+   "a8201c60cbe17c57",
+   "aa7f83bb1c2f3f5d",
+   "b2a027cf2ed5da25",
+   "b9f2322e3cf69132",
+   "bd0946bebaa1d501",
+   "c4222822b7cf81e8",
+   "c6583f90fb1a590c",
+   "cc5ad9b35d3bbe66",
+   "e6ff39083621f53a",
+   "ef53cf83ac141675",
+   "f20e1327cb551f75"
+  ],
+  "32": [
+   "242bd9e3dce54c21"
+  ],
+  "48": [
+   "01ac38427e3d4281",
+   "3dd996c013bd8578",
+   "5072645835eeb403",
+   "67a9d6fddbbe2ad7",
+   "781f2307aafd3353",
+   "d36e9e0e1c25a96c"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06e21fcf538f2838e6b6e3c917e0dbe73acdd8348a5b7da56a04b4f043b7d3ec",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "jp-rail-pylon",
+ "label": "jp/jp-rail-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail pylon / signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn as a flat front elevation with straight horizontal bands and outlines (rows 0, 7-12, 21, 29-31). No foreshortened top surface or depth is visible anywhere on the column or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6322
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete rail pylon / bollard lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn in flat front elevation with straight horizontal bands at every tier (rows 9-12, row 21, and rows 28-31). The top cap terminates in a flat outline at row 0 with no visible horizontal top surface whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7497
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway pylon / signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation with strictly horizontal striping across the cap, middle housing, and base plinth. No foreshortened top surfaces or elliptical roundings are present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7238
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway pylon / signal pole with upper cap, central lantern/signal housing, and lower base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation with perfectly horizontal edges and no visible top/horizontal surfaces on any section (the cap, lantern overhang, and base are all 2D elevations).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7574
+  }
+ ],
+ "decidedAt": "2026-10-13T14:20:17.061Z",
+ "cells": {
+  "16": [
+   "03f3737857004a0b",
+   "b7e6fac238b0dc14"
+  ],
+  "24": [
+   "2e75fafebba45908",
+   "30501756b6629143",
+   "32a918d77ac27192",
+   "5389c9cbda2d4a04",
+   "935259b31f0c1f7a",
+   "c81c7f922e9d426d",
+   "c9d8e5b70f17e105",
+   "cbcaa40af617390b",
+   "cebe3174d1d19e6f",
+   "d51afa058912c56f",
+   "ef3122d1417daa44",
+   "f64492bfe0cfe0bb"
+  ],
+  "32": [
+   "04de05ef9f802418",
+   "2dfa6c4043b6dd35",
+   "61b2e4e2652a4aae"
+  ],
+  "48": [
+   "1cad188e88bcfc97",
+   "663d20109ce53328",
+   "8dd76168759db723",
+   "a1e17544b5f69057",
+   "b2b9d01f40112cb9",
+   "be30ac3fd3005e5c"
+  ]
+ }
+}

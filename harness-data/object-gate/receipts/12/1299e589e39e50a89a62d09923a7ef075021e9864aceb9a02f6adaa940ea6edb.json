@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1299e589e39e50a89a62d09923a7ef075021e9864aceb9a02f6adaa940ea6edb",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "정보 키오스크(넓은 윗면 + 위 홀로 지도판 + 앞 화면 둘 + 받침)",
+ "label": "sf-station/sf-street-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kiosk console body",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console counter has a clearly rendered top surface spanning rows 14 to 17 (4 source pixels) above the south front face featuring two display screens.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4591
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk console body",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body has a clearly foreshortened top surface spanning rows 14 to 17 (4 source pixel rows) in light blue-grey above the dark blue front face (rows 18-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk console counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body has a distinct 4-row deep top surface (rows 14-17) visible between the upper screen stem and the front face (rows 19-29), properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk console / counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main kiosk counter body clearly displays a 4-pixel tall horizontal top surface (rows 14-17) upon which the upper display stand is mounted, above the vertical south face (rows 18-29) containing two screens.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5333
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.248Z",
+ "cells": {
+  "16": [
+   "07d606d493aa20db",
+   "0966711879d190a6",
+   "96ff4fa1adc18a12",
+   "e965787d9296bb29"
+  ],
+  "24": [
+   "158ef8af17eb8c4e",
+   "2c9cc7567e3a4c3d",
+   "41939fca51af47ed",
+   "486bcda5db49cd9e",
+   "4e67389f7be46e24",
+   "6d51764f451d9ac7",
+   "76e2647b1062ae51",
+   "921413c010417ef0",
+   "944e9174d2952c20",
+   "a5918a5a7b9610aa",
+   "a63f7c45d58875a2",
+   "a766001bcb9b3615",
+   "abe59e8c8e1774ee",
+   "afe513dba7b122ad",
+   "b4f92abf7862adf0",
+   "bf9f918b65961a71",
+   "c01cfab29183f38d",
+   "c78bc7d423f757b6",
+   "c83ab7cf16d4124c",
+   "cd700a95734ca2a5",
+   "d7c2db0c32172b2e",
+   "e5c307d3f50934f0",
+   "f242af947dcfc6c3",
+   "f9297ca01a772c56"
+  ],
+  "32": [
+   "272c92442fd9ccac"
+  ],
+  "48": [
+   "1c6d1b194404b131",
+   "712be4156ed609e5",
+   "8f36049908f9a774",
+   "b5290355738bd2f0",
+   "c738e6cb2370d280",
+   "d239986e322b87d7"
+  ]
+ }
+}

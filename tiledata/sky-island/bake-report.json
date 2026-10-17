@@ -1,0 +1,34 @@
+{
+ "gate": {
+  "provisional_profile_uncalibrated": 263,
+  "blocked": [],
+  "pieces": 249
+ },
+ "tiles": {
+  "count": 667,
+  "rows": 14,
+  "sheetPx": [
+   768,
+   224
+  ],
+  "strips": 35,
+  "kits": 86,
+  "groups": 166,
+  "pieces": 249
+ },
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 667,
+  "kits_checked": 86,
+  "groups_checked": 166,
+  "autotiles_checked": 0
+ },
+ "reassembly": {
+  "kits": 86,
+  "checked": 86,
+  "mismatched": 0,
+  "ids": []
+ }
+}

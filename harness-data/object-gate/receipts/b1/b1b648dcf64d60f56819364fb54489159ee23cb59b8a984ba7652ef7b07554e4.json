@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1b648dcf64d60f56819364fb54489159ee23cb59b8a984ba7652ef7b07554e4",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "머그잔 둘",
+ "label": "modern_city/interior/mci-g-coffee",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two mugs with coffee inside",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both mugs show foreshortened circular/elliptical top openings filled with brown coffee spanning rows 6-8, sitting atop the front south cylinder faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5510
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two mugs with coffee inside",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both mugs show clear top openings from row 6 to row 8 filled with coffee (3 rows tall ellipse/cross shape) with visible south-facing mug bodies below from row 9 to 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5433
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two mugs with coffee",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both mugs show clear 3-row foreshortened top openings (rows 6-8) revealing the dark liquid inside, with the south cylindrical wall visible below (rows 9-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5789
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two mugs side-by-side with coffee inside",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both mugs show clear 3-row tall ellipses containing dark brown liquid viewed from above (rows 6-8).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4561
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.389Z",
+ "cells": {
+  "16": [
+   "950aa8a5077ca6ac"
+  ],
+  "24": [
+   "04d884bb708cdd58",
+   "3430f9258dee0233",
+   "427483d72fcb58f3",
+   "79aab358b9eab2fc",
+   "abf3befbac595ac9",
+   "ef8579eccaa69b29"
+  ],
+  "32": [
+   "0dd1529176262d52",
+   "1a61c1dad75870b5",
+   "2b3ac60e5204cb11",
+   "317eb3059448fc30",
+   "5a8ba82859a21af7",
+   "cb87c1758a342ee6"
+  ],
+  "48": [
+   "15264a58829957a0",
+   "23169ba3fd664308",
+   "30e47933a416c32d",
+   "8dec9a72942497e8",
+   "bb988da6e5b5d2f1",
+   "e37128c207081ace"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b678838a8ae36de7b253f3c105c103ed50b7b1f60658f081fec5b3a25472edf",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "의무실 침대(흰 매트 + 연청 담요 + 머리맡 생체 화면)",
+ "label": "sf-station/sf-med-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress surface is viewed from above across rows 8-23 (16 rows) showing the pillow and blanket, while rows 24-29 form the front-facing foot of the bed frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5695
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "infirmary bed mattress and blanket surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface (pillow, white sheet, and light-blue blanket) is viewed from above across rows 8–23 (~16 rows), with the vertical footboard/control panel visible as the south face at rows 24–29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5736
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "infirmary bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above in classic 3/4 perspective: the headboard with biometric monitor is at the north (rows 0-7), the horizontal mattress surface with pillow and blanket spans 16 rows (rows 8-23), and the south-facing front base with control panel and legs spans rows 24-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5296
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "infirmary bed with mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's top surface (mattress and light blue blanket) spans rows 8-23 (16 rows) viewed from above, with the south footboard/frame face visible below it on rows 24-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8960
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "37d4b49c4964f009",
+   "9b791b4fdef37a1f",
+   "b67283c457d68fb1",
+   "c7a3df565405d950"
+  ],
+  "24": [
+   "0359713643bdf013",
+   "119bda0da606c3d6",
+   "1970d130933b0167",
+   "237946a0e594dd6e",
+   "2dd076c55cfee908",
+   "3879b910f0eadc3b",
+   "394978d6532d1194",
+   "46870975fe47efee",
+   "49e343b9b7320d71",
+   "4cffa2e06746db16",
+   "5cb6649041d6914c",
+   "6856004832b6ad21",
+   "6cb79c9a7c60bed8",
+   "766c366b249cef05",
+   "837ca94d74b09799",
+   "83edf4eef536f2b8",
+   "9105fd6f977067c8",
+   "919d1a1951a73ce2",
+   "aa792145360e4b00",
+   "df6cdbcff7f787ac",
+   "e6217a74b67a6069",
+   "f99c7bd109182e7c",
+   "fe15be6fdbca5ae9",
+   "ff9b1de1d81db5fc"
+  ],
+  "32": [
+   "c6b2d2b246d260a6"
+  ],
+  "48": [
+   "5977cd8089c2b1f1",
+   "730fb8b053655cce",
+   "bbea5594b6f0be69",
+   "ddf7c9323312d789",
+   "f08e64359cf6d52f",
+   "f281938bb4051deb"
+  ]
+ }
+}

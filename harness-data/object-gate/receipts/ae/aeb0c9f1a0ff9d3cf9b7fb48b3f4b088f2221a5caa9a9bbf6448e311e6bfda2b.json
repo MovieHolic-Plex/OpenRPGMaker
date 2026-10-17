@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aeb0c9f1a0ff9d3cf9b7fb48b3f4b088f2221a5caa9a9bbf6448e311e6bfda2b",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "투약 창구",
+ "label": "jp_city/interior_hospital/hs-pickup-window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dispensing window and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter and window structure is drawn in pure front elevation (side-scroller style). There is no visible top surface for the counter (only a 1px edge line at row 22, with vertical panel lines beneath it), and the dispensing window cutout is a flat front rectangle with no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12768
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dispensing window and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pharmacy dispensing counter and glass window are drawn in pure front elevation with no visible top surface for the counter ledge or window sill.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4664
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pharmacy dispensing window counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (glass window pane, dispensing slot, counter panels) is drawn in pure architectural front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6724
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medication dispensing counter with glass partition window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire counter and partition window are drawn in flat front elevation with zero top-down foreshortening; no horizontal counter top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4559
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "ba9461d8ab0532b9",
+   "dd24204b267d3241",
+   "e5ec7fa86c49d50b",
+   "f0ebad9bfd4148c1"
+  ],
+  "24": [
+   "001441317a546240",
+   "0a8210a62ebdc975",
+   "15227fc58b0da716",
+   "1646eed72f9c2176",
+   "2030fd15c91ba41b",
+   "206d315aa091fd23",
+   "2650b34aadda21eb",
+   "2688258a2aeac27f",
+   "306ad067ca4c58aa",
+   "3c970d0a9482f864",
+   "41e7ac82dcd2d9b3",
+   "43d2ef523c01e293",
+   "67602e116ec38561",
+   "6fb518e21a912063",
+   "8c5970b3cb1f9341",
+   "8f18bf513d76372e",
+   "aabbee18cb20ddfb",
+   "b082350db752ec32",
+   "b6d45fd7c5a28671",
+   "c4f64cb9dc4b62eb",
+   "df43663fc9f3e124",
+   "ee8cc1c3f4f6665d",
+   "fdf7040422886db0",
+   "ffde0373a8ff32e8"
+  ],
+  "32": [
+   "7ffd479a33d3b008"
+  ],
+  "48": [
+   "088014a1a5ea615d",
+   "3135f4d2c7e933a3",
+   "46d0357066c8072e",
+   "5a071e947dc0c859",
+   "6a4052d76e0110f8",
+   "9b8d69ccd8fdbc5b"
+  ]
+ }
+}

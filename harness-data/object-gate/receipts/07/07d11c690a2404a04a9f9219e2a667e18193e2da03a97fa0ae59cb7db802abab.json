@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07d11c690a2404a04a9f9219e2a667e18193e2da03a97fa0ae59cb7db802abab",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "둥근 걸상",
+ "label": "steampunk-city/sp-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool seat cushion",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion top is clearly seen from above across rows 3-7 (5 rows high), resting on front legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stool seat cushion",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is clearly foreshortened and visible from above across rows 3-7 (5 pixel rows tall) above the wooden rim and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4056
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat displays a foreshortened elliptical top surface spanning rows 3-7 (5 pixels tall) with its front rim at row 8 and legs extending down below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5532
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool cushion and legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is clearly foreshortened and viewed from above across rows 3-7 (approx 5 rows tall), resting on legs extending downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5589
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.533Z",
+ "cells": {
+  "16": [
+   "ccd6344ab5ea0044"
+  ],
+  "24": [
+   "0840911bed32439e",
+   "b7a259d15be1fdd5",
+   "e2c87608b9cc11f3",
+   "f503106baea02f78",
+   "fcc343e596c4de6c",
+   "fcf12fc0be1b65e3"
+  ],
+  "32": [
+   "03f37ae0703296ed",
+   "50eb509c0aab2c36",
+   "55e6bba0f9e5673f",
+   "80321cac6d827cec",
+   "e6b3ba107da8124a",
+   "efe0ad1d896533e7"
+  ],
+  "48": [
+   "3d988f285bebb326",
+   "8599d058db5d1234",
+   "8d58feb6c73bfc12",
+   "9e33e9453a19ddbc",
+   "b08f87a310b9dc9e",
+   "b21b44a2043a74be"
+  ]
+ }
+}

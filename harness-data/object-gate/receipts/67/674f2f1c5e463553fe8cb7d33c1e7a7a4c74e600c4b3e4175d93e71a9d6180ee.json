@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "674f2f1c5e463553fe8cb7d33c1e7a7a4c74e600c4b3e4175d93e71a9d6180ee",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "회관 가운데 화덕(돌 둘레 + 장작불) (프레임 3)",
+ "label": "snow-north/sn-firepit-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone hearth / fire pit with burning logs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stone rim clearly displays its horizontal top stone surface (rows 19-24) above the south-facing outer wall (rows 25-28), and the interior pit opening is widely visible from row 9 to 18 containing fire and firewood.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5641
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular stone hearth / fire pit with burning logs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone rim shows a broad top surface (rows 19-24 on the front rim) and a south-facing outer wall (rows 25-28). The central pit opening is clearly an ellipse showing burning logs and fire inside (rows 9-18, ~10 rows deep).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fire pit with burning wood",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stone rim has clearly visible top surfaces (rows 19-24 on the front rim) and an elliptical interior opening spanning roughly 11 rows (rows 8-18) containing the fire and logs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fire pit with burning wood",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stone hearth clearly shows its top rim surface (rows 20-24), south vertical rim face (rows 25-28), and a fully visible central recessed opening (rows 8-19) holding the logs and fire seen from above in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2859
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.167Z",
+ "cells": {
+  "16": [
+   "614735c573bd470e",
+   "d32bbdab0b22e472",
+   "d53e0bb2dca008ee",
+   "fbc2ec3597d64c72"
+  ],
+  "24": [
+   "02570cf9cbc2daf8",
+   "0beddb95cf957b36",
+   "1bdfc2b1226257e9",
+   "275431f672a5b8a5",
+   "3cfbbece4a0bc5b3",
+   "41460e2b6a62dc24",
+   "47f02b4e558ca6f3",
+   "504fc7e3b0ac95c3",
+   "553231469c7a90d4",
+   "5ab48e1d6bca1dec",
+   "6906d87566b9d27b",
+   "69643dd8f3596346",
+   "698371adf83c1d4b",
+   "701f1dcaa7306532",
+   "722a0a0cab9b5b01",
+   "97fae3a3e530d4f5",
+   "9d98014527529547",
+   "acd66abd605172a9",
+   "b63239dac937146f",
+   "cecc403b9996aaa6",
+   "e3b7bb7b33030561",
+   "ef73242e17fc5c92",
+   "f0ee3775e57493b9",
+   "f21765e4fa48c71d"
+  ],
+  "32": [
+   "3f124781bf922c5f"
+  ],
+  "48": [
+   "4148aeba3927b5cc",
+   "57a95c03d5178051",
+   "61bd338acd4efcb9",
+   "a43a97b8179784bc",
+   "ce617a49877eccc8",
+   "f07f8acfe221d2fe"
+  ]
+ }
+}

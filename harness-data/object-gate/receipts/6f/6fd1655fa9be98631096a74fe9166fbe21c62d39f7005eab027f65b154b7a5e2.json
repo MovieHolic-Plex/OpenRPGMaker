@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fd1655fa9be98631096a74fe9166fbe21c62d39f7005eab027f65b154b7a5e2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈밭(바람 물결)",
+ "label": "snow-north/sn-snow",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow ground terrain with wind-blown ripples",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snowfield terrain tile filling the 16x16 canvas with subtle wind ripple details seen from the 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snowfield ground tile with wind ripples",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting snow with subtle wind-blown ripple highlights and shadows; no standing structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4153
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snowfield ground with wind ripples",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snow terrain tile with wind-blown ripples, viewed from above as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowfield terrain tile with wind ripple drifts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting snow with subtle wind-blown wave highlights and shadows across the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5160
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.949Z",
+ "cells": {
+  "16": [
+   "2a9e18bba052d958"
+  ],
+  "24": [
+   "18df6901a5a73929",
+   "1da4143a8661d47d",
+   "20670c3de07e9470",
+   "d0ad641770c67f85",
+   "e98957a241c0a36d",
+   "ea7c8754c3b591a6"
+  ],
+  "32": [
+   "137c239778a0087d",
+   "240e72823f99a192",
+   "5e6b28e306af528c",
+   "80f81ff9615274a2",
+   "e01002108a9ebe18",
+   "f8cd93a116b865e5"
+  ],
+  "48": [
+   "1b439c00a4fd8e3c",
+   "8b24f3dec6dad376",
+   "95007a42ffc2ce7a",
+   "aaa29719b89540a6",
+   "b4d370831206194d",
+   "f7af05cf38527c0c"
+  ]
+ }
+}

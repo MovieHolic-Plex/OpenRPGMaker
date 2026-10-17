@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58921c6cbac58d5db8346f0b8171c6df4e36b38687a30e55190555d76049d00d",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "jp-lot-pay",
+ "label": "jp_city/street_hand/jp-lot-pay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking pay machine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pay machine is drawn in flat front elevation. The main cabinet (rows 11-29) shows only its south face (screen, slots, buttons) with no visible top surface, and the upper section/signboard (rows 1-7) is also drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11440
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking payment machine / ticket kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire kiosk, including the upper sign (rows 1-7), canopy rim (rows 8-10), and lower body with screen and slots (rows 11-29), is drawn in flat front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4692
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking lot payment machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire ticket machine, including the top sign, canopy, and main cabinet, is drawn as a flat architectural front elevation with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parking pay machine (housing and upper sign)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine and its upper sign are drawn in flat front elevation with no visible top surface (0 rows). The horizontal surfaces are represented only by 1-2px border lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6630
+  }
+ ],
+ "decidedAt": "2026-10-13T17:32:26.914Z",
+ "cells": {
+  "16": [
+   "0b6bf0638f5e8174",
+   "1463f27fc206fda4"
+  ],
+  "24": [
+   "13c8ed9579ecfe65",
+   "2865419bf63a6ca9",
+   "2dbefc8e94ee5605",
+   "32b28a2e1488451b",
+   "668a4b890f505513",
+   "7262054cc6180f34",
+   "80834e7a1c5aea2e",
+   "bb4af08704749427",
+   "c8aad4772abd3c39",
+   "d1df290ae9738f9d",
+   "eed7ee69dd7d0214",
+   "febb452ae0853200"
+  ],
+  "32": [
+   "9cda35b3b03bc4e7",
+   "f910d35430a0c6f6",
+   "f9fd02547fe247ed"
+  ],
+  "48": [
+   "2f4223d89f93037d",
+   "52175cb5bed8da1a",
+   "5c526d69e5b4233c",
+   "99990025a563d5a2",
+   "ec35da009c8bcd08",
+   "fc5363305899d66d"
+  ]
+ }
+}

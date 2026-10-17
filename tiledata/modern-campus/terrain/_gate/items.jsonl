@@ -1,0 +1,37 @@
+{"png": "mc-lawn.png", "kind": "terrain", "name": "캠퍼스 잔디", "label": "modern-campus/mc-lawn"}
+{"png": "mc-lawn-b.png", "kind": "terrain", "name": "캠퍼스 잔디(변주)", "label": "modern-campus/mc-lawn-b"}
+{"png": "mc-lawn-flower.png", "kind": "terrain", "name": "토끼풀 꽃 잔디", "label": "modern-campus/mc-lawn-flower"}
+{"png": "mc-lawn-shade.png", "kind": "terrain", "name": "그늘진 잔디(나무 밑)", "label": "modern-campus/mc-lawn-shade"}
+{"png": "mc-pave-brick.png", "kind": "terrain", "name": "붉은 벽돌 포석(바구니 짜기)", "label": "modern-campus/mc-pave-brick"}
+{"png": "mc-pave-granite.png", "kind": "terrain", "name": "화강암 판석", "label": "modern-campus/mc-pave-granite"}
+{"png": "mc-pave-path.png", "kind": "terrain", "name": "콘크리트 산책길", "label": "modern-campus/mc-pave-path"}
+{"png": "mc-sidewalk.png", "kind": "terrain", "name": "보도블록", "label": "modern-campus/mc-sidewalk"}
+{"png": "mc-tactile.png", "kind": "terrain", "name": "점자 블록(노랑)", "label": "modern-campus/mc-tactile"}
+{"png": "mc-asphalt.png", "kind": "terrain", "name": "아스팔트 차도", "label": "modern-campus/mc-asphalt"}
+{"png": "mc-asphalt-dash.png", "kind": "terrain", "name": "차도 흰 점선(가로)", "label": "modern-campus/mc-asphalt-dash"}
+{"png": "mc-asphalt-yellow.png", "kind": "terrain", "name": "중앙선 황색 실선 두 줄(가로)", "label": "modern-campus/mc-asphalt-yellow"}
+{"png": "mc-crosswalk.png", "kind": "terrain", "name": "횡단보도", "label": "modern-campus/mc-crosswalk"}
+{"png": "mc-parking-line.png", "kind": "terrain", "name": "주차 칸 선(세로)", "label": "modern-campus/mc-parking-line"}
+{"png": "mc-track.png", "kind": "terrain", "name": "육상 트랙(붉은 우레탄)", "label": "modern-campus/mc-track"}
+{"png": "mc-track-line.png", "kind": "terrain", "name": "트랙 레인 선(가로)", "label": "modern-campus/mc-track-line"}
+{"png": "mc-track-line-v.png", "kind": "terrain", "name": "트랙 레인 선(세로)", "label": "modern-campus/mc-track-line-v"}
+{"png": "mc-turf-a.png", "kind": "terrain", "name": "인조잔디 구장(밝은 줄)", "label": "modern-campus/mc-turf-a"}
+{"png": "mc-turf-b.png", "kind": "terrain", "name": "인조잔디 구장(어두운 줄)", "label": "modern-campus/mc-turf-b"}
+{"png": "mc-turf-line-h.png", "kind": "terrain", "name": "구장 흰 선(가로)", "label": "modern-campus/mc-turf-line-h"}
+{"png": "mc-turf-line-v.png", "kind": "terrain", "name": "구장 흰 선(세로)", "label": "modern-campus/mc-turf-line-v"}
+{"png": "mc-turf-line-c.png", "kind": "terrain", "name": "구장 흰 선 교차", "label": "modern-campus/mc-turf-line-c"}
+{"png": "mc-dirt.png", "kind": "terrain", "name": "흙 운동장", "label": "modern-campus/mc-dirt"}
+{"png": "mc-dirt-line.png", "kind": "terrain", "name": "흙 운동장 흰 선(가로, 석회)", "label": "modern-campus/mc-dirt-line"}
+{"png": "mc-bed-soil.png", "kind": "terrain", "name": "화단 흙(덮개 나무껍질)", "label": "modern-campus/mc-bed-soil"}
+{"png": "mc-curb-n.png", "kind": "terrain", "name": "잔디 경계석(북 변)", "label": "modern-campus/mc-curb-n"}
+{"png": "mc-curb-s.png", "kind": "terrain", "name": "잔디 경계석(남 변)", "label": "modern-campus/mc-curb-s"}
+{"png": "mc-curb-w.png", "kind": "terrain", "name": "잔디 경계석(서 변)", "label": "modern-campus/mc-curb-w"}
+{"png": "mc-curb-e.png", "kind": "terrain", "name": "잔디 경계석(동 변)", "label": "modern-campus/mc-curb-e"}
+{"png": "mc-curb-nw.png", "kind": "terrain", "name": "잔디 경계석(북서 변)", "label": "modern-campus/mc-curb-nw"}
+{"png": "mc-curb-ne.png", "kind": "terrain", "name": "잔디 경계석(북동 변)", "label": "modern-campus/mc-curb-ne"}
+{"png": "mc-curb-sw.png", "kind": "terrain", "name": "잔디 경계석(남서 변)", "label": "modern-campus/mc-curb-sw"}
+{"png": "mc-curb-se.png", "kind": "terrain", "name": "잔디 경계석(남동 변)", "label": "modern-campus/mc-curb-se"}
+{"png": "mc-curb-in-nw.png", "kind": "terrain", "name": "잔디 경계석(안쪽 북서 변)", "label": "modern-campus/mc-curb-in-nw"}
+{"png": "mc-curb-in-ne.png", "kind": "terrain", "name": "잔디 경계석(안쪽 북동 변)", "label": "modern-campus/mc-curb-in-ne"}
+{"png": "mc-curb-in-sw.png", "kind": "terrain", "name": "잔디 경계석(안쪽 남서 변)", "label": "modern-campus/mc-curb-in-sw"}
+{"png": "mc-curb-in-se.png", "kind": "terrain", "name": "잔디 경계석(안쪽 남동 변)", "label": "modern-campus/mc-curb-in-se"}

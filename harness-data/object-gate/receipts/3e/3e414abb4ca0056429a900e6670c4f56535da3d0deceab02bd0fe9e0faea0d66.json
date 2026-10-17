@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e414abb4ca0056429a900e6670c4f56535da3d0deceab02bd0fe9e0faea0d66",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "세로 네온 간판(굵은 슬랩 + 윗면 + 세로 램프 띠)",
+ "label": "sf-station/sf-street-sign-vertical",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical neon signboard slab",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 8 clearly depict a 7-pixel-tall top surface of the sign slab, followed by the south front face displaying three vertical neon light bars from row 10 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5499
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign slab casing",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the slab enclosure is clearly foreshortened and visible across rows 2-8 (7 pixel rows), showing the 3/4 top-down view above the front-facing neon lamp panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5156
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign slab housing",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign casing is clearly visible from row 2 to row 8 (7 rows tall) above the front face containing the neon tubes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign slab / housing",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the slab casing spans rows 2 through 8 (7 pixel rows), showing clear 3/4 top-down foreshortening above the south-facing neon panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4438
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "4d42f22f567c53b5",
+   "8c5662db1b465fa7"
+  ],
+  "24": [
+   "09e7daed706a160e",
+   "469305d76400bf98",
+   "4d9deca922934b3e",
+   "56b8d98d8ef2ba33",
+   "74bd4278103ec4b6",
+   "99bed6a8d755ef83",
+   "a82502adaf68a846",
+   "d2b0d2c6debe744b",
+   "e3b3366624c711a4",
+   "e67ba266e93ae10e",
+   "e96464397b724ba9",
+   "f3226a43921cf8b9"
+  ],
+  "32": [
+   "097f7ee53209df8c",
+   "9e9e2746fb82a95d",
+   "a7b3dc74d36557f2"
+  ],
+  "48": [
+   "23e27b15d65d22fd",
+   "41c8a9d8c5996b15",
+   "669078173990e25d",
+   "6a61236f61a9d1c5",
+   "a4bfb73595b8cd1b",
+   "de00a7b3022642ed"
+  ]
+ }
+}

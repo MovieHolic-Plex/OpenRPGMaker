@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c05023a23373986df37b5d715ba2fedff946b1f7834451c4455a181f5ac08b70",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "옥상 대형 실외기",
+ "label": "jp_city/interior_school2/sx-roof-ac-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large outdoor AC unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The AC unit is drawn entirely as a flat front elevation. Row 2 is an outline and row 3 is a 1px edge highlight; below that is the vertical front face containing circular fans and vent slats. There is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5232
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large outdoor AC unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The unit is drawn strictly in front elevation with no visible top surface foreshortened from above (top_rows=0). The circular fan grilles face the viewer directly without perspective tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4709
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large rooftop AC outdoor unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in a pure front elevation with fully circular front-facing fan grilles and vents. Only a single 1px outline/highlight exists at the top with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large outdoor AC unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in a flat front elevation with fans directly visible from row 5 down to 13; there is no top surface visible above row 3 (only a 1px outline and 1px edge highlight).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4841
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.918Z",
+ "cells": {
+  "16": [
+   "61d7c3b072f0cb0e",
+   "954a5c8c74743fd8",
+   "ac8062ff894359e3",
+   "b06a5a9845336e71"
+  ],
+  "24": [
+   "01dc53df2eabcb60",
+   "21950e90b458690e",
+   "28d4e59015ca27e4",
+   "29b0f8568430683c",
+   "2a3574f6fcb3d8fc",
+   "2f2dc1cb5d8fa035",
+   "40357fdf11081879",
+   "5436779981af33ea",
+   "73f7b0bd5dc45e9f",
+   "7ba85db891b7c0fd",
+   "809a77c8e56b682c",
+   "89b4f6162a4f36bf",
+   "8aa27924a49e31f8",
+   "90e8d955eeda2c89",
+   "9a1263e0ad17515c",
+   "9aea87608f1e4a27",
+   "9cdb375d617a0802",
+   "a51b5450faa9fb30",
+   "b003d9debbaae5c2",
+   "cfac025e483b9dd3",
+   "d13e590a5e52c77a",
+   "d2bd2f3549d16fa2",
+   "de38b91d63e9fd86",
+   "fe0ac0e840720dff"
+  ],
+  "32": [
+   "a81b8bc3700cea20"
+  ],
+  "48": [
+   "19862ea3fdb611b2",
+   "60675d10c14b2f8e",
+   "71b80bd8ef17b306",
+   "9666e1e03588bb49",
+   "aae39b363f7ad34d",
+   "c4d0f767ff037896"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54164942e6944e9a98e90951992c0eb2e5a7175d0b822f132d8100f69bae6f95",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "둥근 광고탑(빛바랜 포스터 — 글자 없음, 녹청 돔 머리)",
+ "label": "steampunk-city/sp-poster-column",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "advertising column (Morris column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column, including the dome roof, poster drum, and base, is drawn in pure front elevation with flat horizontal boundaries and no top surface or downward-curving ellipses visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15398
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "advertising column (cylindrical kiosk with dome cap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure front elevation: all horizontal boundaries (poster edges at rows 14, 19, and 23) are straight horizontal lines rather than elliptical curves. The dome cap has its finial sticking out of the top silhouette profile and displays an undercut/shadowed underside at rows 13-14, which only occurs in an eye-level or low-angle elevation rather than a 45-degree top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7536
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "advertising column (Morris column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The advertising column is drawn as a flat front elevation: the finial sits directly on the top profile contour rather than foreshortened on top of the dome, the poster sections and joints across the column are straight horizontal lines, and there is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "advertising column (cylindrical body with dome cap and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical column and base are drawn in pure front elevation with no visible horizontal top surfaces. The posters on the column have completely flat horizontal edges (rows 15, 19, 20, 24), the plinth shows no top plane (its contour arches upward in front elevation rather than receding as a top-down ellipse), and the dome is depicted straight-on as an architectural profile.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13206
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.657Z",
+ "cells": {
+  "16": [
+   "1248c39421570938",
+   "5acfee9b6989e4ba"
+  ],
+  "24": [
+   "09c8ced04b97505c",
+   "0c0a7017106a2241",
+   "2528bad9c3e1f2e9",
+   "3690e13a94ad5345",
+   "57b3bfff5f273b17",
+   "5f294b4fb7fdbe1e",
+   "7fbf272ff48cc9ab",
+   "8460d5dc7d7d3ba4",
+   "bb7113b68df621ad",
+   "c7719dfb0a79e4f7",
+   "cba3ccc436cf5850",
+   "f55e3a7d67b91af6"
+  ],
+  "32": [
+   "2ba1ce7e639bf08f",
+   "5be18a02a0a460ad",
+   "b54d944f43e078d6"
+  ],
+  "48": [
+   "0dd6b51811b00ccd",
+   "23b91281f74c506c",
+   "600030ff9046196c",
+   "c53c1084a36a1d72",
+   "d28768ca48d5a089",
+   "d46fb817b1858f2a"
+  ]
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5f206f90bf6f46f2fe8f5dc97065821939dd50a5d673a30ad92aaac45aa0c3a",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "음수대(스테인리스 대야 둘)",
+ "label": "modern-campus/mc-drinking-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stainless steel drinking fountain with dual basins",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the drinking fountain spans rows 2-8 (7 rows), set with two recessed basin openings visible from above (each opening is about 3 rows tall from rows 4 to 6). The front cabinet face spans rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drinking fountain counter with two sink basins",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is visible across rows 2 to 8 (7 rows tall) containing two oval sink basins whose interiors are clearly seen from above across rows 4 to 6. The front cabinet face occupies rows 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4064
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stainless steel dual drinking fountain / basin counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal deck spans rows 2-8 (7 source pixel rows) and features two recessed basins visible from above (openings spanning rows 4-6, 3 rows tall). The vertical front panel occupies rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4001
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drinking fountain counter with two recessed basins",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the drinking fountain spans rows 2-8 (7 rows) and clearly shows the interior cavities of two basins (each 3 rows tall), while the front face spans rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4703
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "79f3c9c808b9d44a",
+   "afc2dd23ace81428"
+  ],
+  "24": [
+   "14b50a8f8cfe9c12",
+   "1edab48dc0511e65",
+   "22bc35d91b53dcf5",
+   "384a5945d18c467e",
+   "49f9a8190a8da6bd",
+   "6be8c24d7acc5914",
+   "a11d93607ccc3972",
+   "a1b753910f24b43e",
+   "ab813027af2fb0f4",
+   "bbc2b15c12c6773a",
+   "d292c441bf39252b",
+   "fc1bb3a10f18f302"
+  ],
+  "32": [
+   "5191e9641ce4e8c7",
+   "d320323326942dcd"
+  ],
+  "48": [
+   "265e27e32b64cd4f",
+   "2d6b356e7e9ec032",
+   "3afbd97dfd75da3f",
+   "8d0750428d78f238",
+   "e26e53c57278d2d1",
+   "f5ce005ac07ee83b"
+  ]
+ }
+}

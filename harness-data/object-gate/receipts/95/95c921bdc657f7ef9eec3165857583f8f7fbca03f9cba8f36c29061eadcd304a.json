@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95c921bdc657f7ef9eec3165857583f8f7fbca03f9cba8f36c29061eadcd304a",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age log seat",
+ "label": "prehistoric/ph-log-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal log bench",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log bench is drawn in pure front elevation: the cylindrical body is seen straight from the side with peg legs sticking straight down, showing only a 1-2px highlight along row 5-6 rather than a foreshortened top seat surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 10086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal log bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log bench is drawn in pure front elevation (side-scroller style), showing only a horizontal cylindrical side with vertical shading and two legs extending straight down at the bottom edge, with no visible top seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal log bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn in pure front elevation as a horizontal cylinder with front-view legs extending straight down at rows 11-12. Shading is a simple vertical gradient across the front face with no top surface or seat plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal log bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn in pure front elevation as a horizontal cylinder with side-scroller style cylindrical shading and two small peg legs extending straight down from row 11. There is no visible top seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6070
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "49194b3983b14882",
+   "4c0fa79eea6a30c3"
+  ],
+  "24": [
+   "09a1221e54cf6df6",
+   "0a8bc5b42f013e0b",
+   "35559eed0141dd8c",
+   "455b403f5f35a057",
+   "4ebde5e357f3291d",
+   "9b3d3775dd612e37",
+   "a5aee93f530d7cb7",
+   "ae56e1c617ae3fe7",
+   "d4b98a10b4716544",
+   "da355b6a786479ab",
+   "e0e3a09d628a4a32",
+   "fdf5336a6d36193b"
+  ],
+  "32": [
+   "8793fe2c04514fc0",
+   "9a0bcaa25e07f37a"
+  ],
+  "48": [
+   "38d049154a8ec76d",
+   "443b424cfcfc0484",
+   "c667566e2b36c7dd",
+   "d3672406341a2a09",
+   "d8d0b8e8d1a710ef",
+   "f3c53cab5823593e"
+  ]
+ }
+}

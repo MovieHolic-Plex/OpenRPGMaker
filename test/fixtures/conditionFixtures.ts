@@ -93,6 +93,8 @@ export const CONDITION_FIXTURES: Readonly<Record<ConditionKind, Condition>> = {
   actorStat: { kind: "actorStat", actorId: CONDITION_REFS.actorId, stat: "hpPercent", op: "<=", value: 25 },
   actorState: { kind: "actorState", actorId: "anyone", stateId: "state_probe", present: true },
   partyLeader: { kind: "partyLeader", actorId: CONDITION_REFS.actorId },
+  partyKnowsSkill: { kind: "partyKnowsSkill", skillId: "skill_probe", present: true },
+  badgeCount: { kind: "badgeCount", op: ">=", value: 2 },
   partySize: { kind: "partySize", op: ">=", value: 2 },
   facing: { kind: "facing", subject: "player", dir: "left" },
   relativeFacing: { kind: "relativeFacing", relation: "playerBehindEvent" },

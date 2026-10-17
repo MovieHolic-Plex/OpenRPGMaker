@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ebaabced136814c9c4d86683474872c854f0f52938cc82721daba84354e55b8",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "빨강 무쇠 우체통(둥근 기둥, 둥근 머리)",
+ "label": "steampunk-city/sp-pillar-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast iron pillar box (cylindrical body with domed cap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar box is drawn in pure front elevation: the domed cap, mail slot, plaque, and base all feature strictly horizontal lines and vertical column shading with no foreshortened top surface visible from the 45-degree camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red cast-iron pillar postbox with domed cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The postbox is drawn as a flat front elevation: the domed cap is rendered straight from the side with the finial at the very top edge (row 5), the mail slot is a flat horizontal bar, the collection plate is a flat rectangle, and the base is a straight horizontal line. No foreshortened top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9701
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar post box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post box is drawn as a flat front elevation: the domed cap is an upright 2D arch with its apex at the very top edge, the mail slot is a horizontal flat bar, and neither the cylindrical body nor the cap rim shows any foreshortened top surface or downward elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9233
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red cast iron pillar post box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar box is drawn in pure front elevation. The domed cap is rendered as a flat arch profile with horizontal base lines, the mail slot and plaque are flat rectangles without perspective foreshortening, and the cylindrical shading runs strictly vertically with 0 source pixel rows of a top-down foreshortened surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9679
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.657Z",
+ "cells": {
+  "16": [
+   "7a48dd5c2930d9c3",
+   "95ace5b411afbfe8"
+  ],
+  "24": [
+   "2489e8893bab4487",
+   "32d894066cde3aa5",
+   "744b1e2d34d287f0",
+   "9f350c417b99549c",
+   "9fd19c1e226ced75",
+   "a232f48adb0a8d7c",
+   "c5f551e945b26ade",
+   "c7838539e3078ad7",
+   "d38df5ce12ce16f3",
+   "e38944301e7bd1e9",
+   "e3b9040915765dcc",
+   "f5cb4db9fb3d103e"
+  ],
+  "32": [
+   "3de078120b6f8158",
+   "9318168857bf939c",
+   "d3e2f8d760c9d102"
+  ],
+  "48": [
+   "04554e2dc31e454a",
+   "0b4941dbb447b110",
+   "150a7b0e93a7ef8e",
+   "29fc70dee2fa1651",
+   "33c392ed4007d18f",
+   "8e0a73cba64770f3"
+  ]
+ }
+}

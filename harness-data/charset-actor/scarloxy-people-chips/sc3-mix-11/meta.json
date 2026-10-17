@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-11",
+ "name": "파란 캡 · 올리브 십자 상의",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy1:3",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-11",
+ "candidate_id": "t64",
+ "judge_totals_ABC": [
+  10,
+  10,
+  6
+ ],
+ "recipe": "gallery4-recipes.json#mix-11"
+}

@@ -1,4 +1,83 @@
+## 포획 연출 · 도감 등록 문장 (2026-10-16, poke-sys ⑦)
+
+- 시각 QA: `MODE=success|fail|both [SHAKES=0..3] [VIDEO=1] unshare -rn sh -c "ip link set lo up && node scripts/qa/runtime/monster-capture.scenario.mjs <campaign.json> <outDir>"` — 실제 가방 버튼으로 볼을 던져 프레임 연속 캡처(+녹화)·전투 문장 로그(`<mode>MsgLog`)를 남긴다. 진단 전용.
+- 연출(`battleFieldDom.playCaptureCinematic`): 포켓몬 스킨 일반 전투(온필드 제외)는 **주인공 뒷모습(번들 `battle-trainers/<troop.trainerSprite.back|hero_m>/back.png`, 새 그림 없음)이 내 몬스터 자리에 서서 손을 휘두르고**, 구슬이 그 손에서 떠난다(몬스터는 그동안 `.battle-capture-thrower-active` 로 투명). 구슬은 상대 몸통(그림 상자 하단 0.84) 위에 앉는다 — 예전 발끝 좌표는 아군 HUD 에 절반이 가렸다. 흡수 때 흰 섬광, 흔들림 ±30°·±12px, 잡힘은 금빛 별 6개+밝은 구슬, 탈출은 붉은 섬광+몬스터가 튀어나옴(`battle-capture-escaped`). 효과음: 던지기·흔들림·잡힘·탈출은 monster-sfx 세트(`playMonsterSfxNow`), 도감 등록 징글만 `battleSfx` "dex"(합성).
+- 시퀀서: 연출은 실시간이라 행동 비트(무게 배율·템포·배속으로 줄어듦)에 맞춰 늘려 넘긴다(`cinematicBeatMs`, `approachScaleFor`) — 안 그러면 「잡았다!」가 구슬이 흔들리는 도중에 떴다. 결과 문장은 최소 `CAPTURE_RESULT_HOLD_MS`(1300ms) 체류.
+- 도감 등록: 캠페인 도감(`system.monsterCampaign.speciesIds`)에 있는 종을 처음 잡으면 `lastCaptureResult.newDexEntry` + 타임라인 special(`aside:"dex"`) 한 줄「{name}의 데이터가 도감에 등록되었다!」+징글. 문구는 **선택 필드** `monsterCampaign.dexRegisteredText`({name}=종 이름, ≤80자)로 바꾼다 — 조수 `configure_monster_campaign definition.dexRegisteredText`, 별칭 「도감 등록 문장」. 도감 영수증(mx_caught_)은 여전히 승리·도주 커밋 때만 찍힌다(패배로 버려지는 포획은 도감에 안 남는다).
+- 실패 문구: 흔들림 0~3회별 4행 × (에메랄드 고정 / 그 밖 스킨 변형 2개를 굴림 값으로 번갈아)(`battleDirectorDom.captureFailLine`).
+- 단위 `test/captureDexRegistration.test.ts`(미실행). `monster-journey.mjs` 가 던지는 주인공·구슬·흔들림·잡힘/탈출·도감 문장을 단언(`capture-cinematic`, `capture-dex-line`).
+
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## 조건부 볼 · 포획 볼 기록 — 포켓몬식 그물·퀵·타이머·리피트 볼 (2026-10-16, poke-depth PR6)
+
+- 데이터: `ItemCaptureProfile.condition?: {kind: "type"|"firstTurn"|"turns"|"repeat", multiplier, types?, step?}`(**선택 필드**, 생략=조건 없음·저장 바이트 불변; multiplier 1.1~8). 기존 `ballClass`(poke/great/ultra/master)와 **겹친다** — 조건이 맞으면 포획 확률이 더 오른다. 규칙·정규화는 `src/battle/captureBalls.ts`(`normalizeCaptureCondition` 은 필수 매개변수가 빠지면 조건을 버린다).
+- 종류: `type`(대상 타입이 `types` 중 하나면 ×multiplier — 그물 볼) · `firstTurn`(전투 첫 라운드에만, `turn===0` — 퀵 볼) · `turns`(`1 + 끝난 라운드×step`, 상한 multiplier — 타이머 볼) · `repeat`(대상 종이 도감에 이미 있을 때 — 전투가 시드한 `mx_caught_<종>` 스위치 — 리피트 볼).
+- 적용(`runtime.ts applyCapture`): `captureConditionMultiplier` 를 gen1 은 `catchRate = min(255, 종 포획률×255×배율)` 에, 기본 모델은 `captureItemMultiplier×배율` 에 곱한다. 마스터 등급은 어차피 확정이다. 조건이 맞으면 전투 문장 하나(「신속 구슬이 첫 차례라서 힘을 발휘한다!」)가 던지기 줄 뒤에 나온다.
+- 포획 볼 기록: `MonsterInstance.caughtBallId?`(선택, 세이브 검증 포함)를 포획 결과(`battleRewardsToSession`)가 채운다. 선물·시작 몬스터는 없음. 상태 메뉴 몬스터 상세에 「포획 볼 ◓ 이름」 줄(testid `status-menu-monster-ball-<id>`, 설명 = 등급·조건, 아이콘은 그 볼 아이템의 `iconResourceId`).
+- 화면: 전투 포획 목록의 상세 칸이 조건 요약(「첫 차례 ×5」·「물·벌레 타입 ×3.5」)을 보인다(`battleCommandDom.captureItems`). 아이템 정보 화면의 「효과」 칸에 `조건 …`.
+- 조수: `upsert_item.item.captureProfile.condition`(enum·숫자·타입 id 배열만, 자유 키 없음). 모르는 종류·kind=type 인데 types 없음·상성표에 없는 타입은 허용 값을 담아 `invalid-capture-condition` 로 거절. 레시피 `monster-capture-balls`.
+- 예제 몬스터 원정: 그물·신속·경과·재회 구슬(`mx_ball_*`, `roster.ts EXPEDITION_BALL_IDS`)을 DB·상점에 추가. **그림 필요**: 네 볼은 기본 포획 구슬 그림(`cc0-jetrel-capture-orb`)을 재사용한다 — 볼마다 다른 도트 그림은 3/4 관문(object-gate)을 통과해야 하므로 만들지 않았다.
+- 검증: `bun scripts/qa/poke-depth/balls.probe.mts`(엔진 4항목), `scripts/qa/runtime/poke-depth-balls.capture.mjs`(출하 플레이어 — 신속 구슬을 던져 잡고 상세에서 「포획 볼」 확인; LEGACY=1 이 「전」). 단위 `test/captureBalls.test.ts`(미실행).
+- 남은 것: 레벨·HP·상태·시간대 조건(다이브·네스트·듀스크 볼), 볼 종류별 도감 필터, 볼별 던지기·흔들림 연출, DB 편집기 볼 조건 칸, 볼마다 다른 그림. 도감 아이콘은 기존 `monsterMenuIconResourceId` 그대로.
+
+## 야생 조우 보호 — 도망 무적 걸음·벌레퇴치·탈출 로프 (2026-10-16, poke-sys ②)
+
+- 도망 성공 → `grantEscapeGrace`(`playSceneMovement`), 걸음마다 `tickEncounterGuard`(`project/encounterGuard.ts`)가 면제를 깎는다. 세션 필드 `encounterGuard` 하나(저장·불러오기 왕복, 비면 생략). 벌레퇴치 `ItemRecord.repelSteps/repelBelowLead`, 탈출 로프 `escapeTo`(던전 `mapRole` 에서만). 자세한 규칙·조수 경로·화면 증거는 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
+## 지닌 도구(held item) — 아이템 선언 + 몬스터 개체가 하나 지님 (2026-10-16, poke-depth PR4)
+
+- 데이터: `ItemRecord.heldEffect?: {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`(**선택 필드**, 생략=지닐 수 없는 아이템·저장 바이트 불변)와 `MonsterInstance.heldItemId?`(선택, 세이브 슬롯 검증 `isMonsterInstancesRecord`). 종류 다섯 enum — `healBelow`(HP 가 문턱 이하가 되면 먹고 회복, 1회용)·`cureStatus`(주요 상태가 걸리면 먹고 치료, 1회용)·`boostType`(같은 타입 기술 피해 percent 101~200)·`endureOnce`(가득 찬 HP 에서 쓰러질 피해를 HP 1 로 버팀, 1회용)·`regen`(매 차례 말 최대 HP 의 percent 1~25 회복, 안 사라짐). 순수 규칙·정규화는 `src/battle/heldItems.ts`(`normalizeHeldItemEffect` 는 필수 매개변수가 빠지면 효과를 버린다).
+- 적용 범위: **gen1 전투 모델의 파티 몬스터만**(적에게는 `heldItemId` 가 없다). `monsterPartyBattlers` 가 인스턴스의 `heldItemId` 를 배틀러에 싣고 `battlerSnapshot` 이 내보낸다.
+- 훅 순서(`runtime.ts`): ① `applyExactGen1Damage` 에서 피해 배율(`heldBoostPercent`) → 버티기(`heldEndureDamage`, 가득 찬 HP 에서 쓰러질 피해면 `hpBefore-1`, 도구 소모, 문장은 `heldNotes`) ② 기술 하나가 끝난 뒤 `flushHeldNotes` + `triggerHeldItem`(맞은 쪽 → 쓴 쪽 순; 열매 회복은 `healing aside:"drain"` 엔트리, 상태 치료는 `stateRemoved reason:"effect"`) ③ 차례 말 잔여 피해 뒤 `applyHeldRegen` + `triggerHeldItem`. 소모된 도구는 `battler.heldItemId` 를 지운다.
+- 전투가 끝나면: 열매·띠 같은 소모품은 **인스턴스에서도 지운다**(`battleRewardsToSession.applyBattleMonsterVitalsToSession` 이 `heldItemId` 를 되쓴다 — 쓰고 사라진 도구가 다음 전투에 되돌아오지 않는다).
+- 필드: 메뉴 「가방」 → 도구 → 「지니게 하기」(원정 스타일은 행동 화면, 기본 스타일은 바로 대상) → 파티 몬스터. 이미 다른 도구를 지닌 몬스터는 바꿔 쥐고 옛 도구는 가방으로 돌아온다(`project/monsterHeldItems.giveHeldItem`, 인벤토리는 `itemTransitions` 정본). 몬스터 상세의 「지닌 도구」 줄을 고르면 가방으로 되돌린다(`takeHeldItem`, `onTakeHeldItem` 액션이 `onMoveMonster` 와 같은 길로 흐른다).
+- 화면: 전투 상태 클러스터에 `◆` 알약(`.battle-held-pill`, testid `battle-held-<battlerId>`, 이름은 title·aria-label; 소모되면 사라짐)과 도구가 발동할 때의 전투 문장. 도구 정보 화면의 「효과」 칸은 `지닌 도구 · <종류>`.
+- 조수: `upsert_item.item.heldEffect`(enum·정수만, 자유 키 없음). 필수 매개변수 누락·모르는 값·상성표에 없는 type 은 허용 값을 담아 `invalid-held-effect` 로 거절, gen1 이 아닌 프로젝트는 저장하되 경고. 레시피 `monster-held-items`.
+- 예제 몬스터 원정: 회복 열매·불꽃 숯·끈기 띠·남은 먹이(`mx_held_*`, `roster.ts` `EXPEDITION_HELD_ITEM_IDS`)를 DB 에 넣고 상점 목록에 올린다.
+- 검증: `bun scripts/qa/poke-depth/held-items.probe.mts`(엔진 6항목), `scripts/qa/runtime/poke-depth-items.capture.mjs`(출하 플레이어 — 메뉴에서 쥐여 주고 전투에서 열매가 발동; LEGACY=1 이 「전」). 단위 `test/heldItems.test.ts`(미실행).
+- 남은 것: 슬롯 하나(몬스터당 도구 하나), 적·트레이너 몬스터의 도구, 야생 몬스터가 떨구는 도구, 특성·날씨와 얽힌 도구, 교체 시 발동 도구, 전투 중 도구 교환은 없다. rm2k3 전투 모델은 지원하지 않는다.
+
+## 특성(ability) — 종마다 선언형 효과 하나 (2026-10-16, poke-depth PR3)
+
+- 데이터: `MonsterSpeciesRecord.ability?: {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`(**선택 필드**, 생략=특성 없음·저장 바이트 불변). 종류는 일곱 enum — `immuneType`(타입 무효, `healPercent` 가 있으면 흡수 회복)·`resistType`(percent 0~99)·`boostLowHp`(HP ≤ 1/3 에서 같은 타입 기술 percent 101~400)·`immuneStatus`·`contactStatus`(물리 피해를 받으면 percent% 확률로 공격자에게 주요 상태)·`statMultiplier`(attack=물리 공격, defense=물리 방어, mind=특수 공격·방어, percent 25~400)·`endure`. 정본·정규화·순수 효과 함수는 `src/battle/abilities.ts`(`normalizeMonsterAbility` 는 종류별 필수 매개변수가 빠지면 특성을 버린다).
+- 적용 범위: **gen1 전투 모델의 피해 경로만**(`applyExactGen1Damage`). 다른 모델은 필드가 있어도 무시한다. 배틀러의 특성은 `abilityOfBattler`(종 id 또는 적 레코드의 speciesId)로 찾는다 — 플레이어 몬스터·야생·트레이너 몬스터가 같다.
+- 훅 순서(`runtime.ts`): ① 타입 무효·흡수(기술이 닿기 전, 난수 바이트 0, 결과는 「효과가 없는 것 같다…」 + 설명 줄 + 흡수 회복 `healing aside:"drain"`), ② 능력 배율(공격 쪽은 `offense`, 방어 쪽은 `defense` 두 값에 모두 곱함 — 급소의 「단계·상태 무시」 계약과 같은 쪽에 들어간다), ③ 결과 피해에 위기 강화×타입 반감, ④ `endure`(가득 찬 HP 에서 쓰러질 피해면 HP 1 이 남게), ⑤ 접촉 상태(`applyContactAbility`: `gen1EffectChanceSucceeds` 확률, 공격자가 이미 주요 상태면 안 건다), ⑥ 상태 면역(`applyGen1States` — 확률 판정을 통과한 뒤 「○○은 특성 ○○ 덕분에 ○○ 상태에 걸리지 않는다!」). 설명 줄은 `abilityNotes` 에 쌓였다가 `flushAbilityNotes` 가 기술 결과 엔트리 **뒤에** `special` 로 기록한다.
+- 예측(`battlePredict`)도 같은 순수 함수를 쓴다(타입 무효면 0, 배율·위기 강화·반감).
+- 화면: 별도 알약 없음 — 전투 문장으로만 나온다. 상태 메뉴 「몬스터 → 상세」에 「특성」 줄(이름 + 효과 설명, testid `status-menu-monster-ability`). DB 편집기 종족 → 성장 탭의 「특성」 카드(`db-monster-species-ability-card`: 종류를 고르면 그 종류에 필요한 칸만).
+- 조수: `define_monster_species.species.ability`(enum·정수만, 자유 키 없음). 필수 매개변수 누락·모르는 값·상성표에 없는 type 은 허용 값을 담아 `invalid-species-ability` 로 거절, gen1 이 아닌 프로젝트는 저장하되 경고. 레시피 `monster-abilities`(`toolCapabilityIndex.ts`). 원작 특성 이름을 그대로 쓰지 말 것.
+- 예제 몬스터 원정: 주 타입별 특성(`roster.ts` `ABILITY_BY_TYPE` — 비행=땅 무효, 전기=접촉 마비, 불·물·풀·벌레=위기 강화, 바위=버티기, 격투=공격 125%, 독·얼음·에스퍼=상태 면역, 땅=전기 무효).
+- 검증: `bun scripts/qa/poke-depth/abilities.probe.mts`(엔진 8항목), `scripts/qa/runtime/poke-depth-abilities.capture.mjs`(출하 플레이어, MODE=immune|contact|endure, LEGACY=1 이 「전」). 단위 `test/monsterAbilities.test.ts`(미실행).
+- 남은 것: **개체별 특성 선택**(한 종에 특성 둘·숨은 특성)은 없다 — 종당 하나. 등장 시·교체 시 발동하는 특성(위협·날씨 소환)·턴 말 특성(가속·재생)·날씨/지닌 도구와 얽힌 특성은 해당 시스템이 들어온 뒤 더한다. rm2k3 전투 모델은 지원하지 않는다.
+
+## 맹독·혼란 — gen1 전투의 상태이상 보강 (2026-10-16, poke-depth PR2)
+
+- 범위: **`battleModel: "gen1"` 프로젝트(몬스터 수집)만.** 다른 전투 모델에서는 같은 레코드가 일반 상태처럼만 돈다(`upsert_state` 가 경고).
+- 맹독 = `StateRecord.gen1MajorStatus: "toxic"`(독·화상·수면·얼음·마비와 같은 주요 상태 슬롯, 서로 배타). 차례 말마다 `stateTurns[id]` 카운터가 1→15(`gen1NextToxicCounter`)로 올라 **최대 HP 1/16 × 카운터**를 깎는다(`applyGen1PostActionResidual({kind:"toxic",toxicCounter})`). 교체해서 빠지면 카운터 0(`resetVolatileStatesOnSwitchOut`). 독·강철 타입은 독과 같이 맹독에 안 걸린다(`gen1MajorStatusBlockedByType`). 필드 걸음 독(`applyGen1FieldPoisonStep`)·포획 보너스·상태 오라는 독과 같다. 일반 독은 그대로 고정 1/16.
+- 혼란 = `StateRecord.volatileStatus: "confusion"`(**새 선택 필드**, 생략=옛 동작). 주요 상태와 겹쳐 걸리고(`readGen1MajorStatus` 는 이 필드가 있는 상태를 주요 상태로 안 읽는다), 걸릴 때 바이트 하나로 남는 행동 수 2~5(`gen1ConfusionTurns`, `stateTurns[id]` 에 저장)가 정해진다. `prepareGen1CombatAction` 이 주요 상태(수면·얼음·마비) 뒤에 `stepGen1ConfusionBeforeAction` 을 부른다: 카운터를 하나 줄여 0 이면 풀리고(`stateRemoved`, reason natural, 그 행동은 정상), 아니면 바이트 하나로 절반(<128)이 **위력 40 무속성 물리 자해**(`gen1ConfusionSelfDamage`: 급소·자속·난수 없음, 자기 공격·방어에 상태·단계 배율 적용, 최소 1)로 그 행동을 잃는다. 자해는 `stateUpkeep` 엔트리(`userRecordId`+문장 「○○은 혼란에 빠져 자신을 공격했다!」)로 기록되고, 시퀀서는 이를 「명령을 못 쓴 차례」로 읽는다(`commandIncapacitated`) — 안 그러면 적의 첫 엔트리가 아군 명령 대사로 읽힌다. 이미 혼란이면 다시 안 걸리고 바이트도 안 쓴다. 교체해서 빠지면 풀린다. 전투가 끝나면 `removeOnBattleEnd` 로 풀린다(상태 레코드에 `runtimeEffects:{removeOnBattleEnd:true}`).
+- RNG: 맹독은 바이트를 안 쓴다(걸리는 순간의 확률 굴림만). 혼란은 걸릴 때 1바이트, 행동마다 1바이트(풀리는 행동은 0바이트). 이 상태를 안 쓰는 게임의 난수열은 그대로다.
+- 화면: 배지 `TOX`(진보라)·`CNF`(분홍, `stateIconToken` 이 `confus`·`toxic` 를 읽는다 — 옛 코드는 `confuse` 만 읽어 `state_confusion` 이 점(●)으로 떨어졌다). 에메랄드 문장: 「○○은 맹독에 걸렸다!」「○○은 맹독의 피해를 입었다!」「○○은 혼란에 빠졌다!」「○○의 혼란이 풀렸다!」. 혼란 오라(`confuse-stars`)는 `state_confusion` id 에 이미 매핑돼 있어 머리 위에 별이 돈다.
+- 예제 몬스터 원정(`monsterExpedition/roster.ts`·`scarloxyPokemonDemoGame.ts`): `state_toxic`·`state_confusion` 추가. 독 6단계 기술이 맹독, 에스퍼·고스트·페어리 4단계 기술이 20~30% 혼란, 물 6단계 정화가 맹독·혼란까지 씻는다.
+- 조수: `upsert_state` 의 `gen1MajorStatus` enum 에 `toxic`, 새 `volatileStatus` enum(`confusion`). 모델이 gen1 이 아니면 경고. 레시피 `monster-status-conditions`(`toolCapabilityIndex.ts`).
+- 검증: `bun scripts/qa/poke-depth/status.probe.mts`(엔진: 맹독 25→150, 혼란 2~5·자해 ≈1/3 라운드), `scripts/qa/runtime/poke-depth-status.capture.mjs`(출하 플레이어, MODE=toxic|confuse, LEGACY=1 이 「전」). 단위 `test/statusConditions.test.ts`(미실행).
+- 남은 것: 나머지 휘발 상태(풀죽음·씨뿌리기·바인드)·상태 치료 도구(만병통치약이 혼란을 낫게 함)·rm2k3 모델의 혼란은 다루지 않는다. 모든 기술의 수면 확률·턴 수는 기존 그대로.
+
+## 날씨 — 기술이 켜고 전투 한 번 동안 유지 (2026-10-16, poke-depth PR5)
+
+- 데이터: `SkillRecord.weather?: {kind: "sun"|"rain"|"sandstorm"|"hail", turns?}`(**선택 필드**, 생략=날씨 없음·저장 바이트 불변; turns 3~8, 기본 5 는 저장하지 않는다). 규칙·정규화는 `src/battle/weather.ts`(`normalizeSkillWeather` 는 모르는 종류를 버린다). 전투 날씨는 런타임 지역 변수라 **저장하지 않는다**(`BattleSnapshot.weather` 로만 나간다).
+- 적용 범위: **gen1 전투 모델만**. 맵·트루프에서 날씨를 거는 길은 아직 없다(기술만).
+- 훅(`runtime.ts`): ① `applyGen1Skill` 이 날씨 기술이 닿은 뒤 `setBattleWeather` — 같은 날씨가 이미 있으면 「하지만 아무 일도 일어나지 않았다!」, 다르면 덮어쓰고 시작 문장 ② `applyExactGen1Damage` 의 피해에 `weatherDamagePercent`(쾌청: 불 150·물 50, 비: 물 150·불 50; 타입은 `gen1CanonicalTypeForId`) ③ 라운드 끝(`completeStrictRound`, gauge 흐름은 사이클 마감 `markGaugeActionCycle`)에 `tickBattleWeather`: 지속 문장 → 모래바람(바위·땅·강철 제외)·싸라기눈(얼음 제외)의 최대 HP 1/16(최소 1) 피해 → 남은 차례 −1 → 0 이면 종료 문장 → `resolveOutcome`(피해로 승패가 갈릴 수 있다).
+- 타임라인: 날씨가 만든 엔트리는 `weatherKind` 를 달고(피해는 `stateUpkeep`+message, 문장은 `special`), 배지가 바뀌는 엔트리는 `weatherAfter`(그 뒤 날씨, null=끝)를 싣는다. 스냅샷의 `weather` 는 명령 즉시 해결돼 문장보다 먼저 바뀌므로 `battleDom.pendingWeatherView` 가 재생한 `weatherAfter` 까지만 반영해 배지를 문장에 맞춘다(stateView·stageView 와 같은 방식). 피해 문장·팝업은 시퀀서가 표시 이름·날씨 이름으로 다시 만든다.
+- 화면: 전투장 오른쪽 위 배지 `.battle-weather-badge`(testid `battle-weather-badge`, 「☀ 쾌청 4」 — 글자+색 4종, 새 그림 없음)와 전투 문장.
+- 조수: `upsert_skill.skill.weather`(enum·정수만, 자유 키 없음). 모르는 종류·turns 범위 밖·모르는 키는 허용 값을 담아 `invalid-skill-weather` 로 거절, gen1 이 아니면 경고. 레시피 `monster-weather`.
+- 예제 몬스터 원정: 주 타입 불·물·바위·땅·얼음 계통이 Lv30 에 날씨 기술(햇살·소나기·모래바람·싸라기눈 부르기, `buildWeatherMoves`)을 배운다.
+- 검증: `bun scripts/qa/poke-depth/weather.probe.mts`(엔진 7항목), `scripts/qa/runtime/poke-depth-weather.capture.mjs`(출하 플레이어, MODE=sun|sand, LEGACY=1 이 「전」). 단위 `test/battleWeather.test.ts`(미실행).
+- 남은 것: 맵·트루프·이벤트로 거는 날씨(필드 날씨→전투 시작 날씨), 날씨를 켜는 특성, 날씨 의존 기술(번개·솔라빔 등), 날씨 연장 도구(지닌 도구), DB 편집기 기술 폼의 날씨 칸, 예측(`battlePredict`) 반영, 날씨 그림 효과(비·모래 입자)는 없다. rm2k3 모델은 지원하지 않는다.
+
+## 필드 적 접촉 전투 진형 (2026-10-14)
+
+접촉 트리거(eventTouch·touch·playerTouch) 이벤트의 `battleProcessing` 은 `playCommandBattle` 의 `contactEventFormation` 으로
+`symbolContactFormation`(선제/기습)을 따른다. 명령에 `formation` 이 있으면 그쪽이 이긴다. 도구·계약·한계는 [필드 적](field-enemy.md).
 
 ## 주인공 연출 5종 · 사용자 재반려 후 수정 (2026-10-05)
 
@@ -215,7 +294,10 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 [캐릭터 전투 동작](character-battle-motion.md)을 따른다. 공용 연출과 통상 공격이 같은 프로필을 읽으며
 기존 마법 영창과 직접 저작 경로를 보존한다.
 
+- **걷기 칩 시트를 전투 시트로 적으면 무시한다(jrpg-loop-1)**: `resolvePartyBattleCharset`(charsetBattlers.ts)은 `battleCharacterResourceId` 가 걷기 칩 시트(`characterResourceId` 와 같거나 `oprn-charset-*`·`easyrpg-charset-*`)이고 전투 전용 칩(`charset-battler-*`)이 아니면 저작 시트로 치지 않는다 — 그대로 그리면 288×256 시트가 작은 칸 수백 개로 깔려 전투 화면 오른쪽이 군중이 됐다(조수가 `oprn-charset-heroes1` 을 양쪽에 적은 ct2). easyrpg 칩이면 대응 전투 칩으로, 아니면 호출자의 기본 도트(`retroFallbackPartyBattler`)로 물러난다.
+
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
+- **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
 
 - 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
   `rm2003`(유리)·`octopath`(먹빛)·`chrono`(청람)·`bravely`(세피아)·`ff`(코발트)·`goldensun`(금갈색)을 **지웠다** —
@@ -782,6 +864,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   런타임은 그림 픽셀을 캔버스로 읽어 캐시한다(가로 스트립은 `data-strip-frames` 첫 칸만). 그림에 `data-emit-x/y`(칸 좌표)가 있으면 그것을 쓴다 —
   몬스터 하네스 `anim.json` 의 `emit` 이 같은 함수로 구한 값이고, 시드 `emit` 으로 손 고칠 수 있다(`openwiki/harnesses/monster-collect-species.md`).
   교차 출처라 못 읽으면 그림 상자 위쪽 앞끝으로 물러난다. 엔진의 `data-emit-*` 배선은 아직 없고 QA 녹화가 주입으로 시연했다(스트립과 같은 처지).
+- **몬스터 수집 하네스 그림이 전투에 배선됨 (2026-10-15):** 캠페인 종의 `graphic.monsterResourceId/backResourceId` 가 `harness-monster-<종>-<front|back>`(112×112, `src/assets/harnessMonsterArt.ts`)이면 상대=앞모습·내 몬스터=뒷모습으로 읽고, 대기 스트립(112×N)은 `battlerIdleAnimation()` 이 돌려준다. 적에게도 `applyIdleAnimationToImage` 가 걸리며(`battleFieldDom.ts` enemyButton, 도트 시트 적 제외), 포켓몬 스킨의 `background:none` 이 스트립을 지우던 것을 `_battlers.css` 한 규칙으로 막았다. 번들에 없는 종은 기존 그림. 규칙·대응 표는 `openwiki/harnesses/monster-collect-species.md` 「캠페인·전투 배선」.
 - **타격감 프리셋 (2026-09-27):** `system.battleHitFeel` = `impact`(묵직하게, 기본·JSON 생략) | `light`(가볍게 = 이 날 이전 연출) |
   `calm`(차분하게). 정본 `src/project/battleHitFeel.ts`, 자료집 시스템 → 시작 설정 → 전투 설정 `db-field-system-battle-hit-feel`,
   AI `set_project_settings battle.hitFeel`. 루트에 `data-battle-hit-feel-preset` 를 찍는다 — `data-battle-hit-feel` 은 히트스톱 중
@@ -1344,6 +1427,17 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - 저작: `upsert_skill` 의 `comboActorIds`·`area`, `upsert_enemy` 의 `rewards.tp`, `upsert_actor` 의 `learnedSkills[].tp`(없는 배우·인원 수·반경·음수 TP 는 ToolError).
 - 검증 증거: `node scripts/runtime-qa.mjs --scenario ct-techs`(`scripts/qa/runtime/ct-techs*.m*`), 헤드리스 TP 는 `scripts/qa/runtime/ct-techs-tp.mts`.
 
+## CT 감사 후속 — 연계기 해금·합체 능력치·Active/Wait 설정·필드 위 배치 (2026-10-15)
+
+- **연계기 해금** `SkillRecord.comboRequires [{actorId, skillId}]`: 그 배우가 그 기술을 **배운 상태**여야 메뉴에 열린다(`comboLockedBy`·`comboSkillIdsFor(…, party)`는 못 채운 연계기를 숨기고, `battleActorSkillFailure` 는 `comboLocked` 로 거절한다). 판정 참가자 `BattleComboParticipant.skillIds` 는 장비 부여 기술까지 합친다. 값이 비면 조건 없음(옛 프로젝트 불변).
+- **합체 능력치** `SkillRecord.comboCombinedStats:true`: 피해·치유 계산 동안만 시전자의 공격력·마력을 연계 참가자 전원 합으로 바꾼다(`applySkillHit` 래퍼, 끝나면 원복). 기술 위력은 낮게 잡는다. **`comboSwitchId`**: 연계기가 발동하면 전투 이벤트 상태의 스위치가 켜진다(세션으로 되돌려 쓰여 이후 이야기 분기). 타임라인 엔트리에 `comboActorIds` 가 실려 표시 계층이 참가자 전원에게 모션을 줄 수 있다(합체 모션 자체는 아직 없다 — 참가자는 선다).
+- **Active/Wait** 필드 메뉴 「대기 ON/OFF」는 이제 실제로 읽힌다: `PlayerPreferences.atbMode`(장치 설정, 세이브 밖) > `system.atbMode`(저작) > wait. `playSceneBattle` 이 `createBattleRuntime({atbMode})` 로 넘기고 런타임 `snapshot().atbMode` 가 전투 DOM 의 `data-battle-atb-mode`·메뉴 중 시간 진행을 정한다. 다음 전투부터 적용된다.
+- **필드 위 전투 배치** `onFieldEnemyPoint`: 트룹 `members[].x/y` 가 모두 있으면 무게중심을 심볼 발밑에 두고 나머지를 24단위=한 칸으로 환산해 저작 배치대로 세운다(없으면 한 칸 간격 가로줄). 아군은 주인공·동료 스프라이트 자리가 정본이고, 동료가 겹치거나 모자라면 주인공 등 뒤로 엇갈려 선다(`onFieldPartyPoint`).
+- **걷기 칩이 없는 종**(박쥐·늑대 …)도 `place_field_enemy` 심볼이 된다: 전투 도트 그림(`generated-enemy-*`)을 정지 그림으로 쓴다(다른 그림으로 대체하지 않는다, 걷기 애니메이션 없음).
+- **필드 배경(`battleBackdrop:"field"`)** 도 스냅샷 전에 주인공·동료·시비 건 적 스프라이트를 투명하게 한다(`hideOnFieldSprites`) — 안 그러면 같은 캐릭터가 배틀러와 필드 그림에 두 번 보인다.
+- `simulate_battle {useSkills:true}`: 아군이 자동 전투 AI(기술·회복·연계기)로 행동하고 `data.skillUses` 에 기술별 횟수가 나온다. 기본은 통상 공격+회복약.
+- 검증: `scripts/qa/runtime/ct-*.scenario.mjs`(ct-vehicle 제외)가 다시 돈다 — 원인은 `vite-node/vite-node.mjs`(v6 에서 `dist/cli.mjs` 로 이동), 투명 심볼 그림, 스킬 칸 커서 방향, retro 스킨의 적 좌표 접힘(x≥34·y 92..142)이었다.
+
 ## 전투 자원 · 감정 · 장비 부여 (JRPG 레인 L3, 2026-09-27)
 
 전부 **system 에서 켤 때만** 동작하고 값이 있을 때만 저장한다(정규화가 기본값·꺼짐을 생략). 옛 프로젝트는 스냅샷에 게이지 필드조차 없다.
@@ -1366,6 +1460,63 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - **장착 장비 제자리 강화** `ItemUpgradeRule.target: "equipment"` — from/to 가 장비 id. 누가 끼고 있으면 그 슬롯을 바로 바꾸고(같은 부위·슬롯 수용 검사), 아니면 가방 한 개를 바꾼다(`applyItemUpgrade`).
 - 저작: 시스템 탭 「전투 자원」, 스킬 카드 「전투 자원」, 상태 전투 규칙 패널의 「감정 계열/단계」, 장비 카드 「장착 시 스킬·명령」, 생활·제작 업그레이드 「장비 강화」. AI 도구는 `set_project_settings.battle.*`·`upsert_skill`·`upsert_state`·`upsert_equipment`·`upsert_item_upgrade.target`.
 - 테스트: `test/mgL3BattleGauges.test.ts`, `mgL3BattleGaugeHud`, `mgL3BattleEmotion`, `mgL3EquipmentGrants`, `mgL3BattleResourceEditor`.
+
+## FF6 마석 성장 — AP 영구 습득 · 레벨업 보너스 · 전투당 1회 (2026-10-15, 작업자 A)
+
+전부 **값이 있을 때만** 동작한다(없는 옛 프로젝트·세이브는 바이트 그대로). 순수 규칙은 `src/battle/battleEsperAp.ts`(미리보기·세션 정산이 같은 함수를 쓴다).
+
+- **AP 영구 습득** — `EquipmentRecord.apGrants [{skillId, ap}]` + `apRate`(%, 기본 100). 적 `EnemyRewards.ap`(트룹 합계 → `BattleRewardsSnapshot.ap`)를 살아남은 보상 대상 전원이
+  받아 **장착한 마석**의 apGrants 에 쌓는다(마석 몫 = max(1, round(AP × apRate/100)), 같은 스킬을 여러 마석이 가르치면 몫을 합하고 필요 AP 는 가장 낮은 값).
+  필요 AP 를 채우면 스킬을 영구 습득한다 — `PlaySession.actorSkillIds` + `learnedViaAp`(배우별 기록)에 들어가 장비를 벗어도 남고, 진행치는 `actorApProgress[배우][스킬]` 에 남는다.
+  `grantsSkillIds`(장착 중에만 사용)와 별개다: 이미 아는 스킬에는 쌓지 않고, 장착 부여로 쓰는 중인 스킬은 아는 것으로 치지 않는다.
+  정산 `applyEsperApToSession`(`player/battleRewardsToSession.ts`, TP 정산 직후), 결과 미리보기 `computeApLearnedPreview`(runtime.ts, `rewards.techLearned[].viaAp`). 세이브 `actorApProgress`·`learnedViaAp` 저장·복원·검증(`saveSlots.ts`).
+- **레벨업 보너스** — `EquipmentRecord.levelUpBonus {maxHpPercent,maxMpPercent,attack,defense,mind,agility}`. 장착한 배우가 레벨이 오를 때마다(올라간 레벨 하나당 한 번) 영구 보너스를 받는다:
+  `computeActorLevelUp({equipment})` 가 `BattleLevelUpResult.equipmentBonus` 를 돌려주고(`*Gain` 에 이미 합산), `applyActorLevelUp` 가 `session.actorParamBonuses` 에 적립한다(Change Parameters 와 같은 저장소 — 장비를 벗어도 남고 전투·메뉴가 이미 읽는다). 퍼센트는 그 레벨의 **곡선 최대치** 기준.
+- **전투당 1회** — `SkillRecord.oncePerBattle`. 쓰면 `skillCooldowns[id] = ONCE_PER_BATTLE_LOCK(1e6)`(라운드가 지나도 풀리지 않는다, 배틀러와 함께 사라짐). 라벨 「이번 전투에서는 이미 사용했습니다.」. `cooldownTurns:99` 근사를 대신한다.
+- **장비 부위 도구** — `upsert_equipment_slot {slots:[{id,label,equipsAs?}], removeIds?}`. `EquipmentSlotRecord.equipsAs` = 그 칸이 대신 받아 주는 부위(유물 2칸: `relic_2.equipsAs="relic"`, `equipmentSlotAccepts` 가 읽는다).
+  `upsert_equipment` 가 모르는 slot 이면 이 도구를 안내한다.
+- 저작: 장비 탭 「마석 성장」 카드(`databaseEquipmentEsperFields.ts`)·적 탭 「마석 AP」·스킬 카드 「전투당 1회」. AI: `upsert_equipment`(apGrants·apRate·levelUpBonus, 모르는 스킬/키는 거절)·`upsert_enemy.rewards.ap`·`upsert_skill.oncePerBattle`·`upsert_equipment_slot`. 능력 색인 레시피 `esper-growth`.
+- 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-growth-probe.mts`(실제 도구 → 전투 → 세션 정산 → 세이브 왕복).
+
+## 팀 교대 전투 (2026-10-15, FF6 수정 A)
+
+**팀 = 교대 묶음이다. 한 번에 한 팀만 싸우고 나머지는 대기한다 — 동시 행동은 없다**(사용자 결정 옵션 A). 설정이 없으면 아무것도 달라지지 않는다.
+
+- **저작:** `system.battleTeams: [{id,name,actorIds}]`(2~4팀, 한 배우는 한 팀만; `project/battleTeamModel.ts` 가 정규화), `system.teamSwapCost` / `TroopRecord.teamSwapCost` = `free | gauge | turn`
+  (기본 `gauge`, 트룹이 시스템을 덮는다). 팀이 구성원 있는 2개 미만이면 팀 전투가 아니다. 팀에 없는 파티원은 첫 팀에 붙는다. 저장 변경 없음(전투 중 상태는 저장하지 않는다).
+- **런타임(`battle/runtime.ts`, 순수 규칙은 `battle/battleTeams.ts`):** 시작 활성 팀 = 첫 전투원이 속한 팀. `switchCandidateActors` 는 **같은 팀** 대기 구성원만 — 다른 팀은 `performTeamSwap({kind:"teamSwap",targetTeamId})` 로만 들어온다.
+  `ActorCommand` 합집합에는 넣지 않았다(대상·피해가 없는 팀 단위 명령이라 연출 `commandTarget`/`commandLine` 대상이 아니다) — `BattleRuntime.performTeamSwap?` 별도 입구이며 타임라인에는 기존 `switch` 한 줄(「전열을 교체했다.」)로 흐른다.
+- **비용:** `free` = 들어온 팀 게이지 100(바로 행동) · `gauge` = 게이지 0(나간 팀 게이지는 어느 비용이든 유지하지 않는다) · `turn` = 게이지 0 + 적이 한 번 행동할 때까지 충전 정지(`teamResting`; `performEnemyTurn` 이 푼다).
+  교대는 명령을 고르던 배우의 행동 슬롯을 쓴다(gauge 흐름). **strict**: 교대가 이 라운드 전체를 쓰고 물러난 팀의 다른 명령은 버려진다, 교대 뒤 적만 행동한다 — free·gauge 는 같고 turn 은 다음 라운드도 아군이 쉰다.
+- **전멸 순환:** 활성 팀의 모든 구성원(대기 포함)이 쓰러지거나 행동 불가가 되면 `resolveOutcome` 끝에서 다음 살아 있는 팀이 자동으로 들어온다(`gauge`, free 는 free). **패배는 모든 팀이 쓰러졌을 때만**(`actors.every(...)` 는 원래 전원 기준이라 불변).
+- **스냅샷:** 팀 전투일 때만 `teams[{id,name,actorIds,active,canSwapIn,alive}]`·`activeTeamId`·`teamSwapCost`. `reserveActors` 에는 다른 팀도 들어 있다(보상 정산이 전 파티를 본다).
+- **화면:** `player/battleTeamSwapDom.ts` 가 루트 명령 메뉴에 팀별 「○○ 교대」 버튼(`actor-team-swap-<teamId>`)을 더한다. `battleCommandDom.ts` 는 import 1줄·`append` 1줄·`includeSwitch` 조건 1줄만 바뀌었다. `battleDom.ts` 의 `runTeamSwap` 이 시퀀서로 잇는다.
+- **도구·편집기:** `set_project_settings` `battle.teams`/`battle.teamSwapCost`(모르는 키·겹침·1팀·없는 배우 거절, `[]` = 해제, 경고: 팀 없는 파티원·파티 없는 팀·strict), `upsert_troop.teamSwapCost`, 시스템 탭 「팀 교대 전투」 카드(`databaseBattleTeamsSection.ts`)·적 그룹 「팀 교대 비용」. 능력 색인 `battle-teams`.
+- **한계:** 팀별 맵 분할 이동은 별개(이벤트 `storeParty`/`recallParty`). 교대 연출은 한 줄 문장뿐(그림 필요 없음). 몬스터 파티 전투·gen1 은 팀 전투를 쓰지 않는다.
+- 증거: 헤드리스 프로브 `scripts/qa/ff6-fix-a-teams-probe.mts`(도구 거절 4 · 한 팀만 싸움 · 같은 팀 교체 · gauge/free/turn 비용 · 전멸 순환→전 팀 전멸에서만 패배 · strict · 팀 없는 프로젝트 불변).
+
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15, 작업자 A)
+
+전부 **값이 있을 때만** 동작한다. 새 효과 종류는 `SkillEffect` 합집합 끝에 붙었고 피해 공식에서는 피해 0 의 support 로 접힌다(`battleSpecialEffects.ts` `isSpecialSkillEffectKind`).
+
+- **스케치**(`{kind:"sketch"}`) — `applySkillCast` 가 hitRate 를 굴린 뒤 대상 적의 `skillIds`·행동 표 기술 중 하나(`sketchableSkills`: 스케치·폭주·무작위·청마법 습득 제외)를 골라 `castPickedSkill`
+  (흉내 `randomSkillFrom` 과 같은 함수)로 **시전자 능력치**로 쓴다. 그린 기술의 MP 는 내지 않는다.
+- **폭주**(`{kind:"rage", enemyIds?}`) — `beginRage` 가 몬스터 하나를 골라 `MutableBattler.rageEnemyId` 에 새기고 `state_rage`(`forcedAction:"rage"`)를 건다. 이후 그 배우는 명령 메뉴 없이
+  (`berserkAttackCommand` → `rageCommand`: gauge 로 준비됨·메뉴 도중·strict 라운드 시작 세 경로 모두) 몬스터 행동 표 한 줄을 골라 자동 행동한다. 폭주 명령은 **MP·PP·파티 게이지·HP 대가를 내지 않는다**
+  (`rageActive` 이고 자기가 배운 기술이 아닐 때). 상태를 풀면(정화) 폭주도 끝나고, 전투가 끝나면 사라진다(`removeOnBattleEnd`). 후보: `effect.enemyIds` 가 있으면 그것, 없으면 `PlaySession.actorRageEnemyIds[배우]`.
+  목록 적립: 폭주 기술을 아는 배우가 있는 전투에서만 `BattleRewardsSnapshot.rageEnemyIds`(쓰러뜨린 몬스터 레코드 id)가 실리고 `applyRageEnemiesToSession` 이 폭주 기술을 아는 **살아남은** 배우에게 더한다(배우당 64종).
+  세이브 `actorRageEnemyIds`(`saveSlots.ts` 저장·복원·검증, 없으면 키를 쓰지 않는다). 목록이 비면 「폭주할 몬스터를 아직 모른다」 안내만 하고 상태는 걸지 않는다.
+- **대열 섞기**(`shuffleParty`)·**강제 교대**(`forceSwitch`) — 적(또는 어느 편이든)의 기술. 배우 편이 대상일 때만 작동한다. 섞기는 활성 배우의 **자리 순서**와 앞/뒤 열(`MutableBattler.row` 는 이제 가변)을 뒤섞고,
+  교대는 살아 있는 예비 배우 한 명과 `switchActiveActor`(타임라인 `switch`)로 바꾼다. 예비가 없으면 「교대할 동료가 없다」. 자리에서 빠진 배우의 strict 라운드 명령은 `drainStrictActions` 가 버린다
+  (`activeActorIds.includes` 검사)이고, gauge 의 열린 메뉴는 `restoreMenuAfterEnemy` 가 거둔다. 예비 배우가 있으려면 트룹 `activeSlots` 가 파티 수보다 작아야 한다.
+- **좀비**(`StateRuntimeEffects.invertHealing`, 기본 상태 `state_zombie`) — `invertsHealingForStates`. 회복 스킬(`applySkillHit`)·회복 아이템(`applyItemRecovery`)의 **HP** 회복은 같은 양의 피해가 되고
+  (타임라인 `damage`), 재생 틱(`runStateUpkeep`)은 지속 피해처럼 HP 1 아래로 깎지 않는다. MP 회복·부활 기술은 그대로다. 이미 쓰러진 대상은 바뀌지 않는다.
+- **트랜스**(리미트 게이지 + `StateRuntimeEffects.grantSkillIds`) — 새 런타임 게이지는 없다. `system.limitGauge` 가 받은 피해·가한 타격으로 차고, `limitSkill` 기술이 `transformResourceId`·배율·`grantSkillIds`
+  를 가진 상태를 건다. `grantedSkillIdsForStates` + `syncStateGrantedSkills`(상태가 바뀔 때마다)가 그 기술을 전투 기술 목록에 더했다가 상태가 풀리면 자기가 더한 것만 걷어 낸다(배운 기술은 불변).
+- **블리츠·검기·룬·분석·적 반격** — 새 코드 없이 기존 기능으로 된다는 것을 헤드리스 프로브로 증명했다: `inputSequence`(성공 ×2 > 입력 없음 > 실패 ×0.5, 입력 창은 `battleDom` 의 `openInputPrompt`),
+  `chargeTurns`(명령 직후 피해 0·`charging` 예고 → 발동), `battleGimmick: absorb`(마법 피격 흡수), `scan`(분석), `EnemyRecord.reactions`(물리 피격 직후 적 반격).
+- 증거: `scripts/qa/ff6-fix-a-effects-probe.mts`(실제 도구 → 실제 전투 → 세션 정산 → 세이브 왕복).
+- 아트 필요 목록(미작성 — 3/4 관문 미보정): 마기텍 아머 전투 그림, 제국 병사 전투 그림, 폭주 몬스터 모습 전환(지금은 상태 오라만).
 
 ## Chrono Trigger 전투 엔진: Active ATB · 상태 · 반격 · 자동 부활 · 적 이동 · 승리 포즈 · 필드 배경 (2026-09-26)
 
@@ -1478,6 +1629,17 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Gen1 major status is authored through `StateRecord.gen1MajorStatus`. `applyGen1MajorStatus` permits only one poison/burn/sleep/freeze/paralysis state; post-hit chances use the cartridge `floor(percent*255/100)+1` boundary while 100% effects are unconditional after the move hits. Poison-type targets reject poison; damaging burn/freeze/paralysis side effects reject a target sharing the move type; Electric status moves reject Ground. Sleep lasts 1..7 turns and its wake turn loses the action. Freeze has no natural thaw, but a successful Fire move carrying a burn side effect clears freeze instead of applying burn (Fire Spin-like moves without that effect do not). Paralysis blocks 63/256 actions and quarters ordering Speed, and poison/burn deal `max(1,floor(MaxHP/16))` after the attempted action. The generic RM2K3 `runStateUpkeep` path is bypassed for Gen1. Pure golden contracts are `test/gen1DamageGolden.test.ts`, `test/gen1CaptureGolden.test.ts`, and `test/gen1StatusGolden.test.ts`; live wiring is pinned by `test/gen1RuntimeExactIntegration.test.ts`.
 - Gen1 defaults to one active party monster when no option/troop/system `activeSlots` is authored; RM2K3 keeps its whole-party fallback. Cartridge type meaning does not require literal English ids: `typeChart.gen1CanonicalTypeForId` recognizes canonical ids, common prefixes such as `type_fire`, and the bundled Korean labels, while damage still indexes the author's actual chart ids.
 - Gen1 presentation trim lives in `src/styles/runtime/battle/21-gen1-hud-type-badge.css`: the Pokemon skin hides MP text/bars and every ATB fragment (`display: none`) while leaving the DOM in place, because `setVitalNode`/`statBar` sync values through those nodes for all skins. Skill submenu buttons get a `.battle-command-tag` badge from `SkillRecord.elementId` (label resolved through `database.elements`, so the demo authors Korean type names and adds the missing `grass` record); typeless skills get no badge. `sendOutDirectorState` adds a second intro beat (`가라, X!`) when the lead ally carries `monsterInstanceId`, so a monster-party intro costs `2 x BATTLE_INTRO_MS` before the command prompt. Unit contract: `test/gen1IntroTypeBadge.test.ts`; browser evidence: `test/e2e/gen1-hud-trim.spec.ts`.
+### 능력치 단계 −6~+6 (포켓몬식, 2026-10-16, poke-depth PR1)
+
+- 데이터: `SkillRecord.statStageEffects?: {stat, stages(−6~+6, 0 제외), chance?, target?: "target"|"self"}[]`(최대 4). stat 은 `attack·defense·spAttack·spDefense·speed·accuracy·evasion` 일곱. 생략하면 필드 자체가 없다 — 기존 프로젝트는 저장 바이트 그대로(`normalizeSkillRecord` 화이트리스트가 값이 있을 때만 싣는다). 정본은 `src/battle/statStages.ts`.
+- 런타임: `MutableBattler.statStages`(0 아닌 칸만, **저장하지 않는다**). 기술이 명중하면 `applyStatStageEffects`(runtime.ts)가 `shiftStatStage` 로 옮기고(±6 에서 멈춤) `special` 타임라인 엔트리에 `statStage:{stat,before,after,requested}` 를 싣는다. 피해 기술은 피해가 0 보다 클 때만, 대상이 이미 쓰러졌으면 건너뛴다. `chance<100` 은 gen1 이면 `gen1EffectChanceSucceeds`(카트리지 경계), 그 밖은 `rng`. 100% 는 굴리지 않는다(바이트를 안 쓰므로 단계 기술이 없는 게임의 난수열은 그대로). 자기 대상 단계 기술은 gen1 명중 바이트도 쓰지 않는다. **교체해서 빠지거나 나오면 초기화**(`switchActiveActor`), 전투가 끝나면 배틀러가 사라지므로 이월 없음.
+- 배율은 gen1/damage.ts 의 카트리지 표(25%~400%, `applyStatStageRatio`)를 공유: gen1 은 `modified` 쪽에만 곱한다 — **급소는 단계를 무시**(`unmodified` 사용)하는 원작 규칙이 그대로다. 물리=공격/방어, 특수(마법 속성 기술·`statistic:"mind"`)=spAttack/spDefense, 스피드는 행동 순서(`strictRoundActions`·`agilityMultiplierForStates`·gauge 충전), 명중률·회피율은 gen1 `scaledGen1Accuracy`(피해 기술·상태 기술 모두), 그 밖 모델은 `withAccuracyStages`. 상태(`state_attack_up` 같은 이진 배율)와 **곱으로 겹친다** — `battleStates.ts` 의 `attackMultiplierForStates` 등이 상태 배율을 clamp 한 뒤 단계 배율을 곱하므로 서로의 한계를 먹지 않는다. 예측(`battlePredict`·`predictSkillDamage`)도 같은 함수를 쓴다(스냅샷의 `statStages` 를 읽는다).
+- 화면: `BattleBattlerSnapshot.statStages`. `battleFieldDom.statusIconCluster` 가 상태 알약 뒤에 `.battle-stage-pill(.battle-stage-pill-up|down)` — `ATK↑2`·`SPE↓1`(testid `battle-stage-<battlerId>-<stat>`, `data-stage-stat`/`data-stage`, aria-label 「공격 +2단계」)을 붙인다. 알약 묶음은 `data-has-stages`. CSS 는 `03-vxace-status-nodes.css` 끝(올림 파랑/내림 붉은 계열, 방향은 ↑↓ 글자로도 읽힌다). 에메랄드 HP 상자에서는 단계가 있을 때만 알약 묶음이 막대 줄(2행)에서 3행으로 내려와 「HP」 글자와 겹치지 않는다(`emeraldSurfaces.css`). 문장은 시퀀서 `statStageLine`(에메랄드면 「야생/상대」 접두 이름 + 「공격이 크게 올랐다!」·한계 「공격은 더 이상 오르지 않는다!」)과 대상 위 「공격↑」 팝업(`statStagePopup`). 알약도 아직 재생 안 한 변화는 `battleDom.pendingStageView` 가 되감아 문장과 같은 박자에 바뀐다(상태 배지의 `pendingStateView` 와 같은 장부). 기술 상세 줄·DB 스킬 요약은 `statStageEffectText`(「상대의 공격 −1단계 (20%)」).
+- 조수 도구: `upsert_skill`(`dbTools.ts`)의 `statStageEffects`. 모르는 stat·0 단계·범위 밖·모르는 키는 허용 값을 담아 `ToolError`(`invalid-stat-stage-effects`), 빈 배열이 해제. 능력 색인 레시피 `monster-battle-depth`·몬스터 프롬프트(`monsterGameRequest.ts`)에 같은 안내.
+- `build_monster_game` 의 공명울음·모래장막(`state_*_down`) 같은 하락과 「결의의발·순풍깃·암석갑옷」 상승은 이진 상태 대신 단계(−1/+2)로 건다(`roster.ts` `STAGE_DEBUFF`). 상태이상(독·화상·수면·마비·얼음)은 그대로 상태.
+- 검증: `bun scripts/qa/poke-depth/stages.probe.mts`(엔진 수치), `scripts/qa/runtime/poke-depth-stages.capture.mjs`(출하 플레이어 화면). 단위 계약 `test/statStages.test.ts`.
+- 남은 것: 아이템으로 거는 단계(X공격 등)·교체 시 「깨우기」 같은 단계 초기화 기술(하얀안개)·급소 때 상대 방어 단계 무시 외의 세부(화상 반감 순서)는 다루지 않는다. 특수공격/특수방어를 분리한 종족값은 없다(몬스터 `mind` 하나가 둘 다) — 단계만 둘로 나뉜다.
+
 ### 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
 
 - Play-mode map depth (`src/player/characterDepth.ts`, `playSceneMapRuntime.ts`): characters use `PRIORITY_DEPTH_BASE + worldY` (`same` = 200k). **★ upper tiles** (passable overlays / tree canopy) stay on `upperTileLayer` at 250k. **× solid upper tiles** (furniture) share same-priority y-sort with the player so standing in front of a desk draws above it; tracked on root and destroyed on re-render. Tests: `test/characterDepthYSort.test.ts`.
@@ -1528,6 +1690,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
   - 「전투 명령 변경」(m2-092)의 더하기·빼기는 지금 메뉴(`baseBattleCommandIds`: 배우 고유 목록 > 직업 명령) 위에서 한다. 예전에는 빈 목록에서 시작해서, 아직 바꾼 적 없는 배우에게 「더하기」를 한 번 하면 메뉴가 그 명령 하나만 남았다(공격·스킬이 사라졌다). 같은 이유로 처음 「빼기」는 아무 일도 하지 않았다. 편집기 선택지에는 전역 `database.battleCommands`(공통 이벤트 명령 등)도 뜬다. 이 명령은 필드 전용이다(트룹 이벤트에서는 돌지 않는다).
 - Side-view battler presentation uses `BattleBattlerSnapshot.pose` (`idle`/`attack`/`hit`/`defend`/`dead`) from `src/battle/battlePose.ts`, driven by `lastActionResult` until the next command / tool phase. Hit-feel uses `hitFeel` on the snapshot plus sequencer hit-stop (`BATTLE_HITSTOP_MS`) and `battleJuice` SFX/shake.
 - Battle backdrop priority is owned by `resolveBattleBackdrop` in `src/battle/battleBackdrop.ts`: explicit override → troop `previewBackgroundResourceId` → terrain tag at the battle location (`tileset.terrain` / `tileMeta.terrainTag` → `database.terrains[tag-1].battleBackgroundResourceId`) → forest field fallback. Night-sky / dimension-rift panoramas are rewritten to the forest field.
+  - 지명 단계(jrpg-loop-1): 맵 `battleBackground`·기후·던전 이름이 모두 없을 때 맵 이름 낱말이 고른다(`placeNameBattleBackground` — 숲 낱말은 그대로 숲, 사막 → 사막, 마을·도시·항구·폐허 → 평원). 시간여행 변형 맵이 전부 숲으로 나오던 문제 수정. 낱말이 없으면 기존대로 숲.
 - Battle event conditions support switch/variable legacy conditions plus round cadence (`turn`, `onRound`, `everyRound`), `enemyHpBelow`, enemy/actor HP ranges, enemy/actor turn, and actor command. Round cadence pages are de-duplicated per page/round; `runOnce` keeps a page battle-wide single-shot even when its condition remains true.
 - `battleResult` 페이지 조건은 `src/project/io/pageResolution.ts`에서 `session.battleResult`(직전 전투 처리 결과: `victory`/`defeat`/`escape`)와 비교해 실제 평가합니다. 필드 몬스터 처치 후 페이지 전환, 보스전 분기 등 RM2K3 "직전 전투 결과" 시나리오가 작동합니다. `battleResult`는 `PlaySessionLike`·`PlaySession`·save slot에 포함되며 `fork(battleResult=...)` 명령 분기와 동일한 SSOT를 씁니다.
 - `simulate_battle` accepts `activeSlots` and strict-script `"switch"` commands, and returns first-sample `participatingActorIds`, `roundLogs`, and `eventLogs` for AI/tool assertions.
@@ -1793,6 +1956,15 @@ accepted metadata; unknown dimensions, metadata/decode mismatch and broken URLs
 retain the native battle fallback. The pair can mix the two supported profiles.
 There is no placeholder art, implicit resizing or custom-sheet inference.
 
+**Trainer picture sizes (2026-10-15 generalization).** `src/player/trainerPictureSize.ts` is the single contract shared by
+`emeraldTrainerIntro` and the export collector (`webExportAssets`): widths 64 or 128, height equal to width or 1.5x
+(64x64, 64x96, 128x128, 128x192). The on-screen width is always 128px, so the display scale is `128 / width`
+(64 wide at 2x, 128 wide at 1x; exposed as `data-portrait-scale`, profile `hires-square` for 128x128). Field anchors,
+the 240px battle field and the platform positions are unchanged, so existing 64x64 / 64x96 pictures render exactly as
+before. Throw sheets: each frame is square (64 or 128), 2-8 frames, always shown as one 128x128 box. Bundled
+(`/assets/battle-trainers/<role>/...`) pictures are sized after decode instead of assuming 64x64.
+`scripts/qa/runtime/emerald-trainer-dimensions.mjs` covers the new sizes and throw sheets.
+
 The separate `emeraldTrainerIntro.css` renders native64×64 portraits at128×128 and
 legacy64×96 portraits at128×192, exact integer2× in both dimensions with
 `object-fit:contain`. Width/height attributes and CSS height agree with each
@@ -1925,6 +2097,18 @@ Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (12
 
 Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.
 
+### 도망 불가 안내와 경험치 분배 expSplitAlive (2026-10-16)
+
+- `canEscape:false`(트레이너 전 `place_trainer` 기본·이벤트가 막은 전투)에서 「도망간다」 줄은 회색(`aria-disabled`)이지만 이유를 말하지 않았다.
+  이제 그 줄에서 확인키를 누르면 문장 창이 이유를 말한다(`emeraldNoEscapeLine`: 트레이너 전은 「안돼! 승부 중에는 도망칠 수 없어!」, 그 밖은 「도망칠 수 없다!」).
+  `BattleDirectorState.flash` 가 붙은 이 안내는 커서를 옮기면 원래 「○○는 무엇을 할까?」로 돌아오고, 그 사이 다시 그려져도 덮이지 않는다(`shouldRefreshCommandPrompt`).
+  행동은 막힌 채 그대로다(런타임 `escape` 적법성은 바꾸지 않았다).
+- `system.rewardPolicy.expSplitAlive`(조수: `configure_game_systems rewardPolicy {expSplitAlive:true}`) — 3세대식 분배.
+  끄면(생략) 참전자 전원이 전액을 받고 **쓰러진 참전자도 받는다**(예전부터의 동작; 결과 문장은 쓰러진 줄을 빼고 말해 서로 달랐다).
+  켜면 참전해 쓰러지지 않은 몬스터만 총량을 그 수로 나눠 받는다(총량이 있으면 몫 최소 1). `battle/rewardPolicy.monsterExpPlan` 이 런타임 레벨업 미리보기·
+  세션 적립(`battleRewardsToSession`)·결과 문장(`snapshot.rewards.monsterExp`)의 단일 기준이다. `expShare`(벤치 절반)는 분배 몫의 절반으로 이어진다.
+  결과 문장은 교체로 대기에 물러난 참전자(`reserveActors`)도 한 줄씩 말한다.
+
 ### 못 움직인 차례·얼음 녹음·명령 대사의 결과 찾기 (2026-10-07)
 
 - 명령 대사(`actorCommandDirectorState`)는 이 액터의 결과 엔트리를 붙인다. 명령한 상대가 이미 쓰러져 런타임이 다음 상대로 돌렸으면
@@ -1937,3 +2121,60 @@ Native trainer assets must also survive `webExportAssets.collectProjectStrings`:
   55% 얼리기 기술 하나에 1관에서 전멸했다. 녹음 굴림이 전투 난수를 한 바이트 쓰므로 그 뒤 전투 결과가 달라진다.
 - 헤드리스 몬스터 전술(`sceneTestRunner` `actHeadless`)은 리더 체력이 60% 아래이고 다음 한 방(예상 ×1.5 + 화상·독 한 틱)에 쓰러질 수 있으면
   자기 회복 기술을 먼저 쓴다 — 챔피언 앞에서 명중 90% 기술이 빗나가고 급소·화상에 반 체력으로 쓰러져 열 번 연속 졌다.
+
+### 레벨업 기술 배우기·잊기 장면 (2026-10-16)
+
+- 몬스터는 기술을 4개(`MONSTER_SKILL_MAX`)까지 안다. 레벨업 습득 기술이 칸에 안 들어가면 `pendingSkillIds` 로 보류된다(`applyLearnedMonsterSkills`).
+  이전에는 이 보류 기술에도 결과 문장이 「○○는 △△를 배웠다!」라고 말해서 거짓이었고, 고르는 곳은 메뉴(`playerStatusMenuDetails`)뿐이었다.
+- `MonsterLevelUpPreview.overflowSkillIds`(`previewMonsterExperience`, `splitLearnedMonsterSkills` 와 같은 순서·기준)가 칸이 모자란 기술만 가린다.
+  비면 필드가 없다. 에메랄드 결과 문장(`emeraldResultRows`)은 이 기술을 「배웠다!」에서 뺀다.
+- 에메랄드 몬스터 스타일의 승리 뒤 `playSceneBattle.onResult` 가 진화 장면보다 먼저 `emeraldMoveLearnScene.playEmeraldMoveLearns` 를 연다:
+  「○○는 △△를 배우고 싶어 한다! 하지만 기술이 4개라 더 배울 수 없다!」 → 예/아니오 → 네 기술 목록 → 「A를 잊고 △△를 배웠다!」.
+  X/Esc 는 한 단계 뒤로, 아니오 = 「배우기를 미뤘다」(보류로 남아 메뉴의 몬스터 화면에서 다시 정한다 — 데이터를 잃지 않는다).
+  `unforgettable` 기술은 줄이 흐리고 고르면 거절 문장. 장면은 결정만 돌려주고, 세션 반영은 `applyBattleRewardsToSession` 뒤에
+  `replacePendingMonsterSkill` 로 한다(취소·중단이면 미룸). 다른 전투 스킨은 이전 그대로 메뉴 경로다.
+- 증거 장면: `scripts/qa/runtime/poke-battle-sys.probe.mjs learnForget`(원 해상도 960×640, `verify-shots/poke-sys-battle/pa*.png`).
+
+### 기술 규칙 어휘: 고정 피해·연속 타수·반동·풀죽음 (2026-10-16)
+
+모두 `SkillRecord` 의 선택 필드다 — 없으면 기존 기술·기존 저장 바이트·난수열이 그대로다(`normalizeSkillRecord` 가 있을 때만 키를 쓴다).
+어휘·정규화·굴림은 `src/project/skillBattleRules.ts` 한 곳.
+
+- `fixedDamage {mode:"level"} | {mode:"amount",amount}` — 피해 식·급소·날씨 대신 정해진 양(지구던지기·용의분노). 명중 굴림과 타입 무효(상성 0 배 → 0)는 그대로.
+  **gen1 전투 모델만** 먹는다(`applyExactGen1Damage` 의 `fixedDamage`). 보통 기술과 같은 난수 바이트를 쓰므로 난수열 이동이 없다.
+- `multiHit {min,max}` (2~5) — 한 번 쓰면 무작위 타수(2~5 는 2·3 번 각 3/8, 4·5 번 각 1/8). `hitSequence` 가 있으면 그쪽이 이긴다. 규칙이 없으면 rng 를 쓰지 않는다.
+  대상이 쓰러지면 멈추고(`applySkillCast` 의 기존 break), 실제로 맞은 횟수를 `recordSpecial` 로 「N번 맞았다!」.
+- `recoilPercent` — 준 피해(타마다)의 N%, 최소 1 을 시전자가 입는다. 타임라인 `aside:"recoil"` damage 엔트리(시전자 자신 대상)라 HP 바가 줄고 연출 대상·타수로 세지 않는다(`retroSkillChoreography.isAside`).
+  gen1·비 gen1 둘 다 먹는다(`applySkillRecoilAndFlinch`).
+- `flinchChance` — 피해를 준 명중 뒤 확률(gen1 은 `gen1EffectChanceSucceeds`)로 대상이 **이번 라운드 자기 차례를 잃는다**. 대상이 이 라운드 큐에 아직 남아 있을 때만(`actsLaterThisRound`) 굴리므로 느린 시전자가 쓰면 아무 일도 없다 — 선공(`movePriority`)과 짝.
+  `flinchedBattlerIds` 는 라운드 끝(`completeStrictRound`)에 비우고 저장하지 않는다. 차례 때 `prepareGen1CombatAction` 이 `incapacitated{flinch:true}` 엔트리를 남기고 행동을 막는다(문장은 상태 이상 문장이 아니라 「…는 풀이 죽어 움직일 수 없다!」, `battleSequencer`).
+- 조수: `upsert_skill` 의 네 필드(`dbTools` 스키마 + `validateSkillBattleRules` 가 틀린 모양을 허용 값과 함께 거부). `toolCapabilityIndex` `monster-battle-depth` 정책에 어휘·쓰는 법·「상태로 흉내 내지 말 것」 추가.
+  자료집 기술 편집(`databaseCombatRuleFields`)에도 칸이 있다(고급 칸 접힘은 값이 있으면 열린다).
+- 한계: 고정 피해는 gen1 만. 적(야생·트레이너)도 같은 기술을 쓰면 같은 규칙을 탄다. 비 strict 흐름에서는 풀죽음이 라운드 개념이 없어 먹지 않는다(`strictResolution` 없음).
+- 시각 QA: `scripts/qa/runtime/poke-battle-sys-d.probe.mjs`(player.html, 장면 fixedDamage·multiHit·recoil·flinch). 테스트 `test/skillBattleRules.test.ts` 는 작성만 했고 미실행.
+
+### 더블 배틀(2대2) 설계 메모 — 구현하지 않았다 (2026-10-16)
+
+**지금 상태(실측, `activeSlots` 2 로 강제한 에메랄드 트레이너 전 캡처 `verify-shots/poke-sys-battle/ad1-double-attempt.png`).**
+- 일반 RPG 모델(`battleModel` 비 gen1)은 이미 여러 명이 동시에 싸운다 — `activeSlots`(`TroopRecord.activeSlots` > `system.activeSlots` > 파티 수, `battleFormation.ts`)만큼 `activeActorIds` 가 차고 적도 `visibleEnemies()` 가 여럿이다. 대상 선택(`targetSelection`·`battleTargetResolver.ts`)과 범위 기술(`scope: allEnemies/allAllies`)도 있다.
+- **에메랄드·포켓몬 경로는 구조적으로 1대1이다.** `singleFileEnemies = gen1 || (pokemon 스킨 && troop.activeSlots<=1 && 적 여럿 && 전부 종 있음)` 이라 `battleModel==="gen1"` 이면 적은 항상 한 마리씩만 나온다(`visibleEnemies()`·`promoteNextGen1Enemy`·`gen1EnemyOrderIds`).
+  `formationActiveSlots` 도 gen1 에서 기본 1. 그래서 `activeSlots: 2` 만 올리면 아군 HUD 가 두 칸으로 쌓이지만(캡처 하단 두 상자) 적은 한 칸이고, 두 번째 적·대상 고르기는 없다.
+- 에메랄드 HUD(`emeraldSurfaces.css` 의 `.battle-enemy-list-row`/`.battle-party .battle-actor-status`)는 상자 하나를 전제로 위치를 잡는다 — 둘이면 아군 상자가 서로 겹쳐 오른쪽 아래에서 위로 밀려 오른다.
+
+**원작이 하는 일(더블 배틀 규칙).** 아군 2·적 2가 동시에 서고, 매 라운드 각자 기술/교체/가방을 고른다. 단일 대상 기술은 대상(적 둘·아군 하나)을 고르고, 범위 기술(`allEnemies`)은 모두 맞는다(여럿 맞으면 피해 0.75 배). 한쪽이 쓰러지면 대기 몬스터가 그 칸에 들어온다. 경험치는 참전한 모두가 나눈다.
+
+**구현 단계 제안(작은 PR 여러 개, 각각 옵트인 = `activeSlots>=2` 인 트룹만).**
+1. **런타임 1대1 가정 풀기.** `singleFileEnemies` 를 「트룹이 `activeSlots>=2` 면 끈다」로 좁히고, `visibleEnemies()` 가 최대 `activeSlots` 마리를 돌려주게 한다. 뒤 대기 적은 `gen1EnemyOrderIds` 순서로 쓰러진 칸에 채운다(`promoteNextGen1Enemy` 를 칸 단위로).
+   `formationActiveSlots` 가 gen1+pokemon 스킨에서도 `system.activeSlots` 를 따르게 한다. 단일 대전 트룹(`activeSlots<=1`)의 기존 경로는 그대로 — 바이트·난수열 불변이 조건.
+2. **대상 고르기.** 단일 대상 기술은 `targetSelection`(이미 있음)을 에메랄드 화면에서 열어 적 둘 중 하나를 고른다(좌우 키, 선택된 적 HUD 에 커서). 적의 단일 대상 기술은 아군 둘 중 하나를 `chooseBasicEnemyTarget`/`refreshedEnemyTargetId` 로 정한다(이미 있음).
+3. **범위 기술 감쇠.** `scope: allEnemies/allAllies` 로 여럿이 맞으면 피해 ×0.75 — `SkillRecord` 에 규칙 필드를 새로 만들지 말고 `rewardPolicy` 옆 `system.doubleBattle {spreadPenalty?: number}` 한 곳에 둔다(없으면 기존 감쇠 없음).
+4. **교체·쓰러짐.** 칸 하나가 쓰러지면 그 칸만 `forceSwitch`(이미 있는 강제 교체 선택창을 칸 번호로 열기). 라운드 안 순서는 `strictRoundActions` 가 이미 모든 행동을 속도·우선도로 정렬하므로 칸 수만큼 행동이 늘기만 한다(풀죽음 `flinchedBattlerIds` 도 칸 기준으로 그대로 동작).
+5. **경험치.** `participatingActorIds` 가 이미 참전자 집합 — `monsterExpPlan`(옵트인 `expSplitAlive`)과 그대로 맞물린다.
+6. **화면.** 에메랄드 HUD 를 두 칸 레이아웃으로: 적 상자 둘 위 좌측 세로, 아군 상자 둘 아래 우측 세로, 몬스터 그림 앵커(`battleEnemyFit.ts`·`battleAnimationAnchor.ts`)를 두 자리 좌표로. 이 단계가 가장 크다 — 새 도트 그림은 필요 없지만 앵커·겹침 검수에 원본 해상도 캡처 루프가 필요하다.
+7. **조수.** `place_trainer` 에 `double: true`(적 2마리 이상 + `activeSlots: 2`)를 추가하고 `toolCapabilityIndex` 의 monster-field-rules 정책에 한 줄. 도구가 만들지 못하는 더블 트룹은 쓰지 않는다.
+
+**막는 것(하지 않은 이유).** 6번 화면 작업이 에메랄드 HUD·앵커·진행 비트(`battleSequencer`)를 동시에 건드려 한 PR 로 안전하게 검증할 수 없다. 이번 범위는 어휘·규칙 PR 을 먼저 끝내는 것이어서 메모로만 남긴다.
+
+## 기술 목록 폭 — 룩 프리셋(actor·keys·fan)
+
+retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152px · fan 210px)에서 `_battle-look.css` 가 절대 배치와 고정 폭을 잡는다. 이 폭은 루트 명령 4~5개용이라 기술·아이템 목록(`.battle-submenu-header` 가 있는 메뉴)에서는 한글 두 자 이름도 「마…」 로 잘렸다(jrpg-loop-2 ct1 실측, #2773 의 `grid-column` 규칙은 이 절대 배치 앞에서 무력했다). 목록이 열린 동안만 `left:150px; width:296px` 로 왼쪽으로 넓힌다(오른쪽 끝은 그대로). 프리셋별 위치는 건드리지 않는다.

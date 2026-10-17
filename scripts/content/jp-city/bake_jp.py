@@ -43,7 +43,8 @@ BLOCK_ORDER = ['autotiles_ground', 'autotiles_lines', 'roads', 'buildings', 'str
                'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
                'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
                'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
-               'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall']
+               'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall',
+               'interior_hospital', 'interior_school2', 'interior_office2']
 PEOPLE = (851, 1005)            # 행인(Actor1) 자리 — 번들에서 제외, 투명 빈 칸으로 번호만 지킨다
 N_ORIG = 2880
 SIGN_DECOS = ('sign_h', 'vstack', 'wallad', 'vsign', 'plate', 'board', 'rtext', 'facade_ad', 'vision', 'mural')
@@ -771,7 +772,7 @@ def main():
     sys.path.insert(0, HERE); import gate_kinds
     if a.gate_report:
         res = gate_kinds.check_all(); gate_kinds.report(res); sys.exit(0 if not res['bad'] else 1)
-    if not a.dry and not a.selftest and os.path.abspath(a.out_root) == os.path.abspath(ROOT): gate_kinds.enforce()   # 3/4 관문: 영수증 없는 키트가 있으면 굽기 거절(JP_GATE=skip 로만 우회)
+    if not a.dry and not a.selftest and os.path.abspath(a.out_root) == os.path.abspath(ROOT): gate_kinds.enforce()   # 3/4 관문: 영수증 없는 키트가 있으면 굽기 거절(우회 없음)
     out = bake(a.out_root, dry=a.dry)
     rep = out['report']
     if a.selftest:

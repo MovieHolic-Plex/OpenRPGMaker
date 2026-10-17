@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "317148023fb678ea8b077ba5e992f7a8c0eaedb2290119193be75fd1be591c98",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v1",
+ "label": "sf-station/sf-air-v1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock module building with paneled roof and front door wall",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a 16-row sloped/foreshortened roof section from row 2 to row 17 with paneled detail and a central hatch/skylight above the vertical front door wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4604
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock building with sloped roof and sliding door",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large sloped panelled roof (rows 3 to 17, ~15 pixel rows tall) visible above the vertical front wall containing the airlock doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5353
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock module building with sloped roof and front entrance",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a foreshortened roof visible from row 2 to row 17 (approx. 15 rows tall) above the front wall, properly rendering the 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock building",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large sloped roof/top surface spanning rows 2 to 17 (approx 15 rows) above the front wall and airlock doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7841
+  }
+ ],
+ "decidedAt": "2026-10-13T15:19:47.092Z",
+ "cells": {
+  "16": [
+   "086aea619df959d0",
+   "2eb333f44899a8a7",
+   "32a9eb533dfca72d",
+   "5c17e3966e48fe09",
+   "68aebe2164b81330",
+   "7babbac0777aad05",
+   "c0c26f95fb871ae4",
+   "c4a5ba4e84b1b5ee",
+   "f723875365ac017e"
+  ],
+  "24": [
+   "3b70dbd91b009083",
+   "7c322cbec5eb63b0",
+   "aeae6a444ba541f4",
+   "fd5f82de25e7def4"
+  ],
+  "32": [
+   "0f41e98c2c1879d5",
+   "112663c4894f5e7e",
+   "32261d17453212a8",
+   "33af74f205592e1d",
+   "341757c6a4792d25",
+   "384b8eac5482daa7",
+   "40496aa2755bd959",
+   "4461e96d3feabb5e",
+   "4620acdff02ec5ff",
+   "488c1f194f777216",
+   "6eb5cdac6ada13bb",
+   "70186041c3ea1264",
+   "75717a4abcc95215",
+   "7cbcfa77cb4b7676",
+   "8c31308bd755e4cc",
+   "a69586f085cf1399",
+   "c0675feef4a9c2a5",
+   "c826d6f73029835a",
+   "d502732177ee6292",
+   "d8d670ce10fdb9c2",
+   "e3a35accf881d8ea",
+   "ea45f5eb879f8850",
+   "efa8311e7e0c42bc",
+   "f414c8951097934a"
+  ],
+  "48": [
+   "71d5ffb8eb26031f"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa77f875ed9b1231db6d481f55c71fca48a6026197a5e60bbd5c459368c40318",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "작은 달 바위(회색 돌덩이)",
+ "label": "sf-station/sf-rock-regolith-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grey rock boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly lit top surface spanning rows 5-10 and a shaded southern face on rows 11-13, accurately rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6453
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey boulder / rock",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded rock displays an illuminated top/upper surface spanning roughly rows 5 to 10 with shaded southern face below on rows 11 to 13, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4052
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small boulder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly illuminated top surface spanning rows 4 to 10 with south-side shading from row 11 to 13, correctly presenting a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grey rock boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an elliptical 3/4 top-down footprint with the illuminated upper dome spanning rows 5-9 (approx 5 rows) and shading sloping downward toward the south base (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4147
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "99ea4dbeeba9faa2"
+  ],
+  "24": [
+   "09cbc06974d12672",
+   "13d66bc6acf0efd2",
+   "57b1f1de8c262f79",
+   "6729bccdf93037a6",
+   "8864d4ca73630066",
+   "d0e15bb9dc05dac1"
+  ],
+  "32": [
+   "35c2720a9c1a759c",
+   "72c05b65eeeaf514",
+   "75d05979d0a04556",
+   "9806facd41a0cd99",
+   "9b15b7cf1b44e754",
+   "c5e84489f40f44be"
+  ],
+  "48": [
+   "17b4fc9d0db452da",
+   "96170c1989bc1a4a",
+   "9efae56b51e90b02",
+   "c4c90614b151b072",
+   "d31bd5a750019768",
+   "eafedaad0aa147f0"
+  ]
+ }
+}

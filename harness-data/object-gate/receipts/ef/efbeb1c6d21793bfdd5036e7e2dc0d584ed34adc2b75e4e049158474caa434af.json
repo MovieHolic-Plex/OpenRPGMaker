@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "efbeb1c6d21793bfdd5036e7e2dc0d584ed34adc2b75e4e049158474caa434af",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "성벽 모서리 탑",
+ "label": "desert-east/de-wall-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone corner tower with battlements and arrow slit",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tower features a clearly visible battlement platform floor (rows 3-19) surrounded by crenellations, resting above the vertical front stone wall (rows 24-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "castle wall corner tower",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top parapet and walkable platform of the tower are clearly visible from above across rows 0–23 (approx. 24 rows tall), resting above the vertical front stone wall (rows 24–63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5411
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone corner tower with battlement platform",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tower shows a full top-down view of the battlement platform floor and surrounding parapets spanning rows 0-22 (approx. 20 rows of visible horizontal top surface), above the vertical front stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6646
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "castle wall tower",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tower shows an expansive battlements deck/platform viewed from above across rows 0-22, situated above a tall vertical stone wall (rows 25-63) with an arrow slit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5294
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.964Z",
+ "cells": {
+  "16": [
+   "0222978a903dda79",
+   "03798d3b45d508ce",
+   "286b886fa1cd6f54",
+   "41aadae76e45e00c",
+   "b0aee4825c6eb83e",
+   "c113a00524016514",
+   "f4af6e852dac8f47",
+   "f905860a82d45463"
+  ],
+  "24": [
+   "12112187ff51370a",
+   "1b80062cd990f7c7",
+   "1b8435a53ec40f8a",
+   "2bc5e5494c4d6846",
+   "3797b131d037b27e",
+   "3ce7ab046a9ae0b6",
+   "42b80558c1b48ce6",
+   "4d6c36c3855eda71",
+   "583c25c6ac3d0fc7",
+   "5d4ddee385947b80",
+   "5d51d0f3e892a809",
+   "691fb6a8eb0ec4cb",
+   "6b61e91122a6b8ce",
+   "6d4fb1b592a3dcb8",
+   "6fac8300d501f516",
+   "73d64761e1ceada6",
+   "7b6abf0f71628680",
+   "7cea36d56a8c9bab",
+   "81216d102e23f586",
+   "9227429a1353aad8",
+   "923053c59fdb3a35",
+   "932278fe52762dbe",
+   "9b5fc0e3d1dc2b69",
+   "9b97b6dda934ed2b",
+   "ad3862aa736f86b3",
+   "ad3b8a06aead9ee3",
+   "b9eb50dd2a56cd7f",
+   "bff7f4033d7cf51c",
+   "c256805c8baf1e91",
+   "c5bf174eb79bee88",
+   "c6fc8be015cbfa21",
+   "c95f3c0597f6c8b3",
+   "dde64df6601cfae7",
+   "e894dd6b2f70034c",
+   "fce433a080d5202b",
+   "fdbb318b507677fd"
+  ],
+  "32": [
+   "38bbea2d212f1be3",
+   "d63b2f5b58349258"
+  ],
+  "48": [
+   "10a84506842633ec",
+   "122192ad97b562e2",
+   "3a620de23bb8c0d6",
+   "4114ec7b13b5cb65",
+   "5375bf88f3e8b98d",
+   "53d56bcd875e61c0",
+   "54b442727d4dab94",
+   "56a8ee8914c24a95",
+   "76f2033420342797",
+   "c7e9d024eb55d3fa",
+   "d95153da58b0f84c",
+   "eafd4af517c4d0d8"
+  ]
+ }
+}

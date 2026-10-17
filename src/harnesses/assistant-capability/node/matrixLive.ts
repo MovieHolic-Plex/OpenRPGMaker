@@ -46,12 +46,15 @@ export function argsFor(id:string): { tool:string; args:Record<string,unknown> }
     case 'blocked-cells': return [{tool:'get_map_region',args:{mapId:MAP,x:0,y:0,w:5,h:5}}];
     case 'event-list': return [{tool:'find_events',args:{mapId:MAP}}];
     case 'region-preview': return [{tool:'show_map_region',args:{mapId:MAP,x:0,y:0,w:5,h:5}}];
-    case 'paint-dirt': return [{tool:'paint_tiles',args:{mapId:MAP,layer:'lower',mode:'cells',tile:240,cells:[{x:2,y:2},{x:3,y:2}]}}];
-    case 'clear-region': return [{tool:'clear_region',args:{mapId:MAP,x:2,y:2,w:3,h:2,layer:'both',fill:'empty'}}];
-    case 'copy-region': return [{tool:'copy_map_region',args:{from:{mapId:MAP,x:1,y:1,w:2,h:2},to:{mapId:MAP,x:5,y:5},layers:'all'}}];
+    // "흙" is an auto-connected lower-layer material in beodeul_city. The
+    // live tool contract therefore uses fill_region; a raw paint_tiles tile
+    // id would bypass the required edge recomputation and is not equivalent.
+    case 'paint-dirt': return [{tool:'fill_region',args:{mapId:MAP,x:2,y:2,w:2,h:1,layer:'lower',material:'버들항 모랫길'}}];
+    case 'clear-region': return [{tool:'clear_region',args:{mapId:MAP,x:1,y:1,w:5,h:3,layer:'both',fill:'empty'}}];
+    case 'copy-region': return [{tool:'copy_map_region',args:{from:{mapId:MAP,x:1,y:1,w:2,h:2},to:{mapId:MAP,x:3,y:1},layers:'all'}}];
     case 'mirror-region': return [{tool:'mirror_region',args:{mapId:MAP,x:2,y:2,w:4,h:2,axis:'horizontal'}}];
     case 'move-start': return [{tool:'set_start_position',args:{mapId:MAP,x:9,y:8}}];
-    case 'place-trees': return [{tool:'paint_tiles',args:{mapId:MAP,layer:'upper',mode:'cells',tile:288,cells:[{x:3,y:3},{x:5,y:3},{x:7,y:3}]}}];
+    case 'place-trees': return [{tool:'place_props',args:{mapId:MAP,area:{x:3,y:3,w:5,h:1},material:'버들항 · 나무·덤불',count:3,seed:4}}];
     case 'place-chest': return [{tool:'place_chest',args:{mapId:MAP,x:4,y:4,contents:{itemId:'item_potion',gold:10},id:'ev_test_chest'}}];
     case 'move-door': return [{tool:'move_event',args:{mapId:MAP,eventId:'ev_test_door',x:19,y:8}}];
     case 'remove-barrels': return [{tool:'remove_event',args:{mapId:MAP,eventId:'ev_test_door'}}];

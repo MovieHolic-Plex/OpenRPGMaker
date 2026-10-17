@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3e9ed5d2e6628a3071814d58b352bf0a2e73512bc34f3c0a0bab2addd412386",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "주거 모듈(사다리꼴 지붕 + 환기 상자 + 흰 판 앞면 + 창 넷 + 문)",
+ "label": "sf-station/sf-hab-module",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "habitat module with sloped roof and front facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal sloped metal roof extends from row 4 to row 21 (18 rows tall), clearly presenting the top-facing roof plane with rooftop ventilation units and panel seams above the south wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8924
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "modular habitation building with sloped trapezoidal metal roof and front facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing roof slope measuring approximately 18 pixel rows (rows 4-21) viewed from above in classic 3/4 perspective, complete with rooftop vents, above the vertical front wall facade (rows 22-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building with sloped metal roof and front facade",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal roof slope extends vertically from row 3 down to row 21 (approx. 19 pixel rows) before meeting the lower facade at row 22, properly presenting a top/sloped surface in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3942
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prefabricated habitation module building with sloping metal roof",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent foreshortened front roof slope extending from row 4 down to row 21 (~18 rows tall) complete with ventilation fixtures, above the vertical front wall facade (rows 22-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4579
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.617Z",
+ "cells": {
+  "16": [
+   "2e3ff293194492d5",
+   "381b09be6418bd44",
+   "46a2d5d0ecc7beea",
+   "6bbd6c55b55e6b1a",
+   "7f5a11b5fd072c75",
+   "90a2e33df65a7a04",
+   "b163e61b5512670c",
+   "ba03c32e4f8be8b7",
+   "c1b8b7d4a24901b1",
+   "d326aaca6d55322b",
+   "d7d3fac9886d313f",
+   "e3f0c3ddeed06624"
+  ],
+  "24": [
+   "1a3fc9726fde0c43",
+   "3ad707bc46943797",
+   "3d773d7106bffd25",
+   "444be2139c67c51d",
+   "62fe3bbda9b4002e",
+   "8f1de8d72cc9e81e",
+   "a3c539367c16aefd",
+   "a759aa039173603e",
+   "bd098f994c393bd6",
+   "c2e134f88510937f",
+   "d4518c618ed048cd",
+   "d736e7af26bc42ae",
+   "dc4aa025b5d02395",
+   "de78781f7468cbae",
+   "e11ca0172616e95f",
+   "eb279fb1212041b8",
+   "fbd7f7db6efc71bd",
+   "ff04018b60a3356c"
+  ],
+  "32": [
+   "0704c5c8cf68334c",
+   "4713df062aeed8f0",
+   "4e67ae1ef5623b5d",
+   "59f8bd542b9c93ec",
+   "64dd18404680b04e",
+   "8052ea2bbcb5bc4b",
+   "b860db2eb6187cd4",
+   "f64b75e44c54827a"
+  ],
+  "48": [
+   "5cbbf3f51d150e20",
+   "8a03a96d400517f8",
+   "939b0bbeac01ea36",
+   "af7fdd23241084e6",
+   "d2695a7e8d4f8a23",
+   "e2c7c8cadb593df0"
+  ]
+ }
+}

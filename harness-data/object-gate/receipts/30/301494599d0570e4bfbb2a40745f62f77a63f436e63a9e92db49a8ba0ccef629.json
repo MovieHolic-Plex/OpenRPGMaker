@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "301494599d0570e4bfbb2a40745f62f77a63f436e63a9e92db49a8ba0ccef629",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat side elevation profile. The horizontal seat surface has no visible top plane foreshortened from above (0 top rows), showing only a flat side profile with a 1px white stripe at row 10.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6942
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is depicted as a flat 2D side/front elevation with no top surface of the seat or backrest visible from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5633
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in flat elevation with no visible horizontal seat surface (the seat is represented only by a 1px horizontal stripe at row 10).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 59534
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat side elevation facing east. The horizontal surfaces (seat, armrest, top of backrest) show zero perspective depth from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8416
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:46.921Z",
+ "cells": {
+  "16": [
+   "3e8ba37c6fed4dc2"
+  ],
+  "24": [
+   "6c3f7a7ef7890951",
+   "7721a14aa45613c4",
+   "79a9c1c00cf2d64c",
+   "bdeedac505f26483",
+   "e300d522d9ed279c",
+   "eecdc0e238895d71"
+  ],
+  "32": [
+   "2612f69864326c1d",
+   "35e5e795b4d36650",
+   "536560970ff602b2",
+   "5b906b85e0074919",
+   "c3b52b419ff391b0",
+   "f39570bcd3e35b8e"
+  ],
+  "48": [
+   "180453d62baeaec0",
+   "56e4aa4cb45a3361",
+   "6fea999cd26c928f",
+   "7c9042dfdb3c98c8",
+   "a39f8c273841f77f",
+   "f0ef881dd18ee89b"
+  ]
+ }
+}

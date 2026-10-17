@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c66b66255eacc9a686a75ddf935b97f519519547ad349226ff52872a07a7c93b",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "출입 보안 게이트",
+ "label": "modern_city/interior/mci-security-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "security turnstile gate pedestals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pedestals and swinging flaps are drawn as flat 2D rectangular elevations with screens facing directly toward the camera, showing zero top surface or depth along the north-south axis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "security gate / turnstile housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both gate housings are drawn as flat 2D rectangles in pure front elevation, showing only the front face with screen, indicator, and lower metal panel. There is no visible top surface (0 pixel rows) foreshortened from the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "security gate turnstile posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The security turnstiles and glass flaps are drawn entirely in flat front elevation with no visible top surface or depth along the north-south axis. The top edge is just a 1px outline at row 4.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5448
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "security turnstile pedestals and gates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile pedestals and barrier flaps are drawn in pure front elevation with no visible top surface depth (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5723
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:50.059Z",
+ "cells": {
+  "16": [
+   "52387503ab9cf5d1",
+   "a8140a29e8aa5755",
+   "c21f461c735f63b3",
+   "e7f30398f7979a51"
+  ],
+  "24": [
+   "1980e9bc46db8ff9",
+   "29b8112913cd42ae",
+   "2ee979442ad4178e",
+   "37e64582c841bc7c",
+   "3c9031496d058f10",
+   "759bd9e84f44d7ed",
+   "78ba8c332cb53e77",
+   "7a657c6005446ff2",
+   "7e36c17b4b32c7d2",
+   "7f4f20dfbdf246c4",
+   "826213ff06c2b8cc",
+   "83b5d859e02add25",
+   "861e6beba5047c7b",
+   "8df2d549407a39e9",
+   "9f7aa99d83ab97c7",
+   "a0bd86ee55bca8c3",
+   "afe3e867c218b659",
+   "ccbcb8047e574d60",
+   "ce5632a939c014b5",
+   "d51a2f175090f844",
+   "dba715153e152b60",
+   "f490045e222707fc",
+   "fb0bace9ba441197",
+   "fd756f6f1d58a4d1"
+  ],
+  "32": [
+   "43e214556a3b2b03"
+  ],
+  "48": [
+   "3154c28a7cadbb67",
+   "50b465ba7fb82d83",
+   "a9e07953aded8b82",
+   "c66e4ed1e49b2e90",
+   "c81aad002780bf9b",
+   "ea3a3919c7696ec1"
+  ]
+ }
+}

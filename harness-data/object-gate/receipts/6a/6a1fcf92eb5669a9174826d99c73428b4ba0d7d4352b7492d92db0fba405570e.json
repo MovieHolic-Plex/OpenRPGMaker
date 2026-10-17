@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a1fcf92eb5669a9174826d99c73428b4ba0d7d4352b7492d92db0fba405570e",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "접수 카운터",
+ "label": "modern_city/interior/mci-reception",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is clearly visible from row 8 to row 14 (approx 7 pixel rows tall), with items resting on top and a south-facing wooden panel front below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5398
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from row 9 to row 14 (about 6 rows tall) displaying items on top, with the front face extending from row 15 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter shows a foreshortened top surface (white countertop) measuring about 7 pixel rows (rows 8-14) above the front wooden face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5318
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "reception counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from row 8 to 14 (approx 7 rows tall) with items resting on it, followed by a south-facing front facade extending to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4852
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:11.885Z",
+ "cells": {
+  "16": [
+   "10fcd74577b9772a",
+   "49fe0165c4da72ef",
+   "9672b8944abe2a46",
+   "a2ec3f78890ebe6d",
+   "cee76a711c8675d1",
+   "dae3881fc532f703"
+  ],
+  "24": [
+   "1e46a55de0575a45",
+   "43b676cb6c9ad60f",
+   "5ea5d95501701870",
+   "651cab057ce04e3a",
+   "6b11d5919789d92b",
+   "7d1cc888db338217",
+   "b71655375b16c490",
+   "d8c590a95787468c"
+  ],
+  "32": [
+   "37a02d79fd7ef8d4",
+   "ae408b723b401cde",
+   "bead9111c0abc089",
+   "c7cec329c0373528",
+   "d556b8f4dd7d05f8",
+   "d9c316b3d0fbd14e"
+  ],
+  "48": [
+   "b34a88b182e750c9",
+   "ccda05fa587b6947"
+  ]
+ }
+}

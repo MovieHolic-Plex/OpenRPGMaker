@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5535dbc836ea50b79687833067e4df76edee0a123bd17df646e5734c12a54533",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "prehistoric stone-age stalagmite",
+ "label": "prehistoric/ph-stalagmite",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rock spire / stalagmite",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn in a pure 2D side elevation with completely horizontal segment lines and a flat bottom line, showing zero top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stalagmite column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn in flat 2D side elevation with completely horizontal bands, a flat baseline at row 30, and no visible foreshortened top surfaces on any of its tiers or tip.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4134
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stalagmite column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn in straight side/front elevation with purely horizontal layer divisions, flat shelf steps, and a completely flat horizontal base line with no foreshortened top or roundness visible from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4024
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stalagmite column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite is drawn as a flat 2D silhouette with completely straight horizontal segment lines and a flat horizontal base, lacking any top-down perspective or foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4973
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "54132182b827d7a5",
+   "6f6882b651205500"
+  ],
+  "24": [
+   "051cc5c3ba276dbe",
+   "09d77c7e986333b1",
+   "2549f963563f4246",
+   "3a1b78afb7d7ec24",
+   "6f5c56e3e4453c0b",
+   "7c4d8c23cad6413e",
+   "8843be559c32db5e",
+   "8fbe42ac1ae66270",
+   "96513f390442bcce",
+   "b3561d9c284f2bdf",
+   "b3fcdd8dfd6f305d",
+   "d702d8ee5f851a43"
+  ],
+  "32": [
+   "0f7c769d2f36fc51",
+   "196a21203f4afe4f",
+   "d5f66e02a8b43157"
+  ],
+  "48": [
+   "119a74100cd8baf2",
+   "44d78fa41e90d109",
+   "58ce41c45c761a2f",
+   "e4861f484beaa775",
+   "f006237238464490",
+   "f1eef11385a5ad85"
+  ]
+ }
+}

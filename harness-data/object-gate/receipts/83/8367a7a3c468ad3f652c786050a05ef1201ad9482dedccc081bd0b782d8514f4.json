@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8367a7a3c468ad3f652c786050a05ef1201ad9482dedccc081bd0b782d8514f4",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "생선 말리는 덕장(대구 줄줄이)",
+ "label": "snow-north/sn-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fish drying rack with hanging cod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat 2D front elevation (side-scroller style). The horizontal beam, the snow layer atop it, and the vertical posts show only their front faces with no visible top surface receding back. The top edges of the snow and beam are completely flat horizontal lines without depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9280
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden drying frame with hanging fish and snow on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame is drawn in flat front elevation. The horizontal beam and roof structure show only front-facing vertical layers (slats and snow fringe) with no foreshortened top surface, the posts are flat vertical columns, and the bottom cross-plate is drawn as a flat 2D rectangle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7510
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fish drying frame with hanging cod",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crossbeam shows a 4-pixel-tall snow-covered top horizontal surface (rows 6-9) above its front face (rows 10-12), and the base features a foreshortened ground patch (rows 27-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5274
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame and beam are drawn in pure front elevation: the top beam shows only a flat front face with scalloped snow dripping over it (rows 6-8) and a dark front face (rows 10-12) with no foreshortened top surface, and the vertical post tops (rows 2-5) are drawn as flat 2D decorative caps without visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6689
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "18e8a18e6490668e",
+   "42d025806b53275f",
+   "50e942aeb7d75f99",
+   "de96ec98ac7643dc"
+  ],
+  "24": [
+   "00a9ad06a6e94aba",
+   "046f2144b2f1db81",
+   "0c927afd9d7dfa07",
+   "19a6d0a8b5a08aa3",
+   "19f5b39a684c0aca",
+   "33100fea9600c181",
+   "374bca63734b0a4e",
+   "5db9c527b7cedc8d",
+   "610565edb7e52b21",
+   "6ddcae9e49b12bf0",
+   "712ac3848ae6f985",
+   "7444573ed09f7253",
+   "74e75c4db92a6491",
+   "7bf1abeaef1010e8",
+   "8422898b39d8921c",
+   "871abcc0ba255177",
+   "a07150f797ff9821",
+   "afec94f4ed22e79d",
+   "b312ae60eddfa432",
+   "b506e5f74146aef6",
+   "c65ca1e035a15d27",
+   "e21dc391ba092c49",
+   "f42e4b990aab60e7",
+   "f6b15b35a7d6a83d"
+  ],
+  "32": [
+   "a613556c610c8615"
+  ],
+  "48": [
+   "049da2bfc7a32e48",
+   "1ce633c324723dcc",
+   "5c45908d1624c988",
+   "8178e690580aca2b",
+   "b821a5d95038b667",
+   "ca4185dcd7cf346b"
+  ]
+ }
+}

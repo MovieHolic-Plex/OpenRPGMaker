@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a37e314726b0facbc885f7e8bf4d36e7cba30972162d07b860d4ab83f6bbd7da",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당(잔돌 적은 변주)",
+ "label": "steampunk-city/sp-cinder-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile (coal ash ground with small stones)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 16x16 flat ground/terrain tile depicting dark coal ash earth with scattered small rocks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2689
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terrain ground tile (coal ash yard)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile depicting coal ash / dark dirt ground with subtle pebbles, properly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2957
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 flat terrain ground tile depicting coal ash ground with small scattered pebbles; correctly represents top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2513
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground surface representing coal ash / dirt ground with scattered pebbles, correctly shown as flat ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3137
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "5449bf7d48b7807c"
+  ],
+  "24": [
+   "20d0f4e40b2ff741",
+   "37763e8d11ddc173",
+   "40105eea5ade20d2",
+   "5399dc231d17c2b3",
+   "780cb3fe65e5b15e",
+   "be50b97ae2c7b34c"
+  ],
+  "32": [
+   "155dfe4720e45705",
+   "76c4f5268319d4e9",
+   "967e7ca14ade9ad2",
+   "acbf69886aa2d8df",
+   "d0d6c7395e7a298c",
+   "f3ba3e76693fd70f"
+  ],
+  "48": [
+   "2b48b74cfc6fcfd3",
+   "869650d3c9b04ec2",
+   "a4eed635e450ec36",
+   "c0ba73b137ebfb29",
+   "c33f0e8bd4656ba8",
+   "fbb66a5fa1bc039f"
+  ]
+ }
+}

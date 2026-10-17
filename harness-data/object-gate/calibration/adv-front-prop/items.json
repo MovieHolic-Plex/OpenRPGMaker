@@ -1,0 +1,1442 @@
+[
+ {
+  "name": "pairs__old-wardrobe",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 pairs/old-wardrobe(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__cake_display_case__w8-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/cake_display_case__w8-C(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__chopping_block__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/chopping_block__v5(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__altar_E__w21-G",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/altar_E__w21-G(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__pew__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/pew__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__pew_E2__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/pew_E2__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__pew_E3__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/pew_E3__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__pulpit__w32-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/pulpit__w32-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__votive_stand__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/votive_stand__v5(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__coffin__w73-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/coffin__w73-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__column_dwarf__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/column_dwarf__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__column_marble__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/column_marble__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__column_steel__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/column_steel__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__column_stone__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/column_stone__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__column_wood__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/column_wood__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__armchair__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/armchair__w9-B(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__barrel__w2-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/barrel__w2-A(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__chair_E__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/chair_E__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__chair_N__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/chair_N__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__chair_S__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/chair_S__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__chair_W__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/chair_W__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__cradle__w29-F",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/cradle__w29-F(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__sofa__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/sofa__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__firewood_bundle__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/firewood_bundle__w9-B(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__magitek_engine__w46-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/magitek_engine__w46-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__mine_cart__w2-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/mine_cart__w2-C(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__powder_kegs__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/powder_kegs__w9-B(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__rune_stone__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/rune_stone__w45-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__stone_throne__w52-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/stone_throne__w52-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__theater_seat__w10-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/theater_seat__w10-C(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__hammock__w72-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/hammock__w72-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__safe__w72-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/safe__w72-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__spear_rack__w70-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/spear_rack__w70-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__hay_bale__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/hay_bale__w44-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__saddle_rack__w26-D",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/saddle_rack__w26-D(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__loom__w43-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/loom__w43-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__spiral_stair__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/spiral_stair__v5(원래 종류 structure)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__slot_machine__w46-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/slot_machine__w46-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__choir_stall__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 interior/choir_stall__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__fish_tank__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/fish_tank__w44-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__kitchen_range__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 interior/kitchen_range__v5(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "interior__patient_bed__w74-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 interior/patient_bed__w74-A(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__scroll_shelf__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 murim/scroll_shelf__A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__scroll_shelf__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 murim/scroll_shelf__B(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__medicine_cabinet__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 murim/medicine_cabinet__A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__medicine_cabinet__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 murim/medicine_cabinet__B(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__gong_frame__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 murim/gong_frame__A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "murim__weapon_rack__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 murim/weapon_rack__A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_old-wardrobe",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_old-wardrobe(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_cake_display_case__w8-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_cake_display_case__w8-C(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_chopping_block__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_chopping_block__v5(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_altar_E__w21-G",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_altar_E__w21-G(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_pew__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_pew__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_pew_E2__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_pew_E2__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_pew_E3__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_pew_E3__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_pulpit__w32-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_pulpit__w32-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_votive_stand__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_votive_stand__v5(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_coffin__w73-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_coffin__w73-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_column_dwarf__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_column_dwarf__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_column_marble__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_column_marble__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_column_steel__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_column_steel__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_column_stone__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_column_stone__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_column_wood__w51-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_column_wood__w51-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_armchair__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_armchair__w9-B(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_barrel__w2-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_barrel__w2-A(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_chair_E__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_chair_E__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_chair_N__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_chair_N__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_chair_S__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_chair_S__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_chair_W__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_chair_W__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_cradle__w29-F",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_cradle__w29-F(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_sofa__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_sofa__v5(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_firewood_bundle__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_firewood_bundle__w9-B(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_magitek_engine__w46-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_magitek_engine__w46-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_mine_cart__w2-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_mine_cart__w2-C(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_powder_kegs__w9-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_powder_kegs__w9-B(원래 종류 round_body)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_rune_stone__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_rune_stone__w45-A(원래 종류 column)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_stone_throne__w52-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_stone_throne__w52-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_theater_seat__w10-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_theater_seat__w10-C(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_hammock__w72-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_hammock__w72-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_safe__w72-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_safe__w72-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_spear_rack__w70-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_spear_rack__w70-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_hay_bale__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_hay_bale__w44-A(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_saddle_rack__w26-D",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_saddle_rack__w26-D(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_loom__w43-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_loom__w43-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_spiral_stair__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_spiral_stair__v5(원래 종류 structure)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_slot_machine__w46-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_slot_machine__w46-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_choir_stall__w45-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_choir_stall__w45-A(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_fish_tank__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_fish_tank__w44-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_kitchen_range__v5",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "U",
+  "note": "적대 시험: 위반 표본 holdout/mir_kitchen_range__v5(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_patient_bed__w74-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_patient_bed__w74-A(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_scroll_shelf__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_scroll_shelf__A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_scroll_shelf__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_scroll_shelf__B(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_medicine_cabinet__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_medicine_cabinet__A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_medicine_cabinet__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "C",
+  "note": "적대 시험: 위반 표본 holdout/mir_medicine_cabinet__B(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_gong_frame__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_gong_frame__A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__mir_weapon_rack__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/mir_weapon_rack__A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_wardrobe__w42-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_wardrobe__w42-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_wardrobe__w42-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_wardrobe__w42-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_dresser__w71-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_dresser__w71-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_dresser__w71-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_dresser__w71-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_bookshelf_1w__w41-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_bookshelf_1w__w41-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_bookshelf_1w__w41-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_bookshelf_1w__w41-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_stove__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_stove__w44-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_stove__w44-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_stove__w44-A(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_nightstand__w8-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_nightstand__w8-C(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_nightstand__w8-C",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_nightstand__w8-C(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_keg_rack__w48-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_keg_rack__w48-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_keg_rack__w48-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_keg_rack__w48-A(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_tea_table__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_tea_table__A(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_tea_table__A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_tea_table__A(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_tea_table__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_tea_table__B(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_tea_table__B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_tea_table__B(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_water_trough__w4-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_water_trough__w4-A(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_water_trough__w4-A",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_water_trough__w4-A(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_feed_trough__w4-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_feed_trough__w4-B(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_feed_trough__w4-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_feed_trough__w4-B(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_coal_bin__w10-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_coal_bin__w10-B(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_coal_bin__w10-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 holdout/thin_coal_bin__w10-B(원래 종류 container)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__flat_timber_prop__w53-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/flat_timber_prop__w53-B(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__thin_timber_prop__w53-B",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 holdout/thin_timber_prop__w53-B(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_desk_2x1",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_desk_2x1(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_work_2x1",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_work_2x1(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_grindstone",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_grindstone(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_spinning_wheel",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_spinning_wheel(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_confessional",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_confessional(원래 종류 structure)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_cupboard",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_cupboard(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "holdout__realbad_sword_rack",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "B",
+  "note": "적대 시험: 위반 표본 holdout/realbad_sword_rack(원래 종류 frame)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__b24_campus",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh/b24_campus(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__b23_campus",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/b23_campus(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__b31_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh/b31_modern_city(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__b76_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh/b76_modern_city(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c26_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c26_modern_city(원래 종류 tall_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c62_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c62_modern_city(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c70_sf",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c70_sf(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c44_desert",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c44_desert(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c6_snow",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh/c6_snow(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c4_campus",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c4_campus(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c18_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c18_modern_city(원래 종류 box)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh__c53_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh/c53_modern_city(원래 종류 seat)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh2__b44_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh2/b44_modern_city(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh2__b11_campus",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh2/b11_campus(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh2__b46_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "A",
+  "note": "적대 시험: 위반 표본 fresh2/b46_modern_city(원래 종류 other)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh2__c43_modern_city",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh2/c43_modern_city(원래 종류 low_furniture)을 front_prop 으로 선언"
+ },
+ {
+  "name": "fresh2__c7_steampunk",
+  "kind": "front_prop",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "adv-front-prop",
+  "tier": "D",
+  "note": "적대 시험: 위반 표본 fresh2/c7_steampunk(원래 종류 other)을 front_prop 으로 선언"
+ }
+]

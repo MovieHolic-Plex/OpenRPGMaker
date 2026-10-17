@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f53dfffc22f3d3f12a282c0755a7e4d3ea587428db151449b863645dba6ae880",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "노점(대추·석류·남보라 차양)",
+ "label": "desert-east/de-stall-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping awning is clearly viewed from above (rows 2-10) before draping down at rows 11-13, and the counter top surface is visible with depth between rows 19-24 above the front counter paneling (rows 25-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5745
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning shows a sloped top surface spanning rows 1-9 above its hanging valance (rows 10-13), and the counter shows a 6-row deep top surface (rows 19-24) above its vertical front panel (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5759
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with awning and counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a visible horizontal top surface across rows 19-24 (6 px tall) where display crates sit, and the awning shows its angled upper slope across rows 2-10 (9 px tall) above the hanging valance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and fruit counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The striped awning functions as the roof of the structure and displays a prominent 9-row top slope (rows 1-9) in 3/4 view before dropping down into the vertical scalloped valance (rows 10-13). The fruit counter below displays angled produce bins visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9861
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "74e5815cda988e99",
+   "8ef63c232a4e5e13",
+   "cce1c2973d9b3ff2",
+   "eabdbde715eafdab"
+  ],
+  "24": [
+   "0e50a57d5e7bf5be",
+   "153b3943df099063",
+   "1a8cdc9ec80fa09d",
+   "22adf4cc030505fe",
+   "333c75b2349867cc",
+   "40194dc4a3ec201c",
+   "4f5ccfed372a037a",
+   "55c4aeb2cf217fc9",
+   "5f41285f3d8cdea5",
+   "6dce734d2b270766",
+   "70d47de8a23ac60b",
+   "7e27714f1431bb71",
+   "7ff1c9cdd7bf25c1",
+   "834e3a52d543d495",
+   "94685e57f8232965",
+   "9fe33da1144c7664",
+   "a8a3a302f462c80e",
+   "aa45c33e680bfa19",
+   "ad362219f9b4133c",
+   "adef27902a1d989d",
+   "b1344df974deccd4",
+   "d06e4477915bcbff",
+   "d6bdb3b953377074",
+   "fec98dc11a2900a3"
+  ],
+  "32": [
+   "a7055577ed86107e"
+  ],
+  "48": [
+   "02f5aab8efaff682",
+   "185bbb9b566a5424",
+   "38413f37b4c83dcd",
+   "4935b39d65714b29",
+   "b24cfa9b62fb1572",
+   "ffab57f250056844"
+  ]
+ }
+}

@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93daa40510039bca3c3719ccb43bb71bacf0356ef9cfc0d1981ce2e6def7367f",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "놋 화로",
+ "label": "desert-east/de-brazier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass brazier bowl with three legs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier shows an elliptical opening from rows 4 to 7 containing glowing embers/coals, with the front face of the bowl visible from rows 8 to 11 and tripod legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass brazier bowl with three legs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier shows an elliptical opening (rows 4-6/7) containing glowing coals and ash viewed from above, atop the south-facing bowl body (rows 8-11) supported by three legs.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6647
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass brazier bowl with burning coals",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier has an elliptical top opening clearly visible from above across rows 4-7 filled with glowing embers, positioned above the south-facing curved bowl front (rows 8-10) and tripod legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5761
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bowl of the brass brazier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier is drawn in flat front elevation with a circular front silhouette, horizontal bands across rows 6-7, no visible elliptical opening/interior, and three tripod legs all terminating on the exact same horizontal baseline (row 14).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 10348
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.225Z",
+ "cells": {
+  "16": [
+   "ce13fb35a46d01dc"
+  ],
+  "24": [
+   "725ca20276f5828e",
+   "acd3b5bf2d367157",
+   "c5e5061ae1a64b44",
+   "c6206496130076af",
+   "d0b90eeb6e5a5dd2",
+   "e248dfbc45a53c55"
+  ],
+  "32": [
+   "3a37457190dd679f",
+   "671345fbd5f8daa3",
+   "70efb8ac8c3c39fd",
+   "79a0493ce9455668",
+   "8fb6f42123acb4cc",
+   "b260a7627536ec03"
+  ],
+  "48": [
+   "4296f35a74d3cb1c",
+   "4592df0ea2cc710d",
+   "9f3a5a4b55475bab",
+   "a02f8885c60c2bf6",
+   "bc8c0193a2a130c2",
+   "ec36070dcc779a01"
+  ]
+ }
+}

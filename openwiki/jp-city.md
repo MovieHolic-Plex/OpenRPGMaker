@@ -18,7 +18,7 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 정의 모듈 `src/project/defaults/jpCity.ts` — `createJpCityTileset`, `ensureJpCityTileset`, `ensureJpCityReferences`, `isJpCityTileset`.
 - 굽기가 만드는 파일(굽기 담당 소유): `public/assets/jp-city/jp-city-chipset.png`, 시트 메타 `src/assets/jpCitySheet.json`(`count`, `tilesPerRow`), 정의 `src/assets/jpCityTileset.json`(`name`·`tileSize`·`passability`·`priority`·`terrain`·`tileMeta`·`tileGroups`·`autotileGroups`·`animationStrips`·`structureKits`), 굽기 스크립트·소스 `scripts/content/jp-city/`, 자리 키 핀·출처 `tiledata/jp-city/`.
-- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 8용도 55쪽·그림 147장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
+- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 15용도 145쪽·그림 267장 (2026-10-13 재굽기: 거리 시설에 하천·다리·철도·일체형 정면 143종·지붕·옥상 키트 추가, 계획 단계 철도는 「아직 연결 안 됨」 표시). `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
 - 배선: `src/assets/bundled.ts`(시트 import·항목·`bundledChipsetFrameCount`), `src/assets/bundledChipsetGeometry.ts`(열 수), `src/project/defaults/defaultAssets.ts`(`ensureBundledTilesets` 기존 사본 블록·`bundledEasyRpgTilesetBase`; 새 프로젝트는 `defaultTilesets()` 가 번들 목록을 돌며 자동 포함), `src/project/tilesetFamily.ts`, `src/project/tilesetHarness/combinedTown.ts`(RM2k3 투명 칩 보정 제외), `test/bundledTilesetIdParity.test.ts`.
 
 ## 굽기 규약 (TS 가 기대하는 것)
@@ -212,6 +212,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 전봇대 `jp-pole`(3×10, 변압기·완목·노란 지선 커버) · `jp-pole-guy` · `jp-pole-wood`(3×9). 전선 `jp-wire-5`~`jp-wire-20`(폭 L−3 × 3): **왼쪽 전봇대 키트 x + 3, 맨 위 줄 y 에 4층**. 세로 `jp-wire-v6/8/10`.
 - 노면(2층 투명 덧그림, `pc=flat`): `jp-mark-edge-{n,s,w,e}`(側溝 + 路側帯 흰 선) · `-grate` · `jp-mark-line-*` · `jp-mark-30`(2×4 주황) · `jp-mark-lockplate`(코인 주차 잠금판).
 - 담·문: `jp-bwall-{plain,sukashi,end-l,end-r}` · 펜스 얹은 `jp-bwallf-*`(1×2) · `jp-gatepost`(표찰·인터폰·우편함, 1×1) · `jp-gate` · `jp-carport`(4×3) · `jp-tsukigime`(月極 표지).
+- **빠진 키트(2026-10-13, 3/4 관문 불합격으로 거리 키트 220종에서 제외):** `jp-bwall-{plain,sukashi,end-l,end-r}` · `jp-bwallf-{plain,end-l,end-r}` · `jp-rail-fence` · `jp-rail-signal` · `jp-tsukigime` · `jp-pole-guy`. 위 담·문·전봇대 줄의 해당 이름은 옛 기록이다 — 새 시트/타일셋/참고문서에서는 쓰지 않는다. `bake_refs.py` 소스에서는 이미 뺐고, 산출물(`jpCityReferences.json`)은 재생성 대기.
 - 생활·길가: `jp-propane` · `jp-ac-unit` · `jp-pots` · `jp-monohoshi` · `jp-keijiban` · `jp-gomi-box` · `jp-jizo` · `jp-mirror2`(주황 커브미러) · `jp-hydrant-sign` · `jp-bus-stop`. 거점: `jp-torii` · `jp-gas-canopy` · `jp-school-gate`.
 - `ai.role` 은 enum(`building castle fence roof terrain water wall prop`) 안이어야 한다(`bake_lib.py` 검사) — 전선·표시는 `prop`, 담·문은 `wall`.
 - **층 규칙**: 전봇대·전선은 건물 앞에 서므로 4층(3층에 찍으면 건물 칸을 지운다 — 참고문서 `upper-overwritten`). 엔진 통행은 4→1층 순으로 빈칸·★ 를 건너뛰므로 4층 ★ 가 3층 막힘 칸을 풀지 않는다.
@@ -354,7 +355,7 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 완성 장소를 붙이면 같은 컨셉 틀이 같은 거리로 나온다(사용자 지적: 견본을 늘려도 해결이 안 된다). 구성기는 **규칙으로 거리를 짠다**.
 
 - 정본 `src/project/jpCityStreetComposer.ts`(순수): `planJpCityStreet({mapId,width,height,seed,style,shops})` → 도구 호출 목록. 짜임 = [뒷줄 건물][보도 2][도로 3~4][보도 2][앞줄 건물][맨 아래 보도 2], 세로 골목 0~1, 횡단보도 키트(폭 4 도로만), 차 1~3, 가로등·노보리·자판기·자전거·화분·벤치. 건물은 가게 종류(`LOOKS`: 1층·층 띠·벽·지붕·간판 범위)에서 무작위 조립하고 `build_jp_city_building` 이 거절하면(`try:N` 후보 12개, 점점 단순) 다음 후보로 간다 — 첫 성공에서 멈춘다. 층 수는 남는 줄로 제한(앞줄 건물이 보도·도로를 덮지 않게). `runJpStreetPlan(plan, call)` 이 실행.
-- 도구 `compose_jp_city_street`(`src/editor/tools/jpCityStreetTool.ts`, `JP_CITY_TOOLS`·`JP_CITY_EXPOSED_TOOLS`): `{mapId, seed, style: shopping|residential, shops[], replace}`. 복제본에서 짠 뒤 반영, 손댄 맵은 `replace:true`. 레지스트리와 순환이라 `bindStreetToolLookup` 로 조회 함수를 꽂는다.
+- 도구 `compose_jp_city_street`(`src/editor/tools/jpCityStreetTool.ts`, `JP_CITY_TOOLS`·`JP_CITY_EXPOSED_TOOLS`): `{mapId, seed, style: shopping|residential, shops[], replace, lotsOnly}`. 복제본에서 짠 뒤 반영, 손댄 맵은 `replace:true`. `lotsOnly:true` 는 다시 짜지 않고 남은 빈터만 채운다(아래 「빈터 쓰임 단계」). 레지스트리와 순환이라 `bindStreetToolLookup` 로 조회 함수를 꽂는다.
 - 시작 흐름: jp_city 컨셉(학교·역 낱말이 아니면, `plan.composeStreet`)은 `prebuildStartTown` 이 구성기로 시작 맵을 짠다(기획 글의 가게 낱말 → `shopsFromText`, 스타일 → `streetStyleFromText`). 학교·역 낱말은 완성 장소(`placeId`) 붙이기가 남아 있다.
 - 증거: `bun scripts/qa/jp-street-probe.mts --seeds 6 --out <새 폴더>`(Read 도구는 같은 경로 이미지를 캐시하니 폴더를 바꿀 것). 알려진 한계: 도로 점선·중앙선은 면 채우기 재료가 아니라 못 깐다, 횡단보도는 폭 4 도로만, 가게 간판(`decos`)은 아직 안 넣는다.
 - (2026-10-12 후속) 골목은 지도를 위아래로 가로지르는 샛길(양옆 보도+가운데 도로)이라 큰길과 사거리로 이어진다. 지어진 건물마다 이름 붙은 위치(`labelStreetBuildings`, 태그 `jp-building`·종류)를 남겨 `list_map_locations` 로 어느 문이 어느 가게인지 읽고 `link_jp_city_interior` 를 맞게 잇는다(편의점 실내를 아파트 문에 잇던 문제).
@@ -380,3 +381,39 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 ## 조수 지침: compose 우선 (2026-10-13)
 
 `jpCityPolicy.ts` 의 포인터·상세·노트를 «거리 한 장 = `compose_jp_city_street` 먼저, 이후 build_jp_city_building/fill_region 로 부분 보정, link_jp_city_interior 로 실내 잇기» 로 다시 썼다. 라우팅은 `describesCityStreet`(번화가·상점가·도심·시가지·주택가·downtown 등)를 jp_city 맵이 이미 있는 프로젝트에서만 허용하고 미국풍/modern_city 낱말은 제외한다. 세부는 `openwiki/editor-ai-tools.md` 「일본 도시 조수 연결」.
+
+## 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+
+`jp-sf-*` 는 건물 1층 부품이라 윗면이 없다. 띠를 한 장씩 판정하지 않고 `gate_assembled.py build` 가 띠 + 위층 + 지붕(조립기 `buildJpCityBuilding` 결과를 시트 칸으로 합성)을
+`tiledata/jp-city/blocks/_gate_assembled/<역할>-<L|R>-w<폭묶음>.png` 로 내면 `object-gate review --batch /tmp/jp-asm-chunk-N.jsonl`(kind structure)로 판정한다.
+`gate_kinds.check_all` 은 띠 화소가 PASS 조립 그림 안에 그대로 있을 때만 통과시킨다(리포트에 `covered by assembled <표본>`). 띠를 고치면 build → review 를 다시 한다.
+주의: 거리 구성기의 평지붕 건물(윗면 거의 없음)은 판정이 대부분 불합격 — 조립 표본은 roof.hip 으로 짓는다. 구성기 지붕 선택 개선은 별건.
+
+## 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
+
+「거리·광장의 빈 땅이 거슬린다」(사용자) → 구성기 끝에 남은 대지를 «쓰임»으로 채운다. 코드 `src/project/jpCityLotUse.ts`, 호출은 `runJpStreetPlan(plan, call, view)` 끝(지도를 읽어야 하므로 `view` 를 준 호출만 — 도구·`playableSegment`·프로브).
+- 남은 땅 = 건물·도로·보도·물·담이 아닌 맨 대지. 가장 큰 빈 직사각형(최대 16×10, 아래 기준)부터 크기·위치·구획으로 쓰임 하나: 코인 주차(**보도에 닿는 자리만**, 생활도로 + `jp-lot-bay` 2층 + 차 + `jp-lot-board`), 놀이터(기구를 먼저 놓고 생울타리를 그 둘레에 맞춤, 입구 2칸은 보도 쪽), 텃밭(`jp-lot-veg`), 공사장(`jp-lot-cabin` + 철망 + `jp-keijiban`·콘, 보도 쪽 대지만), 광장(판석 위 `jp-lot-fountain`|`jp-lot-clock` + 둘레 짜임 3가지 중 하나 + `jp-lot-kiosk`), 골목 틈(아래 5줄에 둘까지), 지붕 바로 뒤 띠(실외기·가스통·빨래 장대·화분).
+- 건물 둘레 1칸·이미 선 소품 둘레 1칸은 비운다. 쓰임 사이 1칸 여백. 같은 씨앗이면 같은 결과.
+- 멈춤: 「반경 2칸 안에 소품 없는 대지」 비율 ≤ 7%, 또는 직사각형이 바닥나거나 쓰임 수 상한. 내부 계산은 측정기 `scripts/qa/jpLotEmptiness.mts` 와 같은 분류(하천 석축·다리·노면 표시 키트는 «길·물», 소품 아님)여야 한다 — 다르면 일찍 멈춘다.
+- 손댄 맵: `compose_jp_city_street({mapId, lotsOnly:true, style})` 가 다시 짜지 않고 빈터만 채운다(건물은 타일로 찾는다 — 건물·집·가게 키트 목록이 측정기와 같아야 한다).
+- 생울타리·철망·블록담은 `fill_region`/`build_wall` 이 받지 않는다(위층 4방 오토타일) → 4방 비트(N1 E2 S4 W8)로 `variantMap` 칸을 골라 `stamp_layer_block` 3층으로 찍는다(`edgeLine`). **구성기 본문의 `fill(…, "생울타리"/"블록담")` 은 optional 단계라 조용히 실패했다 — 2026-10-14 수정:** `runJpStreetPlan` 이 `view` 가 있으면 그 재료의 `fill_region` 단계를 `stampEdgeRect`(`jpCityLotUse.ts`)로 3층에 4방 오토타일로 직접 찍는다(이미 위층이 있는 칸은 건드리지 않는다). `view` 없는 호출(예: NOLOT 프로브)은 옛 동작. 구성기가 이제 `composed-layout` 표식을 건물 이름표에 단다(`labelStreetBuildings`) — 거리 맵은 배치 품질 권고에서 빠진다.
+- 측정: `bun scripts/qa/jp-street-probe.mts --from 3 --seeds 3 --w 64 --h 56 --style shopping` 이 `empty <seed> X%` 와 `.empty.json`(마스크)을 낸다. `NOLOT=1` 이면 이 단계 없이(비교용).
+- 키트 그림 `scripts/content/jp-city/blocks/lot_art.py`(`ENABLED` 만 굽는다, `street_hand.py` 가 등록). 관문 실패로 빠진 것: `jp-lot-pay`·`jp-lot-hoarding`·`jp-lot-notice`.
+
+## 시설 실내 6묶음 — 병원·학교 별관·IT 사옥 + 방 구성(program)·길 고르기 (2026-10-14)
+
+- 블록 3개(`BLOCK_ORDER` 끝): `interior_hospital`(`hs-`, 병원 기물 30 + 바닥·벽면) · `interior_school2`(`sx-`, 학교 복도·교무·특별교실·옥상 보강 13) · `interior_office2`(`ox-`, 자유석·급탕실·로비 보강 13) — 관문 보류 19종을 뺀 수. 틀은 `scripts/content/jp-city/interior/inst.py`(`Inst`: ikit Registry 위에 관문 종류·`_gate/*.png`·`items.jsonl`·`kinds.json` 내보내기). 그림 엔진은 캠퍼스 `px.py`(modern3 램프).
+  핀 15554 → 15876(덧붙이기만, 옛 번호 이동 0). 분류는 `interior/categories.py` 6번째 묶음(hospital-lobby·hospital-exam·hospital-ward·hospital-pharmacy·school-hall·school-staff2·school-roof2·office2·office2-common).
+- 3/4 관문: `gate_kinds.py` 가 이 세 블록을 `_gate/kinds.json` 으로 함께 검사한다. 문(종류 `part`)은 `gate_rooms.py` — 예제 렌더(`verify-shots/jp-city/interior-*-1x.png`)에서 문을 화소 그대로 품은 5×5 칸 조각을 잘라 kind `structure` 로 판정받고, 그 영수증이 문을 덮는다(gate_assembled 와 같은 규칙).
+  1차 판정(76점)에서 «정면 입면도·윗면 0행»이 많았다 — 윗면을 1~2px 테로만 그리면 판정자는 윗면으로 세지 않는다. 윗면은 4~6행 별개의 판으로 그린다(`box(c, …, top=5…)`).
+  2026-10-14 판정(gemini-3.8-flash ×4 과반, 보정 프로필 미보정 → PASS 는 «임시통과»): 다시 그린 48조각 중 1차 23 통과, 남은 25 를 한 번만 고쳐 재검수해 8 통과. 두 번 떨어진 17조각 + 문 2종(문 품은 조립 조각도 두 번 불합격)은 **굽지 않는다** — `interior/gate_hold.py` 의 `HOLD`(사유 포함), 블록이 `I.hold()` 로 레지스트리에서 빼고 `categories.py` 도 거른다. 예제 맵은 통과한 조각으로 바꿔 끼웠다(병원 미닫이 문 → 학교 `sc-classroom-door`, 접수 키오스크·수납기 → 휠체어·화분 등). 다시 넣으려면 그림을 고쳐 `object-gate review --force` 로 새 영수증을 받은 뒤 HOLD 에서 지운다(`--force` 없이 부르면 같은 해시의 옛 영수증이 그대로 나온다).
+  기계·탁자형 윗면 도우미: `inst.py` 의 `box34`(앞면보다 1px 넓은 판·뒤 모서리 둥글림·판 밑 그림자)·`slab34`(판만). 윗면 판은 앞면보다 2톤 밝게, 판 위 물건은 줄여 빈 판을 2칸 이상 남긴다 — 판이 화면·뚜껑으로 꽉 차면 정면 판으로 읽힌다.
+- 예제 5맵(생성기 `interior/gen_places6_{hospital,annex}.py` → `examples/*.json`): 종합병원 1층 외래(30×19: 대기실·종합 접수·진찰실 둘·처치실·원내 약국 투약 창구·계단/엘리베이터 홀) + 2층 병동(30×22: 2인 병실 넷·간호사 대기소·복도·계단 홀) — 장소 `jp-city-hospital-1f-30x19`; 학교 특별교실동(26×16: 취주악부실·인쇄실·트로피장 복도) `jp-city-school-annex-26x16`; IT 사옥 1층 로비 + 자유석 층 `jp-city-office-tower-1f-16x11`. 표 `examples/places6-{hospital,annex}.json`, 참고문서 용도 `interior-hospital`(`jp-interior-hospital-index`).
+  예제 방 사각형(`rooms`)은 겹치지 않게 — 겹치면 방 견본이 옆 방 몫까지 가져간다(간호사 대기소가 복도 3줄을 먹어 빈 바닥 5줄이 됐다).
+- **방 구성(program)**: `extract.mts` 가 places3~9(지하 던전 places4 제외)도 견본·program 표로 싣는다(jp_city 견본 35 → 144). 시험 `node scripts/content/jp-city/qa/program-rooms.mjs [program…]`(조수와 같은 `build_hand_interior_room({tileset:"jp_city", floor, wall, layout:{program}})`, floor·wall 은 필수) → `verify-shots/jp-city/program/`.
+  `layout.ts`: 화풍 묶음이 없는 칩셋(jp_city)에서 program 이면 **같은 예제 맵 → 같은 건물** 견본을 먼저 고른다(전에는 종류만 같으면 아무 건물 — 사무 엘리베이터 홀에 호텔 붉은 카펫, 학교 복도에 다른 건물 나무 복도). HUB·출입 순서에 학교 昇降口·로비·병원 대기실·사옥 로비를 더했다. program 으로 짠 평면에는 «참고 예제와 n% 같다» 경고를 내지 않는다(도구가 짠 것이다).
+- **길 고르기**(`src/ai/jpCityPolicy.ts` `jpFacilityOf`): 만들기 요청이고 실내면 사무실·회사 → office, 병원·진료실·대기실·병동·약국·의원 → hospital, «일본»·昇降口·신발장·上履き 가 붙은 학교 낱말 → school 로 jp_city 시설 실내 노트를 붙인다. 그냥 «교실·교무실·대학교 캠퍼스·기숙사»는 캠퍼스(`campusPolicy`) 그대로, 폐병원·폐교는 던전 장소 그대로. 결정: 일본 시설이라고 밝힌 요청만 jp_city 로 — 국적 없는 학교 낱말까지 옮기면 캠퍼스 칩셋(현대 학교) 사용자가 길을 잃는다.
+- 문 맞춤(`handInteriorTools.ts` `fitDoorsToPlan`): 실내끼리 잇는 계단·층 이동(대상 맵이 indoor)은 거리 출구 틈으로 옮기지 않는다 — origin 의 문 맞춤이 일본 집 계단을 출구로 끌고 가 house-2f 가 `no-exit-gap` 으로 죽었다.
+- layout(program·rooms)으로 지은 맵에는 방마다 위치 이름표(`hand-layout-room` + `composed-layout`)를 단다 — 조수 배치 품질 권고(«빈 바닥 → 맵을 줄여라»)가 견본 한 벌짜리 방을 빈 방으로 보고 손으로 다시 짓게 하던 것을 막는다(`piAgentRuntime.ts` 가 composed-layout 맵을 건너뜀). 시설 노트에도 «닿지 못한 빈 바닥 0·경고 0 이면 그대로 두고 다시 짓지 말라, 다른 배치는 layout.variant» 한 줄.
+- 실조수 시험(입력창 경로, `harness-data/assistant-capability/ai-configs/gemini-4-argon.json`: 모든 역할 gemini-4-argon 추론 medium): 새 기본 프로젝트에 4문장(일본 학교 교실·회사 사무실·병원 진료실과 대기실·일본 학교 신발장과 복도). 지침 개선 전 7·7·8·6(c1 은 6번 다시 지음, c4 는 «빈 바닥» 권고에 22×16 손 짓기로 줄임) → 개선 후 7·7·8·7 — 넷 다 jp_city program(school-2f·office-floor·hospital-1f, c4 는 rooms 뒤 school-1f)으로 짓고 다시 짓기 없이 경고 0. 남은 흠: 학교 2층 두 교실이 소품까지 똑같다, 사무 층 자판기 옆 곁문, 학교 1층 계단 옆 짧은 문. 실조수 시험 중에 굽기 사슬(`interiorRoomTemplates.json` 을 origin 판으로 되돌렸다 다시 뽑는다)을 같이 돌리면 «방 구성 "school-2f" 이 없다»가 난다 — 둘을 겹치지 말 것. 3.8-flash·gpt 로 잰 점수와 섞지 않는다.
+- 남은 것: program 배치 후보가 병실을 옆문으로 지나가게 짜는 경우(병동 program 후보 1) · 동·서 벽면 걸이 없음 · 의사·간호사 NPC 는 Actor1 이벤트.

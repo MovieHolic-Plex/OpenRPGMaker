@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58cc83694dc19f403fd8a98533f76372dd088ce09116c1773c94fde28e815cdc",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 나무 침상(담요)",
+ "label": "desert-east/de-bed-mat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bed with blanket and pillow",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress and bedding top surface is clearly visible from above across rows 3 to 26, ending in a south-facing wooden footboard and legs at rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3875
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bed with mattress, pillow, and folded blanket",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow and patterned blanket) is clearly foreshortened and visible from row 2 to row 26 (approx 25 rows tall), resting above the front footboard and legs at rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4284
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bed with blanket and pillow",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface is foreshortened from above across rows 3-26 showing the pillow and patterned blanket, with a clear south front face and legs on rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3665
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bed with bedding and blanket",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is drawn in proper 3/4 top-down RPG perspective, showing the top surface of the mattress, pillow, and blanket spanning rows 3-26, with the south footboard and legs visible at rows 27-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4027
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "723b55f4429c6c40",
+   "e3f88c4b9bf8711b"
+  ],
+  "24": [
+   "2537de2dcd80a86a",
+   "6e0c72698c7060ed",
+   "8989a1a9295376c3",
+   "94a9ef80901b4410",
+   "9a7214d3523a7c3b",
+   "a0b40ea5c53e5a98",
+   "a1217edd28398fa1",
+   "d03859c675bd384d",
+   "e515505e0edbad57",
+   "eb38524e69a315cc",
+   "ed076bf7e15cf901",
+   "ede70b2650436fa4"
+  ],
+  "32": [
+   "30f0786b1a1c0dca",
+   "43b908c568df5ef4",
+   "c3d3800b07c4b763"
+  ],
+  "48": [
+   "17d0dc051d959f80",
+   "3101822d0ba33e92",
+   "895684deee4b8934",
+   "b82f9d2dcd837ac4",
+   "ccfbe2b246e36a62",
+   "d4a5ab4949470f4f"
+  ]
+ }
+}

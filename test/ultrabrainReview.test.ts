@@ -21,7 +21,7 @@ describe("Ultrabrain whole-map review", () => {
     const values = new Map<string, string>();
     vi.stubGlobal("localStorage", { getItem: (k: string) => values.get(k) ?? null, setItem: (k: string, v: string) => values.set(k, v) });
     const config = defaultAiConfig();
-    expect(configForUltrabrain({ ...config, model: "other", reasoningEffort: "low" })).toMatchObject({ model: "gemini-3.8-flash", reasoningEffort: "high" });
+    expect(configForUltrabrain({ ...config, ultrabrainProviderId: undefined, ultrabrainModel: undefined, model: "other", reasoningEffort: "low" })).toMatchObject({ model: "gemini-4-argon", reasoningEffort: "high" });
     saveAiConfig({ ...config, model: "unknown-explicit", ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-5.5", ultrabrainReasoningEffort: "medium" });
     expect(loadAiConfig()).toMatchObject({ model: "unknown-explicit", ultrabrainProviderId: "openai-codex", ultrabrainModel: "gpt-5.5", ultrabrainReasoningEffort: "medium" });
   });
@@ -33,13 +33,13 @@ describe("Ultrabrain whole-map review", () => {
     const after = structuredClone(before);
     const map = Object.values(after.maps)[0]!;
     map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
-    await reviewMapHarmony(before, after, "나무 수정", defaultAiConfig());
+    await reviewMapHarmony(before, after, "나무 수정", { ...defaultAiConfig(), ultrabrainProviderId: undefined, ultrabrainModel: undefined });
     expect(mocks.render).toHaveBeenCalledWith(after, map);
     // 맵당 한 번 — 같은 이미지를 Vision 으로 먼저 한 번 더 보내지 않는다.
     expect(mocks.chat).toHaveBeenCalledTimes(1);
     const [config, request] = mocks.chat.mock.calls[0]!;
     expect(request.messages[0].content).toContain("You are Ultrabrain");
-    expect(config).toMatchObject({ model: "gemini-3.8-flash", reasoningEffort: "high" });
+    expect(config).toMatchObject({ model: "gemini-4-argon", reasoningEffort: "high" });
     expect(request.messages[1].content.filter((p: { type: string }) => p.type === "image_url")).toHaveLength(1);
     expect(JSON.stringify(before)).not.toBe(JSON.stringify(after));
   });

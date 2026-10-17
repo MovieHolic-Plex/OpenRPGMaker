@@ -33,12 +33,14 @@ import {
   chargingDirectorState,
   commandPromptState,
   resultDirectorState,
+  completeBattleMessageTyping,
   syncBattleMessageWindow,
   syncBattleResultPanel,
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
@@ -51,6 +53,8 @@ import { resolveBattleLook } from "@/project/battleLook";
 import { applyBattleLook, syncBattleTurnOrder } from "@/player/battleLookDom";
 import { battlerSpriteNode } from "@/player/battleFieldDom";
 import { playBattleImpactLayer, playBattleSfx } from "@/player/battleSfx";
+import { usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
+import { monsterTimelineCue, playMonsterSfx } from "@/player/monsterSfx";
 import { pokemonActionMotion, pokemonDamageBlink, pokemonHitPower, pokemonHudBuzz, preloadPokemonMotionSounds, type PokemonMoveContext } from "@/player/battlePokemonMotion";
 import { pokemonMoveColor, pokemonMoveMotion, pokemonStrikeFromBelow } from "@/battle/pokemonMoveMotion";
 import { AUTO_BATTLE_KEY_LABEL, SPEED_KEY_LABEL, directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -68,7 +72,7 @@ import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldS
 import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
-import { emeraldNarrationActive } from "@/player/emeraldBattleNarration";
+import { emeraldNarrationActive, emeraldNoEscapeLine } from "@/player/emeraldBattleNarration";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -124,9 +128,9 @@ const POKEMON_DAMAGE_TAIL_MS = 90;
 const POKEMON_RESULT_READ_FRAMES = 40;
 /** 상성별 타격음 모양 — 3세대 SE_KOUKA_L/M/H 를 같은 타격 샘플의 크기·높이로 옮겼다. */
 const POKEMON_EFFECTIVENESS_SHAPE: Readonly<Record<"weak" | "normal" | "super", BattleCueShape>> = {
-  weak: { volume: 0.6, rate: 1.22 },
-  normal: { volume: 1, rate: 1 },
-  super: { volume: 1.3, rate: 0.88 },
+  weak: { volume: 0.6, rate: 1.22, tier: "weak" },
+  normal: { volume: 1, rate: 1, tier: "normal" },
+  super: { volume: 1.3, rate: 0.88, tier: "super" },
 };
 
 export function destroyBattleSceneOnHost(host: HTMLElement): void {
@@ -171,6 +175,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let animationPlan: { animationId: string; skipFrames: number; skippedMs: number } | undefined;
   if (pokemonMotion) preloadPokemonMotionSounds();
   // 지금 재생 중인 타임라인 엔트리의 기술 움직임 종류(접촉·발사체·…). onTimelineEntry 가 비트보다 먼저 온다.
+  let captureEntryActive = false;
   let pokemonMove: PokemonMoveContext = { motion: "contact", color: "#ffffff", fromBelow: false };
   if (retroMotion) root.dataset.battleMotion = "retro";
   // 창 크롬 묶음 — `_rm2000.css` 의 유리 HUD 는 이 속성으로 스코프해 정면(rm2000)·측면(rm2003) 이 나눠 쓴다.
@@ -179,7 +184,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleHud = skin.hudTemplate;
   root.dataset.battleLayout = skin.layout;
   // Active ATB(system.atbMode) — gauge 흐름에서만 켜진다. CSS·QA 가 이 속성으로 구분한다.
-  const activeAtb = store.getCurrent().system.atbMode === "active" && options.runtime.snapshot().battleFlow === "gauge";
+  const activeAtb = options.runtime.snapshot().atbMode === "active";
   root.dataset.battleAtbMode = activeAtb ? "active" : "wait";
   // 타격감 프리셋(project/battleHitFeel.ts). `data-battle-hit-feel` 은 히트스톱 중 여부(true/false)로 이미 쓰이므로
   // 이름을 나눈다 — QA 스펙 셋이 그 값을 읽는다. CSS(22-hit-feel.css)가 이 속성으로 갈라진다.
@@ -390,6 +395,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     setDirectorState(state: BattleDirectorState): void;
     render(): void;
     runActorCommand(command: ActorCommand): void;
+    runTeamSwap(targetTeamId: string): void;
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
@@ -405,6 +411,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     render: () => syncView(),
     runActorCommand,
+    runTeamSwap,
     beginTargetCommand,
     confirmTargetSelection,
     cancelTargetSelection: cancelTargetSelectionAndRestore,
@@ -468,14 +475,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         }
       });
     },
-    onCaptureCinematic(targetId, success) {
-      return playCaptureCinematic(field, targetId, success);
+    onCaptureCinematic(targetId, success, shakes) {
+      return playCaptureCinematic(field, targetId, success, shakes);
     },
     onDirectorState(state) {
       directorState = withFormationBanner(state);
     },
     onTimelineEntry(entry) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      captureEntryActive = entry.kind === "capture";
+      // 도감 등록 문장이 뜨는 순간의 징글.
+      if (entry.kind === "special" && entry.aside === "dex") playBattleSfx("dex");
+      // 몬스터 장르: 상태 이상 걸림·능력 단계 변화·날씨 시작 소리(다른 장르는 playMonsterSfx 가 false 라 무음 변화 없음).
+      const timelineCue = monsterTimelineCue(entry, store.getCurrent().database.states);
+      if (timelineCue) playMonsterSfx(store.getCurrent(), timelineCue);
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       if (pokemonMotion) {
         const skill = entry.skillId || entry.skillName ? battleEntrySkillRecord(entry) : undefined;
@@ -612,8 +625,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
       else root.classList.remove("battle-hit-stop-critical");
     },
-    onActionMotion(beat) {
+    onActionMotion(rawBeat) {
       setBattleMotionContext(field, options.runtime.snapshot());
+      // 구슬을 던지는 것은 트레이너다 — 내 몬스터가 상대에게 돌진하지 않는다(2026-10-15 진단 C1).
+      const beat = captureEntryActive && rawBeat && rawBeat.userMotion === "lunge" ? { ...rawBeat, userMotion: "idle" as const } : rawBeat;
       if (retroMotion) {
         // 시퀀서의 배속으로 실제 비트 길이를 맞춰 칸 전환이 다음 비트에 넘어가지 않게 한다.
         const timed = beat && beat.durationMs > 0
@@ -830,6 +845,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 지연이다. 배속(Shift) 토글과 달리 이건 이 시퀀스 한 번에만 걸리고 끝나면 복귀한다.
       if (isBattleConfirmKey(event) || isBattleCancelKey(event)) {
         event.preventDefault();
+        // 문장이 글자 단위로 나오는 중이면 이 입력은 그 문장을 한 번에 끝내는 데 쓴다(3세대). 다음 입력부터 빨리감기.
+        if (completeBattleMessageTyping(messageWindow)) return;
         beginSkip();
       }
       return;
@@ -1108,7 +1125,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (!next || next === current) return false;
     }
     setMenuCursor(snapshot, next, true);
+    clearFlashLine(snapshot);
     return true;
+  }
+
+  /** 도망 불가 안내처럼 잠깐 띄운 문장(directorState.flash)을 지우고 원래 「무엇을 할까?」로 돌린다. */
+  function clearFlashLine(snapshot: BattleSnapshot): void {
+    if (!directorState.flash) return;
+    directorState = commandPromptState(snapshot);
+    syncView();
   }
 
   function handleConfirm(snapshot: BattleSnapshot): boolean {
@@ -1134,6 +1159,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 확인키는 거기서 아무 일도 하지 않고 거절음만 울린다. 메뉴는 열린 채로 둔다.
     if (button.dataset.battleCommandInert === "true") {
       playBattleCue("command-cancel");
+      // 3세대처럼 도망갈 수 없는 이유를 문장 창에 말한다(회색 줄만 있으면 왜 안 되는지 알 수 없다). 커서를 옮기면 원래 안내로 돌아온다.
+      if (button.dataset.testid === "actor-command-run" && snapshot.phase === "actorCommand" && !snapshot.canEscape) {
+        directorState = { ...commandPromptState(snapshot, emeraldNoEscapeLine(snapshot)), flash: true };
+        syncView();
+      }
       return true;
     }
     button.click();
@@ -1201,6 +1231,31 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     };
   }
 
+  /** 시퀀서가 아직 재생하지 않은 능력치 단계 변화를 되감은 단계(표시 전용). 스냅샷은 명령 즉시 해결돼 문장 전에 알약이 먼저 바뀐다. */
+  function pendingStageView(snapshot: BattleSnapshot): BattleFieldPresentation["stageView"] {
+    const pending = snapshot.timeline.filter((entry) => entry.sequence > playedTimelineSequence && entry.statStage && entry.targetId);
+    if (pending.length === 0) return undefined;
+    return (battlerId, stages) => {
+      let view: Record<string, number> = { ...(stages ?? {}) };
+      for (const entry of [...pending].reverse()) {
+        if (entry.targetId !== battlerId || !entry.statStage) continue;
+        view = { ...view, [entry.statStage.stat]: entry.statStage.before };
+      }
+      return view;
+    };
+  }
+
+  /** 시퀀서가 지금까지 재생한 날씨 변화만 반영한 날씨(표시 전용). 아직 재생하지 않은 날씨 엔트리가 없으면 undefined(스냅샷 그대로). */
+  function pendingWeatherView(snapshot: BattleSnapshot): BattleFieldPresentation["weather"] {
+    if (!snapshot.timeline.some((entry) => entry.sequence > playedTimelineSequence && entry.weatherAfter !== undefined)) return undefined;
+    let view: BattleFieldPresentation["weather"] = null;
+    for (const entry of snapshot.timeline) {
+      if (entry.sequence > playedTimelineSequence) break;
+      if (entry.weatherAfter !== undefined) view = entry.weatherAfter;
+    }
+    return view;
+  }
+
   /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러진 적 다음 몬스터는 런타임에선 이미 서 있지만,
    *  화면에는 그 교체 비트(「○○는 △△를 내보냈다!」)가 재생될 때 나와야 한다. 아직 재생하지 않은 적 교체가
    *  가리키는 적을 숨긴다 — 앞 몬스터가 쓰러지기도 전에 HP 상자 둘·겹친 그림이 보였다(2026-10-07 관장전 실측). */
@@ -1242,6 +1297,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       onField: options.onField,
       rollingHp,
       stateView: sequenceBusy ? pendingStateView(snapshot) : undefined,
+      stageView: sequenceBusy ? pendingStageView(snapshot) : undefined,
+      weather: sequenceBusy ? pendingWeatherView(snapshot) : undefined,
+      resultShown: showingResult,
     };
     // 결과 화면이 뜨면 미터를 멈춘다 — 이 순간 남은 HP 가 결산 값이다. 패배는 결산하지 않으므로
     // 미터를 실제 HP(0)에 붙인다: 전멸 화면에 굴러가던 HP 와 「쓰러지는 중」이 남지 않게.
@@ -1492,6 +1550,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
         flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
       }
+      // 몬스터 장르: 몬스터가 레벨이 올랐으면 승리음이 끝난 뒤 레벨 업 소리(다른 장르는 playMonsterSfx 가 false).
+      if (snapshot.result === "victory" && (snapshot.rewards.monsterLevelUps?.length ?? 0) > 0) {
+        scheduleBattleTimer(() => { if (!destroyed) playMonsterSfx(store.getCurrent(), "level-up"); }, 850);
+      }
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
@@ -1504,6 +1566,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       || after.turn !== before.turn
       || after.result !== before.result
       || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
+  /** FF6 식 팀 교대(system.battleTeams). 시퀀서에는 「전열 교체」 한 줄로 흘려 보낸다. */
+  function runTeamSwap(targetTeamId: string): void {
+    if (sequenceBusy || inputPrompt || !options.runtime.performTeamSwap) return;
+    const before = options.runtime.snapshot();
+    options.runtime.performTeamSwap({ kind: "teamSwap", targetTeamId });
+    const afterCommand = options.runtime.snapshot();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    const arrived = afterCommand.actors[0]?.recordId;
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
+    sequencer.runAfterActorCommand({ kind: "switch", targetActorId: arrived ?? "" }, before, afterCommand);
   }
 
   function runActorCommand(command: ActorCommand): void {
@@ -1646,7 +1726,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 급소는 소리를 바꾸지 않는다(3세대 Cmd_effectivenesssound) — 「급소에 맞았다!」 문장이 말한다.
     const strikeSound = (): void => {
       emitBattleJuice("hit-damage", targetNode, POKEMON_EFFECTIVENESS_SHAPE[tier]);
-      if (tier === "super") scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55 / Math.max(0.2, speed));
+      // 굉장 = 같은 샘플을 한 번 더 낮게 — 몬스터 효과음 세트의 굉장 타격음은 두 번 치는 소리 하나로 만들어져 있어 겹치지 않는다.
+      if (tier === "super" && !usesMonsterSfxSet(store.getCurrent())) scheduleBattleTimer(() => { if (!destroyed) emitBattleJuice("hit-damage", targetNode, { volume: 0.9, rate: 0.78 }); }, 55 / Math.max(0.2, speed));
       if (hitFeel === "impact" && tier !== "weak") playBattleImpactLayer(pokemonHitPower(lostHp, maxHp, feedback.critical), feedback.critical);
     };
     scheduleBattleTimer(() => {
@@ -1869,6 +1950,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function shouldRefreshCommandPrompt(snapshot: BattleSnapshot, previous: BattleDirectorState): boolean {
+    // 도망 불가 같은 잠깐 안내(flash)는 커서를 옮길 때까지 남긴다 — 그 사이 다시 그려져도 덮지 않는다.
+    if (previous.flash && previous.activeActorRecordId === snapshot.activeActorId) return false;
     return previous.step === "command" || previous.activeActorRecordId !== snapshot.activeActorId;
   }
 

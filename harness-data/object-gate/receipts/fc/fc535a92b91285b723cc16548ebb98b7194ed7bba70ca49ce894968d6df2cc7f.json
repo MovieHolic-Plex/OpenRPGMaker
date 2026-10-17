@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc535a92b91285b723cc16548ebb98b7194ed7bba70ca49ce894968d6df2cc7f",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "큰 달 바위(높게 솟은 회색 바위 덩이)",
+ "label": "sf-station/sf-rock-regolith-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large rounded boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper surface of the boulder is clearly defined by light grey shading from rows 5 to 13 (~8 rows tall), transitioning into a medium-toned south face (rows 14–21) and a dark bottom shadow/ground-contact zone.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9694
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large rounded boulder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boulder is drawn as a circular disc/sphere viewed straight from the front, with diagonal geological strata running across the entire face and shading curving under at the bottom. There is no foreshortened top surface visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9132
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large rounded boulder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boulder is drawn as a circular disc with straight horizontal shading bands like a 2D celestial body icon, depicting a pure front elevation with no distinct foreshortened top surface or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8377
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large boulder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boulder is rendered as an almost perfect circular sphere/disc with horizontal/equatorial banding and middle highlights (rows 14-20), identical to a planet or moon viewed straight-on from the front. There is no distinguishable top surface or foreshortened 3/4 view angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6507
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "05b5702d06f0548b",
+   "7e6c7bf8eb8ba1ac",
+   "a93e066c43744a3b",
+   "d56efa8f9c6380fc"
+  ],
+  "24": [
+   "023f80c2b5850c05",
+   "09216bef8794dd65",
+   "0a3fa636528fcb75",
+   "158971df72d71a0a",
+   "19888dc35fe53523",
+   "1e1c3e705ac036f9",
+   "24c66569b4f22784",
+   "27d8afd934894e5b",
+   "27df597175b078fb",
+   "4dc335ba7c138cc3",
+   "5385f2e373956b6b",
+   "54b62ee73518e6a5",
+   "583287c4d0e32414",
+   "5d0bbdd172c2fd36",
+   "961533545f238444",
+   "a3695f58df68e420",
+   "b43e71afdb88fc6a",
+   "bb54b8a26e0c5783",
+   "c3dd7ff1e8236da0",
+   "d58877179fadb37d",
+   "e4b589419d406fb3",
+   "e6255d62257c1e27",
+   "f8b44751b848c93c"
+  ],
+  "32": [
+   "c6e8ae9ec6cc8e50"
+  ],
+  "48": [
+   "37532cb6c8940bd9",
+   "44db9c78a2e0320b",
+   "4cca294785e0384a",
+   "5af1c0912969a89b",
+   "c2b050e682d1b150",
+   "dedaf6a902027e70"
+  ]
+ }
+}

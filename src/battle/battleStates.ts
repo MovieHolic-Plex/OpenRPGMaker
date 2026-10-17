@@ -5,6 +5,7 @@ import { stateRatePercentage } from "@/project/actorModel";
 import { resolvedStateValues } from "@/project/ontology/databaseStateOntology";
 import type { DatabaseStateEffect, Project, StateRecord } from "@/project/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
+import { statStageMultiplier, type StatStages } from "@/battle/statStages";
 
 export type Rng = () => number;
 const defaultRng: Rng = () => {
@@ -42,7 +43,7 @@ export interface StateBehavior {
   readonly freezesGauge: boolean;
   readonly physicalDefenseMultiplier: number;
   readonly magicDefenseMultiplier: number;
-  readonly forcedAction?: "attackRandom";
+  readonly forcedAction?: "attackRandom" | "rage";
   readonly elementRates?: Readonly<Record<string, string>>;
   // 반격·도발·감싸기·회피·리플렉·리레이즈·선고(2026-10-01). 모두 runtimeEffects 에서만 온다.
   readonly counterChance: number;
@@ -52,6 +53,8 @@ export interface StateBehavior {
   readonly reflect: boolean;
   readonly reraisePercent: number;
   readonly doomTurns: number;
+  readonly invertHealing: boolean;
+  readonly grantSkillIds: readonly string[];
 }
 
 // hpTurn 문자열/숫자에서 매 턴 HP 변화 비율(부호 포함)을 추출.
@@ -100,7 +103,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     freezesGauge: runtime?.freezesGauge === true,
     physicalDefenseMultiplier: runtime?.physicalDefenseMultiplier ?? 1,
     magicDefenseMultiplier: runtime?.magicDefenseMultiplier ?? 1,
-    ...(runtime?.forcedAction === "attackRandom" ? { forcedAction: "attackRandom" as const } : {}),
+    ...(runtime?.forcedAction === "attackRandom" || runtime?.forcedAction === "rage" ? { forcedAction: runtime.forcedAction } : {}),
     ...(runtime?.elementRates ? { elementRates: runtime.elementRates } : {}),
     counterChance: clampPercent(runtime?.counterChance),
     taunt: runtime?.taunt === true,
@@ -109,6 +112,8 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     reflect: runtime?.reflect === true,
     reraisePercent: clampPercent(runtime?.reraisePercent),
     doomTurns: Math.max(0, Math.min(9, Math.round(Number(runtime?.doomTurns ?? 0) || 0))),
+    invertHealing: runtime?.invertHealing === true,
+    grantSkillIds: Array.isArray(runtime?.grantSkillIds) ? runtime.grantSkillIds.filter((id): id is string => typeof id === "string" && id.length > 0).slice(0, 12) : [],
   };
 }
 
@@ -241,7 +246,13 @@ export function runStateUpkeep(project: Project, battler: MutableBattler, rng: R
       battler.hp -= applied;
       hpDamage += applied;
     }
-    if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 0 && battler.hp < battler.maxHp) {
+    if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 1 && invertsHealingForStates(project, battler)) {
+      // 좀비: 재생이 피해가 된다. 지속 피해와 같이 HP 1 아래로는 깎지 않는다.
+      const tick = Math.max(1, Math.floor((battler.maxHp * behavior.hpHealPercentPerTurn) / 100));
+      const applied = Math.min(tick, battler.hp - 1);
+      battler.hp -= applied;
+      hpDamage += applied;
+    } else if (behavior.hpHealPercentPerTurn > 0 && battler.hp > 0 && battler.hp < battler.maxHp) {
       const tick = Math.max(1, Math.floor((battler.maxHp * behavior.hpHealPercentPerTurn) / 100));
       const applied = Math.min(tick, battler.maxHp - battler.hp);
       battler.hp += applied;
@@ -305,19 +316,23 @@ function clampStateMultiplier(value: number): number {
   return Math.max(STATE_MULTIPLIER_MIN, Math.min(STATE_MULTIPLIER_MAX, value));
 }
 
-export function attackMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+// 능력치 단계(statStages.ts)는 상태 배율을 clamp 한 뒤에 곱한다 — 단계는 −6~+6 에서 따로 멈추고,
+// 상태 배율(0.4~2.5)과 겹쳐도 서로의 한계를 먹지 않는다. battler 에 statStages 가 없으면 이전 계산과 같다.
+type StageBattler = { readonly stateIds: readonly string[]; readonly statStages?: StatStages };
+
+export function attackMultiplierForStates(project: Project, battler: StageBattler, kind: "attack" | "mind" = "attack"): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, kind === "mind" ? "spAttack" : "attack");
 }
 
-export function agilityMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+export function agilityMultiplierForStates(project: Project, battler: StageBattler): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.agilityMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, "speed");
 }
 
-export function defenseMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
+export function defenseMultiplierForStates(project: Project, battler: StageBattler, kind: "attack" | "mind" = "attack"): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, kind === "mind" ? "spDefense" : "defense");
 }
 
 /**
@@ -326,8 +341,10 @@ export function defenseMultiplierForStates(project: Project, battler: { readonly
  */
 export function defenseMultiplierForStatesByKind(
   project: Project,
-  battler: { readonly stateIds: readonly string[] },
+  battler: StageBattler,
   kind: "attack" | "mind",
+  /** 능력치 단계(방어/특수방어)를 고르는 계열. 생략하면 kind 를 따른다 — 마법 속성 기술은 statistic 과 무관하게 특수방어 단계를 본다. */
+  stageKind: "attack" | "mind" = kind,
 ): number {
   const raw = battler.stateIds.reduce((factor, stateId) => {
     const behavior = behaviorFor(project, stateId);
@@ -335,7 +352,21 @@ export function defenseMultiplierForStatesByKind(
     const split = kind === "mind" ? behavior.magicDefenseMultiplier : behavior.physicalDefenseMultiplier;
     return factor * behavior.defenseMultiplier * split;
   }, 1);
-  return clampStateMultiplier(raw);
+  return clampStateMultiplier(raw) * statStageMultiplier(battler.statStages, stageKind === "mind" ? "spDefense" : "defense");
+}
+
+/** 좀비: 걸린 상태 중 하나라도 invertHealing 이면 true — HP 회복이 피해로 뒤집힌다. */
+export function invertsHealingForStates(project: Project, battler: { readonly stateIds: readonly string[] }): boolean {
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.invertHealing === true);
+}
+
+/** 트랜스·변신: 걸린 상태가 이 순간 주는 기술 id(중복 없음). */
+export function grantedSkillIdsForStates(project: Project, battler: { readonly stateIds: readonly string[] }): string[] {
+  const out: string[] = [];
+  for (const stateId of battler.stateIds) {
+    for (const id of behaviorFor(project, stateId)?.grantSkillIds ?? []) if (!out.includes(id)) out.push(id);
+  }
+  return out;
 }
 
 /** 스톱: 게이지가 멈추는 상태가 하나라도 있으면 true. */
@@ -343,9 +374,10 @@ export function gaugeFrozenByStates(project: Project, battler: { readonly stateI
   return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.freezesGauge === true);
 }
 
-/** 버서크: 강제 행동 상태가 있으면 그 종류. */
-export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | undefined {
-  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom") ? "attackRandom" : undefined;
+/** 버서크·폭주: 강제 행동 상태가 있으면 그 종류(버서크가 먼저). */
+export function forcedActionForStates(project: Project, battler: { readonly stateIds: readonly string[] }): "attackRandom" | "rage" | undefined {
+  if (battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "attackRandom")) return "attackRandom";
+  return battler.stateIds.some((stateId) => behaviorFor(project, stateId)?.forcedAction === "rage") ? "rage" : undefined;
 }
 
 /** 반격 확률(%): 걸린 상태 중 가장 큰 값. */

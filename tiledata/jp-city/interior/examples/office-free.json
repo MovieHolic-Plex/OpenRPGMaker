@@ -1,0 +1,462 @@
+{
+ "name": "IT 회사 사옥 자유석 층",
+ "plan": [
+  "########################",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "######.###.#######..####",
+  "#.......#....#.........#",
+  "#.......#....#.........#",
+  "#.......#....#.........#",
+  "#.......#....#.........#",
+  "#.......#....#.........#",
+  "#.......#....#.........#",
+  "########################"
+ ],
+ "floor": "of-carpet-tile",
+ "wall": "of-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 11,
+   "x1": 7,
+   "y1": 17,
+   "floor": "of-carpet-tile",
+   "wall": "of-glass-wall"
+  },
+  {
+   "x0": 9,
+   "y0": 11,
+   "x1": 12,
+   "y1": 17,
+   "floor": "of-pantry-tile",
+   "wall": "of-wall"
+  },
+  {
+   "x0": 14,
+   "y0": 11,
+   "x1": 22,
+   "y1": 17,
+   "floor": "of-lobby-stone",
+   "wall": "of-lobby-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "of-window-blind",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "of-window-blind",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "of-window-blind",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "ox-whiteboard-wall",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "of-cabinet",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "of-plant-big",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "ox-shredder",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "of-copier",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "ox-planter-box",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "of-server-rack",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "ox-planter-box",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "ox-standing-table",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "ox-bench-desk",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "ox-bench-desk",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "of-desk-chair-s",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "ox-bench-desk",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "ox-desk-wagon",
+   "x": 17,
+   "y": 7
+  },
+  {
+   "id": "ox-lounge-sofa",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "ox-planter-box",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "of-plant-big",
+   "x": 22,
+   "y": 10
+  },
+  {
+   "id": "ox-trash-column",
+   "x": 22,
+   "y": 8
+  },
+  {
+   "id": "ox-projector-screen",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "of-whiteboard",
+   "x": 6,
+   "y": 16
+  },
+  {
+   "id": "of-desk-n",
+   "x": 2,
+   "y": 15
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 2,
+   "y": 16
+  },
+  {
+   "id": "of-desk-n",
+   "x": 3,
+   "y": 15
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 3,
+   "y": 16
+  },
+  {
+   "id": "of-desk-n",
+   "x": 4,
+   "y": 15
+  },
+  {
+   "id": "of-desk-chair-n",
+   "x": 4,
+   "y": 16
+  },
+  {
+   "id": "of-glass-door",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "ox-water-boiler",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "of-fridge-small",
+   "x": 9,
+   "y": 14
+  },
+  {
+   "id": "ox-coffee-counter",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "ox-standing-table",
+   "x": 11,
+   "y": 16
+  },
+  {
+   "id": "ox-trash-column",
+   "x": 12,
+   "y": 17
+  },
+  {
+   "id": "door-open-western",
+   "x": 10,
+   "y": 11
+  },
+  {
+   "id": "of-elevator",
+   "x": 15,
+   "y": 14
+  },
+  {
+   "id": "of-stairwell-down",
+   "x": 21,
+   "y": 14
+  },
+  {
+   "id": "houseplant",
+   "x": 18,
+   "y": 17
+  },
+  {
+   "id": "hs-sanitizer-stand",
+   "x": 14,
+   "y": 17
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "freeoffice",
+   "x0": 0,
+   "y0": 0,
+   "x1": 23,
+   "y1": 10
+  },
+  {
+   "room": "meetingroom",
+   "x0": 0,
+   "y0": 11,
+   "x1": 8,
+   "y1": 18
+  },
+  {
+   "room": "pantry",
+   "x0": 9,
+   "y0": 11,
+   "x1": 13,
+   "y1": 18
+  },
+  {
+   "room": "elevatorhall",
+   "x0": 14,
+   "y0": 11,
+   "x1": 23,
+   "y1": 18
+  }
+ ],
+ "start": [
+  17,
+  15
+ ],
+ "inner": true,
+ "open": [
+  {
+   "x0": 14,
+   "y0": 14,
+   "x1": 22,
+   "y1": 17,
+   "why": "엘리베이터 홀 — 엘리베이터 앞 기다리는 자리와 계단 앞 회전 공간"
+  },
+  {
+   "x0": 17,
+   "y0": 8,
+   "x1": 21,
+   "y1": 10,
+   "why": "엘리베이터 홀에서 사무 공간으로 들어오는 주 동선"
+  }
+ ],
+ "links": [
+  {
+   "x": 21,
+   "y": 15,
+   "toMapId": "jp-city-office-tower-1f",
+   "toX": 2,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 22,
+   "y": 15,
+   "toMapId": "jp-city-office-tower-1f",
+   "toX": 2,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 15,
+   "y": 14,
+   "toMapId": "jp-city-office-tower-1f",
+   "toX": 3,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 16,
+   "y": 14,
+   "toMapId": "jp-city-office-tower-1f",
+   "toX": 4,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

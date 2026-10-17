@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57639a8e7720ee4234f35c3d0c6f36220a5d4734cd6914ee53ea68f112b5c827",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "함교 주 조종 콘솔(윗면 화면 셋 + 앞 패널)",
+ "label": "sf-station/sf-console-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge control console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console desk top surface spans rows 2-10 (9 rows) displaying three inset screen displays, while rows 11-14 form the front south-facing panel with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6062
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge main control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface spans rows 2 to 10 (~9 pixel rows) displaying three embedded screens and status indicators, while rows 11 to 14 form the front south panel with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5246
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge main control console desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–9 clearly represent the top surface of the console containing three embedded display screens, while rows 10–14 form the front-facing panel with indicator lights, showing the expected 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5250
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface clearly spans rows 2-10 (9 rows tall) featuring three embedded monitor displays, while rows 11-15 form the south-facing front panel with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7304
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.447Z",
+ "cells": {
+  "16": [
+   "044922a2a55b528d",
+   "6763038811b5c944",
+   "6ca08c2c1999395a"
+  ],
+  "24": [
+   "3a85159134891e95",
+   "bbcde65a0be40b39",
+   "c40949c961db84e5",
+   "f2de3c3e8777b212"
+  ],
+  "32": [
+   "29104b939b770b40",
+   "39222e01d2165fd2",
+   "94ab6b010d1e2ed7",
+   "9cd6c6542132166e",
+   "9d6ec86bb6630c8f",
+   "a3ce200c3d5508e1",
+   "adbe8f6a5363cda1",
+   "d057f6158dbf2fda",
+   "dc227b78b2a83c4c",
+   "e9422bd774637bb5",
+   "f16d0d79c49818c0",
+   "f27c3a89d2f907c0"
+  ],
+  "48": [
+   "0be296fd18bf8277",
+   "c61276601d3c45dc"
+  ]
+ }
+}

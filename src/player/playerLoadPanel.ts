@@ -1,3 +1,5 @@
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { monsterSaveSummaryLine } from "@/project/monsterSaveSummary";
 import {
   listSaveSlots,
   readAutosave,
@@ -38,8 +40,12 @@ export type SaveSlotCardModel = {
   readonly level?: string;
   readonly playTime?: string;
   readonly savedAt?: string;
+  /** 몬스터 수집 게임: 「주인공 · 도감 12/60 · 배지 2/8 · 파티 3」. */
+  readonly monster?: string;
   /** 오토세이브 카드 전용: 저장을 일으킨 트리거 표기("맵 이동"/"전투 승리"). */
   readonly trigger?: string;
+  /** 미연시 세이브 카드: 저장 시점의 마지막 대사 한 줄. */
+  readonly scene?: string;
 };
 
 export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElement {
@@ -48,6 +54,7 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     dataset: { testid: "title-screen", screen: "load" },
   });
   applyLoadPanelBackground(panel);
+  if (isEmeraldMonsterStyle(store.getCurrent())) panel.dataset.monsterStyle = "emerald";
 
   const loadWindow = el("section", {
     class: "oprn-load-window",
@@ -167,6 +174,12 @@ function renderCardButton(
     for (const part of metaParts) meta.append(el("span", { class: part.className, text: part.text }));
     button.append(meta);
   }
+  if (model.monster) {
+    button.append(el("span", { class: "oprn-load-slot-row oprn-load-slot-monster", text: model.monster, dataset: { testid: `${testId}-monster` } }));
+  }
+  if (model.scene) {
+    button.append(el("span", { class: "oprn-load-slot-row oprn-load-slot-scene", text: `“${model.scene}”`, dataset: { testid: `${testId}-scene` } }));
+  }
   return button;
 }
 
@@ -179,6 +192,8 @@ export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
     level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
     playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
     savedAt: formatSavedAt(snapshot.savedAt) || undefined,
+    ...monsterCardPart(snapshot),
+    ...(snapshot.sceneLine ? { scene: snapshot.sceneLine } : {}),
     trigger: autosaveTriggerLabel(snapshot.autosaveTrigger),
   };
 }
@@ -209,6 +224,8 @@ export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
         level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
         playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
         savedAt: formatSavedAt(snapshot.savedAt) || undefined,
+        ...monsterCardPart(snapshot),
+        ...(snapshot.sceneLine ? { scene: snapshot.sceneLine } : {}),
       };
     }
     case "corrupt":
@@ -218,6 +235,11 @@ export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
     default:
       return assertNever(slot);
   }
+}
+
+function monsterCardPart(snapshot: SaveSnapshot): { readonly monster?: string } {
+  const summary = snapshot.monsterSummary;
+  return summary ? { monster: [summary.trainer, monsterSaveSummaryLine(summary)].filter(Boolean).join(" · ") } : {};
 }
 
 // ISO 저장시각 → 'YYYY.MM.DD HH:mm' 로컬 시각. 무효 ISO 는 빈 문자열.

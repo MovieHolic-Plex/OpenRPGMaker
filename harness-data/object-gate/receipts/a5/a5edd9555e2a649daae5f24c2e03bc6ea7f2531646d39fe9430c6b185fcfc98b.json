@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a5edd9555e2a649daae5f24c2e03bc6ea7f2531646d39fe9430c6b185fcfc98b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "wooden signpost seen from above-front: square post with visible cut top, arrow boards with visible top edges, stone base",
+ "label": "sky-island/si-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the vertical post is visible across rows 1-3 with distinct end-grain coloring before the south face's vertical column shading begins at row 4. The arrow signs and stone base also clearly show their top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with sign boards and stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the post is visible across rows 1-3 (3 rows tall). Additionally, both arrow boards show 2-pixel-tall top surfaces (rows 7-8 and 15-16) and the stone base displays a 3-pixel-tall top surface (rows 25-27), correctly establishing the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8105
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden post with arrow signs and stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the post is visible across rows 1-3 (lighter top face with distinct shading from the vertical front face below). Additionally, the arrow signs show 2-row top edges and the stone base has a visible 3-row sloped top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post with directional sign boards and stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the post is visible from rows 1 to 3 (3 source pixels tall) in lighter wood end-grain tones above the shaded front face (rows 4+). The stone base also shows a 3-row visible top surface (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7927
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.918Z",
+ "cells": {
+  "16": [
+   "89c7a4b243bfa0d0",
+   "8c86761c5322385f"
+  ],
+  "24": [
+   "176a275dd5858c5e",
+   "6773e8e68544fa6f",
+   "84f842a75e00f5e4",
+   "85d20339735662c8",
+   "86a106f4b0208338",
+   "93d3f90465fbb33a",
+   "99c9618944201d7f",
+   "b9da1bfcad5a7caa",
+   "c82c7af21bf8502e",
+   "ec2a9297007b0a87",
+   "f677cd68e074dd94",
+   "fdc04123e2fc23d2"
+  ],
+  "32": [
+   "41dd12b3a841a097",
+   "79eac6b33a3622c0",
+   "9c024c6b3afbb4c2"
+  ],
+  "48": [
+   "35c001f756902bd9",
+   "7309d9c8a474cb5d",
+   "801bf8aa323e734b",
+   "b1b803ba1122c38e",
+   "d0e5466cdc1f3506",
+   "d3179eb56c67b6ea"
+  ]
+ }
+}

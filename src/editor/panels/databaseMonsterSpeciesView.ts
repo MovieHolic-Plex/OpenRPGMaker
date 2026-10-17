@@ -27,7 +27,8 @@ import { monsterSpeciesSections, type MonsterSpeciesSectionId, type MonsterSpeci
 import { monsterTypeLabel, monsterTypeTone } from "@/editor/panels/databaseMonsterSpeciesTypeLabels";
 import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
 import { store } from "@/project/store";
-import type { EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
+import type { EnemyStats, MonsterAbility, MonsterEvolutionRecord, MonsterSpeciesRecord, Project } from "@/project/types";
+import { abilityEffectText, MONSTER_ABILITY_KINDS, MONSTER_ABILITY_KIND_LABELS, MONSTER_ABILITY_STATS, MONSTER_ABILITY_STATUSES, normalizeMonsterAbility } from "@/battle/abilities";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -168,27 +169,24 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   const detail = selected
     ? speciesDetailPane(project, selected, species.indexOf(selected), rerender)
     : makeDetailPane({
-      body: emptyState({
-        icon: "◇",
-        title: "종족이 없습니다",
-        body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
-        action: {
-          label: "첫 종족 만들기",
-          kind: "primary",
-          testid: "db-monster-species-empty-create",
-          onClick: () => addSpecies(rerender),
-        },
-      }),
+      body: [
+        emptyState({
+          icon: "◇",
+          title: "종족이 없습니다",
+          body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
+          action: {
+            label: "첫 종족 만들기",
+            kind: "primary",
+            testid: "db-monster-species-empty-create",
+            onClick: () => addSpecies(rerender),
+          },
+        }),
+        monsterPipelineHeader(project),
+      ],
       testid: "db-detail-form",
     });
 
-  // 배너(.db-life-header)와 워크스페이스는 `.db-body` 의 형제로 둔다 —
-  // 11-life-authoring.css 가 `.db-body:has(.oprn-record-monster-species)` 를
-  // `auto minmax(0,1fr)` 2 행 그리드로 못박고 grid-row 를 배너/워크스페이스에
-  // 직접 배정한다(수집 게이트 경고가 붙으면 3 행). workspaceShell 의 header 슬롯을
-  // 쓰면 그 배정이 어긋난다.
   host.append(
-    monsterPipelineHeader(project),
     workspaceShell({
       list,
       detail,
@@ -300,7 +298,7 @@ function speciesDetailPane(
   rerender: () => void,
 ): HTMLElement {
   const hero = speciesHero(project, record, index);
-  const inspector = speciesInspector(record, rerender);
+  const inspector = speciesInspector(project, record, rerender);
   const pane = makeDetailPane({ hero: hero.element, body: inspector.element, testid: "db-detail-form" });
   paintSpeciesSummaries = () => {
     const live = currentSpecies(record.id, record);
@@ -513,7 +511,7 @@ function deleteSpeciesButton(rerender: () => void): HTMLElement {
 type SpeciesInspector = { readonly element: HTMLElement; readonly paint: (record: MonsterSpeciesRecord) => void };
 
 /** 상세 인스펙터 — 구역 탭 다섯 개. 모든 패널이 DOM 에 있고 고른 하나만 보인다. */
-function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): SpeciesInspector {
+function speciesInspector(project: Project, record: MonsterSpeciesRecord, rerender: () => void): SpeciesInspector {
   const preview = speciesStatsPreview(record);
   const linkedCount = (): number => store.getCurrent().database.enemies.filter((entry) => entry.speciesId === record.id).length;
   let sections: MonsterSpeciesSectionsHandle | undefined;
@@ -559,6 +557,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): S
           children: [...statFields(record, preview.refresh), preview.element],
           testid: "db-monster-species-stats-card",
         }),
+        abilityCard(record, rerender),
         skillsByLevelCard(record, rerender),
         experienceCurveCard(record, rerender),
       ],
@@ -573,7 +572,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): S
   ]);
   const handle = sections;
   return {
-    element: el("div", { class: "db-monster-species-inspector", children: [handle.element] }),
+    element: el("div", { class: "db-monster-species-inspector", children: [handle.element, monsterPipelineHeader(project)] }),
     paint: (live) => {
       handle.setSummary("capture", captureDifficulty(live.captureRate).label);
       handle.setSummary("growth", growthSummary(live));
@@ -583,6 +582,62 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): S
       capture.paint(live);
     },
   };
+}
+
+const ABILITY_STATUS_LABELS: Readonly<Record<string, string>> = { poison: "독", burn: "화상", sleep: "수면", freeze: "얼음", paralysis: "마비" };
+const ABILITY_STAT_LABELS: Readonly<Record<string, string>> = { attack: "물리 공격", defense: "물리 방어", mind: "특수(공격·방어)" };
+
+/** 특성 한 개. 종류를 고르면 그 종류에 필요한 칸만 보인다(전투 모델 gen1 에서만 작동). */
+function abilityCard(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
+  const chartTypes = store.getCurrent().system.typeChart?.types ?? [];
+  const live = (): MonsterAbility | undefined => currentSpecies(record.id, record).ability;
+  const save = (ability: MonsterAbility | undefined, repaint = false): void => {
+    updateSpecies(record.id, { ability: ability ? normalizeMonsterAbility(ability) : undefined });
+    if (repaint) rerender();
+  };
+  const select = (label: string, testid: string, value: string, options: readonly (readonly [string, string])[], onChange: (value: string) => void): HTMLElement => {
+    const input = el("select", { dataset: { testid } }) as HTMLSelectElement;
+    for (const [id, text] of options) input.append(el("option", { text, attrs: { value: id } }));
+    input.value = value;
+    input.addEventListener("change", () => onChange(input.value));
+    return el("label", { class: "db-field", children: [el("span", { class: "db-field-label", text: label }), input] });
+  };
+  const current = live();
+  const children: HTMLElement[] = [
+    select("효과 종류", "db-monster-species-ability-kind", current?.kind ?? "", [["", "(특성 없음)"], ...MONSTER_ABILITY_KINDS.map((kind) => [kind, MONSTER_ABILITY_KIND_LABELS[kind]] as const)], (kind) => {
+      if (!kind) { save(undefined, true); return; }
+      const name = current?.name ?? "특성";
+      const typeId = chartTypes[0] ?? "normal";
+      const defaults: Record<string, Partial<MonsterAbility>> = {
+        immuneType: { type: typeId }, resistType: { type: typeId, percent: 50 }, boostLowHp: { type: typeId, percent: 150 },
+        immuneStatus: { status: "poison" }, contactStatus: { status: "paralysis", percent: 30 }, statMultiplier: { stat: "attack", percent: 150 }, endure: {},
+      };
+      save({ name, kind: kind as MonsterAbility["kind"], ...defaults[kind] }, true);
+    }),
+  ];
+  if (current) {
+    const patch = (change: Partial<MonsterAbility>, repaint = false): void => save({ ...(live() ?? current), ...change }, repaint);
+    children.push(textControl("특성 이름 (고유 이름, 최대 20자)", current.name, (value) => patch({ name: value || current.name }), "db-monster-species-ability-name"));
+    if (current.type !== undefined) {
+      children.push(select("타입", "db-monster-species-ability-type", current.type, chartTypes.map((type) => [type, monsterTypeLabel(type)] as const), (type) => patch({ type })));
+    }
+    if (current.status !== undefined) {
+      children.push(select("상태", "db-monster-species-ability-status", current.status, MONSTER_ABILITY_STATUSES.map((status) => [status, ABILITY_STATUS_LABELS[status] ?? status] as const), (status) => patch({ status: status as MonsterAbility["status"] })));
+    }
+    if (current.stat !== undefined) {
+      children.push(select("능력", "db-monster-species-ability-stat", current.stat, MONSTER_ABILITY_STATS.map((stat) => [stat, ABILITY_STAT_LABELS[stat] ?? stat] as const), (stat) => patch({ stat: stat as MonsterAbility["stat"] })));
+    }
+    if (current.percent !== undefined) {
+      const unit = current.kind === "contactStatus" ? "확률 %" : "배율 %";
+      children.push(numberField(unit, "db-monster-species-ability-percent", current.percent, (value) => patch({ percent: value }), { min: 0, max: 400, step: 5 }));
+    }
+    if (current.kind === "immuneType") {
+      children.push(numberField("흡수 회복 % (0 = 그냥 무효)", "db-monster-species-ability-heal", current.healPercent ?? 0, (value) => patch({ healPercent: value }), { min: 0, max: 100, step: 5 }));
+    }
+    children.push(el("div", { class: "db-field-hint", dataset: { testid: "db-monster-species-ability-text" }, text: abilityEffectText(current, (id) => monsterTypeLabel(id)) }));
+  }
+  children.push(el("div", { class: "db-field-hint", text: "특성은 몬스터 수집 전투(gen1 모델)에서만 작동합니다." }));
+  return sectionCard({ title: "특성", hint: "종마다 하나. 전투 중 자동으로 발동하고 전투 화면에 특성 이름이 뜹니다.", children, testid: "db-monster-species-ability-card" });
 }
 
 function growthSummary(record: MonsterSpeciesRecord): string {

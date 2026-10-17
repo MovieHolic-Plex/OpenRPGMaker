@@ -47,7 +47,7 @@ const groups: Record<AuthoringPresetCategory, { prerequisites: string[]; read?: 
   'npc-life': {
     prerequisites: ['기존 NPC의 eventId·전체 페이지·시간표·집과 활동 장소를 읽는다.', '시간표를 쓰면 시간 시스템 활성화와 기다리기 또는 시간 변경 경로가 필요하다.'],
     verify: ['get_event', 'check_reachability', 'run_lint', 'play_walkthrough'],
-    cautions: ['동일 인물을 시간대마다 복제하지 않는다. 생략한 시간표·대사·외형과 퀘스트 분기를 보존한다.', '시간표의 at은 시간 조건에 따른 위치 갱신이다. 연속 보행·맵 간 보행 경로가 구현됐다고 주장하지 않는다.', '요일을 발명하지 않는다. 실제 시간 조건의 hourRange/dayRange/season을 사용한다.'],
+    cautions: ['동일 인물을 시간대마다 복제하지 않는다. 생략한 시간표·대사·외형과 퀘스트 분기를 보존한다.', '시간표의 at은 시간 조건에 따른 위치 갱신이다. 연속 보행·맵 간 보행 경로가 구현됐다고 주장하지 않는다.', '시간표 when 에는 요일이 없다. 이동은 hourRange/dayRange/season, 요일별 대사는 이벤트 페이지의 weekday 조건을 쓴다.'],
   },
   'life-economy': {
     prerequisites: ['아이템·제작법·생활 설정과 저작 시작 소지품·골드를 읽는다. 현재 플레이 값과는 구분한다.', '배열 설정을 교체하는 도구는 원래 전체 목록을 읽고 관련 항목을 합쳐 전달한다.'],

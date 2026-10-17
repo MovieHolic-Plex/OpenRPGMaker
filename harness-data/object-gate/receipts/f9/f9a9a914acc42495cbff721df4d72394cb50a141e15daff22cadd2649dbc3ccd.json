@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9a9a914acc42495cbff721df4d72394cb50a141e15daff22cadd2649dbc3ccd",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "층 안내 받침 판",
+ "label": "jp_city/interior_office2/ox-floor-guide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sign board on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board (the main volume from row 4 to 20) is drawn in pure front elevation with only a 1px outline at row 4 and no top surface visible. Although the base plinth shows perspective, the main body does not.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7516
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "information board display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main directory board (rows 4-20) is drawn in pure front elevation with only a 1px border at row 4 and no visible top surface showing the board's depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor directory sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main sign board (rows 4-21) is drawn in pure front elevation with only a 1px outline at row 4 where its top surface should be, showing no depth or top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7423
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "directory signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signboard (rows 4-20) is drawn in pure front elevation with only a 1px top outline (row 4) and no visible top surface, despite the base showing top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6403
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.342Z",
+ "cells": {
+  "16": [
+   "43478764ba9757d7",
+   "50067ae24bca35c7",
+   "9078be0866148f98"
+  ],
+  "24": [
+   "2b16a7d95e032841",
+   "40924554d6e6b127",
+   "449d53e35e8af74b",
+   "4a8c7334952c6f97",
+   "5808a3683fb8f52a",
+   "a702a2ed3cfeec67"
+  ],
+  "32": [
+   "4a1ab27bc9dc3bfc",
+   "55d90180461e7948",
+   "664e5cc9f90e4ac5",
+   "6f60b72ea9233e87",
+   "81ea51add6ac8cd0",
+   "9de24d21b2d56430",
+   "b583e114eddc140b",
+   "b70118746dc39792",
+   "c0136ce0f4b19308",
+   "db2965c750f02327",
+   "df8359f89cd05c79",
+   "ef3c7263a2614323"
+  ],
+  "48": [
+   "45832cf5949a41e1",
+   "7ed8f1101e306bc0",
+   "d11518c0ef7c327b"
+  ]
+ }
+}

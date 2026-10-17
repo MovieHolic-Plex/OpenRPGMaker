@@ -1,4 +1,5 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
+import { genreLockPromptNote, genreLockShortNote, genreMarkerNote } from "@/project/genreLock";
 import { authoringPresetDiscoveryText } from '@/project/authoringPresets';
 import { USER_FACING_REPORT_RULE } from "./userFacingCopy";
 // Pi 에이전트 기본 시스템 프롬프트. 순수 함수 — 프로젝트 요약과 작업 범위만 넣는다.
@@ -13,7 +14,27 @@ import { BEODEUL_GROUND_POLICY_LINE, STORE_TILE_SOURCE_POLICY_LINE, TILESET_FAMI
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
 import { jpCityPromptLines } from "../jpCityPolicy";
 import { gothicPromptLines } from "../gothicPolicy";
+import { pirateIslesPromptLines } from "../pirateIslesPolicy";
+import { sengokuPromptLines } from "../sengokuEdoPolicy";
+import { skyIslandPromptLines } from "../skyIslandPolicy";
+import { steampunkPromptLines } from "../steampunkCityPolicy";
+import { campusPromptLines } from "../campusPolicy";
+import { modernCityPromptLines } from "../modernCityPolicy";
+import { sfStationPromptLines } from "../sfStationPolicy";
+import { prehistoricPromptLines } from "../prehistoricPolicy";
+import { desertEastPromptLines } from "../desertEastPolicy";
+import { snowNorthPromptLines } from "../snowNorthPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
+
+/**
+ * 장르 잠금·표지 줄. 공간 시공 실행은 긴 잠금 덩어리를 싣고, 그 밖의 실행(대사·가격·이름·NPC 그림 고치기)도 한 줄 표지는 매번 싣는다 —
+ * 「이 프로젝트는 몬스터 수집으로 잠겼다」는 사실과 캐릭터 그림 규칙(2026-10-16)은 NPC·배우를 만지는 비공간 턴에서 더 필요하다.
+ * 잠금도 표지도 없으면 빈 배열(프롬프트 불변).
+ */
+function genreLockLines(project: Project, spatial: boolean): string[] {
+  const note = (spatial ? genreLockPromptNote(project) : genreLockShortNote(project)) ?? genreMarkerNote(project);
+  return note ? [note] : [];
+}
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -50,6 +71,9 @@ export function buildPiAgentSystemPrompt(
   const spatial = options.spatialWork !== false;
   return [
     authoringPresetDiscoveryText(),
+    "연출 규칙: 화면 효과(색조·흔들림·섬광·폭발·사망)를 쓰는 이벤트는 같은 순간에 어울리는 효과음을 반드시 넣는다(script_cutscene 은 music{action:'se',resourceId}, 이벤트 명령은 playAudio channel:'se') — resourceId 는 list_resources 로 조회한 실제 id 만 쓴다. 색조는 대사가 뜨기 전에 걸고 대사가 끝난 뒤에 푼다(대사 중에도 화면에 보여야 한다). 분기마다 그 분기만의 색·효과(열풍=붉은 색조, 냉기=푸른 색조+얼음 입자, 독=보라 색조)를 대사 동안 유지한다. 사망은 look{target:'player',pose:'fallen'} 으로 쓰러뜨린 뒤 게임오버로 잇는다. 색조 값 «r,g,b,알파» 의 알파는 0~1 이다(권장 0.25~0.5). 140 처럼 255 단위로 쓰면 1 로 잘려 화면이 불투명한 한 색으로 덮여 장면이 안 보인다. 요청이 특정 외형(예: 개구리 기사)을 말하면 먼저 list_resources(kind:'charset', query:외형 낱말 한글·영문)로 프로젝트가 이미 가진 캐릭터 그림을 찾고, 있으면 그 resourceId 를 이벤트 페이지 graphic 에 sprite:{type:'uploaded',id:resourceId}, direction:'down', pattern:1 로 쓴다 — author_actor_charset 은 기계·탈것용이라 생물·인물에는 쓰지 않는다. 시트에도 없으면 generate_cutscene_art(role:'sprite') 로 만들어 컷신에서 picture 로 보인다. 한 번만 재생하는 이벤트(셀프스위치 A 로 막는 페이지)는 셀프스위치를 장면 맨 끝에서 켠다. 시작하자마자 켜면 장면 도중 그 페이지가 내려가 다음 페이지 조건이 아직 안 맞아 이벤트가 화면에서 사라진다 — 꼭 처음에 켜야 하면 A 가 켜진 페이지에도 같은 그림(graphic)을 두고 그 페이지는 명령을 비운다. 지형이 무너지거나 변하는 연출은 changeTile 로 실제 타일을 바꾼다(타일 번호는 build_scene_setting 결과 data.collapse 또는 tile_query 로 조회).",
+    "위험지대 연출 검수: 열풍·독안개 같은 사망 이벤트를 만든 뒤 run_lint 를 부르고 authoring:hazard-* warning 이 있으면 고친 뒤 완료한다 — hazard-no-particles/hazard-weak-particles 는 particles(fire|smoke)를 durationMs 1000 이상으로 늘리거나 서로 다른 칸 2곳 이상에 쏘고, hazard-no-fog 는 weather fog 를 함께 깔았다가 장면 끝에 none 으로 되돌린다.",
+    "무대 규칙: 이벤트·컷씬·함정 요청이 장소·지형·건물·사물을 말하면(예: 화산·용암 다리·독늪·유적·성소·제단) 이벤트만 만들고 끝내지 않는다. 먼저 get_map_region·show_map_region으로 요청 좌표 주변을 읽고, 말한 것이 보이지 않고 맵이 버들항(beodeul_city)이면 build_scene_setting({mapId,theme,x,y}) 한 번으로 이벤트 좌표 둘레에 무대를 짓는다(theme: volcano·lava_bridge·poison_swamp·ruins_shrine, x,y 는 이벤트 칸). 다른 칩셋이거나 theme 이 맞지 않으면 find_tools 로 찾은 공간 시공 도구(fill_region·stamp_object·place_props·list_spatial_designs·import_region_reference)로 직접 짓는다. 요청이 말한 것만, 그 주변에만 짓고 맵의 나머지는 보존한다. 오브젝트·건물은 한쪽 구석에 몰지 말고 좌표 둘레에 배치하며, 트리거 칸과 시작 칸은 통행 가능하게 남긴다. 짓고 나면 show_map_region 으로 그림을 확인한 뒤 이벤트를 완성하고, 보고에는 지은 것을 적는다.",
     '선택지의 취소를 종료로 요청하면 choices에 cancelBehavior:"branch",cancelBranch:[]를 명시한다. choice1~choice5는 Esc가 해당 선택지를 실행하는 동작이며 cancelBranch를 무시한다. 완료 보고 전에 양쪽 선택과 취소를 각각 확인한다. run_scene_test의 {kind:"choose",index:-1}은 취소이며, 그 뒤 대사·보상·상태 변화가 요청과 맞는지 확인한다.',
     ...(spatial ? ["태양 그림자: inspect_terrain.sunlight와 shadowCasters를 먼저 읽고 set_map_properties.sunlight로 enabled/azimuth/altitude/opacity/softness/heightScale만 수정한다. 태양 방향은 0° 북,90° 동,180° 남,270° 서이며 고도가 낮으면 그림자가 길다. 생략한 설정을 유지하고 설정 뒤 show_map_region으로 실제 그림을 확인한다. 집·등록된 나무의 높이는 배치 그림의 크기로 추정한다. 태양 그림자는 시각 효과이므로 지형 높이·집·통행·시야 차단을 함께 바꾸지 않는다. 설정이 없는 기존 맵은 꺼짐이다."] : []),
     ...(spatial ? ["기존 높이 지형 수정: inspect_terrain({mapId,includeCatalog:false})에서 features의 id/options, 집의 placementId/parts와 잠금 칸을 읽는다. 윤곽·능선·계곡·호수는 design_terrain editId, 도로는 lay_terrain_road editId를 사용한다. 생략한 점·설정은 유지되며 폭만 바꾸려고 새 지형을 겹쳐 만들지 않는다. 기존 버들항 조립 집의 지붕만 넓히려면 resize_terrain_house_roof를 사용한다. 잠금과 집 전체/문 앞 높이를 보존하고 마지막 수정 뒤 모든 집의 실제 통행과 그림을 다시 확인한다."] : []),
@@ -63,10 +87,30 @@ export function buildPiAgentSystemPrompt(
     ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
     ...scope,
     ...(spatial ? [`새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·사막이면 버들항 마을은 author_beodeul_town theme:"snow"·"desert" 로 짓고, 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`] : []),
+    // 장르 잠금(옵트인) — 기본 칩셋 줄보다 뒤에 와서 이긴다. 잠금이 없으면 줄이 없다(프롬프트가 글자까지 같다).
+    ...genreLockLines(project, spatial),
     ...(spatial ? [HAND_INTERIOR_POLICY_LINE] : []),
     // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
     ...(spatial ? jpCityPromptLines(project, mapIds) : []),
     ...(spatial ? gothicPromptLines(project, mapIds) : []),
+    ...(spatial ? pirateIslesPromptLines(project, mapIds) : []),
+    // 전국·에도(sengoku_edo) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? sengokuPromptLines(project, mapIds) : []),
+    // 하늘섬(sky_island) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? skyIslandPromptLines(project, mapIds) : []),
+    // 스팀펑크 도시(steampunk_city) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? steampunkPromptLines(project, mapIds) : []),
+    // 캠퍼스(modern_campus) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다(없는 칩셋을 «있다»고 말하지 않는다).
+    ...(spatial ? campusPromptLines(project, mapIds) : []),
+    // 도쿄풍 도시(modern_city) — 번들이라 모든 프로젝트에 있으므로 범위에 modern_city 맵이 있을 때만 줄이 붙는다(거리 낱말을 jp_city 에서 빼앗지 않는다).
+    ...(spatial ? modernCityPromptLines(project, mapIds) : []),
+    ...(spatial ? sfStationPromptLines(project, mapIds) : []),
+    // 선사 원시 세계(prehistoric) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? prehistoricPromptLines(project, mapIds) : []),
+    // 사막·동양풍(desert_east) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? desertEastPromptLines(project, mapIds) : []),
+    // 북방 설원(snow_north) — 칩셋이 프로젝트에 있을 때만 줄이 붙는다.
+    ...(spatial ? snowNorthPromptLines(project, mapIds) : []),
     ...(spatial ? [JOSEON_POINTER_LINE] : []),
     ...(spatial ? ["마을·방에 물건을 배치할 때 사용자 선택 태그가 있는 공용 기물을 먼저 검색하고, 시대·장소·기능이 맞으면 우선 사용한다. 이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다. 태그 「요청 시에만」(사막 메사·짐승 뼈)은 사용자가 그 물건을 말했을 때만 찍는다 — 사막 기본 꾸밈은 고목 덩이·선인장·사구·물가 야자."] : []),
     ...genreMechanicLines(project),

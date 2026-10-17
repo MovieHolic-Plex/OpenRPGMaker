@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e2ec6b002d71dd97188d7a4bfd810fda6882b10826a3bb2caff9c8a6b0020e0d",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "배 주방 화덕(쇠) (galley stove)",
+ "label": "atlas_biome_interior/plus/galley stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "galley stove cooktop and oven body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cooktop surface spans rows 17 to 24 (8 rows tall), clearly rendered as a horizontal top surface seen from above where pots rest and the chimney flue connects, above the dark south-facing oven/firebox front (rows 26-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "galley stove with chimney, cooktop, and lower oven/firebox",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cooktop surface is clearly visible from above across rows 16–24 (9 rows tall) with a pot, burner details, and the chimney base penetrating the horizontal plane, resting above the front-facing oven/firebox section (rows 26–41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6089
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "galley stove (wood/coal cookstove with stovepipe)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal cooktop surface is visible from rows 16 to 24 (9 rows) with a pot sitting on it and the vertical stovepipe anchored into its depth, above the front vertical face (rows 25-41) containing the firebox and oven door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8345
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "galley stove (cooktop and oven base)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cooktop surface spans rows 17-24 (8 source pixel rows) between the back edge and the brass front trim, showing burners, a pan with steam, and the stovepipe base viewed from above. Below row 25 is the south-facing front with firebox and oven door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11414
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.899Z",
+ "cells": {
+  "16": [
+   "0f4c7c55f61bc57b",
+   "2c2408fd85441bc3",
+   "63e40ef7bb202d05",
+   "9558d18be9c396ce",
+   "b0e92ae9fcc4a593",
+   "f46189c08e55facf"
+  ],
+  "24": [
+   "0032520923963257",
+   "18d5f0a88c7f3bb4",
+   "1b394c97829401b7",
+   "2178b8cc25af2dc9",
+   "2ec05fea84eb8f17",
+   "46b64cd4da8d18b1",
+   "4c596961ca4556b4",
+   "4f5d8adc6cef3670",
+   "65128b16bdcc82ff",
+   "6be4acabe6d034de",
+   "7551f4c335d56653",
+   "876f77a79346571f"
+  ],
+  "32": [
+   "36986760f528e8e6",
+   "9ad8e45899991420",
+   "b89ef0ea1b9662fa",
+   "fc591e2176681354"
+  ],
+  "48": [
+   "9e636d6a6f4d567a",
+   "b9cb73068ccc9740",
+   "dd999a6389f5ab92"
+  ]
+ }
+}

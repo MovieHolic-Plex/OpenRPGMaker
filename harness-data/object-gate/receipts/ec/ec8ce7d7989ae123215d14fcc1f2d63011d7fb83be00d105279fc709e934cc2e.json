@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec8ce7d7989ae123215d14fcc1f2d63011d7fb83be00d105279fc709e934cc2e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "기름 밴 자갈 포석",
+ "label": "steampunk-city/sp-cobble-oil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pavement terrain tile with oil stain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting stone pavement with a dark oil stain, viewed flat from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oil-stained stone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing oil-stained stone pavement spanning the full 16x16 grid viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2460
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oil-stained cobblestone pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing top-down flat ground cobblestone paving with a dark oil stain in the center.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil-stained cobblestone paving",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting stone paving with a dark oil spill/stain viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3140
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.707Z",
+ "cells": {
+  "16": [
+   "d7a9498f84e488c4"
+  ],
+  "24": [
+   "4997bdfc4d8a8165",
+   "5d4f9971a2a52f33",
+   "c0c1f62ba891075e",
+   "cd19242322ca8e15",
+   "d89bedb737bf395d",
+   "fc62e8664f41acb4"
+  ],
+  "32": [
+   "3a4209ad4035be48",
+   "6a0d46e660c434df",
+   "6ed255e10881e297",
+   "817bed6ea265c985",
+   "82c8bc611633db8b",
+   "a2d963564df4ff81"
+  ],
+  "48": [
+   "0c05858a3948c27c",
+   "56c0b26e38549f89",
+   "6a6091d5ea574aaa",
+   "7a6b759075d64024",
+   "aa84fa9de622006d",
+   "bd55be847cef5c90"
+  ]
+ }
+}

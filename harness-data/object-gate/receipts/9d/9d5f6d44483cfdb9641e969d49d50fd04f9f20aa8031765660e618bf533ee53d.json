@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d5f6d44483cfdb9641e969d49d50fd04f9f20aa8031765660e618bf533ee53d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 포석(이끼 낀 줄눈·금 간 돌 변주)",
+ "label": "steampunk-city/sp-cobble-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving terrain tile with mossy joints",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting stone pavers with mossy mortar joints seen from above; occupies the full tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "paving stone terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground paving stone terrain texture with horizontal mortar joints and moss accents, correctly textured for a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20543
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting stone pavers with mossy seams; valid ground surface covering the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3438
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat cobblestone/flagstone paving with moss in the joints, spanning the entire ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3669
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.706Z",
+ "cells": {
+  "16": [
+   "ff287674c08e5e36"
+  ],
+  "24": [
+   "43653d73af9da223",
+   "5d5b5eca9f3c57ae",
+   "8d44f985188eb3c6",
+   "c16ceb904c5a1afe",
+   "d448e5e2ac44705c",
+   "db8bd318a8ed5e7b"
+  ],
+  "32": [
+   "0f8fea1371991f5c",
+   "14fcbb22773301f0",
+   "77f60c7c91dbddd7",
+   "ca0d6d0d8354c142",
+   "cb0edbed8939b691",
+   "eecb7383e6c58527"
+  ],
+  "48": [
+   "00ec7adc157913ba",
+   "43209032757d6001",
+   "47aba7063b1a9537",
+   "5022eec536f79087",
+   "c4093f2da099060f",
+   "f9fd15d875a88dad"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "223a6f057e00a768cf3003435eea3668ad663478bb16c5721c28f2349c86a37e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "점자 블록",
+ "label": "modern_city/interior/mci-tactile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow tactile paving block with raised dots",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a floor surface (tactile paving block) viewed flat from above with raised dots highlighted from the top/north.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6825
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tactile paving block (braille block) flat ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat floor surface seen from above, with shaded tactile studs lying across it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow tactile paving tile with raised dots",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite represents a floor tile/plate seen from above with shaded bumps, fitting the flat kind perfectly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6793
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tactile paving tile (braille block)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite represents a flat ground tile with raised circular tactile bumps shaded with south-facing drop shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2712
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.387Z",
+ "cells": {
+  "16": [
+   "5f9af42925c4de7b"
+  ],
+  "24": [
+   "0ae728ab885206b4",
+   "1209153f3a43fdcb",
+   "47a4bd63c884066f",
+   "c8fb9e96e3928ebf",
+   "d32f569c81f60df2",
+   "eac58d1c8c6306d8"
+  ],
+  "32": [
+   "1dc14215885e2356",
+   "36dbb17a011aa2bf",
+   "6830532f51950427",
+   "9b314f6af220bde8",
+   "a9f150a93a8a3606",
+   "cc590cdb6ca33532"
+  ],
+  "48": [
+   "0779fec8a2f8cbe2",
+   "2bf510e447ca3bac",
+   "33a01a67389ce71f",
+   "4a3dc0bc60bb6dd3",
+   "616dbf7010b326e1",
+   "ff189a9dbe07cbe6"
+  ]
+ }
+}

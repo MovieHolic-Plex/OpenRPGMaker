@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92a2ed6437854f3a3001de686505fd4d3b01b2a73cbe896a3cfd31a957251673",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden crate seen from above-front",
+ "label": "sky-island/si-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate lid is clearly visible across rows 2 to 6 (5 rows tall), with the front face and diagonal brace shown below from row 7 downwards in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3582
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface of the crate is clearly depicted spanning rows 2 to 6 (5 rows tall), showing lighter horizontal planking, while rows 7 to 14 depict the south vertical face with framed cross-bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3589
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the crate is clearly depicted across rows 2-6 (5 rows tall), showing horizontal planking, while rows 7-14 form the front face with framing and diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3052
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface of the crate is clearly depicted across rows 2-6 (5 pixels tall) with horizontal wooden planks, while the front face extends from rows 7-14 with a diagonal brace.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3340
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.430Z",
+ "cells": {
+  "16": [
+   "77da078228c0236d"
+  ],
+  "24": [
+   "02db441e3ac28e27",
+   "08e1c8e2cd6983ad",
+   "0a1a20618a78c882",
+   "18d618f2affa2df8",
+   "277b1e9319b32355",
+   "c0207ed8c1ae3023"
+  ],
+  "32": [
+   "4573510a4e84bbb8",
+   "7242690d182a83d1",
+   "9dc1261fead2024b",
+   "b8d269421662b87e",
+   "ebc5048b17eebdc3",
+   "fa9896f2f6559fa5"
+  ],
+  "48": [
+   "60de2695c3078020",
+   "678abef6387fbd33",
+   "6a2aef02dc8d0166",
+   "bdb875a501a18f1b",
+   "d0bf851ada8177e4",
+   "daed986680430019"
+  ]
+ }
+}

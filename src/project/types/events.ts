@@ -112,7 +112,18 @@ export type ActorQueryCondition =
   | { kind: "actorStat"; actorId: ActorId | "leader"; stat: "level" | "hp" | "mp" | "hpPercent" | "mpPercent"; op: ConditionCompareOp; value: number }
   | { kind: "actorState"; actorId: ActorId | "leader" | "anyone"; stateId: string; present: boolean }
   | { kind: "partyLeader"; actorId: ActorId }
+  /**
+   * 파티(배우 + 몬스터 파티)의 누군가가 이 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시).
+   * present 생략 = true. 아는 기술은 배우의 배운/직업/성장/장비 부여 스킬과 몬스터 파티 인스턴스의 기술이다.
+   * 해석 못 하면(스킬 id 가 비었음) 거짓.
+   */
+  | { kind: "partyKnowsSkill"; skillId: string; present?: boolean }
   | { kind: "partySize"; op: ConditionCompareOp; value: number }
+  /**
+   * 획득한 배지 수 비교(몬스터 캠페인 「배지 N개 이상」 게이트). 캠페인 정의 badges[].switchId 가 켜진 개수를 센다
+   * (정의가 없으면 mx_badge_N 규약 스위치). 해석할 배지가 없으면 0 으로 본다. 선택 조건이라 기존 프로젝트는 불변.
+   */
+  | { kind: "badgeCount"; op: ConditionCompareOp; value: number }
   /** subject=player: 주인공이 dir 을 본다. subject=event: 이 이벤트가 dir 을 본다. */
   | { kind: "facing"; subject: "player" | "event"; dir: Dir }
   /**
@@ -310,6 +321,9 @@ export type ShowAnimationTarget =
   | { readonly eventId: string }
   | { readonly x: number; readonly y: number };
 
+/** changeTile 이 쓸 수 있는 맵 층. 이름은 mapLayers.ts 의 층 번호와 같다: 1층 lower · 2층 lower2 · 3층 upper · 4층 upper2. */
+export type ChangeTileLayer = "lower" | "upper" | "lower2" | "upper2";
+
 export type Command =
   | {
       kind: "text";
@@ -394,7 +408,8 @@ export type Command =
   | {
       kind: "changeTile";
       mapId: MapId;
-      layer: "lower" | "upper";
+      /** lower=1층, upper=3층, lower2=2층(바닥 장식), upper2=4층(물체 하나 더). 그림자는 못 바꾼다. */
+      layer: ChangeTileLayer;
       x: number;
       y: number;
       tile: number;
@@ -725,6 +740,12 @@ export interface EventObjectInteraction {
   directions?: Dir[];
 }
 
+/** 시야에 처음 들어온 순간의 놀람 — 머리 위 말풍선을 띄우고 holdMs 동안 멈췄다가 쫓는다(chase 전용). */
+export interface ChaseSightAlert {
+  emote: EmoteKind;
+  holdMs: number;
+}
+
 export interface EventPageMovement {
   type: AutonomousMovement;
   speed: number;
@@ -738,6 +759,8 @@ export interface EventPageMovement {
   pathfind?: boolean;
   /** 추적 결정 간격(ms) 명시 오버라이드. 생략 시 frequency 랭크로 결정. */
   moveIntervalMs?: number;
+  /** chase 전용. 시야에 처음 들어온 순간 말풍선+짧은 멈춤 뒤 추격을 시작한다. */
+  sightAlert?: ChaseSightAlert;
 }
 
 export interface EventPage {

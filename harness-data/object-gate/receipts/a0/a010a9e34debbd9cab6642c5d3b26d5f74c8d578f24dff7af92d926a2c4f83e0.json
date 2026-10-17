@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a010a9e34debbd9cab6642c5d3b26d5f74c8d578f24dff7af92d926a2c4f83e0",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "고마이누(돌 사자, 받침 위, 왼쪽 봄)",
+ "label": "sengoku-edo/se-komainu-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "komainu statue on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plinth beneath the statue is drawn as a flat rectangular block in pure elevation with no visible top surface (0 rows of depth) where the figure stands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4905
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "komainu statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plinth and statue are drawn in a flat front/side elevation with straight horizontal bands and no visible top surface (0 rows) showing the plane upon which the statue rests.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5983
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "komainu statue on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue is drawn in a flat side profile and the plinth underneath is drawn as a flat front elevation. There is no visible top surface on the plinth (only a 1px transitional shoulder at row 20) where the statue rests, violating the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5747
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "komainu stone lion statue on a two-tiered pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue is drawn in flat side profile and its pedestal is drawn in pure front elevation as two stacked vertical rectangles (rows 21-26 and 27-31) with zero rows of visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6409
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.181Z",
+ "cells": {
+  "16": [
+   "95ad57518aedbe52",
+   "a3bd2da57cb6c894"
+  ],
+  "24": [
+   "08cce09ec7bcffba",
+   "301b3db403ab8e9b",
+   "43136fbfb33843bc",
+   "51cd175229843684",
+   "8a65237ec989c6af",
+   "a82be0143a2444f2",
+   "b0bb713b48985fa1",
+   "b8843001b45b6312",
+   "c5147537fb13ec28",
+   "c879d8565011570c",
+   "d237d9be676281ec",
+   "faccc3a028f5aa95"
+  ],
+  "32": [
+   "5c636a9da95e1a6c",
+   "684061323bcf50c8",
+   "a1f24385df273ff1"
+  ],
+  "48": [
+   "1029893bb9e8cbf8",
+   "2f419e507475323e",
+   "7b1bcf45599fef11",
+   "8a928b4898b1cdb3",
+   "d1f08deae2e9dc3d",
+   "edd39267b46aac08"
+  ]
+ }
+}

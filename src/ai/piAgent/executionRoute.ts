@@ -13,6 +13,17 @@ import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
+import { formatInteriorPlusNote, type InteriorPlusTarget } from "@/ai/interiorPlusPolicy";
+import { formatPirateIslesNote, type PirateIslesTarget } from "@/ai/pirateIslesPolicy";
+import { formatSengokuNote, type SengokuTarget } from "@/ai/sengokuEdoPolicy";
+import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy";
+import { formatSteampunkNote, type SteampunkTarget } from "@/ai/steampunkCityPolicy";
+import { formatCampusNote, type CampusTarget } from "@/ai/campusPolicy";
+import { formatModernCityNote, type ModernCityTarget } from "@/ai/modernCityPolicy";
+import { formatSfStationNote, type SfStationTarget } from "@/ai/sfStationPolicy";
+import { formatPrehistoricNote, type PrehistoricTarget } from "@/ai/prehistoricPolicy";
+import { formatDesertEastNote, type DesertEastTarget } from "@/ai/desertEastPolicy";
+import { formatSnowNorthNote, type SnowNorthTarget } from "@/ai/snowNorthPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
   formatIntentNote,
@@ -23,6 +34,7 @@ import {
 } from "@/ai/intentDeclaration";
 import type { Project } from "@/project/types";
 import type { PiAgentThinkingLevel } from "./protocol";
+import { INTENT_NOTE_BOUNDARY } from "./monsterGameRequest";
 
 export { DEFAULT_PI_APPLY, type PiApplyMode } from "./applyMode";
 /** 팀 실행 기본값. 컴포저 「팀」 토글·설정 「Pi 팀 실행」 이 이 값을 덮는다. */
@@ -87,6 +99,28 @@ export interface PiIntentNoteInput {
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
   readonly gothic?: GothicTarget | null;
+  /** 박물관·배 안·투기장 실내(손 도트 실내 interior-plus 방 종류)면 그 대상(interiorPlusPolicy). jp_city 다음, 고딕·해적 군도보다 먼저 잡힌다. */
+  readonly interiorPlus?: InteriorPlusTarget | null;
+  /** 요청·대상 맵이 열대 군도·해적 항구(pirate_isles)면 그 대상(pirateIslesPolicy). 버들항 마을 노트보다 먼저 잡힌다. */
+  readonly pirateIsles?: PirateIslesTarget | null;
+  /** 요청·대상 맵이 전국·에도(sengoku_edo) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(sengokuEdoPolicy). jp_city 보다 먼저 잡힌다. */
+  readonly sengoku?: SengokuTarget | null;
+  /** 요청·대상 맵이 하늘섬(sky_island) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(skyIslandPolicy). */
+  readonly skyIsland?: SkyIslandTarget | null;
+  /** 요청·대상 맵이 스팀펑크 도시(steampunk_city) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(steampunkCityPolicy). jp_city 보다 먼저 판정한다. */
+  readonly steampunk?: SteampunkTarget | null;
+  /** 요청·대상 맵이 캠퍼스(modern_campus) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(campusPolicy). */
+  readonly campus?: CampusTarget | null;
+  /** 요청·대상 맵이 도쿄풍 도시(modern_city)면 그 대상(modernCityPolicy) — 캠퍼스 뒤·버들항 앞. 거리 낱말만으로는 잡지 않는다(jp_city 몫). */
+  readonly modernCity?: ModernCityTarget | null;
+  /** 요청·대상 맵이 SF 정거장·네온 거리(sf_station)면 그 대상(sfStationPolicy). jp_city·고딕보다 먼저 잡힌다. */
+  readonly sfStation?: SfStationTarget | null;
+  /** 요청·대상 맵이 선사 원시 세계(prehistoric) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(prehistoricPolicy). jp_city 보다 먼저 판정한다. */
+  readonly prehistoric?: PrehistoricTarget | null;
+  /** 요청·대상 맵이 사막·동양풍(desert_east) 칩셋이면 그 대상(desertEastPolicy). jp_city·고딕이 잡으면 쓰지 않는다. */
+  readonly desertEast?: DesertEastTarget | null;
+  /** 요청·대상 맵이 북방 설원(snow_north) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(snowNorthPolicy). 선사 다음, jp_city 보다 먼저 판정한다. */
+  readonly snowNorth?: SnowNorthTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -111,9 +145,21 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const conceptNote = formatConceptCardNote(conceptCardsForText(input.requestText));
   const worldmapNote = formatWorldmapChoiceNote(input.requestText, input.project, input.targetMap?.id);
   const intentNote = formatIntentNote(input.intent, { clarifyBypassed: true, targetMap: input.targetMap });
-  const villageNote = input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
+  // 노트는 하나만 — plainTurn 이 우선순위대로 하나만 채운다(나머지는 null).
+  const villageNote = input.sengoku ? formatSengokuNote(input.sengoku, input.targetMap)
+    : input.steampunk ? formatSteampunkNote(input.steampunk, input.targetMap)
+    : input.sfStation ? formatSfStationNote(input.sfStation, input.targetMap)
+    : input.prehistoric ? formatPrehistoricNote(input.prehistoric, input.targetMap)
+    : input.desertEast ? formatDesertEastNote(input.desertEast, input.targetMap)
+    : input.snowNorth ? formatSnowNorthNote(input.snowNorth, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
+    : input.interiorPlus ? formatInteriorPlusNote(input.interiorPlus, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
+    : input.pirateIsles ? formatPirateIslesNote(input.pirateIsles, input.targetMap)
+    : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
+    : input.campus ? formatCampusNote(input.campus, input.targetMap)
+    : input.modernCity ? formatModernCityNote(input.modernCity, input.targetMap)
+    : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
@@ -127,5 +173,5 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
  * 문장)를 그대로 쓰고, 모델에 가는 문자열만 이걸 쓴다.
  */
 export function composePiTask(task: string, intentNote: string | null | undefined): string {
-  return intentNote ? `${task}\n\n${intentNote}` : task;
+  return intentNote ? `${task}${INTENT_NOTE_BOUNDARY}${intentNote}` : task;
 }

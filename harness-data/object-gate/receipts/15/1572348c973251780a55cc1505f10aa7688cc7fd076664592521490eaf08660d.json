@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1572348c973251780a55cc1505f10aa7688cc7fd076664592521490eaf08660d",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "ornate clay urn with gold bands seen from above at 3/4, its wide open mouth full of jewels and coins",
+ "label": "pirate-isles/pi-treasure-urn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay urn body with open mouth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn mouth is viewed from above across rows 2-6 (4-5 rows tall), clearly showing the interior filled with coins and multicolored jewels before transitioning to the front curved clay belly below row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12290
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay urn body with gold band and handles",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn mouth is viewed from a 3/4 top-down angle spanning rows 3-6, clearly showing an interior opening filled with colorful jewels and coins before the front rim at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay urn with gold bands",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The urn shows a wide opening viewed from above across rows 3-6 (4 rows tall) filled with colorful jewels and gold coins, bordered by rims and transitioning down to the south-facing rounded clay body from row 7 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3554
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ornate clay urn",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide open mouth of the urn is visible from above across rows 2-6 (4 rows of contents including colored gems and gold coins), set above the front belly of the urn which spans rows 7-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5021
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.594Z",
+ "cells": {
+  "16": [
+   "b88a8f070d19a3a4"
+  ],
+  "24": [
+   "1028cac1568b5360",
+   "38b4237705dbf0c2",
+   "4f8128a46de44f82",
+   "7b676f8037f00650",
+   "82b3721acc67cd12",
+   "e6ea46159f598bde"
+  ],
+  "32": [
+   "28d43bdda295503b",
+   "694ab9a53e574841",
+   "bbb6e5e52b7eebdc",
+   "d5bd2479ff42b07f",
+   "df138e07d0861634",
+   "fcdbf15ae0814af0"
+  ],
+  "48": [
+   "0d563dd8e7f81b3d",
+   "3b5b44a46db8f71d",
+   "6fc82cf2babcaa11",
+   "a5efc2e34467c71a",
+   "da3edbfe8eb5c46b",
+   "f51938134fa6ba5e"
+  ]
+ }
+}

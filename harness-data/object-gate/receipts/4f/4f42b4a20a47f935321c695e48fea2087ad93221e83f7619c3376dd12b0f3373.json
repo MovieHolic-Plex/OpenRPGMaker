@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f42b4a20a47f935321c695e48fea2087ad93221e83f7619c3376dd12b0f3373",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-rail-signal2",
+ "label": "jp/jp-rail-signal2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail signal box and post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal housing (rows 8-17) is drawn entirely as a flat front elevation with square front-facing lenses and only a 1px yellow line at row 8. Neither the signal box, the neck, nor the base shows any foreshortened horizontal top surface; the entire object is drawn from a direct side/front elevation view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal box and housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 8-17) is drawn entirely in flat front elevation with square lights and zero top depth (only a 1px edge line at row 8). The top cap and base mound are drawn as flat 2D silhouettes without foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal box with lights and mounting cap/base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 8-17) and its mounting post and cap/base are drawn entirely as a flat front elevation. There is no visible foreshortened top plane on the box or structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6487
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway signal box and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal housing (rows 9-17) is rendered in pure front elevation with straight horizontal bands and flat square lenses. The upper cap (rows 0-7) and base (rows 21-31) are drawn as flat 2D silhouettes/elevations with horizontal base rims and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7668
+  }
+ ],
+ "decidedAt": "2026-10-13T14:20:17.062Z",
+ "cells": {
+  "16": [
+   "76749510b022f896",
+   "aee19fc3e9201122"
+  ],
+  "24": [
+   "1061c6a54c1ec917",
+   "18dd6c66536b0482",
+   "2c4caac158059a38",
+   "680fa3741816f246",
+   "6be932fe6e116816",
+   "7427b7264ab12470",
+   "8517f81f136a094f",
+   "940ce1908515352d",
+   "aa8d5b145b5c4b8e",
+   "aad9f43cf44caa8f",
+   "ad0077f55e3bff9d",
+   "ba2aa33ed4ce6c07"
+  ],
+  "32": [
+   "5cc867d05fbe02aa",
+   "706a0cb0b1465b1f",
+   "b6938da05bc2995c"
+  ],
+  "48": [
+   "18c6c2bdd4ba392c",
+   "1ae11ee6a0be454d",
+   "482e89ac0cf052fc",
+   "566cb9b1e4f92f20",
+   "ca45099734342ff9",
+   "edb4778e67810455"
+  ]
+ }
+}

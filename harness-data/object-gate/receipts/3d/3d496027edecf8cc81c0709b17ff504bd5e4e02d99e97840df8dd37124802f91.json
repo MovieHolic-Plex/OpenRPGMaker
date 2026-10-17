@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d496027edecf8cc81c0709b17ff504bd5e4e02d99e97840df8dd37124802f91",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "빨강·놋쇠 무늬 깔개",
+ "label": "steampunk-city/sp-rug",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red and brass patterned rug lying flat on the floor with tassels",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug seen flat from above from row 3 to row 28 with tassels on the east and west borders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ornate red and brass patterned rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug seen from above in top-down perspective, occupying rows 3 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red and brass patterned floor rug with fringes",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a rectangular floor rug seen from above in top-down perspective, filling rows 3 to 28 completely as a flat floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3270
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red and brass patterned rug",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rug lies flat on the floor, fully seen from above across rows 3 to 29 with fringed edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2474
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.462Z",
+ "cells": {
+  "16": [
+   "0dc6190abe706f9b",
+   "23669bd99c3ef8cd",
+   "97ccbf0bbd683b27",
+   "a7483b0cf2d9e49c",
+   "f7bd14bec270d208",
+   "f915e81a48289a68"
+  ],
+  "24": [
+   "0471c5bd5926000b",
+   "060ed94a5081dbcf",
+   "33cde6001c588d82",
+   "4c1b5f9df78ca05c",
+   "9d198486de85f8f1",
+   "c8c9daf3ee3ae666",
+   "d6bae8df4eb19238",
+   "dfdd90c7068df612"
+  ],
+  "32": [
+   "3eb42759b90980d1",
+   "72ebf1847b157876",
+   "914f7612a494d538",
+   "a59df4d3ac42c356",
+   "a6b9fd6ea5456147",
+   "c1367fd0bd67e025"
+  ],
+  "48": [
+   "1300970b8a367cc3",
+   "287e86729c64f567"
+  ]
+ }
+}

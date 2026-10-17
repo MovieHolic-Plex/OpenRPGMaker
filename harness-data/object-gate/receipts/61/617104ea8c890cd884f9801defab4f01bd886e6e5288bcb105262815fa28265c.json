@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "617104ea8c890cd884f9801defab4f01bd886e6e5288bcb105262815fa28265c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile (terrain)",
+ "label": "sky-island/si-face-mid",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical rock cliff face. In standard RPG Maker style, wall and cliff faces represent vertical surfaces designed to tile vertically and connect to cliff-top ground tiles above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical rock cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents a vertical rock cliff/wall face terrain texture rather than a standalone object; top surface is not expected on a vertical wall face tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Modular rock cliff wall face terrain tile with vertical crevices; properly classified as terrain rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Modular terrain tile depicting a vertical rock cliff or stone wall face. As terrain, it functions as a vertical wall surface rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5128
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "6349ddce4f4575a7"
+  ],
+  "24": [
+   "2933781e3677eaa5",
+   "333c77a94622893f",
+   "3b8e454c104765ad",
+   "99cb5c3a684027a6",
+   "b180a86e04a91c18",
+   "c9aa7d0534225f91"
+  ],
+  "32": [
+   "0e021df96215cde6",
+   "9d84bc103e695cb4",
+   "cb7a572796b0b125",
+   "cbf8bc46be7e7713",
+   "d221142dcf4345b1",
+   "d39058ab461664c6"
+  ],
+  "48": [
+   "1c054660e01a1cb6",
+   "756d894f899bf0f6",
+   "7950e34c8981c0ce",
+   "a924cadf0afd2f51",
+   "cb828edeb943c014",
+   "dd5b5d4ebb575144"
+  ]
+ }
+}

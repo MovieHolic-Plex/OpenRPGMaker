@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8311769904e435433ae440be4db216966651f865878e7e38b7620f9d40402b8",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "prehistoric stone-age granary",
+ "label": "prehistoric/ph-granary",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roof and elevated granary bin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof displays clear foreshortened concentric tiers seen from above across rows 6 to 24, giving ample top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched conical roof and cylindrical granary body on stilts",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof shows its foreshortened downward slope from apex (row 6) to eave (row 24) across 18 pixel rows, with curved concentric tiers reflecting the 3/4 downward viewing angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7565
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched conical roof over a bulbous clay granary chamber on stilts",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof spans rows 6 to 24 with elliptical curved bands dipping downwards toward the south, clearly depicting the surface seen from above at a 3/4 overhead angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched roof and rounded granary chamber on stilts",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatched roof spans from row 6 down to row 24 with clearly curved horizontal thatch tiers showing the foreshortened top slope in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5414
+  }
+ ],
+ "decidedAt": "2026-10-14T00:41:58.378Z",
+ "cells": {
+  "16": [
+   "08601e8b48cf3537",
+   "58b7337f15e82880",
+   "a30f42bf25e2aac9",
+   "c52f2db3534a2688",
+   "d95458a4aa025206",
+   "e19deb0331548149"
+  ],
+  "24": [
+   "0256d89b7ee094bd",
+   "43cb8e752a0ab09b",
+   "5298e4e55397716c",
+   "53ff0f9a3d7e7d07",
+   "5d5b789f494c74c6",
+   "864f929b747dc1ea",
+   "886448dbf45fbb2e",
+   "98910b9caef56c34",
+   "9b8f15a72ce7afbd",
+   "af99b9d859e28f15",
+   "e83c52166f7bb0a8",
+   "f388083590ec496f"
+  ],
+  "32": [
+   "0fa3446e9e44c5c8",
+   "2cb6023dedf1185a",
+   "bb833c3a2d633def",
+   "efaf7e6dc636aed6"
+  ],
+  "48": [
+   "178f2bcb04f57ec0",
+   "480fbd7d70f4c681",
+   "8f0f09eedf38b5d5"
+  ]
+ }
+}

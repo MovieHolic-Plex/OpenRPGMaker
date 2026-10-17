@@ -1,0 +1,102 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5940ff00367dbb4425d94e525b0cb4ca17abcbe2992f05baf019ec3f1e5c16d",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "팀파니",
+ "label": "jp_city/interior_school2/sx-timpani",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "timpani drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head forms a clearly foreshortened ellipse spanning rows 2 to 6 (5 source pixel rows tall), sitting atop the rounded copper kettle body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "timpani bowl and drumhead",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drumhead top surface forms a clear elliptical cap from row 2 to row 6 (5 rows tall), resting atop the cylindrical copper kettle body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4272
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 823,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 566,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m54s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.785Z",
+ "cells": {
+  "16": [
+   "869327275b770df4"
+  ],
+  "24": [
+   "59e784437f86925b",
+   "5c142df68cb1f427",
+   "9a846cf3ec63f070",
+   "e14242249c71188b",
+   "e80dddfe81476ec7",
+   "f0253d588ac98949"
+  ],
+  "32": [
+   "27d186362be1cffe",
+   "351306b0a2b26246",
+   "3880f55e6819a38a",
+   "99d9ed55c90f70af",
+   "b72c456dd41c64a5",
+   "f6ad0bab3225d254"
+  ],
+  "48": [
+   "09ec6b5eb063951a",
+   "6b4f2358d3aebe85",
+   "c8dcd28f66e11041",
+   "cb81c50f812df421",
+   "d5e791c3dddf48b5",
+   "df9789158295a4e9"
+  ]
+ }
+}

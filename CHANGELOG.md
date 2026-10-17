@@ -5,6 +5,882 @@
 
 <!-- releases -->
 
+## 0.254.0 — 2026-10-17
+
+### 기능
+
+- **start** — 플레이 · 만들기 2모드 런처 껍데기 및 내 월드 바로 플레이 (1단계) (#2847) (`d35b56d`)
+- **ai** — build_scene_setting stages event scenes; irregular terrain, bank overlays, hazard lint (#2673) (`0b4ed4a`)
+
+### 수정
+
+- **dialogue,romance** — drop the VN reading bar and gate untouched openings (#2848) (`78bc34f`)
+- **ci** — drop unused scene-layout and tint-lint bindings (`5872bae`)
+
+## 0.253.0 — 2026-10-17
+
+### 기능
+
+- **database** — 시스템 탭 구획 목록 · 폼 격자(R2) · 스위치(R3) 정리 (PR-5) (#2842) (`4f7f039`)
+
+### 수정
+
+- **ci** — record the portrait-bottom notice in the event text surface baselines (`f7a089a`)
+
+## 0.252.0 — 2026-10-17
+
+### 기능
+
+- **database** — 장르 프로필 접기 — 「숨긴 탭 N개 · 모두 보기」 (PR-4) (#2841) (`f8de82e`)
+- **database** — 6그룹 재배치·소제목·「게임 설정」 라벨 (PR-3) (#2838) (`acdc802`)
+
+### 수정
+
+- **ci** — record the menu note and search crumb classes as unstyled (`cf16020`)
+
+## 0.251.2 — 2026-10-17
+
+### 수정
+
+- **database** — 메뉴 감사 부록 A 시각 깨짐·잘림 9건 수리 (B1~B9) (#2837) (`0258a79`)
+- **qa** — ignore unreachable retired seed map and flag pre-populated JRPG companions (#2835) (`031ed9a`)
+
+## 0.251.1 — 2026-10-17
+
+### 수정
+
+- **qa** — 사물 이름 NPC 에 사람 캐릭터 칩·흉상이 붙으면 완료 경고 romance-object-npc-bust (#2834) (`c83e7a2`)
+- **editor** — strip speaker echo from dialogue body in eventCompile (#2833) (`8158170`)
+- **dialogue** — 읽기 단추 줄이 왼쪽 흉상을 가리지 않게 (#2831) (`b592861`)
+
+## 0.251.0 — 2026-10-17
+
+### 기능
+
+- **database** — wayfinding — section-word search, 3-level crumb, recent tabs (#2829) (`77d3f0e`)
+- **dialogue** — 흉상·전신 초상이 있는 대사는 대사창을 항상 아래로 (#2828) (`73c179a`)
+
+### 수정
+
+- **jrpg** — seed-harbor gate names a path the assistant can take (new map + set_start_position) and only checks maps reachable from the start (#2830) (`a737c98`)
+- **qa** — identical-stats check survives a vehicle actor joining the party (#2822) (`0404905`)
+- **romance** — retire the unreachable generic happy ending once per-heroine endings exist (#2826) (`360b5d2`)
+- **qa** — title-art setting check reads title/subtitle/map names when there is no design brief (#2824) (`767a1bd`)
+- **qa** — autoplay ending goal accepts any ending after an auto-select triggerEnding (#2823) (`745206d`)
+- **ci** — record three new charset chips in the event graphic surface baselines (`8f890d1`)
+
+## 0.250.0 — 2026-10-17
+
+### 기능
+
+- **editor** — 자료집 「메뉴·시스템」 탭 — ESC 메뉴·대사창·갤러리/엔딩/저장 카드 한 화면 저작 (미연시 3단계) (#2808) (`6c70448`)
+
+### 수정
+
+- **ci** — record the visual-novel look and gallery backdrop in the CSS gates (`20bb7aa`)
+- **romance** — unique ending ids for non-ASCII heroine ids, keep the happy tier called, duplicate-chip check groups by characterId (#2818) (`57fbafe`)
+
+## 0.249.0 — 2026-10-17
+
+### 기능
+
+- **romance** — finish gate flags one heroine placed under different characterIds per map (#2815) (`6919a26`)
+- **dialogue** — VN look presets — 8 dialogue-window skins, nameplate/choice/wait styles, font settings, ESC menu theme, set_vn_look (#2816) (`a14870e`)
+- **ai** — create_time_gate 그림 없을 때 빛 표식 (#2776) (`b8c5a41`)
+- **jrpg** — 역할별 능력치 곡선 경고·관문 + 요청 규모(비공정·붕괴 전후) 관문 (#2797) (`bb3af1b`)
+
+### 수정
+
+- **vn** — 미연시 수리 — 기기 단위 엔딩·CG 기록, 엔딩 목록 스크롤, 체크리스트·도구 경계 (vn-review-2) (#2819) (`994c36b`)
+- **ai** — 시대 변형 철거 덧그림 제거 + 전투 배경 지명 단계 (#2775) (`caf2e0c`)
+- **ai** — JRPG finish gate requires joining companions when the request promises them (#2805) (`15ab404`)
+- **ai** — JRPG finish gate also blocks an unplayable first segment and the untouched seed fishing village (#2804) (`e0820b8`)
+- **dialogue** — bust no longer narrows the text; centre-window head fits; right-bust bar clears the nameplate (#2814) (`d21c91c`)
+- **ai** — stronger era-variant looks (ruin/past/future) and no rubble on water (#2798) (`dbe4f7e`)
+- **battle** — skill/item list widens leftward under actor/keys/fan look presets (#2800) (`0e47a66`)
+- **title** — force title line-height so a two-line title cannot cover its subtitle (#2796) (`e13d506`)
+
+## 0.248.0 — 2026-10-17
+
+### 기능
+
+- **romance** — per-heroine deadline sync (place_npc, team finish) + heroine-endings-uncalled check (#2811) (`daf133b`)
+- **ai** — reverse hard lock for monster-collect assets outside monster projects (#2812) (`2e28092`)
+
+### 수정
+
+- restore #2783/#2789/#2794 and v0.245.0 notes reverted by #2802 (#2810) (`11a09a8`)
+
+### 문서
+
+- **harness** — 미연시 추가 화면 실조수 시험 미검증 2문장을 재시험해 5/5 통과로 확정 (#2807) (`c27f943`)
+
+## 0.247.0 — 2026-10-17
+
+### 기능
+
+- **charset-actor** — ScarloxyPeople11~13 — char-gen gallery 4 script mixes, 22 monster-world people chips (#2806) (`07e820a`)
+
+## 0.246.0 — 2026-10-17
+
+### 기능
+
+- **vn** — stage 2 - gallery lock display and ending recall, ending checklist, save-card scene line (#2802) (`c919c0f`)
+
+### 수정
+
+- **ci** — record the dialogue bar and retro skill-list layout in CSS winners (`5801ee9`)
+
+## 0.245.0 — 2026-10-17
+
+### 기능
+
+- **romance** — set_deadline_ending builds a per-heroine ending tier when tiers is omitted (#2794) (`cdf3622`)
+- **romance** — finish gate flags endings aimed at a heroine whose affection can never rise (#2789) (`1b2f797`)
+- **romance** — 소재별 연애 타이틀 키아트(카페·학원·회사·마을) + 소재 불일치 완료 검사 (R1-06) (#2783) (`a888468`)
+
+## 0.244.2 — 2026-10-17
+
+### 수정
+
+- **battle** — walk-chip sheet set as battle sheet no longer renders a crowd (#2793) (`b4d30c8`)
+- **battle** — retro2003 skill list uses full-width host and Korean element badges (#2773) (`de086ef`)
+- **ai** — JRPG completion gate also applies to chat-line requests (balance, opening) (#2774) (`0e9ddf5`)
+- **ai** — intent notes no longer count as monster-game signals (FF6-style request hijacked into a Pokemon campaign) (#2784) (`ac799cb`)
+- **dialogue** — reading system adversarial-review repairs (D1-D8, D11, D12) (#2792) (`9d337d2`)
+
+## 0.244.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record the visual-novel reading colors in the CSS budget and winners (`51f3573`)
+- **ci** — record the extra face-option nodes in the event surface baselines (`94e926b`)
+
+## 0.244.0 — 2026-10-17
+
+### 기능
+
+- **dialogue** — 미연시 시스템 UI 1단계 — 백로그·오토·스킵·숨기기·설정 (#2782) (`2d3bb78`)
+
+## 0.243.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record the hanging portrait dialogue layout in CSS winners (`076750c`)
+
+## 0.243.0 — 2026-10-17
+
+### 기능
+
+- **portraits** — paired bust and full-body portraits for the remaining 12 modern romance chips (#2777) (`f30e20d`)
+
+### 수정
+
+- **romance** — 동사 없이 소재만 적은 연애 게임 요청도 완료 검사를 받는다 (R03 재발) (#2781) (`0bea0ae`)
+- **romance** — 기한 엔딩의 기본 결말이 조건 달린 엔딩이면 거절·검사 (아무도 안 만나면 끝나지 않던 구멍) (#2780) (`c7d28af`)
+- **dialogue** — 위쪽 대사창의 흉상·전신 초상이 화면 밖으로 잘리던 것을 상자 아래로 매단다 (#2779) (`4cd0b37`)
+
+## 0.242.2 — 2026-10-17
+
+### 수정
+
+- **jrpg** — 필드 HUD 클래식화(J09) + 전투 균형 완료 게이트(J06) (#2769) (`3441e8e`)
+- **romance** — 남은 결함 R04/R07/R10/R14 + 429 자동 재시도, R12 재현 불가 확인 (#2768) (`6a91e9b`)
+
+## 0.242.1 — 2026-10-17
+
+### 수정
+
+- **ci** — record new faces, chips, audio, and badge conditions in surface baselines (`3a22527`)
+
+## 0.242.0 — 2026-10-17
+
+### 기능
+
+- **charset-actor** — remake the 12 first-round script people chips with Argon partial edits (11 replaced, 1 kept) (#2763) (`69639de`)
+
+### 수정
+
+- **ci** — record the runtime HUD and capture colors in the CSS gates (`52a90d1`)
+
+## 0.241.0 — 2026-10-16
+
+### 기능
+
+- **romance** — 호감으로 갈리는 엔딩 셋 + 호감 변수 통일 (romance-real-2 R01/R02) (#2760) (`385d223`)
+- **portraits** — paired bust and full-body portraits for 12 modern romance chips (#2759) (`23dd38a`)
+- **ai** — JRPG 완료 가드 + 429 로 끊긴 배정 되돌리기 (jrpg-real-1 J04/J05) (#2752) (`07998ea`)
+- **ai** — derive_map_variant gives each era variant a visible look (light tint, fog, demolished buildings, ruin/camp props) (#2744) (`7dd8937`)
+- **ai** — JRPG hero/party charset search puts Heroes1 (CT·FF6 hero chips) first and tells the assistant to use it (#2740) (`2007d38`)
+
+### 수정
+
+- **romance** — HUD 가 지도·실내 위쪽을 덮지 않게, HUD 이름 짧게 (R06/R09) (#2762) (`0e44f1d`)
+- **romance** — 제목·부제 완료 게이트(채팅 한 줄 경로 포함), 제목 그림 잠금, 긴 제목, 엔딩 작은 줄 (R03/R05/R08) (#2761) (`a955c43`)
+- **battle** — 맵이 전투 배경을 정한다 — 던전 숲 배경(J08), 상자 대사 조사(J10) (#2755) (`c929a64`)
+- **player** — title text/subtitle fit the 320px stage; dialogue pages re-split when the real body is narrower (jrpg-real-1 J05/J07) (#2751) (`b4ff6ec`)
+- **player** — screen-distortion shader no longer redefines SHADER_NAME; failed shader compile skips the effect instead of freezing the screen (#2739) (`d4325bf`)
+
+## 0.240.0 — 2026-10-16
+
+### 기능
+
+- **charset-actor** — 몬스터 세계 사람 칩 2차 — ScarloxyPeople5~10 45종 (Argon 36) (#2743) (`d675d91`)
+- **monster-art** — cute-first judging, white-highlight-preserving pixelization (rules v4), 15 default monsters redrawn (#2754) (`57eef00`)
+
+### 수정
+
+- **charset-actor** — ScarloxyPeople5#6 선장·흰 선장 모자 제외 — 칸을 비워 두고 명단·카탈로그에서 뺌 (44 → 43종) (#2757) (`9eaccf3`)
+
+## 0.239.3 — 2026-10-16
+
+### 수정
+
+- **monster** — lab professor chip matches the opening bust; gym leaders field distinct species with a higher-level ace (D34, D35) (#2749) (`e36db26`)
+- **genre-lock,ai** — clear RTP hero battler under the monster lock; four monster-intent sentences turn on the kit (lock leak, routing) (#2748) (`a9363e0`)
+
+## 0.239.2 — 2026-10-16
+
+### 수정
+
+- **player,menu** — blackout uses the dialogue-window skin and recovery centre; bag footer duplicate removed (D31, D32) (#2747) (`ab7dd2c`)
+- **player** — empty-party battle admission goes through the game dialogue window once (D30) (#2746) (`a6ae44e`)
+- **player** — title resume and load-panel focus follow the newest save (manual or auto), not always the autosave (D29) (#2745) (`b38ab2c`)
+
+## 0.239.1 — 2026-10-16
+
+### 수정
+
+- **monster-art** — eye rules v3 and 15 default monsters redrawn (judge-picked) (#2741) (`860cecd`)
+
+## 0.239.0 — 2026-10-16
+
+### 기능
+
+- **monster** — opt-in natures and EVs (monsterStatRules), evYield, summary nature row (#2732) (`49c4bd1`)
+- **monster** — say why running is blocked; expSplitAlive 3rd-gen exp split (opt-in); result text names every participant (#2729) (`c089808`)
+- **battle** — skill rule vocabulary — fixed damage, random multi-hit, recoil, flinch (#2736) (`f6ee6ea`)
+- **player** — mouse/touch input, portrait layout and emerald loading screen for monster games (D15 D16 D25 D27) (#2734) (`ca033b9`)
+- **monster** — Scarloxy People 변형 사람 칩 25종(ScarloxyPeople1~4) — 스크립트 21 + 실 Argon 4 (#2733) (`bb91f4c`)
+- **romance** — modern chips under the genre lock, relationship ESC menu, romance skeleton + finish gate, HUD names/panel, project-wide chip spread (#2731) (`df5f357`)
+- **monster** — level-up learn/forget scene + stop falsely saying 배웠다 (#2724) (`1044a82`)
+- **monsters** — nickname rename input, gender, shiny marker; fix party rows overlap after 18px font (#2730) (`3ca1a34`)
+- **monsters** — starter confirmation (preview + type + note + yes/no) and save-slot summaries (dex/badges/party), emerald load panel (#2727) (`d86e5e2`)
+- **monsters** — PC 보관함 상자 화면 (30칸 상자·옮기기·놓아주기·필드 PC) (#2725) (`571d860`)
+- **monster-opening** — generated professor bust replaces the chip-on-pedestal intro (#2720) (`0850a0a`)
+- **monster-sfx** — 26 more original chip sounds (evolution, badge, items, status, weather, field) wired to monster projects (#2716) (`2d3dcfb`)
+- **monster** — badgeCount condition, place_badge_gate tool, original-style obedience level caps (#2713) (`efe771d`)
+- **monster** — wild encounter guard — flee grace steps, repel, escape rope, fishing flow (#2712) (`f8863bc`)
+- **ai** — place_npc warns when the same walk chip becomes the third on a map (monster-lock variety prep) (#2722) (`315d63c`)
+- **monster** — HM end-to-end — badge gating, examine 'use it?' prompt, giver chest, proven in the shipped player (#2708) (`f9cd137`)
+- **charset** — modern romance chips Modern1-3 (24 chips: uniform/casual/suit/cafe/teacher) (#2723) (`b91bc77`)
+- **monster** — field item use (revive/PP/rare candy/evolution stone) + bag pockets (#2707) (`60e4760`)
+- **monster** — bundled trainer battle art for campaign trainers + place_trainer auto-assign (#2706) (`e334a7b`)
+- **monster** — gym badge ceremony recipe (flash, jingle, rising bundled icon with glow), badge-case icons, configure_monster_campaign {badgeCeremony} (#2701) (`835b6f5`)
+- **runtime** — pixel grid contract - integer monster display, Galmuri9 18px, integer window (D12 + D08 part) (#2711) (`a724e2d`)
+- **monster-ui** — dex without campaign, paged detail, habitat line, progress meter, even list rows (#2714) (`ab397f0`)
+- **monster** — open-purse mart + center heal ritual (place_monster_center) (#2705) (`789a147`)
+- **battle** — capture throw shows the hero, dex registration line, stronger shake, varied failure lines (poke-sys 7) (#2704) (`b588667`)
+- **monster-art** — design v2 - signature/chibi/silhouette rules + 15 species redrawn on the 64px grid (#2710) (`8d37923`)
+- **monster-ui** — party swap order, paged summary, clipped-icon fix, held-item badge (#2700) (`04be155`)
+- **qa-game** — romance conformance warnings for qa:game check (#2698) (`ad48191`)
+- **qa-game** — gen --compat-base runs the real assistant path on an OpenAI-compatible endpoint (Argon via 8318) (#2687) (`5224d19`)
+- **ai** — everyday-place BGM rule (campus/classroom/cafe/office) + auto BGM for new modern interiors + romance start map BGM (#2695) (`201df1e`)
+- **monster** — spread campaign NPC faces by role over the genre chips, never the player chip (poke vqa D02) (#2693) (`6cb22d6`)
+- **monster** — bundled trainer pictures on every campaign trainer troop (poke vqa D03) (#2690) (`ec7425a`)
+- **monster-sfx** — original chip-synth default sound set for monster-collection games (15 cues) (#2697) (`ad718cf`)
+- **ai-ui** — 작업 목록 하나로 — 드래그·팀·바로 깔기·이벤트·대화를 한 목록에, 렉 없이 (B안 2단계 안 A) (#2696) (`1b8eefb`)
+
+### 수정
+
+- **ai** — repair broken string literal in toolCapabilityIndex (#2736 merge left a stray quote before SKILL RULES) (#2738) (`0b3f277`)
+- **battle-ui** — stage pills, long-name ellipsis, fainted box, lists, emerald ending hall of fame (D04 D13 D17 D20-D24 D26 D27) (#2735) (`9f79af1`)
+- **monster-opening** — lift the introduced monster so the whole sprite shows above the dialogue window (#2728) (`26459a1`)
+- **monster-opening** — put professor, introduced monster and dialogue window on the 2px dot grid; tidy bust to monster style (#2726) (`5e194b4`)
+- **ai** — cutscene stage/impact tools pick the hero chip from the genre lock's allowed chips (monster-collect: Scarloxy people), not only RTP Actor1~4 (#2721) (`3245ee0`)
+- **genre-lock** — late-added charsets, default roster and follower/party actors settle to allowed chips (#2719) (`58aec4b`)
+- **ai** — first monster-only tool call on a blank new project opens the monster kit and locks the genre; place_npc graphic accepts resourceId (#2718) (`9daff09`)
+- **ai** — monster-intent dictionary so gym-hopping, tamer, collection-RPG, pet-raising, Digimon, pocket-monsters-clone and /goal monster goals turn the monster kit and lock on (#2717) (`c9f04a7`)
+- **ci** — treat missing event pages as no romance NPC graphic (`486fb1f`)
+- **ai-settings** — Argon preset turns image input on (reference gate needs delivered pictures) (#2694) (`d2fe38e`)
+- **ai** — define_ending no longer warns 'unreachable' for named endings; build_hand_interior_room floor/wall optional when layout/rooms given (#2692) (`3ed617b`)
+- **monster** — campaign creation names the game instead of keeping the blank-project default title (poke vqa D05) (#2691) (`a44ea62`)
+- **ci** — record the work-list colors in the CSS budget and winners (`c7aec81`)
+- **ci** — record the settings cards and world chip bar in the CSS gates (`f76a7c7`)
+
+### 문서
+
+- **openwiki** — double battle (2v2) design memo — current state and staged plan (#2737) (`02e12ee`)
+
+## 0.238.0 — 2026-10-16
+
+### 기능
+
+- **ai** — monster-collect genre lock covers faces, monster battlers, trainer art and battle backdrops (#2688) (`515e4be`)
+- **world-ui** — compact codex — property rail replaced by chip bar, one-line stats (2/2) (#2686) (`83f47a9`)
+- **ai-settings** — image section as two use-cards (picture / pixel), details folded (#2685) (`3b9174a`)
+- **ai** — HM obstacle detour check + span/fullWidth, define_monster_families ability/ids, scene-test HM prerequisites (#2681) (`76c3dc1`)
+- **ai** — monster-game guidance, routing and find_tools aliases for battle-depth features (#2678) (`058ca94`)
+- **romance** — 2nd repair - multi-person loop, deadline-ending autoplay in qa:game check, social NPC defaults (#2677) (`5d130eb`)
+- **romance** — campus-spring rooftop sunset as the romance default title (candidate C) (#2676) (`ec568d8`)
+- **genre-lock** — lock character chips to the monster family + thin genre marker (#2683) (`eb86e6e`)
+- **charset** — install pick-6 adopted 8 CT/FF6-style hero chips as bundled sheet Heroes1 (+ charset-actor Argon part-edit harness) (#2682) (`74aa0d0`)
+- **genre-lock** — monster-collect lock is the default for projects that start as monster collection (#2675) (`b02bbf7`)
+- **ai** — route image purposes per 2026-10-16 decisions; single-shot pixel art by the pixel text model (#2674) (`ea393a5`)
+
+### 수정
+
+- **ci** — clear the genre-lock typecheck failures (`623835e`)
+- **monster** — 3-gym champion balance + fishing monster encounters (poke audit #7, #9) (#2684) (`5671405`)
+- **ai** — narrow the dot-text surface when resolving an image route (`c7bf93c`)
+
+## 0.237.1 — 2026-10-16
+
+### 수정
+
+- **ci** — record world-panel and battle-pill CSS in the gates (`c26e89a`)
+
+## 0.237.0 — 2026-10-16
+
+### 기능
+
+- **battle** — conditional capture balls (type/first-turn/turns/repeat) + caught-ball record, menu row, assistant tool (#2667) (`4a4bbbd`)
+- **battle** — 포켓몬식 지닌 도구 — 열매·강화·버티기·재생 (#2665) (`1c05e58`)
+- **battle** — species abilities (seven declarative kinds) for the gen1 battle model (#2660) (`ebb2113`)
+
+### 문서
+
+- **object-gate** — remove stray merge-marker line (#2669) (`a586adf`)
+
+## 0.236.0 — 2026-10-16
+
+### 기능
+
+- **battle** — badly-poisoned (toxic) and confusion for the gen1 battle model (#2657) (`1a45c1b`)
+- **battle** — pokemon-style stat stages (-6..+6) with HUD pills, assistant tool and docs (#2655) (`139e0c1`)
+- **battle** — weather — sun/rain/sandstorm/hail skills, damage mods, residual, badge, assistant tool (#2666) (`882947e`)
+
+## 0.235.0 — 2026-10-16
+
+### 기능
+
+- **romance** — daily social loop (slots + per-person cap), deadline ending tool, place_npc strict keys, romance defaults + genre lock + heart HUD (#2664) (`47f2388`)
+- **romance** — interview stage opens on a composed modern campus/city; first-meeting stage designation replaces one-map rule (#2654) (`6ea8127`)
+- **world** — 세계관 노션식 통합 1단계 — 문서 용어·카드 AI 공개 범위·「AI가 읽는 것」·연결 자동 완성 (#2661) (`cc7b272`)
+
+### 수정
+
+- **qa-game** — autoplay plans friendshipAtLeast gates, follows NPC schedules, and sleeps through onDayEnd day locks (romance false blocks) (#2663) (`0acbadd`)
+- **ai-ui** — 드래그 검토 입구·팀 레인·접힌 도크 개수 복구 (B안 1단계 보정) (#2662) (`62e3f41`)
+- **ci** — record the assistant presence hide rules in the CSS gates (`0675a70`)
+
+## 0.234.0 — 2026-10-16
+
+### 기능
+
+- **ai** — split image settings by purpose — generative image model vs dot-authoring text model (#2656) (`66aecb8`)
+- **object-gate** — front_prop human approval record exempts the 3/4 half only for approved pixel hashes (#2653) (`69d5877`)
+- **ai-ui** — B안 1단계 — 진행·확인·실패를 대화 속 카드 하나로 (#2651) (`467eecd`)
+- **object-gate** — front_prop kind (rules v8) — human-review only; adversarial probe 0/144, fresh/A pass rates unchanged (#2650) (`f833b11`)
+
+## 0.233.0 — 2026-10-16
+
+### 기능
+
+- **harness** — battle-trainer-sprites — generated image -> 128 smooth downscale trainer sprites (human pick) (#2601) (`15f8ce5`)
+
+## 0.232.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — 얇은 소품 기준 보강 + 새 정상 35장 재측정 (프로필 e48906a, 여전히 rejected) (#2647) (`cb3af82`)
+
+## 0.231.0 — 2026-10-16
+
+### 기능
+
+- **mode7** — 비행선 flightView opt-in 의사 Mode7 비행 시점 (FF6 audit #31) (#2634) (`2165301`)
+- **cutscene** — author_stage_performance — opera/stage acts compiled to cutscene beats (FF6 audit #31) (#2614) (`ad0a2f8`)
+- **world** — derive_world_variant, world entrance links, world terrain tags and terrain encounter conditions (#2604) (`0b73ced`)
+
+### 수정
+
+- **object-gate** — 굽기 스크립트의 관문 우회 길 제거 (#2644) (`f6f513a`)
+
+## 0.230.0 — 2026-10-16
+
+### 기능
+
+- **object-gate** — rules v7 — 3/4 half passes calibration data, profile still rejected (style half) (#2642) (`072de5c`)
+
+### 수정
+
+- **stamp-place** — 바로 깔기 — 물건은 칩셋 그림을 이름으로 찾고, 없으면 깔지 않는다 (적대적 리뷰 + 코퍼스 가드) (#2643) (`39432bc`)
+
+## 0.229.1 — 2026-10-15
+
+### 성능
+
+- **boot** — warm boot 9.3s -> 4.4s, cold 19.0s -> 13.6s, first-visit shared-content 13.1MB -> 3.7MB (#2640) (`ecd9f79`)
+
+## 0.229.0 — 2026-10-15
+
+### 기능
+
+- **battle** — trainer pictures accept 128-wide canvases (display scale 128/width), throw frames 64 or 128 (#2638) (`08353b1`)
+
+### 수정
+
+- **ci** — record chocobo, cart, and raft on the M2 vehicle surfaces (`5f9c108`)
+
+## 0.228.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record follower chips and four-layer tile labels on event surfaces (`ca7d2c1`)
+
+## 0.228.0 — 2026-10-15
+
+### 기능
+
+- **vehicles** — chocobo, mine cart, raft + ct-vehicle fixture fix (#2609) (`8d36be8`)
+
+### 성능
+
+- **ai** — 조수·팀 모드 렉 — 체크포인트 왕복 검사·강제 레이아웃·붓 라벨 재탐색 (측정 하네스 포함) (#2631) (`32cf184`)
+
+## 0.227.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the team-swap command width and the genre-lock field (`32d52fc`)
+
+## 0.227.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — follower walk chips for the remaining nine species (#2626) (`5d4ccb5`)
+- **monster-art** — bake follower walk chips for sparkit, aqualing, leafling, pipbug (supervisor picks) (#2620) (`97b9330`)
+- **genre-lock** — monster-collect genre chipset lock enforced for assistant/tool runs (#2625) (`105ac40`)
+- **ct** — Active/Wait 연동·필드 배치·연계기·CT 시나리오 복구·완료 가드 (PR2) (#2624) (`e22aa52`)
+- **monster** — HM 필드 기술 세트 — place_field_obstacle · 몬스터 필드 기술 · TM/HM 가르치기 · 잊기 불가 (포켓몬 감사 PR2) (#2622) (`eb2692b`)
+- **boot** — instant discrete-step splash, failure + retry screen, always-on boot marks (#2611) (`4c62f61`)
+- **monster** — 시야선 트레이너·18타입·풀 칸 조우·야생 레벨 범위·블랙아웃 규칙 (포켓몬 감사 S, PR1) (#2603) (`fed4d8d`)
+
+### 수정
+
+- **ci** — build system records field by field so typecheck can finish (`a1a929d`)
+- **ci** — record the field-skill condition and four-layer tile surfaces (`6b71bd4`)
+- **battle-ui** — team-swap command spans the full row in the retro2003 root menu (label was clipped to 로크 …) (#2623) (`dbfaecc`)
+
+## 0.226.0 — 2026-10-15
+
+### 기능
+
+- **battle** — FF6식 팀 교대 전투 — 한 번에 한 팀만 싸운다 (battleTeams · teamSwapCost) (#2613) (`921d948`)
+- **battle** — FF6 battle effects - zombie, sketch, rage, trance, enemy shuffle/forced switch (#2600) (`d814dd1`)
+- **monster-art** — bake follower walk chips for gustchick and zaptoe (supervisor picks) (#2617) (`7b0f2b7`)
+
+### 수정
+
+- **ci** — keep harness follower chips out of the sealed walking catalog (`71571ea`)
+
+## 0.225.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — follower walk-chip wiring (campaignSpeciesId -> species fieldGraphic via bundle manifest) + field_chip harness (#2612) (`ef21a7e`)
+
+### 수정
+
+- **ci** — record the pokemon battle CSS budget and winners (`27875e9`)
+- **ci** — accept the harness monster walking chips in the charset catalog (`38e97b2`)
+
+## 0.224.0 — 2026-10-15
+
+### 기능
+
+- **monster-art** — 12 species front/back picks + bundle build (supervisor-delegated) (#2607) (`5492828`)
+- **battle** — pokemon battle phase 2 - typewriter text, capture shakes, evolution scene, level-up stat box (#2605) (`d7481be`)
+
+### 수정
+
+- **ai** — themeScene maps carry an explicit mapRole; 방어/방패 no longer read as interior (#2606) (`61e6db9`)
+
+## 0.223.0 — 2026-10-15
+
+### 기능
+
+- **ai** — partyKnowsSkill condition + run_scene_test useFieldSkill + auto-play field-skill gates (#2602) (`19e48e3`)
+
+## 0.222.0 — 2026-10-15
+
+### 기능
+
+- **monster** — seed the first 12 campaign species for the species harness (#2599) (`4a75eec`)
+- **ai-tools** — create_map themeScene runs the theme composer in one call; check_map_emptiness and map-flat-ground lint; theme-scenes recipe (#2598) (`93c364d`)
+- **battle** — pokemon battle phase 1 - move box info, EXP bar, final-blow faint, move effects, idle bob, Galmuri9 (#2594) (`e55bc24`)
+- **monster** — harness-bundled species art wired into campaign + battle (#2593) (`a204cb4`)
+- **ai-tools** — find_tools alias ranking, arg alias/repair helpers, encounter-table rejects unknown keys (#2592) (`0293fc9`)
+- **ct** — 시대 변형·타일 변화·시간문 잠금·타이머 저장·NG+ 이월 도구 (PR1) (#2591) (`9b2e233`)
+- **battle** — FF6 magicite growth - AP permanent learning, level-up bonus, once-per-battle skills, equipment slot tool (#2590) (`423504d`)
+
+## 0.221.0 — 2026-10-15
+
+### 기능
+
+- **dungeon** — genre x tileset-adapter dungeons (author_dungeon), monster-kit adapter, beodeul cave/mine/volcano polish (#2587) (`cf71dea`)
+
+### 수정
+
+- **ci** — register the compatible-provider settings CSS (`68327c6`)
+
+## 0.220.0 — 2026-10-15
+
+### 기능
+
+- **ai** — OpenAI 호환 사용자 지정 제공자 (CLIProxyAPI·LiteLLM·Ollama…) + Argon 전용 허용/차단 패턴 (#2585) (`92dcb3d`)
+- **object-gate** — Sonnet 5.5 high judge + exact measurements; calibration rejected (43/47 · 19/36) (#2583) (`a80e9ea`)
+- **dungeon** — 던전 종류 8가지 — 미궁·하수도·동굴·신전·광산·화산 (author_beodeul_dungeon type) (#2579) (`90ec00c`)
+
+### 수정
+
+- **ci** — drop unused dungeon symbols and type the gym shrink (`402e8f5`)
+- **monster** — gym void check, volcano campaign theme, 0-gym annex, shrink cleanup, visual-flat (#2581) (`f38fa38`)
+
+## 0.219.1 — 2026-10-15
+
+### 수정
+
+- **ci** — record the desktop window-control CSS winners (`41a85a4`)
+
+### 성능
+
+- **boot** — editor startup 22.8s -> ~9s (normalization marker, deferred digests) (#2577) (`a3de392`)
+
+## 0.219.0 — 2026-10-14
+
+### 기능
+
+- **monster** — campaign scale parameters, definition-consistency check, post-save write rejection root-cause fix (#2573) (`03db7aa`)
+
+### 수정
+
+- **ci** — type the expedition rival rows and ferry menu (`9da5416`)
+
+## 0.218.0 — 2026-10-14
+
+### 기능
+
+- **desktop** — window controls — minimize / maximize / fullscreen / close icons at top-right, platform-adaptive (#2572) (`2b02d6a`)
+- **monster** — free-path monster intent routing, volcano start theme, no-capture tournament/expedition builders, family batch + propagating rename tools (#2570) (`91ba50d`)
+
+### 수정
+
+- **ci** — type the expedition format and species flying flag (`5c6882e`)
+
+## 0.217.0 — 2026-10-14
+
+### 기능
+
+- **object-gate** — one gemini-4-argon pass judges 3/4 view and Beodeul-level style; profile 473db36f963972c9 calibration rejected (#2567) (`d44c144`)
+
+### 수정
+
+- **beodeul** — dungeon composer v2 — rimmed ceiling autotile, 2D layout, varied dressing (adversarial QA) (#2568) (`7fd4fcb`)
+
+## 0.216.2 — 2026-10-14
+
+### 수정
+
+- **field-enemy,campus** — field sprite follows battle enemy, return-home + "!" at sight + patrol/chase; campus dead doors enforced (#2565) (`2083f4a`)
+
+## 0.216.1 — 2026-10-14
+
+### 수정
+
+- **beodeul** — dungeon floors — ground-support rule + author_beodeul_dungeon room-list composer (#2563) (`c369e73`)
+- **ci** — record the concept feed CSS winners (`503ed03`)
+
+## 0.216.0 — 2026-10-14
+
+### 기능
+
+- **ai** — place_field_enemy — 눈에 보이는 필드 적(고정·순찰·시야 추격), 접촉 전투·승리 소멸·도주 기절 (#2559) (`6e4bce0`)
+- **steampunk-city** — 버들항 결 맞추기 — 돌마다 읽히는 포석·판석·바구니 벽돌·재질 톤 윤곽·5단 가로수·슬레이트 (#2558) (`b7723c4`)
+- **prehistoric** — 버들항 결 맞추기 — 낱알 흙·흙길 테 lane·들쭉날쭉 풀 가장자리·재질 톤 윤곽·잎 뭉치 수관 (#2556) (`fd535e1`)
+- **pirate-isles** — 버들항 결 맞추기 — 재질 톤 윤곽·조용한 풀+그늘 덩이·잔돌 모랫길·기와/초가 램프·판자 (#2555) (`22209e0`)
+- **sky-island** — 버들항 결 맞추기 — 층리 섬 밑면·풀 그늘/얼룩 변형·포석 큰길·기와 램프·큰 활엽수 (#2554) (`70cec72`)
+- **sf-station** — 버들항 결 맞추기 — 재질 톤 윤곽·판 단위 빛면/그늘면 갑판·격벽·벽 띠 (#2553) (`668c500`)
+
+## 0.215.0 — 2026-10-14
+
+### 기능
+
+- **modern_city** — leafy street trees, lawn variants and composer greenery (quality-b) (#2552) (`dee37f1`)
+- **sengoku-edo** — 버들항 결 맞추기 — 잎 덩이 나무·고른 풀밭·잔돌 흙길·잔물결 해자·바랜 기와 (#2551) (`148fe88`)
+- **desert-east** — 버들항 수준 명암·질감 — 야자·평지붕·풀·흙길·물 (#2550) (`06ad748`)
+- **snow-north** — beodeul-level shading for trees, snow roofs, walls, slush/frost, hearth (#2548) (`ea63257`)
+- **modern-campus** — quality-b — brighter lawn, fuller trees, cream school walls, green roofs (#2547) (`12d462c`)
+- **gothic-manor** — buldeul-level grass clumps, dirt path, 5-step dead trees with soft outlines (#2544) (`190fe3c`)
+
+### 정리
+
+- **ai** — one composed-layout marker + one isComposedLayoutMap for layout-quality advice; jp_city street hedge/wall fills no longer fail silently (#2549) (`041afb7`)
+
+## 0.214.0 — 2026-10-14
+
+### 기능
+
+- **start** — redesign launcher home experience (`310370d`)
+- **beodeul-farm** — 3판 화풍 정렬 — 버들항 민가 문법 헛간·닭장, 가는 울타리, 반듯한 흙길 오토타일, 풀 무늬 (#2541) (`17cee01`)
+- **jp-city** — rebake facility interiors with only gate-passing pieces (59 objects, 322 cells append-only); hospital doors use the school sliding door (`f8a7d06`)
+
+### 수정
+
+- **ci** — record the ten new chipsets on the change-tileset form (`f4d3d23`)
+- **ai** — composers claim the game start on a blank start map; campus reports dead doors; example-copy warning no longer drives rebuild loops (#2540) (`4fdf3d6`)
+- **jp-city** — office-free and hospital examples use passing pieces in place of the held ones (`e79fa6f`)
+- **ai** — layout-built hand interiors carry composed-layout room labels; jp facility note says keep a clean program build instead of rebuilding it by hand (`b734e9a`)
+- **jp-city** — hold 17 gate-failing facility pieces out of the bake; keep inter-floor stairs where the author put them when refitting doors (`fbe80f3`)
+
+### 문서
+
+- **jp-city** — facility interiors — gate hold list, door-fit fix, layout room labels, gemini-4-argon assistant scores (`f98f21b`)
+
+### 테스트
+
+- **jp-city** — door-link fixture for hospital/school-annex/IT-office examples (`ec0e40c`)
+
+### 잡무
+
+- **jp-city** — refresh interior reports after merging origin's copy-warning wording (`d498536`)
+- **jp-city** — regenerate interior room templates after merge (`4081d14`)
+
+### 기타
+
+- **jp-city** — rebake after the hospital/phone-booth redraws (`d1e786d`)
+- **jp-city** — clearer top planes on 7 hospital machines and the office phone booth; wiki section for the facility interiors (`42e3e3f`)
+- **jp-city** — hospital/school-annex/IT-office interiors (76 pieces, 5 example maps, programs), routing; gate round 2 pending (`a4dbe81`)
+
+## 0.213.0 — 2026-10-14
+
+### 기능
+
+- **interior-plus** — museum/ship/arena room kinds, layout programs, templates, references and assistant routing (`0ac4f12`)
+
+### 수정
+
+- **interior-plus** — guidance — rebuild at most once by shrinking room w/h, never re-type layout coordinates; doorway gaps through a wall face are the normal form (`1c7fa6a`)
+- **interior-plus** — redraw gate failures until every piece and assembled room passes object-gate (`8ee3869`)
+- **interior-plus** — guidance pass — stands sit above the arena floor in layouts, build only the rooms named, stop reference crawling (`f0fdea7`)
+- **interior-plus** — one adversarial QA pass — painting line, cabinet tops, portcullis in wall, seated cask/sacks, readable chain/capstan/pin rail, hull skirting, calmer sand, re-laid rooms (`96fe6c4`)
+
+### 문서
+
+- **interior-plus** — assistant runs on gemini-4-argon medium, before/after guidance (`e1c663e`)
+- **interior-plus** — gate results — all pieces and rooms pass, dropped four, north-facing cannon (`f5e1d96`)
+- **interior-plus** — openwiki section and interior-room-authoring skill for museum/ship/arena (`a41048b`)
+
+### 기타
+
+- **interior-plus** — museum/ship/arena hand-pixel pieces appended to atlas_biome_interior (gate pending) (`5c6b7b6`)
+
+## 0.212.0 — 2026-10-14
+
+### 기능
+
+- **ai** — assistant default = Google Gemini 4 Argon medium (all roles); recommended provider is Google (#2535) (`398e2b3`)
+- **monster-kit** — rooms m17 — 3/4-gate fixes (lab chair, museum tank, ship bollard); object-gate receipts 48/48 PASS (`05974b8`)
+- **beodeul-farm** — 2판 hand-pixel redraw — farmland/watered soil, crops, chunky fences + gate, barn, coop; watered art at runtime (#2534) (`70abc71`)
+- **monster-art** — GBA redraw of rooms-sheet labs/school/museum/dept/ship + rebake gyms (mint turf, lumpy hedge trees) (`d64e70c`)
+- **monster-art** — code-pixel title key art for meadow/desert/snow; GBA lumpy-crown gym hedge trees (`b68c4b3`)
+
+### 수정
+
+- **monster-art** — title QA pass — aurora ribbons, fox ground shadow, scarab legs (`65c8536`)
+
+## 0.211.0 — 2026-10-14
+
+### 기능
+
+- **monster** — use-based fill for kit outdoor land (towns + furnish_outdoor_area region), beach hut door, theme cast wiring (`965f5af`)
+
+## 0.210.0 — 2026-10-14
+
+### 기능
+
+- **monster** — theme-keyed title key-art hook (default/coast/desert/snow) with stag fallback (`87da523`)
+
+### 수정
+
+- **ci** — drop the unreachable interior check in modern city routing (`fbee487`)
+- **hand-interior** — refit doors, start and incoming transfers when any room-spec chipset interior is rebuilt (`0bbc584`)
+- **modern-city** — composed streets carry the composed-layout tag so the layout-quality repair never rebuilds a street as an interior; number duplicate building names (`6cc1a77`)
+- **snow-north** — assistant guidance — compose first (no reference reading before the first call), cap newMap size at default+8 (`4d2259c`)
+- **modern-city** — meeting-room side chairs, drop dangling desk-pc pair, quiet empty-default layout warning, exit event name (`ad5f2b3`)
+- **snow-north** — one adversarial QA pass — work yards on trampled ground linked to paths, no tundra in villages, per-cell snow variety, irregular ponds and loose reeds, 2x2 ice holes with fishing spots beside them, staggered market stalls, cabin table, forest outside the south wall, falls feeding the stream (`f767f00`)
+
+### 문서
+
+- **modern-city** — real-assistant defects found and fixed, remaining program density gap (`55a6571`)
+- **snow-north** — QA results and real assistant runs (gpt-6.1-sol fallback) (`05967a1`)
+- **openwiki** — regenerate INDEX for snow-north page (`241b3a2`)
+- **snow-north** — AGENTS entry (`34ce36d`)
+
+### 기타
+
+- **modern-city** — concept/start registries (BUILDABLE, seed hint, start size, route style, kit build line) + wiki (`102a517`)
+- **snow-north** — remaining object-gate receipts (interior hearth frames, door wall, dropped barrel-in fails) (`25ebb94`)
+- **snow-north** — references bake, policy, compose/link tools, shared wiring (bundled, defaults, routing chain, startRoutePaint, worldmap snow-north) (`8ff5c39`)
+- **modern-city** — street composer + compose/link tools + modernCityPolicy routed after campus (no jp_city/campus/SF hijack) (`061e260`)
+- **modern-city** — interior reference category mc-interior (dictionary, steps, 9 engine-built examples with full arrays, tamper codes) (`b6905ac`)
+- **modern-city** — example rooms get partitions/pillars (no plain-box), hospital ward+waiting, konbini entrance kind, engine check script (`04cf83f`)
+- **modern-city** — bake 64 gated interior pieces append-only, modern_city hand-interior spec, room templates (`fac5161`)
+- **snow-north** — outdoor art — palette, terrain/autotiles, 19 buildings, 58 props, assembled part receipts (`d5195ee`)
+- **modern-city** — gate redraw passes 2-4 (`c8c6d37`)
+- **modern-city** — interior hand-pixel pieces, gate redraws, example rooms (`6db1498`)
+
+## 0.209.1 — 2026-10-14
+
+### 수정
+
+- **gothic** — gate cell keeps the drive's paving; dead-tree groves in the gallery plaza's upper lawns (`ce145ef`)
+- **gothic** — chapel altar centred at the runner end with flanking candles, cobwebs only in the NW corner, paintings only on bare wall, single dust decals; gemini-4-argon assistant config (`d965186`)
+
+## 0.209.0 — 2026-10-14
+
+### 기능
+
+- **prehistoric** — stone-age chipset + composer + assistant routing (#2519) (`bf7c019`)
+- **pirate-isles** — tropical archipelago / pirate harbor chipset + composer + assistant routing (#2513) (`3ca3b2d`)
+- **sengoku-edo** — 전국·에도 일본 칩셋 — 손 도트 1014칸, 구성 도구, 다다미 실내 (#2512) (`2e2d7af`)
+- **sky-island** — 하늘섬 손 도트 칩셋 sky_island + compose_sky_island_map 조수 길 (#2509) (`956164c`)
+- **steampunk-city** — 스팀펑크 공업 도시 번들 칩셋 + compose_steampunk_city_map (#2508) (`a500d86`)
+- **modern_campus** — redraw the campus chipset by hand, procedural campus composer, interior layout programs (#2500) (`44f3a58`)
+- **sf-station** — SF station / colony / lab / cyber-neon chipset (172 Opus hand-pixel pieces), composer, assistant routing, references (#2499) (`80b2590`)
+- **jp-city** — fill leftover street land by use (coin parking, nooks, playgrounds, gardens, construction, plaza dressing) (#2505) (`324155c`)
+- **desert_east** — redraw 57 gate failures with visible top faces, gated bake (245/247 pieces), references, blank-map ground tile (`3b5f4cb`)
+
+### 수정
+
+- **ci** — type the desert temple floor uses so typecheck passes (`91cfa53`)
+- **ci** — drop unused chipset composer locals that fail typecheck (`972d712`)
+- **desert_east** — tag composed maps and rooms composed-layout so the layout-quality nudge does not make the assistant scatter props (`73a101d`)
+- **desert_east** — assistant guidance — compose output is final, no loose stamping; fuller tomb chamber (`9633345`)
+- repair syntax/duplicate breakage from the five stacked chipset merges (plainTurn routing chain, executionRoute note chain, hand-interior spec map/imports/enum, startRoutePaint map sizes, concept seed json) (#2520) (`0db604a`)
+
+### 문서
+
+- **desert_east** — status — gate counts, QA pass, assistant scores (`1f2eb06`)
+- **desert_east** — openwiki page and final review page builder (`66a8751`)
+
+### 잡무
+
+- **desert_east** — object-gate receipts, first full run (115/172 items pass) (`35f26be`)
+
+### 기타
+
+- **desert_east** — adversarial QA single improvement pass — ground seams, prop footing, camp/bazaar/palace/caravanserai/pyramid layouts, great pyramid, rug runner (`dcf0288`)
+- **desert_east** — art, composer, tools, policy and wiring before the gate run (`e2b44f1`)
+
+## 0.208.0 — 2026-10-14
+
+### 기능
+
+- **gothic** — build_gothic_place hands out create_transfer_pair endpoints and keeps doors linked on rebuild (`cf76698`)
+- **gothic-manor** — reference documents (gm-*), route horror/graveyard/gallery to build_gothic_place, drop old interior draft set (`594c1f7`)
+- **gothic-manor** — wire bundled tileset, outdoor composer + build_gothic_place tool, QA improvement pass (`7877cbd`)
+
+### 수정
+
+- **gothic** — place builder meets the assistant layout-quality limits as built (clearing fill, smaller default rooms, seed probe) (`f964827`)
+
+### 문서
+
+- **gothic** — assistant real-run scores and the place-builder linking contract (`b25dff0`)
+
+### 기타
+
+- **gothic-manor** — gate-clean redraw (166 pieces), bake sheet+tileset+room spec, drop gate failures (`3587240`)
+- **gothic-manor** — redraw engine (gmlib/gmdraw), buildings, graveyard, terrain first pass (`8c6fb34`)
+
+## 0.207.4 — 2026-10-14
+
+### 수정
+
+- **ci** — give the geography raster page the test's own time budget (`1dc9e7e`)
+
+## 0.207.3 — 2026-10-14
+
+### 수정
+
+- **ci** — install Playwright before the browser gate (`b6e0594`)
+
+## 0.207.2 — 2026-10-14
+
+### 수정
+
+- **ci** — refresh the CSS live-class baseline after the surface update (`196835e`)
+
+## 0.207.1 — 2026-10-14
+
+### 수정
+
+- **ci** — keep the interaction surface inside the CI heap (`ee10c6f`)
+
+## 0.207.0 — 2026-10-14
+
+### 기능
+
+- **assistant** — gemini-4-argon model resolution (unverified) and MATRIX_NATIVE_MODEL pin for matrix-native (`ce70bf2`)
+- **assistant** — edit history works under the Pi worker; semantic matrix-native judges (`2ace256`)
+
+### 수정
+
+- **assistant** — event edit notes for stale speaker after rename and unpaired screen fade (`9f40d1e`)
+- **assistant** — create_transfer_pair ignores gates that were already sealed; stricter judges after visual review; robust bubble capture (`e43eee8`)
+- **assistant** — return-door note names the exact direction to set (`f78b5f6`)
+- **assistant** — reject malformed command keys; flag the return door when a transfer direction changes (`5d3bd27`)
+- **assistant** — show_map_region reports blocked cells; patch_event_page summary flags dropped commands; judge ignores empty choices.branch (`e5427cd`)
+- **assistant** — page-scope event assist rejects dropped commands even when the prompt says to keep them; touch trigger alias in judge (`ec1d603`)
+- **assistant** — event edits can no longer silently drop commands or misplace transfer direction; assist results report added/removed (`07f6f71`)
+- **assistant** — retry intent declaration once on timeout; count blocked cells in get_map_region; new doors are not blamed for gates sealed before them (`cef9344`)
+- **assistant** — fill_region no longer grows past the rectangle at lone obstacles; anaphoric requests bind to the selection; capture shows the command's bubble (`e0be861`)
+- **assistant** — sharpen event_command_assist guidance; matrix-native judges accept default-field fill and displayTextSettings (`e07a11e`)
+- **assistant** — tell the Pi turn which event the user selected; fix cutsceneCritic for jimp 1.x (`4e2f5bb`)
+
+### 테스트
+
+- **assistant** — forest-path judge rejects holes and cells outside the area (`eb43532`)
+
+### 기타
+
+- **assistant** — native 50-command matrix with semantic judges and per-command host (`c94b8a9`)
+
+## 0.206.0 — 2026-10-14
+
+### 기능
+
+- **jp-city** — gate-clean street kits, flat-roof art, rail kits, composer-first assistant routing (#2496) (`d847e06`)
+
+### 수정
+
+- **jp-city** — street composer harmony pass from one adversarial visual QA round (#2497) (`090ca8c`)
+
+## 0.205.0 — 2026-10-14
+
+### 기능
+
+- **gothic** — interior reference docs bundle, assistant policy (gothic_manor), concept hint (`ebf0b93`)
+- **gothic** — interior props wave 1 - 34 hand-pixel pieces + 3 anim strips, all object-gate PASS (`0663dba`)
+- **gothic-manor** — outdoor kit pass 1 — 68 gate-passing pieces (buildings, graveyard, terrain) + registry (`d15467e`)
+
+### 수정
+
+- **opening** — critic must not recommend map-event routes; judge looks, fixes name staging values (`a39e78e`)
+- **cutscene** — charset actors honor scale (was ignored, so walkers rendered at 13% height) (`d27702b`)
+
 ## 0.204.0 — 2026-10-13
 
 ### 기능

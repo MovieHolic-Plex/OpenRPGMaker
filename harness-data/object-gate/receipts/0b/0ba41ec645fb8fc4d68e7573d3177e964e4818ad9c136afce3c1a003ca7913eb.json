@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ba41ec645fb8fc4d68e7573d3177e964e4818ad9c136afce3c1a003ca7913eb",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "simple hut bed seen from above at 3/4: low bamboo frame with a straw-stuffed mattress, a cloth pillow and a patterned blanket",
+ "label": "pirate-isles/pi-bed-straw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hut bed with mattress, blanket, and bamboo frame",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top sleeping surface of the bed (pillow, mattress, blanket) is extensively visible from above across rows 2-25, followed by the front bamboo frame and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4300
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo bed frame with mattress, pillow, and patterned blanket",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress, pillow, and blanket occupy rows 2 through 25 seen from above in a top-down 3/4 view, with the front bamboo rail and legs visible below at rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo bed frame with straw mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress, pillow, blanket) spans rows 3 to 25, followed by the south-facing front beam (rows 26-29) and legs (rows 30-31). It is drawn in proper 3/4 perspective with no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4290
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hut bed with mattress, pillow, and patterned blanket",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal mattress surface (with pillow and blanket) spans rows 2-25 (about 24 rows) seen from above, resting on a south-facing frame and legs at rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3706
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.300Z",
+ "cells": {
+  "16": [
+   "54fb3213b95b65e6",
+   "950fab06a073c26f",
+   "9deaf783e0ff4bb9",
+   "e96925f8f2620b9d"
+  ],
+  "24": [
+   "29d555710dc0e803",
+   "2f1ecc24fc4e28c4",
+   "3c828232ab4513ae",
+   "4c705a539f037cdd",
+   "4c7afd54bc7f77bf",
+   "4de0b85641ddf662",
+   "53a250d971bb6acc",
+   "7b8131b8f531d569",
+   "7e8a9c5609e0b116",
+   "82293f1ee085572d",
+   "8932f4221c182964",
+   "91c267724a18d940",
+   "93647cb2cefba168",
+   "986c848fe0bb251b",
+   "9e3ddd4d67ab2e35",
+   "a0c91193a552a83e",
+   "a0ea633ead3d32d4",
+   "a8d25155725d6aac",
+   "afafc44705919b19",
+   "b2cf1a7ca7fadb9f",
+   "b436232ec458497f",
+   "b440fad3838a8ec1",
+   "c57fa20091e87ba2",
+   "fe7ac1d4fa7c19c0"
+  ],
+  "32": [
+   "0cc2735978727774"
+  ],
+  "48": [
+   "006bad74fd799919",
+   "150eff0021761158",
+   "464bb1527a5b5a77",
+   "520704f9ef89d73c",
+   "616602e02ff590e1",
+   "b94fa9172ea0434d"
+  ]
+ }
+}

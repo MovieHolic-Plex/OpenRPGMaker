@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57f75e4850a1f8654c59c424f04a5bae914403ff1fc5df9cd7b83ca2848fee80",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "white glazed laboratory floor tiles with grout and gloss, two variants (one with drain)",
+ "label": "sf-station/sf-lab-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles with grout lines, gloss highlights, and a drain variant.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3642
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glazed floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed from above with gloss specular highlights and grout borders, matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4863
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles depicting flat glazed laboratory floor with grout lines and highlights seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2917
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing glazed laboratory floor seen from above with grout lines, gloss highlights, and drain detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3064
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.462Z",
+ "cells": {
+  "16": [
+   "27e2430c023dcff6",
+   "9cde52d6f2bc0b70"
+  ],
+  "24": [
+   "139dd9d2b1ae5086",
+   "37b667539e6388eb",
+   "3afc0789bd670f7a",
+   "5736a25962f0f198",
+   "5b1a152707c365e3",
+   "67c43d56d1f2d3f1",
+   "770a099161312a32",
+   "7ba9b25d9b1d9d21",
+   "93df8584429df825",
+   "bf133a9496cc1785",
+   "d362e95c03e9e8e7",
+   "e0d32ce51b6504d1"
+  ],
+  "32": [
+   "545d2ea4cccc5f1a",
+   "ed35b12ed96d8897"
+  ],
+  "48": [
+   "4a63335210e65cbe",
+   "65534b389605cf4f",
+   "6b502463a2483aff",
+   "6cdd273a24a8af8e",
+   "da1350003f7a9407",
+   "f4a22f10440ab521"
+  ]
+ }
+}

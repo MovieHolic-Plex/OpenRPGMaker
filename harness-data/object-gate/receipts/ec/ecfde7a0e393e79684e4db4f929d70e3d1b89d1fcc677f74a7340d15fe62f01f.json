@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecfde7a0e393e79684e4db4f929d70e3d1b89d1fcc677f74a7340d15fe62f01f",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "office chair with wheels",
+ "label": "monster-rooms/lab_chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is depicted entirely in flat front elevation: a rectangular backrest sits directly atop a rounded front-facing cushion with a 1-pixel highlight strip at row 7, supported by a central stem at row 12 directly under the front edge, showing no visible horizontal seat surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office chair seat and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with an upright backrest (rows 2-6) and a horizontal seat cushion extending forward seen from above across rows 7-11 (at least 4 pixel rows deep), flanked by armrests.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6568
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn straight from the front: the rectangular backrest (rows 2-6) and the rounded cushion (rows 8-11) show only their vertical front faces, with no foreshortened top surface visible for either the seat or the backrest.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7024
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office chair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion is clearly visible from above, spanning rows 8 to 11 (4 rows tall) flanked by side armrests, positioned in front of the upright backrest.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10927
+  }
+ ],
+ "decidedAt": "2026-10-14T05:37:02.307Z",
+ "cells": {
+  "16": [
+   "e3cadb8239c5a733"
+  ],
+  "24": [
+   "0c3051f565906520",
+   "28d1f33e643727b4",
+   "42de50a6458ff8b7",
+   "8e80ec38e719f18f",
+   "b2d8d4e216e0cf29",
+   "d9ec2034da05538f"
+  ],
+  "32": [
+   "18892be8026f902f",
+   "1f48c9a9e0c179a8",
+   "58f390359b82a010",
+   "b3f9ce8c0be1f4ff",
+   "bdb72106d83bc8c7",
+   "e2a7948566fa4443"
+  ],
+  "48": [
+   "019c4640f94af301",
+   "0c2e779d4ba9ec0b",
+   "1ea8fb54532077f1",
+   "d5344042a68ef678",
+   "d68df6e4a6b93901",
+   "ee995b5e1d817f98"
+  ]
+ }
+}

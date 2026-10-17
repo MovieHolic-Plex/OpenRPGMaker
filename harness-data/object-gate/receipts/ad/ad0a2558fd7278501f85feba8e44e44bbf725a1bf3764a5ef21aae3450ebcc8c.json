@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad0a2558fd7278501f85feba8e44e44bbf725a1bf3764a5ef21aae3450ebcc8c",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "유물 벽 진열장 (relic cabinet)",
+ "label": "atlas_biome_interior/plus/relic cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall relic display cabinet with glass panels and shelves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 6–9 (4 source pixels tall) with appropriate top-down lighting above the front frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden display cabinet with glass panels showing relics",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a distinct visible top surface spanning rows 6 through 9 (~4 pixel rows) above the front face molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3394
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden display cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible from above at rows 6-9 (4 pixel rows deep) with proper foreshortening and shading, leading into the front face and glass display shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "relic display cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is visible across rows 6–9 (4 rows tall) in a lighter wood tone with an overhanging front lip shadow at row 10, clearly distinct from the dark front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4952
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.622Z",
+ "cells": {
+  "16": [
+   "3af3dd8da4e82c3f",
+   "c5a0111e9c257d10",
+   "e5eb000c4ae79ab5"
+  ],
+  "24": [
+   "1acd42f2b8bbf2a9",
+   "5806e90f84ba4d30",
+   "81a93d8c805ffcbb",
+   "867f15240d9919fc",
+   "89391579bd248884",
+   "cee4d17e1149a18d"
+  ],
+  "32": [
+   "0398626522c5769d",
+   "0d60f1a0e5275b9e",
+   "1bbcb70ee7fc207b",
+   "1d05ab872065fa65",
+   "1fc73261740ccb14",
+   "3711ac2aca7cf739",
+   "70685f67d841f701",
+   "919ff8d82ce366b4",
+   "b9e8927e1390b96d",
+   "ca942f643d59baf3",
+   "cda55a1aa660add9",
+   "f57a44e211be2559"
+  ],
+  "48": [
+   "0fca224fbb324349",
+   "5a6aaaba9cdd48ce",
+   "bc13debdc6b79d46"
+  ]
+ }
+}

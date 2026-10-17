@@ -24,8 +24,16 @@ export function activeItemEffects(item: ItemRecord): ItemRecord {
   };
 }
 
+/** 벌레퇴치(repelSteps)·탈출 로프(escapeTo): 대상 없이 필드 메뉴에서만 쓰는 도구. 전투에서는 못 쓴다. */
+export function isFieldUtilityItem(item: Pick<ItemRecord, "repelSteps" | "escapeTo">): boolean {
+  return item.repelSteps !== undefined || item.escapeTo !== undefined;
+}
+
 export function itemAllowsMenu(item: ItemRecord): boolean {
   if (item.occasion !== "always" && item.occasion !== "field") return false;
+  // 지닌 도구(heldEffect)는 메뉴에서 파티 몬스터에게 쥐여 준다.
+  if (item.heldEffect) return true;
+  if (isFieldUtilityItem(item)) return true;
   return item.type === "medicine" || item.type === "book" || item.type === "seed" || item.type === "switch"
     || (item.type === "special" && (Boolean(item.careProfile) || (!item.captureProfile && !item.activateSkillId && !item.skillId && item.stateEffects.length > 0)));
 }
@@ -43,6 +51,7 @@ export function itemAllowsBattle(item: ItemRecord): boolean {
   if (item.occasion !== "always" && item.occasion !== "battle") return false;
   // 포획 도구는 captureProfile 이 계약이다 — 종류가 special 이 아니어도(조수가 normalGoods 로 저장) 전투에서 던진다.
   if (isCaptureTool(item)) return true;
+  if (isFieldUtilityItem(item)) return false;
   if (item.type === "medicine") return !item.onlyEffectiveOnDeadActors;
   return item.type === "special" && !item.careProfile;
 }

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "363db2e8cc32836c34ef41c96e4a9684d5bca1b1d9d20f91a3e9530cf6198279",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age palisade",
+ "label": "prehistoric/ph-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tied vertical wooden logs of palisade",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cut faces of the logs are represented only by a flat 1-pixel highlight line beneath the top outline (rows 5, 6, and 7 depending on log height). No foreshortened top surfaces are rendered, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4092
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden log palisade / fence",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tops of the vertical logs are drawn as flat horizontal lines with only a 1px bright band beneath the top outline rather than foreshortened elliptical top cut surfaces, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical log palisade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tops of the logs are drawn with flat horizontal outlines and a 1px highlight band rather than foreshortened circular/elliptical cut faces. The entire palisade, including the horizontal lashing and flat bottom edge, is depicted in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden palisade logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade logs are drawn from a straight-on front elevation with horizontal step cuts at the top. The top of each log is represented only by a 1px flat edge highlight rather than an elliptical or foreshortened top cut surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5549
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "3ab738128eb98711",
+   "767828307a7c5e50"
+  ],
+  "24": [
+   "1627b2034582ee6f",
+   "38679d96f71209d2",
+   "51d22f5427ab0bd8",
+   "a42bc71e37adbc6f",
+   "b43bc38f883cb1da",
+   "c2b049e96af326c8",
+   "c49577db621d06b2",
+   "c4e025402d11f51f",
+   "c7f2adbb1cb9c508",
+   "d3d8cc6dd56fc399",
+   "fe64d1e7a5d2ac69",
+   "ffb73d5028350323"
+  ],
+  "32": [
+   "03cac98e60c5c2cc",
+   "097905214798c6ca",
+   "38353ec630e143af"
+  ],
+  "48": [
+   "4f55ba1fdbe94713",
+   "55ef85bb1e68a26f",
+   "95e72296183407b4",
+   "989383418c722991",
+   "b28df443a269c5a8",
+   "d4a273034820024d"
+  ]
+ }
+}

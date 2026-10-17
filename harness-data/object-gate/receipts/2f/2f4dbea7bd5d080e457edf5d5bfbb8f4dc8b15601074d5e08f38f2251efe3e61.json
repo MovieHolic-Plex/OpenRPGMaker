@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f4dbea7bd5d080e457edf5d5bfbb8f4dc8b15601074d5e08f38f2251efe3e61",
+ "width": 48,
+ "height": 16,
+ "kind": "structure",
+ "name": "뒤집어 둔 나무배(눈 덮임)",
+ "label": "snow-north/sn-boat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "overturned wooden boat with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boat and the snow mound on it are drawn in pure side elevation (side-scroller view) with horizontal banding and no foreshortened top surface visible from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "overturned wooden boat covered in snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boat is drawn entirely in flat side elevation (profile view) as if for a 2D side-scroller. It lacks any top-down foreshortening or visible top surface to indicate depth along the Y axis in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "overturned wooden boat covered in snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in a flat side/front elevation profile with no foreshortened top surface or depth visible. The hull and snow mound are viewed completely horizontally from the side without the 3/4 downward angle required for RPG Maker perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11473
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "overturned wooden boat covered in snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The boat is drawn entirely in pure side/front elevation. The hull forms a straight horizontal band with stepped downward layers, and the snow on top is rendered as a flat side-profile silhouette with no foreshortened top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6848
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.509Z",
+ "cells": {
+  "16": [
+   "2dafe9dfa97c79fb",
+   "a78591771937953e",
+   "dbc86ef2e334a509"
+  ],
+  "24": [
+   "533d787304013e37",
+   "938c24fd2e026a15",
+   "995491fb05feb909",
+   "feb86308e39e6cc2"
+  ],
+  "32": [
+   "0b7b71822caa19e2",
+   "0fed547c223c3ccc",
+   "4622891023682781",
+   "5c667a6680befdf4",
+   "78aaea8b234beeb3",
+   "8639ba0e3d424c62",
+   "92a1ea6f9c312ba1",
+   "bfe63c0c2520edc1",
+   "c570d4dc261229f3",
+   "deb959c9a413e1e8",
+   "ea52d61dcb302739",
+   "ff92b2547e8496a1"
+  ],
+  "48": [
+   "8f8687ed95164eb9",
+   "d84f04d7a24713bd"
+  ]
+ }
+}

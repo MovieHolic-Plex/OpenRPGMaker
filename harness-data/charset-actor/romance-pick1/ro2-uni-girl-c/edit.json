@@ -1,0 +1,147 @@
+{
+  "palette": {
+    "w": "#241a16",
+    "x": "#3d2c25",
+    "y": "#5c4338",
+    "C": "#4a382b",
+    "D": "#8c725a",
+    "E": "#bfa384",
+    "G": "#dfc7aa",
+    "W": "#ffffff",
+    "X": "#dfe4ec",
+    "R": "#d62828",
+    "S": "#8f1919",
+    "J": "#1f2024",
+    "K": "#383a42",
+    "L": "#50535e",
+    "M": "#686c7a",
+    "N": "#1c3568",
+    "P": "#2b4c8c",
+    "Q": "#1c1512",
+    "T": "#3b2820",
+    "U": "#573c30",
+    "V": "#735142"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "b": "a",
+        "c": "w",
+        "g": "x",
+        "l": "y",
+        "j": "w",
+        "m": "w",
+        "p": "x",
+        "t": "x",
+        "v": "y"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "a": "C",
+        "b": "C",
+        "d": "C",
+        "f": "C",
+        "j": "w",
+        "m": "x",
+        "h": "D",
+        "k": "D",
+        "v": "D",
+        "e": "E",
+        "n": "E",
+        "o": "E",
+        "q": "G",
+        "s": "G"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "J",
+        "b": "J",
+        "d": "K",
+        "h": "K",
+        "n": "L",
+        "o": "L",
+        "q": "M",
+        "k": "N",
+        "e": "N",
+        "f": "P"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "a": "Q",
+        "f": "T",
+        "d": "T",
+        "k": "U",
+        "n": "U",
+        "o": "V"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "11": ".....awywxwaawxwywa.....",
+        "12": ".....wwyxxwaawxxyxw....."
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "19": ".....CDGEWWrurWXEDC.....",
+        "20": ".....CEDGWRRSRXEGDC.....",
+        "21": ".....CrEGDRXSRDGErC....."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "19": ".....CDEDxwWWwxEDDC.....",
+        "20": ".....CEDExXWWXxEDDC....."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "11": "......wxwxwywxwxwa......",
+        "12": ".....wxwxwwywxwxw......."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "19": "......xwCDGEXWrC........",
+        "20": "......wxCEDEGXRSC.......",
+        "21": "......wxCrECERSDC......."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "11": "......awxwxwywxwxw......",
+        "12": ".......wxwxwywwxwxw....."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "19": "........CrWXEGDCwx......",
+        "20": ".......CSRXGEDECxw......",
+        "21": ".......CDSRECErCxw......"
+      }
+    }
+  ]
+}

@@ -11,6 +11,8 @@ import { getPlayerPreferences } from './playerPreferences';
 import { playOpeningAnimatic } from "./openingAnimaticRenderer";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
+import { bindIntegerArtScale } from './monsterArtScale';
+import { EMERALD_PROFESSOR_BUST_RESOURCE_ID } from '@/project/emeraldProfessorArt';
 import { createOpeningPortraitMotion, type PortraitMotionPlayback } from './openingPortraitMotion';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
@@ -98,6 +100,8 @@ export function playCinematicSequence(options: {
   if(isBook){root.dataset.presentation='storybook';root.dataset.ink=book!.ink;root.setAttribute('aria-label','이야기 오프닝');}
   const isEmeraldIntro = isBook && isEmeraldMonsterStyle(project) && Boolean(book?.portraitResourceId);
   if (isEmeraldIntro) { root.dataset.monsterStyle = 'emerald'; root.setAttribute('aria-label','교수와 몬스터 소개'); }
+  // 반신상은 받침 타원 없이 대사창 뒤에서 솟는다(옛 64×64 칩 초상은 그대로 받침 위에 선다).
+  if (isEmeraldIntro && book?.portraitResourceId === EMERALD_PROFESSOR_BUST_RESOURCE_ID) root.dataset.portraitArt = 'bust';
   const atmosphere = isEmeraldIntro ? createEmeraldOpeningAtmosphere(host, project, reducedMotion) : undefined;
   let bookImage:HTMLImageElement|undefined;
   let bookImageId:string|undefined;
@@ -462,6 +466,7 @@ export function playCinematicSequence(options: {
           const creature = el('img', { class: 'cinematic-creature', attrs: { alt: '소개하는 몬스터', draggable: 'false' } });
           const creatureUrl = resolveAssetResourceUrl(scene.resourceId, { project });
           creature.addEventListener('error', () => { creature.remove(); fail('error'); }, { signal: lifetime.signal });
+          bindIntegerArtScale(creature);
           if (creatureUrl) creature.src = creatureUrl; else fail('error');
           root.dataset.showcase = 'monster';
           return creature;

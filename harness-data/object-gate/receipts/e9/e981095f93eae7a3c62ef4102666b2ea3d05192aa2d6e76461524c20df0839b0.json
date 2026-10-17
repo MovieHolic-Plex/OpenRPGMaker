@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e981095f93eae7a3c62ef4102666b2ea3d05192aa2d6e76461524c20df0839b0",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "항아리 무리",
+ "label": "desert-east/de-jars-group",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large earthenware jar on the left",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cluster of jars clearly shows the openings from a top-down 3/4 perspective. The largest jar on the left has an elliptical opening interior spanning 3 rows (rows 4-6) with visible rim foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of ceramic jars/pots",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars clearly show wide open interior cavities seen from above; the largest jar's opening is 4 rows deep with a distinct back and front rim in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of clay jars/pots",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show clear foreshortened elliptical openings into their dark interiors (e.g. rows 4-6 on the main left jar, rows 4-5 on the right, rows 7-8 on the front teal jar) in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3773
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of ceramic jars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The jars show clear foreshortened elliptical openings seen from above, with the interior opening of the largest jar spanning 3 pixel rows (rows 4-6) and framed by back and front rims.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4071
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.537Z",
+ "cells": {
+  "16": [
+   "6aeb3493e9e80408",
+   "808aac70831a3f78"
+  ],
+  "24": [
+   "01eb0d5bc9bb1d85",
+   "06963f5c785e12a6",
+   "0cc38cb2d904370d",
+   "1f8d98d2b948a8dc",
+   "2b9cb9da6dfc740b",
+   "2bb71bd8e565baa4",
+   "5ba9af0c91a15cae",
+   "620880bc9eb7dbbe",
+   "7193d6141f87873a",
+   "7b65abed13932d9f",
+   "a7ac53f3fc9d0aaa",
+   "ab12cf7de760b3ab"
+  ],
+  "32": [
+   "29eac4edc5cd2f5f",
+   "a1a376f3893207f1"
+  ],
+  "48": [
+   "0f37f6a4c10008fb",
+   "363c61d164d28e5f",
+   "9ad67be4b78369ad",
+   "bc064ffd175c8c7f",
+   "c88f29576f3582e1",
+   "d065a8c27f00dde9"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "198e06dfacfb1991167f909bd5b33e3bac052c2e48ee9da729f99b972cfddb45",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "airlock module v2",
+ "label": "sf-station/sf-air-v2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock wall and door module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire module (wall, hazard stripes, door frame, and door) is drawn as a flat 2D side-scroller style front elevation with no visible top surface or 3/4 perspective depth on the door lintel or walls.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4717
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock door and wall module",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure and door are drawn in a completely flat 2D front elevation (side-scroller style). The door frame and lintel show only a 1px edge highlight (row 24) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6774
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock wall module with sliding doors and hazard stripes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural elevation; the door frame and lintel have only a 1px border with no foreshortened top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8646
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock door and wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D front architectural elevation/cross-section. The door frame, lintel, and wall panels show zero foreshortened horizontal top surfaces (only a 1px border at row 24).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6363
+  }
+ ],
+ "decidedAt": "2026-10-13T15:17:46.172Z",
+ "cells": {
+  "16": [
+   "0425d4fbc7096b40",
+   "4157097e1fd647c9",
+   "512cd0621ac053bf",
+   "68aebe2164b81330",
+   "6beefa2786cc0b70",
+   "7babbac0777aad05",
+   "ab96493a1d5f9b75",
+   "c0c26f95fb871ae4",
+   "f621debb3a2c51b8"
+  ],
+  "24": [
+   "0c02acdafc84d614",
+   "3b70dbd91b009083",
+   "7c322cbec5eb63b0",
+   "8119c70b2ce70ea4"
+  ],
+  "32": [
+   "10f65572a8c5be8f",
+   "112663c4894f5e7e",
+   "1afe71e34361ea8f",
+   "23a5249594a11f79",
+   "2a3ab0f965f50db3",
+   "2e6d114d0505ab42",
+   "32261d17453212a8",
+   "33af74f205592e1d",
+   "353270dff8d41ec7",
+   "4620acdff02ec5ff",
+   "5b0cb237a8a233c5",
+   "62bccb56974b0ba1",
+   "6b49e6f974ce2d40",
+   "750bcd80858b90cb",
+   "75c90ad8f0c78899",
+   "7ddc7cdd0832896f",
+   "8552dc8b275316d6",
+   "9e34a1bd89928ba0",
+   "9ffb47e7821171f8",
+   "a54dd46ffceaad93",
+   "c1d58d36638377c8",
+   "d8d670ce10fdb9c2",
+   "efa8311e7e0c42bc",
+   "f4b2698fb5c95e8d"
+  ],
+  "48": [
+   "e5dad797b8ce9ecf"
+  ]
+ }
+}

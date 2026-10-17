@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7e5956ce50ede50294476de25bbbd914f64bf622be9eb1949e53b1d770dcb99",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-r",
+ "label": "jp/jp-bwall-end-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment with paneling and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical surface with vertical slats and stone foundation, showing no top surface or cap (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment with base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel and base are drawn entirely in flat front elevation with no visible top surface or depth (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5857
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall section with barred window and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical elevation from row 2 to 15 with no visible top surface or wall-top cap foreshortening (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5041
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered completely in front elevation with no visible top surface or depth, ending abruptly at row 2 with 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4800
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.897Z",
+ "cells": {
+  "16": [
+   "8f7d15bcbcc99ef9"
+  ],
+  "24": [
+   "1dfd21523023deed",
+   "5faad4fba762e643",
+   "6d4b8302c23c08ed",
+   "70ea7c1c08eb6ade",
+   "83cf098aaed30ab4",
+   "b00d1fe7c302dd77"
+  ],
+  "32": [
+   "398919b1b98f42ba",
+   "64c9c3e8bababe01",
+   "955517c6bf958187",
+   "a4dab541bccc996d",
+   "befb59413bb27aff",
+   "c5599d11b5dab483"
+  ],
+  "48": [
+   "1bae859fce3c28b8",
+   "2abe421405776b81",
+   "7dc0d9ac5dfd0ef2",
+   "820dd8f1f0a9d3bf",
+   "a34536dad67b47e1",
+   "af1355b8e25a5bbc"
+  ]
+ }
+}

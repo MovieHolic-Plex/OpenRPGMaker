@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "429de450984fa91103c9e200cc25504703d266e3ecd0ff8e2ad0a4fa8de8613c",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "round wooden bar stool with three splayed legs",
+ "label": "pirate-isles/pi-tavern-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wooden bar stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stool is drawn in pure front elevation; the seat has vertical sides from rows 3 to 8 with no foreshortened elliptical top surface visible from above, and the legs and footrest are rendered flat facing the viewer.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7341
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden bar stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seat is drawn from a straight-on eye-level front view as a thick horizontally-banded cylindrical block (rows 2-8) sitting on legs, with no foreshortened circular top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seat of the stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seat is drawn as a flat front-facing cylinder with straight vertical side outlines across rows 3–7 and straight horizontal stripes across the front. It does not depict a foreshortened circular/elliptical top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7310
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wooden bar stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seat is drawn as a foreshortened ellipse spanning roughly rows 1 to 8 (about 7 rows tall) showing its top surface clearly from above, with the legs extending downward beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5004
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "24f91788de5f3995"
+  ],
+  "24": [
+   "0ac5741820a8c92e",
+   "24181395a487831d",
+   "4e9384da8f7bbd17",
+   "7174843e782bced2",
+   "ac008a0e8cb8c001",
+   "fb87eb73d73278b4"
+  ],
+  "32": [
+   "0d4de36a334c0feb",
+   "1405340c86baf927",
+   "361b635c726aac61",
+   "a093c3c8d979ae44",
+   "b8894099af59ba46",
+   "d10965414443a7eb"
+  ],
+  "48": [
+   "3318773049b52c55",
+   "569296ea8bba4c17",
+   "7567db7448afdb5b",
+   "d76f4c004d1349f8",
+   "dd273181aa3ab613",
+   "e91badfc79b76ec7"
+  ]
+ }
+}

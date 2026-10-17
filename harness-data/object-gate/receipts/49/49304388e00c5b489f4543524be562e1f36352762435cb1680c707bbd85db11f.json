@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49304388e00c5b489f4543524be562e1f36352762435cb1680c707bbd85db11f",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-tsukigime",
+ "label": "jp_city/street_hand/jp-tsukigime",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking signboard",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign and its posts are drawn in a completely flat front elevation with no visible top surface or depth on the board or frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign face and supporting posts are drawn entirely as a flat 2D front elevation with no visible top surface or depth anywhere on the frame or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4594
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat rectangular signboard in a dark frame",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a broad flat rectangular panel shown straight-on, with horizontal color bands and no visible foreshortened top surface. It reads as a signboard rather than an open frame or rack; the dark border is only an edge/frame around the panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 111346
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular open frame with vertical posts and horizontal top/base members",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame is drawn essentially straight-on: its horizontal members and posts are flat front-facing bands, with no substantial above-view top surfaces on the main body. The thin light/dark strips at the top are rim or edge bands rather than a clearly readable top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 147075
+  }
+ ],
+ "decidedAt": "2026-10-13T10:44:47.464Z",
+ "cells": {
+  "16": [
+   "071199bd986f13d2",
+   "31faf0671a3d1766",
+   "51d5e736432069cd",
+   "d14a2b8dc0516522"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "135e80afbb12895c",
+   "17eeb8efe007bbea",
+   "21514dca39c36d7b",
+   "2201bb6a86906f66",
+   "23961cbc1b2f3a56",
+   "2ee9e01d296c5f38",
+   "4533dd4719c2538b",
+   "500dddd6f9bb625a",
+   "6614a9df47146f99",
+   "669fab931783ad7c",
+   "729f29131c7677f8",
+   "7d67ff46dff0dfa9",
+   "97bbca219fb07ab4",
+   "9dadabcab019b43b",
+   "a9ded2313a01fd93",
+   "ab632f5e62928018",
+   "c18d7c6fcf949445",
+   "c7442bf99d60315a",
+   "d42f2caa1f4984cb",
+   "dfda9e951b75356b",
+   "e347930aacf662f3",
+   "e4249347e249534b",
+   "e6d94c2e3109f65a"
+  ],
+  "32": [
+   "4035a7012b43c38c"
+  ],
+  "48": [
+   "0c1b36babaadc1df",
+   "308d681a5220a2f4",
+   "679c509d3b3edd2f",
+   "8c20b5a1f6b61342",
+   "8d02a09ca42e48ea",
+   "bdfdb7659bc3b4d4"
+  ]
+ }
+}

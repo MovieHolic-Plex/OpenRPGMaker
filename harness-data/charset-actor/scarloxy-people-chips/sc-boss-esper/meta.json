@@ -1,0 +1,56 @@
+{
+ "key": "sc-boss-esper",
+ "arch": "sp3-boss-esper",
+ "base": "Scarloxy1:7",
+ "variant": "청록 긴 머리를 보라 3톤(연보라·보라·짙은 보라)으로 recolor, 분홍 귀 장식은 그대로, 파란 드레스를 보라 3톤 드레스로 recolor, 분홍 치맛단은 그대로 분홍.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 adhnqr"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 7,
+  "added_right1": 7,
+  "added_right2": 7,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 7,
+  "added_left1": 7,
+  "added_left2": 7,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 8,
+  "cross_base": 5,
+  "lone": 295,
+  "lone_base": 220
+ },
+ "distinct": {
+  "score": 0.699,
+  "nearest": "scarloxy-charset-people1#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 33,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 245
+  }
+ },
+ "run": "r5/sp3-boss-esper-a",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 앞모습 정수리 가르마 분홍 점, 눈 위 청록 점(경미)."
+ }
+}

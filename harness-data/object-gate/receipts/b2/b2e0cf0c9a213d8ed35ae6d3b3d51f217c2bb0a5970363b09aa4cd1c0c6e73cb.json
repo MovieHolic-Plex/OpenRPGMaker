@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2e0cf0c9a213d8ed35ae6d3b3d51f217c2bb0a5970363b09aa4cd1c0c6e73cb",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "wooden bench",
+ "label": "pirate-isles/pi-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat and apron",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is clearly visible from above, spanning rows 4 to 9 (6 pixel rows) with illuminated wood grain and a highlighted front lip, followed by the darker front apron (rows 10-12) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6016
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench seat plank",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat top surface is clearly visible from above across rows 4-9 (6 rows tall), with a darker 3-row front apron/face (rows 10-12) and legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4465
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bench seat plank and frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface of the bench is clearly visible from above across rows 4-8 (5 rows of wood grain and texture), followed by a 3-row south-facing front apron (rows 10-12) and legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bench seat slab",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The backless wooden bench shows its top seating surface from row 4 to row 9 (6 source pixels deep), followed by the front vertical edge/apron on rows 10-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7667
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.585Z",
+ "cells": {
+  "16": [
+   "fa6ab371f3f8113d",
+   "fb57b1e5527c4a37"
+  ],
+  "24": [
+   "18ccd11b4a6648c3",
+   "1a5017bcb4549c95",
+   "5455dd771abad171",
+   "57245ec9bac03a2b",
+   "70c48aaae0545953",
+   "74c5e0c56bc43e7e",
+   "8bdd13ad13adb803",
+   "a3f6f58a9fac864d",
+   "b9d2375b711328e3",
+   "ca8108bdbbd4feeb",
+   "e79bf14df6399a0f",
+   "f381f31997d6d75e"
+  ],
+  "32": [
+   "465d7ee7341bab0f",
+   "7d69cd8f9e58e25d"
+  ],
+  "48": [
+   "01ca0845ab3677e9",
+   "079f4c70de513b37",
+   "281722586d761214",
+   "4e22986d70683156",
+   "bdeba97434b10283",
+   "e98ced6d9f62da69"
+  ]
+ }
+}

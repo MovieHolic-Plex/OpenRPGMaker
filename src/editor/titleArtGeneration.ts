@@ -45,7 +45,7 @@ export async function generateTitleArt(
   }
   try {
     options.signal?.throwIfAborted();
-    const image = await (options.generateImage ?? generateAiImage)({ prompt: buildTitleArtPrompt(request), signal: options.signal });
+    const image = await (options.generateImage ?? generateAiImage)({ prompt: buildTitleArtPrompt(request), signal: options.signal, purpose: "title-art" });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {
       return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다. 다시 시도하세요.", code: "image-invalid" };

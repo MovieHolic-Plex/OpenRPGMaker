@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6f32a0746aa6c1c216c93f4296012a56227cd90f9b43918bbe54ac7fac347c89",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "asphalt road with white dashed center line, horizontal and vertical",
+ "label": "sf-station/sf-lane-dash",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road tiles with dashed center line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing horizontal and vertical asphalt road sections with dashed center line markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5368
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile pair showing horizontal and vertical asphalt road sections with dashed white lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4512
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting horizontal and vertical asphalt road sections with dashed center lines viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3827
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles depicting asphalt road with horizontal and vertical dashed center lines viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4175
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.509Z",
+ "cells": {
+  "16": [
+   "7747a3753db4727f",
+   "d0ad645a093b3ddc"
+  ],
+  "24": [
+   "0a18976b09e014a3",
+   "1af569b01fc0349a",
+   "321fbc06fca033fd",
+   "69110e02ad658a68",
+   "6b4986d542cde809",
+   "7198e12299309d89",
+   "9e8080c50ffba3d4",
+   "b1ed6e6cae3e5ca3",
+   "b4334c7595973a68",
+   "c19e6923f84c0ae0",
+   "df885e678d83d2e3",
+   "e005a86be1d645af"
+  ],
+  "32": [
+   "1675fb3f82d6b953",
+   "4807d6b739232aec"
+  ],
+  "48": [
+   "33088cda42019def",
+   "3d49e4b8bd39e3c8",
+   "4da0d0e3a5a74e84",
+   "651c8557284cc9c9",
+   "654ed0a26baed4fd",
+   "9d2c68f5873594d3"
+  ]
+ }
+}

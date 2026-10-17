@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e80def0774f682daea177d81c306bae44aef687be9dff95e79da6f0f6eb4b331",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-4-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya building storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, eave, door canopy, and lantern are drawn in a flat architectural front elevation with no visible top surface or roof slope anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5608
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including lintel, noren curtain, and windows, is drawn straight-on with zero visible top surfaces or roof slopes, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4401
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing izakaya gate/building facade with blue upper panel and yellow lower panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat, symmetric front elevation. Its upper horizontal roof/lintel elements are only thin edge bands, with no visible above-facing top surface; the blue panel and lower facade also have no foreshortened top planes. The visible lower threshold is a small base detail, not the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 340083
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large central building facade with roof beam and front windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade. Its roof/lintel is only a thin horizontal beam and edge strip, with no substantive top surface visible from above; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 288343
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.085Z",
+ "cells": {
+  "16": [
+   "29e85aece0d5b893",
+   "31503ef37ea162cf",
+   "47bc0719befa22e0",
+   "5b56ab9854f9e31c",
+   "78ae855731ecd33d",
+   "86184b2ba15ccb36",
+   "8e6f6144b4deb5f6",
+   "97fd92c3e9fb6f97",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "db20ff5ab6d7d1d4"
+  ],
+  "24": [
+   "0be616c24fd0c7c8",
+   "0c9264d9264c8503",
+   "3c3f876d746907a5",
+   "41d484633b39caaf",
+   "46df6be18a950bda",
+   "59110188bde43fe5",
+   "628939347fcba765",
+   "7e96f9abc193ae8f",
+   "8e9cb2e14a00848d",
+   "9421e08c3ead230c",
+   "9bda59c99a020523",
+   "c45fd45f2c144cf7",
+   "e1369a1f39a56669",
+   "e1d4df408582275d",
+   "e6d62ba263de21e0",
+   "e8dc836bd4c8c6be",
+   "eed9f0f4eed6ee59",
+   "fee78a9fb49c83fe"
+  ],
+  "32": [
+   "132f1c366a5da1b5",
+   "3402323e1d34310c",
+   "40851358aca88d19",
+   "6d18bf56dfad3adc",
+   "7758bf87b9469768",
+   "85aeafe38d6b9c43",
+   "f0b32e5988ba6b20",
+   "fd16280097f5e3e1"
+  ],
+  "48": [
+   "2420173b43578ada",
+   "50f5950ece4f5d57",
+   "7b2e2ad18ef8a318",
+   "a32583c3d65ba051",
+   "b771fb7395b0e707",
+   "d866abc4402cc725"
+  ]
+ }
+}

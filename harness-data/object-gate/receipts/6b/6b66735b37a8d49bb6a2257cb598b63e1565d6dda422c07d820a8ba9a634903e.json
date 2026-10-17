@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b66735b37a8d49bb6a2257cb598b63e1565d6dda422c07d820a8ba9a634903e",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-6-L",
+ "label": "jp_city/street_hand/jp-sf-house-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with sliding shoji doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, doorframe, and wall sections are rendered entirely in straight-on front elevation (side-scroller style). Lintels and eaves are thin 1-2px flat strips with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6944
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style building facade with large sliding door and lattice windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade and protruding sliding door frame are drawn in pure front elevation (2D side-scroller style). The door lintel is only a 2px horizontal cap (rows 11-12) and the wall/eaves show no receding 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building facade with sliding gate and lattice windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D front elevation (side-scroller style). The door lintel, eaves, and upper wall bands are completely flat horizontal stripes (1-2px thick) with no foreshortened top surfaces or roof slope visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7665
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese-style building facade with sliding door entrance and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including the upper eaves/transom (rows 0-9), the door lintel (rows 12-13), and the lower eaves (rows 22-23), is drawn as a flat 2D side-scroller/architectural front elevation with zero top slope or horizontal surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6088
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.388Z",
+ "cells": {
+  "16": [
+   "052c28e81fcc1563",
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "290bb6d989ef48d3",
+   "2ae9bd926f197337",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "6928f650711889f7",
+   "9088e36645219327",
+   "987780e0119584a9",
+   "ac9cff882fbbcb24",
+   "c8270065076e290d",
+   "d39ed79255c09e4e",
+   "e7f5a0cd92135a94",
+   "f442f020ca930fe5"
+  ],
+  "24": [
+   "201fa010714cce8b",
+   "2769b1d01ab4f615",
+   "41cf78a067c1f3f1",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "897bbc469ee7a5a3",
+   "c59a3b37f4f5124d",
+   "f8d7529b9345d7d6"
+  ],
+  "32": [
+   "0ebf653c506f6997",
+   "2a0d9e4af227d919",
+   "3331d7b775de2cb4",
+   "384b7e9487d40861",
+   "4478e59b1fcd0540",
+   "474525ed7a364f34",
+   "5a8cd0a5f8ae9536",
+   "729b39e6ba1737bf",
+   "97969f0931db9060",
+   "9a8c0b986685df01",
+   "9c4c097697e70a0d",
+   "e802b23945b9b511"
+  ],
+  "48": [
+   "2b068aec0c099ebd",
+   "d4226ee72551d9aa"
+  ]
+ }
+}

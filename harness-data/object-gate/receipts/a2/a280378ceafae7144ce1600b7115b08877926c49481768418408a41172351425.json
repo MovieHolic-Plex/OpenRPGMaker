@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a280378ceafae7144ce1600b7115b08877926c49481768418408a41172351425",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "ship deck plank floor tile (flat)",
+ "label": "sky-island/si-floor-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden deck plank floor terrain tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden deck floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing wooden deck planks seen from above across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2963
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship deck wooden plank floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden deck plank floor tile spanning the entire 16x16 area, properly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2959
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden deck floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting ship deck wood planks across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2509
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.559Z",
+ "cells": {
+  "16": [
+   "9c3a85e9346916d7"
+  ],
+  "24": [
+   "3246a80f63bba404",
+   "574c839285ef141e",
+   "6b22f1f33ba8e42f",
+   "89a97e7c96669484",
+   "9416cd97f53f29e7",
+   "f363a17411963960"
+  ],
+  "32": [
+   "3c28ea5dd01d1358",
+   "9b6459221870b491",
+   "a9dc290b5693560b",
+   "d2a1ca0272b4dedc",
+   "ec4fd6434657b6e6",
+   "f1dd24b294348a13"
+  ],
+  "48": [
+   "1c2df8017aa06431",
+   "5bf6bf1f4e4b7abb",
+   "6913e7d93b9703f5",
+   "9ad880f9444e47c1",
+   "d07d1c1f48d0c3fa",
+   "ddeb5e91c9a1e418"
+  ]
+ }
+}

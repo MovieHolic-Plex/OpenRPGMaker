@@ -4,9 +4,9 @@
  "width": 16,
  "height": 64,
  "kind": "terrain",
- "name": "railway track band",
- "label": "jp/rail-h",
- "profileHash": "c69574d8ced1cdf8",
+ "name": "jp-rail-h",
+ "label": "jp_city/street_hand/jp-rail-h",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "railway track on gravel ground",
+    "main_body": "horizontal railroad track on gravel ballast",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat ground terrain tile strip depicting a railway track laid over gravel ballast, viewed from above.",
+    "evidence": "Flat terrain tile depicting horizontal steel rails and wooden ties resting on a gravel ground bed viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 11673
+   "ms": 3893
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "railway track on gravel ground",
+    "main_body": "railroad track terrain on gravel ballast",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat terrain tile band depicting railway tracks laid over gravel ground, fully viewed from above as a horizontal surface.",
+    "evidence": "Horizontal railway tracks embedded in a flat gravel ballast ground tile; correctly depicted as flat terrain viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7030
+   "ms": 6420
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "railway track band terrain tile",
+    "main_body": "horizontal railroad track on gravel terrain",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat repeating ground/track pattern with no standing main body or front elevation; terrain kind is appropriate.",
+    "evidence": "Flat terrain tile depicting horizontal railway tracks over gravel ballast; rails properly show top highlights and south-facing edges.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 65926
+   "ms": 3876
   },
   {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 68750,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal railroad tracks on gravel ground",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting horizontal rail tracks and wooden ties laid on gravel ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3711
   }
  ],
- "decidedAt": "2026-10-13T07:17:27.966Z",
+ "decidedAt": "2026-10-13T11:34:35.382Z",
  "cells": {
   "16": [
    "0fd223945b9c8e8b",

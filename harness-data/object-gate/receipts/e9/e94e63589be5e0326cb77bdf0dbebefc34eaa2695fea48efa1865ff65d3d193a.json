@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e94e63589be5e0326cb77bdf0dbebefc34eaa2695fea48efa1865ff65d3d193a",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-via-span",
+ "label": "jp/jp-via-span",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "viaduct span structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire viaduct structure is drawn in pure front elevation/side-scroller view: all beams, lintels, and ledges are flat horizontal bands with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8409
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "viaduct span / structure elevation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation as flat horizontal bands (sign/map board, red paneling, grey siding, and lower pier) with 0 source pixels of top surface or depth visible on any ledge or beam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5962
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "viaduct span / structure pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural elevation composed of horizontal stripes and vertical panels with no foreshortened top surfaces or deck visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4855
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "viaduct span / elevated structure pier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure consists entirely of stacked horizontal bands and vertical pier sections drawn directly from the front with zero top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5307
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.015Z",
+ "cells": {
+  "16": [
+   "5d0f75739f4eae33",
+   "70eeb7abd1322382",
+   "aa8b934d06d4a265",
+   "bac7d8b4a681167f"
+  ],
+  "24": [
+   "114d96d513e532eb",
+   "154a86af57175fed",
+   "2745a6ca0c877ec9",
+   "2c88a3c724d5c571",
+   "33cf1e68a16f50b7",
+   "3d96e86eebb14bdb",
+   "45dfc80cdf4a7827",
+   "67e942508f28eca6",
+   "771edc90446702bb",
+   "8f500b7f82d902b1",
+   "9d63c4615946ab72",
+   "a4cebe082c8270ae",
+   "ab8eda7c7495ef3d",
+   "ad90ef8698bef846",
+   "cd7f4985e4f6fa40",
+   "d00958b1b93759a7",
+   "d455810e21f0ff3e",
+   "e9733def0385b644"
+  ],
+  "32": [
+   "25c8d31f0fc2536f",
+   "79a8604e0058888d",
+   "a42cbe0e86a1660b",
+   "a79a60f7dc1b9b3f",
+   "a99c05a2fbc618af",
+   "ed992eadbea2ec70"
+  ],
+  "48": [
+   "017fa1d6760e3a08",
+   "3da994e6715c7807",
+   "4d9c2265409621de",
+   "53e47e82fac24e7c",
+   "56ef10c2d1eb60f3",
+   "614c1d2f4676d20c",
+   "75de6fd9091ec739",
+   "7cc1072cde11c64f",
+   "8075b8432083508b",
+   "8b38a02dfe866d04",
+   "9c8be5774cdc7a97",
+   "9e9546457f8ee88e"
+  ]
+ }
+}

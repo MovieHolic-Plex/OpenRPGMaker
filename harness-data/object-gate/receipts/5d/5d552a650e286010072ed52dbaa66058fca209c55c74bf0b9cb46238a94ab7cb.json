@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d552a650e286010072ed52dbaa66058fca209c55c74bf0b9cb46238a94ab7cb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 돌다리 가운데(남북으로 건넌다)",
+ "label": "steampunk-city/sp-bridge-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge paving / terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless stone block paving tile for a north-south stone bridge pathway; qualifies as terrain covering the full 16x16 tile with no standing volume or vertical elevation failure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge paving / terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 stone masonry paving tile representing bridge surface terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4176
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge paving / terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts stone paving for a north-south canal bridge surface, covering the full 16x16 tile as walkable terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6754
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone bridge pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone masonry/pavement viewed from above for a north-south bridge surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.710Z",
+ "cells": {
+  "16": [
+   "859489fce2c7d7f9"
+  ],
+  "24": [
+   "0280568207c0c42b",
+   "040829c25062baac",
+   "146d1739b3d6af34",
+   "3ebcaea8e4efecdd",
+   "f1d4b35487a55a09",
+   "f87dfbcd929d11a0"
+  ],
+  "32": [
+   "11476b6df1cdfc79",
+   "6089bbdb74e919d6",
+   "8969129aefee8418",
+   "8f6670a1d41101fa",
+   "d77cfce52e7a1651",
+   "d8b2d857e7b28a7f"
+  ],
+  "48": [
+   "84a997a53daf138a",
+   "989ee74c5048165c",
+   "9920685c5d63e892",
+   "9d2bc8e5a72ba500",
+   "cbdad5f876b6bfad",
+   "dba097c3ff7b1c45"
+  ]
+ }
+}

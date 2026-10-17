@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c013d9618f0b3367590a615d4db964e7f005fc81c68dde05e803548d6e777e34",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(사다리꼴 캐노피 윗면 + 측면 패널)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod canopy and chassis",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower chassis (rows 18-26) represents the vertical south-facing front, while the upper trapezoidal panelled canopy (rows 3-17, 15 source pixel rows) is clearly foreshortened and viewed from above in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5290
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod canopy and hull",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal canopy/roof slopes upward from row 17 to row 4 (14 rows of visible top surface) above a vertical front hull (rows 18-26), properly rendering the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5202
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod canopy and chassis",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top/roof canopy is extensively visible from row 3 to row 17 (14 pixel rows) showing foreshortened panels and glass, sitting above the south vertical bumper/chassis face (rows 18-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod body with canopy",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper canopy forms an extensive foreshortened top surface (rows 3-17, 15px tall) resting above the south front bumper (rows 18-26, 9px tall), correctly showing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.341Z",
+ "cells": {
+  "16": [
+   "399ecd25ae768216",
+   "6990dc6118a55902",
+   "75829b874775ec57",
+   "78395c7afbe4960b",
+   "9462eda69ff12623",
+   "dc3e00e519ff3f16"
+  ],
+  "24": [
+   "00bda1be62d404a7",
+   "194bdab8bd70b147",
+   "36fb19b27987e693",
+   "7d8cd3d2c90174c5",
+   "aa54df9732c7200d",
+   "e695e2854bd66244",
+   "e9137c3d89219057",
+   "f4cfeccaacb88245"
+  ],
+  "32": [
+   "1704ae217c7c91eb",
+   "550057e76374bca9",
+   "660cf9223c5b24a0",
+   "9aea70ed6e7ae5a4",
+   "a003bc208e18ca83",
+   "c4375ae9a839b3b1"
+  ],
+  "48": [
+   "2174df6c8b4dd4e7",
+   "811a9f01d9f58f06"
+  ]
+ }
+}

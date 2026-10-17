@@ -36,6 +36,11 @@ export interface StartPlan {
   readonly placeId?: string;
   /** 컨셉 칩셋이 jp_city 이고 학교·역 같은 특정 장소가 아니면, 완성 장소를 붙이지 않고 구성기(jpCityStreetComposer)가 씨앗으로 거리를 새로 짠다. */
   readonly composeStreet?: boolean;
+  /**
+   * 컨셉(또는 연애 인터뷰의 무대)이 현대 캠퍼스·도시 칩셋이면 그 칩셋 구성기(compose_campus_grounds / compose_modern_city_street)가
+   * 시작 맵을 코드에서 미리 깐다 — 단색 잔디에서 시작하지 않는다(2026-10-16 연애 감사 I2/I3/O1).
+   */
+  readonly composeKit?: "modern_campus" | "modern_city";
 }
 
 /** 칩셋별 완성 야외 장소. 학교·역 낱말이면 그 장소, 아니면 씨앗이 상가 거리·노면전차 거리·동네 한 장 중 고른다. */
@@ -69,8 +74,19 @@ const THEME_WORDS: readonly (readonly [StartTheme, RegExp])[] = [
   ["desert", /사막|오아시스|모래|사구|desert|oasis/iu],
   ["swamp", /늪|습지|수상\s?마을|갈대|swamp|marsh|bog/iu],
   ["coast", /항구|포구|해안|바닷가|어촌|등대|섬|부두|port|harbou?r|coast|island/iu],
-  ["river", /강가|강변|나루|물레방아|방앗간|시냇|개울|river/iu],
+  ["river", /강가|강변|호숫가|수변|천변|강둑|둔치|나루|물레방아|방앗간|시냇|개울|river|riverside|waterfront/iu],
 ];
+
+/** 길·야외 맵 이름에 들어가면 강변·수변 산책로(물 3~4줄 + 석축 제방 + 연속 산책로)로 까는 낱말. */
+export const WATERFRONT_ROUTE_RE = /강변|강가|호숫가|수변|천변|강둑|둔치|나루|연못가|물가\s?길|수변\s?산책로|강변\s?산책로/u;
+const INDOOR_WATERFRONT_EXCLUDE_RE = /카페|집|실내|가게|식당|레스토랑|호텔|숙소|하숙|책방|서점|공방|도서관|마법학교|교실|강의실|로비|오피스|사무실/u;
+
+export function isWaterfrontRouteName(text: string | undefined): boolean {
+  if (!text) return false;
+  const trimmed = text.trim();
+  if (trimmed.length === 0 || INDOOR_WATERFRONT_EXCLUDE_RE.test(trimmed)) return false;
+  return WATERFRONT_ROUTE_RE.test(trimmed);
+}
 
 /** FNV-1a 32bit — 안정적이고 의존이 없다. */
 export function startHash(text: string): number {
@@ -114,8 +130,10 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   // 지형은 평지가 아닌 것 우선(늘 평지가 나오지 않게) — 시공기 기본과 같다. 넷 중 하나는 평지로 쉬게 한다.
   const terrain = rng() < 0.4 ? "flat" : terrains[0]!;
   const routeW = 22 + Math.floor(rng() * 13);   // 22..34
-  const routeH = 10 + Math.floor(rng() * 7);    // 10..16
-  const lo = 3, hi = routeH - 4;
+  const rawH = 10 + Math.floor(rng() * 7);    // 10..16
+  // 강변·물가 길은 물 3~4줄 + 제방 1줄 + 잔디 화단 + 넓은 산책로가 들어가야 하므로 최소 15줄 확보.
+  const routeH = theme === "river" ? Math.max(15, rawH) : rawH;
+  const lo = theme === "river" ? 8 : 3, hi = routeH - 4;
   const entryY = lo + Math.floor(rng() * (hi - lo + 1));
   // 입구와 끝 줄이 3칸 안에서 어긋나 길이 한 번 꺾인다(이야기 산책길 광장이 끝 줄 ±3 을 쓴다).
   const shift = Math.floor(rng() * 7) - 3;
@@ -123,19 +141,60 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   const hint = input.tilesetHint;
   const placeId = kitStartPlaceId(hint, seed, stage);
   const composeStreet = hint === "jp_city" && !placeId;
-  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}), ...(composeStreet ? { composeStreet } : {}) };
+  const composeKit = hint === "modern_campus" || hint === "modern_city" ? hint : undefined;
+  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}), ...(composeStreet ? { composeStreet } : {}), ...(composeKit ? { composeKit } : {}) };
+}
+
+/** 연애 인터뷰 무대 낱말 → 현대 칩셋. 학교·대학 무대는 캠퍼스, 직장·동네·카페 무대는 도시. */
+const ROMANCE_CAMPUS_WORDS = /대학|캠퍼스|동기|학교|학원|교정|도서관|동아리|강의|수업|교실|기숙사/gu;
+const ROMANCE_CITY_WORDS = /직장|회사|사무실|출근|퇴근|오피스|카페|편의점|아파트|원룸|동네|도심|시내|번화가|골목|버스\s?정류장|지하철|현대/gu;
+
+/**
+ * 연애 인터뷰(「관계·연애」 단독)가 고른 무대에서 시작 칩셋을 뽑는다. 기획에 「타일셋:」 줄이 없을 때만 쓴다.
+ *
+ * 왜 (2026-10-16 연애 감사 I2): 「캠퍼스 재회」 인터뷰가 버들항 농장·항구 마을로 시작했다 — 컨셉 피드만 tilesetHint 를 기획서에 적고
+ * 인터뷰는 적지 않아서, 캠퍼스·직장 구성기가 있어도 사용자가 지나는 입구가 거기에 닿지 못했다.
+ * - 경험 선택 「campus」 = 대학 재회 → modern_campus.
+ * - 경험 선택 「palace」(가면무도회) → 현대가 아니다. 버들항을 유지한다.
+ * - 경험 선택 「town」 · 자유 서술: 학교 낱말이 많으면 캠퍼스, 직장·동네·카페 낱말이 있으면 도시. 현대 단서가 없는 「마을 이웃」은
+ *   시대가 중립이라 기존 버들항 마을 시공기를 유지한다(선택지 문구에 시대 단서가 없다).
+ * 혼합 장르(연애 + 다른 장르)는 건드리지 않는다 — 다른 장르의 시작이 우선이다.
+ */
+export function inferStartTilesetHint(brief: GameDesignBrief | undefined): string | undefined {
+  const interview = brief?.interview;
+  if (!brief || !interview || interview.genre !== "romance" || interview.secondary) return undefined;
+  const experience = interview.choiceIds.experience;
+  if (experience === "palace") return undefined;
+  const text = [brief.summary, interview.concept, interview.notes].join("\n");
+  const campus = text.match(ROMANCE_CAMPUS_WORDS)?.length ?? 0;
+  const city = text.match(ROMANCE_CITY_WORDS)?.length ?? 0;
+  if (experience === "campus") return city > campus ? "modern_city" : "modern_campus";
+  if (campus === 0 && city === 0) return undefined;
+  return campus > city ? "modern_campus" : "modern_city";
 }
 
 /** 프로젝트에서 구상을 낸다 — 뼈대(playableSegment)와 프롬프트가 같은 입력으로 같은 구상을 얻는다. */
 export function planStartForBrief(brief: GameDesignBrief | undefined, title: string): StartPlan {
-  return planStart({ seedText: startSeedText(brief, title), stageText: brief?.summary, tilesetHint: brief ? briefTilesetHint(brief.summary) : undefined });
+  const hint = brief ? briefTilesetHint(brief.summary) ?? inferStartTilesetHint(brief) : undefined;
+  const stageText = [brief?.summary, brief?.interview?.concept, brief?.interview?.notes, title].filter(Boolean).join("\n");
+  return planStart({ seedText: startSeedText(brief, title), stageText, tilesetHint: hint });
 }
 
 /** 칩셋마다 시작 맵을 짓는 길(조수 시스템 프롬프트의 칩셋 지침과 같은 도구 이름). 버들항 도구 author_beodeul_town 은 다른 칩셋에서 쓰지 않는다. */
 const KIT_BUILD_LINES: Readonly<Record<string, string>> = {
   jp_city: "일본 도시(jp_city): 큰길 하나와 골목을 fill_region·lay_path(생활도로·보도 연석·횡단보도)로 먼저 내고, 건물은 list_jp_city_building_parts → build_jp_city_building 으로 세우고(문 앞 접근칸 확보), 가게·집 안은 build_hand_interior_room({tileset:\"jp_city\"}) 또는 import_region_reference 로 짓고 link_jp_city_interior 로 문과 잇는다. 먼저 list_tileset_references → read_tileset_reference 로 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   joseon_baram: "조선(joseon_baram): 완성 장소를 먼저 쓴다 — list_spatial_designs({kind:\"place\", query:\"조선\"}) 로 마을·민가·주막 같은 장소를 찾아 import_region_reference 로 가져와 기획에 맞게 고친다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
-  gothic_manor: "고딕 저택(gothic_manor): 호러·추리·미술관 무대. list_tileset_references({tilesetId:\"gothic_manor\"}) 의 gothic-interior-authoring 을 읽고, 저택·전시실·서재는 build_hand_interior_room 으로 층마다 한 맵(계단칸 좌표 같게), 은신처 접근칸을 비운다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  pirate_isles: "열대 군도·해적 항구(pirate_isles): 맵 한 장은 compose_pirate_isles_map({kind, seed}) 한 번으로 짓는다 — kind 는 harbor(해적 항구 마을)·beach(열대 섬 해변 마을)·fort(해안 요새)·wreck(난파선·보물 동굴 섬)·ship(배 안)·tavern(술집 안)·hut(오두막 안)·cave(보물 동굴 안). 맵 크기는 도구 설명의 권장 크기로 만들고, list_map_locations 의 건물 문 앞 접근칸에 이동 이벤트·인물을 둔다. 바깥과 안은 맵 두 장으로 짓고 create_transfer_pair 로 잇는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  sengoku_edo: "전국·에도 일본(sengoku_edo): 야외는 compose_sengoku_edo_map({style:\"castle_town\"|\"inn_street\"|\"samurai\"|\"castle\"|\"temple\"|\"village\", seed}) 한 번으로 깔고(낱칸 번호로 칠하지 않는다), 건물 안은 build_hand_interior_room({tileset:\"sengoku_edo\", name, floor:\"se-floor-tatami\", wall:\"se-wall-fusuma\", layout:{program:\"samurai-house\"}}) 로 지어 link_sengoku_edo_interior 로 문과 잇는다. 먼저 list_tileset_references({tilesetId:\"sengoku_edo\"}) 의 se-howto 를 읽는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  sky_island: "하늘섬(sky_island): compose_sky_island_map({style:\"village\"|\"shrine\"|\"dock\"|\"archipelago\", seed}) 한 번으로 섬·건물·다리·소품을 깔고(낱칸 번호로 섬을 칠하지 않는다), 건물 안은 compose_sky_island_map({style:\"room-cottage\"…}) 로 새 맵에 지어 link_sky_island_interior 로 문과 잇는다. 먼저 list_tileset_references({tilesetId:\"sky_island\"}) 를 읽는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  steampunk_city: "스팀펑크 도시(steampunk_city): 먼저 list_tileset_references({tilesetId:\"steampunk_city\"}) 를 읽고, 야외는 compose_steampunk_city_map({style:\"street\"|\"industrial\"|\"dock\"}) 한 번으로 깐다(공장·선로·운하·광장 배치는 구성기가 한다). 건물 안은 같은 도구 style:\"boiler-room\"|\"workshop\"|\"engine-room\"|\"lab\"|\"inn\"|\"tavern\" 로 새 맵에 짓고 link_steampunk_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  modern_campus: "캠퍼스(modern_campus): 먼저 list_tileset_references → read_tileset_reference 로 교정 배치(교문→본관→운동장)와 교사 조립 예제를 읽고, 교문·본관·운동장 땅을 그 배열대로 깐다(낱칸 번호로 칠하지 않는다). 건물 안은 build_hand_interior_room({tileset:\"modern_campus\", layout:{rooms:[{kind:\"classroom\"},{kind:\"corridor\"}…]}}) 로 짓고 문 앞 접근칸을 비운 채 이동 쌍으로 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  modern_city: "도쿄풍 도시(modern_city): 시작 맵에 compose_modern_city_street({mapId, seed, shops:[기획의 가게·건물…]}) 한 번으로 도로·교차로·보도·건물 키트·공원·소품을 깐다(낱칸 번호로 칠하지 않는다). 기획의 핵심 건물은 결과 data.buildings 의 program 대로 build_hand_interior_room({tileset:\"modern_city\", name, floor, wall, layout:{program:\"office-floor\"|\"konbini\"|\"hospital-ward\"|\"apartment\"|\"lobby\"|\"cafe\"|\"bank\"|\"concourse\"|\"warehouse\"}}) 로 실내를 지어 link_modern_city_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  sf_station: "SF 정거장·네온 거리(sf_station): 맵 한 장은 compose_sf_station_map({kind, seed}) 한 번으로 짓는다 — kind 는 station(우주 정거장 로비·거주구)·lab(연구 기지 실내)·street(사이버펑크 네온 거리)·moonbase(달 기지 야외). 맵 크기는 도구 설명의 권장 크기로 만들고, list_map_locations 의 구역·건물 문 앞 접근칸에 이동 이벤트·인물을 둔다. 바깥과 안은 맵 두 장으로 짓고 create_transfer_pair 로 잇는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  gothic_manor: "고딕 저택(gothic_manor): 호러·추리·미술관 무대. build_gothic_place 로 장소를 한 장씩 짓는다 — 야외 manor-grounds(흉가 저택과 정원)·graveyard(공동묘지와 예배당)·gallery-plaza(미술관 앞마당), 실내 hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery. 결과의 transferEndpoints 를 create_transfer_pair 에 그대로 넣어 잇고, 은신처는 기물 앞 칸에 상호작용 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  prehistoric: "선사 시대 원시 세계(prehistoric): 야외는 compose_prehistoric_map({style:\"village\"|\"swamp\"|\"volcano\"|\"fossil\"}) 한 번으로 깐다(바닥 가장자리·움집·동굴·소품 배치는 구성기가 한다). 동굴·움집 안은 같은 도구 style:\"cave-dwelling\"|\"chieftain-hut\"|\"shaman-hut\"|\"cave-gallery\" 로 새 맵에 짓고 link_prehistoric_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  desert_east: "사막·동양풍(desert_east): 땅·길·건물·소품은 compose_desert_east_map({kind:\"oasis\"|\"bazaar\"|\"palace\"|\"pyramid\"|\"caravanserai\", seed}) 한 번으로 깐다(낱칸 번호로 칠하지 않는다). 실내는 desert_east 맵을 하나 더 만들어 compose_desert_east_room 으로 짓고 link_desert_east_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  snow_north: "북방 설원(snow_north): 야외는 compose_snow_north_map({style:\"village\"|\"lake\"|\"cave\"|\"market\"}) 한 번으로 깐다(오토타일 덩이·통나무 집·목책·소품 배치는 구성기가 한다). 집 안은 같은 도구 style:\"cabin\"|\"longhall\"|\"tavern\"|\"sauna\"|\"ice-cave\" 로 새 맵에 짓고 link_snow_north_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   wizarding_world: "마법 학교(wizarding_world): build_wizarding_space 로 성채 공간(복도·교실·기숙사 등)을 짓고 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
 };
 
@@ -146,6 +205,16 @@ export function startPlanPrompt(plan: StartPlan): string {
     "뼈대가 지키는 것은 「핵심 행동 → 문 → 길 → 구간 끝」의 연결뿐이다. 마을·거리의 모양·광장·십자 길·가운데 앵커는 보존 대상이 아니다. 문(시작 맵 동쪽 끝)과 길 맵 연결, 뼈대 이벤트 id 는 유지한다.",
     "광장·십자 길·한가운데 건물을 기본으로 두지 않는다. 앵커(시작 NPC·핵심 건물)는 「왜 거기에 있는지」가 있는 자리에 둔다 — 물가·길목·언덕 위처럼 지형이 말해 주는 곳.",
   ];
+  if (kit && plan.composeKit) {
+    const campus = plan.composeKit === "modern_campus";
+    return [
+      `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
+      `시작 맵은 코드가 칩셋 구성기(${campus ? "compose_campus_grounds" : "compose_modern_city_street"}, 씨앗 ${plan.seed})로 이미 ${campus ? "캠퍼스 교정(건물·길·분수·교문·소품)" : "도시 거리(도로·건물·공원·소품)"}를 깔아 열려 있다. 길 맵(${plan.routeW}×${plan.routeH})도 같은 칩셋의 길이다. 이 맵을 지우거나 풀밭으로 덮지 않는다 — 단색 잔디에서 다시 시작하지 않고 이어서 만든다.`,
+      kit,
+      "해야 할 일: ① list_map_locations 로 건물 이름표(문 칸)를 읽고 show_map_region 으로 본다. ② 기획의 핵심 장소를 문마다 골라 실내를 짓고(build_hand_interior_room) 문과 잇는다(" + (campus ? "link_campus_interior" : "link_modern_city_interior") + "). ③ 실내와 거리에 기획의 인물·단서·이벤트를 둔다. 건물을 다시 깔려면 구성기를 replace:true 로 다시 부르되 시작 맵·문 연결은 유지한다.",
+      ...common,
+    ].join("\n");
+  }
   if (kit && plan.composeStreet) {
     return [
       `[첫 장소 구상 — 씨앗 ${plan.seed}]`,

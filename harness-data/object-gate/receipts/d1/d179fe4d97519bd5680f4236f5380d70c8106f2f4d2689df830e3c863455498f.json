@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d179fe4d97519bd5680f4236f5380d70c8106f2f4d2689df830e3c863455498f",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp_city/street_hand/jp-bwallf-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style wall with tiled roof cap, wooden slats, and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show the 4-pixel-tall foreshortened tiled roof capping the wall structure, followed by the south face showing the eave, wooden slats, plaster, and stone foundation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6624
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style boundary wall section with tiled coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show the foreshortened top surface of the tiled wall coping (4 pixel rows tall) above the vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6080
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large wall/building segment with a visible upper cap/top surface and south-facing facade",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main brown structure has a broad horizontal top surface visible above its vertical south face, spanning about 4 source-pixel rows; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 82457
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large wall/building section with a projecting tan roof or lintel over a dark vertical wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible horizontal tan top surface spanning about 4 source-pixel rows above the south-facing dark wall; no receding side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 136704
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.012Z",
+ "cells": {
+  "16": [
+   "224c6b6644f2818b",
+   "788291586a5918b4"
+  ],
+  "24": [
+   "3c9e614fad9ad964",
+   "4602532e1200238c",
+   "4d74648deae12e86",
+   "4fc6ecb76f9e9de5",
+   "59638e24e954d575",
+   "5e01181296c21c82",
+   "7e5453d620b51c0f",
+   "7fe1fabccbe5b6c1",
+   "986e678059623d1d",
+   "b63f004b609f39b7",
+   "d05b4e1a9bad80ff",
+   "f38f8b76167fd12e"
+  ],
+  "32": [
+   "0e396998657fbd8a",
+   "96933cf7ea50215f",
+   "d726e386cad81c79"
+  ],
+  "48": [
+   "5ee2e56732299497",
+   "68cd8baf820ae525",
+   "a477f0b003b0344d",
+   "a5eee7d21f3ad6ff",
+   "cc5b927fa2b7003e",
+   "f1bd66b99f8b4496"
+  ]
+ }
+}

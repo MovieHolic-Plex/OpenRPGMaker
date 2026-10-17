@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad77aa9b41def1f12e4d6ff5ed269b122382694179e2a9a706ed5556bdcf9248",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "서류철 서가",
+ "label": "modern_city/interior/mci-shelf-office",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden bookcase with shelves and books",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookcase is clearly visible across rows 1 to 6 (6 pixels deep) with items resting on top of it in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookshelf with document binders",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bookshelf is shown as a foreshortened horizontal surface spanning roughly rows 1 to 6, with items placed on top of it, correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 1-6 (about 6 rows deep), with organizers/boxes resting on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5061
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf with items on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bookshelf is clearly visible across rows 1-6 (about 6 pixels deep) with containers resting on it, meeting the 3/4 top-down perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7453
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.926Z",
+ "cells": {
+  "16": [
+   "1d698290ecc86225",
+   "7514a4401e2df5e7",
+   "7e3416fbc70ee505",
+   "f0c3af21fb1845fe"
+  ],
+  "24": [
+   "01c8e548781688f6",
+   "031be2d25c130ac9",
+   "12f553eef4a2b780",
+   "152a10430acbb199",
+   "181de6b760269ef1",
+   "2bd9b2542f082703",
+   "341d69ee9df14a96",
+   "35ce842fbb9e1b02",
+   "443ef10bb5b24dbb",
+   "547d37814e7e609d",
+   "5bc484fc4d673a3a",
+   "78a5dafabcb9b6a5",
+   "7aa9f72f36b91364",
+   "bd7e15135deb733d",
+   "c7844083d41d86b8",
+   "cb464f335b00533c",
+   "cf2962f731ccaf4d",
+   "d9d5e54035d754d8",
+   "dd0277875db98385",
+   "e005bc145c26ee37",
+   "e96df50deaf1cc12",
+   "ecf33d84de8c96f1",
+   "fab5b4576b836d09",
+   "ff9246b7e8713d11"
+  ],
+  "32": [
+   "895251087991cdbd"
+  ],
+  "48": [
+   "215942f963e56dd6",
+   "2dfd8a5641cbb7a6",
+   "6e036969fbf1bd78",
+   "76472909826b955c",
+   "77650cb3619eb445",
+   "b20458477e89c736"
+  ]
+ }
+}

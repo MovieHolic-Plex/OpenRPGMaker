@@ -1,3 +1,5 @@
+import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
+import { parseEncounterGuard } from "@/project/encounterGuard";
 import { isEmptySpriteLook, normalizeLetterboxPercent, normalizeSpriteLook, type SpriteLook } from "@/project/eventCommands/cinematicStaging";
 import { isNeutralScreenDistortion, normalizeScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import { normalizeBattleReports, type BattleReport } from "@/project/battleReports";
@@ -15,6 +17,7 @@ import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
 import { normalizeGalleryUnlocks } from "@/project/gallery";
+import { normalizeBacklog, normalizeReadKeys, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { currentChapterLabel } from "@/project/newGamePlus";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
@@ -107,6 +110,7 @@ import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { validProgress, type CollectionProgress } from "@/project/collections";
 import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { parseVehicleSessionState } from "@/project/vehicles";
+import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -137,6 +141,10 @@ export type SaveSnapshot = {
   /** 저장 당시 장(시대) 이름. system.chapter 가 없거나 이름표 없는 값이면 생략. */
   readonly chapterLabel?: string;
   readonly playTimeSeconds?: number;
+  /** 몬스터 수집 게임의 저장 칸 요약(도감·배지·파티). 다른 장르는 생략. */
+  readonly monsterSummary?: MonsterSaveSummary;
+  /** 미연시 세이브 카드(meta.oprnVnExtras.saveCards): 저장 시점의 마지막 대사 한 줄. 꺼져 있으면 생략. */
+  readonly sceneLine?: string;
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
@@ -145,6 +153,8 @@ export type SaveSnapshot = {
     readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
     readonly variables: Record<string, number>;
     readonly timers: Record<string, number>;
+    /** 흐르던 카운트다운(timerId → true). 없는 옛 세이브는 모두 멈춘 채 불러온다. */
+    readonly timerActive?: Record<string, boolean>;
     readonly gold: number;
     readonly inventory?: Record<string, number>;
     readonly itemUseCharges?: Record<string, number>;
@@ -187,6 +197,9 @@ export type SaveSnapshot = {
     readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
     readonly actorTechPoints?: Record<string, number>;
+    readonly actorApProgress?: PlaySession["actorApProgress"];
+    readonly learnedViaAp?: PlaySession["learnedViaAp"];
+    readonly actorRageEnemyIds?: PlaySession["actorRageEnemyIds"];
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
     readonly horror?: PlaySession["horror"];
@@ -208,12 +221,16 @@ export type SaveSnapshot = {
     readonly friendship?: PlaySession["friendship"];
     readonly relationships?: PlaySession["relationships"];
     readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
+    readonly dialogueBacklog?: PlaySession["dialogueBacklog"];
+    readonly dialogueRead?: PlaySession["dialogueRead"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
+    readonly socialLoop?: PlaySession["socialLoop"];
     readonly monsterCareSteps?: number;
     readonly monsterFieldPoisonSteps?: number;
     readonly monsterCareDaily?: PlaySession["monsterCareDaily"];
     readonly equippedToolItemId?: PlaySession["equippedToolItemId"];
+    readonly encounterGuard?: PlaySession["encounterGuard"];
     readonly chests?: PlaySession["chests"];
     readonly placeables?: PlaySession["placeables"];
     readonly followers?: PlaySession["followers"];
@@ -288,6 +305,13 @@ export type SaveSlotReadResult =
   | { readonly kind: "empty"; readonly slot: SaveSlotIndex }
   | { readonly kind: "corrupt"; readonly slot: SaveSlotIndex; readonly message: string }
   | { readonly kind: "present"; readonly slot: SaveSlotIndex; readonly snapshot: SaveSnapshot };
+
+function isSocialLoopDayState(value: unknown): value is NonNullable<PlaySession["socialLoop"]> {
+  if (!value || typeof value !== "object") return false;
+  const state = value as { day?: unknown; slotsUsed?: unknown; gained?: unknown };
+  return typeof state.day === "string" && typeof state.slotsUsed === "number" && Number.isFinite(state.slotsUsed)
+    && isNumberRecord(state.gained);
+}
 
 export function saveSlotKey(slot: SaveSlotIndex): string {
   const pinned = publicationSaveKey(slot);
@@ -392,11 +416,20 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       return chapterLabel ? { chapterLabel } : {};
     })(),
     playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
+    ...(() => {
+      const monsterSummary = monsterSaveSummary(project, session);
+      return monsterSummary ? { monsterSummary } : {};
+    })(),
+    ...(() => {
+      const sceneLine = resolveVnExtras(project)?.saveCards.enabled ? saveSceneLine(session.dialogueBacklog) : undefined;
+      return sceneLine ? { sceneLine } : {};
+    })(),
     session: {
       switches: structuredClone(session.switches),
       selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
+      ...(session.timerActive && Object.values(session.timerActive).some(Boolean) ? { timerActive: structuredClone(session.timerActive) } : {}),
       gold: normalizeEconomyValue(session.gold),
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
@@ -445,6 +478,9 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       ...(session.actorTechPoints && Object.keys(session.actorTechPoints).length > 0 ? { actorTechPoints: structuredClone(session.actorTechPoints) } : {}),
+      ...(session.actorApProgress && Object.keys(session.actorApProgress).length > 0 ? { actorApProgress: structuredClone(session.actorApProgress) } : {}),
+      ...(session.learnedViaAp && Object.keys(session.learnedViaAp).length > 0 ? { learnedViaAp: structuredClone(session.learnedViaAp) } : {}),
+      ...(session.actorRageEnemyIds && Object.keys(session.actorRageEnemyIds).length > 0 ? { actorRageEnemyIds: structuredClone(session.actorRageEnemyIds) } : {}),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
       horror: session.horror ? structuredClone(session.horror) : undefined,
@@ -465,12 +501,16 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       friendship: structuredClone(session.friendship ?? {}),
       relationships: structuredClone(session.relationships ?? {}),
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
+      dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
+      dialogueRead: normalizeReadKeys(session.dialogueRead),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
+      ...(session.socialLoop ? { socialLoop: structuredClone(session.socialLoop) } : {}),
       monsterCareSteps: session.monsterCareSteps,
       monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
+      ...(session.encounterGuard ? { encounterGuard: structuredClone(session.encounterGuard) } : {}),
       chests: parseChestsRecord(session.chests) ?? {},
       placeables: restorePlaceables(project, session.placeables),
       followers: structuredClone(session.followers),
@@ -651,6 +691,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
+  if (snapshot.session.timerActive) session.timerActive = structuredClone(snapshot.session.timerActive);
   session.gold = normalizeEconomyValue(snapshot.session.gold);
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   const normalizedItems = normalizeItemTransitionState({
@@ -717,6 +758,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorTechPoints) session.actorTechPoints = structuredClone(snapshot.session.actorTechPoints);
+  if (snapshot.session.actorApProgress) session.actorApProgress = structuredClone(snapshot.session.actorApProgress);
+  if (snapshot.session.learnedViaAp) session.learnedViaAp = structuredClone(snapshot.session.learnedViaAp);
+  if (snapshot.session.actorRageEnemyIds) session.actorRageEnemyIds = structuredClone(snapshot.session.actorRageEnemyIds);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
   if (snapshot.session.horror) session.horror = structuredClone(snapshot.session.horror);
@@ -741,8 +785,17 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   const galleryUnlocks = normalizeGalleryUnlocks(snapshot.session.galleryUnlocks);
   if (galleryUnlocks) session.galleryUnlocks = galleryUnlocks;
   else delete session.galleryUnlocks;
+  // 백로그는 불러온 뒤에도 남는다. 옛 세이브(필드 없음)는 빈 기록으로 시작한다. 한도는 프로젝트 설정으로 다시 자른다.
+  const dialogueBacklog = normalizeBacklog(snapshot.session.dialogueBacklog, resolveDialogueSystem(project)?.backlog.limit);
+  if (dialogueBacklog) session.dialogueBacklog = dialogueBacklog;
+  else delete session.dialogueBacklog;
+  const dialogueRead = normalizeReadKeys(snapshot.session.dialogueRead);
+  if (dialogueRead) session.dialogueRead = dialogueRead;
+  else delete session.dialogueRead;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
+  if (snapshot.session.socialLoop) session.socialLoop = structuredClone(snapshot.session.socialLoop);
+  else delete session.socialLoop;
   if (typeof snapshot.session.monsterCareSteps === "number") {
     session.monsterCareSteps = Math.max(0, Math.trunc(snapshot.session.monsterCareSteps));
   }
@@ -753,6 +806,10 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
+  // 세이브에 없으면 «보호 없음» 이다 — 이전 세션의 도망 무적·벌레퇴치를 끌고 오지 않는다.
+  const restoredGuard = parseEncounterGuard(snapshot.session.encounterGuard);
+  if (restoredGuard) session.encounterGuard = restoredGuard;
+  else delete session.encounterGuard;
   session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
   if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
   if (snapshot.session.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = structuredClone(snapshot.session.farmBuildingPlacements);
@@ -998,6 +1055,14 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
       ...(typeof value.chapterLabel === "string" && value.chapterLabel ? { chapterLabel: value.chapterLabel } : {}),
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
+      ...(() => {
+        const monsterSummary = readMonsterSaveSummary(value.monsterSummary);
+        return monsterSummary ? { monsterSummary } : {};
+      })(),
+      ...(() => {
+        const sceneLine = normalizeSceneLine(value.sceneLine);
+        return sceneLine ? { sceneLine } : {};
+      })(),
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,
       session: parsed.session,
@@ -1156,6 +1221,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
+      timerActive: isBooleanRecord(session.timerActive) ? session.timerActive : undefined,
       gold: normalizeEconomyValue(session.gold),
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
@@ -1204,6 +1270,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorTechPoints: isNumberRecord(session.actorTechPoints) ? session.actorTechPoints : undefined,
+      actorApProgress: isActorSkillPpRecord(session.actorApProgress) ? session.actorApProgress : undefined,
+      learnedViaAp: isActorSkillIdsRecord(session.learnedViaAp) ? session.learnedViaAp : undefined,
+      actorRageEnemyIds: isActorSkillIdsRecord(session.actorRageEnemyIds) ? session.actorRageEnemyIds : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
       horror: isHorrorState(session.horror) ? session.horror : undefined,
@@ -1224,8 +1293,11 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
       relationships: normalizeRelationships(session.relationships),
       galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
+      dialogueBacklog: normalizeBacklog(session.dialogueBacklog),
+      dialogueRead: normalizeReadKeys(session.dialogueRead),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
+      ...(isSocialLoopDayState(session.socialLoop) ? { socialLoop: session.socialLoop } : {}),
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)
         ? Math.max(0, Math.trunc(session.monsterCareSteps))
         : undefined,
@@ -1234,6 +1306,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
+      ...(parseEncounterGuard(session.encounterGuard) ? { encounterGuard: parseEncounterGuard(session.encounterGuard) } : {}),
       chests: parseChestsRecord(session.chests),
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,

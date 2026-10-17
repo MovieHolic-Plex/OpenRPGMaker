@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0fb173776f4e9558e9c1b857117de8fd6197f471687be61014f3b1d1d89bc12d",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age hut thatch s",
+ "label": "prehistoric/ph-hut-thatch-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched hut roof and wall",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatch roof slopes downward toward the viewer across rows 1 to 44 (about 43 rows of visible roof slope), which is standard 3/4 RPG projection for round huts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical thatch hut",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The round hut is drawn as a flat 2D architectural elevation: the base plinth at row 62 is a perfectly straight horizontal line rather than an elliptical curve, the wall rings and door lintel are straight horizontal, and there is no 3/4 downward perspective curvature on the circular footprint.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6738
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched conical hut",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof provides a large, prominent top slope facing the camera from row 2 down to the eaves around row 44 (~42 rows tall), satisfying the 3/4 top-down perspective requirement for a structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical thatch roof and round hut base",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dominant thatch roof slopes upward to its peak over approximately 44 pixel rows, with thatched tiers curving downward toward the viewer consistent with a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7098
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.794Z",
+ "cells": {
+  "16": [
+   "01684a40beccc965",
+   "0597753f2d683fd6",
+   "064fc8aefbb2615f",
+   "145b833001ad90a3",
+   "1d9c26a6a02d6de8",
+   "389a4b6657690341",
+   "519e113c4021a622",
+   "71fb6d39e2ee5852",
+   "76a9efec9cb64e80",
+   "90630bcbc3a6222d",
+   "b885e7bcf29a4e06",
+   "ea626bb02bfee9ef"
+  ],
+  "24": [
+   "0efe0c60f12b3e70",
+   "3aed5c89b95f53d0",
+   "471e761ec72699bb",
+   "4e61a57a131406be",
+   "502df2cae76d804b",
+   "98bebddacfec9454",
+   "9a1b39c802c4218f",
+   "cd328f2b9507a48c",
+   "d922d8889caa05ad",
+   "e17b802cf4a85add",
+   "e274123674b0c727",
+   "fe5d58ba351dd795"
+  ],
+  "32": [
+   "193a93dd6b80fa98",
+   "22c54a90f640668a",
+   "2d627b5321ba402a",
+   "2e48a56a01c3a9cc",
+   "49ef905f4c40c127",
+   "4b9a0a0bd888b8fd",
+   "5b28203877e4d579",
+   "92516b8aed00f13c",
+   "a35a83f051d0caa6",
+   "b2a96095c1ce7d56",
+   "d7d4720127e7e328",
+   "f8f528fffd6e2458"
+  ],
+  "48": [
+   "8102237b2d459d2f",
+   "97df4f95ad889f7c",
+   "c9bb9e1a61471701",
+   "cfec0e5b326d5606"
+  ]
+ }
+}

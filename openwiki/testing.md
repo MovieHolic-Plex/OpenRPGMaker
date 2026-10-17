@@ -2105,9 +2105,97 @@ dedicated exported player passed. Do not describe this as all browser checks gre
 
 `assistant-capability`는 일반 입력창의 현재 Pi 경로와 격리 SQLite 정본을 사용한다. 이전 `AssistantSession` 골든 평가나 `__oprnAiBridge.send()`로 현재 조수 능력을 대신 측정하지 않는다. 요구·보존·실제 플레이·저장·시각 gate를 각각 표시하고 필수 검수 누락은 pending으로 남긴다. 정상/결함 결과로 검사기를 교정한 `self-check` 통과가 실모델 실행의 선행 조건이며, 그 수치는 조수 성공률이 아니다. 구조와 실행 명령은 [assistant-capability](harnesses/assistant-capability.md)를 따른다.
 
+## FF6 수정 A 헤드리스 프로브 (2026-10-15)
+
+`node node_modules/vite-node/dist/cli.mjs --script scripts/qa/ff6-fix-a-growth-probe.mts`(마석 AP·레벨업 보너스·부위 도구·전투당 1회)와
+`scripts/qa/ff6-fix-a-effects-probe.mts`(좀비·스케치·폭주·트랜스·대열 섞기·강제 교대·블리츠·검기·룬·분석·적 반격). 실제 도구(`runTool`)로 저작 → 실제 전투 런타임 → 세션 정산(`applyBattleRewardsToSession`) → 세이브 왕복.
+한 줄이 `{id, ok, detail}` JSON 이고 끝에 `DONE`. 감사 기준선은 `scripts/qa/ff6-audit-probe.mts`(MISSING 항목이 있던 원본). vitest·gates 는 돌리지 않았다.
+
 ## 몬스터 여정 영상 (2026-10-07)
 
 `JOURNEY_VIDEO=1 node scripts/qa/runtime/monster-journey.mjs <play.json> <out>`(netns 안에서 — `unshare -rn sh -c "ip link set lo up && …"`)는
 `<out>/journey.mp4`(H.264, 타이틀부터)를 남긴다. 영상 모드는 시작 마을→연구소→마을→도로 풀숲, 센터→도로→트레이너를 실제 방향 입력으로 걷는다
 (짧게 눌렀다 떼고 칸이 멈출 때까지 기다린다 — 계속 누르면 걸음이 한 칸씩 밀려 문 앞에서 좌우로 오간다). 걷다 만난 야생은 도망간다.
 관장전 직전 리더 레벨 맞춤·체육관까지의 이동은 여전히 디버그 쓰기다(SUMMARY 에 적힌다).
+
+## 세계 변형·입구·지형 조우 · ct-vehicle 픽스처 (2026-10-15, worker B)
+
+- 헤드리스 도구 시험: `node scripts/oprn-tools.mjs --project <p.json> --out <o.json> derive_world_variant '{...}'` — 호스트 월드맵 빌더(`scripts/lib/worldmapBuild.mjs`)를 걸어 주므로
+  동반 서비스 없이 약 100초에 돈다(`preview:true` 는 2초). `run_scene_test` 로 월드 입구 ↔ 던전 왕복·지형별 랜덤 인카운터(숲에서 `troop_forest_hornets`)를 본다.
+- 크로미움이 이 호스트에서 `ERR_NETWORK_CHANGED` 로 뜨면 `unshare -rn bash -c 'ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-vehicle'`.
+- `ct-vehicle`(`scripts/qa/runtime/ct-vehicle*.{mts,mjs}`) 은 두 번 깨졌다: ① 기본 칩셋이 숲마을 → 버들항이 되어 물 0번·벽 42번이 다른 그림이 됨 → 물 8번·벽 408번·지형 태그 없는 물은
+  칸 이름표 `water` 로 배가 다닌다(`vehicleCanEnter`). ② 새 프로젝트의 기본 오프닝이 입력을 잠가 첫 확인 키가 사라짐 → 픽스처가 `delete project.system.opening`.
+  새 런타임 픽스처는 `system.opening` 을 지우지 않으면 첫 확인 키가 먹히지 않는다(15개 시나리오의 `node_modules/vite-node/vite-node.mjs` 경로도 vite-node 6 에 없어 `dist/cli.mjs` 로 가야 한다 — ct-vehicle 만 고침).
+- `ct-vehicle-walkers`(`scripts/qa/runtime/ct-vehicle-walkers*`) — 초코보(통행 불가 숲 통과·호수 거절)·광산 수레(레일에서만)·뗏목(강만, 바다 거절)을 승하차까지 실제 플레이어로 본다. 크로미움은 `unshare -rn` 안에서. `parkedVehicleSprites` 검사는 초코보만 Animal 텍스처를 기대한다(`scripts/lib/runtimeQa.mjs`).
+
+## 필드 스킬 게이트 시험 (2026-10-15, FF6 수정 C)
+
+바위깨기·물 건너기처럼 **파티가 어떤 스킬을 알아야 열리는 길**은 세 군데가 같은 해석기(`src/project/partySkills.ts`)를 쓴다.
+- 이벤트 페이지·분기 조건 `{kind:"partyKnowsSkill",skillId,present?}` — 배우(습득표·직업·성장 트리·장비 `grantsSkillIds`)와 몬스터 파티(`monsterSkillIds`)가 아는 스킬. 평가기 둘(`session.evalCondition`·`pageResolution.evalPageCondition`)과 전투 이벤트가 같은 결과를 낸다.
+- `run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` — 앞 칸을 바라본 채 스킬의 `fieldCommonEventId` 를 돌린다(배우는 MP 소모, 몬스터는 무소모). 모르면 「누가 아는지」·고치는 도구를 말하며 실패하고, 끝나면 자동 페이지(깨진 바위의 smash 페이지)가 바로 돈다.
+- `qa:game check` 자동 플레이 — 길이 막히면 막은 조사 이벤트 앞에서 아는 필드 스킬을 쓴 뒤 길을 다시 잰다. `partyKnowsSkill` 선행 조건은 `learnSkill`/동료 합류로 채운다. 아는 사람이 없으면 `autoplay-failed` 문구가 「이 길 앞에서 learnedSkills/learnSkill/grantsSkillIds 로 가르쳐라」 까지 말한다.
+
+재현 프로젝트(poke slice-3, 1번 도로 바위): 스킬을 아는 배우가 없을 때 막힘 1(걸어갈 길 없음), 주인공 `learnedSkills:[{level:1,skillId:"mx_skill_rocksmash"}]` 면 막힘 0. 가르칠 곳이 아예 없으면(분실된 스킬) 막힘 2(참조 누락 + 위 안내).
+알려진 한계: `storeParty`/`recallParty` 로 바뀐 파티 구성은 자동 플레이가 모델링하지 않는다(세트 안 배우를 선행 조건으로 보지 않음), 다단계 보스·`oncePerBattle` 은 기존 전투 해결기(첫 적을 계속 공격)에 맡긴다.
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
+
+## CT 회귀 시나리오 복구 (2026-10-15)
+
+`scripts/qa/runtime/ct-*.scenario.mjs`(engine·techs·field·onfield·ngplus, 그리고 chrono)는 편집기 도구(runTool)로 프로젝트를 만든 뒤 출하 플레이어에서 돈다.
+**netns 안에서** 돌린다: `unshare -rn bash -c "ip link set lo up; node scripts/runtime-qa.mjs --scenario ct-engine --out /tmp/x"`.
+깨져 있던 이유(감사 2026-10-15)와 고침: ① 시나리오가 `node_modules/vite-node/vite-node.mjs` 를 불렀으나 v6 은 `dist/cli.mjs` 다
+② `place_battle_blocker` 가 텍스트 그림(「들판 박쥐」)을 거절 → `graphic:{transparent:true}`, 온필드는 `place_field_enemy`(걷기 칩 없는 종도 전투 그림 심볼)
+③ 스킬 칸은 2열 명령창이라 커서 이동이 `ArrowRight` ④ ct-field 의 턱 타일 6 은 beodeul_city 에서 상위 전용 칩으로 라우팅돼 1층에 안 칠해진다 → 741
+⑤ retro 스킨은 적 좌표를 구역(x≥34, y 92..142)으로 접으므로 moveEnemy(30,30) 의 렌더 값은 10.625% / 57.49999999999999% 다(부동소수 표기 그대로 비교).
+ct-vehicle 은 별도 작업이 소유한다. 구조 가드(`src/ai/gameStructureGuard.ts`)는 코드 실행이 아니라 순수 함수이며 `adventureCompletionProblems` 가 부른다.
+
+
+## 팀 교대 전투 프로브 (2026-10-15, FF6 수정 A)
+
+`scripts/qa/ff6-fix-a-teams-probe.mts` — 실제 도구(`set_project_settings battle.teams`)로 3팀 저작 → `createBattleRuntime` → `performTeamSwap`. 17개 항목(도구 거절·한 팀만 전투·개별 교체는 같은 팀만·gauge/free/turn·전멸 순환·strict·팀 없는 프로젝트 불변).
+실행: 워크트리에서 `npx esbuild ./scripts/qa/ff6-fix-a-teams-probe.mts --bundle --platform=node --format=esm --packages=external --alias:@=./src --loader:.png=dataurl --loader:.css=empty --outfile=.omo/p.mjs && node .omo/p.mjs`
+(진입점에 `./` 필수 — 없으면 esbuild 가 패키지로 읽는다. vite-node 는 워크트리에 `.env.local` 이 없거나 node_modules 심링크 루트가 달라 `Cannot find module /@fs//…` 를 낼 수 있다.)
+- `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — `author_stage_performance` 로 저작한 공연 컷신을 출하 플레이어로 본다(가사·합창 코너 자막, 조명 어두움, 끝난 뒤 색조 복구). 크로미움은 `unshare -rn` 안에서.
+- `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`) — 비행선 flightView:"mode7" 탑승·비행 화면(멀리 보기+지평선 원근+하늘). 크로미움은 `unshare -rn` 안에서. 같은 비행의 탑뷰 기준은 `QA_FLIGHT_VIEW=flat`. 프레임 시간은 rAF 간격으로 잰다(플랫 대비 평균 16.67ms 동일).
+
+## `qa:game check` 자동 플레이가 연애물을 거짓으로 막던 네 원인 (2026-10-16)
+
+연애 시뮬레이션 감사에서 R1(막힘 3)·R3(막힘 1)이 **끝까지 플레이할 수 있는 게임인데도** `autoplay-failed` 로 나왔다. 원인은 모두 `src/qa/gameCheck/autoPlay.ts`의 계획기가 모르는 규칙이었고, 기준을 느슨하게 하지 않고 **규칙을 정확하게** 만들었다.
+
+1. **호감 문턱을 선행 요구로 안 봤다** — 페이지 조건 `friendshipAtLeast` 를 `leafRequirements` 가 버려서, 호감 20 이 필요한 고백 페이지를 호감 0 으로 한 번 조사하고 「다른 페이지가 실행됐다」로 오판. 이제 `Requirement` 종류 `friendship`(npcKey·value): 세터는 `changeFriendship(delta>0)`(npcKey 가 비면 이벤트 `characterId`), 완료는 `session.friendship[npcKey] ≥ value`, 변수 문턱과 같은 되풀이(`repeat`, 최대 20번)로 쌓는다.
+2. **NPC 일정을 안 봤다** — 러너는 일정이 있는 이벤트를 시각에 맞춰 `session.eventLocations` 의 다른 맵·칸에 세운다. 계획기는 저작 위치로 걸어가 「조사할 action 이벤트 없음」. `executeGoal` 이 `presentLocation()` 으로 지금 선 자리(맵·칸)를 쓴다.
+3. **하루 잠금이 공통 이벤트로 풀리는 걸 몰랐다** — 「오늘 만남 끝」 스위치를 침대 이벤트가 아니라 `timeSystem.onDayEnd` 공통 이벤트가 끈다. 계획기는 공통 이벤트 안 세터를 못 써서 「되풀이해도 문턱에 닿지 않습니다」. 이제 그 스위치를 `onDayEnd` 가 끄면 되풀이 준비로 `advanceDays 1`(`Goal.sleepDays`)을 쓴다. 목표 페이지가 같은 스위치 OFF 를 요구하면 선행 뒤에 하룻밤을 한 번 넣는다.
+4. (참고) 러너 쪽 호감 대화 재현은 `applySocialTalkForRunner`(`socialLoop` 켠 프로젝트) — 별도 PR.
+
+**정밀성 확인(반례 3종이 여전히 막힌다)**: 호감을 올리는 세터를 지운 사본, `onDayEnd` 리셋을 지운 사본, 일정이 문 없는 맵으로 보내는 사본 → 모두 `autoplay-failed`. 입력·출력은 `~/romance-fix-work/item3/`. 알려진 한계: `talkFriendship`(대화 자체가 호감을 주는 이벤트)는 세터 방문이 없어 아직 계획에 못 쓴다.
+
+## 연애 조수 한 편의 완성도 측정 — 조수 대용 3판 (2026-10-16, 2차 수리 C)
+
+실제 입력창 조수(Argon `gemini-4-argon`)는 한도 소진(HTTP 429 RESOURCE_EXHAUSTED, 복구 2026-10-21)이라 **조수 대용 = Claude Sonnet 5.5 high 역할극**(`scripts/oprn-tools.mjs` 와 같은 헤드리스 도구 코어에 `assistantRun:true`)으로 지었다. Argon 점수와 직접 비교하지 않는다. 씨앗은 `qa:game gen --text "대학 캠퍼스 연애 게임 만들어 줘"` 가 모델 호출 전에 쓰는 `seed.json`, 도구 호출 목록은 `scripts/qa/romance-fix2/assistant-runs/`.
+측정 4가지: `qa:game check` 막힘 수 · 자동 플레이로 닿는 엔딩 · 출하 플레이어 캡처(`runtime/romance-run`) · SQLite 저장→재로드(`save-reload.mjs`). 새로 알게 된 한계: `qa:game check` 는 기한 엔딩을 안 걸었다(`src/qa/gameCheck/deadline.ts` 가 메움). 상세·실측표는 `~/claude-viz/romance-fix-2.html` 의 보고서 근거.
+
+
+## 몬스터 마을 시스템 시각 QA (2026-10-16)
+
+`scripts/qa/runtime/monster-town.mjs <project.json> [outDir]` — 출하 플레이어(player.html)에서 상점(`TOWN_STAGE=shop`: 메뉴·수량·소지금·판매)·센터(`center`: 맡김→볼→섬광→회복 연속 프레임 + `__oprnAudioObserved` 소리 도착)를 실제 입력으로 본다(트레이너 단계 `trainer`·`emote` 는 트레이너 그림 PR 이 쓴다). 픽스처는 `bun src/harnesses/assistant-capability/node/buildMonsterFixture.ts <out.json>`. 함정: 세로 시선 트레이너가 맵 윗가장자리(y<8)에 있으면 「!」가 화면 밖으로 잘린다(트레이너 y≥8 을 쓴다). 서버 부하가 크면 애니메이션 프레임 간격이 늘어나 섬광 타이밍은 판정할 수 없다. 출력은 `verify-shots/runtime-qa/monster-town/SUMMARY.md` 먼저.
+
+## 연애 3차 수리 검증 — 조수 대용 + 출하 플레이어 (2026-10-16, romance-fix-3)
+
+- 실제 Argon(8318)은 `gemini-4-argon-high` 한도 소진(HTTP 429)이라 **조수 대용**(Sonnet 5.5 역할극, `scripts/oprn-tools.mjs --assistant`)으로 `place_npc`×5·`define_ending`×4·`set_deadline_ending`·`set_title_screen` 을 실행했다. 지형은 앞선 실제 Argon 판(`romance-3/qa-runs/real-1`)의 타일을 이식한 합성본 — Argon 점수와 비교하지 않는다.
+- `deadline.ts` 자동 플레이는 선택지로 시작하는 대화에서 첫 선택지를 고른다(`choose 0`). 이전에는 선택지가 열린 채 끝나지 않아 호감이 0 으로 남았고, 어떤 인물에 집중해도 「모두의 봄」 하나만 닿았다 — 호감 엔딩이 모두 닿는지가 이제 검사된다.
+- `scripts/qa/romance-real/proof.mts` 는 인물마다 곁에 설 수 있는 통행 칸(`stand`)을 계산하고, `romance-real.scenario.mjs` 는 실내 인물들을 차례로 만난 뒤(07b) ESC 호감 목록(07c)을 찍는다. 책상에 막힌 아래 칸으로 가면 말 걸기가 실패한다.
+- 이 세션은 vitest·gates 를 돌리지 않았다. `test/romanceFix3.test.ts` 는 작성만 했다(미실행).
+
+## 대사창 읽기 보조 검증 (2026-10-17)
+
+- 집중 테스트(전체 스위트 금지): `node scripts/run-vitest.mjs test/dialogueSystem.test.ts test/dialogueReading.test.ts test/dialogueSystemTool.test.ts test/dialogueSystemMenu.test.ts test/playerRuntimeCss.test.ts test/feature16PlayerPreferences.test.ts`. 앞 네 개와 feature16 은 통과, `playerRuntimeCss` 는 main 에서도 3건 실패(위 runtime 절).
+- 알려진 함정: 읽은 글·백로그 테스트는 `playerPreferences` 를 쓰므로 `textSpeedChosen` 등을 테스트 사이에 초기화한다(앞 테스트의 값이 새어 나가 feature16 이 깨졌다). 도구 테스트는 `runTool` 의 일반 타입 오류 문구에 맞추지 말고 거절 사실을 본다. 시험 도중 happy-dom 의 animation-cancel unhandled rejection 은 기존 현상이다.
+- 런타임 시각 QA 시나리오 `scripts/qa/runtime/romance-vn-system.scenario.mjs` 는 고정 개수의 Enter 대신 `pressUntil` 로 상태를 기다린다(두 번째 Enter 가 선택지 0 을 확정하는 사고를 막기 위해).
+
+
+## 미연시 추가 화면 검증 (2026-10-17)
+
+- 집중 테스트(전체 스위트 금지): `node scripts/run-vitest.mjs test/vnExtras.test.ts` (순수 규칙·갤러리 잠금·엔딩 목록 상세·세이브 카드 저장/읽기·`set_vn_extras` 스키마와 거절·네 언어 표·옛 프로젝트 불변). 범위 tsc: `NODE_OPTIONS=--max-old-space-size=7000 npx tsc -p tsconfig.app.json --noEmit`.
+- 런타임 시각 QA `romance-vn-ui2`(ko·en): 대화로 CG 1장을 열고 → ESC 갤러리(잠긴 칸)·뷰어·엔딩 회상·엔딩 목록·저장·불러오기를 원 해상도로 본다. 이 기기에서 본 엔딩은 `scenario.localStorageSeed` 로 심는다. 타이틀 불러오기 카드는 같은 페이지에서 저장소를 덤프해 다시 심고 `page.reload` 하는 일회용 탐침으로 확인(`/tmp` 스크립트, 보존 안 함 — 증거는 `verify-shots/runtime-qa/romance-vn-ui2/17-title-load-card.png`).
+- 함정: 타이틀로 돌아가기는 ESC 에서 한 번 더 `→` 로 확인 줄에 들어가야 한다. 타이틀 「불러오기」 단추는 오버레이에 가려 Playwright `click` 이 막히니 DOM `click()` 으로.
+- 자료집 「메뉴·시스템」 탭(2026-10-17): 집중 테스트 `node scripts/run-vitest.mjs test/menuSystem.test.ts`(공용 규칙·탭 렌더·되돌리기·SQLite 재로드). 시각 QA 는 `scripts/capture-menu-system-tab.mjs`(편집기 UI 라 `qa:runtime` 이 아니다). `databaseSidebarKeyboard.test.ts` 는 이 환경에서 `window is not defined`(phaser import)로 스위트가 시작하지 못한다 — 탭 맵에 한 줄을 넣었지만 직접 돌리지 못했다.

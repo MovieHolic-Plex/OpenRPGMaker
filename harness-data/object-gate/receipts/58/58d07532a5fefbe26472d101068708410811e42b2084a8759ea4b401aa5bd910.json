@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58d07532a5fefbe26472d101068708410811e42b2084a8759ea4b401aa5bd910",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "경기장 나무 울짱(3칸) (arena fence 3)",
+ "label": "atlas_biome_interior/plus/arena fence 3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden arena fence / barricade with vertical posts and horizontal beams",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal beams show prominent horizontal top surfaces foreshortened in 3/4 view (top beam rows 1-7, bottom beam rows 16-20) with highlighted front edges transitioning into south vertical faces (rows 8-9 and 21-22). Mortise/peg details and post sockets are visible on the respective top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13028
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden arena fence frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal beams clearly show their top surfaces in 3/4 view: the upper beam's top surface spans rows 2-7 (with visible post tenons on rows 4-5) before dropping to its 2px front face on rows 8-9, and the lower beam clearly shows a 4px top surface (rows 17-20) where the posts attach.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8167
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "arena wooden fence (3-tile section with top and bottom horizontal beams and vertical posts)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top beam (rows 1-7, 7px tall, showing mortise/peg joints) and bottom beam (rows 16-20, 5px tall) have clearly drawn horizontal top surfaces viewed from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden arena fence / palisade with top and bottom horizontal beams and vertical posts",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal beams clearly show top surfaces in 3/4 view: the top beam has a 6-row top surface (rows 1-6) with tenon/bolt caps aligned with each post and a bright south-edge highlight on row 7, dropping into a 2-row south face (rows 8-9); the bottom beam similarly shows a 3-4 row top surface (rows 17-20) with front face on rows 21-22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17234
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:00.549Z",
+ "cells": {
+  "16": [
+   "22802644318331d7",
+   "7a7031732ed7e610",
+   "98865b6ffc029786",
+   "bed21533785a5a13",
+   "eb24a3e978b603d2",
+   "fe2bd57c4be4680f"
+  ],
+  "24": [
+   "01e620914c77cd8a",
+   "5397573e8a9514b2",
+   "9d2fb6bfb490dbf7",
+   "a47eb83e600e62a1",
+   "a82a6a49c708798e",
+   "f653502188b5761b"
+  ],
+  "32": [
+   "06dc92e8824f10b7",
+   "3737011ffdcaeeed",
+   "3b56acc8b5ca514b",
+   "8083e6254e5895ab",
+   "b3be1a7cd8640709",
+   "d1be3c1d197cae33"
+  ],
+  "48": [
+   "44775e806d12b923",
+   "49f3bc728a22573f"
+  ]
+ }
+}

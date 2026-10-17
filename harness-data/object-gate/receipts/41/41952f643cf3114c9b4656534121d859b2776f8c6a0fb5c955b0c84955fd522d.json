@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41952f643cf3114c9b4656534121d859b2776f8c6a0fb5c955b0c84955fd522d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "prehistoric stone-age lily",
+ "label": "prehistoric/ph-lily",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cluster of floating lily pads",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lily pads lie flat on the surface viewed from above in top-down 3/4 perspective, with one bearing a small flower bud.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of floating lily pads with a small flower",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lily pads are depicted lying flat on the surface, viewed from a 3/4 top-down angle spanning multiple pixel rows with foreshortened circular/notched shapes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water lily pads with a flower",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cluster of floating lily pads and a small flower viewed top-down on the surface, foreshortened appropriately for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3288
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of lily pads with flower",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lily pads are depicted lying flat in top-down 3/4 perspective, foreshortened across multiple rows without upright front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4289
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.799Z",
+ "cells": {
+  "16": [
+   "f38bf7e885460b39"
+  ],
+  "24": [
+   "234d101bc00ebddb",
+   "33177ae9bdb5aaeb",
+   "62c7889249dbc507",
+   "dda4107a226ba945",
+   "f17fddea2eef884a",
+   "fc3f424c71482b99"
+  ],
+  "32": [
+   "21e510b71a744812",
+   "53063f62ef3800da",
+   "5af01e5dddf8c65b",
+   "902f1fe4b0b764cc",
+   "a2163584b06bb9b9",
+   "b3682de22eea92d0"
+  ],
+  "48": [
+   "02e38273d0d7dde7",
+   "077ca5270402b093",
+   "2f24638b7fc0810b",
+   "2f80704e3e61dbc4",
+   "63dca6736c2da137",
+   "909d6bd5d6164003"
+  ]
+ }
+}

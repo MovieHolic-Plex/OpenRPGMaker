@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1c3104b1779e0b57335f86bd6e835a859f368b67cbca7344410e47a1f33427d",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-monohoshi",
+ "label": "jp_city/street_hand/jp-monohoshi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laundry drying rack frame with top canopy/beam and hanging cloths",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat front elevation. The horizontal canopy/beam at the top (rows 2-8) has no visible top surface (0px), terminating in a flat horizontal outline at row 2. The lower base and horizontal bar also show no foreshortened top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laundry drying rack with futon and hanging towels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack—including the draped futon at the top, the clothesline, and the base—is drawn in pure front elevation with zero foreshortened horizontal depth (top_rows is 0). Neither the top bar, base, nor draped fabric show a top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15378
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laundry drying frame (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": true,
+    "evidence": "The frame is drawn in pure front elevation with flat rectangular posts, a 2px flat base, and flat horizontal beams showing 0 rows of top surface. Furthermore, the hanging cloths include east-facing side faces (e.g. column 10 on the blue cloth, column 28 on the green cloth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16736
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clothes drying frame with canopy and hanging laundry",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat 2D front elevation: the top canopy is a flat frontal rectangle (rows 2-8), the crossbeam is a 1px line (row 10), and the base is a flat front strip (rows 28-30) with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11352
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.380Z",
+ "cells": {
+  "16": [
+   "02f9964358217950",
+   "06919e680113522a",
+   "2de53544fef0f91c",
+   "550fe78938801eba",
+   "7b3b28c2ce215f12",
+   "d35ca39a79ce9bde"
+  ],
+  "24": [
+   "0cfac9b81b0b50ea",
+   "0da717c223d86aa3",
+   "37ec91ee1347924e",
+   "648eddd8acaa2a46",
+   "810930a5e10bde37",
+   "8f3e820ef727fb43",
+   "b232a92918cbc82e",
+   "eb6d662d1301a1c5"
+  ],
+  "32": [
+   "04be5024aba4d3b3",
+   "0560734dfd923f3e",
+   "1bc5748634dc1f8c",
+   "3689f20cbcbab37a",
+   "8f6ff017d6a372df",
+   "c06eb713dd4e6ad3"
+  ],
+  "48": [
+   "bb07c4958116a03b",
+   "d018881322469770"
+  ]
+ }
+}

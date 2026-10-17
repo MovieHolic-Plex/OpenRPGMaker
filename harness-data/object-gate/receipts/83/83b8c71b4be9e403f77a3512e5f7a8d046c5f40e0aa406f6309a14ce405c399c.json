@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83b8c71b4be9e403f77a3512e5f7a8d046c5f40e0aa406f6309a14ce405c399c",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "미술 작품 전시 선반",
+ "label": "jp_city/interior_school2/sx-art-display",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display shelf with art objects",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelf's top surface is visible between rows 14 and 18 (approx 5 rows deep) supporting several art pieces (which themselves have foreshortened tops and visible openings), above a south-facing lower shelving unit (rows 19-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4714
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top display surface of the shelf is clearly visible from rows 13 to 18 (6 rows tall) holding various art objects, viewed in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4358
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display shelf",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display shelf is clearly visible across rows 13-18 (approx 6 rows tall) where the art pieces are placed, with the front South-facing shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "art display shelf / counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly rendered across rows 13-18 (~6 source pixels deep) supporting the display items, above the front face which spans rows 19-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7944
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "4a9a69518c5aca8a",
+   "77dbf3fed8a7d306",
+   "81470b27fad55e8b",
+   "8ea205fed96b94cb"
+  ],
+  "24": [
+   "0c2afd0287a25cf8",
+   "0f5fecfd41c9904f",
+   "132bf1cf871b8c11",
+   "1882487860bb2f58",
+   "1de862c3f8fc1716",
+   "26970c4e3b97203b",
+   "38ca8b9475aa2365",
+   "3e6967704e51017e",
+   "4b2229248240352a",
+   "565cd54f8ea7811d",
+   "59f6006f3254feb1",
+   "5d09e7b610f54c90",
+   "605c8f6bfe44d2b8",
+   "61940ead93dd7bd2",
+   "66a0c05ddf30f3af",
+   "6ce23600ba5764ff",
+   "6ed27444f7c75770",
+   "7bd836a7c300c097",
+   "8867f669a0555058",
+   "976687b7319090b8",
+   "98bab118b4e520a3",
+   "a55318e8e8a2f30d",
+   "f7e06e9a9785403a"
+  ],
+  "32": [
+   "d437c64523288e64"
+  ],
+  "48": [
+   "3118349b55c79e73",
+   "4785d47e34195251",
+   "5e575b45d2ad353c",
+   "7629ef2498c9a16b",
+   "ca3d57c8c2f55791",
+   "fe6be33dfd270d20"
+  ]
+ }
+}

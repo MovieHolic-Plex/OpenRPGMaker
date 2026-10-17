@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db37e3230d57dc73a057f3caeaa4d5c10f097c989494f0ed2f1453059e5807f1",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "축전지 뱅크(윗면에 전지 셀이 놓인 낮은 상자)",
+ "label": "sf-station/sf-battery-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "battery bank chassis",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box body clearly shows its top surface across rows 1-8 with three battery cells resting on it, and its south front face across rows 9-14 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "battery bank unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low base box occupies rows 1-8 (8 rows tall) supporting three green battery cells, while rows 9-14 form the front face with status indicator LEDs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6247
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "battery bank box with green cells mounted on top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 form the white top surface with three battery cells resting on it, while rows 9-14 comprise the dark south face with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4167
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low battery bank box with top surface holding battery cells",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the battery bank spans rows 1 to 8 (8 rows) displaying three green battery cells mounted on it, while the front face extends from row 9 to 14 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4417
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.749Z",
+ "cells": {
+  "16": [
+   "7c4e7567fef8d0d5",
+   "9a1301067897e533"
+  ],
+  "24": [
+   "18e2c88f523f9415",
+   "231239a0d9c2de3c",
+   "46543f3aa4a3c6bd",
+   "64735c728627e439",
+   "79f3175188e90902",
+   "a5a1499e1a51b12e",
+   "aab439bcd1e3065b",
+   "c3c56c921679355d",
+   "d5d95356d1f13b76",
+   "d80d76e748c63115",
+   "e06e18e23f2b6b7b",
+   "e2f30316a8b99d01"
+  ],
+  "32": [
+   "16d0184b019752f6",
+   "35739d931c0d551f"
+  ],
+  "48": [
+   "1f28dc2379ba5aa9",
+   "3ab58a71261ae579",
+   "7135233e26e120e1",
+   "9ad5de8aecf33070",
+   "be5f41c1e58d5263",
+   "bf0a9477570bd550"
+  ]
+ }
+}

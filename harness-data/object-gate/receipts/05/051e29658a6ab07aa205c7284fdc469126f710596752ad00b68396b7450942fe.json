@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "051e29658a6ab07aa205c7284fdc469126f710596752ad00b68396b7450942fe",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small flower patch on the ground (flat decal)",
+ "label": "sky-island/si-flowers-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are drawn in pure front elevation with cross-shaped blossom faces pointing directly at the camera atop green base pixels, showing 0 rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers are drawn as flat 2D front-facing silhouettes with vertical stems and front-oriented blooms, lacking any top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5550
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered upright flowers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each tiny flower is drawn as a flat vertical front elevation with green foliage at the bottom and petals facing purely forward, lacking any foreshortened top surface or 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7600
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each flower is drawn in pure front elevation as a flat 2D billboard sprite with side-facing petals over a green base, showing no top-down tilt or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5120
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.917Z",
+ "cells": {
+  "16": [
+   "f0d99b8e810a9f8c"
+  ],
+  "24": [
+   "1c36dd4393c8e634",
+   "2e4e4ad31a221358",
+   "4e32f88c9e4ce7c1",
+   "5eea89e368331c74",
+   "63640d25ab1cacc5",
+   "e21eedea4ec966e6"
+  ],
+  "32": [
+   "011c11460b46ad40",
+   "24f524491fdecb77",
+   "255747a77d86606a",
+   "29394509191b0d62",
+   "bb4c3e00812f60eb",
+   "e380aadd5d99a282"
+  ],
+  "48": [
+   "3e60882c0fa2112d",
+   "58ff7e71ae90c31c",
+   "7eca867c623e7c0f",
+   "7f47720e133425df",
+   "9331e5ca153cb65a",
+   "ccb91e0e26422f73"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45674c40e11f780da9823cffa8cf25aa2352c7aec5ff879871251054635f0bef",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 현창(둥근 금속 테 + 푸른 행성 가장자리)",
+ "label": "sf-station/sf-porthole-planet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wall porthole showing space and a blue planet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole window mounted flat onto a north wall, correctly rendered as a wall fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wall porthole window showing space and a planet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular porthole window mounted flush to the wall; properly classified as wall_mounted, which is permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wall porthole with view of planet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular porthole/window showing outer space and a planet, properly mounted flat on a vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2835
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular wall porthole with metallic frame showing space and a planet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole viewing outer space; as a flat wall-mounted fixture, it is viewed directly on the wall plane and does not require a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6711
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.257Z",
+ "cells": {
+  "16": [
+   "47b22be14a3e3e6a"
+  ],
+  "24": [
+   "2511c3d11a65f3cf",
+   "45e49749db7e8640",
+   "48c713fba0b48fff",
+   "815566895b2e2985",
+   "bfffe91629e580a0",
+   "c44d5552b1b78448"
+  ],
+  "32": [
+   "18c30a7afb0b6c3e",
+   "30d2cc7f8b77f741",
+   "73acfbfca2d08af0",
+   "a96a0800c02164f8",
+   "b5ff780d6c39e65a",
+   "fc40f2d6430ea2be"
+  ],
+  "48": [
+   "5b204a190d4c8f88",
+   "6a25ddb4aefa5855",
+   "905424d425497bf4",
+   "a5fd111649c8485e",
+   "ee8cd10740cb4172",
+   "ef449f4d507fec46"
+  ]
+ }
+}

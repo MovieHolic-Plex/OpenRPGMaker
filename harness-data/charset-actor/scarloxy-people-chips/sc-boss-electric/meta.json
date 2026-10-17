@@ -1,0 +1,56 @@
+{
+ "key": "sc-boss-electric",
+ "arch": "sp3-boss-electric",
+ "base": "Scarloxy2:0",
+ "variant": "불꽃 머리를 노랑 3톤(밝은 노랑·노랑·황금)으로 recolor, 붉은 코트를 검정 코트로, 금빛 띠를 밝은 노랑으로, 신발은 짙은 남색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 gjoq"
+ ],
+ "metrics": {
+  "added_up0": 12,
+  "added_up1": 14,
+  "added_up2": 12,
+  "added_right0": 5,
+  "added_right1": 11,
+  "added_right2": 5,
+  "added_down0": 12,
+  "added_down1": 14,
+  "added_down2": 12,
+  "added_left0": 5,
+  "added_left1": 11,
+  "added_left2": 5,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 7,
+  "cross_base": 2,
+  "lone": 264,
+  "lone_base": 257
+ },
+ "distinct": {
+  "score": 0.455,
+  "nearest": "ScarloxyPeople7#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 48,
+  "hole_filled_px": 6,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 5
+  }
+ },
+ "run": "r7/sp3-boss-electric-a",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "결함 없음. 노란 머리·어두운 코트·노란 띠가 4방향 일관, 이마 줄 붉은 점은 베이스 고정 칸."
+ }
+}

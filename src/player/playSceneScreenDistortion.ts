@@ -1,5 +1,6 @@
 import type Phaser from "phaser";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
+import { ensureFilterShaderNode } from "@/player/playSceneFilterShader";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   interpolateScreenDistortion,
@@ -31,7 +32,6 @@ const WAVE_SPEED = 0.004;
 
 const FRAG_SHADER = `
 #pragma phaserTemplate(shaderName)
-#define SHADER_NAME OPRN_SCREEN_DISTORT_FS
 precision mediump float;
 uniform sampler2D uMainSampler;
 uniform float uAmp;
@@ -77,21 +77,17 @@ function webglNodes(scene: PlaySceneContext): Phaser.Renderer.WebGL.RenderNodes.
 function ensureFilterNode(scene: PlaySceneContext): boolean {
   const nodes = webglNodes(scene);
   if (!nodes) return false;
-  if (nodes.getNode(FILTER_NODE)) return true;
-  const PhaserRuntime = getLoadedPhaser();
-  const node = new PhaserRuntime.Renderer.WebGL.RenderNodes.BaseFilterShader(FILTER_NODE, nodes, undefined, FRAG_SHADER);
-  const shader = node as Phaser.Renderer.WebGL.RenderNodes.BaseFilterShader & {
-    setupUniforms(controller: Phaser.Filters.Controller, _drawingContext: Phaser.Renderer.WebGL.DrawingContext): void;
-  };
-  shader.setupUniforms = function (controller, _drawingContext) {
-    const fx = controller as DistortController;
-    this.programManager.setUniform("uAmp", fx.amp);
-    this.programManager.setUniform("uLineScale", fx.lineScale);
-    this.programManager.setUniform("uPhase", fx.phase);
-    this.programManager.setUniform("uBlock", [fx.blockX, fx.blockY]);
-  };
-  nodes.addNode(FILTER_NODE, node);
-  return true;
+  return ensureFilterShaderNode(nodes, {
+    name: FILTER_NODE,
+    fragmentSource: FRAG_SHADER,
+    setupUniforms(node, controller) {
+      const fx = controller as DistortController;
+      node.programManager.setUniform("uAmp", fx.amp);
+      node.programManager.setUniform("uLineScale", fx.lineScale);
+      node.programManager.setUniform("uPhase", fx.phase);
+      node.programManager.setUniform("uBlock", [fx.blockX, fx.blockY]);
+    },
+  });
 }
 
 function targetOf(scene: PlaySceneContext): ScreenDistortion {
@@ -138,7 +134,7 @@ function applyScreenDistortion(scene: PlaySceneContext, state: DistortionState, 
   if (!ensureFilterNode(scene)) {
     if (!warnedNoWebgl) {
       warnedNoWebgl = true;
-      console.warn("[player] 화면 왜곡(물결·모자이크)은 WebGL 렌더러에서만 그려집니다.");
+      console.warn("[player] 화면 왜곡(물결·모자이크)을 그릴 수 없어 건너뜁니다(WebGL 아님 또는 셰이더 컴파일 실패) — 전환·이동은 계속됩니다.");
     }
     return;
   }

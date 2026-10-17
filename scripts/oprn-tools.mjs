@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { buildTsModule, withTsModule } from "./ontology-ts-loader.mjs";
+import { buildWorldmap } from "./lib/worldmapBuild.mjs";
 
 const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts", import.meta.url)));
 const STORE_ENTRY = resolve(fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url)));
@@ -21,6 +22,7 @@ function usage() {
     "  --write          save a successful write tool's result back to --project (or --out). Without it write tools are dry runs.",
     "  --out <file>     save to this project.json instead of --project (implies --write)",
     "  --new            start from a new empty project (as the editor opens it) when --project does not exist yet",
+    "  --assistant      run as the assistant would (ToolContext.assistantRun: genre lock, retired chipsets, family guard). --current-map <id> sets the viewed map; --approve-family <family> (repeatable) adds a user-approved tileset family. --monster-turn marks this turn as a monster-collection request (unlocks Pokemon-style tools/assets that are otherwise blocked outside monster projects).",
     "  --bundle <file>  reuse a prebuilt tool bundle; built there on first use (delete it after changing src/)",
     "",
     "With --write, every saved call keeps the previous project in <project>.history/ so revert_last_edit {steps}",
@@ -29,12 +31,16 @@ function usage() {
 }
 
 function parseArgs(argv) {
-  const parsed = { list: false, write: false, fresh: false, projectPath: undefined, projectDir: undefined, outPath: undefined, bundle: undefined, toolName: undefined, toolArgsJson: "{}" };
+  const parsed = { assistant: false, monsterTurn: false, currentMapId: undefined, approved: [], list: false, write: false, fresh: false, projectPath: undefined, projectDir: undefined, outPath: undefined, bundle: undefined, toolName: undefined, toolArgsJson: "{}" };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--list") parsed.list = true;
     else if (arg === "--write") parsed.write = true;
     else if (arg === "--new") parsed.fresh = true;
+    else if (arg === "--assistant") parsed.assistant = true;
+    else if (arg === "--monster-turn") parsed.monsterTurn = true;
+    else if (arg === "--current-map") { parsed.currentMapId = argv[i + 1]; i += 1; }
+    else if (arg === "--approve-family") { parsed.approved.push(argv[i + 1]); i += 1; }
     else if (arg === "--project") { parsed.projectPath = argv[i + 1]; i += 1; }
     else if (arg === "--project-dir") { parsed.projectDir = argv[i + 1]; i += 1; }
     else if (arg === "--out") { parsed.outPath = argv[i + 1]; parsed.write = true; i += 1; }
@@ -134,6 +140,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2));
   await withHeadless(args.bundle, async (module) => {
     module.setHeadlessPublicRoot(PUBLIC_DIR);
+    module.setHeadlessWorldmapBuilder?.(buildWorldmap);   // 월드맵 키트(Python)를 이 프로세스에서 직접 돌린다 — 동반 서비스 없이
     if (args.list) {
       process.stdout.write(`${JSON.stringify({ tools: module.listHeadlessTools() }, null, 2)}\n`);
       return;
@@ -166,8 +173,10 @@ async function main() {
         ? await loadProjectFromDirectory(args.projectDir)
         : loadProject(module, args.projectPath));
     }
-    await module.prepareHeadlessTool(args.toolName, toolArgs);
-    const { result, project: next } = module.runHeadlessToolWithProject(project, args.toolName, toolArgs);
+    await module.prepareHeadlessTool(args.toolName, toolArgs, project);
+    const { result, project: next } = module.runHeadlessToolWithProject(project, args.toolName, toolArgs, args.assistant
+      ? { assistantRun: true, ...(args.monsterTurn ? { monsterTurn: true } : {}), ...(args.currentMapId ? { currentMapId: args.currentMapId } : {}), ...(args.approved.length ? { approvedTilesetFamilies: args.approved } : {}) }
+      : {});
     if (args.write && result.ok && next !== project) {
       pushHistory(savePath, `${args.toolName}: ${String(result.summary ?? "").slice(0, 120)}`);
       writeFileSync(savePath, module.serializeHeadlessProject(next));

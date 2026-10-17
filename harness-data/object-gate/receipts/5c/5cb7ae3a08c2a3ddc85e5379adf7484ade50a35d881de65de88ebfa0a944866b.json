@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cb7ae3a08c2a3ddc85e5379adf7484ade50a35d881de65de88ebfa0a944866b",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "corridor bench",
+ "label": "monster-rooms/sh_bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation: the 4 seat backs (rows 4-8) are drawn completely flat facing the viewer, and the horizontal seat surface where someone would sit is absent (only a 1px white line at row 9 above a 2px front rail at rows 10-11). There is no visible top surface for the seats.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9966
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is rendered in a pure front elevation view: the backrests (rows 4-8), thin seat edge (rows 9-10), and legs (rows 11-14) are shown flatly from the front with zero foreshortened horizontal seat surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5473
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corridor bench",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in flat front elevation. Whether rows 2-3 represent the top of the backrest (2px) or row 9 represents the seat (1px), there is no visible 3/4 foreshortened seat surface (at most 2px tall).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bench with backrest and legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation: the backrest spans rows 2-8, the seat cushion is shown only as a 2px side/front profile thickness (rows 9-10), and the legs extend straight down (rows 11-15). There is no visible horizontal seat surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7336
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.552Z",
+ "cells": {
+  "16": [
+   "0b50328805225545",
+   "2cdb77997c6bfe3f"
+  ],
+  "24": [
+   "0ac0be52441f5d1e",
+   "1451bc4ac3453772",
+   "2c61706578ac2e11",
+   "3208e681614bb66b",
+   "3e7b5a67e72de14e",
+   "87873158ff3237e8",
+   "9234e15053aeec40",
+   "988a82d526f6679d",
+   "b26e252cc2055c0c",
+   "c8dd38990a920fd6",
+   "d306ba4e0276eeb0",
+   "f49bbca14f502716"
+  ],
+  "32": [
+   "6828d329bde264a4",
+   "b5654f8efd936bc5"
+  ],
+  "48": [
+   "0574a0a11871264e",
+   "3bdab8080e327a49",
+   "7777c4f5042e8f7e",
+   "829c5b17c5cd670e",
+   "8d645f5aaca762ec",
+   "b4ab9440c7496729"
+  ]
+ }
+}

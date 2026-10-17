@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d4b391693903ebb7e4976ae45172aa49ef8f18b884d45746ac5564ff26af6297",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station corridor floor with recessed horizontal cyan guide light, two variants",
+ "label": "sf-station/sf-deck-lane-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor floor tiles with recessed guide light",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows two 16x16 terrain floor tiles viewed from above featuring metal/stone panels and a horizontal recessed cyan illuminated guide strip.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3282
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corridor floor tiles with recessed light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down with a horizontal recessed cyan guide light strip running across rows 6-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2939
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station corridor floor tiles with embedded cyan light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed from above with a recessed horizontal light strip running across rows 6-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3013
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "station corridor floor tile with recessed cyan guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a floor surface with an embedded cyan guide light strip running horizontally across rows 6 to 8. As ground terrain, the entire surface represents a horizontal plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3027
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.238Z",
+ "cells": {
+  "16": [
+   "3ceb455689c38a6c",
+   "c2934299f594c29f"
+  ],
+  "24": [
+   "25ee546c4dd93480",
+   "270b233fbf9187e2",
+   "35ee9f9fec95a7a5",
+   "398c128e819eb5a4",
+   "5f1ae16bb3dbe220",
+   "6656879baab57639",
+   "7c73985d5e25ce4d",
+   "7ec25b6a0d441a6c",
+   "864f01e0c3be2ea3",
+   "bea431e5068f08e2",
+   "c3f0d07ac0ab312d",
+   "f4c105987d9ba4c6"
+  ],
+  "32": [
+   "757033d04dbcf0b6",
+   "ac0a0591a0239d6c"
+  ],
+  "48": [
+   "19b1a54b68fad486",
+   "3489ba98d466a613",
+   "394aa3510e6e5aab",
+   "5d3897a94b9e8281",
+   "5d62b6e6d3ecacaf",
+   "60ab5594f7ac3975"
+  ]
+ }
+}

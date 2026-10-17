@@ -333,7 +333,7 @@ test.describe("에이전트 고스트 순차 공개 + 상태칩", () => {
     await expect(page.locator(MARKER)).not.toHaveCount(0, { timeout: 60_000 });
     expect(await page.locator(MARKER).first().evaluate((node) => Boolean(node.parentElement?.querySelector("canvas")))).toBe(true);
     await collapseChatDock(page);
-    await expect(chip).toBeVisible();
+    await expect(chip).toHaveCount(1); // 단계 알약은 기본(간단히 보기)에서 눈에만 접힌다 — 지도 이름표가 같은 말을 한다
     await expect(page.locator(MARKER).first()).toBeVisible();
     await page.screenshot({ path: path.join(EVIDENCE, "e2e-ghost-2.png"), animations: "disabled" });
 

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7018e34c5ebbda4819e8bf6aaa92013420075c0a8d56829931b497f9cfceac85",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥 + 둥근 작업대)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press head and column assembly",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the drill press head (rows 1-5) is visibly foreshortened and seen from above with 5 rows of top surface. The circular worktable (rows 18-22) is also angled in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4579
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press machine (head, column, worktable, and base)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top pulley housing (rows 2-5, 4px) and the circular worktable (rows 18-21, 4px) clearly show horizontal top surfaces foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7452
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the head/pulley cover is visible as a horizontal top surface (rows 1–5, 5 rows tall) above the blue front face (rows 6–13). Below the column, the circular work table and base also show clear foreshortened horizontal surfaces in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7078
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press upper housing and pillar assembly",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the drill press motor/pulley housing is clearly foreshortened and visible across rows 2-5 (4 rows tall). The intermediate worktable also shows its top surface in 3/4 perspective without receding isometric side walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6178
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:14.485Z",
+ "cells": {
+  "16": [
+   "663cf78c7305139d",
+   "b7b97560837055ac"
+  ],
+  "24": [
+   "0469655ac8cafffc",
+   "0c2982d582b627e0",
+   "0eab8aa2d01a3403",
+   "30bf7668ff0051c7",
+   "434a00890b283b0d",
+   "6359174c92314c1e",
+   "6527c6e00d346d37",
+   "b9f9bf5ccab855d0",
+   "c03b5c997026fc99",
+   "d12547e0635f4c20",
+   "e66481c31d5aa430",
+   "e73ad53e71053c78"
+  ],
+  "32": [
+   "0331245f247ef016",
+   "28cdc872562e7eba",
+   "7f55721334454074"
+  ],
+  "48": [
+   "1be8916dbaf80cc2",
+   "34d9eb8f975b3cc8",
+   "96288bff897aa448",
+   "acc06bc7a7f7ebdd",
+   "d2fb79be7b2f108d",
+   "e68aa16567e4483f"
+  ]
+ }
+}

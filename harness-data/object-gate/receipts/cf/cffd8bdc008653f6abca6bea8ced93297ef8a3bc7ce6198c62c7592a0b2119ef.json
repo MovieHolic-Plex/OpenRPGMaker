@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cffd8bdc008653f6abca6bea8ced93297ef8a3bc7ce6198c62c7592a0b2119ef",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "diagonal wooden support struts under a dock (frame)",
+ "label": "sky-island/si-pier-struts-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock support struts and water tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting the vertical face/underside of a wooden dock with support struts descending into water, standard for a vertical wall-face tile in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10340
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dock substructure struts and framing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Vertical wall-face terrain tile representing the underside framing and diagonal support struts of a raised dock over water. As a vertical terrain/wall face, no horizontal top surface is visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden support struts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The diagonal wooden struts are structural framework drawn in pure front elevation with 0px of top surface visible. They are drawn flat against the vertical plane without 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dock underside frame with diagonal support struts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Substructure terrain tile showing the underside of a dock with angled pilings/struts over water, functioning as a wall/elevation terrain tile rather than a standalone object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5694
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "e4f4bfd4185ae021"
+  ],
+  "24": [
+   "17e7d055f7a9958c",
+   "186bbab2089613dc",
+   "2b8beff75059db22",
+   "310df1406112ae83",
+   "5c049ba9937161e6",
+   "646051ffa6d15b3e"
+  ],
+  "32": [
+   "560cda898531d942",
+   "9119a85f1da8e3b9",
+   "9f433c5085e44349",
+   "b14429a736873227",
+   "d334830868e31ec4",
+   "fe1bcca4b018cc68"
+  ],
+  "48": [
+   "1bfe0d3ff69cc248",
+   "3ac1da32770c7c4b",
+   "676aaa5c99ac998e",
+   "d103f64c306c528d",
+   "f089b32eee53b2d6",
+   "f669d459e6ffbff9"
+  ]
+ }
+}

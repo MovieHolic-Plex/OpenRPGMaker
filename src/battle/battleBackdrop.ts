@@ -49,11 +49,23 @@ function resolveBattleBackdropId(input: {
   const override = normalizeBattleFieldBackgroundId(input.overrideResourceId);
   if (override) return override;
   const troopBg = normalizeBattleFieldBackgroundId(troop?.previewBackgroundResourceId);
-  if (troopBg) return troopBg;
+  // 적 그룹의 숲 배경은 만들 때 도구가 찍는 기본값인 경우가 많다(jrpg-real-1 J08: 지하묘지 박쥐 그룹이 숲 배경 값을 들고 있었다).
+  // 숲이 아닌 값은 저작 의도이므로 그대로 이기고, 숲 값은 맵·지형·기후·던전 이름이 더 구체적으로 말해 주면 물러난다.
+  if (troopBg && troopBg !== DEFAULT_BATTLE_FIELD_BACKGROUND_ID) return troopBg;
   const terrainBg = normalizeBattleFieldBackgroundId(terrainBattleBackgroundAt(input.project, input.location));
   if (terrainBg) return terrainBg;
+  // 맵에 저작한 전투 배경(set_map_properties battleBackground). 예전엔 에디터가 저장만 하고 런타임이 읽지 않아 늘 숲이 나왔다(jrpg-real-1 J08).
+  const mapBg = authoredMapBattleBackground(input.project, input.location?.mapId);
+  if (mapBg) return mapBg;
   const climateBg = climateBattleBackground(input.project, input.location?.mapId);
   if (climateBg) return climateBg;
+  // 아무도 배경을 정하지 않은 던전·동굴 맵은 숲이 아니라 동굴이다(고대 지하묘지의 박쥐 전투가 숲에서 벌어졌다).
+  const dungeonBg = dungeonBattleBackground(input.project, input.location?.mapId);
+  if (dungeonBg) return dungeonBg;
+  // 마을·도시·폐허·사막으로 읽히는 맵 이름도 숲이 아니다(jrpg-loop-1 ct1: 안개 낀 「멸망한 폐허 크로노폴리스」의 보스전이 울창한 숲에서 벌어졌다).
+  const placeBg = placeNameBattleBackground(input.project, input.location?.mapId);
+  if (placeBg) return placeBg;
+  if (troopBg) return troopBg;
   return input.project.system.battleUiStyle === "pokemon"
     ? POKEMON_BATTLE_BACKDROP_ID
     : DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
@@ -69,6 +81,41 @@ export function terrainBattleBackgroundAt(
   if (found.record.battleBackgroundResourceId) return found.record.battleBackgroundResourceId;
   const byId = (project.database.terrains ?? []).find((entry) => entry.id === `terrain_${found.tag}` || entry.id.endsWith(`_${found.tag}`));
   return byId?.battleBackgroundResourceId;
+}
+
+/** 던전·동굴로 읽히는 맵 이름 — 이름이 곧 장소의 성격이다(지하묘지·갱도·미궁 …). */
+const DUNGEON_MAP_NAME = /던전|동굴|지하|묘지|광산|갱도|미궁|하수도|catacomb|\bcave\b|dungeon|\bmine\b|sewer/iu;
+const DUNGEON_TILESET_ID = /dungeon|cave/iu;
+
+/** 맵이 `battleBackground` 를 저작했으면 그 값(emerald:<갈래> 는 emeraldBattleTerrain 의 몫이므로 제외). */
+export function authoredMapBattleBackground(project: Project, mapId: string | undefined): string | undefined {
+  const raw = mapId ? project.maps[mapId]?.battleBackground : undefined;
+  if (!raw || /^emerald:/u.test(raw)) return undefined;
+  return normalizeBattleFieldBackgroundId(raw);
+}
+
+/** 던전·동굴 맵이면 동굴 겹 배경, 아니면 undefined. */
+export function dungeonBattleBackground(project: Project, mapId: string | undefined): string | undefined {
+  const map = mapId ? project.maps[mapId] : undefined;
+  if (!map) return undefined;
+  if (DUNGEON_MAP_NAME.test(map.name ?? "") || DUNGEON_TILESET_ID.test(map.tilesetId ?? "")) return "battle-scenery-cave";
+  return undefined;
+}
+
+const FOREST_MAP_NAME = /숲|삼림|밀림|수풀|forest|woods?\b/iu;
+const DESERT_MAP_NAME = /사막|오아시스|모래|desert|oasis/iu;
+const OPEN_PLACE_MAP_NAME = /마을|도시|항구|성채|성곽|성문|광장|거리|시가지|폐허|town|city|village|harbou?r|ruins?\b|plaza/iu;
+
+/**
+ * 맵 이름이 곧 장소의 성격이다. 숲이라는 낱말이 있으면 숲 그대로(undefined), 사막은 사막, 마을·도시·폐허는 하늘이 트인 평원 겹 배경.
+ * 눈·던전은 앞선 단계(기후·던전)가 이미 정했으므로 여기 오지 않는다.
+ */
+export function placeNameBattleBackground(project: Project, mapId: string | undefined): string | undefined {
+  const name = (mapId ? project.maps[mapId]?.name : undefined) ?? "";
+  if (!name || FOREST_MAP_NAME.test(name)) return undefined;
+  if (DESERT_MAP_NAME.test(name)) return "battle-scenery-desert";
+  if (OPEN_PLACE_MAP_NAME.test(name)) return "battle-scenery-plains";
+  return undefined;
 }
 
 /** 눈 날씨 맵(또는 그 맵이 매달린 상위 맵)의 전투는 설원 배경. */

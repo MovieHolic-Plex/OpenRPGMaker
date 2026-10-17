@@ -1,0 +1,110 @@
+{
+ "palette": {
+  "A": "#38122f",
+  "B": "#5e214f",
+  "C": "#843671",
+  "D": "#ae5698",
+  "E": "#1e1226",
+  "F": "#342042",
+  "G": "#4c325e",
+  "I": "#6ab52b",
+  "J": "#9be04a",
+  "K": "#241438",
+  "L": "#3e225c",
+  "M": "#5d3785",
+  "N": "#17141f",
+  "O": "#292436",
+  "P": "#3d3652",
+  "Q": "#542a22",
+  "R": "#c9966b"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "A",
+    "f": "B",
+    "l": "C",
+    "n": "D",
+    "d": "Q",
+    "o": "R"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "E",
+    "c": "F",
+    "g": "G",
+    "b": "A",
+    "f": "B",
+    "l": "C",
+    "i": "I",
+    "r": "J",
+    "d": "Q"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "N",
+    "c": "O",
+    "g": "P",
+    "d": "Q"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "N",
+    "c": "O",
+    "g": "P",
+    "j": "L",
+    "m": "J",
+    "e": "I"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "20": "....KKFGFGGGJGGGFGFKK...",
+    "21": "...KLMGFGIJJJIGFGGEMLK..",
+    "22": "...KLJJJGGGJGGGJJJMLK...",
+    "23": "..KKLqooEGGIGGGEoooqKK.."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "20": "....KKLLLMBBBBMLLLKK....",
+    "21": "...KLMMLMMMMMMMMLMMLK...",
+    "22": "...KLJJLMMMMMMMMLJJLK...",
+    "23": "..KKLqooEMMMMMMEoooqKK.."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "20": "......KKLGFGGGJEa.......",
+    "21": "......KLMGFGIJJEa.......",
+    "22": "......KLJJEGGGJEa.......",
+    "23": ".....KKLqooEGGGIhd......"
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "20": ".......EJGGGFGLKK.......",
+    "21": ".......EJJIGFGMLK.......",
+    "22": ".......EJGGGEJJLK.......",
+    "23": "......dhIGGGEooqLKK....."
+   }
+  }
+ ]
+}

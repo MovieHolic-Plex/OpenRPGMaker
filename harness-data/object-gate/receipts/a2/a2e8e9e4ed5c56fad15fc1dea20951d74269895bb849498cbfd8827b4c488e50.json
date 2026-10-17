@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2e8e9e4ed5c56fad15fc1dea20951d74269895bb849498cbfd8827b4c488e50",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "jp-sat-dish",
+ "label": "jp/jp-sat-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish on balcony rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower rectangular mount/balcony panel is drawn in pure front elevation with horizontal shading bands and no visible top surface (0px). The dish above it also lacks 3/4 depth cues.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16362
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base box and satellite dish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower rectangular base (rows 8-14) is drawn in pure front elevation with no visible top surface (0 rows, only a 1px outline at row 7).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10985
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite dish mounted on a rectangular base / unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower rectangular unit/box (rows 8-15) is drawn in pure front elevation with horizontal shading stripes and 0 rows of visible top surface under the top outline at row 7.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9234
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base unit / lower block with satellite dish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower rectangular unit (rows 7-15) forms the largest volume of the object and is drawn in pure front elevation with horizontal stripes and no visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8140
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.125Z",
+ "cells": {
+  "16": [
+   "89d0d607df8c1677"
+  ],
+  "24": [
+   "37ec45332c8ef752",
+   "89e594d7b56b2537",
+   "a2f11630f58bbd47",
+   "c9585c3a32cd807e",
+   "cf0ef25be5b9038b",
+   "ee08fbdf3477ec7a"
+  ],
+  "32": [
+   "49aa8e1a00711227",
+   "68d2babb61b0a1f3",
+   "98ebc3ae3692ae06",
+   "a8cb534073904cc6",
+   "bc62b416d4b281a0",
+   "f0725d3e72c95650"
+  ],
+  "48": [
+   "16cf8f9e1ac26c0e",
+   "2a808d0e7755ba86",
+   "454573d8d5325ec2",
+   "71d59e46c95de274",
+   "a1366188655e6227",
+   "b944fefe379d65f4"
+  ]
+ }
+}

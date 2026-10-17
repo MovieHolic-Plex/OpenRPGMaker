@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d243f9e802979a33181d51ea0c02999cd78c3b43a3e7d0960ab8eade8755d99",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cNW' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_cNW",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corner fence post with connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a clear 3-row top surface (rows 0-2) above the vertical post face, and horizontal/southward rails display visible top surfaces appropriate for 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5854
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corner fence post with rails extending east and south",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the main corner post has a 3-row foreshortened cap/top surface (rows 0-2). The horizontal rails extending east clearly show distinct lighter top surfaces (rows 3-4 and 9-10) above shaded front faces, consistent with 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8283
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and rails (corner NW piece)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The corner post has a clearly defined 3-row top cap (rows 0-2) and the connecting horizontal rails show distinct foreshortened top surfaces (rows 3-4 and 10-11) above their south-facing sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6264
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and connecting rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post features a visible top cap (rows 0-2, 3px tall) and the horizontal rails clearly show light-toned top surfaces (rows 3-4 and 9-11) distinct from their shaded south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4995
+  }
+ ],
+ "decidedAt": "2026-10-14T06:21:16.327Z",
+ "cells": {
+  "16": [
+   "5f6f5e5cfcb8509e"
+  ],
+  "24": [
+   "09d637fc7f70c4ce",
+   "1e3aedfe3cd7a26b",
+   "6c04d616e0ce00d2",
+   "7fd56d92643adcae",
+   "aafec0b5c87a441b",
+   "e3a8546814eb557e"
+  ],
+  "32": [
+   "2fcb5c867eae3c81",
+   "8b0fed87a5c6af97",
+   "b09e50c53bcdc7ee",
+   "be5487ee94dd559e",
+   "f231370b43f9370f",
+   "f2a6532c91903815"
+  ],
+  "48": [
+   "03fd2b6c5e949431",
+   "7e63f6444814ede7",
+   "e0c037d75a21cb43",
+   "ec728921c7a035c4",
+   "f3c7dc2a05a097aa",
+   "f3ddd67df0117294"
+  ]
+ }
+}

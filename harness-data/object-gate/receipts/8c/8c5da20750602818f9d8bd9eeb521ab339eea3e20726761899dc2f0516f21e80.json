@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c5da20750602818f9d8bd9eeb521ab339eea3e20726761899dc2f0516f21e80",
+ "width": 32,
+ "height": 32,
+ "kind": "seat",
+ "name": "라운지 소파(2인·남향)",
+ "label": "jp_city/interior_office2/ox-lounge-sofa",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "2-seater lounge sofa",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the backrest (rows 2-4), armrests (rows 7-13), and seat cushions (rows 13-21, 9 pixel rows deep) are clearly foreshortened and visible from above, with the south front face/apron and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5022
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "2-seater lounge sofa facing south",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the backrest is visible for 4 rows (rows 2-5), the armrest top surfaces are visible for 6 rows (rows 7-12), and the top surface of the seat cushions is clearly foreshortened and visible for 8 rows (rows 13-20).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4336
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-seater lounge sofa with cushions and armrests",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sofa clearly displays a top-down 3/4 perspective: the top of the backrest is 4 rows tall (rows 2-5), the top surface of the seat cushions spans 9 rows (rows 13-21) complete with button tufts, the armrest tops span rows 7-13, and the south-facing front apron spans rows 22-25 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5720
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "2-seater south-facing sofa with accent cushions",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the backrest is visible across rows 2-4 (3 rows), the flat tops of the armrests span rows 7-13, and the horizontal seat cushion surface seen from above spans rows 13-20 (8 rows) above the front apron (rows 21-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5341
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.919Z",
+ "cells": {
+  "16": [
+   "0e615f187ce79a1d",
+   "4dff84361ee0955f",
+   "696cee9029ef49b3",
+   "946dd7c50e350fa3"
+  ],
+  "24": [
+   "0716eb4e6aab2963",
+   "12e0528501d4c74d",
+   "162b8ac5403d1e98",
+   "26af1861d540311c",
+   "3de2163fb28c4116",
+   "4d1f690d3f9aa591",
+   "6b0417a2b6286ce5",
+   "72c5c7a64b6908f0",
+   "76cb9bee63ebed48",
+   "7fa7892291157789",
+   "8e0148e86b239575",
+   "8f164ff72e1edcf2",
+   "9088da13fddf71a0",
+   "98f7d2784ae3dfa7",
+   "a095296c596cf857",
+   "a85c3c8e08358947",
+   "af72e9626336b849",
+   "c4816cb652cfe2d7",
+   "c68f0ea8f21a73ac",
+   "d53bb72499fdc1d3",
+   "d8557a256b850385",
+   "dc04bd830a32e19a",
+   "e210b3200c291cf2",
+   "f000f6c637bb5bdd"
+  ],
+  "32": [
+   "e88ae8c3e56a9c37"
+  ],
+  "48": [
+   "1682c14364998608",
+   "16fa19aee26fec83",
+   "8b373c2c8a3667cc",
+   "b104f09342ada586",
+   "cf378aa58b85abdc",
+   "fcbfcbd1a9790a04"
+  ]
+ }
+}

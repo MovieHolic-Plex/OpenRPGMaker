@@ -1,0 +1,10 @@
+{"png": "ph-swatch-grass.png", "kind": "terrain", "name": "풀밭 ↔ 흙 ground edge transition patch", "label": "prehistoric/ph-swatch-grass"}
+{"png": "ph-swatch-fern.png", "kind": "terrain", "name": "고사리 ↔ 흙 ground edge transition patch", "label": "prehistoric/ph-swatch-fern"}
+{"png": "ph-swatch-mud.png", "kind": "terrain", "name": "진흙 ↔ 흙 ground edge transition patch", "label": "prehistoric/ph-swatch-mud"}
+{"png": "ph-swatch-ash.png", "kind": "terrain", "name": "화산재 ↔ 흙 ground edge transition patch", "label": "prehistoric/ph-swatch-ash"}
+{"png": "ph-swatch-stone.png", "kind": "terrain", "name": "암반 ↔ 풀 ground edge transition patch", "label": "prehistoric/ph-swatch-stone"}
+{"png": "ph-swatch-swamp.png", "kind": "terrain", "name": "늪 물 ↔ 진흙 둑 ground edge transition patch", "label": "prehistoric/ph-swatch-swamp"}
+{"png": "ph-swatch-water.png", "kind": "terrain", "name": "맑은 물 ↔ 흙 둑 ground edge transition patch", "label": "prehistoric/ph-swatch-water"}
+{"png": "ph-swatch-lava.png", "kind": "terrain", "name": "용암 ↔ 굳은 용암 둑 ground edge transition patch", "label": "prehistoric/ph-swatch-lava"}
+{"png": "ph-swatch-crust.png", "kind": "terrain", "name": "굳은 용암 판 ↔ 화산재 ground edge transition patch", "label": "prehistoric/ph-swatch-crust"}
+{"png": "ph-swatch-lane.png", "kind": "terrain", "name": "trodden dirt footpath network on packed earth ground", "label": "prehistoric/ph-swatch-lane"}

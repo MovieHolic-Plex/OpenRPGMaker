@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88ed2f9dab940ded8d89bf2be8b66c054c0ece3c3fd8faadab4511534ee00596",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 램프(금속 받침 판 + 길쭉한 발광 등)",
+ "label": "sf-station/sf-wall-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal backing plate with elongated glowing lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture mounted flat against the north wall, correctly rendered as a front-facing surface with bevel highlights and shadows suitable for wall decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6895
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall lamp with metal plate and glowing light",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture drawn flat against the wall face as appropriate for wall_mounted fixtures",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall lamp panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted flat lamp fixture mounted directly on the wall surface; appropriate flat depiction for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5265
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal backing plate with glowing light",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture drawn flat against the wall with bevelled metal frame enclosing a vertical light tube; permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3338
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.956Z",
+ "cells": {
+  "16": [
+   "e800720f173418af"
+  ],
+  "24": [
+   "1ee5512c5b1f4709",
+   "40acabc940d9b263",
+   "90f34accfe4e3e8a",
+   "a6b2b953b879c20c",
+   "b7b478192fa46d9e",
+   "d8a039eb347eb7d1"
+  ],
+  "32": [
+   "3bc00a6fd9e835b3",
+   "497f8b678cc52345",
+   "b1661ae805f1067d",
+   "b1c4f8fe30a9bb87",
+   "e9fe8e42bb284219",
+   "fbdbda314d14ea58"
+  ],
+  "48": [
+   "1c4986e8551fb142",
+   "1d3b277230d2b35c",
+   "41dde4c1f1283eeb",
+   "455619d9286f50d8",
+   "63d95dac796ad163",
+   "b537fa80e70275da"
+  ]
+ }
+}

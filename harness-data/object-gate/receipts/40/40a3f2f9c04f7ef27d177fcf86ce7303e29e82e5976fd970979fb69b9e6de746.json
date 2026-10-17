@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40a3f2f9c04f7ef27d177fcf86ce7303e29e82e5976fd970979fb69b9e6de746",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-6-L",
+ "label": "jp_city/street_hand/jp-sf-shop-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shop facade (roofline, sign wall, awning, door frame, and windows) is rendered as a flat 2D architectural front elevation with no visible horizontal top surfaces or roof slope (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with door, sign, and window display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation. The projecting door frame, pillars, window sills, and building roof lack any visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6527
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "shopfront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large structure is presented as a flat frontal facade; the awning and lintel show only thin edge/front bands, with no visible top surface or roof slope from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 83895
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 232804,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.010Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "23f92e3b7442d9c8",
+   "2f6120ea18405e3d",
+   "3917bb0dce18217c",
+   "52b83970a827fa15",
+   "591233ec525de138",
+   "6b6f2f127a0e7b46",
+   "6c680a2b69d619be",
+   "6d8d6a2b2522f31c",
+   "913b974aed01b324",
+   "a3dee56c1fb1c22f",
+   "b1a8b5449b59fe87",
+   "b2a8cd57bb6739f4",
+   "c5403c1250122fda",
+   "d124d4f5fcead829",
+   "e5ba0a30b8a18a6b",
+   "f56690d5634893f0",
+   "fc1110faf9b1790b"
+  ],
+  "24": [
+   "21bee54acc9cb140",
+   "2a52ff0f30d43d8a",
+   "3da26a98eb63e4f5",
+   "3fe4f66e32daf5ca",
+   "7cb1239025d11ba0",
+   "86660e769a452b76",
+   "a5df895684a4c01f",
+   "d0ab0a196691c05f"
+  ],
+  "32": [
+   "394888ebfcad200b",
+   "40ac68a477c3e063",
+   "7081f91132fc4a6b",
+   "75764d5ba71d86d0",
+   "857656e62e0cf7d9",
+   "93acc17df0f408d4",
+   "94fc1f516ec281d4",
+   "97dbcdfb31cc5562",
+   "b00736b3d07d1f0b",
+   "c25e6401b4102f4c",
+   "c90858e69a1e3add",
+   "d6e5c5602f9a3513"
+  ],
+  "48": [
+   "10a19f3cf2379e73",
+   "a8e5650e08581ee9"
+  ]
+ }
+}

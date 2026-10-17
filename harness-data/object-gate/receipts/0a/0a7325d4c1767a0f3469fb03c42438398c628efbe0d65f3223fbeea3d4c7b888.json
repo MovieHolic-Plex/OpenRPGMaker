@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a7325d4c1767a0f3469fb03c42438398c628efbe0d65f3223fbeea3d4c7b888",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "장미 아치(쇠 트렐리스·시든 덩굴)",
+ "label": "gothic_manor/gm-rose-arch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trellis rose arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch is drawn as a flat 2D frontal cutout with perfectly horizontal rung lines and no top-down depth or top surface visible on the lintel/arch or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5078
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trellis arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch and side pillars are drawn as a flat 2D frontal elevation without any top surface, roof depth, or visible underside receding in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3686
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal trellis arch with vines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch and side posts are drawn entirely as a flat 2D front elevation (side-scroller style) with zero top-down depth visible on the arch beam or posts, and horizontal trellis rungs extending purely laterally.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4521
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trellis rose arch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The arch and vertical pillars are drawn in pure 2D front elevation with no depth or visible top surfaces showing the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3412
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.456Z",
+ "cells": {
+  "16": [
+   "11ae561389891df3",
+   "2896c429041666ba",
+   "74a8f8a1e38cc103",
+   "87d5af63e00cfbfc",
+   "a4f94ef7d701d95d",
+   "bead197c03b01187",
+   "f3455fbbdb3722a9",
+   "f5f9832fc5db345e"
+  ],
+  "24": [
+   "4e325ac33c749bea",
+   "9a42dc785990bbd3",
+   "9f312b88ca4d4257",
+   "c93c1ba87d16f63a"
+  ],
+  "32": [
+   "003f9dc45b1e8c33",
+   "16b3b4b58c9aae97",
+   "23b75115b078d14c",
+   "26bbea0b1659d415",
+   "31707d57c7371744",
+   "36293f14af5fb133",
+   "36909aee58583e37",
+   "3c033fcd9b59bf7a",
+   "3ff7a0d83d630abb",
+   "431eb67a019f7b41",
+   "51f17e6daeaaaa02",
+   "63bd3f8bec1e5097",
+   "7033cfbb42fcd1c5",
+   "731bc70b35ad274b",
+   "7367b6947de8995a",
+   "9b378826feb08ef0",
+   "a50d9d3113bc2740",
+   "af13c06ce72e5cf0",
+   "d11a723354234bd4",
+   "d85d085ed8935524",
+   "ddb4769e505b44b8",
+   "e663662a655177ec",
+   "eab03e70ee989bf2",
+   "fbfb8b38268cc240"
+  ],
+  "48": [
+   "7aa9d6ba9f90fff5"
+  ]
+ }
+}

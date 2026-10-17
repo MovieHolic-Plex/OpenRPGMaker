@@ -19,16 +19,26 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
-import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
+import { paintMainStreet, paintRiversidePromenade, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
-import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
-import type { GameMap, Project } from "@/project/types";
+import { isRomanceInterviewProject } from "@/project/romancePreset";
+import { ANY_FRIENDSHIP_KEY } from "@/project/session";
+import { isWaterfrontRouteName, KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
+import type { Command, GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
+import { romanceStageFlatFindings } from '../harnesses/romance-scene/artDirection';
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
+  ROMANCE_ENDING_HAPPY_AT,
+  ROMANCE_ENDING_HAPPY_ID,
+  ROMANCE_ENDING_NAMES,
+  ROMANCE_ENDING_NORMAL_AT,
+  ROMANCE_ENDING_NORMAL_ID,
+  ROMANCE_PLACEHOLDER_NAMES,
+  ROMANCE_SKELETON_ENDING_IDS,
   SEGMENT_END_ENDING_ID,
   SEGMENT_END_EVENT_ID,
   SEGMENT_KEY_SWITCH_ID,
@@ -51,6 +61,11 @@ const STARTER_SPECIES = ["species_leafling", "species_sparkit", "species_aqualin
 /** JRPG 문지기. 기본 DB 의 슬라임 무리는 시작 파티(Lv1 영웅)가 모의전 5/5 로 이긴다(2026-09-28 simulateBattle). */
 const JRPG_GATE_TROOP_ID = "troop_slime_pair";
 
+/** 연애 뼈대(호감 갈림 엔딩)를 가진 프로젝트인가 — 인터뷰 연애이거나 뼈대의 해피 엔딩이 있다(인터뷰 기록이 지워진 채팅 경로도 같게 본다). */
+export function isRomanceSkeletonProject(project: Project): boolean {
+  return isRomanceInterviewProject(project) || (project.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID);
+}
+
 export type PlayableSegmentVerdict =
   | { readonly ok: true; readonly endingId: string; readonly ms: number }
   | { readonly ok: false; readonly blockers: readonly string[]; readonly ms: number };
@@ -61,13 +76,20 @@ export type PlayableSegmentVerdict =
  */
 export function judgePlayableSegment(project: Project, options: { readonly budgetMs?: number; readonly expected?: Project } = {}): PlayableSegmentVerdict {
   const authoring = inspectAuthoringHarness(project, options.expected ?? project);
-  if (authoring) return authoring.ok ? { ok: true, endingId: 'ending_romance_first_meeting', ms: authoring.ms }
-    : { ok: false, blockers: authoring.blockers, ms: authoring.ms };
+  if (authoring) {
+    // 마무리 판정: 동작 검사 통과 + 첫 만남 화면이 단색 빈 판이 아님(초안 시드는 이 판정을 거치지 않는다 — 사람이 먼저 대화를 쓰고 꾸민다).
+    const flat = authoring.ok ? romanceStageFlatFindings(project) : [];
+    return authoring.ok && flat.length === 0 ? { ok: true, endingId: 'ending_romance_first_meeting', ms: authoring.ms }
+      : { ok: false, blockers: authoring.ok ? flat : authoring.blockers, ms: authoring.ms };
+  }
   const started = Date.now();
   const report = runGameCheck(project, { autoPlayBudgetMs: options.budgetMs ?? 60_000 });
-  const reached = report.autoPlay?.runs.some((run) => run.ok && run.endingReached === SEGMENT_END_ENDING_ID) === true;
+  // 연애 뼈대는 엔딩이 호감으로 갈린다 — 자동 플레이는 아무도 안 만난 채 닿으니 대개 기본 결말이지만, 해피·평범에 닿아도 같은 구간 끝이다.
+  const accepted = isRomanceSkeletonProject(project) ? ROMANCE_SKELETON_ENDING_IDS : [SEGMENT_END_ENDING_ID];
+  const reachedRun = report.autoPlay?.runs.find((run) => run.ok && run.endingReached !== undefined && accepted.includes(run.endingReached));
+  const reached = reachedRun !== undefined;
   const ms = Date.now() - started;
-  if (reached) return { ok: true, endingId: SEGMENT_END_ENDING_ID, ms };
+  if (reached) return { ok: true, endingId: reachedRun!.endingReached ?? SEGMENT_END_ENDING_ID, ms };
   const blockers = report.findings.filter((finding) => finding.severity === "blocker").map((finding) => finding.message);
   if (!project.endings?.some((ending) => ending.id === SEGMENT_END_ENDING_ID)) blockers.unshift("첫 구간의 끝(" + SEGMENT_END_ENDING_ID + ") 엔딩이 없습니다.");
   if (report.autoPlay?.skipped) blockers.push("자동 플레이: " + report.autoPlay.skipped);
@@ -111,6 +133,10 @@ function paintRouteFor(ctx: { project: Project }, tilesetId: string, route: Rout
     try { tool(ctx, "fill_region", { mapId: SEGMENT_ROUTE_MAP_ID, rect, material }); }
     catch (error) { if (!optional) throw error; }
   }, style, plan, route);
+  const routeMap = ctx.project.maps[SEGMENT_ROUTE_MAP_ID];
+  if (routeMap && (plan.theme === "river" || isWaterfrontRouteName(routeMap.name))) {
+    paintRiversidePromenade(ctx.project, routeMap, plan);
+  }
 }
 
 /** 컨셉이 고른 칩셋(조선·마법 학교·일본 도시)으로 손대지 않은 빈 시작 맵을 옮긴다 — 조수는 보는 맵의 칩셋 계열을 따르므로 버들항 빈 맵에서는 컨셉의 칩셋이 영영 안 쓰인다. */
@@ -149,6 +175,11 @@ interface GenreSkeleton {
   /** 구간 끝에서 엔딩 앞에 도는 명령(JRPG 의 문지기 전투 등). */
   readonly endCommands: readonly unknown[];
   readonly epilogue: string;
+  /** 구간 끝 엔딩·이벤트 이름(생략하면 「첫 구간 끝」·「구간 끝」). 연애처럼 장르 말투가 필요한 뼈대만 쓴다. */
+  readonly endingName?: string;
+  readonly endEventName?: string;
+  /** 구간 끝 엔딩 말고 더 깔 엔딩(호감 갈림). 있으면 구간 끝 이벤트가 엔딩 id 없이 triggerEnding 해 조건·priority 로 고른다. */
+  readonly branchEndings?: readonly { readonly id: string; readonly name: string; readonly priority: number; readonly conditions: readonly unknown[]; readonly epilogue: string }[];
   /** 도구가 없는 마무리(시작 소지품 등). 복제본에 직접 쓴다. */
   readonly finish?: (project: Project) => void;
 }
@@ -169,17 +200,20 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
       const next = structuredClone(ctx.project);
       const starter = next.maps[map.id]!.events.find((event) => event.id === SEGMENT_STARTER_EVENT_ID);
       let switched = 0;
-      for (const starterPage of starter?.pages ?? []) {
-        for (const command of starterPage.commands) {
+      // 스타팅 선택은 「고르기 → 정할까요? 예/아니오」 중첩이라 어느 깊이의 giveMonster 뒤에도 켠다.
+      const switchAfterGive = (commands: Command[]): void => {
+        for (const command of commands) {
           if (command.kind !== "choices") continue;
           for (const option of command.options) {
             const index = option.branch.findIndex((entry) => entry.kind === "giveMonster");
-            if (index < 0) continue;
-            option.branch.splice(index + 1, 0, { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true });
-            switched += 1;
+            if (index >= 0) {
+              option.branch.splice(index + 1, 0, { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true });
+              switched += 1;
+            } else switchAfterGive(option.branch);
           }
         }
-      }
+      };
+      for (const starterPage of starter?.pages ?? []) switchAfterGive(starterPage.commands);
       if (switched === 0) throw new Error("첫 구간 뼈대: 박사 이벤트에서 giveMonster 선택지를 찾지 못했습니다.");
       ctx.project = next;
     },
@@ -269,6 +303,43 @@ interface TownLayout {
   readonly starter: { readonly x: number; readonly y: number };
 }
 
+/** 현대 캠퍼스·도시 시작 맵을 칩셋 구성기 도구로 깐다. 시작 맵의 칩셋을 컨셉 칩셋으로 옮기고 구성기가 서는 크기로 키운 뒤 부른다. 실패하면 던진다(호출부가 빈 칩셋 맵으로 물러난다). */
+export function composeKitStartMap(ctx: { project: Project }, mapId: string, plan: StartPlan): void {
+  const kit = ctx.project.tilesets[plan.tilesetId];
+  if (!kit || !plan.composeKit) throw new Error("구성기가 있는 칩셋이 아닙니다: " + plan.tilesetId);
+  const base = startMapSizeFor(kit.id, plan) ?? { width: 56, height: 44 };
+  const campus = plan.composeKit === "modern_campus";
+  const schoolText = /고등학교|중학교|교복|학원/u.test(ctx.project.gameDesignBrief?.summary ?? "");
+  const style = campus ? (schoolText ? "school" : "university") : undefined;
+  // 구성기 최소 크기: 대학 52×40 · 학교 48×36 · 도시 40×30.
+  const min = campus ? (style === "school" ? { w: 48, h: 36 } : { w: 52, h: 40 }) : { w: 40, h: 30 };
+  const width = Math.max(min.w, base.width), height = Math.max(min.h, base.height);
+  tool(ctx, "resize_map", { mapId, width, height });
+  const blank = ctx.project.maps[mapId]!;
+  blank.tilesetId = kit.id; blank.tileSize = kit.tileSize;
+  blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
+  const text = ctx.project.gameDesignBrief?.summary ?? "";
+  // 기본 이름 「빈 맵」 은 장소를 말해 주지 않는다 — 구성기가 까는 장소 이름으로 바꾼다(조수·인터뷰가 이미 지은 이름은 건드리지 않는다).
+  if (blank.name === "빈 맵") blank.name = campus ? (style === "school" ? "학교 교정" : "캠퍼스 교정") : "거리";
+  const data = campus
+    ? tool(ctx, "compose_campus_grounds", { mapId, style, seed: plan.seed })
+    : tool(ctx, "compose_modern_city_street", { mapId, seed: plan.seed, shops: modernCityShopsFromText(text) });
+  // 시작 칸은 구성기가 정한 교문·보도 칸이다 — 기본 시작 칸 (10,8) 이 우연히 풀밭이라 통과해도 거기서 시작하지 않는다.
+  const at = (data as { start?: { x: number; y: number } } | undefined)?.start;
+  if (at && ctx.project.startMapId === mapId) ctx.project.startPos = { x: at.x, y: at.y };
+}
+
+/** 기획 글에서 도시 거리에 꼭 넣을 건물(연애·일상 무대의 단골 장소)을 뽑는다. 못 짚으면 비워 씨앗이 고른다. */
+function modernCityShopsFromText(text: string): string[] {
+  const table: readonly (readonly [RegExp, string])[] = [
+    [/카페|커피/u, "카페"], [/편의점/u, "편의점"], [/사무실|회사|직장|출근|퇴근|오피스/u, "사무실"], [/아파트|원룸|자취/u, "아파트"],
+    [/은행/u, "은행"], [/병원/u, "병원"], [/빵집|베이커리/u, "빵집"],
+  ];
+  const out: string[] = [];
+  for (const [pattern, shop] of table) if (pattern.test(text) && !out.includes(shop)) out.push(shop);
+  return out.slice(0, 5);
+}
+
 /**
  * 시작 마을을 기획의 구상(형태·지형·무대)대로 미리 짓고, 시작 칸에서 걸어 닿는 동쪽 끝 문 자리와 시작 NPC 자리를 찾는다.
  * 길을 새로 파지 않는다 — 시공기가 만든 길 위에서만 찾는다. 못 찾으면 null(호출부가 옛 뼈대로 물러난다).
@@ -276,14 +347,19 @@ interface TownLayout {
 const PLACE_TMP_ID = "map_place_tmp";
 function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
   const placeRef = plan.placeId ? regionReference(plan.placeId) : undefined;
-  if (plan.composeStreet) {
+  if (plan.composeStreet || plan.composeKit) {
     if (start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
   } else if (plan.placeId) {
     if (!placeRef || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
   } else if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
   // 시험 사본에서 짓는다 — 걸어 닿는 문 자리를 못 찾으면 마을을 채택하지 않고 빈 시작 맵 그대로 둔다(호출부가 옛 모양으로 간다).
   const trial = { project: structuredClone(ctx.project) };
-  if (plan.composeStreet) {
+  if (plan.composeKit) {
+    // 현대 캠퍼스·도시: 칩셋 구성기 도구가 시작 맵을 통째로 깐다(칸 번호로 칠하지 않는다) — 단색 잔디 시작 금지.
+    try {
+      composeKitStartMap(trial, start.id, plan);
+    } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-kit]", error); return null; }
+  } else if (plan.composeStreet) {
     // 구성기가 씨앗으로 거리를 새로 짠다 — 칩셋을 옮기고 맵을 키운 뒤 땅·도로·건물·소품을 도구 호출로 깐다.
     try {
       const kit = trial.project.tilesets[plan.tilesetId]!;
@@ -295,7 +371,7 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
       blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
       const text = ctx.project.gameDesignBrief?.summary ?? "";
       const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style: streetStyleFromText(text), shops: shopsFromText(text) });
-      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never);
+      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never, () => ({ map: trial.project.maps[start.id]!, tileset: trial.project.tilesets[kit.id]! }));
       if (outcome.built < 4) return null;
       labelStreetBuildings(trial.project.maps[start.id]!, outcome.buildings);
     } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-street]", error); return null; }
@@ -340,7 +416,10 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
   }
   if (largest.size < 40) return null;
   const midY = map.height / 2;
-  const origin = [...largest.keys()].sort((a, b) => (a % map.width) - (b % map.width) || Math.abs(Math.floor(a / map.width) - midY) - Math.abs(Math.floor(b / map.width) - midY))[0]!;
+  // 구성기가 정한 시작 칸(교문·보도)이 걸어 다니는 큰 덩어리 안이면 그 자리에서 시작한다 — 서쪽 끝 풀밭이 아니라.
+  const composerStart = plan.composeKit ? trial.project.startPos : undefined;
+  const composerOrigin = composerStart && composerStart.x >= 0 && composerStart.y >= 0 && composerStart.x < map.width && composerStart.y < map.height ? key(composerStart.x, composerStart.y) : undefined;
+  const origin = composerOrigin !== undefined && largest.has(composerOrigin) ? composerOrigin : [...largest.keys()].sort((a, b) => (a % map.width) - (b % map.width) || Math.abs(Math.floor(a / map.width) - midY) - Math.abs(Math.floor(b / map.width) - midY))[0]!;
   const startAt = { x: origin % map.width, y: Math.floor(origin / map.width) };
   const reach = walk(origin);
   const doors = [...reach.keys()].filter((cell) => cell % map.width === map.width - 1 && isPassableLanding(trial.project, map, map.width - 1, Math.floor(cell / map.width)))
@@ -379,6 +458,45 @@ export async function preloadKitStartPlaces(): Promise<void> {
   await Promise.all(Object.values(KIT_START_PLACES).flat().map((id) => preloadRegionReferenceScene(id).catch(() => undefined)));
 }
 
+/** 연애 인터뷰 프로젝트의 뼈대 이름·대사(2026-10-16). 판타지 말투(「기억의 조각·기억의 길」)는 연애 게임에 어울리지 않아 자리표시도 연애 말투로 둔다 — 그래도 자리표시라서 romance 검사가 끝내 이름 바꾸기를 요구한다(이름은 playableSegmentContract.ts). */
+const ROMANCE_SKELETON: GenreSkeleton = {
+  ...SKELETONS["story-cutscene"],
+  routeName: ROMANCE_PLACEHOLDER_NAMES[0],
+  placeStarter(ctx, at) {
+    tool(ctx, "upsert_event", {
+      mapId: at.mapId,
+      event: {
+        id: SEGMENT_STARTER_EVENT_ID, name: ROMANCE_PLACEHOLDER_NAMES[1], x: at.x, y: at.y, trigger: { kind: "action" },
+        pages: [
+          page(SEGMENT_STARTER_EVENT_ID + "_look", [
+            { kind: "text", body: "누군가 떨어뜨린 수첩이다. 펼쳐 보니 낯익은 글씨가 적혀 있다." },
+            { kind: "setSwitch", switchId: SEGMENT_KEY_SWITCH_ID, value: true },
+          ]),
+          page(SEGMENT_STARTER_EVENT_ID + "_seen", [{ kind: "text", body: "주인은 산책로 끝에서 기다릴 것 같다." }], [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }]),
+        ],
+      },
+    });
+  },
+  lockedLine: "아직 이 길을 갈 이유를 모르겠다. 주변에서 단서를 찾아보자.",
+  endCommands: [{ kind: "text", body: "산책로 끝에서 누군가 이쪽을 돌아본다. 지금까지 쌓은 마음이 이 순간의 대답이 된다." }],
+  // 기본(조건 없는) 결말 = 혼자. 호감이 문턱에 못 닿았을 때 열린다. 해피·평범은 아래 branchEndings 가 누적 호감 문턱으로 깐다.
+  epilogue: "아직 누구에게도 마음을 전하지 못한 채 계절이 지났다. 다음 계절에는 먼저 말을 걸어 볼 수 있을까.",
+  endingName: ROMANCE_ENDING_NAMES.solo,
+  endEventName: ROMANCE_PLACEHOLDER_NAMES[2],
+  branchEndings: [
+    {
+      id: ROMANCE_ENDING_HAPPY_ID, name: ROMANCE_ENDING_NAMES.happy, priority: 20,
+      conditions: [{ kind: "friendshipAtLeast", npcKey: ANY_FRIENDSHIP_KEY, value: ROMANCE_ENDING_HAPPY_AT }],
+      epilogue: "쌓아 온 시간이 한 사람의 이름으로 이어졌다. 이야기는 이제부터 두 사람의 것이다.",
+    },
+    {
+      id: ROMANCE_ENDING_NORMAL_ID, name: ROMANCE_ENDING_NAMES.normal, priority: 10,
+      conditions: [{ kind: "friendshipAtLeast", npcKey: ANY_FRIENDSHIP_KEY, value: ROMANCE_ENDING_NORMAL_AT }],
+      epilogue: "고백은 하지 못했지만 서로를 아끼는 사이가 되었다. 지금은 이 거리가 딱 좋다.",
+    },
+  ],
+};
+
 /**
  * 장르별 첫 구간 뼈대: 시작 맵의 핵심 행동 이벤트 → 동쪽 문 → 길 맵 → 길 끝의 구간 끝(핵심 행동의 스위치가 있어야 열림).
  * 맵·문·조우·이벤트·엔딩은 실제 편집 도구로 만든다 — 모델이 쓰는 것과 같은 검증(통행·착지·커밋 게이트)을 지난다.
@@ -392,7 +510,7 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   const genre = playableSegmentGenre(input);
   if (!genre) throw new Error("이 장르에는 첫 구간 뼈대가 없습니다: " + String(input.system.genre));
   if (hasPlayableSegmentSkeleton(input)) return input;
-  const skeleton = SKELETONS[genre];
+  const skeleton = genre === "story-cutscene" && isRomanceInterviewProject(input) ? ROMANCE_SKELETON : SKELETONS[genre];
   const start = input.maps[input.startMapId];
   if (!start) throw new Error("시작 맵이 없어 첫 구간 뼈대를 깔 수 없습니다.");
   const ctx = { project: structuredClone(input) };
@@ -420,17 +538,21 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   skeleton.placeStarter(ctx, { mapId: here.id, x: starter.x, y: starter.y });
   tool(ctx, "define_ending", {
     id: SEGMENT_END_ENDING_ID,
-    name: "첫 구간 끝",
+    name: skeleton.endingName ?? "첫 구간 끝",
     conditions: [],
     epilogue: [{ kind: "say", speaker: "", text: skeleton.epilogue }],
   });
+  for (const branch of skeleton.branchEndings ?? []) {
+    tool(ctx, "define_ending", { id: branch.id, name: branch.name, priority: branch.priority, conditions: branch.conditions, epilogue: [{ kind: "say", speaker: "", text: branch.epilogue }] });
+  }
   tool(ctx, "upsert_event", {
     mapId: SEGMENT_ROUTE_MAP_ID,
     event: {
-      id: SEGMENT_END_EVENT_ID, name: "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
+      id: SEGMENT_END_EVENT_ID, name: skeleton.endEventName ?? "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
       pages: [
         page(SEGMENT_END_EVENT_ID + "_locked", [{ kind: "text", body: skeleton.lockedLine }]),
-        page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],
+        // 호감 갈림 뼈대는 엔딩 id 없이 부른다 — 조건을 만족한 엔딩 중 priority 가 가장 높은 것이 열린다(마지막 선택지가 아니라 누적 호감이 결말을 가른다).
+        page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, skeleton.branchEndings?.length ? { kind: "triggerEnding" } : { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],
           [{ kind: "switch", switchId: SEGMENT_KEY_SWITCH_ID, value: true }]),
       ],
     },
@@ -441,13 +563,28 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
 }
 
 /**
+ * 손대지 않은 빈 시작 맵을 기획이 고른 현대 칩셋(캠퍼스·도시) 구성기로 깐 사본. 해당 없음·실패면 null(호출부가 입력 그대로 쓴다).
+ * 길 맵·시작 NPC·엔딩은 만들지 않는다 — 한 장면 하네스가 그 위에 자기 이벤트를 얹는다.
+ */
+export function stageStartOnModernKit(project: Project): Project | null {
+  const plan = planStartForBrief(project.gameDesignBrief, project.meta.title);
+  const start = project.maps[project.startMapId];
+  if (!plan.composeKit || !start || start.tilesetId !== DEFAULT_TILESET_ID || !project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
+  const ctx = { project: structuredClone(project) };
+  try { composeKitStartMap(ctx, start.id, plan); }
+  catch (error) { if (nodeEnv("START_DEBUG")) console.error("[stage-kit]", error); return null; }
+  return ctx.project;
+}
+
+/**
  * 뼈대를 깔고 판정까지 통과한 프로젝트. 대상 장르가 아니거나, 이미 있거나, 깔다 실패하거나, 판정을 통과하지 못하면 null —
  * 호출부는 예전 흐름(AI 만)으로 진행한다. 실패는 코드 결함이므로 콘솔에 남긴다.
  */
 export function withVerifiedPlayableSegment(project: Project): Project | null {
   const harness = authoringHarnessFor(project) ?? eligibleAuthoringHarnessFor(project);
   if (harness) {
-    const seeded = harness.seed(project);
+    // 연애 첫 만남 같은 한 장면 하네스도 단색 잔디가 아니라 인터뷰가 고른 현대 무대(캠퍼스·거리)에서 시작한다 — 시작 맵 한 장을 그 구성기로 깐다.
+    const seeded = harness.seed(stageStartOnModernKit(project) ?? project);
     if (!seeded) return null;
     const verdict = harness.inspect(seeded, seeded, { allowDraft: true });
     if (!verdict.ok) throw Error('첫 만남 초안 실행 실패: ' + verdict.blockers.join(' / '));

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31cbdbd733853380d7b98b5e326d7225cd394b11352338e6d7f5448479443cac",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "산울타리(다듬은 생울, 1칸)",
+ "label": "sengoku-edo/se-hedge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trimmed hedge block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The green hedge occupies rows 2 to 14 entirely as a flat vertical front face with no top foliage surface foreshortened from above. The top row (0) consists of grey masonry/wall pixels rather than a hedge top.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4852
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trimmed hedge block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage body spans rows 2 to 14 with no visible top surface foreshortened from above. The top row (row 0) contains only a 1px grey border, making this a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4592
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trimmed hedge wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge is rendered as a flat vertical wall texture spanning rows 2-14 with no visible horizontal top surface foreshortened from above. The top row (row 0) contains a 1px grey strip/coping rather than a top surface of the hedge.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trimmed hedge block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The green hedge occupies rows 2 to 14 as a flat vertical face without any horizontal top surface visible from above. The top is cut off by a flat border line at row 1.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4125
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "7004d2a93306c99b"
+  ],
+  "24": [
+   "53a45c9598a7762f",
+   "99ce9ced2d582b12",
+   "c4587871ed105128",
+   "d7aff1e488f6d82d",
+   "db62a8cd1fe1b736",
+   "e863d371b9a8dbbd"
+  ],
+  "32": [
+   "2e6802ba574f376d",
+   "35bdad1b4c75ba74",
+   "4b01b275c7128536",
+   "6b8045a6efde35fd",
+   "841edb99f1bb39c8",
+   "c8f6ed4f5f64fefa"
+  ],
+  "48": [
+   "0deb5a16d488d7e9",
+   "3984d1afdfd10ad1",
+   "476ab7840365ea04",
+   "b7722a59a70ba8e1",
+   "d65f319db7aa573b",
+   "d77b6767798392e4"
+  ]
+ }
+}

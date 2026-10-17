@@ -14,6 +14,16 @@ import joseonBaramSheet from "./joseonBaramSheet.json";
 import modernCitySheet from "./modernCitySheet.json";
 import jpCitySheet from "./jpCitySheet.json";
 import wizardingWorldSheet from "./wizardingWorldSheet.json";
+import pirateIslesSheet from "./pirateIslesSheet.json";
+import sengokuEdoSheet from "./sengokuEdoSheet.json";
+import skyIslandSheet from "./skyIslandSheet.json";
+import steampunkCitySheet from "./steampunkCitySheet.json";
+import modernCampusSheet from "./modernCampusSheet.json";
+import sfStationSheet from "./sfStationSheet.json";
+import gothicManorSheet from "./gothicManorSheet.json";
+import prehistoricSheet from "./prehistoricSheet.json";
+import desertEastSheet from "./desertEastSheet.json";
+import snowNorthSheet from "./snowNorthSheet.json";
 import worldmapSelectedSheet from "./worldmapSelectedSheet.json";
 import worldmapAuthoringSheet from "./worldmapAuthoringSheet.json";
 import atlasBiomeInterior from "./atlasBiomeInteriorSheet.json";
@@ -42,7 +52,7 @@ import {
   LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
-import { VEHICLE_CHARSET_TEXTURE_KEY } from "@/project/vehicles";
+import { vehicleSheet } from "@/project/vehicles";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
@@ -143,6 +153,40 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 마법 학교 · 해리포터풍(2026-10) — HP 테마 42색 손 도트(성채 벽·12개 공간 기물·자연·탈것·생물·효과 움직임)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
   // 재생성: scripts/content/wizarding/bake_wz.py (검수 통과 조각만), 정의는 project/defaults/wizardingWorld.ts, openwiki/wizarding-world.md.
   {textureKey:"tex_wizarding_world",path:"assets/wizarding-world/wizarding-world-chipset.png",name:"마법 학교 · 해리포터풍 (손 도트)"},
+  // 열대 군도·해적 항구(2026-10-14) — 잠긴 팔레트 코드 손 도트(해안 덩이 오토타일·야자·항구 건물·요새·배·실내 가구)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/pirate-isles/pi_bake.py (object-gate 통과 조각만) → pi_refs.py, 정의는 project/defaults/pirateIsles.ts, openwiki/pirate-isles.md.
+  {textureKey:"tex_pirate_isles",path:"assets/pirate-isles/pirate-isles-chipset.png",name:"열대 군도·해적 항구 (손 도트)"},
+  // 전국·에도 일본(2026-10) — 잠긴 sengoku 팔레트 손 도트 야외(마치야·가게·여관·무가 저택·천수각·신사·절·농가·다리·논·해자·소품)와 실내(다다미·장지·후스마·이로리·다실·알현실)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/sengoku-edo/bake_se.py (object-gate 통과 조각만), 정의는 project/defaults/sengokuEdo.ts, openwiki/sengoku-edo.md.
+  {textureKey:"tex_sengoku_edo",path:"assets/sengoku-edo/sengoku-edo-chipset.png",name:"전국·에도 일본 (손 도트)"},
+  // 하늘섬(2026-10) — 하늘섬 전용 팔레트 손 도트(풀·구름 섬 가장자리와 밑면 바위·구름 바닥·밧줄/돌다리·잔교·폭포·건물·섬 소품·비공정·실내 방 넷)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/sky-island/bake_si.py (object-gate 통과 조각만), 정의는 project/defaults/skyIsland.ts, openwiki/sky-island.md.
+  {textureKey:"tex_sky_island",path:"assets/sky-island/sky-island-chipset.png",name:"하늘섬 (손 도트)"},
+  // 스팀펑크 도시(2026-10) — 자체 잠금 팔레트 손 도트 야외(공장·보일러실·시계탑·연립·가게·배관 도랑·선로·증기 열차·기중기·급수탑·비행선 정박장·운하)와
+  // 실내(공방·보일러실·기관실·연구실·여관·선술집)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/steampunk-city/bake_sp.py (object-gate 통과 조각만), 정의는 project/defaults/steampunkCity.ts, openwiki/steampunk-city.md.
+  {textureKey:"tex_steampunk_city",path:"assets/steampunk-city/steampunk-city-chipset.png",name:"스팀펑크 도시 (손 도트)"},
+  // 현대 학교·캠퍼스(2026-10) — modern3 팔레트 손 도트 야외(교문·담·교사 15종·운동장·교정 소품·바닥·도로)와 실내(교실·복도·도서관·보건실·급식실·기숙사 가구·바닥·벽면)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/modern-campus/bake_mc.py (object-gate 통과 조각만), 정의는 project/defaults/modernCampus.ts, openwiki/modern-campus.md.
+  {textureKey:"tex_modern_campus",path:"assets/modern-campus/modern-campus-chipset.png",name:"현대 학교·캠퍼스 (손 도트)"},
+  // SF 정거장·네온 거리(2026-10-14) — 잠긴 팔레트 손 도트(정거장 실내·달 기지 야외·사이버 네온 거리)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/sf-station/sf_bake.py (object-gate 통과 조각만) → sf_refs.py, 정의는 project/defaults/sfStation.ts, openwiki/sf-station.md.
+  {textureKey:"tex_sf_station",path:"assets/sf-station/sf-station-chipset.png",name:"SF 정거장·네온 거리 (손 도트)"},
+  // 고딕 저택·묘지 · 호러(2026-10) — 잠긴 고딕 팔레트 손 도트(저택·예배당·묘지·미술관 건물, 묘비·고사목·철책, 실내 벽 셋·바닥·가구·전시실)를 48열 16px 칸으로 구운 시트.
+  // 3/4 관문(object-gate) 영수증이 현재 그림 해시에 PASS 인 조각만 굽는다. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/gothic-manor/bake_gm.py, 정의는 project/defaults/gothicManor.ts, openwiki/gothic-manor.md.
+  {textureKey:"tex_gothic_manor",path:"assets/gothic-manor/gothic-manor-chipset.png",name:"고딕 저택·묘지 · 호러 (손 도트)"},
+  // 선사 시대 원시 세계(2026-10) — 자체 잠금 팔레트 손 도트 야외(움집·가죽 천막·매머드 뼈 집·족장 긴 집·동굴 입구·모닥불·선돌·토템·고사리·소철·화산·용암·타르·공룡 화석·밧줄 다리,
+  // 꼭짓점 가장자리 바닥 9쌍)와 실내(동굴 거처·벽화 회랑·족장 집·무당 천막)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/prehistoric/bake_ph.py (object-gate 통과 조각만), 정의는 project/defaults/prehistoric.ts, openwiki/prehistoric.md.
+  {textureKey:"tex_prehistoric",path:"assets/prehistoric/prehistoric-chipset.png",name:"선사 시대 원시 세계 (손 도트)"},
+  // 사막·동양풍(2026-10) — 실크로드·아라비아·이집트 사막 도시(평지붕 흙집·돔·바자르·첨탑·궁전·성벽·피라미드·오아시스·천막·폐허·사구 모서리 왕 타일)와 실내 여섯을 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/desert-east/bake_de.py (object-gate 통과 조각만), 정의는 project/defaults/desertEast.ts, openwiki/desert-east.md.
+  {textureKey:"tex_desert_east",path:"assets/desert-east/desert-east-chipset.png",name:"사막·동양풍 (손 도트)"},
+  // 북방 설원(2026-10-14) — 자체 잠금 팔레트(차가운 파랑·흰색 + 따뜻한 창불) 손 도트 야외(통나무 오두막·긴 집·회관·통널 교회·사우나·훈제막·낚시 오두막·얼음집·방앗간·망루·목책 문루·얼음 동굴 입구·얼어붙은 폭포,
+  // 썰매·장작·건조대·화로·노점·오로라 깃발, 눈·얼음·툰드라·서리 풀·진창·열린 물 오토타일 6)와 실내(오두막·회관·선술집·사우나·얼음 동굴)를 48열 16px 칸으로 구운 시트. 칸 번호는 덧붙이기 전용(자리 키 핀).
+  // 재생성: scripts/content/snow-north/bake_sn.py (object-gate 통과 조각만) → bake_refs_sn.py, 정의는 project/defaults/snowNorth.ts, openwiki/snow-north.md.
+  {textureKey:"tex_snow_north",path:"assets/snow-north/snow-north-chipset.png",name:"북방 설원 (손 도트)"},
   {textureKey:"tex_worldmap_selected",path:"assets/worldmap-icons/worldmap-selected.png",name:"월드맵 · 사람 선택 아이콘"},
   {textureKey:"tex_worldmap_authoring",path:"assets/worldmap-icons/worldmap-authoring.png",name:"월드맵 · 연결 지형 붓"},
   // 생성 칩셋(oprn-atlas) 공용 실내 — 손 도트 실내 v5 전용 시트(tiledata/hand-interior/v5, 가구·바닥·벽·천장·자동 타일·예제 26맵).
@@ -173,6 +217,16 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
   if (key === "tex_wizarding_world") return wizardingWorldSheet.count;
+  if (key === "tex_pirate_isles") return pirateIslesSheet.count;
+  if (key === "tex_sengoku_edo") return sengokuEdoSheet.count;
+  if (key === "tex_sky_island") return skyIslandSheet.count;
+  if (key === "tex_steampunk_city") return steampunkCitySheet.count;
+  if (key === "tex_modern_campus") return modernCampusSheet.count;
+  if (key === "tex_sf_station") return sfStationSheet.count;
+  if (key === "tex_gothic_manor") return gothicManorSheet.count;
+  if (key === "tex_prehistoric") return prehistoricSheet.count;
+  if (key === "tex_desert_east") return desertEastSheet.count;
+  if (key === "tex_snow_north") return snowNorthSheet.count;
   const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
   if (monsterKit) return monsterKit.count;
   if (key === "tex_worldmap_selected") return worldmapSelectedSheet.count;
@@ -588,7 +642,7 @@ function projectBundledTextureKeys(project: Project): Set<string> {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
   // 탈것 그림은 system.vehicles 가 있으면 쓴다(id 만 저장하므로 문자열 수집에 안 걸린다).
-  if (project.system.vehicles?.length) keys.add(VEHICLE_CHARSET_TEXTURE_KEY);
+  for (const vehicle of project.system.vehicles ?? []) keys.add(vehicleSheet(vehicle.id).textureKey);
   // 자동 배선된 작물 그래픽은 프로젝트 문자열에 없다(저장하지 않는다) — 그래서 해석해서 더한다.
   const cropAssetIds = new Set<string>();
   for (const crop of project.database.crops ?? []) {

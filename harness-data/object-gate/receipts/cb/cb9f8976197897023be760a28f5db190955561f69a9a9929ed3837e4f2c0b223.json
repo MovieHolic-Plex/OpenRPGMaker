@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb9f8976197897023be760a28f5db190955561f69a9a9929ed3837e4f2c0b223",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "초음파 진단기 카트",
+ "label": "jp_city/interior_hospital/hs-ultrasound",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ultrasound machine cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor, control console, and lower cart body are all drawn strictly from the front with 0 rows of visible top surface showing 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5598
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ultrasound machine cart with monitor and console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper monitor and the lower cart body are drawn in pure front elevation with no visible top surface (0 pixel rows of depth for any horizontal planes).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5373
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ultrasound cart machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor, control console, and lower cart body are all drawn directly facing the camera with no foreshortened horizontal top surfaces (0 top rows visible on the monitor or cart body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ultrasound diagnostic cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart including the top monitor, control panel, and lower body is drawn in pure front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5066
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "4d6a4540ebfceb9d",
+   "9374417e4e80418a"
+  ],
+  "24": [
+   "3a83522d8e9d1cef",
+   "4250b02bf50d871c",
+   "60b5669153e91072",
+   "6240c7a6fc337aba",
+   "7a2fd3769df99c98",
+   "84fea9cc5cf67ebf",
+   "85348403b40eaa70",
+   "914ca0c941bdf906",
+   "b18ea9a6d62a1d16",
+   "ce991729712307ad",
+   "d44193ddbc5b498a",
+   "df9b4d1abddf767e"
+  ],
+  "32": [
+   "26cf112afecd122c",
+   "39f0beed0ade358d",
+   "cfe6655605cbded3"
+  ],
+  "48": [
+   "090d56b8b7b1c9bd",
+   "5c01438e39113faf",
+   "a03b1b605e95982a",
+   "a5d0d863e9a45f5b",
+   "b7edcdd8817068ab",
+   "e8a5958863dc0a41"
+  ]
+ }
+}

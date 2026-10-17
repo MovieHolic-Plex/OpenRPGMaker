@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f136f02f200fc4fc5070e6d1db2ff2147e0f3a4d403e051f88444eaa2acd9c6d",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and rails are drawn as flat horizontal bands and vertical lines in pure front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4774
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence and concrete curb",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and lower curb/barrier are drawn in flat front elevation with no visible top surface foreshortened from above; all horizontal rails and curb edges are 1px lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5059
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails, posts, and base curb are drawn in pure front elevation with horizontal lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5795
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal guardrail/fence with posts and lower curb",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and curb are drawn in pure front elevation: all horizontal rails and the lower curb are flat 1-pixel horizontal bands with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6532
+  }
+ ],
+ "decidedAt": "2026-10-13T13:05:45.748Z",
+ "cells": {
+  "16": [
+   "b5d58bf845b067dd"
+  ],
+  "24": [
+   "44ec0c12045d1e02",
+   "6c2931639cced7cb",
+   "7059b43b4b1bc4f2",
+   "a14b9a9072a144a3",
+   "f16c93e8b8ed66e7",
+   "f6aa5adf55bdff6e"
+  ],
+  "32": [
+   "07d3c614c209206c",
+   "0eb7499c7d109d51",
+   "3db2c32809168a07",
+   "7772ed958a2f91b5",
+   "de870af69d3e8a03",
+   "f89cdb7535b02a5c"
+  ],
+  "48": [
+   "1594c09b20fb4dc6",
+   "3b03f22918b3a71d",
+   "6907d67df262073c",
+   "aa79e01576734cab",
+   "acc7d62921500b22",
+   "fe511ac83eb611cd"
+  ]
+ }
+}

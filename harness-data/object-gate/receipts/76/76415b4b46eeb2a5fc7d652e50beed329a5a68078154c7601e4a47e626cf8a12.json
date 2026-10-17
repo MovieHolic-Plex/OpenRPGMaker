@@ -1,0 +1,165 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76415b4b46eeb2a5fc7d652e50beed329a5a68078154c7601e4a47e626cf8a12",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "무쇠 창살 철책(돌 받침) (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-fence-iron",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron bar fence with stone pillar and plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar capitals and the fence's horizontal rail are drawn straight-on in architectural front elevation with flat horizontal pixel lines and no visible top plane (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7867
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron fence with stone pillars and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top rail of the iron fence and the caps of both the tall and short stone pillars are drawn in pure front elevation with flat horizontal outlines and no visible foreshortened top surfaces (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6824
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron railing fence with stone pillars and stone base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar caps, horizontal railing beam, and pillar tops are drawn entirely in straight front elevation with no visible top surface (0 px). The molding profiles on the pillars are flat 2D silhouettes without foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5861
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron fence with stone pillars and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence, railings, and stone pillars are drawn in pure front elevation. Both the upper pillar capital (rows 2-4) and lower pillar capitals (rows 18-20) are drawn as flat architectural profiles with horizontal stripe shading and no top surface visible from above. The horizontal rail (rows 18-20) and base plinth show only 1-2px edge lines rather than foreshortened top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7792
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.464Z",
+ "cells": {
+  "16": [
+   "1b606b6227873b66",
+   "4678662c865a86ee",
+   "8733304f30f8bc0c",
+   "dfb047615696ea11"
+  ],
+  "24": [
+   "02f4f760ac9a504e",
+   "098351a2cfafc022",
+   "1d65bec616ea4ef2",
+   "2017171afe7ed642",
+   "434508960dc46b42",
+   "60ec9092ef6ae5c2",
+   "621da5f3f8580443",
+   "6a5c14a8f5ce86b8",
+   "6b2fc68096da8f54",
+   "6d8dcb9257e10b8d",
+   "75d89bbfc0d4a127",
+   "76c08fa4211e6b4e",
+   "7a99b9dc075d4c76",
+   "884550ff3aac5e23",
+   "891daba624e98ad0",
+   "8f294fa454b0cb00",
+   "98d31015b9634ccc",
+   "9f4c64bfbbfc30ef",
+   "a5e9c4f41aea64f3",
+   "a610c747e9e7d823",
+   "aaa9449762eced45",
+   "b819f4572974b71c",
+   "bbc71abd1c5d6207",
+   "bcab6611c5458bd1",
+   "befc2449eee3966e",
+   "d3e2b3a77874311c",
+   "de7bbedbee93c309",
+   "f188b000453b7e31",
+   "f199dd69afa81338",
+   "fc3c4565dae026e3"
+  ],
+  "32": [
+   "0d3fcb7b2b14674d",
+   "71b8aa122be4f897"
+  ],
+  "48": [
+   "232b50c9ed48fa86",
+   "3dad41a40f9967ef",
+   "471d3d028918fb9a",
+   "50ad45e7a7c862d2",
+   "55652ca0eea41857",
+   "788374d7705a48f6",
+   "a1254bfaf4679e99",
+   "b1e1565c3ba24269",
+   "b53f2bb8a6746d64",
+   "c56766347525fc3c",
+   "f6d41fd172e57ec8",
+   "f7dd1868af71b272"
+  ]
+ }
+}

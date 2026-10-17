@@ -1,8 +1,12 @@
 import { isParticlePreset, normalizeParticleDurationMs, normalizeShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import { playMonsterSfx } from "@/player/monsterSfx";
+import { monsterCampaign } from "@/project/monsterJournal";
 import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
-import { isGalleryEnabled, recordGalleryUnlock } from "@/project/gallery";
+import { recordGalleryUnlock } from "@/project/gallery";
+import { galleryActive, listGallerySlots } from "@/project/vnExtras";
+import { recordGalleryUnlockOnDevice } from "@/player/deviceRecords";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -18,6 +22,8 @@ import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
+import { partySkillContext } from "@/project/partySkills";
+import { affectionVariableOwner } from "@/project/affectionVariables";
 import { friendshipKey, changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type ConditionEvalContext, type PlaySession } from "@/project/session";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
@@ -107,7 +113,7 @@ function callMapEvent(state: InterpreterState, frame: Frame, eventId: string): C
     console.warn(`[interpreter] 맵 이벤트 없음: ${eventId}`);
     return resumeNext(frame);
   }
-  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations }) : undefined;
+  const page = event.pages?.length ? resolveEventPage(event, state.session, { locations: map?.locations, ...partySkillContext(state.project, state.session) }) : undefined;
   const commands = page?.commands ?? event.commands;
   if (commands.length) {
     if (pushFrame(state, commands)) return { kind: "continue" };
@@ -295,7 +301,8 @@ function executeM2Command(
     return pause("openSaveMenu", { kind: "openSaveMenu" });
   }
   if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
-    return pause("openMenuScreen", { kind: "openMenuScreen" });
+    // fields.screen 은 선택 — 'monster-box' 면 메뉴 대신 보관함(PC) 화면을 연다. 생략하면 이전과 같은 단계 모양.
+    return pause("openMenuScreen", { kind: "openMenuScreen", ...(command.fields.screen === "monster-box" ? { screen: "monster-box" as const } : {}) });
   }
   if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("openLoadMenu", { kind: "openLoadMenu" });
@@ -450,6 +457,8 @@ function killParty(state: InterpreterState): void {
 
 // 에필로그 끝에 붙는 합성 ending 명령 → 실제로 본 엔딩 id. 저작된 ending 명령은 클리어가 아니다.
 const ENDING_CLEAR_COMMANDS = new WeakMap<Command, string>();
+// 에필로그 안의 문장 명령. 스킵(대사창 읽기 보조)은 이 글을 절대 건너뛰지 않는다 — StepResult text 의 endingEpilogue.
+const ENDING_EPILOGUE_TEXT = new WeakSet<Command>();
 
 function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
   return ending.conditions.every((condition) => condition.kind === "newGamePlus"
@@ -487,6 +496,9 @@ function triggerEnding(
   const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   ENDING_CLEAR_COMMANDS.set(finalCommand, ending.id);
   const epilogueCommands = compileEndingEpilogue(state, ending);
+  for (const epilogueCommand of epilogueCommands) {
+    if (epilogueCommand.kind === "text") ENDING_EPILOGUE_TEXT.add(epilogueCommand);
+  }
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
@@ -570,6 +582,7 @@ export function executeCommand(
         ...(command.container ? { container: command.container } : {}),
         ...(command.position ? { position: command.position } : {}),
         ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
+        ...(ENDING_EPILOGUE_TEXT.has(command) ? { endingEpilogue: true } : {}),
       });
     case "choices":
       return pause("choices", {
@@ -596,17 +609,30 @@ export function executeCommand(
     }
     case "setSwitch": {
       const next = resolveSwitchValue(state.session, command.switchId, command.value);
+      const wasOn = getSwitch(state.session, command.switchId);
       setSwitch(state.session, command.switchId, next);
+      // 몬스터 장르: 캠페인 배지 스위치가 새로 켜지면 배지 획득 팡파레.
+      if (next && !wasOn && state.project && monsterCampaign(state.project)?.badges.some((badge) => badge.switchId === command.switchId)) {
+        playMonsterSfx(state.project, "badge-get");
+      }
       return resumeNext(frame);
     }
-    case "setVariable":
+    case "setVariable": {
+      const before = state.session.variables[command.variableId] ?? 0;
       setVariable(
         state.session,
         command.variableId,
         command.op,
         typeof command.value === "number" ? command.value : state.session.variables[command.value.id] ?? 0
       );
+      // 「인물 호감」 이름의 변수는 변화량을 그 인물의 engine friendship 에도 더한다 — 선택지가 올린 호감이 ESC·HUD·호감 엔딩에 그대로 보이게(affectionVariables.ts).
+      const owner = state.project ? affectionVariableOwner(state.project, command.variableId) : undefined;
+      if (owner) {
+        const delta = (state.session.variables[command.variableId] ?? 0) - before;
+        if (delta !== 0) changeFriendship(state.session, owner, delta);
+      }
       return resumeNext(frame);
+    }
     case "timer": {
       const timerId = command.timerId ?? "timer1";
       if (command.action === "set") setTimer(state.session, timerId, command.seconds ?? 0);
@@ -709,8 +735,11 @@ export function executeCommand(
         ownerEventId: state.currentEventId,
       });
     case "showPicture":
-      if (command.recordInGallery === true && state.project && isGalleryEnabled(state.project)) {
-        recordGalleryUnlock(state.session, command.resourceId);
+      if (command.recordInGallery === true && state.project && galleryActive(state.project)) {
+        const liveSlots = listGallerySlots(state.project);
+        recordGalleryUnlock(state.session, command.resourceId, new Set(liveSlots));
+        // 열린 CG 는 기기 기록에도 바로 남긴다(저장 없이 종료해도·다른 슬롯·새 게임에서도 열려 있다).
+        if (typeof localStorage !== "undefined") recordGalleryUnlockOnDevice(localStorage, command.resourceId, liveSlots);
       }
       return pause("showPicture", {
         kind: "showPicture",
@@ -899,6 +928,8 @@ export function executeCommand(
       return resumeNext(frame);
     case "recoverAll":
       recoverAll(state.session, command.actorId, state.project);
+      // 몬스터 장르: 파티 전체 회복(센터)은 회복 징글. 개별 대상 회복·다른 장르는 소리 없음(예전 그대로).
+      if (state.project && !command.actorId) playMonsterSfx(state.project, "center-heal");
       return resumeNext(frame);
     case "enterHeroName": {
       const actor = state.project?.database.actors.find((record) => record.id === command.actorId);
@@ -923,7 +954,9 @@ export function executeCommand(
       const amount = typeof command.amount === "number"
         ? command.amount
         : state.session.variables[command.amount.id] ?? 0;
-      changeItem(state.session, command.itemId, command.op, amount);
+      const gained = changeItem(state.session, command.itemId, command.op, amount);
+      // 몬스터 장르: 아이템을 얻었을 때(=, += 로 늘었고 amount>0) 획득 소리.
+      if (gained && state.project && command.op !== "-=" && amount > 0) playMonsterSfx(state.project, "item-get");
       return resumeNext(frame);
     }
     case "craftRecipe": {
@@ -1292,7 +1325,7 @@ function resolveOpenChestId(state: InterpreterState): string {
  * 프로젝트를 부채로 돌리는 잡트리(단위 테스트 등)에서는 해석 불가 = 거짓이다.
  */
 function locationEvalContext(state: InterpreterState): ConditionEvalContext {
-  return { map: state.project?.maps[state.session.currentMapId] };
+  return { map: state.project?.maps[state.session.currentMapId], ...partySkillContext(state.project, state.session) };
 }
 
 /** 조건 트리가 host 의 characterId 를 읽는가(호감도·관계). evalCondition 의 hostSocial 사용처와 맞춘다. */

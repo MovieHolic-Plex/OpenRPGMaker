@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d10b6d40a068bdc718083811e2cde65b56abe5285aef4472c585d4427d876f0",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vE' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_vE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post (cols 8-11) has a clear 4-row top surface cap (rows 2-5) rendered in foreshortened 3/4 perspective above its front face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7670
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post at x=8-11 shows a distinct 4-pixel tall top cap surface (rows 2-5) rendered in lighter tones above its darker south-facing vertical shaft (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4375
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and rail",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly visible top cap surface spanning rows 2 to 5 (4 pixels tall) above its shaded vertical south face (rows 6 to 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9241
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and rail",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly defined top cap surface spanning rows 2 to 5 (4px tall) rendered in lighter wood tones above the darker front shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4480
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.331Z",
+ "cells": {
+  "16": [
+   "ae1e47cc586a81dd"
+  ],
+  "24": [
+   "19caf8ed831c1871",
+   "4dd3449af41df951",
+   "69c82c55e0f6ce48",
+   "a37633be810bef1c",
+   "bb29694c99c9573a",
+   "e9a56adec15a25ae"
+  ],
+  "32": [
+   "635baa0346098bf1",
+   "69e4f09e3a799160",
+   "6d7188c3c1ca3f1a",
+   "995abd321d867d77",
+   "d3e57298246bd703",
+   "f5fc5d3c19bd21cc"
+  ],
+  "48": [
+   "27f20be993d2fb77",
+   "30d34530e6cc053d",
+   "b34b2e8041b7a590",
+   "c801748c34131d0e",
+   "f29798ff7d61ca64",
+   "f80a58ca228ec1a2"
+  ]
+ }
+}

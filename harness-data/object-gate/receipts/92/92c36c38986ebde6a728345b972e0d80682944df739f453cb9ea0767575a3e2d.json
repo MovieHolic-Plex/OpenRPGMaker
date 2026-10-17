@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92c36c38986ebde6a728345b972e0d80682944df739f453cb9ea0767575a3e2d",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "banana plant with large paddle leaves",
+ "label": "pirate-isles/pi-banana",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banana plant trunk and leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn in pure 2D side-scroller elevation with leaves arching only in the vertical plane and a flat vertical stem, showing no foreshortened top surfaces or canopy depth from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5615
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stem with arching leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn as a flat 2D front elevation: the stem is a straight vertical bar and the leaves arch purely in the 2D plane (left, right, up) like a side-scroller sprite, with no top-down foreshortening or depth visible from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6126
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banana plant foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn completely flat in 2D side elevation like a platformer asset; all leaves lie in the coronal plane curving left, right, and up with no foreshortened leaves extending toward or away from the camera, and the vertical stem has no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5921
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banana plant stalk and foliage canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The banana plant is drawn as a flat 2D silhouette/front elevation with no top-down tilt. The leaves spread purely in the 2D plane (left/right/up) like a side-scroller sprite, showing no depth, receding leaves, or canopy top seen from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4955
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "5515a05d0c8eabec",
+   "f5d406ae13f53add"
+  ],
+  "24": [
+   "0a9ba33fed1ca6cb",
+   "53a98ba5e1285d6b",
+   "6bc609423d6a8c3f",
+   "a115c85f42476a92",
+   "b6ae47260a8145b6",
+   "de9fcc338d85c4b5",
+   "e00c9c944f8ce944",
+   "e7ea16299d1a2233",
+   "eb417b73c22d480d"
+  ],
+  "32": [
+   "3ee040251f2531de",
+   "bcd64354f38d58fc",
+   "e35408bcb56aa1e8"
+  ],
+  "48": [
+   "0f9a2a1b26e63366",
+   "308bc217fd9dc906",
+   "40fcf4977e885d2a",
+   "5fa013fe4202a524",
+   "cec95d252b0c8973",
+   "cef45e775d7838a2"
+  ]
+ }
+}

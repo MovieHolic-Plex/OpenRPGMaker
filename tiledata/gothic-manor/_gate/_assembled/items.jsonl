@@ -1,0 +1,4 @@
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/_assembled/room-manor.png", "kind": "structure", "name": "저택 다마스크 벽지 방(벽 고리·문·창·촛대 프레임 조립 — 위에서 본 방 한 칸)", "label": "gothic_manor/assembled/room-manor"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/_assembled/hearth-manor.png", "kind": "structure", "name": "저택 다마스크 벽지 방에 벽난로를 박은 방 한 칸(불꽃 프레임 셋을 나란히 — 위에서 본 방)", "label": "gothic_manor/assembled/hearth-manor"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/_assembled/room-stone.png", "kind": "structure", "name": "지하 마름돌 방(벽 고리·문·창·촛대 프레임 조립 — 위에서 본 방 한 칸)", "label": "gothic_manor/assembled/room-stone"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/_assembled/room-gallery.png", "kind": "structure", "name": "미술관 회벽 방(벽 고리·문·창·촛대 프레임 조립 — 위에서 본 방 한 칸)", "label": "gothic_manor/assembled/room-gallery"}

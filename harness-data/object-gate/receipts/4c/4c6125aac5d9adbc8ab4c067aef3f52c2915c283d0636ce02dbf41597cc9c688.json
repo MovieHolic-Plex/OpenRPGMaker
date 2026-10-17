@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c6125aac5d9adbc8ab4c067aef3f52c2915c283d0636ce02dbf41597cc9c688",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "다진 눈길(썰매 자국, 남북)",
+ "label": "snow-north/sn-pack-sled-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground snow path with north-south sled track ruts",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting packed snow with vertical sled tracks; entire 16x16 tile is a ground surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow ground with sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting north-south sled track grooves on snow ground across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2784
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "packed snow path with sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a north-south snow path with two parallel sled rut lines; entirely flat ground surface visible from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowy ground with vertical sled tracks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing snow with north-south sled track ruts filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2862
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "3949208ee3278ced"
+  ],
+  "24": [
+   "02a2c22256374097",
+   "0619c1d2cb9f6d85",
+   "5f3f4c5e616abe2a",
+   "7abcef08f21392c1",
+   "b1b4b87d44ef77af",
+   "d2c60f8ba5c29809"
+  ],
+  "32": [
+   "00cba6bc5f4418de",
+   "0d25a3558af2becc",
+   "5b6f5af60314bd99",
+   "a7a032b6c2b9f2b6",
+   "c24784b371ccb0ee",
+   "dd25ceee25d1b353"
+  ],
+  "48": [
+   "14314ec5fc9333fa",
+   "409d95160a93933c",
+   "4ec36ffe9be5d598",
+   "9c28167cb47d7605",
+   "fd54602ceccc9503",
+   "ff703876de7bd579"
+  ]
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63a8925c70a2b54e8837fbd566880bd87d28a14e449a5e2ce983f1a1279f2aad",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "school room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_school",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles with red entry mat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor grid and rectangular entry mat are flat terrain surfaces viewed top-down as expected for RPG Maker 3/4 perspective floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles with flat entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of flat floor terrain tiles with a red entrance mat resting flat on the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3451
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tiling viewed from top-down with a rectangular red floor mat resting flat on the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2810
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tiles with entry mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts flat ground terrain consisting of tiled floor and a flat rectangular entry mat seen from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3592
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "4cfff8f301e2e44e",
+   "c5e4b3e790cefe02",
+   "c5ead0b9e939bca8",
+   "c5f625e7d39f3ad0"
+  ],
+  "24": [
+   "0353d3234fa8d233",
+   "280b5d2fa17c2f57",
+   "3932d34077aa1047",
+   "567d692ee64576d9",
+   "5abc4a6b64a64460",
+   "69418285b6efa58e",
+   "6e67e321c8a9e291",
+   "72143546a686476c",
+   "8547d8275beed100",
+   "97997561e9350779",
+   "97f3107af4125a34",
+   "b20d6a91c103fe9d",
+   "b7659dbedb9fd393",
+   "b77379fed9db2349",
+   "c4dc47bd54b7888b",
+   "ca1230303ba8fec2",
+   "dcf7fa7c157c4014",
+   "fd03281d5d7dd2e1"
+  ],
+  "32": [
+   "495270608c54396b",
+   "5536d0ea9aa5bba5",
+   "70e6094714af9450",
+   "b9d3924e2a41a64c",
+   "cfe318bde79fe90c",
+   "d17eea5caf384a9d"
+  ],
+  "48": [
+   "02e7fafcdd3848cf",
+   "580b14679daaea3e",
+   "775af64f994bd5b2",
+   "7f3b549f6a17c76b",
+   "cf61ccd6624a0958",
+   "e0d6c1d6c41a24df"
+  ]
+ }
+}

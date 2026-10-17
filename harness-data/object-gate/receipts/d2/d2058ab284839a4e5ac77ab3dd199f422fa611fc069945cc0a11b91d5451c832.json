@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2058ab284839a4e5ac77ab3dd199f422fa611fc069945cc0a11b91d5451c832",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 3)",
+ "label": "steampunk-city/sp-steam-vent-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal vent pipe / chimney segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vent opening is drawn as a circular hole facing directly forward at the camera (7px wide by 8px tall) mounted on a flat front-facing plate, rather than an ellipse seen from a 3/4 top-down perspective. There is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7712
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal pipe stub / steam vent with rising steam",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe opening is viewed from above showing a deep 8-row opening (rows 18-25) framed by a visible rim (rows 17-26) with front flange details below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6483
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron steam vent / pipe stub with square base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe opening is drawn facing directly toward the camera as an upright circle/oval measuring 8px wide by 9px tall, rather than a foreshortened ellipse seen from a 45-degree overhead angle. There is no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 10128
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "short iron chimney/vent pipe on a riveted metal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe opening and rim are drawn as a 1:1 circle (9x9 px hole, cols 5-13, rows 17-25) rather than a foreshortened horizontal ellipse for 3/4 view. Combined with the flat riveted front plate at rows 26-28, the entire structure is drawn in pure front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9943
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.039Z",
+ "cells": {
+  "16": [
+   "287344bfc32cf9ef",
+   "98127fadf8669fa7"
+  ],
+  "24": [
+   "1e6fad1342bb0810",
+   "3a26ff1255805f35",
+   "42f911ab627de02c",
+   "5f0dfd56b506f612",
+   "5ff80a4280297f5b",
+   "6d88d6b76ce5c063",
+   "764f0187a09c9915",
+   "896a58c53a8ca04d",
+   "9762a6e6f3f0085a",
+   "bc3e0bb95dc6db87",
+   "c172e0f905097fb5",
+   "cf6336ff68908d85"
+  ],
+  "32": [
+   "068e3186bdabd6d0",
+   "b7a50902feaa742c",
+   "d51923abeea610a7"
+  ],
+  "48": [
+   "0291d430afa3de2a",
+   "03aeefbb22fe2c7b",
+   "1805ca0e259e685d",
+   "27ec9c36bfa747df",
+   "8865933b619433a9",
+   "a0b49fb957b07508"
+  ]
+ }
+}

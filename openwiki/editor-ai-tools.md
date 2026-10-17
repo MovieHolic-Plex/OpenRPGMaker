@@ -1,5 +1,102 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 장르 칩셋 잠금 `system.genreLock` — 조수·도구 경로 강제 (2026-10-15)
+
+권고(`monsterGameRequest` 지시문 · `openBlankStartOnMonsterKit` · 「칩셋 계열 지키기」)만으로는 조수가 버들항·사막·jp_city 등 다른 계열이나 비몬스터 파이프라인으로
+맵을 만드는 것을 못 막았다. 프로젝트 단위 잠금이 그 구멍을 막는다. 옵트인이며 `system.genreLock` 이 없으면 동작·저장 바이트가 그대로다.
+
+- **데이터**: `Project.system.genreLock?: { preset: "monster-collect"; mode: "enforce" | "warn"; allowedFamilies: string[]; grandfatheredMapIds?: string[] }`.
+  `allowedFamilies` 는 켤 때 `GENRE_LOCK_PRESETS`(표, `src/project/genreLock.ts`)에서 복사한다 — 정본은 프로젝트 쪽 목록이다. 표에는 `monster-collect` 만 있다(다른 장르는 별도 결정).
+  shape 검증 `io/shapeDatabaseFields.ts` · normalize `databaseRecordModel.ts`(모르는 preset·깨진 값은 잠금 없음으로 본다).
+- **판정 함수는 한 곳**: `genreLock.ts` 의 `assertGenreLock(before, draft, {toolName, approved})`(맵 위반) · `genreLockMapViolation` · `genreLockDefaultTileset` · `genreLockHidesTool` · `genreLockReport`.
+  세계 지도 전용 칩셋(`worldmap_<mapId>`)과 `atlas_cartography` 는 장르와 무관해 통과한다.
+- **강제 지점은 `toolRunner.runToolDefinition` 한 곳**(`ctx.assistantRun` 일 때만 — 편집기 직접 편집·예제·콘텐츠 스크립트는 안 막는다):
+  1. 새 맵·`tilesetId` 가 바뀐 맵이 허용 계열 밖이면 오류 `genre-lock`(`ToolError`)으로 거부. 메시지에 허용 칩셋 id 목록·가장 가까운 대안(던전→monster_dungeon, 실내→monster_rooms, 항구→monster_coast, 기후→monster_climate, 체육관→monster_gyms, 기본→monster_overworld)·`ask_tileset_change` 경로를 싣는다. **무음 대체 없음**. `create_map`·`themeScene`·`import_region_reference`·`allowsTilesetChange` 도구(`build_concept_example` 등) 모두 이 한 곳을 지난다. 빠지는 도구는 `reset_project`·`revert_last_edit`(`GENRE_LOCK_EXEMPT_TOOLS`)뿐이다.
+  2. `tilesetId` 를 생략한 `create_map` 의 기본 칩셋이 허용 밖이면 허용 칩셋(대안 표)으로 바꾸고 도구 결과 경고에 그 사실을 적는다(`genreLockedDefaultTileset`). 모델이 `tilesetId` 를 직접 적은 경우는 바꾸지 않고 1번으로 거부한다.
+  3. 승인 카드로 사용자가 허용한 계열(`ctx.approvedTilesetFamilies`)은 그 계열 한정으로 통과한다 — 잠금 해제가 아니다(`ask_tileset_change` 결과에 그 문장이 붙는다). 계열 검사(`tileset-family-change`)는 잠금 중 허용 칩셋으로 가는 변경을 막지 않는다.
+  4. `mode:"warn"` 은 거부 대신 경고만 낸다.
+- **조수에게 보이는 것을 좁힌다**: `find_tools` 결과·Pi 도구 목록(`toolAdapter.createPiToolset`)에서 비허용 계열 전용 시공 도구(`hiddenToolPatterns` — `author_beodeul_*`·`compose_*_map`·`link_*_interior`·`build_jp_city_*` 등)를 뺀다. 이름으로 직접 부르면 실행기가 `genre-lock` 으로 거부한다.
+  `list_tileset_references`(tilesetId 생략)는 허용 계열 칩셋만 나열한다(직접 묻는 비허용 칩셋은 읽기 가능 + 경고). 시스템 프롬프트(`buildSystemPrompt`·`buildPiAgentSystemPrompt`)에 「장르 잠금」 한 덩어리가 붙는다 — 잠금이 없으면 줄이 없다.
+- **켜는 곳**: `applyGenrePreset("monster-collect")`(빈 시작 맵을 몬스터 키트로 옮긴 뒤) · `configure_monster_system(enabled:true)` · `build_monster_game/tournament/expedition` · 자료집 시스템 탭 「장르 칩셋 잠금」 체크박스(상태 배지: 잠금 이후 위반 맵 수·잠금 이전부터 있던 맵 수). 프로젝트에 허용 계열 칩셋이 하나도 없으면 켜지 않는다. **몬스터 수집 기본값(2026-10-16)**: 몬스터 수집으로 시작된 새 프로젝트는 위 경로 어디로 들어와도 잠금이 켜진 채 시작한다 — 시작 장르(`createNewProjectSeed`→`applyGenrePreset`), 채팅 한 줄·헤드리스 첫 요청의 몬스터 수집 의도(`classifyPlainPiTurn` 의 `monsterKit` — 전체 제작 경로 `build_monster_*` 분류도 모델이 도구를 부르기 전에 같은 신호를 낸다 → `aiChatPanel`·`scripts/qa-game/gen.mts` 가 `applyMonsterIntentStart`). `applyMonsterIntentStart`(`project/genrePresets.ts`)는 **손대지 않은 빈 시작 맵 하나뿐인 프로젝트**만 몬스터 키트로 열고 잠근다(키트로 옮긴 뒤에 잠그므로 그 맵이 「이전부터 있던 맵」으로 안 잡힌다). 이미 게임이 있는 프로젝트(맵 여럿·이벤트·다른 계열 맵)·다른 장르를 고른 프로젝트·사용자가 푼 프로젝트는 건드리지 않는다 — 소급 잠금 없음. 몬스터 시작 예제는 버들항 마을 위에 서므로 `grandfatherGenreLockViolations` 로 그 맵을 「이전부터 있던 맵」에 적는다. 해제 경로는 그대로(`configure_monster_system(enabled:false)`·자료집 체크박스).
+- **잠금 중 허용 도구**: 숨기는 것은 버들항·캠퍼스·jp_city 등 비허용 계열 전용 파이프라인뿐이다. `build_monster_*`·`configure_monster_*`·`define_monster_*`·`place_trainer`·`place_field_obstacle`·`set_type_chart`·`set_encounter_table`·`set_shop_stock`·`upsert_skill/state/item`·`author_dungeon`·`create_map`(monster_* 7종) 등 포켓몬 라이크 제작 도구는 어느 것도 숨겨지거나 거부되지 않는다(`test/monsterLockDefault.test.ts`). 시스템 프롬프트의 잠금 덩어리 끝(`GENRE_LOCK_PRESETS['monster-collect'].promptExtra`)에 새 전투 기능(능력 단계 `statStageEffects` · 상태이상 `gen1MajorStatus` · 날씨 `weather` · 특성 `species.ability` · 지닌 물건 `heldEffect` · 조건부 포획볼 `captureProfile.condition`)과 HM 필드 기술(`place_field_obstacle`)이 설정되는 곳, 인자 모양을 읽는 레시피 이름이 한 줄로 실린다.
+  켤 때 이미 허용 밖 칩셋이던 맵은 `grandfatheredMapIds` 에 기록해 막지 않고 따로 보고한다.
+- **끄는 곳**: `configure_monster_system(enabled:false)` 는 잠금도 풀며 결과 경고 「장르 잠금 해제됨: …」(채팅에 보임)와 편집 감사 로그 필드 `system.genreLock before:"enforce" after:"released"`(`applyChangesetToStore.applyAnnotation`)를 남긴다. 체크박스는 라벨 「장르 잠금 끄기」로 기록된다.
+- **검사**: `check_genre_lock`(읽기 도구, `genreLockTools.ts`) — 허용 칩셋·잠금 이후 위반 맵·**잠금 이전부터 있던 허용 밖 맵**을 나눠 보고한다. `projectLint` `opt-in:genre-lock-violation`(잠금 이후 위반만) · `qa:game` monster 검사의 `genre-lock-violation`(warning)/`genre-lock-preexisting`(info).
+- **헤드리스 시험**: `node scripts/oprn-tools.mjs --assistant [--current-map <id>] [--approve-family <family>] --project p.json --write <tool> '<args>'` 가 `assistantRun` 문맥으로 실행기를 부른다(조수 대용 역할극용). SQLite 저장→재로드 증거는 `node scripts/qa/genre-lock-persist.mjs [--from project.json] [projectDir]`.
+
+### 캐릭터 칩(걷기 그림)도 같은 잠금 + 장르 표지 `system.genre` (2026-10-16)
+
+「한 번 포켓몬 라이크로 시작한 프로젝트는 플레이어·NPC 도 기본 Actor1/People1 이 아니라 그 장르 칩이어야 한다」는 요구로, 맵 칩셋 잠금과 **같은 구조**를 캐릭터 칩에 붙였다.
+
+- **계열 분류** `src/project/charsetFamily.ts` — 리소스 id·텍스처 키의 모양만 보고(charsetCatalog 를 불러오지 않는다) `rtp-people`·`scarloxy-people`·`oprn-creature`·`rtp-creature`·`object`·`wizarding`·`shared-actor`·`uploaded`·`other` 로 가른다. 새 번들 시트가 생기면 이 표에 한 줄을 더한다(모르는 번들은 `other`).
+- **표는 프리셋마다**: `GENRE_LOCK_PRESETS[...].charsets?`(`GenreLockCharsetDef`: 허용 `families`·`kitNoun`·`playerDefault`·`promptLine`·`enforceLine`). `monster-collect` 만 채워져 있다(Scarloxy 트레이너·OPRN/RTP 몬스터·기물·업로드·기타). **romance 는 `charsets` 가 없으므로 동작·저장 바이트가 그대로다.** 켤 때 허용 목록을 `system.genreLock.allowedCharsetFamilies` 로 복사한다(정본은 프로젝트). 이 필드가 없는 옛 잠금은 표를 따르고, 같은 잠금을 다시 켜면 필드가 채워진다.
+- **켤 때 기본값**: `enableGenreLock` 이 **손대지 않은 기본 주인공(`actor_hero`=Actor1 #0)만** 프리셋 `playerDefault`(Scarloxy People1 #0)로 바꾼다. 저작자가 이미 바꾼 주인공·기존 NPC 는 그대로(기존 프로젝트 불변).
+- **조수 경로 강제** `genreLockCharsets.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 이벤트 페이지 `graphic.sprite`·배우 `characterResourceId`·공용 이벤트의 걷기 그림만 본다(이미 있던 그림은 위반이 아니다). 허용 밖이면 `genre-lock` 이슈로 거부하고 가장 가까운 허용 칩(`graphic:{textureKey,characterIndex}`)과 푸는 법을 메시지에 싣는다 — 무음 대체 없음. 캠페인 생성·`import_region_reference` 같은 통째 도구(`lenient`)는 막지 않고 경고만. 사용자 손 편집(`assistantRun` 아님)은 막지 않는다. 해제 경로는 맵 잠금과 같다(`configure_monster_system(enabled:false)`·자료집 체크박스).
+- **기본·일반 질의는 허용 칩만**: 도구 실행 동안 `withNpcGraphicCatalogFilter`(`assets/charsetQuery.ts`)가 카탈로그를 허용 칩으로 좁힌다 → 그림을 생략한 `place_npc`·`place_trainer`·`graphic:{query:"villager"}` 와 `list_npc_graphics` 가 허용 칩만 본다. 허용 칩에 없는 구체 검색(「할머니」)은 다른 그림으로 대체하지 않고 잠금 힌트와 함께 거부한다(`eventCompile.ts`).
+- **프롬프트**: 잠금 덩어리에 「캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다」 줄(+허용 계열·가까운 대안 안내)이 붙는다. 공간 시공 프롬프트는 전체 덩어리(`genreLockPromptNote`), 비공간 턴은 짧은 줄(`genreLockShortNote`)이라 **매 턴** 실린다.
+- **장르 표지(얇은 표지) `system.genre="monster-collect"`**: 이미 맵이 있는 프로젝트를 소급 잠금하는 안과 표지+프롬프트 주입 안을 비교해 **후자를 골랐다** — `system.genre` 는 던전 「pokemon」 경로 기본값·공방 하네스 선택을 정하므로, 암묵적 도구 호출만으로 프로젝트를 잠그면 저작자 기존 맵·칩을 놀라게 한다(소급 잠금 금지). 몬스터 전용 도구(`MONSTER_MARKER_TOOLS` + `configure_monster_system(enabled!==false)`)가 성공하면 `genre` 가 비어 있을 때만 표지를 적고(다른 장르는 덮어쓰지 않는다), 잠금이 없는 표지 프로젝트의 조수 프롬프트에는 `genreMarkerNote` 안내가 **막지 않고 알리기만** 한다. 의도 시작(`applyMonsterIntentStart`)·프리셋은 잠금과 함께 표지를 남긴다. 부작용: `system.genre` 가 생기면 lint `opt-in:genre-monster-collect-no-collection` 후보와 던전 기본 경로가 바뀔 수 있다.
+- **캠페인 생성본** `remapCharsetsToPreset`(`build_monster_expedition`·`tournament` 예제가 직렬화 전에 부른다): 방금 생성한 프로젝트의 허용 밖 사람 칩을 가장 비슷한 허용 칩으로 옮긴다(같은 원래 칩은 같은 새 칩, 관장·보스는 `보스` 태그 우선). 주인공은 Actor1 로 되돌리지 않고 Scarloxy 로 남긴다. 저작자가 그린 기존 프로젝트에는 쓰지 않는다.
+- **스키마 영향**: 엄격 검증(`shapeDatabaseFields`)에 `allowedCharsetFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다.**
+- **알려진 빈틈**: 번들에 포켓몬/GBA풍 **사람 트레이너 걷기 칩이 없다**(Scarloxy 사람 칩 10개뿐이라 캠페인 NPC 는 돌려 쓴다). 닌텐도 원작 파생 후보(`pokemon-character-casting`)는 공개 저장소에 커밋할 수 없다. `emeraldMonsterCast.THEME_CASTS` 는 비어 있다.
+- 테스트(미실행): `test/genreLockCharsets.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 26항목): `bun scripts/qa/monster-lock-charset-evidence.mts <out.json>`.
+
+### 얼굴·전투 그림(faceset·battler·트레이너·배경)도 같은 잠금 (2026-10-16)
+
+「몬스터 칩은 charset·faceset·battle 전부 락」 결정의 나머지 둘. 맵 칩셋(#2675)·걷기 칩(#2683)과 **같은 구조**(표 → 켤 때 프로젝트로 복사 → 조수 경로 diff 판정 → 가장 가까운 허용 대안)다.
+
+- **계열 분류** `src/project/visualFamily.ts` — 리소스 id 모양만 본다(무거운 번들 표를 끌어오지 않는다). 얼굴 `fantasy-people-face`·`fantasy-creature-face`·`scarloxy-face`·`oprn-creature-face`, 몬스터 전투 그림 `scarloxy-monster`·`harness-monster`·`generic-enemy`, 트레이너 `oprn-trainer`(`public/assets/battle-trainers/index.json` 14역할), 배경 `scarloxy-backdrop`·`emerald-terrain`·`oprn-scenery`·`pokemon-backdrop`·`rtp-backdrop`·`retired-backdrop`, 업로드·생성은 `uploaded`, 그 외 `other`. 전투 UI 스킨은 `skin:<id>`.
+- **표** `GENRE_LOCK_PRESETS[...].visuals?`(`GenreLockVisualDef`) — `monster-collect` 만 채움. 허용: 얼굴(scarloxy·oprn-creature·fantasy-creature·uploaded·other), 전투 그림(scarloxy-monster·harness-monster·uploaded·other), 트레이너(oprn-trainer·uploaded), 배경(scarloxy·emerald·oprn-scenery·pokemon·uploaded·other), 스킨(pokemon·retro2003). RTP 몬스터·동물 얼굴은 허용 RTP 생물 칩의 **짝 얼굴**이라 허용. **romance 는 `visuals` 가 없어 동작·저장 바이트가 그대로다.**
+- **저장 필드** `system.genreLock.allowedFaceFamilies`(목록)·`allowedBattleFamilies`(접두 `battler:`/`trainer:`/`backdrop:`/`skin:` 한 목록). 켤 때 표에서 복사, 필드 없는 옛 잠금은 표를 따르고 다시 켜면 채워진다. 기존 프로젝트·이미 칠한 그림은 안 건드린다. 기본 주인공(손대지 않은 것만)은 짝 얼굴(`generated-faceset-missing-scarloxy-00`)도 받는다.
+- **판정** `src/project/genreLockVisuals.ts`: 도구가 만든 draft 에서 **새로 생기거나 바뀐** 얼굴(`actor.faceResourceId`·`changeFace`·이벤트/공용/전투 페이지 `face`·`characterAppearances[].face/bust/full`)·적/종 전투 그림(`enemy.monsterResourceId`·`species.graphic.monsterResourceId/backResourceId`)·`TroopRecord.trainerSprite`·전투 배경(`troop.previewBackgroundResourceId`·`map.battleBackground`·`terrain.battleBackgroundResourceId`·`backdropLayers`)·`battleUiStyle` 만 본다. toolRunner 가 걷기 칩 판정 다음에 `enforceGenreLockVisuals` 를 부른다(`ctx.assistantRun` 만, 손 편집은 안 막음, 통째 도구는 `lenient` 로 개수만 경고).
+- **거부 vs 생성 대기**: 허용 밖 그림인데 **가까운 허용 그림이 있으면** `GenreLockVisualError`(code `genre-lock`)로 거부하고 대안을 알린다(예: `generated-enemy-slime-01` → `scarloxy-monster-finiette`). **허용 그림이 아예 없으면 거부하지 않고** 그 칸을 비운 채 「생성 대기」 경고를 남긴다(얼굴 → `generate_character_appearance` 생성형 초상, 전투 그림·트레이너 → 사람이 고르는 `monster-collect-species`/`battle-trainer-sprites` 하네스). 그림을 지어내거나 닌텐도 원작 그림으로 때우지 않는다. 그림 생략 시 `ensureMonsterGraphic` 이 허용 계열에서 고르고(`pendingWhenLocked`: dbTools 의 `upsert_enemy`·`define_monster_species`), 없으면 비운다.
+- **트레이너 그림(2026-10-16 추가)**: `place_trainer` 는 `trainerSprite` 가 없어도 `name` 의 직업 말(소년·소녀·연구·낚시·등산·곤충·불량·노인)로 번들 `front` 를 자동 배정(back=hero_m)하고 경고를 낸다. 말이 없으면 연출 없이 시작한다는 경고만(지어내지 않음).
+- **트레이너 그림**: `upsert_troop` 스키마에 `trainerSprite{front,back?,throw?,backThrow?}` 를 열었고(전엔 조수가 못 정했다) `place_trainer` 에 `trainerSprite{front,back?}` 선택 인자를 더했다. 새 트레이너 전투(`trainerBattle`)에 그림이 없고 이름·걷기 칩이 번들 역할과 분명히 맞으면(소녀→girl 등, back 기본 hero_m) 채우고, 아니면 생성 대기. `mx_troop_*`(캠페인)는 필드 이벤트 걷기 칩에서 읽는 기존 규칙이라 건드리지 않는다.
+- **카탈로그**: 조수 실행 동안 `list_resources`(faceset·monster·backdrop)와 이름→그림 대응(`monsterGraphicAssignment`)이 허용 그림만 보인다(`withCharsetCatalog` 가 같이 설정). 사용자 손 경로는 전부 보인다.
+- **검사·표시**: `check_genre_lock` 이 `visuals{faceFamilies, battleFamilies, outsiders, pending}` 를 보고한다. DB 시스템 탭 배지에 요약. 프롬프트에는 「얼굴·전투 그림도 이 장르 계열만」 한 줄(`genreLockPromptNote`·`genreLockShortNote`).
+- **정책 충돌 없음**: 전투 UI 스킨은 지금 `pokemon`·`retro2003` 둘 다 허용이라 막을 게 없다(정면 스킨은 #1877 에서 삭제). 측면 전투 정책·gen1 스킨과 부딪히지 않는다.
+- **스키마 영향**: 엄격 검증에 `allowedFaceFamilies`·`allowedBattleFamilies` 를 등록했다 — **이 필드를 저장한 프로젝트는 이전 빌드에서 열리지 않는다**(#2683 의 `allowedCharsetFamilies` 와 같다).
+- **알려진 빈틈**: `ActorRecord.battleCharacterResourceId`·`species.graphic.fieldGraphic` 은 잠그지 않았다. Scarloxy 흉상·전신은 없어 흉상·전신은 생성 대기뿐이다. 허용 몬스터 그림은 Scarloxy 19 + 하네스 15종(앞·뒤)·트레이너 앞모습 10역할이라 대부분 종·트레이너는 대기로 간다. 기본 DB 풀(배우·적)의 RTP 얼굴·일반 적 그림은 그대로다.
+- 테스트(미실행): `test/genreLockVisuals.test.ts`. 헤드리스 증거(SQLite 저장·재로드 포함 35항목): `bun scripts/qa/monster-lock-visuals-evidence.mts <out.json>`.
+- 테스트(미실행 — 에이전트 세션 규칙): `test/genreLock.test.ts` 가 판정·표·직렬화 왕복을, `test/toolRunner*.test.ts` 계열이 실행기 거부를 덮도록 후속 추가가 필요하다.
+
+## 몬스터 자산 역방향 잠금 — 몬스터 프로젝트가 아니면 포켓몬식 도구·자산이 보이지도 쓰이지도 않는다 (2026-10-17)
+
+계기: jrpg-loop-1 D1 — 실제 Argon 이 「FF6 같은 게임」을 지으며 `place_monster_center`·에메랄드 프로필·스타터 몬스터를 불렀다. 위 정방향 잠금(`genreLock`)은 monster-collect·romance 프로젝트를 **자기 계열에 가두는** 허용 목록이라, JRPG·CT·연애 프로젝트 쪽 반대 방향이 비어 있었다. 이 절은 그 반대 방향이다. 새 저장 필드는 없다(판정은 프로젝트 데이터 + 요청 턴 신호).
+
+- **판정의 유일한 입구** `src/project/genreLockMonsterAssets.ts` `monsterAssetsAllowed(project, turn)` — 몬스터 프로젝트(`projectHasMonsterGameEvidence`)이거나 이번 요청이 몬스터 수집 요청(`ToolContext.monsterTurn`)이면 참. 노출(createPiToolset·find_tools·세션 노출·프롬프트)·실행(toolRunner)·검사(check_genre_lock·gameCheck)가 모두 이 함수 하나를 쓴다.
+  - **증거(기존 프로젝트 불변)**: 선언된 몬스터 게임(`genre`·`genreLock.preset`·기획 프리셋·`monsterCollection`·포획 없는 몬스터 파티 전투) · 몬스터 파티 전투/`monsterCampaign` · 몬스터 칩셋을 쓰는 맵. 기본 프로젝트가 싣는 종 10개·몬스터 칩셋 **정의**는 증거가 아니다. 증거는 도구 실행 **전**(`before`) 프로젝트로 본다 — 도구가 스스로 장르를 켜서 잠금을 풀 수 없다.
+  - **요청 턴**: `isMonsterRequestTurn(task)`(`monsterGameRequest.ts`) = `hasMonsterCollectIntent ∪ classifyMonsterGameRequest ∪ requestsEmeraldMonsterGame`. 의도 메모(`[의도 메모 …]` 뒤)는 사용자 글이 아니라 뺀다. 워커 입구(`oh-my-pi-worker.ts`)가 `PiAgentRequest.monsterTurn` 을 한 번 채우고 팀 하위 실행도 같은 값을 쓴다. 세션 경로는 `AssistantSession.toolContext` 의 게터. 헤드리스 `oprn-tools --assistant --monster-turn`.
+  - **분류 정밀도**: `CLASSIC_RPG_MARK`(JRPG·FF·드퀘·크로노·용사·마왕·비공정·시간여행·세계 붕괴)가 있고 몬스터 수집 고유 낱말(몬스터·도감·포획·체육관·트레이너·조련·진화 …)이 없으면 의도가 아니다. 모호하면 허용한다 — 막는 것은 「그냥 몬스터(적·사냥터·몬스터 헌터)」가 아니라 포켓몬식 수집·트레이너·센터·도감·포획 계열이다.
+- **거부 표(명시)** `MONSTER_ONLY_TOOLS` 18행(build_monster_game·tournament·expedition, configure_monster_style·campaign·system, read/review_monster_game, define_monster_species·families, rename_monster_species, give_starter_monsters, set_type_chart, place_trainer·monster_center·monster_pc·badge_gate·field_obstacle). `place_npc`·`upsert_enemy`·`upsert_troop`·`set_encounter_table`·`make_hunting_ground`·`place_field_enemy`·`author_dungeon`·**`author_wild_route`(버들항 필드 themeScene 이 일반 프로젝트도 쓴다 — 표에서 뺌)** 는 일반 RPG 도 쓰므로 막지 않는다. 일반 도구의 몬스터 전용 **인자 값**은 `ARG_RULES`(set_project_genre `monster-collect`·reset_project `genrePreset`·author_dungeon `genre:pokemon`·configure_game_systems `battleModel:gen1`/`monsterCare`).
+- **막는 곳(전부 같은 함수)**: ① `toolRunner.runToolDefinition` 맨 앞 거부(이름·인자) ② 실행 뒤 `assertMonsterAssetLock`(`genreLockMonsterAssetsDiff.ts`) — **새로 생기거나 바뀐** 몬스터 칩셋 맵·시스템 필드(genre·monsterCollection·battleModel gen1·battleUiStyle pokemon·monsterCampaign …)는 항상 거부, 캐릭터 칩·얼굴·전투 그림·트레이너 그림·전투 배경은 거부(통째로 들이는 도구 `placesCuratedCast`·`allowsTilesetChange`·장소 가져오기는 개수만 경고) ③ 목록·검색: `withCharsetCatalog` 가 정방향 필터와 **AND** 로 `monsterAssetCatalogFilters` 를 얹는다(list_npc_graphics·list_resources·이름→그림 대응) + `list_spatial_designs`·`read_region_reference`·`list_tileset_references` 가 몬스터 칩셋 장소·기물·참고문서를 뺀다 ④ 노출: `createPiToolset`·`find_tools`(이름으로 찾으면 이유와 다음 행동)·`buildSessionRegistryTools({hideTool})`·워커 `allowedDefinitions` ⑤ 프롬프트: 능력 색인에서 전용 도구 이름·`TASK_RECIPES` 의 `monster-*` 레시피(`withFixedBlocks`)·의도 선언 프롬프트의 몬스터 문장(`intentSystemPrompt`)·선언 후보 도구 목록(`buildIntentFacts`)·평문 턴 첫 노출 목록과 던전 메모의 몬스터 키트 문구·워커의 「게임 시스템 저작」 문장(`GAME_SYSTEM_PROMPT_GENERIC`) ⑥ 완료 검사 `gameCheck/monster.ts` 의 `isMonsterGame` = `isDeclaredMonsterGame`(같은 판정) ⑦ `check_genre_lock` 이 `data.monsterAssets{allowed,reason}` 를 보고하고 막힌 프로젝트에는 `configure_monster_system` 같은 몬스터 도구 이름을 광고하지 않는다.
+- **부작용 차단**: `set_encounter_table`(일반 랜덤 조우)이 몬스터 표지·키트·잠금을 켜던 경로는 몬스터 프로젝트·요청 턴에서만 동작한다(`toolRunner` 의 `markerAllowed`).
+- **거부 문장** 은 무엇이 막혔는지·일반 RPG 대체 도구(`upsert_enemy`·`upsert_troop`·`place_field_enemy`·`set_encounter_table`·`place_npc`)·사용자에게 한 문장으로 되묻고 턴을 끝내라 + 「몬스터 수집 게임 만들어 줘」라고 말하면 그 요청 턴부터 풀린다는 해제 경로를 싣는다. 조수가 임의로 풀지 않는다.
+- **손 편집·기존 그림은 막지 않는다**: `ctx.assistantRun` 일 때만 강제. 이미 들어 있는 몬스터 그림은 건드리지 않고 **새로 고르는 것**만 거부한다(같은 id 그대로 다시 저장하는 것은 통과).
+- **누수 표(L01~L17)와 시험**: `test/monsterReverseLock.test.ts`(136항목, 한 줄마다 「막힌 프로젝트: 숨김·거부 / 몬스터 프로젝트·요청 턴: 통과」) + 기존 프로젝트 불변(R1)·첫 턴 동작(R2)·일반 몬스터 도구 열림(R3)·손 편집(R4). 전후 증거 `npm run qa:game -- toollist [--json out]`(모델 없이 첫 요청의 도구 목록·프롬프트 몬스터 도구 수 — D1 FF6풍: 모델 도구 10→0·프롬프트 언급 18→0), `--live` 는 Argon 의도 선언 호출만(키는 `OPRN_LIVE_KEY` 환경변수, 조건당 1회).
+- **알려진 빈틈**: `ActorRecord.battleCharacterResourceId`·`species.graphic.fieldGraphic`·이벤트 코드가 직접 쓰는 몬스터 그림 필드는 정방향 잠금과 같은 빈틈을 공유한다. 기존 테스트 중 몬스터 도구를 `assistantRun` 으로 부르던 4개 파일(`monsterToolFirstLock`·`monsterBadgeGating`·`monsterBadgeCeremony`·`monsterLockDefault`)는 `monsterTurn: true` 를 넣어 새 규칙에 맞췄다(실행하지 않음 — 에이전트 세션 규칙).
+
+## find_tools 별칭 사전·인자 교정·조우표 거절 (2026-10-15 FF6 감사 #34)
+
+- **find_tools 순위**(`src/editor/tools/discoveryTools.ts`): 낱말 희귀도(IDF) 가중 + 이름 조각 일치 + 첫 문장 우대 + **용어 별칭 사전**(`toolAliases.ts` — 「마석·에스퍼→upsert_equipment/upsert_skill」「시간문→create_time_gate」「필드 적→place_field_enemy」「월드맵→edit_world_terrain」 …).
+  결과마다 `data.matches[].why` 와 요약의 `이름 [이유]` 로 왜 골랐는지 보인다. 아무것도 안 맞으면 글자 쌍 겹침이 가장 큰 3개(`data.nearest`)를 준다. `matchScore` 는 자연어 승격(`capabilityEscalation`)이 계속 쓴다.
+  **별칭을 추가할 땐 도구 이름이 실제 레지스트리에 있어야 한다**(없으면 조용히 무시). 낱말이 너무 흔하면(「적」「배」「벽」) 다른 말에 끼어드니 두 글자 이상 구로 쓴다.
+- **재생 코퍼스**: `scripts/qa/fixtures/find-tools-corpus.json`(감사 역할극 3판의 find_tools 질의 107건 + 이후 실제 호출 도구) → `bun scripts/qa/find-tools-replay.mts [--verbose]`.
+  적중(hit@5) = 이후 실제로 호출된 도구가 상위 5개 안. 실측: 자연어 질의 62건 hit@5 **48.4% → 79.0%**, 정밀도@5 0.155 → 0.26.
+- **인자 교정·거절 공통 헬퍼**: `argRepair.ts`(최상위 인자: `table→collection`·`actors→actorIds`·snake/kebab/대소문자 → 옮기고 「'X' 는 'Y' 입니다」 경고, 못 옮기면 가장 가까운 이름·허용 목록·예시 호출 JSON 을 붙여 거절), `dbRecordAliases.ts`(레코드 안쪽: `enemy.maxHp→stats.maxHp`·`exp/gold→rewards`·`role→도구 최상위 role`·`actor.class→classId`, 자유 서술 칸 `description` 은 「저장 안 했다」 경고). `toolRunner.runToolDefinition` 이 둘을 부르고, `upsert_actor`·`upsert_enemy` 가 레코드 교정을 쓴다. 새 별칭은 이 두 표에 한 줄씩.
+- `set_party` 는 `scope` 생략 시 `start`(경고). `script_cutscene` 의 `{say:"…"}` 줄임 비트는 `kind:"say"` 로 보강하고 kind 오류는 쓸 수 있는 kind 목록을 준다.
+- **`set_encounter_table` 는 모르는 키를 거절한다**(`minLevel`·`maxLevel`·`level`·`weather`·`shiny`·`terrain`·`terrainTag`·`location`: 이유 문구와 올바른 이름을 함께 준다 — 예전엔 조용히 버려져 맵 전체 조우로 저장됐다). 지금 받는 칸은 항목 `troopId`·`weight`·`levelMin`/`levelMax`·`conditions`, 조건 `switchId`·`variableId`·`atLeast`·`minPartyLevel`/`maxPartyLevel`·`region`·`locationId`(맵 로케이션 id/이름)·`terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭)·`timePhase`·`season`이다. 야생 레벨 범위 `levelMin`/`levelMax`(1~99, 종 몬스터 적 트룹만 — 아니면 거절)는 항목 바로 아래이고 뽑힐 때마다 그 범위에서 굴린다; 고정 레벨은 둘에 같은 값. 날씨(`weather`)·이로치(`shiny`) 조건은 아직 없어 거절이 정상이다.
+
+## 빈 잔디 맵 방지 — create_map themeScene · check_map_emptiness (2026-10-15 FF6 감사 #35)
+
+실측: 역할극 필드 맵 7장이 전부 단색 잔디였다(create_map 만 부르고 칩셋 구성기를 못 찾았다). 세 겹으로 막는다.
+
+- **`create_map({themeScene:"장면[:스타일]"})`** (`themeScenes.ts` 정본 표 16장면): 맵 생성과 그 칩셋 구성기 호출이 한 호출. `width/height` 를 생략하면 장면 권장 크기(`themeSceneDefaultSize`). 장면 → 구성기: snow_north→compose_snow_north_map · desert_east · steampunk_city · sky_island · prehistoric · pirate_isles · sengoku_edo · sf_station · modern_city · campus · jp_city 의 compose_*, wizarding→build_wizarding_space, gothic→build_gothic_place, beodeul_town→author_beodeul_town, beodeul_dungeon→author_dungeon, beodeul_field→author_wild_route(남쪽→북쪽 출구, 길·숲·풀숲). 구성기가 맵을 스스로 짓는 장면(wizarding·gothic·beodeul_town·beodeul_dungeon)은 미리 맵을 만들지 않고 이름만 넘긴다. 어느 단계든 던지면 호출 전체가 버려진다. 모르는 장면·스타일은 쓸 수 있는 목록과 예시로 거절, `tilesetId` 가 장면 칩셋과 다르면 거절. 러너(`argsWithCurrentMapTileset`)는 themeScene 이 있으면 보는 맵 칩셋을 덮어 넣지 않는다 — 계열이 다르면 기존 계열 검사가 사용자 승인을 요구한다. **새 테마 구성기를 만들면 `THEME_SCENES` 에 한 줄을 더한다**(도구 이름은 레지스트리에 있어야 한다). 순환을 피하려고 구성기는 `bindThemeToolLookup(getTool)` 로 조회한다.
+- **themeScene 없이 만든 맵**의 `create_map` 요약은 「지금은 단색 … 바닥입니다. 다음: <그 칩셋의 구성기 구체 호출문>」 을 붙인다(`emptyMapNextStep` — 맵 이름 낱말로 장면을 줄 세운다. 실내 칩셋은 build_hand_interior_room, 구성기 없는 칩셋은 find_empty_ground→furnish_outdoor_area).
+- **`check_map_emptiness({mapId?})`**(`mapEmptiness.ts`, 읽기): 가장 흔한 바닥 ≥ 80% 이고 장식 ≤ 10%(100칸 이상)면 flat. qa:game `visual-flat` 과 같은 기준. `run_lint` 와 `evaluate_game_quality` 에도 warning `map-flat-ground` 로 자동 들어가 완료 직전 검사(`LAYER_VERIFICATION_TOOLS`)에서 걸린다. 월드맵 키트 맵과 시작 때 남은 빈 시드 맵 `map_blank_start` 는 제외. evaluate_game_quality 는 이미 `empty-map`(error)인 맵을 중복으로 올리지 않는다.
+- 능력 색인에 `theme-scenes` 레시피(`toolCapabilityIndex.ts`)와 find_tools 별칭(「맵 만들기」「빈 맵」)이 같은 길을 가리킨다.
+- 시험: 새 프로젝트에 16장면을 `node scripts/oprn-tools.mjs --new --project … create_map '{"name":…,"themeScene":…}'` 로 전부 깔아 본다(전부 ok, `check_map_emptiness` 로 flat 은 시드 맵 1장만).
+- **맵 성격 명시(2026-10-15 역할극 후속)**: themeScene 이 만든 맵은 분명한 스타일(cave·mine·labyrinth 등 → `dungeon`, village·market·street·harbor 등 → `town`)이면 `mapRole` 을 직접 적는다(`themeSceneMapRole`). 저작자가 고른 값은 덮지 않는다. 이름 추정(`guessMapRole`)의 INTERIOR_WORDS 는 「방어·방패·방향…」의 「방」을 실내로 읽지 않는다 — 「방어전 - 설원 광산 전선」 맵에 `place_field_enemy` 가 「실내라 필드 적 불가」로 거절되던 사례.
+
 ## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
 
 왜: 실제 입력창 검수(`~/claude-viz/village-ai-report.md` 문제 2·3)에서 `author_beodeul_town` 이 깐 높이 마을(map.relief)에 조수가 품질 수리로
@@ -21,6 +118,11 @@
 마을 도구는 찍기를 다 끝낸 뒤 relief 를 싣기 때문에(beodeulVillage.ts 12c) 새 맵 시공에는 영향이 없다 — 형태 프로브 96건 fail 0·stampFailed 0.
 **알려진 구멍:** 옛 relief 가 남은 맵에 `author_beodeul_town({mapId})` 로 다시 지으면 찍는 동안 옛 높이로 검사돼 일부 키트가 빠진다(합성 시험 stampFailed 5).
 마을 도구가 시공 시작에서 `map.relief` 를 지우면 닫힌다(그 파일은 이 변경 범위 밖). 프로브: `bun scripts/qa/stamp-relief-probe.mts [--theme --terrain --seed]`.
+
+**구성기 맵은 배치 품질 권고를 받지 않는다 — 표식 하나, 판정 하나 (2026-10-14).** `compose_*` 도구·`layout` 방 짓기는 자기 위치 이름표(구역·건물·방)에
+`COMPOSED_LAYOUT_TAG`(`composed-layout`, `src/project/mapNamedLocations.ts`)를 같이 단다. `inspectPiLayoutQuality` 는 `isComposedLayoutMap(map)` 하나로 그 맵을 통째로 건너뛴다
+(권고가 전부 «빈 땅 채우기·대칭 깨기»라서다. 문에 닿지 않는 길·겹침은 구성기 도구 자신의 검증이 따로 막는다). 새 구성기는 표식 한 줄만 달면 된다 — `layoutQuality.ts` 에 칩셋 분기를 더하지 않는다.
+옛 `sf-area`·`pirate-area` 이름표만 있는 저장본은 `isComposedLayoutMap` 이 같이 인정한다. `composedLayoutMapIds` 는 없어졌다.
 
 **트인 땅 배치 기준** (`src/ai/piAgent/layoutQuality.ts`). 바닥(통행 칸)의 절반 이상이 모래·눈 재질(칸 이름표·설명 `모래|사막|눈 바닥|고원 눈|눈밭|설원|sand|snow`,
 `road` 태그 칸 제외)이면 `OPEN_LAND_LAYOUT_LIMITS`(빈 바닥 ≤45%·빈 정사각형 ≤9·대칭 ≤2.2)로 잰다. 근거: 마을 도구 `openLand` 가 사막·설원에 빈 덩이 90칸(≈9×9)·화면당
@@ -217,6 +319,20 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 - SQLite 저장·재로드 근거: `verify-shots/beodeul-door/applied/canonical-proof.json`.
   실제 플레이 검사는 같은 폴더의 `runtime/SUMMARY.md`를 먼저 읽는다.
 
+## FF6 마석 성장 도구 — upsert_equipment_slot · apGrants · levelUpBonus (2026-10-15)
+
+- `upsert_equipment_slot` — 장비 부위(유물 2칸·마석 칸). `slots:[{id,label,equipsAs?}]` 순서대로 만들고(equipsAs 가 가리키는 부위를 앞에), `removeIds` 는 쓰는 칸을 거절한다. 모르는 키·기본 5칸의 equipsAs·없는 equipsAs 는 오류로 거절. `upsert_equipment` 가 모르는 slot 이면 「먼저 upsert_equipment_slot」을 안내한다(예전: `Unknown equipment slot: relic` 만).
+- `upsert_equipment` 신규 필드: `apGrants [{skillId,ap}]`(없는 스킬은 거절 → upsert_skill 안내)·`apRate`·`levelUpBonus`. AP 를 줄 적이 하나도 없으면 경고(`upsert_enemy.rewards.ap`). `upsert_skill.oncePerBattle` 은 소환용.
+- 능력 색인 레시피 `esper-growth`, 라벨 「장비 부위 수정」. 설명·규칙: `openwiki/runtime-battle.md` 「FF6 마석 성장」.
+
+## FF6 전투 특수 효과 — 스케치 · 폭주 · 대열 섞기 · 강제 교대 · 좀비 · 트랜스 (2026-10-15)
+
+- `upsert_skill.effect.kind` 에 `sketch`·`rage`(+`enemyIds`)·`shuffleParty`·`forceSwitch` 가 늘었다. 모르는 키는 거절(허용 필드 목록을 알려 준다). `rage.enemyIds` 에 없는 적 id 는 거절하고 `upsert_enemy` 를 안내한다.
+  경고: 폭주에 scope 가 self 가 아님 / `state_rage` 상태가 프로젝트에 없음, 스케치에 scope 가 enemy 가 아님, 대열 섞기·강제 교대가 self 범위(적이 플레이어 파티를 흔드는 기술이라는 안내).
+- `upsert_state.runtimeEffects` 에 `invertHealing`(좀비), `grantSkillIds`(트랜스·변신이 주는 기술, 없는 기술은 거절 → `upsert_skill` 안내), `forcedAction: "rage"`(폭주)가 늘었다.
+- 능력 색인 레시피 `ff6-battle-effects`(스케치·폭주·교대·좀비·트랜스·블리츠·검기·룬 한 장 요약). 새 도구는 없다 — 라벨·활동 서술은 기존 `upsert_skill`/`upsert_state` 를 그대로 쓴다.
+- 규칙·파일: `openwiki/runtime-battle.md` 「FF6 전투 특수 효과」, `openwiki/state-system.md`.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
@@ -292,9 +408,13 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 
 ## 탈것 배치 도구 — place_vehicle (2026-09-26)
 
-- `place_vehicle {vehicle: boat|ship|airship, mapId, x, y, characterIndex?}` (`src/editor/tools/vehicleTools.ts`, 도메인 event,
+- `place_vehicle {vehicle: boat|ship|airship|chocobo|cart|raft, mapId, x, y, characterIndex?}` (2026-10-15: 초코보·광산 수레·뗏목 추가, 모르는 인자 거절) (`src/editor/tools/vehicleTools.ts`, 도메인 event,
   라벨 「탈것 세우기」): `system.vehicles` 에 종류당 한 항목을 쓰고 다시 부르면 옮긴다. characterIndex 는 EasyRPG
   `Vehicles.png` 의 칸이다(기본 boat 0 소형선, ship 1 대형선, airship 2 비행선; 288×256 은 일반 8칸 시트다).
+- **걷는 탈것 셋 (2026-10-15, FF6급 감사 #28).** `vehicleCanEnter`(`src/project/vehicles.ts`) 규칙: 뗏목 = 지형 `vehiclePassage.raft` 참(강) 또는 boat 참·ship 거짓(호수)·이름표 water — 바다는 못 간다 /
+  초코보 = 걸을 수 있는 칸 + `vehiclePassage.chocobo` 참 + 이름표 tree·forest(통행 불가 숲도 지난다), 물·산은 불가, 걸음 두 배 / 광산 수레 = `vehiclePassage.cart` 참 또는 칸 이름에 선로·레일·궤도·rail(가드레일 제외)이 든 칸만, 걸음 두 배.
+  그림은 새 도트 없이 기존 칩: 초코보 = Animal 시트 말(칸 5, `vehicleSheet`), 수레 = Vehicles 5(임시 무한궤도 차), 뗏목 = Vehicles 0. 월드맵 키트 지도는 지형 태그(`terrain_world_*`)로 바다 boat·ship / 강 boat·raft / 숲 chocobo 가 이미 붙는다.
+  레일 칸이 칩셋에 없으면(버들항) `set_tile_rules` terrainTag 로 `cart` 참인 지형 레코드를 붙인다. 이벤트 편집기 「탈것 위치 설정」·M2 카탈로그 선택지도 여섯 종이다. 시험: `ct-vehicle-walkers`.
 - 통행은 이 도구가 아니라 **지형 레코드**(`database.terrains[태그-1].vehiclePassage`)가 정한다. 자리가 그 탈것에 맞지 않으면
   (배: 그 칸 지형이 boat/ship 불허, 비행선: airshipLand 불허) 쓰기는 하되 경고한다.
 - 기본 DB 는 이미 태그 3 `terrain_water` 에 boat/ship=true·airshipLand=false, 태그 1·2 에 airshipLand=true 를 준다. 그래서
@@ -467,6 +587,8 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 `build_jp_city_building` 이 있어도 조수가 칩셋을 모르면 못 쓴다. `src/ai/jpCityPolicy.ts` 가 ① `classifyPlainPiTurn` 의 jp 라우트(대상 맵 jp_city 이거나 생성 요청이 칩셋·일본 상가를 말함 → 마을 계약 건너뛰고 jp 노트, 첫 요청부터 `JP_CITY_EXPOSED_TOOLS` 노출) ② `buildPiAgentSystemPrompt` 한 줄(+jp_city 맵이면 상세 순서) ③ `requestsModernMap` 의 jp_city 직접 호출 예외 ④ `TASK_RECIPES` `jp-city`(레거시 채팅 경로만)를 맡는다. 노트·지시 문구에 현대·모던·modern 을 쓰지 않는다(노트는 task 에 실려 PAW 게이트를 켠다). 도구 오류 문장은 `NEXT_ACTION` 꼬리로 다음 행동을 알린다. 상세·실측·남은 일: `openwiki/jp-city.md` 「조수 연결」. 같은 시험이 **참고문서 게이트의 일반 결함**을 드러냈다 — Pi 도구 결과 12,000자 상한에서 잘린 쪽(`dataTruncated`)은 읽은 증거가 안 돼, 번들 참고문서 61쪽(12개 타일셋)은 몇 번을 읽어도 칠하기 도구가 통과하지 못했다. `toolAdapter` 가 `read_tileset_reference` 만 30,000자로 보낸다.
 
 **compose 우선 지침 (2026-10-13).** 포인터·상세·노트(`jpCityPolicy.ts`)는 거리·마을·동네 한 장을 `compose_jp_city_street({seed, style:shopping|residential, shops})` 로 먼저 짜게 하고(맵 ≥40×28, 높이 46↑ 큰길 둘+하천, 52↑ 상가 고층 — 인자가 아니라 크기+seed 로 나온다), 손 시공(`build_jp_city_building`·`fill_region`)은 짠 뒤의 건물 한두 채 보정에만 둔다. 라우팅: 일본 낱말이 없어도 번화가·상점가·도심·시가지·주택가·downtown 등(`describesCityStreet`)은 **프로젝트에 jp_city 맵이 이미 있고** 미국풍·modern_city 낱말이 없을 때만 jp_city 로 간다. 회귀: `test/jpCityRouting.test.ts`(작성 시 미실행).
+
+**빈터 쓰임 지침 (2026-10-14).** compose 가 끝에 빈 대지를 쓰임(코인 주차·놀이터·텃밭·공사장·광장·골목 틈)으로 채운다고 알리고, 건물을 손으로 더한 뒤엔 `compose_jp_city_street({lotsOnly:true})`, 쓰임이 0~1곳이면 seed 를 바꿔 다시 짜기, 소품 낱개 흩뿌리기 금지를 적었다. 실조수(gemini-3.8-flash high) 시험에서 손 건물 뒤 lotsOnly 를 스스로 불렀다. 세부 `openwiki/jp-city.md` 「빈터 쓰임 단계」.
 
 ## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
 
@@ -2561,6 +2683,10 @@ walkthrough rather than treating a successful tool call as runtime proof.
 오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
 일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
 
+**`pixel:true` (2026-10-16, kind=picture 만):** 도트 아이콘·소품을 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트)이 32px 격자로 찍어 투명 PNG 로 만든다
+(용도 `chat-pixel-art`, `src/editor/imageAssetGeneration.ts` → `src/ai/dotTextArt.ts`). 생략·false 는 종전 그대로 이미지 모델이다. 다른 kind 와 쓰면 `invalid-args`.
+같은 날 컷신 `generate_cutscene_art role:sprite style:game` 도 도트 저작 모델로 옮겼다 — 근거·결정 5건은 `openwiki/editor-ai-panel.md` 「이미지 용도 분리 → 결정 (2026-10-16)」.
+
 ## Feature16 combat and climate authoring tools (2026-09-21)
 
 `upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
@@ -2859,8 +2985,21 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 - `add_companion`: 이름이 이미 「… 합류」로 끝나면 이벤트 이름에 접미사를 다시 붙이지 않는다.
 - `changeParty` 명령 `action`: `add`·`remove`·`lead`(선두 교대). 명령 스키마·편집기 폼·미리보기가 셋 다 받는다.
 - `set_tile_rules` 항목 `ledge: up|down|left|right|none`: 한 방향 턱. `set_tile_passability` 스키마는 테스트가 고정하고 있어 건드리지 않았다.
-- `place_savepoint {heal?:boolean}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다.
-- `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 두 게이트 전이 앞에 흰 `Flash Screen` 을 넣고 페이드를 white 로 바꾼다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다.
+- `place_monster_center {mapId,x,y,name?,greeting?,checkpointLabel?,machineCells?[{x,y}≤6],graphic?,id?}`: 몬스터 수집용 센터 간호사. `monsterCenterRecipe` 레시피(맡길까요 → 볼 줄 → 회복 ME·섬광 → 전원 회복 → 센터 기록). 크리스탈 세이브 회복은 아래 `place_savepoint`. 모르는 칸·맵 밖 machineCells 는 거절. 몬스터 수집 잠금에서 보이고(`MONSTER_MARKER_TOOLS`·`MONSTER_GAME_INITIAL_TOOLS`) alias 는 센터·병원·간호사·회복소·포켓몬센터.
+- `place_savepoint {heal?:boolean, mode?:both|slot|checkpoint}`: 기본 false(크로노 트리거 세이브 포인트는 회복하지 않음). true 면 `recoverAll` 을 앞에 넣는다. `mode` 기본 both = 체크포인트 + 저장 칸 선택 창(`openSaveMenu`), slot = 저장 창만, checkpoint = 체크포인트만.
+- `create_time_gate {a:{mapId,x,y}, b:{mapId,x,y}, name?, effect?(flash|swirl|pillar|warp|quake), unlockWhen?, lockedMessage?, lockSide?, graphic?}` (`src/editor/tools/timeGateTools.ts`): `create_transfer_pair` 로 자리를 잡고, 전이 앞에 `effect` 연출(화면 왜곡·섬광·흔들림·파티클, 새 그림 없음)을 넣는다. `unlockWhen`({switchId}|{storyFlagId}|{variableId,op,value} 중 정확히 하나)을 주면 **잠긴 페이지를 앞에, 열린 페이지를 뒤에** 둔다(런타임은 조건이 모두 맞는 마지막 페이지를 쓴다). 모르는 키(`swich` 등)·`unlockWhen` 없는 `lockedMessage` 는 거절한다. 번들 캐릭터 시트에는 소용돌이·차원문 그림이 없어 기본 그래픽은 투명이다. 맵 이벤트는 `transfer` 뒤 명령을 실행하지 않아 왜곡은 전이 전에 스스로 풀린다.
+  - **빛 표식(jrpg-loop-1)**: `graphic` 을 안 주면 투명 문이라 플레이어가 문을 찾을 수 없었다. 이제 문 칸마다 `addGateBeacon` 이 파티클(`magic`, target tile, 병렬 이벤트)을 단다(`data.beaconEventIds`). 그림을 주면 달지 않는다.
+- **의도 메모는 몬스터 판정에서 뺀다(jrpg-loop-1)**: `composePiTask` 가 사용자 글과 의도 메모 사이에 `INTENT_NOTE_BOUNDARY`(monsterGameRequest.ts)를 끼우고, `hasMonsterCollectIntent`·`classifyMonsterGameRequest`·`requestsEmeraldMonsterGame` 은 경계 앞(사용자 글)만 본다. 메모(모험 지침·던전 노트의 「몬스터 키트」「포켓몬풍」「트레이너」)를 신호로 읽어 「FF6 같은 게임…동료들을 다시 모으는 이야기」가 포켓몬형 캠페인(build_monster_game 완료 검사)으로 납치되던 결함 수정.
+- `derive_map_variant {sourceMapId, variants:[{id,name?,era?,tilesetId?,tileRemap?,tileOverrides?,removeEvents?}], timeGates?:drop|keep, relinkDoors?, gates?:[create_time_gate 인자], resync?}` (`src/editor/tools/mapVariantTools.ts`): 같은 지리의 시대 변형(중세·현대·미래)을 한 번에 파생한다. 복제는 `cloneMapIntoProject`(`src/project/mapClone.ts`)를 거치며 **이벤트 id 를 새로 매기고 명령 트리·조건·빛 앵커·M2 이벤트 참조의 맵 안 이벤트 참조를 함께 고친다**(예전 `duplicate_map` 은 깨진 참조를 남겼다). `resync` 는 이미 만든 변형의 영역을 원본 지리로 다시 맞춘다. 모르는 키(`tile_overrides` 등)는 거절하고 올바른 이름을 알려 준다.
+  - **시대 강도(jrpg-loop-1 D8·D16)**: `mapVariantLook.ts` LOOKS — ruin 철거 75%·어둠 0.5, past 철거 60%·소품 2~4개·옅은 안개 0.25, future 철거 55%·소품 2~3개. 시대 변형이 색조뿐이라 같은 마을로 읽히던 문제를 새 그림 없이 철거·소품 킷 밀도로 완화한다(칩셋이 다른 건물 그림을 못 주는 한계는 그대로). 폐허 조각은 물 칸 위에 놓지 않는다(`isWaterCell`) — 해안 건물 자리에 놓으면 받침 없는 물체로 커밋이 거절돼 `derive_map_variant` 가 통째로 실패했다(ff1 원본 맵에 변형 id 7개를 시험하면 옛 코드는 5개 거절, 새 코드는 0개).
+  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
+||||||| parent of 895e395c52 (fix(ai): demolition also clears the building shadow strips (BEODEUL_NATURE.shadows cells))
+  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층을 지운다.
+  - **철거 뒤 덧그림(jrpg-loop-1)**: 건물 철거는 1·3층만 `before` 로 되돌려 덧그림(2·4층)에 올라간 지붕 조각이 허공에 남았다. `clearDemolishedOverlays`(`mapVariantLook.ts`)가 철거 영역(4층은 오른쪽 한 칸 더)의 2·4층과, 마을 시공기가 얹은 건물 그림자 띠(`BEODEUL_NATURE.shadows[kitId]` 칸)를 지운다 — 그림자 띠는 원해상도 렌더에서 철거 자리에 남은 어두운 세로·가로 줄의 정체였다.
+- `tile_change_effect {targetMapId, changes:[{layer:1|2|3|4|lower|upper, rect|cells, tile}], trigger?:{mapId,x,y,id?,name?,kind?,graphic?,text?,doneText?,requires?,lockedText?}, doneSwitchId?, alsoSetSwitches?, emitOnly?}` (`src/editor/tools/tileChangeEffectTools.ts`): 「과거 행동 → 미래 타일 변화」. 원인 이벤트가 `changeTile` 을 실행하고 한 번만 일어나게 스위치로 막는다. 오토타일 가장자리는 저작 시점에 scratch 사본에 `paint_tiles` 규칙으로 칠해 얻은 차이를 `changeTile` 목록으로 굳힌다. 레이어 2(`lowerOverlayTiles`)·4(`upperOverlayTiles`)를 지원하며, 변경은 `session.mapOverrides` 에 저장돼 맵 로드마다 다시 입혀지고 세이브에 남는다. `changeTile` 에 `tileId`·없는 레이어를 주면 `upsert_event`·`patch_event_page` 가 거절한다(`src/project/changeTileValidation.ts`). 그림자 비트는 `changeTile` 로 못 바꾼다.
+- 이벤트 쓰기 도구(`upsert_event`·`patch_event_page`)는 페이지의 모르는 키(예: `condition`→`conditions`)를 조용히 버리지 않고 거절·경고한다(`src/editor/tools/eventPageKeys.ts`).
+- 카운트다운은 저장·불러오기에서 이어진다: 흐르는 타이머는 `session.timerActive` 로 저장되고 `restoreRuntimeTimers` 가 다시 흐르게 한다. 헤드리스 `run_scene_test` 는 `timer` 명령(set/start/stop)과 `advanceTime` 흐름을 흉내 내며 `expect` 에 `timerRemaining`({timer1: 초})·`timerRunning`(id)을 쓸 수 있다.
+- 강하게 다시 하기 `newGamePlus.carry` 에 `techPoints`(기술 포인트)·`party`(파티 구성)를 고를 수 있다. 파티 구성은 지금 프로젝트에 있는 배우만 복원한다.
 - 명령 보장 표: `setEventGraphicPattern`·`cutsceneControl`·`checkpointSave`·`triggerEnding`·`setSelfSwitch` 는 맵/공통에서 `full` 이다(전투는 종전 유지). 저작 길은 그대로라 `indirectAuthoring` 로 선택창 행 요구를 면제한다. 도구 요약의 「미지원 커맨드 N건」은 「런타임 제한 커맨드 N건」이 되었다.
 
 
@@ -3051,6 +3190,11 @@ Pi 시스템 지침과 `HAND_INTERIOR_POLICY_LINE`은 시대·장소·용도에 
 대상 맵이 이런 맵이면 `plainTurn.ts`가 두 도구와 `show_map_region`을 처음부터 노출하고 노트(`kitAreaNote`)로 이름을 부른다 —
 r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles 로 소품 네댓 개만 흩었다.
 
+2026-10-14 개정: 코드는 `src/project/kitAreaFurnish.ts` 로 옮겨 캠페인 생성기와 같이 쓴다. `furnish_outdoor_area` 의 기본 style 은 `auto` —
+`region`(사용자가 말한 쪽, bottom-left 등) 또는 `area` 하나만 받아 그 안의 빈터를 구획으로 나누고 구획마다 쓰임(`LOT_USES`)을 고른다(숲 벽 곁 덩이, 건물 곁 마당 쓰임,
+가까운 같은 쓰임 회피, 구획 사이 걷는 띠, 같은 바닥 위에만). 옛 스타일은 첫 덩이로 놓은 뒤 남은 터를 쓰임으로 채운다. 표식을 제자리에 못 놓으면 길도 깔지 않는다.
+`find_empty_ground` 는 `region` 과 터마다 추천 쓰임(suggest)·맨땅 비율을 돌려준다. 결과 요약의 「맨땅 a%→b%」가 휑함의 수치다. 측정 탐침과 수치는 `openwiki/monster-expedition.md` 끝 절.
+
 ### naturalize_beodeul_hamlet (2026-10-04)
 
 공용 버들항 작은 마을 템플릿의 지면 구성 변경. 원본 민가 전체 배열과 원점을 확인한 뒤 큰길/광장·흙 접근로·마당·텃밭·빨래 자리·군락을 공용 재료로 적용한다. 모든 집·지붕·문·기존 나무·이벤트·시작점 보존, 기존 포석 샛길과 작은 풀 장식 변경. 높이 맵/임의 마을 거부, 반복 완료는 no-op. 옛 맵을 author로 재시공하지 않는다. houseCount 신규 시공은 자동 적용. 출처 HAMLET.md와 작은 마을 전체 예제/정상오류 그림; 런타임은 전용 player.html 경로.
@@ -3118,3 +3262,219 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - **자세.** `look.angle` 90° 근처로 눕는 척 금지 → `pose fallen|fallenLeft|crouch|normal`. 스테이지 `pose` 단계는 맵 위 배우에게 스프라이트 자세 beat 를 낸다.
 - **장면 연속성.** 시작 맵 오프닝이 `transfer` 로 옮긴 도착 맵에 `trigger:auto` 연출이 없으면 관문이 막는다(침실→마을 뒤 아무 일 없던 실측).
 - 공급자 흔들림 재시도 패턴(upstream_server_error·socket closed·unknown provider·transient 400, 한도 4)과 로딩 문구 「n / 5」, 대사 한글 어절 줄바꿈(`word-break: keep-all`)도 같은 변경에 있다.
+
+## 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
+
+`monsterTournamentTools.ts`: `build_monster_tournament`(포획 없는 대회형, rounds 2~8) · `build_monster_expedition`(체육관 없는 탐험형, rounds 2~5, 결과 `groundMapIds`).
+`monsterBatchTools.ts`: `define_monster_families`(계통 최대 40, 계통별 원자적·부분 실패는 `data.failed`) · `rename_monster_species`(최대 60, 적·무리·대사·도감 설명까지 전파).
+`configure_monster_system` 에 `capture:false`(포획 없는 파티 전투 모드), `build_monster_game.startTheme` 에 `volcano`.
+요청 분류·키트 시작 맵 이동·한계는 `openwiki/monster-expedition.md` 「자유 경로 · 대회형/탐험형 · 계통 일괄 도구」 절.
+
+
+
+## 몬스터 캠페인 규모 인자화 · 정의 일치 검사 (2026-10-14, monster-free-a)
+
+2026-10-14 자유도 감사(`~/claude-viz/monster-free.html`)에서 `build_monster_game` 은 늘 72맵·60종·8체육관·142연결을 만들고
+검수(`monsterGameReview.ts`)도 그 상수로 막았다 — 「체육관 3개」「체육관 없이」를 말해도 8관 캠페인이 나왔다.
+
+- **몬스터 낚시 (2026-10-16, 깊이 감사 #9):** `configure_fishing` 의 `catches[]` 항에 `fishId` 대신 `speciesId`(+`levelMin/levelMax`·계절·시간대·날씨)를 쓰면 낚였을 때 아이템 대신 그 종의 야생 전투가 열린다. 저장 형태는 `FishingSpotDefinition.monsterCatches`(어종 `catches` 와 한 가중치 풀에서 함께 뽑힌다). 도구는 종 id 존재와 그 종 적이 든 비트레이너 troop(`src/project/wildTroops.ts` `wildTroopIdForSpecies`, `define_monster_families spawn` 이 만드는 `troop_wild_<종>` 포함)이 없으면 거절한다. 런타임은 `attemptFishingCatch` 가 `{kind:'encounter',troopId,level}` 를 돌려주고 `interactWithLifeField` 가 같은 모양으로 전달해 플레이 장면(`runRandomEncounterBattle`)·`run_scene_test`(`fishing encounter <종> … : victory`) 둘 다 야생 인카운터와 같은 전투 경로로 싸운다. 참조 검수·복구(`io/references.ts`)는 사라진 종·무리를 가리키는 `monsterCatches` 항을 버린다. 확인: `bun scripts/qa/poke-audit-fix/fishing-probe.mts`.
+
+- **규모 인자:** `build_monster_game(create)` 의 `gymCount`(0..8, 기본 8)·`speciesCount`(6..60, 기본 60). 기본(인자 없음)은 이전과
+  바이트 단위로 같다(여섯 옵션 변형 sha 비교로 확인). 만드는 쪽은 `src/project/examples/monsterExpedition/campaignPlan.ts`
+  (`campaignShape`·`campaignLevels`·`retellForGymCount`) 한 곳이 정한다 — N관은 마을 1..N, 4관부터 박물관, 5관부터 밤막회사 지부,
+  리그 방 7+→5·4+→3·1+→1·0관→없음(관측탑 보스가 엔딩), 0관은 체육관 없는 마을 둘에 「조련사 회관」. 레벨은 마지막 체육관에 맞춰 줄인다.
+- **계획(`system.monsterCampaign.plan`):** `{gyms,species,maps,links}`. 검수 하한(맵·종·배지·연결)은 이 계획에서 읽고
+  없으면 옛 상수(72/60/8/142). `shapeMonsterCampaign.ts` 가 모양을 검증한다.
+- **요청 문장 → 인자:** `monsterGameRequest.ts` 의 `parseMonsterCampaignScale`(한글 수사·「없이」·「8개를 5개로」·「4 gyms」).
+  `requestsEmeraldMonsterGame` 은 「포켓몬」 낱말이 없어도 「몬스터 수집/포획/육성 게임」 장르 낱말을 받는다(키워드 분기 제거).
+  규모 한 줄(`monsterScaleNote`)이 시스템 프롬프트·의도 메모에 붙고, `PiMonsterGameProduction` 은 요청한 체육관·종 수와
+  만든 캠페인이 다르면 완료를 막는다.
+- **`configure_monster_campaign` 재작성:** `definition` 안쪽 스키마(`speciesNotes` 는 `{speciesId,note}` 배열 — Gemini 는 자유 키
+  객체를 400 으로 거절), 병합 의미(준 칸만 바꿈), 항목 수를 줄이는 덮어쓰기는 `allowShrink:true` 가 없으면 거부,
+  `badgeCount` 는 `resizeCampaignGyms`(`resizeGyms.ts`)로 정의·관장 이벤트·잠금·서사를 함께 줄인다(늘리지는 못함).
+  새 blocker 를 만드는 변경은 거부(`monsterCampaignConsistency.ts`). 이 검사(`checkMonsterCampaignDefinition`)는
+  `qa:game check` 의 monster 검사(`src/qa/gameCheck/monster.ts`)에서도 돈다.
+- 남은 한계: 화산 같은 시작 풍경은 아직 meadow·desert·snow·coast 뿐(키트 적용·테마는 monster-free-b). 체육관 없는 마을의 회관은 체육관
+  모양 건물이다. `resizeCampaignGyms` 가 줄인 체육관 맵은 건물·퍼즐이 남은 빈 시험장이다(관장 대사만 정리).
+
+## 세계 변형판 · 장소 입구 · 지형 조우 (2026-10-15, worker B, FF6급 감사)
+
+- `derive_world_variant {baseMapId, newMapId?, name?, preset?:"ruin"|"none", flood?, rifts?, fissures?, recolor?, forest?, zones?, palette?, ruinIcons?, icons?, journey?:"free"|"keep", variantOps?, copyEvents?, preview?}` —
+  파멸 전/후 같은 대륙. 모르는 키는 거절(허용 목록을 메시지에 준다). `preview:true` 는 저장 없이 도식·통계만(몇 초). 결과 `data.diff`(구조·땅 변화 %, 구역별), `data.journeyCheck.notes`.
+  기본 preset `ruin` = 침수 3칸·자동 균열·바닥 갈아엎기·고사목·ruin 색 표·폐허 아이콘 70%. 라벨 「세계 변형판 만들기」.
+- `link_world_entrance {worldMapId, links:[{place|x,y, toMapId, toGate?}], autoMatch?, fade?}` — 월드맵 장소 입구 ↔ 던전·마을 양방향. 던전은 `던전 입구` 표식이 문 칸을 알려 준다.
+  `autoMatch:true` 는 이름·id 가 같은 맵이 정확히 하나일 때만 잇는다. 결과 `data.unlinkedPlaces` = 입구 이벤트가 없는 장소. 라벨 「월드 입구 잇기」.
+- `author_dungeon.entrance:{fromMapId, place|x,y, fade?}` — 짓는 즉시 야외 입구와 양방향(고아 맵 방지). 모르는 키·없는 장소는 거절하며 `link_world_entrance` 로 우회하는 문장을 준다.
+  `author_dungeon` 최상위도 이제 모르는 인자를 거절한다(`style` 추가). 의도 선언·capability index·contextBuilder 24번 줄에 같은 안내.
+- `set_encounter_table` 항목 조건: `terrainId`(지형 레코드 id)·`locationId`(구역 id·이름) 추가, 모르는 조건 키 거절. 세계 지도 `terrain_world_*` 레코드는 지도 빌드 때 생긴다.
+- 실행 근거: `qa-runs/ff6b`(gitignore) — 변형 diff 46%·두 지도 렌더 비교, 던전 왕복 `run_scene_test`, 지형별 조우·배경·조우율 표.
+
+## 필드 스킬 게이트 증명: `useFieldSkill` + `partyKnowsSkill` (2026-10-15, FF6 수정 C)
+
+`run_scene_test` 스텝 `{kind:"useFieldSkill",skillId,target?,actorId?}` 는 메뉴의 필드 스킬(`skill.fieldCommonEventId`)을 바라보는 앞 칸에 쓴다(`sceneTestRunner.runUseFieldSkillStep`, 배우는 `prepareFieldAbility`, 몬스터 파티원은 `recordFieldAbilityTarget`). 파티가 스킬을 모르면 아는 파티원 목록·고칠 도구(`upsert_actor.learnedSkills`, 장비 `grantsSkillIds`, `learnSkill`)를 오류에 싣는다. 이벤트 조건 `partyKnowsSkill{skillId,present?}`(`event_command` 조건 스키마 `skillId`)로 길을 잠그고, 「알기 전엔 막힘 → 쓰면 열림」을 한 시나리오로 증명한다. `qa:game check` 자동 플레이도 같은 경로로 필드 스킬 게이트를 통과시킨다(상세·한계: `openwiki/testing.md` 「필드 스킬 게이트 시험」).
+
+## 무대 공연 도구 — author_stage_performance (2026-10-15, FF6급 감사 #31)
+
+- `author_stage_performance {mapId, eventId?, x?, y?, trigger?: action|auto, once?, skippable?, letterbox?, curtainRise?, leaveDark?, acts:[…]}` (`src/editor/tools/stagePerformanceTools.ts`, 도메인 event, 라벨 「무대 공연 짜기」).
+  오페라·콘서트·연극 한 장면을 막(act) 목록으로 받아 시각표를 코드가 계산하고 `script_cutscene` 비트로 컴파일해 그 검증·커밋 경로를 그대로 지난다(새 그림·새 소리 없음).
+- 막 종류: `backdrop`(먼 배경 리소스 전환·분위기 색 tint "R,G,B,알파") · `curtain`(close/open) · `spotlight`(주변 어둡게 + 인물 잔상·반짝임, on:false 로 끔) · `lyric`(가사 자막 — `container:"corner"` 비차단 자막을 줄마다 `ms` 만큼 기다림;
+  자막 수명 = 코너 대사 공식 `min(7000, max(2200, 1600+글자×90))`, 더 길게 잡으면 빈 화면 경고) · `chorus`(2~3명 `voices` 가 `staggerMs` 간격으로 겹쳐 뜸 — 화면 구석 자막은 3줄까지만 쌓여 4명은 거절) ·
+  `cue`(파티클 8종·flash·shake) · `music`(이미 있는 BGM/SE 리소스) · `pause`.
+- 모르는 인자는 최상위·막·줄·목소리 모두 거절한다. 결과 `data.timeline` 에 막별 시작·끝 ms. 화면 색조는 컷신이 끝나도 남으므로 막을 닫거나 색을 입힌 채 끝나면 도구가 끝에 0.7초 페이드로 되돌린다(`leaveDark:true` 면 그대로 — 맵 이동으로 이어 붙일 때).
+- 시험: `ct-stage-performance`(`scripts/qa/runtime/ct-stage-performance*`) — 시작하자마자 도는 공연, 합창 두 줄이 동시에 코너 자막으로 쌓이고 끝나면 어두운 화면이 남지 않는다.
+
+## `place_field_obstacle` — 비전머신(HM) 필드 기술 게이트 (2026-10-15, poke-fix-p Phase 2)
+
+포켓몬식 「절단·괴력·파도타기·플래시·폭포 오르기」 를 한 호출로(`fieldObstacleTools.ts`, 이벤트 도메인). 새 런타임 개념이 아니라 #2602 의 `partyKnowsSkill` 조건 + 스킬 `fieldCommonEventId` + `changeTile` 의 조립이다.
+- 인자: `mapId,x,y,kind(rock|tree|water|waterfall|dark),requiresSkillId?,skillName?,machine?(hm|tm|none),tile?,passTile?,direction?,length?,hint?,blockedText?,id?`. 모르는 키는 가까운 이름을 알려 주고 거절.
+- 만드는 것: ① 막는 지형 — rock·tree 는 칩셋(`monster_wild`)의 실제 타일(`깨지는 바위`·`자르기 나무`)을 길 칸에 깔고, water·waterfall 은 막힌 칸에서 시작해 `direction`·`length` 만큼 건널 다리(나무다리)·발판(디딤돌) 목록을 잡는다(타일은 기술을 쓸 때 `changeTile` 로 놓여 세이브에 남는다), dark 는 맵 `defaultLighting` 을 어둡게 한다. ② 투명 이벤트: 모름 → 안내(막힘), `partyKnowsSkill` → 「메뉴에서 쓰자」 안내, 열림 → 통과. ③ 필드 스킬(없으면 독자 이름: 덩굴 가르기·바위 밀치기·물길 열기·폭포 오르기·반딧불 소환, `unforgettable:true`) + 공통 이벤트(대상 이벤트 id 별 분기를 쌓음). ④ 기술머신 아이템 `item_hm_*`(book·사라지지 않음)/`item_tm_*`(한 번 쓰면 소모).
+- 가르치는 법은 호출자가 잇는다: `data.itemId` 를 NPC·상자가 `changeItem += 1` 로 주게 한다. 몬스터 파티 게임에서 `learnedSkillId` 아이템은 **파티 몬스터에게** 쓴다(`machineSkillOf`·`teachMonsterSkill`) — 칸이 가득이면 `pendingSkillIds` 로 가서 메뉴에서 교체하되 `unforgettable` 기술은 후보에서 빠진다. 종별 제한은 `define_monster_species.machineSkillIds`(비면 모든 종).
+- 플레이: 상태 메뉴 → 몬스터 기술 목록에서 필드 기술을 고르면 `PlayScene.useFieldAbility(instanceId, skillId)` — 몬스터는 MP·PP 없이 `partyMembersKnowingSkill` 로 아는지만 보고 쓰러진 몬스터는 못 쓴다(`prepareMonsterFieldAbility`, 러너와 같은 함수).
+- 증명: `run_scene_test` `[walk adjacent, interact(막힘 대사), set inventory{TM:1}/useItem, useFieldSkill{skillId,target}, move through]`. `qa:game check` 자동 플레이는 `changeItem`(기술머신) → `useItem` → `useFieldSkill` 사슬을 스스로 밟고(`Goal.useItemAfter`), 대기 기술을 교체할 때 `unforgettable` 은 후보에서 빼며 필드 기술 대기는 위력과 상관없이 약한 기술과 바꾼다.
+- 같은 `id` 로 다시 부르면(위치·종류를 바꿔 다시 놓기) 앞서 깐 막는 타일을 원래대로 되돌린 뒤 놓는다(옛 칸에 바위가 남지 않는다). 자동 플레이는 `worldFingerprint`(맵 덮어쓰기·스위치·셀프 스위치)가 바뀐 필드 스킬 사용만 확정하고, 아는 기술로 안 열리면 다음 비전서를 익히러 가서 줄지어 선 서로 다른 관문(물길→바위→덩굴)을 차례로 연다. 가방의 비전서 「사용」은 곧바로 가르칠 몬스터 선택 목록을 연다.
+- 새 세이브 필드 없음(몬스터 인스턴스는 기존 `skillIds`·`pendingSkillIds`). 스킬 `unforgettable`·종 `machineSkillIds` 는 선택 필드(생략=기존 동작, 로드 보정 불필요).
+- **우회로·폭 (2026-10-16 깊이 감사 #5)**: rock·tree 는 기본 한 칸이라 도로가 넓으면 옆으로 돌아 기술 없이 지나갔다(8칸 폭 도로에 한 칸 = 성공 응답). 이제 `span`(1..16, `direction` 방향 칸 수)·`fullWidth:true`(`(x,y)` 를 지나는 걸을 수 있는 칸 전체, 폭이 16 을 넘는 광장은 거절)를 받고, 막은 칸마다 이벤트 하나(`id`, `id_c2`…)가 같은 열림 스위치를 공유해 어느 칸 앞에서 기술을 써도 줄 전체가 열린다. 놓은 뒤 막은 칸 곁의 걸을 수 있는 덩이들이 장애물 없이도 이어지는지(3칸 이상 덩이 둘 이상으로 갈라지는지) 재서 `data.bypass`(true=우회 가능)·`data.roadWidth` 와 「우회로가 있습니다」 경고(필요한 `fullWidth`/`span` 안내)를 돌려준다. 같은 `id` 로 다시 부르면 보조 이벤트도 되돌려 치운다. water·waterfall·dark 는 종전과 같다. 검증: `scripts/qa/poke-audit-fix/obstacle-probe.mts`.
+- **배지 게이팅·비전서 상자·「쓸까?」 (2026-10-16, poke-sys-field PR1)**: `requiresBadge`(1..16, 캠페인 `badges[N-1].switchId`, 없으면 `mx_badge_N`)·`requiresSwitchId` 를 주면 공통 이벤트의 열림 분기를 그 스위치 `fork` 로 감싼다 — **조사로 쓰든 메뉴로 쓰든** 배지가 없으면 「아직 ○○이(가) 없어 …말을 듣지 않는다」 안내만 나오고 열리지 않는다(기술은 아는 파티 전용 페이지 `기술은 알지만 조건 부족`). 조사 `know` 페이지는 안내 대사 뒤 `choices`(「○○!」/「그만둔다」)로 쓸까를 묻고 「예」는 메뉴 사용과 같은 열림 스위치를 켠다. `giverX`·`giverY`(+`giverMapId`) 를 주면 같은 호출이 `place_chest` 로 비전서 상자 `<id>_giver` 를 놓아 습득 경로까지 잇는다(안 주면 예전처럼 경고). 배지 스위치는 `mx_badge_N`(캠페인 `badges[].switchId`) — 체육관 승리 분기가 켠다. 증명: `scripts/qa/runtime/monster-hm.mjs`(픽스처 `monster-hm-fixture.mts`) — 스타터 → 상자 → 가방에서 가르치기 → 바위(배지 게이트: 모름/배지 없음 조사·메뉴 거절 → 배지 후 메뉴 사용) → 덩굴(조사 「쓸까?」 그만둔다/쓴다) → 길 열림 → 저장 → 새로고침·불러오기 → 열린 길 유지.
+- `run_scene_test` 설명에 HM 체인 선행 조건(새 세션의 몬스터 파티는 비어 있음 → 스타터 이벤트를 먼저 지나기, 가방에 TM 넣기, useItem 대상 규칙, choose 는 대기 선택지가 있을 때만)을 적었다. `define_monster_families` 는 계통·단계별 `ability`(`define_monster_species` 와 같은 검증)·`machineSkillIds` 를 받고 응답 summary 와 `data.speciesIds`/`data.created[].species` 에 만든 id 를 돌려준다.
+
+
+## 포켓몬풍 필드·진행 규칙 도구 (2026-10-15, poke-fix-p)
+
+- `place_trainer`(`trainerTools.ts`, 이벤트 도메인): 시야선 트레이너 한 명을 한 호출로 — `team:[{speciesId,level}]`(enemy·troop 자동, `trainerBattle`·포획 불가) 또는 `troopId`, `facing`·`sightRange`·`emote`·`approachSpeed`·`before/after/rematchLine/rematch`·`rewardGold/rewardItems`·`winSwitchId`. 모르는 키(`dialogue`·`reward` …)는 가까운 이름을 알려 주고 거절. `place_field_enemy` 는 야생 심볼 도구라 보상·재대결이 없어 트레이너를 그걸로 놓지 않는다.
+- `set_type_chart {preset:'gen3'|'gen6'}`: 표준 17/18타입 표(preset 과 `multipliers` 를 같이 주면 그 칸만 덮어씀). 기본은 1세대 15타입이라 preset 이 없다. `define_monster_families` 는 기본(불·물·풀) 상성표면 요청 타입에 맞춰 표준 표를 자동으로 깔고 경고한다.
+- `set_encounter_table` 항목: `levelMin/levelMax`(종 몬스터 트룹만 — 아니면 「다음 도구」를 알려 거절), `conditions.terrainId`(`'terrain_grass'`; `grass`/`tall_grass` 별칭). 옛 거절 안내(`minLevel`·`terrain`) 는 새 이름을 가리키도록 바꿨다.
+- 패배·보상: `set_game_over {goldLossPercent}`(blackout 일 때만), `configure_game_systems {rewardPolicy:{expShare,trainerPrizePerLevel}}`, `configure_monster_system {captureShakesVariableId}`(변수 먼저 `create_variable`).
+- 의도 선언(`intentDeclaration.ts` tools 설명)·능력 색인(`toolCapabilityIndex.ts` 레시피 `monster-field-rules`)·몬스터 프롬프트(`monsterGameRequest.ts`) 에 같은 안내를 넣었다. 도구 라벨은 `aiToolLabels.ts`.
+
+## 팀 교대 전투 도구 (2026-10-15, FF6 수정 A)
+
+- `set_project_settings` `battle.teams: [{id,name?,actorIds}]`(2~4팀, `[]` 해제) + `battle.teamSwapCost: free|gauge|turn`. 모르는 키(팀 객체 안 포함)·팀 id 중복·한 배우 두 팀·없는 배우(→ `upsert_actor` 안내)·팀 1개·빈 팀은 `ToolError`. 경고(`warnings`): 팀 없는 시작 파티원(첫 팀에 붙음)·시작 파티 배우가 없는 팀·strict 흐름(free/gauge/turn 동일)·팀 없이 비용만 저장.
+  `[]` 로 해제하면 `teamSwapCost` 도 같이 지운다. 기본값 `gauge` 는 저장하지 않는다.
+- `upsert_troop.teamSwapCost` — 그 적 그룹만 비용을 덮어쓴다(`null` 로 되돌림).
+- 능력 색인 `battle-teams`(read → write → `simulate_battle`/`run_lint`). 동시 전투는 지원하지 않는다고 정책에 못 박았다 — 약속하지 말 것. 편집기: 시스템 탭 「팀 교대 전투」 카드, 적 그룹 「팀 교대 비용」.
+- 계약 문서는 `runtime-battle.md` 「팀 교대 전투」. 새 도구는 없다(기존 도구 확장) — 라벨·의도 선언 변경 없음.
+
+## 비행 시점 모드7 — place_vehicle flightView (2026-10-15, FF6급 감사 #31, 안 A)
+
+- `place_vehicle {vehicle:"airship", …, flightView?: "mode7"|"flat"}` → `system.vehicles[비행선].flightView`(선택). **생략 = 기존 탑뷰와 바이트까지 같다**(필드가 저장되지 않는다). 비행선 외 탈것에 주면 무시하고 경고한다. 모르는 인자·값은 거절.
+- 런타임 `src/player/playSceneMode7.ts` 한 파일(+ `PlayScene.update` 에서 `updateMode7(this, deltaMs)` 한 줄; `playSceneScreenDistortion.ts` 는 건드리지 않았다). 비행선을 타고 mode7 일 때만 카메라를 0.5배로 멀리 빼고
+  WebGL 카메라 필터 `OprnMode7` 이 지평선(화면 위 20%) 아래 땅을 원근으로 눕히고 위는 하늘색으로 채운다(북쪽이 항상 위, 지도 회전 없음). 내리면 필터를 떼고 `applyStoredCameraState` 로 저작 배율을 되돌린다.
+- 캔버스(비 WebGL) 렌더러: 멀리 보기만, 콘솔 경고 한 번. 비용 분기: 켠 뒤 90프레임 평균이 평소(지수 이동 평균)의 1.8배(최소 34ms)를 넘으면 필터를 끄고 멀리 보기만 남긴다.
+- **알려진 한계**: 비행선·주인공 스프라이트도 필터를 지나 원근으로 납작해진다(스프라이트 스쿼시). DOM 층(대화창·그림·색조)은 왜곡되지 않는다. 카메라 연출 명령이 비행 중 배율을 바꾸면 이 파일이 다시 덮어쓴다.
+- 시험: `ct-vehicle-mode7`(`scripts/qa/runtime/ct-vehicle-mode7*`; `QA_FLIGHT_VIEW=flat` 로 같은 비행의 기준 그림). 프레임 시간 비교는 헤드리스 스위프트셰이더에서 평소 16.7ms·비행 16.7ms(60fps 유지, 프레임 상한이 vsync 라 필터 비용은 이 호스트에서 검출 한계 아래).
+
+
+
+## `upsert_item.heldEffect` — 지닌 도구 (2026-10-16, poke-depth PR4)
+
+- 아이템 하나에 선언형 효과 하나: `item.heldEffect {kind, thresholdPercent?, healPercent?, healFlat?, status?, type?, percent?}`. `kind` enum = `healBelow|cureStatus|boostType|endureOnce|regen`, `status` enum = `poison|burn|sleep|freeze|paralysis|any`. **자유 키·자유 코드 없음.**
+- 거절: 모르는 종류·필수 매개변수 누락(boostType 의 type)·상성표에 없는 type → `invalid-held-effect`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-held-items`.
+- 플레이어가 지닐 수 있게 하려면 아이템이 가방에 들어와야 한다 — 상점·이벤트 `gain` 도 같이 만든다.
+
+
+
+## `define_monster_species.ability` — 특성 (2026-10-16, poke-depth PR3)
+
+- 종 하나에 선언형 특성 하나: `species.ability {name, description?, kind, type?, status?, stat?, percent?, healPercent?}`. `kind` enum = `immuneType|resistType|boostLowHp|immuneStatus|contactStatus|statMultiplier|endure`, `status` enum = `poison|burn|sleep|freeze|paralysis`, `stat` enum = `attack|defense|mind`. 종류별 필수 매개변수와 percent 범위는 스키마 설명과 `openwiki/runtime-battle.md` 「특성」에 있다. **자유 키·자유 코드 없음.**
+- 거절: 필수 매개변수 누락·모르는 종류/값 → `invalid-species-ability`(허용 값을 담음), 타입 상성표에 없는 `type` → 같은 코드로 허용 타입 목록. `battleModel` 이 gen1 이 아니면 저장은 하되 경고.
+- 원작 특성 이름을 그대로 쓰지 않는다(프로젝트 고유 이름). 레시피 `monster-abilities`.
+
+
+## `upsert_state` 의 맹독·혼란 (2026-10-16, poke-depth PR2)
+
+- `gen1MajorStatus` enum 에 `"toxic"`(맹독: 1/16 × 1,2,3…15) 추가, 새 enum `volatileStatus: "confusion"`(주요 상태와 겹치는 휘발 상태, 2~5 행동·절반 자해·교체/전투 종료로 풀림). 둘 다 **gen1 전투 모델에서만 작동** — 아니면 도구가 경고하고 일반 상태처럼 돈다. 자유 키 없음(enum 값만).
+- 기술에 붙이기는 기존 `upsert_skill.stateEffects:[{stateId, chance, operation:"add"}]`. 독·강철 타입은 맹독에 안 걸린다.
+- 이중 피해 금지: 맹독 레코드에 `runtimeEffects.hpDamagePercentPerTurn` 을 따로 주지 않는다(gen1 은 독 피해를 차례 말 잔여 피해로만 처리하므로 값이 쓰이지 않지만 의미를 오해하게 만든다).
+- 레시피 `monster-status-conditions`. 규칙 정본은 `openwiki/runtime-battle.md` 「맹독·혼란」.
+
+
+## `upsert_skill.statStageEffects` — 능력치 단계 (2026-10-16, poke-depth PR1)
+
+- 울음(공격 −1)·칼춤(공격 +2, 자신)·연막(명중률 −1)·몸을 단단히(방어 +1) 같은 포켓몬식 능력 변화 기술. 상태(`state_attack_up`)로 흉내 내지 않는다 — 단계는 −6~+6 에서 쌓이고 교체하면 초기화되며 화면에 `ATK↑2` 알약이 뜬다. 규칙 정본은 `openwiki/runtime-battle.md` 「능력치 단계」.
+- 인자: `statStageEffects:[{stat,stages,chance?,target?}]`(최대 4). `stat` enum = `attack|defense|spAttack|spDefense|speed|accuracy|evasion`, `stages` 는 0 이 아닌 −6~+6 정수, `chance` 0~100(생략 100), `target` = `target`(기술 대상, 기본)|`self`. **자유 키 객체 금지** — enum 값만 받으므로 Gemini 스키마 400 이 없다. 모르는 stat·0·범위 밖·모르는 키는 허용 값을 알려 주고 거절(`invalid-stat-stage-effects`). 빈 배열 = 해제.
+- 쓰임: 보조 기술(`effect:{kind:"support"}`, `scope:"enemy"|"self"`) + 단계, 또는 피해 기술의 부가 효과(`chance:20`). 능력 색인 레시피 `monster-battle-depth`.
+- 새 세이브 필드 없음(스킬 레코드의 선택 필드, 생략=기존 동작). 장르 잠금(monster-collect)은 칩셋 계열만 막으므로 이 도구와 상호작용이 없다.
+- 증명: `simulate_battle`/`run_scene_test` 로 기술을 쓰고 대상의 `statStages`·문장을 읽는다(upsert 성공은 증명이 아니다).
+- 참고: `docs/tool-catalog.md` 는 이 저장소에 없다(생성 스크립트가 낡았다는 메모의 그 파일) — 도구 행은 이 문서와 `toolCapabilityIndex.ts` 에 둔다.
+
+## 세계 카드 AI 공개 범위가 걸리는 도구 (2026-10-16)
+
+`read_project_wiki`(ids 포함)·`read_authoring_preset`(`world-story` 분야의 `world`)·`get_original_context`(`/world`)는 `project.world` 를 `aiVisibleWorld`/`aiVisibleEntities` 로 거른 뒤 돌려준다 — 카드에 `visibility: "ai-hidden"` 이면 이름·id·관계 메모까지 나가지 않는다. 새 읽기 도구가 `project.world` 를 모델에 돌려주면 같은 필터를 부르고 `test/helpers/worldAiPaths.ts` 에 경로를 등록한다.
+
+
+## `upsert_skill.weather` — 날씨 기술 (2026-10-16, poke-depth PR5)
+
+- 기술 하나에 선언형 날씨 하나: `skill.weather {kind, turns?}`. `kind` enum = `sun|rain|sandstorm|hail`, `turns` 3~8(기본 5). **자유 키·자유 코드 없음.**
+- 거절: 모르는 kind·범위 밖 turns·모르는 키 → `invalid-skill-weather`(허용 값을 담음). `battleModel` 이 gen1 이 아니면 저장하되 경고. 레시피 `monster-weather`. 맵·트루프로 거는 날씨는 아직 없다.
+
+
+## 연애 루프 도구 변경 (2026-10-16)
+
+- `place_npc` `talkFriendship`(true | {delta}) — 그 NPC 와의 대화 한 번이 호감과 하루 칸(`system.socialLoop` 이 켜졌을 때)을 쓴다. 정의에 없는 키를 주면 **조수 실행(`ctx.assistantRun`)에서는 오류**로 거부한다(예전엔 말없이 버려 「호감 대화가 안 켜진다」). 예제·직접 실행은 그대로.
+- `set_deadline_ending` — 「N일 뒤 결말 판정」(2026-10-16: `tiers[].characterId` 로 다인 문턱, 시간표는 요일 없음·페이지 `weekday` 조건 — `harnesses/romance-scene.md` 「2차 수리」): 공통 이벤트 `ce_deadline_ending`·변수 `var_days_elapsed`·`timeSystem.onDayEnd` 를 연결한다. 엔딩 조건에 `friendshipAtLeast`(npcKey, value) 사용 가능(`EndingCondition`, shape 검증 `io/shape.ts`).
+- 장르 잠금 프리셋 `romance` 추가 — 위 「장르 칩셋 잠금」과 같은 구조(허용 칩셋 계열 oprn-campus·oprn-modern·oprn-jp, 비허용 계열 시공 도구 숨김). 정의·기본값은 `openwiki/harnesses/romance-scene.md` 「연애 인터뷰 기본값」.
+
+
+## `upsert_item.captureProfile.condition` — 조건부 볼 (2026-10-16, poke-depth PR6)
+
+- 포획 도구 하나에 선언형 조건 하나: `captureProfile.condition {kind, multiplier, types?, step?}`. `kind` enum = `type|firstTurn|turns|repeat`, `multiplier` 1.1~8, kind=type 은 `types`(system.typeChart.types 값 배열) 필수. **자유 키·자유 코드 없음.**
+- 거절: 모르는 종류·필수 매개변수 누락·상성표에 없는 타입 → `invalid-capture-condition`(허용 값을 담음). 레시피 `monster-capture-balls`. 볼 그림은 만들지 않는다 — 기존 `iconResourceId` 를 재사용한다.
+
+## `upsert_item` 몬스터 필드 아이템 — 부활·PP·이상한 사탕·진화의 돌·가방 포켓 (2026-10-16, poke-sys-items)
+
+- 새 스키마 필드(전부 선택, 기본값이면 저장 바이트에 안 나온다): `careProfile.levelUp`(1~10, 이상한 사탕), `ppRecovery {flat, percentMax}`(에테르류), `pocket`(`items|balls|machines|held|key`). `careProfile` 은 `type:"special"`, `ppRecovery` 는 `type:"medicine"` 에서만 실행되므로 `coerceMonsterFieldItem` 이 종류를 바꾸고 경고를 돌려준다. `careProfile` 이 올바르지 않으면 `invalid-care-profile`.
+- 부활 = `onlyEffectiveOnDeadActors:true` + `hpRecovery`(캠페인 기본 `mx_revive` 부활의 깃털). **진화의 돌은 별도 필드가 없다** — 아이템을 만들고 종의 `evolutions[].requires.itemId` 로 가리키면 `isEvolutionStone`(`monsterEvolutionItems.ts`)이 알아보고 필드 메뉴에서 쓴다.
+- 가방 포켓(`playerBagPockets.ts` `bagPocketOf`): `item.pocket` 이 먼저, 없으면 포획 도구→볼, 기술머신→기술머신, `heldEffect`→지닐 도구, `occasion never`·스위치·장비→중요한 물건, 나머지→도구. ItemType 은 보지 않는다. 몬스터 파티 게임에서만 켜지고 다른 장르의 아이템 화면(분류 필터)은 그대로다.
+- 조수 입구: `toolCapabilityIndex` 레시피 `monster-field-items`, `toolAliases`(부활약·진화의 돌·이상한 사탕·에테르·가방 포켓…), `monsterGameRequest` 지시문 한 줄. 자료집 아이템 카드에도 「레벨 올리기」 칸(`db-field-item-care-level-up`).
+
+## `upsert_item.repelSteps` / `escapeTo` · `configure_monster_system.escapeGraceSteps` — 필드 도구 (2026-10-16, poke-sys ②)
+
+- 벌레퇴치 = `item {repelSteps: 1~9999, repelBelowLead?: boolean, occasion:"field", scope:"none", consumable:true}`. 탈출 로프 = `item {escapeTo:"entrance", occasion:"field", scope:"none"}`(던전·동굴 맵 mapRole `dungeon` 에서만, 마지막 입구로). 거절: `repelSteps` 가 1 미만·정수 아님 → `invalid-repel-steps`, `escapeTo` 가 "entrance" 아님 → `invalid-escape-to`. occasion 이 field/always 가 아니거나 scope 가 none 이 아니면 저장하되 경고. 둘을 한 아이템에 쓰면 벌레퇴치가 먼저 적용된다는 경고.
+- 도망 성공 뒤 무적 걸음은 `configure_monster_system {escapeGraceSteps: 0~99}`(생략 시 몬스터 파티 게임 4, 0 = 끔).
+- 낚싯대는 새 도구가 아니다: `configure_fishing` 의 몬스터 어획(`catches[] {speciesId,…}`) + `upsert_tool_action {action:"fish", itemId}` 로 잇고, NPC `changeItem` 으로 낚싯대를 준다. 기본 `build_monster_game` 캠페인에는 이미 들어 있다. 능력 색인 `monster-field-items`, 별칭 「벌레퇴치·탈출 로프·도망 무적·낚싯대」. 자세한 런타임 동작은 `openwiki/monster-expedition.md` 「야생 조우 보호·필드 도구·낚시」.
+
+## 연애 3차 수리 — 칩·ESC 메뉴·뼈대·완료 문 (2026-10-16, romance-fix-3)
+
+- **인물 칩 = Modern1~3(24칸).** 장르 잠금 `romance` 에 `charsets`(families `modern`·`object`·`uploaded`, 주인공 기본 `oprn-charset-modern2` 칸 2)가 생겼고 `enableGenreLockSettled` 로 켠다(`romancePreset.ts`) — 켜는 순간 기본 로스터·주인공이 Modern 칩으로 옮겨진다. `charsetQuery.categoryOf()` 는 `tex_oprn_charset_modern*` 을 `people` 로 센다(이게 `object` 로 새서 「villager」「npc」 같은 일반 질의와 place_npc 기본값이 잠금 아래 0건이었다). `list_npc_graphics` 가 0건이면 `data.hint` 에 낱말 하나로 줄이라고 적는다(공백으로 이은 여러 낱말은 모두 맞아야 한다).
+- **칩 겹침.** `place_npc` 는 잠긴 연애 게임에서 프로젝트 전체의 이미 쓰인 칩을 피하고(`usedCharsetGraphicKeysOnProject`), 다른 사람이 쓰는 칩을 명시하면 경고한다. `qa:game check` 의 `romance-npc-duplicate-chip` 은 이름이 다른 사람 둘이 같은 칩일 때만 센다.
+- **뼈대 이름.** 연애용 뼈대(`ROMANCE_SKELETON`)는 「산책로 / 떨어진 수첩 / 산책로 끝 / 첫 만남의 끝」 — `ROMANCE_PLACEHOLDER_NAMES`. 팀 finish(`scripts/lib/piTeamRuntime.ts`)는 `romanceCompletionGaps()` 가 비어야 통과한다: 자리표시 이름이 그대로, 엔딩이 뼈대 하나뿐, 타이틀이 기본 문구면 거절(다른 거절과 횟수 공유, 최대 2회).
+- **ESC 메뉴.** `usesRelationshipMenu()`(`relationshipMenu.ts`)가 참이면 `fieldMenu()` 가 `romanceFieldMenu()`(호감도·소지품·저장·불러오기·설정·타이틀로)를, 상태 메뉴 첫 화면이 HP/MP/EX 대신 호감 목록(`renderRelationshipOverview`)을 낸다. 저작자가 직접 정한 `meta.oprnFieldMenu` 의 항목은 그대로 따른다.
+- **HUD.** 호감 판은 `panel: "dark"`, 이름은 `friendshipShortName`(「한서연 선배」→「한서연」, 2026-10-16: 괄호 설명과 앞 직함도 뗀다 — 「바리스타 선배 도윤」→「도윤」), `fieldHud.css` 가 호감 판 높이를 사람 수에 맞춘다. **기본 배치(2026-10-16 R06)**: 남은 시간·호감 목록은 `condition:"changed"`(값이 바뀐 뒤 3초, 대화·메뉴가 가리는 동안 바뀐 값은 다시 보일 때부터 센다 — `fieldHud.ts` `changedPending`), 시계는 모서리 작은 칩(`shape:"number"`, `autoAvoid`). 평소 지도·실내 위쪽을 덮지 않는다. 옛 기본 배치(조건 없는 세 판)는 `isLegacyRomanceHud` 로 알아보고 `applyRomanceDefaults` 가 새 배치로 바꾼다.
+- **한계(미해결).** 상단 HUD 판이 맵 왼쪽 위를 덮는 것(구석 NPC 가림), 상태 메뉴의 긴 맵 이름 말줄임, Modern 칩 전용 얼굴 없음(얼굴 짝 없음 → 대사 얼굴 미표시), 실제 Argon 재측정(429 한도).
+
+## `set_dialogue_system` — 대사창 읽기 보조 (2026-10-17, 미연시 시스템 UI 1단계)
+
+- 정본 저작 데이터는 `project.meta.oprnDialogueSystem`(`src/project/dialogueSystem.ts`, v1). 도구는 부분 패치만 받는다: `language`(ko|en|ja|zh|auto), `backlog`/`auto`/`skip`/`hideButton`(boolean), `backlogLimit`(정수 20~500), `defaults{textSpeed·autoSpeed slow|normal|fast, skipScope read|all, windowOpacity 0.4~1}`. 자유 키 객체 없음(Gemini 400 방지), `additionalProperties:false`. 범위 밖 값은 고칠 방법을 담아 거절하고 저장 직전 `validateDialogueSystem` 이 한 번 더 막는다. 모르는 칸은 조용히 버리지 않는다.
+- 저작이 없으면 옛 동작 그대로다. **관계 중심(연애) 게임만** 저작 없이도 기본 구성(네 기능 전부 켬)을 받는다(`resolveDialogueSystem`). 연애 프리셋(`romancePreset.ts`)은 저작본을 심고, `configure_field_menu` 의 romance/add/remove 와 `백로그` 명령이 같은 판정을 쓴다. 기능이 꺼진 게임의 ESC 메뉴에는 백로그 줄이 없다.
+- 연결 지점: `aiToolLabels.ts` 라벨, `toolAliases.ts`, `gameSystemProduction.ts`(완료 가드: 연애 게임이면 백로그 꺼짐을 지적), `scripts/lib/piAgentRuntime.ts`, 안내 문서 `gameAuthoringPresets/romance.md` 한 문단.
+- 사용자 기기 설정(텍스트 속도·오토 속도·스킵 범위·투명도)은 저작값이 아니라 `playerPreferences` 이고, 저작 `defaults` 는 기기 값이 없을 때의 시작값이다.
+
+
+## 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
+
+- `configure_field_menu`·`set_dialogue_system`·`set_vn_extras`·`review_game_systems` 가 쓰던 규칙 중 화면과 겹치는 것을 잎 모듈로 옮겼다: `menuSystemIssues`(어긋남 목록, `tool` 문장은 기존 그대로), `syncMenuFeatures`(메뉴 항목→기능 켜기), `syncMenuUiStyle`(메뉴 창 모양). 도구와 자료집 탭이 같은 함수를 부르므로 규칙을 바꾸면 한 곳만 고친다. 상세는 `openwiki/editor-database.md` 「자료집 「메뉴·시스템」 탭」.
+- 동작 변화: `review_game_systems` 의 issues 에 `gallery-on-no-entry`(갤러리가 켜졌는데 저작 메뉴에 갤러리 항목이 없음)가 추가됐다.
+
+## `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+
+- 정본 저작 데이터는 `project.meta.oprnVnExtras`(`src/project/vnExtras.ts`, v1). 도구는 부분 패치만 받는다: `preset`(romance|default), `gallery`·`galleryShowLocked`·`endings`·`endingsHideUnseen`·`saveCards`(boolean), `language`(ko|en|ja|zh|auto|inherit). 자유 키 객체 없음, `additionalProperties:false`, 모르는 인자·잘못된 형식은 힌트가 붙은 `invalid-args` 로 거절한다. `preset:"default"` 단독은 저작을 지워 자동 판정으로 돌린다.
+- 연애(관계 중심) 게임은 저작 없이 세 기능이 이미 켜져 있다 — `read_game_systems` 의 `vnExtras`(authored/effective/source/gallerySlots/endings)를 먼저 읽는다. 새 그림은 만들지 않는다: 갤러리 칸 = `showPicture recordInGallery` 그림, 엔딩 목록 = 저작된 엔딩 정의.
+- `configure_field_menu` 로 갤러리·엔딩 항목을 넣으면 해당 기능도 같이 켠다(조용히 안 보이는 항목 방지). `review_game_systems`(issues)는 메뉴 항목과 기능 불일치, 엔딩 정의·CG 없음, 세이브 카드인데 백로그 꺼짐을 지적한다.
+- 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(갤러리·엔딩 목록·세이브 카드 낱말), `gameSystemProduction.ts`, `scripts/lib/piAgentRuntime.ts`(선언 낱말·시스템 프롬프트 한 문단), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단(+ `documents.json` 재생성: `node scripts/content/prepare-game-authoring-presets.mjs`), 연애 프리셋 `romancePreset.ts`.
+
+## `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
+
+- 정본 저작 데이터는 `project.meta.oprnVnLook`(`src/project/vnLook.ts`, v1, 저장 시 `validateVnLook`). 해석 함수 한 곳(`resolveVnLook` → `vnLookAttributes`)이 오버레이의 `data-vn-*` 속성과 `--vn-*` 변수를 만들고, 모양은 `src/styles/vnLook.css` 한 파일이 가진다. 새 그림·글꼴 파일은 없다(CSS 만, 종이 줄무늬도 그라데이션).
+- 프리셋 8: `bar-tab`(반투명 바+이름 탭) `sakura-card`(파스텔 둥근 카드·하트) `paper-note`(따뜻한 종이) `office-bar`(깔끔한 그레이) `sea-glass`(청량한 바다 유리) `night-glass`(다크 글라스·금) `nvl-page`(풀스크린 글 페이지, 초상 숨김) `bubble`(말풍선). 소재 → 기본: campus→sakura-card, cafe→paper-note, office→office-bar, seaside→sea-glass, academy→night-glass.
+- **옵트인**: 저작이 없으면 관계 중심(연애) 프로젝트만 소재별 기본 룩(`source:"setting-default"`, 소재는 기획서·제목·시작 맵 이름에서 `detectVnSetting`)을 받고, 그 밖의 프로젝트는 `undefined` = 옛 대사창 그대로(속성·변수 하나도 안 심음). 저작이 있으면 어떤 장르든 그대로 쓴다. 옛 프로젝트·옛 저장은 필드가 없을 뿐이라 로드·재생에 영향이 없다.
+- 도구 인자는 enum 만(자유 키 객체 없음, `additionalProperties:false`): `preset`(+`default`=저작 삭제) `setting` `nameplate`(tab|pill|ribbon|preset) `choiceStyle`(bar|card|bubble|preset) `waitIcon`(arrow|heart|dot|preset) `fontScale`(small|normal|large) `lineSpacing` `letterSpacing` `readColor` `portraitEntrance`(none|fade|slide) `uiTheme`(match|legacy). 모르는 인자·범위 밖 값은 힌트가 붙은 `invalid-args`. preset/setting 을 주면 이름표·선택지·대기 표시 저작은 새 프리셋 기본으로 돌아가고, 글자 설정은 유지된다. 「카페 연애 게임인데 따뜻한 느낌」=`{setting:"cafe"}`, 「파스텔 카드」=`{preset:"sakura-card"}`, 「텍스트 크게」=`{fontScale:"large"}`.
+- 흉상 배치 규칙(같은 날 PR #2814): 흉상·전신은 상자 위(위쪽 창이면 아래)에 서고 글 폭을 줄이지 않는다(`--runtime-dialogue-bust-text-reserve: 0`). 가운데 창은 흉상을 남는 높이(78px)에 맞춘다. 풀스크린 글 페이지는 초상을 숨긴다.
+- ESC 메뉴(스킨 pixel)는 `uiTheme:"match"` 일 때 같은 `--vn-*` 색·모서리·그림자를 `--px-*` 토큰으로 받는다(`playerStatusMenu.ts` 가 루트에 `data-vn-theme`·변수를 심고 `vnLook.css` 하단이 매핑). 저장·불러오기 전용 패널과 설정 화면의 토큰 연결은 아직이다.
+- 편집기 UI는 이 데이터·`validateVnLook`·순수 함수(`resolveVnLook`, `mergeVnLook`, `vnLookAttributes`, `VN_PRESETS` 표)만 가져다 쓴다 — 미리보기도 같은 해석 함수를 쓴다.
+- 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(대사창 스킨·파스텔·글자 크게 낱말), `gameSystemProduction.ts`(요청 패턴·완료 가드), `scripts/lib/piAgentRuntime.ts`, `read_game_systems` 의 `vnLook`(authored/effective/source), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단, 시험 `test/vnLook.test.ts`, 증거 QA `scripts/qa/runtime/vn-matrix*.scenario.mjs`(`vn-matrix-fixture.mts <dir> look '<oprnVnLook json>'`).
+- 대사창 위치 규칙(2026-10-17, vn-bust-bottom-1): 흉상·전신 초상이 있는 대사는 위치 설정과 상관없이 항상 아래로 나온다(저장은 막지 않음). `set_vn_look`·`set_dialogue_system`·say/displayTextSettings `position` 설명과 `romance.md` 에 한 줄이 있다. 상세는 `runtime-pre-edit-routing.md` 「흉상·전신이 있는 대사는 대사창이 항상 아래」.
+
+## 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
+
+- `stampPlanner.ts` 의 `place_house` 보류 단계를 `stampPlaceRunner.ts` `expandStampHouses` 가 실행 시점 맵에서 `place_terrain_house`(또는 `jp_city` 에서 `quickHouseStyles` 가 비었을 때 `build_jp_city_building`)로 펼친다.
+- 있는 그대로 `planQuickHouse` 가 통과하는 자리가 없으면 물·절벽·잠금·이벤트·보호된 집(`protectedHouseCells`)을 피하고 지울 수 있는 위층 장식·나무·풀만 걸리는 후보에 `tile_erase` 단계를 먼저 넣어 복제 맵에서 검증한 뒤 배치한다. 집 외관이 없는 타일셋이나 영역 크기 부족 사유는 수리·재시도에서 `깔 단계가 없습니다` 로 덮이지 않고 유지된다. 상세는 `openwiki/editor-ai-panel.md` 「바로 깔기」.

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "785931b038c61f06c8672cf68a20bb12724643229bb4b10efffc0f4db9b11284",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "conifer pine tree",
+ "label": "sky-island/si-tree-pine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conifer tree foliage tiers and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage tiers are drawn as flat triangular shapes stacked vertically, each terminating in a straight horizontal line across the bottom with zero curve or downward view, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conifer tree foliage tiers and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pine tree is drawn as flat stacked 2D triangles with perfectly horizontal base lines on each tier (rows 10, 18, 26, 34) and a flat rectangular trunk, typical of a side-scroller front elevation rather than a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4665
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "foliage canopy of stacked conifer tiers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage tiers are drawn as flat triangular/trapezoidal cutouts with perfectly straight horizontal bottom edges (rows 10, 18, 26, 35) and no 3/4 downward curvature or visible top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage tiers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All four foliage tiers are drawn with strictly horizontal, flat bottom edges (rows 10, 18, 26, and 34-35) in a pure 2D front/side elevation rather than curved elliptical rims or downward-overlapping conical surfaces seen from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5539
+  }
+ ],
+ "decidedAt": "2026-10-14T08:17:41.839Z",
+ "cells": {
+  "16": [
+   "02d4c0aa43bb717e",
+   "3aafa7522a4be8eb",
+   "3e8bf08137bf4571",
+   "48c39339b22253b6",
+   "62298142831504a0",
+   "ebf6285359aedc7a"
+  ],
+  "24": [
+   "0c9488353181cb92",
+   "11884fab5064eddb",
+   "216242658443010f",
+   "2b3acc2df709dac5",
+   "76c46f507ba19369",
+   "7833ce84aa1276fb",
+   "8d1980731da00b44",
+   "b62bfcb30537e854",
+   "cbf0f555ce16e7f6",
+   "e0756f975bf27764",
+   "e6669849ccf12d5d",
+   "ea375d56b8817855"
+  ],
+  "32": [
+   "022fbc521847f76e",
+   "53c35510dd152833",
+   "7e8f5c1160a2f09e",
+   "80b1c9164c29b869"
+  ],
+  "48": [
+   "13a87d7e86e73e15",
+   "41c7bd61be740349",
+   "4b339554d142d4f2"
+  ]
+ }
+}

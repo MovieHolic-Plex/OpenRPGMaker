@@ -1,0 +1,251 @@
+{
+  "palette": {
+    "C": "#e49a56",
+    "D": "#bc6c34",
+    "E": "#8e4620",
+    "G": "#5e2a14",
+    "H": "#36160c",
+    "I": "#bccad8",
+    "J": "#8496a8",
+    "K": "#58687a",
+    "L": "#364252",
+    "M": "#1e2632",
+    "N": "#68ace8",
+    "O": "#2c5c8f",
+    "P": "#f2cc4c",
+    "Q": "#b88424"
+  },
+  "recolor": [
+    {
+      "region": "H",
+      "map": {
+        "y": "C",
+        "w": "D",
+        "v": "E",
+        "r": "G",
+        "i": "H",
+        "m": "J",
+        "g": "K",
+        "c": "L"
+      }
+    },
+    {
+      "region": "T",
+      "map": {
+        "x": "C",
+        "u": "D",
+        "o": "E",
+        "l": "G",
+        "t": "P",
+        "n": "Q",
+        "q": "J",
+        "k": "K",
+        "e": "L",
+        "w": "I",
+        "v": "J",
+        "r": "K",
+        "i": "M",
+        "m": "E",
+        "g": "G",
+        "c": "H",
+        "a": "M",
+        "b": "M",
+        "p": "D"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "p": "D",
+        "m": "E",
+        "g": "G",
+        "c": "M",
+        "j": "J",
+        "h": "K",
+        "d": "L",
+        "b": "M",
+        "a": "M",
+        "q": "J",
+        "k": "K",
+        "e": "L"
+      }
+    },
+    {
+      "region": "S",
+      "map": {
+        "b": "L",
+        "a": "M",
+        "d": "L",
+        "h": "K",
+        "j": "J",
+        "c": "M",
+        "g": "G",
+        "m": "E",
+        "p": "D"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "H",
+      "rows": {
+        "5": "..........GPPG..........",
+        "6": "..........CDQG..........",
+        "7": "..........MJKM..........",
+        "8": ".........rJJKKi.........",
+        "14": ".......iMaaMMaaMi.......",
+        "15": "......ivMzfNNfAMvi......",
+        "16": "......iwLAsOOsALwi......",
+        "17": ".......iiLJJKKLii......."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "H",
+      "rows": {
+        "5": "..........GPPG..........",
+        "6": "..........CDQG..........",
+        "7": "..........MJKM..........",
+        "8": ".........rJJKKi.........",
+        "13": ".......ccgCDDEgcc.......",
+        "14": ".......cMLJJKKLMc.......",
+        "15": "......ivcMJJKKMcvi......"
+      }
+    },
+    {
+      "dir": "right",
+      "region": "H",
+      "rows": {
+        "5": "..........GPPG..........",
+        "6": "..........CDQG..........",
+        "7": "..........MJKM..........",
+        "8": ".........rJJKKi.........",
+        "14": "......cgcgcMMaayM.......",
+        "15": "......gmgivMMzfyNM......",
+        "16": "......cgciyLLAsyNL......",
+        "17": ".......ccciiLJKLi......."
+      }
+    },
+    {
+      "dir": "left",
+      "region": "H",
+      "rows": {
+        "5": "..........GPPG..........",
+        "6": "..........CDQG..........",
+        "7": "..........MJKM..........",
+        "8": ".........rJJKKi.........",
+        "14": ".......MyaaMMcgcgc......",
+        "15": "......MNyfzMMvigmg......",
+        "16": "......LNysALLyicgc......",
+        "17": ".......rJKLiiiccc......."
+      }
+    },
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "18": ".......olnMMMMnlo.......",
+        "19": "......oxxtLLLLtxxo......",
+        "20": ".....uooutIJJItuoou.....",
+        "21": ".....xxulMCDDCMluxx.....",
+        "22": "....irvraMDEGGMarvri....",
+        "23": "....ivwiaPJJKKPaiwvi....",
+        "24": "....iwriePLLLLPeirwi...."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "18": ".......olnMMMMnlo.......",
+        "19": "......oxxtLLLLtxxo......",
+        "20": ".....uooutIJJItuoou.....",
+        "21": ".....xxulMCDDEMluxx.....",
+        "22": "....irvraMDEGGMarvri....",
+        "23": "....ivwiaPJJKKPaiwvi....",
+        "24": "....iwriePLLLLPeirwi...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "18": ".........olnMMMM........",
+        "19": "........oxxutLLM........",
+        "20": "........uooutJJM........",
+        "21": "........xxulkCCM........",
+        "22": ".......irvrakDDM........",
+        "23": ".......ivwiaePJM........",
+        "24": ".......iwriekPLM........"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "18": "........MMMMnlo.........",
+        "19": "........MLLtuxxo........",
+        "20": "........MJJtuoou........",
+        "21": "........MCCkluxx........",
+        "22": "........MDDkarvri.......",
+        "23": "........MJPeaiwvi.......",
+        "24": "........MLPkeirwi......."
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "pincer_claw",
+      "kind": "held",
+      "side": "R",
+      "sprites": {
+        "down": {
+          "rows": [
+            "MIIJM",
+            "MCDJM",
+            "MDEKM",
+            "MIJKM",
+            "IJ.KM",
+            "JK.LM",
+            "KL.LM"
+          ],
+          "grip": [4, 1]
+        },
+        "up": {
+          "rows": [
+            "MLLM.",
+            "MJKJM",
+            "MKDJM",
+            "MKELM",
+            "MJKLM",
+            "KL.JM",
+            "LM.KL",
+            "ML.LM"
+          ],
+          "grip": [0, 2]
+        },
+        "right": {
+          "rows": [
+            "...MIJJII",
+            "MCDJJKKJL",
+            "MDEKLM...",
+            "MIJKKLLJL",
+            "...MKKLLM"
+          ],
+          "grip": [1, 2]
+        },
+        "left": {
+          "rows": [
+            "IIJJMM.....",
+            "JKKLLJJKKJM",
+            "...MLKEDJJM",
+            "JKKLKJIJJMM",
+            "MLLKKM....."
+          ],
+          "grip": [10, 2]
+        }
+      }
+    }
+  ]
+}

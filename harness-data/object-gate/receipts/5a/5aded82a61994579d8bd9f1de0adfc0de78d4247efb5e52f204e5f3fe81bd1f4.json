@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5aded82a61994579d8bd9f1de0adfc0de78d4247efb5e52f204e5f3fe81bd1f4",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 경고 화면(주황 경고 삼각)",
+ "label": "sf-station/sf-wall-screen-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted screen displaying an alert graphic; valid flat presentation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10758
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted display screen with bottom wall mount bracket. Conforms to the wall_mounted category, which is flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted monitor screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat monitor/screen mounted against a north wall. As a wall-mounted object, it lies flush in the vertical wall plane, requiring no foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted monitor screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is a screen mounted flat on a wall with a wall-bracket at the bottom; flat front elevation is appropriate for wall-mounted elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11926
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.257Z",
+ "cells": {
+  "16": [
+   "ff9a32152220f911"
+  ],
+  "24": [
+   "2ad01e622e3f5c1b",
+   "383528d065c39be6",
+   "437ce7d12dcd3a6d",
+   "756ae389b487b5c1",
+   "8f20ffc80d0ce590",
+   "e0a79b5f99ef669b"
+  ],
+  "32": [
+   "6793e93db5dea980",
+   "71af8b367fe052e4",
+   "81ed7fde3a39d068",
+   "d2f91805f4285984",
+   "f52c9eb8ebf7978b",
+   "fcb3e02889836f4c"
+  ],
+  "48": [
+   "5fa6c2cd6b0d3baf",
+   "b6561213915206b0",
+   "bf412b4c7591dfb5",
+   "e108ac09a6bef3d8",
+   "eb4ccf623646ef66",
+   "ebe40ba45a7ee073"
+  ]
+ }
+}

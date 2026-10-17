@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "045b93ed2bc3aeb55ed60eee015f9bf4003204621296e082a6fa9d77379fb2aa",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "태양광 패널 열(기울어진 셀 판 + 반사 + 받침 상자)",
+ "label": "sf-station/sf-solar-array",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "solar panel array with support box",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel surface is viewed from above at a clear 3/4 angle across rows 1-13 with visible grid cells and foreshortening, and the base box also displays a 3-row top surface (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4588
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilted solar panel array and support base",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel clearly displays its upward/tilted surface spanning rows 1-13 with solar cell grids and reflections, framed over a 3-pixel front rim (rows 14-16), and the lower base box also shows a distinct 3-row top face (rows 21-23) above its front panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5785
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilted solar panel array and support base",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel array clearly shows its foreshortened tilted top surface (rows 1-13) with front thickness/edge (rows 14-17), and the lower support box also shows a 4-row top surface (rows 21-24) above its south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3843
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilted solar panel array with support stand and battery base",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The solar panel surface is shown angled back and fully visible from above across rows 1-13 with its front edge shown in rows 14-17, and the base box below also displays a clear top surface (rows 21-23) and front face (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4714
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.237Z",
+ "cells": {
+  "16": [
+   "285bb7a88904e03d",
+   "48630eada6f570fb",
+   "5c81495675c44c60",
+   "70d0d0d1f629e38a",
+   "7f0b225d4ee25d65",
+   "a61c49932683f8a8"
+  ],
+  "24": [
+   "3872655d2deed3aa",
+   "5b62179564b0b0fc",
+   "5fb3ffc7d1d78a23",
+   "86b5b9f392958c98",
+   "8ce815d2a5f436d0",
+   "b6da2ba041495ed8",
+   "ec2522b1edbf3ca9",
+   "eda363336eff3c8d"
+  ],
+  "32": [
+   "3f8668a9f2d24af8",
+   "8b17bf69e8ff2430",
+   "9f082e224f76cf96",
+   "af7158d9aa7c061f",
+   "b98978549d4bdfe1",
+   "cc078760882e1682"
+  ],
+  "48": [
+   "1cbce74ec961a5a6",
+   "d4c388f03ab1e704"
+  ]
+ }
+}

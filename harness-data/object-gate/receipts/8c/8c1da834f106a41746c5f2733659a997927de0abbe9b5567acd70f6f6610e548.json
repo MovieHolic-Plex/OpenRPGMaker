@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c1da834f106a41746c5f2733659a997927de0abbe9b5567acd70f6f6610e548",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "현미경 작업대(작은 상판 + 검은 현미경 + 표본 화면)",
+ "label": "sf-station/sf-microscope-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "workbench / desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop is visible from above spanning rows 5 to 10 (6 rows deep) with microscope and screen placed on top, above a 4-row front face (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "workbench / desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface is visible across rows 5 to 10 (6 rows deep) with a microscope and sample display resting on top of it, above a 4-row front face (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4660
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "workbench/desk with tabletop surface and front panel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench has a visible light-grey top surface spanning rows 6 to 10 (approx 5 rows tall) upon which the microscope and screen sit, above a front-facing panel spanning rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3741
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "microscope workbench",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench has a clearly visible light-colored top surface spanning rows 8-10 (extending to row 6 on the left) on which the microscope and screen sit, above a 4-row front face (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4546
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.254Z",
+ "cells": {
+  "16": [
+   "9cae906c678b9d10"
+  ],
+  "24": [
+   "01e17d66b4902562",
+   "2b14dffb0167db39",
+   "7401e8b17a5ea305",
+   "7b9bdc0943371fe6",
+   "ad743a0357d81b04",
+   "fa3f19c1ce910bfa"
+  ],
+  "32": [
+   "043ee2ed32989ecd",
+   "60fc9dfaee5aa755",
+   "9bfda87e961b437a",
+   "bcc44e553f28062e",
+   "c2b14358dc07499c",
+   "eee029b38ff561a9"
+  ],
+  "48": [
+   "7b235c2ac15f052e",
+   "a3caf66338c36dbf",
+   "ad52057f94717f22",
+   "b0a2751bc5161d40",
+   "ceb2610d2b3cd474",
+   "dfae8c3207bcc16e"
+  ]
+ }
+}

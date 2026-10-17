@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f376c5ee94eb56a690ac1f811d2777149b8a8cb59a941a58ad592c9666477199",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "돌 우물(박공 지붕틀·도르래)",
+ "label": "gothic_manor/gm-bld-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin has a clearly visible elliptical stone rim (rows 25-36) and an open interior showing water spanning rows 28 to 34 (7 rows deep). Both top surface/opening and vertical front walls are properly depicted in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5873
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone well basin displays a clear 3/4 top-down perspective with an elliptical rim and visible water opening (rows 28-35, 8px tall inside), supported by a front wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5410
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin clearly shows an elliptical opening (rows 28-34, 7px tall) with water inside and a thick stone rim viewed from above (rows 24-36, 13px total top depth) above its front cylinder wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5807
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone well basin",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone well basin clearly displays an elliptical opening showing the water interior between rows 28 and 34 (7 rows tall) surrounded by a stone rim, set above a vertical south face spanning rows 36 to 45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5174
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.459Z",
+ "cells": {
+  "16": [
+   "4e4c50a5c8012f3a",
+   "d12f724148485f26",
+   "d20e6f7f37bbd28d",
+   "f98203f7a375acd3",
+   "fa51e9bd2ec24d75",
+   "fe74b01e4e655e31"
+  ],
+  "24": [
+   "0b5e6a72b8d3a23e",
+   "138e2f933c5fae54",
+   "25ebd70576fff2d4",
+   "433503ed1db355da",
+   "4aa75d1fcb29312d",
+   "5ee81fae78720790",
+   "9aab1a070807ea76",
+   "a4e07253c21d98e8",
+   "d90512e35542addb",
+   "e5a2a783e1b94459",
+   "e8d95b062e693906",
+   "ea72c487724c7e3d"
+  ],
+  "32": [
+   "910d41bad12bb9a2",
+   "91921c0cb61dfac1",
+   "9330999b08174adc",
+   "b6f3a2641f55d679"
+  ],
+  "48": [
+   "1609df6e1aeff9ba",
+   "d79856e6f1835c29",
+   "fb7226b3d6aee10a"
+  ]
+ }
+}

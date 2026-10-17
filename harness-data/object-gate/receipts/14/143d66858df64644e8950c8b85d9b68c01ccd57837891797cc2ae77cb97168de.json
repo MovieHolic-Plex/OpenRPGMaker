@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "143d66858df64644e8950c8b85d9b68c01ccd57837891797cc2ae77cb97168de",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "지하 돌 판석 B",
+ "label": "gothic_manor/gm-fl-flag-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone floor flagstones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile depicting underground stone flagstones seen from above; completely represents a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3274
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone floor flagstones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat underground stone flagstone floor pattern; valid terrain floor tile covering the full 16x16 grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2715
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone flagstones/paving slabs viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2718
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing underground stone paving slabs seen from top-down ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3691
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.500Z",
+ "cells": {
+  "16": [
+   "04054ea021da2ac5"
+  ],
+  "24": [
+   "16bf7029aeac1212",
+   "980cb9592447b123",
+   "d0aca7cbe2e8313e",
+   "ddb4299c67228c92",
+   "e45240112a1b15ba",
+   "f227df6a297ae362"
+  ],
+  "32": [
+   "39ef5fe844f9cffa",
+   "461f34c0bdf2e78c",
+   "a2c4f85f78ffa148",
+   "bbb3fadb47604f25",
+   "f716183b56de9584",
+   "fb46320f99606bee"
+  ],
+  "48": [
+   "109535c7ef34aa61",
+   "4be9fdfe2e954a6c",
+   "8f92039f4e9ea29e",
+   "920facd3a8dfcf8a",
+   "92c099c6ec32cf7b",
+   "f8744b439f428d60"
+  ]
+ }
+}

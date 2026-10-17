@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "230db3def3ffc74a571914237f7d0ca9062f390ce28fa0e25a4aeba93a1b0201",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-4-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance with side console panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure is rendered strictly as a flat 2D front architectural elevation; the top lintel (rows 11-12) is only a 2px outline band with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6827
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator entrance with side panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and side control panels are drawn in completely flat front elevation; the top lintel is merely a 2px dark outline (rows 11-12) with no foreshortened horizontal top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4575
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator doorway and console panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame lintel (rows 11-12) and adjacent side consoles are drawn straight-on with only a 1-2px flat outline edge and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4783
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator door and flanking control consoles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, lintel, doors, and side consoles are drawn in a completely flat front elevation with only a 2px cap line at rows 11-12 and no visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4738
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.047Z",
+ "cells": {
+  "16": [
+   "1b87e3af4ed40949",
+   "2765fa619518beb4",
+   "3df11349858089b4",
+   "3eb26e7df878c649",
+   "4d54222139cc643d",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "d093264fece2ad31",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "0e77f89e54513e55",
+   "1086b985cf1262b8",
+   "3ee00633e8db6aa5",
+   "5642f9e359e518ac",
+   "5b39743700988c0d",
+   "6877d88596326817",
+   "68a831834f3bf2d7",
+   "6cbbe934858095bf",
+   "8b0c39999a5e5db6",
+   "9537e02afcf0abba",
+   "a33bcccb9f0bbbc0",
+   "bf67a65d59b4e671",
+   "c2567cdec3df62ee",
+   "c4c58ff26e2e3fe4",
+   "cb490db3a4d5c9d0",
+   "d8bb15d55081544b",
+   "dd43bcbd89c20439",
+   "fb7f4b1333e10623"
+  ],
+  "32": [
+   "56f0e0e45356d7bb",
+   "98e568878563ff74",
+   "9a8e46f2b2b43692",
+   "b104d74a7187e35f",
+   "bd853372eb0d8b76",
+   "e0a155fa6bc7f957",
+   "ea4915df5f61de22",
+   "fa7243e4dee8a5f6"
+  ],
+  "48": [
+   "3266ae3729c96023",
+   "434c7d899823c248",
+   "536dc0feef58db35",
+   "6f1cb47eb5d2b9e4",
+   "95081cad8e0ee250",
+   "9a08d00172e5b3e2"
+  ]
+ }
+}

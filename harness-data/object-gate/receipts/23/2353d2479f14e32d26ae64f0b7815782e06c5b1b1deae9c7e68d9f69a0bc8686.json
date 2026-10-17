@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2353d2479f14e32d26ae64f0b7815782e06c5b1b1deae9c7e68d9f69a0bc8686",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "쇠 화로(타오름) 프레임 2",
+ "label": "snow-north/sn-brazier-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brazier bowl and flame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the ground base shows an elliptical plate, the main body (the brazier bowl/firepan at rows 17-18) is drawn as a flat 2px-tall horizontal bar with no elliptical opening or interior visible, resulting in a front elevation for the container itself.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 9661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl at rows 17-19 is drawn as a flat horizontal strip with no visible opening or interior ellipse, despite the floor plinth being drawn in 3/4 view. The main container body lacks any visible top surface or open cavity.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5873
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier's upper rim/bowl (rows 17-18) is drawn as a completely straight, flat horizontal bar with no elliptical curvature or visible top/interior opening into which the fire sits. Despite the elliptical base plate below, the main container body itself is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5996
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron brazier bowl with fire on a tripod stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl/rim (rows 17-19) is drawn as a flat horizontal band with no visible interior ellipse or top opening; the fire and bowl are depicted in pure front elevation. Only the base plinth/shadow is drawn as an ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6200
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "4bcd4767c5a6d83e",
+   "e2958051572a5384"
+  ],
+  "24": [
+   "018fc06decbb1d19",
+   "2125cfb9bd2f35ab",
+   "2c94073b0e711775",
+   "396b81b647df78d9",
+   "595a07717e903e8c",
+   "60af3427d4d1c61e",
+   "6951a98ef3bf9c9d",
+   "898f0ca9f9d7256a",
+   "a9711c0f8e58c39d",
+   "c6a8ac395297761d",
+   "d7095ace7be53148",
+   "de1346be0b336d6c"
+  ],
+  "32": [
+   "3e5e865cccbfb1eb",
+   "8277be2b9630e7f9",
+   "f0762e68d5412e2b"
+  ],
+  "48": [
+   "596c9572edc73010",
+   "82d8d1d8618fd927",
+   "8a869736eaf6d3b3",
+   "9df4f5845a201e65",
+   "a97efd2b7d5e31fc",
+   "c98d2e9835dbf663"
+  ]
+ }
+}

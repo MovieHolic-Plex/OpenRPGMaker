@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cfedb8ed6043b4a49ffe3aebce6a9a9ba9b68f3c10d7bcae3f1b0a23a6b3c10e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "돌길(이시다타미)",
+ "label": "sengoku-edo/se-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting stone paving (ishidatami) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone paving / ishidatami terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat ground stone paving (ishidatami) with top-down lighting and beveled stone edges across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3769
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a stone pavement (ishidatami) ground terrain tile showing rectangular paving stones separated by mortar lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5986
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone paving (ishidatami) viewed from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8078
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "67b7c851d596a0f5"
+  ],
+  "24": [
+   "06a2d49d5672be1d",
+   "0869875cffe2b752",
+   "0b134049ca4b310f",
+   "29fd155cb8a8940e",
+   "54414783ffc0643c",
+   "ffbe766be2d72407"
+  ],
+  "32": [
+   "0025c9b28b6a7489",
+   "072d3bc6913935a9",
+   "250bb0535aac70a9",
+   "2be3fafe3094e2bd",
+   "4752f7eb6db555ba",
+   "a9572cfade06a149"
+  ],
+  "48": [
+   "11b663604232accd",
+   "336a246214d59456",
+   "445b5147033db279",
+   "7711249724fbcf2d",
+   "c4970b8335e22b82",
+   "cc32742d1e72ffaa"
+  ]
+ }
+}

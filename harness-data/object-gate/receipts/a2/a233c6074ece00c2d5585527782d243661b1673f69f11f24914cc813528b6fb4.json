@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a233c6074ece00c2d5585527782d243661b1673f69f11f24914cc813528b6fb4",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: tomato mature (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_tomato_mature",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato plants on wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plants and supporting stakes are drawn straight-on in flat front elevation with no visible top surface or depth, resembling a side-scroller sprite rather than a top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4092
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato plants on wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plants and stakes are drawn flat in a pure front elevation, typical of a side-scrolling platformer, with no foreshortened top surfaces visible on the foliage or the stakes.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5907
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tomato plants climbing wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plants and vertical stakes are drawn purely from a 2D side/front elevation with no top-down perspective or visible upper canopy surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4097
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomato plants on wooden stakes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plants and stakes are drawn in a flat side-scroller/front elevation view with vertical stakes and foliage spanning vertically without any foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4334
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.805Z",
+ "cells": {
+  "16": [
+   "adc46ebdb727a526"
+  ],
+  "24": [
+   "041c78584dbaf5df",
+   "5e82452c04694870",
+   "a16adaadb43851bd",
+   "a6579f7f536ebdcb",
+   "c9d5560fa759e453",
+   "da4cbbc29254f124"
+  ],
+  "32": [
+   "1efdd5bf88e4285f",
+   "313699e0cdd32ce9",
+   "4529d81027636f0e",
+   "72a2157c1f3bd767",
+   "898a6eacd27ebdaf",
+   "d4a503efeac695da"
+  ],
+  "48": [
+   "0e297ce02d6d1e03",
+   "70a05968b984f48d",
+   "825c2cbd868c4c12",
+   "cb81516936d543f6",
+   "eca2062f8c5b6701",
+   "fd5e53f9a2967e93"
+  ]
+ }
+}

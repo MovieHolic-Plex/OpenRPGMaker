@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "32cd039b1fbcb88248dc20aeb6f27740ba7983d9569a30e810bd0de8127fc4e9",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "jp-jizo",
+ "label": "jp_city/street_hand/jp-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Jizo statue in a wooden shrine niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue, niche, roof, and base are all drawn in pure flat front elevation (side-scroller style). There is no visible top surface on the roof, statue head, niche floor, or base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo statue in a small wooden shrine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine roof, alcove, Jizo statue (cap, head, bib, body), and bottom stone plinth are all rendered in pure flat front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Jizo statue inside shrine alcove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Jizo figure, shrine structure, and base plinth are all drawn in pure flat front elevation. The figure's head and cap show no top surface (top_rows=0), and the base/plinth at rows 28-31 is a flat horizontal band with no visible top surface receding into the shrine.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Jizo statue in a wooden niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Jizo figure is rendered in pure front elevation: flat rectangular red cap (rows 13-14), flat front-facing eyes and bib, and a flat body with zero visible top surface. The figure lacks any plinth with a visible top surface as required for figure kinds.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5282
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.358Z",
+ "cells": {
+  "16": [
+   "1a2b6085d7e924a1",
+   "7430ba153707af22"
+  ],
+  "24": [
+   "582c8bbb23800c6a",
+   "5a75e991895b7c2e",
+   "632292607486043d",
+   "a47157b4a9a0e2fd",
+   "a63a9507ffe60f13",
+   "b4adc2ca2bbd712b",
+   "c724be7ad1907090",
+   "d01558cc36590d5e",
+   "d0479008babd0a3f",
+   "d591f957b0b9c43b",
+   "d92ca3199f123f09",
+   "f5a294bdfcc352de"
+  ],
+  "32": [
+   "718ce96398f3a4cb",
+   "b8f43acdf5793607",
+   "cf58a53aad6cf941"
+  ],
+  "48": [
+   "0880202efdf1956f",
+   "1a6562d720201075",
+   "765ea0c74a559d38",
+   "7dd1908b50004150",
+   "7f14545ba5a69306",
+   "e6548466c6175ccb"
+  ]
+ }
+}

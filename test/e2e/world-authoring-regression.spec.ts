@@ -36,7 +36,8 @@ async function worldTab(page: Page, id: string): Promise<void> {
 test("world canon and codex preserve authoring across save, navigation, search, locks, and deletion", async ({ page }) => {
   const tab = (id: string) => worldTab(page, id);
   await tab("db-tab-world-canon");
-  await page.getByTestId("world-properties-toggle").click();
+  // 속성은 본문 위 한 줄 칩 바로 늘 보인다 — 따로 펼칠 필요가 없다.
+  await expect(page.getByTestId("world-document-properties")).toBeVisible();
   // 스프레드 뷰: 법칙 카드가 대화상자를 열고, 선택 + 비고를 저장한다.
   await page.getByTestId("db-world-canon-law-power").click();
   await page.getByTestId("db-world-canon-law-power-note").fill("피의 대가");
@@ -55,6 +56,8 @@ test("world canon and codex preserve authoring across save, navigation, search, 
   await page.getByTestId("world-edit-name").fill("검색검증카드");
   await page.getByTestId("world-edit-summary").fill("저장할 요약");
   await expect(page.getByTestId("db-footer-status")).toContainText("저장 전");
+  // 종류 단추는 「분류」 칩 팝오버 안에 있다.
+  await page.getByTestId("world-category-trigger").click();
   await page.getByTestId("world-tab-character").click();
   await expect(page.getByTestId("world-edit-name")).toHaveValue("검색검증카드");
   await tab("db-tab-world-canon");

@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44b414f7bd0db0eb5e09c1bafe6dcfe44f8773aab45e1f6468e0064c9601ff87",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-4-L",
+ "label": "jp_city/street_hand/jp-sf-shop-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop front facade with central door and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn in flat architectural front elevation. There is no visible top surface on the facade lintel, door frame, awnings, window shelves, or displayed items (which are drawn as flat 2D rectangles with 0px top depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5711
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shopfront facade with entrance door and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (fascia, awnings, door frame, and display shelves) is drawn in pure architectural front elevation with 0 rows of visible top surfaces for any horizontal element.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4348
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central shop/building facade with framed entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation: its upper edge is only a dark horizontal outline with no visible foreshortened roof or lintel top surface. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 113313
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "central shopfront/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main central structure is a flat rectangular front elevation with no visible top slope or horizontal top surface; only thin edge bands appear above the facade.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 97811
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.009Z",
+ "cells": {
+  "16": [
+   "09cc5b312958ae2a",
+   "23f92e3b7442d9c8",
+   "2f6120ea18405e3d",
+   "3347463e09fca617",
+   "35f25202d2734ec2",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "8c924a7d7c8314db",
+   "913b974aed01b324",
+   "b1a8b5449b59fe87",
+   "c5403c1250122fda",
+   "c6174ecbdb983ee6"
+  ],
+  "24": [
+   "1b58b78d90487714",
+   "1d77cff634586099",
+   "2a52ff0f30d43d8a",
+   "3eaacea43b93e2e6",
+   "3fe4f66e32daf5ca",
+   "586655529cafd9ed",
+   "5e5ead96a52ce609",
+   "60f3855a47c16c38",
+   "7ab2f1b10e4870ed",
+   "7cb1239025d11ba0",
+   "8708e4b450438da1",
+   "8a50d66343004270",
+   "8a55a1f07e0e8397",
+   "932221e1516df40a",
+   "a64799432e2fbeb2",
+   "dbc47df63bf37515",
+   "e409948ba5ce90fa",
+   "f70c752f005ced3e"
+  ],
+  "32": [
+   "32e7bac06b0dbbc0",
+   "5ccc9bc3b5ee990e",
+   "71c1d16d58cba4b9",
+   "76c874c53e394d75",
+   "a48b5474f644f43f",
+   "c25e6401b4102f4c",
+   "ccc5c7e13f87dbf7",
+   "cfc35184ddcd601a"
+  ],
+  "48": [
+   "1033f07b8680285f",
+   "2ab397f8130a4efd",
+   "4afffd2cce9e4cfa",
+   "64d940347175b4dc",
+   "9a8a55f16905bc48",
+   "b0c6ba479405780c"
+  ]
+ }
+}

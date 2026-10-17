@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "acc34f96b1b99f5284b33b2d51df6b4c6552da305e258e31de3ee646f2c3afd1",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "볏단 걸이(하사, 나무 틀 + 볏단)",
+ "label": "sengoku-edo/se-rice-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden frame rack with hanging rice sheaves",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal wooden beam has only a 1px highlight line on row 5 representing its top, and the posts and hanging rice sheaves are drawn in a flat 2D side-scroller front elevation with no visible 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6537
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden rack with hanging rice sheaves",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and hanging rice bundles are drawn in flat front elevation. The top horizontal beam has only a 1px highlight line on row 5, the vertical post tops show no foreshortened top surfaces, and the structure lacks the top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5189
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack with hanging rice sheaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal beam has only a 1px light edge highlight on row 5 with a 3px vertical front face, and the hanging rice sheaves and posts are drawn as flat vertical rectangles with zero visible top depth. The object is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame rack with hanging rice sheaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and hanging rice sheaves are drawn in a completely flat front elevation view. The horizontal beam only has a 1px highlight line on row 5, the vertical posts have no top surfaces, and the hanging sheaves show no depth or top curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5103
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.074Z",
+ "cells": {
+  "16": [
+   "694b7fdd741dc48a",
+   "a56d263ea60e335c",
+   "a96c7dd428cb8308",
+   "aeb125dce0a5b7c1",
+   "bb350ffad989d4b6",
+   "c97a204c5c7ca5a4"
+  ],
+  "24": [
+   "0bc6daaa5c4dc5d0",
+   "47b142d90fddf619",
+   "6543ced9a6c20782",
+   "8ca7fd1192a886df",
+   "9d70e583f855f85d",
+   "c6d29351b7783069",
+   "cf7e0a1da8c14be4",
+   "e84172d7d43cf472"
+  ],
+  "32": [
+   "24ecbea272d417c2",
+   "2a9f88f4b620be62",
+   "3d0d6f98f3f85fb2",
+   "427ac86bd4d9726b",
+   "b18d6db8fcd0792e",
+   "de61194ac76492c8"
+  ],
+  "48": [
+   "d2db45251c4e0e82",
+   "d79d8823ed1fade1"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04cb37ce9ce9ff29e37eadd39b4c9f5a49f0f8d260c5a366f3d5c7d64fc8e27f",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "무쇠 창살 담 오른쪽 끝 기둥",
+ "label": "steampunk-city/sp-fence-post-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence with end pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and iron fence are rendered entirely as a flat architectural front elevation with no visible top surface on the pillar cap, fence rails, or wall base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4582
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar and fence wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The right pillar starts flat at row 2 with an ornament/light on its front face, completely lacking a top surface seen from above. Both the pillar and the connected fence/wall are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5046
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar and iron bar fence segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and fence stand in front of open ground (visible at rows 0-1), but the top of the pillar at row 2 is cut off flat with only a 1px border. No foreshortened top surface or horizontal cap is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5440
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence pillar / post and iron bar fence section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and fence are drawn in pure front elevation with zero foreshortened top surface visible. The post extends vertically from row 2 to 31 without any top plane or cap seen from above, and the fence beams and wall base also show only vertical front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5976
+  }
+ ],
+ "decidedAt": "2026-10-13T18:26:16.314Z",
+ "cells": {
+  "16": [
+   "a25caef45328eaf9",
+   "b4f792322984fd73"
+  ],
+  "24": [
+   "15808b5162f845f7",
+   "29556b1269be71d9",
+   "508e4b0f04139d18",
+   "509cb687537facea",
+   "61beebe41c24ddd3",
+   "8511d31ffe7ccbfe",
+   "8bb52594dab61452",
+   "8fd4ba718474976f",
+   "a752c74167a3c551",
+   "bc2d2dbc7a9c49ee",
+   "c344bb9fa39f017b",
+   "f182a4c8bf52ab6d"
+  ],
+  "32": [
+   "2d1b1742896f982f",
+   "312164358c2d54b5",
+   "77f80014e89521ea"
+  ],
+  "48": [
+   "41e6043ea1aa3bdd",
+   "5e2ddedda9a556bc",
+   "958de64b21d5c158",
+   "97b357e07137efb0",
+   "cb28b40036dcc2f3",
+   "dd8997d1da7f23cf"
+  ]
+ }
+}

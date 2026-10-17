@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-10",
+ "name": "올리브 머리 · 붉은 재킷 흰 탱크톱",
+ "head": "Scarloxy1:5",
+ "body": "Scarloxy1:6",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-10",
+ "candidate_id": "t62",
+ "judge_totals_ABC": [
+  10,
+  9,
+  5
+ ],
+ "recipe": "gallery4-recipes.json#mix-10"
+}

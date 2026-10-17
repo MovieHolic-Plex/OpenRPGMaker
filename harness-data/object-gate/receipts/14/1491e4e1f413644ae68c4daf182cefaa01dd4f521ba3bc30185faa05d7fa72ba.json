@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1491e4e1f413644ae68c4daf182cefaa01dd4f521ba3bc30185faa05d7fa72ba",
+ "width": 48,
+ "height": 16,
+ "kind": "seat",
+ "name": "궁전 긴 의자(금틀)",
+ "label": "desert-east/de-divan-royal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sofa seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blue seat cushion is visible from above across rows 6-9 (4 pixel rows deep) between the backrest and the front gold-fringed base, correctly demonstrating a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5685
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "couch seat cushion and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blue seat cushion surface is clearly visible from above across rows 6-9 (4 rows tall) between the backrest and the golden front skirt/apron (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5142
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palace couch/bench with red backrest, blue seat cushion, and gold fringe base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blue seat cushion surface is visible from above between the backrest and front gold fringe, spanning rows 6 to 9 (4 source pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6231
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palace sofa / long bench with gold frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blue horizontal seat cushion is clearly visible from above across rows 6-9 (4 pixel rows deep) between the backrest cushions (rows 1-5) and the golden front skirt/base (rows 10-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5219
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.216Z",
+ "cells": {
+  "16": [
+   "0c67ab32eedc95ef",
+   "46577f07ff10b0d9",
+   "c3bae86ed7f016b2"
+  ],
+  "24": [
+   "1ee511fea50869e4",
+   "2cd0ac28dcaf3886",
+   "6e108f58a7a158f1",
+   "c1c2f403c68c98e4"
+  ],
+  "32": [
+   "065397d5eea2adf5",
+   "1c3ef9c449cc2b8f",
+   "36878b11b6cefeaa",
+   "4185048c3c15ca4f",
+   "497603c309d0d144",
+   "a8d1f347e93e7981",
+   "c9a532c121ee83a1",
+   "ccd7899d46fd1f5e",
+   "d7731bddfb23ca19",
+   "e1bf32f7d14b2f03",
+   "e257cd7efbf00a72",
+   "e3fff55c3c213563"
+  ],
+  "48": [
+   "1679093845abe68d",
+   "c4f653287813f77d"
+  ]
+ }
+}

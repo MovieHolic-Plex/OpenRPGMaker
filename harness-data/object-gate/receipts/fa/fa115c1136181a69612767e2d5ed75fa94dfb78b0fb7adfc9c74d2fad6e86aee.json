@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa115c1136181a69612767e2d5ed75fa94dfb78b0fb7adfc9c74d2fad6e86aee",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal2",
+ "label": "jp/jp-rail-signal2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway signal head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the signal box is a flat vertical rectangle with no visible top surface (1px yellow edge highlight on row 9), the cap/roof above it has a flat horizontal bottom edge (row 8), the pole stripes are flat horizontal bands, and the concrete base also has flat horizontal edges without any foreshortened top-down curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8886
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box, pole, and base are drawn entirely in flat 2D front elevation with perfectly horizontal bottom edges, horizontal pole stripes, and no visible top surfaces or curved elliptical lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal box and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box, striped post, and base are drawn entirely in straight front elevation: all rims, stripe boundaries, and bottom edges are completely horizontal flat lines without any foreshortened top surfaces or elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8913
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway signal head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal is drawn in pure 2D front elevation. The signal box, the pole stripes, the top cap/roof, and the base are all constructed with perfectly horizontal bands and straight edges without 3/4 top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8174
+  }
+ ],
+ "decidedAt": "2026-10-13T14:18:29.294Z",
+ "cells": {
+  "16": [
+   "0cb63ed1931fad80",
+   "6c8f4945347097b9",
+   "c74373a62afdf0c8"
+  ],
+  "24": [
+   "0601b44ededb7b70",
+   "92f7e575da6572c0",
+   "a1cb2467837606c8",
+   "a42b9f30f4722c28",
+   "a5c7ee3424340389",
+   "f4402ab3309363df"
+  ],
+  "32": [
+   "1c7dcd0f1c656f96",
+   "269a0a5550f8b526",
+   "4ce1c8452eba5422",
+   "5d82f8c3f969d34e",
+   "8eb3874f5136dfaa",
+   "9ac905ec1013eb5e",
+   "9b9b519b406a5ba7",
+   "a600d7a759ff127d",
+   "bd03d78a16e9d981",
+   "ce75eb20481b89cb",
+   "e0d7ac5e90777eb9",
+   "f0cba8fa48f10ed9"
+  ],
+  "48": [
+   "12b6372813daa549",
+   "198adf588901b2ef",
+   "8e44a3f7e5a1dc4c"
+  ]
+ }
+}

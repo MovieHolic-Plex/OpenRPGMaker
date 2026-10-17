@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c37f5122c6a72a8b3b969cb883159b8230f9302d2b79602cbc1f306aae4f2361",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 — 남서 바깥 모서리(테 북·동)",
+ "label": "desert-east/de-ceil-warm-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ceiling border/corner autotile representing flat interior ceiling surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border autotile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile representing a ceiling/void corner edge viewed from above; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6047
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling terrain autotile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile corner piece representing an interior ceiling border viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5060
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling terrain autotile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ceiling border corner tile for top-down interior autotile mapping; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4368
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "1b50dcb6ea708121"
+  ],
+  "24": [
+   "17cba194ddba75a7",
+   "2e10f8d77cac609c",
+   "7c07c5dad9432e55",
+   "a7c6ce14f6af8734",
+   "c44c4c49db9dc4c1",
+   "cf145c563a53898c"
+  ],
+  "32": [
+   "43a9d14ddde5ee7a",
+   "892ce07bd9e4752b",
+   "a537b24c6a3bd639",
+   "acd229fabf2ac2e7",
+   "e37294d5a861d831",
+   "fb0af8cfa018157e"
+  ],
+  "48": [
+   "1ad2122801a113de",
+   "21aaa22ae268f0ab",
+   "3f5d8b33a083c656",
+   "906f8136898f3d0e",
+   "bbd3afd80e83f823",
+   "d07f66e6e9c92933"
+  ]
+ }
+}

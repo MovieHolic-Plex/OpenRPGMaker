@@ -1,0 +1,48 @@
+{
+ "key": "sc2-gym-fire",
+ "arch": "sp2-gym-fire",
+ "base": "Scarloxy1:0",
+ "variant": "청록 모자를 붉은 불꽃 머리로 바꾼다: H 의 청록·갈색 전부를 빨강·주황·노랑 3톤으로 recolor 하고 머리 위 h 구역에 뾰족한 불꽃 3갈래(H paint, 각 갈래 3칸 이상 덩어리)를 올린다. 흰 재킷을 검은 코트로, 가슴·어깨 띠는 주황, 초록 바지는 짙은 회색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Ldfnpsv"
+ ],
+ "metrics": {
+  "added_up0": 26,
+  "added_up1": 34,
+  "added_up2": 27,
+  "added_right0": 27,
+  "added_right1": 27,
+  "added_right2": 27,
+  "added_down0": 23,
+  "added_down1": 34,
+  "added_down2": 27,
+  "added_left0": 27,
+  "added_left1": 27,
+  "added_left2": 27,
+  "changed_ratio": {
+   "H": 0.992,
+   "T": 0.997,
+   "B": 0.938,
+   "S": 0.982
+  },
+  "cross": 11,
+  "cross_base": 11,
+  "lone": 208,
+  "lone_base": 274
+ },
+ "distinct": {
+  "score": 0.676,
+  "nearest": "accepted:sp2-gym-ground-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 8,
+  "hole_filled_px": 4,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-gym-fire-a"
+}

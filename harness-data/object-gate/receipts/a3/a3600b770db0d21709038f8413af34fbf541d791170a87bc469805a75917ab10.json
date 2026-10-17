@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3600b770db0d21709038f8413af34fbf541d791170a87bc469805a75917ab10",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "coconut palm tree with curved ringed trunk and drooping fronds",
+ "label": "pirate-isles/pi-palm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coconut palm tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn in a pure 2D side-scroller/front elevation. The fronds spread out purely left and right along a flat vertical plane with no downward 3/4-view angle showing the top of the crown spreading toward/away from the camera, and the trunk rings are drawn horizontally across with no foreshortened circular/elliptical perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trunk and palm fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in 2D side/front elevation (side-scroller style). The trunk rings are flat horizontal bands rather than ellipses, and the fronds spread only left-to-right in a flat plane rather than radiating in depth with top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6391
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coconut palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn entirely in 2D side-scroller elevation. The fronds spread in a single vertical 2D plane with no foreshortening or leaves radiating forward/backward in depth, and the trunk has no visible base ellipse or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5888
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trunk and palm fronds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palm tree is drawn as a flat side-scroller/platformer elevation: the trunk rings are straight horizontal bands and the fronds are arranged in a flat vertical plane with 0px of top-down depth or foreshortened canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6187
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.574Z",
+ "cells": {
+  "16": [
+   "04b4ac40160b589f",
+   "051e05621572e3c5",
+   "241802bcdc426320",
+   "679e69a679cd644c",
+   "79035aceca0172b6",
+   "e09d4a1909215193"
+  ],
+  "24": [
+   "02c76e17f7edf35c",
+   "1430949334e6661d",
+   "1927c96aa23f9f69",
+   "289349461f8f53d3",
+   "3deb08a5bb877fcd",
+   "4280a4fd03eabc7a",
+   "5b82a2b2021ef0f3",
+   "5f9856130d6b5c33",
+   "7b966901f1f39ed3",
+   "ab34cdf8e7708f99",
+   "cd9be2f117ff2d31",
+   "e8822847621b6750"
+  ],
+  "32": [
+   "1b4cc88790499545",
+   "6926e8bd0f57e240",
+   "bf307b5417dfe5f9",
+   "dbb2660c3673cba1"
+  ],
+  "48": [
+   "76290537a66abb91",
+   "a398e7149990b3b3",
+   "fadbfc274bafb011"
+  ]
+ }
+}

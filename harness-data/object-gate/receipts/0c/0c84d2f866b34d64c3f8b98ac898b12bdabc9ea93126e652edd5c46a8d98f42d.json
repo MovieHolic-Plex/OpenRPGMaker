@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c84d2f866b34d64c3f8b98ac898b12bdabc9ea93126e652edd5c46a8d98f42d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "stone block wall with gold trim, upper interior wall tile (wall_mounted)",
+ "label": "sky-island/si-wall-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone block wall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Interior wall face tile showing a stone brick pattern with gold molding along the top; correctly textured vertical terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone wall face with gold trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical interior wall face terrain tile with upper gold trim molding; wall faces naturally display directly facing the camera in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone block wall face with gold molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile showing stone masonry with a gold trim border at the top; as a vertical surface it appropriately fills the tile without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone block wall face with upper gold trim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a standard vertical interior wall face terrain tile with stone brick pattern and upper gold molding; wall faces naturally display their south elevation in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3050
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "f1bc6ca6879a884a"
+  ],
+  "24": [
+   "2aa3e3a62b80e700",
+   "62e936c558f56389",
+   "8fef038979eb25a9",
+   "b6f2caa2b4d62f41",
+   "c10a9e88b7fbfb31",
+   "dce31f4ebed17606"
+  ],
+  "32": [
+   "0b0033092e2792dd",
+   "5dd5e47aa81a5239",
+   "cad2978af9fee82b",
+   "e2bdc5cb8395215d",
+   "f2f7100724960987",
+   "fb3b86d21f82729a"
+  ],
+  "48": [
+   "16a63dc04965ef85",
+   "1d746daacb136781",
+   "2a0629eef5fc5461",
+   "e3dd8e82bab8991a",
+   "f732a6396ffd3a1f",
+   "fd4791455e1eeaf2"
+  ]
+ }
+}

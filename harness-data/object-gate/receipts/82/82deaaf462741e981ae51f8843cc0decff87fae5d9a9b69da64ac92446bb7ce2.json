@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "82deaaf462741e981ae51f8843cc0decff87fae5d9a9b69da64ac92446bb7ce2",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "prehistoric stone-age skull shelf",
+ "label": "prehistoric/ph-skull-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiered stone shelf structure with skull displays",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper and lower stone tiers show distinct foreshortened horizontal top surfaces (upper tier top surface around rows 6-8, lower tier shelf top around rows 17-20) upon which the skulls rest, followed by south-facing vertical surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4715
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone skull shelf with two tiers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stone shelf tiers feature clearly rendered horizontal top surfaces seen from above (rows 6-8 on the upper shelf, rows 17-21 on the lower shelf) upon which the skulls rest, giving proper 3/4 perspective depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4057
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone shelf tiers with skulls",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stone shelf tiers show clear foreshortened horizontal top surfaces seen from above (upper shelf top is ~3 rows deep, lower shelf top is ~5 rows deep) with skulls resting on them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28501
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-tiered prehistoric stone shelf with skulls",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both stone shelf tiers are drawn as foreshortened horizontal slabs seen from above. The lower tier's top surface has roughly 5-6 rows of depth (rows 16-21) where skulls sit with visible shelf surface in front of and around them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7649
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.944Z",
+ "cells": {
+  "16": [
+   "135c5b840cd385ef",
+   "372b84513e7aabff",
+   "be0752e8d0ec1c91",
+   "f9b8a63f927299d8"
+  ],
+  "24": [
+   "06ba5f235a30d1da",
+   "08cbf1148fd1caeb",
+   "0fd618eb73b5cb34",
+   "105e83e18a4891e8",
+   "1ae19c4a32595b95",
+   "31c28aceed7ccbb0",
+   "3edda6b1a7bb9e9f",
+   "408ee6f16518d51d",
+   "4fdc863be653da35",
+   "53aaac92095aa872",
+   "734fd5fed05df805",
+   "861a1c1d7cf2d313",
+   "990fba7508cb9380",
+   "9d662af2d3b5355e",
+   "9ed0095239107547",
+   "a92fa61e46b35d5a",
+   "c62258f39eee2167",
+   "c975af421f55e4d0",
+   "cfdcd8e993461843",
+   "d0a32886fc760bbd",
+   "d610cecd8222d654",
+   "e328f439651749e2",
+   "f7dd6c8fc589abb0",
+   "fb22b3a43dd070ea"
+  ],
+  "32": [
+   "54f74fb392fee5ef"
+  ],
+  "48": [
+   "10e7b8ff6e36980d",
+   "1bece3e59968606c",
+   "23236abeca7093c8",
+   "3edadb498e238d4b",
+   "65c68f109a29dde7",
+   "d07e5c025a2c2aaa"
+  ]
+ }
+}

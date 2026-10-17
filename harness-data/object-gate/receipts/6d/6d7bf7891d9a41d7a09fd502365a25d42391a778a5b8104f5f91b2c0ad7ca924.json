@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6d7bf7891d9a41d7a09fd502365a25d42391a778a5b8104f5f91b2c0ad7ca924",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole's top finial at row 0 ends in a flat 2px horizontal line with 0 visible top rows (no elliptical cut face or top surface visible), failing the top-surface requirement for columns/poles. The visible top of the base plinth below does not substitute for the pole's top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16615
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole pedestal base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large base supporting the pole is drawn in clear 3/4 view with a prominent top surface spanning rows 16 to 24 (approx. 9 rows tall) above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole and banner are drawn in pure front elevation without any top surface visible at the top of the pole. The perspective shown on the stone/wood base plinth cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8487
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole base pedestal",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large pedestal base forms the main volume and clearly displays a deep, foreshortened top surface across rows 16–24 (~9 pixel rows) with the pole anchored into its center, accurately fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6346
+  }
+ ],
+ "decidedAt": "2026-10-14T00:50:53.458Z",
+ "cells": {
+  "16": [
+   "08421a9e2cde1a30",
+   "95771a46999aacc5"
+  ],
+  "24": [
+   "055751473c883531",
+   "4cc3b02e2ae95c67",
+   "773fadc35e02e386",
+   "99d53fe5f12152f2",
+   "9d01434ca113040a",
+   "a4392fc3ac50e452",
+   "b292839a055660b8",
+   "c1d4e98e82d2a1fb",
+   "cd035ccce2fb286d",
+   "db47cc16a29ac052",
+   "dd6a29d62b2ed5c8",
+   "f57a03e72fd777d7"
+  ],
+  "32": [
+   "4b572027dd01ad21",
+   "69ba7423f5c5b393",
+   "965ed8f6e83b20c4"
+  ],
+  "48": [
+   "2ae85ec9546db7f6",
+   "ae6ddf190d6dd0f2",
+   "c98a354b962e714f",
+   "f11bc15a0cf4a835",
+   "f8fad5d0b8b0bc4b",
+   "fd5370526b70786f"
+  ]
+ }
+}

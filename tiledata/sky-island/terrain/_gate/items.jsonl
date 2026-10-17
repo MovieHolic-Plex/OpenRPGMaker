@@ -1,0 +1,147 @@
+{"png": "si-sky.png", "kind": "terrain", "name": "empty sky background tile", "label": "sky-island/si-sky"}
+{"png": "si-sky-glint.png", "kind": "terrain", "name": "sky background tile with a tiny sparkle", "label": "sky-island/si-sky-glint"}
+{"png": "si-grass.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass"}
+{"png": "si-grass-flower.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-flower"}
+{"png": "si-grass-flower-b.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-flower-b"}
+{"png": "si-grass-b.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b"}
+{"png": "si-grass-b2.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b2"}
+{"png": "si-grass-b3.png", "kind": "terrain", "name": "grass ground tile", "label": "sky-island/si-grass-b3"}
+{"png": "si-grass-shade-a.png", "kind": "terrain", "name": "grass ground tile with darker grass patch", "label": "sky-island/si-grass-shade-a"}
+{"png": "si-grass-shade-b.png", "kind": "terrain", "name": "grass ground tile with darker grass patch", "label": "sky-island/si-grass-shade-b"}
+{"png": "si-grass-tuft-a.png", "kind": "terrain", "name": "grass ground tile with a small grass tuft", "label": "sky-island/si-grass-tuft-a"}
+{"png": "si-grass-tuft-b.png", "kind": "terrain", "name": "grass ground tile with a small grass tuft", "label": "sky-island/si-grass-tuft-b"}
+{"png": "si-gs-n.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-n"}
+{"png": "si-gs-s.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-s"}
+{"png": "si-gs-w.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-w"}
+{"png": "si-gs-e.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-e"}
+{"png": "si-gs-nw.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-nw"}
+{"png": "si-gs-ne.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-ne"}
+{"png": "si-gs-sw.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-sw"}
+{"png": "si-gs-se.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-se"}
+{"png": "si-gs-inw.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-inw"}
+{"png": "si-gs-ine.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-ine"}
+{"png": "si-gs-isw.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-isw"}
+{"png": "si-gs-ise.png", "kind": "terrain", "name": "grass island edge tile against sky (terrain)", "label": "sky-island/si-gs-ise"}
+{"png": "si-face-top.png", "kind": "terrain", "name": "rock cliff face tile under a floating island (terrain)", "label": "sky-island/si-face-top"}
+{"png": "si-face-top-b.png", "kind": "terrain", "name": "rock cliff face tile with hanging roots (terrain)", "label": "sky-island/si-face-top-b"}
+{"png": "si-face-top-crystal.png", "kind": "terrain", "name": "rock cliff face tile with small embedded crystals (terrain)", "label": "sky-island/si-face-top-crystal"}
+{"png": "si-face-top-l.png", "kind": "terrain", "name": "rock cliff face end tile (terrain)", "label": "sky-island/si-face-top-l"}
+{"png": "si-face-top-r.png", "kind": "terrain", "name": "rock cliff face end tile (terrain)", "label": "sky-island/si-face-top-r"}
+{"png": "si-face-mid.png", "kind": "terrain", "name": "rock cliff face tile (terrain)", "label": "sky-island/si-face-mid"}
+{"png": "si-face-mid-b.png", "kind": "terrain", "name": "rock cliff face tile (terrain)", "label": "sky-island/si-face-mid-b"}
+{"png": "si-tip-a.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-a"}
+{"png": "si-tip-b.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-b"}
+{"png": "si-tip-c.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-c"}
+{"png": "si-tip-d.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-d"}
+{"png": "si-tip-l.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-l"}
+{"png": "si-tip-r.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-r"}
+{"png": "si-face-mid-ol.png", "kind": "terrain", "name": "rock cliff face tile with a tapered side (terrain)", "label": "sky-island/si-face-mid-ol"}
+{"png": "si-face-mid-or.png", "kind": "terrain", "name": "rock cliff face tile with a tapered side (terrain)", "label": "sky-island/si-face-mid-or"}
+{"png": "si-face-mid-olr.png", "kind": "terrain", "name": "rock cliff face tile with a tapered side (terrain)", "label": "sky-island/si-face-mid-olr"}
+{"png": "si-tip-ol.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-ol"}
+{"png": "si-tip-or.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-or"}
+{"png": "si-tip-olr.png", "kind": "terrain", "name": "bottom tip of a floating island rock underside (terrain)", "label": "sky-island/si-tip-olr"}
+{"png": "si-cloud.png", "kind": "terrain", "name": "walkable cloud floor tile", "label": "sky-island/si-cloud"}
+{"png": "si-cloud-b.png", "kind": "terrain", "name": "walkable cloud floor tile", "label": "sky-island/si-cloud-b"}
+{"png": "si-cs-n.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-n"}
+{"png": "si-cs-s.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-s"}
+{"png": "si-cs-w.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-w"}
+{"png": "si-cs-e.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-e"}
+{"png": "si-cs-nw.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-nw"}
+{"png": "si-cs-ne.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-ne"}
+{"png": "si-cs-sw.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-sw"}
+{"png": "si-cs-se.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-se"}
+{"png": "si-cs-inw.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-inw"}
+{"png": "si-cs-ine.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-ine"}
+{"png": "si-cs-isw.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-isw"}
+{"png": "si-cs-ise.png", "kind": "terrain", "name": "cloud platform edge tile against sky (terrain)", "label": "sky-island/si-cs-ise"}
+{"png": "si-billow.png", "kind": "terrain", "name": "underside billows of a cloud platform (terrain)", "label": "sky-island/si-billow"}
+{"png": "si-billow-b.png", "kind": "terrain", "name": "underside billows of a cloud platform (terrain)", "label": "sky-island/si-billow-b"}
+{"png": "si-billow-l.png", "kind": "terrain", "name": "underside billows of a cloud platform (terrain)", "label": "sky-island/si-billow-l"}
+{"png": "si-billow-r.png", "kind": "terrain", "name": "underside billows of a cloud platform (terrain)", "label": "sky-island/si-billow-r"}
+{"png": "si-gc-n.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-n"}
+{"png": "si-gc-s.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-s"}
+{"png": "si-gc-w.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-w"}
+{"png": "si-gc-e.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-e"}
+{"png": "si-gc-nw.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-nw"}
+{"png": "si-gc-ne.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-ne"}
+{"png": "si-gc-sw.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-sw"}
+{"png": "si-gc-se.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-se"}
+{"png": "si-gc-inw.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-inw"}
+{"png": "si-gc-ine.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-ine"}
+{"png": "si-gc-isw.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-isw"}
+{"png": "si-gc-ise.png", "kind": "terrain", "name": "grass to cloud floor transition tile (terrain)", "label": "sky-island/si-gc-ise"}
+{"png": "si-path-1.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-1"}
+{"png": "si-path-2.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-2"}
+{"png": "si-path-3.png", "kind": "terrain", "name": "flagstone path on grass (terrain)", "label": "sky-island/si-path-3"}
+{"png": "si-road.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road"}
+{"png": "si-road-n.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-n"}
+{"png": "si-road-s.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-s"}
+{"png": "si-road-ns.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-ns"}
+{"png": "si-road-w.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-w"}
+{"png": "si-road-nw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nw"}
+{"png": "si-road-sw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-sw"}
+{"png": "si-road-nsw.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nsw"}
+{"png": "si-road-e.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-e"}
+{"png": "si-road-ne.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-ne"}
+{"png": "si-road-se.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-se"}
+{"png": "si-road-nse.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nse"}
+{"png": "si-road-we.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-we"}
+{"png": "si-road-nwe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nwe"}
+{"png": "si-road-swe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-swe"}
+{"png": "si-road-nswe.png", "kind": "terrain", "name": "paved cobblestone road tile with curb (terrain)", "label": "sky-island/si-road-nswe"}
+{"png": "si-road-b.png", "kind": "terrain", "name": "paved cobblestone road tile (terrain)", "label": "sky-island/si-road-b"}
+{"png": "si-plaza.png", "kind": "terrain", "name": "cobblestone plaza tile (terrain)", "label": "sky-island/si-plaza"}
+{"png": "si-plaza-n.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-n"}
+{"png": "si-plaza-s.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-s"}
+{"png": "si-plaza-w.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-w"}
+{"png": "si-plaza-e.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-e"}
+{"png": "si-plaza-nw.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-nw"}
+{"png": "si-plaza-ne.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-ne"}
+{"png": "si-plaza-sw.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-sw"}
+{"png": "si-plaza-se.png", "kind": "terrain", "name": "cobblestone plaza edge on grass (terrain)", "label": "sky-island/si-plaza-se"}
+{"png": "si-field.png", "kind": "terrain", "name": "tilled farm soil furrows (terrain)", "label": "sky-island/si-field"}
+{"png": "si-field-n.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-n"}
+{"png": "si-field-s.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-s"}
+{"png": "si-field-w.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-w"}
+{"png": "si-field-e.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-e"}
+{"png": "si-field-nw.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-nw"}
+{"png": "si-field-ne.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-ne"}
+{"png": "si-field-sw.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-sw"}
+{"png": "si-field-se.png", "kind": "terrain", "name": "tilled farm soil edge on grass (terrain)", "label": "sky-island/si-field-se"}
+{"png": "si-stream.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream"}
+{"png": "si-stream-f1.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream-f1"}
+{"png": "si-stream-f2.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream-f2"}
+{"png": "si-stream-lip.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream-lip"}
+{"png": "si-stream-lip-f1.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream-lip-f1"}
+{"png": "si-stream-lip-f2.png", "kind": "terrain", "name": "flowing stream channel on grass (terrain)", "label": "sky-island/si-stream-lip-f2"}
+{"png": "si-falls-face.png", "kind": "terrain", "name": "waterfall flowing over a rock cliff (terrain overlay)", "label": "sky-island/si-falls-face"}
+{"png": "si-falls-face-f1.png", "kind": "terrain", "name": "waterfall flowing over a rock cliff (terrain overlay)", "label": "sky-island/si-falls-face-f1"}
+{"png": "si-falls-face-f2.png", "kind": "terrain", "name": "waterfall flowing over a rock cliff (terrain overlay)", "label": "sky-island/si-falls-face-f2"}
+{"png": "si-falls-air.png", "kind": "terrain", "name": "waterfall falling through open sky (terrain overlay)", "label": "sky-island/si-falls-air"}
+{"png": "si-falls-air-f1.png", "kind": "terrain", "name": "waterfall falling through open sky (terrain overlay)", "label": "sky-island/si-falls-air-f1"}
+{"png": "si-falls-air-f2.png", "kind": "terrain", "name": "waterfall falling through open sky (terrain overlay)", "label": "sky-island/si-falls-air-f2"}
+{"png": "si-falls-mist.png", "kind": "terrain", "name": "waterfall spray mist (terrain overlay)", "label": "sky-island/si-falls-mist"}
+{"png": "si-falls-mist-f1.png", "kind": "terrain", "name": "waterfall spray mist (terrain overlay)", "label": "sky-island/si-falls-mist-f1"}
+{"png": "si-falls-mist-f2.png", "kind": "terrain", "name": "waterfall spray mist (terrain overlay)", "label": "sky-island/si-falls-mist-f2"}
+{"png": "si-bridge-h.png", "kind": "flat", "name": "rope plank bridge seen from above (flat walkway)", "label": "sky-island/si-bridge-h"}
+{"png": "si-bridge-h-w.png", "kind": "terrain", "name": "rope bridge end with wooden posts (flat walkway)", "label": "sky-island/si-bridge-h-w"}
+{"png": "si-bridge-h-e.png", "kind": "terrain", "name": "rope bridge end with wooden posts (flat walkway)", "label": "sky-island/si-bridge-h-e"}
+{"png": "si-bridge-v.png", "kind": "flat", "name": "rope plank bridge seen from above (flat walkway)", "label": "sky-island/si-bridge-v"}
+{"png": "si-bridge-v-n.png", "kind": "terrain", "name": "rope bridge end with wooden posts (flat walkway)", "label": "sky-island/si-bridge-v-n"}
+{"png": "si-bridge-v-s.png", "kind": "terrain", "name": "rope bridge end with wooden posts (flat walkway)", "label": "sky-island/si-bridge-v-s"}
+{"png": "si-sbridge.png", "kind": "flat", "name": "stone bridge deck with parapets seen from above (flat walkway)", "label": "sky-island/si-sbridge"}
+{"png": "si-sbridge-w.png", "kind": "flat", "name": "stone bridge deck end with pillar (flat walkway)", "label": "sky-island/si-sbridge-w"}
+{"png": "si-sbridge-e.png", "kind": "flat", "name": "stone bridge deck end with pillar (flat walkway)", "label": "sky-island/si-sbridge-e"}
+{"png": "si-sbridge-arch.png", "kind": "terrain", "name": "stone bridge arch face (terrain overlay)", "label": "sky-island/si-sbridge-arch"}
+{"png": "si-sbridge-arch-w.png", "kind": "terrain", "name": "stone bridge abutment (terrain overlay)", "label": "sky-island/si-sbridge-arch-w"}
+{"png": "si-sbridge-arch-e.png", "kind": "terrain", "name": "stone bridge abutment (terrain overlay)", "label": "sky-island/si-sbridge-arch-e"}
+{"png": "si-pier-w.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-w"}
+{"png": "si-pier-c.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-c"}
+{"png": "si-pier-e.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-e"}
+{"png": "si-pier-sw.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-sw"}
+{"png": "si-pier-s.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-s"}
+{"png": "si-pier-se.png", "kind": "flat", "name": "wooden sky dock plank deck seen from above (flat walkway)", "label": "sky-island/si-pier-se"}
+{"png": "si-pier-struts-w.png", "kind": "terrain", "name": "diagonal wooden support struts under a dock (frame)", "label": "sky-island/si-pier-struts-w"}
+{"png": "si-pier-struts-c.png", "kind": "terrain", "name": "diagonal wooden support struts under a dock (frame)", "label": "sky-island/si-pier-struts-c"}
+{"png": "si-pier-struts-e.png", "kind": "terrain", "name": "diagonal wooden support struts under a dock (frame)", "label": "sky-island/si-pier-struts-e"}

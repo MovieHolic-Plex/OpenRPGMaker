@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b5ae1f8deb06a7ce3abc9ef60c77b50d834deb5eea5ea0e7850f34cc651b5c6",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "화약 통 (powder keg)",
+ "label": "atlas_biome_interior/plus/powder keg",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical powder keg with metal/red hoops",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular cap of the keg is clearly visible as an ellipse across rows 1 to 5 with interior lid shading and fuse hole, meeting the 3/4 perspective requirement above a tall cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5981
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "powder keg",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular surface of the keg is clearly depicted as an ellipse occupying rows 1-5 (5 rows tall), showing proper 3/4 top-down foreshortening above the cylindrical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "powder keg (barrel/drum)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the keg is clearly depicted as an ellipse visible from above across rows 1-5 with a red rim and grey interior, above the cylindrical body visible on rows 6-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical powder keg with red rim bands",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the keg is clearly visible as an elliptical surface spanning rows 1-6 with a grey interior lid and red rim, sitting atop the front vertical body (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4365
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.627Z",
+ "cells": {
+  "16": [
+   "c4cf93acdfd721ea"
+  ],
+  "24": [
+   "15530c90c563a6e4",
+   "155507d993d18f45",
+   "76bc607603ef04df",
+   "9040ac0002f29c96",
+   "9958822a6cb4ed5e",
+   "d14c762c23a5b5fe"
+  ],
+  "32": [
+   "194b5c5cccd8c1cb",
+   "226beaef7259c1dc",
+   "424e100c6c3d5740",
+   "6786809a7a7dab7b",
+   "80a7109838e5d002",
+   "c6fa8f043bcc2a7e"
+  ],
+  "48": [
+   "08b2f9ef69e2d950",
+   "63bcc6112011ce97",
+   "811dc6b736cc67f1",
+   "8e4e6800e2bf92e7",
+   "910f2e7cd31ae644",
+   "fbf0f832c253d70a"
+  ]
+ }
+}

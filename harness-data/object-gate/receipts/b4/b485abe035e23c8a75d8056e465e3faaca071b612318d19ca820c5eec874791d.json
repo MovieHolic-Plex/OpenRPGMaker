@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b485abe035e23c8a75d8056e465e3faaca071b612318d19ca820c5eec874791d",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "조종사 좌석(등받이 + 시안 쿠션 + 양옆 팔걸이 램프)",
+ "label": "sf-station/sf-pilot-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pilot seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion surface is seen from above spanning rows 8 to 11 (4 pixel rows) in front of the upright backrest, supported by a base below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pilot seat with backrest and cushion",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cyan seat cushion is viewed from above across rows 8-11 (4 rows tall) situated in front of the upright backrest, with the dark base beneath it at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6435
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pilot chair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair backrest extends from rows 1 to 7, while the cyan seat cushion is seen from above spanning rows 8 to 11 (4 source pixel rows). Below the cushion, rows 12-13 form the south front face of the seat frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6589
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pilot chair / seat",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion occupies rows 8-11 (4 pixel rows of visible top surface depth) between the backrest and the front base rim at rows 12-13. Armrest tops are also visible at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7057
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.252Z",
+ "cells": {
+  "16": [
+   "6dc2a043a6a8c2a1"
+  ],
+  "24": [
+   "0c7987876d8324e7",
+   "13fbae849d7bc360",
+   "3675f2b569d8ed59",
+   "3f2d729e597a46e3",
+   "61eadbe13d704e91",
+   "ef271b391bdc4784"
+  ],
+  "32": [
+   "7dbde7446b524377",
+   "7e063c954318dffd",
+   "85dac742f245b54e",
+   "8b13eb9b528964f9",
+   "b8ab930571a4b090",
+   "cc0027dba85f2a3a"
+  ],
+  "48": [
+   "2a1eb314d39d444d",
+   "4a23ff9de164c36f",
+   "8000334ee612c6f1",
+   "9ab3e6cdb539ea17",
+   "ac2f9db4137498ce",
+   "f33a788c9d192597"
+  ]
+ }
+}

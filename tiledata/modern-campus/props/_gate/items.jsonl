@@ -1,0 +1,39 @@
+{"png": "mc-bench.png", "kind": "seat", "name": "교정 벤치(나무 판 + 주철 다리, 등받이)", "label": "modern-campus/mc-bench"}
+{"png": "mc-bench-stone.png", "kind": "seat", "name": "돌 벤치(화강암 상판, 등받이 없음)", "label": "modern-campus/mc-bench-stone"}
+{"png": "mc-picnic-table.png", "kind": "low_furniture", "name": "피크닉 탁자(앞뒤 의자 붙은 나무 탁자)", "label": "modern-campus/mc-picnic-table"}
+{"png": "mc-parasol-table.png", "kind": "other", "name": "파라솔 탁자(둥근 탁자 + 접이 파라솔)", "label": "modern-campus/mc-parasol-table"}
+{"png": "mc-lamp-post.png", "kind": "column", "name": "가로등(버섯 갓 + 둥근 받침)", "label": "modern-campus/mc-lamp-post"}
+{"png": "mc-bollard.png", "kind": "column", "name": "볼라드(돌 말뚝)", "label": "modern-campus/mc-bollard"}
+{"png": "mc-trash-bin.png", "kind": "round_body", "name": "쓰레기통(철망 원통 + 덮개)", "label": "modern-campus/mc-trash-bin"}
+{"png": "mc-recycle-bins.png", "kind": "box", "name": "분리수거함(뚜껑 셋: 일반·종이·플라스틱)", "label": "modern-campus/mc-recycle-bins"}
+{"png": "mc-drinking-fountain.png", "kind": "container", "name": "음수대(스테인리스 대야 둘)", "label": "modern-campus/mc-drinking-fountain"}
+{"png": "mc-notice-board.png", "kind": "structure", "name": "게시판(지붕 달린 유리 게시판)", "label": "modern-campus/mc-notice-board"}
+{"png": "mc-campus-map.png", "kind": "box", "name": "캠퍼스 안내도(서 있는 지도판)", "label": "modern-campus/mc-campus-map"}
+{"png": "mc-school-stone.png", "kind": "figure", "name": "교명석(글자 없는 화강암 비석)", "label": "modern-campus/mc-school-stone"}
+{"png": "mc-bust.png", "kind": "figure", "name": "설립자 흉상(청동 + 돌 받침)", "label": "modern-campus/mc-bust"}
+{"png": "mc-fountain.png", "kind": "container", "name": "분수(둥근 화강암 수반)", "label": "modern-campus/mc-fountain"}
+{"png": "mc-fountain-f1.png", "kind": "container", "name": "분수 물결 프레임 2", "label": "modern-campus/mc-fountain-f1"}
+{"png": "mc-fountain-f2.png", "kind": "container", "name": "분수 물결 프레임 3", "label": "modern-campus/mc-fountain-f2"}
+{"png": "mc-tree-zelkova.png", "kind": "organic", "name": "느티나무(큰 활엽수)", "label": "modern-campus/mc-tree-zelkova"}
+{"png": "mc-tree-ginkgo.png", "kind": "organic", "name": "은행나무(가을 노랑)", "label": "modern-campus/mc-tree-ginkgo"}
+{"png": "mc-tree-cherry.png", "kind": "organic", "name": "벚나무(봄 꽃)", "label": "modern-campus/mc-tree-cherry"}
+{"png": "mc-tree-pine.png", "kind": "organic", "name": "소나무", "label": "modern-campus/mc-tree-pine"}
+{"png": "mc-tree-zelkova-l.png", "kind": "organic", "name": "큰 느티나무(넓은 수관, 3×4)", "label": "modern-campus/mc-tree-zelkova-l"}
+{"png": "mc-shrub.png", "kind": "organic", "name": "둥근 회양목", "label": "modern-campus/mc-shrub"}
+{"png": "mc-azalea.png", "kind": "organic", "name": "철쭉 덤불(분홍 꽃)", "label": "modern-campus/mc-azalea"}
+{"png": "mc-hedge.png", "kind": "organic", "name": "생울타리(네모 다듬은 회양목, 2칸)", "label": "modern-campus/mc-hedge"}
+{"png": "mc-planter.png", "kind": "container", "name": "콘크리트 화분대(꽃·관목)", "label": "modern-campus/mc-planter"}
+{"png": "mc-planter-round.png", "kind": "container", "name": "둥근 화분(꽃)", "label": "modern-campus/mc-planter-round"}
+{"png": "mc-soccer-goal.png", "kind": "frame", "name": "축구 골대(흰 철관 + 그물)", "label": "modern-campus/mc-soccer-goal"}
+{"png": "mc-basket-hoop.png", "kind": "frame", "name": "농구 골대(기둥 + 백보드 + 링)", "label": "modern-campus/mc-basket-hoop"}
+{"png": "mc-bleachers.png", "kind": "structure", "name": "스탠드(3단 계단식 관람석)", "label": "modern-campus/mc-bleachers"}
+{"png": "mc-scoreboard.png", "kind": "structure", "name": "점수판(기둥 둘 + 전광판)", "label": "modern-campus/mc-scoreboard"}
+{"png": "mc-wall-brick.png", "kind": "structure", "name": "벽돌 담(돌 갓돌, 1칸)", "label": "modern-campus/mc-wall-brick"}
+{"png": "mc-gate-pillar.png", "kind": "column", "name": "교문 기둥(벽돌 + 넓은 돌 갓)", "label": "modern-campus/mc-gate-pillar"}
+{"png": "mc-guard-booth.png", "kind": "structure", "name": "수위실(작은 초소)", "label": "modern-campus/mc-guard-booth"}
+{"png": "mc-pergola.png", "kind": "structure", "name": "등나무 쉼터(퍼걸러 + 벤치)", "label": "modern-campus/mc-pergola"}
+{"png": "mc-bus-shelter.png", "kind": "structure", "name": "버스 정류장(지붕 + 유리 칸막이 + 의자)", "label": "modern-campus/mc-bus-shelter"}
+{"png": "mc-bike-rack.png", "kind": "frame", "name": "자전거 거치대(콘크리트 받침 + 철 고리 5)", "label": "modern-campus/mc-bike-rack"}
+{"png": "mc-car.png", "kind": "other", "name": "승용차(주차, 흰색)", "label": "modern-campus/mc-car"}
+{"png": "mc-school-bus.png", "kind": "other", "name": "통학 버스(노랑, 남쪽을 보고 주차)", "label": "modern-campus/mc-school-bus"}
+{"png": "mc-clock-tower.png", "kind": "structure", "name": "시계탑(벽돌 탑 + 돌 난간 옥상 + 작은 돔)", "label": "modern-campus/mc-clock-tower"}

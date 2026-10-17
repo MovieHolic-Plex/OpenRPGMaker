@@ -117,6 +117,15 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `npm run harness -- assistant-capability matrix-ui-all --out <새 폴더>`는 50개 명령을 각각 새로 저장한 SQLite fixture에서 시작해 실제 `ai-input` 제출과 scripted `/v1/agent/run` 적용 이벤트를 거친다. 명령 사이에는 같은 Firefox 컨텍스트를 페이지 재로드해 fixture를 다시 읽고, 저장 완료 후 `stored(projectDir)`로 정본을 확인한다. 에디터가 같은 agent 요청을 재전송할 수 있으므로 각 명령의 응답을 캐시해 비멱등 도구가 두 번 실행되지 않게 한다. 결과 JSON의 `uiAgentAppliedCommands`가 50이고 `directTransportCommands`가 0이어야 이 단계가 통과한다. 이 단계도 모델 제공자 성공과 독립 시각 판정은 측정하지 않는다.
 
+`npm run harness -- assistant-capability matrix-native --out <새 폴더>`는 50개 명령을 각각 새 SQLite fixture(`matrixNativeSpec.ts`의 `nativeProject()` — 실제 마을 맵·이름 있는 이벤트·막힌 출입구·월드맵·상점 재고, `fixtureProblems()`가 각 문장에 대상이 있는지 검사)와 **명령마다 새 호스트**에서 시작해 **실제 provider의 응답**을 실제 `ai-input`으로 제출한다(한 호스트를 공유하면 멈춘 명령의 맵 점유가 다음 명령 전부를 409 `map-busy` 로 만든다).
+- **판정은 계약 + 보존이다.** 도구 이름은 보고만 하고 판정하지 않는다 — `judge()` 가 명령 문장이 말한 결과(예: 선택 영역 안 8칸만 흙, 이벤트 이름을 하린으로, 상점 명령이 생기고 기존 대사·이동은 그대로)와 나머지 내용의 보존을 저장 문서 전/후로 비교한다. 읽기 명령은 사실에 맞는 답과 무변경을 본다. `ok = 턴 완료 && 판정 && SQLite 재로드 일치`.
+- **사람이 먼저 한 일(setup).** 「이 이벤트/문」은 `__oprnRegionTaskHarness.selectEvent` 로 이벤트를 고른 상태에서 보내고(`plainTurn.selectedEventFact` 가 `[선택한 이벤트]` 줄로 모델에 전달 — 요청 영수증의 `context` 로 확인), 「방금 한 일」 명령(undo-preview·summarize-diff·show-tool-log·rewind-turn)은 같은 입력창으로 실제 선행 턴(나무 한 그루)을 먼저 돌린다.
+- **되돌리기·기록 도구는 워커에서 편집기 기록을 쓴다.** Pi 워커는 편집기 히스토리 스택이 없으므로 요청의 `editHistory`(라벨·steps·가까운 5건의 바뀐 타일 칸/이벤트 id)로 `list_edit_history` 가 답하고, `revert_last_edit` 는 초안을 건드리지 않고 `data.clientUndo` 만 돌려준다. 다른 변경이 없는 턴에서만 편집기가 끝에 `undoMapEdit()` 로 실제 되돌린다(`aiPiAgentCommand.ts`).
+- 모델 고정: `MATRIX_NATIVE_MODEL=<Antigravity 모델 id>`(+`MATRIX_NATIVE_EFFORT`, 기본 low)가 에이전트 루프·의도 선언을 그 모델 하나로 묶는다. 비우면 제품 기본(gemini-3.8-flash). `gemini-4-argon` 은 `scripts/lib/ohMyPiModel.ts` 확장으로 풀리지만(agy 목록의 gemini-4-argon-{low,medium,high}) **아직 실행으로 검증하지 않았다** — 쓰기 전에 요청 로그의 model 이 실제로 그 id 인지 먼저 확인한다.
+- 환경 변수: `MATRIX_NATIVE_ONLY=id,id`·`MATRIX_NATIVE_START/LIMIT`·`MATRIX_NATIVE_TIMEOUT_MS`, 미리 빌드한 `dist` 를 쓰려면 `HARNESS_DIST_DIR`(빌드: `vite build --mode packaged --configLoader runner --outDir <dir>`, 워크트리면 `VITE_CACHE_DIR` 필수).
+- **오프라인 재판정:** 판정기만 고쳤으면 모델을 다시 부르지 않고 저장된 `before/after/original/trace.json` 으로 다시 채점한다 — `npx vite-node --script src/harnesses/assistant-capability/node/matrixNativeRescore.ts -- <결과 폴더…>`.
+`/v1/chat/completions`는 읽기 답변의 완료 신호로만 기록한다. 각 명령 뒤 실제 SQLite 저장, 새 브라우저 context 재로드, project ID·SHA 일치를 검사한다. `matrix-native.json`에서 `nativeAgentCalls`·`chatCompletions`·`sqliteReloads`와 명령별 실패를 확인하며, 시각 검수는 별도 `review` 영수증으로 남긴다(이 단계의 `visualReviews` 는 0).
+
 `npm run harness -- assistant-capability matrix-score --out <새 폴더>`는 50개 명령 각각의 canonical tool·범위·인자를 실제 provider 모델에 묻고 자연어 이해력과 판단 품질을 계산한다. 현재 실행 설정은 텍스트·비전 모두 `cbcn/glm-5.3-flash`이며, provider가 바뀌어도 결과 JSON에 실제 provider/model을 기록한다. 같은 50개에 대해 도구 적용 전후 PNG 100장을 생성하고, 2개씩 묶은 25회의 실제 비전 모델 호출로 시각 품질을 채점한다. 텍스트·비전 응답이 비거나 항목을 누락하면 같은 입력을 최대 3회 재시도하며, 재시도 뒤에도 점수가 없으면 정적 픽셀 점수로 승격하지 않고 `incomplete`로 기록한다. `matrix-score.json`에는 모델 응답 원문, 호출 수, 실패, 명령별 점수와 전후 이미지 SHA를 남긴다. `status: scored`는 50개 채점 완료를, `qualityGate: pass|fail`는 자연어 ≥60/100·판단 ≥60/100·시각 ≥2/5 기준을 각각 뜻한다. 운영 목표인 시각 평균 4.5/5는 이 파일의 `aggregate.visualQuality`로 확인한다. 시각 모델 점수는 사람 검수의 대체가 아니며, 이 단계는 실제 모델이 도구를 호출했다는 뜻이 아니라 모델의 해석·판단 품질을 별도로 측정한다.
 
 ## 시각 검수
@@ -175,3 +184,33 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 `--case monster-followup`은 bun 으로 만든 캠페인 고정물에 「서리꽃 마을 왼쪽 아래 빈 곳 채워」를 시킨다. 합격은 그 맵만 바뀜·크기/이벤트/다른 콘텐츠 보존·빈칸 60% 이하 —
 숫자보다 `render.mts`로 서리꽃 마을을 원 크기로 그려 검은 칸·테두리 파괴를 눈으로 본다(2026-10-06~07 r8~r11: 검은 칸 셋·테두리 파괴 원인은 도구였다).
 재로드 때 다른 세션이 공용 DB 에 자료를 게시하면 부팅 정규화가 한 번 더 저장한다 — 맵·DB 가 같고 rev+1·`bootNormalization.lib`만 다르면 `libraryResync`로 허용한다.
+
+### 대사창 읽기 보조 실조수 시험 — Argon 5문장 (2026-10-17, `set_dialogue_system`)
+
+헤드리스 실조수 경로(`npm run qa:game -- gen --seed-project … --text "<한 줄>" --compat-base http://127.0.0.1:8318/v1 --compat-model gemini-4-argon-high --compat-thinking medium`, 키는 `OPRN_LIVE_KEY` 환경변수만, `flock /tmp/oprn-8318.lock` 직렬)으로 연애 시작 프로젝트(대사 시스템 저작 없음 = 관계 기본 구성) 위에서 자연어 5문장을 각각 독립 실행했다. 입력창 UI 경로가 아니라 `runPiAgent` 직접 호출이다(조수 하네스의 UI 관문을 대신하지 않는다). 프록시에는 `gemini-4-argon-high` 하나만 있고 `-medium` 모델 id 는 없다(400 model_not_found) — 추론 강도는 `--compat-thinking`.
+
+| 문장 | 결과(저장된 project.json 의 `meta.oprnDialogueSystem`) |
+|---|---|
+| 백로그·오토·스킵·숨기기 다 켜고 백로그 250줄 | `set_dialogue_system {backlog,auto,skip,hideButton:true,backlogLimit:250}` → limit 250, 나머지 켜짐 |
+| 스킵 안 읽은 글도, 오토 빠르게, 창 70% | `defaults {skipScope:"all",autoSpeed:"fast",windowOpacity:0.7}`, 기능 켜짐·limit 100 유지 |
+| 백로그 10000줄(범위 밖) | 1차 호출 `backlogLimit: must be <= 500` 거절 → 2차 500 으로 재호출, 최종 보고에 「요청한 10,000줄은 그대로 안 됨, 최대 500줄」을 정직하게 적음 |
+| 숨기기 버튼만 빼 줘 | `{hideButton:false}` 만 전달, 나머지 보존 |
+| 시스템 글자를 영어로 | `{language:"en"}` 만 전달 |
+
+5/5 도구 선택·인자가 맞았고(`read_game_systems` 먼저 → `set_dialogue_system` → `review_game_systems`) 기존 설정은 보존됐다. 한계: 범위 밖 요청(3번)에서 어시스턴트가 사용자에게 되묻지 않고 최대치로 대신 적용했다(보고는 정직). 조수 UI 입력창 경로·플레이 검수는 이 시험에 포함되지 않는다. 증거는 저장소 밖 로컬 `qa-runs/dlg-a1..a5`(gitignore).
+
+### 미연시 추가 화면 실조수 시험 — Argon 5문장 (2026-10-17, `set_vn_extras`)
+
+경로·키 규칙은 위와 같고 포트만 8319(flock 없음), 시드는 연애 프로젝트에서 `meta.oprnVnExtras` 를 지운 것(`output/qa/vn2/seed-novn.json`, 생성: `romance-vn-ui2-fixture.mts` 후 저작 삭제).
+
+| 문장 | 결과(저장된 `meta.oprnVnExtras`) |
+|---|---|
+| 갤러리·엔딩 목록·세이브 칸 대사 한 줄 켜 줘 | `set_vn_extras` 다섯 칸 전부 true → 세 기능 켜짐(기본값을 명시 저작으로 고정) |
+| 못 본 엔딩 이름도 미리 보이게 | `{endings:true, endingsHideUnseen:false}` → hideUnseen:false, 나머지 보존 |
+| 세이브 칸 대사 한 줄 꺼 줘, 나머지 그대로 | `{saveCards:false}` 하나만 → gallery·endings 보존, 보고 정확 |
+| 안 연 그림 칸 숨겨 줘 | **통과(재시험, 2번째 시도)** — `read_game_systems` → `set_vn_extras {galleryShowLocked:false}` → `review_game_systems`(일치). 저장본 `gallery{enabled:true,showLocked:false}`, endings·saveCards·language 보존 |
+| 갤러리·엔딩 글자를 일본어로 | **통과(재시험, 4번째 시도)** — `read_game_systems` → `list_endings` → `set_vn_extras {language:"ja"}` → `review_game_systems`(일치). 저장본 `language:"ja"`, 갤러리·엔딩·저장 카드 보존, 대사 시스템 언어는 ko 그대로 |
+
+5/5 통과. 앞 3문장은 첫 시험, 뒤 2문장은 같은 날 재시험(8319 Argon `gemini-4-argon-high` medium, 시드 `seed-novn.json`, `--no-check`)이다. 모두 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았고 인자는 바꿀 칸 하나뿐이었다.
+
+**재시험 시도 기록(정직하게):** 「안 연 그림 칸」 2번 시도 중 1번 실패·2번째 통과, 「일본어」 4번 시도 중 3번 실패·4번째 통과. 실패는 전부 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)의 `시간 초과(30000ms)` 로, 도구 인자·내용 때문이 아니라 제공자 지연이다 — 처음 시험에서 「미검증」으로 둔 이유와 같다. 같은 문장·같은 설정으로 다시 돌린 것이고 통과분의 저장본(`project.json` 의 `meta.oprnVnExtras`)을 직접 읽어 확인했다. 분류 호출이 막히는 동안은 모델 품질이 아니라 한도가 병목이므로, 시간 초과 한 번을 실패로, 통과 한 번을 만능으로 읽지 말 것(각 문장 표본 1개).

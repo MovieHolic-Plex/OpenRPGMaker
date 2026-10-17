@@ -1,0 +1,13 @@
+{
+ "id": "ball-shake",
+ "cand": 0,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "4a6ff68d9d7476f3",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

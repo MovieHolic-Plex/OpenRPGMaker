@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "89bb44bd67a476ba430dd79d371e22359fa5638f90ce2a7537307cd7f9535959",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small flower patch on the ground (flat decal)",
+ "label": "sky-island/si-flowers-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each flower is drawn in pure front elevation with petals on the top/sides and green leaves/stems directly at the bottom, lacking bottom petals or top-down radial perspective. There is no visible horizontal top surface (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9635
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each individual flower is drawn in pure front elevation with petals on top and a horizontal green calyx/leaf line directly at the bottom (e.g. rows 3-5, rows 11-13). There is no 3/4 perspective, top surface, or foreshortened ground projection visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7136
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each flower in the patch is drawn in pure front elevation with blossoms at the top and green bases at the bottom, lacking any foreshortened top-down view or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flower patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each individual flower is drawn in pure front elevation (petals on top, green stem/leaves directly underneath) facing horizontally toward the viewer rather than angled or foreshortened from the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10238
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.916Z",
+ "cells": {
+  "16": [
+   "59dfab8c0b1ff173"
+  ],
+  "24": [
+   "0a7a1d751bf61cc1",
+   "156909ba59050552",
+   "51f3bbb2519b82fa",
+   "81eb875ba774d422",
+   "903e2ec77b3b7f73",
+   "c7d04a58f2b4d2a5"
+  ],
+  "32": [
+   "18b24184a3585735",
+   "344a41d7d6b6569b",
+   "6c813c748c0e4792",
+   "bb3965e07f2a026e",
+   "bd00f9bdb38b10cf",
+   "c6c5cdcec6c0acef"
+  ],
+  "48": [
+   "0369ea945b6f2514",
+   "46f1ee6c10f1b997",
+   "8fed4cdd8b01ad2f",
+   "c49f5f86990e1f88",
+   "f1107cadd08a6c37",
+   "ffbbdaf37ff5cdd1"
+  ]
+ }
+}

@@ -12,6 +12,8 @@ import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiU
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { codexVersionFetch } from "./codexClientVersion.ts";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
+import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 
 applyLegacyEnvAliases();
 
@@ -220,17 +222,32 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
-  const message = await completeSimple(model as never, context as never, {
+  // 사용자 지정 엔드포인트: 추론 강도를 엔드포인트가 정한 방식(none/field/suffix)으로 맞춘다. 차단 모델은 여기서도 403 으로 거절한다.
+  const shaped = isOpenAiCompatProviderId(provider)
+    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body))
+    : { model, options: completionThinkingOptions(body) };
+  const message = await completeSimple(shaped.model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
-    fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch) : options?.fetch,
+    fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch)
+      : isOpenAiCompatProviderId(provider) ? guardedOpenAiCompatFetch(options?.fetch ?? fetch) : options?.fetch,
     signal: options?.signal,
-    ...completionThinkingOptions(body),
-    ...(typeof body.max_tokens === "number" ? { maxTokens: body.max_tokens } : {}),
+    ...shaped.options,
+    // 사용자 지정 엔드포인트는 출력 상한을 서버가 모른 채 거절하는 일이 흔하다 — 엔드포인트 설정의 상한으로 낮춰 보낸다.
+    ...(typeof body.max_tokens === "number"
+      ? { maxTokens: isOpenAiCompatProviderId(provider) && typeof model.maxTokens === "number" ? Math.min(body.max_tokens, model.maxTokens) : body.max_tokens }
+      : {}),
     ...(provider === "google-antigravity" && context.tools?.length
       ? { onPayload: antigravityToolEnumPayload(model.id, context.tools) }
       : {}),
   } as never);
-  const completion = assistantToOpenAI(message);
+  let completion;
+  try {
+    completion = assistantToOpenAI(message);
+  } catch (error) {
+    // 사용자 지정 엔드포인트는 원문 오류(401·404·도구 미지원…)를 「무엇을 고치면 되는지」 문장으로 바꿔 올린다.
+    if (isOpenAiCompatProviderId(provider) && error instanceof Error) error.message = explainOpenAiCompatRunError(provider, error.message) ?? error.message;
+    throw error;
+  }
   return { stream: false, completion: { ...completion, image_delivery: imageDelivery } };
 }
 

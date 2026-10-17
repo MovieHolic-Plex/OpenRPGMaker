@@ -2,7 +2,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { appearanceGenerationController } from "@/editor/characterAppearanceGeneration";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { sharedExpressionSetIdOf, sharedPortraitId } from "@/assets/sharedPortraitAssets";
-import { sharedCharsetRow, sharedFaceRow } from "@/project/sharedCharacterFaceResolver";
+import { sharedCharsetRow, sharedFaceForCharset, sharedFaceRow } from "@/project/sharedCharacterFaceResolver";
 import { store } from "@/project/store";
 import type { CharacterAppearanceRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -74,7 +74,9 @@ export function appearanceSlotCard(record: CharacterAppearanceRecord, slot: Slot
   if (sharedLine) children.push(sharedLine);
   children.push(actions);
   // 얼굴이 공용 표정 세트면 그 인물의 공용 흉상을 한 번에 잇는다(대사 표정이 나머지 표정 그림을 고른다).
-  const faceSet = slot === "bust" || slot === "full" ? sharedExpressionSetIdOf(record.face?.resourceId) : undefined;
+  // 얼굴 칸이 비어 있어도 걷기 칩의 검토된 짝이 공용 흉상이면(현대 연애 칩 12종) 그 인물의 흉상·전신을 잇는다.
+  const pairedFace = record.charset ? sharedFaceForCharset(record.charset.resourceId, record.charset.characterIndex)?.resourceId : undefined;
+  const faceSet = slot === "bust" || slot === "full" ? sharedExpressionSetIdOf(record.face?.resourceId ?? pairedFace) : undefined;
   if (faceSet && (slot === "bust" || slot === "full")) {
     const portraitId = sharedPortraitId(faceSet, slot, "base");
     const linked = resourceId === portraitId;

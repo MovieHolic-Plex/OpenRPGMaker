@@ -271,6 +271,30 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 2차에서 나온 것(지역 팔레트가 정글을 모래빛으로, 섬 붙음 무경고, 화산 봉우리 없음, density 0.9 로도 숲이 안 남)도 고쳤다.
 증거: `verify-shots/worldmap-terrain/qa-assist-r1/REPORT.md`, `verify-shots/worldmap-terrain/qa-assist-r2/REPORT.md`.
 
+## 변형 세계(파멸 전/후) · 지형 태그 · 장소 입구 (2026-10-15, FF6급 감사 #26·#29·#35)
+
+**`derive_world_variant`** (`src/editor/tools/worldVariantTools.ts`, 키트 정본 `tiledata/worldmap-kit/kit/lib/kit_variant.py`) — 기존 세계 지도 한 장에서
+같은 대륙의 변형판(바다가 올라오고 땅이 갈라지고 색·숲·마을 아이콘이 바뀐 「파멸 후」)을 새 맵으로 파생한다. 이전엔 `edit_world_terrain` 을 두 번 불러
+5.3% 만 달랐고, 바닥을 재로 덮으면 여정 검사(사구 = 모래 바다 장벽)가 「너무 일찍 3막에 닿는다」며 거부했다.
+- 키트 `terrain.variant`: `ops`(flood·rift·recolor·convert_forest·fissure·clear, 구역 poly/around) + `palette`(ruin·ashfall…) + `icon_preset`(ruin: 같은 칸 수 아이콘만 교체) +
+  `journey`(`free` = 「모든 장소가 어떤 수단으로든 닿는다」, `keep` = 설계 막 순서) + `protect_roads`(기준 길 칸 + 1칸 보호 → 길 설계가 계속 성공).
+  침수는 `_keep_links` BFS 로 장소 사이 땅 목이 끊기면 되살린다. 막이 달라진 장소는 `journeyCheck.notes` 로 알린다.
+- `map.worldmapSource.variant = {of, preset?, spec}` 가 있으면 재빌드가 같은 변형을 다시 얹는다(스키마: `WorldmapVariantSpec`, 선택 필드).
+- 기준 지도의 이벤트(입구·NPC)는 걸을 수 있는 칸에 남으면 같은 자리에 복사한다(`copyEvents`). `data.diff` 가 구조·땅 변화 %와 구역별 변화를 준다
+  (타일 키 비교는 팔레트만 바꿔도 100% 라 믿을 수 없다 — 바닥·물체 구조 변화 %가 정직한 지표). 땅 변화 30% 미만이면 경고한다.
+- 실측(기준 fantasy): 구조 23%(땅 46.2%)·침수 677칸·구역 9곳 모두 20~75%, 빌드 약 97초(미리보기 2초). 헤드리스: `scripts/oprn-tools.mjs` 가 호스트 빌더를 걸어 준다.
+
+**세계 지형 태그** (`src/project/worldTerrainRecords.ts`): 세계 지도 칩셋 칸은 전부 태그 0 이라 지형별 조우율·전투 배경·탈것 통행이 안 들었다.
+`makeWorldmapTilemap` 이 칸 이름표(바다·강·숲·사막·눈…)로 `terrain_world_*` 11종(바다·강·초원·길·숲·사막·설원·늪·황무지·화산지대·산지)을
+`database.terrains` **뒤에** 덧붙이고 칸 태그로 단다(기존 1~4번 순서 불변). 조우율: 길 40%·초원 100%·숲·늪 140%·황무지·화산·산지 160%.
+이미 만든 세계 지도는 `edit_world_terrain({mapId, ops:[]})` 로 한 번 다시 빌드하면 태그가 달린다(약 100초).
+`set_encounter_table` 항목 조건 `terrainId`(지형 레코드 id) — 숲에서만 나오는 적. 읽는 곳은 `player/encounters.ts` 하나, 런타임·씬 테스트 둘 다 같다.
+
+**장소 입구 잇기** (`src/editor/tools/dungeonLinkTools.ts`): 월드맵 장소 위치 표식 note 의 「입구(성문) x,y」와 던전(`던전 입구` 표식 tags `dungeon-entrance`,
+`gate:x,y`, `land:x,y`)을 `linkMapsInDraft`(link_maps 와 같은 경로)로 양방향 잇는다. `author_dungeon({entrance:{fromMapId, place|x,y}})` 는 짓는 즉시,
+`link_world_entrance({worldMapId, links:[{place,toMapId}], autoMatch?})` 는 이미 있는 던전·마을을. `data.unlinkedPlaces` 가 입구 이벤트 없는 장소를 알린다.
+월드맵 키트 지도(`worldmapSource`)는 걸어서 닿지 않는 섬·장벽 너머 장소가 정상이라 출입구 도달성 검사(`transferReachability`)가 통행 칸 전부를 닿는 것으로 본다.
+
 ## 함정
 
 - 숲은 sand·dune·물·길·장소 둘레에 안 자란다 → 먼저 `biome` 으로 바닥을 바꿔라.

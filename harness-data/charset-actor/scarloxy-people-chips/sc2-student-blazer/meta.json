@@ -1,0 +1,48 @@
+{
+ "key": "sc2-student-blazer",
+ "arch": "sp2-student-blazer",
+ "base": "Scarloxy1:0",
+ "variant": "청록 야구모자를 짧은 검은 머리로 recolor(윗선은 H paint 로 모자 챙을 없애고 머리 모양으로 둥글게), 흰 재킷을 회색 블레이저로 recolor, 가슴 중앙에 흰 셔츠 삼각 칼라와 붉은 넥타이(T paint), 주황 배낭 줄 색은 회색으로, 초록 바지는 남색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 dfgnpsv"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 0.997,
+   "B": 0.938,
+   "S": 0.982
+  },
+  "cross": 14,
+  "cross_base": 11,
+  "lone": 198,
+  "lone_base": 274
+ },
+ "distinct": {
+  "score": 0.587,
+  "nearest": "accepted:sp2-gym-fire-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 0,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-student-blazer-a"
+}

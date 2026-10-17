@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "346811146724e42b6861e6161def9e1f3716ff5fee7d6a29740275c04cc77d32",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark ship cabin plank floor tiles, 2 variants",
+ "label": "pirate-isles/pi-floor-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden floor plank tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down across the full 16-row tile height with horizontal plank seams and wood grain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting horizontal wooden planks viewed from above, filling the 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3378
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wood plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor surface depicting dark wooden ship cabin planks viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 40211
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wood plank floor terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor plank terrain texture viewed from top-down; kind matches terrain correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2780
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.695Z",
+ "cells": {
+  "16": [
+   "df3ba051c43c561f",
+   "f8c4d302aaf361f2"
+  ],
+  "24": [
+   "38a936dc3996930b",
+   "48098d1207c400cc",
+   "7988d28742b53a4a",
+   "8415ecdce55f536e",
+   "993d0db3fcd28237",
+   "b0f70877e3b7f9df",
+   "b6db66fea69b2dfb",
+   "c148c2cdbdb682b3",
+   "c481f8464c978bf1",
+   "d814003648dc7ea4",
+   "e312f7f2aa405f4c",
+   "e80556f718e8a5a9"
+  ],
+  "32": [
+   "3cea879ca1ca168e",
+   "e3ca314cc208f165"
+  ],
+  "48": [
+   "2ee450f1997b4ea9",
+   "53c00da8898155a7",
+   "54ab84c2a278deeb",
+   "83f995a2b4f6ea94",
+   "b2d4c06eeedb65de",
+   "f6e8df5967e4f9b3"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d288f8f3e9b0adfaecafb8daab3b25031177efe8416ffdccfa67e2d8295b530",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "prehistoric stone-age mask wall",
+ "label": "prehistoric/ph-mask-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall mask",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mask is a flat wall-mounted decoration shown facing the camera, which is valid for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carved wooden/stone mask",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted mask depicted flat against the wall, consistent with wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4062
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oval stone/wooden mask mounted on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted mask facing flat outward towards the camera; flat elevation is standard and permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2616
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carved tribal mask",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mask is a flat wall-mounted object hanging directly on the wall surface; under wall_mounted kind specifications, flat frontal presentation is permitted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6181
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.810Z",
+ "cells": {
+  "16": [
+   "ddf350dcfa788405"
+  ],
+  "24": [
+   "14f0c873c756f58b",
+   "472515186a2c3616",
+   "6d1ce58f7b714ce5",
+   "82410f698a3d62c0",
+   "85f33e2d8998c932",
+   "ce427c0faf375232"
+  ],
+  "32": [
+   "24dc44f2dd56f58b",
+   "49dce253de1c4c86",
+   "ac84034b41b9a91b",
+   "af43de1353f901fc",
+   "b22bf08f6ed81cb0",
+   "b6aacf3b70f56fd2"
+  ],
+  "48": [
+   "03c8cfa723ff2fe2",
+   "279a443836406442",
+   "6e281f0085058f03",
+   "8cbd21b535509e84",
+   "d977a1568f8dc16e",
+   "db43be38eb33902c"
+  ]
+ }
+}

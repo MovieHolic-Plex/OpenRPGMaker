@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f3215f1e3f2457d68cc4b8260e05eec87e1098ab3c839b2a482a287ec76ce05",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "선반 기계(무쇠 침대 + 주축대 + 심압대)",
+ "label": "steampunk-city/sp-lathe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lathe bed and stock units",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe bed shows a clear 6-pixel-deep horizontal top surface (rows 10-15) with the carriage and bed ways foreshortened, above a 5-pixel front face (rows 16-20). The headstock and tailstock also show 3-4 pixel top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6638
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lathe bed and stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe bed shows a clear 5-pixel-deep horizontal top way/bed surface (rows 11-15) above its front vertical face (rows 16-20). The headstock and tailstock also show distinct foreshortened top surfaces (3-4 rows) with an angled elliptical feature at the top left.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9633
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lathe machine bed and components",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lathe bed shows a clear 3/4 top-down horizontal surface (grey guideways/bed) spanning rows 9-15 (approx. 7 source pixel rows), with its front face below it at rows 16-20. The headstock and tailstock blocks also clearly show foreshortened top surfaces in lighter blue.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4826
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lathe bed and machine base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main bed ways (rows 10-16) form a clearly visible horizontal top surface 7 pixels tall, flanked by the headstock and tailstock which also show distinct top surfaces (rows 4-7 and rows 6-8). The front face of the bed is visible beneath it (rows 17-21) on top of the base legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7792
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.531Z",
+ "cells": {
+  "16": [
+   "3f10461c571c12f0",
+   "625a0147a74fb4f9",
+   "65cbb7077c4c95a1",
+   "6bfa53acb43256a0",
+   "ad51a1e9620befe1",
+   "bfbb106b02a5357a"
+  ],
+  "24": [
+   "01cd4079733559c7",
+   "3ad36388643f2302",
+   "4c789caf9b7e14e9",
+   "50281ba6d8f2d9aa",
+   "5abc15e39409676f",
+   "85f0f78b4ca33bc5",
+   "9dcf9302cd73065b",
+   "a91c5661958c85d4"
+  ],
+  "32": [
+   "24351d721afc6dff",
+   "45465853fcd58252",
+   "931bd9702be320e4",
+   "b6f491dc3f8ad9ff",
+   "db2255034fb819ba",
+   "ee0abda83385a027"
+  ],
+  "48": [
+   "9aec0142266348e7",
+   "b2681a60fc4d9c57"
+  ]
+ }
+}

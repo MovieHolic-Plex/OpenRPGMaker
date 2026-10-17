@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "037144364c5d5af842c9ab7d9819c0faa79a3ffc50f06c4942d0fc0a14e369ec",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 4)",
+ "label": "steampunk-city/sp-steam-vent-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal vent pipe stub",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as an ellipse viewed from a 3/4 perspective, with interior depth spanning rows 18-23 (6 rows tall) surrounded by a visible rim spanning rows 15-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5315
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal pipe stub / steam vent with circular flange and open top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clear elliptical opening viewed from above (rows 17-23, about 6 rows tall) set inside a bolted flange rim, with the south side of the cylinder extending downwards to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short metal vent pipe with steam",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe rim is rendered as a foreshortened ellipse spanning rows 16-24 with a visible dark opening cavity of about 6 pixel rows (rows 18-23) above a vertical front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15335
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "short metal vent pipe with bolted rim and rising steam",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as a foreshortened ellipse spanning rows 17-23 (6 interior rows deep) with a prominent bolted flange rim seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5512
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.527Z",
+ "cells": {
+  "16": [
+   "0b4d51a5226b7b4b",
+   "acf6e6eff007aebd"
+  ],
+  "24": [
+   "1490bac373320529",
+   "2d70349c9753948b",
+   "37d3ebfece073413",
+   "3ece2998e1743f21",
+   "6360e3c8293c0154",
+   "7fcae5b46033a073",
+   "89c3c49366d43f4b",
+   "a0a17b2913eaefd5",
+   "a3bbddff08ea7a29",
+   "bc060d2bae3811e9",
+   "caa08178885f7a20",
+   "cb5ffa053365e781"
+  ],
+  "32": [
+   "1bdb0c2e427072dd",
+   "c649274f8fa6a996",
+   "eae4cf0e646387e3"
+  ],
+  "48": [
+   "31b2a65159d7412a",
+   "68e0c2e7f9fd6bf3",
+   "7d210305fe4efdc9",
+   "951dc80ceda5ccf8",
+   "b0a8dfb9821208bb",
+   "f914c5fe54f01159"
+  ]
+ }
+}

@@ -58,7 +58,14 @@ describe("강제 기본 모델", () => {
     expect(modelForRole({} as AiConfig, "deep").model).toBe(FORCED_DEFAULT);
   });
 
-  it("공장 기본 추론 강도가 high 다(감독 지시 2026-10-05)", () => {
-    expect(defaultAiConfig().reasoningEffort).toBe("high");
+  it("공장 기본 추론 강도가 medium 이다(사용자 결정 2026-10-14: 조수 기본은 Argon medium)", () => {
+    expect(defaultAiConfig().reasoningEffort).toBe("medium");
+  });
+
+  it("새 설정의 모든 역할 슬롯이 Google 의 강제 기본 모델·medium 이다", () => {
+    const roles = defaultAiConfig().roleModels ?? {};
+    for (const role of ["deep", "vision", "writer", "build"] as const) {
+      expect(roles[role], role).toEqual({ provider: DEFAULT_OH_MY_PI_PROVIDER, model: FORCED_DEFAULT, thinkingLevel: "medium" });
+    }
   });
 });

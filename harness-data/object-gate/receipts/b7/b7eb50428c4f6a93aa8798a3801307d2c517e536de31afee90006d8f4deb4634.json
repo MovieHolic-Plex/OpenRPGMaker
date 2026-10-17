@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7eb50428c4f6a93aa8798a3801307d2c517e536de31afee90006d8f4deb4634",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat mature (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_mature",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two horizontal rows of mature wheat stalks and heads",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat is drawn as repeating flat horizontal bands of wheat heads and vertical stalks (rows 0-7 and 8-15) viewed directly from the front/side with 0 pixel rows of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4266
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mature wheat plants (two rows)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat plants are drawn in a flat 2D front elevation (side-scroller style), showing upright stalks and grain heads from the side with zero visible top depth (top_rows: 0). Row 7 even forms a completely flat horizontal dividing line across the tile.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6244
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mature wheat crop stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat is drawn in a pure front elevation (like a 2D side-scroller) arranged in two flat vertical tiers with no foreshortened top surface or volume visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7365
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mature wheat plants",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crop consists of two repeating bands of vertical wheat stalks with heads rendered directly from the side/front as in a 2D platformer, with no top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5048
+  }
+ ],
+ "decidedAt": "2026-10-14T06:31:15.770Z",
+ "cells": {
+  "16": [
+   "37f6c43a491d0e1e"
+  ],
+  "24": [
+   "2048ad934b460718",
+   "2cbef437630fe527",
+   "4d1267af8e156097",
+   "6fa3e4b16307ba99",
+   "b05601e68e12daaa",
+   "c559ee12a10b736a"
+  ],
+  "32": [
+   "0dabc5b9bed099ee",
+   "1ab94320c2eaa28a",
+   "2199ff87088ea23d",
+   "a7868e018ba63153",
+   "d32b0b76b1522120",
+   "faeb13d5cfaee030"
+  ],
+  "48": [
+   "2497e8694f68a3cc",
+   "6544b8a122aa710c",
+   "89fab8020b151ad1",
+   "a1488a17bfb40b2c",
+   "ee3330c01d1e2a70",
+   "ffdd9af6e270c792"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b07a4e930821ad6a38ff139e696e5229550c32ed127b7d5b71fe178fad937d29",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "포탄 더미 (cannonball pile)",
+ "label": "atlas_biome_interior/plus/cannonball pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden ammunition crate/table with stacked cannonballs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden surface has an expansive top plane visible from rows 3 to 10 (~8 rows) with cannonballs resting on top, followed by a south front face from rows 11 to 14 (~4 rows). Clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4031
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden tray/pallet with pile of cannonballs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tray shows a large top surface (rows 3-9, 7px tall) where the cannonballs rest and cast shadows, and a distinct south face (rows 11-14, 4px tall). Correct 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden crate/stand with cannonball pile on top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden stand has a large horizontal top surface spanning rows 2 to 9 (8 rows deep) with a front face extending from row 10 to 14, properly rendered in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate/stand with stacked cannonballs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden crate/base shows a clear top horizontal surface from row 2 to row 10 (approx 8 rows deep) and a south front face from row 11 to row 14, with cannonballs resting on the top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3502
+  }
+ ],
+ "decidedAt": "2026-10-14T05:29:27.991Z",
+ "cells": {
+  "16": [
+   "10f6f00017c406d2"
+  ],
+  "24": [
+   "12c218ddc3f1c03b",
+   "1c6efee1dad35c2a",
+   "1cf2cb6a59e1a0d1",
+   "cc6087109e9448e1",
+   "d8cbe17c9b1eeb84",
+   "e1016fa78a7ca648"
+  ],
+  "32": [
+   "089bdcec31a381e8",
+   "0d3ecf3ad7af1060",
+   "2b40fcdffbc957ff",
+   "b9dee836bc1c93d6",
+   "eb1a8bf93965e8f0",
+   "eb1ba94ebb8f8266"
+  ],
+  "48": [
+   "0b7963879fb227f3",
+   "0d98499577049a65",
+   "3074ceb8d3bcbb8a",
+   "6e5bbcf39ad86584",
+   "829108cd8598fef8",
+   "856c689fdc4a074f"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6a5327444e30dc6ef9e8923990f8244db59dcd4374638be049396343d0f6305",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "banner pole seen from above-front: square stone base with visible top, pole with round finial, hanging cloth",
+ "label": "sky-island/si-banner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner and vertical pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the banner, crossbar, pole, and finial) is drawn in pure front elevation with 0 rows of visible top surface; per instructions, the base plinth does not count for the main body's perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "banner pole and cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the stone base plinth shows a top surface, instructions explicitly state not to give credit for a base plinth. The main body (the banner pole, crossbar, and cloth) is drawn in pure front elevation with no visible top surface (the horizontal crossbar is only 1px tall and the finial is a flat circular shape).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8530
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banner pole and hanging cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the banner cloth and pole) is drawn as a flat front elevation. Per instructions, top surfaces visible only on a base plinth do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5999
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner pole and cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone plinth at the bottom has a 5-row visible top, but the main body (the banner and pole assembly) is drawn in pure front elevation with a 1px crossbar and a flat vertical cloth showing no depth or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6233
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.918Z",
+ "cells": {
+  "16": [
+   "0c5c391cf77def82",
+   "2150e35a561d129f",
+   "32747803fc0314b6"
+  ],
+  "24": [
+   "22a637d4a824e07d",
+   "2aa010ab63895c93",
+   "50005442414d39d0",
+   "5d4278755b9d374a",
+   "98e65f3d0393c49f",
+   "e3fb31f574913ffe"
+  ],
+  "32": [
+   "17e70eb3961c1818",
+   "26ac2eb24c24557c",
+   "2a173ef8e87c5a04",
+   "33088fe2b3f58394",
+   "38c60bca0bef85ac",
+   "492f478c5252123c",
+   "8813335c3f7bc8f0",
+   "8d3a0b66c7214ee5",
+   "a520945dcf5a3f55",
+   "c17c42012a33cda5",
+   "e3d18c2156336daf",
+   "e5f735512fc5813e"
+  ],
+  "48": [
+   "7cb0d66546b89737",
+   "9add551891be72e8",
+   "bdb6fc33c20a7d8c"
+  ]
+ }
+}

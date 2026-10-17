@@ -14,6 +14,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
+import { equipmentEsperFields, equipmentEsperHasContent } from "@/editor/panels/databaseEquipmentEsperFields";
 import { iconChangeButton, openDatabaseResourcePickerDialog, resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
@@ -355,6 +356,14 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                 choiceGroup("장착 시 쓸 수 있는 스킬", "db-equipment-grant-skill-group", grantedSkillChoices(record, refreshOverview)),
                 ...grantedCommandFields(record, () => { refreshOverview(); rerender(); }),
               ],
+            })),
+            spanCard(sectionCard({
+              title: "마석 성장 (AP·레벨업 보너스)",
+              collapsible: true,
+              collapsed: !equipmentEsperHasContent(record),
+              hint: "AP 로 스킬을 영구 습득 · 레벨업마다 능력치 보너스(FF6 마석)",
+              testid: "db-equipment-card-esper",
+              children: equipmentEsperFields(record, () => { refreshOverview(); rerender(); }),
             })),
             twoColumnCard(spanCard(sectionCard({
               title: "공격/방어 속성",

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e46c113603588fe370a6e716ce9cbfbdc3f9a13aa63c52c3e25796f672018af",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "이끼 정원",
+ "label": "sengoku-edo/se-moss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "moss ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground surface representing moss terrain, seamlessly filling the entire tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6398
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground terrain tile representing mossy garden soil/turf viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "moss ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 ground tile showing a moss garden texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5706
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moss ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 flat moss ground terrain tile with organic texture and specks, fully consistent with top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2696
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.061Z",
+ "cells": {
+  "16": [
+   "6263af10f477ff48"
+  ],
+  "24": [
+   "01e487a268b44d63",
+   "277af323ce3c2d5b",
+   "2fc3387c2514b38d",
+   "7877bc774c19a23b",
+   "bf87d50f9adbb3d9",
+   "c97e4781ff56eaad"
+  ],
+  "32": [
+   "1e69138ec46e0fce",
+   "3b13684168d6f02e",
+   "400ace7815afeed9",
+   "4564c48fee352f16",
+   "566ba913f7d5e035",
+   "77e358d5e9b44000"
+  ],
+  "48": [
+   "0bc098c4436e9874",
+   "0d31603f637ccb14",
+   "20ed91021027e60e",
+   "384aae21e36808cf",
+   "68db3e5f311a8088",
+   "a0bfa6e48c17042f"
+  ]
+ }
+}

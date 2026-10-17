@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c013aefb63a23372fc7728a438288c5b6e9cb1e4e7faf81bbd7639d91a5b943",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "round green bush",
+ "label": "sky-island/si-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D silhouette with a completely flat horizontal bottom line and no foreshortened top surface or overhead depth visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5807
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D silhouette with vertical side edges and a completely flat horizontal bottom baseline spanning 10 pixels, characteristic of a 2D platformer front elevation rather than a top-down 3/4 perspective where the volume and ground contact would be rounded/foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7002
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with vertical side walls (rows 7-12), a completely flat horizontal base line (row 13), and no visible foreshortened top surface or curved ground contact.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6439
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush mound",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with a completely flat horizontal base at row 13 and vertical side walls from rows 7-11. There is no distinct foreshortened top surface or curved base indicating a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5196
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.426Z",
+ "cells": {
+  "16": [
+   "a49fccfa452ec6bf"
+  ],
+  "24": [
+   "487da5f2e15ebe7f",
+   "8a3d68bcaa9e1093",
+   "ab87c63bb4cd200d",
+   "ae1f3597d5da9f27",
+   "c1aeb1cb0b4e8394",
+   "df469dd0fbc7a08f"
+  ],
+  "32": [
+   "9828b4a9b7773f0c",
+   "9c7533f30b2b9b06",
+   "a986e9d6a7583360",
+   "c64f7b83d9ae7a02",
+   "ef163216a0e200e8",
+   "f0c10a736b4533ac"
+  ],
+  "48": [
+   "0cadbde132510933",
+   "1b04cf25b1f5873b",
+   "662e8ad8ec60bc7b",
+   "a2de86f1b925eca1",
+   "b3be13efbb836d9b",
+   "c7d3b1b2dca192e2"
+  ]
+ }
+}

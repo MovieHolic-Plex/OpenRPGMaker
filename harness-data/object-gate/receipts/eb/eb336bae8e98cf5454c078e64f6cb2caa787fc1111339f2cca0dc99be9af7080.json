@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eb336bae8e98cf5454c078e64f6cb2caa787fc1111339f2cca0dc99be9af7080",
+ "width": 48,
+ "height": 48,
+ "kind": "box",
+ "name": "컨테이너 더미(아래 남색 + 위 주황, 두 대)",
+ "label": "sf-station/sf-container-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked shipping containers (orange atop blue)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both containers clearly display foreshortened top surfaces consistent with 3/4 top-down view: the top orange container shows an 8-row deep roof (rows 2-9) above its corrugated front, and the lower blue container shows its top surface (rows 18-25) around and in front of the upper container.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4310
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked shipping containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top orange container clearly displays a foreshortened top roof surface spanning rows 2 to 9 (8 rows tall), and the bottom blue container also shows its top horizontal surface (rows 17-25). Both containers have proper front corrugated faces viewed from a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked shipping containers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top orange container displays a clear, foreshortened top surface spanning rows 2 to 9 (8 rows tall), resting on top of the lower blue container which also shows its top ledge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked shipping containers (orange atop navy blue)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top orange container displays a clear, 8-row deep top surface (rows 2-9) viewed from above, and the lower container also reveals its top surface shelf around rows 18-25 before dropping to the vertical corrugated front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3464
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.244Z",
+ "cells": {
+  "16": [
+   "5880dfaa8823d18c",
+   "5c94bb73649f0e0f",
+   "62696ae3ef775f51",
+   "6f9dae4a8e324b4a",
+   "8b5877f5693ebe45",
+   "946748dc9779ba86",
+   "a6d3bf91a69bc8b6",
+   "c846c9fa047e3d80",
+   "d2d9200f5941feb5"
+  ],
+  "24": [
+   "15f2e72add0cc9d3",
+   "6aa9a8014e21ecb7",
+   "b512a13589b62bb9",
+   "d5be175ac44fa3ad"
+  ],
+  "32": [
+   "02f67837e638a144",
+   "07c3ac3e782cfbcf",
+   "128d45e8c984fc4c",
+   "1577a6127d57827f",
+   "189f969d8326578b",
+   "2031a5198ed688f0",
+   "28013cb7a39e114d",
+   "454668f495daa70c",
+   "523cba38d3697587",
+   "60360dcc1e851fd4",
+   "6381030df2052c70",
+   "713fa2aa14aca902",
+   "97a26d7c54aa830b",
+   "9a367465a7854288",
+   "a22eb1dc91c80761",
+   "a3011fa505acbf3b",
+   "bca5672d39638c13",
+   "c31acb3a48709748",
+   "c64e2be1bafe1023",
+   "d3938a3fae1d5231",
+   "e3a1e54625198151",
+   "e90e873c6f2d03d8",
+   "eef0e83cf527a59e",
+   "fc7e36036b441e11"
+  ],
+  "48": [
+   "a219da0577fd2415"
+  ]
+ }
+}

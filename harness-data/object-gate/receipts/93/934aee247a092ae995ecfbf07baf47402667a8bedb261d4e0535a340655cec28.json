@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "934aee247a092ae995ecfbf07baf47402667a8bedb261d4e0535a340655cec28",
+ "width": 16,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "선원 3층 침상 (ship bunk)",
+ "label": "atlas_biome_interior/plus/ship bunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-tier ship bunk bed unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bunk frame is clearly visible across rows 1-4 (4 source pixels tall) before dropping down into the front face and recessed bunk compartments.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "triple bunk bed frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bunk bed is drawn in pure front elevation (side-scroller style). The top wooden header (rows 1-4) is drawn vertically as a front fascia board with vertical grain banding rather than a receding top surface. Furthermore, all horizontal surfaces—the shelf beams and the three mattresses/beds—are drawn completely flat from the front with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11773
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "triple-decker ship bunk bed",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bunk frame is clearly visible across rows 1-4 (4 pixel rows deep) before dropping into the front face and alcoves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4484
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-tier ship bunk bed frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bunk bed frame is visibly foreshortened across rows 1-4 (4 source pixels tall) above the top bunk compartment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5026
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.901Z",
+ "cells": {
+  "16": [
+   "12e9160f75c3c655",
+   "71024eb768b5f467",
+   "743a4330c952fde3"
+  ],
+  "24": [
+   "0f7d0d42c9628969",
+   "17843c0cf0959a4a",
+   "240083919ca36987",
+   "9eadf155e3bd6293",
+   "afa79ee7a3d56221",
+   "d80feace9fc90f9d"
+  ],
+  "32": [
+   "0c65ba0b5ad550a6",
+   "244c53e94b67bf42",
+   "2d3635e41e63943b",
+   "2d85c0b030e9d475",
+   "6ace947134318704",
+   "6f2a0dcc65a581f7",
+   "933989aa215785c8",
+   "b4a31d12bddafaad",
+   "c2f4ec94376398b3",
+   "cb98aca4109c647a",
+   "ec5028837cdf6020",
+   "ef48c6e632b805e0"
+  ],
+  "48": [
+   "0e57595db058da2e",
+   "3744be85cdb72e62",
+   "5f3ddd9bfce992db"
+  ]
+ }
+}

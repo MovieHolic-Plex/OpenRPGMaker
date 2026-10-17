@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d830087c6d3747fcf8bc20f9f95b01caf846e9aa7abb6d359203eabd3f754fba",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 현창(둥근 금속 테 + 푸른 행성의 둥근 가장자리)",
+ "label": "sf-station/sf-porthole-planet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular wall porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted porthole window flush with the wall; flat presentation is valid for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5463
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Circular wall-mounted porthole window showing space and a planet; wall-mounted objects viewed on a north wall face may be drawn flat in front-facing view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5262
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round wall porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole with metallic frame and view of space/planet, mounted flat on the wall plane as allowed for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4778
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole with planet view, correctly mounted flat on the wall plane as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4118
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.894Z",
+ "cells": {
+  "16": [
+   "3873d697b5088bcd"
+  ],
+  "24": [
+   "124e85ed1fb9d879",
+   "184e40a8bd7ffd3c",
+   "82beb240a70a964d",
+   "83c07eefddb6466a",
+   "8cbcc444bee39efc",
+   "c9a0397ad2425678"
+  ],
+  "32": [
+   "2961ef66cb68daec",
+   "5d301ac389cf43d5",
+   "84727e8dad3ffbee",
+   "920bebc4dba9e045",
+   "e3f944a7f785d7d0",
+   "efd3f49d705d2c05"
+  ],
+  "48": [
+   "327ff66f3fbabcc9",
+   "3fad6f38f9421d12",
+   "5ac002567f35a5df",
+   "62da5b1ce66f2fec",
+   "8c0a80dda23fbe3e",
+   "9bd5f6664c476db3"
+  ]
+ }
+}

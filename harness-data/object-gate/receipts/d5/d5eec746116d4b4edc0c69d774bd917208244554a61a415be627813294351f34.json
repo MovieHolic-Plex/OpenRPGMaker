@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5eec746116d4b4edc0c69d774bd917208244554a61a415be627813294351f34",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "강의대(경사진 윗판 연단)",
+ "label": "modern-campus-int/mc-lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lectern podium",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slanted surface of the lectern with a paper/sheet on it occupies rows 8–13 (6 rows), sitting atop the front vertical pedestal spanning rows 16–30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lectern / podium",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lectern top surface with a reading sheet is clearly visible from above across rows 8 to 13 (6 rows tall) above the vertical front pedestal (rows 15 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "podium/lectern",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted top surface of the lectern with paper on it spans rows 8 to 13 (6 pixel rows), well foreshortened above the front pillar (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "podium / lectern with slanted reading top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top reading surface of the lectern is clearly visible from above across rows 8-13 (with a document on it), supported by the south-facing pedestal below (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4213
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "11b6fedcb4d1b79a",
+   "429192cfbe13dc65"
+  ],
+  "24": [
+   "03d043e75660dae7",
+   "33d6ddff72fc6bdd",
+   "4416554ac77a44a7",
+   "677b3cde3ab6cfa9",
+   "6c58d490ebee4b13",
+   "6ce23cf29501c31e",
+   "6dccd2180a88ebe8",
+   "8e54a4b20cd91f3d",
+   "edea3060018c4311"
+  ],
+  "32": [
+   "1bd7de46b498b9e0",
+   "a9347df9f67349cf",
+   "b928f595baa4578d"
+  ],
+  "48": [
+   "0a5565bab067f2ca",
+   "453a5890005ce9c7",
+   "829669ce20b945eb",
+   "a905fdde799afd88",
+   "d0840e9576880ba3",
+   "fcf908f68d13c24c"
+  ]
+ }
+}

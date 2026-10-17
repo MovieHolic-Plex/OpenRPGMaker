@@ -1,0 +1,52 @@
+{
+ "key": "sc-boss-ice",
+ "name": "얼음 도장 보스",
+ "head": "Scarloxy2:0",
+ "body": "Scarloxy2:0",
+ "recolor": [
+  {
+   "region": "*",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "vmax": 0.55,
+   "to": {
+    "hue": 215,
+    "s": 0.9,
+    "v": 0.9
+   }
+  },
+  {
+   "region": "*",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 195,
+    "s": 0.8,
+    "v": 1.1
+   }
+  },
+  {
+   "region": "*",
+   "hue": [
+    20,
+    55
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 205,
+    "s": 0.3,
+    "v": 1.2
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

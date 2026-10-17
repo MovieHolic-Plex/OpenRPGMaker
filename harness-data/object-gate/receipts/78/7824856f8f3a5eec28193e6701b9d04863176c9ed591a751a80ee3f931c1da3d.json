@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7824856f8f3a5eec28193e6701b9d04863176c9ed591a751a80ee3f931c1da3d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "눈밭(숲 그늘, 푸른빛)",
+ "label": "snow-north/sn-snow-shade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snowy ground terrain tile in forest shade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting blue-toned snow cover in shade across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless ground terrain tile depicting blue-shaded snow in forest cover; the entire surface is a horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4311
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "snow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snow ground surface viewed from above with textured shading and highlights covering the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snowy ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat snow ground texture tile (forest shade) filling the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3291
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.950Z",
+ "cells": {
+  "16": [
+   "4de378997e25ee78"
+  ],
+  "24": [
+   "1964632c14cade9c",
+   "1f1a10ca5ace8c95",
+   "46afe9eda32fe6bf",
+   "54e967e86188d465",
+   "b4b77007aa601a44",
+   "ffb83932aca8197b"
+  ],
+  "32": [
+   "1e18955ba7756502",
+   "a297852a088b1272",
+   "af0879f00073a0a6",
+   "ce887ebf561fe342",
+   "f1da856d65064bb8",
+   "fb6499e591b73927"
+  ],
+  "48": [
+   "10af3c544d0092db",
+   "2dfb0a63ab2c199b",
+   "44a6f4fbaee01dcd",
+   "48c08968c152dea4",
+   "996b4854d12f7b5e",
+   "e5696af9f169c1f0"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4f48a5b8348acb132177e474ab3a9721cc0103730fb59e89a64f129651a7435",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "옷장(두 문, 놋쇠 손잡이)",
+ "label": "steampunk-city/sp-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wardrobe is visible across rows 1-4 (4 pixel rows tall) with a front edge highlight on row 4, a vertical cornice lip on row 5, and shadow on row 6 above the doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4844
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wardrobe is visible across rows 1-3 (3 rows deep) with a front edge highlight on row 4, followed by the slab's south face and drop shadow above the doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5752
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-door wardrobe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wardrobe is rendered across rows 1 to 4 (approx 3-4 rows deep with a front highlight) above the front cornice and doors, correctly displaying 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4836
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wardrobe with two panel doors and handles",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-3 show the horizontal top surface of the wardrobe, with row 4 providing the front edge highlight and rows 5-6 forming the south-facing overhang above the doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6116
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "10bc6cfe46b478c3",
+   "318f12fec29f8de5",
+   "580633cdb64f929c",
+   "91c3075cbedd7193"
+  ],
+  "24": [
+   "1a796a271538ac93",
+   "1bbca4694bc480d8",
+   "29f5668c2ff1e481",
+   "2a67fd3106654317",
+   "339a8604e7f8b717",
+   "36c4530219ade864",
+   "3dafe0ea334a456c",
+   "569264f297fcb565",
+   "5dc0136f264abfe8",
+   "60229398a5f0b5d8",
+   "6a486140ea82f659",
+   "7c47a83b6b72615f",
+   "9a449292c175e256",
+   "a1e527c8c0db34a5",
+   "a58977d29b87c90c",
+   "aa616afc178d46e5",
+   "b872dfe08041ce9c",
+   "ca422caf5b83292b",
+   "d5233eaa69607ef2",
+   "d8edacfe1c0a0f09",
+   "dbee0accec455092",
+   "e1b402ae05bb56da",
+   "e30e37a80adeaa56",
+   "e347b2c638fdca6c"
+  ],
+  "32": [
+   "773d6eaa485b47e0"
+  ],
+  "48": [
+   "3b0e08c2e6724bac",
+   "7102284b66eac3c4",
+   "71a2d84399978eaf",
+   "90984b91e3246841",
+   "b0fd446e6c28e341",
+   "e3f79b7c275f0868"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dd38f1a67464f8c308e841fce69c3d4da6d73f88faec1970dc6e7cec4f5f9cd",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "열린 향신료 자루",
+ "label": "desert-east/de-sacks-spice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open spice sacks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sacks show wide elliptical openings (rows 7-10 for the front sack, rows 3-5 for the rear sack) revealing piles of spice inside seen from a 3/4 top-down angle, above front-facing sack walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5544
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open spice sacks",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sacks show clearly defined openings seen from above with visible spices (red spice in the rear sack, yellow spice in rows 6-10 of the front sack) above their respective south-facing fabric bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open sack filled with spice",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sacks show clear open circular/elliptical tops looking down into piles of spice (yellow spice opening spans rows 7-10, red spice opening spans rows 2-5) with south-facing sack walls visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4225
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open spice sacks with visible contents inside",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open spice sack shows its opening and contents (yellow spice in the foreground sack, red in the background sack) viewed from above across rows 6-10, with the front sack wall extending south to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5230
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.214Z",
+ "cells": {
+  "16": [
+   "58442d2dcc4e9d1c"
+  ],
+  "24": [
+   "0a2680fa03098dca",
+   "1030c31ec14fb090",
+   "1a8a2ab8b63ebbd6",
+   "20e2a360c825ddb7",
+   "769f7c100271634c",
+   "a3e821b8ad5209f0"
+  ],
+  "32": [
+   "12e363aecc3e2996",
+   "95eeccf51b6412f4",
+   "a0687449fd2ab72f",
+   "a245af88de42599d",
+   "ce24ef786f778aa2",
+   "d370450e8e9c8e82"
+  ],
+  "48": [
+   "05bde0809b0a9172",
+   "1c8ac1d9ef604b0a",
+   "416613b1a131e463",
+   "539d893378c558fe",
+   "5f320fe5d7d5ffb8",
+   "97b118dd308d531d"
+  ]
+ }
+}

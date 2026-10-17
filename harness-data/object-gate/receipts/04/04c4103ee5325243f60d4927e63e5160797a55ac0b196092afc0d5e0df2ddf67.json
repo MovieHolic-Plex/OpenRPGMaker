@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04c4103ee5325243f60d4927e63e5160797a55ac0b196092afc0d5e0df2ddf67",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "받침대 위 암모나이트 화석 (plinth fossil)",
+ "label": "atlas_biome_interior/plus/plinth fossil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pedestal / plinth with mounted fossil",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth shows a generous top surface (rows 11-17, ~7px tall) upon which the fossil's stand rests, transitioning via an edge highlight at row 18 to the darker south-facing front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pedestal with ammonite fossil",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth has a clearly rendered top surface spanning rows 11 to 18 upon which the fossil display stand rests, followed by a south-facing front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5793
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plinth / fossil display stand",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the plinth cap is clearly visible from row 11 to row 18 (around 7-8 rows tall), upon which the ammonite fossil stand rests at row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pedestal / plinth with mounted fossil",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth has a clearly defined top surface spanning rows 11 to 18 (approx. 8 source pixel rows deep), upon which the fossil display stand is mounted around row 14, well behind the plinth's front edge at row 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9010
+  }
+ ],
+ "decidedAt": "2026-10-14T05:25:18.786Z",
+ "cells": {
+  "16": [
+   "3477b6a82936a86b",
+   "62060ef768354889"
+  ],
+  "24": [
+   "06bc15cd758a4426",
+   "28dc420252407b6f",
+   "39290e9d05f40d03",
+   "7dba73dc8d98db7e",
+   "9c7b745d0a2b37b7",
+   "a192caff17490297",
+   "a3d94dde38dca2d8",
+   "ae8f35e2a1077b19",
+   "bb699fe52b2b3948",
+   "c7c12f0bb4a3bde7",
+   "e577a58e9766cf54",
+   "fa46db46af046dda"
+  ],
+  "32": [
+   "07977f3329a2b483",
+   "46bdeced3ab243fc",
+   "7f0114237f9a95a2"
+  ],
+  "48": [
+   "381479b5ba09c1b3",
+   "552feb36e9fe5c00",
+   "5c6aa53e2675555a",
+   "6e1105e35f7f9664",
+   "a526acd9d4e0cf7f",
+   "bfe0bb09cc82bf3f"
+  ]
+ }
+}

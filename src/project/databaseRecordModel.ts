@@ -1,4 +1,8 @@
+import { normalizeFixedDamage, normalizeMultiHit } from "@/project/skillBattleRules";
+import { normalizeShinyRate } from "@/project/monsterIdentity";
 import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeHeldItemEffect } from "@/battle/heldItems";
+import { normalizeRepelSteps } from "@/project/encounterGuard";
 import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
@@ -42,9 +46,11 @@ import {
   type TimeSystemConfig,
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeMonsterBoxNames } from "@/project/monsterBox";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId, type GenreLock } from "@/project/genreLock";
 import {
   normalizeBundleDefinitions,
   normalizeEnergySystemConfig,
@@ -68,13 +74,17 @@ import {
   normalizeFarmBuildingTypes,
   normalizeHomeDecorationTypes,
 } from "@/project/spatialPlacements";
-import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, CompanionConfig, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentApGrant, EquipmentLevelUpBonus, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemBagPocket, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SkillStatStageEffect, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { normalizeSkillInputSequence } from "@/battle/battleInputSequence";
+import { normalizeCaptureCondition } from "@/battle/captureBalls";
+import { isStatStageKey, STAT_STAGE_MAX, STAT_STAGE_MIN } from "@/battle/statStages";
+import { normalizeSkillWeather } from "@/battle/weather";
 import { normalizeCharacterFootprint, normalizePassRows } from "@/project/footprint";
 import { normalizePlayResolution } from "@/project/playResolution";
 import { normalizeCameraZoom } from "@/project/cameraZoom";
 import { normalizeWorldGenRulesForStorage } from "@/project/worldGenRules";
 import { normalizeCinematicSequence, normalizeGameOverSettings } from "@/project/cinematicSettings";
+import { isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -90,6 +100,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
     id: record.id,
     name: record.name,
     ...(isGen1MajorStatus(record.gen1MajorStatus) ? { gen1MajorStatus: record.gen1MajorStatus } : {}),
+    ...(record.volatileStatus === "confusion" ? { volatileStatus: record.volatileStatus } : {}),
     ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
     ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
     ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
@@ -208,191 +219,201 @@ function battleLookWithRetiredSkinWindow(system: { battleUiStyle?: unknown; batt
   return { ...look, window: lookWindow };
 }
 
+/** 알 수 없는 preset·모양이 깨진 값은 잠금 없음으로 본다 — 저장 바이트를 지키려고 선택 칸은 있을 때만 쓴다. */
+function normalizeGenreLock(value: unknown): GenreLock | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Partial<GenreLock>;
+  if (!isGenreLockPresetId(raw.preset)) return undefined;
+  const families = Array.isArray(raw.allowedFamilies) ? raw.allowedFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0) : [];
+  if (!families.length) return undefined;
+  const mapIds = Array.isArray(raw.grandfatheredMapIds) ? [...new Set(raw.grandfatheredMapIds.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  // 허용 캐릭터 칩 계열(2026-10-16) — 없으면 없는 채로 둔다(이전에 켠 잠금은 프리셋 표를 따른다. 저장 바이트 불변).
+  const charsetFamilies = Array.isArray(raw.allowedCharsetFamilies) ? [...new Set(raw.allowedCharsetFamilies.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  // 허용 얼굴·전투 그림 계열(2026-10-16) — 없으면 없는 채로 둔다(이전에 켠 잠금은 프리셋 표를 따른다. 저장 바이트 불변).
+  const strings = (value: unknown): string[] => Array.isArray(value) ? [...new Set(value.filter((id): id is string => typeof id === "string" && id.trim().length > 0))] : [];
+  const faceFamilies = strings(raw.allowedFaceFamilies), battleFamilies = strings(raw.allowedBattleFamilies);
+  // 켤 때 이미 허용 밖이던 캐릭터 칩 사용처(2026-10-16) — 없으면 없는 채로 둔다(저장 바이트 불변).
+  const charsetPaths = strings(raw.grandfatheredCharsetPaths);
+  return {
+    preset: raw.preset, mode: raw.mode === "warn" ? "warn" : "enforce", allowedFamilies: [...new Set(families)],
+    ...(charsetFamilies.length ? { allowedCharsetFamilies: charsetFamilies } : {}),
+    ...(faceFamilies.length ? { allowedFaceFamilies: faceFamilies } : {}), ...(battleFamilies.length ? { allowedBattleFamilies: battleFamilies } : {}),
+    ...(mapIds.length ? { grandfatheredMapIds: mapIds } : {}),
+    ...(charsetPaths.length ? { grandfatheredCharsetPaths: charsetPaths } : {}),
+  };
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
   const timeSystem = normalizeTimeSystemConfig(system.timeSystem);
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   const playerFootprint = normalizeCharacterFootprint(system.playerFootprint);
-  return {
-    startActorIds: cleanIds(system.startActorIds),
-    ...(system.fieldHud !== undefined ? { fieldHud: normalizeFieldHud(system.fieldHud) } : {}),
-    ...(system.playerFootprint !== undefined ? { playerFootprint } : {}),
-    ...(system.playerPassRows !== undefined
-      ? { playerPassRows: normalizePassRows(system.playerPassRows, playerFootprint.height) }
-      : {}),
-    ...(() => {
-      const playResolution = normalizePlayResolution(system.playResolution);
-      return playResolution ? { playResolution } : {};
-    })(),
-    // 프로젝트 기본 카메라 배율. 1(클래식)은 생략해 였 JSON 바이트를 지킨다.
-    ...(() => {
-      const cameraZoom = normalizeCameraZoom(system.cameraZoom);
-      return cameraZoom !== undefined ? { cameraZoom } : {};
-    })(),
-    ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
-    titleResourceId,
-    systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
-    battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
-    battleBgmResourceId: cleanOptionalId(system.battleBgmResourceId),
-    // 맵이 BGM 을 정하지 않았을 때 쓰는 프로젝트 기본 BGM. 화이트리스트 정규화이므로
-    // 여기 없으면 왕복 1회에 사라진다(skillSystem 이 실제로 그렇게 사라진 전례가 위에 있다).
-    defaultBgmResourceId: cleanOptionalId(system.defaultBgmResourceId),
-    battleVictoryMeResourceId: cleanOptionalId(system.battleVictoryMeResourceId),
-    battleDefeatSeResourceId: cleanOptionalId(system.battleDefeatSeResourceId),
-    battleEscapeSeResourceId: cleanOptionalId(system.battleEscapeSeResourceId),
-    initialTroopId: cleanOptionalId(system.initialTroopId),
-    battleFlow: normalizeBattleFlow(system.battleFlow),
-    // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
-    ...(system.atbMode === "active" ? { atbMode: "active" as const } : {}),
-    ...(typeof system.atbSpeed === "number" && Number.isFinite(system.atbSpeed)
-      ? { atbSpeed: clampInteger(system.atbSpeed, 1, 8) }
-      : {}),
-    ...(system.battleBackdrop === "field" ? { battleBackdrop: "field" as const } : {}),
-    // 롤링 HP 미터(마더식). 기본(끔)과 기본 속도는 저장하지 않는다 — 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
-    ...(system.battleRollingHp === true ? { battleRollingHp: true } : {}),
-    ...(typeof system.battleRollingHpPerSecond === "number" && Number.isFinite(system.battleRollingHpPerSecond)
-      ? { battleRollingHpPerSecond: clampInteger(system.battleRollingHpPerSecond, 1, 999) }
-      : {}),
-    ...(system.battlePresentation === "onField" ? { battlePresentation: "onField" as const } : {}),
-    // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
-    ...(system.battleFormationRoll === true ? { battleFormationRoll: true } : {}),
-    ...(system.pointerMovement === true ? { pointerMovement: true } : {}),
-    ...(typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0
-      ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
-      : {}),
-    ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
-    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = retro2003)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
-    // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
-    // (기본이 vxace 였던 시절 실제로 그랬다). 지운 정면 스킨(rm2000·classic 등)과 모르는 값은
-    // resolveSkinId 가 기본으로 풀어 여기서 지워진다(2026-10-02).
-    ...(system.battleUiStyle && resolveSkinId(system.battleUiStyle) !== DEFAULT_BATTLE_SKIN_ID
-      ? { battleUiStyle: resolveSkinId(system.battleUiStyle) }
-      : {}),
-    // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
-    ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
-      ? { battleHitFeel: system.battleHitFeel }
-      : {}),
-    ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
-    // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
-    ...(normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) ? { battleLook: normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) } : {}),
-    // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
-    ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
-      ? { menuUiStyle: system.menuUiStyle }
-      : {}),
-    // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
-    ...(isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID
-      ? { dialogueStyle: system.dialogueStyle }
-      : {}),
-    ...(isFontFamilyId(system.dialogueFont) ? { dialogueFont: system.dialogueFont } : {}),
-    ...(typeof system.dialogueSpeed === "number" && Number.isFinite(system.dialogueSpeed) && system.dialogueSpeed !== 1
-      ? { dialogueSpeed: Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100 }
-      : {}),
-    ...(system.dialoguePunctuationPause === false ? { dialoguePunctuationPause: false } : {}),
-    ...(() => {
-      const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
-      return fullPortrait ? { dialogueFullPortrait: fullPortrait } : {};
-    })(),
-    // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
-    ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
-    // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
-    ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
-    activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
-    // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
-    ...(() => {
-      const companions = normalizeCompanionConfig(system.companions);
-      return companions ? { companions } : {};
-    })(),
-    rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
-    // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
-    // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
-    ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
-    ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
-    ...(system.monsterCampaign ? { monsterCampaign: structuredClone(system.monsterCampaign) } : {}),
-    ...(() => {
-      const fonts = normalizeSystemFontConfig(system.fonts);
-      return fonts ? { fonts } : {};
-    })(),
-    ...(system.monsterBattleParty !== undefined ? { monsterBattleParty: system.monsterBattleParty === true } : {}),
-    ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
-    ...(() => {
-      const gallery = normalizeGallerySettings(system.gallery);
-      return gallery ? { gallery } : {};
-    })(),
-    ...(() => {
-      const newGamePlus = normalizeNewGamePlusSettings(system.newGamePlus);
-      return newGamePlus ? { newGamePlus } : {};
-    })(),
-    ...(() => {
-      const chapter = normalizeChapterSettings(system.chapter);
-      return chapter ? { chapter } : {};
-    })(),
-    ...(() => {
-      const vehicles = normalizeVehicleConfigs(system.vehicles);
-      return vehicles ? { vehicles } : {};
-    })(),
-    ...(typeChart ? { typeChart } : {}),
-    ...(timeSystem ? { timeSystem } : {}),
-    ...(system.worldGen ? { worldGen: normalizeWorldGenRulesForStorage(system.worldGen) } : {}),
-    // 전투 자원·감정 설정(battleGauges/battleEmotion). 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
-    ...(() => {
-      const limitGauge = normalizeLimitGauge(system.limitGauge);
-      return limitGauge ? { limitGauge } : {};
-    })(),
-    ...(() => {
-      const resource2 = normalizeResource2(system.resource2);
-      return resource2 ? { resource2 } : {};
-    })(),
-    ...(() => {
-      const partyGauge = normalizePartyGauge(system.partyGauge);
-      return partyGauge ? { partyGauge } : {};
-    })(),
-    ...(system.weaknessExtraAction === true ? { weaknessExtraAction: true } : {}),
-    ...(() => {
-      const emotionCycle = normalizeEmotionCycle(system.emotionCycle);
-      return emotionCycle ? { emotionCycle } : {};
-    })(),
-    ...(actionCombat ? { actionCombat } : {}),
-    ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
-    ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
-    ...(Array.isArray(system.itemUpgrades) ? { itemUpgrades: system.itemUpgrades } : {}),
-    ...(Array.isArray(system.sellPrices) ? { sellPrices: system.sellPrices } : {}),
-    ...(system.energy ? { energy: normalizeEnergySystemConfig(system.energy) } : {}),
-    ...(system.shipping ? { shipping: normalizeShippingSystemConfig(system.shipping) } : {}),
-    ...(Array.isArray(system.bundles) ? { bundles: normalizeBundleDefinitions(system.bundles) } : {}),
-    ...(Array.isArray(system.worldUnlocks) ? { worldUnlocks: normalizeWorldUnlockDefinitions(system.worldUnlocks) } : {}),
-    ...(Array.isArray(system.makers) ? { makers: normalizeMakerDefinitions(system.makers) } : {}),
-    ...(system.dailyWeather ? { dailyWeather: normalizeDailyWeatherConfig(system.dailyWeather) } : {}),
-    ...(Array.isArray(system.farmAnimalBuildings)
-      ? { farmAnimalBuildings: normalizeFarmAnimalBuildingDefinitions(system.farmAnimalBuildings) }
-      : {}),
-    ...(system.fishing ? { fishing: normalizeFishingSystem(system.fishing) } : {}),
-    ...(system.seasonalForage ? { seasonalForage: normalizeSeasonalForage(system.seasonalForage) } : {}),
-    ...(system.collections ? { collections: normalizeCollectionSystem(system.collections) } : {}),
-    ...(system.museum ? { museum: normalizeMuseumSystem(system.museum) } : {}),
-    ...(() => {
-      const monsterCare = normalizeMonsterCare(system.monsterCare);
-      return monsterCare ? { monsterCare } : {};
-    })(),
-    ...(() => {
-      const difficulties = normalizeDifficulties(system.difficulties);
-      if (!difficulties) return {};
-      const defaultDifficultyId = typeof system.defaultDifficultyId === "string" ? system.defaultDifficultyId.trim() : "";
-      return {
-        difficulties,
-        ...(difficulties.some((row) => row.id === defaultDifficultyId) ? { defaultDifficultyId } : {}),
-      };
-    })(),
-    ...(() => {
-      const monsterFusions = normalizeMonsterFusions(system.monsterFusions);
-      return monsterFusions ? { monsterFusions } : {};
-    })(),
-    titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
-    ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
-    ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
-    ...(system.gameOvers !== undefined ? { gameOvers: system.gameOvers.map(row => ({ id: row.id.trim(), name: row.name, settings: normalizeGameOverSettings(row.settings) })) } : {}),
-    ...(system.defaultGameOverId !== undefined ? { defaultGameOverId: system.defaultGameOverId.trim() } : {}),
-  };
+  const genreLock = normalizeGenreLock(system.genreLock);
+  const playResolution = normalizePlayResolution(system.playResolution);
+  const cameraZoom = normalizeCameraZoom(system.cameraZoom);
+  const displayFilter = normalizeDisplayFilter(system.displayFilter);
+  const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
+  const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
+  const battleTeams = normalizeBattleTeams(system.battleTeams);
+  const companions = normalizeCompanionConfig(system.companions);
+  const fonts = normalizeSystemFontConfig(system.fonts);
+  const gallery = normalizeGallerySettings(system.gallery);
+  const newGamePlus = normalizeNewGamePlusSettings(system.newGamePlus);
+  const chapter = normalizeChapterSettings(system.chapter);
+  const vehicles = normalizeVehicleConfigs(system.vehicles);
+  const limitGauge = normalizeLimitGauge(system.limitGauge);
+  const resource2 = normalizeResource2(system.resource2);
+  const partyGauge = normalizePartyGauge(system.partyGauge);
+  const emotionCycle = normalizeEmotionCycle(system.emotionCycle);
+  const monsterCare = normalizeMonsterCare(system.monsterCare);
+  const difficulties = normalizeDifficulties(system.difficulties);
+  const monsterFusions = normalizeMonsterFusions(system.monsterFusions);
+  const battleUiStyle = system.battleUiStyle ? resolveSkinId(system.battleUiStyle) : undefined;
+  // 조건부 스프레드를 한 객체에 모으면 조합 타입이 TS2590 으로 죽는다. 키 순서는 예전 리터럴과 같다.
+  const records = {} as SystemRecords;
+  records.startActorIds = cleanIds(system.startActorIds);
+  if (system.fieldHud !== undefined) records.fieldHud = normalizeFieldHud(system.fieldHud);
+  if (system.playerFootprint !== undefined) records.playerFootprint = playerFootprint;
+  if (system.playerPassRows !== undefined) records.playerPassRows = normalizePassRows(system.playerPassRows, playerFootprint.height);
+  if (playResolution) records.playResolution = playResolution;
+  // 프로젝트 기본 카메라 배율. 1(클래식)은 생략해 옛 JSON 바이트를 지킨다.
+  if (cameraZoom !== undefined) records.cameraZoom = cameraZoom;
+  if (isGenrePackId(system.genre)) records.genre = system.genre;
+  if (genreLock) records.genreLock = genreLock;
+  records.titleResourceId = titleResourceId;
+  records.systemResourceId = normalizeSystemWindowSkinId(system.systemResourceId);
+  records.battleSystemResourceId = cleanOptionalId(system.battleSystemResourceId);
+  records.battleBgmResourceId = cleanOptionalId(system.battleBgmResourceId);
+  // 맵이 BGM 을 정하지 않았을 때 쓰는 프로젝트 기본 BGM. 화이트리스트 정규화이므로
+  // 여기 없으면 왕복 1회에 사라진다(skillSystem 이 실제로 그렇게 사라진 전례가 위에 있다).
+  records.defaultBgmResourceId = cleanOptionalId(system.defaultBgmResourceId);
+  records.battleVictoryMeResourceId = cleanOptionalId(system.battleVictoryMeResourceId);
+  records.battleDefeatSeResourceId = cleanOptionalId(system.battleDefeatSeResourceId);
+  records.battleEscapeSeResourceId = cleanOptionalId(system.battleEscapeSeResourceId);
+  records.initialTroopId = cleanOptionalId(system.initialTroopId);
+  records.battleFlow = normalizeBattleFlow(system.battleFlow);
+  // ATB 대기 방식·속도·필드 배경 — 기본(wait·기존 속도·트룹 배경)은 저장하지 않는다(옛 JSON 바이트 유지).
+  if (system.atbMode === "active") records.atbMode = "active";
+  if (typeof system.atbSpeed === "number" && Number.isFinite(system.atbSpeed)) records.atbSpeed = clampInteger(system.atbSpeed, 1, 8);
+  if (system.battleBackdrop === "field") records.battleBackdrop = "field";
+  // 롤링 HP 미터(마더식). 기본(끔)과 기본 속도는 저장하지 않는다 — 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+  if (system.battleRollingHp === true) records.battleRollingHp = true;
+  if (typeof system.battleRollingHpPerSecond === "number" && Number.isFinite(system.battleRollingHpPerSecond)) {
+    records.battleRollingHpPerSecond = clampInteger(system.battleRollingHpPerSecond, 1, 999);
+  }
+  if (system.battlePresentation === "onField") records.battlePresentation = "onField";
+  // 진형 굴림·도주 가산 — 기본(굴림 없음·가산 0)은 저장하지 않는다(옛 JSON 바이트 유지).
+  if (system.battleFormationRoll === true) records.battleFormationRoll = true;
+  if (system.pointerMovement === true) records.pointerMovement = true;
+  if (typeof system.escapeBonusPercent === "number" && Number.isFinite(system.escapeBonusPercent) && system.escapeBonusPercent !== 0) {
+    records.escapeBonusPercent = clampInteger(system.escapeBonusPercent, 0, 100);
+  }
+  if (system.battleCommandCss?.trim()) records.battleCommandCss = system.battleCommandCss;
+  // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = retro2003)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
+  // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
+  // (기본이 vxace 였던 시절 실제로 그랬다). 지운 정면 스킨(rm2000·classic 등)과 모르는 값은
+  // resolveSkinId 가 기본으로 풀어 여기서 지워진다(2026-10-02).
+  if (battleUiStyle && battleUiStyle !== DEFAULT_BATTLE_SKIN_ID) records.battleUiStyle = battleUiStyle;
+  // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
+  if (isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL) records.battleHitFeel = system.battleHitFeel;
+  if (displayFilter) records.displayFilter = displayFilter;
+  // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
+  if (battleLook) records.battleLook = battleLook;
+  // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
+  if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
+  // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
+  if (isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) records.dialogueStyle = system.dialogueStyle;
+  if (isFontFamilyId(system.dialogueFont)) records.dialogueFont = system.dialogueFont;
+  if (typeof system.dialogueSpeed === "number" && Number.isFinite(system.dialogueSpeed) && system.dialogueSpeed !== 1) {
+    records.dialogueSpeed = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100;
+  }
+  if (system.dialoguePunctuationPause === false) records.dialoguePunctuationPause = false;
+  if (fullPortrait) records.dialogueFullPortrait = fullPortrait;
+  // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
+  if (system.battleParty === "monsters") records.battleParty = "monsters";
+  // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
+  if (system.battleModel === "gen1") records.battleModel = "gen1";
+  records.activeSlots = normalizeOptionalPositiveInteger(system.activeSlots);
+  if (battleTeams) records.battleTeams = battleTeams;
+  if (isTeamSwapCost(system.teamSwapCost)) records.teamSwapCost = system.teamSwapCost;
+  // 동료 규칙도 화이트리스트에 있어야 왕복 1회에 사라지지 않는다(없던 동안 gap·formation·fromParty 가 로드마다 지워졌다).
+  if (companions) records.companions = companions;
+  records.rewardPolicy = normalizeRewardPolicy(system.rewardPolicy);
+  // 능력치 심화(성격·노력치). 켠 축만 저장한다 — 둘 다 꺼지면 필드를 두지 않아 기존 프로젝트의 저장 바이트가 그대로다.
+  if (system.monsterStatRules && (system.monsterStatRules.natures === true || system.monsterStatRules.evs === true)) {
+    records.monsterStatRules = {
+      ...(system.monsterStatRules.natures === true ? { natures: true } : {}),
+      ...(system.monsterStatRules.evs === true ? { evs: true } : {}),
+    };
+  }
+  if (typeof system.captureShakesVariableId === "string" && system.captureShakesVariableId.trim()) {
+    records.captureShakesVariableId = system.captureShakesVariableId.trim();
+  }
+  // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
+  // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
+  if (system.skillSystem !== undefined) records.skillSystem = { enabled: system.skillSystem.enabled === true };
+  if (system.monsterCollection !== undefined) records.monsterCollection = system.monsterCollection === true;
+  if (system.monsterCampaign) records.monsterCampaign = structuredClone(system.monsterCampaign);
+  // 보관함 상자 이름 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const boxNames = normalizeMonsterBoxNames(system.monsterBoxNames); if (boxNames) records.monsterBoxNames = boxNames; }
+  if (fonts) records.fonts = fonts;
+  if (system.monsterBattleParty !== undefined) records.monsterBattleParty = system.monsterBattleParty === true;
+  // 색이 다른 개체 확률 — 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다.
+  { const shinyRate = normalizeShinyRate(system.shinyRate); if (shinyRate !== undefined) records.shinyRate = shinyRate; }
+  if (system.giftSystem !== undefined) records.giftSystem = system.giftSystem === true;
+  // 연애 하루 루프(옵트인). 화이트리스트라 여기 없으면 저장/로드 1회 왕복에 사라진다(2026-10-16 런타임 QA 실측).
+  if (system.socialLoop && typeof system.socialLoop === "object") {
+    const { slotsPerDay, dailyFriendshipCap } = system.socialLoop;
+    records.socialLoop = {
+      ...(typeof slotsPerDay === "number" && Number.isFinite(slotsPerDay) ? { slotsPerDay: Math.trunc(slotsPerDay) } : {}),
+      ...(typeof dailyFriendshipCap === "number" && Number.isFinite(dailyFriendshipCap) ? { dailyFriendshipCap: Math.trunc(dailyFriendshipCap) } : {}),
+    };
+  }
+  if (gallery) records.gallery = gallery;
+  if (newGamePlus) records.newGamePlus = newGamePlus;
+  if (chapter) records.chapter = chapter;
+  if (vehicles) records.vehicles = vehicles;
+  if (typeChart) records.typeChart = typeChart;
+  if (timeSystem) records.timeSystem = timeSystem;
+  if (system.worldGen) records.worldGen = normalizeWorldGenRulesForStorage(system.worldGen);
+  // 전투 자원·감정 설정(battleGauges/battleEmotion). 화이트리스트라 여기 없으면 왕복 1회에 사라진다.
+  if (limitGauge) records.limitGauge = limitGauge;
+  if (resource2) records.resource2 = resource2;
+  if (partyGauge) records.partyGauge = partyGauge;
+  if (system.weaknessExtraAction === true) records.weaknessExtraAction = true;
+  if (emotionCycle) records.emotionCycle = emotionCycle;
+  if (actionCombat) records.actionCombat = actionCombat;
+  if (Array.isArray(system.toolActions)) records.toolActions = system.toolActions;
+  if (Array.isArray(system.craftRecipes)) records.craftRecipes = system.craftRecipes;
+  if (Array.isArray(system.itemUpgrades)) records.itemUpgrades = system.itemUpgrades;
+  if (Array.isArray(system.sellPrices)) records.sellPrices = system.sellPrices;
+  if (system.energy) records.energy = normalizeEnergySystemConfig(system.energy);
+  if (system.shipping) records.shipping = normalizeShippingSystemConfig(system.shipping);
+  if (Array.isArray(system.bundles)) records.bundles = normalizeBundleDefinitions(system.bundles);
+  if (Array.isArray(system.worldUnlocks)) records.worldUnlocks = normalizeWorldUnlockDefinitions(system.worldUnlocks);
+  if (Array.isArray(system.makers)) records.makers = normalizeMakerDefinitions(system.makers);
+  if (system.dailyWeather) records.dailyWeather = normalizeDailyWeatherConfig(system.dailyWeather);
+  if (Array.isArray(system.farmAnimalBuildings)) records.farmAnimalBuildings = normalizeFarmAnimalBuildingDefinitions(system.farmAnimalBuildings);
+  if (system.fishing) records.fishing = normalizeFishingSystem(system.fishing);
+  if (system.seasonalForage) records.seasonalForage = normalizeSeasonalForage(system.seasonalForage);
+  if (system.collections) records.collections = normalizeCollectionSystem(system.collections);
+  if (system.museum) records.museum = normalizeMuseumSystem(system.museum);
+  if (monsterCare) records.monsterCare = monsterCare;
+  if (difficulties) {
+    records.difficulties = difficulties;
+    const defaultDifficultyId = typeof system.defaultDifficultyId === "string" ? system.defaultDifficultyId.trim() : "";
+    if (difficulties.some((row) => row.id === defaultDifficultyId)) records.defaultDifficultyId = defaultDifficultyId;
+  }
+  if (monsterFusions) records.monsterFusions = monsterFusions;
+  records.titleScreen = normalizeTitleScreenSettings(system.titleScreen, titleResourceId);
+  if (system.opening !== undefined) records.opening = normalizeCinematicSequence(system.opening);
+  if (system.gameOver !== undefined) records.gameOver = normalizeGameOverSettings(system.gameOver);
+  if (system.gameOvers !== undefined) {
+    records.gameOvers = system.gameOvers.map(row => ({ id: row.id.trim(), name: row.name, settings: normalizeGameOverSettings(row.settings) }));
+  }
+  if (system.defaultGameOverId !== undefined) records.defaultGameOverId = system.defaultGameOverId.trim();
+  return records;
 }
 
 export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | undefined): TimeSystemConfig | undefined {
@@ -434,10 +455,15 @@ export function normalizeTypeChart(chart: Partial<TypeChartRecord> | undefined):
 }
 
 function normalizeRewardPolicy(policy: Partial<RewardPolicy> | undefined): RewardPolicy | undefined {
-  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined)) return undefined;
+  if (!policy || (policy.participationOnly === undefined && policy.levelGapPenalty === undefined && policy.expShare === undefined && policy.expSplitAlive === undefined && policy.trainerPrizePerLevel === undefined)) return undefined;
+  const prize = typeof policy.trainerPrizePerLevel === "number" && Number.isFinite(policy.trainerPrizePerLevel) ? Math.max(0, Math.min(9999, Math.trunc(policy.trainerPrizePerLevel))) : 0;
   return {
     participationOnly: policy.participationOnly === true,
     levelGapPenalty: policy.levelGapPenalty === true,
+    // 새 칸은 켰을 때만 저장한다 — 안 쓰는 프로젝트의 저장 바이트는 그대로.
+    ...(policy.expShare === true ? { expShare: true } : {}),
+    ...(policy.expSplitAlive === true ? { expSplitAlive: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -683,9 +709,15 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.criticalRate) ? { criticalRate: clampInteger(record.criticalRate!, 0, 100) } : {}),
     ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
     ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
+    ...(record.oncePerBattle === true ? { oncePerBattle: true } : {}),
     ...(typeof record.fieldCommonEventId === "string" && record.fieldCommonEventId.trim() ? { fieldCommonEventId: record.fieldCommonEventId.trim() } : {}),
+    ...(record.unforgettable === true ? { unforgettable: true } : {}),
     ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
     ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
+    ...(Number.isFinite(record.recoilPercent) && record.recoilPercent! > 0 ? { recoilPercent: clampInteger(record.recoilPercent!, 0, 100) } : {}),
+    ...(normalizeFixedDamage(record.fixedDamage) ? { fixedDamage: normalizeFixedDamage(record.fixedDamage) } : {}),
+    ...(normalizeMultiHit(record.multiHit) ? { multiHit: normalizeMultiHit(record.multiHit) } : {}),
+    ...(Number.isFinite(record.flinchChance) && record.flinchChance! > 0 ? { flinchChance: clampInteger(record.flinchChance!, 0, 100) } : {}),
     ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
     ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
     ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),
@@ -696,6 +728,11 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    ...(() => {
+      const statStageEffects = normalizeStatStageEffects(record.statStageEffects);
+      return statStageEffects.length ? { statStageEffects } : {};
+    })(),
+    ...(normalizeSkillWeather(record.weather) ? { weather: normalizeSkillWeather(record.weather) } : {}),
     ...(typeof record.maxPp === "number" && Number.isFinite(record.maxPp) && record.maxPp > 0
       ? { maxPp: clampInteger(record.maxPp, 1, 99) }
       : {}),
@@ -711,7 +748,20 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     // 연계기·범위기는 값이 있을 때만 남긴다 — 없는 옆 프로젝트는 바이트 그대로.
     ...(() => {
       const comboActorIds = uniqueCleanIds(record.comboActorIds).slice(0, 3);
-      return comboActorIds.length >= 2 ? { comboActorIds } : {};
+      if (comboActorIds.length < 2) return {};
+      const comboRequires = Array.isArray(record.comboRequires)
+        ? record.comboRequires.flatMap((entry) => {
+            const actorId = typeof entry?.actorId === "string" ? entry.actorId.trim() : "";
+            const skillId = typeof entry?.skillId === "string" ? entry.skillId.trim() : "";
+            return actorId && skillId && comboActorIds.includes(actorId) ? [{ actorId, skillId }] : [];
+          })
+        : [];
+      return {
+        comboActorIds,
+        ...(comboRequires.length > 0 ? { comboRequires } : {}),
+        ...(record.comboCombinedStats === true ? { comboCombinedStats: true as const } : {}),
+        ...(typeof record.comboSwitchId === "string" && record.comboSwitchId.trim() ? { comboSwitchId: record.comboSwitchId.trim() } : {}),
+      };
     })(),
     ...(record.area && (record.area.shape === "circle" || record.area.shape === "line")
       && Number.isFinite(record.area.radius) && record.area.radius > 0
@@ -771,7 +821,17 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
     captureProfile: normalizeCaptureProfile(record.captureProfile),
     careProfile: normalizeCareProfile(record.careProfile),
+    ...(normalizeHeldItemEffect(record.heldEffect) ? { heldEffect: normalizeHeldItemEffect(record.heldEffect) } : {}),
+    ...(isItemBagPocket(record.pocket) ? { pocket: record.pocket } : {}),
+    ...(normalizeRepelSteps(record.repelSteps) !== undefined ? { repelSteps: normalizeRepelSteps(record.repelSteps) } : {}),
+    ...(normalizeRepelSteps(record.repelSteps) !== undefined && record.repelBelowLead === true ? { repelBelowLead: true } : {}),
+    ...(record.escapeTo === "entrance" ? { escapeTo: "entrance" as const } : {}),
   };
+}
+
+const ITEM_BAG_POCKETS: readonly string[] = ["items", "balls", "machines", "held", "key"];
+function isItemBagPocket(value: unknown): value is ItemBagPocket {
+  return typeof value === "string" && ITEM_BAG_POCKETS.includes(value);
 }
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
@@ -813,7 +873,42 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
       const grantsCommand = normalizeGrantedCommand(record.grantsCommand);
       return grantsCommand ? { grantsCommand } : {};
     })(),
+    ...(() => {
+      const apGrants = normalizeApGrants(record.apGrants);
+      return apGrants.length > 0 ? { apGrants } : {};
+    })(),
+    ...(typeof record.apRate === "number" && Number.isFinite(record.apRate) && Math.round(record.apRate) !== 100 ? { apRate: clampInteger(record.apRate, 1, 1000) } : {}),
+    ...(() => {
+      const levelUpBonus = normalizeLevelUpBonus(record.levelUpBonus);
+      return levelUpBonus ? { levelUpBonus } : {};
+    })(),
   };
+}
+
+/** 마석 AP 항목: 스킬 id 가 있고 필요 AP 가 양의 정수인 것만, 같은 스킬은 뒤의 것이 이긴다. */
+export function normalizeApGrants(grants: readonly Partial<EquipmentApGrant>[] | undefined): EquipmentApGrant[] {
+  if (!Array.isArray(grants)) return [];
+  const bySkill = new Map<string, number>();
+  for (const grant of grants) {
+    const skillId = cleanOptionalId(grant?.skillId);
+    if (!skillId || typeof grant?.ap !== "number" || !Number.isFinite(grant.ap) || grant.ap <= 0) continue;
+    bySkill.set(skillId, clampInteger(grant.ap, 1, 99999));
+  }
+  return [...bySkill].slice(0, 64).map(([skillId, ap]) => ({ skillId, ap }));
+}
+
+export function normalizeLevelUpBonus(bonus: Partial<EquipmentLevelUpBonus> | undefined): EquipmentLevelUpBonus | undefined {
+  if (!bonus || typeof bonus !== "object") return undefined;
+  const out: EquipmentLevelUpBonus = {};
+  for (const key of ["maxHpPercent", "maxMpPercent"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value > 0) out[key] = clampInteger(value, 1, 100);
+  }
+  for (const key of ["attack", "defense", "mind", "agility"] as const) {
+    const value = bonus[key];
+    if (typeof value === "number" && Number.isFinite(value) && value !== 0) out[key] = clampInteger(value, -99, 99);
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 function normalizeGrantedCommand(command: Partial<ClassBattleCommand> | undefined): ClassBattleCommand | undefined {
@@ -942,7 +1037,30 @@ function normalizeRecovery(cost: Partial<SkillMpCost> | undefined): SkillMpCost 
 
 function normalizeSkillEffect(effect: SkillEffect | undefined): SkillEffect {
   if (effect?.kind === "randomSkillFrom") return { kind: "randomSkillFrom", skillIds: uniqueCleanIds(effect.skillIds).slice(0, 16) };
+  if (effect?.kind === "rage") {
+    const enemyIds = uniqueCleanIds(effect.enemyIds ?? []).slice(0, 24);
+    return enemyIds.length > 0 ? { kind: "rage", enemyIds } : { kind: "rage" };
+  }
   return effect ?? { kind: "damage", statistic: "attack", affects: "hp" };
+}
+
+/** 능력치 단계 효과 정규화: 모르는 stat·0 단계는 버린다(툴 쪽이 먼저 거절한다). 최대 4개. */
+export function normalizeStatStageEffects(effects: readonly Partial<SkillStatStageEffect>[] | undefined): SkillStatStageEffect[] {
+  if (!Array.isArray(effects)) return [];
+  return effects
+    .filter((effect): effect is Partial<SkillStatStageEffect> & { stat: SkillStatStageEffect["stat"] } => isStatStageKey(effect?.stat))
+    .flatMap((effect) => {
+      const stages = clampInteger(Number(effect.stages ?? 0), STAT_STAGE_MIN, STAT_STAGE_MAX);
+      if (stages === 0) return [];
+      const chance = clampInteger(Number(effect.chance ?? 100), 0, 100);
+      return [{
+        stat: effect.stat,
+        stages,
+        ...(chance < 100 ? { chance } : {}),
+        ...(effect.target === "self" ? { target: "self" as const } : {}),
+      }];
+    })
+    .slice(0, 4);
 }
 
 function normalizeStateEffects(effects: readonly Partial<DatabaseStateEffect>[] | undefined): DatabaseStateEffect[] {
@@ -977,6 +1095,7 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
   return {
     multiplier,
     ...(isGen1BallClass(profile.ballClass) ? { ballClass: profile.ballClass } : {}),
+    ...(normalizeCaptureCondition(profile.condition) ? { condition: normalizeCaptureCondition(profile.condition) } : {}),
   };
 }
 
@@ -985,7 +1104,7 @@ function isGen1BallClass(value: unknown): value is NonNullable<ItemCaptureProfil
 }
 
 function isGen1MajorStatus(value: unknown): value is NonNullable<StateRecord["gen1MajorStatus"]> {
-  return value === "poison" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
+  return value === "poison" || value === "toxic" || value === "burn" || value === "sleep" || value === "freeze" || value === "paralysis";
 }
 
 function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {
@@ -997,10 +1116,14 @@ function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): It
   const expDelta = typeof profile.expDelta === "number" && Number.isFinite(profile.expDelta)
     ? Math.max(0, Math.trunc(profile.expDelta))
     : undefined;
+  const levelUp = typeof profile.levelUp === "number" && Number.isFinite(profile.levelUp) && profile.levelUp >= 1
+    ? Math.min(10, Math.trunc(profile.levelUp))
+    : undefined;
   return {
     kind: profile.kind,
     friendshipDelta,
     ...(expDelta !== undefined ? { expDelta } : {}),
+    ...(levelUp !== undefined ? { levelUp } : {}),
   };
 }
 

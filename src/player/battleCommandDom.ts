@@ -1,4 +1,6 @@
+import { statStageEffectText } from "@/battle/statStages";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
+import { captureConditionLabel } from "@/battle/captureBalls";
 import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import type {
   ActorCommand,
@@ -8,7 +10,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
-import { disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
+import { battleNameText, disambiguatedBattlerName, hpBarState, syncStatusIcons } from "@/player/battleFieldDom";
 import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
@@ -23,6 +25,7 @@ import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 import { mountBattleCommandCss } from "@/project/battleCommandCss";
 import { withJosa } from "@/util/josa";
+import { teamSwapCommandNodes } from "@/player/battleTeamSwapDom";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -39,6 +42,8 @@ export interface BattleCommandPanelOptions {
   setDirectorState(state: BattleDirectorState): void;
   render(): void;
   runActorCommand(command: ActorCommand): void;
+  /** 팀 교대 전투(system.battleTeams) 전용 — 설정이 없으면 호출되지 않는다. */
+  runTeamSwap?(targetTeamId: string): void;
   beginTargetCommand(command: TargetedActorCommand): void;
   confirmTargetSelection(targetId: string): void;
   cancelTargetSelection?(): void;
@@ -196,13 +201,14 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     : undefined;
   for (const command of battleCommandsForActor(project, actor?.recordId, {
     classId: actor?.classId,
-    includeSwitch: snapshot.reserveActors.length > 0,
+    includeSwitch: snapshot.reserveActors.length > 0 && (!snapshot.teams || snapshot.switchCandidateActorIds.length > 0),
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
     overrideCommandIds,
     grantedCommands: actor?.equipmentEffects?.grantedCommands,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
+  if (!targetMode && !snapshot.forcedSwitchActorId) menu.append(...teamSwapCommandNodes(snapshot, options, commandButton));
   return menu;
 }
 
@@ -391,7 +397,7 @@ export function syncEnemyListPanel(
     }
     row.classList.toggle("defeated", shownDefeated);
     // 에메랄드 상대 HP 상자에도 상태 배지를 단다(스프라이트 쪽 배지는 CSS 가 숨긴다).
-    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds });
+    if (isEmeraldMonsterStyle(store.getCurrent())) syncStatusIcons(row, { ...enemy, defeated: false, stateIds: shownDefeated ? [] : enemy.stateIds, statStages: shownDefeated ? undefined : enemy.statStages });
   }
 }
 
@@ -430,7 +436,7 @@ function syncEnemyListName(
 ): void {
   const name = row.querySelector<HTMLElement>(".battle-enemy-list-name");
   if (!name) return;
-  name.replaceChildren(document.createTextNode(disambiguatedBattlerName(enemy, enemies)));
+  name.replaceChildren(battleNameText(disambiguatedBattlerName(enemy, enemies)));
   if (!enemy.level) return;
   const level = document.createElement("span");
   level.className = "battle-enemy-list-level";
@@ -452,7 +458,7 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   // 장비가 준 스킬은 배우지 않아도 목록에 뜬다(EquipmentRecord.grantsSkillIds).
   const owned = battlerSkillIdsWithGrants(actor);
   const combos = snapshot
-    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned)
+    ? comboSkillIdsFor(project, actor.recordId, snapshot.actors.map((entry) => entry.recordId), owned, comboParticipantsFromSnapshot(snapshot))
     : [];
   return [...owned, ...combos].filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
@@ -523,14 +529,15 @@ function isBattleUsableItem(item: {
   );
 }
 
-function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {
+function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number; condition?: string }[] {
   const project = store.getCurrent();
   const troop = project.database.troops.find((entry) => entry.id === snapshot.troopId);
   if (troop?.trainerBattle === true || troop?.uncapturable === true) return [];
   const inventory = snapshot.eventState.inventory;
   return project.database.items
     .filter((item) => isCaptureTool(item) && (inventory[item.id] ?? 0) > 0)
-    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1 }));
+    .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1,
+      ...(item.captureProfile?.condition ? { condition: captureConditionLabel(item.captureProfile.condition, (id) => project.database.elements?.find((element) => element.id === id)?.name ?? id) } : {}) }));
 }
 
 function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
@@ -563,6 +570,40 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   return nodes;
 }
 
+function moveInfoBox(
+  slot: string,
+  project: ReturnType<typeof store.getCurrent>,
+  elementId: string | undefined,
+  pp: number | undefined,
+  maxPp: number | undefined,
+  reason: string | undefined,
+): HTMLElement {
+  const box = document.createElement("div");
+  box.className = "battle-move-info";
+  box.dataset.moveSlot = slot;
+  box.dataset.testid = `battle-move-info-${slot}`;
+  const ppNode = document.createElement("span");
+  ppNode.className = "battle-move-pp";
+  ppNode.dataset.ppState = pp === undefined || maxPp === undefined ? "none" : pp === 0 ? "empty" : pp * 4 <= maxPp ? "low" : "ok";
+  ppNode.textContent = pp === undefined || maxPp === undefined ? "PP --" : `PP ${pp}/${maxPp}`;
+  box.append(ppNode);
+  if (elementId) {
+    const label = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
+    const type = document.createElement("span");
+    type.className = "battle-move-type";
+    type.dataset.skillType = elementId;
+    type.textContent = label;
+    box.append(type);
+  }
+  if (reason) {
+    const why = document.createElement("span");
+    why.className = "battle-move-reason";
+    why.textContent = reason;
+    box.append(why);
+  }
+  return box;
+}
+
 function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
@@ -579,6 +620,7 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
     }));
     return nodes;
   }
+  const infoNodes: HTMLElement[] = [];
   for (const skillId of moves) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const useFailure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
@@ -594,21 +636,40 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason);
     appendSkillTypeBadge(button, project, skill?.elementId);
+    const slot = String(infoNodes.length + 1);
+    button.dataset.moveSlot = slot;
     nodes.push(button);
+    infoNodes.push(moveInfoBox(slot, project, skill?.elementId, pp, skill?.maxPp, reason));
   }
+  // 3세대 화면의 우측 정보 상자: 커서가 선 기술의 PP·타입. 커서 연동은 CSS(형제 선택자)가 한다.
+  nodes.push(...infoNodes);
   return nodes;
 }
 
 /** 기술 타입(속성) 배지. elementId 가 없는 기술에는 아무것도 붙이지 않는다 — 무속성
  *  기술까지 "타입" 을 지어내면 상성 표시가 거짓이 된다. 표시 이름은 elements 레코드에서
  *  읽고(데모는 한글 타입명을 저작한다), 레코드가 없으면 id 를 그대로 보여준다. */
+/** 새 프로젝트 기본 속성 이름은 영어(「Fire」「Sword」)다 — 한국어 게임의 전투 목록에 영어 꼬리표가 그대로 보였다(jrpg-loop-1 실측). 작가가 이름을 바꾸지 않은 기본 이름일 때만 한글로 보인다. */
+const DEFAULT_ELEMENT_DISPLAY_KO: Readonly<Record<string, readonly [english: string, korean: string]>> = {
+  sword: ["Sword", "검"], spear: ["Spear", "창"], hit: ["Hit", "타격"], bow: ["Bow", "활"],
+  fire: ["Fire", "화염"], ice: ["Ice", "빙결"], thunder: ["Thunder", "번개"], water: ["Water", "물"],
+  earth: ["Earth", "대지"], wind: ["Wind", "바람"], holy: ["Holy", "신성"], dark: ["Dark", "암흑"],
+  grass: ["Grass", "풀"],
+};
+
+export function skillElementBadgeLabel(project: ReturnType<typeof store.getCurrent>, elementId: string): string {
+  const name = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
+  const known = DEFAULT_ELEMENT_DISPLAY_KO[elementId];
+  return known && name === known[0] ? known[1] : name;
+}
+
 function appendSkillTypeBadge(
   button: HTMLButtonElement,
   project: ReturnType<typeof store.getCurrent>,
   elementId: string | undefined,
 ): void {
   if (!elementId) return;
-  const label = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
+  const label = skillElementBadgeLabel(project, elementId);
   const badge = document.createElement("em");
   badge.className = "battle-command-tag";
   badge.dataset.skillType = elementId;
@@ -657,7 +718,7 @@ function skillDetailFor(
   const states = (fullSkill.stateEffects ?? []).map((effect) => {
     const name = project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId;
     return `${name} ${effect.operation === "remove" ? "해제" : "부여"}`;
-  }).join(", ");
+  }).concat((fullSkill.statStageEffects ?? []).map(statStageEffectText)).join(", ");
   const effect = fullSkill.effect.kind === "healing"
     ? `${terms.hp} ${fullSkill.power} 회복`
     : fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch"
@@ -711,7 +772,7 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
   if (isPokemonMonsterActor(project, activeActor(snapshot))) {
     for (const item of captureItems(snapshot)) {
-      const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+      const detail = item.condition ?? (item.multiplier === 1 ? terms.capture : `x${item.multiplier}`);
       nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
         options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
       }));
@@ -726,7 +787,7 @@ function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpt
   header.textContent = terms.capture;
   const nodes: HTMLElement[] = [header];
   for (const item of captureItems(snapshot)) {
-    const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+    const detail = item.condition ?? (item.multiplier === 1 ? terms.capture : `x${item.multiplier}`);
     nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
       options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
     }));

@@ -1,0 +1,59 @@
+{
+ "key": "sc-officer-a",
+ "arch": "sp3-officer",
+ "base": "Scarloxy1:0",
+ "variant": "청록 야구모자를 남색 제모로 recolor(H 청록 전부 남색 3톤, 윤곽은 아주 짙은 남색), 흰 재킷을 남색 제복으로 recolor, 가슴과 소매에 금빛 가로 띠 2줄(T paint, 네 방향 각각), **주황 배낭 줄·배낭은 제복과 같은 남색**(금색 덩어리를 만들지 말 것), 초록 바지는 짙은 남색, 신발은 검정. 머리카락은 갈색 그대로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 adfgikmnopsv"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 5,
+  "added_right1": 8,
+  "added_right2": 8,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 8,
+  "added_left1": 8,
+  "added_left2": 8,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 6,
+  "cross_base": 11,
+  "lone": 206,
+  "lone_base": 274
+ },
+ "distinct": {
+  "score": 0.451,
+  "nearest": "ScarloxyPeople8#1"
+ },
+ "repairs": {
+  "dropped_stray_px": 12,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 232,
+   "베이스 몸 칸을 비운 것을 되돌림": 2,
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 7,
+   "걷기 프레임에만 있는 베이스 글자 2개를 가장 가까운 색의 recolor 대상 글자로 따라 바꿈": 1
+  }
+ },
+ "run": "r7/sp3-officer-c",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 오른쪽·왼쪽 걸음 0·2열 팔·엉덩이 부근 남색 점이 조금 지저분(경미)."
+ }
+}

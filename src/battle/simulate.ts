@@ -37,6 +37,11 @@ export interface SimulateBattleInput {
   readonly battleFlow?: BattleFlow;
   readonly activeSlots?: number;
   readonly strictScript?: readonly (readonly StrictBattleScriptCommand[])[];
+  /**
+   * true 면 아군이 자동 전투 AI(기술·회복·연계기)로 행동한다. 기본(false)은 통상 공격 + 회복약만이라
+   * 기술 밸런스·연계기를 시험할 수 없다. gen1 모델은 항상 이 AI 를 쓴다.
+   */
+  readonly useSkills?: boolean;
   readonly maxSteps?: number; // 무한 루프 방지 tick 상한(기본 4000)
   // 프로덕션(playSceneBattle)과 동일 계약: 전투를 기동한 맵 이벤트 id.
   // 트룹 배틀 이벤트의 selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트.
@@ -76,6 +81,8 @@ export interface SimulateBattleResult {
   readonly eventLogs: readonly BattleEventLogSnapshot[];
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly capturedCount: number;
+  /** 아군이 쓴 기술별 총 횟수(n판 합계, 통상 공격 제외). useSkills 일 때만 의미가 있다. */
+  readonly skillUses: Readonly<Record<string, number>>;
   readonly firstRewards?: BattleRewardsSnapshot;
   /** 트룹의 전투 이벤트 페이지 전부(발동 0회 포함). 페이지가 없으면 빈 배열. */
   readonly phaseCoverage: readonly BattlePhaseCoverage[];
@@ -91,6 +98,7 @@ interface SingleRunResult {
   readonly eventLogs: readonly BattleEventLogSnapshot[];
   readonly capturedMonsters: readonly BattleCapturedMonsterSnapshot[];
   readonly rewards: BattleRewardsSnapshot;
+  readonly skillUses: Readonly<Record<string, number>>;
 }
 
 // 회복 아이템을 가진 저HP 액터가 아이템을 쓰도록 하는 간단 AI로 한 판을 구동한다.
@@ -137,6 +145,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
     const maxSteps = input.maxSteps ?? 4000;
     let turns = 0;
     let potionsUsed = 0;
+    const skillUses: Record<string, number> = {};
 
     for (let step = 0; step < maxSteps; step += 1) {
       const snap = headlessBattleSnapshot(rt);
@@ -166,9 +175,10 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
           rt.performActorCommand({ kind: "item", itemId: input.potionItemId, targetEnemyId: enemy.id });
           potionsUsed += 1;
         } else {
-          const command = input.project.system.battleModel === "gen1"
+          const command = input.project.system.battleModel === "gen1" || input.useSkills
             ? chooseAutoBattleCommand(input.project, snap, rng)
             : undefined;
+          if (command?.kind === "skill") skillUses[command.skillId] = (skillUses[command.skillId] ?? 0) + 1;
           rt.performActorCommand(command ?? { kind: "attack", targetEnemyId: enemy.id });
         }
       } else {
@@ -188,6 +198,7 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       eventLogs: final.eventLogs,
       capturedMonsters,
       rewards: final.rewards,
+      skillUses,
     };
   } finally {
     if (savedSystem) {
@@ -248,6 +259,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   let participatingActorIds: readonly string[] = [];
   let capturedMonsters: readonly BattleCapturedMonsterSnapshot[] = [];
   let capturedCount = 0;
+  const skillUses: Record<string, number> = {};
   let firstRewards: BattleRewardsSnapshot | undefined;
   // 페이즈 발동은 판마다 다르다(HP 임계 조건은 그 판의 진행에 달렸다) — n판 전부를 합산한다.
   const firedRuns = new Map<string, number>();
@@ -260,6 +272,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     totalPotions += run.potionsUsed;
     totalHp += run.hpRemaining;
     capturedCount += run.capturedMonsters.length;
+    for (const [skillId, count] of Object.entries(run.skillUses)) skillUses[skillId] = (skillUses[skillId] ?? 0) + count;
     const firedThisRun = new Set<string>();
     for (const log of run.eventLogs) {
       if (log.kind === "fired") {
@@ -306,6 +319,7 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
     phaseCoverage,
     capturedMonsters,
     capturedCount,
+    skillUses,
     firstRewards,
   };
 }

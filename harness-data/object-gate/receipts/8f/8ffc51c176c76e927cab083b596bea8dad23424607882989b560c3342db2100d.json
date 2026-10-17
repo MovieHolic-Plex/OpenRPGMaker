@@ -1,0 +1,163 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ffc51c176c76e927cab083b596bea8dad23424607882989b560c3342db2100d",
+ "width": 80,
+ "height": 32,
+ "kind": "organic",
+ "name": "hedge row of round trees (two-row partition on grass)",
+ "label": "monster-gyms/gy_hedge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round tree canopies",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopies are rendered with visible upper crowns (approximately 6-7 pixel rows of top/upper hemisphere surface) shaded appropriately for the 3/4 top-down perspective, with front faces and trunks visible beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy of round trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees and bushes are drawn as flat circular silhouettes in pure front elevation with trunks extending straight down beneath the canopies; there is no foreshortened top surface visible from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15279
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round trees / bushes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees are drawn in pure front elevation (2D side-scroller style), rendered as flat circular foliage shapes with straight vertical trunks protruding directly from the bottom edge. There is no overhead foreshortening or visible top surface from the 45-degree 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5790
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canopy of round trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees are depicted in pure front elevation (side-view / 2D platformer style) with vertical circular canopies and straight 2-pixel trunks extending directly from the bottom edge, lacking any top-down foreshortening or top surface perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7369
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "0c7fa7cfe2bd6372",
+   "24d254c4f64be291",
+   "30d9976e1f6eba05",
+   "45624f2a6d7d66fa",
+   "5c71e112eeb90ded",
+   "7d81ae9c08267c0e"
+  ],
+  "24": [
+   "012cbd448e96bb18",
+   "07e09739425f5589",
+   "11a1163eb6838806",
+   "12dd2fe2b7da3bcc",
+   "1e70443790cc0978",
+   "2dd0208ead78652d",
+   "2e5f483e13e2a923",
+   "33999c1ab81b3dfb",
+   "3f777ecf58ec25b6",
+   "46e0db7d913c5411",
+   "484f734ee1287283",
+   "48b8e83eb86030d3",
+   "4ba198bd551bc1b4",
+   "57e3a4961a6de8c2",
+   "58791fb12358f42b",
+   "59273c47f60d6d0b",
+   "5cb7c72051593e66",
+   "6083de1aaf1636a1",
+   "6c629d5452c91026",
+   "709235c1ef5e90a8",
+   "711e9426d1d071db",
+   "7f99f90cffd79382",
+   "842dbf175cd49497",
+   "86c2a8c3054b010e",
+   "86dbb0c61d029079",
+   "87d73c89444befe7",
+   "9610b9b123986ca5",
+   "9a2a7f687cebe6b3",
+   "af1da100eba46dba",
+   "b1bbbe703b5c8577",
+   "d09f8ff6ab1070fa",
+   "dabe714df761baa7",
+   "dba23488dea897ad",
+   "dcca95ed9dad5731",
+   "ebf682a7857b9dcb",
+   "f101ba3e5471b6cf",
+   "f429066439036cb6",
+   "f6a0d245a96f171b",
+   "fae86a0570f53760",
+   "fc8b114454720fec"
+  ],
+  "32": [
+   "06dffb72358db9ce",
+   "25ddc30b02e1cd3d",
+   "697a0052f7182392",
+   "99792a98443772a2",
+   "a01856bbe633e727",
+   "b559f7c20573d2cb",
+   "cb775a2325450c58",
+   "de4632b883717eda"
+  ],
+  "48": [
+   "0261c50f54a1584f",
+   "4f928a8184f65391",
+   "910dcc6e85684698",
+   "a0e008de71818256",
+   "a0f9acdf881d6ccb",
+   "b3334ed4e3fc2ec1",
+   "b476f09306550d2d",
+   "b8864270eefb4675",
+   "d090698d441d7464",
+   "dba71246808233d6",
+   "ef4d1920b54b39c4",
+   "fac6ba33b34705e5"
+  ]
+ }
+}

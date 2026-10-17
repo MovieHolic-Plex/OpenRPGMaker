@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3120dfea614661b7dc7489ea2a95c25018dab75e4f18cfaa2fa08bb52df24af",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "tall beach grass tuft",
+ "label": "pirate-isles/pi-grass-tuft",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass tuft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tuft is rendered as flat vertical stripes with pointed tops and a flat base, drawn completely as a 2D side-view silhouette with no top-down perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5732
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clump of grass blades",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tuft is rendered as flat vertical blades seen directly from the side/front with no foreshortened depth or visible top-down perspective, typical of a 2D side-scroller graphic.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass tuft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tuft is drawn as vertical strips of blades from a flat side-scroller elevation with no visible depth, top surface, or 3/4 top-down foreshortening (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4755
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass tuft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tuft consists entirely of vertical blade columns drawn from a flat side/front elevation with no top-down foreshortening, depth, or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5360
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.577Z",
+ "cells": {
+  "16": [
+   "50c7ca8736890bc0"
+  ],
+  "24": [
+   "0aeccd336e3230c7",
+   "39a433de30247f17",
+   "6c99095b76b8e66c",
+   "9947a3790706c179",
+   "b3b3850feb311e23",
+   "d47d5d29e9119234"
+  ],
+  "32": [
+   "2916b1c2ded4398f",
+   "580c8b4bbbc199d2",
+   "799ab470318c7da9",
+   "ba1bbd60b0bf0776",
+   "cb999bf4cc9c167e",
+   "d5e3ea39d27d3af4"
+  ],
+  "48": [
+   "2bf23c012d974dfe",
+   "70b0b3eeab971139",
+   "7877b135e2e6d242",
+   "7c0a08c9a9c3b9ea",
+   "a4855d8634748872",
+   "e39c92505d329890"
+  ]
+ }
+}

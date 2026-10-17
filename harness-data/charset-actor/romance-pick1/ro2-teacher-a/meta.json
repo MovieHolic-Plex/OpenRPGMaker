@@ -1,0 +1,51 @@
+{
+ "key": "ro2-teacher-a",
+ "arch": "ro2-teacher",
+ "base": "Actor2:0",
+ "variant": "젊은 교수: 갈색 트위드 재킷(소매 전체 같은 갈색) + 크림 셔츠 칼라 + 와인 넥타이 + 짙은 회색 바지 + 갈색 구두. 머리는 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 cegijn"
+   ],
+   "at": "2026-10-16T13:25:07"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 cegijn"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.944,
+   "T": 0.839,
+   "B": 0.832,
+   "S": 1.0
+  },
+  "cross": 7,
+  "cross_base": 5,
+  "lone": 352,
+  "lone_base": 379
+ },
+ "reapplied": true
+}

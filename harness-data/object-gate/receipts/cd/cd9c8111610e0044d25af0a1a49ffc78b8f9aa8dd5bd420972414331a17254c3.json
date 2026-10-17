@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd9c8111610e0044d25af0a1a49ffc78b8f9aa8dd5bd420972414331a17254c3",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age quern",
+ "label": "prehistoric/ph-quern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone quern basin/slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone quern clearly shows its top surface and ground hollow (rows 4-8) in 3/4 perspective, with the south curved front face extending down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone quern",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern shows a well-defined elliptical top surface with an inner grinding basin (rows 5-8) and a rounded front/south face (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3293
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone quern basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern shows a well-defined 3/4 perspective with an elliptical hollow/top surface spanning rows 4-8 (opening ~4 rows tall) and a south-facing rounded front edge extending from row 9 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4501
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone quern bowl / grinding stone",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The quern is viewed from above at a 3/4 angle, showing its inner depression across rows 4-7 (4 pixel rows tall) and a clear south-facing front wall on rows 8-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5177
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "c2ea966a2933994f"
+  ],
+  "24": [
+   "041fcad9aefcf586",
+   "29650e49eef5174e",
+   "5a943f39db109e97",
+   "8438adb34d2d39f7",
+   "8d5edc4e196dec63",
+   "9ee3cfe9245b71f0"
+  ],
+  "32": [
+   "1674a31c142221f5",
+   "1e7c7559ef4c3009",
+   "73197ee97c109b21",
+   "a348b635b8ecef82",
+   "a7d89b63b82e9c7b",
+   "c4371a2f9c8d9f3e"
+  ],
+  "48": [
+   "0848be1ab472cb3b",
+   "092d0cb81828334a",
+   "73abff2635da1a0e",
+   "7a3ab71931821f9e",
+   "b83e5ec8bdb03742",
+   "bda3cdaac6dc6e37"
+  ]
+ }
+}

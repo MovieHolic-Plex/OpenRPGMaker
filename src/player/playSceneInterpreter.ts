@@ -1,6 +1,8 @@
+import { stepStopReason, stopsReading } from "@/project/dialogueSystem";
 import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { playQuickTimeEvent, playTeleportMenu, playTimedChoice } from "@/player/playSceneMinigames";
 import { mapTileSize } from "@/project/tileGeometry";
+import { partySkillContext } from "@/project/partySkills";
 import { cancelFurniturePush } from './furniturePushAnimation';
 import { friendshipDeltaEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
@@ -12,6 +14,7 @@ import {
   setAudioState,
   showPictureState,
 } from "@/project/session";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { store } from "@/project/store";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
@@ -56,6 +59,9 @@ import { despawnFieldEnemyForScene, runFieldSpawnEventBattle, spawnFieldEnemyFor
 import { playCommandBattle } from "./commandBattle";
 import { claimForeground, foregroundOwner } from "./foregroundControl";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
+import { advanceSocialSlotClock } from "@/player/socialSlotClock";
+import { friendshipDisplayMax, resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
+import { resolveTimeSystem } from "@/project/gameTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 import { playPresentItem } from "@/player/playScenePresentItem";
@@ -72,6 +78,8 @@ export type RunCommandsOptions = {
   readonly allowNested?: boolean;
   readonly isCurrent?: () => boolean;
   readonly onComplete?: () => void;
+  /** 전투 입장 거부처럼 호스트가 처리한 실패로 끝났을 때(완료 영수증은 남기지 않는다). */
+  readonly onHandledFailure?: () => void;
   readonly continueAfterTransfer?: boolean;
 };
 
@@ -83,7 +91,7 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
     .find((entry) => entry.event.id === eventId);
   if (!view) return;
   const event = view.event;
-  const page = view.page ?? resolveEventPage(event, scene.session, { locations: scene.map.locations });
+  const page = view.page ?? resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
   if (!page && event.condition && !evalCondition(scene.session, event.condition, undefined, { map: scene.map })) return;
   const dialogue = dialogueUi(scene);
   if (!dialogue) {
@@ -163,12 +171,20 @@ async function runTalkPath(
   if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
   if (!isTalkFriendshipEnabled(event)) return;
-  const page = resolveEventPage(event, scene.session, { locations: scene.map.locations });
+  const page = resolveEventPage(event, scene.session, { locations: scene.map.locations, ...partySkillContext(store.getCurrent(), scene.session) });
   const trigger = page?.trigger ?? event.trigger;
   if (trigger.kind !== "action") return;
-  const result = trySocialTalk(scene.session, event);
-  if (!result.ok) return;
-  showSceneEmote(scene, event.id, friendshipDeltaEmote(result.delta));
+  const result = trySocialTalk(scene.session, event, store.getCurrent());
+  if (!result.ok && result.reason !== "no-slots") return;
+  const project = store.getCurrent();
+  const loop = resolveSocialLoop(project);
+  let endsDay = false;
+  if (result.ok) {
+    // 소셜 루프: 호감 대화 한 번이 하루 시간대 한 칸을 쓴다 — 시계도 그만큼 간다.
+    advanceSocialSlotClock(project, scene.session);
+    endsDay = !!loop && socialSlotsExhausted(scene.session, loop) && resolveTimeSystem(project)?.forceSleep === true;
+    showSceneEmote(scene, event.id, friendshipDeltaEmote(result.delta));
+  }
   scene.syncRuntimeState();
   const dialogue = dialogueUi(scene);
   if (!dialogue) return;
@@ -177,7 +193,12 @@ async function runTalkPath(
   scene.running = true;
   scene.setInputEnabled(false);
   try {
-    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
+    const feedback = result.ok
+      ? formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship, max: friendshipDisplayMax(project) })
+        + (result.capped ? " (오늘은 이 사람에게서 얻을 수 있는 만큼 얻었다)" : "")
+        + (result.slotsLeft !== undefined ? ` · 오늘 남은 시간 ${result.slotsLeft}` : "")
+        + (endsDay ? " · 하루가 저문다." : "")
+      : "오늘은 더 이야기할 시간이 없다. 내일 다시 만나자.";
     await dialogue.showText({
       speaker: resolveCharacterSpeaker(store.getCurrent(), event),
       body: feedback,
@@ -185,15 +206,24 @@ async function runTalkPath(
       playerTileY: scene.tileY,
       mapHeight: scene.map.height,
     });
+  } catch (error) {
+    // 마지막 칸의 시계는 하루 끝 1분 앞에 서 있어, 피드백이 떠 있는 동안 자연 시계가 강제 취침을 먼저 건다 — 그 취침이
+    // 열린 대사를 가져가며 끊는 것이다(런타임 QA 실측 「Text cancelled」). 하루가 이미 넘어가는 중이면 정상 흐름이다.
+    const takenOverBySleep = endsDay && scene.timeSleepInProgress
+      && error instanceof DOMException && error.name === "AbortError";
+    if (!takenOverBySleep) throw error;
   } finally {
+    // 취침이 이미 대화창(에필로그)을 쥐고 있으면 여기서 닫지 않는다.
     if (scene.session === activeSession && !scene.battleAbortController && scene.sys?.isActive() !== false) {
       scene.running = previousRunning;
       scene.lastActionTargetKey = "";
       scene.setInputEnabled(previousInputEnabled);
-      dialogue.close();
+      if (!scene.timeSleepInProgress) dialogue.close();
       scene.refreshRuntimeSurfaces();
     }
   }
+  // 칸을 다 쓴 날은 저문다 — 잠자리 이벤트가 없어도 하루가 넘어가고, 기한 엔딩(onDayEnd)이 센다.
+  if (endsDay && scene.session === activeSession && scene.sys?.isActive() !== false) await scene.sleepUntilMorning();
 }
 
 function shouldOfferGiftMenu(event: CommandSourceEvent, page: RuntimeEventView["page"] | undefined, project: ReturnType<typeof store.getCurrent>): boolean {
@@ -266,7 +296,7 @@ export async function runCommands(
   };
   observe("started");
   try {
-    let result = interpreter.start(), normalCompletion = true, handledFailure = false;
+    let result = interpreter.start(), normalCompletion = true, handledFailure = false, lostBattle = false;
     scene.refreshRuntimeSurfaces();
     while (result.kind !== "done" && current()) {
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
@@ -275,10 +305,13 @@ export async function runCommands(
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
       if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
+      // 진 전투는 시야선 트레이너(발견 이벤트)의 「끝낸 만남」 영수증으로 세지 않는다 — 센터에서 돌아와 다시 시야에 들면 또 걸어온다.
+      if (step.kind === "battleProcessing" && activeSession.battleResult === "defeat") lostBattle = true;
     }
     if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
-      observe("completed"); options.onComplete?.();
+      observe("completed"); if (!lostBattle) options.onComplete?.();
     } else observe(handledFailure ? "failed" : "cancelled");
+    if (handledFailure) options.onHandledFailure?.();
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError"
       && (!current() || scene.sys?.isActive() === false)) { observe("cancelled"); return; }
@@ -365,6 +398,8 @@ async function consumeBlockingStep(
 ): Promise<StepResult> {
   const dialogue = dialogueUi(scene);
   if (!dialogue) return { kind: "done" };
+  // 오토·스킵은 사람이 직접 고르거나 장면이 바뀌는 단계(선택지·이동·전투·상점·엔딩…)에서 반드시 멈춘다(project/dialogueSystem.ts stopsReading).
+  if (stopsReading(step.kind)) dialogue.stopReading?.(stepStopReason(step.kind));
   switch (step.kind) {
     case "text": {
       const project = store.getCurrent();
@@ -393,6 +428,7 @@ async function consumeBlockingStep(
         autoAdvance: step.autoAdvance === true,
         emotion: step.emotion,
         ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
+        ...(step.endingEpilogue ? { endingEpilogue: true } : {}),
       });
       {
         const skipped = skipController.takeResult();
@@ -486,6 +522,12 @@ async function consumeBlockingStep(
       const owner = foregroundOwner(scene);
       const finishTransfer = owner?.beginAuthoredTransfer(step.mapId);
       if (owner && !finishTransfer) return { kind: "done" };
+      // 몬스터 장르: 다른 맵으로 드나드는 문 소리(체육관 이름이면 무거운 문). 다른 장르는 무음 그대로.
+      if (step.mapId !== scene.map.id) {
+        const project = store.getCurrent();
+        const destinationName = project.maps[step.mapId]?.name ?? "";
+        playMonsterSfx(project, /체육관|gym/i.test(destinationName) ? "gym-door" : "door-open");
+      }
       try { await scene.transferTo(step); }
       finally { finishTransfer?.(); }
       return resumeAfterSurface(scene, interpreter);
@@ -499,7 +541,7 @@ async function consumeBlockingStep(
       dialogue.hide();
       const session = scene.session;
       const callback: unknown = scene.game.registry.get(step.kind);
-      if (typeof callback === "function") await callback();
+      if (typeof callback === "function") await callback(step.kind === "openMenuScreen" ? step.screen : undefined);
       return scene.session === session ? resumeInterpreter(interpreter) : { kind: "done" };
     }
     case "spawnFieldEnemy":
@@ -571,13 +613,13 @@ async function consumeBlockingStep(
       return resumeAfterSurface(scene, interpreter);
     case "battleProcessing": {
       try {
-        const result = await playCommandBattle(scene, step, isCurrent);
+        const result = await playCommandBattle(scene, step, isCurrent, isCurrent, currentEventId);
         if (result === null || (result === "defeat" && !step.canLose)) return { kind: "done" };
         return resumeWithValue(scene, interpreter, result);
       } catch (error) {
         onHandledFailure();
         console.error("[player] event battle failed", error);
-        showBattleAdmissionError(scene, error);
+        await showBattleAdmissionError(scene, error);
         return { kind: "done" }; // Do not resume the interpreter or invent a battle result.
       }
     }

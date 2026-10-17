@@ -1,0 +1,1464 @@
+[
+ {
+  "name": "farm__farm-barn__v2",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "farm-user",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+ },
+ {
+  "name": "farm__farm-barn__v3",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "farm-user",
+  "note": "농장 3판(PR #2541, 사용자 수락)"
+ },
+ {
+  "name": "farm__farm-coop__v2",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "farm-user",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+ },
+ {
+  "name": "farm__farm-coop__v3",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "farm-user",
+  "note": "농장 3판(PR #2541, 사용자 수락)"
+ },
+ {
+  "name": "farm__farm-fenced-plot__v2",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "farm-user",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+ },
+ {
+  "name": "farm__farm-fenced-plot__v3",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "farm-user",
+  "note": "농장 3판(PR #2541, 사용자 수락)"
+ },
+ {
+  "name": "farm__farm-plot-wheat__v2",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "farm-user",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다) — 이 조각은 구조가 같고 색만 다르다(약한 라벨)",
+  "weak": true
+ },
+ {
+  "name": "farm__farm-plot-wheat__v3",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "farm-user",
+  "note": "농장 3판(PR #2541, 사용자 수락)"
+ },
+ {
+  "name": "farm__farm-fence-v-3__v2",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "farm-user",
+  "note": "농장 2판(사용자 반려: 칸 정보량·윤곽·질감이 얕다)"
+ },
+ {
+  "name": "farm__farm-fence-v-3__v3",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "farm-user",
+  "note": "농장 3판(PR #2541, 사용자 수락)"
+ },
+ {
+  "name": "gothic__dead-tree__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__dead-tree__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "gothic__willow-dead__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__willow-dead__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "gothic__dead-tree-crows__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__dead-tree-crows__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "gothic__bush-dead__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__bush-dead__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "gothic__g-마른_풀밭_A__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__g-마른_풀밭_A__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "gothic__g-마른_풀밭_B__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2544 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "gothic__g-마른_풀밭_B__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2544 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__bld-school-8__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__bld-school-8__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__bld-admin__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__bld-admin__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__tree-zelkova__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__tree-zelkova__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__tree-pine__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__tree-pine__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__hedge__before",
+  "kind": "organic",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__hedge__after",
+  "kind": "organic",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "campus__g-캠퍼스_잔디__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2547 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "campus__g-캠퍼스_잔디__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2547 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__cabin-m__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__cabin-m__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__longhouse__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__longhouse__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__pine-l__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__pine-l__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__birch__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__birch__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__well__before",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__well__after",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__woodpile__before",
+  "kind": "organic",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__woodpile__after",
+  "kind": "organic",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "snow__g-서리_풀__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2548 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "snow__g-서리_풀__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2548 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "desert__house-adobe-4__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2550 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "desert__house-adobe-4__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2550 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "desert__house-dome-4__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2550 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "desert__house-dome-4__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2550 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "desert__palm-date__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2550 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "desert__palm-date__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2550 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "desert__g-잔잔한_모래__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2550 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "desert__g-잔잔한_모래__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2550 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "desert__g-오아시스_풀밭__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2550 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "desert__g-오아시스_풀밭__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2550 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__machiya-a__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__machiya-a__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__shrine__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__shrine__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__tree-pine__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__tree-pine__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__tree-maple__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__tree-maple__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__chozuya__before",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__chozuya__after",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__g-풀밭__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2551 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sengoku__g-풀밭__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2551 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__hab-module__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__hab-module__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__control-tower__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__control-tower__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__cargo-crate__before",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__cargo-crate__after",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__vending__before",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__vending__after",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__wall-face-hull__before",
+  "kind": "terrain",
+  "styleKind": "wall",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__wall-face-hull__after",
+  "kind": "terrain",
+  "styleKind": "wall",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sf__g-정거장_복도광장_기본_바닥__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2553 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sf__g-정거장_복도광장_기본_바닥__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2553 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sky__cottage-red__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2554 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sky__cottage-red__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2554 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sky__tower-house__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2554 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sky__tower-house__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2554 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sky__tree-round__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2554 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sky__tree-round__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2554 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sky__tree-blossom__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2554 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sky__tree-blossom__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2554 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "sky__g-풀밭__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2554 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "sky__g-풀밭__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2554 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__tavern__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__tavern__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__hut-thatch__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__hut-thatch__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__palm__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__palm__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__tree-broad__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__tree-broad__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__sand__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__sand__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "pirate__grass__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2555 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "pirate__grass__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2555 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__hut-thatch-l__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__hut-thatch-l__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__chief-house__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__chief-house__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__jungle-tree__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__jungle-tree__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__tree-fern__before",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__tree-fern__after",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__fish-rack__before",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__fish-rack__after",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__g-원시_풀밭__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2556 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "prehistoric__g-원시_풀밭__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2556 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__row-3__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__row-3__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__shop-gears__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__shop-gears__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__factory__before",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__factory__after",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__gas-lamp__before",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__gas-lamp__after",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__crates__before",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__crates__after",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__g-자갈_포석(돌_셋트)__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__g-자갈_포석(돌_셋트)__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__g-판석_보도__before",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "bad",
+  "group": "quality-before",
+  "note": "PR #2558 부모 커밋 판(이 PR 이 고치려던 얕은 판)",
+  "weak": true
+ },
+ {
+  "name": "steampunk__g-판석_보도__after",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "quality-after",
+  "note": "PR #2558 병합 후 판 — 약한 라벨(수준 미달일 수 있음)",
+  "weak": true
+ },
+ {
+  "name": "beodeul__house-h106_1",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-house-h106_1(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__house-h111_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-house-h111_0(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__house-h122_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-house-h122_0(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__house-h124_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-house-h124_0(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__tree-5844f6",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-tree-5844f6(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__tree-a80c85",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-tree-a80c85(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__tree-7ecdb8",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-tree-7ecdb8(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__prop-stall_herb_flower",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-prop-stall_herb_flower(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__prop-flower_cart",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-prop-flower_cart(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__prop-goods_pile",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-prop-goods_pile(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__prop-table_mugs",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-prop-table_mugs(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__prop-lamp_double",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 번들 키트 bd-prop-lamp_double(기준 그림 아님)"
+ },
+ {
+  "name": "beodeul__ground-plaza",
+  "kind": "terrain",
+  "styleKind": "ground",
+  "view34": null,
+  "style": "good",
+  "group": "beodeul-heldout",
+  "note": "버들항 광장 판석 그룹(기준 그림 아님)"
+ },
+ {
+  "name": "synthetic__house-h106_1",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-house-h106_1 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ },
+ {
+  "name": "synthetic__house-h122_0",
+  "kind": "structure",
+  "styleKind": "building",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-house-h122_0 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ },
+ {
+  "name": "synthetic__tree-5844f6",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-tree-5844f6 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ },
+ {
+  "name": "synthetic__tree-7ecdb8",
+  "kind": "organic",
+  "styleKind": "tree",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-tree-7ecdb8 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ },
+ {
+  "name": "synthetic__prop-stall_herb_flower",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-prop-stall_herb_flower 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ },
+ {
+  "name": "synthetic__prop-goods_pile",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": null,
+  "style": "bad",
+  "group": "synthetic-shallow",
+  "note": "bd-prop-goods_pile 를 4색 양자화+근흑 윤곽으로 얕게 만든 통제 표본"
+ }
+]

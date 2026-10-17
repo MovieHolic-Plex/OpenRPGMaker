@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c0ce4e940935903f564cb58a84c07dd835933d611bb937c494dbc53b85e79bf",
+ "width": 16,
+ "height": 48,
+ "kind": "frame",
+ "name": "갑판 사다리 (ship ladder)",
+ "label": "atlas_biome_interior/plus/ship ladder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship companionway ladder",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ladder rungs/treads clearly show horizontal top surfaces foreshortened from above (2–3 px high per step) with front edges facing south (1–2 px high), consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6976
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ship ladder (side rails and rungs)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ladder is drawn entirely in a flat front elevation. The vertical rails have no top surfaces where they terminate at row 4, the rungs only have a standard 2px edge highlight/bevel rather than true top faces, and the base lacks any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13444
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship ladder / companionway steps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each horizontal rung/step shows a clearly foreshortened top surface about 3 pixel rows tall (e.g. rows 8-10, 14-16) with a shaded front edge, correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8390
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ship ladder / companionway steps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each ladder tread/rung clearly shows a 3-pixel-tall top surface (e.g. rows 8-10, 14-16, 20-22) rendered in lighter wood above a darker 1-pixel front riser, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4992
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.901Z",
+ "cells": {
+  "16": [
+   "7b396b7d895efe0b",
+   "7fcc7be5abc62f49",
+   "bd4daa604c6dc8b6"
+  ],
+  "24": [
+   "12fc6f5344fb5e9f",
+   "20e9946281c3a3cf",
+   "2a6dbe00e55fa0e1",
+   "b6c202325854ab6c",
+   "c349e283e21f4ff7",
+   "cc621e1bc1fbccfd"
+  ],
+  "32": [
+   "030bc76f4a091529",
+   "14c248fee9ec50e1",
+   "1b60e62e8b8dd60a",
+   "4d393d7bbfcf523b",
+   "519895666c6c93d8",
+   "6b05a5fd627bab98",
+   "882f05cdb90eb774",
+   "89c2e34ecc532fab",
+   "99cfeddd510dc3ce",
+   "9b5187a08f824ae8",
+   "cfba4885cebcd297",
+   "fae7126db1efb254"
+  ],
+  "48": [
+   "c4dde1acdc877477",
+   "ce86b8949de723a5",
+   "e5070abb1cba7b3b"
+  ]
+ }
+}

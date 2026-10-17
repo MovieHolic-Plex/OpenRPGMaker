@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43b8146117b4b3697c426c72a5c445e2e69d569865b3f78514391196d7c902b4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 북·서 꺾임",
+ "label": "steampunk-city/sp-pipe-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench corner tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a pipe running through a recessed floor trench with a corner bend. As terrain/ground, it is correctly rendered in top-down 3/4 perspective with appropriate depth and shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe inside floor trench",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench corner with pipe, viewed from top-down/3/4 perspective as a terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench corner tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor trench tile with a corner pipe running from north to west; properly depicted in 3/4 top-down view with visible ground level, trench wall drops, and top-down cylindrical shading on the pipe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "배관 도랑 (pipe trench)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain feature showing a recessed floor trench with an orange pipe turning between north and west, viewed from the standard top-down 3/4 perspective with appropriate depth shading on the trench walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5918
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.735Z",
+ "cells": {
+  "16": [
+   "74db1fa51cc80070"
+  ],
+  "24": [
+   "33ee3df81554ed19",
+   "5c45bfd5de69461d",
+   "72028563ba40de02",
+   "750879ab36f8a6a3",
+   "d483849af761160d",
+   "f24f7c02e9b7c41a"
+  ],
+  "32": [
+   "0fd4a57a5d107c5e",
+   "9503ff0ac4aebcd6",
+   "978ab81f16e85a13",
+   "9bd7c991f07b5137",
+   "a1ae974c4298d336",
+   "f806dcb4ee82ea85"
+  ],
+  "48": [
+   "1cc37856f6ba18ed",
+   "4be057514bde823c",
+   "60eacbef6256ed9a",
+   "865246e41a8c4841",
+   "b9b463a07f99f096",
+   "bc6e2348e0acc33c"
+  ]
+ }
+}

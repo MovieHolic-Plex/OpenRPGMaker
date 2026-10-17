@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4babd77cd1ca40bd181af718de4172835deecded9d3457d8303655861b245359",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "흰 천 3폭 칸막이",
+ "label": "jp_city/interior_hospital/hs-folding-screen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-fold folding privacy screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The folding screen panels are drawn in an isometric zigzag projection rather than standard 3/4 top-down view, and the frame's top rails only consist of a 1-2px edge line with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6895
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-panel folding screen partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The folding screen is drawn in an isometric zigzag with panels receding into depth, but shows no top surface on its upper horizontal frame rails (only a 1px outline/rim, top_rows = 0). Receding isometric panel faces are used instead of proper top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen is drawn from eye-level (front elevation with accordion-folded panels) with no top surface visible along the horizontal upper frame beams (only a 1-2px border/outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9042
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three-panel folding screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The folding screen panels have no visible top surface on their frame rails (only a 1px outline and 1px highlight line). The object is drawn as a flat elevation without top-down 3/4 foreshortening of any horizontal frame surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6252
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "24c5f0512cafdd5e",
+   "65f1a4ada8b02dfe",
+   "720251e7ca8cc4f8",
+   "a2c0e92fe24d215a"
+  ],
+  "24": [
+   "07a8bab61c958292",
+   "0e733163100bc62a",
+   "14bfd8b410987887",
+   "2a23abb1423dc3b5",
+   "2fa7f803f0d7c111",
+   "3360bbc2aff2bad7",
+   "44ae5da9aa642265",
+   "4599a029d6e88f5c",
+   "4a5dc93af6f3a3eb",
+   "4ef15b6c17505ae5",
+   "5791db490fff3e95",
+   "6b0796e42404d6f0",
+   "81fcf301ba61841f",
+   "8885f99d7ee2c40c",
+   "8e4ac05725b06c9e",
+   "98704f8202b4ceb9",
+   "a5de3028344158f7",
+   "b14e98f3ec376e27",
+   "ede99303ff48ed6c",
+   "f0d794bd2c37c62e",
+   "f1b6382ee10b2521",
+   "f39fbb9a067a8bd1",
+   "f9de6538e39b3a59",
+   "fb00e254f864f975"
+  ],
+  "32": [
+   "53a982c1a36d36ce"
+  ],
+  "48": [
+   "07f938f19bb22b29",
+   "34924257d6a4a121",
+   "38ec94d6faee8d22",
+   "6228b7107ca7d59d",
+   "c2fac808970cbc61",
+   "e1fc3686c744ce52"
+  ]
+ }
+}

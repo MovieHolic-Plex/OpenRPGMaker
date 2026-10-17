@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb93ff7abb864febbbaca62aadcbf7ebfdb79cc8eeb3b18ee0c378a9c75e0083",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "대리석 세면 대야(벽 꼭지)",
+ "label": "desert-east/de-basin-tap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble basin filled with water",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening showing the water surface spans rows 6-10 (5 rows tall), clearly seen from above in a 3/4 top-down perspective, with the front curved rim and wall extending through rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5187
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble wash basin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wash basin has an opening viewed from above spanning rows 5-10 (6 rows of visible water surface) enclosed by back, side, and front rims, with the front south curve visible on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3450
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble washbasin filled with water",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening/water surface is prominently visible from row 6 to row 10 (5 pixel rows tall) inside the surrounding rim, with the curved front face shown below on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble basin / washbasin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washbasin opening is clearly visible from above with water filled inside from row 6 to row 10 (5 source pixel rows tall), framed by a rim and front exterior body extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3426
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.735Z",
+ "cells": {
+  "16": [
+   "d69d820d61221bb7"
+  ],
+  "24": [
+   "079faccb1cf79c4d",
+   "287f71f8a3f45d27",
+   "87ad3f7160bd27d8",
+   "8ac4021c1a10148b",
+   "c4bd7e2cf06c2238",
+   "e20c131f9bec862a"
+  ],
+  "32": [
+   "05fe7beaaca6d0c2",
+   "29691e1f678b0ffd",
+   "3c1a74717242348e",
+   "b6822e92b16e12e8",
+   "c40efb7b5a551c2c",
+   "d5425f82cb523457"
+  ],
+  "48": [
+   "32f1288f5ee698e5",
+   "6c1547ea10c30939",
+   "8cefcbfa6b14de22",
+   "991bc2b18efad06c",
+   "cc142a59a00c8b3d",
+   "feda589705f66cef"
+  ]
+ }
+}

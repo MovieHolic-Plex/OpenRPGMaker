@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "815cd5ac9688526a206a53a1e2cb60db99b47d898522677c96f4b8593046bd93",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "이층 침대(통나무 기둥, 위아래 모피)",
+ "label": "snow-north/sn-bunk-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bunk bed frame and upper bunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bunk bed is drawn as a flat architectural front elevation. The top posts and top rail show 0 rows of visible top surface, ending abruptly at row 1. Furthermore, the two bunks are stacked vertically in a flat 2D side-scroller perspective where the mattresses and pillows are displayed flat against the vertical plane rather than receding horizontally in 3/4 top-down projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9431
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk mattress surface with fur blanket and pillow is clearly visible from above, spanning rows 3-19 (17 rows), and the lower bunk mattress is also shown foreshortened from above (rows 28-39). Not a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8228
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bunk bed is drawn in a pure front/side elevation (2D cutaway view) like a platformer sprite: both upper and lower bunks are stacked vertically with identical front-facing views into the beds, showing under the upper bunk directly into the lower bunk. There is no foreshortened top surface for the overall frame (top_rows = 0, with only rounded post caps at rows 0-2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bunk bed",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bunk's horizontal mattress surface is clearly visible from above across rows 4 to 19 (16 rows), showing the pillow and fur blanket foreshortened in 3/4 perspective rather than as a flat front rail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6445
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.163Z",
+ "cells": {
+  "16": [
+   "7ecfb248fe5abeab",
+   "8785b80783e5dc6b",
+   "ce94ea2e17386f8b",
+   "cf4c54729ad10c66",
+   "e94a98f6c01da137",
+   "f0ce0bb911a9e5e8"
+  ],
+  "24": [
+   "348263cde6853c81",
+   "6135fdf1f84fec77",
+   "710dff915c56d3fc",
+   "789732b2f0772023",
+   "8e56f551f6a53faf",
+   "9a95485570fdbf18",
+   "9d1ca50464a96a2a",
+   "ab7d78abb4c995e9",
+   "cabcb5a5acea5867",
+   "dedb48fff9f8fc57",
+   "f66de7eb86324a3f",
+   "fe03c14086fe46ea"
+  ],
+  "32": [
+   "4a3c487c2945b3b8",
+   "7d3502a5f3547567",
+   "973b430e6d091ef4",
+   "f4bc048827b5d773"
+  ],
+  "48": [
+   "044e63ebc6900e59",
+   "326cca97493282a9",
+   "af276045d626dc07"
+  ]
+ }
+}

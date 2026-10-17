@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3323f0161667750c9d391aac7a2e8c1bade2657ed63e815fa8e5f006afdf4a70",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "wooden bed with pillow and quilt seen from above-front",
+ "label": "sky-island/si-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bed with mattress, pillow, and quilt",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed clearly displays its horizontal sleeping surface (pillow and checkered quilt) across rows 6-25 (about 20 rows) and its south-facing footboard and legs on rows 26-31, perfectly matching top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4242
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bed mattress and quilt surface",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows its top horizontal sleeping surface spanning rows 6 through 25 (with pillow and checkered quilt seen from above), sitting behind a 4-pixel-tall footboard front face (rows 26-29) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3475
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed mattress with pillow and quilt",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface with pillow and quilt is prominently foreshortened and visible from row 5 to row 25 (21 pixel rows), ending at a front footboard spanning rows 26 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3676
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bed with mattress, pillow, and patchwork quilt",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow and quilt) extends across rows 5 to 25 (21 pixel rows tall), seen from above in classic 3/4 top-down projection, with the footboard and legs facing south at rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3543
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.562Z",
+ "cells": {
+  "16": [
+   "3c3ba6e8f48ae7a6",
+   "6598f3009eada526"
+  ],
+  "24": [
+   "09cf1f1c896004cc",
+   "0ec84dfe004097a6",
+   "2d2b83d32659effa",
+   "3bc2662d85468dba",
+   "4772bcba587b05e5",
+   "52d5e16ae6d7a928",
+   "5d9eb4aceec20778",
+   "776e69443ab3212e",
+   "7ccee8d7e24dddd2",
+   "b1324e33064ca077",
+   "b461574ac9631613",
+   "e2ba004761d4164a"
+  ],
+  "32": [
+   "5da120c96f130227",
+   "69cd3b77eb54b446",
+   "9248231cdc0210d9"
+  ],
+  "48": [
+   "0d28340405975b2f",
+   "0f51777d3371a8aa",
+   "35d75b461a4a0cad",
+   "d5b65de7e47d9256",
+   "ddcf4d84bd9a09e2",
+   "f2d1ba5ffe735472"
+  ]
+ }
+}

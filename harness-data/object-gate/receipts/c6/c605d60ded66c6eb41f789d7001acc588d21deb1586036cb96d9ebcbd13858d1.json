@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c605d60ded66c6eb41f789d7001acc588d21deb1586036cb96d9ebcbd13858d1",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-rail-signal2",
+ "label": "jp/jp-rail-signal2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail signal box with lights",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 8-17) and its support structure/panels are drawn in pure flat front elevation; row 8-9 is merely a 1-2px flat trim/band rather than a foreshortened top surface, and the entire structure lacks 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5407
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal box and support structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation with no foreshortened horizontal surfaces visible from above; the 2px yellow band atop the signal box is merely an edge/stripe, failing the 3/4 top-down perspective requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6077
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 9-17) is drawn strictly from the front with a 1px yellow top rim and no foreshortened top surface showing its depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway signal box and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the signal head and striped barriers/panels, is drawn as a flat front elevation with straight vertical sides and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5307
+  }
+ ],
+ "decidedAt": "2026-10-13T14:22:22.864Z",
+ "cells": {
+  "16": [
+   "baff7b85d152e04e",
+   "c0c5049886d2be0c"
+  ],
+  "24": [
+   "1a5e10077a13ab41",
+   "1a84c5a7c2796bf0",
+   "2e667df7950874cb",
+   "30a117863a2a70a8",
+   "6478be72208f3c6f",
+   "74d5eb1a7c15ab67",
+   "a5fcf52c77e80299",
+   "b87daf4b70f289af",
+   "bf1180a58410c039",
+   "d5c0998b62e402e1",
+   "e62b73aab7736c30",
+   "ef8d5b32651c8ddb"
+  ],
+  "32": [
+   "2d072f8caacec572",
+   "8535e376fbc340a8",
+   "c2569179fd37e2dc"
+  ],
+  "48": [
+   "15698ed647b3e76b",
+   "7ee1699886cc378b",
+   "8ca7cf5988c89373",
+   "b0ba1a1aea847ee0",
+   "cd00193c95c58d80",
+   "f5b7916910475d3e"
+  ]
+ }
+}

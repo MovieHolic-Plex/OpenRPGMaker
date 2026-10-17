@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c331d65554de622f44c7f06073f8e1d29b0c7ac9e6a11378d3a0c807aa4c55f8",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 현창(둥근 금속 테 + 푸른 행성 가장자리)",
+ "label": "sf-station/sf-porthole-planet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Round metallic porthole/window mounted flat against a vertical wall face, displaying outer space and a planet edge. Flat wall-mounted fixtures appropriately appear without a top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6504
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular wall porthole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A round porthole mounted flat on a vertical wall displaying space and a planet rim; as a wall-mounted fixture viewed on a south-facing wall, it legitimately shows a direct frontal projection without a top horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6490
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall porthole with metal frame showing space and a planet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular porthole mounted flat on a vertical wall surface. As a wall-mounted fixture, it is viewed face-on without an exposed top surface, which matches the style rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7596
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "porthole window with round metal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular wall-mounted porthole window looking out at space and a planet, properly mounted flat against a vertical north wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5264
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.956Z",
+ "cells": {
+  "16": [
+   "153f5beae12d00b3"
+  ],
+  "24": [
+   "09ad73e74784f634",
+   "5e566dc03fd37aee",
+   "a22fb791ef0cdcc3",
+   "b78d081827ef8f9c",
+   "cf8cbac1cec9ef62",
+   "e4ff6fcb02f2152d"
+  ],
+  "32": [
+   "0acedb763f701e27",
+   "58a17b7b0839141a",
+   "72abec61234a541e",
+   "73a40ecb8f399618",
+   "a2ae5dc694a71a7b",
+   "b22de452fa9ea9a9"
+  ],
+  "48": [
+   "0f71b17b7abeec20",
+   "66ed8fa34301917b",
+   "7ab9fbda06b80424",
+   "8b52e6ca7269b9b8",
+   "b6ffee3f57b2389a",
+   "eb6e7e2efa22d446"
+  ]
+ }
+}

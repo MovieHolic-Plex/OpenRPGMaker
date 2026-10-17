@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2c8b244aa0b3062b3aed54843252b59ab10fba5bfa65b7d63bd5c0059cd5b76",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 북·동 꺾임",
+ "label": "steampunk-city/sp-pipe-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pipe trench corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor-recessed trench tile viewed from above in 3/4 perspective, showing the ground plane, recessed trench bed, and a pipe turning from north to east with appropriate cylindrical shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pipe trench corner tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a pipe turning in a recessed floor trench/channel, which is a flat or recessed terrain element. Standing object perspective rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3425
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe trench corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Recessed floor ditch/trench tile containing a pipe turning north to east, viewed in standard 3/4 top-down terrain perspective with visible trench walls and floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3958
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pipe trench corner",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain floor/trench tile showing a recessed channel with a pipe bending from north to east, correctly rendered in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.735Z",
+ "cells": {
+  "16": [
+   "9fe1b52131aae756"
+  ],
+  "24": [
+   "33f46bd2576c424b",
+   "36e15c547416bc45",
+   "43723d0e13a9e311",
+   "4ba99097cbadaaba",
+   "801da2f0d753c905",
+   "ca0247c94389b66d"
+  ],
+  "32": [
+   "232352fad15a4433",
+   "25821888d342c5fe",
+   "6045714f10eb6531",
+   "6b8913fce1fb71d4",
+   "795ac30e277357e4",
+   "a2928389c13b3e3b"
+  ],
+  "48": [
+   "219b71cd6f86fc14",
+   "6e98c0a1270978be",
+   "6fca4e259f9cf38d",
+   "9cb71034d46d3323",
+   "a3f8d727eacbaeb0",
+   "e4053cac53c2c11d"
+  ]
+ }
+}

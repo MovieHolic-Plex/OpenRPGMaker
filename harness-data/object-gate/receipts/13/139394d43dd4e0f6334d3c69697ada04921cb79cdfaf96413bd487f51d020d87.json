@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "139394d43dd4e0f6334d3c69697ada04921cb79cdfaf96413bd487f51d020d87",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "출입 보안 게이트",
+ "label": "modern_city/interior/mci-security-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "security access gate pedestals (turnstile)",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each gate pedestal clearly shows a 10-row top deck (rows 5–14) in lighter grey featuring an embedded screen and card reader, meeting the darker vertical front face (rows 16–26) at a highlighted front edge (row 15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13639
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "security gate turnstile pedestals",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each gate pedestal clearly shows its horizontal top surface (rows 5-15, 11px tall) containing the card reader/screen and indicator, bounded by a front edge highlight at row 15, sitting above the vertical front face (rows 16-25, 10px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7369
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of security gate pedestals",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gate pedestals show a clear 3/4 view: the horizontal top console surface spans rows 5-15 (11 pixels tall, showing the card reader/screen surface and indicator light) separated by a highlighted front edge at row 15 from the south-facing front vertical panel (rows 16-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10679
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "출입 보안 게이트 (security gate turnstiles)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile pedestals and center flaps are drawn in pure front elevation with only a 1px top outline (row 4). The screen/reader and lower panels are drawn entirely flat on the vertical front face without any foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7007
+  }
+ ],
+ "decidedAt": "2026-10-14T01:18:10.780Z",
+ "cells": {
+  "16": [
+   "33587b1e0d78a305",
+   "6859bd4c54066d1f",
+   "6c05a98b3d4d9030",
+   "aa0deec644bb61df"
+  ],
+  "24": [
+   "02a16eeefdc79fa7",
+   "02b48b0c8e3307ad",
+   "23824629b8b93f7a",
+   "38de676dea1b8731",
+   "3d5d4f7ff2786985",
+   "3e993ba428477cc4",
+   "3f7c24fd568f9105",
+   "41d01e480b2e884f",
+   "434f0237d8ff9647",
+   "5d7916611e874584",
+   "5d82feb8d150830e",
+   "654c81b856e0a2ce",
+   "729a818393d86e12",
+   "96f19dc205e0dd02",
+   "9ff7d780cc46c964",
+   "ce4d08cae107da0e",
+   "cf3365072fe12d22",
+   "dd133b9a32747811",
+   "e2daa37c5139c4f2",
+   "e8bc07a7798a36a8",
+   "ec16e8ee865c47bf",
+   "f3417ed319bd40ab",
+   "fe3aa2c82d8d9bf7",
+   "feb2d08cdeca89af"
+  ],
+  "32": [
+   "eafaecf35e3e7042"
+  ],
+  "48": [
+   "7261ecb25f95c263",
+   "8f32e0897c84f252",
+   "bf2d814c9ce8369b",
+   "c03d3cfccaecceda",
+   "d6d0673cb2b101a1",
+   "d83d29128da4d1a0"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60c18e82408fa1c229e91330ff170441c34717b450741dabe910f5a96272f485",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "바닥 해치(정사각 판 + 가운데 손잡이 + 경고 모서리)",
+ "label": "sf-station/sf-hatch-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor hatch plate with center handle and warning stripes",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor hatch seen from above across rows 1 to 14, with centered handle recess and corner marks, fitting the flat kind correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7452
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is drawn flat on the ground plane occupying rows 1-14 (plate body spans rows 2-13) with inset handle and warning markings, fully consistent with a top-down flat ground object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4097
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is a flat floor object viewed from above, spanning rows 2 to 14 with a central recessed handle and warning stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The floor hatch is drawn flat on the ground as a plate viewed from above, spanning rows 2 to 14 with a central recessed handle and warning stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5537
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "9daf0c34ef8e2f45"
+  ],
+  "24": [
+   "0c2ac3bb90aa2002",
+   "1ba14f51decdf35a",
+   "2d401b642996ec53",
+   "3355af4967108c77",
+   "c5b26287b82c8fe1",
+   "db9644ea5b0302c8"
+  ],
+  "32": [
+   "0f4cbf48a3badd1f",
+   "86d648cc5a8c6b84",
+   "8fa946abac0f3457",
+   "be14fa33dc117ebb",
+   "d9f177e07943c40f",
+   "f4b2a319a8e24476"
+  ],
+  "48": [
+   "0768809ab0e972f9",
+   "27227d27a0cbd193",
+   "350bd28467442ca1",
+   "5ae2ec84108d859c",
+   "744c72802777fd5a",
+   "c7e4932c67d5dbdc"
+  ]
+ }
+}

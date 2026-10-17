@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2463fc64d8aa4973324a3fe67f7636e76f2689366fda50f46f3d4bc9db95b29",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "deep blue sea water tiles, 2 variants",
+ "label": "pirate-isles/pi-deepwater",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 deep blue sea water terrain tiles depicting a horizontal water surface viewed from above with subtle horizontal ripples.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat sea water surface terrain tiles drawn with horizontal wave highlights, filling the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4335
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless deep blue water texture depicting flat horizontal sea surface spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4989
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "deep blue sea water terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water texture spanning the entire 16-row tile height viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3226
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:32.183Z",
+ "cells": {
+  "16": [
+   "1d286f3c7582c577",
+   "5e40b493eb018333"
+  ],
+  "24": [
+   "0648756d53b6a74f",
+   "074919a608ee3bae",
+   "0d1736fce327c679",
+   "1bc4cfccb3b9be52",
+   "2044a1fa3011a112",
+   "5a0c817341ab5676",
+   "5ce75c7058889714",
+   "6130498b6dd1cf2e",
+   "720b18df119958b6",
+   "a336279f9e54410f",
+   "cd757a4c7749be39",
+   "d6e35e672086f6f9"
+  ],
+  "32": [
+   "593480709bde24b5",
+   "f81eeb5fb033eaaf"
+  ],
+  "48": [
+   "22d991a49668ee86",
+   "30264bc975ea4ff7",
+   "4adfbf88e2fa5aa3",
+   "4f37a95505187d43",
+   "e1dc4099ad01998e",
+   "fba8413f2c756d8a"
+  ]
+ }
+}

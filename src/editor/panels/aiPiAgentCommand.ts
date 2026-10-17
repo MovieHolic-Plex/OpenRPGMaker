@@ -7,7 +7,7 @@ import { prepareProjectInterviewBootAssets } from "../projectInterviewBootPrepar
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
-import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
+import { friendlyApplyFailure, friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
 import { executionRoleFor } from "@/ai/buildRole";
@@ -71,7 +71,7 @@ import { createTeamBoard } from "./aiTeamBoard";
 import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 import { judgePlayableSegment, playableSegmentGateApplies } from "@/project/playableSegment";
-import { applyProjectWithHistory } from "@/editor/mapEditHistory";
+import { applyProjectWithHistory, getMapEditHistoryChanges, getMapEditHistoryEntries, undoMapEdit } from "@/editor/mapEditHistory";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 import { discardConstructionLogs, offerConstructionLogs } from "@/editor/agentConstructionReveal";
@@ -403,9 +403,16 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
   const approvedTilesetFamilies = surface.getApprovedTilesetFamilies?.() ?? [];
+  const historyChanges = getMapEditHistoryChanges(5);
+  const editHistory = getMapEditHistoryEntries().slice(0, 20).map(entry => {
+    const changes = historyChanges.filter(change => change.steps === entry.steps).map(({ steps: _steps, ...rest }) => rest);
+    return { label: entry.label, mapId: entry.mapId, steps: entry.steps, ...(changes.length ? { changes } : {}) };
+  });
   const here = {
     ...(currentMapId && base.maps[currentMapId] ? { currentMapId } : {}),
     ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies: [...approvedTilesetFamilies] } : {}),
+    // 워커는 편집기의 되돌리기 스택을 못 본다 — 라벨만 실어 보내 list_edit_history 가 답하게 한다.
+    ...(editHistory.length ? { editHistory } : {}),
   };
   // 끝낼 수 있는 첫 구간(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 상태가 합격한 뼈대면, AI 결과도 구간 끝까지
   // 갈 수 있어야 남는다. 못 가면 적용하지 않고, 이미 실시간 반영한 부분은 시작 상태(합격본)로 되돌린다.
@@ -532,6 +539,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 캔버스 시공 표시(밑그림). 워커의 `map_delta` 를 초안으로 복원해 고스트를 그린다 — 이게 없으면
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
+  let pendingClientUndo = null as number | null;
   const ghost = createPiGhostBridge({ baseProject: base });
   const navigateView = createAssistantViewNavigation(() => options.viewNavigation === true, {
     background: surface.background, signal: surface.signal,
@@ -543,6 +551,9 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     if (nested.type === "tool_end" && nested.ok) {
       const result = nested.result as { data?: unknown } | undefined;
       navigateView(nested.name, result?.data);
+      // 워커의 revert_last_edit 는 초안을 건드리지 않고 되돌림만 요청한다 — 실행이 끝난 뒤 아래에서 편집기 스택으로 실행한다.
+      const undo = nested.name === "revert_last_edit" ? (result?.data as { clientUndo?: unknown } | undefined)?.clientUndo : undefined;
+      if (typeof undo === "number" && undo >= 1) pendingClientUndo = Math.trunc(undo);
     }
     // Live modes preview authoritative checkpoints; post-commit deltas must not replay.
     if (isLiveApplyMode(applyMode)
@@ -644,7 +655,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
-      push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
+      push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "계획" });
       const planned = await stage("plan", () => runPiAgentViaCompanion({ ...buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true,
@@ -850,6 +861,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 화면의 모든 어휘(초록 「완료」 칩·「대기」 상태·성공으로 적힌 활동 로그)가 성공을 가리켰다.
   // 여기서 성공 어휘를 끊는다 — 무엇이 왜 버려졌는지 말하고, 실행 기록에도 실패로 남긴다.
   const droppedEverything = changedCount === 0 && spilledKeys.length > 0 && !options.planOnly;
+  // 되돌려 달라는 턴: 다른 변경이 없을 때만 편집기 히스토리를 실제로 되돌린다(변경이 섞였으면 그 변경이 최신 스냅샷이라 순서가 뒤엉킨다).
+  let undoneSteps = 0;
+  if (changedCount === 0 && pendingClientUndo && !options.planOnly) {
+    while (undoneSteps < pendingClientUndo && undoMapEdit()) undoneSteps += 1;
+  }
   if (changedCount === 0) {
     const answer = lastAssistantText.trim();
     const spillList = spilledKeys.map((key) => `\`${key}\``).join(", ");
@@ -862,7 +878,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       ? markTeamBoardFailed(boardState, droppedEverything ? spillReason : friendlyExecutionError(streamErrors[0]!))
       : markTeamBoardDone(
         boardState,
-        options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
+        undoneSteps ? "직전 변경을 되돌렸습니다." : options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
       );
     const failed = boardState.phase === "실패";
     const failureReason = failed ? boardState.error
@@ -870,6 +886,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       || "작업을 끝내지 못했어요." : undefined;
     const caption = failed
       ? droppedEverything ? spillReason : "작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요."
+      : undoneSteps ? "직전 변경을 되돌렸어요."
       : options.planOnly
         ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
         : answer ? "프로젝트는 바뀌지 않았습니다." : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
@@ -882,7 +899,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     finishLog({
       applied: false,
       changedCount: 0,
-      stoppedReason: failed ? "작업 실패" : options.planOnly ? "계획만" : answer ? "답변" : "변경 없음",
+      stoppedReason: failed ? "작업 실패" : undoneSteps ? "되돌림" : options.planOnly ? "계획만" : answer ? "답변" : "변경 없음",
       // 실행 기록의 ok 는 error 유무로 정해진다(activityLog). 버려진 턴을 성공으로 적으면
       // `npm run ai:log --failed` 가 이 실패를 영영 못 본다.
       ...(failed ? { error: failureReason } : {}),
@@ -928,7 +945,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
         onReview: review => {
           push({ type: "agent_spawn", agentId: `ultrabrain-${review.mapId}`, role: "reviewer", mapId: review.mapId,
-            mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+            mapName: merged.project.maps[review.mapId]?.name ?? null, task: "전체 맵 조화 검수", label: "전체 검수" });
           (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`확인 기록 · ${merged.project.maps[review.mapId]?.name ?? review.mapId}\n${review.summary}${review.findings.length ? "\n" + review.findings.map(f => `• ${f}`).join("\n") : ""}`);
           push({ type: "review", agentId: `ultrabrain-${review.mapId}`, mapId: review.mapId, ok: review.harmonious, findings: [...review.findings] });
         },
@@ -1026,7 +1043,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       // 그 줄이 채팅에 남아 「적용 완료」·「적용됨」 과 동시에 보인다.
       // (2026-09-25 실측: 사용자 QA 원장 「AI 검수 실패와 적용 후 안내가 모순됨」, 회귀 test/piAgentRunOutcome.test.ts)
       surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요.");
-      push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
+      push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "전체 검수" });
       // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
       // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
       push({ type: "agent_event", agentId: "ultrabrain", event: { type: "error", message: `검수 불가 — ${message}` } });
@@ -1130,8 +1147,10 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   }));
     if (!appliedResult.ok) {
       const reason = `적용 실패(${appliedResult.reason}): ${appliedResult.issue ?? "무결성 오류"}`;
+      // 화면에는 내부 사유 코드·도구 이름 없이 한 문장으로, 원문은 실행 기록(finishLog)에만 남긴다.
+      const shownReason = friendlyApplyFailure(appliedResult.reason, appliedResult.issue);
       publishFinalOutcome();
-      boardState = markTeamBoardFailed(boardState, reason); sync();
+      boardState = markTeamBoardFailed(boardState, shownReason); sync();
       finishLog({ applied: false, changedCount, error: reason });
       surface.setStatus("적용 실패");
       surface.appendProcess?.(reason);

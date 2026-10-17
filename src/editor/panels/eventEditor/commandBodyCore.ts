@@ -47,7 +47,7 @@ import { appearanceBindingControl } from "../appearanceBindingControl";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
-  SHARED_PORTRAIT_EXPRESSIONS, SHARED_PORTRAIT_EXPRESSION_LABELS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId,
+  SHARED_PORTRAIT_EXPRESSION_LABELS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitId, sharedPortraitSetHasFaceCells,
   type SharedPortraitExpression, type SharedPortraitMode,
 } from "@/assets/sharedPortraitAssets";
 import {
@@ -55,6 +55,7 @@ import {
   normalizeDialogueFullScale,
   resolveDialogueFullPortraitLayout,
 } from "@/project/dialogueStyles";
+import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
 import { renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
@@ -651,7 +652,13 @@ function wrapSelection(body: HTMLTextAreaElement, prefix: string, suffix: string
   }
 }
 
-/** 공용 흉상·전신의 16표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
+/** 「얼굴로 돌아가기」는 48px 얼굴 낱장이 있는 세트에서만(현대 연애 세트는 흉상·전신뿐). */
+function faceReturnAvailable(resourceId: string): boolean {
+  const portrait = findSharedPortrait(resourceId);
+  return Boolean(portrait) && sharedPortraitSetHasFaceCells(portrait!.setId);
+}
+
+/** 공용 흉상·전신의 표정 줄. 고르면 표정이 없는 대사에 쓸 기본 그림이 바뀐다. */
 function sharedPortraitExpressionRow(
   setId: string,
   mode: SharedPortraitMode,
@@ -661,7 +668,7 @@ function sharedPortraitExpressionRow(
   return el("div", {
     class: "event-command-face-portrait-expressions",
     dataset: { testid: "event-command-face-portrait-expressions" },
-    children: SHARED_PORTRAIT_EXPRESSIONS.map((expression) => {
+    children: sharedPortraitExpressionsOfSet(setId).map((expression) => {
       const id = sharedPortraitId(setId, mode, expression);
       const url = resolveAssetResourceUrl(id, { project: store.getCurrent() });
       return el("button", {
@@ -850,7 +857,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     refreshPreview();
     refreshGallery();
     const sharedSet = sharedExpressionSetIdOf(resource.value.trim());
-    faceReturn.style.display = findSharedPortrait(resource.value.trim()) ? "" : "none";
+    faceReturn.style.display = faceReturnAvailable(resource.value.trim()) ? "" : "none";
     bustPreset.title = sharedSet ? "이 인물의 흉상 — 대사 창 옆 초상" : "Actor1 흉상 — 대사 창 위 대형 초상";
     fullPreset.title = sharedSet ? "이 인물의 전신 — 대사 창 뒤에 크게" : "전신 레이아웃 (id: generated-face-actor1-full)";
     const linked = Boolean(appearanceId);
@@ -938,14 +945,14 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     on: {
       click: () => {
         const portrait = findSharedPortrait(resource.value.trim());
-        if (!portrait) return;
+        if (!portrait || !sharedPortraitSetHasFaceCells(portrait.setId)) return;
         resource.value = `${portrait.setId}-00`;
         apply();
       },
     },
   });
   // .btn 의 display 가 hidden 속성을 이기므로 style 로 숨긴다.
-  faceReturn.style.display = findSharedPortrait(cmd.resourceId) ? "" : "none";
+  faceReturn.style.display = faceReturnAvailable(cmd.resourceId) ? "" : "none";
 
   const resourceActions = el("div", {
     class: "event-command-face-resource-actions",
@@ -1081,6 +1088,11 @@ function displayTextSettingsBody(
       el("p", {
         class: "event-command-settings-hint",
         text: "이후 문장·선택지·숫자 입력 창의 기본 위치를 바꿉니다.",
+      }),
+      el("p", {
+        class: "event-command-settings-hint event-command-portrait-bottom-notice",
+        dataset: { testid: "event-command-portrait-bottom-notice" },
+        text: PORTRAIT_BOTTOM_NOTICE,
       }),
     ]),
     settingsGroup("옵션", [

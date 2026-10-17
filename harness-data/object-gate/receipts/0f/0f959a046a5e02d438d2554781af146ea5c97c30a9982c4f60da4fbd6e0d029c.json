@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f959a046a5e02d438d2554781af146ea5c97c30a9982c4f60da4fbd6e0d029c",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age basket",
+ "label": "prehistoric/ph-basket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "woven basket filled with berries/grain",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening filled with grains/berries is clearly seen from above across rows 2-8 (~6-7 rows tall), while the front woven face of the basket spans rows 9-14 in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "woven basket filled with grain and berries",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket opening is drawn as an elliptical top surface visible from above across rows 3-8 (filled with grain/berries), with the vertical woven basket front face below it on rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5137
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven basket with contents (grain/berries)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket shows a wide 6-row top opening (rows 3-8) filled with grain and berries between the back rim (row 2) and front rim (row 9), above a textured woven south face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4571
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven basket filled with grain and berries",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket displays a clear foreshortened elliptical opening viewed from above (rows 3–8, 6 rows tall) showing its contents surrounded by the rim, above a 6-row front woven body (rows 9–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7982
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "5ccb10a81b0c8a56"
+  ],
+  "24": [
+   "198ceef518a15ba2",
+   "9a4fcb64a01bb35d",
+   "9c700db52b48b85e",
+   "c0cf90bd637eb944",
+   "eb84e4b2a5d45076",
+   "fc38387b5d93269a"
+  ],
+  "32": [
+   "0e17852995493341",
+   "489ae5131e70a957",
+   "970d27408409ab97",
+   "d41356fbb0e3972f",
+   "d649d8b1ba0af7c2",
+   "f79074b892c3a615"
+  ],
+  "48": [
+   "6bb2cd39ae95c0ae",
+   "78bdb34beeee6baf",
+   "7f6bfe0d7640ec53",
+   "c8512049a1bcfb0b",
+   "ce67c92e838cc34d",
+   "fce143cc7ba311e1"
+  ]
+ }
+}

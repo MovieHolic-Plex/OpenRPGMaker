@@ -385,6 +385,12 @@ export interface EncounterTableEntry {
   troopId: TroopId;
   weight: number;
   conditions?: EncounterConditions;
+  /**
+   * 야생 레벨 범위(포함). 이 항목이 뽑히면 전투 시작 때 [levelMin, levelMax] 에서 레벨을 굴려 그 레벨의 능력치·기술로 싸운다
+   * (troop 의 종 enemy 레코드 레벨은 범위를 안 줬을 때의 값). 둘 중 하나만 주면 그 값으로 고정. 종 몬스터 enemy 에만 적용된다.
+   */
+  levelMin?: number;
+  levelMax?: number;
 }
 
 export interface EncounterConditions {
@@ -403,6 +409,11 @@ export interface EncounterConditions {
    * 로케이션을 넓히면 이 조건도 함께 넓어진다(복사본이 없으므로 어긋날 수 없다).
    */
   locationId?: string;
+  /**
+   * `database.terrains[].id`. 서 있는 칸의 지형 태그(타일 → 태그 N → terrains[N-1])가 이 지형 기록일 때만 나온다.
+   * 타일 종류에 묶이므로 풀 그림을 고쳐 칠해도 조우 칸이 따라간다(키 큰 풀 = `terrain_grass`, 칩셋 태그 5).
+   */
+  terrainId?: string;
   timePhase?: TimePhase;
   season?: Season;
 }
@@ -412,6 +423,20 @@ export interface EncounterConditions {
  * 참조도 같은 맵 안에서만 걸리므로 복사본은 자기 로케이션을 가리킨다).
  */
 /** 월드맵 키트 지도의 원본 — 테마와 지형 작업 목록(`worldmap-terrain/1` 의 ops, 칸 좌표). */
+/**
+ * 월드 변형 명세(키트 kit_variant.py 의 terrain.variant) — 기준 지도와 같은 지형 위에 침수·균열·바닥 갈아엎기를 얹고
+ * 여정 검사를 「모든 장소가 어떤 수단으로든 닿는다」로 바꾼다. derive_world_variant 가 만든다.
+ */
+export interface WorldmapVariantSpec {
+  journey?: "free" | "keep";
+  palette?: string;
+  icon_preset?: "ruin";
+  icon_ratio?: number;
+  icons?: Record<string, string>;
+  protect_roads?: Array<[number, number]>;
+  ops?: Array<Record<string, unknown>>;
+}
+
 export interface WorldmapSource {
   /** tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
   theme: string;
@@ -426,6 +451,11 @@ export interface WorldmapSource {
   fitSalt?: number;
   /** Baseline generated tile arrays, used to preserve subsequent hand edits on regeneration. */
   tilemap?: { version: 1; lowerTiles: number[]; upperTiles: number[]; materialKeys: string[] };
+  /**
+   * 파멸 전/후처럼 다른 월드맵에서 파생된 변형 지도(derive_world_variant, 2026-10-15). `of` 는 기준 지도 id,
+   * `spec` 은 키트 terrain.variant(침수·균열·바닥 갈아엎기·색 표·아이콘). 있으면 재빌드가 같은 변형을 다시 얹는다. 없으면 일반 월드맵.
+   */
+  variant?: { of: string; preset?: string; spec: WorldmapVariantSpec };
 }
 
 export interface MapNamedLocation {
@@ -722,7 +752,7 @@ export interface TestPreset {
 /** 강하게 다시 하기(New Game+) 판정의 엔딩 전용 조건. 트리거 시점의 session.flags.ngplus 를 본다. */
 export type EndingNewGamePlusCondition = { kind: "newGamePlus"; value: boolean };
 
-export type EndingCondition = Extract<Condition, { kind: "switch" | "variable" }> | EndingNewGamePlusCondition;
+export type EndingCondition = Extract<Condition, { kind: "switch" | "variable" | "friendshipAtLeast" }> | EndingNewGamePlusCondition;
 
 // 선언형 엔딩 레지스트리. switch/variable conditions가 모두 참인 엔딩 중 priority가
 // 가장 높은 항목을 triggerEnding이 선택한다. epilogue는 script_cutscene과 같은 beat 배열이다.
@@ -765,6 +795,12 @@ export interface Project {
     oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory';portraitResourceId?:string;portraitMotion?:import('../openingPortraitMotion').OpeningPortraitMotion};
     oprnShopPreset?: import('./events').ShopUiPreset;
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
+    /** 대사창 읽기 보조(백로그·오토·스킵·숨기기) 저작. 없으면 옛 동작(연애 게임은 기본 구성). project/dialogueSystem.ts */
+    oprnDialogueSystem?: import('../dialogueSystem').AuthoredDialogueSystem;
+    /** 미연시 추가 화면(갤러리 잠금·엔딩 목록·세이브 카드) — project/vnExtras.ts. 생략 = 옛 동작(연애 게임은 기본 구성). */
+    oprnVnExtras?: import('../vnExtras').AuthoredVnExtras;
+    /** 미연시 대사창 룩(스킨·레이아웃 프리셋) — project/vnLook.ts. 생략 = 옛 대사창(연애·관계 프로젝트는 소재별 기본 룩). */
+    oprnVnLook?: import('../vnLook').AuthoredVnLook;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;

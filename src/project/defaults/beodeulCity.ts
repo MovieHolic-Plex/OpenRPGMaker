@@ -23,12 +23,20 @@ export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
  */
 export const BEODEUL_CITY_BASE_COUNT = 23936;
 /**
- * 농장(beodeul_farm, 2026-10-13): 고른 조각 꼬리(27,648칸) 바로 뒤 768칸. 오토타일 `farmland`(농사 런타임이 경작지를 그릴 때 읽는 id)·
- * `farmland_watered`, 작물 9칸, 울타리 7칸, 키트 `bd-farm-*`. 번들이 소유하며 덧붙이기 전용이다(scripts/content/beodeul-farm/bake_farm.py).
+ * 농장(beodeul_farm, 2026-10-13 첫 판 · 2026-10-14 2판 다시 그림 · 같은 날 3판 버들항 화풍 정렬 + 흙길 오토타일 `beodeul_farm_lane`·풀 무늬): 고른 조각 꼬리(27,648칸) 바로 뒤 768칸. 오토타일 `farmland`(농사 런타임이 경작지를 그릴 때 읽는 id)·
+ * `farmland_watered`(런타임이 물 준 칸을 그릴 때 읽는 id), 작물 10칸, 울타리 13칸, 헛간 6×6·닭장 3×3, 키트 `bd-farm-*`. 번들이 소유하며 덧붙이기 전용이다
+ * (scripts/content/beodeul-farm/bake_farm.py — 2판의 새 칸은 같은 768칸 안 빈 자리라 총 칸 수는 그대로다).
  */
 export const BEODEUL_FARM_BASE = 27648;
 export const BEODEUL_FARM_KIT_PREFIX = "bd-farm-";
-export const BEODEUL_FARM_AUTOTILE_IDS: readonly string[] = ["farmland", "farmland_watered"];
+export const BEODEUL_FARM_AUTOTILE_IDS: readonly string[] = ["farmland", "farmland_watered", "beodeul_farm_lane"];
+/**
+ * 던전 천장 테두리(2026-10-14 적대 QA, scripts/content/beodeul-dungeon/bake_dungeon_ceiling.py): 농장 꼬리(~28,415) 바로 뒤 한 행 128칸.
+ * 변형 던전 렌더와 같은 함수(dlib.ceiling)로 자른 47 모양 × 결 2 + 허공 결 2. 오토타일 `beodeul_dungeon_ceiling`(+`_b`) —
+ * author_beodeul_dungeon 이 방·통로 바깥 천장을 이 그룹으로 깔아 바닥·벽과 닿는 쪽마다 벽 두께 띠를 두른다. 번들 소유, 덧붙이기 전용.
+ */
+export const BEODEUL_DUNGEON_CEILING_BASE = 28416;
+export const BEODEUL_DUNGEON_AUTOTILE_IDS: readonly string[] = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"];
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -114,9 +122,12 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
     if (tileset.count > data.count) return familyFixed;
     // 농장 꼬리(27,648~28,415)가 생기기 전에 저장된 사본은 그 자리에 공방·기물 이식 칸(tileGrafts)을 이미 쓰고 있을 수 있다.
     // 번들 꼬리를 덮으면 그 칸의 통행·그림이 바뀌므로 그 사본은 농장 칸을 받지 않는다(밭은 단색 흙 폴백).
-    if ((tileset.tileGrafts ?? []).some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < data.count)) return familyFixed;
-    const extended = extendPickedParts(tileset);
-    const farm = mergeShippedFarm(tileset);
+    const grafts = tileset.tileGrafts ?? [];
+    if (grafts.some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < BEODEUL_DUNGEON_CEILING_BASE)) return familyFixed;
+    // 던전 천장 꼬리(28,416~)도 같은 이유: 그 자리에 이식 칸을 쓴 사본은 꼬리를 농장 끝까지만 받는다(던전은 테두리 없는 허공으로 물러선다).
+    const dungeonBlocked = grafts.some(graft => graft.targetTile >= BEODEUL_DUNGEON_CEILING_BASE && graft.targetTile < data.count);
+    const extended = extendPickedParts(tileset, dungeonBlocked ? Math.max(tileset.count, BEODEUL_DUNGEON_CEILING_BASE) : data.count);
+    const farm = mergeShippedFarm(tileset, !dungeonBlocked);
     return mergeShippedKits(tileset) || extended || farm || familyFixed;
   }
   const fresh = createBeodeulCityTileset();
@@ -138,22 +149,23 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
 }
 
 /** Cell tables from BEODEUL_CITY_BASE_COUNT on are the bundle's: copy them in (and grow the copy to the shipped count). */
-function extendPickedParts(tileset: TilesetDef): boolean {
+function extendPickedParts(tileset: TilesetDef, limit: number = data.count): boolean {
   const base = BEODEUL_CITY_BASE_COUNT;
   const shippedPass = data.passability as PassFlag[];
   const shippedMeta = data.tileMeta as TileAiMetadata[];
-  const same = tileset.count === data.count
-    && JSON.stringify(tileset.passability.slice(base)) === JSON.stringify(shippedPass.slice(base))
-    && JSON.stringify(tileset.priority.slice(base)) === JSON.stringify(data.priority.slice(base))
-    && JSON.stringify((tileset.tileMeta ?? []).slice(base)) === JSON.stringify(shippedMeta.slice(base));
-  const shippedStrips = data.animationStrips.filter(strip => strip.baseTile >= base);
+  const end = Math.min(limit, data.count);
+  const same = tileset.count === end
+    && JSON.stringify(tileset.passability.slice(base, end)) === JSON.stringify(shippedPass.slice(base, end))
+    && JSON.stringify(tileset.priority.slice(base, end)) === JSON.stringify(data.priority.slice(base, end))
+    && JSON.stringify((tileset.tileMeta ?? []).slice(base, end)) === JSON.stringify(shippedMeta.slice(base, end));
+  const shippedStrips = data.animationStrips.filter(strip => strip.baseTile >= base && strip.baseTile < end);
   const ownStrips = (tileset.animationStrips ?? []).filter(strip => strip.baseTile >= base);
   if (same && JSON.stringify(ownStrips) === JSON.stringify(shippedStrips)) return false;
-  tileset.count = data.count;
-  tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base))];
-  tileset.priority = [...tileset.priority.slice(0, base), ...(data.priority.slice(base) as ("lower" | "upper")[])];
-  tileset.terrain = [...tileset.terrain.slice(0, base), ...data.terrain.slice(base)];
-  tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base))];
+  tileset.count = end;
+  tileset.passability = [...tileset.passability.slice(0, base), ...structuredClone(shippedPass.slice(base, end))];
+  tileset.priority = [...tileset.priority.slice(0, base), ...(data.priority.slice(base, end) as ("lower" | "upper")[])];
+  tileset.terrain = [...tileset.terrain.slice(0, base), ...data.terrain.slice(base, end)];
+  tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, base), ...structuredClone(shippedMeta.slice(base, end))];
   tileset.animationStrips = [...(tileset.animationStrips ?? []).filter(strip => strip.baseTile < base), ...structuredClone(shippedStrips)];
   return true;
 }
@@ -179,14 +191,14 @@ function mergeShippedKits(tileset: TilesetDef): boolean {
 }
 
 /**
- * 농장 오토타일·칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
+ * 농장·던전 천장 오토타일과 칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
  * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
  */
-function mergeShippedFarm(tileset: TilesetDef): boolean {
+function mergeShippedFarm(tileset: TilesetDef, withDungeon = true): boolean {
   let changed = false;
   const groups = [...(tileset.autotileGroups ?? [])];
   for (const shipped of data.autotileGroups as unknown as AutotileGroup[]) {
-    if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id)) continue;
+    if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id) && !(withDungeon && BEODEUL_DUNGEON_AUTOTILE_IDS.includes(shipped.id))) continue;
     const i = groups.findIndex(group => group.id === shipped.id);
     if (i < 0) { groups.push(structuredClone(shipped)); changed = true; }
     else if (JSON.stringify(groups[i]) !== JSON.stringify(shipped)) { groups[i] = structuredClone(shipped); changed = true; }
@@ -195,7 +207,7 @@ function mergeShippedFarm(tileset: TilesetDef): boolean {
   const tileGroups = [...(tileset.tileGroups ?? [])];
   let groupsChanged = false;
   for (const shipped of data.tileGroups as unknown as TileGroupMetadata[]) {
-    if (!shipped.id.startsWith("beodeul:farm")) continue;
+    if (!shipped.id.startsWith("beodeul:farm") && !(withDungeon && shipped.id === "beodeul:dungeon_ceiling")) continue;
     const i = tileGroups.findIndex(group => group.id === shipped.id);
     if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
     else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }

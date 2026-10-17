@@ -345,26 +345,43 @@ revision 1. 재로드 deepEqual 프로젝트·맵·타일셋 true, 통행 불일
    → **버들항의 저택·귀족 구역을 이 부품 조립(지붕/박공/층 띠/붙임기둥/창 칸/탑/현관/계단)으로 옮기고 부품마다 덩굴 변형을 둔다.**
    지금 저택은 한 장짜리 그림(`bd-house-manor` 13×11)이라 부품으로 나뉘어 있지 않다.
 
-## 농장 beodeul_farm 첫 판 (2026-10-13) — 경작지 오토타일 `farmland` · 작물 · 울타리
+## 농장 beodeul_farm 2판·3판 (2026-10-14, 1판 2026-10-13 PR #2489 다시 그림) — 경작지 `farmland`·`farmland_watered` · 작물 · 울타리 · 헛간·닭장
 
 농사 런타임(`playSceneFarming.ts`)은 맵 타일셋에서 오토타일 그룹 id `farmland`(또는 `builtin_farmland`)를 찾아 경작한 칸을 그 그림으로 그린다(`farmlandGroupForTileset`).
-그룹이 없으면 단색 흙 사각형 폴백이다. 버들항에 그 그룹이 없어 새 프로젝트의 밭이 단색이었다 — 이 판이 채운다. 물 준 칸은 런타임이 틴트만 얹으므로 마른 흙 그룹 하나로 충분하다.
+**물 준 칸은 2판부터 `farmland_watered` 그룹의 같은 마스크 칸으로 그리고 틴트를 얹지 않는다**(`wateredFarmlandGroupForTileset`; 그룹이 없는 타일셋은 예전처럼 마른 흙+틴트).
+그룹이 없으면 단색 흙 사각형 폴백이다.
 
-- **그림**: 코드 손 도트 행 문자열 `scripts/content/beodeul-farm/farm_art.py`(16px, 3/4 시점, 버들항 팔레트: 흙 `#633712 #452a17 #714d29 #885a26`, 풀 `#579f35 #73b83e #4b8232`, 밀 `#fbc10d #aa7a08`). 생성 이미지·사람 없음.
-- **굽기**: `python3 scripts/content/beodeul-farm/bake_farm.py [--gate-export DIR]` — 시트 **꼬리 덧붙이기**(앞 216행=27,648칸은 그대로, 뒤 6행 768칸), 칸 표·오토타일·칸 묶음·키트 갱신, 멱등.
+- **그림**: 코드 손 도트 행 문자열 `scripts/content/beodeul-farm/farm_art.py`(16px, 3/4 시점, 버들항에서 뽑은 팔레트 글자). 1판(Sonnet)이 「거칠다」고 반려돼 전부 다시 그렸다:
+  흙은 4행 주기 이랑 몸통 + 둑 윤곽 + 남쪽 앞면 2단 + 잔디 그림자, 작물은 칸 밖으로 넘치지 않게 찍는다(`wrap=False`), 울타리는 공용 말뚝(머리 윗면 4행) 하나를 모든 조각이 쓴다.
+  세로 줄 가로대는 말뚝 **옆면**에 붙인 위에서 본 띠다(앞면을 덮으면 판정자가 「윗면 0행 기둥」으로 읽었다) — 그래서 서쪽 둘레 `v` 와 동쪽 둘레 `vE` 가 따로 있다.
+  문은 가로 울타리와 같은 비례의 **열린 틀**(위 띠장 윗면 2행+앞면 2행·사선 빗장·끝 세로대·아래 띠장, 틈은 투명) — 꽉 막힌 널판은 「정면 입면도」로 FAIL 했다.
+  헛간 6×6(기와 지붕·건초 다락 박공·X 빗장 두 짝 문·돌 기초) · 닭장 3×3(널 지붕·문 하나·알 상자·경사판). 생성 이미지·사람·글자 없음.
+- **굽기**: `python3 scripts/content/beodeul-farm/bake_farm.py [--gate-export DIR]` — 시트 **꼬리 덧붙이기**(앞 216행 그대로, 뒤 6행), 칸 표·오토타일·칸 묶음·키트 갱신, 멱등.
+  **굽기 안에 3/4 관문이 걸려 있다**: 현재 그림 해시의 PASS 영수증이 없는 새 칸은 비워 두고, 이미 번들에 있던 칸(1판 번호)이 막히면 exit 2.
   `bake_picks.py` 가 시트를 다시 자르면 꼬리가 사라지므로 그 끝에서 이 스크립트를 자동으로 다시 부른다(`--dry` 제외).
-- **칸 번호**(`BEODEUL_FARM_BASE = 27648`, 총 28,416칸): 마른 흙 27648~27652 / 27776~27780 / 27904~27907 · 물 준 흙(손으로 칠할 때만) 27654~27658 / 27782~27786 / 27910~27913 ·
-  작물 28160~28168(밀 싹·자람·익음 / 배추 / 토마토) · 울타리 28288(가로)·28290(모서리 NW)·28291(모서리 NE) — 28289(세로)·28292(SW)·28293(SE)·28294(문)은 번호만 예약, 관문 미통과라 칸이 비어 있다.
-- **`farmland` 그룹**: neighborhood 8, 멤버 14칸(몸통·4변·4모서리·외딴 점·오목 모서리 4 — 기본 11역할 틀에 오목 모서리를 방향별로 더했다). 가장자리 바깥 2px 은 잔디 737 화소를 구워 넣어 어느 칸 위에도 얹힌다.
-  `farmland_watered` 는 같은 그림의 한 단 어두운 판(런타임은 안 쓴다). 오토타일 id 와 `beodeul:farm*` 칸 묶음은 번들 소유(`BEODEUL_FARM_AUTOTILE_IDS`).
-- **키트**(`bd-farm-*`): 흙만 4×3 · 밀 4×3 · 배추·토마토·밀 4×3 · 밭 윗변 울타리 4×1(모서리+가로 둘+모서리). 흙은 아래층, 작물·울타리는 윗층. 작물은 걸음, 울타리는 막힘(`bd-farm-` 접두 키트는 번들 소유). 문 달린 울타리 두른 밭 키트는 관문 통과분이 모자라 아직 없다.
-- **기존 프로젝트**: `ensureBeodeulCityTileset` → `extendPickedParts`(꼬리 칸 표) + `mergeShippedFarm`(그룹·묶음). **예외**: 꼬리가 생기기 전에 저장돼 27,648번 이후 칸에 `tileGrafts`(이식 칸)를 이미 쓰는 사본은
-  번들 꼬리를 덮으면 그 칸이 바뀌므로 농장 칸을 받지 않는다(밭은 단색 폴백). 이식 칸 재배치는 하지 않았다.
-- **작물 그림의 한계**: 런타임 작물은 타일이 아니라 스프라이트 시트(`FARMING_CROP_SPRITE_ASSETS`, `graphicStages {resourceId, frame}`)에서 그린다. 이번 작물 9칸은 맵에 타일로 놓는 용도이고,
-  런타임이 밭에 자동으로 그리게 하려면 같은 그림을 16×16 프레임 시트 에셋으로 등록하고 작물 레코드 `graphicStages` 를 이어야 한다(밀·배추는 기존 시트에도 없다) — 남은 일.
-- **3/4 관문(object-gate, 2026-10-13 실측, 영수증은 `harness-data/object-gate/receipts`, 프로필 `c69574d8ced1cdf8` 미보정이라 출구 배선 전)**: 작물 9칸 organic **PASS 9/9** · 마른 흙 4×3 표본 terrain **PASS** ·
-  울타리 가로 `e7a18502cd6c`·모서리 NW `ddfeabaa73b5`·모서리 NE `19190f211d8b` **PASS**(frame). **세로·모서리 SW·SE·문은 6판을 돌려도 FAIL**(판정자 중 gemini 가 말뚝 윗면을 「1px 윤곽」으로 읽음, 이웃 줄기와 이어 그린 윗면 8행도 0행 판정) →
-  **「3/4 관문 미통과」라 시트에 굽지 않았다**(원본 `farm_art.py` 에는 있고 `bake_farm.py` `PENDING_FENCE` 로 뺀다). 통과하면 `PENDING_FENCE` 에서 빼고 다시 굽는다. 물 준 흙 판은 마른 흙의 팔레트 교체(같은 윤곽).
+- **칸 번호**(`BEODEUL_FARM_BASE = 27648`, 총 28,416칸, 1판 번호 그대로 + 덧붙이기):
+  마른 흙 27648~27652 / 27776~27780 / 27904~27907 · 물 준 흙 +6열(27654~ … 27913) ·
+  작물 28160~28168(밀 싹·자람·익음 / 배추 / 토마토) + **28169 씨 뿌린 이랑** ·
+  울타리 28288 가로 · 28289 세로(서쪽 둘레) · 28290 NW · 28291 NE · 28292 SW · 28293 SE · 28294 문 · 28295 서끝 · 28296 동끝 · 28297 세로 북끝 · 28298 세로 남끝 · 28299 홀로 선 말뚝 · **28300 세로(동쪽 둘레 `vE`)** ·
+  헛간 27664(6×6, 행 0~5 열 16~21) · 닭장 27672(3×3, 열 24~26). 건물 윗 줄(헛간 3·닭장 1)은 ★ 통과, 아랫줄은 막힘.
+- **`farmland` 그룹**: neighborhood 8, 멤버 14칸(몸통·4변·4모서리·외딴 점·오목 모서리 4). 가장자리 바깥은 잔디 737 화소를 구워 넣어 어느 칸 위에도 얹힌다.
+  `farmland_watered` 는 같은 윤곽의 팔레트 한 단 어두운 판. 오토타일 id 와 `beodeul:farm*` 칸 묶음(`farmland`·`farmland_watered`·`farm_crops`·`farm_fence`·`farm_buildings`)은 번들 소유.
+- **키트**(`bd-farm-*`, 번들 소유): `plot-soil`·`plot-wheat`·`plot-mixed`(4×3) · `plot-cabbage`(5×4) · `plot-tomato`(4×3) · `plot-sowing`(5×4) · `fence-run-4` · `fence-v-3` ·
+  **`fenced-plot`(7×6, 둘레 울타리 + 남쪽 문, parts gate)** · **`barn`** · **`coop`**(parts entrance). 흙은 아래층, 작물·울타리·건물은 윗층. `routePropPolicy` 는 필드 맵에 헛간·닭장을 거부한다.
+- **기존 프로젝트**: `ensureBeodeulCityTileset` → `extendPickedParts`(꼬리 칸 표) + `mergeShippedFarm`(그룹·묶음) + `mergeShippedKits`(`bd-farm-`). **예외**: 꼬리가 생기기 전에 저장돼 27,648번 이후 칸에 `tileGrafts` 를 이미 쓰는 사본은 농장 칸을 받지 않는다.
+- **장면·검사·참고문서**: `npx vite-node --script scripts/content/beodeul-farm/farm_scenes.mts [--out DIR] [--refs]` — 엔진 렌더러로 장면 5개(조각보 밭·농가 마당·과수원과 목장·마을 텃밭·파종)를 그리고
+  `checkFarm`(작물이 흙 밖·흙 가장자리 모양 불일치·울타리 틈·문 막힘·문 앞 길 없음·건물이 흙 위·겹침)을 돈다. `--refs` 는 `farm_refs.mts` 로 `public/assets/beodeul-farm/`(아틀라스·장면·오류 그림 4)과
+  `tiledata/beodeul-farm/`(사전·실행 순서·예제 배열·오류 예제)을 쓰고 `beodeulCityReferences.json` 의 용도 `beodeul-farm` 을 갱신한다(조작 4종 모두 검출 확인). 장면 증거 `verify-shots/beodeul-farm/`.
+- **적대적 시각 QA(한 번, 2026-10-14)**: 장면 5개에서 결함 10건(1폭 길이 너덜함·씨 이랑 안 보임·문짝 너무 어두움·마당 소품 일렬·과수원이 덤불 덩이·닭장 길 없음 등) → 한 번 고쳐 다시 그림. 밀 익음이 밭 옆 가장자리로 2px 넘는 것은 받아들였다.
+  `door-unreached` 검사는 이 QA 에서 검사기가 놓친 결함으로 더했다.
+- **런타임 확인(LLM 없음)**: `farm_runtime_check.mts` + `farm_runtime_compose.py` — life-full 픽스처의 농장 맵을 버들항으로 바꿔 괭이질 23·심기 23·물 주기(반쪽→전부→반쪽)·하루씩 성장·수확(감자 11)을 실제 런타임 함수로 돌리고,
+  스텁 씬에 `renderFarmOverlays` 를 불러 칸마다 기대 마스크의 마른/물 준 칸 번호와 틴트 없음을 대조한다 — 2026-10-14 실측 어긋남 0.
+- **3/4 관문(object-gate, 2026-10-14)**: 27항목(흙·물 준 흙 terrain, 작물 10 organic, 울타리 13 frame, 헛간·닭장 structure) **PASS 27/27 — 프로필 `ca6aaa9c55194dc5` 미보정이라 「임시 통과」**.
+  세로 울타리는 옆면 띠로 다시 그려 통과, 문은 두 번 FAIL(얇은 기둥 / 꽉 막힌 널판) 뒤 열린 틀로 통과. 실패 영수증도 지우지 않고 남겼다. 프로필이 보정되면 다시 받아야 한다.
+- **3판 화풍 정렬(2026-10-14, 사용자 「농장 칩 분위기가 버들항과 너무 다르다」)**: 헛간·닭장을 버들항 민가 문법(테라코타 기와 행마다 한 단씩 내려가는 램프·용마루 막새·처마 밑 회벽 그늘 4단·3폭 목재 보·1단 돌 기초)으로, 울타리는 윤곽 #2a1a0f·말뚝 5폭으로(2폭·1행까지 줄인 판은 3/4 관문 전부 FAIL), 작물은 버들항 텃밭·밀밭 톤으로, 버들항에 없던 색 4개를 없앴다. 새 칸: 반듯한 흙길 오토타일 `beodeul_farm_lane`(27680+마스크, 재료 「버들항 농장 흙길」, 번들 소유 `BEODEUL_FARM_AUTOTILE_IDS`)·풀 무늬 6(27808~27813). 울타리는 낱개 영수증 + 조립 표본 `fence_assembled` 영수증(부품 예외)으로 덮인다. 장면 6 「마을 가장자리」 추가, 비교 `~/claude-viz/farm-style.html`.
+- **작물 그림의 한계(남은 일)**: 런타임 작물은 여전히 스프라이트 시트(`FARMING_CROP_SPRITE_ASSETS`)에서 그린다(밀·배추는 그 시트에도 없다). 시트 작물 칸은 맵에 타일로 놓는 용도다.
+- **조수**: `create_farm_plot`·`author_beodeul_town` 설명에 「밭 하나 4×3~8×5 직사각형마다 쓰임·울타리·2폭 길, 띠 전체를 흙으로 메우지 말 것, bd-farm 키트, 참고문서 beodeul-farm」을 넣었다. 실제 조수 실행 검증은 아직 없다(할당량) —
+  나중 실조수 시험은 「농장 마을」 요청이 울타리 친 밭 여러 개+길+헛간을 내는지, 띠를 흙으로 메우지 않는지 볼 것. 마을 생성기(`authorBeodeulTown`)의 자체 밭은 아직 포도밭+숲 울타리를 쓴다.
   허수아비·우물은 새로 그리지 않았다 — 기존 `bd-pick-wheat-roman-road-scarecrow`·`bd-prop-well_roofed` 를 쓴다.
 
 ## 남은 것
@@ -616,3 +633,103 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 공용 배선은 bundled.ts/geometry/defaultAssets/createBeodeulCityTileset/ensureBundledTilesets와 `beodeulForms.ts`다. source 본체6/그림자6/기초6 도장을 city에 translateTiles로 이식하며 새·기존 프로젝트 양쪽에서 참고문서 `beodeul-forms`를 갖는다. 그림자2층→본체3층→기초4층을 같은 원점에 놓고 각각의 벽 접점을 따른다. 기초/그림자의 통행 ★가 벽 X를 덮지 않는다. 길1층은 별도로 연결한다. 조수는 같은 실루엣3개를 나란히 놓지 않고 폭/높이/용마루/별채가 다른 몸체를 조합한다.
 
 새 지도 `map_beodeul_forms_village`는 50×50/16동/아치 다리2개다. 이전 다섯 지도와 기존 사용 칸의 통행을 보존한다. 전체16개 문앞과 다리 둑까지 실제 canMove 도로 경로를 확인한다. 여관 입구(35,13)를 anvil로 막은 실제 변조는 true→false로 검출한다. 50×50 재현 `scripts/content/lib/beodeul-forms-village.mts`, 자료 준비 `prepare-beodeul-forms-references.mts`, 정본 API 저장·별도 프로세스 재로드·전용 player.html 화면 `verify-shots/beodeul-forms/`. 외장 저작이며 실내/거래/문 전이 이벤트를 추가한 것은 아니다.
+
+## 던전 층: 받침 규칙 + `author_beodeul_dungeon` (2026-10-14, 사용자 스크린샷 · field-enemy fe1)
+
+**증상:** 「필드에 몬스터가 돌아다니는 던전 층을 만들어 줘」(Argon medium, 48×38)가 25분 시간 초과로 끝났을 때 맵에 횃불·화로·통·상자·기둥이 검은 허공에 뜨고, 벽·바닥 조각이 잘려 서 있고, 상자 이벤트가 천장 칸에 놓였다. trace: `stamp_object` 112번(호출당 ≈4초) + `paint_tiles` 67번(≈3초) ≈ 도구 시간 11분, `run_lint` 0건.
+
+**원인(모델 탓이 아니다):**
+1. 참고문서 `bd-pick-doc-dungeon-guide` 의 공식 절차가 「키트를 `stamp_object` 로 한 개씩 절대 좌표로」였다. 던전 시공기가 없었다 — 좌표 계산 전부가 모델 몫.
+2. `checkKitPlacement` 는 겹침·경계만 봤고 「이 칸 밑이 바닥인가」를 보지 않았다. 찍기가 항상 성공하니 같은 일을 계속 시킬 이유가 생겼고, 거절 → 재시도 루프가 아니라 **성공한 호출이 200번**이었다(장식이 목표라 끝이 없다).
+3. 허공을 `paint_tiles` 로 다시 칠하면 이미 찍은 물체가 허공에 남는다. 시작 위치 무결성 때문에 작은 허공 사각형도 많이 칠했다.
+4. `projectLint`·`check_reachability` 는 「바닥 위 물체」·「천장 칸 이벤트」를 안 봐서 0건으로 통과.
+
+**수리:**
+- `src/project/groundSupport.ts` — 던전 테마 키트(`ai.themes` 에 dungeon)만 대상. 규칙: 천장(허공) 위 금지 · 서는 물체의 맨 아랫줄이 벽이면 금지 · 벽걸이(`torch-wall|banner|niche|chains|sconce`)는 벽 칸에만 · 문·아치 바로 남쪽은 바닥 · 벽 앞면 바로 남쪽이 천장/빈 칸이면 거절. 훅 둘: `kitPlacementRules.checkKitPlacement`(stamp_object 가 어기면 칸·이유·가까운 올바른 자리 3곳을 돌려주고 거절), `projectLint.checkGroundSupport`(코드 `ground-support`, 칸 단위 error + 허공 향한 벽 warning, 천장 칸 이벤트 error — 커밋 게이트가 기준선 대비 새 오류만 막으므로 paint_tiles 가 물체 밑을 지우는 길도 막힌다).
+- `src/editor/dungeonKit/beodeul/compose.ts`(옛 `src/editor/beodeulDungeon/`) + `src/editor/tools/dungeonTools.ts`(옛 beodeulDungeonTools.ts, 현재 도구 이름 `author_dungeon`, 옛 이름은 별칭) — 도구 `author_beodeul_dungeon({rooms:[{kind,w,h,from,dir}]})`. 방 목록 → 배치(통로 4칸·바닥 3줄 폭) → 바닥 마스크 → 천장 → 벽 앞면(바닥 북쪽 변 위 3줄만) → 마스크에서 장식 유도(방 종류별). 끝나면 위 받침 규칙으로 자기 결과를 검사하고, 입구에서 모든 방이 걸어 닿는지 BFS 로 본 뒤에만 맵을 만든다(어기면 맵 안 만들고 거부). 결과 `data.rooms[].spots` 가 이벤트·적·상자를 둘 수 있는 빈 바닥 칸이고 `stairsUp.front`/`stairsDown` 이 이동 지점이다. 빈 시작 맵이면 방 배치 크기로 넓혀 그 자리에 짓고 시작 위치를 입구로 옮긴다.
+- 안내: 참고문서 던전 절(md + `src/assets/beodeulCityReferences.json` 베이크본), `intentDeclaration`·`sessionToolExposure`·`toolCapabilityIndex`·도구 설명이 던전 층은 이 도구 하나로 가라고 한다.
+- 시험 케이스: `harness-data/space-craft/seed.json` 의 `dungeon-fe1`(원 요청 그대로)·`dungeon-stone`·`dungeon-crypt`.
+
+**한계:** 구조는 일렬 방+통로 그래프다(ㄱ자·갈림길 방·물 구역 없음). 방 안 장식은 종류별 규칙형이라 같은 종류 방은 비슷하다. 이벤트(적·상자·이동)는 조수가 spots 에 직접 둔다. 필드 적 시스템 쪽 도구는 건드리지 않았다.
+
+**실조수 재시험(2026-10-14, Argon medium, 같은 요청 「필드에 몬스터가 돌아다니는 던전 층을 만들어 줘」, `space-craft` 케이스 `dungeon-fe1`):**
+수리 전(origin/main) 15분 하네스 한도에서 미완결(stamp_object 65·paint_tiles 5·upsert_troop 8 …), 수리 후 3분 11초·도구 호출 28번(author_beodeul_dungeon 1번)·받침 없는 물체 0·전부 도달·lint error 0. 정본 저장·재로드 sha256 일치(테스트 프로젝트 0376c4e4-a5d7-4702-88cf-b8cae5523ff0). 중간 시행에서 두 가지를 더 고쳤다 — (1) 의도 노트가 `space=interior` 라서 조수가 손 도트 실내 도구를 찾으며 7분을 읽기만 함 → 던전 선언이면 전용 노트, (2) 배치 품질 권고(빈 바닥 ≤30%)가 던전 큰 홀을 「빈 방」으로 보고 조수가 `clear_map` 을 불렀음(응답 없이 15분 멈춤 — 승인 대기로 보이며 별도 조사 필요) → 방마다 `composed-layout` 이름표(`dungeon-room`)를 달아 권고에서 뺐다. 증거: `~/claude-viz/dungeon-place-fix.html`.
+
+### 던전 시공기 2판 — 적대 시각 QA 뒤 한 번 고침 (2026-10-14 같은 날)
+
+사용자: 「던전은 수리 후에도 문제가 있는듯」. 1판 출력(받침은 맞음)을 원 해상도 4분면으로 다시 본 결함과 원인:
+
+| 결함 | 원인(코드) | 2판 |
+|---|---|---|
+| 바닥 가장자리가 검은 허공에 그대로 잘림(앞 턱·옆벽·벽 윗면 없음) — 방이 종이 오린 것처럼 보임 | 천장을 3×3 견본 키트 `bd-pick-aqueduct-sewer-ceiling` 의 가운데 칸(테두리 없는 허공) 하나로만 깔았다. 그 키트는 변형 렌더의 견본일 뿐 47 모양 오토타일이 아니다 | 천장 오토타일 `beodeul_dungeon_ceiling`(+결 2 `_b`) — 변형 던전 렌더와 **같은 함수**(`tiledata/beodeul-variants/_lib3/dlib.py::ceiling`, 벽 두께 띠 8px)로 자른 모양을 시트 꼬리 28,416~ 한 행에 굽고(`scripts/content/beodeul-dungeon/bake_dungeon_ceiling.py`, 실제로 나오는 22 모양 × 결 2 + 허공 결 2 = 46칸, 나머지 마스크는 가까운 모양으로 접음), 시공기가 방·통로 바깥 모든 칸을 이 그룹으로 깐다 |
+| 방 사이 통로 위 벽 토막·높이 다른 벽이 이음 없이 만남 | 위와 같음(벽 윗면 띠가 없어 높이 차가 잘린 조각으로 보임) + 세로 통로 입구가 방 모서리 1칸 안쪽까지 허용돼 1칸 벽 토막이 섬 | 띠가 단차를 잇는다. 통로 입구 양옆에 벽 3칸(좁은 방 2칸) 이상, 세로 통로는 5칸 우선(앞면 3줄 위 천장 2줄), 벽 앞면 위에 천장이 한 줄도 없으면 내부 오류 `stranded-wall` |
+| 가로 한 줄 사슬(99×28), 큰 홀 가운데가 빔, 같은 종류 방이 판박이 | 방향 후보가 N·W·E 뿐이고 들어온 문을 N 으로 잘못 기록(`opposite(N)=N`) — 허브 방에서 북쪽 갈래가 막혀 castle6 같은 목록은 `layout-failed`. 장식은 방 종류마다 고정 좌표 | N·S·W·E + 바운딩 상자가 4:3(또는 `width/height` 비)에 가까운 자리 점수, from 생략 시 직전 세 방 중에서 부모 고르기, 자리 없으면 다른 방에 붙이고 알림, 고리 통로 1~2개. 크기 ±1~2 흔들기·모서리 모따기·감방 칸막이(폭 3 감방) |
+| 횃불 5칸 간격·기둥 쌍 대칭, 장식 드묾 | `(x - r.x) % 5 === 1` 같은 고정 간격, 문 앞 줄(lane)을 방 전체 띠로 비워 큰 홀 가운데가 빔 | 벽걸이는 최소 2·평균 gap 흔들기, 바닥 물건은 종류별 가중 무작위·구석 우선 모둠(같은 방 안만), 줄 비우기 대신 **물건을 놓을 때마다 입구·문 칸 BFS 로 길이 끊기면 되돌림**. 묘실은 뼈 낀 바닥, 감방 칸은 감방 바닥, 통로에 배수 창살 |
+| 계단·아치가 벽 끝 마구리 칸·통로 바로 옆에 반쯤 걸림 | 계단 칸 고르기가 「벽 앞면이고 문 앞 줄이 아님」만 봤다 | 계단은 좌우 두 칸까지 같은 높이 벽(b=1·b=0)인 칸, 가운데 쪽. 벽걸이도 양옆이 같은 줄 벽인 칸만. 내려가는 계단은 여덟 이웃이 바닥인 안쪽 칸, 문에서 먼 칸 |
+| 서사 앵커 없음 | — | `data.anchors`: boss(kind boss, 없으면 입구·보물 방 아닌 가장 깊은 방) · treasure(vault) · gate(보물 방(없으면 보스방)으로 드는 통로 가운데 칸 — 잠긴 문 이벤트 자리). `rooms` 생략 + `size`(small 4·medium 6·large 9) 또는 `width/height` 로 방 구성을 코드가 정한다 |
+
+- 훑기(엔진 출력, 900판 크기만 + 400판 무작위 방 목록): 실패 0, 받침 없는 물체 0, 전부 도달(시공기 내부 검사). 쓰이는 천장 모양은 22개.
+- 3/4 관문: 천장 칸은 그 칸을 화소 그대로 품은 **시공기 실제 출력 층 그림**(표본 `tiledata/beodeul-dungeon/gate-samples/*.json`, 결마다 한 장)으로 받는다. `object-gate review` 4/4 PASS — 판정 프로필 `ca6aaa9c55194dc5` 미보정이라 **임시 통과**. 표본 JSON 을 다시 만들면 영수증도 다시 받는다.
+- 굽기 순서: `bake_picks.py` → `bake_farm.py` → (끝에서 자동) `bake_dungeon_ceiling.py`. 덧붙이기 전용, 앞 칸 그림·표는 그대로(검증: 옛 시트와 새 시트 앞 3552px 차이 없음).
+- 기존 사본: `ensureBeodeulCityTileset` 이 꼬리를 28,544 까지 늘리고 두 오토타일과 칸 묶음 `beodeul:dungeon_ceiling` 을 더한다. 그 자리(28,416~)에 이식 칸(`tileGrafts`)이 있는 사본은 농장 끝까지만 받고, 시공기는 테두리 없는 허공으로 물러서며 경고를 낸다.
+- 실조수(2026-10-14, Google gemini-4-argon medium, `space-craft` 케이스 `dungeon-fe1`): 3분 30초·호출 33·`author_beodeul_dungeon` 1번(방 6개, 55×42)·전부 도달·lint error 0, 조수가 놓은 이벤트 7개 모두 걷는 바닥·위층 빈 칸. 정본 저장·재로드 sha256 일치(테스트 프로젝트 eaf1557a-d401-4cfc-803f-c37dedbc908b, `afd73076…5b9414`). 새 케이스 `dungeon-plain`(「던전 하나 만들어줘」)은 Argon 요청 한도 초과(429)로 두 번 다 도구 호출 없이 끝나 **미검증**.
+- 표본·렌더: `bun scripts/content/beodeul-dungeon-samples.mts <dir>` → `python3 scripts/content/render-beodeul-dungeon-samples.py <dir> [--marks] [--rim]`(--rim = 굽기 전 미리 보기).
+- **남은 한계(정직):** 바닥은 여전히 2×2 무늬 한 종류(금·이끼 변형 칸이 없음 — 새 그림이 필요), 물·높이 차·계단식 구역 없음, 큰 홀 기둥은 반듯한 열주, 보스방 가운데는 싸울 자리로 비움, 칸막이 위 천장 띠는 가는 선으로 보임, 세로 통로가 4칸으로 밀리면 두 방 사이 벽이 한 줄 띠. 증거·전후 비교: `~/claude-viz/dungeon-qa.html`.
+
+
+
+### 던전 시공기 3판 — 종류(`type`) 8가지 (2026-10-14, 사용자: 「던전 종류가 좀 다양해야 할 것 같다」)
+
+2판까지는 지하묘지·성(`catacomb|castle`) 두 가지뿐이라 전부 회색 석벽 지하 묘지였다. 3판은 **배치 문법이 다른** 종류를 더했다 — 팔레트만 바꾼 것이 아니다. 도구 인자는 `type`(옛 `style` 은 별칭). 코드: `src/editor/beodeulDungeon/{profiles,grid,layouts,dress,errors}.ts` + `compose.ts`(조립), 도구 설명·낱말 표는 `beodeulDungeonTools.ts`·`intentDeclaration.ts`·`toolCapabilityIndex.ts`.
+
+| type | 문법 | 한 줄 | 액체 |
+|---|---|---|---|
+| catacomb / castle | rooms | 방+통로 나무(옛 그대로, 출력 불변) | - |
+| labyrinth | maze | 3칸 폭 통로 미로(깊이 우선+고리), 한가운데 3×2 보스 덩어리, 막다른 길 보물 | - |
+| sewer | rooms | 수로 방(양옆 보행로+다리), 저수조(섬), 펌프실 | 물 |
+| cave | blob | 타원 방+넓은 굽은 통로, 지하 호수·웅덩이, 석순·버섯·덩굴·보트, 맵을 내용 크기로 잘라냄 | 물 |
+| temple | rooms | 현관→열주 신랑→제단 성소 + 곁방 좌우 대칭(shift 0), 무너진 구역·덩굴 | - |
+| mine | rooms | 수평 주 갱도(판자 길) + 갈래 갱·채굴장(광석·광차·램프)·적재장, 갈색 흙 바닥 | - |
+| volcano | blob | 용암 못·강, 재 바닥·흑요석 뾰족돌·열 구멍·대장간 방 | 용암 |
+
+- **액체는 막힌 칸이다.** 마스크 `Grid.liquid` 는 열린 칸(천장 안 깔림)이지만 통행에서는 `water`(canMove 가 solid) · 용암(막힘 키트)이다. 길이 액체에 갈라지면 `bridgeComponents` 가 가장 짧은 액체 경로를 다리(1×1 통행 조각)로 바꿔 잇고, 못 잇는 조각은 `pruneUnreachable` 이 막는다. 벽 두께 규칙(`fixThickness`)과 연결이 서로를 깨뜨릴 수 있어 `settle` 이 고정점까지 돈다. 수로 방 양끝 두 칸은 보행로로 남긴다(물↔벽 `tileset-palette-boundary` 경고 방지).
+- **받침 규칙(#2563) 유지·확장.** `groundSupport.ts`: 벽걸이 정규식에 `vines|hanging-chain`, 액체 위에 서도 되는 물체 `boat|dock|driftwood|fish-net|bridge|lily|raft` 만, 그 밖의 물체가 액체 칸 위에 있으면 `supportProblems`·`ground-support` lint 가 오류. 비던전 테마 키트(채굴 계곡)는 `put()` 이 자체 받침 검사.
+- **방 종류가 늘었다**: channel cistern pump(하수도) · cavern lake grotto forge(동굴·화산) · nave(신전) · junction stope depot(광산·미궁). 그 종류에 없는 방 종류를 주면 경고하고 가까운 종류로 접는다. `rooms` 를 주지 않으면 종류별 계획기(`planSewer/planTemple/planMine`)가 구성한다. 미궁·동굴·화산은 방 목록을 무시하고(경고) 크기(`size`/`width×height`)만 쓴다.
+- **종류 추정**: `inferDungeonType`(낱말: 광산·갱도→mine, 화산·용암→volcano, 하수도·수로→sewer, 미궁·미로→labyrinth, 신전·유적→temple, 동굴→cave, 성채→castle, 그 밖→catacomb). 「하수도 미로」는 sewer. 도구 설명·`intentDeclaration`·`toolCapabilityIndex` 에 같은 표. 얼음 요청은 cave 로 대신하고 `iceRequested` 로 알린다.
+- **검증(엔진 출력)**: 8종 × 시드 3·7·12 = 24판 — 도구 ok, `check_reachability` 전부 도달(spots·계단·문 앞), `check_terrain_access`, `run_lint` error 0. 액체 칸을 목표로 주면 실제 `canMove` 가 0/6 거부(음성 시험). 종류 8 × 시드 40 × 크기 3 = 960판 훑기: 실패·가지치기 경고·계단/보스 누락 0, 방 목록 무작위 500판(rooms 문법) 전부 ok.
+- **조수 대용 실경로(Claude Sonnet 5.5 high 역할극 — Argon 사용 불가)**: `scripts/oprn-tools.mjs` 로 find_tools → 도구 → place_field_enemy → check_reachability → run_lint 를 실제 실행기·저장·재로드까지. 「광산 던전 만들어 줘」→mine 76×43, 「화산 동굴」→volcano 82×61, 「하수도 미로」→sewer(조수가 고름) 62×67. 정본 저장·재로드: `scripts/oprn-store.mjs init/import-json/export-json` 로 SQLite 폴더에 저장 후 내보내 맵 JSON 일치 확인(A 프로젝트 a66a9f7b-ffed-4060-80b7-39353fe42021 sha256 0fca1e40…, B 14b909cd-b62b-443b-bc2c-6580e29cba29 7f49dc2c…, C ebbeaeec-c849-4e8c-ba76-8548466ac7ae 8c1413c5…). 실제 에디터 조수·Argon 경로는 **미검증**.
+- **역할극에서 나온 마찰(미수정, 도구 쪽 별건)**: `place_field_enemy` 는 `required` 에 없는데 troopId 나 graphic 이 없으면 거절한다. 기본 부대(`troop_golem_guard`·박쥐 선두)는 필드용으로 거절돼 조수가 `upsert_troop` 으로 슬라임·오크 계열 부대를 만들어야 했다. 거절 메시지의 허용 목록이 잘린다. `run_lint` 상세는 `data.issues`.
+- **없는 그림(MISSING, `profiles.ts`)** — 이번에 한 장도 새로 그리지 않았다(그래서 3/4 관문 해당 없음, 영수증 0). 목록: 광산 — 선로 타일(가로·세로·모서리·T), 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2), 광맥 벽 앞면 변형, 채굴장 벽 광석 장식. 화산 — 현무암·재 바닥 2×2 변형 3종, 현무암 벽 앞면 3h/2h, 용암 가장자리 식은 껍질 오토타일. 동굴 — 갈색 테두리 동굴 천장 오토타일(지금은 회색 석벽 띠), 종유석 천장 늘어짐. 얼음 동굴 — 전부(beodeul_city 에 없음). 선로·광차(`props.cart` RAIL/RAIL_END/CART)와 용암 가장자리(`edges.lava`)는 `dungeon-chipset` 하네스에 **후보만 있고 사람이 안 골랐다** — 고른 뒤 굽기는 별도 단계. 후속은 Opus tile-artist 몫.
+- **남은 결함(정직)**: 광산은 석재 통로+주황 판자 길이라 선로·갱목이 없어 「광산」 느낌이 약하다. 화산은 용암이 가장자리 그림 없이 평평하고 벽은 성 벽돌, 바닥은 보랏빛 재색. 미궁은 바닥이 단조롭다. 동굴·화산에서 방 끝 코너에 천장 1칸 검은 점이 남는 곳이 있다(벽 앞면 양옆). 하수도 다리는 두꺼운 돌 띠로 보인다. 증거·점수: `~/claude-viz/dungeon-types.html`.
+
+
+### 던전 시공기 4판 — 장르 × 칩셋 어댑터 (2026-10-15, 사용자: 「던전을 장르별로 — 포켓몬풍 / 일반 RPG / 그 밖」)
+
+**구조(세 층, `src/editor/dungeonKit/`).**
+1. **칩셋 몰라도 되는 층:** `types.ts`(종류·사양) · `grammar.ts`(종류별 배치 문법 표, `inferDungeonType`) · `mask.ts`(`buildMask` → 열린 칸·방 번호·액체·다리·문 앞 보호) · `layouts.ts`(`layoutRooms/layoutMaze(thin)/layoutBlob`). 어떤 그림을 쓰는지 모른다.
+2. **어댑터(칩셋마다 하나):** `beodeul/`(compose·profiles·dress, 기존 그대로) · `monster/monsterAdapter.ts`(몬스터 키트: `monster_overworld`·`monster_dungeon` 의 기존 조각만 칠한다). 나머지 칩셋(고딕·조선·마법 학교·해적·선사·사막동양·그 밖)은 `capabilities.ts` 능력표에 **stub** 으로만 있고 **거절**한다.
+3. **장르 프리셋(`genres.ts`):** `pokemon` = 짧은 던전(방 2~4, 야생 조우 구역 전체가 걸을 때 확률로 조우, 시선 3~4칸 트레이너 한두 명, 선택 보스, 깊은 방 구멍→입구 지름길, 보물 방·잠긴 문 없음) · `rpg` = 긴 던전(medium 이상, 방 여럿, 곁방 상자, 필드 적, 보물 방 앞 잠긴 문+열쇠 방, 보스). 프리셋은 배치 인자와 **채우기 계획**(`planPopulation` → `data.population`)을 정한다. 이벤트 자체는 조수가 기존 도구로 놓는다.
+
+**라우팅(`route.ts`).** ① 기존 맵을 지으면 그 맵의 칩셋이 어댑터를 정한다 ② 새 맵이면 프로젝트 장르(`system.genre==="monster-collect"` → pokemon) 또는 이미 있는 맵들의 어댑터 다수결 ③ 요청의 `genre` 인자는 **배치 프리셋만** 바꾸고 그림체 계열은 바꾸지 않는다(칩셋 계열 지키기) ④ 어댑터가 그 종류를 못 지으면 `DungeonComposeError(type-unsupported-by-tileset)` + 가장 가까운 지원 종류를 권한다. 조용한 팔레트 바꿔치기는 없다.
+
+| 어댑터 | 짓는 종류 | 못 짓는 종류(이유) |
+|---|---|---|
+| beodeul | catacomb castle labyrinth sewer cave temple mine volcano | ice(얼음 그림 없음) |
+| monster | cave · cave:wet · volcano · ice · labyrinth · temple | catacomb castle sewer mine(지하묘지 벽·수로·선로 그림 없음) |
+| stub 7곳 | 없음(거절) | 이미 있는 재료·모자란 그림을 거절 문구가 같이 알려 준다 |
+
+**`build_monster_game` 은 이 길을 안 탄다.** 고정 템플릿·`markers.json` 앵커 맵이라 건드리면 autoplay 엔딩이 깨질 수 있다. 몬스터 어댑터는 자유 경로(`author_dungeon`)에서만 쓴다(`openwiki/monster-expedition.md` 「던전 어댑터」).
+
+**4판의 고침(beodeul 만, 새 그림 0장).** 적대 시각 QA 결함 → 원인 → 수리:
+- 동굴·광산·화산 바닥에서 2×2 무늬 반복이 격자로 보임 → `FloorSpec.mix`: 무늬 키트에서 칸마다 무작위 한 칸을 뽑는다(결·색은 그대로).
+- 동굴 통로에 하수구 창살이 박힘(성 지하 규칙을 공유) → `dressCorridor` 가 동굴·화산 통로는 잔돌·불씨만.
+- 광산에 선로·갱목이 없다 → 새 그림 없이 기존 조각으로: 판자 줄 위 광차(`cart-h`), 갱목 틀 대용 선반 조각(`rack`) 쌍, 램프, 세로 통로엔 통. **선로·갱목 그림은 여전히 없다.**
+- 화산 바닥이 보랏빛 재색 한 장 + 모래색 얼룩 → 얼룩을 같은 계열 갈색(광산 땅 키트)으로, 용암 못 가장자리 계단식은 이웃 다수결 두 번으로 완화.
+- 안 바뀐 것: 천장 회색 윤곽선(오토타일 그림), 벽 앞면(성 벽돌 / 회색 석재), 화산 벽. 그림이 필요하다.
+
+**검증:** `bun scripts/content/dungeon-proof.mts <dir>` — 종류 × 어댑터 × 장르 × 시드를 `author_dungeon` 으로 실제 시공하고 `run_lint`·`check_reachability`·`check_terrain_access` 를 같이 돌려 PNG(원 해상도)와 `proof.json` 을 쓴다(2026-10-15: 42판, lint error 0, 전부 도달, check_terrain_access 전부 true). 기존 beodeul 24판 sha1 기준선: 안 건드린 5종은 전부 동일, 고친 동굴·광산·화산만 의도적으로 바뀜.
+
+**없는 그림(다음 타일 작업자 몫, `capabilities.ts` `missingArt` 가 정본):**
+- beodeul: 선로 타일(가로·세로·모서리·T) / 갱목 지지대(벽 걸이 1×2·바닥 기둥 1×2) / 광석 박힌 벽·바닥 / 현무암·재 바닥 변형 · 현무암 벽 앞면 3h/2h · 용암 식은 껍질 가장자리 / 갈색 테두리 동굴 천장 오토타일 / 얼음 동굴 일체.
+- monster: catacomb·castle·sewer·mine 일체 / 마른 동굴 안 물·용암 조각 / 유적 신전 안쪽 칸막이 / 화산 제단·보스 연출 / 얼음 판 퍼즐 문.
+- stub 칩셋: 고딕(지하 벽·석관·감방) · 조선(동굴 벽 앞면·천장·바닥) · 마법 학교(지하 감옥 오토타일) · 해적(동굴 천장·물웅덩이) · 선사(동굴 일체·용암) · 사막동양(지하 무덤 일체) · 그 밖(던전 조각 일체).

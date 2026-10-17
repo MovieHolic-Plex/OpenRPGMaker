@@ -113,6 +113,26 @@ export function sharedEntryDigest(entry: unknown, key = ""): string | undefined 
   return digest;
 }
 
+/**
+ * 프로젝트 보기(저장 형식)의 타일셋·업로드 자산 항목 요약을 하나씩 양보하며 미리 만든다. 첫 화면 뒤 한가한 일이 쓴다.
+ * 문서 전체를 한 번에 요약하면 98MB 타일셋 프로젝트에서 메인 스레드가 5~8s 멈췄다(2026-10-14 실측) — 항목 하나(최대 약 0.4s)씩 끊으면
+ * 입력이 사이사이 끼어든다. 끝낸 항목은 믿은 공유 항목이 되어 그 뒤의 문서 요약(withTrustedSharedEntries)이 O(1) 로 지난다.
+ * `view` 는 뒤에 요약할 것과 **같은 보기 객체**여야 한다(요약 기억은 객체 정체로 붙는다).
+ */
+export async function primeSharedEntryDigests(view: unknown, yieldNow: () => Promise<void>, isStale: () => boolean = () => false): Promise<void> {
+  if (!isObject(view)) return;
+  const record = view as { tilesets?: unknown; assets?: { uploaded?: unknown } };
+  for (const dictionary of [record.tilesets, record.assets?.uploaded]) {
+    if (!isObject(dictionary)) continue;
+    for (const [id, entry] of Object.entries(dictionary as Record<string, unknown>)) {
+      if (!isObject(entry)) continue;
+      sharedEntryDigest(entry, id);
+      await yieldNow();
+      if (isStale()) return;
+    }
+  }
+}
+
 /** 믿은 공유 항목 기록을 모두 버린다 — 항목을 제자리에서 고칠 수 있는 구간(로드 정규화 등) 앞뒤에서 부른다. 이후 첫 요약은 끝까지 대조한다. */
 export function forgetTrustedSharedEntries(): void {
   trustedShared = new WeakSet<object>();

@@ -404,6 +404,8 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":

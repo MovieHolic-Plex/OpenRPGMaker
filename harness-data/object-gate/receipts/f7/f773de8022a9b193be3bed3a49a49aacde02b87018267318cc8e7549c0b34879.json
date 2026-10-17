@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f773de8022a9b193be3bed3a49a49aacde02b87018267318cc8e7549c0b34879",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-3-R",
+ "label": "jp_city/street_hand/jp-sf-ramen-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ramen shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the entrance frame, noren curtain, doors, and side sign, is drawn as a flat 2D architectural elevation with zero visible top surfaces (all horizontal framing elements are only 1-2px thick front-facing lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ramen shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top grey fascia panel (rows 1-8), the entrance lintel (row 11), noren curtain, and bottom ledge, is drawn in pure 2D orthographic front elevation with no visible 3/4 top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7110
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront entrance with sliding doors and signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, frame, awning/sign band, and lower curb, is drawn in pure front elevation with zero pixel rows of foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with red noren and glass door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade, including the upper concrete fascia band, the noren awning frame, and the ground sill, is rendered completely flat as a pure front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4613
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.381Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "2cc4bc2716f9d246",
+   "31836a5a65ac806a",
+   "408c41d74bcd1ab0",
+   "a82473e0c094cf36",
+   "b133644178093c6e",
+   "bbf792126b343f24",
+   "d387225d45ed8a74"
+  ],
+  "24": [
+   "38bd476235c8adc7",
+   "5a966b77a704fb14",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123"
+  ],
+  "32": [
+   "0658736eabc9408c",
+   "0c23c51b3c9069b9",
+   "1347ca443929ff61",
+   "25765ec08ddffc01",
+   "2fcb207e01013c79",
+   "342b031b3788eefc",
+   "3620f9235385df2a",
+   "390d3774322edf9b",
+   "41467589d7c6666b",
+   "42492ec5825a95d4",
+   "50766dde003b8c54",
+   "64a831f978acdaac",
+   "79905e407117c9a8",
+   "7ba124930bc8035f",
+   "8d619fc5f870e9fb",
+   "9e560a733c658fdf",
+   "a266c21855f65095",
+   "a9ddf09f69e07a64",
+   "ac253ad7e7572179",
+   "adf37e7240e63270",
+   "c934105e11393b28",
+   "cf7474d7ed2f0fcb",
+   "d26958d7d5bd06fa",
+   "d79d11f584683698"
+  ],
+  "48": [
+   "de1eb7236cbcf2e0"
+  ]
+ }
+}

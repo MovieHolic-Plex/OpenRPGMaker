@@ -40,7 +40,7 @@ describe("System workspace contracts", () => {
     const host = render();
     const studio = node(host, "db-system-studio");
     const targets = new Set(studio.querySelectorAll("button").map((button) => button.dataset.systemTarget).filter(Boolean));
-    expect([...targets].sort()).toEqual(["party", "display", "font", "resources", "startup", "optin", "time", "typechart", "title"].sort());
+    expect([...targets].sort()).toEqual(["party", "display", "menu", "hud", "font", "resources", "startup", "optin", "time", "typechart", "title"].sort());
     const before = JSON.stringify(store.getCurrent());
     const search = node(host, "db-system-studio-command-search");
     search.focus(); search.value = "__no_matching_setting__"; search.dispatchEvent(new Event("input"));
@@ -60,7 +60,7 @@ describe("System workspace contracts", () => {
     expect(document.activeElement).toBe(node(host, "db-field-system-resolution-width"));
     const sections = host.querySelectorAll(".db-system-section");
     const nav = node(host, "db-system-section-nav");
-    expect(nav.querySelectorAll(".db-system-section-button")).toHaveLength(11);
+    expect(nav.querySelectorAll(".db-system-section-button")).toHaveLength(13);
     expect(nav.querySelectorAll(".db-system-section-nav")).toHaveLength(0);
     node(host, "db-system-nav-party").click();
     expect(host.querySelectorAll(".db-system-section")).toEqual(sections);

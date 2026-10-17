@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68a2658e321f53cd6275eb2761010b85b565507be031f95f21bce7ac29025fed",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tavern back shelf with rows of colourful bottles and mugs, cupboard below",
+ "label": "pirate-isles/pi-bar-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern back shelf and cupboard unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 3-6 (about 4 pixel rows deep), upon which a small keg and a bottle rest. The interior shelf surfaces also show foreshortened horizontal depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3899
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern shelf / cupboard unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible from rows 2 to 5 (about 4 rows of depth) where a small barrel and bottle stand, and the inner shelf boards also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden shelf unit with top surface, middle shelves holding bottles and mugs, and cupboard doors below",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 2 to 5 with items (a small cask and bottle) resting upon it, followed by an overhanging front molding at rows 6-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2930
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern back shelf / cupboard unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 2-6 (around 4-5 source pixel rows deep), with items standing on top of it. Internal shelf surfaces also show perspective depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3255
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "87104ba905e7ee60",
+   "8ea60355420ccda2",
+   "d7cd5d57034b2fd2",
+   "db37288fa0798e4c"
+  ],
+  "24": [
+   "05b2bf755665cf1f",
+   "13779e644524e718",
+   "1e6f0327cbb69807",
+   "22875d83b3113743",
+   "26282f364edefec9",
+   "3e4909f145c1334d",
+   "4026f6e109286d61",
+   "5fcea08c1543aa8d",
+   "650c89e432b2eded",
+   "6ed237b1f97ea6c9",
+   "71d279f646c1771c",
+   "814857143832cae7",
+   "8e0e7db57075f30c",
+   "9fce88557cfe108e",
+   "a20d1b0b78079624",
+   "a75f0588a28a32f5",
+   "aea6bf61eb3cca9f",
+   "c114a0df5beb1bc9",
+   "c2702d1dde6c8692",
+   "c724f665188bce9e",
+   "d33345e927655d9d",
+   "e36810da36931918",
+   "e4d0196162760479",
+   "e971e8e566e873bd"
+  ],
+  "32": [
+   "7e27f237b2b3fb5b"
+  ],
+  "48": [
+   "19aa1059d302b19a",
+   "2467dca1eab1cf47",
+   "5a1ed15e152f1592",
+   "7c3e117e9400dc41",
+   "9cbf7151117904ea",
+   "d0752ebf977065fe"
+  ]
+ }
+}

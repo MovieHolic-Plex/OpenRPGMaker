@@ -73,10 +73,11 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
     selectedCharacterId = entries[0]?.characterId;
   }
   const selected = entries.find((entry) => entry.characterId === selectedCharacterId);
+  const selectedIndex = selected ? entries.indexOf(selected) : 0;
 
   const rows: HTMLElement[] = [];
   for (const [index, entry] of entries.entries()) {
-    const label = entry.profile?.displayName?.trim() || `주민 ${index + 1}`;
+    const label = characterDisplayLabel(entry, index);
     if (characterSearch && !matchesNameOrId(label, entry.characterId, characterSearch)) continue;
     const badges: string[] = [];
     if (entry.isOrphan) badges.push("연결만 있음");
@@ -122,7 +123,7 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
   list.querySelector(".db-ws-list")?.setAttribute("data-testid", "db-characters-list");
 
   const detail = selected
-    ? characterDetail(selected, project, rerender)
+    ? characterDetail(selected, selectedIndex, project, rerender)
     : characterOnboarding(rerender);
   detail.querySelector(".db-ws-detail-body")?.setAttribute("data-testid", "db-detail-form");
 
@@ -360,8 +361,12 @@ function deleteProfileButton(entries: readonly CharacterIdIndexEntry[], rerender
 // 상세 창
 // ---------------------------------------------------------------------------
 
-function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerender: () => void): HTMLElement {
-  const displayName = entry.profile?.displayName?.trim() || "이름 없는 주민";
+function characterDisplayLabel(entry: CharacterIdIndexEntry, index: number): string {
+  return entry.profile?.displayName?.trim() || `주민 ${index + 1}`;
+}
+
+function characterDetail(entry: CharacterIdIndexEntry, index: number, project: Project, rerender: () => void): HTMLElement {
+  const displayName = characterDisplayLabel(entry, index);
   const hero = detailHero({
     eyebrow: "주민",
     title: displayName,
@@ -385,7 +390,7 @@ function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerende
         class: "db-cx-status-id",
         text: entry.characterId,
         dataset: { testid: "db-character-id" },
-        attrs: { title: entry.characterId },
+        attrs: { title: entry.characterId, hidden: "true" },
       }),
     ],
   }));
@@ -394,14 +399,14 @@ function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerende
     class: "db-ws-stack",
     children: entry.hasProfile
       ? [
-        spanning(characterOverview(entry)),
+        spanning(characterOverview(entry, displayName)),
         profileCards(entry.characterId, entry.profile ?? {}, project, rerender),
         spanning(usageCard(entry, project)),
       ]
       : [
         // 고아 ID 도 "몇 개 이벤트·몇 개 맵에서 쓰이는지"가 곧 복구 판단 근거다 —
         // 프로필이 없다고 요약을 숨기면 상세 창이 카드 두 장짜리 빈 판이 된다.
-        spanning(characterOverview(entry)),
+        spanning(characterOverview(entry, displayName)),
         orphanCreateCard(entry, rerender),
         usageCard(entry, project),
       ],
@@ -415,8 +420,11 @@ function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerende
  * 가 `.db-list-thumb-probe`(1x1 로드 감지용 투명 img)까지 잡아 늘려서 32px 슬롯을 17px 넘치게
  * 만든다(clipped 위반). 프로브는 보이지 않는 계측용이므로 인라인으로 크기를 되돌린다.
  */
-function heroThumbnail(project: Project, entry: CharacterIdIndexEntry): HTMLElement {
+function heroThumbnail(project: Project, entry: CharacterIdIndexEntry): HTMLElement | undefined {
   const thumb = characterListThumbnail(project, entry);
+  if (thumb.classList.contains("empty")) return undefined;
+  thumb.style.width = "32px";
+  thumb.style.height = "32px";
   for (const probe of thumb.querySelectorAll<HTMLElement>(".db-list-thumb-probe")) {
     probe.style.width = "1px";
     probe.style.height = "1px";
@@ -424,7 +432,7 @@ function heroThumbnail(project: Project, entry: CharacterIdIndexEntry): HTMLElem
   return thumb;
 }
 
-function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
+function characterOverview(entry: CharacterIdIndexEntry, displayName: string): HTMLElement {
   const profile = entry.profile ?? {};
   const giftCount = (profile.giftPrefs?.loved?.length ?? 0)
     + (profile.giftPrefs?.liked?.length ?? 0)
@@ -433,7 +441,7 @@ function characterOverview(entry: CharacterIdIndexEntry): HTMLElement {
 
   return renderLifePanel({
     testid: "db-character-overview",
-    title: profile.displayName?.trim() || entry.characterId,
+    title: displayName,
     compact: true,
     cards: [
       {

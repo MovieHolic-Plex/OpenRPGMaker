@@ -7,11 +7,12 @@ import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/shar
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
-import { npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
+import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
+import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic } from "@/project/types";
 import { ToolError } from "./types";
 import type { SimplePage, SimplePageChoice } from "./types";
@@ -185,7 +186,8 @@ export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOpt
     throw new ToolError(
       `그래픽 검색어에 맞는 charset 을 찾지 못했습니다: "${query}". 다른 그림으로 대체하지 않습니다. ` +
         `사람이면 list_npc_graphics 로 고르고, 물건이면 그 칸에 place_props·paint_tiles 로 물건 타일을 깔고 graphic:{transparent:true} 를 주세요. ` +
-        `charset 라벨 예시: ${examples}.`,
+        `charset 라벨 예시: ${examples}.` +
+        (npcGraphicCatalogIsFiltered() ? " 장르 잠금 중이라 이 프로젝트의 허용 칩(몬스터 수집 캐릭터 칩)만 검색한다 — 사람은 query:\"villager\"·\"트레이너\" 같은 일반 말로 허용 사람 칩이 골라진다." : ""),
       { code: "graphic-not-found" }
     );
   }
@@ -205,7 +207,17 @@ export function resolveGraphic(spec: GraphicSpec | undefined, pick?: GraphicQuer
     return charsetGraphic(selected.textureKey, selected.characterIndex);
   }
   if ("query" in spec) return resolveGraphicQuery(spec.query, pick);
-  return charsetGraphic(spec.textureKey, spec.characterIndex);
+  // 모델이 textureKey 대신 resourceId·spriteId 로 적는 일이 잦다(같은 칩 id). 별칭으로 받고, 문자열이 아니면 도구 예외 대신 인자 오류로 알린다(2026-10-16 잠금 누수 감사 #12: `input.trim` TypeError).
+  const loose = spec as unknown as Record<string, unknown>;
+  const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
+  if (textureKey === undefined) {
+    throw new ToolError(
+      `graphic 은 {query:"…"} 또는 {textureKey:"<시트>", characterIndex:0~7} 이어야 합니다 — 받은 모양: ${JSON.stringify(spec).slice(0, 120)}. 칩 id 는 textureKey 칸에 문자열로 적고, 그림을 고르려면 list_npc_graphics 로 허용 칩을 보세요.`,
+      { code: "invalid-args" },
+    );
+  }
+  const index = typeof spec.characterIndex === "number" ? spec.characterIndex : typeof loose.characterIndex === "number" ? loose.characterIndex : undefined;
+  return charsetGraphic(textureKey, index);
 }
 
 /** 맵 이벤트에 이미 쓰인 charset 슬롯 키 집합. */
@@ -226,9 +238,50 @@ export function usedCharsetGraphicKeysOnMap(map: {
   return used;
 }
 
+/**
+ * 프로젝트 전체 맵에서 이미 쓰인 걷기 칩 키(시트+인물 번호) — 같은 이름의 이벤트(`exceptName`, 같은 사람이 다른 맵에 다시 선 것)는 뺀다.
+ * 허용 칩이 적은 장르 잠금(현대 연애 24칸 · 몬스터 수집 10칸) 아래에서 맵이 달라도 서로 다른 인물이 같은 얼굴이 되지 않게 고르는 데 쓴다.
+ */
+export function usedCharsetGraphicKeysOnProject(project: {
+  readonly maps: Readonly<Record<string, { readonly events: readonly { readonly name?: string; readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[] }>>;
+}, exceptName?: string): Set<string> {
+  const used = new Set<string>();
+  const except = exceptName?.trim();
+  for (const map of Object.values(project.maps)) {
+    for (const key of usedCharsetGraphicKeysOnMap({ events: map.events.filter((event) => !except || event.name?.trim() !== except) })) used.add(key);
+  }
+  return used;
+}
+
+/** 이 맵에서 같은 걷기 칩(시트+인물 번호)을 첫 페이지 그림으로 쓰는 이벤트 수. */
+export function usedCharsetGraphicKeysOnMapCount(map: {
+  readonly events: readonly { readonly pages?: readonly { readonly graphic?: EventPageGraphic }[] }[];
+}, graphic: EventPageGraphic): number {
+  const id = graphic.sprite?.id;
+  if (!id) return 0;
+  const index = decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex;
+  let count = 0;
+  for (const event of map.events) {
+    const g = event.pages?.[0]?.graphic;
+    if (!g || g.transparent || g.sprite?.id !== id) continue;
+    if (decodeCharsetFrameIndex(typeof g.pattern === "number" ? g.pattern : 0).characterIndex === index) count += 1;
+  }
+  return count;
+}
+
+/**
+ * 대사 속 맨 좌표 괄호 「(40,13)」 를 걷는다 — 도구 결과의 좌표(문·접근칸·엘리베이터)를 조수가 그대로 대사에 옮겨
+ * 「북쪽 가운데 엘리베이터(8,4)를 타시면 됩니다」 처럼 플레이어에게 엔진 좌표가 보였다(2026-10-17 r4-rom-d).
+ */
+export function stripRawCoordinates(body: string): string {
+  const cleaned = body.replace(/[ \t]*[(（]\s*\d{1,3}\s*,\s*\d{1,3}\s*[)）]/gu, "");
+  return cleaned.trim() ? cleaned : body;
+}
+
 // 대사 한 줄을 text 커맨드로.
 function textCommand(speaker: string | undefined, body: string): Command {
-  return speaker ? { kind: "text", speaker, body } : { kind: "text", body };
+  const cleaned = stripRawCoordinates(stripSpeakerEcho(body, speaker));
+  return speaker ? { kind: "text", speaker, body: cleaned } : { kind: "text", body: cleaned };
 }
 
 // SimplePage의 대사 소스 — lines 외에 LLM이 자주 쓰는 별칭(showText/messages/text)도 수용한다.
@@ -382,6 +435,16 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     command.body = command.lines.join("\n");
     delete command.lines;
     warnings?.push(`SimplePage 정규화: ${path}.lines를 text.body로 변환했습니다.`);
+  }
+  if (kind === "text" && typeof command.body === "string" && typeof command.speaker === "string") {
+    command.body = stripSpeakerEcho(command.body, command.speaker);
+  }
+  if (kind === "text" && typeof command.body === "string") {
+    const bare = stripRawCoordinates(command.body);
+    if (bare !== command.body) {
+      command.body = bare;
+      warnings?.push(`SimplePage 정규화: ${path}.body 의 좌표 괄호 (x,y) 를 지웠습니다 — 대사에는 장소 이름(「북쪽 엘리베이터」)을 씁니다.`);
+    }
   }
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;

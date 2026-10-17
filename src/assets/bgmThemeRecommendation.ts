@@ -25,12 +25,14 @@ export type MapBgmRecommendOptions = {
   readonly fallbackTheme?: string;
 };
 
-type MapBgmTheme = "village" | "forest" | "cave" | "dungeon" | "night" | "battle" | "field";
+type MapBgmTheme = "village" | "forest" | "cave" | "dungeon" | "night" | "battle" | "field" | "everyday";
 
 type ThemeRule = {
   readonly theme: MapBgmTheme;
   readonly keywords: readonly string[];
   readonly categoryNeedles: readonly string[];
+  /** true 면 곡 찾기에 키워드(장소 낱말)를 쓰지 않고 카테고리 바늘만 쓴다 — 키워드는 맵 이름을 알아보는 데만 쓴다. */
+  readonly categoryOnly?: boolean;
 };
 
 const THEME_RULES: readonly ThemeRule[] = [
@@ -53,6 +55,14 @@ const THEME_RULES: readonly ThemeRule[] = [
     theme: "cave",
     keywords: ["cave", "cavern", "mine", "동굴", "광산", "폐광"],
     categoryNeedles: ["동굴", "광산", "광물"],
+  },
+  {
+    // 현대 일상 장소(캠퍼스·교실·카페·사무실·옥상) — 연애·학원·직장물. 카탈로그에 연애 전용 곡은 없으니(2026-10-16 청취 설명에
+    // 「로맨스·설레·고백」 낱말 0건) 가장 가까운 잔잔한 대화·저녁 곡(찻집·서점 비 오는 실내·옥상 도시 저녁·공원 벤치·조용한 대화)에서 시드로 고른다.
+    theme: "everyday",
+    keywords: ["everyday", "campus", "classroom", "office", "cafe", "캠퍼스", "교정", "교실", "강의", "세미나", "학생회", "동아리", "기숙사", "학원", "교무실", "서점", "카페", "로스터리", "커피", "라운지", "오피스", "사무실", "스튜디오", "옥상", "루프탑", "퇴근", "편의점", "도서관", "열람실", "하굣길", "등굣길", "가로수", "산책로"],
+    categoryNeedles: ["찻집 · 대화", "서점 · 비 오는 실내", "옥상 · 도시 저녁", "공원 · 도시 저녁", "귀환 · 조용한 대화", "도시 광장 · 저녁", "온실 · 휴식 · 대화", "마을 · 휴식", "회관 · 공동체", "연못 · 휴식"],
+    categoryOnly: true,
   },
   {
     theme: "village",
@@ -169,7 +179,7 @@ function tracksMatchingName(
 
 function themeSearchTerms(rule: ThemeRule): readonly string[] {
   const terms = new Set<string>();
-  for (const keyword of rule.keywords) terms.add(keyword.toLowerCase());
+  if (!rule.categoryOnly) for (const keyword of rule.keywords) terms.add(keyword.toLowerCase());
   for (const needle of rule.categoryNeedles) terms.add(needle.toLowerCase());
   return [...terms];
 }

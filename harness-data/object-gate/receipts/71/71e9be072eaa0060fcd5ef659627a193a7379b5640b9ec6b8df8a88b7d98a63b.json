@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71e9be072eaa0060fcd5ef659627a193a7379b5640b9ec6b8df8a88b7d98a63b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-3-R",
+ "label": "jp_city/street_hand/jp-sf-cafe-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront with entrance door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door, window display, and plant are drawn in a completely flat front elevation with no visible top surfaces or downward 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7981
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront with sliding door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D front elevation. The door frame, lintel, window sill, baseboards, and even the plant inside the window lack any foreshortened top surfaces (only 1-2px trim lines exist at the top and step-down).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8516
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal rectangle; its roof/lintel top is only a thin dark edge with no visible above-facing surface, and no receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 310828
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 539604,
+   "error": "Error: ChatGPT rate limit exceeded. retry-after-ms=60000"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.077Z",
+ "cells": {
+  "16": [
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6d8d6a2b2522f31c",
+   "75a61006df7207f9",
+   "8ef8bcb1d076a376",
+   "912bdb1002e40169",
+   "9b217cbabf01af71",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87"
+  ],
+  "24": [
+   "0d3e79c77541ef04",
+   "2a52ff0f30d43d8a",
+   "82fcf7c747a051a1",
+   "bd8abb8a0403336f"
+  ],
+  "32": [
+   "023b2daf46422b64",
+   "0599b17577ca757a",
+   "1ae953c805fba576",
+   "3065c7153f819fd3",
+   "32cc7cc68254d43b",
+   "401cf3cab9f66fcf",
+   "4c28a726fb71701b",
+   "5189452a61953640",
+   "53a2ca1cf98b8434",
+   "6d7c172a95078ab7",
+   "6fc356c5ea17f105",
+   "8027960bbc574093",
+   "83508e824869cb1a",
+   "84f35d6a07ab6a35",
+   "8b78f30dce48eec6",
+   "987547f6196928c8",
+   "9febe8523228be53",
+   "b14b203d43190b05",
+   "b8b356bc19858eb6",
+   "c69f0aadc8514f41",
+   "e04f7654839286a3",
+   "e153b4a892ee898b",
+   "e22debf97386fcf1",
+   "eb11e8c6aa3ccab0"
+  ],
+  "48": [
+   "9ec4db498c28ca1c"
+  ]
+ }
+}

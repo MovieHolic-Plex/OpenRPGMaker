@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75ccead04fe7b07024f40056ab158794ce4b6fd0fd4f0bfe4c264b224e4c0daf",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-3-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance and wall fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, door, control panel, and adjacent wall box are all drawn in pure flat front elevation (side-scroller style) with no visible horizontal top surfaces (only 1-2px outline borders at rows 11-12 and 22).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "apartment entrance wall with sliding doors, panel, and mailboxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front elevation. Lintels and frames over the doors and mailboxes are 1-2px outline strips with no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5952
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "apartment entrance door and intercom/mailbox panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (doors, handles, control panel, doorframe, and mailboxes) is drawn completely flat in pure front elevation with 0px of visible top depth on any surface or lintel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "apartment entrance door and intercom panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the sliding doors, door frame overhang (rows 11-12), control panel, and adjacent mailbox/intercom module, is drawn in pure 2D side-scroller front elevation without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5941
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.046Z",
+ "cells": {
+  "16": [
+   "4d54222139cc643d",
+   "6c795b6f80ebaf11",
+   "74f3ee3ca7c336df",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "d7a9dbba2eeec137",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "926765881efb6e86",
+   "d1b83a6cfccd01c9"
+  ],
+  "32": [
+   "138558a498c66ee4",
+   "1dbf5abcc1aca2da",
+   "260be5c69b8e26d6",
+   "3246050c3a2eb488",
+   "3401fb5211bb6688",
+   "453aff26074bb96d",
+   "4ff7c5e1aebc95dc",
+   "5b5c11681ba9ab52",
+   "5daa870a086a3551",
+   "60d1366aa6ff5f95",
+   "6f02a3301fa28b7e",
+   "6f4900955b4d5204",
+   "8f67b0b086f86fb5",
+   "9330ffeb1e77a38a",
+   "95f1dd8ab554b951",
+   "ab5cdda5747f45eb",
+   "b104d74a7187e35f",
+   "b2392356afa2bd82",
+   "b2908eab065b81fb",
+   "b81924b36e0802df",
+   "bf890e6ac3d754eb",
+   "ddcb51a954b64c1b",
+   "eb84184f9a26cd09",
+   "fa7243e4dee8a5f6"
+  ],
+  "48": [
+   "319f621a67670871"
+  ]
+ }
+}

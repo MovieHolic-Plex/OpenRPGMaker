@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "f0b45e9ca4ea1968",
+ "status": "rejected",
+ "calibratedAt": "2026-10-14T13:15:05.287Z",
+ "bad": {
+  "total": 47,
+  "caught": 37,
+  "missed": [
+   "interior/chopping_block__v5",
+   "interior/pulpit__w32-A",
+   "interior/column_steel__w51-A",
+   "interior/column_wood__w51-A",
+   "interior/kitchen_range__v5",
+   "murim/scroll_shelf__A",
+   "murim/scroll_shelf__B",
+   "murim/medicine_cabinet__A",
+   "murim/gong_frame__A",
+   "murim/weapon_rack__A"
+  ]
+ },
+ "good": {
+  "total": 36,
+  "passed": 25,
+  "falseFail": [
+   "style/beodeul__prop-flower_cart",
+   "style/beodeul__prop-table_mugs",
+   "interior/holy_water_font__w7-A",
+   "interior/slop_bucket__w3-C",
+   "interior/anvil__w7-B",
+   "interior/cheese_wheels__v5",
+   "interior/stove__w44-A",
+   "interior/forge__w44-A",
+   "interior/bookshelf_1w__w41-A",
+   "interior/keg_rack__w48-A",
+   "interior/mortar_and_pestle__w1-B"
+  ]
+ },
+ "style": {
+  "badTotal": 71,
+  "caught": 53,
+  "missed": [
+   "style/farm__farm-fenced-plot__v2",
+   "style/farm__farm-plot-wheat__v2",
+   "style/campus__bld-school-8__before",
+   "style/campus__bld-admin__before",
+   "style/snow__cabin-m__before",
+   "style/snow__longhouse__before",
+   "style/snow__well__before",
+   "style/desert__house-dome-4__before",
+   "style/sengoku__shrine__before",
+   "style/sky__cottage-red__before",
+   "style/pirate__tavern__before",
+   "style/pirate__hut-thatch__before",
+   "style/prehistoric__hut-thatch-l__before",
+   "style/prehistoric__chief-house__before",
+   "style/prehistoric__g-원시_풀밭__before",
+   "style/steampunk__row-3__before",
+   "style/steampunk__shop-gears__before",
+   "style/steampunk__factory__before"
+  ],
+  "goodTotal": 78,
+  "passed": 37,
+  "falseFail": [
+   "style/farm__farm-fence-v-3__v3",
+   "style/gothic__dead-tree__after",
+   "style/gothic__willow-dead__after",
+   "style/gothic__dead-tree-crows__after",
+   "style/gothic__bush-dead__after",
+   "style/gothic__g-마른_풀밭_B__after",
+   "style/campus__tree-zelkova__after",
+   "style/campus__hedge__after",
+   "style/campus__g-캠퍼스_잔디__after",
+   "style/snow__birch__after",
+   "style/snow__woodpile__after",
+   "style/snow__g-서리_풀__after",
+   "style/desert__palm-date__after",
+   "style/desert__g-잔잔한_모래__after",
+   "style/sengoku__machiya-a__after",
+   "style/sengoku__shrine__after",
+   "style/sengoku__tree-pine__after",
+   "style/sengoku__chozuya__after",
+   "style/sengoku__g-풀밭__after",
+   "style/sf__hab-module__after",
+   "style/sf__control-tower__after",
+   "style/sf__cargo-crate__after",
+   "style/sf__vending__after",
+   "style/sf__wall-face-hull__after",
+   "style/sf__g-정거장_복도광장_기본_바닥__after",
+   "style/sky__tree-round__after",
+   "style/sky__g-풀밭__after",
+   "style/pirate__palm__after",
+   "style/pirate__tree-broad__after",
+   "style/pirate__sand__after",
+   "style/pirate__grass__after",
+   "style/prehistoric__tree-fern__after",
+   "style/prehistoric__fish-rack__after",
+   "style/steampunk__gas-lamp__after",
+   "style/steampunk__crates__after",
+   "style/steampunk__g-판석_보도__after",
+   "style/beodeul__tree-7ecdb8",
+   "style/beodeul__prop-flower_cart",
+   "style/beodeul__prop-goods_pile",
+   "style/beodeul__prop-lamp_double",
+   "style/beodeul__ground-plaza"
+  ],
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 6
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 16
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 25
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 8
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "claude-sonnet-5-5(high)"
+}

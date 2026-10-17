@@ -2,6 +2,7 @@
 // semantic term; unrelated hash fallbacks must never become persisted monster art.
 import { searchResources } from "@/assets/resourceSearch";
 import { getMonsterResource, listMonsterResources } from "@/assets/monsterResourceCatalog";
+import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import type { Project } from "@/project/types";
 import { ToolError } from "./types";
 
@@ -35,7 +36,9 @@ const GENERIC_IDENTITY_TERM = /^(?:\*|all|전체|monster|monsters|enemy|enemies|
 
 function availableCandidates(project: Project) {
   const available = new Set(listMonsterResources(project).map(resource => resource.resourceId));
-  return searchResources("monster", "*").filter((match) => available.has(match.id));
+  // 장르 잠금(조수 실행 중): 이름으로 그림을 고를 때도 허용 계열 그림만 후보다 — 일반 JRPG 적 그림으로 이름이 풀리지 않는다.
+  const allows = activeGenreLockVisualCatalog()?.battler;
+  return searchResources("monster", "*").filter((match) => available.has(match.id) && (!allows || allows(match.id)));
 }
 
 function semanticTermsOf(match: { label: string; tags: readonly string[] }): Set<string> {
@@ -135,10 +138,12 @@ export function ensureMonsterGraphic(
   label: string,
   warnings: string[],
   appearanceTags?: readonly unknown[],
+  options: { readonly pendingWhenLocked?: boolean } = {},
 ): void {
   const value = graphic.monsterResourceId;
   if (value !== undefined) {
     // Explicit IDs are author decisions, not names to reinterpret on later edits.
+    // (장르 잠금 중 허용 밖 id 는 실행기 판정 enforceGenreLockVisuals 가 대안과 함께 거부하거나 「생성 대기」로 비운다 — 여기서는 존재만 본다.)
     if (getMonsterResource(project, value)) return;
     if (Object.hasOwn(project.assets.uploaded, value)) {
       throw missingGraphicError(project, value, label, "invalid-args");
@@ -152,7 +157,33 @@ export function ensureMonsterGraphic(
   }
   if (graphic.transparent === true) return;
   const notes: string[] = [];
+  // 장르 잠금(조수 실행 중): 허용 그림에 맞는 것이 없으면 거부하지 않고 그림 없이 저장한다 — 「생성 대기」. 지어낸 그림·일반 적 그림으로 때우지 않는다.
+  if (options.pendingWhenLocked && activeGenreLockVisualCatalog()) {
+    try {
+      graphic.monsterResourceId = assignMonsterResourceId(project, record, label, appearanceTags, notes).resourceId;
+      warnings.push(...(notes.length ? notes : [`${label} 누락 → 이름 "${record.name}" 으로 "${graphic.monsterResourceId}" 를 붙였습니다.`]));
+    } catch (error) {
+      if (!(error instanceof ToolError)) throw error;
+      warnings.push(`장르 잠금 — 생성 대기: ${record.name}(${record.id}) 의 ${label} 에 맞는 허용 몬스터 그림(Scarloxy·하네스 몬스터)이 없어 그림 없이 저장했다. `
+        + `일반 적 그림으로 때우지 않는다 — 이미 있는 허용 그림 id 를 list_resources(kind:monster)에서 골라 지정하거나, 새 그림(앞·뒷모습)은 사람이 고르는 하네스(npm run harness -- monster-collect-species)에서 만든다. check_genre_lock 이 이 칸을 「생성 대기」로 보고한다.`);
+    }
+    return;
+  }
   const assignment = assignMonsterResourceId(project, record, label, appearanceTags, notes);
   graphic.monsterResourceId = assignment.resourceId;
   warnings.push(...(notes.length ? notes : [`${label} 누락 → 이름 "${record.name}" 으로 "${assignment.resourceId}" 를 붙였습니다.`]));
+}
+
+/**
+ * 계통 배치 정의(define_monster_families autoGraphics:true)용 — 이름에 맞는 외형이 없을 때 **저작자가 명시적으로 허용한** 자동 배정.
+ * 아직 어느 종·적도 안 쓰는 카탈로그 외형을 태그가 겹치는 순으로 고르고, 모자라면 undefined(호출자가 그 계통만 실패로 보고한다).
+ * 이름과 어울리는지는 보장하지 않는다 — 호출자가 어떤 외형을 붙였는지 경고로 돌려줘야 한다.
+ */
+export function pickUnusedMonsterResource(project: Project, used: ReadonlySet<string>, tags: readonly unknown[] | undefined): { id: string; label: string } | undefined {
+  const wanted = new Set((tags ?? []).filter((tag): tag is string => typeof tag === "string").map(normalizedIdentity));
+  const free = availableCandidates(project).filter((match) => !used.has(match.id));
+  if (!free.length) return undefined;
+  const scored = free.map((match) => ({ match, score: [...semanticTermsOf(match)].filter((term) => wanted.has(term)).length }));
+  scored.sort((a, b) => b.score - a.score);
+  return { id: scored[0]!.match.id, label: scored[0]!.match.label };
 }

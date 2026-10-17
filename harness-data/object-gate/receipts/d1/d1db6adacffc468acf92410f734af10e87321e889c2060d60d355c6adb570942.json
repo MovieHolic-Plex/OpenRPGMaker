@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1db6adacffc468acf92410f734af10e87321e889c2060d60d355c6adb570942",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age floor cave b",
+ "label": "prehistoric/ph-floor-cave-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cave dirt floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts a horizontal cave dirt ground surface with embedded stones/pebbles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2997
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cave ground/floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a continuous top-down cave dirt/stone floor surface with small embedded rocks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2744
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cave dirt floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing brown cave ground with small embedded rocks, properly viewed as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cave floor terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground/floor terrain texture representing a cave dirt floor with small stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2920
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.807Z",
+ "cells": {
+  "16": [
+   "1fc15237f4632ec1"
+  ],
+  "24": [
+   "14d139f3b0c7dcba",
+   "3078300b3c451641",
+   "5bb785c7fda29297",
+   "b7ad566cf9c860b6",
+   "c50f3a4cf02deedb",
+   "dee1a77908090f14"
+  ],
+  "32": [
+   "1c3361ff7b2119d6",
+   "6b9899dfa985e2a1",
+   "783b391a7a6335bd",
+   "d3f222647e2869ce",
+   "ea4ef17973089de4",
+   "f98fa88427db55d6"
+  ],
+  "48": [
+   "4b76aa70351e21c7",
+   "63e04312191120cf",
+   "83c10a0803893f97",
+   "93dc76d837ca0c85",
+   "c0594cb713dae768",
+   "da476e5cefa093ba"
+  ]
+ }
+}

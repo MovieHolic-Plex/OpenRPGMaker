@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73dd723ec67a741de0163e4dc6b04ca0754c4e215e4e30796aebf428474049db",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "발권기",
+ "label": "modern_city/interior/mci-ticket-machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ticket vending machines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machines are drawn in a flat architectural front elevation. Rows 1-5 depict the front-facing illuminated header/signboard, rows 9-16 the touchscreen, and rows 19-25 the slots and change bins. There is no visible top horizontal surface shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6998
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ticket vending machines",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation with no visible top surface; rows 1-5 represent the front-facing header marquee/sign, followed directly by the front screen and slots.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4721
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ticket vending machine kiosk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn entirely in flat 2D front elevation. Rows 1-5 represent the front-facing illuminated marquee/header, followed by the screen, slots, and dispenser tray all seen straight-on with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5269
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket machines are drawn in pure front elevation: the top section (rows 1-5) is a vertical marquee/header panel rather than a receding top surface, and below it are the screen, card/ticket slots, and dispenser tray all drawn straight-on with no top plane visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4284
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.706Z",
+ "cells": {
+  "16": [
+   "7e8ecf57e2a1efa1",
+   "d19aebac0c696336"
+  ],
+  "24": [
+   "1203a2588895b06b",
+   "19068ea7ae019ff1",
+   "1ce9b4fee7cf7af6",
+   "2068d5f53d23e0ce",
+   "2c0b1aaf18ac4340",
+   "40cc387b32aae3a0",
+   "44c547565fb8ca88",
+   "5899e26e9ef08899",
+   "6074745028a718d0",
+   "6974d9f110408a71",
+   "7d2bccf14f0fd37f",
+   "9f68be4e5d5d100d",
+   "afa39f92dae6b8ca",
+   "b1e1e80426945bf4",
+   "b5793341bb78ddc3",
+   "b64b3d37a2cef90f",
+   "c14b2a692dbf6641",
+   "d6880b251512455b",
+   "e111697acd84ec75",
+   "e22e9496010ac821",
+   "e6aee7007aa90019",
+   "ee7fe0e452c93bcf",
+   "ef9b048d9dfbe2a2",
+   "f03baaf680bcfac7"
+  ],
+  "32": [
+   "b03be76c9052ab76"
+  ],
+  "48": [
+   "3285eb4582f93172",
+   "341112f11eebd876",
+   "39c14f205c1ca001",
+   "4803587a0d992e2d",
+   "61db5bea03a400c6",
+   "7e37f33bf709fac5"
+  ]
+ }
+}

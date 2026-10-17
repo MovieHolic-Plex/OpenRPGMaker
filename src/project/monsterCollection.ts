@@ -1,6 +1,8 @@
+import { normalizeGenderRatio, rollMonsterIdentity } from "@/project/monsterIdentity";
 import type { Rng } from "@/util/rng";
 import { mulberry32 } from "@/util/rng";
 import { ACTOR_LEVEL_MAX, totalExpForLevel } from "@/project/actorModel";
+import { normalizeMonsterAbility } from "@/battle/abilities";
 import type {
   ActorExperienceCurve,
   ActorLearnedSkill,
@@ -16,7 +18,8 @@ import type {
   MonsterSpeciesRecord,
   Project,
 } from "@/project/types";
-import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceEvs, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import { clampMonsterEvs, monsterNatureById, monsterStatRulesOf, natureIdFromSeed, type MonsterNatureStat } from "@/project/monsterStatRules";
 import { recordMonsterCaught } from "@/project/monsterJournal";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { transitionItemState } from "@/project/itemTransitions";
@@ -30,6 +33,8 @@ export type GiveMonsterInput = {
   readonly nickname?: string;
   readonly exp?: number;
   readonly ivs?: MonsterInstanceIvs;
+  /** 성격 id(monsterStatRules). system.monsterStatRules.natures 일 때만 쓰인다. */
+  readonly nature?: string;
   readonly friendship?: number;
   readonly caughtAt?: MonsterCaughtAt;
   readonly currentHp?: number;
@@ -37,6 +42,11 @@ export type GiveMonsterInput = {
   readonly stateTurns?: Readonly<Record<string, number>>;
   readonly skillIds?: readonly SkillId[];
   readonly skillPp?: Readonly<Record<SkillId, number>>;
+  /** 포획에 쓴 볼(아이템 id). */
+  readonly caughtBallId?: string;
+  /** 직접 정할 때(이벤트·이관). 생략하면 종 genderRatio·system.shinyRate 로 개체 번호에서 정해진다. */
+  readonly gender?: "male" | "female";
+  readonly shiny?: boolean;
 };
 
 export type GiveMonsterResult =
@@ -51,6 +61,8 @@ export type EvolveMonsterInput = {
   readonly instanceId: string;
   readonly toSpeciesId?: MonsterSpeciesId;
   readonly allowItemEvolution?: boolean;
+  /** 지정하면 이 아이템을 요구하는 진화 경로만 쓴다(진화의 돌 — 같은 종으로 가는 레벨 경로가 먼저 걸려 돌이 안 쓰이는 일을 막는다). */
+  readonly itemId?: ItemId;
 };
 
 export type EvolveMonsterResult =
@@ -81,7 +93,7 @@ export type MonsterExperienceResult = {
 
 export type MonsterSkillChoiceResult =
   | { readonly ok: true; readonly instance: MonsterInstance }
-  | { readonly ok: false; readonly reason: "missingPendingSkill" | "missingActiveSkill" };
+  | { readonly ok: false; readonly reason: "missingPendingSkill" | "missingActiveSkill" | "unforgettable" };
 
 export const DEFAULT_MONSTER_EXP_CURVE: ActorExperienceCurve = { base: 30, extra: 20, acceleration: 30 };
 
@@ -98,6 +110,9 @@ export function normalizeMonsterSpeciesRecord(
   const skillsByLevel = normalizeSkillsByLevel(record.skillsByLevel);
   const types = normalizeSpeciesTypes(record.types);
   const evolutions = normalizeEvolutions(record.evolutions);
+  const machineSkillIds = uniqueSkillIds((Array.isArray(record.machineSkillIds) ? record.machineSkillIds : []).filter((id): id is SkillId => typeof id === "string" && id.trim() !== "").map((id) => id.trim() as SkillId));
+  const ability = normalizeMonsterAbility(record.ability);
+  const evYield = normalizeEvYield(record.evYield);
   return {
     id: record.id,
     name: textOrDefault(record.name, "몬스터"),
@@ -107,8 +122,26 @@ export function normalizeMonsterSpeciesRecord(
     expCurve: normalizeExpCurve(record.expCurve),
     captureRate: clampNumber(normalizeCaptureRateScale(record.captureRate), 0, 1),
     skillsByLevel: skillsByLevel.length > 0 ? skillsByLevel : undefined,
+    machineSkillIds: machineSkillIds.length > 0 ? machineSkillIds : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
+    ...(ability ? { ability } : {}),
+    ...(evYield ? { evYield } : {}),
+    ...(typeof record.dexNote === "string" && record.dexNote.trim() ? { dexNote: record.dexNote.trim().slice(0, 200) } : {}),
+    ...(normalizeGenderRatio(record.genderRatio) !== undefined ? { genderRatio: normalizeGenderRatio(record.genderRatio) } : {}),
   };
+}
+
+/** 종목당 0~3, 합계 3 이하로 자른다. 전부 0 이면 필드를 두지 않는다(저장 바이트 그대로). */
+function normalizeEvYield(value: MonsterSpeciesRecord["evYield"]): MonsterSpeciesRecord["evYield"] {
+  if (!value || typeof value !== "object") return undefined;
+  const out: { hp?: number; atk?: number; def?: number; spd?: number } = {};
+  let left = 3;
+  for (const key of ["hp", "atk", "def", "spd"] as const) {
+    const raw = value[key];
+    const amount = typeof raw === "number" && Number.isFinite(raw) ? Math.max(0, Math.min(3, Math.trunc(raw), left)) : 0;
+    if (amount > 0) { out[key] = amount; left -= amount; }
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
 }
 
 export type CaptureModel = "rm2k3" | "gen1";
@@ -170,6 +203,13 @@ export function rollMonsterIvs(rng: Rng): MonsterInstanceIvs {
   };
 }
 
+function identityOf(project: Project, species: MonsterSpeciesRecord, input: GiveMonsterInput, seedKey: string): { gender?: "male" | "female"; shiny?: true } {
+  const rolled = rollMonsterIdentity(project, species, seedKey);
+  const gender = input.gender ?? rolled.gender;
+  const shiny = input.shiny ?? rolled.shiny === true;
+  return { ...(gender ? { gender } : {}), ...(shiny ? { shiny: true as const } : {}) };
+}
+
 export function deterministicMonsterIvs(seed: string | number): MonsterInstanceIvs {
   return rollMonsterIvs(mulberry32(typeof seed === "number" ? seed : hashString(seed)));
 }
@@ -179,6 +219,22 @@ export function monsterSpeciesForEnemy(project: Project, enemy: EnemyRecord | un
   const species = project.database.monsterSpecies ?? [];
   if (enemy.speciesId) return species.find((record) => record.id === enemy.speciesId);
   return species.find((record) => record.id === enemy.id);
+}
+
+/**
+ * 몬스터로 싸우는 게임인가 — 포획이 켜진 수집 게임이거나, 포획 없이 몬스터 파티로만 싸우는 게임(대회형).
+ * 포획(`monsterCollection`)과 파티 전투(`monsterBattleParty`/`battleParty:"monsters"`)는 별개 축이라, 둘 중 하나면 몬스터 게임이다.
+ * QA 자동 플레이어의 몬스터 전술·수련·회복은 이 판정을 쓴다(포획 켜짐만 보면 대회형 게임이 영웅 혼자 싸우는 경로로 간다).
+ */
+export function isMonsterPartyGame(project: Pick<Project, "system">): boolean {
+  const system = project.system;
+  return system?.monsterCollection === true || system?.monsterBattleParty === true || system?.battleParty === "monsters";
+}
+
+/** 포획 없음을 명시한 몬스터 게임(`monsterCollection:false` + 몬스터 파티 전투). 「포획을 켜는 걸 잊음」(undefined)과 다르다. */
+export function isMonsterNoCaptureGame(project: Pick<Project, "system">): boolean {
+  const system = project.system;
+  return system?.monsterCollection === false && (system.monsterBattleParty === true || system.battleParty === "monsters");
 }
 
 /**
@@ -215,6 +271,8 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     // at their level's floor; explicit values (including zero) remain authored.
     exp: Math.max(0, Math.trunc(input.exp ?? totalExpForLevel(species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, level))),
     ivs: input.ivs ?? deterministicMonsterIvs(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
+    // 성격(옵트인): 인스턴스 id 가 같으면 같은 성격. 규칙이 꺼진 프로젝트는 필드를 두지 않는다(저장 바이트 그대로).
+    ...(monsterStatRulesOf(project).natures ? { nature: monsterNatureById(input.nature) ? input.nature : natureIdFromSeed(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}:nature`) } : {}),
     friendship: clampInteger(input.friendship ?? 70, 0, 255),
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
     currentHp: input.currentHp,
@@ -222,6 +280,8 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     stateTurns: input.stateTurns ? { ...input.stateTurns } : undefined,
     skillIds: input.skillIds ? [...input.skillIds] : undefined,
     skillPp: input.skillPp ? { ...input.skillPp } : undefined,
+    ...(input.caughtBallId ? { caughtBallId: input.caughtBallId } : {}),
+    ...identityOf(project, species, input, `${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
   };
   const maxHp = monsterMaxHpFor(project, species, instance);
   const hydrated = normalizeMonsterInstanceBattleState(project, {
@@ -261,6 +321,24 @@ export function moveMonster(
   else session.monsterBox.push(instanceId);
   if (project) syncMonsterPartyFollowers(project, session);
   return { ok: true, from, to };
+}
+
+export type SwapMonsterPartyResult =
+  | { readonly ok: true }
+  | { readonly ok: false; readonly reason: "notInParty" | "same" };
+
+/** 파티 안의 두 몬스터 자리를 맞바꾼다(맨 앞 = 먼저 출전하는 선두). 박스 몬스터·같은 몬스터는 거절한다. */
+export function swapMonsterPartyOrder(session: PlaySession, aId: string, bId: string, project?: Project): SwapMonsterPartyResult {
+  ensureMonsterSessionFields(session);
+  if (aId === bId) return { ok: false, reason: "same" };
+  const a = session.monsterParty.indexOf(aId), b = session.monsterParty.indexOf(bId);
+  if (a < 0 || b < 0) return { ok: false, reason: "notInParty" };
+  const next = [...session.monsterParty];
+  next[a] = bId;
+  next[b] = aId;
+  session.monsterParty = next;
+  if (project) syncMonsterPartyFollowers(project, session);
+  return { ok: true };
 }
 
 export function monsterDisplayName(project: Project, instance: MonsterInstance | undefined): string {
@@ -328,7 +406,7 @@ export function applyGen1FieldPoisonStep(project: Project, session: PlaySession)
 
   const poisonStateIds = new Set(
     project.database.states
-      .filter((state) => state.gen1MajorStatus === "poison")
+      .filter((state) => state.gen1MajorStatus === "poison" || state.gen1MajorStatus === "toxic")
       .map((state) => state.id),
   );
   const poisonedParty = session.monsterParty.flatMap((instanceId) => {
@@ -368,6 +446,8 @@ export function replacePendingMonsterSkill(
   const skillIds = [...(normalized.skillIds ?? [])];
   const replaceIndex = skillIds.indexOf(replacedSkillId);
   if (replaceIndex < 0) return { ok: false, reason: "missingActiveSkill" };
+  // 비전머신 기술은 잊을 수 없다 — 메뉴가 후보에서 빼지만 이 경로를 직접 부르는 이벤트·도구도 막는다.
+  if (project.database.skills.find((skill) => skill.id === replacedSkillId)?.unforgettable === true) return { ok: false, reason: "unforgettable" };
   skillIds[replaceIndex] = pendingSkillId;
   const previousPp = { ...(normalized.skillPp ?? {}) };
   delete previousPp[replacedSkillId];
@@ -396,6 +476,32 @@ export function rejectPendingMonsterSkill(
       pendingSkillIds: pendingSkillIds.length > 0 ? pendingSkillIds : undefined,
     },
   };
+}
+
+export type TeachMonsterSkillResult =
+  | { readonly ok: true; readonly instance: MonsterInstance; readonly outcome: "learned" | "pending" }
+  | { readonly ok: false; readonly reason: "missingSpecies" | "unknownSkill" | "alreadyKnown" | "incompatible" };
+
+/** 이 종이 기술머신으로 이 기술을 배울 수 있는가 — species.machineSkillIds 가 비어 있으면 제한 없음(기존 동작). */
+export function monsterCanLearnMachineSkill(project: Project, instance: MonsterInstance, skillId: SkillId): boolean {
+  const species = monsterSpeciesById(project, instance.speciesId);
+  if (!species) return false;
+  const allowed = species.machineSkillIds ?? [];
+  return allowed.length === 0 || allowed.includes(skillId);
+}
+
+/**
+ * 기술머신·비전머신으로 몬스터에게 기술을 가르친다. 칸(MONSTER_SKILL_MAX)이 남으면 바로 익히고, 가득 찼으면 레벨업 때와 같이
+ * pendingSkillIds 로 두어 메뉴의 「기술 교체」에서 고르게 한다(잊을 수 없는 기술은 그 후보에서 빠진다).
+ */
+export function teachMonsterSkill(project: Project, instance: MonsterInstance, skillId: SkillId): TeachMonsterSkillResult {
+  if (!monsterSpeciesById(project, instance.speciesId)) return { ok: false, reason: "missingSpecies" };
+  if (!project.database.skills.some((skill) => skill.id === skillId)) return { ok: false, reason: "unknownSkill" };
+  const normalized = normalizeMonsterInstanceBattleState(project, instance);
+  if ((normalized.skillIds ?? []).includes(skillId) || (normalized.pendingSkillIds ?? []).includes(skillId)) return { ok: false, reason: "alreadyKnown" };
+  if (!monsterCanLearnMachineSkill(project, instance, skillId)) return { ok: false, reason: "incompatible" };
+  const next = applyLearnedMonsterSkills(project, normalized, [skillId]);
+  return { ok: true, instance: next, outcome: (next.skillIds ?? []).includes(skillId) ? "learned" : "pending" };
 }
 
 /**
@@ -428,6 +534,69 @@ export function monsterEvolutionCycleSpeciesIds(species: readonly MonsterSpecies
   };
   for (const record of species) visit(record.id);
   return [...cycled].sort();
+}
+
+/** 레벨업 뒤 자동 진화(아이템 없는 조건)가 일어날지 미리 본다 — 세션은 바꾸지 않는다. 진화 장면이 보상 반영 전에 돌 수 있게 한다. */
+export function previewMonsterEvolution(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  atLevel: number,
+): { readonly name: string; readonly fromSpeciesId: MonsterSpeciesId; readonly toSpeciesId: MonsterSpeciesId } | undefined {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+  if (!instance || !species) return undefined;
+  const evolution = selectEvolution(project, session, { ...instance, level: atLevel }, species, { instanceId, allowItemEvolution: false });
+  return evolution ? { name: monsterDisplayName(project, instance), fromSpeciesId: species.id, toSpeciesId: evolution.toSpeciesId } : undefined;
+}
+
+/** 이 아이템(진화의 돌 등)이 어떤 종의 진화 조건에 쓰이는가. */
+export function isEvolutionItemId(project: Project, itemId: ItemId): boolean {
+  return (project.database.monsterSpecies ?? []).some((species) => (species.evolutions ?? []).some((evolution) => evolution.requires.itemId === itemId));
+}
+
+/** 이 개체에게 이 아이템을 쓰면 진화하는가(읽기 전용). 레벨·친밀도 조건은 그대로 따진다. 아이템 보유 여부는 보지 않는다. 개체가 없으면 undefined. */
+export function previewMonsterItemEvolution(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  itemId: ItemId,
+): { readonly name: string; readonly fromSpeciesId: MonsterSpeciesId; readonly toSpeciesId?: MonsterSpeciesId; readonly reason?: string } | undefined {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+  if (!instance || !species) return undefined;
+  const name = monsterDisplayName(project, instance);
+  const paths = (species.evolutions ?? []).filter((evolution) => evolution.requires.itemId === itemId && monsterSpeciesById(project, evolution.toSpeciesId));
+  if (paths.length === 0) return { name, fromSpeciesId: species.id, reason: "효과가 없습니다" };
+  const met = paths.find((evolution) => evolutionRequirementMet(session, instance, evolution.requires, true));
+  if (met) return { name, fromSpeciesId: species.id, toSpeciesId: met.toSpeciesId };
+  const need = paths[0]!.requires;
+  const reason = need.level !== undefined && instance.level < need.level ? `Lv.${need.level} 이상이어야 진화합니다` : "아직 진화할 준비가 되지 않았습니다";
+  return { name, fromSpeciesId: species.id, reason };
+}
+
+/** 이 레벨이 되면 일어날 진화를 끝까지(아이템 없는 조건만) 미리 센다 — 이상한 사탕이 Lv16·Lv34 를 한꺼번에 넘으면 두 번 진화한다. 세션은 바꾸지 않는다. */
+export function previewMonsterEvolutionChain(
+  project: Project,
+  session: PlaySession,
+  instanceId: string,
+  atLevel: number,
+): readonly MonsterSpeciesId[] {
+  const raw = session.monsterInstances[instanceId];
+  const instance = raw ? normalizeMonsterInstanceBattleState(project, raw) : undefined;
+  if (!instance) return [];
+  const chain: MonsterSpeciesId[] = [];
+  let speciesId = instance.speciesId;
+  for (let step = 0; step < 6; step += 1) {
+    const species = monsterSpeciesById(project, speciesId);
+    const evolution = species ? selectEvolution(project, session, { ...instance, speciesId, level: atLevel }, species, { instanceId, allowItemEvolution: false }) : undefined;
+    if (!evolution || chain.includes(evolution.toSpeciesId) || evolution.toSpeciesId === instance.speciesId) break;
+    chain.push(evolution.toSpeciesId);
+    speciesId = evolution.toSpeciesId;
+  }
+  return chain;
 }
 
 export function applyMonsterExperienceAndEvolution(
@@ -476,7 +645,22 @@ export type MonsterLevelUpPreview = {
   readonly fromLevel: number;
   readonly toLevel: number;
   readonly learnedSkillIds: readonly SkillId[];
+  /**
+   * learnedSkillIds 중 기술 칸(MONSTER_SKILL_MAX)이 모자라 바로 익히지 못하고 보류(pendingSkillIds)로 가는 것.
+   * 비어 있으면 필드 자체가 없다 — 「배웠다!」 문장은 여기 없는 것만 말해야 한다.
+   */
+  readonly overflowSkillIds?: readonly SkillId[];
 };
+
+/** 새로 배울 기술을 칸이 남는 만큼은 바로 익히고, 나머지는 보류로 가르는 것(applyLearnedMonsterSkills 와 같은 순서·같은 기준). */
+export function splitLearnedMonsterSkills(
+  activeSkillIds: readonly SkillId[],
+  learnedSkillIds: readonly SkillId[],
+): { readonly learned: SkillId[]; readonly overflow: SkillId[] } {
+  const free = Math.max(0, MONSTER_SKILL_MAX - activeSkillIds.length);
+  const fresh = uniqueSkillIds(learnedSkillIds).filter((skillId) => !activeSkillIds.includes(skillId));
+  return { learned: fresh.slice(0, free), overflow: fresh.slice(free) };
+}
 
 // 승리 exp 를 적용하면 발생할 몬스터 레벨업을 계산만 한다(세션 변경 없음).
 // 결과 화면 표시용이며, 실제 적립은 applyMonsterExperienceAndEvolution 이 담당한다 —
@@ -500,17 +684,21 @@ export function previewMonsterExperience(
     const fromLevel = instance.level;
     const toLevel = monsterLevelForExp(species, fromLevel, monsterExpInLevelBand(species, fromLevel, instance.exp) + exp);
     if (toLevel <= fromLevel) continue;
+    const activeSkillIds = monsterSkillIds(project, instance);
+    const learnedSkillIds = newSkillsForLevelRange(
+      species,
+      fromLevel,
+      toLevel,
+      [...activeSkillIds, ...(instance.pendingSkillIds ?? [])],
+    );
+    const { overflow } = splitLearnedMonsterSkills(activeSkillIds, learnedSkillIds);
     results.push({
       instanceId: instance.instanceId,
       name: monsterDisplayName(project, instance),
       fromLevel,
       toLevel,
-      learnedSkillIds: newSkillsForLevelRange(
-        species,
-        fromLevel,
-        toLevel,
-        [...monsterSkillIds(project, instance), ...(instance.pendingSkillIds ?? [])],
-      ),
+      learnedSkillIds,
+      ...(overflow.length > 0 ? { overflowSkillIds: overflow } : {}),
     });
   }
   return results;
@@ -669,33 +857,57 @@ export interface MonsterBattleStats {
   readonly agility: number;
 }
 
-// 포켓몬 유사 스탯 공식(EV 없음, IV 0~15):
-//   HP     = floor((2*base + iv) * level / 100) + level + 10
-//   기타   = floor((2*base + iv) * level / 100) + 5
-// MP는 원작에 대응이 없어 base를 레벨로 완만 스케일한다. mind는 IV가 없어 iv=0.
+// 포켓몬 유사 스탯 공식(IV 0~15, EV·성격은 옵트인):
+//   HP     = floor((2*base + iv + floor(ev/4)) * level / 100) + level + 10
+//   기타   = floor(floor((2*base + iv + floor(ev/4)) * level / 100) + 5) * 성격 보정(0.9/1/1.1))
+// EV·성격(extras)을 안 주면(기본) 예전 식 그대로다. MP는 원작에 대응이 없어 base를 레벨로 완만 스케일한다. mind는 IV가 없어 iv=0.
+export type MonsterStatExtras = {
+  readonly nature?: string;
+  readonly evs?: Partial<MonsterInstanceEvs>;
+};
+
 export function monsterBattleStatsForSpecies(
   species: MonsterSpeciesRecord | undefined,
   level: number,
-  ivs: MonsterInstance["ivs"]
+  ivs: MonsterInstance["ivs"],
+  extras?: MonsterStatExtras
 ): MonsterBattleStats {
   const base = species?.baseStats;
   const lv = clampInteger(level, 1, ACTOR_LEVEL_MAX);
-  const other = (statBase: number, iv: number): number =>
-    Math.max(1, Math.floor((2 * statBase + iv) * lv / 100) + 5);
-  const hp = Math.floor((2 * (base?.maxHp ?? 1) + (ivs?.hp ?? 0)) * lv / 100) + lv + 10;
+  const nature = monsterNatureById(extras?.nature);
+  const evs = extras?.evs ? clampMonsterEvs(extras.evs) : undefined;
+  // 성격 ±10%: 능력치가 작은 게임(한 자리 능력치)에서도 보이도록 최소 ±1 은 움직인다. 두 자리 이상에서는 floor(raw*1.1)/floor(raw*0.9)와 같다.
+  const natured = (raw: number, stat: MonsterNatureStat): number => {
+    if (nature?.up === stat) return Math.max(Math.floor(raw * 1.1), raw + 1);
+    if (nature?.down === stat) return Math.max(1, Math.min(Math.floor(raw * 0.9), raw - 1));
+    return raw;
+  };
+  const other = (statBase: number, iv: number, ev: number, stat: MonsterNatureStat): number => {
+    const raw = Math.floor((2 * statBase + iv + Math.floor(ev / 4)) * lv / 100) + 5;
+    return Math.max(1, natured(raw, stat));
+  };
+  const hp = Math.floor((2 * (base?.maxHp ?? 1) + (ivs?.hp ?? 0) + Math.floor((evs?.hp ?? 0) / 4)) * lv / 100) + lv + 10;
   return {
     maxHp: Math.max(1, hp),
     maxMp: Math.max(0, Math.floor((base?.maxMp ?? 0) * (1 + lv / 50))),
-    attack: other(base?.attack ?? 1, ivs?.atk ?? 0),
-    defense: other(base?.defense ?? 1, ivs?.def ?? 0),
-    mind: other(base?.mind ?? 1, 0),
-    agility: other(base?.agility ?? 1, ivs?.spd ?? 0),
+    attack: other(base?.attack ?? 1, ivs?.atk ?? 0, evs?.atk ?? 0, "attack"),
+    defense: other(base?.defense ?? 1, ivs?.def ?? 0, evs?.def ?? 0, "defense"),
+    mind: other(base?.mind ?? 1, 0, 0, "mind"),
+    agility: other(base?.agility ?? 1, ivs?.spd ?? 0, evs?.spd ?? 0, "agility"),
   };
+}
+
+/** 프로젝트 규칙이 켜져 있을 때만 인스턴스의 성격·노력치를 공식에 넘긴다(꺼져 있으면 undefined = 예전 식). */
+export function monsterStatExtrasFor(project: Pick<Project, "system">, instance: Pick<MonsterInstance, "nature" | "evs"> | undefined): MonsterStatExtras | undefined {
+  if (!instance) return undefined;
+  const rules = monsterStatRulesOf(project);
+  if (!rules.natures && !rules.evs) return undefined;
+  return { ...(rules.natures && instance.nature ? { nature: instance.nature } : {}), ...(rules.evs && instance.evs ? { evs: instance.evs } : {}) };
 }
 
 /** 인스턴스의 전투 유효 스탯(종족+레벨+IV). 전투 배틀러 생성에 사용. */
 export function monsterBattleStats(project: Project, instance: MonsterInstance): MonsterBattleStats {
-  return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs);
+  return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs, monsterStatExtrasFor(project, instance));
 }
 
 /**
@@ -709,8 +921,8 @@ export function monsterStatAtLevel(base: number, iv: number, level: number, _gro
   return Math.max(1, Math.floor((2 * base + iv) * lv / 100) + 5);
 }
 
-function monsterMaxHpFor(_project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
-  return monsterBattleStatsForSpecies(species, instance.level, instance.ivs).maxHp;
+function monsterMaxHpFor(project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {
+  return monsterBattleStatsForSpecies(species, instance.level, instance.ivs, monsterStatExtrasFor(project, instance)).maxHp;
 }
 
 function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
@@ -806,6 +1018,15 @@ export function monsterExpInLevelBand(species: MonsterSpeciesRecord, level: numb
   return Math.min(ceiling, Math.max(floor, Math.trunc(exp ?? 0)));
 }
 
+/** 이 개체를 `levels` 레벨 올리는 데 필요한 경험치(상한 레벨이면 0). 이상한 사탕이 레벨 문턱까지 정확히 채우는 데 쓴다. */
+export function monsterExpToRaiseLevels(species: MonsterSpeciesRecord, instance: Pick<MonsterInstance, "level" | "exp">, levels: number): { readonly toLevel: number; readonly exp: number } {
+  const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
+  const level = clampInteger(instance.level, 1, ACTOR_LEVEL_MAX);
+  const toLevel = clampInteger(level + Math.max(0, Math.trunc(levels)), 1, ACTOR_LEVEL_MAX);
+  if (toLevel <= level) return { toLevel: level, exp: 0 };
+  return { toLevel, exp: Math.max(1, totalExpForLevel(curve, toLevel) - monsterExpInLevelBand(species, level, instance.exp)) };
+}
+
 function monsterLevelForExp(species: MonsterSpeciesRecord, currentLevel: number, exp: number): number {
   const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
   let level = clampInteger(currentLevel, 1, ACTOR_LEVEL_MAX);
@@ -822,6 +1043,7 @@ function selectEvolution(
 ): MonsterEvolutionRecord | undefined {
   const evolutions = (species.evolutions ?? [])
     .filter((evolution) => !input.toSpeciesId || evolution.toSpeciesId === input.toSpeciesId)
+    .filter((evolution) => !input.itemId || evolution.requires.itemId === input.itemId)
     .filter((evolution) => monsterSpeciesById(project, evolution.toSpeciesId));
   return evolutions.find((evolution) => evolutionRequirementMet(session, instance, evolution.requires, input.allowItemEvolution === true));
 }

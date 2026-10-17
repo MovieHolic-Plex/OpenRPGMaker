@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c8f40949a41655cb592e12ee9df3c28cfa009d511b5f65e2c2aa7ca02e9eb50",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "지장보살 석상(붉은 턱받이)",
+ "label": "sengoku-edo/se-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone statue with red bib",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base are drawn entirely in straight front elevation with horizontal dividing lines and no foreshortened top surfaces visible on the base, shoulders, or head.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5019
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth with red bib",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base plinth (rows 27-31) are rendered entirely in straight front elevation with no visible horizontal top surfaces foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3180
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Jizo stone statue with red bib and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base are drawn in flat front elevation with horizontal dividing lines and no visible top surface on either the shoulders, lap, or base plinth (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3912
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Jizo stone statue with red bib and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue, shoulders, and base are drawn entirely in flat front elevation with straight horizontal dividing lines and no visible top surface foreshortening on either the plinth or figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3980
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.181Z",
+ "cells": {
+  "16": [
+   "37854b6fcdf303d8",
+   "5134936f2fb9ccdf"
+  ],
+  "24": [
+   "176e539dee080c0c",
+   "1fc060e916ff0519",
+   "23cce4fc9ef30043",
+   "44cedefb9b92fb7a",
+   "4b5dc765f1b35f6b",
+   "6cc59213e5fa2642",
+   "7de13da0c13f5b54",
+   "819c0c8ecfdddc00",
+   "8eeea7ec14849237",
+   "9fdb1eb345582870",
+   "af6c3cf596e3e1b8",
+   "da3bcac5d01ddcbd"
+  ],
+  "32": [
+   "7c821b8898bd6d57",
+   "7fcf008a61fb2e4c",
+   "fa3e762a6cef8011"
+  ],
+  "48": [
+   "02571da1990caa95",
+   "40faf11a13e00155",
+   "4a9e8a3d71d5b3c7",
+   "5386e603ef93ce6f",
+   "dc80ca9387ef1ec2",
+   "e1267679118641dc"
+  ]
+ }
+}

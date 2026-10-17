@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48acc00314c3b136111646a01b4981bd2026295d0a3fdb7794fc714486fb1cd5",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "선미 격자 창(3칸) (stern windows)",
+ "label": "atlas_biome_interior/plus/stern windows",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden stern window frame with glass panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted multi-pane window designed flat against the vertical wall plane as standard for north-wall fixtures in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6251
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large multi-pane stern window frame mounted on a wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted multi-pane window with interior sill; properly flat-facing as expected for north wall decorations in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4799
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stern window frame and panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Stern windows mounted flat against a vertical ship wall; permissible as a flat wall-mounted object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4762
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stern window frame and panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A wide multi-pane stern window mounted flat against a wall. Under the wall_mounted category, flat elevation is expected and permissible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5460
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.625Z",
+ "cells": {
+  "16": [
+   "1146f3ceb5743a3c",
+   "785bfdc90898ce11",
+   "88e081eca8dc9109",
+   "a013b93cfdc26389",
+   "d49070cde32c0249",
+   "e0f5f34e31c02aa3"
+  ],
+  "24": [
+   "0228219784c2e198",
+   "0cf649e846e28c2b",
+   "29682decf7ee0b5c",
+   "5744b1a934ff2e23",
+   "7d8de9559781d8ef",
+   "933b3cf7952c3c43",
+   "fb3a217d0be2b7a7",
+   "fd568437fe75a7c8"
+  ],
+  "32": [
+   "0ac5ad2d74ca1e40",
+   "41da8e43ac0183cb",
+   "47b873c218789a9d",
+   "57219c1e1429160f",
+   "f011c4b2dea0b20a",
+   "f8b4517bf0c92484"
+  ],
+  "48": [
+   "84ad5c6f8a795265",
+   "fd7a9f3e039199ef"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16f8fba206c9622f3eccfd75a7f4cf7f0de5c019d9645b0cfb8e0abb646f1594",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "냉동 수면 포드 세 기 묶음(서리 뚜껑 셋 + 공용 제어 띠)",
+ "label": "sf-station/sf-cryo-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryo-sleep pod trio unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in direct front elevation with no visible top surface foreshortened from above (only a 1px border at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3686
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo sleep pod unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit and its three glass chambers are depicted strictly from the front with zero visible top surface (rows 0-1 are merely a 1px border outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "triple cryo-pod unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cryo-pod unit is drawn as a flat front elevation. There is only a 1-pixel border/rim at rows 0-1 with no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo-sleep pods unit with three chambers and a lower control strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3-pod machine is drawn straight-on in flat front elevation with only a 1-2px border frame along rows 0-1; there is no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4265
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.951Z",
+ "cells": {
+  "16": [
+   "08a68ef15a1daf84",
+   "581ddda485abec17",
+   "9ae28017181eb2c7",
+   "b032a0aae86b6c90",
+   "d515e66cc63ff8b4",
+   "da7134d91cb7ed35"
+  ],
+  "24": [
+   "0a9b41dfa37f31a7",
+   "1a154b4c328d5a90",
+   "31efa93b40386f5f",
+   "a32191d78b621e13",
+   "afd115e1840d67c3",
+   "b1cbb0f6649ae07b",
+   "c51a34869007fb60",
+   "f6d4a298a85ae679"
+  ],
+  "32": [
+   "23bcd2112a8a22ef",
+   "6ff1812917b30aff",
+   "799e0a7f472415cd",
+   "b9fb8c538183479b",
+   "ce550f540e461d21",
+   "fb0259a3a3c83c27"
+  ],
+  "48": [
+   "1aeb55ab9bc7a511",
+   "6dd46fa9441d0042"
+  ]
+ }
+}

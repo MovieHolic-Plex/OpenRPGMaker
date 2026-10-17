@@ -43,7 +43,7 @@ interface BuildWorldNodeInput {
   readonly concept?: string;
 }
 
-interface LinkResult {
+export interface LinkResult {
   readonly eventIdA: string;
   readonly eventIdB?: string;
   readonly gateA: Point;
@@ -279,7 +279,7 @@ const lintWorldTool: ToolDefinition = {
   },
 };
 
-function linkMapsInDraft(
+export function linkMapsInDraft(
   draft: Project,
   options: {
     readonly from: JsonRecord;

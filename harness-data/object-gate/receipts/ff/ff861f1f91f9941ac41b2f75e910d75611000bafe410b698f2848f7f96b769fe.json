@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff861f1f91f9941ac41b2f75e910d75611000bafe410b698f2848f7f96b769fe",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "작은 나무 상자",
+ "label": "steampunk-city/sp-crate-in",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden crate clearly depicts a top face spanning rows 1 to 6 with vertical plank details and a highlighted edge, separated by a dividing shadow line from the south front face spanning rows 8 to 14 with a diagonal brace.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6863
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate occupies rows 1 to 6 (about 5-6 rows of lighter wood with vertical slats) before the darker front face begins at row 7 with diagonal bracing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the crate occupies rows 1-6 with vertical plank detailing, clearly separated by a horizontal edge line at row 7 from the front face (rows 8-14) which features a diagonal brace.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5790
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface of the crate is clearly rendered from row 1 to row 6 (approx 6 rows) with plank details and highlight, while the front face with a diagonal brace occupies rows 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5917
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.534Z",
+ "cells": {
+  "16": [
+   "ae0bad0176787e56"
+  ],
+  "24": [
+   "20335bed35ef0c8a",
+   "4a020b67b86b21d8",
+   "7c7290c710557ca4",
+   "839bc324896bcaa2",
+   "8b6ae7b45f1c8370",
+   "bb877e7c9651dd76"
+  ],
+  "32": [
+   "118150ff596d7595",
+   "2abb194ea638afb6",
+   "503dd44beadb7f8a",
+   "51d0f05980b27cae",
+   "72617e776f8306b9",
+   "818c6df83695f01a"
+  ],
+  "48": [
+   "1a2b63d0975024af",
+   "5376cda0d03ea4a1",
+   "66305dd09c6f9856",
+   "dc7edacd839b76af",
+   "e3568254d6071e26",
+   "f8a5ef94decdd1b3"
+  ]
+ }
+}

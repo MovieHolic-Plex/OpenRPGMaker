@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42d72d67005d107360a1a8e7d94ca20c92df09d99248108cd3f5a98a8cd366ee",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "무너진 둥근 망루(폐탑)",
+ "label": "gothic_manor/gm-bld-folly",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ruined cylindrical stone tower",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hollow ruined cylindrical tower clearly shows its circular top opening as a foreshortened ellipse spanning rows 27 to 33 (7 rows tall), with rear crenellations rising behind the opening and front battlements in front, giving proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ruined cylindrical stone watchtower",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hollow ruined tower shows a 7-pixel-tall dark elliptical opening (rows 27-33) looking down into the interior, correctly foreshortened for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4442
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ruined cylindrical stone watchtower",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the ruined round tower shows an 8-row deep elliptical opening (rows 26–33) viewed from above at a 3/4 angle, with rear battlements rising higher than the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7557
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical ruined stone tower",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The ruined open top of the hollow tower clearly displays an elliptical opening/interior cavity spanning 7 pixel rows (rows 27 to 33) viewed from above at the standard 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9324
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.459Z",
+ "cells": {
+  "16": [
+   "17ae376069feefbb",
+   "2a647c49edfa44ea",
+   "34e2c62ddb61ab63",
+   "3b589f6e9c75811d",
+   "40a687b30e512a0e",
+   "5c442052ad7d3260",
+   "6bc0a754e45425ce",
+   "734adea3b24c73c3",
+   "7b81aa63d9c73bad",
+   "87ca3dee4c50c27d",
+   "8ba99e586bd98c58",
+   "96ee1d6d8ed256a0",
+   "a12cef2303f98b7d",
+   "ad34948292115baa",
+   "bd266d02d68e0042",
+   "c883585b9b553dd2",
+   "e0f95b2656865167",
+   "f92c8dc58649092c"
+  ],
+  "24": [
+   "0d12fe2c3333e5a9",
+   "0d54779dd3d809ee",
+   "1bb6251da69d6f83",
+   "27369f3a612fbd5b",
+   "2db783821bc5b4e6",
+   "4fb5633e28629377",
+   "6886abc72ce85d3f",
+   "7ceaae8177d97a83"
+  ],
+  "32": [
+   "0a51318aa5148496",
+   "24d2122eb69fe584",
+   "27be51cc2330229a",
+   "42490cd4d478b713",
+   "4a6337c9f684e1c4",
+   "4b2045b067cd9210",
+   "822220263b0d3000",
+   "8b0e8fb332174c02",
+   "92f7c524e05b78d6",
+   "9360ab39886d9032",
+   "973d53625d5a8cfd",
+   "a46dbe28b686ffb4",
+   "b668200b1b00d554",
+   "bad530b95f73fad4",
+   "c620560081f093bd",
+   "c6965b5a288b5f78",
+   "dda2aed4cbaf7478",
+   "ea0d6b3221d07692"
+  ],
+  "48": [
+   "eef9a6c084369e70",
+   "f03586af31ee1aa1"
+  ]
+ }
+}

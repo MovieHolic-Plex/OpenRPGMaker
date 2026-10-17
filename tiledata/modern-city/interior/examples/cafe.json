@@ -1,0 +1,193 @@
+{
+ "name": "도쿄풍 카페",
+ "kind": "cafe",
+ "plan": [
+  "################",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#..............#",
+  "#...........####",
+  "#####..#########"
+ ],
+ "floor": "mci-wood-dark",
+ "wall": "mci-wall-brick",
+ "exitWidth": 2,
+ "zones": [],
+ "objects": [
+  {
+   "id": "mci-menu-board",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "mci-wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "mci-window-city",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "mci-window-city",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "mci-coffee-station",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "mci-fridge",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "mci-pastry-case",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "mci-bar-stool",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "mci-bar-stool",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "mci-bar-stool",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "id": "mci-cafe-chair-e",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "mci-cafe-table",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "mci-cafe-chair-w",
+   "x": 10,
+   "y": 7
+  },
+  {
+   "id": "mci-cafe-chair-e",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "mci-cafe-table",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "mci-cafe-chair-w",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "mci-armchair",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "mci-cafe-table",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "mci-armchair",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "mci-plant-tall",
+   "x": 11,
+   "y": 9
+  }
+ ],
+ "tables": [
+  {
+   "style": "mci-t-counter",
+   "x": 1,
+   "y": 5,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "mci-t-wood",
+   "x": 9,
+   "y": 3,
+   "w": 5,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "mci-g-coffee",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "mci-g-register",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "mci-g-vase",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "mci-g-coffee",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "mci-g-coffee",
+   "x": 10,
+   "y": 3
+  }
+ ],
+ "start": [
+  5,
+  9
+ ],
+ "rooms": [
+  {
+   "room": "cafe",
+   "x0": 0,
+   "y0": 0,
+   "x1": 15,
+   "y1": 10
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 4,
+   "x1": 4,
+   "y1": 4,
+   "why": "카운터 뒤 직원 길"
+  }
+ ]
+}

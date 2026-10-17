@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc4597a38b5843658424651b8fe6923a8fff993a6e4c4b0f0b213b3bf5f99c0c",
+ "width": 32,
+ "height": 64,
+ "kind": "column",
+ "name": "비둘기 탑(흙벽돌)",
+ "label": "desert-east/de-dovecote",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mudbrick pigeon tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower is drawn in pure front elevation: all tiers, decorative ledges, pigeon holes, and the base are aligned along straight horizontal lines with no 3/4 top-down foreshortening or curvature. The white cap at the top is also drawn as a flat front profile without an exposed top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6863
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mudbrick pigeon tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower is drawn in pure architectural front elevation: all horizontal bands, ledges, and bottom base are completely flat straight lines without elliptical curvature, and the top dome cap is drawn in flat silhouette with no top-down surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5130
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mud-brick pigeon tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The multi-tiered cylindrical tower is drawn in direct front elevation: every tier transition, ledge, and row of pigeon holes is completely horizontal with 0px of foreshortened top surface visible. The conical/domed top cap is also drawn straight from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6225
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tapered mud-brick pigeon tower (dovecote)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pigeon tower is drawn entirely in front elevation: all tier boundaries, ledges, and bottom base are completely flat horizontal lines with no foreshortened top surfaces or elliptical curvature typical of cylindrical structures in 3/4 top-down view. The top dome is also rendered in side silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5836
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.965Z",
+ "cells": {
+  "16": [
+   "25febf6c19c0c547",
+   "5f5b96b8a7834832",
+   "73f66b592b0e4b65",
+   "8091caa5da3da4e5",
+   "b36a8d90b9571b19",
+   "cda4a1c2c8df0ad6",
+   "e52f482733ce59dd",
+   "fc13daf229308d96"
+  ],
+  "24": [
+   "03aae9652b6d3fce",
+   "08a5e0c5acaa8bcc",
+   "0d9f2725390ae0fd",
+   "1ab4d60319a868b1",
+   "318a2c54b8882627",
+   "382245b65fe9bc23",
+   "3b1e49780ba5c4d7",
+   "50c4645f7ab4dc07",
+   "5ca2ca7a4e47eb28",
+   "645f1e0e1c7ba6cf",
+   "6774521c8ad199ed",
+   "6ab8d04c18d613ca",
+   "786a29595480065e",
+   "79e5d7220f7a6b25",
+   "7ed0ff47eaa9a1a4",
+   "81bbe051a8b354bd",
+   "81e0c1fbe942e502",
+   "86d81fb5700c5de3",
+   "86f4da741ec4d3e8",
+   "8d91b5277a64b885",
+   "995ac0aafa367840",
+   "99e29b4a9a2dcd98",
+   "a45806d4a9497454",
+   "a527be30887f1736",
+   "ae3e9f629f97eef1",
+   "b66822edac4ae2d8",
+   "bad984693858b681",
+   "bd4631cdd7f96070",
+   "bf9d1a4c895c7b5e",
+   "d183cd3777bcb37e",
+   "d2ac72ef23555822",
+   "d6563e49856d0710",
+   "e396aa8b93061367",
+   "edbb88ca800b0ac3",
+   "f2cd81fadb32f7a9",
+   "fb8621efca7f83b1"
+  ],
+  "32": [
+   "3359a7440e01595b",
+   "3fb9f5dfbb28b83f"
+  ],
+  "48": [
+   "08a702900ea8bf74",
+   "0b375949a5cd3638",
+   "32250b559aedf77b",
+   "627ca66e4209d3ce",
+   "629614b12fd81fd0",
+   "782c8457d8d2bc7b",
+   "79515c5146a93804",
+   "9fc1f1e6841474cc",
+   "b0048becd92454be",
+   "c7fb3bc044be8132",
+   "d9e7e7a8014b1202",
+   "f2d1f56bc838eb64"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "888086f4ae7c85d8ce23ebcb24cd06c8e425c7927c1fb2703e1a872799d679db",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flagstone path on grass (terrain)",
+ "label": "sky-island/si-path-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone path on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing stepping stones/flagstones laid flat into the grass ground plane in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstones on grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing flagstones embedded in grass, fully visible from the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstones on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting flagstones embedded in grass, viewed top-down with proper horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6393
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavers on grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting flat flagstones resting on a grass surface viewed from above with appropriate 3/4 foreshortening and south-edge shadowing on the stones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4667
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.888Z",
+ "cells": {
+  "16": [
+   "977efecd8d4daaef"
+  ],
+  "24": [
+   "7a8b9312cadbc3ba",
+   "8302f79152b71e69",
+   "96b18eafb71c9359",
+   "c1ff29171a86bad4",
+   "d11f5214c3f5d3a2",
+   "f8cb44866902da04"
+  ],
+  "32": [
+   "8ab8ee9f10467d53",
+   "ba960176ee32af75",
+   "c11ee9d72c05bc6b",
+   "d89ab707e672b128",
+   "e38935a7d749108c",
+   "ee30c01103f3c3d6"
+  ],
+  "48": [
+   "24a0674ebf3ba5de",
+   "31a904f8580938f8",
+   "49a1a65f09bc779f",
+   "76145b672a286dd9",
+   "e98e7057b8ee8dac",
+   "f3118568b72edda8"
+  ]
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "950b53917e70caf7e1e9dbce5e1321bb4d2afb817dd95c4ca95d14f10f8d6b3a",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-4-L",
+ "label": "jp_city/street_hand/jp-sf-sento-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento entrance doorway with noren curtain and flanking display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway frame, lintel, curtains, and flanking shelves are drawn entirely in a flat front elevation (architectural/platformer style) with only a 1px edge highlight on the lintel (row 11) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5755
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "doorway structure with noren curtain and side display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance structure, including the top lintel (rows 11-13), the side shelves (rows 24-40), and the items on the shelves, is drawn in pure flat front elevation with no visible horizontal top surfaces or 3/4-view depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5238
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sento entrance doorway with noren curtain and flanking display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway frame, lintel, and flanking shelving units are drawn in pure front elevation. The top lintel at row 11 has only a 1px edge line rather than a foreshortened top surface, and the shelves and partition lack top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6001
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sento entrance doorway with noren curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway lintel, wooden frame, hanging curtain, and flanking shelves are drawn in flat front elevation with no visible top horizontal surfaces (only a 1px edge highlight on the lintel at row 11).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6189
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.383Z",
+ "cells": {
+  "16": [
+   "0f6759563c17f652",
+   "3347463e09fca617",
+   "35f25202d2734ec2",
+   "492309af242ec3ef",
+   "49b4d9b72d26c333",
+   "652aced7367b03fa",
+   "653dac2a530fdd8e",
+   "6acda2c9ece8a84d",
+   "8a0024a5ea16da93",
+   "bd89a5f70a56eeee",
+   "c03732f0dc187032",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "0029f195238f7aad",
+   "077ba744b47c5346",
+   "0f200193a4728d1a",
+   "1c56c9c8b834c9fe",
+   "25dfefe358b9155f",
+   "2902b487c4f0ea9b",
+   "34863f2f070aaa94",
+   "37931493f5a54552",
+   "63244e2dac2f1af6",
+   "68b388548c548fa2",
+   "71c95a870b63ec15",
+   "782c79bff4c9f600",
+   "a33c1900102fc5df",
+   "ac648b3862382735",
+   "d6d4e642eac19d79",
+   "d970c65245e852e2",
+   "f1a0567f002ef6d3",
+   "f232d30d8d257d92"
+  ],
+  "32": [
+   "32e29bd408b0fa86",
+   "43403a3ab008217f",
+   "bd80d501e40044ce",
+   "cfbb90930ffc0c05",
+   "d71b1618ff56ef02",
+   "eb56ced909000efe",
+   "f337ae47ae06010c",
+   "f766e419f9de0afd"
+  ],
+  "48": [
+   "2a500d9f0d122870",
+   "2e1cb42196ecc737",
+   "82893edb85698f7a",
+   "86b748f374cb3650",
+   "d57e44802c4adce2",
+   "d9023cc04432903c"
+  ]
+ }
+}

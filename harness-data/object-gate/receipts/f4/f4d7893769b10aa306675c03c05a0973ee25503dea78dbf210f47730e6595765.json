@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4d7893769b10aa306675c03c05a0973ee25503dea78dbf210f47730e6595765",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "small young tree",
+ "label": "sky-island/si-tree-young",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in pure front elevation as if for a side-scroller, with no top-down perspective on the foliage or trunk; only the ground patch at the base is rendered as an ellipse.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8208
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in flat side-scroller/front elevation. The trunk connects directly to the flat underside of the foliage silhouette with no foreshortened top surface or top-down volume on the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6579
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in side-scroller front elevation: the canopy forms a flat profile of stacked circles without top-down foreshortening, and the trunk is a straight vertical strip meeting the canopy at a flat horizontal boundary, despite the ground ellipse below.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6940
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is rendered in a flat 2D side-scroller elevation with side-lighting. There is no visible top surface foreshortened toward the camera, and the trunk descends straight vertically to a flat base line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7253
+  }
+ ],
+ "decidedAt": "2026-10-14T08:17:41.839Z",
+ "cells": {
+  "16": [
+   "005f14f8267382d6",
+   "fb745f63e19fa7dd"
+  ],
+  "24": [
+   "1ef72599cd639927",
+   "2316aff083b6565d",
+   "2adda9d4dd1709e5",
+   "3d97e5311ca85efc",
+   "43eafbb3211de8ad",
+   "5ccec03deaf26288",
+   "a95fb6f15a947455",
+   "ab262a9fe2cdbd53",
+   "c78567169df1764a",
+   "d7039295c38e9694",
+   "dde727e5e8b828e0",
+   "f4f977815629aa96"
+  ],
+  "32": [
+   "4ffc53405f966e89",
+   "71c88f2edbe6c69c",
+   "80fd2b06fe3ea570"
+  ],
+  "48": [
+   "1233d8010c90c2e0",
+   "1896b7ea3a06da2f",
+   "40d36c0854304043",
+   "8ae9d26b8013d4a3",
+   "a2d62c4d09ce2930",
+   "f2691448fdbf42c5"
+  ]
+ }
+}

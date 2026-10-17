@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "456cb17a2d21b31ed610f963a7f6364354a9b10c6c7db2f6f2c70b5e891f2092",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall falling through open sky (terrain overlay)",
+ "label": "sky-island/si-falls-air-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall stream designed as a continuous terrain overlay tiling vertically from top to bottom; correctly depicted as a vertical terrain feature rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6234
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertically tiling terrain overlay representing a waterfall falling through open space. As vertical terrain/water, it correctly spans from top to bottom without a horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6145
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical waterfall stream segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical water terrain tile designed to tile vertically across rows 0-15; as a vertical cascade face / terrain overlay, it correctly represents a falling sheet of water without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5482
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical water overlay / terrain segment connecting seamlessly top-to-bottom across the tile. As a vertical terrain feature rather than a standing object, standard horizontal top requirements do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4618
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.982Z",
+ "cells": {
+  "16": [
+   "561130e8af00b82c"
+  ],
+  "24": [
+   "27a01bd09e849206",
+   "3020e99ce04c8f96",
+   "6a0d16ae5760a462",
+   "90f93c00edb2d4a4",
+   "912eee6383c207f9",
+   "e6ca65f75358bf7d"
+  ],
+  "32": [
+   "4cd20555b45f61e4",
+   "685c44c4d167e724",
+   "7318218cf05c0f5a",
+   "bf78dec2b4836120",
+   "db9cca1c47393404",
+   "e795c02b6e5cd55e"
+  ],
+  "48": [
+   "0dd5c8286a724348",
+   "11d7c62566a11e33",
+   "a60082e5258bd425",
+   "b3311f9794363f7a",
+   "c4d43939715a99e3",
+   "fa436cd759f097ec"
+  ]
+ }
+}

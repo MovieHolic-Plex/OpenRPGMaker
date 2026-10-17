@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8a6ed8dad8eed6435a2a15bc360f823438cd698234a1eb13766bef1195d0586",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile with a small grass tuft",
+ "label": "sky-island/si-grass-tuft-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass terrain ground tile viewed top-down with pixel texture/tufts across the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5411
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 area with grass texturing seen from a top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 footprint with grass texture and tufts viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4055
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.879Z",
+ "cells": {
+  "16": [
+   "dacf54294f8f5b7b"
+  ],
+  "24": [
+   "2995203336be4ff9",
+   "379ecaf8dc59d668",
+   "d7280f2f17c137d9",
+   "d7df0707fbaee0cf",
+   "dfbf99fe49339b5b",
+   "f1c3753fd929c159"
+  ],
+  "32": [
+   "016fdb1a4f76c0e3",
+   "4f3ec28f7d3586a1",
+   "6841c773181d0c10",
+   "7924a14a6dd0b60f",
+   "81db88e2ce9c4d65",
+   "b2dbe2aab1d9a226"
+  ],
+  "48": [
+   "0bfbf8ebd549512c",
+   "76aa237d69cc833a",
+   "8c8daa62e0d94aa9",
+   "9749255bcbf97c2c",
+   "9a33b2761a4e44ba",
+   "ceeb094473760975"
+  ]
+ }
+}

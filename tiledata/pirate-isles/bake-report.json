@@ -1,0 +1,39 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 1198,
+  "kits_checked": 166,
+  "groups_checked": 38,
+  "autotiles_checked": 12
+ },
+ "reassembly": {
+  "kits": 166,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 1198,
+  "rows": 25,
+  "kits": 166,
+  "groups": 38,
+  "autotiles": 12
+ },
+ "adopted": {
+  "pieces": 178,
+  "by_group": {
+   "terrain": 32,
+   "nature": 25,
+   "buildings": 25,
+   "props": 38,
+   "boats": 5,
+   "interior": 53
+  }
+ },
+ "rejected": [],
+ "reassembly_from_files": 0
+}

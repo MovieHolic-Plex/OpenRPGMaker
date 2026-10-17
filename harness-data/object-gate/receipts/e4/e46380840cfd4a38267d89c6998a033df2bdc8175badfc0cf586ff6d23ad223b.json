@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e46380840cfd4a38267d89c6998a033df2bdc8175badfc0cf586ff6d23ad223b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "lab bookshelf against the wall",
+ "label": "monster-rooms/lab_shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tall bookshelf is clearly visible across rows 2–5 (4 pixels deep), bounded by a front lip highlight on row 6 before the recessed shelving begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11646
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lab bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-5 form a 4-pixel tall, brightly illuminated horizontal top surface of the bookshelf, with row 6 serving as the front edge/rim above the shelving frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main body is clearly visible at rows 2-5 (4 source pixel rows tall), rendered in a lighter horizontal top-down lighting tone above the front shelf opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8041
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible at rows 2-5 (4 source pixels tall) with a front edge highlight on row 6, and individual books also exhibit foreshortened top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7778
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "0df15df8a30836e0",
+   "c2f956f536d51d8f",
+   "c4db23f7adffd402",
+   "d2d0eed1951f3ed5"
+  ],
+  "24": [
+   "0d4d435122804084",
+   "236ecddacfa2ee28",
+   "2fe7cefe097863fd",
+   "3a92cdcba09c7aeb",
+   "3b9ca0f355a89028",
+   "41129f483d9b5d58",
+   "4970a398f39561a2",
+   "53a4c485961e6d2d",
+   "54e8a547a4adb12d",
+   "57e73592734d76c5",
+   "5a23bb1bdb9a3027",
+   "662546004095b632",
+   "7d002c7a308c9f35",
+   "80caba560e182d39",
+   "8568291c0a1305dd",
+   "89fb80cba17844a8",
+   "9a1870fd961f805a",
+   "adc2053a6ff1362d",
+   "b5418653faf7eb27",
+   "c7a29ca427c5fd3e",
+   "cc6d60d97668922d",
+   "cede1da6e91edb1d",
+   "dc3e13d80febafb5",
+   "fbd50b3e762b7fc8"
+  ],
+  "32": [
+   "af3a4592f0f62419"
+  ],
+  "48": [
+   "22910edc543d87b8",
+   "629d35393480b148",
+   "8072ff82f2834864",
+   "85a8ba2d6ae81cfb",
+   "a9746073436a0bcd",
+   "d28e4926cf1997ba"
+  ]
+ }
+}

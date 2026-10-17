@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a7925732463fee74e707144a4b8fe575c580580bb5300369d8ec5b2e378fbd0",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spit roast",
+ "label": "prehistoric/ph-spit-roast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden spit rack with roast meat over stone fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden upright posts clearly show circular/oval cut top surfaces measuring 3 pixel rows (rows 1-3) above their vertical front faces, and the fire pit stones form a foreshortened ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5244
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "spit roast frame with roasted meat over fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden upright posts show clear top cut faces (rows 1-3, 3px tall), and the roasted meat and surrounding stone fire pit both show top-down perspective depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4765
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden spit roast frame with roasting meat over fire pit",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden support posts show clear circular top cut-faces across rows 1-3, and the meat and stone fire pit beneath display clear 3/4 downward-looking foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4051
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "spit roast (roasted meat on wooden spit rack over a stone fire pit)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roasted meat shows a 3-row foreshortened top surface (rows 2-4) above its south face. The support posts display circular cut tops (rows 2-3), and the stone fire pit forms an oval ring on the ground plane, consistent with 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7302
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.940Z",
+ "cells": {
+  "16": [
+   "2be890810bc39b75",
+   "e3a24d8760f972c7"
+  ],
+  "24": [
+   "028b0874a3b6a675",
+   "02a5cfe9e5d4710f",
+   "0f10a7ec2910d777",
+   "140c07b9fa5cde4b",
+   "5b6105367d767d6f",
+   "620f9a59b6c54c7b",
+   "6279a7a7b7b1a040",
+   "99e4e1b0bc814f01",
+   "c6dd69afc517befa",
+   "ccc88e9b601bc885",
+   "cfe385d23500a347",
+   "fbd8a4fc6f4614e9"
+  ],
+  "32": [
+   "7700142d44dec192",
+   "fa4aa8e7a1947bbd"
+  ],
+  "48": [
+   "2436d75f6b922feb",
+   "76df053eada3e81a",
+   "7798ed5c54125366",
+   "869b674f39bae2f2",
+   "e779afbdc3ea58b2",
+   "e798a7abdfb0b57c"
+  ]
+ }
+}

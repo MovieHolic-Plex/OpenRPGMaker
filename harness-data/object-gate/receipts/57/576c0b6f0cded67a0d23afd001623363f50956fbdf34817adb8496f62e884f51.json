@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "576c0b6f0cded67a0d23afd001623363f50956fbdf34817adb8496f62e884f51",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile under a floating island (terrain)",
+ "label": "sky-island/si-face-top",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing cliff face with top surface transition along rows 0-3 and vertical rock texture below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6575
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertical terrain tile depicting rocky strata / cliff wall beneath an overhanging dirt layer. Terrain wall and cliff faces in 2D top-down JRPGs are standard vertical surfaces facing south, so pure front elevation failure does not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8313
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical rock/cliff face under a dirt overhang. Terrain wall faces are valid map components.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19100
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cliff / wall face tile representing the underside rock layer of floating terrain; properly categorized as terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6146
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "02a439839672c160"
+  ],
+  "24": [
+   "0257597b19cf0ed6",
+   "065129d81c8a591c",
+   "5f88b543d7471682",
+   "91a4cac2781efb17",
+   "acaafca2fad22f55",
+   "b4053ce348cc908a"
+  ],
+  "32": [
+   "021d738006fd8b94",
+   "0712a420dfcd1d87",
+   "123651ffa27fd218",
+   "85300611bd0c497a",
+   "999cedf6a6f7ad6b",
+   "c80b59911ad049f7"
+  ],
+  "48": [
+   "0afc9c0230bf8614",
+   "17922832916d73b1",
+   "218c26f02176b5d5",
+   "32ab3cb63b48c89c",
+   "37007126c51967de",
+   "598789a75dff3af5"
+  ]
+ }
+}

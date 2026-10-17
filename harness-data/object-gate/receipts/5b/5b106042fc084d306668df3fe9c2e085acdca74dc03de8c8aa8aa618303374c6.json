@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b106042fc084d306668df3fe9c2e085acdca74dc03de8c8aa8aa618303374c6",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age menhir tall",
+ "label": "prehistoric/ph-menhir-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "menhir stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar is drawn in pure front elevation with a perfectly flat horizontal base and a flat 2-pixel-tall lighter band at the top that lacks any foreshortened elliptical curvature or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5528
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone menhir / tall pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is drawn in pure front elevation; its top has only a 2px light band (rows 4-5) acting as a cap line/bevel rather than a foreshortened top surface viewed from a 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "menhir / standing stone",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the stone is drawn as a flat horizontal band only 2 pixels tall (rows 3-4) bounded by a straight horizontal divider at row 5, with completely flat top and bottom outlines typical of a 2D front elevation rather than an elliptical 3/4 view surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall stone menhir / pillar",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the pillar has only a 2-pixel high lighter band (rows 4-5) before the south face starts at row 6, depicting a flat front elevation without a properly foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5467
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.803Z",
+ "cells": {
+  "16": [
+   "56239557ba5046d1",
+   "a46523a225cd684a",
+   "c16381e367442895"
+  ],
+  "24": [
+   "733d94d50ce2a5cb",
+   "bbe3a2ec96633409",
+   "c5a38ed4fd830ecb",
+   "e6523ff59f4284ef",
+   "f063fa22b31edb76",
+   "f4dbec72a5f370b1"
+  ],
+  "32": [
+   "290cd13644c9c6c7",
+   "348c11d42cbdf292",
+   "48ba4f5d46e1288b",
+   "48e51c6b896f9164",
+   "4a897c42d8b59a40",
+   "4e44c6f6d04d8d71",
+   "5756eba7069d9780",
+   "59bd24559c4f959c",
+   "6e2edcef2a461404",
+   "9c9eafabf4750c3e",
+   "9ff976089300c678",
+   "ef03c8802e625d65"
+  ],
+  "48": [
+   "3141f1685527ebc9",
+   "6700cb49a7d61271",
+   "7c7b38b4a35fb9b6"
+  ]
+ }
+}

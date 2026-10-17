@@ -1,0 +1,41 @@
+{
+ "key": "sc-bugcatcher-a",
+ "name": "곤충채집 소년",
+ "head": "Scarloxy1:6",
+ "body": "Scarloxy1:5",
+ "recolor": [
+  {
+   "region": "H",
+   "hue": [
+    335,
+    20
+   ],
+   "smin": 0.5,
+   "to": {
+    "hue": 115,
+    "s": 0.8,
+    "v": 0.9
+   },
+   "vmin": 0.6
+  },
+  {
+   "region": "B",
+   "hue": [
+    15,
+    35
+   ],
+   "smin": 0.3,
+   "to": {
+    "hue": 45,
+    "s": 0.8,
+    "v": 0.95
+   }
+  }
+ ],
+ "ok": true,
+ "errors": [],
+ "warnings": [
+  "면제: outline"
+ ],
+ "model": "script-compose(no model call)"
+}

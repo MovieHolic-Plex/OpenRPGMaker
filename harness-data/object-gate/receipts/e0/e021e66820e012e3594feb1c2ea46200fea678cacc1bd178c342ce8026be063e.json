@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e021e66820e012e3594feb1c2ea46200fea678cacc1bd178c342ce8026be063e",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden cargo crate with cross brace",
+ "label": "pirate-isles/pi-crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crate clearly shows its foreshortened top surface from rows 2 to 7 (6 rows tall), with the front face and cross brace visible below on rows 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4540
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate occupies rows 2-7 (approx 6 rows) with lighter horizontal planking, above a vertical south-facing front surface with framing and cross-brace details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9480
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crate occupies rows 2 to 7 (6 source pixels tall) with lighter wood planks, above the front face showing cross-bracing in rows 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7674
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cargo crate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the crate spans rows 2-7 (6 rows tall) showing planks and bracing from above, with the south face visible below from row 8 to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4510
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.409Z",
+ "cells": {
+  "16": [
+   "c950601a78d89ecf"
+  ],
+  "24": [
+   "1f0942629dda4529",
+   "257ca7ed99861bda",
+   "3869628509a00ba5",
+   "66faa365cd152bb3",
+   "8d6e4377045c840f",
+   "ff518d64d7f0f664"
+  ],
+  "32": [
+   "16e64cdd49d71930",
+   "6fefcefe7f4d06cb",
+   "888ef40f3925af14",
+   "93ae05f8731d51db",
+   "998cf96d55440a0c",
+   "fc0bc4681373239a"
+  ],
+  "48": [
+   "0962efc0f2837465",
+   "1881931f0da422ed",
+   "18c784a3841e45cd",
+   "2c4d06aa350f2e61",
+   "3d704e0567bb9ab9",
+   "7ddc79ee3a1cf5aa"
+  ]
+ }
+}

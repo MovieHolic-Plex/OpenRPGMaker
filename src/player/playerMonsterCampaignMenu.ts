@@ -1,9 +1,8 @@
-import { monsterMoveDescription, monsterMenuIconResourceId, monsterTypeLabel } from "@/player/playerMonsterPartyModel";
-import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
-import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from '@/player/playerStatusMenuDetailTypes';
-import { monsterCampaign, monsterJournalEntry, reconcileMonsterJournal, type MonsterCampaignDefinition } from '@/project/monsterJournal';
+import type { StatusMenuDetail, StatusMenuDetailOptions } from '@/player/playerStatusMenuDetailTypes';
+import { monsterCampaign, reconcileMonsterJournal, type MonsterCampaignDefinition } from '@/project/monsterJournal';
 import type { PlaySession } from '@/project/session';
 import type { Project } from '@/project/types';
+import { dexDetail } from '@/player/playerMonsterDexDetail';
 import { el } from '@/util/dom';
 
 export type MonsterCampaignCommand = 'monster-dex' | 'region-map' | 'campaign-progress';
@@ -19,9 +18,13 @@ const readOnly = (): void => {};
 export function createMonsterCampaignDetail(options: StatusMenuDetailOptions, command: MonsterCampaignCommand): StatusMenuDetail {
   const { project, session } = options;
   const campaign = monsterCampaign(project);
+  // 도감은 원정 정의 없이도(수집 게임 종 레코드 전부) 열린다. 지도·배지는 원정 정의가 있어야 한다.
+  if (command === 'monster-dex') {
+    reconcileMonsterJournal(project, session);
+    return dexDetail(options);
+  }
   if (!campaign) return { title: '원정 기록', entries: [], emptyLabel: '원정 기록이 없습니다.' };
   reconcileMonsterJournal(project, session);
-  if (command === 'monster-dex') return dexDetail(options, campaign);
   if (command === 'region-map') {
     const regionMap = buildCampaignRegionMap(project, session, campaign);
     return {
@@ -55,6 +58,8 @@ export function createMonsterCampaignDetail(options: StatusMenuDetailOptions, co
           label: `${String(index + 1).padStart(2, '0')} ${badge.name}`,
           value: acquired ? '획득 ◆' : '미획득 ◇',
           description: project.maps[badge.cityMapId]?.name ?? campaign.locations.find((location) => location.mapId === badge.cityMapId)?.name ?? '체육관',
+          // 배지 케이스: 받은 배지는 그 배지의 그림(캠페인 정의 iconResourceId, 없으면 기본 배지 아이콘)이 앞에 붙는다.
+          ...(acquired ? { icon: { resourceId: badge.iconResourceId ?? 'cc0-jetrel-badge', alt: badge.name, testId: `campaign-badge-icon-${badge.id}` } } : {}),
           attributes: { 'data-badge-acquired': String(acquired) },
           testId: `campaign-badge-${badge.id}`,
           onActivate: readOnly,
@@ -77,67 +82,6 @@ export function createMonsterCampaignDetail(options: StatusMenuDetailOptions, co
   };
 }
 
-function dexDetail(options: StatusMenuDetailOptions, campaign: MonsterCampaignDefinition): StatusMenuDetail {
-  const { project, session } = options;
-  const selected = options.campaignSpeciesId;
-  const species = selected && campaign.speciesIds.includes(selected)
-    ? project.database.monsterSpecies?.find((record) => record.id === selected) : undefined;
-  if (species && monsterJournalEntry(session, species.id).seen) {
-    const receipt = monsterJournalEntry(session, species.id);
-    const artwork = resolveAssetResourceUrl(species.graphic.monsterResourceId, { project });
-    const skills = (species.skillsByLevel ?? []).map((entry) => {
-      const skill = project.database.skills.find((record) => record.id === entry.skillId);
-      return { label: `Lv.${entry.level} ${skill?.name ?? entry.skillId}`, value: skill ? `PP ${skill.maxPp ?? '—'}` : '', description: monsterMoveDescription(project, skill?.description), onActivate: readOnly };
-    });
-    return {
-      title: `No.${String(campaign.speciesIds.indexOf(species.id) + 1).padStart(3, '0')} ${species.name}`,
-      layout: 'campaign-dex',
-      artwork: artwork ? { src: artwork, alt: species.name } : undefined,
-      entries: informationEntries([
-        { label: '← 도감 목록', value: '', onActivate: () => options.onSelectCampaignSpecies?.(undefined), testId: 'campaign-dex-back' },
-        { label: '기록', value: receipt.caught ? '포획 완료' : '발견 완료', description: receipt.caught ? '함께 여행한 종입니다. 보관하거나 놓아주어도 기록은 남습니다.' : '만난 적이 있는 종입니다.' },
-        { label: '타입', value: monsterTypeLabel(project, species.types) },
-        { label: '생태', value: '', description: campaign.speciesNotes[species.id] ?? '아직 생태 노트가 없습니다.', testId: `campaign-dex-note-${species.id}` },
-        { label: '기초 능력', value: '', description: `HP ${species.baseStats.maxHp} · 공격 ${species.baseStats.attack} · 방어 ${species.baseStats.defense} · 특공 ${species.baseStats.mind} · 속도 ${species.baseStats.agility}` },
-        ...((species.evolutions ?? []).map((evolution) => {
-          const target = project.database.monsterSpecies?.find((record) => record.id === evolution.toSpeciesId);
-          const known = monsterJournalEntry(session, evolution.toSpeciesId).seen;
-          const item = project.database.items.find((record) => record.id === evolution.requires.itemId);
-          const condition = [evolution.requires.level ? `Lv.${evolution.requires.level}` : '', item?.name,
-            evolution.requires.friendshipAtLeast ? `친밀도 ${evolution.requires.friendshipAtLeast}` : ''].filter(Boolean).join(' + ');
-          return { label: '진화', value: known ? target?.name ?? '???' : '???', description: condition || '진화 조건을 찾아보세요.' };
-        })),
-        ...skills,
-      ]),
-      hint: '↑↓ 기술 보기 · Esc 도감 목록',
-    };
-  }
-  const receipts = campaign.speciesIds.map((id) => monsterJournalEntry(session, id));
-  return {
-    title: `몬스터 도감 · 발견 ${receipts.filter((entry) => entry.seen).length}/${campaign.speciesIds.length} · 포획 ${receipts.filter((entry) => entry.caught).length}`,
-    layout: 'campaign-dex',
-    entries: campaign.speciesIds.map((speciesId, index) => {
-      const record = project.database.monsterSpecies?.find((entry) => entry.id === speciesId);
-      const receipt = receipts[index]!;
-      return {
-        label: `${String(index + 1).padStart(3, '0')} ${receipt.seen ? record?.name ?? '???' : '???'}`,
-        value: receipt.caught ? '◆ 포획' : receipt.seen ? '◇ 발견' : '—',
-        description: receipt.seen ? campaign.speciesNotes[speciesId] ?? '생태 기록 보기' : '아직 만나지 못한 몬스터입니다.',
-        icon: receipt.seen && record?.graphic.monsterResourceId ? { resourceId: monsterMenuIconResourceId(project, record.graphic.monsterResourceId), alt: record.name, testId: `campaign-dex-art-${speciesId}` } : undefined,
-        attributes: { 'data-dex-seen': String(receipt.seen), 'data-dex-caught': String(receipt.caught) },
-        testId: `campaign-dex-${speciesId}`,
-        onActivate: receipt.seen && options.onSelectCampaignSpecies
-          ? () => options.onSelectCampaignSpecies?.(speciesId) : readOnly,
-      };
-    }),
-    hint: '↑↓ 몬스터 선택 · Enter 생태·기술 · Esc 돌아가기',
-  };
-}
-
-function informationEntries(entries: readonly StatusMenuDetailEntry[]): StatusMenuDetailEntry[] {
-  return entries.map((entry) => ({ ...entry, onActivate: entry.onActivate ?? readOnly,
-    attributes: { ...entry.attributes, 'data-campaign-information': 'true' } }));
-}
 
 function locationKindLabel(kind: MonsterCampaignDefinition['locations'][number]['kind']): string {
   return { town: '마을', route: '길', dungeon: '탐험지', league: '리그' }[kind];

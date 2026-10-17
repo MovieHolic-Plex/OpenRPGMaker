@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00b45cbbfcd3e89d28b4e039a191aefdad7976a8882365015281cd8bac25e8dd",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "전자 차트 카트",
+ "label": "jp_city/interior_hospital/hs-chart-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cart tray and keyboard surface",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main tray top surface is clearly visible from rows 8 to 14 (approx. 7 rows) holding a keyboard, with the south front face extending down to row 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6352
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medical chart cart with keyboard tray and monitor",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's work surface and keyboard tray are clearly foreshortened and seen from above across rows 8-14 (7 pixel rows), showing the keyboard keys and wrist rest, with the south front face below it on rows 15-18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5452
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart tray and work surface with screen",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The work tray surface (housing the keyboard area) is visible from above across rows 8 to 14 (approx. 7 rows deep), with the south front face of the unit visible below on rows 15-18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6058
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart tray and keyboard surface",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal work surface and keyboard tray span rows 7 to 14 (approx. 8 rows), showing a clear foreshortened top-down view above the front face of the tray (rows 15-18) and wheeled stand.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6005
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.782Z",
+ "cells": {
+  "16": [
+   "33f37739eacbd8b2",
+   "693b8a523c1a52d3"
+  ],
+  "24": [
+   "0c34f0c9549bc85f",
+   "0c5c3a37df218208",
+   "10a7d219a6cc7583",
+   "2fa7d78cc710b2a0",
+   "36923e7244e483cd",
+   "84d944421f270dfe",
+   "a6433587160cf9c8",
+   "b9739923ab6e9fe3",
+   "e720d676dba0f4ab",
+   "f9c7469bed9fde23",
+   "fd21ebb5f21d6aa1",
+   "fec95fc0e2a8a216"
+  ],
+  "32": [
+   "0c91a109ffffd22b",
+   "74f9fbeb76a76b75",
+   "b88ca797aed69506"
+  ],
+  "48": [
+   "0ec2ba319042a393",
+   "20727c613501dba5",
+   "3f19e62531b768bb",
+   "647118d0e96d4441",
+   "cbc4552f5bd41bf1",
+   "d38b3e531ac31e27"
+  ]
+ }
+}

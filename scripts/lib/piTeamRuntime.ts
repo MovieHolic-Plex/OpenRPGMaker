@@ -33,9 +33,12 @@ import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCa
 import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
+import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "../../src/qa/gameCheck/jrpgCompletion.ts";
+import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
+import { syncHeroineDeadline } from "../../src/project/deadlineEnding.ts";
 import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
-import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
+import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings, romanceStageFlatFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
 import {
   claimAssignment,
   createTeamAssignmentLedger,
@@ -60,6 +63,11 @@ export interface RunPiTeamOptions extends RunPiAgentOptions {
    * oh-my-pi 코어가 모듈 그래프에 딸려 들어와 Node/vitest 에서 이 파일을 열 수 없다.
    */
   readonly runAgent?: RunPiAgentFn;
+  /**
+   * finish 가 429 로 끊긴 배정을 자동으로 한 번 다시 맡기기 전에 쉬는 시간(ms). 제공자가 알려 준 retry-after(없으면 undefined)를 받는다.
+   * 비우면 기본값(rateLimitBackoffMs). 테스트는 0 을 돌려주는 함수를 넣는다.
+   */
+  readonly rateLimitBackoffMs?: (retryAfterMs: number | undefined) => number;
 }
 
 type AgentState = "실행 중" | "완료" | "실패";
@@ -70,6 +78,34 @@ interface AgentProgress {
   toolErrors: number;
   lastLine: string;
 }
+
+/** 사용 한도·429 로 끊긴 오류인가(실제 Argon 시험에서 작업자가 429 로 죽은 채 팀이 끝났다). */
+export function isRateLimitMessage(message: string): boolean {
+  return /\b429\b|rate.?limit|too many requests|resource.?exhausted|quota|사용 한도|한도에 도달/iu.test(message);
+}
+
+/** 429 로 끊겼고, 같은 맵(없으면 프로젝트 공통)을 이후에 성공적으로 다시 맡기지도 않은 배정. outcomes 는 끝난 순서(Map 삽입 순서)다. */
+export function rateLimitedUnresolved(outcomes: ReadonlyMap<string, { readonly agentId: string; readonly mapId: string | null; readonly ok: boolean; readonly summary: string }>): { readonly agentId: string; readonly mapId: string | null; readonly summary: string }[] {
+  const all = [...outcomes.values()];
+  return all.filter((outcome, index) => !outcome.ok && isRateLimitMessage(outcome.summary)
+    && !all.slice(index + 1).some((other) => other.ok && other.mapId === outcome.mapId));
+}
+
+/** 429 오류 문구의 `retry-after-ms=299000` — 제공자가 알려 준 쿨다운. 없으면 undefined. */
+export function retryAfterHintMs(message: string): number | undefined {
+  const ms = /retry-after-ms\s*[=:]\s*(\d+)/iu.exec(message);
+  if (ms) return Number(ms[1]) > 0 ? Number(ms[1]) : undefined;
+  const sec = /retry[- ]after\s*[=:]?\s*(\d+)\s*s\b/iu.exec(message);
+  return sec && Number(sec[1]) > 0 ? Number(sec[1]) * 1000 : undefined;
+}
+
+/** 쿨다운 기본 쉼. 제공자 힌트가 있으면 그만큼(+5초), 없으면 60초. 한 번의 재시도가 팀 전체를 오래 붙잡지 않게 330초로 막는다(실측: 쿨다운 299초). */
+export function rateLimitBackoffMs(retryAfterMs: number | undefined): number {
+  return Math.min(330_000, retryAfterMs !== undefined ? retryAfterMs + 5_000 : 60_000);
+}
+
+/** 자동 재시도에 쓸 시간이 팀 남은 시간에 이만큼은 있어야 한다 — 쉬고 나서 바로 상한에 걸리는 재시도는 하지 않는다. */
+const RATE_LIMIT_RETRY_MIN_LEFT_MS = 120_000;
 
 interface AgentOutcome {
   readonly agentId: string;
@@ -105,6 +141,14 @@ function idList(value: unknown): string[] {
 const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
 /** 검수 팀원이 의도 목록과 상관없이 쥐는 확인 도구. */
 const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
+
+/** 이 값 아래로는 남은 시간을 줄이지 않는다 — 0 이하를 넘기면 런타임이 기본 상한으로 돌아가거나 즉시 죽는다. */
+const TEAM_MIN_CHILD_TIMEOUT_MS = 1_000;
+
+/** 팀 전체 상한 중 하위 에이전트가 쓸 수 있는 남은 시간(ms). */
+export function teamTimeoutLeftMs(totalMs: number, startedAt: number, now: number): number {
+  return Math.max(TEAM_MIN_CHILD_TIMEOUT_MS, totalMs - Math.max(0, now - startedAt));
+}
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
@@ -155,6 +199,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let reviewedFirstScene: string | undefined;
   let firstBuildAssignments = 0;
   let segmentRejections = 0;
+  /** finish 가 429 로 끊긴 배정을 한 번 돌려보냈는지 — 두 번째 finish 는 남은 일을 보고에 적고 받는다. */
+  let rateLimitRejected = false;
+  /** 429 로 끊긴 배정을 finish 가 자동으로 한 번 다시 맡겼는지(재시도는 팀 실행에 한 번뿐). */
+  let rateLimitAutoRetried = false;
+  /** 배정 id → 원래 task 문구. 429 자동 재시도가 같은 일을 다시 맡길 때 쓴다. */
+  const assignedTask = new Map<string, string>();
+  /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
+  let romanceRejections = 0;
+  let jrpgChatRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -205,8 +258,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       check();
       return unsubscribe;
     },
-    // 규약: 팀은 하위 에이전트마다 같은 상한이 걸린다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 요청의 상한이 팀장에게만 적용된다.
-    ...(options.timeoutMs !== undefined ? { timeoutMs: options.timeoutMs } : {}),
+    // 규약: 요청의 상한은 팀 전체 벽시계 상한이다. 하위 에이전트는 팀이 시작한 뒤 남은 시간만 받는다.
+    // 예전엔 에이전트마다 상한 전체를 받아, 팀장이 일찍 끝나거나 뒤늦게 뜬 시공·검수·첫 플레이 단계가 상한을 넘어
+    // 계속 돌았다(실측 R04: 1380초 상한에 1611초). 장기 목표(goalCampaign)는 자기 45분을 에이전트마다 따로 쓴다. 빠뜨리면 시공·검수가 런타임 기본값으로 돌아 상한이 팀장에게만 걸린다.
+    ...(options.timeoutMs !== undefined ? { timeoutMs: goalCampaign ? options.timeoutMs : teamTimeoutLeftMs(options.timeoutMs, started, Date.now()) } : {}),
     onEvent: (event) => {
       const row = progress.get(agentId);
       if (row) {
@@ -353,6 +408,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
+    assignedTask.set(agentId, task);
     const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     if (coreFirst) firstBuildAssignments += 1;
     counters.builder += 1;
@@ -564,7 +620,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     } finally { mailbox.close(agentId); ownership.release(); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result: { ok: boolean; findings: string[]; artChecks?: unknown } = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
-    if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot));
+    if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot), ...romanceStageFlatFindings(snapshot));
     if (authoringHarnessFor(base)) {
       result.findings.push(...(inspectAuthoringHarness(snapshot, base)?.blockers ?? []));
       if (!imageDelivered) { result.ok = false; result.findings.push('실제 맵 이미지를 보지 않아 시각 검수를 인정하지 않습니다. show_map_region으로 원본을 확인하세요.'); }
@@ -698,6 +754,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        // 429 로 끊긴 배정은 쿨다운을 쉰 뒤 같은 일을 한 번 자동으로 다시 맡긴다 — 아래 검사들이 다시 한 일의 결과를 보게 맨 앞에 둔다.
+        await retryRateLimitedAssignments();
+        // 맵 묶음 병합은 맵만 합쳐 담당이 놓은 인물 수가 늘어도 프리셋 기한 판정에는 인물 엔딩이 안 얹힌 채 끝났다(romance-loop-3 rom-c) — 병합본에서 한 번 맞춘다.
+        if (!request.readOnly) {
+          const synced: Project = { ...working, endings: structuredClone(working.endings ?? []), commonEvents: structuredClone(working.commonEvents ?? []) };
+          const made = syncHeroineDeadline(synced);
+          if (made.length || JSON.stringify(synced.commonEvents) !== JSON.stringify(working.commonEvents)) {
+            working = synced;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `호감 대화 인물이 둘 이상이라 기한 판정에 인물별 엔딩을 얹었습니다${made.length ? `(새 엔딩 ${made.join(", ")})` : ""}.` } });
+          }
+        }
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
@@ -721,6 +788,46 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 구간 자동 플레이 막힘(${segmentRejections}): ${verdict.blockers.join(" / ")}` } });
             throw new Error(`첫 구간을 끝까지 갈 수 없어 finish 를 받지 않습니다(${segmentRejections}). 자동 플레이가 막힌 곳: ${verdict.blockers.join(" / ")}. 해당 맵에 수정 배정을 하고 wait_agents 뒤 다시 finish 하세요.`);
           }
+          // 연애 인터뷰 게임은 뼈대 엔딩만으로 끝낼 수 없다 — 자리표시 이름·단일 가짜 엔딩·기본 제목이 남았으면 한 번 더 고치게 한다(두 번 거절 뒤에는 보고에 남기고 받는다).
+          const romanceGaps = romanceCompletionGaps(working, { task: request.task });
+          if (romanceGaps.length) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${segmentRejections}): ${romanceGaps.join(" / ")}` } });
+            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${romanceGaps.join(" / ")} — 제목·부제는 set_title_screen, 호감에 따라 갈리는 엔딩은 define_ending(friendshipAtLeast·priority)+set_deadline_ending 으로 만들 수 있습니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
+          }
+          // JRPG 도 같은 방식 — 기본 제목·빈 시작 마을·부르지 않는 엔딩(jrpg-real-1 J04/J05)은 뼈대 엔딩 도달만으로 통과하던 구멍이다.
+          const jrpgGaps = jrpgCompletionGaps(working);
+          if (jrpgGaps.length) {
+            segmentRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `JRPG 마무리 미완(${segmentRejections}): ${jrpgGaps.join(" / ")}` } });
+            throw new Error(`JRPG 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${segmentRejections}/2). ${jrpgGaps.join(" / ")} — 고친 뒤 wait_agents 로 결과를 받고 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
+        }
+        // 연애 게임 요청은 프리셋 첫 생성이 아니어도(채팅 한 줄·기획서 없음) 같은 마무리 검사를 받는다 — 기본 제목·기본 부제·뼈대 자리표시·호감과 무관한 단일 엔딩·농장 타이틀 그림이 통과하던 구멍(romance-real-2 R03).
+        // 구간 게이트 안의 연애 검사(위)와 같은 목록이고, 거절은 두 번까지 — 그 뒤에는 남은 항목을 보고에 적고 받는다.
+        if (!segmentGate && romanceRejections < 2 && !request.readOnly) {
+          const romanceGaps = romanceCompletionGaps(working, { task: request.task });
+          if (romanceGaps.length) {
+            romanceRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `연애 게임 마무리 미완(${romanceRejections}/2): ${romanceGaps.join(" / ")}` } });
+            throw new Error(`연애 게임으로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${romanceRejections}/2). ${romanceGaps.join(" / ")} — 제목·부제는 set_title_screen, 호감에 따라 갈리는 엔딩은 define_ending(friendshipAtLeast·priority)+set_deadline_ending 으로 만듭니다. 고친 뒤 wait_agents 하고 다시 finish 하세요.`);
+          }
+        }
+        // JRPG 도 같은 구멍이 있었다 — 위 JRPG 가드는 기획서 프롬프트(segmentGate)에서만 돌아, 채팅 한 줄(「크로노 트리거 같은 JRPG 만들어 줘」)로 지으면
+        // 파티 능력치 동일·보스 무해·제목 카드뿐인 오프닝이 그대로 통과했다(jrpg-loop-1 ct1: 같은 프로젝트에 qa:game check 경고 4건). 거절은 두 번까지, 그 뒤에는 보고에 남기고 받는다.
+        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, request.task)) {
+          const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: request.task });
+          // 채팅 한 줄 JRPG 는 첫 구간 게이트(segmentGate)를 안 타서 「끝까지 갈 수 없음」이 그대로 통과했다(jrpg-loop-2 ff1: 시간의 문이 절벽 위에 갇혀
+          // qa:game check 막힘 1건인데 finish 가 받아졌다). 뼈대가 있으면 같은 자동 플레이 판정의 막힌 곳을 마무리 항목에 더한다.
+          if (hasPlayableSegmentSkeleton(working)) {
+            const verdict = judgePlayableSegment(working);
+            if (!verdict.ok) jrpgGaps.push(`자동 플레이가 첫 구간을 끝까지 가지 못함: ${verdict.blockers.slice(0, 2).join(" / ")}`);
+          }
+          if (jrpgGaps.length) {
+            jrpgChatRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `JRPG 마무리 미완(${jrpgChatRejections}/2): ${jrpgGaps.join(" / ")}` } });
+            throw new Error(`JRPG 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${jrpgChatRejections}/2). ${jrpgGaps.join(" / ")} — 담당에게 수정을 배정하고 wait_agents 로 결과를 받은 뒤 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
         }
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
           throw new Error('현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요.');
@@ -729,11 +836,24 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           const progress = inspectGoalCampaign(working);
           if (progress.issues.length) throw new Error("장기 목표 미완료: " + progress.issues.join(" / ") + ". 부족한 장소와 콘텐츠를 제작한 뒤 다시 finish 하세요.");
         }
+        // 작업자가 한도(429)로 끊겼는데 같은 맵을 다시 맡기지 않았다면 그 일은 안 된 채로 남았다 — 한 번은 돌려보내 재배정·보고를 시킨다.
+        const cutOff = rateLimitedUnresolved(outcomes);
+        if (cutOff.length && !rateLimitRejected) {
+          rateLimitRejected = true;
+          throw new Error(`작업자 ${cutOff.length}명이 사용 한도(429)로 끊겨 일이 끝나지 않았습니다: ${cutOff.map((outcome) => `${outcome.agentId}(${outcome.mapId ?? "프로젝트 공통"}): ${outcome.summary.slice(0, 120)}`).join(" / ")}. 같은 맵에 assign_map_agent 로 남은 일을 다시 맡기고 wait_agents 로 받은 뒤 finish 하세요. 다시 맡길 수 없으면 한 번 더 finish 하면 남은 일을 보고에 적고 끝납니다.`);
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
         finishAccepted = true;
         if (seamErrors.length > 0) finished += `
 남은 맵 연결 오류 ${seamErrors.length}건: ${formatSeamIssues(seamErrors)}`;
+        if (cutOff.length) finished += `\n사용 한도(429)로 끊겨 끝내지 못한 배정 ${cutOff.length}건 — 남은 일: ${cutOff.map((outcome) => `${outcome.mapId ?? "프로젝트 공통"} (${outcome.agentId})`).join(", ")}. 다시 요청하면 이어서 만듭니다.`;
+        const stillGaps = [...(segmentGate ? jrpgCompletionGaps(working) : []), ...(segmentGate ? romanceCompletionGaps(working, { task: request.task }) : [])];
+        if (stillGaps.length) finished += `\n남은 마무리 항목: ${stillGaps.join(" / ")}`;
+        const romanceLeft = !segmentGate && !request.readOnly ? romanceCompletionGaps(working, { task: request.task }) : [];
+        if (romanceLeft.length) finished += `\n남은 연애 게임 마무리 항목: ${romanceLeft.join(" / ")}`;
+        const jrpgLeft = !segmentGate && !request.readOnly && jrpgCompletionGateApplies(working, request.task) ? jrpgCompletionGaps(working, undefined, { task: request.task }) : [];
+        if (jrpgLeft.length) finished += `\n남은 JRPG 마무리 항목: ${jrpgLeft.join(" / ")}`;
         const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;
@@ -742,6 +862,49 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       },
     },
   ];
+
+  /**
+   * finish 시점에 429 로 끊긴 채 다시 맡겨지지 않은 배정(rateLimitedUnresolved)을 한 번만 자동 재시도한다.
+   * 일반 가드(finish 가 팀장에게 돌려보내 재배정을 시킴)는 그대로 남고, 이 재시도가 먼저 한 번 돈다 — 팀장 모델이 재배정을
+   * 잊거나 같은 쿨다운에 또 맞는 일을 줄인다(romance-real-2 b1/b2: 검수 단계에서 429 로 잘린 채 끝남, jrpg J04).
+   * 쉬는 시간은 제공자 retry-after(없으면 60초, 최대 330초). 팀 남은 시간이 모자라거나 사용자가 중단했으면 하지 않는다.
+   */
+  async function retryRateLimitedAssignments(): Promise<void> {
+    if (rateLimitAutoRetried || request.readOnly || options.readOnlyTools || options.signal?.aborted) return;
+    const cutOff = rateLimitedUnresolved(outcomes);
+    if (cutOff.length === 0) return;
+    rateLimitAutoRetried = true;
+    const hint = Math.max(0, ...cutOff.map((outcome) => retryAfterHintMs(outcome.summary) ?? 0)) || undefined;
+    const wait = (options.rateLimitBackoffMs ?? rateLimitBackoffMs)(hint);
+    if (options.timeoutMs !== undefined && teamTimeoutLeftMs(options.timeoutMs, started, Date.now()) < wait + RATE_LIMIT_RETRY_MIN_LEFT_MS) {
+      emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `사용 한도(429)로 끊긴 배정 ${cutOff.length}건 — 팀 남은 시간이 모자라 자동 재시도를 건너뜁니다.` } });
+      return;
+    }
+    emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `사용 한도(429)로 끊긴 배정 ${cutOff.length}건을 ${Math.round(wait / 1000)}초 쉰 뒤 한 번 다시 맡깁니다: ${cutOff.map((outcome) => `${outcome.agentId}(${outcome.mapId ?? "프로젝트 공통"})`).join(", ")}` } });
+    if (wait > 0) await new Promise<void>((resolve) => {
+      const timer = setTimeout(done, wait);
+      function done(): void { clearTimeout(timer); options.signal?.removeEventListener("abort", done); resolve(); }
+      options.signal?.addEventListener("abort", done, { once: true });
+    });
+    if (options.signal?.aborted) return;
+    const launched: Promise<AgentOutcome>[] = [];
+    for (const outcome of cutOff) {
+      const original = outcome.mapId ? assignedTask.get(outcome.agentId) : tasks.get(outcome.agentId)?.task;
+      if (!original) continue;
+      const task = `[사용 한도(429)로 끊긴 배정의 자동 재시도] 이전 시도가 도중에 끊겼다. 프로젝트에 이미 반영된 부분은 다시 만들지 말고 현재 상태를 먼저 읽어, 남은 일만 이어서 한다.\n원래 배정: ${original}`;
+      const kind = outcome.mapId ? undefined : tasks.get(outcome.agentId);
+      try {
+        const member = [...builders, ...reviewers].find((candidate) => candidate.id === outcome.member) ?? builders[0]!;
+        const launchedRow = outcome.mapId ? startAssign(outcome.mapId, task, member) : startTask(task, kind?.mode ?? "project", member);
+        const agentId = (launchedRow as { agentId?: unknown }).agentId;
+        const entry = typeof agentId === "string" ? inflight.find((candidate) => candidate.agentId === agentId) : undefined;
+        if (entry) launched.push(entry.promise as Promise<AgentOutcome>);
+      } catch (error) {
+        emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `자동 재시도를 시작하지 못했습니다(${outcome.agentId}): ${error instanceof Error ? error.message : String(error)}` } });
+      }
+    }
+    await Promise.all(launched);
+  }
 
   async function reviewFirstPlay(): Promise<void> {
     const receipt = firstPlay!;

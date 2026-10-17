@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12634d61181f542d5b511dfb2f4bcef6a6e65a0c367d1d8fd3b66dea4d28900f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age dirt",
+ "label": "prehistoric/ph-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 flat terrain tile representing dirt ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6079
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 ground dirt terrain tile representing a flat horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel textured dirt ground terrain tile viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3880
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless ground/dirt surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6290
+  }
+ ],
+ "decidedAt": "2026-10-14T08:04:55.971Z",
+ "cells": {
+  "16": [
+   "a29b6663ea8b9768"
+  ],
+  "24": [
+   "2159fcc0f0f3d192",
+   "2ff025c08968d13e",
+   "33c792cccc6cb7f0",
+   "552902da75d8b096",
+   "b12299c010db541a",
+   "f5be31211f651b5d"
+  ],
+  "32": [
+   "100887ea93e737f6",
+   "3db8a367d1d1a055",
+   "5ee68550dfafa926",
+   "7ed1efb53a1b8bb6",
+   "96a783d38550fc88",
+   "a54a92d2b3279c8b"
+  ],
+  "48": [
+   "1c3a96eef0028ecd",
+   "8b859791aef4a458",
+   "8e1799473531cf0b",
+   "a90e4562861c7902",
+   "b134c6efcc80849d",
+   "e9784b234d57f688"
+  ]
+ }
+}

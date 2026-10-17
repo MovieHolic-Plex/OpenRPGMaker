@@ -148,10 +148,10 @@
       "runtime": "none",
       "visual": "editor",
       "toolNames": [
-        "paint_tiles"
+        "fill_region"
       ],
       "executionKind": "direct",
-      "check": "tool:paint_tiles"
+      "check": "tool:fill_region"
     },
     {
       "id": "clear-region",
@@ -228,10 +228,10 @@
       "runtime": "none",
       "visual": "editor",
       "toolNames": [
-        "paint_tiles"
+        "place_props"
       ],
       "executionKind": "direct",
-      "check": "tool:paint_tiles"
+      "check": "tool:place_props"
     },
     {
       "id": "place-chest",

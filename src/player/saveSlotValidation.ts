@@ -207,6 +207,8 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (!isRecord(instance)) return false;
     if (instance.instanceId !== instanceId || typeof instance.speciesId !== "string") return false;
     if (instance.nickname !== undefined && typeof instance.nickname !== "string") return false;
+    if (instance.gender !== undefined && instance.gender !== "male" && instance.gender !== "female") return false;
+    if (instance.shiny !== undefined && instance.shiny !== true) return false;
     if (typeof instance.level !== "number" || !Number.isFinite(instance.level)) return false;
     if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
     if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;
@@ -215,8 +217,11 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (instance.stateTurns !== undefined && !isNonNegativeIntegerRecord(instance.stateTurns)) return false;
     if (instance.skillPp !== undefined && !isNonNegativeIntegerRecord(instance.skillPp)) return false;
     if (instance.pendingSkillIds !== undefined && !isStringArray(instance.pendingSkillIds)) return false;
+    if (instance.heldItemId !== undefined && typeof instance.heldItemId !== "string") return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
+    if (instance.caughtBallId !== undefined && typeof instance.caughtBallId !== "string") return false;
+    if (instance.boxSlot !== undefined && !(Number.isInteger(instance.boxSlot) && (instance.boxSlot as number) >= 0)) return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);
   });
 }
@@ -452,7 +457,12 @@ export function parseMapOverrides(value: Record<string, unknown>): PlaySession["
     if (!isRecord(layers)) continue;
     const lower = isNumberRecord(layers.lower) ? layers.lower : {};
     const upper = isNumberRecord(layers.upper) ? layers.upper : {};
-    parsed[mapId] = { lower, upper };
+    parsed[mapId] = {
+      lower,
+      upper,
+      ...(isNumberRecord(layers.lower2) ? { lower2: layers.lower2 } : {}),
+      ...(isNumberRecord(layers.upper2) ? { upper2: layers.upper2 } : {}),
+    };
   }
   return parsed;
 }

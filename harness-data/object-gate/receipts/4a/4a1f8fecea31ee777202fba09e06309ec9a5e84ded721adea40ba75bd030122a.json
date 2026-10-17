@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a1f8fecea31ee777202fba09e06309ec9a5e84ded721adea40ba75bd030122a",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "round bush with small flowers",
+ "label": "sky-island/si-bush-flower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with straight vertical side outlines (rows 7-12) and a completely flat horizontal base (row 13). There is no curved ground contact or foreshortened top surface visible to indicate a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in pure front elevation with vertical side outlines and a completely flat horizontal bottom base line, showing no foreshortened top surface or elliptical ground contact.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28710
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn in side-scroller / front elevation style with a completely flat horizontal bottom baseline at row 13, straight vertical sides from rows 7 to 12, and no visible top surface foreshortened for a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8730
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a 2D side-view silhouette with vertical sides (rows 7-12) and a completely flat horizontal base (row 13), lacking the foreshortened top or curved ground footprint required for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5584
+  }
+ ],
+ "decidedAt": "2026-10-14T08:17:41.839Z",
+ "cells": {
+  "16": [
+   "0efccb72f44700ac"
+  ],
+  "24": [
+   "04aa4cb861ae6531",
+   "308ce198ea786ad7",
+   "33ea8f398c426d6e",
+   "6d15387c2423655b",
+   "b0a40ddcc136aa69",
+   "d3d76fc22248c2cc"
+  ],
+  "32": [
+   "30367baff3b094ed",
+   "71bfabd869a520db",
+   "7f3d7f6dd712c7bc",
+   "9405a49ce55c8ac5",
+   "9563cffeb128d496",
+   "d130a9e26ea7d8b7"
+  ],
+  "48": [
+   "2b52f28581779164",
+   "465a86e77bf453e2",
+   "50b1d70d3931e5d8",
+   "5b251f4363a6de85",
+   "5e6014d1e921f79a",
+   "d927ee544de166fc"
+  ]
+ }
+}

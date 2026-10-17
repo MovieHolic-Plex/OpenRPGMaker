@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a141c93b4122225bcb3ac13f2dfd1f75a49ebcd6fe24ca565fb6af226c7a7a3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배수 철창(자갈 속)",
+ "label": "steampunk-city/sp-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drain grate embedded in stone/gravel terrain",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain drain grate embedded in the ground (rows 3-11), seen from above as a horizontal surface with vertical bars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5381
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drain grate set into stone/gravel terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a drainage grate embedded in gravel/stone ground or wall face. As a terrain surface tile, it correctly represents a flat map surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5621
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drainage grate embedded in gravel ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain drain grate embedded in gravel ground (rows 3-11), viewed from above with appropriate top-edge drop shadow (row 3) indicating depth into the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drain grate in gravel",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain feature (drainage grate embedded in the ground). Seen from above as a horizontal surface flat against the gravel terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4605
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.708Z",
+ "cells": {
+  "16": [
+   "8d43fb26c13686bf"
+  ],
+  "24": [
+   "0c45d9c25922e858",
+   "6b57e589429557b2",
+   "88a93e26f5fd7d38",
+   "bdbedd52d4008c54",
+   "bf169446ff449245",
+   "ef5ee65c762ad5f6"
+  ],
+  "32": [
+   "0e78add12f98e785",
+   "30f125a4b1a57132",
+   "9418c7114098539b",
+   "e23cdcabc847bb43",
+   "f2af9c1d207bab9d",
+   "fcac7bc20aed362d"
+  ],
+  "48": [
+   "28db2383684ab2ab",
+   "5dbf3dccc95108ab",
+   "600ff15c31998b04",
+   "78e2a4bc11fddf93",
+   "95be312de15f6232",
+   "ea581fa6a2c314c6"
+  ]
+ }
+}

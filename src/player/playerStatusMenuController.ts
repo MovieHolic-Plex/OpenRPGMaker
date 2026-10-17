@@ -1,5 +1,8 @@
+import { resolveDialogueSystem } from "@/project/dialogueSystem";
 import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
+import { DEFAULT_BAG_POCKET, stepBagPocket } from "@/player/playerBagPockets";
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { LifeReconciliationError } from "@/project/lifeRecovery";
 import { actorOwnedSkillIds, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
 import { combineItems } from "@/project/craftRecipes";
@@ -7,17 +10,19 @@ import { toggleSkillLoadout } from "@/project/skillLoadout";
 import { setAudioState } from "@/project/session";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
 import { itemCombinationPartners } from "@/player/playerStatusMenuDetails";
-import { runItemUsePage } from "@/player/playSceneInterpreter";
+import { runCommands, runItemUsePage } from "@/player/playSceneInterpreter";
 import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
+import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
   isStatusMenuGroupEntryId,
+  listStatusMenuCommandIds,
   listStatusMenuGroupCommandIds,
   listStatusMenuRailIds,
   statusMenuRailIdForCommand,
@@ -32,9 +37,16 @@ import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { closeGalleryViewer, galleryViewerIsOpen, stepGalleryViewer } from "@/player/galleryViewer";
+import { backlogViewIsOpen, closeBacklogView } from "@/player/dialogueBacklogView";
 import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
-import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
+import { withJosa } from "@/util/josa";
+import { renameMonster } from "@/project/monsterIdentity";
+import { monsterDisplayName, moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill, swapMonsterPartyOrder } from "@/project/monsterCollection";
+import type { MonsterCollectAction, MonsterSummaryPage } from "@/player/playerMonsterCollectTypes";
+import type { MonsterDexPage } from "@/player/playerMonsterDexTypes";
+import { depositMonsterToBox, monsterBoxCount, monsterBoxName, monsterBoxSlotOf, placeBoxMonster, releaseMonsterFromBox, MONSTER_BOX_SIZE } from "@/project/monsterBox";
+import { BOX_HEADER_ENTRY_COUNT, moveBoxCursor, type BoxDirection } from "@/player/playerMonsterBoxGrid";
 import {
   adoptStatusMenuPanel,
   currentStatusMenu,
@@ -51,6 +63,9 @@ import {
   optimizeStatusMenuEquipment,
   useStatusMenuItem,
 } from "@/player/playerStatusMenuMutations";
+import { takeHeldItem } from "@/project/monsterHeldItems";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
 import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -64,6 +79,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   const detailCursors = new Map<string, number>();
   const detailScrolls = new Map<string, number>();
   let inventoryView: InventoryView = { ...DEFAULT_INVENTORY_VIEW };
+  let evolutionPlaying = false;
   let targetItemId: string | undefined;
   let itemActionId: string | undefined;
   let skillActorId: string | undefined;
@@ -74,12 +90,23 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let formationActorId: string | undefined;
   let battleReportIndex: number | undefined;
   let campaignSpeciesId: string | undefined;
+  let dexPage: MonsterDexPage = "info";
   let monsterInstanceId: string | undefined;
   let monsterView: "party" | "box" = "party";
+  let monsterSwapSourceId: string | undefined;
+  let monsterRenameId: string | undefined;
+  let monsterSummaryPage: MonsterSummaryPage = "stats";
+  let boxIndex = 0;
+  let boxMoveSourceId: string | undefined;
+  let releaseConfirmId: string | undefined;
+  /** 이벤트(PC)가 보관함을 직접 연 상태. 맨 위에서 Esc·왼쪽 끝에서 ←는 메뉴 레일이 아니라 화면을 닫는다. */
+  let pcMode = false;
   let lifeLedgerTab: LifeLedgerTabId | undefined;
   let confirmSaveSlot: SaveSlotIndex | undefined;
   let confirmToTitlePending = false;
-  let waitModeEnabled = true;
+  // 「대기」 ON = 명령 메뉴가 열린 동안 시간이 멈춘다(wait). 플레이어 장치 설정이 게임 저작 기본(system.atbMode)을 덮는다.
+  const currentWaitMode = (): boolean => (getPlayerPreferences().atbMode ?? store.getCurrent().system.atbMode ?? "wait") !== "active";
+  let waitModeEnabled = currentWaitMode();
 
   const reset = (): void => {
     initialMenuSelection = true;
@@ -91,7 +118,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     inventoryView = { ...DEFAULT_INVENTORY_VIEW };
     detailCursors.clear();
     detailScrolls.clear();
-    waitModeEnabled = true;
+    waitModeEnabled = currentWaitMode();
     resetSubscreenState();
   };
 
@@ -107,8 +134,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     formationActorId = undefined;
     battleReportIndex = undefined;
     campaignSpeciesId = undefined;
+    dexPage = "info";
     monsterInstanceId = undefined;
     monsterView = "party";
+    monsterSwapSourceId = undefined;
+    monsterRenameId = undefined;
+    monsterSummaryPage = "stats";
+    boxIndex = 0;
+    boxMoveSourceId = undefined;
+    releaseConfirmId = undefined;
+    pcMode = false;
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
@@ -136,7 +171,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
     const available = listStatusMenuRailIds(project, session);
-    selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    // 접힌 그룹 안의 명령(관계·임무·전투 기록…)은 레일 id 가 아니지만 보이는 명령이다 — 레일에 없다고 첫 항목(아이템)으로 되돌리면
+    // 기록 묶음이 둘 이상인 프로젝트(연애: 전투 기록·임무·관계)에서 그 명령을 열 수 없다.
+    const visibleCommands: readonly StatusMenuRailId[] = listStatusMenuCommandIds(project, session);
+    selectedCommand = available.includes(nextCommand) || visibleCommands.includes(nextCommand) ? nextCommand : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
@@ -159,8 +197,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       formationActorId,
       battleReportIndex,
       campaignSpeciesId,
+      dexPage,
       monsterInstanceId,
       monsterView,
+      monsterCollect: { swapSourceId: monsterSwapSourceId, summaryPage: monsterSummaryPage, boxIndex, boxMoveSourceId, releaseConfirmId, renameId: monsterRenameId },
       lifeLedgerTab,
       readLive: createLifePlacementLiveReader(
         () => options.getActiveScene(),
@@ -177,6 +217,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       actions: {
         onOptionsChanged: (message) => { renderMenu(message, "options"); },
         onInventoryViewChange: (view) => {
+          if (view.pocket !== inventoryView.pocket) {
+            // 포켓을 바꾸면 새 목록의 첫 줄에서 시작한다(점·탭을 눌러 바꿔도 같다).
+            inventoryView = view;
+            detailCursors.set("items:list", 0);
+            options.emitMenuJuice("menu-select", renderMenu(undefined, "items"));
+            return;
+          }
           const control = view.filter !== inventoryView.filter ? "inventory-filter" : "inventory-sort";
           inventoryView = view;
           renderMenu(undefined, "items");
@@ -268,15 +315,27 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onSelectCampaignSpecies: (speciesId) => {
           if (speciesId) rememberDetailCursorFromTestId(`campaign-dex-${speciesId}`);
           campaignSpeciesId = speciesId;
+          dexPage = "info";
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monster-dex"));
+        },
+        onDexPage: (page) => {
+          dexPage = page;
+          setDetailCursor(1);
+          options.emitMenuJuice("menu-select", renderMenu(undefined, "monster-dex"));
         },
         onSelectMonster: (instanceId) => {
           if (instanceId) rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
           monsterInstanceId = instanceId;
+          // 보관함에서 연 요약은 관리 쪽(파티로·옮기기·놓아주기)부터 — 격자에서 고른 이유가 그것이다.
+          monsterSummaryPage = instanceId && monsterView === "box" && isEmeraldMonsterStyle(store.getCurrent()) ? "manage" : "stats";
+          releaseConfirmId = undefined;
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
         },
         onToggleMonsterView: toggleMonsterView,
+        onMonsterCollect: handleMonsterCollect,
         onMoveMonster: moveMonsterFromMenu,
+        onTakeHeldItem: takeHeldItemFromMenu,
+        onUseMonsterFieldSkill: useMonsterFieldSkillFromMenu,
         onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
         onRejectPendingMonsterSkill: rejectMonsterSkillFromMenu,
         onSelectLifeLedgerTab: (tab) => {
@@ -316,6 +375,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     options.emitMenuJuice("menu-open", renderMenu(undefined, "save"));
   };
 
+  /** 이벤트의 「메뉴 화면 열기」(screen:monster-box): 보관함(PC) 화면을 바로 연다. */
+  const openMonsterBox = (): void => {
+    reset();
+    mode = "function";
+    selectedCommand = "monsters";
+    monsterView = "box";
+    pcMode = true;
+    options.emitMenuJuice("menu-open", renderMenu(undefined, "monsters"));
+  };
+
   const openLifeRecoveryLedger = (): void => {
     if (!options.getActiveScene()) return;
     lifeLedgerTab = "recovery";
@@ -338,7 +407,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (mode === "main") detail?.setAttribute("inert", "");
     else detail?.removeAttribute("inert");
     const controls = menu.querySelector<HTMLElement>(".status-menu-controls");
-    if (controls) controls.textContent = statusMenuControls(mode, menuSkinFor(store.getCurrent()).railColumns, menuSkinFor(store.getCurrent()).id === "field-list");
+    if (controls) controls.textContent = statusMenuControls(mode, menuSkinFor(store.getCurrent()).railColumns, menuSkinFor(store.getCurrent()).id === "field-list", resolveDialogueSystem(store.getCurrent()));
     const debug = menu.querySelector<HTMLElement>("[data-testid='status-menu-debug-json']");
     if (debug) debug.textContent = JSON.stringify({ selectedCommand, mode });
     focusActiveMenuContainer();
@@ -346,6 +415,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
 
   const toggleMenu = (): void => {
+    if (backlogViewIsOpen()) {
+      closeBacklogView();
+      return;
+    }
     if (galleryViewerIsOpen()) {
       closeGalleryViewer();
       return;
@@ -360,6 +433,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     if (menu) {
       closeGalleryViewer();
+      closeBacklogView();
       options.closeMenuWithJuice();
       return;
     }
@@ -374,6 +448,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const handleKey = (key: RuntimeMenuKey): boolean => {
     if (!currentMenu()) return false;
+    // 진화 장면이 도는 동안 메뉴는 입력을 받지 않는다(장면이 확인키로 문장을 넘긴다).
+    if (evolutionPlaying) return true;
     if (galleryViewerIsOpen()) {
       if (isCancelMenuKey(key) || isConfirmMenuKey(key)) {
         closeGalleryViewer();
@@ -391,7 +467,30 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return false;
     }
     const direction = directionForKey(key);
+    if (mode === "function" && direction && boxGridActive()) {
+      const next = moveBoxCursor(selectedDetailActionIndex, direction as BoxDirection);
+      if (next !== null) {
+        setDetailCursor(next);
+        syncRenderedDetailCursor();
+        const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
+        const message = currentMenu()?.querySelector<HTMLElement>(".status-menu-message");
+        if (detail && message) message.textContent = updateStatusMenuDetailSelection(detail, selectedDetailActionIndex) ?? "";
+        return emitAndHandle("menu-select");
+      }
+      // 격자 가장자리: 왼쪽 끝은 레일로(PC 는 닫지 않고 제자리), 위쪽 끝은 제자리.
+      if (direction === "left" && !pcMode) {
+        focusMenuArea("main");
+        options.emitMenuJuice("menu-back", currentMenu());
+        return true;
+      }
+      return rejectInput("더 갈 수 없습니다");
+    }
     if (mode === "function") {
+      // 몬스터 가방(목록 단계)에서는 좌우 키가 포켓을 넘긴다(←는 레일로 돌아가는 대신 Esc). 대상 선택·행동 화면은 그대로.
+      if ((direction === "left" || direction === "right") && bagPocketKeysActive()) {
+        stepPocket(direction === "left" ? -1 : 1);
+        return true;
+      }
       if (direction === "left") {
         focusMenuArea("main");
         options.emitMenuJuice("menu-back", currentMenu());
@@ -446,6 +545,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return false;
   };
 
+  function bagPocketKeysActive(): boolean {
+    return selectedCommand === "items" && !targetItemId && !itemActionId && usesMonsterParty(store.getCurrent());
+  }
+
+  function stepPocket(delta: -1 | 1): void {
+    inventoryView = { ...inventoryView, pocket: stepBagPocket(inventoryView.pocket ?? DEFAULT_BAG_POCKET, delta) };
+    detailCursors.set("items:list", 0);
+    options.emitMenuJuice("menu-select", renderMenu(undefined, "items"));
+  }
+
   function saveSlot(slot: SaveSlotIndex): void {
     const scene = options.getActiveScene();
     if (!scene) return;
@@ -499,10 +608,33 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       void fireAutoTriggers(scene as unknown as PlaySceneContext);
       return;
     }
+    if (result.kind === "used" && result.transfer) {
+      // 탈출 로프: 메뉴를 걷고 문장 → 던전 밖으로 이동(이벤트와 같은 전환 연출). 메뉴 아래에 문장이 묻히지 않게 한다.
+      options.closeMenu();
+      void runCommands(scene as unknown as PlaySceneContext, [
+        { kind: "text", body: result.message },
+        { kind: "transfer", mapId: result.transfer.mapId, x: result.transfer.x, y: result.transfer.y },
+      ]);
+      return;
+    }
     if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
     emitMutationResult(result, panel);
+    // 진화의 돌·이상한 사탕으로 진화했으면 3세대 진화 장면(모습이 바뀐다 → 축하 문장)을 메뉴 위에 보인다. 끝나면 새 모습으로 다시 그린다.
+    if (result.kind === "used" && result.evolutions?.length && isEmeraldMonsterStyle(store.getCurrent())) void playItemEvolutions(result.evolutions, result.message);
+  }
+
+  async function playItemEvolutions(entries: NonNullable<Extract<StatusMenuMutationResult, { kind: "used" }>["evolutions"]>, message: string): Promise<void> {
+    evolutionPlaying = true;
+    try {
+      await playEmeraldEvolutions(options.getPlayStage() ?? options.layout, store.getCurrent(), entries);
+    } catch {
+      // 장면이 실패해도 진화 결과는 이미 저장 상태에 반영돼 있다 — 메뉴를 새 모습으로 다시 그린다.
+    } finally {
+      evolutionPlaying = false;
+    }
+    if (currentMenu()) renderMenu(message, "items");
   }
 
   /** 정면·발밑 이벤트가 이 아이템을 받는가(itemUsed 페이지). 씬이 없으면 undefined. */
@@ -609,8 +741,143 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function toggleMonsterView(): void {
     monsterInstanceId = undefined;
+    monsterSwapSourceId = undefined;
+    boxMoveSourceId = undefined;
+    releaseConfirmId = undefined;
+    monsterRenameId = undefined;
     monsterView = monsterView === "party" ? "box" : "party";
     options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+  }
+
+  /** 파티 자리 바꾸기·요약 쪽 넘기기. 상태는 여기만 바꾸고, 화면은 renderMenu 가 다시 그린다. */
+  function handleMonsterCollect(action: MonsterCollectAction): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    switch (action.kind) {
+      case "startSwap":
+        monsterSwapSourceId = action.instanceId;
+        monsterInstanceId = undefined;
+        monsterView = "party";
+        setDetailCursor(Math.max(0, session.monsterParty.indexOf(action.instanceId)));
+        options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+        return;
+      case "cancelSwap":
+        monsterSwapSourceId = undefined;
+        options.emitMenuJuice("menu-back", renderMenu(undefined, "monsters"));
+        return;
+      case "swap": {
+        monsterSwapSourceId = undefined;
+        const project = store.getCurrent();
+        const sourceName = monsterDisplayName(project, session.monsterInstances[action.sourceId]);
+        const targetName = monsterDisplayName(project, session.monsterInstances[action.targetId]);
+        const result = swapMonsterPartyOrder(session, action.sourceId, action.targetId, project);
+        if (result.ok) {
+          scene.refreshRuntimeSurfaces();
+          scene.syncRuntimeState();
+          setDetailCursor(Math.max(0, session.monsterParty.indexOf(action.sourceId)));
+        }
+        const message = result.ok ? `${withJosa(sourceName, "와/과")} ${targetName}의 자리를 바꿨습니다` : result.reason === "same" ? "같은 동료입니다" : "파티 동료만 자리를 바꿀 수 있습니다";
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+        return;
+      }
+      case "startRename":
+        monsterRenameId = action.instanceId;
+        options.emitMenuJuice("menu-confirm", renderMenu(undefined, "monsters"));
+        return;
+      case "cancelRename":
+        monsterRenameId = undefined;
+        options.emitMenuJuice("menu-back", renderMenu(undefined, "monsters"));
+        return;
+      case "rename": {
+        monsterRenameId = undefined;
+        const project = store.getCurrent();
+        const result = renameMonster(session, action.instanceId, action.name);
+        if (result.ok) {
+          scene.refreshRuntimeSurfaces();
+          scene.syncRuntimeState();
+        }
+        const shown = monsterDisplayName(project, session.monsterInstances[action.instanceId]);
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(result.ok ? (result.nickname ? `별명을 ${shown}(으)로 정했습니다` : `별명을 지웠습니다 — ${shown}`) : "몬스터를 찾을 수 없습니다", "monsters"));
+        return;
+      }
+      case "summaryPage":
+        monsterSummaryPage = action.page;
+        releaseConfirmId = undefined;
+        setDetailCursor(0);
+        options.emitMenuJuice("menu-select", renderMenu(undefined, "monsters"));
+        return;
+      case "boxStep":
+        stepBox(action.delta);
+        return;
+      case "startBoxMove":
+        boxMoveSourceId = action.instanceId;
+        releaseConfirmId = undefined;
+        monsterInstanceId = undefined;
+        monsterView = "box";
+        boxIndex = Math.floor(Math.max(0, monsterBoxSlotOf(session, action.instanceId)) / MONSTER_BOX_SIZE);
+        setDetailCursor(BOX_HEADER_ENTRY_COUNT + Math.max(0, monsterBoxSlotOf(session, action.instanceId)) % MONSTER_BOX_SIZE);
+        options.emitMenuJuice("menu-confirm", renderMenu("옮길 칸을 고르세요", "monsters"));
+        return;
+      case "cancelBoxMove":
+        boxMoveSourceId = undefined;
+        options.emitMenuJuice("menu-back", renderMenu(undefined, "monsters"));
+        return;
+      case "boxPlace": {
+        boxMoveSourceId = undefined;
+        const project = store.getCurrent();
+        const result = placeBoxMonster(session, action.sourceId, action.slot);
+        if (result.ok) {
+          scene.syncRuntimeState();
+          boxIndex = Math.floor(action.slot / MONSTER_BOX_SIZE);
+          setDetailCursor(BOX_HEADER_ENTRY_COUNT + (action.slot % MONSTER_BOX_SIZE));
+        }
+        const placed = monsterDisplayName(project, session.monsterInstances[action.sourceId]);
+        const other = result.ok && result.swappedWith ? monsterDisplayName(project, session.monsterInstances[result.swappedWith]) : undefined;
+        const message = result.ok
+          ? other ? `${withJosa(placed, "와/과")} ${other}의 자리를 바꿨습니다` : `${withJosa(placed, "을/를")} ${monsterBoxName(project, boxIndex)}에 놓았습니다`
+          : "그 칸으로는 옮길 수 없습니다";
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+        return;
+      }
+      case "releaseAsk":
+        releaseConfirmId = action.instanceId;
+        setDetailCursor(0);
+        options.emitMenuJuice("menu-select", renderMenu("정말 놓아줄까요? 되돌릴 수 없습니다", "monsters"));
+        return;
+      case "release": {
+        releaseConfirmId = undefined;
+        const project = store.getCurrent();
+        const result = releaseMonsterFromBox(project, session, action.instanceId);
+        if (result.ok) {
+          monsterInstanceId = undefined;
+          scene.refreshRuntimeSurfaces();
+          scene.syncRuntimeState();
+          setDetailCursor(0);
+        }
+        const message = result.ok
+          ? `${withJosa(result.name, "을/를")} 놓아주었습니다. 잘 가!`
+          : result.reason === "lastPartyMonster" ? "마지막 파티 몬스터는 놓아줄 수 없습니다" : "몬스터를 찾을 수 없습니다";
+        options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+        return;
+      }
+    }
+  }
+
+  /** 보관함 상자 넘기기(←→). 상자 끝은 처음으로 이어진다. */
+  /** 에메랄드 보관함 격자 화면이 떠 있는가(요약·자리 바꾸기·상세가 없을 때). */
+  function boxGridActive(): boolean {
+    return selectedCommand === "monsters" && monsterView === "box" && !monsterInstanceId && !monsterSwapSourceId
+      && isEmeraldMonsterStyle(store.getCurrent());
+  }
+
+  function stepBox(delta: -1 | 1): void {
+    const session = options.getActiveScene()?.getSession();
+    if (!session) return;
+    const count = monsterBoxCount(session);
+    boxIndex = (boxIndex + delta + count) % count;
+    // 머리 줄에 머문 채 상자만 바뀐다(커서 위치는 그대로 두면 ◀▶ 를 연달아 누를 수 있다).
+    options.emitMenuJuice("menu-select", renderMenu(undefined, "monsters"));
   }
 
   function moveMonsterFromMenu(instanceId: string, to: "party" | "box"): void {
@@ -619,7 +886,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     rememberDetailCursorFromTestId(`status-menu-monster-${instanceId}`);
     const reason = to === "box" ? monsterBoxUnavailableReason(store.getCurrent(), scene.getSession(), instanceId) : undefined;
     if (reason) { rejectInput(reason); return; }
-    const result = moveMonster(scene.getSession(), instanceId, to, store.getCurrent());
+    // 보관: 첫 빈 칸에 앉는다(보고 있던 상자에 자리가 있으면 그 상자). 불러오기는 기존 규칙 그대로.
+    const result = to === "box" ? depositMonsterToBox(store.getCurrent(), scene.getSession(), instanceId, isEmeraldMonsterStyle(store.getCurrent()) ? boxIndex : undefined) : moveMonster(scene.getSession(), instanceId, to, store.getCurrent());
     if (result.ok) {
       monsterInstanceId = undefined;
       scene.refreshRuntimeSurfaces();
@@ -627,8 +895,29 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     const message = result.ok
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
-      : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
+      : "reason" in result && result.reason === "partyFull" ? "파티가 가득 찼습니다" : "reason" in result && result.reason === "lastPartyMonster" ? "마지막 파티 몬스터는 보관할 수 없습니다" : "몬스터를 찾을 수 없습니다";
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+  }
+
+  function takeHeldItemFromMenu(instanceId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    rememberDetailCursorFromTestId(`status-menu-monster-held-${instanceId}`);
+    const result = takeHeldItem(store.getCurrent(), scene.getSession(), instanceId);
+    if (result.kind === "done") scene.syncRuntimeState();
+    options.emitMenuJuice(result.kind === "done" ? "menu-confirm" : "menu-invalid", renderMenu(result.message, "monsters"));
+  }
+
+  /** 몬스터 기술 목록에서 필드 기술을 고르면 쓰고 메뉴를 닫는다(배우의 onSelectSkill 필드 능력과 같은 흐름). */
+  function useMonsterFieldSkillFromMenu(instanceId: string, skillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const used = scene.useFieldAbility(instanceId, skillId);
+    if (used.ok) {
+      options.closeMenu();
+      return;
+    }
+    options.emitMenuJuice("menu-invalid", renderMenu(used.message, "monsters"));
   }
 
   function replaceMonsterSkillFromMenu(instanceId: string, pendingSkillId: string, replacedSkillId: string): void {
@@ -719,6 +1008,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
+      case "backlog":
       case "life-ledger":
         resetSubscreenState();
         mode = "function";
@@ -731,10 +1022,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function toggleWaitMode(): void {
     waitModeEnabled = !waitModeEnabled;
+    updatePlayerPreferences({ atbMode: waitModeEnabled ? "wait" : "active" });
     mode = "function";
     options.emitMenuJuice(
       "menu-confirm",
-      renderMenu(`대기 방식을 ${waitModeEnabled ? "ON" : "OFF"}로 전환했습니다`, "wait")
+      renderMenu(
+        waitModeEnabled
+          ? "대기 ON — 명령을 고르는 동안 전투 시간이 멈춥니다(다음 전투부터)"
+          : "대기 OFF — 명령을 고르는 동안에도 적이 움직입니다(액티브, 다음 전투부터)",
+        "wait",
+      )
     );
   }
 
@@ -743,6 +1040,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   function backOneStep(): void {
     if (stepBackWithinSubscreen()) {
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
+      return;
+    }
+    // 이벤트(PC)로 연 보관함은 레일 메뉴 위가 아니라 단독 화면이다 — 마지막 Esc 는 화면을 닫고 이벤트로 돌아간다.
+    if (pcMode && selectedCommand === "monsters") {
+      pcMode = false;
+      closeGalleryViewer();
+      options.closeMenuWithJuice();
       return;
     }
     confirmSaveSlot = undefined;
@@ -815,6 +1119,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         if (campaignSpeciesId) { campaignSpeciesId = undefined; return true; }
         return false;
       case "monsters":
+        if (monsterRenameId) { monsterRenameId = undefined; return true; }
+        if (monsterSwapSourceId) { monsterSwapSourceId = undefined; return true; }
+        if (boxMoveSourceId) { boxMoveSourceId = undefined; return true; }
+        if (releaseConfirmId) { releaseConfirmId = undefined; return true; }
         if (monsterInstanceId) { monsterInstanceId = undefined; return true; }
         return false;
       case "region-map":
@@ -829,6 +1137,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
+      case "backlog":
       case "life-ledger":
       case "row":
       case "status":
@@ -859,9 +1169,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (mode !== "function") return false;
     if (actions.length === 0) {
-      if (selectedCommand !== "quests") return false;
+      // 커서가 없는 정보 목록(일정·엔딩 목록 등)은 ↑↓ 가 목록을 스크롤한다. 넘치지 않으면 평소처럼 「선택할 수 없습니다」.
       const list = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
-      if (!list) return false;
+      if (!list || list.scrollHeight <= list.clientHeight + 1) return false;
       list.scrollTop += delta * Math.max(24, list.clientHeight * 0.6);
       return true;
     }
@@ -895,7 +1205,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   function rejectInput(message = "선택할 수 없습니다"): true {
     const panel = currentMenu();
     const status = panel?.querySelector<HTMLElement>(".status-menu-message");
-    if (status) status.textContent = message;
+    if (status) { status.textContent = message; delete status.dataset.messageKind; }
     options.emitMenuJuice("menu-invalid", panel);
     return true;
   }
@@ -961,11 +1271,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `equipment:${equipmentActorId}:${equipmentSlotId}:choices`;
       case "formation":
         return formationActorId ? `formation:${formationActorId}:moving` : "formation:list";
-      case "monster-dex": return `monster-dex:${campaignSpeciesId ?? "list"}`;
+      case "monster-dex": return `monster-dex:${campaignSpeciesId ? `${campaignSpeciesId}:${dexPage}` : "list"}`;
       case "region-map": return "region-map";
       case "campaign-progress": return "campaign-progress";
       case "monsters":
-        return `monsters:${monsterView}:${monsterInstanceId ?? "list"}`;
+        return `monsters:${monsterView}:${monsterInstanceId ? `${monsterInstanceId}:${monsterSummaryPage}${monsterRenameId ? ":rename" : ""}` : monsterSwapSourceId ? "swap" : boxMoveSourceId ? "boxmove" : "list"}`;
       case "battle-reports":
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "save":
@@ -975,6 +1285,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
+      case "backlog":
       case "life-ledger":
       case "row":
       case "status":
@@ -995,6 +1307,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return Math.max(0, options.getActiveScene()?.getSession().partyActorIds.indexOf(formationActorId) ?? 0);
     }
     if (selectedCommand === "save" && confirmSaveSlot) return confirmSaveSlot - 1;
+    if (selectedCommand === "monsters" && monsterSwapSourceId) return Math.max(0, options.getActiveScene()?.getSession().monsterParty.indexOf(monsterSwapSourceId) ?? 0);
     return 0;
   }
 
@@ -1003,7 +1316,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openLifeRecoveryLedger, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openLifeRecoveryLedger, toggleMenu, handleKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

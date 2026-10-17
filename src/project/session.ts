@@ -106,6 +106,14 @@ export type MonsterInstanceIvs = {
   readonly spd: number;
 };
 
+/** 노력치(옵트인, system.monsterStatRules.evs). 한 종목 255·합계 510. 생략 = 0. */
+export type MonsterInstanceEvs = {
+  readonly hp: number;
+  readonly atk: number;
+  readonly def: number;
+  readonly spd: number;
+};
+
 export type MonsterCaughtAt = {
   readonly mapId: MapId;
   readonly x: number;
@@ -116,6 +124,10 @@ export type MonsterInstance = {
   readonly instanceId: MonsterInstanceId;
   readonly speciesId: MonsterSpeciesId;
   readonly nickname?: string;
+  /** 성별(종에 genderRatio 가 있을 때만). 생략 = 무성. */
+  readonly gender?: "male" | "female";
+  /** 색이 다른 개체(system.shinyRate 가 있을 때만 나온다). */
+  readonly shiny?: true;
   readonly level: number;
   readonly exp: number;
   readonly currentHp?: number;
@@ -129,8 +141,18 @@ export type MonsterInstance = {
   /** Learned moves awaiting a replace-or-reject choice when the active set is full. */
   readonly pendingSkillIds?: readonly SkillId[];
   readonly ivs?: MonsterInstanceIvs;
+  /** 성격 id(monsterStatRules.MONSTER_NATURES). 옵트인(system.monsterStatRules.natures) 프로젝트에서만 정해진다. 생략 = 중립. */
+  readonly nature?: string;
+  /** 노력치. 옵트인(system.monsterStatRules.evs) 프로젝트에서만 쌓인다. 생략 = 0. */
+  readonly evs?: MonsterInstanceEvs;
+  /** 지니고 있는 도구(heldEffect 가 있는 아이템 id). 생략 = 없음. 열매는 전투에서 쓰면 비워진다. */
+  readonly heldItemId?: string;
   readonly friendship: number;
   readonly caughtAt: MonsterCaughtAt;
+  /** 이 몬스터를 잡은 볼(아이템 id). 생략 = 선물·시작 몬스터 등 포획이 아닌 입수. 메뉴가 볼 이름·아이콘을 보인다. */
+  readonly caughtBallId?: string;
+  /** 보관함(PC 상자)에서 앉은 절대 칸 번호(상자×30+칸). 생략 = 보관 순서대로 첫 빈 칸. project/monsterBox.ts 가 읽고 쓴다. */
+  readonly boxSlot?: number;
 };
 
 export type FarmPlotState = {
@@ -287,6 +309,12 @@ export interface PlaySession {
   actorExperience: Record<string, number>;
   /** 배우별 누적 기술 포인트(TP). 승리 시 얻고 learnedSkills[].tp 문턱으로 기술을 배운다. 생략 = 없음. */
   actorTechPoints?: Record<string, number>;
+  /** 마석 AP 진행: 배우 → 스킬 id → 누적 AP. EquipmentRecord.apGrants 가 채우고, 필요 AP 에 닿으면 영구 습득(actorSkillIds·learnedViaAp). 생략 = 없음. */
+  actorApProgress?: Record<ActorId, Record<SkillId, number>>;
+  /** 마석 AP 로 영구 습득한 스킬(배우별). 장비를 벗어도 남는다 — 같은 스킬이 actorSkillIds 에도 들어 있다. 생략 = 없음. */
+  learnedViaAp?: Record<ActorId, SkillId[]>;
+  /** 폭주(rage 기술) 배우가 승리 때마다 모은 몬스터 목록(몬스터 레코드 id, 배우당 최대 64). 생략 = 없음. */
+  actorRageEnemyIds?: Record<ActorId, string[]>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
   eventLocations: Record<string, RuntimeEventLocation>;
@@ -351,7 +379,12 @@ export interface PlaySession {
   /** 주인공 통행 차단 행의 런타임 오버라이드. 생략이면 `system.playerPassRows`, 그것도 없으면 몸 높이 전체. */
   playerPassRows?: number;
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
-  mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
+  mapOverrides: Record<MapId, MapTileOverrides>;
+  /**
+   * 카운트다운 타이머 중 지금 흐르는 것(timerId → 진행 중). 값(`timers`)만 저장하면 불러온 뒤 시계가 멈춘다 —
+   * 장면의 runtimeTimers 가 이 표로 다시 짜인다(PlayScene.applySession). 없으면 모두 멈춘 상태.
+   */
+  timerActive?: Record<string, boolean>;
   farmPlots?: FarmPlots;
   // farmPlots 성장 틱이 적용된 마지막 달력 날짜. 시계가 날짜를 넘길 때마다 여기까지의 차이만큼만 성장시킨다.
   farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
@@ -359,8 +392,14 @@ export interface PlaySession {
   relationships?: Record<string, RelationshipState>;
   /** 갤러리에 남긴 그림. 본 순서. 시스템이 꺼져 있으면 메뉴만 숨기고 기록은 유지한다. */
   galleryUnlocks?: string[];
+  /** 지난 대사 기록(백로그) — 최근 N건 링 버퍼. meta.oprnDialogueSystem.backlog 가 켜진 게임만 쌓인다. 세이브에 실린다. project/dialogueSystem.ts */
+  dialogueBacklog?: import("@/project/dialogueSystem").BacklogEntry[];
+  /** 읽은 글 표시(화자+본문 해시). 「읽은 글만 스킵」 판정에 쓴다. 상한 READ_FLAG_LIMIT. */
+  dialogueRead?: string[];
   dailyGifts?: DailyGiftLog;
   dailyTalks?: DailyTalkLog;
+  /** 소셜 루프(system.socialLoop)가 켜졌을 때만 생긴다: 오늘 쓴 시간대 칸과 사람별 오늘 얻은 호감. project/socialLoop.ts. */
+  socialLoop?: import("@/project/socialLoop").SocialLoopDayState;
   /** Accumulated player steps toward the next monster walk-care tick. */
   monsterCareSteps?: number;
   /** Completed Gen1 monster-party field steps modulo the four-step poison tick. */
@@ -369,6 +408,8 @@ export interface PlaySession {
   monsterCareDaily?: Record<string, number>;
   /** Opt-in: currently equipped tool item id (hand). */
   equippedToolItemId?: string;
+  /** 야생 조우 보호(도망 뒤 무적 걸음·벌레퇴치·던전 입구). 값이 없으면 필드째 생략. project/encounterGuard.ts. */
+  encounterGuard?: import("@/project/encounterGuard").EncounterGuardState;
   /** Opt-in: chest storage by chest id. */
   chests?: Record<string, import("@/project/placeables").ChestState>;
   /** Opt-in: placed furniture/objects by map:x,y key. */
@@ -779,6 +820,19 @@ export function friendshipKey(
   return resolveSocialKey(host) ?? undefined;
 }
 
+/** 호감 조건·엔딩 문턱의 「가장 가까운 사람」 키 — 인물을 아직 모르는 뼈대 엔딩이 누적 호감으로 갈릴 때 쓴다. */
+export const ANY_FRIENDSHIP_KEY = "*";
+
+/** friendship 표에서 키의 값. 「*」 는 기록된 모든 사람 중 가장 높은 값(아무도 없으면 0). */
+export function friendshipValueOf(friendship: Readonly<Record<string, number>> | undefined, key: string): number {
+  if (key === ANY_FRIENDSHIP_KEY) {
+    let best = 0;
+    for (const value of Object.values(friendship ?? {})) if (Number.isFinite(value) && value > best) best = value;
+    return clampFriendship(best);
+  }
+  return clampFriendship(friendship?.[key] ?? 0);
+}
+
 export function getFriendship(
   session: PlaySessionLike,
   npcKey: string | undefined,
@@ -786,7 +840,7 @@ export function getFriendship(
 ): number {
   const key = friendshipKey(npcKey, host);
   if (!key) return 0;
-  return clampFriendship(session.friendship?.[key] ?? 0);
+  return friendshipValueOf(session.friendship, key);
 }
 
 export function changeFriendship(
@@ -796,7 +850,7 @@ export function changeFriendship(
   host?: SocialHost | string | null
 ): number {
   const key = friendshipKey(npcKey, host);
-  if (!key) return 0;
+  if (!key || key === ANY_FRIENDSHIP_KEY) return 0;
   session.friendship ??= {};
   const next = clampFriendship((session.friendship[key] ?? 0) + Math.trunc(Number.isFinite(delta) ? delta : 0));
   session.friendship[key] = next;
@@ -824,18 +878,22 @@ function applyAmount(current: number, op: "=" | "+=" | "-=", amount: number): nu
   }
 }
 
-// 맵 타일 오버라이드(changeTile 런타임 반영).
+// 맵 타일 오버라이드(changeTile 런타임 반영). lower=1층, upper=3층, lower2=2층, upper2=4층(2·4층은 쓰일 때만 생긴다).
+export type MapOverrideLayer = "lower" | "upper" | "lower2" | "upper2";
+export type MapTileOverrides = { lower: Record<number, number>; upper: Record<number, number>; lower2?: Record<number, number>; upper2?: Record<number, number> };
+
 export function setMapTileOverride(
   session: PlaySession,
   mapId: MapId,
-  layer: "lower" | "upper",
+  layer: MapOverrideLayer,
   index: number,
   tile: number
 ): void {
   if (!session.mapOverrides[mapId]) {
     session.mapOverrides[mapId] = { lower: {}, upper: {} };
   }
-  session.mapOverrides[mapId][layer][index] = tile;
+  const overrides = session.mapOverrides[mapId];
+  (overrides[layer] ??= {})[index] = tile;
 }
 export function getMapTile(
   session: PlaySession,
@@ -906,6 +964,10 @@ export type ConditionEvalContext = {
   readonly host?: ActorQueryHost;
   /** 요일 계산용 달력(프로젝트 시스템에서). 생략 = 계절 28일·1년 1일 월요일. */
   readonly calendar?: ActorQueryOptions;
+  /** 파티가 아는 스킬 집합(partyKnowsSkill). 프로젝트를 아는 호출측이 partyKnownSkillIds 로 만든다. */
+  readonly partySkillIds?: () => ReadonlySet<string>;
+  /** 캠페인 배지 스위치 id(badgeCount). 프로젝트를 아는 호출측이 badgeContext 로 만든다. */
+  readonly badgeSwitchIds?: () => readonly string[];
 };
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
@@ -970,6 +1032,8 @@ export function evalCondition(
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -980,7 +1044,7 @@ export function evalCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, context?.calendar);
+      return evalActorQueryCondition(session, condition, { eventId, ...context?.host }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}) });
     case "run":
       return evalRoguelikeRunCondition(session, condition);
     case "difficulty":

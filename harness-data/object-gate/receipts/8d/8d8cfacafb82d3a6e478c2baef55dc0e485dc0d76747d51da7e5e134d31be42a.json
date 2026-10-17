@@ -1,0 +1,201 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d8cfacafb82d3a6e478c2baef55dc0e485dc0d76747d51da7e5e134d31be42a",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-line-w",
+ "label": "jp_city/street_hand/jp-mark-line-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical white line painted flat on the ground across the full tile height (16 rows). Perfectly valid flat ground marking decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3045
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "painted white line marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical ground marking line running from row 0 to 15, correctly drawn flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2757
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor marking line decal spanning the full tile height, correctly flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3038
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted floor line decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical white floor marking running top to bottom across all 16 rows, lying flat on the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "road marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical line decal lying flat on the ground plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2624
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "road marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical white floor marking stripe spanning all 16 rows, entirely flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3958
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "painted floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical stripe spanning all 16 rows, representing a flat line decal on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3236
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2px wide white line decal painted flat on the ground running top to bottom across all 16 rows",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2804
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.380Z",
+ "cells": {
+  "16": [
+   "62640b0583e28ca5",
+   "f7ec49476ddd0788"
+  ],
+  "24": [
+   "008a8e13e0c57023",
+   "0b57668f7aa17ecc",
+   "28269433afd778ad",
+   "68793dbd7e6a765c",
+   "87ab61c5af899785",
+   "ac196fefafebcfa3",
+   "c9e0dbc8dbc18be8",
+   "cf667876eb72c79f",
+   "d3cba45ad4d587e1",
+   "f4f9c06cce54c413"
+  ],
+  "32": [
+   "02ad2a8b4a8a6cd3",
+   "168ec1dbb595b5a8",
+   "2fd4cfb0736b2b32",
+   "78dc389ad4c7bf3b",
+   "8115de9c3f4e0578",
+   "919c22034f1ddd30",
+   "97c3dd5686e4d29b",
+   "adf72ab5a3f902d2"
+  ],
+  "48": [
+   "0494ec1c60da66b1",
+   "1901fb2ddfb69c0d",
+   "375a6a7160296ba1",
+   "391315c42a0680f1",
+   "708ef94208bdf30e",
+   "7d81afde82edd75b",
+   "b99a9a089c003934",
+   "bebae4bd472a7323",
+   "c5855bcf0a31e7d6",
+   "ca0b3bf5cfc6c6d1",
+   "cc6e0a889100caea",
+   "d99d9ac6eeb78df7"
+  ]
+ }
+}

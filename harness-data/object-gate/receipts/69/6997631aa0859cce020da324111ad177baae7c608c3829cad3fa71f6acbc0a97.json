@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6997631aa0859cce020da324111ad177baae7c608c3829cad3fa71f6acbc0a97",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "tall grass tufts on the ground (flat decal)",
+ "label": "sky-island/si-tallgrass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass tufts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tufts are drawn straight-on in pure front elevation with vertical blades and dark bases at the bottom, lacking any 3/4 perspective or foreshortened top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7683
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall grass tufts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tufts are drawn in pure front elevation with vertical blade silhouettes and shading from light tips to dark bases, lacking any visible ground footprint or top-down perspective foreshortening (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6675
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass tufts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Organic grass blades/tufts clumped on the ground with standard top-down 3/4 shading (lighter tips, darker base contact). Grass has no horizontal top surface to foreshorten.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7316
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall grass tufts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grass tufts are drawn in a flat front elevation suitable for a side-scroller, showing only vertical silhouettes without any 3/4 top-down depth or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10752
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.917Z",
+ "cells": {
+  "16": [
+   "fd4f5c62a114ee11"
+  ],
+  "24": [
+   "543ae4bc91a3a192",
+   "5c5de3c39760a9b2",
+   "a095aa8b42577501",
+   "a748a8e999516858",
+   "a8f007f6d0a3b4a8",
+   "c27b0c7ccaf48b3b"
+  ],
+  "32": [
+   "085e381959cd8d90",
+   "49fc3763ee7c1971",
+   "7ff1fd128fb688b6",
+   "8066710904ade195",
+   "9eb6e2cc16c2fe56",
+   "c81dce3880efdd75"
+  ],
+  "48": [
+   "3c81a987446afe25",
+   "6df43a4bc4dd8fba",
+   "8cffe14b32089f13",
+   "9de333dff169c5b1",
+   "a6fb9d0b62c5c1c2",
+   "f05ed3aa1bf673c4"
+  ]
+ }
+}

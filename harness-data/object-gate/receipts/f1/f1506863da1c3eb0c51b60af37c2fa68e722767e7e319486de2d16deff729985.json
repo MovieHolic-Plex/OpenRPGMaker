@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1506863da1c3eb0c51b60af37c2fa68e722767e7e319486de2d16deff729985",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "자유석 긴 벤치 책상(3인)",
+ "label": "jp_city/interior_office2/ox-bench-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long desk",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 0-10 (11 rows) with laptops and accessories placed on it, meeting a clear south-facing front edge and skirt across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long bench desk",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface is clearly visible from rows 1 to 10 (10 pixel rows deep) with laptops, coffee mug, and papers resting on it, followed by a south-facing front edge/skirt from rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4011
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long bench desk",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop spans rows 0 to 10 (11 source pixel rows) with items placed on it, followed by the south-facing front edge/skirt from row 11 to 13 in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5342
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long desk surface with computers and accessories",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden desk top surface is clearly visible from above across rows 0-10 (11 rows deep) with objects resting on it, and its front vertical face extends across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4311
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.919Z",
+ "cells": {
+  "16": [
+   "02380b1aa8920c36",
+   "aec030d1c7ed6754",
+   "fbbfdc74444b2c9c"
+  ],
+  "24": [
+   "c692fe97ac854a82",
+   "df7c8ab86d81eff9",
+   "dfd9a1c234e81f64",
+   "fb5c1a6a38a17136"
+  ],
+  "32": [
+   "2e5f78448b7c8286",
+   "38914c7420bfc4c8",
+   "494305e8a6282736",
+   "4b7e12d86053036c",
+   "67e5284f5126857e",
+   "6d0a01a916da3c12",
+   "840bc1d302d96a78",
+   "8867499ca44c64c2",
+   "950a254d20b95de7",
+   "be50b48e14811b01",
+   "d4fc76415582a825",
+   "f12af1e94298d562"
+  ],
+  "48": [
+   "003c4403ac73910d",
+   "aa8169fdce4100c4"
+  ]
+ }
+}

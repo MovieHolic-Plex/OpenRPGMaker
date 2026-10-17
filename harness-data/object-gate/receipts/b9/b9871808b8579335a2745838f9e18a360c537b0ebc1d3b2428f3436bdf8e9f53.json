@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9871808b8579335a2745838f9e18a360c537b0ebc1d3b2428f3436bdf8e9f53",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "굵은 가로등 기둥 상자(윗면 + 긴 램프창 + 받침)",
+ "label": "sf-station/sf-street-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamppost pillar box",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar box is clearly visible across rows 1-9 (9 source pixel rows tall), situated above the vertical south face containing the window (rows 10-21) and base plinth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar box / lamp post pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main pillar box is clearly visible at rows 2-9 (8 source pixels tall) looking down onto it, above the south front face which contains the window panel and base plinth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6352
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thick streetlight post box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar box is clearly visible from above across rows 2–9 (8 pixel rows tall, 8 pixels wide) above the front face containing the lamp window and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13213
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thick lamppost pillar box",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pillar box is clearly visible from rows 1 to 9 (9 pixel rows tall) above the south-facing front body (rows 10-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4389
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:06.604Z",
+ "cells": {
+  "16": [
+   "6f2ad7f0d68b12b5",
+   "df2ac438bb33b1ec"
+  ],
+  "24": [
+   "18f8eaca9c69bacf",
+   "3711a06634980263",
+   "4aaa8b175a405865",
+   "6864a6b31cd349a7",
+   "6e6426b7fc7587b3",
+   "76a43e8aa22110cb",
+   "7c59e49c23dba336",
+   "93261f5d8b6ff6d4",
+   "a2f0278e79cb6c08",
+   "d07b9d687f5dfa7f",
+   "ebc22f4ee934badf",
+   "fe097015e3f7252b"
+  ],
+  "32": [
+   "09d1fbd6300e0c84",
+   "bad8174edaadc906",
+   "c9a0da9f7d48fb14"
+  ],
+  "48": [
+   "02d9e49f5296e0b0",
+   "24874254394a2dd1",
+   "26871f75e3495caa",
+   "4df75c73623b2b98",
+   "4f61e5851282e991",
+   "6039c1e972291ad2"
+  ]
+ }
+}

@@ -29,6 +29,86 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)
+
+`system` 탭(`src/editor/panels/databaseSystemView.ts`, `src/styles/database/studio-refresh.css`)의 상단 13칩 가로 줄을 왼쪽 세로 구획 목록(`184px | minmax(0, 1fr)`)으로 옮기고 소제목 3개(`규칙` / `보이는 것` / `시작·끝`)로 묶었다. 구획 DOM·testid(`db-system-nav-<slug>`, `data-system-section`)와 `requestSystemSection`·`DATABASE_SEARCH_DESTINATIONS` 경로는 그대로다.
+
+- **구획 순서와 소제목**: `overview`(개요) → **`규칙`**: `party`(초기 파티), `startup`(시작 설정), `optin`(기능 확장), `time`(시간), `typechart`(타입 상성) → **`보이는 것`**: `display`(화면), `menu`(게임 메뉴), `dialogue`(대화창), `hud`(인게임 HUD), `font`(폰트), `resources`(리소스) → **`시작·끝`**: `title`(타이틀).
+- **타이틀 4단계 바로가기 승격**: `title` 본문 오른쪽 위 가로 칩 5개(`db-title-workbench-jump`: 오프닝 효과·글자·배경·메뉴·연출·소리)를 본문에서 빼고 왼쪽 구획 목록의 `타이틀` 바로 아래 하위 묶음으로 올렸다(`title` 활성 시 표시, 클릭 시 해당 필드셋으로 스크롤하고 3단 크럼에 `타이틀 · <항목>` 표시).
+- **시각 규칙 R2·R3 적용**: 시스템 폼 필드 격자를 `132px | minmax(0, 1fr)`로 맞추고, `checkboxField`/`lockedCheckboxField`를 34×18 알약 스위치(`.db-toggle-switch > input.db-toggle-input[role="switch"]`)로 통일해 시작 설정 등에서 체크박스가 1,000px 카드 오른쪽 끝으로 밀리던 문제를 함께 없앴다.
+
+## 자료집 장르 프로필 접기 — 「숨긴 탭 N개 · 모두 보기」 (2026-10-17, 메뉴 감사 PR-4)
+
+기본 DB 는 몬스터 106개·스킬 1,243개가 처음부터 들어 있어 기존 「빈 탭 접기」만으로는 연애·추리 프로젝트에서도 전투 9탭과 직업·스킬이 그대로 펼쳐져 있었다. `store.getCurrent().gameDesignBrief?.interview?.genre` 가 있는 프로젝트만 `GENRE_FOLD_PROFILE`(`databaseWayfinding.ts`)로 초기 접기를 더한다.
+
+| 장르(`interview.genre`) | 처음부터 접히는 탭 (`GENRE_FOLD_PROFILE`) | 처음 보이는 탭 수 (36탭 기준) |
+|---|---|---|
+| `romance` · `mystery` (연애·추리) | 전투 9탭(`enemies`·`monsterSpecies`·`troops`·`factions`·`elements`·`states`·`retroChoreographies`·`battleScreen`·`battleCommands`) + 생활 6탭(`crops`·`lifeCrafting`·`dailyWeather`·`farmAnimals`·`farmSpatial`·`lifeCollections`) + 파티 2탭(`classes`·`skills`) = **17개** | **19개** |
+| `adventure` (모험 JRPG) | 생활 6탭 + `monsterSpecies`(포획·성장 종족) = **7개** | **29개** |
+| `monster` (몬스터 수집) | 생활 6탭 = **6개** (직업·스킬은 종족 학습에 쓰이므로 접지 않음) | **30개** |
+| 없음 (`undefined`, 시드·옛 프로젝트) | 프로필 접기 **0개** (기존 빈 목록 탭 접기만 동작, 문구도 「빈 탭 N개」 유지) | 기존과 동일 |
+
+- **문구와 펼침 상태**: 프로필로 접힌 탭이 섞인 그룹은 `.db-tab-fold-count` 문구를 **「숨긴 탭 N개 · 모두 보기」**로 표시한다(프로필 없이 빈 탭만 접힌 그룹은 기존 「빈 탭 N개」 그대로). 한 번 누르면 기존 `localStorage` `oprn:database.revealedEmptyTabGroups`(그룹 slug)에 기록되어 그 그룹의 탭과 소제목이 모두 펼쳐진다.
+- **절대 막지 않는 경로**: 지금 보고 있는 활성 탭(`id !== active`), 탭 검색 결과(`applyTabFilter`), 딥링크·조수 점프(`switchDatabaseActiveTab`)는 프로필 접기 대상이어도 늘 보인다.
+
+## 자료집 6그룹 재배치·소제목·「게임 설정」 라벨 (2026-10-17, 메뉴 감사 PR-3)
+
+탭 id·testid·저장 데이터는 그대로다(마이그레이션 0). `TAB_GROUPS`(`src/editor/panels/database.ts`)를 7그룹에서 6그룹(이야기·파티·전투·맵·생활·시스템)으로 재배치하고, `system` 탭 라벨을 「시스템」→「게임 설정」으로 바꿨다(기존 검색어 「시스템」은 `LEGACY_TAB_SEARCH.system` 별칭으로 유지).
+
+| 그룹 라벨 | slug | 설명 툴팁(`title`) | 소속 탭 (순서 · 소제목) | 이동 내역 |
+|---|---|---|---|---|
+| 이야기 | `lore` | 무슨 이야기를 쓰나요? | `worldCanon`, `worldCodex`, `characters`, `commonEvents`, `[진행 값 (고급)]` `switches`, `variables` | 라벨 세계관→이야기; `characters`(생활에서), `commonEvents`·`switches`·`variables`(시스템에서) 편입 |
+| 파티 | `party` | 누가 나오고 무엇을 갖나요? | `actors`, `characterGraphics`, `classes`, `skills`, `items` | `characterGraphics`(시스템에서) 편입 |
+| 전투 | `battle` | 어떻게 싸우나요? | `[적]` `enemies`, `monsterSpecies`, `troops`, `factions` / `[규칙]` `elements`, `states` / `[화면·연출]` `retroChoreographies`, `battleScreen`, `battleCommands` | 옛 `monster` 그룹과 `battle`(전투 규칙) 합침 |
+| 맵 | `world` | 어디서 벌어지나요? | `spatialTiles`, `spatialObjects`, `spatialPlaces`, `spatialRegions`, `spatialWorlds` | 변경 없음 |
+| 생활 | `life` | 농사·제작·경영이 있나요? | `crops`, `lifeCrafting`, `dailyWeather`, `farmAnimals`, `farmSpatial`, `lifeCollections` | `characters`가 이야기로 이동 |
+| 시스템 | `system` | 게임 틀·화면·메뉴는? | `system`(라벨 「게임 설정」), `menuSystem`, `opening`, `gameOver`, `terms` | 이야기·파티로 4탭 이동, 그룹과 탭 이름 충돌(시스템 › 시스템) 해소 |
+
+- **slug 유지 이유**: `lore`·`party`·`battle`·`world`·`life`·`system` 다섯 slug를 그대로 두어 기존 e2e(`db-tab-group-lore`, `db-tab-group-battle` 등)와 `localStorage` `oprn:database.revealedEmptyTabGroups` 호환성을 지켰다(사라진 `monster` slug는 `revealedEmptyGroupSlugs`가 조용히 무시).
+- **레일 소제목(`.db-tab-subhead`)**: `.db-tab`이 아닌 평평한 직계 자식 행이다. `markViewedSection`(구획 표시), `applyTabFilter`(검색 중 숨김), `applyEmptyTabFold`(소제목 아래 탭이 전부 접히면 소제목도 함께 숨김), 좁은 56px/도크 아이콘 레일(`display: none`)과 맞물려 동작한다.
+- **아이콘·조수 밸런스·번역**: `databaseTabIcons.ts`의 `GROUP_ICON_TAB`에서 `monster`를 지우고 `battle` 대표 아이콘을 `enemies`로 맞췄다. `databaseAiBar.ts`의 `GROUP_BALANCE`는 6그룹 키(`lore` 추가, `monster`+`battle` 통합)로 갱신했다. `{en,ja,zh}.json`에 새 문구 10개(「게임 설정」, 소제목 3개, 그룹 툴팁 질문 6개)를 정렬 위치에 추가했다.
+
+## 자료집 시각 깨짐·잘림 9건 수리 (2026-10-17, 메뉴 감사 PR-2)
+
+탭 id·그룹 구성·저장 데이터는 그대로다(`database.ts` 무변경). 메뉴 감사 부록 A의 시각 결함 9건(B1~B9)만 고쳤다.
+
+- **B1 게임 메뉴 `field-list.png` 썸네일 누락**: `public/assets/ui/menu-skins/field-list.png`(960×720)를 실제 런타임 플레이어 캡처(`scripts/qa/runtime/menu-design.probe.mjs`)로 추가하고 `field-list` 스킨을 프로브 대상 및 복사 목록에 편입했다.
+- **B2 토글 스위치(`.db-toggle-input`) 폭 16px 찌그러짐**: `studio-v2.part-3.css`의 `input[type="checkbox"] { width: 16px }`가 `.db-toggle-input`을 이겨 오프닝·게임 오버 등에서 파란 점과 빈 원 두 개로 갈라지던 문제를 `studio-refresh.css`의 스튜디오 공통 규칙(`34×18px`) 한 줄로 고정했다.
+- **B3 전투 화면·전투 명령 상단 잘림 및 제목 5회 중복**: `.db-battle-studio-heading`에 상하 여백(`padding: 14px 18px 12px`)을 주고 `.db-battle-screen-stack`에 세로 스크롤(`min-height: 0; overflow-y: auto`)을 열었다. `renderBattleCommandsTab`의 `detailHero`에서는 중복 눈썹(`전투 명령`)을 지우고 제목을 「카탈로그와 직업 메뉴 배치」로 바꿨다.
+- **B4 주민 관계 이름 앞 점·원시 id 노출·헤더/목록 이름 불일치**: `databaseCharacterView.ts`에서 목록과 상세 머리글·요약 카드가 같은 표시 이름(`주민 N`)을 쓰도록 통일하고, 히어로 썸네일(`32×32px`, 빈 슬롯은 생략)이 1×1 프로브 크기로 줄어 점(`.`)처럼 보이던 문제를 고쳤다. `[data-testid="db-character-id"]`는 텍스트 계약을 유지한 채 `hidden`으로 숨겼다.
+- **B5 레일 「빈 탭 N개」 줄 2줄 잘림**: `sidebar.css`의 `.db-tab-fold`를 세로 쌓기(`flex-direction: column`)로 바꾸고 `.db-tab-fold-names` 줄 제한을 5줄(`-webkit-line-clamp: 5`, 전폭)로 넓혀 접힌 탭 이름이 잘리지 않게 했다.
+- **B6 생활 기술·제작 빈 상태 안내 중복**: `databaseLifeCraftingView.ts`에서 검색어가 없을 때 왼쪽 목록 창의 중복 빈 상태 카드를 빼고 오른쪽 본문 안내 카드 한 곳만 남겼다.
+- **B7 상태 탭 색상 줄 분리·「GEN1」 문구 평문화**: `studio-refresh.css`에서 `.db-state-color-control`을 3열(`라벨 | 22px 견본 | 색 이름`)로 복원하고, `databaseStateRecordView.ts`의 「Gen1 주요 상태」「휘발 상태 (gen1)」 라벨을 「주요 상태」「휘발 상태」로 평문화했다(`{en,ja,zh}.json` 반영).
+- **B8 포획·성장 종족 「프로젝트 준비 N/4」 칩 부유**: `databaseMonsterSpeciesView.ts`에서 `monsterPipelineHeader`를 본문 위 별도 그리드 행에서 상세 인스펙터 하단으로 옮기고 왼쪽 정렬(`align-items: flex-start`)해 목록·상세 상단 정렬을 맞췄다.
+- **B9 시스템 › 시작 설정 입력 폭 과신장**: `databaseSystemView.ts`의 로컬 `selectField`/`selectLiteral` 폭을 `max-width: 340px`, `numberField` 스테퍼 폭을 `max-width: 120px`로 상한을 두어 940~1,000px로 늘어나지 않게 했다.
+
+## 자료집 길찾기 — 구획 낱말 검색·3단 크럼·최근 탭 (2026-10-17, 메뉴 감사 PR-1)
+
+탭 id·그룹 구성·저장 데이터는 그대로다. 코드는 `databaseWayfinding.ts`(데이터와 작은 상태, DOM 없음) 한 곳과 `database.ts`·`databaseModal.ts`·`databaseSystemView.ts` 의 연결선이다.
+
+- **구획 낱말 검색**: 레일 탭 검색이 탭 이름에 없는 낱말(「대사」「엔딩」「HUD」「타이틀」「호감」「저장」「시작 위치」…)을 `DATABASE_SEARCH_DESTINATIONS` 표에서도 찾는다. 결과는 「이 낱말이 있는 구획」 머리 아래 `.db-search-dest` 행(구획 이름 + `그룹 › 탭` 경로)이다. 시스템 구획은 `requestSystemSection` 으로, 메뉴·시스템 카드는 `scrollTestId` 로 착지한다. **낱말은 실제 화면에서 확인한 것만** 표에 둔다(영어는 기존 접두 검색 `act`·`retro`·`worldGen` 과 안 겹치게). 두 글자 미만은 찾지 않는다. 시작 위치는 자료집에서 고치는 값이 아니라(맵 속성) 개요의 「시작 지점」으로 보낸다.
+- **`.db-tab` 이 아니다**: 구획 행·「최근」 줄은 탭 버튼 계약(라벨=aria-label=title, testid, 카운트 배지, 빈 탭 접기, 활성 표시)의 밖에 둔다. 검색 정리는 `data-search-secondary` 를 재사용한다. 접힌 56px 아이콘 레일(컨테이너 799px 이하)에서는 두 줄 다 숨는다.
+- **3단 크럼**: `그룹 › 탭 › 구획`. 구획을 가진 탭은 지금 시스템 탭뿐이며, `renderSystemTab`·`activateSystemSection` 이 `setDatabaseSubLocation("system", 라벨)` 로 알린다. 다른 탭의 내부 탭(주인공 5·몬스터 4·종족 5·적 그룹 4·생활 10)은 각자 상태를 가져서 아직 크럼에 안 닿는다 — 후속.
+- **최근 탭**: `setDatabaseActiveTab` 이 `recordRecentDatabaseTab` 으로 적는다(`localStorage` `oprn:database.recentTabs`, 4개 보관·3개 표시, 지금 보는 탭·개요 제외, 프로젝트 무관). 레일 맨 위 `.db-recent-tabs`.
+- **키보드**: 검색 상자에서 ↓ 는 첫 결과로, Enter 는 첫 결과 열기, 결과 행 사이는 ↑↓, 맨 위에서 ↑ 는 검색 상자로. **Esc 는 검색어를 지우지 못한다** — `editor/ui/modalStack.ts` 가 document 캡처 단계에서 먼저 가져가 자료집을 닫는다(중첩 필드가 삼키지 못하게 한 의도된 설계). 결과 없음 안내는 `role="status"`.
+- 번역: 새 문구 8개를 `{en,ja,zh}.json` 에 넣었다. 경로는 조각마다 span(번역기는 조각 단위로 찾는다).
+
+## 자료집 「메뉴·시스템」 탭 — ESC 메뉴·대사창·갤러리/엔딩/저장 카드 한 화면 (2026-10-17, 미연시 3단계)
+
+- 탭 id `menuSystem`, 라벨 「메뉴·시스템」, testid `db-tab-menu-system`, 그룹 「시스템」(`system` 바로 뒤). `databaseMenuSystemTab.ts` 의 `renderMenuSystemTab(host)`. 카드 셋:
+  - **ESC 메뉴**(`db-menu-system-menu-card`): 저작이 없으면(일반 게임) 옛 동작 안내 + 시작점 셋(`…-starter-custom|romance|collector`). 있으면 줄마다 이름 입력(`…-label-<명령>`, change 로 확정, 1~12자)·▲▼(`…-up|down-<명령>`)·✕(`…-remove-<명령>`), 아래 「항목 추가」 선택+추가(`…-add-select`·`…-add`), 되돌리기(`…-menu-reset` = `meta.oprnFieldMenu` 삭제). 「타이틀로」는 항상 맨 끝·이동 불가. 연애 게임은 저작이 없어도 기본 메뉴가 보이고 첫 편집이 그 게임만의 저작이 된다.
+  - **대사창**(`db-menu-system-dialogue-card`): 백로그·오토·스킵·숨기기 스위치, 백로그 줄 수(20~500, 백로그가 꺼지면 잠금+이유), 불투명도(0.4~1), 기본 대사 속도·오토 속도·스킵 범위(읽은 글만/전부)·글자 언어. 값은 `meta.oprnDialogueSystem`.
+  - **갤러리 · 엔딩 목록 · 저장 카드**(`db-menu-system-extras-card`): 스위치 다섯(갤러리·잠김 보이기·엔딩 목록·못 본 엔딩 ???·저장 카드)·글자 언어(대사창 따름)·현재 그림 칸/엔딩 수. 값은 `meta.oprnVnExtras`.
+  - **대사창 룩**(`db-menu-system-look-card`, #2816 `meta.oprnVnLook`): 프리셋 선택(`…-look-preset`, 8종·설명·어울리는 곳 `…-look-fit`)과 이름표·선택지·대기 표시(프리셋 기본 또는 직접), 글자 크기·줄 간격·글자 간격·초상 등장·ESC 메뉴 색(룩과 같은 색/예전 청색 창), 읽은 글 옅게. 연애 게임은 소재별 기본 룩이 처음부터 적용(안내띠 `…-look-default-note`), 다른 장르는 「옛 대사창」 기본에서 프리셋을 고르면 시작한다(`…-look-legacy`). 값은 `meta.oprnVnLook`, 저장은 같은 `applyMenuSystemEdit({look})` 경로(검증 `validateVnLook`)이고 지우면 소재별 기본/옛 대사창으로 돌아간다. 조수 `set_vn_look` 과 같은 `mergeVnLook` 을 쓴다.
+  - 맨 위 `db-menu-system-issues`: 메뉴 항목과 기능이 어긋난 곳(`menuSystemIssues(project).ui`)을 경고띠로 보이고, 고칠 수 있으면 단추(「백로그 켜기」「메뉴에 추가」…)를 붙인다. 엔딩·그림이 아직 없다는 안내(`endings-none`·`gallery-no-cg`)는 경고색이 아니라 안내색.
+- **검증·규칙은 조수 도구와 같은 함수** — `src/project/menuSystem.ts`(잎 모듈): `validateMenuSystemEdit`/`applyMenuSystemEdit`(검증 먼저, 실패하면 프로젝트를 건드리지 않는다), `syncMenuFeatures`(메뉴에 백로그·갤러리·엔딩을 넣으면 꺼진 기능을 같이 켠다 — 도구 `configure_field_menu` 와 같은 함수), `menuSystemIssues`(도구 `review_game_systems` 의 어긋남 목록과 같은 원천, 화면은 `ui` 문장·도구는 `tool` 문장), `syncMenuUiStyle`(메뉴를 처음 저작하면 `menuUiStyle=field-list`, 지우면 `pixel` — 도구와 같음), `describeMenuSystemError`(영문 검증 오류를 화면용 한국어로). 새 규칙은 여기 한 곳에만 쓴다. `gallery-on-no-entry`(갤러리가 켜졌는데 저작 메뉴에 갤러리 항목이 없음)는 3단계에서 목록에 새로 들어갔다 — 도구의 `review_game_systems` 에도 같이 나온다.
+- 저장 경로: `recordProjectSnapshot()` + `store.update(…, {scope:"system", label})`. scope 가 `system` 이라 모달 전체 새로고침을 일으키지 않고 탭이 자기 자리에서 다시 그린다. 되돌리기(Ctrl+Z·모달 되돌리기)는 편집 하나씩 되감는다(브라우저에서 확인: 이름→백로그→메뉴 시작이 거꾸로 풀림). 거절·연동 안내(`db-menu-system-rejection`·`…-notices`)는 그 프로젝트 판에 묶여 되돌리기·다른 편집 뒤 저절로 사라진다.
+- 함정: 토글 스위치는 `.db-toggle-input` 이 다른 탭 CSS 에 눌려 체크박스 크기로 보일 수 있어 이 탭 스코프(`.db-menu-system-studio`, `system-studio.css`)에서 34×18 로 고정했다. `field()` 는 컨트롤 하나일 때만 — 속도·범위는 `segmentedControl`(그룹 필드). 모드(uxLevel) 숨김은 쓰지 않는다 — 이 저장소에 `databaseUxLevel.ts` 가 없고, 초보도 연애 기본값을 보고 꺼야 하므로 모든 칸을 보인다.
+- **기기 단위 기록 안내(2026-10-17 수리 PR #2819 정책).** 한 번 본 엔딩과 한 번 연 CG 는 저장 칸이 아니라 이 기기에 남는다(`deviceRecords.ts`). 「갤러리 · 엔딩 목록 · 저장 카드」 카드의 안내 문장이 이를 밝힌다. `menuSystemIssues`: 저작 없는 연애 기본 구성의 「CG 0」은 경고하지 않고(작가가 갤러리를 직접 켠 경우만), 저작 메뉴에 갤러리 항목이 없으면 열 내용(CG 칸·엔딩)이 있을 때만 짚는다. `syncMenuFeatures` 는 작가가 저작해 둔 `oprnVnExtras` 의 꺼짐을 되돌리지 않고 알린다(도구와 같은 규칙).
+- 다국어: 화면 문구는 en/ja/zh 카탈로그에 95개 추가(기계 번역 초안). `menuSystem.ts` 는 추출기 `SCAN_ROOTS` 밖이다(도구용 문장이 섞여 있어) — 화면용 문구를 추가하면 카탈로그에 손으로 넣는다.
+- 시각 QA: `scripts/capture-menu-system-tab.mjs`(`DEV_SERVER_PORT`, `--mode beginner|expert`, `VIEWPORT=1024x768`, `LOCALE=en`). `?freshProject=1` 의 비동기 로드가 끝나기 전에 모달을 열면 프로젝트 전환으로 닫히므로 스크립트가 5초 기다린다.
+- 집중 테스트: `node scripts/run-vitest.mjs test/menuSystem.test.ts`(공용 규칙·거절 문구·탭 렌더/클릭·되돌리기/다시 하기·SQLite 저장 뒤 `deserialize` 재로드).
+
 ## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
 
 사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.
@@ -1036,7 +1116,7 @@ Database tabs, record views, battle database records, utility records, reference
 - **Project play resolution (System → 화면, 2026-08-24):** `system.playResolution?: { width, height }` authors the logical map/runtime viewport. Omission and an explicit 320×240 both normalize to the legacy default; custom values clamp to 320–1920 × 240–1080. `db-field-system-resolution-preset` offers 320×240, 426×240, 640×360, and 640×480, while the width/height fields allow bounded custom values. Custom values remain authorable: the diagnostics card reports the reduced aspect ratio, 16px reference-tile span, ceil-rounded minimum map size, partial-tile edges, undersized map count/list, and an estimated current-window fit scale as warnings rather than blockers. The title workbench preview uses the authored aspect ratio. The setting is applied on the next Test Play boot. `createPlaySurface`, Phaser boot, dialogue pagination, runtime DOM marker culling, and the lighting mask must resolve the same project value. Tests: `test/playResolution.test.ts`, `test/databaseSystemView.test.ts`, `test/playerBootFactory.test.ts`.
 - **Editor boot welcome (2026-08-20, replaced 2026-10-07 by the concept feed overlay `src/editor/conceptFeedOverlay.ts` — see runtime-project-schema.md 「컨셉 피드」; the CSS file and `test/editorWelcome.test.ts` below are gone):** After store.load and enterMode(edit), finishEditorBoot may overlay a canvas-scoped director briefing (`src/editor/editorWelcome.ts`, CSS `src/styles/shell/editor-welcome.css`) instead of the old full-screen cinematic welcome. Copy: "어떤 게임을 만들까요?" + one input + 만들기 + three start posters (몬스터 수집 / 회상 스토리 / 모험 JRPG) + 빈 맵으로 시작. Horror, farm, partner-raise, and action posters are not mounted. Each visible pack owns one stable `data-pack-id`. Illustrated-card start auto-sends to the current map via `setPendingWelcomePipeline` (`replaceWithBlank: false`); the separate blank-system-preset button confirms before the verified new-project transaction. Skip dismisses and then starts coach marks. Dismiss key `oprn:editor-welcome-dismissed` is set only after a completed action. Brush/standard coach is suppressed while the briefing is open (`markWelcomeIntentAppliedThisBoot`). Skipped when modeMounted, automation boot context, dismissed, or deep-linked `?project=`. Tests: `test/editorWelcome.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `test/aiBootIntent.test.ts`. Playwright: `?forceWelcome=1`.
 - **첫 방문 브리핑은 빈 프로젝트에서만 (2026-09-28):** 「어떤 게임을 만들까요? / 빈 맵으로 시작」 브리핑은 닫음 표시(`oprn:editor-welcome-dismissed`)뿐 아니라 **프로젝트 내용**도 본다 — `isBlankStartProject`(`src/project/projectBlankness.ts`)가 false(맵 2개 이상, 유일한 맵에 이벤트·칠한 타일·2/4층·그림자·높이, 공통 이벤트)면 띄우지 않는다. 닫음 표시는 출처(origin)마다 따로라 워크트리 포트·팀 호스트 주소·새 프로필에서는 늘 비어 있어, 다 만든 프로젝트 위에 브리핑이 떴다. `?forceWelcome=1` 은 내용과 무관하게 띄운다(e2e 는 예제 프로젝트 위에서 검증). 단위: `test/projectBlankness.test.ts`.
-- **부팅 진행 막대 (2026-09-28):** `index.html` 의 첫 로드 로더에 진행 막대와 %가 있다. 번들 전에는 CSS 키프레임이 0→12%, 번들이 뜨면 `reportBootStage`(`src/app/bootLoader.ts`)가 prepare 12→20 · shared 20→35 「공용 자료 받는 중…」 · project 35→85 「프로젝트 불러오는 중…」 · editor 85→97 「편집기 여는 중…」 구간을 넘겨받고 `dismissBootLoader` 가 100%로 닫는다. 막대는 `transform: scaleX` 전환이라 프로젝트 역직렬화가 메인 스레드를 막아도 합성 스레드에서 계속 찬다(실측: JS 타이머 방식은 36%에서 9초 멈췄다가 85%로 튀었다). 문구는 한국어 원문이고 다른 언어는 DOM 번역 카탈로그가 바꾼다.
+- **부팅 진행 막대 (2026-09-28, 2026-10-15 에 이산 4단계 스플래시로 대체 — `openwiki/architecture.md` 「부팅 스플래시와 계측」):** `index.html` 의 첫 로드 로더에 진행 막대와 %가 있다. 번들 전에는 CSS 키프레임이 0→12%, 번들이 뜨면 `reportBootStage`(`src/app/bootLoader.ts`)가 prepare 12→20 · shared 20→35 「공용 자료 받는 중…」 · project 35→85 「프로젝트 불러오는 중…」 · editor 85→97 「편집기 여는 중…」 구간을 넘겨받고 `dismissBootLoader` 가 100%로 닫는다. 막대는 `transform: scaleX` 전환이라 프로젝트 역직렬화가 메인 스레드를 막아도 합성 스레드에서 계속 찬다(실측: JS 타이머 방식은 36%에서 9초 멈췄다가 85%로 튀었다). 문구는 한국어 원문이고 다른 언어는 DOM 번역 카탈로그가 바꾼다.
 - **Title / opening workbench (System tab, 2026-07-15):** ?뚭쾶???쒖옉?붾㈃??is a left-fields + right live-preview workbench (`db-title-workbench`) grouped as fieldsets ?쒖떆/?ㅻ뵒??메뉴. Display: title text, presentation mode text|graphic|both (logo resource + X/Y when graphic/both), background resource picker (writes only titleScreen.backgroundResourceId ??never clears system.titleResourceId), layout title/menu X/Y, showInputHint. Audio: BGM music picker + play/stop, SE pickers cursor/confirm/cancel (kind sound, allowClear). Menu: per-option label + visibility; New Game visibility is locked checked+disabled. Live preview shows only visible menu labels via listTitleMenuOptions and logo per presentation mode. The preview column must remain content-sized, top-aligned, and sticky while the long settings column scrolls; do not let CSS grid stretch its label row and push the 180px stage down. Tool set_title_screen creates titleScreen when missing and nested-merges sounds/titleGraphic/layout. Default title art from bundled generated assets. Schema via normalizeTitleScreenSettings (menuVisibility, sounds, titleGraphic, showInputHint, musicResourceId). Code: databaseSystemView.ts, dbTools.ts, player.ts (startTitleBgm/stopTitleBgm, juice sound overrides), styles database/title-workbench.css. Tests: test/databaseSystemView.test.ts, test/titleScreenMusic.test.ts, test/titleScreenSettingsNormalize.test.ts, test/dbToolsIntegrity.test.ts, test/e2e/title-database-authoring.spec.ts.
 - Elements tab ?뚯턀? 개수??resizes `database.elements[]` through `resizeElementRecords` (1~99, unique ids). Class 전투 명령은 인라인 워크벤치로 편집한다(`battleCommandsForActor` / `finalizeClassBattleCommands` / `moveEditableClassCommand`). 컬럼 헤더 + 종류별 컨텍스트 활성화(`skill`/`skillSubset` 일 때만 스킬 그룹·스킬 필드 활성화, 적 행동 basic/skill 모드와 동일 패턴), 인라인 ↑↓ 재정렬, 행 추가/삭제(최대 6), 고정 교체 footer, 전투 메뉴 미리보기. 별도 순서 설정 다이얼로그는 제거됨. Enemy action dialog supports live 기본 ?됰룞 vs ?ㅽ궗 modes (`applyEnemyActionBehaviourMode`); empty `skillId` is basic attack. Animation stage ?뚯? ?쇨큵...???뚮낫媛꾠?write selected-frame cells via `batchApplyCells` / `interpolateCells`. Battle Screen also edits `system.battleFlow` and `system.activeSlots`; battler animations edit idle and attack pose first-frame durations.
 - Skill targeting is authored independently from effect kind. Skill scope controls and write schemas enumerate `self | ally | allAllies | enemy | allEnemies`; `allAllies` must stay aligned across `databaseBasicRecordFields.ts`, event-command advanced fields, database references, and `upsert_skill` in `dbTools.ts`. MP cost remains the shared flat-plus-percent record, and state add/remove rows remain `stateEffects`; neither cost nor damage/healing/support kind may implicitly rewrite scope. Runtime uses this authored value for both actor and enemy casters. The Skills view exposes `maxPp` (0 in the control removes the finite-PP field; persisted values clamp to 1..99) and `gen1CriticalRate` (`normal|high`), and `upsert_skill` supports the same fields.
@@ -2472,3 +2552,25 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
    레코드 이동, 탭 전환, 프로젝트 교체/재열기와 이전 펼침 상태 초기화도 검사한다. debounce 시간과
    DOM/계산 시간, 자동화 wall과 CPU를 구분하고 소스 SHA·하드웨어·viewport·실제 F/I/C를 함께 남긴다.
    원래 감사/비교 기준은 `verify-shots/editor-ux-audit-round2-20261004/agents/database.md`와 README다.
+
+## 세계관 노션식 통합 1단계 — 문서 용어·AI 공개 범위·「AI가 읽는 것」 (2026-10-16)
+
+원본 의견서 `~/claude-viz/world-ui-review-1.html` 의 B안(페이지+속성+연결, **저장 형태 불변**)을 따른 1단계. C안(저장소 이주)은 하지 않았다.
+
+- **A 정리.** (1) 세계관 그룹의 두 탭(세계 개요·설정집)은 내용이 비어도 「빈 탭 N개」 로 접히지 않는다 — `database.ts` 의 `NEVER_FOLDED_TABS`. (2) 설정집의 사용자 낱말은 **「문서」** 하나다(「카드」「낱장」 폐기: `+ 새 문서`, `N개 문서`, 지우기 확인문·되돌리기 라벨까지). 자료집 최상위 그룹 「세계관」과 월드맵 계층 탭 「세계」(`spatialWorlds`)는 서로 다른 개념이라 그대로 둔다. (3) 속성 레일은 **1366px 이상에서 처음부터 펼친다**(`WORLD_PROPERTIES_AUTO_OPEN_MIN_VIEWPORT`, `worldPropertiesOpen`); 사용자가 한 번 접거나 펴면 그 선택이 이긴다(`propertiesOpen: boolean | undefined`). e2e 는 닫혀 있을 때만 토글을 누른다. (4) 문서 단위 lint 의 「게임 개체와 연결되지 않음」 은 안내 수준이라 문서마다 배지로 쌓지 않고, 원시 id 대신 이름을 보여 준다(`ADVISORY_LINT_CODES`, `lintMessageForDisplay`).
+- **카드 공개 범위.** `WorldEntity.visibility?: "public" | "ai-hidden"`(`types.ts` `WORLD_VISIBILITIES`). 생략 = 공개이며 **`ai-hidden` 만 저장**한다(guards 가 `public` 을 떼어 낸다) — 기존 프로젝트의 저장 바이트는 변하지 않는다. UI 라벨은 「공개 — AI가 읽을 수 있음 / 비밀 — AI에게 보내지 않음」. **`worldCanon.visibility: "secret"` 과는 다른 개념이다**: 세계 개요의 비밀은 AI 가 읽되 플레이어 대사에 직접 쓰지 않게 하는 *지시*이고, 카드의 `ai-hidden` 은 *전송 차단*이다. 두 이름을 합치지 마라(세계 개요 탭의 문구가 차이를 설명한다). 편집기 화면·게임 런타임·내보내기 JSON 에는 필터가 없다 — 작가는 늘 본다. 낡은 빌드는 모르는 `visibility` 를 로드에서 버린다.
+- **모델로 가는 경로는 필터 한 곳을 거친다.** `src/project/world/visibility.ts` 의 `isAiHiddenEntity` / `aiVisibleEntities` / `aiVisibleWorld`(숨긴 카드에 닿는 관계도 뺀다; 숨긴 카드가 없으면 같은 객체 반환). 지나는 곳: 조수 시스템 프롬프트 위키 블록·의도 선언·맵 배치 문맥(`projectWikiContext`), `read_project_wiki`(ids 직접 지목 포함), `get_original_context` 의 `/world`, `read_authoring_preset` 의 `world`, 독립 검수 `reviewChanges`, NPC 대사 작성기 다이제스트·이름 목록(`buildWorldDigest`/`worldEntityNames`), 위키 추출기 입력(`wikiExtractorDocuments`), 위키 패치 peers. **새 모델 경로를 만들면 같은 함수를 부르고 `test/helpers/worldAiPaths.ts` 의 `modelPathOutputs` 에 한 줄을 더한다**(`test/worldCardVisibility.test.ts` 가 전수로 단언). 일부러 필터하지 않은 곳: 전투 방식 해석기 `resolveWikiCombatMode`(결정적 라우팅, 모델에 안 감), lint(화면 전용), 변경 목록의 개수 diff.
+- **「AI가 읽는 것」 패널.** `src/ai/worldAiReach.ts` 가 위 경로들의 **같은 함수**로 계산하고(화면용 근사식 금지), `worldAiReachPanel.ts` 가 그린다: 세계 개요(매 턴 고정·토큰), 채팅 조수(질문과 낱말이 겹치는 문서 최대 8개·6,000자), NPC 대사 작성기(600토큰 예산·생략 수), 대화로 설정 기록(참고 문서 수·상한 64), 「질문 시험」 입력(`world-ai-reach-probe`: 입력한 질문에 실제로 가는 문서 이름·토큰), 숨긴·미작성 문서 목록. 속성 레일에서는 한 줄 요약만 접어 두고(`aiReachOpen` 기본 접힘), 빈 설정집·세계 개요의 「조수에게 보내기」 탭에서는 펼친다. 처음부터 `open` 인 `<details>` 는 브라우저가 토글 이벤트를 한 번 쏘므로 **초기 이벤트는 상태에 기록하지 않는다**(기록하면 레일 기본값이 펼침으로 오염된다).
+- **연결 속성.** 관계 편집은 `<select>` 대신 이름 입력+`datalist` 자동 완성이다(`worldRelationEditor.ts`). 해석은 순수 모듈 `worldRelationTarget.ts`(`resolveRelationTarget`: id → 표시 이름 → 이름 대소문자 무시 → 유일한 부분 일치, 여럿이면 거절 문구, 같은 이름은 「이름 · id」로 구분). 저장되는 값은 기존과 같은 `relations[].b`(문서 id)다 — 저장 형태 불변.
+- 검증(2026-10-16, 에이전트 세션 규칙에 따라 vitest·gates·전체 typecheck 미실행): 범위 `tsc -p tsconfig.app.json --noEmit` 0, 헤드리스 11개 경로 누출 0(vite-node), 새 프로젝트·기존 프로젝트 ko/en 캡처, 임시 SQLite 폴더(`serve:project`) 저장→재로드에서 `visibility` 유지. 손으로 고친 기존 테스트(실행 안 함): `worldPanel.test.ts`·`worldviewCopy.test.ts`·`databaseWorldCodexStructure.test.ts`·`workshopSurfaces.test.ts`.
+
+### 세계관 화면 컴팩트화 2차 (2026-10-16) — 속성 레일 폐지, 칩 줄
+
+위 1단계의 「속성 레일」(`world-document-properties`, `propertiesOpen`, `aiReachOpen`, 1366px 자동 펼침)은 **2차에서 사라졌다**. 기능·저장·AI 공개 판정(`visibility.ts`, `computeWorldAiReach`)은 그대로이고 화면 구조만 바꿨다. 근거 그림: `~/claude-viz/world-ui-2.html`.
+
+- **구조.** 설정집은 CSS 그리드(`.world-panel-embedded`, 컨테이너 ≥800px)로 「목록 열 232px | 본문」. `.world-panel-main` 은 `display: contents` 라 갱신(refresh)이 `main` 만 갈아 끼워도 헤더의 검색 입력은 유지된다(포커스 보존) — **DOM 을 옮기지 말고 그리드 영역으로 배치할 것**. 툴바는 제목 + 통계 한 줄(`summaryLine`) + 「AI 공개 N개 · 숨김 N개」 칩(`world-ai-slot`, 구독 갱신은 `store.getCurrent()` 동일성으로 메모).
+- **칩 줄.** 본문 위 한 줄(`worldPropertyBar`): 유형·태그·AI 공개(읽기: 클릭 토글 `world-visibility-toggle`, 편집: 공개 범위 셀렉트)·연결·출처. 길거나 드문 것은 `worldPopoverChip`(`<details>`) 팝오버, 열림은 `state.openPopover`(한 번에 하나). **Esc 는 window 캡처로 받는다** — 자료집 창은 `modalStack` 이 document 캡처에서 Esc 를 가져가 창째 닫기 때문에(`wirePopoverDismiss`), 팝오버가 열려 있는 동안만 그보다 앞에서 팝오버 하나만 닫는다.
+- **분류 탭**은 칩 「분류 {label}」 팝오버(`world-category`) 안에 있다. 사용자 태그는 `data-i18n-skip`. 새 문구는 한국어가 키이며 en/ja/zh 는 기계 초안이다.
+- **세계 개요**는 레일 대신 한 줄 바(작성 상태·공개 범위·「AI 미리보기」 칩).
+- **측정(1440×900 / 1100×700, 문서 40개):** 한 화면 문서 6→17 / 3→11, 본문 칸 면적 31.5%→64% / 22.4%→52.3%.
+- 검증: 범위 tsc 0, 임시 SQLite 호스트 프로젝트에서 AI 숨김·공개 범위·연결·태그·세계 개요 비밀 저장→새 브라우저 재로드 일치. vitest·gates·e2e 미실행(`world-authoring-regression.spec.ts` 는 절차만 고쳐 두었고 실행하지 않음).

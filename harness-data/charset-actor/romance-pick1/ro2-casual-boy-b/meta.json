@@ -1,0 +1,51 @@
+{
+ "key": "ro2-casual-boy-b",
+ "arch": "ro2-casual-boy",
+ "base": "Actor4:1",
+ "variant": "회색 후드티(앞 가운데 주머니 줄·후드 끈 두 줄) + 검정 조거 팬츠 + 흰 스니커즈. 머리는 어두운 갈색(금발 제거).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 AEaceghijlmnosuvy"
+   ],
+   "at": "2026-10-16T12:54:07"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 AEaceghijlmnosuvy"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.948,
+   "T": 0.943,
+   "B": 0.919,
+   "S": 1.0
+  },
+  "cross": 4,
+  "cross_base": 4,
+  "lone": 203,
+  "lone_base": 303
+ },
+ "reapplied": true
+}

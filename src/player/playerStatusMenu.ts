@@ -1,3 +1,6 @@
+import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
+import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
   createPlayerStatusMenuSnapshot,
   isStatusMenuGroupEntryId,
@@ -20,6 +23,7 @@ import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { resolveActorAppearance } from "@/project/characterAppearances";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { resolveVnLook, vnLookAttributes } from "@/project/vnLook";
 import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
@@ -63,16 +67,27 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ...(skin.partyStats ? { menuSkinStats: "true" } : {}),
     },
   });
+  // 미연시 대사창 룩과 같은 색·모서리·그림자 토큰(uiTheme=match). 룩이 없거나 legacy 면 아무것도 심지 않는다(옛 청색 창 그대로).
+  const vnLook = resolveVnLook(options.project);
+  if (vnLook?.uiTheme === "match") {
+    const attrs = vnLookAttributes(vnLook);
+    panel.dataset.vnTheme = "match";
+    for (const [name, value] of Object.entries(attrs.vars)) panel.style.setProperty(name, value);
+  }
   const emerald = stampEmeraldSurface(panel, options.project, "menu");
   if (emerald) {
     panel.dataset.emeraldPage = selectedCommand === "monsters"
       ? options.monsterInstanceId ? "summary" : options.monsterView === "box" ? "box" : "party"
+      : selectedCommand === "monster-dex"
+        ? options.campaignSpeciesId ? "dex-detail" : "dex-list"
       : selectedCommand === "items"
         ? options.targetItemId ? "item-target" : options.itemActionId ? "item-context" : "bag"
         : selectedCommand;
-    panel.dataset.bagPocket = options.inventoryView?.filter ?? "all";
+    panel.dataset.bagPocket = usesMonsterParty(options.project) ? options.inventoryView?.pocket ?? "items" : options.inventoryView?.filter ?? "all";
     panel.style.setProperty("--emerald-command-count", String(snapshot.commands.length));
   }
+  // 도트 스킨 명령 창은 높이를 항목 수로 잡는다(pixelWindows.css --px-dock-h) — 7항목 연애 메뉴에서 「타이틀로」 가 창 밖으로 나갔다(R10).
+  panel.style.setProperty("--status-menu-command-count", String(snapshot.commands.length));
   applySystemGraphic(panel);
   // Keep authored metadata while the shared runtime palette paints the menu.
   panel.style.removeProperty("border-image-source");
@@ -101,8 +116,11 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onSelectBattleReport: options.actions.onSelectBattleReport,
     campaignSpeciesId: options.campaignSpeciesId,
     onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
+    dexPage: options.dexPage,
+    onDexPage: options.actions.onDexPage,
     monsterView: options.monsterView,
     monsterInstanceId: options.monsterInstanceId,
+    monsterCollect: options.monsterCollect,
     onSelectMonster: options.actions.onSelectMonster,
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
@@ -129,7 +147,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onSelectFormationActor: options.actions.onSelectFormationActor,
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
+    onMonsterCollect: options.actions.onMonsterCollect,
     onMoveMonster: options.actions.onMoveMonster,
+    onTakeHeldItem: options.actions.onTakeHeldItem,
+    onUseMonsterFieldSkill: options.actions.onUseMonsterFieldSkill,
     onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
     onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
     onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,
@@ -148,14 +169,14 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
-  const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
+  const needsFullDetail = Boolean(detail.layout?.startsWith("campaign-")) || selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || selectedCommand === "endings" || selectedCommand === "backlog" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const sideParty = skin.sideParty && !snapshot.relationship && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
   const detailPanel = renderStatusMenuDetailPanel(options.project, detail, {
     selectedActionIndex: options.selectedDetailActionIndex,
     // 쇼케이스는 작업 패널에서만 — 트레이·확인 카드는 명령 버튼 목록이라 그릴 그림이 없다.
-    showcase: !detail.layout?.startsWith("campaign-") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
+    showcase: (!detail.layout?.startsWith("campaign-") || detail.layout === "campaign-box") && selectedCommand !== "options" && !options.targetItemId && presentation === "work-panel",
     side: sideParty,
   });
   detailPanel.dataset.statusMenuPresentation = presentation;
@@ -164,6 +185,24 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     detailPanel.append(el("div", { class: "emerald-bag", attrs: { role: "img", "aria-label": "가방" }, children: [
       el("span", { class: "emerald-bag-handle" }), el("span", { class: "emerald-bag-pocket" }),
     ] }));
+    // 포켓 표시: 가방 그림 아래 점 다섯, 제목 양옆 ◀ ▶(좌우 키·누르기 모두 같은 전환). 목록 단계(행동 화면 제외)에서만 보인다.
+    const pockets = detail.pockets;
+    if (pockets?.length && !options.itemActionId) {
+      const at = Math.max(0, pockets.findIndex((pocket) => pocket.selected));
+      const arrow = (glyph: string, label: string, side: "prev" | "next", delta: number): HTMLElement => el("button", {
+        class: `emerald-bag-arrow emerald-bag-arrow-${side}`, text: glyph,
+        attrs: { type: "button", "aria-label": label, tabindex: "-1" }, dataset: { testid: `bag-pocket-${side}` },
+        on: { click: () => pockets[(at + delta + pockets.length) % pockets.length]?.onActivate?.() },
+      });
+      detailPanel.append(
+        arrow("◀", "이전 포켓", "prev", -1), arrow("▶", "다음 포켓", "next", 1),
+        el("div", { class: "emerald-bag-dots", attrs: { role: "tablist", "aria-label": "가방 포켓" }, children: pockets.map((pocket) => el("button", {
+          class: `emerald-bag-dot${pocket.selected ? " active" : ""}${pocket.count === 0 ? " empty" : ""}`,
+          attrs: { type: "button", role: "tab", "aria-selected": String(pocket.selected), "aria-label": `${pocket.label} ${pocket.count}종`, title: pocket.label, tabindex: "-1" },
+          dataset: { testid: pocket.testId }, on: { click: () => pocket.onActivate?.() },
+        })) }),
+      );
+    }
   }
   // 첫 화면이 작업 패널이 아닌 스킨(파티 퍼스트·허브·시트)은 main 모드에서 작업 패널을 그리지 않는다.
   const landingOnly = mode === "main" && skin.landing !== "work";
@@ -200,7 +239,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ],
     }),
     ...(landingOnly
-      ? [skin.landing === "hub"
+      ? [snapshot.relationship
+        ? renderRelationshipOverview(options.project, options.session, snapshot)
+        : skin.landing === "hub"
           ? renderPartyStrip(options.project, snapshot)
           // 사이드 시트는 140px 폭에 4행이라 얼굴을 22px 로 줄인다(파티 퍼스트는 30px).
           : renderPartyOverview(options.project, snapshot, skin.landing === "sheet" ? 22 : 30, skin.partyArt === "character" ? options.session : undefined, skin.partyStats === true)]
@@ -211,7 +252,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       options.message ?? (mode === "function"
         ? selectedEntryDescription(detail, options.selectedDetailActionIndex) ?? interactiveHint(detail)
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
-      skin.railColumns, skin.id === "field-list"
+      skin.railColumns, skin.id === "field-list",
+      options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
+      resolveDialogueSystem(options.project)
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
@@ -320,6 +363,8 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "relationships": return "∞";
     case "gallery": return "▣";
     case "life-ledger": return "▦";
+    case "endings": return "★";
+    case "backlog": return "≡";
     case "save": return "↓";
     case "load": return "↑";
     case "wait": return "Ⅱ";
@@ -352,6 +397,8 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "relationships": return "world";
     case "gallery": return "map";
     case "life-ledger": return "book-magic";
+    case "endings": return "badge";
+    case "backlog": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
     case "wait": return "clock";
@@ -391,7 +438,9 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "quests":
     case "relationships":
     case "gallery":
+    case "endings":
     case "life-ledger":
+    case "backlog":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:
@@ -507,6 +556,46 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
   const characterIndex = override !== undefined ? sprite.characterIndex : requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
   applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
   return node;
+}
+
+// ── 관계 중심(연애) 게임의 첫 화면 — 전투 수치(HP·MP·EX·직업·Lv) 없이 주인공, 오늘 남은 시간, 호감 높은 순 몇 사람 ──
+function renderRelationshipOverview(project: PlayerStatusMenuOptions["project"], session: PlayerStatusMenuOptions["session"], snapshot: PlayerStatusMenuSnapshot): HTMLElement {
+  const info = snapshot.relationship!;
+  const lead = snapshot.partyRows[0];
+  const overview = el("section", {
+    class: "status-menu-party-overview status-menu-rel-overview",
+    attrs: { "aria-label": "호감도" },
+    dataset: { testid: "status-menu-party-overview" },
+  });
+  overview.append(el("article", {
+    class: "status-menu-overview-row status-menu-rel-lead",
+    dataset: { testid: "status-menu-rel-lead" },
+    children: [
+      ...(lead ? [renderPartyCharacter(project, session, lead, 0, 30)] : []),
+      el("div", {
+        class: "status-menu-overview-info",
+        children: [
+          el("span", { class: "status-menu-actor-name", text: info.leadName || project.meta.title }),
+          ...(info.timeLine ? [el("span", { class: "status-menu-actor-subline", text: info.timeLine })] : []),
+        ],
+      }),
+    ],
+  }));
+  if (info.rows.length === 0) {
+    overview.append(el("div", { class: "status-menu-empty", text: "아직 마음을 나눈 사람이 없어요", dataset: { testid: "status-menu-rel-empty" } }));
+    return overview;
+  }
+  info.rows.forEach((row, index) => overview.append(el("div", {
+    class: "status-menu-rel-row",
+    attrs: { "aria-label": `${row.name} 호감 ${row.value}` },
+    dataset: { testid: `status-menu-rel-row-${index}` },
+    children: [
+      el("span", { class: "status-menu-rel-name", text: row.name }),
+      el("span", { class: "status-menu-rel-hearts", text: row.hearts }),
+      ...(row.tierLabel ? [el("span", { class: "status-menu-rel-tier", text: row.tierLabel })] : []),
+    ],
+  })));
+  return overview;
 }
 
 // ── 스킨 첫 화면: 파티 개요(party·sheet) ──
@@ -707,28 +796,32 @@ function interactiveHint(detail: StatusMenuDetail): string | undefined {
 function renderFooter(
   mode: "main" | "function",
   message: string | undefined,
-  railColumns: number, compact = false
+  railColumns: number, compact = false,
+  messageKind?: "description",
+  system?: AuthoredDialogueSystem,
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
   footer.append(el("div", {
     class: "status-menu-message",
     text: message ?? "",
     attrs: { role: "status" },
-    dataset: { testid: "status-menu-message" },
+    dataset: { testid: "status-menu-message", ...(messageKind ? { messageKind } : {}) },
   }));
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: statusMenuControls(mode, railColumns, compact),
+    text: statusMenuControls(mode, railColumns, compact, system),
     dataset: { testid: "status-menu-controls" },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false): string {
-  if (compact && mode === "main") return "↑↓ 이동 · Enter 선택\nEsc 닫기";
-  if (mode === "function") return "↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로";
+export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false, system?: AuthoredDialogueSystem): string {
+  // 대사 시스템이 있는 게임(연애 기본 구성 포함)은 저작한 언어로, 없으면 예전 한국어 그대로다.
+  const text = (key: "controls.compact" | "controls.function" | "controls.grid" | "controls.list"): string => dialogueUiText(system, key);
+  if (compact && mode === "main") return text("controls.compact");
+  if (mode === "function") return text("controls.function");
   // 격자 레일(허브 타일)은 → 가 선택이 아니라 이동이다.
-  return railColumns > 1 ? "↑↓←→ 이동   Enter 선택   Esc 게임으로" : "↑↓ 메뉴 이동   → / Enter 선택   Esc 게임으로";
+  return railColumns > 1 ? text("controls.grid") : text("controls.list");
 }
 
 function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {

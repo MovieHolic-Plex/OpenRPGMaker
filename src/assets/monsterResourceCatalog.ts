@@ -5,6 +5,7 @@ import { MONSTER_CATALOG } from "./monsterCatalog";
 import { koreanMonsterTags } from "./monsterResourceSemantics";
 import { GENERATED_ASSET_PLAN } from "./oprnGeneratedAssetPlan";
 import { SCARLOXY_MONSTER_ASSETS } from "./scarloxyPack";
+import { HARNESS_MONSTER_RESOURCE_IDS } from "./harnessMonsterArt";
 
 export type MonsterResourceProject = {
   readonly monsterMetadata?: MonsterMetadataOverrides;
@@ -49,6 +50,8 @@ export function listMonsterResources(project: MonsterResourceProject): readonly 
   }
   for (const asset of EASYRPG_MONSTER_ASSETS) add(asset.id, asset.name, "bundled");
   for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name, "bundled");
+  // 몬스터 수집 하네스가 사람이 고른 종 그림(앞·뒤). 이름은 id 에서 만든다.
+  for (const id of HARNESS_MONSTER_RESOURCE_IDS) add(id, id.replace(/^harness-monster-/, "").replace(/-/g, " "), "bundled");
   for (const profile of project.resourceProfiles) {
     if (profile.kind === "monster" && profile.assetId) add(profile.assetId, profile.name, "profile");
   }

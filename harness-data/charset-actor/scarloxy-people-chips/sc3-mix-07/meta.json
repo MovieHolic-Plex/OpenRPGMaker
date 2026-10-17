@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-07",
+ "name": "보라 올림머리 소녀 · 청록 상의",
+ "head": "Scarloxy1:4",
+ "body": "Scarloxy1:5",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-07",
+ "candidate_id": "t41",
+ "judge_totals_ABC": [
+  8,
+  11,
+  7
+ ],
+ "recipe": "gallery4-recipes.json#mix-07"
+}

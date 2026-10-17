@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e22508ce65c5ea1a90c52ca3190a2af9e229cc6fe4819e787d45f26ccfc0ee6d",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "정류장 쉼터(유리 지붕 윗면 + 시안 등 + 유리 뒷벽 + 안 벤치 + 노선 화면)",
+ "label": "sf-station/sf-street-transit-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus shelter canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter shows the foreshortened top surface of the glass canopy (rows 1–6) above the light strip, and the bench inside clearly displays a horizontal seat surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12105
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus shelter canopy and frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Canopy shows foreshortened top surface across rows 1-6; interior bench also displays visible top plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13297
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop shelter roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass roof shows an angled top surface spanning rows 1 to 6, and the interior bench also displays visible depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11057
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop shelter roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The glass canopy displays a foreshortened top surface across rows 1 to 6 above the front edge lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11039
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.251Z",
+ "cells": {
+  "16": [
+   "36c544b17b63c9d6",
+   "37873b3374cc170b",
+   "4f55aee77290f4bf",
+   "6174ca75dba0f8fe",
+   "8e3802dc5f1455f9",
+   "e0af8da138c2ba58"
+  ],
+  "24": [
+   "1288d2c72546af6c",
+   "6099c45c51063845",
+   "6b0416624599245d",
+   "6f9ceb85cd531d71",
+   "a591a097d7e0cfcb",
+   "ab8de60a1a2e6a91",
+   "b1e7c3d19708bc08",
+   "e3cc968d90d843a0"
+  ],
+  "32": [
+   "1549fa2ef58fd665",
+   "477e1c0cfe8e427e",
+   "8de58250f18b8fdd",
+   "9711d36623575276",
+   "de0948ab475ea651",
+   "e8557c6327560cbd"
+  ],
+  "48": [
+   "082e66fc1128fbb7",
+   "c208959558edf406"
+  ]
+ }
+}

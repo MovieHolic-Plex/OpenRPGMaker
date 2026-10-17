@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "582fbcf13efeaa86a5b224cd556b44d1e6b50acc02755458b28f1e8e3d459d07",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-6-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance with adjacent wall panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the elevator frame, doors, control panel, and adjacent wall consoles, is drawn in pure 2D side-scroller elevation with no foreshortened horizontal top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4758
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sci-fi elevator structure and corridor wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator enclosure, lintels, and adjacent wall consoles are drawn in a flat 2D side-scroller/platformer front elevation. The top lintel of the elevator frame at rows 11-12 is only a 2px flat rim with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4012
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator entrance structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire elevator frame and wall structure are drawn in pure front elevation (side-scroller style). The projecting top lintel at rows 11-13 is only a 2-3px horizontal cap line with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator portal and wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame and wall/console panels are drawn in a flat side-scroller elevation with no top surfaces visible from above (the top of the elevator unit at rows 11-12 is merely a 2px horizontal rim).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4977
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.384Z",
+ "cells": {
+  "16": [
+   "146c33490fba78be",
+   "2634288f94ba584f",
+   "3b4f2a78fbd0ce51",
+   "3eb26e7df878c649",
+   "5907b440a2fa6761",
+   "7274d7f1839ddc54",
+   "7727236b97e114cf",
+   "7c5cb9bd9d5b2ba3",
+   "91981ea6408a53ff",
+   "a130cc5dc2bad7e7",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "f1996fd2dc8b1403",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "34c30ebf083ef679",
+   "6cbbe934858095bf",
+   "a2b5b595d814af2d",
+   "af98f6ce88300766",
+   "ba2212941e28906b",
+   "bf964bbf998c89e6",
+   "cb490db3a4d5c9d0",
+   "d2a571194789c371"
+  ],
+  "32": [
+   "2aad5e23bb34e0b8",
+   "35d2a82a82b49aa5",
+   "7bb9562367d23f6a",
+   "9b280d6f2169273f",
+   "a1f31f8ea58e9e67",
+   "b104d74a7187e35f",
+   "baf1fc2eaad93232",
+   "bd853372eb0d8b76",
+   "d10590bf4187d11e",
+   "e0a155fa6bc7f957",
+   "e13511a97da6fd7e",
+   "ec8643ef918cd414"
+  ],
+  "48": [
+   "7931ea0d5b131c27",
+   "c001f81f1f7ccc3b"
+  ]
+ }
+}

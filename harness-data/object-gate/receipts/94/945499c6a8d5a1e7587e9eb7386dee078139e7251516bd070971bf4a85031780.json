@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "945499c6a8d5a1e7587e9eb7386dee078139e7251516bd070971bf4a85031780",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age shaman altar",
+ "label": "prehistoric/ph-shaman-altar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a clear top surface 5 pixel rows tall (rows 5-9) displaying items (skull, ritual offering, stone tablet) and a darker south front face 5 pixel rows tall (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar shows a clear 5-row deep top surface (rows 5-9) holding ritual items, followed by a shaded 5-row front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar has a clearly defined top horizontal surface spanning rows 4 to 9 (6 pixels tall) holding ritual items, followed by a darker front face from rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone altar slab",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The altar table top is clearly visible from rows 5 to 9 (5 source pixel rows), displaying items placed on top of it, with a darker south-facing front wall from rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3651
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.710Z",
+ "cells": {
+  "16": [
+   "a167e440a56e83c6",
+   "b5ad938edccf51d6"
+  ],
+  "24": [
+   "167b7c2b3fad1968",
+   "1d638147e8797093",
+   "1e478817e6c308a8",
+   "25ce6443f6aaf156",
+   "2b522921bafb221d",
+   "42f6718b07bdd657",
+   "5dbf2b3ba9a58338",
+   "a45c2d427f6bff4a",
+   "a8ffd0daecea60a1",
+   "dbb65e27c423d127",
+   "f5875961cfa6dc9d",
+   "fca3be7a16dab703"
+  ],
+  "32": [
+   "26e5c8b22290dcd2",
+   "e3c4958a5adce857"
+  ],
+  "48": [
+   "09f63d8a4a68c38c",
+   "329cadf19ca06ff1",
+   "4b01c196ca377129",
+   "85fde94335bae56b",
+   "daa721df5dfefc9f",
+   "e407557be0b525ce"
+  ]
+ }
+}

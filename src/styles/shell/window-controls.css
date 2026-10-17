@@ -1,11 +1,133 @@
-@layer shell {
-  .studio-window-controls { position: fixed; top: 6px; right: 10px; z-index: 10000; display: flex; gap: 6px; }
-  .studio-window-controls button { border: 1px solid #ffffff45; border-radius: 6px; background: #101a29e8; color: #fff9eb; min-height: 32px; padding: 5px 9px; font: inherit; font-size: 11px; cursor: pointer; }
-  .studio-window-controls button:hover { border-color: #edcea0; }
-  .studio-window-controls button:focus-visible { outline: 2px solid #edcea0; outline-offset: 2px; }
+/* 데스크톱 앱 창 단추와 제목줄 여백(openwiki/desktop-window-controls.md).
+   Windows·Linux: 오른쪽 위에 전체화면 · 최소화 · 최대화/복원 · 닫기(닫기는 호버 빨강).
+   macOS: 신호등이 왼쪽 위(OS 가 그린다) — 오른쪽 단추 없음, 왼쪽 여백만 비운다.
+
+   층 주의: 시작 화면과 편집기는 @layer 순서가 다르고 톱바 패딩 규칙이 여러 시트(figma-editor·studio-bar.modern·
+   responsive)에 흩어져 있다. 그래서 여백·드래그 규칙은 레이어 밖(unlayered)에 두어 어느 쪽에서도 이긴다.
+   !important 는 쓰지 않는다. 색은 토큰이며, 닫기 호버 빨강만 OS 관례라 이 파일의 지역 변수다. */
+
+.studio-window-controls {
+  --swc-height: 48px;
+  --swc-button-width: 46px;
+  --swc-fg: var(--text-1, #1b1f2a);
+  --swc-hover: color-mix(in srgb, var(--swc-fg) 10%, transparent);
+  --swc-active: color-mix(in srgb, var(--swc-fg) 18%, transparent);
+  --swc-close-bg: #e81123;
+  --swc-close-active: #f1707a;
+  --swc-on-close: #fff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  /* 모달·전체 화면 흐름(인터뷰 등) 위에서도 항상 눌려야 한다. 그 대신 큰 모달의 머리줄은 아래 「모달 머리줄」 규칙이 비켜 준다. */
+  z-index: 10000;
+  display: flex;
+  align-items: stretch;
+  height: var(--swc-height);
+  color: var(--swc-fg);
+  -webkit-app-region: no-drag;
+  user-select: none;
 }
 
-/* The launcher and editor establish different layer orders. Native-only spacing
-   must win both graphs so these controls never cover product navigation. */
-body:has(.studio-window-controls) .ci-controls { margin-top: 28px; }
-body:has(.studio-window-controls) .oprn-menu-bar { padding-right: 160px; }
+.studio-window-controls .swc-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--swc-button-width);
+  height: var(--swc-height);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: default;
+  -webkit-app-region: no-drag;
+  transition: none; /* OS 캡션 단추처럼 호버가 즉시 바뀐다 */
+}
+
+.studio-window-controls .swc-glyph { width: 12px; height: 12px; pointer-events: none; }
+.studio-window-controls .swc-button:hover { background: var(--swc-hover); }
+.studio-window-controls .swc-button:active { background: var(--swc-active); }
+.studio-window-controls .swc-button:focus-visible { outline: 2px solid var(--accent, #5b6cff); outline-offset: -3px; background: var(--swc-hover); }
+.studio-window-controls .swc-button.is-close:hover,
+.studio-window-controls .swc-button.is-close:focus-visible { background: var(--swc-close-bg); color: var(--swc-on-close); }
+.studio-window-controls .swc-button.is-close:active { background: var(--swc-close-active); color: var(--swc-on-close); }
+.studio-window-controls .swc-button.is-fullscreen[aria-pressed="true"] { background: color-mix(in srgb, var(--swc-fg) 8%, transparent); }
+
+/* 전체화면은 OS 캡션 세 개와 다른 종류의 동작이라 얇은 구분선으로 떼어 둔다. */
+.studio-window-controls .swc-separator { align-self: center; width: 1px; height: 18px; margin: 0 4px 0 2px; background: color-mix(in srgb, var(--swc-fg) 22%, transparent); }
+
+/* Linux 는 Windows 와 같은 순서·기호. 둥근 호버만 약간 달리해 GNOME/KDE 의 느낌을 살린다. */
+.studio-window-controls.is-linux .swc-button { border-radius: 6px; margin: 6px 1px; height: calc(var(--swc-height) - 12px); width: 36px; }
+
+/* ── 단추 폭만큼 비울 곳 ─────────────────────────────────────────────────────────────────── */
+body.has-window-buttons { --window-inset-right: calc(4 * 46px + 9px + 6px); }
+body.has-window-buttons.window-chrome-linux { --window-inset-right: calc(4 * 36px + 8px + 9px + 6px); }
+/* macOS 신호등(왼쪽 위). 전체화면에서는 OS 가 숨기므로 거둔다. */
+body.window-chrome-darwin:not(.is-window-fullscreen) { --window-inset-left: 82px; }
+
+/* 톱바(편집기)와 시작 화면 위 막대: 단추 밑으로 들어가지 않게 양 끝을 비우고, 빈 곳은 창 끌기 영역으로 쓴다. */
+body.has-window-chrome .oprn-menu-bar.studio-bar {
+  padding-right: calc(12px + var(--window-inset-right, 0px));
+  padding-left: calc(12px + var(--window-inset-left, 0px));
+  -webkit-app-region: drag;
+}
+body.has-window-chrome .cf-top {
+  padding-right: calc(24px + var(--window-inset-right, 0px));
+  -webkit-app-region: drag;
+}
+body.has-window-chrome .ln-top {
+  padding-right: calc(32px + var(--window-inset-right, 0px));
+  -webkit-app-region: drag;
+}
+/* 시작 화면은 왼쪽 레일 맨 위(브랜드)가 창 모서리다 — macOS 신호등이 거기 뜨므로 레일을 내리고, 브랜드 줄도 끌 수 있게 한다. */
+body.has-window-chrome .ln-brand { -webkit-app-region: drag; }
+body.window-chrome-darwin:not(.is-window-fullscreen) .ln-rail { padding-top: 44px; }
+/* 모달이 열리면 끌기 영역을 끈다. 크로미움은 끌기 영역을 층 순서와 무관하게 모으므로, 톱바 밑을 지나는 모달 머리줄의
+   단추(데이터베이스 닫기 등)가 끌기에 먹혀 눌리지 않는다(실측 2026-10-14, 실제 X 클릭). */
+body.has-window-chrome:has([aria-modal="true"]:not([aria-hidden="true"] *), dialog[open]) :is(.oprn-menu-bar.studio-bar, .cf-top, .ln-top, .ln-brand) { -webkit-app-region: no-drag; }
+/* (데이터베이스 모달은 미리 읽어 두려고 visibility:hidden·aria-hidden 부모 아래에 늘 떠 있다 — 그 「주차된」 것은 제외한다.) */
+
+/* 드래그 영역 안의 조작 요소는 끌기가 아니라 클릭을 받아야 한다. */
+body.has-window-chrome .oprn-menu-bar.studio-bar :is(button, input, select, textarea, a, summary, label, [role="button"], [role="combobox"], [role="menuitem"], [role="tab"], [contenteditable], [tabindex]),
+body.has-window-chrome :is(.cf-top, .ln-top) :is(button, input, select, textarea, a, summary, label, [role="button"], [role="combobox"], [role="menuitem"], [tabindex]) {
+  -webkit-app-region: no-drag;
+}
+
+/* 단추 자리를 같은 칸이 대신하므로, 톱바의 옛 전체화면 단추는 Windows·Linux 에서 빼고 한 곳에서만 보이게 한다. */
+body.has-window-buttons .oprn-menu-bar .oprn-window-control { display: none; }
+
+/* 전체 화면 인터뷰의 오른쪽 패널은 top:18px 에서 시작한다 — 단추(48px) 밑으로 들어가지 않게 내린다. */
+body.has-window-buttons .ci-controls { margin-top: 36px; }
+
+/* 단추(오른쪽 ≈190px, macOS 는 신호등 자리 왼쪽 82px)가 자리를 차지하므로, 톱바가 이미 빠듯한 1439px 이하에서는 이름표를 한 단계 일찍 걷는다
+   (기존 규칙은 1279/1119px 에서 걷는다 — studio-bar.modern.css §12). 클릭 경로는 그대로이고 title·aria-label 이 이름이다.
+   아래 두 구간은 그 규칙의 기준 폭에 단추 폭(≈180px)을 더한 사본이다 — 기준을 고치면 같이 고친다. */
+@media (max-width: 1439px) {
+  body.has-window-chrome .studio-bar .editor-product-brand-text,
+  body.has-window-chrome .studio-tool-button .studio-tool-button-label,
+  body.has-window-chrome .studio-bar .ai-connection-chip .ai-connection-label { display: none; }
+  body.has-window-chrome .studio-bar .editor-product-brand { margin-right: 0; }
+  body.has-window-chrome .studio-tool-button { flex: 0 0 32px; justify-content: center; padding: 0; width: 32px; }
+  body.has-window-chrome .studio-bar .ai-connection-chip { justify-content: center; padding: 0; width: 32px; }
+}
+
+@media (max-width: 1299px) {
+  body.has-window-chrome .studio-bar .workspace-panels-label { display: none; }
+  body.has-window-chrome .studio-bar .workspace-panels-button { padding: 0; }
+  body.has-window-chrome .studio-bar .topbar-save-status { flex-basis: 145px; max-width: 145px; }
+}
+/* 창 최소 폭은 1100px(electron/main/main.ts minWidth) — 그보다 좁은 톱바는 이 단추 폭을 더하면 버튼이 겹친다. */
+
+/* ── 모달 머리줄 ─────────────────────────────────────────────────────────────────────────
+   오른쪽 위까지 닿는 큰 창(데이터베이스·리소스·테스트 플레이·조수 크게 보기·이벤트 편집기)은 머리줄 오른쪽에 자기 닫기·최대화
+   단추를 둔다. 창 단추(z 10000)가 그 위에 뜨면 그 단추를 가로채므로 머리줄 오른쪽을 단추 폭만큼 비운다(2026-10-14 실측:
+   1280px 에서 database-modal-close 가 눌리지 않았다). 2000px 이상에서는 창이 가운데에 떠 모서리에 닿지 않아 건드리지 않는다.
+   새 큰 모달을 만들면 scripts/qa/window-controls.mjs 의 「모달 가림」 검사 목록에 더한다. */
+@media (max-width: 2000px) {
+  body.has-window-chrome .database-modal-window:not(.ai-settings-window) > .database-modal-header,
+  body.has-window-chrome .test-play-titlebar,
+  body.has-window-chrome .ai-assistant-wide-head,
+  body.has-window-chrome .event-editor-modal-header { padding-right: calc(var(--window-inset-right, 0px) - 6px); }
+}

@@ -1,8 +1,10 @@
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
-import { requestsEmeraldMonsterGame, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { monsterAssetsAllowed, toolHiddenByMonsterLock } from '../../src/project/genreLockMonsterAssets.ts';
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
-import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
+import { GAME_SYSTEM_REQUEST_PATTERN, PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
+import { PiRomanceProduction } from '../../src/ai/piAgent/romanceProduction.ts';
 import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
@@ -20,6 +22,7 @@ import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt }
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
+import { setClientEditHistory } from "../../src/editor/tools/historyTools.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
@@ -34,7 +37,8 @@ import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
 import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
 import { readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
-import { createPiPresentationTool, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { setDotTextChat } from '../../src/ai/dotTextArt';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
@@ -63,6 +67,8 @@ import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { gameDesignBriefContext } from "../../src/project/gameDesignBrief.ts";
 import { isTransientProviderStreamError, PI_PROVIDER_STREAM_RETRY_LIMIT, providerStreamResumePrompt } from "../../src/ai/piAgent/providerRetry.ts";
+import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { PLAN_EXECUTION_REKICK, ULTRABRAIN_PLAN_HEADING } from "../../src/ai/piAgent/planExecution.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, PI_MAP_LOSS_DECLINED_PREFIX, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, slimProjectForWire, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts";
@@ -231,6 +237,9 @@ function trimText(value: unknown, max: number): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
+/** 몬스터 자산이 막힌 프로젝트의 게임 시스템 저작 지침 — 몬스터 수집 낱말(configure_monster_system·gen1·collector·도감·배지)을 싣지 않는다. */
+const GAME_SYSTEM_PROMPT_GENERIC = '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·지도·음악을 함께 확인한다. configure_field_menu로 실제 기능 ID를 설정한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.';
+
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const setupTimer = piTimer("worker runPiAgent setup");
   // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
@@ -241,7 +250,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
   // «/assets/…» 번들 그림(캐릭터셋 걷기 프레임)도 워커에는 fetch 가 없어 저장소 public/ 에서 읽는다.
   setCutsceneAssetFetcher(async url => `data:image/png;base64,${readBundledAsset(joinBundledAsset(process.cwd(), 'public', url.replace(/^\/+/u, '').split('?')[0]!)).toString('base64')}`);
-  setCutsceneArtGenerator(createWorkerImageGenerator(request, provider => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined)));
+  const workerKeyFor = (provider: string) => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined);
+  setCutsceneArtGenerator(createWorkerImageGenerator(request, workerKeyFor));
+  // 도트(컷신 style:game 소품·아이콘·generate_pixel_art)는 이미지 모델이 아니라 도트 저작 모델(텍스트)이 찍는다.
+  setDotTextChat(createWorkerDotTextChat(request, workerKeyFor));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
@@ -249,7 +261,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
     assistantRun: true,
+    // 몬스터 자산 역방향 잠금: 이 요청이 몬스터 수집 요청이면 이 턴만 몬스터 도구·자산이 풀린다(워커 입구가 채운다, 없으면 task 로 판정).
+    monsterTurn: request.monsterTurn ?? isMonsterRequestTurn(request.task),
   };
+  setClientEditHistory(request.editHistory ?? []);
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   const charsetGate = new PiCharsetSelectionGate();
@@ -262,17 +277,20 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 배열 교체(setTools)는 진행 중 루프에 닿지 않는다(컨텍스트가 같은 배열을 잡고 있어서다).
   const tools: PiToolShape[] = [];
   const exposed = new Set<string>();
-  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && requestsEmeraldMonsterGame(request.task));
+  const monsterGameProduction = new PiMonsterGameProduction(!request.readOnly && !options.readOnlyTools && (requestsEmeraldMonsterGame(request.task) || classifyMonsterGameRequest(request.task) === 'campaign'), request.task);
   const gameSystemProduction = new PiGameSystemProduction();
+  // 채팅 한 줄 연애 게임 요청 — 도구 목록이 고정된 팀 하위 실행은 제외(팀은 finish 게이트가 한다).
+  const romanceProduction = new PiRomanceProduction(!request.readOnly && !options.readOnlyTools && !options.toolNames && !options.subscribeTeamMessages, request.task);
   const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && !monsterGameProduction.requested && (request.openingProduction ?? requestsOpeningProduction(request.task)), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && !!options.interiorRequirements, options.interiorRequirements);
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
   const scopeGuard = piMapScopeGuard(request);
+  // 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 전용 도구는 선언·능력 색인·find_tools 어디에도 나오지 않는다(실행기도 이름 호출을 거부한다).
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
-  });
+  }).filter(tool => !toolHiddenByMonsterLock(ctx.project, tool.name, ctx));
   // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
   const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
   // 공간 시공 실행인가 — 선언 모델이 고른 첫 노출 도구로 판정한다. 목록이 없으면(전체 카탈로그) 모른다고 보고 싣는다.
@@ -578,7 +596,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}
-  if (/시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
+  if (GAME_SYSTEM_REQUEST_PATTERN.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','set_dialogue_system','set_vn_extras','set_vn_look','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
   for (const name of PI_PRESENTATION_GENERATORS) {
     if (!registryTools.some(tool => tool.name === name)) continue;
     const shape = shapeFor(name);
@@ -644,10 +662,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork });
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
-  if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT, EMERALD_MONSTER_AUTHORING_GUIDE);
+  if (monsterGameProduction.requested) systemPrompt.push(MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(request.task), EMERALD_MONSTER_AUTHORING_GUIDE);
   else if (isEmeraldMonsterStyle(base)) systemPrompt.push(EMERALD_MONSTER_AUTHORING_GUIDE);
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
-  if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
+  if (/갤러리|엔딩 목록|엔딩 회상|엔딩 체크|세이브 카드|저장 칸|저장 썸네일|gallery|ending list|save card/iu.test(request.task)) systemPrompt.push('[미연시 추가 화면] 갤러리(잠긴 CG 칸 표시·본 엔딩 회상)·엔딩 목록(저작된 엔딩 정의를 읽어 자동으로 채움, 인물별·결말 3종 체크리스트)·세이브 카드(날짜+마지막 대사 한 줄)는 set_vn_extras 하나로 켜고 끈다. 연애·관계 중심 게임은 이미 전부 켜져 있으니 새로 켤 필요 없이 read_game_systems 의 vnExtras 를 먼저 읽는다. 바꿀 때는 필요한 칸만 보낸다(gallery, galleryShowLocked, endings, endingsHideUnseen, saveCards, language: ko|en|ja|zh|auto|inherit). 새 그림은 만들지 않는다: 갤러리 칸은 showPicture recordInGallery 로 저작된 그림이고 엔딩 목록은 저작된 엔딩 정의다 — 둘이 없으면 비어 보이니 먼저 지은 것을 확인한다. ESC 메뉴에 넣으려면 configure_field_menu preset:custom add:[{command:endings,label:엔딩}] 를 쓴다(기능도 함께 켜진다). 설정 뒤 review_game_systems 로 불일치를 확인하고 실제 플레이 검증은 별도다.');
+  if (/백로그|오토|스킵|대사 기록|대사창|미연시|backlog/iu.test(request.task)) systemPrompt.push('[대사창 읽기 보조] 백로그(지난 대사·고른 선택지, 세이브에 저장)·오토·스킵·숨기기 단추는 set_dialogue_system 하나로 켜고 끈다. 연애·관계 중심 게임은 이미 전부 켜져 있으니 새로 켤 필요 없이 read_game_systems 의 dialogueSystem 을 먼저 읽는다. 바꿀 때는 필요한 칸만 보낸다(backlog, backlogLimit 20~500, auto, skip, hideButton, language, defaults{textSpeed, autoSpeed, skipScope, windowOpacity}). ESC 메뉴에 백로그를 넣으려면 configure_field_menu preset:custom add:[{command:backlog,label:백로그}] 를 쓴다(백로그도 함께 켜진다). 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추며 이는 설정이 아니다. 설정 뒤 review_game_systems 로 불일치를 확인하고, 실제 플레이 검증을 했다고 주장하지 않는다.');
+  if ((monsterAssetsAllowed(ctx.project, ctx) ? /시스템|상점|shop|메뉴|포켓몬|몬스터/iu : /시스템|상점|shop|메뉴/iu).test(withoutIntentNote(request.task))) systemPrompt.push(monsterAssetsAllowed(ctx.project, ctx) ? '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.' : GAME_SYSTEM_PROMPT_GENERIC);
   if (/음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) systemPrompt.push('[음악 저작] 기존 recommend_bgm은 곡 선택이다. 새 곡 요청이면 get_music_composer -> compose_music -> get_music_score -> set_game_audio로 실제 원문 음표와 독립 파트를 만든다. 모티프/응답/쉼/구간별 악기 진입을 설계한다. 다른 게임의 곡을 복사하지 않는다. WAV 바이트와 측정값은 실제 합성이며 모델은 소리를 듣지 않는다. 원곡 수준/청취 완료/스튜디오 오케스트라라고 주장하지 않는다. 세션/M2 전투곡 우선순위를 확인한다.');
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);
@@ -678,7 +698,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : request.provider === "openai-codex"
         ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) =>
           streamSimple(m as never, c as never, { ...o, fetch: codexVersionFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never)) as never }
-        : {}),
+        // 사용자 지정(OpenAI 호환): 리다이렉트를 따라가지 않고 사용자가 고른 호스트로만 보내는 fetch 를 끼운다.
+        : isOpenAiCompatProviderId(request.provider)
+          ? { streamFn: ((m: unknown, c: unknown, o?: Record<string, unknown>) => {
+            const shaped = shapeOpenAiCompatCall(request.provider, m as { id: string; name?: string }, { ...o });
+            return streamSimple(shaped.model as never, c as never, { ...shaped.options, fetch: guardedOpenAiCompatFetch((o?.fetch as typeof fetch | undefined) ?? fetch) } as never);
+          }) as never }
+          : {}),
     // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
     // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
     sessionId: `oprn-${randomUUID()}`,
@@ -834,7 +860,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           emit({ type: "execution_status", name: "provider_retry", summary: `제공자 연결이 끊겨 이어서 진행합니다 (${providerRetries + 1}/${PI_PROVIDER_STREAM_RETRY_LIMIT}): ${message.errorMessage}` });
           return;
         }
-        fatal = fatal ?? message.errorMessage ?? "제공자 오류";
+        fatal = fatal ?? explainOpenAiCompatRunError(request.provider, message.errorMessage) ?? "제공자 오류";
         emit({ type: "error", message: fatal });
       }
     }
@@ -914,11 +940,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     let previousOpeningIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
-      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
+      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project),...romanceProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame && !openingProduction.requiresPixelAnimatic)) break;
+
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.'
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인/연애 게임 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.'
         + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '')
         + (openingProduction.requiresPixelAnimatic ? ' 이 요청은 새로하기 픽셀 애니메틱입니다. storybook/image 장면을 더 만들거나 set_opening으로 정지 장면을 저장하지 말고, 지금 create_opening_animatic_shot(384,216) → set_opening_pixel_grid → upsert_opening_layer → place_opening_charset_actor/set_opening_caption/animate_opening_camera를 호출하세요. zero animatic이면 완료가 아닙니다.' : '')
         + '\n' + signature);
@@ -935,6 +962,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
+    // 구성기가 구역마다 쓰임을 정해 깐 맵(composed-layout 표식, 예: compose_steampunk_city_map)도 뺀다 — inspectPiLayoutQuality 가 isComposedLayoutMap 으로 스스로 건너뛴다.
     // 전체 몬스터 게임도 뺀다 — 맵은 검수된 공용 캠페인이 깔고(포켓몬 마을·센터는 원래 트였고 대칭이다), 고칠 도구가 없어
     // 조수가 repair 를 한 번 더 부른 뒤 「마지막 변경 뒤 read/review_monster_game」 완료 검사에 걸려 실행 실패로 끝났다(2026-10-06 실측).
     if (!fatal && !rejected && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task) && !monsterGameProduction.requested) {

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ac54671842342395771ca6a65d17f42e87f9af2079db75b472d793d3e4d7914",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "시장 노점(톱니·부품, 초록 차양)",
+ "label": "steampunk-city/sp-stall-parts",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall clearly shows the top surface of the counter (rows 25-33, 9 rows tall) displaying gears/parts from an overhead 3/4 perspective, as well as the sloped surface of the awning (rows 1-17) above the front counter wall (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear 9-row top surface (rows 25-33) displaying gears and parts seen from above, and the green-and-white awning shows its downward-sloping top surface (rows 1-16) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3563
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with canopy and display counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter display top surface is clearly visible from rows 25 to 32 (8 rows tall) displaying gears and parts, and the canopy roof extends across rows 1 to 17.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8910
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall with striped awning and display counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The awning roof shows its forward-sloping top surface (rows 1-16), and the market counter top surface is clearly visible from above across rows 26-33 displaying gears and parts, above a vertical front face (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3161
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.526Z",
+ "cells": {
+  "16": [
+   "01af6dbd61bc0763",
+   "2fdac14d46865efd",
+   "308859bc2ffb855e",
+   "40f029e6e6cf5959",
+   "50811e2388b3894c",
+   "81e74cabc65866b7",
+   "c63d9af8dcbc7444",
+   "f25bbfa953252e67",
+   "ffa3ba31c52f3669"
+  ],
+  "24": [
+   "aaf1664129db729e",
+   "b82d65d942ee1528",
+   "df537ae0018d716b",
+   "fb7fdd4a706aa66c"
+  ],
+  "32": [
+   "01ff544d12477be2",
+   "1048db0b7271c235",
+   "2b5198ca70c6b54f",
+   "332a51b4db60df51",
+   "37a533ce95f776af",
+   "3c2ee1bf48faf82a",
+   "3fe4f3ba1c879dff",
+   "4a556e25785bbc74",
+   "4adc9e9926996658",
+   "50d4e5b976e8ba91",
+   "51b9253f62cbed18",
+   "59d4b6dec7b7a142",
+   "6dad5d159c28a7ac",
+   "85fc64fbbedcbab4",
+   "86180a90f0438168",
+   "c14cfaeac2a25975",
+   "d4f9b86db1ba37d8",
+   "d7148ab2277381f3",
+   "dd5f1b1bc0a3bb57",
+   "e0d3291558f6cb66",
+   "ee8746c013e7eb5e",
+   "f0ebe34bdd81ec93",
+   "f652b38963409c08",
+   "ffa246b5d4cfb8a0"
+  ],
+  "48": [
+   "561b10d9cd2c994d"
+  ]
+ }
+}

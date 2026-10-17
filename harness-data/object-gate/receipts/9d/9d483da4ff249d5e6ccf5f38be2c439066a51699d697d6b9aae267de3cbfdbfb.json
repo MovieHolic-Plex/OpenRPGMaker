@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d483da4ff249d5e6ccf5f38be2c439066a51699d697d6b9aae267de3cbfdbfb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판자 길(남북)",
+ "label": "snow-north/sn-boards-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank path terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "North-south wooden plank path floor tile; as a flat terrain surface, the entire 16-row tile represents the top surface of the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4251
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank path (north-south)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down wooden boardwalk/plank path spanning all 16 rows as flat ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3014
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wooden plank road/pathway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting north-south wooden planks seen from above with nails and plank seams across the full tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2821
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank path (north-south)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing north-south oriented wooden planks. As flat ground terrain, the entire surface lies in the horizontal plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4077
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.952Z",
+ "cells": {
+  "16": [
+   "aa0c42bafd15a12f"
+  ],
+  "24": [
+   "11bdeef23a7c5cd1",
+   "912fdd3339cb85c9",
+   "94308f0cf80a50d2",
+   "9884fec524a85650",
+   "c945e79f0a09a79d",
+   "fa1d66b1f84b77b3"
+  ],
+  "32": [
+   "392facfd3f5a383a",
+   "600501189296c731",
+   "6fee2be503cb7962",
+   "a439bee500bd2655",
+   "bcb69bc0184eaaf2",
+   "e9791c4267032f32"
+  ],
+  "48": [
+   "248e60f8670a3f0f",
+   "3e2811dcc22b831b",
+   "5ecd618b068e27e8",
+   "912c17a48580deaf",
+   "928352e6089219e0",
+   "fd26c6b9259bb9dc"
+  ]
+ }
+}

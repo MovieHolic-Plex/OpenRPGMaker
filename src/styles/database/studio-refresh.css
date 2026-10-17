@@ -337,3 +337,151 @@
   background: var(--db-studio-surface);
   border-top: 1px solid var(--db-studio-border-subtle);
 }
+
+/* ── 6. PR-2 시각 버그 수정 (B2·B3·B7·B8) ─────────────────────────────────── */
+
+/* B2: 토글 스위치(.db-toggle-input)가 체크박스 규칙(width:16px)에 눌리지 않게 스튜디오 전체에서 고정. */
+.database-modal-backdrop .database-modal-window .database-modal-body input.db-toggle-input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toggle-switch > input.db-toggle-input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form input.db-toggle-input {
+  appearance: none;
+  background-color: var(--db-light-bg-inset);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  flex: 0 0 34px;
+  height: 18px;
+  margin: 0;
+  min-height: 18px;
+  min-width: 34px;
+  width: 34px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form input.db-toggle-input:checked {
+  background-color: var(--db-light-accent);
+  border-color: var(--db-light-accent-border);
+}
+
+/* B3: 전투 화면·전투 명령 등 스튜디오 헤딩이 상단 경계선(y=57)에 붙어 잘려 보이지 않게 여백 부여. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-battle-studio-heading {
+  padding: 14px 18px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-battle-screen-studio .db-battle-screen-stack {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* B7: 상태 탭 색상 견본과 색 이름(output)이 두 줄로 갈라지지 않게 3열 격자로 복원. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-state-color-control {
+  grid-template-columns: var(--db2-label-col) 22px minmax(0, 1fr);
+}
+
+/* B8: 포획·성장 종족의 「프로젝트 준비 N/4」 칩이 본문 위에 붕 뜨지 않게 상세 하단에 정렬. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-life-header,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness {
+  align-items: flex-start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-life-header {
+  margin-top: 10px;
+}
+
+@media (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):not(:has(> .db-collection-gate-warn)) {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):not(:has(> .db-collection-gate-warn)) > .oprn-record-monster-species {
+    grid-row: 1;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .oprn-record-monster-species {
+    grid-row: 2;
+  }
+}
+
+/* ── 7. PR-5 시스템 탭 구획 목록 · 폼 격자(R2) · 불리언 스위치(R3) ─────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form {
+  grid-template-columns: 184px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-nav {
+  align-items: stretch;
+  border-bottom: 0;
+  border-right: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 12px 8px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-subhead {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.3 var(--font-ui);
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding: 10px 10px 3px;
+  text-align: left;
+  user-select: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-button,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-button.active {
+  align-items: center;
+  border-radius: 7px;
+  display: flex;
+  justify-content: flex-start;
+  min-height: 30px;
+  padding: 5px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-nav .db-title-workbench-jump {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 2px 0 4px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-nav .db-title-workbench-jump[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-nav .db-title-workbench-jump-link {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 500 12px/1.35 var(--font-ui);
+  padding: 4px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-section-nav .db-title-workbench-jump-link:hover {
+  background: var(--db-studio-surface-2);
+  color: var(--db-studio-text-1);
+}
+
+/* R2: 폼 격자 = 라벨 132px | 컨트롤 (타이틀 메뉴 항목 오른쪽 「표시」 보조 스위치만 압축 유지). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form :is(.db-field, .db-resource-picker-control) {
+  grid-template-columns: 132px minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-system-form .db-title-menu-option-row > .db-field:last-child {
+  align-items: center;
+  gap: 6px;
+  grid-template-columns: auto auto;
+}

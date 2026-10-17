@@ -1,9 +1,11 @@
 import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";
+import { afterBootSettled } from "@/util/bootSettled";
 import { deserializeParsed, projectWireView } from "../io/serialize";
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
 import { jsonContentDigest } from "./core/contentDigest";
 import { sharedDefaultAssetDataUrl } from "../sharedContent";
+import { bootNormalizationMatches, currentBootNormalizationMarker } from "../bootNormalization";
 import { readTilesetBlobs, writeTilesetBlobs } from "./tilesetBlobCache";
 import { applyProjectDocumentPatch, diffProjectDocumentsSliced, withWirePatchValuesSliced, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
@@ -111,7 +113,13 @@ export type OprnAssetBrowser = {
 };
 
 export type OprnBridge = {
-  readonly windowControl?: (action: "toggle-fullscreen" | "close") => Promise<boolean>;
+  readonly windowControl?: (action: import("../../../electron/shared/windowControl").WindowControlAction) => Promise<boolean>;
+  /** 데스크톱 전용 — 창 단추 방식. darwin 은 OS 신호등, 그 밖은 렌더러가 직접 그린다. */
+  readonly platform?: import("../../../electron/shared/windowControl").WindowPlatform;
+  /** 데스크톱 전용 — 최대화·전체화면 상태 조회. */
+  readonly windowState?: () => Promise<import("../../../electron/shared/windowControl").WindowState>;
+  /** 데스크톱 전용 — 최대화·전체화면 변화 구독. 해지 함수를 돌려준다. */
+  readonly onWindowState?: (callback: (state: import("../../../electron/shared/windowControl").WindowState) => void) => () => void;
   /** 데스크톱 앱 창의 네이티브 전체화면 여부. 브라우저 Fullscreen API 와는 별개다. */
   readonly windowFullscreen?: () => Promise<boolean>;
   /** 네이티브 전체화면 변화(F11·메뉴 포함) 구독. 해지 함수를 돌려준다. */
@@ -187,7 +195,8 @@ export function createElectronRepository(): ElectronRepository {
    * 부팅 정규화처럼 제자리에서 고친 객체는 요약이 달라져 버린다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영 한 번에
    * 타일셋 본문 8MB 를 IndexedDB 에서 읽고 파싱했다(0.7s + 그 쓰레기의 GC).
    */
-  let parsedTilesets = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+  type ParsedTileset = { readonly sha: string; readonly tileset: unknown; digest: string | undefined };
+  let parsedTilesets = new Map<string, ParsedTileset>();
   let parsedTilesetsDir: string | null = null;
 
   const openedRef = (target: ProjectTarget | null | undefined): LocalProjectTarget | null => {
@@ -222,6 +231,23 @@ export function createElectronRepository(): ElectronRepository {
       sha256: sha256 ?? null,
       projectId: target.projectId,
     };
+  };
+
+  /** 재사용 판정용 요약을 한가할 때 타일셋 하나씩 센다. 새 로드가 지도를 바꿨으면 멈춘다. */
+  const digestParsedTilesetsWhenIdle = (owner: Map<string, ParsedTileset>, entries: readonly ParsedTileset[]): void => {
+    const schedule = (run: () => void): void => {
+      const idle = (globalThis as { requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+      afterBootSettled(() => { if (typeof idle === "function") idle(run, { timeout: 10_000 }); else setTimeout(run, 50); });
+    };
+    let index = 0;
+    const step = (): void => {
+      if (parsedTilesets !== owner) return;
+      const entry = entries[index];
+      index += 1;
+      if (entry && entry.digest === undefined) entry.digest = jsonContentDigest(entry.tileset);
+      if (index < entries.length) schedule(step);
+    };
+    schedule(step);
   };
 
   /**
@@ -286,14 +312,24 @@ export function createElectronRepository(): ElectronRepository {
       // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
       // 스토어의 정규화 전 요약(normalizeCurrentProject)이 같은 객체의 노드 기억을 그대로 쓴다
       // (2026-09-28 실측, 팀 참여 창 부팅의 요약 합계 10.0s → 5.7s).
-      const next = new Map<string, { readonly sha: string; readonly tileset: unknown; readonly digest: string | undefined }>();
+      // 부팅 정규화가 건너뛰어지는 문서(표식이 지금 빌드·공용 판본과 짝)는 정규화기가 타일셋을 제자리에서 고치지 않는다 —
+      // 요약을 «그 순간» 세지 않아도 나중에 센 값이 같다. 그 요약은 다음 재로드의 재사용 판정에만 쓰이므로(첫 로드는 재사용할 것이 없다)
+      // 편집 화면이 뜬 뒤 한가할 때 타일셋 하나씩 센다. 실측(2026-10-14, 타일셋 379칸 98MB): 이 요약이 첫 화면 전 critical path 4.9s 였다.
+      // 정규화기가 돌 문서는 예전처럼 지금 센다(정규화가 같은 객체를 고치기 전의 값이어야 한다).
+      const deferDigests = bootNormalizationMatches(project, currentBootNormalizationMarker());
+      const next = new Map<string, ParsedTileset>();
+      const lazyDigests: ParsedTileset[] = [];
       for (const [id, sha] of folded.tilesetShas) {
         const tileset = project.tilesets[id];
         if (tileset === undefined) continue;
         const previous = parsedTilesets.get(id);
-        next.set(id, previous && previous.tileset === tileset ? previous : { sha, tileset, digest: jsonContentDigest(tileset) });
+        if (previous && previous.tileset === tileset) { next.set(id, previous); continue; }
+        const entry: ParsedTileset = { sha, tileset, digest: deferDigests ? undefined : jsonContentDigest(tileset) };
+        if (deferDigests) lazyDigests.push(entry);
+        next.set(id, entry);
       }
       parsedTilesets = next;
+      if (lazyDigests.length > 0) digestParsedTilesetsWhenIdle(next, lazyDigests);
       loadedSha = loaded.sha256;
       return {
         authority: { mode: "legacy", target },

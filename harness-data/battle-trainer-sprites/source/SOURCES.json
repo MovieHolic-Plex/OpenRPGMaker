@@ -1,0 +1,90 @@
+{
+ "note": "몬스터 수집 캠페인 전투 인물 그림(64x64, 저장소 소유 GPT 이미지 생성 원본을 nearest 추출). 하네스는 이 사본만 읽는다.",
+ "sources": {
+  "hero": {
+   "assetId": "oprn_emerald_trainer_hero",
+   "name": "비취섬 전투 인물 · 여행자",
+   "sha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b"
+  },
+  "rival": {
+   "assetId": "oprn_emerald_trainer_rival",
+   "name": "비취섬 전투 인물 · 라이벌",
+   "sha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5"
+  },
+  "professor": {
+   "assetId": "oprn_emerald_trainer_professor",
+   "name": "비취섬 전투 인물 · 박사",
+   "sha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6"
+  },
+  "nurse": {
+   "assetId": "oprn_emerald_trainer_nurse",
+   "name": "비취섬 전투 인물 · 치유사",
+   "sha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8"
+  },
+  "merchant": {
+   "assetId": "oprn_emerald_trainer_merchant",
+   "name": "비취섬 전투 인물 · 상점 주인",
+   "sha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331"
+  },
+  "mother": {
+   "assetId": "oprn_emerald_trainer_mother",
+   "name": "비취섬 전투 인물 · 어머니",
+   "sha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080"
+  },
+  "resident": {
+   "assetId": "oprn_emerald_trainer_resident",
+   "name": "비취섬 전투 인물 · 마을 주민",
+   "sha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902"
+  },
+  "gym_leader": {
+   "assetId": "oprn_emerald_trainer_gym_leader",
+   "name": "비취섬 전투 인물 · 체육관 관장",
+   "sha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9"
+  },
+  "company_agent": {
+   "assetId": "oprn_emerald_trainer_company_agent",
+   "name": "비취섬 전투 인물 · 회사 요원",
+   "sha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124"
+  },
+  "captain": {
+   "assetId": "oprn_emerald_trainer_captain",
+   "name": "비취섬 전투 인물 · 선장",
+   "sha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66"
+  },
+  "worker": {
+   "assetId": "oprn_emerald_trainer_worker",
+   "name": "비취섬 전투 인물 · 정비공",
+   "sha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f"
+  },
+  "explorer": {
+   "assetId": "oprn_emerald_trainer_explorer",
+   "name": "비취섬 전투 인물 · 탐험가",
+   "sha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e"
+  },
+  "student": {
+   "assetId": "oprn_emerald_trainer_student",
+   "name": "비취섬 전투 인물 · 학생",
+   "sha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9"
+  },
+  "ranger": {
+   "assetId": "oprn_emerald_trainer_ranger",
+   "name": "비취섬 전투 인물 · 숲 관리인",
+   "sha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083"
+  },
+  "moon_leader": {
+   "assetId": "oprn_emerald_trainer_moon_leader",
+   "name": "비취섬 전투 인물 · 달빛 관장",
+   "sha256": "39ae0d6bab08f30e3b91215200971bc22feb245886a89deccac50e234d405c98"
+  },
+  "hiker": {
+   "assetId": "oprn_emerald_trainer_hiker",
+   "name": "비취섬 전투 인물 · 등산객",
+   "sha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9"
+  },
+  "hero_back": {
+   "assetId": "oprn_emerald_trainer_hero_back",
+   "name": "비취섬 전투 인물 · 여행자 뒤모습",
+   "sha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a"
+  }
+ }
+}

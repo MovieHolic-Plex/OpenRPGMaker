@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a84379cddd8829783487476bab0fcd01c06ae43f91556d4c47a6f72b800af5c",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "실외기 묶음(상자 둘 + 윗면 환풍 팬)",
+ "label": "sf-station/sf-street-ac-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dual outdoor AC units with top-mounted ventilation fans",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface occupies rows 2-10 (9 pixel rows) displaying foreshortened elliptical fan grilles, followed by the south front face on rows 11-14 with indicator lights and base recess.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pair of outdoor AC / chiller units",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lit upper surfaces (rows 2-10, 9 rows tall) clearly represent the top face containing the circular exhaust fans, while rows 11-14 represent the shadowed south-facing front panels with vents and indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 48493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dual outdoor AC units with top exhaust fans",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of each unit spans rows 2-10 (9 pixel rows) displaying an elliptical top-mounted fan. Rows 11-14 form the front south-facing panel with a status light and base recess.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5687
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two outdoor AC units with top exhaust fans",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of each unit spans rows 2-10 (9 pixel rows) displaying an elliptical top-mounted fan grille, with a 4-pixel front face (rows 11-14) below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4832
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "7adba15fcba21c14"
+  ],
+  "24": [
+   "05a5e8666ad84487",
+   "222299314bd73796",
+   "325e6fad9e02af2a",
+   "3c0ef48a87dd3352",
+   "5ed2a3506f4989cf",
+   "6438784d5919a39a",
+   "69c1688b06fe3345",
+   "9809d4567f7a1d0f",
+   "a82804d417b28f8f",
+   "c0995df8b1bb1f6e",
+   "c243a3c865122e54",
+   "d7d5b8b297e11a94"
+  ],
+  "32": [
+   "2fa8534ad2f5bcf1",
+   "a4305fe4425f172d"
+  ],
+  "48": [
+   "8f482695207fe622",
+   "9083c235c43cca2f",
+   "bd6a4775af23366f",
+   "ce85e84646404a92",
+   "f07f889b6512c783",
+   "f60d24ee74f040ff"
+  ]
+ }
+}

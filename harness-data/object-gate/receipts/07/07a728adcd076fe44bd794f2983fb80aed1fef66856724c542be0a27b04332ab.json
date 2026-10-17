@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07a728adcd076fe44bd794f2983fb80aed1fef66856724c542be0a27b04332ab",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "제도대(설계도 — 선만, 글자 없음)",
+ "label": "steampunk-city/sp-drafting-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drafting table",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tabletop surface is clearly visible from row 2 to row 17, holding a blueprint, books, and a desk lamp. The front face with a drawer and legs extends downward from row 18 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drafting table with drawer and legs",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface extends from row 3 to row 17 (15 rows tall), clearly viewed from above at a 3/4 angle with blueprint, lamp, and books placed on it. Below it, the front drawer face spans rows 18 to 21 above the legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5907
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drafting desk with blueprint, books, and lamp",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop forms a large visible top surface spanning rows 2 to 17, holding a blueprint, books, and a lamp. The drawer and apron form the front face from rows 18 to 21 above the legs, properly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drafting desk",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop top surface is clearly visible from row 3 to row 16 (approx 14 rows) with blueprint, lamp, and papers resting on it, followed by a front-facing drawer and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6008
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.532Z",
+ "cells": {
+  "16": [
+   "23ed0952220b88c5",
+   "29fa2a3b7939d47b",
+   "42f793145243cb6c",
+   "60af193c51b52e77"
+  ],
+  "24": [
+   "08160e29f47355ad",
+   "0bd400ba2f2cdff9",
+   "0e47ea12141ae42b",
+   "115374b594160d85",
+   "1bb1b220a7662aab",
+   "1d855a665531f8d1",
+   "3c3db233bc195fce",
+   "425467d24ed05133",
+   "4a865057a00f3b8c",
+   "51a910490c8291be",
+   "56067ba2a41b22e3",
+   "6541cda19b76922f",
+   "869fbff99a4f9678",
+   "8993b66995a8a9e4",
+   "8f3581bf4cde3dbc",
+   "93f6d9f4373ce825",
+   "9d8a24c715f65911",
+   "a1159f3ec1342b32",
+   "aa8f2a051e5f6379",
+   "ba9f056750509896",
+   "bd318f69b8a3852a",
+   "d29535dae82416db",
+   "e0e4bf2ab24a34e4",
+   "eb4cf1eeaa24658f"
+  ],
+  "32": [
+   "8333fa80640df7ea"
+  ],
+  "48": [
+   "0bb7c6b617bfecbb",
+   "104a2a9b8b1cf1d9",
+   "a4a9a40882b207b9",
+   "ae85c0b857e32e1f",
+   "b92bec2604fb70d0",
+   "c311d0fce8797d7b"
+  ]
+ }
+}

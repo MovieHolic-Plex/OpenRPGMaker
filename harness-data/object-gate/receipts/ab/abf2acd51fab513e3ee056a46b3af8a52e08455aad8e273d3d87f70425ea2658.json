@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abf2acd51fab513e3ee056a46b3af8a52e08455aad8e273d3d87f70425ea2658",
+ "width": 32,
+ "height": 96,
+ "kind": "structure",
+ "name": "시계탑(벽돌 탑 + 슬레이트 첨탑)",
+ "label": "modern-campus/mc-clock-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick clock tower with slate spire roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tower is rendered in pure architectural front elevation: the spire base (row 25), white cornice (rows 26-29), string courses (rows 55, 70), and plinth/base (rows 90-94) are completely flat horizontal bands with 0px of visible top surface or 3/4 downward curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick clock tower with slate spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire clock tower is drawn as a flat architectural front elevation: the spire base, cornice, floor moldings, door frame, and base plinth all have straight horizontal baselines with 0px of top surface visible from a 45-degree angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5182
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick clock tower with slate spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock tower is drawn as a flat architectural front elevation: the clock face is an unforeshortened circle, the cornices, ledges, and plinth are flat horizontal bands without top surfaces, and the spire base is completely flat rather than showing top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6053
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick clock tower with slate spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower, cornices, clock, and spire are drawn in pure front elevation with perfectly horizontal base lines, ledges, and trims (e.g. rows 25, 26, 55, 71, 90). No top surface or 3/4 foreshortening is visible anywhere on the main structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.873Z",
+ "cells": {
+  "16": [
+   "13eec2036f2a3cb6",
+   "366f98b82944efc6",
+   "4cf14d35bd29096e",
+   "54e32470033ca640",
+   "56712bdd1bd2a1d6",
+   "7998bd966efd72e9",
+   "83abd6676b351370",
+   "9cae350ffe32db1a",
+   "ce8dd8914b431326",
+   "e29e0fda7e63b6c0",
+   "e4361fbd413dd1fb",
+   "e5adf09e343c58fe"
+  ],
+  "24": [
+   "00f7fe79970615af",
+   "0ace2024ac333c46",
+   "228418e2b23c77bd",
+   "240c4c3bc253d8aa",
+   "256854e7d4c0a9bd",
+   "352ef8a1da5c4bba",
+   "3659338a3327b865",
+   "396eb04e2d7316f2",
+   "4a145f4e6f1a0eae",
+   "4c6207df472d24cb",
+   "5053920dfcfc68c1",
+   "82d5d04c751438e9",
+   "8c3106c6d37c4798",
+   "9352d9d2325847b0",
+   "9c3bd4ad27fbb237",
+   "a23a987aa01318d5",
+   "a62e07c349069020",
+   "b187a8bebefe21f8",
+   "b7e51c3927aacf1e",
+   "bd9de4409fb05522",
+   "d5466f18eb4961bb",
+   "ddc4de858bdd76d0",
+   "df7d280937f6b45d",
+   "ef9061f6fec81f68"
+  ],
+  "32": [
+   "a63a47142725a903",
+   "a76b6238b95235d3",
+   "d2246858bbba2dee"
+  ],
+  "48": [
+   "68c6e393802420fa",
+   "816f539673c42d68",
+   "976f095cf09b28e2",
+   "a4eeb00177f4e77c",
+   "a76c8507fa3b41c0",
+   "c5548d82b236334d"
+  ]
+ }
+}

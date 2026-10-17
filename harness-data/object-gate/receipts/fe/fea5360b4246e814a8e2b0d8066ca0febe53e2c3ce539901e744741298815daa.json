@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fea5360b4246e814a8e2b0d8066ca0febe53e2c3ce539901e744741298815daa",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "prehistoric stone-age log seat",
+ "label": "prehistoric/ph-log-seat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log bench / seat with hide or padding",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat top surface is clearly visible from above, measuring 5 pixel rows (rows 4-8) of patterned tan hide/cushioning, above a 4-pixel-tall front face of shaded log (rows 9-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "log bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the seat spans rows 4 through 8 (5 pixel rows), distinctly separated from the shaded south front face at rows 9 to 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "log bench with hide or straw seat covering",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 4 to 8 show a 5-pixel deep top horizontal surface (cushioned/fur-covered seat), above a 4-pixel tall front wooden face (rows 9-12) resting on small feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3445
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log bench with pelt/straw seat top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seating surface spans rows 4 through 8 (5 rows of textured yellow material), meeting a clearly shaded brown south face on rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3284
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.941Z",
+ "cells": {
+  "16": [
+   "c7c3ff9a356062fe",
+   "f72c690fa8dac876"
+  ],
+  "24": [
+   "2b2d4f5162e8e585",
+   "48288b6821ddfa40",
+   "594e9fecb4b32d40",
+   "659525a0a4f98df6",
+   "66ea64f05ec38d5b",
+   "738f8b5ede29ca97",
+   "92e948880887d0bc",
+   "9d1f28fe025db671",
+   "b491a7f562154ad3",
+   "b7999a6afacf2a51",
+   "d4f500ea157d8c82",
+   "ee78da7e50c0fb43"
+  ],
+  "32": [
+   "23ed7acafb9c7967",
+   "b1ec8855d94e598f"
+  ],
+  "48": [
+   "15d9977df8ddfec3",
+   "7ddba9fc378d9916",
+   "80de517829f56f3e",
+   "97297412cdf43046",
+   "b076c6c22622e952",
+   "ed8e8741b66a8c3b"
+  ]
+ }
+}

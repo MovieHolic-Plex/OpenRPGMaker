@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebd27ca19ceac52d1e188f379c13c25b06071164a4401e5a4498b93169ef3019",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통로 교차 허브(사방 통로가 만나는 가압 마디 + 윗면 해치)",
+ "label": "sf-station/sf-tube-cross",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical pressurized corridor hub",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical structure clearly presents a large foreshortened elliptical top surface spanning from row 5 to row 19 with a detailed top hatch, followed by a south-facing curved wall down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3957
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical hub node with top hatch",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical junction node shows a large, clearly foreshortened elliptical top surface (rows 4 to 19, ~15 rows tall) containing a detailed hatch, situated above a front cylinder wall (rows 18 to 30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2778
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical junction hub with top access hatch",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cylindrical structure displays a large elliptical top surface spanning from row 4 to row 18 (14 pixel rows) containing an intricate hatch, clearly showing the 3/4 top-down perspective above the south-facing curved wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical junction node with top hatch",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical hub clearly shows a large top surface spanning rows 4 to 18 featuring a detailed hatch, sitting atop a visible south vertical wall extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6767
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.241Z",
+ "cells": {
+  "16": [
+   "337daccaeb20de1b",
+   "3cb734a1730266c3",
+   "61037ae8f4698db0",
+   "e7b07d69d8c24043"
+  ],
+  "24": [
+   "0873d0dd6f014f26",
+   "13f52a36df067891",
+   "1d56cc65494de44d",
+   "1f6ffaf8cd35bd87",
+   "2c748f9b96d57b12",
+   "2d573cdb80675e4e",
+   "3bbcdb2b1a9d921c",
+   "3f57110e79f1582c",
+   "3f7ba7eec1fdef25",
+   "410f054785619b05",
+   "5e9746bdef1a4666",
+   "74db486dc9907af1",
+   "760b92fbf1838ff1",
+   "787248d77642abe0",
+   "7e4929da919f602f",
+   "86ebd1fe520d1c05",
+   "a40ce6f5164b2362",
+   "aacf4d039fdbdcc9",
+   "af7cf0abda44d7cd",
+   "be3d81eaf61d4c2f",
+   "bec856e023fbc887",
+   "c844c6c0e2f85f59",
+   "db66e2e8338b144d",
+   "dd72c60d17e380b9"
+  ],
+  "32": [
+   "c21081f1de992ae7"
+  ],
+  "48": [
+   "2ead602e9de505cc",
+   "55b45a07b7f2ffda",
+   "5c7dfd70cdeb4629",
+   "6c91c72046ff67a2",
+   "78a45f3aaf1b2cb2",
+   "9d55c7f909881f91"
+  ]
+ }
+}

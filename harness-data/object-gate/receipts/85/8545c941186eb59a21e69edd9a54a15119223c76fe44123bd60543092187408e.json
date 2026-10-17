@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8545c941186eb59a21e69edd9a54a15119223c76fe44123bd60543092187408e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "bamboo tiki torch on a round stone base, flame burning in an open bowl seen from above",
+ "label": "pirate-isles/pi-tiki-torch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiki torch bowl, bamboo pole, and round base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl top opening is visible as an ellipse around the flame from rows 5 to 7 (3 rows tall), and the round stone base also shows its elliptical top surface (rows 25-27, 3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4894
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiki torch bowl and pole on round stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bowl shows an open interior ellipse (rows 5-7, 3 rows tall) with the flame rising from it, and the round stone base shows a 3-row foreshortened top surface (rows 25-27), both correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3989
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo tiki torch with top bowl and round stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl opening is visible from above as a dark 3-row elliptical interior (rows 5-7) containing the flame base, and the round stone base also clearly shows its top surface (rows 25-27, ~3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3883
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo tiki torch with top bowl and round stone base",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The torch bowl clearly shows an elliptical opening (rows 5-7, 3px tall) with the flame burning inside, and the round stone base at the bottom also shows a foreshortened top surface (rows 25-27, 3px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4342
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "272716aeb3526aa1",
+   "7cd784bd8b114fab"
+  ],
+  "24": [
+   "03405ab9f4e06a6b",
+   "110280898e62f265",
+   "1f7a1a14daecc370",
+   "22eb7e2907a74558",
+   "245f255e533e9094",
+   "37abe3aceb1afe45",
+   "3d878a90c3c3c161",
+   "60d6285d39ca449f",
+   "78954a9e2355985d",
+   "937387080d2f545a",
+   "be872df6cee75b70",
+   "f41babb8a26feda5"
+  ],
+  "32": [
+   "8884d064cb4b2cb0",
+   "b0cfc58e002a2e1f",
+   "c684914431bd5253"
+  ],
+  "48": [
+   "22530274948e14cd",
+   "3cd33dd125b64793",
+   "3f4aa9c802dca9f5",
+   "74e7bfe3a80d8b6c",
+   "ac78b600f5f1fac9",
+   "b6d291c73a663ad9"
+  ]
+ }
+}

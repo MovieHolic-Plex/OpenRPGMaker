@@ -10,6 +10,7 @@ import {
   CINEMATIC_SCENE_LIMIT,
   normalizeCinematicSequence,
   normalizeGameOverSettings,
+  gameOverOutcome,
   type CinematicMotion,
   type CinematicScene,
   type CinematicSequence,
@@ -978,13 +979,14 @@ const setGameOver: ToolDefinition = {
       recovery: { type: "object", additionalProperties: false, required: ["mapId", "x", "y"], properties: { mapId: { type: "string" }, x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 } } },
       title: { type: "string", description: "게임오버 제목. 빈 문자열은 지움" },
       message: { type: "string", description: "게임오버 본문. 빈 문자열은 지움" },
+      goldLossPercent: { type: "integer", minimum: 0, maximum: 100, description: "귀환(blackout) 때 잃는 소지금 비율. 포켓몬식은 50(절반). 0 이면 잃지 않음. blackout 일 때만 의미가 있다." },
       retryLabel: { type: "string", description: "재시도 버튼 문구. 빈 문자열은 기본 문구 사용" },
       titleLabel: { type: "string", description: "타이틀 버튼 문구. 빈 문자열은 기본 문구 사용" },
       backgroundResourceId: { type: "string", description: "전체화면 배경 그림 id. 빈 문자열은 제거" },
     },
   },
   run(draft, args): ToolExecResult {
-    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery"] as const;
+    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "goldLossPercent"] as const;
     if (!allowed.some(key => Object.hasOwn(args, key))) {
       throw new ToolError("게임오버에서 바꿀 값을 하나 이상 지정하세요.", { code: "invalid-args" });
     }
@@ -1008,6 +1010,12 @@ const setGameOver: ToolDefinition = {
     }
     if (Object.hasOwn(args, "presentation")) next.presentation = args.presentation as GameOverSettings["presentation"];
     if (Object.hasOwn(args, "recovery")) next.recovery = args.recovery as GameOverSettings["recovery"];
+    if (Object.hasOwn(args, "goldLossPercent")) {
+      const percent = args.goldLossPercent;
+      if (typeof percent !== "number" || !Number.isInteger(percent) || percent < 0 || percent > 100) throw new ToolError("goldLossPercent는 0~100 정수여야 합니다(포켓몬식 블랙아웃은 50).", { code: "invalid-args" });
+      if (percent > 0) next.goldLossPercent = percent; else delete next.goldLossPercent;
+      if (percent > 0 && gameOverOutcome(next) !== "recover") throw new ToolError("goldLossPercent 는 귀환(blackout) 패배에서만 적용됩니다 — presentation:'blackout' 을 함께 주세요(귀환 좌표는 recovery 또는 마지막 회복 센터).", { code: "invalid-args" });
+    }
     try { validateGameOverSettings(next); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
     if (next.recovery) {
       const map = draft.maps[next.recovery.mapId];

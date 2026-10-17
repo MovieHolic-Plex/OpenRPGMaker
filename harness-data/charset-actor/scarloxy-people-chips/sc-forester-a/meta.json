@@ -1,0 +1,11 @@
+{
+ "key": "sc-forester-a",
+ "name": "숲지기",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy2:1",
+ "recolor": [],
+ "ok": true,
+ "errors": [],
+ "warnings": [],
+ "model": "script-compose(no model call)"
+}

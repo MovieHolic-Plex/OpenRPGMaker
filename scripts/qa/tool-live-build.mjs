@@ -34,7 +34,7 @@ if (process.env.FOREIGN === "1") await page.addInitScript(() => { window.__villa
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-ui-mode", "standard");
   for (const key of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(key, "1");
-  localStorage.setItem("oprn:ai-config", JSON.stringify({ providerId: "google-antigravity", model: "gemini-3.8-flash", piApply: "auto", piTeam: false }));
+  localStorage.setItem("oprn:ai-config", JSON.stringify({ providerId: "google-antigravity", model: "gemini-4-argon", piApply: "auto", piTeam: false }));
   if (window.name === "noreveal") localStorage.setItem("oprn:ai-live-canvas", "off"); else localStorage.removeItem("oprn:ai-live-canvas");
   const original = window.fetch.bind(window);
   const qa = window.__villageQa = { marks: {}, acks: 0, intentCalls: 0, stage: "boot" };

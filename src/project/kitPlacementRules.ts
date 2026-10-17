@@ -6,6 +6,7 @@
 import type { GameMap, StructureKitDef, TilesetDef } from "./types";
 import { reliefLevel, rampAt } from "./relief/walk";
 import { passageMarkForTile } from "./tilesetPassage";
+import { checkGroundSupportForStamp } from "./groundSupport";
 
 export type PlacementSurface = "water" | "ice" | "land";
 interface CellRule {
@@ -77,6 +78,9 @@ const SURFACE_KO: Record<PlacementSurface, string> = { water: "물", ice: "얼�
 
 /** 규칙을 어기면 사람이 읽을 이유를 돌려준다(통과면 null). kit 은 찍을 키트 정의, (x, y) 는 왼쪽 위 칸. */
 export function checkKitPlacement(map: GameMap, ts: TilesetDef, kitId: string, kit: StructureKitDef, x: number, y: number): string | null {
+  // 받침 규칙(2026-10-14, groundSupport.ts): 던전 키트는 허공(천장) 위·벽 위에 놓지 않고, 벽 앞면은 바닥을 마주 본다.
+  const unsupported = checkGroundSupportForStamp(map, ts, kit, x, y);
+  if (unsupported) return unsupported;
   const rule = KIT_PLACEMENT_RULES[kitId];
   if (rule) {
     for (const r of rule.rules) {

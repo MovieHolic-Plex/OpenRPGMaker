@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "158a0b711e256c0bb7e13543f12307c41b819ffd8fbff1fb0aa9b66fe4db2a64",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age crust",
+ "label": "prehistoric/ph-crust",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "volcanic crust terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing dark stone crust with molten lava cracks viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lava crust ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark rock crust with glowing lava fissures viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9411
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cracked volcanic rock ground tile with lava veins",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a ground surface of volcanic stone crust with glowing molten lava channels seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3230
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "volcanic rock crust terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing dark volcanic rock crust cracked with molten lava channels seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3147
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.789Z",
+ "cells": {
+  "16": [
+   "99c8cb95355f058e"
+  ],
+  "24": [
+   "0571044fc39b372c",
+   "428a980ecbe31ce9",
+   "7eaaa32c86289fa5",
+   "8931c14b3577b956",
+   "aeec2720ec29691f",
+   "fc05cc8ebaf2ccc3"
+  ],
+  "32": [
+   "0d9860e949ac8193",
+   "22b24992aadd5075",
+   "653fac17e06111f5",
+   "99c6ea5fa8487645",
+   "ddc3e2d503f60dd1",
+   "e38b6fa48f847496"
+  ],
+  "48": [
+   "33e871830b8ac57c",
+   "3830532cf92d5958",
+   "6b6b919bbdc83dfb",
+   "8a34051219674180",
+   "a2632b6abc28a328",
+   "ba92735f95d551ab"
+  ]
+ }
+}

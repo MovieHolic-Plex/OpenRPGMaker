@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "216897c22802620f0b802fc802ce0244bbe84bffd20d5f6e465f81cae7e331d5",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "실험대(흰 상판 + 플라스크·시험관 꽂이·작은 화면 + 서랍 앞면)",
+ "label": "sf-station/sf-lab-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab bench",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab bench has a deep horizontal top surface spanning rows 1 to 9 (9 pixels tall) holding various equipment, and a clear vertical south face with drawers from rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3954
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory bench / counter with items resting on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface spans from row 1 to row 9 (9 pixel rows deep) with lab equipment placed on it, followed by drawer fronts on the south face from row 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laboratory bench / desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white tabletop surface occupies rows 1 to 9 (9 rows deep), on which lab equipment and a monitor sit. The front face with drawers is visible below from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "laboratory workbench / desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk has a prominent white tabletop surface spanning rows 1 through 9 with various lab instruments resting on it, followed by a south-facing front drawer section from rows 10 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3059
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.253Z",
+ "cells": {
+  "16": [
+   "3dca8e90a9ed332f",
+   "97fe7d9ae6fb6b4b",
+   "d735d2259c84a1bd"
+  ],
+  "24": [
+   "1636bcf9ee8266d1",
+   "2b7ad61be6672cd2",
+   "a1d4bc34c8cc0b97",
+   "f7edb6024d08535d"
+  ],
+  "32": [
+   "08d3dfc5304e6f0b",
+   "0d2bf5da589f921f",
+   "2c89f5a157f16a84",
+   "30375182b3bde5ef",
+   "5f6708783a8b0ae0",
+   "6fb5c11c6e234290",
+   "7bdb288164cfd282",
+   "7ffe686f0f6fb599",
+   "c6ff15d2c0d0b292",
+   "dc22bdbaf55d98e8",
+   "f351fbfa2bbe398f",
+   "fc98bee4107f5547"
+  ],
+  "48": [
+   "378449b4950baae2",
+   "7a0bdfe61dfe0119"
+  ]
+ }
+}

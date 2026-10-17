@@ -24,12 +24,13 @@
 | `game-concepts` | 새 게임 컨셉 카드 | 장르 무관 | `harness-data/game-concepts/seed.json` | `openwiki/harnesses/game-concepts.md` |
 | `murim-chipset` | 무림 칩셋 도트 (murim_wuxia · oprn-murim) | 장르 무관 | `harness-data/murim-chipset/seed.json` | `openwiki/harnesses/murim-chipset.md` |
 | `dungeon-chipset` | 던전 칩셋 도트 (beodeul_dungeon · oprn-atlas) | 장르 무관 | `harness-data/dungeon-chipset/seed.json` | `openwiki/harnesses/dungeon-chipset.md` |
-| `object-gate` | 공용 오브젝트 게이트 (3/4 시점) | 장르 무관 | `harness-data/object-gate/seed.json` | `openwiki/harnesses/object-gate.md` |
+| `object-gate` | 공용 오브젝트 게이트 (3/4 시점 + 버들항 화풍) | 장르 무관 | `harness-data/object-gate/seed.json` | `openwiki/harnesses/object-gate.md` |
 | `interview-scene-bank` | 인터뷰 선택 배경 | 장르 무관 | `harness-data/interview-scene-bank/seed.json` | `openwiki/harnesses/interview-scene-bank.md` |
+| `battle-trainer-sprites` | 전투 트레이너 스프라이트 (생성형 → 도트화) | 장르 무관 | `harness-data/battle-trainer-sprites/seed.json` | `openwiki/harnesses/battle-trainer-sprites.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
-몬스터 수집(포켓몬류) 게임의 종을 도감 시드에서 읽어 앞모습(상대)·뒷모습(내 몬스터) 전투 스프라이트와 대기·공격·피격 애니메이션을 만든다. 생성 그림 속 픽셀 격자를 찾아 진짜 도트로 옮기고, 사람이 후보를 고르며, 112 캔버스·바닥 정렬로 맞춘다.
+몬스터 수집(포켓몬류) 게임의 종을 도감 시드에서 읽어 앞모습(상대)·뒷모습(내 몬스터) 전투 스프라이트와 대기·공격·피격 애니메이션을 만든다. 생성 그림 속 픽셀 격자를 찾아 진짜 도트로 옮기고, 사람이 후보를 고르며, 64 캔버스(몸 56 이내)·바닥 정렬로 맞춘다.
 
 **이럴 때 쓴다:**
 - 몬스터 수집(포켓몬류) 게임의 몬스터 종·스타터·진화 계통 그림을 만들 때
@@ -43,8 +44,11 @@
 - `action` — 큰 동작 후보: 공격·피격처럼 자세가 크게 바뀌는 동작을 sprite-gen 방식(가로 한 줄 한 장 생성)으로 만들고 재생 시트를 만든다. 대기는 생성하지 않는다(build 가 고른 스프라이트를 1px 씩 움직여 만든다).
 - `pick` — 고르기: 사람이 고른 후보(앞·뒤 그림 또는 --action 동작 줄)를 출처(격자 원본·해시·프롬프트)와 함께 기록한다.
 - `import` — 가져오기: 이미 있는 생성 원본 PNG 하나를 도트화해 후보로 등록한다.
-- `build` — 번들 굽기: 골라 둔 격자 원본을 112 캔버스로 맞춰 public/assets/harnesses/ 아래에 쓰고, 대기·동작 스트립과 anim.json 을 만들고 검사한다.
+- `build` — 번들 굽기: 골라 둔 격자 원본을 64 캔버스로 맞춰 public/assets/harnesses/ 아래에 쓰고, 대기·동작 스트립과 anim.json 을 만들고 검사한다.
 - `check` — 검사: 번들 스프라이트의 색 수·마젠타 잔점·윤곽·앞뒤 색 일치, 애니메이션 프레임(대기 0번=원본·발 고정, 동작 색·몸집)을 검사한다.
+- `refit` — 후보 다시 맞추기: 이미 만든 후보 폴더의 스프라이트·검사·시트를 현재 캔버스 규격(64)으로 다시 만든다. 격자는 그대로, 생성하지 않는다.
+- `grid` — 격자 보고: 고른 그림마다 생성 블록 크기·원본 도트 칸 수·64 캔버스로 줄인 배율을 보고한다(격자 계약: 한 도트 = 논리 화소 하나).
+- `manifest` — 런타임 목록: 번들 폴더를 읽어 src/assets/harnessMonsterBundle.json(이미지 바이트 없음)을 쓴다. 런타임이 「번들에 종 id 가 있으면 그 그림」 규칙으로 캠페인 종(seed 의 campaignSpeciesId)에 번들 그림을 쓴다. build 가 끝에 자동 실행.
 - `preview` — 미리보기: 번들 스프라이트의 대기·동작을 전투 배율로 재생하는 HTML 한 쪽을 만든다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
@@ -301,6 +305,7 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `matrix` — 작은 명령 50개 매트릭스: 50개 명령과 역할별 수행 에이전트, 저장·플레이·시각 검수 기준의 누락을 검사한다.
 - `matrix-tools` — 작은 명령 50개 도구 계약: 격리된 결정론적 fixture에서 50개 명령의 canonical editor tool 호출, 읽기 불변·쓰기 변경 커밋을 각각 검사한다. 모델·SQLite·플레이·독립 시각 검수와 별도 집계한다.
 - `matrix-live` — 작은 명령 50개 자연어 입력: 실제 에디터 입력창에 50개 프롬프트를 순서대로 넣고 scripted agent transport로 응답을 고정해 적용·저장·새 context 재로드·대표 플레이를 검사한다. native provider 성공률·독립 시각 검수와 별도 집계한다.
+- `matrix-native` — 작은 명령 50개 실제 모델 수행: 50개 프롬프트를 실제 입력창과 실제 provider에 제출하고 tool 호출·정본 SQLite 저장·새 context 재로드를 명령별로 확인한다. scripted transport와 모델 품질 점수는 통과로 세지 않는다.
 - `matrix-score` — 작은 명령 50개 모델 품질 점수: 실제 모델의 자연어 해석·도구 판단과 전후 화면 쌍의 시각 품질을 50개 모두 채점한다. 모델 호출 누락은 정적 점수로 대체하지 않는다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
@@ -426,17 +431,18 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## object-gate — 공용 오브젝트 게이트 (3/4 시점)
+## object-gate — 공용 오브젝트 게이트 (3/4 시점 + 버들항 화풍)
 
-새로 만든 기물 그림이 번들·공용 DB·스토어·공방 칩셋에 들어가기 전에 3/4 시점(윗면+앞면)을 판정해 그림 해시에 묶인 영수증을 남긴다. 판정자 둘×두 번 만장일치, 위반 표본을 하나도 놓치지 않는 보정 프로필만 효력이 있다. 번들·공용·스토어는 예외 없이 막고, 공방 로컬만 사람이 「그래도 넣기」를 누를 수 있다.
+새로 만든 기물·타일 그림이 번들·공용 DB·스토어·공방 칩셋에 들어가기 전에, 판정자(Claude Sonnet 5.5 high, 정확한 열 훑기·화풍 측정을 함께 받음)가 한 번에 (a) 3/4 시점(윗면+앞면)과 (b) 같은 종류 버들항 조각과 같은 배율로 견준 화풍(명암 단계·윤곽 색·질감·칸 정보량)을 판정해, 둘을 따로 적은 영수증을 그림 화소 해시+프로필 해시에 묶어 남긴다. 둘 다 통과해야 통과다. 위반 표본을 놓치지 않는 보정 프로필만 효력이 있다. 번들·공용·스토어는 예외 없이 막고, 공방 로컬만 사람이 「그래도 넣기」를 누를 수 있다.
 
 **이럴 때 쓴다:**
 - 어느 하네스·에디터 공방·스크립트든 새 기물(오브젝트) 그림을 번들·공용 DB·스토어·칩셋에 굽거나 올리기 전
 - 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때(require_pass / objectGateRefusal)
 
 **단계** (`npm run harness -- object-gate <단계>`):
-- `review` — 판정: 그림 하나(--png --kind --name) 또는 묶음(--batch items.jsonl)을 판정자 둘×두 번으로 재고 화소 해시 영수증을 쓴다.
-- `calibrate` — 보정: 라벨 붙은 위반·정상 표본으로 현재 프로필을 잰다. 위반을 하나라도 통과시키면 프로필을 rejected 로 남긴다.
+- `review` — 판정: 그림 하나(--png --kind [--style-kind] --name) 또는 묶음(--batch items.jsonl)을 판정자 ×네 번으로 재고 3/4·화풍 두 반쪽을 따로 적은 화소 해시 영수증을 쓴다.
+- `calibrate` — 보정: 3/4 위반·정상 표본과 화풍 얕음·버들 수준 표본으로 현재 프로필을 잰다. 위반을 하나라도 통과시키거나 정상 표본 통과율이 하한 아래면 rejected. 답은 프롬프트 해시별로 캐시해 이어 돌릴 수 있다(--offline 은 캐시만).
+- `rereview` — 재검수: 현재 번들 테마 칩셋의 키트·바닥 그룹을 시트에서 합성해 새 프로필로 다시 판정한다(중단 후 이어 돌리기). 보정 통과 프로필만 영수증을 쓰고, --audit 은 보고서만.
 - `check` — 출구 확인: 그림 하나가 출구(bundle·shared·store·workshop-local)를 지나갈 수 있는지 영수증만 보고 답한다(모델 호출 없음).
 - `status` — 현황: 프로필·영수증 수와 통과율을 보여 준다.
 - `audit` — 기존 그림 감사: 이미 번들에 든 기물을 판정만 하고 보고서를 쓴다. 막지 않는다.
@@ -458,5 +464,24 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `review` — 실제 그림 검수: --key <장면> --verdict <JSON>으로 원본 해시에 묶인 판정을 등록한다.
 - `build` — 합격작 배포: 규격과 시각 판정이 모두 유효한 그림만 앱 매니페스트에 넣는다.
 - `status` — 제작 현황: 미제작·규격 탈락·검수 대기·합격 수를 보고한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## battle-trainer-sprites — 전투 트레이너 스프라이트 (생성형 → 도트화)
+
+전투 화면용 트레이너 그림(상대 앞모습·내 뒷모습)을 만든다. 몬스터 수집 전용 그림체 샘플을 참고 이미지로 이미지 서버(god-tibo-imagen)가 역할별 새 인물을 그리고, monster-collect-species 의 격자 검출·도트화로 64×64 투명 PNG 로 정리한다(가장자리 닿음·색 수·마젠타 잔점 검사). 사용자가 시트에서 고른 것만 굽는다. 사람 선택 경로이며 object-gate 영수증은 없다. 던지기 프레임은 아직 없음.
+
+**이럴 때 쓴다:**
+- 전투 화면에 트레이너(사람) 그림이 필요할 때 — 포켓몬식 트레이너 앞모습·뒷모습
+- 소스 그림 색만 바꾸는 편집이나 Actor1 변형은 폐기 — 생성형 이미지 → 도트화 + 사용자 선택
+- 걷기 칩(RM2000 CharSet) 제작은 charset-actor, 몬스터 전투 그림은 monster-collect-species 하네스
+
+**단계** (`npm run harness -- battle-trainer-sprites <단계>`):
+- `list` — 역할 목록: 역할(주인공 남·녀 앞/뒤, 상대 트레이너)과 brief 를 보여 준다.
+- `draw` — 후보 그리기: 역할당 후보 5안을 이미지 서버가 생성하고 격자 도트화·64×64 검사를 통과한 것만 남긴다.
+- `status` — 현황: 판·후보 상태와 사용자가 고른 기록.
+- `sheet` — 고르기 시트: 참고 샘플 옆에 같은 배율로 나란히, 전투 합성 미리보기 포함 자체완결 HTML 을 ~/claude-viz 에 쓴다.
+- `pick` — 고르기 기록: 사용자가 고른 역할=글자를 현재 그림 해시에 묶어 기록한다.
+- `bake` — 번들 굽기: 고른 후보만 public/assets/battle-trainers/<역할>/ 와 index.json 으로 굽는다. 고르기 전에는 거절한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

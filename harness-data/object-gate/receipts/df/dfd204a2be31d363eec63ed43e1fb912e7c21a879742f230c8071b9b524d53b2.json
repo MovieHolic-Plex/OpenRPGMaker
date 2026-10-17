@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfd204a2be31d363eec63ed43e1fb912e7c21a879742f230c8071b9b524d53b2",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "이동식 게시판 스탠드",
+ "label": "modern-campus-int/mc-bulletin-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The board shows a clearly rendered top surface occupying rows 1-6 above the dark separator at row 7, showing depth in 3/4 perspective above the vertical front cork surface (rows 8-20). The feet also display foreshortened top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5748
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the stand/board features a deep horizontal surface across rows 1-6 (about 6 source pixel rows tall) containing brochure racks viewed from above, above the south-facing cork board face (rows 9-20). The feet also display foreshortened top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6795
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulletin board and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board stand is drawn in pure front elevation: the board, header, support poles, and wheeled base feet show only front-facing vertical planes with no visible top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15855
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulletin board panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board is drawn in pure front elevation. The main cork panel (rows 8-20) shows only its south face with no top edge, and the upper section (rows 1-7) is drawn as a flat vertical panel with flat rectangular details rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16854
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.539Z",
+ "cells": {
+  "16": [
+   "61a4702c5200e3ad",
+   "96c62f1e0bdf8b36",
+   "c3ebe2d4a2836057",
+   "fc1f099c867128e0"
+  ],
+  "24": [
+   "05274135f0179c16",
+   "12a99aa72272e171",
+   "210da9b2013fd44e",
+   "228040c098017c7b",
+   "23efab3cddedc214",
+   "244cfdabe129caca",
+   "310754e02e96966f",
+   "3e91daac9ec920b9",
+   "422c0a4b3cfcd962",
+   "4bd1bce8d7882a1b",
+   "57650cb1a6cbcb19",
+   "6264acfa1a2cbf94",
+   "8431b3a005121755",
+   "ab5cc0532c16016e",
+   "ae219e4d701dffdb",
+   "b76a29b8cc987d80",
+   "bd4a69462d6da427",
+   "be3e56437a0cb1c4",
+   "c72bc1fa1d1f8617",
+   "ca0f9fcc68b6461d",
+   "e484d393c1642151",
+   "efd60cd0ff48fb42",
+   "f0da514733016f1a",
+   "f64e8b527f9aad2c"
+  ],
+  "32": [
+   "3bc8378bbffcf2ae"
+  ],
+  "48": [
+   "23420b580b7ff85e",
+   "4efb602febe179c4",
+   "690043075c186176",
+   "6e5ebf80fa138902",
+   "9a1b31585c26b059",
+   "bedc2f485dd0ab51"
+  ]
+ }
+}

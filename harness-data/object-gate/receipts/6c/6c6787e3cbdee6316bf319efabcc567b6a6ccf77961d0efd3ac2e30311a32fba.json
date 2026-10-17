@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c6787e3cbdee6316bf319efabcc567b6a6ccf77961d0efd3ac2e30311a32fba",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "broadleaf tropical tree with layered round canopy and short trunk",
+ "label": "pirate-isles/pi-tree-broad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in side-scroller front elevation. The trunk terminates at the bottom in a flat, straight horizontal line (rows 44-46) rather than a curved base indicating ground contact from a 45-degree vantage, and the canopy lacks any top-down foreshortening or visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in 2D side elevation, typical of a side-scrolling platformer. The trunk is viewed straight-on with a flat horizontal base and side-projecting root feet, and the canopy shows no top-down perspective or foreshortened upper surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7083
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D front elevation (side-scroller style). There is no visible top surface foreshortened from a 45-degree angle, and the trunk and canopy are oriented flat toward the camera with a flat base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6702
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in pure front elevation (2D platformer style). The trunk is a straight vertical pillar resting on a flat horizontal baseline at rows 44-46, and the underside of the canopy is visible looking straight-on rather than foreshortened from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5718
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "04c6f92041dff13e",
+   "4f0538fcf33e3f1d",
+   "6739952c27c96f63",
+   "ca58448bf76439c3",
+   "d39370f8a4ce0dde",
+   "f7f8f2c4356d052b"
+  ],
+  "24": [
+   "25f2f5243dba670d",
+   "37b778df307999e2",
+   "4c18b81657aa3689",
+   "6d0e3f34d9677694",
+   "8c8a412ab5fc4fa4",
+   "988bcfe4c4f65a4d",
+   "a1b757e9c607416a",
+   "a2310305072a3f1f",
+   "a3683869f8965b73",
+   "acb4f3bf3291fa05",
+   "d022b326da006229",
+   "eb5c0cbfaeb802d6"
+  ],
+  "32": [
+   "0385c0ca2db2809e",
+   "36d39953c1e14c51",
+   "9747e5a57df8c20f",
+   "b8ffaf952e25a7a1"
+  ],
+  "48": [
+   "8d89b41bff12e73e",
+   "db654a68ec0f34a7",
+   "f7176f30f1b8c5bf"
+  ]
+ }
+}

@@ -34,9 +34,10 @@ import { isBlankStartProject } from "@/project/projectBlankness";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
 import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
+import { bootMark } from "@/util/bootMarks";
 import { rememberBootBrief } from "@/app/bootBrief";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
-import { START_SCREEN_INTENT_KEY } from "@/start/startIntent";
+import { START_SCREEN_INTENT_KEY, takeStartPlayRequest } from "@/start/startIntent";
 
 export type Mode = "edit" | "play";
 
@@ -130,6 +131,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     await attachElectronFolderAtBoot();
     // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
     await store.load();
+    bootMark("project-loaded");
     rememberBootBrief(store.getCurrent(), getAiConnectionStatus().kind === "ready");
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
@@ -188,6 +190,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   } = await import("@/editor/aiBootIntent");
 
   let showBriefing = false;
+  // 시작 화면 「플레이」로 연 폴더는 편집 화면을 거치지 않고 바로 플레이한다. 브리핑·인계는 만들기 길이라 묻지 않는다.
+  const playAtBoot = !modeMounted && takeStartPlayRequest(window.location, window.history);
   // 데스크톱 시작 화면의 「만들기」로 막 만든 폴더면, 거기서 고른 장르를 채택·저장하고 한 문장을 조수에게 넘긴다.
   // 시작 화면이 이미 「어떤 게임을 만들까요?」를 물었으므로 캔버스 브리핑은 다시 띄우지 않는다.
   const startHandoff = modeMounted ? null : await applyStartScreenHandoffAtBoot();
@@ -205,7 +209,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && projectIsBlank && shouldPresentEditorWelcome({
+    showBriefing = !playAtBoot && !startHandoff && !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && projectIsBlank && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
@@ -240,7 +244,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   }
 
   await renderTopbar();
-  await enterMode("edit");
+  await enterMode(playAtBoot ? "play" : "edit");
+  bootMark("shell-mounted");
   // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다. 브리핑이 뜰 때는 웰컴이 마운트된
   // 직후까지 로더를 남겨 편집기가 한순간도 맨몸으로 보이지 않게 한다(아래 openConceptFeedOverlay 직후).
   if (!showBriefing || !elements) dismissBootLoader();
@@ -335,6 +340,7 @@ export function isModeShellMounted(): boolean {
 }
 
 function renderDbRequiredScreen(_error: unknown): void {
+  bootMark("failed-db-required");
   dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = PRODUCT_BRAND;
@@ -407,6 +413,7 @@ function openRequiredDbSettings(): void {
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(_error: unknown): void {
+  bootMark("failed-project");
   dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = `${PRODUCT_BRAND} - 작업을 불러올 수 없음`;

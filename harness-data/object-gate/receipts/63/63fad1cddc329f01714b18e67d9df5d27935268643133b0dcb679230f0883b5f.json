@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63fad1cddc329f01714b18e67d9df5d27935268643133b0dcb679230f0883b5f",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-6-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (roofline, signage bands, sliding doors, and window shelves) is drawn in pure architectural front elevation with no visible roof top surface or horizontal depth planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8247
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store facade with sliding entrance doors and glass display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade is rendered as a flat architectural front elevation. The upper fascia, entrance header, and window lintels show no top perspective or roof slope (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5159
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large convenience-store building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is shown as a flat frontal elevation with stacked horizontal roof/sign bands but no visible foreshortened roof or other top surface; no receding side face is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 354588
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience-store building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is drawn as a flat straight-on facade with horizontal roof/sign bands but no visible top surface or foreshortened roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 283051
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.820Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "45091d2f58a20182",
+   "4571655b0f2a45d4",
+   "6e97d7906472b915",
+   "81e3afcda33d3ca7",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "8d89cb2a840e7e2c",
+   "96f131cc674d1d0a",
+   "a85f374984f82a6d",
+   "b65d05d203fc28f2",
+   "beea5831be6a53de",
+   "c420ed7e86803c46",
+   "dc0f45c04e822588",
+   "e09dad0b84f07f9a",
+   "ed308cd86f7435b5",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "29940760d6a42a81",
+   "35fa0435a39defa9",
+   "4a0247476d0b856e",
+   "5aefce9720a888f5",
+   "9668c652d8c17a1a",
+   "bf5cf87cacc2fc1e",
+   "d87457922233324e",
+   "eab9043f5ba62a97"
+  ],
+  "32": [
+   "213f7aaaa9e998c1",
+   "221c06b273302b86",
+   "6df33b1c11524708",
+   "70715087f4aeb45d",
+   "75a0b57ef1aa6546",
+   "7bbafc63fd6bdc8a",
+   "8c55d7a8ce986aff",
+   "a27629878767b4ae",
+   "b9ec0fbbfab13f79",
+   "c3f382079df8d841",
+   "db7100df70f572de",
+   "ec57bb2f56d5492f"
+  ],
+  "48": [
+   "daef651f3ed90e1f",
+   "df6eedfa5757c04c"
+  ]
+ }
+}

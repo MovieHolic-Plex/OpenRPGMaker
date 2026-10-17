@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2305fa37ee6609ab04384d1ba16161a5d10c1e1b9177d52fc77b048e4d9197ab",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 — 남동 바깥 모서리(테 북·서)",
+ "label": "desert-east/de-ceil-warm-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain/ceiling autotile corner with top/west borders; viewed from directly above as a standard 2D map tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border autotile (terrain)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ceiling tile with top-left border trim; properly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5785
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling corner terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile representing a ceiling corner surface, filling the 16x16 tile seamlessly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3801
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling border autotile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing a ceiling corner piece seen top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4008
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "0a7c6b1adba45401"
+  ],
+  "24": [
+   "7b265d2d08f38d30",
+   "8dbe2af3e30eec91",
+   "a3925e83d3144abe",
+   "cca28f8b00ea18f8",
+   "dd1fd3f2baa1df74",
+   "eb84e38bb54d254f"
+  ],
+  "32": [
+   "300896f58981f1f5",
+   "4edef845b9451667",
+   "7771475d8a28094c",
+   "777db07d93fa4be2",
+   "7b0d803b94de6f6d",
+   "b897bd0c394fc3bb"
+  ],
+  "48": [
+   "504ef5a62bf0a88f",
+   "6e608aa96c62b2d1",
+   "8b73db9bfbd3f9a8",
+   "c62bf39b9353d0d2",
+   "cb021208abe6e250",
+   "e5069d8a5f3d99f9"
+  ]
+ }
+}

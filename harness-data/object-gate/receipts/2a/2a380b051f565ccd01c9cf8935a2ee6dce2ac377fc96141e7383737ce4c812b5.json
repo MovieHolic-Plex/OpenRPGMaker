@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a380b051f565ccd01c9cf8935a2ee6dce2ac377fc96141e7383737ce4c812b5",
+ "width": 48,
+ "height": 32,
+ "kind": "container",
+ "name": "광장 분수(둥근 돌 수반 + 놋쇠 증기 꼭지)",
+ "label": "steampunk-city/sp-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stone fountain basin with water and center nozzle",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is drawn as an elliptical pool of water visible from row 7 to 21 (about 15 rows tall), resting above a curved south-facing outer wall that extends down to row 30, correctly demonstrating 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4381
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stone fountain basin",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water spanning rows 7 to 21, surrounded by a stone rim and a south-facing cylindrical outer wall from row 22 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3210
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stone fountain basin with central nozzle",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 7-21, ~15 rows) seen from a 3/4 top-down angle, framed by a stone rim and a curved south front wall (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stone fountain basin",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water spanning 15 rows (rows 7-21), with the front exterior wall visible below it down to row 30, clearly drawn in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4786
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.518Z",
+ "cells": {
+  "16": [
+   "7b2c622ec9110dbf",
+   "9d99dc2de61a9b6b",
+   "af9445c62c58864b",
+   "cb456fe37ab96c60",
+   "f46ebca256da0ec8",
+   "fa78c62f3501c783"
+  ],
+  "24": [
+   "1a813a20bdda2fa1",
+   "1dcab6536ded39ce",
+   "1fe441ca3b2d40ef",
+   "545e0bad411ffbb7",
+   "c77b01bd3d40c3ea",
+   "d038df8ea2fda426",
+   "f422136785b437c5",
+   "f6bf3866838dd7d4"
+  ],
+  "32": [
+   "15121c5b21645354",
+   "6c765aadd5cf45d4",
+   "6ca2b39bc44dbdf8",
+   "94778a354d145471",
+   "aa75d1d2c5d40afa",
+   "fa9fba311c55b301"
+  ],
+  "48": [
+   "0cfcc461cc106d69",
+   "7eaaa8e82a283e72"
+  ]
+ }
+}

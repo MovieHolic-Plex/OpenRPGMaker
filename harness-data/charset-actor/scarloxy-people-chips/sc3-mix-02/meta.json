@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-02",
+ "name": "청록 머리 · 주황 조끼 초록 반바지",
+ "head": "Scarloxy2:1",
+ "body": "Scarloxy1:0",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-02",
+ "candidate_id": "t10",
+ "judge_totals_ABC": [
+  11,
+  10,
+  8
+ ],
+ "recipe": "gallery4-recipes.json#mix-02"
+}

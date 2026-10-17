@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e925c4b816b99af9c063c1023975b34d93e26dac9ae5c4111154c732af082add",
+ "width": 16,
+ "height": 64,
+ "kind": "column",
+ "name": "jp-rail-pylon",
+ "label": "jp/jp-rail-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail pylon column with concrete blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon (metal truss column and both concrete blocks) is drawn as a flat 2D front elevation with perfectly horizontal top edges and no visible top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6858
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail pylon column with base, truss shaft, and top capital block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pylon is drawn in complete 2D front elevation: the top block, truss column, and bottom block all show strictly vertical front faces with horizontal outline borders and 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4646
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal truss pylon column with top and bottom blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column, including the top block, central truss shaft, and base block, is drawn in pure 2D front elevation with perfectly horizontal top/bottom edges and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6099
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail pylon column with top and bottom blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn as a flat 2D front elevation with perfectly horizontal top edges and no visible top surface foreshortened from above on either the top block or the lower base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4707
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.123Z",
+ "cells": {
+  "16": [
+   "3fd8346f40c99ff4",
+   "767551619ecd7c61",
+   "812802d05dd2c274",
+   "c2d658be3aa0a615"
+  ],
+  "24": [
+   "19b28f86df7e807d",
+   "479723e22049d958",
+   "524b385756c6d512",
+   "68d54df9937e0112",
+   "6ef4b5dd0b04de8c",
+   "70453ffada2e8b19",
+   "74048782069f4a95",
+   "90121bdcf289c67a",
+   "9d61ce9ab2405f59",
+   "9f2807fa37c6332e",
+   "c063dcf462db5d68",
+   "d21f390294b4e0d3",
+   "d22fe9acc64d6b56",
+   "d55f361a88b84d52",
+   "dd168a0e6d829c91",
+   "f44eabfc92d50a38",
+   "fbc3869f93b938e2",
+   "fcf558252af98156"
+  ],
+  "32": [
+   "0158f1ba6cfb070e",
+   "584152df73751f12",
+   "69c4bdb97e2dd180",
+   "d5545752c076690d",
+   "d8a39b3cf0eaeda8",
+   "ded13444f21b9d1e"
+  ],
+  "48": [
+   "0d0b0c26fd1d5d40",
+   "1e538ca16d9230ad",
+   "27095180520a43f1",
+   "2c4271cd8681d74f",
+   "4982fa0f24e9c7ff",
+   "4e60d9efada371e6",
+   "73f212fc67d416a2",
+   "7ee00109f309da04",
+   "a529573504f3d5fd",
+   "c77a1d33747b954e",
+   "eeddae6d11e47c66",
+   "eff8f3e89558891b"
+  ]
+ }
+}

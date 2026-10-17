@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "807243a1d5cc3eec627b16ed8573925bd767805db0e75f99bc5e0c66f14df261",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "작은 도리이(붉은, 폭 3)",
+ "label": "sengoku-edo/se-torii-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red torii gate with roofed top lintel and stone bases",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The kasagi (top roof lintel) clearly displays its upper sloped surface across rows 1-7, and the stone column plinths at the bottom show rounded top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red torii gate with roofed top lintel and stone pillar bases",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/lintel clearly displays its upward-facing tiled slope across rows 1–7 (approx. 6 rows), and the stone base footings are drawn with clear top-down elliptical curvature around the pillars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red torii gate with roofed top lintel and round stone bases",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/crossbeam shows a wide foreshortened top slope (rows 1-7, ~7px tall) and the stone bases at the bottom clearly show their elliptical top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3988
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torii gate roof and lintel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/lintel of the torii clearly shows its upper surface from rows 1 to 7 (about 7 source pixels tall) with proper 3/4 downward perspective, and the stone base plinths also show top-down cylindrical perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "0880fc1637e69ed8",
+   "0afbbe8d0cdf6b61",
+   "1445685c0778a8ba",
+   "16fdc1f0bfcdc214",
+   "323175822622f99f",
+   "4a1c51e526b4c0b3",
+   "7c86b11e21d01756"
+  ],
+  "24": [
+   "26bb2c20b39e5104",
+   "27a059411f82e4e4",
+   "859c75f700c454fd",
+   "a6f8268bb38b6035"
+  ],
+  "32": [
+   "0166c7c3732c103b",
+   "0a309e515f6facb9",
+   "10da42eecbd44dc6",
+   "1e6f9b71577f234c",
+   "312596477871bccd",
+   "40f39de787c6041b",
+   "52c304e5286e0fd7",
+   "7eb715cd542b3b45",
+   "82e37aa58a2c8ab8",
+   "89312e68dcab450a",
+   "9f9f759612ca011f",
+   "ad46b7347f71aa0e",
+   "aea2ecfdac3e8c76",
+   "b1b1e34ec9b3bca5",
+   "cdddb894dc046ab0",
+   "ce4fc14d2930b3c7",
+   "d229648c3d8a6378",
+   "e6ecec58ee2680a9",
+   "e83354b962852de4",
+   "ebabb95a977b0489",
+   "fce06035f31c7839"
+  ],
+  "48": [
+   "ba66354b38322ee4"
+  ]
+ }
+}

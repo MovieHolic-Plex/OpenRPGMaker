@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "877a727200ddd6f7b7fa0ae0d76fda071e53e94916f7f888d2c35ee17b81b89f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "벽지 벽면(윗줄, 초록 줄무늬 벽지 + 천장 몰딩)",
+ "label": "steampunk-city/sp-wall-panel-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile with ceiling molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an interior wall face with upper ceiling trim/molding in standard top-down JRPG format.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3948
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall face with ceiling molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing an interior vertical wall face with top ceiling trim/molding and green patterned wallpaper; standard RPG Maker style wall tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall surface with ceiling molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile with ceiling molding at rows 0-2 and patterned green wallpaper below, correctly representing a vertical interior wall surface in top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4632
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wallpaper wall face with ceiling molding",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Interior wall tile with top ceiling molding and green wallpaper pattern, properly classified as terrain (wall face).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4686
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "1c0e6fd875f562d6"
+  ],
+  "24": [
+   "05cab9e81f34a090",
+   "85e6732c6787aa0f",
+   "a8885e7998adf141",
+   "b1c1908c6c168dd5",
+   "c0a5cf999d2efbc6",
+   "da8d7e5e7f5a1d83"
+  ],
+  "32": [
+   "49e77ac5be6e3951",
+   "62123a25aad3d1d8",
+   "6665578f4ac0b031",
+   "cbfd109cfd22cd34",
+   "d6da0b2bc6d1a2bb",
+   "f5bc2fb4ea78ae4d"
+  ],
+  "48": [
+   "0a2dfd182a8b500a",
+   "0d8bfd853584e41d",
+   "18dfee28166d18be",
+   "44f47afce3d55c99",
+   "7d2e6a90249f1f9e",
+   "ae62b1a54faf835b"
+  ]
+ }
+}

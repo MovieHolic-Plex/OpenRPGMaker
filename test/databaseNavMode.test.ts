@@ -43,7 +43,7 @@ describe("database navigation", () => {
     // textContent 를 그대로 쓰면 라벨 계약이 아니라 헤더 전체를 재게 된다.
     const groups = Array.from(nav.querySelectorAll(".db-tab-group-label")).map((group) => group.textContent);
     expect(groups).toContain("파티");
-    expect(groups).toContain("몬스터");
+    expect(groups).toContain("전투");
     expect(groups).toContain("시스템");
 
     // 접힌 그룹 안에 있어도 모든 탭이 레일에 존재해야 한다(교차 탭 이동 계약).
@@ -53,13 +53,10 @@ describe("database navigation", () => {
     expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBeNull();
   });
 
-  it("keeps grouped navigation with explicit monster and life domains", () => {
+  it("keeps 6 grouped navigation domains (story, party, battle, map, life, system)", () => {
     const host = renderPanel();
     const groups = host.querySelectorAll(".db-tab-group-label").map((group) => group.textContent);
-    // 몬스터는 전투 규칙과 분리된 독립 그룹이다 — 예전 `전투·몬스터` 한 덩어리(9탭)가 아니다.
-    expect(groups).toContain("몬스터");
-    expect(groups).toContain("전투 규칙");
-    expect(groups).toContain("생활");
+    expect(groups).toEqual(["이야기", "파티", "전투", "맵", "생활", "시스템"]);
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
 
@@ -112,5 +109,45 @@ describe("database navigation", () => {
     expect(findByTestId(host, "db-nav-all")).toBeNull();
     expect(directTabIds(nav)).toContain("db-tab-spatial-tiles");
     expect(findByTestId(nav, "db-tab-spatial-tiles")?.closest("details")).toBeNull();
+  });
+
+  it("interview.genre 가 있는 프로젝트는 장르 프로필 탭을 「숨긴 탭 N개 · 모두 보기」로 접고 클릭·점프 시 펼친다", () => {
+    store.update((project) => {
+      project.gameDesignBrief = {
+        version: 1,
+        presetId: "story-cutscene",
+        answers: {
+          experience: { question: "q", label: "l", text: "a", source: "user" },
+          activity: { question: "q", label: "l", text: "a", source: "user" },
+          progression: { question: "q", label: "l", text: "a", source: "user" },
+          detail: { question: "q", label: "l", text: "a", source: "user" },
+          scope: { question: "q", label: "l", text: "a", source: "user" },
+        },
+        summary: "연애 기획",
+        interview: {
+          version: 1,
+          genre: "romance",
+          concept: "연애",
+          protagonist: "주인공",
+          notes: "",
+          choiceIds: {},
+        },
+      };
+    });
+    const host = renderPanel();
+    const battleFold = findByTestId(host, "db-tab-fold-battle")!;
+    const partyFold = findByTestId(host, "db-tab-fold-party")!;
+    expect(battleFold.hidden).toBe(false);
+    expect(battleFold.textContent).toContain("숨긴 탭 9개 · 모두 보기");
+    expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(true);
+    expect(partyFold.hidden).toBe(false);
+    expect(partyFold.textContent).toContain("숨긴 탭 2개 · 모두 보기");
+    expect(findByTestId(host, "db-tab-classes")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-tab-skills")?.hidden).toBe(true);
+
+    // 「모두 보기」 클릭 시 해당 그룹의 숨긴 탭이 모두 펼쳐진다.
+    battleFold.click();
+    expect(battleFold.hidden).toBe(true);
+    expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(false);
   });
 });

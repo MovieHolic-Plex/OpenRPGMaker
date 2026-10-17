@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e82e165953d4d5d8eed64e7c2e086e4be1b0449ca62b213842f446a2a5a2b30",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel seen from above at an angle: big light elliptical lid on top, curved iron hoops",
+ "label": "pirate-isles/pi-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel has a prominent elliptical top lid spanning rows 2 to 5 (4 rows tall) viewed from above, atop a curved front body with iron hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4231
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A clear elliptical wooden lid surface is visible across rows 1-6 (~5 rows tall), showing plank lines from above, above the front vertical barrel wall with metal hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel has a prominent foreshortened elliptical wooden lid spanning rows 1-5, with the cylindrical front body extending from row 6 down to row 13 with curved metal hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3918
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the barrel is drawn as an elliptical wooden surface spanning rows 1-5 (about 4-5 source pixel rows tall) with visible vertical plank lines, showing proper 3/4 perspective atop the south-facing cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4631
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:03.665Z",
+ "cells": {
+  "16": [
+   "7f9da1c598da32cb"
+  ],
+  "24": [
+   "0ab464711f0e7e6d",
+   "1c7f7276e211f0b1",
+   "289debf5ab6cb9f4",
+   "6bd241dedeb8d049",
+   "a497607f1e6ba5e2",
+   "c97a21f53fdf76e3"
+  ],
+  "32": [
+   "0255ec2b836b1d8f",
+   "079ac081642cfa38",
+   "386643d6c1654436",
+   "6674da271a491b19",
+   "72f350c62d93ce0a",
+   "a8e45fedf990f489"
+  ],
+  "48": [
+   "0b7383774625cfb7",
+   "4f199c99c4f2a7a1",
+   "59f417e1df34e920",
+   "a701a464c79d4dc7",
+   "eb2965bea22022b7",
+   "f0357b814a749a37"
+  ]
+ }
+}

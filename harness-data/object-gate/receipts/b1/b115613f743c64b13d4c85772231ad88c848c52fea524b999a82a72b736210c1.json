@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b115613f743c64b13d4c85772231ad88c848c52fea524b999a82a72b736210c1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "flagstone path on grass (terrain)",
+ "label": "sky-island/si-path-2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone path on grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain ground tile showing stepping stones on grass seen from 3/4 top-down perspective with visible top surfaces and south edge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone stepping stones on grass",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing stepping stones resting on grass, viewed from above with stones displaying both top face and minor south edge thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4337
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone path on grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a flagstone path embedded in grass seen from above in standard 3/4 perspective, with stepping stones displaying top surfaces and shaded southern edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4793
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone path terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting flagstones embedded in grass, showing the top surfaces of the stones with south-edge thickness and shadows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5038
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.888Z",
+ "cells": {
+  "16": [
+   "0e847b7d1a387e50"
+  ],
+  "24": [
+   "2213fb3776d1c432",
+   "3063c5dc21aa5843",
+   "4266132b9bb18ddc",
+   "ba7d8ceffdf1119f",
+   "c792714f43fd82b9",
+   "f4665d3ee1c5dff7"
+  ],
+  "32": [
+   "0abd3fb407f7d5d7",
+   "2d7ffee52db56170",
+   "30477750ba6eb2b2",
+   "6c7c0fe52d56912f",
+   "cc8ab73e743ab22d",
+   "f9b9677c4cd91446"
+  ],
+  "48": [
+   "1d31cb330592b5fa",
+   "4899d4fbb90dbbe7",
+   "74a862e82d1a3129",
+   "7d47434200a678be",
+   "8828711683620f76",
+   "9ec0bd69b26a686b"
+  ]
+ }
+}

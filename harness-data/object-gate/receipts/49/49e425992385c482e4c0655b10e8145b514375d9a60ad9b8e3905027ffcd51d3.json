@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49e425992385c482e4c0655b10e8145b514375d9a60ad9b8e3905027ffcd51d3",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp/jp-bwallf-end-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary/building wall section with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of a grey patterned tile roof surface visible above the dark eave line at row 4 before the vertical wall face begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12026
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall is topped with a 4-pixel-tall tiled roof cap (rows 0-3) seen from above at a 3/4 angle, resting over the vertical front face and stone base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese-style wall section with roof cap and foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top edge shows 4 rows (rows 0-3) of patterned roof tiling viewed from above before the dark eaves line at row 4 and the vertical wall face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7150
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese style building wall section with roof coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel deep tiled roof coping/top surface above the vertical wall face and stone base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6473
+  }
+ ],
+ "decidedAt": "2026-10-13T13:24:46.392Z",
+ "cells": {
+  "16": [
+   "5baf56d775c3d098",
+   "735060f5024cd7aa"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "07e3529a814c8b9e",
+   "3f7bfd7c86fc3dda",
+   "51b7c74eea70b62e",
+   "853fb4f451814e41",
+   "89c2d477919a6d41",
+   "92d5aaebc7e94f55",
+   "b2c4552ba80f2d08",
+   "b37124a3ba7c7a65",
+   "e7b8afe2dce2e898",
+   "fd4c9f93e787701a",
+   "fee4aa0c3a28aef4"
+  ],
+  "32": [
+   "806826c86f4b918f",
+   "c01fadd178e8dbe4",
+   "c410f2a7d181e8e0"
+  ],
+  "48": [
+   "272b0546bd405976",
+   "2740b88793bdc166",
+   "6a1e775bdb1266fb",
+   "9f0f69fc6521a42e",
+   "bd4724349952881f",
+   "c79c10db2c79e041"
+  ]
+ }
+}

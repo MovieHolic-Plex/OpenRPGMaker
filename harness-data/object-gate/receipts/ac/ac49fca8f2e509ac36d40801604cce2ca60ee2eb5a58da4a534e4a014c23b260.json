@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac49fca8f2e509ac36d40801604cce2ca60ee2eb5a58da4a534e4a014c23b260",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp_city/street_hand/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object consists of flat horizontal bands from row 0 to row 14 with a 1px top outline at row 0, showing no foreshortened top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3861
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / barrier panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier consists of purely horizontal stripes with 1px border lines and no visible foreshortened top surface (top_rows=0), drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6863
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail fence / barrier panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier is depicted entirely as flat horizontal stripes from row 0 to 14 without any visible top-down thickness or foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail fence panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier is rendered entirely as horizontal parallel bands and flat vertical panels without any visible top surface (row 0 is only a 1px outline). It is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3691
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.381Z",
+ "cells": {
+  "16": [
+   "b0458c48f1fcaeaf"
+  ],
+  "24": [
+   "33e5c1c390bfda63",
+   "3f8ed6a00f0081cf",
+   "40032bced8df0494",
+   "7e7f97a793b3eca0",
+   "b50d0f35a91ed74f",
+   "d9ff65b66caf95ae"
+  ],
+  "32": [
+   "12ff9fc6094b03bb",
+   "33416760744ebc93",
+   "3d3300bd9304a35d",
+   "55a5dd6c619ca7f2",
+   "9015e52b6e60ed52",
+   "a5f402e51b2798f4"
+  ],
+  "48": [
+   "3d39a5a127cb169c",
+   "3daef106e7fba70b",
+   "791e9b09aebfa4f1",
+   "8e0946cddeda226f",
+   "978907aa92ae62de",
+   "e0ee80c30aecf7a1"
+  ]
+ }
+}

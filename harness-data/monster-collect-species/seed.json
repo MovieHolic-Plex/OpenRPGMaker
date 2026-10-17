@@ -3,7 +3,7 @@
   "style": {
     "reference": "Pokemon Black and White (Nintendo DS, 2010)",
     "maxColors": 20,
-    "canvas": 112,
+    "canvas": 64,
     "avoid": [
       "Bulbasaur",
       "Ivysaur",
@@ -11,7 +11,33 @@
       "Charmeleon",
       "Squirtle",
       "Leafeon",
-      "Eevee"
+      "Eevee",
+      "Pidgey",
+      "Pidove",
+      "Torchic",
+      "Rowlet",
+      "Weedle",
+      "Caterpie",
+      "Wurmple",
+      "Venipede",
+      "Pikachu",
+      "Geodude",
+      "Rhyhorn",
+      "Wooloo",
+      "Diglett",
+      "Krabby",
+      "Horsea",
+      "Seadra",
+      "Zigzagoon",
+      "Totodile",
+      "Marill",
+      "Zoroark",
+      "Gligar",
+      "Wooper",
+      "Quagsire",
+      "Fennekin",
+      "Skiddo",
+      "Sceptile"
     ]
   },
   "animation": {
@@ -89,8 +115,11 @@
       ],
       "stage": 1,
       "starterSet": "first-region",
-      "design": "A young fire newt starter on four legs, low and agile like a lizard: ember-orange back with darker red stripe markings, cream belly, a small crisp pixel flame (drawn with flat pixel colors and a dark outline, not glowing) at the tail tip, head raised alert.",
-      "palette": "ember orange, dark red stripes, cream",
+      "campaignSpeciesId": "mx_species_coalbit",
+      "design": "A baby fire newt starter standing on four tiny stubby legs: a big round head with big eyes and a small cheerful mouth, a plump short rounded body, ember-orange back with two dark red stripes across it, cream belly and cream chin.",
+      "signature": "a huge round tail club - the short thick tail ends in a giant cracked-charcoal ball almost as big as its own head, with glowing orange cracks and one crisp pixel flame tuft on top (flat colors, dark outline, not glowing), so the tail looks like a smoldering mace it drags behind it",
+      "accent": "bright yellow-orange (the glowing cracks and the flame tuft)",
+      "palette": "ember orange, dark red, cream, charcoal grey",
       "motion": {
         "flicker": "flame"
       }
@@ -103,8 +132,11 @@
       ],
       "stage": 1,
       "starterSet": "first-region",
-      "design": "A water axolotl starter standing on four short legs: blue body, pale belly, three feathery external gill fronds on each side of the head in coral pink, a flat paddle tail with a fin along it.",
-      "palette": "blue, pale cream, coral pink"
+      "campaignSpeciesId": "mx_species_rivulet",
+      "design": "A baby axolotl starter standing on four tiny stubby legs: a very big round head with big eyes and a tiny smiling mouth, a soft plump short blue body with a pale cream belly, a short thick paddle tail.",
+      "signature": "an enormous crown of feathery gills - three huge coral-pink fan-shaped gill fronds on each side of the head, spread wide like a flower ruff or frilled collar, each frond as long as the head is wide, so the head with its gills is wider than the whole body",
+      "accent": "coral pink (only the gills)",
+      "palette": "blue, pale cream, navy, coral pink"
     },
     {
       "id": "leafling",
@@ -114,14 +146,181 @@
       ],
       "stage": 1,
       "starterSet": "first-region",
-      "design": "A grass starter inspired by a sprouting acorn and a small fox: four legs, brown seed-shell cap on the head, two large leaves growing from the head like ears, green body with cream chest fur, leafy tail.",
-      "palette": "leaf green, cream, acorn brown",
+      "campaignSpeciesId": "mx_species_spriglet",
+      "design": "A baby grass fox starter standing on four tiny stubby legs: a big round head with big brown eyes and a small brown seed-shell acorn cap on top, a plump short body with green fur and a cream chest tuft, a small leafy tail.",
+      "signature": "two gigantic leaf ears - broad pointed leaves growing from the head, each as tall as its entire body, tilted outward like wide antennas with a visible vein line",
+      "accent": "bright lime green (the leaf ears)",
+      "palette": "leaf green, cream, acorn brown, dark green",
       "emit": {
         "back": {
-          "x": 86,
-          "y": 61
+          "x": 49,
+          "y": 35
         }
       }
+    },
+    {
+      "id": "gustchick",
+      "name": "바람삐",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_gustchick",
+      "design": "A round fledgling bird: a nearly ball-shaped fluffy body with a cream-white puffed chest, big eyes, a short pale-yellow beak, storm-grey stubby wings too small to fly, two tiny three-toed feet, leaning forward into the wind.",
+      "signature": "a gigantic stiff sky-blue three-feather crest swept back like a wind vane, as tall as its whole body",
+      "accent": "sky blue (the crest and tail feathers)",
+      "palette": "storm grey, cream, pale yellow, dark blue"
+    },
+    {
+      "id": "pipbug",
+      "name": "씨앗충",
+      "types": [
+        "bug"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_pipbug",
+      "design": "A baby beetle: a huge domed olive-green shell with ridged plates sitting low on six tiny stubby legs, a small round soft cream-and-brown face with huge shiny eyes peeking out at the front, two short bent antennae.",
+      "signature": "a big seedling growing from the top of the shell - a thick sprout stem with two huge broad leaves, together taller than the whole beetle, like a propeller",
+      "accent": "fresh bright leaf green (only the sprout)",
+      "palette": "olive green, brown, cream, dark green"
+    },
+    {
+      "id": "wickworm",
+      "name": "심지충",
+      "types": [
+        "bug"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_wickworm",
+      "design": "A baby larva: a plump round chubby butter-yellow body with two or three brown bands, a big round head with big eyes, six tiny front legs and stubby rear prolegs, a curled resting posture on the ground.",
+      "signature": "an oversized candle flame - a short curly wick on its head carries a big bright pixel flame as big as its own head (flat colors, dark outline, not glowing)",
+      "accent": "warm orange-red (only the flame)",
+      "palette": "butter yellow, brown, cream, warm orange"
+    },
+    {
+      "id": "rootpig",
+      "name": "뿌리꿀",
+      "types": [
+        "ground"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_rootpig",
+      "design": "A baby boar piglet: a round plump body low to the ground on four stubby legs, a big round head with big eyes and a wide pale snout, earthy brown bristly hide, a small curly root-like tail.",
+      "signature": "a pair of huge twisted root-shaped tusks curving up from its mouth, each as long as its head, with a green sprout growing from each tip",
+      "accent": "fresh green (only the sprouts)",
+      "palette": "earth brown, tan, cream, dark brown",
+      "eyes": "draw TWO clearly visible eyes on the face above the snout - three-quarter view, the near eye bigger; keep the bristly head fur and the tusks away from the eyes so the eyes are not hidden."
+    },
+    {
+      "id": "frondhare",
+      "name": "잎귀토",
+      "types": [
+        "grass"
+      ],
+      "stage": 2,
+      "evolvesFrom": "leafling",
+      "campaignSpeciesId": "mx_species_frondhare",
+      "design": "The evolved form of the leafling fox: it now stands upright on two sturdy legs like a brave young swordsman fox, a slim body and a big round friendly face with a SHORT cute muzzle: the face is large, plain cream, fully visible and in front of the leaves, with big bright round eyes (large dark pupils with a 2x2 white sparkle) - the leaf mane grows only BEHIND and above the head like a collar and never covers the face, the acorn cap grown into a small crown, a long leaf-blade tail like a green sword.",
+      "signature": "a huge flamboyant mane made of only about eight big broad leaves fanning out from its neck and shoulders like a peacock fan or lion's mane, taller than its head and wider than its body, in layered greens",
+      "accent": "golden yellow (only the tips of the mane leaves)",
+      "palette": "leaf green, cream, acorn brown, dark green"
+    },
+    {
+      "id": "kilnclaw",
+      "name": "가마발",
+      "types": [
+        "fire",
+        "fighting"
+      ],
+      "stage": 2,
+      "evolvesFrom": "sparkit",
+      "campaignSpeciesId": "mx_species_kilnclaw",
+      "design": "The evolved form of the sparkit newt: a sturdy chunky salamander brawler standing up on two thick hind legs with a big round friendly head and a short rounded snout, huge muscular forearms ending in thick dark claws, charcoal-grey armor plates over the shoulders and back, ember-orange cracked skin with dark red stripes, big bright round eyes (large dark pupils with a 2x2 white sparkle, brave but friendly, never tiny slits), a spiked charcoal ridge down its neck.",
+      "signature": "a colossal flaming coal-club tail, far bigger than its head - a huge cracked charcoal mace-ball wrapped in a big crown of crisp pixel flames (flat colors, dark outline, not glowing), raised behind it like a war hammer",
+      "accent": "bright yellow-orange (the flames and cracks)",
+      "palette": "ember orange, charcoal grey, dark red, cream"
+    },
+    {
+      "id": "brookraft",
+      "name": "뗏목랑",
+      "types": [
+        "water"
+      ],
+      "stage": 2,
+      "evolvesFrom": "aqualing",
+      "campaignSpeciesId": "mx_species_brookraft",
+      "design": "The evolved form of the aqualing axolotl: a big sturdy heavy amphibian standing on four thick webbed legs, big bright round eyes (large dark pupils with a 2x2 white sparkle, calm and kind), a broad flat driftwood raft of bark planks lashed on its back like a barge, a blue body with a pale belly, a long thick fin-edged paddle tail.",
+      "signature": "a giant sail-like fan of coral-pink gill fronds, as tall as its whole body, flaring up and back from the head like a great frilled crown",
+      "accent": "coral pink (only the gill fan)",
+      "palette": "blue, pale cream, driftwood brown, coral pink"
+    },
+    {
+      "id": "coralpin",
+      "name": "산호집",
+      "types": [
+        "water"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_coralpin",
+      "design": "A baby crab: a round plump rose-pink shell body low on four stubby legs, two big round eyes on short stalks, small branching coral growths on top of the shell, one tiny claw.",
+      "signature": "one gigantic pincer shaped like an open clam shell, as big as its entire body, raised like a boxing glove, while the other claw stays tiny",
+      "accent": "teal (the clam shell pincer and coral)",
+      "palette": "rose pink, dark rose, pale cream, coral orange",
+      "eyes": "the two eyes sit on short stalks: each eyeball is a pale cream round ball (the light skin area) with a big dark round pupil at least 5 art pixels wide and a 2x2 white highlight square inside it; both eyeballs clearly visible and fully separate from the dark outline."
+    },
+    {
+      "id": "curlfin",
+      "name": "돌돌해마",
+      "types": [
+        "dragon",
+        "water"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_curlfin",
+      "design": "A baby sea-dragon creature sitting upright like a seahorse: a big round head with a short snout, big eyes and a tiny frilled crest, a small plump S-curved teal body with tiny side fins and gold salt-crystal speckles.",
+      "signature": "a huge spiral-curled tail coiled several times like a snail shell and clutching a pebble, as big as its whole body, with a leaf-like fin fringe along it",
+      "accent": "gold (the salt crystals on the tail)",
+      "palette": "teal, dark teal, pale cream, gold"
+    },
+    {
+      "id": "zaptoe",
+      "name": "톡발도마",
+      "types": [
+        "electric"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_zaptoe",
+      "design": "A baby gecko clinging low on four splayed stubby legs with big round toe pads: a big round head with big eyes and a tiny smile, a plump short mustard-yellow body with a white belly and a dark brown zigzag stripe along the back.",
+      "signature": "a huge coiled-spring tail - the tail is a giant ridged coil like a stack of copper rings standing up behind it, taller than its whole body, ending in a bright glowing spark orb",
+      "accent": "electric white-yellow (the spark orb)",
+      "palette": "mustard yellow, dark brown, white, copper"
+    },
+    {
+      "id": "pebblekid",
+      "name": "조약양",
+      "types": [
+        "rock"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_pebblekid",
+      "design": "A baby mountain goat kid on four tiny hooved legs: a big round head with big eyes and a stubborn little frown, a short plump body with a round fluffy cream and grey coat dappled with pebble-like patches, round stone-textured hooves.",
+      "signature": "two enormous spiral horns made of layered grey stone, curling in big ammonite-like swirls, each larger than its whole head",
+      "accent": "dark slate blue (only the stone horns)",
+      "palette": "cream, stone grey, slate brown, dark grey"
+    },
+    {
+      "id": "gritnose",
+      "name": "자갈코",
+      "types": [
+        "ground"
+      ],
+      "stage": 1,
+      "campaignSpeciesId": "mx_species_gritnose",
+      "design": "A baby burrowing mole: a very round plump slate-brown body low on short legs, a big round head with small but clearly readable cheerful eyes, a tuft of grey rock chips on its back, huge shovel-shaped digging claws on both forelimbs.",
+      "signature": "a gigantic wide pale-pink snout bigger than the rest of its head, held high and covered in gritty speckles",
+      "accent": "bright pink (only the snout)",
+      "palette": "slate brown, pale pink, grey, cream"
     }
   ]
 }

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04645fd5286893a08e5a2cbe0b12a7d46a23bfef057ad09a359fac8d8a7d0223",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "벽돌 화덕(위가 트인 불 아가리)",
+ "label": "steampunk-city/sp-furnace",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick hearth / forge with open fire pit",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 1-13) depicts the horizontal hearth bed seen from above, featuring an elliptical fire opening (rows 3-11) with glowing embers inside (rows 6-10, 5 rows visible). The lower section (rows 14-29) depicts the south front face with an ash grate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16743
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick stove / furnace with top cooking opening",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 1-13) represents the top surface of the brick stove deck, featuring a foreshortened elliptical opening (rows 3-11) showing the interior fire/coals from above (opening interior spans rows 6-10, approx 5 rows). The front south face spans rows 14-29 with an ash/firebox door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick hearth forge with top firepot and lower ash door",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is divided into a horizontal brick hearth top (rows 2-13, featuring a highlighted projecting front ledge at row 13 casting a shadow on row 14) and a front south face (rows 14-29). The firepot opening is drawn as an ellipse viewed from above across rows 3-11 with visible back rim, interior firebed, and front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7816
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick hearth / stove",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth has a prominent foreshortened top surface (rows 1-13) showing an elliptical top opening into the fire (yellow interior with embers, rows 6-9), while the front face (rows 14-29) shows a lower grate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6763
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.465Z",
+ "cells": {
+  "16": [
+   "144ac65c65c0075a",
+   "259e8e6c41899622",
+   "c0b52df3cc276a1d",
+   "dc240e4e23e04354"
+  ],
+  "24": [
+   "2bf7c6d3b778f1b8",
+   "43cad7b6127e7a77",
+   "48a944e946231098",
+   "4bbd68386b509c48",
+   "601abeaf4e07787d",
+   "631ba876275013f6",
+   "784c6a2aa1f501bf",
+   "841cceb037b3f91f",
+   "874a1766b33c62e2",
+   "87d92076c9fa0f68",
+   "8b44f0c3fbf44f2a",
+   "8c006f29a84eeebd",
+   "a4c3a4f59f244584",
+   "aab9a9eae842b249",
+   "af2db58db51f578f",
+   "cce94cbae751163c",
+   "d123ef1ee5beccbd",
+   "d2121ad64788d12f",
+   "d60d7c3f8e09096e",
+   "da5bf7ee1e9fcad4",
+   "e5462b344de9278b",
+   "e8febac39b828ba9",
+   "f8137eebeebb79d1",
+   "fa6daf0d4f83ccaf"
+  ],
+  "32": [
+   "f6bf136b3d48dd9f"
+  ],
+  "48": [
+   "14436b0823fce50c",
+   "35bf90d581683a4e",
+   "7d2551698bbee0c7",
+   "9bc917908d7e20a3",
+   "b3109d2d4dbf8024",
+   "c69988b30d88bd8e"
+  ]
+ }
+}

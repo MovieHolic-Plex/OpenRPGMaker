@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a5cc5b2410db1ed65281a1a29c9f649875cf42c4d6e1e40cef50349bfd9a3a5",
+ "width": 32,
+ "height": 48,
+ "kind": "other",
+ "name": "병상 칸막이 커튼",
+ "label": "jp_city/interior_hospital/hs-curtain-wide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital divider curtain hanging from an overhead track",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and its overhead track are rendered in flat front elevation with 0 rows of visible top surface; neither the top of the track nor the top depth of the curtain pleats are seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7262
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bed partition curtain hanging from a ceiling rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and ceiling track are drawn entirely in straight front elevation with 0 visible top rows. The rail and pleated fabric show no foreshortened horizontal depth from the 45-degree overhead camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5689
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bed divider curtain hanging from a ceiling rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and its top rail are drawn completely in flat front elevation with no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital partition curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and its top mounting rail are drawn completely flat from the front with 0 rows of visible top surface on either the rail or the curtain body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6375
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.916Z",
+ "cells": {
+  "16": [
+   "03b1addcb365f135",
+   "1a88ad8d62fd7fbf",
+   "2a7684c2ed9a468a",
+   "2b8a7a43906cad38",
+   "8a2740368154a53e",
+   "a15c79729f36c33c"
+  ],
+  "24": [
+   "0473a24d4f6b9af1",
+   "05d0532e5911ab45",
+   "54ddd4b81ac30dd9",
+   "6b56705f969407c7",
+   "86fa911beb7df1b5",
+   "963221d20da88786",
+   "976f659eb7ec9f5e",
+   "9fc900b724eca7f4",
+   "abec509fe93a7dd2",
+   "ac34fc10cef2fbc3",
+   "ee61a3c72436463f",
+   "fb7bc9b7ef895df0"
+  ],
+  "32": [
+   "02d462e8fdf60ae3",
+   "3c8dab63b070f3b8",
+   "ba593358a0089623",
+   "e831b5a59b7ae2e4"
+  ],
+  "48": [
+   "5cd7e1f893e14271",
+   "9fbc2f2dae74599f",
+   "e5e26d6932c77db6"
+  ]
+ }
+}

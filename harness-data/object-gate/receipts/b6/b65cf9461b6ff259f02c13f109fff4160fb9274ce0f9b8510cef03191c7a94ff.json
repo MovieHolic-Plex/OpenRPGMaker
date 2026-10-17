@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b65cf9461b6ff259f02c13f109fff4160fb9274ce0f9b8510cef03191c7a94ff",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "prehistoric stone-age stone circle",
+ "label": "prehistoric/ph-stone-circle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone-age stone circle with standing stones",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The standing stones show clear top caps (around 4-6 source pixels tall) above vertical south faces, arranged around a foreshortened circular dirt clearing seen from above at roughly 45 degrees.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone circle with central dirt clearing",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central dirt ground is drawn as an elliptical surface spanning roughly 20 source pixel rows (rows 16-36). The foreground standing stones clearly show foreshortened lighter top surfaces 4-5 rows tall before their darker south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone-age stone circle with central dirt clearing and standing megaliths",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle is arranged around a foreshortened elliptical ground surface 20 rows tall in proper 3/4 perspective. The standing stones are arrayed around the rim with the rear stones elevated relative to the foreground stones, and individual stones feature 4-5 rows of visible top beveling/surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6349
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone circle with central dirt ground and megaliths",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle consists of a prominent elliptical dirt clearing (rows 16-36, ~20 rows tall) viewed from above, surrounded by standing stones that clearly show top surfaces (3-5 rows each) foreshortened above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3408
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.942Z",
+ "cells": {
+  "16": [
+   "07dfe692b391978c",
+   "12ec544d530173e8",
+   "220d03439d9469e5",
+   "223942193d0544f9",
+   "5c68c749de6837cc",
+   "809ab7361da68156",
+   "9c0b0c127fafd715",
+   "a7eb1045e781b119",
+   "bf838a98665edb34",
+   "c066fdd97fa618f9",
+   "d73498072d2cd3b2",
+   "e5a63180345578ed"
+  ],
+  "24": [
+   "1665f6aca5f4f648",
+   "17ffabbf6704085b",
+   "1873216e59ae354a",
+   "1f396d9f6da5a519",
+   "26c2691e7a2a5242",
+   "2bf4414c4adfbea9",
+   "4194cf1de408fe7f",
+   "43eaf2e3213cc403",
+   "63e4e4c01c719f36",
+   "71743b7e67977a6e",
+   "74b12c9cce04f35a",
+   "8056d52d358a80a4",
+   "8443a97042f5d5be",
+   "8b9d085e012fd503",
+   "8e4c1a9d87046051",
+   "978c604517e5ca64",
+   "dd8872be5306a9c3",
+   "e1882249b59ca1ad"
+  ],
+  "32": [
+   "0d66540cd39e7cc4",
+   "45b53072a51544ba",
+   "4e447d9a9df8cab4",
+   "5c81c8c82685e80e",
+   "6edd1e9ccf2a1e52",
+   "75d36d1d2fa3e65b",
+   "7a0567e4d1890db2",
+   "fbdac889d5d4b04e"
+  ],
+  "48": [
+   "3144f1487fb9d9b3",
+   "398fdd5b08d0bcf9",
+   "6060cc1c2a794644",
+   "639c1ca41c56d142",
+   "65e14949125613c7",
+   "da0ae53eb385c9f9"
+  ]
+ }
+}

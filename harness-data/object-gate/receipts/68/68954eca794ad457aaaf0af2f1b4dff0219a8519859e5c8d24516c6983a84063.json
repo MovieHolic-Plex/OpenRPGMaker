@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68954eca794ad457aaaf0af2f1b4dff0219a8519859e5c8d24516c6983a84063",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "우산 비닐 씌우는 받침(傘袋スタンド)",
+ "label": "jp_city/interior_office2/ox-umbrella-bagger",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "umbrella bag dispenser stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stand is drawn in pure flat front elevation. The top edge at row 2 is just a 1px outline with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5340
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "umbrella bag dispenser stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stand is drawn as a flat front elevation enclosed by a 1px outline at row 2 with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5911
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "umbrella bag dispenser stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire dispenser stand is drawn in flat front elevation with a straight horizontal top outline at row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5211
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "umbrella bag dispenser stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire dispenser is drawn in straight front elevation with only a 1px outline at row 2; no top horizontal surface or top rim openings are foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5295
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.920Z",
+ "cells": {
+  "16": [
+   "8aedfb2db12affb5",
+   "9ac330e8602a85f3"
+  ],
+  "24": [
+   "1cffbb0d16f1a438",
+   "358192c417a53b48",
+   "68f0d1145321b17f",
+   "7a2b7299daaf2f01",
+   "80e3e426ff7977e5",
+   "9e3b6b37cff010f5",
+   "bae95fd3240124f3",
+   "cc6503ae8621b1b0",
+   "cfaa4a8d40b14a97",
+   "d2db9644f770656f",
+   "d34e350a395cf0f6",
+   "f14ae0e0254f763a"
+  ],
+  "32": [
+   "0392dab8aa781ff1",
+   "9161daedbe83a279",
+   "b1d25f3784590cb4"
+  ],
+  "48": [
+   "1ccac85d18cf1ceb",
+   "2c0cddec43375369",
+   "6e3e0000d4b7f468",
+   "75cfcc7d70782516",
+   "79dcdbd4db0f442c",
+   "cd12a1113330ecea"
+  ]
+ }
+}

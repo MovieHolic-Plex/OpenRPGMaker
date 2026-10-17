@@ -69,6 +69,11 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   recovery: FARMING_LIFE_UI_ASSETS.buildings,
 };
 
+/** 몬스터만 낚이는 낚시터(catches 비어 있음)는 도감에 올릴 어종이 없다 — 그것만으로 생활 기록 메뉴를 만들지 않는다. */
+function fishingHasLedgerData(project: Project): boolean {
+  return project.system.fishing?.enabled === true && project.system.fishing.spots.some((spot) => spot.catches.length > 0 || (spot.monsterCatches?.length ?? 0) === 0);
+}
+
 /** Project-authored life packages only. Session claims are checked separately. */
 export function hasProjectLifeLedgerData(project: Project): boolean {
   return project.system.shipping?.enabled === true
@@ -82,7 +87,7 @@ export function hasProjectLifeLedgerData(project: Project): boolean {
     || (project.database.homeDecorationTypes?.length ?? 0) > 0
     || (project.session.farmBuildingPlacements?.length ?? 0) > 0
     || (project.session.homeDecorationPlacements?.length ?? 0) > 0
-    || project.system.fishing?.enabled === true
+    || fishingHasLedgerData(project)
     || project.system.seasonalForage?.enabled === true
     || project.system.collections?.enabled === true
     || project.system.museum?.enabled === true;
@@ -176,7 +181,7 @@ function availableLifeLedgerTabs(project: Project, session: PlaySession): readon
     || (project.session.homeDecorationPlacements?.length ?? 0) > 0) {
     tabs.push("spaces");
   }
-  if (project.system.collections?.enabled || project.system.fishing?.enabled || project.system.seasonalForage?.enabled) {
+  if (project.system.collections?.enabled || fishingHasLedgerData(project) || project.system.seasonalForage?.enabled) {
     tabs.push("collections");
   }
   if (project.system.museum?.enabled) tabs.push("museum");

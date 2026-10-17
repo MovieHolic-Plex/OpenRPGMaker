@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a836fed1a883f3821c4e0dd350fd3143fcb8be31a04ac8806826d9e4232d26bd",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "승강기 문(사다리꼴 윗면 문틀 + 두 장 미닫이 + 층 표시 램프)",
+ "label": "sf-station/sf-elevator-door",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator door with upper lintel/casing and sliding panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper trapezoidal section (rows 1-11) is a flat front-facing lintel/wall containing the elevator floor indicator display. The top edge terminates at row 0 with only a 1px outline, showing no top surface or receding roof/casing depth from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7282
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire elevator is drawn in pure front elevation. The upper section (rows 2-11) is a chamfered front transom/lintel bearing the floor indicator screen, rather than a top surface seen from above. There is no horizontal top surface showing depth (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14476
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator portal structure",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The elevator structure features a distinct, 10-pixel tall (rows 2-11) trapezoidal top surface that tapers backward in standard 3/4 perspective, contrasting with the vertical south-facing front facade (rows 12-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6885
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator entrance casing and lintel",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slope/surface of the elevator casing (rows 1-11) is prominently foreshortened and shaded lighter than the vertical front face (rows 12-30), fulfilling the requirement for lintel top surfaces in structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12757
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "0d3011efb59106bb",
+   "3da74348b13532fc",
+   "adda92ec7f79014a",
+   "e656d9c020604987"
+  ],
+  "24": [
+   "0a91061f1bd4871d",
+   "0b36b4f9e1e026e1",
+   "1bd0388afb8844cd",
+   "215db602c91e09ee",
+   "29f4849d8368feb1",
+   "2e00ea01a16414e5",
+   "43d281afb02b7f08",
+   "474f5523084fb503",
+   "5f75923254ca2ba4",
+   "6a7b4335310bb507",
+   "6b8fc3cfe4cf98c0",
+   "6d12b776afbb4374",
+   "8bc7bb9f08358cfa",
+   "a18774340437368b",
+   "afc18b2ef966b935",
+   "b452b8a319dbf0b9",
+   "b59ae10e38f37cd0",
+   "c2efc6a076aad211",
+   "d65a16dfba134444",
+   "d9132a249f6bad07",
+   "e247a737d5757f6e",
+   "e6504ee90608843e",
+   "eb9ac200f4193046",
+   "fa807202841c5121"
+  ],
+  "32": [
+   "6db98a31edc1ec2e"
+  ],
+  "48": [
+   "12a325ddd901f5bb",
+   "1cd2f00a56f0fdf3",
+   "65a8422fa8209888",
+   "86fae5e60c5fd483",
+   "abebb7f927d4573a",
+   "e504dea57365429c"
+  ]
+ }
+}

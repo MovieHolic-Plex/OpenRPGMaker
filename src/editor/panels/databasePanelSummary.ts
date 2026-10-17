@@ -64,6 +64,7 @@ function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefine
     case "elements":
     case "switches":
     case "system":
+    case "menuSystem":
     case "terms":
     case "terrain":
     case "tilesets":

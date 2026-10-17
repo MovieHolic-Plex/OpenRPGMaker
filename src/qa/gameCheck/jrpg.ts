@@ -37,6 +37,9 @@ function statKey(battler: { maxHp: number; maxMp: number }): string {
   return [battler.maxHp, battler.maxMp].join("/");
 }
 
+/** 파티 안 최대 능력치 편차(최대값 대비)가 이보다 작으면 역할 구분 없는 파티다. */
+const FLAT_ROLE_SPREAD = 0.15;
+
 export function checkJrpg(project: Project): Finding[] {
   if (project.system?.genre !== "adventure-jrpg" && project.gameDesignBrief?.presetId !== "adventure-jrpg") return [];
   const findings: Finding[] = [];
@@ -52,12 +55,28 @@ export function checkJrpg(project: Project): Finding[] {
   }
   if (battlers.length >= 2) {
     const keys = new Set(battlers.map(statKey));
-    if (keys.size === 1) {
-      const b = battlers[0]!;
+    // 같은 몸이 셋 이상이면 한 명만 다른 이름(탈것 배우 등 합류 명령이 있는 비-인물)이 섞여도 막는다 — jrpg-loop-3 ff2: 「actor_airship」 합류가
+    // 로스터에 끼어 카일·가렌·엘레나(전부 HP514·MP43)가 이 검사를 통과했다.
+    const groups = new Map<string, typeof battlers>();
+    for (const battler of battlers) groups.set(statKey(battler), [...(groups.get(statKey(battler)) ?? []), battler]);
+    const sameBody = [...groups.values()].sort((a, b) => b.length - a.length)[0]!;
+    if (keys.size === 1 || sameBody.length >= 3) {
+      const b = sameBody[0]!;
       findings.push({
         severity: "warning", code: "jrpg-party-identical-stats",
-        message: `파티원 ${battlers.map((x) => x.name).join("·")} 의 Lv1 체력·마력이 전부 같습니다(HP ${b.maxHp}·MP ${b.maxMp}·공 ${b.attackPower}·방 ${b.defense}·마 ${b.mind}·민 ${b.agility}) — 전투에서 역할 차이가 기술 목록뿐입니다. 런타임은 배우의 parameterCurves 를 쓰고, 직업(class) 곡선은 직업 변경 때만 씁니다.`,
+        message: `파티원 ${sameBody.map((x) => x.name).join("·")} 의 Lv1 체력·마력이 전부 같습니다(HP ${b.maxHp}·MP ${b.maxMp}·공 ${b.attackPower}·방 ${b.defense}·마 ${b.mind}·민 ${b.agility}) — 전투에서 역할 차이가 기술 목록뿐입니다. 런타임은 배우의 parameterCurves 를 쓰고, 직업(class) 곡선은 직업 변경 때만 씁니다.`,
       });
+    }
+    // 같지는 않아도 역할이 갈리지 않은 파티(한두 칸만 살짝 고친 것) — 여섯 능력치 모두 파티 안 편차가 작으면 평평한 파티다.
+    if (keys.size > 1 && battlers.length >= 3) {
+      const stats: Array<(b: (typeof battlers)[number]) => number> = [(b) => b.maxHp, (b) => b.maxMp, (b) => b.attackPower, (b) => b.defense, (b) => b.mind, (b) => b.agility];
+      const spreads = stats.map((get) => { const values = battlers.map(get); const max = Math.max(...values); return max > 0 ? (max - Math.min(...values)) / max : 0; });
+      if (Math.max(...spreads) < FLAT_ROLE_SPREAD) {
+        findings.push({
+          severity: "warning", code: "jrpg-party-flat-roles",
+          message: `파티원 ${battlers.map((x) => x.name).join("·")} 의 Lv1 여섯 능력치 편차가 모두 ${Math.round(FLAT_ROLE_SPREAD * 100)}% 미만입니다 — 역할(전사·마법사·도적)이 능력치로 갈리지 않습니다. upsert_actor.parameterCurves 로 전사는 체력·방어, 마법사는 마력·MP, 도적은 민첩을 높이세요.`,
+        });
+      }
     }
   }
   for (const battler of battlers) {

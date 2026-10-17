@@ -1,4 +1,5 @@
 import { lintHorrorAuthoring } from "./horrorAuthoringLint";
+import { lintHazardEffects } from "./hazardEffectLint";
 // project/lint/projectLint.ts
 // 프로젝트 무결성 정적 검사기. 순수 함수(Node 헤드리스에서도 동작 — 브라우저 전역 접근 금지).
 // 예외를 던지지 않고 모든 문제를 LintIssue 배열로 수집한다(왕복/참조 검증이 throw하면 catch).
@@ -22,12 +23,15 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
 //  - reachability          (error)   opts.reachability 지정 시 도달 불가
+//  - campus-dead-door      (error|warning) 캠퍼스 문 그림이 막혔거나 닿지 못하거나 어디로도 이어지지 않음(lint/campusDoorLint.ts)
 //  - map-location-missing-ref (error) 삭제된 명명 로케이션을 가리키는 이벤트 조건/인카운터
 //  - map-location-degenerate  (warning) 맵 축소로 경계 1×1 까지 눌린 로케이션
 //  - map-location-duplicate-name (warning) 같은 맵 안 로케이션 표시명 중복
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
+//  - ground-support        (error|warning) 던전 키트 맵: 천장·벽 위에 놓인 물체/이벤트, 바닥에 걸린 벽 횃불(error), 허공을 향한 벽(warning)
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
+import { genreLockViolations } from "@/project/genreLock";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { describeShadowedPage, describeUnwrittenSelfSwitchGate, findShadowedPages, findUnwrittenSelfSwitchGates } from "../eventPageShadow";
 import {
@@ -56,8 +60,10 @@ import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } fr
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
 import { clusterRuleLintIssues } from "./clusterRuleLint";
+import { checkCampusDoors } from "./campusDoorLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
+import { groundSupportIssues } from "../groundSupport";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
@@ -99,8 +105,10 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkStoryFlags(project, issues);
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues, opts.clusterMapIds);
+  checkGroundSupport(project, issues, opts.clusterMapIds);
   issues.push(...lintWorldGraph(project));
   issues.push(...lintHorrorAuthoring(project));
+  issues.push(...lintHazardEffects(project));
   checkCharacterIdSocial(project, issues);
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues, analysis);
@@ -109,6 +117,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkShopIntegrity(project, issues);
   checkPresentItemIntegrity(project, issues);
   checkMapNamedLocations(project, issues);
+  checkCampusDoors(project, issues);
   return issues;
 }
 
@@ -683,6 +692,26 @@ function checkClusterRules(project: Project, issues: LintIssue[], mapIds?: reado
   for (const issue of clusterRuleLintIssues(project, mapIds)) issues.push(issue);
 }
 
+/**
+ * 받침 없는 물체·이벤트(error)와 허공을 향한 벽(warning) — 던전 키트가 있는 타일셋의 맵만 본다(project/groundSupport.ts).
+ * 타일이 바뀐 맵(mapIds)만 훑되 이벤트는 모든 맵의 위치를 본다(이벤트는 타일을 안 바꾸고 천장 칸에 놓일 수 있다).
+ * 2026-10-14 사용자 스크린샷: 던전 층에서 횃불·화로·상자·기둥이 허공에 뜨고 상자 이벤트가 천장 칸에 놓여도 run_lint 가 0건이었다.
+ */
+function checkGroundSupport(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
+  const scoped = mapIds ? new Set(mapIds) : null;
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    const full = !scoped || scoped.has(mapId);
+    const found = groundSupportIssues(map, tileset, { events: true, tiles: full });
+    for (const issue of found) {
+      issues.push({
+        severity: issue.severity, code: issue.code, mapId, x: issue.x, y: issue.y,
+        ...(issue.eventId ? { eventId: issue.eventId } : {}), message: issue.message,
+      });
+    }
+  }
+}
+
 // (g) opts.reachability 지정 시 도달 불가 = error.
 function checkReachabilitySpecs(
   project: Project,
@@ -1024,6 +1053,10 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   const actionCombatMaps = maps.filter((m) => m.actionCombat === true);
  const timeEnabled = system.timeSystem?.enabled === true;
 
+  // 0. 장르 잠금 위반 — 잠금을 켠 뒤 허용 밖 칩셋으로 생긴/바뀐 맵(조수 경로는 거부하지만 손 편집·옛 도구 경로는 못 막는다). 잠금 이전부터 있던 맵은 경고하지 않는다.
+  for (const violation of genreLockViolations(project).filter((entry) => !entry.preexisting)) {
+    issues.push({ severity: "warning", code: "opt-in:genre-lock-violation", mapId: violation.mapId, message: `맵 ${violation.mapId}「${violation.mapName}」이 장르 잠금 밖 칩셋(${violation.tilesetId})을 씁니다 — 허용 계열은 check_genre_lock 로 확인하세요.` });
+  }
   // 1. monsterCollection && no species
   if (system.monsterCollection === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-collection-empty", message: "포획이 활성인데 몬스터 종족이 0 — 전투에 포획 명령이 나타나지 않습니다." });
@@ -1089,7 +1122,8 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   if (system.genre === "action-rpg" && system.actionCombat?.enabled !== true) {
     issues.push({ severity: "warning", code: "opt-in:genre-action-no-system", message: "장르가 2D 액션 RPG이나 액션 전투 시스템이 꺼져 있습니다." });
   }
-  if (system.genre === "monster-collect" && system.monsterCollection !== true) {
+  // monsterCollection:false 는 「포획 없음」 선언(configure_monster_system capture:false)이다 — 꺼두고 잊은 것(undefined)만 경고한다.
+  if (system.genre === "monster-collect" && system.monsterCollection === undefined) {
     issues.push({ severity: "warning", code: "opt-in:genre-monster-collect-no-collection", message: "장르가 몬스터 수집이나 포획(monsterCollection)이 꺼져 있습니다." });
   }
   if (system.genre === "farm-life") {

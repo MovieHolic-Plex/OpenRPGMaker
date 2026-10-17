@@ -1,5 +1,7 @@
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
-import { imageAssetPrompt, prepareImageAssetRequest, type ImageAssetKind } from "@/editor/tools/imageAssetTools";
+import { generateDotArt, type GenerateDotArtRequest } from "@/ai/dotTextArt";
+import type { DotTextImage } from "@/ai/dotTextImage";
+import { imageAssetDotPrompt, imageAssetPrompt, prepareImageAssetRequest, type ImageAssetKind } from "@/editor/tools/imageAssetTools";
 import { ToolError } from "@/editor/tools/types";
 import { genId } from "@/util/id";
 
@@ -8,7 +10,11 @@ const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/
 export type ImageAssetGenerationRequest = {
   readonly signal?: AbortSignal;
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
+  /** pixel:true(도트 아이콘) 일 때 쓰는 도트 저작 모델 호출. 생략하면 설정의 도트 저작 모델(src/ai/dotTextArt.ts). */
+  readonly generateDot?: (request: GenerateDotArtRequest) => Promise<DotTextImage>;
 };
+/** pixel:true 아이콘의 한 변(px). */
+const PIXEL_ICON_PX = 32;
 
 export type ImageAssetGenerationResult =
   | { readonly ok: true; readonly kind: ImageAssetKind; readonly resourceId: string; readonly name: string; readonly prompt: string; readonly tags: string[]; readonly dataUrl: string }
@@ -27,10 +33,14 @@ export async function generateImageAsset(
   }
   try {
     options.signal?.throwIfAborted();
-    const image = await (options.generateImage ?? generateAiImage)({
-      prompt: imageAssetPrompt(request.kind, request.prompt),
-      signal: options.signal,
-    });
+    // 조수 채팅이 «도트로» 달라고 한 그림(pixel:true)은 이미지 모델이 아니라 도트 저작 모델(텍스트)이 격자로 찍는다.
+    const image = request.pixel
+      ? await (options.generateDot ?? generateDotArt)({ prompt: imageAssetDotPrompt(request.prompt), longSidePx: PIXEL_ICON_PX, purpose: "chat-pixel-art", ...(options.signal ? { signal: options.signal } : {}) })
+      : await (options.generateImage ?? generateAiImage)({
+        prompt: imageAssetPrompt(request.kind, request.prompt),
+        signal: options.signal,
+        purpose: request.kind === "title" ? "title-picture" : request.kind === "backdrop" ? "backdrop" : "picture",
+      });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다.", code: "image-invalid" };
     return {

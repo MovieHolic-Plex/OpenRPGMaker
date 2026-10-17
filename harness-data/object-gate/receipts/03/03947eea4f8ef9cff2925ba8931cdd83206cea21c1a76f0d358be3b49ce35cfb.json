@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03947eea4f8ef9cff2925ba8931cdd83206cea21c1a76f0d358be3b49ce35cfb",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "노송나무 욕조(김 오르는 물)",
+ "label": "sengoku-edo/se-bathtub",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden hinoki bathtub with water inside and steam",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tub is seen from a top-down 3/4 perspective showing the opening filled with blue water (rows 9-28, 20 rows tall), surrounding wooden rim, and the south front wooden wall (rows 32-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3557
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bathtub filled with water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tub displays a clear 3/4 top-down perspective with a large interior opening containing water (rows 9-27, 19 rows tall), a visible horizontal front rim (rows 28-31, 4 rows tall), and a south-facing wooden wall (rows 32-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3583
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bathtub filled with steaming water",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bathtub clearly shows the top rim (rows 7-8, 28-31), the interior water opening seen from above (rows 9-27, 19 rows tall), and the front vertical wooden slats (rows 32-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cypress bathtub",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tub clearly shows its top opening filled with water (rows 9-28), wide front rim (rows 29-31), and front vertical wooden paneling (rows 32-36) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3953
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "0b52fcdebb48904d",
+   "5cd6c09c42557ba9",
+   "86c1ca08120ef829",
+   "95b8ac21144e6fc1",
+   "b9afc2451ae62b77",
+   "fe6217d1acfbbf45"
+  ],
+  "24": [
+   "2ed8eb2858ae7069",
+   "4333269418c5f677",
+   "5370715421f55da8",
+   "639684d07f27c5ba",
+   "7fce817b87358956",
+   "84bc658a8400b909",
+   "a7f109e673f2cdb7",
+   "a89f363875dc32bb",
+   "bd30a88ca5587bc5",
+   "c515d16927609e77",
+   "cbbd18eacc05c865",
+   "d4aaf077a2574f2c"
+  ],
+  "32": [
+   "241f3e155c4d63cb",
+   "3566f536950da6ee",
+   "9d212dc4d0d0cef6",
+   "fc0673b8d36d4eac"
+  ],
+  "48": [
+   "2dcfebe95785fb8f",
+   "5bf5cb2deaceb18e",
+   "fa7586d98cbbfbda"
+  ]
+ }
+}

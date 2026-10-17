@@ -12,6 +12,12 @@
 // 상대 경로 + 확장자로 가져온다: 이 모듈은 브라우저 번들뿐 아니라 **순수 Node**(동반 서비스의
 // scripts/lib/aiAuthRuntime.ts)에서도 로드된다. Node 는 `@/` 별칭도, 확장자 없는 지정자도 풀지 못한다.
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials.ts";
+import {
+  getKnownOpenAiCompatEndpoint,
+  isOpenAiCompatProviderId,
+  listKnownOpenAiCompatEndpoints,
+  openAiCompatSlug,
+} from "./openAiCompat.ts";
 
 /**
  * 자격 증명 종류. 레지스트리에는 oauth 만 남았지만 세 값을 유지한다 — 동반 서비스의
@@ -43,17 +49,17 @@ export type OhMyPiProvider = {
  */
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   {
-    id: CODEX_PROVIDER_ID,
-    label: "ChatGPT",
-    defaultModel: "gpt-6.1-sol",
-    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
-    authKind: "oauth",
-  },
-  {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
     defaultModel: "gemini-4-argon",
     envVars: [],
+    authKind: "oauth",
+  },
+  {
+    id: CODEX_PROVIDER_ID,
+    label: "ChatGPT",
+    defaultModel: "gpt-6.1-sol",
+    envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
     authKind: "oauth",
   },
 ];
@@ -65,21 +71,49 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
 export const DEFAULT_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 /**
- * 새로 설정하는 사용자에게 권하는 제공자. 조수 기능 시험 12과제(2026-10-07, 같은 입력 1회씩)에서
- * gpt-6.1-sol 11/12, gemini-3.8-flash 7/12 — Gemini 는 범위 밖 칸을 바꾸는 실패가 많았다.
+ * 새로 설정하는 사용자에게 권하는 제공자 = Google 계정의 Gemini 4 Argon(사고 강도 medium).
+ * 사용자 결정(2026-10-14): 조수 기본은 Argon medium 이다. 2026-10-07 에는 12과제 시험(gpt-6.1-sol 11/12,
+ * gemini-3.8-flash 7/12)을 근거로 ChatGPT 를 권했으나, 그 뒤 타일 시공은 Gemini 가 훨씬 빠르다는 판단과
+ * Argon 도입으로 기본을 Google 로 되돌렸다. 이미 ChatGPT 를 고른 저장값은 그대로 둔다.
  * 제공자 목록 순서도 이 값을 첫 항목으로 둔다(첫 항목 = 권장값).
  */
-export const RECOMMENDED_OH_MY_PI_PROVIDER = CODEX_PROVIDER_ID;
+export const RECOMMENDED_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 
-export function getOhMyPiProvider(id: string): OhMyPiProvider | undefined {
-  return BY_ID.get(id);
+/**
+ * 사용자 지정(OpenAI 호환) 엔드포인트를 레지스트리 행으로 보이게 한 것. 정적 목록(OH_MY_PI_PROVIDERS)에는 넣지 않는다 —
+ * 사용자가 만들고 지우는 동적 항목이고, 정적 목록의 불변식(첫 항목 = 권장값, 카탈로그와의 짝)을 건드리지 않기 위해서다.
+ * 엔드포인트 목록을 아직 못 받았어도(부팅 직후) id 만으로 행이 만들어져 상태 칩·역할 표가 깨지지 않는다.
+ */
+function compatProviderRow(id: string): OhMyPiProvider {
+  const known = getKnownOpenAiCompatEndpoint(id);
+  return {
+    id,
+    label: known?.name || openAiCompatSlug(id),
+    defaultModel: known?.defaultModel || known?.models[0] || "",
+    envVars: [],
+    authKind: "apiKey",
+  };
 }
 
+export function getOhMyPiProvider(id: string): OhMyPiProvider | undefined {
+  return BY_ID.get(id) ?? (isOpenAiCompatProviderId(id) ? compatProviderRow(id) : undefined);
+}
+
+/**
+ * 저장값·HTTP 경계에서 들어온 제공자 id 를 정규화한다. 정적 레지스트리 id 와 사용자 지정 엔드포인트 id
+ * (`openai-compat:<slug>`)만 통과하고, 그 밖의 값은 fallback 으로 스냅한다.
+ * 엔드포인트가 이미 지워졌어도 id 는 살려 둔다 — 말없이 Google 로 바꿔치지 않고 요청 시점에 「없는 엔드포인트」 오류를 낸다.
+ */
 export function parseOhMyPiProvider(raw: unknown, fallback = DEFAULT_OH_MY_PI_PROVIDER): string {
-  if (typeof raw === "string" && BY_ID.has(raw)) return raw;
+  if (typeof raw === "string" && (BY_ID.has(raw) || isOpenAiCompatProviderId(raw))) return raw;
   return fallback;
+}
+
+/** 설정 화면의 제공자 선택지 — 정적 제공자 뒤에 사용자 지정 엔드포인트가 이어진다. */
+export function selectableOhMyPiProviders(): readonly OhMyPiProvider[] {
+  return [...OH_MY_PI_PROVIDERS, ...listKnownOpenAiCompatEndpoints().map((endpoint) => compatProviderRow(endpoint.id))];
 }
 
 export function ohMyPiOAuthProviders(): readonly OhMyPiProvider[] {
@@ -95,7 +129,8 @@ export function ohMyPiOAuthProviders(): readonly OhMyPiProvider[] {
  * 제공자를 API 키처럼 취급했다).
  */
 export function ohMyPiAuthKind(providerId: unknown): OhMyPiAuthKind {
-  return BY_ID.get(parseOhMyPiProvider(providerId))?.authKind ?? "oauth";
+  const id = parseOhMyPiProvider(providerId);
+  return getOhMyPiProvider(id)?.authKind ?? "oauth";
 }
 
 /**

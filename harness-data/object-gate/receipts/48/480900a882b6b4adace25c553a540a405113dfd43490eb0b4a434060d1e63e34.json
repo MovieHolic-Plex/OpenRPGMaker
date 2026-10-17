@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "480900a882b6b4adace25c553a540a405113dfd43490eb0b4a434060d1e63e34",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain edge tile showing top-down cloud ground surface meeting open sky on the western edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4244
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform edge terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain tile showing the top surface of a cloud edge transitioning into sky, correctly depicted as a top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the vertical edge of a cloud platform against a blue sky backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting the western edge of a cloud platform against blue sky, valid for 3/4 top-down ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3179
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "a7ced5e671cff720"
+  ],
+  "24": [
+   "07362484be686dcb",
+   "0d2ca41fd15f0729",
+   "470b84e8a35ee46e",
+   "5c3ad56d6d48de9a",
+   "d2671e141838685e",
+   "d523e0a7c97d6a5c"
+  ],
+  "32": [
+   "1516aa734e0f5648",
+   "1e539dacf9155945",
+   "4b0cffc1f6d9a4e6",
+   "8b5e4b83b30a7bc2",
+   "ab6c35bccb599066",
+   "dcf92969dbbfd3e5"
+  ],
+  "48": [
+   "0554645aef720f80",
+   "172c563c27257c35",
+   "1eed5fce0c23b604",
+   "2993423aebb0c118",
+   "6491052e366848bc",
+   "a3ea279be0b60681"
+  ]
+ }
+}

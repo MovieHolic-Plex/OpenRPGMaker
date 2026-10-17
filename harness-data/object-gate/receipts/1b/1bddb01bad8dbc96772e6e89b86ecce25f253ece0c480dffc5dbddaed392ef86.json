@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bddb01bad8dbc96772e6e89b86ecce25f253ece0c480dffc5dbddaed392ef86",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "돌계단",
+ "label": "sengoku-edo/se-stone-steps",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone stairs (terrain tile)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts stone stairs consisting of 4 repeating steps; each step clearly shows a 3-pixel-tall foreshortened horizontal tread (top surface) and a 1-pixel dark riser shadow line, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 44131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone stairs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts four stone steps in top-down perspective; each step displays a 3-pixel-tall horizontal tread surface seen from above, separated by 1-pixel riser shadow lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7745
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone stairs terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting stone steps viewed from 3/4 perspective, consisting of four horizontal step treads (3 px deep each) separated by shadow lines, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stairs tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing stone steps. Each step clearly displays a horizontal tread surface approximately 3 source pixels deep followed by a dark 1-pixel riser line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5473
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "99333baad287df5e"
+  ],
+  "24": [
+   "040bb6b1ef8f7145",
+   "146c1d5ca56bb741",
+   "664ff5e8e418aad1",
+   "bb120fd0742360fb",
+   "e7b3cd60c48c0dc4",
+   "f712842ea903c4c9"
+  ],
+  "32": [
+   "05f1ead07a215117",
+   "505db9f0f98e41cb",
+   "78b38fdde3d9e84b",
+   "9a7c18b5f4a3ed18",
+   "d36d6977e781acfa",
+   "d49d756d5a870fe1"
+  ],
+  "48": [
+   "094b38c9e8940a16",
+   "6aead136227072e6",
+   "85c17d49a8e1820d",
+   "b551a9d12ba68df6",
+   "c9322c8d0d971238",
+   "ed47dcc34d3288ac"
+  ]
+ }
+}

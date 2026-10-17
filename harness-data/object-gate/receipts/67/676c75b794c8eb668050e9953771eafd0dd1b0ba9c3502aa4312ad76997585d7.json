@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "676c75b794c8eb668050e9953771eafd0dd1b0ba9c3502aa4312ad76997585d7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "얼어붙은 호수 얼음",
+ "label": "snow-north/sn-ice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "frozen lake ice terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat frozen lake surface (terrain ground tile) seen from above with surface reflections and ice texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "frozen lake ice terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting ice surface with highlights and darker patches, fully visible from above as ground terrain across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2526
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "frozen lake ice ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting frozen lake ice with cracks and highlights spanning all 16 rows of the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "frozen lake ice ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting a frozen lake surface with darker depth spots and light glints covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3446
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:23.951Z",
+ "cells": {
+  "16": [
+   "4f2e2118f40b1ad2"
+  ],
+  "24": [
+   "4f8a47545a2901f4",
+   "58520aaa2aceefce",
+   "7df99d7ea4a66677",
+   "93923bfbc407b9dd",
+   "b7772f6380460172",
+   "f5f13599afea08fa"
+  ],
+  "32": [
+   "2e983d07ba52ed62",
+   "885c18714f3feaed",
+   "9a9b6cc0ee3e089e",
+   "bf70624c4e9c210e",
+   "d32cf26097866dce",
+   "f57fcdc292808efe"
+  ],
+  "48": [
+   "15df5df8a57c12ed",
+   "525bb3d77505951d",
+   "62c129b7b6fb69d0",
+   "8f78a6f4470921e9",
+   "8fbec32a7cc02812",
+   "b44e5a9e34e10828"
+  ]
+ }
+}

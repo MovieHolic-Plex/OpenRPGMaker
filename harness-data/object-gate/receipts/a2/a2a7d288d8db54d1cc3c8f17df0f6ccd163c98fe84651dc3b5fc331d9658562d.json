@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2a7d288d8db54d1cc3c8f17df0f6ccd163c98fe84651dc3b5fc331d9658562d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "배관 도랑 — 세로",
+ "label": "steampunk-city/sp-pipe-ns",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical pipe in a floor trench",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical pipe embedded in a trench viewed from above; spans full height seamlessly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical pipe trench floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical trench tile running north-south with an embedded pipe, viewed from above as terrain across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical pipe in a trench / floor channel",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a vertical drainage trench with a pipe running north-south, correctly viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical pipe trench tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical trench terrain tile depicting a pipe running through an open ditch viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4544
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:09.735Z",
+ "cells": {
+  "16": [
+   "2ebb7ded995dd401"
+  ],
+  "24": [
+   "03c6cf9007950bc5",
+   "7fc618fffaf66454",
+   "a2c7f220cd8b0465",
+   "bf4c56f73afd59a6",
+   "c8fb44794debdb89",
+   "def8066976bc7ea4"
+  ],
+  "32": [
+   "38bfab9bbda39994",
+   "4dba70fb49ce8365",
+   "50b8273e3c5343a4",
+   "90eb1f144c8c77bf",
+   "9db427185f464321",
+   "b892d3c1b24ce995"
+  ],
+  "48": [
+   "0fed2f02908ec6a9",
+   "25eaee13fbf82447",
+   "3fb358b6ce971a8f",
+   "8f4009131adb6cfc",
+   "d4664b2e64daff6a",
+   "d73f15c0bd04aad1"
+  ]
+ }
+}

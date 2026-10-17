@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f55be6b0743b0f909a6eb4c6464d7103a494de1435a41cc1d310f3826e1ba96b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-3-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront with door and window counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cafe facade (door frame, door, window, counter, and upper lintel) is rendered in a flat 2D front architectural elevation with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront building facade with door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the storefront is drawn in pure front elevation; the door frame, lintel, and wall lack any top horizontal surface viewed from above (the door overhang is only a 2px line, and the upper concrete beam is drawn flat).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9580
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafe storefront with entrance door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper beam/frieze (rows 1-8), door frame, and window awning, is drawn as a flat front architectural elevation with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5513
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cafe storefront with door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cafe facade, door frame, lintel, and window are drawn in pure front elevation with no visible top surface or 3/4 perspective depth on any horizontal structural element.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6492
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.385Z",
+ "cells": {
+  "16": [
+   "5757810fc59a2053",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6d8d6a2b2522f31c",
+   "7a7092f87888f7bf",
+   "a18de3840de9dee2",
+   "ad7f4e44a0467922",
+   "b1a8b5449b59fe87",
+   "e5e9db21149868a2"
+  ],
+  "24": [
+   "7ab2f1b10e4870ed",
+   "a97790e10166146e",
+   "c9b98f9e96f14de7",
+   "cb92d3881ce2843b"
+  ],
+  "32": [
+   "02b949686743cd9a",
+   "0599b17577ca757a",
+   "12e1dc79961abfc4",
+   "1a1682bb93b2fea8",
+   "289c6a3e01e6b4d5",
+   "2d883a2ce5ae749f",
+   "31eb0bea7bee1e32",
+   "3497086e85e1f003",
+   "46f19eeccbe8d2a8",
+   "5d28bbcc47e4fb45",
+   "5e3848cb0a83e1ba",
+   "7378d4c1bd6569c4",
+   "87c381d978863be7",
+   "89a651cb8f6ede5f",
+   "a19ade354aee60be",
+   "b297fb9f58d3c4fe",
+   "b579e3435062357f",
+   "b8b356bc19858eb6",
+   "c9a69974cde2df83",
+   "ca3913731ede065c",
+   "df9e6d1dae17f821",
+   "e6a9fe4273314f1b",
+   "f07454d18594c477",
+   "f2621abb808eb324"
+  ],
+  "48": [
+   "e0698d475107f25c"
+  ]
+ }
+}

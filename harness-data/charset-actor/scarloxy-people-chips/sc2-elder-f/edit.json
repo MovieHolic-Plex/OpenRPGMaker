@@ -1,0 +1,144 @@
+{
+ "palette": {
+  "u": "#26272e",
+  "v": "#555863",
+  "w": "#878b96",
+  "x": "#b8bcc7",
+  "y": "#2a1b33",
+  "z": "#684b7a",
+  "A": "#9e7ab5",
+  "B": "#c9ade0",
+  "C": "#29180e",
+  "D": "#452b1b",
+  "E": "#734b32",
+  "F": "#1e1f26",
+  "G": "#363842",
+  "H": "#505361",
+  "I": "#382214"
+ },
+ "recolor": [
+  {
+   "region": "H",
+   "map": {
+    "b": "u",
+    "f": "v",
+    "l": "w",
+    "n": "x",
+    "d": "u",
+    "o": "w"
+   }
+  },
+  {
+   "region": "T",
+   "map": {
+    "a": "C",
+    "c": "D",
+    "g": "E",
+    "b": "y",
+    "f": "z",
+    "l": "A",
+    "i": "A",
+    "r": "B",
+    "d": "I"
+   }
+  },
+  {
+   "region": "B",
+   "map": {
+    "a": "F",
+    "c": "G",
+    "g": "H",
+    "d": "C"
+   }
+  },
+  {
+   "region": "S",
+   "map": {
+    "a": "C",
+    "c": "D",
+    "g": "E",
+    "e": "D",
+    "m": "E",
+    "j": "I"
+   }
+  }
+ ],
+ "paint": [
+  {
+   "dir": "down",
+   "region": "H",
+   "rows": {
+    "2": "..........uuuu..........",
+    "3": ".........uxwwwu.........",
+    "4": ".........uvwwwvu........"
+   }
+  },
+  {
+   "dir": "up",
+   "region": "H",
+   "rows": {
+    "2": "..........uuuu..........",
+    "3": ".........uxwwwu.........",
+    "4": ".........uvwwwvu........"
+   }
+  },
+  {
+   "dir": "right",
+   "region": "H",
+   "rows": {
+    "2": ".......uuuu.............",
+    "3": "......uxwwvuuuu.........",
+    "4": "......uvwwvuwwwvu......."
+   }
+  },
+  {
+   "dir": "left",
+   "region": "H",
+   "rows": {
+    "2": ".............uuuu.......",
+    "3": ".........uuuvwwxu.......",
+    "4": ".......uvwwwuvwwvu......"
+   }
+  },
+  {
+   "dir": "down",
+   "region": "T",
+   "rows": {
+    "17": "..yyyyzByyhhhhhyBzyyyy..",
+    "18": "..yABBAAzyykkkyyzAABBzy.",
+    "19": "...yyzBBBBzzzzzBBBBzyy..",
+    "20": "....yyyzBBzzzzzBBzyyy..."
+   }
+  },
+  {
+   "dir": "up",
+   "region": "T",
+   "rows": {
+    "17": "..yyyyzzzzzzzzzzzzzyyyy.",
+    "18": "..yABBAzzzzzzzzzzzABBAy.",
+    "19": "...yyzBBBBBBzBBBBBBzyy..",
+    "20": "....yyyzBBBBzBBBBzyyy..."
+   }
+  },
+  {
+   "dir": "right",
+   "region": "T",
+   "rows": {
+    "17": "..yyyyzBzzzykkhdd.......",
+    "18": "..yABBAAzBzyzBky........",
+    "19": "...yyzBBBBBBzBBBBy......",
+    "20": "......yyyzBBzBBByy......"
+   }
+  },
+  {
+   "dir": "left",
+   "region": "T",
+   "rows": {
+    "17": ".......ddhhkyzzzBzyyyy..",
+    "18": "........ykBzyzBzAABBzy..",
+    "19": "......yBBBBzBBBBBBzyy...",
+    "20": "......yyBBBzBBzyyy......"
+   }
+  }
+ ]
+}

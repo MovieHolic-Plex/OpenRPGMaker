@@ -1,12 +1,12 @@
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
+import { effectiveFieldHud, normalizeFieldHud, resolvedHudWidgets, recommendedHudFont, type HudWidget } from "@/project/fieldHud";
 import { isActionCombatMap } from "@/project/actionCombat";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { readHudWidget, type HudRuntimeContext } from "./fieldHudData";
 import { drawHudWidget, hudNode } from "./fieldHudRender";
 export type { HudRuntimeContext } from "./fieldHudData";
-interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number }
+interface WidgetMount { node: HTMLElement; signature: string; drawnWidget?: HudWidget; readingSignature?: string; changedAt: number; changedPending?: boolean }
 /** Same renderer for authoring preview and shipped player; input belongs to the editor only. */
 export class FieldHud {
   readonly root = hudNode("field-hud");
@@ -19,10 +19,11 @@ export class FieldHud {
     this.root.dataset.testid = "field-hud"; host.append(this.root);
   }
   update(project: Project, session: PlaySession, context: HudRuntimeContext = {}): void {
-    if (this.configSource !== project.system.fieldHud || !this.initialized) {
+    const hudSource = effectiveFieldHud(project);
+    if (this.configSource !== hudSource || !this.initialized) {
       this.initialized = true;
-      this.configSource = project.system.fieldHud;
-      this.config = normalizeFieldHud(project.system.fieldHud);
+      this.configSource = hudSource;
+      this.config = normalizeFieldHud(hudSource);
       this.widgets = resolvedHudWidgets(this.config);
       const wanted = new Set(this.widgets.map(w => w.id));
       for (const [id, mount] of this.mounts) if (!wanted.has(id)) { mount.node.remove(); this.mounts.delete(id); }
@@ -51,7 +52,9 @@ export class FieldHud {
       const mount = this.mounts.get(widget.id)!;
       const reading = readHudWidget(widget, project, session, context);
       const readingSignature = JSON.stringify(reading);
-      if (mount.readingSignature !== undefined && mount.readingSignature !== readingSignature) mount.changedAt = now;
+      if (mount.readingSignature !== undefined && mount.readingSignature !== readingSignature) { mount.changedAt = now; mount.changedPending = widget.condition === "changed"; }
+      // 대화·메뉴가 HUD 를 가리는 동안 바뀐 값은 다시 보일 때부터 3초를 센다(말 걸기 직후의 호감 변화를 놓치지 않게).
+      if (mount.changedPending && this.root.offsetParent !== null) { mount.changedAt = now; mount.changedPending = false; }
       mount.readingSignature = readingSignature;
       const condition = widget.condition === "always" ||
         (widget.condition === "damaged" && reading.value < reading.max) ||
@@ -62,7 +65,7 @@ export class FieldHud {
         (widget.condition === "changed" && now - mount.changedAt < 3000);
       mount.node.hidden = !widget.enabled || !reading.available || !condition ||
         (widget.hideEmpty && ["slots", "timers", "party"].includes(widget.kind) && reading.value === 0);
-      if (widget.enabled && reading.available && widget.kind === "party") hpOwned = true;
+      if (widget.enabled && reading.available && widget.kind === "party" && widget.source !== "friendship") hpOwned = true;
       if (widget.enabled && reading.available && widget.kind === "gauge") {
         if (widget.source === "stamina") staminaOwned = true;
         if (widget.source === "hp") hpOwned = true;

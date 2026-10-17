@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6aac8031a277cdb6131810420ad3ba3596e93f32b117dcd611ea39000a7cb222",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "물가 갈대",
+ "label": "desert-east/de-reeds",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "reeds / cattails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds and cattail heads are drawn in pure 2D side/front elevation: perfectly vertical 1px stalks rising from a flat 1px baseline (row 14) with rectangular cattail heads showing no top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of cattail reeds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds and cattail heads are drawn as flat vertical 2D bars rising from a straight 1px horizontal baseline, with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7328
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of cattail stalks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds and cattail heads are drawn in pure 2D side elevation, rising vertically from a flat 1px line at the bottom with zero depth or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cattails / reeds cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The reeds and cattail heads are drawn as flat vertical 1px-wide stalks and rectangular brown heads with no depth, foreshortening, or top-down perspective, resting on a flat 1px base line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4605
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.222Z",
+ "cells": {
+  "16": [
+   "fac9d745c8910c79"
+  ],
+  "24": [
+   "170a649caa871948",
+   "65749efc470743f2",
+   "88eb27c0fb40eb1e",
+   "afd53acdecbae515",
+   "bb6bea72f96aef43",
+   "ed6dbd8ade1ac0c5"
+  ],
+  "32": [
+   "092a2a8a6d3d4a67",
+   "4216e0842acbd1b4",
+   "4faa6a2000cfae93",
+   "87bb42b4d4ab2393",
+   "9b90184e4f70cac5",
+   "e42e1920c2c67ebf"
+  ],
+  "48": [
+   "19fdd020a6a1c558",
+   "270c593e6cc64b5c",
+   "b2656296e8794c53",
+   "be19f7acca788c5e",
+   "c305bd9a41e05cca",
+   "d91da13825d6b003"
+  ]
+ }
+}

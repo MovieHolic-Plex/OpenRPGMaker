@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c6da520bbb4158b94d0a6d696a4f1ebd646841ad482ca5aea8e0ee630d21b91",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-gomi-box",
+ "label": "jp_city/street_hand/jp-gomi-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "green mesh garbage box (gomi box)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–5 form the top lid surface (4px deep) with visible mesh texture and frame, while rows 7–14 form the vertical front face featuring the wire cage pattern and a white label plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7908
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese street trash collection box (gomi box)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-5 represent the top mesh lid of the box foreshortened from above (4px deep), separated by a dark hinge/seam line at row 6 from the 8px tall front mesh face (rows 7-14) which features a white label plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green mesh garbage box / cage",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface of the mesh cage is visible across rows 2-5 (4 rows tall), separated by a dark horizontal crease line at row 6 from the front face (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5826
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "green mesh garbage box with lid",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the garbage cage is clearly foreshortened and visible from above across rows 2-5 (4 rows deep), separated by a distinct edge line from the south-facing front body (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5452
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.357Z",
+ "cells": {
+  "16": [
+   "8c66d165c6e0a90f",
+   "931d2ded4956f91c"
+  ],
+  "24": [
+   "0728ea814838882f",
+   "0c42e9911b412e72",
+   "0f4653bd9f2117e1",
+   "11a02ca6407988dc",
+   "220ec82c0f08904a",
+   "24fffe4e356318f2",
+   "4bf65fc5f90577d0",
+   "506f3a993dc7f81a",
+   "59743dc15dff3da3",
+   "8e658b953bbb5238",
+   "a1b13a5df08f1e76",
+   "b0d1787c720378c1"
+  ],
+  "32": [
+   "78b3dd3a78b85c98",
+   "ae9cb9af005ad8cd"
+  ],
+  "48": [
+   "15a2e518034cfe08",
+   "3eb4fa258ad57e2b",
+   "466643022dd934b3",
+   "86212147486fbe70",
+   "8f861a08b5400741",
+   "b61e651e19687b5a"
+  ]
+ }
+}

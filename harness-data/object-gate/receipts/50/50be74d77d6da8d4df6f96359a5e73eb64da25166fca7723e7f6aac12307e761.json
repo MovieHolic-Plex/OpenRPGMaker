@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50be74d77d6da8d4df6f96359a5e73eb64da25166fca7723e7f6aac12307e761",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "잔디(짙은 풀 덩이) (16px 칸 3×3 반복)",
+ "label": "modern_city/street-green/lawn-tuft-503",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "repeating grass terrain tile with dark tuft",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a 16x16 seamless ground terrain tile repeated 3x3, depicting a flat grass surface with tufts and texture seen from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5768
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Repeating 16x16 flat ground terrain tile showing top-down grass surface with a darker grass patch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3918
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Repeating 16x16 flat grass ground tile with dark grass tuft detailing, viewed from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4576
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing a patch of dark grass/foliage viewed from above, repeating in a 3x3 pattern as flat ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4636
+  }
+ ],
+ "decidedAt": "2026-10-14T08:05:10.642Z",
+ "cells": {
+  "16": [
+   "73d9deaeedc89779"
+  ],
+  "24": [
+   "1be4eea56a7ab1ea",
+   "3ce82569aa357a24",
+   "54e571291f53d34f",
+   "7cdcfb8836edcb80"
+  ],
+  "32": [
+   "111d1418ddafd203",
+   "20b3bbdb6789becf",
+   "3a509926491f4d70",
+   "56ac660da7236f63",
+   "627cb18a7c036b1a",
+   "78d3858b195af65d",
+   "8e20293da39bfe37",
+   "8e449c5c27fc595e",
+   "98dd1759167e8e1c",
+   "a8354cee1a718c7b",
+   "adb61e646c619577",
+   "c706430ee903e43c",
+   "d289265c32b5580c",
+   "e6bf7e8aea225473",
+   "f383871d7cc88447"
+  ],
+  "48": [
+   "62cd1ff5e0a1f356"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27f99170bf78512c9682abeb37a74d1a35c1e1db65b94e6428270ee33ffeeda4",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "실외기 묶음(상자 둘 윗면 팬 격자 + 앞 그릴 + 배관)",
+ "label": "sf-station/sf-street-ac-cluster",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dual outdoor air conditioning units",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 6 clearly display the horizontal top surface of the units with foreshortened elliptical fan grilles, followed by the front grilles from row 7 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dual air conditioner outdoor units",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the AC units spans rows 2-6 (5 pixels tall) displaying foreshortened oval fan grilles, followed by the front faces with horizontal vents on rows 7-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4422
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dual outdoor AC unit boxes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces of the units span rows 2 through 6 (5 rows tall) and clearly feature foreshortened elliptical fan grates viewed from above, above the front-facing grilles spanning rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3026
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dual AC outdoor unit boxes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-6 clearly show the top surfaces of both AC units with elliptical fan vents seen from above, separated at row 7 from the vertical front face with grilles (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3033
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.251Z",
+ "cells": {
+  "16": [
+   "3f1b42abe43635bd",
+   "cbed49dedfcffb91"
+  ],
+  "24": [
+   "0ddc8862a258e877",
+   "0e6499b498bb6916",
+   "199f2474c2636516",
+   "23edc18f114b7e12",
+   "3b434c282b979530",
+   "4c4cb8bb7f261443",
+   "5b43e92488d54601",
+   "7be21815b7b64cfe",
+   "889d5e6bf9a3f113",
+   "abaaf16808a22857",
+   "b7c98f9d4cf802c7",
+   "ff3e5faa1b8a5392"
+  ],
+  "32": [
+   "4b8e487bc895af5a",
+   "e05891623a68a600"
+  ],
+  "48": [
+   "21e6a0197e0a909f",
+   "43f956888aba5882",
+   "6b6279fe29b41419",
+   "77d8ce2806f61b58",
+   "9b9525eef1ffa07a",
+   "d7887c8e54f59452"
+  ]
+ }
+}

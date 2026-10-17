@@ -6,14 +6,15 @@ import { cropCharsetFrames, fetchPictureDataUrl, type CharsetAnyRole } from "@/e
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { pictureSize, pngSize } from "@/editor/cutsceneArt/pictureSize";
 import { compileStage, StageError, type StageActor, type TimedStep } from "@/editor/cutsceneStage/compile";
+import type { Project } from "@/project/types";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
 import { CUTSCENE_WHITE_RESOURCE_ID } from "./impactCutsceneTools";
 import { EVENT_TOOLS } from "./eventTools";
 import { requireMap } from "./mapHelpers";
+import { cutsceneHeroChipError, defaultCutsceneCharset, heroCharacterResourceId } from "./cutsceneCharacterLock";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const STAGED_CUTSCENE_TOOL = "script_cutscene_staged";
-const DEFAULT_CHARSET = "tex_easyrpg_charset_actor1";
 const WHITE_PIXEL_DATA_URL = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAFUlEQVR4nGP8////fwYGBgYmBigAAD34BADaOyqcAAAAAElFTkSuQmCC";
 
 const WALK_ROLES: CharsetAnyRole[] = ["Up", "Down", "Left", "Right"].flatMap((d) => [0, 1, 2].map((n) => `walk${d}${n}` as CharsetAnyRole));
@@ -44,7 +45,7 @@ const STEP_SCHEMA: JsonSchema = {
     ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk", "bob"], description: "walk: 캐릭터셋 걷기 프레임 교체 / bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)이 발걸음 박자로 위아래 출렁이며 나아감" },
     pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
-    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom." },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom. 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다)." },
     resourceId: { type: "string", description: "se/bgm 리소스 id" },
     color: { type: "string", enum: ["white", "red", "green", "blue", "yellow", "purple", "black"], description: "flash 색" },
     mapId: { type: "string", description: "transfer: 옮겨 갈 맵" }, x: { type: "integer", description: "transfer: 도착 칸 x" }, y: { type: "integer", description: "transfer: 도착 칸 y" },
@@ -80,7 +81,7 @@ const ACTOR_SCHEMA: JsonSchema = {
   required: ["name"],
   properties: {
     name: { type: "string" },
-    character: { type: "object", additionalProperties: false, properties: { resourceId: { type: "string" }, characterIndex: { type: "integer", minimum: 0, maximum: 7 } }, description: "게임 캐릭터셋 인물(걷기 프레임 포함). 사람은 Actor1~4(tex_easyrpg_charset_actor1, characterIndex 0~7) 중에서 고른다. 몬스터·동물 캐릭터셋(monster1~3, animal)도 가능." },
+    character: { type: "object", additionalProperties: false, properties: { resourceId: { type: "string" }, characterIndex: { type: "integer", minimum: 0, maximum: 7 } }, description: "게임 캐릭터셋 인물(걷기 프레임 포함). 사람은 Actor1~4(tex_easyrpg_charset_actor1, characterIndex 0~7) 중에서 고른다(장르 잠금이 캐릭터 칩을 잠근 프로젝트는 허용 칩 — 몬스터 수집이면 tex_scarloxy_charset_people1 등). 몬스터·동물 캐릭터셋(monster1~3, animal)도 가능." },
     hero: { type: "boolean", description: "true 면 이 인물을 주인공으로 삼아 맵 위 주인공 그래픽도 같은 캐릭터셋·번호로 맞춘다(컷신 속 인물 = 이세계의 주인공)." },
     resourceId: { type: "string", description: "생성한 소품 picture(generate_cutscene_art 결과)" },
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
@@ -100,14 +101,14 @@ const bundledSizes = new Map<string, { width: number; height: number }>();
 const preparedActors = new Map<string, Awaited<ReturnType<typeof cropCharsetFrames>> | { readonly error: string }>();
 const charKey = (resourceId: string, index: number): string => `${resourceId}:${index}`;
 
-function characterOf(actor: Raw): { resourceId: string; characterIndex: number } | undefined {
+function characterOf(actor: Raw, project?: Project): { resourceId: string; characterIndex: number } | undefined {
   const c = actor.character;
   if (!c || typeof c !== "object" || Array.isArray(c)) return undefined;
   const r = c as Raw;
   // 스키마가 빈 값으로 채운 character({resourceId:""})는 «캐릭터셋 없음»이다 — 그림 배우(resourceId)가 이미 있으면 기본 Actor1 로 바꿔치지 않는다.
   // 그림 배우(resourceId)가 명시되면 그것이 정본이다 — 스키마가 채워 보낸 character(빈 값이나 기본 Actor1)에 끌려가지 않는다. 주인공(hero:true)만 예외.
   if (typeof actor.resourceId === "string" && actor.resourceId.trim() && actor.hero !== true) return undefined;
-  return { resourceId: typeof r.resourceId === "string" && r.resourceId.trim() ? r.resourceId.trim() : DEFAULT_CHARSET, characterIndex: Math.max(0, Math.min(7, Math.trunc(Number(r.characterIndex ?? 0)))) };
+  return { resourceId: typeof r.resourceId === "string" && r.resourceId.trim() ? r.resourceId.trim() : defaultCutsceneCharset(project), characterIndex: Math.max(0, Math.min(7, Math.trunc(Number(r.characterIndex ?? 0)))) };
 }
 
 const SCRIPT_CUTSCENE = EVENT_TOOLS.find((tool) => tool.name === "script_cutscene");
@@ -197,7 +198,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     const actors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     for (const actor of actors) {
       // generate_cutscene_art 그림이 character 로 넘어오면 run 이 resourceId 배우로 바로잡는다 — 캐릭터셋 프레임 준비는 건너뛴다.
-      const asCharacter = characterOf(actor);
+      const asCharacter = characterOf(actor, project);
       if (asCharacter && (project?.assets.uploaded[asCharacter.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(asCharacter.resourceId))) {
         if (typeof actor.resourceId !== "string") actor.resourceId = asCharacter.resourceId; delete actor.character;
       }
@@ -210,7 +211,7 @@ const scriptCutsceneStaged: ToolDefinition = {
           if (size) bundledSizes.set(id, size);
         } catch { /* 번들 그림이 아니면 run 이 업로드 자산으로 찾는다 */ }
       }
-      const character = characterOf(actor);
+      const character = characterOf(actor, project);
       if (!character) continue;
       const key = charKey(character.resourceId, character.characterIndex);
       const cached = preparedActors.get(key);
@@ -230,24 +231,20 @@ const scriptCutsceneStaged: ToolDefinition = {
     if (rawActors.length === 0) throw new ToolError("actors 가 비어 있습니다.", { code: "invalid-args" });
     // generate_cutscene_art 소품은 캐릭터셋이 아니라 그림이다 — character 로 넘겨도 resourceId 배우로 바로잡는다(반복 실패 실측).
     for (const raw of rawActors) {
-      const c = characterOf(raw);
+      const c = characterOf(raw, draft);
       if (c && (draft.assets.uploaded[c.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(c.resourceId))) { if (typeof raw.resourceId !== "string") raw.resourceId = c.resourceId; delete raw.character; }
     }
     for (const raw of rawActors) {
-      const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
-      if (heroCharacter && !/actor[1-4]$/iu.test(heroCharacter.resourceId)) {
-        throw new ToolError(
-          `주인공(hero:true) 은 캐릭터셋 Actor1~4 에서 고릅니다('${heroCharacter.resourceId}' 아님) — 예: character:{resourceId:'tex_easyrpg_charset_actor1', characterIndex:0}(인물 0~7번). 고른 인물로 맵 위 주인공 그래픽도 맞춰 줍니다.`,
-          { code: "invalid-args" },
-        );
-      }
+      const heroCharacter = raw.hero === true ? characterOf(raw, draft) : undefined;
+      const chipError = heroCharacter ? cutsceneHeroChipError(draft, heroCharacter.resourceId, "주인공(hero:true)") : undefined;
+      if (chipError) throw new ToolError(chipError, { code: "invalid-args" });
     }
     const actors: StageActor[] = rawActors.map((raw, index) => {
       const name = typeof raw.name === "string" ? raw.name.trim() : "";
       if (!name) throw new ToolError(`actors[${index}].name 이 필요합니다.`, { code: "invalid-args" });
       const at = raw.at && typeof raw.at === "object" ? (raw.at as StageActor["at"]) : undefined;
       const z = typeof raw.z === "number" ? Math.trunc(raw.z) : undefined;
-      const character = characterOf(raw);
+      const character = characterOf(raw, draft);
       if (character && raw.ghost !== true) {
         const prepared = preparedActors.get(charKey(character.resourceId, character.characterIndex));
         if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다(character.resourceId='${character.resourceId}') — 그림 소품(cutscene_sprite_*)이면 character 대신 resourceId 로 넘기고, 캐릭터셋이면 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
@@ -357,11 +354,11 @@ const scriptCutsceneStaged: ToolDefinition = {
     const cut = SCRIPT_CUTSCENE.run(draft, cutsceneArgs);
     let heroNote = "";
     for (const raw of rawActors) {
-      const character = raw.hero === true ? characterOf(raw) : undefined;
+      const character = raw.hero === true ? characterOf(raw, draft) : undefined;
       if (!character) continue;
       const hero = draft.database.actors.find((actor) => actor.id === "actor_hero") ?? draft.database.actors[0];
       if (!hero) continue;
-      hero.characterResourceId = character.resourceId.replace(/^tex_easyrpg_charset_/u, "easyrpg-charset-");
+      hero.characterResourceId = heroCharacterResourceId(character.resourceId);
       hero.characterIndex = character.characterIndex;
       const face = reviewedFaceIdForCharset(hero.characterResourceId, character.characterIndex);
       if (face) hero.faceResourceId = face;

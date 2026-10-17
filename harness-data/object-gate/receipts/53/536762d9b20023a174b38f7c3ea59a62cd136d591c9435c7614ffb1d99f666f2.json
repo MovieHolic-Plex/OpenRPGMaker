@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "536762d9b20023a174b38f7c3ea59a62cd136d591c9435c7614ffb1d99f666f2",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오로라 깃발(보라·청록 물결, 반대 무늬)",
+ "label": "snow-north/sn-banner-aurora-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banner pole with horizontal crossbar and top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar (rows 6-10) and top finial (rows 0-5) are drawn in pure front elevation without any visible top surface; row 7 is merely a 1px highlight line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with banner and top beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (golden top ornament, horizontal crossbeam, vertical post, and banner) is drawn in pure flat front elevation. The crossbeam has only a 1px white edge highlight on row 7 rather than a foreshortened top surface, and the finial on rows 0-5 shows no top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banner pole with hanging flag and top ornament",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (finial, horizontal beam, banner, and vertical pole) is drawn in pure front elevation with no visible top surface. The white line at row 7 is only a 1px highlight, and the only foreshortened top surface belongs to the base plinth, which does not grant credit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banner post with crossbeam and hanging banner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossbeam, and finial on top are drawn in a completely flat front elevation with no visible top surface foreshortened from above (only a 1px white highlight line on the beam). The only top surface is on the base plinth, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5097
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.398Z",
+ "cells": {
+  "16": [
+   "22bbd099f21ffb03",
+   "5774804b52e2513c",
+   "843a5116faecd97f"
+  ],
+  "24": [
+   "26f98dad7a599bcd",
+   "7ac30f5b002fbb0a",
+   "8300f3d81ebee00e",
+   "9270db367460e8b3",
+   "bfed11a4420ac777",
+   "e37535bba111b075"
+  ],
+  "32": [
+   "15a4aec3d4a6bbde",
+   "1b06ad0c76aee9b8",
+   "20e589becda9e4da",
+   "2779de89ad6d15f3",
+   "544be0366724d303",
+   "749b5f0ee13c7d32",
+   "8c6226975c22f04f",
+   "a87df8a25b705bbc",
+   "b571490d8f6b4afa",
+   "dc7791ad84acc9b4",
+   "e1e2f485052a78a8",
+   "eef8f5c7800b7bbb"
+  ],
+  "48": [
+   "1115573948c0ea76",
+   "16776e9a7da4b9a2",
+   "f2f71735e2bb343c"
+  ]
+ }
+}

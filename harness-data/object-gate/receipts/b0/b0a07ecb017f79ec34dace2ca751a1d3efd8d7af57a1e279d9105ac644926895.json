@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0a07ecb017f79ec34dace2ca751a1d3efd8d7af57a1e279d9105ac644926895",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face end tile (terrain)",
+ "label": "sky-island/si-face-top-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cliff edge tile showing top plateau and vertical rock face",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the edge of a cliff terrain with 3 source pixel rows of brown cliff-top surface (rows 0-2) above the vertical cliff face (rows 3-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5633
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff edge tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing cliff top surface in rows 0-2 (3 pixel rows) transitioning into the vertical cliff face below, fitting standard 3/4 RPG cliff autotile perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5214
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff edge tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a cliff with 3 pixel rows of brown top plateau surface (rows 0-2) above the vertical rock face (rows 3-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5366
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face end tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the right end of a rock cliff, showing about 3 rows of top plateau surface (brown) at rows 0-2 above the vertical rock cliff face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3314
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.882Z",
+ "cells": {
+  "16": [
+   "ab3dd93c95d003fb"
+  ],
+  "24": [
+   "3d907f082f06b6c9",
+   "97e17475b2d3c92e",
+   "a360132f731bbbea",
+   "b1206d129f72b178",
+   "d370f9371720d4a6",
+   "ec9351dc7daa9e54"
+  ],
+  "32": [
+   "13706ec3a460fbbb",
+   "29fa24dd19547f58",
+   "3f998168eb7e315e",
+   "420ed45ffba3fdc0",
+   "8975561a8cec8f1c",
+   "e5db4094cbdc2e10"
+  ],
+  "48": [
+   "3578ba11be2c2c98",
+   "3feb14ae1e6d2893",
+   "472f98937c3293a9",
+   "70490ffa01b32f82",
+   "ea4665c0ce68b19b",
+   "eba2cf16b65a7caa"
+  ]
+ }
+}

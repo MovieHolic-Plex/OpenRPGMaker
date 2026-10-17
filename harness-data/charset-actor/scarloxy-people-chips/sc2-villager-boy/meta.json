@@ -1,0 +1,51 @@
+{
+ "key": "sc2-villager-boy",
+ "name": "마을 소년",
+ "head": "Scarloxy1:5",
+ "body": "Scarloxy1:1",
+ "recolor": [
+  {
+   "region": "H",
+   "to": {
+    "hue": 28,
+    "s": 0.8,
+    "v": 0.85
+   },
+   "hue": [
+    250,
+    300
+   ]
+  },
+  {
+   "region": "T",
+   "to": {
+    "hue": 125,
+    "s": 0.55,
+    "v": 0.8
+   },
+   "hue": [
+    345,
+    20
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 35,
+    "sat": 0.55,
+    "v": 0.8
+   },
+   "gray": [
+    0.85,
+    1.0
+   ]
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "고정 검사: 12프레임 878칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-villager-boy"
+}

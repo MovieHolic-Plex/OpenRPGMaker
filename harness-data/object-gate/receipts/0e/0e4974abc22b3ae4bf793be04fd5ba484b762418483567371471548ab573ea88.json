@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e4974abc22b3ae4bf793be04fd5ba484b762418483567371471548ab573ea88",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "모피 펴 말리는 틀",
+ "label": "snow-north/sn-hide-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fur drying frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam has a clear top surface spanning rows 6-9 (covered in snow, ~4 rows deep) seen from above, and the lower crossbeam also shows its horizontal top surface across rows 24-26 before the south-facing vertical drops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fur drying frame with snow accumulation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal beams show clear top surfaces foreshortened in 3/4 view (with snow piled on top, rows 6-9 measuring 4px deep on the upper beam and rows 24-26 measuring 3px deep on the lower beam) above their vertical south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5951
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fur-drying frame with stretched hide",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal beams show clear top surfaces seen from above (rows 6-9 on the upper beam and rows 24-26 on the lower beam, both showing snow accumulation on their top faces) resting above their south-facing front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fur drying frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbeams clearly display their top surfaces (rows 6-9 on the top beam and rows 24-26 on the lower beam, both showing depth with snow and pegs) situated above their vertical south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10777
+  }
+ ],
+ "decidedAt": "2026-10-14T01:15:54.501Z",
+ "cells": {
+  "16": [
+   "0d0f51df84b4bee4",
+   "652e188ca512c6e5",
+   "81ba01817075db55",
+   "b73fe928a06f6172"
+  ],
+  "24": [
+   "0963dedcdf4fc1c2",
+   "19f5b39a684c0aca",
+   "1dc3be03eca839b6",
+   "4415c29e2277a299",
+   "4f766eff98f9123c",
+   "5db9c527b7cedc8d",
+   "6f9f24e586c9eee9",
+   "73b557b971cac090",
+   "7f4ac339a52c51b3",
+   "7fccab954dda295b",
+   "8e41f1117e3efcc7",
+   "a07150f797ff9821",
+   "ae62932b751ce562",
+   "afc220787f66a7f8",
+   "b033ae93ce53e6a2",
+   "b0f1c14c9cc9b5e9",
+   "b5c1689ba0338da5",
+   "bdcce8d094ee4ff2",
+   "c2f001516cc3ce29",
+   "c65ca1e035a15d27",
+   "c8db0a377613f095",
+   "e21dc391ba092c49",
+   "e86445743bd4802c",
+   "f6b15b35a7d6a83d"
+  ],
+  "32": [
+   "f0299c0cff947a58"
+  ],
+  "48": [
+   "24e2b83d4e4085a6",
+   "61aa7f4244f50f46",
+   "80682c94bd721306",
+   "8ad83ecd1619d01f",
+   "8e59c6b6d3325863",
+   "cff590cfc52036a4"
+  ]
+ }
+}

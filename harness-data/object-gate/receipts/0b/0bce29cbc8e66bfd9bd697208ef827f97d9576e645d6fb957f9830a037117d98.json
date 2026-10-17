@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0bce29cbc8e66bfd9bd697208ef827f97d9576e645d6fb957f9830a037117d98",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "조종 콘솔(윗면 화면 둘 + 자판 줄 + 앞면 눌린 패널)",
+ "label": "sf-station/sf-console-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "control console",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-9 form the foreshortened top console deck displaying two display screens and a row of keys, while rows 10-14 form the vertical south face with recessed panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "control console with top surface and front panel",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console surface (rows 1-9) is clearly shown from above featuring two screens and a row of keys, while the south front face (rows 10-14) shows the lower recessed panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5321
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "control console with top surface featuring screens and keyboard, and a dark front panel",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface occupies rows 1 to 9, clearly displaying two screens and a row of keys seen from above, resting atop a 5-row tall front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6594
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "control console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface spans rows 1-9 displaying two screens, indicator lights, and a keyboard row in 3/4 view, while rows 10-14 form the vertical front face with recessed panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5525
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.949Z",
+ "cells": {
+  "16": [
+   "374c8e2a68bd0f13",
+   "df7674c3d75dda43"
+  ],
+  "24": [
+   "04e22d7ac8bea0bf",
+   "08ef3d0975d9c151",
+   "3ba483b1d26ab615",
+   "4a40743948d2d619",
+   "4ae0265e25c5df82",
+   "5455d0cf421c3c12",
+   "5480783cdcef1bf7",
+   "cfb453bf34af3be3",
+   "e05783dcd262da2c",
+   "e1ac21506750db29",
+   "e463e56b5d19b9c3",
+   "fa297c7de2a50579"
+  ],
+  "32": [
+   "3c90eeca0efc9197",
+   "6c3ca8bdf1cc01bd"
+  ],
+  "48": [
+   "1681479058624824",
+   "20a2f451772b6a61",
+   "23c2446fdc5350dd",
+   "684c99730a128a0d",
+   "6bd680c91cf1a5aa",
+   "cb85f66e331f8f3c"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c795bbab2430815f3116dc39ca5d9c976beedc59d749d0d9f9e332c3a437439c",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "족자(산수화, 글자 없음)",
+ "label": "sengoku-edo/se-scroll",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging scroll (painting)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hanging scroll appropriately shown flat against the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging scroll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted hanging scroll drawn flat against the wall as appropriate for the kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6159
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging scroll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted hanging scroll (족자) correctly drawn flat against the wall, permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3370
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging scroll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted hanging scroll with landscape painting depicted flat against a north-facing wall, appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2851
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "9abbb0fd7f4b27b4",
+   "e8eb2610d7b30b4a"
+  ],
+  "24": [
+   "2b47f27d82dcd7e6",
+   "35a6901a648fcd40",
+   "3851c192be2968b1",
+   "4545e076dced5ff5",
+   "5d66105b88ad3355",
+   "65131f956907211e",
+   "6c01ed50193d6d32",
+   "9138ce84a9c60fe8",
+   "a4f2eda5cc84f45d",
+   "c134911539c1a888",
+   "ce2d7bcdcff22481",
+   "cf1b028d17c69c1f"
+  ],
+  "32": [
+   "7464285f99c79951",
+   "8b391fad6c8942e6",
+   "c601ec74d2db2acd"
+  ],
+  "48": [
+   "20b7bfb705f914f2",
+   "37892029008b3dcc",
+   "a38d5df56e59ad3e",
+   "cc0e3be579c65041",
+   "d1fa5bf38d914db7",
+   "fe8be2496c48af0a"
+  ]
+ }
+}

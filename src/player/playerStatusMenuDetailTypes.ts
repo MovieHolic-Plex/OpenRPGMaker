@@ -40,6 +40,8 @@ export type StatusMenuDetailEntry = {
   readonly facts?: readonly StatusMenuDetailFact[];
   /** Semantic DOM attributes for state/behavior assertions (not prose). */
   readonly attributes?: Readonly<Record<string, string>>;
+  /** 글자 입력 행(별명 짓기). 값은 Enter 로 확정, Esc 로 취소 — 키는 입력창이 받고 게임 키로 새지 않는다. */
+  readonly textInput?: { readonly value: string; readonly maxLength: number; readonly label: string; readonly onCommit: (value: string) => void; readonly onCancel: () => void };
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
   readonly destructive?: boolean;
@@ -68,12 +70,26 @@ export type StatusMenuDetail = {
   readonly emptyLabel?: string;
   readonly hint?: string;
   /** gallery: 고른 그림을 목록 위에 크게 둔다. */
-  readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary";
+  readonly layout?: "gallery" | "campaign-dex" | "campaign-map" | "campaign-progress" | "campaign-party" | "campaign-summary" | "campaign-box";
   readonly regionMap?: import("@/player/playerMonsterCampaignMenu").CampaignRegionMap;
-  readonly artwork?: { readonly src: string; readonly alt: string };
+  readonly artwork?: { readonly src: string; readonly alt: string; readonly shiny?: boolean };
+  /** 도감 목록의 진행 막대(발견·포획·전체). 제목 줄에 겹쳐 그린다. */
+  readonly meter?: { readonly seen: number; readonly caught: number; readonly total: number };
   readonly tabs?: readonly {
     readonly id: string;
     readonly label: string;
+    readonly selected: boolean;
+    readonly testId: string;
+    readonly onActivate?: () => void;
+    /** 키보드 커서 순서에서는 빼고(좌우 키가 따로 전환한다) 눌러서만 고른다. */
+    readonly pointerOnly?: boolean;
+  }[];
+  /** 몬스터 수집 게임 가방의 포켓 목록 — 에메랄드 가방은 점으로, 그 밖의 스킨은 탭 줄로 그린다. */
+  readonly pockets?: readonly {
+    readonly id: string;
+    readonly label: string;
+    /** 이 포켓에 든 아이템 종류 수. */
+    readonly count: number;
     readonly selected: boolean;
     readonly testId: string;
     readonly onActivate?: () => void;
@@ -104,6 +120,10 @@ export type StatusMenuDetailOptions = {
   readonly monsterInstanceId?: string;
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly monsterView?: "party" | "box";
+  readonly monsterCollect?: import("@/player/playerMonsterCollectTypes").MonsterCollectUi;
+  /** 도감 상세의 쪽(에메랄드 스킨에서만 쓴다). */
+  readonly dexPage?: import("@/player/playerMonsterDexTypes").MonsterDexPage;
+  readonly onDexPage?: (page: import("@/player/playerMonsterDexTypes").MonsterDexPage) => void;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;
@@ -133,7 +153,13 @@ export type StatusMenuDetailOptions = {
   readonly onSelectFormationActor?: (actorId: string) => void;
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
+  /** 파티 자리 바꾸기 같은 수집 화면 동작. */
+  readonly onMonsterCollect?: (action: import("@/player/playerMonsterCollectTypes").MonsterCollectAction) => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
+  /** 몬스터가 지닌 도구를 가방으로 되돌린다. */
+  readonly onTakeHeldItem?: (instanceId: string) => void;
+  /** 몬스터 파티원이 필드 기술(skill.fieldCommonEventId)을 바라보는 앞에 쓴다. */
+  readonly onUseMonsterFieldSkill?: (instanceId: string, skillId: string) => void;
   readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
   readonly onRejectPendingMonsterSkill?: (instanceId: string, pendingSkillId: string) => void;
   readonly lifeLedgerTab?: import("@/player/lifeLedger").LifeLedgerTabId;

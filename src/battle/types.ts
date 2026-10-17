@@ -20,7 +20,7 @@ import type {
 } from "@/project/types";
 import type { RelationshipState } from "@/project/relationshipState";
 import type { BattleResult, GameTime } from "@/project/gameTime";
-import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
+import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceEvs, MonsterInstanceIvs } from "@/project/session";
 import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
@@ -100,6 +100,16 @@ export type ActorCommand =
   | { readonly kind: "switch"; readonly targetActorId: ActorId }
   | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
+/**
+ * FF6 식 팀 교대(system.battleTeams) — 한 팀이 물러나고 지정한 팀이 들어온다.
+ * ActorCommand 합집합에 넣지 않는다: 대상·피해가 없는 팀 단위 명령이라 행동 결과 연출(commandTarget/commandLine)의 대상이 아니다.
+ * 런타임의 performActorCommand 만 이 명령을 따로 받는다.
+ */
+export interface TeamSwapCommand {
+  readonly kind: "teamSwap";
+  readonly targetTeamId: string;
+}
+
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;
   readonly side: "actor" | "enemy";
@@ -112,12 +122,24 @@ export interface BattleTargetSelectionSnapshot {
   readonly selectedActorId?: ActorId;
 }
 
+export interface BattleTeamSnapshot {
+  readonly id: string;
+  readonly name: string;
+  readonly actorIds: readonly ActorId[];
+  readonly active: boolean;
+  /** 지금 이 팀으로 교대할 수 있는가(살아 있는 구성원이 있고, 한 턴 비용의 쉬는 시간이 아님). */
+  readonly canSwapIn: boolean;
+  readonly alive: number;
+}
+
 export interface BattleRuntimeOptions {
   readonly project: Project;
   readonly troopId: TroopId;
   readonly canEscape: boolean;
   readonly canLose: boolean;
   readonly battleFlow?: BattleFlow;
+  /** 플레이어 장치 설정(필드 메뉴 「대기」 토글)이 저작 기본(system.atbMode)을 덮는다. 생략 = 저작 값. */
+  readonly atbMode?: "active" | "wait";
   readonly activeSlots?: number;
   /** 전투 개시 진형. 지정하면 그대로, 생략하면 system.battleFormationRoll 일 때만 민첩으로 굴린다(아니면 보통). */
   readonly formation?: import("@/battle/battleFormation").BattleStartFormation;
@@ -134,6 +156,8 @@ export interface BattleRuntimeOptions {
   // selfSwitch 조건/`setSelfSwitch` 커맨드가 이 이벤트의 셀프 스위치를 읽고 쓴다.
   // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined 유지(조건은 false).
   readonly ownerEventId?: string;
+  /** 조우표 levelMin/levelMax 로 굴린 야생 레벨. 종 몬스터 적의 능력치·기술·경험치·포획 레벨이 이 레벨 기준이 된다(생략 = enemy 레코드 레벨). */
+  readonly enemyLevel?: number;
   readonly captureLocation?: MonsterCaughtAt;
   readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
   // 아군측을 파티 몬스터로 구성할 때 필드 순서대로의 인스턴스 목록.
@@ -169,6 +193,11 @@ export interface BattleSessionState {
   readonly actorLevels?: Readonly<Record<string, number>>;
   /** 배우별 누적 기술 포인트(TP). 승리 후 TP 습득 미리보기의 기준. */
   readonly actorTechPoints?: Readonly<Record<string, number>>;
+  /** 마석 AP 진행(배우 → 스킬 id → 누적 AP). 승리 후 AP 습득 미리보기의 기준. */
+  readonly actorApProgress?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
+  readonly learnedViaAp?: Readonly<Record<string, readonly SkillId[]>>;
+  /** 폭주(가우)가 모은 몬스터 목록(배우 → 몬스터 레코드 id). 폭주 기술이 이 목록에서 몬스터를 고른다. */
+  readonly actorRageEnemyIds?: Readonly<Record<string, readonly string[]>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   /** 현재 난이도 id — 적 HP/공격력·보상 배율(project/difficulty.ts). 생략 = 기본 난이도. */
   readonly difficultyId?: string;
@@ -256,6 +285,8 @@ export interface BattleBattlerSnapshot {
   readonly characterIndex?: number;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;
+  /** 지닌 도구 id(있을 때만). */
+  readonly heldItemId?: string;
   readonly name: string;
   readonly hp: number;
   readonly maxHp: number;
@@ -289,6 +320,8 @@ export interface BattleBattlerSnapshot {
   readonly scanned?: boolean;
   /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
   readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
+  /** 능력치 단계(−6~+6, 0 이 아닌 칸만). 표시 계층이 단계 알약(ATK↑2)을 그린다. 저장하지 않는다. */
+  readonly statStages?: Readonly<Partial<Record<import("@/battle/statStages").StatStageKey, number>>>;
   /** 변신(StateRuntimeEffects.transformResourceId) 중인 그림 id. 표시 계층이 원래 그림 대신 쓴다(battleCharacterResourceId 는 원래 그림 그대로). */
   readonly transformResourceId?: string;
 }
@@ -325,6 +358,8 @@ export interface BattleActionResultSnapshot {
   readonly critical: boolean;
   readonly skillName?: string;
   readonly skillId?: SkillId;
+  /** 연계기(듀얼·트리플 테크) 엔트리면 참가 배우 전원(시전자 포함). 표시 계층이 참가자 모두에게 행동 모션을 줄 수 있다. */
+  readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
   readonly effectiveness?: number;
 }
@@ -373,14 +408,20 @@ export interface BattleTimelineEntrySnapshot {
   /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
   readonly actionId?: number;
   /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
-  readonly aside?: "hpCost" | "drain";
+  readonly aside?: "hpCost" | "drain" | "dex" | "recoil";
   /** Conditional choreography follows the rule outcome, including preparation and follow-up cancellation. */
   readonly gimmick?: {pattern:import("@/battle/battleMotionProgram").BattleMotionPattern;triggered:boolean;allyId?:string;source?:"periodic"};
+  /** 반동(SkillRecord.recoilPercent) 뒤의 special 줄. 표시 계층이 표시 이름(야생·상대 접두)으로 「…는 반동 피해를 입었다!」를 만든다. */
+  readonly recoil?: true;
+  /** incapacitated 엔트리: 상태 이상이 아니라 풀죽음(SkillRecord.flinchChance)으로 차례를 잃었다. */
+  readonly flinch?: true;
   /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
   readonly charge?: true;
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
+  /** capture 엔트리: 구슬이 흔들린 횟수(0~3). 실패 연출이 이 횟수만큼 흔들리고 빠져나온다. */
+  readonly shakes?: 0 | 1 | 2 | 3;
   /** 회복 엔트리가 어느 자원에 작용했는가. 표시 계층이 이 값을 HP 원장에 그대로 쓰면
    *  MP 회복이 HP 로 새어 들어간다(실측: 마력약 MP+30 → 표시 HP 250→280). */
   readonly resource?: "hp" | "mp";
@@ -388,6 +429,12 @@ export interface BattleTimelineEntrySnapshot {
   readonly waitMs?: number;
   /** kind === "special" 인 엔트리의 전투 메시지. */
   readonly message?: string;
+  /** 능력치 단계가 바뀐 special 엔트리. before 는 재생 전 화면(단계 알약)을 되감는 근거다. */
+  readonly statStage?: { readonly stat: import("@/battle/statStages").StatStageKey; readonly before: number; readonly after: number; readonly requested: number };
+  /** 날씨가 만든 엔트리(지속 문장·차례 말 피해·종료 문장). 표시 계층이 표시 이름으로 문장을 다시 만들고 상태 이름 팝업을 쓰지 않는다. */
+  readonly weatherKind?: import("@/project/types").SkillWeatherKind;
+  /** 이 엔트리 뒤의 날씨(null = 날씨 끝). 날씨 배지를 재생 시점에 맞추는 근거 — 스냅샷의 weather 는 명령 즉시 해결돼 문장보다 먼저 바뀐다. */
+  readonly weatherAfter?: { readonly kind: import("@/project/types").SkillWeatherKind; readonly turnsLeft: number } | null;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
   readonly animation?: BattleAnimationSnapshot;
@@ -419,6 +466,8 @@ export interface BattleCaptureResultSnapshot {
   readonly speciesId?: MonsterSpeciesId;
   readonly blockedReason?: BattleCaptureBlockedReason;
   readonly shakes?: 0 | 1 | 2 | 3;
+  /** 도감에 처음 등록되는 포획이면 true(캠페인 도감이 있는 게임만). 없으면 생략. */
+  readonly newDexEntry?: true;
 }
 
 export interface BattleRoundActionLogSnapshot {
@@ -465,10 +514,14 @@ export interface BattleLevelUpPreview {
   readonly mindGain: number;
   readonly agilityGain: number;
   readonly learnedSkillIds: readonly SkillId[];
+  /** 장착 마석의 레벨업 보너스(위 *Gain 에 합산돼 있다). 결과 화면이 「마석 보너스」로 따로 보일 수 있다. */
+  readonly equipmentBonus?: { readonly maxHp: number; readonly maxMp: number; readonly attack: number; readonly defense: number; readonly mind: number; readonly agility: number };
 }
 
 export interface BattleRewardsSnapshot {
   readonly exp: number;
+  /** rewardPolicy.expSplitAlive 일 때만: 몬스터 한 마리가 받는 경험치(총량 exp 를 쓰러지지 않은 참전자 수로 나눈 값). */
+  readonly monsterExp?: number;
   readonly gold: number;
   readonly items: readonly ItemId[];
   readonly enemyLevel?: number;
@@ -477,10 +530,16 @@ export interface BattleRewardsSnapshot {
   // 파티 몬스터(battleParty: "monsters") 경로의 레벨업 미리보기. levelUps 는 액터 전용이라
   // 몬스터가 싸운 전투는 성장 피드백이 화면에 전혀 나오지 않았다.
   readonly monsterLevelUps?: readonly MonsterLevelUpPreview[];
+  /** system.monsterStatRules.evs 일 때만: 쓰러뜨린 적 종들의 evYield 합(승리한 참전 몬스터 한 마리가 받는 노력치). 없으면 생략. */
+  readonly monsterEvGain?: Partial<MonsterInstanceEvs>;
   /** 기술 포인트(트룹 합계). 살아남은 파티원 전원이 받는다. 저작된 TP 가 없으면 생략. */
   readonly tp?: number;
   /** TP 로 새로 배우는 기술 미리보기(결과 화면용). 세션 적립은 battleRewardsToSession 이 같은 규칙으로 한다. */
-  readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[] }[];
+  readonly techLearned?: readonly { readonly actorId: string; readonly actorName: string; readonly skillIds: readonly SkillId[]; /** 이 중 마석 AP 로 배운 스킬(EquipmentRecord.apGrants). 생략 = TP 습득뿐. */ readonly viaAp?: readonly SkillId[] }[];
+  /** 마석 AP(트룹 합계). 살아남은 파티원 전원이 받아 장착 마석의 apGrants 에 쌓는다. 저작된 AP 가 없으면 생략. */
+  readonly ap?: number;
+  /** 폭주(rage) 기술을 아는 배우가 있을 때만: 이번 전투에서 쓰러뜨린 몬스터 레코드 id(중복 없음). 세션이 그 배우의 폭주 목록에 더한다. */
+  readonly rageEnemyIds?: readonly string[];
 }
 
 /** 전투 이벤트의 Tint Screen 이 남긴 화면 상태. 색조 문자열은 맵의 m2Runtime.screen.tint 와 같은 문법이다. */
@@ -493,7 +552,7 @@ export interface BattleScreenState {
 export interface BattleEventStateSnapshot {
   /** Read-only pre-reward party EXP, for the result gauge; never written back as a reward. */
   readonly monsterCollection?: {
-    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp">>>;
+    readonly instances: Readonly<Record<string, Pick<MonsterInstance, "instanceId" | "speciesId" | "level" | "exp" | "ivs" | "nature" | "evs">>>;
   };
   /** 전투 중 Tint Screen 이 한 번이라도 실행됐을 때만 있다. 전투 화면 전용(세션에 되돌려 쓰지 않는다). */
   readonly screen?: BattleScreenState;
@@ -537,6 +596,8 @@ export interface BattleEventStateSnapshot {
 }
 
 export interface BattleSnapshot {
+  /** 지금 전투 날씨(없으면 생략). 표시 계층이 날씨 배지를 그린다. 저장하지 않는다. */
+  readonly weather?: { readonly kind: import("@/project/types").SkillWeatherKind; readonly turnsLeft: number };
   /** 한 마리씩 내보내는 전투(gen1·몬스터 트레이너)에서 쓰러져 물러난 적. 표시 계층이 쓰러짐 비트를 재생하는 동안만 쓴다. */
   readonly departedEnemies?: readonly BattleBattlerSnapshot[];
   /** Gauge prediction from the same scheduler/rates as tick, using battler instance id. */
@@ -545,10 +606,16 @@ export interface BattleSnapshot {
   readonly eventChoice?: BattleEventChoiceSnapshot;
   readonly phase: BattlePhase;
   readonly battleFlow: BattleFlow;
+  /** 이번 전투에 실제로 적용된 ATB 방식(플레이어 설정 > 저작 설정 > wait). gauge 흐름에서만 active 가 의미 있다. */
+  readonly atbMode: "active" | "wait";
   readonly activeActorId?: ActorId;
   readonly activeSlots: number;
   readonly forcedSwitchActorId?: ActorId;
   readonly switchCandidateActorIds: readonly ActorId[];
+  /** 팀 교대 전투일 때만. 교대 묶음 목록과 지금 싸우는 팀. 팀 설정이 없으면 생략(기존 스냅샷 그대로). */
+  readonly teams?: readonly BattleTeamSnapshot[];
+  readonly activeTeamId?: string;
+  readonly teamSwapCost?: import("@/project/types").TeamSwapCost;
   readonly participatingActorIds: readonly ActorId[];
   readonly actors: readonly BattleBattlerSnapshot[];
   readonly reserveActors: readonly BattleBattlerSnapshot[];
@@ -599,6 +666,8 @@ export interface BattleRuntime {
   setSelectedTargetEnemy(enemyId: string): void;
   cancelTargetSelection(): void;
   performActorCommand(command: ActorCommand): void;
+  /** 팀 교대 전투(system.battleTeams)에서 지금 명령을 고르는 배우의 차례로 활성 팀을 바꾼다. 팀 설정이 없으면 아무 일도 없다. */
+  performTeamSwap?(command: TeamSwapCommand): void;
   chooseAutoCommand(): ActorCommand | undefined;
   executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;

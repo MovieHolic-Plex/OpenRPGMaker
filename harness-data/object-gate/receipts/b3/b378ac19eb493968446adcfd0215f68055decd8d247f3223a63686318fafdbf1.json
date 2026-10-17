@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b378ac19eb493968446adcfd0215f68055decd8d247f3223a63686318fafdbf1",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "고목 그루터기(도끼)",
+ "label": "gothic_manor/gm-stump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the tree stump is clearly shown from row 3 to row 7 (5 pixel rows tall) with the axe head embedded, sitting above the south-facing bark trunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4829
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree stump has a clearly foreshortened top cut surface spanning rows 4 to 7 (4 rows tall) with an embedded axe head, atop a south-facing trunk wall from row 8 down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cut top surface of the stump is clearly depicted across rows 3-7 (approx 5 rows tall) with the embedded axe visible, while the south vertical bark surface extends from row 8 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree stump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the tree stump is clearly shown from rows 3 to 7 (5 source pixel rows deep), displaying an axe blade embedded, with the south trunk face extending down from row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3293
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "782a876b54ec1ef0"
+  ],
+  "24": [
+   "7f50d6ded32a824c",
+   "8a0859e35f852473",
+   "a1fdc908e48de099",
+   "ab494232c7082002",
+   "b475060a015a6b14",
+   "e0d33a91c6cb2879"
+  ],
+  "32": [
+   "3dc1f0d9037eec8d",
+   "87e2ab999a3a25ec",
+   "a63ed5ab9ad07eba",
+   "be871983eb6e1568",
+   "d5a5b73833a90cc5",
+   "d5d2444666dc6a8b"
+  ],
+  "48": [
+   "11de587fcc30d1a8",
+   "365c8d4aa734eaac",
+   "5c9b113f6b7f9bde",
+   "8f49458239e7f6ff",
+   "94cd0488aae0fb80",
+   "98f9ca28eed6ef26"
+  ]
+ }
+}

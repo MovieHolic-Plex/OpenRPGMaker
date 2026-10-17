@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc6b418158b94c54241793a273cafabfcfa39fbe189ccc04549aebdabab50ac9",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "애도하는 두건 석상",
+ "label": "gothic_manor/gm-statue-mourner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hooded stone statue on a rectangular pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base/plinth (rows 22-31) and the hooded figure are drawn in pure front elevation with straight horizontal bands and no visible top surface foreshortening on either the pedestal or the figure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5183
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hooded mourning statue on a rectangular stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hooded figure and its plinth/base are drawn entirely in straight front elevation with horizontal dividing lines and no visible top surface on either the head, shoulders, or plinth (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hooded stone statue on a rectangular pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and its base/pedestal are rendered in flat front elevation with horizontal dividing lines across rows 22 and 27, showing 0 rows of top surface on either the hood or the pedestal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3947
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hooded statue on a plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hooded figure and its plinth/base are drawn in flat front elevation with straight horizontal dividing lines; neither the top of the head nor the top plane of the base plinth shows any foreshortened top surface (0 pixel rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4191
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.453Z",
+ "cells": {
+  "16": [
+   "cd9240f4389dda27",
+   "d31d6f8fe90b913d"
+  ],
+  "24": [
+   "05276cc7d520d007",
+   "2e2278eff513fe74",
+   "514ba0b5896a5540",
+   "59d90e063a2d95e5",
+   "5b2ce266617cf208",
+   "5ed2adaf27a03b9a",
+   "61f268fac6d66445",
+   "7e85729040425d2f",
+   "8d964b9c0d2a6cf7",
+   "97a1c333e873da0f",
+   "ed7aadb56d97b5e3",
+   "f58ac3f1a8727cf2"
+  ],
+  "32": [
+   "6ecbfc262b6ca14d",
+   "92c187ae84ab1d87",
+   "e5a3b881b290e38c"
+  ],
+  "48": [
+   "06efc9ff439115cb",
+   "647c58667b370d3c",
+   "65027c57025a162a",
+   "7e03110e1bf09b66",
+   "b5e5b60b9af88b8d",
+   "c904f53d7dc123f6"
+  ]
+ }
+}

@@ -1,0 +1,49 @@
+{
+ "key": "sc2-villager-m",
+ "arch": "sp2-villager-m",
+ "base": "Scarloxy1:2",
+ "variant": "초록 벙거지를 짙은 갈색 납작 베레모(H recolor, 윗선을 H paint 로 납작·둥글게 다듬음)로 바꾸고, 흰 민소매를 회색 조끼 + 가슴 단추 한 줄(T paint), 보라 바지를 짙은 갈색으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "한 프레임에만 나오는 색 h — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 Ybfiq"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.97,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 3,
+  "lone": 209,
+  "lone_base": 209
+ },
+ "distinct": {
+  "score": 0.467,
+  "nearest": "ScarloxyPeople3#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 66,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-villager-m-a"
+}

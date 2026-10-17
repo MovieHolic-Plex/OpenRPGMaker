@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61998981dd4c221f7187ee34467c93f9692fdb80d721d69480a9ef1c1ad1b8b4",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal2",
+ "label": "jp/jp-rail-signal2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail signal post and indicator box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (signal box, striped pole, and base block) is drawn in pure flat front elevation with 1px top outline borders and zero visible horizontal top surfaces on either the signal housing or the base block.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7788
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal head, pole, and concrete base are drawn entirely in flat 2D front elevation. Neither the base nor the signal box displays a foreshortened top surface; all edges and stripe transitions are strictly horizontal 1px lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9013
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal box and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure 2D front elevation. Neither the signal head nor the concrete base block shows any visible top surface from above (the pole enters the base at a flat horizontal line with no top plane visible around it).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5237
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail signal head and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal (head, striped pole, and concrete base) is drawn in pure 2D front elevation. No horizontal top surfaces of the signal housing or base plinth are shown in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5129
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.124Z",
+ "cells": {
+  "16": [
+   "5c2de0cffff7f57b",
+   "c74373a62afdf0c8",
+   "de0f7b108ab2f032"
+  ],
+  "24": [
+   "1dfb5c95d62ddca8",
+   "50573fd153cbaacc",
+   "834170cc4f4635dc",
+   "f12f923ee5b653e0",
+   "f290c35bd907c7d0",
+   "fa6b35bef953e52e"
+  ],
+  "32": [
+   "17f2e591f13a75a8",
+   "2ac0b3471a8f2015",
+   "2fbef8912ac856e2",
+   "3f7aa2c56f75689a",
+   "5134231811e3ef2e",
+   "86518c49b89de5a3",
+   "8a935977ee44cb88",
+   "a4a68d1f6f91494b",
+   "a8bfc8d33d59f999",
+   "c5877199483102cb",
+   "d502e942e3eb93e7",
+   "e580d0de89cf5d7b"
+  ],
+  "48": [
+   "01e958d1baa82a4d",
+   "8974f73965edbb88",
+   "8bb3650f061bcd01"
+  ]
+ }
+}

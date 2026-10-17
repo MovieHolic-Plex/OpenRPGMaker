@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20b30379438aa43f3a2c5737de4084e7fd14ec26e3d39d673db2c8f28d012fcf",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem",
+ "label": "prehistoric/ph-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the log pole is clearly visible at rows 5-10 (6 pixel rows tall) displaying tree ring texture in 3/4 top-down perspective, followed by the carved front column face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5748
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the totem pole clearly displays a 6-row tall cut log surface with tree rings (rows 5 to 10) seen from an overhead 3/4 perspective above the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5687
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the wooden totem pole is clearly visible at rows 5-10 (6 rows tall) showing the cross-section/end-grain in 3/4 perspective above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5127
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the log pole is clearly depicted from row 5 to row 10 (6 pixel rows) showing a top-down view of the log cap with ring texturing, resting atop the vertical carved shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5427
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.785Z",
+ "cells": {
+  "16": [
+   "08c7931dd665f1aa",
+   "5d0af4d7961a479d",
+   "7c08bfd5610a6694"
+  ],
+  "24": [
+   "13bcbc1e672f45b2",
+   "214c182e8826f23f",
+   "55924f9b329e99ac",
+   "8189311126a1d9cd",
+   "9632b2b978ab45a0",
+   "bfc97458958dea45"
+  ],
+  "32": [
+   "2c5bd1479db21718",
+   "3a89328999cd32d9",
+   "5123ec4b2226904f",
+   "56889c246ac9a974",
+   "727d24f27a6ca967",
+   "98da7d420c1d4531",
+   "a037c7314641236f",
+   "a60afc9e0e0e019e",
+   "d9d9b0656cbb7aea",
+   "f11567f6d526fa63",
+   "f5e91d1dfd4f761b",
+   "feded01f740c81c2"
+  ],
+  "48": [
+   "22aba6349f8c9b79",
+   "358179b8989c8d0f",
+   "a79bc0ddd8a12b3e"
+  ]
+ }
+}

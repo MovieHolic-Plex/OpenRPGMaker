@@ -2,6 +2,8 @@ import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import type { HudWidget } from "@/project/fieldHud";
 import { formatGameClock } from "@/project/gameTime";
+import { friendshipDisplayMax, resolveSocialLoop, socialSlotsLeft } from "@/project/socialLoop";
+import { friendshipDisplayName, friendshipShortName } from "@/project/friendship";
 import { handSlotCurrent, handSlotEntries, handSlotIndex } from "./handSlot";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { resolveActorFaceResourceId, resolveActorName } from "@/project/sessionActorCommands";
@@ -20,6 +22,15 @@ export function readHudWidget(widget: HudWidget, project: Project, session: Play
     return { ...read(time?.hour), text: time ? formatGameClock(time) : "", detail: time ? `${{spring:"봄", summer:"여름", fall:"가을", winter:"겨울"}[time.season]} ${time.day}일${session.dailyWeather ? ` · ${WEATHER[session.dailyWeather.kind] ?? ""}` : ""}` : "" };
   }
   if (widget.kind === "image") return { ...read(widget.resourceId ? 1 : undefined), text: icon(widget.resourceId) };
+  if (widget.kind === "party" && widget.source === "friendship") {
+    // 호감 목록(다인 연애): 호감이 기록된 사람을 높은 순으로 widget.slots 명. 아직 아무도 없으면 비어 hideEmpty 로 숨는다.
+    const all = session.friendship ?? {};
+    const max = Math.max(1, friendshipDisplayMax(project) ?? widget.max);
+    const ranked = Object.keys(all).map(key => ({ key, value: Math.max(0, Math.trunc(all[key] ?? 0)) }))
+      .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key)).slice(0, widget.slots);
+    const entries: HudEntry[] = ranked.map(row => ({ name: friendshipShortName(friendshipDisplayName(project, row.key) ?? row.key), value: Math.min(max, row.value), max, key: row.key }));
+    return { available: true, value: entries.length, max: Math.max(1, widget.slots), entries };
+  }
   if (widget.kind === "party") return { ...read(session.partyActorIds.length), entries: session.partyActorIds.slice(0, widget.slots).flatMap(id => {
     const actor = project.database.actors.find(a => a.id === id), hp = session.actorVitals[id];
     return actor && hp ? [{ name: resolveActorName(session, actor), value: hp.hp, max: hp.maxHp, icon: icon(resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor)) }] : [];
@@ -57,6 +68,18 @@ export function readHudWidget(widget: HudWidget, project: Project, session: Play
     case "timer": return read(widget.timerId ? session.timers[widget.timerId] : undefined);
     case "inventory": return read(widget.itemIds.length ? widget.itemIds.reduce((sum, id) => sum + (session.inventory[id] ?? 0), 0) : undefined);
     case "weather": return { ...read(session.dailyWeather ? 1 : undefined), text: session.dailyWeather ? WEATHER[session.dailyWeather.kind] : undefined };
+    case "friendship": {
+      // 인물을 정하지 않으면 지금 가장 가까운 사람(단일 상대 연애에서는 그 상대).
+      const all = session.friendship ?? {};
+      const value = widget.npcKey ? all[widget.npcKey] ?? 0 : Math.max(0, ...Object.values(all));
+      return read(value, friendshipDisplayMax(project) ?? widget.max);
+    }
+    case "socialSlots": {
+      const loop = resolveSocialLoop(project);
+      if (!loop) return read(undefined);
+      const left = socialSlotsLeft(session, loop);
+      return { ...read(left, loop.slotsPerDay), text: `오늘 남은 시간 ${left}/${loop.slotsPerDay}` };
+    }
     case "map": return { ...read(1), text: project.maps[session.currentMapId]?.name ?? "" };
     default: return read(undefined);
   }

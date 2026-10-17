@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0dbab6425e24e2fc003607f62146f4ad6916170701038de34006a67a24a6865",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age gravel",
+ "label": "prehistoric/ph-gravel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing gravel and dirt ground texture spanning the full 16x16 tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gravel terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting dirt and embedded gravel/stones viewed from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3105
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gravel ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain ground tile depicting gravel and rocks embedded in dirt, viewed from above across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2928
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gravel terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dirt and gravel stones seen from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3005
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.788Z",
+ "cells": {
+  "16": [
+   "9412ba5312662a0b"
+  ],
+  "24": [
+   "27082527b4a9eb0c",
+   "66cde87ae3e90a59",
+   "7b07a796a1726c00",
+   "924edeb003b54e90",
+   "e106659f1454a1d7",
+   "f1143840bc6ecf46"
+  ],
+  "32": [
+   "0fd91cdf1dda00c1",
+   "826e0d057c4ec6fa",
+   "aa4706c7aa2ca190",
+   "b6a2ae19bfb07155",
+   "d3e68e72e98b21b3",
+   "e3dc5b9caf159250"
+  ],
+  "48": [
+   "16e7341ee62f61b8",
+   "1c26ec3135ae2e28",
+   "3e0a77c9b97aaedb",
+   "504cf2de7d7cd2ad",
+   "66d65e08a30dc257",
+   "95b092af85eb0155"
+  ]
+ }
+}

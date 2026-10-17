@@ -42,6 +42,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`
   → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
 
+- **전투 화면의 트레이너 그림(상대 앞모습·내 뒷모습·볼 던지기)을 만들 때** → `battle-trainer-sprites` · 시드 `harness-data/battle-trainer-sprites/seed.json` · `npm run harness -- battle-trainer-sprites draw|status|sheet|pick|bake` · 문서 `openwiki/harnesses/battle-trainer-sprites.md`. 몬스터 종 하네스와 같은 「생성형 이미지(이미지 서버) → 격자 도트화 → 사람이 고름」, 몬스터 수집 전용 그림체 샘플을 참고 이미지로 쓴다(Actor1·편집 모드 폐기). 사람이 시트에서 고른 것만 굽는다. object-gate 영수증 없음·사람 선택 경로.
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
@@ -61,7 +62,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 둘×두 번(중앙값·과반), 영수증은 그림 화소 해시에 묶인다. 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 출구 미배선). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 Claude Sonnet 5.5 high(`claude -p`, 사용자 결정 2026-10-14; 신원·effort 는 프로필 해시, 안 되면 다른 모델로 안 넘어가고 멈춤) 하나×네 번(과반) 한 번의 판정이 **3/4 시점 + 버들항 화풍(같은 종류 버들항 기준 그림과 같은 배율 비교)** 둘을 함께 정하고, 영수증은 두 판정을 그림 화소 해시·프로필 해시에 묶는다(둘 다 통과해야 통과, 화풍은 영수증의 별도 칸). 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 2026-10-14 프로필 `473db36f963972c9` rejected: 3/4 위반 17/47·정상 27/36, 화풍 얕음 53/71·버들 43/78. 옛 영수증은 무효, `rereview` 는 보정 통과 전엔 거절). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -113,7 +114,15 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
    - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
+   - 열대 군도·해적 항구 pirate_isles (`oprn-pirate`, 16px 코드 손 도트 174조각 → object-gate 통과분만 굽기 `pi_bake.py`, 순수 구성기 `pirateIslesComposer.ts` + 조수 도구 `compose_pirate_isles_map`, 해적·열대·군도 낱말 경로, 참고문서 `pi_refs.py`): `openwiki/pirate-isles.md`
+   - 전국·에도 일본 번들 sengoku_edo (성하마을·여관 거리·무가 저택·성·신사/절·농촌 야외 + 다다미 실내, 손 도트 + object-gate 영수증만 굽기, 구성 도구 compose_sengoku_edo_map · link_sengoku_edo_interior, 방 구성 7개, 적대 QA 결함표): `openwiki/sengoku-edo.md`
    - 마법 학교(해리포터풍) 번들 wizarding_world · 성채 공용 벽·바닥·문과 12공간 기물·학생/교수/생물 걷기 칩(Wizarding 시트)·마법 효과를 코드 손 도트 조각 모듈로 그려 **독립 검수 PASS·해시 일치분만** 굽는다 (계약 `scripts/content/wizarding/CONTRACT.md`, 굽기 4단계, 얇은 재검수 `recheck_sheet.py`, 장소 예제): `openwiki/wizarding-world.md`
+   - 하늘섬 번들 sky_island(계열 oprn-sky) · 떠 있는 섬·밑면·밧줄/돌 다리·잔교·비공정·신전 섬·실내 넷을 코드 손 도트로 그려 object-gate 통과분만 굽고, 순수 구성기 `compose_sky_island_map`(마을·신전·부두·섬 사슬·방 넷, 엔진 BFS 재검사)로 깐다: `openwiki/sky-island.md`
+   - 스팀펑크 공업 도시 번들 steampunk_city · 벽돌·철·구리 거리·공장·기차역·운하·비행선 정박장 + 실내 6종 코드 손 도트 163조각(object-gate 영수증, 프로필 미보정), 구성기 `compose_steampunk_city_map`(계획→건물→소품, BFS·여백), 하늘섬은 다른 칩셋: `openwiki/steampunk-city.md`
+   - SF 정거장·네온 거리 번들 sf_station · 우주 정거장 실내·연구 기지·달 기지·사이버펑크 거리 손 도트 172조각(object-gate 전량 영수증)과 맵 구성기 `compose_sf_station_map`(station·lab·street·moonbase), SF 낱말 라우팅 `src/ai/sfStationPolicy.ts`, 참고문서 `sf_refs.py`: `openwiki/sf-station.md`
+   - 선사 시대 원시 세계 번들 prehistoric · 원시 부족 마을·늪·화산·공룡 화석 계곡 + 동굴·움집 실내 4 코드 손 도트(꼭짓점 Wang 바닥 9쌍, object-gate 영수증·조립 표본, 프로필 미보정), 구성기 `compose_prehistoric_map`(꼭짓점 땅 계획→빈터→집→길→소품, BFS), 그냥 동굴·던전은 던전 칩셋: `openwiki/prehistoric.md`
+   - 사막·동양풍 번들 desert_east(계열 oprn-desert-east) · 오아시스 마을·바자르·궁전·피라미드 유적·대상 숙소 + 찻집·가게·알현실·묘실·함맘·여관 실내를 코드 손 도트로 그려 object-gate 영수증 통과분만 굽고(모서리 왕 타일 5벌), 순수 구성기 `compose_desert_east_map`·`compose_desert_east_room`(발 밑 재질·문 접근칸·BFS)로 깐다: `openwiki/desert-east.md`
+   - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
@@ -124,6 +133,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - **조수에게 타일셋 까는 법 가르치기** (조수가 실제로 보는 것·업로드 타일셋에서 비는 것·참고문서/이름표/조립법 순서·재배포 금지 팩): `openwiki/teaching-assistant-tilesets.md`
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
+   - 데스크톱 창 컨트롤 (Windows·Linux 오른쪽 위 최소화/최대화/전체화면/닫기, macOS 신호등, 끌기 영역·톱바 여백·큰 모달 머리줄 비켜 주기, 닫기 절차 우회 금지): `openwiki/desktop-window-controls.md`
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - **월드맵 아이콘은 하네스를 거친다:** `src/harnesses/worldmap-icons/README.md` — 검수자(시점 계약: 윗면+정면 벽, 옆면 금지)가 판정하고 사용자가 http://mdc-server:18313/ 에서 받기/버리기. 결정 `harness-data/worldmap-icons/decisions.json`. 감독이 대신 고르거나 바로 번들·지도에 넣지 않는다.
@@ -193,13 +203,14 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
 - 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-  판정자 둘×두 번(중앙값·과반)이고 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
-- **지금 상태(2026-10-13 실측): 영수증 0장, 보정 프로필 미보정(`status`), 출구 미배선** — 어느 굽기 스크립트(`bake_jp.py` 등)도 이 관문을 호출하지 않는다.
+  판정자 Claude Sonnet 5.5 high 하나×네 번(과반, 2026-10-14 교체; 보정 프로필 `3989203095df6a2f` rejected — 3/4 위반 43/47·정상 19/36, 화풍 58/71·31/78)이고 한 번에 3/4 와 버들항 화풍 둘을 함께 판정한다(영수증에 칸 둘, 둘 다 통과해야 통과; 숫자 지표는 보조). 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
+- **지금 상태(2026-10-16 실측): 영수증 0장, 현재 프로필 `ee216f0de5822996`(규칙 v8) 보정 rejected** — 3/4 반쪽은 확실 위반 0/84 자동통과지만 정상 통과율·화풍 반쪽이 미통과다. 굽기 스크립트 다수(`theme_bake` 계열·modern-city·murim-chipset·jp-city)는 이미 `refusal`/`require_pass` 를 호출하므로 새 그림은 지금 **거절된다**(우회 `JP_GATE=skip`·`--no-gate`·`--dev` 는 제거됨, 배선 표는 `openwiki/harnesses/object-gate.md`). 정면형 소품(간판·건조 틀)은 종류 `front_prop` — **사람이 터미널에서 `approve-front-prop` 로 그림 해시에 승인한 것만** 3/4 면제(화풍은 그대로 pass), 승인 전엔 보류이며 감독·에이전트는 승인하지 않는다. 「관문이 있다」·「통과했다」고 쓰지 마라.
   그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
+- **부품 예외:** 건물의 일부라 윗면을 혼자 보일 수 없는 부품(예: 1층 상가 띠 `jp-sf-*`)은 윗면 면제가 아니라, 그 부품을 화소 그대로 품은 **조립 건물** 그림의 영수증(kind `structure`, 같은 판정자·기준)으로 관문을 거친다. 부품을 한 화소라도 다시 그리면 덮임이 풀린다(`scripts/content/jp-city/gate_assembled.py`).
 
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 

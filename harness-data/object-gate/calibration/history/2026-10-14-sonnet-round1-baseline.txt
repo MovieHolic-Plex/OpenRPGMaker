@@ -1,0 +1,77 @@
+round 1: Sonnet 5.5 high x4, Argon-era instructions (rules v4), 3/4 sets as labelled by #2567 (murim 'bad' = post-fix pictures, mislabelled)
+FAIL 3/4:fail interior/cake_display_case__w8-C               판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:pass interior/chopping_block__v5                    
+FAIL 3/4:fail interior/altar_E__w21-G                        판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/pew__v5                               판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 0행 < 4
+FAIL 3/4:fail interior/pew_E2__w45-A                         판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/pew_E3__w45-A                         판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 4
+FAIL 3/4:pass interior/pulpit__w32-A                         
+FAIL 3/4:fail interior/votive_stand__v5                      판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 앞면 2행 < 3; 윗면 2행 < 3
+FAIL 3/4:fail interior/coffin__w73-A                         판정자 과반 fail; 투영이 3/4 아님(top_down); 앞면 0행 < 3; 윗면 0행 < 4
+FAIL 3/4:fail interior/column_dwarf__w51-A                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation)
+FAIL 3/4:fail interior/column_marble__w51-A                  판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2.5행 < 3
+FAIL 3/4:pass interior/column_steel__w51-A                   
+FAIL 3/4:fail interior/column_stone__w51-A                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation)
+FAIL 3/4:pass interior/column_wood__w51-A                    
+FAIL 3/4:fail interior/armchair__w9-B                        판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/barrel__w2-A                          판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 1.5행 < 4
+FAIL 3/4:fail interior/chair_E__v5                           판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/chair_N__v5                           판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2.5행 < 4
+FAIL 3/4:fail interior/chair_S__v5                           판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/chair_W__v5                           판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/cradle__w29-F                         판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 3
+FAIL 3/4:fail interior/sofa__v5                              판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/firewood_bundle__w9-B                 판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 1.5행 < 3
+FAIL 3/4:fail interior/magitek_engine__w46-A                 판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/mine_cart__w2-C                       아가리 2.5행 < 4
+FAIL 3/4:fail interior/powder_kegs__w9-B                     판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 1행 < 4
+FAIL 3/4:fail interior/rune_stone__w45-A                     판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation)
+FAIL 3/4:fail interior/stone_throne__w52-A                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 0.5행 < 4
+FAIL 3/4:fail interior/theater_seat__w10-C                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/hammock__w72-A                        판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 1행 < 3
+FAIL 3/4:fail interior/safe__w72-A                           판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 3행 < 4
+FAIL 3/4:fail interior/spear_rack__w70-A                     판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 3
+FAIL 3/4:fail interior/hay_bale__w44-A                       판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 0행 < 4
+FAIL 3/4:fail interior/saddle_rack__w26-D                    판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 3
+FAIL 3/4:fail interior/loom__w43-A                           판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 1행 < 3
+FAIL 3/4:fail interior/spiral_stair__v5                      종류 불일치; 판정자 과반 fail; 투영이 3/4 아님(side_elevation); 윗면 2행 < 3
+FAIL 3/4:fail interior/slot_machine__w46-A                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 0행 < 4
+FAIL 3/4:fail interior/choir_stall__w45-A                    판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:fail interior/fish_tank__w44-A                      종류 불일치; 판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 4
+FAIL 3/4:pass interior/kitchen_range__v5                     
+FAIL 3/4:fail interior/patient_bed__w74-A                    판정자 과반 fail; 윗면 2행 < 3
+FAIL 3/4:fail interior/holy_water_font__w7-A                 아가리 3행 < 4
+FAIL 3/4:fail interior/slop_bucket__w3-C                     판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 아가리 안쪽이 안 보임; 아가리 0행 < 4
+FAIL 3/4:pass interior/bathtub__w22-F                        
+FAIL 3/4:pass interior/nightstand__w8-C                      
+FAIL 3/4:pass interior/roundtable__v5                        
+FAIL 3/4:pass interior/stool__v5                             
+FAIL 3/4:pass interior/straw_bed__w44-A                      
+FAIL 3/4:pass interior/timber_prop__w53-B                    
+FAIL 3/4:pass interior/conductor_podium__w31-F               
+FAIL 3/4:fail interior/anvil__w7-B                           판정자 과반 fail; 윗면 2행 < 3
+FAIL 3/4:pass interior/coal_bin__w10-B                       
+FAIL 3/4:pass interior/quench_barrel__w5-C                   
+FAIL 3/4:pass interior/feed_trough__w4-B                     
+FAIL 3/4:pass interior/water_trough__w4-A                    
+FAIL 3/4:pass interior/bar_stool__w5-C                       
+FAIL 3/4:fail interior/cheese_wheels__v5                     윗면 3행 < 4
+FAIL 3/4:pass interior/dresser__w71-A                        
+FAIL 3/4:pass interior/wardrobe__w42-A                       
+FAIL 3/4:fail interior/stove__w44-A                          판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2.5행 < 4
+FAIL 3/4:fail interior/forge__w44-A                          판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 1.5행 < 3
+FAIL 3/4:fail interior/bookshelf_1w__w41-A                   판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 0행 < 4
+FAIL 3/4:fail interior/keg_rack__w48-A                       판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 2행 < 3
+FAIL 3/4:fail interior/mortar_and_pestle__w1-B               아가리 3행 < 4
+FAIL 3/4:pass interior/potted_fern__w7-B                     
+PASS 3/4:pass interior/treasure_pile__w5-C                   
+FAIL 3/4:pass murim/scroll_shelf__A                          
+FAIL 3/4:pass murim/scroll_shelf__B                          
+FAIL 3/4:pass murim/medicine_cabinet__A                      
+FAIL 3/4:fail murim/medicine_cabinet__B                      판정자 과반 fail; 정면 입면도; 투영이 3/4 아님(front_elevation); 윗면 3행 < 4
+PASS 3/4:pass murim/gong_frame__A                            
+FAIL 3/4:pass murim/weapon_rack__A                           
+PASS 3/4:pass murim/war_drum__A                              
+FAIL 3/4:pass murim/well__A                                  
+PASS 3/4:pass murim/tea_table__A                             
+PASS 3/4:pass murim/tea_table__B                             

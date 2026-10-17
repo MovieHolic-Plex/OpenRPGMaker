@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "afc885f212e3477228698f2fe5dbf07c468521995ee0cfb5b340f4c07dbfc8da",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "3D 프린터(상자 몸체 + 윗면 출력 베드 + 유리 덮개)",
+ "label": "sf-station/sf-3d-printer",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3D printer casing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer body is drawn straight-on in pure front elevation with no visible top surface (rows 1-2 are merely an outline/rim border of the front casing, with the chamber window and control panel facing directly forward).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5258
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3D printer cabinet/body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer body is rendered in flat front elevation with a centered window, front control panel, and feet at the bottom. The top edge is just a 1px outline/highlight with 0 visible top rows for the main unit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6518
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3D printer cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire printer chassis is drawn in pure front elevation; rows 1-2 are merely an outline and 1px edge highlight framing the front face, with 0 rows representing the top surface of the main unit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4273
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3D printer casing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 3D printer body is drawn from a flat eye-level front view (rows 1-30 show only the South face with screen, buttons, and a flat front window into the chamber), with no top horizontal surface visible at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7754
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.171Z",
+ "cells": {
+  "16": [
+   "6a7ffdb4108d99a1",
+   "7f630be1da75eaf9",
+   "893bb6f8ecc99767",
+   "fa260da5417e9574"
+  ],
+  "24": [
+   "0fcf3d1da111520d",
+   "2101f46c19eb5f62",
+   "23662936d8500f82",
+   "3362b80fa6777ca5",
+   "38e3d748701d3b7a",
+   "4a37f6d89674a1ec",
+   "4b366e0e6ef911ec",
+   "76e8a214775c2c50",
+   "86bb2ba9f8bb1e2a",
+   "8855d01c6914f7d6",
+   "a806bea146131dff",
+   "affea06105b147f8",
+   "b39f8b14640153b8",
+   "b930ef80f4f4df06",
+   "c7ed48d5e810a625",
+   "d08390f73d59cf8f",
+   "d426ead4995f221f",
+   "dbfcb2a9c77010ba",
+   "dd2a105ae888ea41",
+   "e00d47ce731ae3b5",
+   "e8f36e7747965d87",
+   "efe3ff1186a951f4",
+   "f30c2d33d68e44ba",
+   "f8d168ebb22124d7"
+  ],
+  "32": [
+   "bf17b6ccc6b4ca88"
+  ],
+  "48": [
+   "12b664726096d77b",
+   "1a20ff14d7048cd9",
+   "402b3da7424c2616",
+   "449f7cc464e21a6d",
+   "63df763189a7772e",
+   "98c2c935efda2442"
+  ]
+ }
+}

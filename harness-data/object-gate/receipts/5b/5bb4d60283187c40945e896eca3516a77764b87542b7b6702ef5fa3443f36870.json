@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5bb4d60283187c40945e896eca3516a77764b87542b7b6702ef5fa3443f36870",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "흰 돔 회칠 집",
+ "label": "desert-east/de-house-dome-white",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whitewashed domed building with rooftop terrace and front facade",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rooftop terrace is prominently shown from above across rows 16 to 48 (around 32 source pixel rows) with an interior dome, sitting above the vertical front facade spanning rows 49 to 79.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7310
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whitewashed building with roof terrace and dome",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows a large horizontal roof terrace surface enclosed by parapet walls from row 16 to 48 (around 32 source pixel rows) with a dome resting on it, above the south vertical wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3635
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plastered building with rooftop terrace and dome",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building correctly displays a large flat rooftop terrace (rows 17-47, ~31 rows tall) enclosed by parapets with a dome resting on it, above a south-facing front wall (rows 48-79).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whitewashed house with dome and flat parapet roof",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large horizontal rooftop terrace enclosed by a low parapet (visible from row 18 to 46, approx 29 rows tall) with a dome resting on it, above a vertical south facade with an arched door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4190
+  }
+ ],
+ "decidedAt": "2026-10-14T00:12:08.962Z",
+ "cells": {
+  "16": [
+   "042776c891aa952c",
+   "0e3d049659d8f818",
+   "1b0a3608063c5054",
+   "32e71163b572373b",
+   "3bbe44f831951d35",
+   "405ab2490a9be04c",
+   "4a2c8b750c3279c2",
+   "5bd1a6f005c4b035",
+   "75f2824a485e081a",
+   "8101b501ffa5cf67",
+   "a27b303d5685999e",
+   "b453fb232d50cfc6",
+   "e389390f5f2f530a"
+  ],
+  "24": [
+   "00fcb68a98b98c0f",
+   "1dfdeab1fbcf1f57",
+   "20ba347f8a4e3949",
+   "4c4c655a4ee83870",
+   "5653ccde9c521e49",
+   "6bc94fd0258c9362",
+   "775d80ef0ab00b3f",
+   "82d7e64f821691f5",
+   "8954d0a34b299285",
+   "a5a08447c8be5700",
+   "b24234d3e2cc8b61",
+   "bb24e5358604afa6",
+   "dc363d1cb9023845",
+   "f1645c0284b94b38"
+  ],
+  "32": [
+   "128965e5a3892893",
+   "149e6e11e4498528",
+   "168b39771732e3f6",
+   "3754b5590c62144b",
+   "3abb89cdf298ddbc",
+   "3f9e0d06bcbe7257",
+   "45b9b362daaa752b",
+   "4713cf8364def07f",
+   "4ba66dfbba041f84",
+   "5130039c43ba7f00",
+   "52df4456e707d956",
+   "5a3d09f61fc9385b",
+   "647e1d42279aae00",
+   "6aef0b761cdfd80b",
+   "6e50b13983214e41",
+   "7d780946ba707baf",
+   "82fe93f664d9a574",
+   "8ee85587bc631893",
+   "9ab869623bffa384",
+   "9df7b28340285d31",
+   "a53dc3fb754de69c",
+   "ac532f29c9b6fcc5",
+   "b687798c6fa0f88b",
+   "c2a580efcc39cb7a",
+   "c3d8c1cdfc188853",
+   "d797b4671e8ba75a",
+   "e609ea5f0b8aaad5",
+   "e7f7050c456063d6",
+   "e964879813fa6d90",
+   "e9a95bc590c72954",
+   "edc805b136a1f402",
+   "ee35cdac1aa36689",
+   "fb52baae876b4081"
+  ],
+  "48": [
+   "0803bf8a1cc22a91",
+   "4d1a72514d001841",
+   "a3caf4ec9c78c1e3",
+   "aeeeeac8e5582d9d"
+  ]
+ }
+}

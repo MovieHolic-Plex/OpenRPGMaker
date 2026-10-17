@@ -1,5 +1,6 @@
 import { normalizeGallerySettings } from "@/project/gallery";
 import { fieldHudEditor } from "./databaseFieldHud";
+import { battleTeamsSection } from "@/editor/panels/databaseBattleTeamsSection";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
@@ -9,8 +10,8 @@ import {
   emptyToUndefined,
   field,
   numberField as baseNumberField,
-  selectField,
-  selectLiteral,
+  selectField as baseSelectField,
+  selectLiteral as baseSelectLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -50,6 +51,11 @@ import {
   type FontRole,
 } from "@/project/fontRegistry";
 import { store } from "@/project/store";
+import { linearObedienceCaps } from "@/project/badgeProgress";
+import { disableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
+import { enableGenreLockSettled } from "@/project/genreLockCharsets";
+import { genreLockVisualSummary } from "@/project/genreLockVisuals";
+import { monsterAssetStatus } from "@/project/genreLockMonsterAssets";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
@@ -102,9 +108,10 @@ import {
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
 } from "@/project/playResolution";
+import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
-import type { PlayResolution, SystemRecords } from "@/project/types";
+import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
 
 type SystemRefresh = (kind?: "values" | "effects") => void;
 const titleStageRefreshers = new WeakMap<HTMLElement, (kind: "values" | "effects") => void>();
@@ -165,20 +172,24 @@ function consumeRequestedSystemSection(): RequestedSystemSection | undefined {
   return requested;
 }
 
-const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
+const SYSTEM_SECTION_ORDER: readonly {
+  readonly slug: SystemSectionSlug;
+  readonly label: string;
+  readonly subhead?: string;
+}[] = [
   { slug: "overview", label: "개요" },
-  { slug: "party", label: "초기 파티" },
-  { slug: "display", label: "화면" },
+  { slug: "party", label: "초기 파티", subhead: "규칙" },
+  { slug: "startup", label: "시작 설정" },
+  { slug: "optin", label: "기능 확장" },
+  { slug: "time", label: "시간" },
+  { slug: "typechart", label: "타입 상성" },
+  { slug: "display", label: "화면", subhead: "보이는 것" },
   { slug: "menu", label: "게임 메뉴" },
   { slug: "dialogue", label: "대화창" },
   { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
-  { slug: "startup", label: "시작 설정" },
-  { slug: "optin", label: "기능 확장" },
-  { slug: "time", label: "시간" },
-  { slug: "typechart", label: "타입 상성" },
-  { slug: "title", label: "타이틀" },
+  { slug: "title", label: "타이틀", subhead: "시작·끝" },
 ];
 
 export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () => undefined): void {
@@ -194,6 +205,7 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
   if (requested) host.dataset.dbSystemSection = requested.slug;
   const activeSlug = requested?.slug ?? readActiveSystemSection(host);
   host.dataset.dbSystemSection = activeSlug;
+  announceSystemSection(activeSlug);
   const refresh: SystemRefresh = (kind) => {
     if (kind) {
       refreshSystemDerived(form, kind);
@@ -202,12 +214,12 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
     const active = document.activeElement;
     const focusId = active instanceof HTMLElement ? active.dataset.testid : undefined;
     const scrollTop = sectionHost.scrollTop;
-    const navScroll = nav.scrollLeft;
+    const navScroll = nav.scrollTop;
     rerender();
     const nextSections = host.querySelector<HTMLElement>(".db-system-sections");
     if (nextSections) nextSections.scrollTop = scrollTop;
     const nextNav = host.querySelector<HTMLElement>(".db-system-section-nav");
-    if (nextNav) nextNav.scrollLeft = navScroll;
+    if (nextNav) nextNav.scrollTop = navScroll;
     if (focusId) host.querySelector<HTMLElement>(`[data-testid="${focusId}"]`)?.focus({ preventScroll: true });
   };
   const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, refresh, activeSlug);
@@ -219,6 +231,12 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
   wireSystemStudioOverview(form);
   host.append(el("h3", { text: "시스템" }), form);
   if (requested?.focusTestId) focusSystemField(form, requested.focusTestId);
+}
+
+/** 헤더 크럼의 세 번째 칸(그룹 › 탭 › 구획)에 지금 보는 구획 이름을 알린다. */
+function announceSystemSection(slug: SystemSectionSlug): void {
+  const label = SYSTEM_SECTION_ORDER.find((section) => section.slug === slug)?.label;
+  setDatabaseSubLocation("system", label ?? null);
 }
 
 function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
@@ -238,8 +256,35 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
     class: "db-system-section-nav",
     dataset: { testid: "db-system-section-nav" },
     attrs: { "aria-label": "시스템 설정 섹션" },
+    on: {
+      keydown: (event: Event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+        const buttons = Array.from(nav.querySelectorAll<HTMLButtonElement>(".db-system-section-button"));
+        const currentIndex = buttons.findIndex((button) => button === document.activeElement);
+        if (currentIndex < 0) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? buttons.length - 1
+            : (currentIndex + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length;
+        const target = buttons[nextIndex];
+        target?.focus();
+        target?.click();
+      },
+    },
   });
-  for (const { slug, label } of SYSTEM_SECTION_ORDER) {
+  for (const { slug, label, subhead } of SYSTEM_SECTION_ORDER) {
+    if (subhead) {
+      nav.append(
+        el("div", {
+          class: "db-system-section-subhead",
+          text: subhead,
+          attrs: { role: "presentation" },
+        }),
+      );
+    }
     nav.append(
       el("button", {
         class: `db-system-section-button${slug === activeSlug ? " active" : ""}`,
@@ -253,14 +298,20 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
         },
       }),
     );
+    if (slug === "title") {
+      nav.append(titleWorkbenchJumpNav(activeSlug, host, nav, sectionHost));
+    }
   }
   return nav;
 }
 
 /** 섹션 전환 핸들러 — DOM 토글만 수행하며 store.update/스냅샷을 만들지 않는다. */
 function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
+  const jump = nav.querySelector<HTMLElement>('[data-testid="db-title-workbench-jump"]');
+  if (jump) jump.hidden = slug !== "title";
   if (host.dataset.dbSystemSection === slug) return;
   host.dataset.dbSystemSection = slug;
+  announceSystemSection(slug);
   for (const button of Array.from(nav.querySelectorAll<HTMLElement>(".db-system-section-button"))) {
     const isActive = button.dataset.testid === `db-system-nav-${slug}`;
     button.classList.toggle("active", isActive);
@@ -417,12 +468,14 @@ function systemSectionNodes(
             else delete draft.system.monsterCollection;
           });
         }),
+        genreLockField(project, rerender),
         checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.monsterBattleParty = true;
             else delete draft.system.monsterBattleParty;
           });
         }),
+        ...obedienceCapFields(project, rerender),
         checkboxField("클릭(탭)으로 걷기", "db-field-system-pointer-movement", project.system.pointerMovement === true, (checked) => {
           updateSystem((draft) => {
             if (checked) draft.system.pointerMovement = true;
@@ -454,6 +507,7 @@ function systemSectionNodes(
             : { disabled: true, disabledReason: "롤링 HP 미터를 켜면 속도를 정할 수 있습니다." },
         ),
       ]),
+      battleTeamsSection(project, updateSystem, rerender),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
         resourcePickerControl({
@@ -582,7 +636,6 @@ function systemSectionNodes(
             el("div", {
               class: "db-title-workbench-fields",
               children: [
-                titleWorkbenchJumpNav(),
                 titleScreenOpeningFieldset(titleScreen, rerender),
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
@@ -1562,15 +1615,22 @@ function updateSystem(mutator: (draft: ReturnType<typeof store.getCurrent>) => v
 }
 
 function nextRewardPolicy(
-  current: { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined,
+  current: RewardPolicy | undefined,
   patch: { participationOnly?: boolean; levelGapPenalty?: boolean },
-): { participationOnly?: boolean; levelGapPenalty?: boolean } | undefined {
+): RewardPolicy | undefined {
   const participationOnly = patch.participationOnly ?? current?.participationOnly === true;
   const levelGapPenalty = patch.levelGapPenalty ?? current?.levelGapPenalty === true;
-  if (!participationOnly && !levelGapPenalty) return undefined;
+  // 이 토글 화면에 없는 칸(expShare·trainerPrizePerLevel)은 조수·도구가 저작한 값이므로 그대로 둔다.
+  const expShare = current?.expShare === true;
+  const expSplitAlive = current?.expSplitAlive === true;
+  const prize = current?.trainerPrizePerLevel ?? 0;
+  if (!participationOnly && !levelGapPenalty && !expShare && !expSplitAlive && prize <= 0) return undefined;
   return {
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
+    ...(expShare ? { expShare: true } : {}),
+    ...(expSplitAlive ? { expSplitAlive: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -1686,11 +1746,97 @@ function galleryLabelField(value: string): HTMLElement {
   return field("메뉴 이름", input);
 }
 
+/**
+ * 장르 칩셋 잠금(몬스터 수집) 켜기/끄기 + 상태 배지. 잠금은 조수·도구만 막는다 — 여기서 손으로 칠하는 것은 막지 않고 허용 밖 맵 수만 알린다.
+ * 켜면 지금 있는 허용 밖 맵은 「잠금 이전부터 있던 맵」으로 기록한다(project/genreLock.ts).
+ */
+function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: () => void): HTMLElement {
+  const lock = project.system.genreLock;
+  const report = genreLockReport(project);
+  const lockPreset = lock?.preset ?? (project.gameDesignBrief?.interview?.genre === "romance" ? "romance" : "monster-collect");
+  const lockLabel = lockPreset === "romance" ? "연애 — 조수는 현대 학교·도시 칩셋만 새로 쓴다" : "몬스터 수집 — 조수는 몬스터 칩셋·캐릭터 칩·얼굴·전투 그림만 새로 쓴다";
+  const checkbox = checkboxField(`장르 칩셋 잠금 (${lockLabel})`, "db-field-system-genre-lock", lock !== undefined, (checked) => {
+    recordProjectSnapshot();
+    store.update((draft) => {
+      if (checked) enableGenreLockSettled(draft, lockPreset, "enforce", { remapEvents: false });
+      else disableGenreLock(draft);
+    }, { scope: "system", label: checked ? "장르 잠금 켜기" : "장르 잠금 끄기" });
+    rerender();
+  });
+  const badge = el("p", {
+    class: "db-system-resolution-help",
+    dataset: { testid: "db-genre-lock-badge" },
+    text: !lock ? "꺼짐 — 조수가 다른 계열 칩셋으로 맵을 만들 수 있다."
+      : `잠금 중(${lock.mode === "warn" ? "경고만" : "강제"}) · 허용 칩셋 ${report.allowedTilesets.length}개`
+        + (genreLockAllowedCharsetLabels(project).length ? ` · 캐릭터 칩: ${genreLockAllowedCharsetLabels(project).join("·")}` : "")
+        + (genreLockVisualSummary(project) ? ` · 얼굴·전투 그림: ${genreLockVisualSummary(project)}` : "")
+        + (report.violations.length ? ` · 허용 밖 맵 ${report.violations.length}개(손으로 칠한 것은 막지 않는다)` : "")
+        + (report.preexisting.length ? ` · 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개` : "")
+        + (report.charsetViolations.length ? ` · 허용 밖 캐릭터 칩 ${report.charsetViolations.length}곳(손으로 칠한 것은 막지 않는다)` : "")
+        + (report.charsetPreexisting.length ? ` · 잠금 이전부터 있던 허용 밖 칩 ${report.charsetPreexisting.length}곳` : ""),
+  });
+  // 몬스터 자산 역방향 잠금(2026-10-17): 몬스터 수집 게임이 아니면 조수가 포켓몬식 도구·칩셋·칩·그림을 새로 고르지 못한다. 여기서 손으로 쓰는 것은 막지 않는다.
+  const monsterAssets = monsterAssetStatus(project);
+  const monsterBadge = el("p", {
+    class: "db-system-resolution-help",
+    dataset: { testid: "db-monster-asset-lock-badge" },
+    text: `몬스터 자산: ${monsterAssets.allowed ? "허용" : "조수에게 막힘"} — ${monsterAssets.reason}`,
+  });
+  return el("div", { class: "db-genre-lock-field", children: [checkbox, badge, monsterBadge] });
+}
+
+/** 원작식 복종 레벨 상한(몬스터 캠페인이 있을 때만). 켜면 기본 상한과 배지당 증가폭으로 일차 사다리를 만든다 — 세부 사다리는 조수 도구(configure_monster_campaign). */
+function obedienceCapFields(project: Project, rerender: () => void): HTMLElement[] {
+  const campaign = project.system.monsterCampaign;
+  if (!campaign) return [];
+  const rule = campaign.obedienceLevelCaps;
+  const base = rule?.caps[0]?.maxLevel ?? 20;
+  const step = rule && rule.caps.length > 1 ? Math.max(0, rule.caps[1]!.maxLevel - rule.caps[0]!.maxLevel) : 5;
+  const write = (enabled: boolean, nextBase: number, nextStep: number): void => {
+    updateSystem((draft) => {
+      const target = draft.system.monsterCampaign;
+      if (!target) return;
+      if (!enabled) delete target.obedienceLevelCaps;
+      else target.obedienceLevelCaps = { enabled: true, caps: linearObedienceCaps(target.badges.length, nextBase, nextStep), ...(target.obedienceLevelCaps?.refuseLine ? { refuseLine: target.obedienceLevelCaps.refuseLine } : {}) };
+    }, "system:monster-obedience");
+  };
+  const out: HTMLElement[] = [
+    checkboxField("복종 레벨 상한 (배지 수에 따라 몬스터가 명령을 거부)", "db-field-system-obedience-caps", rule?.enabled === true, (checked) => {
+      write(checked, base, step);
+      rerender();
+    }),
+  ];
+  if (rule?.enabled === true) {
+    out.push(
+      numberField("기본 상한 Lv (배지 0개)", "db-field-system-obedience-base", () => store.getCurrent().system.monsterCampaign?.obedienceLevelCaps?.caps[0]?.maxLevel ?? 20, (value) => {
+        if (Number.isFinite(value)) write(true, Math.max(1, Math.min(100, Math.round(value))), step);
+      }, { min: 1, max: 100 }),
+      numberField("배지 1개당 상한 증가 (Lv)", "db-field-system-obedience-step", () => {
+        const caps = store.getCurrent().system.monsterCampaign?.obedienceLevelCaps?.caps ?? [];
+        return caps.length > 1 ? Math.max(0, caps[1]!.maxLevel - caps[0]!.maxLevel) : 5;
+      }, (value) => {
+        if (Number.isFinite(value)) write(true, base, Math.max(0, Math.min(100, Math.round(value))));
+      }, { min: 0, max: 100 }),
+    );
+  }
+  return out;
+}
+
 function checkboxField(label: string, testid: string, checked: boolean, onChange: (checked: boolean) => void): HTMLElement {
-  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  const input = el("input", {
+    class: "db-toggle-input",
+    attrs: { type: "checkbox", role: "switch" },
+    dataset: { testid },
+  }) as HTMLInputElement;
   input.checked = checked;
   input.addEventListener("change", () => onChange(input.checked));
-  return el("label", { class: "db-field", children: [el("span", { text: label }), input] });
+  return el("label", {
+    class: "db-field",
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] }),
+    ],
+  });
 }
 
 function systemPreviewWell(label: string, resourceId: string | undefined): HTMLElement {
@@ -2108,12 +2254,19 @@ function titleScreenVariantsFieldset(titleScreen: TitleScreenSettings, project: 
 
 function lockedCheckboxField(label: string, testid: string, checked: boolean): HTMLElement {
   const input = el("input", {
-    attrs: { type: "checkbox", disabled: "true", ...(checked ? { checked: "true" } : {}) },
+    class: "db-toggle-input",
+    attrs: { type: "checkbox", role: "switch", disabled: "true", ...(checked ? { checked: "true" } : {}) },
     dataset: { testid },
   }) as HTMLInputElement;
   input.checked = checked;
   input.disabled = true;
-  return el("label", { class: "db-field db-field-locked", children: [el("span", { text: label }), input] });
+  return el("label", {
+    class: "db-field db-field-locked",
+    children: [
+      el("span", { text: label }),
+      el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] }),
+    ],
+  });
 }
 
 function patchTitleGraphic(
@@ -2389,8 +2542,13 @@ function refreshTitleEffectsLayer(): void {
   else stage.prepend(next);
 }
 
-/** 오른쪽 칸 맨 위의 바로가기 — 칸이 길어서 원하는 묶음으로 바로 뛴다. */
-function titleWorkbenchJumpNav(): HTMLElement {
+/** 왼쪽 구획 목록의 「타이틀」 아래 바로가기 — 본문 안 4단계 가로 칩을 한 단계 위로 올려 원하는 묶음으로 바로 뛴다. */
+function titleWorkbenchJumpNav(
+  activeSlug: SystemSectionSlug,
+  host: HTMLElement,
+  nav: HTMLElement,
+  sectionHost: HTMLElement,
+): HTMLElement {
   const targets = [
     ["오프닝 효과", "db-title-opening"],
     ["글자·배경", "db-title-workbench-display"],
@@ -2398,9 +2556,9 @@ function titleWorkbenchJumpNav(): HTMLElement {
     ["연출", "db-title-workbench-effects"],
     ["소리", "db-title-workbench-audio"],
   ] as const;
-  return el("nav", {
+  const jump = el("div", {
     class: "db-title-workbench-jump",
-    attrs: { "aria-label": "타이틀 설정 바로가기" },
+    attrs: { role: "group", "aria-label": "타이틀 설정 바로가기" },
     dataset: { testid: "db-title-workbench-jump" },
     children: targets.map(([label, testid]) =>
       el("button", {
@@ -2408,14 +2566,19 @@ function titleWorkbenchJumpNav(): HTMLElement {
         text: label,
         attrs: { type: "button" },
         on: {
-          click: (event: Event) => {
-            const root = (event.currentTarget as HTMLElement).closest(".db-title-workbench-fields");
-            root?.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
+          click: () => {
+            activateSystemSection("title", host, nav, sectionHost);
+            setDatabaseSubLocation("system", `타이틀 · ${label}`);
+            sectionHost
+              .querySelector<HTMLElement>(`[data-testid="${testid}"]`)
+              ?.scrollIntoView({ block: "start", behavior: "smooth" });
           },
         },
       }),
     ),
   });
+  jump.hidden = activeSlug !== "title";
+  return jump;
 }
 
 function titleLogoStyleControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
@@ -3333,6 +3496,24 @@ function resourcePickerControl(options: Parameters<typeof baseResourcePickerCont
 }
 
 /** Canonical domain readers keep every committed number and stepper in sync. */
+function selectField(
+  ...args: Parameters<typeof baseSelectField>
+): HTMLElement {
+  const row = baseSelectField(...args);
+  const select = row.querySelector<HTMLElement>("select");
+  if (select) select.style.maxWidth = "340px";
+  return row;
+}
+
+function selectLiteral<const T extends string>(
+  ...args: Parameters<typeof baseSelectLiteral<T>>
+): HTMLElement {
+  const row = baseSelectLiteral(...args);
+  const select = row.querySelector<HTMLElement>("select");
+  if (select) select.style.maxWidth = "340px";
+  return row;
+}
+
 function numberField(
   label: string,
   testid: string,
@@ -3345,6 +3526,8 @@ function numberField(
     onInput(value);
     synchronize();
   }, bounds, options);
+  const stepper = row.querySelector<HTMLElement>(".db-number-stepper");
+  if (stepper) stepper.style.maxWidth = "120px";
   const input = row.querySelector<HTMLInputElement>("input")!;
   const decrement = row.querySelector<HTMLButtonElement>(".db-number-stepper-dec")!;
   const increment = row.querySelector<HTMLButtonElement>(".db-number-stepper-inc")!;

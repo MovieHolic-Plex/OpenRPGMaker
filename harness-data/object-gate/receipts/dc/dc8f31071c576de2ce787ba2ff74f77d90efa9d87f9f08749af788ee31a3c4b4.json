@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc8f31071c576de2ce787ba2ff74f77d90efa9d87f9f08749af788ee31a3c4b4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(북동쪽 뭍)",
+ "label": "sengoku-edo/se-water-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone embankment/path along the north and east edges overlooking water.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfront stone embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a stone embankment and water surface seen from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4714
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone embankment and water terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a stone quay/embankment bordering water from the north and east, viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfront stone embankment and water terrain tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a top-down view of water meeting a stone embankment along the north and east edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4580
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "0c369339006776c0"
+  ],
+  "24": [
+   "439c08496c76551a",
+   "4e872725c15742a2",
+   "8c08af86414957c8",
+   "aa159e7c0ffcbdb1",
+   "b741fe5c07e35bbe",
+   "c9b0c8f053dd8aa8"
+  ],
+  "32": [
+   "1095d4ed87a8c83e",
+   "2c2bfc5a45db7a89",
+   "7ecaf6a106d49de1",
+   "9ce438ae8c040821",
+   "cda0129843e6c562",
+   "f60dfe0a91c3925d"
+  ],
+  "48": [
+   "042ed85630af9f64",
+   "0de120e00758396b",
+   "2ecad02cb7f73390",
+   "5675f07fb3423e4a",
+   "747512a401392c06",
+   "caf2754c95a3b8c0"
+  ]
+ }
+}

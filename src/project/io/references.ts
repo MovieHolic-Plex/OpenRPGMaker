@@ -7,6 +7,7 @@ import { placementRecord } from "../spatialPlacements";
 import { growthIssues } from "@/project/growth/validation";
 import type { Command, GameEvent, GameMap, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
+import { wildTroopIdForSpecies } from "../wildTroops";
 import { structurePlacementBeforeIsWellFormed, structureRectFitsMap } from "../structurePlacements";
 import {
   collectCommandItemReferenceIds,
@@ -190,6 +191,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   });
   const resourceIds = collectResourceIds(project);
   check(() => {
+    for (const badge of project.system.monsterCampaign?.badges ?? []) {
+      if (badge.iconResourceId) assert(resourceIds.has(badge.iconResourceId), `monsterCampaign: unknown badge icon ${badge.iconResourceId}`);
+    }
+  });
+  check(() => {
     for (const widget of project.system.fieldHud?.widgets ?? []) {
       const path = `system.fieldHud.${widget.id}`;
       if (widget.actorId) assert(actorIds.has(widget.actorId), `${path}: unknown actorId ${widget.actorId}`);
@@ -256,10 +262,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   }
   if (project.system.defaultGameOverId && !project.system.gameOvers?.some(row => row.id === project.system.defaultGameOverId)) issues.push("system.defaultGameOverId does not exist.");
   for (const settings of [project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)]) {
-    const recovery = settings?.recovery;
-    if (!recovery) continue;
-    const map = project.maps[recovery.mapId];
-    if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push("system.gameOver.recovery must point inside an existing map.");
+    for (const [field, recovery] of [["recovery", settings?.recovery], ["recoveryFallback", settings?.recoveryFallback]] as const) {
+      if (!recovery) continue;
+      const map = project.maps[recovery.mapId];
+      if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push(`system.gameOver.${field} must point inside an existing map.`);
+    }
   }
   check(() => collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues));
   check(() => validateEndings(project, switchIds, variableIds, issues));
@@ -294,6 +301,10 @@ function validateP2SystemReferences(
     collectDuplicateChildIds(`system.fishing.spots ${spot.id}: catches`, spot.catches.map((rule) => rule.fishId), issues);
     for (const rule of spot.catches) if (!fishIds.has(rule.fishId)) {
       issues.push(`system.fishing.spots ${spot.id}: fishId does not exist: ${rule.fishId}`);
+    }
+    const speciesIds = new Set((project.database.monsterSpecies ?? []).map((species) => species.id));
+    for (const rule of spot.monsterCatches ?? []) {
+      if (!speciesIds.has(rule.speciesId)) issues.push(`system.fishing.spots ${spot.id}: monsterCatches speciesId does not exist: ${rule.speciesId}`);
     }
   }
   for (const area of project.system.seasonalForage?.areas ?? []) {
@@ -478,7 +489,10 @@ function repairP2References(project: Project): void {
         const map = project.maps[spot.mapId];
         if (!mapIds.has(spot.mapId) || !map || !rectFitsMap(spot.area, map.width, map.height)) return [];
         const catches = spot.catches.filter((rule) => fishIds.has(rule.fishId));
-        return catches.length ? [{ ...spot, catches }] : [];
+        const monsterCatches = (spot.monsterCatches ?? []).filter((rule) => (project.database.monsterSpecies ?? []).some((species) => species.id === rule.speciesId) && wildTroopIdForSpecies(project, rule.speciesId) !== undefined);
+        const { monsterCatches: _dropped, ...rest } = spot;
+        void _dropped;
+        return catches.length || monsterCatches.length ? [{ ...rest, catches, ...(monsterCatches.length ? { monsterCatches } : {}) }] : [];
       }),
     };
   }
@@ -717,6 +731,7 @@ function validateMonsterSpeciesRecords(
   if (cycleIds.length > 0) issues.push(`종족 진화 그래프에 사이클이 있습니다: ${cycleIds.join(" → ")}`);
   for (const species of project.database.monsterSpecies ?? []) {
     collectExistingIdIssues(`monsterSpecies ${species.id}: skill`, (species.skillsByLevel ?? []).map((entry) => entry.skillId), skillIds, issues);
+    collectExistingIdIssues(`monsterSpecies ${species.id}: machineSkill`, species.machineSkillIds ?? [], skillIds, issues);
     for (const evolution of species.evolutions ?? []) {
       if (evolution.toSpeciesId === species.id) issues.push(`종족 ${species.id}: 자기 자신으로 진화할 수 없습니다`);
       if (!speciesIds.has(evolution.toSpeciesId)) issues.push(`monsterSpecies ${species.id}: evolution toSpeciesId does not exist: ${evolution.toSpeciesId}`);
@@ -1229,6 +1244,9 @@ function validateMapRecords(
       if (!context.troopIds.has(entry.troopId)) issues.push(`map ${map.id}: encounterTable[${index}].troopId does not exist: ${entry.troopId}`);
       if (entry.conditions?.switchId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.switchId`, [entry.conditions.switchId], switchIds, issues);
       if (entry.conditions?.variableId) collectExistingIdIssues(`map ${map.id}: encounterTable[${index}].conditions.variableId`, [entry.conditions.variableId], variableIds, issues);
+      if (entry.conditions?.terrainId && !(project.database.terrains ?? []).some((terrain) => terrain.id === entry.conditions!.terrainId)) {
+        issues.push(`map ${map.id}: encounterTable[${index}].conditions.terrainId does not exist: ${entry.conditions.terrainId}`);
+      }
     }
     for (const [index, spawn] of (map.fieldSpawns ?? []).entries()) {
       if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);

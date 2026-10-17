@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "589bdd4a53b6faaf8911d5248dc795962273785813d32dabd61f81d9143b7aca",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "가스 가로등(무쇠 기둥·켜진 등)",
+ "label": "steampunk-city/sp-gas-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the top cap of the lantern (rows 2-9) and the rounded base plinth (rows 38-43) are rendered with distinct foreshortened elliptical top surfaces appropriate for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4933
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas street lamp (lantern head, iron pole, and base)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lantern cap is drawn foreshortened from above (rows 2-10, approx. 9 rows tall) with the front rim curving downward in a downward-facing arc (row 12 at center, row 9-10 at sides). The pedestal base also shows its top domed surface across rows 38-43 (6 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7528
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern cap and base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap shows its top surface spanning rows 2-10 in 3/4 view, with the finial placed on the upper slope (rows 4-6) allowing the back curve of the dome to show behind it (rows 2-3). The base also shows a 5-row top dome surface (rows 38-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8885
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "streetlamp base and lantern head",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base plinth shows a clear top surface spanning rows 38 to 43 (approx. 6 rows) viewed from above before dropping into the vertical front face on rows 44-47. The lantern cap and collar rings also reflect the 3/4 downward camera angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6348
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.525Z",
+ "cells": {
+  "16": [
+   "22e0f86a95e5174a",
+   "5e82b57947be644a",
+   "b6566f62cbea76ad"
+  ],
+  "24": [
+   "3371054e46ab4835",
+   "9896d4532e961611",
+   "aa46c26e4aeddfe2",
+   "c130c722d5ccf57c",
+   "cddf5e935ef0d8ec",
+   "f6832cc8cda41b3c"
+  ],
+  "32": [
+   "07814129a3a60723",
+   "095c6b33f42fefa7",
+   "0bb289adcca30010",
+   "61936fcad040edcd",
+   "89dc5b41f9658f46",
+   "ab7065ad77c6ada5",
+   "b8163c69b6d50a45",
+   "bf4b46359532c1d8",
+   "d91c2c791132dc03",
+   "e064ff6e63d689e9",
+   "eaa458622f4c37f3",
+   "ef12048da106fae0"
+  ],
+  "48": [
+   "5d327d96204dac39",
+   "a2e5ac95dc7864ad",
+   "bf04ae8822a66264"
+  ]
+ }
+}

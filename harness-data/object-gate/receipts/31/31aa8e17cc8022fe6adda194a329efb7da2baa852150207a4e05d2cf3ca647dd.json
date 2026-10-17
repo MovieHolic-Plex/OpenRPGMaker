@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31aa8e17cc8022fe6adda194a329efb7da2baa852150207a4e05d2cf3ca647dd",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp_city/street_hand/jp-bwallf-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese castle/compound wall segment with roof cap, wooden lattice/lintel section, white plaster, and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall is capped by a tiled roof surface visible from rows 0-3 (4 source pixel rows tall), properly foreshortened for 3/4 perspective above the vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6207
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style walled structure segment with tiled roof, wooden lattice, plaster midsection, and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof tile surface is visible across rows 0-3 (4 source pixels tall), providing the required 3/4 downward perspective over the tall south-facing wall body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7579
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wall with a broad tiled roof/lintel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall is front-facing, but the tan roof/lintel above it has a clearly visible four-pixel-deep horizontal top surface; no receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 54486
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large wall/building end with a broad tan roof or top slab over a dark vertical wall face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a clearly visible horizontal top surface spanning rows 5–8, with a darker rear edge at row 4 and a distinct south-facing vertical wall below. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 93002
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.362Z",
+ "cells": {
+  "16": [
+   "cd346e315a1ca01f",
+   "f57430d080d4eb3a"
+  ],
+  "24": [
+   "0497c9ae7bf87bf5",
+   "05606fa546746ec8",
+   "1556fbe2b02ee54c",
+   "2b698971480b4e10",
+   "30581d1d0f3e0b4d",
+   "4a95fb87e9b8a583",
+   "63a932ee7e36981e",
+   "7313acf68931d1dd",
+   "78ca3a713702666d",
+   "7ce8c76023650097",
+   "90ee87e823fe32cb",
+   "d40f54b30c9fc115"
+  ],
+  "32": [
+   "6cc1da7fe2c31004",
+   "868d6c73880c8a1a",
+   "8b59622a27fc0fd1"
+  ],
+  "48": [
+   "36af9a94e0a9af67",
+   "57a31adcf96247d0",
+   "872e982ebb746a5d",
+   "9a4d6586863f610a",
+   "a69edbc48eba8c2d",
+   "bf32908efd79d61a"
+  ]
+ }
+}

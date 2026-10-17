@@ -95,3 +95,89 @@ keep playbackVerified:false. This does not establish native gameplay or hearing.
 ## Emerald authored presentation
 
 See [Emerald runtime surfaces](emerald-runtime-surfaces.md) for the opt-in480×320 field menu, six-slot monster party, independent summary/current PP, bag/context/target geometry, icon fallback and standalone browser evidence contract. Campaign data and the existing menu controller remain the semantic owners.
+
+## 파티 화면: 자리 바꾸기·요약 쪽 (2026-10-16, poke-sys-collect)
+
+- 파티 순서의 정본은 `session.monsterParty` 배열 순서다(맨 앞 = 선두 출전). `swapMonsterPartyOrder`(`monsterCollection.ts`)가 두 자리를 맞바꾸고,
+  박스 몬스터·같은 몬스터는 거절한다. 메뉴 경로: 요약 「관리」 쪽 → 자리 바꾸기 → 맞바꿀 동료 고르기(Esc/같은 동료 다시 = 취소).
+- 수집 화면 하위 상태(`swapSourceId`·`summaryPage`)는 `playerMonsterCollectTypes.ts` 한 곳에 있고 컨트롤러가 갖는다.
+  상세 빌더는 `StatusMenuDetailOptions.monsterCollect`(읽기)와 `onMonsterCollect`(동작) 두 칸으로만 받는다.
+- 요약은 에메랄드 스킨에서만 쪽(능력치 → 기술 → 관리)으로 나뉜다(`onMonsterCollect` 가 연결되고 스타일이 에메랄드일 때). 그 밖의 스킨·옛 테스트는 한 목록 그대로.
+- 지닌 도구가 있는 칸은 `data-party-held`, 자리 바꾸기의 먼저 고른 칸은 `data-party-swap-source` 로 CSS 가 표시한다.
+- 캡처: `node scripts/qa/runtime/collect-menu.probe.mjs --stages party,summary` 와 `QA_AFTER=scripts/qa/runtime/collect-menu-party.after.mjs … --stages none`.
+  예제 프로젝트는 `node scripts/content/build-monster-expedition.mjs /tmp/psc/exp /tmp/psc/evidence` 로 먼저 만든다.
+
+## 도감 화면 (수집·관리 UI ② — 2026-10-16)
+
+- 도감 상세 빌더는 `src/player/playerMonsterDexDetail.ts` 로 옮겼다(`playerMonsterCampaignMenu.ts` 는 지도·배지만 남음). 쪽 상태 `dexPage`(생태 / 능력 / 기술)는 컨트롤러가 갖고 `playerMonsterDexTypes.ts` 가 타입이다. 쪽 나누기는 에메랄드 스킨에서만(`onDexPage` 가 넘어올 때) 켜지며 그 밖의 스킨은 기존 한 목록.
+- **원정 정의(`monsterCampaign`) 없이도 도감이 열린다**: `monsterDexSpeciesIds(project)` = 원정이 있으면 그 `speciesIds`, 없으면 `system.monsterCollection===true` 일 때만 `monsterSpecies` 전부, 아니면 `[]`. 발견·포획 기록(`recordMonsterSeen/Caught`)·전투 조우 기록·보상 되돌림이 모두 이 함수를 쓴다. 포획 없는 게임은 저장 바이트·메뉴 모두 그대로.
+- 설명 문구: `monsterDexNote` = 원정 `speciesNotes` 우선, 없으면 종 레코드의 선택 필드 `dexNote`(200자, `define_monster_species` · `define_monster_families` 단계 note). 옛 저장본은 필드가 없어 변하지 않는다.
+- 분포: `monsterSpeciesHabitats` 가 맵 `encounterTable`(없으면 `troopIds`) → 무리 → 적 → 종 으로 거슬러 올라 맵 이름을 모은다. 손으로 쓰지 않는다. 야생에서 안 나오는 종(스타터 등)은 「야생에서는 만날 수 없음」.
+- 진행 막대: 목록 머리 오른쪽 「N% 완성」+ 발견(연한)/포획(진한) 두 겹 막대(`detail.meter`).
+- 조수: `toolCapabilityIndex` 의 `monster-collection-ui` 레시피, find_tools 별칭 「도감」, 점검 `gameSystemAuthoringTools.issues` 가 도감 항목에 원정 정의 **또는** monsterCollection 을 요구.
+- 화면 증거 스크립트: `node scripts/qa/runtime/collect-menu.probe.mjs --stages dex` (`QA_AFTER=scripts/qa/runtime/collect-menu-dex.after.mjs` 로 쪽·야생 종, `QA_PROJECT_PATCH` 로 원정 정의 제거본). 원정 정의를 지울 땐 `meta.oprnCinematicTimelines.monsterCampaign` 캡슐도 같이 지워야 로드 때 되살아나지 않는다.
+
+## 배지 획득 연출과 배지 스위치 규칙 (2026-10-16)
+
+**스위치 규칙(진행 게이팅의 정본).** 배지 N 의 스위치 id 는 `mx_badge_N`(N 은 1부터)이고, 실제 id 의 정본은
+`system.monsterCampaign.badges[i].switchId` 다. 배지에 매달린 모든 것(문·길 잠금·NPC 대사·HM 장애물의 `requiresBadge`)은 이 스위치를 읽는다 —
+번호를 문자열로 지어내지 말고 캠페인 정의에서 읽어라. 스위치를 켜는 것은 관장전 승리 분기(`battle()` 의 승리 스위치)이고 연출은 켜지 않는다.
+
+**연출 레시피.** `src/project/monsterBadgeCeremony.ts` 의 `badgeAwardCommands()` 하나가 모양을 정한다:
+흰 섬광(`m2-047-flash-screen`) → 징글 ME(프로젝트 승리 ME) + 반짝 효과음 → 번들 아이콘(`cc0-jetrel-*`, 32px)을 그림 표시로 4배 키워 아래에서 떠오르게
++ 같은 그림을 더하기 합성으로 640% 깔아 빛나게(`mx_badge_halo`/`mx_badge_medal`) → 반짝임 파티클 → 「○○를 받았다!」 → 「배지 케이스에 N/M번째 배지가 채워졌다.」 → 그림 치우기.
+새 런타임 개념·새 도트는 없다 — 기존 이벤트 명령만 조립한 배열이다. 대사 상자는 `position:"bottom"` 으로 고정한다(자동이면 위로 올라가 배지를 덮는다).
+아이콘은 체육관 타입으로 고르며(`badgeIconResourceId(type)`), 캠페인 정의의 선택 필드 `badges[].iconResourceId` 에 저장돼 배지 화면이 받은 배지 앞에 같은 그림을 보여 준다
+(없으면 `cc0-jetrel-badge`). 기본값(필드 없음)에서는 직렬화에 나타나지 않는다. 참조 검사(`references.ts`)가 아이콘 id 가 실제 리소스인지 확인한다.
+
+**연결.** `build_monster_game`(world.ts 관장 승리 분기, 관마다 한 번) · 조수 `configure_monster_campaign {badgeCeremony:{badgeId?, remove?, line?}}`
+(= `installBadgeCeremonies`, 스위치 setSwitch 바로 뒤에 심고 다시 부르면 갈아 끼움; 스위치를 켜는 이벤트가 없으면 missing 으로 알림) ·
+`definition.badges[].iconResourceId`. 조수 색인은 `toolCapabilityIndex.ts` 의 `monster-badges`, find_tools 별칭은 「배지·뱃지·배지 연출」.
+
+**배지 화면(「배지·목표」).** 받은 배지 행은 아이콘이 붙고 못 받은 행은 흐리다. 첫 줄 「다음 목표」는 라벨만 보이고 설명은 아래 안내 창이 한 줄로 보여 준다
+(에메랄드 스킨 CSS: 설명이 32px 행에서 라벨과 겹치던 것을 고쳤다).
+
+**QA.** `node scripts/qa/runtime/monster-badge.mjs <project.json> [outDir]` (player.html 직접 스크립트; 크로미움이 백지면 `unshare -rn` 으로 감싼다).
+시작 → 교수 → 1관 관장 실제 입력 전투 → 연출 프레임 연속 캡처(`frames/`, `frames.json`) → ESC 메뉴 → 배지 화면. 디버그 쓰기는 SUMMARY 에 적힌다
+(맵 텔레포트·퍼즐 스위치·리더 레벨 ≥14). `BADGE_QA_MENU_ONLY=1` 은 연출을 건너뛰고 배지 스위치만 켜 배지 화면만 찍는다. 헤드리스(swiftshader)에서는 프레임이 초당 1~2장이라 떠오르는 구간은 1~2장만 잡힌다.
+
+## 보관함(PC) 상자 화면 (2026-10-16, poke-sys-collect)
+
+- 정본은 그대로 `session.monsterBox`(평평한 id 배열). 상자·칸은 `src/project/monsterBox.ts` 가 계산한다 — 30칸(6×5)·최소 8상자·넘치면 상자가 늘어난다(포획을 막지 않는다). 칸 번호는 개체의 선택 필드 `boxSlot`(없거나 겹치면 첫 빈 칸). 사용자가 한 칸이라도 옮기면 `placeBoxMonster` 가 전부 굳히고 빈 칸이면 이동·찬 칸이면 자리 바꿈.
+- 상자 이름 = 저작 `system.monsterBoxNames`(`configure_monster_system {boxNames}`; `databaseRecordModel` 화이트리스트·`shapeDatabaseFields` 검사 둘 다 필요). 비면 「상자 N」.
+- 화면: `playerMonsterBoxDetail.ts`(레이아웃 `campaign-box`, 항목 = 머리 ◀ 이름 ▶ 3개 + 30칸), 커서 규칙 `playerMonsterBoxGrid.ts`(순수), 컨트롤러 `boxGridActive`/`stepBox`. 다른 칸으로 옮기기(`startBoxMove`→`boxPlace`)·파티로 데려가기·놓아주기(2단계 확인, 지닌 도구는 가방으로, 도감 기록은 유지). 파티의 마지막 한 마리는 맡기지 않는다.
+- 필드 PC: 새 명령이 아니라 「메뉴 화면 열기」(`m2-078`) 에 `fields.screen='monster-box'`. `commandCatalog` 가 `openMenuScreen{screen}` 으로, `player.ts` 가 `statusMenu.openMonsterBox()`(단독 열기, `pcMode` — Esc 로 닫으면 이벤트 이어짐). 조수 도구 `place_monster_pc`(투명 이벤트, 이미 있는 컴퓨터 그림 위).
+- 파티가 가득 찬 뒤 포획하면 에메랄드 결과 문구에 「…는 보관함으로 보내졌다!」.
+- 한계: 비 에메랄드 스킨은 옛 평평한 목록. PC 그림은 새로 만들지 않았다. 증거 http://mdc-server:18301/poke-sys-collect-1.html. 단위 시험 `test/monsterCollectBox.test.ts` 는 작성만 했고 미실행.
+
+## 스타팅 고르기 확인 · 저장 칸 요약 (2026-10-16, poke-sys-collect)
+
+- **스타팅 확인창** — `src/project/starterChoice.ts` `starterChoiceCommands`: label → choices(종 목록) → 고르면 `showPicture`(앞모습, 좌표 x36 y84·scale 150 — **scale 은 퍼센트(100=1배), opacity 는 0~255**) → 이름·속성 대사 한 장 + 설명 한 장 → 「○○를 첫 동료로 정할까요?」 예/아니오. 예 = erasePicture + giveMonster + 이어붙일 명령(`afterGive`), 아니오 = erasePicture + `gotoLabel starter_pick`(첫 목록으로). 새 명령 종류 없음. `give_starter_monsters`(dbTools)와 모험 예제(monsterExpedition world/tournament) 모두 이 도우미를 쓴다. 설명은 `monsterDexNote`(원정 노트 > 종 dexNote)이고, 원정 정의가 아직 없는 예제는 `notes` 로 넘긴다.
+- **저장 칸 요약** — `src/project/monsterSaveSummary.ts`: 스냅샷의 선택 필드 `monsterSummary {caught,dexTotal,badges,badgeTotal,party,trainer?}`. `monsterDexSpeciesIds` 가 비면(다른 장르) 필드 자체를 쓰지 않아 저장 바이트가 같다. `saveSlots.ts` 의 `createSaveSnapshot`/`parseSnapshotValue` 가 쓰고 읽는다(모양이 틀리면 버리고 연다). 표시: 메뉴 저장 화면은 고른 칸의 쇼케이스에 「도감 · 배지 · 주인공 · 장소 · 시간 · 파티」(행의 오른쪽 값은 쇼케이스가 열리면 목록 폭이 좁아져 「저장됨」으로 둔다), 불러오기 패널 카드는 셋째 줄 `oprn-load-slot-monster`.
+- **불러오기 패널 에메랄드 스킨** — `playerLoadPanel` 이 `dataset.monsterStyle="emerald"` 를 달고 `emeraldSurfaces.css` 끝의 블록(크림 창·진한 청록 글자)이 덮는다. 색은 이름 색·color-mix 만(새 hex 없음).
+- 프로브: `QA_STARTER=scripts/qa/runtime/collect-menu-starter.after.mjs … --lab`, `QA_AFTER=…collect-menu-save.after.mjs`, `…collect-menu-load.after.mjs`(저장 후 새로고침 — 프로브가 saveNamespace 를 sessionStorage 에 고정해 새로고침 뒤에도 같은 칸을 읽는다).
+- 한계: 이어하기(오토세이브) 카드도 같은 줄을 쓰지만 이번 캡처는 수동 칸만. 메뉴 구성(「이어하기」가 필드 메뉴에 없음 — 저장만 있음)은 바꾸지 않았다. 단위 시험 `test/monsterCollectStarterSave.test.ts` 는 작성만 했고 미실행.
+
+## 개체 정체성: 별명·성별·색이 다른 개체 (2026-10-16, poke-sys-collect)
+
+- 데이터(모두 선택 필드, 없으면 기존 동작): `MonsterInstance.gender`("male"|"female")·`shiny`(true), 종 `genderRatio`(암컷 비율 0~1, 없으면 무성), `system.shinyRate`(1/N, 2~65536, 없으면 안 나옴). `databaseRecordModel` 화이트리스트·`shapeDatabaseFields`·`saveSlotValidation` 셋에 모두 올렸다.
+- 굴리기: `src/project/monsterIdentity.ts` `rollMonsterIdentity` — `giveMonster` 안에서 (게임 시드 + 개체 번호 + 종)으로 결정적(IV 와 같은 방식). 입력 `gender`/`shiny` 로 덮을 수 있다. **포획은 잡는 순간 개체 번호로 굴린다 — 전투 화면에 보인 야생 개체와 같은 값이 아니다(전투 쪽 표시는 안 했다).**
+- 조수: `define_monster_species.genderRatio`, `configure_monster_system.shinyRate`(0 = 끔). `toolCapabilityIndex` 의 `monster-collection-ui` 정책 문장에 한 줄.
+- 화면(에메랄드): 파티 목록 이름 앞 ★(색이 다른 개체) + 이름 뒤 ♂(royalblue)·♀(crimson) — **픽셀 글꼴(Galmuri9)의 ♀ 는 「우」처럼 보여서 글자열에 넣지 않고 `[data-monster-gender] .status-menu-target-name::after` 로 시스템 글꼴로 붙인다.** 색이 다른 개체의 그림은 새 그림 없이 `filter: hue-rotate(150deg)`(목록 얼굴·요약 큰 그림). 요약 능력치 쪽에 「성별 수컷/암컷」 반쪽 줄(상태 이상이 있으면 상태가 그 자리를 쓴다).
+- 별명: 요약 「관리」 쪽 「별명 바꾸기」 → 같은 줄이 글자 입력(`StatusMenuDetailEntry.textInput`, 최대 8글자, Enter 확정 / Esc 취소, 비우면 종 이름). 게임 키 핸들러는 `isTextEntryTarget` 로 입력창의 글자를 이미 거른다 — 입력창은 keydown 을 stopPropagation. `renameMonster` 순수 함수.
+- 같이 고친 것: #2711(Galmuri9 18px) 뒤로 작은 파티 칸 다섯의 이름/HP 두 줄이 겹쳐 있었다(`grid-template-rows 18px 14px` → 20px 20px, vital 줄 높이 20px) · 「보관함 보기 / 6마리」 겹침(flex 로) · 요약의 「다음 레벨까지」 줄 바꿈(「다음 Lv」).
+- 프로브: `QA_PROJECT_PATCH=/tmp/psc/identity.patch.mjs QA_AFTER=scripts/qa/runtime/collect-menu-identity.after.mjs`(패치는 모든 종 genderRatio 0.5·shinyRate 2). 단위 시험 `test/monsterCollectIdentity.test.ts` 작성만, 미실행.
+- **④ 알·부화 — 구현하지 않았다. 최소 설계안**: `MonsterInstance.egg?: { stepsLeft: number; speciesId }` 로 「알」 개체를 파티에 둔다(전투 불참·메뉴엔 「알」 이름과 남은 걸음 막대). 걸음 수는 `session.stepCount`(이미 있는 걸음 카운터)가 줄이고 0 이 되면 `giveMonster` 처럼 같은 개체 번호로 종 개체로 바뀌며 도감 포획 기록. 알을 얻는 길은 이벤트 명령 한 칸(`giveMonster` 에 `egg:true`) 하나로 충분하고, 교배는 별도 설계가 필요하다. **알 그림이 번들에 없다** — 새 그림 금지 규칙과 맞부딪히므로 사람이 알 그림을 정한 뒤에 만든다.
+
+
+## 성격·노력치 (옵트인, 2026-10-16)
+
+- `system.monsterStatRules {natures?, evs?}`(조수: `configure_monster_system {statRules}`) — 둘 다 꺼짐이 기본이고 꺼지면 필드가 없어
+  능력치 공식·저장 바이트가 이전 그대로다(`normalizeSystemRecords` 화이트리스트에 있다). 코드는 `src/project/monsterStatRules.ts`.
+- 공식(`monsterBattleStatsForSpecies(species, level, ivs, extras?)`): `floor((2*base + iv + floor(ev/4)) * lv / 100) + 5`(HP 는 `+ lv + 10`) 뒤 성격 ×1.1/×0.9(HP 제외, 능력치가 한 자리여도 최소 ±1 — `natured`).
+  `extras` 는 `monsterStatExtrasFor(project, instance)` 만이 만든다 — 규칙이 꺼져 있으면 undefined 라서 인스턴스에 값이 있어도 무시된다.
+- 성격 13종(중립 1 + 공격·방어·특공·속도 올림/내림 12): 새로 얻는 몬스터(`giveMonster`)가 인스턴스 id 씨앗으로 결정론적으로 받는다.
+  이미 가진 몬스터는 성격이 없는 채로(중립) 남는다. 이름은 오리지널 표기. 요약 화면(`monsterInstanceDetail` 능력 쪽)에 「성격」 줄이 뜬다(`data-summary-half`).
+- 노력치: `MonsterSpeciesRecord.evYield`(종목 0~3, 합 3)를 승리 때 `rewards.monsterEvGain`(쓰러뜨린 적 종 합)으로 싣고, `applyBattleRewardsToSession` 이
+  참전 몬스터에게 쌓는다(한 종목 255·합 510, `addMonsterEvs`). 경험치보다 먼저 쌓아 같은 승리의 레벨업 능력치 상자(`levelUpStatRows`)에 반영된다.
+- 한계: 야생·트레이너 적의 능력치는 이 규칙을 타지 않는다(`WILD_LEVEL_IVS` 고정). 능력치 상세 화면에 EV 수치 표시는 없다(요약 능력치 숫자에 이미 반영).

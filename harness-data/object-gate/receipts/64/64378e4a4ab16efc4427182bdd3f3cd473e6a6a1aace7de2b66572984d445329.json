@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64378e4a4ab16efc4427182bdd3f3cd473e6a6a1aace7de2b66572984d445329",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: wheat sprout (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_wheat_sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wheat sprout seedlings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D silhouettes (stem and single-row horizontal leaves) in pure front elevation with 0 rows of visible top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wheat sprout clusters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D side/front elevations with vertical 1px stems and side-projecting leaf pixels, showing no foreshortened top surfaces or depth (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each sprout is drawn as a flat 2D side/front elevation profile (vertical stem with side-projecting leaf pixels) with 0 rows of visible top surface or 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7655
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D side/front elevation icons (vertical 1px stems with leaves branching left and right) with 0 pixel rows of visible top surface or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5739
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.328Z",
+ "cells": {
+  "16": [
+   "5b45cc4f326aa058"
+  ],
+  "24": [
+   "2e4bc767614f8fc8",
+   "5541278e53592823",
+   "8948fb89b55bf624",
+   "ce4f51e66e343d26",
+   "d84d9df882f50d4a",
+   "eb70f1c99d458b92"
+  ],
+  "32": [
+   "206cc84c2f868129",
+   "3c549dea3ba38cc7",
+   "94fe0de22e42cc1f",
+   "c8c62d6b98a63344",
+   "ca23fb93cae54797",
+   "deb9968ca46ea26b"
+  ],
+  "48": [
+   "3a7b698015ea64dd",
+   "782d33ae7ada1cf4",
+   "9063ce6793926ce9",
+   "9e3d7b7082503e28",
+   "cfad54bc638927a9",
+   "f2b61c1d1f44a82e"
+  ]
+ }
+}

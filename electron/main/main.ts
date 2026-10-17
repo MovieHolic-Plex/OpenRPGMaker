@@ -5,6 +5,7 @@ import { normalizeTeamUrl } from "../serve/localNetwork";
 import { join } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
+import { isWindowControlAction, windowChromeFor, type WindowState } from "../shared/windowControl";
 import { registerIpcHandlers } from "./ipc";
 import { registerAssetBrowser } from "./assetBrowser";
 import { registerAssetStore } from "./assetStore";
@@ -60,13 +61,33 @@ function installCloseFlow(window: BrowserWindow): void {
   });
 }
 
+/** 창의 네이티브 상태. 전체화면이 최대화를 덮으므로 둘은 따로 보낸다. */
+function windowStateOf(window: BrowserWindow): WindowState {
+  return { fullscreen: window.isFullScreen(), maximized: window.isMaximized() };
+}
+
+/**
+ * 제목줄 방식. Windows·Linux 는 OS 제목줄을 빼고 렌더러가 최소화·최대화·전체화면·닫기 단추를 그린다
+ * (전체화면 전환까지 한 줄에 두려면 titleBarOverlay 로는 안 된다 — openwiki/desktop-window-controls.md).
+ * macOS 는 신호등을 왼쪽 위에 남기고 제목줄만 숨긴다(오른쪽에 단추를 또 그리지 않는다).
+ */
+const chrome = windowChromeFor(process.platform);
+const chromeOptions: Electron.BrowserWindowConstructorOptions = chrome.drawsOwnButtons
+  ? { frame: false }
+  : { titleBarStyle: "hiddenInset", trafficLightPosition: { x: 14, y: 16 } };
+
 function createWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 1280,
     height: 800,
+    minWidth: 1100,
+    minHeight: 600,
     show: false,
+    // 첫 프레임(스플래시)이 그려지기 전·창 크기가 바뀌는 순간에 흰 화면이 비치지 않게 스플래시·시작 화면 바탕색과 맞춘다(tokens.css --bg-base).
+    backgroundColor: "#F7F8F8",
     fullscreen: true,
     autoHideMenuBar: true,
+    ...chromeOptions,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
     ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
@@ -80,13 +101,22 @@ function createWindow(): BrowserWindow {
     },
   });
 
+  // ready-to-show 는 렌더러가 첫 프레임을 그린 뒤에 온다 — 창이 처음 보이는 순간 이미 스플래시(index.html)·시작 화면 뼈대가 그려져 있다.
   window.once("ready-to-show", () => window.show());
   // F11·보기 메뉴 등 버튼 밖에서도 전체화면이 바뀐다 — 렌더러가 아이콘 상태를 맞출 수 있게 알린다.
   const broadcastFullscreen = (fullscreen: boolean): void => {
     if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowFullscreen, fullscreen);
   };
-  window.on("enter-full-screen", () => broadcastFullscreen(true));
-  window.on("leave-full-screen", () => broadcastFullscreen(false));
+  const broadcastState = (): void => {
+    if (!window.isDestroyed()) window.webContents.send(OPRN_CHANNELS.windowState, windowStateOf(window));
+  };
+  window.on("enter-full-screen", () => { broadcastFullscreen(true); broadcastState(); });
+  window.on("leave-full-screen", () => { broadcastFullscreen(false); broadcastState(); });
+  // 최대화·복원은 단추 밖(제목줄 더블클릭·키보드 단축키·창 관리자)에서도 일어난다.
+  window.on("maximize", broadcastState);
+  window.on("unmaximize", broadcastState);
+  window.on("restore", broadcastState);
+  window.on("minimize", broadcastState);
   window.webContents.on("will-navigate", (event, url) => {
     if (!url.startsWith(`${OPRN_APP_SCHEME}://`)) event.preventDefault();
   });
@@ -327,9 +357,24 @@ app.whenReady().then(async () => {
   ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (!isWindowControlAction(action)) return false;
     if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
-    if (action === "close") { window.close(); return true; }
-    return false;
+    if (action === "minimize") { window.minimize(); return true; }
+    if (action === "toggle-maximize") {
+      // 전체화면에서 「복원」 은 전체화면만 벗어난다(그 전 창 크기·최대화 상태로 돌아간다).
+      if (window.isFullScreen()) window.setFullScreen(false);
+      else if (window.isMaximized()) window.unmaximize();
+      else window.maximize();
+      return true;
+    }
+    // 닫기는 installCloseFlow 를 거친다 — 미저장 flush·확인을 우회하지 않는다.
+    window.close();
+    return true;
+  });
+  ipcMain.handle(OPRN_CHANNELS.windowState, (event): WindowState => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return { fullscreen: false, maximized: false };
+    return windowStateOf(window);
   });
   // 창의 진짜 전체화면 상태는 네이티브 쪽에만 있다 — 브라우저 Fullscreen API 는 이 창과 무관하다.
   ipcMain.handle(OPRN_CHANNELS.windowFullscreen, (event) => {

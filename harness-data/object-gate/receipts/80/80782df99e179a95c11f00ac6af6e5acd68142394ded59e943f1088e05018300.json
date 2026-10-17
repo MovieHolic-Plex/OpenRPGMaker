@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80782df99e179a95c11f00ac6af6e5acd68142394ded59e943f1088e05018300",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "육각 바닥 깔개(육각형 + 시안 테 + 가운데 무늬)",
+ "label": "sf-station/sf-rug-hex",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hexagonal floor mat/tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor mat lying on the ground, entirely viewed from top-down perspective across rows 0-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hexagonal floor mat with purple border and cyan central emblem",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat hexagonal floor mat/rug viewed from above on the ground plane, filling the 32x32 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4260
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hexagonal floor mat",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor mat lying on the ground viewed from above across rows 0 to 31; properly rendered as a top-down floor element without front elevation or isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3955
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hexagonal floor mat",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat hexagonal floor mat viewed from above, spanning rows 1 to 30 across the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3891
+  }
+ ],
+ "decidedAt": "2026-10-13T15:30:54.893Z",
+ "cells": {
+  "16": [
+   "0d1a8a84feeee45b",
+   "4edb736358e7fa8a",
+   "b746f1b964bb9250",
+   "e65c5712c03216bc"
+  ],
+  "24": [
+   "098a855ebda1e8e9",
+   "18b1f16054810772",
+   "28c3a51f63fbac06",
+   "2abbfe75eea1068d",
+   "322fb433f97f0171",
+   "3c8e8448b87fb996",
+   "421395b0e5df298f",
+   "5ead6d40bb24c602",
+   "82b7f794fe757d4e",
+   "82f2b43c7b879140",
+   "97fb2c0eb7639b5a",
+   "9e1d5aa099c1b182",
+   "9fa3b50e87202243",
+   "a7fe73c27a2eab3f",
+   "aa10d3702d91ee4f",
+   "c0fa2c40b02aeec0",
+   "c62329dc3c061d7b",
+   "d1d13d8666383114",
+   "e056f28fa48d7b6e",
+   "e12e2758003da7bc",
+   "ec70e707ad0b76b8",
+   "ef17da499db97123",
+   "f6063d32da77d358",
+   "f74d02e93c1b32d0"
+  ],
+  "32": [
+   "fb400427dc670166"
+  ],
+  "48": [
+   "1a603b0c5dcd79c8",
+   "64150b07d5c2d797",
+   "993fcdedc05e3705",
+   "a597cb64b8588cba",
+   "a627caf35bb6ae23",
+   "b7d700fb74cb65d6"
+  ]
+ }
+}

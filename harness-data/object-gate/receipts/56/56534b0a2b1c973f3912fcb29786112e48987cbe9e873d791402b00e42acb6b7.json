@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56534b0a2b1c973f3912fcb29786112e48987cbe9e873d791402b00e42acb6b7",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "청동 원형 방패 걸이 (shield display)",
+ "label": "atlas_biome_interior/plus/shield display",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular bronze shield mounted on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular shield display hanging flat on a vertical wall; valid front elevation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3197
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round bronze shield mounted on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shield display is drawn flat facing the camera, which is standard and acceptable for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5493
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular bronze shield display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular shield displayed flat against a vertical wall; valid front-facing representation for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular bronze shield display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A bronze round shield mounted flat against a wall. Front-facing view is appropriate and permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4492
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.624Z",
+ "cells": {
+  "16": [
+   "03450c6f56503f85",
+   "2535e1ac79c787d5"
+  ],
+  "24": [
+   "162975f76a327888",
+   "236371052bf77b15",
+   "3b9887f3dd947b39",
+   "3ea05234e6027735",
+   "66be4e1193bd7db6",
+   "a5a56bdddd2e4633",
+   "b18ac43a1f02e360",
+   "b7604a3435986bea",
+   "e8c256314be67328"
+  ],
+  "32": [
+   "c4d801a4166594f6",
+   "c7d1738c5596798b",
+   "d9d443a6b0fad616"
+  ],
+  "48": [
+   "1ccf46692e123c84",
+   "6570f45bbd934bba",
+   "acd9e00390d2da9a",
+   "cb696372ba3df4a8",
+   "d2e582c69bb2a709",
+   "d667ff2a10f2bb24"
+  ]
+ }
+}

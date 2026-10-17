@@ -1,0 +1,19 @@
+{
+ "id": "hit-normal",
+ "cand": 3,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "3cc68ba58296db4d",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 180.0 ms > 90"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

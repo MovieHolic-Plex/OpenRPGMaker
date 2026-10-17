@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8220b31f9ea6a50217d3448af8bf9332c8755d2ae8533abb715bb81527e3777",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "쇠 화로(타오름) 프레임 2",
+ "label": "snow-north/sn-brazier-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron brazier bowl on tall tripod legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl (rows 14-16) is drawn as a flat rectangular block from the front with no elliptical opening or foreshortened top rim visible; the fire sits directly on a flat edge and the base is a flat 1px horizontal bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6331
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brazier bowl and stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl (rows 13-16) is drawn as a flat rectangular block from a direct side/front elevation with a straight horizontal rim and no visible top opening or elliptical bowl interior.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5816
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron brazier basin on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier basin (rows 13-16) and base (rows 29-30) are drawn as flat rectangular blocks in pure side/front elevation with no foreshortened top surface or elliptical rim visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brazier bowl on stand",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brazier bowl (rows 13-16) is drawn as a flat rectangular block from the front with a straight horizontal rim, showing no top opening or foreshortened elliptical rim for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6718
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.505Z",
+ "cells": {
+  "16": [
+   "a262b27946910fe4",
+   "d9cbe42e9ccca960"
+  ],
+  "24": [
+   "1f253e7e03f9275c",
+   "2507e6fc7953206c",
+   "2dd38c88a39db633",
+   "3e3e25f7f698a013",
+   "40f1e7cb9d4a4a80",
+   "6ae0d294fb2b3f65",
+   "6cd87b8030e90a57",
+   "bdb301b0558ed3aa",
+   "c3a772ebb6563554",
+   "cd08f1f55c01f7cf",
+   "cf3c14c8a03ce307",
+   "dfc7c6fb02a662e9"
+  ],
+  "32": [
+   "bfd1e9358a23b073",
+   "eb5ce7da094252a4",
+   "f08da312d8ffcbdd"
+  ],
+  "48": [
+   "51e426b4df6f7e0d",
+   "63ac3821d9836399",
+   "7a6d0b5e5342d53c",
+   "8738feb858128476",
+   "db63042d02457d75",
+   "eb824575372d0e69"
+  ]
+ }
+}

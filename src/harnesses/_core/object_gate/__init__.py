@@ -7,6 +7,7 @@
     from object_gate import require_pass, ObjectGateRefused
     require_pass(img, kind="tall_furniture", context="bundle", label="murim/prop_scroll_shelf")
 
+front_prop 은 사람 승인 기록(approvals/front_prop/<해시>.json)이 있어야만 3/4 반쪽을 면제한다(승인은 CLI approve-front-prop, 터미널에서 사람이 직접).
 출구(context): bundle·shared·store 는 pass 만(사람 덮어쓰기도 무효), workshop-local 은 pass 또는 사람의 「그래도 넣기」.
 """
 from __future__ import annotations
@@ -18,7 +19,7 @@ from pathlib import Path
 
 KINDS = (
     "tall_furniture", "low_furniture", "seat", "frame", "container", "round_body", "column", "box",
-    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "terrain", "other",
+    "structure", "figure", "organic", "debris", "flat", "wall_mounted", "front_prop", "terrain", "other",
 )
 CONTEXTS = ("bundle", "shared", "store", "workshop-local")
 
@@ -58,6 +59,17 @@ def read_receipt(sha: str) -> dict | None:
     return json.loads(path.read_text()) if path.exists() else None
 
 
+def read_front_prop_approval(sha: str) -> dict | None:
+    """front_prop 종류 선언의 사람 승인 기록. 그림 해시에 묶인다 — 그림이 한 화소라도 바뀌면 해시가 달라져 승인은 없는 것과 같다."""
+    path = GATE_DATA / "approvals" / "front_prop" / sha[:2] / f"{sha}.json"
+    if not path.exists():
+        return None
+    a = json.loads(path.read_text())
+    ok = (a.get("schema") == "oprn-object-gate-front-prop-approval/1" and a.get("by") == "human" and a.get("kind") == "front_prop"
+          and a.get("pixelSha256") == sha and str(a.get("approvedBy") or "").strip() and a.get("approvedAt"))
+    return a if ok else None
+
+
 def calibrated_profiles() -> set[str]:
     root = GATE_DATA / "profiles"
     if not root.exists():
@@ -79,19 +91,33 @@ def refusal(img, *, kind: str | None, context: str) -> str | None:
     sha = pixel_sha256(img)
     receipt = read_receipt(sha)
     if not receipt:
-        return "3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
+        return "3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라"
     if kind and receipt.get("kind") != kind:
         return f"영수증 종류({receipt.get('kind')})가 요청 종류({kind})와 다르다"
     if receipt.get("profileHash") not in calibrated_profiles():
         return f"판정 프로필 {receipt.get('profileHash')} 가 보정되지 않았다"
+    # front_prop: 이 그림 해시에 사람이 종류를 승인했다면 3/4 반쪽은 면제 — 화풍 반쪽만 본다(TS objectGateRefusal 과 같다).
+    if receipt.get("kind") == "front_prop" and read_front_prop_approval(sha):
+        sv = (receipt.get("style") or {}).get("verdict")
+        if sv == "pass":
+            return None
+        if sv == "refer":
+            return "화풍 판정 보류(정면형 소품은 사람이 종류를 승인했으나 화풍 반쪽이 사람 확인 필요) — 보류는 통과로 세지 않는다"
+        return f"화풍 불합격(정면형 소품은 3/4 면제를 승인받았으나 화풍 반쪽이 떨어졌다: {' · '.join((receipt.get('style') or {}).get('reasons') or []) or 'fail'})"
     if receipt.get("verdict") == "pass":
+        return None
+    if receipt.get("verdict") == "refer":
+        # 보류(판정자 의견이 갈림·사용자 정의 영역)는 pass 가 아니다 — 모든 출구에서 막는다(workshop-local 의 사람 덮어쓰기만 예외).
+        if not (context == "workshop-local" and (receipt.get("override") or {}).get("by") == "human"):
+            why = " · ".join(receipt.get("reasons") or []) or "판정자 의견이 갈림"
+            return f"판정 보류(사람 확인 필요: {why}) — 보류는 통과로 세지 않는다"
         return None
     if context == "workshop-local" and (receipt.get("override") or {}).get("by") == "human":
         return None
     why = " · ".join(receipt.get("reasons") or []) or "fail"
     if context == "workshop-local":
-        return f"3/4 시점 판정 불합격({why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다"
-    return f"3/4 시점 판정 불합격({why}) — {context} 출구는 예외 없이 막는다"
+        return f"판정 불합격({why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다"
+    return f"판정 불합격({why}) — {context} 출구는 예외 없이 막는다"
 
 
 def require_pass(img, *, kind: str, context: str, label: str = "") -> str:

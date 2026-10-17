@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b92fc9272ee821e75dee3fedb4abf78661860e3df3d17bc855cb5d7f157b449a",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vN' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vN",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden farm fence piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the vertical post has a 4-row cap at the top (rows 0-3), the horizontal rails connecting to it (rows 5-9 and 12-15) show no top surface at all, terminating in a flat 1px edge at row 5 like a pure front/side architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly visible 4-row foreshortened top cap surface (rows 0-3) above the vertical shaft (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6405
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails extending to the left show no visible top surfaces (0px), drawn in flat front elevation with only vertical edge shading. The post cap at rows 0-3 is only on the post head, while the horizontal beams of the frame lack any top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 35421
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a 4-row top surface (rows 0-3) viewed from above in 3/4 perspective, with vertical post and rail members extending southward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16285
+  }
+ ],
+ "decidedAt": "2026-10-14T06:23:32.649Z",
+ "cells": {
+  "16": [
+   "166ead045ab0a089"
+  ],
+  "24": [
+   "089c86bc8d49ef65",
+   "2c31398acc690af9",
+   "2fd6068133abdd7e",
+   "40c2ca062f5d0613",
+   "740ee088561418bf",
+   "d5131855061651cc"
+  ],
+  "32": [
+   "0f448657ba117d6b",
+   "53488ce3c1de0319",
+   "5a9abff0b63b6027",
+   "b4579c7b6a8799dd",
+   "b48280b46fe38fde",
+   "be88063b30cba744"
+  ],
+  "48": [
+   "03bfc81ead07be90",
+   "0f954cfb10dd995d",
+   "1990edd358b3b6ce",
+   "8e00ee940038703c",
+   "983f0e4c7b0c88c2",
+   "ae777b3fd0305217"
+  ]
+ }
+}

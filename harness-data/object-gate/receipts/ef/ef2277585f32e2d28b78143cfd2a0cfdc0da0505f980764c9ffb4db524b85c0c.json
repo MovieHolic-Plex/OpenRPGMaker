@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef2277585f32e2d28b78143cfd2a0cfdc0da0505f980764c9ffb4db524b85c0c",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "안테나 접시(판 받침 + 굵은 기둥 + 기울어진 흰 접시 + 수신기)",
+ "label": "sf-station/sf-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish antenna with base unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit clearly displays a 7-pixel tall top surface (rows 33-39) separate from its front face (rows 40-46). The dish itself is tilted facing up and south showing its interior bowl in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4687
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish with base unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit clearly displays both a top surface (rows 33-39, 7px tall) and a south front face (rows 40-46). The satellite dish is tilted upward towards the 3/4 camera view, displaying its concave interior surface and central feed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite dish and equipment base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The equipment base shows a clearly foreshortened top surface spanning rows 33-39 (7 source pixels tall) above its darker south face (rows 40-46). The large parabolic dish bowl is tilted upwards and shows its wide concave interior (rows 4-24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "satellite dish and mounting base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box shows a clear top horizontal surface (rows 33-39) above its south vertical face (rows 40-46). The satellite dish is tilted in 3/4 view displaying its wide elliptical concave interior across rows 4-23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11883
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.237Z",
+ "cells": {
+  "16": [
+   "27524283ec2def2a",
+   "42b76a08dd3c7226",
+   "45f62a3aadd0f664",
+   "98b78955f8734ba7",
+   "afd65a55d4f7acf1",
+   "dde73c02f74e7a24"
+  ],
+  "24": [
+   "3df70ea10051031f",
+   "4d8617d2d616a471",
+   "5165415068f4b2e2",
+   "52f9e6ec84e95c61",
+   "96387c2f8e4aad4d",
+   "d434381978bf973d",
+   "d599134c9cddd2c3",
+   "d6b55b8b8ae1cb4a",
+   "e5f56049478929d2",
+   "f658cef92d17d157",
+   "f82d83996a34fb84",
+   "fc03f733ddbca62c"
+  ],
+  "32": [
+   "7c5ea8d31143619d",
+   "a2b1059741c9929c",
+   "f3d872a7bb485a5d",
+   "fc32c643ff98051e"
+  ],
+  "48": [
+   "0d90627d0835b6ce",
+   "31349af5acdc9aab",
+   "b957f644bd90a9fa"
+  ]
+ }
+}

@@ -1,0 +1,207 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-line-s",
+ "label": "jp_city/street_hand/jp-mark-line-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px horizontal floor marking stripe occupying rows 12-13 lying flat on the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3125
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel-thick horizontal white stripe lying flat on the floor plane across rows 2-3, matching a flat ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4818
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-row horizontal white floor decal spanning rows 12-13, correctly rendered flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4592
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat horizontal line decal spanning rows 2 to 3, viewed flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4550
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel-tall horizontal white line decal lying flat on the floor plane across rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel tall horizontal floor line marking spanning the tile width on rows 2-3, lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a 2-pixel tall horizontal painted line lying flat on the ground plane (rows 12-13), appropriate for a flat floor decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3743
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor marking line decal",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px high horizontal road or floor line marking drawn flat on the ground across rows 2-3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4603
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.379Z",
+ "cells": {
+  "16": [
+   "1ebb24708f45458d",
+   "84d42ce20a6d1f7a"
+  ],
+  "24": [
+   "000c4157abca7625",
+   "2f0076d4282800bf",
+   "45d98022600809a3",
+   "74c9dfe3b1cf2298",
+   "960e1ab1074f051e",
+   "98143a0fbd8b3320",
+   "9953b8e3c2979ce1",
+   "9ef54ab20efe04ec",
+   "a2f2ebbcb082d8de",
+   "a6c12e1a0f69c6a6",
+   "b39c290bd9fdf857",
+   "dfddda55a5c0424f"
+  ],
+  "32": [
+   "10378d6cb272c4dd",
+   "2039f6771cf0ec68",
+   "24f67b24ca278431",
+   "269e639c486936e3",
+   "295bc398a7e043dc",
+   "5f80c5f7e9db7f07",
+   "628a8038826f127c",
+   "6eaa81f0ebe2c134",
+   "8fc0df3a649135f7",
+   "b06170a00cab5b53",
+   "ece69d809d181b09",
+   "fdda94995f0c07cf"
+  ],
+  "48": [
+   "0570b5da73258c20",
+   "08f2b740d6613d02",
+   "0f3ccf312a92342d",
+   "453dec510eee9728",
+   "5eba18b2e2cba62a",
+   "6391f08d385eaddc",
+   "7cb966af477bf5bd",
+   "8720827c96e8d31a",
+   "8c4e535ce8a64f93",
+   "9ebee84084a7254d",
+   "b7715abe12f06fab",
+   "e86e2dd4bed49db5"
+  ]
+ }
+}

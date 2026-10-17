@@ -621,3 +621,10 @@ zip SHA-256이 `BUNDLED_PACK_CATALOG` 또는 이 브라우저에 기억된 기�
 - 카탈로그 개수 계약: m2 카탈로그 131종, 맵·공통 full 36종(`test/m2EventCommandCatalog.test.ts`, `test/m2RuntimeSupportCompleteness.test.ts`). 새 모던 명령을 더하면 두 숫자를 같이 올린다.
 - 새 세션 칸 `teleportPoints`·`highScores`·`stateStepCounts` 는 세이브 왕복, `heldInput` 은 세이브하지 않는다.
 - 테스트: `test/mgL6FieldKit.test.ts`.
+
+
+## 현대 연애 칩 짝 흉상·전신 (2026-10-16 · 24종 완료 2026-10-17)
+
+현대 칩 Modern1~3 24종 전부(1차 12종 + 2026-10-17 나머지 12종)는 칩과 같은 인물의 흉상·전신(5표정)이 번들에 있다(`public/assets/shared/portraits/modern-*`, `sharedPortraitAssets.ts` `MODERN_PORTRAIT_SETS`).
+짝은 `sharedCharacterGraphics.json` 이 칩 → 흉상 base 로 잇는다(스키마 로드 때 옛 저장본에도 현대 칩 행만 채운다). `resolveAppearancePortrait` 는 외형의 face·bust·full 이 비어 있어도 칩의 짝으로 채운다.
+표정이 일부만 있는 세트는 `sharedPortraitWithExpression`·`dialogueFaceForEmotion` 이 없는 표정에서 기본 그림에 머문다. 생성 절차는 `scripts/content/portraits/README.md` 마지막 절.

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c58ffc23fca4e5c2012fe55a6bfc1e290356ef296d61388a308b0b8fa0d07190",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tropical jungle grass floor tiles, 2 variants (plain, small flowers)",
+ "label": "pirate-isles/pi-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground floor tiles (grass and grass with flowers)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 floor tiles depicting flat tropical grass terrain viewed from above; ground terrain occupies the entire 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4586
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tropical grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles covering the entire 16x16 tile area, showing overhead ground plane with subtle grass texture and small flowers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tropical jungle grass floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles spanning all 16 vertical rows with subtle blade texture and small flowers seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5101
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tropical jungle grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a horizontal grass floor with small flower accents; viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6521
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "66cfab5937c88c19",
+   "aef6cd49a9ac871e"
+  ],
+  "24": [
+   "07edc3a0ff75bbc7",
+   "17917a7c9372a793",
+   "1b14fa8ecfae24bf",
+   "40843dfaf8f72866",
+   "57b101e689e55478",
+   "7c059425ecc22fc5",
+   "8e932264ebec3c02",
+   "9867768201f96093",
+   "9c9be32cd09fae66",
+   "b008ad57d3010da1",
+   "b0d7afb02f7e09c2",
+   "e9ffcd845de5b2d7"
+  ],
+  "32": [
+   "5cfb3c9ab79b9dd3",
+   "f8635613c6b89f54"
+  ],
+  "48": [
+   "1f0dd5a96d0021dd",
+   "3162c1d5de01efe6",
+   "58f00c4d2e6d11c6",
+   "77c63bc96d24abbc",
+   "7b467aa1813b1bce",
+   "8e8271677d077b6a"
+  ]
+ }
+}

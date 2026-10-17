@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c074c316a4288e7fe62fd82841ff373c5d7198e2889da33da1e16707b8a43f89",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-ine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain surface viewed from above with grass texture and a small water/sky corner in the upper right; constitutes ground plane terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3296
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting top-down grass ground with a corner edge (water or sky) in the top-right.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3985
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a ground terrain tile showing a top-down textured grassy surface with a small patch of sky/water at the top right corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9541
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile with corner edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a grass surface with a water/sky edge corner in the top right, viewed from above as appropriate for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4517
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "32657654e7fbf1b4"
+  ],
+  "24": [
+   "2cabbff59b81056a",
+   "5f86bd59a6faa589",
+   "679a9ce01957d51f",
+   "75db93f6d6ad860c",
+   "8361a03dc9ffe6d8",
+   "e71a7a919fa7e2d3"
+  ],
+  "32": [
+   "70049bf48831e953",
+   "79205921dd0b03e4",
+   "b759356613883a16",
+   "c19be8037283f996",
+   "f18edda487bd58e6",
+   "fafe7d6a12964731"
+  ],
+  "48": [
+   "4764ac373fec1d85",
+   "55c545a033b1235c",
+   "6f308fd2153b6078",
+   "7e1ef9579a637708",
+   "ab38d4413fb82c03",
+   "c1e65d244467a43d"
+  ]
+ }
+}

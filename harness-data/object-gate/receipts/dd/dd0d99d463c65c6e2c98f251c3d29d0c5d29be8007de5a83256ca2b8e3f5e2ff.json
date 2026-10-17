@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dd0d99d463c65c6e2c98f251c3d29d0c5d29be8007de5a83256ca2b8e3f5e2ff",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-6-R",
+ "label": "jp_city/street_hand/jp-sf-house-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style building facade with central double sliding door and latticed screens",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the gate lintel (rows 12-13), lower eaves (rows 22-23), and upper wall/roof (rows 0-11), is drawn as a flat orthographic front elevation with no visible top surfaces or roof slope foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4496
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese house/gate facade with sliding doors and tiled eaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including the doorway lintel and intermediate eaves, is drawn in pure front elevation with only 1-2px horizontal divider lines and no foreshortened top surfaces or roof slopes visible from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5117
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese-style building facade with gate and shoji screens",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure architectural front elevation (2D platformer/side-scroller style). The door lintel (rows 11-12) is only a flat 2px bar with no top surface, the eave over the windows (row 21) is a 1px line, and the base (rows 42-47) is a vertical front face with no horizontal floor depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10618
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building facade with gate and shoji screens",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat architectural front elevation; roof eaves, door lintels, and wall tops have only 1-2px horizontal borders with no visible top surfaces or downward-sloping roof planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5087
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.388Z",
+ "cells": {
+  "16": [
+   "047f908a1110751c",
+   "05ac00bd8eb9cf25",
+   "1043a2b01ac0d9c4",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "290bb6d989ef48d3",
+   "2ae9bd926f197337",
+   "318deea844bef57f",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "7219a3eeb3a1f274",
+   "880f0566290ec000",
+   "987780e0119584a9",
+   "b451e9ed06dba979",
+   "c8270065076e290d"
+  ],
+  "24": [
+   "4b1a8c84d75de168",
+   "6a63b5a2d2a7718c",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "8caa35b13418b1dd",
+   "9ea66f44c2974d4c",
+   "b386a884f7ba736f",
+   "cb5e8b77ea75c9c4"
+  ],
+  "32": [
+   "098da21e3ab329db",
+   "0ef347b801dbd239",
+   "154a27c10d65b9a2",
+   "4af21a7bc778f696",
+   "5c95ed971eeff48a",
+   "608196995e05a192",
+   "a5f646577aafdb1b",
+   "afffdae768e4984e",
+   "caef57966de8a9b1",
+   "d91baceb21aafaeb",
+   "e802b23945b9b511",
+   "ef32c7f75eadd7e1"
+  ],
+  "48": [
+   "704d996d0bc973af",
+   "d0de33ab75046973"
+  ]
+ }
+}

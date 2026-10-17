@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "adb1ab8186f910ccfc1e2bf0ef40c6efdcd356cdc8b9db599a0567a39127f9a8",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "jp-bridge-post",
+ "label": "jp/jp-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese bridge post with giboshi/cap",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cap/top surface of the post is rendered as a prominent ellipse spanning rows 1-9, clearly foreshortened for a 3/4 top-down perspective over the vertical post body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4198
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge post finial / top cap",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post cap shows a prominent elliptical top surface spanning rows 1 to 9 (about 9 rows tall) above the south-facing column collar and shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3830
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge post cap and pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bridge post cap is drawn as a large foreshortened ellipse spanning rows 1 to 9 (~9 source pixels tall), showing the clear top-down 3/4 view over the south-facing post body beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5181
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge post / cut bamboo post",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the post is clearly drawn as a large foreshortened ellipse spanning rows 1 through 9 atop a cylindrical shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4473
+  }
+ ],
+ "decidedAt": "2026-10-13T12:59:17.705Z",
+ "cells": {
+  "16": [
+   "555240dee77a02e4"
+  ],
+  "24": [
+   "1a5951ff04ab23dc",
+   "1feca0b636c858ad",
+   "3b7986d896e64306",
+   "5c307724350eb368",
+   "d2770ece8cf2bd88",
+   "f4f724ec183c3904"
+  ],
+  "32": [
+   "3ec1bac44a5939e8",
+   "3f700a978cae33ae",
+   "449625dc77a56ed3",
+   "71c263b9481dffc5",
+   "a6907671eb49eb78",
+   "ddca0382ae450990"
+  ],
+  "48": [
+   "06f4cbdcb34cb2ac",
+   "134cfe1843c23291",
+   "21404a1e3779a462",
+   "92e3ca9a34066dca",
+   "a847d1f22ecffdc3",
+   "b8e52f33e3c84050"
+  ]
+ }
+}

@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fcfb2fe0c8e7eb099c98e91bf9984444fb3128f8559668621a5952ce10fbb6af",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "생선 말리는 덕장(대구 줄줄이)",
+ "label": "snow-north/sn-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fish drying rack (frame and hanging fish)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn entirely in flat 2D front elevation (like a side-scroller sprite). The horizontal beams only show 1-2px snow cap strips rather than visible foreshortened top surfaces, the vertical posts have no depth or ground-supporting feet extending forward/backward, and the structure lacks any top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7717
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper crossbeam clearly displays its top surface across rows 6-9 (snow layer and top wooden plane) above its south front face (rows 10-12). The lower crossbeam also shows a visible top surface across rows 25-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6420
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fish drying rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drying rack is drawn as a flat 2D architectural front elevation with no depth or 3/4 perspective. The posts and crossbeams show only front faces with snow strips layered on top, and post caps are drawn in pure front elevation with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7674
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack (horizontal crossbeams and hanging cod)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper horizontal beam features a 3-4 row deep top surface covered in snow (rows 6-9) resting above a 3-row front face (rows 10-12). Similarly, the lower beam shows a 3-row top surface with snow and light wood (rows 25-27) above its south-facing beam front (rows 28-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6255
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.396Z",
+ "cells": {
+  "16": [
+   "14d2d5fa28c4978f",
+   "42d025806b53275f",
+   "50e942aeb7d75f99",
+   "c3f0b2f3ff223890"
+  ],
+  "24": [
+   "04ff9b5d1db1408b",
+   "064b96240eee6224",
+   "08c7dbcfe6df66c9",
+   "19f5b39a684c0aca",
+   "3667eb45e87044aa",
+   "4be88516a909c81c",
+   "5676b9abe1fdd0b3",
+   "5db9c527b7cedc8d",
+   "62bf363b454ea63d",
+   "6dd274fe1cfb1685",
+   "709b5e0862a1f50a",
+   "71bdeb2197cb3b93",
+   "74ab15d9d8bc38ae",
+   "9b4ebd16afb74efb",
+   "a07150f797ff9821",
+   "b3c2a951865d3c06",
+   "c65ca1e035a15d27",
+   "d7eaf4a480db9eb6",
+   "e21dc391ba092c49",
+   "eaabd48b9c560e56",
+   "ed922a592d906568",
+   "f0028a51413ce68f",
+   "f6b15b35a7d6a83d",
+   "fb74a408cdd461e3"
+  ],
+  "32": [
+   "4f4119b3bf208c69"
+  ],
+  "48": [
+   "519aba0d752a76f9",
+   "742fef9d2f54600b",
+   "b42d3b571c12936f",
+   "b51c2584935f8f35",
+   "b762d2612706b92a",
+   "deba0f3770ce138b"
+  ]
+ }
+}

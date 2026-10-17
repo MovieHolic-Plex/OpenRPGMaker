@@ -1,0 +1,19 @@
+{
+ "id": "ball-break",
+ "cand": 1,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "2d749807456c1e30",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 190.0 ms > 100"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

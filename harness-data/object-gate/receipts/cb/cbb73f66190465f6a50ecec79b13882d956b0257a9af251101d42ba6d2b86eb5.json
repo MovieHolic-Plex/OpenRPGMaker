@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbb73f66190465f6a50ecec79b13882d956b0257a9af251101d42ba6d2b86eb5",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "izakaya shopfront strip",
+ "label": "jp/jp-sf-izakaya-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya shopfront building facade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building facade features a foreshortened tiled roof slope along the top spanning rows 1 through 7 (7 pixel rows), showing the horizontal tile courses seen from the elevated 3/4 camera angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8765
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront is drawn as a flat architectural front elevation (side-scroller style). The projecting entrance frame, doorway lintel, window sill, lantern, and ground curb/step show zero top surface depth (only flat 1px edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15355
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Wide shopfront building with a tiled roof strip above its timber facade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof surface spans source rows 1–7 above the dark eave edge at row 8. This substantial roof slope is visible above the south-facing shopfront; no receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14764
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Shopfront building facade with a broad tiled roof strip above the windows and entrance",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof surface occupies source rows 1–7 above the dark eave at row 8. Its multiple visible tile courses provide a substantial roof slope rather than a thin cap line; the south-facing shopfront extends below it without receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12801
+  }
+ ],
+ "decidedAt": "2026-10-13T11:26:09.868Z",
+ "cells": {
+  "16": [
+   "31503ef37ea162cf",
+   "45bf50f76d6c03f9",
+   "5b56ab9854f9e31c",
+   "8e6f6144b4deb5f6",
+   "9a2b598801d688b2",
+   "9e0d634da44c4fd1",
+   "a945ea030613df30",
+   "ac5ecd96b93ab690",
+   "af0257012815aec9",
+   "cd6bfc7634237343",
+   "e0c06bfed9a603a1",
+   "e49048aab49f2935",
+   "f488c48fcf235fd4",
+   "ffb95ef70f0924ae",
+   "ffff6582e5e63569"
+  ],
+  "24": [
+   "03e9ec747b4789ec",
+   "538cab57f4d09866",
+   "78af4b0b3b57eb99",
+   "8512ca1446267145",
+   "87c059dca077ecb7",
+   "a510e0139a618ed5",
+   "e1369a1f39a56669",
+   "e6d62ba263de21e0"
+  ],
+  "32": [
+   "04b7ec8af452c882",
+   "16d11149d94b20bf",
+   "26268a1d7d44c104",
+   "3330a9684bd34f39",
+   "3402323e1d34310c",
+   "48971090a3c52041",
+   "4f894ddaaea82e40",
+   "568076a29890726e",
+   "65a3fb082b37e1ba",
+   "a59bd46ff6ae0c5a",
+   "e365f6d1fa0c0888",
+   "e43ffc507370eda7"
+  ],
+  "48": [
+   "2b3b63197e687223",
+   "7d52e3099f524c47"
+  ]
+ }
+}

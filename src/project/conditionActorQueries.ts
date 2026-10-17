@@ -3,6 +3,7 @@
 // 한 곳에서만 해석한다: 페이지 조건(evalCondition)·조건 분기·Data Query 가 같은 함수를 쓴다.
 // 해석할 수 없는 대상(파티에 없는 배우, 빈 파티, 시계 없음)은 조건이면 거짓, 조회면 0 이다 —
 // 없는 대상을 참으로 통과시키면 삭제·편집 사고가 이벤트 폭주로 번진다(insideLocation 과 같은 원칙).
+import { earnedBadgeCount } from "@/project/badgeProgress";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import type { ActorQueryCondition, ConditionCompareOp, Dir } from "@/project/types";
 import type { GameTime } from "@/project/gameTime";
@@ -11,6 +12,8 @@ import { SEASONS } from "@/project/gameTime";
 /** 조건 평가에 필요한 세션 조각. PlaySession 이 구조적으로 만족한다. */
 export interface ActorQuerySession {
   readonly partyActorIds: readonly string[];
+  /** 몬스터 수집 파티(있으면 「파티 인원」은 이 몬스터 수다 — 센터 회복 연출이 파티 수만큼 볼을 놓는다). */
+  readonly monsterParty?: readonly string[];
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorVitals: Readonly<Record<string, { readonly hp: number; readonly mp: number; readonly maxHp: number; readonly maxMp: number }>>;
   readonly actorStateIds?: Readonly<Record<string, readonly string[]>>;
@@ -20,6 +23,8 @@ export interface ActorQuerySession {
   readonly eventLocations?: Readonly<Record<string, { readonly x: number; readonly y: number; readonly direction?: Dir; readonly mapId: string }>>;
   readonly horror?: { readonly hiding?: unknown; readonly pursuits: Readonly<Record<string, { readonly active: boolean }>> };
   readonly flags: Readonly<Record<string, boolean>>;
+  /** 게임 스위치(badgeCount 가 배지 스위치를 센다). PlaySession·페이지 세션이 구조적으로 가진다. */
+  readonly switches?: Readonly<Record<string, boolean>>;
   readonly gameTime?: GameTime;
   readonly stringVariables?: Readonly<Record<string, string>>;
   readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
@@ -116,6 +121,30 @@ export function gameWeekday(time: GameTime | undefined, daysPerSeason: number, s
 export interface ActorQueryOptions {
   readonly daysPerSeason?: number;
   readonly startWeekday?: number;
+  /**
+   * 파티가 아는 스킬 id 집합(필드 스킬 게이트). 호출측이 프로젝트로 계산해 넘긴다(partySkills.partyKnownSkillIds) —
+   * 직업·레벨·성장·몬스터 학습표는 프로젝트가 있어야 풀린다. 생략하면 세션에 이미 적힌 스킬(actorSkillIds·몬스터 skillIds)만 본다.
+   */
+  readonly partySkillIds?: () => ReadonlySet<string>;
+  /**
+   * 캠페인 배지 스위치 id 목록(badgeCount 조건). 호출측이 프로젝트로 넘긴다(badgeProgress.badgeContext).
+   * 생략하면 세션 스위치 중 `mx_badge_N` 규약 스위치를 센다.
+   */
+  readonly badgeSwitchIds?: () => readonly string[];
+}
+
+/** 세션만으로 아는 스킬(프로젝트 없이): 배우가 배운 actorSkillIds 와 몬스터 파티 인스턴스의 명시 skillIds. */
+export function sessionKnownSkillIds(session: ActorQuerySession & { readonly actorSkillIds?: Readonly<Record<string, readonly string[]>>; readonly monsterParty?: readonly string[]; readonly monsterInstances?: Readonly<Record<string, { readonly skillIds?: readonly string[] }>> }): Set<string> {
+  const ids = new Set<string>();
+  for (const actorId of session.partyActorIds) for (const skillId of session.actorSkillIds?.[actorId] ?? []) ids.add(skillId);
+  for (const instanceId of session.monsterParty ?? []) for (const skillId of session.monsterInstances?.[instanceId]?.skillIds ?? []) ids.add(skillId);
+  return ids;
+}
+
+/** 파티 인원: 몬스터 수집 파티가 있으면 그 마리 수, 없으면 파티 배우 수(기존 동작). */
+function partySizeOf(session: ActorQuerySession): number {
+  const monsters = session.monsterParty?.length ?? 0;
+  return monsters > 0 ? monsters : session.partyActorIds.length;
 }
 
 export function evalActorQueryCondition(
@@ -133,8 +162,15 @@ export function evalActorQueryCondition(
       return actorHasState(session, condition.actorId, condition.stateId) === condition.present;
     case "partyLeader":
       return session.partyActorIds[0] === condition.actorId;
+    case "partyKnowsSkill": {
+      if (!condition.skillId.trim()) return false;
+      const known = (options.partySkillIds?.() ?? sessionKnownSkillIds(session)).has(condition.skillId);
+      return known === (condition.present !== false);
+    }
+    case "badgeCount":
+      return compareVariableValue(earnedBadgeCount(session.switches, options.badgeSwitchIds?.()), condition.op, condition.value);
     case "partySize":
-      return compareVariableValue(session.partyActorIds.length, condition.op, condition.value);
+      return compareVariableValue(partySizeOf(session), condition.op, condition.value);
     case "facing": {
       if (condition.subject === "player") return (session.playerFacing ?? "down") === condition.dir;
       const pos = hostPosition(session, host);
@@ -197,6 +233,8 @@ export const ACTOR_QUERY_CONDITION_KINDS = [
   "actorStat",
   "actorState",
   "partyLeader",
+  "partyKnowsSkill",
+  "badgeCount",
   "partySize",
   "facing",
   "relativeFacing",
@@ -246,7 +284,7 @@ export function sessionQueryValue(
       return index >= 0 ? index + 1 : 0;
     }
     case "partySize":
-      return session.partyActorIds.length;
+      return partySizeOf(session);
     case "playerFacing":
       return dirIndex(session.playerFacing ?? "down");
     case "playtimeSeconds":

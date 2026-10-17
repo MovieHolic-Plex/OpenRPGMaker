@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3157d08fc2d3a9f17a4dd582d96f4a57f9eb35e5f06af4ab90a4035bd34d53a",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grey concrete sidewalk paving with faint neon glints, two variants",
+ "label": "sf-station/sf-sidewalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tiles depicting concrete paving seen from above, filling the 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6130
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image shows flat terrain paving tiles viewed top-down as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4567
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tiles representing horizontal sidewalk paving viewed from above; valid terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3776
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete sidewalk paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing concrete sidewalk paving viewed top-down across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3256
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.256Z",
+ "cells": {
+  "16": [
+   "7674015a03c30b8e",
+   "cb8e04a9ed297e59"
+  ],
+  "24": [
+   "0ac0f6b5ef169c5a",
+   "1d01adfa912fd130",
+   "377e6363c3bba1ca",
+   "3cb963fb3463fc1e",
+   "63f5c843b2950f82",
+   "8720dc4383354c8e",
+   "89e9526715ec9baa",
+   "9b76f85fbe7f9724",
+   "a6ce862dd6acb091",
+   "a84eabfc50aed635",
+   "b591a82464c8d575",
+   "b946baf42bd1a7d2"
+  ],
+  "32": [
+   "561ce22bfbe1211b",
+   "70b8c2cfabcd141d"
+  ],
+  "48": [
+   "5a5477a5db2cd6b9",
+   "7970c36f342b0907",
+   "a62ab7c243270b39",
+   "b84c5c85a991fcb4",
+   "d21efa9b604d223a",
+   "e6ffd4174031e2ee"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "898403c54147ca6e6280e99a3bf302e15b5e979bb81eacc85e0fdb241223994c",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "low glass vitrine with a fossil",
+ "label": "monster-rooms/mu_vitrine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vitrine display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire display cabinet is drawn in flat front elevation: the blue drawer base with plaque faces forward and the glass display above is a vertical front window with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5315
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vitrine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vitrine and its blue base are drawn in flat front elevation with no visible top surface (rows 4-5 are only a 1px outline and 1px edge highlight).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7764
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vitrine cabinet with glass display and blue base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vitrine is drawn in flat front elevation: the lower blue cabinet section shows vertical drawer/door fronts (rows 17-25) and the upper glass section is a flat vertical pane (rows 5-16) with only a 1px border at the top and no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "glass vitrine on cabinet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vitrine and lower cabinet are drawn in pure front elevation with only a 1-2px top frame line at rows 4-5, lacking any foreshortened horizontal top surface for the glass case.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4427
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "46f017c0b05273f6",
+   "a1761885bd034f66",
+   "a7d8eb6f58bad968",
+   "bd4bef1eaedda6bf"
+  ],
+  "24": [
+   "028fc0367c6c2f39",
+   "08a427f019396b0a",
+   "170e4425233c5039",
+   "1938e6d2471ac7a8",
+   "22d05bdf31e0ed18",
+   "28f37a628b58017b",
+   "3ca50b83a37bb766",
+   "41caf0107997839a",
+   "527433540bac13b1",
+   "54e6b8ca00bf88d7",
+   "59c0e95ff4987b34",
+   "5faa7dcffba45b8b",
+   "6442379b03cc2db3",
+   "798eda993e88314c",
+   "8617ed4925917176",
+   "884f3b1ae9dfbe06",
+   "90356363967afb7d",
+   "b6291d671d12b9df",
+   "d0c83f70ac486696",
+   "d3859bbe61862737",
+   "df2f0055ec586834",
+   "e32b98ebea97e746",
+   "eb8806dabf65b374",
+   "fc96972d316eb13c"
+  ],
+  "32": [
+   "2851affb21fc9c08"
+  ],
+  "48": [
+   "15013a327d819201",
+   "35a549e36521ba7a",
+   "6397d15421b02c96",
+   "8c974eab802c6e71",
+   "c223e170dc574cad",
+   "e3bdb8f716bbf8a4"
+  ]
+ }
+}

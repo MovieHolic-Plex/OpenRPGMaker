@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de7afaf2dd30b191190c90f4ae85c9814069b2460b0c626efe35308e11f2f382",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "수경 재배 선반(보라 재배등 두 단 + 잎 덩이 + 물 트레이)",
+ "label": "sf-station/sf-hydroponic-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the main unit is clearly rendered across rows 1-5 (5 pixels tall) with back-to-front gradient shading above the shelving frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a 5-pixel-tall top surface (rows 1-5) clearly rendered in a lighter horizontal top-surface tone above the dark front frame (rows 6-31). No isometric side faces are visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8578
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydroponic growing rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is clearly visible across rows 1 to 5 (5 source pixel rows deep) with appropriate top-down lighting and rounded front/back transition before the open front face starts at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydroponic shelf unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in flat front elevation. The top section (rows 1-5) is a front-facing panel/hood flanked by the vertical side posts with cylindrical front shading, capped only by a 1px outline at row 0 with no visible horizontal top surface (0 top rows). The water trays and light bars are also drawn as flat 2D horizontal stripes without any top plane or perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11433
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.255Z",
+ "cells": {
+  "16": [
+   "0ad5bdf2564f49cc",
+   "470955188760fe93",
+   "552221f7d26fe8b5",
+   "ee4de63cf30d5057"
+  ],
+  "24": [
+   "088980b029ba6cca",
+   "135c49e8ff88e037",
+   "1d70527f017149ba",
+   "1ef2058efb2f160e",
+   "2919844f63b59c17",
+   "2922914780a54f1a",
+   "41e269243549f4a9",
+   "491bb92923382a0f",
+   "4b5776cd21c2324f",
+   "5729506874e3fc0d",
+   "6ff2527395f5ceec",
+   "7b5f169f3f906b70",
+   "9696d2f4119082da",
+   "9d3d8100e65a06c3",
+   "a7a920f7dd7b0f70",
+   "a9ea1ca5504384a1",
+   "bea66c99263c1618",
+   "bfbc7f20afde985d",
+   "c0875dcec6f2d01f",
+   "c1b0c0438de03694",
+   "c5dcc62a7e4dfc22",
+   "cdff2bbc9bb7369f",
+   "e0e6b01f206dbca6",
+   "fb57937d23863b82"
+  ],
+  "32": [
+   "7bdbaaf2080319c4"
+  ],
+  "48": [
+   "0cda0c24d3a6b5e0",
+   "34295764e17e33ea",
+   "842ea8d05619febc",
+   "a8171929bbbfaf72",
+   "bbd23ffdc387328f",
+   "bc68f0bcd71eeac5"
+  ]
+ }
+}

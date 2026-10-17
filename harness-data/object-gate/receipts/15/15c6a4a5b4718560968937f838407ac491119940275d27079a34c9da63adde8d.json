@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "15c6a4a5b4718560968937f838407ac491119940275d27079a34c9da63adde8d",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 바퀴 손잡이 + 위험 띠)",
+ "label": "sf-station/sf-airlock-inner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulkhead door frame and circular hatch",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame/lintel displays a clear foreshortened trapezoidal top surface spanning rows 1 to 5 (5 pixel rows tall) with an inset orange box/light, above a vertical front face with hazard stripes and a circular hatch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8790
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead door with trapezoidal top frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame/lintel of the airlock has a clearly visible 6-pixel-tall sloped top surface (rows 1-6) with an orange indicator box, leading down to the front vertical door face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7299
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airlock bulkhead frame and door",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The trapezoidal top surface of the frame is clearly visible from rows 1 to 5 (with an orange indicator/light on it) above the front door face and hazard striping.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6474
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airlock bulkhead door frame and hatch",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top frame features a visible trapezoidal top surface across rows 1-5 (about 5 pixel rows) complete with an orange indicator lamp before dropping to the front horizontal rim at row 6 and the vertical door face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8436
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.257Z",
+ "cells": {
+  "16": [
+   "810d4cf88cb453e5",
+   "8fd724be4be8b1a8",
+   "ca8e0bc150b58b31",
+   "e7417be8e42234a7"
+  ],
+  "24": [
+   "04a546a85c116150",
+   "06a7be30a81614d9",
+   "0dc786e22c30169a",
+   "19f2cab84892b72f",
+   "1e73c24055cb1a64",
+   "246d875b367111d4",
+   "2814a893670d2008",
+   "4007ba7a4c79fefb",
+   "49e68a5b2e4288b4",
+   "543ff1eb0d8d822d",
+   "616136d282c82f4d",
+   "633bdf647ea7aee8",
+   "67ab73f7bbcf0206",
+   "6b70bd886e799d82",
+   "715c8f48a81b1f2e",
+   "794dda018b828d43",
+   "a6dc24a88f17bc50",
+   "aa511efe33bac0fc",
+   "ab860de8ee0ae37e",
+   "affaed169db58d87",
+   "b1fbd494c48e8b0b",
+   "b2774e6cde9b68e6",
+   "d4b51282b4501b91",
+   "dd284012526c738f"
+  ],
+  "32": [
+   "66e68f6345805db5"
+  ],
+  "48": [
+   "1fa6c301344aa0dd",
+   "4eac3b17bb541925",
+   "87ee8862f9f306f9",
+   "8861b1d4e8d53aad",
+   "b4e0b4a8b6ccfb09",
+   "b8362512108d2c87"
+  ]
+ }
+}

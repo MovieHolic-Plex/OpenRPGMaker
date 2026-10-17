@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d620b1a2422a465655d1821a5f101aab5568fe1643996cc5c722feb3787db440",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "문서 파쇄기",
+ "label": "jp_city/interior_office2/ox-shredder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "paper shredder (office machine)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shredder is visible across rows 7-13 (7 rows tall) showing the paper feed slot and indicator LED, ending with a front-edge highlight at row 13 before the lower front face and bin window (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5719
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "paper shredder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shredder containing the paper feed slot and power indicator spans rows 7-13 (7 rows), with the vertical front face and waste bin window below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7948
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "paper shredder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shredder is viewed from above across rows 7-13 (7 pixel rows tall), rendered in a bright highlight tone with the horizontal paper feed slot and LED light clearly visible from above. The vertical front face with the waste window extends below from rows 15-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7681
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paper shredder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shredder is clearly visible from above across rows 7–13 (7 rows), featuring the paper feed slot and power indicator, while rows 15–30 form the front face showing the collection bin window.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5286
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.342Z",
+ "cells": {
+  "16": [
+   "b7e40a7c7df2b26a",
+   "b9c8db7589c55460"
+  ],
+  "24": [
+   "0efce3d245c41abc",
+   "28a87f2233f95bb5",
+   "34d1913ddae946e6",
+   "3c69279cfbe6df7b",
+   "46602e9e84c1d28a",
+   "753d4edaa8157154",
+   "a24ad72aa44b7188",
+   "a52cce918e555374",
+   "bbb8f87e9b467e2a",
+   "bdc3b80231f3636d",
+   "d5f5e8d038350750",
+   "d7694d81b4434858"
+  ],
+  "32": [
+   "0db1dcaed63edbed",
+   "d113e3005bebe099",
+   "fa8d72e3c2679279"
+  ],
+  "48": [
+   "88b0643e82dbf21d",
+   "8a5c03cd4e952542",
+   "8ff06546455d957b",
+   "920c6dcee075657b",
+   "d0588ce8eb8df885",
+   "dce90056cf4fdfe2"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0313f79375a46bbd5f429eb86b974f187c3908e15a4ec4666b4272516c5066f0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torch pole and wrapped head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch is drawn in pure front elevation: the head rim at row 10 is completely flat with no foreshortened top rim/opening ellipse visible, and the pole is a straight vertical rectangle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torch head and wooden shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch shaft and wrapped head are drawn in flat front elevation with horizontal lines across the rim at row 10 and bottom at row 30; no top surface or elliptical rim is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4606
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch head and wooden shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head (rows 10-13) and pole shaft (rows 14-30) are drawn in pure front elevation with straight horizontal boundaries and no foreshortened top surface or rim ellipse visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch shaft and head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head rim and pole shaft are drawn with completely flat horizontal lines in pure 2D front elevation, showing no foreshortened top surface or elliptical rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4582
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.801Z",
+ "cells": {
+  "16": [
+   "2c82ca1b9df20e0e",
+   "b59e8e87da56704d"
+  ],
+  "24": [
+   "00ae6501522271fd",
+   "032f66363600377e",
+   "07b3bf1ab972f904",
+   "0adcc53e57dac297",
+   "7ced30cf93b3cfff",
+   "8b19887a1e24b880",
+   "8b2461d5ec377d69",
+   "8b4646170b2aa421",
+   "9b127d2ed0da8273",
+   "bcd155764ad05e89",
+   "e3520b47ce4eaee7",
+   "f5795d478c55a981"
+  ],
+  "32": [
+   "49bb136a6cc52745",
+   "67a9d6618ac5076a",
+   "dfcdb0040f535214"
+  ],
+  "48": [
+   "5689e7f36ae27303",
+   "914f032e23758999",
+   "a02a8716c273564c",
+   "a33f59485c4b4216",
+   "b4058c97c65243a2",
+   "cdf885923b9e02bd"
+  ]
+ }
+}

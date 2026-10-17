@@ -42,6 +42,8 @@ import { startOAuthCallbackServer } from "./oauth/loopbackCallbackServer.mjs";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 import { configureOAuthClients } from "../../src/ai/oauth/clientConfig.ts";
 import { readOAuthClientsFromPiAi } from "./oauthClients.mjs";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
+import { openAiCompatStatus, resolveOpenAiCompatRequestKey } from "./openAiCompatRuntime.ts";
 
 applyLegacyEnvAliases();
 // 남의 앱 OAuth 클라이언트 값은 저장소에 없다 — 설치된 참조 구현에서 읽는다(환경변수가 있으면 그것이 이긴다).
@@ -268,6 +270,8 @@ export function setEnvScanDecision(decision: "allow" | "deny"): "allow" | "deny"
 }
 
 export function publicProviderStatus(provider: string) {
+  // 사용자 지정(OpenAI 호환) 엔드포인트는 구독 로그인이 아니다 — 저장소(openAiCompatStore)가 자기 상태를 말한다.
+  if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
   // HTTP 경계에서 들어온 이름이므로 여기서 막는다. 모를 제공자를 `connected:false` 로
   // 답하면 사용자는 "여기 로그인하면 된다"고 오해하게 된다 — 지원하지 않는 것이다.
   requireKnown(provider);
@@ -355,6 +359,9 @@ export async function startProviderLogin(
   _body: { apiKey?: string } = {},
   options: { remote?: boolean } = {},
 ) {
+  if (isOpenAiCompatProviderId(provider)) {
+    throw Object.assign(new Error("사용자 지정 엔드포인트는 로그인이 없습니다. 연결 설정에서 주소와 API 키를 저장하세요."), { status: 400 });
+  }
   const id = requireKnown(provider);
   cancelProviderLogin(id);
   const abort = new AbortController();
@@ -514,6 +521,8 @@ function refreshSingleFlight(id: PortedOAuthProviderId) {
 
 /** 수동 갱신(`POST /auth/refresh`)과 요청 경로. 자동 갱신의 백오프는 무시하되 진행 중인 갱신에는 합류한다. */
 export async function refreshProvider(provider: string) {
+  // API 키·사용자 지정 엔드포인트에는 갱신할 토큰이 없다 — 조용히 현재 상태를 돌려준다.
+  if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
   return refreshSingleFlight(requireKnown(provider));
 }
 
@@ -535,6 +544,7 @@ function canAutoRefresh(id: PortedOAuthProviderId): boolean {
  * 제공자를 두드리지 않도록 갱신은 single-flight, 실패하면 지수 백오프(30초→10분) 동안은 다시 시도하지 않는다.
  */
 export async function providerStatus(provider: string) {
+  if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
   const id = requireKnown(provider);
   const status = publicProviderStatus(id);
   if (status.connected || !canAutoRefresh(id)) return status;
@@ -561,6 +571,9 @@ export function authRefreshStatsForTests() {
 }
 
 export function logoutProvider(provider: string) {
+  if (isOpenAiCompatProviderId(provider)) {
+    throw Object.assign(new Error("사용자 지정 엔드포인트는 연결 설정에서 삭제하세요."), { status: 400 });
+  }
   const id = requireKnown(provider);
   cancelProviderLogin(id);
   const removed = store.remove(id);
@@ -587,6 +600,8 @@ export function seedOAuthForTests(
 export const REQUEST_KEY_MIN_LIFETIME_MS = 15 * 60_000;
 
 export async function resolveRequestApiKey(provider: string): Promise<string | undefined> {
+  // 키 없는 엔드포인트는 자리표시값을 돌려준다(pi-ai 가 빈 키에서 환경 변수로 떨어지지 않게). 없는 엔드포인트는 404.
+  if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatRequestKey(provider);
   const id = requireKnown(provider);
   if (envScanDecision() === "allow") {
     const envVars = getOhMyPiProvider(id)?.envVars ?? [];

@@ -1,0 +1,195 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3a44e5f40e8d0d46e73b21c8b635bd720be6917820ea2be3d9caa00bd517531",
+ "width": 96,
+ "height": 80,
+ "kind": "structure",
+ "name": "얼음 동굴 입구(눈 덮인 바위 언덕, 고드름 아가리)",
+ "label": "snow-north/sn-ice-cave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice cave entrance portal and rock cliff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The protruding cave entrance portal (rows 40-76) is drawn as a pure front elevation: its upper arch (rows 40-46) has only a 1-2px highlight rim before the icicles hang straight down, with 0px of visible top depth showing back toward the cliff face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7026
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice cave entrance archway and cliff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": true,
+    "evidence": "The cave entrance archway/lintel (rows 40-78) is drawn as a flat front elevation with icicles hanging down but zero top surface visible on the lintel or frame. Additionally, the interior opening shows an asymmetric right-side inner jamb (rows 50-78), creating an oblique/isometric perspective rather than standard top-down 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9986
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice cave entrance archway and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The icy portal archway (rows 42-78) framing the cave mouth is drawn in pure front elevation; the top of the arch has only a 1-2px outline against the background rocks with no top surface or receding slope shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8497
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 8557,
+   "error": "Error: Cloud Code Assist stream ended without a finish reason (connection dropped or response truncated)"
+  }
+ ],
+ "decidedAt": "2026-10-14T01:06:36.875Z",
+ "cells": {
+  "16": [
+   "0049607bd6da89d2",
+   "04f3e3b42963b771",
+   "06ba1da4a6f8341b",
+   "0d7c150ec6f3dfd4",
+   "0ebb870f3b105ce3",
+   "16aa48f75e77b88e",
+   "1bb9d965a13a82be",
+   "366287dfe855ab8c",
+   "3c1145c798216e06",
+   "3eeb83ed98fdfa5e",
+   "53a8f2d29bc34bf7",
+   "5832070b6b3451b9",
+   "6335960fe0ff2ae6",
+   "683fb347e8244ec0",
+   "6a75b1b7655bff11",
+   "6e78342cb7a74aab",
+   "7cfbea6c39f90a20",
+   "7fcb5f056d594945",
+   "9e18eabcbfca2c7f",
+   "a163e4021745f51f",
+   "a3d2f9de8eee0448",
+   "a52df63b573816d9",
+   "abaae72eb96e5d9e",
+   "b67e7cb9d3703ad1",
+   "b991f7766ff6f13d",
+   "d09b9ea2396f8e24",
+   "d85d10c64b995520",
+   "dd65e7925bf2fb3e",
+   "dd77cf4c30782be2",
+   "f1e292ecb8239b60"
+  ],
+  "24": [
+   "2f54c4425dce5409",
+   "304a633a99508f1c",
+   "369145499d31ac4e",
+   "3b3c0f937ac155d2",
+   "3beea72a10e2aca0",
+   "459cf2e0bc0574c0",
+   "4b7bc841df8db4e0",
+   "513a4f5bf3edbdcf",
+   "539bb42630e41315",
+   "56dcd71c4f2ad131",
+   "58dea020481b8e8d",
+   "59a3a5a333a691d8",
+   "5ca9f106c94a51b6",
+   "61acac541837de66",
+   "656ecb4d786a05e2",
+   "71dc83a7e7374863",
+   "72c6a6523576d1e0",
+   "74aeb71671a3ce03",
+   "831033442dde7b01",
+   "86ac144d5ffaa59c",
+   "898fa173db769b88",
+   "8bdee1e0f0aee0b9",
+   "a28f0a98996ffe06",
+   "a2b101d5019d664b",
+   "abe810ee0e29681e",
+   "b0a3a71b8c448d26",
+   "cd313825d109c608",
+   "d18d766c117a1d32",
+   "d46924daf718bf62",
+   "d8ace66bb5b18f3e",
+   "e986f57147ce2542",
+   "fa117f015aeda1b6"
+  ],
+  "32": [
+   "0767593780e6e3f8",
+   "135e0df7acbdd12b",
+   "1863e8997b84d7dd",
+   "19ad8de75b2670c6",
+   "1dc08a328e3db1b6",
+   "23315cd07382c0b3",
+   "48a127e9184e2588",
+   "583d3d785ca43d25",
+   "59426f03a6ea6e73",
+   "70c131a7fa2bc2bf",
+   "8feb2709b8a4c39e",
+   "917ad144f8b0b49c",
+   "b8a615212e33c4aa",
+   "cf71ec3256f9c9dc",
+   "e18bad084d296645",
+   "f2eec4adaf958215",
+   "f8c3d5168b34b2ed",
+   "fbaeab95fa775d75"
+  ],
+  "48": [
+   "104325d04914ed3d",
+   "3f66b07a98f4050b",
+   "40545d0e46294a79",
+   "718415722ea0f450",
+   "82ce1fccdde7cb77",
+   "8bfdf3e7b08fd118",
+   "dad353796f204ff7",
+   "f03d29e7c9623d08"
+  ]
+ }
+}

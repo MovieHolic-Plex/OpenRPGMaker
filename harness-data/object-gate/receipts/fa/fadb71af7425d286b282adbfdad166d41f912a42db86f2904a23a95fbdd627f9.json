@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fadb71af7425d286b282adbfdad166d41f912a42db86f2904a23a95fbdd627f9",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "가문비(눈 덮임, 중간)",
+ "label": "snow-north/sn-pine-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "snow-covered conical spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the tree is drawn as a flat 2D triangular silhouette. Each tier's underside is rendered as a flat horizontal line with square notches (rows 13, 23, 33, 43) with no downward curvature or visible top surface to indicate the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7095
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "snow-covered spruce tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foliage tiers are drawn with strictly flat, straight horizontal bottom edges (rows 13, 23, 33, 43) with square castellations, representing an orthographic front elevation. In 3/4 top-down view, the cone tiers should curve downward in the front to reveal the circular/elliptical depth and upper surfaces of each tier.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8054
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "spruce tree foliage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce tree is drawn as a flat 2D silhouette with completely straight, horizontal tier bottoms (rows 13, 23, 33, 43) rather than ellipses or downward curves required by the 45-degree top-down perspective. The main foliage body shows no top surface (0 rows), presenting a pure front elevation despite the small ground snow plinth at the base.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "snow-covered spruce tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree tiers are cut off with completely flat horizontal lines and square crenellations at rows 14, 24, 34, and 44, with no downward curvature or visible top surface of foliage tiers, making it a pure front elevation characteristic of a 2D side-scroller rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7391
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.502Z",
+ "cells": {
+  "16": [
+   "01f835bf56212f79",
+   "1ee87665703661e2",
+   "2ee24ba611646ad1",
+   "32bdaf27d8090381",
+   "ce00a80a0dfd2456",
+   "e1b84f326eb4013b"
+  ],
+  "24": [
+   "04956f8cee152bf9",
+   "19dbd3c174443ceb",
+   "2df1f95519442380",
+   "50f7795b07886719",
+   "6fcdb0bbd34e6c47",
+   "73c820cd89184034",
+   "7ad85f978ed86c15",
+   "89cdc0d2cfaf3d02",
+   "8ef4f2ac9560af10",
+   "e046f234c2c7571a",
+   "f414f178ebb81780",
+   "f620e126ffe03208"
+  ],
+  "32": [
+   "2e538e9c6e280a37",
+   "411a923d34788f1b",
+   "9e3e44031c79b800",
+   "e00b34b0c9e30f54"
+  ],
+  "48": [
+   "255865e1f7c4160b",
+   "a37ff2d4fa9732c8",
+   "f5575f25b6f6196e"
+  ]
+ }
+}

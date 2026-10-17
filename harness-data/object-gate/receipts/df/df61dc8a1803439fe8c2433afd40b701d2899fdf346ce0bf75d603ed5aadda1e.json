@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df61dc8a1803439fe8c2433afd40b701d2899fdf346ce0bf75d603ed5aadda1e",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "나무 상자 더미",
+ "label": "snow-north/sn-crates",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden crate pile with snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crates are drawn in pure front elevation with fully vertical framed panels and diagonal braces seen straight-on. No horizontal top surfaces of the crates are visible; the snow mounds on top are also drawn as flat 2D profiles without top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7151
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of wooden crates with snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each crate in the stack is drawn as a flat square front elevation with frame rails and a diagonal brace. There is no visible top surface on any of the crates; the snow on top is also rendered as a flat front-silhouette cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of wooden crates with snow",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crates are drawn as flat rectangular front faces with upper rails and diagonal cross-braces seen straight-on. No horizontal top surfaces of the crates are visible under 3/4 perspective (0px of crate top surface; only small front-view snow caps sitting on flat horizontal edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8168
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden crate pile with snow on top",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crates are drawn as flat rectangular 2D front elevations with diagonal cross-braces, showing zero top wooden surfaces. The snow on top forms flat 2-3px mounds directly atop the front edge with no top-down surface perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5337
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.507Z",
+ "cells": {
+  "16": [
+   "062b8eda28a219c3",
+   "0962b706e9191cf3",
+   "2f87d272b7a58e71",
+   "9024b6eb48de3d09"
+  ],
+  "24": [
+   "0dc093f6686c3a68",
+   "13fca684f33f09b6",
+   "19e09b6f6d4bf816",
+   "2173271eff3f0152",
+   "28182ba24e6ed97a",
+   "4142c62317af7241",
+   "501d1d3642226dc8",
+   "7ecb346fb52359f4",
+   "7f06a1ac565fc4f8",
+   "8f7a296248074bf1",
+   "97787cab411935fc",
+   "9a1fe8e3f9af8f9c",
+   "a07e046d1007c3fd",
+   "a09d408bab7163d8",
+   "b03d3eb2bc7bfe1e",
+   "be1c545df2d11e6c",
+   "c353b20b3bb0d790",
+   "ccec283a3d1256b4",
+   "cd6be9ada9b50db7",
+   "d12764a38daed605",
+   "d5aa70708bf3436b",
+   "e4d046576be31c05",
+   "f9b2f69bbc7d872d"
+  ],
+  "32": [
+   "707dfdefa4c0841c"
+  ],
+  "48": [
+   "01c58401ca859110",
+   "0bea6feed60d564c",
+   "5cc6c8a9eae18ac5",
+   "5eff07f5c63a6353",
+   "78f0a1fe670db7fe",
+   "e9b7bcae450b4aea"
+  ]
+ }
+}

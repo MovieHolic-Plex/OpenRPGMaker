@@ -1,0 +1,50 @@
+{
+ "key": "sc2-fortune-teller",
+ "arch": "sp2-fortune-teller",
+ "base": "Scarloxy1:7",
+ "variant": "청록 긴 머리를 짙은 자주 긴 머리로 바꾸고 머리 위 h 구역에 둥글고 큰 노란 터번(H paint 3줄 높이, 폭 10칸), 파란 드레스를 짙은 보라 로브로, 가슴에 노란 별 무늬(T paint 3×3 십자), 분홍 치마단을 금색으로.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 adhqr"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.999,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 5,
+  "cross_base": 5,
+  "lone": 344,
+  "lone_base": 220
+ },
+ "distinct": {
+  "score": 0.781,
+  "nearest": "ScarloxyPeople2#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 48,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "베이스 몸 칸을 비운 것을 되돌림": 2
+  }
+ },
+ "run": "sp2-r2/sp2-fortune-teller-a"
+}

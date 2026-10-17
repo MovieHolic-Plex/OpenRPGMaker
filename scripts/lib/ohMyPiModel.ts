@@ -1,5 +1,7 @@
 import { getBundledModel } from "@oh-my-pi/pi-catalog";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
+import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
+import { resolveOpenAiCompatModel } from "./openAiCompatModel.ts";
 
 /**
  * GPT-6 계열은 설치된 pi-catalog 17.4.0 보다 나중에 나왔다. pi-catalog 18.3.2 의 openai-codex 항목이
@@ -22,6 +24,8 @@ const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
 
 /** Exact selection only. Missing catalog entries must never change the user's model. */
 export function resolveOhMyPiModel(provider: string, requested?: string) {
+  // 사용자 지정(OpenAI 호환) 엔드포인트는 번들 카탈로그에 없다 — 호스트가 실어 보낸 정의로 모델을 만든다.
+  if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatModel(provider, requested) as ReturnType<typeof getBundledModel>;
   const id = requested?.trim() || getOhMyPiProvider(provider)?.defaultModel || "";
   const exact = getBundledModel(provider as never, id);
   if (exact && typeof exact === "object" && "id" in exact) return exact;
@@ -36,8 +40,8 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
       },
     } };
   }
-  // Gemini 4 Argon: Antigravity 가 새로 낸 모델(2026-10-14). 전역 omp 18.9 의 카탈로그에서 id 는 gemini-4-argon, 전송 ID 는
-  // gemini-4-argon-{low,medium,high}(3.8 과 같은 effortRouting 방식, minimal 은 없다). 설치된 pi-catalog 에는 아직 없어 3.7 메타데이터에 덮어 쓴다.
+  // Gemini 4 Argon: `agy` 모델 목록(2026-10-14)에 gemini-4-argon-{low,medium,high} 로 올라와 있다. 3.8 과 같은 전송이고
+  // 사고 강도 라우팅 이름만 다르다. 번들 카탈로그가 이 모델을 싣게 되면 위 exact 경로가 먼저 잡는다.
   if (provider === "google-antigravity" && id === "gemini-4-argon") {
     const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
     if (base) return { ...base, id, name: "Gemini 4 Argon", thinking: {

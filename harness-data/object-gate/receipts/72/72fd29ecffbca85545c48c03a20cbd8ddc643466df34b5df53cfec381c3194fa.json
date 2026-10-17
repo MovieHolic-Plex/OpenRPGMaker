@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72fd29ecffbca85545c48c03a20cbd8ddc643466df34b5df53cfec381c3194fa",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-via-span",
+ "label": "jp/jp-via-span",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "viaduct bridge span with deck and southern fascia/railing",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-25 depict the horizontal top deck of the viaduct (complete with fallen petals scattered across the ground surface), followed by the southern railing, girder, and support wall below (rows 27-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5977
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "viaduct span with deck and southern elevation",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The viaduct deck (top surface) spans rows 1-25 with paved stone texture and fallen petals, viewed from above, followed by the south-facing parapet and understructure below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7529
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "viaduct span / elevated bridge deck and supporting structure",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The viaduct deck (elevated walkway/roadway with fallen petals) is viewed from above across rows 1-25 (25 rows tall), transitioning at row 26-36 into the south-facing parapet/railing and lower support structure beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7357
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "viaduct span with elevated walkway/deck",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 0-25) shows the foreshortened top surface (paved bridge deck with fallen petals), followed by a south-facing railing (rows 27-37) and the vertical viaduct wall below (rows 38-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7250
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.124Z",
+ "cells": {
+  "16": [
+   "124da12271b5a1df",
+   "5d0f75739f4eae33",
+   "d05aec9c9a29b620",
+   "ece1a78899e058fd"
+  ],
+  "24": [
+   "00e1c384ef3ffafe",
+   "05f57845abd7b301",
+   "199eaf7157f60ad5",
+   "2745a6ca0c877ec9",
+   "2a67cf0a0143b7f3",
+   "3d96e86eebb14bdb",
+   "40cd2fc4f1216e90",
+   "45dfc80cdf4a7827",
+   "55fe6399c979f704",
+   "662b214da7786686",
+   "7677b8e71b82d9d3",
+   "771edc90446702bb",
+   "9f7249de048eb6a2",
+   "ab8eda7c7495ef3d",
+   "ad90ef8698bef846",
+   "af98a103f2b0039d",
+   "d2cfd7af1ecfab19",
+   "f59a36a241222469"
+  ],
+  "32": [
+   "1ca64017a456c486",
+   "7bdb291900ef5cbd",
+   "8057fc5a91b3ff12",
+   "b8f38bacbe05e275",
+   "c38ee822fabae93e",
+   "d97bb474d4b69112"
+  ],
+  "48": [
+   "017fa1d6760e3a08",
+   "0a3364b2da3002af",
+   "4154d934a3f3cd63",
+   "4b656fa7d9078d0a",
+   "520e4db2997df0b0",
+   "53e47e82fac24e7c",
+   "58e6a8ade6c47b2f",
+   "614c1d2f4676d20c",
+   "8d760908779c26b8",
+   "ab70e26d70bc7488",
+   "ce3f423ca9d0c03f",
+   "e90481ae6513ab35"
+  ]
+ }
+}

@@ -5,6 +5,7 @@ import { validateFieldHud } from "./shapeFieldHud";
 import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
+import { isGenreLockPresetId } from "@/project/genreLock";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import {
@@ -61,6 +62,7 @@ export function validateDatabase(value: unknown): void {
       assert(!ids.has(id), `Duplicate equipment slot id: ${id}`);
       ids.add(id);
       assert(requireString("equipment slot.label", slot.label).trim().length > 0, "Equipment slot label must not be blank");
+      if (slot.equipsAs !== undefined) assert(isEquipmentSlotId(requireString("equipment slot.equipsAs", slot.equipsAs)), `Invalid equipment slot equipsAs: ${String(slot.equipsAs)}`);
     }
   }
   for (const raw of database.actors as unknown[]) {
@@ -98,6 +100,7 @@ export function validateSystem(value: unknown): void {
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
+  if (system.captureShakesVariableId !== undefined) requireNonBlankString("system.captureShakesVariableId", system.captureShakesVariableId);
   if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
   if (system.gameOvers !== undefined) {
     const rows = requireArray("system.gameOvers", system.gameOvers);
@@ -128,6 +131,18 @@ export function validateSystem(value: unknown): void {
     requireString("system.genre", system.genre);
     assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);
   }
+  if (system.genreLock !== undefined) {
+    const genreLock = requireRecord("system.genreLock", system.genreLock);
+    requireOnlyFields("system.genreLock", genreLock, ["preset", "mode", "allowedFamilies", "allowedCharsetFamilies", "allowedFaceFamilies", "allowedBattleFamilies", "grandfatheredMapIds", "grandfatheredCharsetPaths"]);
+    assert(isGenreLockPresetId(genreLock.preset), `system.genreLock.preset is not a supported lock preset: ${String(genreLock.preset)}`);
+    assert(genreLock.mode === "enforce" || genreLock.mode === "warn", "system.genreLock.mode must be enforce or warn.");
+    for (const [index, family] of requireArray("system.genreLock.allowedFamilies", genreLock.allowedFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFamilies[${index}]`, family);
+    if (genreLock.allowedCharsetFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedCharsetFamilies", genreLock.allowedCharsetFamilies).entries()) requireNonBlankString(`system.genreLock.allowedCharsetFamilies[${index}]`, family);
+    if (genreLock.allowedFaceFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedFaceFamilies", genreLock.allowedFaceFamilies).entries()) requireNonBlankString(`system.genreLock.allowedFaceFamilies[${index}]`, family);
+    if (genreLock.allowedBattleFamilies !== undefined) for (const [index, family] of requireArray("system.genreLock.allowedBattleFamilies", genreLock.allowedBattleFamilies).entries()) requireNonBlankString(`system.genreLock.allowedBattleFamilies[${index}]`, family);
+    if (genreLock.grandfatheredMapIds !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredMapIds", genreLock.grandfatheredMapIds).entries()) requireNonBlankString(`system.genreLock.grandfatheredMapIds[${index}]`, id);
+    if (genreLock.grandfatheredCharsetPaths !== undefined) for (const [index, id] of requireArray("system.genreLock.grandfatheredCharsetPaths", genreLock.grandfatheredCharsetPaths).entries()) requireNonBlankString(`system.genreLock.grandfatheredCharsetPaths[${index}]`, id);
+  }
   if (system.titleScreen !== undefined) {
     const titleScreen = requireRecord("system.titleScreen", system.titleScreen);
     // additive optional 배열 — 있으면 배열이기만 하면 된다. 요소 정합은 normalize 가 관대하게 거른다
@@ -138,9 +153,21 @@ export function validateSystem(value: unknown): void {
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
+  if (system.escapeGraceSteps !== undefined) requireNumber("system.escapeGraceSteps", system.escapeGraceSteps);
+  if (system.monsterBoxNames !== undefined) {
+    requireArray("system.monsterBoxNames", system.monsterBoxNames);
+    (system.monsterBoxNames as unknown[]).forEach((name, index) => requireString(`system.monsterBoxNames[${index}]`, name));
+  }
+  if (system.shinyRate !== undefined) requireNumber("system.shinyRate", system.shinyRate);
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
+  if (system.socialLoop !== undefined) {
+    const socialLoop = requireRecord("system.socialLoop", system.socialLoop);
+    requireOnlyFields("system.socialLoop", socialLoop, ["slotsPerDay", "dailyFriendshipCap"]);
+    if (socialLoop.slotsPerDay !== undefined) requireNumber("system.socialLoop.slotsPerDay", socialLoop.slotsPerDay);
+    if (socialLoop.dailyFriendshipCap !== undefined) requireNumber("system.socialLoop.dailyFriendshipCap", socialLoop.dailyFriendshipCap);
+  }
   if (system.gallery !== undefined) {
     const gallery = requireRecord("system.gallery", system.gallery);
     if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);
@@ -264,7 +291,8 @@ function validateCinematicSequence(label: string, value: unknown): void {
 
 export function validateGameOverSettings(value: unknown, label = "system.gameOver"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "recoveryFallback", "outcome", "timing", "musicResourceId", "goldLossPercent"]);
+  if (settings.goldLossPercent !== undefined) assert(Number.isInteger(settings.goldLossPercent) && Number(settings.goldLossPercent) >= 0 && Number(settings.goldLossPercent) <= 100, `${label}.goldLossPercent must be an integer in 0..100.`);
   if (settings.outcome !== undefined) assert(settings.outcome === "menu" || settings.outcome === "recover" || settings.outcome === "title", `${label}.outcome is invalid.`);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.timing !== undefined) {
@@ -273,15 +301,20 @@ export function validateGameOverSettings(value: unknown, label = "system.gameOve
     for (const [key, value] of Object.entries(timing)) assert(Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) <= 120000, `${label}.timing.${key} must be an integer in 0..120000.`);
   }
   if (settings.presentation !== undefined) assert(typeof settings.presentation === "string" && ["classic", "horror", "blackout"].includes(settings.presentation), `${label}.presentation is invalid.`);
-  if (settings.recovery !== undefined) {
-    const recovery = requireRecord(`${label}.recovery`, settings.recovery);
-    requireOnlyFields(`${label}.recovery`, recovery, ["mapId", "x", "y"]);
-    requireNonBlankString(`${label}.recovery.mapId`, recovery.mapId);
-    for (const key of ["x", "y"]) assert(Number.isSafeInteger(recovery[key]) && Number(recovery[key]) >= 0, `${label}.recovery.${key} must be a nonnegative integer.`);
+  for (const field of ["recovery", "recoveryFallback"] as const) {
+    if (settings[field] === undefined) continue;
+    const recovery = requireRecord(`${label}.${field}`, settings[field]);
+    requireOnlyFields(`${label}.${field}`, recovery, ["mapId", "x", "y"]);
+    requireNonBlankString(`${label}.${field}.mapId`, recovery.mapId);
+    for (const key of ["x", "y"]) assert(Number.isSafeInteger(recovery[key]) && Number(recovery[key]) >= 0, `${label}.${field}.${key} must be a nonnegative integer.`);
   }
   if (settings.sequence !== undefined) validateCinematicSequence(`${label}.sequence`, settings.sequence);
   for (const key of ["title", "message", "retryLabel", "titleLabel"]) {
     if (settings[key] !== undefined) requireString(`${label}.${key}`, settings[key]);
+  }
+  if (settings.kicker !== undefined) {
+    requireString(`${label}.kicker`, settings.kicker);
+    assert((settings.kicker as string).length <= 24, `${label}.kicker is too long.`);
   }
   if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
 }
@@ -336,6 +369,24 @@ function validateFishing(value: unknown): void {
       if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
       if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
       if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+    }
+    if (spot.monsterCatches !== undefined) {
+      const monsterCatches = requireArray(`${label}.monsterCatches`, spot.monsterCatches);
+      assert(monsterCatches.length <= P2_RULE_LIMIT, `${label}.monsterCatches must contain at most ${P2_RULE_LIMIT} records.`);
+      const seenSpecies = new Set<string>();
+      for (const [catchIndex, catchRaw] of monsterCatches.entries()) {
+        const catchLabel = `${label}.monsterCatches[${catchIndex}]`;
+        const rule = requireRecord(catchLabel, catchRaw);
+        const speciesId = requireNonBlankString(`${catchLabel}.speciesId`, rule.speciesId);
+        assert(!seenSpecies.has(speciesId), `${catchLabel}.speciesId is duplicated: ${speciesId}`);
+        seenSpecies.add(speciesId);
+        assertSafeIntegerInRange(`${catchLabel}.weight`, rule.weight, 1, P2_WEIGHT_MAX);
+        if (rule.levelMin !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMin`, rule.levelMin, 1, 99);
+        if (rule.levelMax !== undefined) assertSafeIntegerInRange(`${catchLabel}.levelMax`, rule.levelMax, 1, 99);
+        if (rule.seasons !== undefined) validateEnumArray(`${catchLabel}.seasons`, rule.seasons, isSeason);
+        if (rule.timePhases !== undefined) validateEnumArray(`${catchLabel}.timePhases`, rule.timePhases, isTimePhase);
+        if (rule.weatherKinds !== undefined) validateEnumArray(`${catchLabel}.weatherKinds`, rule.weatherKinds, isWeatherKind);
+      }
     }
   }
 }
@@ -872,7 +923,7 @@ function assertFiniteNumberInRange(label: string, value: unknown, min: number, m
 
 export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits"]);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits", "kicker"]);
   if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
   if (settings.tone !== undefined) assert(settings.tone === "warm" || settings.tone === "dark", `${label}.tone is invalid.`);
   if (settings.credits !== undefined) {

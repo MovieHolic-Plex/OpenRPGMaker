@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ba6b5b81471dba6340bda59e1ddec90e935cca5766c773a4316ec06f90c2fbe",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "성벽(돌 축대 + 흰 토담 + 총구멍, 1칸)",
+ "label": "sengoku-edo/se-castle-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fortress wall with stone base, plastered parapet, and tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall is capped by a tiled roof spanning rows 0-7 (8 pixel rows of ridge and sloping tile surface) viewed from above in 3/4 perspective before dropping into the vertical wall faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9243
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "castle wall with stone base, white earthen wall, and tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof cap on top of the earthen wall displays its south-facing slope and ridge over rows 0-6 (7 pixel rows) with visible tile ribbing and eave overhang, satisfying the 3/4 top-down perspective requirement for structure roofs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "castle wall with stone foundation, earthen midsection, and tiled coping",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coping roof at rows 0-6 clearly shows its top slope facing the camera across 7 source pixel rows, with ridge capping and north-south running tile courses, casting an eave shadow on the white wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9114
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "castle wall section with stone foundation, white plaster wall with gun port, and tile coping",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation. The stone foundation and plaster wall are completely flat vertical surfaces with no visible horizontal step/shelf between them (only a 2px dark beam at rows 22-23). The roof coping at rows 0-8 shows front-facing vertical tile eaves (rows 3-7) with only 2-3px of edge pixels at rows 0-2 rather than a foreshortened top roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7740
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.066Z",
+ "cells": {
+  "16": [
+   "0ea594333d4dabd7",
+   "a94196577a1c7266",
+   "b6970f479eb8964d"
+  ],
+  "24": [
+   "1d5e9f01d9c14de1",
+   "1d8561354469967e",
+   "32adff3599cd23c8",
+   "c84baea3f9496d04",
+   "f1fdaf3ba155c942",
+   "fc3153a16e8f0782"
+  ],
+  "32": [
+   "24d0e35702b71f12",
+   "3021f91fb35791b5",
+   "378cac912728b514",
+   "52308ce04590410c",
+   "565b24fbeaa5a080",
+   "884afc692dee2329",
+   "8c6457a7e312363d",
+   "a11630b0b034e4df",
+   "a23611bd0d876ef3",
+   "bc4c43236cc80eef",
+   "c4f06acf89c0a208",
+   "cf0fd97f636ad51a"
+  ],
+  "48": [
+   "07521944a88cabe6",
+   "9a8982491b7db069",
+   "c541e4e36d8a9c5b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74c35183d4e7372d76c0898c8d00c2b882a75c990e2e29a2abef1ec508f181f7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-inw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass island terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing ground surface viewed from top-down with corner edge border; fills tile naturally as top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing grass surface with sky/water corner; fully viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3945
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing top-down grass ground with a blue corner edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile with corner cutout",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain surface seen from top-down perspective spanning the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7367
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.881Z",
+ "cells": {
+  "16": [
+   "39f071a36831d4a4"
+  ],
+  "24": [
+   "03215767d28c0e91",
+   "195f984fbb4dc74b",
+   "9e78c940e58673b1",
+   "d001e503d6ab9e6f",
+   "e4ddd7183eb6f994",
+   "ea86974ce5f71302"
+  ],
+  "32": [
+   "2427412f9ec17553",
+   "50f5be7242990913",
+   "620c03d60c80f975",
+   "a84aa0aaac1d8dd2",
+   "abc069d27c51873d",
+   "cbbf6e7d415d10e2"
+  ],
+  "48": [
+   "242cf465e594ce61",
+   "3a3c5daaa3bca996",
+   "77d1136d606da9a6",
+   "7cd2445339064faf",
+   "ba24b50710dfbdec",
+   "e7b862ca503d93bb"
+  ]
+ }
+}

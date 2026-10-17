@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a43f7a17d941bc3bf16bb93507ca382b450a04432011b7e07b1746ae07e9d91a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "염색 천 건조대",
+ "label": "desert-east/de-dye-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal drying rack beam with hanging dyed cloths",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam is only 3px tall overall (rows 2-4) with a single 1px highlight line on row 3; it lacks a true top surface. The hanging cloths and supporting frame are depicted completely flat in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5403
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drying rack frame with hanging dyed cloths",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal beam has only a 1px highlight line across row 3, and the hanging cloths and frame are drawn purely flat from the front with no 3/4 depth or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5995
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal wooden beam and hanging fabrics",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam consists only of a 1px outline, a 1px highlight strip (row 3), and a 1px underside, lacking any foreshortened top surface. The frame and hanging cloth strips are rendered in a completely flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drying rack with hanging dyed cloths",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam has only a 1px highlight line rather than a visible top surface foreshortened from above, and the hanging fabrics and posts are depicted in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4521
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.226Z",
+ "cells": {
+  "16": [
+   "3ff1ebd5097a8862",
+   "6e26a83be5e3637d",
+   "708f96afe67da4de",
+   "9c26148a9bcb2cd9"
+  ],
+  "24": [
+   "04e5d80e6acca272",
+   "15adf17e1a8751c7",
+   "3ace17a56b0a6f8e",
+   "449213237112c398",
+   "44b818226a55a42d",
+   "4c5e0ac6068206c1",
+   "6389d7eccfb33351",
+   "63cfee0e70246804",
+   "64dcf904228e8045",
+   "672043ddf37a05e5",
+   "760720bac48b525a",
+   "7b39199f538653b4",
+   "7d99c67ed7793de6",
+   "97b29a946eedd7f0",
+   "a14dd3ee2fcffe91",
+   "a3b3c9091aa26538",
+   "a84e972355c03941",
+   "ab5b214995a351b0",
+   "b1b19bf7358bc66b",
+   "c046f08658f30b82",
+   "c1be7eb6d6a7868c",
+   "e17e8d8afce1f0c7",
+   "e62c37754736954d",
+   "ec5d0f1614ae0cca"
+  ],
+  "32": [
+   "12e5e88d49d3d28b"
+  ],
+  "48": [
+   "00ea974d466b7dc5",
+   "42946561d329f232",
+   "55c99a39ac1ba1d2",
+   "6269f8af79a52daf",
+   "66198236ec9246fd",
+   "a526df59fa7542b2"
+  ]
+ }
+}

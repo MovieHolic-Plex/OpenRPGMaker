@@ -1,0 +1,57 @@
+{
+ "key": "sc-boss-rock",
+ "arch": "sp3-boss-rock",
+ "base": "Scarloxy1:5",
+ "variant": "보라 머리를 갈색 3톤 뾰족 머리로 recolor, 민트 민소매를 황토색 튜닉으로 recolor 하고 가슴 가운데에 짙은 갈색 사각 장식 한 점(T paint 2×2), 주황 반바지를 올리브색으로, 신발은 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Wcdfhkn"
+ ],
+ "metrics": {
+  "added_up0": 18,
+  "added_up1": 17,
+  "added_up2": 17,
+  "added_right0": 10,
+  "added_right1": 10,
+  "added_right2": 10,
+  "added_down0": 16,
+  "added_down1": 16,
+  "added_down2": 17,
+  "added_left0": 10,
+  "added_left1": 10,
+  "added_left2": 10,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 5,
+  "cross_base": 0,
+  "lone": 194,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.457,
+  "nearest": "ScarloxyPeople9#0"
+ },
+ "repairs": {
+  "dropped_stray_px": 52,
+  "hole_filled_px": 6,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 91,
+   "베이스 몸 칸을 비운 것을 되돌림": 4
+  }
+ },
+ "run": "r10/sp3-boss-rock-d",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 8,
+  "pass": "PASS",
+  "text": "직군 읽힘. 위 방향 양어깨 분홍·적색 얼룩 점, 옆 방향 튜닉 밑단 짙은 갈색 띠가 허리 윤곽을 살짝 끊음(경미)."
+ }
+}

@@ -24,6 +24,7 @@ import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
 import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
 const app = document.getElementById("app");
@@ -128,7 +129,10 @@ function startPlayer(
     const host = parseHostBridge(boot);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
-      surfaceScaleMode: 'fit',
+      // 픽셀 격자 계약: 에메랄드 몬스터 게임은 정수 배율만 쓰고 남는 창은 여백(letterbox)으로 둔다 — 비정수 배율은 도트 크기가 섞인다.
+      surfaceScaleMode: isEmeraldMonsterStyle(project) ? 'integer' : 'fit',
+      // 마우스·터치로도 메뉴·전투를 연다(D15). 몬스터 수집 게임만 — 다른 게임은 기존 키보드 전용 계약을 지킨다.
+      pointerInput: isEmeraldMonsterStyle(project),
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,

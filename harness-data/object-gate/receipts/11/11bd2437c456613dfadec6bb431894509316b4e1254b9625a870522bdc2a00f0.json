@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "11bd2437c456613dfadec6bb431894509316b4e1254b9625a870522bdc2a00f0",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "개찰구",
+ "label": "modern_city/interior/mci-ticket-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "turnstile / ticket barrier posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two barrier posts are drawn in pure front elevation with only a 1px dark top outline border at row 8 and no foreshortened top surfaces visible whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3120
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "subway ticket gates / turnstiles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile units are drawn entirely in flat front elevation from row 8 to row 30, showing screens, gate flaps, and lower panels directly facing the camera with no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ticket gate turnstile pillars and flaps",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The turnstile cabinets are drawn entirely as a flat front elevation from row 8 to row 30 with only a 1px top outline border and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3079
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ticket gate pillars",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ticket gate housings are rendered in pure front elevation with front-facing screens and panels, showing zero rows of a top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3703
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.387Z",
+ "cells": {
+  "16": [
+   "65cd8633d0009260",
+   "6c06d1d09798ff6e",
+   "725199a934cfaef4",
+   "a87def589ea5ce28"
+  ],
+  "24": [
+   "0cf1bc10ae8cb4b5",
+   "2bcc03efe711189c",
+   "2f86b56789cc9ccb",
+   "469c9b3decedf1b7",
+   "80081757f41edcc8",
+   "8f2d385980d5a323",
+   "97fb28edeceb5d45",
+   "a302b8417b4d4e04",
+   "a3cf7b5dcb64c8cd",
+   "a9ec24676d85c5c6",
+   "b0654b429582c2c8",
+   "bacd6705f5a5b0bc",
+   "d3c08cc0f05cf908",
+   "d5178253e1fab2f6",
+   "d7b46a1cff984374",
+   "e9e4e3109242789c",
+   "f3ac8ac49966827f",
+   "f44b5c722d4ec006"
+  ],
+  "32": [
+   "f268e3e30d6a046f"
+  ],
+  "48": [
+   "4b25de2c780d135d",
+   "6aa42b0f3ae17387",
+   "a098db00870e99a6",
+   "ba7586f113c6ab6e",
+   "d9892bbbb0016c78",
+   "f8fa7541e3ae45d0"
+  ]
+ }
+}

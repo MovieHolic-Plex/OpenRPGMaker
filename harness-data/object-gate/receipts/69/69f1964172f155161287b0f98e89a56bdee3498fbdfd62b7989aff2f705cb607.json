@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69f1964172f155161287b0f98e89a56bdee3498fbdfd62b7989aff2f705cb607",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "large iron ship anchor lying on the ground",
+ "label": "pirate-isles/pi-anchor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large iron anchor lying horizontally",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite is a standard 2D front-elevation anchor drawing rotated 90 degrees to depict it lying down. The crossbar and ring show no foreshortened top surfaces from the 3/4 overhead perspective, and the ring is vertically elongated (the un-foreshortened horizontal width of a front-facing ring rotated sideways).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9935
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron anchor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is depicted as a flat 2D icon rotated sideways rather than an object resting on the floor in 3/4 top-down perspective. Features lying on the ground plane (such as the ring at right, which is 4px wide by 6px tall) are vertically elongated instead of horizontally foreshortened, and neither the arms nor the shank show a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship anchor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anchor is drawn as a flat 2D side elevation rotated horizontally. Its ring is circular/taller than wide (5px high by 4px wide) rather than foreshortened into a horizontal ellipse lying on the floor, and the crossbar and arms have no visible top surfaces (the upper cap ends flat at row 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10649
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron anchor lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The anchor is depicted lying flat on the floor as debris, spanning rows 0 to 15 with cylindrical shading indicating thickness and south-facing edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16697
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.584Z",
+ "cells": {
+  "16": [
+   "119dd06c89c85ba8",
+   "1cbdefa0f5593fec"
+  ],
+  "24": [
+   "0a4338481bdb0bf4",
+   "2326cac2887cf113",
+   "397a39a45190f53b",
+   "54540ffe9f5a8e12",
+   "6ee61e3b376e56ac",
+   "7642f3c915f3d9dd",
+   "ab5684dddb036ed1",
+   "b3086a0e0bbf2496",
+   "dac66b3d350e0dab",
+   "e6c2d742d7f5f06c",
+   "f478dc199d6f740a",
+   "ffb192d14dd1554c"
+  ],
+  "32": [
+   "0974c3c63d28ab05",
+   "529822ae907f0e32"
+  ],
+  "48": [
+   "195e4dd63b122da1",
+   "644bff4b67ebc6b5",
+   "7c10cfe1b2a96d65",
+   "878e720a512c0112",
+   "8807143f15744081",
+   "91754c1095f0299c"
+  ]
+ }
+}

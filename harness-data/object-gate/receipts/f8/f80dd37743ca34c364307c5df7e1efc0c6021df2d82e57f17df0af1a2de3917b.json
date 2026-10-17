@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f80dd37743ca34c364307c5df7e1efc0c6021df2d82e57f17df0af1a2de3917b",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "넓은 유물 벽 진열장(2칸) (wide cabinet)",
+ "label": "atlas_biome_interior/plus/wide cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible across rows 6–11 (about 5–6 pixel rows tall) with lighter top-down illumination above the front display face, correctly representing the top surface in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wide display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure front elevation. Rows 6-11 represent the front wooden header/cornice above the glass doors (matching the bottom plinth at rows 36-39), leaving 0 source pixel rows for the cabinet's top horizontal surface. Furthermore, the contents (plates, books, jars, vases) and shelves are drawn entirely flat from the front with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wide display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure 2D front elevation. Rows 6-11 represent the front wooden header/fascia between the vertical side pillars (which run continuously from row 6 down to row 38), showing 0 source pixels of visible top surface from above. The shelves and displayed artifacts are also rendered completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10562
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wide display cabinet with shelves",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly rendered top horizontal surface spanning rows 5 to 10 (approx. 6 rows tall) with a highlighted front lip at row 11 and shadow at row 12, followed by the front display shelves. Interior shelves also exhibit visible horizontal depth surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 37275
+  }
+ ],
+ "decidedAt": "2026-10-14T05:28:27.575Z",
+ "cells": {
+  "16": [
+   "3ce0fb6f89321391",
+   "57d0cfaea478baf6",
+   "5a049c06d3f10599",
+   "6b26e86d49ac09be",
+   "aa305cd9f83d71ac",
+   "cf46b901b32d3235"
+  ],
+  "24": [
+   "15e80ddef0a73f32",
+   "268ac9cc0cb8e335",
+   "2df345d1bab35d70",
+   "5586f0fd87e7a083",
+   "5a88efe0987d90d3",
+   "62163ac7c3be5d5a",
+   "640d61ec89a6565d",
+   "9383fe9c0cb141bd",
+   "a1d564c73b511644",
+   "a8b7cdec85ced5a1",
+   "b1410d067146bdcc",
+   "c4bf023a01944773"
+  ],
+  "32": [
+   "32425dccfa4bd64c",
+   "342549925a5ec73e",
+   "929c6054195624f0",
+   "afcb4849acaf1296"
+  ],
+  "48": [
+   "008cc506e3dbcf2b",
+   "0bb5412521e0b9d4",
+   "2f870459269b911a"
+  ]
+ }
+}

@@ -5,6 +5,7 @@ import {
   WORLD_ENTITY_TYPES,
   WORLD_REF_KINDS,
   WORLD_RELATION_KINDS,
+  WORLD_VISIBILITIES,
   type ProjectWorld,
   type WorldEntity,
   type WorldEntityType,
@@ -74,6 +75,8 @@ function normalizeWorldEntity(label: string, value: unknown): WorldEntity {
   const type = requireEnum(`${label}.type`, record.type, WORLD_ENTITY_TYPES);
   const origin = requireEnum(`${label}.origin`, record.origin, WORLD_ORIGINS);
   const tags = record.tags === undefined ? undefined : normalizeStringArray(`${label}.tags`, record.tags);
+  // public 은 기본값이라 저장하지 않는다 — 옛 프로젝트와 바이트가 같아야 한다.
+  const visibility = record.visibility === undefined ? undefined : requireEnum(`${label}.visibility`, record.visibility, WORLD_VISIBILITIES);
   const refs = record.refs === undefined
     ? undefined
     : requireArray(`${label}.refs`, record.refs).map((entry, index) => normalizeWorldRef(`${label}.refs[${index}]`, entry));
@@ -88,6 +91,7 @@ function normalizeWorldEntity(label: string, value: unknown): WorldEntity {
     origin,
     ...(record.wiki === undefined ? {} : { wiki: normalizeWikiMetadata(record.wiki) }),
     ...(record.locked === undefined ? {} : { locked: requireBoolean(`${label}.locked`, record.locked) }),
+    ...(visibility === "ai-hidden" ? { visibility } : {}),
   };
 }
 

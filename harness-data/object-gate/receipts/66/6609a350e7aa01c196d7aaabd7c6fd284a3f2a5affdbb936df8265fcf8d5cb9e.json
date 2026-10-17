@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6609a350e7aa01c196d7aaabd7c6fd284a3f2a5affdbb936df8265fcf8d5cb9e",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "병원 벽(흰 칠 + 연녹 허리판 + 나무 손잡이)",
+ "label": "jp_city/interior_hospital/hs-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain wall face tile (white wall, handrail, green wainscoting, baseboard), correctly classified as terrain rather than a freestanding 3/4 perspective object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6044
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital wall face with wainscot and handrail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard 2D vertical wall face terrain tile (white upper wall, wooden handrail, green wainscoting, and baseboard), correctly classified as terrain rather than a standing 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing upper white wall, wooden handrail, green wainscoting, and baseboard, appropriate for standard 3/4 view vertical wall surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a vertical terrain wall face tile (white upper wall, wooden handrail, green wainscoting, and baseboard) intended as an architectural wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4735
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.777Z",
+ "cells": {
+  "16": [
+   "0dd8127d628b1f26",
+   "52c574221df8dc74",
+   "ae9ebaec997ddbbd",
+   "bc16b3e3fb1a823a"
+  ],
+  "24": [
+   "187fa62d7c9431e7",
+   "1d0dd461e89c4b71",
+   "2aad546be2879f9c",
+   "5628b4c0ee185633",
+   "58aab2b5c1b0073b",
+   "5affd09fef7a51e7",
+   "5caf9b423172462c",
+   "73720dc71fa64c89",
+   "8d414c3c01c6f4ee",
+   "8e70c5043c26b2cf",
+   "97071bff7eb7cf96",
+   "9969d2ec6ee427d1",
+   "a16157f1c7d4b100",
+   "a24c3902451ba0d2",
+   "a31de72e50a2be17",
+   "a553b7567040c0f4",
+   "b98f72719997671a",
+   "c69e38ee0652ebf6",
+   "e4a1599655eebd33",
+   "ed50d0b834438e91",
+   "f110421c9de027aa",
+   "f14b208d5c225f89",
+   "f48dd9a5d5dad6b1",
+   "fba6ec6368e46088"
+  ],
+  "32": [
+   "dad5e07ba3242a5a"
+  ],
+  "48": [
+   "6297f9603fc04659",
+   "6b3f4932bed881b7",
+   "ba05ce5bdc965af0",
+   "bc8612b55444c0bf",
+   "eb1bcd496552bf83",
+   "edda8da97c6463e2"
+  ]
+ }
+}

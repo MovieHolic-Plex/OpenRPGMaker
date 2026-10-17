@@ -358,8 +358,11 @@ export function captureInteractionSurface(cmd: Command, kindLabel: string): Inte
     const classes = new Set<string>(initial.classes);
 
     for (const planned of plan) {
+      let container: HTMLElement | undefined;
       try {
-        const { container, root } = renderIntoContainer(cmd);
+        const rendered = renderIntoContainer(cmd);
+        container = rendered.container;
+        const root = rendered.root;
         const before = harvestEffective(container);
         const controls = enumerateControls(container);
         const entry = controls[planned.index];
@@ -406,6 +409,8 @@ export function captureInteractionSurface(cmd: Command, kindLabel: string): Inte
         errorStacks.set(`${kindLabel}/${planned.key}`, firstFrames(error));
         reactions[planned.key] =
           `probe-error: ${(error as Error).name}: ${(error as Error).message}`.slice(0, 200);
+      } finally {
+        container?.replaceChildren();
       }
     }
 
@@ -426,10 +431,22 @@ export function captureInteractionSurface(cmd: Command, kindLabel: string): Inte
   }
 }
 
-export function captureAllInteractionSurfaces(): Record<string, InteractionSurface> {
+async function releaseInteractionRender(): Promise<void> {
+  const body = globalThis.document?.body;
+  body?.replaceChildren();
+  const happy = (globalThis as { happyDOM?: { abort?: () => Promise<void> | void } }).happyDOM;
+  await happy?.abort?.();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const gc = (globalThis as { gc?: () => void }).gc;
+  gc?.();
+  gc?.();
+}
+
+export async function captureAllInteractionSurfaces(): Promise<Record<string, InteractionSurface>> {
   const out: Record<string, InteractionSurface> = {};
   for (const kind of COMMAND_KINDS) {
     out[kind] = captureInteractionSurface(MINIMAL_COMMANDS[kind as CommandKind], kind);
+    await releaseInteractionRender();
   }
   return out;
 }

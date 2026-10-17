@@ -11,8 +11,6 @@ const before=await withTsModule(resolve('src/project/cinematicWire.ts'),'decode.
 const project=structuredClone(before);
 if(project.system.monsterCampaign?.id!=='starlight-islands')throw Error('Wrong campaign');
 await withTsModule(resolve('src/project/emeraldMonsterCast.ts'),'cast.mjs',m=>m.configureEmeraldMonsterCast(project));
-const professor=JSON.parse(await fs.readFile('public/assets/emerald-monster/professor-asset.json','utf8'));
-project.assets.uploaded[professor.id]=professor;
 await withTsModule(resolve('src/project/emeraldMonsterOpening.ts'),'title.mjs',m=>m.configureEmeraldMonsterTitle(project));
 if(!same(project.session,before.session)||!same(project.system.opening,before.system.opening))throw Error('Session or opening story changed');
 if(!same([project.startMapId,project.startPos],[before.startMapId,before.startPos]))throw Error('Start changed');

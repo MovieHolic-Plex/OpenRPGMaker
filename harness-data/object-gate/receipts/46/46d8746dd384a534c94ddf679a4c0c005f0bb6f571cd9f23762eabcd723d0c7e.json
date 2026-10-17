@@ -3,91 +3,107 @@
  "pixelSha256": "46d8746dd384a534c94ddf679a4c0c005f0bb6f571cd9f23762eabcd723d0c7e",
  "width": 16,
  "height": 16,
- "kind": "box",
- "name": "concrete track barrier wall",
- "label": "jp/rail-fence",
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp_city/street_hand/jp-rail-fence",
  "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "concrete track barrier wall",
-    "kind_matches": true,
-    "top_rows": 7,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The horizontal top surface of the barrier is clearly visible across rows 2–8 (7 rows tall, rendered in a lighter tone with an edge highlight at row 8), transitioning to the shaded vertical south face at rows 10–13 with reflectors.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 9910
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "concrete track barrier wall",
-    "kind_matches": true,
-    "top_rows": 7,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The concrete barrier features a light-toned horizontal top surface spanning rows 2 to 8 (7 pixels tall) above a darker south-facing vertical face (rows 10-13) equipped with yellow reflector markings.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 6468
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "long rectangular concrete barrier wall",
+    "main_body": "horizontal rail fence/guard rail",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main pale rectangular wall is shown as a flat south-facing elevation with no visible top surface; the dark strip above is only an edge/background line, not a multi-pixel top plane.",
+    "evidence": "The fence/rail is composed of flat horizontal bands with only a 1px border at row 0; there is no foreshortened top surface visible, representing a pure front elevation.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
     "판정자 과반 fail",
     "정면 입면도",
-    "윗면 0행 < 4"
+    "윗면 0행 < 3"
    ],
-   "ms": 35266
+   "ms": 3712
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal rail fence/guardrail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The guardrail/fence is drawn in pure front elevation with horizontal bands across rows 0-14. Row 0 is merely a 1px outline, showing no visible top surface or thickness foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3122
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Fence structure with a broad pale upper rail/panel and dark lower supports",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main fence body is shown as flat horizontal bands. Its upper edge has only a one-pixel light strip, with no distinct top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 13524
   },
   {
    "judge": "gpt",
    "run": 2,
    "answer": {
-    "main_body": "concrete track barrier wall",
+    "main_body": "Fence body with broad horizontal rails",
     "kind_matches": true,
-    "top_rows": 7,
+    "top_rows": 1,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main wall has a broad visible top plane spanning source rows 2-8, above its south-facing front face with yellow markings. No receding side face or opening is present.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The main fence body is drawn as flat horizontal bands. Its upper edge is only a one-pixel strip, with no substantial top surface visible from above.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 80146
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 14090
   }
  ],
- "decidedAt": "2026-10-13T07:55:17.611Z",
+ "decidedAt": "2026-10-13T09:40:33.283Z",
  "cells": {
   "16": [
    "dd23dd94a3f0a9c6"

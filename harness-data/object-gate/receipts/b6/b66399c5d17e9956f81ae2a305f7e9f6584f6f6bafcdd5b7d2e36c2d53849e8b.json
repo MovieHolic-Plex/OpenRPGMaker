@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b66399c5d17e9956f81ae2a305f7e9f6584f6f6bafcdd5b7d2e36c2d53849e8b",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small coastal boulder",
+ "label": "pirate-isles/pi-rock-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rounded boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder clearly shows its top-facing dome lit across rows 3-7 before transitioning into the shaded front face on lower rows, consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coastal boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder shows an illuminated top surface spanning rows 3-7 before sloping down into shaded front-facing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder clearly shows an illuminated, upward-facing top surface across rows 4-8 before transitioning into shaded south-facing facets down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3840
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coastal boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder clearly shows its top illuminated crown (rows 3-7) transitioning via shading to the front/lower facing side (rows 8-13), properly rendered in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4181
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "e0b5b7fda3350e6f"
+  ],
+  "24": [
+   "00fe263e9b1d1ff6",
+   "0e2819fb793554ad",
+   "158be41ef5bd8f7f",
+   "6f1a1ea9fb2901db",
+   "a65ee9ecc700a35b",
+   "f88310a677a5086a"
+  ],
+  "32": [
+   "52dc1b37e5bffec7",
+   "a4bfef36697e0faa",
+   "a71ef38063de424c",
+   "d5069dfaac797b54",
+   "db9c556c06408766",
+   "ea6e830078e1f95d"
+  ],
+  "48": [
+   "30877618e793a22a",
+   "5786bd5e77edba40",
+   "72056b4825d24285",
+   "8d4e123232092e2f",
+   "b1d50c2d5524feda",
+   "f44f0586041fb1a7"
+  ]
+ }
+}

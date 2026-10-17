@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "437574f7982a03aa90dcf9c43483c0607d2a6e9d5587eedcda6a9462fe0d1d1f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 노트북 보관 카트",
+ "label": "modern-campus-int/mc-pc-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart has only a 1-pixel dark outline at row 7 with no top surface visible. The entire cart body is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3664
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn entirely from a flat front view, showing the upper panel with a screen and lower cabinet doors, with only a 1px outline at row 7 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4970
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn entirely as a flat front elevation with a 1px top border at row 7; no foreshortened top horizontal surface is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom laptop charging cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat front rectangle with only a 1-pixel outline at row 7 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4787
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.490Z",
+ "cells": {
+  "16": [
+   "7b509fbfb1e1a06e",
+   "8de59d383ed3daf7"
+  ],
+  "24": [
+   "21088df754c98545",
+   "235d5661cd94b433",
+   "3104e99f5966d0d9",
+   "4788c8f6750a2e78",
+   "6a02a6d34f529e10",
+   "772c37ae75d95618",
+   "8be2ac118fcc08a1",
+   "bbbccda950e0cfc3",
+   "cbfaf83f97c2778d"
+  ],
+  "32": [
+   "6bf60bf33c57ca76",
+   "b6dc242de4c0b1e4",
+   "fc402a4b6ddeac17"
+  ],
+  "48": [
+   "1b3aa4355a9f4c9f",
+   "2380a3fe2cd877ce",
+   "4a850ebe1b5a21ac",
+   "926ce58253d0e936",
+   "9d17edb17085f43a",
+   "f3856fa92e65766b"
+  ]
+ }
+}

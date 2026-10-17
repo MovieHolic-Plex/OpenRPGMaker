@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "62ae2d595bdf2af69abbc1a7668a93e3ff4b578d70b0f029d1d43af6b619e448",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "기름 밴 자갈 포석",
+ "label": "steampunk-city/sp-cobble-oil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gravel paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless ground terrain tile depicting dark, oil-soaked gravel paving across the full 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oil-stained gravel ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat stone/gravel ground terrain with an oil stain, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3021
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oil-stained gravel paving ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat top-down ground terrain tile showing gravel cobblestone with an oily stain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil-soaked stone pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A full 16x16 ground terrain tile representing dark gravel/cobblestone paving with dark oil staining and subtle specular highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4205
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.050Z",
+ "cells": {
+  "16": [
+   "8b26830f90900aa5"
+  ],
+  "24": [
+   "1c72bd6f5d5c47b4",
+   "3d532131f8a2a0bb",
+   "497b654eb2bb561b",
+   "8362706b3ccfec78",
+   "b57b47993f44f80f",
+   "cd971900e5744146"
+  ],
+  "32": [
+   "15252d3310232136",
+   "2b6c658f10589b1f",
+   "7410a0248fce553a",
+   "7831fd164ae9dec3",
+   "bceea19006781bdf",
+   "c015b749bad9245b"
+  ],
+  "48": [
+   "684ec6722e46cd9e",
+   "7147e6bd52cb3f5a",
+   "aaf9456db8d5224c",
+   "c92858be1aeefc58",
+   "e5bba5b451c30c05",
+   "f7d52c56ceaaa891"
+  ]
+ }
+}

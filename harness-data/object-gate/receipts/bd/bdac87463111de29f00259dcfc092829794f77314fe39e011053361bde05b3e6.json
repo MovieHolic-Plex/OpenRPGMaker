@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bdac87463111de29f00259dcfc092829794f77314fe39e011053361bde05b3e6",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "탁상 모니터",
+ "label": "modern_city/interior/mci-g-monitor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "monitor display and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor is drawn in pure front elevation with a completely vertical screen and bezel; row 0 has at most a 1px border line rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7741
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "monitor screen and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor is drawn in a completely flat front elevation with a 1px dark edge at row 0 instead of a foreshortened top surface showing the monitor's depth. The stand and base are also drawn purely from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5144
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "monitor screen and frame",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor is drawn in a completely flat front elevation. The screen and bezel are facing the viewer directly with at most a 1px strip at row 0 instead of a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 4326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "monitor screen and casing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monitor is drawn in pure front elevation with only a 1px outline along row 0. No top surface of the monitor body is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3085
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:05.390Z",
+ "cells": {
+  "16": [
+   "0f072018906a2f1c"
+  ],
+  "24": [
+   "0d459eab7cac73f1",
+   "9c2eed45adf019a6",
+   "bbf67f9db04d67ea",
+   "e191fb8b41f314be",
+   "f149a98ffb62d107",
+   "fb16ab7136ce1cb2"
+  ],
+  "32": [
+   "34daf1c53231e591",
+   "b661cf1934356021",
+   "be3de4acfc95b1dd",
+   "dfa84656e54e9f4c",
+   "e23cbf947369739c",
+   "efe547d08c95694f"
+  ],
+  "48": [
+   "063b1264a2c6eb5f",
+   "0c2fde7dd6924ef9",
+   "0fe73ea0a8f42c2f",
+   "1076398afb974b0a",
+   "615eb09243790afb",
+   "b7d742e2b6336e3c"
+  ]
+ }
+}

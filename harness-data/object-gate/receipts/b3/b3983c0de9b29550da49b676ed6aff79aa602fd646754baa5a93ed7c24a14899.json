@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3983c0de9b29550da49b676ed6aff79aa602fd646754baa5a93ed7c24a14899",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "양탄자 걸이",
+ "label": "desert-east/de-carpet-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet rack with hanging rugs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper beam and draped rugs is clearly depicted from rows 2-6 (5 rows tall), before folding down into the vertical hanging front faces. The wooden base feet also have prominent top surfaces across rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet rack with draped carpets",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper beam and draped carpets clearly display a horizontal top surface across rows 2-6 (5 rows) before the textiles hang vertically down. The base feet also feature foreshortened top faces on rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet rack frame with hanging rugs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the horizontal beam and the carpets draped over it is clearly rendered from rows 1 to 6 (6 source pixel rows tall) before falling vertically south from row 7 downwards. The base feet also clearly show foreshortened top surfaces (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3435
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet rack with draped carpets",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the crossbeam draped with carpets is visible across rows 2-6 (5 rows tall) before hanging vertically down the south face, and both base feet also show distinct 3-row top surfaces (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3792
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.540Z",
+ "cells": {
+  "16": [
+   "13d83290dc08de00",
+   "2d48395d1404136f",
+   "52e9589b373441f6",
+   "a44aa40f07f33520"
+  ],
+  "24": [
+   "208a736f18460d87",
+   "245e5c858761f0f9",
+   "3b50bfc83fd69f56",
+   "3f96f1229dd9a8e5",
+   "42882e39caaccb69",
+   "4a82ec266b3c2761",
+   "5ad7b46c5c0c6b0f",
+   "62a85a96d44ec25e",
+   "66ea5a3009373480",
+   "6be3041e70abd776",
+   "77f50a501b8733d8",
+   "794dd91a8c3464d6",
+   "9811cbd0dfc74161",
+   "b0bff4c2ed356bfd",
+   "b3d1d19ae8e4a0ec",
+   "c144ff60edd47e86",
+   "dc3255c06211ae9e",
+   "dfa2077fddb998b7",
+   "e1fa831d7c5b4e89",
+   "e2e88ebcfc0d7ca5",
+   "e8016bea78c4b5ff",
+   "f9d616dae44abd53",
+   "fa03a181a5db288e",
+   "fed911493e04936d"
+  ],
+  "32": [
+   "c042f47bd1f0ae41"
+  ],
+  "48": [
+   "2e206549527146c5",
+   "4977e43e2884b091",
+   "acbeca2f93d206a9",
+   "c2c96a2332b85fbc",
+   "cba95d9709ded50f",
+   "e34f1e9a80ee9ad4"
+  ]
+ }
+}

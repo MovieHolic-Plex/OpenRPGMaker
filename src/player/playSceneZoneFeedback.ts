@@ -1,4 +1,6 @@
 import type { PlaySession } from "@/project/session";
+import { store } from "@/project/store";
+import { stampEmeraldSurface } from "@/player/emeraldSurfaces";
 import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { footprintContains } from "@/project/footprint";
@@ -163,6 +165,7 @@ function createElements(): FeedbackElements {
   root.className = "zone-feedback";
   root.dataset.testid = "zone-feedback";
   root.setAttribute("aria-label", "탐험 안내");
+  stampEmeraldSurface(root, store.getCurrent(), "zone-feedback");
 
   const banner = feedbackLine("banner", "지역 알림");
   const toast = feedbackLine("toast", "체크포인트 알림");

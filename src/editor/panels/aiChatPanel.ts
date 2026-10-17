@@ -66,7 +66,8 @@ import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createAiWorkspace } from "./aiWorkspace";
 import { mountAiStatusBar } from "./aiStatusBar";
-import { reportBackgroundBoard } from "./aiPresence";
+import { markDragOrigin, reportBackgroundBoard } from "./aiPresence";
+import { createJobEntry } from "./aiJobEntry";
 import { mountAiMapPresence } from "@/editor/aiMapPresence";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
 import { createStoreCard } from "./aiStoreCard";
@@ -76,7 +77,8 @@ import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
+import { classifyPlainPiTurn, selectedEventFact } from "@/ai/piAgent/plainTurn";
+import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
 import { resolveContextWindow } from "@/ai/contextCompaction";
 import { modelForRole } from "@/ai/modelRoles";
 import { warmHeavyWire } from "@/ai/piAgent/heavyWire";
@@ -2240,6 +2242,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         text,
         currentMapId: turnMapId,
         selection: (turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection) ?? null,
+        selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
         declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000, coverageAudit: false })),
@@ -2251,6 +2254,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     } finally {
       // 선언이 던진 턴도 그 구간이 얼마였는지 남긴다 — 해석 실패가 그 턴의 지연 전부인 경우가 있다.
       timing.end("intent");
+    }
+    // 포켓몬 낱말이 없어도 몬스터 수집 의도면 손대지 않은 빈 시작 맵을 몬스터 키트로 옮겨 열고 장르 잠금(monster-collect)을 건다 — 칩셋 계열은 첫 맵에서 정해진다.
+    // 이미 다른 계열 맵이 있는 프로젝트는 건드리지 않는다(applyMonsterIntentStart).
+    if (classified.monsterKit && needsMonsterKitStart(store.getCurrent())) {
+      store.update((draft) => { applyMonsterIntentStart(draft); }, { scope: "project", label: "몬스터 수집 의도: 시작 맵을 몬스터 키트로 + 장르 잠금", origin: "system" });
     }
     return {
       command: plainPiCommand(text, classified.mode, turnMapId),
@@ -2560,7 +2568,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const appendStampOrderResult = (order: StampOrder): void => {
     // 멈추기로 끊은 주문은 멈추기가 한 줄로 이미 알렸다.
     if (order.status === "aborted" && order.applied === 0) return;
-    const head = order.status === "done" ? "완료" : order.applied > 0 ? "일부 적용" : "실패";
+    // 없는 물건은 「실패」가 아니라 「깔지 않음」 — 이벤트·지형으로 흉내 내지 않았다는 뜻이다(2026-10-15 바로 깔기 감사).
+    const head = order.status === "done"
+      ? "완료"
+      : order.applied > 0
+        ? `일부 적용${order.refused > 0 ? ` · 그림 없는 물건 ${order.refused}개는 깔지 않음` : ""}`
+        : order.refused > 0 ? "깔지 않음(칩셋에 그림 없음)" : "실패";
     appendBubble("system", [`#${order.id} ${order.label} — ${head}`, ...order.lines.map((line) => `- ${line}`)].join("\n"));
   };
   // 대기열 상태를 입력줄 요약·멈추기 버튼·상태 줄에 비춘다.
@@ -3268,6 +3281,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       stampPlaceNow(text);
       return;
     }
+    // 드래그로 시킨 대화 일 — 작업 목록·지도 상자가 드래그한 자리를 그대로 쓰게 표식을 남긴다.
+    markDragOrigin({ text, mapId: detail.mapId, region: { x: detail.region.x, y: detail.region.y, width: detail.region.width, height: detail.region.height } });
     restoreComposer(text);
     void send();
   };
@@ -3354,7 +3369,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const rail = createDeckRail();
   // Primary actions stay in the header; secondary controls keep their original
   // handlers and popovers, but live in the labelled overflow menu.
-  rail.actions.append(composerShell.newChatButton, composerShell.menuToggle, collapseButton);
+  // 작업 목록 입구 — 열린 도크 위쪽(rail.actions)과 접힌 레일(collapsedRestore 옆). 둘 다 상태 줄의 「작업 N개」 와 같은 목록을 연다.
+  const dockJobEntry = createJobEntry("dock");
+  const railJobEntry = createJobEntry("rail");
+  rail.actions.append(dockJobEntry.button, composerShell.newChatButton, composerShell.menuToggle, collapseButton);
   const secondaryActions = el("div", { class: "ai-chat-secondary-actions" });
   for (const [button, label] of [
     [composerShell.conversationsButton, "이전 대화"],
@@ -3408,7 +3426,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       chatDock: "float",
       aiConversation: "empty",
     },
-    children: [toolbar, deck, collapsedRestore, collapsedUndo, stickyProposalZone],
+    children: [toolbar, deck, collapsedRestore, railJobEntry.button, collapsedUndo, stickyProposalZone],
   });
   teamPanel.onToggle((open) => panel.classList.toggle("is-team-open", open));
   panelRoot = panel;
@@ -3609,6 +3627,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     deck.inert = collapsed;
     toolbar.inert = collapsed;
     stickyProposalZone.inert = collapsed;
+    // 대화 카드가 화면에 있는지 — 지도 위·아래 진행 표시가 대화 카드와 같은 말을 되풀이하지 않게 CSS·상태 줄이 읽는다.
+    // 알림(아래 dispatch)을 받는 쪽이 읽으므로 클래스를 먼저 맞춘다.
+    if (typeof document !== "undefined" && document.body) document.body.classList.toggle("ai-dock-collapsed", collapsed);
     panel.dispatchEvent(new Event("oprn:ai-panel-collapse", { bubbles: true }));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
@@ -3655,7 +3676,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     collapseAfterAiWork = false; // 레일 클릭으로 연 직후 타이머에 다시 접히지 않게
     savePanelCollapsed(false);
     applyCollapsed();
-    collapseButton.focus({ preventScroll: true });
+    // 열자마자 칠 수 있게 입력창에 둔다 — 예전엔 「접기」 단추에 있어 입력창을 한 번 더 눌러야 했다.
+    (input.disabled ? collapseButton : input).focus({ preventScroll: true });
     recordAiUiEvent({ surface: "panel", action: AI_UI_ACTIONS.panelCollapse, detail: { collapsed: false, turnBusy, via: "rail" } });
   };
   collapseButton.addEventListener("click", toggleCollapsed);
@@ -4153,6 +4175,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     wideAssistant.dispose();
     unmountStatusBar();
     unmountMapPresence();
+    dockJobEntry.dispose();
+    railJobEntry.dispose();
     workspace.dispose();
     teamSidebar.dispose();
     suggestions.dispose();
@@ -4186,7 +4210,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof document !== "undefined") {
       document.removeEventListener("pointerdown", onMoreMenuPointerDown);
       document.removeEventListener("keydown", onMoreMenuKeyDown);
-      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open");
+      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open", "ai-dock-collapsed");
     }
 
     cleanupAiAssistBridge?.();

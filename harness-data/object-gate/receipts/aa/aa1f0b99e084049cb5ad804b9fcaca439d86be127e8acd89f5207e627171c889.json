@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa1f0b99e084049cb5ad804b9fcaca439d86be127e8acd89f5207e627171c889",
+ "width": 16,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "병실 침대(난간·하늘색 이불)",
+ "label": "jp_city/interior_hospital/hs-ward-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital bed with pillow, rails, and blue blanket",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress top surface (pillow, sheet, and blanket) is clearly visible from above across rows 3 to 39, with the front footboard and wheels visible at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3977
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bed with railing and light blue blanket",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire mattress surface (pillow, white sheet, and blue blanket) is viewed from above across rows 3 to 40, with the footboard and front legs visible on the south face (rows 41-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3272
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital bed with pillow and bedding",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is drawn in standard 3/4 top-down view with the pillow, sheet, and blue blanket seen from above across rows 3-39, and the footboard/legs shown at the south face (rows 40-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3641
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital bed with pillow, railings, and blanket",
+    "kind_matches": true,
+    "top_rows": 38,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire top horizontal mattress surface (pillow, white sheet, blue blanket) is visible from row 3 to row 40, with the foot of the bed and legs shown facing south at rows 41-47.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4061
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.778Z",
+ "cells": {
+  "16": [
+   "1d10fb7d129d024d",
+   "3d78851e18cb4f36",
+   "800bba11877e7308"
+  ],
+  "24": [
+   "74693e718d16e37b",
+   "7855aec1aed8dd54",
+   "99ea588f1e712d34",
+   "a4e2f3c6f74fda0a",
+   "bf3d9973f7be819e",
+   "f9b9bf3931865c81"
+  ],
+  "32": [
+   "10faa0f50dec8ea9",
+   "29c00df2ef4b2070",
+   "2dbb90834324a44b",
+   "3dbdd275eac00321",
+   "631352c3b872739c",
+   "6c7ad5b8224f725e",
+   "777a3b4c63843651",
+   "7cbb789afb02c81f",
+   "9e7e32d336e76af0",
+   "9f6a3e0241631154",
+   "a79a2a897dadf5b1",
+   "eb0f361e68628c76"
+  ],
+  "48": [
+   "50cd4342bf9a0a28",
+   "62553a0894340f52",
+   "ee8e2a9bbf91b262"
+  ]
+ }
+}

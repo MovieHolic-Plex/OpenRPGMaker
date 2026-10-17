@@ -4,7 +4,7 @@ import { createWikiSource } from "@/project/world/guards";
 import { parseProjectWikiPatch, ProjectWikiPatchConflictError } from "@/project/world/wiki";
 import type { ProjectWikiPatch, WikiSource } from "@/project/world/types";
 import { chatCompletion, loadAiConfig, type AiConfig } from "./llmClient";
-import { projectWikiContext } from "./projectWikiContext";
+import { projectWikiContext, wikiExtractorDocuments } from "./projectWikiContext";
 
 export interface ExtractProjectWikiInput {
   readonly project: Project;
@@ -34,10 +34,8 @@ export function buildProjectWikiPayload(input: ExtractProjectWikiInput): string 
   if (new Set(sources.map((source) => source.id)).size !== sources.length) throw new ProjectFormatError("Duplicate wiki source IDs");
   if (input.currentMapId && !input.project.maps[input.currentMapId]) throw new ProjectFormatError(`Unknown current wiki map: ${input.currentMapId}`);
   const selected = new Set(projectWikiContext(input.project, { query: input.userText, mapId: input.currentMapId }).selectedIds);
-  const currentDocuments = [...(input.project.world?.entities ?? [])]
-    .filter((entity) => entity.wiki?.kind !== "progress")
-    .sort((a, b) => Number(selected.has(b.id)) - Number(selected.has(a.id)))
-    .slice(0, 64)
+  // 추출기도 모델이다 — AI 비공개 카드는 기존 문서 목록에 싣지 않는다(wikiExtractorDocuments · visibility.ts).
+  const currentDocuments = wikiExtractorDocuments(input.project, selected)
     .map((entity) => ({ ...entity, summary: entity.summary.slice(0, 600), body: entity.body?.slice(0, 1000), wiki: entity.wiki && { ...entity.wiki, sources: entity.wiki.sources.map((source) => ({ ...source, text: source.text.slice(0, 400) })) } }));
   return JSON.stringify({
     userText: input.userText, sources, currentMapId: input.currentMapId ?? null,

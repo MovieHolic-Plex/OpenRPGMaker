@@ -1,0 +1,43 @@
+{"png": "se-grass.png", "kind": "terrain", "name": "풀밭", "label": "sengoku-edo/se-grass"}
+{"png": "se-grass-b.png", "kind": "terrain", "name": "풀밭(짙은 변주)", "label": "sengoku-edo/se-grass-b"}
+{"png": "se-grass-flower.png", "kind": "terrain", "name": "들꽃 풀밭", "label": "sengoku-edo/se-grass-flower"}
+{"png": "se-road.png", "kind": "terrain", "name": "다진 흙길", "label": "sengoku-edo/se-road"}
+{"png": "se-road-b.png", "kind": "terrain", "name": "다진 흙길(변주)", "label": "sengoku-edo/se-road-b"}
+{"png": "se-road-c.png", "kind": "terrain", "name": "흙길(발자국)", "label": "sengoku-edo/se-road-c"}
+{"png": "se-grass-edge-n.png", "kind": "terrain", "name": "풀밭 가장자리(북쪽 흙길)", "label": "sengoku-edo/se-grass-edge-n"}
+{"png": "se-grass-edge-s.png", "kind": "terrain", "name": "풀밭 가장자리(남쪽 흙길)", "label": "sengoku-edo/se-grass-edge-s"}
+{"png": "se-grass-edge-w.png", "kind": "terrain", "name": "풀밭 가장자리(서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-w"}
+{"png": "se-grass-edge-e.png", "kind": "terrain", "name": "풀밭 가장자리(동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-e"}
+{"png": "se-grass-edge-nw.png", "kind": "terrain", "name": "풀밭 모서리(북서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-nw"}
+{"png": "se-grass-edge-ne.png", "kind": "terrain", "name": "풀밭 모서리(북동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-ne"}
+{"png": "se-grass-edge-sw.png", "kind": "terrain", "name": "풀밭 모서리(남서쪽 흙길)", "label": "sengoku-edo/se-grass-edge-sw"}
+{"png": "se-grass-edge-se.png", "kind": "terrain", "name": "풀밭 모서리(남동쪽 흙길)", "label": "sengoku-edo/se-grass-edge-se"}
+{"png": "se-cobble.png", "kind": "terrain", "name": "돌길(이시다타미)", "label": "sengoku-edo/se-cobble"}
+{"png": "se-cobble-moss.png", "kind": "terrain", "name": "이끼 낀 돌길", "label": "sengoku-edo/se-cobble-moss"}
+{"png": "se-gravel.png", "kind": "terrain", "name": "갈퀴 자국 자갈(가레산스이)", "label": "sengoku-edo/se-gravel"}
+{"png": "se-gravel-wave.png", "kind": "terrain", "name": "물결 자갈(가레산스이)", "label": "sengoku-edo/se-gravel-wave"}
+{"png": "se-moss.png", "kind": "terrain", "name": "이끼 정원", "label": "sengoku-edo/se-moss"}
+{"png": "se-deck.png", "kind": "terrain", "name": "판자 마루(바깥)", "label": "sengoku-edo/se-deck"}
+{"png": "se-paddy.png", "kind": "terrain", "name": "논(모내기 한 물논)", "label": "sengoku-edo/se-paddy"}
+{"png": "se-paddy-grown.png", "kind": "terrain", "name": "논(자란 벼)", "label": "sengoku-edo/se-paddy-grown"}
+{"png": "se-paddy-ripe.png", "kind": "terrain", "name": "논(익은 벼)", "label": "sengoku-edo/se-paddy-ripe"}
+{"png": "se-paddy-n.png", "kind": "terrain", "name": "논두렁(북쪽 둑)", "label": "sengoku-edo/se-paddy-n"}
+{"png": "se-paddy-s.png", "kind": "terrain", "name": "논두렁(남쪽 둑)", "label": "sengoku-edo/se-paddy-s"}
+{"png": "se-paddy-w.png", "kind": "terrain", "name": "논두렁(서쪽 둑)", "label": "sengoku-edo/se-paddy-w"}
+{"png": "se-paddy-e.png", "kind": "terrain", "name": "논두렁(동쪽 둑)", "label": "sengoku-edo/se-paddy-e"}
+{"png": "se-paddy-nw.png", "kind": "terrain", "name": "논두렁(북서쪽 둑)", "label": "sengoku-edo/se-paddy-nw"}
+{"png": "se-paddy-ne.png", "kind": "terrain", "name": "논두렁(북동쪽 둑)", "label": "sengoku-edo/se-paddy-ne"}
+{"png": "se-paddy-sw.png", "kind": "terrain", "name": "논두렁(남서쪽 둑)", "label": "sengoku-edo/se-paddy-sw"}
+{"png": "se-paddy-se.png", "kind": "terrain", "name": "논두렁(남동쪽 둑)", "label": "sengoku-edo/se-paddy-se"}
+{"png": "se-water.png", "kind": "terrain", "name": "해자·강물", "label": "sengoku-edo/se-water"}
+{"png": "se-water-n.png", "kind": "terrain", "name": "물가 돌 축대(북쪽 뭍)", "label": "sengoku-edo/se-water-n"}
+{"png": "se-water-s.png", "kind": "terrain", "name": "물가 돌 축대(남쪽 뭍)", "label": "sengoku-edo/se-water-s"}
+{"png": "se-water-w.png", "kind": "terrain", "name": "물가 돌 축대(서쪽 뭍)", "label": "sengoku-edo/se-water-w"}
+{"png": "se-water-e.png", "kind": "terrain", "name": "물가 돌 축대(동쪽 뭍)", "label": "sengoku-edo/se-water-e"}
+{"png": "se-water-nw.png", "kind": "terrain", "name": "물가 돌 축대(북서쪽 뭍)", "label": "sengoku-edo/se-water-nw"}
+{"png": "se-water-ne.png", "kind": "terrain", "name": "물가 돌 축대(북동쪽 뭍)", "label": "sengoku-edo/se-water-ne"}
+{"png": "se-water-sw.png", "kind": "terrain", "name": "물가 돌 축대(남서쪽 뭍)", "label": "sengoku-edo/se-water-sw"}
+{"png": "se-water-se.png", "kind": "terrain", "name": "물가 돌 축대(남동쪽 뭍)", "label": "sengoku-edo/se-water-se"}
+{"png": "se-field.png", "kind": "terrain", "name": "채소밭(이랑 + 잎)", "label": "sengoku-edo/se-field"}
+{"png": "se-field-bare.png", "kind": "terrain", "name": "갈아 놓은 밭(이랑)", "label": "sengoku-edo/se-field-bare"}
+{"png": "se-stone-steps.png", "kind": "terrain", "name": "돌계단", "label": "sengoku-edo/se-stone-steps"}

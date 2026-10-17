@@ -9,7 +9,7 @@
  * 작업 문법·검사의 정본: tiledata/worldmap-kit/kit/lib/kit_terrain.py (이 파일의 스키마는 그 거울).
  */
 import { mapCharacterSizeFactor } from "@/project/characterScale";
-import type { GameMap, MapId, MapNamedLocation, Project, TilesetId } from "@/project/types";
+import type { GameMap, MapId, MapNamedLocation, Project, TilesetId, WorldmapVariantSpec } from "@/project/types";
 import {
   buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_REGIONS, WORLDMAP_STYLES,
   type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
@@ -87,9 +87,11 @@ const OP_HELP =
 // ── 준비(prepare) 결과 캐시: 같은 (테마, 작업, 미리보기) 는 한 번만 빌드한다 ──
 const prepared = new Map<string, WorldmapBuildResult>();
 const lastImage = new Map<string, string>();
+/** 월드 변형 도구가 방금 빌드한 그림을 같은 조수 화면 경로(worldTerrainImages)로 보이게 한다. */
+export function rememberWorldImage(tool: string, dataUrl: string): void { lastImage.set(tool, dataUrl); }
 
 function requestKey(request: WorldmapBuildRequest): string {
-  return JSON.stringify([request.theme, request.terrain?.base ?? null, request.terrain?.fit_salt ?? null, request.terrain?.ops ?? [], request.preview === true]);
+  return JSON.stringify([request.theme, request.terrain?.base ?? null, request.terrain?.fit_salt ?? null, request.terrain?.ops ?? [], request.preview === true, request.terrain?.variant ?? null]);
 }
 
 function remember(key: string, result: WorldmapBuildResult): void {
@@ -127,9 +129,9 @@ function baseOf(value: unknown): WorldmapBase | undefined {
 }
 
 /** 작업도 바탕 지정도 없으면 null — 테마 기본 지형의 공용 캐시를 그대로 쓴다(새로 그리면 2분). */
-function terrainOf(ops: Array<Record<string, unknown>>, base?: WorldmapBase, fitSalt?: number): WorldmapBuildRequest["terrain"] {
-  if (!ops.length && !base) return null;
-  return { id: "edit", ops, ...(base ? { base } : {}), ...(base === "generate" && typeof fitSalt === "number" ? { fit_salt: fitSalt } : {}) };
+export function terrainOf(ops: Array<Record<string, unknown>>, base?: WorldmapBase, fitSalt?: number, variant?: WorldmapVariantSpec): WorldmapBuildRequest["terrain"] {
+  if (!ops.length && !base && !variant) return null;
+  return { id: "edit", ops, ...(base ? { base } : {}), ...(base === "generate" && typeof fitSalt === "number" ? { fit_salt: fitSalt } : {}), ...(variant ? { variant } : {}) };
 }
 
 /** edit_world_terrain 이 빌드할 요청 — 맵에 쌓인 작업 + 이번 작업(replace 면 이번 작업만). 바탕을 바꾸면(공용 ↔ 생성) 쌓인 작업은 버린다. */
@@ -141,18 +143,21 @@ function editRequest(args: Record<string, unknown>, map: GameMap | undefined): W
   const keep = args.replace === true || switching ? [] : src?.ops ?? [];
   const base = asked ?? src?.base;
   const salt = switching || args.replace === true ? undefined : src?.fitSalt;
-  return { theme: theme(args, map), terrain: terrainOf([...keep, ...add], base, salt), preview: args.preview === true };
+  // 변형 지도(derive_world_variant)는 바탕을 바꾸지 않는 한 같은 변형(침수·색 표·아이콘)을 그대로 다시 얹는다.
+  const variant = switching ? undefined : src?.variant?.spec;
+  return { theme: theme(args, map), terrain: terrainOf([...keep, ...add], base, salt, variant), preview: args.preview === true };
 }
 
 function readRequest(args: Record<string, unknown>, map: GameMap | undefined): WorldmapBuildRequest {
   const src = map?.worldmapSource;
   const ops = args.ops !== undefined ? opsOf(args.ops) : src?.ops ?? [];
   const base = baseOf(args.base) ?? src?.base;
-  return { theme: theme(args, map), terrain: terrainOf(ops, base, args.ops === undefined ? src?.fitSalt : undefined), preview: true };
+  const variant = args.base !== undefined && baseOf(args.base) !== (src?.base ?? "shared-v9") ? undefined : src?.variant?.spec;
+  return { theme: theme(args, map), terrain: terrainOf(ops, base, args.ops === undefined ? src?.fitSalt : undefined, variant), preview: true };
 }
 
 /** 생성 지형의 배치 요약 — regions(칸 행 글자)는 읽기 도구에만 싣는다(편집 결과마다 7천 자). */
-function layoutOf(result: Extract<WorldmapBuildResult, { ok: true }>, withRegions: boolean): Record<string, unknown> | null {
+export function layoutOf(result: Extract<WorldmapBuildResult, { ok: true }>, withRegions: boolean): Record<string, unknown> | null {
   const layout = result.world.layout;
   if (!layout) return null;
   if (withRegions) return { ...layout };
@@ -160,7 +165,7 @@ function layoutOf(result: Extract<WorldmapBuildResult, { ok: true }>, withRegion
   return rest;
 }
 
-async function prepareRequest(request: WorldmapBuildRequest): Promise<void> {
+export async function prepareRequest(request: WorldmapBuildRequest): Promise<void> {
   const key = requestKey(request);
   if (prepared.get(key)?.ok) return;
   try {
@@ -170,7 +175,7 @@ async function prepareRequest(request: WorldmapBuildRequest): Promise<void> {
   }
 }
 
-function resultFor(request: WorldmapBuildRequest): Extract<WorldmapBuildResult, { ok: true }> {
+export function resultFor(request: WorldmapBuildRequest): Extract<WorldmapBuildResult, { ok: true }> {
   const entry = prepared.get(requestKey(request));
   if (!entry) throw new ToolError("월드맵 빌드가 실행되지 않았다 — 같은 인자로 다시 호출하라.", { code: "worldmap-not-prepared" });
   if (!entry.ok) {
@@ -199,7 +204,7 @@ export function placeEntrance(p: { x: number; y: number; w: number; h: number },
   return best;
 }
 
-function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): string[] {
+export function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): string[] {
   const rules = result.world.placeRules ?? {};
   return result.world.places.map(p => {
     const e = placeEntrance(p, result.world.walk);
@@ -214,23 +219,34 @@ function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): stri
  */
 const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
   joseon: ["joseon_baram"],
+  sengoku: ["sengoku_edo"],
   "modern-town": ["jp_city", "modern_city"],
   "modern-sf": ["modern_city"],
-  "snow-north": ["forest_harmony_snow"],
-  "desert-east": ["forest_harmony_desert"],
+  "snow-north": ["snow_north"],
+  // 사막·동양풍 번들(desert_east, 2026-10-14) — 오아시스·바자르·궁전·피라미드·대상 숙소를 구성 도구가 짓는다(옛 forest_harmony_desert 는 폐기 계열).
+  "desert-east": ["desert_east"],
+  prehistoric: ["prehistoric"],
 };
 
-function townArtHint(theme: string): string {
+export function townArtHint(theme: string): string {
   const tilesets = THEME_TOWN_TILESETS[theme] ?? [];
   const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
   const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 던전·동굴은 등록 장소를 import_region_reference 로 가져온다(EasyRPG 계열 칩셋으로 새 맵을 만드는 것은 막혀 있다).";
   if (theme === "starmap" || theme === "alien") return `테마 ${theme} 전용 정거장·외계 거점 칩셋과 완성 지역은 현재 없다. 지형 생성과 거점 저작의 준비 상태를 구분해서 보고하라. 기본 로마풍 마을을 우주정거장으로 대신 깔지 마라. 월드맵 후보 아이콘은 사람이 하네스에서 선택한 것만 사용할 수 있다. ${interior}`;
+  // 선사(prehistoric): 마을·늪·화산·화석 계곡과 동굴·움집 실내는 구성기 도구 한 번으로 짓는다(낱칸 칠하기 대신).
+  if (theme === "prehistoric") return "야외 마을은 이 테마와 같은 문화권 번들 칩셋 prehistoric 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). compose_prehistoric_map({style:\"village\"|\"swamp\"|\"volcano\"|\"fossil\", newMap:{name}}) 한 번이 칩셋·크기를 맞춘 새 맵에 마을·땅·집·소품 배치까지 짓는다. 동굴·움집 안은 같은 도구의 실내 style(cave-dwelling·chieftain-hut·shaman-hut·cave-gallery)로 짓고 link_prehistoric_interior 로 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
+  // 북방 설원(snow-north): 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터와 실내는 구성기 도구 한 번으로 짓는다(옛 숲마을 눈 칩셋 대신).
+  if (theme === "snow-north") return "야외 마을은 이 테마와 같은 문화권 번들 칩셋 snow_north 로 깔아라(버들항 눈 기후 등 다른 계열 도구로 깔지 말 것). compose_snow_north_map({style:\"village\"|\"lake\"|\"cave\"|\"market\", newMap:{name}}) 한 번이 칩셋·크기를 맞춘 새 맵에 마을·땅·집·소품 배치까지 짓는다. 집 안은 같은 도구의 실내 style(cabin·longhall·tavern·sauna·ice-cave)로 짓고 link_snow_north_interior 로 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
+  if (tilesets[0] === "desert_east") return "야외 마을은 이 테마와 같은 문화권 칩셋 desert_east(사막·동양풍)로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것): create_map(tilesetId:\"desert_east\") → compose_desert_east_map({kind:\"oasis\"|\"bazaar\"|\"palace\"|\"pyramid\"|\"caravanserai\", seed}) 한 번. "
+    + "실내(찻집·가게·알현실·묘실·목욕탕·여관)는 desert_east 맵을 더 만들어 compose_desert_east_room 으로 짓고 link_desert_east_interior 로 문과 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
   if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
   return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
     + (isRetiredEasyRpgTileset({ tilesets: {} }, tilesets[0]!)
       ? `${tilesets[0]} 은 폐기된 EasyRPG 계열이라 새 맵을 만들 수 없다 — 완성 마을을 가져오거나, 없으면 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. `
-      : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
+      : tilesets[0] === "sengoku_edo"
+        ? "새로 지으려면 create_map(tilesetId=sengoku_edo) 뒤 compose_sengoku_edo_map({style:\"castle_town\"|\"inn_street\"|\"samurai\"|\"castle\"|\"temple\"|\"village\"}) 한 번으로 깐다(장소 역할에 맞는 style). 건물 안은 build_hand_interior_room({tileset:\"sengoku_edo\", floor:\"se-floor-tatami\", wall:\"se-wall-fusuma\", layout:{program}}) + link_sengoku_edo_interior. "
+        : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
     + `세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }
 
@@ -239,9 +255,9 @@ function slug(text: string, i: number): string {
   return `wm_${ascii || "place"}_${i}`;
 }
 
-function applyWorldmap(
+export function applyWorldmap(
   draft: Project, mapId: MapId, name: string | undefined, request: WorldmapBuildRequest,
-  result: Extract<WorldmapBuildResult, { ok: true }>,
+  result: Extract<WorldmapBuildResult, { ok: true }>, variantOf?: { of: string; preset?: string },
 ): { created: boolean; strandedEvents: string[] } {
   const { world } = result;
   const tilesetId = `worldmap_${mapId}` as TilesetId;
@@ -292,6 +308,9 @@ function applyWorldmap(
       base: request.terrain?.base ?? (world.layout ? "generate" : "shared-v9"),
       ...(world.layout ? { fitSalt: world.layout.salt } : {}),
       tilemap: tilemap.baseline,
+      ...(request.terrain?.variant
+        ? { variant: { of: variantOf?.of ?? existing?.worldmapSource?.variant?.of ?? "", ...(variantOf?.preset ?? existing?.worldmapSource?.variant?.preset ? { preset: variantOf?.preset ?? existing?.worldmapSource?.variant?.preset } : {}), spec: request.terrain.variant } }
+        : {}),
     },
   } as GameMap;
   if (existing?.width !== world.width || existing.height !== world.height) {
@@ -450,5 +469,5 @@ export const WORLD_TERRAIN_TOOLS: readonly ToolDefinition[] = [listWorldmapTheme
 /** 조수가 방금 빌드한 지도(미리보기면 도식)를 눈으로 보게 한다. */
 export function worldTerrainImages(toolName: string): { dataUrl: string; label: string }[] {
   const dataUrl = lastImage.get(toolName);
-  return dataUrl ? [{ dataUrl, label: toolName === "read_world_terrain" ? "세계 지형 도식" : "세계 지도" }] : [];
+  return dataUrl ? [{ dataUrl, label: toolName === "read_world_terrain" ? "세계 지형 도식" : toolName === "derive_world_variant" ? "변형 세계 지도" : "세계 지도" }] : [];
 }

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b21239c3444053d7ad491cd576fb186729c04ccf3a909fd89d66fde355917557",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "놋 띠 궤짝",
+ "label": "desert-east/de-chest-brass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is clearly foreshortened and seen from above across rows 1-6 (6px tall), with distinct lighting and a front edge highlight before the vertical front face (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4537
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden chest with brass bands and clasp",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is clearly shown from rows 1 to 6 (6 rows high) with brass bands continuing onto the front face (rows 7 to 15). Proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4097
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed wooden chest with brass bands and lock",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible across rows 1-6 with lighter wood and brass straps, while rows 7-15 show the darker front face with the lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest with brass bands",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-6 clearly render the horizontal top surface (lid) of the chest foreshortened from above, while rows 7-14 show the front face with lock/clasp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4267
+  }
+ ],
+ "decidedAt": "2026-10-14T00:25:45.000Z",
+ "cells": {
+  "16": [
+   "7b732dffa80cd84a"
+  ],
+  "24": [
+   "3bb9951b79997030",
+   "3cc604be275fbaff",
+   "5d09249b945ae9c9",
+   "8edf8d3caaefaf60",
+   "ada5d5c7e43da0fc",
+   "fef7966e5c7b0c1a"
+  ],
+  "32": [
+   "2fb36cb9eb8d5fab",
+   "58d8e90165702c5a",
+   "598417712a46c25f",
+   "5fa0039587ef114d",
+   "909a35f3181e5e6e",
+   "fa0c712193007952"
+  ],
+  "48": [
+   "123754f9053ed94e",
+   "2053f894ac59ea57",
+   "21ac3b55981092de",
+   "5e8adcd320dbd805",
+   "79ccf2320898369b",
+   "d4f1731ec8cb0d41"
+  ]
+ }
+}

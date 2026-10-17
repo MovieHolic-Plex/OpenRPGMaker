@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f97cb27b334557ca767b227109ea93f0ca0cfd3e561704e7d2a737604fc5828",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래(변주 3)",
+ "label": "desert-east/de-sand-d",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing sand ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting calm sand texture across the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2877
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile displaying a calm sand texture covering the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4099
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 sand ground tile with textured pixels; valid terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5207
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.784Z",
+ "cells": {
+  "16": [
+   "19135c3a8faae504"
+  ],
+  "24": [
+   "1534b1830d533822",
+   "30b34cd94ec58024",
+   "5511c82ed005d762",
+   "869bc40748788820",
+   "8ec673d264d19343",
+   "c4e86069b165cbd9"
+  ],
+  "32": [
+   "587d5ac7756592bc",
+   "68e30c348cbef377",
+   "865a5d1289d3aaa1",
+   "c0440d9e552af982",
+   "de186af6587467ed",
+   "f0be3b5820997768"
+  ],
+  "48": [
+   "0101187b9357ea1c",
+   "0c068adf285972b2",
+   "216365e90a8bbcf7",
+   "3e22165a83979f33",
+   "50e83a4526be4cbb",
+   "58d509904817414b"
+  ]
+ }
+}

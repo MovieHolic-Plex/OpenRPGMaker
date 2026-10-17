@@ -8,6 +8,7 @@ import { defaultOutdoorTilesetId, defaultToolTilesetId } from "@/project/default
 import { validateMapClimateInput } from "./combatAuthoringValidation";
 import { mapClimateSchema } from "./combatAuthoringSchemas";
 import { normalizeMapClimate } from "@/project/mapClimate";
+import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
@@ -21,6 +22,7 @@ import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUT
 import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { isUntouchedMap } from "@/project/projectBlankness";
 import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { cloneGameMap } from "@/project/mapClone";
 import {
@@ -56,6 +58,8 @@ import { craftpixDefaultLayers, OGA_CRAFTPIX_BACKDROP_SETS } from "@/assets/ogaC
 import { isActionCombatMap } from "@/project/actionCombat";
 import type { EncounterTableEntry, FieldSpawnDef, GameEvent, GameMap, MapBackground, PaletteSlotRole, Project, Rect, RoguelikeRoomDef, TilesetDef } from "@/project/types";
 import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
+import { terrainRecordAt } from "@/project/terrainAt";
+import { ensureGrassTerrainRecord, GRASS_TERRAIN_ID } from "@/project/defaults/defaultDatabaseUtilityRecords";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
@@ -88,8 +92,11 @@ import {
 } from "./roadObstacles";
 import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { emptyMapNextStep } from "./mapEmptiness";
+import { THEME_SCENES, parseThemeScene, runThemedMap, themeSceneCatalogLines } from "./themeScenes";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
+import { closestDeclaredKey } from "./argRepair";
 import { resolveEventPlacement } from "./eventTools";
 import { expandCellsAgainstWalls } from "./wallFlush";
 import { assertHousePlacement, registerCompletedHouse } from "./houseProtection";
@@ -202,6 +209,9 @@ export function assignCreatedMapBgm(
   return resourceId;
 }
 
+/** themeScene 이 create_map 을 안쪽에서 부를 때 붙이는 내부 표지(스키마에 없다 — 모델이 보내는 인자가 아니다). */
+const THEMED_INNER_ARG = "__themedInner";
+
 const createMap: ToolDefinition = {
   name: "create_map",
   // border 는 모델 스키마에서 뺐다(2026-09-11). 실측: 스키마에 enum 이 있으면 조수가 동굴·던전·지하실
@@ -209,7 +219,8 @@ const createMap: ToolDefinition = {
   // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
   // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
-  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 build_hand_interior_room(손 도트 v5, atlas_biome_interior)이 새 mapId 까지 함께 시공한다. 옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)은 폐기되어 거부된다.`,
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 build_hand_interior_room(손 도트 v5, atlas_biome_interior)이 새 mapId 까지 함께 시공한다. 옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)은 폐기되어 거부된다. `
+    + `필드·마을·던전을 만들 때는 themeScene 을 주면 맵 생성과 그 칩셋의 구성기 호출이 한 번에 끝난다(예: themeScene:"snow_north:village"). themeScene 없이 만든 맵은 단색 잔디이므로 곧바로 find_tools 로 구성기를 찾거나 check_map_emptiness 가 알려 주는 도구로 채운다 — 단색 맵은 완성이 아니다. 장면: ${themeSceneCatalogLines().join(" · ")}.`,
   mode: "write",
   defaultTilesetId: defaultOutdoorTilesetId,
   parameters: {
@@ -222,6 +233,7 @@ const createMap: ToolDefinition = {
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
+      themeScene: { type: "string", description: `테마 장면 "장면" 또는 "장면:스타일" — 맵을 만들고 그 칩셋 구성기를 바로 불러 길·건물·물·나무까지 한 번에 깐다(width·height 를 생략하면 그 장면의 권장 크기). 장면: ${THEME_SCENES.map((scene) => scene.id).join("|")}` },
       tilesetId: { type: "string", description: "타일셋 id(생략 시 숲마을 · 거리별 잔디, 사용자가 보는 맵이 다른 계열 칩셋이면 그 맵의 칩셋. 실내·던전은 해당 칩셋을 명시). 프로젝트에 있는 타일셋만." },
       bgm: {
         type: "object",
@@ -233,9 +245,31 @@ const createMap: ToolDefinition = {
         },
       },
     },
-    required: ["name", "width", "height"],
+    required: ["name"],
   },
+  invalidArgsExample: { name: "북쪽 설원 마을", width: 46, height: 36, themeScene: "snow_north:village" },
   run(draft, args): ToolExecResult {
+    const themeArg = typeof args.themeScene === "string" && args.themeScene.trim() ? args.themeScene.trim() : undefined;
+    if (themeArg !== undefined) {
+      const parsed = parseThemeScene(themeArg);
+      if ("error" in parsed) throw new ToolError(parsed.error, { code: "invalid-args" });
+      if (typeof args.tilesetId === "string" && args.tilesetId.trim() && args.tilesetId.trim() !== parsed.scene.tilesetId) {
+        throw new ToolError(`themeScene '${parsed.scene.id}' 는 칩셋 '${parsed.scene.tilesetId}' 을 쓰는데 tilesetId '${args.tilesetId}' 를 함께 보냈습니다 — tilesetId 를 빼거나 같은 값으로 보내세요.`, { code: "invalid-args" });
+      }
+      const { themeScene: _themeScene, ...rest } = args;
+      void _themeScene;
+      return runThemedMap(draft, parsed.scene, {
+        name: String(rest.name ?? ""),
+        ...(typeof rest.id === "string" ? { id: rest.id } : {}),
+        ...(typeof rest.width === "number" ? { width: rest.width } : {}),
+        ...(typeof rest.height === "number" ? { height: rest.height } : {}),
+        ...(typeof rest.seed === "number" ? { seed: rest.seed } : {}),
+        ...(parsed.style !== undefined ? { style: parsed.style } : {}),
+      }, (innerDraft, innerArgs) => createMap.run(innerDraft, { ...innerArgs, [THEMED_INNER_ARG]: true, ...(rest.bgmResourceId !== undefined ? { bgmResourceId: rest.bgmResourceId } : {}), ...(rest.bgm !== undefined ? { bgm: rest.bgm } : {}) }));
+    }
+    if (typeof args.width !== "number" || typeof args.height !== "number") {
+      throw new ToolError("width 와 height 가 필요합니다(themeScene 을 주면 생략 가능). 예: create_map({\"name\":\"북쪽 들판\",\"width\":40,\"height\":30})", { code: "invalid-args" });
+    }
     const width = args.width as number;
     const height = args.height as number;
     if (width < 3 || height < 3) throw new ToolError("맵 크기는 최소 3x3 이상이어야 합니다.");
@@ -282,13 +316,20 @@ const createMap: ToolDefinition = {
       draft.mapTree.children.push({ mapId: id, children: [] });
     }
     adoptStartIfNeeded(draft, map);
+    const seedStart = draft.maps[draft.startMapId];
+    const startNote = id !== draft.startMapId && seedStart && seedStart.id === "map_blank_start" && isUntouchedMap(seedStart) && Object.keys(draft.maps).length >= 2
+      ? [`게임 시작 위치가 아직 빈 시드 맵 ${seedStart.id} 입니다 — 이 게임을 이 맵부터 시작하려면 set_start_position({mapId:"${id}", x, y}) 를 부르세요(통행 칸 좌표).`]
+      : [];
     const warnings = blankNamesake
       ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
         + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(import_region_reference mapId 로 등록 장소를 그 맵에 붙일 수 있습니다).`]
       : [];
+    // themeScene 이 안쪽에서 부른 create_map 은 곧바로 구성기가 채우므로 「단색」 안내를 붙이지 않는다.
+    const flatNote = args[THEMED_INNER_ARG] === true ? "" : ` 지금은 단색 ${tileset.name ?? tilesetId} 바닥입니다. ${emptyMapNextStep(map)}`;
+    warnings.push(...startNote);
     return {
-      summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
-      data: { mapId: id, bgmResourceId },
+      summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}.${flatNote}`,
+      data: { mapId: id, bgmResourceId, flat: true },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -315,23 +356,35 @@ const duplicateMap: ToolDefinition = {
       throw new ToolError(`이미 사용 중인 맵/폴더 id입니다: ${id} — ${MAP_ID_TAKEN_GUIDANCE}`, { code: "map-exists", mapId: id });
     }
     const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : `${source.name} 복사`;
-    const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));
-    const nextEventId = (): string => {
-      let candidate = genId("ev");
-      while (usedEventIds.has(candidate)) candidate = genId("ev");
-      usedEventIds.add(candidate);
-      return candidate;
-    };
-    const copy = cloneGameMap(source, { newId: id, newName: name, nextEventId });
-    draft.maps[id] = copy;
-    const parentId = findParentMapId(draft.mapTree, source.id);
-    const sourceIndex = siblingIndex(draft.mapTree, source.id);
-    if (!insertTreeNode(draft.mapTree, { mapId: id, children: [] }, parentId ?? "", sourceIndex >= 0 ? sourceIndex + 1 : undefined)) {
-      appendToTree(draft.mapTree, id);
-    }
+    cloneMapIntoProject(draft, source, id, name);
     return { summary: `맵 '${source.name}' 복제 → '${name}' (${id})`, data: { mapId: id } };
   },
 };
+
+/**
+ * 맵 하나를 새 id 로 복제해 트리의 원본 바로 뒤에 넣는다(duplicate_map·derive_map_variant 공용).
+ * 같은 맵 안 이벤트 참조(moveEvent·callMapEvent·showAnimation …)는 cloneGameMap 이 복제본 id 로 다시 잇는다.
+ * 돌려주는 이벤트 id 표는 원본 → 복제본이다.
+ */
+export function cloneMapIntoProject(draft: Project, source: GameMap, id: string, name: string): { copy: GameMap; eventIdMap: Map<string, string> } {
+  const usedEventIds = new Set(Object.values(draft.maps).flatMap((map) => map.events.flatMap((event) => [event.id, ...(event.pages ?? []).map((page) => page.id)])));
+  const nextEventId = (): string => {
+    let candidate = genId("ev");
+    while (usedEventIds.has(candidate)) candidate = genId("ev");
+    usedEventIds.add(candidate);
+    return candidate;
+  };
+  const copy = cloneGameMap(source, { newId: id, newName: name, nextEventId });
+  // cloneGameMap 은 원본 events 순서 그대로 복제한다 — 순서로 원본→복제 id 표를 만든다.
+  const eventIdMap = new Map<string, string>(source.events.map((event, index) => [event.id, copy.events[index]!.id]));
+  draft.maps[id] = copy;
+  const parentId = findParentMapId(draft.mapTree, source.id);
+  const sourceIndex = siblingIndex(draft.mapTree, source.id);
+  if (!insertTreeNode(draft.mapTree, { mapId: id, children: [] }, parentId ?? "", sourceIndex >= 0 ? sourceIndex + 1 : undefined)) {
+    appendToTree(draft.mapTree, id);
+  }
+  return { copy, eventIdMap };
+}
 
 const manageMapTree: ToolDefinition = {
   name: "manage_map_tree",
@@ -1330,9 +1383,12 @@ const encounterConditionsSchema: JsonSchema = {
     minPartyLevel: { type: "integer" },
     maxPartyLevel: { type: "integer" },
     region: rectSchema,
+    locationId: { type: "string", description: "이 맵의 로케이션(구역) id 또는 이름. 그 구역 안에서만 이 항목이 나온다 — 풀숲 구역 같은 곳에만 야생을 걸 때(구역을 옮기면 조건도 따라온다). region(생좌표 사각형)보다 우선." },
+    terrainId: { type: "string", description: "지형 기록 id(database.terrains). 서 있는 칸의 지형 태그가 이 기록일 때만 나온다 — 키 큰 풀 칸에서만 야생을 걸 때 'terrain_grass'(몬스터 칩셋 태그 5, 없으면 자동으로 만든다). 구역(locationId)이 아니라 타일 종류에 묶이므로 풀 그림을 고쳐 칠해도 따라간다." },
     timePhase: { type: "string", enum: TIME_PHASES },
     season: { type: "string", enum: SEASONS },
   },
+  additionalProperties: false,
 };
 
 const encounterEntrySchema: JsonSchema = {
@@ -1340,9 +1396,12 @@ const encounterEntrySchema: JsonSchema = {
   properties: {
     troopId: { type: "string" },
     weight: { type: "integer" },
+    levelMin: { type: "integer", minimum: 1, maximum: 99, description: "야생 레벨 하한. 이 항목이 뽑히면 [levelMin, levelMax] 에서 레벨을 굴려 그 레벨의 능력치·기술·경험치로 싸운다(종 몬스터 적 트룹만). 둘 중 하나만 주면 그 레벨 고정. 생략 = 트룹 적의 level." },
+    levelMax: { type: "integer", minimum: 1, maximum: 99, description: "야생 레벨 상한(포함)." },
     conditions: encounterConditionsSchema,
   },
   required: ["troopId", "weight"],
+  additionalProperties: false,
 };
 
 const fieldGraphicSchema: JsonSchema = {
@@ -1408,24 +1467,102 @@ function applyEncounterRate(map: GameMap, requested: unknown, hasEntries: boolea
   return `인카운터율 0 이라 기본값 ${DEFAULT_TABLE_ENCOUNTER_RATE} 으로 보정`;
 }
 
+/** terrainId 조건이 이 맵에서 실제로 서 있을 칸이 하나도 없으면 알린다 — 조우가 영영 안 나온다. */
+function encounterTerrainWarnings(draft: Project, map: GameMap, entries: readonly EncounterTableEntry[]): string[] {
+  const wanted = [...new Set(entries.flatMap((entry) => entry.conditions?.terrainId ? [entry.conditions.terrainId] : []))];
+  const warnings: string[] = [];
+  for (const terrainId of wanted) {
+    let cells = 0;
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+      if (terrainRecordAt(draft, { mapId: map.id, x, y })?.record.id === terrainId) cells += 1;
+    }
+    if (cells === 0) warnings.push(`terrainId ${terrainId}: 이 맵(${map.name})에는 그 지형 태그가 붙은 칸이 없어 해당 항목은 나오지 않습니다 — 칩셋 타일에 지형 태그를 주거나(타일 지형 도구) 그 타일(키 큰 풀 등)을 칠하세요.`);
+    else warnings.push(`terrainId ${terrainId}: 이 맵에서 ${cells}칸에서만 나옵니다.`);
+  }
+  return warnings;
+}
+
 function parseEncounterEntries(draft: Project, map: GameMap, value: unknown): EncounterTableEntry[] {
   if (!Array.isArray(value)) throw new ToolError("entries는 배열이어야 합니다.", { code: "invalid-entries", mapId: map.id });
   return value.map((entryValue, index) => parseEncounterEntry(draft, map, entryValue, `entries[${index}]`));
 }
 
+/**
+ * 조우표 항목·조건의 모르는 키를 거절한다(2026-10-15 포켓몬 감사 0단계: locationId·minLevel·weather·shiny 를 조용히 버려
+ * 맵 전체 조우로 저장됐다). 알려진 칸은 스키마에 선언해 저장하고, 아직 없는 기능은 이유를 말하고 거절한다.
+ */
+const ENCOUNTER_UNSUPPORTED_HINTS: Readonly<Record<string, string>> = {
+  minLevel: "야생 레벨 범위의 이름은 levelMin/levelMax(항목 바로 아래)입니다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  maxLevel: "야생 레벨 범위의 이름은 levelMin/levelMax(항목 바로 아래)입니다. 파티 레벨로 거르려면 conditions.minPartyLevel/maxPartyLevel",
+  level: "고정 레벨은 levelMin 과 levelMax 에 같은 값을 주세요(항목 바로 아래)",
+  weather: "날씨 조건은 조우표에 아직 없다(날씨를 보는 것은 낚시 규칙의 weatherKinds 뿐) — 비 오는 날 전용 맵은 날씨 이벤트로 스위치를 켜고 conditions.switchId 로 거는 우회를 쓴다",
+  shiny: "이로치(색이 다른 개체) 개념은 아직 없다",
+  terrain: "타일 종류 조건의 이름은 conditions.terrainId 입니다(키 큰 풀 칸만이면 'terrain_grass')",
+  terrainTag: "타일 종류 조건의 이름은 conditions.terrainId 입니다(키 큰 풀 칸만이면 'terrain_grass')",
+  location: "구역 조건의 이름은 locationId 입니다",
+};
+
+function rejectUnknownEncounterKeys(input: Record<string, unknown>, allowed: readonly string[], label: string, mapId: string): void {
+  for (const key of Object.keys(input)) {
+    if (allowed.includes(key)) continue;
+    const near = closestDeclaredKey(key, allowed);
+    const why = ENCOUNTER_UNSUPPORTED_HINTS[key];
+    throw new ToolError(
+      `${label}.${key} 는 조우표가 받지 않는 칸입니다(조용히 버리면 맵 전체 조우가 되므로 거절합니다).${near ? ` '${key}' 는 '${near}' 입니다.` : ""}${why ? ` ${why}.` : ""} 받는 칸: ${allowed.join(", ")}`,
+      { code: "unknown-encounter-field", mapId },
+    );
+  }
+}
+
 function parseEncounterEntry(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry {
   const entry = requireRecordValue(value, label);
+  rejectUnknownEncounterKeys(entry, ["troopId", "weight", "levelMin", "levelMax", "conditions"], label, map.id);
   const troopId = stringField(entry, "troopId", label);
   assertKnownTroop(draft, troopId);
   const weight = integerField(entry, "weight", label);
   if (weight <= 0) throw new ToolError(`${label}.weight는 1 이상이어야 합니다.`, { code: "invalid-weight", mapId: map.id });
   const conditions = entry.conditions === undefined ? undefined : parseEncounterConditions(draft, map, entry.conditions, `${label}.conditions`);
-  return conditions ? { troopId, weight, conditions } : { troopId, weight };
+  const level: Pick<EncounterTableEntry, "levelMin" | "levelMax"> = {};
+  for (const key of ["levelMin", "levelMax"] as const) {
+    if (entry[key] === undefined) continue;
+    const value = integerField(entry, key, label);
+    if (value < 1 || value > 99) throw new ToolError(`${label}.${key}는 1~99 정수여야 합니다(받은 값 ${value}).`, { code: "invalid-level-range", mapId: map.id });
+    level[key] = value;
+  }
+  if (level.levelMin !== undefined && level.levelMax !== undefined && level.levelMin > level.levelMax) {
+    throw new ToolError(`${label}: levelMin(${level.levelMin})이 levelMax(${level.levelMax})보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
+  }
+  if (level.levelMin !== undefined || level.levelMax !== undefined) {
+    const enemyIds = new Set((draft.database.troops.find((troop) => troop.id === troopId)?.members ?? []).map((member) => member.enemyId));
+    const hasSpecies = draft.database.enemies.some((enemy) => enemyIds.has(enemy.id) && enemy.speciesId);
+    if (!hasSpecies) throw new ToolError(`${label}: 트룹 ${troopId} 에 종 몬스터 적(speciesId 있는 enemy)이 없어 levelMin/levelMax 가 적용되지 않습니다. 몬스터 도감 종의 야생 트룹(define_monster_families spawn 또는 upsert_enemy speciesId)을 쓰거나 levelMin/levelMax 를 빼세요.`, { code: "invalid-level-range", mapId: map.id });
+  }
+  return { troopId, weight, ...level, ...(conditions ? { conditions } : {}) };
 }
 
 function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, label: string): EncounterTableEntry["conditions"] {
   const input = requireRecordValue(value, label);
+  rejectUnknownEncounterKeys(input, ["switchId", "variableId", "atLeast", "minPartyLevel", "maxPartyLevel", "region", "locationId", "terrainId", "timePhase", "season"], label, map.id);
   const conditions: NonNullable<EncounterTableEntry["conditions"]> = {};
+  if (input.terrainId !== undefined) {
+    const raw = stringField(input, "terrainId", label).trim();
+    const terrainId = raw === "grass" || raw === "tall_grass" ? GRASS_TERRAIN_ID : raw;
+    const terrains = draft.database.terrains ??= [];
+    if (!terrains.some((terrain) => terrain.id === terrainId) && terrainId === GRASS_TERRAIN_ID) ensureGrassTerrainRecord(terrains);
+    if (!terrains.some((terrain) => terrain.id === terrainId)) {
+      throw new ToolError(`${label}.terrainId가 없습니다: ${raw}. database.terrains 의 id: ${terrains.map((terrain) => terrain.id).join(", ") || "(없음)"}${terrainId === GRASS_TERRAIN_ID ? " — 'terrain_grass' 는 지형 기록이 정확히 4개(물·모래·눈·돌)일 때만 자동으로 만든다. 기록이 더 있으면 upsert_database_utility 로 5번째(태그 5) 자리에 직접 만드세요" : ""}`, { code: "terrain-not-found", mapId: map.id });
+    }
+    conditions.terrainId = terrainId;
+  }
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    const location = locationId ? resolveLocation(map, locationId) : undefined;
+    if (!location) {
+      const known = mapLocations(map).map((entry) => `${entry.name}(${entry.id})`).join(", ") || "(없음 — create_map_location 으로 구역을 먼저 만드세요)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, { code: "location-not-found", mapId: map.id });
+    }
+    conditions.locationId = location.id;
+  }
   if (input.switchId !== undefined) {
     conditions.switchId = stringField(input, "switchId", label);
     if (!draft.switches.some((sw) => sw.id === conditions.switchId)) {
@@ -1445,6 +1582,22 @@ function parseEncounterConditions(draft: Project, map: GameMap, value: unknown, 
     throw new ToolError(`${label}: minPartyLevel이 maxPartyLevel보다 큽니다.`, { code: "invalid-level-range", mapId: map.id });
   }
   if (input.region !== undefined) conditions.region = parseRect(input.region, `${label}.region`, map);
+  if (input.locationId !== undefined) {
+    const locationId = stringField(input, "locationId", label).trim();
+    const location = resolveLocation(map, locationId);
+    if (!location) {
+      const known = (map.locations ?? []).map((entry) => `${entry.id}(${entry.name})`).join(", ") || "(없음)";
+      throw new ToolError(`${label}.locationId를 찾을 수 없습니다: ${locationId}. 이 맵의 로케이션: ${known}`, { code: "invalid-location-anchor", mapId: map.id });
+    }
+    conditions.locationId = location.id;
+  }
+  if (input.terrainId !== undefined) {
+    const terrainId = stringField(input, "terrainId", label);
+    if (!(draft.database.terrains ?? []).some((record) => record.id === terrainId)) {
+      throw new ToolError(`${label}.terrainId 지형 레코드가 없다: ${terrainId} — 있는 것: ${(draft.database.terrains ?? []).map((record) => record.id).join(", ") || "(없음)"}. 세계 지도 지형 레코드는 edit_world_terrain/derive_world_variant 가 맵을 빌드할 때 생긴다.`, { code: "terrain-not-found", mapId: map.id });
+    }
+    conditions.terrainId = terrainId;
+  }
   if (input.timePhase !== undefined) {
     const timePhase = stringField(input, "timePhase", label);
     if (!isTimePhase(timePhase)) throw new ToolError(`${label}.timePhase가 잘못되었습니다: ${timePhase}`, { code: "invalid-time-phase", mapId: map.id });
@@ -1946,6 +2099,7 @@ const setMapProperties: ToolDefinition = {
       }
       map.name = nextName;
       changed.push(`이름='${map.name}'`);
+      sanitizeRiversidePromenade(draft, map);
     }
     if (typeof args.tilesetId === "string") {
       const tileset = draft.tilesets[args.tilesetId];
@@ -2108,7 +2262,7 @@ const setMapProperties: ToolDefinition = {
 
 const setEncounterTable: ToolDefinition = {
   name: "set_encounter_table",
-  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다). 인카운터 구역 요청은 이 툴 또는 make_hunting_ground. 지키는 몬스터는 place_battle_blocker, 함정은 place_trap, 추격전은 make_chase_scene.",
+  description: "맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. 맵 encounterRate가 0이면 기본 발생률로 자동 보정한다(0이면 런타임에서 인카운터가 아예 발생하지 않는다). 인카운터 구역 요청은 이 툴 또는 make_hunting_ground. 지키는 몬스터는 place_battle_blocker, 눈에 보이는 필드 적(닿으면 전투)은 place_field_enemy, 함정은 place_trap, 추격전은 make_chase_scene.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2118,6 +2272,7 @@ const setEncounterTable: ToolDefinition = {
       encounterRate: { type: "integer", description: "생략하면 0일 때만 기본값으로 보정한다. 0을 명시하면 랜덤 인카운터를 끈다." },
     },
     required: ["mapId", "entries"],
+    additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
@@ -2125,16 +2280,18 @@ const setEncounterTable: ToolDefinition = {
     if (entries.length > 0) map.encounterTable = entries;
     else delete map.encounterTable;
     const rateNote = applyEncounterRate(map, args.encounterRate, entries.length > 0);
+    const warnings = encounterTerrainWarnings(draft, map, entries);
     return {
       summary: `${map.name} 인카운터 테이블 ${entries.length}개 항목 설정${rateNote === undefined ? "" : ` — ${rateNote}`}`,
       data: { mapId: map.id, entries, encounterRate: map.encounterRate ?? 0 },
+      ...(warnings.length ? { warnings } : {}),
     };
   },
 };
 
 const makeHuntingGround: ToolDefinition = {
   name: "make_hunting_ground",
-  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker.",
+  description: "사냥터 구획에 보이는 몬스터를 배치한다. 프로젝트 위키의 전투 방식과 맵별 예외를 따르며, 접촉·액션 전투에서는 랜덤 인카운터를 끈다. 액션 결정이면 시스템과 대상 맵도 활성화한다. 위키 결정이 없으면 encounterEntries/encounterRate 설정을 사용한다. 지키는 몬스터 한 마리는 place_battle_blocker, 의도한 자리·순찰·시야 추격 적 한 마리씩은 place_field_enemy.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2240,7 +2397,13 @@ const configureRoguelikeRoom: ToolDefinition = {
 
 const createFarmPlot: ToolDefinition = {
   name: "create_farm_plot",
-  description: "맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다. 밭·농장 요청의 정본 툴.",
+  description: "맵의 경작 가능 영역(farmableArea, 플레이어가 괭이로 갈 수 있는 칸)을 선언한다. 밭·농장 요청의 정본 툴. 타일·울타리·흙 그림은 바꾸지 않는다 — " +
+    "버들항(beodeul_city) 맵은 플레이 중 간 칸을 번들 경작지 오토타일 `farmland`(물 준 칸 `farmland_watered`)로 그리므로 영역은 풀·흙 위에 두면 된다. " +
+    "밭은 쓰임 단위로 나눠 선언한다: 밭 하나 = 4×3~8×5 직사각형 하나(필요하면 여러 번 호출). 들판 한 띠·맵 절반을 한 영역으로 덮지 않는다. " +
+    "영역 한 칸 바깥을 울타리로 빈틈 없이 두르고(버들항: 키트 bd-farm-fenced-plot 또는 울타리 조각 모서리 cNW·cNE·cSW·cSE + 가로·세로 + 문 한 칸) 문 아래에서 폭 2칸 흙길(버들항: fill_region 재료 「버들항 농장 흙길」 — 반듯한 가장자리, 들쭉날쭉한 모랫길 말고)로 집·헛간(bd-farm-barn)에 잇는다. " +
+    "플레이로 갈지 않는 장식 밭(작물이 이미 자란 그림)은 이 도구가 아니라 stamp_object(kit:beodeul_city/bd-farm-plot-*). 칸 사전·조립 순서는 참고문서 용도 beodeul-farm. " +
+    "흔한 실수(2026-10-14 조수 실행 실측): 흙길을 넓은 사각 덩어리·막다른 토막으로 깔기(폭 2칸 곧은 줄과 직각 꺾임만, 끝은 문 앞 칸이나 다른 길에 닿게) · 닭장·헛간 문 앞에 길을 안 잇기 · " +
+    "한 마을에 울타리 두 화풍 섞기(마을 생성기가 둘레를 친 밭 곁에 bd-farm 울타리 밭을 더할 땐 그 밭 하나는 같은 울타리로 끝까지 두르고, 둘레가 끊긴 채 두지 않는다) · 찍은 건물 키트 칸을 tile_erase 로 지워 지붕이 잘리게 두기.",
   mode: "write",
   domains: ["database", "map"],
   parameters: {

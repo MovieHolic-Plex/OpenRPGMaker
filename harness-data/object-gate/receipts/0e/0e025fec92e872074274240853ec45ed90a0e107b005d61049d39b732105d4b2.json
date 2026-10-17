@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e025fec92e872074274240853ec45ed90a0e107b005d61049d39b732105d4b2",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station corridor floor with recessed vertical cyan guide light, two variants",
+ "label": "sf-station/sf-deck-lane-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "station corridor floor tiles with embedded cyan guide strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed entirely from above with vertical embedded cyan light strip; valid terrain surface spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station corridor floor tiles with guide lights",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles viewed entirely from above (top surface spanning all 16 rows) with recessed glowing vertical light strips.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station corridor floor tiles with vertical cyan guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles shown directly from above across all 16 rows, featuring recessed glowing cyan light strips running vertically.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sci-fi station floor tiles with vertical light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above covering the full 16-row vertical extent, with recessed vertical cyan guide lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4059
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.462Z",
+ "cells": {
+  "16": [
+   "863238654ac673d1",
+   "ebc32a82a2ca711a"
+  ],
+  "24": [
+   "04ebcb2abaf013cf",
+   "1a3d726166a58af3",
+   "28b7e45028dce643",
+   "380ab1b5adccb855",
+   "464db9ce08b284f9",
+   "5204782a79f1c3da",
+   "8f7ce7679a22a83b",
+   "ae1ac438e45ca078",
+   "bb179c53fb963dab",
+   "bdf67edca091d97a",
+   "d20ad2b4c3a72add",
+   "e32f13e739067611"
+  ],
+  "32": [
+   "d27b6239bc32e9d6",
+   "d70810bbcf9fb376"
+  ],
+  "48": [
+   "4fc0cdfce651c6e1",
+   "6406eb6afafba6d0",
+   "c817b9cc5fecd6b5",
+   "cc50295e19e32d7b",
+   "daf96213a6997797",
+   "f9960203bb11c4d1"
+  ]
+ }
+}

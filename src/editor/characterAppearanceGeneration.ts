@@ -102,6 +102,7 @@ export function createCharacterAppearanceGenerationController(deps: AppearanceGe
         prompt: buildAppearanceImagePrompt(request.slot, snapshot.name, snapshot.description),
         referenceImages,
         signal: current.signal,
+        purpose: "character-appearance",
       });
       if (abort !== current) return;
       if (!isCurrent()) { cancel(); return; }

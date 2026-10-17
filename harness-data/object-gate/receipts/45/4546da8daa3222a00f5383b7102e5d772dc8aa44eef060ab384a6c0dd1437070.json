@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4546da8daa3222a00f5383b7102e5d772dc8aa44eef060ab384a6c0dd1437070",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "가게 장부 자리(초바, 낮은 책상 + 격자 가림)",
+ "label": "sengoku-edo/se-shop-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter desk with top ledger and abacus",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the counter spans rows 7-12 (6 source pixel rows) and features a ledger and abacus, while the front vertical slat face extends from row 13 to row 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4680
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "counter desk with ledger and abacus",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the desk is clearly visible from rows 7 to 12 (6 rows tall) bearing a white ledger and an abacus, sitting atop a vertically-slatted front face from rows 13 to 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3823
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low counter desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 7-12 (6 rows) displaying a ledger and abacus, atop a 10-row vertical front face (rows 13-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4337
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shop ledger counter / desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk's top horizontal surface is clearly visible across rows 7-12 (6 source pixels tall) with ledger paper and an abacus resting on it, leading down to the front vertical slatted face on rows 13-22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3161
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "29f278c591280e6a",
+   "5b9bb517b7db59f6",
+   "76c51fe1ec44109b",
+   "a928bd8a793bba7d"
+  ],
+  "24": [
+   "05ed57e7fe2d034b",
+   "17530a04c194f5d4",
+   "1b11b2c416a57252",
+   "1b7c0037df778ae7",
+   "2d20a4447d93ce19",
+   "3c7a15b5709066b4",
+   "432c6f41e86edc24",
+   "57afdc584b5bbf31",
+   "6185923eb921cb39",
+   "63672ebd6f6bb143",
+   "6b5ec478d3606055",
+   "6d120cee35e69972",
+   "799df0735fa2dd46",
+   "88dddc523d71345e",
+   "900107f05fca8b24",
+   "daa7f3d28945bc69",
+   "f86a774e47f7ea2e",
+   "fd39353440c52444"
+  ],
+  "32": [
+   "2cd58f345b7edad5"
+  ],
+  "48": [
+   "2054224547803966",
+   "3048142d0a50e43c",
+   "30b74a5b3caf7810",
+   "bca7e4069884e41a",
+   "ca427406a6285b4d",
+   "f4e09857f0c1ca9b"
+  ]
+ }
+}

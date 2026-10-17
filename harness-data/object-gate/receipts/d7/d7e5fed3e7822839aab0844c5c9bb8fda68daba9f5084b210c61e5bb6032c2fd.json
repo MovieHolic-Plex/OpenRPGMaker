@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7e5fed3e7822839aab0844c5c9bb8fda68daba9f5084b210c61e5bb6032c2fd",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(북 변)",
+ "label": "modern-campus/mc-curb-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain with curb edge",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat terrain surface consisting of a northern stone border/curb and a south-extending grass ground plane viewed correctly from a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5357
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with north stone curb",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile displaying a horizontal stone curb and lawn surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile with northern stone curb border",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting grass ground (rows 3-15) bordered by a north stone curb (rows 0-2) viewed from standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4252
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile with northern stone curb border",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile featuring top-down grass surface spanning rows 3-15 with a 3-row horizontal border stone curb along the northern edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5919
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "7d369ef13a0e8954"
+  ],
+  "24": [
+   "0228c4d0bbe5cacf",
+   "4fb8d52b392b20cd",
+   "b4795a181bbeb1f3",
+   "de2e932ca6ade7fb",
+   "e6d1b3b2fbd2f650",
+   "ebe1784c8bfe438b"
+  ],
+  "32": [
+   "0df350ca7c4bb3eb",
+   "26bdd63c1bfa7080",
+   "5b2ad342596370d0",
+   "b1c4eae8433478aa",
+   "b4b4fa5c83670900",
+   "e26960b0f7abc075"
+  ],
+  "48": [
+   "23b6f6c96502faa1",
+   "40dd003026cb6fbc",
+   "61eb84adc85f16e7",
+   "69fb04af5495908d",
+   "7c0d0f5dd14bbe53",
+   "fe2df142d5bde3b8"
+  ]
+ }
+}

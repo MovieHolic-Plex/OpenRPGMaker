@@ -2,6 +2,7 @@ import { roomSpecOf } from "@/editor/handInterior/builder";
 import { tileAt } from "@/project/collision";
 import { hasRelief } from "@/project/relief/walk";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { isComposedLayoutMap } from "@/project/mapNamedLocations";
 
 // 조수가 칠한 맵의 배치 품질(빈 바닥·빈 정사각형·좌우 대칭)을 끝에서 한 번 잰다.
 // 문서·예제만으로는 전체 배치가 옮겨지지 않았다(2026-09-25 Rasak 시험: 문서를 세 번 고쳐도 마을 빈 바닥 44%,
@@ -196,6 +197,11 @@ function paintedShare(map: GameMap, before: GameMap | undefined): number {
   return changed / n;
 }
 
+// 구성기(compose_* 도구·layout 방 짓기)가 «구역마다 쓰임»을 정해 깐 맵 — 판정은 isComposedLayoutMap(mapNamedLocations.ts, 표식 composed-layout) 하나다.
+// 이 검사가 내는 권고는 전부 «빈 땅 채우기·대칭 깨기»(빈 바닥·빈 정사각형·좌우 대칭)뿐이다. 구성기 맵은 차도·선로·승강장·광장 동선·복도의 빈칸이
+// 용도로 비운 칸이라, 이 권고가 조수에게 석탄 통·드론 패드·광고판을 구성기 맵 한가운데에 흩뿌리게 했다(2026-10-14 steampunk_city·sf_station 실조수).
+// 그래서 구성기 맵은 이 검사 전체를 건너뛴다. 문에 닿지 않는 길·겹침 같은 실제 결함은 이 검사의 몫이 아니다 —
+// 구성기 도구 자신의 검증(접근칸 도달·문 틈 통행 → compose-failed)과 맵 구조 lint 가 따로 막는다.
 export function inspectPiLayoutQuality(project: Project, baseline: Project, scopeMapIds: readonly string[] | undefined,
   skipMapIds: Iterable<string> = []): LayoutQualityIssue[] {
   const skip = new Set(skipMapIds);
@@ -207,6 +213,7 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const map = project.maps[mapId];
     if (!map || skip.has(mapId)) continue;
     if (map.width * map.height < MIN_CELLS) continue;
+    if (isComposedLayoutMap(map)) continue;
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
@@ -234,7 +241,9 @@ export function piLayoutRepairPrompt(issues: readonly LayoutQualityIssue[]): str
       + issues.map((i) => `- ${i.mapId}: ${i.problems.join(" / ")}`).join("\n") + "\n"
       + "고치는 법: build_hand_interior_room 을 같은 mapId·replace:true 로 다시 부르며 layout(방 구성 — program 또는 rooms 의 방 종류)을 준다. "
       + "도구가 방마다 알맞은 크기로 배치를 짜고 제작자 예제 방의 가구 한 벌을 심는다. 이미 layout 으로 지었다면 방 수를 줄이거나 layout.rooms 의 w·h 를 줄인다. "
-      + "한 방만 비었다면 그 방 종류에 맞는 가구 한 벌(list_hand_interior_parts room)을 벽을 따라 놓는다. 사용자가 넓은 빈 방(무도회장 등)을 요청했다면 고치지 말고 그 이유를 보고에 적는다."
+      + "한 방만 비었다면 그 방 종류에 맞는 가구 한 벌(list_hand_interior_parts room)을 벽을 따라 놓는다. 사용자가 넓은 빈 방(무도회장 등)을 요청했다면 고치지 말고 그 이유를 보고에 적는다. "
+      // 거리와 실내를 한 칩셋으로 까는 번들(modern_city·jp_city)은 거리 맵도 여기로 온다 — 2026-10-14 실조수가 이 문장을 따라 도쿄풍 거리 60×48 을 로비 10×8 로 덮었다.
+      + "그 맵이 실내가 아니라 거리·야외(도로·보도·건물 외형 키트가 깔린 맵)면 build_hand_interior_room 을 부르지 마라 — 맵 전체가 실내로 바뀐다. 고치지 말고 「거리 맵이라 실내 기준이 맞지 않음」이라고 보고에 적는다."
       + reliefRule + "\n" + HONEST_REPORT_RULE;
   }
   const lines = issues.map(issue => {

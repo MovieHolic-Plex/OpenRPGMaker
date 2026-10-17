@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ced8de76fb1c224fc66ef70207075713b9ccc07fc516e1436b80d4353ebf8aa",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "돌 구 조각 (stone sphere)",
+ "label": "atlas_biome_interior/plus/stone sphere",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone sphere/sculpture on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue rests on a pedestal with a clearly visible top surface spanning rows 18-24 (with visible ground plane in front of the sculpture at rows 22-24) and a front-facing south face at rows 25-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9702
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone sphere on plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone sphere rests on a plinth whose horizontal top surface is clearly visible from rows 18 to 23 (approx. 6 rows tall) with foreshortening, receiving light and showing the sphere's cast shadow, while the south-facing front face extends below it from row 24 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone sphere on a rectangular plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plinth clearly displays a top surface of about 5 pixel rows (rows 19-23) with a front edge highlight at row 24 and a 3-row vertical south face below (rows 25-27), with the sphere resting on top in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4341
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone sphere on plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth shows a clear top surface spanning rows 19-23 (approx 5 rows deep) with a highlighted front edge at row 24 and south face at rows 25-27. The stone sphere sits atop this surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7185
+  }
+ ],
+ "decidedAt": "2026-10-14T05:25:18.787Z",
+ "cells": {
+  "16": [
+   "454faf47b83d0dcf",
+   "e0cad08a79ab8f71"
+  ],
+  "24": [
+   "2c23ecd28fc5969e",
+   "3d7983b441d5b577",
+   "456b1342ec7b25b5",
+   "5eb81d067d33d8d7",
+   "5f6c3348756cfb83",
+   "af09c22962408364",
+   "cf5214ff2f302e1d",
+   "df0f79a60dc22264",
+   "fb05ccf3995275f2"
+  ],
+  "32": [
+   "105c44423ff02247",
+   "a22662c2d6cfaea4",
+   "a4367512cdf4981f"
+  ],
+  "48": [
+   "0299f5cc24625650",
+   "4cc5bba23a9658b4",
+   "89db235a75019f1e",
+   "d0f87a7b9b4f412e",
+   "d224e52f5bef9a0a",
+   "e1541efacc0a319f"
+  ]
+ }
+}

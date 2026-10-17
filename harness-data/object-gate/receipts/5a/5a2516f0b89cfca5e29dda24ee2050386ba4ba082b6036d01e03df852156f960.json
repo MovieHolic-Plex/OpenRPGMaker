@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5a2516f0b89cfca5e29dda24ee2050386ba4ba082b6036d01e03df852156f960",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 2)",
+ "label": "steampunk-city/sp-steam-vent-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chimney stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney stub has a clearly foreshortened opening visible from above at rows 18-25 (8 source pixel rows tall, 10 pixels wide), with a front base flange at rows 26-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10169
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal pipe vent / steam hole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe opening and its bolted base are drawn in pure front elevation: the opening is an unforeshortened circle (8 rows tall by 9 cols wide) facing directly forward towards the camera, with no foreshortened top surface (0px) above the rim or plate.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도"
+   ],
+   "ms": 8953
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short metal chimney stub / steam vent",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a large circular opening viewed from above (rows 18-25, 8 rows tall) through which steam escapes, with the south mounting base visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8644
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "short metal vent pipe / chimney stump with steam rising",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vent opening is rendered as an ellipse viewed from above (rows 18-25, 8 rows high, 10 pixels wide), showing the dark interior of the hole from which steam rises.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7176
+  }
+ ],
+ "decidedAt": "2026-10-13T18:20:36.038Z",
+ "cells": {
+  "16": [
+   "77e26ea57f151601",
+   "e59ecf9d4863980a"
+  ],
+  "24": [
+   "03b1a8223dd1fb97",
+   "0832c3b43d95f672",
+   "1338d6262b50774d",
+   "16f8c832c8d86a3d",
+   "3a49bc31f837ee48",
+   "4b9d5469a512138a",
+   "6d88d6b76ce5c063",
+   "764f0187a09c9915",
+   "7baeb3fe44959e26",
+   "c055aec34d4b91ad",
+   "cf6336ff68908d85",
+   "f4cf35166e55e55a"
+  ],
+  "32": [
+   "8fe57c49299e8091",
+   "980de37222d07fd9",
+   "a151bba47d092b14"
+  ],
+  "48": [
+   "4810436772898465",
+   "55456a35f569c024",
+   "7d70a195e914afcf",
+   "a0adf4ae8bccd4e4",
+   "dc21f080d594313c",
+   "ff68131cb52026d5"
+  ]
+ }
+}

@@ -1,0 +1,68 @@
+{
+ "key": "sp-ranger-a",
+ "arch": "sp-ranger",
+ "base": "Scarloxy1:6",
+ "variant": "밀짚모자를 짙은 초록 챙 모자로 recolor(챙 모양은 베이스 그대로), 흰 민소매를 황토색 조끼로 recolor 하고 가슴 주머니 두 개(T paint), 오른쪽 허리에 작은 갈색 가방(hip 장비 R, 3칸 이상 덩어리), 초록 반바지는 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [
+    "paint[3] left (14,23): 마스크 밖 칸을 바꿨다(그 칸은 F, 허용 부위 T)",
+    "paint[3] left (15,23): 마스크 밖 칸을 바꿨다(그 칸은 F, 허용 부위 T)",
+    "paint[3] left (16,23): 몸 칸을 투명으로 지울 수 없다(실루엣 보존)",
+    "paint[3] left (14,25): 마스크 밖 칸을 바꿨다(그 칸은 F, 허용 부위 T)",
+    "paint[3] left (15,25): 마스크 밖 칸을 바꿨다(그 칸은 F, 허용 부위 T)",
+    "paint[3] left (16,25): 마스크 밖 칸을 바꿨다(그 칸은 F, 허용 부위 T)"
+   ],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 egnq"
+   ],
+   "at": "2026-10-16T17:24:43"
+  },
+  {
+   "n": 2,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "한 프레임에만 나오는 색 p — 걸을 때 깜빡일 수 있다",
+    "팔레트에 있지만 안 쓴 색 egnq"
+   ],
+   "at": "2026-10-16T17:25:12"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "한 프레임에만 나오는 색 p — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 egnq"
+ ],
+ "metrics": {
+  "added_up0": 7,
+  "added_up1": 5,
+  "added_up2": 5,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 1,
+  "added_down0": 5,
+  "added_down1": 5,
+  "added_down2": 7,
+  "added_left0": 7,
+  "added_left1": 5,
+  "added_left2": 2,
+  "changed_ratio": {
+   "H": 0.868,
+   "T": 0.519,
+   "B": 0.497,
+   "S": 0.915
+  },
+  "cross": 2,
+  "cross_base": 0,
+  "lone": 207,
+  "lone_base": 176
+ }
+}

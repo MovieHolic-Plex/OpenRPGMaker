@@ -1,0 +1,17 @@
+{"png": "sn-cabin-s.png", "kind": "structure", "name": "작은 통나무 오두막(폭 3, 붉은 덧문·돌 굴뚝)", "label": "snow-north/sn-cabin-s"}
+{"png": "sn-cabin-m.png", "kind": "structure", "name": "통나무 집(폭 4, 푸른 덧문)", "label": "snow-north/sn-cabin-m"}
+{"png": "sn-cabin-l.png", "kind": "structure", "name": "큰 통나무 집(폭 5, 너와 지붕 깊음)", "label": "snow-north/sn-cabin-l"}
+{"png": "sn-cabin-turf.png", "kind": "structure", "name": "뗏장 지붕 오두막(폭 3, 회색 판자 벽)", "label": "snow-north/sn-cabin-turf"}
+{"png": "sn-longhouse.png", "kind": "structure", "name": "긴집(폭 7, 뗏장·눈 지붕, 연기 창, 조각 양개문)", "label": "snow-north/sn-longhouse"}
+{"png": "sn-meadhall.png", "kind": "structure", "name": "회관 선술집(폭 6, 두 층 높이, 양개문·걸이 간판·등)", "label": "snow-north/sn-meadhall"}
+{"png": "sn-stave-church.png", "kind": "structure", "name": "목조 교회·전당(층층 너와 지붕, 뾰족탑, 용머리 박공)", "label": "snow-north/sn-stave-church"}
+{"png": "sn-sauna.png", "kind": "structure", "name": "사우나 오두막(뗏장 지붕, 붉은 문, 쇠 연통)", "label": "snow-north/sn-sauna"}
+{"png": "sn-smokehouse.png", "kind": "structure", "name": "훈제막(회색 판자, 연기 새는 지붕 틈)", "label": "snow-north/sn-smokehouse"}
+{"png": "sn-fishing-hut.png", "kind": "structure", "name": "얼음 낚시 오두막(썰매 밑판, 외쪽 지붕, 연통)", "label": "snow-north/sn-fishing-hut"}
+{"png": "sn-watchtower.png", "kind": "structure", "name": "망루(통나무 다리·사다리·눈 지붕 감시대)", "label": "snow-north/sn-watchtower"}
+{"png": "sn-storehouse.png", "kind": "structure", "name": "고상 창고(돌 버섯 기둥 위, 위층이 내민 판자 창고)", "label": "snow-north/sn-storehouse"}
+{"png": "sn-mill.png", "kind": "structure", "name": "물방앗간(통나무, 얼어붙은 나무 물길·멈춘 물레 덮개)", "label": "snow-north/sn-mill"}
+{"png": "sn-barn.png", "kind": "structure", "name": "헛간(회색 판자, 큰 양개문, 건초 다락)", "label": "snow-north/sn-barn"}
+{"png": "sn-smithy.png", "kind": "structure", "name": "대장간(돌 화덕 굴뚝, 열린 앞 차양, 모루 불빛)", "label": "snow-north/sn-smithy"}
+{"png": "sn-palisade-gate.png", "kind": "structure", "name": "목책 문(통나무 기둥 둘·지붕 얹은 문루, 문짝 열림)", "label": "snow-north/sn-palisade-gate"}
+{"png": "sn-ice-cave.png", "kind": "structure", "name": "얼음 동굴 입구(눈 덮인 바위 언덕, 고드름 아가리)", "label": "snow-north/sn-ice-cave"}

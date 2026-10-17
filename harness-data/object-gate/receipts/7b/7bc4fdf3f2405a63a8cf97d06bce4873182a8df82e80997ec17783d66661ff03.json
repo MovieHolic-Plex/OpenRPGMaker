@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7bc4fdf3f2405a63a8cf97d06bce4873182a8df82e80997ec17783d66661ff03",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "중간 달 바위(가로로 긴 회색 돌덩이)",
+ "label": "sf-station/sf-rock-regolith-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontally elongated gray rock",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a wide, foreshortened top surface spanning rows 4 to 10, with the shaded south-facing front face visible on rows 11 to 13, correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3673
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey rock boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder clearly displays a wide, textured top surface across rows 4-10 (approx. 7 rows) with a shaded south-facing slope along rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontally elongated grey rock",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock displays a clear foreshortened top surface spanning rows 4-9 with lighter grey texture, descending into a shaded south face on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3394
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontally oblong rock boulder",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock shows a well-defined illuminated top surface from rows 4 through 10 (approx. 7 pixel rows tall) and a darker south-facing front slope/face on rows 11 to 13, properly representing 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3654
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.591Z",
+ "cells": {
+  "16": [
+   "37d83c62931b8d24",
+   "91a7292f6d40624a"
+  ],
+  "24": [
+   "034e4a708fc5fcec",
+   "0718fadd68445883",
+   "1a63455bca4d9797",
+   "1b549c1ff5c8bdec",
+   "1ce6240eeb6c1821",
+   "64250c1cf3d1bacb",
+   "73ff781e64200ec3",
+   "9c1cc934d40baad3",
+   "9dceb3ce8b8bb494",
+   "c772ad4374612784",
+   "e2a7bae6dd923cfa",
+   "e663102c4e1199e5"
+  ],
+  "32": [
+   "337ee42347a9c9d3",
+   "5559944cca83e39d"
+  ],
+  "48": [
+   "05ea9a9f4e0832b8",
+   "33e8f5686b2d2bee",
+   "374c3d27dd8d6006",
+   "3c039ac0ee705501",
+   "6e0c4f7538ec18e3",
+   "8884589b20b0323f"
+  ]
+ }
+}

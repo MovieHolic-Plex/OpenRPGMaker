@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc04d5403f43e8af5082a7e8fab92c3f3ae21b9f79e9cd24fec6ec76bc93cd34",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall with sukashi cutout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is depicted in pure flat front elevation. The top trim (rows 1-3) consists only of flat horizontal stripes with no top surface or coping depth visible from above, and the sukashi cutout in rows 11-13 shows a flat 2D silhouette without any interior sill depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7056
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall section with openwork vent",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile is composed of flat horizontal bands (wall panels, beam, and stone base) with no foreshortened top surface or coping seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese boundary wall segment with sukashi aperture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment and its sukashi opening are drawn in a flat architectural front elevation; horizontal bands across rows 1-3 are front-facing trim/molding with no top surface or roof slope visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment with lower vent opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile consists of flat horizontal bands spanning rows 1-14 (including a shaded cylindrical beam at rows 1-3 and stone base with a vent). There is no foreshortened top surface visible from above; the entire structure is depicted in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6520
+  }
+ ],
+ "decidedAt": "2026-10-13T13:22:58.364Z",
+ "cells": {
+  "16": [
+   "4799c356520f7a27"
+  ],
+  "24": [
+   "18de11a348b85d9f",
+   "25aeddd3c149eef0",
+   "385c8390a2208750",
+   "630148e7028a515b",
+   "6c8f3f15d5ee2161",
+   "fd925280b972094e"
+  ],
+  "32": [
+   "535fc6d149a107ff",
+   "810fd71c15fed8ca",
+   "83d97c4a62d55115",
+   "9343057305bad5d4",
+   "c5581b4479ffb8ac",
+   "e97fe7e9730d3a74"
+  ],
+  "48": [
+   "09aeb0cdff75423f",
+   "730f6d02b61fcbd3",
+   "78c23176679e90a9",
+   "92ce4c912a368c80",
+   "e9bd1ae62b3ae5c1",
+   "f86456066bb20eeb"
+  ]
+ }
+}

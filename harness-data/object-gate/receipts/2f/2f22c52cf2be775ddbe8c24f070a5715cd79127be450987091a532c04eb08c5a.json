@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f22c52cf2be775ddbe8c24f070a5715cd79127be450987091a532c04eb08c5a",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "편의점 벽(흰 패널·빨강 띠)",
+ "label": "modern_city/interior/mci-wall-store",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing white paneling with a red accent stripe and base trim; vertical wall faces are standard flat terrain elements in 3/4 top-down maps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7427
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store wall face with white panels and red stripe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall surface tile showing white facade panels, a red horizontal accent stripe, and lower baseboard molding; correctly formatted as a 3/4 perspective wall face terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4317
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "convenience store wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a modular exterior wall face tile (terrain) showing white panels, a red accent band, and a baseboard. As a terrain wall surface, it connects to separate roof or wall-top tiles in map layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8219
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid wall face terrain tile depicting exterior white paneling with a red horizontal stripe and baseboard trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8225
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:02.401Z",
+ "cells": {
+  "16": [
+   "473b2f3c5512d9e8",
+   "4c512cce430003cb",
+   "4c59867f6225cf19",
+   "775ea6f3eb54b327"
+  ],
+  "24": [
+   "091d4a1068432860",
+   "094ceec4dc4389af",
+   "0c0825f89aa97a47",
+   "2361ba19964f353e",
+   "4431c0e3aadcd11a",
+   "500a59af831126d9",
+   "76bb6ecb5973a073",
+   "7e422621015072da",
+   "7ff86e4761d4c194",
+   "83eda7bb2933f3d3",
+   "85b3b83c20bc6a8c",
+   "8bb4f90689f2b7d3",
+   "8bbe253bc9df719c",
+   "91ec9f2b11a206f4",
+   "9b658d133f7248d0",
+   "9bf104b1d0b59486",
+   "a326e82addb26947",
+   "bc140b75bb98fde5",
+   "c057fe927ff23ce2",
+   "ccc520b9738f0a2c",
+   "d6f956b01c075ece",
+   "e2515ed06be19c4c",
+   "ef53ab7c1da63061"
+  ],
+  "32": [
+   "71a93c5b374f562a"
+  ],
+  "48": [
+   "0aa653ff0c09cb82",
+   "4c47afdb4eb936f4",
+   "6716899fe231e08b",
+   "749839afc6394ca5",
+   "a1ad3ef131ab2a06",
+   "d17f0bb63c70515f"
+  ]
+ }
+}

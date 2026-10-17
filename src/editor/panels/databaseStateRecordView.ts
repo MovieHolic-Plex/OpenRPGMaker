@@ -1,6 +1,6 @@
 import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
 import { partyPixelChoices } from "@/assets/partyPixelSheets";
-import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
+import { numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
@@ -21,7 +21,8 @@ const RATE_GRADE_LABEL: Record<StateRateGrade, string> = {
 
 const REMOVAL_OPTIONS = ["전투 종료 후 유지", "전투 종료", "피격 또는 전투 종료", "즉시 해제", "턴 경과"] as const;
 const RESTRICTION_OPTIONS = ["없음", "행동 불가", "아군에게 공격 불가", "스킬 사용 불가", "물리 공격 불가"] as const;
-const GEN1_MAJOR_STATUS_OPTIONS = ["none", "poison", "burn", "sleep", "freeze", "paralysis"] as const;
+const GEN1_MAJOR_STATUS_OPTIONS = ["none", "poison", "toxic", "burn", "sleep", "freeze", "paralysis"] as const;
+const VOLATILE_STATUS_OPTIONS = ["none", "confusion"] as const;
 
 export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HTMLElement {
   const database = store.getCurrent().database;
@@ -44,8 +45,11 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
       dataset: { testid: "db-states-oprn-workbench" },
       children: [
         panel("기본 설정", [
-          selectLiteral("Gen1 주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
+          selectLiteral("주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
             update({ gen1MajorStatus: gen1MajorStatus === "none" ? undefined : gen1MajorStatus })
+          ),
+          selectLiteral("휘발 상태", "db-state-volatile-status", state.volatileStatus ?? "none", VOLATILE_STATUS_OPTIONS, (volatileStatus) =>
+            update({ volatileStatus: volatileStatus === "none" ? undefined : volatileStatus })
           ),
           selectLiteral("해제 조건", "db-state-removal-condition", ontology.removalCondition, REMOVAL_OPTIONS, (removalCondition) =>
             update({ removalCondition })
@@ -344,9 +348,15 @@ function retroGimmickControls(
     checkControl("스톱 — ATB 게이지 정지·행동 불가", "db-state-rt-freezes-gauge", fx().freezesGauge === true, (freezesGauge) =>
       patchEffects({ freezesGauge: freezesGauge ? true : undefined })
     ),
-    checkControl("버서크 — 명령 없이 무작위 상대를 통상 공격", "db-state-rt-forced-attack", fx().forcedAction === "attackRandom", (on) =>
-      patchEffects({ forcedAction: on ? "attackRandom" : undefined })
-    ),
+    selectField("강제 행동", "db-state-rt-forced-action", fx().forcedAction ?? "", [
+      { id: "", name: "없음" },
+      { id: "attackRandom", name: "버서크 — 명령 없이 무작위 상대를 통상 공격" },
+      { id: "rage", name: "폭주 — 정해진 몬스터의 행동 표대로 자동 행동" },
+    ], (forcedAction) => patchEffects({ forcedAction: forcedAction === "attackRandom" || forcedAction === "rage" ? forcedAction : undefined })),
+    textField("트랜스 — 이 상태인 동안 더해지는 기술 ID(쉼표)", "db-state-rt-grant-skills", (fx().grantSkillIds ?? []).join(", "), (value) => {
+      const ids = value.split(",").map((id) => id.trim()).filter(Boolean).slice(0, 12);
+      patchEffects({ grantSkillIds: ids.length ? ids : undefined });
+    }),
     numberField("반격 % (물리에 맞으면 통상 공격)", "db-state-rt-counter", fx().counterChance ?? 0, (value) =>
       patchEffects({ counterChance: value > 0 ? Math.min(100, value) : undefined }), { min: 0, max: 100, step: 5 }
     ),
@@ -367,6 +377,9 @@ function retroGimmickControls(
     ),
     numberField("선고 — 자기 차례 N 번 뒤 전투 불능 (0 = 끔)", "db-state-rt-doom", fx().doomTurns ?? 0, (value) =>
       patchEffects({ doomTurns: value > 0 ? Math.min(9, Math.round(value)) : undefined }), { min: 0, max: 9, step: 1 }
+    ),
+    checkControl("좀비 — HP 회복이 피해로 뒤집힌다", "db-state-rt-invert-healing", fx().invertHealing === true, (invertHealing) =>
+      patchEffects({ invertHealing: invertHealing ? true : undefined })
     ),
     transformControl(fx().transformResourceId, (transformResourceId) => patchEffects({ transformResourceId: transformResourceId || undefined })),
     multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),

@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "beed84562119b06ade2f84c45ca69ceb6ab4daa6a6f19722086064ceabc602df",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-5-R",
+ "label": "jp_city/street_hand/jp-sf-office-5-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office doorway and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway, lintel, and surrounding wall facade are rendered in a completely flat 2D front architectural elevation (side-scroller style). The projecting door frame lintel at rows 12-13 is only 2 pixels tall with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office building entrance facade with sliding glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the protruding door frame, lintel (rows 11-12), windows, and wall fascia, is drawn as a flat architectural front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4198
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office building entrance with sliding doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the door frame, lintel, and windows, is drawn as a flat 2D architectural front elevation with no visible top surfaces (the lintel at rows 12-13 is only a 2px flat band).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office building entrance and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the entrance frame, lintel, and windows, is drawn in a pure front elevation with only a 2px dark bar for the lintel cap (rows 12-13) and no top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13656
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.650Z",
+ "cells": {
+  "16": [
+   "1f9df1d889f05700",
+   "216b27a342eba0cf",
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "659da1797ea32993",
+   "7700e71b22dfae61",
+   "7c4c78cac25874e5",
+   "a0ea39a91cc40825",
+   "af36d23fe88ffb78",
+   "b8cdc819ecd88b8d",
+   "c125afcc4180df26",
+   "cb9ad67f143bc783",
+   "d50320c32e94db5a",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "365b3abec10339d3",
+   "439df853c721908a",
+   "44408f1371409497",
+   "4478e3e906ee1b8e",
+   "457cd0d85f37988a",
+   "45f16f905f9fe5ae",
+   "464fcb2bf5a91ad6",
+   "46950b83a656ca51",
+   "51afbeb0aa461e3f",
+   "6ed1a82a25b0280f",
+   "7bf0c6cbffe5e25f",
+   "837d6cf20034d356",
+   "85b91de13bd7fd88",
+   "8ebed162287371d3",
+   "9fd4ae75b7f072f0",
+   "a8d9f2a181390fb7",
+   "af9f4473e026afa1",
+   "b476aec42475429a",
+   "bf91228f3365f4e5",
+   "d41be38079b00ec9",
+   "e2e7e0d426969a11",
+   "e3747639deea0908",
+   "ef43365b3b0bf9e0",
+   "f1fc24d02fe8760b"
+  ],
+  "32": [
+   "13311c0fc3d71fe9",
+   "1df6dd8b1e5183fa",
+   "25a03916526d431c",
+   "29c04858a748b4ee",
+   "29fbd5f9bc8829e2",
+   "33f9234df33938e2",
+   "34c2c5d2aad14c33",
+   "43ea7d7261517982",
+   "461f59c0f84a802f",
+   "46a3c914369357f4",
+   "48fa6900a96ac3d4",
+   "4f89e6ba66a34c7b",
+   "5241e3558d8a1479",
+   "549b4a7bbba29e74",
+   "5557e9eab8637ec2",
+   "56c1534af338a674",
+   "6f986e267a8a5ec4",
+   "875e28f6ebbc3236",
+   "945eb43f71d0979b",
+   "94e154096b327928",
+   "967af82e9f00db49",
+   "96c3b622c72e4fd2",
+   "98112393f4ce28d9",
+   "98b83243858c11f1",
+   "a26de3b55df2e019",
+   "aaf15582ce1ccb5b",
+   "b5928af1dea7d730",
+   "b59b8f7b72a5fa7b",
+   "b763a7f36afce0eb",
+   "bafff1dd30bf8ffb",
+   "c27bf2e59a766dbe",
+   "c9c0bf4f97ea6384",
+   "cf6f675de3cad6cf",
+   "d0e06cd8af11ca75",
+   "ee9e9a4788ab0a3d",
+   "eecee58c407b5181"
+  ],
+  "48": [
+   "41f8dcb0d30184d3",
+   "72e7670d8ea49f3d",
+   "85883f8f81a1e2ab",
+   "c3539030fb3eff51",
+   "d56f8ff79e150f93",
+   "dcca69fbec3e5bc8"
+  ]
+ }
+}

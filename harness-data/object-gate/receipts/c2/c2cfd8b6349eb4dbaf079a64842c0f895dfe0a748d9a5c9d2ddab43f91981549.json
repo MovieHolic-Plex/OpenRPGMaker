@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2cfd8b6349eb4dbaf079a64842c0f895dfe0a748d9a5c9d2ddab43f91981549",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "곡식 자루 더미(2칸) (sack pile)",
+ "label": "atlas_biome_interior/plus/sack pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stacked sacks show clear foreshortened top surfaces (rows 8-12 on the upper tier and rows 17-21 on the lower tier, approx 4-5 pixels tall each) distinct from their shaded south-facing fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7133
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sack pile shows depth with the front row of sacks correctly occluding the back row. Each sack clearly exhibits a 3-4 pixel tall upward-facing top surface (e.g. rows 9-12 on the upper sacks and rows 18-20 on the front sacks) distinct from the south-facing front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14470
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grain sacks are stacked in two depth layers. The upper/rear sacks show approximately 4 rows (rows 9-12) of top-facing surface foreshortened under 3/4 perspective before shading shifts to the south-facing front at row 13. The front tier of sacks similarly shows visible top surfaces (rows 17-21).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grain sack pile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stacked sacks show distinct upward-facing surfaces (rows 8-12 on the upper tier, rows 17-21 on the front tier, roughly 4-5 rows tall) separated by lighting and shading from the south-facing vertical surfaces (rows 13-16 and 22-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10418
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:47.899Z",
+ "cells": {
+  "16": [
+   "009a27630bf476a5",
+   "728d1a78a5401e44",
+   "86c080d13f14eed8",
+   "8e79cbed423c284b"
+  ],
+  "24": [
+   "03e664797c95f517",
+   "0938e5b1285089f1",
+   "1546da26ed1dca17",
+   "2217648a97490ce3",
+   "25e23f4aca30f109",
+   "3827d04127eb5c62",
+   "5b1c6ce0343397fc",
+   "5fae36742900173b",
+   "79a122d60747e3e4",
+   "96f07d8fc7a52c51",
+   "96f6b5ffeaf457e4",
+   "98ed763b37fbca5b",
+   "bc208c1056ae81e5",
+   "cf130aa52dfff24b",
+   "f8a05d26da3f5c5f",
+   "fa7f41138ac26961",
+   "fd3623df295c53a0",
+   "ff26ddfac5c3ac0e"
+  ],
+  "32": [
+   "ab4f41dc65185735"
+  ],
+  "48": [
+   "71aa7382cc83b66d",
+   "73e12f537b326be8",
+   "802b527716de990c",
+   "c7c7282d07c4ed46",
+   "ca1a8c79923e3988",
+   "f5a45fa2011dd55a"
+  ]
+ }
+}

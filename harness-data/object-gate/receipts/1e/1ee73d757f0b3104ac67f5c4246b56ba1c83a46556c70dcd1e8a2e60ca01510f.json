@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ee73d757f0b3104ac67f5c4246b56ba1c83a46556c70dcd1e8a2e60ca01510f",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "축전지 뱅크(윗면 전지 셀 넷 + 전극 + 충전 램프)",
+ "label": "sf-station/sf-battery-bank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "battery bank housing with top-mounted battery cells",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main unit spans rows 1-9 containing four battery cells, while rows 10-14 show the front face with status/charge lamps, providing a clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "battery bank with four top-mounted battery cells",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck spans rows 1–8 showing four battery cells with terminals seen from above, while the south front face occupies rows 10–14 with status indicator LEDs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4518
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "battery bank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the battery bank is prominently visible across rows 1-9, housing four battery cells with top highlights and electrodes. The south face is shown below it across rows 10-14 with indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6994
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "battery bank enclosure",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the battery bank spans rows 1 to 9 (9 pixel rows), clearly showing four battery cells with terminals seen from above, while the south front face is shown below on rows 10-14 with indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.244Z",
+ "cells": {
+  "16": [
+   "1e520476dadae3ee",
+   "9e17c0874172b4e4"
+  ],
+  "24": [
+   "125dd0cfedfc4962",
+   "29ffd5995090786f",
+   "4e54b6894c55172a",
+   "5cf5c0e0a40acd5c",
+   "74756815162e7022",
+   "76810bcb389f91a0",
+   "7ad3c9c4937f1765",
+   "85bdab1bc1248c13",
+   "b4f3c7d321d495af",
+   "ce868bc699e06560",
+   "d460d8fc64ceeeee",
+   "f06f10536e3c2d0a"
+  ],
+  "32": [
+   "a10d384b02ad8150",
+   "e2a01777fd2e0713"
+  ],
+  "48": [
+   "24a153536d13dbd1",
+   "506d58270a862ab4",
+   "99ccf7eb1b50a724",
+   "b173e9ba61bb4936",
+   "c27adc9ebdfa3186",
+   "d44307a736df69dc"
+  ]
+ }
+}

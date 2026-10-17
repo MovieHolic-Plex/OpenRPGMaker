@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c5a0a31114c53bfc931e8820cb060917d9f0ba7ce58f842d25d2f4ed4592b73",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "게시판(지붕 달린 유리 게시판)",
+ "label": "modern-campus/mc-notice-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof structure on top clearly shows a foreshortened top slope spanning rows 2 to 7 (6 rows) with darker eaves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roofed bulletin board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a green pitched roof over the bulletin board whose forward-sloping top surface occupies rows 1-7 (7 px tall) above the shadowed eave/fascia at rows 8-9, satisfying the 3/4 top-down perspective requirement for roofed structures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof atop the bulletin board shows a 6-row foreshortened front slope (rows 2-7) with shading and an overhanging eave (rows 8-9), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6729
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "roofed bulletin board",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green roof structure covers the top of the board and displays its front slope across rows 1-7 (approx 7 rows tall) leading down to the eave on rows 8-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5416
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.303Z",
+ "cells": {
+  "16": [
+   "6069df68d9b957b1",
+   "6ca932976ec5d7d8",
+   "76abe1c60b08527f",
+   "e13d29bdfdcec408"
+  ],
+  "24": [
+   "00ab5db432101d65",
+   "0205b8017b382f45",
+   "06c5aa8d88e04884",
+   "077b09add61655fe",
+   "3365737198b0e22c",
+   "416d6eb82085ec09",
+   "41ed425d9e0ded7c",
+   "4c74c93265bc70d4",
+   "65ffa9c2ce695420",
+   "711101b09c840173",
+   "7533189adb2023ca",
+   "831efde16dc08a0f",
+   "9a805fa7dc86a7de",
+   "a656665fbc9b4303",
+   "b05d7371485802d8",
+   "b1cbbd743b501044",
+   "b4e3b60f5544ba3c",
+   "bf3fc7a613aa699c",
+   "c295d155d0ebca5f",
+   "cda7991edfce902d",
+   "d7034511e9ea2566",
+   "e0b44e69df4b1c20",
+   "f7284439524a180f",
+   "febe80a27d336801"
+  ],
+  "32": [
+   "eeeecaf5570c0785"
+  ],
+  "48": [
+   "10d58742717e23b6",
+   "1477bd49122d1307",
+   "6fb89c6c61887c66",
+   "91535809c1438d8c",
+   "c25f7c5b0009d49a",
+   "ca9a89b9b3204e90"
+  ]
+ }
+}

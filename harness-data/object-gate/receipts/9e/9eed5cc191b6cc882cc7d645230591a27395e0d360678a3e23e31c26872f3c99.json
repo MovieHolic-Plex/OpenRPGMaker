@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9eed5cc191b6cc882cc7d645230591a27395e0d360678a3e23e31c26872f3c99",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "노면 증기 전차(크림·빨강 칠, 지붕 위 작은 굴뚝)",
+ "label": "steampunk-city/sp-steam-tram",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "streetcar / steam tram body",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car faces east-west, showing its side as the south face. The roof surface is clearly visible from above across rows 6 to 14 (9 pixel rows) with top-mounted vents and a chimney whose top rim is seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9054
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tramcar body and roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tram car faces east-west so its south side displays the windows and door, while the roof surface is viewed from above across rows 7–15 (9 px tall), complete with surface-mounted roof vents and a chimney with an elliptical top opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8962
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "streetcar / steam tram body",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tram car shows a foreshortened roof (top surface) spanning rows 6–15 (10 rows tall), upon which the chimney base (row 10) and roof vents are mounted. The chimney top also shows an foreshortened elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street steam tram carriage",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tram is oriented east-west with its side profile facing south. The roof surface is viewed from above across rows 6 to 14 (9 rows deep), with the chimney opening visible from above at rows 0-1 and roof vents showing top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9202
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.859Z",
+ "cells": {
+  "16": [
+   "0f2f37fb14182c35",
+   "12bb1dd3bd26fe13",
+   "1b7e380560f38117",
+   "1b904014bddf8dca",
+   "3ee870483c97a55f",
+   "59f5301f09a9989e",
+   "60d56143e65639a5",
+   "6a7a136a55be7577",
+   "7d55baab849fa6ac",
+   "85ab3be49e4044e8",
+   "df42266c878f71e1",
+   "eacb336294a8a465"
+  ],
+  "24": [
+   "253d80f4f3e65347",
+   "43cb7a329bd724d0",
+   "49955cc8076ad4b8",
+   "5b620c5762bcd35d",
+   "64419fc72fa5b813",
+   "79c63bee5a0814de",
+   "80c024de2d1e4fe1",
+   "96eeca11844f53e4",
+   "97cc5f704e4e8218",
+   "9c62770e05f6a831",
+   "a706b554f3988590",
+   "b79bfabfc81d4052",
+   "d064ef1f321863c2",
+   "d5fb06b4bffd569c",
+   "e3a9db5dbca1bf17",
+   "f30428e59ffebfff",
+   "f9281be84b6fb21a",
+   "fb65845c5267b39a"
+  ],
+  "32": [
+   "0d391c06b37cae6c",
+   "2e94b10b8a29df3d",
+   "31baa5885ac9ad85",
+   "3327c0ee8d0a47d7",
+   "50196409342ded9c",
+   "5b1498c719169845",
+   "e7a0551734e75bef",
+   "e81d6a63c7ab3f19"
+  ],
+  "48": [
+   "2cde4c2861cbf875",
+   "5fb74aca4c6853c0",
+   "777ea7add58bee09",
+   "a3f3caf1430f3927",
+   "c5878699f3ee7a3f",
+   "c9d89a64dd19331b"
+  ]
+ }
+}

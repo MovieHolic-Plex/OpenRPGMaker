@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d71975f7a10082a6bb8dec1806c7f05ab8520692db73aa7f7a7a87583b612d68",
+ "width": 48,
+ "height": 32,
+ "kind": "terrain",
+ "name": "large dark grass shade patch over jungle grass floor, 3x2 tiles, organic outline",
+ "label": "pirate-isles/pi-grass-shade-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark grass shade patch on jungle grass floor",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch viewed from above spanning rows 7 to 23 with organic edges and scattered texture pixels, correctly integrated into the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3990
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dark grass shade patch on ground terrain",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch spanning rows 7 to 23, viewed from above as part of the floor surface with organic pixel shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground shade patch on grass floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch lying flat on the floor in top-down view, accurately categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3194
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark grass shade patch on ground",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch viewed from above, seamlessly integrating as ground/shade cover over the grass floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3504
+  }
+ ],
+ "decidedAt": "2026-10-14T08:46:20.693Z",
+ "cells": {
+  "16": [
+   "146bbd66dd37ac68",
+   "24faa24e7ecfa166",
+   "54bc800330894e9f",
+   "d5c0d81dbc4fd3b2",
+   "d676a2ad4219638d",
+   "e4846b84f63ce34e"
+  ],
+  "24": [
+   "256a681e7eb76435",
+   "2d09cf948b8c0944",
+   "355549f5bd928c93",
+   "4a2a315333dc476f",
+   "6546533b81587d31",
+   "982818e3175d1840",
+   "bb9a83ad5176bc28",
+   "c1b4e6af7078cd8c"
+  ],
+  "32": [
+   "3cf52b263c846f65",
+   "4e0eaa34c4a25a57",
+   "5a3c1f4295c42408",
+   "605d989c0a71e74d",
+   "65aa6e7ad4f439e2",
+   "cace007f66973618"
+  ],
+  "48": [
+   "34a65a54d0c7af56",
+   "effc9c5846265030"
+  ]
+ }
+}

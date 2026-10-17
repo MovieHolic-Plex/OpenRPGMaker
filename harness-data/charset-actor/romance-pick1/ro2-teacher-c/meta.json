@@ -1,0 +1,51 @@
+{
+ "key": "ro2-teacher-c",
+ "arch": "ro2-teacher",
+ "base": "People1:5",
+ "variant": "여선생: 크림 블라우스 칼라 + 버건디 카디건(소매 전체 같은 버건디) + 짙은 회색 직선 바지(하의 리컬러) + 검은 구두. 머리는 짙은 갈색 단발 유지.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 deiklpswxz"
+   ],
+   "at": "2026-10-16T13:37:05"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 deiklpswxz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 10,
+  "cross_base": 16,
+  "lone": 262,
+  "lone_base": 335
+ },
+ "reapplied": true
+}

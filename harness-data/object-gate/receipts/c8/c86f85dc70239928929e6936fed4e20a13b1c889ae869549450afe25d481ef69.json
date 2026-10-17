@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c86f85dc70239928929e6936fed4e20a13b1c889ae869549450afe25d481ef69",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "스테인리스 기구 카트(2단)",
+ "label": "jp_city/interior_hospital/hs-instrument-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stainless steel medical equipment cart with monitor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart and the monitor on top are drawn in flat front elevation with 1px border lines and no visible foreshortened top surface anywhere (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5838
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stainless steel equipment cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart and the equipment/items on it are drawn in pure front elevation with no visible top surface (only a 1px top outline on row 7) and flat vertical faces throughout.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4303
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stainless medical cart / instrument cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart and the monitor/equipment on top are drawn in flat front elevation with a 1px top outline at row 7 and no visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4585
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stainless equipment cart with monitor/device",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart and the upper tier/device are drawn in a flat architectural front elevation with no visible horizontal top surface (top has only a 1px black outline at row 7).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5594
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "4c3ef2406220c3b7",
+   "9598b5101ebdc1e7"
+  ],
+  "24": [
+   "0d4fa6a7cc7b88d0",
+   "35e4031f719e72c5",
+   "3e948c03baeb8c52",
+   "405e5f846c254249",
+   "5cf6f5058aea8570",
+   "8f8088ca5d1c6c25",
+   "a4c11f3efe6726a6",
+   "b2410e56680b1d22",
+   "fbbcc61689fd4510"
+  ],
+  "32": [
+   "29a07057336c17e3",
+   "45decd20cc35d03a",
+   "5f3d1e79fe729b74"
+  ],
+  "48": [
+   "18118c7a98f5825a",
+   "2ad603b776130ffd",
+   "3f7fcbf2b51b434b",
+   "577d26b591ea5ae1",
+   "60df7839bb61f64f",
+   "fdfca183e01e3d45"
+  ]
+ }
+}

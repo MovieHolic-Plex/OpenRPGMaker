@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "339c3bf67da6cd951e35f0d0dd42857dee63fdfe4b6c1827da80b792d448b017",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "천장(벽 윗면 덩어리)",
+ "label": "steampunk-city/sp-ceiling",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiling brick ceiling surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 seamless brick pattern representing a wall top / ceiling terrain surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3401
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick/block ceiling or wall top surface pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a repeating brick/block surface texture representing terrain/ceiling top filling the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5796
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling/wall top surface brick pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain texture depicting the top surface of a brick wall or ceiling spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3384
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pattern terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 seamless brick/stone block texture intended as wall top or surface terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3037
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "0ee5fdf0c13c87b8"
+  ],
+  "24": [
+   "2e346b11f449624e",
+   "9a646a99d337d263",
+   "a116c2dfc3b255bd",
+   "b3d44296d72bc6be",
+   "c6a51d07154ece3d",
+   "dd827dd354dd7a5e"
+  ],
+  "32": [
+   "0ba5ba4ef6928139",
+   "1c0e66a62cd634eb",
+   "3d3ed86347b33de2",
+   "6615679c8a5c363c",
+   "747fd823ac376d45",
+   "f7a57dcf78deedd0"
+  ],
+  "48": [
+   "5af9a10bc4a27afc",
+   "6895c215e75e1d8a",
+   "7a6a20cc72b42d86",
+   "a65cf65078fb44cf",
+   "e35b8e871f9ef91c",
+   "f61f10a4a3e98c3c"
+  ]
+ }
+}

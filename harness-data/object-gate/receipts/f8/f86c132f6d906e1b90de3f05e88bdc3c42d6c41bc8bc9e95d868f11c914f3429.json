@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f86c132f6d906e1b90de3f05e88bdc3c42d6c41bc8bc9e95d868f11c914f3429",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small rocks breaking the surface of the water with foam",
+ "label": "pirate-isles/pi-rock-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rocks emerging from water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks show upper/top-facing facets spanning rows 3-6 above the darker south-facing faces (rows 8-11), surrounded by a foreshortened ellipse of water and foam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rocks emerging from water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks show upper planar surfaces in rows 3-6 sloping down to shaded front faces in rows 9-11, surrounded by an elliptical ring of water and foam on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3902
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rocks in water with foam",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks show lit top-facing planes across rows 3-7 (approx 4 rows) above shaded front slopes, surrounded by an elliptical foreshortened water and foam ring at rows 7-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rocks in water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rocks display light-toned upper surfaces across rows 3-6 before transitioning into darker vertical faces (rows 7-11), resting within a foreshortened elliptical water/foam pool extending to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3513
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "3a11d9b72a785b3e"
+  ],
+  "24": [
+   "3e2d28b0edc3635d",
+   "768a0627a9da5e04",
+   "947b55d3ade513f4",
+   "b88063ef2385d26f",
+   "be938c5bf1669b37",
+   "d1cee397de39cb83"
+  ],
+  "32": [
+   "2580634ac89f30cf",
+   "55ecc4ada24a4ff9",
+   "7341f570378fea4b",
+   "a029aab5a596cbd2",
+   "cbc806da28e2088d",
+   "cff4a393999487c2"
+  ],
+  "48": [
+   "125353f908714707",
+   "57f585e416cff10f",
+   "b172436cfedeb832",
+   "bceb72c8f780a5fd",
+   "ce178cc5f0fb2f38",
+   "fdb37607e635080e"
+  ]
+ }
+}

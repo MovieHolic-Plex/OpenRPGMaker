@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b68640f50e0c303639096f49c1c3c876fcff85c67cbeef7f4f94d8da2f1f2477",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat front elevation across all 16 rows with only a 1px dark border at row 1, lacking any visible foreshortened top surface or wall cap depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6278
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete decorative wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is drawn entirely in front elevation with no visible top surface (row 1 is only a 1px outline rim); the wall cap shows zero depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5175
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese style openwork wall section",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation with horizontal stripes across the entire width and only a 1-pixel border line at the top (row 1), lacking any foreshortened top surface or wall cap depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese decorative wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn completely flat from the front with horizontal bands and decorative cutouts, having no top surface or depth visible (row 1 is just a 1px dark edge line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4895
+  }
+ ],
+ "decidedAt": "2026-10-13T13:07:14.373Z",
+ "cells": {
+  "16": [
+   "d6a3861556b39e6d"
+  ],
+  "24": [
+   "320c97cea69b52a6",
+   "47abeb7676992c5a",
+   "863f587b47ee57c6",
+   "b03852b040fa8576",
+   "b9fa64f7bc4b8ef5",
+   "e09442c37a68df94"
+  ],
+  "32": [
+   "23030b5ccf6dff97",
+   "8383e0f2a0a971f0",
+   "8d6473e449ab127e",
+   "c173a9120609b654",
+   "c4b62e1ced99993a",
+   "f62374d805751287"
+  ],
+  "48": [
+   "301b553deb7a1819",
+   "6d654ab871b9a5b1",
+   "a0f02ffdbe4cf4e6",
+   "b757fc587b4ce18b",
+   "c63916a699f0631d",
+   "de5191d261e10281"
+  ]
+ }
+}

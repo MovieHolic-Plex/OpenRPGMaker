@@ -231,6 +231,36 @@ async function applyOp(page, op, runState) {
         op.timeoutMs,
       );
       return;
+    case "waitForEventAt":
+      // not:true 면 「그 칸이 아니다」까지 기다린다(추격하러 나갔다). 위치는 session.eventLocations — pursuit 정책이 있는 이벤트만 실린다.
+      try {
+      await waitForRuntimePredicate(
+        page,
+        (state, target) => {
+          const at = state.eventLocations?.[target.eventId];
+          const here = !!at && at.mapId === target.mapId && at.x === target.x && at.y === target.y;
+          return target.not ? !!at && !here : here;
+        },
+        { eventId: op.eventId, mapId: op.mapId, x: op.x, y: op.y, not: op.not === true },
+        op.timeoutMs,
+      );
+      } catch (error) {
+        // 실패 진단: 기다리던 이벤트가 마지막으로 보고한 위치를 같이 남긴다.
+        const seen = await page.evaluate((id) => window.__oprnDebug?.readState?.().eventLocations?.[id] ?? null, op.eventId).catch(() => null);
+        throw new Error(`waitForEventAt ${op.eventId}@${op.mapId}(${op.x},${op.y})${op.not ? " 아님" : ""} 시간 초과 — 마지막 보고 위치 ${JSON.stringify(seen)}`, { cause: error });
+      }
+      return;
+    case "traceEvent": {
+      const out = [];
+      const t0 = Date.now();
+      while (Date.now() - t0 < op.ms) {
+        const at = await page.evaluate((id) => window.__oprnDebug?.readState?.().eventLocations?.[id] ?? null, op.eventId);
+        out.push(at ? `${at.x},${at.y}` : "null");
+        await page.waitForTimeout(250);
+      }
+      console.log(`TRACE ${op.eventId}: ${out.join(" ")}`);
+      return;
+    }
     case "pauseFrames":
       await pauseRuntimeFrames(page);
       return;
@@ -425,6 +455,19 @@ async function applyOp(page, op, runState) {
           .includes(text.replace(/\s+/g, ' ').trim()),
         [op.testid, op.text], { timeout: op.timeoutMs ?? 30_000 });
       return;
+    case "wheel": {
+      // 마우스 휠 — testid 요소 한가운데에 포인터를 두고 굴린다(플레이 입력 차단기가 휠을 삼키는지 보려고).
+      const box = await page.evaluate((testid) => {
+        const node = document.querySelector(`[data-testid="${testid}"]`) ?? document.querySelector(testid);
+        if (!node) throw new Error(`wheel target not found: ${testid}`);
+        const rect = node.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      }, op.testid);
+      await page.mouse.move(box.x, box.y);
+      await page.mouse.wheel(0, op.deltaY ?? 120);
+      await page.waitForTimeout(200);
+      return;
+    }
     case "pointerClick": {
       const info = await page.evaluate((testid) => {
         const nodes = document.querySelectorAll(`[data-testid="${testid}"]`);
@@ -519,6 +562,29 @@ async function applyOp(page, op, runState) {
           `pressUntil: ${op.key} ${max}회 뒤에도 ${op.testid} 가 ${op.state} 가 되지 않았다`,
         );
       }
+      return;
+    }
+    case "evalToFile": {
+      const value = await page.evaluate(`(${op.fn})()`);
+      await writeFile(op.out, JSON.stringify(value, null, 1));
+      return;
+    }
+    case "waitForClass":
+      await page.waitForFunction(([testid, cls]) => document.querySelector(`[data-testid="${testid}"]`)?.classList.contains(cls) === true,
+        [op.testid, op.cls], { timeout: op.timeoutMs ?? 30_000 });
+      return;
+    case "pressUntilText": {
+      if (typeof op.text !== "string" || !op.text.length) throw new Error("pressUntilText requires nonempty text");
+      const has = () => page.evaluate(([testid, text]) =>
+        document.querySelector(`[data-testid="${testid}"]`)?.textContent?.replace(/\s+/g, " ").trim().includes(text) === true,
+      [op.testid, op.text.replace(/\s+/g, " ").trim()]);
+      const max = op.maxPresses ?? 12;
+      for (let i = 0; i < max; i += 1) {
+        if (await has()) return;
+        await page.keyboard.press(op.key);
+        await page.waitForTimeout(op.settleMs ?? 120);
+      }
+      if (!(await has())) throw new Error(`pressUntilText: ${op.key} ${max}회 뒤에도 ${op.testid} 에 "${op.text}" 가 나오지 않았다`);
       return;
     }
     default:
@@ -757,6 +823,11 @@ async function readObserved(page, {
       followerSpriteCount: characters ? Object.keys(characters.followers).length : null,
       vehicleSprites: characters ? (characters.vehicles ?? {}) : null,
       emotes: window.__oprnEmotes ? window.__oprnEmotes() : null,
+      // 시나리오가 이름을 댄 이벤트의 런타임 위치(session.eventLocations — 자율 이동·추격 정책이 있는 이벤트가 싣는다). 1×1 몸의 사각은 그 칸이다.
+      events: Object.fromEntries((watched.eventIds ?? []).flatMap((id) => {
+        const at = full?.eventLocations?.[id];
+        return at ? [[id, { mapId: at.mapId, x: at.x, y: at.y, bodyRect: { left: at.x, right: at.x, top: at.y, bottom: at.y } }]] : [];
+      })),
       audioObserved: Array.isArray(window.__oprnAudioObserved) ? [...window.__oprnAudioObserved] : null,
       battlers: window.__oprnReadBattlerGeometry ? window.__oprnReadBattlerGeometry() : null,
     };
@@ -886,15 +957,17 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   // exportEntry.ts 는 최상위에서 즉시 부팅하므로 주입은 addInitScript 여야 한다.
   // localStorage.clear() 는 이전 실행의 세이브가 타이틀 화면을 바꾸는 것을 막는다.
   await page.addInitScript(
-    ([projectUrl, saveNamespace]) => {
+    ([projectUrl, saveNamespace, storageSeed]) => {
       try {
         localStorage.clear();
+        // 시나리오가 「이 기기에 이미 있던 기록」(예: 본 엔딩)을 심는다. 키의 {ns} 는 세이브 이름 공간으로 바뀐다.
+        for (const [key, value] of Object.entries(storageSeed ?? {})) localStorage.setItem(key.replace("{ns}", saveNamespace), value);
       } catch {
         // 접근 불가 환경이면 그대로 진행한다.
       }
       window.__OPENRPG_BOOT__ = { projectUrl, saveNamespace, qaInstrumentation: true };
     },
-    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`],
+    [opts.projectUrl ?? PROJECT_URL, `runtime-qa:${scenario.id}`, scenario.localStorageSeed ?? null],
   );
   if (!opts.projectUrl) {
     await page.route(PROJECT_ROUTE, (route) =>
@@ -910,7 +983,7 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   const query = new URLSearchParams(scenario.query ?? {}).toString();
   const playerUrl = `${opts.serverUrl}${opts.entryPath ?? '/player.html'}${query ? `?${query}` : ""}`;
   try {
-    await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
+    await page.goto(playerUrl, { waitUntil: "domcontentloaded", timeout: 180_000 });
     await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
   } catch (error) {
     await writeFile(join(outDir, 'boot-failure.json'), JSON.stringify({ scenario: scenario.id,

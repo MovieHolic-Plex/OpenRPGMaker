@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f623359fbd80023ed6751aac2f81dd8cbb88269d4c55fd2b1e97dd746b29852e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "콘크리트 산책길",
+ "label": "modern-campus/mc-pave-path",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete walkway / paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles representing concrete pavement slabs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4327
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete pavement / walkway tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles depicting concrete pavement slabs with seams and small textured details; viewed from above as appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3719
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete walkway tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain paving tiles representing a concrete walkway; no standing vertical structure is depicted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2991
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete walkway pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tiles depicting concrete walkway slabs and paving stones viewed from above. As flat terrain, the entire surface represents the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3302
+  }
+ ],
+ "decidedAt": "2026-10-14T08:06:14.286Z",
+ "cells": {
+  "16": [
+   "39c6e2f22a3c807f"
+  ],
+  "24": [
+   "55a8e7371cfdd8c7",
+   "76811f7d8f5b812a",
+   "7c9685a3b2f3c46b",
+   "84332c1d643b1df6",
+   "bb61a8e4b0853675",
+   "d52e7c8fb1b83aef"
+  ],
+  "32": [
+   "9ce1a9823d02b550",
+   "b59eecd6b0a5e5f7",
+   "b6f955dcbb3306f4",
+   "cf834239b5286c07",
+   "e072befd0956ac12",
+   "e75adde23fcbf4b7"
+  ],
+  "48": [
+   "055f99e7292f6a6c",
+   "9ed155709a4b16dc",
+   "a761bd64ae96ecb7",
+   "bfb13ac421377d13",
+   "e45b8a0172633e1c",
+   "fcdb5ea56cfcd3fa"
+  ]
+ }
+}

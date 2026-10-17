@@ -1,6 +1,7 @@
 // 새 게임 = 컨셉 피드 (2026-10-07, docs/superpowers/specs/2026-10-07-concept-feed-design.md).
-// 런처 첫 화면(전체 화면)과 편집기 「새 프로젝트」·환영 창(덮는 창)이 같은 컴포넌트를 쓴다. 다른 것은 만들기 처리기뿐이다.
-// 유튜브 홈처럼: 위 입력창 + 분류 칩 + 16:9 썸네일 격자(내리면 계속) → 상세(큰 키아트·이런 게임이 됩니다·살짝 바꾸기·비슷한 컨셉).
+// 런처 「만들기」 갈래(2026-10-17부터 src/start/launcherShell 안의 본문)와 편집기 「새 프로젝트」·환영 창(덮는 창)이 같은 컴포넌트를 쓴다.
+// 덮는 창은 자기 위 막대(제목·입력창·닫기)를 그리고, 런처는 입력창(searchBox)만 받아 틀의 위 막대에 꽂는다.
+// 유튜브 홈처럼: 입력창 + 분류 칩 + 16:9 썸네일 격자(내리면 계속) → 상세(큰 키아트·이런 게임이 됩니다·살짝 바꾸기·비슷한 컨셉).
 import "./conceptFeed.css";
 import { el } from "@/util/dom";
 import { getLocale, t } from "@/i18n";
@@ -9,8 +10,9 @@ import { CONCEPT_FALLBACK_THUMB, type ConceptFallback, type ConceptQuery, type C
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import type { InterviewGenre } from "@/project/gameInterview";
+import { startIcon } from "../icons";
 
-/** 「골라서 만들기」 띠 — 인터뷰 첫 장면(cdn, src/editor/interviewSceneBank.ts)과 장르 바로가기. 띠 하나 때문에 장면 목록 JSON 을 피드에 싣지 않는다. */
+/** 덮는 창의 「골라서 만들기」 띠 — 인터뷰 첫 장면(cdn, src/editor/interviewSceneBank.ts)과 장르 바로가기. 띠 하나 때문에 장면 목록 JSON 을 피드에 싣지 않는다. */
 const QUICK_ART = "https://cdn.openrpgmaker.com/interview-scene-bank/full/opening-62062ac73a78.webp";
 const QUICK_GENRES: readonly (readonly [InterviewGenre, string])[] = [["romance", "관계·연애"], ["monster", "몬스터 수집"], ["adventure", "모험"], ["mystery", "추리"]];
 
@@ -35,6 +37,7 @@ export const CONCEPT_FEED_TESTIDS = {
   quickStart: "concept-feed-quick-start",
 } as const;
 
+/** launcher = 런처 「만들기」 갈래의 본문(위 막대는 틀이 그린다). overlay = 편집기의 덮는 창(자기 위 막대·닫기). */
 export type ConceptFeedMode = "launcher" | "overlay";
 export type DraftedConcept = { readonly concept: GameConcept; readonly thumb: Promise<string | null> };
 
@@ -44,13 +47,11 @@ export type ConceptFeedOptions = {
   /** 만들기. true = 시작됨(화면 넘김은 호출부 몫, 버튼은 잠근 채 둔다). false = 취소(다시 누를 수 있다). 던지면 오류 줄. */
   readonly onMake: (concept: GameConcept, tweak: string) => Promise<boolean>;
   readonly onBlank?: () => void;
-  /** 「골라서 만들기」 — 빠른 인터뷰(장르 + 질문 셋)가 낸 기획으로 만들기. 없으면 띠를 보이지 않는다. 약속은 onMake 와 같다. */
+  /** 「골라서 만들기」 — 빠른 인터뷰(장르 + 질문 셋)가 낸 기획으로 만들기. 없으면 입구를 보이지 않는다. 약속은 onMake 와 같다. */
   readonly onInterview?: (brief: GameDesignBrief, title: string) => Promise<boolean>;
   readonly onClose?: () => void;
-  /** 런처만 — 「이어하기」 줄. */
-  readonly continueRow?: HTMLElement | null;
-  /** 런처만 — 위 막대 오른쪽(폴더 열기·팀 참여·언어). */
-  readonly topActions?: readonly HTMLElement[];
+  /** 런처만 — 피드 맨 위에 얹는 판(시작 화면의 「이어서 만들기」). */
+  readonly lead?: HTMLElement | null;
   /** 「내가 쓴 걸로 만들기」 전에 — AI 연결 관문. false 면 초안을 쓰지 않고 피드에 남는다. */
   readonly beforeDraft?: () => Promise<boolean>;
   /** 입력 문장 → 컨셉 초안. 기본은 src/concepts/draft.ts 를 지연 로드한다. */
@@ -61,8 +62,12 @@ export type ConceptFeedOptions = {
 
 export type ConceptFeed = {
   readonly element: HTMLElement;
+  /** 입력창 + 만들기 단추. 덮는 창은 자기 위 막대에 이미 꽂았고, 런처는 이것을 틀의 위 막대로 옮긴다. */
+  readonly searchBox: HTMLElement;
   /** Escape 한 번. 상세면 피드로 돌아가고 true. 피드면 false(닫기는 호출부 몫). 편집기 창은 modalStack 이 이걸 부른다. */
   escape(): boolean;
+  /** 상세 화면에서 피드로 돌아간다. 만들기 중이면 false. */
+  returnToFeed(): boolean;
   /** 만들기가 진행 중이면 true — 덮는 창은 이동안 닫지 않는다. */
   busy(): boolean;
   dispose(): void;
@@ -105,6 +110,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   let searchTimer: ReturnType<typeof setTimeout> | undefined;
   let stopObserving: () => void = () => {};
 
+  const launcher = options.mode === "launcher";
   const root = el("div", { class: `cf-root cf-${options.mode}`, dataset: { testid: CONCEPT_FEED_TESTIDS.root } });
   if (options.mode === "overlay") {
     root.setAttribute("role", "dialog");
@@ -115,23 +121,25 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   errorLine.hidden = true;
   const setError = (message: string): void => { errorLine.textContent = message; errorLine.hidden = message === ""; };
 
-  // ── 위 막대 ───────────────────────────────────────────────────────────
+  // ── 입력창 ────────────────────────────────────────────────────────────
   const search = el("input", {
     class: "cf-search-input",
-    attrs: { type: "search", maxlength: "200", autocomplete: "off", "aria-label": "만들고 싶은 게임", placeholder: t("만들고 싶은 게임을 적어 보세요 — 예: 회귀한 용사가 마왕의 비서가 된다") },
+    attrs: {
+      type: "search", maxlength: "200", autocomplete: "off", "aria-label": "만들고 싶은 게임",
+      placeholder: t(launcher ? "만들고 싶은 게임을 적거나 컨셉 검색 — 예: 회귀한 용사가 마왕의 비서가 된다" : "만들고 싶은 게임을 적어 보세요 — 예: 회귀한 용사가 마왕의 비서가 된다"),
+    },
     dataset: { testid: CONCEPT_FEED_TESTIDS.search },
   });
   const searchSubmit = el("button", { class: "cf-search-go", attrs: { type: "button" }, text: "만들기" });
-  const top = el("header", { class: "cf-top", children: [
-    el("div", { class: "cf-brand", children: [el("span", { class: "cf-brand-mark", text: "▶", attrs: { "aria-hidden": "true" } }), el("span", { text: "새 게임" })] }),
-    el("div", { class: "cf-search", children: [search, searchSubmit] }),
-    el("div", { class: "cf-top-actions", children: [
-      ...(options.topActions ?? []),
-      ...(options.mode === "overlay" && options.onClose ? [el("button", {
-        class: "cf-close", attrs: { type: "button", "aria-label": "닫기" }, text: "✕", dataset: { testid: CONCEPT_FEED_TESTIDS.close },
-        on: { click: () => { if (!making) options.onClose?.(); } },
-      })] : []),
-    ] }),
+  const searchBox = el("div", { class: "cf-search", children: [...(launcher ? [startIcon("search", "cf-search-icon")] : []), search, searchSubmit] });
+  const top = launcher ? null : el("header", { class: "cf-top", children: [
+    el("div", { class: "cf-brand", text: "새 게임" }),
+    searchBox,
+    ...(options.onClose ? [el("div", { class: "cf-top-actions", children: [el("button", {
+      class: "cf-close", attrs: { type: "button", "aria-label": "닫기" }, dataset: { testid: CONCEPT_FEED_TESTIDS.close },
+      children: [startIcon("close", "cf-close-icon")],
+      on: { click: () => { if (!making) options.onClose?.(); } },
+    })] })] : []),
   ] });
 
   // ── 피드 ──────────────────────────────────────────────────────────────
@@ -140,11 +148,11 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const more = el("button", { class: "cf-more", attrs: { type: "button" }, text: "더 보기", dataset: { testid: CONCEPT_FEED_TESTIDS.more } });
   const offlineNote = el("p", { class: "cf-offline", dataset: { testid: CONCEPT_FEED_TESTIDS.offline } });
   offlineNote.hidden = true;
-  const blank = options.onBlank ? el("p", { class: "cf-blank", children: [
+  const blank = !launcher && options.onBlank ? el("p", { class: "cf-blank", children: [
     el("span", { text: "직접 처음부터 만들고 싶다면" }),
     el("button", { class: "cf-link", attrs: { type: "button" }, text: "빈 프로젝트로 시작", dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, on: { click: () => options.onBlank?.() } }),
   ] }) : null;
-  // ── 골라서 만들기 띠(빠른 인터뷰) ─────────────────────────────────────
+  // ── 골라서 만들기(빠른 인터뷰) ────────────────────────────────────────
   let quick: { element: HTMLElement; destroy(): void } | null = null;
   const closeQuick = (): void => { quick?.destroy(); quick = null; };
   const openQuick = async (genre?: InterviewGenre): Promise<void> => {
@@ -166,30 +174,51 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     root.append(quick.element);
     quick.element.querySelector<HTMLElement>(".qi-card")?.focus();
   };
-  const quickBand = options.onInterview ? el("section", { class: "cf-quick", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
-    el("img", { class: "cf-quick-art", attrs: { src: QUICK_ART, alt: "", draggable: "false" } }),
-    el("div", { class: "cf-quick-text", children: [
-      el("strong", { text: "골라서 만들기" }),
-      el("span", { text: "장르 하나, 질문 셋. 네 번 고르면 바로 시작해요." }),
-    ] }),
-    el("div", { class: "cf-quick-genres", children: [
-      ...QUICK_GENRES.map(([id, label]) => el("button", {
-        class: "cf-quick-genre", attrs: { type: "button" }, text: label, dataset: { testid: CONCEPT_FEED_TESTIDS.quickGenre, genre: id },
-        on: { click: () => void openQuick(id) },
-      })),
-      el("button", { class: "cf-quick-go", attrs: { type: "button" }, text: "시작하기 →", dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, on: { click: () => void openQuick() } }),
-    ] }),
-  ] }) : null;
+  const genreButtons = (className: string): HTMLElement[] => QUICK_GENRES.map(([id, label]) => el("button", {
+    class: className, attrs: { type: "button" }, text: label, dataset: { testid: CONCEPT_FEED_TESTIDS.quickGenre, genre: id },
+    on: { click: () => void openQuick(id) },
+  }));
+  // 덮는 창: 인터뷰 첫 장면을 깐 띠. 런처: 그림 없는 한 줄 — 위에 「이어서 만들기」 판이 이미 큰 그림을 쓴다.
+  const quickBand = !options.onInterview ? null : launcher
+    ? el("section", { class: "cf-newband", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
+      el("div", { class: "cf-newband-copy", children: [
+        el("h2", { text: "새로 만들기" }),
+        el("p", { text: "위 입력창에 적거나, 장르를 골라 질문 셋에 답하거나, 빈 프로젝트로." }),
+      ] }),
+      el("div", { class: "cf-newband-actions", children: [
+        ...genreButtons("cf-newband-genre"),
+        ...(options.onBlank ? [
+          el("span", { class: "cf-newband-sep", attrs: { "aria-hidden": "true" } }),
+          el("button", { class: "cf-newband-blank", attrs: { type: "button" }, text: "빈 프로젝트", dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, on: { click: () => options.onBlank?.() } }),
+        ] : []),
+      ] }),
+    ] })
+    : el("section", { class: "cf-quick", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
+      el("img", { class: "cf-quick-art", attrs: { src: QUICK_ART, alt: "", draggable: "false" } }),
+      el("div", { class: "cf-quick-text", children: [
+        el("strong", { text: "골라서 만들기" }),
+        el("span", { text: "장르 하나, 질문 셋. 네 번 고르면 바로 시작해요." }),
+      ] }),
+      el("div", { class: "cf-quick-genres", children: [
+        ...genreButtons("cf-quick-genre"),
+        el("button", { class: "cf-quick-go", attrs: { type: "button" }, text: "시작하기", dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, on: { click: () => void openQuick() } }),
+      ] }),
+    ] });
   const feed = el("section", { class: "cf-feed", children: [
+    ...(options.lead ? [options.lead] : []),
     ...(quickBand ? [quickBand] : []),
+    ...(launcher ? [el("div", { class: "cf-feed-head", children: [
+      el("h2", { text: "컨셉에서 시작" }),
+      el("p", { text: "고르면 이름·폴더·화면 크기는 자동으로 정합니다." }),
+    ] })] : []),
     chips,
-    ...(options.continueRow ? [options.continueRow] : []),
     grid, more, offlineNote, ...(blank ? [blank] : []),
   ] });
   const detail = el("section", { class: "cf-detail", dataset: { testid: CONCEPT_FEED_TESTIDS.detail } });
   detail.hidden = true;
   const body = el("div", { class: "cf-body", children: [feed, detail] });
-  root.append(top, body, errorLine);
+  const main = el("div", { class: "cf-main", children: [...(top ? [top] : []), body, errorLine] });
+  root.append(main);
 
   const renderChips = (): void => {
     chips.replaceChildren(...["전체", ...(source.tags?.() ?? CONCEPT_TAGS)].map((tag) => {
@@ -247,7 +276,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       keydown: (event) => { if ((event as KeyboardEvent).key === "Enter") void openCustom(text); },
     },
     children: [
-      el("div", { class: "cf-thumb cf-custom-thumb", children: [el("span", { class: "cf-custom-mark", text: "✏️", attrs: { "aria-hidden": "true" } })] }),
+      el("div", { class: "cf-thumb cf-custom-thumb", children: [startIcon("make", "cf-custom-mark")] }),
       el("div", { class: "cf-meta", children: [
         el("h3", { class: "cf-title", text: "내가 쓴 걸로 만들기" }),
         el("p", { class: "cf-hook", text: `“${text}”`, attrs: { translate: "no" } }),
@@ -334,6 +363,11 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     setError("");
     body.scrollTop = feedScroll;
   };
+  const returnToFeed = (): boolean => {
+    if (making) return false;
+    showFeed();
+    return true;
+  };
 
   const renderDetail = (concept: GameConcept, similar: readonly GameConcept[], heroOverride?: Promise<string | null>): void => {
     const local = localizedConcept(concept, locale);
@@ -342,7 +376,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       attrs: { maxlength: String(CONCEPT_TWEAK_LIMIT), rows: "3", "aria-label": "살짝 바꾸기", placeholder: t("예: 주인공을 고양이로 / 배경을 겨울로 / 엔딩은 해피엔딩") },
       dataset: { testid: CONCEPT_FEED_TESTIDS.tweak },
     });
-    const make = el("button", { class: "cf-make", attrs: { type: "button" }, text: "▶ 이 게임 만들기", dataset: { testid: CONCEPT_FEED_TESTIDS.make } });
+    const make = el("button", { class: "cf-make", attrs: { type: "button" }, text: "이 게임 만들기", dataset: { testid: CONCEPT_FEED_TESTIDS.make } });
     make.addEventListener("click", () => {
       if (making) return;
       making = true;
@@ -353,11 +387,11 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
         if (started) return;
         making = false;
         make.disabled = false;
-        make.textContent = t("▶ 이 게임 만들기");
+        make.textContent = t("이 게임 만들기");
       }, (error: unknown) => {
         making = false;
         make.disabled = false;
-        make.textContent = t("▶ 이 게임 만들기");
+        make.textContent = t("이 게임 만들기");
         setError(error instanceof Error ? error.message : String(error));
       });
     });
@@ -480,7 +514,9 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
 
   return {
     element: root,
+    searchBox,
     escape,
+    returnToFeed,
     busy: () => making,
     dispose() {
       closeQuick();

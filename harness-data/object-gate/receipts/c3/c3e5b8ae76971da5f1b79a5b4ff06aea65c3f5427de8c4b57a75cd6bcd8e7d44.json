@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3e5b8ae76971da5f1b79a5b4ff06aea65c3f5427de8c4b57a75cd6bcd8e7d44",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "짐 썰매(나무 바닥·가죽 덮개 짐)",
+ "label": "snow-north/sn-sled",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo bundle on wooden sled",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cargo sled is drawn entirely in flat 2D side elevation profile with runners at the bottom and a pull rope on the right. Neither the wooden sled bed nor the cargo bundle shows a foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6570
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo sled with strapped package",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sled and the strapped cargo package are drawn in a flat side elevation (side profile of sled with runners below and nose/tow rope at the right). Neither the sled bed nor the cargo block shows any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5965
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo sled with wrapped bundle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sled and the cargo bundle on top are drawn in pure side-view elevation (facing right). Neither the sled bed/interior nor the cargo bundle has any foreshortened top surface visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo sled with packed load",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sled and its cargo are drawn in pure side elevation (profile facing east). The top surface of the cargo box has no visible foreshortened depth (only a 1px border and 1px highlight line at rows 1-2), showing no horizontal top surface as required for 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6925
+  }
+ ],
+ "decidedAt": "2026-10-14T01:19:07.397Z",
+ "cells": {
+  "16": [
+   "1a2caba5e6808746",
+   "5c8dddd0f01fe65d"
+  ],
+  "24": [
+   "01b30c911fa268d1",
+   "2ae1a5ca4c6fe4e5",
+   "2db854cf98e8b505",
+   "35d5c04e8fd9f6c0",
+   "5b6c36bb8cb1a2ce",
+   "a001dfc709eeb5f1",
+   "a2cc3b0225ee6bb0",
+   "c184137baa6854f8",
+   "cb7470df55c28054",
+   "f0dc60e38c7699de",
+   "fe59f2dbcb98c878",
+   "ff8cfbd2024eb33f"
+  ],
+  "32": [
+   "67574d27dbbb84aa",
+   "d02d214f60a21537"
+  ],
+  "48": [
+   "0a3690dd78e83831",
+   "1c5733fe5b44bde8",
+   "283251af2b1cd4fe",
+   "30b6904b139f3afd",
+   "3b928626b35b2527",
+   "813e64d6656de36b"
+  ]
+ }
+}

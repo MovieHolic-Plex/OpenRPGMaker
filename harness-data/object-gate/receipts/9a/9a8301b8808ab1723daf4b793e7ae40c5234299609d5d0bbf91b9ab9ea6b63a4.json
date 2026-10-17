@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a8301b8808ab1723daf4b793e7ae40c5234299609d5d0bbf91b9ab9ea6b63a4",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "round blossom tree with pink flowers",
+ "label": "sky-island/si-tree-blossom",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and trunk are drawn in a flat 2D side-scroller front elevation. There is no visible top surface foreshortened from above (top_rows = 0), and the foliage lobes are shaded straight-on rather than showing upper surfaces facing the 45-degree top-down camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7708
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "blossom tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a pure front elevation / side-scroller view: the foliage clumps and vertical trunk show no visible top surface (top_rows: 0), with the trunk emerging directly from the bottom edge of the canopy rather than being foreshortened in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10739
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The blossom tree is drawn entirely in front elevation (side-scroller style), with three flat overlapping lobes and a straight vertical trunk ending in flat-footed roots. There is no visible top surface (top_rows = 0) of the canopy or trunk seen from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8263
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blossom tree canopy is rendered in 3/4 perspective with distinct upper/rear foliage lobes (rows 3–18) overlapping down toward a forward, lower lobe (rows 19–35), grounded on an elliptical grass base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7476
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.426Z",
+ "cells": {
+  "16": [
+   "0a799c7d4abb963d",
+   "80bae101e0274b5f",
+   "8776973d3e61e11b",
+   "9b45c87b273defee",
+   "c2e89de3ca7de1b9",
+   "f8610fb6ac4675c4"
+  ],
+  "24": [
+   "3e146866f3503982",
+   "4a117fd266753994",
+   "4ef0fde3097cd262",
+   "767f3acd8723fbb0",
+   "8b0d9027bfd9fdf6",
+   "c5d253985b63ee83",
+   "c8929a1e95ef3ecf",
+   "d09a1760cc6c67d1",
+   "e47abcbe63fb1fb4",
+   "f1aae91e90e72750",
+   "f4b4157dd05aa3a8",
+   "fc250eb4c6e92c55"
+  ],
+  "32": [
+   "1fcd7bd91c037314",
+   "d006efaf1ab9130d",
+   "d4908b14c486c6d8",
+   "d7c3c11d763aa0d0"
+  ],
+  "48": [
+   "094e13573fc49f76",
+   "ca6f2632ed0c9c5f",
+   "deff0e83d339ffb8"
+  ]
+ }
+}

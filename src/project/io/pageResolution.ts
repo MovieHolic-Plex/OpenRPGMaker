@@ -1,7 +1,7 @@
 import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { compareVariableValue } from "../conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
-import { clampFriendship } from "../session";
+import { clampFriendship, friendshipValueOf } from "../session";
 import { resolveSocialKey } from "../socialKey";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "../roguelikeRun";
 import { evalRelationshipCondition, type RelationshipState } from "../relationshipState";
@@ -32,6 +32,10 @@ export type EventPageLocationContext = {
   /** 이 이벤트의 런타임 위치·방향(방향 조건). 생략 = session.eventLocations. */
   readonly host?: { readonly x?: number; readonly y?: number; readonly direction?: Dir };
   readonly calendar?: ActorQueryOptions;
+  /** 파티가 아는 스킬 집합(partyKnowsSkill). 프로젝트를 아는 호출측이 partyKnownSkillIds 로 만든다. */
+  readonly partySkillIds?: () => ReadonlySet<string>;
+  /** 캠페인 배지 스위치 id(badgeCount). 프로젝트를 아는 호출측이 badgeContext 로 만든다. */
+  readonly badgeSwitchIds?: () => readonly string[];
 };
 
 /** 페이지 세션(부분)을 조건 조회 세션으로 비춘다. 없는 칸은 비어 있는 것으로 본다. */
@@ -109,7 +113,7 @@ function evalPageCondition(
     case "friendshipAtLeast": {
       const npcKey = resolveSocialKey(event, condition.npcKey);
       if (!npcKey) return false;
-      return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
+      return friendshipValueOf(session.friendship, npcKey) >= clampFriendship(condition.value);
     }
     case "relationshipAtLeast":
       return evalRelationshipCondition(session, condition, resolveSocialKey(event, condition.npcKey));
@@ -120,6 +124,8 @@ function evalPageCondition(
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -130,7 +136,7 @@ function evalPageCondition(
     case "newGamePlus":
     case "weekday":
     case "stringVariable":
-      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, context?.calendar);
+      return evalActorQueryCondition(pageQuerySession(session), condition, { eventId: event.id, x: context?.host?.x, y: context?.host?.y, direction: context?.host?.direction }, { ...context?.calendar, ...(context?.partySkillIds ? { partySkillIds: context.partySkillIds } : {}), ...(context?.badgeSwitchIds ? { badgeSwitchIds: context.badgeSwitchIds } : {}) });
     case "difficulty":
       return session.difficultyId !== undefined && session.difficultyId === condition.difficultyId;
     case "itemUsed":

@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de29faf037ad72c326a9c5127d9962faab47dbded8348f7cf677fc5f4a773410",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-5-L",
+ "label": "jp_city/street_hand/jp-sf-bento-5-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with central door and flanking refrigerated display cases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door, lintels, and display shelves are drawn in a completely flat architectural front elevation with no visible top surfaces or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4295
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with central door and display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, door lintel, and display shelves are drawn straight-on in pure front elevation with 0 rows of visible top surfaces or downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3842
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront door and display cases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (door, lintel, wall, and flanking display shelves) is drawn in pure 2D front elevation with horizontal lines and no visible top surfaces or downward-angled foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6019
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront with central sliding door and flanking display counters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, upper awning/signboard, and display shelves, is drawn in pure 2D side-scroller front elevation with 0px of foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4432
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.386Z",
+ "cells": {
+  "16": [
+   "0d0ff99faf374292",
+   "20dcca3854b4844b",
+   "23f92e3b7442d9c8",
+   "3e88245faa86d328",
+   "487c0e6a726b04e7",
+   "4a7a2db846f02150",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "9bb3c4f2defacac6",
+   "9e6f71bd295281e4",
+   "a213ffdd81a26c0b",
+   "b1a8b5449b59fe87",
+   "b4319970abdeed2c",
+   "d046d1a1ca6790ca",
+   "e3f622f3e4dffe3e"
+  ],
+  "24": [
+   "01e2215f8c68a085",
+   "2a52ff0f30d43d8a",
+   "3110f713d3f71071",
+   "32e1f68535c994d2",
+   "363982e015abf4e0",
+   "3e496593b1daddfa",
+   "4028ecc72330edad",
+   "424441196bc6e7a8",
+   "4cf2af7d82bf99d6",
+   "52425c751e18ad5a",
+   "5d8f163bb8368d77",
+   "6ca89219e831ecdb",
+   "7a7642c31dfe80a5",
+   "7ab2f1b10e4870ed",
+   "9a3583926ebf8075",
+   "9eddaf042e3610b7",
+   "cea6cb51c037299e",
+   "d69815f99c853520",
+   "ddaf1c9e9ce605da",
+   "df45b24751b86c0b",
+   "e4a7c0be407e5215",
+   "e7f6c482f73789b0",
+   "e86d9183ac45a6bc",
+   "ede87031498e3869"
+  ],
+  "32": [
+   "0401c2ebbaf139f0",
+   "0f9948c236384eb1",
+   "19151a3714e9e3dd",
+   "1e04584cc6024c9a",
+   "24c1f23ffac8a995",
+   "26d1e19adbc599d9",
+   "33a3726049c58951",
+   "46e8fb8c945c550d",
+   "47d2f7fff3091217",
+   "4ba37f791f24b09d",
+   "58cc023c42ce3851",
+   "5f82b0882d8c6cd9",
+   "5ff0478918259234",
+   "7203bd55d2e838d4",
+   "76268720d86a11e4",
+   "819d10d011260682",
+   "87cfd14d3907809f",
+   "8d97a27153e2024d",
+   "939798a48a003751",
+   "a272e0b92c541967",
+   "b5db457808c9ab14",
+   "b8056690b9293d73",
+   "b8b356bc19858eb6",
+   "c114946c7a35179b",
+   "c22e03ac062a1841",
+   "ce7bb90f91e1e243",
+   "ceea2e37da88234e",
+   "d0615a0e53bf0599",
+   "d3990dd59a7ece14",
+   "df47dfb74d58657a",
+   "e7e35f09ff66f891",
+   "ee3eeab43dc95cfc",
+   "f5bfae217e5cdce0",
+   "f717422e0e0bd459",
+   "f97bd45002c6f43e",
+   "ff70a24182223a58"
+  ],
+  "48": [
+   "11fb5aeba5d21403",
+   "15eed8eba5f1a8ef",
+   "1ac18eca5c8b6237",
+   "3866b3d73d35706d",
+   "a42b86f820ed375e",
+   "f1112675af888e82"
+  ]
+ }
+}

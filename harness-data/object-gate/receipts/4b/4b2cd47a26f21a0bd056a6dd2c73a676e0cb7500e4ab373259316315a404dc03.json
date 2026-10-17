@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b2cd47a26f21a0bd056a6dd2c73a676e0cb7500e4ab373259316315a404dc03",
+ "width": 64,
+ "height": 32,
+ "kind": "flat",
+ "name": "jp-mark-30-e",
+ "label": "jp_city/street_hand/jp-mark-30-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "painted road markings on asphalt",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat Japanese road speed limit marking (orange painted decal on asphalt) viewed top-down on the street surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4833
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted road markings",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Orange road markings painted flat on the asphalt surface, correctly depicted lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3770
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "painted road marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat Japanese road marking painted on asphalt, lying completely flat on the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "road marking painted flat on the asphalt",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Orange road marking decal painted directly on the ground surface, correctly shown flat in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4063
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.358Z",
+ "cells": {
+  "16": [
+   "2625ac2c85f5d76f",
+   "5c2acdfed441a882",
+   "6d3323df614e85ea",
+   "7e471c768c1aa032",
+   "b84aa5af9e94a63c",
+   "e40dd36052c861e5",
+   "ee4062a9ee585f75"
+  ],
+  "24": [
+   "05fbaf215cc4f491",
+   "122c73b9f198fc5f",
+   "1330598a51dfc200",
+   "1a8cca7d22cb89b3",
+   "1dd5d3b1d99e5293",
+   "23de7d302a51b849",
+   "36a00c155398478b",
+   "386d0eb335c61ae5",
+   "3fc551f930d86994",
+   "40a3f9892674afab",
+   "4638761ebefed7cf",
+   "4890fa52c42cd3b0",
+   "532cb0f635b0acf9",
+   "56e9b94a89f538e2",
+   "5956c87246b8651e",
+   "7013d6e70e165e64",
+   "7480e301ab4ab0b0",
+   "7b9e027717befd3c",
+   "8175b7e77eabf4d7",
+   "833e6af452f0b8ac",
+   "8a810b021f8cb4a5",
+   "925997cf6803e1bb",
+   "9a5982518856ce67",
+   "a288ae9dcddebcb6",
+   "ab8622f1b63afb5f",
+   "bb05c567819fcf28",
+   "c92480abb28a08b6",
+   "d327dd40b94ba284",
+   "f70c14a3abaf411b",
+   "f7a1d3576ebf8cb4",
+   "fb71454fa3dea349",
+   "fe3927dda64f02cf"
+  ],
+  "32": [
+   "01c0020a4541d9ef",
+   "f371ece28ecda93e"
+  ],
+  "48": [
+   "308c378abdd42113",
+   "5bc4b33cecf41cd9",
+   "823e4156e874a5fe",
+   "97f02f214906b1db",
+   "9d9c5951b5ba2b81",
+   "a3655950d913dbfa",
+   "a944a88f32300207",
+   "c68f85c349b31b0c",
+   "d199f835b6bd6d87",
+   "d1a329eea2a64928",
+   "dcee9534e5b98c36",
+   "ee6b53eed576c66f"
+  ]
+ }
+}

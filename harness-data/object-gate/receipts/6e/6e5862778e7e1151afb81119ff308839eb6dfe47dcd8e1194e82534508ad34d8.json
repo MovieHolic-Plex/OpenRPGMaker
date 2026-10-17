@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e5862778e7e1151afb81119ff308839eb6dfe47dcd8e1194e82534508ad34d8",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grey moon regolith ground with pebbles and small craters, four variants",
+ "label": "sf-station/sf-regolith",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grey moon regolith ground tiles with craters and pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 ground terrain tiles representing flat moon regolith surface with small foreshortened craters and pebble details viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grey moon regolith terrain tiles with pebbles and small craters",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal ground terrain tiles (four 16x16 variants) showing moon surface with pebbles and small recessed crater depressions seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4837
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grey moon regolith ground tiles with pebbles and small craters",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles viewed from top-down/3/4 perspective, complete with crater depressions and shaded pebbles across all four 16x16 variants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5019
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground plane with craters and pebbles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing moon regolith with shaded crater depressions and pebbles viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5336
+  }
+ ],
+ "decidedAt": "2026-10-13T15:44:10.256Z",
+ "cells": {
+  "16": [
+   "302fec7541079e85",
+   "36195fe44594d3d7",
+   "895ddb7c628a83ec",
+   "a7c00a63ab7a671f"
+  ],
+  "24": [
+   "0ee213343675c14f",
+   "13b5676526fedc4d",
+   "1c0c008c9c7b5377",
+   "21969af8f7d820d6",
+   "2be5845a517ebc44",
+   "323b1eff56a622e2",
+   "35684dcf7b738cb6",
+   "4984048aa58d965c",
+   "59c099fadb763118",
+   "59ffe6be24a514ed",
+   "8cb6b7a288337b9d",
+   "93dcad883009ad0c",
+   "a664b7fe635ba550",
+   "aa3e0b53ea7843c6",
+   "bad6f8ccb66a52ec",
+   "d124f93c63cc1f19",
+   "d761dba63c889836",
+   "f8d12c5cc6a40fe3"
+  ],
+  "32": [
+   "4e845be69e23d155",
+   "670d95a4f3e33066",
+   "c4916a92ccc8fb0a",
+   "e13479dfeb9bcbbd"
+  ],
+  "48": [
+   "21869646fb794df6",
+   "224e515e9c9a929c",
+   "239c54f96b98d277",
+   "2d408d43848d8948",
+   "2dc64e48bab11abf",
+   "88cc043ee20d5584",
+   "8bb55f53da8474ba",
+   "9fa1f440360cd63f",
+   "bc84e6a76a803aa5",
+   "ec6994211351cf38",
+   "ee139534e4f756b4",
+   "f1373839bf66699b"
+  ]
+ }
+}

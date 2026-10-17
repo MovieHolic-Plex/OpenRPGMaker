@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29d84367b4f258f07ec05eb3ba46dc408b9c9f4ad1df337ea708684ea13d82f9",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "카페 원탁",
+ "label": "modern_city/interior/mci-cafe-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round tabletop on pedestal stand",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cafe table features a clear 8-row elliptical top surface viewed from above (rows 12-19) mounted on a central pedestal pole and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4476
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round tabletop on pedestal base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is rendered as an ellipse foreshortened from above spanning rows 12-18 (approx. 7 rows), showing a clear horizontal top surface atop a pedestal stem and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4818
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round cafe table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round tabletop is properly foreshortened into an ellipse spanning rows 12 to 19 (about 8 rows tall), resting on a central pedestal leg and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round cafe table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly rendered as a foreshortened ellipse spanning rows 12 to 18 (approx 7 rows tall) above the table apron, stem, and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4354
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.630Z",
+ "cells": {
+  "16": [
+   "73e1e82399fd1ae6",
+   "cfc7efb70d16c89f"
+  ],
+  "24": [
+   "2434b44bea32fdf4",
+   "297f3823c3c34dbb",
+   "4c824fe4da3d5ef9",
+   "56d5c37e5166a5fc",
+   "67bc5151a7cb346a",
+   "7bf63f07e61d05de",
+   "ca9692cb66604ec7",
+   "f4c67cb9213437eb",
+   "f8fce65918e80d94"
+  ],
+  "32": [
+   "1a6d14cf4785bbf6",
+   "ad7a33103f693df6",
+   "cc69a68e6aa0e29c"
+  ],
+  "48": [
+   "6bd6f165ef49d012",
+   "73f9df5fe7bd8abe",
+   "7d41ecd6b6e9cf98",
+   "c03f5b508317a987",
+   "cf400dea41b138bb",
+   "d50b5fa7a586728b"
+  ]
+ }
+}

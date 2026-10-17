@@ -5,6 +5,8 @@
 // 그 평가 중에 터지는 예외를 잡으려면 트랩 모듈이 첫 import 여야 한다 —
 // 이 모듈은 import 시점에 스스로 설치한다(근거는 src/app/errorTrap.ts 하단 주석).
 import { installGlobalErrorTrap } from "@/app/errorTrap";
+// 두 번째 import: 번들 첫 평가 시각을 새긴다(import 시점 부수효과). 아래 무거운 모듈 평가가 이 뒤에 온다.
+import { bootMark, installBootSummaryFallback } from "@/util/bootMarks";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import "./styles/index.css";
 import { mountWindowControls } from "@/start/windowControls";
@@ -16,8 +18,9 @@ import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";
 import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
-import { bootApp } from "@/app/mode";
-import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
+import { bootApp, isModeShellMounted as modeShellMountedForBootFailure } from "@/app/mode";
+import { dismissBootLoader, failBootLoader, reportBootStage } from "@/app/bootLoader";
+import { expectBootSettle } from "@/util/bootSettled";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
@@ -31,7 +34,12 @@ import { configureProjectInterviewBootPreparation } from "@/editor/projectInterv
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
 installGlobalErrorTrap();
+installBootSummaryFallback();
 installVitePreloadRecovery();
+// 로드 직후 걸리는 «한가할 때» 일(요약 데우기)은 첫 화면 뒤로 미룬다(src/util/bootSettled.ts).
+expectBootSettle();
+// 번들의 모든 import 평가가 끝났다(여기까지가 «JS 내려받기 + 파싱 + 평가»).
+bootMark("js-ready");
 
 // 개발/테스트 플래그를 URL 파라미터에서 body class로 변환.
 // 각 플래그는 대응하는 CSS 모드(palette compact scroll 등)를 토글한다.
@@ -94,7 +102,17 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
 void registerPwaIfEnabled();
 // 부팅이 어디서 터지든 첫 로드 로더가 오류 화면·빈 셸을 덮은 채 남지 않게 한다(정상 경로는 mode.ts 가 먼저 걷는다).
 void bootEditorWithOpenedProject(app)
-  .finally(dismissBootLoader)
+  .then(dismissBootLoader, (error: unknown) => {
+    // 부팅이 던졌다. 스플래시가 아직 떠 있으면(= 편집기 셸이 안 떴다) 걷지 말고 실패 메시지 + 다시 시도를 보인다 —
+    // 걷으면 빈 셸만 남고, 안 걷으면 영원히 돈다. 셸이 이미 떴으면 걷고(원래 동작) 오류는 그대로 던진다.
+    if (document.getElementById("oprn-boot-loader") && !modeShellMountedForBootFailure()) {
+      failBootLoader(error, "unknown");
+      console.error("[boot] editor boot failed:", error);
+      return;
+    }
+    dismissBootLoader();
+    throw error;
+  })
   .then(openClassicEventEditorCaptureIfRequested);
 
 /**

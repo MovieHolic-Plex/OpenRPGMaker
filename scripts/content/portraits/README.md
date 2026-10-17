@@ -33,3 +33,11 @@ python3 scripts/content/portraits/finalize.py
 - 얼굴 칸 대응: `portraits.py` 의 `EMO_CELL`(happy=02, surprised=04, angry=09, sad=10 … wink=15). 표정 이름은 `src/assets/sharedPortraitAssets.ts` 와 같아야 한다.
 - 얼굴↔칩: Actor1 0–7→Actor1, 8–15→Actor2 / Actor2 0–7→Actor3, 8–15→Actor4 /
   People1 0–7→People1, **8–15→People2 0–7** / People2 사람→People3, 동물→Animal / Monster→Monster1·2 (`charset-map.json`, `portraits.py` `chip_map`).
+
+## 현대 연애 칩(Modern1~3) 짝 초상 (2026-10-16)
+
+현대 칩에는 48px 얼굴이 없다 — **칩이 정답**이고 흉상·전신을 새로 그린다. `modern_portraits.py`(후보 생성·눈가림 시트) → 독립 판정자가 1등을 고르면
+`pick.json`/`emo-pick.json` → `modern_finalize.py`(128색·테두리 제거). 줄기 이름은 `modern-<칩 id 뒤쪽>`, 24종(1차 12 + 2차 12) × 흉상·전신 × 5표정(기본·기쁨·놀람·슬픔·당황).
+세트 목록·표정은 `sharedPortraitAssets.ts` 의 `MODERN_PORTRAIT_SETS`·`MODERN_PORTRAIT_EXPRESSIONS`, 칩↔흉상 짝은 `sharedCharacterGraphics.json`(얼굴 칸 = 흉상 base).
+`resolveAppearancePortrait` 는 외형 칸이 비어도 칩의 짝 초상을 채운다. 없는 표정(예: 분노)은 대사가 기본 그림에 머문다.
+런타임 확인: `scripts/qa/runtime/modern-portraits-fixture.mts` + `modern-portraits.scenario.mjs`. 2차 시연은 `modern-portraits-2-fixture.mts` + `modern-portraits-2.scenario.mjs`. 새 칩을 더하면 `ROSTER`·`MODERN_PORTRAIT_SETS`·대응표 행을 같이 늘린다.

@@ -2,6 +2,7 @@ import { giftRankEmote } from "@/project/emotes";
 import { showSceneEmote } from "@/player/playSceneEmotes";
 import { giftDayKey } from "@/project/session";
 import { store } from "@/project/store";
+import { friendshipDisplayMax } from "@/project/socialLoop";
 import { formatFriendshipFeedback, giftRankForItem, giveGiftToNpc, giftResponseForKey } from "@/project/friendship";
 import { resolveCharacterSpeaker, resolveGiftPrefs, resolveGiftResponses } from "@/project/characterProfiles";
 import { resolveSocialKey } from "@/project/socialKey";
@@ -34,7 +35,7 @@ export async function playGiftSelection(scene: PlaySceneContext, event: GameEven
   if (result.ok) {
     // 선물 반응을 대사창 밖에서도 보여준다 — 등급이 정수리에 뜨므로 저작자가 아무것도 안 해도 읽힌다.
     showSceneEmote(scene, event.id, giftRankEmote(giftRankForItem(resolveGiftPrefs(project, event), item.id)));
-    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
+    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship, max: friendshipDisplayMax(project) });
     await showGiftMessage(scene, event, `${result.message}\n${feedback}`);
     return;
   }

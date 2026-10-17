@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d17879e59abbb70b018c3323824cc68123f67297640db4527f2c00ac49c105e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "가스 가로등(무쇠 기둥·켜진 등)",
+ "label": "steampunk-city/sp-gas-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamppost cap and housing",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lamppost is viewed from above (rows 2 to 11, ~9 rows tall), with circular rims curving downward at the front to correctly convey the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8610
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamppost (lantern cap, glazed housing, pole, and domed base)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap at the top is viewed from a 3/4 overhead angle, showing its upper domed roof surface and finial over rows 2-10 with downward-curving circular rims. The base and collars similarly curve downward to indicate the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8930
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The street lamp is drawn as a flat front elevation. The lantern roof, rectangular glass panes, pole collars, and base show no foreshortened top surfaces from a 3/4 perspective, with all horizontal features drawn as flat horizontal lines or front-facing curves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11098
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas streetlamp with lantern head, iron post, and domed base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The streetlamp is drawn in a pure front elevation: the lantern frame, collar rings on the pole (rows 20-22, 30-32), and lantern base are completely flat horizontal rectangles with 0 rows of foreshortened top surface visible from above. The cap and base are drawn as flat 2D silhouettes without top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11588
+  }
+ ],
+ "decidedAt": "2026-10-13T18:31:07.466Z",
+ "cells": {
+  "16": [
+   "04ab9664130b219a",
+   "0d69b1db6a774a3b",
+   "31edc23e54cc6300"
+  ],
+  "24": [
+   "4e993719270562a1",
+   "5bb156a7d8e73367",
+   "665b5da0bea7898d",
+   "81d3d741747e5ef4",
+   "c2e77bdf17709d5f",
+   "e91982a3347a7bfc"
+  ],
+  "32": [
+   "0bf2c21386cbb910",
+   "301ce90fdc63c840",
+   "363c5f9f669c199a",
+   "384aff98a79a6880",
+   "40fbc0164b43b502",
+   "91badc39b65dbc65",
+   "9a08c6f44398fa5e",
+   "addf959f9b49f094",
+   "afd15d3d1f6c9cd1",
+   "b8ddd43ab951f6c5",
+   "befe0ddbf6bb998b",
+   "edec9d4c45f5d52a"
+  ],
+  "48": [
+   "5a62292dd31b5399",
+   "f61888afa7e51d27",
+   "f8fe75d3d6aa12a0"
+  ]
+ }
+}

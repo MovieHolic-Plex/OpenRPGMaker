@@ -647,6 +647,7 @@ function validateCondition(
     case "actorState":
     case "partyLeader":
     case "partySize":
+    case "badgeCount":
     case "facing":
     case "relativeFacing":
     case "hiding":
@@ -713,6 +714,9 @@ function validateCondition(
       return;
     case "itemUsed":
       requireReference(issues, pageId, "reference.item.missing", "사용한 아이템", condition.itemId, refs.items, { testId: "event-condition-item-used" }, commandPath);
+      return;
+    case "partyKnowsSkill":
+      requireReference(issues, pageId, "reference.skill.missing", "필드 스킬", condition.skillId, refs.skills, { testId: "event-condition-party-knows-skill" }, commandPath);
       return;
   }
   const exhaustive: never = condition;

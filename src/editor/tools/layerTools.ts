@@ -11,6 +11,7 @@ import { shapeWorldmapOutsideStamp } from "@/project/worldmapBrushStamp";
 import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { compactMapLayers, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
+import { sanitizeRiversidePromenade } from "@/project/startRoutePaint";
 import type { GameMap } from "@/project/types";
 import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT, inMapBounds, passabilityWarning, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -165,6 +166,7 @@ const stampLayerBlock: ToolDefinition = {
       for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(view, group, points);
     }
     if (reshape) shapeWorldmapOutsideStamp(map, tileset, written.get(1) ?? [], written.get(3) ?? []);
+    sanitizeRiversidePromenade(draft, map);
     compactMapLayers(map);
 
     const touched = [...new Map([...written.values()].flat().map((p) => [`${p.x},${p.y}`, p] as const)).values()];

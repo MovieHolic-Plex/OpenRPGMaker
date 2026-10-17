@@ -10,7 +10,10 @@
  *                                              이미 있는 생성 원본을 후보 run 으로 등록
  *   pick   --species <id> --side front|back [--action <동작>] --run <run> --candidate <k> [--note <text>]
  *   build                                      골라 둔 격자 → public/assets/harnesses/... 스프라이트·대기·동작 스트립 + 검사
- *   check                                      번들 검사만
+ *   check                                      번들 검사만 (색·윤곽·애니메이션·실루엣 겹침)
+ *   refit [--species <id>]                     후보 폴더의 스프라이트·시트를 현재 캔버스 규격으로 다시 만든다(생성 없음)
+ *   grid                                       고른 그림마다 블록 크기·원본 칸 수·축소 여부 (격자 계약)
+ *   manifest                                   번들 폴더 → 런타임 목록(src/assets/harnessMonsterBundle.json). build 가 끝에 자동 실행
  *   preview [--species <id>]                   번들 스프라이트·애니메이션을 한 쪽 HTML 로 (qa-runs/.../preview/)
  */
 import { createHash } from "node:crypto";
@@ -19,8 +22,9 @@ import { join, relative, resolve } from "node:path";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../harness";
 import { cleanReference, magentaCanvas, pixelize, toSprite } from "../pixel/pipeline";
 import type { GridOptions } from "../pixel/grid";
-import { SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
-import { checkDirection, checkFrames, checkPair, checkSprite, type CheckIssue } from "../checks/checks";
+import { MAX_INK_SIDE, SPRITE_CANVAS, type SpriteSide } from "../pixel/fit";
+import { checkEyes } from "../checks/eyes";
+import { checkDirection, checkFrames, checkPair, checkSprite, similarSilhouettes, type CheckIssue } from "../checks/checks";
 import { actionPrompt, backPrompt, evolutionPrompt, frontPrompt } from "../prompts/prompts";
 import { emptyLedger, validateSeed, type ActionContract, type ActionKind, type MonsterLedger, type MonsterSeed, type SpeciesSeed } from "../seed";
 import { idleFrames } from "../anim/idle";
@@ -129,7 +133,7 @@ function pickedSprite(ledger: MonsterLedger, species: SpeciesSeed, which: Sprite
 }
 
 /**
- * 줄 격자 → 112 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞추고,
+ * 줄 격자 → 캔버스 프레임 (build 와 후보 시트가 같은 함수를 쓴다). 0번 폭을 기준 스프라이트 폭에 맞추고,
  * 공격·피격은 뒷발(공격 방향 반대쪽 끝)을 고정한다 — 덤빈 거리가 프레임 안에 남는다.
  */
 function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaImage, which: SpriteSide, stage: 1 | 2 | 3, base: RgbaImage) {
@@ -138,7 +142,8 @@ function actionFramesFromGrid(seed: MonsterSeed, actionId: string, grid: RgbaIma
   return rowFrames(splitRow(grid, action.frames), which, stage, cropToInk(base).width, rear);
 }
 
-type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
+/** eye: 눈 규칙(checks/eyes.ts) 결과 — 앞모습 pass=false 는 판정 대상 탈락, pair 는 두 눈 확인(참고) */
+type Candidate = { k: number; raw: string; grid: string; sprite: string; sha256: string; block: number; colors: number; issues: CheckIssue[]; eye?: { pass: boolean; pair: boolean } };
 type RunRecord = { species: string; side: SpriteSide; prompt: string; reference: string; fixedBlock?: number; candidates: Candidate[] };
 
 /** 원본 PNG 바이트들을 도트화해 run 폴더에 후보로 쓰고, 비교 시트를 만든다. */
@@ -154,10 +159,13 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
     writeFileSync(raw, bytes);
     try {
       const { grid, block, colors } = pixelize(readPng(raw), seed.style.maxColors, gridOptions);
-      const sprite = toSprite(grid, which, species.stage).sprite;
+      const fit = toSprite(grid, which, species.stage);
+      const sprite = fit.sprite;
       writePng(join(dir, `grid-${k}.png`), grid);
       writePng(join(dir, `sprite-${k}.png`), sprite);
-      candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues: checkSprite(sprite, seed.style.maxColors).issues });
+      const issues = checkSprite(sprite, seed.style.maxColors, which, species.stage as 1 | 2 | 3).issues;
+      const eye = checkEyes(sprite, which, species.stage as 1 | 2 | 3);
+      candidates.push({ k, raw: `raw-${k}.png`, grid: `grid-${k}.png`, sprite: `sprite-${k}.png`, sha256: sha256(bytes), block, colors, issues, eye: { pass: eye.pass, pair: eye.pair } });
     } catch (error) {
       console.error(`후보 ${k} 도트화 실패: ${error instanceof Error ? error.message : error}`);
     }
@@ -171,14 +179,17 @@ function writeRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSide, pr
 }
 
 function sheetHtml(species: SpeciesSeed, which: SpriteSide, id: string, candidates: Candidate[]): string {
+  // 실루엣 테스트: 같은 그림을 검정 단색 마스크 64px 로도 보여 준다 (시그니처만으로 종이 구별되는지 — 디자인 규칙 ④)
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
-    return `<figure><img src="${c.sprite}" width="336" height="336"><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
+    return `<figure><img src="${c.sprite}" width="${SPRITE_CANVAS * 5}" height="${SPRITE_CANVAS * 5}"><div class="sil"><img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS}" height="${SPRITE_CANVAS}"> <img class="mask" src="${c.sprite}" width="${SPRITE_CANVAS * 2}" height="${SPRITE_CANVAS * 2}"></div><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}${c.eye ? ` · 눈 규칙 ${c.eye.pass ? "통과" : "<b class=\"error\">탈락</b>"}${which === "front" && c.eye.pass ? (c.eye.pair ? " · 두 눈" : " · 한 눈") : ""}` : ""}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
   }).join("");
   return `<!doctype html><meta charset="utf-8"><title>${species.name} ${which} ${id}</title>
 <style>body{margin:0;background:#15171d;color:#dfe3ea;font:14px system-ui,sans-serif;padding:12px}main{display:flex;flex-wrap:wrap;gap:10px}
-figure{margin:0;background:#d6e4cd;color:#1d2a1d;padding:6px}img{image-rendering:pixelated;display:block}ul{margin:4px 0;padding-left:16px}.error{color:#b00}.warn{color:#8a5a00}</style>
-<h1>${species.name} (${species.id}) · ${which === "front" ? "앞모습(상대)" : "뒷모습(내 몬스터)"} · run ${id}</h1><main>${cells}</main>`;
+figure{margin:0;background:#d6e4cd;color:#1d2a1d;padding:6px}img{image-rendering:pixelated;display:block}ul{margin:4px 0;padding-left:16px}.error{color:#b00}.warn{color:#8a5a00}
+.sil{display:flex;gap:8px;align-items:flex-end;margin-top:4px}.mask{filter:brightness(0)}</style>
+<h1>${species.name} (${species.id}) · ${which === "front" ? "앞모습(상대)" : "뒷모습(내 몬스터)"} · run ${id}</h1>
+<p>시그니처: ${species.signature}</p><main>${cells}</main>`;
 }
 
 type ActionCandidate = { k: number; raw: string; grid: string; strip: string; sha256: string; block: number; colors: number; issues: CheckIssue[] };
@@ -215,22 +226,22 @@ function writeActionRun(seed: MonsterSeed, species: SpeciesSeed, which: SpriteSi
   writeFileSync(join(dir, "run.json"), JSON.stringify(record, null, 2) + "\n");
   const cells = candidates.map((c) => {
     const issues = c.issues.map((i) => `<li class="${i.level}">${i.message}</li>`).join("");
-    return `<figure><div class="play" style="background-image:url(${c.strip})"></div><img src="${c.strip}" height="112"><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
+    return `<figure><div class="play" style="background-image:url(${c.strip})"></div><img src="${c.strip}" height="${SPRITE_CANVAS * 2}"><figcaption><b>${c.k}</b> · 블록 ${c.block}px · 색 ${c.colors}<ul>${issues}</ul><a href="${c.raw}">원본</a></figcaption></figure>`;
   }).join("");
   writeFileSync(join(dir, "sheet.html"), `<!doctype html><meta charset="utf-8"><title>${species.name} ${which} ${actionId} ${id}</title>
 <style>body{margin:0;background:#15171d;color:#dfe3ea;font:14px system-ui,sans-serif;padding:12px}main{display:flex;flex-wrap:wrap;gap:10px}
 figure{margin:0;background:#d6e4cd;color:#1d2a1d;padding:6px}img{image-rendering:pixelated;display:block}ul{margin:4px 0;padding-left:16px}.error{color:#b00}.warn{color:#8a5a00}
 ${playCss(action.frames, action.frameMs)}</style>
 <h1>${species.name} (${species.id}) · ${which === "front" ? "앞모습" : "뒷모습"} · ${actionId} · run ${id}</h1>
-<p>기준: <img src="base.png" width="112" style="display:inline;background:#d6e4cd"></p><main>${cells}</main>`);
+<p>기준: <img src="base.png" width="${SPRITE_CANVAS * 2}" style="display:inline;background:#d6e4cd"></p><main>${cells}</main>`);
   console.log(`후보 ${candidates.length}개 → ${relativeToRepo(join(dir, "sheet.html"))}`);
   console.log(`고르기: npm run harness -- ${MONSTER_COLLECT_SPECIES_HARNESS.id} pick --species ${species.id} --side ${which} --action ${actionId} --run ${id} --candidate <번호>`);
   return id;
 }
 
 /** 스트립을 CSS 로 재생 (GIF 인코더 없이). 3배 = 내 몬스터 전투 배율 */
-function playCss(frames: number, frameMs: number, scale = 3, cls = "play"): string {
-  const w = 112 * scale;
+function playCss(frames: number, frameMs: number, scale = 2, cls = "play"): string {
+  const w = SPRITE_CANVAS * scale;
   return `.${cls}{width:${w}px;height:${w}px;background-size:${w * frames}px ${w}px;image-rendering:pixelated;animation:${cls}-${frames} ${frames * frameMs}ms steps(${frames}) infinite}
 @keyframes ${cls}-${frames}{from{background-position-x:0}to{background-position-x:-${w * frames}px}}`;
 }
@@ -277,7 +288,7 @@ async function stageBack(args: Args): Promise<void> {
   const front = loadLedger().picks[species.id]?.front;
   if (!front) throw new Error(`${species.id} 앞모습을 먼저 고른다 (pick --side front)`);
   const reference = encodePng(cleanReference(readPng(resolve(PATHS.data, front.grid))));
-  const prompt = backPrompt();
+  const prompt = backPrompt(species);
   const raws = await mapLimit(Array.from({ length: n }, (_, i) => i), 4, (i) =>
     generateImage({ prompt, reference, slug: `mcs-${species.id}-back-${i + 1}` }));
   writeRun(seed, species, "back", prompt, `clean:${species.id}-front`, raws);
@@ -421,7 +432,90 @@ function stageBuild(): number {
   }
   for (const [speciesId, manifest] of Object.entries(anim)) writeFileSync(join(PATHS.bundle, speciesId, "anim.json"), JSON.stringify(manifest, null, 2) + "\n");
   errors += stageCheck();
+  stageManifest();
   return errors;
+}
+
+/**
+ * 번들 폴더(public/assets/harnesses/monster-collect-species/<종>/)를 읽어 런타임 목록을 쓴다 — 이미지 바이트 없이 id·면·대기 칸 수만.
+ * 런타임(`src/assets/harnessMonsterArt.ts`)은 이 목록에 종이 있으면 `campaignSpeciesId` 로 이어진 캠페인 종의 그림을 번들 그림으로 바꾼다.
+ * 그림 파일이 실제로 있는 면만 싣는다(없는 면은 기존 그림으로 폴백).
+ */
+function stageManifest(): void {
+  const seed = loadSeed();
+  type Entry = { campaignSpeciesId?: string; front?: { idle?: { frames: number; frameMs: number } }; back?: { idle?: { frames: number; frameMs: number } }; field?: { sheet: number; index: number } };
+  const species: Record<string, Entry> = {};
+  // 따라다니기 걷기 칩: field_chip.py bake 가 쓴 field/index.json (시트 수 + 종별 시트·번호). 시트 파일이 실제로 있는 종만 싣는다.
+  const fieldIndexPath = join(PATHS.bundle, "field", "index.json");
+  const fieldIndex = existsSync(fieldIndexPath) ? (JSON.parse(readFileSync(fieldIndexPath, "utf8")) as { sheets: number; chips: Record<string, { sheet: number; index: number }> }) : undefined;
+  for (const sp of seed.species) {
+    const entry: Entry = {};
+    if (sp.campaignSpeciesId) entry.campaignSpeciesId = sp.campaignSpeciesId;
+    const manifestPath = join(PATHS.bundle, sp.id, "anim.json");
+    const anim = existsSync(manifestPath) ? (JSON.parse(readFileSync(manifestPath, "utf8")) as AnimManifest) : undefined;
+    for (const which of ["front", "back"] as const) {
+      if (!existsSync(bundlePath(sp.id, which))) continue;
+      const idle = anim?.sides[which]?.idle;
+      entry[which] = idle && existsSync(join(PATHS.bundle, sp.id, idle.path)) ? { idle: { frames: idle.frames, frameMs: idle.frameMs } } : {};
+    }
+    const chip = fieldIndex?.chips[sp.id];
+    if (chip && existsSync(join(PATHS.bundle, "field", `chips-${chip.sheet}.png`))) entry.field = { sheet: chip.sheet, index: chip.index };
+    if (entry.front || entry.back) species[sp.id] = entry;
+  }
+  mkdirSync(resolve(PATHS.manifest, ".."), { recursive: true });
+  writeFileSync(PATHS.manifest, JSON.stringify({ version: 1, canvas: SPRITE_CANVAS, ...(fieldIndex && fieldIndex.sheets > 0 ? { fieldSheets: fieldIndex.sheets } : {}), species }, null, 2) + "\n");
+  console.log(`런타임 목록 → ${relativeToRepo(PATHS.manifest)} (종 ${Object.keys(species).length})`);
+}
+
+/**
+ * 후보 폴더의 스프라이트·검사·시트를 현재 규격(캔버스·몸집)으로 다시 만든다. 격자(grid-k.png)는 그대로이고 생성은 하지 않는다.
+ * 규격이 바뀌었을 때(112 → 64, 2026-10-16) 이미 만든 후보를 새 캔버스에서 비교하려는 것.
+ */
+function stageRefit(args: Args): void {
+  const seed = loadSeed();
+  const only = args.flags.get("species");
+  let runs = 0;
+  for (const species of seed.species) {
+    if (only && species.id !== only) continue;
+    for (const which of ["front", "back"] as const) {
+      const base = join(PATHS.runs, species.id, which);
+      if (!existsSync(base)) continue;
+      for (const id of readdirSync(base)) {
+        const file = join(base, id, "run.json");
+        if (!existsSync(file)) continue;
+        const record = JSON.parse(readFileSync(file, "utf8")) as RunRecord;
+        for (const c of record.candidates) {
+          const grid = readPng(join(base, id, c.grid));
+          const sprite = toSprite(grid, which, species.stage).sprite;
+          writePng(join(base, id, c.sprite), sprite);
+          c.issues = checkSprite(sprite, seed.style.maxColors, which, species.stage as 1 | 2 | 3).issues;
+          const eye = checkEyes(sprite, which, species.stage as 1 | 2 | 3);
+          c.eye = { pass: eye.pass, pair: eye.pair };
+        }
+        writeFileSync(file, JSON.stringify(record, null, 2) + "\n");
+        writeFileSync(join(base, id, "sheet.html"), sheetHtml(species, which, id, record.candidates));
+        runs += 1;
+      }
+    }
+  }
+  console.log(`다시 만든 후보 폴더 ${runs}개 (캔버스 ${SPRITE_CANVAS})`);
+}
+
+/** 격자 보고: 고른 그림마다 생성 블록 크기·원본 도트 칸 수·64 캔버스로 줄인 배율. 종마다 원본 블록이 달라도 최종은 1칸 = 1도트 = 논리 화소 하나다. */
+function stageGrid(): void {
+  const seed = loadSeed();
+  const ledger = loadLedger();
+  console.log(`격자 계약: 캔버스 ${SPRITE_CANVAS} (몸 ${MAX_INK_SIDE} 이내), 1 도트 = 논리 화소 1 = 화면 2px, 전투 표시 ${SPRITE_CANVAS * 2}px`);
+  for (const species of seed.species) {
+    for (const which of ["front", "back"] as const) {
+      const pick = ledger.picks[species.id]?.[which];
+      if (!pick) continue;
+      const grid = readPng(resolve(PATHS.data, pick.grid));
+      const ink = cropToInk(grid);
+      const fit = toSprite(grid, which, species.stage);
+      console.log(`${species.id.padEnd(10)} ${which.padEnd(5)} 블록 ${String(pick.block).padStart(2)} · 원본 ${ink.width}x${ink.height}칸 → ${fit.ink.width}x${fit.ink.height} (${fit.factor.toFixed(2)}배 줄임)`);
+    }
+  }
 }
 
 function stageCheck(): number {
@@ -430,8 +524,8 @@ function stageCheck(): number {
   for (const species of seed.species) {
     const front = existsSync(bundlePath(species.id, "front")) ? readPng(bundlePath(species.id, "front")) : null;
     const back = existsSync(bundlePath(species.id, "back")) ? readPng(bundlePath(species.id, "back")) : null;
-    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors).issues);
-    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors).issues);
+    if (front) errors += printIssues(`${species.id} front`, checkSprite(front, seed.style.maxColors, "front", species.stage as 1 | 2 | 3).issues);
+    if (back) errors += printIssues(`${species.id} back`, checkSprite(back, seed.style.maxColors, "back", species.stage as 1 | 2 | 3).issues);
     if (front && back) errors += printIssues(`${species.id} 앞·뒤`, checkPair(front, back));
     const manifestPath = join(PATHS.bundle, species.id, "anim.json");
     if (!existsSync(manifestPath)) continue;
@@ -461,6 +555,9 @@ function stageCheck(): number {
       }
     }
   }
+  // 실루엣 테스트(디자인 규칙 ④): 윤곽이 거의 같은 종 짝은 경고 — 진화형이 1단계 복제인 경우도 여기서 걸린다
+  const fronts = seed.species.filter((sp) => existsSync(bundlePath(sp.id, "front"))).map((sp) => ({ id: sp.id, image: readPng(bundlePath(sp.id, "front")) }));
+  for (const pair of similarSilhouettes(fronts)) console.log(`  ! 실루엣 ${pair.a} ↔ ${pair.b}: 겹침 ${pair.iou.toFixed(2)} (64px 검정 마스크에서 구별되지 않는다)`);
   console.log(errors === 0 ? "검사: 오류 없음" : `검사: 오류 ${errors}개`);
   return errors;
 }
@@ -496,7 +593,7 @@ function stagePreview(args: Args): void {
         const name = `${species.id}-${which}-${state}.png`;
         copyFileSync(join(PATHS.bundle, species.id, entry.path), join(dir, name));
         const cls = `p-${species.id}-${which}-${state}`;
-        css.push(playCss(entry.frames, entry.frameMs, which === "back" ? 3 : 2, cls));
+        css.push(playCss(entry.frames, entry.frameMs, 2, cls));
         cells.push(`<figure><div class="${cls}" style="background-image:url(${name})"></div><figcaption>${which === "front" ? "앞" : "뒤"} · ${state} · ${entry.frames}장 ${entry.frameMs}ms${entry.loop ? " 반복" : ""}</figcaption></figure>`);
       }
     }
@@ -522,6 +619,9 @@ export async function run(argv: string[]): Promise<number> {
     case "pick": stagePick(args); return 0;
     case "build": return stageBuild() > 0 ? 1 : 0;
     case "check": return stageCheck() > 0 ? 1 : 0;
+    case "grid": stageGrid(); return 0;
+    case "refit": stageRefit(args); return 0;
+    case "manifest": stageManifest(); return 0;
     default:
       console.error(`모르는 단계: ${stage}. 단계: ${MONSTER_COLLECT_SPECIES_HARNESS.stages.map((s) => s.id).join(", ")}`);
       return 2;

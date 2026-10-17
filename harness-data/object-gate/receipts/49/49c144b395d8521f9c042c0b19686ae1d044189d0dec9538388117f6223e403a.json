@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49c144b395d8521f9c042c0b19686ae1d044189d0dec9538388117f6223e403a",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(기둥 + 백보드 + 링)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball hoop backboard and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The backboard shows a 5-pixel-tall top surface (rows 1-5) above its front face, the basketball rim is foreshortened as an ellipse with a visible 2-pixel-tall interior opening, and the base box shows a clear top surface (rows 39-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop (backboard, rim, and base)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoop shows a clear foreshortened elliptical rim (opening visible inside across 2 rows), the backboard has a 5-row deep visible top surface (rows 1-5), and the base shows a distinct top surface (rows 39-43) before the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8914
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop (backboard, rim, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the base (rows 39-43, 5px) and the backboard (rows 1-5, 5px) display clearly defined top surfaces. Additionally, the basketball rim is rendered as a foreshortened ellipse showing its opening from above (rows 21-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8724
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop backboard, pole, and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basketball hoop shows foreshortened top surfaces on both the backboard structure (rows 1-5) and the weighted base (rows 39-43), and the hoop rim is drawn as a clear top-down open ellipse with visible inner space (rows 21-22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8463
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.304Z",
+ "cells": {
+  "16": [
+   "1ffb0d3d918a0234",
+   "3b3ab1a7686beb72",
+   "6ddc7e9b20922439",
+   "97a764cd08398016",
+   "c9b96b4d111904e0",
+   "e2fed152d4597254"
+  ],
+  "24": [
+   "084e644575e687e4",
+   "1c9e928b5835836a",
+   "2e0c2d1caccdd6cf",
+   "31a2e4aed0b8f27b",
+   "3498de9c7aaee02f",
+   "3d6f31c3bef12c43",
+   "47f8577bee645359",
+   "55b31802be9a0b82",
+   "6865d7ce17f5f6e4",
+   "68d19f2a4f74ac9b",
+   "759688d03c9ffb48",
+   "9d501557d74f8758"
+  ],
+  "32": [
+   "08dee0732014cc2d",
+   "4c173f4488e94a12",
+   "a552953837e82709",
+   "bb2254be204c5829"
+  ],
+  "48": [
+   "5036ec0d9d3437b7",
+   "b0b71d6ad25eef48",
+   "cb068c45b3cedbb1"
+  ]
+ }
+}

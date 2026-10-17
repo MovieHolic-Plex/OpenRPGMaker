@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4ae914022aa705b935ab29463f87da25d1a60620bd68eb5a9c803a64e834071",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "wooden direction signpost with arrow boards",
+ "label": "sky-island/si-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden signpost with arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post ends bluntly at row 6 with no visible top surface cut face, and the arrow boards are drawn completely flat in pure front elevation with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4181
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signpost pole and arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and arrow boards are drawn in flat front elevation with no visible top surface on either the post cut end or the signboards (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signpost with two arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and arrow boards are drawn completely flat in pure front elevation; neither the top end of the post (row 6) nor the tops of the sign boards show any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden signpost with arrow boards",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signpost and arrow boards are drawn completely flat in pure front elevation; the top of the post (row 6) and the tops of both horizontal signboards show no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3965
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.430Z",
+ "cells": {
+  "16": [
+   "5e0e69a6f760781d",
+   "7d60adfc31545823"
+  ],
+  "24": [
+   "0cdb479cfea73b23",
+   "138c278ac886e94e",
+   "202b9eef1bd0f5cf",
+   "3ab86ccdb779c12b",
+   "431131949ab10140",
+   "62e28b40c51546de",
+   "8617f972eff21d23",
+   "8efee67a7b64fd59",
+   "91821328bdf9d213",
+   "ace5a0f95d2a15e5",
+   "c7653c700a5f806a",
+   "d9f7266bd75390f5"
+  ],
+  "32": [
+   "2632940919b19f75",
+   "b893e451e37cab52",
+   "fe84c423082e2df4"
+  ],
+  "48": [
+   "6489388ef779f40f",
+   "677de8b2eef75a70",
+   "7d74794512ddda75",
+   "bceefbd2a0e656e1",
+   "d0ce6f309549c7e7",
+   "ddc30f45b38e8f51"
+  ]
+ }
+}

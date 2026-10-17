@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-06",
+ "name": "붉은 머리 · 초록 줄무늬 후드",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy2:1",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-06",
+ "candidate_id": "t39",
+ "judge_totals_ABC": [
+  10,
+  9,
+  8
+ ],
+ "recipe": "gallery4-recipes.json#mix-06"
+}

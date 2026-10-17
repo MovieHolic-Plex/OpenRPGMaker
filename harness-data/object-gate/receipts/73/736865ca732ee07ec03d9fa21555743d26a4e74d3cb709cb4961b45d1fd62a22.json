@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "736865ca732ee07ec03d9fa21555743d26a4e74d3cb709cb4961b45d1fd62a22",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쓰러진 돌덩이",
+ "label": "desert-east/de-block-fallen",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "toppled stone block",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the fallen stone block spans rows 3 to 8 (6 source pixel rows) with clear top-down perspective, resting above the shaded south front face on rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4559
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the stone block is visible across rows 2–8 (6–7 pixel rows tall) with surface cracking, terminating in an edge highlight at row 8, while the south-facing front side spans rows 9–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6119
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fallen stone block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fallen block clearly shows its large horizontal top face (rows 2-8, 7 rows tall with an edge highlight on row 8) and its south-facing vertical front side (rows 9-12, 4 rows tall in shadow).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8686
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fallen stone block / slab lying on the ground",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fallen block is viewed from above in 3/4 perspective, showing its large upward-facing top surface (rows 3-8, 6 rows tall) and its south-facing vertical thickness/front edge (rows 9-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6866
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "8968eae230982df6"
+  ],
+  "24": [
+   "0c967688da636beb",
+   "1613cc029dc77df3",
+   "216b73b91d0e81ac",
+   "7dc8f869f46c912f",
+   "8265aa3fd36b1444",
+   "9a29cc97a979c19c"
+  ],
+  "32": [
+   "14404bf4a85380cd",
+   "1db60b6211c918da",
+   "6536b907d9f44f23",
+   "aee65e6251076034",
+   "bb2517d47d029e4b",
+   "e98fc27937c28967"
+  ],
+  "48": [
+   "41e4fb727d44af83",
+   "6280658510820587",
+   "69ae64d05234f812",
+   "75d99d527aefbea8",
+   "bea2109180d6b002",
+   "eb25b91d8bbc996b"
+  ]
+ }
+}

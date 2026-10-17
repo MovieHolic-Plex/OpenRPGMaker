@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c581b39d201b2c7ecd8730fb13f9d0a56a721568300d1146ccea744a13f84f58",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "prehistoric stone-age dirt",
+ "label": "prehistoric/ph-dirt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 canvas with earthy dirt texture and small pebble details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5039
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down dirt surface with pebbles across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat dirt ground terrain tile filling the 16x16 frame, appropriate for a top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing dirt surface viewed top-down with small pebbles and texture variations across the full tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  }
+ ],
+ "decidedAt": "2026-10-14T00:09:46.451Z",
+ "cells": {
+  "16": [
+   "63b90c8c1de8c9f9"
+  ],
+  "24": [
+   "059eec05b9601b76",
+   "39e83b82770a251d",
+   "655c523f20996778",
+   "6cca995297114730",
+   "a50fb382a496aae2",
+   "c919753f7cfdccd3"
+  ],
+  "32": [
+   "5738dd30cfaf9b83",
+   "948d62fa9b79383c",
+   "b6bee38fcd70ec5a",
+   "ca6edf8720414e4e",
+   "ea18a7c598a92311",
+   "f9acfa45186c0c91"
+  ],
+  "48": [
+   "048459537410747b",
+   "2f402e04665d3cb0",
+   "822b2d4b59ff6e2a",
+   "88c9568f20d52f7c",
+   "9360fe8b147c4e32",
+   "e5f368e0c09ecd65"
+  ]
+ }
+}

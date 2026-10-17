@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d7ec1dd5fa10e54b4aff7a68e0309be6e44bec031d6672d406066d93eb19dc2",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "빨강 무쇠 우체통(둥근 기둥, 넓은 둥근 뚜껑이 위에서 보인다)",
+ "label": "steampunk-city/sp-pillar-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast iron pillar postbox with domed lid",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap/lid of the pillar box visibly presents its top surface from row 5 to row 10 (6 pixel rows tall) above the overhanging rim, showing proper 3/4 foreshortening rather than a flat front-facing rim line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13551
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar-style round postbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in pure front elevation. The top is a front-facing dome with a finial knob protruding from the silhouette apex (rows 4-5) rather than centered on an elliptical top surface. The mail slot (rows 14-15) and base plinth (rows 28-31) are also drawn with straight horizontal lines without any 3/4-view downward curvature or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10950
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red cast iron pillar postbox with domed lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The postbox is drawn in a pure front elevation: the domed roof (rows 5-10) is rendered as a front-facing arch ending at a flat horizontal rim, the mail slot (rows 14-15) is a straight horizontal rectangle, and the base collar (rows 28-30) is completely straight horizontally with no perspective curvature or foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical pillar postbox with cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/lid of the cylindrical postbox shows a foreshortened circular/elliptical top surface spanning rows 6 to 10 (5 pixel rows tall) above the overhang rim and front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10468
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.517Z",
+ "cells": {
+  "16": [
+   "970121c839238ce2",
+   "b8c0c0be6b9405b0"
+  ],
+  "24": [
+   "0d9e0b2fc8f563cd",
+   "1401a9c7927f2d58",
+   "4b1d7cb61cbf5489",
+   "5e12351e42596e23",
+   "6bcc743a72a3d568",
+   "73bcf2cfe9701423",
+   "abf837f69d423594",
+   "b7d1113e08173f71",
+   "c1aa0c4ae5b34fa0",
+   "e95dbd29d39a00fb",
+   "ee4ad869656bac42",
+   "f32fe6ee18eb649d"
+  ],
+  "32": [
+   "6353bce70f87f32e",
+   "6cdafe7fe252b55e",
+   "a1d6d4cac0d173f6"
+  ],
+  "48": [
+   "45366bbef1fbd1bf",
+   "7abef9c6d8ee0433",
+   "807837e2642db27b",
+   "ce79e933d6ded2e2",
+   "dc85497a97f36752",
+   "e4c17178d9db71be"
+  ]
+ }
+}

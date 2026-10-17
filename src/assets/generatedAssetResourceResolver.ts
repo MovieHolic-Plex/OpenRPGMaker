@@ -14,9 +14,13 @@ import { findOpeningStillPackEntry } from "./openingStillPackRuntime";
 import { resolveSeCatalogAssetUrl } from "./seCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveOprnMonsterCharsetUrl } from "./oprnMonsterCharsets";
+import { resolveHeroesCharsetUrl } from "./heroesCharsets";
+import { resolveModernCharsetUrl } from "./modernCharsets";
+import { resolveScarloxyPeopleCharsetUrl } from "./scarloxyPeopleCharsets";
 import { resolveWizardingCharsetUrl } from "./wizardingCharsets";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
+import { resolveHarnessMonsterCharsetUrl, resolveHarnessMonsterUrl } from "./harnessMonsterArt";
 import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
 import { resolveOgaCraftpixAssetUrl } from "./ogaCraftpixBackgrounds";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
@@ -49,6 +53,15 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
+  // 연애(현대 캠퍼스) 타이틀 — 벚꽃 교정 옥상 노을, 교복 둘이 난간에서 교정을 내려다본다(2026-10-16, gpt-image-2.5-sunburst 로 만든 큰 그림).
+  "oprn-title-romance-campus": "/assets/generated/title/romance-campus-spring.jpg",
+  // 소재별 연애 타이틀(2026-10-17 romance-loop-2, 같은 모델·같은 화풍). 후보 12장 중 독립 판정 + 감독 선택 — 출처: public/assets/generated/title/romance-keyart-provenance.json.
+  "oprn-title-romance-cafe": "/assets/generated/title/romance-cafe.jpg",
+  "oprn-title-romance-school": "/assets/generated/title/romance-school.jpg",
+  "oprn-title-romance-office": "/assets/generated/title/romance-office.jpg",
+  "oprn-title-romance-town": "/assets/generated/title/romance-town.jpg",
+  // 몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16) — gpt-image-2.5-sunburst 생성 → 격자 복원 도트화. 출처·프롬프트: public/assets/emerald-monster/professor-bust-provenance.json.
+  "oprn_emerald_professor_bust": "/assets/emerald-monster/professor-bust.png",
   "horror-mystery-blue-gallery": "/assets/generated/title/horror-mystery-blue-gallery.png",
   // ── 구 id 별칭 (읽기 호환. 새로 쓸 때는 위 id 를 쓴다) ──────────────
   "rpg-zzu-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
@@ -201,10 +214,16 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveFacesetFaceAssetUrl(resourceId) ??
     resolveSharedPortraitUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
+    // 몬스터 수집 하네스가 사람이 고른 종 그림(앞·뒤). 번들에 없으면 null 이라 아래 해석기로 넘어간다.
+    resolveHarnessMonsterUrl(resourceId) ??
+    resolveHarnessMonsterCharsetUrl(resourceId) ??
     resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
     resolveOprnMonsterCharsetUrl(resourceId) ??
     resolveWizardingCharsetUrl(resourceId) ??
+    resolveHeroesCharsetUrl(resourceId) ??
+    resolveModernCharsetUrl(resourceId) ??
+    resolveScarloxyPeopleCharsetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveOgaBackdropAssetUrl(resourceId) ??
     resolveOgaCraftpixAssetUrl(resourceId) ??

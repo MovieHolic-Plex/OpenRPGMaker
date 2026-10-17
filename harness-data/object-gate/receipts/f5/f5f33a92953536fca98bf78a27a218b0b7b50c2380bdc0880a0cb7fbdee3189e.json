@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5f33a92953536fca98bf78a27a218b0b7b50c2380bdc0880a0cb7fbdee3189e",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "좌상 사자 석상(받침)",
+ "label": "desert-east/de-guardian-statue",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seated lion statue on plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth shows a large foreshortened elliptical top surface spanning roughly rows 20 to 26 (approx 7 rows tall) beneath the seated figure in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5686
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seated lion/dog statue on an oval pedestal plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue sits on a wide oval plinth whose foreshortened top surface is clearly visible from rows 19 to 26 (7-8 rows tall) before meeting the southern front rim and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lion statue on base/plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base/plinth of the statue displays a clear, foreshortened top surface spanning rows 20-26 (approx 7 pixel rows tall), correctly conveying the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5336
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lion statue on large round plinth",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth presents a large foreshortened elliptical top surface spanning rows 19 to 26 (approx 7-8 rows tall) before stepping down to the south-facing rim and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4689
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:46.723Z",
+ "cells": {
+  "16": [
+   "6d06fba266e57cad",
+   "d7baf215cd2ccd7c"
+  ],
+  "24": [
+   "0afbe2f1b4e642e5",
+   "1189bb2dafc2039d",
+   "20bfe12a75fe43c9",
+   "258b1fa8e1d7bca6",
+   "450a15090b120f79",
+   "45c66ea0dad5050a",
+   "7ce053c06e74c053",
+   "c6a3f3bce1a7128c",
+   "cb357b41c763bbb3",
+   "dad65de95db0808d",
+   "dbcc1c86d29f2d46",
+   "de17352ded3619b3"
+  ],
+  "32": [
+   "287246cec0ea9c13",
+   "b8008b1eb9fe3dd7",
+   "e4ce2a81bf6575dd"
+  ],
+  "48": [
+   "1fedbd92739ed9a7",
+   "6f85ca73d833d3b4",
+   "821e32cee265fb6b",
+   "a6b997e79abf62b3",
+   "de9db2f923ca117f",
+   "fbbead243f53cc72"
+  ]
+ }
+}

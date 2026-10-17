@@ -35,7 +35,7 @@ const shot = async (label) => { await page.screenshot({ path: `${out}/frames/${S
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-ui-mode", "standard");
   for (const key of ["oprn:editor-welcome-dismissed", "oprn:standard-welcome-seen", "oprn:coachmarks-basic-v1"]) localStorage.setItem(key, "1");
-  localStorage.setItem("oprn:ai-config", JSON.stringify({ providerId: "google-antigravity", model: "gemini-3.8-flash", piApply: "auto", piTeam: false }));
+  localStorage.setItem("oprn:ai-config", JSON.stringify({ providerId: "google-antigravity", model: "gemini-4-argon", piApply: "auto", piTeam: false }));
   const original = window.fetch.bind(window);
   const qa = window.__mapRunQa = { t0: performance.now(), runs: [], acks: [] };
   const now = () => Math.round(performance.now() - qa.t0);

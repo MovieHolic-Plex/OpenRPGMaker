@@ -1,5 +1,6 @@
 import { PI_APPLY_MODES, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
+import { PIXEL_MODEL_CHOICES, resolvePixelModel } from "@/ai/pixelModel";
 // AI 설정 전용 모달 — 채팅 본문과 분리된 설정 표면.
 // loadAiConfig/saveAiConfig 자동 저장 계약을 유지한다.
 
@@ -20,7 +21,8 @@ import {
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { MODEL_PRESETS, tierModelFor, type ModelPreset } from "@/ai/modelPresets";
 import { isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
-import { OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { getOhMyPiProvider, parseOhMyPiProvider, selectableOhMyPiProviders, type OhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { OPENAI_COMPAT_CHANGED_EVENT, getKnownOpenAiCompatEndpoint, isOpenAiCompatProviderId, openAiCompatModelBlockReason } from "@/ai/openAiCompat";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, IMAGE_MODEL_CATALOG } from "@/ai/imageModelCatalog";
 import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { configForProviderSelection, workProviderIds } from "@/ai/providerSelection";
@@ -47,6 +49,7 @@ import { dismissToastsByKey, toast } from "@/util/toast";
 
 const INVALID_MODEL_TOAST_KEY = Symbol("ai-settings-invalid-model");
 import { renderAiAuthSettings, type AiAuthStatusSnapshot } from "./aiAuthSettings";
+import { renderAiCompatSettings, type AiCompatRoleSlot } from "./aiCompatSettings";
 import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
@@ -246,12 +249,14 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-config-image-model" },
   }) as HTMLSelectElement;
   const imageStatus = el("p", {
-    class: "ai-config-help",
+    class: "ai-config-help ai-card-status",
     attrs: { id: "ai-config-image-status", role: "status", "aria-live": "polite" },
     dataset: { testid: "ai-config-image-status" },
   });
-  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 선택과 무관하게 항상 보이고, GPT 가 아닌 동안에만
-  // 한 번에 바꾸는 버튼을 둔다 — 추천만 있고 바꿀 길이 제공자·모델 두 셀렉트를 차례로 건드리는 것뿐이면 불편하다.
+  // 로그인·제공 방식처럼 «고른 뒤에 읽는» 문단은 카드 안 「자세히」 로 접는다. 항상 보이는 줄은 상태 한 줄뿐이다.
+  const imageRouteNote = el("p", { class: "ai-config-help", dataset: { testid: "ai-config-image-route-note" } });
+  // 그림은 GPT 를 강력히 추천한다(감독 지시 2026-09-27). 추천은 GPT 가 아닐 때만 한 줄로 보이고, 바꾸는 버튼이 곁에 붙는다 —
+  // 이미 GPT 면 말할 것이 없으므로 숨는다(예전 상자형 배너는 로그인 안내와 같은 상자 모양이라 겹쳐 보였다).
   const recommendedImage = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === CODEX_PROVIDER_ID && entry.supported);
   const useRecommendedImage = el("button", {
     class: "ai-assistant-action ai-config-recommend-action",
@@ -266,10 +271,7 @@ export function renderAiSettingsForm(options: {
     children: [
       el("p", {
         class: "ai-config-recommend-text",
-        children: [
-          el("strong", { text: "그림은 GPT 모델을 강력히 추천합니다." }),
-          el("span", { text: " 픽셀 타일·캐릭터의 형태와 색이 더 안정적입니다. ChatGPT 계정 연결이 필요합니다." }),
-        ],
+        text: "GPT 이미지 모델을 권장합니다. 앵글·초점 지시를 더 잘 지키고 해상도도 높습니다.",
       }),
       useRecommendedImage,
     ],
@@ -277,6 +279,7 @@ export function renderAiSettingsForm(options: {
   const refreshImageRecommendation = (): void => {
     const onGpt = imageProvider.value === CODEX_PROVIDER_ID;
     imageRecommendation.dataset.state = onGpt ? "active" : "suggest";
+    imageRecommendation.hidden = onGpt || !recommendedImage;
     useRecommendedImage.hidden = onGpt || !recommendedImage;
   };
   const refreshImageStatus = (): void => {
@@ -284,9 +287,13 @@ export function renderAiSettingsForm(options: {
     const entry = IMAGE_MODEL_CATALOG.find((entry) => entry.providerId === imageProvider.value && entry.model === imageModel.value);
     imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
     imageStatus.textContent = entry?.supported
-      ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
-        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다.")
+      ? `${entry.providerLabel} 로그인이 필요합니다.`
       : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
+    const routeNote = entry?.supported && entry.providerId !== DEFAULT_IMAGE_PROVIDER_ID
+      ? "god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다."
+      : "";
+    imageRouteNote.textContent = routeNote;
+    imageRouteNote.hidden = routeNote === "";
   };
   const refreshImageModels = (selected: string): void => {
     const entries = IMAGE_MODEL_CATALOG.filter((entry) => entry.providerId === imageProvider.value);
@@ -301,6 +308,58 @@ export function renderAiSettingsForm(options: {
     refreshImageStatus();
   };
   refreshImageModels(config.imageModel ?? DEFAULT_IMAGE_MODEL);
+
+  // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
+  const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
+  // ── 도트 저작 모델(텍스트 모델) ───────────────────────────────────────────────
+  // 도트는 이미지 모델이 아니라 텍스트 모델이 격자 문자열·좌표로 직접 찍는다. 그래서 이 칸은 이미지 모델 목록이 아니라
+  // 텍스트 모델 목록이고, 비워 두면(따라가기) 옛 동작 그대로 계획·최종 판단 모델이 공방 그리기를 맡는다.
+  const PIXEL_FOLLOW = "";
+  const pixelKey = (provider: string, model: string): string => `${provider}::${model}`;
+  const initialPixel = resolvePixelModel(config);
+  const pixelModelSelect = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "도트 저작 모델", "aria-describedby": "ai-config-pixel-status" },
+    dataset: { testid: "ai-config-pixel-model" },
+  }) as HTMLSelectElement;
+  const pixelEffort = el("select", {
+    class: "ai-config-select",
+    attrs: { "aria-label": "도트 저작 추론 강도" },
+    dataset: { testid: "ai-config-pixel-reasoning" },
+    children: ["off", "low", "medium", "high"].map(value => el("option", { attrs: { value }, text: EFFORT_LABEL[value] })),
+  }) as HTMLSelectElement;
+  const pixelStatus = el("p", {
+    class: "ai-config-help ai-card-status",
+    attrs: { id: "ai-config-pixel-status", role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-config-pixel-status" },
+  });
+  const refreshPixelModels = (selected: string): void => {
+    const brain = `${configForUltrabrain(config).model}`;
+    pixelModelSelect.replaceChildren(
+      el("option", { attrs: { value: PIXEL_FOLLOW }, text: `계획 모델과 같게 (${brain})` }),
+      ...PIXEL_MODEL_CHOICES.map(choice => el("option", {
+        attrs: { value: pixelKey(choice.provider, choice.model) }, text: `${choice.providerLabel} · ${choice.label}`,
+      })),
+    );
+    if (selected !== PIXEL_FOLLOW && !PIXEL_MODEL_CHOICES.some(choice => pixelKey(choice.provider, choice.model) === selected)) {
+      pixelModelSelect.append(el("option", { attrs: { value: selected, disabled: "" }, text: `${selected.replace("::", " · ")} · 목록에 없음` }));
+    }
+    pixelModelSelect.value = selected;
+    pixelModelSelect.dispatchEvent(new Event("input", { bubbles: true }));
+    refreshPixelStatus();
+  };
+  const refreshPixelStatus = (): void => {
+    const following = pixelModelSelect.value === PIXEL_FOLLOW;
+    pixelEffort.disabled = following;
+    const choice = PIXEL_MODEL_CHOICES.find(entry => pixelKey(entry.provider, entry.model) === pixelModelSelect.value);
+    pixelStatus.textContent = following
+      ? "따로 고르지 않아 계획·최종 판단 모델이 그립니다."
+      : choice?.model.startsWith("claude")
+        ? "Claude 모델은 Google 계정 연결로 씁니다."
+        : "선택한 모델의 계정 로그인이 필요합니다.";
+  };
+  refreshPixelModels(initialPixel.follows ? PIXEL_FOLLOW : pixelKey(initialPixel.model.provider, initialPixel.model.model));
+  pixelEffort.value = initialPixel.model.thinkingLevel;
   const model = modelField("Writer 모델", modelForRole(config, "writer").model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "Deep 모델",
@@ -312,13 +371,11 @@ export function renderAiSettingsForm(options: {
     providerId,
   );
   const brainConfig = configForUltrabrain(config);
-  // 추론 강도 옵션은 영어 enum 을 그대로 보여 주지 않는다 — 영역 작업 추론 셀렉트와 같은 한국어 라벨.
-  const EFFORT_LABEL: Record<string, string> = { off: "끔", low: "낮음", medium: "보통", high: "높음" };
   const brainProvider = el("select", {
     class: "ai-config-select", dataset: { testid: "ai-config-ultrabrain-provider" },
     attrs: { "aria-label": "Ultrabrain 제공자" },
-    children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
   }) as HTMLSelectElement;
+  fillProviderOptions(brainProvider, brainConfig.providerId!);
   brainProvider.value = brainConfig.providerId!;
   const brainModel = modelField("Ultrabrain 모델", brainConfig.model,
     "ai-config-ultrabrain-model", "ai-config-ultrabrain-model-preset", authMode, DEFAULT_ULTRABRAIN_MODEL, brainProvider.value);
@@ -332,8 +389,8 @@ export function renderAiSettingsForm(options: {
     const selected = modelForRole(config, role);
     const provider = el("select", { class: "ai-config-select", dataset: { testid: `ai-config-${role}-provider` },
       attrs: { "aria-label": `${role} 제공자` },
-      children: OH_MY_PI_PROVIDERS.map(p => el("option", { attrs: { value: p.id }, text: p.label })),
     }) as HTMLSelectElement;
+    fillProviderOptions(provider, selected.provider);
     provider.value = selected.provider;
     const field = role === "writer" ? model : role === "deep" ? liteModel
       : role === "build" ? modelField("시공 모델", selected.model, "ai-config-build-model", "ai-config-build-model-preset", authMode, selected.model, selected.provider)
@@ -367,6 +424,17 @@ export function renderAiSettingsForm(options: {
     lastAuthStatus = next;
     pendingAuthStatus?.(next);
   });
+  // 「사용자 지정 (OpenAI 호환)」 카드 — 로그인 카드 아래 같은 연결 탭에 둔다. 역할 칸에 꽂는 일은 아래 assignCompatRole 이 한다.
+  const compatSettings = renderAiCompatSettings({
+    getAssignment: (slot) => {
+      if (slot === "ultrabrain") return { provider: brainProvider.value, model: brainModel.input.value.trim() };
+      const control = specialistControls.find((entry) => entry.role === slot);
+      return { provider: control?.provider.value ?? providerId, model: control?.field.input.value.trim() ?? "" };
+    },
+    getMainProvider: () => providerId,
+    selectMain: (endpointId) => authSettings.selectProvider(endpointId),
+    assign: (slot, endpointId, endpointModel) => assignCompatRole(slot, endpointId, endpointModel),
+  });
   const maxTokensDescription = `한 요청에서 AI가 쓸 수 있는 출력 토큰 예산입니다. 기본값은 ${DEFAULT_MAX_TOKENS}이며, 예산이 다 되면 그때까지의 변경을 제안하고 멈춥니다.`;
   const maxTokens = textField("최대 토큰", maxTokensDescription, String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
@@ -398,7 +466,7 @@ export function renderAiSettingsForm(options: {
   };
   setAutonomyDerived(initialAutonomyLevel);
   const autonomyRow = settingsRow(
-    "자율성",
+    "일하는 방식",
     autonomyDescription,
     el("span", { class: "ai-config-stack", children: [autonomySelect, autonomyDerived] }),
   );
@@ -446,7 +514,7 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   piApplySelect.value = config.piApply ?? DEFAULT_PI_APPLY;
   piApplySelect.addEventListener("change", () => persist(false));
-  const piApplyRow = settingsRow("결과 적용", "YOLO·AUTO·DEFAULT는 실제 맵을 실시간 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
+  const piApplyRow = settingsRow("결과 적용", "「바로 반영」 셋은 실제 맵을 실시간으로 편집합니다. 검토 후 적용·단계별 적용은 승인 전까지 초안으로 남습니다.", piApplySelect);
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },
@@ -555,6 +623,11 @@ export function renderAiSettingsForm(options: {
     ultrabrainReasoningEffort: brainEffort.value as AiConfig["ultrabrainReasoningEffort"],
     imageProviderId: imageProvider.value,
     imageModel: imageModel.value,
+    // 도트 저작 칸: 「따라가기」면 저장하지 않는다(옛 동작 유지). 고른 값만 저장하고 고른 표시를 남긴다.
+    ...(pixelModelSelect.value === PIXEL_FOLLOW ? {} : (() => {
+      const [provider, model] = pixelModelSelect.value.split("::");
+      return { pixelModel: { provider, model, thinkingLevel: pixelEffort.value as RoleModel["thinkingLevel"] } };
+    })()),
     // 에디터는 동반 서비스 전송만 쓴다 — baseUrl 은 endpoint() 가 무시하고, 키는 동반 서비스가
     // 들고 있다. 여기서 빈 값으로 고정해 브라우저 저장소에 비밀·죽은 주소가 남지 않게 한다.
     baseUrl: DEFAULT_BASE_URL,
@@ -569,6 +642,39 @@ export function renderAiSettingsForm(options: {
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
     piApply: normalizePiApplyMode(piApplySelect.value),
   });
+
+  /** 연결 카드의 「이 역할에 쓰기」 — 그 역할 칸만 이 엔드포인트·모델로 바꾸고 직접 지정으로 표시한다(다른 칸·기본 제공자는 그대로). */
+  const assignCompatRole = (slot: AiCompatRoleSlot, endpointId: string, endpointModel: string): void => {
+    if (slot === "ultrabrain") {
+      fillProviderOptions(brainProvider, endpointId);
+      brainProvider.value = endpointId;
+      brainModel.refresh(authMode, endpointId);
+      brainModel.setValue(endpointModel, authMode, endpointId);
+      brainProvider.dispatchEvent(new Event("input", { bubbles: true }));
+      modelSelectionOverrides.ultrabrain = true;
+    } else {
+      const control = specialistControls.find((entry) => entry.role === slot);
+      if (!control) return;
+      fillProviderOptions(control.provider, endpointId);
+      control.provider.value = endpointId;
+      control.field.refresh(authMode, endpointId);
+      control.field.setValue(endpointModel, authMode, endpointId);
+      control.provider.dispatchEvent(new Event("input", { bubbles: true }));
+      control.field.preset.dispatchEvent(new Event("input", { bubbles: true }));
+      modelSelectionOverrides[slot] = true;
+    }
+    persist(false);
+    updateReadiness();
+    void refreshAiConnectionStatus(updateReadiness);
+  };
+  // 엔드포인트를 만들고 지우면 제공자 선택지와 모델 목록을 다시 채운다.
+  const onCompatChanged = (): void => {
+    for (const select of [brainProvider, ...specialistControls.map((entry) => entry.provider)]) fillProviderOptions(select, select.value);
+    brainModel.refresh(authMode, brainProvider.value);
+    for (const entry of specialistControls) entry.field.refresh(authMode, entry.provider.value);
+    compatSettings.refresh();
+  };
+  window.addEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
 
   let autoSaveTimer: number | null = null;
   const persist = (showToast: boolean): void => {
@@ -636,6 +742,13 @@ export function renderAiSettingsForm(options: {
     refreshImageModels(recommendedImage.model);
     persist(false);
   });
+  pixelModelSelect.addEventListener("change", () => {
+    if (pixelModelSelect.value === PIXEL_FOLLOW) delete modelSelectionOverrides.pixel;
+    else modelSelectionOverrides.pixel = true;
+    refreshPixelStatus();
+    persist(false);
+  });
+  pixelEffort.addEventListener("change", () => { modelSelectionOverrides.pixel = true; persist(false); });
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -661,6 +774,15 @@ export function renderAiSettingsForm(options: {
   // 않는 계약("자동 대체하지 않습니다")은 그대로다 — 이건 사용자 조작에 따른 교체다.
   const alignModelToProvider = (field: typeof brainModel, providerId: string, tier: "fast" | "strong"): void => {
     field.refresh(authMode, providerId);
+    if (isOpenAiCompatProviderId(providerId)) {
+      // 다른 제공자의 모델 ID(예: gemini-4-argon)는 이 서버에 없을 가능성이 크다. 시험에서 받은 목록이 있으면 그 밖의 값은
+      // 이 서버의 기본 모델로 맞추고, 목록이 없으면(직접 입력 서버) 사용자가 입력하도록 비운다.
+      const known = getKnownOpenAiCompatEndpoint(providerId);
+      const current = field.input.value.trim();
+      if (!known || known.models.includes(current) || known.defaultModel === current) return;
+      field.setValue(tierModelFor(providerId, tier) ?? "", authMode, providerId);
+      return;
+    }
     if (field.validate(authMode, providerId)) return;
     const next = tierModelFor(providerId, tier);
     if (next) field.setValue(next, authMode, providerId);
@@ -1003,15 +1125,36 @@ export function renderAiSettingsForm(options: {
     children: [
       pane("connection", [
         settingsSection("connection", "연결", "AI 제공자와 로그인 상태를 관리합니다.", [authSettings.element, modelConnectionHint, alignAccountButton]),
+        settingsSection("compat", "사용자 지정 연결", "OpenAI 호환 서버(CLIProxyAPI·LiteLLM·Ollama 등)를 직접 연결합니다. 기본 연결은 바꾸지 않아요.", [compatSettings.element]),
       ]),
       pane("models", [
         settingsSection("presets", "품질 프리셋", "역할별 모델과 추론 강도를 한 번에 맞춥니다.", [presetGroup]),
         rolesDetails,
-        settingsSection("image", "이미지 생성", "그림을 생성하는 모델입니다. 이미지를 읽는 Vision과 별도로 선택합니다.", [
-          settingsRow("이미지 생성 제공자", "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.", imageProvider),
-          settingsRow("이미지 생성 모델", "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.", imageModel),
-          imageRecommendation,
-          imageStatus,
+        settingsSection("image", "그림·도트 모델", "무엇을 만드느냐에 따라 쓰는 모델이 따로 있습니다.", [
+          settingsCard("image-large", "그림 (타이틀·배경·컷신·초상)", "이미지 생성 모델이 한 장을 통째로 그립니다.", [
+            settingsRow("제공자", "", imageProvider),
+            settingsRow("모델", "", imageModel),
+            imageStatus,
+            imageRecommendation,
+            settingsDetails([
+              "인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다.",
+              imageRouteNote,
+              "직접 지정한 이미지 모델은 계정을 바꿔도 유지됩니다.",
+              "이미지를 출력하는 모델만 표시합니다. 지원 미확인 모델은 선택할 수 없습니다.",
+              "이미지를 읽는 Vision 모델과는 별도로 고릅니다.",
+            ]),
+          ]),
+          settingsCard("image-dot", "도트 (타일·캐릭터·맵 기물)", "텍스트 모델이 격자를 한 줄씩 써서 찍습니다.", [
+            settingsRow("모델", "", pixelModelSelect),
+            settingsRow("추론 강도", "", pixelEffort),
+            pixelStatus,
+            settingsDetails([
+              "공방의 그리기 단계가 이 모델을 씁니다. 조수 채팅은 이 칸이 아니라 위 「역할별 모델 직접 지정」을 따릅니다.",
+              "Argon 또는 Claude 계열을 고릅니다. 격자를 한 줄씩 맞추는 일이라 추론 강도는 보통 이상을 권합니다.",
+              "이미지 모델은 도트 눈금·색 수·3/4 시점을 지키지 못해 이 용도에는 쓰지 않습니다.",
+              "쓸 수 없으면 요청할 때 오류로 알려 주며, 다른 모델로 자동 전환하지 않습니다.",
+            ]),
+          ]),
         ]),
       ]),
       pane("behavior", [
@@ -1055,6 +1198,8 @@ export function renderAiSettingsForm(options: {
     dispose: () => {
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, updateReadiness);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
+      window.removeEventListener(OPENAI_COMPAT_CHANGED_EVENT, onCompatChanged);
+      compatSettings.dispose();
       if (autoSaveTimer !== null) {
         if (typeof window !== "undefined") window.clearTimeout(autoSaveTimer);
         autoSaveTimer = null;
@@ -1094,13 +1239,45 @@ function settingsSection(
   });
 }
 
+/**
+ * 한 절 안의 «용도 카드» — 용도(제목 한 줄 + 설명 한 줄) 아래 모델 선택만 둔다.
+ * 그림과 도트처럼 같은 위계의 용도를 나란히 놓되, 서로 다른 상자 안에 가둬 컨트롤이 섞여 읽히지 않게 한다.
+ */
+function settingsCard(id: string, title: string, description: string, children: readonly HTMLElement[]): HTMLElement {
+  const titleId = `ai-settings-card-${id}-title`;
+  return el("div", {
+    class: "ai-settings-card",
+    attrs: { role: "group", "aria-labelledby": titleId },
+    dataset: { testid: `ai-settings-group-${id}` },
+    children: [
+      el("div", { class: "ai-settings-card-head", children: [
+        el("h4", { text: title, attrs: { id: titleId } }),
+        el("p", { text: description }),
+      ] }),
+      ...children,
+    ],
+  });
+}
+
+/** 카드 안 「자세히」 — 고른 뒤에 읽는 안내 문단을 접는다. 문자열은 문단으로 감싸고 요소는 그대로 넣는다. */
+function settingsDetails(items: ReadonlyArray<string | HTMLElement>): HTMLElement {
+  return el("details", {
+    class: "ai-settings-subdetails ai-card-details",
+    children: [
+      el("summary", { text: "자세히" }),
+      el("div", { class: "ai-card-details-body", children: items.map((item) =>
+        typeof item === "string" ? el("p", { class: "ai-config-help", text: item }) : item) }),
+    ],
+  });
+}
+
 function settingsRow(label: string, description: string, control: HTMLElement): HTMLElement {
   return el("label", {
     class: "ai-config-row",
     children: [
       el("span", { class: "ai-config-row-copy", children: [
         el("span", { class: "ai-config-label", text: label }),
-        el("span", { class: "ai-config-help", text: description }),
+        ...(description ? [el("span", { class: "ai-config-help", text: description })] : []),
       ] }),
       el("span", { class: "ai-config-control", children: [control] }),
     ],
@@ -1188,8 +1365,10 @@ function modelField(
     // 소속**이다(modelCatalog.isModelValidForAuthMode). 그래서 gpt-5.1-codex-max 처럼 gpt- 로
     // 시작하는데도 거부되는 ID 에 "gpt- 는 괜찮다"고 안내하는 모순이 있었다. 게다가 remedy 로
     // 제시한 "연결 방식을 API/게이트웨이로 바꾸세요" 는 이제 존재하지 않는 경로다.
-    warning.textContent =
-      "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
+    const blockReason = providerId ? openAiCompatModelBlockReason(providerId, value) : null;
+    warning.textContent = blockReason
+      ? `${blockReason} 다른 모델로 자동 대체하지 않습니다.`
+      : "현재 제공자에서 지원을 확인하지 못한 모델입니다. 다른 모델로 자동 대체하지 않습니다.";
     return false;
   };
   // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.
@@ -1209,4 +1388,18 @@ function modelField(
   });
   refresh(authMode, providerId);
   return { control, warning, input, preset, refresh, validate, setValue };
+}
+
+/**
+ * 역할 표의 제공자 선택지를 채운다 — 로그인 제공자 둘 뒤에 사용자 지정 엔드포인트가 이어진다.
+ * 저장돼 있는데 목록에 없는 값(지운 엔드포인트)은 그대로 보여 준다: 말없이 다른 제공자로 바꾸지 않고, 요청 시점에 「없는 엔드포인트」 오류가 말한다.
+ */
+function fillProviderOptions(select: HTMLSelectElement, current: string): void {
+  const rows: OhMyPiProvider[] = [...selectableOhMyPiProviders()];
+  if (current && !rows.some((row) => row.id === current)) {
+    const row = getOhMyPiProvider(current);
+    rows.push(row ? { ...row, label: `${row.label} (지워짐)` } : { id: current, label: current, defaultModel: "", envVars: [], authKind: "apiKey" });
+  }
+  select.replaceChildren(...rows.map((row) => el("option", { attrs: { value: row.id }, text: row.label })));
+  select.value = current;
 }

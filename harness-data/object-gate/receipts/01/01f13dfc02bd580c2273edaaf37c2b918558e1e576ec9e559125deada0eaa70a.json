@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01f13dfc02bd580c2273edaaf37c2b918558e1e576ec9e559125deada0eaa70a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "two-tier wooden rack holding four rum barrels lying on their sides, round ends facing south",
+ "label": "pirate-isles/pi-cargo-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper shelf/rack is visible across rows 0-3 (4 source pixels deep) with bottles resting on it, and intermediate shelf tops are visible as horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel rack with two tiers",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top shelf surface of the rack is visible across rows 0-3 (4 rows deep) with bottles resting on top. The rack is viewed in proper 3/4 perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 clearly display the 4-pixel-deep top horizontal surface of the rack with bottles resting on it, properly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-tier wooden barrel rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is visible across rows 0-3 (4 rows deep) with bottles standing on it, showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6714
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "11ef01ab23ade2ca",
+   "64cf19977593cae6",
+   "aa55ad43aa4aa7c1",
+   "eacd138ae30abbdb"
+  ],
+  "24": [
+   "0597d124cefe022e",
+   "0b76dcdbc6fb0209",
+   "1b982c373b381604",
+   "236e364966f9a76e",
+   "415ea9cae2ca00dc",
+   "463644d91336a62f",
+   "468fae7d9a6c03db",
+   "58a6da90a234ec25",
+   "5b2658a02faa0d27",
+   "69c6833515a5176f",
+   "6cf7196716e19e65",
+   "71c2e71c581f69e1",
+   "7437de27d9fabb9a",
+   "97a9edd7d59a9aaa",
+   "9db6ef762432bd38",
+   "a843bfb1effaad1b",
+   "acc1334b9aabd7a3",
+   "c44b539a661ed182",
+   "c7d1fed603cd2026",
+   "c9615e5ce8b9f03c",
+   "d130d4eaf09469c6",
+   "e2380de95eec9eb7",
+   "eaa3f12014ecfc9d",
+   "ed8cc77285bc350e"
+  ],
+  "32": [
+   "a54adc0afbdd228b"
+  ],
+  "48": [
+   "777ad6c9a60cab5e",
+   "80204a3450a8b9c4",
+   "84e39117cd180a39",
+   "a956e22b1e8a1383",
+   "cc4bb0e0ad10fd9f",
+   "d882901216d75187"
+  ]
+ }
+}

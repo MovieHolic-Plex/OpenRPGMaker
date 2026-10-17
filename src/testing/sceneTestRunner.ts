@@ -30,7 +30,10 @@ import type { ChoiceCancelBehavior, Command, Dir, GameMap, Project } from "@/pro
 import { cancelChoiceIndex } from "@/project/choiceCancellation";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
-import { useItemFromMenu } from "@/player/playerItemUse";
+import { machineSkillOf, previewMonsterMachine, useItemFromMenu } from "@/player/playerItemUse";
+import { grantEscapeGrace, recordDungeonEntrance, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
+import { prepareFieldAbility, prepareMonsterFieldAbility } from "@/player/fieldAbility";
+import { partyMembersKnowingSkill, partySkillContext } from "@/project/partySkills";
 import { getSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
@@ -58,7 +61,9 @@ type RuntimeEventView, } from "@/project/runtimeEventState"
 import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
-import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
+import { terrainRecordAt } from "@/project/terrainAt";
+import { scaledEncounterRate } from "@/project/terrainStep";
 import { monsterBattlePartyOf, monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
@@ -99,7 +104,9 @@ import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
 import { interactWithLifeField } from "@/player/lifeFieldInteraction";
 import { findChestAt } from "@/project/placeables";
 import { cropStageAt, farmIntentForHand, interactWithFarmPlot } from "@/player/farming";
-import { giveGiftToNpc } from "@/project/friendship";
+import { giveGiftToNpc, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
+import { advanceSocialSlotClock } from "@/player/socialSlotClock";
+import { resolveSocialLoop, socialSlotsExhausted } from "@/project/socialLoop";
 import { accrueShopLoyalty, handleShopTransaction, shopItems, type ShopStep } from "@/player/playSceneShop";
 import { beginShopVisit, endShopVisit, shopIsClosed } from "@/player/playSceneShopVisit";
 import { resolveShopStock } from "@/project/shopStock";
@@ -206,6 +213,11 @@ export type SceneStep =
   | { kind: "interact"; eventId?: string }
   /** 메뉴에서 아이템을 쓴다. 스위치 아이템이면 직후 자동 공통 이벤트가 돈다. */
   | { kind: "useItem"; itemId: string }
+  /**
+   * 메뉴에서 필드 스킬(skill.fieldCommonEventId)을 쓴다 — 바라보는 앞 칸이 대상. 파티(배우·몬스터)가 그 스킬을 알아야 하고
+   * actorId 를 생략하면 아는 첫 구성원이 쓴다. target 은 앞 칸 이벤트 id 확인용(다르면 실패).
+   */
+  | { kind: "useFieldSkill"; skillId: string; target?: string; actorId?: string }
   | { kind: "snapshotRewards" }
   | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
@@ -248,6 +260,10 @@ export type SceneExpectStep = {
   cutsceneLocked?: boolean;
   mapId?: string;
   gameTimeAt?: Partial<GameTime>;
+  /** 카운트다운 남은 초: {timer1: 0} 또는 {timerId,seconds}. 흐르는 중이면 올림한 값이다. */
+  timerRemaining?: { timerId: string; seconds: number } | Record<string, number>;
+  /** 지금 흐르는 중이어야 하는 타이머 id(들). */
+  timerRunning?: string | readonly string[];
   timePhase?: TimePhase;
   cropStageAt?: { x: number; y: number; stage: number; mapId?: string };
   inventoryCount?: { itemId: string; count: number } | Record<string, number>;
@@ -391,6 +407,8 @@ interface RunnerState {
   lightingTransition: LightingAmbientTransition | null;
   timeFixedAccumulatorMs: number;
   timeMinuteAccumulator: number;
+  /** 흐르는 카운트다운의 남은 ms(timerId → ms). 런타임 playSceneTimers 와 같은 규칙이다. */
+  readonly timerRemainingMs: Map<string, number>;
   activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
   inCommonAuto: boolean;
@@ -465,6 +483,8 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   bgmPlaying: sceneText, messageShown: sceneBoolean, gameOver: sceneBoolean,
   endingReached: sceneText, cutsceneLocked: sceneBoolean, mapId: sceneText,
   gameTimeAt: value => sceneShape(value, { minute: sceneCount, hour: sceneCount, day: sceneCount, season: isSeason, year: sceneCount }),
+  timerRemaining: value => sceneNumbers(value) || sceneShape(value, { timerId: sceneText, seconds: sceneNumber }, ["timerId", "seconds"]),
+  timerRunning: sceneStringOrList,
   timePhase: isTimePhase,
   cropStageAt: value => sceneShape(value, { x: sceneCount, y: sceneCount, stage: sceneCount, mapId: sceneText }, ["x", "y", "stage"]),
   inventoryCount: value => sceneNumbers(value) || sceneShape(value, { itemId: sceneText, count: sceneCount }, ["itemId", "count"]),
@@ -500,6 +520,7 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
   } },
   interact: { fields: { eventId: sceneText } },
   useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
+  useFieldSkill: { fields: { skillId: sceneText, target: sceneText, actorId: sceneText }, required: ["skillId"] },
   snapshotRewards: { fields: {} },
   retryCheckpoint: { fields: {} },
   gift: { fields: { eventId: sceneText, itemId: sceneText }, required: ["itemId"] },
@@ -545,6 +566,7 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
   followerAt: "{name,x,y}", cameraAt: "{cx,cy,tolerance?}", lightingAmbient: "숫자 또는 {value,tolerance?}",
   lightAt: "{x,y,expected?}", animationPlaying: "true/false", bgmPlaying: "BGM 리소스 id 문자열",
   pictureVisible: "그림 id 문자열 또는 {id,resourceId?}", gameTimeAt: "{minute?,hour?,day?,season?,year?}",
+  timerRemaining: "{timer1: 초} 또는 {timerId,seconds}", timerRunning: "타이머 id(timer1|timer2) 또는 id 배열",
   cropStageAt: "{x,y,stage,mapId?}",
 };
 
@@ -561,6 +583,7 @@ const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, strin
   move: { direction: "dir", target: "to", position: "to" },
   gift: { item: "itemId" },
   useItem: { item: "itemId", id: "itemId" },
+  useFieldSkill: { skill: "skillId", id: "skillId", skillID: "skillId", user: "actorId", actor: "actorId", event: "target", eventId: "target" },
   expect: { ending: "endingReached", ended: "endingReached", inventory: "inventoryCount", position: "playerAt", switch: "switchOn" },
 };
 
@@ -688,6 +711,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     lightingTransition: null,
     timeFixedAccumulatorMs: 0,
     timeMinuteAccumulator: 0,
+    timerRemainingMs: restoredTimerRemaining(session),
     activeAnimations: [],
     autoStartedKeys: new Set(),
     inCommonAuto: false,
@@ -759,7 +783,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
 function runStep(state: RunnerState, step: SceneStep): string | null {
   if (state.rewardProof && state.held && step.kind !== "choose"
     && !(step.kind === "expect" && step.mapId !== undefined && Object.keys(step).length === 2)) return "Unfinished interaction: only its pending choice may proceed";
-  if (state.held && ["walk", "move", "interact", "gift", "useItem"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
+  if (state.held && ["walk", "move", "interact", "gift", "useItem", "useFieldSkill"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
@@ -778,6 +802,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runInteractStep(state, step.eventId);
     case "useItem":
       return runUseItemStep(state, step.itemId);
+    case "useFieldSkill":
+      return runUseFieldSkillStep(state, step);
     case "snapshotRewards":
       state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
       if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
@@ -1031,9 +1057,65 @@ function findGiftEventOverlapping(
 
 function runUseItemStep(state: RunnerState, itemId: string): string | null {
   const actorId = state.session.partyActorIds.find((id): id is string => typeof id === "string");
-  const result = useItemFromMenu(state.project, state.session, itemId, actorId);
+  // 기술머신·비전머신은 파티 몬스터에게 쓴다 — 가르칠 수 있는 첫 몬스터(없으면 첫 몬스터)가 대상이다.
+  const item = state.project.database.items.find((entry) => entry.id === itemId);
+  const machine = item ? machineSkillOf(state.project, item) : undefined;
+  const monsterId = machine && item
+    ? (state.session.monsterParty ?? []).find((id) => !previewMonsterMachine(state.project, state.session, item, id).reason) ?? state.session.monsterParty?.[0]
+    : undefined;
+  const result = useItemFromMenu(state.project, state.session, itemId, actorId, monsterId);
   state.log.push(`useItem ${itemId}: ${result.kind} ${result.message}`);
+  if (result.kind === "used" && result.transfer) {
+    // 탈출 로프 — 실제 플레이어가 메뉴를 닫고 transfer 명령을 도는 것과 같다.
+    recordDungeonEntrance(state.session, state.project.maps[state.session.currentMapId], state.project.maps[result.transfer.mapId], { x: state.session.x, y: state.session.y });
+    state.session.currentMapId = result.transfer.mapId;
+    state.session.x = result.transfer.x;
+    state.session.y = result.transfer.y;
+    resetRuntimeMapForRunner(state, result.transfer.mapId);
+    const targetMap = currentMap(state);
+    if (targetMap) applyMapDefaultLighting(state.session, targetMap);
+    refreshChasers(state);
+    state.log.push(`escape rope → ${result.transfer.mapId} (${result.transfer.x},${result.transfer.y})`);
+  }
   return result.kind === "used" ? null : result.message;
+}
+
+function runUseFieldSkillStep(state: RunnerState, step: Extract<SceneStep, { kind: "useFieldSkill" }>): string | null {
+  const skill = state.project.database.skills.find((record) => record.id === step.skillId);
+  if (!skill) return `useFieldSkill: 스킬 '${step.skillId}' 가 없습니다 — get_database_records {collection:"skills"} 로 id 를 확인하세요.`;
+  if (!skill.fieldCommonEventId) return `useFieldSkill: '${skill.name}'(${skill.id}) 는 필드 스킬이 아닙니다 — upsert_skill 의 fieldCommonEventId 에 공통 이벤트 id 를 지정하세요.`;
+  if (state.gameOver) return "useFieldSkill: 게임 오버 중에는 쓸 수 없습니다.";
+  const users = partyMembersKnowingSkill(state.project, state.session, skill.id);
+  const user = step.actorId ? users.find((entry) => entry.id === step.actorId) : users[0];
+  if (!user) {
+    return step.actorId
+      ? `useFieldSkill: '${step.actorId}' 는 ${skill.id} 를 모릅니다(이 스킬을 아는 파티원: ${users.map((entry) => entry.id).join(", ") || "없음"}).`
+      : `useFieldSkill: 파티에 ${skill.id} 를 아는 구성원이 없습니다 — set_party 로 아는 배우를 넣거나 upsert_actor 의 learnedSkills[{level,skillId}]·장비 grantsSkillIds 로 습득시키세요(몬스터 파티 게임은 기술머신 — useItem 스텝으로 파티 몬스터에게 가르치거나 define_monster_species skillsByLevel).`;
+  }
+  const map = currentMap(state);
+  if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  const delta = directionDelta(state.facing);
+  const front = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, state.session.x + delta.x, state.session.y + delta.y, "action");
+  if (step.target !== undefined && front?.event.id !== step.target) return `useFieldSkill: 앞 칸 이벤트가 ${front?.event.id ?? "없음"} 입니다(기대 ${step.target}) — walk adjacent + face 로 바라보세요.`;
+  let commonEventId: string;
+  if (user.kind === "actor") {
+    const prepared = prepareFieldAbility(state.project, state.session, user.id, skill, { facing: state.facing, eventId: front?.event.id });
+    if (prepared.kind === "unusable") return `useFieldSkill: ${prepared.message}`;
+    commonEventId = prepared.commonEventId;
+  } else {
+    if (!(state.project.commonEvents ?? []).some((event) => event.id === skill.fieldCommonEventId)) return `useFieldSkill: 공통 이벤트 ${skill.fieldCommonEventId} 가 없습니다 — upsert_common_event 로 만드세요.`;
+    // 실플레이어(PlayScene.useFieldAbility)와 같은 판정 — 쓰러진 몬스터는 쓰지 못한다.
+    const prepared = prepareMonsterFieldAbility(state.project, state.session, user.id, skill, { facing: state.facing, eventId: front?.event.id });
+    if (prepared.kind === "unusable") return `useFieldSkill: ${prepared.message}`;
+    commonEventId = prepared.commonEventId;
+  }
+  const commonEvent = (state.project.commonEvents ?? []).find((event) => event.id === commonEventId)!;
+  state.log.push(`useFieldSkill ${skill.id} by ${user.kind} ${user.id} → ${front?.event.id ?? "front tile"}`);
+  const failure = runCommonEventForRunner(state, commonEvent);
+  if (failure) return failure;
+  refreshRoguelikeRoomForRunner(state);
+  // 공통 이벤트가 켠 스위치로 열리는 자동 페이지(깨지는 바위의 smash 페이지)는 실플레이어처럼 바로 돈다.
+  return runAutoTriggers(state);
 }
 
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
@@ -1077,6 +1159,18 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
       return null;
     }
     const life = interactWithLifeField(state.project, state.session, target);
+    if (life.kind === "encounter") {
+      if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
+      if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
+      const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId: life.troopId, canEscape: true, canLose: false, ...(life.level !== undefined ? { enemyLevel: life.level } : {}) });
+      state.session.battleResult = outcome;
+      state.log.push(`fishing encounter ${life.speciesId} (${life.troopId}${life.level !== undefined ? ` Lv${life.level}` : ""}): ${outcome}`);
+      if (outcome === "defeat" && !recoverFromDefeatForRunner(state)) {
+        killPartyForRunner(state);
+        state.gameOver = true;
+      }
+      return null;
+    }
     if (life.kind !== "unhandled") {
       if (expectedEventId !== undefined) return `Interaction target: expected ${expectedEventId}, actual ${life.source}`;
       state.log.push(`${life.source} ${life.kind}: ${life.kind === "success" ? life.itemId : life.reason}`);
@@ -1186,7 +1280,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   }
   if (state.held) return `Interaction still waiting for ${state.held.mode}`;
   if (isFieldSpawnEventId(view.event.id)) return runFieldSpawnBattleForRunner(state, view.event.id);
-  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
+  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session))?.commands ?? view.event.commands;
   if (commands.length === 0) {
     state.held = null;
     state.log.push(`event ${view.event.id}: no commands`);
@@ -1230,6 +1324,34 @@ function updateHeldInterpreter(
   }
   if (currentEventId) releaseCutsceneControlForOwner(state.session, currentEventId);
   state.held = null;
+  if (currentEventId && stop.stop === "done") applySocialTalkForRunner(state, currentEventId);
+}
+
+/**
+ * 런타임 runTalkPath 와 같은 규칙: action 대화가 끝나면 한 번 호감 지급(+ 소셜 루프가 켜져 있으면 시간대 칸과 시계).
+ * 이게 없으면 헤드리스 시나리오에서는 대화로 호감이 오르지 않아 friendshipAtLeast 조건이 영원히 닫혀 보였다.
+ */
+function applySocialTalkForRunner(state: RunnerState, eventId: string): void {
+  const map = currentMap(state);
+  if (!map) return;
+  const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((entry) => entry.event.id === eventId);
+  if (!view || !isTalkFriendshipEnabled(view.event)) return;
+  const page = resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session));
+  if ((page?.trigger ?? view.event.trigger).kind !== "action") return;
+  const result = trySocialTalk(state.session, view.event, state.project);
+  if (!result.ok) {
+    if (result.reason === "no-slots") state.log.push(`talk ${eventId}: ${result.reason}`);
+    return;
+  }
+  const minutes = advanceSocialSlotClock(state.project, state.session);
+  if (minutes > 0) applyNpcSchedulesForRunner(state);
+  state.log.push(`talk ${eventId}: +${result.delta} => ${result.friendship}${result.slotsLeft !== undefined ? ` (남은 칸 ${result.slotsLeft})` : ""}${result.capped ? " [하루 상한]" : ""}`);
+  // 런타임과 같다: 칸을 다 쓴 날은(forceSleep 이면) 잠으로 넘어가 기한 엔딩이 센다.
+  const loop = resolveSocialLoop(state.project);
+  if (loop && socialSlotsExhausted(state.session, loop) && resolveTimeSystem(state.project)?.forceSleep === true) {
+    const failure = sleepUntilMorningForRunner(state);
+    if (failure) state.runtimeFailure = failure;
+  }
 }
 
 function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpStop {
@@ -1297,6 +1419,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           const failure = runLocationTransitionTriggersForRunner(state, left);
           if (failure) return { stop: "failed", reason: failure };
         }
+        recordDungeonEntrance(state.session, state.project.maps[state.session.currentMapId], state.project.maps[step.mapId], { x: state.session.x, y: state.session.y });
         state.session.currentMapId = step.mapId;
         state.session.x = step.x;
         state.session.y = step.y;
@@ -1408,11 +1531,14 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         syncFollowCamera(state);
         step = interp.resume(undefined);
         break;
+      case "timer":
+        applyTimerForRunner(state, step);
+        step = interp.resume(undefined);
+        break;
       case "spawnEvent":
       case "removeEvent":
       case "vehicle":
       case "setEventGraphicPattern":
-      case "timer":
       case "moveEvent":
       case "waitForAllMovement":
       case "stopAllMovement":
@@ -1686,6 +1812,7 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     if (timeFailure) return timeFailure;
     advanceCamera(state, delta);
     advanceLighting(state, delta);
+    advanceTimersForRunner(state, delta);
     advanceAnimations(state, delta);
     resumeHeldAnimationIfReady(state);
     advanceFieldSpawnsForRunner(state, delta);
@@ -1693,6 +1820,58 @@ function advanceTime(state: RunnerState, ms: number): string | null {
     if (state.runtimeFailure) return state.runtimeFailure;
   }
   return null;
+}
+
+/** 저장에서 되살린 세션이면 흐르던 타이머의 남은 시간을 장면 타이머처럼 다시 짠다. */
+function restoredTimerRemaining(session: PlaySession): Map<string, number> {
+  const remaining = new Map<string, number>();
+  for (const [id, active] of Object.entries(session.timerActive ?? {})) {
+    if (active && (session.timers[id] ?? 0) > 0) remaining.set(id, (session.timers[id] ?? 0) * 1000);
+  }
+  return remaining;
+}
+
+function timerSeconds(value: number | undefined): number {
+  return Math.max(0, Math.floor(Number.isFinite(value) ? (value as number) : 0));
+}
+
+/** timer 명령(set/start/stop). 런타임 playSceneTimers.applyTimerStep 과 같다 — 헤드리스가 건너뛰면 카운트다운을 시험할 수 없다. */
+function applyTimerForRunner(state: RunnerState, step: Extract<StepResult, { kind: "timer" }>): void {
+  const id = step.timerId ?? "timer1";
+  const session = state.session;
+  const running = state.timerRemainingMs.get(id);
+  const current = running !== undefined ? Math.ceil(running / 1000) : timerSeconds(session.timers[id]);
+  if (step.action === "set") {
+    session.timers[id] = timerSeconds(step.seconds);
+    state.timerRemainingMs.delete(id);
+  } else if (step.action === "start") {
+    const seconds = timerSeconds(step.seconds ?? current);
+    session.timers[id] = seconds;
+    if (seconds > 0) state.timerRemainingMs.set(id, seconds * 1000);
+    else state.timerRemainingMs.delete(id);
+  } else {
+    session.timers[id] = current;
+    state.timerRemainingMs.delete(id);
+  }
+  syncTimerActive(state);
+}
+
+function syncTimerActive(state: RunnerState): void {
+  const active: Record<string, boolean> = {};
+  for (const id of state.timerRemainingMs.keys()) active[id] = true;
+  if (Object.keys(active).length > 0) state.session.timerActive = active;
+  else delete state.session.timerActive;
+}
+
+function advanceTimersForRunner(state: RunnerState, deltaMs: number): void {
+  if (state.timerRemainingMs.size === 0) return;
+  for (const [id, remainingMs] of [...state.timerRemainingMs.entries()]) {
+    const next = Math.max(0, remainingMs - deltaMs);
+    state.session.timers[id] = timerSeconds(Math.ceil(next / 1000));
+    if (next === 0) state.timerRemainingMs.delete(id);
+    else state.timerRemainingMs.set(id, next);
+  }
+  syncTimerActive(state);
 }
 
 function advanceGameTimeByRealDelta(state: RunnerState, deltaMs: number): string | null {
@@ -2096,6 +2275,18 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
     const timeFailure = expectGameTimeAt(state, step.gameTimeAt);
     if (timeFailure) return timeFailure;
   }
+  if (step.timerRemaining) {
+    const expected: Record<string, number> = "timerId" in step.timerRemaining && typeof step.timerRemaining.timerId === "string"
+      ? { [step.timerRemaining.timerId]: Number((step.timerRemaining as { seconds: number }).seconds) }
+      : (step.timerRemaining as Record<string, number>);
+    for (const [id, seconds] of Object.entries(expected)) {
+      const actual = state.session.timers[id] ?? 0;
+      if (actual !== seconds) return `타이머 ${id}: 기대 ${seconds}초, 실제 ${actual}초`;
+    }
+  }
+  for (const id of toStringList(step.timerRunning)) {
+    if (!state.timerRemainingMs.has(id)) return `타이머 ${id}: 기대 흐르는 중, 실제 멈춤(남은 ${state.session.timers[id] ?? 0}초)`;
+  }
   if (step.timePhase !== undefined) {
     const actual = timePhaseFor(state.session.gameTime);
     if (actual !== step.timePhase) return `시간대: 기대 ${step.timePhase}, 실제 ${actual ?? "(none)"}`;
@@ -2169,7 +2360,7 @@ function expectShopStock(
   if (!map) return `상점 재고 확인 맵 없음: ${mapId}`;
   const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions).find((entry) => entry.event.id === expected.eventId);
   if (!view) return `상점 이벤트 없음: ${expected.eventId} (맵 ${mapId})`;
-  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session)?.commands ?? view.event.commands;
+  const commands = view.page?.commands ?? resolveEventPage(view.event, state.session, partySkillContext(state.project, state.session))?.commands ?? view.event.commands;
   const shop = findShopCommand(commands);
   if (!shop) return `상점 커맨드 없음: ${expected.eventId}`;
   const stock = resolveShopStock(state.project, state.session, shop);
@@ -2470,11 +2661,19 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
 function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map || state.gameOver || state.runtimeFailure) return null;
-  const rate = map.encounterRate ?? 0;
+  // 실제 플레이(maybeTriggerRandomEncounter)와 같이: 걸음마다 도망 무적·벌레퇴치 남은 수를 줄이고, 막힌 걸음엔 조우 판정을 건너뛴다.
+  const guard = tickEncounterGuard(state.session);
+  if (guard.expiredItemId !== undefined) {
+    state.log.push(`message: ${repelExpiredMessage(state.project, guard.expiredItemId)}`);
+    return null;
+  }
+  if (guard.suppress) { state.encounterAccumulator = 0; return null; }
+  // 실제 플레이(maybeTriggerRandomEncounter)와 같이: 서 있는 칸의 지형 조우율(%)을 곱한다 — 숲 140%·길 40% 같은 세계 지형 값이 여기서도 듣는다.
+  const rate = scaledEncounterRate(map.encounterRate ?? 0, terrainRecordAt(state.project, { mapId: map.id, x: state.session.x, y: state.session.y })?.record.encounterRatePercent);
   if (rate <= 0) return null;
   const position = { x: state.session.x, y: state.session.y };
   const hasCandidates = map.encounterTable && map.encounterTable.length > 0
-    ? eligibleEncounterEntries(map, state.session, position).length > 0
+    ? eligibleEncounterEntries(map, state.session, position, state.project).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return null;
   // 실제 플레이(playSceneMovement)와 같이: 몬스터 파티 전투인데 파트너가 없으면 야생이 나오지 않는다.
@@ -2483,11 +2682,17 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
   state.encounterAccumulator += rate;
   if (state.encounterAccumulator < 1000 && nextSessionRandom(state.session, "encounter") * 1000 >= state.encounterAccumulator) return null;
   state.encounterAccumulator = 0;
-  const troopId = pickEncounterTroopForMap(map, state.session, position);
-  if (!troopId) return null;
+  const picked = pickEncounterForMap(map, state.session, position, undefined, state.project);
+  if (!picked) return null;
+  if (guard.repelBelowLead) {
+    const lead = monsterBattlePartyOf(state.project, state.session).party.find((monster) => (monster.currentHp ?? 1) > 0);
+    if (repelBlocksWildLevel(troopWildLevel(state.project, picked.troopId, picked.level), lead?.level)) return null;
+  }
+  const troopId = picked.troopId;
   if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
-  const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+  const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false, ...(picked.level !== undefined ? { enemyLevel: picked.level } : {}) });
   state.session.battleResult = outcome;
+  if (outcome === "escape") grantEscapeGrace(state.project, state.session);
   state.log.push(`random encounter ${troopId}: ${outcome}`);
   if (outcome === "defeat" && !recoverFromDefeatForRunner(state)) {
     killPartyForRunner(state);
@@ -2537,6 +2742,7 @@ function runHeadlessBattle(
     // 프로덕션(playSceneBattle)과 동일 계약: battleProcessing 스텝의 소유 이벤트를 그대로 전달.
     // 인카운터/필드 스폰 경로가 만드는 스텝에는 없으므로 자연히 undefined.
     ownerEventId: step.ownerEventId,
+    ...(step.enemyLevel !== undefined ? { enemyLevel: step.enemyLevel } : {}),
     party: {
       levels: state.session.actorLevels,
       experience: state.session.actorExperience,
@@ -2674,7 +2880,7 @@ function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRu
   // 다음 한 방에 쓰러지고 먼저 눕히지도 못하면 자기 회복 기술(햇살쉼 등)을 쓴다 — 챔피언 앞에서 리더가 화상·약점 한 방에
   // 체력 반을 남기고 쓰러져 Lv2 동료들만 남았다(2026-10-07 사막 기획서, 회복약이 바닥난 뒤). 플레이어도 그때 회복한다.
   // 예상 피해는 난수·급소를 빼고 잰다 — 1.5배 여유에 화상·독 한 틱을 더한다(예상 107 에 실제 145, 화상 18 로 쓰러졌다).
-  const upkeep = active && active.stateIds.some((stateId) => /^(burn|poison)$/u.test(project.database.states.find((state) => state.id === stateId)?.gen1MajorStatus ?? ""))
+  const upkeep = active && active.stateIds.some((stateId) => /^(burn|poison|toxic)$/u.test(project.database.states.find((state) => state.id === stateId)?.gen1MajorStatus ?? ""))
     ? Math.max(1, Math.floor(active.maxHp / 16)) : 0;
   const healMove = project.system.battleModel === "gen1" && active && target && active.hp > 0 && active.hp < active.maxHp * 0.6
     // 먼저 눕힐 수 있어 보여도 명중 90% 기술이 빗나가면 그 한 방을 맞는다(빗나간 뒤 쓰러졌다) — 신중한 플레이어처럼 회복한다.

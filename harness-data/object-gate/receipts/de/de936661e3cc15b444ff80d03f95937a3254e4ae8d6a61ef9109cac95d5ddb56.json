@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de936661e3cc15b444ff80d03f95937a3254e4ae8d6a61ef9109cac95d5ddb56",
+ "width": 48,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "jp-wire-6",
+ "label": "jp_city/street_hand/jp-wire-6",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted/overhead catenary wires depicted as thin sagging lines, appropriately flat for wall_mounted elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3280
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three sagging cable or wire strands designed to hang overhead or flat against a wall, appropriately represented as thin lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3019
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging wires/cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted or suspended hanging wires/cables consisting of thin sagging lines, naturally flat/thin overhead or wall elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three horizontal sagging cables/wires mounted across a wall or overhead; appropriate as a flat wall-mounted/overhead element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3868
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.705Z",
+ "cells": {
+  "16": [
+   "15553fe53040ed32",
+   "2d88fc459ebf8f50",
+   "5f7f1beed8659d2f",
+   "6298aba4379b4dad",
+   "8408b8a679a38c9f",
+   "96f81a9c2c8f3050",
+   "a4a81c363f8d9b9c",
+   "a6f65deab5f86a9c",
+   "e9dcca5cef0db6f4"
+  ],
+  "24": [
+   "418dfb183a7f0e86",
+   "492a972ed8ffe3b9",
+   "adfca0f316366f40",
+   "e07ad1c1689d0c0b"
+  ],
+  "32": [
+   "13cede6e6a1fbff7",
+   "17efc5c52131926f",
+   "23dc082544b8a016",
+   "370041cd8beee727",
+   "40f08ea524b5c147",
+   "4c853fa78b58a893",
+   "4d2bd679357b8343",
+   "4eb8fde959fccd44",
+   "4f692fd0f31f8b11",
+   "8c5c5b48a3e14ba5",
+   "92026e9b22edc1f8",
+   "971c4609d6501be7",
+   "a21c4c5b0d977686",
+   "af1c6823e520cfad",
+   "b3cf9d32544de771",
+   "bc3b0ec7f58c97df",
+   "c64c331f7a1ef9de",
+   "ce1f68f3f66216a9",
+   "d0b857b01bcc7bb5",
+   "eabe5c5790771d7f",
+   "edd0503d938b2156",
+   "eff8caaecba3da35",
+   "f37ea4998bc9296f",
+   "f52bfb162d25839e"
+  ],
+  "48": [
+   "f81f283ab2f8a09e"
+  ]
+ }
+}

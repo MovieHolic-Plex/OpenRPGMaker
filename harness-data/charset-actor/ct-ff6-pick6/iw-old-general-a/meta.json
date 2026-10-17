@@ -1,0 +1,50 @@
+{
+ "key": "iw-old-general-a",
+ "arch": "iw-old-general",
+ "base": "People3:4",
+ "variant": "흰 머리와 풍성한 흰 콧수염은 그대로 두고(얼굴은 고정) 머리는 흰색 유지, 짙은 남색 군복(T 리컬러)에 어깨 금술, 가슴 훈장 두 줄, 어깨에 붉은 짧은 망토(어깨 구역 t), 허리 오른쪽에 지휘봉(hip 장비 R).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 ehmortvw"
+   ],
+   "at": "2026-10-16T03:57:44"
+  }
+ ],
+ "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 ehmortvw"
+ ],
+ "metrics": {
+  "added_up0": 13,
+  "added_up1": 18,
+  "added_up2": 11,
+  "added_right0": 6,
+  "added_right1": 5,
+  "added_right2": 6,
+  "added_down0": 11,
+  "added_down1": 18,
+  "added_down2": 13,
+  "added_left0": 9,
+  "added_left1": 13,
+  "added_left2": 9,
+  "changed_ratio": {
+   "H": 0.0,
+   "T": 0.936,
+   "B": 0.803,
+   "S": 0.083
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 219,
+  "lone_base": 217
+ }
+}

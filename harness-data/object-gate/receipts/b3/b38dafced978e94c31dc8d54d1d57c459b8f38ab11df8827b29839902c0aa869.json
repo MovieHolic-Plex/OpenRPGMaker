@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b38dafced978e94c31dc8d54d1d57c459b8f38ab11df8827b29839902c0aa869",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "경고 표지 상자(깊은 윗면이 있는 높은 표지 상자)",
+ "label": "sf-station/sf-sign-chunky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall warning sign box / hazard cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly depicted from above across rows 2-9 (8 pixel rows deep), with the front face extending from row 10 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5573
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall warning sign box / electrical cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible from rows 2 to 9 (8 pixel rows deep), followed by a rim line at row 10 and the south-facing front panel below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4726
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall warning sign box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible across rows 2–9 (8 pixel rows deep) with proper lighting contrast distinguishing it from the front face (rows 11–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4843
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall warning sign box / pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a prominent white top surface spanning rows 2 to 9 (8 rows tall) seen from above, atop the south-facing front body spanning rows 10 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3348
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:20.333Z",
+ "cells": {
+  "16": [
+   "25fd7d0c0878001e",
+   "a059e0252dffa9c7"
+  ],
+  "24": [
+   "1a49e202e4d9ca7e",
+   "1beff1206ba22fd9",
+   "1c96c2acad70fa93",
+   "1faa7ad5f2b40631",
+   "38f274e8cb2a3b1f",
+   "401427429f432640",
+   "465cd193a4be9cc0",
+   "54042806f65f3616",
+   "77032d449586c3a4",
+   "79e185d01b35b0d3",
+   "bd3a9a8067a9dcd0",
+   "fa56d965918dae28"
+  ],
+  "32": [
+   "0bce99f8da90cb1b",
+   "6fd52f0b128d905d",
+   "813ec712c3d391cc"
+  ],
+  "48": [
+   "336c1f1c96e2e5e0",
+   "8aa1e7480ecb93da",
+   "97d7c5508b37f865",
+   "a1344bb450032649",
+   "c47b7f53ad11b6cb",
+   "fba28d6c6de7bd68"
+  ]
+ }
+}

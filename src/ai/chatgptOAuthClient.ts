@@ -1,6 +1,12 @@
 import { DEFAULT_CHATGPT_BASE_URL } from "@/ai/llmClient";
 import { companionToken, companionTokenHeaders } from "@/ai/companionToken";
 import {
+  parseOpenAiCompatReasoningMode,
+  setKnownOpenAiCompatEndpoints,
+  type OpenAiCompatEndpointPublic,
+  type OpenAiCompatReasoningMode,
+} from "@/ai/openAiCompat";
+import {
   DEFAULT_OH_MY_PI_PROVIDER,
   parseOhMyPiProvider,
   type OhMyPiAuthKind,
@@ -372,4 +378,174 @@ export async function disconnectCompanionAuth(providerId?: string): Promise<Chat
     throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   }
   return readAuthStatus(await readJsonBody(response));
+}
+
+// ── 사용자 지정(OpenAI 호환) 엔드포인트 ──────────────────────────────────────────
+// 키·헤더 값은 쓰기 전용이다: 보낼 수는 있어도 돌려받지 않는다(응답에는 hasKey·headerNames 만 있다).
+// 이 호출들은 provider 쿼리를 쓰지 않으므로 companionAuthUrl 을 거치지 않는다.
+
+export interface OpenAiCompatSaveRequest {
+  readonly id?: string;
+  readonly name: string;
+  readonly baseUrl: string;
+  /** undefined = 저장된 키 유지. 문자열 = 교체. */
+  readonly apiKey?: string;
+  readonly clearKey?: boolean;
+  /** value 가 비면 같은 이름의 저장값을 유지한다. */
+  readonly headers?: ReadonlyArray<{ readonly name: string; readonly value?: string }>;
+  readonly reasoningMode?: OpenAiCompatReasoningMode;
+  /** 패턴 목록(문자열 배열). undefined = 저장된 값 유지. */
+  readonly allowModels?: readonly string[];
+  readonly blockModels?: readonly string[];
+  readonly supportsImages?: boolean;
+  readonly maxOutputTokens?: number;
+  readonly contextWindow?: number;
+  readonly firstTokenTimeoutSec?: number;
+  readonly allowInsecurePublic?: boolean;
+  readonly defaultModel?: string;
+}
+
+export interface OpenAiCompatTestRequest {
+  readonly id?: string;
+  /** 아직 저장하지 않은 엔드포인트의 이름 — 오류 문장에 이 이름을 쓴다. */
+  readonly name?: string;
+  readonly baseUrl?: string;
+  readonly apiKey?: string;
+  readonly headers?: ReadonlyArray<{ readonly name: string; readonly value?: string }>;
+  readonly allowInsecurePublic?: boolean;
+  readonly allowModels?: readonly string[];
+  readonly blockModels?: readonly string[];
+  readonly model?: string;
+  readonly probeTools?: boolean;
+}
+
+export interface OpenAiCompatTestResponse {
+  readonly ok: boolean;
+  readonly code: string;
+  readonly status?: number;
+  readonly message: string;
+  readonly models: readonly string[];
+  readonly modelsAvailable: boolean;
+  /** 허용/차단 패턴 때문에 목록에서 숨긴 모델 수. */
+  readonly hiddenModels: number;
+  readonly chat?: { readonly ok: boolean; readonly status?: number; readonly message?: string };
+  readonly toolsOk: boolean | null;
+  readonly latencyMs: number;
+  readonly warnings: readonly string[];
+}
+
+function readCompatEndpoints(payload: Record<string, unknown> | null): OpenAiCompatEndpointPublic[] {
+  const rows = Array.isArray(payload?.endpoints) ? payload.endpoints : [];
+  return rows.flatMap((row): OpenAiCompatEndpointPublic[] => {
+    const item = objectValue(row);
+    if (!item || typeof item.id !== "string" || typeof item.baseUrl !== "string") return [];
+    const lastTest = objectValue(item.lastTest);
+    return [{
+      id: item.id,
+      name: typeof item.name === "string" ? item.name : item.id,
+      baseUrl: item.baseUrl,
+      hasKey: item.hasKey === true,
+      headerNames: Array.isArray(item.headerNames) ? item.headerNames.filter((n): n is string => typeof n === "string") : [],
+      reasoningMode: parseOpenAiCompatReasoningMode(item.reasoningMode),
+      allowModels: Array.isArray(item.allowModels) ? item.allowModels.filter((p): p is string => typeof p === "string") : [],
+      blockModels: Array.isArray(item.blockModels) ? item.blockModels.filter((p): p is string => typeof p === "string") : [],
+      supportsImages: item.supportsImages === true,
+      maxOutputTokens: typeof item.maxOutputTokens === "number" ? item.maxOutputTokens : 16_384,
+      contextWindow: typeof item.contextWindow === "number" ? item.contextWindow : 128_000,
+      firstTokenTimeoutSec: typeof item.firstTokenTimeoutSec === "number" ? item.firstTokenTimeoutSec : 180,
+      allowInsecurePublic: item.allowInsecurePublic === true,
+      models: Array.isArray(item.models) ? item.models.filter((m): m is string => typeof m === "string") : [],
+      defaultModel: typeof item.defaultModel === "string" ? item.defaultModel : "",
+      ...(lastTest && typeof lastTest.at === "number" ? {
+        lastTest: {
+          at: lastTest.at,
+          ok: lastTest.ok === true,
+          ...(typeof lastTest.status === "number" ? { status: lastTest.status } : {}),
+          ...(typeof lastTest.toolsOk === "boolean" || lastTest.toolsOk === null ? { toolsOk: lastTest.toolsOk as boolean | null } : {}),
+          ...(typeof lastTest.message === "string" ? { message: lastTest.message } : {}),
+        },
+      } : {}),
+    }];
+  });
+}
+
+async function compatJson(path: string, init?: RequestInit): Promise<Record<string, unknown> | null> {
+  const response = await companionFetch(`${companionOrigin()}${path}`, init);
+  if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  return readJsonBody(response);
+}
+
+let compatKnownRequest: Promise<void> | null = null;
+/**
+ * 부팅 직후 한 번 — 역할이 사용자 지정 엔드포인트를 쓰는데 이름·모델 목록 사본이 아직 없으면 받아 둔다.
+ * 실패해도 조용히 넘어간다(상태 칩은 id 슬러그로 보이고, 실제 도달은 요청 시점 오류가 말한다).
+ */
+export function ensureOpenAiCompatEndpointsKnown(): Promise<void> {
+  compatKnownRequest ??= fetchOpenAiCompatEndpoints().then(() => undefined, () => { compatKnownRequest = null; });
+  return compatKnownRequest;
+}
+
+/** 저장된 엔드포인트 목록을 받아 알려진 사본(provider 선택 UI 가 읽는다)도 갱신한다. */
+export async function fetchOpenAiCompatEndpoints(): Promise<readonly OpenAiCompatEndpointPublic[]> {
+  const list = readCompatEndpoints(await compatJson("/auth/openai-compat"));
+  setKnownOpenAiCompatEndpoints(list);
+  return list;
+}
+
+export async function saveOpenAiCompatEndpoint(request: OpenAiCompatSaveRequest): Promise<{ endpoint: OpenAiCompatEndpointPublic | undefined; endpoints: readonly OpenAiCompatEndpointPublic[] }> {
+  const payload = await compatJson("/auth/openai-compat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(request),
+  });
+  const endpoints = readCompatEndpoints(payload);
+  setKnownOpenAiCompatEndpoints(endpoints);
+  const saved = readCompatEndpoints({ endpoints: [payload?.endpoint] })[0];
+  return { endpoint: saved, endpoints };
+}
+
+export async function deleteOpenAiCompatEndpoint(id: string): Promise<readonly OpenAiCompatEndpointPublic[]> {
+  const list = readCompatEndpoints(await compatJson("/auth/openai-compat/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+  }));
+  setKnownOpenAiCompatEndpoints(list);
+  return list;
+}
+
+/** 「연결 시험」 — 동반 서비스가 GET {base}/models 를 대신 호출한다(브라우저는 CORS 때문에 직접 못 한다). 시험은 모델 호출이 길 수 있어 별도 시간 한도를 쓴다. */
+export async function testOpenAiCompatEndpoint(request: OpenAiCompatTestRequest): Promise<OpenAiCompatTestResponse> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), request.model ? 130_000 : 30_000);
+  try {
+    const token = companionTokenHeaders();
+    const response = await fetch(`${companionOrigin()}/auth/openai-compat/test`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...token },
+      body: JSON.stringify(request),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+    const payload = await readJsonBody(response);
+    const chat = objectValue(payload?.chat);
+    return {
+      ok: payload?.ok === true,
+      code: typeof payload?.code === "string" ? payload.code : "unknown",
+      ...(typeof payload?.status === "number" ? { status: payload.status } : {}),
+      message: typeof payload?.message === "string" ? payload.message : "",
+      models: Array.isArray(payload?.models) ? payload.models.filter((m): m is string => typeof m === "string") : [],
+      modelsAvailable: payload?.modelsAvailable === true,
+      hiddenModels: typeof payload?.hiddenModels === "number" ? payload.hiddenModels : 0,
+      ...(chat ? { chat: { ok: chat.ok === true, ...(typeof chat.status === "number" ? { status: chat.status } : {}), ...(typeof chat.message === "string" ? { message: chat.message } : {}) } } : {}),
+      toolsOk: typeof payload?.toolsOk === "boolean" ? payload.toolsOk : null,
+      latencyMs: typeof payload?.latencyMs === "number" ? payload.latencyMs : 0,
+      warnings: Array.isArray(payload?.warnings) ? payload.warnings.filter((w): w is string => typeof w === "string") : [],
+    };
+  } catch (error) {
+    if (error instanceof ChatGptCompanionResponseError) throw error;
+    throw new ChatGptCompanionUnreachableError(error, controller.signal.aborted ? "timeout" : "network");
+  } finally {
+    clearTimeout(timer);
+  }
 }

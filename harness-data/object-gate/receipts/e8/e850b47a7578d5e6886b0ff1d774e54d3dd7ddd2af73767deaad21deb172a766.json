@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e850b47a7578d5e6886b0ff1d774e54d3dd7ddd2af73767deaad21deb172a766",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "broken natural cave rock column seen from above at 3/4: flat rough top cut face clearly visible, cylindrical body with downward-curving strata rings, flared rocky base",
+ "label": "pirate-isles/pi-rock-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken rock column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broken column's top cut face is clearly shown from rows 1 to 6 with moss patches, providing roughly 5 rows of visible top surface in 3/4 perspective, along with curved strata and a flared base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3984
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken rock column shaft",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the column is clearly rendered as a foreshortened elliptical/rough flat surface from row 1 to row 5 (approx 5 pixel rows) with moss patches, curving down into the vertical column body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2993
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken rock column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the rock column is clearly depicted as an elliptical plane spanning rows 1-5 (approx 5 rows tall) with moss details, leading down into a cylindrical shaft with curved strata rings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3462
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the broken rock column is clearly depicted as an elliptical/rough flat top surface spanning rows 1-5 (around 5 rows tall) with green moss patches before the vertical cylindrical shaft begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4713
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.595Z",
+ "cells": {
+  "16": [
+   "1aeb67ad722a5eed",
+   "bb073b583cdf1139"
+  ],
+  "24": [
+   "031b57c1d2273a4a",
+   "0922804df6549153",
+   "29c2a245bcb1ba21",
+   "4954b508e639be90",
+   "526a27e6677c3ca3",
+   "5af040570f8a947b",
+   "606ba0948911742f",
+   "66357d75635d1ab8",
+   "842ceace4bedf15f",
+   "be0fc927ec7a4fe1",
+   "c4edf8c5f77ef4ca",
+   "db3663c21c3dd20d"
+  ],
+  "32": [
+   "9e1d4573bbb1b5d3",
+   "d999f8901f1d4f12",
+   "f722ffe6ef57a07a"
+  ],
+  "48": [
+   "06cd1cf287dfab34",
+   "24941953005af603",
+   "51711c54ff6dc1bf",
+   "70eea0d41b787151",
+   "c3bb92a48c9c161f",
+   "d30426efaf908389"
+  ]
+ }
+}

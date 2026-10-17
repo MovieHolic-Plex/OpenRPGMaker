@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d162ae8cd05972bc969da13ddef5360fc1d340bbb4f4b19fd68776cf912e201",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "시장 노점(생선 얼음판, 남색 차양)",
+ "label": "steampunk-city/sp-stall-fish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall with striped awning and fish display counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fish ice tray counter top is clearly viewed from above across rows 26 to 32 (7 px tall) showing the fish lying on the ice surface, paired with the south front face below on rows 33 to 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6967
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall counter with canopy",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fish display counter shows a clear foreshortened horizontal top surface (ice bed with fish) across rows 26-33 (8 rows tall), resting above the front wooden counter face (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4457
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with striped awning and fish ice counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal ice counter bed is clearly viewed from above between rows 26 and 33 (about 8 rows tall) showing the fish lying on the ice surface, resting atop the front wooden base panel (rows 34-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5380
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall clearly shows its horizontal counter surface with fish on ice across rows 26-33 (8 rows tall), as well as a sloped awning viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5670
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.526Z",
+ "cells": {
+  "16": [
+   "2a3cbcce20d4fb52",
+   "45f3814c9c737781",
+   "68ceffa4c4ae4ee5",
+   "79736c153b9615e2",
+   "90cae661289f6bfd",
+   "cf3d68f999a4af6e",
+   "d208ad463db2aa1c",
+   "e2af29e035fba2fd",
+   "e58e23baad2b6bb4"
+  ],
+  "24": [
+   "74502b10f39ba4ba",
+   "a3e6620117f41af5",
+   "b1443dd753f2a060",
+   "d14ea7ff8764fc84"
+  ],
+  "32": [
+   "08918f7061888027",
+   "0ffaee1a963ae97e",
+   "1106b69aadbb31b5",
+   "1fdd574a291a924c",
+   "21c81061fc2c0000",
+   "24ffd1bf259f1f24",
+   "36deec5b4f6924a1",
+   "3eef89b288679d11",
+   "53ff524be5be0f9c",
+   "5c645d41bc6db1f1",
+   "6bfc570bfded27d0",
+   "7a9dfb2ddafe17cc",
+   "89e9e8762412b045",
+   "98a3b04fa956000a",
+   "9d2cea8a5547a084",
+   "ac51f0176721f3b2",
+   "b1ff32ee00bfc45c",
+   "b6d946f6b76eaf82",
+   "baffd0f8c0f2c09c",
+   "cbb9f7c378d0eae6",
+   "e957593532fe6d9c",
+   "ef63426674a72992",
+   "f185c8afbabb89e9",
+   "fd26bca403ff69e0"
+  ],
+  "48": [
+   "dc7d6fb9126daf2c"
+  ]
+ }
+}

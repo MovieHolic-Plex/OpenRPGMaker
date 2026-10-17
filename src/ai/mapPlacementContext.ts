@@ -265,7 +265,7 @@ function goldBasis(facts: MapFacts, scope: RewardScope, where: string): ChestRew
 
 const TOWN_WORDS = /마을|촌|town|village|거리|시장|항구|광장|성읍|도시|city|harbor|market|plaza|hamlet/i;
 const DUNGEON_WORDS = /동굴|던전|dungeon|cave|탑|tower|폐허|ruin|지하|숲속 깊|미궁|labyrinth|요새|fortress|성채/i;
-const INTERIOR_WORDS = /집|방|여관|상점 안|가게|교회|성당|inn|house|room|shop interior|church|interior|실내/i;
+const INTERIOR_WORDS = /집|방(?!어|패|향|위|랑|해|벽|금|침|송|문|식)|여관|상점 안|가게|교회|성당|inn|house|room|shop interior|church|interior|실내/i;
 
 /**
  * 맵 성격 추정. 적 조우는 "위험한 곳"의 가장 강한 신호, 그다음 레이아웃 종류·이름·상점/여관/주민 수.

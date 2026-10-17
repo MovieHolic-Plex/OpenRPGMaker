@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e8b98e0d99c0997bdf17b506b61b333ad6652b92a6ee6fc70a4c5a02826e81f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "얼음 기둥(위가 잘린 단면이 보인다)",
+ "label": "snow-north/sn-ice-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the ice pillar is rendered as a prominent foreshortened circular/oval cross-section spanning rows 1 to 9 (approx. 8-9 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cross-section cut surface of the ice pillar is clearly visible as an elliptical face spanning from row 2 through row 10 (~9 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3014
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice pillar shaft",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut cross-section of the ice column is prominently rendered as an elliptical surface spanning rows 2 to 10 (~9 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical ice pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut cross-section of the ice pillar is rendered as a large elliptical surface from row 2 to row 10 (approx. 9 rows tall) showing top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4322
+  }
+ ],
+ "decidedAt": "2026-10-14T01:17:43.845Z",
+ "cells": {
+  "16": [
+   "ac97d70f0a885e06",
+   "f218af34f87e127a"
+  ],
+  "24": [
+   "17435535379d125f",
+   "40e4f62f9ac7c785",
+   "42443e88cc5cf868",
+   "47188f17e7879113",
+   "55fccb92f283c471",
+   "5ac0c03e2d374403",
+   "8f99ee92d804450b",
+   "a1ce53793c231d3a",
+   "ae5a821021af2544",
+   "c4adb9d638260419",
+   "d8e50040f12477a6",
+   "fca2af51867fc142"
+  ],
+  "32": [
+   "27e78b4c5ee5da77",
+   "5db08f94564675e4",
+   "e28d2f682c6b8696"
+  ],
+  "48": [
+   "1863eeae3a5ba945",
+   "353706a3f263a85f",
+   "5dba60ab43eed65b",
+   "8759bafb9e66e8df",
+   "a89f8a6e15d1dca8",
+   "dc9bf6ee706f1b79"
+  ]
+ }
+}

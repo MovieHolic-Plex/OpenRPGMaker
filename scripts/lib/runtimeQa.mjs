@@ -45,6 +45,9 @@ export const OP_KINDS = [
   "waitForRuntime",
   "waitForEmote",
   "waitForPosition",
+  // 이벤트(자율 이동 적·NPC)가 그 칸에 도착/이탈할 때까지 조건 대기 — session.eventLocations 를 읽는다(필드 적 QA).
+  "waitForEventAt",
+  "traceEvent",
   // 조건 대기. 고정 sleep 만으로 UI 전이를 기다리면 느린 호스트에서 flaky 해지고,
   // 키를 정해진 횟수만큼 눌러 대사를 소진하려 하면 **NPC 를 재발동시켜 초과 입력**이 된다
   // (실측: 선택지 NPC 옆에서 Enter 8회 → 선택지가 다시 열림).
@@ -61,8 +64,15 @@ export const OP_KINDS = [
   // 타이틀 이어하기처럼 클릭이 자연스러운 표면도 있다. 레일/타이틀 항목은 진짜
   // 클릭 대상이므로 가려짐·비활성·0 크기를 검사한 뒤 보이는 상자 중심을 누른다.
   "pointerClick",
+  "wheel",
   "waitForAttr",
   "pressUntil",
+  // 키를 누를 때마다 testid 노드의 글에 text 가 들어왔는지 본다(대사 줄 번호표를 따라 넘길 때 — 쪽 수를 몰라도 다음 줄에서 멈춘다).
+  "pressUntilText",
+  // 노드에 클래스가 붙기를 기다린다(대사 쪽이 다 나와 page-ready 가 된 순간).
+  "waitForClass",
+  // 페이지 안에서 함수 본문을 실행하고 결과를 JSON 파일로 남긴다(레이아웃 측정용 탐침).
+  "evalToFile",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
   "playerRoute",
@@ -568,7 +578,7 @@ export function evaluateExpect(expected, observed) {
   for (const id of expected.parkedVehicleSprites ?? []) {
     const sprite = observed.vehicleSprites?.[id];
     if (!sprite) failures.push(`parkedVehicleSprites: ${id} 스프라이트가 필드에 없다`);
-    else if (sprite.textureKey !== "tex_easyrpg_charset_vehicles") failures.push(`parkedVehicleSprites: ${id} 텍스처 ${sprite.textureKey}`);
+    else if (sprite.textureKey !== (id === "chocobo" ? "tex_easyrpg_charset_animal" : "tex_easyrpg_charset_vehicles")) failures.push(`parkedVehicleSprites: ${id} 텍스처 ${sprite.textureKey}`);
   }
 
   if (expected.playerSpriteResourceNonEmpty && !playerSpriteResourceId) {

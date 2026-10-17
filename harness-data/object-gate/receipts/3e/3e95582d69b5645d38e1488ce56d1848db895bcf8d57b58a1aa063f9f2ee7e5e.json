@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e95582d69b5645d38e1488ce56d1848db895bcf8d57b58a1aa063f9f2ee7e5e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-bus-stop",
+ "label": "jp_city/street_hand/jp-bus-stop",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop post and sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop is drawn in a flat architectural front elevation: the top cap is drawn from the side/front without any visible top surface, the circular route sign is a circle facing directly forward with no 3/4 foreshortening or top depth, the timetable board is a flat front rectangle, and the base has no top surface visible around the pole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7564
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop pole and timetable sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop (cap, circular sign, timetable board, and base) is drawn in pure front elevation as if for a side-scrolling platformer, with no visible top surfaces or 3/4 downward tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8793
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular bus-stop signboard on a post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest body is a flat rectangular signboard shown straight-on. Its dark top strip is only a 1px edge/rim, with no visible horizontal top surface; the post and circular sign are likewise front-facing. A bus-stop sign assembly is not plausibly a column or pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 39431
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular bus-stop information sign panel on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest body is the lower rectangular sign panel, shown as a flat front elevation. Its top is only a thin 1-2px dark edge rather than a visible horizontal top surface; the upper circular sign does not change the main body's projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 76828
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.010Z",
+ "cells": {
+  "16": [
+   "4939133de0988f92",
+   "4fdcc77dfcc3e33c",
+   "8cae0198ddd93c0e"
+  ],
+  "24": [
+   "2c36f13eb478a009",
+   "48ed3e3d3e1b445c",
+   "5aea0a230f7fdfd8",
+   "747b8f607ca645be",
+   "c69a9ba7a6891224",
+   "f58bf3ac5e1f6cb2"
+  ],
+  "32": [
+   "0ec1acce414b4827",
+   "114c5fc9df587698",
+   "2f22a424adf036b2",
+   "3102da11b65bf3ea",
+   "44a4cbe7833b9301",
+   "47064224f1668927",
+   "89c33edbb174167b",
+   "a7ef26f66f169104",
+   "b1e479a1b0759c19",
+   "b3601cd790c5eb62",
+   "c892a6ab1547a298",
+   "f3722828913e2132"
+  ],
+  "48": [
+   "089e9a25db67332b",
+   "4a2389c8bdc75dda",
+   "fcf5aef2d69059ad"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+/* === 대사창 읽기 보조: 백로그 · 숨기기 (2026-10-17, 미연시 시스템 UI 1단계) ===
+   저작된 대사 시스템(meta.oprnDialogueSystem · 연애 기본 구성)에서만 DOM 이 생긴다. 옛 프로젝트에는 아무 영향이 없다.
+   대사창 위 오토·스킵·백로그·숨기기 단추 줄은 없앴다(2026-10-17) — 단축키만 남는다. */
+
+/* 숨기기: 대사창과 어둠막을 걷고 아무 키나 누르면 돌아온다. 글자 타이핑은 뒤에서 계속된다. */
+.dialogue-overlay[data-dialogue-hidden],
+.dialogue-scrim[data-dialogue-hidden] {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.dialogue-overlay[data-dialogue-hidden] * {
+  pointer-events: none;
+}
+
+/* === 백로그 전체 화면 === */
+.dialogue-backlog {
+  backdrop-filter: blur(3px);
+  background: rgba(6, 10, 18, 0.97);
+  box-sizing: border-box;
+  color: var(--runtime-dialogue-text, #fff);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  inset: 0;
+  padding: 8px 12px;
+  pointer-events: auto;
+  position: absolute;
+  z-index: 60;
+}
+
+.dialogue-backlog-head {
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+  padding-bottom: 3px;
+}
+
+.dialogue-backlog-title {
+  font-size: 1.05em;
+}
+
+.dialogue-backlog-count {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.8em;
+}
+
+.dialogue-backlog-hint {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.8em;
+  margin-left: auto;
+}
+
+.dialogue-backlog-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  min-height: 0;
+  outline: none;
+  overflow-y: auto;
+  padding: 0 2px 0 0;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+  scrollbar-width: thin;
+}
+
+.dialogue-backlog-entry {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.dialogue-backlog-speaker {
+  color: var(--runtime-window-highlight, #f2c14e);
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-entry.no-speaker .dialogue-backlog-text,
+.dialogue-backlog-entry[data-context="narration"] .dialogue-backlog-text {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-style: italic;
+}
+
+.dialogue-backlog-text {
+  white-space: pre-wrap;
+}
+
+.dialogue-backlog-entry.is-choice {
+  border-left: 2px solid var(--runtime-window-highlight, #f2c14e);
+  padding-left: 4px;
+}
+
+.dialogue-backlog-prompt {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-picked {
+  color: var(--runtime-window-highlight, #f2c14e);
+  display: flex;
+  gap: 4px;
+}
+
+.dialogue-backlog-mark {
+  flex: 0 0 auto;
+  font-size: 0.85em;
+}
+
+.dialogue-backlog-empty {
+  color: var(--runtime-dialogue-muted, #cfd6e6);
+}
+
+.dialogue-backlog-close {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85em;
+  margin-top: 4px;
+  padding: 2px 8px;
+}
+
+.dialogue-backlog-close:hover,
+.dialogue-backlog-close:focus-visible {
+  background: rgba(255, 255, 255, 0.22);
+}

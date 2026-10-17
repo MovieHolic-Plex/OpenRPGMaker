@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50be158810e99045e7844d9685dad309ba47ef33ebb381a0e0fe882de1a68a3a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall dark wooden ship bookshelf with books held by rope rails, rolled charts on top",
+ "label": "pirate-isles/pi-bookshelf-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall dark wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 3-6 (4 rows deep), holding rolled charts and a bottle in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4633
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bookshelf spans rows 2 to 6 (about 5 rows deep), displaying rolled charts and a bottle, showing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the bookshelf is clearly visible across rows 3-7, supporting rolled charts and a bottle, giving proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf spans rows 3 to 7 (about 5 rows deep), where rolled charts and a bottle rest in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3619
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "139280b4ae0c2772",
+   "97d4afc8da672511",
+   "b3c17f2b69e6d7f0",
+   "deb6f084d839b737"
+  ],
+  "24": [
+   "19ebe636106bcb9b",
+   "24236a5c3a0d7ed3",
+   "2bedef5c104784b3",
+   "2c24841d67d3b9e5",
+   "3b78a080df960986",
+   "3fbdd51ff460900f",
+   "457844df362355d4",
+   "45fec60f9ab58fda",
+   "55b18d3fae97b40c",
+   "5750dea08f0b18cf",
+   "62e00954f5fdaa22",
+   "66d8dd5a46202399",
+   "821b844e20411300",
+   "887ebc734745646d",
+   "9a4e3e9279d32dd4",
+   "a91e84ddf9d114ee",
+   "b7b1268a92a90643",
+   "b8664485a1ad0f0a",
+   "bdaf57ec967d891c",
+   "cc7f90b49ceed4f3",
+   "dfeef6a46df6c536",
+   "e4e75c83688b78cd",
+   "ee464c647ae8e7bb",
+   "f39094383026dc29"
+  ],
+  "32": [
+   "8110ec30a0eef2c9"
+  ],
+  "48": [
+   "0ee51b3e3a74cde4",
+   "49b5844576f1dbcf",
+   "a1809c8402e81a54",
+   "d819ea3d59006c27",
+   "f16598b013761a91",
+   "f224dd585baa8572"
+  ]
+ }
+}

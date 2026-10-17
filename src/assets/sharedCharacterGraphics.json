@@ -2205,6 +2205,342 @@
       "faceResourceId": null,
       "quality": "unspecified",
       "note": "2026-09-18 원본 실물 대조. 시트의 빈 칸으로, 얼굴 대상이 아님."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 0,
+      "label": "남학생 · 남색 블레이저",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-boy-navy-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 3,
+      "label": "남학생 · 옆머리 묶음",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-boy-sidetail-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 4,
+      "label": "여학생 · 남색 블레이저",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-girl-navy-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 5,
+      "label": "여학생 · 세일러복",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-girl-sailor-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 6,
+      "label": "여학생 · 양갈래",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-girl-twintail-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 2,
+      "label": "캐주얼 남 · 회색 후드티",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-boy-hoodie-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 4,
+      "label": "캐주얼 여 · 민트 원피스",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-girl-mint-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 0,
+      "label": "정장 남 · 네이비",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-suit-boy-navy-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 2,
+      "label": "정장 여 · 남색",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "중년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-suit-girl-navy-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 3,
+      "label": "카페 점원 · 갈색 앞치마",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-apron-brown-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 6,
+      "label": "교수 · 트위드 재킷",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-teacher-tweed-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 7,
+      "label": "여선생 · 버건디 카디건",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "중년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-teacher-cardigan-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-16 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 1,
+      "label": "남학생 · 회색 블레이저",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-boy-grey-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 2,
+      "label": "남학생 · 여름 교복",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-boy-summer-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern1",
+      "characterIndex": 7,
+      "label": "여학생 · 올림머리 카디건",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-girl-bun-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 0,
+      "label": "여학생 · 긴 머리 회색 블레이저",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-uni-girl-long-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 1,
+      "label": "캐주얼 남 · 머스터드 스웨트셔츠",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-boy-mustard-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 3,
+      "label": "캐주얼 남 · 올리브 재킷",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-boy-olive-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 5,
+      "label": "캐주얼 여 · 분홍 후드티",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-girl-pink-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 6,
+      "label": "캐주얼 여 · 라벤더 블라우스",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-girl-lavender-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern2",
+      "characterIndex": 7,
+      "label": "캐주얼 여 · 줄무늬 티",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-casual-girl-stripe-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 1,
+      "label": "정장 남 · 차콜",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-suit-boy-charcoal-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 4,
+      "label": "카페 점원 · 남색 앞치마",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-apron-navy-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_oprn_charset_modern3",
+      "characterIndex": 5,
+      "label": "카페 점원 · 올리브 앞치마",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "status": "mapped",
+      "faceResourceId": "shared-modern-apron-olive-expressions-bust-base",
+      "quality": "approximate",
+      "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
     }
   ],
   "faces": [
@@ -3217,6 +3553,246 @@
         "kind": "몬스터"
       },
       "note": "2026-09-28 AI 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#6."
+    },
+    {
+      "resourceId": "shared-modern-uni-boy-navy-expressions-bust-base",
+      "label": "남학생 · 남색 블레이저 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-boy-sidetail-expressions-bust-base",
+      "label": "남학생 · 옆머리 묶음 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-girl-navy-expressions-bust-base",
+      "label": "여학생 · 남색 블레이저 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-girl-sailor-expressions-bust-base",
+      "label": "여학생 · 세일러복 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-girl-twintail-expressions-bust-base",
+      "label": "여학생 · 양갈래 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-boy-hoodie-expressions-bust-base",
+      "label": "캐주얼 남 · 회색 후드티 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-girl-mint-expressions-bust-base",
+      "label": "캐주얼 여 · 민트 원피스 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-suit-boy-navy-expressions-bust-base",
+      "label": "정장 남 · 네이비 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-suit-girl-navy-expressions-bust-base",
+      "label": "정장 여 · 남색 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "중년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-apron-brown-expressions-bust-base",
+      "label": "카페 점원 · 갈색 앞치마 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-teacher-tweed-expressions-bust-base",
+      "label": "교수 · 트위드 재킷 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-teacher-cardigan-expressions-bust-base",
+      "label": "여선생 · 버건디 카디건 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "중년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-16). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-boy-grey-expressions-bust-base",
+      "label": "남학생 · 회색 블레이저 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-boy-summer-expressions-bust-base",
+      "label": "남학생 · 여름 교복 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-girl-bun-expressions-bust-base",
+      "label": "여학생 · 올림머리 카디건 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-uni-girl-long-expressions-bust-base",
+      "label": "여학생 · 긴 머리 회색 블레이저 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-boy-mustard-expressions-bust-base",
+      "label": "캐주얼 남 · 머스터드 스웨트셔츠 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-boy-olive-expressions-bust-base",
+      "label": "캐주얼 남 · 올리브 재킷 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-girl-pink-expressions-bust-base",
+      "label": "캐주얼 여 · 분홍 후드티 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-girl-lavender-expressions-bust-base",
+      "label": "캐주얼 여 · 라벤더 블라우스 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-casual-girl-stripe-expressions-bust-base",
+      "label": "캐주얼 여 · 줄무늬 티 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-suit-boy-charcoal-expressions-bust-base",
+      "label": "정장 남 · 차콜 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "남성",
+        "age": "중년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-apron-navy-expressions-bust-base",
+      "label": "카페 점원 · 남색 앞치마 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "shared-modern-apron-olive-expressions-bust-base",
+      "label": "카페 점원 · 올리브 앞치마 흉상",
+      "attributes": {
+        "kind": "사람",
+        "gender": "여성",
+        "age": "청년"
+      },
+      "note": "현대 연애 인물 칩과 같은 인물의 흉상(2026-10-17). 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
     }
   ]
 }

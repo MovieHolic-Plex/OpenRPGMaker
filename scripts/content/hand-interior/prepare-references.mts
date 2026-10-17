@@ -8,6 +8,7 @@ import { execFileSync } from "node:child_process";
 import { analyseHandInteriorPlan, buildHandInteriorLayers, HAND_INTERIOR_SPEC as S, type HandInteriorInput } from "../../../src/editor/handInterior/builder.ts";
 import { createAtlasBiomeInteriorTileset } from "../../../src/project/defaults/atlasBiomeInterior.ts";
 import { handInteriorPlanExits } from '../../../src/editor/handInterior/exits.ts';
+import { withComposedRooms } from "../../../src/editor/handInterior/rooms.ts";
 
 const OUT = "src/assets/sharedHandInteriorReferences.json", PUB = "public/assets/hand-interior-references", MD = "tiledata/hand-interior/v5-maps/refs";
 fs.mkdirSync(PUB, { recursive: true }); fs.mkdirSync(MD, { recursive: true });
@@ -16,6 +17,9 @@ const meta = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5/interior-meta
 // 예제 맵 가구·격자는 build_tileset.py 가 쓴 것(고른 후보로 크기를 바꾼 가구가 새 자리에 있다). 없으면 v5 원본.
 if (fs.existsSync("tiledata/hand-interior/v5-maps/buildings.json")) meta.buildings = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/buildings.json", "utf8"));
 const check = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/check.json", "utf8"));
+// 박물관·배 안·투기장(interior-plus, scripts/content/interior-plus) 예제 평면 — 방 사각형(rooms) 입력. 없으면 건너뛴다.
+const PLUS_DIR = "tiledata/hand-interior/plus/plans";
+const plusPlans = fs.existsSync(PLUS_DIR) ? fs.readdirSync(PLUS_DIR).filter((f) => f.endsWith(".json")).sort().map((f) => ({ key: f.replace(/\.json$/, ""), ...JSON.parse(fs.readFileSync(`${PLUS_DIR}/${f}`, "utf8")) })) : [];
 const tileset = createAtlasBiomeInteriorTileset();
 const TID = "atlas_biome_interior", CAT = "hand-interior-v5";
 const fence = (lang: string, body: string) => "```" + lang + "\n" + body + "\n```\n";
@@ -65,6 +69,7 @@ doc("hand-interior-v5-order", "손 도트 실내 · 읽는 순서·짓는 순서
 ## 읽는 순서
 1. 이 문서 → 2. \`hand-interior-v5-exit-width\`(외부 문과 실제 출구 폭), \`hand-interior-v5-rules\`(구조 규칙·사용자 판정) → 3. \`hand-interior-v5-dictionary\`(바닥·벽면·천장·탁자·줄·단 칸 번호) →
 4. 짓는 건물과 가장 가까운 예제(\`hand-interior-v5-map-*\`: 입력 인자 + 네 층 정답 배열 + 그림) → 5. \`hand-interior-v5-errors\`(오류 그림과 코드).
+박물관·미술관·배 안(선장실·화물칸)·투기장은 \`hand-interior-v5-plus\`(경계·방 종류·program·배치 규칙)를 먼저 읽는다.
 가구는 \`list_hand_interior_parts({room:"빵집"})\`(방 종류·건물 → 예제에 쓰인 가구를 종류별로)와 \`{query:"여관 벽"}\`(설명·쓰는 방·놓는 곳·짝 소품까지)으로 찾는다.
 \`hand-interior-v5-objects-*\`(가구 사전, 칸 번호 포함)는 도구 결과로 모자랄 때만 한 분류씩 읽는다.
 
@@ -172,7 +177,7 @@ for (const c of cats.filter((c) => c.ids.length < SMALL)) {
 }
 if (pack.length) groups.push(pack);
 // 새 분류가 늘어도 예제·규칙을 빠뜨리지 않는다. 문서 예산을 넘으면 가장 작은 묶음 둘을 합친다.
-const objectDocBudget = 64 - docs.length - maps.plans.length - 1; // 뒤의 예제 + 오류 지침
+const objectDocBudget = 64 - docs.length - maps.plans.length - plusPlans.length - (plusPlans.length ? 1 : 0) - 1; // 뒤의 예제(+ interior-plus 예제·개요) + 오류 지침
 if (objectDocBudget < 1) throw new Error("No object dictionary document budget");
 const size = (g: (typeof cats)) => g.reduce((n, c) => n + c.ids.length, 0);
 while (groups.length > objectDocBudget) {
@@ -228,6 +233,75 @@ ${rows(m.upperTiles, m.width)}4층 upperOverlayTiles
 ${rows(m.upperOverlayTiles, m.width)}`);
 }
 render(jobs);
+
+// ── 2b. interior-plus: 박물관·배 안·투기장 (방 사각형 입력 → 도구가 평면·칸막이·문을 만든다) ─────────────────────────────────
+if (plusPlans.length) {
+  const plusJobs: object[] = [];
+  const plusRows: string[] = [];
+  for (const ex of plusPlans) {
+    const toolArgs = { rooms: ex.rooms.map((r: Record<string, unknown>) => ({ id: r.id, x0: r.x0, y0: r.y0, x1: r.x1, y1: r.y1, ...(r.floor ? { floor: r.floor } : {}), ...(r.wall ? { wall: r.wall } : {}) })),
+      connect: ex.connect ?? [], exit: ex.exit, floor: ex.floor, wall: ex.wall, ...(ex.ceiling ? { ceiling: ex.ceiling } : {}),
+      objects: ex.objects ?? [], ...(ex.tables?.length ? { tables: ex.tables } : {}), ...(ex.goods?.length ? { goods: ex.goods } : {}), ...(ex.lines?.length ? { lines: ex.lines } : {}), ...(ex.daises?.length ? { daises: ex.daises } : {}) };
+    const { input } = withComposedRooms(toolArgs as never, S);
+    const built = buildHandInteriorLayers(input, tileset);
+    const errs = built.issues.filter((i) => i.severity === "error"), warns = built.issues.filter((i) => i.severity === "warning");
+    if (errs.length) throw new Error(`interior-plus 예제 ${ex.key}: 도구 오류 ${errs.map((e) => e.message).join(" / ")}`);
+    exampleCheck.push({ map: ex.key, errors: errs.length, warnings: warns.length, reachable: built.reachable });
+    plusJobs.push({ out: `${PUB}/hand-interior-${ex.key}.png`, width: built.width, height: built.height, lowerTiles: built.lowerTiles, lowerOverlayTiles: built.lowerOverlayTiles, upperTiles: built.upperTiles, upperOverlayTiles: built.upperOverlayTiles });
+    image(`hand-interior-${ex.key}`, `${ex.name}(${ex.building}) 완성 그림 — 아래 build_hand_interior_room 인자를 도구로 지은 네 층을 원본 해상도로 쌓은 그림.`);
+    const kinds = ex.rooms.map((r: { id: string; kind: string }) => `${r.id}=${r.kind}`).join(" · ");
+    plusRows.push(`| \`${ex.key}\` | ${ex.name} | ${kinds} | ${built.width}×${built.height} |`);
+    doc(`hand-interior-v5-map-${ex.key}`, `손 도트 실내 · 예제 · ${ex.name}`, `# 예제 — ${ex.name} (${ex.building}, interior-plus)
+
+${built.width}×${built.height} · 바닥 ${ex.floor} · 벽 ${ex.wall} · 천장 ${ex.ceiling ?? "default"}. 방(id=종류): ${kinds}.
+도구 검사: 오류 ${errs.length} · 경고 ${warns.length} · 닿는 칸 ${built.reachable}. 그림: \`hand-interior-${ex.key}\`.
+조수는 보통 \`build_hand_interior_room({layout:{program:"${ex.building}"}})\` 로 짓는다 — layout 이 방 크기·배치를 새로 짜고 방마다 이 예제 방의 가구 한 벌을 옮겨 심는다.
+아래는 방 사각형을 직접 준 입력(rooms·connect·exit)이다. 좌표를 그대로 복사하지 말고 방 짜임(통로·앵커 가구·벽 걸이 간격)을 배운다.
+
+## build_hand_interior_room 인자 (rooms 입력)
+${fence("json", JSON.stringify({ name: ex.name, ...toolArgs }))}
+## 도구가 만든 평면
+${fence("text", input.plan.join("\n"))}
+## 정답 배열 (층별 칸 번호, -1 = 빈 칸)
+1층 lowerTiles
+${rows(built.lowerTiles, built.width)}2층 lowerOverlayTiles
+${rows(built.lowerOverlayTiles, built.width)}3층 upperTiles
+${rows(built.upperTiles, built.width)}4층 upperOverlayTiles
+${rows(built.upperOverlayTiles, built.width)}`);
+  }
+  render(plusJobs);
+  const plusCats = ["museum", "ship", "arena"].map((c) => { const ids = Object.entries(S.objects).filter(([, o]) => o.category === c).map(([id]) => id); return `${c}(${ids.length}): ${ids.join(", ")}`; });
+  doc("hand-interior-v5-plus", "손 도트 실내 · 박물관·배 안·투기장", `# 박물관·미술관 · 배 안 · 투기장 (interior-plus, 2026-10-14)
+
+손 도트 v5 시트 끝에 덧붙인 조각(같은 팔레트 v6·같은 6단 명암)과 방 종류. 칸 번호는 덧붙이기만 한다(기존 칸 불변, ensureAtlasBiomeInteriorCurrent 가 기존 프로젝트 정의를 새로 고친다).
+
+## 어느 도구로 (경계)
+- 판타지·중세 박물관·미술관 전시실 → 이 칩셋 \`build_hand_interior_room({layout:{program:"museum"}})\`. 호러·고딕·흉가·저택 미술관 → gothic_manor \`build_gothic_place({place:"gallery"})\`(조수 라우팅이 호러 낱말로 나눈다).
+- 배 안(선장실·조타실·배 주방·선원 숙소) → program \`ship\`, 아래 갑판(포 갑판·화물칸·배 감방) → \`ship_hold\`. 해적 항구·섬·난파선 바깥은 pirate_isles. 보고 있는 맵이 pirate_isles 면 그 칩셋의 배 안(compose_pirate_isles_map kind ship)을 쓴다.
+- 투기장·콜로세움·검투사 방 → program \`arena\`(관중석과 모래 마당은 칸막이 없이 트인다).
+
+## 예제(방 구성)
+| program | 이름 | 방(id=종류) | 크기 |
+|---|---|---|---|
+${plusRows.join("\n")}
+
+## 방 종류
+museum_lobby 입구 홀 · museum_gallery 미술 전시실 · museum_relics 유물실 · museum_sculpture 조각실 · museum_natural 자연사실 ·
+ship_cabin 선장실 · ship_helm 조타실 · ship_galley 배 주방 · ship_crew 선원 숙소 · ship_gundeck 포 갑판 · ship_cargo 화물칸 · ship_brig 배 감방 ·
+arena_stands 관중석 · arena_floor 모래 마당 · gladiator_cell 검투사 방 · arena_armory 무기고.
+
+## 바닥·벽면
+바닥 deck(갑판 판자) · hold(짐칸 판자) · parquet(쪽모이 마루) · sand(투기장 모래) · sandstone(사암 포석). 벽면 hull(선체 늑골 판자) · cabin(선장실 판벽) · gallery(미술관 벽지) · arenawall(사암 벽).
+
+## 가구(분류별 id)
+${plusCats.map((l) => `- ${l}`).join("\n")}
+
+## 배치 규칙
+- 그림·명판·깃발에는 글자가 없다. 그림(hang)은 벽면 윗줄, 두 칸 이상 띄워 같은 높이로 건다. 진열장·받침대는 관람 통로(2칸 이상)를 남기고 줄을 맞춘다. 줄 기둥(rope barrier)은 귀한 전시물 앞 한 줄.
+- 배 안: 대포(cannon north)는 북쪽 선체 벽 바로 아래 첫 바닥 줄에 두고 그 위 벽면 윗줄에 포문(gunport)을 건다, 포탄·화약통은 대포 곁. 해먹·침상은 벽 쪽, 가운데는 통로. 돛대(mast)는 방 가운데 한 개. 배 감방은 창살 줄(bars)로 나누고 문 칸을 비운다.
+- 투기장: 관중석 의자(tier seat)는 줄마다 같은 간격, 사이 통로를 남긴다. 모래 마당은 비워 둔다(문장 emblem 하나·과녁·허수아비 정도). 철창문(portcullis)은 북쪽 벽 앞.
+`);
+}
 
 // ── 3. normal vs broken (the builder must catch each) ───────────────────────────────────────────────────────────────
 const bakery = maps.plans.find((p: { key: string }) => p.key === "bakery");

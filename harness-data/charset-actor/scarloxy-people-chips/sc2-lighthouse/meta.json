@@ -1,0 +1,48 @@
+{
+ "key": "sc2-lighthouse",
+ "arch": "sp2-lighthouse",
+ "base": "Scarloxy1:0",
+ "variant": "청록 모자를 노란 방수모로 recolor 하고, 흰 재킷을 노란 우비로, 주황 배낭 줄은 회색, 초록 바지는 짙은 청색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 3,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 37dfgnpsv"
+ ],
+ "metrics": {
+  "added_up0": 3,
+  "added_up1": 6,
+  "added_up2": 6,
+  "added_right0": 3,
+  "added_right1": 3,
+  "added_right2": 3,
+  "added_down0": 3,
+  "added_down1": 6,
+  "added_down2": 6,
+  "added_left0": 3,
+  "added_left1": 3,
+  "added_left2": 3,
+  "changed_ratio": {
+   "H": 0.999,
+   "T": 1.0,
+   "B": 0.938,
+   "S": 0.982
+  },
+  "cross": 0,
+  "cross_base": 11,
+  "lone": 175,
+  "lone_base": 274
+ },
+ "distinct": {
+  "score": 0.54,
+  "nearest": "accepted:sp2-rancher-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 41,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r2/sp2-lighthouse-b"
+}

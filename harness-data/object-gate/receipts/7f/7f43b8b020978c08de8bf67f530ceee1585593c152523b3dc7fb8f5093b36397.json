@@ -1,0 +1,194 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f43b8b020978c08de8bf67f530ceee1585593c152523b3dc7fb8f5093b36397",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-5-R",
+ "label": "jp_city/street_hand/jp-sf-sento-5-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento (bathhouse) entrance facade with doorway, noren curtains, and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is rendered as a flat 2D architectural elevation. The door frame, lintel, noren curtain, display shelves, and base/sidewalk are drawn straight-on with zero top surfaces visible (0 rows of top depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6500
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento entrance structure and doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The prominent projecting entrance portal (rows 11-45) is drawn in pure front elevation; its horizontal lintel at row 11 has no visible top surface (0px depth, only a 1px boundary line), violating the requirement that lintels and projecting structural frames show their top surfaces in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building entrance facade and doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway structure projecting in front of the wall has a completely flat top lintel at row 11 with only a 1px outline and no visible top surface or slope. The entire facade, including the protruding door frame, window shelves, and base, is drawn in pure 2D front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sento (bathhouse) storefront with tiled roof eaves, windows, and central curtained doorway",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof eaves spanning rows 0-7 show multiple foreshortened rows of Japanese roof tiles (around 8 rows tall) viewed from above at the standard 3/4 camera angle, resting above the storefront facade and sidewalk curb.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5448
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.384Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "2861d1767a739476",
+   "390a422ed87f2dc5",
+   "436036fdff361312",
+   "492309af242ec3ef",
+   "651ec2a5fc3387e8",
+   "8a0024a5ea16da93",
+   "b7a914a9886874eb",
+   "c03732f0dc187032",
+   "c19d188e44baa256",
+   "d21d870f87c37bbd",
+   "e0319cd2f96ab822",
+   "e6114a91176ef67f",
+   "f8eec44ffad8edd6",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "1878ee474bc13103",
+   "2252db990f425335",
+   "2717de8772582ea2",
+   "2e5847961af4ce96",
+   "33fe20370632b7f0",
+   "3b0c21d14d45365c",
+   "3f0873205918a261",
+   "589f031a01596b76",
+   "5dbc44cf1450030e",
+   "67163fca9d60cb1a",
+   "76b142b1117540b3",
+   "782c79bff4c9f600",
+   "8f06840d8289225f",
+   "ac648b3862382735",
+   "b0c55a00cd79f2db",
+   "b56a65b0046ee3c9",
+   "c0380ba9256640a1",
+   "cabcca009966f279",
+   "d620839347fa93ab",
+   "e8872653f3d098f8",
+   "ebd3f8c65c11abc0",
+   "f11309da7ce1dd13",
+   "f9491128c77c7aad",
+   "ff90efbe0590b44e"
+  ],
+  "32": [
+   "012e4e8702f7e254",
+   "0c7061e03195f2f6",
+   "0c9d1f79bea4bab1",
+   "175ed98cd555df65",
+   "28a0d7fe736c25d3",
+   "2af4024735c92590",
+   "2d2628440203eec4",
+   "324bc285fcb9ff86",
+   "3a8d4d137d36f242",
+   "3e2ed2153c615b5e",
+   "3ebf3ade6233e88e",
+   "40575e227cd78189",
+   "40d01b0c4598952c",
+   "4500eb45166378f5",
+   "5607c5d2c3f3882b",
+   "8d9b47353f3847a3",
+   "8ed8c311d9ac97d7",
+   "90f4af96bee06723",
+   "9643fc64793711d7",
+   "a4709bf2e4fecb5e",
+   "aab543655a84be34",
+   "ab731a6c5a05880d",
+   "b84fba48054825c1",
+   "b98fad66014d6b92",
+   "bc4c537d477d26ed",
+   "c157e367809347e1",
+   "cbe3d95a9f68d98c",
+   "d0bab4583bc9b689",
+   "daed4200e6f24877",
+   "e4aa1de65831fc40",
+   "e7a91e77d3a01a7b",
+   "ed9c213f75451799",
+   "f018f678c48f293e",
+   "f0af636c339ea614",
+   "f100e97ce532bfe5",
+   "fe31700261a5a90f"
+  ],
+  "48": [
+   "265bec28a27674b7",
+   "2890fd330e182cca",
+   "5d4c1a3008437739",
+   "8bdc1c70bca40ae8",
+   "d394c7ff86a8a8cb",
+   "fa935de1cf6f7b64"
+  ]
+ }
+}

@@ -35,6 +35,20 @@
         "oprn-joseon"
       ],
       "note": "번들 joseon_baram 완성 장소(주막·관아 등)가 있다(2026-10-08 조수 연결). 가져와 고치는지, 버들항·실내 v5 로 대신 까는지 본다."
+    },
+    "farm": {
+      "label": "농장 마을",
+      "families": [
+        "oprn-atlas"
+      ],
+      "note": "버들항 농장 칩(beodeul_farm, 3판 화풍 정렬 2026-10-14). 밭 직사각형·울타리·2폭 흙길·헛간 문 도달·소품 겹침/떠 있음을 본다."
+    },
+    "dungeon": {
+      "label": "던전",
+      "families": [
+        "oprn-atlas"
+      ],
+      "note": "버들항(beodeul_city) 던전 키트로 지은 석조 던전. 허공에 뜬 기물·고아 벽 조각·떠 있는 횃불을 본다(2026-10-14 사용자 스크린샷)."
     }
   },
   "forbiddenFamilies": [
@@ -162,6 +176,93 @@
         "사또 자리(높은 단)",
         "병풍",
         "가운데 넓은 통로"
+      ]
+    },
+    {
+      "id": "farm-village",
+      "category": "farm",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "농장 마을을 만들어 줘. 밭 몇 개랑 울타리, 헛간이 있으면 좋겠어.",
+      "requires": [
+        "울타리 친 밭 여러 개",
+        "헛간",
+        "밭 사이 길"
+      ]
+    },
+    {
+      "id": "farm-homestead",
+      "category": "farm",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "작은 농가 하나 만들어 줘. 헛간이랑 닭장, 텃밭, 집까지 이어지는 흙길.",
+      "requires": [
+        "헛간",
+        "닭장",
+        "텃밭",
+        "흙길"
+      ]
+    },
+    {
+      "id": "farm-edge",
+      "category": "farm",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "마을 바깥쪽에 밀밭이랑 채소밭이 있는 농촌 풍경을 만들어 줘.",
+      "requires": [
+        "밀밭",
+        "채소밭",
+        "길"
+      ]
+    },
+    {
+      "id": "dungeon-stone",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "던전 하나 만들어줘. 석조 지하 던전이고 방 몇 개랑 복도, 횃불, 보물상자, 철문이 있으면 좋겠어.",
+      "requires": [
+        "방 여러 개",
+        "복도",
+        "횃불",
+        "철문"
+      ]
+    },
+    {
+      "id": "dungeon-crypt",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "지하 묘지 던전 만들어줘. 석관이랑 횃불, 화로, 기둥이 있는 방들이 복도로 이어졌으면 해.",
+      "requires": [
+        "석관",
+        "횃불",
+        "기둥",
+        "복도"
+      ]
+    },
+    {
+      "id": "dungeon-fe1",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "필드에 몬스터가 돌아다니는 던전 층을 만들어 줘",
+      "requires": [
+        "방 여러 개",
+        "복도",
+        "횃불"
+      ]
+    },
+    {
+      "id": "dungeon-plain",
+      "category": "dungeon",
+      "mode": "balanced",
+      "startTileset": "beodeul_city",
+      "prompt": "던전 하나 만들어줘",
+      "requires": [
+        "방 여러 개",
+        "복도",
+        "횃불"
       ]
     }
   ],

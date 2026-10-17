@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d47f42fd39f7f705e6969c5a0e9255102f945dcc7b251694fb8d6d0b770fc470",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age torch",
+ "label": "prehistoric/ph-torch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torch shaft and head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch bowl rim at row 10 and the pole base at row 30 are completely straight horizontal lines with no foreshortened top or elliptical opening visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torch shaft and cup",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch cup and shaft are drawn with completely flat horizontal lines (rows 10, 12, 14, 30) with no ellipse, visible opening, or foreshortened top surface showing the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5657
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torch pole and cup",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch head and wooden pole are drawn with completely flat horizontal lines (rows 10, 12, 14, 30) with no visible top surface or elliptical rim around the base of the flame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5881
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torch shaft and sconce",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torch shaft and sconce are drawn in flat front elevation with horizontal lines across rows 10, 12, 14, and 30, showing no foreshortened top surface or rim ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5416
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.801Z",
+ "cells": {
+  "16": [
+   "50b52d76878a55ab",
+   "b59e8e87da56704d"
+  ],
+  "24": [
+   "3322caf162a7b237",
+   "686dbc83233f11a9",
+   "7b64a1a669906e03",
+   "7ced30cf93b3cfff",
+   "9a834e636f62eea4",
+   "9b127d2ed0da8273",
+   "ae878766dfbc83c7",
+   "b44d1a9c0a1ab8bf",
+   "c8e2de8de5428ecb",
+   "e058ed03c5fcd986",
+   "e6c74f736c314604",
+   "f5795d478c55a981"
+  ],
+  "32": [
+   "0b541c0d45864ab7",
+   "da55d4e72a4bcb0a",
+   "fbfc474a518e84bc"
+  ],
+  "48": [
+   "2625a6b2172d9b42",
+   "3b83412a9819e237",
+   "3d7011aa7feaf9b8",
+   "3fff70cfb1bab80b",
+   "785b6dd347b3daa7",
+   "d286b43a25a3bf17"
+  ]
+ }
+}

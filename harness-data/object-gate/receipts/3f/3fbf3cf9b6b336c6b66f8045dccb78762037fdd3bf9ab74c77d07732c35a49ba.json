@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fbf3cf9b6b336c6b66f8045dccb78762037fdd3bf9ab74c77d07732c35a49ba",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "밧줄 걸이 핀 막대(2칸) (rope pin rail)",
+ "label": "atlas_biome_interior/plus/rope pin rail",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pin rail with hanging rope coils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rack with belaying pins and hanging rope loops, drawn flat against the wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5301
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden rail with pins and hanging rope coils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pin rail with hanging rope coils drawn flat against the wall, permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rail with belaying pins and hanging rope coils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pin rail with hanging ropes, correctly depicted flat against a vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3716
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pin rail with hanging rope coils",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is wall-mounted (pin rail with ropes hanging flat against a wall). Per kind specification, wall-mounted items may be flat, and no 3D top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10253
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.628Z",
+ "cells": {
+  "16": [
+   "30d3e0baeb9d5a98",
+   "8eaa3c7ee3603795",
+   "c4d2613437b2919b",
+   "cf46406d672b57b2"
+  ],
+  "24": [
+   "004e03e465fac4a2",
+   "01474276e92a8c18",
+   "03c44f5bde120d24",
+   "13ff7e2ffaedbb62",
+   "22c39244daf76f53",
+   "2eff6906e31c195c",
+   "326bc2be6e75206c",
+   "4e1e31949aaa4369",
+   "547f0d1ec7119e6b",
+   "55fcba68be519753",
+   "6f033d5682c0bfd1",
+   "82abd1e780efa39c",
+   "ce01504ab6295291",
+   "d01b444ef344d562",
+   "d3175ca545569f35",
+   "e3fa38044cc45685",
+   "f82be6e8a6c47334",
+   "fd1e51fff5384bda"
+  ],
+  "32": [
+   "e2857eda581e5774"
+  ],
+  "48": [
+   "3e722514cbec5336",
+   "893fba6f81f31738",
+   "92c7a3f0fd2e7793",
+   "9f824d483b7a14ee",
+   "aa35d1adeacacb05",
+   "e6b78d5c9eef1d5c"
+  ]
+ }
+}

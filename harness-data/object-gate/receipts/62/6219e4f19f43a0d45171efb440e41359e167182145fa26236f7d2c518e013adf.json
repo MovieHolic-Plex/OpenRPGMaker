@@ -1,0 +1,94 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6219e4f19f43a0d45171efb440e41359e167182145fa26236f7d2c518e013adf",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 붙박이 화이트보드",
+ "label": "jp_city/interior_office2/ox-whiteboard-wall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 답을 읽지 못함",
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 433,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m48s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 423,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m48s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 451,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m48s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 409,
+   "error": "Error: Cloud Code Assist API error (429): {\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Individual quota reached. Please upgrade your subscription to increase your limits. Resets in 3h24m47s.\",\n    \"status\": \"RESOURCE_EXHAUSTED\",\n    \"details\": [\n      {\n        \"@type\": \"type.googleapis.com/googl"
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.787Z",
+ "cells": {
+  "16": [
+   "0cc20bc4249352c8",
+   "0f601ac0efc1c058",
+   "15110c60328a41c1",
+   "5499d72e755718c3",
+   "e59c7fffbf2e5f41",
+   "fa86f47d254db7e2"
+  ],
+  "24": [
+   "2b940ffce50f09af",
+   "3b1426629a198f06",
+   "5339d97f754eca38",
+   "7d670ad74f3ec280",
+   "829baa19c412dbd8",
+   "8dc208ffdabf1e97",
+   "9aa733c211bc747f",
+   "fa317ab5beef0cb4"
+  ],
+  "32": [
+   "2ab43775e0f8d2a3",
+   "2e20a0291f3d332c",
+   "654884eed80657da",
+   "68d64ae0e2bc3d7e",
+   "6fffa0b92541bb77",
+   "a57115e68e568194"
+  ],
+  "48": [
+   "a4e65d35c366c76a",
+   "b054495dc9ee32ec"
+  ]
+ }
+}

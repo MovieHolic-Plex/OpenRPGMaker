@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b4ea7e4d4f6681c01c53423fe1f5f18f210dfd6cc44620349fe444017647251",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "케이크 접시",
+ "label": "modern_city/interior/mci-g-cake",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cake on cake plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the plate is drawn as a 3/4 view ellipse, the cake resting on it is drawn in flat front elevation with a straight horizontal base (row 10) and no visible top surface (0 rows of depth for the cake top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16746
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cake on plate / cake stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cake and plate/stand are drawn in a flat front elevation; the cake consists of straight horizontal bands with no visible top surface, and the plate is rendered vertically without 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cake on a plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plate is drawn as an ellipse, but the cake resting on it is depicted as a flat front elevation (vertical profile with cherries perched on the top outline) without any foreshortened top surface showing cake depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5527
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cake on a plate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the plate is drawn as an ellipse, the cake standing on it is drawn in pure front elevation with 0 top rows; the cherries sit directly along the flat upper silhouette (row 7) and the cake body (rows 7-10) shows only a vertical front slice with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8558
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:56.356Z",
+ "cells": {
+  "16": [
+   "64eff19481b21843"
+  ],
+  "24": [
+   "8ce6402d21968421",
+   "b34d7214fac777d0",
+   "bfa19b98f6fa1aad",
+   "c5bcb8fc6bd1143c",
+   "d3bea8bba871e789",
+   "fde967794d799633"
+  ],
+  "32": [
+   "0fa30803cd6884f7",
+   "159550546863a506",
+   "8011fed5d04a1c78",
+   "a1f7ae8e684115c5",
+   "e718dc18a3e9ca6a",
+   "eebaefd579dde2d4"
+  ],
+  "48": [
+   "286766e3e0b135f8",
+   "2c58f9638478b4c6",
+   "4044ae90111e157b",
+   "48853be04c0cedf6",
+   "64be7e817167f9a2",
+   "8c95e80adb891109"
+  ]
+ }
+}

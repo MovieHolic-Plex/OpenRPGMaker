@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab306db4ae9f74be8740aa2d80df5322b5148fd7d476de4f7f0334c55aafda04",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face tile with a tapered side (terrain)",
+ "label": "sky-island/si-face-mid-olr",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a rocky cliff face / floating island underside tapering against a sky or water backdrop. Terrain face tiles do not include top surfaces on the vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7515
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cliff face / rock terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a tapered vertical cliff face / rock bottom edge over a background; terrain tiles are vertical wall/cliff surfaces rather than standing objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5609
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid vertical cliff face terrain tile tapering over a water/abyss background. As a modular terrain tile representing a vertical cliff surface in a grid map, it is not a standing object and does not require an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5386
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a rocky cliff face / tapered terrain segment over water/sky. As terrain representing a vertical cliff surface, it correctly fills the vertical terrain plane without requiring an exposed top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5210
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.884Z",
+ "cells": {
+  "16": [
+   "0c379a40014e7a38"
+  ],
+  "24": [
+   "0775eefff027516b",
+   "388e3bcf74ed9a0e",
+   "88fc6e673de5e2cb",
+   "bf0d2b98e80a3686",
+   "c23dffb4d7be9a1a",
+   "f3b63741832d8ac1"
+  ],
+  "32": [
+   "1c2bbc7005a2b84f",
+   "353b862fb27f9d42",
+   "36123deddd86f69f",
+   "9d272a46d0a7e696",
+   "adaac62c3d8b0a7e",
+   "b2f7701c6903c11e"
+  ],
+  "48": [
+   "1fea832cb2b42dff",
+   "49c2679f0937de2d",
+   "4fce1251bbb5c639",
+   "6dc2bd542f91a5e5",
+   "acca7777cbfd3119",
+   "c1b84973d2e42f73"
+  ]
+ }
+}

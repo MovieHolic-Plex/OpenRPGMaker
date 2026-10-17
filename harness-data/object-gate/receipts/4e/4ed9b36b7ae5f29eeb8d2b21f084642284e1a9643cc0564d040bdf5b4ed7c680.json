@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ed9b36b7ae5f29eeb8d2b21f084642284e1a9643cc0564d040bdf5b4ed7c680",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "얼음 석순",
+ "label": "snow-north/sn-stalagmite-ice",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ice stalagmite / crystal pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ice spire is drawn in pure front elevation with vertical sides, a pointed tip with no top-down foreshortening, and rests on a completely flat, horizontal base line at rows 13-15 with no elliptical or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4771
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ice stalagmite / crystal pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ice pillar is drawn in a flat 2D side-scroller profile with vertical vertical shading, no top facets visible from above (0 rows), and a flat horizontal base line at rows 13-14 with no floor depth or foreshortened footprint.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ice stalagmite / crystal spire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ice stalagmite is drawn as a flat vertical 2D front view with vertical shading bands and a completely straight horizontal base (rows 13-14) without foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4565
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ice stalagmite",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ice stalagmite is drawn as a flat vertical column with a straight horizontal base (rows 13-14) in pure front elevation, showing no top-down perspective or foreshortened base/facets.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5630
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.166Z",
+ "cells": {
+  "16": [
+   "159c4fad49771dd5"
+  ],
+  "24": [
+   "1856705def4d3062",
+   "23c23d1e24f86300",
+   "4a544b5656457be2",
+   "5c9dc9a12775e0e6",
+   "b9bdfbbfb35c955f",
+   "fd4523aa32ecf549"
+  ],
+  "32": [
+   "1c9c35a8970ceb24",
+   "a3052277731ae7c8",
+   "ae79a345237ac5d3",
+   "d485a71512279f7c",
+   "d892aaa98510f942",
+   "e6f88421c0e3117a"
+  ],
+  "48": [
+   "199c72859f104865",
+   "1f8df080562e505b",
+   "386e6e76a6b312c2",
+   "5671124a30ccb27f",
+   "aa9ac6a905379d43",
+   "d127e426ef007337"
+  ]
+ }
+}

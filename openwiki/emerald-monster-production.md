@@ -29,21 +29,39 @@ values remain host compatible. The authored viewport is 480x320 at cameraZoom2:
 the 240x160 GBA view at exact2x, showing 15x10 16px map cells. This uses existing
 supported settings rather than changing global resolution limits.
 
-`src/project/emeraldMonsterOpening.ts` registers the shared original professor
-sprite, authors Enter-confirm professor/monster dialogue, and leaves actual
-starter choice to existing map events. It accepts explicit author-written pages.
-`oprnOpeningBook.portraitResourceId` keeps the same professor image mounted while
-the showcased monster/text changes. Continue does not replay a new-game opening.
-The original generated PNG and provenance live in `public/assets/emerald-monster`.
-Source scene resource IDs must include the portrait at least once so the normal
-export asset closure retains it; the default intro satisfies this.
+`src/project/emeraldMonsterOpening.ts` authors Enter-confirm professor/monster dialogue
+(six pages) and leaves actual starter choice to existing map events. It accepts
+explicit author-written pages. `oprnOpeningBook.portraitResourceId` keeps the same
+professor image mounted while the showcased monster/text changes. Continue does not
+replay a new-game opening.
 
-The professor PNG was generated with the built-in imagegen tool and visually
-inspected. Requested logical sprite dimensions are prompt intent, not output
-facts: actual original PNG is1122x1402 with alpha0..255. Runtime displays it as a
-small pixel-style portrait without modifying the raster. Original species remain
-editable database/resource records. Exact Emerald combat mechanics are distinct
-from Emerald presentation and must not be inferred from a skin name.
+**Professor art (2026-10-16).** The opening professor is the bundled bust
+`oprn_emerald_professor_bust` (`public/assets/emerald-monster/professor-bust.png`, 122x97,
+shown at an exact 2x = 244x194). It is resolved by id in
+`generatedAssetResourceResolver.ts` only: the project JSON holds no image bytes. The old
+64x64 chip portrait on a big oval pedestal was dropped (users called the professor a mess);
+`configureEmeraldMonsterPortraitMotion` upgrades an old `oprn_emerald_professor` campaign
+on repair. The bust is the same character as the lab NPC chip (bald, white goatee, olive
+field jacket). Production: `scripts/asset-gen/gen-opening-professor.mjs` (MDC image API,
+gpt-image-2.5-sunburst, magenta background) -> `pixelize-grid.py` (restores the fake pixel
+grid, cell mode colour) -> bundled PNG. Model, prompt summary and hashes are in
+`professor-bust-provenance.json`. `cinematicSequence` sets `data-portrait-art="bust"`,
+and `playSurface.css` drops the pedestal oval for that case (a soft light behind the
+bust, the bust rises from behind the dialogue box). Candidate review sheet:
+`~/claude-viz/poke-professor-pick-1.html` (supervisor picked C1, 2026-10-16).
+
+**Opening pixel grid (2026-10-16 scale QA).** On the 480x320 stage one logical dot = 2 screen px
+for the professor (122x97 -> 244x194), the starter monsters (64x64 canvas -> 128x128) and the
+Galmuri9 18px text. Everything must sit on that 2px grid: the bust at left 118/14, top 14; the
+introduced monster at left 272, top 56 (box bottom 184 = dialogue window top, so the whole sprite shows above the window) with its box from `--art-box-width/height`
+(`bindIntegerArtScale`, not a % box); idle bobs are 2px (`steps(1, end)` per segment, `steps(2)`
+gave a -1px half step); the dialogue window uses `left:14px`, `border:6px double` and
+`width:calc(100% - 68px)` (the old 94% + padding overflowed the right edge). `restyle-bust.py`
+re-tidies the bust to the monster style (<=26 colours, no lone-pixel dither, 1px dark outline)
+without changing size or grid. Measure with
+`GRID=1 [VP=960x640] node scripts/qa/runtime/poke-vqa.capture.mjs <campaign.json> <out> opening`
+(`report.json` metrics now include element positions and the narration window rect).
+
 ## Original title key art
 
 `configureEmeraldMonsterOpening` also applies `configureEmeraldMonsterTitle`,
@@ -59,6 +77,10 @@ imagegen prompt. The untouched generated PNG is **1536×1024** (3:2), SHA
 The prompt requested GBA pixel composition; this asset is not falsely described
 as a native 240×160 file. The runtime fits it into the authored 480×320 stage with
 pixelated sampling. `title-provenance.json` records dimensions and generation.
+Theme variants (2026-10-14): `src/project/emeraldMonsterTitleArt.ts` picks the title art by
+`startTheme` — coast keeps the stag; meadow/default, desert and snow use 240×160 coordinate pixel art
+from `scripts/content/monster-title-art.py` (`title-<meadow|desert|snow>{.png,-asset.json}`), not generated images.
+Re-run the script to regenerate; the asset id must equal `MONSTER_TITLE_ART_IDS[theme]`.
 ## Field cast
 
 `scripts/content/emerald-field-cast.py` owns reproducible original coordinate art:

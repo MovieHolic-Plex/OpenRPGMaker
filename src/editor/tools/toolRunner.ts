@@ -1,4 +1,5 @@
 import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
+import { syncHeroineDeadline } from "@/project/deadlineEnding";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
 // 툴 실행기. runTool(ctx, name, args, {dryRun}) → ToolResult.
@@ -11,6 +12,14 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
+import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLockError, genreLockAllowsTileset, genreLockDefaultTileset, genreLockHidesTool, genreLockHiddenToolMessage, markMonsterGenre, monsterMarkerTool, monsterToolStartsLock } from "@/project/genreLock";
+import { applyMonsterIntentStart } from "@/project/genrePresets";
+import { isRomanceTitleTarget, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
+import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
+import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog, type VisualCatalogFilter } from "@/project/genreLockVisuals";
+import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monsterToolRejection, withMonsterTurn } from "@/project/genreLockMonsterAssets";
+import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
+import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
@@ -21,6 +30,7 @@ import { formatTreePairRepairSummary, repairTreePairsOnMap } from "@/project/lin
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
+import { applyArgAliases, describeArgError } from "./argRepair";
 import { getTool } from "./toolRegistry";
 import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -137,6 +147,9 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
       && draft.worldAtlases?.some(atlas => atlas.overviewMapId === id || atlas.nodes.some(node => node.mapId === id))) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
+    // 장르 잠금 중 기준 맵이 잠금 밖(켜기 전부터 있던 다른 계열 맵)이면 그 맵의 계열이 「맞는 그림체」가 아니다 — 허용 칩셋으로 새 맵을 만드는 것은 막지 않는다.
+    // 기준 맵이 허용 계열이면 이 검사가 그대로 돈다(밝은 monster_* 와 에메랄드풍은 섞지 않는다 — 2026-10-06 연속성 결정).
+    if (enforcingGenreLock(draft) && !genreLockAllowsTileset(draft, currentMap.tilesetId) && genreLockAllowsTileset(draft, next.tilesetId)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
     const toName = draft.tilesets[next.tilesetId]?.name ?? next.tilesetId;
     const candidates = sameFamilyTilesets(before, baseFamily).slice(0, FAMILY_CANDIDATE_LIMIT)
@@ -155,6 +168,114 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
 }
 
 /**
+ * 장르 잠금(project/genreLock.ts): 조수·도구가 새 맵을 만들거나 맵 칩셋을 바꿔 허용 계열 밖이 되면 거부한다. 판정은 assertGenreLock 하나.
+ * 편집기 직접 편집·예제·콘텐츠 스크립트(ctx.assistantRun 아님)는 막지 않는다. warn 모드는 경고만 돌려준다.
+ */
+function rejectGenreLockViolation(ctx: ToolContext, before: Project, draft: Project, name: string): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return assertGenreLock(before, draft, { toolName: name, approved: ctx.approvedTilesetFamilies ?? [] });
+  } catch (cause) {
+    if (cause instanceof GenreLockError) throw new ToolError(cause.message, { code: "genre-lock", mapId: cause.mapId });
+    throw cause;
+  }
+}
+
+/**
+ * 장르 잠금(캐릭터 칩): 조수·도구가 새로 고르거나 바꾼 걷기 그림(이벤트 페이지·배우)이 허용 계열 밖이면 거부한다 — 판정은 assertGenreLockCharsets 하나.
+ * 캠페인 생성·장소 가져오기처럼 프로젝트 내용을 통째로 들이는 도구(placesCuratedCast·allowsTilesetChange·라이브러리 가져오기)는 막지 않고 개수만 경고한다.
+ * 이미 있던 그림은 건드리지 않는다. 편집기 직접 편집·콘텐츠 스크립트(ctx.assistantRun 아님)는 막지 않는다.
+ */
+function rejectGenreLockCharsets(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return assertGenreLockCharsets(before, draft, {
+      toolName: tool.name,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof GenreLockCharsetError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/**
+ * 장르 잠금(얼굴·전투 그림): 조수·도구가 새로 고르거나 바꾼 얼굴·몬스터 전투 그림·트레이너 전투 그림·전투 배경이 허용 계열 밖이면, 가장 가까운 허용 그림이 있을 때는 거부하고
+ * 맞는 허용 그림이 없는 칸은 비워 「생성 대기」로 저장한다(경고로 알린다) — 판정은 enforceGenreLockVisuals 하나. 그림 없이 새로 생긴 트레이너 적 그룹에는 근거가 확실한 번들 그림을 채운다.
+ * 통째로 들이는 도구(placesCuratedCast·allowsTilesetChange·라이브러리 가져오기)는 막지 않고 개수만 경고한다. 이미 있던 그림·편집기 직접 편집(ctx.assistantRun 아님)은 건드리지 않는다.
+ */
+function rejectGenreLockVisuals(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun || !draft.system.genreLock) return [];
+  try {
+    return enforceGenreLockVisuals(before, draft, {
+      toolName: tool.name,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof GenreLockVisualError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/**
+ * 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아닐 때, 조수·도구가 새로 고르거나 바꾼 몬스터 전용 칩셋·시스템 설정·캐릭터 칩·얼굴·전투 그림을 거부한다.
+ * 판정은 assertMonsterAssetLock 하나. 통째로 들이는 도구(캠페인 생성·장소 가져오기)의 그림은 막지 않고 개수만 경고한다(칩셋·시스템 설정은 항상 거부). 이미 있던 것·손 편집(ctx.assistantRun 아님)은 건드리지 않는다.
+ */
+function rejectMonsterAssets(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun) return [];
+  try {
+    return assertMonsterAssetLock(before, draft, {
+      toolName: tool.name, turn: ctx,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof MonsterAssetLockError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/**
+ * 조수 실행 중 장르 잠금이 캐릭터 칩·얼굴·전투 그림을 잠그면 그림 검색·기본 선택을 허용 그림으로 좁힌다(동기 도구 실행 구간만).
+ * 몬스터 프로젝트가 아니면 몬스터 전용 그림(Scarloxy 트레이너 칩·몬스터 전투 그림·트레이너·몬스터 배경)도 같은 방식으로 뺀다 — 두 필터를 모두 만족해야 보인다.
+ * 이 구간 동안 ctx.monsterTurn 도 켜 두어 find_tools·목록 도구가 ctx 없이 같은 판정을 쓴다(withMonsterTurn).
+ */
+function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T): T {
+  const forwardChars = ctx.assistantRun ? genreLockCharsetCatalogFilter(project) : undefined;
+  const forwardVisual = ctx.assistantRun ? genreLockVisualCatalogFilter(project) : undefined;
+  const reverse = ctx.assistantRun ? monsterAssetCatalogFilters(project, ctx) : undefined;
+  const filter = forwardChars && reverse ? (entry: { readonly textureKey: string }) => forwardChars(entry) && reverse.charset(entry) : forwardChars ?? reverse?.charset;
+  const visual: VisualCatalogFilter | undefined = forwardVisual && reverse
+    ? { face: (id) => forwardVisual.face(id) && reverse.visual.face(id), battler: (id) => forwardVisual.battler(id) && reverse.visual.battler(id), backdrop: (id) => forwardVisual.backdrop(id) && reverse.visual.backdrop(id) }
+    : forwardVisual ?? reverse?.visual;
+  const inner = filter ? () => withNpcGraphicCatalogFilter(filter, run) : run;
+  const scoped = visual ? () => withGenreLockVisualCatalog(visual, inner) : inner;
+  return withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped);
+}
+
+/**
+ * 장르 잠금 중 tilesetId 를 생략한 create_map 류 호출의 기본 칩셋이 허용 밖이면(보는 맵이 잠금 이전부터 있던 다른 계열이어도) 허용 칩셋으로 대체하고 경고를 남긴다.
+ * 모델이 tilesetId 를 직접 적었으면 건드리지 않는다 — 그것은 아래 거부 경로가 막는다(무음 대체 금지).
+ */
+/** 연애 게임의 타이틀 배경을 농장·모험 같은 어울리지 않는 번들 그림으로 바꾸는 호출은 거부한다(romanceTitleArt.ts). 이미 그렇던 것은 건드리지 않는다. */
+function rejectRomanceTitleMismatch(ctx: ToolContext, before: Project, draft: Project): void {
+  if (!ctx.assistantRun || !isRomanceTitleTarget(draft)) return;
+  const next = draft.system.titleScreen?.backgroundResourceId;
+  if (next === before.system.titleScreen?.backgroundResourceId) return;
+  const mismatch = romanceTitleMismatch(next);
+  if (mismatch) throw new ToolError(romanceTitleMismatchMessage(mismatch), { code: "romance-title-art" });
+}
+
+function genreLockedDefaultTileset(ctx: ToolContext, tool: ToolDefinition, original: Record<string, unknown>, args: Record<string, unknown>): { args: Record<string, unknown>; note?: string } {
+  if (!ctx.assistantRun || !tool.defaultTilesetId || !enforcingGenreLock(ctx.project)) return { args };
+  if (typeof original.tilesetId === "string" && original.tilesetId.trim().length > 0) return { args };
+  if (typeof args.themeScene === "string" && args.themeScene.trim().length > 0) return { args };
+  const effective = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId : tool.defaultTilesetId(ctx.project);
+  const hint = `${tool.name} ${typeof args.name === "string" ? args.name : ""} ${typeof args.theme === "string" ? args.theme : ""} ${typeof args.purpose === "string" ? args.purpose : ""}`;
+  const swap = genreLockDefaultTileset(ctx.project, effective, hint);
+  return swap ? { args: { ...args, tilesetId: swap.tilesetId }, note: swap.note } : { args };
+}
+
+/**
  * tilesetId 없이 불린 create_map 류 도구에 지금 보는 맵의 칩셋을 채운다(ToolDefinition.defaultTilesetId 주석).
  * 도구 기본값이 지금 보는 맵과 같은 계열이면 그대로 둔다.
  */
@@ -163,6 +284,8 @@ function argsWithCurrentMapTileset(ctx: ToolContext, tool: ToolDefinition, args:
     args = { ...args, mapId: ctx.currentMapId };
   }
   if (!tool.defaultTilesetId || !ctx.currentMapId) return args;
+  // themeScene 은 자기 칩셋을 정한다 — 보는 맵의 칩셋을 덮어 넣지 않는다(계열이 다르면 실행기 계열 검사가 사용자에게 묻게 한다).
+  if (typeof args.themeScene === "string" && args.themeScene.trim().length > 0) return args;
   if (typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0) return args;
   const viewed = ctx.project.maps[ctx.currentMapId];
   const currentMap = viewed ? familyBaselineMap(ctx.project, viewed) : undefined;   // 빈 시작 맵·세계 지도는 채울 칩셋의 기준이 아니다
@@ -240,6 +363,30 @@ function argErrorMessage(message: string, example: Record<string, unknown> | und
  * (2026-10-07 장르 시험: 레이어 id:"", 오프닝 text 장면의 composition:{} 같은 거부가 반복됐다). 필수 칸·빈 배열·0 은 건드리지 않는다 —
  * 빈 배열은 「해제」 뜻으로 쓰는 도구가 있다.
  */
+/**
+ * 모르는 최상위 인자를 말없이 버리지 않는다(2026-10-16 연애 감사). place_npc 는 선언 밖 키(talkFriendship·friendshipUnlock·schedule 등)를
+ * 그냥 무시해서 「호감 대화를 켰다」고 믿은 NPC 가 아무 호감도 못 줬다. 조수 실행에서만 거부한다 — 편집기·콘텐츠 스크립트 호출은 그대로.
+ * 이 목록은 선택 적용이다: 키를 아는 도구만 올린다(그 외 도구는 기존대로 관대).
+ */
+const STRICT_TOP_LEVEL_ARG_TOOLS: ReadonlyMap<string, readonly string[]> = new Map([
+  // run() 이 직접 읽지만 스키마에는 없는 별칭 두 개.
+  ["place_npc", ["dialogue", "commands"]],
+]);
+
+function unknownTopLevelArgKeys(tool: { name: string; parameters: JsonSchema }, args: Record<string, unknown>): string[] {
+  const extra = STRICT_TOP_LEVEL_ARG_TOOLS.get(tool.name);
+  if (!extra) return [];
+  const declared = new Set([...Object.keys(tool.parameters.properties ?? {}), ...extra]);
+  return Object.keys(args).filter((key) => !declared.has(key) && args[key] !== undefined);
+}
+
+function unknownArgKeysMessage(toolName: string, keys: readonly string[]): string {
+  const hint = toolName === "place_npc"
+    ? " 호감·선물·상점·시간표·friendshipUnlock 같은 인물 옵션은 make_villager 에 있고, place_npc 는 talkFriendship(호감 대화 켜기)만 받는다. 인물 옵션이 필요하면 make_villager 로 만들거나 place_npc 뒤에 update_event 로 고쳐라."
+    : "";
+  return `${toolName} 은 선언되지 않은 인자 ${keys.map((key) => `'${key}'`).join(", ")} 를 받지 않는다 — 말없이 버리면 저작한 내용이 사라진 채 성공처럼 보이므로 거부했다.${hint}`;
+}
+
 function pruneEmptyOptionalArgs(schema: JsonSchema | undefined, value: unknown, path: string, dropped: string[]): unknown {
   if (!schema || value === null || typeof value !== "object") return value;
   if (Array.isArray(value)) {
@@ -275,7 +422,7 @@ function issueFromToolError(tool: ToolDefinition, normalizedArgs: Record<string,
 export function normalizeToolArgs(name: string, args: Record<string, unknown>): Record<string, unknown> {
   const tool = getTool(name);
   if (!tool) return args;
-  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
+  return normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, applyArgAliases(tool.name, tool.parameters, args).args)) as Record<string, unknown>;
 }
 
 export function runTool(
@@ -300,13 +447,44 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
+  // 장르 잠금 중 허용 계열 밖 칩셋 전용 파이프라인은 조수에게 보이지 않는다(find_tools·Pi 도구 목록). 이미 알고 있는 이름으로 부르는 경우의 마지막 방어선.
+  if (ctx.assistantRun && genreLockHidesTool(ctx.project, name)) {
+    const message = genreLockHiddenToolMessage(ctx.project, name);
+    return { ok: false, summary: `'${name}' 장르 잠금으로 거부`, issues: [{ severity: "error", code: "genre-lock", message }] };
+  }
+
+  // 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 전용 도구는 실행하지 않는다(목록·find_tools 에서도 빠져 있다).
+  // 일반 도구가 몬스터 전용 인자 값(genre:monster-collect·battleModel:gen1 …)을 받는 경우도 여기서 막는다. 판정은 genreLockMonsterAssets.ts 하나.
+  if (ctx.assistantRun && !monsterAssetsAllowed(ctx.project, ctx)) {
+    const argMessage = isMonsterOnlyTool(name) ? undefined : monsterToolArgViolation(name, args);
+    if (isMonsterOnlyTool(name) || argMessage) {
+      return { ok: false, summary: `'${name}' 몬스터 수집 잠금으로 거부`, issues: [{ severity: "error", code: "genre-lock", message: argMessage ?? monsterToolRejection(name) }] };
+    }
+  }
+
   const prunedPaths: string[] = [];
-  const normalizedArgs = argsWithCurrentMapTileset(ctx, tool,
+  // 모호하지 않은 인자 별칭(table→collection 등)은 옮기고 「X 는 Y 입니다」 경고를 남긴다(argRepair.ts) — 조용한 교정 금지.
+  const aliased = applyArgAliases(name, tool.parameters, args);
+  const filledArgs = argsWithCurrentMapTileset(ctx, tool,
     normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(
-      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, args, "", prunedPaths) as Record<string, unknown> : args))) as Record<string, unknown>);
-  const prunedNote = prunedPaths.length
-    ? `빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`
-    : null;
+      ctx.assistantRun ? pruneEmptyOptionalArgs(tool.parameters, aliased.args, "", prunedPaths) as Record<string, unknown> : aliased.args))) as Record<string, unknown>);
+  const lockedDefault = genreLockedDefaultTileset(ctx, tool, aliased.args, filledArgs);
+  const normalizedArgs = lockedDefault.args;
+  const prunedNote = [
+    ...aliased.notes,
+    ...(lockedDefault.note ? [lockedDefault.note] : []),
+    ...(prunedPaths.length
+      ? [`빈 값("" · null · {})으로 보낸 선택 칸 ${prunedPaths.slice(0, 8).join(", ")}${prunedPaths.length > 8 ? " …" : ""} 는 보내지 않은 것으로 봤다 — 정할 것이 없는 칸은 빼고 보낸다.`]
+      : []),
+  ].join("\n") || null;
+  const unknownKeys = ctx.assistantRun ? unknownTopLevelArgKeys(tool, normalizedArgs) : [];
+  if (unknownKeys.length > 0) {
+    return {
+      ok: false,
+      summary: `'${name}' 인자 검증 실패`,
+      issues: [{ severity: "error", code: "invalid-args", message: unknownArgKeysMessage(name, unknownKeys) }],
+    };
+  }
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
@@ -316,7 +494,7 @@ export function runToolDefinition(
       issues: argErrors.map((message) => ({
         severity: "error",
         code: "invalid-args",
-        message: argErrorMessage(message, tool.invalidArgsExample, tool.invalidArgsHint)
+        message: argErrorMessage(describeArgError(message, tool.parameters, normalizedArgs, tool.invalidArgsExample !== undefined), tool.invalidArgsExample, tool.invalidArgsHint)
           + (repair ? `\nrepair: ${JSON.stringify(repair)}` : ""),
       })),
     };
@@ -324,7 +502,7 @@ export function runToolDefinition(
 
   if (tool.mode === "read") {
     try {
-      const exec = tool.run(ctx.project, normalizedArgs);
+      const exec = withCharsetCatalog(ctx, ctx.project, () => tool.run(ctx.project, normalizedArgs));
       const warnings = [...(prunedNote ? [prunedNote] : []), ...(exec.warnings ?? [])];
       return {
         ok: true,
@@ -341,7 +519,7 @@ export function runToolDefinition(
 
   // 쓰기 툴: draft에 적용.
   const prerequisite = authoringWritePrerequisite(ctx.project);
-  if (prerequisite && name !== prerequisite && name !== 'set_build_spec'
+  if (prerequisite && name !== prerequisite && name !== 'set_build_spec' && name !== 'set_romance_stage'
     && tool.domains?.some(domain => domain === 'event' || domain === 'map' || domain === 'tile')) {
     return { ok: false, summary: '첫 대화를 먼저 작성하세요.', issues: [{ severity: 'error', code: 'authoring-prerequisite',
       message: `${prerequisite}으로 확정한 두 선택의 대사를 먼저 작성한 뒤 장소를 꾸미세요. 임시 초안을 두고 배경 시공부터 시작하지 않습니다.` }] };
@@ -355,10 +533,34 @@ export function runToolDefinition(
     // 조수만: 기존 레코드를 통째로 다시 보내면 이벤트 페이지는 거부, DB 레코드는 바뀐 칸만 남긴다(assistantRewriteGuard.ts).
     const guarded = ctx.assistantRun ? guardWholeRecordRewrite(before, name, normalizedArgs) : undefined;
     beginSpatialToolProposal(draft, before);
-    exec = tool.run(draft, guarded?.args ?? normalizedArgs);
+    // 라우팅이 몬스터 의도를 놓친 자유 경로: 빈 시작 맵뿐인 프로젝트에서 몬스터 전용 도구가 처음 불리면, 도구가 NPC·트레이너를 놓기 전에 몬스터 키트 시작 + 장르 잠금을 건다.
+    // 도구가 실패하면 draft 째로 버려지므로 「처음 성공하면」이다. 선언 장르가 이미 있거나(풀어 둔 프로젝트 포함) 맵이 있는 프로젝트는 건드리지 않는다.
+    // 역방향 잠금: 일반 도구(set_encounter_table)는 몬스터 프로젝트·몬스터 요청 턴에서만 표지·키트 시작을 건다 — JRPG 의 랜덤 조우 한 줄이 프로젝트를 몬스터 게임으로 바꾸지 못하게 한다.
+    const markerAllowed = !ctx.assistantRun || monsterAssetsAllowed(before, ctx);
+    const lockProject: Project = ctx.assistantRun && markerAllowed && monsterToolStartsLock(name) && draft.system.genre === undefined && !draft.system.genreLock && applyMonsterIntentStart(draft).locked ? draft : before;
+    exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
+    // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
+    if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
+    // 연애: 호감 대화 인물이 둘 이상이 되면 프리셋이 깔아 둔 기한 판정에 인물별 엔딩을 얹는다(rom-c·rom-a: 모델이 set_deadline_ending 을 안 불러 인물 엔딩이 영영 없었다).
+    if (name === "place_npc" || name === "make_villager") {
+      const made = syncHeroineDeadline(draft);
+      if (made.length) exec = { ...exec, warnings: [`호감 대화 인물이 둘 이상이라 기한 판정에 인물 엔딩 ${made.join(", ")} 을(를) 얹었습니다(기본 에필로그) — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요.`, ...(exec.warnings ?? [])] };
+    }
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
+    // 장르 잠금은 계열 검사보다 먼저 돈다(허용 칩셋 목록·대안을 알리는 더 구체적인 거부). allowsTilesetChange 도구(예제 통째 가져오기 등)도 거친다 — 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 빠진다.
+    if (!GENRE_LOCK_EXEMPT_TOOLS.has(name)) {
+      const lockWarnings = rejectGenreLockViolation(ctx, before, draft, name);
+      if (lockWarnings.length) exec = { ...exec, warnings: [...lockWarnings, ...(exec.warnings ?? [])] };
+      const charsetWarnings = rejectGenreLockCharsets(ctx, tool, before, draft);
+      if (charsetWarnings.length) exec = { ...exec, warnings: [...charsetWarnings, ...(exec.warnings ?? [])] };
+      const visualWarnings = rejectGenreLockVisuals(ctx, tool, before, draft);
+      if (visualWarnings.length) exec = { ...exec, warnings: [...visualWarnings, ...(exec.warnings ?? [])] };
+      rejectRomanceTitleMismatch(ctx, before, draft);
+      const monsterWarnings = rejectMonsterAssets(ctx, tool, before, draft);
+      if (monsterWarnings.length) exec = { ...exec, warnings: [...monsterWarnings, ...(exec.warnings ?? [])] };
+    }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
       rejectRetiredEasyRpgMaps(ctx, before, draft, name);

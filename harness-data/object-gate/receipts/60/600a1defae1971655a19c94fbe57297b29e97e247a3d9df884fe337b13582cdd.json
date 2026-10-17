@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "600a1defae1971655a19c94fbe57297b29e97e247a3d9df884fe337b13582cdd",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "prehistoric stone-age palisade",
+ "label": "prehistoric/ph-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden palisade posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut faces of the palisade posts are clearly visible from above across rows 6–10 (approx. 5 pixel rows tall) with lighter wood cross-section coloring, properly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two wooden palisade logs lashed together",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each vertical log has a clearly defined elliptical top surface (rows 5 to 10, approx 5-6 rows tall) curving down toward the front in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two wooden palisade logs bound with rope",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade posts are drawn entirely in straight front elevation. The tops of the logs terminate in a 1px rounded outline at row 5 with rope wrapping beneath it; there is no foreshortened top cut surface or ellipse visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12198
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two upright wooden logs bound with ropes to form a palisade segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of both vertical posts display angled, foreshortened top surfaces/cut ends spanning approximately rows 6 to 10 (5 source pixels tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3962
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.708Z",
+ "cells": {
+  "16": [
+   "de24d85c928c7138",
+   "e020b85868c310f5"
+  ],
+  "24": [
+   "07ace4b640f43373",
+   "2b8656d3683567cb",
+   "3c0cb9b508552293",
+   "60b2a42249bfbd49",
+   "6e3db118d3399c9c",
+   "7467a6dd048026f7",
+   "9d8bf817d6f2ed3c",
+   "a07de1a0e8019d8f",
+   "a871bf3c4be20d3a",
+   "cb327bf3e8140b71",
+   "d3a73c1c8d2fa926",
+   "fe90466e8e7c7264"
+  ],
+  "32": [
+   "237a4764ccca2331",
+   "7ce8ade88248e9ae",
+   "b86af3afeb0fb397"
+  ],
+  "48": [
+   "2e6b53935dbef99d",
+   "351c69ab9cb4ce0e",
+   "38588e98e52535e8",
+   "702b2267f0381dca",
+   "7fb6e86569c1f537",
+   "fb6627f9d549d129"
+  ]
+ }
+}

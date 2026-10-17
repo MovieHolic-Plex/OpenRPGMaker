@@ -1,0 +1,45 @@
+{"png": "se-floor-tatami.png", "kind": "terrain", "name": "다다미(검은 테)", "label": "sengoku-edo/se-floor-tatami"}
+{"png": "se-floor-tatami-gold.png", "kind": "terrain", "name": "다다미(금빛 테, 성 알현실)", "label": "sengoku-edo/se-floor-tatami-gold"}
+{"png": "se-floor-wood.png", "kind": "terrain", "name": "나무 마루(윤 나는 판자)", "label": "sengoku-edo/se-floor-wood"}
+{"png": "se-floor-doma.png", "kind": "terrain", "name": "흙바닥(도마, 다진 흙)", "label": "sengoku-edo/se-floor-doma"}
+{"png": "se-wall-shoji.png", "kind": "terrain", "name": "장지 벽(밝은 종이 칸 + 나무 기둥)", "label": "sengoku-edo/se-wall-shoji"}
+{"png": "se-wall-fusuma.png", "kind": "terrain", "name": "후스마 벽(소나무 그림 미닫이 + 둥근 손잡이)", "label": "sengoku-edo/se-wall-fusuma"}
+{"png": "se-wall-fusuma-gold.png", "kind": "terrain", "name": "금박 후스마 벽(성 알현실, 금 바탕 소나무)", "label": "sengoku-edo/se-wall-fusuma-gold"}
+{"png": "se-wall-plaster.png", "kind": "terrain", "name": "흙벽(신카베, 황토 회벽 + 기둥 + 인방)", "label": "sengoku-edo/se-wall-plaster"}
+{"png": "se-wall-board.png", "kind": "terrain", "name": "판자벽(도장·가게, 가로 판 + 누름대)", "label": "sengoku-edo/se-wall-board"}
+{"png": "se-irori.png", "kind": "container", "name": "이로리(바닥 화로, 숯불 + 걸린 무쇠 주전자)", "label": "sengoku-edo/se-irori"}
+{"png": "se-zabuton.png", "kind": "flat", "name": "방석(자부톤, 쪽빛)", "label": "sengoku-edo/se-zabuton"}
+{"png": "se-chabudai.png", "kind": "low_furniture", "name": "둥근 밥상(차부다이)", "label": "sengoku-edo/se-chabudai"}
+{"png": "se-zataku.png", "kind": "low_furniture", "name": "긴 좌탁(검은 옻칠)", "label": "sengoku-edo/se-zataku"}
+{"png": "se-tansu.png", "kind": "tall_furniture", "name": "장롱(탄스, 서랍 + 쇠 장식)", "label": "sengoku-edo/se-tansu"}
+{"png": "se-futon.png", "kind": "flat", "name": "깔아 둔 이불(후톤)", "label": "sengoku-edo/se-futon"}
+{"png": "se-futon-stack.png", "kind": "box", "name": "갠 이불 더미", "label": "sengoku-edo/se-futon-stack"}
+{"png": "se-andon.png", "kind": "column", "name": "안돈(종이 등잔)", "label": "sengoku-edo/se-andon"}
+{"png": "se-byobu.png", "kind": "tall_furniture", "name": "병풍(여섯 폭, 금 바탕 구름)", "label": "sengoku-edo/se-byobu"}
+{"png": "se-tokonoma.png", "kind": "tall_furniture", "name": "도코노마(족자 + 꽃병 단)", "label": "sengoku-edo/se-tokonoma"}
+{"png": "se-scroll.png", "kind": "wall_mounted", "name": "족자(산수화, 글자 없음)", "label": "sengoku-edo/se-scroll"}
+{"png": "se-kamidana.png", "kind": "wall_mounted", "name": "가미다나(집 신단, 선반 + 작은 사당)", "label": "sengoku-edo/se-kamidana"}
+{"png": "se-hibachi.png", "kind": "container", "name": "히바치(둥근 도자기 화로)", "label": "sengoku-edo/se-hibachi"}
+{"png": "se-tea-kettle.png", "kind": "round_body", "name": "차 가마(풍로 위 무쇠 솥)", "label": "sengoku-edo/se-tea-kettle"}
+{"png": "se-tea-set.png", "kind": "low_furniture", "name": "다도 도구(검은 쟁반 + 찻사발·물병)", "label": "sengoku-edo/se-tea-set"}
+{"png": "se-dais.png", "kind": "low_furniture", "name": "상단(영주 자리, 한 단 높인 다다미 단)", "label": "sengoku-edo/se-dais"}
+{"png": "se-armor.png", "kind": "figure", "name": "갑옷 진열(투구 + 갑옷, 궤 위)", "label": "sengoku-edo/se-armor"}
+{"png": "se-sword-rack.png", "kind": "frame", "name": "칼걸이(긴칼·짧은칼 두 자루)", "label": "sengoku-edo/se-sword-rack"}
+{"png": "se-weapon-rack.png", "kind": "frame", "name": "목검·창 걸이(도장 벽)", "label": "sengoku-edo/se-weapon-rack"}
+{"png": "se-taiko.png", "kind": "round_body", "name": "북(타이코, 받침 위)", "label": "sengoku-edo/se-taiko"}
+{"png": "se-shop-counter.png", "kind": "low_furniture", "name": "가게 장부 자리(초바, 낮은 책상 + 격자 가림)", "label": "sengoku-edo/se-shop-counter"}
+{"png": "se-goods-shelf.png", "kind": "tall_furniture", "name": "물건 선반(피륙·상자, 벽 앞)", "label": "sengoku-edo/se-goods-shelf"}
+{"png": "se-cash-box.png", "kind": "box", "name": "돈궤(쇠 장식 작은 궤)", "label": "sengoku-edo/se-cash-box"}
+{"png": "se-kimono-rack.png", "kind": "frame", "name": "옷걸이 틀(이코, 걸린 기모노)", "label": "sengoku-edo/se-kimono-rack"}
+{"png": "se-kamado.png", "kind": "box", "name": "부뚜막(가마도, 솥 둘)", "label": "sengoku-edo/se-kamado"}
+{"png": "se-water-jar.png", "kind": "container", "name": "물독(큰 질항아리 + 나무 뚜껑)", "label": "sengoku-edo/se-water-jar"}
+{"png": "se-meal-tray.png", "kind": "low_furniture", "name": "밥상 소반(오젠, 밥그릇·국그릇)", "label": "sengoku-edo/se-meal-tray"}
+{"png": "se-bathtub.png", "kind": "container", "name": "노송나무 욕조(김 오르는 물)", "label": "sengoku-edo/se-bathtub"}
+{"png": "se-buckets.png", "kind": "round_body", "name": "나무 들통 더미(목욕·물)", "label": "sengoku-edo/se-buckets"}
+{"png": "se-writing-desk.png", "kind": "low_furniture", "name": "앉은뱅이 책상(붓·벼루)", "label": "sengoku-edo/se-writing-desk"}
+{"png": "se-scroll-shelf.png", "kind": "tall_furniture", "name": "두루마리 서가(벽 앞)", "label": "sengoku-edo/se-scroll-shelf"}
+{"png": "se-go-board.png", "kind": "low_furniture", "name": "바둑판(다리 달린 두꺼운 판)", "label": "sengoku-edo/se-go-board"}
+{"png": "se-lantern-hang.png", "kind": "wall_mounted", "name": "걸린 초롱(붉은)", "label": "sengoku-edo/se-lantern-hang"}
+{"png": "se-window-shoji.png", "kind": "wall_mounted", "name": "장지 창(벽면, 밝은 종이 + 대 살)", "label": "sengoku-edo/se-window-shoji"}
+{"png": "se-door-fusuma.png", "kind": "wall_mounted", "name": "방 사이 미닫이(열린 후스마 틈)", "label": "sengoku-edo/se-door-fusuma"}
+{"png": "se-door-noren.png", "kind": "wall_mounted", "name": "노렌 드리운 문 틈(가게 안쪽·부엌)", "label": "sengoku-edo/se-door-noren"}

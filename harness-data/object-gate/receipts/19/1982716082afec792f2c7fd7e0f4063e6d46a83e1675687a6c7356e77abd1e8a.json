@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1982716082afec792f2c7fd7e0f4063e6d46a83e1675687a6c7356e77abd1e8a",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "prehistoric stone-age tipi",
+ "label": "prehistoric/ph-tipi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tent / tipi",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body is a conical sloping roof structure spanning over 40 rows, with clear 3/4 perspective curvature on the base stones, orange decorative band, and entrance frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5457
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical hide tipi tent",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire structure is a conical roof slope foreshortened for 3/4 view (approx. 44 pixel rows tall from apex collar to base). The base skirt and painted mid-band clearly arc downward by 7-8 pixels, demonstrating proper overhead perspective rather than a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical hide tent / tipi",
+    "kind_matches": true,
+    "top_rows": 45,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire structure is a sloped conical roof resting on the ground, foreshortened in 3/4 view. The circular base and decorative bands clearly curve downward toward the front, and the top smoke hole opening around the poles is visible from above (rows 17-20).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical hide tipi tent",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent is viewed from an elevated angle; the circular base curves downward significantly (from row 48 at the sides to row 60 at the front center), revealing its round footprint in 3/4 perspective. The smoke hole aperture at rows 17-19 is also rendered with top-down depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6541
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.700Z",
+ "cells": {
+  "16": [
+   "2be0280e2da142d9",
+   "56bc931b2d1e2e08",
+   "5b7009228b9331c4",
+   "61a5d4dafca4adb2",
+   "664ea750943a388d",
+   "7ec6f7dc87d8aff7",
+   "932fd44f48b4e000",
+   "967272a937d7019f",
+   "b349762951cb079b",
+   "c52815f65ccfaa53"
+  ],
+  "24": [
+   "0c217746e0dce442",
+   "1bb6e44e8b986240",
+   "368ae62ee8153821",
+   "824ca8594bb249a7",
+   "83fa89486df7d08c",
+   "925dd0e6e3d0dc54",
+   "9f80fc114b642157",
+   "9fab5991ea506dab",
+   "b258480bcc2652f1",
+   "b95439e7f9b47ba6",
+   "bd0829c8c3f5ecaf",
+   "e514d6a78044b93b"
+  ],
+  "32": [
+   "2ce958d34b3ec6c7",
+   "312a852fe7448b75",
+   "53844391e5a9ac53",
+   "6ea83b5f3d5dcce3",
+   "7e78ea5d5f0cb6b6",
+   "8e930121eb806c58",
+   "90be581be2868baa",
+   "99c78d4f2b2fdab5",
+   "a371455ffd6d7969",
+   "d333e5d3d709e75a",
+   "d76fbd3f36d2e636",
+   "de85e930244272a3"
+  ],
+  "48": [
+   "28e5029cd93ac334",
+   "827b0bc2fa02c8dc",
+   "865967cd3c883733",
+   "964b82d0ff2794d8"
+  ]
+ }
+}

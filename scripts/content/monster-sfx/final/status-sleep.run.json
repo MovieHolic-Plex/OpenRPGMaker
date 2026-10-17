@@ -1,0 +1,13 @@
+{
+ "id": "status-sleep",
+ "cand": 0,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "cf820fb2b0b54322",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8cc23b824c1650144a4551c4d8820f1cfb51f7d3cb6ce3dbc7f1435d57d2b97",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "채소 노점(바구니 넷 + 천 차양)",
+ "label": "sengoku-edo/se-stall-veg",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vegetable stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display shelf of the stall counter is viewed from above across rows 18-24 (7 rows deep) with baskets displayed on it, above a 6-row front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vegetable stall counter and awning",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter has a prominent horizontal top surface spanning rows 17-24 (8 rows) displaying four vegetable baskets, positioned above the vertical front panel (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3946
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vegetable stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter top/shelf is clearly foreshortened from above across rows 18 to 24 (7 rows deep) displaying four baskets, while the vertical front board faces south from rows 25 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6041
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vegetable stall counter with awning",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear top surface (rows 18-24, 7 rows deep) holding four produce baskets viewed from above, above a south front wooden panel (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4068
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.072Z",
+ "cells": {
+  "16": [
+   "00172bf5e3bc3de4",
+   "35634ac202bfd285",
+   "9ef1a0fbf91188a5",
+   "c42eaf27acb41571"
+  ],
+  "24": [
+   "00c6c58f270b6a1a",
+   "02d77bb4f2ef5c71",
+   "0457edb5c30740a4",
+   "097fa9d1daaabffe",
+   "0abf3783f50e59f3",
+   "16c76525fbba5bdd",
+   "1acb6c3d8cb504e2",
+   "26427e7d96667fc7",
+   "3fb7782ba9dfb183",
+   "4e2c66eb15df0aa2",
+   "53718e9c8ea205c3",
+   "5dde94582b49dade",
+   "62061a204cff30c1",
+   "6d7027b297ccd425",
+   "777353bb1543e227",
+   "7790e29ac0127554",
+   "8de0495b0e37c721",
+   "9e60282df643c744",
+   "a3d52d50ade60a76",
+   "b546cce26cad8f84",
+   "d3774b910e6a2c5c",
+   "e1386f2596721882",
+   "ee51fc67bdb8b82a"
+  ],
+  "32": [
+   "74fa923f47c48a53"
+  ],
+  "48": [
+   "18220b24e2c6a2b3",
+   "27304369ec451011",
+   "852d36860b03c910",
+   "c64568774259da95",
+   "da17535b18263ae2",
+   "f1d5e825b2d98b3a"
+  ]
+ }
+}

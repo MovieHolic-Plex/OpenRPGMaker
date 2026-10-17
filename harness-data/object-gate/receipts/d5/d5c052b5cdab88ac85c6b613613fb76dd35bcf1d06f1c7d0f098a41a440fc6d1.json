@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5c052b5cdab88ac85c6b613613fb76dd35bcf1d06f1c7d0f098a41a440fc6d1",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-lot-board",
+ "label": "jp_city/street_hand/jp-lot-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signboard box (rows 2-26) is drawn in pure front elevation with only a 1px dark border outline at row 2 and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signboard (rows 2-26) is drawn completely flat from the front with a 1px outline across the top and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6039
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board frame and body are drawn in pure front elevation with only a 1px outline at row 2 and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7839
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard casing on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signboard frame (rows 2-26) has only a 1-pixel outline at its top edge with no foreshortened top surface visible, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6532
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.783Z",
+ "cells": {
+  "16": [
+   "2bc62b66b20d45b9",
+   "85b01f34aa793c1e",
+   "d91108b9d010e495"
+  ],
+  "24": [
+   "1821c0f615f3fb91",
+   "454dc187f9f53dcb",
+   "574b8eed6e64615a",
+   "923aa22c455197f3",
+   "c186c99239240157",
+   "e3946d9bfd8b4f96"
+  ],
+  "32": [
+   "02f2c1cffe66c6f5",
+   "0a2e4b8eba40b7d2",
+   "0d2da569fe63170a",
+   "120ada76590ee87c",
+   "230f571a0985a074",
+   "2ce26dd0aea3a48f",
+   "68472c1feb19d656",
+   "891f793d304917a2",
+   "9105c7f59c138906",
+   "aa9b04f2b8e1402b",
+   "b2c4510083d831d2",
+   "bc779598fedbcc8e"
+  ],
+  "48": [
+   "1a9459ace919b7e1",
+   "49d1c50c83949627",
+   "537b11f11ae01ae4"
+  ]
+ }
+}

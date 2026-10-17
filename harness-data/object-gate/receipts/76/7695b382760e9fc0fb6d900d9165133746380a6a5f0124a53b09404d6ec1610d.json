@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7695b382760e9fc0fb6d900d9165133746380a6a5f0124a53b09404d6ec1610d",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "소형 안테나 접시(받침 상자 + 작은 흰 접시)",
+ "label": "sf-station/sf-dish-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "antenna base box and dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit clearly displays a foreshortened top surface across rows 20-23 (4 pixel rows tall) shaded lighter than the south-facing front panel (rows 24-29), consistent with standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10975
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish and base box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat 2D front elevation: the dish is a true circle (11x11 px) facing directly at the screen, and the base box is drawn as a flat rectangular block with a 1px horizontal top outline at row 18 without any receding top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20158
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "antenna base box and dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box clearly displays a 4-pixel tall top surface (rows 20-23) shaded lighter than the south-facing front panel (rows 25-29), with the antenna pole mounted to the top surface in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base box with antenna dish",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base box clearly displays a 4-row light-shaded horizontal top surface (rows 20-23) above its front south face (rows 24-29), conforming to the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5900
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.243Z",
+ "cells": {
+  "16": [
+   "48a9e62d7d46f4f3",
+   "ae1a605c79cc5362"
+  ],
+  "24": [
+   "09ae2d846b8acfe9",
+   "209b5583a1cadfb3",
+   "2a594000ab23bdb3",
+   "338ac81d3c8594c7",
+   "561050137b0b62ff",
+   "56387e7540a9e485",
+   "66c4a2936066aba9",
+   "ad2321ee5633afec",
+   "cfe00d601ff7c3f1",
+   "ef7c4500ccb9e930",
+   "f0eee6f21454eba5",
+   "f5da42b797df0c09"
+  ],
+  "32": [
+   "757adbea58ec1029",
+   "92f7a5fe27e3de9f",
+   "fa6abfd47639c635"
+  ],
+  "48": [
+   "0be924e8d13fb0f7",
+   "6c5e289138a22dc5",
+   "8da290a7812e976c",
+   "cbdc233cd9d6f58f",
+   "d8642cda916292d9",
+   "f0414a582c10344c"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5c0fffb3e97b00eb2011f6f430e2d5b4e50fa89c83676c1103b825c2d6cf3c7",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "昇降口 긴 우산꽂이",
+ "label": "jp_city/interior_school2/sx-umbrella-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "umbrella rack with top slot grid",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal grid plate is clearly viewed from above across rows 12-24 (approx. 12 rows deep), showing two rows of umbrella slots staggered in depth with umbrellas inserted into both the rear and front rows, above a 5px front vertical face (rows 25-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "umbrella rack with slotted top grid",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The umbrella stand features a deep top grid surface (rows 12-24, ~12px deep) viewed from above, containing two rows of square slots for umbrellas, with a vertical front panel beneath it (rows 25-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "umbrella stand rack",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top plate of the umbrella rack is drawn in 3/4 view across rows 11-24 (~13 px deep), showing two tiers of rectangular insertion holes viewed from above. Umbrellas are inserted into these holes with differing depth positions for back and front rows, and the vertical front panel and feet extend below at rows 24-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "umbrella rack stand with two rows of umbrella slots",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The umbrella rack correctly displays a large foreshortened top grid surface (rows 12-23, ~12px deep) showing two distinct depth tiers of umbrella insertion slots, with umbrellas positioned either in the back row or front row. The south front face of the stand is clearly visible below from rows 24 to 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6417
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.784Z",
+ "cells": {
+  "16": [
+   "61cb548ac2320baf",
+   "c7836f9eeda7a0ce",
+   "d100cf75124a0b39",
+   "f8d54936230f86f8"
+  ],
+  "24": [
+   "0105debcb9dcafe5",
+   "079d118739ca67a6",
+   "0d7990d7fcd54319",
+   "28fbb46825f7c9ef",
+   "2d2dcd0d86c32abc",
+   "39cc330818ac8dbb",
+   "61bcbd4ebad4e371",
+   "70964f869c9836e7",
+   "85e945a6775eae3f",
+   "9140419a1afd7492",
+   "a51430c9a5341cd6",
+   "a9531012ca7f547a",
+   "c67cb265699fefb2",
+   "d3440eddf653b4c3",
+   "d4114bb372ae4eba",
+   "d79d3332936a6dd5",
+   "d86a4620a60f23c3",
+   "d982c005c5d55ddd",
+   "db1a4cf1928a19c0",
+   "ddd365a500db346d",
+   "e27b313e5aabb84b",
+   "e47a72a7b8f2d5d7",
+   "e7219d7db213b1f9",
+   "f39a202e24739cad"
+  ],
+  "32": [
+   "4d321a3d9710f6a9"
+  ],
+  "48": [
+   "0d9790ec366ed03e",
+   "17898908c2fea0ac",
+   "181f7e50e382228a",
+   "239a1567f8196944",
+   "9af5763e79b9bf3a",
+   "e5d6d781742309ea"
+  ]
+ }
+}

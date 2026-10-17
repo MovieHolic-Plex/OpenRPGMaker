@@ -12,6 +12,7 @@ import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { isMonsterRequestTurn } from "../src/ai/piAgent/monsterGameRequest.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
@@ -20,6 +21,7 @@ import { holdWorkerKeys, refreshWorkerKeys } from "./lib/piWorkerKeys.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { piTimer } from "./lib/piRunTiming.mjs";
+import { registerOpenAiCompatEndpoints } from "./lib/openAiCompatModel.ts";
 
 applyLegacyEnvAliases();
 
@@ -89,6 +91,7 @@ const server = Bun.serve({
         const provider = typeof body.provider === "string" ? body.provider : "google-antigravity";
         const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        registerOpenAiCompatEndpoints(body.compatEndpoints as never);
         return json(await completeProvider(provider, payload, { apiKey }));
       }
       if (request.method === "POST" && url.pathname === "/agent/render") {
@@ -109,8 +112,9 @@ const server = Bun.serve({
         // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
         // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
         const timer = piTimer("worker /agent/run");
-        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; request?: PiAgentRequest; heavy?: Record<string, string>; heavyRaw?: Record<string, unknown> };
+        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; compatEndpoints?: Record<string, never>; request?: PiAgentRequest; heavy?: Record<string, string>; heavyRaw?: Record<string, unknown> };
         timer.mark("json");
+        registerOpenAiCompatEndpoints(body.compatEndpoints);
         const sentRequest = body.request;
         if (!sentRequest || typeof sentRequest !== "object" || typeof sentRequest.task !== "string" || !sentRequest.project) {
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
@@ -119,7 +123,9 @@ const server = Bun.serve({
         timer.mark("heavy", resolved?.missing ? `missing=${resolved.missing.length}` : "");
         timer.done();
         if (resolved?.missing) return json({ error: "heavy-missing", missing: resolved.missing }, 409);
-        const agentRequest: PiAgentRequest = resolved ? { ...sentRequest, project: resolved.project } : sentRequest;
+        const resolvedRequest: PiAgentRequest = resolved ? { ...sentRequest, project: resolved.project } : sentRequest;
+        // 몬스터 자산 역방향 잠금: 이 요청이 몬스터 수집 요청인지 입구에서 한 번 정해 팀 하위 실행까지 같은 값을 쓴다.
+        const agentRequest: PiAgentRequest = resolvedRequest.monsterTurn === undefined ? { ...resolvedRequest, monsterTurn: isMonsterRequestTurn(resolvedRequest.task) } : resolvedRequest;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         // Cold catalog parsing is preparation, before the live stream begins.
         // Team members reuse this revision rather than blocking its heartbeat.

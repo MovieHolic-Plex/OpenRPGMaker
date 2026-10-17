@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be99a4015e3c969194cc03bfa1aa4a9777f6e244d7096b26b379c64a8e75bcd5",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "bleached driftwood log lying on the sand",
+ "label": "pirate-isles/pi-driftwood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal driftwood log",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn as a flat 2D side-scroller sprite with perfectly horizontal top and bottom contours, branches extending directly up and down in the vertical screen plane, and no foreshortened top or visible angled cross-section.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal driftwood trunk",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The driftwood trunk is a cylindrical debris object lying horizontally. Its upper surface is lit across rows 8-10 (3 rows) with downward shading to row 13 representing the south-facing lower curve, consistent with a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9497
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal driftwood log",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The log is drawn as a flat side-scroller profile with branches pointing straight up and down (acting like support legs), lacking any 3/4 top-down foreshortened top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal driftwood log",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical log lying east-west shows a 3-row foreshortened top curved surface (rows 9–11) transitioning to a shaded south-facing lower flank (rows 12–13), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22199
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.577Z",
+ "cells": {
+  "16": [
+   "79efd1488c8c2c7a",
+   "b2439c5570aa59d7"
+  ],
+  "24": [
+   "0fb1a19caa195882",
+   "3f1803077a1a25b5",
+   "44b7138b6c20f123",
+   "4e02d10de0df0ff4",
+   "515ef2bb5b53ef56",
+   "6c6371bfc019edf8",
+   "6e9550470d8b4775",
+   "81f62ee21a36b491",
+   "9b56308b3cdcc028",
+   "a4151bc694084a21",
+   "c4c7f95dde62fd07",
+   "ca4a270e38dde80e"
+  ],
+  "32": [
+   "071a308a0d1e6f74",
+   "9dfad65e7a3b4bb5"
+  ],
+  "48": [
+   "029341df5016ff32",
+   "1bbd18d12065fe38",
+   "28a125f9452da71b",
+   "42b093a399c3d594",
+   "ba63b01d58f9cc1e",
+   "f6c14978edd594d2"
+  ]
+ }
+}

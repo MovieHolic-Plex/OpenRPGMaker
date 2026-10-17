@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e287622bb20a417f6c62ca4d3deb15d231c8792b202bf7b8195badb96134bc8",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-ac-unit",
+ "label": "jp_city/street_hand/jp-ac-unit",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "outdoor AC unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Light grey top surface spans rows 2-7 (6 rows tall), with the front face containing vents and indicator light spanning rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6668
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "air conditioner outdoor/indoor unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is clearly depicted in rows 2-6 (5 pixels tall) in lighter gray, above the dark front face containing the vent grill and indicator light (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6244
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular box with a broad visible top and vented south face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box has a clearly visible horizontal top surface about 6 source pixels deep above its south-facing front grille; no receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 72268
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular air-conditioning box with a dark front grille and light top panel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad light horizontal top surface spanning about source rows 2–7, above the south-facing dark grille/front face. No receding side face is drawn, and the top is much more than a thin rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 91425
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.360Z",
+ "cells": {
+  "16": [
+   "e0c8f347af74c496"
+  ],
+  "24": [
+   "1b77c9abc949297e",
+   "3a546ecaf48ef7f3",
+   "410c61f261c3b03b",
+   "4827c0c4451a4497",
+   "6a2153554a35f270",
+   "cc1bc60529a406be"
+  ],
+  "32": [
+   "0cd8d28447de60c5",
+   "1504bff83e2d1ad6",
+   "476f208272ec8ab3",
+   "4af5f891c3488e02",
+   "90e8adcf86f388da",
+   "d43c776a3991694b"
+  ],
+  "48": [
+   "12107da4ce2b65a8",
+   "5d56c4f97deb88b0",
+   "710354398ab5c325",
+   "8917aab40ebdc762",
+   "a79cacedc087aa14",
+   "ba13b11e3a9687b0"
+  ]
+ }
+}

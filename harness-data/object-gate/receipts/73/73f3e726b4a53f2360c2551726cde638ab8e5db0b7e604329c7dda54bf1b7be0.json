@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "73f3e726b4a53f2360c2551726cde638ab8e5db0b7e604329c7dda54bf1b7be0",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "jp-bridge-post",
+ "label": "jp/jp-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge post with cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bridge post and its cap are drawn in flat front elevation with straight horizontal edges (rows 1, 6-7, and 13-14). No foreshortened top surface or elliptical curve is shown on either the post or the cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9380
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge railing post with decorative cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap (rows 2-7) and post body (rows 8-13) are drawn strictly in flat front elevation with straight horizontal boundary lines at rows 2, 7, and 14. There is no visible top surface or 3/4-view foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11080
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge post with cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap and post are drawn in pure front elevation with completely flat horizontal edges (rows 1-2, 6-7, and 13-14) and no visible elliptical top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6109
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge post with cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire post and its cap/finial are drawn in pure front elevation with completely flat horizontal lines across rows 2, 6, 7, 10-11, and 14, showing neither an elliptical 3/4 curve on the circular/rounded cap nor any foreshortened top surface on the post body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7450
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.348Z",
+ "cells": {
+  "16": [
+   "bcfca7b2b1fadcd1"
+  ],
+  "24": [
+   "26fb71aa8fc5c3fc",
+   "512105f165502296",
+   "6bd5d85a5c46c6aa",
+   "6ff483664184c42b",
+   "c8eee983b9806182",
+   "f77fe80d88bef47c"
+  ],
+  "32": [
+   "206b363e773fbf5d",
+   "21d06489033f5b34",
+   "581fd878fde060e2",
+   "ccbba5f0c7ba45a1",
+   "d793f0ac0e65a7ea",
+   "de1e94760fd9a5a9"
+  ],
+  "48": [
+   "038913d4737dce6b",
+   "0627920212ee45ca",
+   "24cf11b87973dd1d",
+   "444db938ecfba410",
+   "6f876fbbb0d8b3b2",
+   "fd8a3a3d4eefa7d5"
+  ]
+ }
+}

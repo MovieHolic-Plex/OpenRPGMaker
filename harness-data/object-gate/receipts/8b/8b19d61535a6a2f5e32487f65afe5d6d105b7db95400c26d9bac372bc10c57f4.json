@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b19d61535a6a2f5e32487f65afe5d6d105b7db95400c26d9bac372bc10c57f4",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "round woven basket full of tropical fruit: mangoes, bananas and a coconut",
+ "label": "pirate-isles/pi-basket",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket opening is viewed from above across rows 2-8 showing fruit and interior cavity inside, with the cylindrical front face visible below on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5521
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket features an elliptical top opening spanning rows 2 to 8, showing the fruit contents and dark interior space from a top-down 3/4 angle above the front wall (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9254
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket rim and opening are clearly viewed from a 3/4 perspective spanning rows 2 to 8, displaying the interior cavity and fruit contents above the front-facing woven basket body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3466
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round woven basket",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basket features a clearly foreshortened circular opening spanning rows 2 to 8 containing fruit and inner shadow, with the front rim at row 9 and the front cylindrical wall extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.593Z",
+ "cells": {
+  "16": [
+   "dc79e6e2d834b952"
+  ],
+  "24": [
+   "59cfca403a2f20ec",
+   "7157736e27afd84b",
+   "87a4ea0d91b0fb66",
+   "a49108ebb08089af",
+   "a83bba9178ffd577",
+   "e18d02878796c0c8"
+  ],
+  "32": [
+   "4fa97f1615bc4d12",
+   "5e8564ce62746a61",
+   "995d173733c32b51",
+   "99cb11cb34e5af23",
+   "a4502f3883777a40",
+   "e6bece9b9709c8fb"
+  ],
+  "48": [
+   "046c9ef6e6bb1e96",
+   "0fc2d52f93a89386",
+   "33e785f455d66eff",
+   "494796ccdcea4acd",
+   "750b834b17d0a86b",
+   "d75fe3bc8f363760"
+  ]
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "key": "sc2-gym-steel",
+ "arch": "sp2-gym-steel",
+ "base": "Scarloxy1:5",
+ "variant": "보라 머리를 은회색 투구로(H 전부 회색 3톤 recolor, 윗면 가운데 세로 돌기 H paint), 민트 민소매를 짙은 강철색, 어깨 구역 t 에 은색 어깨받이(T paint 2칸 폭), 주황 반바지를 검정 recolor.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Mcdf"
+ ],
+ "metrics": {
+  "added_up0": 10,
+  "added_up1": 20,
+  "added_up2": 16,
+  "added_right0": 24,
+  "added_right1": 25,
+  "added_right2": 25,
+  "added_down0": 22,
+  "added_down1": 22,
+  "added_down2": 10,
+  "added_left0": 24,
+  "added_left1": 25,
+  "added_left2": 25,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.893,
+   "S": 0.982
+  },
+  "cross": 3,
+  "cross_base": 0,
+  "lone": 232,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.606,
+  "nearest": "ScarloxyPeople3#6"
+ },
+ "repairs": {
+  "dropped_stray_px": 22,
+  "hole_filled_px": 2,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 234,
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 5
+  }
+ },
+ "run": "sp2-r3/sp2-gym-steel-b"
+}

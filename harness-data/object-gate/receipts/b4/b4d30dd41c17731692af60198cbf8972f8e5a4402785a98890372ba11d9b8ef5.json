@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4d30dd41c17731692af60198cbf8972f8e5a4402785a98890372ba11d9b8ef5",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "네온 간판 탑(위 두꺼운 덮개 윗면 5줄 + 램프 상자 앞면 도형 + 기둥 + 받침)",
+ "label": "sf-station/sf-neon-sign-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign tower / lightbox",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper cap/housing is clearly visible from above across rows 1-5 (5 rows tall), situated directly above the vertical front display face (rows 7-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5803
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign box on a pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main sign enclosure spans rows 1 to 5 (5 source pixel rows tall) between the rounded back rim and the front edge at row 6 before the vertical neon display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7566
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "neon sign box on a pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main sign body features a 5-pixel-tall top surface cap (rows 1-5) seen from above, positioned over the south-facing illuminated neon panel (rows 7-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5655
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign box on a pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the sign box is prominently rendered across rows 1-5 (5 pixel rows tall) viewed from above, showing proper 3/4 perspective above the vertical front sign face (rows 7-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.236Z",
+ "cells": {
+  "16": [
+   "6a3965680d2ebc3e",
+   "6d76eb9731cf82c4",
+   "af875636a71eba55"
+  ],
+  "24": [
+   "2d8be79223f15ffb",
+   "7285ae0bf0f58640",
+   "90372f0d3de8fbde",
+   "b4f1f9bd1e82fe3d",
+   "e7a34e120ed147c9",
+   "fe84e480f9892c45"
+  ],
+  "32": [
+   "09e8dcdc2cdbf0ac",
+   "0caa288b0ec43cac",
+   "1c3401ccc9ffbded",
+   "55399e78cdf36323",
+   "5dde2228c243e10a",
+   "69017929544cdb82",
+   "6ed1a80ab5a4a22e",
+   "738a02d0f8a9edb4",
+   "74d7ae08791bcce1",
+   "772fc981dbaaa798",
+   "7f638fb3dc6837ba",
+   "81cf62390abbf11c"
+  ],
+  "48": [
+   "0aab76dcb991b247",
+   "854b2835fa9b9287",
+   "f4b459e3c1fd9dfc"
+  ]
+ }
+}

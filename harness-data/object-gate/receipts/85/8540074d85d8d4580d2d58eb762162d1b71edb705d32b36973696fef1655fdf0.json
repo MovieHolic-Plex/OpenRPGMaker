@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8540074d85d8d4580d2d58eb762162d1b71edb705d32b36973696fef1655fdf0",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "stack of three wooden barrels, two below and one on top",
+ "label": "pirate-isles/pi-barrels",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of three wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel clearly shows its foreshortened elliptical top cap across rows 2-6, and the lower barrels also display their top lids (rows 13-17) behind their front bodies in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3897
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of wooden barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "All three barrels show clear elliptical top surfaces foreshortened in 3/4 view (approx 5 rows tall on each barrel, e.g. rows 2-6 on the top barrel and rows 13-17 on the lower barrels), complete with curved front rim boundaries.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6946
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "top barrel of stack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel displays a clearly foreshortened circular top cap spanning rows 2 to 6 (about 5 rows tall), with vertical plank texturing seen from above before bending down into the front cylindrical face. The bottom barrels also show their visible upper caps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8525
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of three barrels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top barrel displays a clearly foreshortened top wooden lid spanning rows 1-5 (~5 px tall), and the two lower barrels also show their top circular surfaces peeking out on either side.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4119
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.408Z",
+ "cells": {
+  "16": [
+   "25cf509f63055519",
+   "30fee4881935163f",
+   "9ede1e8fc3e7379e",
+   "ac74a33ca2825579"
+  ],
+  "24": [
+   "00f35873d58c8eb9",
+   "0d6a83d026ddeb79",
+   "0e3e0b6376c23264",
+   "1a65685a758d9218",
+   "1b6a2422ebc092cd",
+   "2d4f574d315b568f",
+   "3abe9989e866b723",
+   "4080c9ff8aa6ebfb",
+   "4b2d05de296f5822",
+   "51461a611873b2fa",
+   "564eb82ff726172f",
+   "5c5de1ac98644c36",
+   "7d9989828017b0f8",
+   "7dd5a84aa7e3ebd4",
+   "825eb2715fce3d04",
+   "b601c373e1dfbbb6",
+   "ba1af6178038e3e4",
+   "bbf057bf3483d633",
+   "cda5d91aaefc098c",
+   "e4df9bebd8710fbc",
+   "ea559b1d66035cde",
+   "f3d3e5d1dd9f2d89",
+   "f7128c9ac47a3008",
+   "fdf9debd1061a2e6"
+  ],
+  "32": [
+   "e88d89f145b98121"
+  ],
+  "48": [
+   "2c443a1141d5ba7a",
+   "2e8f7bc01b41f5ae",
+   "52ec92b73cebd695",
+   "9fb830e3a18cb8bf",
+   "ac9b41697218bb51",
+   "c79901c1231f6211"
+  ]
+ }
+}

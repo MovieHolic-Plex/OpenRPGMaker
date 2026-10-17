@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "def55f39cfff09990312654daf5d990687c0726da5ba4184159147afed79ae32",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "유개 화물칸(나무 판자, 미닫이 문, 둥근 지붕)",
+ "label": "steampunk-city/sp-wagon-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boxcar / covered freight car",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded roof surface is clearly visible from above, occupying rows 3 to 12 (10 pixel rows) above the vertical wooden south wall (rows 13-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6201
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "covered freight car (boxcar)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The freight car is oriented east-west with its south flank facing the camera. The roof is visible from above as an 8-9 pixel tall top surface (rows 3-11) above the south wall (rows 13-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6537
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "covered freight car / boxcar",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded roof surface is clearly visible from above across rows 3-12 (approx. 10 source pixels tall) showing the top roof panels sloping down to the eave line above the wooden wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6614
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boxcar body and roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows a clear 3/4 perspective with a 9-row sloped/curved roof surface visible above the south-facing wooden wall and sliding door (rows 4–12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12095
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.528Z",
+ "cells": {
+  "16": [
+   "0d17f0959691b375",
+   "2a4336e0e6f0d62d",
+   "38e610e2f7b57995",
+   "6b2042e50225b637",
+   "8ea718e0084fa5dc",
+   "c25e23bcc796e61c",
+   "d1ce476e7506f843",
+   "dbd6f7f5aa541f75",
+   "eb6260baa83a0498"
+  ],
+  "24": [
+   "4facae11ce3b005e",
+   "c559b5efd74dfebd",
+   "de30710c24af573a",
+   "fe245369c0b00dd3"
+  ],
+  "32": [
+   "02fece9714d4fe99",
+   "1299a195970fbd99",
+   "19be7a6fd7f43a38",
+   "1a084b82edc80e5c",
+   "217dfbc50fbc250a",
+   "2654b29e62a37f86",
+   "27e62255f4abe4e7",
+   "3ae6787f64d0444b",
+   "58502682c72e849d",
+   "5925ce96637f5e65",
+   "59a7500146cb43e7",
+   "5cd89ada9145d8bf",
+   "6a55bdf0d1adff74",
+   "6c731f3ebe3f90da",
+   "782df25e90717d97",
+   "82afa8147096ce73",
+   "8a3971a3f434ea77",
+   "8a9e8f083f53b8b3",
+   "a08b06503479f543",
+   "afcbefff84214e40",
+   "c345d45e14d24f6f",
+   "ca37b3d08178b387",
+   "e3dd136a01829330",
+   "e410f0838f04ea85"
+  ],
+  "48": [
+   "3cfd83f5ba79d394"
+  ]
+ }
+}

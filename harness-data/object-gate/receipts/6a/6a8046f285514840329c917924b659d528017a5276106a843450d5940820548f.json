@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a8046f285514840329c917924b659d528017a5276106a843450d5940820548f",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "칸막이 화분 상자",
+ "label": "jp_city/interior_office2/ox-planter-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular wooden planter box with bushes",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening looking down onto the soil (rows 15-20, 6 rows tall) enclosed by rims, followed by a south-facing wooden front face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3824
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular wooden planter box",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening (rows 15-19, 5 rows deep) filled with soil and shrubs, framed by the top rim (rows 13-21), with the front wooden face extending below from row 22 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4152
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular planter box with soil and bushes",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the planter box is clearly visible from above across rows 13-21, showing the soil inside (rows 15-19, 5 rows deep) framed by the wooden rim, above the south face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3342
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular wooden planter box with bushes",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top-down 3/4 perspective with visible wooden rims around an interior opening filled with soil (rows 15-19, 5 rows deep), situated above the vertical front wooden panel (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4004
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.919Z",
+ "cells": {
+  "16": [
+   "0cdf3440d6c7046f",
+   "324b658ec831f9ef",
+   "695f389d671054b0",
+   "bd919ba5ab008762"
+  ],
+  "24": [
+   "17a36005cf146ce4",
+   "18f5477318026f6d",
+   "212a6f1b4bed4f57",
+   "26bb5446486bd199",
+   "2c44b0ab429fbc90",
+   "464fd409cc39ca00",
+   "4781ea892fbc9e9f",
+   "63ab9fd3f0c6a454",
+   "700f734cf2c1c0a7",
+   "808b80539ae4baa2",
+   "8a7336670e5ac090",
+   "8ab26d8e5d7c79e4",
+   "9c339283538eab57",
+   "a4e637b91086b04a",
+   "a9ee67657a34f965",
+   "b090a7fdf4002cac",
+   "b500fc9bb1033cb6",
+   "c84270ed572fac44",
+   "cd18c0b740b525f6",
+   "d709ac5129f720c2",
+   "ddd921318cbbf22b",
+   "e5f92525ccd42e95",
+   "ed6a8ee881d8dd9d",
+   "edf483e3b8367289"
+  ],
+  "32": [
+   "5db3bafd72123a57"
+  ],
+  "48": [
+   "128c68f7f81faa68",
+   "3a85ce734cb80e74",
+   "47b3f68a919116da",
+   "61f3d2abc8b29d0b",
+   "d56f802efb96d101",
+   "ff6c69a7739f8530"
+  ]
+ }
+}

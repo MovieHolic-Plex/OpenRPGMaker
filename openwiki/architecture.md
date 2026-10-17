@@ -7,6 +7,37 @@
   - after boot, it conditionally registers PWA support and can open a classic event-editor capture path for special debug params.
   - Shared tile references and the remaining catalog normally load after the shell. First-generation interview requests use `projectInterviewBootPreparation.ts` to join those same loads and apply reference refresh **before** save and immutable AI-base capture. The remaining catalog starts inside that preparation when needed, avoiding a wait on `bootApp()` returning. Ordinary editing still boots with only the default catalog; stale-base rejection is unchanged.
 
+- **부팅 스플래시와 계측 (2026-10-15):** 편집기 첫 화면은 `index.html` 의 `#oprn-boot-loader`(`data-testid="boot-loader"`)다 —
+  인라인 CSS·마크업만으로 첫 프레임에 그려지고(외부 자원·이미지 없음, 로고는 인라인 SVG), 단계 표시(4칸 이산: 앱 → 공용 자료 → 프로젝트 → 도구)·
+  10초/60초 안내(지연 CSS 애니메이션이라 JS 없이 뜬다)·실패 화면(「다시 시도」 = `<a href="">`)·언어 분기(ko/en/ja/zh,
+  `navigator.language` 규칙은 `src/i18n/locale.ts` 와 같다)는 `public/boot-splash.js`(외부 클래식 스크립트 — Electron `app://` CSP 가 인라인
+  스크립트를 막고, 번들 로드가 실패해도 먼저 돌고 있어야 실패를 말할 수 있다)가 맡는다. 번들은 `src/app/bootLoader.ts` 의 `reportBootStage`·
+  `failBootLoader`·`dismissBootLoader` 로 `window.__oprnBootSplash` 에 사실만 넘긴다(퍼센트 없음). 편집기 i18n 계층에 의존하지 않는다 —
+  `data-i18n-skip` 으로 DOM 번역기를 비킨다(화면 글자 역참조 금지 계약, `openwiki/i18n.md`). 기존 `#oprn-boot-loader`·`boot-loader` testid·
+  `data-leaving` 은 그대로라 e2e/캡처 스크립트의 «로더가 사라질 때까지 대기» 가 유효하다.
+  계측: `src/util/bootMarks.ts` 의 `bootMark` 가 `performance.mark("oprn:boot:<이름>")` 을 새긴다(html · js-eval-start · js-ready · prepare · shared ·
+  project · project-read · project-normalized · project-loaded · editor · shell-mounted · settled · failed-*). 콘솔에서 `__oprnBoot()`(요약)·
+  `__oprnBoot(true)`(표). 스플래시 표시와 같은 신호다.
+  첫 페인트 경로의 두 함정(실측): ① vite 가 head 에 심는 스타일시트(main.css 2.1MB)는 렌더 차단이라 `scripts/lib/deferStylesheets.mjs` 가 빌드 산출물에서
+  body 끝으로 옮긴다(지연 모듈 스크립트는 차단 스타일시트가 다 올 때까지 실행되지 않으므로 FOUC 없음). ② 호스트가 head 끝에 심던 `bridge.js` 는
+  modulepreload 수십 개 뒤라 HTTP/1.1 연결을 기다려 첫 화면을 늦췄다 — `electron/serve/runtime.ts` 가 `<meta charset>` 바로 뒤에 심는다.
+  Electron 창은 `backgroundColor: #F7F8F8`(스플래시 바탕색)이고 `ready-to-show` 가 첫 프레임 뒤라 흰 화면이 안 보인다. 시작 화면(`start-screen.html`)도 인라인 로고 뼈대를 먼저 그린다.
+
+- **웜 부팅 시간 줄이기 (2026-10-15, 웜 = 표식이 맞는 두 번째 부팅. 정상 상태 CPU 프로필로 큰 것부터):** 다섯 가지와, 해 보고 버린 것.
+  ① 저장 기준본(`store.load` 의 `baselineFrom`)은 부팅 정규화를 건너뛰는 문서(표식 일치 · 대기 중인 얼굴 시트 보정 없음)에서만 타일셋·업로드 자산
+  항목을 공유한다(`projectWithoutEventDraftsSharingSharedDictionaries`, 복제 1.5s 절약) — 정규화기가 돌 문서는 예전처럼 통째 복제한다(정규화기는 항목을 제자리에서 고친다).
+  ② `installReferenceOwners` 는 번들 타일셋 44개를 전부 만들지 않고 물은 id 하나만 `bundledTilesetById` 로 만든다(참고문서는 둘이 JSON 동일, 0.6s).
+  ③ `scripts/lib/jsonParseModules.mjs`(빌드 전용 플러그인)가 20k 글자 이상 JSON 모듈을 `export default JSON.parse("…")` 로 내보낸다 — 롤다운의
+  `json.stringify` 는 큰 JSON 에 먹지 않아 `bundled-data` 가 34M 글자 객체 리터럴이었다(모듈 평가 시작 1.0s 빨라짐, gzip 크기는 +1.6%). JSON 모듈은 기본 내보내기 하나로만 쓴다.
+  ④ `vite.config.ts` manualChunks 는 8MB 넘는 JSON(버들항·일본 도시 타일셋)만 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 병렬로 풀린다.
+  **더 잘게(1MB 기준 11덩이) 나누면 modulepreload 가 46개로 늘어 첫 페인트(스플래시)가 0.15s → 0.35s 로 늦어진다 — 첫 페인트가 이 최적화보다 우선이다.**
+  ⑤ 자료집 미리 읽기(`scheduleDatabaseModalPrefetch`)는 첫 화면 뒤(`afterBootSettled`)에 시작한다(0.5s).
+  첫 방문 전송량: `/__oprn/shared-content?scope=…&dedup=1` 은 같은 긴 글(캐릭터 256명이 각자 품은 같은 참고 시트·라이선스, defaults 28.4MB 중 15.2MB)을 한 번만 싣는
+  전송 형식이다(`src/project/sharedContentDedup.ts`, 클라이언트가 같은 글로 되돌린 뒤 IndexedDB 캐시·설치로 보낸다. 요청에 `dedup=1` 이 없으면 예전 형식, gzip 13.1MB → 3.7MB).
+  버린 것(근거): 브라우저는 http 에서 brotli 를 받지 않아(9888 은 http) 서버 brotli 는 이득이 없다 · `crypto.subtle` 도 비보안 컨텍스트(http://mdc-server)에는 없어 순수 JS sha256 을 못 바꾼다 ·
+  색 키 반복문 손질은 67→40ms 라 되돌렸다 · Phaser 텍스처 만들기(약 1s, 첫 화면 뒤)·업로드 캐릭터 시트 변환은 동작이 바뀌어 건드리지 않았다.
+  남은 가장 큰 비용: 빌드마다 첫 부팅(표식이 안 맞음)은 전 문서 요약 두 번 + 정규화기로 +10~15s(`src/project`·`src/assets` 가 바뀌는 배포마다 한 번).
+
 - Phaser app split:
   - `src/app/mode.ts` owns the single active mode (`edit` or `play`), the shared Phaser game handle, and the DOM shell for topbar/main.
   - `bootApp()` loads the project store, seeds editor state from `startMapId`, renders the topbar, and enters edit mode.

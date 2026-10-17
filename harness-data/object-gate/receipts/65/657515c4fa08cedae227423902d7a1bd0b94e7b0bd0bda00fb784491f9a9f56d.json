@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "657515c4fa08cedae227423902d7a1bd0b94e7b0bd0bda00fb784491f9a9f56d",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "계산 단말",
+ "label": "modern_city/interior/mci-g-register",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "POS terminal base with attached monitor and card slot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the terminal shows a clear top surface (rows 6–11, 6 rows tall) containing an inset card reader and the base of the screen, terminating in an edge highlight at row 11 before dropping into the front vertical face (rows 12–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7550
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkout / POS terminal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main terminal base shows a clear 5-row horizontal top deck (rows 6-10) with an embedded card slot and vertical display unit, divided by a bright edge highlight on row 11 from the darker south-facing front drawer/panel (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "base console and monitor unit of checkout terminal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The terminal base features a clearly visible horizontal top surface across rows 6–10 with a white edge highlight at row 11, followed by a shaded south-facing front face on rows 12–14. The monitor also displays a top casing surface across rows 1–2.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8239
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "payment terminal base and screen",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the terminal base spans rows 6-10 (highlighted front edge at row 11), with the screen mounted at the back and an embedded card slot visible from above. The south front face extends below from row 12 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10520
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:56.356Z",
+ "cells": {
+  "16": [
+   "61d75a0488e913ea"
+  ],
+  "24": [
+   "5756af1e6f9a6cd6",
+   "77928dc5a6e10b4e",
+   "7cb3d47f4e35e4b2",
+   "8a754fda1c32d25c",
+   "c4fab5c229a1f82e",
+   "e213d8f059a8dabb"
+  ],
+  "32": [
+   "16be108d01e2e157",
+   "1b82be770b255dd1",
+   "1ea9bbc471b87e9a",
+   "6e4b15af6e3bb6e4",
+   "f088b035d02a6b6b",
+   "f73fbf299f0c7bff"
+  ],
+  "48": [
+   "07f822ad3ddbaf67",
+   "0c4bc26d0ce09be5",
+   "4aa3f727d6db0533",
+   "4ed0fa3a3957ae5a",
+   "718d1820d64e834d",
+   "7cdfc1ae16294ca1"
+  ]
+ }
+}

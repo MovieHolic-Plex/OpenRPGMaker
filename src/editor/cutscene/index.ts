@@ -63,7 +63,7 @@ export type CutsceneSayBeat = {
   readonly style?: string;
   /** 대사 그릇(box·balloon·bark·corner). 흘림·코너는 게임을 멈추지 않는다. */
   readonly container?: string;
-  /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. */
+  /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. 흉상·전신 초상이 있는 줄은 항상 아래. */
   readonly position?: "auto" | "top" | "center" | "bottom";
 };
 
@@ -490,6 +490,13 @@ function inferBeatKind(entry: Record<string, unknown>): Record<string, unknown> 
     // `look:"<대상>"` 을 대상 칸으로 쓴 모양도 받는다.
     const { look, ...rest } = entry;
     return { ...rest, kind: "look", ...(typeof look === "string" && rest.target === undefined ? { target: look } : {}) };
+  }
+  // {say:"대사"} · {narration:"…"} 처럼 종류 이름을 키로 쓴 줄임 모양(FF6 감사 역할극 2회차 script_cutscene 실패).
+  for (const key of ["say", "narration", "dialogue", "line"] as const) {
+    if (typeof entry[key] === "string" && entry.text === undefined) {
+      const { [key]: text, ...rest } = entry;
+      return { ...rest, kind: "say", text };
+    }
   }
   if (typeof entry.text === "string" || Array.isArray(entry.lines) || typeof entry.speaker === "string") return { ...entry, kind: "say" };
   if (typeof entry.ms === "number") return { ...entry, kind: "wait" };
@@ -1061,11 +1068,12 @@ function validateDurations(beat: CutsceneBeat, path: string, errors: string[]): 
 
 function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): void {
   if (!isRecord(beat) || typeof beat.kind !== "string") {
-    errors.push(`${path}: beat.kind 문자열이 필요합니다.`);
+    errors.push(`${path}: beat.kind 문자열이 필요합니다. 비트는 {"kind":"say","text":"대사"} 처럼 kind 를 꼭 씁니다(kind 목록: ${[...KNOWN_BEAT_KINDS].join(", ")}).`);
     return;
   }
   if (!KNOWN_BEAT_KINDS.has(beat.kind)) {
-    errors.push(`${path}.kind: 알 수 없는 컷신 beat 종류 '${beat.kind}'입니다.`);
+    const near = [...KNOWN_BEAT_KINDS].filter((kind) => kind.toLowerCase().includes(beat.kind.toLowerCase()) || beat.kind.toLowerCase().includes(kind.toLowerCase()));
+    errors.push(`${path}.kind: 알 수 없는 컷신 beat 종류 '${beat.kind}'입니다.${near.length > 0 ? ` 비슷한 종류: ${near.join(", ")}.` : ""} 쓸 수 있는 kind: ${[...KNOWN_BEAT_KINDS].join(", ")}.`);
   }
   // beats 없는 parallel 은 검증을 통과한 뒤 compileBeats 에서 TypeError 로 죽었다(2026-10-02 도그푸딩: 조수의 첫 script_cutscene 호출).
   if (beat.kind === "parallel" && (!Array.isArray(beat.beats) || beat.beats.length === 0)) {

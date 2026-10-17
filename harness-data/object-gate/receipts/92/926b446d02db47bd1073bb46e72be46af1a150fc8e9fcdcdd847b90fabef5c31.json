@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "926b446d02db47bd1073bb46e72be46af1a150fc8e9fcdcdd847b90fabef5c31",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "interior wall top rim seen from above (flat)",
+ "label": "sky-island/si-void-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "north-south interior wall top rim",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the top surface of a north-south interior wall seen from directly above, spanning all 16 rows as a flat terrain/autotile boundary.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wall top seen from above",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a north-south interior wall top seen directly from above, spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4176
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wall top rim / partition",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A terrain autotile/edge showing the flat top surface of a north-south interior wall running the full 16-pixel tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall top rim / border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a wall top rim seen directly from above, extending vertically across all 16 pixel rows with no 3D front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4699
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.561Z",
+ "cells": {
+  "16": [
+   "0eb29b5e0310ab4c"
+  ],
+  "24": [
+   "3d617f56d5e92fec",
+   "771da6badab7e694",
+   "80c5c1a2447fcb64",
+   "8909458f671b56a5",
+   "e4f0e0a25367e984",
+   "fb00c9221ba878f8"
+  ],
+  "32": [
+   "2386eb628c11dd1f",
+   "2dfa31adc6152771",
+   "46ea007769d83ccd",
+   "509afbc475e49289",
+   "5c2d8664620d74e2",
+   "855513a61b5ad665"
+  ],
+  "48": [
+   "5e9b1db4846cad0c",
+   "5f033e14a7d4edf1",
+   "84955180c1549374",
+   "f419bb14a373063e",
+   "fa1a91d71dc7473f",
+   "fadf60f9b9207832"
+  ]
+ }
+}

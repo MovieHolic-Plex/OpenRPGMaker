@@ -1,6 +1,6 @@
 import type { ActivityVisual } from "../activityVisual";
 import type { PiApplyMode } from "./applyMode";
-import type { SpecialistModels } from "../modelRoles";
+import type { RoleModel, SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
@@ -34,6 +34,11 @@ export interface PiAgentRequest {
   /** The user's image slot, inherited by every specialist; credentials stay on the companion. */
   readonly imageProvider?: string;
   readonly imageModel?: string;
+  /**
+   * 도트를 찍는 텍스트 모델(설정의 «도트 저작 모델»). 클라이언트가 **해석한 값**을 싣는다 — 저장값이 없는 옛 설정은 계획·최종 판단 모델이다
+   * (설정을 새로 만들지 않는다). 워커의 낱장 도트 찍기(src/ai/dotTextArt.ts)가 쓴다. 비면 roleModels.deep → 실행 모델.
+   */
+  readonly pixelModel?: RoleModel;
   readonly provider: string;
   /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
   readonly projectKey?: string;
@@ -64,6 +69,29 @@ export interface PiAgentRequest {
    * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
    */
   readonly approvedTilesetFamilies?: readonly string[];
+  /**
+   * 편집기가 가진 되돌리기 기록(가까운 것이 먼저). 워커는 별도 프로세스라 편집기의 히스토리 스택을 못 본다 —
+   * `list_edit_history` 가 이 목록을 답하고, `revert_last_edit` 는 초안을 건드리지 않고 되돌림을 요청만 한다(편집기가 끝에 실행).
+   */
+  readonly editHistory?: readonly {
+    readonly label: string;
+    readonly mapId: string | null;
+    readonly steps: number;
+    /** 이 편집이 바꾼 것(맵별 타일 칸 좌표·이벤트 id). 가까운 몇 건만 채운다. */
+    readonly changes?: readonly {
+      readonly mapId: string;
+      readonly tileCells: readonly { readonly x: number; readonly y: number; readonly layer: "lower" | "upper" }[];
+      readonly tileCellCount: number;
+      readonly eventsAdded: readonly string[];
+      readonly eventsRemoved: readonly string[];
+      readonly eventsChanged: readonly string[];
+    }[];
+  }[];
+  /**
+   * 이 요청이 몬스터 수집(포켓몬식) 요청인가 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)이 이 턴만 푼다. 비우면 워커가 task(사용자 글)로 판정한다(isMonsterRequestTurn).
+   * 팀 하위 실행은 요청을 펼쳐 받으므로 워커가 입구에서 한 번 채운다 — 팀원 task 에 몬스터 낱말이 없어도 같은 턴 판정을 따른다.
+   */
+  readonly monsterTurn?: boolean;
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
@@ -77,7 +105,7 @@ export interface PiAgentRequest {
   readonly team?: PiTeamSpec;
   /** 읽기 전용 실행: 쓰기 툴을 주지 않고 조회·보고만 한다(자율성 「읽기 전용」·계획 턴). */
   readonly readOnly?: boolean;
-  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). 팀은 하위 에이전트마다 같은 값이 걸린다. */
+  /** 한 실행의 시간 상한(ms). 비우면 런타임 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). 팀에서는 팀 전체 벽시계 상한이다 — 하위 에이전트는 팀 시작 뒤 남은 시간만 받는다(장기 목표 제외). */
   readonly timeoutMs?: number;
 }
 export interface PiAgentStats {

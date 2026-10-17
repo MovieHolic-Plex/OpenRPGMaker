@@ -80,20 +80,20 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
     const events = map.events?.length ?? 0;
     const inbound = graph.inbound.get(map.id) ?? 0;
     const where = { mapId: map.id, mapName: map.name };
+    // 시드 시작 맵(map_blank_start)은 조수가 새 마을을 짓고 시작 위치·문을 옮기면 남는다(remove_map 은 맵 소실 확인에 막힌다).
+    // 플레이 경로에서 빠진 옛 시드 맵은 이벤트가 남아 있어도 unreachable-map 막힘으로 세지 않는다(r3-ff1: 막힘 안내 때문에 다시 문을 이어 붙여 초록 어촌이 노출됨).
+    const seedLeftBehind = map.id === "map_blank_start" && project.startMapId !== map.id;
     if (events === 0 && inbound === 0) {
-      // 시드 빈 맵은 조수가 시작 위치만 새 맵으로 옮기면 남는다. 플레이 경로가 아니라 막힘으로 세지 않는다
-      // (2026-09-24 갤러리 r5: 엔딩은 출구 인형에 막혔는데 빈 시드 맵이 막힘 1건으로 같이 올랐다).
-      const seedLeftBehind = map.id === "map_blank_start" && project.startMapId !== map.id;
       findings.push({
         severity: seedLeftBehind ? "warning" : "blocker",
         code: "orphan-empty-map",
         message: seedLeftBehind
-          ? `시작 맵을 옮긴 뒤 남은 빈 시드 맵 ${map.name}(${map.id}) ${map.width}×${map.height} 입니다. 플레이에는 쓰이지 않습니다.`
-          : `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다.`,
+          ? `시작 맵을 옮긴 뒤 남은 빈 시드 맵 ${map.name}(${map.id}) ${map.width}×${map.height} 입니다. 플레이에는 쓰이지 않습니다. 쓸 곳이 없으면 remove_map 으로 지웁니다.`
+          : `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다. 고치기: 장소를 짓는 도구(author_beodeul_town·author_dungeon·build_hand_interior_room 등)로 채우고 create_transfer_pair 로 잇거나, 쓰지 않으면 remove_map.`,
         where,
       });
-    } else if (!graph.reachable.has(map.id)) {
-      findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}.`, where });
+    } else if (!graph.reachable.has(map.id) && !seedLeftBehind) {
+      findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}. 고치기: create_transfer_pair({a:{mapId:<시작 맵에서 닿는 맵>,x,y}, b:{mapId:"${map.id}",x,y}}) — 시대 사이면 create_time_gate.`, where });
     }
   }
   return findings;

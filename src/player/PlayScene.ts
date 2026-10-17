@@ -1,7 +1,9 @@
+import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
 import { setCharacterBaseOrigin } from "./characterOrigin";
+import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
 import { syncTerrainWater } from "./terrainWater";
-import { prepareFieldAbility } from "@/player/fieldAbility";
+import { prepareFieldAbility, prepareMonsterFieldAbility } from "@/player/fieldAbility";
 import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -61,6 +63,7 @@ import {
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
+import { recordDungeonEntrance } from "@/project/encounterGuard";
 import { createWorldAtlasController } from './worldAtlasOverlay';
 import { visitAtlasMap } from '@/project/worldAtlas';
 import { characterSpriteY, footprintSpriteX, MAP_LOWER_LAYER_DEPTH, MAP_UPPER_LAYER_DEPTH, placeCharacterSprite } from "@/player/characterDepth";
@@ -91,6 +94,7 @@ import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransit
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
+import { updateMode7 } from "@/player/playSceneMode7";
 import { updateScreenDistortion } from "@/player/playSceneScreenDistortion";
 import { updateFieldStaging } from "@/player/playSceneFieldStaging";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
@@ -418,6 +422,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
     updateScreenDistortion(this);
+    updateMode7(this, deltaMs);
     updateFieldStaging(this);
     const tileView = runtimeCameraTileView(this.cameras.main);
     syncRuntimeTileWindow(this, tileView);
@@ -476,7 +481,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     clearAllSceneEmotes(this);
+    // 던전에 들어가는 순간 바깥에서 서 있던 칸을 적는다(탈출 로프의 목적지). loadSceneMap 이 this.map 을 갈아치기 전에 읽는다.
+    const departure = this.map ? { map: this.map, at: { x: this.tileX, y: this.tileY } } : undefined;
     loadSceneMap(this, mapId, options);
+    // 세이브 복원·체크포인트 복귀(applyMapBgm:false)는 «들어온 것» 이 아니므로 저장된 입구를 그대로 둔다.
+    if (options?.applyMapBgm !== false && departure) recordDungeonEntrance(this.session, departure.map, this.map, departure.at);
     visitAtlasMap(store.getCurrent(), this.session, mapId);
     syncVehicleSprites(this);
     syncMapBackgroundLayers(this);
@@ -658,7 +667,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     if (this.running) return { ok: false, message: "지금은 쓸 수 없습니다" };
     const delta = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[this.facing];
     const front = findRuntimeEventInScene(this as unknown as Parameters<typeof findRuntimeEventInScene>[0], this.tileX + delta[0]!, this.tileY + delta[1]!, "action");
-    const result = prepareFieldAbility(project, this.session, actorId, skill, { facing: this.facing, eventId: front?.event.id });
+    // 몬스터 파티원(인스턴스 id)이 쓰면 MP 없이 파티 해석기로 아는지만 본다 — 배우 id 와 겹치지 않는다.
+    const frontCell = { facing: this.facing, eventId: front?.event.id };
+    const result = this.session.monsterInstances?.[actorId]
+      ? prepareMonsterFieldAbility(project, this.session, actorId, skill, frontCell)
+      : prepareFieldAbility(project, this.session, actorId, skill, frontCell);
     if (result.kind === "unusable") return { ok: false, message: result.message };
     const commonEvent = (project.commonEvents ?? []).find((event) => event.id === result.commonEventId);
     void import("@/player/playSceneInterpreter").then(({ runCommands }) => runCommands(this, commonEvent?.commands ?? [], front?.event.id));
@@ -672,6 +685,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
     this.session = structuredClone(session);
+    // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
+    if (typeof window !== "undefined" && window.localStorage) syncSessionWithDeviceRecords(window.localStorage, store.getCurrent(), this.session);
     this.clearRuntimeOverlay("runtime-error");
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
@@ -695,7 +710,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     placeCharacterSprite(this.player, "same");
     for (const animation of this.activeMapAnimations) animation.destroy(true);
     this.activeMapAnimations.clear();
-    this.runtimeTimers.clear();
+    // 불러온 세션의 카운트다운을 되살린다 — 비우기만 하면 저장 때 흐르던 타이머가 멈춘 채 남았다.
+    restoreRuntimeTimers(this);
     this.moving = false;
     this.centerCamera();
     // 인게임 로드: 이전 오디오 정지 후 저장된 BGM/BGS 재개.

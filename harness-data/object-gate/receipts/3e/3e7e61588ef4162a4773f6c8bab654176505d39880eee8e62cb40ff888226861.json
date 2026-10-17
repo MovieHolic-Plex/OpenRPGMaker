@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e7e61588ef4162a4773f6c8bab654176505d39880eee8e62cb40ff888226861",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "대리석 세면 대야(벽 꼭지)",
+ "label": "desert-east/de-basin-tap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "marble wash basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin clearly shows its back rim (rows 6-7), inner water surface (rows 8-10, 3 rows tall), front rim (row 11), and south-facing front bowl (rows 12-14) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5573
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "marble basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wash basin clearly displays its interior opening filled with water across rows 8-10 (3 pixel rows), with back and front rims framing it properly in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 22601
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "marble basin/sink",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly foreshortened in 3/4 perspective, showing 3 rows of water surface (rows 8-10) surrounded by the basin rims and the front curved wall below (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "marble wash basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin clearly shows its interior opening filled with water across rows 8-10 (3 rows tall) framed by back and front rims, with the front curved face of the basin bowl visible below on rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5057
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "e89969b52e16dd48"
+  ],
+  "24": [
+   "0401be1f48bb7c1d",
+   "1c96a2fbf52fdaa5",
+   "3ff16a4790fd3a13",
+   "478476bab5f6c632",
+   "835bf798f5677ac8",
+   "9fac5065334cbbb0"
+  ],
+  "32": [
+   "09de0bee080605c0",
+   "3632b494bb7c3644",
+   "5d9f29effc8d7be4",
+   "6eb2f8a2e5fba501",
+   "d3ca6b0638f4b986",
+   "f45b2a9faf6de928"
+  ],
+  "48": [
+   "34d9ce230d75f9a7",
+   "640b0cc56ecf3fd0",
+   "65ee07006345108c",
+   "b450ec1e204976cb",
+   "dfeb943bc0a0da8c",
+   "e2adfa2d064486e9"
+  ]
+ }
+}

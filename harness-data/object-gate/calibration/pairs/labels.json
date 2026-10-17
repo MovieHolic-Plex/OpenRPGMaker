@@ -1,0 +1,21 @@
+{
+ "source": "tiledata/atlas-pick/style-demo-view34/interior-{old,new}-*.png (modern-style-bible §11-2·11-4 증명 쌍 — 감독자가 같은 물건을 옛 그림(위반)과 새 그림(합격)으로 만들고 사용자가 새 그림을 수락한 쌍). 판정자에게 보이는 안내 그림(bookshelf·fireplace·lectern·sarcophagus·locker)과 겹치지 않는 쌍만 보정 표본으로 쓴다.",
+ "bad": {
+  "old-wardrobe": "FRONT: 옛 옷장 — 윗면 2px, 정면 도면(§11-2 표: 옛 T=2 / front)"
+ },
+ "good": {
+  "new-column": "§11-4 기준 그림: 머리 타원 윗면 + 원통 띠 + 아래 호, 밑동도 타원 윗면",
+  "new-pew-e": "§11-4 기준 그림: 옆을 보는 회중석, 좌판 윗면이 보인다",
+  "new-pew-n": "§11-4 기준 그림: 북향 긴의자, 등판 윗날 + 좌판·방석 띠",
+  "new-chair-e": "§11-4b 사용자 수락: 옆을 보는 의자 L자 옆모습은 정상(좌판 윗면 있음)",
+  "new-chair-w": "§11-4b 사용자 수락: 옆을 보는 의자 L자 옆모습은 정상(좌판 윗면 있음)"
+ },
+ "kinds": {
+  "old-wardrobe": "tall_furniture",
+  "new-column": "column",
+  "new-pew-e": "seat",
+  "new-pew-n": "seat",
+  "new-chair-e": "seat",
+  "new-chair-w": "seat"
+ }
+}

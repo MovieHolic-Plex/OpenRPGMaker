@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6facb20ecdcd634173c0cb52a2e9fb93fae0e23087ed814e7934c4a1dbe659cd",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-hydrant-sign",
+ "label": "jp_city/street_hand/jp-hydrant-sign",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sign head and pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign head clearly shows a foreshortened top surface across rows 5-10 (6 rows tall), and the base plinth also shows a foreshortened top face across rows 38-41, matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5885
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydrant sign head and post assembly",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign head features a prominent 6-row foreshortened top cap/surface (rows 5-10) above its dark red front face (rows 11-20), and the base plinth also clearly depicts a 4-row horizontal top surface (rows 38-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6195
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hydrant sign post with base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the sign head is drawn as a distinct 6-row foreshortened surface (rows 5-10), and the base plinth also clearly shows a 4-row top surface (rows 38-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6409
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hydrant sign head on pole with concrete base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sign head shows a clear 6-row elliptical top surface (rows 5-10) above its front face (rows 11-20), and the base block also clearly displays a 4-row top surface (rows 38-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8155
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.358Z",
+ "cells": {
+  "16": [
+   "766da08089bdb22c",
+   "919aeb242fa37f00",
+   "d0666bcb23110317"
+  ],
+  "24": [
+   "70b600643d19e733",
+   "8c5c06107418900e",
+   "a990e7e22213b566",
+   "bd7bb21fefcf319b",
+   "cc75bebb7b9ab74f",
+   "f413f8e5612a8036"
+  ],
+  "32": [
+   "17f3bcebdc722f93",
+   "485b4b289756305c",
+   "8335e81a66bf5026",
+   "968cd9a6e667a1a7",
+   "9ff3e8228537db4e",
+   "b9fadf646f5cb84c",
+   "bd4409fac55d43db",
+   "cedfafd1ea826c24",
+   "e5995d18dccd0d16",
+   "e70ddb8ea6982277",
+   "f58b274bac5b8bfd",
+   "fd5e05983d1647cb"
+  ],
+  "48": [
+   "322d2868a45e8699",
+   "5ad4b2b42f8d0c4c",
+   "feaca9fdd954b888"
+  ]
+ }
+}

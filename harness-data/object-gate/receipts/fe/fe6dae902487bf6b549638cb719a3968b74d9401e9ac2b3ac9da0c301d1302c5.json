@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fe6dae902487bf6b549638cb719a3968b74d9401e9ac2b3ac9da0c301d1302c5",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "트로피 유리 진열장",
+ "label": "jp_city/interior_school2/sx-trophy-case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display cabinet with trophies",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure front elevation. The top section (rows 8-13) is a front-facing crown molding with dentils/brackets rather than a horizontal top surface seen from above. Internal shelves and the mid-cabinet ledge are also drawn as flat horizontal strips without any visible top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in a pure front elevation view. The top consists of flat crown molding (rows 7-13) with no foreshortened top roof surface visible from above. Furthermore, the interior shelves, trophy bases, and cabinet doors are all depicted completely flat with zero depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8031
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in front elevation with no visible top surface (rows 8-9 are just a 2px crown molding line/rim). The shelves, trophy bases, interior boxes, and lower panel doors are all viewed straight-on with zero top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6214
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trophy display cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in pure front elevation. The top consists only of horizontal bands of crown molding (rows 8-13) with no foreshortened top plane visible from above, and the interior shelves and items are rendered completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5369
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.783Z",
+ "cells": {
+  "16": [
+   "4cd35ac18f8203ad",
+   "540e2f3f0f22253d",
+   "9543d910ef824f6d",
+   "a90aabc5ffc66259",
+   "b6284e8d22ff6e43",
+   "bc568e33d5e8bd70"
+  ],
+  "24": [
+   "297ce91222159ce0",
+   "31a0b569a62321be",
+   "3bb5cf793b450329",
+   "42f56059d5861d5f",
+   "46fab595d59349a0",
+   "6775bb572407195f",
+   "7e041f842e6ceac1",
+   "810e26ce8b3444f1",
+   "b43a36f219618bed",
+   "b7196e9a5517781d",
+   "b95900394a4f10b8",
+   "f530c36049ea4eb1"
+  ],
+  "32": [
+   "bd6155068953f3c0",
+   "c39081997e609737",
+   "c4aa84d40b868adf",
+   "f2cb8a6b3b5f5bc0"
+  ],
+  "48": [
+   "4b2c4c9717b115d5",
+   "635fe5de78e6454f",
+   "b761a1b1a5dfe051"
+  ]
+ }
+}

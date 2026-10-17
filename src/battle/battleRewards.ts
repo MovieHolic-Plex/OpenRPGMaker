@@ -12,11 +12,14 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
   // battleRewards는 stateless라 pity는 호출 단위에서 enemy 수만큼 누적 보정한다.
   let pityBonus = 0;
   const tp = rewardedEnemies.reduce((sum, enemy) => sum + (enemyReward(project, enemy).tp ?? 0), 0);
+  const ap = rewardedEnemies.reduce((sum, enemy) => sum + (enemyReward(project, enemy).ap ?? 0), 0);
   return {
     exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),
     gold: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).gold, 0),
     // 기술 포인트는 저작된 적이 있을 때만 실는다(없는 옛 프로젝트는 스냅샷 모양 그대로).
     ...(tp > 0 ? { tp } : {}),
+    // 마석 AP 도 저작된 적이 있을 때만 싣는다.
+    ...(ap > 0 ? { ap } : {}),
     enemyLevel: rewardedEnemies.reduce((level, enemy) => Math.max(level, enemyLevel(project, enemy)), 1),
     items: rewardedEnemies.flatMap((enemy) => {
       const reward = enemyReward(project, enemy);
@@ -41,10 +44,15 @@ export function collectBattleRewards(project: Project, enemies: readonly Mutable
 
 function enemyReward(project: Project, enemy: MutableBattler) {
   const record = project.database.enemies.find((item) => item.id === enemy.recordId);
-  return record ? normalizeEnemyRecord(record).rewards : { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined };
+  if (!record) return { exp: 0, gold: 0, dropRatePercent: 0, drops: undefined, tp: undefined, ap: undefined };
+  const normalized = normalizeEnemyRecord(record);
+  // 야생 레벨 굴림(조우표 levelMin/levelMax)으로 레코드 레벨과 달라졌으면 경험치를 레벨 비로 맞춘다.
+  const recordLevel = normalized.level ?? 0;
+  const scale = recordLevel > 0 && enemy.level !== undefined && enemy.level !== recordLevel ? enemy.level / recordLevel : 1;
+  return scale === 1 ? normalized.rewards : { ...normalized.rewards, exp: Math.max(0, Math.round(normalized.rewards.exp * scale)) };
 }
 
 function enemyLevel(project: Project, enemy: MutableBattler): number {
   const record = project.database.enemies.find((item) => item.id === enemy.recordId);
-  return Math.max(1, Math.min(99, Math.trunc(record?.level ?? 1)));
+  return Math.max(1, Math.min(99, Math.trunc(enemy.level ?? record?.level ?? 1)));
 }

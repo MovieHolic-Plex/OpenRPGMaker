@@ -167,7 +167,9 @@
   letter-spacing: -0.04em;
   /* 1.05 는 18px 픽셀 글꼴에서 상하 2px 을 잘라먹었다(scrollHeight 21 vs clientHeight 19, 실측). */
   line-height: 1.2;
-  max-width: 72%;
+  /* 제목 왼쪽 끝(--title-left)에서 오른쪽 가장자리까지만 쓴다 — 긴 제목이 화면 밖으로 잘리지 않고 줄을 바꾼다(romance-real-2 R05). */
+  max-width: min(72%, calc(100% - var(--title-left, 0%) - 16px));
+  overflow-wrap: break-word;
   text-align: left;
   transform: none;
   word-break: keep-all;
@@ -467,7 +469,9 @@
   letter-spacing: 0.06em;
   line-height: 1.1;
   width: max-content;
-  max-width: 88%;
+  max-width: min(88%, calc(100% - var(--title-left, 0%) - 16px));
+  overflow-wrap: break-word;
+  text-wrap: balance;
   color: transparent;
   background-image:
     linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
@@ -815,4 +819,22 @@
   .rm-title-screen.rm-title-transitioning[data-transition="zoom"] > :not(.rm-title-transition) {
     animation: none !important;
   }
+}
+
+/* 몬스터 수집 게임 저장 칸 요약(도감·배지·파티) — 둘째 줄 아래 한 줄. */
+.player-layout.system-shell .oprn-load-slot-monster {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--runtime-font-size-9);
+}
+
+/* 미연시 세이브 카드(meta.oprnVnExtras.saveCards) — 마지막 대사 한 줄. 길면 말줄임. */
+.player-layout.system-shell .oprn-load-slot-scene {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--runtime-font-size-9);
+  font-style: italic;
 }

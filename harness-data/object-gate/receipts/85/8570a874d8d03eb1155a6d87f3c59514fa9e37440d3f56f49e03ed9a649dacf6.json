@@ -1,0 +1,182 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8570a874d8d03eb1155a6d87f3c59514fa9e37440d3f56f49e03ed9a649dacf6",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "둥근 지붕 회당(큰 돔·아치 문루)",
+ "label": "desert-east/de-domed-hall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with dome and arched gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The walls, central gateway, parapet/roofline, and lintels show zero top-down depth (0 pixel rows of top surface), presenting straight frontal views of the walls, arch, windows, and door.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6615
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "domed arched gatehouse and building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural elevation. The dome, horizontal lintels, wall sections, and roofline show no visible top surfaces or downward slope angles appropriate for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7783
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "domed gatehouse building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The gatehouse, flanking walls, lintels, windows, and main doorway have 0px of visible top surface, showing only straight-on vertical faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "domed gatehouse/hall facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure orthographic front elevation. The dome's latitude lines (rows 11, 16, 21, 26) are perfectly straight horizontal lines rather than downward-curving ellipses as required from a 45-degree top-down perspective, the finial sits on the top silhouette, and all lintels, arches, and walls lack any visible horizontal top surfaces (0 top_rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9862
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.461Z",
+ "cells": {
+  "16": [
+   "08ce50705a567daa",
+   "09a62cff30e7db0f",
+   "0e271642ae2ca5a8",
+   "136e54fcb4634732",
+   "177aa9a5a60d5823",
+   "1813441d839d0792",
+   "19fcce53d2bce462",
+   "28b1c27b2b5af4aa",
+   "2f2b00bcbd1d2e4f",
+   "302b17429e550ef6",
+   "3187d91eecf81ab7",
+   "31f5bfffc02f3d2f",
+   "38c92c823bf5a1fa",
+   "3acf399a090a77ed",
+   "3c3571388b7e0f0f",
+   "3ec184bba5accc02",
+   "3fce45c8aeec1840",
+   "4a3020bbcbec0ba4",
+   "5059545f3e6ba46f",
+   "5c6b4053dac86f50",
+   "6fbca3b17ef3c1ff",
+   "72cb2b438efac07d",
+   "7c258bda0c60fb4e",
+   "a4f484295ec0bc59",
+   "a8cd013a18cc81a2",
+   "b14c9c4eb4fb2f8f",
+   "b7a545eae6035d2a",
+   "be20a0eac89c270f",
+   "c33bffa37b10d319",
+   "d43d30453f010e92",
+   "d599380a4231ea37",
+   "d6b403d61421d548",
+   "da1d9b5d4cf63db0",
+   "da26e73c80bccc85",
+   "e89908cf46a9ea5f",
+   "fc7f05fcb5428dd9"
+  ],
+  "24": [
+   "19c599430439457a",
+   "21c0ccb5b4bd4e1b",
+   "23492620bf6e15d1",
+   "34d5fa51b7d4cd52",
+   "3ebb84f04182adef",
+   "49d8d31692c920f9",
+   "52ee50288b03334d",
+   "61b70a3014b5d2c9",
+   "7a013f84cd3e243d",
+   "9dda2caff579c415",
+   "aa98ff512529a004",
+   "ae26810529d46158",
+   "ae5912545dcc4fd6",
+   "c6c8ebd9a684a33e",
+   "d0b427b91ae666ac",
+   "e0fe6419f0c0e1bd"
+  ],
+  "32": [
+   "0ecea4008d606f70",
+   "21f5d9b723fb313d",
+   "32e2232136dc42b3",
+   "57b430fd405305bd",
+   "7013c81b4bfa1b5b",
+   "be0b8afce30c168a",
+   "bfc0ca2df9951688",
+   "df70ec365bbe46d6",
+   "fe8761eda264bec9"
+  ],
+  "48": [
+   "0b689a1cde675e91",
+   "27aadb35d33b84ab",
+   "3b32bd7a2ece5874",
+   "7ff48ea6bfc23beb"
+  ]
+ }
+}

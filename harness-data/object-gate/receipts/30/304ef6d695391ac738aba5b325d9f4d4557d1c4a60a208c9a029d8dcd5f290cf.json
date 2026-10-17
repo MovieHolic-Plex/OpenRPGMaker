@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "304ef6d695391ac738aba5b325d9f4d4557d1c4a60a208c9a029d8dcd5f290cf",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-4-L",
+ "label": "jp_city/street_hand/jp-sf-bento-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront with central door and display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame, and flanking display shelves are drawn straight-on in flat front elevation with 0 rows of visible top surface on any horizontal elements.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4930
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront door and display counters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront structure—including the doorframe lintel, top signage/beam, and side counters—is rendered in pure front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4665
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront entrance with door and display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront structure, including the overhead beam/sign, door frame lintel, and display shelves, is drawn in pure 2D front elevation with no visible top surfaces (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5027
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront building facade with door and shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (upper sign board, door frame lintel, awning/windows, and shelves) is drawn in a flat architectural front elevation with 0 rows of visible top surface on any horizontal component.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4672
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.386Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "3e88245faa86d328",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "85efcf18ccc5edd5",
+   "9a6f504a5ffd1c7a",
+   "9e6f71bd295281e4",
+   "b1a8b5449b59fe87",
+   "b4319970abdeed2c",
+   "bfc8bf616bb04b4a",
+   "dff0087a3023fbdb",
+   "e3f622f3e4dffe3e"
+  ],
+  "24": [
+   "05c9f5ab2211a859",
+   "1a1300f1b3dc3bde",
+   "2a52ff0f30d43d8a",
+   "2ae53f080ac1eae8",
+   "363982e015abf4e0",
+   "5c859c538e34d9e3",
+   "7ab2f1b10e4870ed",
+   "7bd925d55166fb6c",
+   "811b66ffd1a277d7",
+   "9a3b6c0eeb7d4675",
+   "bef6c75b891857a4",
+   "c5aa0b91346c8c1b",
+   "cb7b5fdf6cde2981",
+   "e7f6c482f73789b0",
+   "e86d9183ac45a6bc",
+   "ede87031498e3869",
+   "f70c752f005ced3e",
+   "f9986b7bbb0b0f03"
+  ],
+  "32": [
+   "4b445020d3b78188",
+   "7716a187ebd2f055",
+   "85415cb675a2ad10",
+   "a272e0b92c541967",
+   "aa00b1236f33fb90",
+   "c33a73748cefd0db",
+   "d17fa0fabe89929e",
+   "e7e35f09ff66f891"
+  ],
+  "48": [
+   "2186fcdbd4a44aea",
+   "5d836a038a09bd76",
+   "b5a3ad36052a45bf",
+   "beaeab168652f3e0",
+   "ea66da93981bcf1f",
+   "ffa3782d11682629"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2861d8c3c97db8cd0ab918d5a8fc3b326c90435aa0d0b40a7cec4de83c6fa25",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "돌 십자가 묘비",
+ "label": "gothic_manor/gm-tomb-cross",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the vertical post has a clearly rendered top surface in rows 0-3 (4 rows tall), the crossbar arms show their top surfaces in rows 6-9 (4 rows tall), and the base pedestal shows a 4-row top surface at rows 16-19. Perspective is standard 3/4 top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone cross gravestone shaft",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the vertical cross beam clearly displays a 4-pixel-tall horizontal cut surface (rows 0-3) rendered in light stone highlighting, consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10547
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the vertical cross beam is clearly visible at rows 0-3 (4 source pixels tall). The horizontal cross arms also display their top planes (rows 6-8), consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25898
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone cross gravestone",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cross post shows a 4-row deep top surface (rows 0-3), and the horizontal crossbar arms clearly show 3-row deep top surfaces (rows 6-8) matching 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6282
+  }
+ ],
+ "decidedAt": "2026-10-13T16:33:45.367Z",
+ "cells": {
+  "16": [
+   "9d14bd02fee8a8c8",
+   "a421d4e09b50286e"
+  ],
+  "24": [
+   "03c65c0bbd069784",
+   "09e6ceba21984927",
+   "10275c3f84d0e3c8",
+   "5bb59254ea918b42",
+   "68e7b24caaf219a8",
+   "9550ac33a286ae73",
+   "b043b16510d3fc17",
+   "cd7594df087f7629",
+   "d653f77199deeb33",
+   "df5f21530aa21b51",
+   "e5ca78ff818b028e",
+   "f685b9dbfef187f4"
+  ],
+  "32": [
+   "3fc15926304382db",
+   "4df931fd8e2e9f13",
+   "a9c8bf1e94e47fdd"
+  ],
+  "48": [
+   "07e20a8ddc6d12f1",
+   "435580e07bb60c35",
+   "5a836a60110dc07e",
+   "5e1418ea619c3dd3",
+   "c4d9c895f5c0f55e",
+   "f2dea1126a787461"
+  ]
+ }
+}

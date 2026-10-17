@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "81411b9aae18f357606cd7c77a226882885e1464b71fb0d31c5a96b2eef0c2c0",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rack frame with hanging fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame is drawn from a flat side-scroller / front elevation perspective: neither the upper horizontal bar nor the main crossbeam shows a foreshortened top surface (only 1px edge shading), and the posts have flat silhouettes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4217
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame rack with drying fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fish drying rack is rendered as a flat 2D front elevation. Neither the upper horizontal bar (rows 5-6) nor the thick lower crossbeam (rows 15-19) displays a top surface; the legs are flat vertical rectangles with zero ground depth or top perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack with horizontal crossbeam and vertical legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam (rows 14-19) and top rail (rows 5-6) are drawn entirely as flat vertical faces in straight front elevation with no visible top surface planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4331
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rack/frame structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both horizontal beams and the vertical side posts are drawn purely in flat front elevation with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4716
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.784Z",
+ "cells": {
+  "16": [
+   "091b7901f11c627a",
+   "a1ea6e54436576e7",
+   "c5247887bf625d1b",
+   "ecb6195b648dc4b7"
+  ],
+  "24": [
+   "11be986ba0217169",
+   "1d4dc102c82dc515",
+   "1ff65538eb7b3135",
+   "22838816818e9e13",
+   "26b0f768d2078278",
+   "273636082531646f",
+   "30518eceb392f218",
+   "3744e9811b9dc248",
+   "519b61d8509cf003",
+   "6aa41c30b83fe093",
+   "7e17e4914fb65a9b",
+   "8600292cd0221334",
+   "8877aed87d1583f7",
+   "8f9e0656f0e768ce",
+   "a487969df15c9909",
+   "b29a338a1f6361ee",
+   "b78117618a8f8284",
+   "b943b86437e4c7f6",
+   "d3bbee123bf1c44a",
+   "e99d7e1aebb677fe",
+   "efad29910fb86f53",
+   "f45686654b3abda1",
+   "fd843a03d0950db6",
+   "fdcf81d461d82584"
+  ],
+  "32": [
+   "7aae0e771f37dd45"
+  ],
+  "48": [
+   "349707ea8aa609a3",
+   "57001ff73a5a551c",
+   "698a9cae937d36ef",
+   "6df2f255e2c00f6d",
+   "816efd4270a52531",
+   "a255052f07d7de1d"
+  ]
+ }
+}

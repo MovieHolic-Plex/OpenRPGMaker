@@ -34,6 +34,8 @@ export type EndingPresentation = {
   tone?: "warm" | "dark";
   backgroundResourceId?: string;
   credits?: string;
+  /** Small line above the ending heading. Absent: romance projects say "두 사람의 이야기", others "우리의 여정". */
+  kicker?: string;
 };
 
 export type GameOverOutcome = "menu" | "recover" | "title";
@@ -58,6 +60,13 @@ export type GameOverSettings = {
   presentation?: DefeatPresentation;
   /** Blackout preserves progress; this is a destination, never a save rollback. */
   recovery?: RecoveryDestination;
+  /**
+   * 귀환 지점의 **물러날 자리** — `recovery` 가 없고 마지막 체크포인트(회복 센터 직원)도 없을 때만 쓴다(없으면 시작 지점).
+   * 체크포인트는 불러오기 뒤에는 사라지므로, 몬스터 수집 게임은 첫 마을 센터를 여기에 둔다(D31).
+   */
+  recoveryFallback?: RecoveryDestination;
+  /** 귀환(outcome recover) 때 잃는 소지금 비율(0~100). 생략·0 = 잃지 않음. 포켓몬식 블랙아웃은 50. */
+  goldLossPercent?: number;
   sequence?: CinematicSequence;
   title?: string;
   message?: string;
@@ -88,11 +97,12 @@ export function normalizeCinematicSequence(sequence: CinematicSequence): Cinemat
 }
 
 export function normalizeGameOverSettings(settings: GameOverSettings): GameOverSettings {
-  const { sequence, backgroundResourceId, recovery, timing, musicResourceId, ...text } = settings;
+  const { sequence, backgroundResourceId, recovery, recoveryFallback, timing, musicResourceId, ...text } = settings;
   const backgroundId = backgroundResourceId?.trim();
   return {
     ...text,
     ...(recovery ? { recovery: { ...recovery, mapId: recovery.mapId.trim() } } : {}),
+    ...(recoveryFallback ? { recoveryFallback: { ...recoveryFallback, mapId: recoveryFallback.mapId.trim() } } : {}),
     ...(timing ? { timing: { ...timing } } : {}),
     ...(musicResourceId?.trim() ? { musicResourceId: musicResourceId.trim() } : {}),
     ...(sequence !== undefined ? { sequence: normalizeCinematicSequence(sequence) } : {}),

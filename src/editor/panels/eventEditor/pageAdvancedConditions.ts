@@ -486,6 +486,8 @@ function renderAdvancedConditionContent(
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -551,6 +553,8 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":

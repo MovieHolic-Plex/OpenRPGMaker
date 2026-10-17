@@ -3,7 +3,7 @@ import type { JsonSchema } from '@/editor/tools/types';
 // Strict providers require every property. Null represents an unused optional field;
 // concrete zero/false/empty arrays retain their meaning and must never stand for omission.
 export const NULLABLE_OPTIONAL_TOOLS = new Set([
-  'read_world_terrain', 'edit_world_terrain', 'set_map_properties', 'import_region_reference', 'read_spatial_reference',
+  'read_world_terrain', 'edit_world_terrain', 'derive_world_variant', 'link_world_entrance', 'set_map_properties', 'import_region_reference', 'read_spatial_reference',
 ]);
 
 export function nullableOptionalParameters(schema: JsonSchema): Record<string, unknown> {

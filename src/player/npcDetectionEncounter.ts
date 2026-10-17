@@ -28,6 +28,11 @@ type DetectionController = {
   session: PlaySceneContext['session'];
   mapId: string;
   readonly suppressed: Set<string>;
+  /**
+   * 전투 입장이 거부된(파티 0 등) 만남. 시야에서 벗어났다 다시 들어와도 같은 이유로 또 걸어오지 않는다 —
+   * 거부 안내는 한 번이면 충분하다(D30). 몬스터 파티가 생기거나 맵·세션이 바뀌면 풀린다.
+   */
+  readonly refused: Set<string>;
   run?: DetectionRun;
   closed: boolean;
 };
@@ -36,7 +41,7 @@ const controllers = new WeakMap<object, DetectionController>();
 function controllerFor(scene: PlaySceneContext): DetectionController {
   const found = controllers.get(scene);
   if (found) return found;
-  const controller: DetectionController = { session: scene.session, mapId: scene.map.id, suppressed: new Set(), closed: false };
+  const controller: DetectionController = { session: scene.session, mapId: scene.map.id, suppressed: new Set(), refused: new Set(), closed: false };
   controllers.set(scene, controller);
   const shutdown = () => {
     controller.closed = true; cancelDetectionEncounter(scene, false);
@@ -79,7 +84,7 @@ export function updateDetectionEncounters(scene: PlaySceneContext, deltaMs: numb
   }
   if (controller.session !== scene.session || controller.mapId !== scene.map.id) {
     cancelDetectionEncounter(scene);
-    controller.session = scene.session; controller.mapId = scene.map.id; controller.suppressed.clear();
+    controller.session = scene.session; controller.mapId = scene.map.id; controller.suppressed.clear(); controller.refused.clear();
     return; // The replaced session/map gets its first fresh scan on its own next frame.
   }
   const run = controller.run;
@@ -105,6 +110,8 @@ export function updateDetectionEncounters(scene: PlaySceneContext, deltaMs: numb
     const receipts = scene.session.detectionEncounterCompletions;
     const completed = receipts && Object.hasOwn(receipts, view.event.id)
       && Object.hasOwn(receipts[view.event.id], view.pageId) && receipts[view.event.id][view.pageId] === true;
+    if (controller.refused.has(key) && !hasMonsterParty(scene)) continue;
+    controller.refused.delete(key);
     if (controller.suppressed.has(key) || completed) continue;
     const lease = claimForeground(scene);
     if (!lease) return;
@@ -114,6 +121,11 @@ export function updateDetectionEncounters(scene: PlaySceneContext, deltaMs: numb
     if (admitted.remainingMs === 0) startApproach(scene, controller, admitted);
     return; // Stable first active view owns this foreground.
   }
+}
+
+function hasMonsterParty(scene: PlaySceneContext): boolean {
+  const { monsterParty, monsterInstances } = scene.session;
+  return (monsterParty ?? []).some((id) => monsterInstances?.[id] !== undefined);
 }
 
 function commandsCurrent(scene: PlaySceneContext, run: DetectionRun): boolean {
@@ -168,6 +180,7 @@ function startApproach(scene: PlaySceneContext, controller: DetectionController,
     await runCommands(scene, arrived.page?.commands ?? [], run.eventId, {
       allowNested: true, continueAfterTransfer: true, isCurrent: () => commandsCurrent(scene, run),
       onComplete: () => completeDetectionEncounter(run.session, run.eventId, run.pageId),
+      onHandledFailure: () => controller.refused.add(`${run.eventId}:${run.pageId}`),
     });
   }).catch((error: unknown) => {
     console.error('[player] detection encounter failed', error);

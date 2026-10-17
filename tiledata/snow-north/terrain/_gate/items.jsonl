@@ -1,0 +1,28 @@
+{"png": "sn-snow.png", "kind": "terrain", "name": "눈밭(바람 물결)", "label": "snow-north/sn-snow"}
+{"png": "sn-snow-b.png", "kind": "terrain", "name": "눈밭(물결 짙은 변주)", "label": "snow-north/sn-snow-b"}
+{"png": "sn-snow-c.png", "kind": "terrain", "name": "눈밭(짐승 발자국)", "label": "snow-north/sn-snow-c"}
+{"png": "sn-snow-d.png", "kind": "terrain", "name": "눈밭(마른 풀 끝이 삐죽)", "label": "snow-north/sn-snow-d"}
+{"png": "sn-snow-shade.png", "kind": "terrain", "name": "눈밭(숲 그늘, 푸른빛)", "label": "snow-north/sn-snow-shade"}
+{"png": "sn-pack.png", "kind": "terrain", "name": "다진 눈길", "label": "snow-north/sn-pack"}
+{"png": "sn-pack-sled.png", "kind": "terrain", "name": "다진 눈길(썰매 자국, 동서)", "label": "snow-north/sn-pack-sled"}
+{"png": "sn-pack-sled-v.png", "kind": "terrain", "name": "다진 눈길(썰매 자국, 남북)", "label": "snow-north/sn-pack-sled-v"}
+{"png": "sn-ice.png", "kind": "terrain", "name": "얼어붙은 호수 얼음", "label": "snow-north/sn-ice"}
+{"png": "sn-ice-clear.png", "kind": "terrain", "name": "맑은 얼음(균열 없음, 짙음)", "label": "snow-north/sn-ice-clear"}
+{"png": "sn-ice-crack.png", "kind": "terrain", "name": "얼음(큰 균열)", "label": "snow-north/sn-ice-crack"}
+{"png": "sn-ice-dust.png", "kind": "terrain", "name": "얼음(눈가루 흩날림)", "label": "snow-north/sn-ice-dust"}
+{"png": "sn-tundra.png", "kind": "terrain", "name": "툰드라(마른 풀)", "label": "snow-north/sn-tundra"}
+{"png": "sn-frost.png", "kind": "terrain", "name": "서리 풀", "label": "snow-north/sn-frost"}
+{"png": "sn-slush.png", "kind": "terrain", "name": "진창(녹은 눈과 흙)", "label": "snow-north/sn-slush"}
+{"png": "sn-boards.png", "kind": "terrain", "name": "판자 길(동서)", "label": "snow-north/sn-boards"}
+{"png": "sn-boards-v.png", "kind": "terrain", "name": "판자 길(남북)", "label": "snow-north/sn-boards-v"}
+{"png": "sn-flagstone.png", "kind": "terrain", "name": "눈 낀 판석", "label": "snow-north/sn-flagstone"}
+{"png": "sn-hearthstone.png", "kind": "terrain", "name": "불 쬐는 돌바닥(그을림)", "label": "snow-north/sn-hearthstone"}
+{"png": "sn-water.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울)", "label": "snow-north/sn-water"}
+{"png": "sn-water-f1.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울) (프레임 2)", "label": "snow-north/sn-water-f1"}
+{"png": "sn-water-f2.png", "kind": "terrain", "name": "열린 물(얼음 구멍·여울) (프레임 3)", "label": "snow-north/sn-water-f2"}
+{"png": "sn-at-pack.png", "kind": "terrain", "name": "autotile pack (다진 눈 inside snow-bank border)", "label": "snow-north/sn-at-pack"}
+{"png": "sn-at-ice.png", "kind": "terrain", "name": "autotile ice (얼음 inside snow-bank border)", "label": "snow-north/sn-at-ice"}
+{"png": "sn-at-tundra.png", "kind": "terrain", "name": "autotile tundra (툰드라 inside snow-bank border)", "label": "snow-north/sn-at-tundra"}
+{"png": "sn-at-frost.png", "kind": "terrain", "name": "autotile frost (서리 풀 inside snow-bank border)", "label": "snow-north/sn-at-frost"}
+{"png": "sn-at-slush.png", "kind": "terrain", "name": "autotile slush (진창 inside snow-bank border)", "label": "snow-north/sn-at-slush"}
+{"png": "sn-at-water.png", "kind": "terrain", "name": "autotile water (열린 물 inside snow-bank border)", "label": "snow-north/sn-at-water"}

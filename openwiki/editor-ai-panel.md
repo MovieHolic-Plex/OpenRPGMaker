@@ -71,6 +71,65 @@
   모델 호출·SQLite 저장 검수가 아니다. 이 세션에서 gates·vitest·전체 typecheck 는 돌리지 않았다(`test/aiTeamObservation.test.ts` 문자열만 맞춤).
 - 아직 안 한 것: 질문(ask) 카드를 받은함으로 옮기기, 팀 레일·크게 보기·스튜디오 보드 정리, 「작업 표시」 4단계 설정 제거, 카메라 따라가기 토글.
 
+## B안 1단계 — 진행·확인·실패는 대화 속 카드 하나 (2026-10-15)
+
+설계서: 「AI 조수 UI 복잡도 적대적 QA 1차」(추천 B 중 1단계). 같은 일을 8곳이 알리던 것을 줄였다. 측정은 같은 모의 서버 harness 로 전/후 같은 시나리오·크기에서 했다
+(모델 호출 없음, 상태 재현). 계약은 바뀌지 않았다 — 맵당 조수 한 명·대기열·체크포인트·묶음별 확정은 손대지 않았고 표시 층만 접었다.
+
+- **「대화 카드가 맡는가」 판정 = `aiPresence.conversationCardCovers(presences)`**: 오른쪽 도크가 열려 있고(`body.ai-dock-collapsed` 없음, `body.ai-studio-open` 없음) 일이 **정확히 하나**이고 `source: "chat"` 이면 true(2단계 보정, 아래 「B안 1단계 보정」 참고: 처음엔 「전부 chat」이었다).
+  `aiChatPanel.applyCollapsed` 가 body 클래스 `ai-dock-collapsed` 를 알림(`oprn:ai-panel-collapse`) 직전에 맞춘다. 영역 작업·다른 맵 작업이 섞이거나 도크가 접히면 false → 아래 표면이 그대로 나온다.
+  - 지도 아래 상태 줄(`aiStatusBar`): true 면 접힘. 접힌 도크의 유일한 창구는 그대로다.
+  - 받은함(`aiInbox`): 대화창 앞 턴(`chat`)의 검토·실패 카드는 더 만들지 않는다(대화 안 변경안 카드·오류 카드가 같은 버튼·원인을 갖는다). 다른 맵·영역 작업만 받은함에 남는다.
+  - 지도 이름표(`aiMapPresence`): 실패는 이름표를 달지 않는다(covered 일 때). 검토·초안 상자와 이름표 글자는 **도크 상태와 무관하게 늘 보인다** — 영역을 모르는 구석 이름표만 `data-covered="1"` 일 때 접는다.
+- **접힘(지우지 않음)**: 좌하단 `ai-canvas-progress`·어두운 `ai-canvas-activity`·`ai-ghost-phase-chip` 은 「작업 표시」가 「자세히/매우 자세히」일 때만 보인다
+  (`html[data-ai-activity-level]` 를 `aiActivityPreference` 가 발행, CSS `34-ai-presence.css`). 헤더 상태 칩은 작업 중일 때 눈에서만 걷는다(`aria` 용 텍스트는 남음). 진행 카드의 「중지」 버튼이 작업 중에도 보인다.
+- **문구**: 적용 방식 라벨 `YOLO/AUTO MODE/DEFAULT` → 「바로 반영 · 확인 없이/자동 검수/큰 삭제만 확인」(id 는 그대로), 「AI가 할 일/자율성」 → 「일하는 방식」,
+  `Ultrabrain · 계획`·`Ultrabrain` 역할 이름 → 「계획」·「전체 검수」, 적용 거절 화면 문장은 `friendlyApplyFailure`(사유 코드·도구 이름 없음, 원문은 실행 기록 `finishLog.error` 에만).
+- **간단히 보기**: 같은 문장이 연달아 나오면 한 줄, 원인 줄(error)이 있으면 같은 실패의 「실패」 종료 줄을 뺀다. 「이 작업 되돌리기」를 누르면 카드가 「되돌렸어요」로 바뀐다. 패널을 열면 포커스가 입력창으로 간다.
+- 이 단계에서 하지 않은 것(2단계 이후): 전/후 썸네일이 든 결과 카드, 접힌 도크에서 적용 버튼(레일 배지에서 같은 카드 열기), 로그 입구 이름 통합, 팀·스튜디오·작업함 고급화.
+- 증거: `.playwright-mcp/cap.mjs`(gitignore) 기반 전/후 계량표는 PR 본문 · `~/claude-viz/ai-ui-b1-1.html`.
+
+## B안 1단계 보정 — 드래그·팀·접힘에서 사라지던 입구 (2026-10-16)
+
+사용자 반박(「세션 1개처럼 보인다 · 팀이 주력 · 드래그가 제일 중요」)을 같은 harness 로 적대 검증해 1단계가 만든 회귀를 고쳤다.
+**드래그 AI 는 Pi 채팅 턴**(`aiRegionHandoff` → `handleRegionHandoff`)이라 `source: "chat"` 이다 — 「전부 chat」 판정이 드래그 일·팀 레인까지 「대화 카드가 맡는다」고 읽었다.
+
+- `conversationCardCovers` = 일이 **하나**일 때만 true. 레인이 둘 이상(팀·검수 조수)이거나 영역·다른 맵 일이 섞이면 줄·받은함·이름표가 그대로 나온다.
+  팀 4명이 대화 카드에서는 시간순 한 줄(「시공 3」)로만 보였고 실패한 레인이 안 읽혔다.
+- 검토·초안 상자·이름표는 도크 상태와 무관하게 늘 보인다(`34-ai-presence.css` 의 body 클래스 규칙 삭제 → `.ai-map-region[data-covered="1"].is-cornered` 만 접음). 드래그한 영역의 「확인 입구」다.
+- 접힌 도크 + 일 하나라도 상태 줄은 이미 나온다(1단계부터). 여기에 **상태 줄 팝오버에서 「적용·변경 보기·버리기」**(검토 대기, 대화 카드·받은함과 같은 `currentTeamReviewActions` 클로저)와 background 검토의 「검토하기」를 달았다 — 접은 채로 적용하러 도크를 열 필요가 없다.
+- **개수·급한 상태**: `aiPresence.summarizeJobs(presences, extraRunning)`·`urgencyRank`. 상태 줄 맨 앞 「작업 N개 · 확인 필요 K · 실패 F」(일이 둘 이상일 때), 칩은 급한 순(확인 > 실패 > 진행 > 대기 > 초안), 폭이 좁으면 칩 수를 줄여 「+N」(`chipBudget`, 칩이 잘려 읽히지 않게). 줄 색은 확인(앰버) > 실패(빨강).
+  접힌 레일(`ai-collapsed-restore`)에 같은 요약 배지(`ai-collapsed-restore-jobs`: 둘 이상이면 개수, 확인·실패가 있으면 그 수, 색은 앰버/빨강).
+- **바로 깔기 주문(`stampOrderQueue`)은 aiPresence 와 별개 파이프라인**이다 — 상태 줄이 그 개수(「바로 깔기 N개 진행 · M개 대기」)를 함께 센다(요약 총수·「멈춤」 포함). 주문 위치는 지도 위 번호 상자(`stampOrderRenderer`)가 그대로 말한다.
+- 증거: 드래그 전 흐름 harness `cap2.mjs`(드래그 → 칩 → 작업 → 초안 → 적용, 도크 열림/접힘/스튜디오 × 1440×900·1100×700), 팀 4명 `cap3.mjs team4`, 대화 1+영역 1+대기 1 `cap3.mjs multi` — gitignore `.playwright-mcp/`. 보고 `~/claude-viz/ai-ui-b1-2.html`.
+
+## 작업 목록 (안 A) — 다섯 줄기를 한 목록으로, 렉 없이 (2026-10-16)
+
+B안 2단계. 드래그·팀·바로 깔기·이벤트·대화가 제각기 있던 입구를 **「작업 목록」 하나**로 모았다. 행 = 번호 · 종류 · 한 줄 요약 · 맵 좌표 · 상태(글자) · 그 자리 버튼(확인·열기·멈춤).
+
+- **입구 셋, 목록 하나**: 지도 아래 상태 줄의 「작업 N개」(`aiStatusBar`), 접힌 레일의 개수 배지, 열린 도크 위쪽의 「작업 N」 버튼. 레일·도크 입구는 `aiJobEntry.createJobEntry("rail"|"dock")`. 예전 `ai-collapsed-restore-jobs` 배지와 상태 줄 팝오버의 그룹 행(`ai-status-row*`)은 삭제 — 같은 목록으로 통합.
+- **파일**: 모델 `panels/aiJobList.ts`(줄기 → `JobRow`), 화면 `panels/aiJobListView.ts`, 그 자리 동작 `panels/aiJobActions.ts`(`locateRow`·`stopRow`·`reviewButtons`), 번호 `editor/aiJobNumbers.ts`.
+- **번호 = 지도 상자 번호**: `aiJobNumbers.jobNumber(key)` 하나가 열쇠(`p:<presence id>` · `stamp:<주문 id>` · `event:<작업 id>`)마다 번호를 준다. 지도 위 영역 상자(`aiMapPresence` 의 `#N` 알약)·이벤트 핀·바로 깔기 주문 사각형·목록 행이 같은 번호·같은 색(`jobTone` = 번호에서 나옴, 4색 순환)을 쓴다. 살아 있는 열쇠가 하나도 없을 때만 1 부터 다시 센다.
+- **드래그 일 표시**: 드래그 AI 는 Pi 채팅 턴이라 `source: "chat"` 이다. `aiChatPanel.handleRegionHandoff` 가 `send()` 전에 `markDragOrigin` 으로 표시하고 `aiPresence` 가 `Presence.drag` 로 싣는다 → 행 종류 「드래그」.
+- **이벤트는 보이기만**: 이벤트 AI 작업함(`eventAiQueue`)은 행으로만 나온다(「열기」는 `openEventAiJob`). 우클릭 J/K 일괄 배치·별도 이벤트 패널·「적용 뒤 선택 유지」는 그대로.
+
+### 렉 방지 계약 (깨지 말 것)
+
+1. **프레임당 한 번**: `util/frameBatch.createFrameBatch`(rAF + 120ms 타이머 폴백, rAF 없는 환경은 동기). 줄기 구독은 「바뀌었다」만 표시하고 계산·DOM 은 다음 프레임에 한 번.
+2. **닫히면 비용 0**: 상태 줄·레일은 **요약**(`computeJobSummary`)만 읽는다. **행**(`buildJobRows`)은 목록이 열려 있을 때만 만들고 구독도 그때만(`subscribeJobRows`). 닫으면 행 DOM 을 버린다.
+3. **키 단위 diff**: 행 시그니처(`JobRow.sig`)가 같으면 직전 객체를 재사용 → 보는 쪽이 `===` 로 바뀐 행만 `textContent`/`dataset` 비교로 고친다. 순서가 바뀔 때만 `insertBefore`. 열 때 위치 한 번만 읽고 이후 강제 레이아웃 없음.
+4. **`aiPresence.publish` 중복 제거**(`samePresence`): 같은 내용이면 구독자를 부르지 않는다. 기존 병목은 이벤트마다 상태 줄이 `chipBudget()`(강제 레이아웃)을 렌더 중에 읽던 것 + 구독자 전부 재렌더였다.
+5. **제스처 양보**: `editor/mapGestureState` — 드래그·패닝 중에는 지도 핀·영역 상자·바로 깔기 사각형 갱신을 미룬다(`yieldWhileGesture`, 최대 1초). `EditScene.syncMapGestureFlag()` 가 `update()` 와 포인터 끝에서 플래그를 맞춘다. Phaser 쪽은 바뀐 영역만 다시 그린다(`stampOrderRenderer` 키 단위).
+6. 팀 사이드바·받은함·워크스페이스(`aiTeamSidebar`·`aiInbox`·`aiWorkspace`)는 아직 팀 이벤트마다 재렌더한다(미해결, 아래 측정 참고).
+
+### 접근성
+목록 `role="list"` · 행 `listitem`, 본 버튼은 ↑↓ Home End 로 이동(로빙 tabindex), Esc 로 닫고 입구 버튼에 초점을 돌려준다. 상태는 색이 아니라 글자(「일하는 중」「내 차례」…)와 `aria-label`. 지워지는 행에 초점이 있으면 이웃 행으로 옮긴다. 새 문구는 ko/en/ja/zh 카탈로그에 등록.
+
+### 측정 harness
+`scripts/qa/ai-job-list/`(`lib.mjs`·`mock.mjs`·`bench-stress.mjs`). 모델 호출 없이 합성 이벤트를 **실제 보드 리듀서(`reduceTeamBoard`) → `publishTeamActivity`/`reportBackgroundBoard`** 경로로 넣는다. 격리 netns 크로미움 필요(`playwright-err-network-changed` 메모). 지표: longtask 합·최대, 이벤트→DOM 지연(토큰을 화면 글에 박고 MutationObserver), 프레임 p95, 드래그 pointermove→rAF(근사), DOM 수. 사용법은 파일 머리 주석. 한계: 합성 이벤트(실 스트림 아님), 드래그 지표는 근사, 하나의 머신 부하(load 20~35)에서 전/후 시각이 다르다.
+
+CSS: 새 클래스는 `ai-status-jobs*` · `ai-status-job*` · `ai-status-no`(DB 면이 `ai-status-` 접두를 허용). 지도 위 `ai-map-*`·`event-ai-*` 는 기존 R2 부채 그대로.
+
 ## 지도에 집중하는 AI 작업 창과 로그 추출 (2026-10-05)
 
 일반 편집기는 오른쪽 복원 레일 44px만 예약한다. AI 창은 지도 위에 380px(좁은 화면은
@@ -1128,7 +1187,7 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 나눠 말하면 알아듣지 못했다).
 
 - `src/editor/stampPlaceRunner.ts` `runStampPlace({text, mapId, selection, signal, onPhase})` — 가벼운 모델(`configForLiteModel`, 추론 끔, JSON) 한 번으로
-  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`author_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
+  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`place_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
   부분 사각형으로 쪼개고, 재료는 **현재 타일셋의 실제 라벨**(`fillableMaterialSuggestions`·`formatMaterialLabelHint`·벽/문 후보) 중에서 고른다. 원은 정사각 상자.
 - 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
   실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
@@ -1163,6 +1222,39 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   타일셋을 참조 공유(copy-on-write)하면 줄지만 드래프트에서 타일셋을 직접 고치는 도구가 21파일이라 이번 변경에서 하지 않았다.
 - 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
   증거 `verify-shots/stamp-llm/`.
+
+### 물건은 이름으로 칩셋에서 찾는다 — 없으면 깔지 않는다 (2026-10-15 적대적 감사)
+
+사용자 신고: 「화분 깔아 줘」가 이벤트만 만들고 그림이 없었다. 코퍼스(4칩셋×50문장=200회)로 재현하니 **물건 요청의 39%가 엉뚱한 그림**(화분→자갈·물고기·풀 얼룩),
+**18%가 「깔았습니다」인데 보이는 것이 없었고**, 12.5%는 이벤트만(투명 「빈 바닥 위」 조사 지점·사람 그림 NPC)이었다.
+
+원인 순위(실측): ① 계획기에 **물건을 이름으로 찾아 찍는 도구가 없었다**(모델이 `place_props` 에 라벨을 짐작해 넣거나 조사 지점·NPC 로 흉내) ②
+조사 지점·NPC 가 그림 없이 들어갔다 ③ `place_props` density 를 비수목에 보내 첫 호출이 실패하고 수리 호출이 엉뚱한 대체를 냈다 ④ 결과 줄이 도구 요약만 이어 붙였다 ⑤ 복구 라운드의 성공이 첫 시도 실패를 지웠다.
+
+원칙: **그림이 없으면 이벤트도 지형도 깔지 않는다. 가까운 실제 이름을 보여 주고 거절한다. 조용한 대체·거짓 성공 금지. 결과 줄은 실제 변경 수를 말한다.**
+모델은 의도(이름·개수·위치 낱말)를 정하고, 코드가 이름 검색·칸 선택·정직한 보고를 한다.
+
+- `src/ai/stampObjects.ts`(순수) — `buildStampObjectIndex(tileset)`: 공방/팩 킷(`pack`)·DB 저작 킷(`authored`)·손 도트 실내 킷(`hand`)·소품 그룹(`group`, 한 칸이거나 patternGrammar 있는 것만)을 **물건 사전**으로 만든다.
+  벽·문·창·걸이·간판 부착물(`WALL_BOUND_NAME`·`WALL_TAGS`)은 바닥 물건이 아니라 뺀다. `resolveStampObject(index, names)` 이름 일치 → 낱말 시작 일치 → 한글만 포함 일치 → 자모 편집거리 1(오타, **사용자 말에만**).
+  `acceptedObjectNames` 는 모델의 대체 이름을 **같은 동의어 묶음**(`SYNONYM_GROUPS`)만 받는다(왕좌≠의자, 대포≠화로). 영어 동의어는 낱말 앞부분만(door↛trapdoor). `nearestStampObjects` 가 거절 시 가까운 이름 5개.
+- `stampPlanner.ts` — 공개 도구 `place_object {name, alternatives?, at|area, count?}`, 내부 `stamp_tileset_object`(모델이 못 부름). `validateStampStep` 은 이름을 못 찾으면 `{refused}`, 사람 낱말 없는 NPC·그림 없는 조사 지점·벽 아닌 칸의 문은 버린다.
+  비수목에 보낸 `density` 는 칸 수로 바꾼다(`facts.isTreeMaterial`). `expandStampObjects` 가 **적용 직전의 맵**에서 `facts.isOpenCell`(통행 가능·위층 비어 있음·이벤트·시작칸·길·물·벽 아님)로 칸을 골라 도구 호출로 펼친다. 자리가 없으면 사유(빈 칸 수)를 말한다.
+- `stampPlaceRunner.ts` — 거절은 수리 라운드로 돌리지 않는다(되물으면 사람·조사 지점 대체가 나왔다). 수리 라운드는 `repairRound` 사실로 **요청하지 않은 물건으로 바꾸지 않는다**.
+  결과 끝에 `stampEffect.ts` 가 적용 전후 맵을 비교해 「실제로 바뀐 것: 타일 N칸 · 새 이벤트 M개(그림 a · 투명 b)」를 적는다. 그림 도구가 「성공」인데 아무것도 안 바뀌면 `ok=false` + 「깔리지 않은 것으로 봅니다」.
+  `StampRunResult.refused` 는 큐 주문의 `refused` 로 가서 채팅 헤드가 「실패」가 아니라 **「깔지 않음(칩셋에 그림 없음)」**/「일부 적용 · 그림 없는 물건 N개는 깔지 않음」이 된다.
+- 번개 버튼(`selection-chip-stamp`)·드래그 영역 handoff(`stamp:true`)·입력줄은 모두 `stampPlaceNow` → 같은 러너라 같은 규칙을 탄다. 일반 조수의 `place_npc`·조사 지점·`stamp_tileset_object` 도구 계약은 건드리지 않았다(가드는 바로 깔기 계획기에만).
+- **집 짓기 (`place_house`, 2026-10-17)**: 집·주택·민가·오두막 요청은 계획 단계 `place_house {area|at, size?, count?, stories?}` 로 받고, `expandStampHouses` 가 `place_terrain_house`(조립식 스타일 `quickHouseStyles`, 없으면 `quickHouseCatalog`) 또는 `jp_city` 맵(`quickHouseStyles` 가 비었을 때 `build_jp_city_building`)으로 펼친다.
+  먼저 있는 그대로 `planQuickHouse` 가 통과하는 깨끗한 땅을 찾고, 없으면 물·절벽·잠금·이벤트·기존 보호된 집(`protectedHouseCells`)과 겹치지 않으면서 지울 수 있는 위층 장식·나무·풀 때문에만 막힌 자리를 골라 발자국+문 앞 사각형에 `tile_erase` 를 먼저 넣고 복제된 미리보기 맵에서 검증한다. 집 외관이 없는 타일셋이나 영역 부족 사유는 ` 깔 단계가 없습니다` 로 덮어쓰지 않고 그대로 돌려준다.
+
+**측정법(회귀 가드):** `scripts/qa/stamp-place-corpus.mts` — 실제 계획기·검증기·러너·도구를 헤드리스로 돌리고 `scripts/qa/stamp-place-corpus.json`(50문장: 물건·오타·수량·위치·모호·비물건·없는 물건)을 칩셋별로 돌린다.
+`--mode script` 는 기록된 대본(`stamp-place-corpus.script.json`)을 재생(모델 없음), `--mode agy --record` 는 Argon medium(agy 대용)으로 새로 받아 기록. 판정: 그림 맞음/엉뚱한 물건/이벤트만/정직한 거절(그림 없음·자리 없음)/도구 실패/결과 줄 거짓.
+채점 `python3 scripts/qa/stamp-place-corpus-report.py <결과폴더...>`. 실제 에디터 재현 `scripts/qa/stamp-place-ui.mjs`(dev:worktree + Playwright, blankProject 라 정본 저장 증거 아님).
+기준선(origin/main fed4d8d0b9, 4칩셋 200회, 같은 채점): 그림 맞음 20.5%·엉뚱한 물건 39%·결과 줄 거짓 18%·이벤트만 12.5%.
+수정 후(같은 문장·칩셋, 2026-10-15 `final2`): 그림 맞음 54%·엉뚱한 물건 0.5%·결과 줄 거짓 0%·이벤트만 0%, 나머지는 정직한 거절(그림 없음 11%·자리 없음 9.5%)·도구 실패 사유 표시 3%·모호한 말 12%. 추가 3칩셋(마당 선택 일본 주택가·몬스터 키트·초원 마을 150회): 그림 26%·정직한 거절 43%·엉뚱 1.3%·거짓 줄 0.
+판정이 바뀌면 이 숫자도 같이 고친다(정본 표: `~/claude-viz/stamp-place-review-1.html` 을 `scripts/qa/stamp-place-review-html.py` 로 재생성).
+**남은 약점:** 일본 주택가 「울타리」가 도로 위에 얹힘(재료 선택), 문 달기는 벽이 없으면 거절(벽 지을지는 사용자 몫), 채점은 휴리스틱이라 눈 확인 필요.
+**한계:** 대본 재생은 프롬프트가 바뀌면 키가 어긋나 새로 기록해야 한다. 칩셋에 그림이 아예 없는 물건(몬스터 키트의 화분·농장의 연못)은 **깔지 않는 것이 정답**이다 — 그림을 새로 만들어 채우지 않는다.
+vitest(`test/stampPlaceRunner.test.ts`·`test/stampObjects.test.ts`)는 이 변경에서 **실행하지 않았다**(워크트리 규칙).
 
 ### 연속 주문 대기열 (2026-09-28)
 
@@ -1246,10 +1338,16 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
+**조수 기본 = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14).** 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
+전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 둔다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이고 제공자 목록도 Google 이 맨 앞이다.
+설정 모달 「역할별 모델 직접 지정」에서 모델(Argon 은 카탈로그 첫 항목)과 추론 강도를 슬롯마다 바꿀 수 있다. **이미 저장된 설정은 그대로 읽는다** — 옛 공장 기본(3.7/3.8-flash)만 Argon 으로 소급되고,
+사용자가 고른 ChatGPT(gpt-6.1-sol)와 직접 지정한 슬롯은 건드리지 않는다. ChatGPT 로 바꾸면 시공·작문은 여전히 Argon medium 이다. 실조수 시험(스크립트 `scripts/qa/*live*`·`assistant-*`)도 이 기본을 쓴다.
+옛 근거(2026-10-07 12과제: gpt-6.1-sol 11/12, gemini-3.8-flash 7/12)는 이력이다.
+
 **Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
 장르 프리셋 기획(게임 전체 짓기)이거나 첫 노출 도구 중 tile·world 영역 또는 map 쓰기 도구가 있으면 `build`, 아니면 `deep` 을 고르고
 `runPiCommand` 가 그 역할 모델로 실행한다(`roleModels.build` 가 없으면 `deep` 과 같다 — 옛 설정은 동작이 그대로다).
-ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-3.8-flash` 로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
+ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-4-argon` 으로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
 설정 모달 「역할별 모델 직접 지정」에 「시공」 행이 있고, 시공 행이 실행 행과 같으면 저장하지 않는다(비우면 실행 모델을 따른다).
 근거: 장르 시험에서 같은 기획 전체 짓기가 Gemini 10분·자동 플레이 끝까지 통과, GPT 50분·보스 스위치에서 막힘. 작은 수정은 GPT 12/12·Gemini 11/12.
 판정은 Pi 워커의 `spatialWork`(지시문의 공간 줄을 싣는 판정)와 같지만, 도구 목록이 없을 때 지시문은 싣고 모델은 바꾸지 않는다. 스튜디오 레인(`aiLaneManager`)은 아직 deep 이다.
@@ -1325,14 +1423,14 @@ A/B(맵 id 해시로 자리 고정 섞기)로 보여 주고 `{"winner":"A"|"B"|"
 카드를 유지한다. 회귀: `test/ultrabrainReview.test.ts`(재시도·정확한 사유·재시도 안 하는 취소).
 
 AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
-`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
+`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-4-argon` / `high` (migrated from `gemini-3.8-flash` on 2026-10-14).
 Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
 live in `oprn:ai-config`, not the project database. No new credential store is used.
 
 The old 2026-09-10 claim that catalog absence proves Gemini 3.8 is unavailable is obsolete.
-OMP 17.4's bundled catalog is still missing it, but direct OAuth wire `gemini-3.8-flash-high`
-with `thinkingLevel: HIGH` returned OK on 2026-09-14. `scripts/lib/ohMyPiModel.ts` provides a
-narrow compatibility entry using 3.7's transport metadata until upstream includes 3.8.
+OMP 17.4's bundled catalog is still missing Gemini 3.8 Flash and Gemini 4 Argon, but direct OAuth wire `gemini-4-argon-{low,medium,high}` (2026-10-14) and `gemini-3.8-flash-high` (2026-09-14)
+with `thinkingLevel` returned OK. `scripts/lib/ohMyPiModel.ts` provides
+compatibility entries using 3.7's transport metadata until upstream includes them.
 Both Pi and completion use this exact resolver. Unknown explicit IDs now fail instead of
 silently changing models; `loadAiConfig` also preserves explicit IDs. Completion uses
 `completeSimple` and maps the envelope's reasoning effort and output limit into SDK options,
@@ -4249,3 +4347,203 @@ Pi 최종 적용은 `store.flush()`의 결과까지 기다린다. `saved` 응답
 ## 응답 오류와 이미 반영된 변경의 분리 (2026-10-05)
 
 Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최종 실행 축은 failed이며 활동 로그에 원본 오류가 남는다. 변경이 반영됐으면 전달 축은 applied와 실제 저장 관찰을 유지하고, 실패 보드·응답 오류 상태·되돌리기 안내를 표시한다. 변경이 없으면 no-change와 응답 실패를 함께 표시한다. 제공자 콘텐츠 차단은 친절한 오류 문구를 제공하지만 자동 재시도하거나 실패 자체를 숨기지 않는다. 독립 SQLite에서 오류 스트림을 주입하는 하네스 controls는 실모델 성공률에 넣지 않는다.
+
+
+## 조수 통째 교체 직후 쓰기가 「작업 중 프로젝트가 바뀌었습니다」로 거절되던 원인 (2026-10-14)
+
+증상: `build_monster_game(create)` 처럼 프로젝트를 통째로 교체한 뒤의 쓰기(`patch_event_page`·`set_title_screen`·`generate_title_art`…)가
+`commit-rejected: 작업 중 프로젝트가 바뀌었습니다`(`assistantHumanEdits.ts` `valid=false`)로 거절 — 감사 4/4 런.
+가설(`store.replaceProject` 가 lineage 를 올린다)은 **틀렸다**: 조수 체크포인트는 `store.replace` 로 들어가고 lineage 는 그대로(1)였다.
+
+실측 원인(런 중 `valid` 가 꺼지는 순간의 스택·`refreshFromHost` 상태를 잡음): 호스트 폴링(`teamSession.ts` 3초)이 `refreshFromHost` 를 불러
+`emit({scope:'project', origin:'system', projectSwitch:true})` 를 냈다. 이유 — 저장 뒤에 호스트(`electron/main/dispatch.ts`
+`separateMediaAfterSave`)가 새 프로젝트의 처음 몇 번의 저장마다 base64 업로드 자산을 파일로 떼면서 **저장 응답에 없는 다음 리비전**을
+썼다(저장 4 → 분리 5, 같은 내용). 클라이언트의 `isOwnSavedHostRevision(5)` 가 거짓이라 호스트 문서를 다시 받아 `persistedBaseline` 과
+비교했고, 저장 문서가 접힌 형태(타일셋 참고문서 번들 소유·제목 기본값)라 `jsonEqual` 이 «다름» → 통째 교체로 방송.
+`AssistantHumanEdits` 는 `projectSwitch` 를 사람 편집과 구분하지 못하므로 `valid=false`.
+조수가 큰 일(자산 수백 개를 싣는 첫 저장들)을 한 직후에만 나타나 «통째 교체 직후»로 보였다. 사람 편집기에서도 같은 방송이 undo 이력을 지웠다.
+
+수정(`dispatch.ts`): 저장 응답이 미디어 분리 **뒤** 리비전·sha 를 싣는다(분리는 저장의 일부). 클라이언트는 그 리비전을 자기 것으로
+인식하고 refresh 를 건너뛴다 — 다음 저장의 `expectedSha` 도 호스트 행과 맞는다. `AssistantHumanEdits` 의 사람 편집 보호는
+그대로다(진짜 팀 변경·프로젝트 전환은 여전히 `valid=false`). 디버깅 힌트: `valid` 가 꺼진 순간 `change.projectSwitch`·`origin`·호출 스택을
+`globalThis` 에 남겨 두면 어느 방송인지 바로 보인다(이번 진단법).
+
+## 사용자 지정(OpenAI 호환) 연결 (2026-10-14)
+
+내부 AI 가 OpenAI 호환 Chat Completions 서버(CLIProxyAPI·LiteLLM·Ollama·LM Studio·vLLM·OpenRouter·OpenAI)를 일급 제공자로 쓴다. 기본 연결(Google/ChatGPT)은 **바뀌지 않는다** — 사용자가 설정 → 연결 → 「사용자 지정 연결」에서 직접 골라야 쓴다. PR #2453(apiKey authKind·`/auth/key`)과는 별개 경로다: 거기는 정적 제공자에 키를 얹는 길이고, 여기는 사용자가 주소를 정하는 **동적 제공자 id `openai-compat:<slug>`** 이며 정적 레지스트리(`OH_MY_PI_PROVIDERS`)는 건드리지 않는다. 겹치는 파일은 `aiAuthRuntime.ts`·`ohMyPiHttp.mjs`·`aiAuthSettings.ts` 뿐이므로 두 PR 을 합칠 때 그 셋만 본다.
+
+### 구성
+
+| 층 | 파일 | 하는 일 |
+|---|---|---|
+| 순수 규칙 | `src/ai/openAiCompat.ts` | URL 검증(`checkOpenAiCompatBaseUrl`), 허용/차단 패턴 판정(`openAiCompatModelVerdict` — **모든 층이 같은 함수**), 프리셋, 오류 문장화, 알려진 엔드포인트 레지스트리 |
+| 저장 | `scripts/lib/openAiCompatStore.ts` | `~/.oprn/openai-compat-endpoints.json`(`OPRN_OPENAI_COMPAT_PATH`), 디렉터리 0700·파일 0600, 임시 파일+rename 원자 쓰기 |
+| 동반 서비스 | `scripts/lib/openAiCompatRuntime.ts` | 목록·저장·삭제·「연결 시험」, 요청 자격 해석, 호스트 사전 검사(`assertOpenAiCompatModelsAllowed`) |
+| 워커 | `scripts/lib/openAiCompatModel.ts` | `buildModel({api:"openai-completions"})` 로 pi-ai 기존 전송 재사용, 추론 강도 모양 잡기, 안전 fetch |
+| 화면 | `src/editor/panels/aiCompatSettings.ts` | 엔드포인트 카드·폼·역할별 모델 지정 |
+
+전송을 새로 짜지 않았다. oh-my-pi 의 `openai-completions` 전송이 이미 SSE·스트리밍 도구 호출·이미지 content part·`reasoning_effort` 를 처리한다. Responses API 변형은 oh-my-pi 가 이 경로에서 쓰지 않아 넣지 않았다.
+
+### 비밀 처리
+
+- API 키·헤더 **값**은 동반 서비스 파일에만 있다. 브라우저에는 공개 보기(`hasKey`, `headerNames`)만 가고, 입력칸은 password 형이며 카드에는 마스크(`••••••••`)만 보인다. localStorage(`oprn:ai-config`)의 `apiKey` 는 비어 있다(실측 길이 0). 내보내기·로그·모의 서버 로그에도 키 값은 없다(오류 문자열은 키를 `***` 로 가린다).
+- 키 없는 서버(Ollama·LM Studio)는 빈 키로 저장되고, 요청에는 자리표시 키 `oprn-no-key` 가 간다(pi-ai 가 `$OPENAI_API_KEY` 로 새지 않게).
+- 공유 호스트에서는 기존 `OPRN_HOST_OWNER_AI` 게이트가 이 경로에도 적용된다.
+
+### 주소 안전
+
+- http 는 localhost·사설망(LAN)·Tailscale 이름이면 그대로 되고, **공개 호스트에 http** 면 저장이 거절된다 — 폼의 「그래도 사용」 확인이 있어야 한다.
+- 클라우드 메타데이터(169.254.169.254 등)·링크로컬은 항상 거절. 이름이 그쪽으로 풀리는지도 요청 직전 한 번 더 본다(DNS 재바인딩은 **완전히 막지 못한다** — 검사와 연결 사이 TOCTOU 한계가 있다).
+- 리다이렉트는 따라가지 않는다(`redirect:"manual"`, 3xx 는 오류) — 검증한 주소 밖으로 자격이 새지 않게.
+- 워커에는 호스트 저장소 값만 온다. 브라우저가 보낸 주소는 워커에 닿지 않는다.
+
+### 모델 허용/차단 패턴 (비싼 모델 실수 호출 방지)
+
+엔드포인트마다 허용 패턴(`allowModels`)과 차단 패턴(`blockModels`)을 둔다. `*`·`?` 와일드카드, 대소문자 무시, **차단이 허용을 이긴다**, 허용이 비어 있으면 차단만 아니면 전부 허용. 같은 판정이 아래 여섯 곳에서 쓰인다 — 폴백 없이 거절한다.
+
+1. 목록 숨김(연결 시험 응답과 카드·선택 상자) — 막힌 모델은 사용자에게 아예 보이지 않고 「N개 숨김」만 알린다.
+2. 폼의 직접 입력 — 이유를 바로 보여 주고 시험·저장을 막는다.
+3. 역할별 지정(계획·실행·시각·작문·시공) — 「적용하지 않았어요」 + 이유.
+4. 호스트 사전 검사 — 모델 호출 전 403.
+5. 워커 모델 구성(`resolveOpenAiCompatModel`) — 403.
+6. 호출 직전 모양 잡기(`shapeOpenAiCompatCall`) — 접미사가 붙은 최종 ID 도 같은 패턴을 지켜야 한다. `completeProvider`(작문 등)와 `piAgentRuntime`(조수) 둘 다 이 함수를 지난다.
+
+프리셋 「CLIProxyAPI · mdc-server (Argon 만)」은 `http://mdc-server:8318/v1`, 허용 `gemini-4-argon*`, 차단 `claude-*` 를 채운다(프리셋은 출발값일 뿐 바꿀 수 있다). **이미지 입력도 켠다**(2026-10-16): 꺼 두면 `read_tileset_reference` 의 참고 그림이 모델에 가지 않아 선행 읽기 게이트가 영영 안 풀리고 `paint_tiles`·`stamp_tileset_object` 가 계속 거절된다(실제 Argon 연애 시험에서 도구 실패의 절반). 다른 서버도 모델이 그림을 받으면 「이미지 입력」을 켜야 한다. 다른 프리셋: CLIProxyAPI(로컬 8317)·LiteLLM(4000)·Ollama(11434)·LM Studio(1234)·vLLM(8000)·OpenRouter·OpenAI.
+
+### 추론 강도 세 방식 (엔드포인트별 `reasoningMode`)
+
+| 값 | 동작 | 언제 |
+|---|---|---|
+| `none`(기본) | 역할의 추론 강도를 보내지 않는다 | 모르는 인자를 400 으로 거절하는 서버, 강도가 이름에 박힌 모델 |
+| `field` | `reasoning_effort` 필드로 보낸다(역할 강도가 「끔」이면 생략) | OpenAI·LiteLLM·OpenRouter |
+| `suffix` | 모델 ID 뒤에 `-low/-medium/-high` 를 붙인다(이미 붙어 있으면 그대로) | `gemini-4-argon-high` 처럼 강도가 ID 에 있는 CLIProxyAPI 별칭 |
+
+서버가 어느 방식을 받는지는 `scripts/qa/openai-compat-live.mjs --items effort` 가 세 방식 모두 실측한다.
+
+### 연결 시험과 오류
+
+「연결 시험」은 동반 서비스가 `GET {base}/models` 를 부른다(30초, 모델을 골랐으면 짧은 채팅+도구 시험 130초). 401(인증 거절)·404(경로/모델 없음)·429·연결 거부·DNS·시간 초과·5xx·도구 미지원·이미지 미지원을 「무엇을 고치면 되는지」 문장으로 바꾸고 원문을 뒤에 붙인다. `/models` 가 없는 서버(404)도 모델 ID 를 직접 입력해 쓸 수 있다. 출력 상한(`maxOutputTokens`, 기본 16384)·컨텍스트 창·첫 응답 시간 제한은 카드의 「고급」에서 바꾼다.
+
+### 초기 설정 메모
+
+- **CLIProxyAPI**(mdc-server:8318 또는 로컬 8317): 프리셋을 고르고 서버 설정의 access 키를 넣는다. 허용 `gemini-4-argon*` 를 유지하면 `claude-*` 는 목록·호출 모두에서 막힌다. 강도를 쓰려면 추론 방식 「모델 ID 접미사」 또는 `gemini-4-argon-high` 를 직접 고른다.
+- **LiteLLM**: `http://127.0.0.1:4000/v1`, 마스터 키가 있으면 API 키에. `field` 방식이 보통 맞다.
+- **Ollama**: 키 없음, `http://127.0.0.1:11434/v1`. 도구 호출을 지원하는 모델이어야 조수가 돈다(미지원이면 연결 시험에서 「도구 호출 불가」).
+- **LM Studio**: 키 없음, `http://127.0.0.1:1234/v1`. **vLLM**: `--enable-auto-tool-choice` 로 띄워야 도구 호출이 된다.
+
+### 검증 (2026-10-14)
+
+- 모의 서버 `scripts/qa/openai-compat-mock-server.mjs`(401·404·429·도구 미지원·강도 인자 거절·`--models`) + 실제 설정 화면 Playwright: 카드·프리셋·401/404·모델 목록·마스킹된 키·역할 지정 거절·차단 모델 숨김·4개 언어. 실제 프로젝트 저장소 호스트(`scripts/oprn-serve.mjs`)에서 조수 한 턴(분류 호출 → 도구 25개 → `set_map_properties` 도구 호출 → 결과 왕복)으로 맵 이름을 바꾸고 `project.sqlite` 저장·새 브라우저 재로드로 확인.
+- 실서버 시험: `OPRN_LIVE_KEY=*** bun scripts/qa/openai-compat-live.mjs --base http://mdc-server:8318/v1 --models gemini-4-argon-high --items models,turn,effort,image --allow 'gemini-4-argon*' --block 'claude-*'` — 키는 환경변수로만 받고 출력은 마스킹되며, 패턴에 막힌 모델(claude-*)은 호출하지 않는다.
+- 안 돌린 것: vitest·게이트·typecheck(번들 확인은 esbuild·bun 으로 함). 이 PR 에 새 단위 테스트는 없다.
+
+## 조수·팀 모드 렉 (2026-10-15)
+
+증상: 조수 패널을 열거나 팀 모드로 들어가면 편집기에서 사실상 아무것도 못 한다. 가설 「Phaser 렌더가 범인」은 **측정으로 기각**됐다 — Phaser step 비용 p50 0.3ms, 렌더하는 프레임 비율 11~16%, 팀 스트림 중에도 렌더 비용 p95 6ms. 범인은 메인 스레드의 JS·스타일 재계산이다.
+
+### 측정법
+
+- 하네스: `scripts/qa/perf-ai-lag.mjs`(결과 `verify-shots/perf-ai-lag/<LABEL>.json`), 전/후 표는 `node scripts/qa/perf-ai-report.mjs <전> <후>`.
+- 실제 편집기(Phaser 포함)·실제 스토어·실제 입력창(`ai-input`→`ai-send`) 경로이고 **모델 서버만 대본 NDJSON** 이다. 같은 96×80 마을 위에서 idle → panel → stream(조수 1명, 생각·도구·map_delta·체크포인트) → team(팀장+시공 2+검수) 순으로 돌고, 각 시나리오 안에서 칠하기 드래그·가운데 버튼 팬·Ctrl+휠 줌 «입력 구간» 을 같이 잰다.
+- 지표: Phaser step 간격/비용, Long Task, Long Animation Frame 스크립트 귀속, 입력 큐 지연, 체크포인트 ACK ms, CDP 프로파일(`PROFILE=1`, self/inclusive/호출 경로).
+- 옵션: `SCENARIOS` `STREAM_SEC` `VILLAGE` `PROFILE=1` `NOINPUT=1`(스트림 비용만 분리) `ATTR=1`(rAF/타이머 등록자) `GBCR=1`(강제 레이아웃 호출자·DOM 변경 수) `TRACEGC=1`(V8 GC 일시정지).
+- 실행: 이 박스는 크로미움이 ERR_NETWORK_CHANGED 로 백지가 나므로 `unshare -rn bash -c 'ip link set lo up; npm run dev:worktree -- --port 99NN & …; QA_BASE_URL=… LABEL=… node scripts/qa/perf-ai-lag.mjs'`. dev 서버는 `npm run dev:worktree` 로만(vite 직접 호출 금지). 전/후 비교는 origin/main 을 별도 워크트리에 두고 같은 스크립트로 돌린다 — 결과 파일이 그 워크트리의 `verify-shots` 에 생기니 복사할 것.
+
+### 기준선(같은 머신·같은 대본, 전→후)
+
+| 지표 | 수정 전 | 수정 후 |
+|---|---|---|
+| team 프레임 gap p95 / 최대 | 209 / 4153 ms | 65 / 2345 ms |
+| team 100ms 넘는 프레임 | 65 | 20 |
+| team Long Task 합 | 27.9 s | 14.0 s |
+| team 칠하기 중 Long Task 합 | 11.4 s | 1.1 s |
+| stream gap p95 | 107 ms | 46 ms |
+| 체크포인트 ACK 중앙값 (stream / team) | 1039 / 957 ms | 534 / 547 ms |
+| idle 칠하기 Long Task 합 | 3.6 s | 0.15 s |
+
+### 고친 병목 (한 커밋씩)
+
+1. **체크포인트 저장 왕복 검사 직렬화** — `checkRoundtrip` 이 매 적용마다 프로젝트 전체를 문자열로 만들었다. 이미 검증된 타일셋 항목의 타일별 배열(tileMeta·passability·priority·terrain)을 같은 길이의 placeholder 로 바꿔 왕복 텍스트를 49.7→15.0 MB 로 줄였다(`sharedDictionaryJson.roundtripTilesetPiece`; 근거: `validateTileset` 만 이 네 필드를 읽는다는 Proxy 추적). dev-showcase 경로의 쓸모없는 저장 복제도 건너뛴다(`canSaveDevProjectOverride`).
+2. **스트림 이벤트마다 강제 레이아웃** — 존재 표시·상태바·대화 스크롤·작업 탭이 DOM 을 쓴 직후 `getBoundingClientRect` 를 불러 동기 레이아웃을 유발했다. rAF 한 번으로 합치고, 바뀐 것만 제자리에서 쓰고, 값이 같으면 쓰지 않는다(스타일 재계산 3062→1441). 연출(고스트·시공 막)은 그대로.
+3. **붓 한 번마다 라벨 점수 재탐색(약 140ms)** — `resolveForestCanopyReplacementExemptTileIds` 가 칠할 때마다 타일셋 전 라벨을 다시 훑었다. 스토어 타일셋 객체(제자리 수정 금지 계약)를 열쇠로 한 WeakMap 으로 기억한다.
+
+### 못 고친 것 · 불확실한 것
+
+- 팀 스트림에서 1.7~2.3 s 짜리 단발 정지가 남아 있다(setTimeout 콜백·`import.then`, GC, 릴리프 굽기 `ground` 전체 재굽기, `databaseModal.ts` rAF `run` 130~160 ms). 원인을 하나로 못 박지 못했다.
+- 체크포인트 한 번의 동기 구간이 아직 ~0.5 s 다. 남은 큰 몫은 `eventDraftVault.cloneKeepingDigests` + `shareContentDigests`(팀 11회 체크포인트에서 합 ~3.7 s). 이 복제는 detached draft(도구가 제자리에서 계속 고친다)와 스토어를 분리하는 격리라 생략할 수 없다 — 줄이려면 바뀐 맵만 복제하는 구조 공유가 필요하고 이번에는 위험이 커서 하지 않았다.
+- 이 하네스는 dev-showcase 경로다. 실제 Electron/호스트 저장 경로(`viewSubmit`, `saveMapPatch`)는 재지 않았다. 병목 1의 «저장 복제 건너뛰기» 는 하네스 환경 한정 효과다.
+- 하네스 한 번의 편차가 크다(팀 최대 정지 2~4 s 는 실행마다 다르다). 판정은 p95·Long Task 합·ACK 중앙값 같은 합계로 하고, 한 번의 최댓값으로 회귀를 선언하지 마라.
+
+## 이미지 용도 분리 — 배경·대형은 이미지 모델, 도트는 텍스트 모델 (2026-10-16, 미결 5건 결정 2026-10-16)
+
+사용자 요청: 「AI 설정에서 이미지 생성 모델을 용도별로 분리. 배경·대형 이미지(타이틀·오프닝·컷신 스틸 등)는 GPT 생성형 이미지, 도트를 찍어야 하는 것(타일셋·캐릭터셋 등)은 Argon 또는 Claude(코드 손 도트).」
+
+- **라우터 하나**: `src/ai/imageRoute.ts` 의 `IMAGE_PURPOSES` 표가 정본이다(`generative` / `dot-text` / `upload-only`).
+  `resolveImageRoute(purpose, config)` 는 순수 함수. 새 그림 경로는 이 표에 한 줄을 먼저 넣고 `generateAiImage({ purpose })` 로 넘긴다.
+- **막기**: `generateAiImage` 와 Bun 워커 `createWorkerImageGenerator`(`scripts/lib/piPresentationTools.ts`)는 purpose 가 `dot-text`·`upload-only` 면
+  네트워크 호출 전에 `ImageGenerationError` 로 거절한다. purpose 는 서버로 보내지 않는다. purpose 가 없는 호출은 종전 그대로(설정의 이미지 모델 칸).
+  모든 앱 안 호출처가 purpose 를 넘기는지는 `test/imageRoute.test.ts` 의 소스 스캔이 본다(**작성만 했고 이 작업에서는 실행하지 않았다**).
+- **도트 저작 모델**: `AiConfig.pixelModel`(`{provider, model, thinkingLevel}`) + `modelSelectionOverrides.pixel`. 이미지 모델이 아니라 **텍스트 모델**이
+  격자 문자열·좌표로 픽셀을 쓴다(`src/ai/pixelModel.ts`). 지금 이 칸을 읽는 곳은 `resolveSurfaceAiConfig` 의 두 표면이다
+  (`src/ai/assistantEndpoint.ts`) — `workshop-draw`(공방 그리기)와 `pixel-draw`(낱장 도트 찍기, 2026-10-16 추가, 아래 「결정」). 검수(`workshop-review`)는 그림을 읽는 일이라 시각(vision) 역할 그대로다.
+  **조수 채팅 본체(`chat` 표면)는 이 칸을 읽지 않는다** — 채팅이 부르는 «도트 찍는 도구» 가 `pixel-draw` 로 이 칸을 읽는다.
+- **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
+  모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
+  새 설정(`defaultAiConfig`)만 Google Gemini 4 Argon · 보통으로 시작한다. 이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않는다(`providerSelection.ts`).
+- **선택지**: `PIXEL_MODEL_CHOICES` — Argon, Claude(Opus/Sonnet 4.5·4.6 = Antigravity 카탈로그에 실제 있는 id), GPT-6.1 Sol. 계정에서 실제로 쓸 수 있는지는 요청 때 오류로 알려 주며 자동 대체하지 않는다.
+- **화면**: 모델 탭의 「이미지」 절이 두 묶음이다 — 「배경·대형 이미지 — 생성형 이미지 모델」(기존 제공자·모델·추천·상태 그대로, 추천 문구에서 «픽셀 타일·캐릭터가 안정적» 문장을 뺐다) /
+  「도트 저작 — 텍스트 모델이 격자로 찍기」(모델·추론 강도·상태). 문구는 4개 언어 카탈로그(en/ja/zh 각 +16). `aiChatPanel.ts` 는 건드리지 않았다.
+- **증거 스크립트**: `bun scripts/qa/image-route-table.ts`(모델 호출 없이 용도별 라우터 출력표·입구 거절·공방 표면 모델), `scripts/qa/image-model-split.mjs`(격리 netns 에서 모달 캡처·저장 확인).
+
+### 용도 분류표 (근거 = 파일:줄, 2026-10-16 origin/main 15f8ce5 기준)
+
+| 용도 id | 갈래 | 근거 | 비고 |
+|---|---|---|---|
+| title-art | 생성형 | `src/editor/titleArtGeneration.ts:47`, 워커 `scripts/lib/piPresentationTools.ts` | 타이틀 키아트 |
+| title-logo | 생성형 | `src/editor/titleLogoGeneration.ts:45` | 흰 바탕 로고 → 투명 잘라내기 |
+| title-depth | 생성형 | `src/editor/titleDepthGeneration.ts:84` | 흑백 깊이 지도(흐려도 됨) |
+| opening-still | 생성형 | `src/editor/openingImageGeneration.ts:110` | 오프닝·게임오버 스틸, 전경 레이어 |
+| cutscene-backdrop | 생성형 | `src/editor/tools/cutsceneArtTools.ts` | 컷신 배경(도로 띠 빈 무대). style:game 이어도 이미지 모델 → 320×240 도트화 |
+| cutscene-illustration-sprite | 생성형 | 같은 파일 | style:illustration(회상·환영·꿈) 소품 컷아웃 |
+| **cutscene-sprite** | **도트(낱장)** | 같은 파일 `drawsGameSpriteAsDots` | **결정 1**: style:game 소품은 도트 저작 모델이 격자로 찍는다(`src/ai/dotTextImage.ts`) |
+| backdrop · title-picture · picture | 생성형 | `src/editor/imageAssetGeneration.ts:33`, `src/ai/imageGenerationQueue.ts:101`(필드 kind) | generate_image_asset · 「그림 표시」·피커 AI 칸 |
+| faceset | 생성형 | `src/ai/imageGenerationQueue.ts:101`(kind faceset) | 얼굴 바꾸기·배우 얼굴 칸 |
+| character-appearance | 생성형 | `src/editor/characterAppearanceGeneration.ts:105` | «hand-drawn 2D portrait, 도트 아님» 프롬프트 |
+| **item-icon** | **도트(낱장)** | `src/editor/aiDatabaseGeneration.ts`(DB 「AI 로 만들기」 아이템 그림) | **결정 3**: 32px 투명 도트 아이콘을 도트 저작 모델이 찍는다 |
+| **chat-pixel-art** | **도트(낱장)** | `src/editor/imageAssetGeneration.ts`(`generate_image_asset kind:picture pixel:true`) | **결정 4**: 조수 채팅이 도트로 달라고 한 아이콘·소품 |
+| interview-scene | 생성형 | `src/editor/interviewSceneGeneration.ts:45` | **결정 2 확정**: 도트 격자 검수까지 하지만 이미지 모델로 생성한다(유지) |
+| concept-thumb | 생성형 | `src/concepts/draft.ts:96`, 프롬프트 `src/concepts/art.ts:24` | **결정 2 확정**: «SNES 도트 썸네일» 이어도 이미지 모델로 생성한다(유지) |
+| tileset · map-object · interior-prop | 도트(텍스트) | 공방 `src/harnesses/_core/workshop/engine.ts:142`(`workshop-draw`), 표 `src/ai/assistantEndpoint.ts:107` | 지금 `pixelModel` 을 읽는 유일한 소비자 |
+| charset | 도트(텍스트) — 앱 안 소비자 없음(가드 전용) | `src/editor/tools/mechCharsetTools.ts:1-4`(`author_actor_charset` = 결정적 코드 도트, 모델 호출 없음) | RM2000 캐릭터 대량 저작은 외부 하네스 `charset-actor`(이 설정과 무관) |
+| user-upload | 업로드만 | `src/editor/panels/databaseResourcePickerDialog.ts:240`(AI 칸은 title·backdrop·still 만), 본문 위 「charset/battleCharset/chipset/parallax 타일링은 제외」 | 생성 경로 없음 |
+| (제외) 몬스터·트레이너 | 별도 하네스 | `src/harnesses/monster-collect-species/node/imageSource.ts`, `src/harnesses/battle-trainer-sprites` | 생성→격자 도트화+사람 pick. **라우터를 거치지 않고 건드리지 않았다** |
+| (제외) 컨셉 하네스 | 별도 경로 | `src/harnesses/game-concepts/node/draw.ts:12-13` | 노드 쪽이 `openai-codex`/`codex-image-default` 를 직접 고정 |
+
+### 결정 (2026-10-16)
+
+사용자가 「내 추천대로」 하라고 위임해 아래 다섯을 정했다. 코드·표·QA 출력은 이 결정을 따른다.
+
+1. **컷신 `style:game` 스프라이트 → 도트 텍스트 경로.** 용도 id `cutscene-sprite`(dot-text, 표면 `pixel-draw`). `generate_cutscene_art role:sprite style:game` 은 이미지 모델을 부르지 않고
+   도트 저작 모델이 `tiles×16`px 긴 변의 투명 PNG 를 격자로 찍는다. 긴 변 64 이하는 1배, 넘으면 칸이 64 이하가 되는 가장 작은 정수 배로 확대한다(타일 5칸 이상은 도트가 2~4배 굵어진다).
+   **컷신 배경(backdrop)은 생성형 그대로**이고, `style:illustration` 소품은 생성형(`cutscene-illustration-sprite`)이다.
+   이미지 생성기만 꽂힌 헤드리스 QA 하네스(`setCutsceneArtGenerator`, 도트 호출 없음)는 «준비된 그림을 그대로 쓰는 대역» 이라 옛 경로를 유지한다 — 앱·Bun 워커는 항상 도트 경로다
+   (워커는 시작 때 `setDotTextChat` 으로 요청에 실린 `pixelModel` 을 꽂는다).
+2. **인터뷰 장면 배경·컨셉 썸네일 = 생성형 유지(변경 없음, 확정).** `interview-scene`·`concept-thumb` 는 표에서 생성형 그대로다.
+3. **아이템 아이콘 → 도트 텍스트 경로로 전환했다.** DB 「AI 로 만들기」 의 아이템 그림은 `item-icon`(dot-text)이다. 32px 투명 PNG 라 흰 배경 지우기(`flattenGeneratedArtwork`)를 건너뛴다.
+   프롬프트(`artworkPromptFor`)는 흰 배경이 아니라 투명 배경을 요구한다. 구조상 막히는 부분은 없었다 — 한 장 한 번 호출이라 공방(후보·검수)을 거치지 않는다.
+4. **조수 채팅의 도트 찍기는 `pixelModel` 을 쓴다.** 새 용도 `chat-pixel-art`(dot-text, `pixel-draw`) + 도구 `generate_image_asset` 의 선택 인자 `pixel:true`(kind=picture 만): 32px 도트 아이콘·소품을
+   도트 저작 모델이 찍는다(생략하면 종전처럼 이미지 모델). 컷신 도트 소품(1)도 조수 채팅 도구라 같은 경로다. 채팅 본체(`chat` 표면, 감독 모델)는 그대로이고 도구 안에서만 도트 저작 모델을 부른다.
+   코드 손 도트 도구(`author_actor_charset`·`build_hand_interior_room` 등)는 모델 호출이 없는 결정적 도구라 이 설정과 무관하다.
+5. **레거시 설정은 일괄 변환하지 않는다.** `pixelModel` 이 저장돼 있지 않으면(옛 설정) 새 라우팅도 `follows`(계획·최종 판단 모델)로 간다 — `loadAiConfig` 는 칸을 만들지 않는다.
+   Argon 보통 기본값은 `defaultAiConfig()`(새 설정)와 사용자가 모델 탭에서 명시 선택한 값에만 적용된다. 워커 요청에는 클라이언트가 **해석한 값**(`resolvePixelModel`)을 싣는다(저장은 하지 않는다).
+
+#### 낱장 도트 입구 (`src/ai/dotTextImage.ts` · `dotTextArt.ts` · `dotTextBrowserChat.ts`)
+
+- `AiSurface "pixel-draw"` = 공방 `workshop-draw` 와 같은 예산(16384)·같은 «도트 저작 모델» 칸. 용도 표의 `surface` 필드(`workshop-draw` | `pixel-draw`)로 가른다(`isPixelDrawPurpose`).
+- `generateDotTextImage(request, chat)` 는 순수(llmClient·캔버스 없음): 시스템 프롬프트(정사각 칸·legend `#rrggbb` ≤24색·`.`=투명) → JSON 해석 → 줄 수·폭·legend 검사(틀리면 오류 글로 최대 2번 고치기) →
+  여백 자르기 → 정수 배 확대 → 무압축 deflate PNG. 끝까지 깨지면 `DotTextImageError` — 이미지 모델이나 다른 모델로 몰래 대체하지 않는다.
+- `generateDotArt({prompt, longSidePx, purpose})` 가 앱 입구다. 낱장 도트가 아닌 용도(생성형·공방·업로드)는 거절한다. 브라우저는 `dotTextBrowserChat`(동적 import)이 `resolveSurfaceAiConfig("pixel-draw")` 로 부르고,
+  Bun 워커는 `PiAgentRequest.pixelModel`(protocol.ts, 없으면 `roleModels.deep` → 실행 모델)을 `createWorkerDotTextChat`(piPresentationTools.ts)으로 꽂는다.
+- 이것은 «한 번에 한 장» 이라 정본 칩셋 그림이 아니다. 새 타일셋·기물은 공방(후보·검수·3/4 관문)을 쓴다. 낱장 도트는 `object-gate` 영수증 대상이 아니라 컷신 소품·아이콘 같은 프로젝트 리소스다.
+- 알려진 한계: 한 변 64 초과 소품은 확대라 도트가 굵다 / 모델이 한 변을 틀리게 세면 고치기 2번 뒤 실패(사용자에게 오류를 그대로 보인다) / 3/4 시점은 프롬프트 계약일 뿐 검수 관문이 없다.
+- 검증: `bun scripts/qa/image-route-table.ts`(용도별 표·입구 거절·표면 모델) — `pixel-draw` 줄과 새 용도 5개 포함. 단위 테스트는 `test/dotTextImage.test.ts`·`test/imageRoute.test.ts` 에 썼지만 **이 변경에서는 실행하지 않았다**.

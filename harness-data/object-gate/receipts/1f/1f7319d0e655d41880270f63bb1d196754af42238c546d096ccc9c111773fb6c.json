@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f7319d0e655d41880270f63bb1d196754af42238c546d096ccc9c111773fb6c",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "기숙사 옷장(두 문)",
+ "label": "modern-campus-int/mc-dorm-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-door dormitory wardrobe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible from rows 1 to 5 (5 pixels tall) with folded bedding/cloth placed on it, above the south-facing double doors starting at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wardrobe features a clear top surface spanning rows 0 to 5 (6 pixels deep) with an item placed on top, viewed in proper 3/4 top-down perspective above the front doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4825
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dormitory two-door wardrobe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wardrobe has a clear 6-pixel-tall top surface (rows 0-5) with a purple item sitting on top, followed by the south-facing double doors from row 6 down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3958
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two-door dormitory wardrobe with folded bedding or a box on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-5 clearly display the foreshortened top surface of the wardrobe (6 pixel rows deep) with an item resting on it; the front doors span rows 6-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4160
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.311Z",
+ "cells": {
+  "16": [
+   "333585a72fd3a39f",
+   "e0f5d18bcf0c7c00"
+  ],
+  "24": [
+   "0dcc5d96b125e21a",
+   "1a6e330f350e81f9",
+   "3920feb8b475feef",
+   "49fbd132951b7236",
+   "5c9429efb017b1c5",
+   "647876b5b992dfde",
+   "7fe8fe915831a1da",
+   "9824f14c7b4c941b",
+   "a58246e8176a00e0",
+   "a716145e34293ced",
+   "bc9ec42833fb2214",
+   "e985dcc474aad196"
+  ],
+  "32": [
+   "3c8854ef9a1e50b4",
+   "89ba02afa4679ae3",
+   "d52da5dc8dece255"
+  ],
+  "48": [
+   "0e416a73a6cc8f3b",
+   "220d3e58af09dec2",
+   "3923ae900a77de7f",
+   "4c979ba1d79bdb2b",
+   "aeebb706e9895b0e",
+   "ebd813c78baf1e6d"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8dbc79771654f820b048089a793f44ae8517db17f418e550a6927b2608621789",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔잔한 모래",
+ "label": "desert-east/de-sand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat sand terrain surface tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a sandy ground surface with subtle noise and texture across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6478
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a sandy ground surface with subtle pixel texture variations across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10387
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sand ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile displaying a 16x16 sand surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10386
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.455Z",
+ "cells": {
+  "16": [
+   "3ee89653e70312ae"
+  ],
+  "24": [
+   "173f062cae7f1cc3",
+   "7b9352f07f9848a3",
+   "7de3e7e8454575df",
+   "c17c4661f090e038",
+   "d159518badcc8bad",
+   "f8f1e11657d23351"
+  ],
+  "32": [
+   "3b06742841813366",
+   "6cc11715b3305178",
+   "6d5e71441ad9f1c3",
+   "91f53f0306cf90a0",
+   "9d80d5fe136b0f62",
+   "ce4d1e04b7f70940"
+  ],
+  "48": [
+   "477d29de1da07393",
+   "61ae9df6769e207b",
+   "a0fad391afb0dd21",
+   "aae9533f870f9cae",
+   "bcd9b4dd799ef60c",
+   "ccba2dafd2c32111"
+  ]
+ }
+}

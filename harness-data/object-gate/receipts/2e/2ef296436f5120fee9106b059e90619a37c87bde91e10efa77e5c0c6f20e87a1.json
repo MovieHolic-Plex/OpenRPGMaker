@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ef296436f5120fee9106b059e90619a37c87bde91e10efa77e5c0c6f20e87a1",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "줄무늬 차단 바리케이드(윗면 + 위험 띠 앞면)",
+ "label": "sf-station/sf-street-barrier-stripe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "roadblock barricade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly shows a distinct top surface spanning rows 2 to 8 (7 pixels tall) and a front south-facing side with hazard stripes spanning rows 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "traffic barricade block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the barricade spans rows 2-8 (approx 7px tall) with corner bolt/light accents, while the front face showing hazard stripes occupies rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5707
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "traffic/construction barricade block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2–8 depict the large horizontal top surface of the barricade (7px tall), while rows 9–14 show the vertical south face decorated with diagonal hazard stripes. Perspective conforms to 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6727
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "traffic/construction barricade block",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the barrier block spans rows 2-8 (7 pixel rows), while the front face with diagonal hazard striping spans rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6913
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.343Z",
+ "cells": {
+  "16": [
+   "c293e1323d51ff41",
+   "c5291e6e47069aa6"
+  ],
+  "24": [
+   "2dc740410abb0c06",
+   "32b9daa41f8be77e",
+   "38731fe8b2b70968",
+   "498868b85f62da90",
+   "4cba8208798679db",
+   "512cc2c7d9d73a58",
+   "5913425b929eedac",
+   "5b3019fa3d79a6a6",
+   "7c3ab4127e6e0973",
+   "9371f932730333e6",
+   "a279a063fd7e36d1",
+   "b2a1075d04322f67"
+  ],
+  "32": [
+   "7b8ae02f55595822",
+   "dbe57f5661bf1923"
+  ],
+  "48": [
+   "0fc95924a86c79e3",
+   "24dc66eb29c02dc8",
+   "344862eb3708903d",
+   "41e07b27e2bd0dac",
+   "8d1df2a65b1b33ac",
+   "a0e5b45625b3c2d3"
+  ]
+ }
+}

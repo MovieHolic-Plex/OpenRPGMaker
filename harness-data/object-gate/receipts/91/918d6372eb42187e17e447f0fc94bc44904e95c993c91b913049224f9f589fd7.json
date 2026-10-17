@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "918d6372eb42187e17e447f0fc94bc44904e95c993c91b913049224f9f589fd7",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "곡식 자루 더미",
+ "label": "desert-east/de-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open grain sack filled with grain",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The opening of the grain sack is visible from above across rows 6-10, showing the foreshortened ellipse filled with yellow/orange grain, with the sack's front face descending below at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4561
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open grain sack showing grain inside",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mouth of the open sack is clearly foreshortened in 3/4 top-down view from rows 6 to 10 (5 rows tall), displaying the grain inside surrounded by the sack rim, with the south-facing front of the sack below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5619
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open grain sack in a sack pile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main sack is opened at the top showing its grain contents visible from above across rows 6 to 10 (~5 rows tall), with the front face of the sack continuing down rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4948
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open grain sack in front of closed sacks",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open sack shows the grain interior across rows 6-10 (around 5 rows tall) seen from above, with the south vertical face of the sack visible below it on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5857
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.537Z",
+ "cells": {
+  "16": [
+   "f9d1d6727d78723e"
+  ],
+  "24": [
+   "1e61bce469a7dcb3",
+   "34d9aa189eeaceb9",
+   "3998cae18723b708",
+   "6cad04a6fdf2cf29",
+   "89e7983dd5e2abab",
+   "e1d63250557efe1a"
+  ],
+  "32": [
+   "08259942161aa317",
+   "09a5c4783b36b8ac",
+   "17a4134d769d5d1a",
+   "24159d88cfe9ef89",
+   "35ab67128976a2b1",
+   "75c2506ea997103d"
+  ],
+  "48": [
+   "4821f5862167b146",
+   "80194d1056fb32ea",
+   "9535120b06d8e281",
+   "c78a7fcd2e27c677",
+   "ec2aad1c70840e08",
+   "f2798272e6f392f3"
+  ]
+ }
+}

@@ -18,7 +18,7 @@
 `exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는
 1280×900 창에 960×720만 그렸다(면적 60%). fit은 원래 화면 비율을 유지하며 창의 최대 contain
 배율을 쓴다(320×240이면 1200×900). 게임/UI를 자르거나 늘려 왜곡하지 않는다. 정수 배율을
-명시한 다른 호스트의 선택은 유효하다. 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
+명시한 다른 호스트의 선택은 유효하다. 단 에메랄드 몬스터 프로젝트(`isEmeraldMonsterStyle`)는 픽셀 격자 계약(`emerald-runtime-surfaces.md`)에 따라 `integer`로 부팅한다(창이 남으면 여백). 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
 넘기지 않고 출하 player.html에서 자연 재생/첫 조작을 녹화한다.
 
 생성 원화 타이틀의 효과 캔버스는 `backgroundRendering:smooth`를 상속하고,
@@ -848,3 +848,56 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 지원하는 288×256 업로드 charset을 사용하며, upload id와 같은 SpriteDef에 발 기준점을
 기록하면 생성/자원 변경/세션 복원에 반영한다. 다른 키의 upload alias 또는 자유 크기
 행동 시트가 주인공 걷기 자원이 되는 기능은 포함하지 않는다.
+
+## 위쪽 대사창의 흉상·전신 초상 (2026-10-17 romance-loop-1)
+
+주인공이 화면 아래쪽이면 대사창이 위로 간다(`preventObscuringPlayer`, `effectivePosition`). 흉상(`.dialogue-face-bust`)은 기본적으로 상자 **위**로 서는데
+위쪽 상자는 화면 맨 위라 머리가 화면 밖으로 잘렸다(카페 안 유진, 허리까지만 보임). `.dialogue-overlay.position-top` 에서는 흉상을 상자 **아래**로 매달고
+글 여백(`padding-inline`)을 없앤다. 전신 초상(`dialogue-face-full`)은 위쪽 상자에서 흉상 크기로 줄인다(아래 절반의 주인공을 덜 가리려고). 규칙은 src/styles/dialogue.css.
+
+
+### 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+
+- **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
+- **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
+- **선택지.** `lastLineForcedBottom` 이 같은 세션(`wasOpen`)이면 `showChoices` 도 아래다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **전환 부드럽게.** 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄(흉상 없음(위) ↔ 흉상 있음(아래))에서만 `glideFromPreviousBox` 가 Web Animations `translate` 로 앞 창 자리에서 새 자리까지 220ms 미끄러진다. 레이아웃은 즉시 새 자리로 확정되고 출발점은 변환(진입 연출)을 뺀 `offsetTop` 에 호스트 배율을 곱한 값이다 — 배율로 나누지 않으면 화면 배율(3.2배)만큼 어긋나 창이 화면 밖에서 날아온다(실측). 움직임 줄이기에서는 쓰지 않는다. 그 밖의 줄(같은 위치끼리의 높이 변화 등)은 옛 동작 그대로다.
+- **옛 위쪽 흉상 CSS.** `.position-top` 흉상 매달기 규칙(위 절)은 `dialogue.ts` 경로에서는 더는 닿지 않는다(흉상이면 아래). 편집기 미리보기·저작 도구가 직접 `position-top` 을 붙일 때를 위해 남겼다.
+- **편집기·도구 안내.** 이벤트 명령 「문장 표시 설정」 위치 그룹, 자료집 「메뉴·시스템」 대사창·대사창 룩 카드(`db-menu-system-portrait-bottom-note`), 도구 설명(`schemaShapes` say·displayTextSettings position, `cutsceneStageTools`, `set_dialogue_system`, `set_vn_look`), `gameAuthoringPresets/romance.md` 한 문단. 카탈로그 en/ja/zh 에 안내 문장 한 줄.
+- **증거.** `scripts/qa/runtime/vn-bust-bottom.scenario.mjs`(프로필 `bustbottom`): 캡처마다 DOM 을 읽어 흉상 줄은 아래, 흉상 없는 줄은 저작 위치임을 단정하고(어긋나면 비트 실패) 프레임별 창 윗변 궤적(`_trace.json`)을 남긴다. 전 조합은 프로필 `bb` + `VN_POS_PROBE_DIR=<dir>`(캡처마다 `.json` 위치 탐침, `vn-matrix.lib.mjs`).
+
+## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
+
+- **옵트인 저작.** `meta.oprnDialogueSystem`(순수 모듈 `src/project/dialogueSystem.ts`)이 없고 관계 중심 게임도 아니면 대사창·ESC 메뉴·설정 화면은 예전과 바이트 단위로 같다(예전 hover 「기록」 단추·세션 로그 포함, 설정은 8줄 그대로). 켜지면 `dialogue.ts` 가 단축키(오토 A · 스킵 S · 백로그 L/PageUp/휠 위 · 숨기기 H, Ctrl 누르는 동안 스킵)와 `dialogueBacklogView`(전체 화면, 휠·방향키·Esc, 캡처 단계에서 키를 삼킴)를 붙인다.
+- **대사창 단추 줄 없음 (2026-10-17 사용자 지시).** 예전 `.dialogue-bar`(오토·스킵·백로그·숨기기 단추 + 멈춤 알림)는 흉상·글을 가려 지웠다(`dialogueControlBar.ts`·`bar.*`/`notice.*` 글자·CSS 삭제). 저작된 대사 시스템에서는 옛 「기록」 단추도 그리지 않는다 — 대사창 안에 단추가 하나도 없다. 기능 자체(단축키·백로그·ESC 메뉴·설정)는 남는다. 멈춘 이유는 `overlay.dataset.readingStop` 에만 남는다. `vn-bust-bottom` 탐침은 단추 줄이 다시 생기면 비트를 실패시킨다.
+- **저장.** 세션 `dialogueBacklog`(링 버퍼, 항목 line/choice, 저작 limit 20~500 기본 100)와 `dialogueRead`(화자+본문 FNV-1a 키, 상한 4000)는 세이브에 들어가고 저장·불러오기·파싱 모두에서 `normalizeBacklog`/`normalizeReadKeys` 로 다시 자른다(손댄 세이브도 상한을 넘지 못함). 전투 안 대사는 `reading:"off"` 라 합성 세션에 기록하지 않는다.
+- **안전 규칙(순수 함수 `skipVerdict`·`stopsReading`·`stepStopReason`).** 오토·스킵은 선택지·숫자 입력·이름 입력·상점·전이·전투 진입·세이브/불러오기 메뉴·타이틀·게임 오버에서 멈춘다. 스킵은 선택지를 대신 고르지 않고, 엔딩 에필로그(인터프리터가 WeakSet 으로 표시, `endingEpilogue`)와 넘기기 금지 글을 넘지 않으며, 범위가 `read` 면 읽지 않은 줄에서 멈춘다(`overlay.dataset.readingStop`). 오토 대기는 글자 수에 비례(`autoAdvanceDelayMs`, 속도 느림·보통·빠름). 숨기기는 아무 키나 누르면 돌아오며 닫힘·장면 전환은 오토·스킵을 끈다.
+- **글자 언어.** 편집기 i18n 계층은 에디터 전용이라 런타임은 별도 네 언어 표 `src/player/dialogueUiStrings.ts` 를 쓴다. 언어는 저작 `language`(기본 ko, auto = 기기 언어)가 정하고, 새 글자는 네 언어를 모두 채운다(`test/dialogueSystem.test.ts` 가 빈 칸·자리표시자 불일치를 막는다). 게임 본문은 번역하지 않는다.
+- **투명도.** 기기 설정 `windowOpacity` 는 계산된 배경색·그라데이션의 알파를 곱해 적용한다(`dialogueWindowOpacity.ts`). 글자·테두리는 그대로.
+- **CSS.** `src/styles/dialogueReading.css`(runtime/index.css 가 `layer(runtime)` 으로 불러옴, `test/playerRuntimeCss.test.ts` 의 RUNTIME_IMPORTS 에 등록). 기존 실패 3건(`retro2003` 스킨·`.status-menu-body` 누락, 임포트 개수 68 대 72)은 main 에서 이미 빨갛다 — 이 변경과 무관.
+- **시각 QA.** `npm run qa:runtime -- --scenario romance-vn-system --project <fixture>/project.json`(고정 장면 `scripts/qa/runtime/romance-vn-system-fixture.mts <outDir> [ko|en] [opacity]`). 크로미움이 백지(ERR_NETWORK_CHANGED)면 `unshare -rn` 안에서 실행. 증거 `verify-shots/runtime-qa/romance-vn-system{,-en}/`.
+
+### 대사창 읽기 보조 수리 1 (2026-10-17, 적대 리뷰 D1~D12)
+
+- 저장된 대사 속도: `normalizePlayerPreferences` 가 표식(`textSpeedChosen`) 없는 예전 저장본의 느림/빠름을 한 번 「직접 고른 값」으로 승격한다(연애 기본 시작값에 덮이지 않게). 보통은 구별할 수 없어 저작 시작값을 따른다.
+- 입력: H 반복 keydown 은 숨김을 되돌리지 않는다. 휠 위 백로그 열기는 `ctrlKey`(핀치) 무시 · 닫은 뒤 450ms 쿨다운 · 300ms 안 누적 40 문턱(`dialogue.ts` WHEEL_*).
+- 앰비언트(흘림·코너·bark) 대사는 세션 백로그(세이브)에 쓰지 않는다 — `recordLog(request, look, false)`.
+- 창 투명도: 스킨 그림이 창을 채우는(border-image) 스타일(classic)은 설정 행을 숨기고 `applyWindowOpacity` 도 아무것도 하지 않는다.
+- 레이아웃: 예전 단추 줄 터치 면·흉상 비키기 규칙은 단추 줄과 함께 지웠다(위 「대사창 단추 줄 없음」). 시나리오 `romance-vn-system-mobile` 은 좁은 화면에서 단추 줄이 없음을 본다.
+- 글자: ESC 메뉴 하단 조작 안내(`statusMenuControls(…, system)`)와 레일 「백로그」 기본 라벨은 대사 시스템이 있는 게임에서 저작 언어로 나온다(없으면 예전 한국어). 죽은 키 `notice.hiddenRestore` 삭제.
+- 조수: 시스템 도구 초기 선언 낱말은 `GAME_SYSTEM_REQUEST_PATTERN`(`gameSystemProduction.ts`)에 모았고 영·일·중 낱말을 더했다.
+- 알림(릴리스 노트용): 백로그 항목을 저작한 ESC 메뉴가 든 프로젝트는 이전 빌드에서 열리지 않는다. 기존 연애(관계 메뉴) 프로젝트는 저작 없이도 기본 구성이 켜져 대사창 단추 줄·ESC 백로그·설정 3행이 새로 생긴다(비연애 프로젝트는 불변).
+
+
+## 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+
+- **옵트인 저작.** `meta.oprnVnExtras`(순수 잎 모듈 `src/project/vnExtras.ts`, v1: `language?`, `gallery{enabled,showLocked}`, `endings{enabled,hideUnseen}`, `saveCards{enabled}`)가 없고 관계 중심 게임도 아니면 갤러리·ESC 메뉴·세이브 카드는 예전과 같다(`resolveVnExtras` → undefined). 연애 게임만 저작 없이도 세 기능이 켜지고(`romanceVnExtras`), 연애 프리셋(`romancePreset.ts`)은 저작본을 심는다. 검증은 `validateVnExtras`(모르는 칸·잘못된 값 거절, `shapeResourceFields.ts`).
+- **새 그림 0장.** 갤러리 칸은 맵·공통 이벤트의 `showPicture recordInGallery` 를 훑어(`listGallerySlots`, 중첩 branch/fork/loop 포함, WeakMap 캐시, 상한 200) 만든다 — 아직 안 연 칸이 「???/잠김」으로 보인다(`showLocked:false` 면 감춤). 잠긴 줄은 `unavailableReason` 이라 커서가 건너뛴다. 엔딩 회상은 본 엔딩(기기 클리어 기록 `session.clearHistory.endingIds`)의 에필로그 `say` beat 를 백로그 뷰어(`openBacklogView({title})`)로 다시 읽는 읽기 전용이다. 인터프리터를 다시 돌리지 않는다.
+- **엔딩 목록.** ESC 메뉴 「엔딩」(`FIELD_MENU_COMMANDS` 에 `endings`, 연애 메뉴에 포함). `project.endings` 를 읽어 자동으로 채운다: 달성/미달성(기기 기록), 인물별 체크리스트(해피·평범·혼자 3종, `friendshipAtLeast.npcKey` 로 인물을 가르고 인물 전용 엔딩이 없으면 「공통」 한 줄, 문턱 `ROMANCE_ENDING_*_AT` 로 결말 구분), 못 본 엔딩 이름은 `hideUnseen` 이면 「???」. 엔딩 정의가 없으면 항목 자체를 숨긴다(빈 화면 금지). 갤러리 항목도 열 칸·열린 그림·본 엔딩이 하나도 없으면 숨긴다.
+- **세이브 카드.** `SaveSnapshot.sceneLine`(선택, `saveCards` 가 켜졌을 때만 쓰고, 읽을 때 `normalizeSceneLine` 으로 44자·제어문자 정리)에 저장 시점 마지막 대사(「화자: 글」)를 싣는다. 타이틀 불러오기 카드(`playerLoadPanel` `.oprn-load-slot-scene`)와 ESC 저장/불러오기 상세(날짜+한 줄)에 보인다. 옛 세이브·꺼진 게임은 한 줄이 없을 뿐 바뀌지 않는다. 대사 백로그가 꺼져 있으면 한 줄이 비므로 `review_game_systems` 가 지적한다.
+- **글자 언어.** 새 글자는 `src/player/vnExtrasStrings.ts`(네 언어 표, 빈 칸·자리표시자는 `test/vnExtras.test.ts` 가 막음). 언어는 `vnExtrasLanguage`: 저작 `language` > 대사 시스템 언어 > ko. 연애 기본 이름 「갤러리」「엔딩」은 저작자가 바꾸지 않았을 때만 번역한다(`statusMenuCommandLabel`). 저장/불러오기·호감도 등 기존 메뉴 글자는 아직 한국어 하드코딩(미해결).
+- **함정(실측).** 갤러리 상세는 `grid-template-rows` 가 없어 큰 그림 칸(`status-menu-showcase-frame` height:100%)이 높이 0 으로 접혀 그림이 안 보이는 기존 결함이 있었다 — `galleryMenu.css` 에서 첫 줄을 `minmax(0,1fr)` 로 고쳤다(옛 갤러리에도 적용됨). 로컬 파일 대신 런타임 QA 에는 `scenario.localStorageSeed`(키의 `{ns}` = 세이브 이름 공간)로 「이 기기에 이미 본 엔딩」을 심는다(`scripts/lib/runtimeQaRun.mjs`).
+- **기기 기록 (수리 PR, 2026-10-17).** 엔딩 달성(`{namespace}:clear-record:v1`)과 열린 CG(`{namespace}:gallery-record:v1`, `{version:1, ids:[...]}`, 상한 1000)는 **저장 칸이 아니라 이 기기**에 남는다. 코드는 `src/player/deviceRecords.ts`: `syncSessionWithDeviceRecords` 가 부팅(`player.ts`)과 `PlayScene.applySession`(ESC 불러오기·체크포인트 복원·패배 복구·자동 저장 읽기 모두 통과)에서 `session.clearHistory` 를 기기 기록으로 다시 채우고, CG 는 「기기 기록 ∪ 세션의 칸별 해금」 합집합으로 올려 옛 저장·옛 프로젝트의 칸별 해금을 이관한다(읽기만으로는 쓰지 않고 달라졌을 때만 기록). `showPicture recordInGallery` 는 세션과 기기 양쪽에 기록한다. 세션 상한 200 을 넘으면 지금 프로젝트의 갤러리 칸에 없는 해금부터 버린다(`recordGalleryUnlock(session,id,liveIds)`). **불러오기·새 게임은 열린 그림·본 엔딩을 줄이지 않는다.** 힌트 문구(`gallery.hint`)가 이를 밝힌다.
+- **수리 PR 묶음(vn-review-2).** 엔딩 목록 상세는 커서 없는 정보 목록이라 ↑↓ 가 `.status-menu-detail-list` 를 스크롤한다(`moveSelectedDetailAction`). 체크리스트 칸은 그 인물 자신의 엔딩만으로 채우고 공통 엔딩은 「공통」 행으로 따로 둔다(이름 못 찾은 인물은 「???」). 연애 기본 ESC 메뉴 낱말(호감도·일정·소지품·저장·불러오기·설정·타이틀로)과 저장·로드 화면 글자는 `vnUiText` 로 저작 언어를 따른다(기본 메뉴·미연시 프로젝트만; 작가가 쓴 라벨과 몬스터 수집 쇼케이스는 그대로 — 한 화면에 한국어가 섞이는 부분은 알려진 한계). `review_game_systems`: 저작 없는 연애 기본 구성의 「CG 0」 경고는 뺐고(저작으로 켠 경우만), 저작 메뉴에 갤러리 항목이 없으면 짚는다. `configure_field_menu` 는 작가가 저작한 `oprnVnExtras` 의 꺼짐을 되돌리지 않고 알린다. `set_vn_extras {}` 는 아무것도 쓰지 않고, `preset:"default"` 는 함께 준 칸을 무시한다고 알린다. `GAME_SYSTEM_REQUEST_PATTERN` 은 맨 「갤러리」·「gallery」·「저장 칸」을 빼고 VN 낱말(`CG 갤러리`·`갤러리 화면`·`gallery screen` …)만 받는다. `normalizeSceneLine`/`saveSceneLine` 은 BiDi 제어문자를 지우고 글자 묶음(grapheme) 단위로 자른다. `listGallerySlots` 캐시는 맵·이벤트 배열 참조·길이가 달라지면 무효다.
+- **휠 스크롤과 QA.** ESC 메뉴는 `.play-stage` 아래 전부 `pointer-events:none` 이고 `installPlayPointerBlocker` 가 휠을 삼켜, 넘치는 상세 목록이 휠로 안 움직였다. 키보드 전용 플레이에서만 `.status-menu-detail-list` 상자가 포인터를 받고(행은 계속 안 받음) 차단기는 그 목록 위 휠만 통과시킨다(`statusMenuEdgeDock.css` 맨 아래, `playInputBlocker.ts`). 시험: `bun scripts/qa/runtime/romance-vn-ui4-fixture.mts output/qa/vn4 [ko|en]` → `node scripts/runtime-qa.mjs --scenario romance-vn-ui4 --project output/qa/vn4/project.json` (저장→CG 해금→ESC 불러오기→갤러리·엔딩 유지, 12명 체크리스트 키보드·휠 스크롤, 뷰어 닫기). 하네스에 `wheel` op(`{testid|selector, deltaY}`)을 더했다. ESC 메뉴 커서는 마지막 항목을 기억하니 시나리오는 절대 위치가 아니라 상대 이동으로 짠다.
+- **시각 QA.** `bun scripts/qa/runtime/romance-vn-ui2-fixture.mts output/qa/vn2 [ko|en]` 후 `unshare -rn node scripts/runtime-qa.mjs --scenario romance-vn-ui2 --project output/qa/vn2/project.json`. 증거 `verify-shots/runtime-qa/romance-vn-ui2{,-en}/`.

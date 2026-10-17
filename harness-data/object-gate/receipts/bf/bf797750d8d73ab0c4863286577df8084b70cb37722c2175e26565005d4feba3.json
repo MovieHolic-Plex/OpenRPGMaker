@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bf797750d8d73ab0c4863286577df8084b70cb37722c2175e26565005d4feba3",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass rail fence on platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence panels and vertical posts are drawn in pure front elevation with no visible top surface on the posts or top rail (rows 0-1 are an unmodeled dark line/band).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5636
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence and platform base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and panels (rows 2-9) are drawn in pure front elevation with no visible top surface or post caps seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7312
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railing/fence structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence panels, posts, and upper rail show no foreshortened top surface; the railing is drawn as a flat, straight-on front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5734
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and posts are drawn in pure front elevation with vertical rectangular posts and flat panels; no top surface of the railing, posts, or frame is visible from the required 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7044
+  }
+ ],
+ "decidedAt": "2026-10-13T13:08:13.190Z",
+ "cells": {
+  "16": [
+   "1528cb4b146f67c5"
+  ],
+  "24": [
+   "03aee54b23801a42",
+   "9094e6590d503cfe",
+   "95f6b74e941c0dcc",
+   "9eeeca4289499692",
+   "d504fd744c985487",
+   "f3d66637055796a7"
+  ],
+  "32": [
+   "09229f6bdee514c1",
+   "0ea029fedf45c5c5",
+   "2b963c85126a9fc8",
+   "45f24f92268dac72",
+   "9e57ad64382034f1",
+   "e567d1bb5a22f43d"
+  ],
+  "48": [
+   "0bfd8856e3130e2c",
+   "35f57f37dfe51cbb",
+   "6f9a41a89278780d",
+   "85a66d1d99ad76a5",
+   "b265dcd438865c52",
+   "ce3eea44b14b3dea"
+  ]
+ }
+}

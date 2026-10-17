@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "357836a4c9ddd090e3aac9f757aae9ca37bf6debf248b3f24445993058f4e5bc",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 공구 판(렌치·망치·톱)",
+ "label": "steampunk-city/sp-tool-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted tool rack with tools",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pegboard with wrench, hammer, and saw hanging flat against the wall, appropriate for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3824
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall tool board with hung tools",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted tool board shown flat against the wall, which is standard and permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall tool rack / pegboard with tools",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pegboard holding tools, drawn flat against the wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall tool board with wrench, hammer, and saw",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted tool pegboard shown directly flat against the wall face; appropriate for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4507
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.466Z",
+ "cells": {
+  "16": [
+   "28ca36de9c2d4882",
+   "47764fa9043b35ec"
+  ],
+  "24": [
+   "2c2ebec92950ec4c",
+   "48bb58c3d47dc2d5",
+   "7a05ccf871671df1",
+   "7db40c4671ce9216",
+   "80c855b6dc2a4017",
+   "a433c52e9ac1a56f",
+   "a4bb1ec3fd44764e",
+   "a9f080cb4a804cf0",
+   "d2e47c6730a3fad8",
+   "e3bf46e3b5b9a5e0",
+   "e95a11b8a1c27f88",
+   "f560bf2d60d3fd6e"
+  ],
+  "32": [
+   "93f2e01f529b4bee",
+   "e4dfe20bec4351cf"
+  ],
+  "48": [
+   "425e67c3e8a4b8ad",
+   "799a27e603a64bf7",
+   "98a7ea5ad6d1b7aa",
+   "ae9f2fe30be4a930",
+   "b185908fde25445d",
+   "c87f55decfe80aba"
+  ]
+ }
+}

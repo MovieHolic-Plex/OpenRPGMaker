@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63f2962be9d4927dc710fef8c014a0dd986f7c791c10bb7f3ffc40840da0b287",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "mango tree with round canopy and orange fruit",
+ "label": "pirate-isles/pi-tree-fruit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat front elevation (lollipop tree style suitable for a 2D side-scroller). It lacks top-down foreshortening or visible top ground footprint; the trunk meets the canopy and ground straight on with 0 top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5908
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a flat 2D side/front elevation (lollipop style) with a circular canopy and a flat horizontal trunk base at row 44-45, showing no top-down 3/4 perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7394
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D front elevation (lollipop tree): the canopy is a flat circular silhouette on a straight vertical trunk, and the base of the trunk at rows 43-45 is a completely flat horizontal line with no elliptical ground contact or 3/4 foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6256
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D side-scroller elevation (lollipop style). The trunk is a straight vertical column ending in a completely flat horizontal base at row 44-45 without any 3/4 view ground ellipse or roots, and the spherical canopy lacks top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7343
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "174db322e2f579f2",
+   "28c74f3a92c4f5d4",
+   "4e9747572439ad83",
+   "7d07069b7802fe54",
+   "968c2abaa192b8e9",
+   "9af0a4c3a1484314"
+  ],
+  "24": [
+   "09aba1e6589aa815",
+   "0fde5cd039581e1f",
+   "2d37b0312a1fd959",
+   "3bad1d7e1a3fb351",
+   "4ceaca650c022002",
+   "5ac8421324980c04",
+   "7d58fe6673018a4d",
+   "961f1e69eb4b87b0",
+   "a910dcc7fc644b14",
+   "aff612d8bd44fb55",
+   "d5b48d440c807cbb",
+   "e2a6fc82741dae16"
+  ],
+  "32": [
+   "53932ef3829282e4",
+   "72c8e25694a29a3d",
+   "cf08d3c90808750f",
+   "e76c6164d28d95aa"
+  ],
+  "48": [
+   "063e1816279ce6c2",
+   "1008127aba84bf76",
+   "79914adb1162837f"
+  ]
+ }
+}

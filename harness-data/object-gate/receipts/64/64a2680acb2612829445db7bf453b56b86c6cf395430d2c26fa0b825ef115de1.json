@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64a2680acb2612829445db7bf453b56b86c6cf395430d2c26fa0b825ef115de1",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "round thatched hut with conical straw roof",
+ "label": "pirate-isles/pi-hut-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round thatched hut with conical roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All cross-sections of the conical roof and cylindrical wall are drawn with perfectly straight horizontal lines (e.g. tier lines at rows 4, 7, 10, 13, 16, 20, 24, 28, 32, 35 and the wall band at row 53) with zero elliptical curvature. The hut is rendered as a flat 2D architectural front elevation rather than viewed from a 45-degree top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10971
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched hut with conical roof",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical thatch roof slopes down toward the viewer across 37 source pixel rows (rows 0-36), fully displaying the top roof surface above the lower cylindrical wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14021
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round thatched hut with conical roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hut is drawn entirely in flat 2D front elevation (platformer style). Every circular feature of the cone and cylinder—the thatch tier lines (rows 6, 10, 14, 18, 23, 28, 33), the roof eave fringe (rows 37-40), the door lintel, and the wall bands (rows 52-54)—is a completely straight horizontal line with zero elliptical curvature or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10275
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round thatched hut with conical roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The round hut is drawn in pure flat architectural elevation: all circular horizontal cross-sections (the thatch tiers, eave fringe, wall bands, and base) are rendered as completely straight horizontal lines rather than downward-curving ellipses. The top finial cap shows no top surface, and the doorstep is only a 1px line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16810
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.578Z",
+ "cells": {
+  "16": [
+   "1c5b4a89531d0ccf",
+   "22f7d1733681982f",
+   "26352e145b13dc81",
+   "458c39a87137946d",
+   "46cd0a460bd737af",
+   "6f58ba6598c764fd",
+   "77a0d6ec4d39a634",
+   "81d07522cdd0f329",
+   "8fe388bab4f3278a",
+   "9a45a5c906952bda",
+   "af92702c0f866e91",
+   "dd593516b6c1ef9c"
+  ],
+  "24": [
+   "05c70485d3aa8695",
+   "27c9eb26fb57f602",
+   "36be2aa5bd460587",
+   "43fbc46f8586e639",
+   "58fe23ce691ff002",
+   "6564f9cf5766ecb0",
+   "84bec9b0f928be04",
+   "8a465fddce4cdb08",
+   "90211c035d63da07",
+   "ddb2df35c8954813",
+   "e6dac63a3dabcfe9",
+   "f883935ac0208381"
+  ],
+  "32": [
+   "013f2250a41cf393",
+   "045140cc6656d8c5",
+   "1ad00ad8d12b88b9",
+   "4493e7f08a8d0cf0",
+   "4ef180b718021a34",
+   "60ecdeb7f5587035",
+   "6b4384da4a6d3a94",
+   "8d54550aa395bc94",
+   "a445efe09469ead1",
+   "c92917147b38e298",
+   "dfa8763b4ea6065a",
+   "fdc5586f7486f8ff"
+  ],
+  "48": [
+   "33fa2ef0e11ebc97",
+   "c27ed425e6d54d5f",
+   "d2dd2c058a7db70d",
+   "d2de514bd6c02bc3"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ff3881a0c89db97b258cbbc60053f691aca8820139ddede7fdf44f2e41e420b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담 왼쪽 끝 기둥",
+ "label": "steampunk-city/sp-fence-post-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence pillar and bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and iron fence are rendered in pure front elevation: the pillar has no visible top surface (only a flat cap with a finial directly on top), and the iron bars and brick base coping are flat horizontal bands without top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7277
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "left stone pillar and iron fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and iron fence are drawn in flat front elevation. The pillar has a pointed finial sitting on a flat vertical cap without any foreshortened top surface visible from above (0 rows), and the fence rails are 1px flat bars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7130
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron fence with stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron bars, pillar, and lower wall are rendered in pure front elevation without foreshortened top surfaces. The iron crossbars are flat 1px grid lines, and the wall base ledge is only 1-2px high.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6601
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron fence with stone pillar and low brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar, iron bars, and wall base are drawn entirely in flat front elevation. The iron crossbars are single 1px lines without top surfaces, and the pillar shows no top face under or around its finial.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5488
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "2d8b5e491598342f"
+  ],
+  "24": [
+   "3ee12c161e494f3b",
+   "54ec671f4272dca4",
+   "6cdbfcc7dd48d6b0",
+   "73ed8717ccfa77a3",
+   "a54f1ee679d9b8cb",
+   "fb48517b47061f18"
+  ],
+  "32": [
+   "57b6aeb88d4dcbd2",
+   "581e007d97082b80",
+   "89183c0ec673b604",
+   "b6bed2de7a5da171",
+   "b73ae6ee2247eb15",
+   "e020fed713f8cc21"
+  ],
+  "48": [
+   "1bd19422cbf6d4e8",
+   "95526a3215ec167d",
+   "a11c5ebd9af83a97",
+   "c08f79f2d6bccc56",
+   "e9210208f29511f0",
+   "fc12cd69495e1c0a"
+  ]
+ }
+}

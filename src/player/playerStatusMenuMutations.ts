@@ -3,11 +3,12 @@ import { store } from "@/project/store";
 import type { PlayScene } from "@/player/PlayScene";
 import { transitionActorEquipment } from "@/project/equipmentRules";
 import { useItemFromMenu } from "@/player/playerItemUse";
+import type { CareEvolution } from "@/project/monsterCare";
 import { bestEquipmentPlan } from "@/player/playerStatusMenuDetails";
 import type { ActorInitialEquipment } from "@/project/types";
 
 export type StatusMenuMutationResult =
-  | { readonly kind: "used"; readonly message: string }
+  | { readonly kind: "used"; readonly message: string; readonly evolutions?: readonly CareEvolution[]; readonly transfer?: { readonly mapId: string; readonly x: number; readonly y: number } }
   | { readonly kind: "unusable"; readonly message: string };
 
 export function useStatusMenuItem(scene: PlayScene, itemId: string, actorId?: string, monsterInstanceId?: string): StatusMenuMutationResult {

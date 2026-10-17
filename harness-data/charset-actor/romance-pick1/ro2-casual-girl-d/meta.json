@@ -1,0 +1,53 @@
+{
+ "key": "ro2-casual-girl-d",
+ "arch": "ro2-casual-girl",
+ "base": "Actor3:3",
+ "variant": "흰·남색 줄무늬 티셔츠 + 검은 청바지(하의 짙은 남색) + 흰 스니커즈. 머리는 검은색 올림머리 유지(주황·갈색 줄무늬 제거).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 3,
+   "errors": [],
+   "warnings": [
+    "한 프레임에만 나오는 색 e — 걸을 때 깜빡일 수 있다",
+    "팔레트에 있지만 안 쓴 색 hmpqst"
+   ],
+   "at": "2026-10-16T14:35:42"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "한 프레임에만 나오는 색 e — 걸을 때 깜빡일 수 있다",
+  "팔레트에 있지만 안 쓴 색 hmpqst"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.226,
+   "T": 0.899,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 12,
+  "cross_base": 13,
+  "lone": 340,
+  "lone_base": 407
+ },
+ "reapplied": true
+}

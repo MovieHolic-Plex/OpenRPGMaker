@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9020ddeccf7cdab9e0ae5567758f1f3a5b62441f6db07b6026eb6ce970938cc6",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "그네 매달린 고목",
+ "label": "gothic_manor/gm-dead-tree-swing",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "old tree with hanging swing",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The swing seat clearly displays a 3-row foreshortened top surface (rows 44-46) above its front face (rows 47-50), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "withered tree with hanging swing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in side-scroller / front elevation style. The horizontal branch and the base of the trunk show no top surface (0 rows), drawn flat across the 2D plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9095
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "old tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the large withered tree, drawn in flat 2D side-scroller elevation with a straight flat base line at rows 61-62 and no top-down foreshortening on the trunk or branches. Only the swing seat shows perspective (3px top), but per instructions credit cannot be given for small attached parts.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "old tree trunk and branch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tree is drawn as a flat side-scroller elevation: the horizontal branch shows no top surface, the tree hollow is viewed straight-on, and the roots rest on a perfectly flat horizontal baseline with no depth. The main body has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5909
+  }
+ ],
+ "decidedAt": "2026-10-14T07:55:00.836Z",
+ "cells": {
+  "16": [
+   "1224c86af909c911",
+   "1f05648452a93833",
+   "4aa622e94c99cc57",
+   "4e5585a5efa65861",
+   "58556c95a0f059c8",
+   "5ff518d66f889c33",
+   "88f73006efdf9f2c",
+   "947152bd0deeadcd",
+   "a247a46b4519ec0c",
+   "b700681345f43ff8",
+   "c18ba3e725bbfd44",
+   "e901966b85585be2"
+  ],
+  "24": [
+   "0501638209569b20",
+   "0619807b13844303",
+   "2aee781cdb548cc9",
+   "59521b7d2ed6c238",
+   "727df9cca804bc9a",
+   "815d2ca96c75ef10",
+   "8678964496baeccf",
+   "9ad0adabce357763",
+   "b11d8d6a57d5831f",
+   "d5d86bd1808ef377",
+   "e91cf8798917513f",
+   "f84adbe68578aa45"
+  ],
+  "32": [
+   "0a15b64d41c88f86",
+   "24a60fada879ccdf",
+   "279780212c4810d9",
+   "2ca5bd4c4438b07a",
+   "44422aea0772c56b",
+   "49e4ce8cf905e3a5",
+   "4d934d440a4f197f",
+   "6655cb4a9e3cf72a",
+   "76257fe3970c0ccb",
+   "9875cc8640a241b3",
+   "b8562d9bd579b75f",
+   "e10a0e2f8b603bea"
+  ],
+  "48": [
+   "4425967e4e068733",
+   "90428eb0afbbfb3f",
+   "ba7014d3aa565078",
+   "bd70d3e2fd1a33f2"
+  ]
+ }
+}

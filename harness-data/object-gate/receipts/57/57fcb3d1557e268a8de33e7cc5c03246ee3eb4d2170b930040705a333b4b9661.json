@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57fcb3d1557e268a8de33e7cc5c03246ee3eb4d2170b930040705a333b4b9661",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "wooden hand cart with large wheels and cargo",
+ "label": "sky-island/si-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart body and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure 2D side-scroller elevation profile. Both wheels are perfect flat side-view circles on a single ground line with no rear wheels or depth visible. The cart body shows only its vertical side panel with 0 rows of visible top surface or interior bed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7038
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart body and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat 2D side-scroller elevation with circular wheels in the screen plane and no visible top surface or interior depth into the cart bed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8362
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart body with wheels and cargo",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn in flat 2D side-scroller profile (side elevation). The circular spoked wheels, cart body panels, crate, and handle exist purely in the vertical plane with zero foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart body and wheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn as a flat 2D side-scroller elevation with circular wheels, no visible interior/bed depth or top rim, and no north-side wheels visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10852
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "11e776568dd2713a",
+   "556a14084344bc6a",
+   "a0249492154c9787",
+   "b4d32f98a801cb51"
+  ],
+  "24": [
+   "06bf862dc6dcc6cc",
+   "15ee4d1e904619bd",
+   "45056fa0558a78d6",
+   "489a2150ae6ad337",
+   "56b3aa8be024ebc7",
+   "575fefcf5563cb50",
+   "5a0a9eaa17a64237",
+   "6589be3b611e56f4",
+   "6b237e7e1df0e3d3",
+   "6f0e329f59561ad1",
+   "6fa5f7360bc28f24",
+   "7061c3e80fb4b8ce",
+   "8878af93f6b9bafc",
+   "992fe672b10873ca",
+   "9963b85a8598601f",
+   "a0864a06e0ca0240",
+   "a1368739811c35ec",
+   "a9f822ec15754da3",
+   "ab1c3337b7861f99",
+   "b7c5edebe017ae31",
+   "d44c692fd50ba596",
+   "d805bd1401280971",
+   "f2c31f8006123980",
+   "fa25e0674c917178"
+  ],
+  "32": [
+   "7ba937abe15d3755"
+  ],
+  "48": [
+   "24d30071b4e70298",
+   "3d71af092ac2dbfb",
+   "805b6f39839c25c3",
+   "8ee4fddbc6b4f4a8",
+   "9c85d4a3315ed2ed",
+   "c893d6a47feb8b63"
+  ]
+ }
+}

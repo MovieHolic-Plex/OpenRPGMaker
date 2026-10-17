@@ -1,0 +1,193 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bb8ac021907c9878874fde349c34e928707fac250e0a886fbea59a2102c9e18",
+ "width": 32,
+ "height": 80,
+ "kind": "structure",
+ "name": "tall wooden watchtower on four legs with thatched lookout platform and ladder",
+ "label": "pirate-isles/pi-watchtower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden watchtower with lookout platform and ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure below the roof (rows 15-77, over 80% of the sprite) is drawn in a pure 2D front elevation suited for a side-scroller: the platform is a horizontal plank seen directly edge-on with no visible floor surface, crossbeams and ladder rungs are perfectly straight horizontal bars with zero top visibility, and the lookout cabin walls are flat vertical elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "watchtower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The watchtower is drawn in flat front architectural elevation. The lookout platform base (rows 33-35) shows only a 3px front face with zero visible top floor surface, horizontal crossbeams and ladder rungs are completely flat 1-2px lines with no top visible, and the lookout window is a flat rectangular slit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden watchtower with thatched lookout platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The watchtower is drawn in a pure 2D side-scrolling front elevation. The lookout platform deck and horizontal support beams show 0 source pixel rows of top surface (only a 3px flat front face at rows 33-35), the window is a flat frontal cutout with no visible interior floor, and the cross-bracing, ladder, and legs have no 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13279
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched lookout watchtower and stilt legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire watchtower is drawn as a flat 2D side/front elevation. The lookout platform base (rows 33-35) shows only a flat horizontal rim with no visible deck/floor surface from above, the ladder rungs are drawn flat on, and the roof and window opening lack any top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5404
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.208Z",
+ "cells": {
+  "16": [
+   "16db790203430375",
+   "2538b6bfa62a7e1b",
+   "254d7b29ea73420c",
+   "3bb329740e56a928",
+   "6164a7e50a7a2c8f",
+   "9e230ae616f2264c",
+   "a70af0ba1b2e301d",
+   "b4474023e97dbb5b",
+   "ef3aed51b3fdde73",
+   "f01e7d669d7ae866"
+  ],
+  "24": [
+   "051dce52d6de5cb2",
+   "0f6dd714e3892839",
+   "114b5592e170c55c",
+   "143d05cd510e999c",
+   "18411ff894b51641",
+   "18e79ea53d6e1c8d",
+   "23d36685c9a0bd22",
+   "2a9a2f441610b365",
+   "2b8a904b904a75d0",
+   "2cbf4fe444610a4f",
+   "2f30b49bb4ef8285",
+   "31769fed645a8bce",
+   "319d9ca3cc79f17b",
+   "355505abf21e8c3f",
+   "4215ccb48da110ae",
+   "440a8a3af91ca760",
+   "5540bcf7eb87b429",
+   "5603470f0d1c6393",
+   "5b37c870253d8c6b",
+   "5cd7542028934e63",
+   "63befa307a3defb4",
+   "640ee9795d3312c5",
+   "66cc3a45c9e16762",
+   "6a3ec1d708cfaa22",
+   "6ed3911dec07d374",
+   "712e83c27b1d15eb",
+   "727f84c18b1a80a8",
+   "7615ee09890a22cf",
+   "81ebfdf0920eb8fd",
+   "8bd8f29b16a91144",
+   "8d8d1dfc1efc9304",
+   "8e6395cec7bed7db",
+   "961eae62eb1ec141",
+   "b785f5fbc9213691",
+   "ba6b1156861b7bc2",
+   "bda8b9a79328aa30",
+   "bf7563f8b71cc549",
+   "c42a9c12370290d3",
+   "c46acdd30502d43d",
+   "c7d9b90aecc09106",
+   "cdf3853dc8bf449d",
+   "d1286b4b8145c79f",
+   "d46d6629f8743b59",
+   "eae5e4a34491f723",
+   "f143d1b9597b3f93",
+   "f295fb4ab7714b87",
+   "fb2829ace76e2933",
+   "ff3df21a1a2e3bb6"
+  ],
+  "32": [
+   "3c843af8c2fed593",
+   "3d203de38d873054",
+   "979ebfb9ded613b6",
+   "e214fc4d0f2db838",
+   "f6ef10beba346cc3",
+   "ff92f07c5566f66f"
+  ],
+  "48": [
+   "130f5bbc21571469",
+   "51df1c2e2b845cea",
+   "640523bfcee0e9ba",
+   "7e08e98543c93d4f",
+   "94e940f2f1a86190",
+   "9513dd0424fe2a58",
+   "a769256f257bb7fb",
+   "b3aa55378d13b2ef",
+   "bdf2eb4ef4ae53b5",
+   "be9dace6ad0507cc",
+   "d7a871a7b57c308c",
+   "ed7da9a73b95d565"
+  ]
+ }
+}

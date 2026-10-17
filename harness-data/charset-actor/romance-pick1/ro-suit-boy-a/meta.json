@@ -1,0 +1,51 @@
+{
+ "key": "ro-suit-boy-a",
+ "arch": "ro-suit-boy",
+ "base": "Actor4:0",
+ "variant": "차콜 네이비 정장 재킷(라펠 암시) + 흰 셔츠 + 짙은 파랑 넥타이 + 같은 색 정장 바지 + 검은 구두. 머리는 검은색에 가까운 어두운 갈색(모양 유지).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdefgijklnprstuvz"
+   ],
+   "at": "2026-10-16T03:45:14"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdefgijklmnpqrstuvz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.875,
+   "T": 0.893,
+   "B": 0.89,
+   "S": 1.0
+  },
+  "cross": 10,
+  "cross_base": 15,
+  "lone": 237,
+  "lone_base": 323
+ },
+ "reapplied": true
+}

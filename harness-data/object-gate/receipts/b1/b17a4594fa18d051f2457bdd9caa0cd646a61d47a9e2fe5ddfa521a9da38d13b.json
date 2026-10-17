@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b17a4594fa18d051f2457bdd9caa0cd646a61d47a9e2fe5ddfa521a9da38d13b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 — 방 동쪽 경계(테 서쪽)",
+ "label": "desert-east/de-ceil-tomb-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling/boundary terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat ceiling/boundary terrain tile viewed directly in top-down map projection, not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomb ceiling border tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain/ceiling autotile border viewed top-down; kind matches terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5983
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat overhead terrain/ceiling border tile for dungeon/tomb mapping. As a terrain surface tile rather than a standing object, it correctly fills the view from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomb ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile represents overhead ceiling/border terrain viewed from above, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4526
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "c4a2cb99a6405af0"
+  ],
+  "24": [
+   "893438267407cffb",
+   "92108e7a415e2108",
+   "dc5641abeae99001",
+   "e3e93aff8899b459",
+   "f9e0ca22683b6d4d",
+   "fbdd019f0c3d211c"
+  ],
+  "32": [
+   "3accb2dabda5f91b",
+   "52742a6339067529",
+   "555d5bb2c1f05150",
+   "955f298c5ed94304",
+   "d38a4cbaac710ce3",
+   "f4c72c886659b7ff"
+  ],
+  "48": [
+   "4d3baf10e60a45ed",
+   "6eb338b6b8e0540a",
+   "82e49852b38e748d",
+   "b082ee1a5c6aff9a",
+   "fe1260c7fded8572",
+   "fe9006a332c0fa35"
+  ]
+ }
+}

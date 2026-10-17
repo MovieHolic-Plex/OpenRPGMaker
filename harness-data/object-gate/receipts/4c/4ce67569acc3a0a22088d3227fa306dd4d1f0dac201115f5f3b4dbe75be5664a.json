@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ce67569acc3a0a22088d3227fa306dd4d1f0dac201115f5f3b4dbe75be5664a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "화단 흙",
+ "label": "steampunk-city/sp-soil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soil ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing soil with small green vegetation patches; entire 16x16 surface is the top-down ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3221
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing soil with small green vegetation flecks, filling the full surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3603
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flowerbed soil terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a flat ground surface depicting dirt/soil with small green sprouts, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6320
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire tile is a seamless dirt/soil ground texture with small green specks, representing flat terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2584
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "3fbb7f066218248d"
+  ],
+  "24": [
+   "483412a1423dcaf4",
+   "5a3be83d416dd6c6",
+   "65140b77ae0846ac",
+   "73748205a6e9b765",
+   "92cb016426b16a0a",
+   "d482e39e9fc3fc13"
+  ],
+  "32": [
+   "31ff79e788e50356",
+   "37738f8b56844f2b",
+   "b9641456ecab43b5",
+   "bea954a0f6a1ef70",
+   "daa3c87fcbf57872",
+   "e15214cbc3c6b9a7"
+  ],
+  "48": [
+   "1dfdd21d32be3970",
+   "444f84ad6c4443b0",
+   "553f7badd5aae482",
+   "8b2dbc4c01edb041",
+   "c9ac94fbe4aea08b",
+   "f3d9d3cbef951856"
+  ]
+ }
+}

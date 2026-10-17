@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42bbf80ae3cc1cb89951e5e9ca3721b391b5b39f62ce8659edcae23a2f9443e9",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "병실·진찰실 벽(연크림 + 의료 가스 띠)",
+ "label": "jp_city/interior_hospital/hs-wall-room",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical wall face with a medical gas strip and baseboard, designed for 3/4 perspective map walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4871
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital wall face tile with medical gas strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 2D wall face terrain tile (cream wall with green medical gas band and bottom baseboard trim), correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4564
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile for clinic/hospital room featuring medical gas stripe and baseboard molding.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3413
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital room wall surface with green horizontal strip and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical wall face terrain element showing light cream wall panels, a horizontal medical gas trunking strip, and lower baseboard trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4246
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.777Z",
+ "cells": {
+  "16": [
+   "2813422bffae0295",
+   "5e638be83f52aeb6",
+   "8bccee22f1f0fd04",
+   "a05640fd9dcb7277"
+  ],
+  "24": [
+   "04679535c6c99f98",
+   "04e628531e4097e0",
+   "15cca91fa1fc3935",
+   "177cd0330c436130",
+   "196ff92344a72bdf",
+   "1d120b7f85ab49a2",
+   "242998cc3144df43",
+   "369bd2dece16ab0e",
+   "4031bf9dd5e73cfc",
+   "657497507dd7c36e",
+   "660cb5704f8af90c",
+   "6792d581fe7ec546",
+   "6afa295edd4370f2",
+   "6cf3590f7be73972",
+   "85cde85948527cb2",
+   "968b45a7e86c5e30",
+   "9ade95e1c71cc38e",
+   "a5d100a91e0c9425",
+   "a693afc670acb36b",
+   "b084d85e37b53298",
+   "b94583633b5d7ed5",
+   "c927adb93a15b006",
+   "ea3cbf78330c0565",
+   "ea9484bf70f69bca"
+  ],
+  "32": [
+   "1b9162f8ab0cf184"
+  ],
+  "48": [
+   "19387fe9a5128417",
+   "59f21771c95607ca",
+   "605e75cd08c2f00a",
+   "6ea49cdc923e126e",
+   "7a68132ca01db453",
+   "ed6abf7257dd3615"
+  ]
+ }
+}

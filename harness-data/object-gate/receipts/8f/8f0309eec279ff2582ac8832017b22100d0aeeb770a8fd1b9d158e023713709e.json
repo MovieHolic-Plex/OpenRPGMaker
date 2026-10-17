@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f0309eec279ff2582ac8832017b22100d0aeeb770a8fd1b9d158e023713709e",
+ "width": 16,
+ "height": 48,
+ "kind": "organic",
+ "name": "어린 자작(가는 줄기 둘)",
+ "label": "snow-north/sn-birch-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young birch tree trunks and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunks and branching limbs are drawn strictly in the 2D front plane like a side-scroller sprite or architectural elevation, with no top surface, depth foreshortening, or perspective toward the camera.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young birch tree trunks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunks and branches are drawn entirely in side/front elevation with no top-down perspective or visible horizontal top surfaces (0 px top).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "young birch tree trunks with branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunks and branches are drawn in a completely flat front elevation view suitable for a 2D side-scroller. There is no top-down 3/4 perspective, no canopy volume seen from above, and the base/ground connection lacks depth (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "birch trunks and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young birch tree is rendered entirely in flat 2D front elevation: the trunks are straight vertical parallel lines and the branches spread only along the 2D screen plane without any foreshortening, depth, or canopy volume seen from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8069
+  }
+ ],
+ "decidedAt": "2026-10-14T08:02:24.502Z",
+ "cells": {
+  "16": [
+   "12f5a50fbd2bdc37",
+   "1cca3fa41c9cd95d",
+   "ad96c450dde17315"
+  ],
+  "24": [
+   "0dce1fe1c3689a0a",
+   "1e2e9c863bbd3992",
+   "36a9a17fb024e961",
+   "55bd5efd32482f04",
+   "5656dced83b62057",
+   "82e7f68dfaef5ace"
+  ],
+  "32": [
+   "20e66951ad79a0e1",
+   "210b3dc4210408d0",
+   "23f79d3489c153b6",
+   "3a8111f509cacea3",
+   "3b46a68286243022",
+   "5d139c895c5e07d4",
+   "8a7d840e5b80d149",
+   "9102af206c79cac3",
+   "b3d8555ecab1ee20",
+   "bb88d4b383bf82ce",
+   "d07e07dc919124e7",
+   "f2ad0cb3ab22073d"
+  ],
+  "48": [
+   "602986edbf7907d5",
+   "92cfa03ad294e3ab",
+   "fe7764c1b672582a"
+  ]
+ }
+}

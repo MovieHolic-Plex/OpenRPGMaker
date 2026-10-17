@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f746682107926fd27d6f7efacf4b344185e70d3707d79a5c0e7d29c234e3d902",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(깊은 윗면 + 빛나는 진열창 + 색 캔 + 버튼 줄 + 꺼내는 곳)",
+ "label": "sf-station/sf-vending",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is prominently drawn in rows 0-5 (about 6 rows tall) above the front face (rows 6-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4096
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vending machine features a deep 6-row visible top surface (rows 0-5) in blue-grey above the front face (rows 6-30), which shows the display window, buttons, and dispenser slot without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5085
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vending machine shows a generous 5-pixel deep horizontal top surface across rows 1-5 above the front pink trim and purple main body, correctly conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine spans rows 0 to 5 (6 pixel rows deep) with foreshortened panel detailing before the front purple face begins at row 6/7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4041
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.237Z",
+ "cells": {
+  "16": [
+   "39054d5a470e9621",
+   "8dc64f33ae12bf71"
+  ],
+  "24": [
+   "19ec08ae14d4ce9a",
+   "1be019c3d0decd84",
+   "4a146b8daf8f734a",
+   "51bd77246f3d6723",
+   "69ad854aa14042ed",
+   "812b3d9c1b98c25c",
+   "9f1f0a4af9276b1e",
+   "ad8e10bae6951454",
+   "bcec74422c5454a9",
+   "ded14ffb051f6d94",
+   "e5ad51ce2a95d60e",
+   "f6e55cbb99420d2c"
+  ],
+  "32": [
+   "2cd11e429dfd7f96",
+   "528c93d48d71bf8b",
+   "96edd37eaa1c11c2"
+  ],
+  "48": [
+   "00aaaa1ae6393d48",
+   "0fbafa3490296cba",
+   "24f61e589cc2763b",
+   "ea08d9504713d385",
+   "f971addc224834d8",
+   "fee1a7852d8995f9"
+  ]
+ }
+}

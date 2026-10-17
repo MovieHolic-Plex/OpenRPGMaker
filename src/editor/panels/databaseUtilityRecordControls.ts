@@ -104,7 +104,7 @@ export function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): 
 export function terrainVehicleText(terrain: DatabaseTerrainRecord | undefined): string {
   if (!terrain) return "(미설정)";
   const passage = terrain.vehiclePassage;
-  return `보트 ${passage.boat ? "가능" : "불가"} / 선박 ${passage.ship ? "가능" : "불가"} / 비공정 ${passage.airshipLand ? "착륙" : "불가"}`;
+  return `보트 ${passage.boat ? "가능" : "불가"} / 선박 ${passage.ship ? "가능" : "불가"} / 비공정 ${passage.airshipLand ? "착륙" : "불가"}${passage.chocobo ? " / 초코보 통과" : ""}${passage.cart ? " / 수레 레일" : ""}${passage.raft ? " / 뗏목" : ""}`;
 }
 
 export function isElementKind(value: string): value is DatabaseElementKind {

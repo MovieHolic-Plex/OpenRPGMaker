@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "778cb1a8640c3cf4faf71951698e29ee7ba92d6eb88c9bf0b2126450ab9e4cf0",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "양탄자 걸이",
+ "label": "desert-east/de-carpet-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden carpet rack with hanging rugs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam is only 2-3 pixels tall with no top surface, the rugs hang completely flat, and the bottom crossbar at row 30 is a flat 1px line. The entire frame is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6076
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet rack frame and hanging carpets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam is only 3px tall with a 1px edge highlight on row 4, showing no visible top surface. The bottom bar and hanging carpets are likewise drawn completely flat in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6699
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden carpet rack / hanging frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam has only a 1px highlight line on row 4 with no distinct top face visible from above, and the base beam on row 30-31 is completely flat. The entire rack and hanging carpets are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5205
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet rack frame with hanging carpets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and hanging rugs are drawn entirely in flat front elevation. The top beam has 1px horizontal shading bands rather than a visible top face, and the bottom crossbeam/base is a flat 2px bar with no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6773
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.228Z",
+ "cells": {
+  "16": [
+   "0e60a1b9fca931d1",
+   "ad185b5f13ba2a53",
+   "ccd64c90d6615b64",
+   "faf193efeb112aba"
+  ],
+  "24": [
+   "00437e413e881ac9",
+   "0246749a0e748007",
+   "1cca16d77f350a78",
+   "2397560bb54ca90f",
+   "30a3496f871231a4",
+   "33f9a67f3c552abd",
+   "37d9d408960049a7",
+   "3ab95b1a130ff228",
+   "3bd0c98c5b7c1ff9",
+   "3e4870c7d755557b",
+   "4109e000cce357c4",
+   "5c99af60c7ccb6ef",
+   "5e42ef4e1826cf70",
+   "720ab048b2b18294",
+   "73e6d9c6f41ed54f",
+   "9927825d23b8f1eb",
+   "9df35efd0c4d02b2",
+   "a7cfd02065cb229f",
+   "bccf0fae16111204",
+   "be74f7a6a1418be9",
+   "be99b8877f3ff1ae",
+   "d257ed98c609d1b1",
+   "d98606b980960c70",
+   "dea4de5a8896856a"
+  ],
+  "32": [
+   "e65b4e74bfa38657"
+  ],
+  "48": [
+   "2c7173132038ca0b",
+   "3652a49560c952cc",
+   "6fb252a00b75b8df",
+   "89dbcc6512997176",
+   "9317e24f845323bc",
+   "ee2eb9257f114ceb"
+  ]
+ }
+}

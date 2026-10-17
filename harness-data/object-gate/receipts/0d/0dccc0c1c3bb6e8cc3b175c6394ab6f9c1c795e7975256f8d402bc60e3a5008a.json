@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0dccc0c1c3bb6e8cc3b175c6394ab6f9c1c795e7975256f8d402bc60e3a5008a",
+ "width": 32,
+ "height": 32,
+ "kind": "debris",
+ "name": "huge heap of gold coins with goblets, a jewelled crown, pearls and a sword stuck in it",
+ "label": "pirate-isles/pi-gold-heap",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "heap of gold coins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire heap and the objects embedded in it (crown, goblet, sword) are drawn in pure front elevation as if for a side-scrolling platformer. The crown has no top ellipse or visible interior, the goblet is drawn completely flat, and the mound has no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8990
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "heap of gold coins",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a rounded mound of gold coins viewed from a 3/4 top-down angle, with the upper surface foreshortened across rows 12-21 before sloping to the southern base. The crown and goblet details are drawn in front elevation, but the main body is an overhead heap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6334
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "heap of gold coins",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a large rounded heap of gold coins viewed from an elevated 3/4 angle, with the upper illuminated surface occupying rows 10-18 before sloping down into the shaded front face. No isometric side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11580
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "heap of gold coins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite is drawn in pure front elevation as if for a side-scroller: the coin heap is a vertical front-facing dome with no foreshortened top surface (0 top rows), and the items placed in it (crown and goblet) have flat 1px horizontal lines with no visible elliptical openings or interiors.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9940
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.190Z",
+ "cells": {
+  "16": [
+   "307f3730e271e9ac",
+   "7f52b8839a23deb9",
+   "8df5ba3372e9f46e",
+   "94a917e8128f3d66"
+  ],
+  "24": [
+   "00b7bc34ee2d5c9c",
+   "07e87db4063b2eb4",
+   "0dbc992db4e52fb7",
+   "1d75d337e13a112e",
+   "3695c9cdc4c405f1",
+   "39e0da110531f69b",
+   "446f2e126ae5659a",
+   "49971c7a3a299a92",
+   "4bd16dcb0d0f1f4c",
+   "5e63a9b06f1abdc3",
+   "6f6c553b4d7ca69a",
+   "8bc7dea97b81567f",
+   "9163dc0731e19627",
+   "99cdf0d7432c4170",
+   "a3726a5b4ed24b1e",
+   "b5d65feb2b24e7a1",
+   "b8523ac08e4d3254",
+   "bdd0fb652ba7bf54",
+   "be3a64e81d86ce78",
+   "e5716a8cf5b790ed",
+   "e9af03bc3961ed57",
+   "fc383502ac9f49ec",
+   "fe9cfc172cde100b"
+  ],
+  "32": [
+   "c2ceb59ab79dced7"
+  ],
+  "48": [
+   "3377b94f5153a4f6",
+   "616c0d79d3861800",
+   "71017ec7094c1836",
+   "b854c7e11460dea0",
+   "d46a66923229b72e",
+   "d974a8a7b9390201"
+  ]
+ }
+}

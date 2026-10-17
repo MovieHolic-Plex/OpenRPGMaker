@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e584f34c020c2dd6125731f29cb4ccb2f05addb524fc9753ac14df9240070f6c",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp_city/street_hand/jp-torii",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat 2D architectural front elevation. The top roof and lintels consist of straight horizontal bands with simple 1-2px edge highlights or flat split shading, showing no visible top slopes, foreshortened top surfaces, or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9092
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure 2D side-scroller / architectural front elevation. The pillars, lintels, and base plinths consist entirely of flat horizontal bands and vertical stripes with completely straight horizontal baselines (rows 42-47) and no top surfaces, ellipses, or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii gate is drawn as a completely flat 2D front elevation: all horizontal beams, crossbars, and pillar bases are straight horizontal bands with zero foreshortened top surfaces or elliptical depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7026
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire torii gate is drawn in pure 2D architectural front elevation. The beams, lintels, and roof are flat horizontal stripes with no foreshortened top surfaces, and the column bases are completely flat rectangles with straight horizontal bottom edges.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5788
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.702Z",
+ "cells": {
+  "16": [
+   "04a55d4db834014e",
+   "240923fb7885a208",
+   "3b7a6c490e68de51",
+   "47a66d6b94f9dae3",
+   "89b5c212dbf70c59",
+   "c89cf072c05456ca",
+   "d21685a3efd2e5bc",
+   "d7049b219a904c19",
+   "e1dca3811a6e083d"
+  ],
+  "24": [
+   "30d86d89ea5b4522",
+   "3df52121aa8323bd",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "4e53a379c4a19897",
+   "7d130311678af49b",
+   "919350ac95602a70",
+   "aa5d936b9958cb5e",
+   "b5dff4c0577d00d2",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "c54e1be513c8e5ae",
+   "c747f5e454a937ef",
+   "eda171a019a6de72",
+   "f1a7ed9a35e9a053"
+  ],
+  "32": [
+   "1b915181f104ae8d",
+   "35c4332d768a07ba",
+   "891692d90e4979ad",
+   "a7d71708b3b65359",
+   "b62d9890750f9797",
+   "c50e931f77d21839",
+   "e7d03715010eef94",
+   "eaf01017b8fa34d2"
+  ],
+  "48": [
+   "7c35f5038dbc66a7",
+   "853ebc8c0d52cdd6",
+   "aa738fdef9e7d8e7",
+   "ad46dc37bf1e3a80",
+   "e659174200ae49d8",
+   "f51c75e9ec0788af"
+  ]
+ }
+}

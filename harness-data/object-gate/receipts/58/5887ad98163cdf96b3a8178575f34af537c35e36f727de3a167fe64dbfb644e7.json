@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5887ad98163cdf96b3a8178575f34af537c35e36f727de3a167fe64dbfb644e7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-flower-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile covering the full 16x16 surface depicting green grass ground with small flower accents, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5060
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing top-down grass surface covering all 16 rows with minor flower/speck accents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing a horizontal grassy surface with small flower details across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4072
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite is a 16x16 flat grass terrain tile with scattered pixel details and tiny flowers, properly representing a ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5127
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.878Z",
+ "cells": {
+  "16": [
+   "eac0ed4405a2f607"
+  ],
+  "24": [
+   "325e65132bba2d9a",
+   "58a9033d31de33f2",
+   "607eb6d47a9ff1a9",
+   "993c3158f0345409",
+   "bb99569c1948a11e",
+   "fe5f3a8dc570df84"
+  ],
+  "32": [
+   "4ffca114d102cadd",
+   "7d998ee045f29475",
+   "b3e592f72c2afe80",
+   "f122bd469f17b6c5",
+   "f17f4432d22595fa",
+   "f8a6294315871f16"
+  ],
+  "48": [
+   "14dda24699c5e1be",
+   "3f3c0156412fc42d",
+   "6d83fa7f677d202b",
+   "7af5f315b8978f07",
+   "a293d2133a25115e",
+   "aeee321a7ee5f72c"
+  ]
+ }
+}

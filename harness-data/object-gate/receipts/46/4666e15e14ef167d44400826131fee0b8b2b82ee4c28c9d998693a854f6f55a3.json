@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4666e15e14ef167d44400826131fee0b8b2b82ee4c28c9d998693a854f6f55a3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "승강장 판석",
+ "label": "steampunk-city/sp-platform",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving slabs / flagstone terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a seamless flat terrain texture depicting flagstones/paving slabs viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4085
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a seamless terrain tile depicting stone floor flagstones/pavement viewed from above across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7487
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone flagstones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform flagstone ground terrain tile; the entire 16x16 surface depicts top-down horizontal paving.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone paving flagstones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting platform flagstones/paving blocks viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4383
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "187db8fc8aa50fbb"
+  ],
+  "24": [
+   "2af15aea0515ad4e",
+   "3df92eb0869565dc",
+   "6ffdb36364d743d9",
+   "dbcc28e03dfa8061",
+   "e34cb22f2892a5f8",
+   "f472b450274d3886"
+  ],
+  "32": [
+   "20d4be04826e4ce5",
+   "38c5cf1adc4e2008",
+   "4efa16c497f87bdd",
+   "5d6e6102e2c375da",
+   "8a16c0161a7b9ca8",
+   "9ac6076e12bafdaf"
+  ],
+  "48": [
+   "06d2903cfdfc274e",
+   "0beba645aad19e4e",
+   "4bbb50583c8c7aad",
+   "690365ba47e3039d",
+   "aa446090e4caa1dc",
+   "cee83084b7147086"
+  ]
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "key": "ro-uni-girl-a",
+ "arch": "ro-uni-girl",
+ "base": "People1:1",
+ "variant": "남색 블레이저 + 흰 칼라 + 붉은 리본, 남색 주름치마(체크 느낌 한 줄), 흰 양말 + 검은 로퍼. 머리는 어두운 갈색(웨이브 모양 유지).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 bcdefiknprsuyz"
+   ],
+   "at": "2026-10-16T03:57:54"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 bcdefiknprsuyz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.897,
+   "T": 0.916,
+   "B": 0.861,
+   "S": 1.0
+  },
+  "cross": 9,
+  "cross_base": 9,
+  "lone": 362,
+  "lone_base": 377
+ },
+ "reapplied": true
+}

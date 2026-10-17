@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4e33352c64d152bf5fdd3d9167262d763e3e7fa04349bc7e93553acdc86e081",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도 연석(남쪽 차도로 턱)",
+ "label": "steampunk-city/sp-curb-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sidewalk curb transition to roadway",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts sidewalk pavement (rows 0-9) leading to curb stone blocks (rows 11-13) with a south vertical drop edge at row 14 and road asphalt at row 15. The horizontal walking and curb surfaces are clearly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5084
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curb stone and sidewalk pavement",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sidewalk surface and horizontal curb tops span rows 0 through 13 with the south step-down edge/shadow at rows 14-15, consistent with top-down 3/4 terrain perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5156
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sidewalk paving and curb edge",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sidewalk surface spans rows 0-10 with curb stones showing top surface (rows 11-13) and southern step drop (rows 14-15); properly represents terrain in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4265
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sidewalk curb terrain step",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting sidewalk paving and curb stone (rows 0-13) stepping down via a 1-2px face (rows 14-15) to the roadway below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3401
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.050Z",
+ "cells": {
+  "16": [
+   "52e7ea73dc786285"
+  ],
+  "24": [
+   "069abdf1e899893d",
+   "5ed8c89db3b5c967",
+   "9d7c94db6f7a66d2",
+   "b35f0830f93e162f",
+   "dd908d86c7b0836c",
+   "f8d3f3c9e87e5fce"
+  ],
+  "32": [
+   "33ced9448f4ac6a6",
+   "35ff2790d4ed45c1",
+   "889ce8c710dbc8bc",
+   "c3eda1635f2f902a",
+   "ddef1df9e8c5ba9c",
+   "f352ca58ddc2d895"
+  ],
+  "48": [
+   "00ec4446d02edbc9",
+   "82733a37fe825bbf",
+   "89f027f4724fb7bd",
+   "9e04e34ea747927f",
+   "b93215c4e9a56dfb",
+   "f0ad29dbdad9cb49"
+  ]
+ }
+}

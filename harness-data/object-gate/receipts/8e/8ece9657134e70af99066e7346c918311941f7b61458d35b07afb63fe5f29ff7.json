@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ece9657134e70af99066e7346c918311941f7b61458d35b07afb63fe5f29ff7",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "높은 둥근 의자(스툴)",
+ "label": "jp_city/interior_office2/ox-bar-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool cushion and stand",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion has a clearly foreshortened top surface spanning rows 1-6 with visible shading and highlight, resting on a front-facing rim and pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stool cushion and stem",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion top is drawn as an ellipse visible from row 1 to row 5 (5 rows tall), resting on a front-facing seat edge and central stem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4236
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool seat cushion",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular seat cushion top is clearly rendered from above as an ellipse spanning rows 1 to 5 (approx 5 rows tall), with the south front edge/rim visible in rows 6-8 above the stem and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7961
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool cushion and stem",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion has a clearly visible elliptical top surface spanning rows 1 to 6 (about 6 rows tall) viewed from above, with the south edge and pole beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3580
+  }
+ ],
+ "decidedAt": "2026-10-14T06:02:44.919Z",
+ "cells": {
+  "16": [
+   "e52897c5c339125c"
+  ],
+  "24": [
+   "3b865f2646e5cc0e",
+   "53e200a1509674bb",
+   "7ffd4db1fc9eed2b",
+   "8b711c901aefaa42",
+   "948798d868f07267",
+   "c691d2cc0963913b"
+  ],
+  "32": [
+   "01083854d3eff92a",
+   "1f280316e01d4151",
+   "78b74aab368d6468",
+   "7b28dd2c56cf8d8e",
+   "7da5fa307a21eb82",
+   "d4afa02a0011f53e"
+  ],
+  "48": [
+   "0aa45a5475ae3215",
+   "76bf49493e7aaa95",
+   "a0e771b74c712486",
+   "acb1b45dcc18aa18",
+   "eec0d4e75a94fe98",
+   "f7270c0d74409c91"
+  ]
+ }
+}

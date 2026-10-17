@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3866166beaa98ba543700f074004c0a269ba415c5c9512967f8e10cbc1975dcc",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "침대 곁 탁자(기름등)",
+ "label": "steampunk-city/sp-nightstand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bedside table / nightstand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The nightstand is drawn as a pure front elevation with a 1-2px top slab (rows 4-5), an open shelf niche (rows 6-8), a drawer with pull (rows 9-13), and legs (rows 14-15). No horizontal top surface foreshortened toward the camera is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23734
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bedside table / nightstand",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the nightstand is clearly visible across rows 6 to 8 (3 rows tall, with a highlighted front edge at row 8) upon which the lamp rests. Below it (rows 9-13) is the south-facing drawer front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bedside table / nightstand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the nightstand is clearly visible across rows 5–8 (4 rows tall) with a front-edge highlight on row 8, upon which the oil lamp rests. Rows 9–13 show the south-facing drawer front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9416
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bedside table / nightstand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 5-8 (approx. 4 source pixel rows deep, with the oil lamp resting on it and a front edge highlight at row 8) above the south-facing drawer (rows 9-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14971
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.533Z",
+ "cells": {
+  "16": [
+   "8e8dd963249dc56c"
+  ],
+  "24": [
+   "013dd56cb8e81385",
+   "4be46e0b5ce4dc6c",
+   "514fee55489fb3f6",
+   "aed6ed2e3c683c75",
+   "dd320fcd73e743d7",
+   "f9e41c4373bc82f6"
+  ],
+  "32": [
+   "162fd56f04aca5fe",
+   "31f485b81585ad44",
+   "562ed7c853e605a0",
+   "76afd02083fb46a1",
+   "d587e30d2e7304ed",
+   "ffe7f740ba55c365"
+  ],
+  "48": [
+   "bb368e2b9697541d",
+   "c03874c8b0eea84c",
+   "cfd46dda0d33be7c",
+   "da68a5aaa60d9209",
+   "e754662d996eec80",
+   "ed9831e95e9496e7"
+  ]
+ }
+}

@@ -1,23 +1,41 @@
 import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
-import { applyCareItem } from "@/project/monsterCare";
+import { applyRepel, resolveEscapeRope, type EscapeDestination } from "@/project/encounterGuard";
+import { applyCareItem, type CareEvolution } from "@/project/monsterCare";
+import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
+import { evolveMonster, monsterSpeciesById, previewMonsterItemEvolution } from "@/project/monsterCollection";
+import { roJosa, withJosa } from "@/util/josa";
 import { learnSkill, nextSessionRandom, setSwitch, type PlaySession } from "@/project/session";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorParameterKey, ItemRecord, Project, SkillId } from "@/project/types";
 import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
-import { applyMonsterMedicine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { applyMonsterMedicine, machineSkillOf, previewMonsterMachine, restoredMovePp, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { teachMonsterSkill } from "@/project/monsterCollection";
 import { actorOwnedSkillIds } from "@/project/growth/runtime";
-export { previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
+import { giveHeldItem } from "@/project/monsterHeldItems";
+export { machineSkillOf, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/project/monsterMedicine";
 
 export type MenuItemUseResult =
-  | { readonly kind: "used"; readonly message: string }
+  | { readonly kind: "used"; readonly message: string; /** 이 사용으로 진화한 몬스터(순서대로). 메뉴가 진화 장면을 보인다. */ readonly evolutions?: readonly CareEvolution[]; /** 탈출 로프: 메뉴를 닫고 이 칸으로 옮긴다(호출자가 장면에서 실행). */ readonly transfer?: EscapeDestination }
   | { readonly kind: "unusable"; readonly message: string };
 
 /** The menu preview and execution share the same authored-type and target rules. */
-export function menuItemUnavailableReason(item: ItemRecord): string | undefined {
+export function menuItemUnavailableReason(item: ItemRecord, project?: Project): string | undefined {
   if (item.occasion === "battle") return "전투 중에만 사용할 수 있습니다";
-  if (!itemAllowsMenu(activeItemEffects(item))) return "필드에서 사용할 수 없는 아이템입니다";
+  if (!(project ? itemAllowsFieldMenu(project, item) : itemAllowsMenu(activeItemEffects(item)))) return "필드에서 사용할 수 없는 아이템입니다";
   return undefined;
+}
+
+/** 진화의 돌을 이 파티 몬스터에게 쓰면 어떻게 되는가(읽기 전용) — 메뉴 대상 줄과 사용 경로가 같은 판정을 쓴다. */
+export function previewEvolutionStoneTarget(project: Project, session: PlaySession, item: ItemRecord, instanceId: string) {
+  const found = previewMonsterItemEvolution(project, session, instanceId, item.id);
+  const inParty = session.monsterParty?.includes(instanceId) === true;
+  let reason: string | undefined;
+  if (!found || !inParty) reason = "파티 몬스터를 선택하세요";
+  else if ((session.inventory[item.id] ?? 0) <= 0) reason = "아이템이 없습니다";
+  else if (!found.toSpeciesId) reason = found.reason ?? "효과가 없습니다";
+  const toName = found?.toSpeciesId ? monsterSpeciesById(project, found.toSpeciesId)?.name : undefined;
+  return { reason, name: found?.name, fromSpeciesId: found?.fromSpeciesId, toSpeciesId: reason ? undefined : found?.toSpeciesId, toName: reason ? undefined : toName };
 }
 
 export function previewMenuItemTarget(project: Project, session: PlaySession, authored: ItemRecord, actorId: string) {
@@ -59,11 +77,31 @@ export function useItemFromMenu(
   const authoredItem = project.database.items.find((record) => record.id === itemId);
   const item = authoredItem ? activeItemEffects(authoredItem) : undefined;
   if (!item || (session.inventory[item.id] ?? 0) <= 0) return { kind: "unusable", message: "사용할 수 없습니다" };
-  const unavailableReason = menuItemUnavailableReason(item);
+  const unavailableReason = menuItemUnavailableReason(item, project);
   if (unavailableReason) return { kind: "unusable", message: unavailableReason };
+
+  // 벌레퇴치: 남은 걸음 동안 야생 조우를 막는다(세션 encounterGuard). 겹쳐 쓰지 않는다.
+  if (item.repelSteps !== undefined) {
+    const used = applyRepel(session, item);
+    if (used.kind === "used") commitSuccessfulUse(project, session, item);
+    return used;
+  }
+  // 탈출 로프: 던전에서만. 이동 자체는 장면이 한다(transfer).
+  if (item.escapeTo) {
+    const rope = resolveEscapeRope(project, session, item);
+    if (rope.kind === "unusable") return rope;
+    commitSuccessfulUse(project, session, item);
+    return { kind: "used", message: rope.message, transfer: rope.destination };
+  }
 
   if (item.careProfile) {
     return useCareItem(project, session, item, targetMonsterInstanceId);
+  }
+
+  // 지닌 도구: 사용이 아니라 «쥐여 주기» — 수량은 몬스터에게 옮겨 가고 전투에서 발동한다.
+  if (item.heldEffect) {
+    const given = giveHeldItem(project, session, item.id, targetMonsterInstanceId);
+    return given.kind === "done" ? { kind: "used", message: given.message } : given;
   }
 
   if (targetsPartyMonsters(project, item)) {
@@ -75,6 +113,13 @@ export function useItemFromMenu(
     commitSuccessfulUse(project, session, item);
     return { kind: "used", message: `${item.name}을 사용했습니다` };
   }
+
+  // 진화의 돌: 몬스터 종의 진화 조건이 가리키는 아이템은 고른 파티 몬스터를 진화시킨다. 맞지 않으면 「효과가 없다」(소모하지 않음).
+  if (isEvolutionStone(project, item)) return useEvolutionStone(project, session, item, targetMonsterInstanceId);
+
+  // 기술머신·비전머신: 몬스터 파티 게임에서는 파티 몬스터에게 가르친다(칸이 가득 차면 레벨업 때처럼 교체 대기).
+  const machineSkillId = machineSkillOf(project, item);
+  if (machineSkillId) return useMonsterMachine(project, session, item, machineSkillId, targetMonsterInstanceId);
 
   const learnedSkillId = item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
   if (learnedSkillId) {
@@ -106,6 +151,45 @@ export function useItemFromMenu(
   return { kind: "used", message: `${item.name}을 사용했습니다` };
 }
 
+function useEvolutionStone(project: Project, session: PlaySession, item: ItemRecord, instanceId?: string): MenuItemUseResult {
+  const id = instanceId?.trim();
+  if (!id) return { kind: "unusable", message: "진화시킬 파티 몬스터를 선택하세요" };
+  const preview = previewEvolutionStoneTarget(project, session, item, id);
+  if (preview.reason) return { kind: "unusable", message: preview.reason === "효과가 없습니다" ? `${item.name}의 효과가 없습니다` : preview.reason };
+  // itemId 를 좁혀 이 돌을 요구하는 경로만 탄다 — 같은 종으로 가는 레벨 경로가 먼저 걸려 돌이 소모되지 않는 일을 막는다. 돌 1개는 evolveMonster 가 소모한다.
+  const evolved = evolveMonster(project, session, { instanceId: id, toSpeciesId: preview.toSpeciesId, itemId: item.id, allowItemEvolution: true });
+  if (!evolved.ok) return { kind: "unusable", message: `${item.name}의 효과가 없습니다` };
+  const toName = monsterSpeciesById(project, evolved.toSpeciesId)?.name ?? "새로운 모습";
+  const name = preview.name ?? "몬스터";
+  return {
+    kind: "used",
+    message: `${withJosa(name, "은/는")} ${toName}${roJosa(toName)} 진화했다!`,
+    evolutions: [{ name, fromSpeciesId: evolved.fromSpeciesId, toSpeciesId: evolved.toSpeciesId }],
+  };
+}
+
+function useMonsterMachine(
+  project: Project,
+  session: PlaySession,
+  item: ItemRecord,
+  skillId: SkillId,
+  instanceId?: string
+): MenuItemUseResult {
+  const id = instanceId?.trim();
+  if (!id) return { kind: "unusable", message: "가르칠 파티 몬스터를 선택하세요" };
+  const preview = previewMonsterMachine(project, session, item, id);
+  if (preview.reason) return { kind: "unusable", message: preview.reason };
+  const taught = teachMonsterSkill(project, session.monsterInstances[id]!, skillId);
+  if (!taught.ok) return { kind: "unusable", message: "기술을 가르칠 수 없습니다" };
+  session.monsterInstances[id] = taught.instance;
+  commitSuccessfulUse(project, session, item);
+  const name = project.database.skills.find((skill) => skill.id === skillId)?.name ?? skillId;
+  return {
+    kind: "used",
+    message: taught.outcome === "learned" ? `「${name}」 기술을 익혔습니다` : `「${name}」 기술을 배우려면 기존 기술 하나를 잊어야 합니다 — 몬스터 목록에서 고르세요`,
+  };
+}
+
 function useCareItem(
   project: Project,
   session: PlaySession,
@@ -120,6 +204,7 @@ function useCareItem(
   if (!result.ok) {
     if (result.reason === "notInParty") return { kind: "unusable", message: "파티 몬스터에게만 사용할 수 있습니다" };
     if (result.reason === "missingInstance") return { kind: "unusable", message: "대상을 찾을 수 없습니다" };
+    if (result.reason === "maxLevel") return { kind: "unusable", message: "이미 최대 레벨입니다" };
     return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
   }
   // applyCareItem owns its legacy one-copy decrement. Restore both the copy and
@@ -129,7 +214,22 @@ function useCareItem(
   if (beforeCharge === undefined) delete session.itemUseCharges[item.id];
   else session.itemUseCharges[item.id] = beforeCharge;
   commitSuccessfulUse(project, session, item);
-  return { kind: "used", message: `${item.name}을 사용했습니다` };
+  const name = result.evolutions[0]?.name ?? monsterNameOf(project, session, instanceId);
+  const leveled = result.levelAfter > result.levelBefore;
+  // 한 줄 메시지 칸에 들어가도록 진화가 따라오면 이름을 되풀이하지 않는다(진화 장면이 따로 길게 보여 준다).
+  const parts = [leveled
+    ? result.evolutions.length > 0 ? `${withJosa(name, "은/는")} 레벨 ${result.levelAfter}!` : `${withJosa(name, "은/는")} 레벨 ${withJosa(String(result.levelAfter), "이/가")} 되었다!`
+    : `${withJosa(item.name, "을/를")} 사용했습니다`];
+  result.evolutions.forEach((evolution, index) => {
+    const toName = monsterSpeciesById(project, evolution.toSpeciesId)?.name ?? "새로운 모습";
+    parts.push(`${index === 0 ? "" : `${withJosa(evolution.name, "은/는")} `}${toName}${roJosa(toName)} 진화했다!`);
+  });
+  return { kind: "used", message: parts.join(" "), ...(result.evolutions.length > 0 ? { evolutions: result.evolutions } : {}) };
+}
+
+function monsterNameOf(project: Project, session: PlaySession, instanceId: string): string {
+  const instance = session.monsterInstances?.[instanceId];
+  return instance?.nickname?.trim() || monsterSpeciesById(project, instance?.speciesId ?? "")?.name || "몬스터";
 }
 
 function useSkillBook(

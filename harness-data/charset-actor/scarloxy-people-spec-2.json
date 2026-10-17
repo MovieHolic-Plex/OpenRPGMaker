@@ -1,0 +1,679 @@
+{
+ "title": "Scarloxy People 변형 칩 — Argon 주문서 2 (2026-10-16, 부분 편집 확대)",
+ "note": "뼈대 = Scarloxy MPWSP01 People1~2 의 10명(CC BY 4.0). 모델 gemini-4-argon-* 만. 1차에서 3회 안에 통과 못 한 원인(몸 칸 지우기·마스크 밖·삐죽 점·구멍·원래 색 잔존)을 sanitizer·구멍 메움·구체적 되먹임으로 푼다(scarloxy_argon2.py).",
+ "common": "RPG 걷기 칩(24×32, 머리가 큰 2.5등신)의 사람 캐릭터. 특정 게임의 실존 캐릭터·상표·로고를 복제하거나 닮게 그리지 않는다. 베이스의 얼굴·피부·손·몸 비율·걷기는 그대로 두고 의복·머리·모자·망토·가운 같은 윤곽이 달라지는 요소만 바꾼다. 손에 든 소품은 쓰지 않는다.",
+ "archetypes": [
+  {
+   "id": "sp2-clerk-m",
+   "name": "상점 점원(남)",
+   "genre": "몬스터 수집",
+   "role": "상점 주인",
+   "gender": "male",
+   "age": "youth",
+   "concept": "몬스터 용품 상점의 점원. 챙 짧은 캡모자와 앞치마가 한눈에 읽힌다.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:5",
+     "variant": "머리 위 h 구역에 짧은 챙이 앞으로 나온 청록 캡모자(H paint 로 머리를 덮고 이마 위 한 줄은 챙)를 올린다. 상의 T 를 흰 셔츠로 바꾸고 그 위에 청록 앞치마(T paint: 가슴 아래부터 허리까지 중앙에 앞치마 면, 어깨끈 2줄, 네 방향 각각). 반바지는 갈색, 머리색은 밤색."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 청록 캡모자로 바꾸고(챙 한 줄 앞으로), 흰 민소매 위에 하늘색 앞치마(가슴 아래 중앙 면 + 어깨끈), 바지는 짙은 회색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-clerk-f",
+   "name": "상점 점원(여)",
+   "genre": "몬스터 수집",
+   "role": "상점 주인",
+   "gender": "female",
+   "age": "youth",
+   "concept": "마트의 여자 점원. 머리 리본과 앞치마.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리 색은 밤색으로 바꾸고 머리 양쪽 묶음 위에 큰 하늘색 리본(h 구역 H paint, 좌우 2칸×2칸 덩어리), 노란 웃옷은 흰 블라우스로, 그 위에 하늘색 앞치마(T paint: 가슴 아래 중앙 면 + 어깨끈), 분홍 반바지는 남색."
+    },
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 밝은 갈색으로 바꾸고 머리 위 흰 머릿수건(h 구역 H paint 한 줄 두께로 머리를 덮음), 남색 웃옷은 흰 셔츠로, 분홍 십자 무늬 자리에 분홍 앞치마 면(T paint, 가슴 아래 중앙), 치마 하의는 분홍."
+    }
+   ]
+  },
+  {
+   "id": "sp2-peddler",
+   "name": "행상인",
+   "genre": "몬스터 수집",
+   "role": "상인",
+   "gender": "male",
+   "age": "adult",
+   "concept": "마을을 도는 짐 진 상인. 둥근 챙모자와 큰 조끼.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 짙은 갈색 둥근 모자로 바꾸고(색 전부 recolor), 흰 민소매를 갈색 조끼로, 조끼 아래 자락을 T paint 로 허리 아래 한 줄 더 내려 늘린다. 반바지는 짙은 청색, 신발은 짙은 갈색."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 주황 터번 모양(h 구역에 둥글게 솟은 한 덩어리 H paint)으로 바꾸고, 민소매를 황토색 긴 조끼로 recolor, 바지는 남색, 신발은 갈색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-swimmer-m",
+   "name": "수영 선수(남)",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "concept": "물가 마을의 수영 선수. 수영모와 수영복.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발 머리 전체를 파란 수영모로 칠한다(H recolor 로 머리색을 전부 파랑 3톤으로, 머리 윗선은 H paint 로 매끈하게). 붉은 상의는 파란 수영복 상의로, 흰 반바지는 남색으로 recolor. 신발도 파란색."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 노란 수영모로 칠하고(H 전체 recolor), 민트 민소매를 흰색, 주황 반바지를 하늘색으로 recolor."
+    }
+   ]
+  },
+  {
+   "id": "sp2-swimmer-f",
+   "name": "수영 선수(여)",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "female",
+   "age": "youth",
+   "concept": "수영 대회 선수. 분홍 수영모와 수영복.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 분홍 수영모로 칠하되(H recolor 전부 분홍 3톤) 갈래 묶음 윤곽은 둥글게 H paint 로 정리, 노란 웃옷을 연한 보라 수영복 상의, 분홍 반바지를 보라 수영복 하의로 recolor."
+    },
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 하늘색 수영모로 칠하고(H recolor), 남색 웃옷을 하늘색, 하의를 짙은 청색으로 recolor."
+    }
+   ]
+  },
+  {
+   "id": "sp2-sailor",
+   "name": "뱃사람",
+   "genre": "몬스터 수집",
+   "role": "항구 주민",
+   "gender": "male",
+   "age": "youth",
+   "concept": "항구 마을의 선원. 흰 선원 모자와 줄무늬 셔츠.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 흰 선원 모자로 recolor(챙 둘레는 연회색, 윤곽은 짙은 남색)하고 챙을 위로 접은 둥근 모양으로 H paint 로 윗선을 다듬는다. 흰 민소매 위에 남색 가로 줄무늬(T paint 가슴·배 2줄), 반바지는 남색."
+    },
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발 머리를 흰 선원 모자로 칠하고(H recolor 전부 흰·회색 3톤, 윤곽 남색), 붉은 상의를 남색·흰 줄무늬(T paint 가로 2줄)로, 흰 반바지는 남색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-captain",
+   "name": "선장",
+   "genre": "몬스터 수집",
+   "role": "항구 주민",
+   "gender": "male",
+   "age": "adult",
+   "concept": "큰 배의 선장. 큰 선장 모자와 긴 남색 코트, 금 단추.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:0",
+     "variant": "불꽃 머리 위에 큰 선장 모자(h 구역에 넓게: 챙 한 줄 + 둥근 윗면 2줄을 H paint 로, 흰색 윗면·남색 윤곽), 머리카락은 짙은 갈색, 붉은 코트를 전부 남색 recolor, 금빛 띠는 그대로 둔다."
+    },
+    {
+     "base": "Scarloxy1:0",
+     "variant": "모자를 흰 선장 모자로 바꾸고(청록 전부 흰·회색 recolor), 흰 재킷을 남색 코트로, 주황 배낭 줄·초록 바지는 남색·짙은 회색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-elder-m",
+   "name": "노인(남)",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "adult",
+   "concept": "마을의 노인. 흰 머리와 갈색 조끼, 구부정하지 않은 평범한 실루엣.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 흰 머리로 바꾼다: 모자의 모든 색(H recolor)을 흰색·연회색 3톤으로 바꾸고 챙이 있던 가장자리는 H paint 로 둥글게(챙을 줄여) 머리 모양으로 정리. 흰 민소매를 짙은 갈색 조끼로, 반바지를 회갈색으로 recolor."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 흰 머리로 칠하고(H 전체 흰·회색), 민소매를 갈색 조끼로, 보라 바지를 회갈색으로 recolor."
+    },
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 야구모자를 흰 머리(H 전부 흰·연회색 3톤, 모자 챙을 없애고 둥근 머리 윗선으로 H paint)로 바꾼다. 흰 재킷은 연회색 카디건으로 recolor, 가슴 단추 한 줄(T paint), 배낭 줄·주황 띠는 짙은 갈색, 초록 바지는 갈색 천바지로 recolor. 맨살색 조끼처럼 피부와 같은 색을 상의에 쓰지 마라 — 상의는 확실한 회색·갈색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-elder-f",
+   "name": "노인(여)",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "adult",
+   "concept": "마을의 할머니. 회색 쪽진 머리와 숄.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 회색 3톤으로 바꾸고, 어깨 구역 t 에 연한 보라 숄(T paint, 어깨 위로 걸친 2칸 폭 덩어리, 네 방향), 남색 웃옷은 갈색, 분홍 십자 무늬는 연보라, 하의는 짙은 회색."
+    },
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 회색 3톤으로 바꾸고(갈래 윤곽은 그대로), 노란 웃옷을 갈색 카디건, 어깨 구역 t 에 분홍 숄 끝(T paint), 분홍 반바지를 짙은 회색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-ground",
+   "name": "도장 보스(땅)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "땅 속성 도장의 보스. 둥근 노란 안전모와 황토색 작업복.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:1",
+     "variant": "초록 잎 머리를 노란 안전모로 바꾼다: H 의 초록 전부를 노랑·주황 3톤으로 recolor 하고 h 구역에 둥글게 덮고 챙 한 줄(H paint). 연두 튜닉을 황토색 작업복으로 recolor, 가슴에 큰 사각 주머니 2개와 어깨끈(T paint), 올리브 바지는 갈색."
+    },
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 노란 안전모로 recolor 하고 윗면을 둥글게 H paint, 흰 민소매를 황토색 작업복으로, 반바지는 갈색, 신발은 짙은 갈색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-fire",
+   "name": "도장 보스(불)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "불 속성 도장의 보스. 불꽃 모양으로 솟은 붉은 머리와 검은 코트.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 붉은 불꽃 머리로 바꾼다: H 의 청록·갈색 전부를 빨강·주황·노랑 3톤으로 recolor 하고 머리 위 h 구역에 뾰족한 불꽃 3갈래(H paint, 각 갈래 3칸 이상 덩어리)를 올린다. 흰 재킷을 검은 코트로, 가슴·어깨 띠는 주황, 초록 바지는 짙은 회색."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 붉은 불꽃 머리(H recolor 빨강·주황)로 바꾸고 머리 위 h 구역에 불꽃 2갈래 H paint, 민트 민소매를 검은 조끼, 주황 반바지를 붉은색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-water",
+   "name": "도장 보스(물)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "female",
+   "age": "adult",
+   "concept": "물 속성 도장의 보스. 물결치는 청록 머리와 파란 가운.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 청록(밝은 청록 3톤)으로 바꾸고 머리 위 h 구역에 물방울 모양 장식 한 덩어리(H paint, 하늘색), 남색 웃옷을 파란 가운으로, 분홍 십자 무늬는 흰색, 하의는 짙은 청색."
+    },
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 청록 3톤으로 바꾸고 머리 위 h 구역에 하늘색 물결 장식(H paint 2줄), 노란 웃옷을 파란색, 분홍 반바지를 남색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-flying",
+   "name": "도장 보스(비행)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "youth",
+   "concept": "비행 속성 도장의 보스. 흰 깃털 머리띠와 하늘색 짧은 망토.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 하늘색 머리띠+밝은 머리로 바꾸고 h 구역에 흰 깃털 2갈래(H paint, 위로 솟은 3칸 이상 덩어리), 어깨 구역 t 에 흰 망토 끝(T paint, 어깨 양옆 2칸 폭), 민소매를 하늘색, 보라 바지를 흰색으로."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 밝은 금발로 recolor, h 구역에 하늘 깃털 2갈래, 민트 민소매를 흰색, 어깨 구역 t 에 하늘 망토 끝, 주황 반바지를 하늘색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-fighting",
+   "name": "도장 보스(격투)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "격투 속성 도장의 보스. 흰 도복과 검은 띠, 붉은 머리띠.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발을 검은 머리로 바꾸고 이마 위 붉은 머리띠 한 줄(H paint), 붉은 상의를 흰 도복으로 recolor, 도복 가슴 앞섶 V 자(T paint), 흰 반바지를 흰색 유지하되 허리 검은 띠(T paint 한 줄)와 신발은 검정."
+    },
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 검은 짧은 머리+붉은 머리띠로 바꾸고, 흰 민소매를 흰 도복, 반바지를 흰색으로, 검은 띠(T paint)."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-poison",
+   "name": "도장 보스(독)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "female",
+   "age": "adult",
+   "concept": "독 속성 도장의 보스. 짙은 보라 망토와 연두 포인트.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:3",
+     "variant": "보라 머리를 짙은 자주색으로 바꾸고, 어깨 구역 t 에 짙은 보라 망토 끝(T paint 2칸 폭), 남색 웃옷을 검자주색, 가슴 분홍 십자 무늬를 연두색으로, 하의는 검정."
+    },
+    {
+     "base": "Scarloxy1:7",
+     "variant": "청록 머리를 짙은 보라로, 파란 드레스를 검보라로 recolor, 분홍 치마단은 연두, 어깨 구역 t 에 보라 망토 끝."
+    }
+   ]
+  },
+  {
+   "id": "sp2-student-blazer",
+   "name": "교복 남학생(블레이저)",
+   "genre": "몬스터 수집",
+   "role": "학생",
+   "gender": "male",
+   "age": "youth",
+   "concept": "학교 교복 소년. 회색 블레이저, 흰 셔츠, 붉은 넥타이.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 야구모자를 짧은 검은 머리로 recolor(윗선은 H paint 로 모자 챙을 없애고 머리 모양으로 둥글게), 흰 재킷을 회색 블레이저로 recolor, 가슴 중앙에 흰 셔츠 삼각 칼라와 붉은 넥타이(T paint), 주황 배낭 줄 색은 회색으로, 초록 바지는 남색."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 짧은 검은 머리로(H 전부 짙은 남색·검정), 흰 민소매를 흰 셔츠, 가슴 중앙 붉은 넥타이와 칼라(T paint), 보라 바지를 회색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-station",
+   "name": "역무원",
+   "genre": "몬스터 수집",
+   "role": "철도 직원",
+   "gender": "male",
+   "age": "adult",
+   "concept": "기차역의 직원. 붉은 띠 둘린 챙모자와 회색 제복.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 짙은 회색 제복모로 recolor 하고 모자 가운데 붉은 띠 한 줄(H paint), 흰 재킷을 회색 제복으로, 가슴 단추 두 줄(T paint 노랑), 배낭 줄은 붉은색, 초록 바지는 짙은 회색."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 짙은 남색 제복모로 recolor 하고 붉은 띠 한 줄(H paint), 민소매를 남색 제복(T 전체 recolor)으로, 가슴 금색 단추 두 줄, 바지는 남색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-lighthouse",
+   "name": "등대지기",
+   "genre": "몬스터 수집",
+   "role": "항구 주민",
+   "gender": "male",
+   "age": "adult",
+   "concept": "등대를 지키는 사람. 노란 우비와 둥근 방수모.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:0",
+     "variant": "불꽃 머리를 노란 방수모(H 전부 노랑 3톤 recolor, 뒤통수까지 덮는 둥근 모양으로 h 구역 H paint)로, 붉은 코트를 노란 우비로 recolor, 금빛 띠는 회색으로, 신발은 검정."
+    },
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 노란 방수모로 recolor 하고, 흰 재킷을 노란 우비로, 주황 배낭 줄은 회색, 초록 바지는 짙은 청색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-fishing-contest",
+   "name": "낚시 대회 참가자",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "concept": "낚시 대회 참가자. 흰 버킷햇과 낚시 조끼.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 흰 버킷햇으로 recolor(윤곽은 회색)하고 챙을 아래로 처진 둥근 모양으로 H paint 로 윗선을 다듬는다. 흰 민소매를 주황 낚시 조끼로, 조끼에 주머니 2개(T paint 짙은 갈색 사각), 반바지는 카키."
+    },
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 베이지 버킷햇으로 recolor, 흰 민소매를 청색 조끼로 + 가슴 주머니 2개(T paint), 보라 바지를 카키로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-capture-contest",
+   "name": "포획 대회 참가자",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "concept": "포획 대회 참가자. 주황 조끼에 번호표, 챙 넓은 바이저 모자.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리 위에 노란 바이저 모자(h 구역 H paint: 앞으로 길게 나온 챙 2칸, 윗면 한 줄), 머리색은 갈색, 민트 민소매를 주황 조끼로, 가슴 중앙에 흰 번호표 사각(T paint 3×3칸), 반바지는 짙은 청색."
+    },
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발 위에 초록 바이저 모자(h 구역 H paint, 챙 길게), 붉은 상의를 주황 조끼, 가슴 흰 번호표 사각, 흰 반바지를 남색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-lab-assistant",
+   "name": "연구소 조수",
+   "genre": "몬스터 수집",
+   "role": "연구원",
+   "gender": "female",
+   "age": "youth",
+   "concept": "몬스터 연구소의 조수. 흰 가운과 머리띠, 묶은 머리.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 연한 갈색으로 바꾸고 이마 위 하늘색 머리띠(H paint 한 줄 + h 구역 작은 안테나 같은 둥근 덩어리 1개), 노란 웃옷을 흰 가운 recolor + 앞섶 가운 단추 두 줄과 가슴 주머니(T paint), 분홍 반바지를 청회색으로."
+    },
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 밤색으로 바꾸고 머리 위 흰 머리띠(H paint), 남색 웃옷을 흰 가운으로, 분홍 십자 무늬는 하늘색, 하의는 청회색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-kid-raincoat",
+   "name": "우비 어린이",
+   "genre": "몬스터 수집",
+   "role": "어린이 주민",
+   "gender": "male",
+   "age": "child",
+   "concept": "비 오는 날의 아이. 노란 우비와 후드.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 노란 후드로 칠하고(H 전부 노랑 3톤, 머리 윗선 H paint 로 둥글게 후드 모양), 민트 민소매를 노란 우비로 recolor, 가슴 중앙 단추 한 줄(T paint 흰색), 주황 반바지는 파랑, 신발은 파랑."
+    },
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발 머리를 노란 후드로(H recolor 노랑 3톤은 이미 노란 계열이므로 짙은 노랑·주황으로 더 대비), 붉은 상의를 노란 우비로, 흰 반바지는 파랑."
+    }
+   ]
+  },
+  {
+   "id": "sp2-rancher",
+   "name": "목장 주인",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "adult",
+   "concept": "목장을 하는 사람. 넓은 챙의 카우보이 모자와 갈색 조끼.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 갈색 카우보이 모자로 바꾼다: H 전부 갈색 3톤 recolor 하고 챙을 좌우로 넓게 h 구역에 H paint(양옆 2칸씩 뻗은 챙 덩어리, 윗면은 둥글게), 흰 재킷을 갈색 가죽 조끼로 recolor, 초록 바지는 청색."
+    },
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자 챙을 그대로 두고 색만 갈색 카우보이로 recolor 하되 윗면 가운데를 H paint 로 움푹(카우보이 홈) 파고, 흰 민소매를 체크 갈색 조끼, 반바지를 청색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-courier",
+   "name": "배달원",
+   "genre": "몬스터 수집",
+   "role": "철도 직원",
+   "gender": "male",
+   "age": "youth",
+   "concept": "마을을 도는 배달원. 붉은 모자와 노란 제복, 어깨 가방끈.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 붉은 캡모자(챙 한 줄 H paint)로 recolor, 흰 민소매를 노란 제복으로, 가슴에 대각선 가방끈(T paint 갈색, 어깨에서 허리 반대편으로), 보라 바지를 남색으로."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리 위 붉은 캡모자(h 구역 H paint, 챙 앞으로), 민트 민소매를 노란 제복, 대각선 가방끈(T paint), 주황 반바지를 남색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-chef-f",
+   "name": "요리사(여)",
+   "genre": "몬스터 수집",
+   "role": "식당 주인",
+   "gender": "female",
+   "age": "adult",
+   "concept": "식당의 여자 요리사. 높은 흰 요리모자와 흰 앞치마.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 밤색으로 바꾸고 머리 위 h 구역에 높게 솟은 흰 요리모자(H paint 3줄 높이, 폭 8칸의 둥글고 풍성한 윗부분, 윤곽은 회색), 노란 웃옷을 흰 요리복으로, 가슴 단추 두 줄(T paint), 반바지는 회색."
+    },
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 밤색으로 바꾸고 흰 요리모자 3줄 높이(h 구역 H paint), 남색 웃옷을 흰 요리복으로, 분홍 십자 무늬는 붉은 스카프 모양(T paint), 하의는 회색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-villager-f",
+   "name": "마을 아주머니",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "adult",
+   "concept": "마을의 주민 아주머니. 머리 수건과 앞치마.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:3",
+     "variant": "긴 보라 머리를 밝은 갈색으로 바꾸고 머리 위에 하늘색 머릿수건(h 구역 H paint, 머리를 덮는 한 줄 + 뒤 매듭 한 덩어리), 남색 웃옷은 황토색, 분홍 십자 무늬 자리에 흰 앞치마(T paint, 가슴 아래 중앙 면), 하의는 짙은 갈색."
+    },
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 밤색으로, 머리 위 흰 머릿수건(H paint), 노란 웃옷을 연두 블라우스, 분홍 앞치마(T paint), 반바지를 갈색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-villager-m",
+   "name": "마을 아저씨",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "adult",
+   "concept": "마을의 주민 아저씨. 납작한 베레모와 조끼.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 짙은 갈색 납작 베레모(H recolor, 윗선을 H paint 로 납작·둥글게 다듬음)로 바꾸고, 흰 민소매를 회색 조끼 + 가슴 단추 한 줄(T paint), 보라 바지를 짙은 갈색으로."
+    },
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 짙은 녹색 납작모자로 recolor, 흰 민소매를 갈색 체크 조끼(T 전체 recolor)로, 반바지를 짙은 회색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-bug",
+   "name": "도장 보스(벌레)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "youth",
+   "concept": "벌레 속성 도장의 보스. 머리 위로 솟은 더듬이와 연두·노랑 곤충 무늬 옷.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:1",
+     "variant": "초록 잎 머리를 노랑·연두 머리로 recolor 하고 머리 위 h 구역에 더듬이 두 가닥(H paint: 위로 뻗은 4칸 이상 이어진 덩어리 둘, 끝은 둥글게), 연두 튜닉을 노랑·검정 가로 줄무늬 옷(T recolor 노랑 + T paint 검정 줄 2개), 올리브 바지를 짙은 초록으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-ghost",
+   "name": "도장 보스(고스트)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "고스트 속성 도장의 보스. 보라 후드와 검은 로브, 어깨 망토 끝.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:0",
+     "variant": "불꽃 머리를 짙은 보라 후드로 칠하고(H 전부 보라 3톤 recolor, 윗면을 h 구역에 둥글게 H paint 로 덮고 뾰족하게 솟은 후드 끝 한 덩어리), 붉은 코트를 검은 로브로 recolor, 금빛 띠는 연보라, 어깨 구역 t 에 보라 망토 끝(T paint 2칸 폭)."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-steel",
+   "name": "도장 보스(강철)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "강철 속성 도장의 보스. 은회색 투구 같은 모자와 어깨받이.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 은회색 투구로 recolor(H 전부 회색 3톤)하고 모자 가운데 세로 돌기(H paint 위로 2칸 솟은 한 덩어리), 흰 재킷을 짙은 강철색으로, 어깨 구역 t 에 은색 어깨받이(T paint 2칸 폭), 배낭 줄·초록 바지는 회색·검정."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 은회색 투구로(H 전부 회색 3톤 recolor, 윗면 가운데 세로 돌기 H paint), 민트 민소매를 짙은 강철색, 어깨 구역 t 에 은색 어깨받이(T paint 2칸 폭), 주황 반바지를 검정 recolor."
+    }
+   ]
+  },
+  {
+   "id": "sp2-lifeguard",
+   "name": "인명구조원",
+   "genre": "몬스터 수집",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "concept": "해변의 인명구조원. 붉은 반바지, 흰 구조 조끼, 선캡.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:1",
+     "variant": "금발 위에 흰 선캡(h 구역 H paint: 둥근 윗면 + 앞으로 나온 챙), 머리색은 갈색, 붉은 상의를 흰 구조 조끼(T paint 가슴 중앙 붉은 십자 3×3칸), 흰 반바지는 붉은색, 신발은 흰색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-fortune-teller",
+   "name": "점쟁이",
+   "genre": "몬스터 수집",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "adult",
+   "concept": "마을의 점쟁이. 큰 보라 터번과 별무늬 로브.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:7",
+     "variant": "청록 긴 머리를 짙은 자주 긴 머리로 바꾸고 머리 위 h 구역에 둥글고 큰 노란 터번(H paint 3줄 높이, 폭 10칸), 파란 드레스를 짙은 보라 로브로, 가슴에 노란 별 무늬(T paint 3×3 십자), 분홍 치마단을 금색으로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-kid-girl",
+   "name": "어린이(여)",
+   "genre": "몬스터 수집",
+   "role": "어린이 주민",
+   "gender": "female",
+   "age": "child",
+   "concept": "마을의 여자아이. 큰 리본 머리띠와 원피스 같은 노란 웃옷.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 금발로 바꾸고 양쪽 갈래 위에 큰 붉은 리본(h 구역 H paint 3×3 덩어리 둘), 노란 웃옷을 분홍 원피스로 recolor, 가슴 중앙 흰 꽃 무늬(T paint 3×3), 분홍 반바지를 흰색 레이스 하의로, 신발은 흰색."
+    },
+    {
+     "base": "Scarloxy1:3",
+     "variant": "보라 긴 머리를 연한 금발 한 갈래로(H recolor), 머리 위 큰 노란 리본(h 구역 H paint), 남색 웃옷을 연두 원피스, 분홍 십자 무늬는 흰색, 하의는 연두."
+    }
+   ]
+  },
+  {
+   "id": "sp2-student-gakuran",
+   "name": "교복 남학생(검은 학생복)",
+   "genre": "몬스터 수집",
+   "role": "학생",
+   "gender": "male",
+   "age": "youth",
+   "concept": "목깃 높은 검은 학생복과 학생모를 쓴 소년.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:2",
+     "variant": "초록 벙거지를 검은 학생모로 recolor(H 전부 짙은 남색·검정 3톤, 윗면을 둥글고 납작하게 + 챙 한 줄 H paint), 흰 민소매를 검은 학생복으로(T 전체 짙은 남색 recolor), 가슴 중앙 금색 단추 두 줄(T paint), 목 둘레 흰 칼라 한 줄(T paint), 보라 바지를 검은 바지로."
+    },
+    {
+     "base": "Scarloxy1:5",
+     "variant": "보라 머리를 짧은 검은 머리로(H 전부 검정·짙은 남색), 이마 위 학생모 챙 한 줄(h 구역 H paint), 민트 민소매를 짙은 남색 학생복으로 recolor, 가슴 금색 단추 두 줄, 주황 반바지는 검은 바지로."
+    }
+   ]
+  },
+  {
+   "id": "sp2-gym-dragon",
+   "name": "도장 보스(드래곤)",
+   "genre": "몬스터 수집",
+   "role": "도장 보스",
+   "gender": "male",
+   "age": "adult",
+   "concept": "드래곤 속성 도장의 보스. 뿔 두 개 달린 투구와 짙은 청색 망토.",
+   "candidates": [
+    {
+     "base": "Scarloxy2:0",
+     "variant": "불꽃 머리를 짙은 남색 투구로(H 전부 남색·회색 3톤 recolor) 머리 위 h 구역에 양쪽 뿔 둘(H paint, 각 3칸 이상 이어진 덩어리, 끝이 안쪽으로 굽음, 상아색), 붉은 코트를 청록·남색 갑옷 코트로 recolor, 금빛 띠는 유지, 어깨 구역 t 에 남색 망토 끝(T paint 2칸 폭)."
+    },
+    {
+     "base": "Scarloxy1:0",
+     "variant": "청록 모자를 남색 뿔 투구로 recolor 하고 양쪽에 뿔 둘(h 구역 H paint), 흰 재킷을 짙은 청색 망토 코트로, 배낭 줄 주황은 금색, 초록 바지는 짙은 남색."
+    }
+   ]
+  },
+  {
+   "id": "sp2-breeder",
+   "name": "몬스터 사육사",
+   "genre": "몬스터 수집",
+   "role": "사육사",
+   "gender": "female",
+   "age": "youth",
+   "concept": "몬스터 목장의 사육사. 챙 넓은 모자와 앞치마, 장화.",
+   "candidates": [
+    {
+     "base": "Scarloxy1:6",
+     "variant": "밀짚모자를 연노랑 챙모자로 recolor(윗면 H paint 로 둥글게), 흰 민소매를 연두 작업복으로, 그 위 갈색 앞치마(T paint 가슴 아래 중앙 면 + 어깨끈), 반바지는 갈색, 신발은 갈색 장화색."
+    },
+    {
+     "base": "Scarloxy1:4",
+     "variant": "갈래머리를 연갈색 한 묶음으로(H recolor), 머리 위 노란 두건(h 구역 H paint 한 줄 + 매듭), 노란 웃옷을 연두 작업복, 갈색 앞치마(T paint), 분홍 반바지를 갈색으로."
+    }
+   ]
+  }
+ ]
+}

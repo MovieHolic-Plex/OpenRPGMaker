@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a0ce9735180a4221629c6e821ac73785dea32a2af4ec57da261f951a9fd5570",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "prehistoric stone-age fish rack",
+ "label": "prehistoric/ph-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden frame rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rectangular frame is drawn completely flat in pure front elevation; neither the top crossbar, the post caps, nor the bottom beam display a visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4445
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn in straight front elevation: neither the top horizontal beam nor the bottom horizontal beam shows a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame is rendered in a flat 2D front elevation (like a picture frame or window). Neither the top crossbeam nor the bottom crossbeam shows a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden frame / rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wooden frame is drawn in flat front elevation. Neither the top horizontal beam nor the bottom horizontal beam shows a foreshortened top surface, and the corner posts lack top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4559
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.940Z",
+ "cells": {
+  "16": [
+   "089d4a80a034d73d",
+   "743240f8dacf275f",
+   "9703f01675ce64ef",
+   "d2e1908d5f9adea6"
+  ],
+  "24": [
+   "0c217a551d026276",
+   "1af6e5dd49abee7f",
+   "1b7e35b2fd5ba7ec",
+   "3775da462782030b",
+   "3c08dce7b8b67498",
+   "3d2e9156c11718ec",
+   "487d6ff5f718679d",
+   "488071484d1a1e1d",
+   "5c957e2bd4176b5e",
+   "66ba1050aaa500fb",
+   "78dbc6d5c03853a7",
+   "7a7b74d011e3409c",
+   "7ce6ffa5fd32e6b8",
+   "7dbeaf001feb0cdd",
+   "8757173006c977a9",
+   "88d08b0d4aedc9a5",
+   "92af032f45fff3bf",
+   "994fd134af32c0d0",
+   "9ddb4c1b058981fe",
+   "cf47291917886193",
+   "dcf8ce274f8e5128",
+   "dfd55b0076973ed9",
+   "e2df29822462449c",
+   "f579cb85ecd806f2"
+  ],
+  "32": [
+   "47e4ab5b5a93b413"
+  ],
+  "48": [
+   "4457f1f70532f0a8",
+   "7e0e4fc5dd6c5854",
+   "87e6f82ab2bb36f0",
+   "976ff33f032e0a2f",
+   "c6f01215d30078d3",
+   "c9910f311a2f0fc3"
+  ]
+ }
+}

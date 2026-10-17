@@ -1,0 +1,21 @@
+{
+  "resourceId": "oprn_emerald_professor_bust",
+  "file": "professor-bust.png",
+  "purpose": "몬스터 수집 프리셋 오프닝 박사 반신상(2026-10-16). 작은 도트 사람 칩을 큰 타원 받침에 세우던 옛 구도를 대체. 연구소 필드 NPC 칩(대머리·흰 염소수염·올리브 재킷 노인)과 같은 인물",
+  "tool": "MDC 이미지 API (god-tibo-imagen, private-codex)",
+  "model": "gpt-image-2.5-sunburst",
+  "candidate": "C1 (r2 판) — 후보 시트 ~/claude-viz/poke-professor-pick-1.html, 감독 선택",
+  "promptFile": "scripts/asset-gen/gen-opening-professor.mjs (후보 C1)",
+  "promptSummary": "오리지널 디자인: 60대 노박사. 정수리 벗겨짐·옆머리 흰 털, 단정한 흰 염소수염, 작은 둥근 철테 안경, 올리브 야전 재킷+크림 셔츠, 별 핀, 가죽 가방 끈, 한 손에 황동 휴대 망원경·다른 손 환영 손짓. 16-bit GBA 풍 굵은 도트 반신, 균일 마젠타 배경. 상표·실존 캐릭터·공 금지.",
+  "rawSha256": "dbef3db19492e25bb3d75be2b024272864289565cd88638448cec73ebc57510f",
+  "rawSize": "1536x1024 RGB (마젠타 배경, 원본은 저장소에 두지 않음)",
+  "postprocessing": "scripts/asset-gen/pixelize-grid.py(생성 그림 속 가짜 픽셀 격자 복원: 칸 최빈 색, 마젠타 배경 제거, 32색 이하로 합침). 가장자리 마젠타 번짐은 grid.py 가 제거. 2차(2026-10-16 몬스터 도트 규격 맞춤): scripts/asset-gen/restyle-bust.py --colors 26 --despeckle 3 --rare 0.6 --protect \"28,10,60,40;10,36,40,80;96,26,122,70\" — 입력은 1차 결과(sha256 73ada475…), 크기·격자 불변, 색 29→23, 외톨이 점 13.4%→9.3%, 실루엣 가장자리 1px 을 한 가지 어두운 색으로, 새 생성 호출 없음.",
+  "gridBlockPx": 10,
+  "sha256": "8076c9fac4ec42f19aa4a369c700b05fc8284c5ddfc9305033bba778bd8e87e6",
+  "width": 122,
+  "height": 97,
+  "mode": "RGBA",
+  "display": "원본 480×320 화면에서 정수 2배(244×194), 대사창 뒤에서 솟는 반신상. 받침 타원 없음. 좌표는 2px 격자의 짝수(left 118 또는 14 · top 14).",
+  "license": "OPRN 자체 생성물. 외부 저작물·원작 캐릭터 참조 없음.",
+  "preRestyleSha256": "73ada475f7268abed9bc93aba3c6b65d8c663dce6223c4ece4e1986db2211af5"
+}

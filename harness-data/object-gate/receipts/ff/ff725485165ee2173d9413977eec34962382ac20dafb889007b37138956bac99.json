@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff725485165ee2173d9413977eec34962382ac20dafb889007b37138956bac99",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "버려진 나무 손수레",
+ "label": "gothic_manor/gm-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden handcart body shows a large rectangular opening looking down into the interior (rows 11-16) with a shovel inside, bordered by rim walls, resting above a vertical front plank face (rows 20-28) and front wheel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4801
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart bed",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The inside cavity of the cart is clearly visible from rows 10 to 16 with a tool resting inside, showing the interior base and walls in standard 3/4 view, accompanied by a front vertical face from rows 20 to 27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's top opening is clearly visible from row 10 to 16 (7 rows deep) showing the interior cavity, surrounded by cart rims (rows 8-19), with the south plank wall below (rows 20-27) in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3678
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart basin / bed",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden cart bed is viewed in 3/4 perspective with a deep visible interior cavity (rows 10-16) inside the rim, and a clear vertical south face (rows 20-27) below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2996
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "4cdd0e7418634b63",
+   "4eaf2ed628698d76",
+   "88117ca6156bc64e",
+   "a55aebc057371e89"
+  ],
+  "24": [
+   "0fb4f4ca71c0eb29",
+   "10e996d9e0bd5cb3",
+   "1ac4f2a097fdee05",
+   "23527dd3c28e30c1",
+   "37854df00a85693b",
+   "4b998ea83beebacd",
+   "53221a48982d4352",
+   "57b4998fcecc3691",
+   "599e430a553d8def",
+   "5a4060e7af3d5770",
+   "6632e1764d24b6be",
+   "761858546be6657d",
+   "866633dab7107923",
+   "91f2ff9b48a2b7af",
+   "9512628deebb11b9",
+   "978a399af73d0a23",
+   "a77b3b51a80369ee",
+   "c9d63e9292702190",
+   "cf0ee2632f7d57d8",
+   "d1d0b95444731fb2",
+   "dd9134c03704fcbf",
+   "ec4b9eb506a21644",
+   "f58dabd434a71db4",
+   "fc67de25d232dc72"
+  ],
+  "32": [
+   "bf637dc86dac36cc"
+  ],
+  "48": [
+   "08e16dde582c10b2",
+   "0d1852b47f6a31a7",
+   "6e9c23ae7bf3c650",
+   "88771ea857764795",
+   "a68e43c3f69c9c7e",
+   "e77a8f27aa645d49"
+  ]
+ }
+}

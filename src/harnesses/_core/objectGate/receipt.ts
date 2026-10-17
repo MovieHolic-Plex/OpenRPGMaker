@@ -8,11 +8,25 @@
  * Python 쪽 같은 규칙: src/harnesses/_core/object_gate/__init__.py. 둘을 같이 고친다.
  */
 
-import { OBJECT_GATE_PROFILE, type ObjectGateJudgeAnswer, type ObjectGateKind } from './rules';
+import { OBJECT_GATE_PROFILE, type ObjectGateEyeAnswer, type ObjectGateJudgeAnswer, type ObjectGateKind, type ObjectGateState, type ObjectGateStyleAnswer, type ObjectGateStyleKind } from './rules';
 
 export type ObjectGateContext = 'bundle' | 'shared' | 'store' | 'workshop-local';
 
-export type ObjectGateRun = { judge: string; run: number; answer: ObjectGateJudgeAnswer | null; pass: boolean; reasons: string[]; ms?: number; error?: string };
+export type ObjectGateHalf = { pass: boolean; reasons: string[] };
+
+export type ObjectGateRun = {
+  judge: string; run: number;
+  /** 규칙 v6: 3/4 호출(answer)과 화풍 호출(styleAnswer)은 따로다. 옛 영수증은 answer 안에 style 이 들어 있었다. */
+  answer: ObjectGateJudgeAnswer | null; styleAnswer?: ObjectGateStyleAnswer | null; eyeAnswer?: ObjectGateEyeAnswer | null;
+  pass: boolean; reasons: string[]; ms?: number; error?: string; styleError?: string;
+  view34?: ObjectGateHalf; style?: ObjectGateHalf;
+};
+
+/** 보조 지표(통과 근거 아님): 칸당 고유색 중앙값·p90, 가장 어두운 5% 화소의 V, 근흑 윤곽 비율. 보고서에서 어느 쪽이 얕은지 보는 용도다. */
+export type ObjectGateAuxMetrics = { tileColorsMedian: number; tileColorsP90: number; darkV5: number; nearBlackEdge: number; opaqueTiles: number };
+
+/** 한쪽 판정 요약. 영수증은 3/4 와 화풍을 따로 적고, 둘 다 pass 일 때만 최상위 verdict 가 pass 다. */
+export type ObjectGateHalfVerdict = { verdict: ObjectGateState; reasons: string[] };
 
 export type ObjectGateReceipt = {
   schema: 'oprn-object-gate-receipt/1';
@@ -23,8 +37,15 @@ export type ObjectGateReceipt = {
   name: string;
   label?: string;
   profileHash: string;
-  verdict: 'pass' | 'fail';
+  /** 3/4 와 화풍 둘 다 pass 일 때만 pass. 하나라도 fail 이면 fail, 그 밖(판정자 의견이 갈림·사용자 정의 영역)은 refer(사람 확인 필요 — pass 로 세지 않고 모든 출구에서 막는다). */
+  verdict: ObjectGateState;
   reasons: string[];
+  /** 규칙 v4 부터. 보고서가 어느 반쪽이 떨어졌는지 말할 수 있도록 따로 적는다. */
+  view34?: ObjectGateHalfVerdict;
+  style?: ObjectGateHalfVerdict & { styleKind: ObjectGateStyleKind; refs: string[]; scale: number; score?: number };
+  metrics?: ObjectGateAuxMetrics;
+  /** 규칙 v7: 독립 눈(전체 인상) 답의 판정 목록(right|borderline|wrong). 거부권 계산에 쓰인 근거. */
+  eye?: { verdicts: string[] };
   runs: ObjectGateRun[];
   decidedAt: string;
   /** 판정한 원본 PNG 를 칸 크기별로 자른 칸 해시(정렬 변형 포함). 시트 칸 관문이 이걸로 「판정받은 그림의 칸」을 알아본다. */
@@ -33,13 +54,36 @@ export type ObjectGateReceipt = {
   override?: { by: 'human'; at: string; note?: string };
 };
 
+/**
+ * 정면형 소품(front_prop) 종류 선언의 사람 승인 기록. 화소 해시·종류·승인자·시각을 묶는다 — 그림이 한 화소라도 바뀌면 해시가 달라져 승인은 자동으로 무효다.
+ * 승인된 그림만 3/4 반쪽을 면제한다(화풍 반쪽은 그대로 pass 여야 한다). 감독·에이전트는 승인할 수 없다: 승인 입구(cli `approve-front-prop`)는 터미널 대화형 확인만 받는다.
+ */
+export type ObjectGateFrontPropApproval = { schema: 'oprn-object-gate-front-prop-approval/1'; pixelSha256: string; kind: 'front_prop'; approvedBy: string; approvedAt: string; by: 'human'; note?: string };
+
+export function validFrontPropApproval(approval: ObjectGateFrontPropApproval | null | undefined, pixelSha256: string): approval is ObjectGateFrontPropApproval {
+  return !!approval && approval.schema === 'oprn-object-gate-front-prop-approval/1' && approval.by === 'human' && approval.kind === 'front_prop'
+    && approval.pixelSha256 === pixelSha256 && typeof approval.approvedBy === 'string' && approval.approvedBy.trim().length > 0 && !!approval.approvedAt;
+}
+
+export type ObjectGateConfusion = { badTotal: number; caught: number; missed: string[]; goodTotal: number; passed: number; falseFail: string[] };
+
 export type ObjectGateProfileRecord = {
   schema: 'oprn-object-gate-profile/1';
   profileHash: string;
   status: 'calibrated' | 'rejected';
   calibratedAt: string;
-  bad: { total: number; caught: number; missed: string[] };
-  good: { total: number; passed: number; falseFail: string[] };
+  /** 3/4 반쪽(옛 필드 이름 유지). 규칙 v6 부터 확실(A) 라벨만 센다. caught = pass 가 아니게 막은 것(fail 또는 refer). */
+  bad: { total: number; caught: number; missed: string[]; refer?: number };
+  good: { total: number; passed: number; falseFail: string[]; refer?: number };
+  /** 규칙 v6: 다툼(C)·사용자 수락(U) 라벨은 통과·차단 기준에서 빼고 따로 적는다. */
+  tiers?: Record<string, { bad: { total: number; passed: number }; good: { total: number; passed: number } }>;
+  /** 규칙 v6: 규칙을 조정할 때 쓰지 않은 숨김 표본의 결과(개발 표본과 따로). */
+  fresh?: { bad: { total: number; caught: number; missed: string[] }; good: { total: number; passed: number; falseFail: string[] } };
+  holdout?: { bad: { total: number; caught: number; missed: string[] }; good: { total: number; passed: number; falseFail: string[] } };
+  /** 규칙 v4 의 화풍 반쪽. 둘 다 기준을 넘어야 calibrated 다. 옛 프로필 기록에는 없다. */
+  style?: ObjectGateConfusion & { groups?: Record<string, { total: number; passed: number }> };
+  judge?: string;
+  note?: string;
 };
 
 const hex = (buffer: ArrayBuffer) => [...new Uint8Array(buffer)].map(b => b.toString(16).padStart(2, '0')).join('');
@@ -90,16 +134,30 @@ export function objectGateRefusal(input: {
   kind?: ObjectGateKind;
   context: ObjectGateContext;
   calibratedProfiles: ReadonlySet<string>;
+  /** front_prop 종류의 사람 승인 기록(없으면 null). 이 그림 해시에 묶인 유효한 승인이 있을 때만 3/4 반쪽을 면제한다. */
+  approval?: ObjectGateFrontPropApproval | null;
 }): string | null {
   const { receipt, pixelSha256, kind, context } = input;
-  if (!receipt) return '3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
+  if (!receipt) return '3/4·화풍 판정 영수증이 없다 — object-gate review 를 먼저 받아라';
   if (receipt.pixelSha256 !== pixelSha256) return '영수증의 그림 해시가 지금 그림과 다르다 — 고친 뒤 다시 판정받아라';
   if (kind && receipt.kind !== kind) return `영수증 종류(${receipt.kind})가 요청 종류(${kind})와 다르다`;
   if (!input.calibratedProfiles.has(receipt.profileHash)) return `판정 프로필 ${receipt.profileHash} 가 보정되지 않았다(위반 표본을 다 잡지 못했거나 보정 전)`;
+  // front_prop: 사람이 이 그림 해시에 대해 종류를 승인했다면 3/4 반쪽은 면제 — 남은 것은 화풍 반쪽의 판정뿐이다. 승인이 없으면 아래 보류 경로(번들·공용·스토어 출구 차단).
+  if (receipt.kind === 'front_prop' && validFrontPropApproval(input.approval, pixelSha256)) {
+    const styleVerdict = receipt.style?.verdict;
+    if (styleVerdict === 'pass') return null;
+    if (styleVerdict === 'refer') return `화풍 판정 보류(정면형 소품은 사람이 종류를 승인했으나 화풍 반쪽이 사람 확인 필요) — 보류는 통과로 세지 않는다`;
+    return `화풍 불합격(정면형 소품은 3/4 면제를 승인받았으나 화풍 반쪽이 떨어졌다: ${receipt.style?.reasons?.join(' · ') || 'fail'})`;
+  }
   if (receipt.verdict === 'pass') return null;
+  if (receipt.verdict === 'refer') {
+    // 보류는 통과로 세지 않는다(번들·공용·스토어 출구는 예외 없이 막는다). 공방 로컬만 사람이 직접 누른 「그래도 넣기」로 확인할 수 있다(Python refusal 과 같다).
+    if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
+    return `판정 보류(사람 확인 필요: ${receipt.reasons.join(' · ') || '판정자 의견이 갈림'}) — 보류는 통과로 세지 않는다. 그림을 더 분명하게 고치거나 사람이 고르는 하네스 경로를 거쳐라`;
+  }
   if (context === 'workshop-local' && receipt.override?.by === 'human') return null;
   const why = receipt.reasons.length ? receipt.reasons.join(' · ') : 'fail';
   return context === 'workshop-local'
-    ? `3/4 시점 판정 불합격(${why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다`
-    : `3/4 시점 판정 불합격(${why}) — ${context} 출구는 예외 없이 막는다`;
+    ? `판정 불합격(${why}) — 다시 그리거나 사람이 「그래도 넣기」를 눌러야 한다`
+    : `판정 불합격(${why}) — ${context} 출구는 예외 없이 막는다`;
 }

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74c49146b3a46cb7b4c2c8c03fd07761f816385fac0e3b551226aeb4135fd77f",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'endW' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_endW",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly defined 4-row light cut-wood top surface (rows 1-4) above the darker vertical shaft, and the horizontal rails each show distinct lighter top surfaces (rows 6-7 and 11-12) above shaded south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7825
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails are drawn in pure front elevation (side-scroller style). The post has only a 1px dark cap outline at row 1 with rows 2-5 showing the vertical front face of the cap, showing no foreshortened horizontal top surface for the post or rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal rails show distinct 2-pixel-tall top surfaces (rows 6-7 and 11-12) above darker south faces (rows 8 and 13), and the post features a faceted cap top.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 10927
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly defined 5-pixel-tall top face/cap (rows 1-5) showing lighter end-grain/top lighting above the south-facing shaft (rows 6-14), and the horizontal rails similarly show distinct top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6751
+  }
+ ],
+ "decidedAt": "2026-10-14T06:03:18.253Z",
+ "cells": {
+  "16": [
+   "aac936a26d557db0"
+  ],
+  "24": [
+   "2ea87ebfd97dee33",
+   "5ab1bec6e6766d50",
+   "72d884c3af3483f2",
+   "7d3a1433c268f496",
+   "bf14e2f392b20104",
+   "e6dab4aee799e012"
+  ],
+  "32": [
+   "29a7ef1ab7cbf671",
+   "2e3c71398d0649b8",
+   "70b595f84820833e",
+   "73d32cb6d71b6db2",
+   "91fa25b36717489e",
+   "f435d7abea862d0e"
+  ],
+  "48": [
+   "408dcfdfbbd33b39",
+   "4cb0453319992f27",
+   "57bcedf756291b53",
+   "8d773b80d380e2de",
+   "9919e4675fa1beb4",
+   "d61cc3b6cc905a08"
+  ]
+ }
+}

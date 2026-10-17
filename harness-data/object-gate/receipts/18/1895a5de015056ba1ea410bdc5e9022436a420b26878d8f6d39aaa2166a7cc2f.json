@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1895a5de015056ba1ea410bdc5e9022436a420b26878d8f6d39aaa2166a7cc2f",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "통신 중계기(받침 위의 장비 상자와 작은 접시)",
+ "label": "sf-station/sf-comms-relay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "communications relay equipment and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a pure front elevation. The base block terminates at row 14 with no top surface visible behind it, the equipment box has only a 1px top outline at row 8 with no top surface, and the dish antenna faces directly forward as a flat circle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base pedestal with equipment",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main base features a clearly defined light-colored top surface spanning rows 16 to 23 (8 rows tall) upon which the equipment box and dish antenna rest, above a darker front face (rows 24 to 31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "communication relay station base and equipment box",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large base structure features a clearly defined light-colored top surface spanning rows 14 to 23 (~10 source pixels tall) above its darker south front face (rows 24 to 31). The mounted equipment box similarly displays its top surface (rows 8-13) above its front face (rows 14-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10943
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base pedestal of the relay",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body/pedestal has a clearly defined horizontal top surface visible from rows 15 to 23 upon which the equipment box and dish antenna are mounted, followed by the south-facing front surface down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7306
+  }
+ ],
+ "decidedAt": "2026-10-13T15:31:15.750Z",
+ "cells": {
+  "16": [
+   "1326e00fb5d42858",
+   "27174862e19d1487",
+   "ab46f8a0593008af",
+   "eb7f3bcaa02cafb0"
+  ],
+  "24": [
+   "11ac87e98309b777",
+   "1f604aede408334e",
+   "1f6eef993723c064",
+   "23b111d2dcfa1c77",
+   "2aaff04cb417a8b7",
+   "3071b0c9aa224613",
+   "365004ee968b1ee6",
+   "3c1d582e3a4e5c5b",
+   "3cab17134bac9664",
+   "4bef8328831ffe84",
+   "57ec66c06dd1a428",
+   "58566ffb5b46dddb",
+   "6aba9f712876a376",
+   "7f5aade8406b3aea",
+   "886cbab2882f32b1",
+   "989d24c16b7c4693",
+   "a66a71ff17905590",
+   "bf787c7f7616269d",
+   "d4fcd1a88553466b",
+   "e95f593915874be9",
+   "ef0c13e1e850548c",
+   "f15638c743f51174"
+  ],
+  "32": [
+   "805674670f1bfb53"
+  ],
+  "48": [
+   "4b7e89fff278920d",
+   "59baad60eac0767f",
+   "98d4cf7e4f48690a",
+   "a66a48820d21a96c",
+   "c10d9bee42dfb3fe",
+   "caf8c07f82e43f80"
+  ]
+ }
+}

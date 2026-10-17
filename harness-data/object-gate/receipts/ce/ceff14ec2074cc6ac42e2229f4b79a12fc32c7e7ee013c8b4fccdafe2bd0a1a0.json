@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ceff14ec2074cc6ac42e2229f4b79a12fc32c7e7ee013c8b4fccdafe2bd0a1a0",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담 세 칸(양 끝 돌 기둥)",
+ "label": "steampunk-city/sp-fence-h3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron fence with stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars and iron fence bars are drawn in pure front elevation with no visible top surfaces (0 top rows). While the lower stone plinth shows a 3px top surface (rows 10-12), base plinths do not count for the main body, and the horizontal beams and pillar tops lack top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11023
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron fence and flanking stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (iron barred railing and stone pillars) is drawn in pure front elevation with no visible top surfaces on the horizontal railing beams or the pillars (row 0 has no top plane). Only the lower base plinth shows a horizontal face, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7547
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence and flanking stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (flanking stone pillars and iron grating) is drawn as a flat front elevation. Neither the pillars nor the horizontal iron beams have a visible top surface (only 0-1px edge lines). While the base plinth shows a 3px top face at rows 10-12, the rules explicitly exclude base plinths from giving credit for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12040
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron fence with stone pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars and upper iron bar framework are drawn in pure front elevation with no visible top surfaces (0 rows); only the recessed bottom plinth shows a horizontal face, which cannot compensate for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10871
+  }
+ ],
+ "decidedAt": "2026-10-13T18:49:56.823Z",
+ "cells": {
+  "16": [
+   "16cde6af6c0834e6",
+   "dd7b72d7a00bd0d3",
+   "f564e9a96e95e96d"
+  ],
+  "24": [
+   "147d40af2b32c631",
+   "1edd1acad43dc285",
+   "4dbb41448989d5a6",
+   "e39be080e027075c"
+  ],
+  "32": [
+   "22f07250d6442ff5",
+   "3534d4698d0c2ddc",
+   "3b78378e8238fe5f",
+   "471e5b93344195f0",
+   "7375bbbf57ace782",
+   "85fffcad76e8c99e",
+   "941d485be8355345",
+   "c540c8eb5a302a0e",
+   "d1408c93279a387c",
+   "ebe4fbe68d5be68f",
+   "ecdb9fbb5ea0d02e",
+   "fe258f505f032720"
+  ],
+  "48": [
+   "0a47beb0c70e5846",
+   "da14aca334b5a699"
+  ]
+ }
+}

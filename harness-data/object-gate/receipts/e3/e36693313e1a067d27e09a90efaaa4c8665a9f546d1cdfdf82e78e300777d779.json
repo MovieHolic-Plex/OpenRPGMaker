@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e36693313e1a067d27e09a90efaaa4c8665a9f546d1cdfdf82e78e300777d779",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "석등(가스가 등롱)",
+ "label": "sengoku-edo/se-lantern-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern (Kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern is drawn in a pure front elevation with straight horizontal bands for the roof edge, platform, and base, with no elliptical or foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5579
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (kasuga lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal tiers, eaves, and the pedestal base are rendered with perfectly straight horizontal lines without any visible foreshortened top surfaces, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4813
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stone lantern (roof, light chamber, mid-tier, and base) is drawn in pure front elevation with straight horizontal bands and no foreshortened top surfaces or circular perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4501
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (Kasuga-dōrō)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every horizontal boundary of the lantern (roof rim, middle platform, pillar base, and bottom pedestal) is rendered as a flat horizontal line with 0px of foreshortened top surface visible, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5295
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.180Z",
+ "cells": {
+  "16": [
+   "d36164bc2c95c978",
+   "ed40bf7e1bf43799"
+  ],
+  "24": [
+   "0bca277ee76341ec",
+   "1721c6a34ce1bbc8",
+   "2d99a7e74e3d3cf6",
+   "4a5226891f00a086",
+   "69e29729e1a9a4ca",
+   "8618efcf6c0cb3e7",
+   "87e9ff524f3ed7ee",
+   "8d33ca7d9a9f279d",
+   "9808bc169456ea6d",
+   "9d484773a9077c5c",
+   "cd950302e704c092",
+   "ed7a3974160f7e32"
+  ],
+  "32": [
+   "1f5622b6c83ec97b",
+   "67b625df54a0a045",
+   "c57184862baba4b3"
+  ],
+  "48": [
+   "521e1c495d96493b",
+   "5a2d6f719b709a32",
+   "760a338a43d9a2c9",
+   "899bba8432f75b25",
+   "ac0a16dfc762697f",
+   "c2bc3e22909dfb3e"
+  ]
+ }
+}

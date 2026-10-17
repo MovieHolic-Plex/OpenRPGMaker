@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6fc9dac64e370c2a099c3de6971f35d8133ca06e70b3b3e33aeab75c1dea7e2",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "thick log palisade wall section, flat sawn log ends visible along the top",
+ "label": "pirate-isles/pi-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical log palisade posts with horizontal support rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tops of the vertical logs are clearly drawn from a 3/4 top-down angle as sawn circular/faceted log ends spanning rows 6-8 (3 source pixels tall) for the front posts and rows 2-4 for the back posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6106
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical log palisade",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn ends of the vertical logs form clearly foreshortened circular/hexagonal top surfaces measuring approximately 4 pixel rows tall (rows 2-5 and 6-9) across the top of the palisade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thick log palisade wall section with vertical logs and cross-beams",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat sawn ends of the vertical logs are clearly visible from above, rendered as 3-row foreshortened circular/hexagonal surfaces (rows 2-4 and rows 6-8) showing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5819
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thick log palisade wall with vertical logs and horizontal bracing beams",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each vertical log displays a clearly foreshortened, 3-row-tall flat sawn end face (rows 2-4 and 6-8) showing the top surface from a 3/4 overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6852
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.587Z",
+ "cells": {
+  "16": [
+   "1bce3008330c45a3",
+   "550d2fb9e5517b7c",
+   "7573cc8b72f1a663"
+  ],
+  "24": [
+   "01bf5cf9f8cf017f",
+   "022c2aa85e0ef98d",
+   "1ef35ef01252ef32",
+   "43f191c1f18dc9a9",
+   "58d57871b98f9c4b",
+   "5e521f3bca083213",
+   "68b3418b9ab13502",
+   "6b2c7696f92cfcc0",
+   "78c6095f573a0d88",
+   "80562021f4389c2f",
+   "8b6338f13b6e0f90",
+   "8cd953118fc00a4f",
+   "a81d87ccb543a9ac",
+   "ae421e770377b6e9",
+   "be3b6af4f203571f",
+   "c6f3961128f8e8b3",
+   "d7c51183f27487d4",
+   "e2693cc044428ce1",
+   "e694854c407a2280",
+   "f13295781898c783",
+   "fceb887365a905d9",
+   "ff2f93fdd33610bb"
+  ],
+  "32": [
+   "1e863e657f3856c5"
+  ],
+  "48": [
+   "20f77be3485b86ef",
+   "35bf2e482a0487dc",
+   "86c3ff57b9b65cb8",
+   "be71f2e02f794db1",
+   "ca774bf3fbec59d8",
+   "f68975f492b40cfe"
+  ]
+ }
+}

@@ -316,6 +316,21 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "place_battle_blocker":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_battle_blocker", "전투 이벤트 배치"));
       break;
+    case "place_field_enemy":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_field_enemy", "필드 적 배치"));
+      break;
+    case "place_field_obstacle":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_field_obstacle", "필드 기술 장애물 배치"));
+      break;
+    case "place_monster_center":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_monster_center", "몬스터 센터 직원 배치"));
+      break;
+    case "place_trainer":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_trainer", "시야선 트레이너 배치"));
+      break;
+    case "place_monster_pc":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_monster_pc", "보관함 PC 배치"));
+      break;
     case "place_chest":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_chest", "보물상자 배치"));
       break;

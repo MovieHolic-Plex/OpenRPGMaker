@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c79e6f83a93d73ea38dceca776453df7fc7def319f00ee857eac6c33809e988",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "염색 천 건조대",
+ "label": "desert-east/de-dye-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal crossbeam and hanging cloths of drying rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal beam is drawn as a flat front-facing plank (rows 2-6) with only a 1px outline along the top edge (row 1) and no foreshortened top surface visible. While the base plinths at the bottom show top surfaces, the main horizontal beam is in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16905
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dyeing cloth drying rack frame with draped fabrics",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crossbeam shows a clear 5-row top surface (rows 2-6) over which the dyed cloths drape, with the front face/shadow visible at rows 7-8. Furthermore, the bases at the bottom clearly display 3-row top surfaces (rows 25-27) above their south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4701
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal drying rack beam with draped cloths and base feet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal crossbar and the cloths draped over it show a clear 4-5 pixel top surface (rows 2-6 for the beam, rows 3-6 for the top fold of the cloths) above a 2-pixel front drop/crease line at row 7. The base blocks also clearly show top surfaces (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4984
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dyeing cloth drying rack frame with draped cloths",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam clearly displays a 5-pixel-tall top surface (rows 2-6) over which the dyed cloths are draped before hanging down, with a 2-pixel front face (rows 7-8). The base feet also properly show 3-pixel-tall top surfaces (rows 25-27) and front faces (rows 28-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4377
+  }
+ ],
+ "decidedAt": "2026-10-14T00:27:26.539Z",
+ "cells": {
+  "16": [
+   "41ba4ccbe6b09bad",
+   "48e11c10517951f4",
+   "770cd4f80f55d5bc",
+   "df8714a34ce197b9"
+  ],
+  "24": [
+   "10c58d90fdd6a884",
+   "1283a12f31d9cfbb",
+   "2a925ea41ed0d675",
+   "40d2347e55575031",
+   "4866aab7b64bb06e",
+   "4b5bcaadcfc0c5ee",
+   "5f389a7a2afc14c0",
+   "69b5c3afbd0c124c",
+   "7d54e6165efeb955",
+   "7e89dedacd7eca8a",
+   "80898c52f621c19a",
+   "88239807cde8515c",
+   "8c655ce3ed41cc14",
+   "9dcb97540e0c5ec9",
+   "ab62ae18ec0c07de",
+   "ad7a007fe0ac5521",
+   "b0609c44f5aa6a50",
+   "c34b0dc17dcb1327",
+   "c7e2dd71d19f07ac",
+   "cc1332f02b49a864",
+   "e205fdcc5ae17e16",
+   "e27965737613da1a",
+   "e30ca8eadf909c97",
+   "ee23f9c6c4f86e5c"
+  ],
+  "32": [
+   "662b2eab41579372"
+  ],
+  "48": [
+   "50a7229ea6fded33",
+   "7a88f29490fe14bb",
+   "926f5f11ca8a3885",
+   "ce0b5c10814be5cb",
+   "cf452f52504724c9",
+   "de14a6ef4003976f"
+  ]
+ }
+}

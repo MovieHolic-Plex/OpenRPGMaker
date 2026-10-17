@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfcd9c965c40c227811e65e47277a7eddb077e69b716f6630284593a2c48dc5b",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "hull wall front face with star viewport windows: upper and lower face rows, four variants",
+ "label": "sf-station/sf-wall-face-viewport",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hull wall front face with viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles correctly depicting vertical sci-fi hull surfaces and viewports in standard 2D top-down perspective without isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hull wall front face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tiles representing the vertical south-facing surface of a sci-fi hull with windows. As terrain (wall face), no top surface is expected on the face tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6081
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sci-fi hull wall front face tiles with viewport windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall face tiles representing vertical hull wall surfaces with star viewport windows, intended to be paired with wall-top tiles in a top-down map.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4391
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sci-fi hull wall front face tiles with star viewport windows and paneling",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tiles representing vertical wall front faces in standard 3/4 top-down view, correctly drawn flat-on facing south with no isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4785
+  }
+ ],
+ "decidedAt": "2026-10-14T08:35:45.463Z",
+ "cells": {
+  "16": [
+   "7a320f3cc9d12dd0",
+   "a4ab2b42346a4556",
+   "a50da453e431dfae",
+   "c8cc922cede87b55",
+   "e29b539c7bc9a3ef",
+   "ef963997d94dd0e4",
+   "f0b214398cca596c",
+   "f4cf1770dc9e0c9e"
+  ],
+  "24": [
+   "0711aa62cff7f045",
+   "0c09d3fdfc93d71c",
+   "0dbd554aa7efd54b",
+   "1a693ee099742cbf",
+   "1de80a60895b17d9",
+   "1f02739488a803a2",
+   "283404805d14ca25",
+   "2ae09c0ec46764fa",
+   "37ea4b584d9b7104",
+   "39b0e057c6ed4205",
+   "3be612f2249a73ea",
+   "3facb090a101a0dd",
+   "42b3e5dbb670848a",
+   "560b8641f999948e",
+   "5649f15b9c416a29",
+   "5cefaace0f73754d",
+   "60cbd227c2b2a57e",
+   "907054f1076bd72c",
+   "98172ae74126e930",
+   "99d11b85bd644b7d",
+   "9c1352dee10deb10",
+   "a9615a4f34596487",
+   "b03e4525505e061b",
+   "b4f1ad6a1a56cf96",
+   "b8103aa24e764f03",
+   "c22dfa16c64d7704",
+   "c5c1773e787c22c3",
+   "c64c742c005ff4be",
+   "d7d985b1a4fd066b",
+   "e322b8fb3d36733d",
+   "f19f930d0156e335",
+   "f5e77d3bdfb89304",
+   "fa650c85a926e5a1",
+   "fe6bb17809ea0e88",
+   "fea574f2cf079b0d",
+   "ffc916753c9854dc"
+  ],
+  "32": [
+   "064c095b2029f6fe",
+   "fc1eae4727bfdb58"
+  ],
+  "48": [
+   "0b8c743f1e6f6b31",
+   "2017456c45559648",
+   "2870c56b5c720cf6",
+   "2c37ec3dc85fc3a9",
+   "5500c7ff5fdce65d",
+   "616c948f17160403",
+   "7a0c131eed091a9b",
+   "c0adec3ea4a893d1",
+   "c789ba6fcd269053",
+   "dbfeed28cf937e6f",
+   "e7f7e388680c77fe",
+   "ed7c14d668d8bc35"
+  ]
+ }
+}

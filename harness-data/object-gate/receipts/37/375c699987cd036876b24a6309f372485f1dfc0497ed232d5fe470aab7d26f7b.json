@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "375c699987cd036876b24a6309f372485f1dfc0497ed232d5fe470aab7d26f7b",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "low wooden fish drying table seen from above at an angle, split fish laid out on the slatted top face",
+ "label": "pirate-isles/pi-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden drying table with legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slatted table top surface spans rows 8 to 16 (9 source pixels tall) showing split fish laid out on it, with a front apron at rows 17-20 and front-facing legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drying table top and frame",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slatted wooden table top surface is clearly visible from rows 7 through 16 (10 rows deep) with fish laid out on it, above a 4-row front apron (rows 17-20) and vertical legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6768
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying table/rack",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface is clearly visible across rows 8 to 16 (9 source pixel rows tall) with items laid flat upon it, leading down to a front rim and apron at rows 17-21 supported by vertical legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7231
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal tabletop surface occupies rows 8 through 16 (approx 9 rows) with fish laid out on top, followed by a front apron edge on rows 17-20 and front legs extending down to row 29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4840
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.586Z",
+ "cells": {
+  "16": [
+   "4bdf195d4e3ff7db",
+   "66c6b093b9964135",
+   "cc869894e05cb7f6",
+   "e2ea4134467c6fc9"
+  ],
+  "24": [
+   "0ad92af5dd0fa63c",
+   "1661fbcb2d8e5345",
+   "1b7ec275fcef727f",
+   "265541bef598a6fd",
+   "2d358b304e3fdaf5",
+   "320deb834d6f045c",
+   "3d77c2a30c2a3a65",
+   "444a9f6bbe03911a",
+   "5e468b8818f93fee",
+   "797670f53f8800f7",
+   "8ccf30d5782a5978",
+   "8f67ac23ba50469e",
+   "98376cef8f7e6f4d",
+   "9bdf297426f94042",
+   "afa12033f6894bf1",
+   "b7a2153972d89826",
+   "bd5a136a835cb84e",
+   "c05ca956b70da23f",
+   "c33cc0f0d15010ab",
+   "d3c9595fee7f47c2",
+   "e5a90c08a96481db",
+   "ea21413688d9c5e3",
+   "eb9b376575cae23f",
+   "ece148edcfbd930e"
+  ],
+  "32": [
+   "5f2b22347ff6f994"
+  ],
+  "48": [
+   "037883c74d1c4ff7",
+   "138d3e1505182295",
+   "21e9dabe98097367",
+   "3bb97e7f4ea770c8",
+   "7312913e132637a1",
+   "fa30d72b9076f1d4"
+  ]
+ }
+}

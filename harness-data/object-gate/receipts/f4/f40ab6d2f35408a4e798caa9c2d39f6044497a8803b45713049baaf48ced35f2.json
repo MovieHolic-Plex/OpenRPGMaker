@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f40ab6d2f35408a4e798caa9c2d39f6044497a8803b45713049baaf48ced35f2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭",
+ "label": "sengoku-edo/se-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile depicting a grass field across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing textured grass across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4009
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 green ground/grass terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7670
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile depicting a grass field with tonal variations across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8705
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.057Z",
+ "cells": {
+  "16": [
+   "e1384bdfe433db89"
+  ],
+  "24": [
+   "2a81d19ce266c909",
+   "3ea21a6791b02bb0",
+   "54f0523b879e6fb7",
+   "62a1d67574a493ae",
+   "9424ede5e616a88a",
+   "e330376b805f7585"
+  ],
+  "32": [
+   "05b5fefa11a09312",
+   "34b25a52278ee9d5",
+   "6780a31bb91a9e0f",
+   "c491fcee898e1e5f",
+   "d515010924d77b35",
+   "de71e2dbe5819357"
+  ],
+  "48": [
+   "0935a66a28bb1ad7",
+   "3b9cc993f05fb12f",
+   "674acd47bc62989c",
+   "9d6ca5d5ec569976",
+   "ad689e53e6f9fa47",
+   "e1e2437db18f617a"
+  ]
+ }
+}

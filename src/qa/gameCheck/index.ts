@@ -5,6 +5,7 @@
 import type { Project } from "@/project/types";
 import { simulateBattle } from "@/battle/simulate";
 import { runAutoPlay } from "./autoPlay";
+import { runDeadlineAutoPlay } from "./deadline";
 import { briefTextOf, checkBriefConformance } from "./brief";
 import { checkCommands } from "./commands";
 import { diffLoadNormalization } from "./loadDiff";
@@ -15,9 +16,11 @@ import { allPages, visitPageCommands } from "./walk";
 import { checkHorror } from "./horror";
 import { checkMystery } from "./mystery";
 import { checkMonster } from "./monster";
+import { isMonsterPartyGame } from "@/project/monsterCollection";
 import { checkGallery } from "./gallery";
 import { checkDream } from "./dream";
 import { checkStory } from "./story";
+import { checkRomance } from "./romance";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { whereText, type AutoPlayRun, type Finding, type FindingSeverity, type GameCheckOptions, type GameCheckReport } from "./types";
 
@@ -50,24 +53,34 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     ...checkGallery(project, options.briefText ?? briefTextOf(project)),
     ...checkDream(project, options.briefText ?? briefTextOf(project)),
     ...checkStory(project, options.briefText ?? briefTextOf(project)),
+    ...checkRomance(project, options.briefText ?? briefTextOf(project)),
     ...[...projectSetterShadowedPages(project).values()].map((hit): Finding => ({
       severity: "warning", code: "page-setter-shadowed", message: hit.message,
       where: { mapId: hit.mapId, mapName: project.maps[hit.mapId]?.name, eventId: hit.eventId },
     })),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
+    ...(options.extraFindings ?? []),
   ];
   let autoPlay: GameCheckReport["autoPlay"];
   if (!options.skipAutoPlay) {
     const play = (recoverBeforeRandomEncounters: boolean): GameCheckReport["autoPlay"] => {
       try {
         // 몬스터 캠페인(체육관 8곳·리그, 진 뒤 수련)은 한 실행에 1분 가까이 걸린다 — 기본 1분이면 회복 실행이 시간 상한에 걸렸다.
-        const budgetMs = options.autoPlayBudgetMs ?? (project.system?.monsterCollection === true ? 240_000 : undefined);
+        const budgetMs = options.autoPlayBudgetMs ?? (isMonsterPartyGame(project) ? 240_000 : undefined);
         return runAutoPlay(project, { budgetMs, companionJoins: companionJoins(project), recoverBeforeRandomEncounters });
       } catch (error) {
         return { targets: [], plan: [], runs: [], skipped: `자동 플레이 중 예외: ${error instanceof Error ? error.message : String(error)}` };
       }
     };
     autoPlay = play(false)!;
+    let deadlineRuns: readonly AutoPlayRun[] = [];
+    // onDayEnd 공통 이벤트가 부르는 기한 엔딩(연애 등) — 맵 이벤트 목표만 보는 위 자동 플레이가 걸어 보지 않는 구멍을 메운다.
+    try {
+      const deadline = runDeadlineAutoPlay(project);
+      if (deadline) { deadlineRuns = deadline.runs; findings.push(...deadline.findings); }
+    } catch (error) {
+      findings.push({ severity: "warning", code: "deadline-autoplay-exception", message: `기한 엔딩 자동 플레이 중 예외: ${error instanceof Error ? error.message : String(error)}` });
+    }
     // 자동 플레이는 회복·레벨 관리를 하지 않는다 — 무작위 인카운터를 연달아 맞고 진 것은 「끝까지 못 간다」가 아니라
     // 소모전 신호다(2026-09-24 JRPG 도그푸딩: 포션·여관 없이 광산 세 층을 걷다 쓰러졌다).
     // 인카운터 직전마다 회복하며(여관·포션을 쓰는 플레이어) 다시 돌려 끝까지 가면 그 실행은 막힘 대신 경고로 낸다.
@@ -79,7 +92,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     const downgraded = new WeakSet<AutoPlayRun>();
     const downgrade = (run: AutoPlayRun) => { downgraded.add(run); return run; };
     // 몬스터 게임은 자동 플레이가 지면 수련하고 다시 도전한다 — 회복 없이 걷다 수련 횟수를 다 쓴 실행도 소모전 신호다.
-    const monsterAttrition = project.system?.monsterCollection === true;
+    const monsterAttrition = isMonsterPartyGame(project);
     const encounterDefeat = (run: AutoPlayRun) => !run.ok && (/random encounter [^:]+: defeat/u.test(run.failure?.detail ?? "")
       || (monsterAttrition && /전투 패배|수련|쓰러져/u.test(run.failure?.detail ?? "")));
     const bossDefeat = (run: AutoPlayRun) => !run.ok && /이벤트 전투에서 패배해/u.test(run.failure?.detail ?? "");
@@ -183,6 +196,8 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
         ...(run.failure.where ? { where: run.failure.where } : {}),
       });
     }
+    // 기한 엔딩 판은 「어느 한 판이라도 닿는가」로 위에서 이미 판정했다(인물 하나에 집중하는 판이 문턱에 못 닿는 것은 막힘이 아니다).
+    if (deadlineRuns.length) autoPlay = { ...autoPlay, runs: [...autoPlay.runs, ...deadlineRuns] };
   }
   const sorted = dedupe(findings).sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity]);
   const counts = { blocker: 0, warning: 0, info: 0 } as Record<FindingSeverity, number>;

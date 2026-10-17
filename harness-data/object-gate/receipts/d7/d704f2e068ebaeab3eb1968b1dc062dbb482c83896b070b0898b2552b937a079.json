@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d704f2e068ebaeab3eb1968b1dc062dbb482c83896b070b0898b2552b937a079",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat terrain tile representing grass ground seen from above, covering the full 16x16 pixel area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3109
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile covering the full 16x16 canvas with varying green grass texture tones.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6812
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 cell with textured grass surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2453
+  }
+ ],
+ "decidedAt": "2026-10-14T08:08:25.878Z",
+ "cells": {
+  "16": [
+   "a40513febc871211"
+  ],
+  "24": [
+   "1713072e5506d225",
+   "4e3c8ff7a968382b",
+   "a2c3b43859d87da3",
+   "b1c6a05bb9795c70",
+   "cb6241b0aa1ac137",
+   "db945d0317171fc5"
+  ],
+  "32": [
+   "065856f58861a2d7",
+   "0f5cba7103324eba",
+   "750951cd3d64db9e",
+   "76a1ece35ab33208",
+   "861d4fdb95819534",
+   "fc62740c4c38d00c"
+  ],
+  "48": [
+   "46f294d9e30b6f7c",
+   "52b8917d5ca80f49",
+   "6a70aeb0f98dbe33",
+   "8b097c9f5c928260",
+   "c8e1ad8ac4c336fc",
+   "cee00c421e810822"
+  ]
+ }
+}

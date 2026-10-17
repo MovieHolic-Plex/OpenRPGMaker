@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4651e16ac449f0d35887c64b49116cc056ec9339d38bc347706e9f249df41176",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-rail-verge",
+ "label": "jp/jp-rail-verge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail verge / embankment tile",
+    "kind_matches": false,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain/embankment tile consisting of a top grassy verge (rows 9-24), a cliff/dirt face (rows 26-31), and a fence/railing at the top (rows 0-8), rather than a large structure (gate, pavilion, sealed door, building). The railing portion itself is also drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 10879
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail verge terrain tile",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The asset appears to be a composite terrain/verge tile consisting of a fence or rail, grass verge, and dirt cutaway rather than a building or structure. Even if treated as a structure/railing, all horizontal beams and surfaces are drawn as flat 1-2px front-elevation bands with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9756
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail verge / embankment terrain tile",
+    "kind_matches": false,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain tile slice showing a railway track/fence, grass verge, and dirt edge; it is not a large structure (gate, pavilion, sealed door, or building).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 9006
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "verge / terrain slice with grass, cliff face, and wall/railing",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a terrain/verge map tile consisting mostly of a flat grass plane and cliff edge with a low wall or railing at the top, not a large building, gate, or pavilion structure. The architectural element at rows 0-8 is drawn as a flat front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10443
+  }
+ ],
+ "decidedAt": "2026-10-13T14:20:17.063Z",
+ "cells": {
+  "16": [
+   "12521e4ba6468508",
+   "f4c9b3020c5e3a6e"
+  ],
+  "24": [
+   "1dbc9f00655f919c",
+   "287ecee89086898e",
+   "33e278fdd5deaae0",
+   "3843a4491e381dd5",
+   "3df8dbfcf5c504a4",
+   "52578bc47f24b39d",
+   "9c4f0ae8176e57e3",
+   "ae2d9456a31276d3",
+   "cf1be90e23aaee98",
+   "cfa516359c905db4",
+   "e97b30f91c2d2508",
+   "eb6e105e9ebd3c25"
+  ],
+  "32": [
+   "0863281d90546fc8",
+   "ce85c0c34ec9275e",
+   "ffe7ef2b7b0f03bc"
+  ],
+  "48": [
+   "2a1d388bf7d137c7",
+   "4d0c0f494cc4d5ca",
+   "8e958b3555ce32fd",
+   "a6a82823a53540df",
+   "dc843741602114dd",
+   "fafa5e57e5996e3b"
+  ]
+ }
+}

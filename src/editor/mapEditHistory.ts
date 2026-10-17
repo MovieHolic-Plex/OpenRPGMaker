@@ -498,6 +498,78 @@ export function getMapEditRedoEntries(): readonly MapEditHistoryEntry[] {
     .reverse();
 }
 
+export type MapEditHistoryChange = {
+  readonly steps: number;
+  readonly mapId: string;
+  /** 바뀐 타일 칸(최대 40개). 총수는 tileCellCount. */
+  readonly tileCells: readonly { readonly x: number; readonly y: number; readonly layer: "lower" | "upper" }[];
+  readonly tileCellCount: number;
+  readonly eventsAdded: readonly string[];
+  readonly eventsRemoved: readonly string[];
+  readonly eventsChanged: readonly string[];
+};
+
+const CHANGE_CELL_CAP = 40;
+const CHANGE_EVENT_CAP = 20;
+
+function diffHistoryMap(steps: number, mapId: string, before: GameMap, after: GameMap): MapEditHistoryChange | null {
+  const tileCells: { x: number; y: number; layer: "lower" | "upper" }[] = [];
+  let tileCellCount = 0;
+  if (before.width === after.width && before.height === after.height) {
+    for (const [layer, was, now] of [["lower", before.lowerTiles, after.lowerTiles], ["upper", before.upperTiles, after.upperTiles]] as const) {
+      for (let index = 0; index < Math.min(was.length, now.length); index += 1) {
+        if (was[index] === now[index]) continue;
+        tileCellCount += 1;
+        if (tileCells.length < CHANGE_CELL_CAP) tileCells.push({ x: index % after.width, y: Math.floor(index / after.width), layer });
+      }
+    }
+  }
+  const beforeEvents = new Map(before.events.map((event) => [event.id, event]));
+  const afterEvents = new Map(after.events.map((event) => [event.id, event]));
+  const eventsAdded = [...afterEvents.keys()].filter((id) => !beforeEvents.has(id)).slice(0, CHANGE_EVENT_CAP);
+  const eventsRemoved = [...beforeEvents.keys()].filter((id) => !afterEvents.has(id)).slice(0, CHANGE_EVENT_CAP);
+  const eventsChanged = [...afterEvents].filter(([id, event]) => beforeEvents.has(id) && !jsonEqual(beforeEvents.get(id), event)).map(([id]) => id).slice(0, CHANGE_EVENT_CAP);
+  if (!tileCellCount && !eventsAdded.length && !eventsRemoved.length && !eventsChanged.length) return null;
+  return { steps, mapId, tileCells, tileCellCount, eventsAdded, eventsRemoved, eventsChanged };
+}
+
+/**
+ * 가까운 편집 기록 몇 건이 **무엇을** 바꿨는지(맵별 타일 칸 좌표·이벤트 id). 항목의 before 와 그 다음 상태를 비교한다.
+ * 라벨만으로는 「방금 어떤 타일을 바꿨나」에 답할 수 없다 — Pi 워커가 list_edit_history 에서 이 내용을 읽는다.
+ */
+export function getMapEditHistoryChanges(limit = 5): readonly MapEditHistoryChange[] {
+  const out: MapEditHistoryChange[] = [];
+  const top = Math.min(limit, undoStack.length);
+  for (let offset = 0; offset < top; offset += 1) {
+    const index = undoStack.length - 1 - offset;
+    const entry = undoStack[index]!;
+    const steps = offset + 1;
+    // 이 편집 직후 상태: 더 새로운 스냅샷 중 같은 맵을 담은 첫 것의 before, 없으면 현재 프로젝트.
+    const after = (mapId: string): GameMap | undefined => {
+      for (let newer = index + 1; newer < undoStack.length; newer += 1) {
+        const snapshot = undoStack[newer]!.snapshot;
+        if (snapshot.kind === "project") return snapshot.before.maps[mapId];
+        if (snapshot.mapId === mapId) return snapshot.before;
+      }
+      return store.getCurrent().maps[mapId];
+    };
+    const before = entry.snapshot;
+    if (before.kind === "map") {
+      const next = after(before.mapId);
+      const change = next ? diffHistoryMap(steps, before.mapId, before.before, next) : null;
+      if (change) out.push(change);
+      continue;
+    }
+    for (const [mapId, map] of Object.entries(before.before.maps)) {
+      const next = after(mapId);
+      if (!next || next === map) continue;
+      const change = diffHistoryMap(steps, mapId, map, next);
+      if (change) out.push(change);
+    }
+  }
+  return out;
+}
+
 export function peekPreviousProject(steps = 1): Project | null {
   const normalizedSteps = Number.isFinite(steps) ? Math.max(1, Math.trunc(steps)) : 1;
   if (normalizedSteps > undoStack.length) return null;

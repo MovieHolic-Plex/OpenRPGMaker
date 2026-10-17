@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5008ede5333315bc555d065259c24b378e62bbe45bb80fede350e797ba858a2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tilled farm soil edge on grass (terrain)",
+ "label": "sky-island/si-field-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil and grass terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain ground tile depicting horizontal furrows of tilled earth bordering grass at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3297
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil ground edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting horizontal furrows of tilled soil meeting a grassy edge at the bottom, drawn as a ground plane surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilled soil terrain tile with grass border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing horizontal tilled dirt furrows transitioning into green grass at the southern edge, correctly rendered from an overhead 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2946
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilled soil and grass ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting tilled soil ridges transitioning to grass along the bottom edge, viewed correctly from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3015
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.980Z",
+ "cells": {
+  "16": [
+   "90efe33cb1dd3e1c"
+  ],
+  "24": [
+   "01a61468e8e6b7ac",
+   "2149e8e111c67859",
+   "29658ebe45a94b8b",
+   "9dcffb2c27cb952c",
+   "bda834664ac824b1",
+   "f0f6e586a0630983"
+  ],
+  "32": [
+   "28de8e39884d0c10",
+   "3afd0ffa5980a669",
+   "43d8e0d6e7d15171",
+   "5e1ec33913780159",
+   "64bbab50630b727b",
+   "e60d86081725a2e9"
+  ],
+  "48": [
+   "2b46ccc3cfe2aa60",
+   "2fc7862635520889",
+   "51150dec2c20bad4",
+   "80c67d36860d717f",
+   "946ba891097ca41a",
+   "97d15569851d24f5"
+  ]
+ }
+}

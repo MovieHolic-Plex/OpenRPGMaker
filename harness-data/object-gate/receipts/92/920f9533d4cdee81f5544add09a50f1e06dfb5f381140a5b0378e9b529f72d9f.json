@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "920f9533d4cdee81f5544add09a50f1e06dfb5f381140a5b0378e9b529f72d9f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "오벨리스크",
+ "label": "desert-east/de-obelisk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pillar shaft of the obelisk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The obelisk consists of stacked 7-8px tall stone blocks seen in pure front elevation. The topmost block (rows 2-8) has a decorative inset and terminates flat at row 2 with only a 1px outline across the top, showing no visible top surface or cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "obelisk column",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The column clearly shows its top surface foreshortened across rows 2–7 (6 rows deep), matching the top surface perspective of the base plinth below (rows 36–41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13181
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar shaft with top surface and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the column clearly shows a 5-pixel-tall horizontal surface (rows 3-7) viewed from above, and the base pedestal also shows its top surface (rows 37-40).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5092
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pillar shaft / obelisk column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pillar body is drawn in pure front elevation with only a 1px dark border line at row 2 where the top should be. The panel at rows 3–7 has vertical right-side shading consistent with the south-facing front facade rather than a foreshortened top cut face. While the base plinth has a perspective top surface, the main body shows 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22404
+  }
+ ],
+ "decidedAt": "2026-10-14T00:52:00.805Z",
+ "cells": {
+  "16": [
+   "59d717828ce0d49e",
+   "77bacb571d050ee5",
+   "bf91d74d23f63b3a"
+  ],
+  "24": [
+   "1636afa0c6b20e76",
+   "1b0bb47beb85cdb2",
+   "1c2cf79eadaa4a47",
+   "793770a6c720d0b7",
+   "9866b023f55a12ea",
+   "c9aeaa172db9cb1e"
+  ],
+  "32": [
+   "0202f0586ee90df6",
+   "02e3cdb8c07ddae3",
+   "5304e92c8029670f",
+   "62b9c95b6e10edd4",
+   "83dc3f81e131bcc6",
+   "a468cedf060c8f06",
+   "b10c7180a1438d8f",
+   "b7c1acae39651b51",
+   "b88153a75dcafc96",
+   "bca3a9f604c90a0b",
+   "cbf3a3c71c0c234f",
+   "f066d6c496614f4f"
+  ],
+  "48": [
+   "081857ac27252aba",
+   "24398f23f4059fed",
+   "f5ede0d2c0960241"
+  ]
+ }
+}

@@ -1,0 +1,52 @@
+{
+ "key": "sc2-rookie-boy",
+ "name": "신입 트레이너(소년)",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy1:5",
+ "recolor": [
+  {
+   "region": "H",
+   "to": {
+    "hue": 215,
+    "s": 0.7,
+    "v": 0.8
+   },
+   "hue": [
+    90,
+    160
+   ]
+  },
+  {
+   "region": "T",
+   "to": {
+    "hue": 15,
+    "s": 0.7,
+    "v": 0.9
+   },
+   "hue": [
+    130,
+    200
+   ],
+   "smin": 0.15
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 140,
+    "s": 0.6,
+    "v": 0.55
+   },
+   "hue": [
+    20,
+    50
+   ],
+   "smin": 0.3
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "고정 검사: 12프레임 797칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-rookie-boy"
+}

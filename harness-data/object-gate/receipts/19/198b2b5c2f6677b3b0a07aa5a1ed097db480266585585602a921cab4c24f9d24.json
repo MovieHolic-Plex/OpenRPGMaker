@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "198b2b5c2f6677b3b0a07aa5a1ed097db480266585585602a921cab4c24f9d24",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "생선 말리는 덕장(대구 줄줄이)",
+ "label": "snow-north/sn-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fish drying rack with hanging fish and snow on top",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat 2D architectural elevation. The horizontal beam has only a 1-2px stepped layer of snow at the very top (rows 3-4) over flat front-facing bands, the vertical posts have no depth or perspective grounding, and the structure shows no 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 6019
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fish drying rack (posts, crossbar, and hanging fish)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat 2D front elevation (side-scroller style). The posts and crossbar show no top surfaces or depth in the 3/4 top-down perspective, the snow atop the lintel is drawn as a flat front-facing mound rather than a receding surface, and the structure has no visible depth posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7421
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fish drying rack (wooden frame with hanging fish)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat 2D front elevation (side-scroller style). The top crossbeam shows no top surface seen from above; only a flat front-facing snow cap (rows 4-6) rests on the horizontal beam, and the vertical posts extend straight down to the base with zero depth or foreshortened top/base planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5920
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fish drying rack (wooden frame with hanging fish)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation. The crossbeam has no visible horizontal top surface, only a flat 2D profile of snow accumulated on it (rows 3-6) and a 1-2px front face (rows 7-8). The posts and hanging fish are completely vertical without any 3/4 top-down foreshortening or ground contact depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6891
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.504Z",
+ "cells": {
+  "16": [
+   "21761c04588e5110",
+   "3706160a763c6d3e",
+   "3d0bb36c87c46cbe",
+   "668b036654e101e8"
+  ],
+  "24": [
+   "015a75b8f7d40047",
+   "018a3f564c2e1bc1",
+   "13f5f74e2137692b",
+   "266eee519dee5d68",
+   "2e0a5f6e67fab36d",
+   "3298f77c209b9ec1",
+   "3a579636c325fd12",
+   "3c9e4a260b534e9a",
+   "4ab9247e5dc6328e",
+   "5c43551892eb773e",
+   "62b9111f90ca7b96",
+   "64c006b5d6b64cb5",
+   "90e1df27784912e1",
+   "932b50737a75ffa5",
+   "a38be87fb5670367",
+   "b0337109a9570a48",
+   "b93dad72c65711aa",
+   "beef75c146cd11b9",
+   "d27aeb7e2ed45d7c",
+   "e38c2d59bf4497c2",
+   "eaf2133313df91fa",
+   "ebb6e6ef40822893",
+   "ef5777ab0c9e4dbb",
+   "ffc8e5210d696a01"
+  ],
+  "32": [
+   "6f37bb4577a775c8"
+  ],
+  "48": [
+   "2b73f7c97ddf8602",
+   "301e6645f4bdabaa",
+   "4e67e89b739a783c",
+   "addf2fabfb3f5e6a",
+   "f70ee88c2b3fca07",
+   "fa59883ae242a2b8"
+  ]
+ }
+}

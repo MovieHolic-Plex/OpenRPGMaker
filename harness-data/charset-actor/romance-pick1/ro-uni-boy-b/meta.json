@@ -1,0 +1,51 @@
+{
+ "key": "ro-uni-boy-b",
+ "arch": "ro-uni-boy",
+ "base": "People1:0",
+ "variant": "회색 블레이저 + 흰 셔츠 + 짙은 녹색 넥타이, 검정 슬랙스, 검은 구두. 머리는 어두운 밤색(모양은 베이스 유지). 1번과 색 조합이 확연히 달라야 한다.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 Bcgijmnoqrtux"
+   ],
+   "at": "2026-10-16T03:33:59"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Bcgijmnoqrtux"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.96,
+   "T": 0.869,
+   "B": 0.778,
+   "S": 0.961
+  },
+  "cross": 9,
+  "cross_base": 13,
+  "lone": 339,
+  "lone_base": 361
+ },
+ "reapplied": true
+}

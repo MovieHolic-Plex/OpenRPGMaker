@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93daa9c82d73fef8140f17df6884b6587ea71a118620a73b41be696c45860f99",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: seeded (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_seeded",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed clump is only 2 source pixels tall (rows 3-4 and 11-12) drawn as a flat profile with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8216
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seed mounds",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed mound is only 2 pixels tall (rows 3-4 and 11-12) drawn from a side profile with a 1px upper highlight and 1px front face, showing no substantial foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seeds / planted seed mounds",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts planted seeds/seed mounds arranged in rows across the field. Each 2-pixel-tall seed shows a lighter top surface (1 row) and darker front face (1 row) with a cast shadow to the south, correctly rendered for 3/4 top-down perspective at this tiny scale.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11371
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planted seeds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each seed is drawn as a flat 2-pixel-tall front silhouette (rows 3-4 and 11-12) with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6993
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.805Z",
+ "cells": {
+  "16": [
+   "c9f7a22c61e453d6"
+  ],
+  "24": [
+   "02cdd24291b976d9",
+   "316a29a1387cdf04",
+   "553615c6cd9fae77",
+   "5a81fb066bffa2e6",
+   "7bca1ca16ff54d65",
+   "e820ec42deea2d2d"
+  ],
+  "32": [
+   "1c4ff7297a39cdea",
+   "1eef03c38fe57a7d",
+   "357244877b565aa3",
+   "745dfcdc422426aa",
+   "c3e3798458b14aa6",
+   "d4d4a5d785fbd098"
+  ],
+  "48": [
+   "1f15d0f05dac0943",
+   "23ab272edeb1fb97",
+   "3a614d88c45b820a",
+   "3cf0ecb2ceaf4ed6",
+   "67f727f64d23ba6c",
+   "be01be737c33d185"
+  ]
+ }
+}

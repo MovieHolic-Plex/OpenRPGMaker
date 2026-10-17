@@ -1,0 +1,51 @@
+{
+ "key": "ro3-suit-girl-b",
+ "arch": "ro-suit-girl",
+ "base": "People1:5",
+ "variant": "색 변형(스크립트, 모델 호출 없음) — 남색 정장·같은 머리",
+ "model": "script-colorvar(of gemini-4-argon-high)",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": null,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 EIJKRSdeiklpqstuwxz"
+   ]
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 EIJKRSdeiklpqstuwxz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.924,
+   "T": 0.829,
+   "B": 0.929,
+   "S": 0.93
+  },
+  "cross": 8,
+  "cross_base": 16,
+  "lone": 297,
+  "lone_base": 335
+ },
+ "colorvar_of": "ro-suit-girl-a",
+ "reapplied": true
+}

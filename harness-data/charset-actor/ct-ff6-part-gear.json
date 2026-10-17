@@ -1,0 +1,57 @@
+{
+ "title": "CT·FF6 장비 앵커 재작업 — pick-5",
+ "common": "RPG 걷기 칩(24×32, 머리가 큰 2.5등신)의 직업 원형. 특정 게임의 실존 캐릭터를 복제하거나 닮게 그리지 않는다. 베이스의 얼굴·몸 비율·걷기는 그대로 두고 의복·머리·장비만 바꾼다. 얼굴이 베이스와 같은 사람이라는 점은 괜찮다(얼굴은 고정).",
+ "archetypes": [
+  {
+   "id": "iw-legion-soldier",
+   "name": "군단 창병",
+   "genre": "제국군",
+   "role": "제국 병사",
+   "concept": "철제 투구와 판금 갑옷의 제국 창병. 어두운 청회색 갑옷, 얼굴을 반쯤 가린 바이저, 투구 정수리에 짧은 붉은 술, 어깨의 둥근 견갑, 한 손에 긴 창. 같은 옷을 입은 병사 무리가 한눈에 같은 군대로 보이게 단순한 실루엣.",
+   "candidates": [
+    {
+     "base": "Actor3:0",
+     "variant": "청회색 판금 갑옷, 붉은 술, 오른손에 창을 쥠(손이 창을 쥔다).",
+     "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+     "seed_edit": "/home/main/z-project/rpg-zzu-chips-ct-ff6/qa-runs/harnesses/ct-ff6-part/p4-high/iw-legion-soldier-a/edit.json",
+     "before": "p4-high/iw-legion-soldier-a",
+     "gear_task": "**held 창**: side R(오른손), 막대 모양. 창끝(은회색 삼각)은 주먹 위로 머리 쪽, 자루는 갈색. 위·아래·옆 네 방향 모두. grip 은 막대 가운데 자루 칸(주먹이 감싸는 칸). 먼 손 방향(left)에서는 몸 뒤로 막대 위아래만 보인다."
+    }
+   ]
+  },
+  {
+   "id": "tt-hero-boy",
+   "name": "시간여행 소년",
+   "genre": "시간여행",
+   "role": "주인공",
+   "concept": "모험을 시작하는 소년 주인공. 빨간 머리는 쓰지 않는다. 헝클어진 검은 갈색 머리에 고글 머리띠, 청록 조끼 아래 흰 셔츠, 팔에 가죽 보호대, 어깨에 짧은 두루마기 주머니. 한눈에 주인공으로 읽히는 밝은 청록색 포인트.",
+   "candidates": [
+    {
+     "base": "People1:0",
+     "variant": "청록 머리띠, 가죽 재킷, 오른쪽 허리에 매단 시계 가방.",
+     "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+     "seed_edit": "/home/main/z-project/rpg-zzu-chips-ct-ff6/qa-runs/harnesses/ct-ff6-part/p4-high/tt-hero-boy-b/edit.json",
+     "before": "p4-high/tt-hero-boy-b",
+     "gear_task": "**hip 시계 가방**: side R(오른쪽 허리), 작은 가죽 주머니(갈색+황동 잠금, 8×8 이하). 몸에 붙어 허리춤에 매달린 모양, 아래에서는 오른쪽 허리(보는 사람 왼쪽)에 옷 위로 보이게. 떠 있으면 안 된다."
+    }
+   ]
+  },
+  {
+   "id": "iw-steam-armor",
+   "name": "증기 기갑병",
+   "genre": "제국군",
+   "role": "기계 갑옷 병사",
+   "concept": "걸어 다니는 증기 기계 갑옷. 몸통이 큰 철제 상자형, 가슴에 둥근 관측창과 해치, 등에 굴뚝과 보일러 통, 어깨에 둥근 리벳 판, 팔은 굵은 피스톤 집게, 다리는 두꺼운 관절. 철회색과 구릿빛, 눈은 노란 조명 한 줄. 특정 게임의 실제 기계 갑옷 모양을 복제하지 않는다.",
+   "candidates": [
+    {
+     "base": "Actor3:0",
+     "variant": "철회색+구릿빛 판금 갑옷, 등에 굴뚝 두 개.",
+     "delegated": "사용자 위임: ★ 추천 베이스로 진행",
+     "seed_edit": "/home/main/z-project/rpg-zzu-chips-ct-ff6/qa-runs/harnesses/ct-ff6-part/p4-high/iw-steam-armor-a/edit.json",
+     "before": "p4-high/iw-steam-armor-a",
+     "gear_task": "**back 굴뚝**: 등에 고정된 굴뚝 한 쌍(철회색 통 + 구리 띠, 어깨 폭 안쪽에 붙은 두 개를 한 스프라이트에, 12폭 이하). 위(up)에서는 등 위에 보이고, 아래·옆에서는 어깨 뒤로 머리 위에 위쪽으로 삐져나온 부분만 보인다. 팔을 든 모양으로 읽히지 않게 몸·머리 뒤에서 솟게 한다."
+    }
+   ]
+  }
+ ]
+}

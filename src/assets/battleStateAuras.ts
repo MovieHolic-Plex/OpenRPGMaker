@@ -64,6 +64,7 @@ const DEFAULT_AURA_BY_STATE_ID: Readonly<Record<string, BattleAuraId>> = {
 /** 몬스터 게임의 주 상태(gen1MajorStatus)는 id 가 제각각이라 의미로 고른다. */
 const DEFAULT_AURA_BY_MAJOR_STATUS: Readonly<Record<string, BattleAuraId>> = {
   poison: "poison-bubble",
+  toxic: "poison-bubble",
   burn: "burn-ember",
   sleep: "sleep-zzz",
   freeze: "freeze-grey",

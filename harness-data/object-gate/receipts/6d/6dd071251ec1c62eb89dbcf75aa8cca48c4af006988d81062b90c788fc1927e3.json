@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dd071251ec1c62eb89dbcf75aa8cca48c4af006988d81062b90c788fc1927e3",
+ "width": 32,
+ "height": 32,
+ "kind": "other",
+ "name": "짐수레(나무 바퀴 둘 + 짐)",
+ "label": "sengoku-edo/se-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cart body / wagon box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cart body is drawn as a flat front elevation (rows 10–21) with horizontal wooden planks, flanked by vertical wheels and legs below. No top rim, cart bed interior, or horizontal surface of the cart body is shown from the 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wooden body of the cart (rows 10-22) is drawn in pure front elevation with three horizontal planks and no visible top surface or interior opening depth. The front wall occludes the cargo with 0px of top surface visible on the cart itself.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 26961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cart body is drawn in pure front elevation: its front board is a vertical wall spanning rows 10-22 with no visible top surface or thickness along its upper edge, and no cart floor/interior is visible around the cargo.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17725
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cart body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the cart is drawn as a flat front elevation: a 10px-tall vertical front panel (rows 10-19) with horizontal plank lines and no visible top surface or interior depth of the cart bed. The crates behind it are also drawn flat from the front with horizontal banding, and the handles extend straight down in pure front/orthographic view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10006
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.183Z",
+ "cells": {
+  "16": [
+   "2304ac96501028ab",
+   "4a5df822c298a5b0",
+   "bd591035cc4125ab",
+   "d09031b32d112f1b"
+  ],
+  "24": [
+   "02ccdb810efbaeec",
+   "04590a7d71bab305",
+   "0597df107da2b13e",
+   "0c708e58afd9261b",
+   "1199797cd8fbd3a5",
+   "1865b60e4dbbddf7",
+   "1923e892902036b7",
+   "36ad2bda956a55e3",
+   "4dda8a196e0d4e3f",
+   "64f4124517754868",
+   "67461d2a36986d83",
+   "6c7a10a6cebad6f8",
+   "9c2ea637c41a448f",
+   "9cd49b0bc3c02f2e",
+   "a1c6af7b1a717f69",
+   "abb91ab2d4093bbd",
+   "b3226f1fd642553f",
+   "b8aa042bf7821589",
+   "c361a5de44ba12a5",
+   "c7d62bfe0a71a440",
+   "dbb57534806655ff",
+   "e6b4e7b0fa0ef638",
+   "f1ae2ed3991836a8",
+   "ff1973b7bebcad56"
+  ],
+  "32": [
+   "a72abc00e1309816"
+  ],
+  "48": [
+   "65f76ab812a4836f",
+   "66836a02ba058f1f",
+   "a1f6456b0f1bad99",
+   "b0d4564e343f6af4",
+   "daad988f110e2ede",
+   "e02c45794d550df2"
+  ]
+ }
+}

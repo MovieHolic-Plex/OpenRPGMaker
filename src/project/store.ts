@@ -1,3 +1,4 @@
+import { bootMark } from "@/util/bootMarks";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
@@ -19,13 +20,15 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
-import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
+import { canSaveDevProjectOverride, isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
 import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
-import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
-import { forgetTrustedSharedEntries, jsonContentDigest, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
+import { projectViewWithoutEventDrafts, projectWithoutEventDrafts, projectWithoutEventDraftsSharingSharedDictionaries } from "./eventDrafts";
+import { forgetTrustedSharedEntries, jsonContentDigest, primeSharedEntryDigests, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
+import { afterBootSettled } from "@/util/bootSettled";
+import { yieldToTask } from "@/util/yieldToTask";
 import { applyCleanedProjection, cloneCommandContainersForMove, projectWithEventRevision, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
@@ -333,6 +336,7 @@ class ProjectStore {
           throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const { project, authority, target } = await this.readRemoteProject();
+          bootMark("project-read");
           if (!project && target !== null && isLocalTarget(target)) {
             // 비어 있는 로컬 폴더는 "새 프로젝트"다 — 호스트(앱·로컬 서버)가 폴더를
             // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
@@ -363,7 +367,10 @@ class ProjectStore {
             else this.beginLocalProjectSession();
             this.remotePersistenceEnabled = !sharedDemo;
             this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current);
+            // 정규화를 건너뛰는 문서(표식이 맞는 문서)는 타일셋·업로드 자산 항목이 제자리에서 바뀌지 않는다 — 기준본이 항목을
+            // 공유해도 된다(복제 1.5s 절약, projectWithoutEventDraftsSharingSharedDictionaries). 정규화가 돌 문서는 예전처럼 통째로 복제한다.
+            const sharesDictionaries = bootNormalizationMatches(this.current, currentBootNormalizationMarker()) && !hasPendingFacesetSheetRepair(this.current);
+            this.persistedBaseline = sharedDemo ? null : this.baselineFrom(this.current, { shareDictionaries: sharesDictionaries });
             resetManualProjectCommitBaseline(this.current);
             this.syncProjectUrlBar();
           }
@@ -376,6 +383,7 @@ class ProjectStore {
       // 방금 채택한 새 로컬 프로젝트는 폴더에 문서가 없다 — 첫 flush 대상으로 dirty 를 되돌린다.
       if (seededNewLocalProject && canWriteTeamProject()) this.dirtySinceLastPersist = true;
       await this.normalizeCurrentProject({ persistIfChanged: false });
+      bootMark("project-normalized");
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
         this.loaded = false;
@@ -1075,12 +1083,20 @@ class ProjectStore {
    * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
    * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
    */
-  private baselineFrom(source: Project, options: { readonly owned?: boolean } = {}): Project {
+  private baselineFrom(source: Project, options: { readonly owned?: boolean; readonly shareDictionaries?: boolean } = {}): Project {
     // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
-    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
+    // shareDictionaries: 타일셋·업로드 자산 항목이 이후 제자리에서 바뀌지 않는다고 보증한다(부팅 정규화를 건너뛰는 문서).
+    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source
+      ? source
+      : options.shareDictionaries ? projectWithoutEventDraftsSharingSharedDictionaries(source) : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
-    scheduleIdleWork(() => {
-      if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+    const stale = (): boolean => this.contentLineage !== lineage || this.persistedBaseline !== baseline;
+    const warm = async (): Promise<void> => {
+      if (stale()) return;
+      // 요약 기억이 아직 없는 타일셋(부팅 정규화를 건너뛴 문서는 로드가 요약을 미룬다 — electronRepository)은 여기서 하나씩 양보하며 먼저 만든다.
+      // 한 번에 문서 전체를 요약하면 첫 화면 뒤에 메인 스레드가 7.8s 멈췄다(2026-10-14 실측, 타일셋 379칸 98MB).
+      await primeSharedEntryDigests(projectWireView(this.current), yieldToTask, stale);
+      if (stale()) return;
       // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
       // 다시 해시했다(2026-09-28 실측, 팀 참여 창 부팅 4.4s). 기억을 먼저 넘기면 바뀐 가지만 다시 센다 — 기억은 값
       // 대조로만 채택되므로 정규화가 current 를 고친 가지는 그대로 다시 계산된다.
@@ -1092,7 +1108,9 @@ class ProjectStore {
       for (const view of [baseline, this.current]) {
         for (const [id, entry] of Object.entries(projectWireView(view).tilesets ?? {})) sharedEntryDigest(entry, id);
       }
-    });
+    };
+    // 첫 화면 뒤에 시작한다 — requestIdleCallback 의 3초 상한이 부팅 중에도 이 일을 끼워 넣어 첫 화면을 3~5초 늦췄다(src/util/bootSettled.ts).
+    afterBootSettled(() => scheduleIdleWork(() => { void warm(); }));
     return baseline;
   }
 
@@ -1514,7 +1532,9 @@ class ProjectStore {
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase") {
         // fresh/blank 위치에서는 기록이 스킵되므로(false 반환) dirty를 유지한다(결함 ⑧·⑩).
-        if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
+        // 쓰지 않을 위치면 사본을 만들지 않는다 — 예전에는 인자를 먼저 만들어 매 저장마다 전체 복제(새 프로젝트 기본 자료 약 1.2s)를 하고 버렸다.
+        // 쓸 때도 곧바로 직렬화만 하므로 복제 없는 보기로 충분하다.
+        if (canSaveDevProjectOverride() && saveDevProjectOverride(projectViewWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
           if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
           return { kind: "saved-local", written: true };

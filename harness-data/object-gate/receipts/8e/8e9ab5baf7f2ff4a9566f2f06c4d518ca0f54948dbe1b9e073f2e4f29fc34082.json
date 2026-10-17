@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e9ab5baf7f2ff4a9566f2f06c4d518ca0f54948dbe1b9e073f2e4f29fc34082",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "링거 걸이(점적 스탠드)",
+ "label": "jp_city/interior_hospital/hs-iv-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "IV pole stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular hook assembly is drawn as an ellipse seen from above across rows 1-5 (approx 4-5 rows deep), and the wheeled base at rows 38-46 clearly spreads out in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4914
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "IV drip stand pole and hanger",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular hanger fixture is drawn as a foreshortened ellipse spanning rows 1-4 (4 rows tall). The 5-star wheeled base at rows 38-46 is also properly foreshortened in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4682
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "IV drip stand (pole with hanging bags and wheeled base)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular hook assembly is rendered as a foreshortened ellipse spanning rows 1-4 with visible top shading (approx. 3 rows deep), and the wheeled caster base at rows 38-46 correctly splays in 3/4 perspective with forward-projecting legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "IV drip stand pole and hanger",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hanger ring/cap is drawn as a foreshortened ellipse spanning rows 1-5 (approx 4 rows of depth), and the wheeled base clearly radiates in 3/4 top-down perspective across rows 39-46.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5247
+  }
+ ],
+ "decidedAt": "2026-10-14T06:16:49.338Z",
+ "cells": {
+  "16": [
+   "3406222902003610",
+   "7bacafe516e4ecf3",
+   "d4d81652f5f0219e"
+  ],
+  "24": [
+   "11ce7f93f6da9835",
+   "3cf70ff71f5b0caa",
+   "68c2edd7d032d391",
+   "7f663455fbc1a189",
+   "978b3f9ec7d1f093",
+   "f959adc919790f6d"
+  ],
+  "32": [
+   "06958d486eec65a0",
+   "15f092fae4102560",
+   "178a1b652145757f",
+   "203685f37af600ab",
+   "203d20ba5e786405",
+   "340a153cd6718e32",
+   "52f0c007ffbb63ea",
+   "67a4cd7b10ad45d7",
+   "7f1534362cc53f13",
+   "8c2b9e7d47b5b91b",
+   "8e487f0427f06cda",
+   "e18819a162039a8b"
+  ],
+  "48": [
+   "11995401b52e0de6",
+   "2ec51d732d92b0b5",
+   "d6e2de0006892e91"
+  ]
+ }
+}

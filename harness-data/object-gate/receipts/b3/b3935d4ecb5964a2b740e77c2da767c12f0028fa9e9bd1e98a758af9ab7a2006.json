@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3935d4ecb5964a2b740e77c2da767c12f0028fa9e9bd1e98a758af9ab7a2006",
+ "width": 16,
+ "height": 48,
+ "kind": "other",
+ "name": "iron chain hanging from an island: iron ring plate at the top and a square stone anchor weight with a visible flat top at the bottom",
+ "label": "sky-island/si-chain-hang",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square stone anchor weight at bottom of chain",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone anchor weight displays a foreshortened top surface across rows 30-35 (6 source pixels tall) with chain attachment, above its south-facing vertical face (rows 36-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4584
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone anchor weight",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The square stone anchor weight has a clearly drawn flat top surface from row 30 to 35 (6 rows tall) with the chain mount in the center, and a vertical south face from row 36 to 44.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4300
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square stone anchor weight",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone weight at the bottom clearly depicts a 6-row top surface (rows 30-35) with attachment hardware, above a darker front face (rows 36-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3872
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone anchor weight at bottom of hanging chain",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main block volume at the bottom clearly shows a 6-pixel-tall top surface (rows 30-35) foreshortened from above, directly over its front south face (rows 36-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2707
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.919Z",
+ "cells": {
+  "16": [
+   "0faa8d732e4e1f11",
+   "61eae4f240835e74",
+   "a14b465ecc391c08"
+  ],
+  "24": [
+   "238988749fc8f7e5",
+   "5c8c35011f8386d1",
+   "6931a1a40a246244",
+   "c85189b4daed3572",
+   "def9b4c14e6cd910",
+   "e18896028312a817"
+  ],
+  "32": [
+   "0fa00d56c609acbc",
+   "0fb5d6fc385276fb",
+   "3d2092cd2876fe33",
+   "55387d122eeeed66",
+   "69d489481b11bcf1",
+   "b051a98daa6f6eb7",
+   "b59b6e0abcebba05",
+   "c3afd941a01d6c20",
+   "e04f1ba91ff90882",
+   "eb6376d1fc358c16",
+   "f22c7253ba51d779",
+   "f5b7b6a6464b329b"
+  ],
+  "48": [
+   "01fab597479c9d74",
+   "35e4776cd268a786",
+   "d45b1e135c1f1f02"
+  ]
+ }
+}

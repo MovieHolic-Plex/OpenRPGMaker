@@ -43,6 +43,7 @@ import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { uiLabel } from "@/editor/uiCopy";
 import { createConnectionsPanel } from "@/editor/panels/databaseConnectionsPanel";
+import { getDatabaseSubLocation, subscribeDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 
 // 창 컨트롤 아이콘 — 예전에는 "⇥ □ x" 텍스트 글리프였다. 글꼴에 따라 굵기·베이스라인이
 // 제각각이고 x 는 소문자 엑스라 닫기 버튼으로 읽히지 않았다. 규격은 레일 아이콘과 같다
@@ -76,6 +77,7 @@ function windowIcon(name: WindowIconName): SVGSVGElement {
 function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
   const group = databaseTabGroupLabel(tab);
   const path = databaseTabPath(tab);
+  const section = getDatabaseSubLocation(tab);
   crumb.replaceChildren(
     ...(group
       ? [
@@ -87,6 +89,18 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
       ...(index > 0 ? [el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } })] : []),
       el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } }),
     ]),
+    // 세 번째 칸 — 구획을 가진 탭(시스템)이 보고 있는 구획. 마지막 칸이라 aria-current 로 알린다.
+    ...(section
+      ? [
+        el("span", { class: "database-modal-crumb-sep", text: "›", attrs: { "aria-hidden": "true" } }),
+        el("span", {
+          class: "database-modal-crumb-section",
+          text: section,
+          attrs: { "aria-current": "location" },
+          dataset: { section },
+        }),
+      ]
+      : []),
   );
   crumb.dataset.tab = tab;
 }
@@ -251,6 +265,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     refreshDatabasePanel(body);
     connections.paint(getDatabaseActiveTab());
   });
+  // 구획이 바뀌는 것(시스템 탭 안 이동)은 활성 탭이 안 바뀌어도 크럼에 닿아야 한다.
+  const unsubscribeSubLocation = subscribeDatabaseSubLocation(() => writeCrumb(crumb, getDatabaseActiveTab()));
   const unsubscribeActiveTab = subscribeDatabaseActiveTab((tab) => {
     writeCrumb(crumb, tab);
     aiBar.refreshContext();
@@ -410,6 +426,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     unsubscribeAutoSave();
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();
+    unsubscribeSubLocation();
     aiBar.dispose();
     setDatabasePreviewSurfaceActive(backdrop, false);
     disposeDatabasePanelPreviews(body);
@@ -439,7 +456,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       switchDatabaseActiveTab("worldCodex", body);
       refreshDatabasePanel(body);
       manualStatusShown = true;
-      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 카드 내용을 확인하세요.");
+      writeDatabaseFooterError(footerStatus, codexSession.state.editError || "설정집 문서 내용을 확인하세요.");
       return false;
     }
     refreshDatabasePanel(body);
@@ -534,7 +551,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     if (manualStatusShown && store.getAutoSaveState().kind !== "error") return;
     manualStatusShown = false;
     const status = codexSession.isDirty()
-      ? ({ text: "설정집 카드 저장 전", kind: "pending" } as const)
+      ? ({ text: "설정집 문서 저장 전", kind: "pending" } as const)
       : databaseFooterStatus(store.getAutoSaveState());
     footerStatus.textContent = status.text;
     footerStatus.dataset.statusKind = status.kind;

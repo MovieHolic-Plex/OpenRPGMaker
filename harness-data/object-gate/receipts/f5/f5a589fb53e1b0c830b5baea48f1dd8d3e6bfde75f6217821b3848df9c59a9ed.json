@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5a589fb53e1b0c830b5baea48f1dd8d3e6bfde75f6217821b3848df9c59a9ed",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "harbor cobblestone pavement floor tiles, 2 variants",
+ "label": "pirate-isles/pi-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tiles displaying a staggered cobblestone pattern viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5126
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone pavement floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting rows of cobblestones with top-down lighting and mortar lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4975
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles depicting repeating cobblestones laid across the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3256
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting cobblestones with shading suitable for top-down ground perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12962
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "6ba40cbd7dea8c62",
+   "80eeb1a8e946e2be"
+  ],
+  "24": [
+   "11a54c3e5302fe84",
+   "1db9e461975c0d69",
+   "3e686c3e4296fcbb",
+   "56ec61a9b4bc18b8",
+   "866bd4ea0921d2b3",
+   "86b6df72c86b59e9",
+   "99fa5df8b46e3798",
+   "b7053f9ab965f234",
+   "c1d7353b67ab78bc",
+   "c50a6d479370a5cd",
+   "d9f531744e7deef1",
+   "f899254b64dd36ca"
+  ],
+  "32": [
+   "244b81d10f9cb7bd",
+   "8ed11d5d6a3440dc"
+  ],
+  "48": [
+   "5fe9a013a765e8b9",
+   "6c0226a00c296d37",
+   "9f87fb0c1270145d",
+   "c6c5523918c4a4f3",
+   "d32ef97a1226ecb9",
+   "e3417712c07bbf7e"
+  ]
+ }
+}

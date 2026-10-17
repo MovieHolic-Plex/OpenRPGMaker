@@ -29,10 +29,12 @@
     z-index: 1; animation: emerald-professor-idle 4.8s steps(1, end) infinite;
   }
   .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-creature {
-    z-index: 1; animation: emerald-creature-idle 3.2s steps(2, end) infinite;
+    z-index: 1; animation: emerald-creature-idle 3.2s steps(1, end) infinite;
   }
   .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink] .cinematic-narration { z-index: 2; }
-  @keyframes emerald-professor-idle { 0%, 75%, 100% { translate: 0 0; } 42%, 62% { translate: 0 -1px; } }
+  /* 2px = 논리 도트 1칸. 1px 오르내림은 도트 격자를 반 칸 어긋나게 한다. */
+  @keyframes emerald-professor-idle { 0%, 75%, 100% { translate: 0 0; } 42%, 62% { translate: 0 -2px; } }
+  /* 구간마다 steps(1): 2칸이면 -1px 중간 값이 생겨 몬스터 도트가 격자에서 반 칸 어긋난다. */
   @keyframes emerald-creature-idle { 0%, 70%, 100% { translate: 0 0; } 35%, 50% { translate: 0 -2px; } }
   @keyframes emerald-intro-light { from { rotate: -1deg; opacity: .55; } to { rotate: 2deg; opacity: .85; } }
   @keyframes emerald-intro-mote { 0%, 100% { translate: 0 0; opacity: .15; } 50% { translate: 5px -11px; opacity: .75; } }

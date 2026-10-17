@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94d8c0fe03d1315e3ebda485290209cf875f15d066cab85633b3c92410ab293f",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vN' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vN",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts are drawn as flat vertical shapes with only 1-2px dark outline caps at rows 2-3 and row 5. There is no visible foreshortened top face showing the end grain or top surface of the posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wooden fence post and rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vertical posts terminate at the top with only a 1px dark outline and 1px highlight, with no foreshortened top surface showing depth. The object is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5742
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical fence post and rail segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence elements are drawn as flat vertical shapes with only a 1-2px cap highlight at rows 3-4 on the right section and row 5-6 on the left section, lacking any foreshortened horizontal top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10820
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence post and rail",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts are drawn in pure front/side elevation without foreshortened top surfaces. The top edges consist merely of a 1px outline cap (rows 2 and 5) with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8026
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.806Z",
+ "cells": {
+  "16": [
+   "a080595d9eaa26ce"
+  ],
+  "24": [
+   "00ce0ad149785c59",
+   "03b12949f8fc0756",
+   "0e02bbfb4c21eed4",
+   "5993558f97833161",
+   "c13f9e8488582690",
+   "def1637fb4aa54f1"
+  ],
+  "32": [
+   "0238f34634f1cdef",
+   "3d3747f3f81553d1",
+   "6b12f1457b21875d",
+   "703b81e4188be58d",
+   "b18f783d03f17254",
+   "d2b9a138eb47e9e3"
+  ],
+  "48": [
+   "04da0bfbd2c75d06",
+   "43ada96e5acd570d",
+   "8912ffdf9a92e857",
+   "901ac7569fa43ebc",
+   "b4442a6aeff1c554",
+   "be8134ac6947b6d5"
+  ]
+ }
+}

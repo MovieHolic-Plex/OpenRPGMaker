@@ -1,0 +1,11 @@
+{"png": "si-cottage-red.png", "kind": "structure", "name": "빨간 지붕 오두막(회벽·목조)", "label": "sky-island/si-cottage-red"}
+{"png": "si-cottage-blue.png", "kind": "structure", "name": "푸른 슬레이트 지붕 집(널벽)", "label": "sky-island/si-cottage-blue"}
+{"png": "si-tower-house.png", "kind": "structure", "name": "돌탑 집(원뿔 지붕)", "label": "sky-island/si-tower-house"}
+{"png": "si-windmill.png", "kind": "structure", "name": "round windmill tower seen from above-front: round stone plinth, circular wooden balcony deck, conical cap roof, sails", "label": "sky-island/si-windmill"}
+{"png": "si-windmill-f1.png", "kind": "structure", "name": "round windmill tower seen from above-front: round stone plinth, circular wooden balcony deck, conical cap roof, sails", "label": "sky-island/si-windmill-f1"}
+{"png": "si-windmill-f2.png", "kind": "structure", "name": "round windmill tower seen from above-front: round stone plinth, circular wooden balcony deck, conical cap roof, sails", "label": "sky-island/si-windmill-f2"}
+{"png": "si-lighthouse.png", "kind": "structure", "name": "하늘 등대(빛 탑)", "label": "sky-island/si-lighthouse"}
+{"png": "si-shrine.png", "kind": "structure", "name": "하늘 신전(돌 기단 + 청록 지붕)", "label": "sky-island/si-shrine"}
+{"png": "si-observatory.png", "kind": "structure", "name": "천문대(옥상 마당 + 청동 돔)", "label": "sky-island/si-observatory"}
+{"png": "si-dockhouse.png", "kind": "structure", "name": "부두 관리소(널벽 + 처마 등불)", "label": "sky-island/si-dockhouse"}
+{"png": "si-wind-turbine.png", "kind": "column", "name": "small wind turbine: round stone plinth seen from above, slim mast, nacelle box with visible top, three blades", "label": "sky-island/si-wind-turbine"}

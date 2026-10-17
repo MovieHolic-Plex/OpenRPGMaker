@@ -1,3 +1,4 @@
+import { statStageEffectText } from "@/battle/statStages";
 import { actionSkillFields } from "./databaseActionSkillForm";
 import { skillCombatRuleCard, skillInputSequenceFields } from "@/editor/panels/databaseCombatRuleFields";
 // 스킬 탭 인스펙터 (2026-08 모던 개편).
@@ -41,7 +42,7 @@ import { el } from "@/util/dom";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
 import { POKEMON_MOVE_MOTIONS, POKEMON_MOVE_MOTION_LABELS, isPokemonMoveMotion, pokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 
-const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
+const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom", "sketch", "rage", "shuffleParty", "forceSwitch"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
 const SKILL_DAMAGE_STATS = ["attack", "mind"] as const satisfies readonly SkillDamageStatistic[];
 const STATE_EFFECT_OPERATIONS = ["add", "remove"] as const satisfies readonly DatabaseStateEffect["operation"][];
@@ -218,7 +219,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   });
 
   stack.append(skillCombatRuleCard(currentSkill(record), {
-    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1" || Boolean(record.hpCostPercent || record.drainPercent || record.gaugeShift || record.chargeTurns || record.summonResourceId || record.area || record.comboActorIds?.length)),
+    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1" || Boolean(record.hpCostPercent || record.recoilPercent || record.flinchChance || record.multiHit || record.fixedDamage || record.drainPercent || record.gaugeShift || record.chargeTurns || record.summonResourceId || record.area || record.comboActorIds?.length)),
   }));
   stack.append(skillInputSequenceFields(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
@@ -303,13 +304,15 @@ export function skillSentenceFragments(project: Project, record: SkillRecord): {
   const element = record.elementId
     ? `${project.database.elements?.find((entry) => entry.id === record.elementId)?.name || record.elementId} 속성. `
     : "";
-  const states = (record.stateEffects ?? []).length > 0
-    ? `${(record.stateEffects ?? []).map((effect) => {
-        const state = project.database.states.find((entry) => entry.id === effect.stateId);
-        const name = state?.name || effect.stateId;
-        return `${name} ${effect.operation === "add" ? "부여" : "해제"}${effect.chance < 100 ? ` ${effect.chance}%` : ""}`;
-      }).join(" · ")}. `
-    : "";
+  const stateRows = [
+    ...(record.stateEffects ?? []).map((effect) => {
+      const state = project.database.states.find((entry) => entry.id === effect.stateId);
+      const name = state?.name || effect.stateId;
+      return `${name} ${effect.operation === "add" ? "부여" : "해제"}${effect.chance < 100 ? ` ${effect.chance}%` : ""}`;
+    }),
+    ...(record.statStageEffects ?? []).map(statStageEffectText),
+  ];
+  const states = stateRows.length > 0 ? `${stateRows.join(" · ")}. ` : "";
   const animation = record.animationId
     ? `연출: ${project.database.battleAnimations.find((entry) => entry.id === record.animationId)?.name || record.animationId}`
     : "연출 없음";
@@ -512,6 +515,13 @@ function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] 
       updateDatabaseRecord("skills", record.id, { effect: { kind: "randomSkillFrom", skillIds: value.split(",").map((id) => id.trim()).filter(Boolean) } })
     ));
   }
+  if (record.effect.kind === "rage") {
+    const enemyIds = record.effect.enemyIds ?? [];
+    controls.push(textField("폭주 몬스터 ID 고정(쉼표, 비우면 승리 때 모은 목록)", "db-field-skill-effect-rage-enemies", enemyIds.join(", "), (value) => {
+      const ids = value.split(",").map((id) => id.trim()).filter(Boolean);
+      updateDatabaseRecord("skills", record.id, { effect: ids.length ? { kind: "rage", enemyIds: ids } : { kind: "rage" } });
+    }));
+  }
   if (record.effect.kind === "switch") {
     controls.push(
       selectField("스위치", "db-field-skill-effect-switch", record.effect.switchId ?? "", switchOptions(), (switchId) =>
@@ -542,6 +552,10 @@ function updateSkillEffectKind(record: SkillRecord, kind: SkillEffect["kind"]): 
     case "steal":
     case "scan":
     case "learnEnemySkill":
+    case "sketch":
+    case "rage":
+    case "shuffleParty":
+    case "forceSwitch":
       updateDatabaseRecord("skills", record.id, { effect: { kind } });
       return;
     case "randomSkillFrom":

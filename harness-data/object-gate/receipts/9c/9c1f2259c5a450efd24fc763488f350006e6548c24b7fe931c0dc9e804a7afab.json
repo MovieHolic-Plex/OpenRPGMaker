@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c1f2259c5a450efd24fc763488f350006e6548c24b7fe931c0dc9e804a7afab",
+ "width": 48,
+ "height": 16,
+ "kind": "other",
+ "name": "무쇠 창살 낮은 돌담 세 칸(양 끝 놋쇠 공 돌 기둥)",
+ "label": "steampunk-city/sp-fence-h3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low stone wall with iron bars and end pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat 2D front elevation. The stone pillars with brass balls at both ends show no top cap or horizontal surface visible from above (0px top). The iron railing is drawn flat from the front, and the 3px grey band along the middle wall functions as a front-facing coping band rather than a receding horizontal top surface aligned with the flat pillars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16674
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three-bay low stone wall with iron bars",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the low stone wall spans across the middle three bays and clearly displays a 3-row-tall foreshortened top surface (rows 0-2) paved with stone tiles seen from above, atop its south-facing wall front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10710
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low stone wall with iron grating and end pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillars at both ends are drawn in pure front elevation with 0 top rows, starting with a 1px outline at row 1 and showing the brass balls as flat front-facing squares. The entire structure is rendered as an architectural front elevation with no visible horizontal top surfaces on the pillars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14887
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low stone wall with iron railing and two flanking pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the end pillars and the wall panels, is drawn in pure front elevation. The pillars show 0px of top surface (their tops are a single 1px outline border), the brass balls are flat 2D squares on the front face, and the central wall/railing shows no foreshortened top surface (only a 2px strip at rows 0-1 that functions as a flat trim/cap line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7939
+  }
+ ],
+ "decidedAt": "2026-10-13T18:55:20.982Z",
+ "cells": {
+  "16": [
+   "98cd8f45dd2c8a53",
+   "c661bbaed68565dd",
+   "cffd07b9fecbaa2d"
+  ],
+  "24": [
+   "00120d97d8af1889",
+   "44c29ef673176840",
+   "b2051de81b34f3af",
+   "fafe1a220eb298bc"
+  ],
+  "32": [
+   "02d4c51c69eb854c",
+   "0c1e94eaad7fe9e7",
+   "2d5d2e803406d9c8",
+   "5e758597a60c02dc",
+   "64bad2bc84e77c60",
+   "78bd010caca3cedb",
+   "7df646b58a030489",
+   "9a9ed6b93ff8d105",
+   "c608348ad31b8741",
+   "d2e69145831c3ae4",
+   "d34106e15733de6b",
+   "e30557854e5c508e"
+  ],
+  "48": [
+   "91a3cf727dab3b03",
+   "b0210c14c3a5c1d2"
+  ]
+ }
+}

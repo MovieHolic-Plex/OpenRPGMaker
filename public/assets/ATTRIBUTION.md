@@ -394,3 +394,53 @@ artwork, drawn directly on the final 48px grid by
 `scripts/asset-gen/charset-battler/silver-swordswoman.py`. All 24 battle cells and
 21 cast cells use 16 opaque colors and binary alpha. No source image or
 image-generation model is used. Repository code/asset policy applies.
+
+## Battle trainer sprites (OPRN monster-collect trainer art, generated image, smooth downscale to 128x128)
+
+`battle-trainers/<role>/{front,back}.png` (14 pictures: hero m/f back + front, boy, girl, fisher, hiker, bug_catcher, gym_rock, gym_water, scientist, punk, elder) are repository-owned original artwork for the monster-collect
+genre: a built-in image-generation model draws an original character per role (prompted as original, no imitation of existing Nintendo characters, no ball motif),
+using repository-owned monster-collect battle-trainer pictures (`harness-data/battle-trainer-sprites/source/`, themselves generated originals) only as a
+style sample, then (current method, user-selected 2026-10-15) the result is downscaled smoothly to a 128x128 transparent canvas (displayed 1x); the earlier 64x64 grid-pixelized candidates (p4) were not selected. They contain no EasyRPG Actor1 pixels
+and no Nintendo artwork, and no sample is copied. Selection record: the method was chosen by the user; the hero, boy and girl pictures and the eight remaining roles were chosen by the supervisor under the user's explicit delegation ("pick whatever you recommend", 2026-10-15/16), recorded in `harness-data/battle-trainer-sprites/picks.json` (`by: user-delegated-to-supervisor`) and changeable by re-picking. Harness: `src/harnesses/battle-trainer-sprites/`.
+License: OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).
+
+## Heroes1 walking chips — CT/FF6-style class characters (2026-10-16)
+
+`generated/charsets/Heroes1.png` (288×256, 8 characters × 3 patterns × 4 directions) holds eight walking chips from the `charset-actor` harness (`src/harnesses/charset-actor/`):
+Amphibian Knight, Stone-age Girl, Spell Girl, Scrap Robot, Rogue Scout, Lavender Mage, Old General, Stage Singer.
+**Each chip is derived from an EasyRPG RTP character sheet** (`CharSet/Actor1`, `Actor3`, `Actor4`, `People3`, `People4`): the harness keeps the base chip's face, body proportions, legs and walk poses
+and rewrites only the hair, clothing, colours and carried gear inside region masks (edits by a model, `gemini-4-argon-high`, then verified frame-by-frame against the base).
+The base chip per character is recorded in `src/assets/heroesCharsets.json` (`source.baseChip`).
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP — Creative Commons Attribution 4.0 International; credit lines: `public/assets/easyrpg/AUTHORS.md`. The CC BY 4.0 credit above applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`.
+- Final pixel grids and edit commands: `harness-data/charset-actor/ct-ff6-pick6/<key>/` (`chip.chr.txt`, `edit.json`, `meta.json`); baked by `src/harnesses/charset-actor/install_ct_ff6.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: the eight were chosen from the harness candidate sheet by the supervisor under the user's explicit delegation ("pick-6 는 니 추천대로 해", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
+- No Square Enix / Capcom artwork and no pixel of any other game is used; the character ideas are generic class archetypes (no existing character is copied).
+License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
+
+## Modern1-3 walking chips — modern romance characters (2026-10-16)
+
+`generated/charsets/Modern1.png`, `Modern2.png`, `Modern3.png` (288×256 each, 8 characters × 3 patterns × 4 directions, 24 chips) hold modern-life walking chips from the `charset-actor` harness (`src/harnesses/charset-actor/`):
+school-uniform boys and girls (blazer, summer vest, sailor, cardigan, twin tails, bun, long hair), casual boys and girls (sweatshirt, hoodie, jacket, dress, blouse, striped tee), suits, cafe-apron staff, and teacher/professor.
+**Each chip is derived from an EasyRPG RTP character sheet** (`CharSet/Actor2`, `Actor3`, `Actor4`, `People1`, `People5`): the harness keeps the base chip's face, skin, hands, body proportions, legs and walk poses
+and rewrites only the hair and the top/bottom/shoe colours and shapes inside region masks (edits by a model, `gemini-4-argon-high`, then verified frame-by-frame against the base; no carried gear/props).
+Three chips (cafe apron navy and olive, suit girl navy; `source.model` starts with `script-colorvar`) are scripted hue/value variants of a model-edited chip, produced without a model call and passed through the same verification.
+The base chip per character is recorded in `src/assets/modernCharsets.json` (`source.baseChip`).
+- Upstream: EasyRPG RTP, https://github.com/EasyRPG/RTP — Creative Commons Attribution 4.0 International; credit lines: `public/assets/easyrpg/AUTHORS.md`. The CC BY 4.0 credit above applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`.
+- Final pixel grids and edit commands: `harness-data/charset-actor/romance-pick1/<key>/` (`chip.chr.txt`, `edit.json`, `meta.json`); baked by `src/harnesses/charset-actor/install_modern_romance.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: the 24 were filtered from 36 harness candidates by the author (chip-set grain match, torso, no clothing clipping, 12-frame identity) under the user's explicit delegation ("no picking, filter by your own criteria", 2026-10-16), `selection.by: user-delegated-to-supervisor` in the roster; changeable by re-picking.
+- No image-generation output and no pixel of any other game is used.
+License: OPRN default-asset terms for the derived edits (free in games, no standalone redistribution; `openwiki/licensing.md`); the RTP-derived parts keep CC BY 4.0.
+
+## ScarloxyPeople1-13 walking chips — monster-collect people derived from Scarloxy People1-2 (2026-10-16)
+
+`generated/charsets/ScarloxyPeople1.png` … `ScarloxyPeople13.png` (288×256 each, 8 character slots × 3 patterns × 4 directions, 90 chips; sheet 4 holds one chip, and sheet 5 slot 6 and sheet 8 slot 3 are empty — those slots stay blank because chip slots are append-only) hold people walking chips for monster-collecting games
+(police officer, researcher, nurse, villager, villain grunts, angler, camper, hiker, bug catcher, forester, explorer, rival, trainers, schoolchildren, priestess, beach visitor, shop clerks, peddler, swimmers, sailor, lifeguard, elders, kids, fortune teller, gym leaders of 17 types, students, station attendant, courier, lighthouse keeper, contest participants, rancher, lab assistants, doctor, chef, ranger).
+**Every chip is derived from the Scarloxy MPWSP01 People1/People2 character sheets** (`scarloxy/scarloxy-charset-people1.png`, `scarloxy-charset-people2.png`, ten characters) by (a) a script with no model call (52 chips: 30 + the 22 of sheets 11-13 below) and (b) real Argon (`gemini-4-argon-high`, via the 8318 CLIProxy) part-editing under the same region-mask harness (38 chips; hair/hat/clothes only, face/skin/hands/body proportions pixel-locked and verified on all 12 frames; `argon_http.py`, `scarloxy_draw.py`, `scarloxy_argon2.py`):
+`src/harnesses/charset-actor/scarloxy_compose.py` (a) moves the head rows of one Scarloxy character (hat, hair, face) onto the body rows of another, frame by frame, and (b) shifts hues of hair/hat, top, bottom and shoe colours inside region masks.
+Head and body donor (script chips) or base character (Argon chips) per chip are recorded in `harness-data/charset-actor/scarloxy-people/recipes*.json`, `scarloxy-people-chips/<key>/meta.json` and in `src/assets/scarloxyPeopleCharsets.json` (`source.baseChip`).
+- Upstream: Scarloxy (Ismael Garcia), "Monster Taming Game Essentials" (MyPixelWorld Special Packs #01), https://scarloxy.itch.io/mpwsp01 — Creative Commons Attribution 4.0 International (see the Scarloxy section above). The CC BY 4.0 credit applies to these derivatives and is part of the exported `assets/ATTRIBUTION.md`. Changes were made (head transplants, recoloured clothing/hair, repainted hats/aprons/capes/robes within the region masks).
+- Final pixel grids: `harness-data/charset-actor/scarloxy-people-chips/<key>/` (`chip.chr.txt`, `meta.json`, Argon `edit.json`); baked by `src/harnesses/charset-actor/install_scarloxy_people.py` without redrawing (per-slot RGBA SHA-256 in the roster).
+- Selection record: sheets 1-4 (25 chips) were filtered by the author by eye under the user's delegation and approved by the user ("all fine, you may add more"); sheets 5-10 (43 chips: 34 real Argon + 9 script; ScarloxyPeople8#3 and ScarloxyPeople5#6 were removed after the user's review and left blank) were filtered from 48 Argon orders (43 passed the 12-frame harness) and about 30 script candidates by eye, a pixel-lock check on all 12 frames (face, skin and hands unchanged) and a nearest-chip distinctness check (at least 30 % different pixels); `selection.by: user-delegated-to-supervisor` in the roster; the user names the numbers to discard from `~/claude-viz/monster-people-chips-2.html`.
+- Sheets 11-13 (22 chips, added 2026-10-17 at the user's decision after review of the char-gen gallery 4): **new sheets are combinations of existing Scarloxy characters' parts with colour shifts only** — the head rows (hair, hat, face) of one Scarloxy People1/People2 character are transplanted onto the body rows (clothes, arms, legs) of another, frame by frame, and hair/hat, top, bottom and shoe colours (and the eye colour, which follows the hair hue) are hue-shifted inside part masks. No model call, no newly drawn pixel; head donor and body donor per chip are recorded in `harness-data/charset-actor/scarloxy-people/gallery4.json` (`head`/`body`), the original recipes in `gallery4-recipes.json`, and the pixel hash of every installed chip in the roster (`source.slotRgbaSha256`). They passed a blind three-reviewer majority vote plus a set-level duplicate check before installation.
+- No image-generation output and no pixel of any other game is used.
+License: Scarloxy parts keep CC BY 4.0; the derived edits follow OPRN default-asset terms (free in games, no standalone redistribution; `openwiki/licensing.md`).

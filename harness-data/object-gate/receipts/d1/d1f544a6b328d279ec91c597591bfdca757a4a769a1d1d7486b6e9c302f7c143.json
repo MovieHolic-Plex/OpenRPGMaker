@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1f544a6b328d279ec91c597591bfdca757a4a769a1d1d7486b6e9c302f7c143",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "고대 모자이크 벽판(2칸) (mosaic panel)",
+ "label": "atlas_biome_interior/plus/mosaic panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mosaic wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted framed mosaic panel viewed flat against the wall, permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5727
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed mosaic wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted mosaic panel framed and viewed directly from the front, which is permissible for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed mosaic panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted mosaic panel framed flat against the wall; permitted flat projection for wall-mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mosaic wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a framed decorative mosaic panel mounted flat on a wall. As specified for wall_mounted objects, a flat front-facing view is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4595
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.624Z",
+ "cells": {
+  "16": [
+   "028ee6d806e01fbe",
+   "050fe579e0ed9f94",
+   "2c238998b83b6c36",
+   "87a13a05191a4141"
+  ],
+  "24": [
+   "03aa5955c9784a40",
+   "0ca2be5902949f8d",
+   "11d60f1609fd6f5a",
+   "1c461f39d8ddcb9d",
+   "3581a873d8119219",
+   "3b96f5535a2a6548",
+   "63aeb0a71875a4ec",
+   "63bc308762ffd9c6",
+   "67ce2ffb857d7030",
+   "6c85915a2c6bc015",
+   "807850a4ea9bed4e",
+   "8e6d3f2dd4c0414e",
+   "8f341741a66f19b7",
+   "908dd4051105a8cf",
+   "a2571371adf0fe63",
+   "aefc675822ca0c24",
+   "c5d3ca5824c13a2f",
+   "c7f70d3b38737cac",
+   "dae981f367a0054a",
+   "dfe46051b717ead2",
+   "f5091393c96b6b87",
+   "fbcac6b9961fc043",
+   "fe8e62d71601be1b",
+   "febfdbc0fe0230b5"
+  ],
+  "32": [
+   "3b87be509d80a697"
+  ],
+  "48": [
+   "0fcc37660e649ac4",
+   "265df875d0786ff3",
+   "6e89010ad41031a7",
+   "8d3aeff38217f2af",
+   "925a2bc480c6186b",
+   "92650eee1253bb31"
+  ]
+ }
+}

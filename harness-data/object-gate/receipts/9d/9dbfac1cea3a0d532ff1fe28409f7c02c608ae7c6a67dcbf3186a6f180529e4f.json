@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9dbfac1cea3a0d532ff1fe28409f7c02c608ae7c6a67dcbf3186a6f180529e4f",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "cave stalagmite seen from above at 3/4: rock spike rising from a rounded rocky mound, curved strata rings, wet drip on top",
+ "label": "pirate-isles/pi-stalagmite",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cave stalagmite and rocky mound",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite and its surrounding rocky base are drawn entirely in side elevation (profile view), with vertical rising columns and no foreshortened top surfaces visible on the mound or peaks.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stalagmite rock formation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite and rocky mound are drawn in pure front/side elevation with vertical profiles and no downward 3/4 foreshortening or visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stalagmite spike and rocky mound base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite and bulbous base are drawn strictly in front/side elevation. There is no top-down visible horizontal surface or foreshortened top plane on either the mound or the tip.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cave stalagmite and rocky mound",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stalagmite and base mound are drawn entirely in side profile/front elevation with vertical shading and no visible top/foreshortened surfaces (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5243
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.300Z",
+ "cells": {
+  "16": [
+   "9a17db33707169d1"
+  ],
+  "24": [
+   "0ac786f9ccdc0870",
+   "1b4de31953d7a233",
+   "396bdd9c1436cd14",
+   "6298f782b1c5d4cc",
+   "786536dc452eaa0d",
+   "9d9d8ff5e5a69367"
+  ],
+  "32": [
+   "799ca5795f5e3425",
+   "81605e7260cf0bfd",
+   "8eb9b1af1c0dd09a",
+   "b41a932746e54b03",
+   "dafdd812e608c7d9",
+   "ff6611d1cd4c2e74"
+  ],
+  "48": [
+   "0851c9d61ece358a",
+   "3bd380d24dbd259f",
+   "7cfd776fdb192a53",
+   "9389bf4f4a353ed0",
+   "c15738f319b4641f",
+   "d88bb9a0746acd07"
+  ]
+ }
+}

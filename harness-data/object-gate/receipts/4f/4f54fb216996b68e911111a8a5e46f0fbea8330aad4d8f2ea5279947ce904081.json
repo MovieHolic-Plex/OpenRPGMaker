@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f54fb216996b68e911111a8a5e46f0fbea8330aad4d8f2ea5279947ce904081",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "서 있는 촛대(깜빡임 3프레임)",
+ "label": "gothic_manor/gm-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing candelabrum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the candle tray (rows 8-10) and the base plinth (rows 24-31) are drawn as completely flat rectangular front elevations with no visible top surface or elliptical perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6187
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing candelabra with base, stem, and candle holder tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn strictly in pure front elevation: the candle tops, the horizontal holding tray (rows 9-10), and the rectangular base (rows 25-31) show 0 rows of visible top surface from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6711
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing candelabra (base, central post, and candle holder bar)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra base, support post, crossbar, and candles are all drawn in pure flat front elevation. Neither the base nor the candle plate shows any foreshortened top surface from the 3/4 down-angle view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6444
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing candelabrum with base, pole, and candle tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabrum is drawn in pure front elevation. Neither the base block (rows 24-31) nor the candle tray (rows 8-10) shows a foreshortened top surface (top_rows = 0), appearing entirely flat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5349
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.503Z",
+ "cells": {
+  "16": [
+   "e9010c0df110693f",
+   "ebdd479ef555ac8d"
+  ],
+  "24": [
+   "2a9d9131f7912dea",
+   "32f871b664a545aa",
+   "4194485c8504d67a",
+   "59df4ddcd8585341",
+   "5ab7a46544896c9a",
+   "5b53131ea4b41095",
+   "60c9495adbf93e0a",
+   "683ec120f1a294ee",
+   "7441223b1f2c2ffe",
+   "83f737f2b79b5197",
+   "b3631e0c6b795fc1",
+   "df02929fff180d8b"
+  ],
+  "32": [
+   "03598fa22b339cff",
+   "636e898d163a6998",
+   "f73f5a5540baf240"
+  ],
+  "48": [
+   "1dc2aa495ebf44ef",
+   "7fdaaca45e531301",
+   "af09ee970f197060",
+   "b09198099e90a26d",
+   "c6d1ec115091ffee",
+   "d5a27380e931c789"
+  ]
+ }
+}

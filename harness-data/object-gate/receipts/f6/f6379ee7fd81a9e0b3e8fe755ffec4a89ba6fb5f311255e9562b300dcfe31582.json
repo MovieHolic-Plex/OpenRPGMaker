@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f6379ee7fd81a9e0b3e8fe755ffec4a89ba6fb5f311255e9562b300dcfe31582",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'cNE' (thick posts with cap tops, rails)",
+ "label": "beodeul_farm/fence_cNE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with connecting rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly shows a 4-pixel tall foreshortened top cap surface (rows 2-5) before the vertical south face begins at row 6. Horizontal rails also show lighter top-facing edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly displays a 5-row deep top cap surface (rows 1-5) above its vertical south face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4863
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly shows its horizontal top cap/surface across rows 1-5 (approx 4-5 px tall), with its front face extending downwards from row 6 to 14 in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden post with fence rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly displays a 4-pixel-tall top face (rows 2-5) with foreshortened 3/4 top-down shading, separating the top surface from the vertical south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  }
+ ],
+ "decidedAt": "2026-10-14T05:12:51.330Z",
+ "cells": {
+  "16": [
+   "2bb55639f91b48b9"
+  ],
+  "24": [
+   "112ca10e1459e5c8",
+   "2cc17d64a4527a0d",
+   "2fb6146de6b8431d",
+   "30d5bd2b2cfe78d5",
+   "526179784c162027",
+   "de3fef1be5652929"
+  ],
+  "32": [
+   "10a68a4e966244dd",
+   "4a67f971e8cee984",
+   "5a46ae7d2960f9ca",
+   "7761d2079d89041f",
+   "dc46b0efc3cadf99",
+   "edfc133bf6e2332c"
+  ],
+  "48": [
+   "10215fbf04dbad28",
+   "2673b362eb1426fb",
+   "32fc8d90b97546af",
+   "c639db2ccbed6a71",
+   "c6d900b9037123e7",
+   "f373c613d8e0dfc4"
+  ]
+ }
+}

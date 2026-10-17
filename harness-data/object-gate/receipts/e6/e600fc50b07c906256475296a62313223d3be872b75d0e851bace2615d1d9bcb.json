@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e600fc50b07c906256475296a62313223d3be872b75d0e851bace2615d1d9bcb",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "짚 과녁 (archery target)",
+ "label": "atlas_biome_interior/plus/archery target",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "straw archery target on post and mound base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The straw target head displays a distinct top surface across rows 2-7 (approx 5 rows) separated by shadow lines from the front face (rows 8-16). In addition, the mound base displays a clearly foreshortened top surface across rows 22-26 above its front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5702
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw target bundle on stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical straw target clearly displays its foreshortened top surface (rows 2-6, 5px) above the south-facing bullseye face (rows 8-16), separated by a shadow/fold line at row 7. The base also displays a foreshortened top surface (rows 22-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8788
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "straw archery target and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical straw target head shows a foreshortened top surface across rows 3-6 (4 rows) above the vertical target face (rows 8-15), and the supporting base similarly shows a distinct top surface across rows 22-26 (5 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "straw target head on wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (the straw target head, rows 2-16) is drawn as a flat front-facing circle with a front-elevation bullseye and no visible top surface showing the depth/cylinder of the straw bundle receding northward. Although the base plinth shows a top surface, the main volume is in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8511
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:00.550Z",
+ "cells": {
+  "16": [
+   "61b0f1f77f4d6c43",
+   "e87e98ed73ea9d30"
+  ],
+  "24": [
+   "08cb5ca4179642be",
+   "27894d0b1864bb05",
+   "362343973707bfcc",
+   "5f76a159a51bad66",
+   "669a707095deab51",
+   "6b801dd00a0c3b46",
+   "736cab04ee48849b",
+   "79c5a0c1a3cb27bc",
+   "7e6d90d9c0155d33",
+   "87fa90bb7815e776",
+   "c53920925b03b6dc",
+   "de22b2f519ca81b0"
+  ],
+  "32": [
+   "210af2b5864dbcdd",
+   "21e0d1118051669c",
+   "756d10123443d57b"
+  ],
+  "48": [
+   "5de97a892d4fc3cf",
+   "ab380b8638f6abed",
+   "d5a0d60a9a634bab",
+   "ea6ecacf10d15d63",
+   "ed8f56b1c3a51a61",
+   "fdd9b09e1ba0c64e"
+  ]
+ }
+}

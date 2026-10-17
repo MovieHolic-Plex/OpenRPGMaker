@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a473071068858657b835d60ad160794394b63b216b33a27333a8df8a09b086e0",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "prehistoric stone-age tree fern",
+ "label": "prehistoric/ph-tree-fern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree fern canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree fern is drawn in pure 2D side-scroller front elevation. The fronds spread flatly across a vertical plane without showing the top of the crown from above, the trunk is a straight vertical cylinder with no top foreshortening, and the base meets the ground in a flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5464
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy and trunk of tree fern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree fern is drawn in pure 2D side-scroller/front elevation. The fronds spread symmetrically across a vertical plane without top-down foreshortening, the trunk is a straight vertical post, and the base terminates in a completely flat horizontal line (rows 60-61) rather than showing a ground-contact ellipse.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk of tree fern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree fern is drawn in a pure front elevation typical of a 2D side-scroller. The fronds spread out entirely in the vertical plane with no foreshortened top-down view into the crown, and the trunk base at row 60-61 is completely flat across the bottom without top-down curvature.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5982
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trunk and fern canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree fern is drawn in pure 2D side-scroller elevation: the canopy radiates flatly across the 2D plane with no foreshortened top-down circular spread, the trunk is a straight vertical pole, and the base terminates in a flat 1px-tall horizontal foot line (row 61) rather than an elliptical 3/4 ground contact.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3923
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.797Z",
+ "cells": {
+  "16": [
+   "14fa585ce54a9441",
+   "1a3673603b4084fa",
+   "34d53fecde736764",
+   "55d72d871954ce58",
+   "5dfc68372cdc9318",
+   "af8f183e2f0b2776",
+   "c424e56345151c74",
+   "cb6df7b1a38dde9c"
+  ],
+  "24": [
+   "0c5c2cd3e7545b80",
+   "0e3a14c13ec3286f",
+   "14aa1590aba6921c",
+   "182071aa308dbb4d",
+   "1e04a36fdff82245",
+   "22a517b883d68834",
+   "2edf6a2eae19e95f",
+   "5152284369295e08",
+   "55686454b2829b32",
+   "70878798f8544935",
+   "86b80a8632a6b1fb",
+   "8c4c99d93e5fbe7c",
+   "9036606b3b2e1073",
+   "93113be133805f2e",
+   "94b5591c16fc0c74",
+   "9806786ae84359be",
+   "a04e14f76596286f",
+   "a7bf67638e4682cd",
+   "ac0a1a7b1a33e890",
+   "b7c83b3e45faedd9",
+   "b9aeed524c135bd3",
+   "bc296711ab9d57f8",
+   "c6fdec435de1d12d",
+   "c80755ed05203dd8",
+   "cbd35728fb1b8197",
+   "cfa3715154033c08",
+   "d80bf7fde8345bba",
+   "dc97406f88d5ea7f",
+   "e4e720ac961cfca4",
+   "e785e8ceed4f70d2",
+   "e7915ac45a30c55c",
+   "ff6dcf7636e738c0"
+  ],
+  "32": [
+   "267acd934a50e407",
+   "7699c31a2d93cc58"
+  ],
+  "48": [
+   "112570327ee2be4e",
+   "12dfec1d9854526b",
+   "13fc26c017ec40b7",
+   "59d405a3c4640579",
+   "6e79e088929bbe24",
+   "87de3f9b7cf1784d",
+   "9416ef7d5896604e",
+   "a280306eca477fa0",
+   "a84edee24df1899e",
+   "b6a09afaa50a08a4",
+   "d6157b98566eabe1",
+   "ddaef92e1ec9f552"
+  ]
+ }
+}

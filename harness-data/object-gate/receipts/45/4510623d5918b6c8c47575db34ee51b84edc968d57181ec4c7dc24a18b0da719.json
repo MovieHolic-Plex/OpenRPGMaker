@@ -1,0 +1,181 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4510623d5918b6c8c47575db34ee51b84edc968d57181ec4c7dc24a18b0da719",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp/jp-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "utility pole and crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal crossarms are drawn in pure front elevation; the horizontal crossarm beams show no top surface (0-1px outline) and instead expose large 3px dark undersides as if viewed from below. The transformer box and top cap are also drawn as flat front elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10769
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole has an elliptical top cap visible from above (rows 1-6, ~5 rows tall), foreshortened top surfaces on both crossarms (rows 9-12 and 21-24), and a foreshortened elliptical base surface at rows 152-155, correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7641
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal crossarms are drawn in flat front elevation with no visible top surfaces (only a 1px outline/highlight along the top of the crossarms). The top of the pole does not show a top surface or cut face, and credit is not given for the base plinth at the bottom.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8272
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole features a rounded elliptical cap at its top end (rows 1-6, about 5 rows tall) and a foreshortened elliptical base collar at the bottom (rows 152-156), establishing the downward 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7129
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.744Z",
+ "cells": {
+  "16": [
+   "089ab8a2c5f8be7f",
+   "0e7ec7c661f209b8",
+   "1e63e6b6ad44f95e",
+   "22e568db10da44a8",
+   "2b691b6148ff91e1",
+   "328b4e4bc8654026",
+   "4dc8c70390e670e1",
+   "4dd1622b7fcbad70",
+   "7fd3a2bcd62c8c8a",
+   "b4c85e97aaf88485",
+   "bdf177300bab65ef",
+   "d06eced5f2ad3268",
+   "d4a42f69e5c4fe40",
+   "e9cbe2afef36b772",
+   "f46104698f4e4ee4"
+  ],
+  "24": [
+   "03a8d5b9e8cf003a",
+   "13b6dbf3d701fc92",
+   "2048930db266953e",
+   "28bddc426f7d10c1",
+   "30d52f728ef173f8",
+   "3a054700728d2f49",
+   "4d2e8a4253046615",
+   "56156c00a9d990ca",
+   "70862e62b41f056f",
+   "708dea15822b3cde",
+   "7220ca47c1460a5d",
+   "7225a6dd1efd65a9",
+   "7cce48e33375a12e",
+   "8ce4bc2fbab9f636",
+   "8f472c928be6b550",
+   "95c2a6e076b9f563",
+   "96f6c9b929f9a63d",
+   "9f8e7ccb4fcc9380",
+   "ac66401035ec656f",
+   "b3eb05fc0151e593",
+   "bf153764acc00a95",
+   "cc57cda01fce67af",
+   "cdf314306d51ce02",
+   "d27eebe4c21861d1",
+   "ddee94ffc9fed7b1",
+   "f598bd5441d788ac",
+   "f672b8c4ddd470cd",
+   "ff2c054df247e515"
+  ],
+  "32": [
+   "196c3120e70f1088",
+   "1eb857c633ae70e7",
+   "20edf0f2818a3a22",
+   "21b74d0099b583bf",
+   "458b98b2e0a01638",
+   "45d6f8a0f6bc44fe",
+   "49679fbb02233aca",
+   "52350f1fb1c54be5",
+   "5569b09c9fcfc675",
+   "68ea42b173b38a96",
+   "75edce78c067804e",
+   "8eeeec38f7ee905e",
+   "97b26722796334e9",
+   "9f9e0ec873d67cbd",
+   "aca95f461ebc3f76",
+   "ae76c350c2883451",
+   "b1c8a032d1618e5e",
+   "c799e26508db13f7",
+   "c971178218cd39cc",
+   "da83ea637f3d9b09",
+   "dae5a5437795b090",
+   "f26ca446a4587ed0",
+   "f402739030dead58"
+  ],
+  "48": [
+   "5102b3820c19ab5c",
+   "841a372fb7c41bb4",
+   "8cc76eb9903ece2b",
+   "b1b8dade554412a2",
+   "c0d0f16f0b0b15b8",
+   "d047216c184639c7",
+   "f162592acf4bbd67",
+   "f6d6c28e22a29a59"
+  ]
+ }
+}

@@ -1,0 +1,50 @@
+{
+ "key": "sc2-capture-contest",
+ "arch": "sp2-capture-contest",
+ "base": "Scarloxy1:5",
+ "variant": "보라 머리 위에 노란 바이저 모자(h 구역 H paint: 앞으로 길게 나온 챙 2칸, 윗면 한 줄), 머리색은 갈색, 민트 민소매를 주황 조끼로, 가슴 중앙에 흰 번호표 사각(T paint 3×3칸), 반바지는 짙은 청색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Lcdf"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 3,
+  "added_up2": 3,
+  "added_right0": 4,
+  "added_right1": 4,
+  "added_right2": 4,
+  "added_down0": 6,
+  "added_down1": 6,
+  "added_down2": 3,
+  "added_left0": 4,
+  "added_left1": 4,
+  "added_left2": 4,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.893,
+   "S": 0.982
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 238,
+  "lone_base": 184
+ },
+ "distinct": {
+  "score": 0.583,
+  "nearest": "accepted:sp2-clerk-m-a"
+ },
+ "repairs": {
+  "dropped_stray_px": 28,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "마스크 밖(얼굴·손·구역 밖) 칸을 베이스로 되돌림": 10
+  }
+ },
+ "run": "sp2-r1/sp2-capture-contest-a"
+}

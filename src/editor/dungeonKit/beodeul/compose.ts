@@ -1,0 +1,592 @@
+// 버들항 던전 시공기(author_beodeul_dungeon) 순수 계산 — 방 목록 → 타일 배열 + 앵커. 프로젝트를 건드리지 않는다.
+//
+// 왜(2026-10-14, 사용자 스크린샷 · field-enemy fe1): 던전 층을 시킨 Argon 조수가 참고문서의 「키트를 stamp_object 로 한 개씩 찍는다」를 따라
+// 112번 stamp_object + 67번 paint_tiles(호출당 평균 4초·3초)를 절대 좌표로 불렀고, 25분 시간 초과 시점의 맵은 횃불·화로·통·상자·기둥이
+// 허공에 뜨고 벽 조각이 바닥 한가운데 서고 상자 이벤트가 천장 칸에 놓인 상태였다. 좌표를 모델이 계산하는 한 이 결함은 줄이는 것이지 없어지지 않는다.
+// 이 시공기는 「방 목록(종류·크기·어느 방에서 어느 쪽으로)」만 받고 바닥 마스크 → 천장·벽 앞면 → 장식을 마스크에서 **유도**한다.
+//
+// 2판(2026-10-14 적대 QA, 같은 날): 1판 출력은 받침은 맞았지만 그림이 나빴다 —
+//   · 천장을 테두리 없는 허공 한 칸으로만 깔아 바닥이 검은 허공에 그대로 잘렸다(앞 턱·옆벽 없음, 종이 오린 방) → 천장 오토타일
+//     `beodeul_dungeon_ceiling`(변형 던전 렌더와 같은 벽 두께 띠, bake_dungeon_ceiling.py)로 바닥·벽과 닿는 쪽마다 띠를 두른다
+//   · 방이 가로 한 줄로만 이어졌다(99×28) → 동서남북 네 쪽 + 화면 비(가로:세로 ≈ 4:3)에 가까운 자리를 고르고, 이웃 방 사이에 고리 통로를 하나 더 낸다
+//   · 같은 종류 방이 판박이였다 → 크기 흔들기·모서리 모따기·감방 칸막이, 장식은 종류별 가중 무작위·모둠·벽 사이 간격 흔들기
+//   · 계단·아치가 벽 끝(마구리) 칸에 반쯤 걸렸다 → 양옆이 같은 줄 벽인 칸에만
+//   · 벽 앞면 위에 천장이 한 줄도 없는 「떠 있는 벽 토막」이 생길 수 있었다 → 배치 간격 규칙 + 검사(stranded-wall)
+//   · 서사 앵커가 없었다 → 입구(올라가는 계단)·보스방(입구에서 가장 먼 방)·보물 방·잠긴 문 자리(gate)를 결과로 돌려준다
+import { checkGroundSupportForStamp, groundSupportIssues, kitSupportKind } from "@/project/groundSupport";
+import type { AutotileGroup, GameMap, StructureKitDef, TilesetDef } from "@/project/types";
+import { DungeonComposeError } from "../errors";
+import { WALL_ROWS, hash01, rng, vnoise } from "../grid";
+import { layoutBlob, layoutMaze } from "../layouts";
+import { layoutDungeon } from "../layoutRooms";
+import { buildMask } from "../mask";
+import { PROFILES } from "./profiles";
+import { dressCorridor, dressTyped, type DressCtx } from "./dress";
+import { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES } from "../types";
+import type { DungeonCompose, DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom } from "../types";
+
+export type { DungeonCompose } from "../types";
+export { DUNGEON_DIRS, DUNGEON_ROOM_KINDS, DUNGEON_SIZES, DUNGEON_STYLES, DUNGEON_TYPES, DungeonComposeError };
+export type { DungeonDir, DungeonLayout, DungeonRoomInput, DungeonRoomKind, DungeonSize, DungeonSpec, DungeonStyle, DungeonType, PlacedCorridor, PlacedRoom };
+export { layoutDungeon };
+
+const K = {
+  ceiling: "bd-pick-aqueduct-sewer-ceiling",
+  stairsUp: "bd-pick-aqueduct-sewer-stairs-up-face", stairsDown: "bd-pick-temple-ruins-stairs-down",
+  torch: "bd-pick-aqueduct-sewer-torch-wall", banner: "bd-pick-aqueduct-sewer-banner-cult", chains: "bd-pick-aqueduct-sewer-chains",
+  nicheSkull: "bd-pick-castle-catacombs-niche-skull", nicheUrn: "bd-pick-castle-catacombs-niche-urn", nicheShroud: "bd-pick-castle-catacombs-niche-shroud",
+  archBars: "bd-pick-aqueduct-sewer-arch-bars", archDark: "bd-pick-aqueduct-sewer-arch-dark",
+  column: "bd-pick-castle-catacombs-column-cata", columnBroken: "bd-pick-aqueduct-sewer-column-sewer-broken", fallenColumn: "bd-pick-aqueduct-sewer-fallen-column",
+  brazier: "bd-pick-aqueduct-sewer-brazier", crate: "bd-pick-aqueduct-sewer-crate",
+  crateStack: "bd-pick-aqueduct-sewer-crate-stack", barrel: "bd-pick-aqueduct-sewer-barrel", bucket: "bd-pick-aqueduct-sewer-bucket",
+  coffin: "bd-pick-aqueduct-sewer-coffin", candles: "bd-pick-aqueduct-sewer-candles", altar: "bd-pick-castle-catacombs-altar-stone",
+  altarCult: "bd-pick-aqueduct-sewer-altar-cult",
+  strawBed: "bd-pick-castle-catacombs-straw-bed", skulls: "bd-pick-aqueduct-sewer-skulls", boneHeap: "bd-pick-aqueduct-sewer-bone-heap",
+  bones: "bd-pick-aqueduct-sewer-bones", rubble: "bd-pick-aqueduct-sewer-rubble", rubbleCastle: "bd-pick-castle-catacombs-rubble",
+  grate: "bd-pick-aqueduct-sewer-grate-floor", ironMaiden: "bd-pick-castle-catacombs-iron-maiden", rack: "bd-pick-castle-catacombs-rack-32",
+  anvilTable: "bd-pick-castle-catacombs-anvil-table", lantern: "bd-pick-aqueduct-sewer-lantern-post",
+  floorBone: "bd-pick-aqueduct-sewer-floor-bone", floorCell: "bd-pick-castle-catacombs-floor-cell",
+} as const;
+/** 천장 오토타일(bake_dungeon_ceiling.py). 없는 옛 사본이면 테두리 없는 허공 한 칸으로 물러선다. */
+export const DUNGEON_CEILING_GROUPS = ["beodeul_dungeon_ceiling", "beodeul_dungeon_ceiling_b"] as const;
+
+
+// ---------- 2. 타일 ----------
+
+export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompose {
+  const type: DungeonType = spec.type ?? spec.style ?? "catacomb";
+  if (type === "ice") throw new DungeonComposeError("이 칩셋(버들항)은 얼음 동굴(ice)을 못 짓는다 — 얼음 바닥·벽·고드름 그림이 없다. 가장 가까운 종류: cave(자연 동굴). 얼음은 몬스터 키트(oprn-monster) 칩셋에서만 지을 수 있다.", "type-unsupported-by-tileset");
+  const profile = PROFILES[type];
+  const specT: DungeonSpec = { ...spec, type };
+  const layout = profile.grammar === "maze" ? layoutMaze(specT) : profile.grammar === "blob" ? layoutBlob(specT, profile) : layoutDungeon(specT);
+  const seed = spec.seed ?? 7;
+  const random = rng(seed);
+  const kits = new Map<string, StructureKitDef>((ts.structureKits ?? []).map((kit) => [kit.id, kit]));
+  const kit = (id: string): StructureKitDef => {
+    const found = kits.get(id);
+    if (!found) throw new DungeonComposeError(`이 프로젝트의 버들항 타일셋에 던전 키트 ${id} 가 없다 — 버들항 장소 조각(beodeul-picks-dungeon)이 들어 있는 타일셋이 필요하다.`, "kit-missing");
+    return found;
+  };
+  const hasKit = (id: string) => kits.has(id);
+  const { width: W, height: H, rooms, corridors } = layout;
+  const idx = (x: number, y: number) => y * W + x;
+  const inb = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H;
+  const lower = new Array<number>(W * H).fill(-1);
+  const upper = new Array<number>(W * H).fill(-1);
+  // 배치 → 바닥 마스크(칩셋을 모르는 단계, mask.ts) — 몬스터 키트 어댑터도 같은 마스크를 쓴다.
+  const mask = buildMask(layout, profile, type, spec, seed);
+  const g = mask.grid;
+  const floorMask = g.floor;
+  const roomAt = g.roomAt;
+  const liquid = g.liquid;
+  const bridge = g.bridge;
+  const warnings: string[] = mask.warnings;
+  const doorstep = g.protect;
+  const partitions = mask.partitions;
+  const bridgeCount = mask.bridgeCount;
+  /** 열린 칸(걷는 바닥 + 액체 + 다리) — 천장·벽 앞면이 이것에서 유도된다. */
+  const isFloor = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1;
+  /** 걸을 수 있는 바닥(액체 아님, 다리 포함). 장식·방 안 칸 고르기는 이것만 본다. */
+  const isWalk = (x: number, y: number) => inb(x, y) && floorMask[idx(x, y)] === 1 && liquid[idx(x, y)] === 0;
+
+  // ---- 벽 앞면 = 바닥 북쪽 변 위 세 줄(위에 천장이 한 줄 이상 남게). 둘이면 두 줄. ----
+  const wallB = new Int8Array(W * H).fill(-1);
+  const wallH = new Int8Array(W * H).fill(0);
+  const stranded: string[] = [];
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (!isFloor(x, y) || isFloor(x, y - 1)) continue;
+    let run = 0;
+    while (y - 1 - run >= 0 && !isFloor(x, y - 1 - run) && run < WALL_ROWS + 1) run += 1;
+    const h = Math.min(WALL_ROWS, run >= WALL_ROWS + 1 ? WALL_ROWS : run - 1);
+    if (h < 2) { stranded.push(`(${x},${y})`); continue; }
+    for (let b = 0; b < h; b += 1) { wallB[idx(x, y - 1 - b)] = b; wallH[idx(x, y - 1 - b)] = h; }
+  }
+  if (stranded.length) throw new DungeonComposeError(`시공기 내부 오류(stranded-wall): 벽 앞면 위에 천장이 남지 않는 칸 ${stranded.length}곳 ${stranded.slice(0, 4).join(" ")} — 방 사이 세로 간격이 4칸보다 좁다.`, "stranded-wall");
+  const isWall = (x: number, y: number) => inb(x, y) && wallB[idx(x, y)]! >= 0;
+  const face = profile.face;
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const b = wallB[idx(x, y)]!;
+    if (b < 0) continue;
+    const h = wallH[idx(x, y)]!;
+    const rows = kit(h >= 3 ? face.h3 : face.h2).rows;
+    const row = rows[(h >= 3 ? 3 : 2) - 1 - b]!.tiles;
+    const left = x > 0 && wallB[idx(x - 1, y)] === b, right = x + 1 < W && wallB[idx(x + 1, y)] === b;
+    lower[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
+  }
+
+  // ---- 천장: 바닥·벽이 아닌 칸. 오토타일 47 모양(벽 두께 띠), 결 두 가지를 칸마다 섞는다. ----
+  const groups = DUNGEON_CEILING_GROUPS.map((id) => (ts.autotileGroups ?? []).find((g) => g.id === id)).filter((g): g is AutotileGroup => !!g);
+  const voidTile = kit(K.ceiling).rows[1]!.tiles[1]!;
+  const isOpen = (x: number, y: number) => inb(x, y) && (floorMask[idx(x, y)] === 1 || wallB[idx(x, y)]! >= 0);
+  let rimmed = 0;
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (isOpen(x, y)) continue;
+    if (!groups.length) { lower[idx(x, y)] = voidTile; continue; }
+    let m = 0;
+    const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (const [dx, dy, bit] of bits) if (!isOpen(x + dx, y + dy)) m |= bit;
+    const g = groups[groups.length > 1 && hash01(x, y, seed) < 0.5 ? 1 : 0]!;
+    lower[idx(x, y)] = g.variantMap[String(m)] ?? voidTile;
+    if (m !== 255) rimmed += 1;
+  }
+  if (!groups.length) warnings.push("이 타일셋 사본에 천장 테두리 오토타일(beodeul_dungeon_ceiling)이 없어 천장을 테두리 없는 허공으로 깔았다 — 프로젝트를 다시 열면 번들 꼬리가 붙는다.");
+
+  // ---- 바닥 칸: 종류별 바닥 키트(2×2·3×3 무늬) + 잡음 덩이 변형 + 칸마다 흩뿌림 + 물가 바닥. 액체·다리는 따로 칠한다. ----
+  const fl = profile.floor;
+  const tileOf = (id: string, x: number, y: number): number => { const rows = kit(id).rows; return rows[y % rows.length]!.tiles[x % rows[0]!.tiles.length]!; };
+  const nearLiquid = (x: number, y: number): boolean => {
+    for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inb(x + dx, y + dy) && (liquid[idx(x + dx, y + dy)] || bridge[idx(x + dx, y + dy)])) return true;
+    return false;
+  };
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (!isWalk(x, y) || bridge[idx(x, y)]) continue;
+    const ri = roomAt[idx(x, y)]!;
+    const r = ri >= 0 ? rooms[ri]! : null;
+    let id: string = fl.base;
+    const byKind = r ? fl.byKind?.[r.kind] : undefined;
+    if (r?.kind === "cell" && hasKit(K.floorCell) && y < r.y + 3) id = K.floorCell;
+    else if (byKind && hasKit(byKind)) id = byKind;
+    else {
+      for (const [k, p] of fl.patches.entries()) if (hasKit(p.kit) && vnoise(x, y, p.scale ?? 4, seed * 11 + k * 37) > p.at) id = p.kit;
+      for (const [k, sc] of (fl.scatter ?? []).entries()) if (sc.p > 0 && hasKit(sc.kit) && hash01(x, y, seed * 17 + k) < sc.p) id = sc.kit;
+    }
+    if (fl.shore && hasKit(fl.shore) && nearLiquid(x, y) && hash01(x, y, seed + 71) < 0.8) id = fl.shore;
+    if (fl.mix) { const rows = kit(id).rows; lower[idx(x, y)] = rows[Math.floor(hash01(x, y, seed * 5 + 3) * rows.length)]!.tiles[Math.floor(hash01(y, x, seed * 7 + 1) * rows[0]!.tiles.length)]!; }
+    else lower[idx(x, y)] = tileOf(id, x, y);
+  }
+  // 광산: 갱도 한가운데 줄을 널판 선로 바닥으로(입구·갈림 방은 가로지르는 줄, 그 밖 방은 통로 구간만). 선로 그림이 따로 없어 널판 바닥이 임시다.
+  if (type === "mine" && hasKit("bd-pick-aqueduct-sewer-floor-plank")) {
+    const plank = "bd-pick-aqueduct-sewer-floor-plank";
+    const paintRow = (y: number, x0: number, x1: number) => { for (let x = x0; x < x1; x += 1) if (isWalk(x, y) && !bridge[idx(x, y)]) lower[idx(x, y)] = tileOf(plank, x, y); };
+    for (const c of corridors) {
+      if (c.dir !== "E" && c.dir !== "W") continue;
+      const ty = c.rect.y + Math.floor(c.rect.h / 2);
+      paintRow(ty, c.rect.x, c.rect.x + c.rect.w);
+      for (const id of [c.a, c.b]) { const rm = rooms.find((q) => q.id === id); if (rm && (rm.kind === "junction" || rm.kind === "entrance")) paintRow(rm.y + Math.floor(rm.h / 2), rm.x, rm.x + rm.w); }
+    }
+  }
+  // 액체: 물은 운하 오토타일(돌 둑 테두리), 용암은 용암 키트 무늬. 다리 칸 밑도 같은 액체로 이어 보이게 마스크에 센다.
+  const liqLike = (x: number, y: number) => inb(x, y) && (liquid[idx(x, y)] === 1 || bridge[idx(x, y)] === 1);
+  const canal = (ts.autotileGroups ?? []).find((a) => a.id === "beodeul_canal_lake_47");
+  const LAVA_KIT = "bd-pick-volcano-cave-lava-strip";
+  let liquidCells = 0;
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (!liquid[idx(x, y)] || !isFloor(x, y)) continue;
+    liquidCells += 1;
+    if (profile.liquid === "lava") { lower[idx(x, y)] = tileOf(LAVA_KIT, x, y); continue; }
+    let m = 0;
+    const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (const [dx, dy, bit] of bits) if (liqLike(x + dx, y + dy)) m |= bit;
+    lower[idx(x, y)] = canal?.variantMap[String(m)] ?? canal?.variantMap["255"] ?? voidTile;
+  }
+  if (liquidCells && profile.liquid === "water" && !canal) warnings.push("이 타일셋 사본에 물 오토타일(beodeul_canal_lake_47)이 없어 물이 그려지지 않았다.");
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    if (!bridge[idx(x, y)]) continue;
+    const ew = (isWalk(x - 1, y) || bridge[idx(x - 1, y)]) && (isWalk(x + 1, y) || bridge[idx(x + 1, y)]);
+    lower[idx(x, y)] = kit(ew ? "bd-pick-aqueduct-sewer-bridge-ew-stone" : "bd-pick-aqueduct-sewer-bridge-ns-stone").rows[0]!.tiles[0]!;
+  }
+
+  // ---- 장식 ----
+  const pseudo = { id: "compose", name: "compose", width: W, height: H, tilesetId: ts.id, events: [], lowerTiles: lower, upperTiles: upper } as unknown as GameMap;
+  const counts: Record<string, number> = {};
+  const blocked = new Uint8Array(W * H);
+  const passTile = (tile: number) => { const pass = ts.passability[tile]; return !!pass && Object.values(pass).some(Boolean); };
+  const stand = (x: number, y: number) => isFloor(x, y) && !blocked[idx(x, y)] && passTile(lower[idx(x, y)]!) && (upper[idx(x, y)]! < 0 || passTile(upper[idx(x, y)]!));
+  // 입구 칸과 문 칸들 — 물건 하나를 놓을 때마다 여기서 모두 닿는지 본다(줄째 비워 두는 대신 길만 지킨다: 큰 홀 가운데가 비지 않게).
+  const keyCells: [number, number][] = [];
+  for (const c of corridors) keyCells.push([c.rect.x + Math.floor(c.rect.w / 2), c.rect.y + Math.floor(c.rect.h / 2)]);
+  rooms.forEach((r, ri) => {
+    // 방 대표 칸 = 방 아랫변 가운데에 가장 가까운 걸을 수 있는 칸(호수·수로 방은 가운데가 물이다)
+    const tx = r.x + Math.floor(r.w / 2), ty = r.y + r.h - 1;
+    let best: [number, number] | null = null; let bd = Infinity;
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      if (!isWalk(x, y) || bridge[idx(x, y)] || roomAt[idx(x, y)] !== ri) continue;
+      const d = Math.abs(x - tx) + Math.abs(y - ty);
+      if (d < bd) { bd = d; best = [x, y]; }
+    }
+    if (best) keyCells.push(best);
+  });
+  const connected = (): boolean => {
+    const start = keyCells.find(([x, y]) => stand(x, y));
+    if (!start) return false;
+    const seen = new Uint8Array(W * H);
+    const stack: [number, number][] = [start]; seen[idx(start[0], start[1])] = 1;
+    while (stack.length) {
+      const [x, y] = stack.pop()!;
+      for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+        if (!stand(nx, ny) || seen[idx(nx, ny)]) continue;
+        seen[idx(nx, ny)] = 1; stack.push([nx, ny]);
+      }
+    }
+    // 방마다: 그 방 바닥 중 걸을 수 있는 칸이 하나라도 닿았나 + 모든 문 칸이 닿았나
+    for (const [x, y] of keyCells) if (stand(x, y) && !seen[idx(x, y)]) return false;
+    return rooms.every((r, ri) => { for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) if (roomAt[idx(x, y)] === ri && seen[idx(x, y)]) return true; return false; });
+  };
+  const put = (kitId: string, x: number, y: number, opts: { label?: string; free?: boolean; liquidOk?: boolean } = {}): boolean => {
+    if (!hasKit(kitId)) return false;
+    const def = kit(kitId);
+    if (x < 0 || y < 0 || x + def.width > W || y + def.height > H) return false;
+    if (checkGroundSupportForStamp(pseudo, ts, def, x, y)) return false;
+    const ownSupport = kitSupportKind(def) === null;   // 던전 테마 밖 키트(광산 골짜기 등)는 groundSupport 가 안 본다 — 같은 규칙을 여기서 직접
+    const cells: { x: number; y: number; lo: number; up: number }[] = [];
+    for (let dy = 0; dy < def.height; dy += 1) for (let dx = 0; dx < def.width; dx += 1) {
+      const row = def.rows[dy]!;
+      const lo = row.tiles[dx] ?? -1, up = row.upperTiles?.[dx] ?? -1;
+      if (lo < 0 && up < 0) continue;
+      const X = x + dx, Y = y + dy;
+      // 물·용암·다리 위에는 아무것도 놓지 않는다(액체는 걸을 수 없는 칸, 다리는 길이다)
+      if (inb(X, Y) && (liquid[idx(X, Y)] || bridge[idx(X, Y)]) && !opts.liquidOk) return false;
+      if (ownSupport && up >= 0) {
+        const bottom = dy === def.height - 1;
+        if (bottom ? !isWalk(X, Y) : !(isWalk(X, Y) || isWall(X, Y))) return false;
+      }
+      if (upper[idx(X, Y)]! >= 0 || blocked[idx(X, Y)]) return false;
+      if (doorstep[idx(X, Y)] && isFloor(X, Y)) return false;
+      cells.push({ x: X, y: Y, lo, up });
+    }
+    if (!cells.length) return false;
+    const before = cells.map((c) => [lower[idx(c.x, c.y)]!, upper[idx(c.x, c.y)]!] as const);
+    for (const c of cells) {
+      if (c.lo >= 0) lower[idx(c.x, c.y)] = c.lo;
+      if (c.up >= 0) upper[idx(c.x, c.y)] = c.up;
+    }
+    // 길을 막는 물건이면 되돌린다(바닥 위 걸을 수 없는 칸이 새로 생긴 경우만 검사).
+    const blocks = cells.some((c) => isFloor(c.x, c.y) && !passTile(c.up >= 0 ? c.up : c.lo));
+    if (blocks && !opts.free && !connected()) {
+      cells.forEach((c, i) => { lower[idx(c.x, c.y)] = before[i]![0]; upper[idx(c.x, c.y)] = before[i]![1]; });
+      return false;
+    }
+    const label = opts.label ?? kitId.replace(/^bd-pick-/, "");
+    counts[label] = (counts[label] ?? 0) + 1;
+    return true;
+  };
+  const putAny = (kitId: string, cands: readonly (readonly [number, number])[], opts?: { label?: string }): [number, number] | null => {
+    for (const [x, y] of cands) if (put(kitId, x, y, opts)) return [x, y];
+    return null;
+  };
+  const weighted = <T,>(rs: () => number, list: readonly (readonly [T, number])[]): T => {
+    const total = list.reduce((a, [, w]) => a + w, 0);
+    let r = rs() * total;
+    for (const [v, w] of list) { r -= w; if (r <= 0) return v; }
+    return list[list.length - 1]![0];
+  };
+  const shuffle = <T,>(rs: () => number, list: readonly T[]): T[] => {
+    const out = [...list];
+    for (let i = out.length - 1; i > 0; i -= 1) { const j = Math.floor(rs() * (i + 1)); [out[i], out[j]] = [out[j]!, out[i]!]; }
+    return out;
+  };
+
+  /** 방의 북쪽 벽 가운데 줄(b=1) 칸 중 양옆도 같은 줄 벽인 칸(벽 끝 마구리 칸에는 걸지 않는다). */
+  const wallSlots = (r: PlacedRoom): { x: number; y: number }[] => {
+    const out: { x: number; y: number }[] = [];
+    for (let x = r.x - 1; x <= r.x + r.w; x += 1) {
+      // 이 칸의 벽 가운데 줄 = 그 열 바닥 첫 칸 위 둘째 줄
+      let fy = -1;
+      for (let y = r.y; y < r.y + r.h; y += 1) if (isWalk(x, y) && !bridge[idx(x, y)] && roomAt[idx(x, y)] === rooms.indexOf(r)) { fy = y; break; }
+      if (fy < 0) continue;
+      const y = fy - 2;
+      if (!isWall(x, y) || wallB[idx(x, y)] !== 1) continue;
+      if (wallB[idx(x - 1, y)] !== 1 || wallB[idx(x + 1, y)] !== 1) continue;
+      if (doorstep[idx(x, fy)]) continue;
+      out.push({ x, y });
+    }
+    return out;
+  };
+  /** 방 바닥 칸(벽에서 inset 칸 안쪽). */
+  const floorCells = (r: PlacedRoom, inset = 0): [number, number][] => {
+    const out: [number, number][] = [];
+    const ri = rooms.indexOf(r);
+    for (let y = r.y + inset; y < r.y + r.h - inset; y += 1) for (let x = r.x + inset; x < r.x + r.w - inset; x += 1) if (isWalk(x, y) && !bridge[idx(x, y)] && roomAt[idx(x, y)] === ri) out.push([x, y]);
+    return out;
+  };
+  /** 벽(또는 천장)에 붙은 바닥 칸 — 잡동사니는 가장자리·구석에 모인다. 구석(두 쪽이 막힌 칸)이 앞에 온다. */
+  const edgeCells = (r: PlacedRoom, rs: () => number): [number, number][] => {
+    const cells = floorCells(r).filter(([x, y]) => !isWalk(x - 1, y) || !isWalk(x + 1, y) || !isWalk(x, y - 1) || !isWalk(x, y + 1));
+    const closed = (x: number, y: number) => [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => !isWalk(x + dx!, y + dy!)).length;
+    return shuffle(rs, cells).sort((a, b) => closed(b[0], b[1]) - closed(a[0], a[1]));
+  };
+  /** 벽걸이를 간격을 흔들어 건다(최소 간격 2, 평균 gap). */
+  const hangAlong = (slots: { x: number; y: number }[], rs: () => number, gap: number, pick: () => string, max = 99): number => {
+    let n = 0, next = slots[0] ? slots[0].x + 1 + Math.floor(rs() * gap) : 0;
+    for (const s of slots) {
+      if (n >= max) break;
+      if (s.x < next) continue;
+      if (upper[idx(s.x - 1, s.y)]! >= 0 || upper[idx(s.x + 1, s.y)]! >= 0) continue;   // 이미 건 물건 바로 옆에는 걸지 않는다
+      if (put(pick(), s.x, s.y)) { n += 1; next = s.x + 2 + Math.floor(rs() * gap); }
+    }
+    return n;
+  };
+  /** 잡동사니 한 모둠: 기준 칸 둘레 반지름 2 안에 n 개. */
+  const cluster = (rs: () => number, cx: number, cy: number, n: number, kinds: readonly (readonly [string, number])[]) => {
+    const around: [number, number][] = [];
+    const home = inb(cx, cy) ? roomAt[idx(cx, cy)]! : -1;
+    // 모둠은 기준 칸과 같은 방 안에만(통로로 넘치지 않게)
+    for (let dy = -2; dy <= 2; dy += 1) for (let dx = -2; dx <= 2; dx += 1) if (inb(cx + dx, cy + dy) && roomAt[idx(cx + dx, cy + dy)] === home) around.push([cx + dx, cy + dy]);
+    let placed = 0;
+    for (const [x, y] of shuffle(rs, around).sort((a, b) => Math.abs(a[0] - cx) + Math.abs(a[1] - cy) - Math.abs(b[0] - cx) - Math.abs(b[1] - cy))) {
+      if (placed >= n) break;
+      if (rs() < 0.35) continue;
+      if (put(weighted(rs, kinds), x, y)) placed += 1;
+    }
+  };
+  const litter: readonly (readonly [string, number])[] = [[K.bones, 3], [K.rubble, 3], [K.skulls, 1], [K.rubbleCastle, 1]];
+
+  // 서사 앵커: 보스방 = kind boss(없으면 입구에서 가장 깊은 방), 보물 방 = kind vault.
+  const bossRoom = rooms.find((r) => r.kind === "boss") ?? (rooms.length > 2 ? [...rooms].filter((r) => r.kind !== "vault" && r.kind !== "entrance").sort((a, b) => b.depth - a.depth)[0] ?? null : null);
+  const vaultRoom = rooms.find((r) => r.kind === "vault") ?? null;
+
+  const ctx: DressCtx = {
+    W, H, rooms, corridors, seed, grid: !!layout.grid, hasKit, kit, put, putAny, weighted, shuffle, wallSlots, floorCells, edgeCells, hangAlong, cluster,
+    isFloor, isWalk, isWall, idx, inb, wallB, roomAt, liquid, bridge, upper, lower, blocked, doorstep, counts, litter,
+  };
+  let stairsUp: DungeonCompose["stairsUp"] = null;
+  let stairsDown: DungeonCompose["stairsDown"] = null;
+
+  rooms.forEach((r, i) => {
+    const rs = rng(seed * 7 + i * 101 + 3);
+    const slots = wallSlots(r);
+    const cx = r.x + Math.floor(r.w / 2);
+    const centerFirst = [...slots].sort((a, b) => Math.abs(a.x - cx) - Math.abs(b.x - cx) || a.x - b.x);
+    const torch = () => K.torch;
+    // 올라가는 계단: 북쪽 벽 아래 두 줄(양옆이 벽인 칸, 가운데 쪽). 앞 칸 = 방 맨 윗줄 바닥. 모든 종류 공통.
+    // 계단 칸 양옆 두 칸까지 같은 높이 벽(벽 끝 마구리·계단 옆 단차에 반쯤 걸리지 않게), 가운데에 가까운 칸.
+    let s: { x: number; y: number } | null = null;
+    if (r.kind === "entrance") {
+      const flat = (q: { x: number; y: number }) => [-2, -1, 1, 2].every((d) => wallB[idx(q.x + d, q.y)] === 1 && wallB[idx(q.x + d, q.y + 1)] === 0);
+      s = centerFirst.find(flat) ?? centerFirst.find((q) => wallB[idx(q.x - 1, q.y + 1)] === 0 && wallB[idx(q.x + 1, q.y + 1)] === 0) ?? null;
+      if (s) {
+        const def = kit(K.stairsUp);
+        for (let dy = 0; dy < def.height; dy += 1) lower[idx(s.x, s.y + dy)] = def.rows[dy]!.tiles[0]!;
+        stairsUp = { x: s.x, y: s.y + 1, front: { x: s.x, y: s.y + 2 } };
+        blocked[idx(s.x, s.y + 2)] = 1;
+        counts["stairs-up"] = 1;
+      } else warnings.push("입구 방 북쪽 벽에 올라가는 계단을 놓을 평평한 벽이 없다.");
+    }
+    if (type !== "catacomb" && type !== "castle" && dressTyped(ctx, type, r, rs, s, slots, centerFirst)) return;
+    switch (r.kind) {
+      case "entrance": {
+        const rest = slots.filter((q) => !s || Math.abs(q.x - s.x) > 1);
+        // 계단 양옆 횃불 한 쌍(입구 표지) + 나머지 벽은 드문드문
+        if (s) { put(K.torch, s.x - 2, s.y); put(K.torch, s.x + 2, s.y); }
+        hangAlong(rest, rs, 4, torch, 2);
+        const e = edgeCells(r, rs);
+        cluster(rs, e[0]?.[0] ?? r.x + 1, e[0]?.[1] ?? r.y + 1, 3, [[K.crate, 2], [K.barrel, 2], [K.crateStack, 1], [K.bucket, 1]]);
+        put(K.brazier, r.x + 1 + Math.floor(rs() * 2), r.y + r.h - 2);
+        put(K.brazier, r.x + r.w - 2 - Math.floor(rs() * 2), r.y + r.h - 2);
+        for (const [x, y] of e.slice(3, 7)) if (rs() < 0.6) put(weighted(rs, litter), x, y);
+        break;
+      }
+      case "hall": {
+        // 큰 홀: 기둥 두 줄(간격 흔들기, 몇 개는 부러진 기둥) 또는 쓰러진 기둥이 있는 폐허 홀
+        const ruined = rs() < 0.35;
+        const rowsY = r.h >= 8 ? [r.y + 2, r.y + r.h - 2] : [r.y + Math.floor(r.h / 2)];
+        let x = r.x + 2 + Math.floor(rs() * 2);
+        while (x < r.x + r.w - 2) {
+          for (const y of rowsY) {
+            const k = ruined && rs() < 0.45 ? K.columnBroken : K.column;
+            put(k, x, y - 1);
+          }
+          x += 3 + Math.floor(rs() * 2);
+        }
+        if (ruined) { const f = shuffle(rs, floorCells(r, 2))[0]; if (f) put(K.fallenColumn, f[0], f[1]); }
+        hangAlong(slots, rs, 4, () => (rs() < 0.75 ? K.torch : K.banner));
+        if (rs() < 0.5) { const a = centerFirst.find((q) => isWall(q.x + 2, q.y) && wallB[idx(q.x + 2, q.y)] === 1); if (a) put(rs() < 0.5 ? K.archDark : K.archBars, a.x, a.y); }
+        const e = edgeCells(r, rs);
+        for (let c = 0; c < 2 + Math.floor(rs() * 2); c += 1) { const p = e[c * 5]; if (p) cluster(rs, p[0], p[1], 2 + Math.floor(rs() * 2), litter); }
+        break;
+      }
+      case "crypt": {
+        // 묘실: 벽감 줄(종류 섞고 군데군데 비움) + 관 줄(빈자리 흔들기) + 구석 뼈 더미·촛불
+        const niches = [K.nicheSkull, K.nicheUrn, K.nicheShroud];
+        for (const s of slots) if (rs() < 0.55) put(niches[Math.floor(rs() * 3)]!, s.x, s.y);
+        hangAlong(slots, rs, 5, torch, 2);
+        // 관: 3칸 간격 격자 자리를 섞어 넓이에 맞는 수만큼(줄이 반듯하되 군데군데 빈다)
+        const want = Math.max(2, Math.round((r.w * r.h) / 22));
+        const grid: [number, number][] = [];
+        for (let y = r.y + 2; y < r.y + r.h - 1; y += 3) for (let x = r.x + 1; x < r.x + r.w - 2; x += 3) grid.push([x, y]);
+        let coffins = 0;
+        for (const [x, y] of shuffle(rs, grid)) {
+          if (coffins >= want) break;
+          if (put(K.coffin, x, y - 1)) { coffins += 1; if (rs() < 0.35) put(K.candles, x + 2, y); }
+        }
+        const e = edgeCells(r, rs);
+        if (e[0]) put(K.boneHeap, e[0][0], e[0][1] - 1);
+        for (const [x, y] of e.slice(1, 9)) if (rs() < 0.5) put(weighted(rs, [[K.skulls, 2], [K.bones, 3], [K.candles, 1]]), x, y);
+        break;
+      }
+      case "cell": {
+        // 감방: 칸막이로 나뉜 칸마다 짚 침상·양동이·사슬(칸마다 다르게), 앞쪽 복도에 간수 탁자·고문대
+        const ps = partitions.filter((p) => p.room === r.id).map((p) => p.x);
+        const bounds = [r.x - 1, ...ps, r.x + r.w];
+        for (let k = 0; k + 1 < bounds.length; k += 1) {
+          const x0 = bounds[k]! + 1, x1 = bounds[k + 1]! - 1;
+          if (x1 < x0) continue;
+          const xs = Array.from({ length: x1 - x0 + 1 }, (_, j) => x0 + j);
+          put(K.strawBed, xs[Math.floor(rs() * xs.length)]!, r.y + (rs() < 0.5 ? 0 : 1));
+          if (rs() < 0.6) put(K.bucket, xs[Math.floor(rs() * xs.length)]!, r.y + 2);
+          if (rs() < 0.4) put(weighted(rs, litter), xs[Math.floor(rs() * xs.length)]!, r.y + 2);
+          const wall = slots.filter((s) => s.x >= x0 && s.x <= x1);
+          if (wall.length && rs() < 0.8) put(K.chains, wall[Math.floor(rs() * wall.length)]!.x, wall[0]!.y);
+        }
+        const front = floorCells(r).filter(([, y]) => y >= r.y + 4);
+        const f = shuffle(rs, front);
+        if (f[0]) put(rs() < 0.5 ? K.anvilTable : K.rack, f[0][0], f[0][1] - 1);
+        if (f[1] && rs() < 0.5) put(K.ironMaiden, f[1][0], f[1][1] - 1);
+        if (f[2]) put(K.brazier, f[2][0], f[2][1]);
+        break;
+      }
+      case "shrine":
+      case "boss": {
+        const isBoss = r.kind === "boss";
+        // 제단은 북쪽 벽 앞 가운데, 깃발은 제단 양옆 대칭(서사 축), 그 밖 벽은 흔들기
+        const ax = cx - 1;
+        const altar = putAny(isBoss || rs() < 0.5 ? K.altar : K.altarCult, [0, 1, -1, 2, -2].map((d) => [ax + d, r.y] as [number, number]));
+        if (altar) {
+          for (const d of [2, 3]) { const l = slots.find((s) => s.x === altar[0] - d), rr = slots.find((s) => s.x === altar[0] + 1 + d); if (l && rr) { if (put(K.banner, l.x, l.y)) put(K.banner, rr.x, rr.y); break; } }
+          put(K.candles, altar[0] - 1, altar[1] + 1); put(K.candles, altar[0] + 2, altar[1] + 1);
+          put(K.brazier, altar[0] - 2, altar[1] + 2); put(K.brazier, altar[0] + 3, altar[1] + 2);
+        }
+        hangAlong(slots, rs, 3, torch);
+        if (isBoss) {
+          // 보스방: 기둥이 바닥 가운데를 둘러싸고(싸울 자리는 비운다) 구석에 뼈 더미
+          const ys = [r.y + 2, r.y + r.h - 2];
+          for (const y of ys) for (const x of [r.x + 2, r.x + r.w - 3]) put(K.column, x, y - 1);
+          const e = edgeCells(r, rs);
+          if (e[0]) put(K.boneHeap, e[0][0], e[0][1] - 1);
+          for (const [x, y] of e.slice(1, 8)) if (rs() < 0.55) put(weighted(rs, [[K.skulls, 2], [K.bones, 2], [K.rubble, 1]]), x, y);
+        } else {
+          for (const [x, y] of edgeCells(r, rs).slice(0, 5)) if (rs() < 0.5) put(weighted(rs, [[K.candles, 2], [K.skulls, 1], [K.bones, 1]]), x, y);
+        }
+        break;
+      }
+      case "storage": {
+        // 창고: 벽을 따라 상자·통 모둠 2~3개(모둠마다 섞임), 가운데는 지나다니게
+        const e = edgeCells(r, rs);
+        const n = 2 + Math.floor(rs() * 2);
+        for (let c = 0; c < n; c += 1) { const p = e[c * 4]; if (p) cluster(rs, p[0], p[1], 3 + Math.floor(rs() * 2), [[K.crate, 3], [K.barrel, 3], [K.crateStack, 2], [K.bucket, 1]]); }
+        hangAlong(slots, rs, 4, torch, 2);
+        if (rs() < 0.6) { const f = shuffle(rs, floorCells(r, 1))[0]; if (f) put(K.lantern, f[0], f[1] - 1); }
+        break;
+      }
+      case "vault": {
+        // 보물 방: 벽감 항아리, 가운데 제단, 상자 모둠, 촛불
+        for (const s of centerFirst.slice(0, 4)) if (rs() < 0.7) put(K.nicheUrn, s.x, s.y);
+        hangAlong(slots, rs, 3, torch, 2);
+        const altar = putAny(K.altar, [0, 1, -1].map((d) => [cx - 1 + d, r.y + 1] as [number, number]));
+        if (altar) { put(K.candles, altar[0] - 1, altar[1] + 1); put(K.candles, altar[0] + 2, altar[1] + 1); }
+        const e = edgeCells(r, rs);
+        if (e[0]) cluster(rs, e[0][0], e[0][1], 3, [[K.crate, 2], [K.crateStack, 1], [K.barrel, 1]]);
+        break;
+      }
+    }
+  });
+  // 통로: 가로 통로 벽에 횃불 하나(가끔), 바닥에 배수 창살·뼈 조금
+  (layout.grid ? [] : corridors).forEach((c, i) => {
+    const rs = rng(seed * 13 + i * 71 + 9);
+    const r = c.rect;
+    if (dressCorridor(ctx, type, c, rs)) return;
+    if ((c.dir === "E" || c.dir === "W") && r.w >= 4 && rs() < 0.6) {
+      const x = r.x + 1 + Math.floor(rs() * (r.w - 2));
+      if (wallB[idx(x, r.y - 2)] === 1 && wallB[idx(x - 1, r.y - 2)] === 1 && wallB[idx(x + 1, r.y - 2)] === 1) put(K.torch, x, r.y - 2);
+    }
+    for (let y = r.y; y < r.y + r.h; y += 1) for (let x = r.x; x < r.x + r.w; x += 1) {
+      if (doorstep[idx(x, y)]) continue;
+      const v = hash01(x, y, seed + i);
+      if (v < 0.05) put(K.grate, x, y, { free: true });
+      else if (v < 0.09) put(weighted(rs, litter), x, y);
+    }
+  });
+
+  // 내려가는 계단: 보스방(없으면 가장 깊은 방) 안쪽 구석 쪽 바닥 칸.
+  const deepRoom = bossRoom ?? (rooms.length > 1 ? rooms[rooms.length - 1]! : null);
+  if (deepRoom) {
+    const def = kit(K.stairsDown);
+    // 바닥 한가운데 쪽(여덟 이웃이 모두 바닥, 벽 바로 밑 줄 제외)에서 들어온 문과 가장 먼 칸 — 벽에 붙으면 벽으로 들어가는 계단처럼 보인다.
+    const doors = corridors.filter((c) => c.a === deepRoom.id || c.b === deepRoom.id).map((c) => [c.rect.x + c.rect.w / 2, c.rect.y + c.rect.h / 2] as const);
+    const inset = deepRoom.w >= 8 && deepRoom.h >= 7 ? 2 : 1;
+    const cands = floorCells(deepRoom, inset).filter(([x, y]) => !blocked[idx(x, y)] && upper[idx(x, y)]! < 0 && !doorstep[idx(x, y)] && y > deepRoom.y + 1
+      && [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => isWalk(x + dx, y + dy) && !bridge[idx(x + dx, y + dy)] && upper[idx(x + dx, y + dy)]! < 0)));
+    const doorDist = (x: number, y: number) => Math.min(...doors.map(([dx, dy]) => Math.abs(dx - x) + Math.abs(dy - y)), 99);
+    const far = cands.sort((a, b) => doorDist(b[0], b[1]) - doorDist(a[0], a[1]));
+    for (const [x, y] of far) {
+      const was = lower[idx(x, y)]!;
+      lower[idx(x, y)] = def.rows[0]!.tiles[0]!;
+      blocked[idx(x, y)] = 1;
+      if (!connected()) { lower[idx(x, y)] = was; blocked[idx(x, y)] = 0; continue; }
+      stairsDown = { x, y };          // 계단 칸은 이벤트 자리로 비워 둔다(blocked 유지 — spots 에 들지 않게)
+      counts["stairs-down"] = 1;
+      break;
+    }
+  }
+
+  // ---- 검사 1: 같은 규칙(groundSupport)으로 자기 결과를 본다. 어긋나면 맵을 만들지 않는다.
+  const own = groundSupportIssues(pseudo, ts, { events: false }).filter((i) => i.severity === "error");
+  if (own.length) throw new DungeonComposeError(`시공기 내부 오류: 받침 없는 물체 ${own.length}건 — ${own[0]!.message}`, "support-violation");
+
+  // ---- 검사 2: 입구에서 모든 방·통로 바닥이 걸어서 닿는지.
+  const entranceGuess = { x: rooms[0]!.x + Math.floor(rooms[0]!.w / 2), y: rooms[0]!.y + rooms[0]!.h - 2 };
+  const findStand = (x0: number, y0: number): [number, number] => {
+    for (let r = 0; r < 8; r += 1) for (let dy = -r; dy <= r; dy += 1) for (let dx = -r; dx <= r; dx += 1) if (stand(x0 + dx, y0 + dy)) return [x0 + dx, y0 + dy];
+    throw new DungeonComposeError("입구 방에 설 수 있는 바닥이 없다.", "no-entrance");
+  };
+  const startCell = findStand(entranceGuess.x, entranceGuess.y);
+  const seen = new Uint8Array(W * H);
+  const queue: [number, number][] = [startCell]; seen[idx(startCell[0], startCell[1])] = 1;
+  while (queue.length) {
+    const [x, y] = queue.pop()!;
+    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
+      if (!stand(nx, ny) || seen[idx(nx, ny)]) continue;
+      seen[idx(nx, ny)] = 1; queue.push([nx, ny]);
+    }
+  }
+  const unreachable = rooms.filter((r) => !floorCells(r).some(([x, y]) => seen[idx(x, y)]));
+  if (unreachable.length) throw new DungeonComposeError(`시공기 내부 오류: 입구에서 걸어 닿지 않는 방 ${unreachable.map((r) => r.id).join(", ")}`, "unreachable");
+  const sd = stairsDown as { x: number; y: number } | null;
+  if (sd && ![[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => seen[idx(sd.x + dx!, sd.y + dy!)])) throw new DungeonComposeError("시공기 내부 오류: 내려가는 계단에 닿지 않는다", "unreachable");
+  const su = stairsUp as DungeonCompose["stairsUp"];
+  if (su && !seen[idx(su.front.x, su.front.y)] && ![[1, 0], [-1, 0], [0, 1]].some(([dx, dy]) => seen[idx(su.front.x + dx!, su.front.y + dy!)])) throw new DungeonComposeError("시공기 내부 오류: 올라가는 계단 앞에 닿지 않는다", "unreachable");
+
+  // ---- 잠긴 문 자리: 보물 방(없으면 보스방)으로 들어가는 통로 가운데 칸 ----
+  const gateRoom = vaultRoom ?? bossRoom;
+  const gateCorridor = gateRoom ? corridors.find((c) => c.b === gateRoom.id && !c.loop) : null;
+  const gate = gateCorridor && gateRoom ? (() => {
+    const r = gateCorridor.rect;
+    const x = r.x + Math.floor(r.w / 2), y = r.y + Math.floor(r.h / 2);
+    return stand(x, y) && seen[idx(x, y)] ? { x, y, to: gateRoom.id } : null;
+  })() : null;
+
+  // 이벤트·적을 둘 만한 빈 바닥 칸(방마다) — 위층 그림이 없고 네 이웃도 걸을 수 있고 입구에서 닿는 칸, 방 가운데에서 가까운 순.
+  const spots: Record<string, { x: number; y: number }[]> = {};
+  for (const r of rooms) {
+    const ccx = r.x + (r.w - 1) / 2, ccy = r.y + (r.h - 1) / 2;
+    const cells: { x: number; y: number; d: number }[] = [];
+    for (const [x, y] of floorCells(r, 1)) {
+      if (upper[idx(x, y)]! >= 0 || blocked[idx(x, y)] || !seen[idx(x, y)] || doorstep[idx(x, y)]) continue;
+      if (![[1, 0], [-1, 0], [0, 1], [0, -1]].every(([ox, oy]) => stand(x + ox!, y + oy!))) continue;
+      cells.push({ x, y, d: Math.abs(x - ccx) + Math.abs(y - ccy) });
+    }
+    cells.sort((a, b) => a.d - b.d);
+    const picked: { x: number; y: number }[] = [];
+    for (const c of cells) { if (picked.every((p) => Math.abs(p.x - c.x) + Math.abs(p.y - c.y) >= 3)) picked.push({ x: c.x, y: c.y }); if (picked.length >= 6) break; }
+    spots[r.id] = picked;
+  }
+
+  void rimmed;
+  void random;
+  const picture = drawPicture(W, H, isFloor, isWall, upper, liquid, bridge);
+  return {
+    type, liquid: { kind: profile.liquid ?? null, cells: liquidCells, bridges: bridgeCount },
+    width: W, height: H, lower, upper, rooms, corridors, entrance: { x: startCell[0], y: startCell[1] }, stairsUp: su, stairsDown: sd,
+    anchors: { boss: bossRoom?.id ?? null, treasure: vaultRoom?.id ?? null, gate }, spots, picture, counts, warnings,
+  };
+}
+
+function drawPicture(W: number, H: number, isFloor: (x: number, y: number) => boolean, isWall: (x: number, y: number) => boolean, upper: readonly number[], liquid: Uint8Array, bridge: Uint8Array): string[] {
+  const rows: string[] = [];
+  for (let y = 0; y < H; y += 1) {
+    let line = "";
+    for (let x = 0; x < W; x += 1) line += upper[y * W + x]! >= 0 ? "o" : liquid[y * W + x] ? "~" : bridge[y * W + x] ? "=" : isFloor(x, y) ? "." : isWall(x, y) ? "W" : "#";
+    rows.push(line);
+  }
+  return rows;
+}

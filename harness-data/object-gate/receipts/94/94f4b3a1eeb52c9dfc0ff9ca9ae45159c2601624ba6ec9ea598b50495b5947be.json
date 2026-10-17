@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94f4b3a1eeb52c9dfc0ff9ca9ae45159c2601624ba6ec9ea598b50495b5947be",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "채색 석관(2칸) (painted sarcophagus)",
+ "label": "atlas_biome_interior/plus/painted sarcophagus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "painted sarcophagus with lid on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sarcophagus is oriented east-west; its decorated lid top surface is clearly visible from rows 4 to 10 (7 rows tall) in bright lighting with a highlight ridge at row 10, distinctly separated from the shaded vertical south face below (rows 12-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10011
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted sarcophagus on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sarcophagus lid is clearly rendered from rows 3 to 10 (8 rows tall) above the south-facing vertical panel (rows 11-16) and base plinth (rows 17-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "painted sarcophagus on stone plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sarcophagus is drawn entirely in front elevation with no visible top surface (0px). Row 2 is just a 1px outline directly bounding the upright painted panel, with no foreshortened top plane visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sarcophagus lid and body on stone plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brightly lit top surface of the sarcophagus spans rows 4–10 (7 rows tall), defined by a sharp white edge highlight at row 10 before transitioning to the shaded south-facing vertical wall (rows 11–16) and plinth base (rows 17–22).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16797
+  }
+ ],
+ "decidedAt": "2026-10-14T05:13:49.624Z",
+ "cells": {
+  "16": [
+   "722afbe069753057",
+   "b3820893381ac81f",
+   "e598eba3ae70b84b",
+   "eacd53ce4f27481e"
+  ],
+  "24": [
+   "1724fffa04bc71c8",
+   "1e116d22de178330",
+   "2f04517707263156",
+   "6c8dc083c324f254",
+   "6e96b7e8d13e0aad",
+   "70eed216de6c497d",
+   "8e8feeec31a3a7b7",
+   "951492cec9bffe08",
+   "a1994c6dcc325417",
+   "a779e7b60e964173",
+   "c0712b83761b3cd5",
+   "c821e5a4eef82316",
+   "d306b0720ff1b5f0",
+   "d9a1e518f31397ef",
+   "dd5fe88f48d7647a",
+   "dfe198301bc81757",
+   "f03e3098db6f92c9",
+   "f741450982934340"
+  ],
+  "32": [
+   "59c1631ccc5d6f15"
+  ],
+  "48": [
+   "352801828459d8db",
+   "5003a503963150b6",
+   "519311af021b4faf",
+   "9f1a96503375b235",
+   "c5d8288187242a8e",
+   "dcd61783faf773ce"
+  ]
+ }
+}

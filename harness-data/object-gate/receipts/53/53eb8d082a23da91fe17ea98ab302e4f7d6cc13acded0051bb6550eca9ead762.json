@@ -1,0 +1,195 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53eb8d082a23da91fe17ea98ab302e4f7d6cc13acded0051bb6550eca9ead762",
+ "width": 48,
+ "height": 128,
+ "kind": "structure",
+ "name": "하늘 등대(빛 탑)",
+ "label": "sky-island/si-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tower shaft and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn in pure front elevation: all stripe boundaries, the balcony railing, the roof overhang, and the base are straight horizontal lines with no 3/4 perspective, visible deck surface, or cylindrical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4375
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn in pure front elevation: the catwalk, lantern room, dome roof, and stripe boundaries are all perfectly straight horizontal lines with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5662
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn as a flat 2D architectural front elevation. All circular features (the roof eaves at row 17-18, the lantern base, the walkway/balcony railing at rows 37-43, the striped cylinder divisions, and the base plinth at rows 121-126) are drawn with perfectly straight horizontal lines rather than curves or ellipses showing top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3882
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn in pure architectural front elevation: the walkway platform/railing (rows 37-44), roof base (row 17-18), stripes, and base plinth are all strictly flat horizontal lines with 0 rows of visible top surface or elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4981
+  }
+ ],
+ "decidedAt": "2026-10-13T18:33:29.666Z",
+ "cells": {
+  "16": [
+   "0117a4f86ddf0ad3",
+   "0cb03828d5221db7",
+   "1f2fb56a41d6a184",
+   "1fd0f35926f7f9be",
+   "2d54e4b24bef768a",
+   "326f4df69cf9e9b1",
+   "3b1b1471b0da8b13",
+   "40718a5cae98e360",
+   "4b864b94650003f2",
+   "4be2fa42a06b9121",
+   "61b9e0c95553fd0d",
+   "805d8273fe75631f",
+   "8362f891514f42cf",
+   "99407aaf29a835e4",
+   "9ee8be649a8365c2",
+   "b7fecb1b66376864",
+   "b8d37152f9714770",
+   "bea234837aa34af7",
+   "c6604518960066c0",
+   "c8cfa77bd069cf05",
+   "cc44a09c4bd42acc",
+   "e1f519f1c19e780d",
+   "f26252b6d213b44a",
+   "fdb917c01bf9b9f7"
+  ],
+  "24": [
+   "10e53fdbd8f18eb5",
+   "1e671ce31ac368a6",
+   "276866541afa7bb1",
+   "27e33d2fe1b72cbd",
+   "3cd34ceee1c865a6",
+   "46451365d1b90307",
+   "710d66b47a335cc7",
+   "7af664e5d91675d7",
+   "8147ba1d8e8d1a4b",
+   "83e146685cf1ce56",
+   "84d86d5de11e8fda",
+   "a41374aec3082b81",
+   "ab076e17a1a42541",
+   "ac3ac2727d9fe368",
+   "b19010650021e34e",
+   "b522ebb89917a712",
+   "bea2b3593a309028",
+   "c408f6bab0dc900b",
+   "c91b24370adbf106",
+   "cd4149cf8384b9c8",
+   "ce9e441919badd1d",
+   "e103e27b068fbbd7",
+   "e7049bdae1d6c19e",
+   "f6e7555fa9070465"
+  ],
+  "32": [
+   "15a560406a2806bd",
+   "22c7f6905fcf00cc",
+   "2b60ed6ea367688f",
+   "2bc0dda5d296eb4f",
+   "2bc2e2a918fa5a33",
+   "38cc44675ac00a9a",
+   "3de078a53f749df1",
+   "4029a6df7c29bf0a",
+   "5a6e06f915ba787c",
+   "6669d7bae9bb470b",
+   "6f191a7c36686f66",
+   "713b5908bd6ad540",
+   "79094af775cf2720",
+   "81fc90d1b3f7a0d5",
+   "b59644c2afbed8c0",
+   "b9e89b26d682f8bf",
+   "bbcb03e354143da8",
+   "cddbf44e68a7b873",
+   "d148af9aa180f252",
+   "d7df65082e46e9e5",
+   "e9d17028c07a1e1f",
+   "ea54ccb38d649b13",
+   "edab5635cd326d98",
+   "ef207883b3c104e6"
+  ],
+  "48": [
+   "0a9da8e829a6554f",
+   "4c71c7885acf4a81",
+   "70ea874cf47482c0",
+   "deb251707934d3d9",
+   "f526eba53b5ab877",
+   "f7a0b5a6077ca041"
+  ]
+ }
+}

@@ -7,6 +7,8 @@ import { execFileSync } from "node:child_process";
 import { analyseHandInteriorPlan, buildHandInteriorLayers, HAND_INTERIOR_SPECS, type HandInteriorInput } from "../../../src/editor/handInterior/builder.ts";
 import { createAtlasBiomeInteriorTileset } from "../../../src/project/defaults/atlasBiomeInterior.ts";
 import { createJpCityTileset } from "../../../src/project/defaults/jpCity.ts";
+import { createModernCampusTileset } from "../../../src/project/defaults/modernCampus.ts";
+import { createModernCityTileset } from "../../../src/project/defaults/modernCity.ts";
 import type { InteriorRoomTemplate, InteriorTemplateItem } from "../../../src/editor/handInterior/templates.ts";
 
 const OUT = "src/assets/interiorRoomTemplates.json";
@@ -121,8 +123,8 @@ function templatesOf(tilesetId: string, map: string, building: string, input: Fu
 const v5maps = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/maps.json", "utf8"));
 const v5buildings = JSON.parse(fs.readFileSync("tiledata/hand-interior/v5-maps/buildings.json", "utf8")) as { id: string; maps: { id: string; items: { id: string; x: number; y: number; w: number; h: number; cells?: number[][]; line?: string; on?: { goods: string; fx: number; fy: number }[] }[]; start?: number[][] }[] }[];
 const LABELS = JSON.parse(execFileSync("python3", ["-c", "import json,notes6;print(json.dumps(notes6.LABELS))"], { cwd: "tiledata/hand-interior/v5" }).toString()) as Record<string, Record<string, string>>;
-const templates: Record<string, InteriorRoomTemplate[]> = { atlas_biome_interior: [], jp_city: [] };
-const programs: Record<string, Record<string, { map: string; kinds: string[] }[]>> = { atlas_biome_interior: {}, jp_city: {} };
+const templates: Record<string, InteriorRoomTemplate[]> = { atlas_biome_interior: [], jp_city: [], modern_campus: [], modern_city: [] };
+const programs: Record<string, Record<string, { map: string; kinds: string[] }[]>> = { atlas_biome_interior: {}, jp_city: {}, modern_campus: {}, modern_city: {} };
 const v5tileset = createAtlasBiomeInteriorTileset();
 for (const p of v5maps.plans as { key: string; plan: string[]; floor: string; wall: string; zones: [number, number, number, number, string | null, string | null][]; ceil: string }[]) {
   const b = v5buildings.find((bb) => bb.maps.some((m) => m.id === p.key))!;
@@ -148,7 +150,12 @@ for (const p of v5maps.plans as { key: string; plan: string[]; floor: string; wa
 // ── 일본 집 실내: tiledata/jp-city/interior/examples/*.json 의 rooms 사각형이 방 종류 ──
 const EX = "tiledata/jp-city/interior/examples";
 const places2 = JSON.parse(fs.readFileSync(`${EX}/places2.json`, "utf8")) as { file: string; building: string }[];
-const jpMaps: [string, string][] = [["house-1f", "jp_house"], ["house-2f", "jp_house"], ["apartment-1k", "jp_apartment"], ...places2.map((p) => [p.file, p.building] as [string, string])];
+// 3·5·6묶음(학교·역·사무실·우체국 / 오락·숙박·상업 / 병원)도 방 견본·방 구성으로 — 「교실·학교 복도·사무실·병원」 요청이 layout.program 으로 지어진다(2026-10-14).
+// 4묶음(현대 던전: 폐병원·폐교 …)은 넣지 않는다 — 같은 방 종류 이름의 깨끗한 견본에 잔해·녹이 섞이지 않게.
+const placesN = fs.readdirSync(EX).filter((f) => /^places[3-9].*\.json$/.test(f) && !f.startsWith("places4")).sort()
+  .flatMap((f) => JSON.parse(fs.readFileSync(`${EX}/${f}`, "utf8")) as { file: string; maps?: string[]; building: string }[]);
+const jpMaps: [string, string][] = [["house-1f", "jp_house"], ["house-2f", "jp_house"], ["apartment-1k", "jp_apartment"], ...places2.map((p) => [p.file, p.building] as [string, string]),
+  ...placesN.flatMap((p) => (p.maps ?? [p.file]).map((m) => [m, p.building] as [string, string]))];
 for (const [file, building] of jpMaps) {
   const ex = JSON.parse(fs.readFileSync(`${EX}/${file}.json`, "utf8")) as FullInput;
   const rooms = ex.rooms ?? [];
@@ -158,11 +165,38 @@ for (const [file, building] of jpMaps) {
   (programs.jp_city![building] ??= []).push({ map: file, kinds: got.map((t) => t.kind) });
 }
 
+// ── 학교·캠퍼스 실내: tiledata/modern-campus/interior/plans/*.json 의 rooms 사각형이 방 종류(modernCampusRoomTable kinds) ──
+const MC = "tiledata/modern-campus/interior/plans";
+for (const f of fs.readdirSync(MC).filter((x) => x.endsWith(".json")).sort()) {
+  const file = f.replace(/\.json$/, "");
+  const building = file.startsWith("dorm") ? "dorm" : "school";
+  const ex = JSON.parse(fs.readFileSync(`${MC}/${f}`, "utf8")) as FullInput;
+  const label = (_cells: string[], seed: string) => ((ex.rooms ?? []).length ? seed.split("#")[0]! : null);
+  const got = templatesOf("modern_campus", file, building, ex, label);
+  templates.modern_campus!.push(...got);
+  (programs.modern_campus![building] ??= []).push({ map: file, kinds: got.map((t) => t.kind) });
+}
+
+// ── 도쿄풍 현대 도시 실내: tiledata/modern-city/interior/examples/*.json 의 rooms 사각형이 방 종류(modernCityRoomSpec rooms.kinds) ──
+const MCI = "tiledata/modern-city/interior/examples";
+const MCI_BUILDING: Record<string, string> = { "office-floor": "mc_office", konbini: "mc_konbini", apartment: "mc_apartment", "hospital-ward": "mc_hospital", lobby: "mc_lobby", cafe: "mc_cafe", bank: "mc_bank", concourse: "mc_station", warehouse: "mc_warehouse" };
+for (const f of fs.readdirSync(MCI).filter((x) => x.endsWith(".json")).sort()) {
+  const file = f.replace(/\.json$/, "");
+  const ex = JSON.parse(fs.readFileSync(`${MCI}/${f}`, "utf8")) as FullInput;
+  if (!(ex.rooms ?? []).length) continue;
+  const building = MCI_BUILDING[file] ?? `mc_${file}`;
+  const got = templatesOf("modern_city", file, building, ex, (_cells, seed) => seed.split("#")[0]!);
+  templates.modern_city!.push(...got);
+  (programs.modern_city![building] ??= []).push({ map: file, kinds: got.map((t) => t.kind) });
+}
+
 // 견본마다 옮겨 심기 시험: 같은 크기 네모 방 하나에 심어 오류가 없어야 한다(실패면 그 가구만 빼고 기록).
 const jpTileset = createJpCityTileset();
+const mcTileset = createModernCampusTileset();
+const mciTileset = createModernCityTileset();
 let dropped = 0; const reasons = new Map<string, number>();
 for (const [tid, list] of Object.entries(templates)) {
-  const tileset = tid === "jp_city" ? jpTileset : v5tileset;
+  const tileset = tid === "jp_city" ? jpTileset : tid === "modern_campus" ? mcTileset : tid === "modern_city" ? mciTileset : v5tileset;
   for (const t of list) {
     const plan = ["#".repeat(t.w + 2), ...(t.mask ?? Array.from({ length: t.h }, () => ".".repeat(t.w))).map((r) => `#${r}#`), "#".repeat(t.w + 2)];
     plan[plan.length - 1] = plan[plan.length - 1]!.slice(0, 1 + Math.floor(t.w / 2)) + "." + plan[plan.length - 1]!.slice(2 + Math.floor(t.w / 2));

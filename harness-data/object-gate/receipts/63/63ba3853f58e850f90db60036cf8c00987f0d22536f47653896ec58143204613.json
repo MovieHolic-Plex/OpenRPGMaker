@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63ba3853f58e850f90db60036cf8c00987f0d22536f47653896ec58143204613",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "나무 그루터기 위 모루",
+ "label": "steampunk-city/sp-anvil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anvil",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in a pure 2D side silhouette/elevation with no visible top working surface (only a 1px outline at row 1). Although the tree stump beneath it shows a top surface, the primary subject (the anvil) completely lacks a top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6885
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "anvil",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the tree stump below has a foreshortened top cut surface, the anvil itself is drawn in a flat 2D side elevation typical of a platformer, complete with a side-facing horn and only a 1px highlight line along the top working face (row 1) instead of a proper top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 11013
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "anvil on a tree stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn as a flat side elevation profile (horn pointing west). Its top horizontal working face is not visible from above at all, represented only by a 1px black outline at row 1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "anvil on a tree stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in a pure side elevation showing its silhouette (horn, face, waist) straight on with only a 1px highlight on row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7082
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:44.593Z",
+ "cells": {
+  "16": [
+   "df8e3afbfb1a7f99"
+  ],
+  "24": [
+   "093465cdec518f9f",
+   "87d93d3201ac6d28",
+   "9d7f619998591111",
+   "ad7ce1e8b10fbd92",
+   "e96804a92b0051e0",
+   "f30b5d676ffdd62a"
+  ],
+  "32": [
+   "26567a160251e1d6",
+   "6ada91cd13f94b98",
+   "73ca342945b942d6",
+   "b2a16665cd1ba027",
+   "c1929982948e6c1f",
+   "d1eeb467281d7604"
+  ],
+  "48": [
+   "0c4706a05465494d",
+   "226a7c58a0a09edd",
+   "6e03fd42469936b3",
+   "934a249d8fc50533",
+   "bde70271476543fd",
+   "dcad52ca5e8bd3d3"
+  ]
+ }
+}

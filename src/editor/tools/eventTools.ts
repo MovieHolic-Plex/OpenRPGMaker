@@ -1,3 +1,4 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -5,6 +6,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { genreLockCharsetCatalogFilter } from "@/project/genreLockCharsets";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -44,6 +46,8 @@ import {
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
+  usedCharsetGraphicKeysOnMapCount,
+  usedCharsetGraphicKeysOnProject,
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
@@ -53,6 +57,9 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
+import { pageKeyFindings, pageKeyRejectMessage, pageKeyWarning } from "./eventPageKeys";
+import { CHANGE_TILE_USAGE, changeTileProblems, collectChangeTileCommands } from "@/project/changeTileValidation";
+import { withJosa } from "@/util/josa";
 import { assertDoorExitWidths, reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA_COMPACT,
@@ -125,6 +132,18 @@ function resolveNpcMovement(
       warnings.push(`이동 추론 → random(배회): '${name}' 에 고정·추격 표지가 없어 기본 배회로 두었습니다. 제자리면 movement:"fixed", 추격이면 movement:"approach" 명시.`);
       return WANDER;
   }
+}
+/**
+ * 말 걸어 호감을 쌓는 인물(talkFriendship)은 기본이 제자리다 — 이름 추론이 배회(random)로 두면 시간표 자리에 서 있어야 할 사람이
+ * 칸을 벗어나 돌아다니고(연애 시험 2026-10-16: 한 칸 폭 길의 인물이 걸어 나가 만나러 가는 길이 막혔다), 좁은 길에서는 길도 막는다.
+ * 배회시키려면 movement:"random" 을 명시한다. 시간표가 위치를 정하는 사회 루프 인물이 기본 대상이다.
+ */
+function resolveSocialNpcMovement(name: string, args: Record<string, unknown>, warnings: string[]): EventPage["movement"] {
+  if (args.talkFriendship === true && !(typeof args.movement === "string" && args.movement.trim())) {
+    warnings.push(`이동 추론 → fixed(제자리): '${name}' 은(는) 호감 대화 인물(talkFriendship)이라 시간표 자리에 서 있게 했습니다. 배회시키려면 movement:"random" 명시.`);
+    return PASSIVE;
+  }
+  return resolveNpcMovement(name, args.movement, warnings);
 }
 const DIALOGUE_COMMAND_KINDS: ReadonlySet<string> = new Set(["text", "choices"]);
 
@@ -264,6 +283,21 @@ function isAutoInspectEvent(event: GameEvent): boolean {
  * 아래(below) 조사 이벤트를 먼저 집어 상자·NPC 가 영영 반응하지 않았다(2026-09-23 도그푸딩:
  * 동굴 (3,6) chest_cave_potion 과 술통 조사 ev_inspect_…_9_5). 걷어낸 id 를 돌려준다.
  */
+
+/** 명령 비교용 — 자동 부여되는 commandId 는 모델이 다시 쓴 명령에 없어도 같은 명령이다(patch_event_page 「빠짐」 경고 오탐 방지). 중첩 then/else 도 같이 벗긴다. */
+function stripCommandIds(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stripCommandIds);
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+      if (key === "commandId") continue;
+      out[key] = stripCommandIds(entry);
+    }
+    return out;
+  }
+  return value;
+}
+
 export function displaceAutoInspectEvents(map: GameMap, event: GameEvent): string[] {
   if (isAutoInspectEvent(event)) return [];
   const displaced = map.events.filter(entry => entry.id !== event.id && isAutoInspectEvent(entry) && entry.x === event.x && entry.y === event.y);
@@ -765,7 +799,7 @@ function relocateImpassableTransfers(project: Project, event: GameEvent, warning
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
+export function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -945,7 +979,7 @@ export function resolveEventPlacement(
 }
 
 /** place_npc 와 같은 문구의 자동 조정 경고. */
-function placementAdjustedWarning(label: string, from: Point, to: Point): string {
+export function placementAdjustedWarning(label: string, from: Point, to: Point): string {
   return `${label} 위치 자동 조정: (${from.x}, ${from.y}) → (${to.x}, ${to.y})`;
 }
 
@@ -1104,6 +1138,17 @@ const upsertEvent: ToolDefinition = {
       : rawPatch;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    // transfer 는 m2Command 가 아니다 — direction·fade 는 명령 바로 아래에 둔다. `fields` 에 넣으면 조용히 무시돼 변경이 사라진다
+    // (실측 2026-10-13: 「출입구 방향을 맞춰줘」가 fields:{direction} 로 저장돼 방향이 그대로였다).
+    const misplaced = (node: unknown): boolean => Array.isArray(node)
+      ? node.some(misplaced)
+      : !!node && typeof node === "object" && (((node as { kind?: unknown }).kind === "transfer" && "fields" in (node as object)) || Object.values(node as object).some(misplaced));
+    if (misplaced(patch)) throw new ToolError("transfer 명령에는 fields 가 없습니다. direction(up/down/left/right/retain)·fade·mapId·x·y 를 명령 바로 아래에 직접 적으세요.", { code: "invalid-args" });
+    // changeTile 은 모르는 키(tileId·map 등)를 조용히 버리면 변경이 사라진다 — 입력 단계에서 거절하고 맞는 이름을 알려 준다.
+    const changeTileIssues = collectChangeTileCommands(patch).flatMap((command, index) => changeTileProblems(command, draft).map((problem) => `changeTile #${index + 1}: ${problem}`));
+    if (changeTileIssues.length > 0) {
+      throw new ToolError(`${changeTileIssues.join(" / ")} — ${CHANGE_TILE_USAGE}`, { code: "invalid-args" });
+    }
     // A trigger describes when to run; commands belong beside it. Do this on the
     // incoming patch before normalization can turn an omitted command list into [].
     const commandOwners = [
@@ -1137,6 +1182,9 @@ const upsertEvent: ToolDefinition = {
           { code: "invalid-args" },
         );
       }
+      const keyFindings = pageKeyFindings(page, `event.pages[${index}]`);
+      if (keyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(keyFindings.reject), { code: "invalid-args" });
+      if (keyFindings.warn.length > 0) warnings.push(pageKeyWarning(keyFindings.warn));
       // 유니온 밖 값은 저장됐다가 플레이어가 처음 조사하는 순간 런타임 exhaustiveness trips 를
       // 때려 씬이 죽는다(2026-09-24 갤러리 도그푸딩: 모델이 32페이지에 "none" 을 넣어 브라우저 완주가 막힘).
       // args 는 위에서 Partial<GameEvent> 로 캐스팅된 입력이라 런타임 값이 유니온을 어길 수 있다 — includes 로 실제 값을 본다.
@@ -1306,6 +1354,7 @@ const placeNpc: ToolDefinition = {
       id: { type: "string" },
       guide: { type: "string", enum: ["action-controls"], description: "키 바인딩 정본의 조작 안내 한 페이지. pages 대신 사용하며 맵별 고정 ID로 재사용한다." },
       characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
+      talkFriendship: { type: "boolean", description: "true 면 이 NPC 와 action 대화를 끝낼 때마다 하루 한 번 호감이 오른다(characterId 가 없으면 이름에서 할당). 연애·관계 게임의 기본 호감 통로. 선언 밖 인물 옵션은 거부되니 make_villager 를 써라." },
     },
     // x,y 또는 home 중 하나 — 스키마 required 로 두면 make_villager 모양(home)으로 부른 호출이 Pi 검증에서
     // 통째로 거부됐다(2026-09-24 JRPG ember-4: 상점 NPC 넷이 전부 「x,y is required」). run 에서 둘 중 하나를 요구한다.
@@ -1382,11 +1431,25 @@ const placeNpc: ToolDefinition = {
     const specQuery = "query" in graphicSpec ? graphicSpec.query : undefined;
     const recurring = specQuery !== undefined && !('selectionId' in graphicSpec) ? recurringCharacterLook(draft, map.id, name) : undefined;
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
+    // 허용 칩이 적은 장르 잠금 아래에서는 다른 맵에 선 다른 인물의 칩도 피한다(같은 사람은 recurring 이 같은 모습을 준다).
+    const avoidKeys = genreLockCharsetCatalogFilter(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
-      avoidKeys: usedCharsetGraphicKeysOnMap(map),
+      avoidKeys,
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
     });
+    // 같은 칩이 한 맵에 3번째로 나오면 알린다(poke-adv-lock-1 #8: 허용 칩이 적은 잠금 아래에서 NPC 가 한 칩으로 몰렸다). 막지 않고, 다른 인물 칩을 고르게 한다.
+    if (!graphic.transparent && graphic.sprite?.id) {
+      const sameChip = usedCharsetGraphicKeysOnMapCount(map, graphic);
+      if (sameChip >= 2) normalizationWarnings.push(`같은 걷기 칩(${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex})이 이 맵에 이미 ${sameChip}명 있어 ${sameChip + 1}번째가 됩니다 — 한 화면에 같은 얼굴이 셋 이상이면 어색합니다. list_npc_graphics 로 다른 인물 칩을 골라 graphic 으로 주세요(query 를 생략하거나 "villager" 로 두면 쓰이지 않은 칩이 먼저 골라집니다).`);
+    }
+    // 허용 칩이 적은 잠금(현대 연애): 다른 인물이 이미 쓴 칩을 직접 골랐으면(맵이 달라도) 알린다 — 칸이 모자라 어쩔 수 없을 때까지는 다른 칸을 쓰게 한다(2026-10-16 연애 첫 실측: 서로 다른 인물 셋이 같은 칩).
+    if (!graphic.transparent && graphic.sprite?.id && !recurring && genreLockCharsetCatalogFilter(draft)) {
+      const key = `${graphic.sprite.id}#${decodeCharsetFrameIndex(typeof graphic.pattern === "number" ? graphic.pattern : 0).characterIndex}`;
+      if (usedCharsetGraphicKeysOnProject(draft, name).has(key)) {
+        normalizationWarnings.push(`이 칩(${key})은 이미 다른 인물이 쓰고 있어 '${name}' 이(가) 그 사람과 같은 얼굴이 됩니다 — list_npc_graphics 로 아직 안 쓴 허용 칩을 골라 graphic 으로 주세요(같은 사람이 다른 맵에 다시 나올 때만 같은 칩을 씁니다).`);
+      }
+    }
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
     const similar = existingNpc ?? (actionGuide ? undefined : findNearbySimilarNpc(map, x, y, name, 2));
@@ -1398,7 +1461,7 @@ const placeNpc: ToolDefinition = {
     if (pagesDefaulted) normalizationWarnings.push(pagesDefaulted);
     if (reused) normalizationWarnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     // 명시 movement 우선, 생략 시 이름 아키타입 추론(guide 예외는 제자리).
-    const movement = actionGuide ? PASSIVE : resolveNpcMovement(name, args.movement, normalizationWarnings);
+    const movement = actionGuide ? PASSIVE : resolveSocialNpcMovement(name, args, normalizationWarnings);
     const faceArg = resolvePlaceNpcFaceArg(args.face);
     const pages = compileSimplePages(id, name, actionGuide ? [{ text: ACTION_CONTROLS_GUIDE }] : pagesArg as SimplePage[], graphic, {
       movement,
@@ -1432,6 +1495,12 @@ const placeNpc: ToolDefinition = {
       event.characterId = event.characterId
         ?? allocateCharacterId(draft, undefined, name, normalizationWarnings);
       normalizationWarnings.push(`호감 페이지/커맨드 → characterId '${event.characterId}' 자동 할당`);
+    }
+    if (args.talkFriendship === true) {
+      event.characterId = event.characterId ?? allocateCharacterId(draft, undefined, name, normalizationWarnings);
+      event.talkFriendship = true;
+    } else if (args.talkFriendship === false) {
+      delete event.talkFriendship;
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event, normalizationWarnings, event, draft);
@@ -1478,7 +1547,7 @@ function timeSystemOffWarnings(project: Project, scheduleCount: number): string[
 const setNpcSchedule: ToolDefinition = {
   name: "set_npc_schedule",
   description:
-    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 요일은 GameTime에 없으므로 dayRange를 사용한다. 순찰·출근·귀가 같은 이동 시간표는 이 툴(NPC 를 여러 개 복제하지 말 것).",
+    "기존 NPC 이벤트에 시간표를 설정한다. timeSystem이 켜진 플레이에서 when이 현재 시간과 맞으면 at으로 이동한다. 시간표 when 에는 요일이 없다(dayRange 는 날짜 번호). 요일마다 다른 대사·반응은 시간표가 아니라 NPC 이벤트 페이지의 weekday 조건(0=일..6=토)으로 나눈다. 순찰·출근·귀가 같은 이동 시간표는 이 툴(NPC 를 여러 개 복제하지 말 것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1614,7 +1683,7 @@ const makeVillager: ToolDefinition = {
     const homeAdjusted = home.x !== homeRaw.x || home.y !== homeRaw.y;
     const warnings: string[] = [];
     if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
-    const villagerMovement = resolveNpcMovement(name, args.movement, warnings);
+    const villagerMovement = resolveSocialNpcMovement(name, args, warnings);
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
@@ -1718,6 +1787,7 @@ const makeVillager: ToolDefinition = {
       }
       if (shopStock) setShopStockOnEvent(event, shopStock);
       event.characterId = characterId;
+      if (!event.name?.trim()) event.name = name;
       if (args.schedule !== undefined || args.dailyRoutine !== undefined) {
         event.schedule = schedule.length > 0 ? schedule : undefined;
       }
@@ -1734,6 +1804,8 @@ const makeVillager: ToolDefinition = {
     } else {
       event = {
         id,
+        // 이름이 없으면 HUD 호감 목록·ESC 관계 탭이 사람 이름 대신 characterId 를 보인다(place_npc 는 처음부터 이름을 단다).
+        name,
         characterId,
         x: home.x,
         y: home.y,
@@ -1767,7 +1839,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2610,7 +2682,7 @@ function cleanOptionalString(raw: unknown): string | undefined {
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
   description:
-    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
   mode: "write",
@@ -2684,6 +2756,11 @@ const createTransferPair: ToolDefinition = {
         },
       ],
     });
+    // 새 문 때문이 아니라 원래부터 막혀 있던 문은 이 요청의 책임이 아니다 — 그걸 풀려고 무관한 타일을 지우게 하지 않는다(실측 2026-10-14: 덤불 칸이 지워졌다).
+    const sealedBefore = new Set<string>();
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
+    }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
@@ -2691,7 +2768,8 @@ const createTransferPair: ToolDefinition = {
     const sealedAfter: string[] = [];
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       const check = transferGatesStayApproachable(draft, map);
-      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+      const fresh = check.sealed.filter((entry) => !sealedBefore.has(`${map.id}:${entry.replace(/\(.*$/u, "")}`));
+      if (fresh.length) sealedAfter.push(`${map.name}: ${fresh.join(", ")}`);
     }
     if (sealedAfter.length) throw new ToolError(`출입구 설치로 기존 문이 봉쇄됩니다: ${sealedAfter.join(' / ')}`, { code: 'transfer-sealed' });
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
@@ -3089,7 +3167,7 @@ function assertChestDrySurface(project: Project, map: GameMap, x: number, y: num
 
 // 보물상자: "상자를 열면 X 지급"을 셀프스위치 2페이지로 완결하는 프리셋.
 // (코퍼스 hidden-treasure-chest / chest-potion-reward가 "부분 가능"이던 갭 해소)
-const placeChest: ToolDefinition = {
+export const placeChest: ToolDefinition = {
   name: "place_chest",
   description:
     "보물상자 이벤트를 배치한다. 조사하면 contents의 아이템/골드를 지급하고 셀프스위치 A로 개봉 상태를 기억한다(2페이지).  보물상자(열면 아이템/골드 지급, 개봉 기억)는 반드시 이 툴 — place_npc/upsert_event 로 흉내내지 말 것. 장식용 박스·나무상자는 이 툴이 아니라 place_props(material:\"나무 상자\"). 넣고 빼는 보관 상자는 place_storage_chest." +
@@ -3161,7 +3239,7 @@ const placeChest: ToolDefinition = {
     const openCommands: Command[] = [
       ...chestOpenCommands(id, graphic),
       ...lootGrantCommands({ itemId, gold }),
-      { kind: "text", body: `보물상자를 열었다! ${rewardText} 를 손에 넣었다.` },
+      { kind: "text", body: `보물상자를 열었다! ${/G$/u.test(rewardText) ? `${rewardText}를` : withJosa(rewardText, "을/를")} 손에 넣었다.` },
       { kind: "setSelfSwitch", key: "A", value: true } as Command,
     ];
     const event: GameEvent = {
@@ -3297,7 +3375,7 @@ const placeStorageChest: ToolDefinition = {
 
 const placeSavepoint: ToolDefinition = {
   name: "place_savepoint",
-  description: "세이브 포인트 이벤트를 배치한다. 조사하면 체크포인트 저장이 실행된다(크리스탈 외형). 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
+  description: "세이브 포인트 이벤트를 배치한다(크리스탈 외형). 조사하면 mode 에 따라 동작한다 — both(기본): 사망 재시도용 체크포인트를 기록하고 **저장 칸 메뉴(openSaveMenu)** 도 연다(크로노 트리거식: 크리스탈에서 3칸 중 골라 저장) · slot: 저장 칸 메뉴만 · checkpoint: 체크포인트만(저장 칸 안 염, 새로고침하면 사라진다 — 호러·사망 재시도용). 플레이어가 새로고침 뒤에도 이어 하려면 slot 이나 both 다. 맵이 저장 금지(set_map_properties disableSave)면 경고한다. 벽 위여도 인접 칸에서 조사할 수 있으면 그대로 두고, 사방이 막힌 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. 세이브 포인트는 반드시 이 툴 — place_npc/upsert_event 흉내 금지.",
   mode: "write",
   parameters: {
     type: "object",
@@ -3308,14 +3386,20 @@ const placeSavepoint: ToolDefinition = {
       name: { type: "string" },
       id: { type: "string" },
       heal: { type: "boolean", description: "true 면 저장 전에 파티 전원 회복(recoverAll). 기본 false — 크로노 트리거의 세이브 포인트는 회복하지 않는다." },
+      mode: { type: "string", enum: ["both", "slot", "checkpoint"], description: "both(기본): 체크포인트 + 저장 칸 메뉴 · slot: 저장 칸 메뉴만 · checkpoint: 사망 재시도용 메모리 체크포인트만" },
     },
     required: ["mapId", "x", "y"],
+    additionalProperties: false,
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     const heal = args.heal === true;
+    const saveMode = args.mode === undefined ? "both" : args.mode;
+    if (saveMode !== "both" && saveMode !== "slot" && saveMode !== "checkpoint") {
+      throw new ToolError(`mode 는 both | slot | checkpoint 중 하나여야 합니다(받은 값: ${JSON.stringify(args.mode)}).`, { code: "invalid-args", mapId: map.id });
+    }
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`세이브 포인트 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "savepoint-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
@@ -3350,18 +3434,23 @@ const placeSavepoint: ToolDefinition = {
           movement: PASSIVE,
           commands: [
             ...(heal ? [{ kind: "recoverAll" } as Command] : []),
-            { kind: "checkpointSave", label: "savepoint" },
-            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : "이곳에 모험을 기록했다." },
+            ...(saveMode !== "slot" ? [{ kind: "checkpointSave", label: "savepoint" } as Command] : []),
+            { kind: "text", body: heal ? "기운이 돌아왔다. 이곳에 모험을 기록했다." : saveMode === "checkpoint" ? "이곳에 모험을 기록했다." : "이곳에 모험을 기록할 수 있다." },
+            ...(saveMode !== "checkpoint" ? [{ kind: "openSaveMenu" } as Command] : []),
           ],
         },
       ],
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
+    const saveWarnings = [
+      ...(adjusted ? [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] : []),
+      ...(map.disableSave && saveMode !== "checkpoint" ? [`${map.name} 은(는) 저장 금지 맵이라 저장 칸 메뉴에서 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요.`] : []),
+    ];
     return {
-      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y})${heal ? " — 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
-      data: { eventId: id, x, y, adjusted, heal },
-      ...(adjusted ? { warnings: [placementAdjustedWarning("세이브 포인트", { x: requestedX, y: requestedY }, placement)] } : {}),
+      summary: `${map.name}에 세이브 포인트 '${name}' 배치 (${x}, ${y}) — ${saveMode === "slot" ? "저장 칸 메뉴" : saveMode === "checkpoint" ? "체크포인트(저장 칸 안 염)" : "체크포인트 + 저장 칸 메뉴"}${heal ? " · 전원 회복 포함" : ""}${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
+      data: { eventId: id, x, y, adjusted, heal, mode: saveMode },
+      ...(saveWarnings.length > 0 ? { warnings: saveWarnings } : {}),
     };
   },
 };
@@ -4062,7 +4151,7 @@ export { ensureNamedSwitch };
  */
 const patchEventPage: ToolDefinition = {
   name: "patch_event_page",
-  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
+  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 요청하지 않은 필드(대사의 speaker·얼굴, 명령의 다른 인자)는 원래 값 그대로 다시 적는다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
   mode: "write",
   parameters: {
     type: "object",
@@ -4093,16 +4182,77 @@ const patchEventPage: ToolDefinition = {
       throw new ToolError("set 에 바꿀 페이지 필드를 하나 이상 넣으세요.", { code: "invalid-args" });
     }
     const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
+    const setKeyFindings = pageKeyFindings(fields, "set");
+    if (setKeyFindings.reject.length > 0) throw new ToolError(pageKeyRejectMessage(setKeyFindings.reject), { code: "invalid-args" });
+    if (setKeyFindings.warn.length > 0) throw new ToolError(`set 에 알 수 없는 페이지 키가 있다: ${setKeyFindings.warn.join(", ")}. ${pageKeyWarning(setKeyFindings.warn.map((key) => key.replace(/^set\./u, "")))}`, { code: "invalid-args" });
     const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
     const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
-    return { ...result, summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
+    // commands 는 배열 통째 교체라 유지할 명령을 빠뜨리기 쉽다. 사라진 원래 명령을 결과에 적어 모델이 바로 되살리게 한다
+    // (실측 2026-10-13: 「화면 흔들림 추가」가 기존 화면 숨기기·대기·표시 명령을 지웠다).
+    const dropped: string[] = [];
+    if (Array.isArray(fields.commands)) {
+      const kept = fields.commands as unknown[];
+      for (const old of pages[index]!.commands ?? []) {
+        if (!kept.some((next) => jsonEqual(stripCommandIds(next), stripCommandIds(old)))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
+      }
+    }
+    const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };
 
+/**
+ * 한쪽 문의 착지 방향만 바꾸면 반대쪽 문과 어긋난다 — 「두 맵 사이 출입구 방향을 맞춰줘」에서 모델이 가는 문만 고치고
+ * 끝냈다(실측 2026-10-13, 5회 중 4회). 방향이 바뀐 transfer 가 있으면, 그 목적지 맵에서 이 맵으로 돌아오는 문을 결과에 적는다.
+ */
+function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
+  return {
+    ...base,
+    run(draft, args) {
+      const mapId = String(args.mapId ?? "");
+      const eventId = String((args.event as { id?: unknown } | undefined)?.id ?? args.eventId ?? "");
+      const transfersOf = (event: GameEvent | undefined): Array<{ mapId?: string; direction?: string }> =>
+        (event?.pages ?? []).flatMap((page) => (page.commands ?? []).filter((command) => command.kind === "transfer") as Array<{ mapId?: string; direction?: string }>);
+      const before = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId)).map((entry) => ({ ...entry }));
+      const eventBefore = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const nameBefore = eventBefore?.name;
+      const fadeBalance = (event: GameEvent | undefined): number => (event?.pages ?? []).flatMap((page) => page.commands ?? []).reduce((sum, command) => {
+        const id = String((command as { commandId?: unknown }).commandId ?? "");
+        return sum + (command.kind === "m2Command" && /m2-044/u.test(id) ? 1 : command.kind === "m2Command" && /m2-045/u.test(id) ? -1 : 0);
+      }, 0);
+      const balanceBefore = fadeBalance(eventBefore);
+      const result = base.run(draft, args);
+      const eventAfter = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const editNotes: string[] = [];
+      // 이벤트 이름만 바꾸면 대화창에 뜨는 화자명은 옛 이름 그대로다(실측 2026-10-14: 이름 변경 후에도 대사 화자가 「마을 주민」).
+      if (nameBefore && eventAfter?.name && eventAfter.name !== nameBefore) {
+        const stale = (eventAfter.pages ?? []).flatMap((page) => page.commands ?? []).filter((command) => command.kind === "text" && (command as { speaker?: string }).speaker === nameBefore).length;
+        if (stale) editNotes.push(`대사 ${stale}개의 speaker 가 옛 이름 '${nameBefore}' 그대로입니다 — 이름 변경 요청이면 speaker 도 '${eventAfter.name}' 으로 바꾸세요.`);
+      }
+      // 화면 숨기기(m2-044)만 남고 보이기(m2-045)가 지워지면 장면이 끝나도 화면이 어두운 채 남는다.
+      if (fadeBalance(eventAfter) > balanceBefore) editNotes.push("화면 숨기기만 남고 화면 보이기가 없어 화면이 어두운 채 남습니다 — 페이드는 숨기기·보이기를 짝으로 다루세요.");
+      const changed = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId))
+        .filter((entry) => entry.mapId && entry.direction && !before.some((old) => old.mapId === entry.mapId && old.direction === entry.direction));
+      const notes: string[] = [];
+      for (const entry of changed) {
+        for (const door of draft.maps[entry.mapId!]?.events ?? []) {
+          const back = transfersOf(door).find((candidate) => candidate.mapId === mapId);
+          if (back) {
+          const opposite = ({ up: "down", down: "up", left: "right", right: "left" } as Record<string, string>)[entry.direction!];
+          if (opposite && back.direction !== opposite) notes.push(`돌아오는 문 '${door.id}'(${draft.maps[entry.mapId!]!.name})의 착지 방향은 ${back.direction ?? "(없음)"} 입니다. 「출입구 방향을 맞춰줘」 요청이면 가는 쪽을 ${entry.direction} 으로 둔 채 그 문의 transfer.direction 을 ${opposite} 로 바꾸세요(가는 쪽을 다시 바꾸지 말 것). 다른 요청이면 무시하세요.`);
+        }
+        }
+      }
+      const all = [...editNotes, ...notes];
+      return all.length ? { ...result, summary: `${result.summary} ⚠ ${all.join(" ⚠ ")}` } : result;
+    },
+  };
+}
+
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
-  upsertEvent,
-  patchEventPage,
+  withReturnDoorNote(upsertEvent),
+  withReturnDoorNote(patchEventPage),
   placeNpc,
   setNpcSchedule,
   makeVillager,

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "988788bce0e8d955b38b44c29a84da74465fe970ca5b1f703209c46e9038de8f",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age pots",
+ "label": "prehistoric/ph-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clay/stone pot",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening cavity visible from rows 5 to 7 (3 pixel rows tall) revealing the dark interior from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large clay pot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows a foreshortened top opening spanning from row 3 to row 7 (5 pixel rows of visible interior with inner back wall and deep shadow) between the back rim at row 2 and the front rim at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay pot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows a foreshortened elliptical opening into its dark interior occupying rows 4 to 7 (~3-4 rows tall) viewed from an elevated 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3673
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clay pot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening visible from above spanning rows 5 to 7, with a raised back rim on rows 2-4 and the south face extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 3104
+  }
+ ],
+ "decidedAt": "2026-10-14T00:39:52.941Z",
+ "cells": {
+  "16": [
+   "bab10c449c9e8bed"
+  ],
+  "24": [
+   "13ced4175a74f234",
+   "5a4df87606f8efb4",
+   "7e2a885f5e86f78c",
+   "9798c37a986c428a",
+   "9a88a98c53c2f4b8",
+   "9b6b465703f69cd1"
+  ],
+  "32": [
+   "1af9ae8f12f9267a",
+   "7e1ea87822ff9f15",
+   "8e611dbc5fe46d31",
+   "ddae12c3a4e6bacf",
+   "eada51abab2213f3",
+   "fd1bdbd10fd219c4"
+  ],
+  "48": [
+   "140ff70768f0e7bd",
+   "2f01c07174242806",
+   "3f8a00dcfa92b508",
+   "4e968e3ae3dbeb97",
+   "5d052375c8dc7568",
+   "a29500b202a70a08"
+  ]
+ }
+}

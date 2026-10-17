@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85ecbb0de349d2c5409b5872c172455bb56fcc9d92985e83b5c37a347d5b2907",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "따뜻한 천장(집·궁전) · 천장 — 방 남쪽 경계(테 북쪽)",
+ "label": "desert-east/de-ceil-warm-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling boundary terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain border/ceiling tile with a light wood edge at rows 0-2 and dark void/ceiling below, matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5105
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 2D map terrain boundary tile (ceiling/room south border) rather than a standing object, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4263
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ceiling boundary terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a ceiling border and dark void/surface; flat architectural terrain tile where standing object perspective rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a ceiling edge/border transition; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5793
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "93f0df88f22ab37c"
+  ],
+  "24": [
+   "0a4bf53faf393b4f",
+   "6e98a31f126c18a4",
+   "8525a9a06f69682c",
+   "9d4734c5f1f600ed",
+   "f266022d29a14c1c",
+   "f6f011722c3e98aa"
+  ],
+  "32": [
+   "19dfdde882b0103c",
+   "3664daaeb96eaa8c",
+   "3dbfb5f7e57d77dd",
+   "6fef4b79dad6a1b0",
+   "a1061d8ad01990ba",
+   "fdcc88e29292f44b"
+  ],
+  "48": [
+   "07a26487b729a424",
+   "35581886f97534b4",
+   "3f4a0e902a85f3e6",
+   "636774cfee9b8f98",
+   "b88b20eb6d5edc56",
+   "e7da632386d9d459"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "671fa219163a69a0c8b5cc337ff0910a69c7cf2251d31c3618208d7e9f8670de",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "prehistoric stone-age bone pile l",
+ "label": "prehistoric/ph-bone-pile-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bone structure and skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bone arch, skull, and horizontal bones are drawn entirely in flat 2D side/front elevation with no top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5274
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bone pile with arched rib and skull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bones, including the arched rib, skull, and bottom long bone, are drawn entirely in side-view elevation as if for a 2D platformer, with zero foreshortened top surfaces visible from the top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5036
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bone structure / skull and ribs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bones, including the arched rib, skull with side-facing eye socket, and base bone, are drawn entirely in a flat 2D side-scroller profile elevation with no visible top surfaces or top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4604
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bone structure / skeleton with skull and ribs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bones, tusk/arch, and skull are drawn in pure 2D side-profile elevation (like a side-scroller asset). There is no top-down 3/4 perspective or visible top surface on any of the bone elements.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3822
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.805Z",
+ "cells": {
+  "16": [
+   "53dbb76883cc41ca",
+   "b2f5f1c98b27a789"
+  ],
+  "24": [
+   "0c02d3bc3ba49b7b",
+   "20993b297fe6aa06",
+   "22b5bffa58822f6d",
+   "4f7c492e0ccd44c6",
+   "6a9ad9898c57bee2",
+   "88820e71727110a9",
+   "9294ce6ae98c2f29",
+   "ba6476a12bf36360",
+   "c9c518ba75fb2ae5",
+   "d9648e98813d17ba",
+   "f08f401506312bda",
+   "fb2a18e95fde97e4"
+  ],
+  "32": [
+   "35d2f0861d35a337",
+   "97d4534f382fce75"
+  ],
+  "48": [
+   "58a64a483a03c619",
+   "92f3a914b99f561a",
+   "966aa73ca6318d5b",
+   "a53e95f95ba6ba5b",
+   "c26f1a6dc55bd7ac",
+   "d62ddb5da8569024"
+  ]
+ }
+}

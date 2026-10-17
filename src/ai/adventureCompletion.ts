@@ -4,6 +4,7 @@ import { roleCapabilities } from "@/project/tileRoles";
 import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { worldCanonHasContent } from "@/project/world/canon";
+import { gameStructureProblems } from "./gameStructureGuard";
 
 /** Declared by the intent model, never inferred from incidental NPC/building words. */
 export interface AdventureRequirements {
@@ -26,8 +27,8 @@ export function adventureToolNames(required: AdventureRequirements | undefined):
   return ["get_project_summary", "get_database_records", "read_project_wiki", "find_events", "list_resources", "generate_image_asset", "recommend_bgm", "get_soundtrack", "generate_original_bgm", "generate_original_se", "set_map_properties", "set_title_screen", "show_map_region", "upsert_event", "upsert_actor", "upsert_character_profile", "set_world_canon", "upsert_item", "upsert_equipment", "set_session_start",
     ...(required.world || required.village || required.dungeon ? ["plan_world", "build_world"] : []),
     ...(required.village ? ["author_beodeul_town", "inspect_terrain", "place_terrain_house"] : []),
-    // 던전 생성기(EasyRPG 칩셋)는 폐기 — 등록 던전 장소를 가져온다(retiredEasyRpgTilesets.ts).
-    ...(required.dungeon ? ["list_spatial_designs", "import_region_reference", "create_transfer_pair", "place_chest"] : []),
+    // EasyRPG 던전 생성기는 폐기(retiredEasyRpgTilesets.ts). 던전은 author_dungeon(칩셋 어댑터), 어댑터가 못 짓는 장소는 등록 장소 가져오기.
+    ...(required.dungeon ? ["author_dungeon", "list_spatial_designs", "import_region_reference", "create_transfer_pair", "place_chest"] : []),
     ...(required.party ? ["set_party"] : []),
     ...(required.battle ? ["upsert_enemy", "upsert_troop", "set_encounter_table"] : []),
   ];
@@ -37,14 +38,17 @@ export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 �
 첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → set_party로 시작 파티 → set_session_start로 시작 소지금·아이템 → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
 음악·효과음도 저작한다. get_soundtrack으로 기존 배치를 읽고 맵 생성의 자동 BGM을 임시 선택으로 취급한다. 장소/서사 변화에 맞는 원곡 OST나 변주를 generate_original_bgm(score.loop:true)으로 작곡해 set_map_properties.bgm에 연결한다. 타이틀 키 이동/확정/취소는 generate_original_se의 짧고 조용한 서로 다른 소리를 set_title_screen.sounds에 연결한다. 사용자 원곡 요청은 후보 검색 없이 직접 작곡해도 된다. 기존 작곡 모티브의 의도적 재사용과 무관한 맵에 같은 기본 곡을 반복하는 것을 구분한다.
 마을은 author_beodeul_town(집은 place_terrain_house)으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
-던전 탐험을 요청했다면 list_spatial_designs({kind:"place"})에서 등록 던전·동굴 장소를 골라 import_region_reference({id,name})로 별도 맵을 먼저 가져온다(던전 생성기는 EasyRPG 칩셋이라 폐기됐다). 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
+던전 탐험을 요청했다면 author_dungeon({type?,genre?})으로 별도 던전 맵을 먼저 짓는다(칩셋 어댑터가 종류를 못 지으면 거절하며 가까운 종류를 권한다 — 그때는 권한 종류로 다시 부르거나 list_spatial_designs({kind:"place"})의 등록 장소를 import_region_reference({id,name})로 가져온다. EasyRPG 던전 생성기는 폐기됐다). 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
 기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다. 보스 적은 upsert_enemy에 role:"boss"를 주어 시작 파티 기준 위협 하한을 맞춘다. 기획에 등대가 있으면 등대 꼭대기 방을 build_hand_interior_room 으로 짓고 create_transfer_pair 로 마을과 잇는다.
 파티 모험은 조회한 actors를 set_party({scope:"start",actorIds})로 시작 파티에 넣거나 changeParty 합류 이벤트를 만든다. add_companion의 시각 추종과 전투 파티는 다르다.
 선택지는 분기 안에 결과가 있어야 한다: place_npc는 choices:[{text,commands:[...]}], 네이티브 choices 명령은 options:[{text,branch:[...]}]. 합류(changeParty)·보스전(battleProcessing, 승리 분기에 setSwitch)·엔딩을 분기에 넣고 run_scene_test의 {kind:"choose",index}로 결과(partyIncludes·switchOn·endingReached)를 확인한다.
 기획에 엔딩이 있으면 define_ending으로 정의하고 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 {kind:"triggerEnding",endingId}를 넣는다. 페이지 조건으로 쓴 스위치는 어떤 분기의 setSwitch가 반드시 켜야 한다.
 아이템과 장비 모두 조회한 iconResourceId를 지정한다. 착용 무기는 upsert_equipment로 만들며 items의 legacy type:weapon은 쓰지 않는다.
+JRPG(크로노 트리거·FF6·클래식 판타지)의 주인공·동료 걷기 칩은 list_resources({kind:"charset",query:"heroes"}) 로 CT·FF6풍 영웅 칩 Heroes1(8종, textureKey tex_oprn_charset_heroes1)을 먼저 보고 어울리는 칸을 characterResourceId:"oprn-charset-heroes1"+characterIndex 로 지정한다 — RTP Actor 는 어울리는 칸이 없을 때만 쓴다(Heroes1 에는 짝 얼굴이 없으니 얼굴은 list_resources faceset 에서 따로 고른다).
 재시도는 find_events로 기존 ID를 읽고 upsert_event로 갱신한다. place_npc를 되풀이해 동명이인을 늘리지 않는다.
 건물을 먼저 시공하고 NPC·상자는 나중에 배치한다. 기존 이벤트 위 시공 후에는 find_events로 겹침을 확인하고 upsert_event로 통행 가능한 자리로 옮긴다.
+시대·평행세계처럼 같은 지리를 여러 벌 쓰는 게임은 맵을 따로 새로 칠하지 않는다 — derive_map_variant({sourceMapId, variants:[{id,era:"past"|"future"|"ruin"…,tileOverrides?}], gates?})로 한 번에 파생(이벤트 참조 자동 보정)하고 — 변형마다 시대 겉모습(조명 색조·안개·건물 철거·폐허/야영 조각)이 자동으로 걸리니 era 에 과거·미래·붕괴 낱말을 넣고, 결과 뒤 show_map_region 으로 현재 맵과 눈으로 구별되는지 확인하며 부족하면 tileOverrides 로 더 바꾼다, 시대 사이 문은 create_time_gate(effect, 잠그려면 unlockWhen+lockedMessage), 과거의 행동이 미래의 땅을 바꾸면 tile_change_effect, 세이브 포인트는 place_savepoint(mode:both). 전투 비교는 simulate_battle({useSkills:true}).
+완료 직전 구조 점검(가드가 같은 것을 막는다): ① set_start_position 으로 시작 맵을 지은 게임의 첫 맵에 맞춘다(빈 시드 맵에서 시작하면 안 된다) ② 저작한 모든 맵이 시작 맵에서 문으로 닿는다(create_transfer_pair/create_time_gate) ③ define_ending 과 그것을 부르는 {kind:"triggerEnding"} 이벤트가 있다.
 마지막 저작 후 모든 관련 맵 전체를 show_map_region(최대 24×24이므로 큰 맵은 분할 조회)으로 직접 보고, 입구·동선·외형과 중복을 확인한다. lint 무오류는 장르 완성이 아니다. 정식 퀘스트/보스는 요청 없으면 불필요하다.`;
 
 function commands(map: GameMap): Array<{ event: GameMap["events"][number]; command: Command }> {
@@ -173,5 +177,7 @@ export function adventureCompletionProblems(project: Project, required: Adventur
   }
   if (required.battle && !battle) problems.push("도달 가능한 전투가 없습니다. 조회한 트룹을 조우표/필드 스폰/battleProcessing에 연결하세요. DB 시드만으로 전투는 시작되지 않습니다.");
   if (required.party && [...party].filter(id => actorIds.has(id)).length < 2) problems.push("전투 파티가 1명뿐이고 도달 가능한 changeParty 합류도 없습니다. 배우 ID 조회 후 시작 파티 또는 합류 이벤트를 저작하세요.");
+  // 시작 맵·맵 도달성·엔딩 호출 — 도구 한 번으로 풀리는 구조 결함이라 메시지가 다음 도구와 인자를 이름으로 준다(gameStructureGuard.ts).
+  for (const problem of gameStructureProblems(project)) if (!problems.includes(problem)) problems.push(problem);
   return problems;
 }

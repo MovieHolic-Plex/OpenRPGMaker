@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f2975948896232675642c1962f4b3465701df8a66aa0e8cce52a94a770aa034",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "현금 단말기 부스(윗면 + 차양 턱 + 화면 + 키패드 + 카드 투입구)",
+ "label": "sf-station/sf-street-atm-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ATM booth terminal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2-6 form a clear 5-row top surface above the green visor/canopy lip (rows 7-8), presenting proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3776
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ATM booth cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The curved top cap of the booth is clearly visible from rows 2 to 6 (5 pixel rows tall) above the green visor and front control face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3450
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ATM booth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 6 show a clear foreshortened top surface (5 rows tall) above the green visor ledge (rows 7-8) and south-facing terminal body (rows 9-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ATM terminal booth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the booth is clearly visible across rows 2-6 (approx. 5 pixel rows) before the green awning rim and the vertical front face with screen, keypad, and card slot.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3799
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "a7540ec3e2759b78",
+   "d0df1f29d3deb3a1"
+  ],
+  "24": [
+   "10f0ca9e4ea6d018",
+   "1fc3510a963bf8d8",
+   "4d15e25ef6b7662a",
+   "540b08f1dd9772ec",
+   "75f70d1031dc08a2",
+   "8573dd4cf64aec72",
+   "85ff376a88d5f700",
+   "87893380d0d5ad08",
+   "8a828d9ee7cf2549",
+   "bee05ccaea946cfd",
+   "c01c7a1952f26849",
+   "fe83992f0236f79e"
+  ],
+  "32": [
+   "0f8b800bf834c19a",
+   "3a34bafaa3695796",
+   "b314aaf03840e906"
+  ],
+  "48": [
+   "0a65f9023d87c533",
+   "0bc5868dc279aee4",
+   "34377240b21ffa3c",
+   "bac6bc30d5266637",
+   "e6bdee3ed46e8ea3",
+   "fc68aee762a98d83"
+  ]
+ }
+}

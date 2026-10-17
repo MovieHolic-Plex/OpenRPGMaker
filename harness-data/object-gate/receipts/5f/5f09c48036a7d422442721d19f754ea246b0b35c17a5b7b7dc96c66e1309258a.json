@@ -1,0 +1,162 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f09c48036a7d422442721d19f754ea246b0b35c17a5b7b7dc96c66e1309258a",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "회관 선술집(폭 6, 두 층 높이, 양개문·걸이 간판·등)",
+ "label": "snow-north/sn-meadhall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-story wooden tavern building with large snow-covered pitched roof",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent south-facing sloped snow roof extending from row 8 to row 51 (44 pixel rows tall) above the two-story front facade, providing standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4406
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large two-story snow-covered wooden tavern building",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The snow-covered southward roof slope occupies rows 8 through 51 (~44 pixels tall), clearly displaying the top surface in proper 3/4 perspective above the front log facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3698
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-story snow-covered log tavern/hall with large front-facing gabled roof",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a massive south-facing snow-covered roof slope spanning rows 8 to 51 (44 pixels tall) above a two-story log facade, providing standard top-down 3/4 JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8627
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern hall building with snow-covered roof",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing snow-covered roof slope visible from row 8 down to row 51 (approx. 43 pixel rows), correctly presenting the top slope in RPG Maker 3/4 perspective without isometric receding side walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3491
+  }
+ ],
+ "decidedAt": "2026-10-14T01:02:41.799Z",
+ "cells": {
+  "16": [
+   "020c45c70aaf104e",
+   "08db2343eb04a40b",
+   "0d2aab0d116ab22b",
+   "1d83519042b59837",
+   "2a255cdce3e224f2",
+   "3fc610e24c3c5e54",
+   "46eec7125cdf6a6c",
+   "4b3c4c8585a1901a",
+   "4f04905c7f5843f0",
+   "506df236f17b64a0",
+   "55057ddf7ee30613",
+   "55e9191cf7b1fb78",
+   "6c999ba8af03c957",
+   "6ea8925036e8dce0",
+   "7936cb33577661d1",
+   "7e3ab6c88e4b7bda",
+   "801d7cd6911aed2e",
+   "805d001fd9153a1a",
+   "8a205b015b9e0569",
+   "8b0e6b276456573d",
+   "a108f30b76a1fb0d",
+   "a8474ce320210e8d",
+   "a971cbd0d1478e2d",
+   "b0daf47114e3c732",
+   "b876bbdc77a903fc",
+   "cd67adf050af1aec",
+   "cf7840e0c7570503",
+   "d70d61fc155f1c1a",
+   "ddf105f68d19c2b9",
+   "de162586136b29a4",
+   "e8c598c95a1168e7",
+   "eb34fa43157e28d9",
+   "ec1634a24e369e9c",
+   "f00c23705a3951c7",
+   "f909623596801ddb",
+   "fe6d5d12efd8c6a4"
+  ],
+  "24": [
+   "0da9902260704b2b",
+   "2e3f9ffdd151a24b",
+   "32e72e92d1c61350",
+   "32e7edae3fbbedb9",
+   "44faac8131ab439b",
+   "839a133d1309015a",
+   "8a32b7eb9bd95117",
+   "8fabdb0facf8a07b",
+   "9d79ce5a66aab955",
+   "a9cb6c7c236219ff",
+   "b1f7cce7acde5b37",
+   "b61981114feae715",
+   "c8cd92f6fc3f7a18",
+   "d71fdff6330f9945",
+   "e322a769ce3853d3",
+   "f9fd3b04d76fc90c"
+  ],
+  "32": [
+   "012e9ecf24865945",
+   "162873613152db0d",
+   "1ba76ff0aa38d413",
+   "30dd29c1ec819130",
+   "343ab49868f4db5e",
+   "7fab2225b7fa667e",
+   "97a6516a7411c0af",
+   "dbad997e61ce3d03",
+   "fbb9260395650fea"
+  ],
+  "48": [
+   "50ffb7bf306071c7",
+   "547a2faa04dfc304",
+   "6826d450fc25786f",
+   "eec7b3b005ac5b0f"
+  ]
+ }
+}

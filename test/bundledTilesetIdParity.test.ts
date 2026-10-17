@@ -14,12 +14,26 @@ describe("bundled tileset id parity", () => {
     const { createModernCityTileset } = await import("@/project/defaults/modernCity");
     const { createJpCityTileset } = await import("@/project/defaults/jpCity");
     const { createWizardingWorldTileset } = await import("@/project/defaults/wizardingWorld");
+    const { createSengokuEdoTileset } = await import("@/project/defaults/sengokuEdo");
+    const { createSkyIslandTileset } = await import("@/project/defaults/skyIsland");
+    const { createSteampunkCityTileset } = await import("@/project/defaults/steampunkCity");
+    const { createModernCampusTileset } = await import("@/project/defaults/modernCampus");
+    const { createPrehistoricTileset } = await import("@/project/defaults/prehistoric");
+    const { createDesertEastTileset } = await import("@/project/defaults/desertEast");
+    const { createSnowNorthTileset } = await import("@/project/defaults/snowNorth");
 
     const creators: Record<string, () => { id: string }> = {
       tex_joseon_baram: createJoseonBaramTileset,
       tex_modern_city: createModernCityTileset,
       tex_jp_city: createJpCityTileset,
       tex_wizarding_world: createWizardingWorldTileset,
+      tex_sengoku_edo: createSengokuEdoTileset,
+      tex_sky_island: createSkyIslandTileset,
+      tex_steampunk_city: createSteampunkCityTileset,
+      tex_modern_campus: createModernCampusTileset,
+      tex_prehistoric: createPrehistoricTileset,
+      tex_desert_east: createDesertEastTileset,
+      tex_snow_north: createSnowNorthTileset,
     };
     const byKey = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a]));
     for (const [textureKey, creator] of Object.entries(creators)) {

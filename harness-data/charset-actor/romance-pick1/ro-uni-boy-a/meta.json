@@ -1,0 +1,51 @@
+{
+ "key": "ro-uni-boy-a",
+ "arch": "ro-uni-boy",
+ "base": "People1:0",
+ "variant": "남색 블레이저(앞여밈 줄·라펠 암시) + 흰 셔츠 칼라 + 붉은 넥타이, 회색 슬랙스, 검은 구두. 머리는 짧은 검은 갈색(모양은 베이스 유지).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 0,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 Bbgjmtux"
+   ],
+   "at": "2026-10-16T03:18:55"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Bbgjmtux"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.96,
+   "T": 0.877,
+   "B": 0.944,
+   "S": 0.947
+  },
+  "cross": 11,
+  "cross_base": 13,
+  "lone": 364,
+  "lone_base": 361
+ },
+ "reapplied": true
+}

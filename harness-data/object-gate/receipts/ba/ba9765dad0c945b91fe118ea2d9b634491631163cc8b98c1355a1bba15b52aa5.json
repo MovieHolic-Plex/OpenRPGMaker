@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba9765dad0c945b91fe118ea2d9b634491631163cc8b98c1355a1bba15b52aa5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디 경계석(안쪽 북서 변)",
+ "label": "modern-campus/mc-curb-in-nw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground tile with corner border stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a flat ground surface viewed from above with grass texture and a NW corner stone edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3904
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain tile with corner stone",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing grass ground with an inner corner stone patch in the top-left corner.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3468
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain tile (grass with stone path corner)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing grass and an inner corner stone section, representing a ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5293
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing grass with an inner corner transition tile; flat ground inherently passes 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3707
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.866Z",
+ "cells": {
+  "16": [
+   "d0d022ffef768679"
+  ],
+  "24": [
+   "416ba65c55c9e1e9",
+   "73628175b6190f68",
+   "9efe32e810cf1a6e",
+   "c437567149b49e74",
+   "d657ad636aa2cb30",
+   "fb4a40009e5481f6"
+  ],
+  "32": [
+   "32546010cd864a43",
+   "5e2bd1d141cb6f64",
+   "683e545a78ceb7c1",
+   "69e1653516690e2c",
+   "a703071d963e5465",
+   "b8a2194df5527994"
+  ],
+  "48": [
+   "0672136c29eb076c",
+   "b6116381f24c6b83",
+   "bca1af9a5424e9b3",
+   "c0bc2d2898533cb1",
+   "de227f791c4ccdb9",
+   "ec2a81d3f334f536"
+  ]
+ }
+}

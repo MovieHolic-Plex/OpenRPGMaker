@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc4b343f9eeee864b445e2852e92c5a473fa6d467d7390399b81fac1289061f3",
+ "width": 80,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "teacher platform / dais in front of the chalkboard",
+ "label": "monster-rooms/sc_dais",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden platform / dais",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the dais is clearly shown spanning rows 1-9 (9 pixel rows of horizontal wooden planks), with a 4-pixel-tall front step face visible on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3538
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden platform / dais",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dais shows a clear horizontal top surface (rows 0-9, 10px tall) with wooden plank texturing, and a south-facing riser/front edge (rows 10-13, 4px tall) with an edge shadow, matching standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3383
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden platform dais",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-9 depict the top wooden planked surface of the dais with highlight along row 9, while rows 10-13 form the vertical front riser.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden platform / dais",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dais shows a clear top surface spanning rows 1-9 textured with wooden floorboards, followed by a south-facing front edge/riser spanning rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2829
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "318f55fbe03b0311",
+   "39ee209d21fac9f5",
+   "4ca383b5afe936ab",
+   "b41296764c3ca01f",
+   "fca636615d2f2650"
+  ],
+  "24": [
+   "071272a1ba4eb11e",
+   "0f2054970374826a",
+   "2baecaab958a3265",
+   "2f32185bca42b369",
+   "489d0f02f09ecfce",
+   "48ccaa51e134a5f4",
+   "4b2ee7fbf631d0c1",
+   "5e7f3e5c84e6abc0",
+   "67be4b3298af16d4",
+   "757e67aa20b6c9b9",
+   "8268cb4bcbe3ab3c",
+   "8903ac04b6a81f06",
+   "925eec875e854b75",
+   "9492c3fbb4471c73",
+   "9495f7fdab898567",
+   "9efe3f3be99c4123",
+   "a8bdc12075038c24",
+   "aeb771b205d1d175",
+   "af50d7344beeb412",
+   "c462882c727efdc3",
+   "c60d50744552e5bf",
+   "c9f9aba7d39f210d",
+   "d9b0c6824474cf34",
+   "e52d97e5f3c8c8a8"
+  ],
+  "32": [
+   "05d14e6db45fc48b",
+   "21a48518ddcd1ddc",
+   "3048d84e1af9248b",
+   "4a1affdbb6192166",
+   "5a0588ac60ce1fc5",
+   "5b3c1882e12c40fe",
+   "6556ceb6430804b5",
+   "6a29d38ea1fe7bb4",
+   "734827d120a765f3",
+   "8638e52d478340bf",
+   "9a8d2addd94905f5",
+   "a5ab61a221c892eb",
+   "b6696ad89c5b2d52",
+   "b8e09a4ff6d51a6c",
+   "cf383c440fbb2b71",
+   "ebd80016617672b5",
+   "f0996268f389d54c",
+   "fedb3c1c701fb03a"
+  ],
+  "48": [
+   "2c1fe853b1d110f2",
+   "40bdb89e8a2b9d2d",
+   "4c9e8156994296ed",
+   "4f0e392a1cb1a195",
+   "53dcb6f399fb9f1e",
+   "5ce0f30e9b0a9635",
+   "76f6311d5a42651e",
+   "807fd81515bba0db",
+   "9556cbd31f3e81f5",
+   "a34106e588e37605",
+   "d37a9b3bbd199fcb",
+   "ed7bad34b074214e"
+  ]
+ }
+}

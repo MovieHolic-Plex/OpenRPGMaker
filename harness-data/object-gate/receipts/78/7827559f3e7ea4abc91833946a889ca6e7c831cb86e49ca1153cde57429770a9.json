@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7827559f3e7ea4abc91833946a889ca6e7c831cb86e49ca1153cde57429770a9",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "물담배(시샤)",
+ "label": "desert-east/de-hookah",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wide circular base/tray of the hookah",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The largest volume is the wide circular base/tray (rows 7-14), which clearly displays a 3-row foreshortened top surface (rows 7-9) surrounding the central flask, with the vertical front face below (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6533
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wide circular base/tray of the hookah",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large circular tray/base clearly shows its top surface foreshortened across rows 7-9 behind the front rim (row 10), with the front face extending from rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5564
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large circular base/tray of the hookah",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main yellow cylindrical base shows a foreshortened top surface across rows 7-9 encircling the central blue element, with the south vertical face rendered on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6149
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large circular yellow base/tray",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main yellow circular base/tray displays a foreshortened top surface spanning rows 7-9 surrounding the central flask, with its front face extending across rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6732
+  }
+ ],
+ "decidedAt": "2026-10-14T00:28:26.927Z",
+ "cells": {
+  "16": [
+   "a7d5e9fa68021152"
+  ],
+  "24": [
+   "190755c912357e6c",
+   "1fe79b15c7f3fdde",
+   "3954dfe137c3c92d",
+   "6ac4a3fc60fd8f7b",
+   "9597dff9ac463c39",
+   "9ab07a095051cc9f"
+  ],
+  "32": [
+   "0e3ebf4059004a18",
+   "4008a23423cc20a3",
+   "4f07b85a6be4a1d5",
+   "94c99a0fb212b55c",
+   "9b0db9033ee42523",
+   "fe739809e08e8a6e"
+  ],
+  "48": [
+   "38e940ec246eb886",
+   "602988f4dbf797c4",
+   "613b992a208fdc70",
+   "6d4aae8175c5ec6c",
+   "902ca83b255e6f4c",
+   "ebd47f935d44d796"
+  ]
+ }
+}

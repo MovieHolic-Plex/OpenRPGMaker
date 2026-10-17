@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47054cb7e155398da16cef7dbf878565dc8a31ea7cb9d556312b76f3c33aa0fe",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "오아시스 풀밭(변주)",
+ "label": "desert-east/de-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oasis grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 pixel terrain floor/ground tile depicting grass texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5782
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oasis grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a full 16x16 pixel flat terrain ground tile representing oasis grass, completely visible from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 terrain ground tile representing oasis grass with color variations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a full 16x16 top-down ground terrain tile depicting grassy meadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11987
+  }
+ ],
+ "decidedAt": "2026-10-14T00:10:56.816Z",
+ "cells": {
+  "16": [
+   "908d2074950efa67"
+  ],
+  "24": [
+   "0540d6bc6659d144",
+   "3eaf843987f768ed",
+   "6c8332f63a4f86f3",
+   "7da05a279b8e34db",
+   "82cade94eef8edaa",
+   "ebcfd918b38841f1"
+  ],
+  "32": [
+   "2170dff9120a62a4",
+   "265102eb189e38b6",
+   "756bf29c5f9fc310",
+   "8954efa8e11b8456",
+   "dfcc0f02cc95ebe6",
+   "fb633ebe5114244f"
+  ],
+  "48": [
+   "0e77b36d7532761b",
+   "3ef0d200bf4ec33c",
+   "6be9e60b74197865",
+   "c794e3a795cabac6",
+   "cd0809b483c66b24",
+   "e0433006c68f21de"
+  ]
+ }
+}

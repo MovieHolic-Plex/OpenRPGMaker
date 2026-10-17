@@ -1,0 +1,166 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b14f01f6332033f6cab5931423a298677f6ee3b463329f0c250aa5bef3e15c76",
+ "width": 48,
+ "height": 80,
+ "kind": "structure",
+ "name": "prehistoric stone-age shaman tent",
+ "label": "prehistoric/ph-shaman-tent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical hide tent / teepee",
+    "kind_matches": true,
+    "top_rows": 54,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body is a sloped conical roof surface viewed from above at ~45 degrees. The circular cross-sections (the smoke hole opening at rows 22-26, the decorative mid-band at rows 46-52, and the ground perimeter at rows 64-76) all exhibit pronounced elliptical downward curvature consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8656
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "conical hide tent / teepee",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent is a conical structure with sloped walls rather than a flat top. The top smoke hole opening is visible from above (rows 24-26), and the downward curvature of both the decorative band (rows 46-52) and the base hem (rows 66-76) confirms the top-down 3/4 viewing angle.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 8301
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical shaman tent / tipi",
+    "kind_matches": true,
+    "top_rows": 54,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure is a conical tipi/tent where the entire visible body is a sloped roof surface (rows 23-77). Strong 3/4 perspective is evidenced by the downward-curving base rim, the downward-curving decorative sash (rows 46-52), and the foreshortened top smoke hole collar showing the opening from above where the poles emerge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "conical hide tent / teepee",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent is drawn in proper 3/4 top-down perspective: the smoke-hole rim at the top forms a visible opening/collar ellipse across rows 22-26 (interior opening visible across ~3 rows), the midsection band curves down 5-6 rows across the front, and the circular base forms a downward arc from row 67 at the sides to row 76 at the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10105
+  }
+ ],
+ "decidedAt": "2026-10-14T00:41:00.197Z",
+ "cells": {
+  "16": [
+   "2420a6fd9d75b5d2",
+   "273d1b7543319e5e",
+   "2ad180c3b0222c09",
+   "36f9c95d8e48af83",
+   "4e6f94055db84f71",
+   "8c786b32882c6ba1",
+   "b2e9586a4a8b0396",
+   "b998d2cb18ce77ee",
+   "bd93b4b87e72a17c",
+   "be5fd222607fb58a",
+   "c2ae516e7c9c4124",
+   "e4ad49cd669d6ae0",
+   "f0a8b7a2ec6f1eae"
+  ],
+  "24": [
+   "1c66d1e6b9fd3214",
+   "293b4b7a0ca0641e",
+   "2c17f61fc2e5ff11",
+   "4e34a9c9e24af6f9",
+   "4f7b5310f248c5f8",
+   "609903c25526e8ed",
+   "63c6232e5f27dc99",
+   "6c93c7074884654e",
+   "8dd50df7444c77a4",
+   "9a49407be00052a6",
+   "a3655737df2c4021",
+   "a7a291c6100c3903",
+   "ac4252b593cdf24c",
+   "bfe2f29b384bfa65",
+   "cbf791359c3e0825",
+   "ef9e258087eed9f0"
+  ],
+  "32": [
+   "045e6f243f295a20",
+   "0e8c94de5397d9fa",
+   "0f1f9c0e863bea2d",
+   "19793b38853dc0d8",
+   "232f5eb8da69f659",
+   "2a891f4c804a6db4",
+   "3a18929588861a41",
+   "3ddafef4c8177608",
+   "50b065c115ec84ef",
+   "54750741c4f2eb46",
+   "5996ea8c129edb86",
+   "705db019cc36ecbf",
+   "72ead7a1d7505422",
+   "766f7c9350c9e30a",
+   "8316a4701344226a",
+   "8c38f63749866f30",
+   "97bbe9c3e6db7b03",
+   "9de074b4de586a92",
+   "a18a7dc3e1af2a5e",
+   "aa9d32203887468b",
+   "adde57dd291583b8",
+   "afc43cdbf77ec7a0",
+   "b05cd7879f7af8e0",
+   "b159cc28f9ecf205",
+   "b34b189646628a0b",
+   "b406c175168264d2",
+   "bd96e0a980835fe5",
+   "c669b0dbe4486fab",
+   "c71b7797c8ecd798",
+   "d1ddb24b6ddff722",
+   "d581f031e2d9868f",
+   "df2b84511275817b",
+   "e09113241690927d",
+   "ebcb330ea958cc8f"
+  ],
+  "48": [
+   "9e2d2af0b48676c6",
+   "a12b9afb603d7dad",
+   "ce7a204b013acbae",
+   "d6b8fb9f6d336574"
+  ]
+ }
+}

@@ -24,7 +24,8 @@ export function lintHorrorAuthoring(project: Project): LintIssue[] {
       }
       if (page.trigger.kind === 'action' && commands.some(c => c?.kind === 'text') && page.graphic.sprite) {
         const key = JSON.stringify(page.graphic);
-        const names = images.get(key) ?? new Set<string>(); names.add(page.name); images.set(key, names);
+        // 같은 이벤트의 상태 페이지(첫 만남·가까워짐…)가 그림을 공유하는 것은 당연하다 — 서로 다른 이벤트(물체)만 센다.
+        const names = images.get(key) ?? new Set<string>(); names.add(event.name?.trim() || event.id); images.set(key, names);
       }
       const transfers = commands.filter(c => c?.kind === 'transfer');
       if (transfers.length && map.roomHarnessPlan && [[1,0],[-1,0],[0,1],[0,-1]].every(([dx,dy]) => isPassable(project, map, event.x+dx!, event.y+dy!))) add('interior-door', `${page.name}: 사방이 열린 바닥에 출입구가 있습니다. 벽·문 뒤 공간과 연결이 의도한 배치인지 확인하세요.`, event.x, event.y);

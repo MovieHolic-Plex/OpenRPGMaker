@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a15e6c63e207c6129bf01d869daf72bdd3935828a2fef983b5ddc727d669a693",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "승무원 의자(흰 등받이 + 회색 쿠션)",
+ "label": "sf-station/sf-crew-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair with backrest and seat cushion",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair is facing south with its vertical backrest visible in rows 1-6, a distinct foreshortened seat cushion top surface spanning rows 7-11 (approx 5 rows tall), and a front face/base visible in rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5519
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crew seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly foreshortened and viewed from above across rows 7-11 (5 rows tall), with the upright backrest above and the front base below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair with backrest and cushion seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair backrest occupies rows 1-6, while the top surface of the seat cushion is clearly visible from above across rows 7-11 (5 rows tall), resting above a dark front/under-seat face on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4242
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with backrest, seat cushion, and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair backrest occupies rows 1-6, followed by a clearly visible horizontal seat cushion surface from rows 7 to 12 (approx. 6 rows tall) shown in top-down 3/4 perspective, with the lower front/base in rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4316
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.447Z",
+ "cells": {
+  "16": [
+   "592cacc34d0ce47d"
+  ],
+  "24": [
+   "02d52914784bb8c5",
+   "254fac0296ba783b",
+   "3fb706056b0ba7b0",
+   "7278729cb014bc53",
+   "8d8c00760369be3e",
+   "bccf8cdcadadeab4"
+  ],
+  "32": [
+   "169e278713d5963e",
+   "2bb2a359dda4798c",
+   "4725ddf9d583da3e",
+   "59da06227ac07118",
+   "75bee4664655ec59",
+   "ec52d0ec3f0b0156"
+  ],
+  "48": [
+   "48fbb9983030b05a",
+   "63ec9b20d5a49597",
+   "bbd60cc7577764de",
+   "c3fcc6fd010bc1ed",
+   "d654eacec0adff1e",
+   "e87cd9679577ec27"
+  ]
+ }
+}

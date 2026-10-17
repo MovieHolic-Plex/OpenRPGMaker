@@ -1,0 +1,29 @@
+{
+ "bad": {
+  "scroll_shelf__A": "FRONT: 두루마리 서가 정면 입면도, 윗면 0행 (v2 보정 표본 prop_scroll_shelf__A1)",
+  "scroll_shelf__B": "FRONT: 같은 서가 B안, 정면 입면도 (v2 prop_scroll_shelf__B1)",
+  "medicine_cabinet__A": "FRONT: 약재장 정면 입면도, 윗면 1행 (v2 prop_medicine_cabinet__A1)",
+  "medicine_cabinet__B": "FRONT: 약재장 B안 정면 입면도, 윗면 0.5행 (v2 prop_medicine_cabinet__B1)",
+  "gong_frame__A": "THIN: 징 틀 윗들보 윗면 1행 (v2 prop_gong_frame__A1)",
+  "weapon_rack__A": "THIN: 무기 걸이 윗면 1행 (v2 prop_weapon_rack__A1)"
+ },
+ "good": {
+  "war_drum__A": "북 윗면 타원 (v2 정상 prop_war_drum__A1)",
+  "well__A": "우물 아가리 타원 (v2 정상 prop_well__A1)",
+  "tea_table__A": "찻상 윗면 (v2 정상 prop_tea_table__A1)",
+  "tea_table__B": "찻상 B안 윗면 (v2 정상 prop_tea_table__B1)"
+ },
+ "kinds": {
+  "scroll_shelf__A": "tall_furniture",
+  "scroll_shelf__B": "tall_furniture",
+  "medicine_cabinet__A": "tall_furniture",
+  "medicine_cabinet__B": "tall_furniture",
+  "gong_frame__A": "frame",
+  "weapon_rack__A": "frame",
+  "war_drum__A": "round_body",
+  "well__A": "container",
+  "tea_table__A": "low_furniture",
+  "tea_table__B": "low_furniture"
+ },
+ "source": "agent/murim-props 브랜치 harness-data/murim-chipset/picked/{A,B}/prop_*.png (고치기 전 판으로 보이나 v2 표본(prop_*__A1/B1)과 같은 파일인지는 확인하지 못했다). 라벨은 v2 보정 이력(2026-10-09)에서 가져왔다."
+}

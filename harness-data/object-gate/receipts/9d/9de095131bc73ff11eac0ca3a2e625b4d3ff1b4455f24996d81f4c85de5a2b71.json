@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9de095131bc73ff11eac0ca3a2e625b4d3ff1b4455f24996d81f4c85de5a2b71",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark ship cabin plank floor tiles, 2 variants",
+ "label": "pirate-isles/pi-floor-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark wood plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two 16x16 horizontal wooden plank floor tiles drawn flat from the top-down perspective with nail and plank-seam details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin plank floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain floor tiles depicting horizontal wooden planks seen flat from above, filling the 16-row height with plank surfaces and nail details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7141
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship cabin wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles depicting horizontal wooden planks seen from above across all 16 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4155
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank floor tiles drawn from a top-down perspective, filling the 16x16 tile areas as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3502
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.696Z",
+ "cells": {
+  "16": [
+   "70349fd526eac084",
+   "b5e73c0bb6d3dc98"
+  ],
+  "24": [
+   "0016077a9d396a6a",
+   "22b66790bc809243",
+   "2d4d21785a91afbb",
+   "2f37c96f325376cc",
+   "7d108a186f113734",
+   "86db43133c3d9724",
+   "9d9e7d72b7e8f57b",
+   "a377e335b3353903",
+   "af4c46e6b1138222",
+   "bbfc9036c0244597",
+   "d59460c86c1ccbd6",
+   "e03ec221fe5a4ab4"
+  ],
+  "32": [
+   "16bfbca4525fc835",
+   "6bdcc24e2a5c4948"
+  ],
+  "48": [
+   "3e2c98022bbf90b2",
+   "4039609efe470193",
+   "6955c3bcd89b9553",
+   "7df0f05a06e84090",
+   "b8c689e5578149ae",
+   "db5bb40ea0d4ab1a"
+  ]
+ }
+}

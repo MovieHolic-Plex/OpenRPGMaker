@@ -16,7 +16,7 @@ mkdirSync(".omo/runtime-qa", { recursive: true });
 const temporary = mkdtempSync(".omo/runtime-qa/ct-engine-");
 const fixture = join(temporary, "project.json");
 process.on("exit", () => { rmSync(temporary, { recursive: true, force: true }); });
-writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/vite-node.mjs", "--script", "scripts/qa/runtime/ct-engine-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
+writeFileSync(fixture, execFileSync(process.execPath, ["node_modules/vite-node/dist/cli.mjs", "--script", "scripts/qa/runtime/ct-engine-fixture.mts"], { maxBuffer: 80 * 1024 * 1024 }));
 
 const scene = (attr, value, timeoutMs = 40_000) => ({ kind: "waitForAttr", testid: "battle-scene", attr, value, timeoutMs });
 const cursorTo = (testid) => ({ kind: "pressUntil", key: "ArrowDown", testid, state: "present", attr: "data-battle-command-cursor", value: "true", maxPresses: 8, timeoutMs: 1500 });
@@ -27,7 +27,8 @@ const attack = [
   cursorTo("actor-command-attack"),
   { kind: "key", key: "z" },
   { kind: "waitFor", testid: "battle-target-prompt", state: "present", timeoutMs: 10_000 },
-  { kind: "key", key: "z" },
+  // 한 번 눌러 소비되지 않으면(전투 시퀀스 틈) 대상 창이 열린 채 굳는다 — 닫힐 때까지 확인 키를 다시 누른다.
+  { kind: "pressUntil", key: "z", testid: "battle-target-prompt", state: "absent", maxPresses: 4, timeoutMs: 1500 },
 ];
 
 export default {
@@ -62,9 +63,10 @@ export default {
       scene("data-battle-revive-seen", "true"),
       idle,
     ], expect: { testidPresent: ["battle-scene", "battle-actor-actor_hero"] }, shot: true },
-    { id: "enemy-moved", note: "turn-1 troop page moveEnemy(30,30): rendered node sits at the new coordinates", ops: [
-      { kind: "waitForStyleVar", testid: "enemy-1", prop: "--battle-node-x", value: "9.375%", timeoutMs: 60_000 },
-      { kind: "waitForStyleVar", testid: "enemy-1", prop: "--battle-node-y", value: "12.5%", timeoutMs: 5_000 },
+    { id: "enemy-moved", note: "turn-1 troop page moveEnemy(30,30): rendered node sits at the new coordinates (retro 구역 clamp: x≥34→10.625%, y 20→92→57.49999999999999%)", ops: [
+      // 도트 측면(retro) 스킨은 적 좌표를 RETRO_ZONE(left 34·top 92)으로 접는다 — 30,30 은 34,92 로 그려진다.
+      { kind: "waitForStyleVar", testid: "enemy-1", prop: "--battle-node-x", value: "10.625%", timeoutMs: 60_000 },
+      { kind: "waitForStyleVar", testid: "enemy-1", prop: "--battle-node-y", value: "57.49999999999999%", timeoutMs: 5_000 },
     ], expect: { testidPresent: ["enemy-1"] }, shot: true },
     { id: "victory-pose", note: "keep attacking until the enemy falls — the living hero shows the victory pose", ops: [
       { kind: "repeatUntil", testid: "battle-result-panel", state: "present", maxRounds: 12, ops: attack },

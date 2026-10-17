@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fdd3fd1ffc95b684559cee013a1c336d42a1519bc0cc40352dae2889688dc456",
+ "width": 16,
+ "height": 32,
+ "kind": "terrain",
+ "name": "목욕탕 청록 타일 벽(회칠 아치 벽감)",
+ "label": "desert-east/de-wall-hammam",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled wall face with arched niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain (wall face tile). The vertical wall surface and arched niche are drawn as expected for south-facing JRPG wall terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6166
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathhouse wall face with inset arched niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a vertical wall face terrain tile with turquoise square tiles, an inset plaster niche, and lower wall base. As classified under terrain (wall face), it is not a standing object and correctly depicts a vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8082
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face with arched niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile featuring teal tiles and an embedded arched niche with towels and shelf. Conforms to standard 3/4 top-down JRPG north wall rendering.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7796
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled wall face with arched niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a wall face terrain tile depicting a teal-tiled bathhouse wall with an inset arched niche. As a terrain wall surface, standard vertical wall orientation applies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6148
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.211Z",
+ "cells": {
+  "16": [
+   "0c8d37e9dbf59432",
+   "776bb494e8f73cef"
+  ],
+  "24": [
+   "251a56e41685c051",
+   "30a15f50a74eec9f",
+   "54b385a25f34b3a3",
+   "57aa401f18eac941",
+   "5dcbba5fca00ff40",
+   "5dd0d4bf8a3e8b17",
+   "748784d5f0f58efc",
+   "77542d4ceb6cf270",
+   "796c884a0a5ccb0d",
+   "a639d6b3fce9ea94",
+   "b0be4fc3bc7c18c3",
+   "e941a53de62d0f3b"
+  ],
+  "32": [
+   "95a8fe90bf93b422",
+   "b46764c1eb3c3c46",
+   "c9bf7530e5db81b3"
+  ],
+  "48": [
+   "00d808b1f0a040d1",
+   "04349161b95d12df",
+   "262b70eeca105b04",
+   "b5ab4dd574bbf9e5",
+   "c7d57b45d630a43f",
+   "e88b2355e9ad72a2"
+  ]
+ }
+}

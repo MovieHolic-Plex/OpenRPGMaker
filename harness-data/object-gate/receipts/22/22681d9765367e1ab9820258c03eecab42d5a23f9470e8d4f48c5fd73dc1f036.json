@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22681d9765367e1ab9820258c03eecab42d5a23f9470e8d4f48c5fd73dc1f036",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 포석(돌 셋트)",
+ "label": "steampunk-city/sp-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobblestone/gravel paving texture covering the full 16x16 ground terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4934
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 tile depicting stone pavement/cobblestone ground viewed from above as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a cobblestone paving/flooring terrain texture spanning the entire 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3983
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pavement texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting cobblestone/flagstone pavement covering the full 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4302
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.049Z",
+ "cells": {
+  "16": [
+   "85b4099a9da980dc"
+  ],
+  "24": [
+   "40b1236656a71f1c",
+   "73f3c4e936c5870f",
+   "965896d46ac05f86",
+   "a2f3cb29d3a690e2",
+   "f227e8b8fa2a6729",
+   "fe287e1d24c8337c"
+  ],
+  "32": [
+   "76bbc1923565e0cb",
+   "a3eb0e0ab2ed9005",
+   "a8263db0917ee014",
+   "b0df907a8df80f89",
+   "bee33e82b3aaec0b",
+   "fd0d7df5c4d10bcb"
+  ],
+  "48": [
+   "04eddeec0f739c44",
+   "367d8a72fdb87c47",
+   "6727adc9e363c660",
+   "6b7d7182b3249270",
+   "7480aa096440745a",
+   "e81de39419845a15"
+  ]
+ }
+}

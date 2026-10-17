@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9adb1895cafddbecfab4c305277dba6ab2172b703e993637cfa47e7092720828",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "장바구니 더미",
+ "label": "modern_city/interior/mci-basket-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shopping basket stack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket is drawn in flat front elevation with a straight 1px horizontal top border at row 4; no top opening or interior cavity seen from above is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 11424
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stack of shopping baskets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket stack is drawn in a pure front elevation: a flat vertical rectangle with upright wire handles and horizontal bands at the bottom indicating stacked rims, with no foreshortened top opening or top surface visible (top edge is a 1px flat line at row 4).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 6387
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shopping basket / stack of baskets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a flat square/rectangular front elevation. The handles, basket body, and stacked horizontal bands at the bottom are all rendered facing the viewer with no top opening ellipse or 3/4 top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 13450
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shopping basket stack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The basket stack is drawn in a pure flat front elevation. The handles stick straight up, the body is a flat 2D rectangle, and there is no visible top surface or open interior seen from above (top edge is just a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 7718
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:24.133Z",
+ "cells": {
+  "16": [
+   "820839bcdcc114c5",
+   "8e0efe399d36a033"
+  ],
+  "24": [
+   "28fc8cd054c9ecf1",
+   "3603c560bd2626c3",
+   "3d6c3d7bafea8aee",
+   "636ca4bf54d8f3ec",
+   "84bbb1e16a93295f",
+   "98898eb630c91515",
+   "be851a7ad03d9718",
+   "c661607f346fff1a",
+   "cf9bef5633e6136f"
+  ],
+  "32": [
+   "233b8bbf6e6a8429",
+   "292aa34ed00a9e08",
+   "c4bfd4967d63c220"
+  ],
+  "48": [
+   "1382f32fc9d86759",
+   "1594abf9ceb08091",
+   "3dc18856ad950ebb",
+   "3fd46ff0d1f423fe",
+   "496da2f50f4f0d8b",
+   "b5f17883d1de867c"
+  ]
+ }
+}

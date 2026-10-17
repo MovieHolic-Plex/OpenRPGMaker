@@ -1,0 +1,182 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5b1630e9b34a2b36029aa2208feb53bb5ca54983f180ca9f99a5971cc0f782da",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-8-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-8-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure protrudes from the wall but is rendered entirely as a flat architectural front elevation. Its top overhang/lintel (rows 6-7) is only a 1-2px rim line with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator entrance and sci-fi corridor wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the elevator frame and wall panels, is drawn in pure 2D front elevation (side-scroller style). The overhang/lintel above the elevator is only a 1-2px horizontal line (rows 6-7) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4514
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "apartment building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is rendered as a flat front elevation with vertical facade, windows, and entrance; the roof/lintel has only thin horizontal edge lines and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 129019
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "apartment building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; the roof/lintel areas are only thin horizontal strips with no visible top slope or surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 173799
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.285Z",
+ "cells": {
+  "16": [
+   "13513fa858f3ca41",
+   "20c644f07a08bbab",
+   "67486c086a708f95",
+   "8b47f6595d7bc272",
+   "91981ea6408a53ff",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c87f3888ed4ef097",
+   "c9de1492235fe7f2",
+   "e2099af672879c9c",
+   "e9905657de169b4b",
+   "e9dcfdc5a23bb509",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2",
+   "f6667b8422880b8b"
+  ],
+  "24": [
+   "169f48ec3321b481",
+   "1b35ee9751846f18",
+   "34c30ebf083ef679",
+   "35e8f16067efe3f5",
+   "36b1e4d3c8377a51",
+   "3ee00633e8db6aa5",
+   "440910d9d7d9f8cd",
+   "599d690f65a87043",
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "68d47530df1fa8ad",
+   "6cbbe934858095bf",
+   "707f954784956f51",
+   "739d1afb44e259f9",
+   "757e700df94bb839",
+   "8d81dc9d76e6f7b4",
+   "a5ba6a6693627fb5",
+   "a8006de4a4c1f2a3",
+   "af98f6ce88300766",
+   "bbd1c2e2a38c9f67",
+   "cb490db3a4d5c9d0",
+   "cc784fa1349b4126",
+   "d0586a0783fd79b9",
+   "d1e54dcdb4b1e854",
+   "d5fae425a3bcdc21",
+   "e93b68ec21c3da9f",
+   "f318ef5f9f72bff7"
+  ],
+  "32": [
+   "23ab485b3eeb8508",
+   "32fba22d135174e5",
+   "594ff6563f171669",
+   "73c98c1447fbc409",
+   "7a8d41d5adc0ef61",
+   "a2624c2c1e80724e",
+   "a9e7e58d66924942",
+   "ac1559a1be143c2a",
+   "b0bea7b30c53b3d5",
+   "b104d74a7187e35f",
+   "e0a155fa6bc7f957",
+   "e242e68afe031d88",
+   "ec8643ef918cd414",
+   "f74233a6fa3745db"
+  ],
+  "48": [
+   "128efb50bd889af9",
+   "43b05d81116e9962",
+   "8696b1ba04ec7f01",
+   "8ca073d5e4c2e21f",
+   "94be98bbdfdaad58",
+   "a91abd33baae9bd9",
+   "d4ed64c63410f019",
+   "f68d03c17cbe9675",
+   "f7597ee1d6ec444d"
+  ]
+ }
+}

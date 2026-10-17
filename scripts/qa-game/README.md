@@ -19,6 +19,22 @@ gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 �
 | `npm run qa:game -- replay qa-runs/<id>` | 모델 없이 `tools.jsonl` 을 `seed.json` 위에서 **지금의** 툴 코드로 다시 돌린다(레지스트리 셰이프 `resolvePiToolShape` = 참고 문서 게이트·맵 범위 가드, 쓰기마다 `createPiPublication` 체크포인트 = 스토어 커밋 게이트). `replay/project.json`·`tools.jsonl`·`diff.json`·`replay.txt` 를 쓰고 check 를 돌린다. 녹화와 ok·경고가 달라진 호출을 경고 차이(-녹화/+재생)와 함께 보고한다. `[vperf]` 같은 시간 계측 줄은 비교에서 뺀다. |
 | `npm run qa:game -- render qa-runs/<id>` | 모든 맵을 헤드리스로 `render/<mapId>.png` 에 그리고(에디터와 같은 `drawMapTileLayer`, 캔버스 대신 pngjs 버퍼), 썸네일·검사 지적·자동 플레이 경로·재생 요약·meta 를 담은 자체완결 `report.html`(이미지는 data URI)을 쓴다. 표식: 초록=시작 위치, 파랑=문, 빨강=전투, 노랑=엔딩, 보라=기타 이벤트. check·replay 를 먼저 돌려 두면 그 결과도 들어간다. |
 
+### 사용자 지정(OpenAI 호환) 연결로 gen 돌리기 — 예: CLIProxyAPI 8318 Argon (2026-10-16)
+
+Agy(Google Antigravity) 경로가 429 로 막혔을 때도 같은 조수 경로(의도 선언·계획·팀·시공)를 실제 모델로 잰다.
+
+```bash
+export OPRN_LIVE_KEY=$(cat ~/.config/oprn/live-key)      # 키는 환경변수로만 — 파일·인자·저장소에 두지 않는다
+npm run qa:game -- gen --brief scripts/qa-game/briefs/campus-reunion-romance.json --out qa-runs/real-1 \
+  --compat-base http://127.0.0.1:8318/v1 --compat-model gemini-4-argon-high --text "대학 캠퍼스 연애 게임 만들어 줘"
+```
+
+- 모든 역할(계획·실행·시각·작문·시공·감독)이 그 한 모델로 간다. 제공자 id 는 `openai-compat:qa-gen`, 엔드포인트 정의는 프로세스 메모리에만 있다(`~/.oprn/openai-compat-endpoints.json` 을 쓰지 않는다).
+- 허용 `gemini-4-argon*`·차단 `claude-*`(편집기 설정과 같은 판정, `--compat-allow/--compat-block` 으로 바꿈). 패턴 밖 모델은 폴백 없이 거절한다.
+- 키를 읽을 환경변수는 `--compat-key-env`(기본 `OPRN_LIVE_KEY`). 오류 문장은 키를 `***` 로 가린다. 환경변수 `QA_COMPAT_BASE`·`QA_COMPAT_MODEL` 로도 줄 수 있다. 구현 `scripts/qa-game/lib/compatProvider.ts`.
+- 이미지 **입력**은 기본 켜짐(`--compat-no-images` 로 끔). 끄면 타일셋 참고문서의 그림이 모델에 안 가서 선행 읽기 게이트(그림 전달 확인)를 영영 못 넘고 `paint_tiles`·`stamp_tileset_object` 가 계속 거절된다(2026-10-16 첫 시험에서 도구 실패의 절반이 이것이었다).
+- 이미지 생성(타이틀 키아트 등)은 이 연결을 타지 않는다(`QA_IMAGE_PROVIDER` 별개).
+
 ### replay 의 한계
 
 - 모델이 없으니 앞 호출 결과가 바뀌어도 뒤 호출 인자는 녹화 그대로다. 첫 차이 뒤의 차이는 연쇄 효과일 수 있다.
@@ -46,6 +62,14 @@ gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 �
   없는 엔딩 id, 시작 파티, 동료 추종만 있고 파티 합류가 없는 배우.
 - **전투** — 적 그룹의 적 존재, 피해를 주는 행동이 없는 적(공격 안 하는 보스).
 - **기획 부합(경고)** — 눈·겨울 기획인데 눈 기후가 없음, 동료 기획인데 올바른 합류가 없음, 던전·보스 흔적 없음. 보스는 같은 이름의 이벤트가 있는데 전투로 부르지 않는 적 그룹을 짚는다(실제 gen 런에서 battleProcessing 이 인자 오류로 거절된 뒤 모델이 place_npc 선택지 「맞서 싸운다 → 스위치 켜기」로 대신 채웠다).
+- **화면 빈 구멍(`visual-void` 경고)** — 렌더한 맵 그림에서 칸마다 밝기를 읽어 「거의 검은데 걸어 다닐 수 있는 덩이」(통행 칸이 6칸 이상이고 덩이의 1/4 이상)나
+  「맵 안쪽에 갇힌 빈 칸 12칸 이상」, 「맵의 1/5 이상이 빈 칸」을 찾는다(`src/qa/gameCheck/visualVoid.ts` 순수 로직, `scripts/qa-game/lib/visualVoid.ts` 가 `render.mts` 를 불러 그린다).
+  지도 데이터만 보는 검사로는 못 잡는 「타일은 있는데 검게 그려진다」를 잡는다(체육관 가운데 검은 공백이 이 검사로 처음 잡혔다). 의도한 낭떠러지·가장자리 어둠은 통행 칸이 거의 없어 걸리지 않는다.
+  같은 파일의 `visual-flat` 경고는 렌더 없이 데이터로, 바닥 타일 한 가지가 맵의 80% 이상을 덮고 그 위 장식(위층·덧층·다른 바닥)이 10% 이하인 「무늬 없는 빈 판」을 잡는다(조수가 낱개 도구로 지은 새 마을이 회색 판에 집 하나로 남던 사례, 100칸 미만 맵은 제외).
+  렌더가 필요하므로 `check` 는 맵마다 몇백 ms 더 든다 — 그림 없이 빨리 보려면 `--no-visual`. `gen` 의 끝 check 에도 같이 돈다.
+- **연애 부합(`romance-*` 경고, `src/qa/gameCheck/romance.ts`)** — 호감 하트 HUD·인터뷰 장르·기획 문장으로 연애 프로젝트를 알아보고, 「막힘 0 · 엔딩 도달」 이 못 잡는 구멍을 짚는다(2026-10-16 실제 Argon 시험에서 이 검사가 모두 통과시켰던 것들):
+  `romance-skeleton-leftover`(뼈대 자리표시 「기억의 길」·「구간 끝」·「첫 구간 끝」이 그대로), `romance-only-skeleton-ending`(엔딩이 뼈대 하나뿐), `romance-no-relationship`(호감 인물·변수·명령이 없음),
+  `romance-npc-invisible`(인물이 그림 없는 투명 이벤트), `romance-npc-duplicate-chip`(서로 다른 인물이 같은 칩), `romance-speaker-in-body`(본문 앞에 「[이름]」 이중 표기).
 - **자동 플레이** — 엔딩에서 거꾸로 사슬(엔딩 ← 그 페이지를 여는 스위치 ← 그 스위치를 켜는 이벤트 ← …)을 만들고
   헤드리스 런타임(`src/testing/sceneTestRunner.ts`, `run_scene_test` 도구와 같은 엔진)으로 실제로 걷고·조사하고·고르고·싸운다.
   문 위를 밟아 엉뚱한 맵으로 튀지 않게 다른 이벤트 칸을 피해 한 칸씩 걷는다. 전투는 러너가 결정적으로 푼다(seed 1).

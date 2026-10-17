@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65b5636f5e209d4be075f733b1db7dd4361d5880e1d9c26df0fe23ae15878da9",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp/jp-bwall-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite consists of flat horizontal bands depicting a wall face with no visible top surface or thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5516
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The image depicts a completely flat, vertical wall face composed of plaster above a stone base, showing 0 rows of any top surface or roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5426
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile depicts only the vertical front face of a wall (patterned upper wall and brick base) with 0 rows of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4953
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile is drawn as a flat vertical elevation consisting of an upper plaster section and lower stone/brick base with no visible top surface or thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6670
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.349Z",
+ "cells": {
+  "16": [
+   "592d8c3a343548b3"
+  ],
+  "24": [
+   "12fe9ff8473d362c",
+   "237a354e067aa621",
+   "433d2db288ad3815",
+   "56c6ab28762135e0",
+   "85aee03941907100",
+   "db43cf7e13ec7415"
+  ],
+  "32": [
+   "1a2fc073e704855d",
+   "3d70036d6e3b5e42",
+   "4233ce5c7b4571e4",
+   "670b8fffc360fe0e",
+   "90d0c8f3a1b4011e",
+   "eb8333ddc5efc4be"
+  ],
+  "48": [
+   "130617a5e28de163",
+   "52dfe43bffd05891",
+   "81cd846aab2f4031",
+   "c9d830010ca55c61",
+   "e5dceb0b52a52ad2",
+   "f1fa9d210b70ec4e"
+  ]
+ }
+}

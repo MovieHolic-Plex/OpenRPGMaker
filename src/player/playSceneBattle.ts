@@ -1,9 +1,10 @@
-import { monsterCampaign, recordEncounteredMonsters } from "@/project/monsterJournal";
+import { recordEncounteredMonsters, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
 import { createBattleRuntime } from "@/battle/runtime";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import type { BattleAudioSession } from "@/player/battleAudio";
@@ -28,6 +29,10 @@ import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { emeraldBattleTerrain } from "@/battle/emeraldBattleTerrain";
+import { monsterSkillIds, previewMonsterEvolution, replacePendingMonsterSkill } from "@/project/monsterCollection";
+import { playEmeraldEvolutions } from "@/player/emeraldEvolutionScene";
+import { playEmeraldMoveLearns, type EmeraldMoveLearnDecision } from "@/player/emeraldMoveLearnScene";
+import { playMonsterSfx } from "@/player/monsterSfx";
 
 export type ResolvedMonsterBattleParty = {
   readonly requested: boolean;
@@ -112,6 +117,7 @@ export async function playBattle(
       canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
       canLose: step.canLose,
       battleFlow: step.battleFlow,
+      atbMode: getPlayerPreferences().atbMode,
       formation: step.formation,
       party: {
         levels: scene.session.actorLevels,
@@ -135,6 +141,7 @@ export async function playBattle(
       // battleProcessing 스텝을 만든 맵 이벤트. 트룹 배틀 이벤트의 selfSwitch 소유 이벤트가 된다.
       // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
       ownerEventId: step.ownerEventId,
+      ...(step.enemyLevel !== undefined ? { enemyLevel: step.enemyLevel } : {}),
       sessionState: {
         messageWindowSettings: session.messageWindowSettings,
         switches: scene.session.switches,
@@ -152,6 +159,9 @@ export async function playBattle(
         actorSkillIds: scene.session.actorSkillIds,
         actorExperience: scene.session.actorExperience,
         actorTechPoints: scene.session.actorTechPoints,
+        actorApProgress: scene.session.actorApProgress,
+        learnedViaAp: scene.session.learnedViaAp,
+        actorRageEnemyIds: scene.session.actorRageEnemyIds,
         actorLevels: scene.session.actorLevels,
         actorBattleCommands: scene.session.actorBattleCommands,
         difficultyId: scene.session.difficultyId,
@@ -202,13 +212,19 @@ export async function playBattle(
       const onFieldAnchors = project.system.battlePresentation === "onField"
         ? computeOnFieldAnchors(scene as unknown as OnFieldScene, fieldCanvas, step.ownerEventId, mapTileSize(scene.map))
         : undefined;
-      const restoreOnFieldSprites = onFieldAnchors ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
+      // 필드 배경 스냅샷에도 주인공·동료·시비 건 적이 찍히면 같은 캐릭터가 배틀러와 두 번 보인다(CT 감사 캡처) — 둘 다 숨긴 뒤 찍는다.
+      const restoreOnFieldSprites = onFieldAnchors || project.system.battleBackdrop === "field" ? hideOnFieldSprites(scene as unknown as OnFieldScene, step.ownerEventId) : () => {};
       const fieldBackdrop = project.system.battleBackdrop === "field" || onFieldAnchors !== undefined;
       const fieldSnapshot = fieldBackdrop ? captureFieldSnapshot(scene.game) : Promise.resolve(undefined);
       const newTransition = (): BattleTransition => onFieldAnchors
         ? instantBattleTransition()
         : createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas, fieldBackdrop);
       const entryTransition = newTransition();
+      // 몬스터 장르: 야생 조우 전환음(소리 세트가 없는 장르는 예전처럼 무음).
+      if (playMonsterSfx(project, "encounter")) {
+        // 전환음(약 0.9초)이 끝난 뒤 전투 시작 짧은 팡파레.
+        window.setTimeout(() => { playMonsterSfx(project, "battle-start"); }, 950);
+      }
       // 전투 DOM 의 첫 스타일·레이아웃(수백 줄 CSS 를 처음 매칭)과 SE 디코드 요청을 진입 커버(번쩍임) 동안 치른다.
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
       preloadBattleJuiceSamples();
@@ -255,7 +271,7 @@ export async function playBattle(
         if (!current()) { abort(); return; }
         battleScene = mountBattleScene({
           host, runtime,
-          onSnapshot: monsterCampaign(project) ? (snapshot) => {
+          onSnapshot: monsterDexSpeciesIds(project).length > 0 ? (snapshot) => {
             if (current()) recordEncounteredMonsters(project, session, snapshot.enemies);
           } : undefined,
           fieldBackdropUrl,
@@ -270,7 +286,7 @@ export async function playBattle(
             if (!dialogue) return Promise.reject(new Error("Battle text input host missing"));
             const eventState = runtime.snapshot().eventState;
             return dialogue.showText({
-              ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height,
+              ...request, signal: inputSignal, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },
@@ -282,7 +298,7 @@ export async function playBattle(
             return dialogue.showChoices({
               prompt: request.prompt, options: request.options.map(option => ({ ...option })),
               cancelBehavior: request.cancelBehavior, signal: inputSignal,
-              settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height,
+              settings: request.settings, playerTileY: scene.tileY, mapHeight: scene.map.height, reading: "off",
               textContext: { project, session: { variables: eventState.variables, gold: eventState.gold, actorNames: session.actorNames } },
             });
           },
@@ -293,6 +309,29 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
+              // 레벨업으로 진화할 몬스터는 결과 문장을 다 본 뒤, 전투 화면이 걷히기 전에 3세대 진화 장면을 본다(규칙 반영은 아래에서 그대로).
+              const evolving = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const preview = previewMonsterEvolution(project, session, entry.instanceId, entry.toLevel);
+                  return preview ? [preview] : [];
+                })
+                : [];
+              // 칸(4개)이 가득 차 새 기술을 못 배우는 몬스터는 진화보다 먼저 「잊게 할까?」를 묻는다. 결정은 보상 적용 뒤에 세션에 쓴다.
+              const learnRequests = result === "victory" && isEmeraldMonsterStyle(project)
+                ? (snapshot.rewards.monsterLevelUps ?? []).flatMap((entry) => {
+                  const instance = session.monsterInstances[entry.instanceId];
+                  if (!instance) return [];
+                  const activeSkillIds = monsterSkillIds(project, instance);
+                  return (entry.overflowSkillIds ?? []).map((pendingSkillId) => ({ instanceId: entry.instanceId, name: entry.name, pendingSkillId, activeSkillIds }));
+                })
+                : [];
+              let moveDecisions: readonly EmeraldMoveLearnDecision[] = [];
+              const learnDone = learnRequests.length > 0
+                ? playEmeraldMoveLearns(host, project, learnRequests, signal).then((decisions) => { moveDecisions = decisions; }).catch(() => undefined)
+                : Promise.resolve();
+              const evolutionDone = learnDone.then(() => evolving.length > 0 ? playEmeraldEvolutions(host, project, evolving, signal).catch(() => undefined) : undefined);
+              void evolutionDone.then(() => {
+              if (!current()) { abort(); return; }
               const transition = newTransition();
               exitTransition = transition;
               void transition.exit().then(async () => {
@@ -328,6 +367,12 @@ export async function playBattle(
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }
+                for (const decision of moveDecisions) {
+                  const instance = session.monsterInstances[decision.instanceId];
+                  if (!instance || decision.replaceSkillId === undefined) continue;
+                  const replaced = replacePendingMonsterSkill(project, instance, decision.pendingSkillId, decision.replaceSkillId);
+                  if (replaced.ok) session.monsterInstances[decision.instanceId] = replaced.instance;
+                }
                 appendBattleReport(session, project, snapshot, result);
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");
                 settled = true;
@@ -339,6 +384,7 @@ export async function playBattle(
                   resolve(null);
                 } else resolve(result);
               }).catch(fail);
+              });
             } catch (error) {
               fail(error);
             }

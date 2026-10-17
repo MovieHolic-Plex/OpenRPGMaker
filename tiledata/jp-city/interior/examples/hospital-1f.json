@@ -1,0 +1,554 @@
+{
+ "name": "일본 종합병원 1층(외래)",
+ "plan": [
+  "##############################",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "#.....#.....#......#.....#...#",
+  "####.#####.#####.####..#.##..#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "#............................#",
+  "##############..##############"
+ ],
+ "floor": "hs-floor-sheet",
+ "wall": "hs-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 9,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 6,
+   "y0": 0,
+   "x1": 12,
+   "y1": 9,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 12,
+   "y0": 0,
+   "x1": 19,
+   "y1": 9,
+   "floor": "hs-floor-ward",
+   "wall": "hs-wall-room"
+  },
+  {
+   "x0": 19,
+   "y0": 0,
+   "x1": 25,
+   "y1": 9,
+   "floor": "hs-floor-sheet",
+   "wall": "hs-wall-room"
+  }
+ ],
+ "objects": [
+  {
+   "id": "curtain-window",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "hs-xray-viewer",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "pb-doctor-desk",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "hs-exam-stool",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "pb-exam-bed",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "pb-curtain",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "hs-vitals-monitor",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "hs-xray-viewer",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "curtain-window",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "pb-doctor-desk",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "pb-office-chair-n",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "hs-exam-stool",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "pb-exam-bed",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "pb-curtain",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "hs-ultrasound",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "hs-bed-headwall",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "hs-patient-locker",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "hs-stretcher",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "hs-iv-stand",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "hs-instrument-cart",
+   "x": 18,
+   "y": 5
+  },
+  {
+   "id": "hs-exam-stool",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "hs-wheelchair",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "hs-med-cart",
+   "x": 18,
+   "y": 7
+  },
+  {
+   "id": "hs-sharps-bin",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "hs-drug-drawers",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "hs-drug-drawers",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "of-fridge-small",
+   "x": 24,
+   "y": 3
+  },
+  {
+   "id": "hs-dispense-table",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "ox-bar-stool",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "hs-pickup-window",
+   "x": 21,
+   "y": 11
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 24,
+   "y": 9
+  },
+  {
+   "id": "of-stairs-up",
+   "x": 26,
+   "y": 3
+  },
+  {
+   "id": "of-elevator",
+   "x": 27,
+   "y": 3
+  },
+  {
+   "id": "of-plant-big",
+   "x": 28,
+   "y": 5
+  },
+  {
+   "id": "sx-extinguisher",
+   "x": 26,
+   "y": 8
+  },
+  {
+   "id": "wall-clock",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "hs-call-display",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "hs-tv-wall",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "sx-hydrant-box",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "hs-call-display",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "hs-aed",
+   "x": 20,
+   "y": 10
+  },
+  {
+   "id": "of-cabinet",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 3,
+   "y": 13
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 5,
+   "y": 13
+  },
+  {
+   "id": "hs-front-counter",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "hs-front-counter",
+   "x": 4,
+   "y": 14
+  },
+  {
+   "id": "hs-wheelchair",
+   "x": 8,
+   "y": 12
+  },
+  {
+   "id": "houseplant",
+   "x": 9,
+   "y": 12
+  },
+  {
+   "id": "pb-magazine-rack",
+   "x": 25,
+   "y": 12
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 11,
+   "y": 14
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 16,
+   "y": 14
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 9,
+   "y": 17
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 18,
+   "y": 17
+  },
+  {
+   "id": "hs-bench-row-n",
+   "x": 22,
+   "y": 17
+  },
+  {
+   "id": "hs-wheelchair",
+   "x": 1,
+   "y": 17
+  },
+  {
+   "id": "hs-wheelchair",
+   "x": 2,
+   "y": 17
+  },
+  {
+   "id": "pb-water-dispenser",
+   "x": 5,
+   "y": 17
+  },
+  {
+   "id": "of-plant-big",
+   "x": 7,
+   "y": 17
+  },
+  {
+   "id": "hs-kids-mat",
+   "x": 24,
+   "y": 14
+  },
+  {
+   "id": "hs-toy-shelf",
+   "x": 26,
+   "y": 16
+  },
+  {
+   "id": "of-plant-big",
+   "x": 28,
+   "y": 17
+  },
+  {
+   "id": "of-plant-big",
+   "x": 28,
+   "y": 13
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 14,
+   "y": 18
+  },
+  {
+   "id": "houseplant",
+   "x": 13,
+   "y": 17
+  },
+  {
+   "id": "hs-sanitizer-stand",
+   "x": 16,
+   "y": 17
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-stethoscope",
+   "x": 1,
+   "y": 3
+  }
+ ],
+ "rooms": [
+  {
+   "room": "hosp-exam",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 9
+  },
+  {
+   "room": "hosp-exam",
+   "x0": 6,
+   "y0": 0,
+   "x1": 12,
+   "y1": 9
+  },
+  {
+   "room": "hosp-treat",
+   "x0": 12,
+   "y0": 0,
+   "x1": 19,
+   "y1": 9
+  },
+  {
+   "room": "hosp-pharmacy",
+   "x0": 19,
+   "y0": 0,
+   "x1": 25,
+   "y1": 9
+  },
+  {
+   "room": "hosp-stairs",
+   "x0": 25,
+   "y0": 0,
+   "x1": 29,
+   "y1": 9
+  },
+  {
+   "room": "hosp-lobby",
+   "x0": 0,
+   "y0": 10,
+   "x1": 29,
+   "y1": 18
+  }
+ ],
+ "start": [
+  14,
+  17
+ ],
+ "exitWidth": 2,
+ "open": [
+  {
+   "x0": 7,
+   "y0": 12,
+   "x1": 28,
+   "y1": 16,
+   "why": "외래 대기실 홀 — 진찰실·처치실·약국 문 앞 통로, 정산기·접수기·투약 창구 앞 대기 줄(일본 병원 대기실은 트인 홀이다)"
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 21,
+   "y0": 9,
+   "x1": 22,
+   "y1": 12,
+   "why": "약 투약 창구 — 칸막이 틈 2칸에 창구 카운터, 안쪽 약사 자리·바깥 손님 자리"
+  }
+ ],
+ "links": [
+  {
+   "x": 26,
+   "y": 3,
+   "toMapId": "jp-city-hospital-2f",
+   "toX": 26,
+   "toY": 18,
+   "direction": "up"
+  },
+  {
+   "x": 27,
+   "y": 3,
+   "toMapId": "jp-city-hospital-2f",
+   "toX": 19,
+   "toY": 17,
+   "direction": "down"
+  },
+  {
+   "x": 28,
+   "y": 3,
+   "toMapId": "jp-city-hospital-2f",
+   "toX": 20,
+   "toY": 17,
+   "direction": "down"
+  }
+ ]
+}

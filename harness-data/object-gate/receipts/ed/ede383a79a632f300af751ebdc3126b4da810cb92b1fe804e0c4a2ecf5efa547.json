@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ede383a79a632f300af751ebdc3126b4da810cb92b1fe804e0c4a2ecf5efa547",
+ "width": 32,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "무쇠 틀 침대(누비 이불, 머리판 북쪽)",
+ "label": "steampunk-city/sp-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bed with iron frame and quilted blanket",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal surface of the bed (pillow, sheet, and quilt) is clearly visible from above across rows 9 to 40 (~32 rows tall) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6304
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bed mattress and quilt surface",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above in standard 3/4 perspective, displaying a large top surface spanning rows 9 through 41 with pillow, sheet, and quilted blanket clearly visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron frame bed with mattress and quilt",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed's horizontal sleeping surface (pillow, sheet, and quilt) is clearly viewed from above across rows 9 to 41, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron frame bed with quilt and headboard to the north",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface (pillow, sheet, and quilt) is viewed from above in classic 3/4 top-down perspective, spanning rows 9 through 41 (~33 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2946
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "4e6af21e42bf2932",
+   "52bcb82c72d7a093",
+   "74a719fa6be1ee3a",
+   "852c04281ead2f80",
+   "b9d6d936ed32d62d",
+   "dfd02d7aca0eb16a"
+  ],
+  "24": [
+   "11f7680f80187f0f",
+   "320342c755c2d831",
+   "42d4b807414eedd6",
+   "4dd50f020d96cf5d",
+   "55ee7c895e8df6d4",
+   "570571a8cf213f18",
+   "6d2f7f899b6e43f0",
+   "a01f92862758aca2",
+   "a3f6525b933133cd",
+   "b0f1af6c6060ab38",
+   "cda4308df020b383",
+   "f9d82df87731cce1"
+  ],
+  "32": [
+   "483627957a7d5be8",
+   "86073c9292bbafba",
+   "d00b690027db0276",
+   "db4520086fc784b8"
+  ],
+  "48": [
+   "11b1defb7372ad12",
+   "79ec2c2a2bf647d3",
+   "c92a186f6b73c99b"
+  ]
+ }
+}

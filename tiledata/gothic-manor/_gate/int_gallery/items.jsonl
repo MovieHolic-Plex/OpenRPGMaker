@@ -1,0 +1,9 @@
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-paint-portrait.png", "kind": "wall_mounted", "name": "금 액자 초상화(귀부인)", "label": "gothic_manor/gm-paint-portrait"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-paint-cursed.png", "kind": "wall_mounted", "name": "저주받은 초상(눈이 붉게 빛남, 3프레임)", "label": "gothic_manor/gm-paint-cursed"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-paint-landscape.png", "kind": "wall_mounted", "name": "풍경화(폭풍 치는 고성)", "label": "gothic_manor/gm-paint-landscape"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-display-case.png", "kind": "low_furniture", "name": "유리 진열장(해골·보석 유물)", "label": "gothic_manor/gm-display-case"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-bust-plinth.png", "kind": "figure", "name": "대리석 흉상 받침", "label": "gothic_manor/gm-bust-plinth"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-armor.png", "kind": "figure", "name": "갑옷 한 벌(받침대·미늘창)", "label": "gothic_manor/gm-armor"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-stanchion.png", "kind": "frame", "name": "관람 차단 줄(놋쇠 기둥 둘·붉은 줄)", "label": "gothic_manor/gm-stanchion"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-museum-bench.png", "kind": "seat", "name": "관람 의자(가죽 등받이 없는 긴 의자)", "label": "gothic_manor/gm-museum-bench"}
+{"png": "/home/main/z-project/rpg-zzu-quality-b-gothic/tiledata/gothic-manor/_gate/int_gallery/gm-vase-plinth.png", "kind": "container", "name": "받침 위 큰 도자기 항아리", "label": "gothic_manor/gm-vase-plinth"}

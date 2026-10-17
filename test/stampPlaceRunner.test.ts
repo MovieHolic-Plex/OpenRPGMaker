@@ -14,6 +14,9 @@ function reply(content: string): ChatResult {
 
 type Call = { name: string; args: Record<string, unknown> };
 
+const VISUAL: Readonly<Record<string, true>> = { fill_region: true, place_props: true, paint_road: true, tile_erase: true, build_wall: true, place_door: true, stamp_tileset_object: true, place_terrain_house: true, build_jp_city_building: true };
+const BASE_PROJECT = createBlankProject();
+
 function harness(options: {
   readonly replies?: readonly string[];
   readonly ready?: boolean;
@@ -22,7 +25,7 @@ function harness(options: {
   /** 맵 이름을 바꾸고 조우를 비운다 — 이름만으로 마을 성격을 추정하게. */
   readonly mapName?: string;
 }) {
-  const project = createBlankProject();
+  const project = { ...BASE_PROJECT, maps: structuredClone(BASE_PROJECT.maps), tilesets: { ...BASE_PROJECT.tilesets } };
   const mapId = project.startMapId;
   if (options.mapName) {
     const map = project.maps[mapId]!;
@@ -34,6 +37,7 @@ function harness(options: {
   }
   const requests: ChatRequest[] = [];
   const applied: Call[][] = [];
+  let mutation = 0;
   const queue = [...(options.replies ?? [])];
   const chat: StampChatFn = async (_config, req) => {
     requests.push(req);
@@ -48,7 +52,14 @@ function harness(options: {
       applied.push(calls.map((call) => ({ name: call.name, args: call.args })));
       return calls.map((call): ToolResult => {
         const error = options.fail?.(call) ?? null;
-        return error ? { ok: false, summary: "", issues: [{ message: error } as never] } : { ok: true, summary: `${call.name} 완료` };
+        if (error) return { ok: false, summary: "", issues: [{ message: error } as never] };
+        // 실제 도구처럼 그림 도구는 맵 타일을 바꾼다 — 결과 줄이 「실제로 바뀐 것」을 재므로 가짜 성공 검사가 통과해야 한다.
+        if (VISUAL[call.name]) {
+          const map = project.maps[mapId]!;
+          mutation += 1;
+          map.lowerTiles[mutation % map.lowerTiles.length] = 100000 + mutation;
+        }
+        return { ok: true, summary: `${call.name} 완료` };
       });
     },
     chat,
@@ -70,7 +81,9 @@ describe("runStampPlaceWith", () => {
     });
     const result = await runStampPlaceWith({ text: "땅을 동그랗게, 물을 동그랗게 옆에 나무", mapId: h.mapId, selection: null }, h.deps);
     expect(result).toMatchObject({ ok: true, applied: 3, usedModel: true });
-    expect(result.lines).toHaveLength(3);
+    // 단계 줄 셋 + 「실제로 바뀐 것」 한 줄.
+    expect(result.lines).toHaveLength(4);
+    expect(result.lines.at(-1)).toContain("실제로 바뀐 것");
     expect(h.applied).toHaveLength(1);
     expect(h.applied[0]!.map((call) => call.name)).toEqual(["fill_region", "fill_region", "place_props"]);
     expect(h.applied[0]!.every((call) => call.args.mapId === h.mapId)).toBe(true);
@@ -171,11 +184,13 @@ describe("runStampPlaceWith", () => {
       { tool: "place_examine_hotspots", args: { spots: [{ at: { x: 11, y: 3 }, name: "비석", lines: ["오래된 글씨"] }] } },
     ] })] });
     const result = await runStampPlaceWith({ text: "상자 둘, 상인, 세이브, 비석", mapId: h.mapId, selection: null }, h.deps);
+    // 빈 바닥 위 비석 조사 지점은 그림이 없어 투명 이벤트가 되므로 계획 단계에서 버린다.
+    expect(result.lines.some((line) => line.includes("비석"))).toBe(true);
     const payload = JSON.parse(String(h.requests[0]!.messages[1]!.content)) as { placement?: { chestGold: { min: number; max: number }; knownItemIds?: unknown } };
     expect(payload.placement?.chestGold.min).toBeGreaterThan(1);
     expect(payload.placement?.knownItemIds).toBeUndefined();
     const calls = h.applied[0]!;
-    expect(calls.map((call) => call.name)).toEqual(["place_chest", "place_chest", "place_npc", "place_savepoint", "place_examine_hotspots"]);
+    expect(calls.map((call) => call.name)).toEqual(["place_chest", "place_chest", "place_npc", "place_savepoint"]);
     const first = calls[0]!.args.contents as { gold?: number };
     expect(first.gold).toBeGreaterThanOrEqual(payload.placement!.chestGold.min);
     const second = calls[1]!.args.contents as { itemId?: string; gold?: number };
@@ -270,5 +285,53 @@ describe("runStampPlaceWith", () => {
     const result = await runStampPlaceWith({ text: "물", mapId: h.mapId, selection: null, signal: controller.signal }, deps);
     expect(result).toMatchObject({ ok: false, applied: 0 });
     expect(h.applied).toHaveLength(0);
+  });
+
+  it("clears removable upper decorations before placing a house on a decorated map", async () => {
+    const h = harness({
+      replies: [JSON.stringify({ steps: [{ tool: "place_house", args: { area: { x: 2, y: 2, w: 10, h: 9 }, size: "small" }, label: "작은 집" }] })],
+    });
+    const map = h.project.maps[h.mapId]!;
+    for (let y = 2; y < 11; y++) {
+      for (let x = 2; x < 12; x++) {
+        map.upperTiles[y * map.width + x] = 751;
+      }
+    }
+    const result = await runStampPlaceWith({ text: "작은 집 하나 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 10, height: 9 } }, h.deps);
+    expect(result.ok).toBe(true);
+    expect(h.applied[0]!.map((call) => call.name)).toEqual(["tile_erase", "place_terrain_house"]);
+  });
+
+  it("preserves too-small selection rejection reason when no other steps remain", async () => {
+    const h = harness({
+      replies: [JSON.stringify({ steps: [{ tool: "place_house", args: { area: { x: 2, y: 2, w: 4, h: 4 }, size: "small" }, label: "집" }] })],
+    });
+    const tooSmall = await runStampPlaceWith({ text: "집 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 4, height: 4 } }, h.deps);
+    expect(tooSmall.ok).toBe(false);
+    expect(tooSmall.lines.join(" ")).toContain("가장 작은 집도 5×6칸");
+  });
+
+  it("preserves missing house styles rejection reason when no other steps remain", async () => {
+    const h = harness({
+      replies: [JSON.stringify({ steps: [{ tool: "place_house", args: { area: { x: 2, y: 2, w: 10, h: 9 } }, label: "집" }] })],
+    });
+    const map = h.project.maps[h.mapId]!;
+    h.project.tilesets.grassland_test = { ...h.project.tilesets[map.tilesetId]!, id: "grassland_test", name: "초원", structureKits: [] };
+    map.tilesetId = "grassland_test";
+    const noStyles = await runStampPlaceWith({ text: "집 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 10, height: 9 } }, h.deps);
+    expect(noStyles.ok).toBe(false);
+    expect(noStyles.lines.join(" ")).toContain("이 타일셋(grassland_test)에는 집 외관이 없습니다");
+  });
+
+  it("supports jp_city with build_jp_city_building when quickHouseStyles is empty", async () => {
+    const h = harness({
+      replies: [JSON.stringify({ steps: [{ tool: "place_house", args: { area: { x: 2, y: 2, w: 10, h: 9 }, size: "small" }, label: "일본 집" }] })],
+    });
+    const map = h.project.maps[h.mapId]!;
+    h.project.tilesets.jp_city = { ...h.project.tilesets[map.tilesetId]!, id: "jp_city", name: "일본 도시" };
+    map.tilesetId = "jp_city";
+    const result = await runStampPlaceWith({ text: "작은 집 하나 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 10, height: 9 } }, h.deps);
+    expect(result.ok).toBe(true);
+    expect(h.applied[0]!.map((call) => call.name)).toEqual(["build_jp_city_building"]);
   });
 });

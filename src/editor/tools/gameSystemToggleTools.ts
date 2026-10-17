@@ -64,10 +64,16 @@ function nextRewardPolicy(current: RewardPolicy | undefined, patch: Record<strin
     ?? current?.participationOnly === true;
   const levelGapPenalty = optionalBoolean(patch, "levelGapPenalty", "rewardPolicy")
     ?? current?.levelGapPenalty === true;
-  if (!participationOnly && !levelGapPenalty) return undefined;
+  const expShare = optionalBoolean(patch, "expShare", "rewardPolicy") ?? current?.expShare === true;
+  const expSplitAlive = optionalBoolean(patch, "expSplitAlive", "rewardPolicy") ?? current?.expSplitAlive === true;
+  const prize = optionalCount(patch, "trainerPrizePerLevel", "rewardPolicy", 9999) ?? current?.trainerPrizePerLevel ?? 0;
+  if (!participationOnly && !levelGapPenalty && !expShare && !expSplitAlive && prize <= 0) return undefined;
   return {
     ...(participationOnly ? { participationOnly: true } : {}),
     ...(levelGapPenalty ? { levelGapPenalty: true } : {}),
+    ...(expShare ? { expShare: true } : {}),
+    ...(expSplitAlive ? { expSplitAlive: true } : {}),
+    ...(prize > 0 ? { trainerPrizePerLevel: prize } : {}),
   };
 }
 
@@ -106,7 +112,7 @@ function applySection(system: SystemRecords, key: (typeof SECTIONS)[number], val
       const next = nextRewardPolicy(system.rewardPolicy, requireObject(value, "rewardPolicy"));
       if (next) system.rewardPolicy = next;
       else delete system.rewardPolicy;
-      return `보상 정책 참전만=${next?.participationOnly === true} 레벨격차=${next?.levelGapPenalty === true}`;
+      return `보상 정책 참전만=${next?.participationOnly === true} 레벨격차=${next?.levelGapPenalty === true} 경험치분배=${next?.expSplitAlive === true}`;
     }
     case "monsterCare": {
       const next = nextMonsterCare(system.monsterCare, requireObject(value, "monsterCare"));
@@ -144,10 +150,13 @@ const configureGameSystems: ToolDefinition = {
       giftSystem: { type: "boolean", description: "선물 시스템 on/off. false 면 필드를 지운다." },
       rewardPolicy: {
         type: "object",
-        description: "전투 보상 정책 부분 패치. 주지 않은 축은 유지하고, 둘 다 false 면 필드를 지운다.",
+        description: "전투 보상 정책 부분 패치. 주지 않은 축은 유지하고, 모든 축이 꺼지면 필드를 지운다.",
         properties: {
           participationOnly: { type: "boolean", description: "참전한 액터만 보상." },
           levelGapPenalty: { type: "boolean", description: "레벨 격차 경험치 패널티." },
+          expShare: { type: "boolean", description: "경험치 나누기(몬스터 파티 전투): 나서지 않은 살아 있는 파티 몬스터도 경험치의 절반을 받는다." },
+          expSplitAlive: { type: "boolean", description: "3세대식 경험치 분배(몬스터 파티 전투): 참전해 쓰러지지 않은 몬스터만 경험치를 받고 총량을 그 수로 나눈다(쓰러진 참전자는 0). 끄면 참전자 전원 전액." },
+          trainerPrizePerLevel: { type: "integer", minimum: 0, maximum: 9999, description: "트레이너 상금 = 상대 마지막 몬스터 레벨 × 이 값(3세대 공식, 보통 16~60). 0 이면 끄고 적 레코드의 rewards.gold 를 쓴다." },
         },
         additionalProperties: false,
       },

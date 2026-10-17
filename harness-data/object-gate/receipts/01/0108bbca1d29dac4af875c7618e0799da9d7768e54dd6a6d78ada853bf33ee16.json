@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0108bbca1d29dac4af875c7618e0799da9d7768e54dd6a6d78ada853bf33ee16",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tavern back shelf with rows of colourful bottles and mugs, cupboard below",
+ "label": "pirate-isles/pi-bar-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tavern back shelf and cupboard unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a visible top surface spanning rows 2-5 (depth of 4 rows) supporting a small chest and a green bottle, sitting behind the front overhang lip at rows 6-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern back shelf and cupboard unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main unit is visible across rows 2-5 (about 4 pixel rows deep) with a barrel and green bottle resting on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5629
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tavern back shelf with cupboard base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly drawn from rows 2 to 5 (approx. 4 rows deep) with objects (a keg/box and a bottle) resting on it, showing correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tavern back shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the cabinet is clearly visible across rows 2-5 (about 4 source pixel rows deep), upon which a small keg/box and a green bottle rest, before the front molding ledge at rows 6-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4383
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.592Z",
+ "cells": {
+  "16": [
+   "1a46be52e0c0629f",
+   "7957f487ca196265",
+   "bbd552347aae3a65",
+   "e8188aba0a045526"
+  ],
+  "24": [
+   "03ed63121d993fd3",
+   "16be6102905269c9",
+   "1b8e7cdc39d89fcd",
+   "288d9e08f6395526",
+   "2de843a43ed33085",
+   "335b86559277e784",
+   "3ce933b9e7a1f62c",
+   "4565cfd6fc3106af",
+   "543687cfd4eb6778",
+   "64fcead2c02c0fc6",
+   "65fc737986ca54c7",
+   "6600b9ff451f3853",
+   "80703ed40e58021c",
+   "873d37f6f8652c2f",
+   "963d5e76b23aa3fe",
+   "a7f872fdc002d26f",
+   "aa83f9d8d727b193",
+   "b166391af912574a",
+   "b4d34d56f9e063a0",
+   "b86844c807150951",
+   "c1b322b5ca08faba",
+   "c593e6fb9a6a32f6",
+   "c5e6ce81c07ace43",
+   "ecd7bc04912e24ba"
+  ],
+  "32": [
+   "b62a3fed11ef7e33"
+  ],
+  "48": [
+   "21d7d8ab0bef55ae",
+   "330a53c631ca8f79",
+   "4db464f165da1e8b",
+   "9a7a731cb3af9145",
+   "cc6ccc94da3e4cfd",
+   "e9617b4c4c6155c6"
+  ]
+ }
+}

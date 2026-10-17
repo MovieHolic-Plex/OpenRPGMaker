@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ab913254e38797c42cdd5c292da7b07f1038ae39f772c34973686bd5ffa94ff",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall dark wooden ship wardrobe seen from above at 3/4: deep top surface with a folded blanket, two panelled doors",
+ "label": "pirate-isles/pi-wardrobe-ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly foreshortened and visible from row 0 to row 8 (approx 9 rows deep), with objects resting on top. The front face with two panelled doors occupies rows 9 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4988
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible and foreshortened, spanning rows 1-8 (around 8 rows deep) with items (folded blue blanket and yellow object) resting on top of it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible across rows 0-7 (approx 8 rows deep), supporting items (folded blue blanket and yellow object) seen in foreshortened top-down view, with the vertical front doors extending below from row 9 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3315
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall dark wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible from row 1 to row 8 (approx. 8 pixels deep) holding a blue blanket and a gold item, above the front-facing panelled double doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4090
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.590Z",
+ "cells": {
+  "16": [
+   "2ce4bc2336dce5fc",
+   "5e0d631d2c85d7f4"
+  ],
+  "24": [
+   "074583f7e5a6a1a4",
+   "34134c465cf137a1",
+   "4ba784da624556e2",
+   "524d99e1efc5b8b5",
+   "54f8d1dd75833a42",
+   "6e79907bec280b31",
+   "735b0ad1aa8f8b23",
+   "764615c0125593fa",
+   "7c0fcac917b23db1",
+   "bbd3149c5a6a7e6b",
+   "d37253225bf3f1ee",
+   "ff0ae9f64decbcba"
+  ],
+  "32": [
+   "a2b06621b7e96780",
+   "a4d20cb71278d2f8",
+   "ec57a7f07e40eede"
+  ],
+  "48": [
+   "2938ff24c87b07e1",
+   "34a638e119952405",
+   "4b8eb585c934bfaa",
+   "d5b653ace2a379cc",
+   "d8c07a2a88dce8f0",
+   "dd0080087632d31f"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e5a3ae788dc1f16b1f6b7a2af8d1e8a5d0b14cc47274c1db6ae0a577705c33d",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "긴 화분 상자",
+ "label": "modern_city/interior/mci-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "planter box",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The long planter box has an open top interior (rows 10-17) filled with soil and three bushes, surrounded by top rims (rows 9 and 18-19), and a prominent south front face (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box / trough",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The long planter box shows both its south face (rows 20-29) and its top opening (rows 9-19) framed by a rim, within which the soil and three plants are clearly visible from above across 8 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box / long flower box",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a large foreshortened top opening (rows 9-19) containing soil and three bushes, sitting above a tall front south face (rows 20-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone planter box",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear 3/4 perspective with both its south front face (rows 20-29, 10px tall) and its top opening (rows 9-19, 11px tall) containing visible soil (rows 11-17, 7px tall) and three bushes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5290
+  }
+ ],
+ "decidedAt": "2026-10-14T01:08:02.706Z",
+ "cells": {
+  "16": [
+   "8454840b6da715c3",
+   "aac280868904b5cc",
+   "b1f519aa80ca97d2",
+   "d1949283ddcda728"
+  ],
+  "24": [
+   "0280432e26e496b0",
+   "0b9cf2b9acd5522f",
+   "2becdf4ddea1b948",
+   "30b28a0f2f95e53f",
+   "38f31ab4a891e748",
+   "3f2b6e1123ad8e91",
+   "401fa98937b31548",
+   "52d05aa9639dbced",
+   "582c72e6abc0970a",
+   "5b0af148e2a81760",
+   "744e9b4e183c91f0",
+   "a6ba62e84bcc443e",
+   "a9b5b67a23f6fde8",
+   "af6781b2e5f64b71",
+   "bd03a3256e22660b",
+   "d9deb443ac8aa078",
+   "e3012801ef754049",
+   "fc15ffb992d56240"
+  ],
+  "32": [
+   "e51c219279719dd4"
+  ],
+  "48": [
+   "0013049b1d89ef24",
+   "2547fc5c3f20836c",
+   "28c521e64077806e",
+   "8b8fc74e281d88c6",
+   "9ef4c342bac9183b",
+   "a4c00b98888dee1f"
+  ]
+ }
+}

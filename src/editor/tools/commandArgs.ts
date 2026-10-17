@@ -94,6 +94,12 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
       failures.push(`${path}.kind: 기대 형식 string, 실제 타입 ${describeValue(raw.kind)}`);
       continue;
     }
+    // 키 이름에 따옴표·공백이 섞인 것은 JSON 을 잘못 옮겨 적은 것이다(실측 2026-10-13: `"\"eventId"` — 이동 명령의 eventId 가 조용히 사라졌다).
+    const strayKeys = Object.keys(raw).filter((key) => /["'\s]/u.test(key));
+    if (strayKeys.length > 0) {
+      failures.push(`${path}: 키 이름이 깨졌습니다(${strayKeys.map((key) => JSON.stringify(key)).join(", ")}) — 따옴표·공백 없는 정확한 필드 이름으로 다시 적으세요.`);
+      continue;
+    }
     if (raw.kind === "text" && typeof raw.body !== "string") {
       failures.push(`${path}.body: 대사는 string body가 필요합니다. 예: {kind:"text",body:"안녕하세요"}`);
     }
@@ -102,6 +108,10 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
     }
     if (raw.kind === "text" && typeof raw.body === "string" && /\\n(?!\[)/u.test(raw.body)) {
       failures.push(`${path}.body: 문자형 역슬래시+n 대신 실제 줄바꿈을 넣으세요. 배우 이름 제어문자 \\n[번호]는 그대로 사용할 수 있습니다.`);
+    }
+    // 도구 결과의 엔진 좌표를 대사에 옮겨 적으면 플레이어에게 「엘리베이터(8,4)」 가 보인다(2026-10-17 r4-rom-d).
+    if (raw.kind === "text" && typeof raw.body === "string" && /[(（]\s*\d{1,3}\s*,\s*\d{1,3}\s*[)）]/u.test(raw.body)) {
+      failures.push(`${path}.body: 대사에 좌표 괄호 (x,y) 를 쓰지 않습니다 — 플레이어에게 엔진 좌표가 보입니다. 장소 이름(「북쪽 엘리베이터」 「산책로 끝 전망대」)으로 바꾸세요.`);
     }
     if (raw.kind === "fork" && (!isRecord(raw.condition) || !Array.isArray(raw.then))) {
       failures.push(`${path}: 조건 분기(fork)는 condition 객체 하나와 then 배열을 한 명령 안에 담습니다 — 뒤따르는 명령을 형제로 두는 「조건 시작/끝」 표기가 아닙니다. `

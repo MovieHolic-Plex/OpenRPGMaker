@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a0f0a5fc12e1e2949c0650c2ff8c5657c8d0d97f1b2671ba1d60e142472b485",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "오아시스 풀밭",
+ "label": "desert-east/de-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oasis grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 footprint with a top-down grass texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3314
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grassy terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a seamless flat ground terrain texture representing oasis grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2832
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass terrain tile intended as flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3335
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oasis grass terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture representing oasis grass, appropriately covering the full 16x16 tile as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6838
+  }
+ ],
+ "decidedAt": "2026-10-14T08:01:48.457Z",
+ "cells": {
+  "16": [
+   "e3a30f3a2ed7723c"
+  ],
+  "24": [
+   "0601b6356d9df0d8",
+   "0dc4ba06ec4c4c3a",
+   "2b17e91fe57603c4",
+   "8de554468c1897f7",
+   "9619593ff92c96ed",
+   "b50a9116256e0849"
+  ],
+  "32": [
+   "0294c35f7d43cac8",
+   "038975472a5f8a2b",
+   "2604a7c08a5f40df",
+   "b2228da39e849dc2",
+   "d4e0c4c25442cbcb",
+   "f33ae59950384451"
+  ],
+  "48": [
+   "1ed71b58e9e35fc0",
+   "474b172aa58c6de9",
+   "82e3621513bc9a36",
+   "8fcbb7d9fec660c0",
+   "adf8ac4ec3145f9f",
+   "b92d601d3202e21c"
+  ]
+ }
+}

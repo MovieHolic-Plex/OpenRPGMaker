@@ -1,12 +1,17 @@
 import type { BattleResult } from "@/battle/runtime";
 import type { BattleBattlerSnapshot, BattleCapturedMonsterSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
 import { computeActorLevelUp, computeTechPointLearning, type BattleLevelUpResult } from "@/battle/battleLevelUp";
-import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
+import { computeApLearning } from "@/battle/battleEsperAp";
+import { effectiveActorEquipment } from "@/project/equipmentRules";
+import { effectiveActorClassId } from "@/project/sessionClass";
+import { normalizeActorRecord } from "@/project/actorModel";
+import { expForRewardActor, monsterExpPlan, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { setRelationshipState } from "@/project/relationshipState";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
-import { monsterCampaign, recordMonsterSeen, recordMonsterCaught } from "@/project/monsterJournal";
-import { applyMonsterExperienceAndEvolution, giveMonster } from "@/project/monsterCollection";
+import { monsterCampaign, recordMonsterSeen, recordMonsterCaught, monsterDexSpeciesIds } from "@/project/monsterJournal";
+import { applyMonsterExperienceAndEvolution, giveMonster, monsterCurrentHp } from "@/project/monsterCollection";
+import { addMonsterEvs, monsterStatRulesOf } from "@/project/monsterStatRules";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
 
@@ -33,14 +38,14 @@ export type BattleRewardsOutcome = {
 export function applyBattleRewardsToSession(
   session: PlaySession,
   outcome: BattleRewardsOutcome,
-  project: Project
+  project: Project,
 ): readonly BattleLevelUpResult[] {
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
     // Transfer class, lineage and permanent skills before vitals. Never replay
     // arbitrary reclass: it would erase the earned promotion chain.
-    const journal = (monsterCampaign(project)?.speciesIds ?? []).map((speciesId) => ({
+    const journal = monsterDexSpeciesIds(project).map((speciesId) => ({
       speciesId, seen: session.switches[`mx_seen_${speciesId}`] === true, caught: session.switches[`mx_caught_${speciesId}`] === true,
     }));
     applyBattleClassOverridesToSession(session, outcome.eventState);
@@ -59,7 +64,7 @@ export function applyBattleRewardsToSession(
       giveMonster(project, session, {
         speciesId: capture.speciesId, level: capture.level, caughtAt: capture.caughtAt,
         ivs: capture.ivs, currentHp: capture.currentHp, stateIds: capture.stateIds,
-        stateTurns: capture.stateTurns, skillIds: capture.skillIds, skillPp: capture.skillPp,
+        stateTurns: capture.stateTurns, skillIds: capture.skillIds, skillPp: capture.skillPp, caughtBallId: capture.captureItemId,
       });
     }
     // Derived maxima follow final levels/class/growth, never stale battler maxima.
@@ -89,6 +94,8 @@ export function applyBattleRewardsToSession(
       if (levelUp) levelUps.push(levelUp);
     }
     applyTechPointsToSession(session, project, outcome, rewardActorIdList);
+    applyEsperApToSession(session, project, outcome, rewardActorIdList);
+    applyRageEnemiesToSession(session, project, outcome, rewardActorIdList);
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
   const itemState = transitionItemStates(
@@ -108,7 +115,26 @@ export function applyBattleRewardsToSession(
     : snapshotInstanceIds.length > 0
       ? snapshotInstanceIds
       : undefined;
-  applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
+  // 노력치(옵트인 system.monsterStatRules.evs): 승리한 참전 몬스터가 쓰러뜨린 적 종의 evYield 를 받는다. 경험치보다 먼저 쌓아 레벨업 때 새 능력치에 반영된다.
+  if (outcome.monsterPartyMode === true && outcome.result === "victory" && outcome.rewards.monsterEvGain && monsterStatRulesOf(project).evs) {
+    const gainers = (participantInstanceIds ?? session.monsterParty).filter((id) => session.monsterInstances[id] !== undefined);
+    for (const id of gainers) {
+      const instance = session.monsterInstances[id]!;
+      session.monsterInstances[id] = { ...instance, evs: addMonsterEvs(instance.evs, outcome.rewards.monsterEvGain) };
+    }
+  }
+  // 경험치 분배(system.rewardPolicy.expSplitAlive): 쓰러지지 않은 참전자만 총량을 나눠 받는다. 꺼져 있으면 plan 이 입력 그대로다.
+  const aliveBattlerIds = new Set((outcome.actors ?? []).filter((actor) => actor.hp > 0).flatMap((actor) => [actor.recordId, ...(actor.monsterInstanceId ? [actor.monsterInstanceId] : [])]));
+  const expPlan = outcome.monsterPartyMode === true
+    ? monsterExpPlan(project.system.rewardPolicy, earnedExp, participantInstanceIds, aliveBattlerIds)
+    : { exp: earnedExp, participantIds: participantInstanceIds };
+  applyMonsterExperienceAndEvolution(project, session, expPlan.exp, expPlan.participantIds);
+  // 경험치 나누기(system.rewardPolicy.expShare): 이번 전투에 나서지 않은 살아 있는 파티 몬스터도 절반을 받는다.
+  if (project.system.rewardPolicy?.expShare === true && participantInstanceIds !== undefined && outcome.monsterPartyMode === true) {
+    const taken = new Set(participantInstanceIds);
+    const bench = session.monsterParty.filter((id) => !taken.has(id) && session.monsterInstances[id] !== undefined && monsterCurrentHp(project, session.monsterInstances[id]!) > 0);
+    if (bench.length > 0) applyMonsterExperienceAndEvolution(project, session, Math.floor(expPlan.exp / 2), bench);
+  }
   return levelUps;
 }
 
@@ -136,6 +162,56 @@ function applyTechPointsToSession(
   }
 }
 
+// 마석 AP: 살아남은 보상 대상 전원이 트룹 AP 합계를 받아 장착한 마석의 apGrants 에 쌓고, 필요 AP 를 채운 스킬은
+// 영구 습득한다(actorSkillIds + learnedViaAp). 장비를 벗어도 남는다. 저작된 AP 가 없으면 아무것도 쓰지 않는다.
+function applyEsperApToSession(
+  session: PlaySession,
+  project: Project,
+  outcome: BattleRewardsOutcome,
+  actorIds: readonly string[],
+): void {
+  const earnedAp = Math.max(0, Math.trunc(outcome.rewards.ap ?? 0));
+  if (earnedAp <= 0) return;
+  for (const actorId of new Set(actorIds)) {
+    const record = project.database.actors.find((actor) => actor.id === actorId);
+    if (!record) continue;
+    const vitals = session.actorVitals[actorId];
+    const snapshot = (outcome.actors ?? []).find((actor) => actor.recordId === actorId);
+    if ((vitals ? vitals.hp : snapshot?.hp ?? 1) <= 0) continue;
+    const equipment = effectiveActorEquipment(project, normalizeActorRecord(record), session.actorEquipment?.[actorId], effectiveActorClassId(project, session, actorId));
+    const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
+    const result = computeApLearning(project, equipment, earnedAp, session.actorApProgress?.[actorId], known);
+    if (Object.keys(result.progress).length > 0) (session.actorApProgress ??= {})[actorId] = result.progress;
+    if (result.learned.length === 0) continue;
+    const skillIds = result.learned.map((entry) => entry.skillId);
+    session.actorSkillIds[actorId] = [...new Set([...(session.actorSkillIds[actorId] ?? []), ...skillIds])];
+    const via = (session.learnedViaAp ??= {});
+    via[actorId] = [...new Set([...(via[actorId] ?? []), ...skillIds])];
+  }
+}
+
+// 폭주(가우): 폭주 기술을 아는 살아남은 배우가 이번 전투에서 쓰러뜨린 몬스터를 폭주 목록에 더한다(배우당 최대 64종).
+function applyRageEnemiesToSession(
+  session: PlaySession,
+  project: Project,
+  outcome: BattleRewardsOutcome,
+  actorIds: readonly string[],
+): void {
+  const enemyIds = outcome.rewards.rageEnemyIds ?? [];
+  if (enemyIds.length === 0) return;
+  const rageSkillIds = new Set(project.database.skills.filter((skill) => skill.effect.kind === "rage").map((skill) => skill.id));
+  if (rageSkillIds.size === 0) return;
+  for (const actorId of new Set(actorIds)) {
+    const vitals = session.actorVitals[actorId];
+    const snapshot = (outcome.actors ?? []).find((actor) => actor.recordId === actorId);
+    if ((vitals ? vitals.hp : snapshot?.hp ?? 1) <= 0) continue;
+    const known = [...(session.actorSkillIds[actorId] ?? []), ...(snapshot?.skillIds ?? [])];
+    if (!known.some((skillId) => rageSkillIds.has(skillId))) continue;
+    const pool = (session.actorRageEnemyIds ??= {});
+    pool[actorId] = [...new Set([...(pool[actorId] ?? []), ...enemyIds])].slice(0, 64);
+  }
+}
+
 // 파티 몬스터 배틀러의 전투 종료 HP를 세션 인스턴스의 currentHp로 되돌려쓴다.
 function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
   session.monsterInstances ??= {};
@@ -145,8 +221,12 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
     const instance = session.monsterInstances[instanceId];
     if (!instance) continue;
     if (session.actorStateIds) delete session.actorStateIds[instanceId];
+    // 열매는 쓰면 사라진다 — 전투 끝에 배틀러가 도구를 잃었으면 개체에서도 지운다(그 밖의 경우는 건드리지 않는다).
+    const { heldItemId: carried, ...bare } = instance;
+    const heldItem = carried && !actor.heldItemId ? {} : carried ? { heldItemId: carried } : {};
     session.monsterInstances[instanceId] = {
-      ...instance,
+      ...bare,
+      ...heldItem,
       currentHp: Math.max(0, Math.min(actor.maxHp, actor.hp)),
       stateIds: [...actor.stateIds],
       stateTurns: actor.stateTurns
@@ -270,10 +350,26 @@ function applyBattleVitalsToSession(
 export function applyActorLevelUp(session: PlaySession, project: Project, actorId: string): BattleLevelUpResult | null {
   const currentLevel = session.actorLevels[actorId] ?? 1;
   const totalExp = session.actorExperience[actorId] ?? 0;
-  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides });
+  const actorRecord = project.database.actors.find((actor) => actor.id === actorId);
+  const equipment = actorRecord
+    ? effectiveActorEquipment(project, normalizeActorRecord(actorRecord), session.actorEquipment?.[actorId], effectiveActorClassId(project, session, actorId))
+    : undefined;
+  const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides, equipment });
   if (!result) return null;
 
   session.actorLevels[actorId] = result.toLevel;
+
+  // 마석 레벨업 보너스는 영구 보너스(Change Parameters 와 같은 actorParamBonuses)로 적립한다 — 장비를 벗어도 남는다.
+  // 최대치는 아래 vitals 가산과 이후 refreshGrowthVitals 가 같은 값으로 맞춘다.
+  if (result.equipmentBonus) {
+    session.actorParamBonuses ??= {};
+    const bonuses = { ...(session.actorParamBonuses[actorId] ?? {}) };
+    for (const key of ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const) {
+      const gain = result.equipmentBonus[key];
+      if (gain) bonuses[key] = (bonuses[key] ?? 0) + gain;
+    }
+    session.actorParamBonuses[actorId] = bonuses;
+  }
 
   // maxHp/maxMp 증가분만큼 최대치와 현재치를 함께 올린다(RM2K3: 증가분 가산).
   const vitals = session.actorVitals[actorId];

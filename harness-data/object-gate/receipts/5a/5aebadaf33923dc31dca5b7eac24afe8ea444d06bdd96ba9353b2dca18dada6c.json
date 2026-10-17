@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5aebadaf33923dc31dca5b7eac24afe8ea444d06bdd96ba9353b2dca18dada6c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(서쪽 뭍)",
+ "label": "sengoku-edo/se-water-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water edge tile with stone retaining wall border on the west",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down water surface with ripples and a stone embankment edge along the western border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6201
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tile with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water with a stone bank along the western edge; viewed from standard top-down perspective spanning full tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4359
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water tile with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water surface with a western stone border/embankment viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4251
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water tile with stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a vertical stone embankment boundary on the left and top-down water surface covering the remaining tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8012
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.013Z",
+ "cells": {
+  "16": [
+   "dd8219cb9be9309f"
+  ],
+  "24": [
+   "12d2d7b57ec554db",
+   "3125b49b3f228156",
+   "4cc6798a798620e3",
+   "8c4883fc9fb316a1",
+   "b9a3e24f24e2acc6",
+   "e8799f58b32a4993"
+  ],
+  "32": [
+   "25f102f00d1f9520",
+   "8e963ebe09abf9d2",
+   "a338e386f48ce6fc",
+   "a61d9cdd45121e7b",
+   "ac0483d904e11705",
+   "c36a1e87d21dc0b0"
+  ],
+  "48": [
+   "1c4e267d72f996be",
+   "1e8fb24f8d187340",
+   "2b43362526db58e8",
+   "3b034b5bb39c49d6",
+   "41ee49ce6b811a43",
+   "6d9389549b475ab6"
+  ]
+ }
+}

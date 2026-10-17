@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8117b0698e7964ef44664c0c082c91027b9733017371701a8aa4d770cb9bc22c",
+ "width": 32,
+ "height": 48,
+ "kind": "container",
+ "name": "이로리(바닥 화로, 숯불 + 걸린 무쇠 주전자)",
+ "label": "sengoku-edo/se-irori",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sunken hearth (irori) wooden frame with ash pit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The irori hearth has a clear top-down view showing the inside of the square basin/ash pit (rows 23–36, 14 rows tall) containing charcoal, with the back rim of the frame visible across rows 19–22 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9268
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sunken hearth (irori) with ash pit and hanging kettle",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sunken hearth is viewed from above showing the ash pit interior (rows 23-35, 13 rows tall) with burning charcoal and embers, surrounded by a wooden frame, beneath a suspended kettle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5306
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sunken floor hearth (irori) with ash pit and hanging kettle",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth shows a full view from above into the sunken ash pit (opening_rows = 12, rows 24-35) containing charcoal and embers, with the enclosing wooden frame clearly visible around it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sunken hearth frame and ash pit (irori)",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth clearly shows the interior ash pit and embers seen from above (13 rows tall) with the hanging kettle and charcoal visible inside. It is properly depicted in 3/4 top-down perspective, not a front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10884
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.075Z",
+ "cells": {
+  "16": [
+   "464affbb7ad49689",
+   "5701e2816326409d",
+   "ae76b7e60bd16b6d",
+   "e6240aa316205b0f",
+   "f52853e5afe8bef3",
+   "f70e3ad31e0150ab"
+  ],
+  "24": [
+   "1062f8bd053cf0b0",
+   "311ba7ab69db7bdc",
+   "37a59a0dc9d5c50c",
+   "54c6aefdfa91095b",
+   "8505611baf40c522",
+   "8858e13082560724",
+   "acf93780501d03e1",
+   "b58d335ebb65e1f7",
+   "c965d3451783e682",
+   "e4c3a89980e28136",
+   "f8fb0eef797457c5",
+   "fb2e734a194f57ef"
+  ],
+  "32": [
+   "447e452d772f818b",
+   "6c0f9d91190daa45",
+   "e628a48506836a6d",
+   "efb7ee45203f771f"
+  ],
+  "48": [
+   "33c8cad167a48966",
+   "b2a090ccca559ed4",
+   "cabe6f125a8c2cd5"
+  ]
+ }
+}

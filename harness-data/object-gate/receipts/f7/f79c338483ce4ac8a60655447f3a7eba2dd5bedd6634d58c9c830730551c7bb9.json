@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f79c338483ce4ac8a60655447f3a7eba2dd5bedd6634d58c9c830730551c7bb9",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "small clay smokehouse with smoke vent and stacked firewood",
+ "label": "pirate-isles/pi-smokehouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched/clay roof and front wall of smokehouse",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a full south-facing roof slope spanning rows 0-24 (25 pixels tall) viewed from above, complete with a smoke vent whose dark opening is visible on rows 2-3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4990
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clay smokehouse with thatched/tiered roof and timber door",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features an extensive tiered/thatched roof sloping toward the viewer across rows 0–24, complete with a smoke vent showing an opening, above the vertical south-facing wall (rows 25–47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5025
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay smokehouse with sloped thatched roof and chimney vent",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing roof slope occupies rows 0-24 (25 rows), properly showing the top volume of the structure in 3/4 top-down perspective. Additionally, the smoke vent opening shows interior depth at rows 2-3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5253
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched roof over clay smokehouse",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large sloping thatched roof (rows 0-24) facing south in standard 3/4 JRPG perspective above the vertical clay wall and wooden door (rows 25-47). The chimney vent at rows 2-4 also shows an opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3673
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.582Z",
+ "cells": {
+  "16": [
+   "232b0ab53187ef75",
+   "4e26c07b44da2da5",
+   "b92954d7b94b13e6",
+   "c02bb0159a261d87",
+   "f038f52f0aba572a",
+   "f61ae36855f1c510"
+  ],
+  "24": [
+   "04a1f0cc99eadd4a",
+   "0ab94cba4c86942b",
+   "2ed207ef3068f933",
+   "35895588644aece1",
+   "40229dd793b2cfb4",
+   "49e00ec295a8223d",
+   "56d9588fa3761ce3",
+   "8a3fa0df041050cc",
+   "a83e0e39c3797b72",
+   "e682acf797ba1c74",
+   "f0067b17faab8e36",
+   "faecabbd70dcd5d3"
+  ],
+  "32": [
+   "23e7a435b97a6a61",
+   "872a40306c11ccd3",
+   "cef8894b324231b2",
+   "e8d80e58f8a0b3e2"
+  ],
+  "48": [
+   "2a490fda8543dd57",
+   "949713cf4b42e021",
+   "d17880615c652385"
+  ]
+ }
+}

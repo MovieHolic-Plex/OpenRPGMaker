@@ -24,6 +24,8 @@
 .hud-heart-fill { height:100%; background:var(--hud-accent); }
 .hud-widget[data-kind="clock"] { text-align:right; gap:4px; }
 .hud-date { font-size:7px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hud-widget[data-kind="clock"][data-shape="number"] { flex-direction:row; align-items:center; justify-content:flex-end; gap:6px; padding:2px 6px; }
+.field-hud[data-font="pixel"] .hud-widget[data-kind="clock"][data-shape="number"] .hud-time { font-size:11px; }
 .hud-time { font-size:15px; line-height:1; font-variant-numeric:tabular-nums; letter-spacing:.3px; }
 .hud-text { font-size:12px; line-height:1.15; font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hud-widget[data-kind="text"] { flex-direction:row; align-items:center; justify-content:space-between; gap:4px; }
@@ -47,6 +49,12 @@
 .hud-party-meter { height:4px; background:#0007; }
 .hud-party-fill { height:100%; background:var(--hud-accent); }
 .hud-party-value { font-size:5px; margin-top:2px; }
+.hud-widget[data-kind="party"][data-source="friendship"] { justify-content:flex-start; gap:2px; }
+/* 호감 목록은 사람 수만큼만 판이 자란다 — 한 사람뿐인데 세 줄 높이의 어두운 판이 지도를 덮던 것(연애 두 번째 측정). 위쪽 칸 수 위젯과 겹치지 않게 y 는 그대로 둔다. */
+.hud-widget[data-kind="party"][data-source="friendship"][data-panel="dark"] { height:auto !important; min-height:0 !important; }
+.hud-rel-row { display:flex; align-items:center; justify-content:space-between; gap:6px; min-height:14px; }
+.hud-rel-name { font-size:7px; line-height:1.1; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.field-hud:is([data-font="pixel"],[data-font="round"]) .hud-rel-name { font-size:9px; line-height:1; letter-spacing:0; }
 .hud-effect { font-size:7px; border-left:2px solid var(--hud-accent); padding-left:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .hud-widget[data-kind="image"] > .hud-art { width:100%; height:100%; }
 [data-field-hud]:not([data-field-hud="legacy"]) > .runtime-time-hud,
@@ -98,3 +106,6 @@
 .hud-flower-center { background:#602139; box-shadow:0 0 0 1px #db8a94; }
 .hud-widget[data-empty="true"] .hud-flower { filter:grayscale(1) drop-shadow(0 1px 1px #140e1b); opacity:.6; }
 .play-stage[data-field-hud="chase"] > .minimap-root { display:none; }
+/* 픽셀 격자 계약: 수집 테마(에메랄드 몬스터)는 Galmuri9 를 18px(정확히 2배)로 쓴다. 9px 는 도트 절반 크기다. 상자 크기는 저작 값(위젯 w/h)을 그대로 따르고 안쪽 여백만 줄인다. */
+.field-hud[data-theme="collector"][data-font="pixel"] :is(.hud-label,.hud-value,.hud-date,.hud-party-name,.hud-party-value,.hud-effect,.hud-rel-name,.hud-text) { font-size:18px; line-height:20px; }
+.field-hud[data-theme="collector"] .hud-widget[data-panel="paper"] { padding:2px 8px; }

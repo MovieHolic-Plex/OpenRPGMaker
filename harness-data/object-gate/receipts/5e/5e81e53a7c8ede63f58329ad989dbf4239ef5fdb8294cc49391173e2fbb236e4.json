@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e81e53a7c8ede63f58329ad989dbf4239ef5fdb8294cc49391173e2fbb236e4",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "진료 호출 화면",
+ "label": "jp_city/interior_hospital/hs-call-display",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "electronic call display board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted electronic hospital call display screen hanging from ceiling/wall brackets; flat wall-mounted objects are exempt from needing a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6508
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "electronic call display screen board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a clinic call display screen hanging/mounted on a wall via two rods. Wall-mounted screens and boards are permitted to be flat front elevations; there is no isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7653
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "electronic call display board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted electronic calling screen mounted flat on the wall via vertical hanging rods. As a wall-mounted flat object, it appropriately faces the viewer flat without receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging electronic display board / call screen",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display board is suspended by two ceiling rods and features a 3-row beveled/rounded top casing (rows 7-9) above the front panel. Wall-mounted/suspended flat screens are permitted flat front profiles, and this one also includes depth along the top housing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8127
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.780Z",
+ "cells": {
+  "16": [
+   "13b102a9faff0986",
+   "6b6535ae631a861e",
+   "773d324264dc3b64",
+   "e3b38a992763e444"
+  ],
+  "24": [
+   "02cfa951460f0edc",
+   "14d3d26bf8f8098d",
+   "2a71afd4051587e4",
+   "3f155b3256e16248",
+   "5182779e41db9484",
+   "5dd98d2e82ff137a",
+   "6e06e438403b9abc",
+   "6e4fb12040b3e8dc",
+   "6f32a995b56a01d3",
+   "7470a55b6448e284",
+   "78ca96a7034f47e0",
+   "7a6764ab89fcd689",
+   "9e350e1d10c3c71c",
+   "a212701db248226f",
+   "a9a0d038dd9e9ee7",
+   "aaff53f8d6e4b977",
+   "ac7c4c0e4d11234c",
+   "b85e7918b5baf137",
+   "e487389c8fd7a1fd",
+   "e92fd19767b43fda",
+   "ec0e65707ceb2d0d",
+   "f40e53b44fda14f2",
+   "f860da11648df9b1",
+   "fdede05c5c374be8"
+  ],
+  "32": [
+   "1fd3845679f9896a"
+  ],
+  "48": [
+   "1eb0e4474311e64c",
+   "2e2b145ea2595e9a",
+   "480e05fab4eb21bc",
+   "63065e6ecae54a8d",
+   "8c466678728dcc6e",
+   "bdfe920d75acd44a"
+  ]
+ }
+}

@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f71295fef325462d6a191ecb74a1e582c7023cd6c8dba9810d50332d86773d8",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-6-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store storefront with entrance doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural elevation. The protruding door frame overlaps the facade stripes but has only a 1-2px outline at row 11 with no visible top surface. The upper facade/roof and interior shelving also show no foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13423
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store storefront with sliding doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, upper fascia (rows 0-9), striped awning/signage, and protruding door frame are drawn in pure front elevation with no visible top surfaces (lintels and roof lack any foreshortened depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5382
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "convenience store storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the entrance frame, lintel, fascia, and interior shelves, is drawn in pure front elevation with 0 visible rows of foreshortened top surfaces. The door frame top is merely a 1-2px outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5211
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store facade with sliding glass doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper signage band, door frame, and window shelves, is drawn in pure flat front elevation with 0px of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4990
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.645Z",
+ "cells": {
+  "16": [
+   "04a8744fffab93af",
+   "111f96b51c7e191f",
+   "3f1cb23eeee868b1",
+   "4f3a7dd9ec722387",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8d89cb2a840e7e2c",
+   "9584da2e409f93c6",
+   "96f131cc674d1d0a",
+   "a6fc34552180ddaa",
+   "bf90ed6d825fb852",
+   "df2a5dc56a26c9c3",
+   "e02b4494a8b6c0b5",
+   "e09dad0b84f07f9a",
+   "ed308cd86f7435b5",
+   "f57dd59d8e0ee44e",
+   "f77f37bb52b582e0",
+   "fb9836fdba5cb433"
+  ],
+  "24": [
+   "4a0247476d0b856e",
+   "5aefce9720a888f5",
+   "5bef23f4929c03eb",
+   "846954c132b3b796",
+   "9668c652d8c17a1a",
+   "a1d96bd3a8fb599a",
+   "bacd61ad7eee4893",
+   "bf5cf87cacc2fc1e"
+  ],
+  "32": [
+   "3a6d26686013c712",
+   "437fc27cd0bd215e",
+   "71a99b489ae36663",
+   "98e88b3eb9d5a64d",
+   "a0b8bdb7cd210cea",
+   "b179d29d20a65612",
+   "b9ec0fbbfab13f79",
+   "c3f382079df8d841",
+   "c5b38acf295e2d2b",
+   "ec57bb2f56d5492f",
+   "f8db3241ff33a08f",
+   "fbcce17e9f2ca69c"
+  ],
+  "48": [
+   "b7529171cdd8f987",
+   "d9f956f7b5f19656"
+  ]
+ }
+}

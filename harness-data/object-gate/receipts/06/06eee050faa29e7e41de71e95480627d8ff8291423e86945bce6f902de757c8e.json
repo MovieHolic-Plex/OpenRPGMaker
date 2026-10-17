@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06eee050faa29e7e41de71e95480627d8ff8291423e86945bce6f902de757c8e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "궁전 대리석 바닥",
+ "label": "desert-east/de-floor-marble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile viewed from above with tiled marble slabs and border trim across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile with decorative border seen completely from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5554
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing marble floor pattern with an ornate border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4934
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palace marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile featuring checkered marble tiles with decorative border edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4760
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.210Z",
+ "cells": {
+  "16": [
+   "3dee428fec7864f9"
+  ],
+  "24": [
+   "0541c9067f6523da",
+   "432a18b9a4392b06",
+   "832e9a3bf94fbdc0",
+   "9f023e2f59968992",
+   "a62332eca00bcc06",
+   "f69cfa754d1c17f2"
+  ],
+  "32": [
+   "25457e350cba0b9e",
+   "2867c368a3c58deb",
+   "2e3e9c0202372b8f",
+   "59593902645937a3",
+   "ed2a84e0e204402d",
+   "fd77d3a268b43be4"
+  ],
+  "48": [
+   "0f9814128ce20883",
+   "3d02757d71f6e5df",
+   "7a30bfeacb395483",
+   "8f60911943e1c4e6",
+   "a0524065d2185bca",
+   "afab64f9a57818b7"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fe07e49f2cc32d154a1144477b79d9060422bc74933f00be8c0adcdb455544a",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-3-R",
+ "label": "jp_city/street_hand/jp-sf-apartment-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator door and wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, double doors, and adjacent wall panels are drawn in pure front elevation with no top surface visible (the top lintel at rows 11-12 is merely a 2px horizontal border).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6439
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator doorway and wall console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and wall units are drawn in completely flat front elevation; the top lintel/frame at row 11 is only a 2px flat outline with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4412
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sci-fi elevator/doorway structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the projecting door frame/lintel at row 11, the door panels, and the side consoles, is drawn as a flat front architectural elevation with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4866
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator door and wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation. The elevator door frame has only a 2px dark outline at the top (rows 11-12) with no foreshortened top surface, and the adjacent utility panel/mailboxes similarly lack any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5114
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.383Z",
+ "cells": {
+  "16": [
+   "3eb26e7df878c649",
+   "5907b440a2fa6761",
+   "7c5cb9bd9d5b2ba3",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "f1996fd2dc8b1403",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "6cbbe934858095bf",
+   "ba2212941e28906b",
+   "bf964bbf998c89e6",
+   "cb490db3a4d5c9d0"
+  ],
+  "32": [
+   "0611e738ed3705e0",
+   "10caef1948e610d3",
+   "138558a498c66ee4",
+   "1a27e4abb7736a56",
+   "1dffbb9eac64677b",
+   "2cc20f758514cf53",
+   "33fea46f15e2b21b",
+   "3d8e8d270f214c36",
+   "4c83d13cb627f76e",
+   "55679e6cb73d83bd",
+   "5daf48d0ec522093",
+   "6c93313da226d53f",
+   "6fff55e22bcdb4e2",
+   "7307f6b3970907fe",
+   "7bb9562367d23f6a",
+   "874f6d0673f3dcfd",
+   "96e09ff586854168",
+   "b62f399c08cf13bf",
+   "bd853372eb0d8b76",
+   "bf890e6ac3d754eb",
+   "d10590bf4187d11e",
+   "d6397f851e9e331c",
+   "e0a155fa6bc7f957",
+   "f4e540f67a16da9e"
+  ],
+  "48": [
+   "c001f81f1f7ccc3b"
+  ]
+ }
+}

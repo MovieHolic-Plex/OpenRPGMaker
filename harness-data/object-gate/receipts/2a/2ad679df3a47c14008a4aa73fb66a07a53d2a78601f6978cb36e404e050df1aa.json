@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ad679df3a47c14008a4aa73fb66a07a53d2a78601f6978cb36e404e050df1aa",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "양변기",
+ "label": "modern_city/interior/mci-toilet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "toilet bowl and tank",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The toilet is viewed in 3/4 top-down perspective with the tank showing a 4-row top surface (rows 4-7) and the bowl opening clearly displaying interior water (rows 15-23, 9 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3738
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "toilet bowl and tank",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The toilet bowl opening is clearly visible from above with blue water inside spanning rows 16-23 (8 rows tall). The top of the water tank is also visible from above (rows 4-7, 4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4073
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "toilet tank and bowl",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tank displays a 4-row top surface (rows 4-7) above its front face (rows 8-11), and the bowl features an 8-row elliptical interior opening filled with water (rows 16-23) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4141
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "toilet tank and bowl",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The toilet tank top shows foreshortened top surface across rows 4-7, and the toilet bowl opening is clearly visible with blue interior water across rows 16-23 (8 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3453
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "5131188bf9cc99a3",
+   "d7458c1fe11a1e0f"
+  ],
+  "24": [
+   "01366197b8121fc5",
+   "03652a5d1760df8a",
+   "2256bd3da5e50e27",
+   "34410d60a3972e7e",
+   "3c56661149e163ba",
+   "547a7b69092fee4d",
+   "5a3c9bd3bdd9375d",
+   "5b40c8349819820e",
+   "7da61efbb8f7b3c3",
+   "9dba5710dd9e9096",
+   "a36ad413fe4e86de",
+   "e7e7ccc0351a9c78"
+  ],
+  "32": [
+   "86755078574f644c",
+   "f10946dbbf4cf5c2",
+   "fae9c88749c7be4c"
+  ],
+  "48": [
+   "0eae03456b3b7751",
+   "5216dd5129b0f58b",
+   "7ebdf09caa6661cd",
+   "b8f59da78f1af21f",
+   "ce321d84ec0b0ea5",
+   "fd95694fa6c42f0d"
+  ]
+ }
+}

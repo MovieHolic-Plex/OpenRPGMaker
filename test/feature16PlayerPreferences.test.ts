@@ -16,7 +16,7 @@ describe('device player preferences', () => {
     const records = new Map([['save-slot-1', 'untouched']]);
     const storage = { getItem: (key: string) => records.get(key) ?? null, setItem: (key: string, value: string) => { records.set(key, value); } };
     expect(updatePlayerPreferences({ bgm: 0, textSpeed: 'fast' }, storage)).toBe(true);
-    expect(readPlayerPreferences(storage)).toEqual({ ...DEFAULT_PLAYER_PREFERENCES, bgm: 0, textSpeed: 'fast' });
+    expect(readPlayerPreferences(storage)).toEqual({ ...DEFAULT_PLAYER_PREFERENCES, bgm: 0, textSpeed: 'fast', textSpeedChosen: true });
     expect([...records.keys()]).toEqual(['save-slot-1', PLAYER_PREFERENCES_KEY]);
     expect(records.get('save-slot-1')).toBe('untouched');
   });

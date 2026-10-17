@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "294e10aad4bcc769c434e0126e7eecf2abcfc8e016fc0c76056be84a273e0f80",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop plants: tomato sprout (plants only, the soil is a separate tile underneath)",
+ "label": "beodeul_farm/crop_tomato_sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D Y-shapes in pure front elevation with 1px stems and side-projecting leaves; no top-down foreshortening or top surfaces are depicted.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sprout stem and leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D Y-shaped silhouettes in pure front elevation with no top-down perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3199
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiny sprout plant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprout consists of a 1px vertical stem with two pixels branching out left and right in a flat 2D Y-shape (rows 11-13) with no top-down foreshortening or visible leaf surface from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tomato plant sprout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D 'Y' shapes in pure front elevation with a 1px vertical stem and flat side leaves, showing zero top-down depth or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3594
+  }
+ ],
+ "decidedAt": "2026-10-14T05:55:32.805Z",
+ "cells": {
+  "16": [
+   "ec89e05e475cd80d"
+  ],
+  "24": [
+   "43b60bafe5582830",
+   "829d33a7816425a9",
+   "8a405ddf89fa3d3a",
+   "c1c83d5259021282",
+   "d1f94feda08239fc",
+   "f9a7c862c524f91c"
+  ],
+  "32": [
+   "0532c563cb3b1f99",
+   "4cd826c9a3b13087",
+   "95321f27b4523230",
+   "98181d8bf8f12ec1",
+   "a1406926b73be270",
+   "e0d1da3bbffbc420"
+  ],
+  "48": [
+   "3787fd85ade7ed4c",
+   "43bb4ea09f6f6c3d",
+   "578bb5849db5641d",
+   "6024e0ef9a7e2595",
+   "647bd728baf4dc34",
+   "dbd69c8070ad4cb2"
+  ]
+ }
+}

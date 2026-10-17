@@ -92,6 +92,14 @@ function validateEncounterTable(label: string, value: unknown): void {
     const weight = requireNumber(`${label}[${index}].weight`, entry.weight);
     assert(Number.isInteger(weight) && weight > 0, `${label}[${index}].weight는 1 이상의 정수여야 합니다.`);
     if (entry.conditions !== undefined) validateEncounterConditions(`${label}[${index}].conditions`, entry.conditions);
+    for (const key of ["levelMin", "levelMax"] as const) {
+      if (entry[key] === undefined) continue;
+      const level = requireNumber(`${label}[${index}].${key}`, entry[key]);
+      assert(Number.isInteger(level) && level >= 1 && level <= 99, `${label}[${index}].${key}는 1~99 정수여야 합니다.`);
+    }
+    if (typeof entry.levelMin === "number" && typeof entry.levelMax === "number") {
+      assert(entry.levelMin <= entry.levelMax, `${label}[${index}].levelMin이 levelMax보다 큽니다.`);
+    }
   }
 }
 
@@ -110,6 +118,10 @@ function validateEncounterConditions(label: string, value: unknown): void {
   if (conditions.locationId !== undefined) {
     const locationId = requireString(`${label}.locationId`, conditions.locationId);
     assert(locationId.trim().length > 0, `${label}.locationId는 바울 수 없습니다.`);
+  }
+  if (conditions.terrainId !== undefined) {
+    const terrainId = requireString(`${label}.terrainId`, conditions.terrainId);
+    assert(terrainId.trim().length > 0, `${label}.terrainId는 비울 수 없습니다.`);
   }
   if (conditions.timePhase !== undefined) {
     const phase = requireString(`${label}.timePhase`, conditions.timePhase);
@@ -495,6 +507,12 @@ function validatePageShape(label: string, value: unknown): void {
   if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
   if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
   if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
+  if (movement.sightAlert !== undefined) {
+    const alert = requireRecord(`${label}.movement.sightAlert`, movement.sightAlert);
+    requireString(`${label}.movement.sightAlert.emote`, alert.emote);
+    const holdMs = requireNumber(`${label}.movement.sightAlert.holdMs`, alert.holdMs);
+    assert(Number.isFinite(holdMs) && holdMs >= 0 && holdMs <= 5000, `${label}: 시야 놀람 멈춤은 0~5000ms`);
+  }
   if (movement.pursuit !== undefined) {
     const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
     assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);

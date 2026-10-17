@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a37352cd55e10c096a3fb8707ae77f3a080727ea9c8b39da5220982761a894de",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "red woven rectangular rug with gold diamond medallion, patterned border and fringed ends",
+ "label": "pirate-isles/pi-rug-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular woven rug lying flat on the floor with fringe and medallion",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-plane surface (mat/rug) viewed top-down from row 1 through row 31, correctly representing a flat object in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3972
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular rug",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor object correctly displayed from above occupying rows 1-31 with fringed borders and medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2746
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a rug lying flat on the floor, correctly displayed from above occupying rows 1-31 with fringed ends, patterned border, and central medallion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woven rectangular rug",
+    "kind_matches": true,
+    "top_rows": 31,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above across rows 1-31 with no vertical front face or receding isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3169
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.593Z",
+ "cells": {
+  "16": [
+   "a2537fbadf0b16a4",
+   "be17f8fc0fa12801",
+   "dbf87a94b75a71fb",
+   "e1e70368b7675259"
+  ],
+  "24": [
+   "064854f3fdb0c053",
+   "0a60ff70d64172b5",
+   "0d86a02ae4795cf3",
+   "12841cd42e25ecac",
+   "1f7fb92a22369936",
+   "2342ee3a68328518",
+   "39a87fffc605acb3",
+   "5bab2c5c185ae3d3",
+   "5c4c3296dcc6b923",
+   "5eaa02336ab9816a",
+   "6a6ef72dbc5d3908",
+   "71b019a33e2d5a60",
+   "8b529098277fc030",
+   "8f3f4a70e34287d5",
+   "9e85b642df071c6e",
+   "caea8c585e58f4a4",
+   "ce6f54d663ab2b02",
+   "d2611e776018683b",
+   "d4ec0f0e27a25a6e",
+   "e3083fe0e980fe3a",
+   "e4839b5d5df9ac71",
+   "e5e1ceb699853ce8",
+   "eca629942883b64a",
+   "fcd589e52979439a"
+  ],
+  "32": [
+   "beb4f94a152de8ef"
+  ],
+  "48": [
+   "058088a0b6a30bf3",
+   "2d07d6e96c12c38e",
+   "5b6d4c23f90fe0d6",
+   "6fb723dce4b67568",
+   "79d12d8c0cce4aa9",
+   "dbc7f0ca1a2227e3"
+  ]
+ }
+}

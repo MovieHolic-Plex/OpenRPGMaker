@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "94de412226cbcaaabb2d53db27945e455a1c24cded5a550c53c070a6d49181b6",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "말아 쌓은 양탄자",
+ "label": "desert-east/de-carpet-rolls",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing rolled carpets",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both standing rolled rugs show their circular top cross-sections foreshortened from above across rows 1-6 (about 4-5 pixels tall) with visible concentric rolled patterns before transitioning to the vertical south-facing bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5759
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two upright rolled carpets/rugs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both standing rolled rugs clearly show foreshortened circular/elliptical top ends (approx. 4-5 pixel rows tall, rows 2-5/6) displaying the spiral roll pattern from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6499
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two upright rolled carpets",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both standing rolled carpets clearly depict foreshortened elliptical top cross-sections across rows 2-5 showing the rolled spiral pattern from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5046
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two rolled carpets standing upright",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both rolled carpets clearly show their top circular/spiral ends in perspective across rows 1-5 (approx 4-5 px tall), showing the rolled layers from above before transitioning into the vertical cylindrical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4160
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.416Z",
+ "cells": {
+  "16": [
+   "4051e98d1ff06220"
+  ],
+  "24": [
+   "0db91db50f674332",
+   "54af56648dc89be3",
+   "84e8e2afb550efde",
+   "981d41a3cfc49363",
+   "d308426822a6ed5a",
+   "fd06731e7d62e889"
+  ],
+  "32": [
+   "16ad2875d34d316a",
+   "326eb0ae2aa4135f",
+   "8ba4e0b60b766ea2",
+   "bbbdc6aa3d0dad7c",
+   "bcd0ea4b0991a041",
+   "d01b4739518e6dc0"
+  ],
+  "48": [
+   "493e759bcb36ec66",
+   "6471caf0a2eb3af4",
+   "88facd60c1c57d9b",
+   "a088abb4d82153f6",
+   "a57fd62dab16c192",
+   "f5058437d6e66c3c"
+  ]
+ }
+}

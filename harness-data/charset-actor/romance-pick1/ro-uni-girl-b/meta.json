@@ -1,0 +1,51 @@
+{
+ "key": "ro-uni-girl-b",
+ "arch": "ro-uni-girl",
+ "base": "People1:1",
+ "variant": "흰 세일러 상의(네이비 칼라 + 붉은 스카프), 네이비 치마, 흰 양말 + 갈색 로퍼. 머리는 검은 갈색(모양 유지). 1번과 색 조합이 확연히 달라야 한다.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "attempts": [
+  {
+   "n": 1,
+   "agy_exit": 124,
+   "errors": [],
+   "warnings": [
+    "팔레트에 있지만 안 쓴 색 Acdefiknprsuyz"
+   ],
+   "at": "2026-10-16T04:13:21"
+  }
+ ],
+ "delegated": "",
+ "before": "",
+ "gear_task": "",
+ "ok": true,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 Acdefiknprsuyz"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 0.883,
+   "T": 0.901,
+   "B": 0.856,
+   "S": 1.0
+  },
+  "cross": 9,
+  "cross_base": 9,
+  "lone": 370,
+  "lone_base": 377
+ },
+ "reapplied": true
+}

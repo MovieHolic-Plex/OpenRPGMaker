@@ -126,6 +126,8 @@
 .dialogue-overlay[data-dialogue-style="pixel-cinematic"] .choice-list .choice-btn {
   border-radius: 0;
   flex-shrink: 0;
+  /* 선택 표식(◆, left 5px)이 첫 글자에 붙지 않게 글 시작을 조금 밀어 준다(romance-loop-1 실측: 「◆한서연으로 한다」 간격 0). */
+  padding-inline-start: 18px;
   line-height: 1.2;
   overflow-wrap: anywhere;
 }

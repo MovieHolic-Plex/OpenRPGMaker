@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb5de72376ed9040157a9b7707873fff3c6511581d817f5d5094e0cea4bd6db2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "안개 이끼 땅 A",
+ "label": "gothic_manor/gm-ground-moss-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy ground tile with misty specks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 ground terrain tile representing a mossy surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 mossy ground texture tile with small highlight specks, representing continuous terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2861
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mossy ground terrain tile with small pale flecks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat mossy ground surface viewed from above, filling the 16x16 canvas with ground texture and specks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3777
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 terrain ground tile depicting mossy turf with light speckles (mist/dew/spores). As ground terrain, it fully represents a horizontal surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7345
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.504Z",
+ "cells": {
+  "16": [
+   "83d44a4b6625f7c2"
+  ],
+  "24": [
+   "5d03be63027905f6",
+   "69fcd81bec3c1a4b",
+   "790dbba437d454ad",
+   "99fc65c7d72e3398",
+   "9a7bf2d9a262dd36",
+   "a04c70dc5e93bdc3"
+  ],
+  "32": [
+   "0189a03d15f7810a",
+   "0202d523a7484d98",
+   "1f0a6e4e5ed3f4aa",
+   "262575f986390de4",
+   "63d4690fa3687a89",
+   "ffb1aa175d6f2d57"
+  ],
+  "48": [
+   "1c45ef789327e3f9",
+   "49d8889e8b705fb9",
+   "6f65021b20bddd00",
+   "b44b88b97ea6a503",
+   "bd175eacbbc5c076",
+   "e4caf72d73d6966c"
+  ]
+ }
+}

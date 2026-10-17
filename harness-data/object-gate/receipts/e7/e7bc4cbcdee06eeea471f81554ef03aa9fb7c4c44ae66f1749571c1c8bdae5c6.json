@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7bc4cbcdee06eeea471f81554ef03aa9fb7c4c44ae66f1749571c1c8bdae5c6",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-3-R",
+ "label": "jp_city/street_hand/jp-sf-izakaya-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (lintel, sliding doors, window lattice, lantern, and upper facade band) is drawn in a flat 2D architectural front elevation with no visible top surfaces or top slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7866
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade / storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the lintels, doorway frame, and upper frieze/wall, is drawn in pure front elevation with 0 rows of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "izakaya storefront with eave roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features an eave roof across rows 1-7 (7 source pixel rows) showing the roof surface seen from above, resting over the vertical front facade of the storefront.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4849
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "izakaya storefront with eave/awning and entrance",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure features an 8-pixel-tall eave/canopy slope (rows 1-8) seen from above with surface texture and edge highlights before meeting the facade wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11913
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.389Z",
+ "cells": {
+  "16": [
+   "31503ef37ea162cf",
+   "5b56ab9854f9e31c",
+   "61cac19962dc28f9",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "ad5f123bf1aee714",
+   "b94ef5938594547e",
+   "e374434bc8fe3f78"
+  ],
+  "24": [
+   "305cd268d8e94430",
+   "41d484633b39caaf",
+   "91092d31746e8fbe",
+   "a037d57646b089e6"
+  ],
+  "32": [
+   "0bec4c238ec4ec1d",
+   "0f7e26f6b219a8b6",
+   "1976978792bc7f31",
+   "2066bc19fbdb2b3e",
+   "20f8c195b1fd35eb",
+   "2397d3705b1c1eac",
+   "29a486b0975a6093",
+   "3cf3c60bed8b01d4",
+   "5bbb65054e5994b0",
+   "66f816638c7791bb",
+   "6d18bf56dfad3adc",
+   "7eb8ac5656ae6821",
+   "891cbadaea6fcc7e",
+   "90c0de9fa3197384",
+   "947f4ac54070430a",
+   "b022dd53553d8c9c",
+   "ca284b94268b0ac7",
+   "cfe5287b8ccaf75e",
+   "d18035107e5ab84a",
+   "d9052260167fbb59",
+   "dd48f77f9b062709",
+   "def0fb726d22fc57",
+   "e1c488ae9938e456",
+   "e7b8b589b27ee6e9"
+  ],
+  "48": [
+   "1fdcae9c858267a3"
+  ]
+ }
+}

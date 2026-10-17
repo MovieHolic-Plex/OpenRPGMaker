@@ -1,0 +1,57 @@
+{
+ "key": "sc-priestess-a",
+ "arch": "sp3-priestess",
+ "base": "Scarloxy1:7",
+ "variant": "청록 긴 머리를 금발 3톤으로 recolor, 분홍 귀 장식은 그대로, 파란 드레스를 청록색 로브로 recolor(밝은 청록·짙은 청록 3톤), 분홍 치맛단은 그대로 분홍 유지, 가슴 앞에 금빛 장식 한 점(T paint 2×2).",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 1,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 adhnqr"
+ ],
+ "metrics": {
+  "added_up0": 0,
+  "added_up1": 0,
+  "added_up2": 0,
+  "added_right0": 0,
+  "added_right1": 0,
+  "added_right2": 0,
+  "added_down0": 0,
+  "added_down1": 0,
+  "added_down2": 0,
+  "added_left0": 0,
+  "added_left1": 0,
+  "added_left2": 0,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 1.0,
+   "S": 1.0
+  },
+  "cross": 5,
+  "cross_base": 5,
+  "lone": 276,
+  "lone_base": 220
+ },
+ "distinct": {
+  "score": 0.686,
+  "nearest": "scarloxy-charset-people1#7"
+ },
+ "repairs": {
+  "dropped_stray_px": 0,
+  "hole_filled_px": 0,
+  "sanitized": {
+   "recolor 와 같은 색을 paint 로 또 적은 칸을 정리": 52,
+   "down 줄 20 이 24글자가 아니라 버림": 1
+  }
+ },
+ "run": "r5/sp3-priestess-a",
+ "redo": "2026-10-16",
+ "verdict": {
+  "score": 9,
+  "pass": "PASS",
+  "text": "결함 거의 없음. 눈 위 청록 점이 살짝."
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "acd37649e69289b672ed8d8784118f57ea0730c1c9a164100b086f8c9783c47d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "장롱(탄스, 서랍 + 쇠 장식)",
+ "label": "sengoku-edo/se-tansu",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall chest of drawers / tansu",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered from row 3 to row 7 (5 pixel rows tall) with top-down wood grain, a front edge highlight on row 7, and a cast shadow over the drawer bank on row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5520
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest is clearly visible across rows 2–7 (approx. 6 pixel rows deep) with wood texture and a front-edge highlight line on row 7, above the three tiers of drawers facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chest of drawers / tansu",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 3-7 clearly show the horizontal top surface of the chest with wood grain texture and a highlighted front edge lip at row 7, above the three rows of drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6930
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest of drawers",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest is clearly shown from row 2-3 to row 7 (about 5-6 pixel rows tall) with wood grain texture and a front-edge highlight, above the front drawer face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3079
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.076Z",
+ "cells": {
+  "16": [
+   "1989cff65fde24b8",
+   "5cde5a91ab0c265c",
+   "5dad64871d5d6241",
+   "d9b10635578b6e7b"
+  ],
+  "24": [
+   "101f27e1bc1c80d7",
+   "1619f8d7b286042e",
+   "24402de80e3f0ec6",
+   "28dc1f324172dc56",
+   "2a0a86e322a3a65e",
+   "2c159233e9cb652b",
+   "3a199f3946426119",
+   "48b71fe921814a2d",
+   "50b697bcb90cc9bf",
+   "5fa3de7d343e55e8",
+   "683594e2dcc923dc",
+   "6e290a4fc2e5b15f",
+   "812c98a9655d2a68",
+   "8b68ddfe9d22baa4",
+   "93a1abfe31410d2c",
+   "a11a855f14203959",
+   "b294e048f459ecb8",
+   "b699d300f986a3f6",
+   "c35af8ac5c66191d",
+   "d4f4590c183a0a40",
+   "e18f97fe7e33e0de",
+   "e7be2b176dc26c46",
+   "eba10fc6e4d9ae5b",
+   "ffa76b38489ef7a6"
+  ],
+  "32": [
+   "7ea918c97739d573"
+  ],
+  "48": [
+   "1e4f02bdc1de0f96",
+   "388f08b7a525ccaf",
+   "80830679414028be",
+   "a4c1e5973e910572",
+   "bda48b830984c47d",
+   "ca79d635d79cccb6"
+  ]
+ }
+}

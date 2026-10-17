@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "adbe94b8b45286b80115d9739d64fdd64ea997dccbac48efd69d087b2267fecc",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "sky background tile with a tiny sparkle",
+ "label": "sky-island/si-sky-glint",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sky background tile with sparkles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2D background/terrain tile representing sky with sparkle motifs across the full 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sky background tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sky background terrain tile with small sparkle motifs; no standing 3D object is depicted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5835
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sky background tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sky background terrain tile with faint sparkle pixels; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sky background tile with sparkles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 sky background terrain tile with small sparkle motifs; not a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5616
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "8dfb4a47526ad844"
+  ],
+  "24": [
+   "023291f3d6eb5663",
+   "0dc26cec028ccc54",
+   "347949af0fcacc16",
+   "96dbcd46dc5f4fbd",
+   "c0fd11220033434d",
+   "d78c6593322d180f"
+  ],
+  "32": [
+   "02ffc5fcb675ac86",
+   "267eb67347244fcb",
+   "4b7e85696595d857",
+   "c793757985d55bbf",
+   "ce9ecb1572512db9",
+   "d5990b5f818b4478"
+  ],
+  "48": [
+   "3c590484d2971d20",
+   "568e8f7e222512e7",
+   "8be316a1481ee37d",
+   "8f903f9ad2b51351",
+   "a9fa0406ae0bb479",
+   "cd47d7de965d1580"
+  ]
+ }
+}

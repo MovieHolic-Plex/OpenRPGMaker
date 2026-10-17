@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa37c688fda1516da64613c3fa924557c43544233c17e8bf055fabdacafa3b27",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-6-R",
+ "label": "jp_city/street_hand/jp-sf-machiya-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya building facade with sliding door and latticed windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade is drawn in flat architectural front elevation. The projecting central door frame and lintel show only a 2px dark horizontal cap (rows 12-13) with no top surface, and the eaves, windows, and foundation plinth show no foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat architectural front elevation. While the pent roof eave has some vertical height (rows 8-21), the protruding entrance door and its lintel (rows 12-13) have only a 2px flat cap with no visible top surface, and the entire facade lacks top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11805
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machiya building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The door frame, lintel, window lattices, and base plinth show only 0-2px lines where top surfaces should be, with no 3/4 top-down perspective visible on horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12451
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "machiya building facade with awning roof and lattice entrance",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main awning roof (hisashi) between the upper lattice and lower windows spans rows 9 to 21 (13 source pixels tall), correctly foreshortened for a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6176
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.648Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "2a750be2acb717cc",
+   "3a5162cc64da4e1c",
+   "3fae5867f8e17aba",
+   "47dbdf04d1b37802",
+   "7f1775d8f542293a",
+   "884a53247c5d220d",
+   "91adf9299a32a824",
+   "a3043c90ab422321",
+   "ac529962e6e72f70",
+   "c8ba2cfaceb7db6d",
+   "c9935c1aceeb5b56",
+   "f53aa0a80fda7bf4",
+   "f91f2729557b16f2"
+  ],
+  "24": [
+   "02f10e6a7ba34163",
+   "36af71a4c1632066",
+   "8aa3fa64b939572d",
+   "8c2d00682371adbf",
+   "98ceb43d33c29bb0",
+   "da7047820a02a2f6",
+   "ef5a2d5c6bf4115e",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "366d8aa182091872",
+   "817dbcb5f4916360",
+   "905eef6f44a9df35",
+   "a25a4856765c8b02",
+   "b0eccde16b6da91a",
+   "bb0df715a4500032",
+   "be61dd1fe0a1fe25",
+   "c2a6accb9fbeec4f",
+   "cc15cea23ae117c6",
+   "cc7358b28079e89d",
+   "db9d84e0a5d82d62",
+   "f3231d5948245068"
+  ],
+  "48": [
+   "0af03855f5c704d9",
+   "b3dbe320e1031214"
+  ]
+ }
+}

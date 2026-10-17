@@ -1,0 +1,21 @@
+import { createMonsterExpedition } from "../../../src/project/examples/monsterExpedition";
+const t0=Date.now();
+const r:any = createMonsterExpedition({gymCount:2,speciesCount:20});
+const project = r.project ?? r;
+console.log("keys of result:",Object.keys(r).slice(0,8),"ms",Date.now()-t0);
+const sys=project.system;
+console.log("battleModel",sys.battleModel,"battleUiStyle",sys.battleUiStyle,"activeSlots",sys.activeSlots,"battleParty",sys.battleParty,"monsterBattleParty",sys.monsterBattleParty);
+const tc=sys.typeChart;
+console.log("typeChart.types",tc.types.length,tc.types.join(","));
+let n2=0,n5=0,n0=0;
+for(const a of tc.types)for(const d of tc.types){const m=tc.multipliers[a]?.[d]; if(m===2)n2++; else if(m===0.5)n5++; else if(m===0)n0++;}
+console.log("2x cells",n2,"0.5x",n5,"0x",n0);
+const spec=project.database.monsterSpecies;
+console.log("species",spec.length,"dual-type species",spec.filter((s:any)=>(s.types?.length??0)>=2).length);
+const ex=(a:string,d:string)=>tc.multipliers[a]?.[d];
+console.log("fire->grass",ex("fire","grass"),"water->fire",ex("water","fire"),"electric->ground",ex("electric","ground"),"normal->ghost",ex("normal","ghost"),"ghost->normal",ex("ghost","normal"),"fire->steel",ex("fire","steel"),"psychic->dark",ex("psychic","dark"),"dragon->fairy",ex("dragon","fairy"),"fighting->dark",ex("fighting","dark"));
+console.log("elements db",project.database.elements?.length);
+const used=new Set<string>(); for(const s of spec) for(const t of s.types??[]) used.add(t);
+console.log("species types in use",[...used].join(","));
+console.log("ghost->psychic",ex("ghost","psychic"),"(Gen1 cartridge bug=0, Gen2+=2)");
+console.log("tc type counts by id uses 'dark'?", tc.types.includes("dark"));

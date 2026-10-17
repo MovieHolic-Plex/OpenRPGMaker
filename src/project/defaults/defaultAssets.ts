@@ -14,6 +14,16 @@ import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramRefere
 import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
 import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
 import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWorldReferences, ensureWizardingWorldTileset } from "./wizardingWorld";
+import { PIRATE_ISLES_TEXTURE, createPirateIslesTileset, ensurePirateIslesReferences, ensurePirateIslesTileset } from "./pirateIsles";
+import { SENGOKU_EDO_TEXTURE, createSengokuEdoTileset, ensureSengokuEdoReferences, ensureSengokuEdoTileset } from "./sengokuEdo";
+import { SKY_ISLAND_TEXTURE, createSkyIslandTileset, ensureSkyIslandReferences, ensureSkyIslandTileset } from "./skyIsland";
+import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCityReferences, ensureSteampunkCityTileset } from "./steampunkCity";
+import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset } from "./modernCampus";
+import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset } from "./sfStation";
+import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset } from "./gothicManor";
+import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset } from "./prehistoric";
+import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReferences, ensureDesertEastTileset } from "./desertEast";
+import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset } from "./snowNorth";
 import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
@@ -114,6 +124,21 @@ export function defaultTilesets(): Record<string, TilesetDef> {
   return tilesets;
 }
 
+/**
+ * 번들 타일셋 하나만 새로 만든다 — `defaultTilesets()[id]` 와 같은 값이지만 나머지를 만들지 않는다.
+ * 번들에 없는 id 면 아무것도 만들지 않고 undefined 다.
+ *
+ * 왜(2026-10-14 실측, 번들 타일셋 30+개 · 데이터 55MB): 모듈 평가 때 `defaultTilesets()[한 id]` 로 시트 하나의 모양만 읽던 곳이
+ * 전부(3~9MB 짜리 복제 수십 개, 0.6s)를 만들어 버렸다. 그 id(EasyRPG 실내)는 2026-10-07 부터 번들에도 없어 결과는 늘 undefined 였다.
+ */
+export function bundledTilesetById(id: string): TilesetDef | undefined {
+  if (id === DEFAULT_TILESET_ID) return defaultTileset();
+  for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    if (bundledTilesetIdForAsset(asset) === id) return bundledEasyRpgTileset(asset);
+  }
+  return undefined;
+}
+
 // 숲마을·기후 마을·선별 소품·Tibo 실내·합본 마을+레트로 월드 시트의 보강 단계는 2026-10-07 저작권 정리로 그 칩셋과 함께 지웠다.
 // 옛 프로젝트에 남은 그 타일셋 정의는 그대로 읽힌다(번들 목록에 없으니 여기서 건드리지 않는다).
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
@@ -162,6 +187,56 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === WIZARDING_WORLD_TEXTURE) {
         changed = ensureWizardingWorldTileset(project.tilesets[id]) || changed;
         changed = ensureWizardingWorldReferences(project.tilesets[id]) || changed;
+      }
+      // 열대 군도·해적 항구 (pirate_isles 굽기): 번들 칸 표·`pi-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === PIRATE_ISLES_TEXTURE) {
+        changed = ensurePirateIslesTileset(project.tilesets[id]) || changed;
+        changed = ensurePirateIslesReferences(project.tilesets[id]) || changed;
+      }
+      // 전국·에도 일본 (sengoku_edo 굽기): 번들 칸 표·`se-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === SENGOKU_EDO_TEXTURE) {
+        changed = ensureSengokuEdoTileset(project.tilesets[id]) || changed;
+        changed = ensureSengokuEdoReferences(project.tilesets[id]) || changed;
+      }
+      // 하늘섬 (sky_island 굽기): 번들 칸 표·`si-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === SKY_ISLAND_TEXTURE) {
+        changed = ensureSkyIslandTileset(project.tilesets[id]) || changed;
+        changed = ensureSkyIslandReferences(project.tilesets[id]) || changed;
+      }
+      // 스팀펑크 도시 (steampunk_city 굽기): 번들 칸 표·`sp-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) {
+        changed = ensureSteampunkCityTileset(project.tilesets[id]) || changed;
+        changed = ensureSteampunkCityReferences(project.tilesets[id]) || changed;
+      }
+      // 현대 학교·캠퍼스 (modern_campus 굽기): 번들 칸 표·`mc-` 부품·참고문서(야외 mc-·실내 mci-)를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === MODERN_CAMPUS_TEXTURE) {
+        changed = ensureModernCampusTileset(project.tilesets[id]) || changed;
+        changed = ensureModernCampusReferences(project.tilesets[id]) || changed;
+      }
+      // SF 정거장·네온 거리 (sf_station 굽기): 번들 칸 표·`sf-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === SF_STATION_TEXTURE) {
+        changed = ensureSfStationTileset(project.tilesets[id]) || changed;
+        changed = ensureSfStationReferences(project.tilesets[id]) || changed;
+      }
+      // 고딕 저택·묘지 (gothic_manor 굽기): 번들 칸 표·`gm-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === GOTHIC_MANOR_TEXTURE) {
+        changed = ensureGothicManorTileset(project.tilesets[id]) || changed;
+        changed = ensureGothicManorReferences(project.tilesets[id]) || changed;
+      }
+      // 선사 시대 원시 세계 (prehistoric 굽기): 번들 칸 표·`ph-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === PREHISTORIC_TEXTURE) {
+        changed = ensurePrehistoricTileset(project.tilesets[id]) || changed;
+        changed = ensurePrehistoricReferences(project.tilesets[id]) || changed;
+      }
+      // 사막·동양풍 (desert_east 굽기): 번들 칸 표·`de-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === DESERT_EAST_TEXTURE) {
+        changed = ensureDesertEastTileset(project.tilesets[id]) || changed;
+        changed = ensureDesertEastReferences(project.tilesets[id]) || changed;
+      }
+      // 북방 설원 (snow_north 굽기): 번들 칸 표·`sn-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === SNOW_NORTH_TEXTURE) {
+        changed = ensureSnowNorthTileset(project.tilesets[id]) || changed;
+        changed = ensureSnowNorthReferences(project.tilesets[id]) || changed;
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       // 몬스터 수집 손 도트 시트(지역별): 다시 구운 시트면 칸 표를 번들 것으로, 아니면 빠진 번들 킷만 더한다.
@@ -327,6 +402,16 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
   if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
   if (asset.textureKey === WIZARDING_WORLD_TEXTURE) return createWizardingWorldTileset();
+  if (asset.textureKey === PIRATE_ISLES_TEXTURE) return createPirateIslesTileset();
+  if (asset.textureKey === SENGOKU_EDO_TEXTURE) return createSengokuEdoTileset();
+  if (asset.textureKey === SKY_ISLAND_TEXTURE) return createSkyIslandTileset();
+  if (asset.textureKey === STEAMPUNK_CITY_TEXTURE) return createSteampunkCityTileset();
+  if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
+  if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();
+  if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();
+  if (asset.textureKey === PREHISTORIC_TEXTURE) return createPrehistoricTileset();
+  if (asset.textureKey === DESERT_EAST_TEXTURE) return createDesertEastTileset();
+  if (asset.textureKey === SNOW_NORTH_TEXTURE) return createSnowNorthTileset();
   if (isMonsterKitTexture(asset.textureKey)) return createMonsterKitTileset(asset.textureKey);
   if (isEmeraldMonsterKitTexture(asset.textureKey)) return createEmeraldMonsterKitTileset(asset.textureKey);
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();

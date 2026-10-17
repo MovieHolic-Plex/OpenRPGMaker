@@ -4,6 +4,7 @@ import { sha256HexBytes } from '@/util/sha256';
 import { jsonEqual } from '@/util/structuralJson';
 import { SHARED_CONTENT_ENDPOINT, type SharedContentScope, type SharedContentSnapshot } from './sharedContentSchema';
 import { readSharedContentCache, writeSharedContentCache } from './sharedContentCache';
+import { inflateSharedContentResponse } from './sharedContentDedup';
 import { ensureSharedCharacters, installSharedCharacters } from './sharedCharacters';
 const bundledLibraries: Record<string, SharedContentLibrary> = {};
 let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibraries};
@@ -113,12 +114,13 @@ async function loadSharedContentScope(scope: SharedContentScope): Promise<void> 
   // 판본(ETag)을 기기 캐시와 비교한다. 같으면 호스트가 본문 없이 304 를 주고 캐시를 쓴다 — 예전 no-store 는
   // 공용 자료가 그대로여도 부팅마다 gzip 73MB 를 다시 받았다(2026-09-27 실측). HTTP 캐시는 본문이 커서 안 남는다.
   const cached=await readSharedContentCache(scope);
-  const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}`,{cache:'no-store',headers:cached?{'if-none-match':cached.etag}:{},signal:AbortSignal.timeout(60000)});
+  const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}&dedup=1`,{cache:'no-store',headers:cached?{'if-none-match':cached.etag}:{},signal:AbortSignal.timeout(60000)});
   let value: SharedContentSnapshot;
   if(r.status===304 && cached) value=cached.value;
   else {
     if(!r.ok) { if(r.status===404) throw new SharedContentNotFoundError(); throw new Error(`HTTP ${r.status}`); }
-    value=await r.json() as SharedContentSnapshot;
+    // 호스트가 같은 긴 글을 한 번만 실어 보냈으면 되돌린다(받은 트리는 막 파싱한 사적 트리다). 옛 호스트는 예전 형식을 준다.
+    value=inflateSharedContentResponse(await r.json());
     const etag=r.headers.get('etag');
     if(etag) void writeSharedContentCache(scope, etag, value);
   }

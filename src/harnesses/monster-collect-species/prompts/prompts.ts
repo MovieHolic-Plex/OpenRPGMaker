@@ -7,18 +7,84 @@
  */
 import type { ActionContract, ScreenVector, SpeciesSeed, StyleContract } from "../seed";
 
+/**
+ * 디자인 계약 (2026-10-16, 외부 시험자 지적 「귀엽지 않다 / 강해 보이지만 특징이 없다 / 어딘가 특출나게 강조된 곳이 있어야 한다」).
+ * 이전 프롬프트는 「NOT chibi, NOT kawaii, believable creature anatomy」 라고 적어 실사적 비례의 평평한 동물만 나왔다.
+ * 규칙 다섯: ① 시그니처 한 부위 과장 ② 1단계는 chibi 비례(머리 40~50%·큰 눈·짧고 통통한 몸) ③ 진화마다 시그니처가 커지거나 형태가 바뀜,
+ * 최종형은 위압감 ④ 실루엣(검정 마스크 64px)으로 종이 구별 ⑤ 몸 색 3~4개 + 포인트 1개. 문서 openwiki/harnesses/monster-collect-species.md 「디자인 규칙」.
+ * 귀여움은 비례와 눈에서 나온다 — 홍조·스티커·하트·반짝이는 장식은 여전히 금지(마스코트 스티커처럼 나온 2026-10-01 실패).
+ */
+export const DESIGN_RULES_VERSION = 4;
+
+/**
+ * 판본 4 (2026-10-16, 사용자 「하이라이트 없이 어두운 눈은 징그럽다, 귀여운 거 위주로」): 귀여움이 최우선, 흰 하이라이트는 필수(어두운 구슬눈 = 탈락),
+ * 1~2단계는 눈이 크고 반짝인다. 하이라이트가 64px 축소에서 먹히는 문제는 도트화 규칙(pixel/downscale.ts findHighlights·preserveHighlights)이 푼다.
+ *
+ * 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」).
+ * 판본 2 그림 30장 실측: 눈이 한 점으로 뭉개지거나(rootpig) 하이라이트가 없고(gustchick·aqualing 한쪽) 윤곽에 붙고(kilnclaw) 얼굴 자체가 안 읽히고(frondhare)
+ * 줄기눈에 눈동자가 없고(coralpin) 뒷모습에 눈이 비쳤다. 「narrow sharp eyes」(진화형)가 눈 크기를 64px 에서 3화소 아래로 줄이는 주범이었다.
+ * 하네스 검사(checks/eyes.ts)가 같은 수치를 쓴다: 주 눈 3×3 화소 이상 + 하이라이트 1화소 + 밝은 얼굴 위(윤곽선과 분리).
+ */
+export function eyeClause(species: SpeciesSeed): string {
+  const big = species.stage <= 2
+    ? "BIG shiny round eyes (each pupil at least 6 art pixels wide and 6 tall, about a fifth of the head width - eyes are the biggest feature of the face)"
+    : "readable round eyes (each pupil at least 5 art pixels wide and 5 tall)";
+  return [
+    species.eyes
+      ? `EYES (the most important part of cuteness, readable at 64 pixels): ${species.eyes}`
+      : "EYES (the most important part of cuteness, readable at 64 pixels): draw TWO clearly visible eyes on the face - three-quarter view, the near eye bigger, the far eye a little smaller, both on the same level on the head.",
+    `${big}: a solid dark round or oval pupil (dark brown or navy) with a pure-white shiny highlight made of a 2x2 block of art pixels in the upper-left of the pupil plus, when room allows, one more white pixel at the lower right - the highlight is MANDATORY, a dark bead eye without a white highlight is forbidden,`,
+    "sitting on a LIGHT skin area with at least one art pixel of light skin color between the eye and the dark outline - the pupil never touches or merges with the outline, and is never a single dot, a thin slit, a smudge or hidden under hair or leaves.",
+    "Sweet, friendly, alive expression - sparkling eyes, a gentle face you want to befriend. NOT creepy: no compound or insect eyes, no slit or reptile pupils, no dead dark beads, no scowl, no bared teeth, no menacing glare.",
+  ].join(" ");
+}
+
+function proportionClause(stage: 1 | 2 | 3): string {
+  if (stage === 1) {
+    return [
+      "PROPORTIONS (first-stage creature, must be genuinely adorable): chibi proportions - the head is 40-50% of the total body height, a round head, large round glossy sparkling eyes",
+      "(each about a fifth of the head width, dark with a 2x2 white highlight), short plump rounded torso, stubby short limbs, a soft rounded overall silhouette,",
+      "gentle sweet expression, smooth soft textures (no scaly, chitinous, insect-like or reptilian roughness on the face). The cuteness comes from the proportions and the big eyes, not from decoration: no blush marks, no hearts, no sparkles, no stickers, no wide mascot grin.",
+    ].join(" ");
+  }
+  return [
+    "PROPORTIONS (evolved creature, strong but still lovable): the head is 30-38% of the body height with BIG round shiny eyes (dark pupil, 2x2 white highlight, never tiny slits, never a scowl), longer limbs, a sturdy powerful build,",
+    "a confident brave stance (it may rear up on two legs), armor-like or mane-like decoration growing out of the body. It looks clearly stronger and more mature than its earlier stage but keeps a kind, charming face - a hero you want on your team, not a villain.",
+  ].join(" ");
+}
+
+function signatureClause(species: SpeciesSeed): string {
+  return [
+    `SIGNATURE FEATURE (the most important thing in the picture): ${species.signature}.`,
+    "Draw this ONE feature boldly exaggerated - much larger than a realistic animal would have, taking a big share of the whole silhouette and being the first thing the eye sees;",
+    "keep every other part simple so the signature stands out.",
+    "Silhouette test: if the picture is filled solid black, the outline alone must still be unique and recognizable from this feature - not a generic balanced animal outline.",
+  ].join(" ");
+}
+
+function colorClause(species: SpeciesSeed): string {
+  return [
+    "COLOR PLAN: only 3-4 body colors (main, secondary, light belly, dark) with 2-3 shading tones each, dark colored outline (a dark version of the local color, not pure black)",
+    species.accent ? `plus ONE vivid accent color (${species.accent}) used only on the signature feature, so the eye lands there.` : "plus one vivid accent color used only on the signature feature.",
+  ].join(", ");
+}
+
 export function frontPrompt(style: StyleContract, species: SpeciesSeed): string {
   return [
     "Draw on this flat magenta canvas.",
     "Original creature design for a monster-collecting RPG, finished pixel art battle sprite in the style of",
-    `${style.reference} opponent sprites.`,
-    "Strong readable silhouette, believable creature anatomy (real limbs, joints, paws or claws, a sense of weight),",
-    "designed by a professional creature designer, NOT a cute mascot, NOT chibi, NOT kawaii:",
-    "no blush marks, no sparkly anime eyes, eyes small and sharp with one tiny highlight.",
-    `About ${style.maxColors - 6} colors: 2-3 main hues with 3 shading tones each, dark colored outline (dark version of the local color, not pure black).`,
-    "Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing.",
+    `${style.reference} opponent sprites (cute, bold, instantly readable monsters).`,
+    "Designed by a professional monster designer: a strong readable silhouette and ONE exaggerated signature feature - NOT a realistic zoological animal drawing, NOT a flat well-balanced animal.",
+    proportionClause(species.stage),
+    signatureClause(species),
+    eyeClause(species),
+    colorClause(species),
+    `Total at most ${style.maxColors - 6} colors. Light from the upper left, flat clean shading areas, no dithering noise, no gradients, no anti-aliasing.`,
     "Pose: three-quarter view turned to the LEFT, standing on its feet, head and chest facing left, tail on the right. NOT facing the viewer.",
-    "Every art pixel is one clean square block of about 12x12 image pixels; the creature is about 80 art pixels wide.",
+    species.stage >= 2
+      ? "Every art pixel is one chunky clean square block of about 14x14 image pixels (a coarse low-resolution look); the whole creature is only about 80 art pixels wide and 90 tall, so keep shapes big and simple - no tiny details."
+      : "Every art pixel is one clean square block of about 12x12 image pixels; the creature is about 80 art pixels wide.",
+    "FRAMING: the entire creature including its signature feature (mane, tail, ears, horns, flames) stays inside the middle 70% of the canvas width and height with a wide empty magenta margin on every side - never larger, never touching the edges.",
     "The whole background stays flat solid pure magenta #FF00FF: absolutely NO glow, NO aura, NO halo, NO embers, NO smoke,",
     "NO light bloom around the creature, no ground, no shadow, no text.",
     `Creature (${species.types.join("/")} type, evolution stage ${species.stage}): ${species.design}`,
@@ -27,25 +93,29 @@ export function frontPrompt(style: StyleContract, species: SpeciesSeed): string 
   ].filter(Boolean).join(" ");
 }
 
-export function backPrompt(): string {
+export function backPrompt(species?: SpeciesSeed): string {
   return [
     "EDIT TASK on the reference pixel art creature sprite (Pokemon Black and White style).",
-    "Draw the SAME creature (identical design, colors, markings, palette, outline style and pixel block size)",
+    "Draw the SAME creature (identical design, colors, markings, palette, outline style, proportions and pixel block size)",
     "as the PLAYER's monster BACK sprite in a monster battle: the camera is BEHIND it and slightly to its left and above,",
     "we see its back, the back of its head and its tail closest to us; it faces AWAY from us toward the upper RIGHT where the opponent stands.",
-    "The head is turned to the right so only the back of the head and a sliver of the right-side profile (one eye at most, partly) are visible;",
+    "The head is turned to the right so only the back of the head and a sliver of the right-side profile are visible; NO eyes are visible from behind - draw no eyes, no pupils, no face features at all on the back view (keep the dark outline, no dark dots on the head);",
     "the snout points to the right. Tail in the foreground on the lower left. Same body posture type as the reference",
     "(a four-legged creature stays on four legs). It is close to the camera and fills the picture.",
+    species ? `Keep the exaggerated signature feature (${species.signature}) just as big and just as prominent as in the reference - it must still dominate the silhouette from behind.` : "",
+    species && species.stage === 1 ? "Keep the chibi proportions: the head stays big and round, the body short and plump." : "",
     "Flat solid pure magenta #FF00FF background everywhere, NO glow, NO aura, no ground, no shadow, no text, no anti-aliasing.",
     "Absolutely no dark border, halo or vignette around the creature: magenta must touch the outline directly.",
-  ].join(" ");
+  ].filter(Boolean).join(" ");
 }
 
 /** 진화형: 앞 단계 도트를 참고로 넣고, 같은 계통으로 자란 모습을 그린다. */
 export function evolutionPrompt(style: StyleContract, species: SpeciesSeed, previousName: string): string {
   return [
     `The reference is ${previousName}, an earlier evolution stage. Draw its evolved form as a NEW sprite in the same style and pixel block size:`,
-    "same color family and signature markings, clearly the same lineage, but bigger, more mature and more powerful, with a stronger silhouette.",
+    "same color family and markings, clearly the same lineage, but the SIGNATURE FEATURE has grown much bigger or changed into a more dramatic form, and the whole body changed shape",
+    "(new posture, new proportions: it must be told apart from the earlier stage by silhouette alone - NOT the same silhouette with a recolor).",
+    "Do not copy the reference outline; redraw the creature with imposing evolved proportions.",
     frontPrompt(style, species).replace("Draw on this flat magenta canvas. ", ""),
   ].join(" ");
 }
@@ -77,7 +147,7 @@ export function actionPrompt(style: StyleContract, species: SpeciesSeed, side: "
     "Exactly one complete full-body pose centered in each box; no pose may cross into a neighboring box or overlap another pose; nothing cropped.",
     "NO effects of any kind (the game draws fire, water, leaves and impacts itself): no sparks, beams, particles, motion lines, speed lines, afterimages, smears, blur, glow, aura, shadow, dust or impact bursts.",
     "Do NOT draw the boxes, guide lines, frame numbers, labels or any text. The whole background is flat solid pure magenta #FF00FF, magenta touching the outline directly.",
-    `Creature (${species.types.join("/")} type): ${species.design}`,
+    `Creature (${species.types.join("/")} type): ${species.design} Signature feature, keep it exactly as in the reference sprite: ${species.signature}.`,
     "Pixel art: chunky clean square pixel blocks, dark colored outline, flat shading, no anti-aliasing, no gradients.",
   ].join(" ");
 }

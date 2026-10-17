@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9509145209d229028a53ad47cc114f30f30f26dcacdc06e26e570b7ca4478a70",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "prehistoric stone-age straw bed",
+ "label": "prehistoric/ph-straw-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "straw bed mat with a pillow",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The straw bed is viewed from above in 3/4 perspective, showing at least 6 pixel rows of the top sleeping surface (rows 2-7) with a visible pillow and woven pattern, and a shaded front edge below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "straw bed/mat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed clearly displays a 6-row foreshortened top sleeping surface (rows 2-7) with a 3-row front vertical drop (rows 8-10); the pillow also correctly shows top and south faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4758
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "straw mattress / bed with pillow",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows a 5-pixel tall top surface (rows 3-7) with a resting pillow, and a 3-pixel tall front edge/face (rows 8-10) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4861
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "straw mattress bed",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is shown in standard 3/4 top-down view with a generous top surface (approx. rows 3-7, ~5 rows tall) featuring a foreshortened pillow, and a distinct shaded south front face (rows 8-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5474
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.709Z",
+ "cells": {
+  "16": [
+   "01fd6883e12fafd9",
+   "9470213bbd2aba6f"
+  ],
+  "24": [
+   "0d80af577f89d6a7",
+   "0de7d07037bdffad",
+   "1346de9319ebc909",
+   "3681b9bf5e741280",
+   "415130f589aabd2a",
+   "61653c3cd3058cbd",
+   "6222f58588a43373",
+   "6349b69aba7540eb",
+   "6b11ebde1055a2f8",
+   "9ed305311c8a285d",
+   "bedeccfa5df714d3",
+   "c934c11d1aeafa0f"
+  ],
+  "32": [
+   "360c27f48719b49d",
+   "4439010dfd4b2fee"
+  ],
+  "48": [
+   "0449bbfe91b25851",
+   "660fb392ae899561",
+   "763bc7388ff0eeaa",
+   "9bb92fcb6a7f4453",
+   "dcdfca28d0d8d250",
+   "e1145ccb8caa81b3"
+  ]
+ }
+}

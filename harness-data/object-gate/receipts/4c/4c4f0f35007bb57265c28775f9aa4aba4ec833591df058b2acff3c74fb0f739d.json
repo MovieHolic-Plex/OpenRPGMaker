@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c4f0f35007bb57265c28775f9aa4aba4ec833591df058b2acff3c74fb0f739d",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-6-R",
+ "label": "jp_city/street_hand/jp-sf-apartment-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator / sci-fi sliding door structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator door frame and upper lintel/overhang (rows 7-9) are drawn completely flat in front elevation with no visible top surface (only a 1px black outline at row 7).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8386
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and corridor wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame and wall structure are rendered in pure flat front elevation. The lintel/overhang above the elevator (rows 7-8) consists only of a 1px dark line and a 1px highlight line without any visible top surface in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6867
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large apartment building facade with a central entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; roofs, lintels, and the central entrance have only horizontal edge lines with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 250693
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 254773,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.284Z",
+ "cells": {
+  "16": [
+   "13513fa858f3ca41",
+   "20c644f07a08bbab",
+   "4a7ffe9b5b8b50f1",
+   "67486c086a708f95",
+   "8b47f6595d7bc272",
+   "91981ea6408a53ff",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "e2099af672879c9c",
+   "e9dcfdc5a23bb509",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2",
+   "f6667b8422880b8b"
+  ],
+  "24": [
+   "34c30ebf083ef679",
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "7868839616969d13",
+   "af98f6ce88300766",
+   "c000f2c5a5ca428f",
+   "cc784fa1349b4126",
+   "d14ba4e36030ceed"
+  ],
+  "32": [
+   "410ec1895fe0e48a",
+   "594ff6563f171669",
+   "7bae81fdd3856be6",
+   "7f993c115917ee3f",
+   "ac1559a1be143c2a",
+   "b104d74a7187e35f",
+   "cb9b313bf9bf8744",
+   "cf9d782002beb582",
+   "d1bab9372ff16b26",
+   "e58f7775ca2c2da5",
+   "e8f4428344ab68d2",
+   "f74233a6fa3745db"
+  ],
+  "48": [
+   "556f1ca90685c4ca",
+   "7c8e0c8acaeafa1c"
+  ]
+ }
+}

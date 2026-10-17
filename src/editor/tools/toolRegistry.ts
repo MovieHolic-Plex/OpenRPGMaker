@@ -1,8 +1,18 @@
 import { MONSTER_GAME_TOOLS } from './monsterGameTools';
+import { MONSTER_TOURNAMENT_TOOLS } from './monsterTournamentTools';
+import { MONSTER_BATCH_TOOLS } from './monsterBatchTools';
 import { bindStreetToolLookup } from "./jpCityStreetTool";
+import { bindThemeToolLookup } from "./themeScenes";
+import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
+import { FIELD_ENEMY_TOOLS } from './fieldEnemyTools';
+import { FIELD_OBSTACLE_TOOLS } from './fieldObstacleTools';
+import { TRAINER_TOOLS } from './trainerTools';
+import { MONSTER_CENTER_TOOLS } from './monsterCenterTools';
+import { BADGE_GATE_TOOLS } from './badgeGateTools';
+import { MONSTER_PC_TOOLS } from './monsterPcTools';
 import { GAME_SYSTEM_AUTHORING_TOOLS } from './gameSystemAuthoringTools';
 import { OPENING_STORYBOOK_TOOLS } from './openingStorybookTools';
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
@@ -22,6 +32,8 @@ import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
 import { TIME_GATE_TOOLS } from "./timeGateTools";
+import { MAP_VARIANT_TOOLS } from "./mapVariantTools";
+import { TILE_CHANGE_EFFECT_TOOLS } from "./tileChangeEffectTools";
 import { VEHICLE_TOOLS } from "./vehicleTools";
 import { EVENT_COMMAND_ASSIST_TOOLS } from "./eventCommandAssistTool";
 import { EVENT_TOOLS } from "./eventTools";
@@ -45,11 +57,13 @@ import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { CUTSCENE_ART_TOOLS } from "./cutsceneArtTools";
 import { WORLD_TERRAIN_TOOLS } from "./worldTerrainTools";
+import { WORLD_VARIANT_TOOLS } from "./worldVariantTools";
 import { WORLD_ATLAS_TOOLS } from "./worldAtlasTools";
 import { WORLDMAP_ICON_TOOLS } from "./worldmapIconTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
+import { STAGE_PERFORMANCE_TOOLS } from "./stagePerformanceTools";
 import { MECH_CHARSET_TOOLS } from "./mechCharsetTools";
 import { PIXEL_ART_TOOLS } from "./pixelArtTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
@@ -62,6 +76,7 @@ import { RELIEF_TOOLS } from "./reliefTools";
 import { TERRAIN_TOOLS } from "./terrainTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
+import { GENRE_LOCK_TOOLS } from "./genreLockTools";
 import { WILD_ROUTE_TOOLS } from "./wildRouteTool";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
@@ -83,7 +98,18 @@ import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
+import { CAMPUS_TOOLS } from "./campusTools";
+import { MODERN_CITY_TOOLS } from "./modernCityTools";
+import { DESERT_EAST_TOOLS } from "./desertEastTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { PIRATE_ISLES_TOOLS } from "./pirateIslesTools";
+import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
+import { SKY_ISLAND_TOOLS } from "./skyIslandTools";
+import { STEAMPUNK_CITY_TOOLS } from "./steampunkCityTools";
+import { SF_STATION_TOOLS } from "./sfStationTools";
+import { GOTHIC_PLACE_TOOLS } from "./gothicPlaceTools";
+import { PREHISTORIC_TOOLS } from "./prehistoricTools";
+import { SNOW_NORTH_TOOLS } from "./snowNorthTools";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -98,8 +124,10 @@ import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { VIEW_FOCUS_TOOLS } from "./viewFocusTools";
 import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
+import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
+import { AUTHOR_BEODEUL_DUNGEON_ALIAS, AUTHOR_DUNGEON_TOOL } from "./dungeonTools";
 import { PROJECT_TOOLS } from "./projectTools";
 import { FIND_TOOLS } from "./discoveryTools";
 import { LIFE_SYSTEM_TOOLS } from "./lifeSystemTools";
@@ -121,6 +149,7 @@ import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 import { STORE_TOOLS } from "./storeTools";
+import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -210,11 +239,14 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_BEODEUL_TOWN_TOOL,
+  AUTHOR_DUNGEON_TOOL,
+  AUTHOR_BEODEUL_DUNGEON_ALIAS,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
   BUILD_CONCEPT_EXAMPLE_TOOL,
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,
+  ...SCENE_SETTING_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 방 세션·던전 방 파이프라인·팩 마을·
@@ -222,8 +254,29 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
+  // 현대 학교·캠퍼스(modern_campus) 야외 구성(학교 마당·교외 거리)과 건물 문 ↔ 실내 이음. modern_campus 맵에서만 동작한다.
+  ...withDomain(CAMPUS_TOOLS, "tile"),
+  // 도쿄풍 도시(modern_city) 거리 구성기(도로·교차로·건물 키트·공원·소품·차)와 건물 문 ↔ 실내 이음. modern_city 맵에서만 동작한다.
+  ...withDomain(MODERN_CITY_TOOLS, "tile"),
+  // 사막·동양풍(desert_east) 야외·실내 구성과 건물 문 ↔ 실내 이음. desert_east 맵에서만 동작한다.
+  ...withDomain(DESERT_EAST_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 열대 군도·해적 항구(pirate_isles) 맵 구성기 — 항구·섬 마을·요새·난파선 섬·배/술집/오두막/동굴 안을 씨앗으로 한 장째 짠다. oprn-pirate 맵에서만 동작한다.
+  ...withDomain(PIRATE_ISLES_TOOLS, "tile"),
+  // 전국·에도 일본(sengoku_edo) 야외 구성(성하마을·여관 거리·무가 저택·성·신사/절·농촌)과 건물 문 ↔ 실내 이음. sengoku_edo 맵에서만 동작한다.
+  ...withDomain(SENGOKU_EDO_TOOLS, "tile"),
+  // 하늘섬(sky_island) 구성기 — 마을·신전 섬·비공정 부두·섬 사슬·실내 방 한 장(섬·건물·다리·소품, 도달 검사)과 건물 문 ↔ 실내 이음. sky_island 맵에서만 동작한다.
+  ...withDomain(SKY_ISLAND_TOOLS, "tile"),
+  // 스팀펑크 도시(steampunk_city) 구성기 — 거리·공장역·운하 부두·실내 여섯 가지를 한 번에 짓고(배치·통행은 구성기), 건물 문 ↔ 실내를 잇는다.
+  ...withDomain(STEAMPUNK_CITY_TOOLS, "tile"),
+  // SF 정거장·네온 거리(sf_station) 맵 구성기 — 정거장·연구 기지 실내·네온 거리·달 기지를 씨앗으로 한 장째 짠다. oprn-scifi 맵에서만 동작한다.
+  ...withDomain(SF_STATION_TOOLS, "tile"),
+  ...withDomain(GOTHIC_PLACE_TOOLS, "tile"),
+  // 선사 시대 원시 세계(prehistoric) 구성기 — 부족 마을·늪지·화산 골짜기·화석 계곡·실내 넷을 한 번에 짓고(배치·통행·바닥 가장자리는 구성기), 집·동굴 문 ↔ 실내를 잇는다.
+  ...withDomain(PREHISTORIC_TOOLS, "tile"),
+  // 북방 설원(snow_north) 구성기 — 눈 마을·얼어붙은 호수·얼음 동굴 입구·겨울 장터·실내 다섯을 한 번에 짓고(배치·통행·오토타일 덩이는 구성기), 집 문 ↔ 실내를 잇는다.
+  ...withDomain(SNOW_NORTH_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
@@ -251,18 +304,22 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...AUTHORING_HARNESS_TOOLS,
   ...withDomain(COMPANION_TOOLS, "event"),
   ...withDomain(TIME_GATE_TOOLS, "event"),
+  ...withDomain(MAP_VARIANT_TOOLS, "map"),
+  ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
   ...withDomain(WORLD_TERRAIN_TOOLS, "world"),
+  ...withDomain(WORLD_VARIANT_TOOLS, "world"),
   ...withDomain(WORLD_ATLAS_TOOLS, "world"),
   ...withDomain(WORLDMAP_ICON_TOOLS, "world"),
   // 충돌 전용 지름길은 script_cutscene_staged 하나로 합친다(2026-10-02 조수 시험: 두 도구가 있으면 모델은 전용 쪽만 쓰고
   // 일반 도구를 외면했다). 실행·코드 호환은 getTool 로 유지 — 오프라인 사슬·옛 세션 재생.
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
   ...withDomain(CUTSCENE_STAGE_TOOLS, "event"),
+  ...withDomain(STAGE_PERFORMANCE_TOOLS, "event"),
   ...withDomain(MECH_CHARSET_TOOLS, "event"),
   ...withDomain(PIXEL_ART_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
@@ -290,6 +347,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(RESOURCE_TOOLS, "system"),
   ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
+  ...DUNGEON_LINK_TOOLS,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
   ...withDomain(STORY_ARC_TOOLS, "event"),
@@ -301,12 +359,21 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
+  ...GENRE_LOCK_TOOLS,
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
   ...withDomain(MUSIC_AUTHORING_TOOLS, 'system'),
   ...withDomain(GAME_SYSTEM_AUTHORING_TOOLS, 'system'),
   ...withDomain(MONSTER_GAME_TOOLS, 'system'),
+  ...withDomain(MONSTER_TOURNAMENT_TOOLS, 'system'),
+  ...withDomain(MONSTER_BATCH_TOOLS, 'database'),
   ...withDomain(NPC_PATROL_TOOLS, 'event'),
+  ...withDomain(FIELD_ENEMY_TOOLS, 'event'),
+  ...withDomain(FIELD_OBSTACLE_TOOLS, 'event'),
+  ...withDomain(TRAINER_TOOLS, 'event'),
+  ...withDomain(MONSTER_CENTER_TOOLS, 'event'),
+  ...withDomain(BADGE_GATE_TOOLS, 'event'),
+  ...withDomain(MONSTER_PC_TOOLS, 'event'),
   ...withDomain(OPENING_STORYBOOK_TOOLS, 'system'),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
@@ -317,6 +384,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
+  ...MAP_EMPTINESS_TOOLS,
   // Documentation tools belong to the system domain for explicitly scoped callers.
   ...withDomain(AI_DOC_TOOLS, "system"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
@@ -339,6 +407,7 @@ export function getTool(name: string): ToolDefinition | undefined {
   return TOOL_BY_NAME.get(name);
 }
 bindStreetToolLookup(getTool);
+bindThemeToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;

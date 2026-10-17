@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8904dc63e90f1b8bd440864db6b267d7efb6128b84e9c6646c47b6c4ba0c94e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "analysis machine against the back wall",
+ "label": "monster-rooms/lab_machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "analysis machine / mainframe terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation with no visible top surface (0 rows). The upper section (rows 2-5) shares the exact vertical edge shading of the front face rather than depicting a receding top plane, and the lower protruding base only has a 1px highlight line across row 22.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in flat front elevation. The front face extends directly to the top outline (row 1 is merely a 1px edge highlight with vertical highlights and shadows continuing down the entire height from row 2), with no foreshortened top surface visible on either the main body or the lower section.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7132
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall scientific analysis machine / computer terminal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the terminal is visible across rows 2–4 (3 source pixel rows tall) before the horizontal edge/crease at row 5, meeting the 3/4 view requirement for tall wall-backed furniture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10688
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis machine console",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body shows a 3-pixel-tall top surface (rows 2-4) uniformly lit from above, separated by an edge line (row 5) from the vertically shaded front face (rows 6-21) containing the screen and buttons.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13195
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "26a11773f638c2c7",
+   "31982ca2b0edc480",
+   "9dd759b926a8a451",
+   "acd03c72f5b893b9"
+  ],
+  "24": [
+   "100606e7faff1fe1",
+   "136afad30364a159",
+   "194c12660f5489dc",
+   "32465352b54d5bc9",
+   "339c09233e787ee3",
+   "35feb9064e612f02",
+   "4916e3c96c2e9512",
+   "4c250acea3cfb512",
+   "5303a8499fc127a6",
+   "6a6c636b2c7fd726",
+   "7144241f4aeca312",
+   "756e5aea4777e2ff",
+   "a209db2dd81af937",
+   "b2c582f23a6d80e1",
+   "c33432c7f7a6ddc6",
+   "c37536b0a2294d37",
+   "c7ea4b6b863518c1",
+   "cd7203cce08b6911",
+   "cda24901fb913923",
+   "d20021e8adfb1022",
+   "da159385e44f22cb",
+   "ecbbaf92366da2be",
+   "f07a01f373bbe7cd",
+   "f75f9d7abcae2ada"
+  ],
+  "32": [
+   "e87914e29be8711b"
+  ],
+  "48": [
+   "01a0c6326918356e",
+   "9e4b30198edacd94",
+   "d3664b4d4110e0ce",
+   "dc4d3d38b11c2976",
+   "fd6816ae4f2a8a9d",
+   "fdea964099c8f7e1"
+  ]
+ }
+}

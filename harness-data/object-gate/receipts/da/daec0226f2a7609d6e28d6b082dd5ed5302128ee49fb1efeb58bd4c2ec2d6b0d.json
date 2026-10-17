@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "daec0226f2a7609d6e28d6b082dd5ed5302128ee49fb1efeb58bd4c2ec2d6b0d",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "small mossy boulder",
+ "label": "sky-island/si-rock-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder features a clearly foreshortened, moss-covered top surface spanning rows 5 to 9, sitting above a south-facing stone base (rows 10 to 13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4225
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The moss-covered top surface spans rows 4 to 9 (approx. 5-6 rows tall) above the exposed rock front face spanning rows 10 to 13, clearly depicting a 3/4 view rounded rock.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "moss-covered rounded boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper surface of the boulder is clearly shown with a rounded moss cap occupying rows 5-9 (about 5 rows of visible top surface), resting on the lower stone south face spanning rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded boulder shows a clear top surface covered in moss spanning rows 5-9 (about 5 rows tall), with the south vertical/sloped rock face visible below on rows 10-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3273
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.427Z",
+ "cells": {
+  "16": [
+   "9541b006671fc2f1"
+  ],
+  "24": [
+   "7a4d3bfa029fc179",
+   "a2d60872844a644f",
+   "ae6e4101be22c347",
+   "ba9dfc7d6a72567b",
+   "e66cc437a787ea1c",
+   "eb25f3e52ad4de4f"
+  ],
+  "32": [
+   "0c61aa213c4ebc2b",
+   "2c34d0f3ec44f2db",
+   "39b462d54724e0f6",
+   "46e6afbefb92dd4a",
+   "88dedbd144ecf39b",
+   "e7413af8c5853a2c"
+  ],
+  "48": [
+   "17552afb43c90c90",
+   "1b2e0c277758b14d",
+   "4f7449b80d1d384b",
+   "767c96df999402f7",
+   "7f52fcd0f29ad682",
+   "885f6b674ef3f192"
+  ]
+ }
+}

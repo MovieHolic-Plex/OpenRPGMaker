@@ -123,6 +123,8 @@ export interface IntentFacts {
   readonly maps: readonly { readonly id: string; readonly name: string }[];
   readonly facilityLabels: readonly string[];
   readonly toolNames: readonly string[];
+  /** 몬스터 자산이 막힌 프로젝트·턴이면 true — 선언 프롬프트에서 몬스터 도구 안내를 뺀다(intentSystemPrompt). */
+  readonly monsterLocked?: boolean;
   readonly hasActivePlan: boolean;
   readonly wikiContext?: string;
   readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
@@ -141,6 +143,27 @@ export function isContinuationText(text: string): boolean {
   return CONTINUATION_TOKENS.has(text.normalize("NFKC").trim().toLowerCase().replace(/[.!~]+$/u, ""));
 }
 
+/**
+ * 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아닐 때 의도 선언 프롬프트·메모에서 지울 몬스터 문구.
+ * 정방향 문구는 INTENT_SYSTEM_PROMPT 안에 그대로 두고(몬스터 프로젝트용), 선언 호출 직전에 intentSystemPrompt 가 잘라 낸다 — 도구 이름이 선언 후보에 오르지 않게.
+ */
+const INTENT_MONSTER_SENTENCE = ["포켓몬/Pokemon/에메랄드 같은 전체 게임 생성·보수는", "define_monster_species를 선택한다. "] as const;
+export function intentSystemPrompt(facts: Pick<IntentFacts, "monsterLocked">): string {
+  if (!facts.monsterLocked) return INTENT_SYSTEM_PROMPT;
+  const start = INTENT_SYSTEM_PROMPT.indexOf(INTENT_MONSTER_SENTENCE[0]);
+  const end = INTENT_SYSTEM_PROMPT.indexOf(INTENT_MONSTER_SENTENCE[1]);
+  if (start < 0 || end < start) return INTENT_SYSTEM_PROMPT;
+  return INTENT_SYSTEM_PROMPT.slice(0, start) + INTENT_SYSTEM_PROMPT.slice(end + INTENT_MONSTER_SENTENCE[1].length);
+}
+
+/** 던전 시공 메모 등에 섞인 몬스터 키트·포켓몬풍 문구를 지운다(몬스터 자산이 막힌 프로젝트용). 문구가 없으면 그대로. */
+export function stripMonsterKitMentions(note: string): string {
+  return note
+    .replace("칩셋 어댑터(몬스터 키트 / 버들항)와 장르(포켓몬풍 짧은 던전 / 일반 RPG 긴 던전)는", "칩셋 어댑터와 장르는")
+    .replace("(버들항 기본, 몬스터 키트 기본은 cave)", "(버들항 기본)")
+    .replace("장르별 채우기 계획 data.population(야생 조우 구역·시선 트레이너·지름길 / 필드 적·상자·잠긴 문)", "채우기 계획 data.population(필드 적·상자·잠긴 문)");
+}
+
 export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.
 
 Fields:
@@ -148,12 +171,12 @@ Fields:
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
 - "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 build_hand_interior_room(plan) 로 짓는다(손 도트 v5) — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=create/modify 모두 작업할 기존 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 새 맵 자체를 요청하거나 모르면 null.
-- "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
+- "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false. 「이 작업·이걸·여기」처럼 가리키는 말만 있고 이름 붙은 대상이 없으면, 선택 영역이 주어진 한 그 선택 영역을 가리키는 것이니 true(계획만·미리보기·추천 요청도 마찬가지).
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
 - "clarifyOptions": clarify 가 있을 때 2~4개의 짧은 선택지 라벨. 없으면 [].
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. 집 한 채(place_terrain_house)는 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
-- "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 []. 포켓몬/Pokemon/에메랄드 같은 전체 게임 생성·보수는 read_monster_game, configure_monster_style, build_monster_game, review_monster_game을 선택한다. 높이·언덕·구릉·단차·고도·오르막·내리막·산길·절벽·경사로·평탄화 요청은 read_relief·sculpt_relief·check_relief를 우선 고른다. 길 연결까지 요청하면 design_terrain·lay_terrain_road·check_terrain_access를 함께 고른다. 일반 paint_tiles/fill_region으로 높이를 흉내 내지 않는다. 이 요청은 needsPlan:true이며 마을 하나로 축소하지 않는다. 기존 캠페인 보수는 재생성하지 않는다.
+- "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 []. 포켓몬/Pokemon/에메랄드 같은 전체 게임 생성·보수는 read_monster_game, configure_monster_style, build_monster_game, review_monster_game을 선택한다. 포켓몬풍 게임의 시야선 트레이너(눈이 마주치면 배틀)·관장 부하는 place_trainer, 18타입 상성표(악·강철·페어리)는 set_type_chart, 야생 레벨 범위·풀숲 칸에서만 나오는 조우는 set_encounter_table, 패배 시 돈 절반·경험치 나누기·상금 공식은 set_game_over·configure_game_systems 를 선택한다. 비전머신·필드 기술(절단·괴력·파도타기·폭포 오르기·플래시 같은, 길을 막은 바위·덩굴·물길·어둠을 기술로 여는 요청)은 place_field_obstacle, 기술을 몬스터에게 가르치는 기술머신 아이템은 upsert_item, 종마다 가르칠 수 있는 기술은 define_monster_species를 선택한다. 높이·언덕·구릉·단차·고도·오르막·내리막·산길·절벽·경사로·평탄화 요청은 read_relief·sculpt_relief·check_relief를 우선 고른다. 길 연결까지 요청하면 design_terrain·lay_terrain_road·check_terrain_access를 함께 고른다. 일반 paint_tiles/fill_region으로 높이를 흉내 내지 않는다. 이 요청은 needsPlan:true이며 마을 하나로 축소하지 않는다. 이벤트·컷씬·함정 요청이 장소·지형·건물·사물(화산·용암·늪·유적·성소·제단·다리 등)을 말하면 그 무대를 짓는 공간 시공 도구(build_scene_setting·fill_region·stamp_object·place_props 등)도 tools에 포함한다 — 이벤트 도구만 고르면 무대 없이 대사만 남는다. 기존 캠페인 보수는 재생성하지 않는다.
 - "viewNavigation": 사용자가 편집 화면에서 특정 맵·NPC·장소의 위치를 찾아 보여달라고 요청했을 때만 true. 예: '상점 어디야?', '그 NPC 찾아줘', '만든 마을 보여줘'. '마을 만들어줘', '버그 찾아줘', '타일 목록 보여줘', '화면 옮기지 말고 위치만 알려줘'는 false. 작업·검수·진행 보고를 위한 화면 이동을 추론하지 않는다.
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true,"world":true,"characters":true,"appearance":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 또는 "중세 게임 RPG를 만들어줘"처럼 프로젝트 전체를 처음 만드는 요청은 세계관·핵심 인물·주인공 외형/장비를 먼저 저작해야 하므로 world/characters/appearance를 true로 선언한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목과 새 세 항목 모두 true다.
@@ -174,8 +197,12 @@ Rules:
 - 「추가해줘」「하나 더」는 있는 곳에 얹는 것이라 보통 mode=modify 이고, 마을을 새로 만드는 뜻이 아니다.
 - 질문(뭐야, 몇 개야, 알려줘, 보여줘)은 mode=question, tools 는 조회 툴만.
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
+- 던전·카타콤·지하 감옥·성 지하·미궁·하수도·동굴·신전 유적·광산·화산·얼음 동굴 층을 짓는 요청은 tools 에 author_dungeon 을 적는다(방 배치·벽·바닥·장식·계단을 코드가 한 번에 깐다). 월드맵 장소 입구에 던전·마을을 잇는 요청은 link_world_entrance 도 적는다. 칩셋과 장르는 코드가 정한다 — 몬스터 수집(포켓몬풍) 프로젝트는 몬스터 키트의 짧은 동굴(방 2~4, 야생 조우 구역·시선 트레이너), 그 밖은 버들항 beodeul_city 의 긴 던전(방 6~9, 보스·보물·잠긴 문). 종류는 사용자 낱말로 type 을 고른다 — 지하묘지·카타콤·감옥·던전=catacomb, 성 지하·성채=castle, 미궁·미로=labyrinth, 하수도·수로=sewer, 동굴·지하 호수=cave, 신전·사원·유적=temple, 광산·갱도=mine, 화산·용암=volcano, 얼음 동굴=ice. 그 칩셋이 못 짓는 종류(예: 몬스터 키트의 광산·하수도, 버들항의 얼음)는 도구가 가장 가까운 종류를 권하며 거절한다 — 사용자에게 알리고 다른 칩셋으로 바꿔 칠하지 않는다. 벽·소품을 stamp_object·paint_tiles 로 따로 깔지 않는다. 필드 적·상자·트레이너는 그 결과의 빈 바닥 칸(data.rooms[].spots, data.population)에 둔다.
+- 탈것(비행선·배·초코보·광산 수레·뗏목)을 놓는 요청은 tools 에 place_vehicle 을 적는다(vehicle: boat|ship|airship|chocobo|cart|raft). 초코보는 숲·들을 걷고, 광산 수레는 레일 칸에서만, 뗏목은 강에서만 다닌다 — 월드맵 키트 지도는 지형 태그가 이미 붙어 있다.
+- 오페라·콘서트·연극 무대 공연(가사 자막·합창·막마다 배경 전환·조명)은 tools 에 author_stage_performance 를 적는다(막 목록 acts). 대사·카메라 중심 컷신은 script_cutscene, 그림 배우가 걷고 부딪히는 연출은 script_cutscene_staged.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
+- 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:
@@ -613,7 +640,16 @@ export function formatIntentNote(
     const facilityHow = intent.facility
       ? `시설 「${intent.facility}」는 참고문서 「손 도트 실내 (v5)」의 가까운 예제를 읽고 규모·방 구성을 정한 plan 을 build_hand_interior_room 으로 새 mapId 에 시공한다`
       : null;
-    if (intent.space === "both") {
+    if (intent.tools.includes("author_dungeon") || intent.tools.includes("author_beodeul_dungeon")) {
+      // 던전 층은 「실내」로 선언돼도 손 도트 실내 도구가 아니다 — 실측(2026-10-14 fe1 재시험): space=interior 노트를 따라
+      // build_hand_interior_room·list_hand_interior_parts 를 찾고 참고문서를 6번 읽느라 7분을 읽기만 했다.
+      lines.push(
+        "[의도] 던전 층 시공이다. 칩셋 어댑터(몬스터 키트 / 버들항)와 장르(포켓몬풍 짧은 던전 / 일반 RPG 긴 던전)는 author_dungeon 이 프로젝트에서 읽어 정한다 — type·genre 는 사용자 낱말이 분명할 때만 준다. 종류: 하수도·수로=sewer · 광산·갱도=mine · 화산·용암=volcano · 동굴·지하 호수=cave · 신전·사원·유적=temple · 미궁·미로=labyrinth · 성 지하·성채=castle · 얼음 동굴=ice · 지하묘지·감옥·던전=catacomb(버들항 기본, 몬스터 키트 기본은 cave). 버들항 sewer·temple·mine·catacomb·castle 은 author_dungeon({type,rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]}) 또는 방 구성을 맡기려면 author_dungeon({type,size:'medium'}), cave·volcano·ice·labyrinth 는 author_dungeon({type}) 만(방 목록 없이) 한 호출로 방·통로·벽·바닥·장식·계단을 깐다 — "
+        + "월드맵·야외의 입구(예: 산기슭 동굴 아이콘)와 이어야 하면 entrance:{fromMapId, place:장소 이름|x,y} 를 같이 주어 양방향 이동까지 한 번에 건다 — create_transfer_pair 로 따로 잇지 않는다. "
+        + "빈 시작 맵이면 mapId 에 그 id 를 준다. 좌표를 계산하지 말고, 참고문서·build_hand_interior_room·stamp_object·paint_tiles 로 벽·소품을 따로 깔지 않는다. "
+        + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만, 보스는 data.anchors.boss 방, 잠긴 문은 data.anchors.gate 칸에 두고, 장르별 채우기 계획 data.population(야생 조우 구역·시선 트레이너·지름길 / 필드 적·상자·잠긴 문)을 기존 도구로 놓는다. 도구가 type-unsupported-by-tileset 으로 거절하면 사용자에게 알리고 권한 종류로 다시 부르거나 묻는다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
+      );
+    } else if (intent.space === "both") {
       const how = facilityHow
         ?? "들어가서 걷는 집이면 외장은 place_terrain_house, 실내는 build_hand_interior_room(새 mapId)으로 짓고 create_transfer_pair 로 양방향 출입구를 잇는다";
       lines.push(

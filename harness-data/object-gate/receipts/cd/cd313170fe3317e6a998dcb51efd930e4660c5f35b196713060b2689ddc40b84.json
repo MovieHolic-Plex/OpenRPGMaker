@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd313170fe3317e6a998dcb51efd930e4660c5f35b196713060b2689ddc40b84",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "무덤 천장(어두운 돌) · 천장 — 방 남쪽 경계(테 북쪽)",
+ "label": "desert-east/de-ceil-tomb-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomb ceiling edge tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain/ceiling tile depicting dark stone with an upper boundary border; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a dark stone tomb ceiling/wall boundary with an edge trim along rows 0-1. It is not a standing object, correctly matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4569
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tomb ceiling border terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts tomb ceiling / boundary terrain with an upper border band and textured dark stone surface below, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling boundary terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents tomb ceiling/wall boundary terrain with dark stone pattern and upper border edge. Being flat terrain/wall autotile piece rather than a standing object, 3/4 perspective requirements for top surface do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3237
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.212Z",
+ "cells": {
+  "16": [
+   "0b0dfade46895cb1"
+  ],
+  "24": [
+   "0178ab03b5e20eb1",
+   "0bdb6b94ae66af9c",
+   "57b02a057a48360a",
+   "982c5f8e40992193",
+   "b447c4a35fe3ecdc",
+   "ea2ae827a59bb558"
+  ],
+  "32": [
+   "ad8469fe05a3dcda",
+   "b28df05c0bb3ca2c",
+   "bf6e088f089b20d0",
+   "d0b9120c96c10f42",
+   "d47f399cc17e2742",
+   "e4bedc35c30fe41e"
+  ],
+  "48": [
+   "3e1b105472bc6edb",
+   "67fcfa0133611150",
+   "884e5b153134ac98",
+   "8b2bdba556d41782",
+   "dbdf3c3b601f0fd2",
+   "e1da79633fe30fca"
+  ]
+ }
+}

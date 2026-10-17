@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88febd0154f00671ed4be98d94b21921a142797dda3923fd17a57bac2df5c641",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "화물 드론(몸통 윗면 + 회전날개 원 넷(흐린 날 원) + 매단 화물 상자 + 그림자)",
+ "label": "sf-station/sf-street-cargo-drone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo drone chassis",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone chassis clearly shows a 3-row top surface (rows 4-6 in light grey with a cyan indicator light) and a 3-row vertical front face (rows 7-9 in dark grey). The rotor discs, suspended cargo box, and ground shadow are all correctly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10792
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drone body and suspended cargo crate",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone shows a foreshortened top surface (rows 4-6, 3 rows) and a front south face (rows 7-8, 2 rows), with elliptical rotor blur discs (rows 1-5) and an attached crate showing top and front faces. However, the kind 'structure' is completely mismatched for a cargo drone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 8949
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drone chassis and cargo box",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone is drawn in proper 3/4 top-down perspective: the central body displays a clear 3-row top deck (rows 4-6) above a 3-row front face (rows 7-9), the rotors are rendered as foreshortened horizontal ellipses (rows 1-4), and an elliptical shadow is cast underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11409
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo drone body with suspended cargo box",
+    "kind_matches": false,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drone body shows a clear 3-row top surface (rows 4-6) above a 3-row front face (rows 7-9), and the suspended crate also shows a top face (rows 10-11). However, the kind 'structure — large structure: gate, pavilion, sealed door, building' does not describe a small flying cargo drone.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 5700
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.923Z",
+ "cells": {
+  "16": [
+   "3034038596b1f254",
+   "a86f4858254f2d16"
+  ],
+  "24": [
+   "0e08789377a11c4b",
+   "1190b1c93ba1c3a6",
+   "2f3c8fa138d97358",
+   "376ad270c06a7459",
+   "51e74a6126f7f816",
+   "683821c3ab56d3eb",
+   "6f370a90573a7687",
+   "a8191b5ed0753fab",
+   "bce6e74309e5817c",
+   "ca8a17815ed6e1a3",
+   "d7cb0a154d41bffe",
+   "e301ff411c4d2750"
+  ],
+  "32": [
+   "2964bfb3a25c2e9e",
+   "83245a1b425b9816"
+  ],
+  "48": [
+   "055017ebb7643536",
+   "0f8f23f084790eef",
+   "28b6ee0115cb65ff",
+   "3c2a1f2c5b093140",
+   "6c1d3974455d5214",
+   "93cc9c8b47071c2b"
+  ]
+ }
+}

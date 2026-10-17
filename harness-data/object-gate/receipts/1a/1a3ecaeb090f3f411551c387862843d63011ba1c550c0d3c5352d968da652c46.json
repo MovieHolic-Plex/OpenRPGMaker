@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a3ecaeb090f3f411551c387862843d63011ba1c550c0d3c5352d968da652c46",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "tall standing iron candelabra seen from above at 3/4: wide round base dish, three fat lit candles in drip pans",
+ "label": "pirate-isles/pi-candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "candelabra shaft, drip pans, and candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles and drip pan assembly at the top are drawn in flat front elevation with horizontal 1px slice tops and no visible 3/4 top surfaces or elliptical foreshortening. The top perspective is only indicated on the base plinth at the bottom, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing candelabra with candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles and golden drip pan across the top are drawn in flat front elevation with 0px of visible top surface; neither the candle wax tops nor the drip pans show any elliptical foreshortening seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7327
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing iron candelabra column with candle branches and candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central shaft, drip pan brackets, and candles are all rendered in a flat front elevation. Neither the candle tops nor the drip pan basins show any elliptical top surface or opening; only the base plinth shows depth, which does not substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5252
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron candelabra with central shaft, drip pan, and candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candles, drip pans, and central shaft are drawn in flat front elevation with straight horizontal cutoff lines and no visible top surfaces (top_rows: 0). Although the base dish shows an elliptical top plane, credit cannot be given solely to a base plinth while the main body lacks 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6731
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "402cfab2e6a5cd4d",
+   "f666fe0a5f0162e8"
+  ],
+  "24": [
+   "0a90e2a43b22d1e8",
+   "2715514a44d02071",
+   "2eb1d87940a1fbb6",
+   "3061258fab7434a0",
+   "33eb5dc9fef71ec5",
+   "5857e91d095ce118",
+   "7f9e274008e75cff",
+   "9ff9f465109e766f",
+   "a8f0eccf7dfa7185",
+   "c468c788e6c002fd",
+   "cb4355af4663ddb8",
+   "d68adcf9ff7fbac8"
+  ],
+  "32": [
+   "5f1e7f38b4b3bbae",
+   "6bd61bb6c109ba52",
+   "ada272e9b4b523ba"
+  ],
+  "48": [
+   "0ca095b808a4b116",
+   "34097a7e73150fb5",
+   "3818e58a4eeea912",
+   "6228496abc9241ad",
+   "686fa58695f06d27",
+   "c49249884b7072d2"
+  ]
+ }
+}

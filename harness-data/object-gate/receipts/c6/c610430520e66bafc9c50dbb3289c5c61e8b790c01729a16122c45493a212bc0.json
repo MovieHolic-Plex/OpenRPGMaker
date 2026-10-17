@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c610430520e66bafc9c50dbb3289c5c61e8b790c01729a16122c45493a212bc0",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "prehistoric stone-age woodpile",
+ "label": "prehistoric/ph-woodpile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of firewood/logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The woodpile is drawn in pure front elevation as tiered horizontal blocks with flat checkerboard dithering and no visible top surface or depth along the logs.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked woodpile / logs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The woodpile is drawn entirely in pure front elevation as three tiers of logs stacked flatly in vertical rows without any foreshortened top surfaces visible from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "woodpile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The woodpile is drawn entirely in pure front elevation as a 2D triangular stack of logs with no receding top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5914
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "woodpile / firewood stack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The woodpile is drawn in pure front elevation as a flat stepped mound without any foreshortened top surface visible. The upper edge at row 2 is just a 1px outline over a vertical front-facing texture.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6541
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.705Z",
+ "cells": {
+  "16": [
+   "352ddad2ebfe015a",
+   "9c22f15a7b04546b"
+  ],
+  "24": [
+   "0af885640dd41b11",
+   "0de76cf18d607c52",
+   "1d13a4dd41c28387",
+   "3937d7ccfb3b5b1f",
+   "4819f0442bba214a",
+   "5623c607bff4500b",
+   "64ed865a32377761",
+   "94acfa1783ed4277",
+   "9675fbc8f05e04ed",
+   "b0f401d24a7a267c",
+   "d0a9d1905fb11920",
+   "f2b7bc35b3551313"
+  ],
+  "32": [
+   "166007e28f6a08ac",
+   "bb25e10accd3334c"
+  ],
+  "48": [
+   "3db04fd11a355828",
+   "76e71c33187ee4d6",
+   "97da3452e49ecb88",
+   "b6f575a5ca67f0f6",
+   "caea5d83fc30af60",
+   "d812647a1a04ed35"
+  ]
+ }
+}

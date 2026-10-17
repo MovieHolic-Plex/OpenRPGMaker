@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49cb4c65c386c6682894e964925359f49fe93030ed2d4d2d287d2c815e62db71",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "prehistoric stone-age spear rack",
+ "label": "prehistoric/ph-spear-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wooden rack holding stacked spears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spear rack and stacked spears are drawn entirely in a flat front elevation. The top horizontal frame beam at row 3 is only a 1px outline with no visible horizontal top surface, and the feet at rows 13-14 show no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden spear rack with stacked spears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and stacked spears are depicted in a flat front elevation. The top beam has only a 1px outline at row 3 with no visible top surface foreshortening, and the frame/feet show no depth in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal wooden rack holding spears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spear rack is drawn entirely in a flat front elevation. The top horizontal bar of the frame is only a 1-pixel dark outline at row 3 with no foreshortened top surface visible, and the feet extend directly downward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3712
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal spear rack with spears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spear rack is drawn in pure front elevation with only a 1px outline along the top beam (row 3) and no foreshortened top surfaces visible on the frame, horizontal rails, or base legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2966
+  }
+ ],
+ "decidedAt": "2026-10-14T00:42:49.784Z",
+ "cells": {
+  "16": [
+   "2d70021cfcf0ef2b",
+   "8a08c69fce56a22c"
+  ],
+  "24": [
+   "28a5ed6f846a1456",
+   "2dc62d1e529a1ff8",
+   "3ee7f2f35ba27c32",
+   "47735816a47e4bd5",
+   "6ce9b3879dfe93fa",
+   "747bd5d346851c14",
+   "8c5ecdd2189edf60",
+   "949b286ec842b560",
+   "b1647ba91b874eff",
+   "bae5bb8c59bf79ef",
+   "bcafb9e421676f48",
+   "c59942ef0c52c56e"
+  ],
+  "32": [
+   "d06a318980c3b159",
+   "d1804117596d9628"
+  ],
+  "48": [
+   "0a1ed9fed07bd5a3",
+   "0af5e71a5b05f900",
+   "3cbb777dbb013766",
+   "7e99a4c5396cb5a7",
+   "8ac858c15dc181df",
+   "eb2ea1b8a4e36e6f"
+  ]
+ }
+}

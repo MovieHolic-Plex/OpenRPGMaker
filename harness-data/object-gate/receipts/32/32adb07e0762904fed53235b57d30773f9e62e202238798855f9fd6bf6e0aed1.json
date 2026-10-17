@@ -1,0 +1,146 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "32adb07e0762904fed53235b57d30773f9e62e202238798855f9fd6bf6e0aed1",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "병상 칸막이 커튼",
+ "label": "jp_city/interior_hospital/hs-curtain-wide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hospital bed privacy curtain hanging from ceiling track",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and track are drawn entirely in a flat front elevation. There is no visible top surface on the track, frame, or base, presenting a purely 2D vertical plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5498
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hospital bed partition curtain",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and top rail are rendered as a completely flat architectural front elevation with no visible top surface or depth perspective (top rail is only a 2px horizontal band at row 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4434
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hospital partition curtain",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and top rail are drawn completely flat in pure front elevation without any top surface or perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hospital privacy curtain partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The curtain and top rail are rendered entirely flat in a direct front elevation without any top-down perspective or visible horizontal depth (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4126
+  }
+ ],
+ "decidedAt": "2026-10-14T01:42:05.781Z",
+ "cells": {
+  "16": [
+   "1095bb6ba0f4522f",
+   "7fa369e73e518368",
+   "ae040b43569a0d1c",
+   "afa3648cc0b3c186",
+   "b239259ef6c36643",
+   "d8f7163c20dea06f"
+  ],
+  "24": [
+   "10bdd31a93149c01",
+   "20f9eed88ac331c9",
+   "3ed00c1886080873",
+   "4d7b334498162ff4",
+   "531f9079e6086f13",
+   "5bd334eeb89a4ab3",
+   "61313a77586dc8f1",
+   "68bdd6bd794d1b49",
+   "937b079c0e20757d",
+   "c8b919a1ab588488",
+   "ce99e820e63ce301",
+   "ed2b9e30dea6d74d"
+  ],
+  "32": [
+   "35455e7d8d782054",
+   "4749262e1e8e0750",
+   "c8287705a90be173",
+   "cd750934166a18da"
+  ],
+  "48": [
+   "2cd54c568ac0a2d3",
+   "3667f6c7549012c2",
+   "c0425092b67cf6d4"
+  ]
+ }
+}

@@ -5,6 +5,7 @@ import type { ActorInitialEquipment, Project } from "@/project/types";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
+import type { MonsterCollectAction, MonsterCollectUi } from "@/player/playerMonsterCollectTypes";
 
 export type PlayerStatusMenuActions = {
   readonly onInventoryViewChange?: (view: InventoryView) => void;
@@ -34,9 +35,13 @@ export type PlayerStatusMenuActions = {
   readonly onSelectFormationActor: (actorId: string) => void;
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onSelectCampaignSpecies?: (speciesId: string | undefined) => void;
+  readonly onDexPage?: (page: import("@/player/playerMonsterDexTypes").MonsterDexPage) => void;
   readonly onSelectMonster?: (instanceId: string | undefined) => void;
   readonly onToggleMonsterView: () => void;
+  readonly onMonsterCollect?: (action: MonsterCollectAction) => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
+  readonly onTakeHeldItem?: (instanceId: string) => void;
+  readonly onUseMonsterFieldSkill?: (instanceId: string, skillId: string) => void;
   readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
   readonly onRejectPendingMonsterSkill?: (instanceId: string, pendingSkillId: string) => void;
   readonly onSelectLifeLedgerTab?: (tab: LifeLedgerTabId) => void;
@@ -66,8 +71,10 @@ export type PlayerStatusMenuOptions = {
   readonly formationActorId?: string;
   readonly battleReportIndex?: number;
   readonly campaignSpeciesId?: string;
+  readonly dexPage?: import("@/player/playerMonsterDexTypes").MonsterDexPage;
   readonly monsterInstanceId?: string;
   readonly monsterView?: "party" | "box";
+  readonly monsterCollect?: MonsterCollectUi;
   readonly lifeLedgerTab?: LifeLedgerTabId;
   readonly readLive?: import("@/project/spatialOccupancy").SpatialLiveContextReader;
   readonly placementDirection?: import("@/project/types").Dir;

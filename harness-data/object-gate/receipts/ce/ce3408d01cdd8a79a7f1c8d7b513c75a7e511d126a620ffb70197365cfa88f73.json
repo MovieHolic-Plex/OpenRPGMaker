@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce3408d01cdd8a79a7f1c8d7b513c75a7e511d126a620ffb70197365cfa88f73",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "prehistoric stone-age cycad",
+ "label": "prehistoric/ph-cycad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cycad tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cycad is drawn in flat 2D side/front elevation (platformer style). The trunk has a completely flat horizontal base at row 46, and the fronds fan out symmetrically in 2D profile without any foreshortened top-down view of the canopy or trunk.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cycad palm crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cycad is drawn in pure 2D side-scroller front elevation. The fronds form a flat vertical ring around a central yellow cone in the coronal plane rather than radiating in a foreshortened ellipse seen from 45 degrees above, and the base of the trunk is a flat horizontal line with symmetrical 2D flaring.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cycad palm tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat front elevation (side-scroller style): the fronds radiate symmetrically in 2D profile without top-down foreshortening, and the base of the trunk sits on a completely flat horizontal line (row 46) with no elliptical ground contact or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6120
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cycad palm trunk and frond crown",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage crown shows 3/4 top-down depth with rear fronds reaching back to row 12, an interior central cone/shoot at rows 14-25, and foreground fronds drooping down to row 34, establishing a clear top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4189
+  }
+ ],
+ "decidedAt": "2026-10-14T00:26:45.797Z",
+ "cells": {
+  "16": [
+   "079871c9f734faf6",
+   "23a62d2a67475214",
+   "6bffc27aba5b0765",
+   "c88f117e148c3d2e",
+   "eaeb8a876a2f77e4",
+   "fc571d7ceb8c8ae0"
+  ],
+  "24": [
+   "0440c06236e0e464",
+   "3fd5b69e7433b71a",
+   "4290c8fbab0c0daa",
+   "46c515057464b4d6",
+   "5a9095270f20db51",
+   "65539e2fd212d294",
+   "aed409450bac23c7",
+   "ba4eddfa7e9e6d47",
+   "be71206d957cceaa",
+   "c927bf6f3d2a8886",
+   "d9bafce16ef48544",
+   "fef70fb289f34598"
+  ],
+  "32": [
+   "8c0562a3928af44f",
+   "b0081d615a4e5cdd",
+   "d3746ed05fec49f7",
+   "f7da7a21f5b176ba"
+  ],
+  "48": [
+   "5e3408757fba253f",
+   "7bf3911574bc1811",
+   "9eea36ceb0fbddc3"
+  ]
+ }
+}

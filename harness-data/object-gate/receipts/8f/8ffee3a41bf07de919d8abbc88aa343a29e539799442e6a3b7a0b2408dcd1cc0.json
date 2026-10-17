@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ffee3a41bf07de919d8abbc88aa343a29e539799442e6a3b7a0b2408dcd1cc0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "마른 풀밭 B (낙엽)",
+ "label": "gothic_manor/gm-ground-grass-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is a top-down ground surface texture representing dry grass with scattered leaves, naturally viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3719
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal terrain tile showing dry grass ground surface with scattered fallen leaves across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4410
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain ground tile with fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground texture tile showing dry grass and scattered fallen leaves viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground tile with dry grass and fallen leaves",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Full 16x16 terrain surface representing a ground tile with grass texture and fallen leaves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8094
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "bb87512807d77039"
+  ],
+  "24": [
+   "0ae1ae2c544f2342",
+   "1b129c418dc4f829",
+   "49bf425986a8f328",
+   "8e693e26bdd14de4",
+   "b5f154fbb38434f4",
+   "bd8c01c6bf4fc6db"
+  ],
+  "32": [
+   "13d814911d7d6536",
+   "34f2c639393fe254",
+   "5568bb9c64b984bf",
+   "6ffab1525b4e6ba9",
+   "b2b9d93c0b76a99d",
+   "b4891c32e5ac8cda"
+  ],
+  "48": [
+   "3b1b75f4f22dd838",
+   "3c8d41c9f9a903cd",
+   "40c7194c4635e235",
+   "625af7302dc45851",
+   "c5ba98ff8ded81b9",
+   "fba96e10bfe42879"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad2e55b732f8151d124451fb3786aec00ec07d8733dc0492be8b152f5a26cc80",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "scattered pile of gold coins and a goblet on the floor",
+ "label": "pirate-isles/pi-gold-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of gold coins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coin pile is drawn as a flat 2D shape with straight horizontal top (row 7) and bottom (row 14) outlines. Furthermore, the goblet embedded in it is drawn in pure side/front elevation with a flat 2px rim and no visible opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12816
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of gold coins with goblet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coin mound has a flat horizontal base and vertical side edges with no foreshortened top plane, and the goblet sticking out of it is drawn in flat front profile with a straight horizontal top and no visible opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13361
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of gold coins with a goblet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pile and goblet are drawn in pure front elevation (side-scroller style). The goblet has a flat horizontal top rim with no visible opening/interior ellipse, and the coin pile is drawn as a vertical 2D silhouette with a flat bottom, vertical left edge, and horizontal upper boundary with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of gold coins",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coin pile is drawn as a flat 2D block with vertical side walls and a straight horizontal top outline (top_rows=0). The goblet on top is also drawn in pure side/front elevation with a flat horizontal rim and no visible opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6881
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.411Z",
+ "cells": {
+  "16": [
+   "3df33b0acb53b605"
+  ],
+  "24": [
+   "06924f2f651d91a8",
+   "421fc2f3b6497582",
+   "43758eeee3fd1679",
+   "e183bbe72b8a9a5b",
+   "fd16a6fc1b0643d7",
+   "fff1b3e604e3dbe1"
+  ],
+  "32": [
+   "3c0c0e7cd748d7c3",
+   "90576bfac0523acf",
+   "a94f42e72b06e852",
+   "b19241a703d29dc5",
+   "c9389264d2f78e4f",
+   "d0b58bfb592bece3"
+  ],
+  "48": [
+   "1b93ff515b649327",
+   "a662139a9e679ebe",
+   "ab4d1b3e70505f4b",
+   "ba4ba2a5e53162ab",
+   "ba5702b92bc08f4b",
+   "cfa5b0071cd44893"
+  ]
+ }
+}

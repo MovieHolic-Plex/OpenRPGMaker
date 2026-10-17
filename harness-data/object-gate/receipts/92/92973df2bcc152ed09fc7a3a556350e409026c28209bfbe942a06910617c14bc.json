@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92973df2bcc152ed09fc7a3a556350e409026c28209bfbe942a06910617c14bc",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "prehistoric stone-age stone circle",
+ "label": "prehistoric/ph-stone-circle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone circle with standing megaliths surrounding a dirt clearing",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle is laid out in a foreshortened top-down ellipse with the interior ground spanning ~20 pixel rows (rows 16-36). Each individual standing stone distinctly shows its top surface (4-6 rows of top highlight/slope) above its front vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4335
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone circle with megaliths surrounding an earthen clearing",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle is arranged in a clear foreshortened ellipse spanning rows 16 to 37 (~21 rows of visible top ground surface), and each standing megalith has rounded, foreshortened top facets 5-6 rows tall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4963
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circle of standing stones around a dirt clearing",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle is properly drawn in 3/4 perspective as a foreshortened ellipse of megaliths arranged around a circular ground clearing (rows 16-37). Individual standing stones also clearly show their rounded/sloped top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4009
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circle of standing stones enclosing an earthen ground",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone circle is laid out in proper 3/4 perspective with an elliptical ground plane spanning rows 16-37, background megaliths clearly behind it, and foreground megaliths showing distinct 5-6 row top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4406
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.706Z",
+ "cells": {
+  "16": [
+   "12ec544d530173e8",
+   "1a253f72cd0d86d6",
+   "2e8b8dbadabb2fc1",
+   "3376f34a92121b3e",
+   "3c7db153bb396061",
+   "3eedd1482ca7133d",
+   "6d0586cd66f84cdc",
+   "a7eb1045e781b119",
+   "b0ff3ae8920d0217",
+   "e48de7c579c05fee",
+   "efd996c4e82870af",
+   "f4f25a47090b246e"
+  ],
+  "24": [
+   "3335e4999f6c174f",
+   "3c313a37ff315706",
+   "4781faeffbe3b032",
+   "512ab464898f5c09",
+   "577bdf4296b92974",
+   "5af76c26210fb57c",
+   "5f0bf7a819e4cbb2",
+   "6e12cf68ec785130",
+   "7753d56885622fe6",
+   "7a909041cd651309",
+   "7c58a9f7e2f55422",
+   "a4698fcff5353aa2",
+   "b4c68d5713a792a4",
+   "cea3cd915fe46fca",
+   "d128582e5faf4d12",
+   "d7ffa6636cd125c7",
+   "e75dd2e9e6edbd02",
+   "fd978adf14477e1b"
+  ],
+  "32": [
+   "0da95afc7510c6df",
+   "49552ff6037bf47b",
+   "71b89fb1eed0e173",
+   "790503211878acf3",
+   "b6bddc68dc9c8fb4",
+   "c9482762d43db51f",
+   "da5c00883809a14e",
+   "f61c6a116f6f45a8"
+  ],
+  "48": [
+   "1bc65d69f8e17b51",
+   "22441f811cfc1c09",
+   "9ec62424e27f4f24",
+   "ad80846525f10259",
+   "e65f0b3cb4f1d657",
+   "ec0a056c7fc17983"
+  ]
+ }
+}

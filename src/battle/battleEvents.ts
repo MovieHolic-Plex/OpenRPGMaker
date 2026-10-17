@@ -13,6 +13,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { transitionActorEquipment } from "@/project/equipmentRules";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
+import { badgeContext } from "@/project/badgeProgress";
 import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
@@ -1085,6 +1086,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "actorStat":
       case "actorState":
       case "partyLeader":
+      case "partyKnowsSkill":
+      case "badgeCount":
       case "partySize":
       case "facing":
       case "relativeFacing":
@@ -1108,7 +1111,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           } satisfies ActorQuerySession,
           condition,
           { eventId: options.ownerEventId },
-          calendarOptionsOf(options.project),
+          { ...calendarOptionsOf(options.project), ...badgeContext(options.project), partySkillIds: () => new Set(options.actors.flatMap((battler) => battler.skillIds)) },
         );
       case "difficulty":
         return conditionState.difficultyId !== undefined && conditionState.difficultyId === condition.difficultyId;

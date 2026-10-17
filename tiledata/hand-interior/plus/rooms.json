@@ -1,0 +1,766 @@
+{
+ "kinds": {
+  "museum_lobby": {
+   "ko": "박물관 입구 홀",
+   "alias": [
+    "박물관",
+    "미술관",
+    "박물관 입구",
+    "매표소",
+    "로비",
+    "museum"
+   ]
+  },
+  "museum_gallery": {
+   "ko": "미술관 전시실",
+   "alias": [
+    "미술관",
+    "화랑",
+    "그림 전시실",
+    "전시실",
+    "갤러리",
+    "gallery"
+   ]
+  },
+  "museum_relics": {
+   "ko": "유물 전시실",
+   "alias": [
+    "박물관",
+    "유물실",
+    "보물 전시실",
+    "진열실",
+    "전시실"
+   ]
+  },
+  "museum_sculpture": {
+   "ko": "조각 전시실",
+   "alias": [
+    "조각실",
+    "조각 전시실",
+    "석상 전시실",
+    "전시실"
+   ]
+  },
+  "museum_natural": {
+   "ko": "자연사 전시실",
+   "alias": [
+    "자연사",
+    "화석 전시실",
+    "자연사 박물관",
+    "전시실"
+   ]
+  },
+  "ship_cabin": {
+   "ko": "선장실",
+   "alias": [
+    "선장실",
+    "선실",
+    "배 안",
+    "해적선",
+    "범선",
+    "captain cabin",
+    "cabin"
+   ]
+  },
+  "ship_helm": {
+   "ko": "조타실",
+   "alias": [
+    "조타실",
+    "함교",
+    "키 잡는 곳",
+    "항해실",
+    "bridge",
+    "helm"
+   ]
+  },
+  "ship_galley": {
+   "ko": "배 주방",
+   "alias": [
+    "배 주방",
+    "선상 주방",
+    "갤리",
+    "주방",
+    "galley"
+   ]
+  },
+  "ship_crew": {
+   "ko": "선원 숙소",
+   "alias": [
+    "선원 숙소",
+    "선실",
+    "해먹",
+    "배 안",
+    "crew quarters"
+   ]
+  },
+  "ship_gundeck": {
+   "ko": "포 갑판",
+   "alias": [
+    "포 갑판",
+    "대포 갑판",
+    "함포",
+    "해적선",
+    "gun deck"
+   ]
+  },
+  "ship_cargo": {
+   "ko": "화물칸",
+   "alias": [
+    "화물칸",
+    "선창",
+    "짐칸",
+    "cargo hold",
+    "hold"
+   ]
+  },
+  "ship_brig": {
+   "ko": "배 감방",
+   "alias": [
+    "배 감방",
+    "선상 감옥",
+    "영창",
+    "brig"
+   ]
+  },
+  "arena_stands": {
+   "ko": "관중석",
+   "alias": [
+    "관중석",
+    "투기장",
+    "콜로세움",
+    "원형 경기장",
+    "stands"
+   ]
+  },
+  "arena_floor": {
+   "ko": "투기장 모래 마당",
+   "alias": [
+    "투기장",
+    "콜로세움",
+    "경기장",
+    "결투장",
+    "arena"
+   ]
+  },
+  "arena_armory": {
+   "ko": "투기장 무기고",
+   "alias": [
+    "무기고",
+    "검투사 대기실",
+    "투기장 무기고",
+    "armory"
+   ]
+  },
+  "gladiator_cell": {
+   "ko": "검투사 방",
+   "alias": [
+    "검투사",
+    "검투사 방",
+    "검투사 감방",
+    "대기 감방",
+    "gladiator cell"
+   ]
+  }
+ },
+ "buildings": {
+  "museum": "박물관 — 입구 홀·미술 전시실·유물실·조각실·자연사실 (판타지·중세 박물관/미술관. 호러·고딕 미술관은 고딕 저택 도구)",
+  "ship": "범선 위 갑판 — 선장실·조타실·배 주방·선원 숙소 (해적선·상선)",
+  "ship_hold": "범선 아래 갑판 — 포 갑판·화물칸·감방",
+  "arena": "투기장 — 관중석·모래 마당·검투사 방·무기고 (콜로세움)"
+ },
+ "examples": [
+  [
+   "arena",
+   "arena",
+   "arena_stands",
+   [
+    [
+     "tier back 3",
+     6
+    ],
+    [
+     "tier seat 3",
+     6
+    ],
+    [
+     "arena banner",
+     2
+    ],
+    [
+     "curule seat",
+     2
+    ],
+    [
+     "laurel trophy",
+     1
+    ],
+    [
+     "war drum",
+     1
+    ]
+   ]
+  ],
+  [
+   "arena",
+   "arena",
+   "arena_floor",
+   [
+    [
+     "brazier",
+     2
+    ],
+    [
+     "gate winch",
+     2
+    ],
+    [
+     "training dummy",
+     2
+    ],
+    [
+     "wall torch",
+     2
+    ],
+    [
+     "arena emblem",
+     1
+    ],
+    [
+     "portcullis",
+     1
+    ],
+    [
+     "portcullis open",
+     1
+    ]
+   ]
+  ],
+  [
+   "arena",
+   "arena",
+   "gladiator_cell",
+   [
+    [
+     "shackles",
+     1
+    ],
+    [
+     "stone bench",
+     1
+    ],
+    [
+     "straw pile",
+     1
+    ],
+    [
+     "water bucket",
+     1
+    ]
+   ]
+  ],
+  [
+   "arena",
+   "arena",
+   "arena_armory",
+   [
+    [
+     "archery target",
+     1
+    ],
+    [
+     "arena banner",
+     1
+    ],
+    [
+     "armor bench",
+     1
+    ],
+    [
+     "barrel",
+     1
+    ],
+    [
+     "gladiator rack",
+     1
+    ],
+    [
+     "shield rack",
+     1
+    ]
+   ]
+  ],
+  [
+   "arena",
+   "arena",
+   "gladiator_cell",
+   [
+    [
+     "beast cage",
+     1
+    ],
+    [
+     "prison cot",
+     1
+    ],
+    [
+     "shackles",
+     1
+    ],
+    [
+     "slop bucket",
+     1
+    ]
+   ]
+  ],
+  [
+   "museum",
+   "museum",
+   "museum_gallery",
+   [
+    [
+     "bench museum",
+     3
+    ],
+    [
+     "painting landscape",
+     2
+    ],
+    [
+     "potted fern",
+     2
+    ],
+    [
+     "painting grand",
+     1
+    ],
+    [
+     "painting sea",
+     1
+    ],
+    [
+     "painting still life",
+     1
+    ],
+    [
+     "plinth amphora",
+     1
+    ],
+    [
+     "plinth helmet",
+     1
+    ],
+    [
+     "rope barrier 3",
+     1
+    ]
+   ]
+  ],
+  [
+   "museum",
+   "museum",
+   "museum_relics",
+   [
+    [
+     "relic cabinet",
+     2
+    ],
+    [
+     "shield display",
+     2
+    ],
+    [
+     "wide cabinet",
+     2
+    ],
+    [
+     "accessory case",
+     1
+    ],
+    [
+     "case scroll",
+     1
+    ],
+    [
+     "case sword",
+     1
+    ],
+    [
+     "crown pedestal",
+     1
+    ],
+    [
+     "plinth helmet",
+     1
+    ]
+   ]
+  ],
+  [
+   "museum",
+   "museum",
+   "museum_sculpture",
+   [
+    [
+     "bronze warrior",
+     1
+    ],
+    [
+     "plinth",
+     1
+    ],
+    [
+     "plinth amphora",
+     1
+    ],
+    [
+     "skylight light",
+     1
+    ],
+    [
+     "stone sphere",
+     1
+    ]
+   ]
+  ],
+  [
+   "museum",
+   "museum",
+   "museum_lobby",
+   [
+    [
+     "lion statue",
+     2
+    ],
+    [
+     "potted fern",
+     2
+    ],
+    [
+     "window",
+     2
+    ],
+    [
+     "counter 3x1",
+     1
+    ],
+    [
+     "plaque stand",
+     1
+    ]
+   ]
+  ],
+  [
+   "museum",
+   "museum",
+   "museum_natural",
+   [
+    [
+     "plinth fossil",
+     2
+    ],
+    [
+     "relic cabinet",
+     2
+    ],
+    [
+     "geode stand",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship",
+   "ship",
+   "ship_cabin",
+   [
+    [
+     "captain bed",
+     1
+    ],
+    [
+     "captain desk",
+     1
+    ],
+    [
+     "chair N",
+     1
+    ],
+    [
+     "globe",
+     1
+    ],
+    [
+     "map rolls",
+     1
+    ],
+    [
+     "painting sea",
+     1
+    ],
+    [
+     "porthole",
+     1
+    ],
+    [
+     "rug red",
+     1
+    ],
+    [
+     "sea chest",
+     1
+    ],
+    [
+     "stern windows",
+     1
+    ],
+    [
+     "wardrobe",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship",
+   "ship",
+   "ship_helm",
+   [
+    [
+     "porthole",
+     2
+    ],
+    [
+     "binnacle",
+     1
+    ],
+    [
+     "chart table",
+     1
+    ],
+    [
+     "instrument shelf",
+     1
+    ],
+    [
+     "rope coil",
+     1
+    ],
+    [
+     "ship bell",
+     1
+    ],
+    [
+     "ship wheel",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship",
+   "ship",
+   "ship_galley",
+   [
+    [
+     "barrel",
+     2
+    ],
+    [
+     "cask rack",
+     1
+    ],
+    [
+     "galley stove",
+     1
+    ],
+    [
+     "pot rack",
+     1
+    ],
+    [
+     "sack pile",
+     1
+    ],
+    [
+     "work 3x2",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship",
+   "ship",
+   "ship_crew",
+   [
+    [
+     "stool",
+     3
+    ],
+    [
+     "hammock",
+     2
+    ],
+    [
+     "sea chest",
+     2
+    ],
+    [
+     "ship bunk",
+     2
+    ],
+    [
+     "dice barrel",
+     1
+    ],
+    [
+     "hanging lantern",
+     1
+    ],
+    [
+     "life ring",
+     1
+    ],
+    [
+     "porthole",
+     1
+    ],
+    [
+     "rope coil",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship_hold",
+   "ship_hold",
+   "ship_gundeck",
+   [
+    [
+     "cannon north",
+     4
+    ],
+    [
+     "gunport",
+     4
+    ],
+    [
+     "cannonball pile",
+     2
+    ],
+    [
+     "hanging lantern",
+     2
+    ],
+    [
+     "powder keg",
+     2
+    ],
+    [
+     "capstan",
+     1
+    ],
+    [
+     "deck grate",
+     1
+    ],
+    [
+     "life ring",
+     1
+    ],
+    [
+     "mast",
+     1
+    ],
+    [
+     "rope pin rail",
+     1
+    ],
+    [
+     "ship ladder",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship_hold",
+   "ship_hold",
+   "ship_cargo",
+   [
+    [
+     "barrel stack",
+     2
+    ],
+    [
+     "crate stack",
+     2
+    ],
+    [
+     "anchor chain",
+     1
+    ],
+    [
+     "barrel",
+     1
+    ],
+    [
+     "cargo netted",
+     1
+    ],
+    [
+     "cask rack",
+     1
+    ],
+    [
+     "crate",
+     1
+    ],
+    [
+     "hanging lantern",
+     1
+    ],
+    [
+     "powder keg",
+     1
+    ],
+    [
+     "sack pile",
+     1
+    ]
+   ]
+  ],
+  [
+   "ship_hold",
+   "ship_hold",
+   "ship_brig",
+   [
+    [
+     "bars",
+     1
+    ],
+    [
+     "prison cot",
+     1
+    ],
+    [
+     "shackles",
+     1
+    ],
+    [
+     "slop bucket",
+     1
+    ],
+    [
+     "stool",
+     1
+    ],
+    [
+     "straw pile",
+     1
+    ]
+   ]
+  ]
+ ],
+ "example_maps": [
+  "arena",
+  "museum",
+  "ship",
+  "ship_hold"
+ ]
+}

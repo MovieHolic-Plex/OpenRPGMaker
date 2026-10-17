@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-profile/1",
+ "profileHash": "473db36f963972c9",
+ "status": "rejected",
+ "calibratedAt": "2026-10-14T11:46:34.812Z",
+ "bad": {
+  "total": 47,
+  "caught": 17,
+  "missed": [
+   "interior/chopping_block__v5",
+   "interior/altar_E__w21-G",
+   "interior/pew__v5",
+   "interior/pew_E2__w45-A",
+   "interior/pew_E3__w45-A",
+   "interior/coffin__w73-A",
+   "interior/column_dwarf__w51-A",
+   "interior/column_marble__w51-A",
+   "interior/column_steel__w51-A",
+   "interior/column_stone__w51-A",
+   "interior/column_wood__w51-A",
+   "interior/barrel__w2-A",
+   "interior/cradle__w29-F",
+   "interior/magitek_engine__w46-A",
+   "interior/stone_throne__w52-A",
+   "interior/safe__w72-A",
+   "interior/spear_rack__w70-A",
+   "interior/hay_bale__w44-A",
+   "interior/loom__w43-A",
+   "interior/slot_machine__w46-A",
+   "interior/choir_stall__w45-A",
+   "interior/fish_tank__w44-A",
+   "interior/kitchen_range__v5",
+   "interior/patient_bed__w74-A",
+   "murim/scroll_shelf__A",
+   "murim/scroll_shelf__B",
+   "murim/medicine_cabinet__A",
+   "murim/medicine_cabinet__B",
+   "murim/gong_frame__A",
+   "murim/weapon_rack__A"
+  ]
+ },
+ "good": {
+  "total": 36,
+  "passed": 27,
+  "falseFail": [
+   "interior/holy_water_font__w7-A",
+   "interior/slop_bucket__w3-C",
+   "interior/anvil__w7-B",
+   "interior/feed_trough__w4-B",
+   "interior/bar_stool__w5-C",
+   "interior/cheese_wheels__v5",
+   "interior/forge__w44-A",
+   "interior/mortar_and_pestle__w1-B",
+   "interior/treasure_pile__w5-C"
+  ]
+ },
+ "style": {
+  "badTotal": 71,
+  "caught": 53,
+  "missed": [
+   "style/farm__farm-fenced-plot__v2",
+   "style/farm__farm-plot-wheat__v2",
+   "style/farm__farm-fence-v-3__v2",
+   "style/gothic__g-마른_풀밭_A__before",
+   "style/gothic__g-마른_풀밭_B__before",
+   "style/campus__bld-school-8__before",
+   "style/campus__bld-admin__before",
+   "style/campus__hedge__before",
+   "style/snow__cabin-m__before",
+   "style/snow__longhouse__before",
+   "style/snow__g-서리_풀__before",
+   "style/sengoku__machiya-a__before",
+   "style/prehistoric__hut-thatch-l__before",
+   "style/prehistoric__chief-house__before",
+   "style/prehistoric__fish-rack__before",
+   "style/prehistoric__g-원시_풀밭__before",
+   "style/steampunk__factory__before",
+   "style/steampunk__g-자갈_포석(돌_셋트)__before"
+  ],
+  "goodTotal": 78,
+  "passed": 43,
+  "falseFail": [
+   "style/farm__farm-fence-v-3__v3",
+   "style/gothic__dead-tree__after",
+   "style/gothic__willow-dead__after",
+   "style/gothic__dead-tree-crows__after",
+   "style/gothic__bush-dead__after",
+   "style/campus__bld-admin__after",
+   "style/campus__tree-zelkova__after",
+   "style/campus__tree-pine__after",
+   "style/campus__g-캠퍼스_잔디__after",
+   "style/snow__pine-l__after",
+   "style/snow__birch__after",
+   "style/snow__well__after",
+   "style/snow__woodpile__after",
+   "style/desert__house-dome-4__after",
+   "style/sengoku__tree-pine__after",
+   "style/sengoku__tree-maple__after",
+   "style/sengoku__chozuya__after",
+   "style/sengoku__g-풀밭__after",
+   "style/sf__hab-module__after",
+   "style/sf__control-tower__after",
+   "style/sf__vending__after",
+   "style/sf__wall-face-hull__after",
+   "style/sky__cottage-red__after",
+   "style/sky__tower-house__after",
+   "style/sky__tree-round__after",
+   "style/sky__tree-blossom__after",
+   "style/pirate__palm__after",
+   "style/pirate__tree-broad__after",
+   "style/pirate__grass__after",
+   "style/prehistoric__jungle-tree__after",
+   "style/prehistoric__tree-fern__after",
+   "style/steampunk__row-3__after",
+   "style/steampunk__shop-gears__after",
+   "style/steampunk__gas-lamp__after",
+   "style/steampunk__g-판석_보도__after"
+  ],
+  "groups": {
+   "farm-user": {
+    "total": 10,
+    "passed": 7
+   },
+   "quality-before": {
+    "total": 60,
+    "passed": 15
+   },
+   "quality-after": {
+    "total": 60,
+    "passed": 26
+   },
+   "beodeul-heldout": {
+    "total": 13,
+    "passed": 13
+   },
+   "synthetic-shallow": {
+    "total": 6,
+    "passed": 0
+   }
+  }
+ },
+ "judge": "gemini-4-argon(medium)"
+}

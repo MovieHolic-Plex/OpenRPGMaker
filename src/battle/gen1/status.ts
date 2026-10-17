@@ -1,13 +1,18 @@
-import type { Gen1DamageClass } from "@/battle/gen1/damage";
+import { computeGen1BaseDamage, type Gen1DamageClass } from "@/battle/gen1/damage";
 import type { Gen1NextByte } from "@/battle/gen1/rng";
 import type { Gen1MajorStatus } from "@/battle/gen1/capture";
 import type { Gen1CanonicalType } from "@/battle/typeChart";
 
 export type { Gen1MajorStatus } from "@/battle/gen1/capture";
 
+/** 주요 상태와 따로 걸리고 교체하면 풀리는 상태. 지금은 혼란 하나. */
+export type Gen1VolatileStatus = "confusion";
+
 export interface Gen1StateRecordRef {
   readonly id: string;
   readonly gen1MajorStatus?: Gen1MajorStatus;
+  /** 주요 상태와 겹쳐 걸리는 휘발 상태(교체·전투 종료로 사라진다). */
+  readonly volatileStatus?: Gen1VolatileStatus;
   /** 얼음만: 행동 전 녹을 확률(%). 0·없음이면 1세대처럼 치료할 때까지 못 움직인다. 3세대는 20. */
   readonly thawChance?: number;
 }
@@ -71,7 +76,10 @@ export function gen1MajorStatusBlockedByType(
   targetTypes: readonly Gen1CanonicalType[],
   moveKind: "damage" | "status",
 ): boolean {
-  if (status === "poison" && targetTypes.includes("poison")) return true;
+  const poisonous = status === "poison" || status === "toxic";
+  if (poisonous && targetTypes.includes("poison")) return true;
+  // 3세대 이후: 강철은 독 상태에 걸리지 않는다(15타입 1세대 프로젝트에는 강철 타입이 없어 영향 없음).
+  if (poisonous && targetTypes.includes("steel")) return true;
   if (!moveType) return false;
   if (moveKind === "damage" && status !== "sleep") return targetTypes.includes(moveType);
   return moveKind === "status"
@@ -189,19 +197,60 @@ export function gen1ParalyzedSpeed(speed: number, paralyzed: boolean): number {
   return paralyzed ? Math.max(1, Math.floor(normalized / 4)) : normalized;
 }
 
+export const GEN1_TOXIC_COUNTER_MAX = 15;
+
+/** 맹독 카운터: 매 차례 말에 1 올라 15 에서 멈춘다. 0 이하·비정상은 첫 차례(1)로 본다. */
+export function gen1NextToxicCounter(previous: number | undefined): number {
+  const counter = Math.trunc(Number.isFinite(previous) ? previous! : 0);
+  return Math.min(GEN1_TOXIC_COUNTER_MAX, Math.max(0, counter) + 1);
+}
+
 export function applyGen1PostActionResidual(input: {
   readonly kind: Gen1MajorStatus | undefined;
   readonly maxHp: number;
   readonly currentHp: number;
+  /** 맹독일 때 이번 차례의 카운터(1~15). 없으면 1. */
+  readonly toxicCounter?: number;
 }): { readonly damage: number; readonly currentHp: number; readonly fainted: boolean } {
   const maxHp = normalizeHp(input.maxHp, 1);
   const currentHp = Math.min(maxHp, normalizeHp(input.currentHp, 0));
-  if (input.kind !== "burn" && input.kind !== "poison") {
+  if (input.kind !== "burn" && input.kind !== "poison" && input.kind !== "toxic") {
     return { damage: 0, currentHp, fainted: currentHp === 0 };
   }
-  const damage = Math.max(1, Math.floor(maxHp / 16));
+  const unit = Math.max(1, Math.floor(maxHp / 16));
+  const damage = input.kind === "toxic"
+    ? unit * Math.min(GEN1_TOXIC_COUNTER_MAX, Math.max(1, Math.trunc(input.toxicCounter ?? 1)))
+    : unit;
   const remainingHp = Math.max(0, currentHp - damage);
   return { damage, currentHp: remainingHp, fainted: remainingHp === 0 };
+}
+
+/** 혼란이 걸릴 때 남는 행동 수(2~5). 바이트 하나를 쓴다. */
+export function gen1ConfusionTurns(nextByte: Gen1NextByte): number {
+  return (normalizeByte(nextByte()) & 0x03) + 2;
+}
+
+export interface Gen1ConfusionStep {
+  /** acts = 평소처럼 행동, selfHit = 자신을 때리고 이번 행동을 잃음, snappedOut = 풀려서 평소처럼 행동. */
+  readonly outcome: "acts" | "selfHit" | "snappedOut";
+  readonly turnsLeft: number;
+  readonly trace: { readonly confusionByte?: number };
+}
+
+/**
+ * 행동 직전 혼란 판정. 남은 횟수를 하나 줄이고, 0 이 되면 풀려 정상 행동한다.
+ * 아직 걸려 있으면 바이트 하나로 절반(<128)이 자신을 때린다.
+ */
+export function stepGen1Confusion(turnsLeft: number, nextByte: Gen1NextByte): Gen1ConfusionStep {
+  const remaining = Math.max(0, Math.trunc(Number.isFinite(turnsLeft) ? turnsLeft : 0)) - 1;
+  if (remaining <= 0) return { outcome: "snappedOut", turnsLeft: 0, trace: {} };
+  const confusionByte = normalizeByte(nextByte());
+  return { outcome: confusionByte < 128 ? "selfHit" : "acts", turnsLeft: remaining, trace: { confusionByte } };
+}
+
+/** 혼란 자해: 위력 40 무속성 물리, 자기 공격 ÷ 자기 방어. 급소·자속·난수 없음(카트리지와 같다). 최소 1. */
+export function gen1ConfusionSelfDamage(level: number, attack: number, defense: number): number {
+  return Math.max(1, computeGen1BaseDamage({ level, power: 40, attack: normalizeStat(attack), defense: normalizeStat(defense) }));
 }
 
 function normalizeSleepTurns(turns: number | undefined): number {

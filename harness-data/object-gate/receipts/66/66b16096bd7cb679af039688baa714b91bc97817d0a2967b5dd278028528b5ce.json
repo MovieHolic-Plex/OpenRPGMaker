@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66b16096bd7cb679af039688baa714b91bc97817d0a2967b5dd278028528b5ce",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "사물함 두 칸 열(윗면 + 문 둘 + 환기 틈)",
+ "label": "sf-station/sf-locker-row",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal school lockers with three doors",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly drawn from rows 2 to 9 (approx. 8 source pixel rows) above the front face containing the doors (rows 11-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4165
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "locker bank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker bank is clearly rendered spanning rows 2 through 9 (about 8 rows tall) above the front locker doors, providing the correct 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4545
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lockers bank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly shown spanning rows 2 to 9 (approx. 8 rows tall) in a lighter shade, above the darker vertical front face containing the doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3752
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "set of three school/gym lockers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly shown spanning rows 2 through 9 (8 source pixel rows) before transitioning to the front locker doors at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3613
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "3de899554b7f2f68",
+   "4de757f39b04cd2c",
+   "9a1cf89952e52dee",
+   "b7f06e2b5d0afb3e"
+  ],
+  "24": [
+   "04179e2da84ca55f",
+   "13d0c1a4174240a2",
+   "1b86f113f33272dd",
+   "24da2e651734c30e",
+   "372c5e4b0c3fd909",
+   "3e03a0d27b8c4e54",
+   "437a545de0cbb243",
+   "4a7fb06d88509b0d",
+   "4ac648d27d8d9b33",
+   "53f2fb7d212d44e7",
+   "6bb24457a51e6a07",
+   "6f4d68f2c214cc51",
+   "752fc214a01fcefb",
+   "7fc1e32df0addc58",
+   "8be95018eadcd87b",
+   "9438ccc23f6d01f1",
+   "97a50d92c816e0aa",
+   "a8a13c8f031ac511",
+   "a9664c02b10e5500",
+   "a97ec4be7e4ca121",
+   "aa82f8fe7ac81f85",
+   "bfad36cd95bc75a2",
+   "d2e0c60e094eb4a7",
+   "dc84f5e32346dc8c"
+  ],
+  "32": [
+   "706d5a4159f371d4"
+  ],
+  "48": [
+   "09c52a3b720d4a38",
+   "7719a99f970c6902",
+   "b43bcef57d2f586a",
+   "b7b819bea335d44f",
+   "c1696b8a4c95ad1e",
+   "fda55ab39bcaef6d"
+  ]
+ }
+}

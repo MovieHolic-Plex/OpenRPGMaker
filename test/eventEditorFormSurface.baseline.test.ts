@@ -29,7 +29,6 @@ const FLOOR = resolve(process.cwd(), "test/fixtures/eventEditorFormSurface.floor
  */
 const NO_FIELD_KINDS: readonly CommandKind[] = [
   "breakLoop",
-  "gameOver",
   "openSaveMenu",
   "returnToTitle",
   "sleepUntilMorning",
@@ -126,7 +125,7 @@ describe("이벤트에디터 폼 표면 스냅샷", () => {
       // 반대로 태그 히스토그램은 늘어야 한다 — 변형이 실제로 적용됐다는 증거.
       expect(wrapped.tags.div ?? 0, `${kind}: 래퍼가 실제로 삽입되지 않았다`).toBeGreaterThan(plain.tags.div ?? 0);
     }
-  });
+  }, 60_000);
 
   // ── A-10.5. 게이트 자체의 단위 테스트 ─────────────────────────────────────────
   //

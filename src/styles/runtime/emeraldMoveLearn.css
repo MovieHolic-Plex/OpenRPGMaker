@@ -1,0 +1,32 @@
+/* 에메랄드 기술 배우기·잊기 장면: 전투 화면 위에 문장 창과 선택 상자만 얹는다(배경은 투명). 480x320 네이티브. */
+.battle-scene.emerald-movelearn[data-monster-style="emerald"] { background: transparent; }
+.emerald-movelearn-menu {
+  position: absolute;
+  right: 8px;
+  bottom: 84px;
+  min-width: 104px;
+  box-sizing: border-box;
+  padding: 4px 8px 4px 20px;
+  background: #f8f8e8;
+  border: 4px solid #486050;
+  color: #384840;
+  font: 18px/24px var(--runtime-pixel-font, "Galmuri9", monospace);
+}
+.emerald-movelearn-menu[hidden] { display: none; }
+.emerald-movelearn-row { position: relative; display: flex; justify-content: space-between; gap: 16px; white-space: nowrap; cursor: pointer; }
+.emerald-movelearn-row[data-disabled="true"] { color: #a0a898; }
+.emerald-movelearn-row::before {
+  content: "";
+  position: absolute;
+  left: -16px;
+  top: 6px;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-left: 8px solid #384840;
+  visibility: hidden;
+}
+.emerald-movelearn-row[data-cursor="true"]::before { visibility: visible; }
+.emerald-movelearn-sub { color: #688070; }
+/* 이 장면이 떠 있는 동안 아래 결과 창의 레벨업 능력치 상자는 가린다(문장 창과 겹쳐 잘려 보인다). */
+.battle-scene[data-battle-ui-style="pokemon"][data-monster-style="emerald"][data-movelearn-open="true"] .battle-result-panel .battle-result-reward-row[data-emerald-last="true"] .battle-levelup-stats { display: none; }

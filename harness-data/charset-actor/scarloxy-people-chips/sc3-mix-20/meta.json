@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-20",
+ "name": "갈색 머리 · 하늘색 반팔",
+ "head": "Scarloxy1:5",
+ "body": "Scarloxy1:4",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-20",
+ "candidate_id": "u32",
+ "judge_totals_ABC": [
+  11,
+  7,
+  10
+ ],
+ "recipe": "gallery4-recipes.json#mix-20"
+}

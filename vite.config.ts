@@ -6,6 +6,7 @@ import {
   existsSync,
   readdirSync,
   realpathSync,
+  statSync,
 } from "node:fs";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
 import { createActivityMirrorMiddleware } from "./scripts/lib/activityMirrorMiddleware.mjs";
@@ -14,6 +15,9 @@ import type { OhMyPiAdapters } from "./scripts/lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
 import { devPlayerBundlesPlugin } from "./scripts/lib/devPlayerBundles";
 import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
+import { normalizerFingerprintPlugin } from "./scripts/lib/normalizerFingerprint.mjs";
+import { jsonParseModulesPlugin } from "./scripts/lib/jsonParseModules.mjs";
+import { deferStylesheetsPlugin } from "./scripts/lib/deferStylesheets.mjs";
 import { audioDeliveryPlugin } from "./scripts/lib/audioDelivery";
 import { bgmInstallPlugin } from "./scripts/lib/bgmInstall";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
@@ -233,7 +237,7 @@ export default defineConfig(({ mode }) => {
   // (npm run dev · dev:worktree · playwright webServer)는 공유 node_modules 를 보면 스스로
   // `<체크아웃>/.vite-cache/dev` 를 넣는다(scripts/lib/viteCacheDir.mjs). vite 를 직접 부르면 안 걸린다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin()],
+  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서
@@ -329,7 +333,14 @@ export default defineConfig(({ mode }) => {
         // 읽는 시점을 늦추는 지연 로드는 동기 소비자가 많고 JSON 해석이 합쳐 약 0.4초라 넣지 않았다(openwiki/runtime-project-schema.md 편집기 렉 F).
         manualChunks(id) {
           const file = id.split("?")[0]!.replace(/\\/g, "/");
-          if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) return "bundled-data";
+          if (file.endsWith(".json") && (file.includes("/src/assets/") || file.includes("/src/project/defaults/"))) {
+            // 8MB 가 넘는 JSON(버들항·일본 도시 타일셋)만 자기 청크로 나눈다 — 한 스크립트는 한 스레드가 읽고 컴파일하므로 큰 덩이가 여럿이면
+            // 병렬로 풀린다. 웜 부팅 실측(2026-10-15, 9회 중앙값): 한 덩이 → 셋으로 모듈 평가 시작 1.6s → 1.1s, 편집 화면 5.5s → 4.6s.
+            // 더 잘게(1MB 기준 11덩이) 나누면 평가는 0.1s 더 빠르지만 modulepreload 가 46개로 늘어 첫 페인트가 0.2s → 0.4s 로 늦어진다.
+            let size = 0;
+            try { size = statSync(file).size; } catch { /* 가상 모듈 */ }
+            return size > 8_000_000 ? `bundled-data-${file.slice(file.lastIndexOf("/") + 1, -5)}` : "bundled-data";
+          }
           return undefined;
         },
       },

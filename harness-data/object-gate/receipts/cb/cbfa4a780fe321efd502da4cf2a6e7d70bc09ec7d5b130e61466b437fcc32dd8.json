@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbfa4a780fe321efd502da4cf2a6e7d70bc09ec7d5b130e61466b437fcc32dd8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 시계 기둥(무쇠 기둥 + 둥근 시계 북 — 넓은 녹청 뚜껑이 위에서 보인다)",
+ "label": "steampunk-city/sp-clock-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street clock drum and post with verdigris cap",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top verdigris lid/cap shows a clearly visible sloped top surface from row 2 down to row 8 (approx 7 rows tall) crowned by a small finial, drawn in proper 3/4 top-down perspective over the clock cylinder and domed base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6879
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock head with green patina cap and clock drum",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the clock structure features a broad green patina cap shown from an overhead 3/4 perspective spanning rows 2 to 8 (7 rows tall) with a finial, properly revealing its upper surface above the clock face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street clock post with drum and verdigris cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green copper cap atop the clock drum is clearly viewed from a 3/4 top-down angle, showing roughly 6 rows of foreshortened top surface (rows 2-7) adorned with a finial, and the circular base also displays a foreshortened top dome (rows 38-43).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8990
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock drum with verdigris cap on pillar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The clock head is topped with an elliptical verdigris cap viewed from above across rows 2–7 (6 rows of visible top dome surface), accented with a finial. The circular base also shows a foreshortened top surface across rows 38–42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6990
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.517Z",
+ "cells": {
+  "16": [
+   "35f298ee1cd02c62",
+   "aa94aad65e71dfe2",
+   "b046ce91c12ed36c"
+  ],
+  "24": [
+   "02d85b7641aa5850",
+   "19be8d70bbe157b6",
+   "7b8921146199921c",
+   "800185cd33193337",
+   "9a06acabf685de37",
+   "fb353133684e1e60"
+  ],
+  "32": [
+   "040968c3d3f19db4",
+   "10e46abcaee69f82",
+   "4c61ff2fb6423fa4",
+   "681e84c363f9737d",
+   "6d6a53db3caff792",
+   "91bcb1e181740433",
+   "9d4277e4fa72a289",
+   "9ec04ff137364410",
+   "a22116ea1946c206",
+   "c4a2dd963d1ac765",
+   "ee1c1b74bb719d0b",
+   "f5d0ae7b621ba616"
+  ],
+  "48": [
+   "75029b9ba72038e4",
+   "b1be51d817215473",
+   "f9c30528b51f68b5"
+  ]
+ }
+}

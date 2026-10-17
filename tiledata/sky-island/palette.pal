@@ -1,0 +1,28 @@
+// sky_island(하늘섬) 잠긴 팔레트 — 이 파일 밖 색은 굽기에서 불합격이다(scripts/content/sky-island/art/px.py check_palette).
+// 램프는 어두움(0) → 밝음. 어두운 쪽은 청보라로, 밝은 쪽은 살구·크림으로 기운다. 빛은 왼쪽 위. 반투명 없음.
+// 2026-10-14 Opus 손 도트 칩셋 sky_island 전용(다른 번들 팔레트와 섞지 않는다).
+
+@rampc sky      #2c3f7a #3b58a0 #4d74c0 #6492d8 #7eaee8 #9cc6f1 #c2def9
+@rampc cloud    #4f5a8c #6b77aa #8d98c6 #b0badf #d2daf0 #eaf0fa #ffffff
+@rampc grass    #1d3628 #27502f #346b38 #46853f #5f9f48 #80b85a #a8cf72
+@rampc leaf     #142a2c #1d4136 #285a3f #377448 #4b8e52 #68a95e #8fc46f
+@rampc soil     #2a1a1c #3e2524 #55332c #6e4636 #8a5e45 #a77c5c
+@rampc rock     #1e1826 #2e2534 #423542 #584651 #705a62 #8b7476 #a8918c
+@rampc stone    #33323f #4a4859 #636173 #7d7b8c #9896a6 #b6b4c2 #d6d4de
+@rampc wood     #241615 #3a221d #522f26 #6b4131 #87573f #a3714f #bd8d64
+@rampc plank    #4a3424 #654a32 #826243 #a07e57 #bd9b6f #d6b98b
+@rampc roofr    #3a1420 #561d26 #752a2d #93413a #b05c4a #c97d61 #e0a07c
+@rampc roofb    #172338 #213450 #2d4a68 #3b6380 #4f7f98 #6b9cb0 #8fbdca
+@rampc roofg    #17302f #1f4642 #2b5d55 #3a7768 #51927a #72ad8c
+@rampc brass    #3d2614 #5e3d1a #82591f #a87c2a #cba23d #e8c95c #f8e7a0
+@rampc iron     #1e1e26 #2c2d38 #3e404d #555866 #6f7381 #8e93a0
+@rampc crystal  #173a5c #1f5f86 #2b88ab #45b3cc #7ddbe3 #c4f5f2
+@rampc amethyst #2b1840 #43245f #613782 #8150a3 #a676c2 #cba2dc
+@rampc water    #1d3a6a #24548a #2f72a8 #4b94c4 #73b6dc #a9d8ef #e2f4fb
+@rampc clothr   #4a1626 #6e1f2c #962c33 #b8463d #d86b52
+@rampc clothb   #1d2550 #2a3a78 #3d559e #5776bd #7e9ad6
+@rampc glow     #8a4a12 #c47a1a #eeaa30 #ffd664 #fff2b0
+@rampc cream    #6b5a55 #8d7a6f #ad9a88 #cbbba3 #e2d6bd #f3ead5 #fffaee
+@rampc flower   #6a2048 #a03460 #d0587a #ee8ea0 #f9c4c8
+@rampc gold     #4a2e10 #7a5018 #b07c22 #e0b03a #f8de78
+@rampc sumi     #120f1a #1c1828 #2a2438

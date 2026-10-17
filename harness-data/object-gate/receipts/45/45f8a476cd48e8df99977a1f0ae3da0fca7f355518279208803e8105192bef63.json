@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45f8a476cd48e8df99977a1f0ae3da0fca7f355518279208803e8105192bef63",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "선로 북쪽 레일(자갈 도상)",
+ "label": "steampunk-city/sp-rail-n",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway track terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile depicting a horizontal rail with wooden sleepers over gravel ballast viewed from above in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3945
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railroad track terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a standard top-down/3/4 terrain tile depicting a railroad track (gravel ballast, wooden ties, and a rail with visible top highlight and south-facing drop shadow).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway track terrain tile with ballast, wooden ties, and rail",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a horizontal railroad track with gravel ballast and wooden ties in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3693
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway track terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down ground terrain tile showing a horizontal rail and wooden ties over gravel ballast.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3310
+  }
+ ],
+ "decidedAt": "2026-10-14T08:37:24.709Z",
+ "cells": {
+  "16": [
+   "b256abb5eb3bd599"
+  ],
+  "24": [
+   "0d1f7104dcda621a",
+   "1918b370c97154db",
+   "21a4c5626c428dc1",
+   "42a754479e93f7a7",
+   "5b2eaf2486db26a9",
+   "7fb804bad0a51285"
+  ],
+  "32": [
+   "16a4c8f1dace3932",
+   "5169cefa93ea7c01",
+   "679f6405f1e73cda",
+   "eac50dbb52528f2e",
+   "fa6283b0cb50b872",
+   "fc5b2dc624483332"
+  ],
+  "48": [
+   "564703756b54e714",
+   "8f1a14e3cd094c8c",
+   "94d5661c4720d415",
+   "95f5d9ea06e0c421",
+   "a98f5348d43ec0be",
+   "b50a8c8d4d309976"
+  ]
+ }
+}

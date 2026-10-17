@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5523b3b837ce9ed93e8d985e7b23a4c404f4d54050709b57b3438cbe9772781",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 부착 항로 지도 화면(점 성계 + 항로 선)",
+ "label": "sf-station/sf-wall-map-display",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted navigation map screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted map screen mounted flat against the vertical wall surface, correctly depicted for wall_mounted objects in top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted screen frame and display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted navigational screen correctly depicted mounted flat against a wall, consistent with wall-mounted fixtures in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted route map screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat, framed digital screen mounted directly to the wall showing a star route map. Wall-mounted objects are permitted to be flat facing the camera.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4834
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted screen display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted route map screen mounted flat against the wall; correctly depicted flat on the vertical wall surface according to the wall_mounted kind specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13632
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.257Z",
+ "cells": {
+  "16": [
+   "31f09209ee0bc6fc",
+   "a92389fe82563170"
+  ],
+  "24": [
+   "0254a795280f2911",
+   "0a07eac4788b6d09",
+   "2b634fc38a74b5c7",
+   "33224df5f50af59f",
+   "52a0f3cc45cdd422",
+   "7e9cba93539cbf9b",
+   "83b03cf017eedf15",
+   "84e2e93d853baa75",
+   "8cde9421af32e79b",
+   "9bfe1777ed2792fe",
+   "b7733385f7f01a72",
+   "d5887086d486efa8"
+  ],
+  "32": [
+   "56f7860ee6a7c00c",
+   "c5b67e26dd52a89d"
+  ],
+  "48": [
+   "05a0730b67d9cc5a",
+   "4ca81dccfa7c0537",
+   "5d75e011b52ec46a",
+   "6b16cba18b927fc7",
+   "77acb28ed40df85c",
+   "9bd8aac4f25b82ea"
+  ]
+ }
+}

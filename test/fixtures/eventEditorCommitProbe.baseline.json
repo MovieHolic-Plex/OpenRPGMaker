@@ -4,10 +4,14 @@
    "event-command-text-speaker": "replaceCommand x2 {\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"__p_f0a5ac__\"}",
    "event-command-text-body": "replaceCommand x2 {\"body\":\"__p_c13fff__\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
    "event-command-text-emotion": "replaceCommand {\"body\":\"hello\",\"emotion\":\"surprised\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
-   "event-command-text-auto-advance": "replaceCommand {\"autoAdvance\":true,\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}"
+   "event-command-text-context": "replaceCommand {\"body\":\"hello\",\"context\":\"system\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-container": "replaceCommand {\"body\":\"hello\",\"container\":\"corner\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-position": "replaceCommand {\"body\":\"hello\",\"kind\":\"text\",\"position\":\"bottom\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-auto-advance": "replaceCommand {\"autoAdvance\":true,\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\"}",
+   "event-command-text-style": "replaceCommand {\"body\":\"hello\",\"kind\":\"text\",\"speaker\":\"<undefined>\",\"style\":\"terminal\"}"
   },
-  "probeCount": 4,
-  "commitCount": 4,
+  "probeCount": 8,
+  "commitCount": 8,
   "noCommitCount": 0
  },
  "changeFace": {
@@ -15,30 +19,42 @@
    "event-command-face-appearance": "single-option",
    "event-command-face-presentation": "disabled",
    "event-command-face-resource": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"__p_a66b5f__\"}",
+   "event-command-face-full-scale-slider": "replaceCommand {\"flipHorizontally\":false,\"fullScale\":170,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}",
+   "event-command-face-full-scale": "replaceCommand {\"flipHorizontally\":false,\"fullScale\":47,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}",
    "event-command-face-ai-prompt": "no-commit",
    "event-command-face-position": "replaceCommand {\"flipHorizontally\":false,\"kind\":\"changeFace\",\"position\":\"right\",\"resourceId\":\"res1\"}",
    "event-command-face-flip-horizontal": "replaceCommand {\"flipHorizontally\":true,\"kind\":\"changeFace\",\"position\":\"left\",\"resourceId\":\"res1\"}"
   },
-  "probeCount": 6,
-  "commitCount": 3,
+  "probeCount": 8,
+  "commitCount": 5,
   "noCommitCount": 1
  },
  "choices": {
   "probes": {
    "event-choice-prompt": "replaceCommand {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}],\"prompt\":\"__p_9fe488__\"}",
    "event-choice-option-1": "replaceCommand x2 {\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"__p_ef6098__\"}]}",
-   "event-choice-cancel-disallow": "replaceCommand {\"cancelBehavior\":\"disallow\",\"cancelBranch\":\"<undefined>\",\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}",
-   "event-choice-cancel-choice1": "radio-uncheck",
+   "event-choice-cancel-disallow": "radio-uncheck",
+   "event-choice-cancel-choice1": "replaceCommand {\"cancelBehavior\":\"choice1\",\"cancelBranch\":\"<undefined>\",\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}",
    "event-choice-cancel-branch": "replaceCommand {\"cancelBehavior\":\"branch\",\"cancelBranch\":[],\"kind\":\"choices\",\"options\":[{\"branch\":[],\"text\":\"a\"}]}"
   },
   "probeCount": 5,
   "commitCount": 4,
   "noCommitCount": 0
  },
+ "presentItem": {
+  "probes": {
+   "present-item-prompt-input": "replaceCommand {\"kind\":\"presentItem\",\"options\":[{\"branch\":[],\"itemId\":\"item1\"}],\"prompt\":\"__p_86891b__\"}",
+   "present-item-options-item-0": "replaceCommand {\"kind\":\"presentItem\",\"options\":[{\"branch\":[],\"itemId\":\"item_ether\"}]}",
+   "present-item-consume-toggle": "replaceCommand {\"consume\":true,\"kind\":\"presentItem\",\"options\":[{\"branch\":[],\"itemId\":\"item1\"}]}"
+  },
+  "probeCount": 3,
+  "commitCount": 3,
+  "noCommitCount": 0
+ },
  "fork": {
   "probes": {
    "event-condition-mode": "replaceCommand {\"condition\":{\"condition\":{\"kind\":\"switch\",\"switchId\":\"\",\"value\":true},\"kind\":\"not\"},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
-   "event-condition-switch-target>select#0": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw_gen2_sun_relay\",\"value\":true},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
+   "event-condition-switch-target>select#0": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"switch_shared_relay_tide\",\"value\":true},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
    "event-condition-switch-value": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":false},\"else\":[],\"kind\":\"fork\",\"then\":[]}",
    "event-fork-else-enabled": "replaceCommand {\"condition\":{\"kind\":\"switch\",\"switchId\":\"sw1\",\"value\":true},\"kind\":\"fork\",\"then\":[]}"
   },
@@ -108,7 +124,7 @@
  },
  "setSwitch": {
   "probes": {
-   "event-command-switch-target>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw_gen2_sun_relay\",\"value\":true}",
+   "event-command-switch-target>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"switch_shared_relay_tide\",\"value\":true}",
    "event-command-switch-value": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":{\"id\":\"\",\"kind\":\"var\"}}",
    "event-command-switch-operand>select#0": "replaceCommand {\"kind\":\"setSwitch\",\"switchId\":\"sw1\",\"value\":true}"
   },
@@ -228,7 +244,7 @@
  "changeTile": {
   "probes": {
    "change-tile-map-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map_blank_start\",\"tile\":1,\"x\":0,\"y\":0}",
-   "change-tile-layer-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0}",
+   "change-tile-layer-select": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"upper2\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":0}",
    "change-tile-x-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":7861,\"y\":0}",
    "change-tile-y-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":1,\"x\":0,\"y\":7666}",
    "change-tile-tile-input": "replaceCommand {\"kind\":\"changeTile\",\"layer\":\"lower\",\"mapId\":\"map1\",\"tile\":7679,\"x\":0,\"y\":0}"
@@ -255,17 +271,18 @@
  },
  "battleProcessing": {
   "probes": {
-   "battle-processing-troop-source": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"variable\",\"troopVariableId\":\"\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-troop-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop_bat_swarm\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-escape-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-lose-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-flow-select": "replaceCommand {\"battleFlow\":\"strict\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-branch-on-result": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":true,\"canEscape\":true,\"canLose\":false,\"defeatBranch\":[],\"escapeBranch\":[],\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":[]}",
-   "battle-processing-escape-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
-   "battle-processing-lose-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}"
+   "battle-processing-troop-source": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"variable\",\"troopVariableId\":\"\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-troop-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop_bat_swarm\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-escape-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-lose-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-flow-select": "replaceCommand {\"battleFlow\":\"strict\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-formation-select": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"pincer\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-branch-on-result": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":true,\"canEscape\":true,\"canLose\":false,\"defeatBranch\":[],\"escapeBranch\":[],\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":[]}",
+   "battle-processing-escape-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":false,\"canLose\":false,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}",
+   "battle-processing-lose-checkbox": "replaceCommand {\"battleFlow\":\"<undefined>\",\"branchOnResult\":\"<undefined>\",\"canEscape\":true,\"canLose\":true,\"defeatBranch\":\"<undefined>\",\"escapeBranch\":\"<undefined>\",\"formation\":\"<undefined>\",\"kind\":\"battleProcessing\",\"troopId\":\"troop1\",\"troopSource\":\"<undefined>\",\"troopVariableId\":\"<undefined>\",\"victoryBranch\":\"<undefined>\"}"
   },
-  "probeCount": 8,
-  "commitCount": 8,
+  "probeCount": 9,
+  "commitCount": 9,
   "noCommitCount": 0
  },
  "learnSkill": {
@@ -369,10 +386,12 @@
   "probes": {
    "enter-hero-name-actor-select": "replaceCommand {\"actorId\":\"actor_mage\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":false}",
    "enter-hero-name-max-length": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":7,\"showInitialName\":false}",
-   "enter-hero-name-show-initial": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":true}"
+   "enter-hero-name-show-initial": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":true}",
+   "enter-hero-name-string-variable": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"showInitialName\":false,\"stringVariableId\":\"__p_1e576b__\"}",
+   "enter-hero-name-prompt": "replaceCommand {\"actorId\":\"actor1\",\"kind\":\"enterHeroName\",\"maxLength\":6,\"prompt\":\"__p_671e07__\",\"showInitialName\":false}"
   },
-  "probeCount": 3,
-  "commitCount": 3,
+  "probeCount": 5,
+  "commitCount": 5,
   "noCommitCount": 0
  },
  "changeGold": {
@@ -427,10 +446,32 @@
  "openChest": {
   "probes": {
    "open-chest-scope-select": "replaceCommand {\"kind\":\"openChest\"}",
-   "open-chest-id-input": "replaceCommand x2 {\"chestId\":\"__p_8f742f__\",\"kind\":\"openChest\"}"
+   "open-chest-id-input": "replaceCommand x2 {\"chestId\":\"__p_8f742f__\",\"kind\":\"openChest\"}",
+   "open-chest-display-name": "replaceCommand x2 {\"chestId\":\"chest1\",\"displayName\":\"__p_d629a2__\",\"kind\":\"openChest\"}",
+   "open-chest-template": "replaceCommand {\"allowBulk\":true,\"chestId\":\"chest1\",\"goldVault\":false,\"kind\":\"openChest\",\"template\":\"vault\"}",
+   "open-chest-layout": "replaceCommand {\"chestId\":\"chest1\",\"kind\":\"openChest\",\"layout\":\"wide\"}",
+   "open-chest-capacity": "replaceCommand {\"capacity\":7113,\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-show-icons": "replaceCommand {\"chestId\":\"chest1\",\"kind\":\"openChest\",\"showIcons\":false}",
+   "open-chest-allow-bulk": "replaceCommand {\"allowBulk\":false,\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-allow-sort": "replaceCommand {\"allowSort\":false,\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-show-categories": "replaceCommand {\"chestId\":\"chest1\",\"kind\":\"openChest\",\"showCategories\":true}",
+   "open-chest-gold-vault": "replaceCommand {\"chestId\":\"chest1\",\"goldVault\":true,\"kind\":\"openChest\"}",
+   "open-chest-lock-switch>select#0": "replaceCommand {\"chestId\":\"chest1\",\"kind\":\"openChest\",\"lockSwitchId\":\"switch_shared_relay_tide\"}",
+   "open-chest-lock-item": "replaceCommand {\"chestId\":\"chest1\",\"kind\":\"openChest\",\"lockItemId\":\"item_ether\"}",
+   "open-chest-type-normalGoods": "replaceCommand {\"allowedItemTypes\":[\"normalGoods\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-medicine": "replaceCommand {\"allowedItemTypes\":[\"medicine\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-seed": "replaceCommand {\"allowedItemTypes\":[\"seed\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-weapon": "replaceCommand {\"allowedItemTypes\":[\"weapon\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-shield": "replaceCommand {\"allowedItemTypes\":[\"shield\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-body": "replaceCommand {\"allowedItemTypes\":[\"body\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-head": "replaceCommand {\"allowedItemTypes\":[\"head\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-accessory": "replaceCommand {\"allowedItemTypes\":[\"accessory\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-book": "replaceCommand {\"allowedItemTypes\":[\"book\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-special": "replaceCommand {\"allowedItemTypes\":[\"special\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}",
+   "open-chest-type-switch": "replaceCommand {\"allowedItemTypes\":[\"switch\"],\"chestId\":\"chest1\",\"kind\":\"openChest\"}"
   },
-  "probeCount": 2,
-  "commitCount": 2,
+  "probeCount": 24,
+  "commitCount": 24,
   "noCommitCount": 0
  },
  "changeFriendship": {
@@ -474,7 +515,7 @@
  "changeParty": {
   "probes": {
    "change-party-actor-select": "replaceCommand {\"action\":\"add\",\"actorId\":\"actor_mage\",\"kind\":\"changeParty\"}",
-   "change-party-action-select": "replaceCommand {\"action\":\"remove\",\"actorId\":\"actor1\",\"kind\":\"changeParty\"}"
+   "change-party-action-select": "replaceCommand {\"action\":\"lead\",\"actorId\":\"actor1\",\"kind\":\"changeParty\"}"
   },
   "probeCount": 2,
   "commitCount": 2,
@@ -613,13 +654,16 @@
    "show-picture-ai-prompt": "no-commit",
    "show-picture-x-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":7343,\"y\":0}",
    "show-picture-y-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":7801}",
+   "show-picture-gallery": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"recordInGallery\":true,\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
    "show-picture-scale-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":2000,\"x\":0,\"y\":0}",
    "show-picture-opacity-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-blend-select": "replaceCommand {\"blendMode\":\"multiply\",\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
    "show-picture-rotation-input": "replaceCommand {\"durationMs\":0,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":7664,\"scale\":100,\"x\":0,\"y\":0}",
-   "show-picture-duration-input": "replaceCommand {\"durationMs\":7820,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}"
+   "show-picture-duration-input": "replaceCommand {\"durationMs\":7820,\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}",
+   "show-picture-easing-select": "replaceCommand {\"durationMs\":0,\"easing\":\"easeInOut\",\"kind\":\"showPicture\",\"opacity\":255,\"pictureId\":\"pic1\",\"resourceId\":\"res1\",\"rotation\":0,\"scale\":100,\"x\":0,\"y\":0}"
   },
-  "probeCount": 9,
-  "commitCount": 8,
+  "probeCount": 12,
+  "commitCount": 11,
   "noCommitCount": 1
  },
  "erasePicture": {
@@ -647,8 +691,8 @@
  },
  "playMovie": {
   "probes": {
-   "play-movie-wait-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"\",\"skippable\":true}",
-   "play-movie-skippable-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"\",\"wait\":true}",
+   "play-movie-wait-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"\",\"skippable\":true,\"wait\":false}",
+   "play-movie-skippable-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"\",\"skippable\":false,\"wait\":true}",
    "play-movie-resource-select": "replaceCommand {\"kind\":\"playMovie\",\"resourceId\":\"movie2\",\"skippable\":true,\"wait\":true}"
   },
   "probeCount": 3,
@@ -678,7 +722,7 @@
  "shop": {
   "probes": {
    "shop-stock-price-base": "radio-uncheck",
-   "shop-stock-price-custom": "replaceCommand {\"itemIds\":[\"item_potion\"],\"kind\":\"shop\",\"stock\":[{\"itemId\":\"item_potion\",\"priceOverride\":50}]}",
+   "shop-stock-price-custom": "replaceCommand {\"itemIds\":[\"item_potion\"],\"kind\":\"shop\",\"stock\":[{\"itemId\":\"item_potion\",\"priceOverride\":60}]}",
    "shop-stock-price-override": "disabled",
    "shop-stock-all-seasons": "replaceCommand {\"itemIds\":[\"item_potion\"],\"kind\":\"shop\",\"stock\":[{\"itemId\":\"item_potion\",\"seasons\":[\"spring\"]}]}"
   },
@@ -719,7 +763,7 @@
  "spawnFieldEnemy": {
   "probes": {
    "event-command-spawn-troop": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop_bat_swarm\"}}",
-   "event-command-spawn-switch": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"onKillSwitchId\":\"sw_gen2_sun_relay\",\"troopId\":\"troop1\"}}",
+   "event-command-spawn-switch": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"id\":\"spawn1\",\"onKillSwitchId\":\"switch_shared_relay_tide\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-graphic": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":0},\"graphic\":{\"sprite\":{\"id\":\"__p_5acc74__\",\"type\":\"bundled\"}},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-area-x": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":7237,\"y\":0},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
    "event-command-spawn-area-y": "replaceCommand {\"kind\":\"spawnFieldEnemy\",\"spawn\":{\"area\":{\"h\":4,\"w\":4,\"x\":0,\"y\":7854},\"id\":\"spawn1\",\"troopId\":\"troop1\"}}",
@@ -736,6 +780,17 @@
   "commitCount": 0,
   "noCommitCount": 0
  },
+ "tacticsBattle": {
+  "probes": {
+   "tactics-battle-troop-id-input": "replaceCommand {\"kind\":\"tacticsBattle\",\"troopId\":\"__p_dd354a__\"}",
+   "tactics-battle-width-input": "replaceCommand {\"kind\":\"tacticsBattle\",\"troopId\":\"troop1\",\"width\":11}",
+   "tactics-battle-height-input": "replaceCommand {\"height\":5,\"kind\":\"tacticsBattle\",\"troopId\":\"troop1\"}",
+   "tactics-battle-can-lose-toggle": "replaceCommand {\"canLose\":true,\"kind\":\"tacticsBattle\",\"troopId\":\"troop1\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
  "runControl": {
   "probes": {
    "event-command-run-action": "replaceCommand {\"action\":\"resetRoom\",\"kind\":\"runControl\"}",
@@ -750,9 +805,10 @@
  },
  "killPlayer": {
   "probes": {
+   "event-command-game-over-id": "single-option",
    "event-command-kill-player-message": "replaceCommand {\"kind\":\"killPlayer\",\"message\":\"__p_f74134__\"}"
   },
-  "probeCount": 1,
+  "probeCount": 2,
   "commitCount": 1,
   "noCommitCount": 0
  },
@@ -765,18 +821,22 @@
   "noCommitCount": 0
  },
  "gameOver": {
-  "probes": {},
-  "probeCount": 0,
+  "probes": {
+   "event-command-game-over-id": "single-option"
+  },
+  "probeCount": 1,
   "commitCount": 0,
   "noCommitCount": 0
  },
  "ending": {
   "probes": {
-   "ending-title-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"m\",\"title\":\"__p_c3098a__\"}",
-   "ending-message-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"__p_49e463__\",\"title\":\"t\"}"
+   "ending-title-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"m\",\"presentation\":{\"credits\":\"\",\"tone\":\"warm\"},\"title\":\"__p_c3098a__\"}",
+   "ending-message-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"__p_49e463__\",\"presentation\":{\"credits\":\"\",\"tone\":\"warm\"},\"title\":\"t\"}",
+   "ending-tone-input": "replaceCommand {\"kind\":\"ending\",\"message\":\"m\",\"presentation\":{\"credits\":\"\",\"tone\":\"dark\"},\"title\":\"t\"}",
+   "ending-credits-input": "replaceCommand x2 {\"kind\":\"ending\",\"message\":\"m\",\"presentation\":{\"credits\":\"__p_727c5a__\",\"tone\":\"warm\"},\"title\":\"t\"}"
   },
-  "probeCount": 2,
-  "commitCount": 2,
+  "probeCount": 4,
+  "commitCount": 4,
   "noCommitCount": 0
  },
  "returnToTitle": {
@@ -811,6 +871,58 @@
   },
   "probeCount": 6,
   "commitCount": 6,
+  "noCommitCount": 0
+ },
+ "setDifficulty": {
+  "probes": {
+   "set-difficulty-select": "single-option"
+  },
+  "probeCount": 1,
+  "commitCount": 0,
+  "noCommitCount": 0
+ },
+ "storeParty": {
+  "probes": {
+   "store-party-name-input": "replaceCommand {\"kind\":\"storeParty\",\"partySetId\":\"__p_f66c23__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "recallParty": {
+  "probes": {
+   "recall-party-name-input": "replaceCommand {\"kind\":\"recallParty\",\"partySetId\":\"__p_6f9fb6__\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "removeMonster": {
+  "probes": {
+   "remove-monster-instance-input": "replaceCommand {\"instanceId\":\"__p_780b38__\",\"kind\":\"removeMonster\"}"
+  },
+  "probeCount": 1,
+  "commitCount": 1,
+  "noCommitCount": 0
+ },
+ "tradeMonster": {
+  "probes": {
+   "trade-monster-from-select": "replaceCommand {\"fromSpeciesId\":\"species_aqualing\",\"kind\":\"tradeMonster\",\"toSpeciesId\":\"\"}",
+   "trade-monster-to-select": "replaceCommand {\"fromSpeciesId\":\"species1\",\"kind\":\"tradeMonster\",\"toSpeciesId\":\"species1\"}",
+   "trade-monster-level-input": "replaceCommand {\"fromSpeciesId\":\"species1\",\"kind\":\"tradeMonster\",\"level\":99,\"toSpeciesId\":\"\"}",
+   "trade-monster-nickname-input": "replaceCommand {\"fromSpeciesId\":\"species1\",\"kind\":\"tradeMonster\",\"nickname\":\"__p_acd086__\",\"toSpeciesId\":\"\"}"
+  },
+  "probeCount": 4,
+  "commitCount": 4,
+  "noCommitCount": 0
+ },
+ "fuseMonsters": {
+  "probes": {
+   "fuse-monsters-a-input": "replaceCommand {\"instanceIdA\":\"__p_df7287__\",\"instanceIdB\":\"monster_2\",\"kind\":\"fuseMonsters\"}",
+   "fuse-monsters-b-input": "replaceCommand {\"instanceIdA\":\"monster_1\",\"instanceIdB\":\"__p_614325__\",\"kind\":\"fuseMonsters\"}"
+  },
+  "probeCount": 2,
+  "commitCount": 2,
   "noCommitCount": 0
  }
 }

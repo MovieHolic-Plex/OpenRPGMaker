@@ -1,0 +1,138 @@
+{
+  "palette": {
+    "N": "#141d36",
+    "P": "#203159",
+    "Q": "#324b82",
+    "R": "#4a68a8",
+    "U": "#fae06b",
+    "V": "#d9a12b",
+    "W": "#633d0a",
+    "X": "#de3b3b",
+    "Y": "#94181e",
+    "Z": "#691117"
+  },
+  "recolor": [
+    {
+      "region": "T",
+      "map": {
+        "a": "N",
+        "b": "N",
+        "e": "N",
+        "g": "N",
+        "h": "N",
+        "i": "N",
+        "j": "N",
+        "l": "N",
+        "m": "P",
+        "n": "P",
+        "o": "P",
+        "r": "Q",
+        "s": "Q",
+        "t": "Q",
+        "v": "Q",
+        "w": "R"
+      }
+    },
+    {
+      "region": "B",
+      "map": {
+        "a": "N",
+        "b": "N",
+        "d": "N",
+        "e": "N",
+        "f": "P",
+        "v": "P",
+        "A": "Q"
+      }
+    }
+  ],
+  "paint": [
+    {
+      "dir": "down",
+      "region": "T",
+      "rows": {
+        "18": "....ZYWUUXYttYZVVWYZ....",
+        "19": "...ZYWUVnrnGCnrnVWWYZ...",
+        "20": "....ZYwrUUUGCUUUrwYZ....",
+        "21": "....innninnEEnninnni....",
+        "22": "....iwwrVVVggVVVrwwi...."
+      }
+    },
+    {
+      "dir": "up",
+      "region": "T",
+      "rows": {
+        "18": "....ZYWUUXXYYZZVVWYZ....",
+        "19": "...ZYWUVXXYYYYZZVWWYZ...",
+        "20": "....ZYwrXYYYYYYZrwYZ....",
+        "21": "....innniZZZZZZinnni...."
+      }
+    },
+    {
+      "dir": "right",
+      "region": "T",
+      "rows": {
+        "18": ".......ZYYUVWaso........",
+        "19": ".......ZXYUVWnn.........",
+        "20": ".......ZZnrnnUU.........",
+        "21": "........gnnnnnng........",
+        "22": ".......giwwaiVVg........"
+      }
+    },
+    {
+      "dir": "left",
+      "region": "T",
+      "rows": {
+        "18": "........osaWVUYYZ.......",
+        "19": ".........nnWVUYXZ.......",
+        "20": ".........UUnnrnZZ.......",
+        "21": "........gnnnnnng........",
+        "22": "........nVViawwig......."
+      }
+    }
+  ],
+  "gear": [
+    {
+      "name": "baton",
+      "kind": "hip",
+      "side": "R",
+      "sprites": {
+        "down": {
+          "rows": [
+            "WUU",
+            "WVV",
+            "NPP",
+            "NPP"
+          ],
+          "grip": [0, 0]
+        },
+        "up": {
+          "rows": [
+            "UUW",
+            "VVW",
+            "PPN",
+            "PPN"
+          ],
+          "grip": [2, 0]
+        },
+        "right": {
+          "rows": [
+            "UUV.",
+            "UVV.",
+            ".PPN",
+            ".PPN"
+          ],
+          "grip": [1, 0]
+        },
+        "left": {
+          "rows": [
+            "VVW",
+            "PPN",
+            "PPN"
+          ],
+          "grip": [0, 0]
+        }
+      }
+    }
+  ]
+}

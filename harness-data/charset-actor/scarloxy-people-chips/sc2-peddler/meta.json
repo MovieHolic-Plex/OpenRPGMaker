@@ -1,0 +1,48 @@
+{
+ "key": "sc2-peddler",
+ "arch": "sp2-peddler",
+ "base": "Scarloxy1:6",
+ "variant": "밀짚모자를 짙은 갈색 둥근 모자로 바꾸고(색 전부 recolor), 흰 민소매를 갈색 조끼로, 조끼 아래 자락을 T paint 로 허리 아래 한 줄 더 내려 늘린다. 반바지는 짙은 청색, 신발은 짙은 갈색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 HLbdegnqt"
+ ],
+ "metrics": {
+  "added_up0": 6,
+  "added_up1": 10,
+  "added_up2": 10,
+  "added_right0": 10,
+  "added_right1": 10,
+  "added_right2": 10,
+  "added_down0": 6,
+  "added_down1": 10,
+  "added_down2": 10,
+  "added_left0": 10,
+  "added_left1": 10,
+  "added_left2": 10,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 0.949,
+   "B": 0.952,
+   "S": 0.989
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 208,
+  "lone_base": 176
+ },
+ "distinct": {
+  "score": 0.622,
+  "nearest": "ScarloxyPeople4#0"
+ },
+ "repairs": {
+  "dropped_stray_px": 69,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-peddler-a"
+}

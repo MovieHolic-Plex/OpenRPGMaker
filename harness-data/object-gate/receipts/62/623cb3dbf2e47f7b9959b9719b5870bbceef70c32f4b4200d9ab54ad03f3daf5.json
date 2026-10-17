@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "623cb3dbf2e47f7b9959b9719b5870bbceef70c32f4b4200d9ab54ad03f3daf5",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "large mossy boulder",
+ "label": "sky-island/si-rock-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rounded boulder with mossy top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the boulder features a generous patch of moss spanning rows 7 through 16 (~9-10 rows tall) representing the upward-facing surface viewed in 3/4 perspective, resting atop the stone front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-facing dome of the boulder is clearly defined with moss spanning rows 7 to 16, clearly foreshortened in 3/4 view above the south rock face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3227
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large mossy boulder",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top foreshortened dome of the boulder is covered in moss from row 7 to row 17 (~10 pixel rows tall), sitting above the vertical south-facing rock face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3051
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mossy boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder features a clearly defined top surface covered in moss spanning rows 7 to 15, sitting above a vertical front rock face from rows 16 to 28, matching the expected 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4493
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.428Z",
+ "cells": {
+  "16": [
+   "11184ff4d5948aa3",
+   "3a6f9cac25b53a98",
+   "3dcfe4a452d06a9d",
+   "6f5177f3dd9173c1"
+  ],
+  "24": [
+   "1430d9bdf611b1df",
+   "27133eae7b0a3679",
+   "3008c02ec5f4ee4d",
+   "365f433b17a9eef2",
+   "47cdd904532af340",
+   "4a2d931a29363092",
+   "77363244519f59ea",
+   "798aef9c22802441",
+   "845aff3bdacb6676",
+   "8ae7eb80bd6c40ff",
+   "91f85900aa5dba1f",
+   "93c3364236db6796",
+   "ae27f133305a2c8f",
+   "bfc9008f990193c6",
+   "c77944f7d88fb703",
+   "c7e22a5871cc01a6",
+   "c823c421e7cf97a4",
+   "cb5ce81d5fc67ae8",
+   "d7e03f7ed4a5d9b0",
+   "d8621f706db964c3",
+   "d8bcff394c3cca2f",
+   "ed7425324ca4490d"
+  ],
+  "32": [
+   "b907d49ff7065741"
+  ],
+  "48": [
+   "03f19f3228d5e6a6",
+   "3986cff3d0d36f6e",
+   "6523571ef4fd89b8",
+   "68eba95d4d21a81c",
+   "d7300d7e03eb955c",
+   "e306bd9cc67fd6e5"
+  ]
+ }
+}

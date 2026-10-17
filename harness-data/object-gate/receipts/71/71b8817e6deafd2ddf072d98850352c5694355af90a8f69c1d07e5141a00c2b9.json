@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71b8817e6deafd2ddf072d98850352c5694355af90a8f69c1d07e5141a00c2b9",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "네온 화분 상자(콘크리트 상자 윗면 테 + 흙 + 둥근 잎 덩이 + 앞 띠 등)",
+ "label": "sf-station/sf-street-planter-neon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon planter box with bush",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box has a 6px tall front face (rows 10-15), but its top rim (row 9) is only 1px tall with minimal 1px soil peeking out behind it, forming a flat 1px edge line rather than a foreshortened top surface or visible planter opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6794
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box shows only a 1-pixel high top rim at row 9 with 1px soil peeking out at row 8, while its front face is 5 pixels tall (rows 11-15). The planter base is drawn as an almost pure front elevation without an adequate top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box shows only a 1-pixel-tall rim (row 9) with no foreshortened top surface or opening into the planter, rendering the box as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4849
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planter box with bush",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete planter box has a front face spanning rows 10-14, but its top rim/surface at row 9 is only 1 pixel tall, making the box a pure front elevation with no visible horizontal top depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6037
+  }
+ ],
+ "decidedAt": "2026-10-14T07:58:55.250Z",
+ "cells": {
+  "16": [
+   "757631b0a1f9cbcf"
+  ],
+  "24": [
+   "31d070f1a16786f9",
+   "60f3df1e071eb802",
+   "a79d4d5b98bc85bd",
+   "bd7676d084cc9ee5",
+   "d40d1ed9c10a6352",
+   "f1be0f9f7e6e1bd5"
+  ],
+  "32": [
+   "03fe3b1f13032463",
+   "262bc1bb472c1440",
+   "4fb5b263a149a436",
+   "860d0ee422a91810",
+   "b795e8c52987c1f2",
+   "de5eee220a686013"
+  ],
+  "48": [
+   "5c4d5aefcd7df647",
+   "60d5a00e94154269",
+   "763c9527796a0794",
+   "9b9774e63abccdeb",
+   "c0f27ca39fed8485",
+   "f327eaf0331e8a80"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "801e020b626de398d8c59e49d0a1b241527657ba54afde7e9aa9e6fe7e4f3a23",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece 'vE' (slim posts with cap tops, two rails)",
+ "label": "beodeul_farm/fence_vE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence section with post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece extends off the top edge or displays flat horizontal rails/caps that are only 1-2px tall with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8384
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post cap clearly shows a top surface 4 pixel rows tall (rows 0-3) seen from above before transitioning to the vertical south face on row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25065
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails show flat side/front elevation shading with no foreshortened top surfaces visible from above (0 top rows). The 1px yellow edge lines are highlights rather than 3/4 view top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28512
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical fence piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence components consist of flat vertical strips and bands with no visible top surfaces or caps depicted in 3/4 perspective (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7265
+  }
+ ],
+ "decidedAt": "2026-10-14T06:23:32.650Z",
+ "cells": {
+  "16": [
+   "cf531fa4bd6e307e"
+  ],
+  "24": [
+   "4ce836b7a069fd3e",
+   "8be37b4705478769",
+   "8d171830c3a04649",
+   "ca6ee6f607cb290b",
+   "d2db492099ea74e1",
+   "daf80f76e0b97c72"
+  ],
+  "32": [
+   "093dd52f7da1bfb5",
+   "3f562aa06658b857",
+   "6010d6847c8edc75",
+   "6c7e252b60d4b415",
+   "cb772fca95b22161",
+   "e5712def901f01ec"
+  ],
+  "48": [
+   "226c7b5af102e8b2",
+   "57525a4cda034c9b",
+   "6578aa4c14687e73",
+   "688a082c671aa75d",
+   "ab4664a75a7128c4",
+   "fd9bb8652fa26106"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de3831b523c6baf7c2cfede2ecb1998070bd88f25cb05de0cf7306f25ebaf5ab",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "말뚝 고삐 기둥",
+ "label": "desert-east/de-hitch-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hitching post frame with trough/rail and canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn in pure front elevation: the lower rail/trough (rows 11-14) is a flat 4px horizontal bar with no top surface visible, and the upper canopy/beam is drawn straight-on without any 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hitching post / stall rail with upper beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hitching rail/frame is drawn in pure front elevation: the lower horizontal beam/rail (rows 11-14) shows no visible top face (row 11 is merely a 1px outline), the posts are flat vertical lines, and the upper section is entirely flat with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6362
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hitching post / frame with hanging banner and lower rail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper beam/banner and the lower horizontal rail (rows 11-14) are drawn in pure front elevation with only 1px dark outlines on top (row 0 and row 11) instead of foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hitching rail and awning/stall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper awning/banner (rows 1-5) and the lower hitching beam (rows 11-14) are rendered in flat front elevation with no visible horizontal top surfaces seen from above (the bottom rail has only a 1px top edge line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4571
+  }
+ ],
+ "decidedAt": "2026-10-14T00:35:53.799Z",
+ "cells": {
+  "16": [
+   "945578ae69eae560"
+  ],
+  "24": [
+   "11e7a3e43ae3248d",
+   "4c7dc63d7e1d2288",
+   "521b4ec553b8e2fa",
+   "8b6999c333ae0259",
+   "d16e4fc1cf0c7fec",
+   "ead6cb01ca927c2a"
+  ],
+  "32": [
+   "14b386e516af478a",
+   "3724f1f67f99d77b",
+   "65d6530950430d60",
+   "8f5baf5ef5d342d9",
+   "a7b7c2346c671ac8",
+   "f654e6d8ea27f961"
+  ],
+  "48": [
+   "27ae7f566f3ea96c",
+   "49171374b429715e",
+   "78ab8e35ef32f6e1",
+   "7a976e4914331bbe",
+   "8c9360a1582f6389",
+   "db1e15cdbf416b33"
+  ]
+ }
+}

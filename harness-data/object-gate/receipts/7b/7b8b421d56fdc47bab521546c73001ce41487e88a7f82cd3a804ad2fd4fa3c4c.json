@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b8b421d56fdc47bab521546c73001ce41487e88a7f82cd3a804ad2fd4fa3c4c",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp/jp-bwallf-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Rows 0-3 are transparent canvas (checkerboard background). The wall begins at row 4 with a 1px dark edge line and presents a completely flat architectural front elevation with no visible top surface on any beam, panel, or stone base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese building wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall structure begins at row 4 (rows 0-3 are empty/transparent checkerboard canvas). The lintels, horizontal beams, vertical slats, and stone base are all drawn in pure flat front elevation with no visible top surfaces or slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10332
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese boundary wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 depict a 4-row top coping/roof surface seen from above, resting atop the front vertical facade of the wall (rows 4-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7967
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese tiled boundary wall with wooden upper panel and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of the tiled roof/coping seen from above in 3/4 perspective, overhanging the front wall face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16064
+  }
+ ],
+ "decidedAt": "2026-10-13T13:24:46.392Z",
+ "cells": {
+  "16": [
+   "4225ea479b125a11",
+   "735060f5024cd7aa"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "15b04b8c8f242e12",
+   "25caa1560be7c44b",
+   "51b7c74eea70b62e",
+   "80a605f81eec9937",
+   "853fb4f451814e41",
+   "92d5aaebc7e94f55",
+   "ac5e8e7596b2cd87",
+   "ac9f1af61f53093f",
+   "b2c4552ba80f2d08",
+   "ef439d4ac3f946c0",
+   "fd4c9f93e787701a"
+  ],
+  "32": [
+   "368b2dfe5b93f541",
+   "c411fbc6faa7204b",
+   "fe593460712f132f"
+  ],
+  "48": [
+   "4dce304ab91e0c91",
+   "6a8dcd537ebf76eb",
+   "6e0a2943110b5fbc",
+   "73646a548e0a9abe",
+   "8d4fa7a8f3588be4",
+   "ab50936943ed27f4"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c0da295e36abc83b4e1e11061ef7d7a9471b1fa50e25a8f115b4f12602be04d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "jp-bank-mid",
+ "label": "jp_city/street_hand/jp-bank-mid",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face / panel tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain tile depicting a wall face or grid panel pattern across the full 16x16 space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5812
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone wall face / riverbank tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain wall/embankment face tile with horizontal stone courses and mortar lines, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5007
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face / embankment tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless terrain tile depicting a wall or embankment face; exempt from 3/4 perspective object requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall face / embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating block/panel pattern filling the entire tile, correctly classified as terrain (wall face / bank).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5206
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.354Z",
+ "cells": {
+  "16": [
+   "5d89539e3330ba27"
+  ],
+  "24": [
+   "6c168c5f188b8d76",
+   "6e55ff976fa6912a",
+   "7a411b76a6db166e",
+   "870de56341fd564a",
+   "8cbbffd6bd262292",
+   "cba9c9458a358126"
+  ],
+  "32": [
+   "4772047de199faeb",
+   "77de2186d12e74db",
+   "7ea4b2da4fa244d1",
+   "9e8ba58f515d50ec",
+   "b5139d2509ee111e",
+   "c60dfdaf362725c1"
+  ],
+  "48": [
+   "40e1b227ca36839f",
+   "55311e9a372890fe",
+   "6907f706896ce783",
+   "cec5cbf8b8cdf550",
+   "d256b22db6eb05e7",
+   "f1cd7867e5178bb0"
+  ]
+ }
+}

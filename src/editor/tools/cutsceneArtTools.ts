@@ -3,6 +3,7 @@
 //   generate_cutscene_art role:"backdrop" 뷰포트 비율 전체화면 배경(거리, 방…)
 // 생성(수십 초)은 prepare 에서 하고, run 은 그 결과를 같은 동기 draft 경계 안에서 리소스로 등록한다.
 // prepare 의 실패는 삼켜지므로(asyncToolRunner.prepareTool) 실패 사유를 보관했다가 run 이 ToolError 로 낸다.
+import { generateDotArt, hasDotTextChat } from "@/ai/dotTextArt";
 import type { GenerateAiImageRequest, GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import { processBackdropArt, processIllustrationBackdrop, processIllustrationSprite, processSpriteArt, type ProcessedArt } from "@/editor/cutsceneArt/imageProcess";
 import { DEFAULT_PLAY_RESOLUTION } from "@/project/playResolution";
@@ -26,6 +27,24 @@ async function generate(request: GenerateAiImageRequest): Promise<GeneratedImage
   if (generatorOverride) return generatorOverride(request);
   const { generateAiImage } = await import("@/ai/imageGenerationClient");
   return generateAiImage(request);
+}
+
+/**
+ * style:game 소품은 «도트» 라 이미지 모델이 아니라 도트 저작 모델(텍스트)이 격자로 찍는다(결정 2026-10-16, imageRoute 의 cutscene-sprite).
+ * 이미지 생성기만 꽂힌 헤드리스 QA 하네스(setCutsceneArtGenerator, 도트 호출 없음)는 준비된 그림을 그대로 쓰도록 옛 경로를 유지한다 —
+ * 앱·워커는 항상 도트 경로다(워커는 시작 때 setDotTextChat 으로 도트 저작 모델을 꽂는다).
+ */
+function drawsGameSpriteAsDots(): boolean {
+  return generatorOverride === undefined || hasDotTextChat();
+}
+
+/** 도트 저작 모델에게 주는 소품 설명 — 게임 화면 계약(3/4 탑뷰)만 붙이고 이미지 모델용 배경색·여백 지시는 뺀다. */
+export function cutsceneDotPrompt(brief: string): string {
+  return [
+    `A game cutscene sprite: ${JSON.stringify(brief)}.`,
+    "SNES-era 16-bit JRPG field sprite in the game's classic 3/4 top-down view (camera ~45-60 degrees down, parallel projection, no vanishing point): we see its top surface (roof/hood) AND its side or front face. Side-on movement objects (vehicles) are shown side-on with their roof visible from above.",
+    "Chunky readable shapes, dark outline, plain unmarked surfaces: no lettering, logos, numbers, signs or decals; no light beams, glow, motion lines, smoke or sparks.",
+  ].join(" ");
 }
 
 const SPRITE_KEY_COLOR = "pure magenta (#FF00FF)";
@@ -114,7 +133,7 @@ function artResourceId(role: CutsceneArtRole, key: string): string {
 const generateCutsceneArt: ToolDefinition = {
   name: CUTSCENE_ART_TOOL,
   description:
-    "컷신 연출용 그림 생성: 컷신에서 움직일 그림(멧돼지·몬스터·동물·트럭·환영·배경)을 이미지 모델로 만들어 picture 리소스로 등록하고 resourceId·크기를 돌려준다. style:game(기본)은 게임 화면 해상도(320×240, 16px 타일)의 16비트 도트로 바꾼다. "
+    "컷신 연출용 그림 생성: 컷신에서 움직일 그림(멧돼지·몬스터·동물·트럭·환영·배경)을 만들어 picture 리소스로 등록하고 resourceId·크기를 돌려준다. style:game(기본)의 role=sprite 는 이미지 모델이 아니라 설정의 «도트 저작 모델»(텍스트 모델)이 16비트 도트 격자를 직접 찍어 투명 PNG 로 만든다(타일 5칸 이상은 2~4배 확대돼 도트가 굵어진다). role=backdrop 과 style:illustration 은 이미지 모델이 그리고 게임 해상도(320×240)로 줄인다. "
     + "그림은 항상 게임과 같은 눈으로 그려진다 — SNES FF6풍 도트, 소실점 없는 3/4 탑뷰. 프롬프트에 «side view»·«perspective»·«photo»·«painting» 같은 다른 시점·화풍을 쓰지 않는다. "
     + "role=sprite: 투명 배경으로 오려 낸 소품(트럭, 자동차, 상자…). 한 장에 한 대상, 전신이 보이게 설명한다. tiles 로 현실 비례 크기를 정한다. 사람·주인공은 이 도구로 만들지 말고 script_cutscene_staged 의 character 배우(게임 캐릭터셋; 충돌만이면 script_cutscene_impact 의 victimCharacter)를 쓴다. "
     + "role=backdrop: 인물·탈것이 없는 전체화면 빈 무대 배경(거리, 방…). 가로 도로 띠가 화면 가운데(약 40~75% 높이)를 지나게 만든다. 생성에 1분 안팎이 걸리고 호출마다 한 장만 만든다. 결과 그림이 이미지로 함께 전달되니 도로 띠의 위치를 눈으로 읽어 staged 배우의 at(fx·fy 화면 비율, 발 밑 기준)에 넣는다. "
@@ -151,7 +170,12 @@ const generateCutsceneArt: ToolDefinition = {
     }
     try {
       const viewport = DEFAULT_PLAY_RESOLUTION;
-      const image = await generate({ prompt: cutsceneArtPrompt(parsed.role, parsed.prompt, parsed.style) });
+      if (parsed.role === "sprite" && parsed.style === "game" && drawsGameSpriteAsDots()) {
+        const dot = await generateDotArt({ prompt: cutsceneDotPrompt(parsed.prompt), longSidePx: parsed.tiles * 16, purpose: "cutscene-sprite" });
+        prepared.set(key, { art: { dataUrl: dot.dataUrl, width: dot.width, height: dot.height }, role: parsed.role, name: parsed.name });
+        return;
+      }
+      const image = await generate({ prompt: cutsceneArtPrompt(parsed.role, parsed.prompt, parsed.style), ...(parsed.role === "backdrop" ? { purpose: "cutscene-backdrop" as const } : parsed.style === "illustration" ? { purpose: "cutscene-illustration-sprite" as const } : {}) });
       const art = parsed.style === "illustration"
         ? (parsed.role === "sprite" ? await processIllustrationSprite(image.dataUrl) : await processIllustrationBackdrop(image.dataUrl, viewport))
         : (parsed.role === "sprite"

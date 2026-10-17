@@ -50,37 +50,44 @@ def floor(P, kind: str, v: int = 0):
     """kind: lab · school · museum(바깥 어두운 카펫) · dept · dept2 · carpet(배 복도) · cabin(선실) · deck(갑판 널) · lg_<테마> · lgb_<테마>(테두리) · ch_top(챔피언 단)."""
     im = px.new()
     put = im.putpixel
-    if kind == "lab":                                                   # 큰 흰 타일 + 비스듬한 결(헤링본: v 로 결 방향이 바뀐다)
+    if kind == "lab":                                                   # 연청 흰 타일 8px: 줄눈 · 윗·왼 빛 모서리 · 타일 한 칸 건너 반짝 사선(v 로 자리 바뀜)
         d, b, l = P["rm_fl_lab"]
         for y in range(T):
             for x in range(T):
-                k = (x + y) % 8 if v == 0 else (x - y) % 8
-                c = d if x == 15 or y == 15 else l if k == 0 and 0 < x < 15 and 0 < y < 15 else b
+                xx, yy = x % 8, y % 8
+                c = d if xx == 7 or yy == 7 else l if xx == 0 or yy == 0 else b
                 put((x, y), c)
-    elif kind == "school":                                              # 회색 타일 안에 밝은 네모 테
-        d, b, l = P["rm_fl_school"]
+    elif kind == "school":                                              # 교실 리놀륨: 따뜻한 연회색 8px 타일 두 톤 체크(줄눈 · 윗변 빛) — 나무 책상이 떠 보이게 밝게
+        d, b, m, l = P["rm_fl_school"]
         for y in range(T):
             for x in range(T):
-                ring = (x in (3, 12) and 3 <= y <= 12) or (y in (3, 12) and 3 <= x <= 12)
-                c = d if x == 15 or y == 15 else l if ring else b
-                if v == 1 and ring and x in (3, 12) and y in (3, 12):
-                    c = b                                                   # 둘째 변형은 테 모서리가 둥글다
-
+                xx, yy = x % 8, y % 8
+                body = b if (x // 8 + y // 8 + v) % 2 == 0 else m
+                c = d if xx == 7 or yy == 7 else l if yy == 0 or (xx == 0 and body == m) else body
                 put((x, y), c)
-    elif kind in ("museum", "museum_in"):                               # 마름모 격자 카펫(바깥은 어둡게, 안쪽 카펫은 한 톤 밝게)
+    elif kind == "museum":                                              # 바깥: 윤 나는 짙은 청록 돌판 16px(줄눈 · 윗변 빛 · 사선 광택 두 줄, v 로 자리)
         m = P["rm_fl_museum"]
-        lo, base, hi = (m[0], m[1], m[2]) if kind == "museum" else (m[1], m[2], m[3])
+        for y in range(T):
+            for x in range(T):
+                s_ = x + y
+                c = m[0] if x == 15 or y == 15 else m[2] if y == 0 or x == 0 else m[1]
+                if 0 < x < 15 and 0 < y < 15 and (s_ in (9, 11) if v == 0 else s_ in (17, 19)):
+                    c = m[2]
+                put((x, y), c)
+    elif kind == "museum_in":                                           # 안쪽 카펫: 마름모 격자 + 가운데 밝은 점(한 톤 밝은 램프)
+        m = P["rm_fl_museum"]
+        lo, base, hi = m[1], m[2], m[3]
         for y in range(T):
             for x in range(T):
                 a, b2 = (x + y) % 8, (x - y) % 8
                 c = lo if a == 0 or b2 == 0 else hi if (a == 4 and b2 == 4) or (v == 1 and a == 4 and b2 in (3, 5)) else base
                 put((x, y), c)
-    elif kind == "dept":                                                # 주황 큰 타일 + 사선 광택 한 줄
+    elif kind == "dept":                                                # 밝은 살구 매장 타일 8px 체크(밝은·보통) · 줄눈 · 밝은 칸 윗왼 빛 · 보통 칸 반짝 사선
         d, b, l = P["rm_fl_dept"]
         for y in range(T):
             for x in range(T):
-                s = x + y
-                c = d if x == 15 or y == 15 else l if (5 <= s <= 6 if v == 0 else 19 <= s <= 20) and x < 15 and y < 15 else b
+                xx, yy = x % 8, y % 8
+                c = d if xx == 7 or yy == 7 else l if xx == 0 or yy == 0 else b
                 put((x, y), c)
     elif kind == "dept2":                                               # 민트 팔각 타일(모서리에 작은 마름모)
         d, b, l = P["rm_fl_dept2"]
@@ -94,21 +101,27 @@ def floor(P, kind: str, v: int = 0):
                 else:
                     c = l if cx + cy > 8.5 or v == 0 else b if (x + y) % 2 and cx + cy < 2 else l
                 put((x, y), c)
-    elif kind == "carpet":                                              # 배 복도 카펫: 바탕 + 2px 점 마름모 배열
+    elif kind == "carpet":                                              # 배 복도 남색 카펫: 짙은 마름모 격자 · 마름모 가운데 밝은 점(v1 은 점 + 십자)
         d, b, l = P["rm_fl_carpet"]
         for y in range(T):
             for x in range(T):
-                xx, yy = x % 8, y % 8
-                dots = ((1, 1), (2, 1), (5, 5), (6, 5)) if v == 0 else ((5, 1), (6, 1), (1, 5), (2, 5))   # 두 변형 점 수 같게(자리만 엇갈림)
-                c = l if (xx, yy) in dots else b
+                a, b2 = (x + y) % 8, (x - y) % 8
+                c = d if a == 0 or b2 == 0 else l if (a == 4 and b2 == 4) or (v == 1 and a == 4 and b2 in (3, 5)) else b
                 put((x, y), c)
-    elif kind == "cabin":                                               # 선실 붉은 카펫: 밝은 점 + 그 아래 그늘 점
-        d, b, l = P["rm_fl_cabin"]
+    elif kind == "cabin":                                               # 선실 마호가니 마루: 가로 널 4px · 엇갈린 이음매 · 결 자국(판벽보다 한 톤 어둡다)
+        pl = P["i2_plank"]
+        d, g, b, l = pl[1], pl[1], pl[2], pl[3]                             # 집 마루처럼 낮은 대비(이음·결 = 한 톤 아래) — 판벽 꿀색보다는 한 톤 어둡다
+        joints = (3, 11, 7, 15)
+        grain = ((6, 1, 3), (12, 10, 2)) if v == 0 else ((9, 2, 3), (1, 9, 3))
         for y in range(T):
+            r, k = y // 4, y % 4
+            j = joints[r]
             for x in range(T):
-                xx, yy = x % 8, (y + (4 if (x // 8 + v) % 2 else 0)) % 8
-                c = l if (xx, yy) in ((3, 2), (4, 2)) else d if (xx, yy) == (4, 3) and v == 1 else b
-                put((x, y), c)
+                put((x, y), d if k == 3 or x == j else l if k == 0 else b)
+        for gx, gy, n in grain:
+            for x in range(gx, gx + n):
+                if x != joints[gy // 4]:
+                    put((x % T, gy), g)
     elif kind == "deck":                                                # 가로 긴 널(4px): 이음매는 줄마다 한 칸 건너 하나, 널 위쪽 밝은 줄
         d, b, l = P["rm_deck"]
         for y in range(T):
@@ -161,110 +174,133 @@ def mat(P, floor_im, ramp=None):
 def _wall_col(P, style: str):
     """32px 세로 띠(위 칸 0..15 + 아래 칸 16..31). 반환 col(x, y) → 색."""
     ce, ol, g = P["i2_ceil"], _ol(P), P["i2_gray"]
-    if style == "lab":                                                  # 흰 벽: 회청 띠 → 흰 벽면 → 허리 띠 → 회색 걸레받이
+    def top(y):                                                         # 공통 머리: 흰 천장 끝 2px · 회 1px · 외곽선 · 천장 밑 그늘(호출자가 y4)
+        return ce[1] if y <= 1 else ce[0] if y == 2 else ol
+    if style == "lab":                                                  # 연구소: 흰 판 벽(16px 판 이음) → 회청 허리 띠 → 연청 타일 징두리 → 회색 걸레받이
         f, bd = P["rm_lab_face"], P["rm_lab_band"]
-        def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return bd[2]
-            if y <= 5: return bd[1]
-            if y == 6: return ol
-            if y == 7: return f[2]
-            if y <= 22: return f[1]
-            if y == 23: return f[0]
-            if y == 24: return bd[1]
-            if y == 25: return bd[0]
-            if y <= 28: return g[2] if y == 26 else g[1]
-            if y <= 30: return g[0]
+        def col(x, y):                                                  # interior2 문법: 밝은 벽면(8px 옅은 결) → 허리 띠(빛·중·외곽선) → 연청 판 징두리 → 진한 걸레받이
+            if y <= 3: return top(y)
+            if y == 4: return f[0]
+            if y <= 18: return f[2] if x % 8 == 0 else f[1]
+            if y == 19: return P["i2_white"][2]
+            if y == 20: return bd[1]
+            if y == 21: return bd[0]
+            if y <= 28:                                                     # 징두리 판 8px(윗줄 빛 · 오른쪽 이음 그늘)
+                if y == 22: return P["i2_white"][2]
+                return bd[1] if x % 8 == 7 else bd[2]
+            if y == 29: return g[1]
+            if y == 30: return g[0]
             return ol
-    elif style == "school":                                             # 크림 벽면 → 초록 징두리판 → 나무 걸레받이
+    elif style == "school":                                             # 학교: 크림 벽(8px 옅은 결) → 나무 손잡이 띠 → 초록 판자 징두리 → 나무 걸레받이
         f, bd, wd = P["rm_s_face"], P["rm_s_band"], P["i2_wood"]
         def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return f[2]
-            if y <= 19: return f[1]
-            if y == 20: return f[0]
-            if y == 21: return ol
-            if y == 22: return bd[2]
-            if y <= 25: return bd[1] if x % 16 != 15 else bd[0]
-            if y == 26: return bd[0]
-            if y <= 29: return wd[2] if y == 27 else wd[1]
+            if y <= 3: return top(y)
+            if y == 4: return f[0]
+            if y <= 17: return f[2] if x % 8 == 0 else f[1]
+            if y == 18: return wd[2]
+            if y == 19: return wd[1]
+            if y == 20: return wd[0]
+            if y <= 27:
+                k = x % 8
+                return bd[2] if y == 21 else bd[0] if k == 7 else bd[2] if k == 0 else bd[1]
+            if y == 28: return wd[2]
+            if y == 29: return wd[1]
             if y == 30: return wd[0]
             return ol
-    elif style == "museum":                                             # 황토 벽면 · 주황 선 · 파란 띠 두 단(흰 선) · 걸레받이
+    elif style == "museum":                                             # 박물관: 사암 돌 벽(엇갈린 돌 두 단) → 주황 선 → 남청 판벽(16px 볼록 판) → 흰 선 → 걸레받이
         f, bd = P["rm_mu_face"], P["rm_mu_band"]
         def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return f[2]
-            if y <= 12: return f[1]
-            if y == 13: return P["i2_orange"][1]
-            if y <= 15: return f[0]
-            if y == 16: return ol
-            if y == 17: return bd[2]
-            if y <= 21: return bd[1]
-            if y == 22: return ce[1]
-            if y <= 27: return bd[0] if y != 23 else bd[1]
+            if y <= 3: return top(y)
+            if y == 4: return f[0]
+            if y <= 16:
+                course = 0 if y <= 10 else 1
+                yy = y - (5 if course == 0 else 11)
+                k = (x + 8 * course) % 16
+                if yy == 5 or k == 15: return f[0]
+                return f[2] if yy == 0 or k == 0 else f[1]
+            if y == 17: return P["i2_orange"][1]
+            if y == 18: return ol
+            if y == 19: return bd[2]
+            if y <= 26:
+                k = x % 16
+                if y == 20 or y == 26: return bd[0]
+                if k in (0, 15): return bd[0]
+                if k == 1 or y == 21: return bd[2]
+                return bd[1]
+            if y == 27: return ce[1]
             if y <= 29: return g[1]
             if y == 30: return g[0]
             return ol
-    elif style == "dept":                                               # 회녹 벽면 → 연어색 띠 → 회색 걸레받이
+    elif style == "dept":                                               # 백화점: 회녹 벽지(작은 마름모 점) → 연어색 띠 → 회색 걸레받이
         f, s = P["rm_d_face"], P["i2_salmon"]
         def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return f[2]
-            if y <= 20: return f[1]
+            if y <= 3: return top(y)
+            if y == 4: return f[0]
+            if y <= 20:
+                xx, yy = x % 8, (y - 5) % 8
+                if (xx, yy) in ((3, 3), (4, 4), (3, 5), (2, 4)): return f[0] if (xx, yy) == (3, 5) else f[2]
+                return f[1]
             if y == 21: return f[0]
             if y == 22: return ol
             if y == 23: return s[2]
-            if y <= 25: return s[1]
+            if y <= 25: return s[0] if x % 16 == 15 else s[1]
             if y == 26: return s[0]
-            if y <= 29: return g[2] if y == 27 else g[1]
+            if y == 27: return g[2]
+            if y <= 29: return g[1]
             if y == 30: return g[0]
             return ol
-    elif style == "ship":                                               # 배 복도: 흰 철판(가로 이음매) → 남색 띠 · 금 선 → 걸레받이
+    elif style == "ship":                                               # 배 복도: 흰 철판 판벽(16px 이음 · 못) → 남색 판벽 · 금 선 → 걸레받이
         w, b, gd = P["i2_white"], P["i2_blue"], P["i2_gold"]
         def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return ol
-            if y == 4: return w[2]
-            if y <= 18: return w[0] if y == 11 else w[1]
+            k = x % 16
+            if y <= 3: return top(y)
+            if y == 4: return w[0]
+            if y <= 18:
+                if k == 15: return w[0]
+                if y in (6, 17) and k in (2, 13): return w[0]                 # 판 모서리 못
+                return w[2] if k == 0 or y == 5 else w[1]
             if y == 19: return b[2]
-            if y <= 22: return b[1]
+            if y <= 22: return b[0] if k == 15 else b[1]
             if y == 23: return gd[1]
-            if y <= 25: return b[1]
+            if y <= 25: return b[0] if k == 15 else b[1]
             if y == 26: return b[0]
-            if y <= 29: return g[2] if y == 27 else g[1]
+            if y == 27: return g[2]
+            if y <= 29: return g[1]
             if y == 30: return g[0]
             return ol
-    elif style == "cabin":                                              # 선실 나무 판벽: 16px 세로 판(이음매 1px · 밝은 결 1px)
-        wd = P["i2_wood"]
+    elif style == "cabin":                                              # 선실: 꿀색 볼록 판벽(16px 판 · 윗왼 빛 · 아래오른 그늘) 위아래 두 단 · 손잡이 띠
+        wd, cd = P["i2_wood"], P["i2_card"]
+        def panel(x, y, y0, y1):
+            k = x % 16
+            if k == 0: return wd[0]
+            if k == 1 or y == y0: return cd[2]
+            if k == 15 or y == y1: return cd[0]
+            return cd[1]
         def col(x, y):
-            if y <= 1: return ce[1]
-            if y == 2: return ce[0]
-            if y == 3: return ol
-            if y == 4: return wd[2]
-            if y <= 25:
-                if y == 14: return wd[0]
-                if y == 15: return wd[2]
-                return wd[0] if x % 16 == 0 else wd[2] if x % 16 == 1 else wd[1]
-            if y == 26: return wd[2]
-            if y <= 29: return wd[0]
-            if y == 30: return g[0]
+            if y <= 3: return top(y)
+            if y == 4: return wd[0]
+            if y <= 16: return panel(x, y, 5, 16)
+            if y == 17: return wd[2]
+            if y == 18: return wd[1]
+            if y == 19: return wd[0]
+            if y <= 27: return panel(x, y, 20, 27)
+            if y == 28: return wd[1]
+            if y <= 30: return wd[0]
             return ol
-    elif style == "deckhouse":                                          # 갑판 위 선실 바깥벽: 회색 지붕 끝 → 흰 철판 → 남색 띠
+    elif style == "deckhouse":                                          # 갑판 위 선실 바깥벽: 회색 지붕 끝 → 흰 철판(16px 이음 · 못 줄) → 남색 띠
         w, b = P["i2_white"], P["i2_blue"]
         def col(x, y):
+            k = x % 16
             if y <= 1: return g[2]
             if y == 2: return g[1]
             if y == 3: return ol
-            if y == 4: return w[2]
-            if y <= 23: return w[0] if (y in (7, 20) and x % 4 == 1) else w[2] if y == 13 else w[1]
+            if y == 4: return w[0]
+            if y <= 23:
+                if y in (7, 20) and x % 4 == 1: return w[0]
+                if k == 15: return w[0]
+                return w[2] if k == 0 or y == 5 else w[1]
             if y == 24: return b[2]
-            if y <= 27: return b[1]
+            if y <= 27: return b[0] if k == 15 else b[1]
             if y == 28: return b[0]
             if y <= 30: return w[0]
             return ol

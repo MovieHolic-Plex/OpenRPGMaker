@@ -1,0 +1,1472 @@
+[
+ {
+  "name": "mir_old-wardrobe",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_new-column",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_new-pew-e",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_new-pew-n",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_new-chair-e",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_new-chair-w",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__house-h106_1",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__house-h111_0",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__house-h122_0",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__house-h124_0",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__prop-stall_herb_flower",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__prop-flower_cart",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_beodeul__prop-table_mugs",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_cake_display_case__w8-C",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_chopping_block__v5",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_altar_E__w21-G",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_pew__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_pew_E2__w45-A",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_pew_E3__w45-A",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_pulpit__w32-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_votive_stand__v5",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_coffin__w73-A",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_column_dwarf__w51-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_column_marble__w51-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_column_steel__w51-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_column_stone__w51-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_column_wood__w51-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_armchair__w9-B",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_barrel__w2-A",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_chair_E__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_chair_N__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_chair_S__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_chair_W__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_cradle__w29-F",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_sofa__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_firewood_bundle__w9-B",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_magitek_engine__w46-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_mine_cart__w2-C",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_powder_kegs__w9-B",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_rune_stone__w45-A",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_stone_throne__w52-A",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_theater_seat__w10-C",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_hammock__w72-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_safe__w72-A",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_spear_rack__w70-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_hay_bale__w44-A",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_saddle_rack__w26-D",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_loom__w43-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_spiral_stair__v5",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_slot_machine__w46-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_choir_stall__w45-A",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_fish_tank__w44-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_kitchen_range__v5",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "U",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_patient_bed__w74-A",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_holy_water_font__w7-A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_slop_bucket__w3-C",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_bathtub__w22-F",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_nightstand__w8-C",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_roundtable__v5",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_stool__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_straw_bed__w44-A",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_timber_prop__w53-B",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_conductor_podium__w31-F",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_anvil__w7-B",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_coal_bin__w10-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_quench_barrel__w5-C",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_feed_trough__w4-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_water_trough__w4-A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_bar_stool__w5-C",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_cheese_wheels__v5",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_dresser__w71-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_wardrobe__w42-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_stove__w44-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_forge__w44-A",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_bookshelf_1w__w41-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_keg_rack__w48-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_mortar_and_pestle__w1-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_potted_fern__w7-B",
+  "kind": "organic",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_treasure_pile__w5-C",
+  "kind": "debris",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_scroll_shelf__A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_scroll_shelf__B",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_medicine_cabinet__A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_medicine_cabinet__B",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "C",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_gong_frame__A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_weapon_rack__A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_war_drum__A",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_well__A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_tea_table__A",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "mir_tea_table__B",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-mirror",
+  "tier": "A",
+  "note": "개발 표본의 좌우 반전(같은 그림 — 독립 표본 아님, 읽기 편향 검사)"
+ },
+ {
+  "name": "hue_coal_bin__w10-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_nightstand__w8-C",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_feed_trough__w4-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_keg_rack__w48-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_beodeul__prop-stall_herb_flower",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_holy_water_font__w7-A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_wardrobe__w42-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_bathtub__w22-F",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_quench_barrel__w5-C",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_treasure_pile__w5-C",
+  "kind": "debris",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_dresser__w71-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_stool__v5",
+  "kind": "seat",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_new-column",
+  "kind": "column",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_war_drum__A",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "hue_cheese_wheels__v5",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-hue",
+  "tier": "A",
+  "note": "개발 정상 표본의 색조 회전"
+ },
+ {
+  "name": "flat_wardrobe__w42-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_wardrobe__w42-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_dresser__w71-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_dresser__w71-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_bookshelf_1w__w41-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_bookshelf_1w__w41-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_stove__w44-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_stove__w44-A",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_nightstand__w8-C",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_nightstand__w8-C",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_keg_rack__w48-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_keg_rack__w48-A",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_tea_table__A",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_tea_table__A",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_tea_table__B",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_tea_table__B",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_water_trough__w4-A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_water_trough__w4-A",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_feed_trough__w4-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_feed_trough__w4-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_coal_bin__w10-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_coal_bin__w10-B",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "flat_timber_prop__w53-B",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-flat",
+  "tier": "A",
+  "note": "정상 표본에서 윗면 행을 잘라 만든 합성 위반"
+ },
+ {
+  "name": "thin_timber_prop__w53-B",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-synth-thin",
+  "tier": "A",
+  "note": "정상 표본의 윗면을 3행 깎은 합성 위반"
+ },
+ {
+  "name": "real_sack_flour",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_sack_grain",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_potted_cactus",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_potted_flowering",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_potted_sapling",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_fish_ice_chest",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_ice_chest",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_broom_bucket",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_plant",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_rope_coil",
+  "kind": "round_body",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_coin_pile",
+  "kind": "box",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "real_barrel_apple",
+  "kind": "container",
+  "styleKind": "prop",
+  "view34": "good",
+  "style": null,
+  "group": "hidden-real",
+  "tier": "A",
+  "note": "개발 표본과 겹치지 않는 실제 정상(실내 수락 그림)"
+ },
+ {
+  "name": "realbad_desk_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_work_2x1",
+  "kind": "low_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_grindstone",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_spinning_wheel",
+  "kind": "other",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_confessional",
+  "kind": "structure",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_cupboard",
+  "kind": "tall_furniture",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ },
+ {
+  "name": "realbad_sword_rack",
+  "kind": "frame",
+  "styleKind": "prop",
+  "view34": "bad",
+  "style": null,
+  "group": "hidden-realbad",
+  "tier": "B",
+  "note": "감사 B등급 FAIL(정면·평면도) 실제 그림 — 라벨이 A 보다 약하다(tier B)"
+ }
+]

@@ -21,6 +21,7 @@ import { footprintBounds, nearestCellInRect } from "@/project/footprint";
 import { playerPassageRect, resolvePlayerBody, type PlayerBody } from "@/project/playerFootprint";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
+import { playMonsterSfx } from "@/player/monsterSfx";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteY, footprintSpriteX, updateCharacterDepth } from "@/player/characterDepth";
@@ -45,7 +46,8 @@ import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
-import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { eligibleEncounterEntries, pickEncounterForMap } from "@/player/encounters";
+import { grantEscapeGrace, repelBlocksWildLevel, repelExpiredMessage, tickEncounterGuard, troopWildLevel } from "@/project/encounterGuard";
 import { terrainRecordAt } from "@/project/terrainAt";
 import { applyTerrainWalkDamage, scaledEncounterRate } from "@/project/terrainStep";
 import { firesOnPlayerCollision, PLAYER_COLLISION_TRIGGER_KINDS } from "@/project/eventTouchRules";
@@ -763,7 +765,13 @@ function attemptLifeInteraction(scene: ActionEventSceneContext, x: number, y: nu
   const result = interactWithLifeField(store.getCurrent(), scene.session, { mapId: scene.map.id, x, y });
   if (result.kind === "unhandled") return false;
   if (result.kind === "refused") showFarmFeedbackMessage(scene, result.message);
-  else {
+  else if (result.kind === "encounter") {
+    // 낚시에 몬스터가 걸렸다: 걷다 만나는 야생과 같은 전투 경로(뒤 이벤트·패배 처리 포함)로 싸운다.
+    scene.lastActionTargetKey = "";
+    scene.syncRuntimeState?.();
+    const full = scene as unknown as PlaySceneContext;
+    if (typeof full.playBattle === "function") void runRandomEncounterBattle(full, result.troopId, result.level);
+  } else {
     scene.lastActionTargetKey = "";
     scene.refreshRuntimeSurfaces?.();
     scene.syncRuntimeState?.();
@@ -975,8 +983,22 @@ export function applyTerrainStepDamage(scene: PlaySceneContext): boolean {
 
 export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (scene.running) return; // 이미 전투/이벤트 진행 중이면 무시
+  // 도망 뒤 무적 걸음·벌레퇴치: 걸음마다 남은 수를 줄인다(조우율이 0인 마을 걸음도 센다). 효과가 끝난 걸음엔 문장을 띄운다.
+  const guard = tickEncounterGuard(scene.session);
+  if (guard.expiredItemId !== undefined) {
+    // 끝난 걸음엔 문장이 먼저다 — 같은 걸음에 전투가 겹치지 않게 이번 판정은 건너뛴다.
+    void showEncounterGuardNotice(scene, repelExpiredMessage(store.getCurrent(), guard.expiredItemId));
+    return;
+  }
+  if (guard.suppress) {
+    encounterStepCounter = 0;
+    encounterAccumulator = 0;
+    return;
+  }
   const map = scene.map;
   const terrain = terrainRecordAt(store.getCurrent(), { mapId: map.id, x: scene.tileX, y: scene.tileY });
+  // 몬스터 장르: 풀숲(조우 확률이 있는 지형) 한 걸음마다 바스락 소리.
+  if ((terrain?.record.encounterRatePercent ?? 0) > 0) playMonsterSfx(store.getCurrent(), "walk-grass");
   const baseRate = scaledEncounterRate(map.encounterRate ?? 0, terrain?.record.encounterRatePercent);
   const rate = baseRate * difficultyRate(store.getCurrent().system, scene.session, "encounterRate");
   if (rate <= 0) return;
@@ -989,7 +1011,7 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   }
   const position = { x: scene.tileX, y: scene.tileY };
   const hasCandidates = map.encounterTable && map.encounterTable.length > 0
-    ? eligibleEncounterEntries(map, scene.session, position).length > 0
+    ? eligibleEncounterEntries(map, scene.session, position, store.getCurrent()).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return;
   // 몬스터 파티 전투인데 아직 파트너가 없으면 야생이 나오지 않는다 — 전투를 열 수 없어 매 걸음 오류 창이 떴다
@@ -1003,15 +1025,17 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
   if (!rollRandomEncounter(scene.session, encounterAccumulator)) return;
   encounterStepCounter = 0;
   encounterAccumulator = 0;
-  const troopId = pickEncounterTroopForMap(map, scene.session, position);
-  if (!troopId) return;
+  const picked = pickEncounterForMap(map, scene.session, position, undefined, store.getCurrent());
+  if (!picked) return;
+  // 낮은 레벨만 막는 벌레퇴치 — 뽑힌 야생이 파티 선두보다 약하면 이번 조우는 없던 일이다.
+  if (guard.repelBelowLead && repelBlocksWildLevel(troopWildLevel(store.getCurrent(), picked.troopId, picked.level), monsterBattlePartyOf(store.getCurrent(), scene.session).party.find((monster) => (monster.currentHp ?? 1) > 0)?.level)) return;
   // 전투 시작(비동기). 전투가 끝날 때까지 맵 로직·입력을 잠근다 — 잠그지 않으면 전투
   // 오버레이 뒤에서 걸음이 계속 완료되어 게이지가 쌓이고 전투가 겹쳐 시작된다.
-  void runRandomEncounterBattle(scene, troopId);
+  void runRandomEncounterBattle(scene, picked.troopId, picked.level);
 }
 
 // runFieldSpawnEventBattle(playSceneFieldSpawns.ts) 과 같은 재진입 가드 계약이다.
-async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string): Promise<void> {
+async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string, enemyLevel?: number): Promise<void> {
   const session = scene.session;
   const previousInputEnabled = scene.inputEnabled;
   scene.running = true;
@@ -1019,16 +1043,18 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
   try {
     // 결과를 버리면 안 된다: battleResult 는 페이지 조건·분기의 SSOT 이고, 랜덤 인카운터는
     // canLose=false 라 패배가 곧 게임 오버다(sceneTestRunner 의 인카운터 경로와 같은 계약).
-    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false });
+    const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: false, ...(enemyLevel !== undefined ? { enemyLevel } : {}) });
     if (result === null || scene.session !== session || scene.sys?.isActive() === false) return;
     session.battleResult = result;
+    // 도망에 성공하면 몇 걸음은 다시 만나지 않는다(원작식). 무적 걸음은 세션에 저장된다.
+    if (result === "escape") grantEscapeGrace(store.getCurrent(), session);
     if (result === "defeat") applyBattleDefeat(scene);
     // 적 그룹 「전투 뒤」 이벤트. 인카운터는 canLose=false 라 패배는 게임 오버 — 승리·도망만 돈다.
     else await runTroopAfterBattle(scene, troopId, result, () => scene.session === session);
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {
-      showBattleAdmissionError(scene, error);
+      await showBattleAdmissionError(scene, error);
     }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {
@@ -1036,6 +1062,13 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
       scene.setInputEnabled(previousInputEnabled);
     }
   }
+}
+
+/** 필드 문장 한 줄(벌레퇴치가 끝났다 등). 다른 이벤트가 돌고 있으면 건너뛴다. */
+async function showEncounterGuardNotice(scene: PlaySceneContext, body: string): Promise<void> {
+  if (scene.running) return;
+  const { runCommands } = await import("@/player/playSceneInterpreter");
+  await runCommands(scene, [{ kind: "text", body }]);
 }
 
 // 전투 후/맵 진입 시 스텝 카운터 리셋(외부에서 호출 가능).

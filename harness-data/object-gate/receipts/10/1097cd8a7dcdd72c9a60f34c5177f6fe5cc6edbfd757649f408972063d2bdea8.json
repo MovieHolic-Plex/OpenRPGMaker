@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1097cd8a7dcdd72c9a60f34c5177f6fe5cc6edbfd757649f408972063d2bdea8",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "여관 좁은 선반",
+ "label": "desert-east/de-shelf-inn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "narrow shelf / cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly drawn across rows 1-5 (approx. 5 pixel rows) with an overhanging front rim before the vertical front face and shelves begin at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "narrow wooden shelving unit with stacked goods on two shelves",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the shelf unit is clearly visible from rows 1 to 5 (approx. 5 pixel rows) with a highlighted front edge at row 5 before the front face begins at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3768
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "narrow wooden shelf unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 1-5 (approx. 5 pixel rows tall) above the front shelving face, in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4513
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "narrow shelf/cabinet with linens and items on shelves",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered from rows 1 to 5 (~5 pixels tall) with a highlighted front lip, presenting a proper top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7813
+  }
+ ],
+ "decidedAt": "2026-10-14T00:23:19.736Z",
+ "cells": {
+  "16": [
+   "82595fb1f76cde4a",
+   "a32165c7793ade63"
+  ],
+  "24": [
+   "0068d99585905f9b",
+   "1e417ecab84666cf",
+   "364c7768ecbff9bd",
+   "4c477e0112bcb344",
+   "5887a9415b7a7900",
+   "661a4ff1c94cbdc8",
+   "73ee2b8a402fa4f1",
+   "8b6cdadd8888788b",
+   "9c07d9988860b8d9",
+   "acd402da2ee5f60b",
+   "bd888cae3a4cdb8b",
+   "d49eb2a408efa185"
+  ],
+  "32": [
+   "070939e6a508bbda",
+   "48a8dacfefdc1fe2",
+   "693294b0e9735bcf"
+  ],
+  "48": [
+   "6e37c82554d3147c",
+   "a22dd229b3b9720d",
+   "a36b54ac92cddd98",
+   "f2294768206b5592",
+   "fbcb8e31f28cf71a",
+   "fbe3ab73d5422f57"
+  ]
+ }
+}

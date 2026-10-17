@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d96a76a2dde40d1c9395a89245c66782dc77655394b864e6a9e75b7820ce2bdd",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "가문비 두 그루(겹침)",
+ "label": "snow-north/sn-pine-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "overlapping spruce trees with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce trees are drawn in a flat 2D side-scroller / front elevation style. Each foliage tier terminates in a completely straight horizontal bottom edge (rows 24, 36, 46, 58) rather than curving downward to indicate a conical form seen from above, and the base canopy and ground contact show no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7980
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two overlapping snow-covered spruce trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The spruce trees are drawn as flat triangular silhouettes with straight horizontal tier divisions and crenellations (e.g. rows 24, 36, 46) rather than curved contours showing depth from a 3/4 high-angle view. The trunks and base are also rendered in a flat front elevation style.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5976
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "overlapping spruce trees with snow",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees are drawn in a flat 2D front elevation (side-scroller style): the tree tops come to sharp vertical tips, foliage tiers are separated by flat horizontal lines (rows 24, 36, 47), and the bottom skirt of the foliage forms a completely flat horizontal line (rows 58-59) with no downward curvature or visible top surface from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6686
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "overlapping spruce trees",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trees are drawn in pure front elevation: the apex of each cone reaches the top silhouette, tier dividers (rows 24, 36, 47) and the bottom foliage skirt (rows 58-59) form completely flat horizontal lines with no 3/4 downward curvature or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5217
+  }
+ ],
+ "decidedAt": "2026-10-14T01:07:12.503Z",
+ "cells": {
+  "16": [
+   "0878688d575dac85",
+   "15f1173cf0ede90a",
+   "1723273c99e67cc5",
+   "31854dad1d4a1582",
+   "4063d22a19a1774e",
+   "48fa3425176623f7",
+   "663ccbc4fe05118c",
+   "76590fb1e932a1c6",
+   "852da3cadc589900",
+   "a583d2331847a0ca",
+   "ba8dc6074a5d135f",
+   "ee7af21f978d3dea"
+  ],
+  "24": [
+   "174cfd4e4890fe6f",
+   "53f17aec0e94bb54",
+   "8e51c3ddcb8c40c4",
+   "976978d5ba46c504",
+   "9a77669185d0d355",
+   "9d11830b8f67d4ec",
+   "a5d6187c449f9253",
+   "a8af75ed4cba84ac",
+   "b824855dd50b7a7e",
+   "ce5f0e6392e5aa1c",
+   "f5757b7926f80076",
+   "f984a51adff7ce7c"
+  ],
+  "32": [
+   "27e5a3c38378df94",
+   "3a8e560981c96f75",
+   "3b9fe5db2853ed97",
+   "42092d73d6bda2a2",
+   "50e4b6cec5c653a0",
+   "589d7f724e2749fe",
+   "5ce6a7485094e47e",
+   "8133ed97eb4092be",
+   "b7b0e2e07278bd0b",
+   "c385b5e94523a506",
+   "e99e14b2eb8aefa3",
+   "f7b1b24873e68fb2"
+  ],
+  "48": [
+   "11ffa6ccea59f451",
+   "1d37e4ee17eb4a64",
+   "f7168f2b9f15d87b",
+   "f729966083e035f5"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00a8c8edb5116b0b85834f0233cb00f08490188e29a3bbd0ae0e8e0be474ee7d",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "세로 네온 간판(두꺼운 판 윗면 + 램프 테 + 칸마다 도형 + 고정 다리)",
+ "label": "sf-station/sf-street-sign-vertical",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the standing sign board is clearly rendered across rows 1-6 (about 6 rows tall) above the front neon display face (rows 8-29), conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical neon signboard",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the signboard is clearly rendered across rows 1-6 (6 source pixels tall) with mounting detail, sitting above the vertical front neon face (rows 8-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7621
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical neon sign board",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the sign housing is clearly visible across rows 1 to 6 (6 pixel rows tall) with mounting detail, sitting above the vertical front face of the sign (rows 8 to 29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6061
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical neon signboard",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the signboard is clearly drawn from above across rows 1 to 6 (6 px tall) showing its thickness and mounting detail, above the front vertical neon display face (rows 8-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7843
+  }
+ ],
+ "decidedAt": "2026-10-13T16:15:33.033Z",
+ "cells": {
+  "16": [
+   "201b44ca1ccd6af9",
+   "c702f4e760d0f434"
+  ],
+  "24": [
+   "106bbabd5f773e05",
+   "18ecbdf2d72438ea",
+   "20094b268caca3f1",
+   "2995488f91442d7c",
+   "64fabe754408a2f1",
+   "7a5ef1c18a95eaad",
+   "b428c889fe85c735",
+   "cc421dbabefbc624",
+   "cc66e464a2c2c5c9",
+   "d6f087c21776b8de",
+   "dfa3d16984a83280",
+   "e0a664f569cc9cf8"
+  ],
+  "32": [
+   "17a8ae6076264873",
+   "2a5ddbb64b1aa255",
+   "db4b6d6cb5761324"
+  ],
+  "48": [
+   "0b191e772f2b374f",
+   "5059c6c22b55eca2",
+   "9a240702eb96061c",
+   "da18205063a758e9",
+   "e71245138a910346",
+   "f1e70d075330934b"
+  ]
+ }
+}

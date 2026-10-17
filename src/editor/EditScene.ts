@@ -138,6 +138,7 @@ import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalet
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { getEditorMapViewport, setEditorMapViewport } from "@/editor/editorMapViewport";
 import { setClientPointTileResolver, setRegionClientRectResolver } from "@/editor/regionClientRect";
+import { setMapGestureActive, yieldWhileGesture } from "@/editor/mapGestureState";
 import { setCanvasPointerBridge, type CanvasGestureClaim, type CanvasPointerPoint } from "@/editor/canvasPointerBridge";
 import { resolveCanvasGestureOwner } from "@/editor/canvasPointerOwnership";
 import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
@@ -798,6 +799,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.activeRegionTask = null;
     this.regionSizeBadge?.remove();
     this.regionSizeBadge = null;
+    setMapGestureActive(false);
     setRegionClientRectResolver(null);
     setClientPointTileResolver(null);
     setCanvasPointerBridge(null);
@@ -831,6 +833,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const sunlightMap = sunlightMapId ? store.getCurrent().maps[sunlightMapId] : undefined;
     if (this.sunlightLayer?.sync(sunlightMap, sunlightMap ? store.getCurrent().tilesets[sunlightMap.tilesetId] : undefined)) requestEditRenderFrame(this.game);
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
+    this.syncMapGestureFlag();
     this.syncMapEdgeHint();
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
@@ -2851,8 +2854,11 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentBlueprintRenderer?.render();
   }
 
+  private readonly stampYield: { off: (() => void) | null; timer: ReturnType<typeof setTimeout> | null } = { off: null, timer: null };
+
   private renderStampOrders(): void {
-    this.stampOrderRenderer?.render();
+    // 사람이 지도를 드래그·팬하는 동안은 주문 사각형 재그리기를 미룬다(제스처가 끝나면 한 번 — mapGestureState).
+    yieldWhileGesture(() => this.stampOrderRenderer?.render(), this.stampYield);
   }
 
   private clearAgentBlueprintLayer(): void {
@@ -3022,6 +3028,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.mapEdgeDrag = null;
     if (this.rightRegionGesture) {
       this.finishRightRegionGesture(ptr);
+      this.syncMapGestureFlag();
       return "right-region";
     }
     this.finishDragOperation(ptr);
@@ -3036,6 +3043,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastPaintKey = "";
     if (wasPainting && editorState.get().tool === "relief") this.scheduleReliefRender();
     this.stopPan();
+    this.syncMapGestureFlag();
     return "gesture";
   }
 
@@ -3049,6 +3057,13 @@ export class EditScene extends PhaserRuntime.Scene {
       rightRegionGesture: this.rightRegionGesture !== null,
       pastePreview: editorState.get().pastePreview !== null,
     };
+  }
+
+  /** 사람의 손이 지도 위에 있는 동안 AI 표시(번호 상자·핀·주문 사각형)의 재그리기를 미루게 알린다(mapGestureState). 값이 바뀔 때만 구독자를 깨운다. */
+  private syncMapGestureFlag(): void {
+    // 붙여넣기 미리보기는 커서만 따라다니는 호버라 길게 이어진다 — 손이 눌린 제스처가 아니므로 양보 사유에서 뺀다.
+    const gesture = this.pointerGestureState();
+    setMapGestureActive(shouldDeferCameraFocus({ ...gesture, pastePreview: false }));
   }
 
   /** 프로그램 팬이 끝난 뒤 카메라 좌표에 의존하는 표면을 다시 맞춘다(손 팬의 onPanMove 와 같은 몸). */

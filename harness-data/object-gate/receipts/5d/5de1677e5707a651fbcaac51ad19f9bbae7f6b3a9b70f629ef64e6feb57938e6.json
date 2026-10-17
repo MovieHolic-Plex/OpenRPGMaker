@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5de1677e5707a651fbcaac51ad19f9bbae7f6b3a9b70f629ef64e6feb57938e6",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "은행 창구",
+ "label": "modern_city/interior/mci-teller",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bank teller counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is clearly visible from above across rows 14-20 (7 pixels tall) with paper/folders on it, above a front-facing counter panel from rows 21-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bank teller counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter surface is visible from row 14 to row 20 (7 pixel rows tall), and the vertical front face of the counter spans rows 21 to 30, with partitions and glass panels set behind the counter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3486
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bank teller counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top is clearly visible from rows 14 to 20 (7 rows tall) with items resting on it, and the front face of the counter spans rows 21 to 29 (9 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4130
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bank teller counter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter clearly displays a 7-pixel deep horizontal top surface (rows 14 to 20) with items resting on it, followed by a south-facing front panel (rows 21 to 29) below the glass teller partitions.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3748
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.631Z",
+ "cells": {
+  "16": [
+   "0bb59dd0bbf81b02",
+   "5b04271a3914934b",
+   "6c5917152370318c",
+   "83842aa169dfd158",
+   "9d940114c26c9647",
+   "bd06659cd19ef9ec"
+  ],
+  "24": [
+   "08d778d727d62e20",
+   "1b8fe14b51707e14",
+   "79f8f1ec46ba93d6",
+   "7d8abf6f53dd4780",
+   "d16421c03ba5a679",
+   "d9b1f389002bd8a7",
+   "f338cf9d4e6bce6e",
+   "f496c77767bab9b1"
+  ],
+  "32": [
+   "023cdfa71d153c86",
+   "374fc33d9ed6981c",
+   "5e23573ae5717f63",
+   "7e1adc7cba237937",
+   "b80a76971b7572e7",
+   "c72fbfa5fd48d1bc"
+  ],
+  "48": [
+   "6e34905bdc82e77e",
+   "f75a39093d4b2d6e"
+  ]
+ }
+}

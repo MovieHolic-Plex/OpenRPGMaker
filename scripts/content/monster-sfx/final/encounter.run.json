@@ -1,0 +1,19 @@
+{
+ "id": "encounter",
+ "cand": 0,
+ "model": "gemini-4-argon-high",
+ "prompt_sha256_16": "b30eb40d6a1beec6",
+ "attempts": [
+  {
+   "round": 0,
+   "problems": [
+    "trailing silence 180.0 ms > 120"
+   ]
+  },
+  {
+   "round": 1,
+   "problems": []
+  }
+ ],
+ "passed_gate": true
+}

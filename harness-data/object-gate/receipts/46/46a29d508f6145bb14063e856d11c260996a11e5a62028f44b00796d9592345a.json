@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46a29d508f6145bb14063e856d11c260996a11e5a62028f44b00796d9592345a",
+ "width": 48,
+ "height": 32,
+ "kind": "round_body",
+ "name": "누운 압력 탱크(리벳 철판, 돌 받침 위, 압력계·맨홀)",
+ "label": "steampunk-city/sp-boiler-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal pressure tank cylinder on two stone legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure 2D side elevation rather than 3/4 top-down view. The cylindrical body lies horizontally with no top surface depth (top_rows = 0), the legs/supports are flat 2D rectangles without visible top surfaces or depth, and it does not match the vertical 'round_body' kind (which requires an elliptical top cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7324
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pressure tank lying on stone supports",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a horizontally lying cylinder drawn in flat 2D side/front elevation rather than 3/4 top-down view. The stone legs are flat 2D rectangles with no top surface, the pressure gauge is a flat front-facing circle, and the tank body has no foreshortened top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6013
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal cylindrical pressure tank on stone legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal tank and its support legs are drawn in pure front/side-scroller elevation without top-down 3/4 perspective: the legs are flat 2D rectangles, the gauge is a flat circle, and there is no visible top surface depth (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6443
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal cylindrical tank",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank is drawn as a flat 2D side/front elevation: horizontal bands of shading with no top surface depth, flat rectangular support legs, a flat circular gauge facing directly south, and rounded end caps drawn straight-on as in a side-scroller.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5078
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.658Z",
+ "cells": {
+  "16": [
+   "14e9c46c9d9aee66",
+   "3749bced28ebcfd3",
+   "83982d751a15d05a",
+   "9f81fce0ce0d0e37",
+   "d95bd635c121ae18",
+   "f5b67af7780940fa"
+  ],
+  "24": [
+   "25e76218d248743a",
+   "41acdcf9c6e55ad8",
+   "5dbcf3ef4a87a007",
+   "5ddb7c9abcf4b947",
+   "83039708d3fca710",
+   "97962db729fc5582",
+   "aa15d56fe39ed752",
+   "e0f2abe76387f179"
+  ],
+  "32": [
+   "248d92c681cbd150",
+   "444f3587fd565963",
+   "485cf8fca0ea20e4",
+   "5b71d525f53184ef",
+   "c889aa085fd20b94",
+   "ca5eb586b0d1715f"
+  ],
+  "48": [
+   "62d81488e13f524e",
+   "94cdaa528a75c5fe"
+  ]
+ }
+}

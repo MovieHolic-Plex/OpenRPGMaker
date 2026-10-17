@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "128add952400d760804070d38287d3e9db15505e69435393423d65fa4fefdc17",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "prehistoric stone-age pots",
+ "label": "prehistoric/ph-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "prehistoric clay/stone pot",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows a foreshortened elliptical opening viewed from above, with interior depth/shading visible across rows 5-9, and a curved front belly extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone-age pot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container clearly displays an elliptical opening seen from above (~5 pixel rows tall across rows 5–9) revealing the dark interior cavity, set above the south-facing front body (rows 10–14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 34438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clay pot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot clearly shows a wide opening looking into the dark interior (rows 5-9, 5 pixel rows tall) and a rounded south body (rows 10-15), correctly rendering the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prehistoric stone-age pot with wide open mouth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a clearly visible elliptical interior opening spanning rows 5 to 9 (approx. 5 pixel rows tall) viewed from a 3/4 top-down angle, above the south-facing front wall (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12997
+  }
+ ],
+ "decidedAt": "2026-10-14T00:46:42.340Z",
+ "cells": {
+  "16": [
+   "5f13d19a8231c85d"
+  ],
+  "24": [
+   "15d722fcdc63a271",
+   "22e9799f45de71d7",
+   "2661c24fb539c458",
+   "4541c87dbc5c7f63",
+   "a809bbbc25727ada",
+   "fa6371ee4f1d3049"
+  ],
+  "32": [
+   "2770f85d666ab69a",
+   "3f0b70808d7d01fc",
+   "451411f864407aff",
+   "ac6c32dce3bf4e5d",
+   "d1424cd4ca4f2a28",
+   "f3f99d91fd88d762"
+  ],
+  "48": [
+   "1647719210655029",
+   "2e1f1d753aec49ee",
+   "5d6855037a6e90c4",
+   "6cccb407aa50ecb6",
+   "882ba85d79b32009",
+   "ebecbc7750917df6"
+  ]
+ }
+}

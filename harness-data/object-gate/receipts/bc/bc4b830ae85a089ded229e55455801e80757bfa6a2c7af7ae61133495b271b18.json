@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc4b830ae85a089ded229e55455801e80757bfa6a2c7af7ae61133495b271b18",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "단풍나무(붉은 잎 수관)",
+ "label": "sengoku-edo/se-tree-maple",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage canopy is rendered as overlapping rounded volumes viewed from roughly 45 degrees, with rows 1-9 showing the top surfaces of the upper leaf clusters. The ground plane features an elliptical grass shadow/patch (rows 43-46) grounding the trunk in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canopy",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is structured in layered clusters viewed from an elevated 3/4 perspective, with the upper foliage clusters clearly displaying top surfaces (rows 1-14) foreshortened towards the camera before overlapping the lower southern foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7245
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a side-view/front elevation typical of a 2D platformer. The canopy clusters are stacked vertically without top-down foreshortening, revealing the underside overhangs, and the trunk has a completely flat horizontal base line with no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8160
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a side-view platformer / front elevation style: the trunk is a tall straight vertical cylinder with a completely flat horizontal base at row 46, and the canopy is stacked vertically above it without top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9345
+  }
+ ],
+ "decidedAt": "2026-10-14T08:03:28.010Z",
+ "cells": {
+  "16": [
+   "06452bd8697fd126",
+   "0c2ef4c714622270",
+   "0eba67062bf758eb",
+   "4c050fab97d380a9",
+   "57352c8f8139006e",
+   "657d7f6302a8e3bf",
+   "9b1df7788b276812",
+   "db20d6c36b9cb4db",
+   "dfd770794b45413c"
+  ],
+  "24": [
+   "29f6fa32fce6328a",
+   "910971e17f1cc896",
+   "b41292b0c4517dd3",
+   "e4b3d5bfd0bb5647"
+  ],
+  "32": [
+   "068f9b1f00665cc2",
+   "1251f40ab167d55c",
+   "17c89cca9bd9fde3",
+   "20c62323abf738ee",
+   "2c90d6878dc9891d",
+   "33e18b57787f5be7",
+   "39ef4f43c401a7b6",
+   "3eded65148da985f",
+   "518790a1b463838e",
+   "5da0e28d5380ce67",
+   "66bec0c095575933",
+   "6de2257ebb575d91",
+   "88d18f934af4f3b1",
+   "90c90a00aed953bf",
+   "a1c5ea1bd522e7f9",
+   "b738cecb4e2489cd",
+   "bb11a69a22241241",
+   "bf69a136a0de70c5",
+   "ce31fdd8c8b773b6",
+   "d934c2808d220620",
+   "dda0aa6c1ba272eb",
+   "e0b669403853bfd2",
+   "eb646af803eb81a6",
+   "f2f9d5e61094f2b2"
+  ],
+  "48": [
+   "c5b3518731863327"
+  ]
+ }
+}

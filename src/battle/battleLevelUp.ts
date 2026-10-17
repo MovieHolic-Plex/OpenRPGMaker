@@ -2,7 +2,8 @@
 // 파라미터 곡선으로 능력치 성장분을 산출하며, 새로 습득하는 스킬을 모은다.
 import { ACTOR_LEVEL_MAX, normalizeActorRecord, parameterValueAtLevel, totalExpForLevel } from "@/project/actorModel";
 import { classLearnedSkillIdsUpToLevel, hasActorClassOverride } from "@/project/sessionClass";
-import type { Project, SkillId } from "@/project/types";
+import { combinedLevelUpBonus, levelUpEquipmentGain, type LevelUpEquipmentGain } from "@/battle/battleEsperAp";
+import type { ActorInitialEquipment, Project, SkillId } from "@/project/types";
 
 export interface BattleLevelUpResult {
   readonly actorId: string;
@@ -18,6 +19,8 @@ export interface BattleLevelUpResult {
   readonly agilityGain: number;
   // 새 레벨 구간(fromLevel < level <= toLevel)에서 습득하는 스킬.
   readonly learnedSkillIds: readonly SkillId[];
+  // 장착 마석의 레벨업 보너스(EquipmentRecord.levelUpBonus). 위 *Gain 에 이미 합산돼 있다 — 세션은 이 몫을 영구 보너스로 적립한다.
+  readonly equipmentBonus?: LevelUpEquipmentGain;
 }
 
 // 액터 한 명의 레벨업을 판정. 변화가 없으면 null.
@@ -27,7 +30,7 @@ export function computeActorLevelUp(
   actorId: string,
   currentLevel: number,
   totalExp: number,
-  options: { readonly classOverrides?: Readonly<Record<string, string>> } = {}
+  options: { readonly classOverrides?: Readonly<Record<string, string>>; readonly equipment?: ActorInitialEquipment } = {}
 ): BattleLevelUpResult | null {
   const record = project.database.actors.find((entry) => entry.id === actorId);
   if (!record) return null;
@@ -58,18 +61,23 @@ export function computeActorLevelUp(
     }
   }
 
+  const equipmentBonus = levelUpEquipmentGain(
+    combinedLevelUpBonus(project, options.equipment), fromLevel, level,
+    (stat, at) => parameterValueAtLevel(curves[stat], at),
+  );
   return {
     actorId,
     actorName: actor.name,
     fromLevel,
     toLevel: level,
-    maxHpGain: gainOf(curves.maxHp),
-    maxMpGain: gainOf(curves.maxMp),
-    attackGain: gainOf(curves.attack),
-    defenseGain: gainOf(curves.defense),
-    mindGain: gainOf(curves.mind),
-    agilityGain: gainOf(curves.agility),
+    maxHpGain: gainOf(curves.maxHp) + (equipmentBonus?.maxHp ?? 0),
+    maxMpGain: gainOf(curves.maxMp) + (equipmentBonus?.maxMp ?? 0),
+    attackGain: gainOf(curves.attack) + (equipmentBonus?.attack ?? 0),
+    defenseGain: gainOf(curves.defense) + (equipmentBonus?.defense ?? 0),
+    mindGain: gainOf(curves.mind) + (equipmentBonus?.mind ?? 0),
+    agilityGain: gainOf(curves.agility) + (equipmentBonus?.agility ?? 0),
     learnedSkillIds: [...learnedSkillIds],
+    ...(equipmentBonus ? { equipmentBonus } : {}),
   };
 }
 

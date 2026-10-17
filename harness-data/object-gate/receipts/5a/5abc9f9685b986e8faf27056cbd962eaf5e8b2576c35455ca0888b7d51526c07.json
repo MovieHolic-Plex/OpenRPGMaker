@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5abc9f9685b986e8faf27056cbd962eaf5e8b2576c35455ca0888b7d51526c07",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "펼친 붉은 양탄자",
+ "label": "desert-east/de-rug-red",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red rug lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above across rows 2-12 (11 rows) with a subtle shadow/edge along row 13, fully appropriate for top-down flat ground objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4603
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red carpet rug",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above (rows 2-13) with fringe along the sides and a 1px front thickness/shadow at row 14, perfectly fitting the flat top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3540
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red carpet with fringe",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor rug viewed from above spanning rows 2 to 12 (11 rows of surface area) with a 1px front thickness/shadow at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red patterned rug",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug lies flat on the floor viewed from above, displaying its surface across rows 2-12 (11 rows) with a subtle bottom edge thickness at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5291
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.224Z",
+ "cells": {
+  "16": [
+   "5c2c0470885791a0",
+   "de9810739056e98f"
+  ],
+  "24": [
+   "02e031c45ffe06ef",
+   "0b2ff51243b831cb",
+   "60b4cdc80867397b",
+   "6b70d3ea358f98d0",
+   "6f5ba8f3484e6714",
+   "714b1a9fdfff5dec",
+   "9481bc6e269e883c",
+   "9ce9f36223558ff7",
+   "9f7ba22034218af7",
+   "a430f24144873be2",
+   "dd65b5212ae079bc",
+   "f7244a4c56b85b25"
+  ],
+  "32": [
+   "4d305ab0242994d4",
+   "ce57ddab2790591a"
+  ],
+  "48": [
+   "0486aa1d6f6173c9",
+   "0bd90c96375157ab",
+   "41b02059b93864a4",
+   "4ec6c443edbc7863",
+   "6ea02b37180900e8",
+   "b7f1c171b3c441d6"
+  ]
+ }
+}

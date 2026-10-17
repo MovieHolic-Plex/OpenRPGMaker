@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5c762d52ba2ce5f6e7a28fc322fbd204eca56f5810b532c8ea3d66470ee26bf",
+ "width": 16,
+ "height": 64,
+ "kind": "column",
+ "name": "jp-rail-pylon",
+ "label": "jp/jp-rail-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway pylon pole and concrete bases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn in flat architectural front elevation. All horizontal dividers, joints, and bases (rows 10, 14, 46, 54, 60) are completely flat horizontal lines with zero foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7485
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steel lattice pylon section with concrete/insulator blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal features (the truss bottom, collar edges, and banding across rows 10-13 and 55-60) are drawn with straight horizontal lines with no foreshortened top surfaces or elliptical curvature, making this a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6910
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail catenary pylon column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pylon is drawn in flat front elevation. Every horizontal boundary (rows 9, 13, 46, 54, 60) is a perfectly straight horizontal 1px line, showing no visible top surface or 3/4-view perspective depth on the joints, caps, or column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9182
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway pylon / truss pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn in flat front elevation. All horizontal dividers, joints, and caps (rows 9, 13, 46-47, 54, 60) are completely straight horizontal lines with no foreshortened top surfaces or curved elliptical lines showing a top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7587
+  }
+ ],
+ "decidedAt": "2026-10-13T14:18:29.294Z",
+ "cells": {
+  "16": [
+   "691055cf122f3990",
+   "8e6989c62e1721d7",
+   "be96be6b6e593c70",
+   "c2d658be3aa0a615"
+  ],
+  "24": [
+   "17bc06bc8b017f4f",
+   "18aae625d7b17502",
+   "2008c9e71319b4f3",
+   "4130a7c3cced69c7",
+   "41fa252b87258e7c",
+   "4205a742609946e8",
+   "4bff6b80da068612",
+   "4e1200c1efce2b33",
+   "505e5c2d45f9944c",
+   "53f456618ed073b3",
+   "6810572b1a60da4f",
+   "70453ffada2e8b19",
+   "8dc73d2689b65bc7",
+   "c3234553df080d60",
+   "dd168a0e6d829c91",
+   "f338d350c827a452",
+   "f44eabfc92d50a38",
+   "fecda049b3a421a7"
+  ],
+  "32": [
+   "20eb28703808d23a",
+   "567137b7fc744103",
+   "68db6b6853a5a1d4",
+   "a1149f8e1f3de28b",
+   "a733ce3426135644",
+   "c9607c67b95b7c00"
+  ],
+  "48": [
+   "08e10a2087a4e4b7",
+   "1ac9bbcf8ac875e7",
+   "2e9f678bd329a339",
+   "668f63beb700501c",
+   "84e9541e310bce99",
+   "a212f77b5ca7caa2",
+   "bbd606bb7478e2db",
+   "bbfc4e6c093fd9cf",
+   "be1118396ddb80a5",
+   "c190b71c133dfdc1",
+   "d96cad853d8e269f",
+   "e63345823b2ff784"
+  ]
+ }
+}

@@ -24,6 +24,10 @@
 그 맵은 「지도 그림 = 타일셋 `worldmap_<mapId>`(칸마다 한 타일, 통행은 키트 걷기 표)」이고, 다시 빌드하면 통째로 갈린다.
 없는 맵은 키트 지도가 아니며 도구가 덮어쓰지 않는다. 런타임은 이 필드를 읽지 않는다(편집 원본일 뿐).
 자세한 흐름: `openwiki/worldmap-terrain-editing.md`.
+`variant?: { of, preset?, spec }`(2026-10-15, 선택) — `derive_world_variant` 가 파생한 변형 세계의 원본: `of` 는 기준 지도 id, `spec` 은 키트 `terrain.variant`
+(`WorldmapVariantSpec`: ops·palette·icon_preset·journey·protect_roads…). 없으면 일반 세계 지도. 옛 문서는 그대로 열린다(마이그레이션 없음).
+`EncounterConditions.terrainId?: string`(2026-10-15, 선택) — 서 있는 칸 지형 레코드 id 와 같을 때만 그 항목이 나온다. 없으면 지형 무관(옛 동작).
+`DatabaseTerrainRecord.vehiclePassage.{chocobo?,cart?,raft?}`(선택) — 초코보가 걸을 수 없는 칸도 지남 / 광산 수레가 다니는 칸 / 뗏목이 다니는 칸. 없으면 false.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 
@@ -74,6 +78,25 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 - 마이그 저장 지속성(`persist-trace.mjs`): 마이그·미디어 분리 결과는 저장돼 다음 로드가 빨라진다(대형 사본 첫 로드 31초 → 둘째 21초). 다만 `shared_paw_modern_interiors`·`shared_refmap_crayon|snow|town_outside` 의 저장된 `structureKits` 순서가 라이브러리 순서와 달라 `ensureSharedContent` 가 되돌리고 `applySharedReferenceRefresh` 가 다시 합치므로 로드마다 「프로젝트 정규화 (2종)」 + 저장이 반복된다(수렴 안 함). 수렴 패치는 `sharedContent.ts`/`sharedTileReferences.ts` 몫이다.
 - **수렴·건너뛰기 적용됨 (perf/editor-lag):** `sharedContent.ts` `isMergedKitForm` 이 «라이브러리 형태에서 킷만 [shared_ 앞 + 나머지] 로 재배열한 것»을 같은 것으로 본다 → 첫 수렴 저장 1회 뒤 문서 바이트 고정(4.3MB 사본 4회 로드: revision 372·sha c578ba0a 고정). 그 위에서 `src/project/bootNormalization.ts` 가 `project.meta.bootNormalization = {v: NORMALIZER_VERSION, lib: 공용판본|빌드커밋}` 을 새기고, 다음 로드에서 짝이 맞으면 `normalizeCurrentProject` 가 정규화기 16종과 전후 `jsonContentDigest` 를 건너뛴다. 표식이 없거나 짝이 다르면(옛 파일·새 빌드·새 공용 판본) 전부 돌린 뒤 표식을 새긴다(기존 프로젝트마다 저장 1회, +110바이트). 수정된 트리(dirty)·커밋 미상·공용 판본 `bundled`/빈 값에서는 건너뛰지도 새기지도 않는다. **정규화기를 바꾸고 커밋이 같은 경우 `NORMALIZER_VERSION` 을 올려라.** 측정은 «깨끗한(커밋된) 트리에서 빌드»해야 켜진다. 증거: `verify-shots/editor-lag-fix/F/3a-trace-*.out`(`tamper-doc.mjs` 로 트리 잎을 지운 사본: 표식 유지 → 결함 그대로·저장 없음, 표식 제거 → 결함 복구·revision +1).
 
+## 편집기 시작 시간 — 부팅 정규화 표식·요약 지연·첫 화면 신호 (2026-10-14, 「앱 켜는 게 느려졌다」 조사)
+
+측정 방법은 `scripts/qa/startup-perf-probe.mjs`(영구 프로필 크로미움으로 편집기 주소를 N번 열어 «부팅 로더 걷힘 + `initialEditRenderMs`» 까지의 시간, 메인 스레드 CPU, 첫 화면 뒤 `--settle` 구간의 긴 작업을 잰다).
+`vite build` 를 커밋마다 따로 만들어 `node scripts/oprn-serve.mjs --project-dir <sqlite .backup 사본> --dist <dist> ...`(루프백, 로그인 없음)로 띄우고 같은 서버 코드로 비교한다.
+프로젝트는 정본 사본(타일셋 379칸, 타일셋 본문 98MB)이다. 측정은 **같은 시각 교차(A/B/A/B)** 로 해야 한다 — 이 머신은 다른 에이전트 때문에 load 가 7~40 을 오가 같은 빌드가 11~22초로 흔들린다.
+
+- **실측 요약(웜 부팅 편집 화면까지, 같은 시각 교차, 중앙값):** 수정된 트리 head(:9888 와 같은 경우) 22.8초 → 원인 1 만 고침 16.6초 → 원인 1·2·4 8.8초 → 전부 9.1초(원인 3 은 «첫 화면 뒤 가장 긴 작업» 을 8.4초→4.1초로 쪼개는 것이 목적이라 첫 화면 시간은 그대로). 깨끗한 트리 head 는 같은 조건에서 약 15초(건너뛰기가 켜진 뒤 웜 12~15초), 첫 부팅(콜드)은 24~28초 → 15.6~22초(콜드는 표본 1~3개라 거친 값). 부하 평균 9~20 에서 잰 값이라 ±3초 흔들린다.
+- **원인 1(가장 큼) — 정규화 건너뛰기 표식이 커밋·`dirty` 에 묶여 있었다.** `bootNormalization.ts` 는 «정규화기 16종 + 전후 내용 요약» 을 이미 같은 빌드가 끝낸 문서에서 건너뛴다.
+  표식이 `git describe` 커밋이라 ① 수정된 트리(`dirty`)에서 빌드한 번들은 표식을 새기지도 건너뛰지도 못해 **매 부팅** 전부 돌렸고(:9888 서비스의 `dist` 가 `0.200.0-dev.10+g97ba910.dirty` 였다), ② 정규화기와 무관한 머지마다 «새 빌드» 가 되어 첫 부팅마다 전부 돌렸다(하루 머지 약 150건).
+  → 표식을 **정규화기 입력의 내용 지문**(`scripts/lib/normalizerFingerprint.mjs`: `src/project/**`·`src/assets/**` + 정규화기 모듈이 정적 import 로 닿는 파일, vite `define __OPRN_NORMALIZER_FINGERPRINT__`, build 때만)으로 바꿨다. git 상태에 기대지 않는다. 지문이 없는 환경(dev 서버·vitest·플레이어)은 예전 커밋·`dirty` 규칙 그대로다.
+  정규화기 모듈을 새로 만들면 `NORMALIZER_ENTRIES` 에 더한다(store.ts 에서 import 하는 `ensure*`·`repair*` 모듈). 넓게 잡으면 건너뛰기가 덜 일어날 뿐 틀린 건너뛰기는 없다.
+- **원인 2 — 로드가 타일셋 379칸 요약(`jsonContentDigest`)을 첫 화면 전에 센다.** `electronRepository.loadSnapshotFromHost` 의 `parsedTilesets` 캐시 요약(재로드 때 재사용 판정용)이 critical path 약 4.9초.
+  정규화기가 돌지 않는 문서(표식 짝)는 요약을 첫 화면 뒤 한가할 때 타일셋 하나씩 센다. 정규화기가 도는 문서는 예전처럼 지금 센다(정규화가 같은 객체를 고치기 전 값이어야 한다).
+- **원인 3 — «한가할 때» 일이 첫 화면을 밀었다.** `requestIdleCallback(timeout 3s)` 는 편집기 셸이 그려지는 중에도 3초 안에 시작한다. `src/util/bootSettled.ts`(`expectBootSettle`/`markBootSettled`/`afterBootSettled`)로 기준본 요약 데우기(`store.baselineFrom`)·커밋 기준 요약(`projectCommitLog.resetManualProjectCommitBaseline`)·타일셋 요약을 첫 화면(`dismissBootLoader`) 뒤로 미뤘다. 신호를 켜지 않은 환경(헤드리스·테스트·플레이어)은 바로 돈다. 45초 안전망.
+  미룬 일이 한 덩어리로 도는 것은 막았다: `primeSharedEntryDigests`(contentDigest.ts)가 타일셋·업로드 자산 항목을 하나씩 `yieldToTask` 하며 먼저 요약해, 첫 화면 뒤 메인 스레드가 5~8초 멈추지 않게 한다. (미루기만 하면 7.8초짜리 긴 작업 하나가 첫 화면 뒤에 생겼다 — `--settle` 로 확인.)
+- **원인 4(작음) — 모듈 평가 때 번들 타일셋 전부를 만들었다.** `spatial/assets.ts` 가 `defaultTilesets()[한 id]` 로 시트 하나의 모양만 읽으려 번들 전체(3~9MB 복제 수십 개, 0.6초)를 만들었고 그 id(EasyRPG 실내)는 2026-10-07 부터 번들에도 없다. `bundledTilesetById(id)` 로 필요한 것만, 첫 사용 때 만든다.
+- **새 칩셋 10종(2026-10-14) 자체는 큰 원인이 아니다.** 번들 데이터 청크 46.1→55.6MB(+21%), 웜 부팅 +약 1초, 새 칩셋을 처음 받는 부팅 1회 +수 초. 문제는 «정규화를 건너뛰지 못하는 부팅» 이 늘었다는 것이다.
+- **남은 비용(후속 후보):** ① `store.baselineFrom` 의 `cloneProjectSharingReferenceDocuments`(타일셋 98MB 깊은 복사 약 1.4초 — 정규화를 건너뛸 문서는 타일셋을 공유해도 되지만 «기준본은 사적 사본» 계약을 건드려 보류), ② `installReferenceOwners.bundledTilesets()`(번들 전체를 만들어 소유자 참고문서를 읽는다, 약 0.9초 — 테마가 늘수록 선형으로 늘며 id 별 지연 생성은 ensure* 와 결과가 같은지 확인이 필요), ③ 번들 데이터 청크(55MB JS, 첫 접속·캐시 미스 때 4.4MB gzip) — 테마별 지연 로드는 `ensureBundledTilesets` 가 모든 프로젝트에 모든 번들 타일셋을 심는 계약(AGENTS.md 「새 타일은 공용에 추가한다」)과 부딪혀 설계가 따로 필요하다.
+
 ## 스킬 도트 연출 빌리기 — 선택 필드 retroChoreographyId (2026-09-30)
 
 `SkillRecord.retroChoreographyId?: string` — 계약 연출 id(예: `skill_hero_flame_sword`). 정규화 화이트리스트와 편집 변이 키에 들어 있고, 비어 있으면 필드 자체가 없다. 없는 id 는 조수 도구가 거부하고(비슷한 후보를 돌려줌) 편집기는 계약 목록에서만 고르게 한다. 런타임 의미는 [runtime-battle.md](runtime-battle.md) 같은 날짜 절.
@@ -93,22 +116,47 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
   `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
   누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
+## FF6 마석 성장 — 선택 필드 (2026-10-15)
+
+모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 형태: 장비 `apGrants`·`apRate`·`levelUpBonus`, 적 `rewards.ap`, 스킬 `oncePerBattle`, 장비 부위 `equipmentSlots[].equipsAs`(도형 검사 `shapeDatabaseFields`).
+세이브(`PlaySession`): `actorApProgress {배우:{스킬:AP}}`·`learnedViaAp {배우:[스킬]}` — `saveSlots.ts` 의 저장·복원·`isActorSkillPpRecord`/`isActorSkillIdsRecord` 검증, 없으면 필드 자체를 쓰지 않는다. 레벨업 보너스는 기존 `actorParamBonuses` 를 쓴다. 전투 규칙: `runtime-battle.md` 「FF6 마석 성장」.
+
+## FF6 전투 특수 효과 — 선택 필드 (2026-10-15)
+
+모두 값이 있을 때만 저장한다(옛 프로젝트·세이브 불변). 스킬 `effect.kind` 에 `sketch`·`rage`(`enemyIds?`, 정규화에서 중복 제거·최대 24)·`shuffleParty`·`forceSwitch`,
+상태 `runtimeEffects.invertHealing`·`grantSkillIds`(최대 12)·`forcedAction: "rage"`. 세이브(`PlaySession`): `actorRageEnemyIds {배우:[몬스터 id]}`(최대 64) — `saveSlots.ts` 저장·복원·`isActorSkillIdsRecord` 검증, 없으면 키를 쓰지 않는다.
+전투 중 상태(`MutableBattler.rageEnemyId`)는 저장하지 않는다. 규칙: `runtime-battle.md` 「FF6 전투 특수 효과」.
+
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
 `SkillRecord.hpCostPercent?`(0~100, 시전자 최대 HP 의 N% 를 잃는다, HP 1 밑으로는 안 깎음)와 `drainPercent?`(0~100, 준 피해의 N% 회복,
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 컨셉 피드 (2026-10-07, 옛 시네마틱 로비 대체)
+## 데스크톱 시작 화면 — 플레이·만들기 런처 (2026-10-17, 2026-10-07 컨셉 피드 홈을 감쌈)
 
-새 게임과 새 프로젝트는 **같은 화면**이다 — 유튜브 홈처럼 게임 컨셉 썸네일 격자를 내려 보며 고르고, 상세에서 「▶ 이 게임 만들기」 한 번이면
+첫 화면은 두 갈래다. 왼쪽 레일에 「플레이」·「만들기」 둘만 있고, 위 막대·본문이 갈래를 따라 바뀐다. 이 앱은 만든 게임을 하는 샌드박스로 가므로
+「만드는 홈」 하나였던 2026-10-07 판(레일 「홈·탐색·내 프로젝트·템플릿」, 위 막대 「새 게임」)에는 플레이를 끼울 자리가 없었다.
+만들기 갈래 안쪽은 여전히 컨셉 피드다 — 썸네일 격자를 내려 보며 고르고, 상세에서 「이 게임 만들기」 한 번이면
 기획이 확정된 채 편집기로 넘어가 조수 팀이 첫 구간을 짓는다. 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
 옛 시네마틱 로비(`startLobby.ts`)·첫 문장 입구(`firstWorldArrival.ts`)·장르 프리셋 인터뷰(`runStartScreenPresetInterview`)·
 편집기 새 프로젝트 다이얼로그(`newProjectDialog.ts`)는 지웠다. 메뉴 「게임 기획」 수정 창(`projectInterviewDialog`)은 그대로 있고 세계 지도 영상도 거기서만 쓴다.
 
-- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트, layer `tokens, start, shell`).
-  홈 = `src/start/conceptFeed/conceptFeed.ts`(`mode: "launcher"`) 하나. 위 막대 오른쪽에 폴더 열기·팀에 참여·언어·버전,
-  분류 칩 아래에 「이어하기」 줄(숨기지 않은 최근 프로젝트 카드, 숨김 토글)을 끼운다. 팀 참여는 별도 보기(`start-join-view`).
+- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 바탕 시트, layer `tokens, start`).
+  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-` 접두): 레일(브랜드 · 갈래 둘 · 바닥에 언어 `start-locale-select`·판 번호),
+  위 막대(왼쪽 입력 칸 + 오른쪽 글자 단추), 본문 한 칸. 아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
+  고른 갈래는 `localStorage` 의 `oprn:start-mode`. 고른 적이 없으면 「만들기」 — 처음 켠 사람은 아직 플레이할 월드가 없다.
+- **플레이 갈래**: 위 막대 = 월드 찾기(`start-world-search`) + 「게임 파일 열기」(`start-open-game-file`). 본문 =
+  「이어서 플레이」(이 화면에서 마지막으로 플레이한 월드 큰 판 + 「최근 플레이」 줄) → 「내 월드」 격자(이 컴퓨터에 있는 게임, 주 단추 「플레이」, 곁 「편집」).
+  플레이 기록은 `localStorage` 의 `oprn:start-played`(폴더 → ISO 시각, 40개, `src/start/playFeed/playFeed.ts`). 월드가 없으면 빈 안내와 「게임 파일 열기」·「만들기로 가기」.
+  「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
+  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다.
+  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile` 로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다(이후 「내 월드」에 남는다).
+  공유 월드(store.openrpgmaker.com)는 아직 잇지 않는다 — 빈 줄을 미리 그려 두지 않는다.
+- **만들기 갈래**: 위 막대 = 컨셉 입력창 + 「폴더 열기」·「팀에 참여」. 본문 = `conceptFeed.ts`(`mode: "launcher"`) — 맨 위 「이어서 만들기」
+  (최근 편집한 월드 큰 판 + 「내 월드」 줄, 주 단추 「이어서 만들기」, 곁 「플레이」, 「모두 보기」로 격자), 「새로 만들기」 한 줄(장르 → 빠른 인터뷰, 끝에 빈 프로젝트),
+  「컨셉에서 시작」 격자. 런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다.
+  팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
@@ -1023,6 +1071,10 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 
 - The `src/project` data model is the canonical authored content: maps, database records, tilesets, events, and saveable project metadata. Code that edits project content should update this model, not runtime session fields.
 - Optional `system.genre` is limited to the five IDs in `src/project/genrePackId.ts`, is preserved by normalize/serialize/deserialize, and rejects unsupported strings during shape validation. It is editor authoring metadata only: all packs use the same `Project` schema and runtime, and player code must not branch on it. Pack definitions and readiness live in `src/editor/genrePacks.ts`.
+- Optional `system.genreLock` (`{preset:"monster-collect", mode:"enforce"|"warn", allowedFamilies:string[], grandfatheredMapIds?:string[]}`, 2026-10-15) is an editor/assistant policy that is absent unless the project started as monster-collect (genre preset, monster intent on a blank project, `build_monster_*`/`configure_monster_system`; 2026-10-16) or the author turns it on: absent = no behavior change and no serialized bytes. It is validated in `shapeDatabaseFields.validateSystem` (preset must be a known lock preset, mode enforce|warn), normalized in `normalizeSystemRecords`, and never read by player code. Enforcement lives in the tool runner only (`ctx.assistantRun`); see [editor-ai-tools.md](editor-ai-tools.md) 「장르 칩셋 잠금」.
+- `system.genreLock.allowedCharsetFamilies?: string[]` (2026-10-16) copies the preset's allowed character-chip families (e.g. monster-collect: scarloxy-people, oprn-creature, rtp-creature, object, uploaded, other) when the lock is enabled; absent for presets without a charset table (romance) and for locks saved before this field (they follow the table). It is registered in `shapeDatabaseFields` (strict schema) and kept by `normalizeGenreLock`; **projects saved with it do not open in older builds**. `system.genre="monster-collect"` may also be written alone as a thin marker (no lock) by monster-only tools; see [editor-ai-tools.md](editor-ai-tools.md) 「캐릭터 칩(걷기 그림)도 같은 잠금」.
+- `system.genreLock.allowedFaceFamilies?: string[]` and `allowedBattleFamilies?: string[]` (2026-10-16) copy the preset's allowed face/bust/full families and battle-art families (one list with prefixes `battler:` / `trainer:` / `backdrop:` / `skin:`: monster battlers, `TroopRecord.trainerSprite`, battle backdrops, battle UI skin) when the lock is enabled; absent for presets without a `visuals` table (romance) and for locks saved before these fields (they follow the table). Registered in `shapeDatabaseFields` (strict schema) and kept by `normalizeGenreLock`; **projects saved with them do not open in older builds**. Classification is by resource-id shape in `src/project/visualFamily.ts`; enforcement is assistant-path only (`genreLockVisuals.ts`), and art with no allowed alternative is left empty with a 「생성 대기」 warning instead of being rejected. See [editor-ai-tools.md](editor-ai-tools.md) 「얼굴·전투 그림도 같은 잠금」.
+- Monster-asset reverse lock (2026-10-17) adds **no saved field**: `monsterAssetsAllowed(project, turn)` in `src/project/genreLockMonsterAssets.ts` reads existing data (`system.genre`/`genreLock`/`monsterCollection`/`monsterBattleParty`/`battleParty`/`monsterCampaign`, `gameDesignBrief.presetId`, maps on `oprn-monster*` tilesets) plus the per-turn `ToolContext.monsterTurn`; default monster species/tilesets alone are not evidence. Enforcement is assistant-path only; see [editor-ai-tools.md](editor-ai-tools.md) 「몬스터 자산 역방향 잠금」.
 - `GameMap.roguelikeRoom?` is additive authored room metadata: `{ roomId?, resetEventState?, encounterSlots?: [{ id, choices: [{ fieldSpawnId, weight?, minFloor?, maxFloor? }] }] }`. Slots reference field spawns on the same map, have unique non-empty ids, require at least one choice, use positive integer weights, and accept floor bounds 1–9999 with `minFloor <= maxFloor`. `resetEventState` defaults to true and scopes authored event self switches plus `Erase Event` state to the current room generation; false opts out. Omission preserves legacy field-spawn behavior and requires no schema-version bump. Runtime run state remains in `PlaySession.roguelikeRun`, not in project JSON.
 - **DB-is-truth for database records (2026-07-24):** LegacyDb `current_json` is the canonical source for authored database collections (items, skills, states, battleAnimations, battlerAnimations). `repairLegacyDbCurrentJson` in `src/project/legacyDbProjectSync.ts` no longer backfills missing records from `defaultItemRecords()` / `defaultSkillRecords()` / etc. on load — a sparse DB row loads as-is. JSON defaults only **seed new projects** via `createBlankProject` → `saveProjectToLegacyDb` (a DB write). Local is cache-only; there is no local-JSON-as-truth path (enforced by `test/noLocalProjectDb.test.ts` and the `legacyDb-project-root` ontology contract). Verified by `test/legacyDbProjectSync.test.ts` (no-backfill unit) and `test/legacyDbCanonicalRoundtrip.live.test.ts` (live load→save→reload).
 - **번들 기본 카탈로그 보충은 LegacyDb 백필과 다른 층이다 (2026-08-30):** 위의 "보충 금지"는 `repairLegacyDbCurrentJson` 이 **원격 행**에 손대지 않는다는 규칙이다. 그와 별개로 `ensureDefaultDatabaseIconResources()` (`src/project/defaults/defaultDatabaseIconResources.ts`, `store.normalizeCurrentProject` 에서 호출) 는 **번들 기본 아이템과 기본 장비**를 id 기준으로 보충한다 — 없는 id 만 넣고 이미 있는 레코드는 절대 덮지 않는다. 이 층이 필요한 이유는 실측이다: 편집기 기본 예제(`createSampleAdventureProject`)가 동결된 export 픽스처 `src/project/defaults/fixtures/dew-village-demo.json` 를 복제하는데, 그 픽스처에는 아이템 21개·장비 11개만 들어 있다. 아이템만 보충하고 장비는 보충하지 않던 비대칭 때문에 코드의 기본 장비 86종 중 11종만 화면에 보였다. 계약은 `test/defaultEquipmentBackfill.test.ts` 가 고정한다(모든 `defaultEquipmentRecords()` id 존재 + 사용자가 고친 이름 보존). **한계는 그대로 적어 둔다: 사용자가 의도적으로 지운 기본 레코드는 다음 로드에 다시 살아난다.** 보충이 `changed` 를 세우므로 그 부활이 다음 저장에 실려 나갈 수 있다. 아이템 보충이 원래 갖고 있던 성질이고 이번 변경이 만든 것은 아니지만, "보충 금지" 이야기의 유일한 실질 예외라서 명시한다.
@@ -1605,3 +1657,48 @@ DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 �
 업로드 참조는 같은 라이브러리에 있어야 하며, 사용자 복사본 ID는 덮어쓰지 않는다.
 72×128 걷기 원본은 native 하네스에서 무손실 RM2000 288×256 시트로 패킹하고, 프레임 수는 96이다.
 그림만 공용 등록하면 48×40 행동의 발 기준점이 유실되므로 설치기는 정의도 함께 게시한다.
+
+## 필드 기술(HM) 선택 필드 (2026-10-15)
+
+- `SkillRecord.unforgettable?: boolean` — 몬스터의 기술 교체 후보(`playerStatusMenuDetails` 대기 기술 행)와 `replacePendingMonsterSkill` 에서 제외. 생략=기존 동작. `normalizeSkillRecord` 가 `true` 만 보존.
+- `MonsterSpeciesRecord.machineSkillIds?: SkillId[]` — 기술머신·비전머신(`learnedSkillId` 아이템, 몬스터 파티 게임)으로 가르칠 수 있는 기술. 비면 제한 없음. `normalizeMonsterSpeciesRecord`가 중복·빈 값을 거르고 `io/references.ts` 가 스킬 id 존재를 검사.
+- 저장 슬롯(`saveSlotValidation`)에는 새 필드가 없다 — 몬스터 인스턴스의 `skillIds`·`pendingSkillIds` 만 바뀐다. 두 필드 모두 선택이라 이주 불필요.
+
+## 포켓몬풍 필드·진행 규칙 선택 필드 (2026-10-15, poke-fix-p)
+
+project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이션 없음, 안 쓰면 직렬화에 나타나지 않는다). `EncounterTableEntry.levelMin?/levelMax?`(1~99 정수, `shapeEventFields.ts` 검증), `EncounterConditions.terrainId?`(`database.terrains[].id` 참조 — `references.ts` 가 끊긴 참조를 보고), `GameOverSettings.goldLossPercent?`(0~100 정수), `RewardPolicy.expShare?/trainerPrizePerLevel?`, `SystemRecords.captureShakesVariableId?`(변수 id). 저장 슬롯(`saveSlotValidation`)은 이 값들을 읽지 않는다 — 전부 프로젝트 정의 쪽이고 세션 상태는 기존 `session.gold`·`session.variables` 만 바뀐다. 지형 기록 `terrain_grass` 는 기본 기록 4개(물·모래·눈·돌) 뒤 5번째에 `ensureGrassTerrainRecord` 가 덧붙이며(기본값으로 새 프로젝트에 넣지 않는다) 태그 5 칸이 없는 칩셋에는 영향이 없다.
+
+`system.vehicles[].flightView?: "mode7"`(2026-10-15, 비행선 전용, 선택) — 비행 시점. 생략 = 기존 탑뷰(옛 프로젝트 JSON 바이트 불변). `normalizeVehicleConfigs` 화이트리스트에 들어 있고 비행선 외 id 에서는 버린다.
+
+
+## ItemRecord.heldEffect · MonsterInstance.heldItemId (2026-10-16, poke-depth PR4)
+
+선택 필드 둘. `ItemRecord.heldEffect?`(선언형 다섯 종류 중 하나; 정규화는 값이 있고 필수 매개변수가 맞을 때만 싣는다)와 `MonsterInstance.heldItemId?`(아이템 id 하나; 세이브 검증이 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 전투 중 소모는 전투 후 인스턴스에 되써서 영속한다. 규칙: `openwiki/runtime-battle.md` 「지닌 도구」.
+
+
+## MonsterSpeciesRecord.ability (2026-10-16, poke-depth PR3)
+
+선택 필드 `ability?: MonsterAbility`(선언형 일곱 종류 중 하나). 정규화는 값이 있고 필수 매개변수가 맞을 때만 싣는다 — 안 쓰는 프로젝트는 저장 바이트 그대로. 전투 중 상태는 없다(종 정의에서 읽는다). 규칙: `openwiki/runtime-battle.md` 「특성」.
+
+
+## StateRecord.volatileStatus·gen1MajorStatus "toxic" (2026-10-16, poke-depth PR2)
+
+선택 필드 `volatileStatus?: "confusion"` 과 `gen1MajorStatus` 의 새 값 `"toxic"`. 정규화는 값이 있을 때만 싣는다(안 쓰는 프로젝트는 저장 바이트 그대로). 남은 혼란 행동 수·맹독 카운터는 전투 중 `stateTurns` 에만 있고 저장하지 않는다. 규칙: `openwiki/runtime-battle.md`.
+
+
+## SkillRecord.statStageEffects (2026-10-16, poke-depth PR1)
+
+선택 필드 `statStageEffects?: {stat, stages, chance?, target?}[]`(능력치 단계 −6~+6). 값이 있을 때만 정규화가 싣는다 — 안 쓰는 프로젝트는 저장 바이트 그대로이고 로드 보정이 필요 없다. 전투 중 단계(`MutableBattler.statStages`)는 저장하지 않는다. 규칙: `openwiki/runtime-battle.md`.
+
+
+## SkillRecord.weather (2026-10-16, poke-depth PR5)
+
+선택 필드 `weather?: {kind, turns?}`(쾌청·비·모래바람·싸라기눈 중 하나; 정규화는 모양이 맞을 때만 싣고 turns 기본 5 는 저장하지 않는다). 전투 날씨 상태는 저장하지 않는다. 안 쓰는 프로젝트는 저장 바이트 그대로. 규칙: `openwiki/runtime-battle.md` 「날씨」.
+
+
+`system.socialLoop?: { slotsPerDay?, dailyFriendshipCap? }`(2026-10-16, 선택) — 호감 대화의 하루 칸·사람별 하루 상한. 생략 = 기존 동작(옛 프로젝트 JSON 바이트 불변). `databaseRecordModel.ts` 화이트리스트·`io/shapeDatabaseFields.ts` 검증에 있다. 세션 `session.socialLoop`(`saveSlots.ts` 스냅샷·`isSocialLoopDayState`). 필드 HUD 위젯 소스에 `friendship`(호감 하트)·`socialSlots`(오늘 남은 시간) 추가. 상세 `openwiki/harnesses/romance-scene.md`.
+
+
+## ItemCaptureProfile.condition · MonsterInstance.caughtBallId (2026-10-16, poke-depth PR6)
+
+선택 필드 둘. `captureProfile.condition?`(선언형 네 종류 중 하나; 정규화는 모양이 맞을 때만 싣는다)와 `MonsterInstance.caughtBallId?`(포획에 쓴 볼 아이템 id; 세이브 검증은 문자열만 허용). 안 쓰는 프로젝트·세이브는 직렬화 바이트 그대로다. 규칙: `openwiki/runtime-battle.md` 「조건부 볼」.

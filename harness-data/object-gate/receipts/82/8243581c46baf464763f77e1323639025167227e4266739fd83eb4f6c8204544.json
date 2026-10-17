@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8243581c46baf464763f77e1323639025167227e4266739fd83eb4f6c8204544",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp_city/street_hand/jp-bwall-sukashi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "breeze-block wall segment with wall cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top coping/cap of the wall is clearly visible spanning rows 1-5 (5 pixels tall), with the front face and decorative sukashi cross block extending from row 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese block wall with perforated/sukashi block pattern",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall is clearly visible across rows 0-5 (6 rows tall), while the vertical south face with decorative block detailing occupies rows 6-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wide freestanding wall or gate panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is presented as a flat rectangular frontal panel. Its upper edge is only a thin horizontal band, with no clearly visible foreshortened top plane or roof slope; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 62093
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large gray Japanese wall structure",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a clearly visible horizontal top plane about 4 source pixels deep above its south-facing facade; no receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 54640
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.011Z",
+ "cells": {
+  "16": [
+   "bc2d94c78c6d7559"
+  ],
+  "24": [
+   "0470ed38cc172d1f",
+   "2462da9f3c9d9c3f",
+   "4e1d52fae8327fe9",
+   "63929122f62b69b5",
+   "8c56f127d240df08",
+   "cf8819f490cc41d9"
+  ],
+  "32": [
+   "09b469a3e7917756",
+   "40994f5d6b266f59",
+   "8cff89a013bc1b87",
+   "bea48c31502f9608",
+   "e3a8cf996153b07a",
+   "ffc79ce67f51742f"
+  ],
+  "48": [
+   "183562a530e132bf",
+   "6204e8d663a55301",
+   "7587c31374930012",
+   "7f5c0ef409220344",
+   "7fbe4e991b8d726c",
+   "a4ba693883e40e61"
+  ]
+ }
+}

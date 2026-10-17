@@ -88,11 +88,12 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     variableId: { type: "string" },
     label: { type: "string" },
     key: { type: "string", description: "setSelfSwitch 키 A|B|C|D" },
-    delta: { type: "integer", description: "changeFriendship 변화량" },
+    delta: { type: "integer", description: "changeFriendship 변화량(호감은 변수가 아니라 이 명령으로 올린다 — ESC 관계 화면·호감 HUD·호감 엔딩이 이 값만 읽는다)" },
+    npcKey: { type: "string", description: "changeFriendship/getFriendship: 호감을 올릴 인물의 characterId(place_npc/make_villager 의 characterId). 비우면 이 이벤트의 characterId. 선택지 분기 안에서 인물을 고르는 장면이면 반드시 적는다." },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
     // enum 을 두지 않는다 — 같은 키를 changeFace(left·right)·displayTextSettings(top·center·bottom)도 쓴다.
-    position: { type: "string", description: "text: 이 줄의 대화창 위치 auto|top|center|bottom(생략=문장 표시 설정; auto=화면 속 주인공을 안 가리는 쪽, 주인공이 화면 아래쪽이면 top). changeFace: left|right. displayTextSettings: top|center|bottom." },
+    position: { type: "string", description: "text: 이 줄의 대화창 위치 auto|top|center|bottom(생략=문장 표시 설정; auto=화면 속 주인공을 안 가리는 쪽, 주인공이 화면 아래쪽이면 top). changeFace: left|right. displayTextSettings: top|center|bottom. 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다)." },
     commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp. 주인공 모습 바꾸기(변신·효과·옷 갈아입기)는 m2-024-change-actor-graphic + fields {target:actorId, value:charset 검색 id(\"charset:<텍스처>:<칸>\") 또는 텍스처 키, characterIndex:0~7}" },
     fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
@@ -275,7 +276,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     },
     style: { type: "string", enum: [...DIALOGUE_STYLE_IDS], description: "say 전용. 이 대사만 다른 대화창. 보통 생략." },
     container: { type: "string", enum: [...DIALOGUE_CONTAINER_IDS], description: `say 전용 대사 그릇:\n${dialogueContainerGuideLines().join("\n")}\n마을 사람 잡담은 bark, 무전·동료 한마디는 corner.` },
-    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: `say 전용. 대화창 위치. 생략/auto = 화면 속 주인공을 가리지 않는 쪽으로 자동. top·center·bottom = 고정(그림·인물이 화면 아래쪽에 있으면 top).` },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: `say 전용. 대화창 위치. 생략/auto = 화면 속 주인공을 가리지 않는 쪽으로 자동. top·center·bottom = 고정(그림·인물이 화면 아래쪽에 있으면 top). 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다).` },
     face: FACE_SCHEMA,
     direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },
@@ -350,6 +351,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
     "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
+    "kind=partyKnowsSkill → skillId + present(boolean, 생략=true): 파티 배우·몬스터 파티 누군가가 그 스킬을 아는가(필드 스킬 게이트 — 바위깨기·나무베기·서핑·플래시. 막힌 길을 여는 페이지는 이 조건, 못 여는 안내 페이지는 present:false). " +
+    "kind=badgeCount → op + value(number): 획득한 배지 수 비교(몬스터 캠페인 badges[].switchId 가 켜진 개수, 예 {kind:\"badgeCount\",op:\">=\",value:3} = 배지 3개 이상). 배지 N 의 스위치는 mx_badge_N. 「배지 N개 필요」 문은 place_badge_gate 가 이 조건으로 만든다. " +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -363,8 +366,9 @@ export const CONDITION_SCHEMA: JsonSchema = {
     variableId: { type: "string" },
     itemId: { type: "string" },
     actorId: { type: "string" },
-    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
+    value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast/badgeCount: number 필수. run: query별 boolean 또는 number." },
     speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    skillId: { type: "string", description: "partyKnowsSkill 조건: 조회한 스킬 ID(필드 스킬은 upsert_skill 의 fieldCommonEventId 가 있는 스킬)" },
     present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
@@ -450,6 +454,7 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
         giveUpRange: { type: "number" },
         pathfind: { type: "boolean" },
         moveIntervalMs: { type: "number" },
+        sightAlert: { type: "object", description: "chase 전용. 시야에 처음 든 순간 {emote,holdMs} 말풍선+멈춤 뒤 추격" },
       },
       description: "EventPageMovement. custom는 route:MoveRoute, living은 living:NpcLivingMovement, chase는 pursuit:ChaseAcrossMaps를 추가할 수 있다.",
       additionalProperties: true,

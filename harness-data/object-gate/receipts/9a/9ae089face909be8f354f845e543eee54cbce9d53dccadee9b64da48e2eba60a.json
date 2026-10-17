@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ae089face909be8f354f845e543eee54cbce9d53dccadee9b64da48e2eba60a",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "prehistoric stone-age totem",
+ "label": "prehistoric/ph-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut surface of the wooden totem pole is clearly visible at rows 5-10 (6 pixel rows tall) with cross-section growth ring details, foreshortened correctly for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the cylindrical totem pole is clearly drawn as an ellipse from row 5 to row 10 (about 6 rows tall) showing wood cross-section/rings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5331
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cross-section of the totem log is clearly drawn from above spanning rows 5 to 10 with visible wood grain rings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5265
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden totem pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the log pole is clearly depicted as an elliptical cross-section spanning rows 5 to 10 (approx. 6 rows tall) with wood grain details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4947
+  }
+ ],
+ "decidedAt": "2026-10-14T08:43:16.706Z",
+ "cells": {
+  "16": [
+   "593bc634d77b4421",
+   "5d0af4d7961a479d",
+   "eb1e952028011b8c"
+  ],
+  "24": [
+   "36b6427f0deabb5b",
+   "38115fcb7761b721",
+   "8b7e0eff1fafe1ed",
+   "9fa6283fbc6a57ea",
+   "e30d57c83b1840ae",
+   "ed79f0ed08b8033a"
+  ],
+  "32": [
+   "08be4624ead4586f",
+   "1ec1458ec56e7505",
+   "2ac506d2162919db",
+   "4585b8e9139fa1e0",
+   "4c4f6b32530d6cf3",
+   "521a22525e251568",
+   "5fdc411af0c53f47",
+   "9a0ae1e6d003bfb8",
+   "c0eb326742710d5b",
+   "c1861fbf258e2b77",
+   "c5e9f51c516bbb4a",
+   "dc8fc1816cad2713"
+  ],
+  "48": [
+   "0b3901304a82ddee",
+   "a03b9dc44e05d013",
+   "f8a1e1258440bdfd"
+  ]
+ }
+}

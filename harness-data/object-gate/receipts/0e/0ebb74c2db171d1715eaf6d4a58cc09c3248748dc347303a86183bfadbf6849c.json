@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ebb74c2db171d1715eaf6d4a58cc09c3248748dc347303a86183bfadbf6849c",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냉장고",
+ "label": "modern_city/interior/mci-fridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible across rows 2–5 (4 pixel rows tall), with a cardboard box (also drawn in 3/4 perspective) resting on top of it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7797
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 form a 5-pixel-tall top surface of the refrigerator upon which a cardboard box sits, clearly distinguishing the top horizontal plane from the front doors below (rows 6-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6465
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible across rows 2–5 (4 pixels deep), shaded lighter than the vertical front doors below it. A cardboard box rests on this top surface with its base at row 3.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17743
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "refrigerator",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the refrigerator is clearly visible from rows 1 to 5 (5 source pixel rows tall), with a small box sitting on top of it. Below row 6 are the freezer and refrigerator front doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9367
+  }
+ ],
+ "decidedAt": "2026-10-14T01:01:12.629Z",
+ "cells": {
+  "16": [
+   "196c92a1f8ec7bf8",
+   "a2f1241821a6809a"
+  ],
+  "24": [
+   "021e23e2687cd4de",
+   "1b0483e3082466d6",
+   "264551b516c98e45",
+   "30d58fb1e23ab21a",
+   "43fbf756059e5e8c",
+   "4bad994c3714216c",
+   "6fb6a935de789040",
+   "71ecf487b14d44f4",
+   "7e705bad938d4cd3",
+   "a6f9b3fb9556cea7",
+   "ce12b50614860b5e",
+   "e63de4106394dd03"
+  ],
+  "32": [
+   "2e7d33b1198f5346",
+   "9f827040a4e6ce6f",
+   "b11b29788906e6b4"
+  ],
+  "48": [
+   "209777c0b69d4e26",
+   "8d73ecf71379e53d",
+   "e4d16ef3908d7e7b",
+   "edefbc273a518a8a",
+   "fd303b50c167d51a",
+   "ffd1e5f60e87e321"
+  ]
+ }
+}

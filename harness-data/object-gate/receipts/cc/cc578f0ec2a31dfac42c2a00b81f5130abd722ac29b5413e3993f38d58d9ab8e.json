@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc578f0ec2a31dfac42c2a00b81f5130abd722ac29b5413e3993f38d58d9ab8e",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp/jp-torii",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate with roof, lintel, and pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii is drawn in pure architectural front elevation: the lintel shows only a 1px edge highlight (row 9) with no top surface, the crossbeam and panel have no visible top planes, and the pillar bases end in flat 1px horizontal lines at row 46 rather than foreshortened 3/4 bases.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17746
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure 2D front architectural elevation. All horizontal beams, lintels, and column bases are drawn with perfectly straight horizontal lines with no visible top surfaces, elliptical bases, or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii gate is rendered in a pure 2D orthographic front elevation. All crossbeams, lintels, and base plinths are drawn as flat horizontal rectangles with 0px of visible top surface from a 3/4 overhead perspective. The roof section at the top is also rendered as a flat front silhouette without foreshortening or slope definition.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20116
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii gate is drawn entirely as a flat 2D architectural front elevation. The lintels and tie beams show only vertical front faces with at most a 1px edge highlight (row 10), the pillar base plinths are flat rectangles showing no top surfaces, and the structure lacks any 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10336
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.484Z",
+ "cells": {
+  "16": [
+   "240923fb7885a208",
+   "3d5d70c864d41972",
+   "6d8ac9630e2f0e4c",
+   "7763b35a33c88530",
+   "9ee137907a75d74e",
+   "a97cbb97ac1409cc",
+   "d21685a3efd2e5bc",
+   "fc0744b54943825d"
+  ],
+  "24": [
+   "1ccbdf0b641c2098",
+   "2ca8cde56cef713b",
+   "30d86d89ea5b4522",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "5ccf2d0bf8374d3e",
+   "7d130311678af49b",
+   "a9bd29c164b3ddf9",
+   "b6bcb67537dd61a9",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "c97a7a081f9a201a",
+   "ce052ec78d51347f"
+  ],
+  "32": [
+   "1b915181f104ae8d",
+   "44dec2e8c0df082b",
+   "6b5e35f4c7727b19",
+   "84ab6c56a3b8db91",
+   "b0adc874b6820552",
+   "c50e931f77d21839",
+   "d00bd6361cf8b942",
+   "fb5c2d11f9775ab5"
+  ],
+  "48": [
+   "5e9f5cb7cece1f36",
+   "83b2b759ce859197",
+   "c7b7acaca9773357",
+   "cc96aa8639a4b7b3",
+   "cfb6296fe8e0dcc4",
+   "dd11dbff357e93bf"
+  ]
+ }
+}

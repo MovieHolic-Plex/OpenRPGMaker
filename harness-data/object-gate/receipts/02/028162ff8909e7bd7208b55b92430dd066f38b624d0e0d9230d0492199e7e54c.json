@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "028162ff8909e7bd7208b55b92430dd066f38b624d0e0d9230d0492199e7e54c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "돌 벽난로(넓은 선반 + 화덕 석판 + 장작불) (프레임 2)",
+ "label": "snow-north/sn-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace and chimney are drawn in pure front elevation: vertical stone wall from row 1 to 12 with flat brick seams, flat lintel at rows 13-14, and flat rectangular firebox opening without any visible horizontal top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8163
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace and chimney structure is drawn in pure front elevation. The mantel shelf below row 12 is merely a 1-2px dividing line with no visible foreshortened top surface, and the firebox opening is a flat 2D rectangle with no interior floor or ceiling visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10215
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace and upper chimney/mantel structure is drawn in pure front elevation. There is no foreshortened horizontal top surface for the mantel shelf (only a 1-2px dividing line between rows 12-14) or the firebox interior/exterior.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6919
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn entirely in a flat front elevation. Both the upper chimney breast and the lower firebox surround are flat vertical faces with no top surface foreshortening (the mantel between them is merely a 1-2px dividing line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9988
+  }
+ ],
+ "decidedAt": "2026-10-14T01:22:34.203Z",
+ "cells": {
+  "16": [
+   "910bf09b47dd8172",
+   "d8cbec6dfdcd32d6",
+   "dc4f5d1f3d6cfd4f",
+   "e0b1e403e4b7b245"
+  ],
+  "24": [
+   "022d12e4b230d31a",
+   "073c179cf90ea696",
+   "08460f9f1995992f",
+   "0bbec5c583934785",
+   "10905f18ca122b37",
+   "2131c97cdad42e1b",
+   "27afa58af7bb9a1d",
+   "2d5e7eccce3883c0",
+   "3668efd62536ae81",
+   "3b5655cc987a7d63",
+   "3f81959763eec014",
+   "458c8f6af99d54f3",
+   "5c714126c1f0511c",
+   "69c87b1b59573e96",
+   "69faae9cd6d64944",
+   "893d2927d59fb3a8",
+   "9801091ba8ed456f",
+   "9cf9db816c7b8a9d",
+   "a0a4f5efc5c48a4e",
+   "a437c0d08aca0eff",
+   "c169482dc1360d8b",
+   "cdb1e67d25df3417",
+   "d0ecc1669d220609",
+   "ecca22c7beef740c"
+  ],
+  "32": [
+   "5a5759b704c7885b"
+  ],
+  "48": [
+   "584b1ffa76df771b",
+   "731d8f834adc23d7",
+   "91475f098409a96c",
+   "b4472ae4ceacaa0a",
+   "ba0c2479b8ef59c8",
+   "eadea01719516884"
+  ]
+ }
+}

@@ -36,7 +36,7 @@ describe("world codex tab structure", () => {
     const host = renderCodex();
     const stats = findByTestId(host, "db-world-codex-stats");
     expect(stats).toBeTruthy();
-    expect(stats?.textContent).toContain("낱장 카드");
+    expect(stats?.textContent).toContain("문서");
     expect(stats?.textContent).toContain("검사 지적");
   });
 

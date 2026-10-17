@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1fe4b46b916a3d2f96538cb692afd2217d5ef6b49eae3d20971aaa15d60a9573",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "큰 쓰레기통(둥근 넓은 아가리)",
+ "label": "modern-campus-int/mc-bin-wide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical trash bin",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large opening of the bin is shown as an elliptical mouth occupying rows 2 to 6 (5 rows inside opening) with trash visible inside, above a south-facing curved body from row 7 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4082
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical trash bin with open top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bin shows a clear elliptical opening spanning rows 2 to 6 with visible contents inside, atop an 8-row front cylindrical body (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3869
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical trash can",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is rendered as an elliptical cavity visible from above spanning rows 2 to 6 with interior contents visible, sitting above the south face spanning rows 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4391
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical trash can with open top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is rendered as a wide ellipse spanning rows 2 to 6 (5 source pixel rows deep), showing interior dark space and visible contents (white and yellow trash bits), with the cylindrical front face extending below from row 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3733
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.314Z",
+ "cells": {
+  "16": [
+   "0e142675ea8e6b48"
+  ],
+  "24": [
+   "3f3c4cb18b299401",
+   "626ee3e5f4ba5386",
+   "638c0ffba104b12b",
+   "9666370dff95d633",
+   "a696ed3781ffce3f",
+   "dcbf2a39aa716313"
+  ],
+  "32": [
+   "7c0b54e33b68ff7c",
+   "8679b8f558f8657e",
+   "9b1d8c7bf44638c3",
+   "a7840b0271bbf3fd",
+   "c3ad2e6d52c88a79",
+   "dfbb54c20a4b323e"
+  ],
+  "48": [
+   "0087df7c7f832bb8",
+   "2738ad9fc3dd2a57",
+   "28f7e20f9dc45108",
+   "30f6325e1cafcb43",
+   "6daa048fac6bac50",
+   "c2a947f8d47b4b50"
+  ]
+ }
+}

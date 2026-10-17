@@ -520,6 +520,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":
@@ -1624,6 +1626,8 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
     case "actorStat":
     case "actorState":
     case "partyLeader":
+    case "partyKnowsSkill":
+    case "badgeCount":
     case "partySize":
     case "facing":
     case "relativeFacing":

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f02faa7c1675d05acc0a7b65d58a8168f36dbbfe4af64f1be97ca976b95e073",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "긴 의자(통나무 판 + 모피 깔개)",
+ "label": "snow-north/sn-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "log plank bench with fur mat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is visible from row 3 to row 8 (6 rows tall) with lighter lighting and a fur mat laid across it. The front face is shaded from row 9 to row 12 with the fur draping over the front edge, supported by legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8006
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench is clearly visible from above across rows 3-8 (6 rows tall), complete with horizontal wood grain and a fur rug spread across it. A highlighted front edge at row 8 separates the top from the south-facing vertical front drop (rows 9-11), where the fur rug hangs down in shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10901
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bench seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench shows a distinct 6-row top seat surface (rows 3-8) with a fur rug draped over it, transitioning to a shaded 4-row south-facing front edge (rows 9-12) above two short legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "log bench seat with fur rug",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is clearly foreshortened and visible across rows 2–8 (7 rows), separated by an edge highlight from the shaded front edge of the plank (rows 9–12), with the fur rug draped over both planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22215
+  }
+ ],
+ "decidedAt": "2026-10-14T01:14:31.164Z",
+ "cells": {
+  "16": [
+   "712ff67921e2552b",
+   "93ef48a4dd5626d4"
+  ],
+  "24": [
+   "0c2ae760e5adafc8",
+   "3a53c1a19aeb4bf4",
+   "489029ab3c5ac20f",
+   "60a869eaf3d5de70",
+   "624b20f1a3b5e90b",
+   "6ecdabc04cef0d81",
+   "830c1884aa06060c",
+   "c504aa59cbfcb84d",
+   "c8f96894e0a79e4c",
+   "db4f56f6a9d9a8ed",
+   "dcb63a082f90b526",
+   "ee68f61586751b40"
+  ],
+  "32": [
+   "7070f30490b3cf51",
+   "f12b45f6d77a59f5"
+  ],
+  "48": [
+   "07600f8a074222e1",
+   "46583bfd1e5e418b",
+   "4fac8fd3329cc8d2",
+   "a32a4193702a89aa",
+   "d868eb963641228c",
+   "eebb637ff0a4931e"
+  ]
+ }
+}

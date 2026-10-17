@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b896ea5e80985b57c3e9edd3d5077cd9e284b8f82289cc70da21394e2f532f8a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "깃대(무늬 없는 천)",
+ "label": "desert-east/de-banner-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical banner stand / frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vertical frame and banner are drawn in flat front elevation with a 1px border at row 3; no top horizontal surface is visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5019
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing banner frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wooden frame holding the banner terminates at row 3 with a flat 1px horizontal edge and has no visible top surface, drawn as a pure front elevation despite the stepped base at the bottom.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing banner frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main standing body and frame (rows 3-24) have no visible top surface foreshortened from above; row 3 is simply a flat 1px horizontal outline viewed straight-on, despite the plinth at the bottom showing a top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3930
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden banner frame/stele",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vertical wooden board/frame (rows 3–23) has no visible top surface; row 3 is merely a 1px front border outline. While the base plinth shows depth, the main body is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5456
+  }
+ ],
+ "decidedAt": "2026-10-14T00:33:14.417Z",
+ "cells": {
+  "16": [
+   "0e05456f3cd159e4",
+   "7f14d9b463a57a8c"
+  ],
+  "24": [
+   "2645a7abc25fce28",
+   "2bafe3921fccabed",
+   "369692efcccaed62",
+   "55c374d5a6d29c06",
+   "64facef75dda0cd6",
+   "7df6e62b57c20b6b",
+   "861651f092526fcb",
+   "9557391dc19eaa11",
+   "a01bd94fb3c3c0bf",
+   "a510a4d3f0d7073a",
+   "b9c7c3ebfcec4960",
+   "ba501ad85c7b2388"
+  ],
+  "32": [
+   "50f317852dc54440",
+   "9f648e32a03f8582",
+   "cecc2dc37d5282d5"
+  ],
+  "48": [
+   "03cf907b5139b784",
+   "1606c6eed5940203",
+   "4a2e0b058715d8ce",
+   "e6adb19246c6c449",
+   "fa120d4808c6894d",
+   "ff025f317f0f1bfc"
+  ]
+ }
+}

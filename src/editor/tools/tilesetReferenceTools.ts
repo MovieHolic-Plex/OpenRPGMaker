@@ -1,7 +1,9 @@
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { referenceManifest, referenceOwner, referencePage, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
+import { activeGenreLock, genreLockAllowsTileset } from "@/project/genreLock";
 import { ToolError, type ToolDefinition } from "./types";
 import type { Project } from '@/project/types';
+import { monsterTilesetHiddenInRun } from "@/project/genreLockMonsterAssets";
 
 /** 선택 인자를 빈 문자열로 채워 보내는 모델(엄격 스키마 — 2026-10-01 r2 시험: imageId:"" 로 12번 실패)을 위해 빈 id 는 없는 것으로 본다. */
 function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown> {
@@ -131,9 +133,15 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
         } };
       }
       // 폐기된 실내 칩셋은 목록에 나오지 않는다(retiredInteriorTilesets.ts) — 실내 자료는 atlas_biome_interior 의 손 도트 실내.
-      const tilesets = args.tilesetId === undefined ? Object.values(project.tilesets).filter(t => !isRetiredInteriorTileset(t.id, t)) : [project.tilesets[String(args.tilesetId)]];
+      // 장르 잠금 중에는 허용 계열 밖 칩셋을 전체 목록에 올리지 않는다(조수가 애초에 고르지 않게). 이름을 알고 직접 묻는 것은 막지 않고 경고만 붙인다 — 사용자가 승인한 계열의 자료도 읽어야 하므로.
+      const locked = args.tilesetId === undefined && activeGenreLock(project) !== undefined;
+      const tilesets = args.tilesetId === undefined
+        ? Object.values(project.tilesets).filter(t => !isRetiredInteriorTileset(t.id, t) && (!locked || genreLockAllowsTileset(project, t.id)) && !monsterTilesetHiddenInRun(project, t.id))
+        : [project.tilesets[String(args.tilesetId)]];
       if (tilesets.some(t => !t)) throw new ToolError("타일셋을 찾을 수 없습니다.");
-      return { summary: "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.", data: { tilesets: tilesets.map(t => {
+      const lockWarnings = args.tilesetId !== undefined && activeGenreLock(project) && !genreLockAllowsTileset(project, String(args.tilesetId))
+        ? [`장르 잠금: ${String(args.tilesetId)} 는 허용 계열 밖 칩셋이다 — 이 칩셋으로 새 맵을 만들거나 칩셋을 바꾸면 거부된다. 읽기만 가능.`] : [];
+      return { summary: locked ? "타일셋 → 용도 → MD와 이미지(장르 잠금: 허용 계열 칩셋만 나열). 선택한 용도를 읽은 다음 응답에서 배치하세요." : "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.", ...(lockWarnings.length ? { warnings: lockWarnings } : {}), data: { tilesets: tilesets.map(t => {
         const owner = referenceOwner(project, t!);
         return { tilesetId: t!.id, name: t!.name, ownerId: owner.id, categories: args.tilesetId === undefined ? (owner.referenceDocuments ?? []).map(g => ({ id: g.id, name: g.name })) : (owner.referenceDocuments ?? []).map(g => ({ id: g.id, name: g.name, description: g.description.slice(0, 160), documents: g.documents.length, images: g.images.length })) };
       }) } };

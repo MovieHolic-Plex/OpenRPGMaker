@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d3a038f6e2e476dfb1d46b0c7ac2996cccfb072cba7e50efcd6130d22b4c76bb",
+ "width": 32,
+ "height": 16,
+ "kind": "debris",
+ "name": "broken old rowboat half buried in the sand, seen from above with a cracked hull and missing planks",
+ "label": "pirate-isles/pi-broken-rowboat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "broken rowboat hull",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat is seen from above at a top-down angle, displaying the full open interior cavity (approx 5 rows tall between gunwales) and crossbeams, half-submerged in sand without receding isometric sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "broken rowboat hull",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat is viewed from above at an angle showing its interior compartments, missing planking/sand filling, and south rim over rows 4-13. It is not a flat side elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5456
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "broken rowboat",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat is drawn in a standard 3/4 top-down perspective, looking down into the open hull (approx. 6 rows of interior opening and benches visible from row 5 to 10) with the southern outer hull visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6356
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rowboat hull",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat interior is clearly visible from above across rows 6-10, with the south hull face foreshortened at rows 12-13, appropriately depicted in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4727
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.587Z",
+ "cells": {
+  "16": [
+   "44d44afa66695fc2",
+   "554095976ed13485"
+  ],
+  "24": [
+   "091c8157d9166fda",
+   "1242acc8e616a95a",
+   "31ccf20f1897edef",
+   "537382183c49405b",
+   "598071990f29dca0",
+   "7c1e911df6bd8124",
+   "8974d9820362eddb",
+   "8bd628a9a0843773",
+   "b31b7457a3b496a4",
+   "c6052ee85ad38437",
+   "dada9b25393a10f9",
+   "e27839c52f0fdc11"
+  ],
+  "32": [
+   "5fc8db2f9bf8ed0e",
+   "e75c988c6634b5df"
+  ],
+  "48": [
+   "40c5731c15ed33f4",
+   "6b4533ee011dd31a",
+   "727e617ed5197521",
+   "c9c35c8dcaa5efef",
+   "cc798e67356ce7a6",
+   "e6db570da0e00476"
+  ]
+ }
+}

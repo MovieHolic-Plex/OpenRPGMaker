@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4020a1e9e2bfb6539b06c8359c18c071568a13e9b8c1ef0af5e01dfd911f0dfe",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "작은 천 천막",
+ "label": "desert-east/de-tent-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloth tent with striped canopy roof and lower vertical walls",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping south canopy of the tent occupies rows 5-20 (16 source pixel rows), dominating the vertical wall below (rows 22-29, 8 rows) in standard 3/4 top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5478
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tent roof canopy and walls",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent displays an expansive sloped roof canopy facing the camera from row 5 down to row 20 (16 rows) above the vertical lower walls (rows 22-29), characteristic of the top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3731
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloth tent / pavilion",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tent structure clearly shows its southward-sloping roof canopy across rows 5–20 (16 source pixel rows) above the shorter vertical lower walls (rows 22–29), providing proper 3/4 top-down foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5047
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloth pavilion tent",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The marquee tent features a large sloped canopy facing the viewer from row 5 to row 20 (16 rows) above an 8-row vertical wall section (rows 22-29), properly presenting the top/sloping roof surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4955
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.344Z",
+ "cells": {
+  "16": [
+   "041cd4765fa030ec",
+   "6bc0bfc140c07115",
+   "8ac1c6e96d5bda98",
+   "da79dbd9f118bb2a"
+  ],
+  "24": [
+   "06c8ebbf25450aa3",
+   "0cf12482960d1fa0",
+   "114ac699ab46fe7b",
+   "12fb0b1bb61a6633",
+   "1827c37631dc529e",
+   "185ca926857a110d",
+   "2e801718d5f0a9ae",
+   "357fdd700efc0ad3",
+   "3a3f5a14dec152c2",
+   "3c7799aa9d45e04d",
+   "3ff99e032cf350ba",
+   "6f82ea567ef7f1a5",
+   "7846501cddfd1b3a",
+   "8b696e232ae21d32",
+   "8fe56fe798641220",
+   "9ae78e5c7b18162d",
+   "cf282ec83a8ab3c9",
+   "d02af618a028b805",
+   "d3d738bc1c864f4a",
+   "d885e6d9caf07983",
+   "e5e55b017f9a64a2",
+   "e7da93379f3a1304",
+   "e9f8e18310106b41",
+   "f680fe2f43843c58"
+  ],
+  "32": [
+   "949af23bdd0c8b1e"
+  ],
+  "48": [
+   "1d2e6a0af5d670dd",
+   "a14f67f73cb6f712",
+   "b8f0bbe4a34f6ca7",
+   "bbc15d7a44021739",
+   "bf9f5f2ebdff6fde",
+   "e55eced06ce7f820"
+  ]
+ }
+}

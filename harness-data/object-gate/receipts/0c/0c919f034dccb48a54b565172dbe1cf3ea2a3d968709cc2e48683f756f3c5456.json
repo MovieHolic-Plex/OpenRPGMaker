@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c919f034dccb48a54b565172dbe1cf3ea2a3d968709cc2e48683f756f3c5456",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "줄무늬 정자 천막",
+ "label": "desert-east/de-tent-pavilion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circus/pavilion tent with striped conical canopy roof and cylindrical wall",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical canopy roof clearly shows its sloped surface facing the camera across rows 4-33. The roof eaves and bottom perimeter curve downwards toward the south in proper 3/4 top-down cylindrical perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4637
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circus/pavilion tent with striped conical roof and cylindrical wall",
+    "kind_matches": true,
+    "top_rows": 33,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof slopes down towards the viewer over 33 pixel rows (rows 0-33). Both the roof eave (center row 33 vs side row 27) and base (center row 43 vs side row 39) curve downward to display correct top-down 3/4 cylindrical foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7507
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circus/pavilion tent",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof slopes toward the camera across rows 4 to 33. Both the eave line and the tent base curve downward toward the viewer (eave dips 9px from row 24 at edges to row 33 in center), correctly establishing the top-down 3/4 projection, and the doorway reveals receding interior floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5545
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "striped pavilion tent",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical tent roof clearly displays its top slope facing the camera across rows 4 to 32, with curved front eaves and curved base conforming to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4082
+  }
+ ],
+ "decidedAt": "2026-10-14T00:24:39.343Z",
+ "cells": {
+  "16": [
+   "1042973d38ddd8bc",
+   "282793540dff5609",
+   "5629dce95325116e",
+   "5685aacaea567de6",
+   "6f31e4a85a7e36c6",
+   "80737cec87c32b6d",
+   "9e8635a20422c6c1",
+   "a9a8d1f3db59553d",
+   "d69c457b56047cb0"
+  ],
+  "24": [
+   "19645d884e073d94",
+   "1a191bd520619db0",
+   "5396822afaf4b034",
+   "673b34b4d8d1313d"
+  ],
+  "32": [
+   "02b764010f5d6e72",
+   "04019d199cfd3514",
+   "1395f9c12a027925",
+   "1c34349182a306e1",
+   "27a814398c1341f1",
+   "2ca89d507bab45bc",
+   "2cef0471f292ffdc",
+   "2f075b0a9b2beb4c",
+   "39c7b55b9eaca2e4",
+   "3d2d26ec6dcdbb0f",
+   "6247709eb4213cad",
+   "708defd62658bc58",
+   "723369b4cec7bc58",
+   "735cfc2a5e41a63b",
+   "74ded4df1b31341c",
+   "79d6c509a0c1a0d9",
+   "8bf9b1a20f4d7c7c",
+   "999e324b22abfe4b",
+   "9cf6600aa64e1896",
+   "c040ba256d482f42",
+   "c0f9d958e16c8829",
+   "ce16acdb01c11c88",
+   "d2d445c837614bdd",
+   "e1174d7b01814a3f"
+  ],
+  "48": [
+   "07bbcb1cd6d4c201"
+  ]
+ }
+}

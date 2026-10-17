@@ -1,0 +1,985 @@
+{
+ "note": "Scarloxy People1~2 뼈대 10명 → 머리 이식 + 부위 색 바꾸기(모델 호출 없음). head=머리 주인, body=몸 주인. 규칙은 위에서부터 먼저 걸린 것 하나만 적용. 순서는 설치 칸 번호가 아니라 레시피 순서(칸 번호는 scarloxy-people-install.json 이 정한다).",
+ "chips": [
+  {
+   "key": "sc-officer-a",
+   "name": "경찰관",
+   "head": "Scarloxy1:0",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      150,
+      190
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 222,
+      "s": 0.9,
+      "v": 0.85
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 222,
+      "s": 0.8,
+      "v": 0.8
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-researcher-a",
+   "name": "연구원",
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "vmax": 0.55,
+     "to": {
+      "hue": 215,
+      "s": 0.5,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "s": 0.07,
+      "v": 1.4
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      20,
+      55
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 178
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      190,
+      215
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 210,
+      "v": 1.5
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-nurse-a",
+   "name": "간호사",
+   "head": "Scarloxy1:7",
+   "body": "Scarloxy1:7",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      150,
+      195
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 338,
+      "s": 0.55,
+      "v": 1.05
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      195,
+      235
+     ],
+     "smin": 0.2,
+     "to": {
+      "s": 0.12,
+      "v": 1.35
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-grunt-a",
+   "name": "단원",
+   "head": "Scarloxy1:2",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      90,
+      160
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 280,
+      "s": 0.5,
+      "v": 0.55
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "s": 0.15,
+      "v": 0.45
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      20,
+      55
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 0,
+      "s": 1.1
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-grunt-f",
+   "name": "단원(여)",
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      30
+     ],
+     "smin": 0.12,
+     "vmin": 0.4,
+     "to": {
+      "hue": 285,
+      "s": 0.5,
+      "v": 0.75
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "s": 0.15,
+      "v": 0.45
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      20,
+      55
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 0,
+      "s": 1.1
+     }
+    }
+   ],
+   "waive": [
+    "edge"
+   ]
+  },
+  {
+   "key": "sc-fisher-a",
+   "name": "낚시꾼",
+   "head": "Scarloxy1:2",
+   "body": "Scarloxy1:6",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      90,
+      160
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 48,
+      "s": 0.95,
+      "v": 1.25
+     }
+    },
+    {
+     "region": "T",
+     "gray": [
+      0.85,
+      1.0
+     ],
+     "to": {
+      "hue": 205,
+      "sat": 0.35
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      60,
+      140
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 35,
+      "s": 0.7,
+      "v": 0.9
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-camper-a",
+   "name": "캠퍼",
+   "head": "Scarloxy1:6",
+   "body": "Scarloxy1:0",
+   "recolor": [
+    {
+     "region": "T",
+     "gray": [
+      0.85,
+      1.0
+     ],
+     "to": {
+      "hue": 38,
+      "sat": 0.4
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      140,
+      190
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 28,
+      "s": 0.7,
+      "v": 1.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-hiker-a",
+   "name": "등산가",
+   "head": "Scarloxy1:2",
+   "body": "Scarloxy1:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      90,
+      160
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 8,
+      "s": 0.9,
+      "v": 1.0
+     }
+    },
+    {
+     "region": "T",
+     "gray": [
+      0.85,
+      1.0
+     ],
+     "to": {
+      "hue": 22,
+      "sat": 0.55
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-bugcatcher-a",
+   "name": "곤충채집 소년",
+   "head": "Scarloxy1:6",
+   "body": "Scarloxy1:5",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.5,
+     "to": {
+      "hue": 115,
+      "s": 0.8,
+      "v": 0.9
+     },
+     "vmin": 0.6
+    },
+    {
+     "region": "B",
+     "hue": [
+      15,
+      35
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 45,
+      "s": 0.8,
+      "v": 0.95
+     }
+    }
+   ],
+   "waive": [
+    "outline"
+   ]
+  },
+  {
+   "key": "sc-forester-a",
+   "name": "숲지기",
+   "head": "Scarloxy1:1",
+   "body": "Scarloxy2:1",
+   "recolor": []
+  },
+  {
+   "key": "sc-explorer-f",
+   "name": "탐험가(여)",
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy2:1",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      340,
+      360
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 120,
+      "s": 0.8,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      0,
+      12
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 120,
+      "s": 0.8,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      0,
+      30
+     ],
+     "smin": 0.12,
+     "vmin": 0.3,
+     "to": {
+      "hue": 22,
+      "sat": 0.72,
+      "v": 1.2
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      75,
+      175
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 25,
+      "s": 0.6,
+      "v": 0.9
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      40,
+      75
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 28,
+      "s": 0.5,
+      "v": 0.95
+     }
+    }
+   ],
+   "waive": [
+    "edge"
+   ]
+  },
+  {
+   "key": "sc-rival-a",
+   "name": "라이벌",
+   "head": "Scarloxy1:0",
+   "body": "Scarloxy1:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      150,
+      190
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 355,
+      "s": 0.85,
+      "v": 0.95
+     }
+    },
+    {
+     "region": "T",
+     "gray": [
+      0.88,
+      1.0
+     ],
+     "to": {
+      "hue": 225,
+      "sat": 0.6,
+      "vlin": [
+       0.1,
+       0.65
+      ]
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      150,
+      190
+     ],
+     "smin": 0.3,
+     "to": {
+      "s": 0.2,
+      "v": 1.05
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-trainer-f",
+   "name": "여자 트레이너",
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy1:0",
+   "recolor": [
+    {
+     "region": "T",
+     "gray": [
+      0.85,
+      1.0
+     ],
+     "to": {
+      "hue": 330,
+      "sat": 0.25
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      150,
+      190
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 220,
+      "s": 0.7,
+      "v": 0.85
+     }
+    }
+   ],
+   "waive": [
+    "edge"
+   ]
+  },
+  {
+   "key": "sc-schoolgirl-a",
+   "name": "여학생(아이)",
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy1:4",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      0,
+      30
+     ],
+     "smin": 0.12,
+     "vmin": 0.4,
+     "to": {
+      "hue": 232,
+      "s": 0.35,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      340,
+      360
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 225,
+      "s": 0.8,
+      "v": 0.9
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      0,
+      12
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 225,
+      "s": 0.8,
+      "v": 0.9
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      40,
+      60
+     ],
+     "smin": 0.3,
+     "to": {
+      "sat": 0.08,
+      "vlin": [
+       0.5,
+       0.5
+      ]
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      150,
+      215
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 225,
+      "s": 0.7,
+      "v": 0.7
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      300,
+      350
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 225,
+      "s": 0.6,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      300,
+      350
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 225,
+      "s": 0.7,
+      "v": 0.65
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-priestess-a",
+   "name": "신관",
+   "head": "Scarloxy1:7",
+   "body": "Scarloxy1:7",
+   "recolor": [
+    {
+     "region": "*",
+     "hue": [
+      150,
+      200
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 42,
+      "s": 0.8,
+      "v": 1.15
+     }
+    },
+    {
+     "region": "*",
+     "hue": [
+      200,
+      230
+     ],
+     "smin": 0.2,
+     "vmax": 0.6,
+     "to": {
+      "hue": 178,
+      "s": 0.6,
+      "v": 0.5
+     }
+    },
+    {
+     "region": "*",
+     "hue": [
+      200,
+      230
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 176,
+      "s": 0.55,
+      "v": 0.8
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-boss-ice",
+   "name": "얼음 도장 보스",
+   "head": "Scarloxy2:0",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "*",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "vmax": 0.55,
+     "to": {
+      "hue": 215,
+      "s": 0.9,
+      "v": 0.9
+     }
+    },
+    {
+     "region": "*",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 195,
+      "s": 0.8,
+      "v": 1.1
+     }
+    },
+    {
+     "region": "*",
+     "hue": [
+      20,
+      55
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 205,
+      "s": 0.3,
+      "v": 1.2
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-boss-electric",
+   "name": "전기 도장 보스",
+   "head": "Scarloxy2:0",
+   "body": "Scarloxy2:0",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "vmax": 0.55,
+     "to": {
+      "hue": 30,
+      "s": 1.0,
+      "v": 0.55
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "vmax": 0.55,
+     "to": {
+      "hue": 235,
+      "s": 0.7,
+      "v": 0.5
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 50,
+      "s": 1.0,
+      "v": 1.15
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "s": 0.12,
+      "v": 0.4
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      20,
+      55
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 52,
+      "s": 1.0
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-boss-rock",
+   "name": "바위 도장 보스",
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy2:1",
+   "recolor": [
+    {
+     "region": "*",
+     "hue": [
+      85,
+      175
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 28,
+      "s": 0.7,
+      "v": 0.95
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-boss-esper",
+   "name": "에스퍼 도장 보스",
+   "head": "Scarloxy1:7",
+   "body": "Scarloxy1:7",
+   "recolor": [
+    {
+     "region": "*",
+     "hue": [
+      150,
+      200
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 272,
+      "s": 0.75,
+      "v": 0.95
+     }
+    },
+    {
+     "region": "*",
+     "hue": [
+      200,
+      230
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 262,
+      "s": 0.8,
+      "v": 0.7
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-kid-a",
+   "name": "어린이(여)",
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy1:4",
+   "recolor": [
+    {
+     "region": "H",
+     "hue": [
+      340,
+      360
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 130,
+      "s": 0.8,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      0,
+      12
+     ],
+     "smin": 0.6,
+     "to": {
+      "hue": 130,
+      "s": 0.8,
+      "v": 0.8
+     }
+    },
+    {
+     "region": "H",
+     "hue": [
+      0,
+      30
+     ],
+     "smin": 0.12,
+     "vmin": 0.3,
+     "to": {
+      "hue": 44,
+      "sat": 0.62,
+      "v": 1.55
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      40,
+      60
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 10,
+      "s": 0.7,
+      "v": 1.0
+     }
+    },
+    {
+     "region": "T",
+     "hue": [
+      150,
+      215
+     ],
+     "smin": 0.15,
+     "to": {
+      "hue": 145,
+      "s": 0.8,
+      "v": 1.0
+     }
+    },
+    {
+     "region": "B",
+     "hue": [
+      300,
+      350
+     ],
+     "smin": 0.2,
+     "to": {
+      "hue": 40,
+      "s": 0.8,
+      "v": 1.05
+     }
+    }
+   ]
+  },
+  {
+   "key": "sc-beach-a",
+   "name": "해변 관광객",
+   "head": "Scarloxy1:6",
+   "body": "Scarloxy1:1",
+   "recolor": [
+    {
+     "region": "T",
+     "hue": [
+      335,
+      20
+     ],
+     "smin": 0.3,
+     "to": {
+      "hue": 45,
+      "s": 1.0,
+      "v": 1.1
+     }
+    },
+    {
+     "region": "B",
+     "gray": [
+      0.8,
+      1.0
+     ],
+     "to": {
+      "hue": 170,
+      "sat": 0.35
+     }
+    }
+   ]
+  }
+ ],
+ "rejected": {
+  "sc-professor-a": "흰 머리 소년처럼 읽힌다(박사로 안 읽힘)"
+ }
+}

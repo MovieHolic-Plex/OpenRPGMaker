@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "815bd61ebc347163fc2fc753cdab6bfe72e187d2b6121d71df9ec62b38c4e65d",
+ "width": 16,
+ "height": 48,
+ "kind": "box",
+ "name": "neon sign tower v3",
+ "label": "sf-station/sf-neon-v3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "neon sign tower body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is rendered straight-on with no top plane visible; cap at row 2 is a 1px outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11462
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "neon sign tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Stacked rectangular segments drawn in flat front view with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12625
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular sign tower housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower consists of vertically stacked flat panels with a 1px top outline and no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "neon sign tower body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in flat orthographic front elevation without a visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11708
+  }
+ ],
+ "decidedAt": "2026-10-13T15:17:46.173Z",
+ "cells": {
+  "16": [
+   "545fc91d1f26399f",
+   "7078e9e4638179df",
+   "a452f577e75bcc29"
+  ],
+  "24": [
+   "4c594e04eea80790",
+   "a3f0c8b4dca8bb09",
+   "a8585f1c5990e882",
+   "d31d80ba89ac106f",
+   "eff7b3069e5b71f9",
+   "f0471b539225ad3f"
+  ],
+  "32": [
+   "0d84d5e7266e09fd",
+   "156e094d7ce6e44f",
+   "3d19ba68a14f1a5a",
+   "4103260750288594",
+   "5dc4e367dac5416f",
+   "6637bb1728be1534",
+   "962b06ac3e0fc8aa",
+   "b763e06658ab34fe",
+   "bcfe45bec107e082",
+   "cc68808d8c025d30",
+   "da1ac1b5eb07a710",
+   "dd1d4b8a4a1f817d"
+  ],
+  "48": [
+   "2271a3c679297d2e",
+   "3fec30bdc05bb812",
+   "9dd65317ea13a40e"
+  ]
+ }
+}

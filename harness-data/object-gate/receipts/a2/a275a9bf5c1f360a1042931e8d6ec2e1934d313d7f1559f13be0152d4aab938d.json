@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a275a9bf5c1f360a1042931e8d6ec2e1934d313d7f1559f13be0152d4aab938d",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "청록 타일 팔각 분수",
+ "label": "desert-east/de-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "octagonal fountain basin",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly visible from above with ~18 rows of water surface and a distinct rim, resting above an 8-10 row south-facing tiled base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4814
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "octagonal fountain basin",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior filled with water is fully visible from above across rows 14-32, framed by the top rim and showing the front outer tiled wall from row 32 down to 42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4923
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "octagonal fountain basin",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior filled with water is fully visible from above spanning rows 14 to 32 (19 rows), surrounded by a clear rim and showing a tiled south-facing front wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7351
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "octagonal fountain basin",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": true,
+    "opening_rows": 20,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin interior with water is clearly visible from above across rows 14-33, surrounded by an octagonal rim with a south-facing tiled base visible from row 32 to 42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  }
+ ],
+ "decidedAt": "2026-10-14T00:14:03.223Z",
+ "cells": {
+  "16": [
+   "4582e8658a9c67c2",
+   "5364dc88b2f2219e",
+   "87e1a8f1a902d454",
+   "92cb8d2bca1b5503",
+   "a3a30eb605845748",
+   "c2eef8f54fc8ef78",
+   "c798df28e35f8c5a",
+   "cf612aef1e5f8a3a",
+   "f903e81afe75ccf6"
+  ],
+  "24": [
+   "5dac2e87ce8d6986",
+   "97338aaf70dcafd0",
+   "abbd7047551f515b",
+   "eb6e4f6de1a32faa"
+  ],
+  "32": [
+   "0165d52b47d5e426",
+   "0be2a1a866e642c7",
+   "11f1d9964f4acb9e",
+   "2180713e642f6a38",
+   "32d3d3e71ceabd6d",
+   "376e2cb970cb7846",
+   "39bd1042e00b95d4",
+   "3ae8542e07a92a3e",
+   "42c4b0f9f2f2561c",
+   "49e7c09bafeeeebe",
+   "58c88413d0ae88bb",
+   "60164eb47e1aa0ac",
+   "622cbd8453510115",
+   "7677d4d15db2f420",
+   "7c68fe6949f886ea",
+   "a8e10c22017e1a92",
+   "acf29fb30e2a2e79",
+   "b90973b9835c1c12",
+   "bafc15de7ed21bfe",
+   "bb49001e8ceeaede",
+   "c5b886d9299f0f94",
+   "cc11db899d935d15",
+   "f290bbf5769d3722",
+   "f365c0b427c3f450"
+  ],
+  "48": [
+   "b12011467aa1474c"
+  ]
+ }
+}

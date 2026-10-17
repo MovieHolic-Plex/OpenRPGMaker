@@ -1,0 +1,52 @@
+{
+ "key": "sc2-ball-boy",
+ "name": "야구 소년",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy1:5",
+ "recolor": [
+  {
+   "region": "H",
+   "to": {
+    "hue": 215,
+    "s": 0.8,
+    "v": 0.7
+   },
+   "hue": [
+    150,
+    190
+   ],
+   "smin": 0.3
+  },
+  {
+   "region": "T",
+   "to": {
+    "sat": 0.06,
+    "v": 1.25
+   },
+   "hue": [
+    130,
+    200
+   ],
+   "smin": 0.15
+  },
+  {
+   "region": "B",
+   "to": {
+    "hue": 215,
+    "s": 0.7,
+    "v": 0.6
+   },
+   "hue": [
+    20,
+    50
+   ],
+   "smin": 0.3
+  }
+ ],
+ "ok": true,
+ "warnings": [
+  "고정 검사: 12프레임 738칸(얼굴·눈·피부·손) 화소 동일 — 통과"
+ ],
+ "model": "script-compose(no model call)",
+ "recipe": "sc2-ball-boy"
+}

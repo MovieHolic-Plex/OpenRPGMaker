@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "545723a3251ef0ae0322bf66ab46fe2b71cc20a37bd21b2515349cdda842de9e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "주차 칸 선(세로)",
+ "label": "modern-campus/mc-parking-line",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt ground tile with vertical white parking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat asphalt pavement with a painted vertical white parking line. Viewed entirely as a flat horizontal surface from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4512
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical parking line on asphalt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting asphalt pavement with a painted vertical white parking boundary line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4330
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt ground tile with painted vertical parking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing dark asphalt surface with a 2-pixel wide painted parking space line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt ground tile with vertical painted parking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark asphalt ground with a vertical white parking boundary line viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3295
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.864Z",
+ "cells": {
+  "16": [
+   "419b414c509fb78c"
+  ],
+  "24": [
+   "0bdb50dc88220ea5",
+   "0bf03d76deb88e18",
+   "25d78d03460edbb0",
+   "5bd5e8f97e177c22",
+   "7fd1c6e903739d9e",
+   "837735caea15615e"
+  ],
+  "32": [
+   "1be38b5782b51542",
+   "4e910dc1f72b23fb",
+   "5d0547f2957b977c",
+   "6f43b61c2cea41be",
+   "76a92e611ec95038",
+   "e343a29b73dd29e6"
+  ],
+  "48": [
+   "08a521a655a358c0",
+   "1f3b13b7ff147f67",
+   "25b3d25d6956c133",
+   "58e7084485b2bf11",
+   "9d68f4f877e51b17",
+   "eacde9275e1959c1"
+  ]
+ }
+}

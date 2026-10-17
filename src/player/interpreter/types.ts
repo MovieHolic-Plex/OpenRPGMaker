@@ -36,7 +36,7 @@ export type StepResult =
   | import("./minigameCommands").TimedChoiceStep
   | import("./minigameCommands").QuickTimeStep
   | import("./minigameCommands").TeleportMenuStep
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string; endingEpilogue?: boolean }
   | {
       kind: "choices";
       prompt?: string;
@@ -73,7 +73,7 @@ export type StepResult =
   | {
       kind: "changeTile";
       mapId: MapId;
-      layer: "lower" | "upper";
+      layer: import("@/project/types").ChangeTileLayer;
       x: number;
       y: number;
       tile: number;
@@ -81,7 +81,7 @@ export type StepResult =
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "openChest"; chestId: string } & import("@/project/storageChest").OpenChestFields
   | { kind: "openSaveMenu" }
-  | { kind: "openMenuScreen" }
+  | { kind: "openMenuScreen"; screen?: "monster-box" }
   | { kind: "openLoadMenu" }
   | {
       kind: "pathfindMove";
@@ -120,6 +120,8 @@ export type StepResult =
       // 이 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 의 소유 이벤트).
       // 랜덤 인카운터/필드 스폰 전투는 undefined.
       ownerEventId?: string;
+      /** 랜덤 인카운터가 조우표 levelMin/levelMax 로 굴린 야생 레벨(그 외 경로는 없음). */
+      enemyLevel?: number;
     }
   | {
       kind: "showPicture";

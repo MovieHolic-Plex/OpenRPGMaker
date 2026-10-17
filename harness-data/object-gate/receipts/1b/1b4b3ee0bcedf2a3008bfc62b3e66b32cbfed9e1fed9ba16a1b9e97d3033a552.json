@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b4b3ee0bcedf2a3008bfc62b3e66b32cbfed9e1fed9ba16a1b9e97d3033a552",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "손수레(위에서 본 넓은 나무 짐칸 — 바닥 판자가 보인다, 손잡이 동쪽)",
+ "label": "steampunk-city/sp-handcart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden cart cargo bed",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo bed is clearly viewed in 3/4 perspective with a 9-row interior opening revealing floorboards and cargo, bordered by wooden rims, and a 3-row south exterior front face at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3921
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden cart bed with handle and wheels",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart shows a large interior opening revealing wooden floorboards and cargo from row 2 to 11 (10 rows tall), framed by rims, with a south front face visible below at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4193
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden cart cargo bed",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the handcart bed is clearly seen from above across rows 2-11 (10 rows high) showing wooden floor planks and cargo, with the southern wall visible at rows 13-14 and wheels below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4890
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden cart cargo bed",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The inside floor of the cart bed is clearly visible from above across rows 2-10 (9 rows), surrounded by rims, with the front south-facing wall visible below at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4604
+  }
+ ],
+ "decidedAt": "2026-10-13T18:54:55.544Z",
+ "cells": {
+  "16": [
+   "0c1e93de232e6953",
+   "25ed48eabf916565"
+  ],
+  "24": [
+   "0e40dbd3da6fd72f",
+   "391f23f0c2afbfc5",
+   "3b5b62691cd164da",
+   "61cd36e0208bd0a9",
+   "690d54734fb69245",
+   "70392658e4557560",
+   "820ec82b0e42fe77",
+   "93d216d616092998",
+   "b3476f09cd0fe581",
+   "c32d3e9fb6b64993",
+   "d1d31d75b54108d6",
+   "fdc747500a4e9031"
+  ],
+  "32": [
+   "5869e972c29e2ad9",
+   "a25dd6dbcd6f3c04"
+  ],
+  "48": [
+   "13294fd72c5f4494",
+   "1dbcd929f1673a12",
+   "276132fdd46e8127",
+   "b472d512ff3a3961",
+   "cef85e6448388d86",
+   "f05d307f18dafae3"
+  ]
+ }
+}

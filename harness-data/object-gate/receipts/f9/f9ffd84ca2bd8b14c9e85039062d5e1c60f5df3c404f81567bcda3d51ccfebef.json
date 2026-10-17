@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9ffd84ca2bd8b14c9e85039062d5e1c60f5df3c404f81567bcda3d51ccfebef",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "ship's steering wheel on a wooden stand",
+ "label": "sky-island/si-helm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pedestal stand and steering wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden pedestal is drawn as a flat rectangle with no top surface visible at row 18 where the shaft enters, and the base plinth is also a flat block. Both the stand and the wheel are depicted in a pure front elevation view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden stand and steering wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is rendered in flat 2D front elevation. The ship's wheel is drawn flat-on without tilt, and the wooden pedestal stand has a completely flat top edge at row 18 with 0 pixels of top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3946
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden stand and ship's wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ship's wheel is drawn facing directly forward as a flat circle, and the wooden pedestal beneath it has a completely flat top edge at row 18 with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3748
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden stand and steering wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden pedestal is drawn completely flat from the front with a 0px top surface at row 17, and the wheel is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2936
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "3fcad224033152e7",
+   "6d0c90ab7127fcff"
+  ],
+  "24": [
+   "010b79f4b219df98",
+   "40ce20532653a551",
+   "48f4d2ad1a031f11",
+   "4e009d06eacb679d",
+   "56e6c50a473abf91",
+   "5cc6e7052d18e64c",
+   "723efe1007268865",
+   "7a6379e8e47e2831",
+   "7aba41e638165782",
+   "9514abc8e0ba80e4",
+   "9e39fa61923a7a2d",
+   "faca8e0e152669e7"
+  ],
+  "32": [
+   "9165a4c18153a564",
+   "b3994b6d8cca1125",
+   "f266763c217ff284"
+  ],
+  "48": [
+   "6099800780ad65e7",
+   "b1ae1b343d32f9d6",
+   "c5785b6462d340c0",
+   "c7ffba5ae7d532fd",
+   "ce77913c7a8608be",
+   "d34f157b73d366d6"
+  ]
+ }
+}

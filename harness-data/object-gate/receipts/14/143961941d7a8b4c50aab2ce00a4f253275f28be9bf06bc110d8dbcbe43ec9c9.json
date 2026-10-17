@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "143961941d7a8b4c50aab2ce00a4f253275f28be9bf06bc110d8dbcbe43ec9c9",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-via-pier",
+ "label": "jp/jp-via-pier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "viaduct pier and bridge structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pier column (rows 40–62) is drawn in pure front elevation: the cap (rows 40–45) and base (rows 60–62) have perfectly horizontal 1px highlight lines rather than foreshortened top surfaces. The fascia/girder (rows 28–37) is likewise drawn completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "viaduct deck and support pier",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top 26 pixel rows (rows 1-26) show the top surface of the elevated road/bridge deck with scattered petals, leading down to the front-facing railing/girder (rows 27-37) and support pier structure below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7386
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "viaduct pier and elevated deck",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure correctly depicts the elevated viaduct in 3/4 perspective: the horizontal road deck extends across rows 1-26 (26 rows of top surface visible from above with petal details), while the vertical front face and supporting pier column extend downward below it to row 62.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13286
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "viaduct bridge deck and support pier",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the structure depicts the viaduct's road deck viewed from above across rows 1–25 (with scattered cherry blossom petals), followed by the south-facing fascia/railing and the supporting pier below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11280
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.124Z",
+ "cells": {
+  "16": [
+   "114e70648f60d022",
+   "d05aec9c9a29b620",
+   "ece1a78899e058fd",
+   "f766ab532960ee8f"
+  ],
+  "24": [
+   "05f57845abd7b301",
+   "199eaf7157f60ad5",
+   "19cf1e70a02e9559",
+   "1ad1e4d3cbdf5049",
+   "24e1236c58927e9e",
+   "2a67cf0a0143b7f3",
+   "36e1ab30e2d32c12",
+   "40cd2fc4f1216e90",
+   "55fe6399c979f704",
+   "5d4dd5378534eea4",
+   "662b214da7786686",
+   "7677b8e71b82d9d3",
+   "8aa7827fa376c3b2",
+   "981434948f32edcd",
+   "9f7249de048eb6a2",
+   "d2cfd7af1ecfab19",
+   "e5b259d463c53465",
+   "f84b0c6667c640b2"
+  ],
+  "32": [
+   "0b8513a293f6a33a",
+   "3d6e5a2bf866683d",
+   "57ef79a2eba8f141",
+   "8057fc5a91b3ff12",
+   "c38ee822fabae93e",
+   "d97bb474d4b69112"
+  ],
+  "48": [
+   "231745fd33a09390",
+   "52af8d7335245c5d",
+   "58e6a8ade6c47b2f",
+   "885dc4f8678f4558",
+   "8d760908779c26b8",
+   "92720fa8efccd57a",
+   "95f7d2c3e53c4f7e",
+   "a1ff14f3a364f787",
+   "af802a93e79264e2",
+   "b2d2896f44c8a338",
+   "ce3f423ca9d0c03f",
+   "cfcc7a083089c2ec"
+  ]
+ }
+}

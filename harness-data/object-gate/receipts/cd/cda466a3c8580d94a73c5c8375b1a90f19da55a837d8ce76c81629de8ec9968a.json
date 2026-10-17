@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cda466a3c8580d94a73c5c8375b1a90f19da55a837d8ce76c81629de8ec9968a",
+ "width": 48,
+ "height": 32,
+ "kind": "container",
+ "name": "타일 탕(물)",
+ "label": "desert-east/de-plunge-pool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled bath tub with water",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tub opening containing water and internal back wall is clearly visible from above across rows 2-24 (23 rows), with a visible 3-row front rim (rows 25-27) and a 4-row south-facing tiled wall below it (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled bath/pool basin with water and steps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly visible from rows 2 to 24, displaying the water interior, steps, and interior back wall; the south ledge/rim spans rows 25 to 27 and the front face occupies rows 28 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5001
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled bath/pool with water and steps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bath shows a large interior opening with water and steps (rows 3-24), a visible front rim top surface (rows 25-27), and a tiled south face (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled bath / pool basin",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled pool interior is viewed from above across rows 2-24, showing steps and water surface, with a 3px front rim (rows 25-27) and a vertical front tiled wall (rows 28-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4662
+  }
+ ],
+ "decidedAt": "2026-10-14T00:13:26.217Z",
+ "cells": {
+  "16": [
+   "1c3ed9d8c92a77c8",
+   "21158b7d5129b312",
+   "37c82df1251f2ac9",
+   "9a6aa4e08b58ae09",
+   "d42002b2720ca9e2",
+   "d8e55d45ff08d0dc"
+  ],
+  "24": [
+   "09eaa854d727380a",
+   "1f7e6a460e447871",
+   "3263ff89880b461a",
+   "69315dbb244c120f",
+   "771ee06c5b661e60",
+   "a0088df54723359f",
+   "bdcdd1da1f36ed11",
+   "bed54a91f84001e4"
+  ],
+  "32": [
+   "2d28c47f8fc02de7",
+   "45cec8785bd5c90b",
+   "7ec6efc22a83c878",
+   "8b6eaa9c90ae0392",
+   "c82b335b4325dcec",
+   "f9f1bdb3156e5b64"
+  ],
+  "48": [
+   "8504af5d106f3362",
+   "8e4a21564efe7ad5"
+  ]
+ }
+}

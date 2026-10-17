@@ -1,7 +1,8 @@
 import { renderCampaignRegionMap } from "@/player/playerMonsterCampaignMenu";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact } from "@/player/playerStatusMenuDetails";
-import type { Project } from "@/project/types";
+import { HELD_ITEM_KIND_LABELS } from "@/battle/heldItems";
+import type { HeldItemEffectKind, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 export type StatusMenuDetailPanelOptions = {
@@ -20,7 +21,7 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   const context = detailContexts.get(panel);
   if (!context) return undefined;
   const { project, detail } = context;
-  const tabCount = detail.tabs?.filter((tab) => tab.onActivate).length ?? 0;
+  const tabCount = detail.tabs?.filter((tab) => tab.onActivate && !tab.pointerOnly).length ?? 0;
   const entry = detail.entries.filter((row) => row.onActivate && !row.disabled)[index - tabCount];
   const existing = panel.querySelector(".status-menu-detail-showcase");
   const next = context.showcase && entry ? renderDetailShowcase(project, entry) : null;
@@ -28,6 +29,12 @@ export function updateStatusMenuDetailSelection(panel: HTMLElement, index: numbe
   // 사이드 열이 있으면 쇼케이스는 그 안에 산다(순서는 CSS order 가 정한다 — 쇼케이스 위, 파티 미니 아래).
   if (next) (panel.querySelector(".status-menu-detail-side") ?? panel).append(next);
   panel.classList.toggle("has-showcase", Boolean(next));
+  // 푸터 문장이 이 항목의 설명 그대로면 표시해 둔다 — 쇼케이스가 같은 설명을 이미 그리는 화면에서 CSS 가 푸터 사본을 숨긴다(D32).
+  const footer = panel.closest(".oprn-status-menu")?.querySelector<HTMLElement>(".status-menu-message");
+  if (footer) {
+    if (entry?.unavailableReason ?? entry?.description) footer.dataset.messageKind = "description";
+    else delete footer.dataset.messageKind;
+  }
   return entry?.unavailableReason ?? entry?.description ?? detail.hint;
 }
 
@@ -54,10 +61,27 @@ export function renderStatusMenuDetailPanel(
     text: detail.title,
     dataset: { testid: "status-menu-detail-title" },
   }));
+  if (detail.meter && detail.meter.total > 0) {
+    const { seen, caught, total } = detail.meter;
+    const percent = (count: number): string => `${Math.round((count / total) * 100)}%`;
+    panel.append(el("div", {
+      class: "campaign-dex-meter",
+      attrs: { role: "progressbar", "aria-label": `도감 완성도 ${percent(caught)}`, "aria-valuemin": "0", "aria-valuemax": String(total), "aria-valuenow": String(caught) },
+      dataset: { testid: "campaign-dex-meter", seen: String(seen), caught: String(caught), total: String(total) },
+      children: [
+        el("span", { class: "campaign-dex-meter-label", text: `${percent(caught)} 완성` }),
+        el("span", { class: "campaign-dex-meter-track", children: [
+          el("i", { class: "campaign-dex-meter-seen", attrs: { style: `width:${percent(seen)}` } }),
+          el("i", { class: "campaign-dex-meter-caught", attrs: { style: `width:${percent(caught)}` } }),
+        ] }),
+      ],
+    }));
+  }
   if (detail.regionMap) panel.append(renderCampaignRegionMap(detail.regionMap));
   if (detail.artwork) {
     panel.append(el("figure", {
       class: "life-ledger-artwork",
+      ...(detail.artwork.shiny ? { dataset: { monsterShiny: "true" } } : {}),
       children: [el("img", {
         attrs: { src: detail.artwork.src, alt: detail.artwork.alt },
         dataset: { testid: "life-ledger-artwork" },
@@ -72,15 +96,17 @@ export function renderStatusMenuDetailPanel(
       attrs: { role: "tablist", "aria-label": `${detail.title} 분류` },
     });
     for (const tab of detail.tabs) {
-      const actionIndex = tab.onActivate ? enabledActionIndex : undefined;
+      const keyboardTab = Boolean(tab.onActivate) && !tab.pointerOnly;
+      const actionIndex = keyboardTab ? enabledActionIndex : undefined;
       const button = el("button", {
-        class: "life-ledger-tab status-menu-detail-action",
+        class: tab.pointerOnly ? "life-ledger-tab" : "life-ledger-tab status-menu-detail-action",
         text: tab.label,
         attrs: {
           type: "button",
           role: "tab",
           "aria-selected": String(tab.selected),
           "aria-controls": "life-ledger-tab-panel",
+          ...(tab.pointerOnly ? { tabindex: "-1" } : {}),
         },
         dataset: {
           testid: tab.testId,
@@ -200,8 +226,27 @@ function renderDetailEntry(options: {
         dataset: detailEntryDataset(entry, undefined),
       });
   if (selected) row.classList.add("selected");
+  if (entry.textInput) {
+    const field = entry.textInput;
+    const input = el("input", {
+      class: "status-menu-text-input",
+      attrs: { type: "text", maxlength: String(field.maxLength), value: field.value, "aria-label": field.label, autocomplete: "off", spellcheck: "false" },
+      dataset: { testid: "status-menu-text-input" },
+    }) as HTMLInputElement;
+    input.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      if (event.isComposing) return;
+      if (event.key === "Enter") { event.preventDefault(); field.onCommit(input.value); }
+      else if (event.key === "Escape") { event.preventDefault(); field.onCancel(); }
+    });
+    row.classList.add("with-text-input");
+    row.append(el("span", { class: "status-menu-detail-label", text: field.label }), input);
+    // 행이 붙은 다음 틱에 포커스(렌더 중에는 아직 문서에 없다).
+    queueMicrotask(() => { if (input.isConnected) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); } });
+    return row;
+  }
   if (entry.vitals) {
-    if (entry.face) row.append(renderDetailFace(project, entry.face, entry.attributes?.partySlot === undefined ? 24 : 48));
+    if (entry.face) row.append(renderDetailFace(project, entry.face, entry.attributes?.partySlot === undefined ? 24 : entry.attributes.partySlot === "0" ? 64 : 32));
     row.append(el("span", { class: "status-menu-target-name", text: entry.label }));
     // 상태 줄 — 걸린 상태는 빨강, 이 아이템이 푸는 상태는 「→ 정상」 초록. 비어 있으면 「정상」.
     if (entry.vitals.stateNames) {
@@ -256,6 +301,7 @@ function renderDetailEntry(options: {
 
 /** 선택된 항목의 그림(아이콘/얼굴)을 크게, 이름·수치·설명 전문을 그린다. 그릴 것이 없으면(동작 확인문 등) null. */
 function renderDetailShowcase(project: Project, entry: StatusMenuDetailEntry): HTMLElement | null {
+  if (entry.attributes?.boxNav !== undefined) return null; // 보관함 머리 줄(◀ 이름 ▶)은 그릴 그림이 없다.
   if (!entry.icon && !entry.face && !entry.description && !entry.unavailableReason && !entry.statDelta && !entry.facts?.length) return null;
   const art = entry.icon
     ? renderDetailEntryIcon(project, { ...entry.icon, testId: "status-menu-showcase-art" })
@@ -415,7 +461,7 @@ function formatItemEffectTokens(project: Project, tokens: readonly string[]): st
 
 function itemEffectTokenLabel(project: Project, token: string): string {
   if (token === "none") return "없음";
-  const [kind, raw, amount, extra] = token.split(":");
+  const [kind, raw, amount, extra, levelUp] = token.split(":");
   const value = decodeURIComponent(raw ?? "");
   switch (kind) {
     case "hp": return `HP +${value}`;
@@ -429,9 +475,14 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "skill": return `스킬 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "switch": return `장치 ${project.switches.find((entry) => entry.id === value)?.name || value}`;
-    case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}`;
+    case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}${Number(levelUp) > 0 ? ` · 레벨 +${Number(levelUp)}` : ""}`;
+    case "evolve": return "진화의 돌 · 맞는 몬스터를 진화시킨다";
+    case "held": return `지닌 도구 · ${HELD_ITEM_KIND_LABELS[value as HeldItemEffectKind] ?? value}`;
+    case "repel": return `벌레퇴치 ${value}걸음${amount === "below-lead" ? " (선두보다 약한 야생만)" : ""}`;
+    case "escape": return "던전 입구로 탈출";
     case "capture": return `포획 ×${value}`;
     case "capture-class": return `포획 ${value}`;
+    case "capture-cond": return `조건 ${value}`;
     case "seed": return `${ITEM_SEED_LABEL[value] ?? value} ${signedItemAmount(Number(amount))}`;
     default: return token;
   }

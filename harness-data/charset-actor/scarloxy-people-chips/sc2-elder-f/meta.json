@@ -1,0 +1,48 @@
+{
+ "key": "sc2-elder-f",
+ "arch": "sp2-elder-f",
+ "base": "Scarloxy1:3",
+ "variant": "긴 보라 머리를 회색 3톤으로 바꾸고, 어깨 구역 t 에 연한 보라 숄(T paint, 어깨 위로 걸친 2칸 폭 덩어리, 네 방향), 남색 웃옷은 갈색, 분홍 십자 무늬는 연보라, 하의는 짙은 회색.",
+ "model": "gemini-4-argon-high",
+ "effort": "high",
+ "ok": true,
+ "harness": "scarloxy_argon2",
+ "attempts": 2,
+ "warnings": [
+  "팔레트에 있지만 안 쓴 색 acgn"
+ ],
+ "metrics": {
+  "added_up0": 4,
+  "added_up1": 22,
+  "added_up2": 22,
+  "added_right0": 16,
+  "added_right1": 16,
+  "added_right2": 16,
+  "added_down0": 4,
+  "added_down1": 21,
+  "added_down2": 21,
+  "added_left0": 15,
+  "added_left1": 15,
+  "added_left2": 15,
+  "changed_ratio": {
+   "H": 1.0,
+   "T": 1.0,
+   "B": 0.926,
+   "S": 1.0
+  },
+  "cross": 0,
+  "cross_base": 0,
+  "lone": 314,
+  "lone_base": 249
+ },
+ "distinct": {
+  "score": 0.639,
+  "nearest": "ScarloxyPeople3#5"
+ },
+ "repairs": {
+  "dropped_stray_px": 48,
+  "hole_filled_px": 0,
+  "sanitized": {}
+ },
+ "run": "sp2-r1/sp2-elder-f-a"
+}

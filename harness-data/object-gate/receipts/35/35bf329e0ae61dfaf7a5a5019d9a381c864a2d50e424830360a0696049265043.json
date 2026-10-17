@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35bf329e0ae61dfaf7a5a5019d9a381c864a2d50e424830360a0696049265043",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "stone bridge deck end with pillar (flat walkway)",
+ "label": "sky-island/si-sbridge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone bridge deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is the flat stone bridge deck walkway seen directly from above in top-down perspective, spanning the full tile height (16 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11920
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone bridge walkway floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat stone bridge surface / walkway viewed from above across all 16 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3842
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone bridge deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat pavement/bridge deck tile viewed entirely from above across all 16 rows with no standing vertical elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8664
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge deck walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a stone bridge deck/walkway surface lying flat on the ground plane, viewed correctly from above spanning the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8289
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "6870f23fbe7f2c35"
+  ],
+  "24": [
+   "0243c5ce37d6e103",
+   "053d14e17b27e963",
+   "194703f6f8ce8c9d",
+   "c5baac76047b5889",
+   "d3ecf7b62267f469",
+   "d4a9f06cdec11e34"
+  ],
+  "32": [
+   "0ccd20491c148b13",
+   "0d40d45f4c139a40",
+   "10e368c774847752",
+   "5032636788c39305",
+   "531dd593391393dc",
+   "67fe12b22896811c"
+  ],
+  "48": [
+   "443986d6001d8539",
+   "488b59936afc77f5",
+   "cb3799da6e56edd2",
+   "d3608402fd17c080",
+   "f2873aa358b551f4",
+   "fa46d32b8a58d0f6"
+  ]
+ }
+}

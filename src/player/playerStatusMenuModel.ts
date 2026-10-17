@@ -4,10 +4,16 @@ import { defaultActorFaceResourceId, normalizeActorRecord, totalExpForLevel } fr
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
-import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
-import { monsterCampaign, monsterJournalEntry } from "@/project/monsterJournal";
+import { DEFAULT_GALLERY_LABEL, isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { monsterCampaign, monsterJournalEntry, monsterDexSpeciesIds } from "@/project/monsterJournal";
 import { currentChapterLabel } from "@/project/newGamePlus";
-import { isGiftSystemEnabled } from "@/project/friendship";
+import { DEFAULT_FRIENDSHIP_MAX, isGiftSystemEnabled, listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
+import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
+import { galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
 import { hasLifeLedgerData } from "@/player/lifeLedger";
@@ -34,7 +40,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
+  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "quests", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -200,7 +206,24 @@ export type PlayerStatusMenuPartyRow = {
 
 export type PartyVitalLevel = "crit" | "safe" | "warn";
 
+/** 관계 중심(연애) 게임의 메뉴 첫 화면 — 전투 수치 대신 호감 높은 순 몇 사람과 오늘 남은 시간. */
+export type RelationshipMenuRow = {
+  readonly key: string;
+  readonly name: string;
+  /** 하트 다섯 칸 글자(♥♥♡♡♡). */
+  readonly hearts: string;
+  readonly value: number;
+  readonly tierLabel?: string;
+};
+export type RelationshipMenuOverview = {
+  readonly leadName: string;
+  readonly timeLine?: string;
+  readonly rows: readonly RelationshipMenuRow[];
+};
+
 export type PlayerStatusMenuSnapshot = {
+  /** 관계 중심 게임이면 있다 — 있으면 렌더러는 HP/MP/EX 대신 이것을 그린다. */
+  readonly relationship?: RelationshipMenuOverview;
   readonly commands: readonly StatusMenuCommand[];
   readonly commandLabels: readonly string[];
   readonly partyRows: readonly PlayerStatusMenuPartyRow[];
@@ -219,17 +242,25 @@ export type StatusMenuSnapshotOptions = {
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
     isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
+  const relationship = usesRelationshipMenu(project);
   // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
   const saveDisabled = session.m2Runtime?.access?.save === false;
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   const authored = fieldMenu(project);
   return (authored ? authored.entries.map(row => row.command) : STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds)).filter((id) => {
     if (id === 'trainer-card') return Boolean(authored);
-    if (id === "monster-dex" || id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
+    if (id === "monster-dex") return monsterDexSpeciesIds(project).length > 0;
+    if (id === "region-map" || id === "campaign-progress") return Boolean(monsterCampaign(project));
     if (usesMonsterParty(project) && (id === "equipment" || id === "row" || id === "formation")) return false;
-    if (id === "relationships") return showRelationships;
-    if (id === "gallery") return isGalleryEnabled(project);
+    // 관계 중심 게임은 호감 기록이 아직 없어도 호감도 항목이 있다 — 비어 있어도 「아직 아무도」 가 보여야 한다. 일정은 퀘스트가 정의된 게임만.
+    if (id === "relationships") return showRelationships || relationship;
+    if (id === "quests" && relationship) return (project.quests?.length ?? 0) > 0;
+    if (id === "gallery") return isGalleryEnabled(project) || vnGalleryVisible(project, session);
+    // 엔딩 목록은 연애 기본 구성/저작이 켜고 엔딩 정의가 있는 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
+    if (id === "endings") return vnEndingsVisible(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
+    // 백로그는 저작된 대사 시스템에서 켠 게임에만 — 그 밖의 메뉴(옛 프로젝트 포함)는 그대로다.
+    if (id === "backlog") return backlogEnabled(project);
     if (id === "save") return !saveDisabled;
     return true;
   });
@@ -322,7 +353,9 @@ export function createPlayerStatusMenuSnapshot(
     };
   });
 
+  const relationship = usesRelationshipMenu(project) ? relationshipOverview(project, session, partyRows[0]?.name ?? "") : undefined;
   return {
+    ...(relationship ? { relationship } : {}),
     commands,
     commandLabels: commands.map((command) => command.label),
     partyRows,
@@ -333,9 +366,36 @@ export function createPlayerStatusMenuSnapshot(
   };
 }
 
+const RELATIONSHIP_MENU_ROWS = 4;
+
+function relationshipOverview(project: Project, session: PlaySession, leadName: string): RelationshipMenuOverview {
+  const max = friendshipDisplayMax(project) ?? DEFAULT_FRIENDSHIP_MAX;
+  const rows = listFriendshipEntries(session.friendship, max, undefined, project)
+    .sort((a, b) => b.value - a.value || a.key.localeCompare(b.key))
+    .slice(0, RELATIONSHIP_MENU_ROWS)
+    .map((entry): RelationshipMenuRow => {
+      const filled = Math.max(0, Math.min(5, Math.round((entry.value / Math.max(1, max)) * 5)));
+      return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}) };
+    });
+  const timeLine = socialLoopSummary(project, session);
+  return { leadName, ...(timeLine ? { timeLine } : {}), rows };
+}
+
+/** 연애 기본 ESC 메뉴(저작 없음)의 기본 낱말 — 저작 언어로 번역한다. 저작한 메뉴의 라벨은 작가 글자 그대로 둔다. */
+const ROMANCE_DEFAULT_LABEL_KEYS: Partial<Record<StatusMenuCommandId, VnUiKey>> = {
+  relationships: "menu.relationships", quests: "menu.quests", items: "menu.items", save: "menu.save", load: "menu.load", options: "menu.options", "to-title": "menu.toTitle",
+};
+
 export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {
   const authored = project && fieldMenu(project)?.entries.find(row => row.command === commandId);
-  if (authored) return authored.label;
+  const defaultKey = authored && project && !project.meta.oprnFieldMenu && resolveVnExtras(project) ? ROMANCE_DEFAULT_LABEL_KEYS[commandId] : undefined;
+  if (defaultKey) return vnUiText(vnExtrasLanguage(project), defaultKey);
+  // 저작하지 않은 기본 라벨(연애 기본 메뉴의 「백로그」「갤러리」「엔딩」)은 저작한 언어로 보인다. 저작자가 직접 쓴 라벨은 그대로다.
+  const defaultName = authored && project && (
+    (commandId === "backlog" && authored.label === "백로그")
+    || (resolveVnExtras(project) !== undefined && ((commandId === "gallery" && authored.label === DEFAULT_GALLERY_LABEL) || (commandId === "endings" && authored.label === "엔딩")))
+  );
+  if (authored && !defaultName) return authored.label;
   switch (commandId) {
     case 'trainer-card': return '원정 수첩';
     case "items": return "아이템";
@@ -354,8 +414,10 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "battle-reports": return "전투 기록";
     case "quests": return "임무";
     case "relationships": return "관계";
-    case "gallery": return galleryMenuLabel(project);
+    case "gallery": return project && resolveVnExtras(project)?.gallery.enabled ? vnGalleryLabel(project) : galleryMenuLabel(project);
+    case "endings": return vnUiText(vnExtrasLanguage(project), "menu.endings");
     case "life-ledger": return "생활 장부";
+    case "backlog": return dialogueUiText(resolveDialogueSystem(project), "menu.backlog");
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.
@@ -418,7 +480,7 @@ export function statusMenuCommandSummary(
     case "monsters":
       return `${session.monsterParty.length}마리`;
     case "monster-dex": {
-      const ids = monsterCampaign(project)?.speciesIds ?? [];
+      const ids = monsterDexSpeciesIds(project);
       return `${ids.filter((id) => monsterJournalEntry(session, id).caught).length}/${ids.length}종`;
     }
     case "region-map": return project.maps[session.currentMapId]?.name ?? "";
@@ -439,8 +501,19 @@ export function statusMenuCommandSummary(
     case "relationships":
     case "life-ledger":
       return "";
-    case "gallery":
-      return `${listGalleryUnlocks(session).length}장`;
+    case "gallery": {
+      const unlocked = listGalleryUnlocks(session).length;
+      // 연애 기본 구성/저작의 갤러리는 전체 칸 수를 알고 있어 「열림/전체」 로 보인다. 그 밖은 옛 표기.
+      if (!resolveVnExtras(project)?.gallery.enabled) return `${unlocked}장`;
+      const total = galleryRows(listGallerySlots(project), session.galleryUnlocks ?? []).length;
+      return vnUiText(vnExtrasLanguage(project), "gallery.progress", Math.min(unlocked, total), total);
+    }
+    case "endings": {
+      const rows = listEndingRows(project, session.clearHistory?.endingIds);
+      return vnUiText(vnExtrasLanguage(project), "endings.progress", rows.filter((row) => row.seen).length, rows.length);
+    }
+    case "backlog":
+      return dialogueUiText(resolveDialogueSystem(project), "backlog.count", normalizeBacklog(session.dialogueBacklog)?.length ?? 0);
     case "party-menu": {
       const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
       return crit > 0 ? `위험 ${crit} · ${countLabel}` : `${countLabel} 양호`;
@@ -451,4 +524,15 @@ export function statusMenuCommandSummary(
         .map((commandId) => statusMenuCommandLabel(commandId, waitModeEnabled, project))
         .join(" · ");
   }
+}
+
+/** 연애 기본 구성/저작의 갤러리 항목을 보일 것인가 — 열 CG 칸·열린 그림·본 엔딩 중 하나라도 있어야 한다(빈 항목을 만들지 않는다). */
+function vnGalleryVisible(project: Project, session: PlaySession): boolean {
+  if (resolveVnExtras(project)?.gallery.enabled !== true) return false;
+  if (listGallerySlots(project).length > 0 || (session.galleryUnlocks?.length ?? 0) > 0) return true;
+  return listEndingRows(project, session.clearHistory?.endingIds).some((row) => row.seen);
+}
+
+function vnEndingsVisible(project: Project): boolean {
+  return resolveVnExtras(project)?.endings.enabled === true && (project.endings?.length ?? 0) > 0;
 }

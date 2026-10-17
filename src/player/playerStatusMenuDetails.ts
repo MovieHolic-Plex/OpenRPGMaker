@@ -1,22 +1,29 @@
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { captureConditionLabel } from "@/battle/captureBalls";
+import { roJosa, withJosa } from "@/util/josa";
+import { repelStepsLeft } from "@/project/encounterGuard";
 import { monsterUiEntry, monsterMenuIconResourceId } from "@/player/playerMonsterPartyModel";
 import { monsterInstanceDetail, monsterPartySkillDetail, monsterPartyStatusDetail } from "@/player/playerMonsterPartyDetail";
+import { monsterBoxDetail } from "@/player/playerMonsterBoxDetail";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import { createMonsterCampaignDetail } from "@/player/playerMonsterCampaignMenu";
-import { monsterCampaign, monsterJournalEntry } from '@/project/monsterJournal';
-import { inventoryViewEntries } from '@/player/playerInventoryView';
+import { monsterCampaign, monsterDexSpeciesIds, monsterJournalEntry } from '@/project/monsterJournal';
+import { DEFAULT_INVENTORY_VIEW, inventoryViewEntries } from '@/player/playerInventoryView';
+import { BAG_POCKETS, DEFAULT_BAG_POCKET, bagPocketCounts, bagPocketLabel } from '@/player/playerBagPockets';
 import { createPlayerOptionsDetail } from '@/player/playerOptionsDetail';
 import { battleReportDetail } from "@/player/playerBattleReportDetail";
 import { formationDetail } from "@/player/playerFormationDetail";
 import { equipmentSlots, equipmentSlotLabel } from "@/project/equipmentSlots";
 import { createGrowthMenu, growthMenuTabs } from "@/player/playerGrowthMenu";
 import { canUseMenuItemOnActor } from "@/player/playerItemUse";
-import { activeItemEffects, itemAllowsMenu } from "@/project/itemUsage";
+import { activeItemEffects, isFieldUtilityItem } from "@/project/itemUsage";
+import { isEvolutionStone, itemAllowsFieldMenu } from "@/project/monsterEvolutionItems";
+import { previewCareItem } from "@/project/monsterCare";
 import { actorOwnedSkillIds } from '@/project/growth/runtime';
 import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
-import { menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
+import { machineSkillOf, menuItemUnavailableReason, previewEvolutionStoneTarget, previewMenuItemTarget, previewMonsterMachine, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -37,9 +44,15 @@ import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact, Sta
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
+import { endingChecklist, formatSaveDate, endingRecallLines, galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { openGalleryViewer } from "@/player/galleryViewer";
+import { openBacklogView } from "@/player/dialogueBacklogView";
+import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { resourceDisplayName } from "@/player/resourceDisplay";
-import { listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import {
   isStatusMenuGroupEntryId,
@@ -64,10 +77,10 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   if (isStatusMenuGroupEntryId(options.selectedCommand)) return groupDetail(options, options.selectedCommand);
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
-    case "options": return createPlayerOptionsDetail(options.onOptionsChanged);
+    case "options": return createPlayerOptionsDetail(options.onOptionsChanged, options.project);
     case 'trainer-card': {
       const { project, session } = options;
-      const campaign = monsterCampaign(project), ids = campaign?.speciesIds ?? [];
+      const campaign = monsterCampaign(project), ids = monsterDexSpeciesIds(project);
       const leader = project.database.actors.find(a => a.id === session.partyActorIds[0]);
       const trainer = leader ?? project.database.actors[0];
       return { title: `원정 수첩 · ${trainer ? resolveActorName(session, trainer) : '여행자'}`, entries: [
@@ -86,7 +99,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "region-map":
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
-    case "load": return loadDetail(options.slots, options.onLoadSlot);
+    case "load": return loadDetail(options.slots, options.onLoadSlot, options.project);
     case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -94,6 +107,8 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "gallery": return galleryDetail(options.project, options.session);
+    case "endings": return endingsDetail(options.project, options.session);
+    case "backlog": return backlogDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
       session: options.session,
@@ -136,6 +151,7 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
   gallery: "모아 둔 그림을 다시 봅니다.",
+  backlog: "지난 대사와 고른 선택지를 다시 읽습니다.",
   "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   options: "음량·대사 속도·메뉴 움직임을 이 기기에 설정합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
@@ -168,12 +184,12 @@ function itemActionDetail(options: StatusMenuDetailOptions, itemId: string): Sta
   const authored = project.database.items.find((record) => record.id === itemId);
   const item = authored ? activeItemEffects(authored) : undefined;
   const entries: StatusMenuDetailEntry[] = [];
-  if (item && itemAllowsMenu(item)) {
-    const needsTarget = item.type !== "switch" && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+  if (item && itemAllowsFieldMenu(project, item)) {
+    const needsTarget = item.type !== "switch" && !isFieldUtilityItem(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || Boolean(machineSkillOf(project, item)) || isEvolutionStone(project, item));
     entries.push({
-      label: "사용",
+      label: item.heldEffect ? "지니게 하기" : "사용",
       value: "",
-      unavailableReason: menuItemUnavailableReason(item),
+      unavailableReason: menuItemUnavailableReason(item, project),
       testId: `status-menu-item-use-${itemId}`,
       ...(isEmeraldMonsterStyle(project) ? { icon: itemEntryIcon(item), description: item.description, facts: itemFacts(project, session, item) } : {}),
       onActivate: needsTarget && options.onSelectItemTarget
@@ -241,20 +257,111 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     const item = activeItemEffects(authoredItem);
     const careProfile = item.careProfile;
     if (careProfile) {
+      const speciesName = (id: string) => project.database.monsterSpecies?.find((species) => species.id === id)?.name ?? id;
       return {
         title: `대상 선택: ${item.name}`,
         entries: session.monsterParty.flatMap((instanceId) => {
           const instance = session.monsterInstances[instanceId];
           if (!instance) return [];
+          if (!careProfile.levelUp) {
+            return [{
+              label: monsterDisplayName(project, instance),
+              value: `Lv.${instance.level}  친밀도 ${instance.friendship}`,
+              testId: `status-menu-monster-${instanceId}`,
+              onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+            }];
+          }
+          // 이상한 사탕 — 「Lv a → b」 와 진화 연쇄를 미리 보인다. 상한 레벨 개체는 쓸 수 없다.
+          const preview = previewCareItem(project, session, item, instanceId);
+          const evolve = preview.evolveToSpeciesIds.length ? ` · ${preview.evolveToSpeciesIds.map(speciesName).join(" → ")} 진화` : "";
           return [{
-            label: monsterDisplayName(project, instance),
-            value: `Lv.${instance.level}  친밀도 ${instance.friendship}`,
+            label: `${monsterDisplayName(project, instance)}  Lv.${preview.level}${preview.levelAfter !== preview.level ? ` → ${preview.levelAfter}` : ""}`,
+            value: `친밀도 ${preview.friendship}${preview.friendshipAfter !== preview.friendship ? ` → ${preview.friendshipAfter}` : ""}`,
+            description: preview.reason ?? (preview.levelAfter !== preview.level ? `레벨이 ${preview.levelAfter - preview.level} 오릅니다${evolve}` : "효과가 없습니다"),
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
             testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterLevelUpTarget: "true" },
             onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
           }];
         }),
         emptyLabel: "대상이 없습니다",
-        hint: "사용할 대상을 선택하세요.",
+        hint: careProfile.levelUp ? "Enter 사용 · Esc 아이템 목록" : "사용할 대상을 선택하세요.",
+      };
+    }
+    if (isEvolutionStone(project, item)) {
+      // 진화의 돌 — 몬스터마다 「진화한다 → 이름 / 효과 없음 / 아직 레벨이 모자람」 을 사용 경로와 같은 판정으로 보인다.
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — 진화시킬 몬스터 선택`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewEvolutionStoneTarget(project, session, item, instanceId);
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: preview.reason ? "효과 없음" : `→ ${preview.toName ?? "진화"}`,
+            description: preview.reason ?? `${preview.toName ?? "새로운 모습"}${roJosa(preview.toName ?? "새로운 모습")} 진화합니다`,
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterEvolutionTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: (session.monsterParty ?? []).some((instanceId) => session.monsterInstances?.[instanceId] && !previewEvolutionStoneTarget(project, session, item, instanceId).reason)
+          ? "Enter 진화시키기 · Esc 아이템 목록" : "진화할 수 있는 몬스터가 없습니다 · Esc 목록",
+      };
+    }
+    if (item.heldEffect) {
+      // 지닌 도구 — 몬스터마다 지금 지닌 도구를 보이고, 고르면 쥐여 준다(이미 지닌 도구는 가방으로 돌아온다).
+      const heldName = (id: string | undefined) => (id ? project.database.items.find((record) => record.id === id)?.name : undefined);
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — 지닐 몬스터 선택`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const current = heldName(instance.heldItemId);
+          const same = instance.heldItemId === item.id;
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: current ? `지닌 도구: ${current}` : "지닌 도구 없음",
+            description: same ? "이미 이 도구를 지니고 있습니다" : current ? `${withJosa(current, "을/를")} 가방에 돌려주고 ${withJosa(item.name, "을/를")} 쥐여 줍니다` : `${withJosa(item.name, "을/를")} 쥐여 줍니다`,
+            disabled: same,
+            unavailableReason: same ? "이미 이 도구를 지니고 있습니다" : undefined,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterHeldItemTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 쥐여 주기 · Esc 아이템 목록",
+      };
+    }
+    const machineSkillId = machineSkillOf(project, item);
+    if (machineSkillId) {
+      // 기술머신·비전머신 — 몬스터마다 「배울 수 있음 / 이미 익힘 / 못 배움」을 미리 보인다.
+      const skillName = project.database.skills.find((skill) => skill.id === machineSkillId)?.name ?? machineSkillId;
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개 — ${skillName}`,
+        entries: (session.monsterParty ?? []).flatMap((instanceId) => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewMonsterMachine(project, session, item, instanceId);
+          const known = (instance.skillIds ?? []).length;
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: preview.reason ? "배울 수 없음" : known >= 4 ? "교체해서 배움" : "배울 수 있음",
+            description: preview.reason ?? (known >= 4 ? "기술이 가득 찼습니다 — 가르치면 몬스터 목록에서 잊을 기술을 고릅니다" : `「${skillName}」 기술을 가르칩니다`),
+            disabled: Boolean(preview.reason),
+            unavailableReason: preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterMachineTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 가르치기 · Esc 아이템 목록",
       };
     }
     if (targetsPartyMonsters(project, item)) {
@@ -318,7 +425,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const inventory = new Map(Object.entries(session.inventory).filter(([, count]) => count > 0));
   const itemEntries = project.database.items.filter((item) => inventory.has(item.id)).map((authored) => {
     const item = activeItemEffects(authored);
-    const needsTarget = item.type !== "switch" && itemAllowsMenu(item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile));
+    const needsTarget = item.type !== "switch" && !isFieldUtilityItem(item) && itemAllowsFieldMenu(project, item) && (item.scope === "ally" || item.scope === "allAllies" || item.type === "book" || item.type === "seed" || Boolean(item.careProfile) || Boolean(item.heldEffect) || isEvolutionStone(project, item));
     // 조합할 짝이 있거나 바라보는 대상이 받는 아이템은 «행동 고르기» 화면으로 간다. 그 화면 첫 줄이 평소 「사용」이다.
     const hasOtherActions = Boolean(options.onOpenItemActions)
       && (isEmeraldMonsterStyle(project) || itemCombinationPartners(project, session, item.id).length > 0 || options.canUseItemOnFacedTarget?.(item.id) === true);
@@ -327,7 +434,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         label: item.name,
         icon: itemEntryIcon(item),
         value: `${inventory.get(item.id) ?? 0}개`,
-        description: item.description,
+        description: `${repelNote(session, item.id)}${item.description}`,
         facts: itemFacts(project, session, item),
         testId: `status-menu-item-${item.id}`,
         attributes: { itemActions: "true" },
@@ -338,8 +445,8 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       label: item.name,
       icon: itemEntryIcon(item),
       value: `${inventory.get(item.id) ?? 0}개`,
-      description: item.description,
-      unavailableReason: menuItemUnavailableReason(item),
+      description: `${repelNote(session, item.id)}${item.description}`,
+      unavailableReason: menuItemUnavailableReason(item, project),
       facts: itemFacts(project, session, item),
       testId: `status-menu-item-${item.id}`,
       onActivate: needsTarget && options.onSelectItemTarget
@@ -350,7 +457,31 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { wornSummary, bagEntries } = usesMonsterParty(project)
     ? { wornSummary: undefined, bagEntries: [] } : ownedEquipmentEntries(options);
   const entries = [...(wornSummary ? [wornSummary] : []), ...itemEntries, ...bagEntries];
-  return { title: usesMonsterParty(project) ? "가방" : "아이템", entries: inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange), emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  const rows = inventoryViewEntries(entries, project, session, options.inventoryView, options.onInventoryViewChange);
+  if (!usesMonsterParty(project)) return { title: "아이템", entries: rows, emptyLabel: "아이템이 없습니다", hint: "목록 끝에서 분류·정렬 변경 · ↑↓ 이동 · Enter 선택" };
+  // 몬스터 수집 게임 가방: 도구·볼·기술머신·지닐 도구·중요한 물건 포켓. 좌우 키(또는 점·탭을 눌러서)로 전환한다.
+  const view = options.inventoryView ?? DEFAULT_INVENTORY_VIEW;
+  const selectedPocket = view.pocket ?? DEFAULT_BAG_POCKET;
+  const counts = bagPocketCounts(project, session.inventory);
+  const pockets = BAG_POCKETS.map((pocket) => ({
+    id: pocket.id, label: pocket.label, count: counts[pocket.id], selected: pocket.id === selectedPocket, testId: `bag-pocket-${pocket.id}`,
+    onActivate: options.onInventoryViewChange ? () => options.onInventoryViewChange?.({ ...view, pocket: pocket.id }) : undefined,
+  }));
+  return {
+    title: bagPocketLabel(selectedPocket),
+    entries: rows,
+    pockets,
+    // 에메랄드 스킨은 가방 그림 아래 점으로 포켓을 보인다. 그 밖의 스킨은 목록 위 탭 줄(키보드 커서 순서에는 넣지 않는다).
+    ...(isEmeraldMonsterStyle(project) ? {} : { tabs: pockets.map((pocket) => ({ id: pocket.id, label: `${pocket.label} ${pocket.count}`, selected: pocket.selected, testId: pocket.testId, onActivate: pocket.onActivate, pointerOnly: true })) }),
+    emptyLabel: "아이템이 없습니다",
+    hint: "←→ 포켓 · ↑↓ 이동 · Enter 선택",
+  };
+}
+
+/** 지금 효과를 내는 벌레퇴치 아이템 설명 앞에 남은 걸음을 붙인다(«[남은 87걸음] …»). 목록 행 값은 폭이 좁아 이름과 겹치므로 설명에 쓴다. 다른 행은 빈 문자열. */
+function repelNote(session: PlaySession, itemId: string): string {
+  const left = repelStepsLeft(session);
+  return left > 0 && session.encounterGuard?.repelItemId === itemId ? `[남은 ${left}걸음] ` : "";
 }
 
 function ownedEquipmentEntries(options: StatusMenuDetailOptions): {
@@ -552,35 +683,47 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
+function vnSaveCards(project: Project): boolean {
+  return resolveVnExtras(project)?.saveCards.enabled === true;
+}
+
+/** 저장·로드 화면 글자. 미연시 기능이 있는 프로젝트만 저작 언어로, 그 밖은 옛 한국어 그대로(비연애 프로젝트 불변). */
+function saveText(project: Project): (key: VnUiKey, ...args: readonly (string | number)[]) => string {
+  const language = resolveVnExtras(project) ? vnExtrasLanguage(project) : { language: "ko" as const };
+  return (key, ...args) => vnUiText(language, key, ...args);
+}
+
 function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const text = saveText(options.project);
   return {
-    title: "저장",
+    title: text("save.title"),
     entries: options.slots.map((slot) => ({
-      label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot),
+      label: text("save.slot", slot.slot),
+      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot, vnSaveCards(options.project), text),
       testId: `save-slot-${slot.slot}`,
       onActivate: options.onSaveSlot && options.saveEnabled !== false ? () => options.onSaveSlot?.(slot.slot) : undefined,
       disabled: options.saveEnabled === false,
     })),
     hint: options.saveEnabled === false
-      ? "지금은 저장할 수 없습니다."
+      ? text("save.hintDisabled")
       : options.confirmSaveSlot
-        ? "이미 저장된 칸입니다. 같은 슬롯을 다시 선택하면 덮어씁니다."
-        : "저장할 슬롯을 선택하세요.",
+        ? text("save.hintConfirm")
+        : text("save.hintPick"),
   };
 }
 
-function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined): StatusMenuDetail {
+function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, project: Project): StatusMenuDetail {
+  const text = saveText(project);
   return {
-    title: "로드",
+    title: text("load.title"),
     entries: slots.map((slot) => ({
-      label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, false),
+      label: text("save.slot", slot.slot),
+      ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
       testId: `load-slot-${slot.slot}`,
       onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
       disabled: slot.kind !== "present",
     })),
-    hint: "불러올 저장 칸을 선택하세요.",
+    hint: text("load.hint"),
   };
 }
 
@@ -616,6 +759,12 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
 function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const view = options.monsterView ?? "party";
   const ids = view === "party" ? options.session.monsterParty : options.session.monsterBox;
+  // 자리 바꾸기 중: 먼저 고른 몬스터가 파티에 있을 때만(없으면 평소 목록).
+  const swapSourceId = view === "party" && options.monsterCollect?.swapSourceId && options.session.monsterParty.includes(options.monsterCollect.swapSourceId)
+    ? options.monsterCollect.swapSourceId : undefined;
+  const activateMonster = (instanceId: string): (() => void) | undefined => swapSourceId
+    ? () => options.onMonsterCollect?.(instanceId === swapSourceId ? { kind: "cancelSwap" } : { kind: "swap", sourceId: swapSourceId, targetId: instanceId })
+    : options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined;
   const entries = [
     {
       label: view === "party" ? "보관함 보기" : "파티 보기",
@@ -633,14 +782,15 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         {
           label: monsterDisplayName(options.project, instance),
           value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-          description: "선택하면 현재 능력·기술·PP를 봅니다",
+          description: swapSourceId ? (instanceId === swapSourceId ? "이 동료의 자리 바꾸기를 취소합니다" : "선택하면 이 동료와 자리를 바꿉니다") : "선택하면 현재 능력·기술·PP를 봅니다",
           testId: `status-menu-monster-${instanceId}`,
-          onActivate: options.onSelectMonster ? () => options.onSelectMonster?.(instanceId) : undefined,
+          onActivate: activateMonster(instanceId),
         },
         ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
           const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
           return [
-            ...(instance.skillIds ?? []).map((replacedSkillId) => {
+            // 잊을 수 없는 기술(비전머신)은 교체 후보에서 뺀다.
+            ...(instance.skillIds ?? []).filter((id) => options.project.database.skills.find((skill) => skill.id === id)?.unforgettable !== true).map((replacedSkillId) => {
               const replaced = options.project.database.skills.find((skill) => skill.id === replacedSkillId);
               return {
                 label: `${replaced?.name ?? replacedSkillId} → ${pending?.name ?? pendingSkillId}`,
@@ -666,21 +816,29 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       ];
     }),
   ];
+  // 보관함(PC)은 에메랄드 스킨에서 상자 격자로 보인다. 요약이 열려 있으면 요약이 먼저다.
+  const boxScreen = isEmeraldMonsterStyle(options.project) && view === "box" && Boolean(options.onMonsterCollect);
   const detail = monsterInstanceDetail(options, entries.filter(entry => entry.testId?.startsWith(`status-menu-monster-skill-`) && entry.testId.includes(`-${options.monsterInstanceId}-`)));
   if (detail) return detail;
+  if (boxScreen) return monsterBoxDetail(options);
   if (isEmeraldMonsterStyle(options.project) && view === "party") {
     const slots: StatusMenuDetailEntry[] = Array.from({ length: MONSTER_PARTY_MAX }, (_, index): StatusMenuDetailEntry => {
       const raw = options.session.monsterInstances[ids[index] ?? ""];
       if (!raw) return { label: "—", value: "", attributes: { partySlot: String(index), partyEmpty: "true", partyFainted: "false" }, disabled: true };
       const member = monsterUiEntry(options.project, raw);
-      return { label: `${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: member.stateNames.join(" · ") || "정상",
+      const heldName = raw.heldItemId ? options.project.database.items.find((item) => item.id === raw.heldItemId)?.name : undefined;
+      const slotNote = swapSourceId
+        ? raw.instanceId === swapSourceId ? "바꿀 동료를 고르세요. 이 동료를 다시 고르면 취소합니다" : `${withJosa(member.name, "와/과")} 자리를 바꿉니다`
+        : [member.stateNames.join(" · ") || "정상", heldName ? `지닌 도구 ${heldName}` : ""].filter(Boolean).join(" · ");
+      return { label: `${raw.shiny ? "★" : ""}${member.name} Lv.${raw.level}`, value: `Lv.${raw.level}`, description: slotNote,
         testId: `status-menu-monster-${raw.instanceId}`,
-        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp) },
+        attributes: { partySlot: String(index), partyFainted: String(member.hp <= 0), monsterHp: String(member.hp), monsterMaxHp: String(member.maxHp),
+          ...(heldName ? { partyHeld: "true" } : {}), ...(raw.shiny ? { monsterShiny: "true" } : {}), ...(raw.gender ? { monsterGender: raw.gender } : {}), ...(raw.instanceId === swapSourceId ? { partySwapSource: "true" } : {}) },
         vitals: { hp: member.hp, maxHp: member.maxHp, hpAfter: member.hp, mp: 0, maxMp: 0, mpAfter: 0, stateNames: member.stateNames },
         face: { resourceId: monsterMenuIconResourceId(options.project, member.species?.graphic.monsterResourceId), alt: member.name, testId: `status-menu-monster-art-${raw.instanceId}` },
-        onActivate: () => options.onSelectMonster?.(raw.instanceId) };
+        onActivate: activateMonster(raw.instanceId) };
     });
-    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
+    return { title: "동료", layout: "campaign-party", entries: [...slots, entries[0]!], hint: swapSourceId ? "맞바꿀 동료를 선택하세요. Esc 취소" : "동료를 선택하세요. Enter 요약 · Esc 돌아가기" };
   }
   return {
     title: view === "party" ? "몬스터: 파티" : "몬스터: 보관함",
@@ -723,8 +881,60 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
 }
 
 function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const label = galleryMenuLabel(project);
   const unlocks = listGalleryUnlocks(session);
+  const vn = resolveVnExtras(project)?.gallery;
+  if (!vn?.enabled) return legacyGalleryDetail(project, galleryMenuLabel(project), unlocks);
+  const label = vnGalleryLabel(project);
+  // 연애 기본 구성/저작의 갤러리: 전체 CG 칸을 보이고(잠금 표시) 본 엔딩을 회상으로 다시 읽는다.
+  const language = vnExtrasLanguage(project);
+  const text = (key: VnUiKey, ...args: readonly (string | number)[]) => vnUiText(language, key, ...args);
+  const rows = galleryRows(listGallerySlots(project), unlocks);
+  const opened = rows.filter((row) => !row.locked).map((row) => row.resourceId);
+  const pictureEntries: StatusMenuDetailEntry[] = [];
+  rows.forEach((row, index) => {
+    if (row.locked) {
+      if (!vn.showLocked) return;
+      pictureEntries.push({
+        label: text("gallery.lockedName"), value: text("gallery.locked"),
+        testId: `status-menu-gallery-locked-${index}`,
+        attributes: { "data-gallery-locked": "true" },
+      });
+      return;
+    }
+    const fallbackName = text("gallery.item", index + 1);
+    const name = resourceDisplayName(row.resourceId, fallbackName);
+    const openIndex = opened.indexOf(row.resourceId);
+    pictureEntries.push({
+      // 기본 이름(「그림 N」)에 이미 번호가 있으면 값 칸에 번호를 또 적지 않는다(리뷰 C4).
+      label: name, value: name === fallbackName ? "" : String(index + 1), testId: `status-menu-gallery-${index}`,
+      icon: { resourceId: row.resourceId, alt: name, testId: `status-menu-gallery-thumb-${index}`, smooth: true },
+      onActivate: () => openGalleryViewer({ project, resourceIds: opened, index: openIndex }),
+    });
+  });
+  const seenIds = session.clearHistory?.endingIds;
+  const endingEntries: StatusMenuDetailEntry[] = listEndingRows(project, seenIds).filter((row) => row.seen).map((row, index) => {
+    const ending = (project.endings ?? []).find((candidate) => candidate.id === row.id);
+    const lines = ending ? endingRecallLines(ending) : [];
+    return {
+      label: text("gallery.endingRecall", row.name), value: "",
+      testId: `status-menu-gallery-ending-${index}`,
+      onActivate: () => openBacklogView({
+        host: (document.querySelector(".play-stage") as HTMLElement | null) ?? document.body,
+        entries: lines.length > 0 ? lines : [{ kind: "line", text: text("gallery.recallEmpty") }],
+        system: language, title: row.name,
+      }),
+    };
+  });
+  return {
+    title: label,
+    layout: "gallery",
+    entries: [...pictureEntries, ...endingEntries],
+    emptyLabel: text("gallery.empty"),
+    hint: text("gallery.hint"),
+  };
+}
+
+function legacyGalleryDetail(project: Project, label: string, unlocks: readonly string[]): StatusMenuDetail {
   return {
     title: label,
     layout: "gallery",
@@ -748,8 +958,71 @@ function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail
   };
 }
 
+/** 엔딩 목록 — 엔딩 정의를 읽어 자동으로 채운다. 결말 3종·인물별 체크리스트·엔딩별 달성 표시. 달성은 이 기기의 클리어 기록. */
+function endingsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const vn = resolveVnExtras(project);
+  const language = vnExtrasLanguage(project);
+  const text = (key: VnUiKey, ...args: readonly (string | number)[]) => vnUiText(language, key, ...args);
+  const title = text("endings.title");
+  if (!vn?.endings.enabled) return { title, entries: [], emptyLabel: text("endings.empty") };
+  const seenIds = session.clearHistory?.endingIds;
+  const rows = listEndingRows(project, seenIds);
+  if (rows.length === 0) return { title, entries: [], emptyLabel: text("endings.empty") };
+  const mark = (seen: boolean) => (seen ? `● ${text("endings.seen")}` : `○ ${text("endings.unseen")}`);
+  const entries: StatusMenuDetailEntry[] = [{
+    label: text("endings.summary"), value: text("endings.progress", rows.filter((row) => row.seen).length, rows.length), testId: "status-menu-endings-summary",
+  }];
+  for (const row of endingChecklist(project, seenIds, text("endings.common"), text("endings.unknownPerson"))) {
+    const cells = row.tiers.map((cell) => `${text(`endings.tier.${cell.tier}`)} ${cell.defined ? (cell.seen ? "●" : "○") : text("endings.undefined")}`);
+    entries.push({
+      label: text("endings.checklist", row.name), value: row.tiers.map((cell) => (cell.defined ? (cell.seen ? "●" : "○") : "·")).join(""),
+      description: cells.join(" · "), testId: `status-menu-endings-checklist-${row.characterId ?? "common"}`,
+    });
+  }
+  rows.forEach((row, index) => {
+    const hidden = vn.endings.hideUnseen && !row.seen;
+    const who = row.characterId ? friendshipDisplayName(project, row.characterId) ?? text("endings.unknownPerson") : text("endings.common");
+    entries.push({
+      label: hidden ? text("endings.hidden") : row.name, value: mark(row.seen),
+      ...(hidden ? {} : { description: `${text(`endings.tier.${row.tier}`)} · ${who}` }),
+      testId: `status-menu-endings-${index}`, attributes: { "data-ending-seen": String(row.seen) },
+    });
+  });
+  return { title, entries, emptyLabel: text("endings.empty"), hint: text("endings.hint") };
+}
+
+/** 백로그 — 전체 화면 뷰어를 열고, 아래에 가장 최근 대사 몇 줄을 미리 보인다. 데이터는 세이브에 실린 session.dialogueBacklog. */
+function backlogDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const system = resolveDialogueSystem(project);
+  const text = (key: Parameters<typeof dialogueUiText>[1], ...args: readonly (string | number)[]) => dialogueUiText(system, key, ...args);
+  if (!system?.backlog.enabled) {
+    return { title: text("menu.backlog"), entries: [], emptyLabel: text("menu.backlogDisabled") };
+  }
+  const log = normalizeBacklog(session.dialogueBacklog, system.backlog.limit) ?? [];
+  const recent = log.slice(-5).reverse();
+  return {
+    title: text("menu.backlog"),
+    entries: [
+      {
+        label: text("menu.backlogOpen"),
+        value: text("backlog.count", log.length),
+        testId: "status-menu-backlog-open",
+        onActivate: () => openBacklogView({ host: (document.querySelector(".play-stage") as HTMLElement | null) ?? document.body, entries: log, system }),
+      },
+      ...recent.map((entry, index) => ({
+        label: entry.kind === "choice" ? `▶ ${text("backlog.choice")}` : entry.speaker ?? "—",
+        value: "",
+        description: entry.kind === "choice" ? entry.picked : entry.text,
+        testId: `status-menu-backlog-recent-${index}`,
+      })),
+    ],
+    emptyLabel: text("backlog.empty"),
+    hint: text("menu.backlogHint"),
+  };
+}
+
 function relationshipsDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const entries = listFriendshipEntries(session.friendship, undefined, undefined, project).map((entry) => ({
+  const entries = listFriendshipEntries(session.friendship, friendshipDisplayMax(project), undefined, project).map((entry) => ({
     label: entry.displayName ?? entry.key,
     value: entry.secondary,
     description: entry.label,
@@ -822,7 +1095,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile || targetsPartyMonsters(project, item) ? "partyMonster"
+  const scope = isFieldUtilityItem(item) ? "none" : item.careProfile || item.heldEffect || targetsPartyMonsters(project, item) || machineSkillOf(project, item) || isEvolutionStone(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -831,7 +1104,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
     { id: "type", value: item.type },
     { id: "effects", value: itemEffectTokens(project, item).join(",") },
     {
-      id: "eligibility", value: itemEligibilityFact(item),
+      id: "eligibility", value: itemEligibilityFact(project, item),
       targeting: { scope, deadOnly: item.onlyEffectiveOnDeadActors },
       consumption: item.consumable
         ? { consumable: true, usesPerCopy, remainingCopyUses,
@@ -841,9 +1114,9 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   ];
 }
 
-function itemEligibilityFact(item: ItemRecord): string {
+function itemEligibilityFact(project: Project, item: ItemRecord): string {
   if (item.occasion === "battle") return "battle";
-  if (item.occasion === "never" || !itemAllowsMenu(item)) return "unusable";
+  if (item.occasion === "never" || !itemAllowsFieldMenu(project, item)) return "unusable";
   if ((item.type === "medicine" || item.type === "book" || item.type === "seed")
     && (item.usableActorIds.length > 0 || item.usableClassIds.length > 0)) return "restricted";
   return "usable";
@@ -871,11 +1144,17 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.learnedSkillId) tokens.push(`learn:${encodeURIComponent(item.learnedSkillId)}`);
   if (item.activateSkillId) tokens.push(`skill:${encodeURIComponent(item.activateSkillId)}`);
   if (item.switchId) tokens.push(`switch:${encodeURIComponent(item.switchId)}`);
-  if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}`);
+  if (item.heldEffect) tokens.push(`held:${item.heldEffect.kind}`);
+  if (item.repelSteps !== undefined) tokens.push(`repel:${item.repelSteps}${item.repelBelowLead ? ":below-lead" : ""}`);
+  if (item.escapeTo) tokens.push(`escape:${item.escapeTo}`);
+  if (item.careProfile) tokens.push(`care:${item.careProfile.kind}:${item.careProfile.friendshipDelta}:${item.careProfile.expDelta ?? 0}:${item.careProfile.levelUp ?? 0}`);
+  if (isEvolutionStone(project, item)) tokens.push("evolve:stone");
   if (item.captureProfile) {
     tokens.push(project.system.battleModel === "gen1"
       ? `capture-class:${item.captureProfile.ballClass ?? "poke"}`
       : `capture:${item.captureProfile.multiplier}`);
+    const condition = item.captureProfile.condition;
+    if (condition) tokens.push(`capture-cond:${encodeURIComponent(captureConditionLabel(condition))}`);
   }
   for (const [key] of STAT_LABELS) {
     const delta = item.seedParameterBonuses[key];
@@ -917,18 +1196,33 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
 // 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
-  confirmingOverwrite: boolean
+  confirmingOverwrite: boolean,
+  vnCard = false,
+  text: (key: VnUiKey) => string = (key) => vnUiText(undefined, key)
 ): { value: string; description?: string } {
   switch (slot.kind) {
-    case "empty": return { value: "비어 있음" };
-    case "corrupt": return { value: "손상됨" };
+    case "empty": return { value: text("save.empty") };
+    case "corrupt": return { value: text("save.corrupt") };
     case "present": {
       const parts = [slot.snapshot.projectTitle];
       if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
       if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
       if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
+      const monster = slot.snapshot.monsterSummary;
+      if (monster) {
+        // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
+        const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
+        const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
+        return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
+      }
+      // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
+      if (vnCard) {
+        const when = formatSaveDate(slot.snapshot.savedAt);
+        if (when) parts.push(when);
+        if (slot.snapshot.sceneLine) parts.push(`“${slot.snapshot.sceneLine}”`);
+      }
       return {
-        value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨",
+        value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
         description: parts.join(" / "),
       };
     }
@@ -947,6 +1241,10 @@ function skillKindLabel(skill: SkillRecord): string {
     case "scan": return "탐색";
     case "learnEnemySkill": return "습득";
     case "randomSkillFrom": return "무작위";
+    case "sketch": return "스케치";
+    case "rage": return "폭주";
+    case "shuffleParty": return "대열";
+    case "forceSwitch": return "교대";
     default: return assertNever(skill.effect);
   }
 }

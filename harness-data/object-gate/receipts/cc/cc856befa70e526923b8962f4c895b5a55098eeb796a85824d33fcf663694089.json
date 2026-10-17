@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc856befa70e526923b8962f4c895b5a55098eeb796a85824d33fcf663694089",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "현미경 작업대(작은 상판 + 검은 현미경 + 표본 화면)",
+ "label": "sf-station/sf-microscope-station",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "microscope workbench",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is clearly visible across rows 3-10 with the microscope and screen resting on it, leading down to the front south face at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4606
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "workbench/desk with microscope and monitor",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench shows a wide white tabletop surface from row 3 to row 10 (8 rows tall) upon which the microscope and monitor stand, with the front face and drawers visible below on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8586
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "workbench with microscope and display",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is clearly visible from rows 4 to 10 (approx. 7 rows deep) with equipment mounted on it, while rows 11 to 14 form the front south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "workbench/desk with microscope and display",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is visible from rows 4 to 10 (3 rows completely clear in front of the equipment from row 8 to 10), on which the microscope and screen rest. The front face of the desk is visible below from rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7147
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.952Z",
+ "cells": {
+  "16": [
+   "2406321d9d01f014"
+  ],
+  "24": [
+   "27bae614f4f2634d",
+   "5ba34825fc238594",
+   "64ece24cf2887eb6",
+   "a085400c4fb58f93",
+   "d5852b30da76c372",
+   "e27573a4c7e17580"
+  ],
+  "32": [
+   "7eb0ab05d422d9e0",
+   "871714b536050dd8",
+   "8e76788b056e670c",
+   "a6a65df6e8adf8a4",
+   "c2ad9bdc5d567948",
+   "f034223155922957"
+  ],
+  "48": [
+   "086f780e093abd0a",
+   "1ea46307666ecf5e",
+   "9281e06f30f22f02",
+   "95467bd09dac67f1",
+   "f05c95b9808dcf48",
+   "f61028d98a14c0f4"
+  ]
+ }
+}

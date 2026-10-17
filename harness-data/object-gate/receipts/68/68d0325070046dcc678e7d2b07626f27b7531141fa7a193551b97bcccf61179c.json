@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68d0325070046dcc678e7d2b07626f27b7531141fa7a193551b97bcccf61179c",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "지장보살 석상(붉은 턱받이)",
+ "label": "sengoku-edo/se-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth/pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical stone base/plinth shows a foreshortened top surface spanning rows 21-25 (~5 pixel rows tall) with offerings resting on it, meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5701
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo statue on round pedestal base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base/pedestal shows a wide foreshortened top surface spanning rows 21-25 (~5 source pixel rows) with offerings placed on top of it, clearly establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5481
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded plinth base shows a clearly visible foreshortened top surface spanning rows 21 to 25 (approx 5 rows tall) upon which the statue stands, with offerings placed on it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4300
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Jizo stone statue on plinth with offerings",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The statue's plinth/pedestal shows a clearly foreshortened top surface spanning rows 21-25 (5 source pixel rows) upon which offerings rest, viewed in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3577
+  }
+ ],
+ "decidedAt": "2026-10-13T19:42:40.481Z",
+ "cells": {
+  "16": [
+   "872fd3ea3fd349ae",
+   "8cd188dad49ab89f"
+  ],
+  "24": [
+   "3ee8eabf27671a42",
+   "3fe35f9d774886bf",
+   "500aa2b2aa962f92",
+   "545c41264a49c2bc",
+   "6700f93b549202e9",
+   "6a0d9ef44c8b1cdd",
+   "89267ffbc5e045cc",
+   "9c3aa15f9bbd3878",
+   "a0be863f6f998c06",
+   "beb007b2e6296e9c",
+   "c15489a339f806c9",
+   "e17031fc3f7853db"
+  ],
+  "32": [
+   "3f250ecc33f73fa6",
+   "710f149d6e394d78",
+   "b3e67242b3e0f143"
+  ],
+  "48": [
+   "3633240165f42d78",
+   "506224580ed23b94",
+   "d5710636ced2ef92",
+   "d632cd233e781787",
+   "f5c5a0e536994d24",
+   "f662b0e3a7710878"
+  ]
+ }
+}

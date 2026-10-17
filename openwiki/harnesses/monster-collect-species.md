@@ -41,8 +41,7 @@ npm run harness -- monster-collect-species preview                      # 대기
 npm run harness -- monster-collect-species import --species sparkit --side front --raw <PNG> --block 8 # 검토한 격자 고정
 ```
 
-- 후보 비교 시트는 `qa-runs/harnesses/monster-collect-species/<종>/<front|back>/<run>/sheet.html`. **고르는 건 사람이다.**
-  에이전트는 시트를 사용자에게 보여 주고(claude-viz 등) 번호를 받는다. 직접 고르지 않는다.
+- 후보 비교 시트는 `qa-runs/harnesses/monster-collect-species/<종>/<front|back>/<run>/sheet.html`(64px 실루엣 마스크 포함). 2026-10-16 이후 고르는 건 **감독**이다(아래 「디자인 규칙」) — 시트를 사용자에게 보여 주고 번호를 받는 단계는 두지 않는다. 작업 에이전트는 기준으로 골라 근거를 적는다.
 - 새 종은 `harness-data/monster-collect-species/seed.json` 에 먼저 적는다. 진화형은 `evolvesFrom` 을 적으면 앞 단계 앞모습을 참고로 그린다(앞 단계를 먼저 골라야 한다).
 - **시험 실행은 모래상자에서**: `MONSTER_HARNESS_SANDBOX=<폴더>` 를 주면 시드(`<폴더>/data/seed.json`)·기록·격자·번들·산출물이 전부 그 폴더 아래로 간다. 커밋된 `seed.json`·`ledger.json`·번들을 건드리지 않는다. 에이전트가 시험 삼아 고르는 건 여기서만 한다.
 - 이미지 서버: god-tibo-imagen `POST /v1/generate/json`, 주소 `OPRN_HARNESS_IMAGE_URL`(기본 `http://mdc-server:8091`). 502 `MISSING_IMAGE_GENERATION_OUTPUT` 이 흔해 한 번 재시도한다.
@@ -60,6 +59,27 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 실제 원본 손실 수와 흰색 RGB 변형 손실 수는 별도로 기록하며, 실제 손실을 가정하지 않는다.
 흰색 연결 fixture의 회귀 근거와 실제 원본 측정은 서로 구분한다.
 
+## 캠페인·전투 배선 (2026-10-15) — 「번들에 종이 있으면 그 그림」
+
+사용자 결정(2026-10-15): 인게임 전투 몬스터는 생성형(이 하네스) 그림이다. 번들(`public/assets/harnesses/monster-collect-species/<종>/`)은 이제 `build_monster_game` 캠페인(60종)·전투 화면에 실제로 쓰인다.
+
+**일반 규칙(종마다 하드코딩 없음):**
+
+1. 시드 종에 `campaignSpeciesId`(예: `mx_species_coalbit`)를 적는다 — 캠페인 종 하나에 하네스 종 하나. **이 값이 대응 표의 정본이다.**
+   현재 대응: `sparkit`→`mx_species_coalbit`(불꽃), `aqualing`→`mx_species_rivulet`(물), `leafling`→`mx_species_spriglet`(풀). 사람이 고른 스타터 세 종이 캠페인 스타터 3계통 1단계에 붙는다.
+   2026-10-15 추가 12종(감독 위임으로 앞·뒤 선택): `gustchick`→`mx_species_gustchick`, `pipbug`→`pipbug`, `wickworm`→`wickworm`, `rootpig`→`rootpig`, `frondhare`→`frondhare`, `kilnclaw`→`kilnclaw`, `brookraft`→`brookraft`, `coralpin`→`coralpin`, `curlfin`→`curlfin`, `zaptoe`→`zaptoe`, `pebblekid`→`pebblekid`, `gritnose`→`gritnose`(하네스 종 id 와 캠페인 종 id 가 `mx_species_` 접두만 다르다. 정본은 시드).
+   (이름·도감 설명은 캠페인 쪽 그대로라 스파킷=도롱뇽 그림이 「숯비늘」로 보인다 — 맞추려면 캠페인 종 이름·설명을 바꾸거나 `campaignSpeciesId` 를 지운다.)
+2. `build`(끝에 자동) 또는 `manifest` 단계가 번들 폴더를 읽어 `src/assets/harnessMonsterBundle.json` 을 쓴다(종 → `campaignSpeciesId`·면·대기 칸 수, **이미지 바이트 없음**). 모래상자는 `<샌드박스>/bundle/manifest.json`.
+3. 런타임 입구는 `src/assets/harnessMonsterArt.ts`:
+   - 리소스 id `harness-monster-<하네스종>-<front|back>` → 리졸버(`generatedAssetResourceResolver.ts`)가 `/assets/harnesses/monster-collect-species/<종>/<면>.png` 로 풀고, 참조 검증(`resourceReferenceValidation.ts` `collectResourceIds`)과 몬스터 자원 목록(`monsterResourceCatalog.ts`)에 올라간다. 내보내기는 기존 경로(`collectWebExportAssets`)가 그림 파일과 대기 스트립을 함께 싣는다(확인함).
+   - 대기 스트립(112×N)은 `battlerIdleAnimation()` 이 같은 모듈에서 image-strip 으로 돌려준다(카탈로그 배열에는 안 넣는다 — 목록이 정본).
+   - `harnessArtForCampaignSpecies(id)` 가 캠페인 종 id → 번들 그림을 준다.
+4. `roster.ts`(`configureExpeditionRoster`)가 종마다 **앞·뒤가 둘 다 번들에 있으면** `graphic.monsterResourceId/backResourceId` 를 번들 그림으로, 아니면 기존 `mx_art_*`(64×64 업로드 그림)로 둔다. 번들 그림으로 바뀐 종의 `mx_art_<slug>_*` 는 프로젝트에 복사하지 않는다. 기본 적 레코드·야생·트레이너 팀은 `species.graphic` 을 읽으므로 따라온다. → **번들에 없는 종은 지금처럼 기존 그림으로 폴백한다.**
+5. 전투: 내 몬스터는 `backResourceId`(`.battle-monster-authored-back`), 상대는 `monsterResourceId` 를 쓴다. 상대 적 그림에도 대기 스트립을 적용하도록 `battleFieldDom.ts` `enemyButton` 에 `applyIdleAnimationToImage` 를 더했고(도트 시트 적은 제외), 포켓몬 스킨 CSS(`20-pokemon-skin.css` 의 `.battle-enemy-image{background:none}`)가 스트립 배경을 지워 적이 투명해지던 것을 `battle-skins/_battlers.css` 한 규칙(특정도 보강, 죽은 적·감속·고대비는 제외)으로 막았다. `applyIdleAnimationToImage` 끝의 가드는 스킨이 배경을 지워도 표시를 걷어 정적 `src` 로 돌아가게 한다.
+6. 폴백 확인: 번들에 면이 하나뿐이거나 종이 없으면 기존 그림, 스트립이 없으면 정적 그림.
+
+**남은 한계:** 아이콘(`_icon` 32×32)은 번들 종에 없어 메뉴·도감이 앞모습(112)으로 폴백한다 · 전투 표시 크기가 에메랄드 스킨 128px 고정이라 112 캔버스는 1.14배(비정수) — 하네스 배치 시안(`qa/battle-layout.css`)은 내 몬스터 3배·상대 2배 정수 배율 · 진화형·다른 종은 사람이 고른 뒤 `build` 하면 같은 규칙으로 자동 반영(시드에 `campaignSpeciesId`) · 이미 만든 저장 프로젝트는 옛 `mx_art_*` id 를 그대로 가진다(새 캠페인부터 반영).
+
 ## 파일
 
 | 경로 | 무엇 |
@@ -67,7 +87,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/harnesses/monster-collect-species/harness.ts` | 매니페스트 (범위 `monster-collect`) |
 | `src/harnesses/monster-collect-species/pixel/grid.ts` | 생성 그림 속 픽셀 격자 찾기 → 칸 최빈 색 |
 | `src/harnesses/monster-collect-species/pixel/tidy.ts` | 마젠타 번짐·작은 섬 제거, 20색 합치기, 외톨이 점 흡수 |
-| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 112 캔버스 바닥 정렬 |
+| `src/harnesses/monster-collect-species/pixel/downscale.ts` · `src/harnesses/monster-collect-species/pixel/fit.ts` | 정수/비정수 최빈 축소(선 우선) → 64 캔버스 바닥 정렬 |
 | `src/harnesses/monster-collect-species/pixel/pipeline.ts` | `pixelize` · `toSprite` · `cleanReference` (브라우저·노드 공용 입구) |
 | `src/harnesses/monster-collect-species/prompts/prompts.ts` | 앞모습·뒷모습·진화형 프롬프트 |
 | `src/harnesses/monster-collect-species/checks/checks.ts` | 자동 검사 |
@@ -76,11 +96,71 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 | `src/harnesses/monster-collect-species/anim/idle.ts` | 대기: 고른 스프라이트를 정수 픽셀로 움직이는 4프레임 (생성 없음) |
 | `src/harnesses/monster-collect-species/anim/row.ts` | 큰 동작: 한 줄 참고 그림, 줄 → 프레임 나누기, 같은 배율·발 맞춤, 스트립 |
 | `harness-data/monster-collect-species/seed.json` | 사람이 쓰는 도감 기획 + 화풍 계약 + 애니메이션 계약(`animation`) |
+| `src/assets/harnessMonsterBundle.json` · `src/assets/harnessMonsterArt.ts` | 런타임 번들 목록(바이트 없음, `build`/`manifest` 가 씀) · 런타임 입구(리소스 id·URL·대기 스트립·캠페인 종 대응) |
 | `harness-data/monster-collect-species/ledger.json` | 하네스가 쓰는 선택 기록 (원본 sha256·프롬프트·블록 크기) |
 | `harness-data/monster-collect-species/grids/<종>-<면>.png` | 고른 후보의 격자 도트(칸 하나 = 픽셀 하나). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (112×112) |
+| `public/assets/harnesses/monster-collect-species/<종>/<front\|back>.png` | 번들 스프라이트 (64×64, 2026-10-16 전엔 112) |
 | `harness-data/monster-collect-species/grids/<종>-<면>-<동작>.png` | 고른 동작 줄의 격자 도트 (N 프레임이 한 장). `build` 의 입력 |
-| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(112×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
+| `public/assets/harnesses/monster-collect-species/<종>/anim/<면>-<상태>.png` · `anim.json` | 가로 스트립(64×N, `src/assets/battlerIdleAnimations.ts` image-strip 과 같은 모양) + 프레임 수·간격·반복·출처 |
+
+## 디자인 규칙 (2026-10-16 — 외부 시험자 지적 이후)
+
+지적 원문: 「디자인이 별로다. 귀여운 게 포인트인 것 같은데 귀엽지 않고, 강력해 보이는 건 좋은데 특징이 없다. 포켓몬은 어딘가 특출나게 강조된 곳이 있다
+(피카츄의 번개 꼬리, 글라이온의 꼬리 끝 독침, 조로아크의 이족보행 늑대인간 느낌과 큰 갈기). 캐릭터 디자인을 더 고민해야 한다.」
+원인: 이전 프롬프트가 「NOT chibi, NOT kawaii, believable creature anatomy, eyes small and sharp」 라고 못 박아 **실사적 비례의 평평하게 균형 잡힌 동물**만 나왔고
+(시드 design 에도 시그니처 요구가 없었다), 선택 기준은 「귀엽다」 한 문장 + 기계 경고(윤곽 약함·외톨이 점)뿐이라 「한 가지 과장」과 「귀여움의 비례」를 아무도 검증하지 않았다.
+점검표: `~/claude-viz/monster-design-audit-1.html` (15종 시그니처 ○3 △9 ×3, 귀여움·위압감 ○3 △7 ×5, 실루엣 ○5 △7 ×3; frondhare 는 leafling 의 알파 100% 복제).
+
+| # | 규칙 | 어디서 강제되나 |
+|---|---|---|
+| ① | **시그니처**: 종마다 몸에 비해 한 부위만 크게 과장(꼬리 모양·침·갈기·귀·등껍질·뿔 …). 원작 특징 베끼기 금지 | 시드 `signature`(필수, `validateSeed`) → `frontPrompt` 「SIGNATURE FEATURE」, 뒷모습·동작 프롬프트도 유지 문장 |
+| ② | **1단계는 chibi 비례**: 머리 40~50%·큰 눈(하이라이트 2칸)·짧고 통통한 몸·둥근 실루엣. 귀여움은 비례와 눈에서, 홍조·하트·스티커·반짝이는 장식은 금지 | `proportionClause(stage 1)` |
+| ③ | **진화마다 시그니처가 커지거나 형태가 바뀜**. 최종형은 위압감(머리 25~35%·이족·갈기·무기 같은 장식), 같은 윤곽에 색만 바꾼 복제 금지 | `proportionClause(stage ≥2)` + `evolutionPrompt` |
+| ④ | **실루엣 테스트**: 검정 마스크 64px 에서 종이 구별. 후보 시트가 64px·112px 마스크를 같이 보여 주고, `check` 가 겹침(IoU) 0.75 이상 짝을 경고 | `sheetHtml`, `checks.ts similarSilhouettes` |
+| ⑤ | **색**: 몸 색 3~4개(+명암 2~3톤) + **포인트 색 1개**(시그니처에만) | 시드 `accent`·`palette` → `colorClause` |
+
+- 시드 `design` 은 체형·몸 무늬·자세, `signature` 는 한 문장 영어, `accent` 는 포인트 색. 진화형 design 은 앞 단계와 **자세·비례가 다르게** 적는다(예: 네발 → 이족).
+- 프롬프트 판본은 `DESIGN_RULES_VERSION`(prompts.ts, 현재 4 = 귀여움 우선·흰 하이라이트 필수·하이라이트 보존 도트화). 규칙을 바꾸면 올린다.
+- 후보 선택은 2026-10-16 이후 **감독이** 한다(사용자에게 고르게 하지 않는다). 위 다섯 기준으로 1장을 골라 `pick --note` 와 `harness-data/monster-collect-species/design-v2-picks.json` 에 근거 한 줄을 남긴다. 새 후보가 분명히 더 낫지 않으면 기존 그림을 유지하고 `keep` 으로 적는다.
+- 후보 시트·점검표 생성기: `src/harnesses/monster-collect-species/qa/design_sheets.py` (`audit` · `pick`).
+- 조수가 새 종·계통을 지을 때의 같은 규칙: `src/ai/piAgent/monsterGameRequest.ts` `MONSTER_GAME_PRODUCTION_PROMPT` 끝의 「종 디자인 규칙」 문단.
+- 아래 「왜 이렇게 만드는가」의 「마스코트·치비·볼터치 금지」는 2026-10-01 시안의 이력이다. 지금은 **볼터치·스티커 금지만** 남고 치비 비례(1단계)는 요구한다.
+
+### 눈 규칙 (판본 3, 2026-10-16 — 사용자 지적 「몬스터에 문제가 많다, 눈이라던가」)
+
+판본 2 번들 30장을 원본 64px·6배·얼굴 10배로 열어 보니 눈 결함이 컸다: 눈이 갈색 털 속 한 덩어리로 뭉개짐(rootpig), 얼굴이 갈기에 묻혀 눈이 안 보임(frondhare),
+눈동자가 윤곽선에 붙음(kilnclaw), 줄기눈에 동공이 없음(coralpin), 한쪽 눈이 윙크 곡선(aqualing), 하이라이트가 윤곽색에 묻힘(gustchick), 뒷모습이 꽃으로 읽힘(aqualing).
+진화형 프롬프트의 「narrow sharp/fierce eyes」가 64px 에서 눈을 3화소 아래로 줄이는 주범이었다. 점검표: `~/claude-viz/monster-eye-audit-1.html`.
+
+| 규칙 | 어디서 강제되나 |
+|---|---|
+| 앞모습 눈 둘(3/4 시점, 가까운 눈이 더 큼) · 눈동자 3×3 화소 이상(프롬프트는 4×4) · 흰 하이라이트(프롬프트는 2×2) · 밝은 얼굴 위에서 윤곽선과 한 칸 이상 떨어짐 · 털·잎·불꽃에 가리지 않음 | `prompts.ts eyeClause`(DESIGN_RULES_VERSION 3), 시드 `eyes`(줄기눈 등 종별 덮어쓰기), 진화형 design 의 「narrow eyes」 삭제 |
+| 뒷모습에는 눈을 그리지 않는다 | `backPrompt` |
+| 주 눈 탐지(면적 ≥ 9, 하이라이트 ≥ 1, 눈동자 둘레 고리의 절반 이상이 밝은 살갗) 실패 = **눈 규칙 탈락**, 후보 시트에 표시하고 판정 대상에서 뺀다 | `checks/eyes.ts` `checkEyes` → `checkSprite(…, side)`, 후보 `run.json` 의 `eye: {pass, pair}` |
+| 둘째 눈 확인·두 눈 크기비·뒷모습의 큰 눈 모양은 **경고**(3/4 시점에서 먼 눈은 정당하게 가려질 수 있고, 어두운 바위·줄무늬를 눈으로 오인한다) | 같은 파일 |
+
+- 기계 검사는 필요조건이다(탈락 후보를 거르고 번들 통과율을 센다). 눈이 자연스럽고 생기 있는지는 **판정 모델**이 후보 시트를 보고 정한다 — 번들 갱신은 사람이 아니라 Opus 5.5 판정자(독립 서브에이전트)의 1등을 쓴다.
+- 실측: 판본 2 번들 앞모습 주 눈 규칙 통과 12/15 → 판본 3 번들 15/15(뒷모습 눈 비침 없음 14/15 → 15/15). 생성 후보는 앞 68/78 통과.
+- 한계: 64px 로 줄이면 하이라이트 화소가 자주 사라진다(생성은 넣어도 격자 최빈색에 먹힌다). 판정자가 「하이라이트 없음」으로 본 종(pipbug 등)은 판정 기록에 `eye_ok:false` 로 남았다.
+- 시트·판정 생성기: `qa/eye_sheets.py`(`audit` 점검표 · `blind` 번호만 보이는 눈가림 시트). 판정자에게는 생성 순서·점수·눈 규칙 결과를 숨기고 번호만 준다.
+
+### 판본 4 — 귀여움 우선·흰 하이라이트 필수 (2026-10-16, 사용자 「눈이 안 비치니까 징그럽다, 귀여운 거 위주로」)
+
+판본 3 은 눈의 크기·하이라이트 유무만 봤고 「어두운 구슬눈」도 통과했다. 판본 4 는 기준 순서를 바꾼다.
+
+- **판정 순서**: ① 귀엽다(큰 눈·둥근 머리와 몸·1단계 머리 40~50%·호감 가는 표정; 「친구로 데려가고 싶은가」) ② 눈에 흰 하이라이트가 있어 반짝인다(없는 어두운 구슬눈은 감점이 아니라 **탈락**) ③ 시그니처 한눈에 ④ 64px 실루엣 ⑤ 앞뒤 일관 ⑥ 뭉개짐 없음. 징그러운 느낌(어두운 눈, 사나운 표정, 곤충·파충류 질감, 눈 하나만 점)은 탈락 사유로 판정자에게 명시한다. 시그니처·치비·64px 계약은 그대로.
+- **눈 규칙 v4(`checks/eyes.ts`)**: 앞모습은 흰 하이라이트 필수 — 눈동자 안(눈동자 상자 안, 어두운 이웃 2개 이상)에 L≥0.85·채도≤0.055·눈동자보다 0.5 이상 밝은 화소. 크림 살갗(채도 0.06~0.09)은 하이라이트가 아니다. 1~2단계 주 눈 면적 ≥12(3단계 9). 없으면 `눈 규칙 탈락`(후보에서 뺀다).
+- **하이라이트 보존 도트화(`pixel/downscale.ts`)**: 최빈색 축소가 어두운 동공 속 흰 점 1~2칸을 먹어 눈이 구슬로 죽었다(pipbug 후보 12장 전멸의 원인). `findHighlights` 가 격자에서 「어두운 이웃에 70% 이상 둘러싸인 밝은 덩어리(면적 ≤9)」를 찾고, `preserveHighlights` 가 축소 뒤 그 자리 새 칸(겹침 ≥1/3, 없으면 최대 겹침 한 칸)을 하이라이트 색으로 되살린다. 손으로 도트를 찍지 않는다 — 파이프라인 규칙이다. 격자에 하이라이트가 아예 없으면(생성기가 안 그림) 되살릴 것이 없다 → 탈락.
+- **프롬프트**: 눈동자 6×6 이상·흰 2×2 하이라이트(+우하 1화소)·「어두운 구슬눈 금지」·징그러움 금지 문장, 진화형도 「친근하고 용감한 얼굴」(사나운 표정 금지).
+
+### 격자 계약 (2026-10-16 — 외부 시험자 「픽셀 그리드부터 맞게」)
+
+- **한 문장**: 논리 화소 1 = 화면 2px(화면 480×320 = GBA 240×160 의 2배). 몬스터 그림 한 도트 = 논리 화소 하나, 전투 표시 **64 캔버스 → 128px(정확히 2배)**.
+- 캔버스 **64×64**(옛 112: 정수배가 1배뿐이라 D12 비정수 128 이 났다), 몸 내용 **긴 변 56 이내**(`MAX_INK_SIDE`), 바닥 정렬, idle 스트립 64×N. 몸집 목표 `BODY_SIZE` front 46 · back 50(진화 단계 ×1.08·1.15).
+- 생성기가 그린 도트(블록 7~15px → 60~130칸)는 `fitSprite` 가 64 캔버스에 맞게 줄인다(정수배에 0.15 안이면 정수, 아니면 비정수). 종마다 원본 블록이 달라도 **최종 스프라이트는 전 종이 같은 64 격자**다. `grid` 단계가 종별 원본 칸 수→줄인 배율을 보여 준다(실측: 앞 14·뒤 14 중 줄임 1.5~2배).
+- 거칠어지는 건 GBA 격자와 같아 의도한 것이다 — 그래서 시그니처와 실루엣이 64px 에서도 읽히는지가 더 중요하다(디자인 규칙 ④).
+- 규격이 바뀌었을 때 이미 만든 후보를 다시 맞추려면 `refit [--species]`(생성 없음).
+- 런타임의 정수배 표시(그림 크기에서 배율 계산)는 별도 작업이다(D12). 매니페스트 `canvas` 가 64 이므로 `harnessMonsterArt.ts` 는 스트립 셀 폭을 64 로 읽는다.
 
 ## 왜 이렇게 만드는가 (2026-10-01 실험, `qa-runs/hand-monster/` 시안)
 
@@ -105,7 +185,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
   - 블록 크기는 짐작해서 고른다: 첫 포즈 폭(px) ÷ 기준 잉크 폭(칸), ±30%(`rowBlockHint`). 짐작 없이 고르면 12장 중 5장이 2배 블록을 골라 몸집이 반이 됐다.
   - 줄 전체를 한 번에 도트화(격자·팔레트 공유) → 큰 성분 N 개를 씨앗으로 묶기 → 0번 잉크 폭을 기준 스프라이트 폭에 맞춘 배율을 N 장에 똑같이 → 발 위치를 0번에 맞춰 바닥 정렬.
   - 포즈가 겹친 후보는 「큰 덩어리가 N 개가 아니다」로 떨어진다. 후보 시트는 CSS 로 스트립을 재생한다. 고르는 건 사람.
-- 엔진 배선은 아직 없다 — 스트립과 `anim.json` 만 번들에 있다. 공격 모션(돌진·넉백·히트스톱)은 엔진이 이미 하므로, 붙일 땐 그 위에 프레임만 바꾼다.
+- 공격·피격 동작 스트립의 엔진 배선은 아직 없다(대기 스트립은 2026-10-15 에 배선됨, 위 「캠페인·전투 배선」). 공격 모션(돌진·넉백·히트스톱)은 엔진이 이미 하므로, 붙일 땐 그 위에 프레임만 바꾼다.
 
 ### 공격 방향 계약 (`animation.direction`)
 
@@ -149,7 +229,9 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 | 항목 | 기준 | 수준 |
 |---|---|---|
-| 캔버스 | 112×112, 바닥 정렬 | 오류 |
+| 캔버스 | 64×64, 바닥 정렬 | 오류 |
+| 몸 크기 | 긴 변 56 이내(격자 계약) | 오류 |
+| 실루엣 겹침 | 앞모습 둘의 64px 마스크 IoU 0.75 이상 | 경고(`check`) |
 | 색 수 | `style.maxColors`(20) 이하 | 오류 |
 | 마젠타 기운 점 | 0 | 오류 |
 | 윤곽 | 실루엣 가장자리 칸의 85% 이상이 어두운 선 | 경고 |
@@ -164,7 +246,7 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 
 ## 전투 배치 (`src/harnesses/monster-collect-species/qa/battle-layout.css`, 엔진 미반영)
 
-포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
+(옛 112 캔버스 시절 시안) 포켓몬 스킨에서 112 캔버스를 내 몬스터 3배(화면 336)·상대 2배(화면 224) 정수 배율로 그리고, 발판을 같은 배율로 줄이고, 발을 발판 중심에 두고,
 상대 숨쉬기 찌그러짐(`battler-breathe`)을 끈다. 2026-10-01 실제 플레이어 화면에 주입해 확인했다(명령 선택 화면만 — 공격·피격·기절·포획 모션은 미확인).
 엔진 반영 대상은 `src/styles/runtime/battle/20-pokemon-skin.css`. 주입 캡처는 시안 녹화기(qa-runs/monster-viz/record.mjs, gitignore — `INJECT_CSS`·`OVERRIDES` 환경 변수)로 했다 — 하네스 `qa/` 로 옮기는 건 다음 작업.
 
@@ -180,6 +262,17 @@ import를 확인한다. seed만 개인 sandbox에 복사하고 후보 import만 
 ## 아직 없는 것
 
 - 에디터 화면(도감에서 「새 종 만들기」 후보 카드), 조수 도구 — `entrypoints.editorUi/assistantTool = false`. 조수 장르 안내문(`MONSTER_COLLECT_AUTHORING_GUIDE`)에는 도구가 생긴 뒤에 힌트를 넣는다.
-- 번들 스프라이트를 몬스터 종 기록(`graphic.monsterResourceId` / `backResourceId`)과 기본 프로젝트에 배선하는 일.
+- (배선됨, 2026-10-15) 번들 스프라이트 → 캠페인 종 기록은 위 「캠페인·전투 배선」. 남은 것: 에디터에서 종 그림을 번들로 고르는 화면, `build_monster_game` 이외 프리셋.
 - 파티 아이콘·필드 동행 그림.
-- 애니메이션 스트립의 엔진 배선(`battlerIdleAnimations.ts` 카탈로그·전투 명령 단계별 프레임 전환).
+- 동작 스트립(공격·피격) 의 엔진 배선(전투 명령 단계별 프레임 전환). 대기 스트립은 배선됨.
+
+## 따라다니기 걷기 칩 (2026-10-15)
+
+파티 몬스터를 필드에서 따라다니게 하는 엔진은 이미 있다(`src/project/followers.ts` · `src/player/playSceneFollowers.ts`). 에메랄드 스타일은 종에 `graphic.fieldGraphic.sprite.id` 또는 `graphic.fieldCharsetId` 가 없으면 따라다니기를 건너뛰므로, 하네스가 **걷기 칩**을 대 주는 것이 이 절이다. 전투 앞·뒤 그림과 같은 일반 규칙(종 하드코딩 없음)이다.
+
+- 그림: `src/harnesses/monster-collect-species/field_chip.py`. 고른 앞·뒤 그림을 참고로 보여 주고 Argon(`gemini-4-argon-medium`, `agy`)이 24×32 격자 문자열 9장(down/up/right × 프레임 0·1·2, 왼쪽은 right 거울)을 손으로 적는다. 이미지 생성·합성 코드 없음. 하네스가 규격(발 줄·덩어리·색 16·프레임 간 변경 셀 수)을 검사하고 어기면 이유를 붙여 최대 3번 다시 시킨다. `--base <run>/cand-k` 로 고른 후보의 몸은 두고 걷기만 보강할 수 있다.
+- 단계: `draw` → `sheet`(걷기 GIF 8배·1배 실제 크기) → 사람이 `pick`(그림 해시에 묶임, `harness-data/monster-collect-species/field-picks.json` + `field-chips/<종>.png`) → `bake`.
+- `bake` 는 칩 8명씩 288×256 시트(`public/assets/harnesses/monster-collect-species/field/chips-<n>.png`, 한 캐릭터 72×128 = 3패턴 × 4방향 위·오른·아래·왼)로 묶고 `field/index.json`(종 → 시트·칸)을 쓴다. **칸 번호는 덧붙이기 전용**이다 — 저장된 프로젝트의 참조가 흔들리지 않게 한 번 준 칸은 바꾸지 않는다. 끝에 `manifest` 를 돌려 `harnessMonsterBundle.json` 에 `fieldSheets` 와 종별 `field {sheet,index}` 를 싣는다.
+- 런타임: `harnessMonsterArt.ts` 가 시트를 캐릭터셋 카탈로그(`charsetCatalog.ts`, id `oprn-charset-harness-monster<n>` / 텍스처 `tex_oprn_charset_harness_monster<n>`)에 올리고, 로스터(`roster.ts` `fieldArt`)가 `campaignSpeciesId` 로 이어진 종에 `graphic.fieldGraphic` 을 단다. 칩이 없는 종은 기존대로 기본 몬스터 칩. 해석기·참조 검증·내보내기는 charset 의 일반 경로를 따른다.
+- 3/4 관문(object-gate) 영수증 없음 — 몬스터 하네스 경로(생성형 참고 + 격자 손 저작). 사람이 고른 것만 굽는다.
+- 15종 전부 칩이 있다(시트 2장, 2026-10-15). 실화면 확인: `scripts/qa/runtime/follower-chip-train.capture.mjs`(출하 플레이어, `buildMonsterFixture.ts` 캠페인 사용) — 종을 6마리씩 열차로 세워 네 방향으로 걷고 맵 이동·비행선 탑승(동료 스프라이트 0)·하차(복귀)를 찍는다. 열차는 세션 followers 를 직접 쓴 디버그 쓰기, 소형선은 육지 이동이 막혀 걸음 뒤 동기화가 안 돌아 비행선으로 시험한다.

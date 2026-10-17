@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c144fb5ba1a1c929e2fdc334daeec251093138b59eabf0e3633c9956996acbe",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "hibiscus bush with red flowers",
+ "label": "pirate-isles/pi-bush-hibiscus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "spherical bush with red flowers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded volume in 3/4 top-down perspective, with the top lit surface occupying rows 1-6 and the south-facing shadowed lower body extending through row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6252
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush foliage mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered with a 3/4 top-down spherical volume: the upper crown is lit with light green tones across rows 2–7, while the lower south face transitions into darker shading down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5336
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rounded bush with red blossoms",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a top-lit rounded dome with bright highlights across the upper crown (rows 2-7) and shadow along the lower south face (rows 10-15), typical for 3/4 top-down foliage.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3957
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush foliage mound",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bush is rendered as a rounded mass with the top illuminated foliage spanning rows 2 to 7 (about 6 rows) before transitioning into front and lower shadows, with flowers distributed across both the top and front surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  }
+ ],
+ "decidedAt": "2026-10-14T08:14:10.576Z",
+ "cells": {
+  "16": [
+   "500bb823b644b3c9"
+  ],
+  "24": [
+   "1e19eef45e0f4105",
+   "215e5231574ee4c6",
+   "5518989c1b0bc633",
+   "6132b6d5cbae50fc",
+   "b8baf47a71ca3c98",
+   "f42eed39603e51db"
+  ],
+  "32": [
+   "0daa0c6aa321969d",
+   "40074ce7cbe21849",
+   "81daed9f9b46aaa6",
+   "9b07fa65ac8c00bb",
+   "cb2f8ef5f1a4505e",
+   "e0e237cff6358151"
+  ],
+  "48": [
+   "08c616fc8ae1ae96",
+   "2933163c7ef79039",
+   "323375f4f81dc097",
+   "3b4b74e1571aad83",
+   "d760e9c9885216f6",
+   "f4be846323246ed0"
+  ]
+ }
+}

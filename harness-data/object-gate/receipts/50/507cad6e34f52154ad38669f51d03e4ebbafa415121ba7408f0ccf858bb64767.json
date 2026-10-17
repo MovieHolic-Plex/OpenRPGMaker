@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "507cad6e34f52154ad38669f51d03e4ebbafa415121ba7408f0ccf858bb64767",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "무쇠 다리 나무 벤치",
+ "label": "steampunk-city/sp-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench with iron legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in flat front elevation. Both the backrest (rows 0-4) and the seat (rows 5-10) are drawn facing forward with front-facing bolts and vertical gradient shading, showing no visible horizontal seat surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat and backrest with iron legs",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat surface is visible from above across rows 5–7 (3 rows deep, complete with bolted plank surface and front edge highlight), transitioning into a shaded 3-row front face at rows 8–10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16574
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is visible from above across rows 5–7 (3 rows tall, detailed with bolt heads and shaded from the backrest crevice to the front lip), before dropping down to the front-facing apron on rows 8–10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10975
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench with iron legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is rendered in pure front elevation. Both the backrest and the seat plank are drawn as vertical front-facing slats with identical front-lit rounded shading (highlight along the middle and shadow along the bottom). There is no visible horizontal seat top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7041
+  }
+ ],
+ "decidedAt": "2026-10-14T09:07:01.525Z",
+ "cells": {
+  "16": [
+   "bceda481426e1ecc",
+   "c64b5afe9de71540"
+  ],
+  "24": [
+   "178ac96a3d6e5bdd",
+   "39bf69faaf830f79",
+   "3f9292369384e3c2",
+   "5f9afb11ea55758d",
+   "6a7a91bcac67fa4c",
+   "8bac1b9f8e525bb7",
+   "961023168870664c",
+   "9a969178c1099772",
+   "9f212faea85292cb",
+   "b747e6e93090a323",
+   "cc9bd387a30b67c5",
+   "d916fb29d256acf4"
+  ],
+  "32": [
+   "0f2663846baf4a81",
+   "b9c170680ae2fec0"
+  ],
+  "48": [
+   "0a7325556850ff1c",
+   "22bdf9b367caaeb0",
+   "5b1c6ebbf5fbb226",
+   "cdc2a2162d61a8ce",
+   "d63ceaec8cf98b7a",
+   "ef81eb599c73ef49"
+  ]
+ }
+}

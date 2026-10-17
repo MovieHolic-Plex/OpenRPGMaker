@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c847d7722a3f54c6240fdd52411b37e0ac0445dcfb45b1129127869ef1eb36f0",
+ "width": 48,
+ "height": 16,
+ "kind": "other",
+ "name": "나룻배(작은 목선, 물 위)",
+ "label": "sengoku-edo/se-boat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat is drawn in a pure 90-degree bird's-eye (overhead plan) view. It is vertically symmetrical around row 8, showing only the interior deck and benches with no south-facing outer hull or front face visible, violating the 3/4 perspective requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10038
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat interior, floor planks, ribs, and a rectangular mat/seat are clearly visible from above across rows 3-12 (approx. 9-10 rows tall). It is not a flat side elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12360
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat is viewed from above showing its interior deck/floor boards, seats, and cargo across roughly 9 pixel rows (rows 3-12). It is not a pure front elevation and shows no isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7380
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden boat hull",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boat is drawn in a pure 90-degree overhead (bird's-eye/plan) view rather than 3/4 view. It is completely vertically symmetrical with no front (south) hull face shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail"
+   ],
+   "ms": 8293
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.072Z",
+ "cells": {
+  "16": [
+   "585c2247489a0b72",
+   "788f4a992baa820a",
+   "d9eca88f0c6a2a08"
+  ],
+  "24": [
+   "213f8ac228ae2fb9",
+   "59dafba32637f672",
+   "bc5c75e6f4e191c6",
+   "bdb5c80687aeb39b"
+  ],
+  "32": [
+   "11238490aa19c52b",
+   "423902e1efc081cc",
+   "66b53a8df790d7b8",
+   "8853ff7961f12dcd",
+   "93889386725f51bb",
+   "a8ff71af0a370aa7",
+   "ae872b3818f26eee",
+   "c8eb66604aa24348",
+   "e5d2064556971036",
+   "e5f29278400e4177",
+   "ead2c471d7a0e706",
+   "fa362fe1c42eaba5"
+  ],
+  "48": [
+   "662e16f0b2430464",
+   "9e81813cd83c59f1"
+  ]
+ }
+}

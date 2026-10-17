@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "40592f986f8fd40485d1a5ec5ca6dc255027328a9538aecef709dcac3c2a9b27",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "가마(카고, 지붕 덮은 상자 + 장대)",
+ "label": "sengoku-edo/se-palanquin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "palanquin cabin (covered box)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/top surface of the palanquin is clearly visible across rows 2-5 (4 source pixel rows tall), with the front face and window shown below it from row 6 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5324
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kago / palanquin body",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/top surface of the palanquin spans rows 2 to 5 (4 pixel rows tall) above the south-facing body and window frame (rows 6 to 13), showing proper 3/4 view foreshortening with no receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10282
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "palanquin cabin (covered box)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/top surface of the palanquin cabin spans rows 2-5 (4 source pixel rows) above the front face and window (rows 6-13), clearly showing the horizontal top surface foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5013
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "palanquin cabin box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof top surface is foreshortened across rows 2-5 (4 rows tall) with an eave edge and under-eave shadow above the south-facing front wall (rows 7-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4553
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.073Z",
+ "cells": {
+  "16": [
+   "687304c2a06dc654",
+   "a417c43b0e21357e"
+  ],
+  "24": [
+   "262fe72d6d81e986",
+   "2871a7424c11693e",
+   "312b65297ac3000e",
+   "575f7e3d5be2c1a2",
+   "5850d59fb1432a3f",
+   "64f03587e528ddd4",
+   "6c2abbe071c2f063",
+   "c0e406d5b9a8fd37",
+   "c371ed4e53e9ebb9",
+   "ca7660452314f8c9",
+   "efeb708a6c860168",
+   "f783d209e5a1405f"
+  ],
+  "32": [
+   "8292a4b4e0fa0022",
+   "f2465fc017c461ce"
+  ],
+  "48": [
+   "0cee3edfd0aa7047",
+   "5d1aea58205fcea7",
+   "6c54a6c4a04149c1",
+   "b30c16347b4e0f44",
+   "b6c95f1187cd4d2f",
+   "ff031fa8e406efd3"
+  ]
+ }
+}

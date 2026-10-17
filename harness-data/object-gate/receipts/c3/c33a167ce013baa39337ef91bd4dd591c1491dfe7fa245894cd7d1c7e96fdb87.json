@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c33a167ce013baa39337ef91bd4dd591c1491dfe7fa245894cd7d1c7e96fdb87",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden kitchen cupboard seen from above-front: deep flat top surface with jars on it, shelves with plates",
+ "label": "sky-island/si-cupboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall kitchen cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cupboard is clearly visible across rows 1-5 (5 rows deep) with jars resting on it, properly foreshortened in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4891
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden kitchen cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cupboard is clearly visible across rows 1-5 (approx 5 rows deep) with items resting on it, above the shelves and cabinet doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden kitchen cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cupboard is clearly visible across rows 1-5 (5 rows deep) with jars resting on it, properly foreshortened for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4926
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall kitchen cupboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cupboard is clearly visible from rows 1 to 5 (5 pixels deep) with two jars resting on it, leading down into the front face shelves and doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4912
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.236Z",
+ "cells": {
+  "16": [
+   "3be4e495b7754a27",
+   "99821fe3428cfac3"
+  ],
+  "24": [
+   "0df3770aef1ee3ea",
+   "1f19ec907fa33dbf",
+   "29d1886bd8615d8d",
+   "6a208f6bb75a7e83",
+   "73151d0e43fdce22",
+   "732a15bc1b068e93",
+   "792322878e4c761b",
+   "831512ff4a7021c1",
+   "8b92b660717e7120",
+   "bea0a0de80d086fe",
+   "c9172752b27b12ab",
+   "e8a4f1626a72ee2c"
+  ],
+  "32": [
+   "229058c242e1703d",
+   "c139f56b39d11986",
+   "c49f83883e929a81"
+  ],
+  "48": [
+   "02e2c7344e5790d8",
+   "0f4aad969b2c19de",
+   "2223c68849e885dd",
+   "3b47bc1558f4a0b6",
+   "9f7e3678ae9484a6",
+   "eb438b23190721ee"
+  ]
+ }
+}

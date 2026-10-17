@@ -3,6 +3,7 @@ import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_PROVI
 import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
+import { imageRouteRefusal, resolveImageRoute, type ImagePurpose } from "@/ai/imageRoute";
 
 /** Legacy exports name the defaults, not the current user selection. */
 export const IMAGE_GENERATION_PROVIDER_ID = DEFAULT_IMAGE_PROVIDER_ID;
@@ -23,6 +24,11 @@ export interface GenerateAiImageRequest {
   readonly providerId?: string;
   readonly signal?: AbortSignal;
   readonly referenceImages?: readonly ImageReference[];
+  /**
+   * 그림 용도(src/ai/imageRoute.ts). 주면 라우터가 모델을 정하고, 도트·업로드 전용 용도는 요청을 보내기 전에 거절한다.
+   * 이 값은 서버로 보내지 않는다. 없으면 종전처럼 설정의 이미지 모델 칸을 그대로 쓴다.
+   */
+  readonly purpose?: ImagePurpose;
 }
 
 export interface GenerateAiImageDeps {
@@ -74,6 +80,16 @@ export async function generateAiImage(
   const config = loadAiConfig();
   let providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
   let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
+  if (request.purpose) {
+    // 도트 용도에 이미지 모델이 불리면 네트워크로 나가기 전에 막는다(눈금·팔레트·3/4 시점을 지키지 못한다).
+    const route = resolveImageRoute(request.purpose, config, {
+      ...(request.providerId ? { providerId: request.providerId } : {}),
+      ...(request.model ? { model: request.model } : {}),
+    });
+    if (route.kind !== "generative") throw new ImageGenerationError(imageRouteRefusal(route));
+    providerId = route.providerId;
+    model = route.model;
+  }
   // 사용자가 그림 경로를 고르지 않아 권장값(GPT Image)이 기본으로 들어간 경우에만, ChatGPT 연결이 없을 때 Google 로 대신한다.
   // 고른 값은 절대 바꾸지 않는다(이 파일의 「조용히 다른 모델로 바꾸지 않는다」 계약).
   if (!deps.fetch && !request.providerId && !config.modelSelectionOverrides?.image && providerId === RECOMMENDED_IMAGE_PROVIDER_ID
