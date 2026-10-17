@@ -3096,7 +3096,7 @@
    "input": 19,
    "label": 21,
    "legend": 5,
-   "option": 88,
+   "option": 91,
    "path": 1,
    "polyline": 1,
    "section": 1,
@@ -3391,7 +3391,7 @@
    "닫기",
    "드묾",
    "매우 자주",
-   "모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm)Monster# (Monster)Monster# (Monster)Monster# (Monster)chips-# (Monster)chips-# (Monster)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Heroes# (Heroes)Modern# (Modern)Modern# (Modern)Modern# (Modern)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)People# (People)",
+   "모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm)Monster# (Monster)Monster# (Monster)Monster# (Monster)chips-# (Monster)chips-# (Monster)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Heroes# (Heroes)Modern# (Modern)Modern# (Modern)Modern# (Modern)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)People# (People)",
    "모습: People# (People)",
    "반복 실행",
    "보통",
@@ -3551,7 +3551,7 @@
    "primary"
   ],
   "tags": {
-   "button": 58,
+   "button": 61,
    "details": 1,
    "div": 16,
    "fieldset": 2,
@@ -3562,7 +3562,7 @@
    "p": 3,
    "path": 1,
    "section": 1,
-   "span": 45,
+   "span": 48,
    "summary": 1,
    "svg": 1
   },
@@ -3746,8 +3746,8 @@
    "태그, 쉼표로 구분",
    "패턴"
   ],
-  "testidCount": 77,
-  "controlCount": 68,
+  "testidCount": 80,
+  "controlCount": 71,
   "classCount": 37,
   "rootCount": 1
  },
