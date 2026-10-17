@@ -78,8 +78,8 @@ export function resolvePortraitHeadRatio(archetypeOrDescription?: string): Portr
   return DEFAULT_PORTRAIT_HEAD_RATIO;
 }
 
-/** 양쪽 전신 스탠딩 무대 기본 비율 — 원본 전신 일러스트를 왜곡 없이 화면 높이의 ~88%까지 세운다(114% × (1 - 0.22) ≈ 88.9%). */
-export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 114, drop: 22 } as const;
+/** 양쪽 전신 스탠딩 무대 기본 비율 — 미디엄 풀샷(머리~골반·허벅지 상단)이 화면 높이의 ~92%를 꽉 채우도록 세운다(98% × (1 - 0.06) ≈ 92.1%). */
+export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 98, drop: 6 } as const;
 export type DialogueSystemPresetId = "default" | "romance" | typeof DUAL_FULLBODY_VEIL_PRESET_ID;
 export type DialogueSystemPresetDefinition = {
   readonly id: DialogueSystemPresetId;

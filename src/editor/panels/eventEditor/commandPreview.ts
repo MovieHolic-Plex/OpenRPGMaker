@@ -406,21 +406,21 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
         content.classList.add("has-veil-speaker-face");
         content.prepend(el("div", {
           class: "dialogue-veil-speaker-face",
-          attrs: { role: "img", "aria-label": "화자 왼쪽 초상 견본", style: `background-image:url("${cornerFaceUrl}");width:40px;height:40px;` },
+          attrs: { role: "img", "aria-label": "화자 왼쪽 초상 견본", style: `background-image:url("${cornerFaceUrl}");width:44px;height:44px;image-rendering:auto;` },
           dataset: { testid: "dialogue-veil-speaker-face" },
         }));
       }
       if (leftUrl) {
         const leftPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-left dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:22px;` },
+          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:92px;--runtime-dialogue-full-width:56px;--runtime-dialogue-full-drop:6px;image-rendering:auto;` },
         });
         overlay.append(leftPortrait);
       }
       if (rightUrl) {
         const rightPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-right dialogue-portrait-listener dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:22px;` },
+          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:92px;--runtime-dialogue-full-width:56px;--runtime-dialogue-full-drop:6px;image-rendering:auto;` },
         });
         overlay.append(rightPortrait);
       }
