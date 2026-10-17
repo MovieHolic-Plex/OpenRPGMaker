@@ -129,7 +129,10 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   const titleArtMismatch = romanceTitleMismatch(project.system?.titleScreen?.backgroundResourceId);
   if (titleArtMismatch) findings.push({ severity: "warning", code: "romance-title-art-mismatch", message: romanceTitleMismatchMessage(titleArtMismatch) });
   // 타이틀이 소재와 다른 그림(벚꽃 캠퍼스 기본이거나 엉뚱한 소재)인데 기획은 카페·학원·회사·마을이면 소재에 맞는 키아트로 바꾸게 한다(romance-loop-1 R1-06).
-  const settingArt = romanceTitleArtSettingGap(project.system?.titleScreen?.backgroundResourceId, briefText);
+  // 기획서(gameDesignBrief)가 없는 판(--text 생성·직접 시작)은 제목·부제·맵 이름에서 소재를 읽는다(romance-loop-3: 「봄빛 고등학교의 고백」이 벚꽃 캠퍼스 그림을 그대로 썼다).
+  const settingText = briefText.trim() ? briefText
+    : [project.meta?.title, project.system?.titleScreen?.title, project.system?.titleScreen?.logoSubtitle, ...Object.values(project.maps).map((map) => map.name)].filter((part): part is string => typeof part === "string").join("\n");
+  const settingArt = romanceTitleArtSettingGap(project.system?.titleScreen?.backgroundResourceId, settingText);
   if (settingArt) {
     findings.push({
       severity: "warning", code: "romance-title-art-setting",

@@ -94,6 +94,11 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **프로브·시나리오**: `scripts/qa/romance-fix2/` — `multi-fixture.mts`+`runtime/romance-multi`(3인·시간대 위치·요일 페이지·ESC 관계 21비트), `playthrough.mts`(인물별 끝까지 플레이), `run-proof.mts`+`runtime/romance-run`(조수가 지은 한 편의 캡처), `save-reload.mjs`(시험 SQLite 폴더 저장→재로드), `assistant-runs/`(조수 대용 3판의 도구 호출 목록).
 - **타이틀 = 후보 C 확정**(옥상 노을, 교복 둘이 난간에서 교정을 내려다봄): 생성형 큰 그림 한 장, `ROMANCE_TITLE_RESOURCE_ID = "oprn-title-romance-campus"`(별도 PR #2676, 노부부 벽난로 그림을 대체). 사용자에게 고르게 하는 단계는 없다.
 
+## 소재 키아트 검사의 입력 (기획서 없는 판)
+
+`romance-title-art-setting` 은 기획서(`gameDesignBrief`)가 비면(`qa:game gen --text` 등) 제목·부제·맵 이름에서 소재 낱말을 읽는다.
+「봄빛 고등학교의 고백」이 벚꽃 캠퍼스 그림을 그대로 쓰던 것을 잡는다(romance-loop-3).
+
 ## 엔딩 분기 · 호감 통일 (2026-10-16 romance-fix-4, R01/R02)
 
 실제 Argon 재측정(romance-real-2)에서 3판 모두 엔딩 1개였고(호감과 무관), 선택지 호감(변수)과 ESC·HUD 호감(engine friendship)이 따로였다.
