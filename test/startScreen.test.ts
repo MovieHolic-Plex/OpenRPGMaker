@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { START_SCREEN_INTENT_KEY, takeStartScreenIntent, writeStartScreenIntent } from "@/start/startIntent";
+import { START_SCREEN_INTENT_KEY, START_PLAY_URL, takeStartPlayRequest, takeStartScreenIntent, writeStartScreenIntent } from "@/start/startIntent";
 import { entriesNeedingCover, formatRelativeTime, partitionRecentEntries } from "@/start/startScreen";
+import { LAUNCHER_MODE_KEY, readLauncherMode, writeLauncherMode } from "@/start/launcherShell";
+import { PLAYED_KEY, readPlayedLog, recordPlayed, worldsByLastPlayed } from "@/start/playFeed/playFeed";
 import { startScreenPrompt } from "@/editor/startScreenHandoff";
 import { projectCoverSchema } from "../electron/shared/schemas";
 import { interviewBrief } from "./helpers/gameDesignBrief";
@@ -104,5 +106,46 @@ describe("대표 그림 채널", () => {
     expect(projectCoverSchema.safeParse({ projectDir: "/p", dataUrl: "data:image/jpeg;base64,/9j/4AAQ" }).success).toBe(true);
     expect(projectCoverSchema.safeParse({ projectDir: "/p", dataUrl: "data:image/png;base64,iVBOR" }).success).toBe(false);
     expect(projectCoverSchema.safeParse({ projectDir: "/p", dataUrl: "data:text/html;base64,PGh0bWw+" }).success).toBe(false);
+  });
+});
+
+describe("플레이·만들기 갈래", () => {
+  it("마지막으로 고른 갈래를 기억하고, 모르는 값은 버린다", () => {
+    const storage = memoryStorage();
+    expect(readLauncherMode(storage)).toBeNull();
+    writeLauncherMode(storage, "play");
+    expect(readLauncherMode(storage)).toBe("play");
+    storage.setItem(LAUNCHER_MODE_KEY, "edit");
+    expect(readLauncherMode(storage)).toBeNull();
+    expect(readLauncherMode(null)).toBeNull();
+  });
+
+  it("플레이 기록은 최근에 플레이한 순서로, 플레이한 적 없는 월드는 빼고 고른다", () => {
+    const storage = memoryStorage();
+    recordPlayed(storage, "/games/a", Date.parse("2026-10-17T09:00:00Z"));
+    recordPlayed(storage, "/games/b", Date.parse("2026-10-17T10:00:00Z"));
+    const log = readPlayedLog(storage);
+    const order = worldsByLastPlayed([
+      { projectDir: "/games/a", title: "A" },
+      { projectDir: "/games/never", title: "안 함" },
+      { projectDir: "/games/b", title: "B" },
+    ], log);
+    expect(order.map((entry) => entry.title)).toEqual(["B", "A"]);
+  });
+
+  it("깨진 플레이 기록은 빈 기록으로 읽는다", () => {
+    const storage = memoryStorage();
+    storage.setItem(PLAYED_KEY, "not json");
+    expect(readPlayedLog(storage)).toEqual({});
+    storage.setItem(PLAYED_KEY, JSON.stringify({ "/a": "어제", "/b": "2026-10-17T10:00:00Z" }));
+    expect(readPlayedLog(storage)).toEqual({ "/b": "2026-10-17T10:00:00Z" });
+  });
+
+  it("플레이 표시는 편집기 부팅이 한 번 읽고 주소에서 지운다", () => {
+    let replaced = "";
+    const history = { state: null, replaceState: (_state: unknown, _title: string, url?: string | URL | null) => { replaced = String(url); } };
+    expect(takeStartPlayRequest({ href: "app://oprn" + START_PLAY_URL }, history)).toBe(true);
+    expect(replaced).toBe("app://oprn/index.html");
+    expect(takeStartPlayRequest({ href: "app://oprn/index.html" }, history)).toBe(false);
   });
 });

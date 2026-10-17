@@ -174,4 +174,17 @@ describe("concept feed", () => {
     expect(feed.escape()).toBe(true);
     expect(q(root, CONCEPT_FEED_TESTIDS.detail)!.hidden).toBe(true);
   });
+
+  it("launcher mode hands its input to the shell, drops its own top bar, and offers a blank project in the new band", async () => {
+    const onBlank = vi.fn();
+    const lead = document.createElement("div");
+    const { feed, root } = mount({ mode: "launcher", onBlank, onInterview: async () => true, lead, source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }) });
+    await flush();
+    expect(root.querySelector(".cf-top")).toBeNull();
+    expect(feed.searchBox.contains(q(feed.searchBox, CONCEPT_FEED_TESTIDS.search))).toBe(true);
+    expect(root.querySelector(".cf-feed")!.firstElementChild).toBe(lead);
+    expect(qa(root, CONCEPT_FEED_TESTIDS.blank)).toHaveLength(1);
+    q(root, CONCEPT_FEED_TESTIDS.blank)!.click();
+    expect(onBlank).toHaveBeenCalledOnce();
+  });
 });

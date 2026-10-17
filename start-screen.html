@@ -7,8 +7,8 @@
     <!-- 첫 프레임 뼈대: 번들·로캘이 준비되기 전 빈 창이 보이지 않게 한다. 언어 무관(로고만)이라 번역 계층에 기대지 않는다.
          startScreen.ts 의 첫 마운트(host.replaceChildren)가 통째로 대체한다. -->
     <style>
-      html { background: #f7f8f8; }
-      .start-boot { min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 12px; color: #0f172a; font: 700 20px/1 system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; letter-spacing: -0.01em; }
+      html { background: #111214; }
+      .start-boot { min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 12px; color: #ececee; font: 700 20px/1 system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; letter-spacing: -0.01em; }
       .start-boot svg { width: 28px; height: 28px; animation: start-boot-pulse 1.4s ease-in-out infinite; }
       @keyframes start-boot-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
       @media (prefers-reduced-motion: reduce) { .start-boot svg { animation: none; } }

@@ -133,16 +133,30 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는 바이트 그대로. `normalizeSkillRecord` 화이트리스트(0 초과만 남김)·
 `updateSkillRecord` 패치 키 목록에 있다. 전투는 시전자 자신을 대상으로 한 타임라인 엔트리(대가 damage·흡수 healing)를 남겨 숫자가 뜬다. 상세는 runtime-battle.md 「스킬 기믹 명시화」.
 
-## 데스크톱 시작 화면 — 컨셉 피드 (2026-10-07, 옛 시네마틱 로비 대체)
+## 데스크톱 시작 화면 — 플레이·만들기 런처 (2026-10-17, 2026-10-07 컨셉 피드 홈을 감쌈)
 
-새 게임과 새 프로젝트는 **같은 화면**이다 — 유튜브 홈처럼 게임 컨셉 썸네일 격자를 내려 보며 고르고, 상세에서 「▶ 이 게임 만들기」 한 번이면
+첫 화면은 두 갈래다. 왼쪽 레일에 「플레이」·「만들기」 둘만 있고, 위 막대·본문이 갈래를 따라 바뀐다. 이 앱은 만든 게임을 하는 샌드박스로 가므로
+「만드는 홈」 하나였던 2026-10-07 판(레일 「홈·탐색·내 프로젝트·템플릿」, 위 막대 「새 게임」)에는 플레이를 끼울 자리가 없었다.
+만들기 갈래 안쪽은 여전히 컨셉 피드다 — 썸네일 격자를 내려 보며 고르고, 상세에서 「이 게임 만들기」 한 번이면
 기획이 확정된 채 편집기로 넘어가 조수 팀이 첫 구간을 짓는다. 설계: `docs/superpowers/specs/2026-10-07-concept-feed-design.md`.
 옛 시네마틱 로비(`startLobby.ts`)·첫 문장 입구(`firstWorldArrival.ts`)·장르 프리셋 인터뷰(`runStartScreenPresetInterview`)·
 편집기 새 프로젝트 다이얼로그(`newProjectDialog.ts`)는 지웠다. 메뉴 「게임 기획」 수정 창(`projectInterviewDialog`)은 그대로 있고 세계 지도 영상도 거기서만 쓴다.
 
-- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트, layer `tokens, start, shell`).
-  홈 = `src/start/conceptFeed/conceptFeed.ts`(`mode: "launcher"`) 하나. 위 막대 오른쪽에 폴더 열기·팀에 참여·언어·버전,
-  분류 칩 아래에 「이어하기」 줄(숨기지 않은 최근 프로젝트 카드, 숨김 토글)을 끼운다. 팀 참여는 별도 보기(`start-join-view`).
+- **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 바탕 시트, layer `tokens, start`).
+  틀은 `src/start/launcherShell.ts` + `launcher.css`(`ln-` 접두): 레일(브랜드 · 갈래 둘 · 바닥에 언어 `start-locale-select`·판 번호),
+  위 막대(왼쪽 입력 칸 + 오른쪽 글자 단추), 본문 한 칸. 아이콘은 `src/start/icons.ts` 의 선 SVG 하나뿐 — 이모지·색 배지를 쓰지 않는다.
+  고른 갈래는 `localStorage` 의 `oprn:start-mode`. 고른 적이 없으면 「만들기」 — 처음 켠 사람은 아직 플레이할 월드가 없다.
+- **플레이 갈래**: 위 막대 = 월드 찾기(`start-world-search`) + 「게임 파일 열기」(`start-open-game-file`). 본문 =
+  「이어서 플레이」(이 화면에서 마지막으로 플레이한 월드 큰 판 + 「최근 플레이」 줄) → 「내 월드」 격자(이 컴퓨터에 있는 게임, 주 단추 「플레이」, 곁 「편집」).
+  플레이 기록은 `localStorage` 의 `oprn:start-played`(폴더 → ISO 시각, 40개, `src/start/playFeed/playFeed.ts`). 월드가 없으면 빈 안내와 「게임 파일 열기」·「만들기로 가기」.
+  「플레이」 = `start.openRecent` 로 폴더를 연 뒤 `/index.html?play=1`(`START_PLAY_URL`). 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
+  표시를 읽고 지운 뒤 플레이 모드로 연다 — 플레이 중 새로고침은 편집 화면이다.
+  「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile` 로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 바로 플레이한다(이후 「내 월드」에 남는다).
+  공유 월드(store.openrpgmaker.com)는 아직 잇지 않는다 — 빈 줄을 미리 그려 두지 않는다.
+- **만들기 갈래**: 위 막대 = 컨셉 입력창 + 「폴더 열기」·「팀에 참여」. 본문 = `conceptFeed.ts`(`mode: "launcher"`) — 맨 위 「이어서 만들기」
+  (최근 편집한 월드 큰 판 + 「내 월드」 줄, 주 단추 「이어서 만들기」, 곁 「플레이」, 「모두 보기」로 격자), 「새로 만들기」 한 줄(장르 → 빠른 인터뷰, 끝에 빈 프로젝트),
+  「컨셉에서 시작」 격자. 런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다.
+  팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
