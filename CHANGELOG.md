@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.251.2 — 2026-10-17
+
+### 수정
+
+- **database** — 메뉴 감사 부록 A 시각 깨짐·잘림 9건 수리 (B1~B9) (#2837) (`0258a79`)
+- **qa** — ignore unreachable retired seed map and flag pre-populated JRPG companions (#2835) (`031ed9a`)
+
 ## 0.251.1 — 2026-10-17
 
 ### 수정
