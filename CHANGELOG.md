@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.254.0 — 2026-10-17
+
+### 기능
+
+- **start** — 플레이 · 만들기 2모드 런처 껍데기 및 내 월드 바로 플레이 (1단계) (#2847) (`d35b56d`)
+- **ai** — build_scene_setting stages event scenes; irregular terrain, bank overlays, hazard lint (#2673) (`0b4ed4a`)
+
+### 수정
+
+- **dialogue,romance** — drop the VN reading bar and gate untouched openings (#2848) (`78bc34f`)
+- **ci** — drop unused scene-layout and tint-lint bindings (`5872bae`)
+
 ## 0.253.0 — 2026-10-17
 
 ### 기능
