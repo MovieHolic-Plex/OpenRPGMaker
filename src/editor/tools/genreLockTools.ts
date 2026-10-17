@@ -6,6 +6,8 @@
 import { genreLockAlternative, genreLockReport } from "@/project/genreLock";
 import { CHARSET_FAMILY_LABELS, charsetFamilyOf } from "@/project/charsetFamily";
 import { genreLockVisualReport } from "@/project/genreLockVisuals";
+import { monsterAssetStatus } from "@/project/genreLockMonsterAssets";
+import { activeMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { tilesetFamilyLabel } from "@/project/tilesetFamily";
 import type { ToolDefinition, ToolExecResult } from "./types";
 
@@ -20,7 +22,10 @@ const checkGenreLock: ToolDefinition = {
   run(project): ToolExecResult {
     const report = genreLockReport(project);
     if (!report.active) {
-      return { summary: "장르 잠금이 꺼져 있다 — 칩셋 계열 제한이 없다(몬스터 수집 게임이면 configure_monster_system(enabled:true) 가 켠다).", data: { active: false } };
+      // 몬스터 수집 게임이 아닌 프로젝트에는 몬스터 도구 이름을 광고하지 않는다 — 잠금 이름도 「몬스터 자산 잠금」 상태만 알린다.
+      const monsterAssets = monsterAssetStatus(project, activeMonsterTurn());
+      const hint = monsterAssets.allowed ? " 몬스터 수집 게임이면 configure_monster_system(enabled:true) 가 켠다." : "";
+      return { summary: `장르 잠금이 꺼져 있다 — 칩셋 계열 제한이 없다.${hint} 몬스터 자산: ${monsterAssets.allowed ? "허용" : "막힘"} — ${monsterAssets.reason}.`, data: { active: false, monsterAssets } };
     }
     const describe = (v: (typeof report.violations)[number]) => ({
       mapId: v.mapId, mapName: v.mapName, tilesetId: v.tilesetId, family: tilesetFamilyLabel(project, v.family),
@@ -52,7 +57,7 @@ const checkGenreLock: ToolDefinition = {
         + `잠금 이후 위반 맵 ${report.violations.length}개, 잠금 이전부터 있던 허용 밖 맵 ${report.preexisting.length}개(막지 않았다).${visualText}${chipText}`,
       ...(issues.length || chipIssues.length ? { issues: [...issues, ...chipIssues] } : {}),
       data: {
-        active: true, preset: report.preset, mode: report.mode, allowedFamilies: report.allowedFamilies, allowedTilesets: report.allowedTilesets,
+        active: true, monsterAssets: monsterAssetStatus(project, activeMonsterTurn()), preset: report.preset, mode: report.mode, allowedFamilies: report.allowedFamilies, allowedTilesets: report.allowedTilesets,
         violations: report.violations.map(describe), preexisting: report.preexisting.map(describe),
         ...(report.charsetViolations.length || report.charsetPreexisting.length ? { charsets: { violations: report.charsetViolations.slice(0, 40).map(chipLine), preexisting: report.charsetPreexisting.slice(0, 40).map(chipLine) } } : {}),
         ...(visual.active ? { visuals: { faceFamilies: visual.faceFamilies, battleFamilies: visual.battleFamilies, outsiders: visual.outsiders.slice(0, 40), pending: visual.pending.slice(0, 40) } } : {}),

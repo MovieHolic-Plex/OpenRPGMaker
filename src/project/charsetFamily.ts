@@ -56,3 +56,12 @@ export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrT
   if (project?.assets?.uploaded?.[idOrTextureKey]?.kind === "charset") return "uploaded";
   return "other";
 }
+
+/**
+ * 몬스터 수집 전용 칩 — Scarloxy 트레이너·직군·도장 보스(scarloxy-people)와 몬스터 수집 하네스의 따라다니기 칩(oprn-charset-harness-monster<n>).
+ * 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)이 몬스터 프로젝트가 아닌 곳에서 조수가 새로 고르지 못하게 하는 대상이다.
+ * RTP Monster1~6·Animal 같은 일반 판타지 몬스터·동물 칩은 일반 RPG 의 필드 적이므로 포함하지 않는다(경계가 애매하면 허용).
+ */
+export function isMonsterCollectOnlyCharset(project: CharsetFamilyContext | undefined, idOrTextureKey: string): boolean {
+  return charsetFamilyOf(project, idOrTextureKey) === "scarloxy-people" || /^oprn-charset-harness-monster\d+$/u.test(shape(idOrTextureKey));
+}

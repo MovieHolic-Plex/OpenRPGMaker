@@ -22,6 +22,7 @@ import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/edito
 import { captureActivityVisuals, type ActivityVisual } from "@/ai/activityVisual";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { genreLockHidesTool } from "@/project/genreLock";
+import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
 import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
@@ -269,7 +270,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
   const maxDataChars = options.maxDataChars ?? DEFAULT_MAX_DATA_CHARS;
   const maxIssues = options.maxIssues ?? DEFAULT_MAX_ISSUES;
   // 장르 잠금 중에는 허용 계열 밖 칩셋 전용 시공 도구를 조수에게 아예 보이지 않는다(실행기도 같은 이름을 거부한다).
-  return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).filter((tool) => !genreLockHidesTool(ctx.project, tool.name)).map((tool) => ({
+  return selectPiToolDefinitions(options.domains, { readOnly: options.readOnly, toolNames: options.toolNames }).filter((tool) => !genreLockHidesTool(ctx.project, tool.name) && !(ctx.assistantRun && toolHiddenByMonsterLock(ctx.project, tool.name, ctx))).map((tool) => ({
     name: tool.name,
     label: tool.name,
     description: tool.description,

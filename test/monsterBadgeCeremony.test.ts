@@ -126,7 +126,7 @@ describe("installBadgeCeremonies / configure_monster_campaign {badgeCeremony}", 
 
   it("도구가 같은 일을 하고 요약에 결과를 적는다", () => {
     const project = fresh();
-    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: true };
     const removed = runTool(ctx, "configure_monster_campaign", { badgeCeremony: { remove: true } }, { dryRun: false });
     expect(removed.ok, removed.summary).toBe(true);
     expect(removed.summary).toContain("걷음");

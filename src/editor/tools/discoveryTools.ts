@@ -1,5 +1,6 @@
 import { activeTools } from "./toolRegistry";
 import { genreLockHidesTool } from "@/project/genreLock";
+import { monsterToolHiddenInRun } from "@/project/genreLockMonsterAssets";
 import { TOOL_ALIASES, aliasTermHit } from "./toolAliases";
 import { ToolError, type ToolDefinition, type ToolDomain, type ToolExecResult } from "./types";
 
@@ -210,8 +211,10 @@ export const FIND_TOOLS: ToolDefinition = {
     const domain = parseDomain(args.domain);
     const limit = normalizedLimit(args.limit);
     // 장르 잠금 중에는 허용 계열 밖 칩셋 전용 파이프라인(버들항·jp_city·캠퍼스… 시공 도구)이 결과에 나오지 않는다 — 조수가 애초에 고르지 않게(project/genreLock.ts).
-    const visible = (tool: { name: string }) => !genreLockHidesTool(project, tool.name);
+    const visible = (tool: { name: string }) => !genreLockHidesTool(project, tool.name) && !monsterToolHiddenInRun(project, tool.name);
     const lockedNames = [...new Set(words(query))].filter((name) => genreLockHidesTool(project, name));
+    // 몬스터 수집 도구를 이름으로 찾는데 이 프로젝트가 몬스터 게임이 아니면 이유와 다음 행동을 알린다(결과에는 나오지 않는다).
+    const monsterLockedNames = [...new Set(words(query))].filter((name) => monsterToolHiddenInRun(project, name));
     const pool = activeTools()
       .filter(visible)
       .filter((tool) => tool.name !== FIND_TOOLS.name)
@@ -233,12 +236,13 @@ export const FIND_TOOLS: ToolDefinition = {
     const candidates = hits.map(({ tool, why }) => ({ name: tool.name, mode: tool.mode, domains: tool.domains ?? [], why, description: tool.description, parameters: tool.parameters }));
     const label = (hit: ToolSearchHit) => (hit.why && exact.length === 0 ? `${hit.tool.name} [${hit.why}]` : hit.tool.name);
     const lockNote = lockedNames.length ? ` 단 ${lockedNames.join(", ")} 는 장르 잠금 중이라 쓸 수 없다(허용 계열 칩셋 도구만 보인다).` : "";
+    const monsterNote = monsterLockedNames.length ? ` 단 ${monsterLockedNames.join(", ")} 는 몬스터 수집(포켓몬식) 전용이라 이 프로젝트에서는 쓸 수 없다 — 일반 RPG 의 적·사냥터는 upsert_enemy·upsert_troop·place_field_enemy 로 만든다. 사용자가 몬스터 수집 게임을 원하는지 한 문장으로 되묻고 턴을 끝내라.` : "";
     return {
       summary: (candidates.length > 0
         ? nearest
           ? `"${query}"에 정확히 맞는 툴은 없어 가장 가까운 ${candidates.length}개를 돌려줍니다: ${hits.map(label).join(", ")}. 맞지 않으면 기능어를 바꾸거나 영문 툴 이름으로 다시 검색하세요.`
           : `편집기 툴 ${candidates.length}개 발견: ${hits.map(label).join(", ")}${unknownNames(exact, named)}`
-        : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`) + lockNote,
+        : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`) + lockNote + monsterNote,
       data: { matches: candidates, ...(nearest ? { nearest: true } : {}) },
     };
   },

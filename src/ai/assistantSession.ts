@@ -104,6 +104,8 @@ import {
 } from "./conversationTurnContext";
 import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { buildSessionRegistryTools } from "./sessionToolExposure";
+import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
+import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -703,8 +705,11 @@ export class AssistantSession {
    */
   private toolContext(project: Project): ToolContext {
     const options = (): ContextOptions => this.contextOptions ?? {};
+    const session = this;
     return {
       project,
+      // 몬스터 자산 역방향 잠금: 이번 사용자 요청이 몬스터 수집 요청인가(없으면 몬스터 전용 도구·자산은 막힌다).
+      get monsterTurn() { return isMonsterRequestTurn(session.currentTurnInstruction); },
       get currentMapId() {
         const id = resolveContextMapId(options());
         return id && this.project.maps[id] ? id : undefined;
@@ -4825,6 +4830,7 @@ export class AssistantSession {
           requiredReadTools: this.readEvidence.requiredReadTools(),
           workPlan: this.workPlan,
           fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
+          hideTool: (toolName) => toolHiddenByMonsterLock(this.ctx.project, toolName, { monsterTurn: isMonsterRequestTurn(this.currentTurnInstruction) }),
           // 이벤트 명령 범위는 전체에서 걸러 쓰므로 창 판정을 하지 않는다.
           ...(this.eventCommandScope ? {} : { contextWindow: resolveContextWindow(this.config.model) }),
         }),

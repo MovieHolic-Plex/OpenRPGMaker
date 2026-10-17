@@ -87,6 +87,11 @@ export interface PiAgentRequest {
       readonly eventsChanged: readonly string[];
     }[];
   }[];
+  /**
+   * 이 요청이 몬스터 수집(포켓몬식) 요청인가 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)이 이 턴만 푼다. 비우면 워커가 task(사용자 글)로 판정한다(isMonsterRequestTurn).
+   * 팀 하위 실행은 요청을 펼쳐 받으므로 워커가 입구에서 한 번 채운다 — 팀원 task 에 몬스터 낱말이 없어도 같은 턴 판정을 따른다.
+   */
+  readonly monsterTurn?: boolean;
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];

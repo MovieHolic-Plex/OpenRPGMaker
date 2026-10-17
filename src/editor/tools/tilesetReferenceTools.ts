@@ -3,6 +3,7 @@ import { referenceManifest, referenceOwner, referencePage, referencePageStarts, 
 import { activeGenreLock, genreLockAllowsTileset } from "@/project/genreLock";
 import { ToolError, type ToolDefinition } from "./types";
 import type { Project } from '@/project/types';
+import { monsterTilesetHiddenInRun } from "@/project/genreLockMonsterAssets";
 
 /** 선택 인자를 빈 문자열로 채워 보내는 모델(엄격 스키마 — 2026-10-01 r2 시험: imageId:"" 로 12번 실패)을 위해 빈 id 는 없는 것으로 본다. */
 function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown> {
@@ -135,7 +136,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
       // 장르 잠금 중에는 허용 계열 밖 칩셋을 전체 목록에 올리지 않는다(조수가 애초에 고르지 않게). 이름을 알고 직접 묻는 것은 막지 않고 경고만 붙인다 — 사용자가 승인한 계열의 자료도 읽어야 하므로.
       const locked = args.tilesetId === undefined && activeGenreLock(project) !== undefined;
       const tilesets = args.tilesetId === undefined
-        ? Object.values(project.tilesets).filter(t => !isRetiredInteriorTileset(t.id, t) && (!locked || genreLockAllowsTileset(project, t.id)))
+        ? Object.values(project.tilesets).filter(t => !isRetiredInteriorTileset(t.id, t) && (!locked || genreLockAllowsTileset(project, t.id)) && !monsterTilesetHiddenInRun(project, t.id))
         : [project.tilesets[String(args.tilesetId)]];
       if (tilesets.some(t => !t)) throw new ToolError("타일셋을 찾을 수 없습니다.");
       const lockWarnings = args.tilesetId !== undefined && activeGenreLock(project) && !genreLockAllowsTileset(project, String(args.tilesetId))

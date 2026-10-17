@@ -15,7 +15,9 @@ import { assertGenreLock, enforcingGenreLock, GENRE_LOCK_EXEMPT_TOOLS, GenreLock
 import { applyMonsterIntentStart } from "@/project/genrePresets";
 import { isRomanceTitleTarget, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { assertGenreLockCharsets, genreLockCharsetCatalogFilter, GenreLockCharsetError } from "@/project/genreLockCharsets";
-import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog } from "@/project/genreLockVisuals";
+import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualError, withGenreLockVisualCatalog, type VisualCatalogFilter } from "@/project/genreLockVisuals";
+import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monsterToolRejection, withMonsterTurn } from "@/project/genreLockMonsterAssets";
+import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { isRetiredEasyRpgTileset, LIBRARY_IMPORT_TOOLS, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { guardWholeRecordRewrite } from "./assistantRewriteGuard";
@@ -214,12 +216,39 @@ function rejectGenreLockVisuals(ctx: ToolContext, tool: ToolDefinition, before: 
   }
 }
 
-/** 조수 실행 중 장르 잠금이 캐릭터 칩·얼굴·전투 그림을 잠그면 그림 검색·기본 선택을 허용 그림으로 좁힌다(동기 도구 실행 구간만). */
+/**
+ * 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아닐 때, 조수·도구가 새로 고르거나 바꾼 몬스터 전용 칩셋·시스템 설정·캐릭터 칩·얼굴·전투 그림을 거부한다.
+ * 판정은 assertMonsterAssetLock 하나. 통째로 들이는 도구(캠페인 생성·장소 가져오기)의 그림은 막지 않고 개수만 경고한다(칩셋·시스템 설정은 항상 거부). 이미 있던 것·손 편집(ctx.assistantRun 아님)은 건드리지 않는다.
+ */
+function rejectMonsterAssets(ctx: ToolContext, tool: ToolDefinition, before: Project, draft: Project): string[] {
+  if (!ctx.assistantRun) return [];
+  try {
+    return assertMonsterAssetLock(before, draft, {
+      toolName: tool.name, turn: ctx,
+      lenient: tool.placesCuratedCast === true || tool.allowsTilesetChange === true || LIBRARY_IMPORT_TOOLS.has(tool.name),
+    });
+  } catch (cause) {
+    if (cause instanceof MonsterAssetLockError) throw new ToolError(cause.message, { code: "genre-lock" });
+    throw cause;
+  }
+}
+
+/**
+ * 조수 실행 중 장르 잠금이 캐릭터 칩·얼굴·전투 그림을 잠그면 그림 검색·기본 선택을 허용 그림으로 좁힌다(동기 도구 실행 구간만).
+ * 몬스터 프로젝트가 아니면 몬스터 전용 그림(Scarloxy 트레이너 칩·몬스터 전투 그림·트레이너·몬스터 배경)도 같은 방식으로 뺀다 — 두 필터를 모두 만족해야 보인다.
+ * 이 구간 동안 ctx.monsterTurn 도 켜 두어 find_tools·목록 도구가 ctx 없이 같은 판정을 쓴다(withMonsterTurn).
+ */
 function withCharsetCatalog<T>(ctx: ToolContext, project: Project, run: () => T): T {
-  const filter = ctx.assistantRun ? genreLockCharsetCatalogFilter(project) : undefined;
-  const visual = ctx.assistantRun ? genreLockVisualCatalogFilter(project) : undefined;
+  const forwardChars = ctx.assistantRun ? genreLockCharsetCatalogFilter(project) : undefined;
+  const forwardVisual = ctx.assistantRun ? genreLockVisualCatalogFilter(project) : undefined;
+  const reverse = ctx.assistantRun ? monsterAssetCatalogFilters(project, ctx) : undefined;
+  const filter = forwardChars && reverse ? (entry: { readonly textureKey: string }) => forwardChars(entry) && reverse.charset(entry) : forwardChars ?? reverse?.charset;
+  const visual: VisualCatalogFilter | undefined = forwardVisual && reverse
+    ? { face: (id) => forwardVisual.face(id) && reverse.visual.face(id), battler: (id) => forwardVisual.battler(id) && reverse.visual.battler(id), backdrop: (id) => forwardVisual.backdrop(id) && reverse.visual.backdrop(id) }
+    : forwardVisual ?? reverse?.visual;
   const inner = filter ? () => withNpcGraphicCatalogFilter(filter, run) : run;
-  return visual ? withGenreLockVisualCatalog(visual, inner) : inner();
+  const scoped = visual ? () => withGenreLockVisualCatalog(visual, inner) : inner;
+  return withMonsterTurn(ctx.assistantRun ? { monsterTurn: ctx.monsterTurn === true } : undefined, scoped);
 }
 
 /**
@@ -423,6 +452,15 @@ export function runToolDefinition(
     return { ok: false, summary: `'${name}' 장르 잠금으로 거부`, issues: [{ severity: "error", code: "genre-lock", message }] };
   }
 
+  // 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 전용 도구는 실행하지 않는다(목록·find_tools 에서도 빠져 있다).
+  // 일반 도구가 몬스터 전용 인자 값(genre:monster-collect·battleModel:gen1 …)을 받는 경우도 여기서 막는다. 판정은 genreLockMonsterAssets.ts 하나.
+  if (ctx.assistantRun && !monsterAssetsAllowed(ctx.project, ctx)) {
+    const argMessage = isMonsterOnlyTool(name) ? undefined : monsterToolArgViolation(name, args);
+    if (isMonsterOnlyTool(name) || argMessage) {
+      return { ok: false, summary: `'${name}' 몬스터 수집 잠금으로 거부`, issues: [{ severity: "error", code: "genre-lock", message: argMessage ?? monsterToolRejection(name) }] };
+    }
+  }
+
   const prunedPaths: string[] = [];
   // 모호하지 않은 인자 별칭(table→collection 등)은 옮기고 「X 는 Y 입니다」 경고를 남긴다(argRepair.ts) — 조용한 교정 금지.
   const aliased = applyArgAliases(name, tool.parameters, args);
@@ -496,10 +534,12 @@ export function runToolDefinition(
     beginSpatialToolProposal(draft, before);
     // 라우팅이 몬스터 의도를 놓친 자유 경로: 빈 시작 맵뿐인 프로젝트에서 몬스터 전용 도구가 처음 불리면, 도구가 NPC·트레이너를 놓기 전에 몬스터 키트 시작 + 장르 잠금을 건다.
     // 도구가 실패하면 draft 째로 버려지므로 「처음 성공하면」이다. 선언 장르가 이미 있거나(풀어 둔 프로젝트 포함) 맵이 있는 프로젝트는 건드리지 않는다.
-    const lockProject: Project = ctx.assistantRun && monsterToolStartsLock(name) && draft.system.genre === undefined && !draft.system.genreLock && applyMonsterIntentStart(draft).locked ? draft : before;
+    // 역방향 잠금: 일반 도구(set_encounter_table)는 몬스터 프로젝트·몬스터 요청 턴에서만 표지·키트 시작을 건다 — JRPG 의 랜덤 조우 한 줄이 프로젝트를 몬스터 게임으로 바꾸지 못하게 한다.
+    const markerAllowed = !ctx.assistantRun || monsterAssetsAllowed(before, ctx);
+    const lockProject: Project = ctx.assistantRun && markerAllowed && monsterToolStartsLock(name) && draft.system.genre === undefined && !draft.system.genreLock && applyMonsterIntentStart(draft).locked ? draft : before;
     exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, guarded?.args ?? normalizedArgs));
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
-    if (monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
+    if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);
     const runnerWarnings = [...(prunedNote ? [prunedNote] : []), ...(guarded?.warnings ?? [])];
     if (runnerWarnings.length) exec = { ...exec, warnings: [...runnerWarnings, ...(exec.warnings ?? [])] };
     compactTouchedMapLayers(before, draft);
@@ -512,6 +552,8 @@ export function runToolDefinition(
       const visualWarnings = rejectGenreLockVisuals(ctx, tool, before, draft);
       if (visualWarnings.length) exec = { ...exec, warnings: [...visualWarnings, ...(exec.warnings ?? [])] };
       rejectRomanceTitleMismatch(ctx, before, draft);
+      const monsterWarnings = rejectMonsterAssets(ctx, tool, before, draft);
+      if (monsterWarnings.length) exec = { ...exec, warnings: [...monsterWarnings, ...(exec.warnings ?? [])] };
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

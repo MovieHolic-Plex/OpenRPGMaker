@@ -44,6 +44,11 @@ export interface SessionToolExposureInput {
    * 폴백 턴이 요청 조립에서 죽었다.
    */
   readonly contextWindow?: number;
+  /**
+   * 이 이름을 조수에게 보이지 않는다 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)이 몬스터 프로젝트가 아닌 곳의 포켓몬식 도구를 가린다.
+   * 전체 카탈로그 폴백·발견 결과·의도 선언·플랜 노출 어디서 왔든 마지막에 한 번 거른다.
+   */
+  readonly hideTool?: (toolName: string) => boolean;
 }
 
 /** 폴백으로 전체 카탈로그를 보내도 대화가 쓸 자리(약 13,000 토큰)가 남는가. */
@@ -89,6 +94,11 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
  * flip it for the next round without changing execution/approval policy.
  */
 export function buildSessionRegistryTools(input: SessionToolExposureInput): OpenAiTool[] {
+  const tools = buildSessionRegistryToolsUnfiltered(input);
+  return input.hideTool ? tools.filter((tool) => !input.hideTool!(tool.function.name)) : tools;
+}
+
+function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): OpenAiTool[] {
   if (input.fullCatalogFallback || input.intent === null || input.intent.source === "fallback") {
     const full = toOpenAiTools() as OpenAiTool[];
     // 창이 좁으면 전체를 밀어 넣지 않고 아래 좁힌 목록으로 간다 — 발견 도구가 나머지를 찾아 준다.

@@ -123,6 +123,8 @@ export interface IntentFacts {
   readonly maps: readonly { readonly id: string; readonly name: string }[];
   readonly facilityLabels: readonly string[];
   readonly toolNames: readonly string[];
+  /** 몬스터 자산이 막힌 프로젝트·턴이면 true — 선언 프롬프트에서 몬스터 도구 안내를 뺀다(intentSystemPrompt). */
+  readonly monsterLocked?: boolean;
   readonly hasActivePlan: boolean;
   readonly wikiContext?: string;
   readonly actualStart?: { readonly mapId: string; readonly x: number; readonly y: number };
@@ -139,6 +141,27 @@ const CONTINUATION_TOKENS: ReadonlySet<string> = new Set(["계속", "이어서",
 
 export function isContinuationText(text: string): boolean {
   return CONTINUATION_TOKENS.has(text.normalize("NFKC").trim().toLowerCase().replace(/[.!~]+$/u, ""));
+}
+
+/**
+ * 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아닐 때 의도 선언 프롬프트·메모에서 지울 몬스터 문구.
+ * 정방향 문구는 INTENT_SYSTEM_PROMPT 안에 그대로 두고(몬스터 프로젝트용), 선언 호출 직전에 intentSystemPrompt 가 잘라 낸다 — 도구 이름이 선언 후보에 오르지 않게.
+ */
+const INTENT_MONSTER_SENTENCE = ["포켓몬/Pokemon/에메랄드 같은 전체 게임 생성·보수는", "define_monster_species를 선택한다. "] as const;
+export function intentSystemPrompt(facts: Pick<IntentFacts, "monsterLocked">): string {
+  if (!facts.monsterLocked) return INTENT_SYSTEM_PROMPT;
+  const start = INTENT_SYSTEM_PROMPT.indexOf(INTENT_MONSTER_SENTENCE[0]);
+  const end = INTENT_SYSTEM_PROMPT.indexOf(INTENT_MONSTER_SENTENCE[1]);
+  if (start < 0 || end < start) return INTENT_SYSTEM_PROMPT;
+  return INTENT_SYSTEM_PROMPT.slice(0, start) + INTENT_SYSTEM_PROMPT.slice(end + INTENT_MONSTER_SENTENCE[1].length);
+}
+
+/** 던전 시공 메모 등에 섞인 몬스터 키트·포켓몬풍 문구를 지운다(몬스터 자산이 막힌 프로젝트용). 문구가 없으면 그대로. */
+export function stripMonsterKitMentions(note: string): string {
+  return note
+    .replace("칩셋 어댑터(몬스터 키트 / 버들항)와 장르(포켓몬풍 짧은 던전 / 일반 RPG 긴 던전)는", "칩셋 어댑터와 장르는")
+    .replace("(버들항 기본, 몬스터 키트 기본은 cave)", "(버들항 기본)")
+    .replace("장르별 채우기 계획 data.population(야생 조우 구역·시선 트레이너·지름길 / 필드 적·상자·잠긴 문)", "채우기 계획 data.population(필드 적·상자·잠긴 문)");
 }
 
 export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.

@@ -30,6 +30,8 @@ const TRAINER_ROLES: ReadonlyMap<string, { readonly label: string; readonly view
   Object.entries((trainerIndex as { trainers: Record<string, { label: string; view: "front" | "back" }> }).trainers).map(([role, entry]) => [role, { label: entry.label, view: entry.view }]),
 );
 const BUNDLED_TRAINER_ROLES: ReadonlySet<string> = new Set(TRAINER_ROLES.keys());
+/** 번들 트레이너 전투 그림 역할 id — 몬스터 자산 역방향 잠금(genreLockMonsterAssetsDiff.ts)이 같은 목록을 쓴다. */
+export const BUNDLED_TRAINER_ROLE_IDS: ReadonlySet<string> = BUNDLED_TRAINER_ROLES;
 
 export interface VisualUse {
   readonly kind: VisualKind;

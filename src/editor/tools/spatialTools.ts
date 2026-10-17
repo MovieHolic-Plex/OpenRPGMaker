@@ -24,6 +24,7 @@ import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL
 import { ToolError, type ToolDefinition } from "./types";
 import { referenceManifest, referenceOwnerManifest } from '@/project/tilesetReferences';
 import { readSpatialReferenceTool } from './spatialReferenceTools';
+import { monsterTilesetHiddenInRun } from '@/project/genreLockMonsterAssets';
 
 const kinds = ["object", "space", "place", "region", "world"] as const;
 const collections = { object: "objects", space: "spaces", place: "places", region: "regions", world: "worlds" } as const;
@@ -106,8 +107,8 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command. To put the place itself into the project (new map or pasted into a map), call import_region_reference instead of repainting these rows.",
     parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
     prepare: args => typeof args.id === "string" ? preloadRegionReference(args.id) : Promise.resolve(),
-    run(_project, args) {
-      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].map(referenceOwnerManifest)) } };
+    run(project, args) {
+      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].filter(reference => !monsterTilesetHiddenInRun(project, (reference as { tilesetId?: string }).tilesetId)).map(referenceOwnerManifest)) } };
       try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
     },
@@ -172,6 +173,8 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       const offset = args.offset === undefined ? 0 : Math.max(0, Number(args.offset));
       // Shared places/objects are read-only rows every project sees, with or without spatialAuthoring.
       const shared = [...(!kind || kind === "place" ? sharedPlaces() : []), ...(!kind || kind === "object" ? sharedObjects(project) : [])]
+        // 몬스터 수집 칩셋의 장소·기물은 몬스터 프로젝트(또는 몬스터 요청 턴)가 아니면 조수 검색에 나오지 않는다(genreLockMonsterAssets.ts).
+        .filter(entry => !monsterTilesetHiddenInRun(project, entry.tilesetId))
         .filter(entry => matchesQuery(entry, query))
         // Rows whose id/name match come before rows that only share a tag (e.g. every tile group of the volcano sheet).
         .map((entry, index) => ({ entry, index, rank: !query || matchesQuery({ ...entry, tags: [] }, query) ? 0 : 1 }))

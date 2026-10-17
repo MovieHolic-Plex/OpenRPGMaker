@@ -8,6 +8,7 @@
 //   - 스타터를 안 받고도 도로로 나갈 수 있다(영웅 혼자 야생과 싸운다).
 
 import { genreLockViolations } from "@/project/genreLock";
+import { isDeclaredMonsterGame } from "@/project/genreLockMonsterAssets";
 import { TILE } from "@/project/defaults/constants";
 import { itemAllowsBattle } from "@/project/itemUsage";
 import { isMonsterNoCaptureGame, monsterSpeciesForEnemy } from "@/project/monsterCollection";
@@ -19,10 +20,8 @@ import { visitAllCommands, type RawCommand } from "./walk";
 const GYM = /체육관|관장|도전장|gym/iu;
 const ROUTE = /도로|길|필드|숲|초원|route|field/iu;
 
-function isMonsterGame(project: Project): boolean {
-  return project.system?.genre === "monster-collect" || project.gameDesignBrief?.presetId === "monster-collect"
-    || project.system?.monsterCollection === true || isMonsterNoCaptureGame(project);
-}
+/** 몬스터 수집 게임 선언 판정은 역방향 잠금과 같은 함수 하나다(genreLockMonsterAssets.ts) — 그 밖의 프로젝트에는 센터·도감·배지 요구를 하지 않는다. */
+const isMonsterGame = (project: Project): boolean => isDeclaredMonsterGame(project);
 
 function mapTroops(map: GameMap): string[] {
   return [...new Set([...(map.encounterTable ?? []).map((entry) => entry.troopId), ...(map.troopIds ?? [])])];
