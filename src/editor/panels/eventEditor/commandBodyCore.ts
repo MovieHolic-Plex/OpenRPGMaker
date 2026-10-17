@@ -55,6 +55,7 @@ import {
   normalizeDialogueFullScale,
   resolveDialogueFullPortraitLayout,
 } from "@/project/dialogueStyles";
+import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
 import { renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
@@ -1087,6 +1088,11 @@ function displayTextSettingsBody(
       el("p", {
         class: "event-command-settings-hint",
         text: "이후 문장·선택지·숫자 입력 창의 기본 위치를 바꿉니다.",
+      }),
+      el("p", {
+        class: "event-command-settings-hint event-command-portrait-bottom-notice",
+        dataset: { testid: "event-command-portrait-bottom-notice" },
+        text: PORTRAIT_BOTTOM_NOTICE,
       }),
     ]),
     settingsGroup("옵션", [

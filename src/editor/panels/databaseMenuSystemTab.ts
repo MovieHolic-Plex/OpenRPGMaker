@@ -9,6 +9,7 @@
  * 화면과 도구가 같은 규칙을 갖는다. 저작이 없으면 옛 동작 그대로이고(연애·관계 중심 게임만 기본 구성이 처음부터 켜져 있다),
  * 값을 바꾸는 순간 그 칸이 이 게임만의 저작이 된다. 되돌리기 버튼은 저작을 지워 자동 판정으로 돌린다.
  */
+import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { field, segmentedControl, selectField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { noticeBar, sectionCard } from "@/editor/panels/databaseWorkspace";
@@ -327,6 +328,11 @@ function menuCard(project: Project, rerender: () => void): HTMLElement {
   return sectionCard({ title: "ESC 메뉴", hint: sourceHint(authored, relationship && menu !== undefined), testid: "db-menu-system-menu-card", children });
 }
 
+/** 대사창 위치 규칙 한 줄 — 위·가운데는 저장할 수 있지만 흉상이 있는 대사는 항상 아래로 나온다. */
+function portraitBottomNote(): HTMLElement {
+  return el("p", { class: "db-menu-system-lead db-menu-system-portrait-note", dataset: { testid: "db-menu-system-portrait-bottom-note" }, text: PORTRAIT_BOTTOM_NOTICE });
+}
+
 function dialogueCard(project: Project, rerender: () => void): HTMLElement {
   const resolved = resolveDialogueSystem(project);
   const current = resolved ?? defaultDialogueSystem();
@@ -357,6 +363,7 @@ function dialogueCard(project: Project, rerender: () => void): HTMLElement {
   });
   const children: HTMLElement[] = [
     el("p", { class: "db-menu-system-lead", text: "대사창 아래 단추와 단축키(L 백로그 · A 오토 · S 스킵 · H 숨기기)입니다. 속도·스킵 범위·불투명도는 플레이어가 아직 정하지 않았을 때의 시작값이고, 플레이어는 설정에서 바꿀 수 있습니다. 스킵은 선택지·엔딩·넘기기 금지 글에서 항상 멈춥니다." }),
+    portraitBottomNote(),
     toggles,
     grid,
   ];
@@ -380,6 +387,7 @@ function lookCard(project: Project, rerender: () => void): HTMLElement {
   const authoredValue = <T extends string>(key: keyof AuthoredVnLook): T | typeof LOOK_PRESET_DEFAULT => (base?.[key] as T | undefined) ?? LOOK_PRESET_DEFAULT;
   const children: HTMLElement[] = [
     el("p", { class: "db-menu-system-lead", text: "대사창·ESC 메뉴·저장 화면의 모양(색·모서리·이름표·선택지)을 프리셋 하나로 고릅니다. 연애 게임은 소재(캠퍼스·카페·회사·바닷가·학원)에 맞는 룩이 처음부터 적용되어 있고, 다른 장르는 고르기 전까지 옛 대사창 그대로입니다." }),
+    portraitBottomNote(),
   ];
   if (!resolved) {
     children.push(

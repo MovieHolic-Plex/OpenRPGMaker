@@ -20,6 +20,7 @@ import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
+import { portraitForcesBottom } from "@/project/dialoguePortraitPosition";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
 import {
   DIALOGUE_FALLBACK_CHAR_WIDTH,
@@ -315,6 +316,9 @@ export function createDialogueUI(
     cancelActiveText?.();
     cancelActiveChoice?.();
     const wasOpen = overlay.firstChild !== null;
+    // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
+    const prevBox = wasOpen ? overlay.querySelector<HTMLElement>(".dialogue-box") : null;
+    previousBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
     if (pendingExit) {
       pendingExit.cancelTimer();
       pendingExit = null;
@@ -338,10 +342,37 @@ export function createDialogueUI(
       // 대화 세션이 끝났다 — 초상 무대가 기억한 앞 화자를 잊는다.
       lastPortrait = undefined;
       listenerPortrait = undefined;
+      lastLineForcedBottom = false;
+      previousBoxTop = undefined;
     };
     const cancelTimer = schedule(finish, exitMs);
     // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
     if (!settled) pendingExit = { cancelTimer, finish };
+  };
+
+  /** 변환(진입 연출)을 뺀 레이아웃 윗변 — 화면 좌표. 연출 도중의 값이 섞이면 미끄러짐의 출발점이 틀어진다. */
+  const layoutTop = (host: HTMLElement, node: HTMLElement): { readonly top: number; readonly scale: number } | undefined => {
+    if (typeof host.getBoundingClientRect !== "function" || host.offsetHeight <= 0) return undefined;
+    const rect = host.getBoundingClientRect();
+    const scale = rect.height / host.offsetHeight || 1;
+    return { top: rect.top + node.offsetTop * scale, scale };
+  };
+
+  /**
+   * 이어지는 대사에서 초상 규칙 때문에 창의 세로 자리가 바뀌면(초상 없는 줄 위/가운데 ↔ 초상 있는 줄 아래) 앞 창이 있던 자리에서 새 자리로 미끄러진다.
+   * 레이아웃은 즉시 새 자리로 확정되고(캡처·판정에 영향 없음) `translate` 만 되감아 재생한다. 움직임 줄이기에서는 쓰지 않는다.
+   */
+  const glideFromPreviousBox = (box: HTMLElement): void => {
+    const before = previousBoxTop;
+    previousBoxTop = undefined;
+    if (before === undefined || typeof box.animate !== "function") return;
+    if (resolveReducedMotion(undefined)) return;
+    const after = layoutTop(overlay, box);
+    if (after === undefined) return;
+    // 화면 좌표의 차이를 상자 안 좌표(CSS px)로 되돌린다 — 플레이 화면은 논리 해상도를 키워서 보여 준다.
+    const dy = (before - after.top) / after.scale;
+    if (Math.abs(dy) * after.scale < 12) return;
+    box.animate([{ translate: `0 ${dy}px` }, { translate: "0 0" }], { duration: 220, easing: "cubic-bezier(0.22, 0.8, 0.3, 1)" });
   };
 
   const beginEnter = (box: HTMLElement, enterMs: number, animate: boolean): (() => void) => {
@@ -579,6 +610,9 @@ export function createDialogueUI(
   // ── 초상 무대: 앞 화자의 초상을 반대쪽에 흐리게 남긴다 ──────────────────────
   // 대화 세션(창이 이어서 열려 있는 동안)에만 기억한다. 퇴장이 끝나면 잊는다.
   let lastPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
+  // 직전 대사가 초상 때문에 아래로 강제됐는가 — 같은 세션의 선택지가 대사창과 같은 자리에 서도록 이어 쓴다.
+  let lastLineForcedBottom = false;
+  let previousBoxTop: number | undefined;
   let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
 
   function showText(rawRequest: DialogueTextRequest): Promise<void> {
@@ -621,12 +655,10 @@ export function createDialogueUI(
 
       const mount = (balloon: boolean): void => {
         const behindPortraits: HTMLElement[] = [];
+        let glideFromPrevious = false;
         box = dialogueBox("", "dialogue-box");
         applyDialogueLook(overlay, box, look);
         const vnLook = applyVnLook(overlay, resolveVnLook(store.getCurrent()));
-        position = applyTextSettings(overlay, box, request);
-        applyDialoguePresentation(box, profile);
-        applyDialogueScrim(scrim, profile, position);
         const baseFace = look.hideFace || balloon || !vnLookShowsPortraits(vnLook) ? undefined : request.face;
         // 공용 흉상·전신이면 줄의 표정으로 같은 모양의 표정 그림을 고른다(sharedPortraitAssets.ts).
         const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
@@ -634,6 +666,14 @@ export function createDialogueUI(
         const face = faceForLine;
         const portraitMode = dialoguePortraitMode(face);
         const isPortrait = portraitMode !== "face";
+        // 흉상·전신이 실제로 그려지는 줄은 저작한 위치(위·가운데)와 상관없이 아래다. 위치 결정은 여기 한 곳이다.
+        const forceBottom = portraitForcesBottom(portraitMode);
+        // 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄에서만 앞 창이 있던 자리에서 미끄러진다(그 밖의 줄은 옛 동작 그대로).
+        glideFromPrevious = wasOpen && lastLineForcedBottom !== forceBottom;
+        lastLineForcedBottom = forceBottom;
+        position = applyTextSettings(overlay, box, request, undefined, forceBottom);
+        applyDialoguePresentation(box, profile);
+        applyDialogueScrim(scrim, profile, position);
         const content = el("div", {
           class: [
             "dialogue-content",
@@ -736,6 +776,8 @@ export function createDialogueUI(
           }
         } else if (!balloon) box.append(logButton);
         overlay.append(box);
+        if (glideFromPrevious) glideFromPreviousBox(box);
+        else previousBoxTop = undefined;
         if (system) applyWindowOpacity(box, getEffectiveReadingPreferences(system.defaults).windowOpacity);
         // 상자 뒤 초상은 상자 **다음** 형제여야 퇴장 연출 선택자(`~`)가 닿는다. 쌓임은 z-index 가 정한다.
         overlay.append(...behindPortraits);
@@ -1324,7 +1366,8 @@ export function createDialogueUI(
     stopReading("choices");
     const wasOpen = takeOverOverlay();
     return new Promise<number>((resolve, reject) => {
-      const position = applyOverlayPosition(overlay, request);
+      // 초상이 선 대사 바로 뒤의 선택지는 그 대사창과 같은 아래 자리에 선다(같은 세션 안에서 창이 위로 뛰지 않게).
+      const position = applyOverlayPosition(overlay, request, wasOpen && lastLineForcedBottom);
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
@@ -1471,6 +1514,8 @@ export function createDialogueUI(
     closeLog();
     lastPortrait = undefined;
     listenerPortrait = undefined;
+    lastLineForcedBottom = false;
+    previousBoxTop = undefined;
   }
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
@@ -1950,10 +1995,11 @@ function applyTextSettings(
   overlay: HTMLElement,
   box: HTMLElement,
   request: DialogueSurfaceSettings,
-  appliedPosition?: MessageWindowPosition
+  appliedPosition?: MessageWindowPosition,
+  forceBottom = false
 ): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
-  const position = appliedPosition ?? applyOverlayPosition(overlay, request);
+  const position = appliedPosition ?? applyOverlayPosition(overlay, request, forceBottom);
   box.classList.toggle("transparent", settings.format === "transparent");
   box.dataset.messageFormat = settings.format;
   box.dataset.messagePosition = position;
@@ -1992,14 +2038,16 @@ function applyVnLook(overlay: HTMLElement, look: ResolvedVnLook | undefined): Re
   return look;
 }
 
-function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings): MessageWindowPosition {
+function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings, forceBottom = false): MessageWindowPosition {
   const settings = request.settings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS;
-  const position = effectivePosition({
-    settings,
-    playerTileY: request.playerTileY,
-    mapHeight: request.mapHeight,
-    ...(request.playerScreenY === undefined ? {} : { playerScreenY: request.playerScreenY }),
-  });
+  const position: MessageWindowPosition = forceBottom
+    ? "bottom"
+    : effectivePosition({
+        settings,
+        playerTileY: request.playerTileY,
+        mapHeight: request.mapHeight,
+        ...(request.playerScreenY === undefined ? {} : { playerScreenY: request.playerScreenY }),
+      });
   overlay.classList.add(`position-${position}`);
   return position;
 }

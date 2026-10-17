@@ -121,6 +121,26 @@ const PLANS: Record<string, Plan> = {
     { g: "bustR", positions: ["top"], names: [true], lens: ["l3"], choices: false },
     { g: "fullL", positions: ["bottom"], names: [true], lens: ["l1"], choices: false },
   ] },
+  // 흉상 아래 고정 전 조합: 흉상 좌/우·전신 좌/우 × 위/가운데/아래 설정 × 이름 있음/없음 × 1·3·6줄(+ 흉상 없는 대조군).
+  bb: { groups: [
+    { g: "none", positions: ["top", "center", "bottom"], names: [true], lens: ["l3"], choices: false },
+    { g: "bustL", positions: ["top", "center", "bottom"], names: [true, false], lens: ["l1", "l3", "l6"], choices: false },
+    { g: "bustR", positions: ["top", "center", "bottom"], names: [true, false], lens: ["l1", "l3", "l6"], choices: false },
+    { g: "fullL", positions: ["top", "center", "bottom"], names: [true, false], lens: ["l1", "l3", "l6"], choices: false },
+    { g: "fullR", positions: ["top", "center", "bottom"], names: [true, false], lens: ["l1", "l3", "l6"], choices: false },
+  ] },
+  // 흉상 → 아래 고정 증명: 위·가운데 설정 위에서 흉상 있는 줄/없는 줄을 섞는다(전환 때 튀는지·선택지·48px 얼굴 제외 포함).
+  bustbottom: { groups: [
+    { g: "none", positions: ["top"], names: [true], lens: ["l1"], choices: false },
+    { g: "bustL", positions: ["top"], names: [true], lens: ["l3"], choices: true },
+    { g: "none", positions: ["center"], names: [true], lens: ["l1"], choices: false },
+    { g: "fullR", positions: ["center"], names: [true], lens: ["l1"], choices: false },
+    { g: "none", positions: ["top"], names: [true], lens: ["l1"], choices: false },
+    { g: "bustR", positions: ["top"], names: [true], lens: ["l1"], choices: true },
+    { g: "faceL", positions: ["top"], names: [true], lens: ["l1"], choices: false },
+    { g: "bustL", positions: ["bottom"], names: [true], lens: ["l1"], choices: false },
+    { g: "none", positions: ["bottom"], names: [true], lens: ["l1"], choices: false },
+  ] },
   cjk: { groups: [
     { g: "none", positions: ["bottom"], names: [true], lens: ["l1", "l6", "max"], choices: true },
     { g: "bustL", positions: ["bottom", "top"], names: [true], lens: ["l1", "l6", "max"], choices: true },

@@ -62,7 +62,7 @@ export type CutsceneSayBeat = {
   readonly style?: string;
   /** 대사 그릇(box·balloon·bark·corner). 흘림·코너는 게임을 멈추지 않는다. */
   readonly container?: string;
-  /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. */
+  /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. 흉상·전신 초상이 있는 줄은 항상 아래. */
   readonly position?: "auto" | "top" | "center" | "bottom";
 };
 

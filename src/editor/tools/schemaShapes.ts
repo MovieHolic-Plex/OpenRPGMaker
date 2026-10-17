@@ -93,7 +93,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
     // enum 을 두지 않는다 — 같은 키를 changeFace(left·right)·displayTextSettings(top·center·bottom)도 쓴다.
-    position: { type: "string", description: "text: 이 줄의 대화창 위치 auto|top|center|bottom(생략=문장 표시 설정; auto=화면 속 주인공을 안 가리는 쪽, 주인공이 화면 아래쪽이면 top). changeFace: left|right. displayTextSettings: top|center|bottom." },
+    position: { type: "string", description: "text: 이 줄의 대화창 위치 auto|top|center|bottom(생략=문장 표시 설정; auto=화면 속 주인공을 안 가리는 쪽, 주인공이 화면 아래쪽이면 top). changeFace: left|right. displayTextSettings: top|center|bottom. 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다)." },
     commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp. 주인공 모습 바꾸기(변신·효과·옷 갈아입기)는 m2-024-change-actor-graphic + fields {target:actorId, value:charset 검색 id(\"charset:<텍스처>:<칸>\") 또는 텍스처 키, characterIndex:0~7}" },
     fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
@@ -276,7 +276,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     },
     style: { type: "string", enum: [...DIALOGUE_STYLE_IDS], description: "say 전용. 이 대사만 다른 대화창. 보통 생략." },
     container: { type: "string", enum: [...DIALOGUE_CONTAINER_IDS], description: `say 전용 대사 그릇:\n${dialogueContainerGuideLines().join("\n")}\n마을 사람 잡담은 bark, 무전·동료 한마디는 corner.` },
-    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: `say 전용. 대화창 위치. 생략/auto = 화면 속 주인공을 가리지 않는 쪽으로 자동. top·center·bottom = 고정(그림·인물이 화면 아래쪽에 있으면 top).` },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: `say 전용. 대화창 위치. 생략/auto = 화면 속 주인공을 가리지 않는 쪽으로 자동. top·center·bottom = 고정(그림·인물이 화면 아래쪽에 있으면 top). 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다).` },
     face: FACE_SCHEMA,
     direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },
