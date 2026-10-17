@@ -36,6 +36,13 @@ describe("JRPG 파티 역할 곡선", () => {
     expect(codes).not.toContain("jrpg-party-identical-stats");
     expect(codes).not.toContain("jrpg-party-flat-roles");
   });
+  it("같은 몸 셋에 다른 몸 하나가 섞여도 identical-stats 로 잡는다(jrpg-loop-3: 탈것 배우 합류가 가렸다)", () => {
+    const { project } = party([undefined, undefined, undefined, { maxHp: [437, 4000], maxMp: [39, 400] }]);
+    const found = checkJrpg(project).find((finding) => finding.code === "jrpg-party-identical-stats");
+    expect(found).toBeDefined();
+    expect(found!.message).toContain("배우0");
+    expect(found!.message).not.toContain("배우3");
+  });
   it("세 명 이상인데 곡선이 거의 같으면 flat-roles 로 잡는다", () => {
     const { project } = party([
       { maxHp: [520, 5000] },
