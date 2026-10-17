@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.252.0 — 2026-10-17
+
+### 기능
+
+- **database** — 장르 프로필 접기 — 「숨긴 탭 N개 · 모두 보기」 (PR-4) (#2841) (`f8de82e`)
+- **database** — 6그룹 재배치·소제목·「게임 설정」 라벨 (PR-3) (#2838) (`acdc802`)
+
+### 수정
+
+- **ci** — record the menu note and search crumb classes as unstyled (`cf16020`)
+
 ## 0.251.2 — 2026-10-17
 
 ### 수정
