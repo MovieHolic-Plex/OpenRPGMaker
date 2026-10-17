@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.257.0 — 2026-10-18
+
+### 기능
+
+- **editor** — AI 참고 청사진 — 수동 프리셋 버튼 철거, AI 가 청사진을 참고해 매번 새로 짓기 + 적대적 VQA 3회 고도화 (#2882) (`adefd95`)
+- **ai** — add live 4-stage pipeline header and rich minimap/inspector tool telemetry cards (#2879) (`ff24ceb`)
+
+### 수정
+
+- **dialogue** — 양쪽 전신 베일 프리셋의 과한 장식 UI를 제거하고 대화창 높이를 슬림하게 조정 (#2880) (`6798826`)
+- **monster** — redraw 칼날 사마귀 battle sheet with real mantis anatomy and 9 distinct poses (#2878) (`499bf95`)
+
 ## 0.256.0 — 2026-10-18
 
 ### 기능
