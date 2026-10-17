@@ -57,6 +57,12 @@ export function installDeadlineEnding(project: Project, days: number, tiers: rea
   return true;
 }
 
+/** 받침 있으면 「과」, 없으면 「와」(한글 아니면 「와」). */
+function withJosa(name: string): string {
+  const code = name.charCodeAt(name.length - 1);
+  return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0 ? "과" : "와";
+}
+
 /** 호감 대화 인물(characterId 있는 talkFriendship 이벤트)마다 「OO와 함께」 엔딩을 보장하고, 인물 엔딩 tiers 를 돌려준다. 이미 있는 같은 id 엔딩은 건드리지 않는다. 인물이 둘 미만이면 빈 배열. */
 export function ensureHeroineEndings(project: Project): { readonly tiers: DeadlineTier[]; readonly generated: string[]; readonly heroines: number } {
   const heroines = new Map<string, string>();
@@ -72,9 +78,9 @@ export function ensureHeroineEndings(project: Project): { readonly tiers: Deadli
     const endingId = `ending_with_${key.replace(/[^A-Za-z0-9_]+/gu, "_")}`;
     if (!project.endings.some((ending) => ending.id === endingId)) {
       project.endings.push({
-        id: endingId, name: `${name}와 함께`, priority: 36,
+        id: endingId, name: `${name}${withJosa(name)} 함께`, priority: 36,
         conditions: [{ kind: "friendshipAtLeast", npcKey: key, value: ROMANCE_ENDING_HAPPY_AT }],
-        epilogue: [{ kind: "say", text: `${name}와(과) 마음이 닿은 채 이야기가 끝난다. 한 계절의 끝에서 두 사람의 거리는 처음과 전혀 다르다.` }],
+        epilogue: [{ kind: "say", text: `${name}${withJosa(name)} 마음이 닿은 채 이야기가 끝난다. 한 계절의 끝에서 두 사람의 거리는 처음과 전혀 다르다.` }],
       });
       generated.push(endingId);
     }

@@ -177,4 +177,21 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect((ctx.project.endings ?? []).map((ending) => ending.id)).toEqual(expect.arrayContaining(["ending_with_char_a", "ending_with_char_b"]));
     expect(JSON.stringify(ctx.project.commonEvents)).toContain("ending_with_char_b");
   });
+
+  it("인물 엔딩이 있어도 기한 판정이 하나도 안 부르면 짚고, 얹으면 조용하다", () => {
+    const project = romanceProject();
+    project.system.timeSystem = { enabled: true } as never;
+    project.endings = [
+      { id: "ending_first_segment", name: "혼자", conditions: [], priority: 0 },
+      { id: "ending_romance_happy", name: "해피", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 60 }], priority: 20 },
+      { id: "ending_with_a", name: "A와", conditions: [{ kind: "friendshipAtLeast", npcKey: "char_a", value: 60 }], priority: 36 },
+      { id: "ending_with_b", name: "B와", conditions: [{ kind: "friendshipAtLeast", npcKey: "char_b", value: 60 }], priority: 36 },
+    ] as never;
+    installDeadlineEnding(project, 14, [{ endingId: "ending_romance_happy", threshold: 60, characterId: "*" }, { endingId: "ending_first_segment" }]);
+    expect(codes(project)).toContain("romance-heroine-endings-uncalled");
+    installDeadlineEnding(project, 14, [
+      { endingId: "ending_with_a", threshold: 60, characterId: "char_a" }, { endingId: "ending_with_b", threshold: 60, characterId: "char_b" },
+      { endingId: "ending_romance_happy", threshold: 60, characterId: "*" }, { endingId: "ending_first_segment" }]);
+    expect(codes(project)).not.toContain("romance-heroine-endings-uncalled");
+  });
 });

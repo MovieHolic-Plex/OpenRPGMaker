@@ -167,3 +167,33 @@ export function checkEndingNpcReachable(project: Project): Finding[] {
       + "그 인물 이벤트에 talkFriendship 을 켜거나 선택지에 changeFriendship(npcKey=그 characterId) 를 넣고, 엔딩 조건의 characterId 가 이벤트 characterId 와 같은지 확인하세요.",
   }];
 }
+
+function deadlineChainEndingIds(project: Project): string[] | undefined {
+  const hook = project.system?.timeSystem?.onDayEnd;
+  const common = hook ? (project.commonEvents ?? []).find((entry) => entry.id === hook) : undefined;
+  if (!common) return undefined;
+  const ids: string[] = [];
+  const walk = (commands: readonly unknown[] | undefined): void => {
+    for (const command of (commands ?? []) as { kind?: string; endingId?: string; then?: unknown[]; else?: unknown[] }[]) {
+      if (command.kind === "triggerEnding" && command.endingId) ids.push(command.endingId);
+      if (command.kind === "fork") { walk(command.then); walk(command.else); }
+    }
+  };
+  walk(common.commands);
+  return ids;
+}
+
+/** 특정 인물의 호감을 보는 엔딩이 둘 이상 있는데 기한 판정이 그 엔딩을 하나도 부르지 않는 경우 — 인물 엔딩이 있어도 기한에는 모두 같은 「해피」로 끝난다(romance-loop-3 rom-c: 병합 뒤 기한 판정에 인물 엔딩이 안 얹혔다). */
+export function checkHeroineEndingsCalled(project: Project): Finding[] {
+  const heroineEndings = (project.endings ?? []).filter((ending) => ending.conditions.some((condition) => friendshipLeaves(condition).some((leaf) => leaf.npcKey !== ANY_FRIENDSHIP_KEY)));
+  if (heroineEndings.length < 2) return [];
+  const called = deadlineChainEndingIds(project);
+  if (called === undefined || called.length === 0) return [];
+  const uncalled = heroineEndings.filter((ending) => !called.includes(ending.id));
+  if (uncalled.length < 2 || uncalled.length < heroineEndings.length) return [];
+  return [{
+    severity: "warning", code: "romance-heroine-endings-uncalled",
+    message: `인물 엔딩 ${uncalled.slice(0, 4).map((ending) => `「${ending.name}」(${ending.id})`).join(", ")} 이(가) 있는데 기한 판정(${project.system?.timeSystem?.onDayEnd})이 하나도 부르지 않습니다 — 기한이 와도 모두 같은 결말입니다. `
+      + "set_deadline_ending 을 tiers 없이 한 번 부르면 인물 엔딩이 기한 판정 맨 위에 얹힙니다(또는 tiers 에 {endingId, friendshipAtLeast, characterId} 로 직접).",
+  }];
+}
