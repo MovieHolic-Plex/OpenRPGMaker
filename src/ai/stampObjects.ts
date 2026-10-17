@@ -85,12 +85,21 @@ function sourceOf(kit: SectionStructureKitDef): StampObjectSource {
   return "authored";
 }
 
-/** 「버들항 지하 수도교·하수도 · 통 1×1」「버들항 소품 돌 우물 (지붕) 2×2」 → 핵심 물건 이름 「통」「돌 우물 (지붕)」. */
+const LOCATION_PREFIX_RE =
+  /^(?:버들항(?:\s.*)?|현대\s*도시|일본\s*도시|마법\s*세계|조선|건물(?:\s*띠)?|거리|공공|소품|차량|부착물|실내(?:\s*바닥|\s*벽면|\s*천장\s*띠|\s*가구)?)$/u;
+
+/** 「버들항 지하 수도교·하수도 · 통 1×1」「승용차 · 검정 · 오른쪽 향함」 → 핵심 물건 이름 「통」「승용차」. */
 export function extractCoreObjectName(name: string): string {
   const base = baseName(name);
-  const afterDot = base.includes("·") ? base.split("·").pop()!.trim() : base;
-  return afterDot
+  const parts = base.split(/\s+·\s+/u).map((p) => p.trim()).filter(Boolean);
+  while (parts.length > 1 && LOCATION_PREFIX_RE.test(parts[0]!)) {
+    parts.shift();
+  }
+  const head = parts[0] ?? base;
+  return head
+    .replace(/\([^)]*\)/gu, " ")
     .replace(/^(?:버들항\s*소품|버들항|조선|마법\s*세계|현대\s*도시|일본\s*도시)\s+/u, "")
+    .replace(/\s+/gu, " ")
     .trim() || base;
 }
 
@@ -139,7 +148,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
       source: sourceOf(kit),
       width: kit.width,
       height: kit.height,
-      nameText: norm(`${core} ${rawTags.join(" ")} ${slug}`),
+      nameText: norm(`${core} ${rawName} ${rawTags.join(" ")} ${slug}`),
       descText: norm(kit.ai?.description ?? ""),
       floorStanding: placement !== "wall",
       placement,
@@ -235,7 +244,9 @@ function hasCompoundConflict(q: string, entry: StampObjectEntry): boolean {
   if (VEHICLE_QUERY_RE.test(q) && NON_VEHICLE_RE.test(core)) return true;
   if ((q === "다리" || q === "돌다리" || q === "bridge") && /말뚝|울타리|식탁|탁자|의자|사다리/u.test(core)) return true;
   if ((q === "계단" || q === "올라가는 계단" || q === "내려가는 계단") && /말뚝|사다리/u.test(core)) return true;
-  if ((q === "기둥" || q === "돌기둥" || q === "석주") && /이정표|가로등|등불|전주|전봇대|신호/u.test(core)) return true;
+  if (/내려가는|아래로/u.test(q) && /올라가는|위로/u.test(entry.name)) return true;
+  if (/올라가는|위로/u.test(q) && /내려가는|아래로/u.test(entry.name)) return true;
+  if ((q === "기둥" || q === "돌기둥" || q === "석주") && /이정표|가로등|등불|전주|전봇대|신호|정문|문|통|우물/u.test(core)) return true;
   return false;
 }
 
@@ -279,11 +290,11 @@ function fuzzyNameScore(query: string, entry: StampObjectEntry): number {
  * 「황금 왕좌」에 「의자」, 「공룡 알」에 「바위」, 「대포」에 「화로」를 붙여 엉뚱한 그림을 깔던 길을 막는다(2026-10-15 코퍼스).
  */
 const SYNONYM_GROUPS: readonly (readonly string[])[] = [
-  ["화분", "꽃 화분", "화초", "planter", "pot", "flowerpot"],
+  ["화분", "꽃 화분", "둥근 돌 화분", "네모 돌 화분", "화초", "planter", "pot", "flowerpot"],
   ["의자", "스툴", "걸상", "chair", "stool"],
   ["탁자", "테이블", "식탁", "책상", "table", "desk"],
   ["침대", "bed"],
-  ["벤치", "나무 벤치", "긴 의자", "bench"],
+  ["벤치", "나무 벤치", "소품 나무 벤치", "긴 의자", "bench"],
   ["책장", "서가", "책꽂이", "bookshelf", "bookcase"],
   ["통", "나무통", "술통", "오크통", "배럴", "barrel", "keg"],
   ["상자", "나무 상자", "궤", "박스", "크레이트", "crate", "box"],
@@ -291,14 +302,14 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ["우물", "돌 우물", "우물가", "well"],
   ["분수", "분수대", "fountain"],
   ["연못", "pond"],
-  ["가로등", "공원 가로등", "정원 가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
+  ["가로등", "주오도리식 가로등", "공원 가로등", "정원 가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
   ["횃불", "벽 횃불", "등불 기둥", "토치", "torch"],
   ["모닥불", "화톳불", "캠프파이어", "campfire", "bonfire"],
   ["화로", "돌 화로", "화덕", "불판", "brazier"],
   ["바위", "돌", "큰 바위", "암석", "boulder", "rock", "stone"],
   ["덤불", "관목", "수풀", "bush", "shrub"],
   ["꽃", "꽃밭", "화단", "꽃무더기", "flower", "flowerbed"],
-  ["울타리", "나무 울타리", "가로 울타리", "세로 울타리", "펜스", "담장", "산울타리", "fence", "hedge"],
+  ["울타리", "나무 울타리", "밭 울타리 윗줄", "외곽 나무 울타리", "가로 울타리", "세로 울타리", "펜스", "담장", "산울타리", "fence", "hedge"],
   ["표지판", "푯말", "이정표", "안내판", "sign", "signpost"],
   ["간판", "입간판", "메뉴판", "signboard"],
   ["동상", "조각상", "석상", "statue"],
@@ -315,7 +326,9 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ["카펫", "러그", "양탄자", "깔개", "carpet", "rug"],
   ["나무", "가로수", "활엽수", "침엽수", "벚나무", "은행나무", "느티나무", "소나무", "전나무", "tree", "street tree"],
   ["다리", "아치 다리", "강 위 아치 다리", "아치 돌다리", "돌다리", "능선 개울 돌다리", "나무 다리", "나무 널다리", "널다리", "바위 다리", "bridge", "footbridge"],
-  ["계단", "올라가는 계단", "내려가는 계단", "벽 앞면에서 올라가는 계단", "바닥에서 아래로 내려가는 계단 한 칸", "돌 계단", "나선 계단", "stair", "stairs"],
+  ["계단", "돌 계단", "나선 계단", "stair", "stairs"],
+  ["올라가는 계단", "벽 앞면에서 올라가는 계단", "계단"],
+  ["내려가는 계단", "바닥에서 아래로 내려가는 계단 한 칸", "계단"],
   ["기둥", "돌기둥", "카타콤 기둥", "신전 기둥", "사각 기둥", "원주", "석주", "바위 기둥", "pillar", "column"],
   ["제단", "돌 제단", "교단 제단", "흑요석 제단", "altar"],
   ["해골", "해골 무더기", "뼈", "뼈 더미", "skull", "skulls", "bones"],
@@ -357,13 +370,44 @@ export interface StampObjectHit {
 
 const SOURCE_RANK: Readonly<Record<StampObjectSource, number>> = { pack: 0, hand: 1, authored: 2, group: 3 };
 
-function pickVariants(hits: readonly { entry: StampObjectEntry; score: number }[]): StampObjectEntry[] {
+function pickVariants(hits: readonly { entry: StampObjectEntry; score: number }[], primaryQuery = ""): StampObjectEntry[] {
   const best = Math.max(...hits.map((hit) => hit.score));
+  const wantColdOrDesert = /설원|눈|사막|오아시스|바다|화산/u.test(primaryQuery);
+  const treeRank = (e: StampObjectEntry): number => {
+    if (!e.id.startsWith("bd-tree-")) return 0;
+    if (e.width >= 3 && e.height >= 3) return 0;
+    if (e.width >= 2) return 1;
+    return 2;
+  };
+  const vehicleOrientationRank = (e: StampObjectEntry): number => {
+    if (!e.id.startsWith("mc-veh-")) return 0;
+    return e.width > e.height ? 0 : 1;
+  };
+  const bridgeRank = (e: StampObjectEntry): number => {
+    if (e.id === "bd-bridge-arch") return 1;
+    return 0;
+  };
+  const streetPropRank = (e: StampObjectEntry): number => {
+    if (/가로등/u.test(primaryQuery) && e.id === "jp-prop-stone-lantern") return 1;
+    if (/신호등|신호기|보행/u.test(primaryQuery) && e.id.startsWith("jp-") && e.id !== "jp-tram-ped-signal") return 1;
+    if (/화분/u.test(primaryQuery) && e.id === "bd-prop-flowerbed") return 1;
+    if (/벤치/u.test(primaryQuery) && e.id === "bd-pick-mining-valley-bench") return 1;
+    return 0;
+  };
+  const biomeRank = (e: StampObjectEntry): number => {
+    if (wantColdOrDesert) return 0;
+    return /snowfield|desert-oasis|sea-cave|volcano-cave/i.test(e.id) ? 1 : 0;
+  };
   return hits
     .filter((hit) => hit.score === best)
     .map((hit) => hit.entry)
     .sort((a, b) =>
       Number(Boolean(a.indoor)) - Number(Boolean(b.indoor))
+      || biomeRank(a) - biomeRank(b)
+      || streetPropRank(a) - streetPropRank(b)
+      || bridgeRank(a) - bridgeRank(b)
+      || treeRank(a) - treeRank(b)
+      || vehicleOrientationRank(a) - vehicleOrientationRank(b)
       || SOURCE_RANK[a.source] - SOURCE_RANK[b.source]
       || (a.coreName?.length ?? a.name.length) - (b.coreName?.length ?? b.name.length)
       || a.width * a.height - b.width * b.height
@@ -382,19 +426,27 @@ export function resolveStampObject(
   const allFloor = index.filter((entry) => entry.floorStanding || entry.placement === "wall");
   const sized = maxSize ? allFloor.filter((entry) => entry.width <= maxSize.w && entry.height <= maxSize.h) : allFloor;
   const floor = sized.length > 0 ? sized : allFloor;
-  for (const name of names) {
-    const scored: { entry: StampObjectEntry; score: number }[] = [];
-    for (const entry of floor) {
-      const score = nameScore(name, entry);
-      if (score > 0) scored.push({ entry, score });
+  const primary = names[0] ?? "";
+  const pooled: { entry: StampObjectEntry; score: number; matchedBy: string }[] = [];
+  for (const entry of floor) {
+    let bestScore = 0;
+    let bestName = primary;
+    for (const name of names) {
+      const s = nameScore(name, entry);
+      if (s > bestScore) {
+        bestScore = s;
+        bestName = name;
+      }
     }
-    if (scored.length === 0) continue;
-    const variants = pickVariants(scored);
-    return { entry: variants[0]!, matchedBy: name, corrected: false, variants };
+    if (bestScore > 0) pooled.push({ entry, score: bestScore, matchedBy: bestName });
   }
-  // 오타 한 칸 — 사용자 말(첫 이름)과 그 묶음 낱말에만.
-  const primary = names[0];
-  if (primary !== undefined) {
+  if (pooled.length > 0) {
+    const variants = pickVariants(pooled, primary);
+    const winner = variants[0]!;
+    const matchedBy = pooled.find((p) => p.entry.id === winner.id)?.matchedBy ?? primary;
+    return { entry: winner, matchedBy, corrected: false, variants };
+  }
+  if (primary) {
     const scored: { entry: StampObjectEntry; score: number }[] = [];
     for (const entry of floor) {
       const score = fuzzyNameScore(primary, entry);

@@ -132,6 +132,8 @@ export interface StampPlanFacts {
   readonly isWaterCell?: (x: number, y: number) => boolean;
   /** 차량·횡단보도가 놓일 차도 칸인가. */
   readonly isRoadCell?: (x: number, y: number) => boolean;
+  /** 나무·화단이 우선 놓일 잔디·흙 칸인가(판석·보도 광장 위를 피한다). */
+  readonly isGrassOrSoilCell?: (x: number, y: number) => boolean;
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -394,12 +396,30 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       else if (norm2(shown) !== norm2(named) && !norm2(shown).includes(norm2(named))) notes.push(`「${named}」→「${shown}」(${hit.matchedBy})`);
       if (hit.variants.length > 1) notes.push(`같은 이름 ${hit.variants.length}종 중 ${entry.id}`);
       const placement = entry.placement ?? (entry.floorStanding ? "floor" : "wall");
+      const sameSizeVariants = entry.id.startsWith("mc-prop-street-tree-") || entry.id.startsWith("mc-prop-blossom-") || entry.id.startsWith("mc-prop-ginkgo-")
+        ? ["mc-prop-blossom-a", "mc-prop-ginkgo-a", "mc-prop-street-tree-a", "mc-prop-blossom-b"]
+        : hit.variants
+            .filter((v) => v.width === entry.width && v.height === entry.height)
+            .slice(0, 8)
+            .map((v) => v.id);
       return {
         step: {
           tool: stampTool,
           label: labelText ?? `${shown} ${count}개`,
           ...(notes.length ? { note: notes.join(" · ") } : {}),
-          args: { mapId, name: shown, entryId: entry.id, entryKind: entry.kind, entryName: entry.name, width: entry.width, height: entry.height, placement, area, count },
+          args: {
+            mapId,
+            name: shown,
+            entryId: entry.id,
+            ...(sameSizeVariants.length > 1 ? { variantIds: sameSizeVariants } : {}),
+            entryKind: entry.kind,
+            entryName: entry.name,
+            width: entry.width,
+            height: entry.height,
+            placement,
+            area,
+            count,
+          },
         },
       };
     }
@@ -409,7 +429,10 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (/경작지|밭/u.test(material) && !facts.fillMaterials.includes(material)) {
         return validateStampStep({ tool: "place_object", label: raw.label, args: { name: "밭", area: rect, count: 2 } }, facts);
       }
-      const resolvedMaterial = normalizeFillMaterial(material, facts.fillMaterials);
+      if (/횡단보도|crosswalk/iu.test(material)) {
+        return validateStampStep({ tool: "place_object", label: raw.label, args: { name: "횡단보도", area: rect, count: 1 } }, facts);
+      }
+      const resolvedMaterial = normalizeFillMaterial(material, facts.fillMaterials, `${labelText ?? ""} ${facts.text}`);
       // 연못·호수를 물 재료가 없는 칩셋에서 「하늘」「잔디」로 채우던 대체를 막는다(천공섬 「연못 파 줘」가 하늘 칠하기였다).
       if (/연못|호수|못 파|pond|lake/iu.test(`${labelText ?? ""} ${facts.text}`) && !/물|수역|해안|바다|호수|연못|강|water|lake|pond|sea|river|shore/iu.test(resolvedMaterial)) {
         return dropped(`「${resolvedMaterial}」은 물이 아니라서 연못으로 칠하지 않았습니다 — 이 칩셋의 물 재료 라벨이 없으면 연못은 깔지 않습니다(다른 재료로 흉내 내지 않음)`);
@@ -693,6 +716,8 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (!at) return dropped("옮길 위치가 없습니다");
       return { step: { tool: stampTool, label: labelText ?? `${known.name} 옮기기`, args: { mapId, eventId, x: at.x, y: at.y } } };
     }
+    case "paint_tiles":
+      return dropped("내부 전용 도구입니다");
   }
 }
 
@@ -841,6 +866,7 @@ export function expandStampObjects(
     x >= 0 && y >= 0 && x < facts.mapWidth && y < facts.mapHeight && !taken.has(`${x},${y}`) && (facts.isOpenCell ? facts.isOpenCell(x, y) : true);
   const inBoundsNotTaken = (x: number, y: number): boolean =>
     x >= 0 && y >= 0 && x < facts.mapWidth && y < facts.mapHeight && !taken.has(`${x},${y}`);
+  let roadVehiclesPlaced = 0;
   for (const step of steps) {
     if (step.tool !== "place_object") { out.push(step); continue; }
     const args = step.args;
@@ -864,16 +890,38 @@ export function expandStampObjects(
       : placement === "wall" || placement === "water" || placement === "road"
         ? facts.target
         : area;
+    const entryIdStr = String(args.entryId ?? "");
+    const isVehicle = placement === "road" && width >= 3 && !/crosswalk|횡단보도|xwalk/iu.test(entryIdStr);
+    const isArchDoor = placement === "wall" && width >= 2 && height >= 2;
+    const isTreeObj = /^(?:bd-tree-|jp-prop-tree-|mc-prop-(?:street-tree|tree|blossom|ginkgo))/i.test(entryIdStr);
+    const isPillarGrid = count === 4 && /column|pillar|기둥/iu.test(`${entryIdStr} ${name}`) && search.w >= 7 && search.h >= 5;
+    const isAltarOrCenterpiece = count === 1 && /altar|제단|분수|fountain|우물|well/iu.test(`${entryIdStr} ${name}`);
+    const canOverhangUpper =
+      placement === "floor"
+      && height >= 3
+      && (width === 1 || entryIdStr.startsWith("jp-prop-tree-") || entryIdStr.startsWith("mc-prop-"));
     const cellAllowed = (x: number, y: number, baseY: number): boolean => {
       if (!inBoundsNotTaken(x, y)) return false;
-      if (placement === "floor" && height >= 3 && y < baseY) {
+      if (entryIdStr.startsWith("jp-prop-tree-") && search.y >= 18 && baseY - height + 1 < 18) return false;
+      if (canOverhangUpper && y < baseY) {
+        return !(facts.hasArtAt && facts.hasArtAt(x, y));
+      }
+      if (isVehicle && height >= 3 && y < baseY - 1) {
         return !(facts.hasArtAt && facts.hasArtAt(x, y));
       }
       if (!insideRect(facts.target, x, y)) return false;
       if (placement === "wall") return facts.isWallMountCell ? facts.isWallMountCell(x, y) : true;
       if (placement === "water") return true;
-      if (placement === "road") return facts.isRoadCell ? facts.isRoadCell(x, y) || open(x, y) : open(x, y);
+      if (placement === "road") return facts.isRoadCell ? facts.isRoadCell(x, y) : open(x, y);
       return open(x, y);
+    };
+    const isChokeDoorway = (base: { x: number; y: number }): boolean => {
+      if (!isArchDoor || !facts.isOpenCell) return false;
+      for (let dx = 0; dx < width; dx++) {
+        if (!facts.isOpenCell(base.x + dx, base.y + 1)) return false;
+        if (!facts.isOpenCell(base.x + dx, base.y - height)) return false;
+      }
+      return true;
     };
     const fits = (base: { x: number; y: number }, margin: number, strictSurface: boolean): boolean => {
       const cells = footprintCells(base, width, height);
@@ -888,26 +936,69 @@ export function expandStampObjects(
         if (!cells.some((cell) => facts.isWaterCell!(cell.x, cell.y))) return false;
       }
       if (strictSurface && placement === "road" && facts.isRoadCell) {
-        const roadCount = cells.filter((cell) => facts.isRoadCell!(cell.x, cell.y)).length;
-        if (roadCount < Math.min(cells.length, 4)) return false;
+        const checkCells = isVehicle && height >= 3 ? cells.filter((c) => c.y >= base.y - 1) : cells;
+        const roadCount = checkCells.filter((cell) => facts.isRoadCell!(cell.x, cell.y)).length;
+        if (roadCount < Math.min(checkCells.length, 4)) return false;
       }
       if (margin === 0) return !chosen.some((other) => other.some((o) => cells.some((c) => c.x === o.x && c.y === o.y)));
       return !chosen.some((other) => other.some((o) => cells.some((c) => Math.abs(c.x - o.x) <= margin && Math.abs(c.y - o.y) <= margin)));
     };
+    let roadMinY = Infinity;
+    let roadMaxY = -Infinity;
+    if (isVehicle && facts.isRoadCell) {
+      for (let y = search.y; y < search.y + search.h; y++) {
+        for (let x = search.x; x < search.x + search.w; x++) {
+          if (facts.isRoadCell(x, y)) {
+            if (y < roadMinY) roadMinY = y;
+            if (y > roadMaxY) roadMaxY = y;
+          }
+        }
+      }
+    }
+    const hasRoadLanes = isVehicle && Number.isFinite(roadMinY) && roadMaxY - roadMinY >= 3;
+    const northLaneY = hasRoadLanes ? roadMinY + 1 : 0;
+    const southLaneY = hasRoadLanes ? roadMaxY : 0;
     const picked: { x: number; y: number }[] = [];
     const horizontalSpread = search.w >= search.h;
+    const staggerY = count > 1 && placement === "floor" && horizontalSpread && search.h >= height + 3 && !isPillarGrid;
+    const pillarTargets: readonly [number, number][] = [
+      [search.x + 1, search.y + 2],
+      [search.x + search.w - 2, search.y + 2],
+      [search.x + 1, search.y + search.h - 1],
+      [search.x + search.w - 2, search.y + search.h - 1],
+    ];
+    const vehicleXFractions = [0.2, 0.72, 0.34, 0.84] as const;
     for (let slot = 0; slot < count; slot++) {
-      const slotCx = count > 1 && horizontalSpread
-        ? search.x + ((slot + 0.5) * search.w) / count - (width - 1) / 2
-        : search.x + (search.w - 1) / 2;
-      const slotCy = count > 1 && !horizontalSpread
-        ? search.y + ((slot + 0.5) * search.h) / count
-        : search.y + (search.h - 1) / 2;
-      const candidates: { x: number; y: number; d: number }[] = [];
+      const vIdx = roadVehiclesPlaced + slot;
+      const slotCx = isPillarGrid
+        ? pillarTargets[slot % 4]![0]
+        : isAltarOrCenterpiece
+          ? search.x + Math.floor((search.w - width) / 2)
+          : hasRoadLanes
+            ? search.x + vehicleXFractions[vIdx % 4]! * (search.w - width)
+            : count > 1 && horizontalSpread
+              ? search.x + ((slot + 0.5) * search.w) / count - (width - 1) / 2
+              : search.x + (search.w - 1) / 2;
+      const baseCy = isPillarGrid
+        ? pillarTargets[slot % 4]![1]
+        : isAltarOrCenterpiece
+          ? search.y + Math.floor((search.h + 2) / 2)
+          : count > 1 && !horizontalSpread
+            ? search.y + ((slot + 0.5) * search.h) / count
+            : search.y + (search.h - 1) / 2;
+      const slotCy = hasRoadLanes
+        ? (vIdx % 2 === 0 ? northLaneY : southLaneY)
+        : staggerY
+          ? baseCy + (slot % 2 === 0 ? -1.4 : 1.4)
+          : baseCy;
+      const candidates: { x: number; y: number; d: number; choke: number; lane: number; grass: number }[] = [];
       for (let y = search.y; y < search.y + search.h; y++) for (let x = search.x; x < search.x + search.w; x++) {
-        candidates.push({ x, y, d: Math.hypot(x - slotCx, y - slotCy) });
+        const choke = isArchDoor && isChokeDoorway({ x, y }) ? 0 : 1;
+        const lane = hasRoadLanes ? (y === slotCy ? 0 : y === northLaneY || y === southLaneY ? 1 : 2) : 0;
+        const grass = isTreeObj && facts.isGrassOrSoilCell ? (facts.isGrassOrSoilCell(x, y) ? 0 : 1) : 0;
+        candidates.push({ x, y, d: Math.hypot(x - slotCx, y - slotCy), choke, lane, grass });
       }
-      candidates.sort((a, b) => a.d - b.d || a.y - b.y || a.x - b.x);
+      candidates.sort((a, b) => a.choke - b.choke || a.lane - b.lane || a.grass - b.grass || a.d - b.d || a.y - b.y || a.x - b.x);
       let slotHit = false;
       for (const strictSurface of [true, false]) {
         for (const margin of count > 1 ? [1, 0] : [0]) {
@@ -925,6 +1016,7 @@ export function expandStampObjects(
         if (slotHit) break;
       }
     }
+    if (isVehicle) roadVehiclesPlaced += picked.length;
     if (picked.length === 0) {
       let openCells = 0;
       for (let y = facts.target.y; y < facts.target.y + facts.target.h; y++) for (let x = facts.target.x; x < facts.target.x + facts.target.w; x++) if (open(x, y)) openCells += 1;
@@ -932,15 +1024,27 @@ export function expandStampObjects(
       continue;
     }
     const short = picked.length < count ? `자리가 모자라 ${count}개 중 ${picked.length}개만` : "";
+    const variantIds = Array.isArray(args.variantIds) ? (args.variantIds as string[]) : [String(args.entryId)];
+    const rotateVariants = /^(?:bd-tree-|jp-prop-tree-|mc-prop-(?:street-tree|tree|blossom|ginkgo)|mc-veh-|jp-prop-car-)/i.test(String(args.entryId ?? ""));
     picked.forEach((base, index) => {
       const notes = [index === 0 ? step.note : undefined, index === 0 ? short : undefined].filter(Boolean).join(" · ");
+      let objectId = rotateVariants && variantIds.length > 0 ? variantIds[index % variantIds.length]! : String(args.entryId);
+      if (hasRoadLanes && variantIds.length > 1) {
+        const wantEastbound = base.y >= southLaneY;
+        const directional = variantIds.filter((id) =>
+          id.startsWith("mc-veh-") ? (wantEastbound ? !id.endsWith("-l") : id.endsWith("-l"))
+            : id.startsWith("jp-prop-car-") ? (wantEastbound ? !id.endsWith("-r") : id.endsWith("-r"))
+              : true
+        );
+        if (directional.length > 0) objectId = directional[index % directional.length]!;
+      }
       out.push({
         tool: "stamp_tileset_object",
         label: picked.length > 1 ? `${name} ${index + 1}/${picked.length}` : name,
         group: name,
         at: [{ x: base.x, y: base.y }],
         ...(notes ? { note: notes } : {}),
-        args: { mapId, objectId: String(args.entryId), base },
+        args: { mapId, objectId, base, ...(isVehicle || canOverhangUpper ? { overwrite: true } : {}) },
       });
     });
   }
@@ -986,14 +1090,29 @@ function houseSizeFromText(text: string): "small" | "medium" | "large" {
   return "medium";
 }
 
-function normalizeFillMaterial(material: string, fillMaterials: readonly string[]): string {
-  if (fillMaterials.length === 0 || fillMaterials.includes(material)) return material;
+function normalizeFillMaterial(material: string, fillMaterials: readonly string[], contextText = ""): string {
   const m = material.trim();
-  if (/보도|판석|광장|블록/u.test(m) && !/차도|차선|생활도로/u.test(m)) {
-    const hit = fillMaterials.find((f) => /보도|판석|점자블록/u.test(f));
+  if (fillMaterials.length === 0) return material;
+  // jp_city 의 가방 그룹 「거리 · 땅·잔디·판석·참배길」은 첫 타일이 맨땅(흙)이라 잔디 공원 요청에는 실제 오토타일 「잔디」를 쓴다.
+  if (m === "거리 · 땅·잔디·판석·참배길" && /잔디|공원|풀밭/u.test(contextText) && fillMaterials.includes("잔디")) {
+    return "잔디";
+  }
+  if (fillMaterials.includes(material)) return material;
+  if (/횡단보도|crosswalk/iu.test(m)) {
+    const hit = fillMaterials.find((f) => /횡단보도/u.test(f));
+    if (hit) return hit;
+  }
+  if (/판석\s*광장|공공\s*·\s*보도/u.test(m)) {
+    const hit = fillMaterials.find((f) => /판석\s*광장|광장|보도/u.test(f) && !/횡단보도/u.test(f));
+    if (hit) return hit;
+  }
+  if (/보도|판석|광장|블록/u.test(m) && !/횡단보도|차도|차선|생활도로/u.test(m)) {
+    const hit = fillMaterials.find((f) => /보도|판석|점자블록/u.test(f) && !/횡단보도/u.test(f));
     if (hit) return hit;
   }
   if (/공원|잔디|녹지|풀밭/u.test(m)) {
+    const exact = fillMaterials.find((f) => f === "잔디" || /^잔디\(|^녹지/u.test(f));
+    if (exact) return exact;
     const hit = fillMaterials.find((f) => /녹지|잔디|풀밭|참배길/u.test(f));
     if (hit) return hit;
   }
