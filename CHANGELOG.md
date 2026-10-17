@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.247.0 — 2026-10-17
+
+### 기능
+
+- **charset-actor** — ScarloxyPeople11~13 — char-gen gallery 4 script mixes, 22 monster-world people chips (#2806) (`07e820a`)
+
 ## 0.246.0 — 2026-10-17
 
 ### 기능
