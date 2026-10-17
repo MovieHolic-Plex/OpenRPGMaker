@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T12:37:56.284Z",
+  "generatedAt": "2026-10-17T18:46:55.106Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -1857,9 +1857,9 @@
     "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.ai-workspace-view-options > summary:focus-visible|ai-workspace-view-options",
     "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.ai-workspace-view-options > summary|ai-workspace-view-options",
     "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.ai-workspace-view-options|ai-workspace-view-options",
-    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar|ai-right-dock",
-    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar|canvas-toolbar",
-    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar|editor-layout",
+    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar)|ai-right-dock",
+    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar)|canvas-toolbar",
+    "R2|database/tabs-b-assistant-panel/32-ai-workspace.css|.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar)|editor-layout",
     "R2|database/tabs-b-assistant-panel/33-store-card.css|.ai-store-agree input|ai-store-agree",
     "R2|database/tabs-b-assistant-panel/33-store-card.css|.ai-store-agree|ai-store-agree",
     "R2|database/tabs-b-assistant-panel/33-store-card.css|.ai-store-card .ai-store-result button.is-primary|ai-store-card",
