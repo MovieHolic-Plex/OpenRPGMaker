@@ -19515,11 +19515,13 @@
    "event-command-message-position-segment-center",
    "event-command-message-position-segment-top",
    "event-command-message-prevent-obscuring",
-   "event-command-message-settings"
+   "event-command-message-settings",
+   "event-command-portrait-bottom-notice"
   ],
   "classes": [
    "cream-command-form-head",
    "event-command-message-settings",
+   "event-command-portrait-bottom-notice",
    "event-command-settings-group",
    "event-command-settings-hint",
    "inline-field",
@@ -19570,7 +19572,7 @@
    "label": 2,
    "legend": 3,
    "option": 5,
-   "p": 3,
+   "p": 4,
    "select": 2,
    "span": 4
   },
@@ -19585,12 +19587,13 @@
    "event-command-message-position-segment-center": "button",
    "event-command-message-position-segment-top": "button",
    "event-command-message-prevent-obscuring": "input",
-   "event-command-message-settings": "div"
+   "event-command-message-settings": "div",
+   "event-command-portrait-bottom-notice": "p"
   },
   "texts": {
    "event-command-edit-summary": "문장 표시 설정"
   },
-  "testidCount": 11,
+  "testidCount": 12,
   "controlCount": 9
  },
  "shop": {
