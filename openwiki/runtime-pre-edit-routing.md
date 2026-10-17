@@ -876,9 +876,6 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - 글자: ESC 메뉴 하단 조작 안내(`statusMenuControls(…, system)`)와 레일 「백로그」 기본 라벨은 대사 시스템이 있는 게임에서 저작 언어로 나온다(없으면 예전 한국어). 죽은 키 `notice.hiddenRestore` 삭제.
 - 조수: 시스템 도구 초기 선언 낱말은 `GAME_SYSTEM_REQUEST_PATTERN`(`gameSystemProduction.ts`)에 모았고 영·일·중 낱말을 더했다.
 - 알림(릴리스 노트용): 백로그 항목을 저작한 ESC 메뉴가 든 프로젝트는 이전 빌드에서 열리지 않는다. 기존 연애(관계 메뉴) 프로젝트는 저작 없이도 기본 구성이 켜져 대사창 단추 줄·ESC 백로그·설정 3행이 새로 생긴다(비연애 프로젝트는 불변).
-||||||| parent of 22f15b1a42 (wip(vn): issues for save cards without backlog, openwiki)
-
-
 
 ## 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 
