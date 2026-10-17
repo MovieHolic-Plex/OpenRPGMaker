@@ -91,17 +91,16 @@
 /* ── 양쪽 전신 · 반투명 베일 ── 양쪽 전신 스탠딩 초상 위로 부드럽게 번지는 다크 그라데이션 베일. */
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"],
 .dialogue-ambient-layer [data-dialogue-style="dual-fullbody-veil"] {
-  --runtime-dialogue-panel-height: 34%;
-  --runtime-choice-panel-height: 35%;
-  --runtime-dialogue-speaker-inset: 14px;
-  --runtime-dialogue-font-size: 10.5px;
+  --runtime-dialogue-panel-height: 22%;
+  --runtime-choice-panel-height: 28%;
+  --runtime-dialogue-speaker-inset: 15px;
+  --runtime-dialogue-font-size: 10px;
   --dlg-bg: linear-gradient(
     180deg,
     rgba(10, 8, 16, 0) 0%,
-    rgba(12, 10, 18, 0.24) 16%,
-    rgba(14, 12, 22, 0.64) 36%,
-    rgba(12, 10, 18, 0.85) 72%,
-    rgba(8, 7, 14, 0.93) 100%
+    rgba(12, 10, 18, 0.32) 18%,
+    rgba(14, 12, 22, 0.72) 42%,
+    rgba(10, 8, 16, 0.88) 100%
   );
   --dlg-border: 0 solid transparent;
   --dlg-radius: 0;
@@ -120,24 +119,16 @@
   --dlg-weight: 600;
 }
 
-:not(.ecp-runtime-viewport) > .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"].position-bottom::before {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 160'%3E%3Cdefs%3E%3Cg id='rose'%3E%3Ccircle cx='0' cy='0' r='16' fill='rgba(255,252,245,0.96)' stroke='rgba(218,204,186,0.9)' stroke-width='1'/%3E%3Cpath d='M-11 -5 C-6 -14 6 -14 11 -5 C15 2 10 12 0 13 C-10 12 -15 2 -11 -5 Z' fill='rgba(255,248,236,0.96)' stroke='rgba(224,208,184,0.85)' stroke-width='0.9'/%3E%3Cpath d='M-7 -2 C-3 -9 3 -9 7 -2 C9 3 5 8 0 8 C-5 8 -9 3 -7 -2 Z' fill='rgba(253,238,204,0.96)' stroke='rgba(228,204,164,0.85)' stroke-width='0.8'/%3E%3Ccircle cx='0' cy='1' r='3.5' fill='rgba(244,216,158,0.95)'/%3E%3C/g%3E%3Cg id='corner'%3E%3Cpath d='M3 3 H134 M3 3 V124 M7 7 H116 M7 7 V106' fill='none' stroke='rgba(255,255,255,0.88)' stroke-width='1.5'/%3E%3Cpath d='M7 7 C46 7 84 26 108 56 M7 7 C7 46 24 82 50 106' fill='none' stroke='rgba(255,255,255,0.82)' stroke-width='1.3'/%3E%3Cpath d='M18 14 C30 34 52 46 80 42 C62 58 38 64 14 54 Z' fill='rgba(116,168,120,0.88)'/%3E%3Cpath d='M54 8 C72 18 94 20 116 10 C100 28 76 34 52 24 Z' fill='rgba(104,156,110,0.85)'/%3E%3Cpath d='M8 48 C22 66 26 88 14 110 C32 94 36 70 24 46 Z' fill='rgba(110,162,116,0.85)'/%3E%3Cuse href='%23rose' x='34' y='28'/%3E%3Cuse href='%23rose' x='68' y='22' transform='scale(0.82)'/%3E%3Cuse href='%23rose' x='26' y='64' transform='scale(0.78)'/%3E%3Cuse href='%23rose' x='64' y='54' transform='scale(0.65)'/%3E%3Ccircle cx='96' cy='16' r='6' fill='rgba(255,252,245,0.94)'/%3E%3Ccircle cx='16' cy='88' r='5.5' fill='rgba(255,252,245,0.94)'/%3E%3Ccircle cx='112' cy='12' r='3.5' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='12' cy='104' r='3.5' fill='rgba(255,255,255,0.9)'/%3E%3C/g%3E%3C/defs%3E%3Cuse href='%23corner' x='0' y='0'/%3E%3Cuse href='%23corner' transform='translate(640,0) scale(-1,1)'/%3E%3Cg fill='none' stroke='rgba(255,255,255,0.92)' stroke-width='1.5'%3E%3Cline x1='194' y1='12' x2='446' y2='12'/%3E%3Cline x1='210' y1='16' x2='430' y2='16' stroke-width='1'/%3E%3Cpath d='M194 12 L206 7 L202 12 L206 17 Z' fill='rgba(255,255,255,0.92)'/%3E%3Cpath d='M446 12 L434 7 L438 12 L434 17 Z' fill='rgba(255,255,255,0.92)'/%3E%3Cpath d='M320 5 C304 5 296 18 308 27 C316 33 320 40 320 46 C320 40 324 33 332 27 C344 18 336 5 320 5 Z'/%3E%3Cpath d='M304 15 C286 15 276 28 288 35 C296 39 306 31 302 24'/%3E%3Cpath d='M336 15 C354 15 364 28 352 35 C344 39 334 31 338 24'/%3E%3Cpath d='M280 12 C264 12 258 23 268 28 C275 30 282 23 278 18'/%3E%3Cpath d='M360 12 C376 12 382 23 372 28 C365 30 358 23 362 18'/%3E%3Ccircle cx='320' cy='18' r='2.5' fill='rgba(255,255,255,0.95)'/%3E%3C/g%3E%3C/svg%3E");
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-size: 100% auto;
-  content: "";
-  height: 135%;
-  left: 0;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: -194%;
-  z-index: 2;
-}
-
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box {
   height: 100%;
   max-width: none;
+  min-height: 0;
+  padding-bottom: 5px;
+  padding-inline: 8px 10px;
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box .body {
+  line-height: 1.35;
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box .speaker.speaker-nameplate {
@@ -145,31 +136,17 @@
   border: 0;
   box-shadow: none;
   color: rgb(255, 236, 190);
+  font-size: 9px;
   height: auto;
   left: 16px;
+  line-height: 1.1;
   padding: 0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.98), 0 0 6px rgba(0, 0, 0, 0.9), 1px 1px 0 rgba(0, 0, 0, 0.95);
-  top: 4px;
+  top: 2px;
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box.has-veil-speaker-face .speaker.speaker-nameplate {
-  left: 74px;
-}
-
-:not(.ecp-runtime-viewport) > .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box:not(.choices-prompt)::after {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 260 26'%3E%3Ctext x='130' y='10' text-anchor='middle' font-family='Georgia,serif' font-size='7' fill='rgba(242,240,248,0.82)'%3ELove is, above all else, the gift of oneself.%3C/text%3E%3Ctext x='130' y='22' text-anchor='middle' font-family='Georgia,serif' font-weight='bold' font-size='10.5' fill='rgba(255,255,255,0.92)'%3EMemories of Love%3C/text%3E%3C/svg%3E");
-  background-position: center bottom;
-  background-repeat: no-repeat;
-  background-size: contain;
-  bottom: 9px;
-  content: "";
-  display: block;
-  height: 16px;
-  left: 50%;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-50%);
-  width: 156px;
+  left: 60px;
 }
 
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-page-cursor {

@@ -89,7 +89,7 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
           src: cornerUrl,
           alt: "",
           draggable: "false",
-          style: `width:${Math.round(54 * scale)}px;height:${Math.round(54 * scale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-6px;`,
+          style: `width:${Math.round(44 * scale)}px;height:${Math.round(44 * scale)}px;object-fit:contain;object-position:bottom center;flex-shrink:0;image-rendering:auto;margin-bottom:-5px;`,
         },
         dataset: { testid: "full-portrait-stage-corner-face" },
       });
@@ -105,12 +105,12 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
       inset: "auto 0 0 0",
       border: "0",
       borderRadius: "0",
-      padding: "6px 14px 8px 10px",
+      padding: "4px 12px 5px 8px",
       display: "flex",
       flexDirection: "row",
       alignItems: "center",
       gap: "8px",
-      background: "linear-gradient(180deg, rgba(10, 8, 16, 0) 0%, rgba(12, 10, 18, 0.24) 16%, rgba(14, 12, 22, 0.64) 36%, rgba(12, 10, 18, 0.85) 72%, rgba(8, 7, 14, 0.93) 100%)",
+      background: "linear-gradient(180deg, rgba(10, 8, 16, 0) 0%, rgba(12, 10, 18, 0.32) 18%, rgba(14, 12, 22, 0.72) 42%, rgba(10, 8, 16, 0.88) 100%)",
     });
   }
   stageChildren.push(boxNode);
