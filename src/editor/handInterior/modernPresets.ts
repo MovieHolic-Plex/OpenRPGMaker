@@ -7,6 +7,59 @@ export interface ModernPresetData {
   readonly programs: Readonly<Record<string, Readonly<Record<string, readonly { readonly map: string; readonly kinds: readonly string[] }[]>>>>;
 }
 
+/** program 을 seed 로 다시 지을 때의 변주 — 같은 「백화점」·「레스토랑」이 매번 똑같은 맵으로 나오지 않게(2026-10-18 사용자 지적).
+ *  seed 1 은 견본 그대로. seed k(≥2)는 (k-1)%2 로 동↔서 구역 배치를 뒤집고, (k-1)%(palettes+1) 로 바닥·벽면 묶음을 바꾸고,
+ *  큰 방(가로 10칸↑·세로 8칸↑)을 0~3칸·0~1칸 넓혀 가구 간격을 바꾼다. palettes 는 방 종류 → [바닥, 벽면].
+ *  entrance·above 는 그 program 만의 출구 방·위아래 쌍(layout.ts 기본 표의 반대 쌍을 대신한다). */
+export interface ModernProgramVariation {
+  readonly entrance?: string;
+  readonly above?: readonly (readonly [string, string])[];
+  readonly palettes: readonly Readonly<Record<string, readonly [string, string]>>[];
+}
+
+export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<string, ModernProgramVariation>>>> = {
+  modern_city: {
+    mc_office: { palettes: [
+      { "open-office": ["mci-wood-oak", "mci-wall-home"], meeting: ["mci-carpet-office", "mci-wall-lobby"], pantry: ["mci-tile-small", "mci-wall-tile"], hall: ["mci-tile-concourse", "mci-wall-office"] },
+      { "open-office": ["mci-concrete", "mci-wall-brick"], meeting: ["mci-wood-dark", "mci-wall-brick"], pantry: ["mci-wood-oak", "mci-wall-brick"], hall: ["mci-concrete", "mci-wall-metal"] },
+    ] },
+    mc_department_store: { palettes: [
+      { "dept-vip-hall": ["mci-wood-dark", "mci-wall-brick"], "dept-cosmetics": ["mci-stone-lobby", "mci-wall-store"], "dept-atrium": ["mci-stone-lobby", "mci-wall-store"], "dept-fashion": ["mci-carpet-office", "mci-wall-lobby"] },
+      { "dept-vip-hall": ["mci-vinyl-store", "mci-wall-store"], "dept-cosmetics": ["mci-tile-small", "mci-wall-tile"], "dept-atrium": ["mci-tile-concourse", "mci-wall-lobby"], "dept-fashion": ["mci-wood-dark", "mci-wall-home"] },
+    ] },
+    mc_supermarket: { palettes: [
+      { "mart-fresh-bakery": ["mci-wood-oak", "mci-wall-brick"], "mart-storage": ["mci-concrete", "mci-wall-tile"], "mart-sales-hall": ["mci-tile-concourse", "mci-wall-tile"] },
+      { "mart-fresh-bakery": ["mci-tile-small", "mci-wall-tile"], "mart-storage": ["mci-concrete", "mci-wall-office"], "mart-sales-hall": ["mci-stone-lobby", "mci-wall-lobby"] },
+    ] },
+    // 승강장 선로는 북쪽 벽 밑에 깔린다 — 대합실이 출구 방(남쪽)이고 승강장이 그 위다. 출구·문이 선로를 가로지르지 않는다
+    // (2026-10-18 적대적 VQA: 승강장이 출구 방이라 남쪽 출구가 선로 바로 밑에 뚫려 선로를 밟고 나갔다).
+    mc_station: {
+      entrance: "subway-concourse",
+      above: [["subway-platform", "subway-concourse"], ["subway-platform", "subway-kiosk"]],
+      palettes: [
+        { "subway-concourse": ["mci-stone-lobby", "mci-wall-lobby"], "subway-kiosk": ["mci-tile-small", "mci-wall-tile"], "subway-platform": ["mci-concrete", "mci-wall-metal"] },
+        { "subway-concourse": ["mci-concrete", "mci-wall-tile"], "subway-kiosk": ["mci-wood-oak", "mci-wall-home"], "subway-platform": ["mci-tile-concourse", "mci-wall-brick"] },
+      ],
+    },
+    mc_hospital: { palettes: [
+      { "ward-inpatient": ["mci-wood-oak", "mci-wall-home"], "ward-exam-1": ["mci-tile-small", "mci-wall-tile"], "ward-exam-2": ["mci-tile-small", "mci-wall-tile"], waiting_room: ["mci-stone-lobby", "mci-wall-lobby"] },
+      { "ward-inpatient": ["mci-vinyl-store", "mci-wall-hospital"], "ward-exam-1": ["mci-vinyl-hospital", "mci-wall-office"], "ward-exam-2": ["mci-vinyl-hospital", "mci-wall-office"], waiting_room: ["mci-carpet-office", "mci-wall-office"] },
+    ] },
+    mc_cinema: { palettes: [
+      { "cinema-theater": ["mci-wood-dark", "mci-wall-brick"], "cinema-arcade-zone": ["mci-concrete", "mci-wall-metal"], "cinema-lobby": ["mci-tile-concourse", "mci-wall-store"] },
+      { "cinema-theater": ["mci-carpet-office", "mci-wall-office"], "cinema-arcade-zone": ["mci-vinyl-store", "mci-wall-tile"], "cinema-lobby": ["mci-wood-dark", "mci-wall-brick"] },
+    ] },
+    mc_restaurant: { palettes: [
+      { "rest-kitchen-bar": ["mci-tile-small", "mci-wall-tile"], "rest-live-stage": ["mci-carpet-office", "mci-wall-lobby"], "rest-dining-hall": ["mci-stone-lobby", "mci-wall-lobby"] },
+      { "rest-kitchen-bar": ["mci-concrete", "mci-wall-metal"], "rest-live-stage": ["mci-wood-oak", "mci-wall-home"], "rest-dining-hall": ["mci-wood-dark", "mci-wall-home"] },
+    ] },
+    mc_museum: { palettes: [
+      { "gallery-paintings": ["mci-wood-dark", "mci-wall-brick"], "gallery-sculpture": ["mci-concrete", "mci-wall-office"], "gallery-lobby": ["mci-tile-concourse", "mci-wall-store"], "gallery-shop": ["mci-wood-dark", "mci-wall-home"] },
+      { "gallery-paintings": ["mci-carpet-office", "mci-wall-office"], "gallery-sculpture": ["mci-stone-lobby", "mci-wall-store"], "gallery-lobby": ["mci-wood-oak", "mci-wall-lobby"], "gallery-shop": ["mci-vinyl-store", "mci-wall-store"] },
+    ] },
+  },
+};
+
 export const MODERN_PRESET_DATA: ModernPresetData = {
   programs: {
     modern_city: {
@@ -469,7 +522,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-wall-clock", x: 16, y: 0 },
           { t: "o", id: "mci-route-map", x: 18, y: 0 },
           { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
-          { t: "o", id: "mci-mailboxes", x: 2, y: 2 },
+          { t: "o", id: "subway-vending-machine", x: 2, y: 2 },
           { t: "o", id: "dept-directory-kiosk", x: 5, y: 2 },
           { t: "o", id: "dept-directory-kiosk", x: 6, y: 2 },
           { t: "o", id: "mci-teller", x: 8, y: 2 },
@@ -526,18 +579,23 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-tv-wall", x: 22, y: 0 },
           { t: "o", id: "mci-wall-clock", x: 26, y: 0 },
           { t: "o", id: "mci-notice-board", x: 28, y: 0 },
-          { t: "o", id: "mci-plant-tall", x: 0, y: 2 },
-          { t: "o", id: "mci-elevator", x: 2, y: 2 },
-          { t: "o", id: "subway-vending-machine", x: 5, y: 2 },
-          { t: "o", id: "stairs-side-up-east", x: 15, y: 3 },
-          { t: "o", id: "subway-vending-machine", x: 24, y: 2 },
-          { t: "o", id: "mci-elevator", x: 28, y: 2 },
-          { t: "o", id: "mci-plant-tall", x: 31, y: 2 },
-          { t: "o", id: "mci-bench-metal", x: 2, y: 4 },
-          { t: "o", id: "mci-bench-metal", x: 6, y: 4 },
-          { t: "o", id: "mci-bench-metal", x: 20, y: 4 },
-          { t: "o", id: "mci-bench-metal", x: 24, y: 4 },
-          { t: "o", id: "mci-bench-metal", x: 28, y: 4 },
+          // 선로는 북쪽 벽 밑 두 줄 — 스크린도어·점자 블록이 그 앞, 걷는 승강장은 아래쪽. 남쪽 칸막이로 대합실과 튼다.
+          { t: "o", id: "subway-track-pit", x: 0, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 4, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 8, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 12, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 16, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 20, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 24, y: 2 },
+          { t: "o", id: "subway-track-pit", x: 28, y: 2 },
+          { t: "o", id: "subway-psd-door", x: 1, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 5, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 9, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 12, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 18, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 21, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 25, y: 4 },
+          { t: "o", id: "subway-psd-door", x: 29, y: 4 },
           { t: "o", id: "mci-tactile", x: 1, y: 5 },
           { t: "o", id: "mci-tactile", x: 3, y: 5 },
           { t: "o", id: "mci-tactile", x: 5, y: 5 },
@@ -554,22 +612,13 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-tactile", x: 26, y: 5 },
           { t: "o", id: "mci-tactile", x: 28, y: 5 },
           { t: "o", id: "mci-tactile", x: 30, y: 5 },
-          { t: "o", id: "subway-psd-door", x: 1, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 5, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 9, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 12, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 18, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 21, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 25, y: 6 },
-          { t: "o", id: "subway-psd-door", x: 29, y: 6 },
-          { t: "o", id: "subway-track-pit", x: 0, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 4, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 8, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 12, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 16, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 20, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 24, y: 7 },
-          { t: "o", id: "subway-track-pit", x: 28, y: 7 },
+          { t: "o", id: "mci-plant-tall", x: 0, y: 6 },
+          { t: "o", id: "mci-bench-metal", x: 2, y: 7 },
+          { t: "o", id: "mci-bench-metal", x: 6, y: 7 },
+          { t: "o", id: "stairs-side-up-east", x: 14, y: 6 },
+          { t: "o", id: "mci-bench-metal", x: 22, y: 7 },
+          { t: "o", id: "mci-bench-metal", x: 26, y: 7 },
+          { t: "o", id: "mci-plant-tall", x: 31, y: 6 },
         ],
       },
       // ── 4. 종합병원 로비 · 입원 병동 (hospital-ward, 32×20) ──
