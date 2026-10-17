@@ -221,6 +221,10 @@
   left: 16px;
 }
 
+
+.dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box.has-veil-speaker-face .speaker.speaker-nameplate {
+  left: 68px;
+}
 .dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-page-cursor {
   bottom: 5px;
   left: calc(50% - 4px);

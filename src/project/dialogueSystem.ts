@@ -61,9 +61,25 @@ export function romanceDialogueSystem(): AuthoredDialogueSystem {
 
 /** 연애·오토메 전신 양쪽 스탠딩 + 반투명 베일 대화창 프리셋 id. */
 export const DUAL_FULLBODY_VEIL_PRESET_ID = "dual-fullbody-veil" as const;
-/** 양쪽 전신 스탠딩 무대 기본 비율 — 화면 높이의 ~87%까지 올라오고 머리 위 배경 여백을 남긴다(116% × (1 - 0.25) ≈ 87%). */
-export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 116, drop: 25 } as const;
+/** 전신·스탠딩 초상의 기본 등신비 계약: 어린이·노인 등 특수 체형을 제외한 모든 기본 인물은 7.5~8등신. */
+export const DEFAULT_PORTRAIT_HEAD_RATIO = "7.5-to-8-heads" as const;
+export const PORTRAIT_HEAD_RATIOS = ["7.5-to-8-heads", "child-6-heads", "elderly-7-heads"] as const;
+export type PortraitHeadRatio = (typeof PORTRAIT_HEAD_RATIOS)[number];
 
+const CHILD_ARCHETYPE_PATTERN = /(?:어린이|아이|유아|초등학생|꼬마|소꿉친구\s*아이|child|kid|young\s*(?:boy|girl)|toddler)/iu;
+const ELDERLY_ARCHETYPE_PATTERN = /(?:노인|할머니|할아버지|장로|원로|노파|노옹|elder|elderly|old\s*(?:man|woman)|grandmother|grandfather)/iu;
+
+/** 인물 설명·역할에서 전신 스탠딩 등신비를 결정한다. 특수 체형(어린이·노인)이 아니면 언제나 7.5~8등신이 기본값이다. */
+export function resolvePortraitHeadRatio(archetypeOrDescription?: string): PortraitHeadRatio {
+  const text = archetypeOrDescription?.trim() ?? "";
+  if (!text) return DEFAULT_PORTRAIT_HEAD_RATIO;
+  if (CHILD_ARCHETYPE_PATTERN.test(text)) return "child-6-heads";
+  if (ELDERLY_ARCHETYPE_PATTERN.test(text)) return "elderly-7-heads";
+  return DEFAULT_PORTRAIT_HEAD_RATIO;
+}
+
+/** 7.5~8등신 양쪽 전신 스탠딩 무대 기본 비율 — 화면 높이의 ~88%까지 올라오고 허벅지 중간에서 끊어 머리 비중을 7~8등신으로 맞춘다(126% × (1 - 0.30) ≈ 88.2%). */
+export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 126, drop: 30 } as const;
 export type DialogueSystemPresetId = "default" | "romance" | typeof DUAL_FULLBODY_VEIL_PRESET_ID;
 export type DialogueSystemPresetDefinition = {
   readonly id: DialogueSystemPresetId;
