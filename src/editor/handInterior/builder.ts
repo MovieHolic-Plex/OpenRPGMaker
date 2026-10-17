@@ -286,6 +286,7 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
         if (!A.isFloor(x, y) && (flush || d.stairs !== "up")) issues.push({ severity: "error", code: "not-on-floor", message: flush ? `${label} 앞 탈 자리 (${x},${y}) 가 바닥이 아니다 — 벽면 바로 아래 첫 바닥 줄 칸을 준다(그림은 그 위 벽면 두 줄에 박힌다)` : `${label} 발밑 (${x},${y}) 이 바닥이 아니다`, x, y });
         claim(x, y, label);
         if (flush && inBounds(x, y)) landings.push({ i: y * W + x, label });
+        else if (d.use?.includes("travel") && dy === d.h - 1 && A.isFloor(x, y + 1)) landings.push({ i: (y + 1) * W + x, label });
         if (isSeatId(o.id, d) && inBounds(x, y)) seats.add(y * W + x);
       }
       if (d.kind === "wall") for (let dx = 0; dx < d.w; dx++) {
