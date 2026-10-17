@@ -150,7 +150,7 @@ export type VariantLookReport = {
  * 지붕·처마가 덧그림(4층)으로 올라간 건물은 철거 뒤에도 지붕 조각이 허공에 남았다(jrpg-loop-1 ct1 미래 맵).
  * 4층은 처마가 건물 폭 밖으로 나오므로 오른쪽 한 칸을 더 지운다. 길 가장자리 덧그림은 건드리지 않는다(위 영역 밖).
  */
-function clearDemolishedOverlays(copy: GameMap, placement: { x: number; y: number; w: number; h: number }): void {
+function clearDemolishedOverlays(copy: GameMap, placement: { kitId: string; x: number; y: number; w: number; h: number }): void {
   for (let row = 0; row < placement.h; row += 1) {
     for (let column = 0; column <= placement.w; column += 1) {
       const x = placement.x + column;
