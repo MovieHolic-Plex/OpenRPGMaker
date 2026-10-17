@@ -28,6 +28,21 @@
 
 /* 오른쪽 흉상은 상자 위로 솟아 오른쪽 정렬 단추 줄과 겹친다 — 줄을 흉상 폭만큼 왼쪽으로 비킨다.
    (적대 리뷰 D7 은 줄을 왼쪽 끝으로 뒤집었으나 왼쪽에는 이름표가 있어 이름표를 가렸다 — 2026-10-17 매트릭스 실측.) */
+/* 왼쪽 흉상(기본)도 상자 위로 솟아 줄의 왼쪽 끝과 겹친다 — 줄의 왼쪽 한계를 흉상 오른쪽으로 두고, 모자라면 줄바꿈한다
+   (romance-loop-3 실측: 480×320 에서 오토·스킵 단추가 흉상 오른쪽 어깨를 덮음). 하단 전신(뒤에 섬)은 겹치지 않는다. */
+.dialogue-box.bust-left .dialogue-bar {
+  flex-wrap: wrap;
+  left: calc(12px + var(--runtime-dialogue-bust-width) + 6px);
+}
+
+.dialogue-box.bust-left.portrait-full:not(.portrait-full-tall) .dialogue-bar {
+  left: calc(12px + var(--runtime-dialogue-full-width) + 6px);
+}
+
+.dialogue-box.bust-left.portrait-full-tall .dialogue-bar {
+  left: auto;
+}
+
 .dialogue-box.bust-right .dialogue-bar {
   right: calc(var(--runtime-dialogue-bust-width) + 18px);
 }

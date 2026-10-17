@@ -16,6 +16,11 @@ const assertFn = (setting, group, isChoices) => `() => { const o = document.quer
  const expected = bustGroup ? 'bottom' : ${JSON.stringify(setting)};
  const r = { setting: ${JSON.stringify(setting)}, bust, overlayPositions: pos, boxPosition: box?.dataset.messagePosition ?? null, expected, box: box ? (({ x, y, width, height }) => ({ x: Math.round(x), y: Math.round(y), w: Math.round(width), h: Math.round(height) }))(box.getBoundingClientRect()) : null, vw: innerWidth, vh: innerHeight };
  if (pos.length !== 1 || pos[0] !== expected || r.boxPosition !== expected) throw new Error('창 위치 어긋남: ' + JSON.stringify(r));
+ // 읽기 단추 줄(.dialogue-bar)이 흉상·전신(.dialogue-face-bust/-full)을 가리면 안 된다(romance-loop-3: 흉상 오른쪽 어깨를 오토·스킵 단추가 덮음).
+ const bar = document.querySelector('.dialogue-bar')?.getBoundingClientRect();
+ if (bar && bar.width > 0) for (const f of document.querySelectorAll('.dialogue-face')) { const b = f.getBoundingClientRect();
+   const w = Math.min(b.right, bar.right) - Math.max(b.left, bar.left), h = Math.min(b.bottom, bar.bottom) - Math.max(b.top, bar.top);
+   if (w > 2 && h > 2) throw new Error('단추 줄이 초상을 가림: ' + JSON.stringify({ bar: [bar.left, bar.top, bar.right, bar.bottom].map(Math.round), face: [b.left, b.top, b.right, b.bottom].map(Math.round), w: Math.round(w), h: Math.round(h) })); }
  return r; }`;
 // 전환 궤적: 대화가 열린 뒤 매 프레임 창 윗변·위치 클래스·줄 번호표를 쌓아 두고, 마지막에 파일로 남긴다.
 //   흉상 없음(위) ↔ 흉상 있음(아래) 전환에서 창이 한 프레임에 튀는지 부드럽게 미끄러지는지 이 궤적으로 본다.
