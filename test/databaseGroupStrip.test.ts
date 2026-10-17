@@ -44,12 +44,12 @@ describe("자료집 그룹 띠", () => {
     expect(inView(root, "db-tab-classes")).toBe("1");
     expect(inView(root, "db-tab-enemies")).toBe("0");
 
-    root.querySelector<HTMLElement>('[data-testid="db-group-strip-monster"]')!.click();
+    root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
 
-    expect(viewed(root)).toBe("monster");
+    expect(viewed(root)).toBe("battle");
     expect(inView(root, "db-tab-enemies")).toBe("1");
     expect(inView(root, "db-tab-classes")).toBe("0");
-    const strip = root.querySelector<HTMLElement>('[data-testid="db-group-strip-monster"]')!;
+    const strip = root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!;
     expect(strip.getAttribute("aria-pressed")).toBe("true");
     expect(root.querySelector<HTMLElement>('[data-testid="db-group-strip-party"]')!.getAttribute("aria-pressed")).toBe("false");
     // 탭은 사용자가 고를 때까지 바뀌지 않는다.
@@ -58,9 +58,9 @@ describe("자료집 그룹 띠", () => {
 
   it("다른 구획의 탭을 고르면 그 탭 그룹이 계속 보인다", () => {
     const root = host();
-    root.querySelector<HTMLElement>('[data-testid="db-group-strip-monster"]')!.click();
+    root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
     root.querySelector<HTMLElement>('[data-testid="db-tab-enemies"]')!.click();
-    expect(viewed(root)).toBe("monster");
+    expect(viewed(root)).toBe("battle");
     expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-enemies");
 
     root.querySelector<HTMLElement>('[data-testid="db-group-strip-system"]')!.click();
@@ -69,7 +69,7 @@ describe("자료집 그룹 띠", () => {
 
   it("프로그램 점프(조수·딥링크)는 새 활성 탭의 그룹으로 띠를 옮긴다", () => {
     const root = host();
-    root.querySelector<HTMLElement>('[data-testid="db-group-strip-monster"]')!.click();
+    root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
     setDatabaseActiveTab("skills");
     const rerooted = host();
     expect(viewed(rerooted)).toBe("party");

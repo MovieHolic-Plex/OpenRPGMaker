@@ -43,7 +43,7 @@ describe("database navigation", () => {
     // textContent 를 그대로 쓰면 라벨 계약이 아니라 헤더 전체를 재게 된다.
     const groups = Array.from(nav.querySelectorAll(".db-tab-group-label")).map((group) => group.textContent);
     expect(groups).toContain("파티");
-    expect(groups).toContain("몬스터");
+    expect(groups).toContain("전투");
     expect(groups).toContain("시스템");
 
     // 접힌 그룹 안에 있어도 모든 탭이 레일에 존재해야 한다(교차 탭 이동 계약).
@@ -53,13 +53,10 @@ describe("database navigation", () => {
     expect(findByTestId(nav, "db-tab-switches")?.closest("details")).toBeNull();
   });
 
-  it("keeps grouped navigation with explicit monster and life domains", () => {
+  it("keeps 6 grouped navigation domains (story, party, battle, map, life, system)", () => {
     const host = renderPanel();
     const groups = host.querySelectorAll(".db-tab-group-label").map((group) => group.textContent);
-    // 몬스터는 전투 규칙과 분리된 독립 그룹이다 — 예전 `전투·몬스터` 한 덩어리(9탭)가 아니다.
-    expect(groups).toContain("몬스터");
-    expect(groups).toContain("전투 규칙");
-    expect(groups).toContain("생활");
+    expect(groups).toEqual(["이야기", "파티", "전투", "맵", "생활", "시스템"]);
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
 

@@ -13,51 +13,51 @@ type FakeBrowserGlobals = {
 const EXPECTED_TABS = [
   // 상단 고정 (그룹 밖)
   "db-tab-overview",
-  // 세계관
+  // 이야기
   "db-tab-world-canon",
   "db-tab-world-codex",
+  "db-tab-characters",
+  "db-tab-common-events",
+  "db-tab-switches",
+  "db-tab-variables",
   // 파티
   "db-tab-actors",
+  "db-tab-character-graphics",
   "db-tab-classes",
   "db-tab-skills",
   "db-tab-items",
-  // 몬스터 — 포획 종족도 이 도메인에 둔다
+  // 전투 (적 · 규칙 · 화면·연출)
   "db-tab-enemies",
   "db-tab-monster-species",
   "db-tab-troops",
   "db-tab-factions",
-  // 전투 규칙
   "db-tab-elements",
   "db-tab-states",
   "db-tab-retro-choreographies",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
-  // 생활
-  "db-tab-crops",
-  "db-tab-characters",
-  "db-tab-life-crafting",
-  "db-tab-daily-weather",
-  "db-tab-farm-animals",
-  "db-tab-farm-spatial",
-  "db-tab-life-collections",
-  // 맵 — six visual spatial destinations
+  // 맵
   "db-tab-spatial-tiles",
   "db-tab-spatial-objects",
   "db-tab-spatial-places",
   "db-tab-spatial-regions",
   "db-tab-spatial-worlds",
+  // 생활
+  "db-tab-crops",
+  "db-tab-life-crafting",
+  "db-tab-daily-weather",
+  "db-tab-farm-animals",
+  "db-tab-farm-spatial",
+  "db-tab-life-collections",
   // 시스템
-  "db-tab-common-events",
   "db-tab-system",
+  "db-tab-menu-system",
   "db-tab-opening",
   "db-tab-game-over",
-  "db-tab-character-graphics",
   "db-tab-terms",
-  "db-tab-switches",
-  "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["세계관", "파티", "몬스터", "전투 규칙", "생활", "맵", "시스템"];
+const EXPECTED_GROUPS = ["이야기", "파티", "전투", "맵", "생활", "시스템"];
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -126,10 +126,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(36);
+    expect(EXPECTED_TABS.length).toBe(37);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(36);
+    expect(new Set(EXPECTED_TABS).size).toBe(37);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();

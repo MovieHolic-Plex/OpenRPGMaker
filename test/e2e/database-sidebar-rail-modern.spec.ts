@@ -45,12 +45,11 @@ test("every group stays open and empty list tabs fold into one row per group", a
   const facts = await readRailFacts(page);
 
   expect(facts.groupLabels, "group labels").toEqual([
-    "세계관",
+    "이야기",
     "파티",
-    "몬스터",
-    "전투 규칙",
-    "생활",
+    "전투",
     "맵",
+    "생활",
     "시스템",
   ]);
 
