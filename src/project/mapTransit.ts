@@ -58,6 +58,14 @@ export interface MapTransit {
   routes: MapTransitRoute[];
 }
 
+export type TransitFrameName =
+  | TransitDir
+  | "right_open" | "left_open"
+  | "right_brake" | "left_brake" | "up_brake" | "down_brake"
+  | "right_0" | "right_1" | "right_2" | "right_3"
+  | "left_0" | "left_1" | "left_2" | "left_3"
+  | "up_0" | "up_1" | "up_2" | "up_3"
+  | "down_0" | "down_1" | "down_2" | "down_3";
 export interface TransitFrameRect { x: number; y: number; w: number; h: number; foot: { w: number; h: number } }
 export interface TransitVehicleDef {
   id: string;
@@ -67,14 +75,47 @@ export interface TransitVehicleDef {
   image: string;
   width: number;
   height: number;
-  frames: Partial<Record<TransitDir | "right_open" | "left_open", TransitFrameRect>>;
+  frames: Partial<Record<TransitFrameName, TransitFrameRect>>;
 }
 
-const CATALOG = catalogJson as unknown as { version: number; tileSize: number; vehicles: TransitVehicleDef[] };
-const BY_ID = new Map(CATALOG.vehicles.map((v) => [v.id, v]));
+function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, spriteCols = length, openDoor = false): TransitVehicleDef {
+  const ewW = spriteCols * 16, ewH = 48, nsW = 32, nsH = length * 16;
+  const ewFoot = { w: length, h: 2 }, nsFoot = { w: 2, h: length };
+  const frames: Partial<Record<TransitFrameName, TransitFrameRect>> = {};
+  const suffixes = ["", "_0", "_1", "_2", "_3", "_brake"] as const;
+  for (const [dir, y] of [["right", 0], ["left", 48]] as const) {
+    suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: ewW * i, y, w: ewW, h: ewH, foot: ewFoot }; });
+    if (openDoor) frames[`${dir}_open` as TransitFrameName] = { x: ewW * 6, y, w: ewW, h: ewH, foot: ewFoot };
+  }
+  for (const [dir, y] of [["up", 96], ["down", 96 + nsH]] as const) {
+    suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: nsW * i, y, w: nsW, h: nsH, foot: nsFoot }; });
+  }
+  return { id, name, kind, length, image: `mc-kit:${id}`, width: Math.max(ewW * (openDoor ? 7 : 6), nsW * 6), height: 96 + nsH * 2, frames };
+}
 
-export function transitVehicleCatalog(): readonly TransitVehicleDef[] { return CATALOG.vehicles; }
-export function transitVehicle(id: string): TransitVehicleDef | undefined { return BY_ID.get(id); }
+export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
+  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-white", "승용차 · 흰색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-black", "승용차 · 검정", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-beige", "낮은 지붕 세단 · 베이지", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-green", "낮은 지붕 세단 · 녹색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 3, 5),
+  makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 4, 6),
+  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4, 6),
+  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4, 7),
+  makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 5, 8, true),
+];
+
+const CATALOG = catalogJson as unknown as { version: number; tileSize: number; vehicles: TransitVehicleDef[] };
+const ALL_VEHICLES: readonly TransitVehicleDef[] = [...CATALOG.vehicles, ...MODERN_CITY_TRANSIT_VEHICLES];
+const BY_ID: Readonly<Record<string, TransitVehicleDef>> = Object.fromEntries(ALL_VEHICLES.map((v) => [v.id, v]));
+
+export function transitVehicleCatalog(): readonly TransitVehicleDef[] { return ALL_VEHICLES; }
+export function transitVehicle(id: string): TransitVehicleDef | undefined { return BY_ID[id]; }
 
 /** 노선 종류마다 탈 수 있는 탈것 종류. 조수·편집기·정규화가 같은 표를 본다. */
 export const TRANSIT_ROUTE_VEHICLE_KINDS: Record<TransitRouteKind, readonly TransitVehicleKind[]> = {
@@ -165,8 +206,9 @@ export function transitFootprintRect(head: TransitPoint, dir: TransitDir, length
  * 폭 4 생활도로: 동쪽행 edge, 서쪽행 edge+2, 남쪽행 edge+2, 북쪽행 edge.
  */
 export function laneOffsetFor(dir: TransitDir, edge: number, width = 4): number {
+  const near = width >= 6 ? edge + 1 : edge;
   const far = edge + Math.max(0, width - 2);
-  if (dir === "right" || dir === "up") return edge;
+  if (dir === "right" || dir === "up") return near;
   return far;
 }
 
@@ -190,7 +232,7 @@ export function normalizeMapTransit(transit: MapTransit | undefined | null, mapS
     if (!cells) { bad("경로의 이웃 점이 같은 행·열이 아니다(대각선 구간)"); continue; }
     if (cells.length < 2) { bad("경로가 두 칸보다 짧다"); continue; }
     const allowed = TRANSIT_ROUTE_VEHICLE_KINDS[kind];
-    const vehicles = (Array.isArray(raw.vehicles) ? raw.vehicles : []).map((v) => BY_ID.get(String(v))).filter((v): v is TransitVehicleDef => !!v && allowed.includes(v.kind));
+    const vehicles = (Array.isArray(raw.vehicles) ? raw.vehicles : []).map((v) => BY_ID[String(v)]).filter((v): v is TransitVehicleDef => !!v && allowed.includes(v.kind));
     if (vehicles.length === 0) { bad(`이 노선(${kind})에 맞는 탈것이 없다 — ${allowed.join("·")} 중에서`); continue; }
     if (mapSize) {
       // 열린 노선은 맵 밖에서 들어와 밖으로 나간다 — 가장 긴 탈것 + 여유 8칸까지 허용.
@@ -253,6 +295,8 @@ export interface TransitSim {
 export interface TransitPose {
   head: TransitPoint;
   dir: TransitDir;
+  /** 교차로 90° 회전 직전·회전 중 깜빡이는 방향지시등(직진 중이면 null). */
+  blinker?: "left" | "right" | null;
   /** 그림·막힘 사각(칸, 실수). */
   rect: { x: number; y: number; w: number; h: number };
   open: boolean;
@@ -286,9 +330,35 @@ export function transitHeadAt(route: Pick<NormalizedTransitRoute, "cells" | "loo
   return { head: { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f }, dir: transitDirAt(cells, i, false) };
 }
 
+export function transitCornerBlinker(route: Pick<NormalizedTransitRoute, "cells" | "loop">, pos: number): "left" | "right" | null {
+  const { cells, loop } = route;
+  const n = cells.length;
+  if (n < 3) return null;
+  const p = loop ? ((pos % n) + n) % n : pos;
+  const start = loop ? 0 : 1;
+  const end = loop ? n : n - 1;
+  for (let c = start; c < end; c += 1) {
+    const prevIdx = (c - 1 + n) % n;
+    const fromDir = transitDirAt(cells, prevIdx, loop);
+    const toDir = transitDirAt(cells, c, loop);
+    if (fromDir === toDir) continue;
+    const diff = loop ? ((c - p + n / 2) % n) - n / 2 : c - p;
+    if (diff < -0.5 || diff > 5) continue;
+    const isLeftTurn =
+      (fromDir === "right" && toDir === "up") ||
+      (fromDir === "up" && toDir === "left") ||
+      (fromDir === "left" && toDir === "down") ||
+      (fromDir === "down" && toDir === "right");
+    return isLeftTurn ? "left" : "right";
+  }
+  return null;
+}
+
 export function transitPose(sim: TransitSim, v: TransitVehicleState): TransitPose {
-  const { head, dir } = transitHeadAt(sim.routes[v.routeIndex]!, v.pos);
-  return { head, dir, rect: transitFootprintRect(head, dir, v.def.length), open: v.wait > 0 && v.stopAt !== null };
+  const route = sim.routes[v.routeIndex]!;
+  const { head, dir } = transitHeadAt(route, v.pos);
+  const blinker = transitCornerBlinker(route, v.pos);
+  return { head, dir, blinker, rect: transitFootprintRect(head, dir, v.def.length), open: v.wait > 0 && v.stopAt !== null };
 }
 
 /** 실수 사각이 걸치는 정수 칸들. */
@@ -316,7 +386,7 @@ const isHorizontal = (d: TransitDir): boolean => d === "left" || d === "right";
 
 export function createTransitSim(transit: MapTransit | undefined | null, mapSize?: { width: number; height: number }, warmupSec = 90): TransitSim {
   const { routes } = normalizeMapTransit(transit, mapSize);
-  const sim: TransitSim = { routes, vehicles: [], spawnClock: routes.map(() => 0), nextDef: routes.map(() => 0), nextKey: 1, clockSec: 0 };
+  const sim: TransitSim = { routes, vehicles: [], spawnClock: routes.map((r, i) => ((i * 2.3) % r.headwaySec)), nextDef: routes.map(() => 0), nextKey: 1, clockSec: 0 };
   routes.forEach((r, ri) => {
     if (!r.loop) return;
     for (let k = 0; k < r.count; k += 1) {
@@ -380,13 +450,14 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     for (const c of [...enter, ...aheadCells]) { const o = occ.get(cellKey(c.x, c.y)); if (o) blockers.add(o); }
     // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린 방향**이고 STUCK_RELEASE_SEC 넘게
     // 연달아 막혔으면 겹쳐서라도 지나간다. 같은 방향 줄(정류장 버스 뒤 등)과 주인공 앞에서는 끝까지 선다.
-    const crossOnly = blockers.size > 0 && [...blockers].every((o) => isHorizontal(transitPose(sim, o).dir) !== isHorizontal(nextPose.dir));
-    if (byPlayer || (blockers.size > 0 && !(crossOnly && (v.stuckSec ?? 0) >= STUCK_RELEASE_SEC))) {
+    const crossOnly = blockers.size > 0 && [...blockers].every((o) => !(o.wait > 0) && (isHorizontal(transitPose(sim, o).dir) !== isHorizontal(nextPose.dir) || o.routeIndex !== v.routeIndex));
+    const releaseThreshold = r.id.startsWith("turn-") ? 2 : STUCK_RELEASE_SEC;
+    if (byPlayer || (blockers.size > 0 && !(crossOnly && (v.stuckSec ?? 0) >= releaseThreshold))) {
       v.blockedSec += dtSec;
       v.stuckSec = byPlayer || !crossOnly ? 0 : (v.stuckSec ?? 0) + dtSec;
       continue;
     }
-    v.stuckSec = 0;
+    if (blockers.size === 0) v.stuckSec = 0;
     v.pos = next;
     if (reached) { v.wait = reached.waitSec; v.stopAt = reached.index; v.served.push(reached.index); }
     if (r.loop && v.pos >= n) { v.pos -= n; v.served = []; }

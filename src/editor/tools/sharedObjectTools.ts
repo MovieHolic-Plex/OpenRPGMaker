@@ -45,7 +45,8 @@ function resolveObject(project: Project, requestedId: string): Resolved {
     return { name: def.name, source, assets: {}, defaultLayers: def.defaultLayers,
       pattern: { width: def.width, height: def.height, lower: def.lower ?? [], upper: def.upper ?? [] } };
   }
-  const prefix = objectId.slice(0, objectId.indexOf(":")), rest = objectId.slice(objectId.indexOf(":") + 1);
+  const normalizedId = !objectId.includes(":") && objectId.startsWith("mc-") ? `kit:modern_city/${objectId}` : objectId;
+  const prefix = normalizedId.slice(0, normalizedId.indexOf(":")), rest = normalizedId.slice(normalizedId.indexOf(":") + 1);
   if (prefix === "kit" || prefix === "group") {
     const slash = rest.indexOf("/");
     const tilesetId = rest.slice(0, slash), innerId = rest.slice(slash + 1);

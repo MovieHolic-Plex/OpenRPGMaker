@@ -15,6 +15,8 @@ export interface StampEffect {
   readonly eventsWithArt: number;
   /** 새 이벤트 중 그림이 없거나 투명인 것 — 화면에 아무것도 안 보인다. */
   readonly eventsInvisible: number;
+  /** 새로 깔리거나 바뀐 주행 탈것 노선(map.transit.routes) 수. */
+  readonly transitRoutesChanged?: number;
 }
 
 const TILE_LAYERS = ["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles"] as const;
@@ -30,7 +32,7 @@ export function eventHasVisibleArt(event: GameEvent): boolean {
 export function measureStampEffect(before: Project, after: Project, mapId: string): StampEffect {
   const a = before.maps[mapId];
   const b = after.maps[mapId];
-  if (!a || !b) return { tilesChanged: 0, eventsAdded: 0, eventsRemoved: 0, eventsWithArt: 0, eventsInvisible: 0 };
+  if (!a || !b) return { tilesChanged: 0, eventsAdded: 0, eventsRemoved: 0, eventsWithArt: 0, eventsInvisible: 0, transitRoutesChanged: 0 };
   let tilesChanged = 0;
   const size = Math.min(a.width * a.height, b.width * b.height);
   for (const key of TILE_LAYERS) {
@@ -42,12 +44,16 @@ export function measureStampEffect(before: Project, after: Project, mapId: strin
   const beforeIds = new Set(a.events.map((event) => event.id));
   const afterIds = new Set(b.events.map((event) => event.id));
   const added = b.events.filter((event) => !beforeIds.has(event.id));
+  const transitBefore = JSON.stringify(a.transit?.routes ?? []);
+  const transitAfter = JSON.stringify(b.transit?.routes ?? []);
+  const transitRoutesChanged = transitBefore !== transitAfter ? Math.max(b.transit?.routes?.length ?? 0, a.transit?.routes?.length ?? 0, 1) : 0;
   return {
     tilesChanged,
     eventsAdded: added.length,
     eventsRemoved: a.events.filter((event) => !afterIds.has(event.id)).length,
     eventsWithArt: added.filter(eventHasVisibleArt).length,
     eventsInvisible: added.filter((event) => !eventHasVisibleArt(event)).length,
+    transitRoutesChanged,
   };
 }
 
@@ -59,12 +65,13 @@ export function describeStampEffect(effect: StampEffect): string {
     parts.push(`새 이벤트 ${effect.eventsAdded}개(그림 ${effect.eventsWithArt}${effect.eventsInvisible > 0 ? ` · 투명 ${effect.eventsInvisible}` : ""})`);
   }
   if (effect.eventsRemoved > 0) parts.push(`이벤트 ${effect.eventsRemoved}개 삭제`);
+  if ((effect.transitRoutesChanged ?? 0) > 0) parts.push(`주행 노선 ${effect.transitRoutesChanged}개`);
   return `실제로 바뀐 것: ${parts.join(" · ")}`;
 }
 
-/** 화면에 보이는 변화가 하나라도 있는가(타일이 바뀌었거나 그림 있는 이벤트가 생김/지워짐). */
+/** 화면에 보이는 변화가 하나라도 있는가(타일이 바뀌었거나 그림 있는 이벤트가 생김/지워짐, 또는 탈것 주행 노선이 바뀜). */
 export function hasVisibleChange(effect: StampEffect): boolean {
-  return effect.tilesChanged > 0 || effect.eventsWithArt > 0 || effect.eventsRemoved > 0;
+  return effect.tilesChanged > 0 || effect.eventsWithArt > 0 || effect.eventsRemoved > 0 || (effect.transitRoutesChanged ?? 0) > 0;
 }
 
 export function mapOf(project: Project, mapId: string): GameMap | undefined {

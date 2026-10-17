@@ -112,19 +112,19 @@ export function scopeUsesModernCity(project: Pick<Project, "tilesets" | "maps">,
 export const MODERN_CITY_EXPOSED_TOOLS: readonly string[] = [
   "list_tileset_references", "read_tileset_reference", "create_map", "resize_map", "fill_region", "lay_path", "paint_tiles", "check_reachability", "show_map_region",
   "ask_tileset_change", "import_region_reference", "list_hand_interior_parts", "build_hand_interior_room", "list_tileset_objects", "stamp_tileset_object",
-  "compose_modern_city_street", "link_modern_city_interior", "list_map_locations",
+  "compose_modern_city_street", "link_modern_city_interior", "list_map_locations", "set_street_traffic", "set_map_transit", "inspect_map_transit",
 ];
 
 const PROGRAM_LIST = MODERN_CITY_PROGRAMS.map((p) => `${p.program}(${p.ko.split("(")[0]})`).join("·");
 
 /** 시스템 프롬프트 한 줄 — 범위에 modern_city 맵이 있을 때만 붙는다(모든 프로젝트에 번들로 있으므로 늘 붙이면 거리 요청을 jp_city 에서 빼앗는다). */
 export const MODERN_CITY_POINTER_LINE =
-  "도쿄풍 도시 칩셋 modern_city(계열 oprn-modern): 거리는 compose_modern_city_street({mapId, seed}) 한 번으로 도로·교차로·보도·건물 키트·소품을 깔고(결과 data.buildings 의 문 칸), "
+  "도쿄풍 도시 칩셋 modern_city(계열 oprn-modern): 거리는 compose_modern_city_street({mapId, seed}) 한 번으로 도로·교차로·보도·건물 키트·소품·주행/회전 차량 노선(map.transit)을 깔고(결과 data.buildings 의 문 칸), "
   + "건물 안은 build_hand_interior_room({tileset:\"modern_city\", name, floor, wall, layout:{program}}) 로 짓고(program = " + PROGRAM_LIST + ") link_modern_city_interior 로 문과 잇는다. "
-  + "참고문서 list_tileset_references({tilesetId:\"modern_city\"}) 의 「실내」 용도에 가구 사전·예제 9장이 있다. 낱칸 번호로 칠하지 않는다 — 소품은 list_tileset_objects → stamp_tileset_object.";
+  + "거리 차량 흐름·교차로 90° 회전·시내버스 조정은 set_street_traffic({mapId, density:\"normal\", includeTurns:true})(또는 set_map_transit). 참고문서 list_tileset_references({tilesetId:\"modern_city\"}) 의 「실내」 용도에 가구 사전·예제 9장이 있다. 낱칸 번호로 칠하지 않는다 — 소품은 list_tileset_objects → stamp_tileset_object.";
 
 export const MODERN_CITY_DETAIL_LINE =
-  "이 작업의 맵은 modern_city 다. ① 거리는 compose_modern_city_street 로 깔고(손댄 맵은 replace:true, 씨앗마다 도로 배치·건물·소품이 달라진다) 건물은 키트(mc-bld-*)째 — 몸통 칸은 막힘, 문 앞 접근칸 한 줄은 보도로 비운다. "
+  "이 작업의 맵은 modern_city 다. ① 거리는 compose_modern_city_street 로 깔고(손댄 맵은 replace:true, 씨앗마다 도로 배치·건물·소품·주행/교차로 회전 차량 노선이 달라진다) 건물은 키트(mc-bld-*)째 — 몸통 칸은 막힘, 문 앞 접근칸 한 줄은 보도로 비운다. 도로에 움직이는 차·회전 차량·버스를 더하거나 바꿀 때는 set_street_traffic({mapId, density, includeTurns:true}) 를 부른다(차선 한가운데에 정지 차량 타일을 찍지 않는다). "
   + "② 실내는 방 구성 하나로: 사무실 office-floor, 편의점 konbini, 아파트 apartment, 병원 hospital-ward, 로비 lobby, 카페 cafe, 은행 bank, 지하철 concourse, 창고 warehouse. 도구가 칸막이·문·출구를 짜고 예제 방의 가구 한 벌을 심는다 — plan·objects 를 손으로 쓰는 것은 크기·가구를 바꿀 때만. "
   + "③ 방 사이 문 그림은 같은 맵이라 이벤트가 없다. 이동 이벤트는 건물 출입구(link_modern_city_interior)와 계단에만. ④ check_reachability 로 시작 칸 → 건물 문 → 실내 안까지 이어지는지 본다.";
 
@@ -163,7 +163,7 @@ export function formatModernCityNote(target: ModernCityTarget, targetMap: { id: 
   return [
     "[도쿄풍 도시 거리 — modern_city 칩셋] 이 요청의 칩셋은 번들 modern_city(계열 oprn-modern)다. jp_city 의 compose_jp_city_street·build_jp_city_building 과 버들항 author_beodeul_town 은 칸 번호 체계가 달라 쓰지 않는다.",
     where,
-    "순서: compose_modern_city_street({mapId, seed}) 한 번으로 도로(6칸 폭, 노란 중앙선)·교차로(횡단보도·정지선)·보도·건물 키트(문 앞 접근칸)·가로수·가로등·차량을 깐다 → 결과 data.buildings 이름표(가게·사무실·병원·아파트…)를 보고 → 기획에 필요한 건물만 build_hand_interior_room({tileset:\"modern_city\", layout:{program}}) 실내 → link_modern_city_interior 로 문과 잇기 → check_reachability. "
-      + "건물·소품을 더할 때는 list_tileset_objects({tilesetId:\"modern_city\"}) → stamp_tileset_object 로 키트째 찍는다(낱칸 번호로 칠하지 않는다).",
+    "순서: compose_modern_city_street({mapId, seed}) 한 번으로 도로(6칸 폭, 노란 중앙선)·교차로(횡단보도·정지선)·보도·건물 키트(문 앞 접근칸)·가로수·가로등·실시간 주행/교차로 회전 차량(map.transit)을 깐다 → 결과 data.buildings 이름표(가게·사무실·병원·아파트…)를 보고 → 기획에 필요한 건물만 build_hand_interior_room({tileset:\"modern_city\", layout:{program}}) 실내 → link_modern_city_interior 로 문과 잇기 → check_reachability. "
+      + "도로 차량 흐름·교차로 회전·버스를 조정할 때는 set_street_traffic({mapId, density:\"normal\", includeTurns:true}) 를 쓰고, 건물·소품을 더할 때는 list_tileset_objects({tilesetId:\"modern_city\"}) → stamp_tileset_object 로 키트째 찍는다(낱칸 번호로 칠하지 않는다).",
   ].join("\n");
 }

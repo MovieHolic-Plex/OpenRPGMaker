@@ -115,3 +115,10 @@ lower→mixed 갱신을 저장·재로드했다. 개별 칸의 통행/우선순�
 같은 승인 칩으로 416×288px(두 면 표본의 4.78배), 두 차로/연결로/12면/차량6대를 조립했다.
 공용 `mc-parking`에 전체 배열·조립 규칙·실험 이미지·누락 소재를 추가했다. 독립 시각 판정은
 조립 PASS, 시설 INCOMPLETE다. 새 기둥·천장 조명·벽/출입부 키트가 갖춰지기 전에는 이 그림을 완성 시설의 근거로 쓰지 않는다.
+
+## 실시간 주행·교차로 90° 회전 차량 및 AI 조수 자동 배선 (2026-10-17)
+
+- `compose_modern_city_street`(`src/project/modernCityStreetComposer.ts`, `src/editor/tools/modernCityTools.ts`)는 도로 한가운데에 정지 차량 타일을 박는 대신, 가로·세로 아스팔트 차도(6칸 폭)를 따라 달리는 직진 노선·교차로 90° 좌/우회전 노선·남쪽 보도 버스 정류장(`mc-prop-busstop-a`) 정차 시내버스 노선을 `map.transit`으로 자동 생성한다.
+- `src/project/mapTransit.ts`는 `MODERN_CITY_TRANSIT_VEHICLES`(`mc-veh-police-a`, `mc-veh-taxi-b`, `mc-veh-car2-c-red`, `mc-veh-sedan-a-navy`, `mc-veh-bus-a`, `mc-veh-van-a`, `mc-veh-truck-a`, `mc-veh-ambulance-a`, `mc-veh-firetruck-b` 등 14종)와 교차로 90° 직교 코너 방향지시등(`transitCornerBlinker`: 회전 5칸 전부터 `blinker` 점멸 + 코너에서 `right`/`left` ↔ `up`/`down` 직교 전환)을 제공한다.
+- `src/player/modernCityTransitTexture.ts`와 `src/player/playSceneTransit.ts`는 런타임에 이미 로드된 `tex_modern_city` 시트의 원본 차량 키트(`mc-veh-*` 및 `mc-veh-car-front-a*`/`mc-veh-car-back-a*`, 경찰차·택시는 원본 경광등·표시등 화소를 그대로 이식)에서 휠 허브 스포크 4상 회전(`_0.._3`), 차체 1px 서스펜션 바운스(타이어·접지 그림자 고정), 경광등/택시 표시등/전조등, 보행자 횡단보도 앞 정지 브레이크등(`_brake`), 시내버스 중앙 폴딩 도어 개폐(`_open`) 프레임을 즉시 합성해 렌더링한다.
+- AI 조수와 「바로 깔기」(`stampPlanner.ts`, `stampEffect.ts`)는 `set_street_traffic({ mapId, density, includeTurns: true, includeBus: true })`(`src/editor/tools/transitTools.ts`) 한 번으로 `modern_city`·`jp_city` 맵의 차도와 교차로를 자동 감지해 주행·회전 차량을 배치한다.

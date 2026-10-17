@@ -115,17 +115,18 @@ export const COMPOSE_MODERN_CITY_STREET_TOOL: ToolDefinition = {
         // build_hand_interior_room replace:true 를 시켜 거리를 로비로 덮었다(2026-10-14 실조수 gpt-6.1-sol). 이름표가 있으면 그 권고에서 빠진다.
         tags: ["modern-city-building", COMPOSED_LAYOUT_TAG, d.kind, d.kit] });
     }
+    target.transit = r.transit;
     const blocked = (target.events ?? []).filter((e) => !walkable(next, target, e.x, e.y)).map((e) => `${e.name ?? e.id}(${e.x},${e.y})`);
     draft.maps[mapId] = target;
     // 시작 위치: 이 맵이 시작 맵인데 시작 칸이 건물에 덮였거나, 시작 맵이 빈 기본 맵이면 거리 시작 칸으로(2026-10-14 실조수 argon:
     // 시작 칸 (10,8) 이 건물 밑이 되어 커밋이 무결성 오류로 거부됐다 → 모델이 set_start_position 후 다시 불렀다).
     const startNote = claimStartIfBlank(draft, mapId, r.start).note;
     return {
-      summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품·차 ${r.props.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
+      summary: `도쿄풍 거리를 ${map.width}×${map.height} 맵(${mapId})에 짰다(seed ${seed}) — 가로 도로 ${r.roads.horizontal.length}·세로 도로 ${r.roads.vertical.length}, 건물 ${r.buildings.length}채, 소품 ${r.props.length}개, 주행·회전 차량 노선 ${r.transit.routes.length}개${r.park ? `, 공원 (${r.park.x},${r.park.y}) ${r.park.w}×${r.park.h}` : ""}, 시작 칸 (${r.start.x},${r.start.y}) 에서 모든 문 접근칸에 닿음(엔진 통행). `
         + `건물: ${r.buildings.map((d) => `${d.name} 문(${d.doors[0]!.x},${d.doors[0]!.y})${d.program ? `→${d.program}` : ""}`).join(" · ")}.`
         + (r.notes.length ? ` 참고: ${r.notes.join(" / ")}.` : "") + (blocked.length ? ` 경고: 막힌 칸 위 이벤트 ${blocked.join(", ")}.` : "") + startNote
         + " 좌표는 도구 인자용이다 — NPC 대사·안내 문구에는 (x,y) 대신 건물 이름·방향(「본사 정문」 「동쪽 끝」)을 쓴다.",
-      data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length },
+      data: { mapId, seed, start: r.start, roads: r.roads, park: r.park, transitRoutes: r.transit.routes.length, buildings: r.buildings.map((d) => ({ name: d.name, kind: d.kind, kit: d.kit, rect: d.rect, doors: d.doors, access: d.access, program: d.program ?? null })), props: r.props.length },
     };
   },
 };

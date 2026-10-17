@@ -13,7 +13,9 @@ import { requireMap } from "./mapHelpers";
 const KIND_TAGS = new Set(["decal", "prop", "tall", "wallmount", "door", "overhead"]);
 
 function packObjects(tileset: TilesetDef | undefined): SectionStructureKitDef[] {
-  return (tileset?.structureKits ?? []).filter((kit) => kit.learnedFrom === "pack-preset" || kit.learnedFrom === "workshop");
+  return (tileset?.structureKits ?? []).filter(
+    (kit) => kit.learnedFrom === "pack-preset" || kit.learnedFrom === "workshop" || (kit.learnedFrom === "db-authored" && kit.id.startsWith("mc-")),
+  );
 }
 
 function objectKind(kit: SectionStructureKitDef): string {
@@ -25,21 +27,39 @@ function growth(kit: SectionStructureKitDef): { x: boolean; y: boolean } {
   return { x: axis === "horizontal" || axis === "both", y: axis === "vertical" || axis === "both" };
 }
 
-/** 바로 깔기(`place_object`)가 id 로 짚는 작은 물건 킷 — 팩 프리셋이 아닌 손 도트 실내·저작 킷(3×3 이하)도 id 정확 일치로만 찍는다. */
+/** 바로 깔기(`place_object`)가 id 로 짚는 물건 킷 — 팩 프리셋이 아닌 손 도트 실내·저작·차량 킷(8×8 이하)도 id 정확 일치로 찍는다. */
 function objectKitById(tileset: TilesetDef | undefined, id: string): SectionStructureKitDef | undefined {
   const kit = (tileset?.structureKits ?? []).find((candidate) => candidate.id === id);
-  if (!kit || kit.width > 7 || kit.height > 7 || kit.width * kit.height > 36 || !kit.rows?.length) return undefined;
+  if (!kit || kit.width > 8 || kit.height > 8 || kit.width * kit.height > 64 || !kit.rows?.length) return undefined;
   return kit;
 }
 
-function findObject(tileset: TilesetDef | undefined, query: string): SectionStructureKitDef {
+function resolveVehicleDirectionQuery(query: string, dir?: unknown): string {
+  const q = query.trim();
+  if (!q.startsWith("mc-veh-") || typeof dir !== "string") return q;
+  const d = dir.trim().toLowerCase();
+  const base = q.replace(/-l$/u, "");
+  if (d === "left" || d === "west" || d === "w") return `${base}-l`;
+  if (d === "right" || d === "east" || d === "e") return base;
+  if (d === "down" || d === "south" || d === "s" || d === "up" || d === "north" || d === "n") {
+    const face = d === "down" || d === "south" || d === "s" ? "front" : "back";
+    const colorMatch = base.match(/-(black|navy|red|white|beige|green)$/u);
+    if (colorMatch) return `mc-veh-car-${face}-a-${colorMatch[1]}`;
+    if (base.includes("taxi") || base.includes("police")) return `mc-veh-car-${face}-a-black`;
+    return `mc-veh-car-${face}-a`;
+  }
+  return q;
+}
+
+function findObject(tileset: TilesetDef | undefined, query: string, direction?: unknown): SectionStructureKitDef {
+  const effectiveQuery = resolveVehicleDirectionQuery(query, direction);
   const objects = packObjects(tileset);
-  const byKitId = objects.length === 0 || !objects.some((kit) => kit.id === query.trim()) ? objectKitById(tileset, query.trim()) : undefined;
+  const byKitId = objects.length === 0 || !objects.some((kit) => kit.id === effectiveQuery) ? objectKitById(tileset, effectiveQuery) : undefined;
   if (byKitId) return byKitId;
   if (objects.length === 0) {
     throw new ToolError("이 맵의 타일셋에는 팩 물체가 없습니다 — 팩 프리셋으로 만든 타일셋, 또는 공방에서 그려 넣은 기물(workshop:…)이 있는 손 도트 실내 칩셋에서만 쓴다.", { code: "no-pack-objects" });
   }
-  const needle = query.trim();
+  const needle = effectiveQuery;
   const exact = objects.find((kit) => kit.id === needle) ?? objects.find((kit) => kit.name === needle);
   if (exact) return exact;
   const lowered = needle.toLowerCase();
@@ -185,7 +205,8 @@ const stampTilesetObject: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      objectId: { type: "string", description: "물체 id(예: \"street_lamp_left\") 또는 정확한 이름" },
+      objectId: { type: "string", description: "물체 id(예: \"street_lamp_left\", \"mc-veh-police-a\", \"mc-veh-police-a-l\") 또는 정확한 이름" },
+      direction: { type: "string", enum: ["right", "left", "down", "up"], description: "선택. 차량(mc-veh-*) 방향: right(오른쪽 →), left(왼쪽 ←, -l 키트), down(남향 ↓), up(북향 ↑)" },
       at: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"], description: "물체 왼쪽 위 칸. at 대신 base 를 줘도 된다" },
       base: {
         type: "object", properties: { x: { type: "integer" }, y: { type: "integer" } }, required: ["x", "y"],
@@ -205,7 +226,7 @@ const stampTilesetObject: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const tileset = draft.tilesets[map.tilesetId];
-    const kit = findObject(tileset, String(args.objectId ?? ""));
+    const kit = findObject(tileset, String(args.objectId ?? ""), args.direction);
     const base = args.base as { x?: unknown; y?: unknown } | undefined;
     const at = base !== undefined && args.at === undefined
       ? { x: base.x, y: Number.isInteger(base.y) ? (base.y as number) - kit.height + 1 : base.y }
