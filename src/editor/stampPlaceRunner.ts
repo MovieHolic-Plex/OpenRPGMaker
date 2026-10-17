@@ -1012,7 +1012,15 @@ const JP_HOUSE_PRESETS = [
   { ground: "gr.shutter.sora", roof: "roof.hip.slate", floorKind: "slide", wall: "kinari", door: { type: "lattice" } },
 ] as const;
 
-function jpPresetForKind(kindText: string | undefined, seed: number): (typeof JP_HOUSE_PRESETS)[number] {
+type JpHousePreset = {
+  readonly ground: string;
+  readonly roof: string;
+  readonly floorKind: string;
+  readonly wall: string;
+  readonly door: { readonly type: string };
+};
+
+function jpPresetForKind(kindText: string | undefined, seed: number): JpHousePreset {
   const text = (kindText ?? "").trim();
   if (/편의점|마트|수퍼|conv/iu.test(text)) {
     return { ground: "gr.shutter.sora", roof: "roof.slate", floorKind: "slide", wall: "shiro", door: { type: "lattice" } };
