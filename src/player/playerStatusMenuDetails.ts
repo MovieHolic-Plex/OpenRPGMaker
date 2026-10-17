@@ -44,12 +44,14 @@ import type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailFact, Sta
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
+import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
+import { endingChecklist, formatSaveDate, endingRecallLines, galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { openGalleryViewer } from "@/player/galleryViewer";
 import { openBacklogView } from "@/player/dialogueBacklogView";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
 import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { resourceDisplayName } from "@/player/resourceDisplay";
-import { listFriendshipEntries } from "@/project/friendship";
+import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax } from "@/project/socialLoop";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import {
@@ -97,7 +99,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "region-map":
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
-    case "load": return loadDetail(options.slots, options.onLoadSlot);
+    case "load": return loadDetail(options.slots, options.onLoadSlot, vnSaveCards(options.project));
     case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -105,6 +107,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "gallery": return galleryDetail(options.project, options.session);
+    case "endings": return endingsDetail(options.project, options.session);
     case "backlog": return backlogDetail(options.project, options.session);
     case "life-ledger": return createLifeLedgerDetail({
       project: options.project,
@@ -680,12 +683,16 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
+function vnSaveCards(project: Project): boolean {
+  return resolveVnExtras(project)?.saveCards.enabled === true;
+}
+
 function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   return {
     title: "저장",
     entries: options.slots.map((slot) => ({
       label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot),
+      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot, vnSaveCards(options.project)),
       testId: `save-slot-${slot.slot}`,
       onActivate: options.onSaveSlot && options.saveEnabled !== false ? () => options.onSaveSlot?.(slot.slot) : undefined,
       disabled: options.saveEnabled === false,
@@ -698,12 +705,12 @@ function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   };
 }
 
-function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined): StatusMenuDetail {
+function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, vnCards: boolean): StatusMenuDetail {
   return {
     title: "로드",
     entries: slots.map((slot) => ({
       label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, false),
+      ...saveSlotEntryParts(slot, false, vnCards),
       testId: `load-slot-${slot.slot}`,
       onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
       disabled: slot.kind !== "present",
@@ -866,8 +873,59 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
 }
 
 function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail {
-  const label = galleryMenuLabel(project);
   const unlocks = listGalleryUnlocks(session);
+  const vn = resolveVnExtras(project)?.gallery;
+  if (!vn?.enabled) return legacyGalleryDetail(project, galleryMenuLabel(project), unlocks);
+  const label = vnGalleryLabel(project);
+  // 연애 기본 구성/저작의 갤러리: 전체 CG 칸을 보이고(잠금 표시) 본 엔딩을 회상으로 다시 읽는다.
+  const language = vnExtrasLanguage(project);
+  const text = (key: VnUiKey, ...args: readonly (string | number)[]) => vnUiText(language, key, ...args);
+  const rows = galleryRows(listGallerySlots(project), unlocks);
+  const opened = rows.filter((row) => !row.locked).map((row) => row.resourceId);
+  const pictureEntries: StatusMenuDetailEntry[] = [];
+  rows.forEach((row, index) => {
+    if (row.locked) {
+      if (!vn.showLocked) return;
+      pictureEntries.push({
+        label: text("gallery.lockedName"), value: text("gallery.locked"),
+        unavailableReason: text("gallery.lockedHint"),
+        testId: `status-menu-gallery-locked-${index}`,
+        attributes: { "data-gallery-locked": "true" },
+      });
+      return;
+    }
+    const name = resourceDisplayName(row.resourceId, text("gallery.item", index + 1));
+    const openIndex = opened.indexOf(row.resourceId);
+    pictureEntries.push({
+      label: name, value: String(index + 1), testId: `status-menu-gallery-${index}`,
+      icon: { resourceId: row.resourceId, alt: name, testId: `status-menu-gallery-thumb-${index}`, smooth: true },
+      onActivate: () => openGalleryViewer({ project, resourceIds: opened, index: openIndex }),
+    });
+  });
+  const seenIds = session.clearHistory?.endingIds;
+  const endingEntries: StatusMenuDetailEntry[] = listEndingRows(project, seenIds).filter((row) => row.seen).map((row, index) => {
+    const ending = (project.endings ?? []).find((candidate) => candidate.id === row.id);
+    const lines = ending ? endingRecallLines(ending) : [];
+    return {
+      label: text("gallery.endingRecall", row.name), value: "",
+      testId: `status-menu-gallery-ending-${index}`,
+      onActivate: () => openBacklogView({
+        host: (document.querySelector(".play-stage") as HTMLElement | null) ?? document.body,
+        entries: lines.length > 0 ? lines : [{ kind: "line", text: text("gallery.recallEmpty") }],
+        system: language, title: row.name,
+      }),
+    };
+  });
+  return {
+    title: label,
+    layout: "gallery",
+    entries: [...pictureEntries, ...endingEntries],
+    emptyLabel: text("gallery.empty"),
+    hint: text("gallery.hint"),
+  };
+}
+
+function legacyGalleryDetail(project: Project, label: string, unlocks: readonly string[]): StatusMenuDetail {
   return {
     title: label,
     layout: "gallery",
@@ -889,6 +947,39 @@ function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail
     emptyLabel: "아직 열린 그림이 없습니다.",
     hint: "결정 키로 화면 가득 봅니다. 연 뒤 좌우로 넘깁니다.",
   };
+}
+
+/** 엔딩 목록 — 엔딩 정의를 읽어 자동으로 채운다. 결말 3종·인물별 체크리스트·엔딩별 달성 표시. 달성은 이 기기의 클리어 기록. */
+function endingsDetail(project: Project, session: PlaySession): StatusMenuDetail {
+  const vn = resolveVnExtras(project);
+  const language = vnExtrasLanguage(project);
+  const text = (key: VnUiKey, ...args: readonly (string | number)[]) => vnUiText(language, key, ...args);
+  const title = text("endings.title");
+  if (!vn?.endings.enabled) return { title, entries: [], emptyLabel: text("endings.empty") };
+  const seenIds = session.clearHistory?.endingIds;
+  const rows = listEndingRows(project, seenIds);
+  if (rows.length === 0) return { title, entries: [], emptyLabel: text("endings.empty") };
+  const mark = (seen: boolean) => (seen ? `● ${text("endings.seen")}` : `○ ${text("endings.unseen")}`);
+  const entries: StatusMenuDetailEntry[] = [{
+    label: text("endings.summary"), value: text("endings.progress", rows.filter((row) => row.seen).length, rows.length), testId: "status-menu-endings-summary",
+  }];
+  for (const row of endingChecklist(project, seenIds, text("endings.common"))) {
+    const cells = row.tiers.map((cell) => `${text(`endings.tier.${cell.tier}`)} ${cell.defined ? (cell.seen ? "●" : "○") : text("endings.undefined")}`);
+    entries.push({
+      label: text("endings.checklist", row.name), value: row.tiers.map((cell) => (cell.defined ? (cell.seen ? "●" : "○") : "·")).join(""),
+      description: cells.join(" · "), testId: `status-menu-endings-checklist-${row.characterId ?? "common"}`,
+    });
+  }
+  rows.forEach((row, index) => {
+    const hidden = vn.endings.hideUnseen && !row.seen;
+    const who = row.characterId ? friendshipDisplayName(project, row.characterId) ?? row.characterId : text("endings.common");
+    entries.push({
+      label: hidden ? text("endings.hidden") : row.name, value: mark(row.seen),
+      ...(hidden ? {} : { description: `${text(`endings.tier.${row.tier}`)} · ${who}` }),
+      testId: `status-menu-endings-${index}`, attributes: { "data-ending-seen": String(row.seen) },
+    });
+  });
+  return { title, entries, emptyLabel: text("endings.empty"), hint: text("endings.hint") };
 }
 
 /** 백로그 — 전체 화면 뷰어를 열고, 아래에 가장 최근 대사 몇 줄을 미리 보인다. 데이터는 세이브에 실린 session.dialogueBacklog. */
@@ -1096,7 +1187,8 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
 // 메타가 길면 value(우측 1줄)가 아니라 description(전폭 2줄) 행으로 내려 라벨과 겹치지 않게 한다.
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
-  confirmingOverwrite: boolean
+  confirmingOverwrite: boolean,
+  vnCard = false
 ): { value: string; description?: string } {
   switch (slot.kind) {
     case "empty": return { value: "비어 있음" };
@@ -1112,6 +1204,12 @@ function saveSlotEntryParts(
         const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
         const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
         return { value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨", description: where.filter(Boolean).join(" / ") };
+      }
+      // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
+      if (vnCard) {
+        const when = formatSaveDate(slot.snapshot.savedAt);
+        if (when) parts.push(when);
+        if (slot.snapshot.sceneLine) parts.push(`“${slot.snapshot.sceneLine}”`);
       }
       return {
         value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨",

@@ -3,6 +3,8 @@
 
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { galleryMenuLabel } from "@/project/gallery";
+import { vnGalleryLabel, vnUiText } from "@/player/vnExtrasStrings";
+import { resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -60,8 +62,10 @@ function paint(): void {
   const state = viewer;
   if (!state) return;
   const resourceId = state.resourceIds[state.index] ?? "";
-  const label = galleryMenuLabel(state.project);
-  const name = resourceDisplayName(resourceId, "그림");
+  // 연애 기본 구성/저작의 갤러리는 저작 언어로 글자를 보인다. 그 밖은 예전 한국어 그대로.
+  const vn = resolveVnExtras(state.project)?.gallery.enabled === true ? vnExtrasLanguage(state.project) : undefined;
+  const label = vn ? vnGalleryLabel(state.project) : galleryMenuLabel(state.project);
+  const name = resourceDisplayName(resourceId, vn ? vnUiText(vn, "gallery.item", state.index + 1) : "그림");
   const url = resolveAssetResourceUrl(resourceId, { project: state.project });
   const figure = url
     ? el("img", {
@@ -71,7 +75,7 @@ function paint(): void {
       })
     : el("p", {
         class: "gallery-viewer-missing",
-        text: "그림을 찾을 수 없습니다.",
+        text: vn ? vnUiText(vn, "gallery.missing") : "그림을 찾을 수 없습니다.",
         dataset: { testid: "gallery-viewer-missing" },
       });
   state.root.replaceChildren(
@@ -83,7 +87,7 @@ function paint(): void {
     }),
     el("button", {
       class: "gallery-viewer-close",
-      text: "닫기",
+      text: vn ? vnUiText(vn, "gallery.close") : "닫기",
       attrs: { type: "button" },
       dataset: { testid: "gallery-viewer-close" },
       on: { click: () => closeGalleryViewer() },

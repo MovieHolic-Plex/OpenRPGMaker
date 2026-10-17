@@ -153,6 +153,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_title_screen: system("타이틀 화면"),
   configure_game_systems: system("게임 시스템"),
   set_dialogue_system: system("대사창 읽기 보조"),
+  set_vn_extras: system("갤러리·엔딩·세이브 카드"),
   configure_field_menu: system("ESC 메뉴 구성"),
   set_action_combat: system("액션 전투 설정"),
   make_action_enemy: people("액션 적 배치", "user"),

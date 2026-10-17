@@ -1008,6 +1008,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
       case "backlog":
       case "life-ledger":
         resetSubscreenState();
@@ -1136,6 +1137,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
       case "backlog":
       case "life-ledger":
       case "row":
@@ -1283,6 +1285,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "quests":
       case "relationships":
       case "gallery":
+      case "endings":
       case "backlog":
       case "life-ledger":
       case "row":

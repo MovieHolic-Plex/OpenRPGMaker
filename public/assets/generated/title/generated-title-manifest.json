@@ -10,29 +10,5 @@
     "fileName": "romance-campus-spring.jpg",
     "sha256": "da7e82b8cdcb09a976ed339e8db865a2df2620eefc25253cbaddbaa140ed45cc",
     "model": "gpt-image-2.5-sunburst"
-  },
-  {
-    "id": "oprn-title-romance-cafe",
-    "fileName": "romance-cafe.jpg",
-    "sha256": "4bcd850724251ede26e2ee037a47c8639a5459736e29366aed03bce6243fa5cd",
-    "model": "gpt-image-2.5-sunburst"
-  },
-  {
-    "id": "oprn-title-romance-school",
-    "fileName": "romance-school.jpg",
-    "sha256": "2f3eb4bbcd7c55f7b8a47fda115527343683156ea1da917551b45d46c8126a79",
-    "model": "gpt-image-2.5-sunburst"
-  },
-  {
-    "id": "oprn-title-romance-office",
-    "fileName": "romance-office.jpg",
-    "sha256": "00781c19f2aae6dac2a5eb0f85de8f429d5c5b6113c921bc8dec5e3545744181",
-    "model": "gpt-image-2.5-sunburst"
-  },
-  {
-    "id": "oprn-title-romance-town",
-    "fileName": "romance-town.jpg",
-    "sha256": "2b3cb96d8914b01ebc5aee90ca012b4869d5cfcf57bbe6b60874ec0249ec6fdb",
-    "model": "gpt-image-2.5-sunburst"
   }
 ]

@@ -35,7 +35,9 @@ export function isBacklogToggleKey(event: Pick<KeyboardEvent, "key" | "code">): 
   return event.code === "KeyL" || event.key === "l" || event.key === "L" || event.key === "ㅣ";
 }
 
-function lineElement(entry: BacklogEntry, system: AuthoredDialogueSystem | undefined): HTMLElement {
+type UiLanguageHost = Pick<AuthoredDialogueSystem, "language">;
+
+function lineElement(entry: BacklogEntry, system: UiLanguageHost | undefined): HTMLElement {
   if (entry.kind === "choice") {
     const children: HTMLElement[] = [];
     if (entry.prompt) children.push(el("span", { class: "dialogue-backlog-prompt", text: entry.prompt }));
@@ -61,12 +63,16 @@ function lineElement(entry: BacklogEntry, system: AuthoredDialogueSystem | undef
 export function openBacklogView(options: {
   readonly host: HTMLElement;
   readonly entries: readonly BacklogEntry[];
-  readonly system: AuthoredDialogueSystem | undefined;
+  /** 글자 언어만 쓴다 — 백로그 시스템이 없는 게임의 회상 화면(엔딩 회상)도 같은 뷰를 쓴다. */
+  readonly system: UiLanguageHost | undefined;
+  /** 제목을 바꾼다(엔딩 회상). 생략 = 「백로그」. */
+  readonly title?: string;
   readonly onClose?: () => void;
 }): void {
   closeBacklogView();
   const { system } = options;
-  const list = el("ol", { class: "dialogue-backlog-list", attrs: { tabindex: "0", "aria-label": dialogueUiText(system, "backlog.title") }, dataset: { testid: "dialogue-backlog-list" } });
+  const title = options.title ?? dialogueUiText(system, "backlog.title");
+  const list = el("ol", { class: "dialogue-backlog-list", attrs: { tabindex: "0", "aria-label": title }, dataset: { testid: "dialogue-backlog-list" } });
   for (const entry of options.entries) list.append(lineElement(entry, system));
   if (options.entries.length === 0) list.append(el("li", { class: "dialogue-backlog-empty", text: dialogueUiText(system, "backlog.empty") }));
   const closeButton = el("button", {
@@ -76,11 +82,11 @@ export function openBacklogView(options: {
   closeButton.addEventListener("click", (event) => { event.stopPropagation(); closeBacklogView(); });
   const root = el("div", {
     class: "dialogue-backlog",
-    attrs: { role: "dialog", "aria-modal": "true", "aria-label": dialogueUiText(system, "backlog.title") },
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": title },
     dataset: { testid: "dialogue-backlog", count: String(options.entries.length) },
     children: [
       el("div", { class: "dialogue-backlog-head", children: [
-        el("strong", { class: "dialogue-backlog-title", text: dialogueUiText(system, "backlog.title") }),
+        el("strong", { class: "dialogue-backlog-title", text: title }),
         el("span", { class: "dialogue-backlog-count", text: dialogueUiText(system, "backlog.count", options.entries.length) }),
         el("span", { class: "dialogue-backlog-hint", text: dialogueUiText(system, "backlog.hint") }),
       ] }),

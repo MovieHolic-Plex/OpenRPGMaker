@@ -797,6 +797,8 @@ export interface Project {
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
     /** 대사창 읽기 보조(백로그·오토·스킵·숨기기) 저작. 없으면 옛 동작(연애 게임은 기본 구성). project/dialogueSystem.ts */
     oprnDialogueSystem?: import('../dialogueSystem').AuthoredDialogueSystem;
+    /** 미연시 추가 화면(갤러리 잠금·엔딩 목록·세이브 카드) — project/vnExtras.ts. 생략 = 옛 동작(연애 게임은 기본 구성). */
+    oprnVnExtras?: import('../vnExtras').AuthoredVnExtras;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;

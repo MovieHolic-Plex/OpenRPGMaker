@@ -6,8 +6,13 @@
 }
 
 .oprn-status-menu .status-menu-detail.is-gallery.has-showcase > .status-menu-detail-showcase {
+  align-content: stretch;
   border-left: 0;
   grid-area: picture;
+  /* 그림 칸이 남는 높이를 먹는다. 높이를 정하지 않으면 frame 의 height:100% 가 0 으로 접혀 그림이 안 보인다(2026-10-17 실측). */
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto auto auto;
+  justify-items: stretch;
   padding: 0;
 }
 

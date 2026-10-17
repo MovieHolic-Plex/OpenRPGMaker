@@ -110,6 +110,7 @@ import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { validProgress, type CollectionProgress } from "@/project/collections";
 import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { parseVehicleSessionState } from "@/project/vehicles";
+import { normalizeSceneLine, resolveVnExtras, saveSceneLine } from "@/project/vnExtras";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -142,6 +143,8 @@ export type SaveSnapshot = {
   readonly playTimeSeconds?: number;
   /** 몬스터 수집 게임의 저장 칸 요약(도감·배지·파티). 다른 장르는 생략. */
   readonly monsterSummary?: MonsterSaveSummary;
+  /** 미연시 세이브 카드(meta.oprnVnExtras.saveCards): 저장 시점의 마지막 대사 한 줄. 꺼져 있으면 생략. */
+  readonly sceneLine?: string;
   /** Optional metadata shared by supported Save4 and Save5 snapshots. */
   readonly savedBy?: SaveOrigin;
   readonly autosaveTrigger?: AutosaveTrigger;
@@ -416,6 +419,10 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
     ...(() => {
       const monsterSummary = monsterSaveSummary(project, session);
       return monsterSummary ? { monsterSummary } : {};
+    })(),
+    ...(() => {
+      const sceneLine = resolveVnExtras(project)?.saveCards.enabled ? saveSceneLine(session.dialogueBacklog) : undefined;
+      return sceneLine ? { sceneLine } : {};
     })(),
     session: {
       switches: structuredClone(session.switches),
@@ -1051,6 +1058,10 @@ function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
       ...(() => {
         const monsterSummary = readMonsterSaveSummary(value.monsterSummary);
         return monsterSummary ? { monsterSummary } : {};
+      })(),
+      ...(() => {
+        const sceneLine = normalizeSceneLine(value.sceneLine);
+        return sceneLine ? { sceneLine } : {};
       })(),
       savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
       autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,

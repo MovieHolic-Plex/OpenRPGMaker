@@ -825,3 +825,15 @@
   color: rgba(255, 255, 255, 0.85);
   font-size: var(--runtime-font-size-9);
 }
+
+/* 미연시 세이브 카드(meta.oprnVnExtras.saveCards) — 마지막 대사 한 줄. 길면 말줄임. */
+.player-layout.system-shell .oprn-load-slot-scene {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: var(--runtime-font-size-9);
+  font-style: italic;
+}

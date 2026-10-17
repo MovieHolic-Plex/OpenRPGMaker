@@ -876,3 +876,16 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 - 글자: ESC 메뉴 하단 조작 안내(`statusMenuControls(…, system)`)와 레일 「백로그」 기본 라벨은 대사 시스템이 있는 게임에서 저작 언어로 나온다(없으면 예전 한국어). 죽은 키 `notice.hiddenRestore` 삭제.
 - 조수: 시스템 도구 초기 선언 낱말은 `GAME_SYSTEM_REQUEST_PATTERN`(`gameSystemProduction.ts`)에 모았고 영·일·중 낱말을 더했다.
 - 알림(릴리스 노트용): 백로그 항목을 저작한 ESC 메뉴가 든 프로젝트는 이전 빌드에서 열리지 않는다. 기존 연애(관계 메뉴) 프로젝트는 저작 없이도 기본 구성이 켜져 대사창 단추 줄·ESC 백로그·설정 3행이 새로 생긴다(비연애 프로젝트는 불변).
+||||||| parent of 22f15b1a42 (wip(vn): issues for save cards without backlog, openwiki)
+
+
+
+## 미연시 추가 화면 — 갤러리 잠금·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
+
+- **옵트인 저작.** `meta.oprnVnExtras`(순수 잎 모듈 `src/project/vnExtras.ts`, v1: `language?`, `gallery{enabled,showLocked}`, `endings{enabled,hideUnseen}`, `saveCards{enabled}`)가 없고 관계 중심 게임도 아니면 갤러리·ESC 메뉴·세이브 카드는 예전과 같다(`resolveVnExtras` → undefined). 연애 게임만 저작 없이도 세 기능이 켜지고(`romanceVnExtras`), 연애 프리셋(`romancePreset.ts`)은 저작본을 심는다. 검증은 `validateVnExtras`(모르는 칸·잘못된 값 거절, `shapeResourceFields.ts`).
+- **새 그림 0장.** 갤러리 칸은 맵·공통 이벤트의 `showPicture recordInGallery` 를 훑어(`listGallerySlots`, 중첩 branch/fork/loop 포함, WeakMap 캐시, 상한 200) 만든다 — 아직 안 연 칸이 「???/잠김」으로 보인다(`showLocked:false` 면 감춤). 잠긴 줄은 `unavailableReason` 이라 커서가 건너뛴다. 엔딩 회상은 본 엔딩(기기 클리어 기록 `session.clearHistory.endingIds`)의 에필로그 `say` beat 를 백로그 뷰어(`openBacklogView({title})`)로 다시 읽는 읽기 전용이다. 인터프리터를 다시 돌리지 않는다.
+- **엔딩 목록.** ESC 메뉴 「엔딩」(`FIELD_MENU_COMMANDS` 에 `endings`, 연애 메뉴에 포함). `project.endings` 를 읽어 자동으로 채운다: 달성/미달성(기기 기록), 인물별 체크리스트(해피·평범·혼자 3종, `friendshipAtLeast.npcKey` 로 인물을 가르고 인물 전용 엔딩이 없으면 「공통」 한 줄, 문턱 `ROMANCE_ENDING_*_AT` 로 결말 구분), 못 본 엔딩 이름은 `hideUnseen` 이면 「???」. 엔딩 정의가 없으면 항목 자체를 숨긴다(빈 화면 금지). 갤러리 항목도 열 칸·열린 그림·본 엔딩이 하나도 없으면 숨긴다.
+- **세이브 카드.** `SaveSnapshot.sceneLine`(선택, `saveCards` 가 켜졌을 때만 쓰고, 읽을 때 `normalizeSceneLine` 으로 44자·제어문자 정리)에 저장 시점 마지막 대사(「화자: 글」)를 싣는다. 타이틀 불러오기 카드(`playerLoadPanel` `.oprn-load-slot-scene`)와 ESC 저장/불러오기 상세(날짜+한 줄)에 보인다. 옛 세이브·꺼진 게임은 한 줄이 없을 뿐 바뀌지 않는다. 대사 백로그가 꺼져 있으면 한 줄이 비므로 `review_game_systems` 가 지적한다.
+- **글자 언어.** 새 글자는 `src/player/vnExtrasStrings.ts`(네 언어 표, 빈 칸·자리표시자는 `test/vnExtras.test.ts` 가 막음). 언어는 `vnExtrasLanguage`: 저작 `language` > 대사 시스템 언어 > ko. 연애 기본 이름 「갤러리」「엔딩」은 저작자가 바꾸지 않았을 때만 번역한다(`statusMenuCommandLabel`). 저장/불러오기·호감도 등 기존 메뉴 글자는 아직 한국어 하드코딩(미해결).
+- **함정(실측).** 갤러리 상세는 `grid-template-rows` 가 없어 큰 그림 칸(`status-menu-showcase-frame` height:100%)이 높이 0 으로 접혀 그림이 안 보이는 기존 결함이 있었다 — `galleryMenu.css` 에서 첫 줄을 `minmax(0,1fr)` 로 고쳤다(옛 갤러리에도 적용됨). 로컬 파일 대신 런타임 QA 에는 `scenario.localStorageSeed`(키의 `{ns}` = 세이브 이름 공간)로 「이 기기에 이미 본 엔딩」을 심는다(`scripts/lib/runtimeQaRun.mjs`).
+- **시각 QA.** `bun scripts/qa/runtime/romance-vn-ui2-fixture.mts output/qa/vn2 [ko|en]` 후 `unshare -rn node scripts/runtime-qa.mjs --scenario romance-vn-ui2 --project output/qa/vn2/project.json`. 증거 `verify-shots/runtime-qa/romance-vn-ui2{,-en}/`.
