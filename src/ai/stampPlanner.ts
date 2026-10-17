@@ -37,7 +37,8 @@ export type StampTool =
   | "place_terrain_house"
   | "build_jp_city_building"
   | "stamp_object"
-  | "place_dungeon_room";
+  | "place_dungeon_room"
+  | "paint_tiles";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -326,6 +327,7 @@ const TOOL_KO: Record<StampTool, string> = {
   build_jp_city_building: "집",
   stamp_object: "건물",
   place_dungeon_room: "던전 방",
+  paint_tiles: "타일 칠하기",
 };
 
 /**
@@ -586,6 +588,8 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     case "build_jp_city_building":
     case "stamp_object":
       return dropped(`${stampTool} 은 코드가 place_house 에서 만드는 내부 단계다 — place_house 를 쓴다`);
+    case "paint_tiles":
+      return dropped("paint_tiles 는 코드가 place_dungeon_room 에서 만드는 내부 단계다 — place_dungeon_room 을 쓴다");
     case "place_inn": {
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("여관 주인 위치가 없습니다");
