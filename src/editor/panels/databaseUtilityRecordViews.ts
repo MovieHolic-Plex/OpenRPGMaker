@@ -438,8 +438,7 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
     workspaceShell({
       detail: detailPane({
         hero: detailHero({
-          eyebrow: "전투 명령",
-          title: "전투 명령",
+          title: "카탈로그와 직업 메뉴 배치",
           subtitle: "카탈로그에서 골라 직업의 실제 메뉴에 배치합니다.",
           tags: [`${commands.length}개`, `직업 ${project.database.classes.length}개가 참조`],
           actions: [{

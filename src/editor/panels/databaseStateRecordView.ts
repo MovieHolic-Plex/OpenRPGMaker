@@ -45,10 +45,10 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
       dataset: { testid: "db-states-oprn-workbench" },
       children: [
         panel("기본 설정", [
-          selectLiteral("Gen1 주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
+          selectLiteral("주요 상태", "db-state-gen1-major-status", state.gen1MajorStatus ?? "none", GEN1_MAJOR_STATUS_OPTIONS, (gen1MajorStatus) =>
             update({ gen1MajorStatus: gen1MajorStatus === "none" ? undefined : gen1MajorStatus })
           ),
-          selectLiteral("휘발 상태 (gen1)", "db-state-volatile-status", state.volatileStatus ?? "none", VOLATILE_STATUS_OPTIONS, (volatileStatus) =>
+          selectLiteral("휘발 상태", "db-state-volatile-status", state.volatileStatus ?? "none", VOLATILE_STATUS_OPTIONS, (volatileStatus) =>
             update({ volatileStatus: volatileStatus === "none" ? undefined : volatileStatus })
           ),
           selectLiteral("해제 조건", "db-state-removal-condition", ontology.removalCondition, REMOVAL_OPTIONS, (removalCondition) =>

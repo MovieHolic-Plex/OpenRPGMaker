@@ -73,6 +73,7 @@ function hitFeelField(project: Project): HTMLElement {
     dataset: { testid: "db-field-system-battle-hit-feel" },
     attrs: { title: BATTLE_HIT_FEEL_IDS.map((id) => `${BATTLE_HIT_FEEL_LABELS[id]}: ${BATTLE_HIT_FEEL_DESCRIPTIONS[id]}`).join("\n") },
   });
+  select.style.maxWidth = "340px";
   for (const id of BATTLE_HIT_FEEL_IDS) {
     select.append(el("option", { text: BATTLE_HIT_FEEL_LABELS[id], attrs: { value: id } }));
   }

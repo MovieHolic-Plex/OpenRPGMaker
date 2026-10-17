@@ -10,8 +10,8 @@ import {
   emptyToUndefined,
   field,
   numberField as baseNumberField,
-  selectField,
-  selectLiteral,
+  selectField as baseSelectField,
+  selectLiteral as baseSelectLiteral,
   textControl,
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -3434,6 +3434,24 @@ function resourcePickerControl(options: Parameters<typeof baseResourcePickerCont
 }
 
 /** Canonical domain readers keep every committed number and stepper in sync. */
+function selectField(
+  ...args: Parameters<typeof baseSelectField>
+): HTMLElement {
+  const row = baseSelectField(...args);
+  const select = row.querySelector<HTMLElement>("select");
+  if (select) select.style.maxWidth = "340px";
+  return row;
+}
+
+function selectLiteral<const T extends string>(
+  ...args: Parameters<typeof baseSelectLiteral<T>>
+): HTMLElement {
+  const row = baseSelectLiteral(...args);
+  const select = row.querySelector<HTMLElement>("select");
+  if (select) select.style.maxWidth = "340px";
+  return row;
+}
+
 function numberField(
   label: string,
   testid: string,
@@ -3446,6 +3464,8 @@ function numberField(
     onInput(value);
     synchronize();
   }, bounds, options);
+  const stepper = row.querySelector<HTMLElement>(".db-number-stepper");
+  if (stepper) stepper.style.maxWidth = "120px";
   const input = row.querySelector<HTMLInputElement>("input")!;
   const decrement = row.querySelector<HTMLButtonElement>(".db-number-stepper-dec")!;
   const increment = row.querySelector<HTMLButtonElement>(".db-number-stepper-inc")!;

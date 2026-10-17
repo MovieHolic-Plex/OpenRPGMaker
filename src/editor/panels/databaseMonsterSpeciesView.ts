@@ -27,7 +27,7 @@ import { monsterSpeciesSections, type MonsterSpeciesSectionId, type MonsterSpeci
 import { monsterTypeLabel, monsterTypeTone } from "@/editor/panels/databaseMonsterSpeciesTypeLabels";
 import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
 import { store } from "@/project/store";
-import type { EnemyStats, MonsterAbility, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
+import type { EnemyStats, MonsterAbility, MonsterEvolutionRecord, MonsterSpeciesRecord, Project } from "@/project/types";
 import { abilityEffectText, MONSTER_ABILITY_KINDS, MONSTER_ABILITY_KIND_LABELS, MONSTER_ABILITY_STATS, MONSTER_ABILITY_STATUSES, normalizeMonsterAbility } from "@/battle/abilities";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -169,27 +169,24 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
   const detail = selected
     ? speciesDetailPane(project, selected, species.indexOf(selected), rerender)
     : makeDetailPane({
-      body: emptyState({
-        icon: "◇",
-        title: "종족이 없습니다",
-        body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
-        action: {
-          label: "첫 종족 만들기",
-          kind: "primary",
-          testid: "db-monster-species-empty-create",
-          onClick: () => addSpecies(rerender),
-        },
-      }),
+      body: [
+        emptyState({
+          icon: "◇",
+          title: "종족이 없습니다",
+          body: "포획·성장·종족값을 설정합니다. 전투 몬스터 탭에서 연결하며, 전투의 고정 능력치는 별도로 편집합니다.",
+          action: {
+            label: "첫 종족 만들기",
+            kind: "primary",
+            testid: "db-monster-species-empty-create",
+            onClick: () => addSpecies(rerender),
+          },
+        }),
+        monsterPipelineHeader(project),
+      ],
       testid: "db-detail-form",
     });
 
-  // 배너(.db-life-header)와 워크스페이스는 `.db-body` 의 형제로 둔다 —
-  // 11-life-authoring.css 가 `.db-body:has(.oprn-record-monster-species)` 를
-  // `auto minmax(0,1fr)` 2 행 그리드로 못박고 grid-row 를 배너/워크스페이스에
-  // 직접 배정한다(수집 게이트 경고가 붙으면 3 행). workspaceShell 의 header 슬롯을
-  // 쓰면 그 배정이 어긋난다.
   host.append(
-    monsterPipelineHeader(project),
     workspaceShell({
       list,
       detail,
@@ -301,7 +298,7 @@ function speciesDetailPane(
   rerender: () => void,
 ): HTMLElement {
   const hero = speciesHero(project, record, index);
-  const inspector = speciesInspector(record, rerender);
+  const inspector = speciesInspector(project, record, rerender);
   const pane = makeDetailPane({ hero: hero.element, body: inspector.element, testid: "db-detail-form" });
   paintSpeciesSummaries = () => {
     const live = currentSpecies(record.id, record);
@@ -514,7 +511,7 @@ function deleteSpeciesButton(rerender: () => void): HTMLElement {
 type SpeciesInspector = { readonly element: HTMLElement; readonly paint: (record: MonsterSpeciesRecord) => void };
 
 /** 상세 인스펙터 — 구역 탭 다섯 개. 모든 패널이 DOM 에 있고 고른 하나만 보인다. */
-function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): SpeciesInspector {
+function speciesInspector(project: Project, record: MonsterSpeciesRecord, rerender: () => void): SpeciesInspector {
   const preview = speciesStatsPreview(record);
   const linkedCount = (): number => store.getCurrent().database.enemies.filter((entry) => entry.speciesId === record.id).length;
   let sections: MonsterSpeciesSectionsHandle | undefined;
@@ -575,7 +572,7 @@ function speciesInspector(record: MonsterSpeciesRecord, rerender: () => void): S
   ]);
   const handle = sections;
   return {
-    element: el("div", { class: "db-monster-species-inspector", children: [handle.element] }),
+    element: el("div", { class: "db-monster-species-inspector", children: [handle.element, monsterPipelineHeader(project)] }),
     paint: (live) => {
       handle.setSummary("capture", captureDifficulty(live.captureRate).label);
       handle.setSummary("growth", growthSummary(live));
