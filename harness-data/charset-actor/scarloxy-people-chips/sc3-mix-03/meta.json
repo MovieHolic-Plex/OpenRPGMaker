@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-03",
+ "name": "보라 머리 · 민트 십자 후드",
+ "head": "Scarloxy2:1",
+ "body": "Scarloxy1:3",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-03",
+ "candidate_id": "t17",
+ "judge_totals_ABC": [
+  12,
+  11,
+  8
+ ],
+ "recipe": "gallery4-recipes.json#mix-03"
+}

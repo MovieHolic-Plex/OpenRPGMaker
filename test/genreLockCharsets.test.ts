@@ -253,6 +253,6 @@ describe("생성한 캠페인 맞추기", () => {
     const sheet5 = SCARLOXY_PEOPLE_CHARSET_SEMANTICS.filter((entry) => entry.textureKey === "tex_oprn_charset_scarloxy_people5").map((entry) => entry.characterIndex);
     expect(sheet5).toEqual([0, 1, 2, 3, 4, 5, 7]);
     expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS.some((entry) => entry.tags?.some((tag) => tag === "scarloxy-student-gakuran" || tag === "scarloxy-captain"))).toBe(false);
-    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(68);
+    expect(SCARLOXY_PEOPLE_CHARSET_SEMANTICS).toHaveLength(90);   // 1~10 시트 68칸 + 갤러리 4 합성 22칸(시트 11~13)
   });
 });

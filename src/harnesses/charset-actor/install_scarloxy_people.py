@@ -14,6 +14,7 @@
 뼈대 칩은 Scarloxy MPWSP01(CC BY 4.0, 제작 Scarloxy / Ismael Garcia)이다 — public/assets/ATTRIBUTION.md 「ScarloxyPeople」 절을 함께 유지한다.
 사람 캐릭터 칩이라 3/4 관문(object-gate) 대상이 아니다(해당 없음).
 칸 비우기: 명단 행을 {"vacant": true, key, id, name, reason} 로 바꾸면 그 칸은 투명으로 두고 roster 에서 빠진다(다른 칸 번호 불변). 2026-10-16 ScarloxyPeople8#3 이 이렇게 빠졌다.
+4차(2026-10-17): 시트 11~13 은 char-gen 갤러리 4 의 스크립트 합성 22종(scarloxy_gallery4.py, 명단 행 lockExempt)이다 — 눈·피부·손 원본 고정 검사 대신 갤러리 그림 화소 해시(expectSlotRgbaSha256) 일치를 건다.
 3차(2026-10-16): 1차 스크립트 칩 12종은 명단 항목에 `redo` 표시를 달아 같은 id·칸 번호로 Argon 재제작분 그림을 넣는다(그림만 바뀌고 고정 검사 필수, 옛 격자는 chip.v1.chr.txt 로 보존).
 2차(2026-10-16): 시트 5~ 의 칩은 Argon 부분 편집(scarloxy_argon2.py)·스크립트(scarloxy_compose.py)로 만들고 scarloxy_collect.py 가 명단에 덧붙인다. 설치·--check 는 scarloxy_lock.py 의 12프레임 화소 고정 검사를 통과해야 한다.
 """
@@ -41,7 +42,7 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def render(key, n, redo=False):
+def render(key, n, redo=False, exempt=None):
     grid = PICKS / key / 'chip.chr.txt'
     pal, _, frames = C.load(grid)
     errors = C.structural_errors(pal, frames)
@@ -58,7 +59,9 @@ def render(key, n, redo=False):
         raise SystemExit(f'{key}: 하네스 meta.ok 가 아니다')
     if not (str(meta.get('model', '')).startswith('script-compose') or meta.get('model') in ('gemini-4-argon-high', 'gemini-4-argon-medium')):
         raise SystemExit(f'{key}: 저작 경로가 script-compose 나 Argon 이 아니다 ({meta.get("model")})')
-    if n >= 5 or redo:   # 2차(시트 5~)·재제작분(redo): 설치 직전에 얼굴·피부·손 12프레임 화소 고정 검사를 다시 한다(1~4 는 1차 승인분이라 불변).
+    if exempt:   # 4차(갤러리 4 합성 22종): char-gen 합성기는 눈 색도 머리색을 따르므로 원본 고정 검사 대신 호출자가 그림 화소 해시 고정(expectSlotRgbaSha256)을 건다.
+        pass
+    elif n >= 5 or redo:   # 2차(시트 5~)·재제작분(redo): 설치 직전에 얼굴·피부·손 12프레임 화소 고정 검사를 다시 한다(1~4 는 1차 승인분이라 불변).
         lock = LOCK.check(key)
         if not lock['ok']:
             raise SystemExit(f'{key}: 얼굴·피부·손 화소 고정 검사 실패 {lock["bad"]}칸 {lock["sample"]}')
@@ -83,7 +86,9 @@ def main():
             if row.get('vacant'):   # 사용자가 뺀 칩: 칸 번호는 덧붙이기 전용이라 칸을 투명으로 비워 두고 명단·카탈로그에는 올리지 않는다.
                 vacant_ids.add(row['id'])
                 continue
-            image, grid_bytes, meta = render(row['key'], n, bool(row.get('redo')))
+            image, grid_bytes, meta = render(row['key'], n, bool(row.get('redo')), row.get('lockExempt'))
+            if row.get('lockExempt') and sha(image.tobytes()) != row['expectSlotRgbaSha256']:
+                raise SystemExit(f'{row["key"]}: 갤러리에서 본 그림과 화소가 다르다(expectSlotRgbaSha256 불일치)')
             sheet.paste(image, ((index % COLS) * SLOT_W, (index // COLS) * SLOT_H))
             entry = {
                 'id': row['id'], 'name': row['name'], 'desc': row['desc'], 'genre': row['genre'], 'role': row['role'],

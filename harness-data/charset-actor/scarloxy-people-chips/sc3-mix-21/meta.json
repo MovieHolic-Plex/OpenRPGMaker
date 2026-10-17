@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-21",
+ "name": "검은 모자 · 붉은 줄무늬 상의",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy2:1",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-21",
+ "candidate_id": "u39",
+ "judge_totals_ABC": [
+  11,
+  8,
+  9
+ ],
+ "recipe": "gallery4-recipes.json#mix-21"
+}

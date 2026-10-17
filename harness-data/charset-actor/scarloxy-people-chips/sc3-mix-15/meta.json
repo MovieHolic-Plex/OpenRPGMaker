@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-15",
+ "name": "금발 · 파란 조끼",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy1:0",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-15",
+ "candidate_id": "u13",
+ "judge_totals_ABC": [
+  11,
+  6,
+  12
+ ],
+ "recipe": "gallery4-recipes.json#mix-15"
+}
