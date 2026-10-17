@@ -17,6 +17,12 @@ import { isEmoteKind, type EmoteKind } from "@/project/emotes";
 import { isFontFamilyId, type FontFamilyId } from "@/project/fontRegistry";
 import type { GamePresetId } from "@/project/gameDesignBrief";
 
+export {
+  DEFAULT_PORTRAIT_HEAD_RATIO,
+  PORTRAIT_HEAD_RATIOS,
+  resolvePortraitHeadRatio,
+  type PortraitHeadRatio,
+} from "@/project/dialogueSystem";
 export const DIALOGUE_STYLE_IDS = [
   "glass",
   "dual-fullbody-veil",

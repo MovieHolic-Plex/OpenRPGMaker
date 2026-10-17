@@ -396,20 +396,31 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
       const project = store.getCurrent();
       const leftUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-full-base", { project });
       const rightUrl = resolveAssetResourceUrl("shared-modern-uni-girl-navy-expressions-full-base", { project });
+      const cornerFaceUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-bust-base", { project });
       overlay.classList.add("has-bust-face");
       overlay.style.setProperty("--runtime-dialogue-panel-height", "52px");
       win.classList.add("has-bust-face", "portrait-full", "portrait-full-tall", "has-portrait-listener", "bust-left");
+      const content = win.querySelector<HTMLElement>(".dialogue-content");
+      if (content && cornerFaceUrl) {
+        win.classList.add("has-veil-speaker-face");
+        content.classList.add("has-veil-speaker-face");
+        content.prepend(el("div", {
+          class: "dialogue-veil-speaker-face",
+          attrs: { role: "img", "aria-label": "화자 왼쪽 초상 견본", style: `background-image:url("${cornerFaceUrl}");width:40px;height:40px;` },
+          dataset: { testid: "dialogue-veil-speaker-face" },
+        }));
+      }
       if (leftUrl) {
         const leftPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-left dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:60px;--runtime-dialogue-full-drop:18px;` },
+          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:118px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:32px;` },
         });
         overlay.append(leftPortrait);
       }
       if (rightUrl) {
         const rightPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-right dialogue-portrait-listener dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:60px;--runtime-dialogue-full-drop:18px;` },
+          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:118px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:32px;` },
         });
         overlay.append(rightPortrait);
       }

@@ -127,6 +127,10 @@
   padding: 2px 11px;
 }
 
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box.has-veil-speaker-face .speaker.speaker-nameplate {
+  left: 68px;
+}
+
 .dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-page-cursor {
   bottom: 5px;
   left: calc(50% - 4px);

@@ -14,7 +14,9 @@ STYLE, FACES, CHIPS, EMO_CELL, EMO_TEXT, GENERIC = (ns[k] for k in ("STYLE", "FA
 WORK = ns["WORK"]
 OUT = WORK / ("out3" if "--out3" in sys.argv else "out2")
 
-# 인물별 비례(머리 높이 N개 = 전체 키). 칩의 SD 비율은 무시한다. 기본 8등신.
+# 인물별 비례(머리 높이 N개 = 전체 키). 칩의 SD 비율은 무시한다.
+# 특수 체형(어린이 KIDS=6, 노인 ELDERS=7~7.5)을 제외한 기본값은 언제나 7.5~8등신(DEFAULT_PORTRAIT_HEADS=8).
+DEFAULT_PORTRAIT_HEADS = 8
 KIDS = {"people1-boy": 6, "people1-girl": 6}
 ELDERS = {"people1-old-man": 7.5, "people1-old-woman": 7, "people2-white-elder": 7.5}
 STOCKY = {"people1-bald-man": 7, "monster-red-demon": 7.5, "monster-pig": 6.5, "monster-beast": 7.5}
@@ -35,7 +37,7 @@ NATURAL = {
 def heads(slug):
   st = slug.replace("-expressions", "")
   if st in NATURAL: return None
-  return KIDS.get(st) or ELDERS.get(st) or STOCKY.get(st) or 8
+  return KIDS.get(st) or ELDERS.get(st) or STOCKY.get(st) or DEFAULT_PORTRAIT_HEADS
 def body(slug):
   st = slug.replace("-expressions", "")
   if st in NATURAL: return NATURAL[st]
@@ -73,7 +75,7 @@ def prompt_base(slug, chip):
   if chip: panels.append("next panel: the SAME character's tiny walking sprite seen from the front and from the side - the GROUND TRUTH for headwear, hair, body plan, clothing, colors and footwear (ignore only its tiny chibi proportions)")
   if n: panels.append(f"RIGHT panel: a gray PROPORTION GUIDE mannequin divided into numbered bands, each band exactly one head tall - the full-length figure must be exactly {n} heads tall like this mannequin (copy ONLY its proportions, never its look, lines or numbers)")
   head = f"The reference image has {len(panels)} panels. " + "; ".join(panels) + "."
-  full = (f"LEFT: the full-length figure from the top of the head to the feet, relaxed upright pose, facing the viewer with a slight three-quarter turn, arms natural and fully inside the canvas, nothing held. Build: {body(slug)}, exactly {n} head-heights tall in total - a small head on a long body, NOT chibi, NOT big-headed, NOT super-deformed even if the character is a child or elderly. Measured landmarks: the chin sits at 1/{n} of the figure's height from the top, and the legs (crotch to soles) are HALF of the total height. The full figure fills almost the whole canvas height."
+  full = (f"LEFT: the full-length figure from the top of the head to the feet, relaxed upright pose, facing the viewer with a slight three-quarter turn, arms natural and fully inside the canvas, nothing held. Build: {body(slug)}, strictly {n} head-heights tall in total (7.5-8 heads tall default unless child or elderly) - a small refined head on a long slender body with shoulders 2.2x head width, NEVER 4.5-5.5 head big-headed or chibi proportions. Measured landmarks: the chin sits strictly at 1/{n} of the figure's height from the top, and the legs (crotch to soles) are HALF of the total height. The full figure fills almost the whole canvas height."
           if n else f"LEFT: the whole body: {body(slug)}, filling most of the canvas height, nothing held.")
   sheet = (f"Draw ONE character design sheet: a landscape image on a flat uniform pure magenta #FF00FF background containing the SAME character twice, side by side, with a wide empty magenta gap between the two drawings (they must not overlap or touch, and the right drawing must not touch the canvas edge except at the bottom). {full} "
            "RIGHT: a large head-and-shoulders bust close-up of the same character in the house style of the style reference: tight crop, face big and readable, slight three-quarter turn, shoulders and collar running off the bottom edge. "

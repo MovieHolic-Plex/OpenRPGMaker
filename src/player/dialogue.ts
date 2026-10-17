@@ -253,6 +253,38 @@ export function promoteFaceToFullPortrait(
   return { ...face, ...(lineFace ? { resourceId: lineFace } : {}), presentation: "full" };
 }
 
+/**
+ * 양쪽 전신 베일 프리셋의 하단 대화창 왼쪽에 함께 띄우는 화자 클로즈업(흉상/얼굴) 리소스 ID를 구한다.
+ */
+export function resolveVeilCornerFaceResourceId(faceResourceId: string): string {
+  const shared = findSharedPortrait(faceResourceId);
+  if (shared) {
+    return sharedPortraitId(shared.setId, "bust", shared.expression);
+  }
+  if (faceResourceId === "generated-face-actor1-full") {
+    return "generated-face-actor1-bust";
+  }
+  return faceResourceId;
+}
+
+function renderVeilSpeakerFace(face: FaceGraphic): HTMLElement | undefined {
+  const cornerResourceId = resolveVeilCornerFaceResourceId(face.resourceId);
+  const url = safeResourceImageUrl(resolveAssetResourceUrl(cornerResourceId, { project: store.getCurrent() }));
+  if (!url) return undefined;
+  return el("div", {
+    class: `dialogue-veil-speaker-face${face.flipHorizontally ? " flipped" : ""}`,
+    attrs: {
+      "aria-label": `speaker face ${cornerResourceId}`,
+      role: "img",
+      style: `background-image:url("${url}")`,
+    },
+    dataset: {
+      testid: "dialogue-veil-speaker-face",
+      resourceId: cornerResourceId,
+    },
+  });
+}
+
 function portraitIdentityOf(key: string, face: FaceGraphic): string {
   const sharedSet = sharedExpressionSetIdOf(face.resourceId);
   if (sharedSet) return sharedSet;
@@ -820,6 +852,7 @@ export function createDialogueUI(
       let bodyEl!: HTMLElement;
       let cursor!: HTMLElement;
       let faceEl: HTMLElement | undefined;
+      let veilFaceEl: HTMLElement | undefined;
       let faceForLine: FaceGraphic | undefined;
       let position!: MessageWindowPosition;
       let pages!: ReturnType<typeof paginateDialogueSegments>;
@@ -872,14 +905,15 @@ export function createDialogueUI(
         const content = el("div", {
           class: [
             "dialogue-content",
-            face?.position === "right" ? "face-right" : "",
-            isPortrait ? "has-bust" : "",
+            !isDualFullbodyVeil && face?.position === "right" ? "face-right" : "",
+            !isDualFullbodyVeil && isPortrait ? "has-bust" : "",
             isPortrait ? `portrait-${portraitMode}` : "",
           ]
             .filter(Boolean)
             .join(" "),
         });
         faceEl = undefined;
+        veilFaceEl = undefined;
         if (face && !isPortrait) {
           faceEl = renderFace(face);
           content.append(faceEl);
@@ -947,6 +981,14 @@ export function createDialogueUI(
           if (tallFull) {
             styleBehindPortrait(faceEl, logicalHostHeight(host), face, isDualFullbodyVeil);
             behindPortraits.push(faceEl);
+          if (isDualFullbodyVeil) {
+            veilFaceEl = renderVeilSpeakerFace(face);
+            if (veilFaceEl) {
+              box.classList.add("has-veil-speaker-face");
+              content.classList.add("has-veil-speaker-face");
+              content.prepend(veilFaceEl);
+            }
+          }
           } else box.append(faceEl);
           if (listenerPortrait) {
             const side: FaceGraphic["position"] = face.position === "right" ? "left" : "right";
@@ -1019,7 +1061,7 @@ export function createDialogueUI(
             // 상수로 계산한 폭은 상자의 실제 안쪽 폭보다 몇 px 넓을 수 있다(jrpg-real-1 J07: 282 대 280).
             // 실제 레이아웃이 있으면 둘 중 좁은 쪽을 쓴다 — 넓게 재면 40자 줄이 DOM 에서 한 번 더 접혀 4번째 줄이 잘린다.
             : Math.min(
-              dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
+              dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host), Boolean(veilFaceEl)),
               measuredBodyContentWidth(bodyEl) ?? Number.POSITIVE_INFINITY,
             );
         const maxLines = balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl);
@@ -1131,6 +1173,9 @@ export function createDialogueUI(
         if (nextFace && faceEl) {
           currentFaceId = nextFace;
           setFaceImage(faceEl, nextFace);
+          if (veilFaceEl) {
+            setFaceImage(veilFaceEl, resolveVeilCornerFaceResourceId(nextFace));
+          }
         }
         box.dataset.dialogueExpression = emotion;
         if (expression?.emote) {
@@ -2039,20 +2084,27 @@ function clampDialogueColor(index: number): number {
   return Math.max(0, Math.min(19, Math.trunc(index)));
 }
 
-function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition, hostWidth: number): number {
+function dialogueBodyWidth(
+  request: DialogueTextRequest,
+  position: MessageWindowPosition,
+  hostWidth: number,
+  hasVeilCornerFace = false,
+): number {
   const baseWidth = hostWidth
     - DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
     - DIALOGUE_BOX_HORIZONTAL_PADDING
     - DIALOGUE_BOX_HORIZONTAL_BORDER;
   const portraitMode = dialoguePortraitMode(request.face);
-  const faceWidth = !request.face
-    ? 0
-    : portraitMode === "full"
-      // 하단 전신은 대사창 뒤에 서므로 글이 왼쪽 끝부터 나온다(여백 0).
-      ? position === "bottom" ? 0 : DIALOGUE_FULL_TEXT_RESERVE
-      : portraitMode === "bust"
-        ? DIALOGUE_BUST_TEXT_RESERVE
-        : DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP;
+  const faceWidth = hasVeilCornerFace
+    ? 52 + DIALOGUE_FACE_COLUMN_GAP
+    : !request.face
+      ? 0
+      : portraitMode === "full"
+        // 하단 전신은 대사창 뒤에 서므로 글이 왼쪽 끝부터 나온다(여백 0).
+        ? position === "bottom" ? 0 : DIALOGUE_FULL_TEXT_RESERVE
+        : portraitMode === "bust"
+          ? DIALOGUE_BUST_TEXT_RESERVE
+          : DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP;
   return Math.max(1, baseWidth - faceWidth);
 }
 
