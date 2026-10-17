@@ -152,7 +152,6 @@ export function buildStampPlanFacts(
   const map = project.maps[input.mapId];
   if (!map) return null;
   const tileset = project.tilesets[map.tilesetId];
-  const labels = (list: readonly { readonly label: string }[]): string[] => [...new Set(list.map((entry) => entry.label))];
   const placement = buildMapPlacementContext(project, input.mapId);
   const objects = buildStampObjectIndex(tileset);
   return {
@@ -163,7 +162,7 @@ export function buildStampPlanFacts(
     target: input.target,
     targetIsSelection: input.targetIsSelection,
     ...(tileset ? { tilesetId: tileset.id } : {}),
-    fillMaterials: tileset ? labels(fillableMaterialSuggestions(tileset, 24)) : [],
+    fillMaterials: tileset ? fillableLabels(tileset) : [],
     materialHint: formatMaterialLabelHint(tileset).replace(/^- /u, ""),
     ...(tileset ? { wallMaterials: buildableWallLabels(tileset) } : {}),
     ...(tileset ? { doorMaterials: doorLabels(tileset) } : {}),
@@ -172,6 +171,9 @@ export function buildStampPlanFacts(
     objects,
     objectSamples: sampleStampObjectNames(objects, 36),
     isOpenCell: (x, y) => isOpenObjectCell(project, map, x, y),
+    isWallMountCell: (x, y) => isWallMountCell(map, tileset, x, y),
+    isWaterCell: (x, y) => isWaterCell(map, tileset, x, y),
+    isRoadCell: (x, y) => isRoadCell(map, tileset, x, y),
     hasArtAt: (x, y) => hasArtAt(map, x, y),
     ...(tileset ? { isWallCell: (x: number, y: number) => isWallCell(map, tileset, x, y) } : {}),
     isTreeMaterial: (material) => {
@@ -185,6 +187,21 @@ export function buildStampPlanFacts(
       }));
     },
   };
+}
+
+function fillableLabels(tileset: TilesetDef): string[] {
+  const out: string[] = [];
+  for (const entry of fillableMaterialSuggestions(tileset, 32)) {
+    if (!entry.label || out.includes(entry.label)) continue;
+    const resolved = resolveMaterialByLabel(tileset, entry.label, {
+      preferGroup: true,
+      preferRoles: ["water", "terrain"],
+      requireAutotileGroup: true,
+    });
+    if (resolved.status !== "missing" && resolved.kind === "group") out.push(entry.label);
+    if (out.length >= 24) break;
+  }
+  return out;
 }
 
 /**
@@ -218,7 +235,7 @@ function doorLabels(tileset: TilesetDef): string[] {
   return out;
 }
 
-/** 물건 발자국 한 칸이 놓일 수 있는 칸 — 걸을 수 있고, 위층이 비었고, 이벤트·시작칸이 아니고, 길·물·벽 면이 아니다. */
+/** 물건 발자국 한 칸이 놓일 수 있는 칸 — 걸을 수 있고, 위층이 비었고, 이벤트·시작칸이 아니고, 차도·물·벽 면이 아니다. */
 export function isOpenObjectCell(project: Project, map: GameMap, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
   const index = y * map.width + x;
@@ -229,11 +246,42 @@ export function isOpenObjectCell(project: Project, map: GameMap, x: number, y: n
   const tileset = project.tilesets[map.tilesetId];
   const lower = map.lowerTiles[index] ?? -1;
   const meta = tileset?.tileMeta?.[lower];
-  if (meta?.tags?.includes("road") || meta?.role === "water" || meta?.role === "wall" || meta?.role === "roof") return false;
-  if (isPathSurfaceTile(lower)) return false;
+  const isSidewalk = /보도|인도|광장/u.test(meta?.label ?? "") && !/횡단보도/u.test(meta?.label ?? "");
+  const isWall = meta?.role === "wall" || meta?.tags?.includes("wall") === true;
+  if (!isSidewalk && (meta?.tags?.includes("road") || meta?.role === "water" || isWall || meta?.role === "roof")) return false;
+  if (!isSidewalk && isPathSurfaceTile(lower)) return false;
   return true;
 }
 
+function isWallMountCell(map: GameMap, tileset: TilesetDef | undefined, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const index = y * map.width + x;
+  if ((map.upperTiles[index] ?? -1) >= 0 || (map.upperOverlayTiles?.[index] ?? -1) >= 0) return false;
+  const lower = map.lowerTiles[index] ?? -1;
+  const meta = tileset?.tileMeta?.[lower];
+  const isWall = meta?.role === "wall" || meta?.tags?.includes("wall") === true;
+  return isWall && !/천장|ceiling/iu.test(meta?.label ?? "");
+}
+
+function isWaterCell(map: GameMap, tileset: TilesetDef | undefined, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const index = y * map.width + x;
+  if ((map.upperTiles[index] ?? -1) >= 0) return false;
+  const lower = map.lowerTiles[index] ?? -1;
+  const meta = tileset?.tileMeta?.[lower];
+  return meta?.role === "water" || /물|용암|수역|lava|water/iu.test(meta?.label ?? "");
+}
+
+function isRoadCell(map: GameMap, tileset: TilesetDef | undefined, x: number, y: number): boolean {
+  if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const index = y * map.width + x;
+  if ((map.upperTiles[index] ?? -1) >= 0) return false;
+  const lower = map.lowerTiles[index] ?? -1;
+  const meta = tileset?.tileMeta?.[lower];
+  const label = meta?.label ?? "";
+  if (/보도|인도|광장/u.test(label) && !/횡단보도/u.test(label)) return false;
+  return meta?.tags?.includes("road") === true || /도로|차도|아스팔트|생활도로/u.test(label);
+}
 /** 그 칸에 보이는 그림이 이미 있는가(위층·겹침 타일 또는 그림 있는 이벤트). */
 function hasArtAt(map: GameMap, x: number, y: number): boolean {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
@@ -301,6 +349,7 @@ const ABORTED: StampRunResult = { ok: false, lines: ["바로 깔기를 중단했
 /** 화면에 그림을 바꾸는 도구 — 이 도구만 성공했는데 아무 칸도 안 바뀌었다면 거짓 성공이다. */
 const VISUAL_TOOLS: Readonly<Record<string, true>> = {
   fill_region: true,
+  paint_tiles: true,
   place_props: true,
   paint_road: true,
   tile_erase: true,
@@ -309,8 +358,8 @@ const VISUAL_TOOLS: Readonly<Record<string, true>> = {
   stamp_tileset_object: true,
   place_terrain_house: true,
   build_jp_city_building: true,
+  stamp_object: true,
 };
-
 /** 도구 결과의 첫 경고 중 사람이 알아야 하는 것(그림 없음·투명) — 줄에 덧붙인다. */
 function invisibleWarning(result: ToolResult | undefined): string {
   const text = (result?.warnings ?? []).concat(result?.summary ? [result.summary] : []).find((warning) => /투명|보이지 않/u.test(warning));
@@ -344,7 +393,7 @@ function stepLines(plan: readonly StampStep[], results: readonly (ToolResult | u
     }
     if (result?.ok) {
       applied += 1;
-      lines.push(`${prefix}${step.label} · ${resultDetail(result)}${step.note ? ` (${step.note})` : ""}${invisibleWarning(result)}`);
+      if (step.label) lines.push(`${prefix}${step.label} · ${resultDetail(result)}${step.note ? ` (${step.note})` : ""}${invisibleWarning(result)}`);
     } else failures.push({ step, error: resultDetail(result) });
   });
   for (const [group, entry] of grouped) {
@@ -413,14 +462,10 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     await input.waitForApply();
     if (input.signal?.aborted) return ABORTED;
   }
-  // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮긴다(모델이 빈 칸을 잘못 고른 경우).
-  // 기존 이벤트는 **지금** 맵에서 읽는다 — 계획을 세우는 동안 먼저 끝난 주문이 같은 칸에 NPC 를 세웠을 수 있다.
-  const landing = landingCheck(deps, input.mapId);
+  // 새 이벤트가 기존 이벤트·서로와 겹치지 않게 코드가 옮기고, 던전 방·집·물건 칸은 **지금 맵**에서 고른다.
   const liveFacts = refreshFacts(deps, facts);
-  const settled = resolveStampOverlaps(plan.steps, input.waitForApply ? liveFacts : facts, landing);
-  // 집·물건 칸은 **지금 맵**에서 고른다(이름은 계획 때 확정, 자리는 적용 직전).
-  const expanded = expandPlacedThings(settled.steps, liveFacts, deps.getProject());
-  plan = { ...plan, steps: expanded.steps, dropped: [...plan.dropped, ...settled.dropped, ...expanded.dropped] };
+  const expanded = settleAndExpandSteps(plan.steps, input.waitForApply ? liveFacts : facts, deps.getProject(), landingCheck(deps, input.mapId));
+  plan = { ...plan, steps: expanded.steps, dropped: [...plan.dropped, ...expanded.dropped] };
   const lines: string[] = [...refusalLines];
   if (plan.dropped.length > 0) lines.push(`버린 단계: ${plan.dropped.join(", ")}`);
   if (plan.steps.length === 0) return { ok: false, lines, applied: 0, usedModel: true, refused: refusals.length };
@@ -442,8 +487,8 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
   if (failures.length === 0) return finish(applied > 0, [], false);
 
   // 수리 라운드 — 실패한 단계와 도구 오류(가까운 라벨 제안 포함)를 한 번만 되묻는다.
-  // 물건(place_object 에서 펼친 단계)·집은 모델에게 되묻지 않는다 — 되물으면 사람·조사 지점·벽 상자 같은 엉뚱한 대체가 나왔다.
-  const codePlaced = (step: StampStep): boolean => Boolean(step.group) || step.tool === "place_terrain_house" || step.tool === "build_jp_city_building";
+  // 물건(place_object 에서 펼친 단계)·집·던전 방은 모델에게 되묻지 않는다.
+  const codePlaced = (step: StampStep): boolean => Boolean(step.group) || step.tool === "place_terrain_house" || step.tool === "build_jp_city_building" || step.tool === "stamp_object";
   const repairable = failures.filter((failure) => !codePlaced(failure.step));
   const objectFailures = failures.filter((failure) => codePlaced(failure.step));
   for (const failure of objectFailures) lines.push(`${failure.step.label} 놓지 못함: ${failure.error}`);
@@ -464,10 +509,9 @@ export async function runStampPlaceWith(input: StampRunInput, deps: StampRunDeps
     }
     const repairFacts = { ...refreshFacts(deps, facts), repairRound: true };
     const parsed = parseStampPlan(repairRaw, repairFacts);
-    const repairedSettled = resolveStampOverlaps(parsed.steps, repairFacts, landingCheck(deps, input.mapId));
-    const repairedExpanded = expandPlacedThings(repairedSettled.steps, repairFacts, deps.getProject());
+    const repairedExpanded = settleAndExpandSteps(parsed.steps, repairFacts, deps.getProject(), landingCheck(deps, input.mapId));
     repaired = repairedExpanded.steps;
-    const droppedAgain = [...parsed.dropped, ...repairedSettled.dropped, ...repairedExpanded.dropped];
+    const droppedAgain = [...parsed.dropped, ...repairedExpanded.dropped];
     if (droppedAgain.length > 0) lines.push(`버린 단계: ${droppedAgain.join(", ")}`);
     for (const refusal of parsed.refused) lines.push(refusalLine(refusal, tilesetLabel));
     if (parsed.error) repairError = parsed.error;
@@ -506,32 +550,381 @@ function refreshFacts(deps: StampRunDeps, facts: StampPlanFacts): StampPlanFacts
   const project = deps.getProject();
   const placement = buildMapPlacementContext(project, facts.mapId);
   const map = project.maps[facts.mapId];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   // 물건 칸 검사는 항상 지금 맵을 읽는다(먼저 끝난 주문·사람이 바꿨을 수 있다).
   const probes = map
-    ? { isOpenCell: (x: number, y: number) => isOpenObjectCell(project, map, x, y), hasArtAt: (x: number, y: number) => hasArtAt(map, x, y) }
+    ? {
+        isOpenCell: (x: number, y: number) => isOpenObjectCell(project, map, x, y),
+        isWallMountCell: (x: number, y: number) => isWallMountCell(map, tileset, x, y),
+        isWaterCell: (x: number, y: number) => isWaterCell(map, tileset, x, y),
+        isRoadCell: (x: number, y: number) => isRoadCell(map, tileset, x, y),
+        hasArtAt: (x: number, y: number) => hasArtAt(map, x, y),
+        ...(tileset ? { isWallCell: (x: number, y: number) => isWallCell(map, tileset, x, y) } : {}),
+      }
     : {};
   return { ...facts, ...(placement ? { placement } : {}), ...probes };
 }
 
-/** 집을 먼저 펼치고, 그 발자국을 비운 채 물건을 펼친다(물건이 방금 고른 집 자리에 앉지 않게). */
-function expandPlacedThings(steps: readonly StampStep[], facts: StampPlanFacts, project: Project): { steps: readonly StampStep[]; dropped: readonly string[] } {
-  const houses = expandStampHouses(steps, project, facts);
-  const isOpen = facts.isOpenCell;
+/**
+ * 던전 방·지형 칠하기를 미리보기 맵에 먼저 반영한 뒤, 이벤트 겹침 해결 → 집 펼치기 → 물건 펼치기를 순서대로 돌린다.
+ * 같은 주문 안에서 방을 파거나 강·도로를 칠한 뒤 상자·함정·다리·횡단보도·벽 횃불을 놓을 때 방금 바뀐 지형을 바로 읽는다.
+ */
+function settleAndExpandSteps(
+  steps: readonly StampStep[],
+  facts: StampPlanFacts,
+  project: Project,
+  fallbackLanding: (x: number, y: number) => boolean,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  const map = project.maps[facts.mapId];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!map || !tileset) {
+    const settled = resolveStampOverlaps(steps, facts, fallbackLanding);
+    const houses = expandStampHouses(settled.steps, project, facts);
+    const isOpen = facts.isOpenCell;
+    const objectFacts: StampPlanFacts = houses.cells.size === 0
+      ? facts
+      : { ...facts, isOpenCell: (x, y) => !houses.cells.has(`${x},${y}`) && (isOpen ? isOpen(x, y) : true) };
+    const objects = expandStampObjects(houses.steps, objectFacts);
+    return { steps: objects.steps, dropped: [...settled.dropped, ...houses.dropped, ...objects.dropped] };
+  }
+  const previewMap = copiedTerrainMap(map);
+  previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
+  const dungeon = expandDungeonRooms(steps, previewMap, tileset, facts);
+  previewFillRegions(dungeon.steps, previewMap, tileset);
+  const hasTerrainPreview = dungeon.steps !== steps || steps.some((step) => step.tool === "fill_region");
+  const previewFacts: StampPlanFacts = hasTerrainPreview
+    ? {
+        ...facts,
+        isOpenCell: (x, y) => isOpenObjectCell(project, previewMap, x, y),
+        isWallMountCell: (x, y) => isWallMountCell(previewMap, tileset, x, y),
+        isWaterCell: (x, y) => isWaterCell(previewMap, tileset, x, y),
+        isRoadCell: (x, y) => isRoadCell(previewMap, tileset, x, y),
+        hasArtAt: (x, y) => hasArtAt(previewMap, x, y),
+        isWallCell: (x, y) => isWallCell(previewMap, tileset, x, y),
+      }
+    : facts;
+  const landing = hasTerrainPreview
+    ? (x: number, y: number) => isPassableLanding(project, previewMap, x, y)
+    : fallbackLanding;
+  const settled = resolveStampOverlaps(dungeon.steps, previewFacts, landing);
+  const houses = expandStampHouses(settled.steps, project, previewFacts, previewMap);
+  const isOpen = previewFacts.isOpenCell;
   const objectFacts: StampPlanFacts = houses.cells.size === 0
-    ? facts
-    : { ...facts, isOpenCell: (x, y) => !houses.cells.has(`${x},${y}`) && (isOpen ? isOpen(x, y) : true) };
+    ? previewFacts
+    : { ...previewFacts, isOpenCell: (x, y) => !houses.cells.has(`${x},${y}`) && (isOpen ? isOpen(x, y) : true) };
   const objects = expandStampObjects(houses.steps, objectFacts);
-  return { steps: objects.steps, dropped: [...houses.dropped, ...objects.dropped] };
+  return {
+    steps: objects.steps,
+    dropped: [...dungeon.dropped, ...settled.dropped, ...houses.dropped, ...objects.dropped],
+  };
+}
+
+function previewFillRegions(steps: readonly StampStep[], previewMap: GameMap, tileset: TilesetDef): void {
+  for (const step of steps) {
+    if (step.tool !== "fill_region") continue;
+    const rect = step.args.rect as StampRect | undefined;
+    const material = typeof step.args.material === "string" ? step.args.material : "";
+    if (!rect || !material) continue;
+    const resolved = resolveMaterialByLabel(tileset, material, {
+      preferGroup: true,
+      preferRoles: ["water", "terrain"],
+      requireAutotileGroup: true,
+    });
+    if (resolved.status === "missing" || resolved.kind !== "group") continue;
+    const repTile = resolved.group.tileIds[0];
+    if (repTile === undefined) continue;
+    for (let y = rect.y; y < rect.y + rect.h; y++) {
+      for (let x = rect.x; x < rect.x + rect.w; x++) {
+        if (x < 0 || y < 0 || x >= previewMap.width || y >= previewMap.height) continue;
+        previewMap.lowerTiles[y * previewMap.width + x] = repTile;
+      }
+    }
+  }
+}
+
+/**
+ * `place_dungeon_room` 단계를 `paint_tiles` 호출들로 펼치고 `previewMap` 에 바로 반영한다.
+ * - 방(`kind: "room"`): 북쪽 2줄 돌벽(`face-cata-2h`), 나머지 칸 돌바닥(`floor-cata`), `hazard: "lava"|"water"` 면 가운데 2줄 수로 + 돌다리.
+ * - 연결(`kind: "connect"|"corridor"`): 이미 파인 방들 사이를 폭 3칸 복도로 잇고 북쪽 천장 경계에 2줄 돌벽을 세운다.
+ * - 방·복도 바깥 빈 땅은 `beodeul_dungeon_ceiling` 47변형 오토타일(밝은 벽 두께 테두리)로 감싼다.
+ */
+function expandDungeonRooms(
+  steps: readonly StampStep[],
+  previewMap: GameMap,
+  tileset: TilesetDef,
+  facts: StampPlanFacts,
+): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[] } {
+  if (!steps.some((step) => step.tool === "place_dungeon_room")) return { steps, dropped: [] };
+  const kits = new Map((tileset.structureKits ?? []).map((kit) => [kit.id, kit]));
+  const faceKit = kits.get("bd-pick-aqueduct-sewer-face-cata-2h") ?? kits.get("bd-pick-castle-catacombs-face-castle-2h");
+  const floorKit = kits.get("bd-pick-aqueduct-sewer-floor-cata") ?? kits.get("bd-pick-castle-catacombs-floor-castle");
+  const lavaKit = kits.get("bd-pick-volcano-cave-lava-strip");
+  const bridgeNsKit = kits.get("bd-pick-aqueduct-sewer-bridge-ns-stone");
+  const ceilingKit = kits.get("bd-pick-aqueduct-sewer-ceiling");
+  const stairsUpKit = kits.get("bd-pick-aqueduct-sewer-stairs-up-face");
+  const stairsDownKit = kits.get("bd-pick-temple-ruins-stairs-down");
+  const ceilingGroup = (tileset.autotileGroups ?? []).find((group) => group.id === "beodeul_dungeon_ceiling");
+  if (!faceKit || !floorKit) {
+    return {
+      steps: steps.filter((step) => step.tool !== "place_dungeon_room"),
+      dropped: ["던전 방: 이 타일셋에는 던전 벽·바닥 키트가 없습니다"],
+    };
+  }
+  const W = previewMap.width;
+  const H = previewMap.height;
+  const idx = (x: number, y: number): number => y * W + x;
+  const inb = (x: number, y: number): boolean => x >= 0 && y >= 0 && x < W && y < H;
+  const kitTile = (kit: typeof floorKit, x: number, y: number): number => {
+    const row = kit.rows[y % kit.rows.length]!;
+    return row.tiles[x % row.tiles.length]!;
+  };
+  const voidTile = ceilingKit?.rows[1]?.tiles[1] ?? 28416;
+  const stoneFloorTiles = new Set<number>();
+  for (const kit of [floorKit, bridgeNsKit, stairsDownKit]) {
+    for (const row of kit?.rows ?? []) for (const t of row.tiles) if (t >= 0) stoneFloorTiles.add(t);
+  }
+  const dungeonFloorTiles = new Set<number>(stoneFloorTiles);
+  for (const row of lavaKit?.rows ?? []) for (const t of row.tiles) if (t >= 0) dungeonFloorTiles.add(t);
+  const stairsUpTiles = new Set<number>();
+  for (const row of stairsUpKit?.rows ?? []) for (const t of row.tiles) if (t >= 0) stairsUpTiles.add(t);
+  const dungeonWallTiles = new Set<number>(stairsUpTiles);
+  for (const row of faceKit.rows) for (const t of row.tiles) if (t >= 0) dungeonWallTiles.add(t);
+  // 현재 맵에서 이미 파인 바닥·벽 마스크를 읽는다.
+  const floorMask = new Uint8Array(W * H);
+  const wallB = new Int8Array(W * H).fill(-1);
+  for (let y = 0; y < H; y++) {
+    for (let x = 0; x < W; x++) {
+      const t = previewMap.lowerTiles[idx(x, y)] ?? -1;
+      if (dungeonFloorTiles.has(t)) floorMask[idx(x, y)] = 1;
+      else if (dungeonWallTiles.has(t)) {
+        const southT = y + 1 < H ? (previewMap.lowerTiles[idx(x, y + 1)] ?? -1) : -1;
+        wallB[idx(x, y)] = dungeonFloorTiles.has(southT) ? 0 : 1;
+      }
+    }
+  }
+  const out: StampStep[] = [];
+  const dropped: string[] = [];
+  for (const step of steps) {
+    if (step.tool !== "place_dungeon_room") {
+      out.push(step);
+      continue;
+    }
+    const beforeLower = [...previewMap.lowerTiles];
+    const area = step.args.area as StampRect;
+    const kind = step.args.kind === "corridor" || step.args.kind === "connect" ? step.args.kind : "room";
+    const hazard = step.args.hazard === "lava" || step.args.hazard === "water" ? step.args.hazard : "none";
+
+    if (kind === "room") {
+      const wallRows = Math.min(2, Math.max(1, area.h - 2));
+      for (let y = area.y; y < area.y + area.h; y++) {
+        for (let x = area.x; x < area.x + area.w; x++) {
+          if (!inb(x, y)) continue;
+          if (y < area.y + wallRows) {
+            if (!floorMask[idx(x, y)]) {
+              wallB[idx(x, y)] = (area.y + wallRows - 1 - y) as 0 | 1;
+            }
+          } else {
+            floorMask[idx(x, y)] = 1;
+            wallB[idx(x, y)] = -1;
+            previewMap.lowerTiles[idx(x, y)] = kitTile(floorKit, x, y);
+          }
+        }
+      }
+      if (hazard !== "none" && area.h >= 7 && lavaKit) {
+        const ly = area.y + wallRows + Math.floor((area.h - wallRows - 2) / 2);
+        const bx = area.x + Math.floor((area.w - 2) / 2);
+        const bridgeTile = bridgeNsKit?.rows[0]?.tiles[0] ?? kitTile(floorKit, bx, ly);
+        for (let dy = 0; dy < 2; dy++) {
+          for (let x = area.x; x < area.x + area.w; x++) {
+            const y = ly + dy;
+            if (!inb(x, y)) continue;
+            if (x === bx || x === bx + 1) previewMap.lowerTiles[idx(x, y)] = bridgeTile;
+            else previewMap.lowerTiles[idx(x, y)] = kitTile(lavaKit, x, y);
+          }
+        }
+      }
+    } else {
+      // 기존 방 컴포넌트들을 찾아 중심점 사이를 3칸 폭 L자 복도로 잇는다.
+      const seen = new Uint8Array(W * H);
+      const rooms: { cx: number; cy: number; minX: number; maxX: number; minY: number; maxY: number }[] = [];
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          if (!floorMask[idx(x, y)] || seen[idx(x, y)]) continue;
+          const q: [number, number][] = [[x, y]];
+          seen[idx(x, y)] = 1;
+          let sumX = 0, sumY = 0, minX = x, maxX = x, minY = y, maxY = y;
+          for (let head = 0; head < q.length; head++) {
+            const [cx, cy] = q[head]!;
+            sumX += cx; sumY += cy;
+            if (cx < minX) minX = cx;
+            if (cx > maxX) maxX = cx;
+            if (cy < minY) minY = cy;
+            if (cy > maxY) maxY = cy;
+            for (const [nx, ny] of [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]] as const) {
+              if (inb(nx, ny) && floorMask[idx(nx, ny)] && !seen[idx(nx, ny)]) {
+                seen[idx(nx, ny)] = 1;
+                q.push([nx, ny]);
+              }
+            }
+          }
+          if (q.length >= 6) {
+            const meanX = sumX / q.length;
+            const meanY = sumY / q.length;
+            const walkable = q.filter(([qx, qy]) => stoneFloorTiles.has(previewMap.lowerTiles[idx(qx, qy)] ?? -1));
+            const anchorPool = walkable.length > 0 ? walkable : q;
+            anchorPool.sort((a, b) => Math.hypot(a[0] - meanX, a[1] - meanY) - Math.hypot(b[0] - meanX, b[1] - meanY));
+            const [ax, ay] = anchorPool[0]!;
+            rooms.push({ cx: ax, cy: ay, minX, maxX, minY, maxY });
+          }
+        }
+      }
+      const carveFloorCell = (x: number, y: number): void => {
+        if (!inb(x, y)) return;
+        if ((previewMap.upperTiles[idx(x, y)] ?? -1) >= 0) return;
+        if (!floorMask[idx(x, y)] && !stairsUpTiles.has(previewMap.lowerTiles[idx(x, y)] ?? -1)) {
+          floorMask[idx(x, y)] = 1;
+          wallB[idx(x, y)] = -1;
+          previewMap.lowerTiles[idx(x, y)] = kitTile(floorKit, x, y);
+        }
+      };
+      const carveCorridor = (x0: number, y0: number, x1: number, y1: number): void => {
+        const minX = Math.min(x0, x1), maxX = Math.max(x0, x1);
+        for (let x = minX; x <= maxX; x++) for (let dy = -1; dy <= 1; dy++) carveFloorCell(x, y0 + dy);
+        const minY = Math.min(y0, y1), maxY = Math.max(y0, y1);
+        for (let y = minY; y <= maxY; y++) for (let dx = -1; dx <= 1; dx++) carveFloorCell(x1 + dx, y);
+      };
+      if (rooms.length >= 2) {
+        const connected = new Set<number>([0]);
+        while (connected.size < rooms.length) {
+          let bestA = 0, bestB = 1, bestD = Infinity;
+          for (const a of connected) {
+            for (let b = 0; b < rooms.length; b++) {
+              if (connected.has(b)) continue;
+              const d = Math.hypot(rooms[a]!.cx - rooms[b]!.cx, rooms[a]!.cy - rooms[b]!.cy);
+              if (d < bestD) { bestD = d; bestA = a; bestB = b; }
+            }
+          }
+          carveCorridor(rooms[bestA]!.cx, rooms[bestA]!.cy, rooms[bestB]!.cx, rooms[bestB]!.cy);
+          connected.add(bestB);
+        }
+      } else {
+        const cy = area.y + Math.max(2, Math.floor(area.h / 2));
+        for (let x = area.x; x < area.x + area.w; x++) for (let dy = -1; dy <= 1; dy++) carveFloorCell(x, cy + dy);
+      }
+      // 바닥 사이에 1~2줄짜리 얇은 천장/벽 틈이 남으면(2줄 벽+1줄 천장이 못 들어가는 좁은 틈) 바닥으로 합친다.
+      for (let pass = 0; pass < 2; pass++) {
+        for (let y = 1; y < H - 1; y++) {
+          for (let x = 0; x < W; x++) {
+            if (floorMask[idx(x, y)]) continue;
+            const northFloor = floorMask[idx(x, y - 1)] === 1 || (y >= 2 && floorMask[idx(x, y - 2)] === 1);
+            const southFloor = floorMask[idx(x, y + 1)] === 1 || (y + 2 < H && floorMask[idx(x, y + 2)] === 1);
+            if (northFloor && southFloor) carveFloorCell(x, y);
+          }
+        }
+      }
+      // 새로 판 복도 북쪽 변 위에 천장이 3줄 이상 있으면 2줄 벽 앞면을 세운다.
+      for (let y = 2; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          if (!floorMask[idx(x, y)] || floorMask[idx(x, y - 1)] || wallB[idx(x, y - 1)] >= 0) continue;
+          if (!floorMask[idx(x, y - 2)] && wallB[idx(x, y - 2)] < 0) {
+            wallB[idx(x, y - 1)] = 0;
+            wallB[idx(x, y - 2)] = 1;
+          }
+        }
+      }
+    }
+
+    // 벽 앞면 타일 계산(좌·우 이웃 벽 연결에 따라 마구리·가운데 타일 선택). 이미 찍힌 계단 타일은 보존한다.
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const b = wallB[idx(x, y)]!;
+        if (b < 0 || stairsUpTiles.has(previewMap.lowerTiles[idx(x, y)] ?? -1)) continue;
+        const row = faceKit.rows[1 - Math.min(1, b)]!.tiles;
+        const left = x > 0 && wallB[idx(x - 1, y)] === b;
+        const right = x + 1 < W && wallB[idx(x + 1, y)] === b;
+        previewMap.lowerTiles[idx(x, y)] = left && right ? row[1]! : !left && right ? row[0]! : left && !right ? row[2]! : row[1]!;
+      }
+    }
+
+    // 방·벽 바깥 빈 땅은 던전 천장 오토타일(47변형 테두리)로 채운다.
+    const isOpen = (x: number, y: number): boolean => inb(x, y) && (floorMask[idx(x, y)] === 1 || wallB[idx(x, y)]! >= 0);
+    const bits: readonly [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        if (isOpen(x, y)) continue;
+        if (!ceilingGroup) { previewMap.lowerTiles[idx(x, y)] = voidTile; continue; }
+        let m = 0;
+        for (const [dx, dy, bit] of bits) if (!isOpen(x + dx, y + dy)) m |= bit;
+        previewMap.lowerTiles[idx(x, y)] = ceilingGroup.variantMap[String(m)] ?? voidTile;
+      }
+    }
+
+    // 바뀐 lowerTiles 를 타일 번호별로 묶어 paint_tiles 단계로 내보낸다.
+    const byTile = new Map<number, { x: number; y: number }[]>();
+    for (let y = 0; y < H; y++) {
+      for (let x = 0; x < W; x++) {
+        const after = previewMap.lowerTiles[idx(x, y)]!;
+        if (after === beforeLower[idx(x, y)]) continue;
+        const list = byTile.get(after) ?? [];
+        list.push({ x, y });
+        byTile.set(after, list);
+      }
+    }
+    let first = true;
+    for (const [tile, cells] of byTile) {
+      out.push({
+        tool: "paint_tiles",
+        label: first ? step.label : "",
+        ...(first && step.note ? { note: step.note } : {}),
+        group: step.label,
+        args: { mapId: facts.mapId, layer: "lower", mode: "cells", tile, cells },
+      });
+      first = false;
+    }
+  }
+  return { steps: out, dropped };
 }
 
 /** 크기 말 → 조립식 집 벽 너비(칸). 칩셋의 최소 너비보다 작으면 최소 너비를 쓴다. */
 const HOUSE_WIDTH: Record<"small" | "medium" | "large", number> = { small: 5, medium: 7, large: 9 };
-
 /**
  * 시도할 집 외관 — 조립식 스타일이 있으면 그것(맵의 구조물 수로 돌려 이웃 집과 외관이 겹치지 않게, 너비는 원하는 것부터 줄여 가며),
  * 없으면 칩셋의 집 키트(원본 크기 그대로, 크기 말에 가까운 순).
  */
-function houseOptionsFor(tileset: TilesetDef, size: "small" | "medium" | "large", stories: 1 | 2, seed: number): QuickHouseOptions[] {
+function houseKindRegex(kindText: string | undefined): RegExp | null {
+  if (!kindText) return null;
+  const text = kindText.trim();
+  if (!text) return null;
+  if (/편의점|세븐|로손|패밀리|마트|conv|konbini/iu.test(text)) return /편의점|conv|konbini|shop-c/iu;
+  if (/카페|커피|베이커리|다방|빵집|cafe|bakery/iu.test(text)) return /카페|빵집|cafe|bakery|shop-a/iu;
+  if (/이자카야|선술집|식당|음식점|초밥|도시락|목욕탕|상가|가게|상점|shop|store|izakaya|sushi|bento|sento/iu.test(text)) {
+    return /상점|상가|가게|식당|초밥|도시락|목욕탕|대장간|방앗간|마구간|shop|store|bento|sushi|sento|smith|mill|stable/iu;
+  }
+  if (/오피스|사무|빌딩|회사|은행|병원|호텔|맨션|타워|아파트|office|bank|hospital|hotel|tower|apart/iu.test(text)) {
+    return /오피스|사무|빌딩|은행|병원|호텔|타워|맨션|아파트|관청|성당|저택|office|bank|hospital|hotel|tower|apart|manor|cathedral/iu;
+  }
+  if (/학교|교사|강의동|기숙사|체육관|도서관|강당|연구동|school|campus|dorm|gym|library/iu.test(text)) {
+    return /학교|교사|기숙사|체육관|도서관|강당|시계탑|보건실|school|dorm|gym|library|clock|infirmary/iu;
+  }
+  if (/여관|숙소|주막|민박|inn|lodge/iu.test(text)) return /여관|주막|인\b|오두막|저택|inn|lodge|manor|house/iu;
+  if (/대장간|무기점|갑옷|공방|smith|forge/iu.test(text)) return /대장간|무기|공방|smith|forge/iu;
+  if (/주택|단독주택|살림집|민가|집|오두막|cottage|house|home/iu.test(text)) return /주택|살림집|민가|오두막|집|house|cottage|home/iu;
+  return null;
+}
+
+function houseOptionsFor(tileset: TilesetDef, size: "small" | "medium" | "large", stories: 1 | 2, seed: number, kindText?: string): QuickHouseOptions[] {
+  const kindRe = houseKindRegex(kindText);
+  const allKits = [...quickHouseCatalog(tileset)];
+  // 특정 건물 종류(여관·대장간·상점·편의점·오피스 등)를 요청했고 그에 맞는 키트가 있으면 키트를 우선 쓴다.
+  if (kindRe && allKits.length > 0 && !/^(?:집|주택|살림집|민가|단독주택)$/u.test((kindText ?? "").trim())) {
+    const matchedKits = allKits.filter((kit) => kindRe.test(`${kit.id} ${kit.name ?? ""} ${(kit.ai?.tags ?? []).join(" ")}`));
+    if (matchedKits.length > 0) {
+      matchedKits.sort((a, b) => a.width * a.height - b.width * b.height);
+      const ordered = size === "small" ? matchedKits : size === "large" ? [...matchedKits].reverse() : matchedKits;
+      const rotated = ordered.map((_, i) => ordered[(seed + i) % ordered.length]!);
+      return rotated.map((kit) => ({ style: "blue-stone", width: kit.width, stories: 1, kitId: kit.id }));
+    }
+  }
   const styles = quickHouseStyles(tileset);
   if (styles.length > 0) {
     const rotated = styles.map((_, i) => styles[(seed + i) % styles.length]!);
@@ -543,13 +936,19 @@ function houseOptionsFor(tileset: TilesetDef, size: "small" | "medium" | "large"
     }
     return out;
   }
-  const kits = [...quickHouseCatalog(tileset)].sort((a, b) => a.width * a.height - b.width * b.height);
-  if (kits.length === 0) return [];
+  if (allKits.length === 0) return [];
+  const kits = [...allKits].sort((a, b) => a.width * a.height - b.width * b.height);
   const middle = kits[Math.floor(kits.length / 2)]!;
-  const ordered = size === "small" ? kits : size === "large" ? kits.reverse()
-    : kits.sort((a, b) => Math.abs(a.width * a.height - middle.width * middle.height) - Math.abs(b.width * b.height - middle.width * middle.height));
+  const sizeOrdered = size === "small" ? kits : size === "large" ? [...kits].reverse()
+    : [...kits].sort((a, b) => Math.abs(a.width * a.height - middle.width * middle.height) - Math.abs(b.width * b.height - middle.width * middle.height));
+  const rotated = sizeOrdered.map((_, i) => sizeOrdered[(seed + i) % sizeOrdered.length]!);
+  if (kindRe) {
+    rotated.sort((a, b) =>
+      Number(!kindRe.test(`${a.id} ${a.name ?? ""} ${(a.ai?.tags ?? []).join(" ")}`))
+      - Number(!kindRe.test(`${b.id} ${b.name ?? ""} ${(b.ai?.tags ?? []).join(" ")}`)));
+  }
   // kitId 가 있으면 quickHouseKit 은 style 을 보지 않는다 — 타입을 채우는 자리값이다.
-  return ordered.map((kit) => ({ style: "blue-stone", width: kit.width, stories: 1, kitId: kit.id }));
+  return rotated.map((kit) => ({ style: "blue-stone", width: kit.width, stories: 1, kitId: kit.id }));
 }
 
 const NON_REMOVABLE_UPPER_RE = /(?:^|[\s·,])(?:물|강물|바닷물|호수|연못|작은 연못|폭포|절벽|벼랑|낭떠러지|밧줄 다리|건물|집|지붕|집 문)(?=$|[\s·,(])|\b(?:water|river|lake|pond|waterfall|cliff|void|bridge|building|house|roof|wall|door)\b/iu;
@@ -613,6 +1012,21 @@ const JP_HOUSE_PRESETS = [
   { ground: "gr.shutter.sora", roof: "roof.hip.slate", floorKind: "slide", wall: "kinari", door: { type: "lattice" } },
 ] as const;
 
+function jpPresetForKind(kindText: string | undefined, seed: number): (typeof JP_HOUSE_PRESETS)[number] {
+  const text = (kindText ?? "").trim();
+  if (/편의점|마트|수퍼|conv/iu.test(text)) {
+    return { ground: "gr.shutter.sora", roof: "roof.slate", floorKind: "slide", wall: "shiro", door: { type: "lattice" } };
+  }
+  if (/이자카야|선술집|식당|음식점|초밥|도시락|상가|가게|상점/u.test(text)) {
+    return { ground: "gr.machiya", roof: "roof.tile", floorKind: "koushi", wall: "kinari", door: { type: "machiya" } };
+  }
+  if (/오피스|빌딩|사무|은행|병원|호텔|맨션|타워/u.test(text)) {
+    return { ground: "gr.garage", roof: "roof.slate", floorKind: "veranda", wall: "shiro", door: { type: "rollup" } };
+  }
+  const order = [JP_HOUSE_PRESETS[2], JP_HOUSE_PRESETS[0], JP_HOUSE_PRESETS[3], JP_HOUSE_PRESETS[1]] as const;
+  return order[seed % order.length]!;
+}
+
 function expandJpCityHouseStep(
   step: StampStep,
   project: Project,
@@ -628,8 +1042,7 @@ function expandJpCityHouseStep(
   const size = step.args.size === "small" || step.args.size === "large" ? step.args.size : "medium";
   const stories = step.args.stories === 2 ? 2 : 1;
   const count = Number(step.args.count) || 1;
-  const cx = area.x + (area.w - 1) / 2;
-  const cy = area.y + (area.h - 1) / 2;
+  const kindText = typeof step.args.kind === "string" ? step.args.kind : step.label;
   const widths = size === "small" ? [4, 5] : size === "large" ? [7, 6, 5] : [5, 6, 4];
   const floorCounts = stories === 2 ? [1, 0] : [0, 1];
   const out: StampStep[] = [];
@@ -638,8 +1051,11 @@ function expandJpCityHouseStep(
   let placed = 0;
   let smallest: { w: number; h: number } | null = null;
   let lastReason = "";
+  const horizontalSpread = area.w >= area.h;
   for (let n = 0; n < count; n++) {
-    const preset = JP_HOUSE_PRESETS[seed % JP_HOUSE_PRESETS.length]!;
+    const cx = count > 1 && horizontalSpread ? area.x + ((n + 0.5) * area.w) / count : area.x + (area.w - 1) / 2;
+    const cy = count > 1 && !horizontalSpread ? area.y + ((n + 0.5) * area.h) / count : area.y + (area.h - 1) / 2;
+    const preset = jpPresetForKind(kindText, seed);
     let hit: {
       fx: number;
       fy: number;
@@ -772,10 +1188,11 @@ export function expandStampHouses(
   steps: readonly StampStep[],
   project: Project,
   facts: StampPlanFacts,
+  surfaceMapOverride?: GameMap,
 ): { readonly steps: readonly StampStep[]; readonly dropped: readonly string[]; readonly cells: ReadonlySet<string> } {
   const cells = new Set<string>();
   if (!steps.some((step) => step.tool === "place_house")) return { steps, dropped: [], cells };
-  const map = project.maps[facts.mapId];
+  const map = surfaceMapOverride ?? project.maps[facts.mapId];
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
   const blocked = new Set<string>();
   for (const event of map?.events ?? []) blocked.add(`${event.x},${event.y}`);
@@ -789,8 +1206,8 @@ export function expandStampHouses(
     const points = [cellOf(args), cellOf(args.home), step.tool === "place_trap" ? cellOf(args.at) : null];
     for (const point of points) if (point) for (const dy of [-1, 0]) blocked.add(`${point.x},${point.y + dy}`);
   }
-  const previewMap = map ? copiedTerrainMap(map) : undefined;
-  if (previewMap && map) previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
+  const previewMap = surfaceMapOverride ?? (map ? copiedTerrainMap(map) : undefined);
+  if (previewMap && map && !surfaceMapOverride) previewMap.structurePlacements = [...(map.structurePlacements ?? [])];
   const target = facts.target;
   const out: StampStep[] = [];
   const dropped: string[] = [];
@@ -810,18 +1227,20 @@ export function expandStampHouses(
     const size = step.args.size === "small" || step.args.size === "large" ? step.args.size : "medium";
     const stories = step.args.stories === 2 ? 2 : 1;
     const count = Number(step.args.count) || 1;
-    const optionsList = houseOptionsFor(tileset, size, stories, seed);
+    const kindText = typeof step.args.kind === "string" ? step.args.kind : step.label;
+    const optionsList = houseOptionsFor(tileset, size, stories, seed, kindText);
     if (optionsList.length === 0) {
       dropped.push(`${step.label}: 이 타일셋(${tileset.id})에는 집 외관이 없습니다(벽·문·바닥으로 흉내 내지 않음)`);
       continue;
     }
-    const cx = area.x + (area.w - 1) / 2;
-    const cy = area.y + (area.h - 1) / 2;
     let placed = 0;
     let lastReason = "";
     let smallest: { w: number; h: number } | null = null;
+    const horizontalSpread = area.w >= area.h;
     for (let n = 0; n < count; n++) {
-      const currentOptions = houseOptionsFor(tileset, size, stories, seed);
+      const cx = count > 1 && horizontalSpread ? area.x + ((n + 0.5) * area.w) / count : area.x + (area.w - 1) / 2;
+      const cy = count > 1 && !horizontalSpread ? area.y + ((n + 0.5) * area.h) / count : area.y + (area.h - 1) / 2;
+      const currentOptions = houseOptionsFor(tileset, size, stories, seed, kindText);
       let hit: {
         anchor: { x: number; y: number };
         options: QuickHouseOptions;

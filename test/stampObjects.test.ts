@@ -65,6 +65,23 @@ describe("resolveStampObject", () => {
     expect(baseName("화분 고사리 (0,0)")).toBe("화분 고사리");
     expect(baseName("버들항 소품 둥근 돌 화분 1×1")).toBe("버들항 소품 둥근 돌 화분");
   });
+
+  it("avoids wooden furniture false matches on tree queries and respects maxSize", () => {
+    const pool: readonly StampObjectEntry[] = [
+      entry("k-chair", "학교 나무 의자"),
+      entry("k-garden", "학급 밭(이랑·새싹·나무 팻말)"),
+      entry("k-tree-big", "가로수 · ginkgo", { width: 4, height: 6 }),
+      entry("k-tree-small", "벚나무", { width: 2, height: 3 }),
+    ];
+    const names = acceptedObjectNames("나무", ["가로수", "벚나무"]).names;
+    expect(resolveStampObject(pool, names)?.entry.id).toBe("k-tree-small");
+    expect(resolveStampObject(pool, ["가로수"], { w: 10, h: 5 })?.entry.id).toBe("k-tree-big");
+    const bridges: readonly StampObjectEntry[] = [
+      entry("b-tall", "바위 다리", { width: 3, height: 7, placement: "water" }),
+      entry("b-fit", "나무 널다리", { width: 5, height: 4, placement: "water" }),
+    ];
+    expect(resolveStampObject(bridges, acceptedObjectNames("다리", []).names, { w: 40, h: 5 })?.entry.id).toBe("b-fit");
+  });
 });
 
 describe("place_object planning", () => {

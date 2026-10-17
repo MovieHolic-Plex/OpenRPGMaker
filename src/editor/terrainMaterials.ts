@@ -26,8 +26,9 @@ export function terrainIsReserved(map:GameMap,tileset:TilesetDef,index:number):b
   if ((map.relief?.ramps?.[index]??0)>0 || layerTileAt(map,3,index)>=0 || layerTileAt(map,4,index)>=0) return true;
   if ((topTileInStack(map,"upper",index)??-1)>=0) return true;
   const tile=layerTileAt(map,1,index), meta=tileset.tileMeta?.[tile];
+  if (tileset.id === "modern_city" && /^보도 포석/.test(meta?.label ?? "")) return false;
   if (/road|path|water|river|lake|길|포석|물|호수/i.test(`${meta?.label} ${meta?.tags?.join(" ")}`)) return true;
-  return autotileGroupsForTileset(tileset).some(g=>/road|path|water|river|lake|길|포석|물|호수/i.test(`${g.id} ${g.name}`) && g.memberTileIds.includes(tile));
+  return autotileGroupsForTileset(tileset).some(g=>g.id !== "mc:sidewalk" && /road|path|water|river|lake|길|포석|물|호수/i.test(`${g.id} ${g.name}`) && g.memberTileIds.includes(tile));
 }
 
 /** Road authoring uses the map's road material, including Beodeul cobbles, rather than assuming dirt. */
