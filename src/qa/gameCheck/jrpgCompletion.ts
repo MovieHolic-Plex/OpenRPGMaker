@@ -60,6 +60,28 @@ function openingIsOnlyTitleCard(project: Project): boolean {
   });
 }
 
+/** 시작 맵에서 transfer 명령을 따라 닿는 맵 id 들(시작 맵 포함). */
+function reachableMapIds(project: Project): Set<string> {
+  const edges = new Map<string, Set<string>>();
+  visitAllCommands(project, (visit) => {
+    const from = visit.where.mapId;
+    const to = visit.command.kind === "transfer" && typeof visit.command.mapId === "string" ? visit.command.mapId : undefined;
+    if (!from || !to) return;
+    const bucket = edges.get(from) ?? new Set<string>();
+    bucket.add(to);
+    edges.set(from, bucket);
+  });
+  const seen = new Set<string>();
+  const queue = [project.startMapId];
+  while (queue.length) {
+    const id = queue.pop();
+    if (!id || seen.has(id) || !project.maps[id]) continue;
+    seen.add(id);
+    for (const next of edges.get(id) ?? []) queue.push(next);
+  }
+  return seen;
+}
+
 export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(project), options: { readonly task?: string } = {}): string[] {
   if (!isJrpg(project) && !JRPG_TASK.test(options.task ?? "")) return [];
   const gaps: string[] = [];
@@ -153,10 +175,15 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
     if (BALANCE_CODES.has(finding.code)) gaps.push(`${finding.message} — 배우 능력치는 upsert_actor 의 parameterCurves, 적 능력치는 upsert_enemy 의 stats 로 고치세요.`);
   }
   // 2c) 씨앗 어촌 그대로 — 이름은 「잿빛 설원 · 저항군 전초기지」인데 맵은 초록 항구 마을(등대)이면 첫 화면부터 세계관이 거짓이다(jrpg-loop-2 ff1).
+  //    플레이어가 닿을 수 있는 맵(시작 맵에서 transfer 로 이어진 맵)만 본다 — 새 마을을 짓고 시작 맵을 옮긴 뒤 남은 옛 씨앗 맵까지 막으면 고칠 방법이 없다.
+  //    jrpg-loop-3 실측(ff2·ct2): 이 맵의 집은 완성된 집 보호 영역이라 tile_erase·clear_map·paint_tiles·author_beodeul_town 이 전부
+  //    「완성된 집의 보호 영역은 AI가 변경할 수 없습니다」로 거절됐고, 옛 문구의 「등대 건물을 철거」 는 AI 도구에 없는 일이었다.
+  const reachable = reachableMapIds(project);
   for (const map of Object.values(project.maps)) {
+    if (!reachable.has(map.id)) continue;
     if (!(map.structurePlacements ?? []).some((placement) => placement.kitId === SCAFFOLD_LANDMARK_KIT)) continue;
     if (HARBOR_MAP_NAME.test(map.name ?? "")) continue;
-    gaps.push(`맵 「${map.name}」(${map.id}) 이 씨앗 어촌(등대·항구) 그대로입니다 — 이름과 다른 초록 항구 마을이 보입니다. 이 장소를 요청 세계관에 맞게 다시 짓거나(author_beodeul_town 의 다른 테마·place_concept) 등대 건물을 철거하고, 시작 맵이면 startMapId 를 새로 지은 마을로 옮기세요.`);
+    gaps.push(`맵 「${map.name}」(${map.id}) 이 씨앗 어촌(등대·항구) 그대로입니다 — 이름과 다른 초록 항구 마을이 보입니다. 이 맵의 집은 보호돼 있어 안에서 지우거나 덧칠할 수 없습니다(tile_erase·clear_map·paint_tiles 는 거절됩니다). 새 맵을 만들어(create_map → author_beodeul_town 으로 요청 세계관에 맞게 짓기) set_start_position 으로 시작 맵을 새 마을로 옮기고, 옛 맵으로 가는 문(transfer)은 새 마을로 돌리세요 — 시작에서 닿지 않는 옛 씨앗 맵은 이 검사에서 빠집니다.`);
     break;
   }
   return gaps;

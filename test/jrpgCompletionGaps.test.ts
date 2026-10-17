@@ -59,10 +59,24 @@ describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
 
   it("flags the seed fishing village (lighthouse) left under a non-harbor name — 6 of 6 loop projects kept it", () => {
     const lighthouse = [{ kitId: "bd-pick-fishing-port-lighthouse", x: 1, y: 1 }];
-    const bad = jrpg({ maps: { m1: { id: "m1", name: "잿빛 설원 · 저항군 전초기지", structurePlacements: lighthouse, events: [] } } });
+    const bad = jrpg({ startMapId: "m1", maps: { m1: { id: "m1", name: "잿빛 설원 · 저항군 전초기지", structurePlacements: lighthouse, events: [] } } });
     expect(jrpgCompletionGaps(bad, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(true);
-    const harbor = jrpg({ maps: { m1: { id: "m1", name: "푸른 항구 마을", structurePlacements: lighthouse, events: [] } } });
+    const harbor = jrpg({ startMapId: "m1", maps: { m1: { id: "m1", name: "푸른 항구 마을", structurePlacements: lighthouse, events: [] } } });
     expect(jrpgCompletionGaps(harbor, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(false);
+  });
+
+  it("ignores the old seed map once the start moved to a new town and nothing transfers into it (loop-3: protected houses cannot be erased)", () => {
+    const lighthouse = [{ kitId: "bd-pick-fishing-port-lighthouse", x: 1, y: 1 }];
+    const moved = jrpg({ startMapId: "m2", maps: {
+      m1: { id: "m1", name: "잿빛 설원 · 저항군 전초기지", structurePlacements: lighthouse, events: [] },
+      m2: { id: "m2", name: "눈 덮인 요새", events: [] },
+    } });
+    expect(jrpgCompletionGaps(moved, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(false);
+    const linked = jrpg({ startMapId: "m2", maps: {
+      m1: { id: "m1", name: "잿빛 설원 · 저항군 전초기지", structurePlacements: lighthouse, events: [] },
+      m2: { id: "m2", name: "눈 덮인 요새", events: [{ id: "e", x: 0, y: 0, pages: [{ commands: [{ kind: "transfer", mapId: "m1", x: 1, y: 1 }] }] }] },
+    } });
+    expect(jrpgCompletionGaps(linked, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(true);
   });
 
   it("uses the request text as part of the brief for the time-ending check", () => {
