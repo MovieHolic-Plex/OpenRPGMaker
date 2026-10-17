@@ -395,7 +395,7 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
     if (overlay && win) {
       const project = store.getCurrent();
       const leftUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-full-base", { project });
-      const rightUrl = resolveAssetResourceUrl("shared-modern-uni-girl-navy-expressions-full-base", { project });
+      const rightUrl = resolveAssetResourceUrl("shared-modern-uni-girl-long-expressions-full-base", { project });
       const cornerFaceUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-bust-base", { project });
       overlay.classList.add("has-bust-face");
       overlay.style.setProperty("--runtime-dialogue-panel-height", "52px");
@@ -413,14 +413,14 @@ export function renderDialogueLookSample(speaker: string, body: string, look: Di
       if (leftUrl) {
         const leftPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-left dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:118px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:32px;` },
+          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:22px;` },
         });
         overlay.append(leftPortrait);
       }
       if (rightUrl) {
         const rightPortrait = el("div", {
           class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-right dialogue-portrait-listener dialogue-face-behind",
-          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:118px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:32px;` },
+          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:44px;--runtime-dialogue-full-drop:22px;` },
         });
         overlay.append(rightPortrait);
       }

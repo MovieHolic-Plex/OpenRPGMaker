@@ -78,8 +78,8 @@ export function resolvePortraitHeadRatio(archetypeOrDescription?: string): Portr
   return DEFAULT_PORTRAIT_HEAD_RATIO;
 }
 
-/** 7.5~8등신 양쪽 전신 스탠딩 무대 기본 비율 — 화면 높이의 ~88%까지 올라오고 허벅지 중간에서 끊어 머리 비중을 7~8등신으로 맞춘다(126% × (1 - 0.30) ≈ 88.2%). */
-export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 126, drop: 30 } as const;
+/** 양쪽 전신 스탠딩 무대 기본 비율 — 원본 전신 일러스트를 왜곡 없이 화면 높이의 ~88%까지 세운다(114% × (1 - 0.22) ≈ 88.9%). */
+export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 114, drop: 22 } as const;
 export type DialogueSystemPresetId = "default" | "romance" | typeof DUAL_FULLBODY_VEIL_PRESET_ID;
 export type DialogueSystemPresetDefinition = {
   readonly id: DialogueSystemPresetId;

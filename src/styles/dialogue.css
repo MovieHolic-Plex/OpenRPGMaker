@@ -560,7 +560,7 @@
   filter: brightness(1) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.45));
   left: 2%;
   right: auto;
-  width: calc(var(--runtime-dialogue-full-height) * 0.34);
+  width: calc(var(--runtime-dialogue-full-height) * 0.36);
   z-index: 0;
 }
 

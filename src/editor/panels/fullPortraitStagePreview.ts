@@ -8,10 +8,10 @@ import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
-/** 견본에 기본으로 세우는 공용 전신(7.5~8등신 기본 비율) — 어린이·노인 등 특수 체형을 제외한 표준 성인·청소년 전신. */
-export const FULL_PORTRAIT_SAMPLE_RESOURCE_ID = "shared-modern-uni-girl-navy-expressions-full-base";
+/** 견본에 기본으로 세우는 공용 전신(자연스러운 성인·청소년 전신) — 어린이·노인 등 특수 체형을 제외한 기본 전신. */
+export const FULL_PORTRAIT_SAMPLE_RESOURCE_ID = "shared-modern-uni-girl-long-expressions-full-base";
 export const FULL_PORTRAIT_PARTNER_SAMPLE_RESOURCE_ID = "shared-modern-uni-boy-navy-expressions-full-base";
-export const FULL_PORTRAIT_CORNER_FACE_SAMPLE_RESOURCE_ID = "shared-modern-uni-girl-navy-expressions-bust-base";
+export const FULL_PORTRAIT_CORNER_FACE_SAMPLE_RESOURCE_ID = "shared-modern-uni-girl-long-expressions-bust-base";
 
 const STAGE_WIDTH = 320;
 const PORTRAIT_ASPECT = 9 / 16;

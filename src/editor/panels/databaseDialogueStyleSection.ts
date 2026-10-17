@@ -128,7 +128,7 @@ function dialogueFullPortraitSettings(project: Project, deps: DialogueStyleSecti
   const redraw = (): void => {
     const isDualVeil = resolveDialogueStyleId(project.system.dialogueStyle) === "dual-fullbody-veil";
     stageHost.replaceChildren(renderFullPortraitStage({
-      resourceId: isDualVeil ? "shared-modern-uni-girl-navy-expressions-full-base" : FULL_PORTRAIT_SAMPLE_RESOURCE_ID,
+      resourceId: isDualVeil ? FULL_PORTRAIT_SAMPLE_RESOURCE_ID : "shared-people1-girl-expressions-full-base",
       ...(isDualVeil ? { partnerResourceId: FULL_PORTRAIT_PARTNER_SAMPLE_RESOURCE_ID, veil: true } : {}),
       layout: resolveDialogueFullPortraitLayout(settings),
       width: 320,
