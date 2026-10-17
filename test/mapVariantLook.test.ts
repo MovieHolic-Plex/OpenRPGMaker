@@ -52,6 +52,15 @@ describe("derive_map_variant 시대 겉모습(J03)", () => {
     expect(report.stampedPieces).toBeGreaterThan(0);
   });
 
+  it("물 칸 위에는 폐허 조각을 놓지 않는다(받침 없는 물체로 커밋이 거절되던 결함)", () => {
+    const { draft, map } = townDraft();
+    (draft.tilesets.ts as unknown as { tileMeta: Record<number, { tags: string[] }> }).tileMeta = { 7: { tags: ["water"] } };
+    const report = applyVariantLook(draft, map, "ruin", [], "variants[w]");
+    expect(report.demolishedBuildings).toBeGreaterThanOrEqual(1);
+    expect(report.stampedPieces).toBe(0);
+    expect(map.upperTiles.filter((tile) => tile === 555).length).toBe(0);
+  });
+
   it("같은 변형 id 는 언제나 같은 철거·배치가 나온다", () => {
     const first = townDraft();
     const second = townDraft();
