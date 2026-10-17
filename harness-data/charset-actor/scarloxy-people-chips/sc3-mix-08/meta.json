@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-08",
+ "name": "적갈 머리 · 흰 탱크톱 보라 띠",
+ "head": "Scarloxy2:1",
+ "body": "Scarloxy1:2",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-08",
+ "candidate_id": "t44",
+ "judge_totals_ABC": [
+  9,
+  10,
+  7
+ ],
+ "recipe": "gallery4-recipes.json#mix-08"
+}

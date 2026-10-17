@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-01",
+ "name": "금발 소년 · 팥색 십자 후드",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy1:3",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-01",
+ "candidate_id": "t02",
+ "judge_totals_ABC": [
+  9,
+  10,
+  8
+ ],
+ "recipe": "gallery4-recipes.json#mix-01"
+}

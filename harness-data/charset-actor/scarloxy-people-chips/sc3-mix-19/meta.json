@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-19",
+ "name": "청록 캡 · 노란 상의",
+ "head": "Scarloxy1:0",
+ "body": "Scarloxy1:4",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-19",
+ "candidate_id": "u31",
+ "judge_totals_ABC": [
+  10,
+  6,
+  11
+ ],
+ "recipe": "gallery4-recipes.json#mix-19"
+}

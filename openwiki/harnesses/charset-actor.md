@@ -167,7 +167,7 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   `OPRN_LIVE_KEY="$(cat ~/.config/oprn/live-key)" CTFF6_PART_OUT=$HOME/spc-runs python3 src/harnesses/charset-actor/scarloxy_argon2.py draw --spec harness-data/charset-actor/scarloxy-people-spec-2.json --run sp2-r5 --label sp2-clerk-m-a --par 2`
 - 배선: 시트 수는 명단의 `sheets` 에서 나오므로 카탈로그·의미표·리졸버·참조 검증·`charsetFamily`·`catalog_sources.py` 는 코드 변경 없이 10시트를 읽는다. 바뀐 것: `genreLock.ts` 안내 문장(1~10, 직군 목록), `test/genreLockCharsets.test.ts`(새 시트 칩 허용·RTP 거절 테스트 추가), 포털 표면 기준선(`ScarloxyPeople# (ScarloxyPeople)` 10항목).
 - 검증(출하 경로): `scarloxy-people-chips-fixture.mts --part 0|1` + `scarloxy-people-chips.scenario.mjs`(`node scripts/runtime-qa.mjs --scenario scarloxy-people-chips --project tmp/scarloxy-people-chips[-2].json --out verify-shots/runtime-qa/<이름>`, 판마다 35칸 5줄×7열)로 70칸 전수 렌더, `scarloxy-people-chips-persist.mts`(몬스터 잠금 프로젝트 새·옛 두 판: 새 직군 칩 place_npc 허용 · RTP 칩 거절 · 임시 SQLite 저장·재로드). vitest/gates 는 실행하지 않았다.
-- 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-10」.
+- 출처: Scarloxy MPWSP01(CC BY 4.0) — `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-13」.
 
 ## 몬스터 세계 사람 칩 3차 — 1차 스크립트 칩 12종 재제작 (2026-10-16)
 
@@ -186,3 +186,14 @@ REQUEST는 source(path/sha256), palette, canvas, origin과 poses(id/direction/fr
   (`SPC_ACCEPT_DIR` 를 판마다 새로 줘야 같은 직군의 다른 후보끼리 「방금 채택된 칩과 비슷하다」로 거절되지 않는다.)
 - 증거 시트: `~/claude-viz/monster-people-chips-3.html`(`scarloxy_sheet3.py`).
 - 저작권·출처 변동 없음(Scarloxy MPWSP01 CC BY 4.0 변형, 칸 번호·id 동일). vitest/gates 는 실행하지 않았다.
+
+## 몬스터 세계 사람 칩 4차 — char-gen 갤러리 4 합성 22종, ScarloxyPeople11~13 (2026-10-17)
+
+사용자가 char-gen 갤러리 4(`~/claude-viz/chargen-gallery-4.html`)를 보고 「22종은 넣어야할듯」이라고 결정해, 갤러리에 올라간 22종을 **그림 그대로** 새 시트 11(8)·12(8)·13(6)에 덧붙였다. 기존 시트 1~10(빈 칸 4#1~7·10#5~7 포함)은 한 칸·한 화소도 안 바뀐다(`--check` 일치).
+
+- 출처: char-gen 저장소(`~/char-gen-public`, 79fe270)의 스크립트 합성 — 머리 이식 + 부위 마스크 안 색조 이동, 모델 호출 없음, 새로 찍은 픽셀 없음. 눈가림 독립 판정자 3명 다수결(8점 이상·0점 없음)과 세트 중복 검사를 통과한 것이다. 레시피 원본은 `harness-data/charset-actor/scarloxy-people/gallery4-recipes.json`, 이름·설명·직군·판정 점수·**그림 화소 해시**는 `gallery4.json`.
+- 도구: `scarloxy_gallery4.py`(갤러리 격자 → `scarloxy-people-chips/sc3-mix-NN/` 로 모으고 해시가 갤러리 그림과 같은지 확인한 뒤 설치 명단에 11번 시트부터 덧붙임) → `install_scarloxy_people.py`.
+- **고정 검사 예외(알려진 한계):** char-gen 합성기는 눈·눈썹도 머리색을 따라 옮겨, 이 저장소 `scarloxy_lock.py` 의 「얼굴·피부·손 원본 고정」 검사를 22종 모두 통과하지 못한다(칩당 94~334 / 493~894칸 어긋남 — 2차 문서가 1차 스크립트 칩 12종에서 지적한 것과 같은 종류). 사용자가 갤러리 그림 그대로를 선택했으므로 명단 행에 `lockExempt: "gallery4"` 와 `expectSlotRgbaSha256` 를 달아, 고정 검사 대신 **갤러리 그림 화소 해시 일치**를 설치 관문으로 건다. 눈이 머리색과 같은 칩은 게임 배율에서 얼굴이 옅게 보인다(금발·흰 머리·황갈 머리 등) — 나중에 다시 만들면 3차처럼 같은 id·칸 번호에서 `redo` 로 그림만 바꾼다.
+- 가장 가까운 기존 칩과 다른 화소 비율: 최소 0.41(= 거름 기준 0.30 이상), 새 22종끼리도 0.41 이상.
+- 배선: 시트 수는 명단 `sheets` 에서 나오므로 카탈로그·의미표·리졸버·참조 검증·`charsetFamily` 는 코드 변경 없음. 바뀐 것: `genreLock.ts` 안내 문장(1~13), `test/genreLockCharsets.test.ts`(의미표 90칸), 새 `test/scarloxyPeopleGallery4.test.ts`, 이벤트 편집기 표면 기준선 3개(people11~13 노드), QA 픽스처 `--part mix`(새 22종 + 기존 13종 섞은 35칸).
+- 검증(출하 경로): `scarloxy-people-chips-fixture.mts --part mix` + `scarloxy-people-chips.scenario.mjs`. 출처 크레딧은 `public/assets/ATTRIBUTION.md` 「ScarloxyPeople1-13」(새 시트는 기존 칩의 부위 조합과 색 변형임을 명시).

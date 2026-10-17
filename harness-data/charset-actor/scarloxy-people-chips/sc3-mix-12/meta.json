@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-12",
+ "name": "갈색 둥근 모자 · 연두 티셔츠",
+ "head": "Scarloxy1:2",
+ "body": "Scarloxy1:4",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-12",
+ "candidate_id": "u02",
+ "judge_totals_ABC": [
+  10,
+  5,
+  9
+ ],
+ "recipe": "gallery4-recipes.json#mix-12"
+}

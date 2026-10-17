@@ -1,0 +1,17 @@
+{
+ "key": "sc3-mix-13",
+ "name": "흰 머리 · 청록 십자 상의",
+ "head": "Scarloxy1:1",
+ "body": "Scarloxy1:3",
+ "ok": true,
+ "model": "script-compose(char-gen gallery 4; no model call)",
+ "lockExempt": "char-gen compose recolors eyes with the hair hue; pixels pinned by gallery4.json slotRgbaSha256",
+ "gallery": "mix-13",
+ "candidate_id": "u05",
+ "judge_totals_ABC": [
+  12,
+  8,
+  12
+ ],
+ "recipe": "gallery4-recipes.json#mix-13"
+}

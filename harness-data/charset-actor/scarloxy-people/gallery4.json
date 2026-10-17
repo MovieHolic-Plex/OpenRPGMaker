@@ -1,0 +1,562 @@
+{
+ "note": "char-gen 갤러리 4(http://mdc-server:18301/chargen-gallery-4.html, 2026-10-17)에 올라간 스크립트 합성 22종. 머리 이식 + 부위 마스크 안 색조 이동, 모델 호출 없음, 새로 찍은 픽셀 없음. 눈가림 독립 판정자 3명 다수결(8점 이상·0점 없음) + 세트 중복 검사(3종 삭제)를 통과. 사용자 결정(2026-10-17) 「22종은 넣어야할듯」으로 ScarloxyPeople11~13 에 덧붙인다. 설치 그림=갤러리 그림(slotRgbaSha256 고정). 출처 코드/그림: ~/char-gen-public examples/gallery/{chips,recipes,gallery.json} (char-gen 저장소 79fe270).",
+ "chips": [
+  {
+   "key": "sc3-mix-01",
+   "gallery": "mix-01",
+   "candidate_id": "t02",
+   "id": "scarloxy-mix01-blond-maroon-hoodie",
+   "name": "금발 소년 · 팥색 십자 후드",
+   "desc": "금빛 뾰족한 머리, 가슴에 분홍 십자가 있는 팥색 후드 상의와 어깨 덮개, 남색 바지, 갈색 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "금발",
+    "팥색",
+    "후드",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy1:1",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    9,
+    10,
+    8
+   ],
+   "slotRgbaSha256": "24ccb84d373248c3606208653e5a8209374f7b7502d87a3eb7f0bdcdfc8743df"
+  },
+  {
+   "key": "sc3-mix-02",
+   "gallery": "mix-02",
+   "candidate_id": "t10",
+   "id": "scarloxy-mix02-teal-orange-vest",
+   "name": "청록 머리 · 주황 조끼 초록 반바지",
+   "desc": "청록색 뾰족한 머리, 흰 셔츠 위 주황 조끼, 짙은 초록 반바지, 붉은 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "청록 머리",
+    "주황 조끼",
+    "반바지",
+    "소년"
+   ],
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy1:0",
+   "judge_totals_ABC": [
+    11,
+    10,
+    8
+   ],
+   "slotRgbaSha256": "7eac7e5ca4aeda9e3434486081cf1f5573271ed79c50d655d33e6521e4d98ff1"
+  },
+  {
+   "key": "sc3-mix-03",
+   "gallery": "mix-03",
+   "candidate_id": "t17",
+   "id": "scarloxy-mix03-purple-mint-hoodie",
+   "name": "보라 머리 · 민트 십자 후드",
+   "desc": "짙은 보라색 뾰족한 머리, 가슴에 흰 십자가 있는 민트색 후드 상의, 짙은 남보라 바지, 붉은 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "보라 머리",
+    "민트",
+    "후드",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    12,
+    11,
+    8
+   ],
+   "slotRgbaSha256": "cb7735ce7487d57bd90a6d3adc091ac17ab84711cd580e5215a8154e0fec22bc"
+  },
+  {
+   "key": "sc3-mix-04",
+   "gallery": "mix-04",
+   "candidate_id": "t22",
+   "id": "scarloxy-mix04-gray-white-tank",
+   "name": "회청 머리 · 흰 탱크톱",
+   "desc": "회청색 짧은 머리, 갈색 띠를 두른 흰 탱크톱, 회록색 바지, 짙은 붉은 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "회청 머리",
+    "흰 탱크톱",
+    "소년"
+   ],
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy1:2",
+   "judge_totals_ABC": [
+    10,
+    9,
+    7
+   ],
+   "slotRgbaSha256": "29cb6102107d915e50cd1c5d7c31aab1fb41e19dad1787c0874557e563aec783"
+  },
+  {
+   "key": "sc3-mix-05",
+   "gallery": "mix-05",
+   "candidate_id": "t35",
+   "id": "scarloxy-mix05-tan-green-hoodie",
+   "name": "황갈 머리 소녀 · 연두 줄무늬 후드",
+   "desc": "황갈색 긴 머리, 연두색 세로줄 후드 상의와 어깨 덮개, 보랏빛 회색 바지, 갈색 신발.",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "황갈 머리",
+    "긴 머리",
+    "연두",
+    "후드",
+    "소녀"
+   ],
+   "head": "Scarloxy1:3",
+   "body": "Scarloxy2:1",
+   "judge_totals_ABC": [
+    11,
+    12,
+    10
+   ],
+   "slotRgbaSha256": "12bfd4479da4a29d64b82d01ff7f6484ac3e5b6113a89329b11adba8e1e05091"
+  },
+  {
+   "key": "sc3-mix-06",
+   "gallery": "mix-06",
+   "candidate_id": "t39",
+   "id": "scarloxy-mix06-red-green-hoodie",
+   "name": "붉은 머리 · 초록 줄무늬 후드",
+   "desc": "붉은 뾰족한 머리, 연두색 세로줄 후드 상의, 갈색 바지, 파란 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "붉은 머리",
+    "초록",
+    "줄무늬",
+    "후드",
+    "소년"
+   ],
+   "head": "Scarloxy1:1",
+   "body": "Scarloxy2:1",
+   "judge_totals_ABC": [
+    10,
+    9,
+    8
+   ],
+   "slotRgbaSha256": "f0d48d48a89663728e99087a9ee650bc38e4db1a0f222c4bbc4d58c887d307f9"
+  },
+  {
+   "key": "sc3-mix-07",
+   "gallery": "mix-07",
+   "candidate_id": "t41",
+   "id": "scarloxy-mix07-purple-buns-teal",
+   "name": "보라 올림머리 소녀 · 청록 상의",
+   "desc": "보라색 두 갈래 올림머리에 보라 리본, 목걸이 장식이 있는 청록 상의, 보라색 하의, 흰 신발.",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "보라 머리",
+    "올림머리",
+    "리본",
+    "청록",
+    "소녀"
+   ],
+   "head": "Scarloxy1:4",
+   "body": "Scarloxy1:5",
+   "judge_totals_ABC": [
+    8,
+    11,
+    7
+   ],
+   "slotRgbaSha256": "f5afb50decab84bbd240c869d239e1a0722d315c6ac3623aa3b8febc6e91fa1e"
+  },
+  {
+   "key": "sc3-mix-08",
+   "gallery": "mix-08",
+   "candidate_id": "t44",
+   "id": "scarloxy-mix08-auburn-white-tank",
+   "name": "적갈 머리 · 흰 탱크톱 보라 띠",
+   "desc": "적갈색 뾰족한 머리, 보라 어깨 띠를 두른 흰 탱크톱, 카키 바지, 초록 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "적갈 머리",
+    "흰 탱크톱",
+    "보라 띠",
+    "소년"
+   ],
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy1:2",
+   "judge_totals_ABC": [
+    9,
+    10,
+    7
+   ],
+   "slotRgbaSha256": "d6cc74ad59db76ecc5032ceeba341e06a374c39a162d0c9363dee7adca6e80d9"
+  },
+  {
+   "key": "sc3-mix-09",
+   "gallery": "mix-09",
+   "candidate_id": "t60",
+   "id": "scarloxy-mix09-brown-purple-hoodie",
+   "name": "갈색 머리 · 보라 줄무늬 후드",
+   "desc": "갈색 머리, 보라색 세로줄 후드 상의, 올리브색 바지, 파란 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "갈색 머리",
+    "보라",
+    "줄무늬",
+    "후드",
+    "소년"
+   ],
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy2:1",
+   "judge_totals_ABC": [
+    10,
+    10,
+    5
+   ],
+   "slotRgbaSha256": "1310c2e65f7eb39c7cf44a64e6f5d7f3d8235044324f1b777587bfa8784d65d5"
+  },
+  {
+   "key": "sc3-mix-10",
+   "gallery": "mix-10",
+   "candidate_id": "t62",
+   "id": "scarloxy-mix10-olive-red-jacket",
+   "name": "올리브 머리 · 붉은 재킷 흰 탱크톱",
+   "desc": "올리브색 머리, 흰 탱크톱 위 붉은 재킷, 파란 반바지, 주황 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "올리브 머리",
+    "붉은 재킷",
+    "흰 탱크톱",
+    "소년"
+   ],
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy1:6",
+   "judge_totals_ABC": [
+    10,
+    9,
+    5
+   ],
+   "slotRgbaSha256": "f1b550e0c8789da2a6702d2c3f9f1c7a0894f3b5ac5eb3617945ffc361ba21c3"
+  },
+  {
+   "key": "sc3-mix-11",
+   "gallery": "mix-11",
+   "candidate_id": "t64",
+   "id": "scarloxy-mix11-blue-cap-olive",
+   "name": "파란 캡 · 올리브 십자 상의",
+   "desc": "흰 로고가 있는 파란 캡과 청회색 머리, 가슴에 십자가 있는 올리브색 상의와 누런 어깨 덮개, 적갈색 바지.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "파란 캡",
+    "모자",
+    "올리브",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy1:0",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    10,
+    10,
+    6
+   ],
+   "slotRgbaSha256": "0d7b62ee4bc775759db7fef978e13979051ac3b7736b2b6cd8fe84303f552133"
+  },
+  {
+   "key": "sc3-mix-12",
+   "gallery": "mix-12",
+   "candidate_id": "u02",
+   "id": "scarloxy-mix12-brown-round-hat",
+   "name": "갈색 둥근 모자 · 연두 티셔츠",
+   "desc": "갈색 둥근 모자 아래 곱슬한 옆머리, 연두색 티셔츠, 청색 반바지, 주황 신발.",
+   "role": "마을 주민",
+   "gender": null,
+   "age": "youth",
+   "tags": [
+    "갈색 모자",
+    "둥근 모자",
+    "연두",
+    "티셔츠"
+   ],
+   "head": "Scarloxy1:2",
+   "body": "Scarloxy1:4",
+   "judge_totals_ABC": [
+    10,
+    5,
+    9
+   ],
+   "slotRgbaSha256": "0358a634b014647cd2f9806ae1f8771a5e9f1b5651980b6fc4b8944e135f2866"
+  },
+  {
+   "key": "sc3-mix-13",
+   "gallery": "mix-13",
+   "candidate_id": "u05",
+   "id": "scarloxy-mix13-white-hair-teal",
+   "name": "흰 머리 · 청록 십자 상의",
+   "desc": "은백색 머리, 가슴에 십자가 있는 청록 상의와 어깨 덮개, 갈색 바지, 주황 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "흰 머리",
+    "은발",
+    "청록",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy1:1",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    12,
+    8,
+    12
+   ],
+   "slotRgbaSha256": "7b278c29ed7b0da836c8020fba021f24042ceb737cad043dc127ccc91e2bbcf3"
+  },
+  {
+   "key": "sc3-mix-14",
+   "gallery": "mix-14",
+   "candidate_id": "u11",
+   "id": "scarloxy-mix14-brown-cyan-vest",
+   "name": "갈색 머리 · 하늘색 조끼",
+   "desc": "갈색 뾰족한 머리, 흰 소매 위 하늘색 조끼, 적갈색 반바지, 파란 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "갈색 머리",
+    "하늘색 조끼",
+    "반바지",
+    "소년"
+   ],
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy1:0",
+   "judge_totals_ABC": [
+    11,
+    6,
+    12
+   ],
+   "slotRgbaSha256": "5d12c62fda06312b36e49bebf30d3f4e6053e8a99061c2cbceb6637cdd092bdf"
+  },
+  {
+   "key": "sc3-mix-15",
+   "gallery": "mix-15",
+   "candidate_id": "u13",
+   "id": "scarloxy-mix15-blond-blue-vest",
+   "name": "금발 · 파란 조끼",
+   "desc": "금빛 머리, 흰 소매 위 파란 조끼, 짙은 남색 바지, 붉은 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "금발",
+    "파란 조끼",
+    "소년"
+   ],
+   "head": "Scarloxy1:1",
+   "body": "Scarloxy1:0",
+   "judge_totals_ABC": [
+    11,
+    6,
+    12
+   ],
+   "slotRgbaSha256": "a7d6685bad1d5122c7740e208a252363d43b4dbada68d8fb98a3051ad58891f9"
+  },
+  {
+   "key": "sc3-mix-16",
+   "gallery": "mix-16",
+   "candidate_id": "u15",
+   "id": "scarloxy-mix16-teal-khaki-girl",
+   "name": "청록 머리 소녀 · 카키 줄무늬 상의",
+   "desc": "푸른 청록색 중단발, 황갈색 세로줄 상의, 회보라 바지, 갈색 신발.",
+   "role": "마을 주민",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "청록 머리",
+    "카키",
+    "줄무늬",
+    "소녀"
+   ],
+   "head": "Scarloxy1:3",
+   "body": "Scarloxy2:1",
+   "judge_totals_ABC": [
+    10,
+    11,
+    11
+   ],
+   "slotRgbaSha256": "62705a144007f84ddb22f167809918672fa0c8ddb8e33f5afc9f23b68ee1f004"
+  },
+  {
+   "key": "sc3-mix-17",
+   "gallery": "mix-17",
+   "candidate_id": "u24",
+   "id": "scarloxy-mix17-navy-cap-green",
+   "name": "남색 캡 · 초록 십자 상의",
+   "desc": "흰 로고가 있는 짙은 남색 캡과 검은 머리, 가슴에 십자가 있는 초록 상의, 짙은 갈색 바지, 파란 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "남색 캡",
+    "모자",
+    "초록",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy1:0",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    11,
+    9,
+    12
+   ],
+   "slotRgbaSha256": "bbad1cbccda4a827571b8dcb2ed79888bc36601bfefc0d18a1ff7af159b2d2ac"
+  },
+  {
+   "key": "sc3-mix-18",
+   "gallery": "mix-18",
+   "candidate_id": "u26",
+   "id": "scarloxy-mix18-plum-pink-top",
+   "name": "자주 머리 · 분홍 십자 상의",
+   "desc": "자주색 뾰족한 머리, 가슴에 십자가 있는 분홍 상의와 어깨 덮개, 짙은 갈색 바지, 주황 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "자주 머리",
+    "분홍",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy2:1",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    10,
+    9,
+    8
+   ],
+   "slotRgbaSha256": "0c85c15a7a7a340489b6dcd299f82e8555e5aac3d48f3ac214f7d2a74c0678ee"
+  },
+  {
+   "key": "sc3-mix-19",
+   "gallery": "mix-19",
+   "candidate_id": "u31",
+   "id": "scarloxy-mix19-teal-cap-yellow",
+   "name": "청록 캡 · 노란 상의",
+   "desc": "흰 로고가 있는 청록 캡과 짙은 청록 머리, 노란 상의, 청회색 반바지, 붉은 신발.",
+   "role": "일반 트레이너",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "청록 캡",
+    "모자",
+    "노란 상의",
+    "소년"
+   ],
+   "head": "Scarloxy1:0",
+   "body": "Scarloxy1:4",
+   "judge_totals_ABC": [
+    10,
+    6,
+    11
+   ],
+   "slotRgbaSha256": "2169f4a6ff01ff2319dbc343991d97fb6cf128e9922c2fdf38e2b3ecbc6101a2"
+  },
+  {
+   "key": "sc3-mix-20",
+   "gallery": "mix-20",
+   "candidate_id": "u32",
+   "id": "scarloxy-mix20-brown-sky-tee",
+   "name": "갈색 머리 · 하늘색 반팔",
+   "desc": "갈색 머리, 하늘색 반팔 상의, 황토색 바지, 붉은 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "갈색 머리",
+    "하늘색",
+    "반팔",
+    "소년"
+   ],
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy1:4",
+   "judge_totals_ABC": [
+    11,
+    7,
+    10
+   ],
+   "slotRgbaSha256": "e155e19c45a99e7e5bc5ed2599c7931678d86e6831f6ac70329559bca6a2021e"
+  },
+  {
+   "key": "sc3-mix-21",
+   "gallery": "mix-21",
+   "candidate_id": "u39",
+   "id": "scarloxy-mix21-black-hat-red-stripe",
+   "name": "검은 모자 · 붉은 줄무늬 상의",
+   "desc": "검은 둥근 모자와 짙은 머리, 갈색 피부, 적갈색 세로줄 상의, 회갈색 바지.",
+   "role": "마을 주민",
+   "gender": null,
+   "age": "youth",
+   "tags": [
+    "검은 모자",
+    "둥근 모자",
+    "붉은 줄무늬",
+    "갈색 피부"
+   ],
+   "head": "Scarloxy1:2",
+   "body": "Scarloxy2:1",
+   "judge_totals_ABC": [
+    11,
+    8,
+    9
+   ],
+   "slotRgbaSha256": "47872cbd3afe298a0c28244712fe173ec2661bcb463fe6deb6000852ecc9832e"
+  },
+  {
+   "key": "sc3-mix-22",
+   "gallery": "mix-22",
+   "candidate_id": "u48",
+   "id": "scarloxy-mix22-navy-hair-brown-top",
+   "name": "남청 머리 · 갈색 십자 상의",
+   "desc": "짙은 남청색 머리, 가슴에 십자가 있는 갈색 상의와 어깨 덮개, 짙은 갈색 바지, 주황 신발.",
+   "role": "마을 주민",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "남청 머리",
+    "갈색",
+    "십자",
+    "소년"
+   ],
+   "head": "Scarloxy1:5",
+   "body": "Scarloxy1:3",
+   "judge_totals_ABC": [
+    12,
+    11,
+    12
+   ],
+   "slotRgbaSha256": "8b3b2d6af18a79d5599b3ed55d6c872f85467203e63f0f8c143d4209615a47e7"
+  }
+ ]
+}
