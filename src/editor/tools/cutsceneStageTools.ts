@@ -37,7 +37,7 @@ const STEP_SCHEMA: JsonSchema = {
   additionalProperties: false,
   required: ["do"],
   properties: {
-    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera", "smash"] },
+    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera"] },
     withPrevious: { type: "boolean", description: "앞 단계와 같은 때에 시작(동시 진행). say 는 불가." },
     actor: { type: "string" }, to: PLACE_SCHEMA,
     from: { type: "string", enum: ["left", "right", "top", "bottom"], description: "enter: 들어오는 화면 가장자리" },
@@ -54,25 +54,12 @@ const STEP_SCHEMA: JsonSchema = {
     dir: { type: "string", enum: ["left", "right", "top", "bottom", "up", "down"], description: "fling: 날아가는 방향 / turn: 바라볼 방향(up·down·left·right)" },
     animationId: { type: "string", description: "animate: 게임의 전투 애니메이션 id(database.battleAnimations, 예: anim_scarloxy_fire)" },
     direction: { type: "string", enum: ["in", "out"], description: "fade: 검정으로 사라짐(out)/나타남(in)" },
-    tintColor: { type: "string", description: "tint: 화면 색조 — 이름 night(푸른 밤)·moonlit·dusk·dawn·storm·ember·sickly 를 쓰면 도구가 눈으로 맞춘 값(알파 0.3~0.55)을 넣는다. 직접 주려면 'r,g,b,알파'(예: '12,20,62,0.55'). 알파 0.2 미만은 화면이 안 바뀐다. 'none' 해제. 밤·황혼 같은 분위기를 요청받았으면 이름을 써라." },
+    tintColor: { type: "string", description: "tint: 화면 색조 — 'night'류 이름 대신 '#rrggbb' 또는 'r,g,b,알파'(예: '20,30,80,0.45' 푸른 밤, '255,140,60,0.25' 노을, 'none' 해제)" },
     weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather: 날씨(intensity 0~1)" },
     show: { type: "boolean", description: "letterbox: 영화식 위아래 띠 켜기/끄기" },
     mode: { type: "string", enum: ["pan", "follow", "fixed", "return"], description: "camera: 맵 카메라(x,y 맵 칸, zoom 배율)" }, zoom: { type: "number" },
-    tile: { type: "object", additionalProperties: false, properties: { x: { type: "integer" }, y: { type: "integer" } }, description: "smash: 부서질 곳의 왼쪽 위 맵 칸(show_map_region 의 칸 좌표)" },
-    w: { type: "integer", minimum: 1, maximum: 16, description: "smash: 부서질 가로 칸 수(기본 1)" }, h: { type: "integer", minimum: 1, maximum: 16, description: "smash: 세로 칸 수(기본 1)" },
-    layer: { type: "string", enum: ["upper", "lower"], description: "smash: 바꿀 층(기본 upper = 담장·장식·지붕을 걷어냄)" },
-    tileId: { type: "integer", minimum: 0, description: "smash: 그 칸을 이 타일 번호로 바꿈(기본 0 = 비움). 부서진 자리에 다른 조각을 두려면 get_map_region 으로 본 번호" },
-    effect: { type: "string", enum: ["dust", "explosion", "smoke", "fire"], description: "smash: 터지는 파티클(기본 dust)" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
-};
-
-/** 이름 있는 화면 색조 — 값은 실제 맵 위에서 눈으로 맞춘 것이다(밤 0.55 는 푸른 어둠, 맵 형태는 읽힌다). */
-const TINT_PRESETS: Readonly<Record<string, string>> = {
-  // 눈·흰 벽 위에 파란 막을 씌우면 «어두워지는» 게 아니라 «연보라로 바래는» 것이다(r1 실측: moonlit 30,50,110,0.42 가 낮처럼 보임).
-  // 밤은 아주 어두운 색을 높은 알파로 — 흰색 바탕이 섞인 뒤에도 중간 회색 아래로 내려가야 한다.
-  night: "8,14,44,0.62", moonlit: "14,24,70,0.52", dusk: "40,20,60,0.5", dawn: "255,170,120,0.26",
-  storm: "20,28,40,0.5", ember: "255,110,40,0.3", sickly: "80,140,70,0.28",
 };
 
 const ACTOR_SCHEMA: JsonSchema = {
@@ -87,7 +74,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
-    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 생성한 큰 일러스트·몬스터 그림을 화면에 맞게 줄일 때만. 도트 배우(캐릭터셋·author_pixel_art 프레임)는 무시되고 항상 원본 크기다 — 사람은 주인공과 같은 크기, 큰 유닛은 처음부터 큰 도트(walker)로 그린다." },
+    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎." },
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
     event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
@@ -127,36 +114,11 @@ function normalizeSteps(raw: unknown): TimedStep[] {
     if (step.do === "turn" && step.dir === "top") step.dir = "up";
     if (step.do === "turn" && step.dir === "bottom") step.dir = "down";
     if (step.do === "turn" && typeof step.dir !== "string") throw new ToolError(`steps[${index}] turn 에는 dir(up/down/left/right)이 필요합니다.`, { code: "invalid-args" });
-    if (step.do === "say" && typeof step.text === "string") {
-      const t = step.text.trim();
-      const wrapped = /^[(（][^]*[)）]$/u.test(t);
-      if (wrapped && step.context === "thought") step.text = t.replace(/^[(（]+\s*/u, "").replace(/\s*[)）]+$/u, ""); // 생각 말풍선은 괄호를 런타임이 감싼다 — 이중 괄호 방지
-      else if (wrapped) throw new ToolError(`steps[${index}] say 가 괄호로 싼 행동 묘사 «${t.slice(0, 24)}…» 입니다 — 대사창에 «(불길이 집어삼켜…)» 같은 지문을 쓰지 마세요. 일어나는 일은 단계(smash·particles·flash·pose·move)로 화면에 보이고, 대사는 인물이 실제로 하는 말이나 내레이션(context:"narration")만 씁니다. 속마음이면 context:"thought" 로 괄호 없이.`, { code: "invalid-args" });
-    }
     if (step.do === "animate" && typeof step.animationId !== "string") throw new ToolError(`steps[${index}] animate 에는 animationId 가 필요합니다.`, { code: "invalid-args" });
     if (step.do === "transfer") {
       if (typeof step.mapId !== "string" || typeof step.x !== "number" || typeof step.y !== "number") throw new ToolError(`steps[${index}] transfer 에는 mapId, x, y 가 필요합니다.`, { code: "invalid-args" });
       if (typeof step.faceDir === "string") step.facing = step.faceDir;
       if (typeof step.fadeColor === "string") step.fade = step.fadeColor;
-    }
-    if (step.do === "tint" && typeof step.tintColor === "string") {
-      // 런타임은 알파를 0~1 로 자르므로 «0.48» 대신 «48»·«255» 를 주면 알파 1 — 화면이 한 색으로 꽉 찬다(실측: 순파랑 화면).
-      // 이름 → 값: 모델이 «푸른 밤»을 매번 감으로 정해 알파 0.1~0.2 처럼 안 보이는 값을 내던 문제(2026-10-14 실행 5회)를 막는 어휘.
-      const named = TINT_PRESETS[step.tintColor.trim().toLowerCase()];
-      if (named) step.tintColor = named;
-      const v = step.tintColor.trim();
-      if (v && v !== "none" && v !== "neutral" && !v.startsWith("#")) {
-        const parts = v.split(",").map((part) => Number(part.trim()));
-        const alpha = parts[3];
-        if (parts.length >= 3 && (parts.some((n) => !Number.isFinite(n)) || parts.slice(0, 3).some((n) => n < 0 || n > 255))) throw new ToolError(`steps[${index}] tintColor '${v}' 는 'r,g,b,알파'(r·g·b 0~255) 형식이어야 합니다 — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
-        const luma = parts.length >= 3 ? 0.2126 * parts[0]! + 0.7152 * parts[1]! + 0.0722 * parts[2]! : 255;
-        if (alpha !== undefined && alpha > 0 && luma < 110 && (255 * (1 - alpha) + luma * alpha) > 150) throw new ToolError(`steps[${index}] tintColor '${v}' 는 어두운 색인데 알파가 ${String(alpha)}라 흰 눈·벽 위에서 밤으로 안 보이고 연보라로 바랠 뿐입니다(실측: 0.28~0.42 는 대낮처럼 보임). 이름 night·moonlit·storm 을 쓰거나 아주 어두운 색(예 '8,14,44')을 알파 0.55 이상으로 주세요.`, { code: "invalid-args" });
-        if (alpha !== undefined && (alpha < 0 || alpha > 0.75)) throw new ToolError(`steps[${index}] tintColor 알파 ${String(alpha)} 는 0~0.75 여야 합니다(0.75 를 넘으면 맵이 가려집니다; 푸른 밤은 0.3~0.45) — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
-      }
-    }
-    if (step.do === "smash") {
-      const t = step.tile as { x?: unknown; y?: unknown } | undefined;
-      if (!t || typeof t.x !== "number" || typeof t.y !== "number") throw new ToolError(`steps[${index}] smash 에는 tile:{x,y}(부서질 맵 칸)가 필요합니다.`, { code: "invalid-args" });
     }
     if (step.do === "fade" && typeof step.direction !== "string") throw new ToolError(`steps[${index}] fade 에는 direction(in/out)이 필요합니다.`, { code: "invalid-args" });
     return step as unknown as TimedStep;
@@ -170,9 +132,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     + "배우: character(게임 캐릭터셋 인물, 걷기 프레임 포함) 또는 resourceId(generate_cutscene_art 소품). 위치 관계 예: 트럭이 오른쪽 화면 밖에서 들어와 인물 몸에 35% 파고든다 = "
     + "{do:'enter',actor:'트럭',from:'right',to:{touch:'인물',overlap:0.35,dy:6},ms:520}. 그 직후 {do:'expect',touching:['트럭','인물']} 로 닿았는지 못 박으면 어긋날 때 도구가 거부하고 고칠 방법을 알려 준다. "
     + "withPrevious:true 는 앞 단계와 동시 진행(예: flash·shake·fling·exit 를 충돌 순간에 함께). say 는 동시 진행 불가. 모든 그림은 게임 해상도 100% 배율이고, 위치는 «발 밑 가운데» 기준이다. "
-    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공은 ghost 배우(tile 지정), 맵 위 NPC·몬스터는 event 배우(이벤트 id; place_npc 로 먼저 둔다)로 두고 move(to:{tile:{x,y}} 또는 {at:'주인공',side,gap 칸})로 걷게 한다 — turn(위·왼·오른·아래 둘러보기)·animate(전투 애니메이션을 그 배우 위에)의 대상도 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. "
-    + "회상·전설 내레이션 장면에는 지금의 주인공·마을 NPC 가 비치면 안 된다(플레이어는 숨기거나 그 장면 맵 밖에 둔다). 대화하는 가족·동료는 초상화(얼굴창)만 두지 말고 맵 위에 인물(charset)로 세워 둔다. 쓰러짐·눕기·웅크리기: 맵 위 인물(player·이벤트)은 {do:'pose',actor,pose:'fallen'|'fallenLeft'|'crouch'|'normal'} 로 자세를 바꾼다 — 그림을 90° 돌려 눕는 척하지 말 것(회전 금지). 깨어남은 pose fallen → wait → pose normal. 장면이 바뀔 땐 fade/whiteout 으로 잇고 맨 컷으로 끊지 않는다. 밤 장면은 tint(night·moonlit) 필수, 불·연기·물결은 반복 파티클/애니메이션으로 계속 움직여야 한다. 세계가 반응한다: 대형 유닛이 맵의 것(담장·깃발·지붕·나무·건물 귀퉁이) 곁을 지나면 부수고 간다 — 그 유닛이 그 칸에 닿는 순간 {do:'smash',tile:{x,y},w,h,effect:'explosion'|'dust',intensity:7,resourceId:<se>,withPrevious:true} 한 단계가 화면 흔들림·파티클·효과음·그 칸 장식 제거(맵이 실제로 바뀌고 컷신 뒤에도 남음)를 한꺼번에 낸다. 유닛 이동을 구간으로 나눠 smash 와 시각을 맞춘다. 아무것도 안 부서지고 지나가는 행군은 가벼워 보인다. "
-    + "연출 원칙: 화면 밖에서 들어와(enter from) 화면 밖으로 나가고(exit), 행군은 멈추지 않으며(대사는 짧게 행군 사이에, 걷는 동안엔 withPrevious 이동), camera pan/follow 로 따라가고, 대형 유닛은 author_pixel_art kind:walker 로 원본 해상도로 그려 scale 100 으로 쓴다. ",
+    + "소재 고르는 순서: ① 몬스터·동물은 게임에 이미 있는 도트(list_monster_resources 의 resourceId, 예 scarloxy-monster-*)를 배우 resourceId 로 그대로 쓴다 ② 사람은 캐릭터셋 Actor1(characterIndex 0~7)에서 한 명을 골라 character 로 쓰고, 맵 위 주인공 그래픽도 upsert_actor(characterResourceId·characterIndex)로 같은 칸에 맞춘다 — 컷신 속 인물과 이세계의 주인공이 같아야 한다. 몬스터는 이 그림 도트이거나 맵 NPC 캐릭터셋(EasyRPG monster·animal) 중 게임 세계에 맞는 쪽을 쓴다 ③ 공격·마법·불꽃은 그림을 만들지 말고 animate 로 게임의 전투 애니메이션(get_database_records battleAnimations, 예 anim_scarloxy_fire)을 쓴다 ④ 효과음·BGM 은 list_resources(kind:se)·recommend_bgm 으로 고른 id 를 se/bgm 단계에 넣는다 ⑤ generate_cutscene_art 는 게임에 없는 것(트럭·거리 배경·회상 일러스트)에만 쓴다. 맵 위에 서 있는 주인공은 ghost 배우(tile 지정), 맵 위 NPC·몬스터는 event 배우(이벤트 id; place_npc 로 먼저 둔다)로 두고 move(to:{tile:{x,y}} 또는 {at:'주인공',side,gap 칸})로 걷게 한다 — turn(위·왼·오른·아래 둘러보기)·animate(전투 애니메이션을 그 배우 위에)의 대상도 된다. 새 장소로 넘어갈 땐 clear → transfer(fadeColor) 단계. 암전(fade out)으로 끝냈으면 fade in 으로 되돌려 화면을 검게 둔 채 끝내지 않는다. 끝나면 preview_cutscene 으로 핵심 장면을 눈으로 확인한다. ",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -253,8 +213,7 @@ const scriptCutsceneStaged: ToolDefinition = {
           draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 프레임`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
         }
         // 캐릭터셋 배우도 scale(%)을 따른다 — 24×32 칩을 화면에서 키우려면 필요하다(이전에는 무시되어 13% 크기로 나왔다).
-        // 24×32 도트는 정수배(100·200·300)로만 키운다 — 265% 같은 값은 가장자리가 뭉개져 도트가 번진다(실행 2 프레임 40s).
-        const charScale = 100; // 사람 크기 캐릭터는 맵 주인공과 같은 1배 — 2~3배로 키운 24×32 는 주인공의 3배짜리 뭉개진 블록이 된다(r1 실측: 엄마·선원·아버지). 큰 유닛은 author_pixel_art walker.
+        const charScale = typeof raw.scale === "number" && raw.scale > 0 ? Math.max(10, Math.min(300, raw.scale)) : 100;
         const f = (role: string): string => prepared.frames[role]!.id;
         const trio = (d: string): readonly [string, string, string] => [f(`walk${d}0`), f(`walk${d}1`), f(`walk${d}2`)];
         return {
@@ -293,14 +252,11 @@ const scriptCutsceneStaged: ToolDefinition = {
         if (!draft.assets.uploaded[id] && !bundledSizes.has(id)) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
         poses[String(p.name)] = id;
       }
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
+      const k = (scale ?? 100) / 100;
       // 이미 잘라 둔 캐릭터 프레임(cutscene_char_<시트>_<번호>_walk<방향><0~2>) 한 장을 resourceId 로 넘겨도 그 인물의 걷기 프레임 전체를 붙인다 —
       // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
       const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
-      // 도트 프레임은 정수배로만 — 115%·135% 는 도트가 뭉개진다(px4 실측: 직접 찍은 기계를 115~140% 로 써서 흐려짐).
-      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 && !resourceId.includes("_pxw_") && !frame
-        ? (frame ? (Math.max(1, Math.min(3, Math.round(raw.scale / 100))) !== 1 ? Math.max(1, Math.min(3, Math.round(raw.scale / 100))) * 100 : undefined) : Math.max(10, Math.min(300, raw.scale)))
-        : undefined;
-      const k = (scale ?? 100) / 100;
       const trio = (d: string): [string, string, string] | undefined => {
         const ids = [0, 1, 2].map((n) => `${frame![1]}_walk${d}${n}`);
         return ids.every((id) => draft.assets.uploaded[id]) ? (ids as [string, string, string]) : undefined;
@@ -341,7 +297,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     }
     let result: ReturnType<typeof compileStage>;
     try {
-      result = compileStage({ viewport, mapId: map.id, ...(backdrop ? { backdrop } : {}), actors, steps: normalizeSteps(args.steps), whiteResourceId: CUTSCENE_WHITE_RESOURCE_ID });
+      result = compileStage({ viewport, ...(backdrop ? { backdrop } : {}), actors, steps: normalizeSteps(args.steps), whiteResourceId: CUTSCENE_WHITE_RESOURCE_ID });
     } catch (error) {
       if (error instanceof StageError) throw new ToolError(error.message, { code: "stage-invalid" });
       throw error;

@@ -354,7 +354,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     if (args.remove === true) delete l.region;
     else {
       if (!args.region || typeof args.region !== 'object') throw new ToolError('region 객체가 필요합니다(또는 remove:true).', { code: 'invalid-args' });
-      const region = cleanRegion(structuredClone(args.region) as AnimaticLayer['region']);
+      const region = cleanRegion(structuredClone(args.region) as AnimaticLayer['region'])!;
       if (l.role === 'background' && (region.mode === 'scroll-x' || region.mode === 'scroll-y')
         && region.width >= s.composition.width * 0.7 && region.height >= s.composition.height * 0.65) {
         throw new ToolError('전체 배경에는 scroll 루프를 걸 수 없습니다. 상단 하늘 띠/작은 영역만 scroll하고 전체 이동은 animate_opening_camera로 만드세요.', { code: 'background-scroll-unsafe' });

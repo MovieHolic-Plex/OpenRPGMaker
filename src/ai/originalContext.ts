@@ -33,7 +33,6 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     // 폴백 규칙이 바뀌면 조용히 창이 줄어드는 취약함을 없앤다(2026-09-26 / 2026-10-14 기본값 이동).
     "gemini-4-argon": 1048576,
     "gemini-3.8-flash": 1048576,
-    "gemini-4-argon": 1048576,
     "gemini-3.7-flash-tiered": 1048576,
     "gpt-oss-120b": 131072,
     "tab_flash_lite_preview": 16384,

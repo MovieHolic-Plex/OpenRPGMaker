@@ -69,7 +69,7 @@ export type OpeningShotMeasurement = {
   readonly grid: { width: number; height: number } | null;
   readonly moving: { id: string; what: string }[];
   readonly movingCount: number;
-  readonly planes: { background: number; actor: number; prop: number; foreground: number; effect: number };
+  readonly planes: { background: number; actor: number; prop: number; foreground: number; effect: number; credit: number };
   readonly hasCamera: boolean;
   readonly spriteScale: { layerId: string; resourceId: string; frameWidth: number; drawnWidth: number; scale: number }[];
   readonly emoteBox: { layerId: string; width: number; height: number }[];
@@ -106,7 +106,7 @@ function shotMeasurement(project: Project, scene: Extract<CinematicScene, { kind
   const moving = movingLayers(c);
   if (cameraMoves(c)) moving.push({ id: 'camera', what: 'camera' });
   const role = (l: AnimaticLayer) => l.role ?? (l.kind === 'shaft' || l.kind === 'glow' || l.kind === 'emote' || l.kind === 'particles' ? 'effect' : 'prop');
-  const planes = { background: 0, actor: 0, prop: 0, foreground: 0, effect: 0 };
+  const planes = { background: 0, actor: 0, prop: 0, foreground: 0, effect: 0, credit: 0 };
   for (const l of c.layers) planes[role(l)] += 1;
   const grid = c.pixelGrid ?? null;
   const spriteScale = c.layers.flatMap((l) => {
