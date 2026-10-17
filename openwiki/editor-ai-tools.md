@@ -3451,3 +3451,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 편집기 UI는 이 데이터·`validateVnLook`·순수 함수(`resolveVnLook`, `mergeVnLook`, `vnLookAttributes`, `VN_PRESETS` 표)만 가져다 쓴다 — 미리보기도 같은 해석 함수를 쓴다.
 - 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(대사창 스킨·파스텔·글자 크게 낱말), `gameSystemProduction.ts`(요청 패턴·완료 가드), `scripts/lib/piAgentRuntime.ts`, `read_game_systems` 의 `vnLook`(authored/effective/source), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단, 시험 `test/vnLook.test.ts`, 증거 QA `scripts/qa/runtime/vn-matrix*.scenario.mjs`(`vn-matrix-fixture.mts <dir> look '<oprnVnLook json>'`).
 - 대사창 위치 규칙(2026-10-17, vn-bust-bottom-1): 흉상·전신 초상이 있는 대사는 위치 설정과 상관없이 항상 아래로 나온다(저장은 막지 않음). `set_vn_look`·`set_dialogue_system`·say/displayTextSettings `position` 설명과 `romance.md` 에 한 줄이 있다. 상세는 `runtime-pre-edit-routing.md` 「흉상·전신이 있는 대사는 대사창이 항상 아래」.
+
+## 바로 깔기 `place_house` — 장식 정리 후 집 배치·`jp_city` 지원 (2026-10-17)
+
+- `stampPlanner.ts` 의 `place_house` 보류 단계를 `stampPlaceRunner.ts` `expandStampHouses` 가 실행 시점 맵에서 `place_terrain_house`(또는 `jp_city` 에서 `quickHouseStyles` 가 비었을 때 `build_jp_city_building`)로 펼친다.
+- 있는 그대로 `planQuickHouse` 가 통과하는 자리가 없으면 물·절벽·잠금·이벤트·보호된 집(`protectedHouseCells`)을 피하고 지울 수 있는 위층 장식·나무·풀만 걸리는 후보에 `tile_erase` 단계를 먼저 넣어 복제 맵에서 검증한 뒤 배치한다. 집 외관이 없는 타일셋이나 영역 크기 부족 사유는 수리·재시도에서 `깔 단계가 없습니다` 로 덮이지 않고 유지된다. 상세는 `openwiki/editor-ai-panel.md` 「바로 깔기」.

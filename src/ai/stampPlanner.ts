@@ -32,7 +32,10 @@ export type StampTool =
   | "place_inn"
   | "place_signpost"
   | "place_object"
-  | "stamp_tileset_object";
+  | "stamp_tileset_object"
+  | "place_house"
+  | "place_terrain_house"
+  | "build_jp_city_building";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -55,6 +58,7 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_inn",
   "place_signpost",
   "place_object",
+  "place_house",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -114,6 +118,8 @@ export interface StampPlanFacts {
   readonly isWallCell?: (x: number, y: number) => boolean;
   /** place_props 의 material 이 나무(density 를 받는 재료)인가 — 아니면 density 를 칸 수로 바꾼다(첫 호출이 항상 실패하던 길). */
   readonly isTreeMaterial?: (material: string) => boolean;
+  /** 이 칩셋에서 바로 깔기가 지을 수 있는 집 외관 수(조립식 스타일 또는 집 키트). 0 이면 place_house 를 거절한다. */
+  readonly houseLooks?: number;
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -125,6 +131,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- Shapes: 동그랗게/원/둥근/호수/연못 → fill_region shape \"circle\" (ellipse for wide ovals); otherwise \"rect\".",
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". density is ONLY for tree labels — never send density with any other material. Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
+  "- HOUSES (집·주택·민가·오두막·가옥·초가집·저택·살림집 한 채/두 채) are ONE place_house step {area|at, size?, count?, stories?}. Code picks this tileset's real house look (roof, walls, windows and door included) and a flat empty spot whose door front stays inside the target. NEVER build or imitate a house with build_wall, place_door, fill_region, place_props or place_object. size: 작은 → \"small\", 큰/저택 → \"large\", otherwise \"medium\". If facts.houseLooks is 0 still send place_house — code refuses honestly.",
   "- PHYSICAL THINGS (물건: 화분·의자·탁자·침대·벤치·우물·가로등·자판기·책장·동상·우체통·통·바위·돌·카펫·모닥불·꽃밭·덤불 한 포기…) are placed ONLY with place_object {name, alternatives?, area|at, count?}. name = the correctly spelled everyday Korean noun alone (fix typos: 화뷴→화분, 의짜→의자; no numbers or verbs); alternatives = up to 3 true synonyms of the SAME thing (탁자→[\"테이블\",\"식탁\"]); never a different or merely similar thing (왕좌≠의자, 대포≠화로) — code ignores those and refuses honestly. Code looks the name up among this tileset's real object pictures (facts.objectNames are examples of names that exist) and REFUSES, listing the nearest names, when no picture matches. So NEVER imitate a thing with place_examine_hotspots (it makes an INVISIBLE event), place_npc/make_villager (people only), or a terrain place_props — those make invisible, wrong or person-shaped things. place_chest, place_savepoint, place_signpost keep their own jobs; place_door only goes on an existing WALL cell (code drops it, saying so, when the target has no wall). Use place_props only for terrain-like scatter with labels copied from the lists, never for a named object. Counts (세 개·둘·여러) → count (default 1, max 8); position words (창가·구석·가운데·왼쪽·입구 옆) → pick area/at inside the target accordingly.",
   "- Game objects: 보물상자/상자(열어서 얻는) → place_chest; 사람/주민/상인/NPC/경비 → place_npc (one step per person, give each a fitting Korean name and 1-2 short lines); 세이브/저장 → place_savepoint; 조사/살펴보기 → place_examine_hotspots ONLY on a cell that already shows a picture (a drawn painting, statue, sign…; code drops hotspots on bare floor); 표지판 → place_signpost. Put them on walkable ground inside the target, not on trees, water or walls.",
   "- More game objects: 상인(물건 파는) → place_npc with merchant:true and stock:[itemId...] from facts.placement.rewardItems / existing shops; 보관 상자/창고 → place_storage_chest; 함정/가시/즉사 → place_trap; 길막 몬스터/보스 앞 적 → place_battle_blocker with troopId from facts.placement.encounterTroops (skip it if that list is empty); 비·눈·폭풍·안개 → set_scene_mood; 시작 위치 → set_start_position; 기존 것 옮기기/지우기 → move_event/remove_event with an eventId from facts.placement.existing.occupied.",
@@ -133,7 +140,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- Do not put a new object on or right above/below a cell in facts.placement.existing.occupied, nor on another new object; code moves overlapping ones but choose free cells first.",
   "- facts.placement describes THIS map (its fights, existing chests, shops, NPCs, wiki). It is the main reference. Chest gold MUST be inside facts.placement.chestGold.min..max; prefer an item from facts.placement.rewardItems (use its id) when the sentence asks for items. Never invent item ids. NPC names must not repeat facts.placement.existing.npcs. Match NPC lines to the map name, locations and wiki.",
   "- An empty sentence (\"(빈 입력) …\") means: decorate the target sensibly for this map (terrain first); add at most one game object and only if it clearly fits.",
-  "- Order steps ground first (fill_region / paint_road), then walls/houses, then props, so props land on finished ground.",
+  "- Order steps ground first (fill_region / paint_road), then houses/walls, then props, so props land on finished ground.",
   "- Do not add things the user did not ask for. Empty steps [] only if nothing can be done.",
   `- At most ${STAMP_MAX_STEPS} steps. Omit mapId; code fills it.`,
   "Tool arg shapes (only these keys):",
@@ -141,8 +148,9 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_props {area:{x,y,w,h}, material, density?:\"sparse\"|\"normal\"|\"dense\"|\"impassable\", count?:int, packing?:\"natural\"|\"dense\"}",
   "paint_road {points:[{x,y},...], style?:\"dirt\"|\"sand\"}",
   "tile_erase {rect:{x,y,w,h}, layer?:\"both\"|\"lower\"|\"upper\"}",
-  "build_wall {rect:{x,y,w,h}, material}",
-  "place_door {at:{x,y}, material}",
+  "build_wall {rect:{x,y,w,h}, material}  (a free-standing wall or fence only — never a house)",
+  "place_door {at:{x,y}, material}  (only on an existing wall cell)",
+  "place_house {area?:{x,y,w,h}, at?:{x,y}, size?:\"small\"|\"medium\"|\"large\", count?:1..4, stories?:1|2}",
   "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
   "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean, stock?:[itemId]}",
   "place_savepoint {at:{x,y}, mode?:\"both\"|\"slot\"|\"checkpoint\", heal?:boolean}",
@@ -169,6 +177,7 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
     materialHint: facts.materialHint,
     ...(facts.wallMaterials?.length ? { wallMaterials: facts.wallMaterials } : {}),
     ...(facts.doorMaterials?.length ? { doorMaterials: facts.doorMaterials } : {}),
+    houseLooks: facts.houseLooks ?? 0,
     ...(facts.objectSamples?.length ? { objectNames: facts.objectSamples } : {}),
     ...(facts.placement ? { placement: placementForModel(facts.placement) } : {}),
   });
@@ -301,6 +310,9 @@ const TOOL_KO: Record<StampTool, string> = {
   place_signpost: "표지판",
   place_object: "물건",
   stamp_tileset_object: "물건",
+  place_house: "집",
+  place_terrain_house: "집",
+  build_jp_city_building: "집",
 };
 
 /**
@@ -338,6 +350,8 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (/^(?:문|출입문|대문|door|창|창문|window)$/iu.test(primary.trim())) {
         return dropped(`「${primary}」은 벽에 다는 물건이라 바닥에 놓지 않습니다(문은 place_door 로 벽 칸에만 — 벽이 없으면 먼저 벽·건물이 필요합니다)`);
       }
+      // 「집」을 물건으로 보내면 물건 사전(3×3 상한)이 거절한다 — 집 단계로 돌린다.
+      if (HOUSE_NAME.test(primary.trim())) return validateStampStep({ tool: "place_house", label: raw.label, args }, facts);
       if (facts.repairRound && !norm2(facts.text).includes(norm2(primary))) {
         return dropped(`수리 라운드에서는 요청하지 않은 물건(「${primary}」)으로 바꾸지 않습니다`);
       }
@@ -515,7 +529,7 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       if (hotspots.length === 0) return dropped("조사 지점이 없습니다");
       // 그림 없는 칸의 조사 지점은 「빈 바닥 위 투명 이벤트」다 — 물건을 깔지 못해 이벤트로 흉내 내던 경로(코퍼스 64회)를 막는다.
       const seen = hotspots.filter((spot) => facts.hasArtAt === undefined || facts.hasArtAt(spot.at.x, spot.at.y) || facts.hasArtAt(spot.at.x, spot.at.y - 1));
-      if (seen.length === 0) return dropped("조사 지점은 이미 그림이 있는 칸에만 둡니다 — 이 자리에는 보이는 물건이 없어 투명 이벤트만 생기므로 두지 않았습니다(물건은 place_object)");
+      if (seen.length === 0) return dropped(`조사 지점(${hotspots.map((spot) => spot.name).join(", ")})은 이미 그림이 있는 칸에만 둡니다 — 이 자리에는 보이는 물건이 없어 투명 이벤트만 생기므로 두지 않았습니다(물건은 place_object)`);
       const skippedSpots = hotspots.length - seen.length;
       return { step: { tool: stampTool, label: labelText ?? `조사 지점 ${seen.length}곳`, ...(skippedSpots > 0 ? { note: `그림 없는 자리 ${skippedSpots}곳은 뺌` } : {}), args: { mapId, hotspots: seen } } };
     }
@@ -523,6 +537,18 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       return dropped("상인은 place_npc merchant:true 로 보낸다");
     case "stamp_tileset_object":
       return dropped("stamp_tileset_object 는 코드가 place_object 에서 만드는 내부 단계다 — place_object 를 쓴다");
+    case "place_house": {
+      // 집은 코드가 칩셋의 실제 집 외관(지붕·벽·창·문)과 빈 땅을 고른다 — 모델은 영역·크기·채 수만 말한다.
+      const area = args.at !== undefined ? pointRect(clampPointToTarget(args.at, target)) : rect;
+      if (!area) return dropped("집을 지을 영역이 대상 밖입니다");
+      const size = enumArg(args.size, ["small", "medium", "large"] as const) ?? houseSizeFromText(facts.text);
+      const count = Math.max(1, Math.min(STAMP_MAX_HOUSES, finiteInt(args.count) ?? 1));
+      const stories = finiteInt(args.stories) === 2 ? 2 : 1;
+      return { step: { tool: stampTool, label: labelText ?? (count > 1 ? `집 ${count}채` : "집"), args: { mapId, area, size, count, stories } } };
+    }
+    case "place_terrain_house":
+    case "build_jp_city_building":
+      return dropped(`${stampTool} 은 코드가 place_house 에서 만드는 내부 단계다 — place_house 를 쓴다`);
     case "place_inn": {
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("여관 주인 위치가 없습니다");
@@ -835,6 +861,49 @@ function pointOrCenter(value: unknown, rect: StampRect | null, target: StampRect
 /** 한 번에 놓을 물건 개수 상한. */
 export const STAMP_MAX_OBJECTS = 8;
 
+/** 한 번에 지을 집 채 수 상한. */
+export const STAMP_MAX_HOUSES = 4;
+
+/** place_object 이름이 집인가(「작은 집」「통나무집」). 「개집」「새집」은 물건이다. */
+const HOUSE_NAME = /^(?:.*\s)?(?:집|주택|민가|오두막|오두막집|가옥|초가|초가집|저택|살림집|통나무집|house|cottage|hut)$/iu;
+/** 문장이 집을 지으라는 말인가 — 「집 앞에」「집 옆」처럼 자리를 가리키는 집은 뺀다. */
+const HOUSE_ASK = /(?:^|[^개새])(?:집|주택|민가|오두막|가옥|초가|저택|살림집)(?!\s*(?:앞|옆|뒤|안|에|의|근처|주변|마당|문|벽|지붕|쪽|사이))|house|cottage/iu;
+/** 문장이 벽·담을 직접 말하면 벽 단계는 사용자가 원한 것이다. */
+const WALL_ASK = /벽(?!돌)|담장|담을|울타리|성벽|펜스|fence|wall/iu;
+
+export function isHouseSentence(text: string): boolean {
+  return HOUSE_ASK.test(text) && !WALL_ASK.test(text);
+}
+
+function houseSizeFromText(text: string): "small" | "medium" | "large" {
+  if (/작은|조그만|조그마|아담|소박|오두막/u.test(text)) return "small";
+  if (/큰|커다란|넓은|저택/u.test(text)) return "large";
+  return "medium";
+}
+
+/**
+ * 집 문장인데 모델이 벽+문으로 집을 흉내 냈으면 첫 벽 영역을 집 단계로 바꾸고 나머지 벽·문은 뺀다.
+ * 왜(2026-10-17 실측, 버들항 「집」「집 지어줘」「작은 집」「민가」 4/4): 계획기가 build_wall+place_door 만 냈고,
+ * 벽 재료가 단일 타일이라 전부 실패했다(성공해도 지붕 없는 상자). 문장이 벽·담·울타리를 말하면 손대지 않는다.
+ */
+function houseInsteadOfWalls(steps: readonly StampStep[], facts: StampPlanFacts, dropped: string[]): StampStep[] {
+  if (!isHouseSentence(facts.text) || !steps.some((step) => step.tool === "build_wall")) return [...steps];
+  const out: StampStep[] = [];
+  let housed = steps.some((step) => step.tool === "place_house");
+  for (const step of steps) {
+    if (step.tool !== "build_wall") { out.push(step); continue; }
+    if (!housed) {
+      housed = true;
+      const check = validateStampStep({ tool: "place_house", args: { area: step.args.rect } }, facts);
+      if ("step" in check) out.push({ ...check.step, note: "벽으로 짓던 집을 칩셋의 집 외관으로 바꿈" });
+      else if ("dropped" in check) dropped.push(check.dropped);
+      continue;
+    }
+    dropped.push("build_wall: 집 단계가 지붕·벽·문을 함께 짓습니다(따로 세우지 않음)");
+  }
+  return out;
+}
+
 /** 모델이 이름에 붙인 수량·조사를 떼고 낱말만 남긴다(「화분 세 개」→「화분」). */
 export function cleanObjectName(value: string): string {
   return value
@@ -881,15 +950,25 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
   const steps: StampStep[] = [];
   const dropped: string[] = [];
   const refused: StampRefusal[] = [];
+  const houseAsk = isHouseSentence(facts.text);
   for (const entry of list) {
     if (steps.length >= STAMP_MAX_STEPS) {
       dropped.push(`단계 상한(${STAMP_MAX_STEPS}) 초과`);
       break;
+    }
+    // 집 문장의 문은 집 단계가 함께 짓는다 — 벽이 없다는 검증 오류 대신 이유를 한 줄로 남긴다.
+    if (houseAsk && isRecord(entry) && entry.tool === "place_door") {
+      dropped.push("place_door: 집 단계가 지붕·벽·문을 함께 짓습니다(따로 달지 않음)");
+      continue;
     }
     const check = validateStampStep(entry, facts);
     if ("step" in check) steps.push(check.step);
     else if ("refused" in check) refused.push(check.refused);
     else dropped.push(check.dropped);
   }
-  return { steps, dropped, refused };
+  const finalSteps = houseInsteadOfWalls(steps, facts, dropped);
+  if (finalSteps.length === 0 && dropped.length === 0 && refused.length === 0 && houseAsk && facts.houseLooks === 0) {
+    dropped.push(`집: 이 타일셋(${facts.tilesetId ?? "현재 타일셋"})에는 집 외관이 없습니다(벽·문·바닥으로 흉내 내지 않음)`);
+  }
+  return { steps: finalSteps, dropped, refused };
 }
