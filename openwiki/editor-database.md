@@ -29,6 +29,20 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 자료집 장르 프로필 접기 — 「숨긴 탭 N개 · 모두 보기」 (2026-10-17, 메뉴 감사 PR-4)
+
+기본 DB 는 몬스터 106개·스킬 1,243개가 처음부터 들어 있어 기존 「빈 탭 접기」만으로는 연애·추리 프로젝트에서도 전투 9탭과 직업·스킬이 그대로 펼쳐져 있었다. `store.getCurrent().gameDesignBrief?.interview?.genre` 가 있는 프로젝트만 `GENRE_FOLD_PROFILE`(`databaseWayfinding.ts`)로 초기 접기를 더한다.
+
+| 장르(`interview.genre`) | 처음부터 접히는 탭 (`GENRE_FOLD_PROFILE`) | 처음 보이는 탭 수 (36탭 기준) |
+|---|---|---|
+| `romance` · `mystery` (연애·추리) | 전투 9탭(`enemies`·`monsterSpecies`·`troops`·`factions`·`elements`·`states`·`retroChoreographies`·`battleScreen`·`battleCommands`) + 생활 6탭(`crops`·`lifeCrafting`·`dailyWeather`·`farmAnimals`·`farmSpatial`·`lifeCollections`) + 파티 2탭(`classes`·`skills`) = **17개** | **19개** |
+| `adventure` (모험 JRPG) | 생활 6탭 + `monsterSpecies`(포획·성장 종족) = **7개** | **29개** |
+| `monster` (몬스터 수집) | 생활 6탭 = **6개** (직업·스킬은 종족 학습에 쓰이므로 접지 않음) | **30개** |
+| 없음 (`undefined`, 시드·옛 프로젝트) | 프로필 접기 **0개** (기존 빈 목록 탭 접기만 동작, 문구도 「빈 탭 N개」 유지) | 기존과 동일 |
+
+- **문구와 펼침 상태**: 프로필로 접힌 탭이 섞인 그룹은 `.db-tab-fold-count` 문구를 **「숨긴 탭 N개 · 모두 보기」**로 표시한다(프로필 없이 빈 탭만 접힌 그룹은 기존 「빈 탭 N개」 그대로). 한 번 누르면 기존 `localStorage` `oprn:database.revealedEmptyTabGroups`(그룹 slug)에 기록되어 그 그룹의 탭과 소제목이 모두 펼쳐진다.
+- **절대 막지 않는 경로**: 지금 보고 있는 활성 탭(`id !== active`), 탭 검색 결과(`applyTabFilter`), 딥링크·조수 점프(`switchDatabaseActiveTab`)는 프로필 접기 대상이어도 늘 보인다.
+
 ## 자료집 6그룹 재배치·소제목·「게임 설정」 라벨 (2026-10-17, 메뉴 감사 PR-3)
 
 탭 id·testid·저장 데이터는 그대로다(마이그레이션 0). `TAB_GROUPS`(`src/editor/panels/database.ts`)를 7그룹에서 6그룹(이야기·파티·전투·맵·생활·시스템)으로 재배치하고, `system` 탭 라벨을 「시스템」→「게임 설정」으로 바꿨다(기존 검색어 「시스템」은 `LEGACY_TAB_SEARCH.system` 별칭으로 유지).

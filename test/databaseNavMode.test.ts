@@ -110,4 +110,44 @@ describe("database navigation", () => {
     expect(directTabIds(nav)).toContain("db-tab-spatial-tiles");
     expect(findByTestId(nav, "db-tab-spatial-tiles")?.closest("details")).toBeNull();
   });
+
+  it("interview.genre 가 있는 프로젝트는 장르 프로필 탭을 「숨긴 탭 N개 · 모두 보기」로 접고 클릭·점프 시 펼친다", () => {
+    store.update((project) => {
+      project.gameDesignBrief = {
+        version: 1,
+        presetId: "story-cutscene",
+        answers: {
+          experience: { question: "q", label: "l", text: "a", source: "user" },
+          activity: { question: "q", label: "l", text: "a", source: "user" },
+          progression: { question: "q", label: "l", text: "a", source: "user" },
+          detail: { question: "q", label: "l", text: "a", source: "user" },
+          scope: { question: "q", label: "l", text: "a", source: "user" },
+        },
+        summary: "연애 기획",
+        interview: {
+          version: 1,
+          genre: "romance",
+          concept: "연애",
+          protagonist: "주인공",
+          notes: "",
+          choiceIds: {},
+        },
+      };
+    });
+    const host = renderPanel();
+    const battleFold = findByTestId(host, "db-tab-fold-battle")!;
+    const partyFold = findByTestId(host, "db-tab-fold-party")!;
+    expect(battleFold.hidden).toBe(false);
+    expect(battleFold.textContent).toContain("숨긴 탭 9개 · 모두 보기");
+    expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(true);
+    expect(partyFold.hidden).toBe(false);
+    expect(partyFold.textContent).toContain("숨긴 탭 2개 · 모두 보기");
+    expect(findByTestId(host, "db-tab-classes")?.hidden).toBe(true);
+    expect(findByTestId(host, "db-tab-skills")?.hidden).toBe(true);
+
+    // 「모두 보기」 클릭 시 해당 그룹의 숨긴 탭이 모두 펼쳐진다.
+    battleFold.click();
+    expect(battleFold.hidden).toBe(true);
+    expect(findByTestId(host, "db-tab-enemies")?.hidden).toBe(false);
+  });
 });
