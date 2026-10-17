@@ -38,6 +38,14 @@ const OVERRIDE_MODERN_MAPS: Readonly<Record<string, true>> = {
   "office-floor": true,
   lobby: true,
   "office-1f": true,
+  "department-store": true,
+  "supermarket-mart": true,
+  "subway-station": true,
+  concourse: true,
+  "hospital-ward": true,
+  "cinema-arcade": true,
+  "restaurant-bar": true,
+  "museum-gallery": true,
   "school-class-wing": true,
   "university-lecture-wing": true,
   "lecture-hall": true,
@@ -81,7 +89,7 @@ const V5_STYLE: Record<string, string> = {
   manor_1f: "noble", manor_2f: "noble", chapel: "noble", throne: "noble", opera: "noble", casino: "noble", mead: "noble",
   elf: "fantasy", dwarf: "fantasy", tower: "fantasy", magitek: "fantasy", mine: "fantasy", dungeon: "fantasy",
   // interior-plus: 박물관·범선·투기장은 각자 한 묶음(다른 건물 방과 섞지 않는다)
-  museum: "museum", ship: "ship", ship_hold: "ship", arena: "arena",
+  museum: "museum", "museum-gallery": "museum", ship: "ship", ship_hold: "ship", arena: "arena",
 };
 export function templateStyle(t: Pick<InteriorRoomTemplate, "map">): string { return V5_STYLE[t.map] ?? "any"; }
 

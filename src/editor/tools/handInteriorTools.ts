@@ -24,7 +24,7 @@ import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations
 
 /** layout 으로 짠 방의 이름표 — 다시 지을 때 이 이름표만 갈아 끼운다. */
 const HAND_LAYOUT_ROOM_TAG = 'hand-layout-room';
-import { roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
+import { programKinds, roomPrograms, roomTemplates } from '@/editor/handInterior/templates';
 import { genId } from "@/util/id";
 import { assignCreatedMapBgm } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -41,7 +41,7 @@ const CEILING_IDS = uniq((s) => s.ceilings);
 const TILESET_IDS = Object.keys(HAND_INTERIOR_SPECS);
 /** 새 실내 맵에 BGM 을 자동으로 고르는 현대 칩셋. */
 const MODERN_BGM_TILESETS: ReadonlySet<string> = new Set(["modern_campus", MODERN_CITY_INTERIOR_TILESET_ID, JP_INTERIOR_TILESET_ID]);
-const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 사무실·회의실·편의점·아파트·병원 병동·빌딩 로비·카페·은행·지하철 대합실·창고 — layout:{program:"office-floor"|"konbini"|"apartment"|"hospital-ward"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
+const TILESET_PARAM = { type: "string", description: `실내 칩셋 id — 방 짓기 역할표(roomKit)가 있는 타일셋. ${HAND_INTERIOR_TILESET_ID}(기본, 판타지·중세 손 도트) · ${JP_INTERIOR_TILESET_ID}(일본 현대 집: 현관·화실·LDK·욕실·화장실·침실, 일본 거리 jp_city 와 같은 칩셋) · ${WIZARDING_INTERIOR_TILESET_ID}(마법 학교 성채·병동·온실·도서관 — 가구는 그 칩셋 조립 부품 wz-… id) · ${SENGOKU_INTERIOR_TILESET_ID}(전국·에도 일본: 다다미 방·다실·여관 손님방·성 알현실·가게·농가·도장·목욕간 — layout:{program:"samurai-house"|"ryokan-1f"|"ryokan-2f"|"castle-hall"|"machiya"|"minka"|"dojo"}) · modern_campus(현대 학교: 교실·복도·도서관·보건실·급식실·기숙사 — 남쪽 출구가 2칸인 예제 평면이면 exitWidth:2) · ${MODERN_CITY_INTERIOR_TILESET_ID}(도쿄풍 현대 도시 실내: 백화점·대형 마트·지하철역·종합병원·영화관 아케이드·레스토랑 바·미술관 박물관·사무실·편의점·아파트·빌딩 로비·카페·은행·창고 — layout:{program:"department-store"|"supermarket-mart"|"subway-station"|"hospital-ward"|"cinema-arcade"|"restaurant-bar"|"museum-gallery"|"office-floor"|"konbini"|"apartment"|"lobby"|"cafe"|"bank"|"concourse"|"warehouse"}, 남쪽 출구 2칸 이상이면 exitWidth) · 스토어에서 받은 그 사본(store_…)도 된다. 인자 없이 list_hand_interior_parts 를 부르면 이 프로젝트에서 쓸 수 있는 칩셋이 나온다.` } as const;
 /** 역할표가 있는 이 프로젝트의 칩셋 + 번들 칩셋(프로젝트에 아직 없어도 짓기 전에 넣는다). */
 function roomTilesetIds(project: Project): string[] {
   return [...new Set([...TILESET_IDS, ...Object.values(project.tilesets).filter((t) => roomSpecOf(t)).map((t) => t.id)])];
@@ -53,10 +53,20 @@ function roomTilesetIds(project: Project): string[] {
 function inferTileset(project: Project, args: Record<string, unknown>): string {
   const map = typeof args.mapId === "string" ? project.maps[args.mapId] : undefined;
   if (map && (HAND_INTERIOR_SPECS[map.tilesetId] || roomSpecOf(project.tilesets[map.tilesetId]))) return map.tilesetId;
-  const owners = (key: "floors" | "walls", id: unknown) => typeof id === "string" ? TILESET_IDS.filter((t) => HAND_INTERIOR_SPECS[t]![key][id]) : [];
   for (const [key, id] of [["floors", args.floor], ["walls", args.wall]] as const) {
-    const found = owners(key, id);
+    const found = typeof id === "string" ? TILESET_IDS.filter((t) => HAND_INTERIOR_SPECS[t]![key][id]) : [];
     if (found.length === 1) return found[0]!;
+  }
+  const prog = args.layout && typeof args.layout === "object" ? (args.layout as Record<string, unknown>).program : undefined;
+  if (typeof prog === "string" && prog.trim()) {
+    const p = prog.trim();
+    const pOwners = TILESET_IDS.filter((t) => programKinds(t, p));
+    if (pOwners.length === 1) return pOwners[0]!;
+    const hasJp = Object.values(project.maps).some((m) => m.tilesetId === JP_INTERIOR_TILESET_ID);
+    if (hasJp && pOwners.includes(JP_INTERIOR_TILESET_ID)) return JP_INTERIOR_TILESET_ID;
+    if (pOwners.includes(MODERN_CITY_INTERIOR_TILESET_ID) && (!pOwners.includes(HAND_INTERIOR_TILESET_ID) || p === "museum-gallery")) {
+      return MODERN_CITY_INTERIOR_TILESET_ID;
+    }
   }
   return HAND_INTERIOR_TILESET_ID;
 }
@@ -628,15 +638,31 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         args = { ...rest, layout: { program: campusProgram } } as typeof args;
         fitNotes.push(`예제 평면(26×15) 대신 "${campusProgram}" 다구역 표준 배치로 지었다`);
       }
-    } else if (tilesetId === "modern_city" && !args.layout && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
-      const planH = args.plan.length, planW = args.plan[0].length;
-      const isLobby = /로비|1층\s*홀/u.test(mapName);
-      const isOffice = !isLobby && /오피스|사무실|사무층|마케팅|디자인팀|개발팀|기획팀|본사\s*[2-9]층/u.test(mapName);
-      if ((isLobby || isOffice) && (planW < 28 || planH < 18)) {
-        const officeProgram = isLobby ? "lobby" : "office-floor";
-        const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, ...rest } = args as Record<string, unknown>;
-        args = { ...rest, layout: { program: officeProgram } } as typeof args;
-        fitNotes.push(`작은 오피스·로비 평면(${planW}×${planH})을 "${officeProgram}" 다구역 표준 배치로 넓혀 지었다`);
+    } else if (tilesetId === "modern_city" || tilesetId === "jp_city") {
+      const matchedProgram =
+        /백화점|면세점|아울렛|부티크\s*몰|department\s*store/iu.test(mapName) ? "department-store"
+        : /대형\s*마트|슈퍼마켓|할인점|하이퍼마켓|식자재\s*마트|supermarket|mart/iu.test(mapName) ? "supermarket-mart"
+        : /지하철|전철역|승강장|개찰구|대합실|subway|station/iu.test(mapName) ? "subway-station"
+        : /종합\s*병원|대학\s*병원|병원|병동|입원실|응급실|진료실|hospital|ward/iu.test(mapName) ? "hospital-ward"
+        : /영화관|시네마|상영관|오락실|아케이드|게임\s*센터|복합\s*문화|cinema|arcade/iu.test(mapName) ? "cinema-arcade"
+        : /레스토랑|다이닝\s*바|비스트로|스테이크\s*하우스|재즈\s*바|라운지\s*바|와인\s*바|restaurant|dining\s*bar/iu.test(mapName) ? "restaurant-bar"
+        : /미술관|박물관|전시실|전시관|갤러리|아트\s*센터|museum|gallery/iu.test(mapName) ? "museum-gallery"
+        : tilesetId === "modern_city" && /로비|1층\s*홀/u.test(mapName) ? "lobby"
+        : tilesetId === "modern_city" && /오피스|사무실|사무층|마케팅|디자인팀|개발팀|기획팀|본사\s*[2-9]층/u.test(mapName) ? "office-floor"
+        : undefined;
+      if (args.layout && typeof args.layout === "object") {
+        const lbag = args.layout as Record<string, unknown>;
+        if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires"].includes(lbag.program) && lbag.program !== matchedProgram) {
+          args = { ...args, layout: { ...lbag, program: matchedProgram } };
+          fitNotes.push(`맵 이름("${mapName}")에 맞춰 "${matchedProgram}" 다구역 표준 배치로 지었다`);
+        }
+      } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
+        const planH = args.plan.length, planW = args.plan[0].length;
+        if (planW < 28 || planH < 18) {
+          const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
+          args = { ...rest, layout: { program: matchedProgram } } as typeof args;
+          fitNotes.push(`작은 실내 평면(${planW}×${planH})을 "${matchedProgram}" 다구역 표준 배치로 넓혀 지었다`);
+        }
       }
     }
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
