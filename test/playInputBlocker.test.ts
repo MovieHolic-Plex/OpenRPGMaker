@@ -20,6 +20,18 @@ describe("play pointer blocker", () => {
     expect(shouldBlockPlayPointerEvent({ type: "click" })).toBe(false);
   });
 
+  it("lets the wheel through only over a scrollable status-menu detail list", () => {
+    const list = document.createElement("div");
+    list.className = "status-menu-detail-list";
+    const row = document.createElement("div");
+    list.append(row);
+    expect(shouldBlockPlayPointerEvent({ type: "wheel", target: row })).toBe(false);
+    expect(shouldBlockPlayPointerEvent({ type: "wheel", target: document.createElement("div") })).toBe(true);
+    // 목록 위라도 누르기·움직임은 그대로 막는다.
+    expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: row })).toBe(true);
+    expect(shouldBlockPlayPointerEvent({ type: "mousemove", target: row })).toBe(true);
+  });
+
   it("blocks title-control pointers with the rest of keyboard-only play", () => {
     const g = globalThis as { __oprnForcePointerBlock?: boolean };
     g.__oprnForcePointerBlock = true;

@@ -1,3 +1,4 @@
+import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
 import { setCharacterBaseOrigin } from "./characterOrigin";
 import { restoreRuntimeTimers } from "@/player/playSceneTimers";
 import { syncTerrainVision } from "./terrainVision";
@@ -684,6 +685,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   applySession(session: PlaySession): void {
     this.battleAbortController?.abort();
     this.session = structuredClone(session);
+    // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
+    if (typeof window !== "undefined" && window.localStorage) syncSessionWithDeviceRecords(window.localStorage, store.getCurrent(), this.session);
     this.clearRuntimeOverlay("runtime-error");
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;

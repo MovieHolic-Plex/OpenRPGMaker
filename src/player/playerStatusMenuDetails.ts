@@ -99,7 +99,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "region-map":
     case "campaign-progress": return createMonsterCampaignDetail(options, options.selectedCommand);
     case "save": return saveDetail(options);
-    case "load": return loadDetail(options.slots, options.onLoadSlot, vnSaveCards(options.project));
+    case "load": return loadDetail(options.slots, options.onLoadSlot, options.project);
     case "status": return usesMonsterParty(options.project) ? monsterPartyStatusDetail(options) : statusDetail(options.project, options.session);
     case "row": return rowDetail(options);
     case "formation": return formationDetail(options);
@@ -687,35 +687,43 @@ function vnSaveCards(project: Project): boolean {
   return resolveVnExtras(project)?.saveCards.enabled === true;
 }
 
+/** 저장·로드 화면 글자. 미연시 기능이 있는 프로젝트만 저작 언어로, 그 밖은 옛 한국어 그대로(비연애 프로젝트 불변). */
+function saveText(project: Project): (key: VnUiKey, ...args: readonly (string | number)[]) => string {
+  const language = resolveVnExtras(project) ? vnExtrasLanguage(project) : { language: "ko" as const };
+  return (key, ...args) => vnUiText(language, key, ...args);
+}
+
 function saveDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const text = saveText(options.project);
   return {
-    title: "저장",
+    title: text("save.title"),
     entries: options.slots.map((slot) => ({
-      label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot, vnSaveCards(options.project)),
+      label: text("save.slot", slot.slot),
+      ...saveSlotEntryParts(slot, options.confirmSaveSlot === slot.slot, vnSaveCards(options.project), text),
       testId: `save-slot-${slot.slot}`,
       onActivate: options.onSaveSlot && options.saveEnabled !== false ? () => options.onSaveSlot?.(slot.slot) : undefined,
       disabled: options.saveEnabled === false,
     })),
     hint: options.saveEnabled === false
-      ? "지금은 저장할 수 없습니다."
+      ? text("save.hintDisabled")
       : options.confirmSaveSlot
-        ? "이미 저장된 칸입니다. 같은 슬롯을 다시 선택하면 덮어씁니다."
-        : "저장할 슬롯을 선택하세요.",
+        ? text("save.hintConfirm")
+        : text("save.hintPick"),
   };
 }
 
-function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, vnCards: boolean): StatusMenuDetail {
+function loadDetail(slots: readonly SaveSlotReadResult[], onLoadSlot: ((slot: SaveSlotIndex) => void) | undefined, project: Project): StatusMenuDetail {
+  const text = saveText(project);
   return {
-    title: "로드",
+    title: text("load.title"),
     entries: slots.map((slot) => ({
-      label: `${slot.slot}번 저장`,
-      ...saveSlotEntryParts(slot, false, vnCards),
+      label: text("save.slot", slot.slot),
+      ...saveSlotEntryParts(slot, false, vnSaveCards(project), text),
       testId: `load-slot-${slot.slot}`,
       onActivate: onLoadSlot && slot.kind === "present" ? () => onLoadSlot(slot.slot) : undefined,
       disabled: slot.kind !== "present",
     })),
-    hint: "불러올 저장 칸을 선택하세요.",
+    hint: text("load.hint"),
   };
 }
 
@@ -888,16 +896,17 @@ function galleryDetail(project: Project, session: PlaySession): StatusMenuDetail
       if (!vn.showLocked) return;
       pictureEntries.push({
         label: text("gallery.lockedName"), value: text("gallery.locked"),
-        unavailableReason: text("gallery.lockedHint"),
         testId: `status-menu-gallery-locked-${index}`,
         attributes: { "data-gallery-locked": "true" },
       });
       return;
     }
-    const name = resourceDisplayName(row.resourceId, text("gallery.item", index + 1));
+    const fallbackName = text("gallery.item", index + 1);
+    const name = resourceDisplayName(row.resourceId, fallbackName);
     const openIndex = opened.indexOf(row.resourceId);
     pictureEntries.push({
-      label: name, value: String(index + 1), testId: `status-menu-gallery-${index}`,
+      // 기본 이름(「그림 N」)에 이미 번호가 있으면 값 칸에 번호를 또 적지 않는다(리뷰 C4).
+      label: name, value: name === fallbackName ? "" : String(index + 1), testId: `status-menu-gallery-${index}`,
       icon: { resourceId: row.resourceId, alt: name, testId: `status-menu-gallery-thumb-${index}`, smooth: true },
       onActivate: () => openGalleryViewer({ project, resourceIds: opened, index: openIndex }),
     });
@@ -963,7 +972,7 @@ function endingsDetail(project: Project, session: PlaySession): StatusMenuDetail
   const entries: StatusMenuDetailEntry[] = [{
     label: text("endings.summary"), value: text("endings.progress", rows.filter((row) => row.seen).length, rows.length), testId: "status-menu-endings-summary",
   }];
-  for (const row of endingChecklist(project, seenIds, text("endings.common"))) {
+  for (const row of endingChecklist(project, seenIds, text("endings.common"), text("endings.unknownPerson"))) {
     const cells = row.tiers.map((cell) => `${text(`endings.tier.${cell.tier}`)} ${cell.defined ? (cell.seen ? "●" : "○") : text("endings.undefined")}`);
     entries.push({
       label: text("endings.checklist", row.name), value: row.tiers.map((cell) => (cell.defined ? (cell.seen ? "●" : "○") : "·")).join(""),
@@ -972,7 +981,7 @@ function endingsDetail(project: Project, session: PlaySession): StatusMenuDetail
   }
   rows.forEach((row, index) => {
     const hidden = vn.endings.hideUnseen && !row.seen;
-    const who = row.characterId ? friendshipDisplayName(project, row.characterId) ?? row.characterId : text("endings.common");
+    const who = row.characterId ? friendshipDisplayName(project, row.characterId) ?? text("endings.unknownPerson") : text("endings.common");
     entries.push({
       label: hidden ? text("endings.hidden") : row.name, value: mark(row.seen),
       ...(hidden ? {} : { description: `${text(`endings.tier.${row.tier}`)} · ${who}` }),
@@ -1188,11 +1197,12 @@ function skillEntryIcon(project: Project, skill: SkillRecord): NonNullable<Statu
 function saveSlotEntryParts(
   slot: SaveSlotReadResult,
   confirmingOverwrite: boolean,
-  vnCard = false
+  vnCard = false,
+  text: (key: VnUiKey) => string = (key) => vnUiText(undefined, key)
 ): { value: string; description?: string } {
   switch (slot.kind) {
-    case "empty": return { value: "비어 있음" };
-    case "corrupt": return { value: "손상됨" };
+    case "empty": return { value: text("save.empty") };
+    case "corrupt": return { value: text("save.corrupt") };
     case "present": {
       const parts = [slot.snapshot.projectTitle];
       if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
@@ -1203,7 +1213,7 @@ function saveSlotEntryParts(
         // 몬스터 수집 게임: 고른 칸의 쇼케이스(설명)에 도감·배지·주인공·장소·시간·파티. 행의 오른쪽 값은 짧게 둔다(쇼케이스가 열리면 목록 폭이 좁다).
         const progress = [`도감 ${monster.caught}/${monster.dexTotal}`, ...(monster.badgeTotal > 0 ? [`배지 ${monster.badges}/${monster.badgeTotal}`] : [])].join(" · ");
         const where = [progress, monster.trainer, slot.snapshot.mapName, typeof slot.snapshot.playTimeSeconds === "number" ? formatPlayTime(slot.snapshot.playTimeSeconds) : undefined, `파티 ${monster.party}`];
-        return { value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨", description: where.filter(Boolean).join(" / ") };
+        return { value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"), description: where.filter(Boolean).join(" / ") };
       }
       // 미연시 세이브 카드(saveCards): 날짜와 저장 시점의 마지막 대사 한 줄을 함께 보인다.
       if (vnCard) {
@@ -1212,7 +1222,7 @@ function saveSlotEntryParts(
         if (slot.snapshot.sceneLine) parts.push(`“${slot.snapshot.sceneLine}”`);
       }
       return {
-        value: confirmingOverwrite ? "덮어쓰기 확인" : "저장됨",
+        value: confirmingOverwrite ? text("save.overwrite") : text("save.saved"),
         description: parts.join(" / "),
       };
     }

@@ -95,8 +95,11 @@ describe("gallery slots and ending rows", () => {
     expect(rows.find((r) => r.id === ROMANCE_ENDING_NORMAL_ID)?.seen).toBe(true);
     expect(rows[0]!.characterId).toBe("npc_a");
     const checklist = endingChecklist(project, [ROMANCE_ENDING_NORMAL_ID], "공통");
-    expect(checklist).toHaveLength(1);
-    expect(checklist[0]!.tiers.map((t) => [t.tier, t.defined, t.seen])).toEqual([["happy", true, false], ["normal", true, true], ["solo", true, false]]);
+    // 인물 행(npc_a: 해피·평범 정의) + 공통 행(혼자 걷는 길). 칸은 그 행 자신의 엔딩만 센다.
+    expect(checklist).toHaveLength(2);
+    expect(checklist[0]!.tiers.map((t) => [t.tier, t.defined, t.seen])).toEqual([["happy", true, false], ["normal", true, true], ["solo", false, false]]);
+    expect(checklist[1]!.characterId).toBeUndefined();
+    expect(checklist[1]!.tiers.map((t) => [t.tier, t.defined, t.seen])).toEqual([["happy", false, false], ["normal", false, false], ["solo", true, false]]);
   });
 
   it("recall lines keep only the written say beats", () => {

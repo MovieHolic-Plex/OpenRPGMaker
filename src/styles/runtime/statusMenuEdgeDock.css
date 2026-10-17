@@ -420,3 +420,8 @@
   white-space: normal;
   overflow-wrap: anywhere;
 }
+
+/* 키보드 전용 플레이: 메뉴 전체가 pointer-events:none 이라 휠이 상세 목록에 닿지 않아 넘치는 목록(엔딩 체크리스트 등)이 휠로 안 움직였다(2026-10-17).
+   목록 상자만 휠을 받고, 안의 행은 계속 포인터를 받지 않는다(호버·클릭 없음 — 입력 차단기가 휠만 이 목록 위에서 통과시킨다). */
+[data-play-input-owner="keyboard-only"] .oprn-status-menu .status-menu-detail-list { pointer-events: auto; }
+[data-play-input-owner="keyboard-only"] .oprn-status-menu .status-menu-detail-list > * { pointer-events: none; }

@@ -1169,9 +1169,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const actions = detailActionButtons();
     if (mode !== "function") return false;
     if (actions.length === 0) {
-      if (selectedCommand !== "quests") return false;
+      // 커서가 없는 정보 목록(일정·엔딩 목록 등)은 ↑↓ 가 목록을 스크롤한다. 넘치지 않으면 평소처럼 「선택할 수 없습니다」.
       const list = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
-      if (!list) return false;
+      if (!list || list.scrollHeight <= list.clientHeight + 1) return false;
       list.scrollTop += delta * Math.max(24, list.clientHeight * 0.6);
       return true;
     }

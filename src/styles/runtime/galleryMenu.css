@@ -30,7 +30,7 @@
 
 .play-stage > .gallery-viewer {
   align-items: center;
-  background: rgba(0, 0, 0, 0.94);
+  background: #000;
   bottom: 0;
   display: flex;
   flex-direction: column;
@@ -54,15 +54,18 @@
 .gallery-viewer-missing,
 .gallery-viewer-caption {
   color: #f4efe4;
-  font: 500 7px/1.4 var(--runtime-ui-font, sans-serif);
+  font: 500 8px/1.4 var(--runtime-ui-font, sans-serif);
   margin: 0;
   text-align: center;
 }
 
+/* 닫기: 캡션(8px)과 균형이 맞는 크기. 예전 `font: inherit` 은 16px 로 캡션보다 두 배 커서 눈에 띄게 어긋났다(2026-10-17 리뷰 C3). */
 .gallery-viewer-close {
   background: transparent;
-  border: 0;
+  border: 1px solid rgba(244, 239, 228, 0.45);
+  border-radius: 2px;
   color: #f4efe4;
-  font: inherit;
+  font: 600 9px/1.4 var(--runtime-ui-font, sans-serif);
   margin: 2px 0 4px;
+  padding: 1px 10px;
 }

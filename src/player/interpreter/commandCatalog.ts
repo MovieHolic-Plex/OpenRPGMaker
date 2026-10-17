@@ -5,7 +5,8 @@ import { normalizeBlendMode } from "@/project/blendMode";
 import { normalizeEasing } from "@/project/easing";
 import { applyHighScore, applyKeyPoll, quickTimeStep, teleportMenuStep, timedChoiceStep } from "./minigameCommands";
 import { recordGalleryUnlock } from "@/project/gallery";
-import { galleryActive } from "@/project/vnExtras";
+import { galleryActive, listGallerySlots } from "@/project/vnExtras";
+import { recordGalleryUnlockOnDevice } from "@/player/deviceRecords";
 import { NEW_GAME_PLUS_FLAG } from "@/project/newGamePlus";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { resolveAppearancePortrait } from "@/project/characterAppearances";
@@ -735,7 +736,10 @@ export function executeCommand(
       });
     case "showPicture":
       if (command.recordInGallery === true && state.project && galleryActive(state.project)) {
-        recordGalleryUnlock(state.session, command.resourceId);
+        const liveSlots = listGallerySlots(state.project);
+        recordGalleryUnlock(state.session, command.resourceId, new Set(liveSlots));
+        // 열린 CG 는 기기 기록에도 바로 남긴다(저장 없이 종료해도·다른 슬롯·새 게임에서도 열려 있다).
+        if (typeof localStorage !== "undefined") recordGalleryUnlockOnDevice(localStorage, command.resourceId, liveSlots);
       }
       return pause("showPicture", {
         kind: "showPicture",

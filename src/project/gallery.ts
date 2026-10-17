@@ -49,19 +49,32 @@ export function listGalleryUnlocks(
   return session?.galleryUnlocks ?? [];
 }
 
+/**
+ * CG 한 장을 연다. 상한(GALLERY_UNLOCK_MAX)을 넘으면 오래된 것부터 잊되, `liveIds`(지금 갤러리 칸에 있는 그림)를 주면
+ * 칸 밖(지워진 그림·옛 id)을 먼저 잊는다 — 칸 안 CG 가 다시 잠기지 않게(2026-10-17 리뷰 C9).
+ */
 export function recordGalleryUnlock(
   session: { galleryUnlocks?: string[] },
   resourceId: string,
+  liveIds?: ReadonlySet<string>,
 ): void {
   const id = resourceId.trim();
   if (!id) return;
   const current = session.galleryUnlocks ?? [];
   if (current.includes(id)) return;
-  const next = [...current, id];
-  session.galleryUnlocks = next.length > GALLERY_UNLOCK_MAX ? next.slice(next.length - GALLERY_UNLOCK_MAX) : next;
+  let next = [...current, id];
+  if (next.length > GALLERY_UNLOCK_MAX) {
+    if (liveIds && liveIds.size > 0) {
+      // 지금 갤러리 칸에 있는 해금은 모두 남기고, 칸 밖 옛 해금은 오래된 것부터 버린다.
+      const live = next.filter((entry) => liveIds.has(entry));
+      next = [...live, ...next.filter((entry) => !liveIds.has(entry)).slice(-Math.max(0, GALLERY_UNLOCK_MAX - live.length))].slice(0, GALLERY_UNLOCK_MAX);
+    }
+    else next = next.slice(next.length - GALLERY_UNLOCK_MAX);
+  }
+  session.galleryUnlocks = next;
 }
 
-export function normalizeGalleryUnlocks(value: unknown): string[] | undefined {
+export function normalizeGalleryUnlocks(value: unknown, max: number = GALLERY_UNLOCK_MAX): string[] | undefined {
   if (!Array.isArray(value)) return undefined;
   const ids: string[] = [];
   for (const entry of value) {
@@ -69,7 +82,7 @@ export function normalizeGalleryUnlocks(value: unknown): string[] | undefined {
     const id = entry.trim();
     if (!id || ids.includes(id)) continue;
     ids.push(id);
-    if (ids.length >= GALLERY_UNLOCK_MAX) break;
+    if (ids.length >= max) break;
   }
   return ids.length > 0 ? ids : undefined;
 }
