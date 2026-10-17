@@ -16,7 +16,7 @@ import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
 import { checkEndingNpcReachable, checkHeroineEndingsCalled, checkPerHeroineEndings, checkSplitHeroineIds, checkRomanceEndings } from "./romanceEndings";
-import { allPages, visitPageCommands } from "./walk";
+import { allPages, commandList, visitPageCommands } from "./walk";
 import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 
 const ROMANCE_BRIEF = /연애|로맨스|호감|고백|romance|dating/iu;
@@ -25,6 +25,8 @@ const PLACEHOLDER_NAMES = new Set<string>(["기억의 길", "기억의 조각", 
 /** 빈 프로젝트·인터뷰 시작이 남기는 기본 제목 — 연애 게임은 이 게임의 이름을 가져야 한다. */
 const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트"]);
 const AFFECTION_VARIABLE = /호감|friendship|affection|favou?r/iu;
+const OBJECT_NPC_NAME = /표지판|게시판|안내판|푯말|우편함|시계탑|나무|상자|벤치|분수대|자판기|포인트|안내데스크|다이어리|수첩/u;
+const PERSON_ROLE_NAME = /학생|선배|후배|동기|친구|교수|선생|매니저|바리스타|팀장|대리|사원|부원|위원|회장|서기|당번|주인|점원/u;
 
 /** 연애 프로젝트인가 — 호감 하트 HUD(연애 기본값)·인터뷰 장르·기획 문장 중 하나. */
 export function isRomanceCheckTarget(project: Project, briefText = briefTextOf(project)): boolean {
@@ -219,6 +221,25 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
       message: `서로 다른 인물 ${who.length}명(${who.slice(0, 5).join(", ")})이 같은 캐릭터 칩(${chip})입니다 — 화면에서 구분되지 않습니다. list_npc_graphics 에서 인물마다 다른 칩을 고르세요.`,
     });
   }
+  const objectBustNpcs = people.filter(({ event }) => {
+    if (event.id === SEGMENT_STARTER_EVENT_ID || event.id === SEGMENT_END_EVENT_ID) return false;
+    const name = (event.name ?? "").trim();
+    if (!OBJECT_NPC_NAME.test(name) || PERSON_ROLE_NAME.test(name)) return false;
+    const hasChip = (event.pages ?? []).some((page) => page.graphic?.transparent !== true && chipOf(page) !== undefined);
+    const hasFace = (event.pages ?? []).some((page, pageIndex) => {
+      let hit = false;
+      visitPageCommands({ page, pageIndex, conditions: page.conditions ?? [], commands: commandList(page.commands) }, (v) => { if (v.command.kind === "changeFace") hit = true; });
+      return hit;
+    });
+    return hasChip && hasFace;
+  });
+  if (objectBustNpcs.length > 0) {
+    const where = objectBustNpcs.map(({ map, event }) => `${(event.name ?? event.id).trim()}(${map.name})`).join(", ");
+    findings.push({
+      severity: "warning", code: "romance-object-npc-bust",
+      message: `사물 이름인 NPC ${objectBustNpcs.length}개(${where})가 사람 캐릭터 칩·흉상(changeFace)을 달고 있습니다 — 사물은 NPC 가 아니라 place_props/오브젝트 이벤트로 놓으세요(이벤트는 graphic:{transparent:true}·injectFace:false).`,
+    });
+  }
 
   // 3b) 선택지가 달린 조사 이벤트가 눈에 안 보이는 칸에 서 있나(romance-real-2 R14: 「설레는 약속 게시판」이 그림 없는 투명 이벤트 + 빈 바닥).
   //     호감을 올리는 선택의 입구인데 플레이어가 무엇을 조사할지 알 수 없다. 인물(그림 칩 검사는 위 romance-npc-invisible)은 제외.
@@ -268,7 +289,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split", "romance-object-npc-bust"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
 const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";
