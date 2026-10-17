@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.258.0 — 2026-10-18
+
+### 기능
+
+- **jp_city** — shitamachi alley & shotengai arcade street variants (#2886) (`a2c3486`)
+- **studio** — drive the Director Board from live project data instead of canned demo content (#2881) (`5180526`)
+
+### 수정
+
+- **monster-taming** — resolve R5 Pokemon 1-line VQA & QA check defects (#2887) (`ba144b2`)
+- **interior** — wall-flush side escalators/stairs and impassable subway track for 7 venue presets (#2884) (`ba1d284`)
+
 ## 0.257.0 — 2026-10-18
 
 ### 기능
