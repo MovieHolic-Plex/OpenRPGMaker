@@ -63,6 +63,22 @@ function withJosa(name: string): string {
   return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0 ? "과" : "와";
 }
 
+function shortHash(text: string): string {
+  let h = 2166136261;
+  for (let i = 0; i < text.length; i += 1) { h ^= text.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
+
+/** characterId → 엔딩 id. 한글 id 는 영문 슬러그가 비므로 해시를 쓰고, 다른 인물이 이미 그 id 를 쓰고 있으면 해시를 덧붙인다(romance-loop-3 rom-c: 「한서윤」 → ending_with__ 로 셋이 충돌). */
+function heroineEndingId(project: Project, key: string): string {
+  const slug = key.replace(/[^A-Za-z0-9_]+/gu, "_").replace(/^_+|_+$/gu, "");
+  const base = `ending_with_${slug || `h${shortHash(key)}`}`;
+  const owner = (project.endings ?? []).find((ending) => ending.id === base);
+  if (!owner) return base;
+  const targets = owner.conditions.some((condition) => (condition as { npcKey?: string }).npcKey === key);
+  return targets ? base : `${base}_${shortHash(key)}`;
+}
+
 /** 호감 대화 인물(characterId 있는 talkFriendship 이벤트)마다 「OO와 함께」 엔딩을 보장하고, 인물 엔딩 tiers 를 돌려준다. 이미 있는 같은 id 엔딩은 건드리지 않는다. 인물이 둘 미만이면 빈 배열. */
 export function ensureHeroineEndings(project: Project): { readonly tiers: DeadlineTier[]; readonly generated: string[]; readonly heroines: number } {
   const heroines = new Map<string, string>();
@@ -75,7 +91,7 @@ export function ensureHeroineEndings(project: Project): { readonly tiers: Deadli
   const tiers: DeadlineTier[] = [];
   const generated: string[] = [];
   for (const [key, name] of heroines) {
-    const endingId = `ending_with_${key.replace(/[^A-Za-z0-9_]+/gu, "_")}`;
+    const endingId = heroineEndingId(project, key);
     if (!project.endings.some((ending) => ending.id === endingId)) {
       project.endings.push({
         id: endingId, name: `${name}${withJosa(name)} 함께`, priority: 36,
@@ -116,6 +132,7 @@ export function syncHeroineDeadline(project: Project): string[] {
   if (heroines < 2) return [];
   const full: DeadlineTier[] = [
     ...tiers,
+    { endingId: ROMANCE_ENDING_HAPPY_ID, threshold: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
     { endingId: ROMANCE_ENDING_NORMAL_ID, threshold: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
     { endingId: SEGMENT_END_ENDING_ID },
   ];

@@ -188,3 +188,6 @@ NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, �
 팀 실행은 담당 맵 병합(mergeMapBundles)이 맵만 합쳐 place_npc 의 동기화가 병합본에는 없다 — 그래서 팀 `finish`(scripts/lib/piTeamRuntime.ts)도 완료 검사 앞에서 병합본에 `syncHeroineDeadline` 을 한 번 돌린다(rom-c 라운드 3 실측: 인물 3명, 인물 엔딩 0).
 검사 `romance-heroine-endings-uncalled`(romanceEndings.ts, COMPLETION_CODES): 특정 인물 호감을 보는 엔딩이 둘 이상인데 기한 판정(onDayEnd 공통 이벤트)이 그 엔딩을 하나도 부르지 않으면 짚는다 — 엔딩을 만들어도 기한 호출에 안 걸려 모두 「해피」로 끝나는 구멍(rom-c 라운드 3 실측).
 검사 `romance-heroine-id-split`(romanceEndings.ts, COMPLETION_CODES): 같은 이름의 호감 대화 인물이 맵마다 다른 characterId(`yoon_seoha`/`yoon_seoha_2`)로 놓이면 호감 키가 갈라져, 한 곳에서 쌓은 호감이 다른 곳 엔딩 문턱에 안 잡힌다(회사 판 rom-d 라운드 3 실측).
+
+엔딩 id 는 `heroineEndingId`(deadlineEnding.ts)가 만든다: characterId 의 영문 슬러그, 한글 id(「한서윤」)는 해시(`ending_with_h<해시>`), 다른 인물이 같은 id 를 쓰면 해시를 덧붙인다(rom-c 라운드 3 실측: 「한서윤」·「윤하늘」이 전부 `ending_with__` 로 충돌). 기한 판정은 인물 엔딩 뒤에 해피(*≥60)·평범·혼자를 그대로 둔다(해피가 부르는 곳 없는 엔딩이 되지 않게).
+`romance-npc-duplicate-chip` 은 같은 이름이거나 같은 characterId 인 이벤트를 한 사람으로 묶는다(맵마다 「산책로의 한서윤」 머리말이 달라도 같은 칩 허용).

@@ -252,7 +252,7 @@ const setDeadlineEnding: ToolDefinition = {
     const heroineTiers = heroine.tiers.map((tier) => ({ endingId: tier.endingId, friendshipAtLeast: tier.threshold!, characterId: tier.characterId! }));
     const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[]
       : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
-        ? [...heroineTiers, ...(heroineTiers.length > 0 ? skeletonTiers.slice(1) : skeletonTiers)] : [];
+        ? [...heroineTiers, ...skeletonTiers] : [];
     if (tiers.length === 0) throw new ToolError("tiers 에 엔딩이 하나 이상 있어야 합니다.", { code: "invalid-args" });
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
     const known = new Set((draft.endings ?? []).map((ending) => ending.id));
