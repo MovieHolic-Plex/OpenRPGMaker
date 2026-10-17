@@ -114,6 +114,13 @@ const PLANS: Record<string, Plan> = {
     { g: "bustL", positions: ["bottom", "center", "top"], names: [true], lens: ["l1", "l6", "max"], choices: true },
     { g: "bustR", positions: ["bottom", "center", "top"], names: [true], lens: ["l1", "l6", "max"], choices: true },
   ] },
+  // 룩 프리셋 시트: 프리셋마다 같은 일곱 장면(바 하단·흉상 좌/우·전신·가운데·선택지)을 찍는다.
+  look: { groups: [
+    { g: "none", positions: ["bottom"], names: [true], lens: ["l3"], choices: true },
+    { g: "bustL", positions: ["bottom", "center"], names: [true], lens: ["l3"], choices: false },
+    { g: "bustR", positions: ["top"], names: [true], lens: ["l3"], choices: false },
+    { g: "fullL", positions: ["bottom"], names: [true], lens: ["l1"], choices: false },
+  ] },
   cjk: { groups: [
     { g: "none", positions: ["bottom"], names: [true], lens: ["l1", "l6", "max"], choices: true },
     { g: "bustL", positions: ["bottom", "top"], names: [true], lens: ["l1", "l6", "max"], choices: true },

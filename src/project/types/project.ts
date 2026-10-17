@@ -799,6 +799,8 @@ export interface Project {
     oprnDialogueSystem?: import('../dialogueSystem').AuthoredDialogueSystem;
     /** 미연시 추가 화면(갤러리 잠금·엔딩 목록·세이브 카드) — project/vnExtras.ts. 생략 = 옛 동작(연애 게임은 기본 구성). */
     oprnVnExtras?: import('../vnExtras').AuthoredVnExtras;
+    /** 미연시 대사창 룩(스킨·레이아웃 프리셋) — project/vnLook.ts. 생략 = 옛 대사창(연애·관계 프로젝트는 소재별 기본 룩). */
+    oprnVnLook?: import('../vnLook').AuthoredVnLook;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;
     title: string;

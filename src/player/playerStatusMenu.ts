@@ -23,6 +23,7 @@ import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolvePlayerSpriteResource } from "@/player/playerSpriteResources";
 import { resolveActorAppearance } from "@/project/characterAppearances";
 import { menuSkinFor } from "@/player/menuSkins/registry";
+import { resolveVnLook, vnLookAttributes } from "@/project/vnLook";
 import { partyWalker } from "@/player/partyWalker";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { el } from "@/util/dom";
@@ -66,6 +67,13 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       ...(skin.partyStats ? { menuSkinStats: "true" } : {}),
     },
   });
+  // 미연시 대사창 룩과 같은 색·모서리·그림자 토큰(uiTheme=match). 룩이 없거나 legacy 면 아무것도 심지 않는다(옛 청색 창 그대로).
+  const vnLook = resolveVnLook(options.project);
+  if (vnLook?.uiTheme === "match") {
+    const attrs = vnLookAttributes(vnLook);
+    panel.dataset.vnTheme = "match";
+    for (const [name, value] of Object.entries(attrs.vars)) panel.style.setProperty(name, value);
+  }
   const emerald = stampEmeraldSurface(panel, options.project, "menu");
   if (emerald) {
     panel.dataset.emeraldPage = selectedCommand === "monsters"
