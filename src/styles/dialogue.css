@@ -392,7 +392,7 @@
 .dialogue-content.has-veil-speaker-face {
   align-items: stretch;
   grid-template-columns: minmax(0, 1fr);
-  padding-left: 66px;
+  padding-left: 52px;
 }
 
 .dialogue-veil-speaker-face {
@@ -400,12 +400,12 @@
   background-repeat: no-repeat;
   background-size: contain;
   bottom: 0;
-  height: 62px;
+  height: 48px;
   image-rendering: auto;
   left: 4px;
   pointer-events: none;
   position: absolute;
-  width: 62px;
+  width: 48px;
   z-index: 3;
 }
 
@@ -554,7 +554,7 @@
 }
 
 .dialogue-overlay[data-dialogue-stage="dual-fullbody-veil"].position-bottom {
-  --runtime-dialogue-panel-height: 34%;
+  --runtime-dialogue-panel-height: 22%;
   padding-bottom: 0;
   padding-inline: 0;
 }

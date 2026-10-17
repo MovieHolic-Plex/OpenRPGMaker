@@ -51,14 +51,17 @@
   background: linear-gradient(
     180deg,
     rgba(10, 8, 16, 0) 0%,
-    rgba(12, 10, 18, 0.24) 16%,
-    rgba(14, 12, 22, 0.64) 36%,
-    rgba(12, 10, 18, 0.85) 72%,
-    rgba(8, 7, 14, 0.93) 100%
+    rgba(12, 10, 18, 0.32) 18%,
+    rgba(14, 12, 22, 0.72) 42%,
+    rgba(10, 8, 16, 0.88) 100%
   );
   border-width: 0;
   box-shadow: none;
+  height: 100%;
   max-width: none;
+  min-height: 0;
+  padding-bottom: 5px;
+  padding-inline: 8px 10px;
 }
 
 /* ── 이름표 — 세 가지 ── */
@@ -216,20 +219,26 @@
   top: 4px;
 }
 
+.dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box .body {
+  line-height: 1.35;
+}
+
 .dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
   background: transparent;
   border: 0;
   box-shadow: none;
   color: rgb(255, 236, 190);
+  font-size: 9px;
   height: auto;
   left: 16px;
+  line-height: 1.1;
   padding: 0;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.98), 0 0 6px rgba(0, 0, 0, 0.9), 1px 1px 0 rgba(0, 0, 0, 0.95);
-  top: 4px;
+  top: 2px;
 }
 
 .dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box.has-veil-speaker-face .speaker.speaker-nameplate {
-  left: 74px;
+  left: 60px;
 }
 
 .dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-page-cursor {

@@ -2096,7 +2096,7 @@ function dialogueBodyWidth(
     - DIALOGUE_BOX_HORIZONTAL_BORDER;
   const portraitMode = dialoguePortraitMode(request.face);
   const faceWidth = hasVeilCornerFace
-    ? 52 + DIALOGUE_FACE_COLUMN_GAP
+    ? 44 + DIALOGUE_FACE_COLUMN_GAP
     : !request.face
       ? 0
       : portraitMode === "full"
