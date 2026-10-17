@@ -196,8 +196,10 @@ const DIALOGUE_BOX_HORIZONTAL_PADDING = 16;
 const DIALOGUE_BOX_HORIZONTAL_BORDER = 2;
 const DIALOGUE_FACE_COLUMN_WIDTH = 48;
 const DIALOGUE_FACE_COLUMN_GAP = 8;
-const DIALOGUE_BUST_TEXT_RESERVE = 96;
-const DIALOGUE_FULL_TEXT_RESERVE = 100;
+// 흉상·전신은 상자 **위(위쪽 창은 아래)** 에 서고 상자 안쪽을 거의 덮지 않는다 — 글 여백을 두면 글 폭만 좁아지고
+// 반대편이 빈다(2026-10-17 매트릭스 실측: 1024 폭 하단 창에서 글 폭 890 → 590). 그래서 여백은 0 이다.
+const DIALOGUE_BUST_TEXT_RESERVE = 0;
+const DIALOGUE_FULL_TEXT_RESERVE = 0;
 /** RPG 만들기식 대사창: 한 페이지에 보이는 줄은 최대 3줄. 상자가 더 커도 3줄에서 끊어 다음 장으로 넘긴다. */
 const DIALOGUE_VISIBLE_LINES = 3;
 /**

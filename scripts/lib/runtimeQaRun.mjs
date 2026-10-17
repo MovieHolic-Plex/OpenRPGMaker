@@ -551,6 +551,29 @@ async function applyOp(page, op, runState) {
       }
       return;
     }
+    case "evalToFile": {
+      const value = await page.evaluate(`(${op.fn})()`);
+      await writeFile(op.out, JSON.stringify(value, null, 1));
+      return;
+    }
+    case "waitForClass":
+      await page.waitForFunction(([testid, cls]) => document.querySelector(`[data-testid="${testid}"]`)?.classList.contains(cls) === true,
+        [op.testid, op.cls], { timeout: op.timeoutMs ?? 30_000 });
+      return;
+    case "pressUntilText": {
+      if (typeof op.text !== "string" || !op.text.length) throw new Error("pressUntilText requires nonempty text");
+      const has = () => page.evaluate(([testid, text]) =>
+        document.querySelector(`[data-testid="${testid}"]`)?.textContent?.replace(/\s+/g, " ").trim().includes(text) === true,
+      [op.testid, op.text.replace(/\s+/g, " ").trim()]);
+      const max = op.maxPresses ?? 12;
+      for (let i = 0; i < max; i += 1) {
+        if (await has()) return;
+        await page.keyboard.press(op.key);
+        await page.waitForTimeout(op.settleMs ?? 120);
+      }
+      if (!(await has())) throw new Error(`pressUntilText: ${op.key} ${max}회 뒤에도 ${op.testid} 에 "${op.text}" 가 나오지 않았다`);
+      return;
+    }
     default:
       throw new Error(`구현되지 않은 op: ${op.kind}`);
   }
