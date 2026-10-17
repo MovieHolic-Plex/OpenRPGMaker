@@ -6,12 +6,14 @@ import type { CharsetLabelOverride, PassFlag, Project, TilesetDef, UploadedAsset
 import {
   STORE_ASSET_KINDS,
   STORE_BLOB_MIMES,
+  STORE_LIMITS,
   STORE_PACK_SCHEMA,
   blobPlaceholder,
   mapStrings,
   placeholderSha,
   storeProjectId,
   tilesetUploadedAssetIds,
+  validateManifest,
   type StoreAssetKind,
   type StoreAssetOrigin,
   type StoreBlobMime,
@@ -205,6 +207,8 @@ export interface ApplyContext {
    * 그림을 assets/ 에 따로 두므로 문서에 바이트를 싣지 않는다(uploadedAssetForImport 와 같은 규칙).
    */
   readonly storedRefs?: ReadonlyMap<string, NonNullable<UploadedAsset["ref"]>>;
+  /** 같은 blob 을 두 번 base64 인코딩하지 않도록 공유하는 캐시. */
+  readonly restoredDataUrls?: Map<string, string>;
 }
 
 export interface ApplyResult {
@@ -237,13 +241,18 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     credits: manifest.credits,
     url: context.itemUrl,
   };
+  const restoredCache = context.restoredDataUrls ?? new Map<string, string>();
   const restore = (text: string): string => {
     const sha = placeholderSha(text);
     if (!sha) return text;
+    const hit = restoredCache.get(sha);
+    if (hit !== undefined) return hit;
     const bytes = context.blob(sha);
     const mime = sniffMime(bytes);
     if (!mime) throw new Error(`blob ${sha.slice(0, 12)} 의 형식을 알 수 없습니다.`);
-    return dataUrlOf(bytes, mime);
+    const encoded = dataUrlOf(bytes, mime);
+    restoredCache.set(sha, encoded);
+    return encoded;
   };
   for (const [id, packAsset] of Object.entries(manifest.content.assets)) {
     const bytes = context.blob(packAsset.blob);
@@ -275,7 +284,34 @@ export function applyPackToProject(project: Project, manifest: StorePackManifest
     project.charsetLabels = at >= 0 ? labels.map((old, i) => (i === at ? entry : old)) : [...labels, entry];
   }
   for (const [id, source] of Object.entries(manifest.content.tilesets)) {
-    const tileset = mapStrings(source, restore) as TilesetDef;
+    const existingBundled = project.tilesets[id];
+    const bundledRefUrls = new Map<string, string>();
+    if (existingBundled && existingBundled.image.type === "bundled" && existingBundled.referenceDocuments?.length) {
+      for (const category of existingBundled.referenceDocuments) {
+        for (const image of category.images) {
+          if (image.dataUrl.startsWith("/") && !image.dataUrl.startsWith("data:")) {
+            bundledRefUrls.set(`${category.id}\u0000${image.id}`, image.dataUrl);
+          }
+        }
+      }
+    }
+    const preparedSource = bundledRefUrls.size > 0 && source.referenceDocuments?.length
+      ? {
+        ...source,
+        referenceDocuments: source.referenceDocuments.map((category) => ({
+          ...category,
+          images: category.images.map((image) => {
+            const sha = placeholderSha(image.dataUrl);
+            const bundledUrl = sha ? bundledRefUrls.get(`${category.id}\u0000${image.id}`) : undefined;
+            if (!sha || !bundledUrl) return image;
+            const bytes = context.blob(sha);
+            if (!sniffMime(bytes)) throw new Error(`blob ${sha.slice(0, 12)} 의 형식을 알 수 없습니다.`);
+            return { ...image, dataUrl: bundledUrl };
+          }),
+        })),
+      }
+      : source;
+    const tileset = mapStrings(preparedSource, restore) as TilesetDef;
     tileset.id = tilesetIdMap.get(id)!;
     if (tileset.image.type === "uploaded") tileset.image = { type: "uploaded", id: assetIdMap.get(tileset.image.id) ?? tileset.image.id };
     if (tileset.tileGrafts) tileset.tileGrafts = tileset.tileGrafts.map((graft) => ({ ...graft, sourceChipset: assetIdMap.get(graft.sourceChipset) ?? graft.sourceChipset }));
@@ -328,4 +364,87 @@ export function storeCredits(project: Project): string {
     return origin.credits ? `${head}\n  ${origin.credits}` : head;
   });
   return lines.length > 0 ? `OPRN 에셋 스토어\n${lines.join("\n")}\n` : "";
+}
+
+export const STORE_BUNDLE_MAGIC = "OPK1" as const;
+const BUNDLE_MAGIC_BYTES = [0x4f, 0x50, 0x4b, 0x31] as const;
+
+export interface DecodedPackBundle {
+  readonly manifest: StorePackManifest;
+  readonly blobs: Map<string, Uint8Array>;
+}
+
+/**
+ * 매니페스트와 blob 전체를 단일 바이너리 팩(`OPK1`, `.oprn-pack`) 한 덩어리로 묶는다.
+ * 형식: `[4B "OPK1"][4B uint32BE manifestBytes.byteLength][manifest JSON UTF-8][manifest.blobs 순서대로 이어 붙인 원본 바이트]`.
+ */
+export function encodePackBundle(manifest: StorePackManifest, blob: (sha256: string) => Uint8Array): Uint8Array {
+  const manifestBytes = new TextEncoder().encode(JSON.stringify(manifest));
+  let blobsByteLength = 0;
+  const parts: Uint8Array[] = [];
+  for (const entry of manifest.blobs) {
+    const bytes = blob(entry.sha256);
+    if (bytes.byteLength !== entry.bytes) {
+      throw new Error(`blob ${entry.sha256.slice(0, 12)} 길이가 매니페스트(${entry.bytes})와 다릅니다(${bytes.byteLength}).`);
+    }
+    parts.push(bytes);
+    blobsByteLength += bytes.byteLength;
+  }
+  const out = new Uint8Array(8 + manifestBytes.byteLength + blobsByteLength);
+  out.set(BUNDLE_MAGIC_BYTES, 0);
+  new DataView(out.buffer, out.byteOffset, out.byteLength).setUint32(4, manifestBytes.byteLength, false);
+  out.set(manifestBytes, 8);
+  let offset = 8 + manifestBytes.byteLength;
+  for (const part of parts) {
+    out.set(part, offset);
+    offset += part.byteLength;
+  }
+  return out;
+}
+
+/** 단일 바이너리 팩(`OPK1`)을 풀어 매니페스트와 각 blob 의 형식·길이를 검증한다. */
+export function decodePackBundle(
+  bundle: Uint8Array,
+  verifySha256?: (bytes: Uint8Array) => string,
+  decompressManifest?: (bytes: Uint8Array) => Uint8Array,
+): DecodedPackBundle {
+  if (bundle.byteLength < 8 || BUNDLE_MAGIC_BYTES.some((b, i) => bundle[i] !== b)) {
+    throw new Error("올바른 OPRN 팩 번들(OPK1) 형식이 아닙니다.");
+  }
+  const manifestLength = new DataView(bundle.buffer, bundle.byteOffset, bundle.byteLength).getUint32(4, false);
+  if (manifestLength === 0 || manifestLength > STORE_LIMITS.manifestBytes || 8 + manifestLength > bundle.byteLength) {
+    throw new Error("팩 번들의 매니페스트 길이가 올바르지 않습니다.");
+  }
+  const rawManifestBytes = bundle.subarray(8, 8 + manifestLength);
+  const isGzip = rawManifestBytes.byteLength >= 2 && rawManifestBytes[0] === 0x1f && rawManifestBytes[1] === 0x8b;
+  const manifestBytes = isGzip && decompressManifest ? decompressManifest(rawManifestBytes) : rawManifestBytes;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(new TextDecoder().decode(manifestBytes));
+  } catch {
+    throw new Error("팩 번들의 매니페스트 JSON 을 읽지 못했습니다.");
+  }
+  const checked = validateManifest(parsed);
+  if (!checked.ok) throw new Error(`팩 매니페스트가 올바르지 않습니다: ${checked.errors.join(", ")}`);
+  const manifest = checked.value;
+  let cursor = 8 + manifestLength;
+  const blobs = new Map<string, Uint8Array>();
+  for (const entry of manifest.blobs) {
+    if (cursor + entry.bytes > bundle.byteLength) {
+      throw new Error(`blob ${entry.sha256.slice(0, 12)} 바이트가 잘렸습니다.`);
+    }
+    const slice = bundle.subarray(cursor, cursor + entry.bytes);
+    cursor += entry.bytes;
+    if (sniffMime(slice) !== entry.mime) {
+      throw new Error(`blob ${entry.sha256.slice(0, 12)} 의 실제 형식이 매니페스트(${entry.mime})와 다릅니다.`);
+    }
+    if (verifySha256 && verifySha256(slice) !== entry.sha256) {
+      throw new Error(`blob ${entry.sha256.slice(0, 12)} 의 해시가 맞지 않습니다.`);
+    }
+    blobs.set(entry.sha256, slice);
+  }
+  if (cursor !== bundle.byteLength) {
+    throw new Error("팩 번들 끝에 남는 바이트가 있습니다.");
+  }
+  return { manifest, blobs };
 }

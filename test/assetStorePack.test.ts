@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { STORE_BLOB_PREFIX, slugify, storeProjectId, validateManifest, packGrade } from "@/assetStore/format";
-import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
+import { aiMadeAssets, aiMaker, applyPackToProject, basicTilesetFor, buildPack, closeSelection, decodePackBundle, encodePackBundle, storeCredits, storeItemsInProject, type PackMeta } from "@/assetStore/pack";
 import { bytesToBase64, pngSize, sniffMime } from "@/assetStore/sniff";
 import { uploadBlockReason } from "@/editor/assetStore/storeUpload";
 import type { Project, TilesetDef, UploadedAsset } from "@/project/types";
@@ -128,6 +128,17 @@ describe("asset store pack", () => {
     expect(uploadBlockReason("t1", "Rasak Fantasy 마을", undefined)).toContain("제3자");
     expect(uploadBlockReason("t2", "RPG Maker MV 실내", undefined)).toContain("제3자");
     expect(uploadBlockReason("pawn_shop", "전당포 pawnshop", undefined)).toBeNull();
+  });
+
+  it("encodes and decodes a single-file OPK1 pack bundle with sha256 verification", async () => {
+    const built = await buildPack(project(), { tilesetIds: ["forest"], assetIds: ["song"] }, META, { readAsset, sha256 });
+    const bundle = encodePackBundle(built.manifest, (sha) => built.blobs.get(sha)!.bytes);
+    const decoded = decodePackBundle(bundle, (bytes) => createHash("sha256").update(bytes).digest("hex"));
+    expect(decoded.manifest).toEqual(built.manifest);
+    expect(decoded.blobs.size).toBe(built.blobs.size);
+    for (const [sha, blob] of built.blobs) {
+      expect(decoded.blobs.get(sha)).toEqual(blob.bytes);
+    }
   });
 });
 

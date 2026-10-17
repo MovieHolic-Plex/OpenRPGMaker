@@ -1,6 +1,8 @@
 import { deserialize, serializePretty } from "@/project/io";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
-import type { Project } from "@/project/types";
+import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
+import { encodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
+import type { Project, UploadedAsset } from "@/project/types";
 import {
   readStoredZipEntry,
   readStoredZipEntryNames,
@@ -28,6 +30,31 @@ export function projectPackageFileName(project: Project): string {
   return `${safeFileName(project.meta.title || "oprn-project")}${OPRN_EXTENSION}`;
 }
 
+/**
+ * 데스크톱(Electron) 저장소는 업로드·스토어 에셋을 `assets/<sha256>.<ext>` 에 두고 문서에는 `ref` 만 남긴다.
+ * `.oprn` 패키지나 단일 파일로 내보낼 때는 다른 폴더·웹에서도 열리도록 `ref` 바이트를 읽어 `dataUrl` 로 인라인한다.
+ */
+export async function projectWithInlineUploadedMedia(project: Project): Promise<Project> {
+  const uploaded = project.assets.uploaded;
+  if (!Object.values(uploaded).some((asset) => asset.ref !== undefined && !asset.dataUrl)) return project;
+  const nextUploaded: Record<string, UploadedAsset> = {};
+  for (const [id, asset] of Object.entries(uploaded)) {
+    if (!asset.ref || asset.dataUrl) {
+      nextUploaded[id] = asset;
+      continue;
+    }
+    try {
+      const bytes = await uploadedAssetBytes(asset);
+      const inlined: UploadedAsset = { ...asset, dataUrl: encodeDataUrlBytes(bytes, asset.ref.mime) };
+      delete inlined.ref;
+      nextUploaded[id] = inlined;
+    } catch {
+      nextUploaded[id] = asset;
+    }
+  }
+  return { ...project, assets: { ...project.assets, uploaded: nextUploaded } };
+}
+
 export function createProjectPackage(project: Project): Blob {
   return writeStoredZip(createProjectPackageEntries(projectWithoutEventDrafts(project)));
 }
@@ -36,7 +63,17 @@ export async function readProjectPackage(file: Blob): Promise<Project> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const projectEntry = readPackageEntry(bytes, "project.json");
   if (!projectEntry) throw new ProjectPackageError("project.json entry is missing");
-  return deserialize(decoder.decode(projectEntry));
+  const project = deserialize(decoder.decode(projectEntry));
+  for (const asset of Object.values(project.assets.uploaded)) {
+    if (asset.ref && !asset.dataUrl) {
+      const assetBytes = readPackageEntry(bytes, `assets/${asset.ref.sha256}.${asset.ref.extension}`);
+      if (assetBytes) {
+        asset.dataUrl = encodeDataUrlBytes(assetBytes, asset.ref.mime);
+        delete asset.ref;
+      }
+    }
+  }
+  return project;
 }
 
 export async function readProjectPackageEntryNames(file: Blob): Promise<readonly string[]> {
@@ -58,29 +95,11 @@ function createProjectPackageEntries(project: Project): readonly ZipEntry[] {
     jsonEntry("data/switches.json", project.switches),
     jsonEntry("data/variables.json", project.variables),
     jsonEntry("data/common-events.json", project.commonEvents),
-    jsonEntry("data/tilesets.json", project.tilesets),
     jsonEntry("data/assets.json", project.assets),
     jsonEntry("data/resource-profiles.json", project.resourceProfiles),
-    jsonEntry("metadata/ai-tile-labels.json", createAiTileMetadata(project)),
     jsonEntry("maps/mapTree.json", project.mapTree),
     ...maps.map((map) => jsonEntry(`maps/${safeFileName(map.id)}.json`, map)),
   ];
-}
-
-function createAiTileMetadata(project: Project): unknown {
-  return Object.fromEntries(
-    Object.values(project.tilesets).map((tileset) => [
-      tileset.id,
-      {
-        name: tileset.name,
-        tileSize: tileset.tileSize,
-        tilesPerRow: tileset.tilesPerRow,
-        count: tileset.count,
-        tileMeta: tileset.tileMeta ?? [],
-        tileGroups: tileset.tileGroups ?? [],
-      },
-    ])
-  );
 }
 
 function readPackageEntry(bytes: Uint8Array, name: string): Uint8Array | null {

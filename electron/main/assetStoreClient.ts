@@ -6,9 +6,10 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { isSha256, STORE_LIMITS, validateManifest, type StoreCatalogPage, type StoreItemDetail, type StorePackManifest } from "../../src/assetStore/format";
+import { decodePackBundle, type DecodedPackBundle } from "../../src/assetStore/pack";
 import { sniffMime } from "../../src/assetStore/sniff";
-import { normalizeGameConcept, type GameConcept } from "../../src/concepts/format";
 
 export const DEFAULT_STORE_URL = "https://store.openrpgmaker.com";
 
@@ -161,23 +162,65 @@ export class AssetStoreClient {
     writeAtomic(this.indexPath(), JSON.stringify({ version: 1, items: Object.fromEntries(items.map((item) => [item.slug, item])) }, null, 2));
   }
 
-  /** 받기: 매니페스트 검증 → blob 전부 받기(해시 확인) → 설치 목록에 기록. 받기 수도 센다. */
+  /**
+   * 받기: 단일 번들(`/bundle`, `OPK1`) 스트리밍을 먼저 시도해 1회 R2 GET + `Content-Length` 진행률로 받고,
+   * 서버가 아직 `/bundle` 을 지원하지 않으면(404 등) 매니페스트 + 병렬(최대 8개) blob 받기로 폴백한다.
+   */
   async install(slug: string, progress: Progress, version?: number): Promise<InstalledItem> {
     const detail = await this.item(slug);
     const target = version ?? detail.latestVersion;
     // 판본 번호는 캐시 파일 이름에 들어간다 — 서버가 준 값이라도 양의 정수만 믿는다.
     if (!Number.isSafeInteger(target) || target < 1) throw new StoreError("스토어가 알려 준 판본 번호가 올바르지 않습니다.");
-    const raw = await this.json<unknown>(`/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/manifest`);
-    const checked = validateManifest(raw);
-    if (!checked.ok) throw new StoreError("팩 형식이 올바르지 않아 받지 않았습니다.", 0, checked.errors);
-    const manifest = checked.value;
-    let done = 0;
-    progress({ slug, phase: "install", done, total: manifest.blobs.length });
-    for (const entry of manifest.blobs) {
-      const bytes = await this.blob(entry.sha256);
-      if (sniffMime(bytes) !== entry.mime || bytes.byteLength !== entry.bytes) throw new StoreError("받은 파일이 팩 설명과 다릅니다.");
-      done += 1;
-      progress({ slug, phase: "install", done, total: manifest.blobs.length });
+    let manifest: StorePackManifest | null = null;
+    const bundleRes = await this.request(
+      `/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/bundle`,
+      { auth: false, headers: { accept: "application/vnd.oprn.store-pack, application/octet-stream" }, signal: AbortSignal.timeout(180_000) },
+    ).catch(() => null);
+    if (bundleRes && bundleRes.ok) {
+      const maxBundleBytes = STORE_LIMITS.manifestBytes + STORE_LIMITS.versionBytes + 65_536;
+      const rawBundle = await readCapped(bundleRes, maxBundleBytes, (done, total) => {
+        progress({ slug, phase: "install", done, total: total || done });
+      });
+      const inflated = rawBundle.byteLength >= 2 && rawBundle[0] === 0x1f && rawBundle[1] === 0x8b
+        ? new Uint8Array(gunzipSync(rawBundle))
+        : rawBundle;
+      let decoded: DecodedPackBundle;
+      try {
+        decoded = decodePackBundle(
+          inflated,
+          (bytes) => createHash("sha256").update(bytes).digest("hex"),
+          (bytes) => new Uint8Array(gunzipSync(bytes)),
+        );
+      } catch (error) {
+        throw new StoreError(error instanceof Error ? error.message : "팩 번들이 손상되었습니다.");
+      }
+      manifest = decoded.manifest;
+      for (const [sha, bytes] of decoded.blobs) {
+        const path = this.blobPath(sha);
+        if (!existsSync(path)) writeAtomic(path, bytes);
+      }
+    } else {
+      if (bundleRes) await bundleRes.body?.cancel().catch(() => undefined);
+      const raw = await this.json<unknown>(`/api/v1/items/${encodeURIComponent(slug)}/versions/${target}/manifest`);
+      const checked = validateManifest(raw);
+      if (!checked.ok) throw new StoreError("팩 형식이 올바르지 않아 받지 않았습니다.", 0, checked.errors);
+      manifest = checked.value;
+      let done = 0;
+      const total = manifest.blobs.length;
+      progress({ slug, phase: "install", done, total });
+      const queue = [...manifest.blobs];
+      const workers = Array.from({ length: Math.min(8, queue.length) }, async () => {
+        while (queue.length > 0) {
+          const entry = queue.shift()!;
+          const bytes = await this.blob(entry.sha256);
+          if (sniffMime(bytes) !== entry.mime || bytes.byteLength !== entry.bytes) {
+            throw new StoreError("받은 파일이 팩 설명과 다릅니다.");
+          }
+          done += 1;
+          progress({ slug, phase: "install", done, total });
+        }
+      });
+      await Promise.all(workers);
     }
     writeAtomic(this.manifestPath(slug, target), JSON.stringify(manifest));
     const record: InstalledItem = {
@@ -295,19 +338,21 @@ export function isPrivateHost(host: string): boolean {
 }
 
 /** 응답 본문을 max 바이트까지만 읽는다. 넘으면 끊는다(악의적인 서버가 메모리를 채우지 못하게). */
-async function readCapped(response: Response, max: number): Promise<Uint8Array> {
+async function readCapped(response: Response, max: number, onProgress?: (done: number, total: number) => void): Promise<Uint8Array> {
   const declared = Number(response.headers.get("content-length") ?? 0);
   if (declared > max) { await response.body?.cancel(); throw new StoreError("스토어 응답이 너무 큽니다."); }
   if (!response.body) return new Uint8Array();
   const reader = response.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
+  if (onProgress && declared > 0) onProgress(0, declared);
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
     total += value.byteLength;
     if (total > max) { await reader.cancel(); throw new StoreError("스토어 응답이 너무 큽니다."); }
     chunks.push(value);
+    if (onProgress) onProgress(total, declared > 0 ? declared : total);
   }
   const out = new Uint8Array(total);
   let offset = 0;

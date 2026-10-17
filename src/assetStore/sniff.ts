@@ -38,6 +38,10 @@ export function dataUrlParts(dataUrl: string): { mime: string; base64: string } 
 }
 
 export function base64ToBytes(base64: string): Uint8Array {
+  if (typeof Buffer !== "undefined") {
+    const buf = Buffer.from(base64, "base64");
+    return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+  }
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
@@ -45,6 +49,9 @@ export function base64ToBytes(base64: string): Uint8Array {
 }
 
 export function bytesToBase64(bytes: Uint8Array): string {
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString("base64");
+  }
   let binary = "";
   const CHUNK = 0x8000;
   for (let index = 0; index < bytes.length; index += CHUNK) binary += String.fromCharCode(...bytes.subarray(index, index + CHUNK));
