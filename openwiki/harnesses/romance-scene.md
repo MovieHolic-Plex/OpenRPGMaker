@@ -179,3 +179,9 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 `set_deadline_ending` 을 tiers 없이 부르고(뼈대 해피 엔딩이 있고) 호감 대화 인물이 둘 이상이면, 도구가 인물마다 `ending_with_<characterId>`(「OO와 함께」, 호감 ≥60, priority 36, 기본 에필로그 한 줄)를 만들어
 tiers 맨 위에 얹고 그 뒤에 평범·혼자를 둔다. 이미 같은 id 엔딩이 있으면 건드리지 않는다(define_ending 으로 다시 쓴 것 보존). 결과 경고가 에필로그를 인물에 맞게 다시 쓰라고 알린다.
 NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, 완료 검사가 그대로 막는다.
+
+### 인물 엔딩은 인물을 놓는 순간 얹는다 (romance-loop-3)
+
+라운드 3 실측(rom-a): 모델이 `set_deadline_ending` 을 한 번도 부르지 않았다 — 프리셋이 깔아 둔 기한 판정(해피·평범·혼자)을 그대로 두고 인물 3명을 놓아 엔딩이 호감 구간 셋뿐이었다.
+그래서 도구 설명에만 맡기지 않고 `place_npc`/`make_villager` 가 성공할 때 `syncHeroineDeadline`(project/deadlineEnding.ts)이 호감 대화 인물 수를 세어, 둘 이상이면 프리셋 기본 판정에 한해 `ending_with_<characterId>` 를 만들어 맨 위에 얹는다.
+저자가 set_deadline_ending 으로 직접 짠 tiers(뼈대·인물 엔딩 밖 엔딩이 들어 있는 판정)는 건드리지 않는다. 같은 id 엔딩이 이미 있으면 그대로 둔다. `ensureHeroineEndings` 는 도구와 이 동기화가 같이 쓴다.
