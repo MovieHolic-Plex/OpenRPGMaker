@@ -377,6 +377,8 @@ const BRIEF_TOOL_PHRASES: Readonly<Record<string, readonly [doing: string, done:
   stamp_object: ["건물·소품 놓는 중", "건물·소품 놓기 완료"],
   check_city_form: ["길과 마을 모양 확인하는 중", "마을 모양 확인 완료"],
   check_reachability: ["길이 이어졌는지 확인하는 중", "길 확인 완료"],
+  place_npc: ["NPC 배치하는 중", "NPC 배치 완료"],
+  list_authoring_presets: ["프리셋 살펴보는 중", "프리셋 살펴보기 완료"],
 };
 const BRIEF_GROUP_PHRASES: Readonly<Record<ToolGroup, readonly [doing: string, done: string]>> = {
   inspect: ["프로젝트 살펴보는 중", "프로젝트 살펴보기 완료"],

@@ -340,8 +340,11 @@ export function statusToneOf(text: string): AiStatusTone {
     t.includes("실행") ||
     t.includes("검수") ||
     t.includes("생각") ||
-    t.includes("영역 작업") ||
+    t.includes("작업") ||
+    t.includes("읽는") ||
+    t.includes("준비") ||
     t.includes("중단") ||
+    t.endsWith("중") ||
     t.endsWith("중…") ||
     t.endsWith("중...")
   ) {

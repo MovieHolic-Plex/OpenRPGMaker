@@ -129,7 +129,7 @@ export function readAgentBrief(): AgentBrief {
  * 할 수 없는 일을 하라고 안내하지 않는다.
  */
 export function formatComposerPlaceholder(aiReady = true): string {
-  return aiReady ? "한 문장으로 지시" : "AI 연결 후 지시할 수 있어요 — 오른쪽 위 상태 칩을 누르세요";
+  return aiReady ? "한 문장으로 지시" : "AI 연결 후 지시할 수 있어요";
 }
 
 export function idlePresenceLine(brief: AgentBrief): string {

@@ -928,7 +928,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
-  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`));
+  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}` && key !== "tilesets" && key !== "assets" && !(key === "startPos" && merged.project.startMapId === command.mapIds[0])));
   let harmonyApproved = false;
   // 끝난 뒤 사용자에게 보여 줄 «남은 문제» — 무엇이 문제인지 말하지 않는 경고는 아무것도 알려 주지 않는다.
   let unresolvedFindings: string[] = [];
@@ -1187,6 +1187,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
     surface.setStatus(streamErrors.length ? "변경 반영됨 · 응답 중 오류" : (harmonyManualReview && applyMode !== "yolo") ? "반영됨 · 확인할 문제 있음" : saveAccepted ? "적용·저장 완료" : "적용됨 · 저장 확인 필요");
     if (streamErrors.length) surface.appendBubble("system", `${friendlyExecutionError(streamErrors[0]!)} 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요. 저장 상태는 저장 표시에서 확인해 주세요.`);
+    if (lastAssistantText.trim()) surface.appendBubble("assistant", lastAssistantText);
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,

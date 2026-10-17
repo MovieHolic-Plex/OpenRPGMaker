@@ -112,10 +112,17 @@ const coveredKit = (kitId: string) => kitId.startsWith("dewbank:");
 const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || groupId.startsWith("climate-terrain:") || groupId.startsWith("atlas-vehicles:");
 
 function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
-  return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => ({
-    id: `kit:${tileset.id}/${kit.id}`, kind: "object" as const, name: kit.name || kit.id, category: "project-kit" as const, tilesetId: tileset.id,
-    width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? [])], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
-  }));
+  return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => {
+    const label = `${kit.id} ${kit.name}`;
+    const extra = [
+      ...(/분수|우물|수반|fountain|well/iu.test(label) ? ["분수", "분수대", "우물", "fountain"] : []),
+      ...(/벤치|긴의자|bench/iu.test(label) ? ["벤치", "의자", "bench"] : []),
+    ];
+    return {
+      id: `kit:${tileset.id}/${kit.id}`, kind: "object" as const, name: kit.name || kit.id, category: "project-kit" as const, tilesetId: tileset.id,
+      width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? []), ...extra], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
+    };
+  });
 }
 
 function groupObjects(tileset: TilesetDef): SharedObjectEntry[] {

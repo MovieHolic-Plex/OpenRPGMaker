@@ -35,7 +35,7 @@ export interface ModelPreset {
  * fast: 각 제공자의 기본 모델(레지스트리 defaultModel 과 일치), strong: 최상위 모델.
  */
 const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, string>>>> = {
-  [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-4-argon", strong: "gemini-3-pro" },
+  [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-4-argon", strong: "gemini-4-argon" },
   // Codex 는 두 티어 모두 gpt-6.1-sol 이고 사고 강도로만 가른다(2026-10-07 조수 시험에서 기본으로 채택).
   [CODEX_PROVIDER_ID]: { fast: "gpt-6.1-sol", strong: "gpt-6.1-sol" },
 };

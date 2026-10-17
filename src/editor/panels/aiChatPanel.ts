@@ -669,6 +669,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const removeStartScreen = (): void => {
     startScreen?.remove();
     startScreen = null;
+    syncGlassIdle();
   };
   // 휘발 존이 사라져 접을 것이 없다(사이드 도크 전용이었다). 호출부 계약만 유지한다.
   const hideVolatileIfIdle = (): void => {};
@@ -2438,6 +2439,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       workCardTitle = shown.replace(/\s+/gu, " ").trim().slice(0, 48);
       appendBubble("user", shown);
       ensureWorkCard();
+      syncGlassIdle();
       let classified: PlainPiTurn;
       try {
         classified = await plainPiTurn(text, handoff?.team ? { team: true } : undefined);
@@ -3378,12 +3380,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     [composerShell.conversationsButton, "이전 대화"],
     [composerShell.preferenceToggle, "AI가 기억한 취향"],
     [composerShell.planningToggle, "저장한 기획"],
-    [contextMeter.button, "대화 맥락 사용량"],
   ] as const) {
     if (!button) continue;
     button.append(el("span", { text: label }));
     secondaryActions.append(button);
   }
+  secondaryActions.append(contextMeter.button);
   // 상태 문장은 레일이 든다 — 컴포저 행의 상태 그룹은 멈추기 버튼 자리만 남는다.
   rail.statusSlot.append(status);
   // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
@@ -3445,6 +3447,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
   // 팀 UI를 숨긴 동안에는 팀과 함께 열리는 분할 창도 노출하지 않는다.
   wideButton.hidden = true;
+  wideButton.style.display = "none";
   wideButton.classList.add("ai-deck-wide-open");
   wideButton.replaceChildren(deckIcon("expand"));
   deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);
@@ -3485,8 +3488,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // side=에디터 셸 컬럼, float=캡슐 3가지를 도크별 localStorage 키로 따로 들고 있었고
   // 리사이즈 핸들의 방향·앵커·aria 도 도크마다 갈렸다.
   const resizableDock = (): boolean =>
-    !panel.classList.contains("is-left-sidebar")
-    && !panel.classList.contains("is-studio")
+    !panel.classList.contains("is-studio")
     && !panel.classList.contains("is-docked")
     && !collapsed;
   // 크기 조절 크롬은 aiChatResizeChrome.ts 가 갖는다. 패널은 상태 세 질문만 넘긴다 —
@@ -3505,7 +3507,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel,
     deck,
     rail: rail.root,
-    movable: resizableDock,
+    movable: () => !panel.classList.contains("is-left-sidebar") && resizableDock(),
   });
 
   /**

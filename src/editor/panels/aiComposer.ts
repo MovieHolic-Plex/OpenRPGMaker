@@ -379,10 +379,13 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     settingsToggle.textContent = quickPlacement ? "작업 설정 · 바로 깔기" : mode === "default" ? "작업 설정" : `작업 설정 · ${labels[mode]}`;
   };
   paintSettingsSummary();
-  const settingRow = (title: string, hint: string, control: HTMLElement): HTMLElement => el("label", {
-    class: "ai-chat-setting-row",
-    children: [el("span", { text: title }), control, el("small", { text: hint })],
-  });
+  const settingRow = (title: string, hint: string, control: HTMLElement): HTMLElement => {
+    control.style.maxWidth = "none";
+    return el("label", {
+      class: "ai-chat-setting-row",
+      children: [el("span", { text: title }), control, el("small", { text: hint })],
+    });
+  };
   const settingsPopover = el("div", {
     class: "ai-composer-popover ai-chat-settings",
     attrs: { role: "dialog", "aria-label": "작업 설정" },
@@ -527,7 +530,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     const rect = popover.getBoundingClientRect();
     // Overflow controls become hidden when their destination popover opens.
     const toggleRect = toggle.getBoundingClientRect();
-    const anchor = openState === "team" ? composer : toggleRect.width || toggleRect.height ? toggle : menuToggle;
+    const anchor = openState === "team" || openState === "settings" ? composer : toggleRect.width || toggleRect.height ? toggle : menuToggle;
     const position = anchoredPopupPosition(anchor.getBoundingClientRect(), rect, {
       width: window.innerWidth, height: window.innerHeight,
     }, 6);

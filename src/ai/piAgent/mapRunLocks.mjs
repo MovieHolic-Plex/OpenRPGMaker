@@ -45,7 +45,7 @@ export function mapRunBundleIds(project, mapIds) {
 
 /** Unrestricted and team requests can touch any map, including maps created later. */
 export function mapRunScope(request) {
-  if (request.mode === "team" || !request.mapIds?.length || (request.scopeStrict === false && !request.mapBundleMerge)) return null;
+  if (request.mode === "team" || !request.mapIds?.length) return null;
   return mapRunBundleIds(request.project, request.mapIds);
 }
 

@@ -224,8 +224,8 @@ export async function completeProvider(
   const apiKey = options?.apiKey;
   // 사용자 지정 엔드포인트: 추론 강도를 엔드포인트가 정한 방식(none/field/suffix)으로 맞춘다. 차단 모델은 여기서도 403 으로 거절한다.
   const shaped = isOpenAiCompatProviderId(provider)
-    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body))
-    : { model, options: completionThinkingOptions(body) };
+    ? shapeOpenAiCompatCall(provider, model as { id: string; name?: string }, completionThinkingOptions(body, provider))
+    : { model, options: completionThinkingOptions(body, provider) };
   const message = await completeSimple(shaped.model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
     fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch)
@@ -252,8 +252,8 @@ export async function completeProvider(
 }
 
 /** OpenAI envelope -> OMP simple options, which own wire model/effort routing. */
-export function completionThinkingOptions(body: Record<string, unknown>) {
+export function completionThinkingOptions(body: Record<string, unknown>, provider?: string) {
   const effort = (body.reasoning as { effort?: unknown } | undefined)?.effort;
-  return effort === "low" || effort === "medium" || effort === "high"
-    ? { reasoning: effort } : {};
+  if (effort === "low" || effort === "medium" || effort === "high") return { reasoning: effort };
+  return provider === "google-antigravity" ? { reasoning: "low" as const } : {};
 }
