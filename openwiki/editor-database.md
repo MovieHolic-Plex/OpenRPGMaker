@@ -29,6 +29,20 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 자료집 시각 깨짐·잘림 9건 수리 (2026-10-17, 메뉴 감사 PR-2)
+
+탭 id·그룹 구성·저장 데이터는 그대로다(`database.ts` 무변경). 메뉴 감사 부록 A의 시각 결함 9건(B1~B9)만 고쳤다.
+
+- **B1 게임 메뉴 `field-list.png` 썸네일 누락**: `public/assets/ui/menu-skins/field-list.png`(960×720)를 실제 런타임 플레이어 캡처(`scripts/qa/runtime/menu-design.probe.mjs`)로 추가하고 `field-list` 스킨을 프로브 대상 및 복사 목록에 편입했다.
+- **B2 토글 스위치(`.db-toggle-input`) 폭 16px 찌그러짐**: `studio-v2.part-3.css`의 `input[type="checkbox"] { width: 16px }`가 `.db-toggle-input`을 이겨 오프닝·게임 오버 등에서 파란 점과 빈 원 두 개로 갈라지던 문제를 `studio-refresh.css`의 스튜디오 공통 규칙(`34×18px`) 한 줄로 고정했다.
+- **B3 전투 화면·전투 명령 상단 잘림 및 제목 5회 중복**: `.db-battle-studio-heading`에 상하 여백(`padding: 14px 18px 12px`)을 주고 `.db-battle-screen-stack`에 세로 스크롤(`min-height: 0; overflow-y: auto`)을 열었다. `renderBattleCommandsTab`의 `detailHero`에서는 중복 눈썹(`전투 명령`)을 지우고 제목을 「카탈로그와 직업 메뉴 배치」로 바꿨다.
+- **B4 주민 관계 이름 앞 점·원시 id 노출·헤더/목록 이름 불일치**: `databaseCharacterView.ts`에서 목록과 상세 머리글·요약 카드가 같은 표시 이름(`주민 N`)을 쓰도록 통일하고, 히어로 썸네일(`32×32px`, 빈 슬롯은 생략)이 1×1 프로브 크기로 줄어 점(`.`)처럼 보이던 문제를 고쳤다. `[data-testid="db-character-id"]`는 텍스트 계약을 유지한 채 `hidden`으로 숨겼다.
+- **B5 레일 「빈 탭 N개」 줄 2줄 잘림**: `sidebar.css`의 `.db-tab-fold`를 세로 쌓기(`flex-direction: column`)로 바꾸고 `.db-tab-fold-names` 줄 제한을 5줄(`-webkit-line-clamp: 5`, 전폭)로 넓혀 접힌 탭 이름이 잘리지 않게 했다.
+- **B6 생활 기술·제작 빈 상태 안내 중복**: `databaseLifeCraftingView.ts`에서 검색어가 없을 때 왼쪽 목록 창의 중복 빈 상태 카드를 빼고 오른쪽 본문 안내 카드 한 곳만 남겼다.
+- **B7 상태 탭 색상 줄 분리·「GEN1」 문구 평문화**: `studio-refresh.css`에서 `.db-state-color-control`을 3열(`라벨 | 22px 견본 | 색 이름`)로 복원하고, `databaseStateRecordView.ts`의 「Gen1 주요 상태」「휘발 상태 (gen1)」 라벨을 「주요 상태」「휘발 상태」로 평문화했다(`{en,ja,zh}.json` 반영).
+- **B8 포획·성장 종족 「프로젝트 준비 N/4」 칩 부유**: `databaseMonsterSpeciesView.ts`에서 `monsterPipelineHeader`를 본문 위 별도 그리드 행에서 상세 인스펙터 하단으로 옮기고 왼쪽 정렬(`align-items: flex-start`)해 목록·상세 상단 정렬을 맞췄다.
+- **B9 시스템 › 시작 설정 입력 폭 과신장**: `databaseSystemView.ts`의 로컬 `selectField`/`selectLiteral` 폭을 `max-width: 340px`, `numberField` 스테퍼 폭을 `max-width: 120px`로 상한을 두어 940~1,000px로 늘어나지 않게 했다.
+
 ## 자료집 길찾기 — 구획 낱말 검색·3단 크럼·최근 탭 (2026-10-17, 메뉴 감사 PR-1)
 
 탭 id·그룹 구성·저장 데이터는 그대로다. 코드는 `databaseWayfinding.ts`(데이터와 작은 상태, DOM 없음) 한 곳과 `database.ts`·`databaseModal.ts`·`databaseSystemView.ts` 의 연결선이다.

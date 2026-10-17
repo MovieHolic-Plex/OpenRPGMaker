@@ -302,13 +302,7 @@ function recordListPane(section: RecordSection, records: readonly LifeRecord[], 
         compact: true,
         testid: "db-life-list-empty",
       })
-      : wsEmptyState({
-        icon: "○",
-        title: `${meta.label} 레코드 없음`,
-        body: "아래 '+ 추가'로 첫 레코드를 만드세요.",
-        compact: true,
-        testid: "db-life-list-empty",
-      }),
+      : el("div", { attrs: { hidden: "true" } }),
     toolbar: listToolbar([
       { label: "+ 추가", testid: "db-life-add", onClick: () => addRecord(section, rerender) },
       { label: "복제", testid: "db-life-duplicate", disabled: records.length === 0, onClick: () => duplicateRecord(section, rerender) },
@@ -404,12 +398,7 @@ function configListPane(section: ConfigSection): HTMLElement {
         onSelect: () => undefined,
       })]
       : [],
-    empty: wsEmptyState({
-      icon: "○",
-      title: "설정 없음",
-      compact: true,
-      testid: "db-life-list-empty",
-    }),
+    empty: el("div", { attrs: { hidden: "true" } }),
     testid: `db-life-list-pane-${section}`,
   });
 }

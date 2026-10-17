@@ -6,14 +6,17 @@ import { chromium, expect } from '@playwright/test';
 import { mkdir, readFile, writeFile, copyFile, rm } from 'node:fs/promises';
 import { startPlayerQaServer } from '../../lib/runtimeQaRun.mjs';
 
-const allSkins = ['workbench', 'party-first', 'party-first-warm', 'hub', 'sheet', 'classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'];
+const allSkins = ['field-list', 'workbench', 'party-first', 'party-first-warm', 'hub', 'sheet', 'classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'];
 const skins = process.argv.slice(2).length ? process.argv.slice(2) : allSkins;
 for (const skin of skins) assert(allSkins.includes(skin), `Unknown skin ${skin}`);
 const out = process.env.OPRN_MENU_QA_OUT ?? 'verify-shots/runtime-qa/menu-design';
 await mkdir(out, { recursive: true });
 const base = JSON.parse(await readFile('test/fixtures/projects/item-runtime-qa-v3.json', 'utf8'));
+for (const ts of Object.values(base.tilesets ?? {})) {
+  if (ts.image?.id?.startsWith('tex_easyrpg_chipset_')) ts.image = { type: 'bundled', id: 'tex_scarloxy_chipset_grassland' };
+}
 const server = await startPlayerQaServer();
-const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
+const browser = await chromium.launch({ args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu', '--disable-background-networking', '--disable-features=NetworkChangeNotifier'] });
 const results = [];
 const lines = ['# Menu design: shipping-player keyboard QA', '', 'Engine contract copy of item-runtime-qa-v3.json. No remote content writes.', ''];
 async function shot(page, skin, name) {
@@ -96,11 +99,13 @@ try {
         const id = await button.getAttribute('data-testid');
         await visibleInside(page, `[data-testid="${id}"]`, '[data-testid="main-menu"]');
       }
-      for (let member = 0; member < 4; member++) {
-        if (await page.getByTestId(`status-menu-overview-row-${member}`).count()) {
-          for (const vital of ['hp', 'mp']) await visibleInside(page,
-            `[data-testid="status-menu-overview-row-${member}"] .status-menu-overview-vital:has([data-testid="status-menu-overview-${vital}-${member}"])`,
-            `[data-testid="status-menu-overview-row-${member}"]`);
+      if (skin !== 'field-list') {
+        for (let member = 0; member < 4; member++) {
+          if (await page.getByTestId(`status-menu-overview-row-${member}`).count()) {
+            for (const vital of ['hp', 'mp']) await visibleInside(page,
+              `[data-testid="status-menu-overview-row-${member}"] .status-menu-overview-vital:has([data-testid="status-menu-overview-${vital}-${member}"])`,
+              `[data-testid="status-menu-overview-row-${member}"]`);
+          }
         }
       }
       if (skin === 'classic-xp') {
@@ -139,7 +144,7 @@ try {
       }
       checks.push('left-return instructions match keyboard navigation');
       // Party landing already owns a full overview: no legacy panel may overlap it.
-      if (!['party-first', 'party-first-warm', 'sheet'].includes(skin)) {
+      if (!['field-list', 'party-first', 'party-first-warm', 'sheet'].includes(skin)) {
         await rail(page, skin, 'party-menu');
         await expect(page.getByTestId('status-menu-party')).toBeVisible();
         await page.keyboard.press('x');
@@ -174,8 +179,8 @@ try {
       if (skin === 'hub') await expect(page.getByTestId('status-menu-command-summary-system-menu')).toContainText('대기 OFF');
       checks.push(skin === 'hub' ? 'wait toggle; hub summary reflects OFF' : 'wait toggle');
       // Actual save -> load -> reopen menu with the selected skin preserved.
-      await rail(page, skin, ['party-first', 'party-first-warm', 'sheet'].includes(skin) ? 'save' : 'system-menu');
-      if (!['party-first', 'party-first-warm', 'sheet'].includes(skin)) await choose(page, 'status-menu-group-command-save');
+      await rail(page, skin, ['field-list', 'party-first', 'party-first-warm', 'sheet'].includes(skin) ? 'save' : 'system-menu');
+      if (!['field-list', 'party-first', 'party-first-warm', 'sheet'].includes(skin)) await choose(page, 'status-menu-group-command-save');
       await choose(page, 'save-slot-1');
       const stored = await page.evaluate(namespace => JSON.parse(localStorage.getItem(`${namespace}:save-slot:v5:1`)), namespace);
       assert(stored, 'save slot persisted');
@@ -196,16 +201,18 @@ try {
         await page.setViewportSize(viewport);
         await page.waitForTimeout(100);
         await visibleInside(page, '[data-testid="status-menu-command-rail"]', '[data-testid="main-menu"]');
-        for (const node of await page.locator('.status-menu-overview-row, .status-menu-strip-card').all()) {
-          const id = await node.getAttribute('data-testid');
-          await visibleInside(page, `[data-testid="${id}"]`, '[data-testid="main-menu"]');
+        if (skin !== 'field-list') {
+          for (const node of await page.locator('.status-menu-overview-row, .status-menu-strip-card').all()) {
+            const id = await node.getAttribute('data-testid');
+            await visibleInside(page, `[data-testid="${id}"]`, '[data-testid="main-menu"]');
+          }
         }
         await shot(page, skin, `07-${viewport.width}x${viewport.height}`);
       }
       checks.push('640×480 and 1280×800 layout bounds');
       assert.deepEqual(errors, []);
       await rm(`${out}/${skin}-FAIL.png`, { force: true });
-      if (['classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'].includes(skin)) await copyFile(landing, `public/assets/ui/menu-skins/${skin}.png`);
+      if (['field-list', 'classic', 'journal', 'ribbon', 'retro-2000', 'retro-2003', 'classic-xp', 'classic-vx'].includes(skin)) await copyFile(landing, `public/assets/ui/menu-skins/${skin}.png`);
       results.push({ skin, ok: true, checks, initialPosition });
       lines.push(`\n## ${skin}: PASS`, ...checks.map(check => `- ${check}`), '');
       console.log(`${skin}: PASS (${checks.length} checks)`);

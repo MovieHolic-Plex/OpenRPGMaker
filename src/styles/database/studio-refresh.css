@@ -337,3 +337,58 @@
   background: var(--db-studio-surface);
   border-top: 1px solid var(--db-studio-border-subtle);
 }
+
+/* ── 6. PR-2 시각 버그 수정 (B2·B3·B7·B8) ─────────────────────────────────── */
+
+/* B2: 토글 스위치(.db-toggle-input)가 체크박스 규칙(width:16px)에 눌리지 않게 스튜디오 전체에서 고정. */
+.database-modal-backdrop .database-modal-window .database-modal-body input.db-toggle-input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toggle-switch > input.db-toggle-input {
+  flex: 0 0 34px;
+  height: 18px;
+  min-height: 18px;
+  min-width: 34px;
+  width: 34px;
+}
+
+/* B3: 전투 화면·전투 명령 등 스튜디오 헤딩이 상단 경계선(y=57)에 붙어 잘려 보이지 않게 여백 부여. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-battle-studio-heading {
+  padding: 14px 18px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-battle-screen-studio .db-battle-screen-stack {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* B7: 상태 탭 색상 견본과 색 이름(output)이 두 줄로 갈라지지 않게 3열 격자로 복원. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-state-color-control {
+  grid-template-columns: var(--db2-label-col) 22px minmax(0, 1fr);
+}
+
+/* B8: 포획·성장 종족의 「프로젝트 준비 N/4」 칩이 본문 위에 붕 뜨지 않게 상세 하단에 정렬. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-life-header,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness {
+  align-items: flex-start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-life-header {
+  margin-top: 10px;
+}
+
+@media (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):not(:has(> .db-collection-gate-warn)) {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):not(:has(> .db-collection-gate-warn)) > .oprn-record-monster-species {
+    grid-row: 1;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(.oprn-record-monster-species):has(> .db-collection-gate-warn) > .oprn-record-monster-species {
+    grid-row: 2;
+  }
+}
