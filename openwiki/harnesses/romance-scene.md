@@ -162,3 +162,11 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
   「타이틀이 소재와 다른 그림(캠퍼스 기본이거나, 카페 기획에 마을 그림처럼 다른 소재 그림이 기획 낱말을 더 많이 세는 쪽에 밀릴 때)」일 때 정확한 id 와 함께 finish 를 막는다. 저작자가 다른 그림(생성·업로드)을 고른 타이틀은 건드리지 않는다.
 - R1-05(기한 엔딩이 빠른 Enter 연타에서 늦게 열림): 대화 한 번당 칸 하나, 칸 3개가 하루. 14일째 하루 끝에서 엔딩은 slow·fast·spam 모두 즉시 열렸다(var_days_elapsed 13에서 시작). 이전 관측은 측정용 드라이버가
   Enter(= 행동 키)로 다음 대화를 연타해 한 반복 안에 여러 하루가 지나간 것으로 보이며 제품 결함으로 재현하지 못했다. 「Text cancelled」 는 하루 끝 취침이 열린 대사를 가져갈 때의 정상 AbortError(playSceneInterpreter 주석)다.
+
+## 엔딩이 겨눈 인물의 호감이 오를 곳 (2026-10-17 romance-loop-2, `romance-ending-npc-unreachable`)
+
+실측(rom-b, 카페 6인): 엔딩 10개 중 `ending_haru`·`ending_yuu` 는 카페 안 두 인물의 호감을 보는데, 그 인물의 선택지는 스위치만 켜고 talkFriendship·changeFriendship 이 없어
+호감이 0 에서 안 올랐다. 한 인물(지훈)은 characterId 가 `haru_street` 인데 엔딩은 `jihun` 을 봐 엔딩이 둘로 갈라졌다(`ending_jihun`/`ending_jihun_alt`). 자동 플레이는 경고(`deadline-ending-unplayed`)만 냈다.
+
+`checkEndingNpcReachable`(romanceEndings.ts)은 엔딩 조건·기한 fork 가 이름으로 겨눈 인물 키마다 호감이 오르는 곳(호감 대화 인물의 characterId · changeFriendship npcKey · 「인물 호감」 변수 주인)이 있는지 본다.
+없으면 경고 `romance-ending-npc-unreachable` 이고 COMPLETION_CODES 라 finish 를 막는다(한 장면 게임은 ENDING_CODES 로 면제). 키 이름이 다른 오타(`haru_street` vs `jihun`)도 같은 검사로 잡힌다.

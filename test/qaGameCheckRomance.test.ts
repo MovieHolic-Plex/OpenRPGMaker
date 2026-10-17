@@ -119,4 +119,20 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     expect(got?.message).toContain("oprn-title-romance-cafe");
     expect(checkRomance(project, "바닷가 이웃마을 썸 연애 게임").some((finding) => finding.code === "romance-title-art-setting")).toBe(false);
   });
+
+
+  it("엔딩이 보는 인물의 호감이 어디서도 오르지 않으면 짚는다", () => {
+    const project = romanceProject();
+    const map = Object.values(project.maps)[0]!;
+    map.events.push(npc("a"), npc("b", { talkFriendship: false }));
+    project.endings = [
+      { id: "ending_a", name: "A와", conditions: [{ kind: "friendshipAtLeast", npcKey: "char_a", value: 10 }], priority: 30 },
+      { id: "ending_b", name: "B와", conditions: [{ kind: "friendshipAtLeast", npcKey: "char_b", value: 10 }], priority: 30 },
+    ] as never;
+    const got = checkRomance(project).find((finding) => finding.code === "romance-ending-npc-unreachable");
+    expect(got?.message).toContain("char_b");
+    expect(got?.message).not.toContain("char_a");
+    map.events.find((event) => event.id === "b")!.talkFriendship = true;
+    expect(codes(project)).not.toContain("romance-ending-npc-unreachable");
+  });
 });
