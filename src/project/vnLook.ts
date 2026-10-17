@@ -19,7 +19,7 @@ export const VN_SETTINGS = ["campus", "cafe", "office", "seaside", "academy"] as
 export type VnSetting = (typeof VN_SETTINGS)[number];
 
 /** 대사창 프리셋. layout 이 상자 모양을, tokens 가 색·모서리를 정한다. */
-export const VN_PRESET_IDS = ["bar-tab", "sakura-card", "paper-note", "office-bar", "sea-glass", "night-glass", "nvl-page", "bubble"] as const;
+export const VN_PRESET_IDS = ["dual-fullbody-veil", "bar-tab", "sakura-card", "paper-note", "office-bar", "sea-glass", "night-glass", "nvl-page", "bubble"] as const;
 export type VnPresetId = (typeof VN_PRESET_IDS)[number];
 export const VN_LAYOUTS = ["bar", "card", "page", "bubble"] as const;
 export type VnLayout = (typeof VN_LAYOUTS)[number];
@@ -85,6 +85,14 @@ export type VnPresetDefinition = {
  * 대비: 본문 글자 ↔ 상자 배경은 모두 WCAG AA(4.5:1) 이상이 되게 골랐다(test/vnLook.test.ts 가 계산으로 확인한다).
  */
 export const VN_PRESETS: Readonly<Record<VnPresetId, VnPresetDefinition>> = {
+  "dual-fullbody-veil": {
+    id: "dual-fullbody-veil",
+    label: "양쪽 전신 · 반투명 베일",
+    description: "화면 양쪽에 전신 스탠딩 초상을 함께 세우고, 하단에는 테두리 없는 반투명 다크 그라데이션 대화창을 겹칩니다.",
+    fit: "연애 시뮬레이션 · 오토메 · 양쪽 전신 스탠딩 대화 장면",
+    layout: "bar", nameplate: "pill", choiceStyle: "bar", waitIcon: "arrow",
+    tokens: { bg: "rgba(10, 12, 20, 0.84)", bgStrong: "rgba(8, 10, 18, 0.92)", border: "rgba(255, 255, 255, 0.14)", text: "#ffffff", textRead: "#b8c2d8", textShadow: "0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.82), 1px 1px 0 rgba(0, 0, 0, 0.92)", nameBg: "rgba(14, 18, 30, 0.88)", nameText: "#f7e7c4", accent: "#f3d28c", accentText: "#1b1405", accentInk: "#f5d99b", stage: "rgba(8, 10, 18, 0.80)", radius: 0, borderWidth: 0, shadow: "none", blur: 0 },
+  },
   "bar-tab": {
     id: "bar-tab",
     label: "하단 반투명 바 · 이름 탭",

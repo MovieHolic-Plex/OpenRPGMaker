@@ -19,6 +19,7 @@ import type { GamePresetId } from "@/project/gameDesignBrief";
 
 export const DIALOGUE_STYLE_IDS = [
   "glass",
+  "dual-fullbody-veil",
   "pixel-cinematic",
   "classic",
   "retro-black",
@@ -76,6 +77,11 @@ export interface DialogueStyleDefinition {
 }
 
 export const DIALOGUE_STYLES: Readonly<Record<DialogueStyleId, DialogueStyleDefinition>> = {
+  "dual-fullbody-veil": {
+    id: "dual-fullbody-veil", label: "양쪽 전신 · 반투명 베일", defaultVoice: "soft",
+    description: "화면 양쪽에 전신 스탠딩 초상을 함께 세우고, 하단에는 테두리 없는 반투명 다크 그라데이션 대화창을 겹칩니다.",
+    fit: "연애 시뮬레이션 · 오토메 · 양쪽 전신 스탠딩 대화 장면.",
+  },
   "pixel-cinematic": {
     id: "pixel-cinematic", label: "도트 · 반투명 영화창", defaultVoice: "soft",
     description: "작은 반투명 먹빛 창, 각진 이중 테두리와 픽셀 글꼴. 배경과 인물이 계속 보입니다.",
@@ -473,7 +479,7 @@ export const RECOMMENDED_DIALOGUE_STYLE_BY_PRESET: Readonly<Record<GamePresetId,
   "horror-gallery": "float",
   "school-horror": "mono-heavy",
   "farm-life": "wood",
-  "partner-raise": "pixel-cinematic",
+  "partner-raise": "dual-fullbody-veil",
   "action-rpg": "white-card",
 };
 

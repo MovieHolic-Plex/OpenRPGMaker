@@ -376,6 +376,8 @@ function stageDialogueContainer(
 function applyPreviewDialogueLook(overlay: HTMLElement, win: HTMLElement, look: DialogueLook): void {
   overlay.dataset.dialogueStyle = look.style;
   win.dataset.dialogueStyle = look.style;
+  if (look.style === "dual-fullbody-veil") overlay.dataset.dialogueStage = "dual-fullbody-veil";
+  else delete overlay.dataset.dialogueStage;
   if (look.context !== "speech") win.dataset.dialogueContext = look.context;
   if (look.font) win.style.setProperty("--runtime-dialogue-font", resolveFontStack(look.font));
 }
@@ -386,7 +388,34 @@ function applyPreviewDialogueLook(overlay: HTMLElement, win: HTMLElement, look: 
  */
 export function renderDialogueLookSample(speaker: string, body: string, look: DialogueLook): HTMLElement {
   void preloadRuntimeStyles();
-  return messageWindowMock(speaker, body, undefined, { replay: false, look });
+  const frame = messageWindowMock(speaker, body, undefined, { replay: false, look });
+  if (look.style === "dual-fullbody-veil" && look.container === "box" && !look.hideFace) {
+    const overlay = frame.querySelector<HTMLElement>(".dialogue-overlay");
+    const win = frame.querySelector<HTMLElement>(".dialogue-box");
+    if (overlay && win) {
+      const project = store.getCurrent();
+      const leftUrl = resolveAssetResourceUrl("shared-modern-uni-boy-navy-expressions-full-base", { project });
+      const rightUrl = resolveAssetResourceUrl("shared-modern-uni-girl-navy-expressions-full-base", { project });
+      overlay.classList.add("has-bust-face");
+      overlay.style.setProperty("--runtime-dialogue-panel-height", "52px");
+      win.classList.add("has-bust-face", "portrait-full", "portrait-full-tall", "has-portrait-listener", "bust-left");
+      if (leftUrl) {
+        const leftPortrait = el("div", {
+          class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-left dialogue-face-behind",
+          attrs: { role: "img", "aria-label": "전신 왼쪽 견본", style: `background-image:url("${leftUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:60px;--runtime-dialogue-full-drop:18px;` },
+        });
+        overlay.append(leftPortrait);
+      }
+      if (rightUrl) {
+        const rightPortrait = el("div", {
+          class: "dialogue-face dialogue-face-bust dialogue-face-full dialogue-face-side-right dialogue-portrait-listener dialogue-face-behind",
+          attrs: { role: "img", "aria-label": "전신 오른쪽 견본", style: `background-image:url("${rightUrl}");--runtime-dialogue-full-height:108px;--runtime-dialogue-full-width:60px;--runtime-dialogue-full-drop:18px;` },
+        });
+        overlay.append(rightPortrait);
+      }
+    }
+  }
+  return frame;
 }
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */

@@ -10,6 +10,7 @@ import { el } from "@/util/dom";
 
 /** 견본에 기본으로 세우는 공용 전신 — 프로젝트에 고른 그림이 없을 때. */
 export const FULL_PORTRAIT_SAMPLE_RESOURCE_ID = "shared-people1-girl-expressions-full-base";
+export const FULL_PORTRAIT_PARTNER_SAMPLE_RESOURCE_ID = "shared-people1-boy-expressions-full-base";
 
 const STAGE_WIDTH = 320;
 const PORTRAIT_ASPECT = 9 / 16;
@@ -18,13 +19,14 @@ const SIDE_INSET_PX = 22;
 
 export interface FullPortraitStageOptions {
   readonly resourceId: string;
+  readonly partnerResourceId?: string;
+  readonly veil?: boolean;
   readonly layout: DialogueFullPortraitLayout;
   readonly position?: "left" | "right";
   readonly flipHorizontally?: boolean;
   readonly width?: number;
   readonly testid?: string;
 }
-
 export function renderFullPortraitStage(options: FullPortraitStageOptions): HTMLElement {
   // 견본 화면은 프로젝트의 게임 해상도 비율을 그대로 줄인다(기본 320×240).
   const project = store.getCurrent();
@@ -33,9 +35,9 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
   const scale = width / resolution.width;
   const height = Math.round(resolution.height * scale);
   const portraitHeight = Math.round(height * options.layout.heightRatio);
-  const portraitWidth = Math.round(portraitHeight * PORTRAIT_ASPECT);
+  const portraitWidth = Math.round(portraitHeight * (options.veil ? 0.36 : PORTRAIT_ASPECT));
   const drop = Math.round(portraitHeight * options.layout.dropRatio);
-  const inset = Math.round(SIDE_INSET_PX * scale);
+  const inset = Math.round((options.veil ? 4 : SIDE_INSET_PX) * scale);
   const url = resolveAssetResourceUrl(options.resourceId, { project });
   const right = options.position === "right";
   const portrait = url
@@ -52,17 +54,44 @@ export function renderFullPortraitStage(options: FullPortraitStageOptions): HTML
     [right ? "right" : "left"]: `${inset}px`,
     transform: options.flipHorizontally ? "scaleX(-1)" : "",
   });
+  const stageChildren: HTMLElement[] = [portrait];
+  if (options.partnerResourceId) {
+    const partnerUrl = resolveAssetResourceUrl(options.partnerResourceId, { project });
+    const partnerNode = partnerUrl
+      ? el("img", {
+        class: "full-portrait-stage-figure",
+        attrs: { src: partnerUrl, alt: "", draggable: "false" },
+        dataset: { testid: "full-portrait-stage-listener" },
+      })
+      : el("div", { class: "full-portrait-stage-figure is-missing", text: "그림 없음" });
+    Object.assign(partnerNode.style, {
+      width: `${portraitWidth}px`,
+      height: `${portraitHeight}px`,
+      bottom: `${-drop}px`,
+      [right ? "left" : "right"]: `${inset}px`,
+      filter: "brightness(0.82) saturate(0.92)",
+    });
+    stageChildren.push(partnerNode);
+  }
+  const boxNode = el("div", {
+    class: "full-portrait-stage-box",
+    children: [el("span", { class: "full-portrait-stage-name", text: "소녀" }), el("span", { text: "대사창은 초상 앞에 놓입니다." })],
+  });
+  if (options.veil) {
+    Object.assign(boxNode.style, {
+      inset: "auto 0 0 0",
+      border: "0",
+      borderRadius: "0",
+      padding: "8px 14px 10px",
+      background: "linear-gradient(180deg, rgba(8, 10, 18, 0.04) 0%, rgba(10, 13, 22, 0.68) 22%, rgba(10, 13, 22, 0.84) 60%, rgba(8, 10, 18, 0.92) 100%)",
+    });
+  }
+  stageChildren.push(boxNode);
   const stage = el("div", {
     class: "full-portrait-stage",
     attrs: { role: "img", "aria-label": `전신 초상 견본 · 화면 높이의 ${Math.round(options.layout.heightRatio * 100)}%` },
     dataset: { testid: options.testid ?? "full-portrait-stage" },
-    children: [
-      portrait,
-      el("div", {
-        class: "full-portrait-stage-box",
-        children: [el("span", { class: "full-portrait-stage-name", text: "소녀" }), el("span", { text: "대사창은 초상 앞에 놓입니다." })],
-      }),
-    ],
+    children: stageChildren,
   });
   stage.style.width = `${width}px`;
   stage.style.height = `${height}px`;
