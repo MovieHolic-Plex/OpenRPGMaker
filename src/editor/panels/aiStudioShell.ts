@@ -22,6 +22,7 @@ import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
 import { createPlanningListView, currentPlanningMapId, type PlanningListView } from "@/editor/panels/aiPlanningList";
 import { listMapPlanningItems } from "@/editor/mapPlanningActions";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
+import { createStudioDirectorBoard } from "@/editor/panels/studioDirectorBoard";
 import type { ToolDefinition } from "@/editor/tools/types";
 import { subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
 import { LANE_STATUS_LABEL, type LaneState } from "@/ai/piAgent/lane";
@@ -229,9 +230,11 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   let selectedThreadId = "director";
 
   // ── 모니터 ───────────────────────────────────────────────────────────────
+  let canvasViewActive = false;
   const monitorStage = el("div", {
     class: "ai-studio-monitor-stage",
     dataset: { testid: "ai-studio-monitor-stage" },
+    attrs: { hidden: "" },
   });
   const monitorChrome = el("div", {
     class: "ai-studio-monitor-chrome",
@@ -245,6 +248,54 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   const monitorMeta = el("div", {
     class: "ai-studio-monitor-meta",
     dataset: { testid: "ai-studio-monitor-meta" },
+  });
+  const directorBoard = createStudioDirectorBoard({
+    onSelectMap: () => {
+      refreshScenes();
+      refreshMonitor();
+    },
+    onOpenTileEditor: () => {
+      requestExit();
+    },
+    onPromptPick: (prompt) => {
+      selectThread("director");
+      const input = composerSlot.querySelector<HTMLTextAreaElement | HTMLInputElement>("[data-testid=ai-input]")
+        ?? composerSlot.querySelector<HTMLTextAreaElement>("textarea")
+        ?? composerSlot.querySelector<HTMLInputElement>("input");
+      if (input && prompt) {
+        input.value = prompt;
+        if (typeof Event === "function") {
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        input.focus();
+      }
+    },
+  });
+  const canvasToggleButton = el("button", {
+    class: "ai-studio-ghost-btn",
+    attrs: {
+      type: "button",
+      title: "스토리보드 감독 보드와 라이브 맵 캔버스를 전환합니다",
+      "aria-pressed": "false",
+    },
+    dataset: { testid: "ai-studio-canvas-toggle" },
+    text: "맵 캔버스 보기",
+    on: {
+      click: () => {
+        canvasViewActive = !canvasViewActive;
+        canvasToggleButton.setAttribute("aria-pressed", String(canvasViewActive));
+        canvasToggleButton.textContent = canvasViewActive ? "감독 보드 보기" : "맵 캔버스 보기";
+        if (canvasViewActive) {
+          directorBoard.root.setAttribute("hidden", "");
+          monitorStage.removeAttribute("hidden");
+          requestCanvasFit();
+        } else {
+          monitorStage.setAttribute("hidden", "");
+          directorBoard.root.removeAttribute("hidden");
+          directorBoard.refresh();
+        }
+      },
+    },
   });
   const exitButton = el("button", {
     class: "ai-studio-exit",
@@ -268,9 +319,10 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
         class: "ai-studio-monitor-head",
         children: [
           el("div", { class: "ai-studio-monitor-title", children: [monitorLabel, monitorMeta] }),
-          el("div", { class: "ai-studio-monitor-tools", children: [monitorChrome, exitButton] }),
+          el("div", { class: "ai-studio-monitor-tools", children: [monitorChrome, canvasToggleButton, exitButton] }),
         ],
       }),
+      directorBoard.root,
       monitorStage,
       monitorLanes,
     ],
@@ -1126,6 +1178,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     chips.push(metaChip(brief.layerShort));
     monitorMeta.replaceChildren(...chips);
     refreshBriefing();
+    directorBoard.refresh();
     if (!attachedTo) return;
     if (parked.length > 0) return;
     if (monitorStage.querySelector("[data-testid=edit-canvas]")) return;

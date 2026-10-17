@@ -652,3 +652,67 @@ describe("스튜디오 밖 — 오른쪽 팀원 패널", () => {
     manager.discard("lane_s");
   });
 });
+
+describe("Option B: 장르 적응형 비주얼 스토리보드 & 감독 보드", () => {
+  it("스튜디오 진입 시 중앙 모니터에 스토리보드 비트 흐름과 16:9 실시간 무대 인스펙터가 열린다", () => {
+    const { root } = standaloneShell();
+    const board = findByTestId(root, "ai-studio-director-board");
+    expect(board).toBeTruthy();
+    expect(isHidden(board)).toBe(false);
+
+    const beats = root.querySelectorAll("[data-testid=ai-studio-beat-card]");
+    expect(beats.length).toBeGreaterThanOrEqual(4);
+
+    const stage = findByTestId(root, "ai-studio-stage-16x9");
+    expect(stage).toBeTruthy();
+
+    const inspector = findByTestId(root, "ai-studio-director-inspector");
+    expect(inspector).toBeTruthy();
+    expect(findByTestId(root, "ai-studio-planning-pin")).toBeTruthy();
+  });
+
+  it("3대 장르(몬스터 수집 / 정통 JRPG / 연애 미연시) 전환 시 서브탭·16:9 무대·시스템 보드가 장르에 맞게 재구성된다", () => {
+    const { root } = standaloneShell();
+    const tabSystem = findByTestId(root, "ai-studio-director-tab-system");
+
+    findByTestId(root, "ai-studio-genre-monster-taming")?.click();
+    expect(tabSystem?.textContent).toContain("스타터 · 진화 · 서식지 도감");
+    expect(findByTestId(root, "ai-studio-stage-16x9")?.dataset.stageKind).toBe("monster");
+
+    findByTestId(root, "ai-studio-genre-romance")?.click();
+    expect(tabSystem?.textContent).toContain("인물 · 호감도 · 멀티엔딩");
+    expect(findByTestId(root, "ai-studio-stage-16x9")?.dataset.stageKind).toBe("romance");
+
+    tabSystem?.click();
+    const systemBoard = findByTestId(root, "ai-studio-system-board");
+    expect(systemBoard?.dataset.genre).toBe("romance");
+    expect(systemBoard?.textContent).toContain("Dead Ending");
+
+    findByTestId(root, "ai-studio-director-tab-cinema")?.click();
+    const shots = root.querySelectorAll("[data-testid=ai-studio-opening-shot]");
+    expect(shots.length).toBe(6);
+  });
+
+  it("결함 감지 카드의 [AI로 즉시 수리] 클릭 시 조수 입력창에 수리 지시문이 채워지고 캔버스 토글이 동작한다", () => {
+    const { root, host } = standaloneShell();
+    const bar = findByTestId(host, "ai-command-bar");
+    const input = new FakeElement("textarea");
+    input.dataset.testid = "ai-input";
+    bar?.append(input);
+
+    findByTestId(root, "ai-studio-genre-monster-taming")?.click();
+    const fixBtn = findByTestId(root, "ai-studio-defect-fix");
+    expect(fixBtn).toBeTruthy();
+    fixBtn?.click();
+    expect(input.value).toContain("출현 테이블");
+
+    const canvasToggle = findByTestId(root, "ai-studio-canvas-toggle");
+    const board = findByTestId(root, "ai-studio-director-board");
+    const stage = findByTestId(root, "ai-studio-monitor-stage");
+    expect(isHidden(board)).toBe(false);
+    expect(isHidden(stage)).toBe(true);
+    canvasToggle?.click();
+    expect(isHidden(board)).toBe(true);
+    expect(isHidden(stage)).toBe(false);
+  });
+});
