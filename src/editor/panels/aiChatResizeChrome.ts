@@ -92,7 +92,14 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     if (handle.getAttribute(name) !== value) handle.setAttribute(name, value);
   };
 
+  const syncHostWidth = (): void => {
+    if (!panel.parentElement) return;
+    const target = appliedWidthVar ? `min(${appliedWidthVar}, calc(100vw - 48px))` : "";
+    if (panel.style.width !== target) panel.style.width = target;
+  };
+
   const syncAria = (): void => {
+    syncHostWidth();
     const limits = widthLimits();
     // Effective (clamped) width only — never advertise preferred barSize above valuemax.
     const now = effectiveWidth();
@@ -106,10 +113,13 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
   const applySize = (): void => {
     clearPanelSize();
     if (!resizable()) {
+      handle.style.display = "none";
       applyWidthVar(null);
       return;
     }
+    handle.style.display = "block";
     applyWidthVar(barSize ? `${clampWidth(barSize.width)}px` : null);
+    syncHostWidth();
     syncAria();
   };
 

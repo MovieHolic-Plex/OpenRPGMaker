@@ -636,6 +636,9 @@ export function formatIntentNote(
       `[의도] 있는 것을 고치는 요청이다. ${target} get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. `
       + "create_map·duplicate_map·author_beodeul_town(새 맵) 으로 새것을 만들지 말 것. 기존 실내 맵은 같은 mapId 로 build_hand_interior_room(replace:true).",
     );
+    if (intent.tools.includes("stamp_object")) {
+      lines.push("소품·기물 배치는 list_spatial_designs({kind:\"object\", query}) 의 data.shared.rows[].id 를 골라 stamp_object({objectId, mapId, x, y}) 로 바로 찍는다(list_tileset_references·read_tileset_reference·find_tools 불필요).");
+    }
   } else if (intent.mode === "create" && !intent.clarify) {
     const facilityHow = intent.facility
       ? `시설 「${intent.facility}」는 참고문서 「손 도트 실내 (v5)」의 가까운 예제를 읽고 규모·방 구성을 정한 plan 을 build_hand_interior_room 으로 새 mapId 에 시공한다`

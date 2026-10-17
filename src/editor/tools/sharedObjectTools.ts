@@ -1,5 +1,6 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
+import { isPassable } from "@/project/collision";
 import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
@@ -121,7 +122,22 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }
       catch (error) { return fail(error instanceof Error ? error.message : String(error)); }
+      let startNote: string | null = null;
+      if (project.startMapId === map.id && project.startPos && !isPassable(project, map, project.startPos.x, project.startPos.y)) {
+        const s = project.startPos;
+        outer: for (let r = 1; r < Math.max(map.width, map.height); r++) {
+          for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+            if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+            const nx = s.x + dx, ny = s.y + dy;
+            if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height || !isPassable(project, map, nx, ny)) continue;
+            project.startPos = { ...s, x: nx, y: ny };
+            startNote = `시작 위치 (${s.x},${s.y}) 가 기물에 덮여 가장 가까운 통행 칸 (${nx},${ny}) 로 옮겼다`;
+            break outer;
+          }
+        }
+      }
       const warnings = [
+        ...(startNote ? [startNote] : []),
         ...(result.clipped ? [`맵 밖으로 나간 칸은 뺐다 — 찍힌 범위 ${JSON.stringify(result.rect)}`] : []),
         // 2026-10-07 적대적 검토: 모델이 꽃 상자를 가로수 수관 위에 찍어 소품이 나무 잎에 얹혀 보였다. 덮인 칸을 되돌려 알린다.
         ...(result.coveredUpper.length ? [`이미 다른 위층 그림(나무 수관·지붕 등)이 있던 ${result.coveredUpper.length}칸을 덮었다 — ${result.coveredUpper.slice(0, 6).map(c => `(${c.x},${c.y})`).join(" ")}. 소품이 그 위에 얹혀 보이면 빈 풀밭·바닥 칸으로 옮겨 다시 찍는다`] : []),

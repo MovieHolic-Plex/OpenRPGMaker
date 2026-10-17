@@ -32,7 +32,7 @@ function briefEntryText(entry: ActivityEntry): string {
     case "assistant": {
       // 조수가 작업 사이에 한 말(「강과 다리가 있는 마을을 만들겠습니다」). 예전 간단히 보기는 이 말을 숨겨
       // 사용자에게 「생각하는 중…」만 보였다. 생각(추론) 내용이 아니라 모델이 사용자에게 한 말이다.
-      const text = (entry.output as { text?: string } | undefined)?.text?.replace(/\s+/gu, " ").trim() ?? "";
+      const text = ((entry.output as { text?: string } | undefined)?.text ?? "").replace(/\*\*|__|`/gu, "").replace(/\s+/gu, " ").trim();
       return text ? `“${activityText(text, 160)}”` : activityText(entry.summary, 140);
     }
     case "agent_spawn":

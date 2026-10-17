@@ -121,10 +121,10 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     // 「최고 품질」을 고르면 역할 모델이 상위 티어로 채워지고 저장된다.
     findByTestId(modal, "ai-model-preset-quality")?.click();
     const modelInput = findByTestId(modal, "ai-config-model") as unknown as HTMLInputElement | null;
-    expect(modelInput?.value).toBe("gemini-3-pro");
+    expect(modelInput?.value).toBe("gemini-4-argon");
     const stored = JSON.parse(storage.get("oprn:ai-config") ?? "{}");
-    expect(stored.model).toBe("gemini-3-pro");
-    expect(stored.ultrabrainModel).toBe("gemini-3-pro");
+    expect(stored.model).toBe("gemini-4-argon");
+    expect(stored.ultrabrainModel).toBe("gemini-4-argon");
     expect(stored.roleModels?.writer?.thinkingLevel).toBe("high");
   });
 

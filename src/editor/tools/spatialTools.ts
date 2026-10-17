@@ -172,14 +172,22 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       const limit = args.limit === undefined ? 40 : Math.max(1, Math.min(200, Number(args.limit)));
       const offset = args.offset === undefined ? 0 : Math.max(0, Number(args.offset));
       // Shared places/objects are read-only rows every project sees, with or without spatialAuthoring.
-      const shared = [...(!kind || kind === "place" ? sharedPlaces() : []), ...(!kind || kind === "object" ? sharedObjects(project) : [])]
+      const activeTilesetIds = Object.values(project.maps).map(m => m?.tilesetId).filter((id): id is string => Boolean(id));
+      const candidates = [...(!kind || kind === "place" ? sharedPlaces() : []), ...(!kind || kind === "object" ? sharedObjects(project) : [])]
         // 몬스터 수집 칩셋의 장소·기물은 몬스터 프로젝트(또는 몬스터 요청 턴)가 아니면 조수 검색에 나오지 않는다(genreLockMonsterAssets.ts).
-        .filter(entry => !monsterTilesetHiddenInRun(project, entry.tilesetId))
-        .filter(entry => matchesQuery(entry, query))
-        // Rows whose id/name match come before rows that only share a tag (e.g. every tile group of the volcano sheet).
-        .map((entry, index) => ({ entry, index, rank: !query || matchesQuery({ ...entry, tags: [] }, query) ? 0 : 1 }))
+        .filter(entry => !monsterTilesetHiddenInRun(project, entry.tilesetId));
+      const queryWords = query.toLocaleLowerCase().split(/\s+/u).filter(Boolean);
+      const strict = candidates.filter(entry => matchesQuery(entry, query));
+      const shared = (strict.length > 0 || queryWords.length <= 1 ? strict : candidates.filter(entry => queryWords.some(word => matchesQuery(entry, word))))
+        // Rows whose id/name/object-tags match come before rows that only share a sheet-level tag (e.g. every tile group of the volcano sheet).
+        .map((entry, index) => {
+          const sheetName = entry.tilesetId ? project.tilesets[entry.tilesetId]?.name : undefined;
+          const ownTags = entry.tags.filter(t => t !== sheetName && t !== "타일셋 킷");
+          return { entry, index, rank: !query || queryWords.some(word => matchesQuery({ ...entry, tags: ownTags }, word)) ? 0 : 1 };
+        })
         .sort((a, b) => a.rank - b.rank
           || Number(b.entry.tags.includes("사용자 선택")) - Number(a.entry.tags.includes("사용자 선택"))
+          || Number(activeTilesetIds.includes(b.entry.tilesetId ?? "")) - Number(activeTilesetIds.includes(a.entry.tilesetId ?? ""))
           || a.index - b.index).map(({ entry }) => entry);
       const sharedPage = { total: shared.length, offset, rows: shared.slice(offset, offset + limit),
         ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}) };
