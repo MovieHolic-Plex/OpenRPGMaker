@@ -80,6 +80,8 @@ function releaseStrandedTextEntryFocus(pressed: EventTarget | null): void {
 
 export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   if (isExplicitPointerOwner(event.target)) return false;
+  // ESC 메뉴의 상세 목록(일정·엔딩 목록·갤러리 등)은 넘치면 휠로도 스크롤된다. 휠은 칸을 고르거나 누르지 않으므로 이 목록 위에서만 통과시킨다(2026-10-17 리뷰 B2: 휠이 막혀 scrollTop 이 0 이었다).
+  if (event.type === "wheel" && hasClosestTarget(event.target, ".status-menu-detail-list")) return false;
   if (event.type !== "click") return true;
   // 키보드 커서 메뉴는 기존 버튼 핸들러를 재사용하기 위해 HTMLElement.click()을 합성한다.
   // 실제 마우스 click은 detail >= 1 이므로 막고, 키보드/테스트용 합성 click(detail 0/없음)은 통과시킨다.

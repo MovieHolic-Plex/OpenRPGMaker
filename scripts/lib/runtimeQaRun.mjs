@@ -455,6 +455,19 @@ async function applyOp(page, op, runState) {
           .includes(text.replace(/\s+/g, ' ').trim()),
         [op.testid, op.text], { timeout: op.timeoutMs ?? 30_000 });
       return;
+    case "wheel": {
+      // 마우스 휠 — testid 요소 한가운데에 포인터를 두고 굴린다(플레이 입력 차단기가 휠을 삼키는지 보려고).
+      const box = await page.evaluate((testid) => {
+        const node = document.querySelector(`[data-testid="${testid}"]`) ?? document.querySelector(testid);
+        if (!node) throw new Error(`wheel target not found: ${testid}`);
+        const rect = node.getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      }, op.testid);
+      await page.mouse.move(box.x, box.y);
+      await page.mouse.wheel(0, op.deltaY ?? 120);
+      await page.waitForTimeout(200);
+      return;
+    }
     case "pointerClick": {
       const info = await page.evaluate((testid) => {
         const nodes = document.querySelectorAll(`[data-testid="${testid}"]`);

@@ -30,7 +30,7 @@
 
 .play-stage > .gallery-viewer {
   align-items: center;
-  background: rgba(0, 0, 0, 0.94);
+  background: #000;
   bottom: 0;
   display: flex;
   flex-direction: column;
