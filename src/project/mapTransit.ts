@@ -10,8 +10,12 @@
 // - 경로 칸 = 탈것 **머리**가 지나는 칸, 그리고 탈것 폭 2칸 중 **위/왼쪽 칸**이다.
 //   가로로 달리면 몸은 (머리 행, 머리 행+1) 두 줄, 세로로 달리면 (머리 열, 머리 열+1) 두 열.
 // - 몸 길이 L칸(목록의 `length`) — 머리에서 지나온 쪽으로 L칸.
-// - 좌측통행: 폭 4칸 생활도로(y0..y0+3)에서 동쪽행은 위 두 줄(y0), 서쪽행은 아래 두 줄(y0+2),
+// - 좌측통행(기본, jp_city): 폭 4칸 생활도로(y0..y0+3)에서 동쪽행은 위 두 줄(y0), 서쪽행은 아래 두 줄(y0+2),
 //   남쪽행은 오른쪽 두 열(x0+2), 북쪽행은 왼쪽 두 열(x0). `laneOffsetFor` 가 이 규칙 하나다.
+// - 우측통행(modern_city): 동쪽행 아래 반쪽·서쪽행 위 반쪽·남쪽행 왼쪽(서) 반쪽·북쪽행 오른쪽(동) 반쪽.
+//   반쪽이 3칸(폭 6 도로)이면 폭 2 차를 가운데 세우려 노선의 `laneShift` 로 가로지르는 방향 0.5칸을 민다.
+// - 꺾임: 몸 **가운데**가 두 차선 중심선의 교점 곁을 둥글게 지나며 돈다(transitBodyAt). 머리 기준으로 돌리면
+//   몸이 머리 둘레로 순간이동해 옆 차선·횡단보도로 튀었다.
 //
 // 상태(어디쯤 달리는가)는 프로젝트에 저장하지 않는다. 런타임(player/playSceneTransit.ts)이 맵에 들어올 때 처음부터 돌린다.
 import catalogJson from "@/assets/jpCityVehicles.json";
@@ -50,6 +54,8 @@ export interface MapTransitRoute {
   /** 칸/초. 기본 road 4·bus 3·tram 2.5·train 5·subway 5. */
   speed?: number;
   stops?: MapTransitStop[];
+  /** 차선 가운데 맞춤(칸, 0~0.99) — 동서 구간은 아래로(ew), 남북 구간은 오른쪽으로(ns) 몸을 민다. 기본 0. */
+  laneShift?: { ew?: number; ns?: number };
   /** false 면 이 노선을 끈다. 기본 true. */
   enabled?: boolean;
 }
@@ -78,36 +84,37 @@ export interface TransitVehicleDef {
   frames: Partial<Record<TransitFrameName, TransitFrameRect>>;
 }
 
-function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, spriteCols = length, openDoor = false): TransitVehicleDef {
-  const ewW = spriteCols * 16, ewH = 48, nsW = 32, nsH = length * 16;
+/** modern_city 차량: 동서 = 길이 L칸 × 2칸(L·16 × 32px), 남북 = 2칸 × L칸(32 × L·16px) — 90° 돌아도 크기가 그대로다. */
+function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, openDoor = false): TransitVehicleDef {
+  const ewW = length * 16, ewH = 32, nsW = 32, nsH = length * 16;
   const ewFoot = { w: length, h: 2 }, nsFoot = { w: 2, h: length };
   const frames: Partial<Record<TransitFrameName, TransitFrameRect>> = {};
   const suffixes = ["", "_0", "_1", "_2", "_3", "_brake"] as const;
-  for (const [dir, y] of [["right", 0], ["left", 48]] as const) {
+  for (const [dir, y] of [["right", 0], ["left", ewH]] as const) {
     suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: ewW * i, y, w: ewW, h: ewH, foot: ewFoot }; });
     if (openDoor) frames[`${dir}_open` as TransitFrameName] = { x: ewW * 6, y, w: ewW, h: ewH, foot: ewFoot };
   }
-  for (const [dir, y] of [["up", 96], ["down", 96 + nsH]] as const) {
+  for (const [dir, y] of [["up", ewH * 2], ["down", ewH * 2 + nsH]] as const) {
     suffixes.forEach((s, i) => { frames[`${dir}${s}` as TransitFrameName] = { x: nsW * i, y, w: nsW, h: nsH, foot: nsFoot }; });
   }
-  return { id, name, kind, length, image: `mc-kit:${id}`, width: Math.max(ewW * (openDoor ? 7 : 6), nsW * 6), height: 96 + nsH * 2, frames };
+  return { id, name, kind, length, image: `mc-kit:${id}`, width: Math.max(ewW * (openDoor ? 7 : 6), nsW * 6), height: ewH * 2 + nsH * 2, frames };
 }
 
 export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
-  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 3, 5),
-  makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-sedan-a-white", "승용차 · 흰색", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-sedan-a-black", "승용차 · 검정", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-car2-c-beige", "낮은 지붕 세단 · 베이지", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-car2-c-green", "낮은 지붕 세단 · 녹색", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 3, 5),
-  makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 3, 5),
-  makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 4, 6),
-  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4, 6),
-  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4, 7),
-  makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 5, 8, true),
+  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3),
+  makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 3),
+  makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 3),
+  makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 3),
+  makeModernVehicleDef("mc-veh-sedan-a-white", "승용차 · 흰색", "car", 3),
+  makeModernVehicleDef("mc-veh-sedan-a-black", "승용차 · 검정", "car", 3),
+  makeModernVehicleDef("mc-veh-car2-c-beige", "낮은 지붕 세단 · 베이지", "car", 3),
+  makeModernVehicleDef("mc-veh-car2-c-green", "낮은 지붕 세단 · 녹색", "car", 3),
+  makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 3),
+  makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 3),
+  makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 4),
+  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4),
+  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4),
+  makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 5, true),
 ];
 
 const CATALOG = catalogJson as unknown as { version: number; tileSize: number; vehicles: TransitVehicleDef[] };
@@ -142,6 +149,8 @@ export interface NormalizedTransitRoute {
   headwaySec: number;
   speed: number;
   stops: Array<{ index: number; waitSec: number; name?: string; board?: MapTransitStop["board"] }>;
+  /** 차선 가운데 맞춤(칸) — 동서 구간 y·남북 구간 x 에 더한다. */
+  laneShift: { ew: number; ns: number };
 }
 
 /**
@@ -212,6 +221,25 @@ export function laneOffsetFor(dir: TransitDir, edge: number, width = 4): number 
   return far;
 }
 
+export type TransitDrive = "left" | "right";
+
+/**
+ * 차로 — 머리 칸이 서는 행/열(lane)과 폭 2 차를 차로 한가운데 세우는 나머지 민 칸(shift, 0 또는 0.5).
+ * 좌측통행(jp_city)은 laneOffsetFor 그대로(shift 0). 우측통행(modern_city)은 반쪽 가운데:
+ * 폭 6 도로 edge..edge+5 — 서쪽행 edge+0.5(위 반쪽), 동쪽행 edge+3.5(아래 반쪽), 남쪽행 edge+0.5(서쪽 반쪽), 북쪽행 edge+3.5(동쪽 반쪽).
+ */
+export function transitLane(dir: TransitDir, edge: number, width: number, drive: TransitDrive): { lane: number; shift: number } {
+  if (drive === "left") return { lane: laneOffsetFor(dir, edge, width), shift: 0 };
+  if (width < 4) {
+    const c = Math.max(0, width - 2) / 2;
+    return { lane: edge + Math.floor(c), shift: c - Math.floor(c) };
+  }
+  const half = Math.floor(width / 2);
+  const start = dir === "left" || dir === "down" ? edge : edge + width - half;
+  const c = (half - 2) / 2;
+  return { lane: start + Math.floor(c), shift: c - Math.floor(c) };
+}
+
 export interface TransitRouteProblem { routeId: string; message: string }
 
 /** 저장된 설정을 런타임이 쓰는 꼴로 편다. 고칠 수 없는 노선은 problems 에 적고 뺀다. */
@@ -235,8 +263,8 @@ export function normalizeMapTransit(transit: MapTransit | undefined | null, mapS
     const vehicles = (Array.isArray(raw.vehicles) ? raw.vehicles : []).map((v) => BY_ID[String(v)]).filter((v): v is TransitVehicleDef => !!v && allowed.includes(v.kind));
     if (vehicles.length === 0) { bad(`이 노선(${kind})에 맞는 탈것이 없다 — ${allowed.join("·")} 중에서`); continue; }
     if (mapSize) {
-      // 열린 노선은 맵 밖에서 들어와 밖으로 나간다 — 가장 긴 탈것 + 여유 8칸까지 허용.
-      const margin = Math.max(...vehicles.map((v) => v.length)) + 8;
+      // 열린 노선은 맵 밖에서 들어와 밖으로 나간다 — 가장 긴 탈것 + 여유 8칸까지, 적어도 자동 노선의 맵 밖 여유(transitAuto OFF = 12칸).
+      const margin = Math.max(12, Math.max(...vehicles.map((v) => v.length)) + 8);
       const outside = cells.find((c) => c.x < -margin || c.y < -margin || c.x >= mapSize.width + margin || c.y >= mapSize.height + margin);
       if (outside) { bad(`경로 칸 (${outside.x},${outside.y}) 가 맵 밖으로 너무 멀다`); continue; }
     }
@@ -250,7 +278,9 @@ export function normalizeMapTransit(transit: MapTransit | undefined | null, mapS
       .filter((s) => s && Number.isFinite(s.index) && s.index >= 0 && s.index < cells.length)
       .map((s) => ({ index: Math.round(s.index), waitSec: clampNumber(s.waitSec, 0, 120, DEFAULT_WAIT[kind]), ...(s.name ? { name: String(s.name) } : {}), ...(s.board ? { board: s.board } : {}) }))
       .sort((a, b) => a.index - b.index);
-    routes.push({ id, name: raw.name ? String(raw.name) : id, kind, loop, cells, vehicles, count, headwaySec, speed, stops });
+    const shiftOf = (v: unknown): number => clampNumber(v, 0, 0.99, 0);
+    const laneShift = { ew: shiftOf(raw.laneShift?.ew), ns: shiftOf(raw.laneShift?.ns) };
+    routes.push({ id, name: raw.name ? String(raw.name) : id, kind, loop, cells, vehicles, count, headwaySec, speed, stops, laneShift });
   }
   return { routes, problems };
 }
@@ -290,6 +320,24 @@ export interface TransitSim {
   nextDef: number[];
   nextKey: number;
   clockSec: number;
+  /** 교차로(동서·남북 노선이 겹치는 칸 덩어리)와 노선별 진입 정보 — stepTransitSim 이 처음 부를 때 만든다. */
+  junctions?: TransitJunctions;
+}
+
+export interface TransitJunctionPass { box: number; entryDir: TransitDir; swept: Set<string> }
+export interface TransitJunctions { boxes: Array<Set<string>>; byRoute: TransitJunctionPass[][] }
+
+/** 신호 주기(초): 동서 초록 → 전부 빨강 → 남북 초록 → 전부 빨강. */
+export const TRANSIT_SIGNAL = { green: 7, clear: 1.5 } as const;
+
+/** 지금 초록인 축(전부 빨강이면 null). */
+export function transitSignalAxis(clockSec: number): "ew" | "ns" | null {
+  const { green, clear } = TRANSIT_SIGNAL;
+  const t = ((clockSec % (2 * (green + clear))) + 2 * (green + clear)) % (2 * (green + clear));
+  if (t < green) return "ew";
+  if (t < green + clear) return null;
+  if (t < 2 * green + clear) return "ns";
+  return null;
 }
 
 export interface TransitPose {
@@ -354,11 +402,59 @@ export function transitCornerBlinker(route: Pick<NormalizedTransitRoute, "cells"
   return null;
 }
 
+/** 곧게 달릴 때 몸 가운데(칸, 실수) — transitFootprintRect 의 가운데에 노선 차선 맞춤을 더한 것. */
+function straightBodyCenter(head: TransitPoint, dir: TransitDir, length: number, shift: { ew: number; ns: number }): TransitPoint {
+  const r = transitFootprintRect(head, dir, length);
+  return isHorizontal(dir) ? { x: r.x + r.w / 2, y: r.y + r.h / 2 + shift.ew } : { x: r.x + r.w / 2 + shift.ns, y: r.y + r.h / 2 };
+}
+
+/**
+ * 몸 가운데·몸 방향. 꺾임 칸 c 를 머리가 지난 뒤 몸 길이 L 만큼(c ≤ pos < c+L) 몸 가운데가 들어오던 차선 중심선에서
+ * 나가는 차선 중심선으로 사분원을 그리며 옮겨 간다(가운데 피벗). 몸 방향은 반쯤 돌았을 때 바뀐다 — 크기는 L×2 ↔ 2×L 그대로.
+ */
+export function transitBodyAt(route: Pick<NormalizedTransitRoute, "cells" | "loop" | "laneShift">, pos: number, length: number): { center: TransitPoint; dir: TransitDir } {
+  const { cells, loop } = route;
+  const n = cells.length;
+  const shift = route.laneShift ?? { ew: 0, ns: 0 };
+  if (n >= 3) {
+    const p = loop ? ((pos % n) + n) % n : pos;
+    const hi = Math.floor(p);
+    for (let c = hi; c > p - length - 1e-9; c -= 1) {
+      if (!loop && (c < 1 || c > n - 2)) continue;
+      const ci = ((c % n) + n) % n;
+      const u = transitDirAt(cells, (ci - 1 + n) % n, loop), w = transitDirAt(cells, ci, loop);
+      if (u === w || isHorizontal(u) === isHorizontal(w)) continue;
+      const t = (p - c) / length;
+      const corner = cells[ci]!;
+      const p0 = straightBodyCenter(corner, u, length, shift);
+      const wv = DIR_VEC[w], uv = DIR_VEC[u];
+      const p1 = straightBodyCenter({ x: corner.x + wv.x * length, y: corner.y + wv.y * length }, w, length, shift);
+      const du = (p1.x - p0.x) * uv.x + (p1.y - p0.y) * uv.y;
+      const dw = (p1.x - p0.x) * wv.x + (p1.y - p0.y) * wv.y;
+      const a = Math.sin((t * Math.PI) / 2), b = 1 - Math.cos((t * Math.PI) / 2);
+      return {
+        center: { x: p0.x + uv.x * du * a + wv.x * dw * b, y: p0.y + uv.y * du * a + wv.y * dw * b },
+        dir: t < 0.5 ? u : w,
+      };
+    }
+  }
+  const { head, dir } = transitHeadAt(route, pos);
+  return { center: straightBodyCenter(head, dir, length, shift), dir };
+}
+
+/** 몸 사각(칸, 실수)과 몸 방향 — 길이 L 은 동서 L×2, 남북 2×L. */
+function transitBodyRect(route: Pick<NormalizedTransitRoute, "cells" | "loop" | "laneShift">, pos: number, length: number): { rect: TransitPose["rect"]; dir: TransitDir } {
+  const body = transitBodyAt(route, pos, length);
+  const w = isHorizontal(body.dir) ? length : 2, h = isHorizontal(body.dir) ? 2 : length;
+  return { rect: { x: body.center.x - w / 2, y: body.center.y - h / 2, w, h }, dir: body.dir };
+}
+
 export function transitPose(sim: TransitSim, v: TransitVehicleState): TransitPose {
   const route = sim.routes[v.routeIndex]!;
-  const { head, dir } = transitHeadAt(route, v.pos);
+  const { head } = transitHeadAt(route, v.pos);
+  const { rect, dir } = transitBodyRect(route, v.pos, v.def.length);
   const blinker = transitCornerBlinker(route, v.pos);
-  return { head, dir, blinker, rect: transitFootprintRect(head, dir, v.def.length), open: v.wait > 0 && v.stopAt !== null };
+  return { head, dir, blinker, rect, open: v.wait > 0 && v.stopAt !== null };
 }
 
 /** 실수 사각이 걸치는 정수 칸들. */
@@ -384,6 +480,91 @@ function occupied(sim: TransitSim, except?: TransitVehicleState): Map<string, Tr
 
 const isHorizontal = (d: TransitDir): boolean => d === "left" || d === "right";
 
+/**
+ * 교차로 찾기 — 한 노선의 동서 차선 몸 칸과 **다른** 노선의 남북 차선 몸 칸이 겹치는 칸을 이어 붙인 덩어리가 교차로(상자)다.
+ * 노선마다 상자를 지날 때 들어오는 방향과, 그 노선 가장 긴 탈것이 상자 안에서 쓸고 지나가는 칸(swept)을 적어 둔다.
+ */
+export function buildTransitJunctions(routes: readonly NormalizedTransitRoute[]): TransitJunctions {
+  const h = new Map<string, Set<number>>(), v = new Map<string, Set<number>>();
+  routes.forEach((r, ri) => {
+    const n = r.cells.length;
+    for (let i = 0; i < n; i += 1) {
+      const { rect, dir } = transitBodyRect(r, i, 1);
+      const into = isHorizontal(dir) ? h : v;
+      for (const c of transitRectCells(rect)) { const k = cellKey(c.x, c.y); (into.get(k) ?? into.set(k, new Set()).get(k)!).add(ri); }
+    }
+  });
+  const boxCells = new Set<string>();
+  for (const [k, hr] of h) { const vr = v.get(k); if (vr && [...hr].some((a) => [...vr].some((b) => a !== b))) boxCells.add(k); }
+  const boxes: Array<Set<string>> = [];
+  const boxOf = new Map<string, number>();
+  for (const start of boxCells) {
+    if (boxOf.has(start)) continue;
+    const box = new Set<string>([start]); boxOf.set(start, boxes.length);
+    const stack = [start];
+    while (stack.length) {
+      const [x, y] = stack.pop()!.split(",").map(Number) as [number, number];
+      for (const k of [cellKey(x + 1, y), cellKey(x - 1, y), cellKey(x, y + 1), cellKey(x, y - 1)]) {
+        if (!boxCells.has(k) || boxOf.has(k)) continue;
+        boxOf.set(k, boxes.length); box.add(k); stack.push(k);
+      }
+    }
+    boxes.push(box);
+  }
+  const byRoute = routes.map((r) => {
+    const L = Math.max(...r.vehicles.map((d) => d.length));
+    const passes = new Map<number, TransitJunctionPass>();
+    const lo = r.loop ? 0 : -L, hi = r.loop ? r.cells.length : r.cells.length + L;
+    for (let p = lo; p <= hi; p += 0.25) {
+      const { rect } = transitBodyRect(r, p, L);
+      for (const c of transitRectCells(rect)) {
+        const k = cellKey(c.x, c.y); const b = boxOf.get(k);
+        if (b === undefined) continue;
+        let pass = passes.get(b);
+        // 들어오는 방향 = 처음 상자에 닿을 때 머리가 달리던 방향(꺾임은 상자 안에서 일어난다)
+        if (!pass) { pass = { box: b, entryDir: transitHeadAt(r, p).dir, swept: new Set() }; passes.set(b, pass); }
+        pass.swept.add(k);
+      }
+    }
+    return [...passes.values()];
+  });
+  return { boxes, byRoute };
+}
+
+const touchesBox = (rect: TransitPose["rect"], box: Set<string>): boolean => transitRectCells(rect).some((c) => box.has(cellKey(c.x, c.y)));
+
+/** 정지선 — 상자(차선이 엇갈리는 칸) 앞 이만큼(칸)에서 선다. modern_city 교차로 횡단보도(2칸)를 밟지 않게. */
+const STOP_LINE_GAP = 2;
+
+/** 사각을 진행 방향으로 늘인다(정지선 내다보기). */
+function reachAhead(rect: TransitPose["rect"], dir: TransitDir, by: number): TransitPose["rect"] {
+  const d = DIR_VEC[dir];
+  return { x: rect.x + Math.min(0, d.x * by), y: rect.y + Math.min(0, d.y * by), w: rect.w + Math.abs(d.x * by), h: rect.h + Math.abs(d.y * by) };
+}
+
+/**
+ * 상자에 새로 들어가도 되는가 — 들어오는 축이 빨간불이면 정지선(상자 STOP_LINE_GAP 칸 앞)에서 선다. 초록이어도 상자 안에 다른 방향에서
+ * 들어와 쓸고 지나갈 칸이 겹치는 탈것(맞은편 직진과 좌회전 등)이 있으면 기다린다 — 겹쳐 지나가거나 교착하지 않게.
+ * 이미 상자에 몸이 걸친 탈것은 신호와 상관없이 빠져나간다.
+ */
+function junctionHolds(sim: TransitSim, v: TransitVehicleState, curRect: TransitPose["rect"], nextRect: TransitPose["rect"], nextDir: TransitDir): boolean {
+  const j = sim.junctions!;
+  const reach = reachAhead(nextRect, nextDir, STOP_LINE_GAP);
+  for (const pass of j.byRoute[v.routeIndex] ?? []) {
+    const box = j.boxes[pass.box]!;
+    if (touchesBox(curRect, box) || !touchesBox(reach, box)) continue;
+    if (transitSignalAxis(sim.clockSec) !== (isHorizontal(pass.entryDir) ? "ew" : "ns")) return true;
+    for (const o of sim.vehicles) {
+      if (o === v) continue;
+      const op = (j.byRoute[o.routeIndex] ?? []).find((q) => q.box === pass.box);
+      if (!op || op.entryDir === pass.entryDir) continue;
+      if (!touchesBox(transitPose(sim, o).rect, box)) continue;
+      for (const k of op.swept) if (pass.swept.has(k)) return true;
+    }
+  }
+  return false;
+}
+
 export function createTransitSim(transit: MapTransit | undefined | null, mapSize?: { width: number; height: number }, warmupSec = 90): TransitSim {
   const { routes } = normalizeMapTransit(transit, mapSize);
   const sim: TransitSim = { routes, vehicles: [], spawnClock: routes.map((r, i) => ((i * 2.3) % r.headwaySec)), nextDef: routes.map(() => 0), nextKey: 1, clockSec: 0 };
@@ -407,6 +588,7 @@ export function createTransitSim(transit: MapTransit | undefined | null, mapSize
  */
 export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: number, y: number) => boolean): void {
   sim.clockSec += dtSec;
+  sim.junctions ??= buildTransitJunctions(sim.routes);
   // 열린 노선: 간격마다 시작점에 새 차(시작 자리가 비었을 때만)
   sim.routes.forEach((r, ri) => {
     if (r.loop) return;
@@ -438,8 +620,11 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
       if (v.pos <= s.index + 1e-6 && next >= s.index) { next = s.index; reached = s; break; }
     }
     // 막힘: 새로 들어갈 몸 칸이 주인공·다른 탈것과 겹치면 서 있는다(정류장 대기 설정은 그대로 둔다)
-    const cur = new Set(transitRectCells(transitPose(sim, v).rect).map((c) => cellKey(c.x, c.y)));
+    const curRect = transitPose(sim, v).rect;
+    const cur = new Set(transitRectCells(curRect).map((c) => cellKey(c.x, c.y)));
     const nextPose = transitPose(sim, { ...v, pos: next });
+    // 교차로: 빨간불·상자 안 엇갈린 탈것이면 정지선에서 기다린다(막힘 초에는 넣지 않는다 — 신호 대기는 막힘이 아니다).
+    if (junctionHolds(sim, v, curRect, nextPose.rect, nextPose.dir)) { v.stuckSec = 0; continue; }
     const occ = occupied(sim, v);
     // 앞차 간격: 머리 앞 한 칸까지 본다
     const ahead = transitHeadAt(r, next + 1);
@@ -448,10 +633,11 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
     const byPlayer = enter.some((c) => isBlocked(c.x, c.y));
     const blockers = new Set<TransitVehicleState>();
     for (const c of [...enter, ...aheadCells]) { const o = occ.get(cellKey(c.x, c.y)); if (o) blockers.add(o); }
-    // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린 방향**이고 STUCK_RELEASE_SEC 넘게
-    // 연달아 막혔으면 겹쳐서라도 지나간다. 같은 방향 줄(정류장 버스 뒤 등)과 주인공 앞에서는 끝까지 선다.
-    const crossOnly = blockers.size > 0 && [...blockers].every((o) => !(o.wait > 0) && (isHorizontal(transitPose(sim, o).dir) !== isHorizontal(nextPose.dir) || o.routeIndex !== v.routeIndex));
-    const releaseThreshold = r.id.startsWith("turn-") ? 2 : STUCK_RELEASE_SEC;
+    // 교차로 교착(가로·세로 탈것이 서로의 다음 칸을 막음): 막는 탈것이 전부 **엇갈린(직각) 방향**이고 STUCK_RELEASE_SEC 넘게
+    // 연달아 막혔으면 겹쳐서라도 지나간다 — 신호·상자 규칙(junctionHolds)이 막아 주지 못한 저작 노선의 마지막 안전판.
+    // 같은 방향 줄(같은 차선에 합류한 다른 노선·정류장 버스 뒤 등)과 주인공 앞에서는 끝까지 선다(앞차를 뚫고 지나가지 않는다).
+    const crossOnly = blockers.size > 0 && [...blockers].every((o) => !(o.wait > 0) && isHorizontal(transitPose(sim, o).dir) !== isHorizontal(nextPose.dir));
+    const releaseThreshold = STUCK_RELEASE_SEC;
     if (byPlayer || (blockers.size > 0 && !(crossOnly && (v.stuckSec ?? 0) >= releaseThreshold))) {
       v.blockedSec += dtSec;
       v.stuckSec = byPlayer || !crossOnly ? 0 : (v.stuckSec ?? 0) + dtSec;

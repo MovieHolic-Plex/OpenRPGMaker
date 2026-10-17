@@ -59,6 +59,28 @@ function hx(s: string): readonly [number, number, number, number] {
 
 const GREY_RAMP = ["#676a77", "#757886", "#848794", "#9496a1", "#a1a3ac", "#afb1b8", "#bcbdc3", "#d4d8dc"];
 
+const WHITE_RAMP = ["#8a8f9a", "#9ea3ad", "#b2b6be", "#c2c6cc", "#d0d3d8", "#dcdfe2", "#e8eaec", "#f6f7f8"];
+
+/**
+ * 손 그림이 없는 차종 - 같은 꼴의 손 그림을 다른 색 램프로 다시 칠한다(앞·뒤 키트가 비어 있어 따로 그리면 투명해진다).
+ * 4칸 트럭류는 밴 그림의 지붕 줄(STRETCH_ROW)을 늘려 32×64 로 맞춘다.
+ */
+const HAND_NS_ALIASES: Readonly<Record<string, { readonly grid: string; readonly vk: string }>> = {
+  "mc-veh-sedan-a": { grid: "mc-veh-sedan-a-navy", vk: "grey_sedan" },
+  "mc-veh-sedan-a-white": { grid: "mc-veh-sedan-a-navy", vk: "white_sedan" },
+  "mc-veh-sedan-a-black": { grid: "mc-veh-sedan-a-navy", vk: "black_sedan" },
+  "mc-veh-car2-c-beige": { grid: "mc-veh-car2-c-red", vk: "beige_sedan" },
+  "mc-veh-car2-c-green": { grid: "mc-veh-car2-c-red", vk: "green_sedan" },
+  "mc-veh-truck-a": { grid: "mc-veh-van-a", vk: "truck" },
+  "mc-veh-ambulance-a": { grid: "mc-veh-van-a", vk: "ambulance" },
+  "mc-veh-firetruck-b": { grid: "mc-veh-van-a", vk: "firetruck" },
+};
+
+const EMERGENCY_VK: ReadonlySet<string> = new Set(["ambulance", "firetruck"]);
+
+/** 밴 그림에서 같은 지붕 줄이 이어지는 가운데 줄(남·북 그림 모두 3..15 줄이 같은 지붕). */
+const STRETCH_ROW = 8;
+
 const RAMPS: Readonly<Record<string, readonly [readonly string[], readonly string[]]>> = {
   police: [GREY_RAMP, ["#0e1720", "#192737", "#283d53", "#36516a", "#4c6680"]],
   taxi: [
@@ -75,6 +97,26 @@ const RAMPS: Readonly<Record<string, readonly [readonly string[], readonly strin
   ],
   bus: [GREY_RAMP, ["#3a0616", "#5e0a24", "#8a2a34", "#d2a54c", "#d6b073"]],
   van: [GREY_RAMP, ["#19274a", "#2d436e", "#3d578a", "#4a6ba1", "#5e80b2"]],
+  grey_sedan: [GREY_RAMP, ["#3d4b51", "#516268", "#848794", "#afb1b8", "#dfe4e8"]],
+  white_sedan: [WHITE_RAMP, ["#3d4b51", "#516268", "#848794", "#afb1b8", "#dfe4e8"]],
+  black_sedan: [
+    ["#07090d", "#0d1117", "#141922", "#1b212c", "#232a37", "#2c3443", "#394252", "#5a6476"],
+    ["#3d4b51", "#516268", "#848794", "#afb1b8", "#dfe4e8"],
+  ],
+  beige_sedan: [
+    ["#5e4a30", "#76603e", "#8c744c", "#a0875a", "#b39a6a", "#c4ab7c", "#d3bc90", "#e6d4b0"],
+    ["#120c14", "#1e141c", "#2e1e28", "#3e2836", "#5a3a48"],
+  ],
+  green_sedan: [
+    ["#10301e", "#1a4229", "#225033", "#2a5e3c", "#336c46", "#3e7a51", "#4c895e", "#6eaa80"],
+    ["#120c14", "#1e141c", "#2e1e28", "#3e2836", "#5a3a48"],
+  ],
+  truck: [WHITE_RAMP, ["#19274a", "#2d436e", "#3d578a", "#4a6ba1", "#5e80b2"]],
+  ambulance: [WHITE_RAMP, ["#5a0a14", "#8a1420", "#b82030", "#d83a44", "#f06a6a"]],
+  firetruck: [
+    ["#4a0c10", "#6e1418", "#8a1c20", "#a0242a", "#b42e32", "#c63a3c", "#d64c4a", "#ec7a70"],
+    ["#3d4b51", "#516268", "#848794", "#afb1b8", "#dfe4e8"],
+  ],
 };
 
 const TAXI_GLASS = ["#0e2428", "#17373c", "#265359", "#326c72", "#5a9690"];
@@ -852,11 +894,26 @@ export function renderHandNsFrame(
   phase: number,
   brake: boolean,
 ): ImageData | null {
-  const spec = HAND_NS_GRIDS[`${kitId}:${dir}`];
-  if (!spec) return null;
+  const alias = HAND_NS_ALIASES[kitId];
+  const base = HAND_NS_GRIDS[`${alias?.grid ?? kitId}:${dir}`];
+  if (!base) return null;
+  const vk = alias?.vk ?? base.vk;
+  // 몸이 더 긴 탈것(4칸 트럭류): 지붕(짐칸) 줄을 늘려 동서 길이와 같은 남북 길이로 그린다.
+  const extra = Math.max(0, targetH - base.h);
+  const rows = extra > 0
+    ? [...base.rows.slice(0, STRETCH_ROW), ...Array<string>(extra).fill(base.rows[STRETCH_ROW]!), ...base.rows.slice(STRETCH_ROW)]
+    : [...base.rows];
+  if (EMERGENCY_VK.has(vk)) {
+    // 경광등 막대 - 지붕 앞쪽(남행은 아래쪽 앞유리 위, 북행은 위 끝).
+    const barY = dir === "down" ? 23 + extra : 3;
+    const r0 = expandRow(rows[barY]!).split("");
+    for (let x = 11; x <= 20; x += 1) r0[x] = x < 16 ? "P" : "Q";
+    rows[barY] = r0.join("");
+  }
+  const spec: HandNsGridSpec = { ...base, vk, h: base.h + extra, planted: base.planted + extra, rows };
   const pal = buildPalette(spec.vk);
   const bounce = !brake && (phase === 1 || phase === 3) ? 1 : 0;
-  const sirenSwap = spec.vk === "police" && (phase & 1) === 1;
+  const sirenSwap = (spec.vk === "police" || EMERGENCY_VK.has(spec.vk)) && (phase & 1) === 1;
   const ox = Math.floor((targetW - spec.w) / 2);
   const oy = targetH - spec.h;
   const out = new ImageData(targetW, targetH);

@@ -7,7 +7,7 @@
 //   폭 4칸 이상이면 좌측통행 두 방향(laneOffsetFor), 2~3칸이면 한 방향(동쪽·남쪽행)만.
 // - 노면전차: 2층의 레일(tram-rail-h 2줄 / tram-rail-v 2열) 칸이 이룬 곧은 선, 가장자리에서 가장자리까지.
 // 막다른 길·굽은 길·고리 노선은 여기서 만들지 않는다 — set_map_transit 의 routes 로 직접 준다.
-import { laneOffsetFor, transitVehicle, type MapTransitRoute, type MapTransitStop, type TransitDir } from "./mapTransit";
+import { transitLane, transitVehicle, type MapTransitRoute, type MapTransitStop, type TransitDir, type TransitDrive } from "./mapTransit";
 
 export interface RoadBand {
   axis: "ew" | "ns";
@@ -81,8 +81,8 @@ export function findRoadBands(grid: GridLike, isRoad: (x: number, y: number) => 
 const OFF = 12;
 
 /** 띠 하나의 한 방향 칸 경로(꺾이는 점 두 개). 가장자리에 닿은 끝은 맵 밖 OFF 칸까지 늘인다. */
-export function bandLanePath(band: RoadBand, dir: TransitDir, grid: GridLike): Array<{ x: number; y: number }> {
-  const lane = laneOffsetFor(dir, band.edge, band.width);
+export function bandLanePath(band: RoadBand, dir: TransitDir, grid: GridLike, drive: TransitDrive = "left"): Array<{ x: number; y: number }> {
+  const { lane } = transitLane(dir, band.edge, band.width, drive);
   const along = band.axis === "ew" ? grid.width : grid.height;
   const lo = band.from === 0 ? -OFF : band.from;
   const hi = band.to === along - 1 ? along - 1 + OFF : band.to;
@@ -131,30 +131,41 @@ export interface AutoTrafficOptions {
   busHeadwaySec?: number;
   /** 띠마다 차를 보낼지 거르는 함수(기본: 가장자리→가장자리 띠만). */
   accept?: (band: RoadBand) => boolean;
+  /** 통행 방향. 기본: modern_city 차(mc-veh-*)면 우측통행, 아니면 좌측통행. */
+  drive?: TransitDrive;
 }
-/** 찾은 띠마다 차 흐름 노선(좌측통행 두 방향)을 만들고, 정류장이 있으면 그 차선에 버스 노선을 더한다. */
+/** 찾은 띠마다 차 흐름 노선(두 방향)을 만들고, 정류장이 있으면 그 차선에 버스 노선을 더한다. */
 export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, opts: AutoTrafficOptions = {}): { routes: MapTransitRoute[]; unmatchedStops: Array<{ x: number; y: number }> } {
   const routes: MapTransitRoute[] = [];
   const accept = opts.accept ?? ((b: RoadBand) => b.edgeToEdge);
-  const lanes: Array<{ id: string; dir: TransitDir; path: Array<{ x: number; y: number }> }> = [];
+  const drive: TransitDrive = opts.drive ?? (opts.vehicles?.[0]?.startsWith("mc-veh-") ? "right" : "left");
+  const lanes: Array<{ id: string; dir: TransitDir; path: Array<{ x: number; y: number }>; laneShift?: MapTransitRoute["laneShift"] }> = [];
   const accepted = bands.filter(accept);
+  /** 차선 가운데 맞춤 — 폭 2 차가 반쪽 한가운데 서도록 띠 축의 나머지 0.5칸. 0 이면 넣지 않는다. */
+  const shiftOf = (band: RoadBand, dir: TransitDir): MapTransitRoute["laneShift"] | undefined => {
+    const { shift } = transitLane(dir, band.edge, band.width, drive);
+    return shift ? (band.axis === "ew" ? { ew: shift } : { ns: shift }) : undefined;
+  };
   // 폭 2~3칸 일방 차로 둘이 같은 축으로 나란하면(가운데 노면전차 궤도·중앙분리대) 한 길의 양쪽 차로다 — 좌측통행으로
-  // 동서 길은 위 차로 동쪽행·아래 차로 서쪽행, 남북 길은 왼쪽 차로 북쪽행·오른쪽 차로 남쪽행.
+  // 동서 길은 위 차로 동쪽행·아래 차로 서쪽행, 남북 길은 왼쪽 차로 북쪽행·오른쪽 차로 남쪽행(우측통행이면 반대).
   const narrowDir = (band: RoadBand): TransitDir => {
     const mate = accepted.find((o) => o !== band && o.axis === band.axis && o.width < 4 && o.from <= band.to && band.from <= o.to && Math.abs(o.edge - band.edge) <= 16);
     if (!mate) return band.axis === "ew" ? "right" : "down";
-    return band.axis === "ew" ? (band.edge < mate.edge ? "right" : "left") : (band.edge < mate.edge ? "up" : "down");
+    const first = band.edge < mate.edge;
+    if (drive === "right") return band.axis === "ew" ? (first ? "left" : "right") : (first ? "down" : "up");
+    return band.axis === "ew" ? (first ? "right" : "left") : (first ? "up" : "down");
   };
   for (const band of accepted) {
     const dirs: TransitDir[] = band.width >= 4 ? (band.axis === "ew" ? ["right", "left"] : ["down", "up"]) : [narrowDir(band)];
     for (const dir of dirs) {
       const id = `traffic-${band.axis}${band.edge}-${dir}`;
-      const path = bandLanePath(band, dir, grid);
-      lanes.push({ id, dir, path });
+      const path = bandLanePath(band, dir, grid, drive);
+      const laneShift = shiftOf(band, dir);
+      lanes.push({ id, dir, path, ...(laneShift ? { laneShift } : {}) });
       const baseMix = opts.vehicles?.length ? opts.vehicles : DEFAULT_CAR_MIX;
       const nsMix = baseMix.filter((vid) => { const k = transitVehicle(vid)?.kind; return k === "car" || k === "taxi" || k === "kei" || vid === "mc-veh-van-a" || vid === "mc-veh-bus-a"; });
       const laneMix = band.axis === "ns" && nsMix.length ? nsMix : baseMix;
-      routes.push({ id, name: `${band.axis === "ew" ? "동서" : "남북"} 길 ${band.edge} ${({ right: "동쪽행", left: "서쪽행", down: "남쪽행", up: "북쪽행" } as const)[dir]}`, kind: "road", path, vehicles: rotate(laneMix, routes.length * 3), headwaySec: opts.headwaySec ?? 7 });
+      routes.push({ id, name: `${band.axis === "ew" ? "동서" : "남북"} 길 ${band.edge} ${({ right: "동쪽행", left: "서쪽행", down: "남쪽행", up: "북쪽행" } as const)[dir]}`, kind: "road", path, vehicles: rotate(laneMix, routes.length * 3), headwaySec: opts.headwaySec ?? 7, ...(laneShift ? { laneShift } : {}) });
     }
   }
   if (opts.includeTurns) {
@@ -167,9 +178,12 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
     for (const ew of ews) {
       for (const ns of nss) {
         if (ns.edge < ew.from || ns.edge > ew.to || ew.edge < ns.from || ew.edge > ns.to) continue;
-        const ewRightY = laneOffsetFor("right", ew.edge, ew.width);
-        const nsUpX = laneOffsetFor("up", ns.edge, ns.width);
-        const nsDownX = laneOffsetFor("down", ns.edge, ns.width);
+        const ewRightY = transitLane("right", ew.edge, ew.width, drive).lane;
+        const nsUpX = transitLane("up", ns.edge, ns.width, drive).lane;
+        const nsDownX = transitLane("down", ns.edge, ns.width, drive).lane;
+        const ewShift = shiftOf(ew, "right")?.ew, nsUpShift = shiftOf(ns, "up")?.ns, nsDownShift = shiftOf(ns, "down")?.ns;
+        const upShift = ewShift || nsUpShift ? { ...(ewShift ? { ew: ewShift } : {}), ...(nsUpShift ? { ns: nsUpShift } : {}) } : undefined;
+        const downShift = ewShift || nsDownShift ? { ...(ewShift ? { ew: ewShift } : {}), ...(nsDownShift ? { ns: nsDownShift } : {}) } : undefined;
         const loX = ew.from === 0 ? -OFF : ew.from;
         const hiX = ew.to === grid.width - 1 ? grid.width - 1 + OFF : ew.to;
         const loY = ns.from === 0 ? -OFF : ns.from;
@@ -182,6 +196,7 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
             path: [{ x: loX, y: ewRightY }, { x: nsUpX, y: ewRightY }, { x: nsUpX, y: loY }],
             vehicles: rotate(mix, routes.length * 2),
             headwaySec: turnHeadway,
+            ...(upShift ? { laneShift: upShift } : {}),
           });
         } else {
           routes.push({
@@ -191,6 +206,7 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
             path: [{ x: nsDownX, y: loY }, { x: nsDownX, y: ewRightY }, { x: hiX, y: ewRightY }],
             vehicles: rotate(mix, routes.length * 2 + 1),
             headwaySec: turnHeadway,
+            ...(downShift ? { laneShift: downShift } : {}),
           });
         }
         if (ews.length === 1 && nss.length === 1) {
@@ -201,6 +217,7 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
             path: [{ x: nsDownX, y: loY }, { x: nsDownX, y: ewRightY }, { x: hiX, y: ewRightY }],
             vehicles: rotate(mix, routes.length * 2 + 1),
             headwaySec: turnHeadway + 2,
+            ...(downShift ? { laneShift: downShift } : {}),
           });
         }
         crossIdx += 1;
@@ -218,7 +235,7 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
     const index = stop.at === "center" ? headIndexFromCenter(raw, busLen) : raw;
     let bus = busByLane.get(lane.id);
     if (!bus) {
-      bus = { id: `bus-${lane.id.slice("traffic-".length)}`, name: "시내버스", kind: "bus", path: lane.path.map((p) => ({ ...p })), vehicles: [busId], headwaySec: opts.busHeadwaySec ?? 35, stops: [] };
+      bus = { id: `bus-${lane.id.slice("traffic-".length)}`, name: "시내버스", kind: "bus", path: lane.path.map((p) => ({ ...p })), vehicles: [busId], headwaySec: opts.busHeadwaySec ?? 35, stops: [], ...(lane.laneShift ? { laneShift: lane.laneShift } : {}) };
       busByLane.set(lane.id, bus);
       routes.push(bus);
     }

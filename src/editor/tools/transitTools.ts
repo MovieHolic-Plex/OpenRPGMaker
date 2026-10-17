@@ -249,6 +249,7 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
         ...(typeof auto.headwaySec === "number" ? { headwaySec: auto.headwaySec } : {}),
         vehicles: Array.isArray(auto.vehicles) ? (auto.vehicles as string[]) : defaultVehicles,
         busVehicle: isModern ? "mc-veh-bus-a" : "jp-bus-city",
+        drive: isModern ? "right" : "left",
         includeTurns: auto.includeTurns !== undefined ? Boolean(auto.includeTurns) : true,
         ...(Array.isArray(auto.busStops) ? { busStops: auto.busStops as NonNullable<Parameters<typeof autoTrafficRoutes>[2]>["busStops"] } : {}),
         ...(typeof auto.busHeadwaySec === "number" ? { busHeadwaySec: auto.busHeadwaySec } : {}),

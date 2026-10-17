@@ -366,6 +366,7 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
     routes: autoTrafficRoutes(roadBands, { width: W, height: H }, {
       vehicles: rotatedMix,
       busVehicle: "mc-veh-bus-a",
+      drive: "right",
       headwaySec: 6,
       busHeadwaySec: 28,
       includeTurns: true,

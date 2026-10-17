@@ -130,6 +130,52 @@ function mirrorHorizontal(src: ImageData): ImageData {
   return out;
 }
 
+interface Box { x0: number; y0: number; x1: number; y1: number }
+
+/** 불투명 화소의 테두리 사각(끝 포함). 위로 1px 더 — 서스펜션 바운스가 잘리지 않게. */
+function opaqueBox(img: ImageData): Box {
+  let x0 = img.width, y0 = img.height, x1 = -1, y1 = -1;
+  for (let y = 0; y < img.height; y += 1) for (let x = 0; x < img.width; x += 1) {
+    if ((img.data[(y * img.width + x) * 4 + 3] ?? 0) === 0) continue;
+    if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+  }
+  return x1 < 0 ? { x0: 0, y0: 0, x1: img.width - 1, y1: img.height - 1 } : { x0, y0: Math.max(0, y0 - 1), x1, y1 };
+}
+
+/**
+ * 동서 프레임을 칸 칸수(길이 L칸 × 2칸 = L·16 × 32px)에 맞춘다 — 원본 키트(5~8칸 × 3칸)를 면적 평균으로 줄여
+ * 아래 1px 띄워 바닥에 앉히고 가로 가운데. 남북 프레임(32 × L·16)과 길이·폭이 같아 90° 돌아도 크기가 튀지 않는다.
+ */
+function fitToFrame(src: ImageData, box: Box, targetW: number, targetH: number): ImageData {
+  const bw = box.x1 - box.x0 + 1, bh = box.y1 - box.y0 + 1;
+  const s = Math.min(1, targetW / bw, (targetH - 1) / bh);
+  const ow = Math.max(1, Math.round(bw * s)), oh = Math.max(1, Math.round(bh * s));
+  const ox = Math.floor((targetW - ow) / 2), oy = targetH - 1 - oh;
+  const out = new ImageData(targetW, targetH);
+  for (let y = 0; y < oh; y += 1) {
+    const sy0 = box.y0 + y / s, sy1 = box.y0 + (y + 1) / s;
+    for (let x = 0; x < ow; x += 1) {
+      const sx0 = box.x0 + x / s, sx1 = box.x0 + (x + 1) / s;
+      let r = 0, g = 0, b = 0, a = 0, area = 0;
+      for (let yy = Math.floor(sy0); yy < Math.ceil(sy1); yy += 1) {
+        const wy = Math.min(yy + 1, sy1) - Math.max(yy, sy0);
+        for (let xx = Math.floor(sx0); xx < Math.ceil(sx1); xx += 1) {
+          const wgt = wy * (Math.min(xx + 1, sx1) - Math.max(xx, sx0));
+          area += wgt;
+          if (xx < 0 || yy < 0 || xx >= src.width || yy >= src.height) continue;
+          const i = (yy * src.width + xx) * 4;
+          const al = (src.data[i + 3]! / 255) * wgt;
+          r += src.data[i]! * al; g += src.data[i + 1]! * al; b += src.data[i + 2]! * al; a += al;
+        }
+      }
+      if (area <= 0 || a / area < 0.5) continue;
+      const di = ((oy + y) * targetW + ox + x) * 4;
+      out.data[di] = Math.round(r / a); out.data[di + 1] = Math.round(g / a); out.data[di + 2] = Math.round(b / a); out.data[di + 3] = 255;
+    }
+  }
+  return out;
+}
+
 function buildEwFrame(
   base: ImageData,
   kitId: string,
@@ -382,17 +428,22 @@ export function ensureModernCityVehicleTexture(
   const frontKit = findKit(meta?.front ?? "mc-veh-car-front-a") ?? sideKit;
 
   const srcImg = phaser.textures.get(MODERN_CITY_TEXTURE).getSourceImage() as CanvasImageSource;
-  const ewW = def.frames.right?.w ?? sideKit.width * TILE;
-  const ewH = 48;
+  // 원본 키트 크기로 꾸민 뒤(바퀴·경광등·문 좌표가 원본 기준) 칸 프레임으로 줄인다.
+  const rawW = sideKit.width * TILE;
+  const rawH = 48;
+  const ewW = def.frames.right?.w ?? def.length * TILE;
+  const ewH = def.frames.right?.h ?? 32;
   const isBus = kitId === "mc-veh-bus-a";
   const nsW = def.frames.up?.w ?? 32;
   const nsH = def.frames.up?.h ?? def.length * TILE;
 
-  const baseRight = extractKitImageData(srcImg, sideKit, ewW, ewH);
+  const baseRight = extractKitImageData(srcImg, sideKit, rawW, rawH);
   const leftKit = findKit(`${kitId}-l`);
-  const baseLeftMirrored = leftKit ? mirrorHorizontal(extractKitImageData(srcImg, leftKit, ewW, ewH)) : baseRight;
+  const baseLeftMirrored = leftKit ? mirrorHorizontal(extractKitImageData(srcImg, leftKit, rawW, rawH)) : baseRight;
   const baseUp = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, backKit, nsW, nsH), baseRight, meta, "up");
   const baseDown = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, frontKit, nsW, nsH), baseRight, meta, "down");
+  const boxRight = opaqueBox(baseRight);
+  const boxLeft = opaqueBox(mirrorHorizontal(baseLeftMirrored));
 
   const canvas = document.createElement("canvas");
   canvas.width = def.width;
@@ -400,22 +451,24 @@ export function ensureModernCityVehicleTexture(
   const ctx = canvas.getContext("2d")!;
   ctx.imageSmoothingEnabled = false;
 
+  const right = (p: number, brake: boolean, open: boolean): ImageData => fitToFrame(buildEwFrame(baseRight, kitId, meta, p, brake, open), boxRight, ewW, ewH);
+  const left = (p: number, brake: boolean, open: boolean): ImageData => fitToFrame(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, p, brake, open)), boxLeft, ewW, ewH);
   // Row 0 (right) & Row 1 (left — uses chipset's native <kitId>-l art)
-  ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, false, false), 0, 0);
-  ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, false, false)), 0, 48);
+  ctx.putImageData(right(0, false, false), 0, 0);
+  ctx.putImageData(left(0, false, false), 0, ewH);
   for (let p = 0; p < 4; p += 1) {
-    ctx.putImageData(buildEwFrame(baseRight, kitId, meta, p, false, false), ewW * (p + 1), 0);
-    ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, p, false, false)), ewW * (p + 1), 48);
+    ctx.putImageData(right(p, false, false), ewW * (p + 1), 0);
+    ctx.putImageData(left(p, false, false), ewW * (p + 1), ewH);
   }
-  ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, true, false), ewW * 5, 0);
-  ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, true, false)), ewW * 5, 48);
+  ctx.putImageData(right(0, true, false), ewW * 5, 0);
+  ctx.putImageData(left(0, true, false), ewW * 5, ewH);
   if (isBus) {
-    ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, false, true), ewW * 6, 0);
-    ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, false, true)), ewW * 6, 48);
+    ctx.putImageData(right(0, false, true), ewW * 6, 0);
+    ctx.putImageData(left(0, false, true), ewW * 6, ewH);
   }
   // Row 2 (up) & Row 3 (down)
-  const upY = 96;
-  const downY = 96 + nsH;
+  const upY = ewH * 2;
+  const downY = upY + nsH;
   const makeNs = (dir: "up" | "down", base: ImageData, p: number, brake: boolean): ImageData =>
     renderHandNsFrame(kitId, dir, nsW, nsH, p, brake) ?? buildNsFrame(base, meta, dir, p, brake);
   ctx.putImageData(makeNs("up", baseUp, 0, false), 0, upY);
