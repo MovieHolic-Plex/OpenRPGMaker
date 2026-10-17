@@ -173,6 +173,13 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 
 
 
+## 인물 엔딩이 들어서면 일반 해피는 지운다 (romance-loop-3)
+
+인물별 엔딩(`ending_with_*`, 문턱 60)이 기한 판정 맨 위에 서면 같은 문턱의 일반 해피(`ending_romance_happy`, 아무 인물 ≥60)는 어떤 판으로도 닿지 않는
+죽은 엔딩이 된다(`deadline-ending-unplayed`). `syncHeroineDeadline`·`set_deadline_ending`(tiers 생략)은 이제 판정 사슬에서 해피를 빼고,
+다른 곳에서 부르지 않으면 `retireGenericHappy`(`src/project/deadlineEnding.ts`)로 그 엔딩 정의도 지운다. 이후 인물이 늘어도 다시 동기화되도록
+뼈대 판정은 `hasRomanceDeadlineSkeleton`(해피 있음, 또는 인물 엔딩+평범 있음)으로 본다.
+
 ## 인물 엔딩 자동 생성 (2026-10-17 romance-loop-2, rom-c)
 
 학원물 한 판(호감 대화 인물 3명)이 시간 상한(2558초)까지 가서도 엔딩이 호감 구간(해피·평범·혼자) 셋뿐이었다 — 완료 검사(`romance-endings-not-per-heroine`)는 막았지만 모델이 인물 엔딩을 쓸 시간이 없었다.

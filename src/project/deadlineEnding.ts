@@ -105,6 +105,26 @@ export function ensureHeroineEndings(project: Project): { readonly tiers: Deadli
   return { tiers, generated, heroines: heroines.size };
 }
 
+/** 연애 기한 판정의 뼈대가 있는가 — 해피 엔딩이 있거나, 인물 엔딩이 해피를 대신해 이미 들어선 뒤(해피는 지워졌다)이고 평범 엔딩이 남아 있다. */
+export function hasRomanceDeadlineSkeleton(project: Project): boolean {
+  const endings = project.endings ?? [];
+  if (endings.some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)) return true;
+  return endings.some((ending) => ending.id.startsWith("ending_with_")) && endings.some((ending) => ending.id === ROMANCE_ENDING_NORMAL_ID);
+}
+
+/**
+ * 인물별 엔딩이 들어서면 호감 문턱이 같은(60) 일반 「해피」 엔딩은 어떤 판으로도 닿지 않는 죽은 엔딩이 된다(인물 문턱이 먼저 열린다 — romance-loop-3 「deadline-ending-unplayed」).
+ * 기한 판정이 더는 부르지 않고 다른 곳(맵·공통 이벤트)에서도 안 부르면 그 엔딩 정의를 지운다. 지웠으면 true.
+ */
+export function retireGenericHappy(project: Project): boolean {
+  const endings = project.endings ?? [];
+  const at = endings.findIndex((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID);
+  if (at < 0 || !endings.some((ending) => ending.id.startsWith("ending_with_"))) return false;
+  if (JSON.stringify({ maps: project.maps, commonEvents: project.commonEvents }).includes(`"${ROMANCE_ENDING_HAPPY_ID}"`)) return false;
+  endings.splice(at, 1);
+  return true;
+}
+
 function chainEndingIds(commands: readonly Command[] | undefined, out: string[] = []): string[] {
   for (const command of commands ?? []) {
     if (command.kind === "triggerEnding" && typeof command.endingId === "string") out.push(command.endingId);
@@ -127,19 +147,20 @@ export function syncHeroineDeadline(project: Project): string[] {
   const fork = event.commands[forkAt] as Command & { then?: Command[] };
   const known = new Set([SEGMENT_END_ENDING_ID, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_ID]);
   if (!chainEndingIds(fork.then).every((id) => known.has(id) || id.startsWith("ending_with_"))) return [];
-  if (!(project.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)) return [];
+  if (!hasRomanceDeadlineSkeleton(project)) return [];
   const { tiers, generated, heroines } = ensureHeroineEndings(project);
   if (heroines < 2) return [];
   const full: DeadlineTier[] = [
     ...tiers,
-    { endingId: ROMANCE_ENDING_HAPPY_ID, threshold: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
     { endingId: ROMANCE_ENDING_NORMAL_ID, threshold: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
     { endingId: SEGMENT_END_ENDING_ID },
   ];
   const next = deadlineEndingChain(full);
-  if (JSON.stringify(next) === JSON.stringify(fork.then)) return generated;
-  const commands = [...event.commands];
-  commands[forkAt] = { ...fork, then: next } as Command;
-  project.commonEvents[index] = { ...event, commands } as CommonEvent;
+  if (JSON.stringify(next) !== JSON.stringify(fork.then)) {
+    const commands = [...event.commands];
+    commands[forkAt] = { ...fork, then: next } as Command;
+    project.commonEvents[index] = { ...event, commands } as CommonEvent;
+  }
+  retireGenericHappy(project);
   return generated;
 }
