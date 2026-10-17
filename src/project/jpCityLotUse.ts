@@ -29,10 +29,10 @@ function mulberry(seed: number): () => number {
 }
 
 const INFRA_AUTOTILES = ["jp-sidewalk-curb", "jp-lane-road", "jp-water-canal", "jp-water-pond", "jp-rail-track", "jp-lane-center", "jp-lane-dash", "jp-crosswalk-ew", "jp-crosswalk-ns", "jp-tactile"];
-const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water"];
+const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water", "jp:shita-brick", "jp:shita-asphalt", "jp:shita-shade"];
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];
 /** 길·물의 일부인 키트(하천 석축·둑·다리·노면 표시·발 그림자…) — 소품이 아니다. 측정기(scripts/qa/jpLotEmptiness.mts)와 같은 목록: 이걸 소품으로 세면 강가 대지가 「채워졌다」고 보고 일찍 멈춘다(2026-10-14 실측 내부 7% · 측정 16%). */
-const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform)/;
+const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform|gnd-)/;
 
 interface Rect { x: number; y: number; w: number; h: number }
 

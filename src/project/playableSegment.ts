@@ -23,6 +23,7 @@ import { paintMainStreet, paintRiversidePromenade, paintStartRoute, routeStyleFo
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
+import { flavorAvailable } from "@/project/jpShitamachiStreet";
 import { isRomanceInterviewProject } from "@/project/romancePreset";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { isWaterfrontRouteName, KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
@@ -370,7 +371,9 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
       blank.tilesetId = kit.id; blank.tileSize = kit.tileSize;
       blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
       const text = ctx.project.gameDesignBrief?.summary ?? "";
-      const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style: streetStyleFromText(text), shops: shopsFromText(text) });
+      const style0 = streetStyleFromText(text);
+      const style = (style0 === "shitamachi" || style0 === "shotengai") && !flavorAvailable(kit, style0) ? "shopping" : style0;   // 굽지 않은 칩셋이면 기본 상가
+      const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style, shops: shopsFromText(text) });
       const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never, () => ({ map: trial.project.maps[start.id]!, tileset: trial.project.tilesets[kit.id]! }));
       if (outcome.built < 4) return null;
       labelStreetBuildings(trial.project.maps[start.id]!, outcome.buildings);

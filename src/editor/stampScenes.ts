@@ -14,6 +14,7 @@ import { roomPrograms } from "@/editor/handInterior/templates";
 import { THEME_SCENES } from "@/editor/tools/themeScenes";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { planJpCityStreet } from "@/project/jpCityStreetComposer";
+import { flavorAvailable } from "@/project/jpShitamachiStreet";
 import { MODERN_CITY_STREET_MIN } from "@/project/modernCityStreetComposer";
 import type { GameMap, Project } from "@/project/types";
 
@@ -32,7 +33,9 @@ export function stampSceneMenu(project: Project, map: GameMap): StampSceneOption
     if (scene.tilesetId !== map.tilesetId) continue;
     const props = getTool(scene.tool)?.parameters.properties as ToolSchemaProps | undefined;
     if (!props?.mapId) continue;
-    const styles = scene.id === "jp_city" ? [...(scene.styles ?? []), JP_RIVERSIDE_STYLE] : scene.styles;
+    const styles = scene.id === "jp_city"
+      ? [...(scene.styles ?? []).filter((s) => (s !== "shitamachi" && s !== "shotengai") || flavorAvailable(project.tilesets[map.tilesetId], s)), JP_RIVERSIDE_STYLE]
+      : scene.styles;
     const schemaShops = props.shops?.items?.enum?.filter((value): value is string => typeof value === "string");
     const shops = scene.id === "modern_city" ? MODERN_SHOP_WORDS : schemaShops;
     menu.push({

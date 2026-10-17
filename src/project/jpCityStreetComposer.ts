@@ -13,8 +13,10 @@
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap } from "@/project/types";
 import { EDGE_MATERIAL_AUTOTILE, fillLotUses, stampEdgeRect, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
+import { BACK_ROOF_H, BACK_ROOF_W, BACK_ROOFS, FLAVOR_BUS_STOP, FLAVOR_KITS, FLAVOR_KO, FLAVOR_POLE, FLAVOR_POSTBOX, FLAVOR_ROAD, FLAVOR_SIDEWALK, flavorFromText, GND, type JpStreetFlavor } from "@/project/jpShitamachiStreet";
 
-export type JpStreetStyle = "shopping" | "residential";
+/** shopping·residential = 기본 상가·주택가. shitamachi·shotengai = 상가 거리 위에 시타마치 골목·쇼텐가이 키트와 따뜻한 바닥을 얹은 변형. */
+export type JpStreetStyle = "shopping" | "residential" | JpStreetFlavor;
 
 export interface JpStreetShop {
   /** 가게 종류. konbini · izakaya · ramen · cafe · shop · office · garage · machiya · apartment · house · sento · bento */
@@ -246,7 +248,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const { mapId, width: W, height: H } = opts;
   const rng = mulberry((opts.seed ^ 0x9e3779b1) >>> 0);
   const rng2 = mulberry((opts.seed ^ 0x2545f491) >>> 0);          // 새로 더한 꾸밈(뒷마당 나무·반대편 보도 소품)은 별도 난수 — 같은 씨앗에서 기존 배치가 밀리지 않게
-  const style: JpStreetStyle = opts.style ?? "shopping";
+  const flavor: JpStreetFlavor | undefined = opts.style === "shitamachi" || opts.style === "shotengai" ? opts.style : undefined;
+  const style: "shopping" | "residential" = opts.style === "residential" ? "residential" : "shopping";   // 변형은 상가 거리 짜임을 그대로 쓴다
+  const rng3 = mulberry((opts.seed ^ 0x7f4a7c15) >>> 0);          // 변형 전용 난수 — 기본 거리의 난수 순서를 건드리지 않는다
   const steps: JpStreetStep[] = [];
   const fill = (x: number, y: number, w: number, h: number, material: string, optional = false) => {
     if (w > 0 && h > 0) steps.push({ tool: "fill_region", args: { mapId, rect: { x, y, w, h }, material }, optional });
@@ -321,6 +325,15 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   }
   fill(0, H - 2, W, 2, "보도 연석");
+  // 변형 바닥: 기본 재료를 깐 뒤 그 위를 테라코타 벽돌 보도·따뜻한 아스팔트로 다시 깐다(optional — 굽지 않은 칩셋이면 기본 바닥이 남는다).
+  if (flavor) {
+    for (const b of bands) if (b.gap && !b.gap.river) {
+      fill(0, b.gap.sw1, W, 2, FLAVOR_SIDEWALK, true);
+      fill(0, b.gap.road0, W, b.gap.roadW, FLAVOR_ROAD, true);
+      fill(0, b.gap.road1 + 1, W, 2, FLAVOR_SIDEWALK, true);
+    }
+    fill(0, H - 2, W, 2, FLAVOR_SIDEWALK, true);
+  }
 
   // 세로 길: 0~2 개. 폭 2~3 + 양옆 보도 1칸. 전 구간을 지나거나(사거리) 일부 띠에서만 큰길에 붙는다(T자). 서로 14칸 이상 떨어뜨린다.
   interface VStreet { x: number; lane: number; w: number; from: number; to: number }
@@ -350,6 +363,11 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       fill(s2.x, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
+      if (flavor) {
+        fill(s2.x, segStart, 1, y1 - segStart + 1, FLAVOR_SIDEWALK, true);
+        fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, FLAVOR_SIDEWALK, true);
+        fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, FLAVOR_ROAD, true);
+      }
       for (let y = segStart; y <= y1; y += 2) {                      // 중앙 점선: 가로길·하천 구간은 비운다
         if (bands.some((bb) => bb.gap && y >= bb.gap.sw1 - 1 && y <= bb.gap.end)) continue;
         stamp(s2.lane % 2 === 0 ? "jp-mark-center-v-l" : "jp-mark-center-v", s2.x + 1 + Math.floor(s2.lane / 2), y, "road");
@@ -432,6 +450,34 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       break;
     }
   });
+  // 변형 노면(1칸 바닥 키트, 아래층): 연석·맨홀·빗물받이·금 간 아스팔트·황토 벽돌 — 큰길 건널목과 세로 길은 비운다.
+  if (flavor) {
+    const busy = (x: number, road: number) => inStreet(x) || crossings.some((c) => c.road === road && x >= c.x - 1 && x < c.x + 7);
+    const brick = (x: number, y: number) => { if (rng3() < 0.14) stamp(rng3() < 0.6 ? GND.ochre : GND.stain, x, y, "ground"); };
+    bands.forEach((b, bi) => {
+      const g = b.gap;
+      if (!g || g.river) return;
+      const manholes = new Set<number>();
+      for (let x = 3 + Math.floor(rng3() * 6); x < W - 1; x += 9 + Math.floor(rng3() * 5)) if (!busy(x, bi)) { stamp(GND.manhole, x, g.road0 + Math.floor(g.roadW / 2), "ground"); manholes.add(x); }
+      for (let x = 0; x < W; x++) {
+        if (busy(x, bi)) continue;
+        stamp(GND.curbS, x, g.sw1 + 1, "ground");
+        stamp(GND.curbN, x, g.sw2, "ground");
+        brick(x, g.sw1);
+        brick(x, g.sw2 + 1);
+        if (x % 7 === 3) stamp(GND.drain, x, g.road0, "ground");
+        else if (!manholes.has(x) && rng3() < 0.06) stamp(GND.crack, x, g.road0 + 1 + Math.floor(rng3() * Math.max(1, g.roadW - 1)), "ground");
+      }
+    });
+    for (let x = 0; x < W; x++) if (!inStreet(x)) { brick(x, H - 2); brick(x, H - 1); }
+  }
+  /** 변형 접지 그림자: 건물·키트 발 아래 보도 줄을 어둡게, 왼쪽 끝은 사선 시작, 오른쪽 다음 칸은 사선 끝(빛 왼쪽 위 → 그림자 오른쪽 아래). */
+  const flavorShade = (x: number, w: number, foot: number) => {
+    stamp(GND.shadeL, x, foot + 1, "ground");
+    for (let fx = 1; fx < w; fx++) stamp(GND.shade, x + fx, foot + 1, "ground");
+    if (x + w < W) stamp(GND.shadeR, x + w, foot + 1, "ground");
+  };
+  const flavorUsed = new Set<string>();                               // 이 지도에 이미 세운 변형 키트 — 다음 구획은 안 쓴 키트부터(좁은 구획에서 큰 키트가 늘 밀리지 않게)
 
   // ── 2. 블록과 구획 용도: 띠 × (세로 길 사이 구간). 상가가 기본이고 가끔 주택·공원·주차장.
   const mix = style === "residential" ? RESIDENTIAL_MIX : SHOPPING_MIX;
@@ -517,6 +563,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       let zone: JpBlockZone = "shop";
       if (style === "residential") zone = r < 0.65 ? "house" : r < 0.85 && w >= 9 && w <= 26 ? "park" : "shop";
       else zone = r < 0.14 && w >= 7 ? "house" : r < 0.24 && w >= 9 && w <= 26 ? "park" : r < 0.32 && w >= 9 && w <= 22 ? "parking" : "shop";
+      if (flavor && zone !== "house") zone = "shop";                      // 변형: 공원·평면 주차장 대신 키트 줄(코인 주차장 키트가 주차장을 맡는다)
       if (b.foot - b.top < 9 && zone === "park") zone = "shop";
       zones.push({ band: bi, sx, ex, zone });
       if (zone === "park" || zone === "parking") { nonShopFill(sx, ex, b, zone); continue; }
@@ -527,7 +574,29 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       }
       if (zone === "house" && b.foot - b.top >= 6) fill(sx, b.top, w, 1, "블록담", true);          // 주택 구획: 잔디를 통으로 깔지 않고 뒷담만(대지는 자갈 그대로)
       let packW = w, lmEnd = 0;
-      if (zone === "shop" && w >= 18 && rng() < 0.4) {
+      if (flavor && zone === "shop") {
+        // 변형 키트 줄: 구획 왼쪽부터 빈틈 없이 붙여 세우고(폭의 55% 까지), 키트 위 띠 꼭대기까지는 뒤쪽 지붕 줄로 덮는다. 나머지는 문 있는 조립 건물.
+        const hAvail = b.foot - b.top + 1;
+        const budget = Math.floor(w * 0.55);
+        let used = 0;
+        const order = shuffle(rng3, FLAVOR_KITS[flavor].filter((k2) => k2.h <= hAvail));
+        for (const k of [...order.filter((k2) => !flavorUsed.has(k2.id)), ...order.filter((k2) => flavorUsed.has(k2.id))]) {
+          if (used + k.w > budget) continue;
+          const kx = sx + used;
+          stamp(k.id, kx, b.foot - k.h + 1);
+          flavorUsed.add(k.id);
+          placed.push({ role: "landmark", x: kx, foot: b.foot, w: k.w, top: b.top, h: k.h });
+          flavorShade(kx, k.w, b.foot);
+          if (k.w >= BACK_ROOF_W) {
+            const xs = new Set<number>();
+            for (let rx = kx; rx + BACK_ROOF_W <= kx + k.w; rx += BACK_ROOF_W) xs.add(rx);
+            xs.add(kx + k.w - BACK_ROOF_W);
+            for (let ry = b.foot - k.h + 1 - BACK_ROOF_H; ry >= b.top; ry -= BACK_ROOF_H) for (const rx of xs) stamp(pick(rng3, BACK_ROOFS), rx, ry);
+          }
+          used += k.w;
+        }
+        packW = w - used; lmEnd = used;
+      } else if (zone === "shop" && w >= 18 && rng() < 0.4) {
         const hAvail = b.foot - b.top + 1;
         const fits = LANDMARKS.filter((l) => l.h <= hAvail && l.w + 8 <= w);
         const lm = fits.length ? pick(rng, fits) : undefined;
@@ -542,7 +611,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (zone === "shop" && b.foot - b.top + 1 >= 16 && style === "shopping") {            // 키 큰 띠: 고층 빌딩을 사이사이에 섞는다(셋 건너 하나 정도)
         rolesHere = rolesHere.flatMap((r, i) => (i % 3 === 0 ? ["tower", r] : [r]));
       }
-      const packed = packRow(rng, packW, rolesHere, true).map((p2) => ({ ...p2, x: p2.x + lmEnd }));
+      const packed = packRow(rng, packW, rolesHere, !flavor).map((p2) => ({ ...p2, x: p2.x + lmEnd }));
       if (zone === "shop") poolPtr += packed.length;
       let cur = lmEnd;
       let headBudget = 1;
@@ -553,7 +622,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         const side: "L" | "R" = rng() < 0.5 ? "L" : "R";
         const doorX = sfKitId(bb.role, bb.w, side) ? sx + bb.x + sfDoorCol(bb.w, side) : undefined;
         placed.push({ role: bb.role, x: sx + bb.x, foot: b.foot, w: bb.w, top: b.top, ...(doorX !== undefined ? { doorX } : {}) });
-        for (let fx = 0; fx < bb.w; fx++) if (doorX === undefined || sx + bb.x + fx < doorX || sx + bb.x + fx > doorX + 1) stamp("jp-foot-shadow", sx + bb.x + fx, b.foot + 1, "ground");   // 접지 그림자(건물이 뜨지 않게)
+        if (flavor) flavorShade(sx + bb.x, bb.w, b.foot);
+        else for (let fx = 0; fx < bb.w; fx++) if (doorX === undefined || sx + bb.x + fx < doorX || sx + bb.x + fx > doorX + 1) stamp("jp-foot-shadow", sx + bb.x + fx, b.foot + 1, "ground");   // 접지 그림자(건물이 뜨지 않게)
         // 같은 건물에 대한 후보 입력 12개(점점 단순) — 첫 성공을 쓴다(buildJpCityBuilding 이 거절하면 다음)
         let headTaken = false;
         for (let attempt = 0; attempt < 12; attempt++) {
@@ -573,7 +643,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // ── 3. 큰길 표식: 외측선(교차로·횡단보도 칸 제외), 보행 신호등
   const skipX = (x: number, road: number) => crossings.some((c) => c.road === road && x >= c.x && x < c.x + 6) || streets.some((s) => x >= s.x && x < s.x + s.w);
   bands.forEach((b, i) => {
-    if (!b.gap || b.gap.river) return;
+    if (flavor || !b.gap || b.gap.river) return;                   // 변형 골목은 흰 외측선 없이 연석·빗물받이로 읽힌다(참고 그림)
     for (let x = 0; x < W; x++) {
       if (skipX(x, i)) continue;
       stamp("jp-mark-edge-n", x, b.gap.road0, "road");
@@ -587,7 +657,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   }
 
   // ── 4. 보도 소품: 띠 아래 보도 바깥줄에 낮은 소품. 문 앞 접근칸(건물 발 바로 아래 줄)은 비운다.
-  const props = ["jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori", "jp-prop-planter", "jp-prop-pot", "jp-prop-bench", "jp-prop-post-box", "jp-prop-bike-rack", "jp-prop-a-frame", "jp-prop-garbage-net", "jp-prop-bollard"];
+  const props = ["jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori", "jp-prop-planter", "jp-prop-pot", "jp-prop-bench", "jp-prop-post-box", "jp-prop-bike-rack", "jp-prop-a-frame", "jp-prop-garbage-net", "jp-prop-bollard", ...(flavor ? [FLAVOR_POSTBOX.id] : [])];
   const propH: Record<string, number> = { "jp-prop-vending-aka": 2, "jp-prop-vending-sora": 2, "jp-prop-vending-midori": 2, "jp-prop-bike-sora": 2, "jp-prop-bike-aka": 2, "jp-prop-bike-midori": 2, "jp-prop-planter": 1, "jp-prop-pot": 2, "jp-prop-bench": 1, "jp-prop-post-box": 2, "jp-prop-bike-rack": 1, "jp-prop-a-frame": 1, "jp-prop-garbage-net": 1, "jp-prop-bollard": 1 };
   const propW: Record<string, number> = { "jp-prop-vending-aka": 2, "jp-prop-vending-sora": 2, "jp-prop-vending-midori": 2, "jp-prop-bike-sora": 2, "jp-prop-bike-aka": 2, "jp-prop-bike-midori": 2, "jp-prop-planter": 2, "jp-prop-pot": 1, "jp-prop-bench": 2, "jp-prop-post-box": 1, "jp-prop-bike-rack": 2, "jp-prop-a-frame": 1, "jp-prop-garbage-net": 2, "jp-prop-bollard": 1 };
   const doorZone = (x: number, foot: number) => placed.some((b) => b.foot === foot && (b.doorX !== undefined ? x >= b.doorX - 1 && x <= b.doorX + 2 : x >= b.x + b.w - 3 && x <= b.x + b.w));
@@ -622,7 +692,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // ── 5. 차·노면: 큰길마다 일방통행 한 줄(중앙선 없음), 길 위 「30」 표시.
   const cars = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-red", "jp-prop-car-blue", "jp-prop-car-taxi", "jp-prop-car-green", "jp-prop-car-navy"];
   bands.forEach((b, bi) => {
-    if (!b.gap || b.gap.river) return;
+    if (!b.gap || b.gap.river || flavor) return;                   // 변형 골목에는 「30」 노면 표시·차를 두지 않는다
     const eastbound = rng() < 0.5;
     const laneY = b.gap.road0 + (b.gap.roadW >= 4 ? 1 : 0);
     const spans: [number, number][] = crossings.filter((c) => c.road === bi).map((c) => [c.x - 1, c.x + 7] as [number, number]);
@@ -683,7 +753,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     const poleXs = cand.filter((_, i) => wireOk[i] || wireOk[i - 1]);
     cand.forEach((x, i) => {
       if (!(wireOk[i] || wireOk[i - 1])) return;
-      stamp("jp-prop-utility-pole2", x, b.foot + 2 - 4);
+      if (flavor) stamp(FLAVOR_POLE.id, x, b.foot + 2 - (FLAVOR_POLE.h - 1));
+      else stamp("jp-prop-utility-pole2", x, b.foot + 2 - 4);
       claimYards(x, 2, b.foot);
       const nx = cand[i + 1];
       // 전선 키트는 아래층 칸을 비워 찍으므로 건물 위에 찍으면 1층 외벽을 지운다 → 건물보다 먼저(yardSteps 앞)에 찍고 건물이 아래층을 다시 덮게 한다.
@@ -691,7 +762,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     });
     poleXsByBand.push(poleXs);
     for (const s of streets) if (bi >= s.from && bi <= s.to) stamp("jp-prop-curve-mirror", s.x + s.w, b.foot + 2 - 2);
-    for (const id of bi === 0 ? ["jp-bus-stop", "jp-hydrant-sign"] : rng() < 0.4 ? ["jp-bus-stop"] : []) {
+    const busStop = flavor ? FLAVOR_BUS_STOP.id : "jp-bus-stop";
+    for (const id of bi === 0 ? [busStop, "jp-hydrant-sign"] : rng() < 0.4 ? [busStop] : []) {
       for (let t = 0; t < 12; t++) {
         const x = 2 + Math.floor(rng() * (W - 4));
         if (doorZone(x, b.foot) || inStreet(x, bi) || !clearCols(x, 2, b.foot) || poleXs.some((q) => x >= q - 1 && x <= q + 2)) continue;
@@ -764,9 +836,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     steps,
     buildings: placed,
     propRects: propRectsOut,
-    mapId, seed: opts.seed, style,
+    mapId, seed: opts.seed, style: flavor ?? style,
     walkRows: [...bands.flatMap((b) => (b.gap ? (b.gap.river ? [b.foot + 2, b.gap.sw2] : [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2]) : [])), H - 2],
-    summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
+    summary: `${flavor ? FLAVOR_KO[flavor] : style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
   };
 }
 
@@ -858,7 +930,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       ...buildings.filter((b) => b.rect).map((b) => ({ x: b.rect!.x0, y: b.rect!.y0, w: b.rect!.w, h: b.rect!.h })),
       ...plan.buildings.filter((b) => b.role === "landmark" && b.h).map((b) => ({ x: b.x, y: b.foot - b.h! + 1, w: b.w, h: b.h! })),
     ];
-    const lot = fillLotUses({ mapId: plan.mapId, seed: plan.seed, style: plan.style ?? "shopping", buildings: rects, view, call: (tool, args) => call(tool, args) });
+    const lot = fillLotUses({ mapId: plan.mapId, seed: plan.seed, style: plan.style === "residential" ? "residential" : "shopping", buildings: rects, view, call: (tool, args) => call(tool, args) });
     props += lot.props; lotUses = lot.uses;
     if (nodeEnvFlag("LOTDBG")) console.error("[lot-use]", (lot.emptyBefore * 100).toFixed(1), "→", (lot.emptyAfter * 100).toFixed(1), lot.uses.map((u) => `${u.use}@${u.x},${u.y} ${u.w}x${u.h}`).join(" "));
   }
@@ -892,5 +964,6 @@ export function shopsFromText(text: string): string[] {
   return SHOP_WORDS.filter(([, re]) => re.test(text)).map(([role]) => role);
 }
 export function streetStyleFromText(text: string): JpStreetStyle {
-  return /주택가|주택|골목집|동네 집|residential|suburb/iu.test(text) && !/상가|번화|shopping|arcade/iu.test(text) ? "residential" : "shopping";
+  if (/주택가|주택|골목집|동네 집|residential|suburb/iu.test(text) && !/상가|번화|shopping|arcade|상점가|시장|아케이드/iu.test(text)) return "residential";
+  return flavorFromText(text) ?? "shopping";
 }
