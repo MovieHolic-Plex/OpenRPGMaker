@@ -7,9 +7,8 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
-import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID } from "@/project/deadlineEnding";
+import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID, ensureHeroineEndings } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
-import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
@@ -247,30 +246,10 @@ const setDeadlineEnding: ToolDefinition = {
       { endingId: SEGMENT_END_ENDING_ID },
     ];
     // tiers 를 생략했는데 호감 대화 인물이 둘 이상이면 인물마다 엔딩을 만들어 맨 위에 얹는다(romance-loop-2 rom-c: 인물 3명인데 엔딩은 호감 구간뿐이었다).
-    const generated: string[] = [];
-    const heroineTiers: { endingId: string; friendshipAtLeast: number; characterId: string }[] = [];
-    if (args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)) {
-      const heroines = new Map<string, string>();
-      for (const map of Object.values(draft.maps ?? {})) for (const event of map.events ?? []) {
-        const key = event.characterId?.trim();
-        if (key && isTalkFriendshipEnabled(event) && !heroines.has(key)) heroines.set(key, (event.name ?? key).trim() || key);
-      }
-      if (heroines.size >= 2) {
-        draft.endings ??= [];
-        for (const [key, name] of heroines) {
-          const endingId = `ending_with_${key.replace(/[^A-Za-z0-9_]+/gu, "_")}`;
-          if (!draft.endings.some((ending) => ending.id === endingId)) {
-            draft.endings.push({
-              id: endingId, name: `${name}와 함께`, priority: 36,
-              conditions: [{ kind: "friendshipAtLeast", npcKey: key, value: ROMANCE_ENDING_HAPPY_AT }],
-              epilogue: [{ kind: "say", text: `${name}와(과) 마음이 닿은 채 이야기가 끝난다. 한 계절의 끝에서 두 사람의 거리는 처음과 전혀 다르다.` }],
-            });
-            generated.push(endingId);
-          }
-          heroineTiers.push({ endingId, friendshipAtLeast: ROMANCE_ENDING_HAPPY_AT, characterId: key });
-        }
-      }
-    }
+    const heroine = args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
+      ? ensureHeroineEndings(draft) : { tiers: [], generated: [] as string[], heroines: 0 };
+    const generated = heroine.generated;
+    const heroineTiers = heroine.tiers.map((tier) => ({ endingId: tier.endingId, friendshipAtLeast: tier.threshold!, characterId: tier.characterId! }));
     const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[]
       : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
         ? [...heroineTiers, ...(heroineTiers.length > 0 ? skeletonTiers.slice(1) : skeletonTiers)] : [];
