@@ -29,6 +29,7 @@ import { RETRO_SKILL_RECIPES } from "@/player/retroSkillChoreography";
 
 import { typeChartForPreset } from "@/project/typeCharts";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -2729,10 +2730,16 @@ const setTitleScreen: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const requestedTitle = typeof args.title === "string" ? args.title : undefined;
+    const previousTitles = [draft.meta.title, draft.system.titleScreen?.title ?? ""];
     if (requestedTitle !== undefined) draft.meta = { ...draft.meta, title: requestedTitle };
     draft.system.titleScreen ??= defaultTitleScreenSettings();
     const current = draft.system.titleScreen;
-    if (requestedTitle !== undefined) current.title = requestedTitle;
+    if (requestedTitle !== undefined) {
+      current.title = requestedTitle;
+      // 씨앗이 남긴 제목 카드 한 장(「— 새 게임 —」)이면 오프닝 글자도 새 제목으로 옮긴다 — 저작된 오프닝은 그대로.
+      const retitled = retitlePlaceholderOpening(draft.system.opening, previousTitles, requestedTitle);
+      if (retitled) draft.system.opening = retitled;
+    }
 
     const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
     if (labels) current.menuLabels = { ...current.menuLabels, ...labels };

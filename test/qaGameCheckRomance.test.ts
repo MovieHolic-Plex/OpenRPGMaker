@@ -255,4 +255,71 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     page.graphic = { transparent: true };
     expect(codes(project)).not.toContain("romance-object-npc-bust");
   });
+
+  it("오프닝이 비었거나 「— 새 게임 —」 같은 제목 카드뿐이면 romance-opening-title-card 완료 조건 경고를 낸다", () => {
+    const project = romanceProject();
+    const task = { task: "캠퍼스 연애 게임 만들어 줘" };
+    const card = (narration: string) => ({ id: "s", kind: "text" as const, narration, durationMs: 4200 });
+    expect(codes(project)).not.toContain("romance-opening-title-card");
+    project.system.opening = { enabled: true, skippable: true, scenes: [card("— 새 게임 —")] };
+    expect(codes(project)).toContain("romance-opening-title-card");
+    expect(romanceCompletionGaps(project, task).some((msg) => msg.includes("plan_opening/set_opening"))).toBe(true);
+    project.system.opening.scenes = [card("새 게임")];
+    expect(codes(project)).toContain("romance-opening-title-card");
+    project.system.opening.scenes = [card("- 옛 제목 -")];
+    expect(codes(project)).toContain("romance-opening-title-card");
+    project.system.opening.scenes = [];
+    expect(codes(project)).toContain("romance-opening-title-card");
+    project.system.opening.enabled = false;
+    expect(codes(project)).not.toContain("romance-opening-title-card");
+    project.system.opening = { enabled: true, skippable: true, scenes: [card("봄비가 그친 오후, 전학 첫날."), card("— 봄비 —")] };
+    expect(codes(project)).not.toContain("romance-opening-title-card");
+  });
+
+  it("대사에 타일 좌표 (x,y) 가 그대로 박히면 romance-dialogue-raw-coords 완료 조건 경고를 낸다", () => {
+    const project = romanceProject();
+    const map = Object.values(project.maps)[0]!;
+    const talker = npc("han", { chip: "sheetA" });
+    const page = talker.pages?.[0];
+    if (!page) throw new Error("missing page");
+    page.commands = [{ kind: "text", speaker: "한", body: "분수대 옆 벤치에서 기다릴게. 3시(오후)에 봐." }];
+    map.events.push(talker);
+    expect(codes(project)).not.toContain("romance-dialogue-raw-coords");
+    page.commands = [{ kind: "text", speaker: "한", body: "(40,13) 쪽 벤치에서 기다릴게." }, { kind: "text", speaker: "한", body: "도서관은 ( 16, 6 ) 이야." }];
+    const finding = checkRomance(project).find((entry) => entry.code === "romance-dialogue-raw-coords");
+    expect(finding?.message).toContain("2줄");
+    expect(romanceCompletionGaps(project, { task: "캠퍼스 연애 게임 만들어 줘" }).some((msg) => msg.includes("(40,13)"))).toBe(true);
+  });
+
+  it("물가 이름(강변·호숫가…)의 바깥 맵에 물이 10% 미만이거나 한 줄 띠뿐이면 romance-waterfront-no-water 완료 조건 경고를 낸다", () => {
+    const project = romanceProject();
+    const map = project.maps[project.startMapId]!;
+    const water = project.tilesets[map.tilesetId]!.tileMeta!.findIndex((meta) => meta?.tags?.includes("water"));
+    const message = () => checkRomance(project).find((finding) => finding.code === "romance-waterfront-no-water")?.message;
+    expect(message()).toBeUndefined();
+    map.name = "퇴근길 강변 야경 길";
+    expect(message()).toContain("물 0%");
+    for (let x = 0; x < map.width; x += 1) map.lowerTiles[x] = water;
+    expect(message()).toContain("y=0 한 줄에만");
+    expect(romanceCompletionGaps(project, { task: "직장인 연애 게임 만들어 줘" }).some((msg) => msg.includes("퇴근길 강변 야경 길"))).toBe(true);
+    for (let y = 0; y < Math.ceil(map.height * 0.15); y += 1) for (let x = 0; x < map.width; x += 1) map.lowerTiles[y * map.width + x] = water;
+    expect(message()).toBeUndefined();
+    map.name = "강변 카페";
+    map.lowerTiles.fill(map.lowerTiles[map.lowerTiles.length - 1]!);
+    expect(message()).toBeUndefined();
+  });
+
+  it("제목을 정하면 씨앗이 남긴 제목 카드 한 장짜리 오프닝도 새 제목을 쓰고, 저작된 오프닝은 그대로 둔다", () => {
+    const project = romanceProject();
+    project.meta.title = "새 게임";
+    project.system.opening = { enabled: true, skippable: true, scenes: [{ id: "s", kind: "text", narration: "— 새 게임 —", durationMs: 4200 }] };
+    const ctx = { project };
+    expect(runTool(ctx, "set_title_screen", { title: "봄비 오는 교정" }).ok).toBe(true);
+    expect(ctx.project.system.opening?.scenes.map((scene) => scene.narration)).toEqual(["— 봄비 오는 교정 —"]);
+    expect(runTool(ctx, "set_project_settings", { title: "봄비" }).ok).toBe(true);
+    expect(ctx.project.system.opening?.scenes.map((scene) => scene.narration)).toEqual(["— 봄비 —"]);
+    ctx.project.system.opening = { enabled: true, skippable: true, scenes: [{ id: "s", kind: "text", narration: "— 우리 둘의 계절 —", durationMs: 4200 }] };
+    expect(runTool(ctx, "set_title_screen", { title: "다른 제목" }).ok).toBe(true);
+    expect(ctx.project.system.opening?.scenes.map((scene) => scene.narration)).toEqual(["— 우리 둘의 계절 —"]);
+  });
 });

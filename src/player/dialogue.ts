@@ -1,5 +1,4 @@
 import { getEffectiveReadingPreferences, playerTextDelay, setAuthoredPreferenceDefaults } from '@/player/playerPreferences';
-import { createDialogueControlBar, type DialogueBarAction, type DialogueControlBar } from '@/player/dialogueControlBar';
 import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklogView } from '@/player/dialogueBacklogView';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
 import { applyWindowOpacity } from '@/player/dialogueWindowOpacity';
@@ -301,7 +300,6 @@ export function createDialogueUI(
     delete overlay.dataset.dialogueHidden;
     delete scrim.dataset.dialogueHidden;
     hiddenByUser = false;
-    currentBar = undefined;
   };
 
   /**
@@ -388,29 +386,22 @@ export function createDialogueUI(
 
   // ── 읽기 보조(오토·스킵·숨기기) 상태 ───────────────────────────────────────────
   // 저작(meta.oprnDialogueSystem·연애 기본 구성)이 있을 때만 켜진다. 없으면 아래 값은 전부 쉬고 옛 동작 그대로다.
+  // 대사창에 단추 줄은 그리지 않는다(2026-10-17 사용자 지시: 미연시 에디터가 아니다) — 단축키(A·S·H·L·Ctrl)와 휠·ESC 메뉴로만 쓴다.
   type ReadingMode = "off" | "auto" | "skip";
   let readingMode: ReadingMode = "off";
   let ctrlSkip = false;
   let hiddenByUser = false;
-  let currentBar: DialogueControlBar | undefined;
-  /** 지금 떠 있는 대사 한 줄의 읽기 보조 손잡이. */
-  let onBarAction: (action: DialogueBarAction) => void = () => {};
   let activeReading: { readonly reevaluate: () => void; readonly clearTimer: () => void; readonly toggle: (mode: "auto" | "skip") => void; readonly openBacklog: () => void; readonly setHidden: (value: boolean) => void } | undefined;
   /** 마지막으로 쓴 백로그 문맥. ESC 메뉴·openLog() 가 같은 화면을 연다. */
   let lastBacklog: { readonly host: BacklogHost; readonly system: AuthoredDialogueSystem } | undefined;
   const isSkipping = (): boolean => readingMode === "skip" || ctrlSkip;
-  const syncBar = (): void => currentBar?.sync({ auto: readingMode === "auto", skip: isSkipping() });
-  const NOTICE_KEY = { choices: "notice.choices", ending: "notice.ending", unread: "notice.unread", locked: "notice.locked", boundary: "notice.boundary" } as const;
-  let noticeSystem: AuthoredDialogueSystem | undefined;
   const stopReading = (reason: ReadingStopReason): void => {
     const was = readingMode !== "off" || ctrlSkip;
     readingMode = "off";
     ctrlSkip = false;
     activeReading?.clearTimer();
-    syncBar();
     if (!was) return;
     overlay.dataset.readingStop = reason;
-    if (reason in NOTICE_KEY) currentBar?.notice(dialogueUiText(noticeSystem, NOTICE_KEY[reason as keyof typeof NOTICE_KEY]));
   };
   const setHiddenState = (value: boolean): void => {
     hiddenByUser = value;
@@ -620,7 +611,6 @@ export function createDialogueUI(
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
     const system = systemFor(request);
     if (request.reading !== "off") setAuthoredPreferenceDefaults(system?.defaults);
-    noticeSystem = system;
     const voiceFile = request.voiceResourceId?.trim();
     const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
     if (voiceUrl) playLineVoice(voiceUrl);
@@ -754,27 +744,22 @@ export function createDialogueUI(
           attrs: { "aria-hidden": "true" },
         });
         box.append(cursor);
-        // 대화 기록 단추 — 마우스로도 열 수 있게. 키는 L.
-        const logButton = el("button", {
-          class: "dialogue-log-button",
-          text: "기록",
-          attrs: { type: "button", "aria-label": "대화 기록 (L)" },
-          dataset: { testid: "dialogue-log-button" },
-        });
-        logButton.addEventListener("click", (event) => {
-          event.stopPropagation();
-          if (logPanel || backlogViewIsOpen()) closeLog();
-          else if (activeReading) activeReading.openBacklog();
-          else openLog();
-        });
-        if (!balloon && system && dialogueSystemHasControls(system)) {
-          // 저작된 대사 시스템: 오토·스킵·백로그·숨기기 단추 줄이 옛 「기록」 단추를 대신한다.
-          currentBar = createDialogueControlBar(system, (action) => onBarAction(action));
-          if (currentBar) {
-            box.append(currentBar.root);
-            syncBar();
-          }
-        } else if (!balloon) box.append(logButton);
+        // 대화 기록 단추 — 마우스로도 열 수 있게. 키는 L. 저작된 대사 시스템에서는 대사창에 단추를 두지 않는다(백로그는 L·휠·ESC 메뉴).
+        if (!balloon && !dialogueSystemHasControls(system)) {
+          const logButton = el("button", {
+            class: "dialogue-log-button",
+            text: "기록",
+            attrs: { type: "button", "aria-label": "대화 기록 (L)" },
+            dataset: { testid: "dialogue-log-button" },
+          });
+          logButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+            if (logPanel || backlogViewIsOpen()) closeLog();
+            else if (activeReading) activeReading.openBacklog();
+            else openLog();
+          });
+          box.append(logButton);
+        }
         overlay.append(box);
         if (glideFromPrevious) glideFromPreviousBox(box);
         else previousBoxTop = undefined;
@@ -1167,7 +1152,6 @@ export function createDialogueUI(
         if (mode === "skip" && !system.skip.enabled) return;
         readingMode = readingMode === mode ? "off" : mode;
         delete overlay.dataset.readingStop;
-        syncBar();
         if (readingMode === "off") clearReadTimer();
         reevaluate();
       };
@@ -1232,20 +1216,13 @@ export function createDialogueUI(
       };
       const readingHandle = { reevaluate, clearTimer: clearReadTimer, toggle: toggleMode, openBacklog: openBacklogForLine, setHidden };
       activeReading = readingHandle;
-      onBarAction = (action) => {
-        if (action === "auto" || action === "skip") toggleMode(action);
-        else if (action === "backlog") openBacklogForLine();
-        else setHidden(true);
-      };
 
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
         if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
-        // Tab 으로 포커스된 읽기 도구 단추에서 Enter/Space 는 그 단추를 누르는 것이다(대사를 넘기면 안 된다 — 적대 리뷰 D2).
-        if ((e.key === "Enter" || e.key === " ") && e.target instanceof Element && e.target.closest(".dialogue-bar-btn")) return;
         if (system) {
           // Ctrl 은 누르는 동안만 스킵. 누르고 있다가 다른 키가 Ctrl 없이 눌리면(놓친 keyup) 스킵을 푼다.
-          if (ctrlSkip && !e.ctrlKey) { ctrlSkip = false; syncBar(); }
+          if (ctrlSkip && !e.ctrlKey) ctrlSkip = false;
           if (hiddenByUser) {
             // 숨김 중 아무 키나 누르면 돌아온다. 그 키는 게임에 닿지 않는다.
             e.preventDefault();
@@ -1256,7 +1233,6 @@ export function createDialogueUI(
           if (e.key === "Control" && system.skip.enabled && !backlogViewIsOpen()) {
             ctrlSkip = true;
             delete overlay.dataset.readingStop;
-            syncBar();
             reevaluate();
             return;
           }
@@ -1289,14 +1265,12 @@ export function createDialogueUI(
       const onKeyUp = (e: KeyboardEvent): void => {
         if (e.key === "Control" && ctrlSkip) {
           ctrlSkip = false;
-          syncBar();
           scheduleReading();
         }
       };
       const onBlur = (): void => {
         if (!ctrlSkip) return;
         ctrlSkip = false;
-        syncBar();
         scheduleReading();
       };
       const onBoxClick = (): void => {

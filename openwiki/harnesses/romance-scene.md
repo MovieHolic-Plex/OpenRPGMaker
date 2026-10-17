@@ -215,3 +215,13 @@ NPC 를 놓기 전에 부르면 인물이 안 보여 뼈대 tiers 로 가고, �
 
 엔딩 id 는 `heroineEndingId`(deadlineEnding.ts)가 만든다: characterId 의 영문 슬러그, 한글 id(「한서윤」)는 해시(`ending_with_h<해시>`), 다른 인물이 같은 id 를 쓰면 해시를 덧붙인다(rom-c 라운드 3 실측: 「한서윤」·「윤하늘」이 전부 `ending_with__` 로 충돌). 기한 판정은 인물 엔딩 뒤에 해피(*≥60)·평범·혼자를 그대로 둔다(해피가 부르는 곳 없는 엔딩이 되지 않게).
 `romance-npc-duplicate-chip` 은 같은 이름이거나 같은 characterId 인 이벤트를 한 사람으로 묶는다(맵마다 「산책로의 한서윤」 머리말이 달라도 같은 칩 허용).
+
+## 오프닝·대사 좌표·물가 맵 검사 (2026-10-17 romance-loop-1)
+
+연애 판이 「막힘 0」 으로 끝났지만 새 게임을 누르면 검은 화면에 「- 새 게임 -」 한 장만 뜨고, 대사에 「(40,13)으로 와」 같은 타일 좌표가 그대로 박히고, 「퇴근길 강변 야경 길」 맵에는 y=0 한 줄짜리 물띠뿐이었다. 셋 다 경고(severity `warning`)이면서 COMPLETION_CODES 다:
+
+- `romance-opening-title-card`: 오프닝이 켜져 있는데 장면이 없거나, `openingIsOnlyTitleCard`(jrpgCompletion.ts, 내보냄)가 참이면 — 장면이 전부 「- … -」 제목 카드이고 그 글이 씨앗 제목(「새 게임」·「새 프로젝트」·New Game/Project)이거나 현재 제목(titleScreen.title ?? meta.title)인 경우. `plan_opening`/`set_opening` 으로 여러 장면 도입을 쓰라고 알린다. 사용자가 끈 오프닝(enabled:false)은 짚지 않는다.
+- `romance-dialogue-raw-coords`: 이벤트 대사 줄에 `/\(\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/` 이 있으면 — 장소를 「분수대 앞」처럼 말로 쓰라고 알린다.
+- `romance-waterfront-no-water`: 이름에 강변·강가·호숫가·수변·해변이 들어간 바깥 맵(카페·가게 등 실내 이름 제외)의 아래층 물 칸이 10% 미만이거나 물이 한 줄(같은 y)에만 있으면. 물 칸은 타일셋 tileMeta 의 role/태그 `water`, 없으면 내장 물 칸 번호로 판정한다.
+
+제목 동기화: `set_title_screen`·`set_project_settings` 로 제목을 바꿀 때 오프닝이 아직 씨앗 그대로(제목 카드 한 장, 글이 씨앗 제목이거나 바꾸기 전 제목)면 `retitlePlaceholderOpening`(project/defaults/defaultOpeningSequence.ts)이 그 카드를 새 제목으로 바꾼다. 저작된 오프닝은 건드리지 않는다.

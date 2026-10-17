@@ -195,8 +195,7 @@
   top: 4px;
 }
 
-.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-gold-window,
-.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-bar {
+.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-gold-window {
   bottom: auto;
   top: 4px;
 }
@@ -261,21 +260,6 @@
 
 .dialogue-overlay[data-vn-choice="bubble"][data-vn-look].choices-active .choice-list .choice-btn.selected::before {
   display: none;
-}
-
-/* ── 읽기 단추 줄(오토·스킵·백로그·숨기기) ── */
-.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn {
-  background: var(--vn-bg-strong);
-  border-color: var(--vn-border);
-  color: var(--vn-text);
-  text-shadow: none;
-}
-
-.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn[aria-pressed="true"],
-.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn.is-on {
-  background: var(--vn-accent);
-  border-color: var(--vn-accent);
-  color: var(--vn-accent-text);
 }
 
 /* ── 초상 입퇴장 ── */

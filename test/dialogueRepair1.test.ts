@@ -1,6 +1,5 @@
 /** @vitest-environment happy-dom */
 // 미연시 시스템 UI 1단계 수리(적대 리뷰 D1~D12) — 새 동작만 잠근다(2026-10-17).
-import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createDialogueUI, type DialogueTextRequest, type DialogueUI } from "@/player/dialogue";
 import { createPlayerOptionsDetail } from "@/player/playerOptionsDetail";
@@ -87,20 +86,7 @@ describe("D1 saved text speed survives the romance defaults", () => {
   });
 });
 
-describe("D2 / D6 keys", () => {
-  it("Enter and Space on a focused tool button do not advance the line", async () => {
-    useSystem();
-    const dialogue = ui();
-    const line = request(dialogue, "단추 포커스");
-    const button = host.querySelector<HTMLElement>('[data-testid="dialogue-bar-auto"]')!;
-    press("Enter", "Enter", {}, button);
-    press(" ", "Space", {}, button);
-    await vi.advanceTimersByTimeAsync(200);
-    expect(line.done()).toBe(false);
-    press("Enter"); press("Enter");
-    await line.promise;
-  });
-
+describe("D6 keys", () => {
   it("holding H hides once and does not flicker back on key repeat", async () => {
     useSystem();
     const dialogue = ui();
@@ -190,13 +176,5 @@ describe("D12 assistant system-tool declaration words", () => {
   });
   it("does not match an unrelated sentence", () => {
     expect(GAME_SYSTEM_REQUEST_PATTERN.test("make the hero taller")).toBe(false);
-  });
-});
-
-describe("D4 / D7 style rules exist", () => {
-  const css = readFileSync("src/styles/dialogueReading.css", "utf8");
-  it("gives touch screens a real tap area and flips the bar away from a right bust", () => {
-    expect(css).toMatch(/@media \(pointer: coarse\), \(max-width: 600px\)[\s\S]*min-height: calc\(44px \/ var\(--play-scale, 1\)\)/);
-    expect(css).toMatch(/\.dialogue-box\.bust-right \.dialogue-bar[\s\S]*left: 4px;[\s\S]*right: auto;/);
   });
 });
