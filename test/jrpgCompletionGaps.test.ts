@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { jrpgCompletionGateApplies, jrpgCompletionGaps } from "@/qa/gameCheck/jrpgCompletion";
+import { buildMapGraph, checkMapGraph } from "@/qa/gameCheck/mapGraph";
 import { isRateLimitMessage, rateLimitedUnresolved } from "../scripts/lib/piTeamRuntime";
 import type { Project } from "@/project/types";
 
@@ -77,6 +78,25 @@ describe("채팅 한 줄 JRPG 요청 (jrpg-loop-1)", () => {
       m2: { id: "m2", name: "눈 덮인 요새", events: [{ id: "e", x: 0, y: 0, pages: [{ commands: [{ kind: "transfer", mapId: "m1", x: 1, y: 1 }] }] }] },
     } });
     expect(jrpgCompletionGaps(linked, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(true);
+    const renamedRetiredSeed = jrpg({ startMapId: "m2", maps: {
+      map_blank_start: { id: "map_blank_start", name: "(구) 포구 외곽 — 폐쇄 구역", structurePlacements: lighthouse, events: [] },
+      m2: { id: "m2", name: "눈 덮인 요새", events: [{ id: "e", x: 0, y: 0, pages: [{ commands: [{ kind: "transfer", mapId: "map_blank_start", x: 1, y: 1 }] }] }] },
+    } });
+    expect(jrpgCompletionGaps(renamedRetiredSeed, "").some((gap) => gap.includes("씨앗 어촌"))).toBe(true);
+  });
+
+  it("does not emit unreachable-map blocker when startMapId moved off map_blank_start and map_blank_start still has seed events (r3-ff1)", () => {
+    const project = {
+      startMapId: "m2",
+      startPos: { x: 0, y: 0 },
+      maps: {
+        map_blank_start: { id: "map_blank_start", name: "옛 씨앗 마을", width: 10, height: 10, tilesetId: "t", data: [new Array(100).fill(0)], events: [{ id: "ev_seed", name: "촌장", x: 1, y: 1, pages: [] }] },
+        m2: { id: "m2", name: "새 시작 마을", width: 10, height: 10, tilesetId: "t", data: [new Array(100).fill(0)], events: [] },
+      },
+      tilesets: { t: { id: "t", name: "t", tileWidth: 16, tileHeight: 16, passability: {} } },
+    } as unknown as Project;
+    const findings = checkMapGraph(project, buildMapGraph(project));
+    expect(findings.some((finding) => finding.code === "unreachable-map" && finding.where?.mapId === "map_blank_start")).toBe(false);
   });
 
   it("uses the request text as part of the brief for the time-ending check", () => {
@@ -132,5 +152,15 @@ describe("동료 약속 (jrpg-loop-2 ct2)", () => {
     const two = jrpg({ maps: { m1: { id: "m1", name: "마을", events: [talk("a", [{ kind: "changeParty", action: "add", actorId: "x1" }]), talk("b", [{ kind: "changeParty", action: "add", actorId: "x2" }])] } } });
     expect(jrpgCompletionGaps(two, "", { task: "시대마다 동료를 만나는 RPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
     expect(jrpgCompletionGaps(none, "", { task: "그냥 JRPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
+  });
+
+  it("flags when changeParty add companions are already pre-populated in the starting party (r3-ff1, r3-ct1)", () => {
+    const talk = (id: string, commands: unknown[]) => ({ id, name: id, x: 1, y: 2, pages: [{ id: `${id}_p`, trigger: { kind: "action" }, commands }] });
+    const prePopulated = jrpg({
+      system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, startActorIds: ["hero", "x1", "x2"], party: ["hero", "x1", "x2"] },
+      maps: { m1: { id: "m1", name: "마을", events: [talk("a", [{ kind: "changeParty", action: "add", actorId: "x1" }]), talk("b", [{ kind: "changeParty", action: "add", actorId: "x2" }])] } },
+    });
+    const gaps = jrpgCompletionGaps(prePopulated, "", { task: "시대마다 동료를 만나는 RPG" });
+    expect(gaps.some((gap) => gap.includes("set_party") && gap.includes("시작 파티"))).toBe(true);
   });
 });
