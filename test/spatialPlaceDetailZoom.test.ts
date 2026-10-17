@@ -27,7 +27,7 @@ beforeEach(() => {
   store.replace(createBlankProject(), { preserveEventDrafts: false });
 });
 
-describe("장소 카드 두 번 클릭 확대", () => {
+describe("장소 카드 상세 보기 확대", () => {
   it("목록을 다시 그린 뒤에도 상세에 같은 그림이 커진다", () => {
     const body = mountPlaces();
     flushSpatialCardThumbs();
@@ -36,10 +36,11 @@ describe("장소 카드 두 번 클릭 확대", () => {
     const listed = card!.querySelector("img");
     expect(listed?.getAttribute("src")).toBeTruthy();
 
+    // 한 번 클릭은 선택만 한다. 상세는 선택한 칸의 액션 줄 「상세 보기」가 연다.
     card!.click();
-    const again = body.querySelector<HTMLButtonElement>(`[data-testid="${card!.dataset.testid}"]`);
-    expect(again).not.toBeNull();
-    again!.click();
+    const detailButton = body.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-detail']");
+    expect(detailButton).not.toBeNull();
+    detailButton!.click();
 
     const detail = document.body.querySelector("[data-testid='spatial-place-detail']");
     const stage = detail?.querySelector("[data-zoom='detail']");

@@ -124,3 +124,10 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools > button { height:auto; min-height:30px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage { min-width:0; margin:4px 0 0; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-passage-paint-hint { display:block; white-space:normal; word-break:keep-all; font-size:11px; line-height:1.4; color:var(--text-3); }
+/* 자동 연결(autotile-compose)도 같은 레거시 그리드(140px + 시트)를 물려받아 DOM 순서 [도구줄, 시트, 편집 패널]이
+   자동 배치로 흘렀다 — 9칸/11칸 카드가 140px 열에 갇혀 글자가 한 자씩 꺾이고 편집 패널은 시트 밑으로 밀렸다.
+   도구줄은 맨 위 한 줄, 시트는 왼쪽, 편집 패널은 오른쪽 열로 고정한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area:has(> .tileset-autotile-toolbar) { grid-template-columns:minmax(0,1fr) minmax(240px,320px); grid-template-rows:auto minmax(0,1fr); }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area:has(> .tileset-autotile-toolbar) > .tileset-autotile-toolbar { grid-column:1 / -1; grid-row:1; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area:has(> .tileset-autotile-toolbar) > .tileset-db-preview-wrap { grid-column:1; grid-row:2; min-height:0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area:has(> .tileset-autotile-toolbar) > .tileset-db-edit-sidebar { grid-column:2; grid-row:2; min-height:0; }

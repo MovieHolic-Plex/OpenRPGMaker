@@ -5,7 +5,7 @@
 //  - 개편 전: 그리드 791×424, 5열 2줄 = 한 화면 10장. 카드를 누르면 선택과 동시에 편집기가 열려
 //    「맵에 놓기」 액션 줄을 볼 수 없었다(listView: card.id !== selected?.id).
 //  - 개편 후: 그리드 1332×527, 7열 = 한 화면 14장. 첫 클릭은 선택만, 편집기는 「편집」 버튼.
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
 import { libraryPlaceCardId } from "@/editor/panels/spatialPlaceQuery";
@@ -96,14 +96,25 @@ describe("places gallery library-first layout", () => {
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
   });
 
-  it("enters the editor when the same selected card is clicked again", () => {
-    setDatabaseActiveTab("spatialPlaces");
-    paint();
-    const id = libraryPlaceCardId(village().id);
-    host.querySelector<HTMLButtonElement>(cardSelector(id))?.click();
-    host.querySelector<HTMLButtonElement>(cardSelector(id))?.click();
-    expect(spatialSession().listView).toBe(false);
-    expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
+  it("one click shows three actions and never enters the editor on a timer", () => {
+    vi.useFakeTimers();
+    try {
+      setDatabaseActiveTab("spatialPlaces");
+      paint();
+      const id = libraryPlaceCardId(village().id);
+      host.querySelector<HTMLButtonElement>(cardSelector(id))?.click();
+      const actions = host.querySelector("[data-testid='spatial-cell-actions']");
+      const labels = [...(actions?.querySelectorAll("button") ?? [])].map((button) => button.dataset.testid);
+      expect(labels.slice(0, 3)).toEqual(["spatial-cell-build", "spatial-cell-detail", "spatial-cell-edit"]);
+      // 같은 칸을 다시 눌러도 선택만 유지한다 — 예전에는 450ms 타이머가 편집기로 끌고 들어갔다.
+      host.querySelector<HTMLButtonElement>(cardSelector(id))?.click();
+      vi.advanceTimersByTime(2000);
+      expect(spatialSession().listView).toBe(true);
+      expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+      expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps the place search field while Korean composition filters the gallery", () => {

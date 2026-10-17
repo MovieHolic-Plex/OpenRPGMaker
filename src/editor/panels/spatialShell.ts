@@ -49,10 +49,7 @@ import {
 } from "@/editor/panels/spatialUsage";
 import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
 import {
-  armPlaceEditorEntry,
   bindPlaceCardBrowse,
-  cancelPlaceEditorEntry,
-  consumePlaceActivation,
   hidePlaceHover,
   openPlaceDetail,
   retargetPlaceHover,
@@ -91,36 +88,19 @@ export function renderSpatialAuthoringShell(
   if (regionGallery && selected && !matchesRegionClassification(selected)) selected = cards.find(matchesRegionClassification);
 
   const refresh = (): void => {
-    cancelPlaceEditorEntry();
     rerender();
   };
 
   const onSelect = (id: string): void => {
     const card = cards.find(card => card.id === id);
     if (card) {
-      // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 조금 뒤 다시 누르면
-      // 편집기로 들어간다. 그 전에 한 번 더 누르면 상세 모달이 이긴다 — 셸이 클릭마다
-      // 카드를 다시 그려 dblclick 이 끊기기 때문이다.
-      if (placesGallery && !regionGallery && card.kind === "places") {
-        cancelPlaceEditorEntry();
-        const placePreset = Boolean(card.reviewedPlaceId || card.regionReferenceId);
-        const actionable = Boolean(card.canonicalSource || placePreset);
-        if (consumePlaceActivation(card.id) === "detail") {
-          if (spatialSession().galleryCardId !== card.id || spatialSession().listView === false) {
-            selectSpatialGalleryEntry(card);
-            patchSpatialSession({ galleryCardId: card.id, listView: true });
-            usageChromeState.openPopoverCardId = null;
-            refresh();
-          }
-          openPlaceDetail(card, placeBrowseActions(card, refresh));
-          return;
-        }
-        const reopening = spatialSession().galleryCardId === card.id && spatialSession().listView !== false;
+      // 장소·지역 갤러리: 클릭은 언제나 선택만 한다. 맵에 놓기·상세 보기·편집은 선택한 칸의
+      // 액션 줄(spatial-cell-actions)에서 고른다 — 재클릭 타이머로 편집기에 들어가던 3단계를 걷어냈다.
+      if (placesGallery && (card.kind === "places" || card.kind === "regions")) {
         selectSpatialGalleryEntry(card);
         patchSpatialSession({ galleryCardId: card.id, listView: true });
         usageChromeState.openPopoverCardId = null;
         refresh();
-        if (reopening && actionable) armPlaceEditorEntry(() => enterPlaceEditor(card, refresh));
         return;
       }
       selectSpatialGalleryEntry(card);
@@ -191,7 +171,11 @@ export function renderSpatialAuthoringShell(
   const renderCell = (card: GalleryCard): HTMLElement => {
     const isSelected = card.id === selected?.id;
     const button = renderSpatialGalleryCard(card, isSelected, onSelect);
-    if (!regionGallery && card.kind === "places") bindPlaceCardBrowse(button, card);
+    if (placesGallery && (card.kind === "places" || card.kind === "regions")) {
+      bindPlaceCardBrowse(button, card);
+      // 보너스: 같은 칸을 두 번 누르면 상세. 첫 클릭의 다시 그리기 뒤에 새 칸이 받는 dblclick 이다.
+      button.addEventListener("dblclick", () => openPlaceDetail(card, placeBrowseActions(card, refresh)));
+    }
     // 카드에는 분류 하나만 — 공간 형태·용도·그림체·출처는 필터와 상세에서 본다. 칩 4~5개가 이름보다 먼저 읽혔다.
     // 지역 예시는 전부 같은 분류라 칩이 정보를 주지 않는다.
     const badges = regionGallery ? [] : [classifyPlaceCard(card).category];
@@ -200,19 +184,26 @@ export function renderSpatialAuthoringShell(
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
       : card.kind === "spaces" ? spatialSpacesChrome(card, refresh).build : undefined;
+    const buildBlocked = card.kind === "regions" ? "지역 예시는 아직 맵으로 바로 놓을 수 없습니다 — 편집에서 지역 맵을 만드세요" : "이 설계는 맵으로 만들 수 없습니다";
     const popoverOpen = usageChromeState.openPopoverCardId === card.id;
     const actions = el("div", { class: "spatial-cell-actions", dataset: { testid: "spatial-cell-actions" }, children: [
       el("button", {
         class: "spatial-action is-primary", text: "맵에 놓기",
-        attrs: { type: "button", title: "이 설계로 새 맵을 만들어 편집 맵으로 엽니다", ...(build ? {} : { disabled: "" }) },
+        attrs: { type: "button", title: build ? "이 설계로 새 맵을 만들어 편집 맵으로 엽니다" : buildBlocked, ...(build ? {} : { disabled: "" }) },
         dataset: { testid: "spatial-cell-build" },
         on: build ? { click: () => { build(); refresh(); } } : undefined,
+      }),
+      el("button", {
+        class: "spatial-action", text: "상세 보기",
+        attrs: { type: "button" },
+        dataset: { testid: "spatial-cell-detail" },
+        on: { click: () => openPlaceDetail(card, placeBrowseActions(card, refresh)) },
       }),
       el("button", {
         class: "spatial-action", text: "편집",
         attrs: { type: "button" },
         dataset: { testid: "spatial-cell-edit" },
-        on: { click: () => { selectSpatialGalleryEntry(card); patchSpatialSession({ listView: false, galleryCardId: card.id }); usageChromeState.openPopoverCardId = null; refresh(); } },
+        on: { click: () => enterPlaceEditor(card, refresh) },
       }),
       ...(usage.rows.length ? [el("button", {
         class: "spatial-action", text: `배치 ${usage.rows.length} ${popoverOpen ? "▴" : "▾"}`,
@@ -415,7 +406,7 @@ function purposeBand(tab: "places" | "regions"): HTMLElement {
   const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
   const copy = tab === "regions"
     ? { lead: "지역은 여러 장소를 이어 붙인 동네입니다", sub: "아래는 완성된 예시(읽기 전용)입니다", steps: ["예시 고르기", "상세 보기", "맵 파일 받기 · AI 참고"] }
-    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "올리면 크게 보고, 두 번 클릭하면 자세히 봅니다", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
+    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "누르면 맵에 놓기 · 상세 보기 · 편집이 나옵니다", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
   return el("div", {
     class: "spatial-purpose",
     dataset: { testid: "spatial-purpose" },

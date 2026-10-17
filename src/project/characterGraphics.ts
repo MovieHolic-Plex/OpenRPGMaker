@@ -6,6 +6,7 @@ import { PRODUCT_SLUG } from "@/brand";
 import faceExpressionSources from "../../scripts/shared-face-expression-sources.json";
 import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
 import previousFaceNames from "@/assets/previousFaceReferenceNames.json";
+import { MODERN_PORTRAIT_SETS, SHARED_PORTRAIT_ASSETS } from "@/assets/sharedPortraitAssets";
 import { sharedCharacterIndices } from './sharedCharacters';
 import type { Project, ResourceProfile } from "./types";
 
@@ -108,6 +109,9 @@ export function listCharacterSprites(project: Project): CharacterSprite[] {
   }));
 }
 
+const MODERN_BUST_FACES = SHARED_PORTRAIT_ASSETS.filter((asset) => asset.mode === "bust" && asset.expression === "base"
+  && MODERN_PORTRAIT_SETS.some((set) => asset.setId === `shared-${set.stem}-expressions`));
+
 export function listCharacterFaces(project: Project): CharacterFace[] {
   const faces = new Map<string, CharacterFace>();
   const add = (resourceId: string, label: string, attributes?: GraphicAttributes, note = ""): void => {
@@ -120,6 +124,9 @@ export function listCharacterFaces(project: Project): CharacterFace[] {
     `easyrpg-faceset-${source.baseSheet.toLowerCase()}-${String(source.baseCell).padStart(2, "0")}`, source.name,
   ]));
   for (const face of FACESET_FACE_ASSETS) add(face.id, sourceNames.get(face.id) ?? face.name);
+  // 현대 연애 칩(Modern1~3)은 48px 얼굴이 없고, 공용 대응표가 칩 → 흉상 base 를 「얼굴」로 잇는다(2026-10-16).
+  // 이 흉상을 얼굴 목록에 넣지 않으면 그 대응표 전체가 「알 수 없는 얼굴」로 거부돼 캐릭터·얼굴 탭이 열리지 않는다.
+  for (const portrait of MODERN_BUST_FACES) add(portrait.id, portrait.name);
   for (const face of FACESET_PEOPLE1_FACES) add(face.resourceId, face.label, {
     ...seedGraphicAttributes(face.label), gender: face.gender === "male" ? "남성" : face.gender === "female" ? "여성" : "",
     ...(face.age ? { age: ({ child: "어린이", youth: "청년", middle: "중년", elder: "노년" } as const)[face.age] } : {}),

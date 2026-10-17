@@ -1,6 +1,4 @@
-// 장소 갤러리의 둘러보기: 호버는 그림을 크게 보여주고, 빠른 재클릭은 상세 모달이다.
-// 셸은 클릭마다 카드를 다시 만들기 때문에 dblclick 은 첫 클릭의 재렌더에 끊긴다.
-// 그래서 더블클릭은 카드 id 와 시각으로 판정한다.
+// 장소·지역 갤러리의 둘러보기: 호버는 그림을 크게 보여주고, 상세 모달은 선택한 칸의 「상세 보기」(또는 dblclick)로 연다.
 
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { classifyPlaceCard } from "@/editor/panels/spatialPlaceClassification";
@@ -13,7 +11,7 @@ import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalSta
 import { spatialThumbSrc } from "@/editor/panels/spatialCardThumbs";
 import { el } from "@/util/dom";
 
-const DOUBLE_CLICK_MS = 450;
+// 선택·편집기 진입은 셸(spatialShell.ts)의 한 번 클릭 + 액션 줄이 맡는다. 여기에는 재클릭 타이머가 없다.
 const HOVER_DELAY_MS = 70;
 
 export type PlaceBrowseActions = {
@@ -27,8 +25,6 @@ const HOVER_BOX: ZoomBox = { w: 360, h: 248 };
 const DETAIL_BOX: ZoomBox = { w: 640, h: 420 };
 
 const cards = new Map<string, SpatialGalleryCard>();
-let lastActivation: { id: string; at: number } | null = null;
-let editorTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverHideTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverEl: HTMLElement | null = null;
@@ -37,32 +33,6 @@ let pointer = { x: 0, y: 0, known: false };
 let pointerTracked = false;
 let detailOpen = false;
 let closeDetail: (() => void) | null = null;
-
-function now(): number {
-  return typeof performance !== "undefined" ? performance.now() : Date.now();
-}
-
-export function consumePlaceActivation(cardId: string): "detail" | "select" {
-  const at = now();
-  const quick = lastActivation !== null && lastActivation.id === cardId && at - lastActivation.at < DOUBLE_CLICK_MS;
-  lastActivation = { id: cardId, at };
-  return quick ? "detail" : "select";
-}
-
-export function cancelPlaceEditorEntry(): void {
-  if (editorTimer === null) return;
-  clearTimeout(editorTimer);
-  editorTimer = null;
-}
-
-/** 이미 선택된 카드를 한 번 더 누르면 편집기로 들어간다. 그 전에 한 번 더 누르면 상세가 이긴다. */
-export function armPlaceEditorEntry(run: () => void): void {
-  cancelPlaceEditorEntry();
-  editorTimer = setTimeout(() => {
-    editorTimer = null;
-    run();
-  }, DOUBLE_CLICK_MS);
-}
 
 function trackPointer(): void {
   if (pointerTracked || typeof document === "undefined") return;
@@ -232,7 +202,7 @@ function showHover(button: HTMLElement, card: SpatialGalleryCard): void {
     el("div", { class: "spatial-place-hover-copy", children: [
       el("strong", { class: "spatial-place-hover-name", text: card.name }),
       ...(subtitle ? [el("span", { class: "spatial-place-hover-sub", text: subtitle })] : []),
-      el("span", { class: "spatial-place-hover-hint", text: "두 번 클릭하면 자세히 봅니다" }),
+      el("span", { class: "spatial-place-hover-hint", text: "누르면 맵에 놓기 · 상세 보기 · 편집이 나옵니다" }),
     ] }),
   );
   host.append(panel);
