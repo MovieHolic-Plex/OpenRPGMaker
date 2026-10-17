@@ -20,9 +20,9 @@ export function quickHouseOptions(s: Pick<import("./editorState").EditorState, "
 }
 export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
-  return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width <= 24 && k.height <= 24
-    && !/^bd-block-|^quick_house_/.test(k.id)
-    && !!k.parts?.some(p => p.kind === "entrance") && /house|home|집|주택|저택|여관|상점|대장간|성당|창고/i.test(`${k.id} ${k.name} ${k.ai?.tags?.join(" ")}`))
+  return (tileset.structureKits ?? []).filter((k): k is SectionStructureKitDef => k.kind === "section" && k.width >= 3 && k.height >= 4 && k.width <= 24 && k.height <= 24
+    && !/^bd-block-|^quick_house_|^jp-door-|-door-/i.test(k.id)
+    && Boolean(k.parts?.some(p => p.kind === "entrance")) && /house|home|bldg|bld-|recipe-|집|주택|저택|여관|상점|가게|대장간|성당|창고|편의점|카페|이자카야|술집|빵집|초밥|도시락|목욕탕|사무|오피스|빌딩|타워|아파트|맨션|은행|병원|호텔|학교|도서관|기숙사|우체국|경찰|소방|건물/i.test(`${k.id} ${k.name} ${k.ai?.tags?.join(" ")}`))
     .sort((a, b) => Number(!/살림집|cottage/i.test(a.name ?? "")) - Number(!/살림집|cottage/i.test(b.name ?? "")));
 }
 export function quickHouseStyles(tileset: TilesetDef): readonly QuickHouseStyle[] {

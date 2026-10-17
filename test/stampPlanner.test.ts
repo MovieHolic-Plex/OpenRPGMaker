@@ -112,6 +112,28 @@ describe("clamping to the target rect", () => {
     }), { ...FACTS, text: "여기에 작은 집 지어줘" });
     expect(converted.steps.map((step) => step.tool)).toEqual(["place_house"]);
   });
+
+  it("validates place_dungeon_room and converts dungeon wall+fill plans into place_dungeon_room", () => {
+    const check = validateStampStep(
+      { tool: "place_dungeon_room", args: { area: { x: 10, y: 5, w: 10, h: 8 }, kind: "room", hazard: "lava" } },
+      FACTS,
+    );
+    expect("step" in check && check.step.args).toMatchObject({
+      area: { x: 10, y: 5, w: 10, h: 8 },
+      kind: "room",
+      hazard: "lava",
+    });
+    const converted = parseStampPlan(
+      JSON.stringify({
+        steps: [
+          { tool: "fill_region", args: { rect: { x: 10, y: 5, w: 10, h: 8 }, material: "흙" }, label: "던전 방 바닥" },
+          { tool: "build_wall", args: { rect: { x: 10, y: 5, w: 10, h: 8 }, material: "벽" }, label: "던전 방 외벽" },
+        ],
+      }),
+      { ...FACTS, text: "던전 입구 방과 계단" },
+    );
+    expect(converted.steps.map((step) => step.tool)).toEqual(["place_dungeon_room"]);
+  });
 });
 
 describe("prompts", () => {

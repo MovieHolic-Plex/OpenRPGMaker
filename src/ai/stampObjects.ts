@@ -11,6 +11,7 @@
 import type { SectionStructureKitDef, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 export type StampObjectSource = "pack" | "authored" | "hand" | "group";
+export type StampObjectPlacement = "floor" | "wall" | "water" | "road";
 
 export interface StampObjectEntry {
   /** 킷 id 또는 소품 그룹 id. */
@@ -26,14 +27,28 @@ export interface StampObjectEntry {
   readonly descText: string;
   /** 그림이 놓는 방식: 바닥에 서는 물건인가. 벽·문·간판에 붙는 것은 바로 깔기가 놓지 않는다. */
   readonly floorStanding: boolean;
+  /** 놓이는 표면 종류(바닥·벽면·물 위 다리·차도 위 차량/횡단보도). */
+  readonly placement?: StampObjectPlacement;
+  /** 칩셋·장소 접두어를 뗀 핵심 물건 이름(정확도 우선 정렬용). */
+  readonly coreName?: string;
+  /** 실내 전용 프리셋(jp-in-*, mc-in-*)인가 — 야외 물건과 동점이면 야외를 먼저 고른다. */
+  readonly indoor?: boolean;
 }
 
-/** 바로 깔기가 한 번에 놓는 물건 한 개의 최대 칸 수(건물·큰 구조물은 다른 도구의 일). */
-const MAX_OBJECT_CELLS = 9;
-const MAX_OBJECT_SIDE = 3;
-const WALL_TAGS = new Set(["wallmount", "door", "overhead", "wall", "hang", "window", "decal"]);
-const STRUCTURE_WORDS = /건물|집 외장|지붕|성벽|외벽|가게 앞|상가|띠\b/u;
-const OBJECT_GROUP_ROLES = new Set(["prop", "furniture", "decoration", "detail"]);
+/** 바로 깔기가 한 번에 놓는 물건(나무·분수·다리·차량·제단 포함)의 최대 크기(건물·집은 place_house 가 맡는다). */
+const MAX_OBJECT_CELLS = 36;
+const MAX_OBJECT_SIDE = 7;
+const WALL_TAGS: Readonly<Record<string, true>> = { wallmount: true, door: true, overhead: true, wall: true, hang: true, window: true, decal: true };
+const STRUCTURE_WORDS = /건물|집 외장|성벽|외벽|가게 앞|\b띠\b/u;
+const OBJECT_GROUP_ROLES: Readonly<Record<string, true>> = { prop: true, furniture: true, decoration: true, detail: true };
+
+/** 집·건물·지붕 부품·그림자·바닥/벽면 타일 패치는 물건 사전에서 뺀다(place_house·place_dungeon_room·fill_region 이 맡는다). */
+const NON_OBJECT_KIT_ID =
+  /^(?:bd-(?:house|block|facility|rv-shadow|rv-foundation|mpart-(?:roof|bay|gable|dormer|porch|wall|chimney)|out-(?:roof|log|logg|plank|gable|chimney)|ground-|pick-mining-valley-(?:d\d|e\d|s\d|w\d|boss|hall|inn|smelt|smith)|pick-desert-oasis-(?:n\d|s\d|w\d|khan|temple)|pick-snowfield-(?:e\d|n\d|s\d|w\d|shed|hall|bath)|pick-swamp-stilt-(?:e\d|n\d|s\d|w\d|pierhut|hall|loom|shrine))|jp-(?:bldg|recipe|sf|roof|foot-shadow|road-lane|door-)|mc-(?:bld|road-ew|road-ns|street-|intersection-)|jb-(?:giwa_house|thatch_house|palace_)|wz-(?:lake-boathouse|lake-bh-))|-(?:ground|floor|face|ceiling)-|(?:-ceiling|-water-sew|-water-sea|-water-tide)$/i;
+
+/** 장소·범주 태그(「걸음 구조물(다리·계단·잔교)」「편의점」「주택」)가 물건 이름으로 둔갑하지 않게 걸러 낸다. */
+const CATEGORY_TAG_RE =
+  /[()]|^(?:버들항|현대 도시|일본 도시|마법 세계|조선|실내|야외|거리|공공|상점|편의점|카페|이자카야|주택|빌딩|마을|던전|광산|설원|사막|늪|성 지하|지하 수도교|바다 동굴|화산 동굴|어촌|산길|강변|신전|고원|포도원|숲길|등대|걸음 구조물|물체|소품|가구|자연|차량|도로)/u;
 
 function norm(text: string): string {
   return text.toLowerCase().replace(/[\s·・,.()\[\]_/\\-]+/gu, " ").trim();
@@ -41,12 +56,25 @@ function norm(text: string): string {
 
 /** 이름·id 에 「벽/창/문/걸이」가 든 물건은 벽에 붙는 부착물 — 바닥에 서지 않는다(「벽 횃불」이 바닥 칸에서 무결성 거부됐다). */
 const WALL_BOUND_NAME = /(?:^|[\s_:-])(?:wall|window|door|hang|벽|창|창문|문|걸이|걸개|현판)(?:$|[\s_:-])|벽걸이|벽 /iu;
+const WALL_MOUNTABLE_PROP = /torch-wall|벽 횃불|횃불|arch-bars|arch-dark|arch-open|arch-water|벽 아치|철창 아치|stairs-up-face|올라가는 계단|banner|현수막|niche|벽감|chains|사슬|vines|담쟁이/iu;
+const WATER_BRIDGE_KIT = /\bbridge\b|footbridge|다리|널다리|돌다리/iu;
+const ROAD_VEHICLE_OR_MARKING_KIT = /^mc-veh-|^jp-prop-(?:car|ad-truck|ricksha|train)|^mc-crosswalk-|crosswalk|횡단보도/iu;
+
+function kitPlacementOf(kit: SectionStructureKitDef): StampObjectPlacement | null {
+  const label = `${kit.id} ${kit.name ?? ""}`;
+  if (WATER_BRIDGE_KIT.test(label) && !/말뚝|기둥|post|pier-hut/iu.test(label)) return "water";
+  if (ROAD_VEHICLE_OR_MARKING_KIT.test(label)) return "road";
+  if (isFloorStanding(kit)) return "floor";
+  if (WALL_MOUNTABLE_PROP.test(label)) return "wall";
+  return null;
+}
 
 function isFloorStanding(kit: SectionStructureKitDef): boolean {
   if (WALL_BOUND_NAME.test(`${kit.name ?? ""} ${kit.id}`)) return false;
   const tags = kit.ai?.tags ?? [];
-  if (tags.some((tag) => WALL_TAGS.has(tag))) return false;
-  const snap = (kit.ai as { snap?: string } | undefined)?.snap;
+  if (tags.some((tag) => WALL_TAGS[tag] === true)) return false;
+  const ai = kit.ai;
+  const snap = ai && typeof ai === "object" && "snap" in ai && typeof ai.snap === "string" ? ai.snap : undefined;
   if (snap && snap !== "floor") return false;
   return true;
 }
@@ -57,20 +85,30 @@ function sourceOf(kit: SectionStructureKitDef): StampObjectSource {
   return "authored";
 }
 
-/** 킷이 「물건 하나」인가 — 작고, 이름이 있고, 건물 부품이 아니다. */
+/** 「버들항 지하 수도교·하수도 · 통 1×1」「버들항 소품 돌 우물 (지붕) 2×2」 → 핵심 물건 이름 「통」「돌 우물 (지붕)」. */
+export function extractCoreObjectName(name: string): string {
+  const base = baseName(name);
+  const afterDot = base.includes("·") ? base.split("·").pop()!.trim() : base;
+  return afterDot
+    .replace(/^(?:버들항\s*소품|버들항|조선|마법\s*세계|현대\s*도시|일본\s*도시)\s+/u, "")
+    .trim() || base;
+}
+
+/** 킷이 「물건 하나」인가 — 적당한 크기이고, 이름이 있고, 건물 외장/바닥 패치가 아니다. */
 function isObjectKit(kit: SectionStructureKitDef): boolean {
   const name = (kit.name ?? "").trim();
   if (!name) return false;
   if (kit.width < 1 || kit.height < 1 || kit.width > MAX_OBJECT_SIDE || kit.height > MAX_OBJECT_SIDE) return false;
   if (kit.width * kit.height > MAX_OBJECT_CELLS) return false;
   if (!kit.rows?.length) return false;
+  if (NON_OBJECT_KIT_ID.test(kit.id)) return false;
   if (STRUCTURE_WORDS.test(name)) return false;
-  return true;
+  return kitPlacementOf(kit) !== null;
 }
 
 function isObjectGroup(group: TileGroupMetadata): boolean {
   if (!group.name?.trim() || group.tileIds.length === 0) return false;
-  if (!OBJECT_GROUP_ROLES.has(String(group.role))) return false;
+  if (OBJECT_GROUP_ROLES[String(group.role)] !== true) return false;
   // 한 칸짜리이거나 패턴 문법이 있는 그룹만 — 문법 없는 여러 칸 그룹은 낱장으로 흩어져 조각만 놓인다.
   return group.tileIds.length === 1 || Boolean(group.patternGrammar);
 }
@@ -86,32 +124,47 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
   const seenKitIds = new Set<string>();
   for (const kit of tileset.structureKits ?? []) {
     if (!isObjectKit(kit) || seenKitIds.has(kit.id)) continue;
+    const placement = kitPlacementOf(kit);
+    if (!placement) continue;
     seenKitIds.add(kit.id);
-    const tags = kit.ai?.tags ?? [];
+    const rawTags = (kit.ai?.tags ?? []).filter((tag) => !CATEGORY_TAG_RE.test(tag.trim()));
+    const rawName = (kit.name ?? kit.id).trim();
+    const core = extractCoreObjectName(rawName);
+    const slug = kit.id
+      .replace(/^(?:bd-pick-[a-z-]+-|bd-(?:prop|mpart|out|tree|farm|bridge)-|jp-(?:prop|in-[a-z]+|tram|road)-|mc-(?:prop|veh|in-[a-z]+)-|jb-|wz-)/iu, "");
     entries.push({
       id: kit.id,
       kind: "kit",
-      name: (kit.name ?? kit.id).trim(),
+      name: rawName,
       source: sourceOf(kit),
       width: kit.width,
       height: kit.height,
-      nameText: norm(`${kit.name ?? ""} ${tags.join(" ")} ${kit.id.replace(/^[a-z]+(?:-[a-z]+)?[:-]/iu, "")}`),
+      nameText: norm(`${core} ${rawTags.join(" ")} ${slug}`),
       descText: norm(kit.ai?.description ?? ""),
-      floorStanding: isFloorStanding(kit),
+      floorStanding: placement !== "wall",
+      placement,
+      coreName: norm(core),
+      indoor: /^(?:jp-in-|mc-in-)/i.test(kit.id),
     });
   }
   for (const group of tileset.tileGroups ?? []) {
     if (!isObjectGroup(group)) continue;
+    const rawName = group.name.trim();
+    const core = extractCoreObjectName(rawName);
+    const groupTags = "tags" in group && Array.isArray(group.tags) ? group.tags.filter((t): t is string => typeof t === "string" && !CATEGORY_TAG_RE.test(t)) : [];
     entries.push({
       id: group.id,
       kind: "group",
-      name: group.name.trim(),
+      name: rawName,
       source: "group",
       width: 1,
       height: 1,
-      nameText: norm(`${group.name} ${((group as { tags?: string[] }).tags ?? []).join(" ")}`),
+      nameText: norm(`${core} ${groupTags.join(" ")}`),
       descText: norm(group.description ?? ""),
       floorStanding: true,
+      placement: "floor",
+      coreName: norm(core),
+      indoor: false,
     });
   }
   indexCache.set(tileset, entries);
@@ -161,17 +214,49 @@ function tokens(text: string): string[] {
   return norm(text.replace(/\(\s*-?\d+\s*,\s*-?\d+\s*\)/gu, " ").replace(/\d+\s*[×x]\s*\d+/giu, " ")).split(" ").filter(Boolean);
 }
 
-/** 이름 수준 일치 점수: 3 = 낱말이 그 이름, 2 = 낱말이 그 이름으로 시작하거나(2자 이상) 포함, 0 = 불일치. */
+const TREE_QUERY_RE = /^(?:나무|가로수|활엽수|침엽수|벚나무|은행나무|느티나무|소나무|전나무|버드나무|올리브\s*나무|tree|street\s*tree)$/iu;
+const WOODEN_NON_TREE_RE =
+  /상자|의자|벤치|탁자|식탁|테이블|침대|책장|선반|카운터|문|울타리|펜스|널다리|다리|판자|수레|마차|통|관목|사이프러스|화분|걸이|걸개|계단|난간|기둥|보트|배|팻말|테두리|전봇대|장롱|발판|신발장|접수대|시렁|밭|이랑/u;
+const TRUE_TREE_RE = /나무|가로수|활엽수|침엽수|벚나무|은행나무|느티나무|소나무|전나무|버드나무|올리브|tree|sakura|ginkgo|zelkova|pine|willow|fir|conifer/iu;
+
+const BARREL_QUERY_RE = /^(?:통|나무통|술통|오크통|배럴|barrel|keg)$/iu;
+const NON_BARREL_TONG_RE = /통\s*속|우체통|쓰레기통|물통|분유통|플라스틱\s*통|광석\s*통|사료통|연통|몸통|통나무|가스통/u;
+
+const VEHICLE_QUERY_RE = /^(?:차|자동차|승용차|세단|차량|오토차|택시|경찰차|순찰차|트럭|버스|car|sedan|vehicle|taxi|truck|bus)$/iu;
+const NON_VEHICLE_RE = /차\s*세트|차단봉|차양|차고|주차|정류장|표지판|자판기|개찰기|자동문|광차|수레|유모차|장난감/u;
+
+function hasCompoundConflict(q: string, entry: StampObjectEntry): boolean {
+  const core = entry.coreName ?? norm(extractCoreObjectName(entry.name));
+  if (TREE_QUERY_RE.test(q)) {
+    if (WOODEN_NON_TREE_RE.test(core)) return true;
+    if (!TRUE_TREE_RE.test(`${core} ${entry.id}`)) return true;
+  }
+  if (BARREL_QUERY_RE.test(q) && NON_BARREL_TONG_RE.test(core)) return true;
+  if (VEHICLE_QUERY_RE.test(q) && NON_VEHICLE_RE.test(core)) return true;
+  if ((q === "다리" || q === "돌다리" || q === "bridge") && /말뚝|울타리|식탁|탁자|의자|사다리/u.test(core)) return true;
+  if ((q === "계단" || q === "올라가는 계단" || q === "내려가는 계단") && /말뚝|사다리/u.test(core)) return true;
+  if ((q === "기둥" || q === "돌기둥" || q === "석주") && /이정표|가로등|등불|전주|전봇대|신호/u.test(core)) return true;
+  return false;
+}
+
+/** 이름 수준 일치 점수: 4 = 핵심 이름 전체 일치, 3 = 핵심 이름 낱말 일치, 2 = 시작/포함/태그 일치, 0 = 불일치. */
 function nameScore(query: string, entry: StampObjectEntry): number {
   const q = norm(query);
   if (!q) return 0;
+  if (hasCompoundConflict(q, entry)) return 0;
+  const core = entry.coreName ?? norm(extractCoreObjectName(entry.name));
+  if (core === q) return 4;
+  const coreWords = core.split(" ").filter(Boolean);
+  if (coreWords.includes(q)) return 3;
   const words = entry.nameText.split(" ").filter(Boolean);
   if (words.includes(q)) return 3;
   // 한 글자 낱말(통·문)은 낱말이 정확히 같을 때만 — 「통로」「소통」에 걸리지 않게.
   if ([...q].length < 2) return 0;
+  if (core.startsWith(q) || coreWords.some((word) => word.startsWith(q))) return 3;
   if (words.some((word) => word.startsWith(q))) return 2;
   // 영어 동의어는 낱말 앞부분만(「door」가 「trapdoor」·「outdoor」에 걸려 뚜껑문이 문으로 깔리던 것).
   if (/[a-z]/u.test(q)) return 0;
+  if (core.includes(q)) return 3;
   if (entry.nameText.includes(q)) return 2;
   return 0;
 }
@@ -180,6 +265,7 @@ function nameScore(query: string, entry: StampObjectEntry): number {
 function fuzzyNameScore(query: string, entry: StampObjectEntry): number {
   const q = norm(query);
   if ([...q].length < 2) return 0;
+  if (hasCompoundConflict(q, entry)) return 0;
   const qj = toJamo(q);
   for (const word of tokens(entry.nameText)) {
     if ([...word].length < 2) continue;
@@ -197,28 +283,44 @@ const SYNONYM_GROUPS: readonly (readonly string[])[] = [
   ["의자", "스툴", "걸상", "chair", "stool"],
   ["탁자", "테이블", "식탁", "책상", "table", "desk"],
   ["침대", "bed"],
-  ["벤치", "긴 의자", "bench"],
+  ["벤치", "나무 벤치", "긴 의자", "bench"],
   ["책장", "서가", "책꽂이", "bookshelf", "bookcase"],
-  ["통", "나무통", "술통", "배럴", "barrel", "keg"],
+  ["통", "나무통", "술통", "오크통", "배럴", "barrel", "keg"],
   ["상자", "나무 상자", "궤", "박스", "크레이트", "crate", "box"],
   ["항아리", "단지", "독", "jar", "urn"],
-  ["우물", "well"],
-  ["가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
-  ["횃불", "토치", "torch"],
+  ["우물", "돌 우물", "우물가", "well"],
+  ["분수", "분수대", "fountain"],
+  ["연못", "pond"],
+  ["가로등", "공원 가로등", "정원 가로등", "등불", "랜턴", "가로 등", "street lamp", "lamp", "lantern", "lamppost"],
+  ["횃불", "벽 횃불", "등불 기둥", "토치", "torch"],
   ["모닥불", "화톳불", "캠프파이어", "campfire", "bonfire"],
+  ["화로", "돌 화로", "화덕", "불판", "brazier"],
   ["바위", "돌", "큰 바위", "암석", "boulder", "rock", "stone"],
   ["덤불", "관목", "수풀", "bush", "shrub"],
   ["꽃", "꽃밭", "화단", "꽃무더기", "flower", "flowerbed"],
-  ["울타리", "펜스", "담장", "fence", "hedge"],
+  ["울타리", "나무 울타리", "가로 울타리", "세로 울타리", "펜스", "담장", "산울타리", "fence", "hedge"],
   ["표지판", "푯말", "이정표", "안내판", "sign", "signpost"],
-  ["간판", "signboard"],
-  ["동상", "조각상", "statue"],
-  ["우체통", "mailbox", "postbox"],
-  ["자판기", "vending machine", "vending"],
+  ["간판", "입간판", "메뉴판", "signboard"],
+  ["동상", "조각상", "석상", "statue"],
+  ["우체통", "빨간 우체통", "mailbox", "postbox"],
+  ["자판기", "음료 자판기", "자동판매기", "vending machine", "vending"],
+  ["신호등", "신호기", "보행 신호기", "보행자 신호기", "traffic light", "signal"],
+  ["횡단보도", "crosswalk"],
+  ["자동차", "승용차", "세단", "차량", "오토차", "car", "sedan", "vehicle"],
+  ["택시", "taxi"],
+  ["경찰차", "순찰차", "police car", "police"],
+  ["트럭", "화물차", "광고 트럭", "truck"],
+  ["버스", "bus"],
+  ["자전거", "자전거 무리", "bicycle", "bike"],
   ["카펫", "러그", "양탄자", "깔개", "carpet", "rug"],
-  ["나무", "tree"],
-  ["연못", "분수", "pond", "fountain"],
-  ["계단", "stair", "stairs"],
+  ["나무", "가로수", "활엽수", "침엽수", "벚나무", "은행나무", "느티나무", "소나무", "전나무", "tree", "street tree"],
+  ["다리", "아치 다리", "강 위 아치 다리", "아치 돌다리", "돌다리", "능선 개울 돌다리", "나무 다리", "나무 널다리", "널다리", "바위 다리", "bridge", "footbridge"],
+  ["계단", "올라가는 계단", "내려가는 계단", "벽 앞면에서 올라가는 계단", "바닥에서 아래로 내려가는 계단 한 칸", "돌 계단", "나선 계단", "stair", "stairs"],
+  ["기둥", "돌기둥", "카타콤 기둥", "신전 기둥", "사각 기둥", "원주", "석주", "바위 기둥", "pillar", "column"],
+  ["제단", "돌 제단", "교단 제단", "흑요석 제단", "altar"],
+  ["해골", "해골 무더기", "뼈", "뼈 더미", "skull", "skulls", "bones"],
+  ["아치", "벽 아치", "벽 아치 문", "아치 문", "철창 아치", "던전 문", "arch", "archway"],
+  ["밭", "경작지", "밀밭", "배추밭", "토마토밭", "모둠 밭", "farm plot"],
   ["문", "door"],
 ];
 
@@ -261,21 +363,25 @@ function pickVariants(hits: readonly { entry: StampObjectEntry; score: number }[
     .filter((hit) => hit.score === best)
     .map((hit) => hit.entry)
     .sort((a, b) =>
-      SOURCE_RANK[a.source] - SOURCE_RANK[b.source]
-      || a.name.length - b.name.length
+      Number(Boolean(a.indoor)) - Number(Boolean(b.indoor))
+      || SOURCE_RANK[a.source] - SOURCE_RANK[b.source]
+      || (a.coreName?.length ?? a.name.length) - (b.coreName?.length ?? b.name.length)
       || a.width * a.height - b.width * b.height
       || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 
 /**
  * 이름으로 물건을 찾는다. `names[0]` 이 사용자 말(철자 오타 보정은 이 이름에만), 나머지는 같은 묶음의 동의어다.
- * 바닥에 서는 물건만(벽·문·간판 부착물은 제외). 이름 수준에서 맞는 것이 없으면 null.
+ * 바닥·도로·물 위·던전 벽 부착물(횃불·아치)을 찾고, 이름 수준에서 맞는 것이 없으면 null.
  */
 export function resolveStampObject(
   index: readonly StampObjectEntry[],
   names: readonly string[],
+  maxSize?: { readonly w: number; readonly h: number },
 ): StampObjectHit | null {
-  const floor = index.filter((entry) => entry.floorStanding);
+  const allFloor = index.filter((entry) => entry.floorStanding || entry.placement === "wall");
+  const sized = maxSize ? allFloor.filter((entry) => entry.width <= maxSize.w && entry.height <= maxSize.h) : allFloor;
+  const floor = sized.length > 0 ? sized : allFloor;
   for (const name of names) {
     const scored: { entry: StampObjectEntry; score: number }[] = [];
     for (const entry of floor) {
@@ -299,12 +405,12 @@ export function resolveStampObject(
       return { entry: variants[0]!, matchedBy: primary, corrected: true, variants };
     }
   }
-  return null;
+  return maxSize && sized.length > 0 && sized.length < allFloor.length ? resolveStampObject(index, names) : null;
 }
 
 /** 못 찾았을 때 보여 줄 가까운 물건 이름(중복 이름 제거) — 이름 일치 → 설명 일치 → 자모 거리 순. */
 export function nearestStampObjects(index: readonly StampObjectEntry[], names: readonly string[], limit = 5): string[] {
-  const floor = index.filter((entry) => entry.floorStanding);
+  const floor = index.filter((entry) => entry.floorStanding || entry.placement === "wall");
   const scored = new Map<string, number>();
   const bump = (entry: StampObjectEntry, score: number): void => {
     const label = baseName(entry.name);
@@ -338,7 +444,7 @@ export function baseName(name: string): string {
 export function sampleStampObjectNames(index: readonly StampObjectEntry[], limit = 40): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
-  const floor = index.filter((entry) => entry.floorStanding);
+  const floor = index.filter((entry) => entry.floorStanding || entry.placement === "wall");
   // 출처별로 번갈아 뽑아 한 출처에 쏠리지 않게.
   const bySource = (source: StampObjectSource): StampObjectEntry[] => floor.filter((entry) => entry.source === source);
   const lanes = (["pack", "hand", "authored", "group"] as const).map(bySource).filter((lane) => lane.length > 0);
@@ -348,7 +454,8 @@ export function sampleStampObjectNames(index: readonly StampObjectEntry[], limit
       const entry = lane[round];
       if (!entry) continue;
       const label = baseName(entry.name);
-      const key = norm(label).split(" ")[0] ?? label;
+      const core = extractCoreObjectName(entry.name);
+      const key = norm(core).split(" ")[0] ?? label;
       if (seen.has(key)) continue;
       seen.add(key);
       out.push(label);

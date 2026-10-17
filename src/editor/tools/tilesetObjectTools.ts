@@ -28,7 +28,7 @@ function growth(kit: SectionStructureKitDef): { x: boolean; y: boolean } {
 /** 바로 깔기(`place_object`)가 id 로 짚는 작은 물건 킷 — 팩 프리셋이 아닌 손 도트 실내·저작 킷(3×3 이하)도 id 정확 일치로만 찍는다. */
 function objectKitById(tileset: TilesetDef | undefined, id: string): SectionStructureKitDef | undefined {
   const kit = (tileset?.structureKits ?? []).find((candidate) => candidate.id === id);
-  if (!kit || kit.width > 3 || kit.height > 3 || kit.width * kit.height > 9 || !kit.rows?.length) return undefined;
+  if (!kit || kit.width > 7 || kit.height > 7 || kit.width * kit.height > 36 || !kit.rows?.length) return undefined;
   return kit;
 }
 
@@ -63,7 +63,9 @@ function positiveInt(value: unknown, name: string, fallback: number): number {
 function roadUnder(project: Project, map: GameMap, x: number, y: number): boolean {
   const tileset = project.tilesets[map.tilesetId];
   const tile = map.lowerTiles[y * map.width + x] ?? -1;
-  return tile >= 0 && tileset?.tileMeta?.[tile]?.tags?.includes("road") === true;
+  const meta = tile >= 0 ? tileset?.tileMeta?.[tile] : undefined;
+  if (!meta || (/보도|인도|광장/u.test(meta.label ?? "") && !/횡단보도/u.test(meta.label ?? ""))) return false;
+  return meta.tags?.includes("road") === true;
 }
 
 function wallUnder(project: Project, map: GameMap, x: number, y: number): boolean {
@@ -284,11 +286,15 @@ const stampTilesetObject: ToolDefinition = {
     // (2026-09-24 헤드리스 실측: 보도 가로등 at 을 밑칸으로 줘서 건물 옥상 위에 세웠다).
     if (kind === "prop" || kind === "tall") {
       const tileset = draft.tilesets[map.tilesetId];
+      const kitLabel = `${kit.id} ${kit.name ?? ""}`;
+      const isBridge = /\bbridge\b|footbridge|다리|널다리|돌다리/iu.test(kitLabel) && !/말뚝|기둥|post|pier-hut/iu.test(kitLabel);
+      const isWallMount = /torch-wall|벽 횃불|횃불|arch-bars|arch-dark|arch-open|arch-water|벽 아치|철창 아치|stairs-up-face|올라가는 계단|banner|현수막|niche|벽감|chains|사슬|vines|담쟁이/iu.test(kitLabel);
+      const isRoadAllowed = kit.ai?.tags?.includes("on-road") === true || /^mc-veh-|^jp-prop-(?:car|ad-truck|ricksha|train)|^mc-crosswalk-|crosswalk|횡단보도/iu.test(kitLabel);
       // 탁자·카운터(겹침 재료 fence) 위나 다른 물체 위에 올리는 한 줄 소품은 받는다 — 벽·지붕·물 위만 거부.
       const onFurniture = (w: (typeof writes)[number]) => kit.height === 1 && !wallUnder(draft, map, w.x, w.y)
         && (w.layer === "upperOverlayTiles" || [map.lowerTiles[w.index] ?? -1, map.lowerOverlayTiles?.[w.index] ?? -1]
           .some((t) => t >= 0 && tileset?.tileMeta?.[t]?.tags?.includes("fence") === true));
-      const bad = writes.find((w) => (w.layer === "upperTiles" || w.layer === "upperOverlayTiles") && tileset?.passability[w.tile] && !Object.values(tileset.passability[w.tile]!).some(Boolean)
+      const bad = !isBridge && !isWallMount && writes.find((w) => (w.layer === "upperTiles" || w.layer === "upperOverlayTiles") && tileset?.passability[w.tile] && !Object.values(tileset.passability[w.tile]!).some(Boolean)
         && !onFurniture(w) && (wallUnder(draft, map, w.x, w.y) || !isPassable(draft, map, w.x, w.y)));
       if (bad) {
         throw new ToolError(
@@ -297,8 +303,8 @@ const stampTilesetObject: ToolDefinition = {
           { code: "object-on-blocked", mapId: map.id, x: bad.x, y: bad.y },
         );
       }
-      // 차도 한가운데 표지판·가로등은 길을 막는다(2026-09-24 헤드리스 실측). 교통 콘만 차도에 선다.
-      const onRoad = !kit.ai?.tags?.includes("on-road") && writes.find((w) => w.layer === "upperTiles"
+      // 차도 한가운데 표지판·가로등은 길을 막는다(2026-09-24 헤드리스 실측). 차량·횡단보도·교통 콘만 차도에 선다.
+      const onRoad = !isRoadAllowed && writes.find((w) => w.layer === "upperTiles"
         && tileset?.passability[w.tile] && !Object.values(tileset.passability[w.tile]!).some(Boolean) && roadUnder(draft, map, w.x, w.y));
       if (onRoad) {
         throw new ToolError(
