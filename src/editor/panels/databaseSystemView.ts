@@ -108,6 +108,7 @@ import {
   PLAY_RESOLUTION_LIMITS,
   resolvePlayResolution,
 } from "@/project/playResolution";
+import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
@@ -200,6 +201,7 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
   if (requested) host.dataset.dbSystemSection = requested.slug;
   const activeSlug = requested?.slug ?? readActiveSystemSection(host);
   host.dataset.dbSystemSection = activeSlug;
+  announceSystemSection(activeSlug);
   const refresh: SystemRefresh = (kind) => {
     if (kind) {
       refreshSystemDerived(form, kind);
@@ -225,6 +227,12 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
   wireSystemStudioOverview(form);
   host.append(el("h3", { text: "시스템" }), form);
   if (requested?.focusTestId) focusSystemField(form, requested.focusTestId);
+}
+
+/** 헤더 크럼의 세 번째 칸(그룹 › 탭 › 구획)에 지금 보는 구획 이름을 알린다. */
+function announceSystemSection(slug: SystemSectionSlug): void {
+  const label = SYSTEM_SECTION_ORDER.find((section) => section.slug === slug)?.label;
+  setDatabaseSubLocation("system", label ?? null);
 }
 
 function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
@@ -267,6 +275,7 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
 function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
   if (host.dataset.dbSystemSection === slug) return;
   host.dataset.dbSystemSection = slug;
+  announceSystemSection(slug);
   for (const button of Array.from(nav.querySelectorAll<HTMLElement>(".db-system-section-button"))) {
     const isActive = button.dataset.testid === `db-system-nav-${slug}`;
     button.classList.toggle("active", isActive);

@@ -22,7 +22,13 @@ import {
   resumeSkillAnimationStagesIn,
   stopSkillAnimationStagesIn,
 } from "@/editor/panels/databaseSkillAnimationStage";
-import { renderSystemTab } from "@/editor/panels/databaseSystemView";
+import { renderSystemTab, requestSystemSection } from "@/editor/panels/databaseSystemView";
+import {
+  matchSearchDestinations,
+  recentDatabaseTabs,
+  recordRecentDatabaseTab,
+  type DatabaseSearchDestination,
+} from "@/editor/panels/databaseWayfinding";
 import {
   disposeDatabaseCinematicsIn,
   renderDatabaseCinematicTab,
@@ -477,6 +483,7 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   if (legacyOrigin) rememberLegacySpatialRoute(legacyOrigin);
   else if (shellTab) setSpatialTab(shellTab);
   persistActiveTab();
+  recordRecentDatabaseTab(primaryTab(activeTab));
   for (const listener of activeTabListeners) listener(activeTab);
 }
 
@@ -511,13 +518,14 @@ export function renderDatabasePanel(container: HTMLElement): void {
   tabRenderCaches.delete(container);
   resetRetroChoreographyViewState();
   applyTilesetFolderFacet(activeTab);
-  const header = el("div", { class: "db-tabs" });
+  const header: HTMLElement = el("div", { class: "db-tabs", on: { keydown: (event: Event) => handleRailResultKeys(event, header) } });
   const body = el("div", {
     class: "db-body db-shared-workspace",
     dataset: { testid: "db-shared-workspace" },
   });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)을 유지한다.
   appendTabSearch(header, body, container);
+  appendRecentTabs(header, body, container);
   appendTabButton(header, body, container, tabFor("overview"));
   for (const group of TAB_GROUPS) {
     header.append(el("div", {
@@ -744,29 +752,180 @@ function tabMatchesQuery(tab: typeof tabs[number], query: string): boolean {
 }
 
 function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTMLElement): void {
+  const refreshSearch = (): void => {
+    for (const node of Array.from(header.querySelectorAll("[data-search-secondary]"))) node.remove();
+    const query = input.value.trim().toLowerCase();
+    if (query) {
+      // Secondary destinations exist in search results, not as hidden legacy rail rows.
+      for (const tab of tabs) {
+        if (
+          !tabOrder.includes(tab.id)
+          && resolveCanonicalDatabaseTab(tab.id) === tab.id
+          && tabMatchesQuery(tab, query)
+        ) {
+          appendTabButton(header, body, container, tab, { searchSecondary: true });
+        }
+      }
+      // 구획·설정 낱말(「대사」「엔딩」「HUD」…)은 탭 이름에 없어도 그 구획으로 바로 데려간다.
+      appendSearchDestinations(header, body, container, query);
+    }
+    applyTabFilter(header, input.value);
+  };
   const input = el("input", {
     class: "db-tab-search",
     attrs: { type: "search", placeholder: "탭 검색", title: "탭 검색", "aria-label": "탭 검색" },
     dataset: { testid: "db-tab-search" },
-    on: { input: () => {
-      for (const node of Array.from(header.querySelectorAll("[data-search-secondary]"))) node.remove();
-      const query = input.value.trim().toLowerCase();
-      if (query) {
-        // Secondary destinations exist in search results, not as hidden legacy rail rows.
-        for (const tab of tabs) {
-          if (
-            !tabOrder.includes(tab.id)
-            && resolveCanonicalDatabaseTab(tab.id) === tab.id
-            && tabMatchesQuery(tab, query)
-          ) {
-            appendTabButton(header, body, container, tab, { searchSecondary: true });
-          }
-        }
-      }
-      applyTabFilter(header, input.value);
-    } },
+    on: {
+      input: refreshSearch,
+      keydown: (event: Event) => {
+        if (!("key" in event)) return;
+        const key = (event as KeyboardEvent).key;
+        if (input.value.trim() === "") return;
+        // Esc 는 여기서 받지 않는다 — modalStack 이 document 캡처 단계에서 먼저 가져가 자료집을 닫는다(의도된 설계).
+        if (key !== "ArrowDown" && key !== "Enter") return;
+        const first = visibleSearchRows(header)[0];
+        if (!first) return;
+        event.preventDefault();
+        if (key === "Enter") first.click();
+        else first.focus();
+      },
+    },
   });
   header.append(input);
+}
+
+/** 검색 중 보이는 결과 행(탭 + 구획 바로가기). DOM 순서가 곧 화면 순서다. */
+function visibleSearchRows(header: HTMLElement): HTMLElement[] {
+  return railChildren(header).filter((child) => {
+    const classes = child.classList;
+    return !!classes && (classes.contains("db-tab") || classes.contains("db-search-dest")) && !child.hidden;
+  });
+}
+
+/** 검색 결과 사이를 ↑↓ 로 오간다. 맨 위에서 ↑ 는 검색 상자로 돌아간다. */
+function handleRailResultKeys(event: Event, header: HTMLElement): void {
+  if (header.dataset.searching !== "1" || !("key" in event)) return;
+  const key = (event as KeyboardEvent).key;
+  if (key !== "ArrowDown" && key !== "ArrowUp") return;
+  const rows = visibleSearchRows(header);
+  const index = rows.indexOf(event.target as HTMLElement);
+  if (index < 0) return;
+  event.preventDefault();
+  if (key === "ArrowDown") rows[index + 1]?.focus();
+  else if (index === 0) header.querySelector<HTMLInputElement>(".db-tab-search")?.focus();
+  else rows[index - 1]?.focus();
+}
+
+function appendSearchDestinations(
+  header: HTMLElement,
+  body: HTMLElement,
+  container: HTMLElement,
+  query: string,
+): void {
+  const matches = matchSearchDestinations(query);
+  if (matches.length === 0) return;
+  header.append(el("div", {
+    class: "db-search-dest-head",
+    dataset: { testid: "db-search-dest-head", searchSecondary: "1" },
+    text: "이 낱말이 있는 구획",
+  }));
+  for (const destination of matches) header.append(buildSearchDestination(header, body, container, destination));
+}
+
+function buildSearchDestination(
+  header: HTMLElement,
+  body: HTMLElement,
+  container: HTMLElement,
+  destination: DatabaseSearchDestination,
+): HTMLElement {
+  // 경로는 조각마다 span 이다 — 번역기가 조각 단위로 찾는다(문장을 이어 붙이지 않는다).
+  const crumbs: string[] = [];
+  const group = groupForTab(destination.tab)?.label;
+  if (group) crumbs.push(group);
+  for (const id of databaseTabPath(destination.tab)) crumbs.push(tabFor(id).label);
+  const path = el("span", { class: "db-search-dest-path" });
+  crumbs.forEach((label, index) => {
+    if (index > 0) path.append(el("span", { class: "db-search-dest-sep", text: "›", attrs: { "aria-hidden": "true" } }));
+    path.append(el("span", { text: label }));
+  });
+  return el("button", {
+    class: "db-search-dest",
+    attrs: { type: "button" },
+    dataset: {
+      testid: `db-search-dest-${destination.id}`,
+      searchDest: destination.id,
+      tab: destination.tab,
+      searchSecondary: "1",
+    },
+    children: [el("span", { class: "db-search-dest-label", text: destination.section }), path],
+    on: {
+      click: () => openRailDestination(header, body, container, destination.tab, {
+        ...(destination.systemSection ? { systemSection: destination.systemSection } : {}),
+        ...(destination.scrollTestId ? { scrollTestId: destination.scrollTestId } : {}),
+      }),
+    },
+  });
+}
+
+/**
+ * 레일 밖 경로(최근 탭·구획 바로가기)로 탭을 연다. 레일 탭 버튼의 클릭과 같은 순서를 밟되,
+ * 시스템 구획·카드 착지를 더한다. 구획 요청은 캐시된 화면이 먹지 못하므로 새로 그린다.
+ */
+function openRailDestination(
+  header: HTMLElement,
+  body: HTMLElement,
+  container: HTMLElement,
+  tabId: DatabaseTab,
+  landing?: { readonly systemSection?: Parameters<typeof requestSystemSection>[0]; readonly scrollTestId?: string },
+): void {
+  if (landing?.systemSection) requestSystemSection(landing.systemSection);
+  if (tabId === "retroChoreographies" && activeTab !== tabId) resetRetroChoreographyViewState();
+  setDatabaseActiveTab(tabId);
+  updateTabButtons(header);
+  renderActiveTab(body, container, landing?.systemSection ? { forceFresh: true } : {});
+  if (landing?.scrollTestId) {
+    const target = body.querySelector<HTMLElement>(`[data-testid="${landing.scrollTestId}"]`);
+    if (target && typeof target.scrollIntoView === "function") target.scrollIntoView({ block: "start" });
+  }
+  // 눌린 행은 검색을 지우며 사라진다 — 포커스가 문서 맨 앞으로 날아가지 않게 활성 탭으로 둔다.
+  const active = header.querySelector<HTMLElement>(".db-tab.active");
+  if (active && typeof active.focus === "function") active.focus();
+}
+
+// 레일 맨 위 「최근」 줄 — 가장 최근에 연 탭 3개(지금 보는 탭 제외). 탭 버튼이 아니므로 `.db-tab`
+// 계약(라벨·testid·포커스 순서 검사)을 건드리지 않는다. 검색 중에는 숨는다.
+const recentTabSyncers = new WeakMap<HTMLElement, () => void>();
+
+function appendRecentTabs(header: HTMLElement, body: HTMLElement, container: HTMLElement): void {
+  const row = el("div", {
+    class: "db-recent-tabs",
+    attrs: { role: "group", "aria-label": "최근 연 탭", hidden: "" },
+    dataset: { testid: "db-recent-tabs" },
+  });
+  const sync = (): void => {
+    const searching = (header.querySelector<HTMLInputElement>(".db-tab-search")?.value ?? "").trim() !== "";
+    const recent = recentDatabaseTabs(primaryTab(activeTab), (id) => tabs.some((tab) => tab.id === id));
+    clearChildren(row);
+    if (searching || recent.length === 0) {
+      row.hidden = true;
+      return;
+    }
+    row.append(el("span", { class: "db-recent-tabs-label", text: "최근" }));
+    for (const id of recent) {
+      const tab = tabFor(id);
+      row.append(el("button", {
+        class: "db-recent-tab",
+        text: tab.label,
+        attrs: { type: "button", title: tab.label },
+        dataset: { testid: `db-recent-tab-${id}`, tab: id },
+        on: { click: () => openRailDestination(header, body, container, id) },
+      }));
+    }
+    row.hidden = false;
+  };
+  recentTabSyncers.set(header, sync);
+  header.append(row);
+  sync();
 }
 
 function applyTabFilter(header: HTMLElement, rawQuery: string): void {
@@ -777,16 +936,22 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   if (query === "") {
     for (const child of railChildren(header)) child.hidden = false;
     applyEmptyTabFold(header);
+    recentTabSyncers.get(header)?.();
     syncTabSearchEmptyNotice(header, rawQuery);
     return;
   }
   for (const child of Array.from(header.children)) {
     if (!(child instanceof HTMLElement)) continue;
     // 검색 중에는 구획 머리와 「빈 탭」 줄을 숨기고, 빈 탭도 이름이 맞으면 보인다.
-    if (child.classList.contains("db-tab-group") || child.classList.contains("db-tab-fold")) {
+    if (
+      child.classList.contains("db-tab-group")
+      || child.classList.contains("db-tab-fold")
+      || child.classList.contains("db-recent-tabs")
+    ) {
       child.hidden = true;
       continue;
     }
+    // 구획 바로가기 행·머리는 검색 결과 자체다 — 탭 필터가 숨기지 않는다.
     if (!child.classList.contains("db-tab")) continue;
     const tab = tabs.find((entry) => entry.id === child.dataset.tab);
     child.hidden = !tab || !tabMatchesQuery(tab, query);
@@ -806,7 +971,7 @@ function syncTabSearchEmptyNotice(header: HTMLElement, rawQuery: string): void {
     if (child.hidden) return false;
     const classes = child.classList;
     if (!classes) return false;
-    return classes.contains("db-tab") || classes.contains("db-tab-group");
+    return classes.contains("db-tab") || classes.contains("db-tab-group") || classes.contains("db-search-dest");
   });
   if (query === "" || anyVisible) {
     existing?.remove();
@@ -818,6 +983,8 @@ function syncTabSearchEmptyNotice(header: HTMLElement, rawQuery: string): void {
   }
   header.append(el("p", {
     class: "db-tab-search-empty",
+    // 결과가 없다는 말이 화면 낭독기에도 닿게 한다(검색 상자에서 손을 떼지 않고 알 수 있다).
+    attrs: { role: "status" },
     dataset: { testid: "db-tab-search-empty" },
     text: `“${query}”와 일치하는 탭이 없습니다.`,
   }));
@@ -884,6 +1051,7 @@ function updateTabButtons(header: HTMLElement): void {
     if (isActive) button.setAttribute("aria-current", "page");
     else button.removeAttribute("aria-current");
   }
+  recentTabSyncers.get(header)?.();
   syncGroupStrip(header);
   revealActiveTab(header);
 }
