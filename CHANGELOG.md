@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.248.0 — 2026-10-17
+
+### 기능
+
+- **romance** — per-heroine deadline sync (place_npc, team finish) + heroine-endings-uncalled check (#2811) (`daf133b`)
+- **ai** — reverse hard lock for monster-collect assets outside monster projects (#2812) (`2e28092`)
+
+### 수정
+
+- restore #2783/#2789/#2794 and v0.245.0 notes reverted by #2802 (#2810) (`11a09a8`)
+
+### 문서
+
+- **harness** — 미연시 추가 화면 실조수 시험 미검증 2문장을 재시험해 5/5 통과로 확정 (#2807) (`c27f943`)
+
 ## 0.247.0 — 2026-10-17
 
 ### 기능
