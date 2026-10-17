@@ -130,8 +130,16 @@ export interface HandInteriorLayers {
   readonly travel: { label: string; x: number; y: number }[];
 }
 
+/** 평면 분석 결과 — face: 0 바닥 · 1 벽면 윗줄 · 2 벽면 아랫줄. */
+export interface HandInteriorPlanAnalysis {
+  readonly W: number; readonly H: number;
+  readonly g: boolean[][]; readonly face: number[][]; readonly top: boolean[][];
+  readonly inn: (x: number, y: number) => boolean;
+  readonly isFloor: (x: number, y: number) => boolean;
+}
+
 /** 평면 분석 — room2.analyse 와 같다. */
-export function analyseHandInteriorPlan(plan: readonly string[]) {
+export function analyseHandInteriorPlan(plan: readonly string[]): HandInteriorPlanAnalysis {
   const H = plan.length, W = Math.max(0, ...plan.map((r) => r.length));
   const g: boolean[][] = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => (plan[y]![x] ?? "#") !== "#"));
   const inn = (x: number, y: number) => x >= 0 && x < W && y >= 0 && y < H && g[y]![x]!;

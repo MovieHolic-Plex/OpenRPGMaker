@@ -1,140 +1,45 @@
-// @vitest-environment happy-dom
-import { beforeEach, describe, expect, it } from "vitest";
-import { editorState } from "@/editor/editorState";
-import { openMapCreateDialog } from "@/editor/panels/mapCreateDialog";
-import { createSpacePresetSidebarPanel } from "@/editor/panels/spacePresetSidebarPanel";
-import {
-  applySpacePresetToMap,
-  createMapWithSpacePreset,
-  executeSpacePresetOnDraft,
-  findSpacePresetById,
-  presetsByCategory,
-  SPACE_PRESET_CATALOG,
-  SPACE_PRESET_CATEGORIES,
-  SPACE_PRESET_STYLE_VARIANTS,
-} from "@/editor/spacePresetCatalog";
-import { createDraft, finishDraftTilesets } from "@/editor/tools/changeset";
+// AI 참고 청사진 — 사람이 고르는 프리셋 버튼 대신 조수가 청사진 규칙을 참고해 요청·씨앗마다 다른 배치를 짓는다(2026-10-18 사용자 반려).
+import { describe, expect, it } from "vitest";
+import { getTool } from "@/editor/tools/toolRegistry";
+import { composeSpaceFromBlueprint, matchSpaceBlueprint, SPACE_BLUEPRINTS } from "@/editor/spacePresetCatalog";
 import { createBlankProject } from "@/project/defaults";
-import { store } from "@/project/store";
 
-describe("Space Preset Gallery & Parametric Style Variants (A/B/C/D)", () => {
-  beforeEach(() => {
-    document.body.innerHTML = "";
-    const blank = createBlankProject();
-    store.replace(blank);
-    editorState.set({ currentMapId: blank.startMapId });
+const signature = (project: ReturnType<typeof composeSpaceFromBlueprint>["project"], mapId: string): string => {
+  const m = project.maps[mapId]!;
+  return `${m.width}x${m.height}|${m.lowerTiles.join(",")}|${(m.upperTiles ?? []).join(",")}`;
+};
+
+describe("AI 참고 청사진", () => {
+  it("청사진마다 구역·초점·무리·동선·리듬 규칙을 갖는다", () => {
+    expect(new Set(SPACE_BLUEPRINTS.map((bp) => bp.id)).size).toBe(SPACE_BLUEPRINTS.length);
+    for (const bp of SPACE_BLUEPRINTS) for (const v of Object.values(bp.guide)) expect(v.length, bp.id).toBeGreaterThan(0);
   });
 
-  it("exposes 20 categorized presets across modern_interior, modern_outdoor, and fantasy_murim_dungeon", () => {
-    expect(SPACE_PRESET_CATALOG.length).toBe(20);
-    expect(SPACE_PRESET_CATEGORIES.map((c) => c.id)).toEqual([
-      "modern_interior",
-      "modern_outdoor",
-      "fantasy_murim_dungeon",
-    ]);
-    expect(presetsByCategory("modern_interior").length).toBe(10);
-    expect(presetsByCategory("modern_outdoor").length).toBe(4);
-    expect(presetsByCategory("fantasy_murim_dungeon").length).toBe(6);
-    expect(SPACE_PRESET_STYLE_VARIANTS.map((v) => v.id)).toEqual(["A", "B", "C", "D"]);
+  it("요청 낱말로 청사진을 고른다", () => {
+    expect(matchSpaceBlueprint("카페 있는 오피스 로비")?.id).toBe("office-lobby");
+    expect(matchSpaceBlueprint("대학 강의실")?.id).toBe("university-lecture");
+    expect(matchSpaceBlueprint("강변 산책로")?.id).toBe("riverside-promenade");
+    expect(matchSpaceBlueprint("왕성 알현실")?.id).toBe("fantasy-throne");
+    expect(matchSpaceBlueprint("우주 정거장")).toBeUndefined();
   });
 
-  it("produces 4 distinct structural/style variants (A/B/C/D) for representative interior and outdoor presets", () => {
-    const base = store.getCurrent();
-    for (const presetId of [
-      "office-lobby",
-      "university-lecture",
-      "department-store",
-      "subway-station",
-      "hospital-ward",
-      "museum-gallery",
-      "riverside-promenade",
-    ]) {
-      const preset = findSpacePresetById(presetId)!;
-      expect(preset).toBeDefined();
-      const signatures = new Set<string>();
-      for (const [idx, sv] of [
-        [1, "A"],
-        [2, "B"],
-        [3, "C"],
-        [4, "D"],
-      ] as const) {
-        const draft = createDraft(base);
-        const mapId = `m_${presetId}_${sv}`;
-        const res = executeSpacePresetOnDraft(draft, preset, mapId, {
-          styleVariant: sv,
-          variantSeed: idx,
-        });
-        finishDraftTilesets(draft);
-        const built = draft.maps[mapId]!;
-        expect(res.styleVariant).toBe(sv);
-        expect(built.width).toBeGreaterThanOrEqual(15);
-        expect(built.height).toBeGreaterThanOrEqual(11);
-        const sig = `${built.width}x${built.height}|${built.lowerTiles.slice(0, 240).join(",")}|${(built.upperTiles ?? []).slice(0, 240).join(",")}`;
-        signatures.add(sig);
-      }
-      expect(signatures.size).toBe(4);
-    }
+  it.each(["오피스 로비", "대학 강의실", "강변 산책로", "왕성 알현실"])("「%s」는 씨앗이 다르면 같은 맵을 찍지 않는다", (request) => {
+    const base = createBlankProject();
+    const a = composeSpaceFromBlueprint(base, { request, seed: 1 });
+    const b = composeSpaceFromBlueprint(base, { request, seed: 2 });
+    const again = composeSpaceFromBlueprint(base, { request, seed: 1 });
+    expect(signature(a.project, a.mapId)).not.toBe(signature(b.project, b.mapId));
+    expect(signature(a.project, a.mapId)).toBe(signature(again.project, again.mapId));
   });
 
-  it("renders Space Preset Gallery inside New Map modal and creates a multi-zone map with selected variant", () => {
-    openMapCreateDialog();
-    const gallery = document.querySelector<HTMLElement>('[data-testid="map-create-space-gallery"]');
-    expect(gallery).not.toBeNull();
-
-    const cycleBtn = document.querySelector<HTMLButtonElement>('[data-testid="space-preset-cycle-variant"]');
-    expect(cycleBtn).not.toBeNull();
-    cycleBtn!.click(); // A -> B
-
-    const card = document.querySelector<HTMLElement>('[data-testid="space-preset-card-office-lobby"]');
-    expect(card).not.toBeNull();
-    card!.click();
-
-    const confirmBtn = document.querySelector<HTMLButtonElement>('[data-testid="map-create-confirm"]');
-    expect(confirmBtn?.textContent).toContain("오피스 로비");
-    expect(confirmBtn?.textContent).toContain("구조 B");
-    confirmBtn!.click();
-
-    const currentMapId = editorState.get().currentMapId;
-    const createdMap = store.getCurrent().maps[currentMapId]!;
-    expect(createdMap.name).toBe("오피스 로비");
-    expect(createdMap.tilesetId).toBe("modern_city");
-    expect(createdMap.locations?.length).toBeGreaterThanOrEqual(3);
-  });
-
-  it("applies preset from Left Sidebar Stamp Place panel and cycles variants on repeated click", () => {
-    const panel = createSpacePresetSidebarPanel({ defaultExpanded: true, testidPrefix: "sidebar-space-preset" });
-    document.body.append(panel);
-
-    const startId = store.getCurrent().startMapId;
-    const chip = panel.querySelector<HTMLButtonElement>('[data-testid="sidebar-space-preset-chip-university-lecture"]');
-    expect(chip).not.toBeNull();
-
-    // 1st click -> Variant A
-    chip!.click();
-    const mapA = structuredClone(store.getCurrent().maps[startId]!);
-    expect(mapA.tilesetId).toBe("modern_campus");
-
-    // 2nd click on same chip -> automatically cycles to Variant B
-    const chipAgain = panel.querySelector<HTMLButtonElement>('[data-testid="sidebar-space-preset-chip-university-lecture"]')!;
-    chipAgain.click();
-    const mapB = store.getCurrent().maps[startId]!;
-    expect(
-      `${mapA.width}x${mapA.height}|${mapA.lowerTiles.slice(0, 150).join(",")}`,
-    ).not.toBe(
-      `${mapB.width}x${mapB.height}|${mapB.lowerTiles.slice(0, 150).join(",")}`,
-    );
-
-    // Direct API checks
-    const created = createMapWithSpacePreset(findSpacePresetById("riverside-promenade")!, {
-      styleVariant: "C",
-      variantSeed: 3,
-    });
-    expect(created.ok).toBe(true);
-    const applied = applySpacePresetToMap(created.mapId, findSpacePresetById("riverside-promenade")!, {
-      styleVariant: "D",
-      variantSeed: 4,
-    });
-    expect(applied.ok).toBe(true);
-    expect(applied.styleVariant).toBe("D");
+  it("compose_space_blueprint 도구가 조수에게 열려 있고 청사진 규칙을 돌려준다", () => {
+    const tool = getTool("compose_space_blueprint");
+    expect(tool).toBeDefined();
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const res = tool!.run(project, { mapId, request: "무기고 딸린 왕성 알현실", seed: 5 });
+    expect(res.summary).toContain("왕성 알현실");
+    expect(res.summary).toContain("동선");
+    expect(project.maps[mapId]!.tilesetId).toBe("atlas_biome_interior");
   });
 });
