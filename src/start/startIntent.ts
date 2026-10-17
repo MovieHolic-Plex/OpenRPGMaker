@@ -55,3 +55,19 @@ export function takeStartScreenIntent(storage: StorageLike, openedProjectDir: st
   if (value.projectDir !== openedProjectDir) return null;
   return value as StartScreenIntent;
 }
+
+/**
+ * 시작 화면 「플레이」 → 편집기 문서를 편집 대신 플레이 모드로 부팅한다(2026-10-17, 플레이·만들기 런처).
+ * 폴더는 openRecent 가 이미 열어 두었으므로 주소에 표시 하나만 싣는다. 부팅이 읽으면서 지운다 —
+ * 플레이 중 새로고침은 편집 화면으로 돌아온다.
+ */
+export const START_PLAY_PARAM = "play";
+export const START_PLAY_URL = `/index.html?${START_PLAY_PARAM}=1`;
+
+export function takeStartPlayRequest(location: Pick<Location, "href">, history: Pick<History, "replaceState" | "state">): boolean {
+  const url = new URL(location.href);
+  if (!url.searchParams.has(START_PLAY_PARAM)) return false;
+  url.searchParams.delete(START_PLAY_PARAM);
+  history.replaceState(history.state, "", url);
+  return true;
+}
