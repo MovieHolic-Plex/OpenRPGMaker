@@ -55,11 +55,16 @@ export function checkJrpg(project: Project): Finding[] {
   }
   if (battlers.length >= 2) {
     const keys = new Set(battlers.map(statKey));
-    if (keys.size === 1) {
-      const b = battlers[0]!;
+    // 같은 몸이 셋 이상이면 한 명만 다른 이름(탈것 배우 등 합류 명령이 있는 비-인물)이 섞여도 막는다 — jrpg-loop-3 ff2: 「actor_airship」 합류가
+    // 로스터에 끼어 카일·가렌·엘레나(전부 HP514·MP43)가 이 검사를 통과했다.
+    const groups = new Map<string, typeof battlers>();
+    for (const battler of battlers) groups.set(statKey(battler), [...(groups.get(statKey(battler)) ?? []), battler]);
+    const sameBody = [...groups.values()].sort((a, b) => b.length - a.length)[0]!;
+    if (keys.size === 1 || sameBody.length >= 3) {
+      const b = sameBody[0]!;
       findings.push({
         severity: "warning", code: "jrpg-party-identical-stats",
-        message: `파티원 ${battlers.map((x) => x.name).join("·")} 의 Lv1 체력·마력이 전부 같습니다(HP ${b.maxHp}·MP ${b.maxMp}·공 ${b.attackPower}·방 ${b.defense}·마 ${b.mind}·민 ${b.agility}) — 전투에서 역할 차이가 기술 목록뿐입니다. 런타임은 배우의 parameterCurves 를 쓰고, 직업(class) 곡선은 직업 변경 때만 씁니다.`,
+        message: `파티원 ${sameBody.map((x) => x.name).join("·")} 의 Lv1 체력·마력이 전부 같습니다(HP ${b.maxHp}·MP ${b.maxMp}·공 ${b.attackPower}·방 ${b.defense}·마 ${b.mind}·민 ${b.agility}) — 전투에서 역할 차이가 기술 목록뿐입니다. 런타임은 배우의 parameterCurves 를 쓰고, 직업(class) 곡선은 직업 변경 때만 씁니다.`,
       });
     }
     // 같지는 않아도 역할이 갈리지 않은 파티(한두 칸만 살짝 고친 것) — 여섯 능력치 모두 파티 안 편차가 작으면 평평한 파티다.
