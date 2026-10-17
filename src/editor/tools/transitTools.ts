@@ -436,7 +436,8 @@ export const SET_STREET_TRAFFIC_TOOL: ToolDefinition = {
   mode: "write",
   domains: ["map", "tile"],
   fillsCurrentMapId: true,
-  description: "도시·마을 거리(modern_city · jp_city)의 아스팔트 도로와 교차로를 자동으로 찾아, 차선 직진 주행 차량·교차로 90° 회전 차량(방향지시등 점멸 + 수평↔수직 회전)·시내버스 노선을 한 번에 깐다. 주인공이 횡단보도를 건널 때는 정지선 앞에서 멈춘다.",
+  description: "도시·마을 거리(modern_city · jp_city)의 아스팔트 도로와 교차로를 자동으로 찾아, 차선 직진 주행 차량·교차로 90° 회전 차량(방향지시등 점멸 + 수평↔수직 회전)·시내버스 노선을 한 번에 깐다. 주인공이 횡단보도를 건널 때는 정지선 앞에서 멈춘다. "
+    + "2층 노면전차 레일(jp-tram-rail-h/v)이 맵 끝까지 이어져 있으면 노면전차(전주·가선 아래 복선, 정류장 앞 감속·문 열고 정차)를, 1층 선로(jp-subway-track)가 있으면 지하철·전철(승강장 앞 감속 → 노란 점자블록 앞 정차·문 열림 → 출발)을 함께 깐다. 차도가 없는 승강장 맵이면 열차만 깐다.",
   parameters: {
     type: "object",
     properties: {
@@ -445,6 +446,24 @@ export const SET_STREET_TRAFFIC_TOOL: ToolDefinition = {
       includeTurns: { type: "boolean", description: "교차로에서 90° 좌·우회전(동서↔남북)하는 차량 노선을 함께 깔지(기본 true)" },
       includeBus: { type: "boolean", description: "시내버스 노선도 함께 깔지(기본 true)" },
       vehicles: { type: "array", items: { type: "string", enum: vehicleIds() }, description: "주행할 차량 id 목록(생략하면 맵 칩셋에 맞춰 경찰차·택시·세단·밴·트럭 자동 배합)" },
+      includeTram: { type: "boolean", description: "노면전차 레일이 있으면 노면전차도 깔지(기본 true — 레일이 없으면 무시)" },
+      tramStops: { type: "array", items: stopSchema, description: "노면전차 정류장(레일 칸, at:\"center\" 권장) — jp-tram-stop 안전지대 옆" },
+      subway: {
+        type: "object",
+        description: "지하철·전철 선로(jp-subway-track)가 있을 때 열차 설정. 생략하면 선로가 있을 때 jp-subway 를 맵 가운데 승강장에 세운다. false 를 주려면 includeSubway:false",
+        properties: {
+          vehicle: { type: "string", enum: ["jp-subway", "jp-train-commuter"], description: "기본 jp-subway. 지상 전철이면 jp-train-commuter" },
+          name: { type: "string" },
+          stopName: { type: "string" },
+          board: boardSchema,
+          centerX: { type: "integer" },
+          centerY: { type: "integer" },
+          waitSec: { type: "number" },
+          headwaySec: { type: "number" },
+        },
+        additionalProperties: false,
+      },
+      includeSubway: { type: "boolean", description: "선로가 있으면 지하철·전철도 깔지(기본 true — 선로가 없으면 무시)" },
       clear: { type: "boolean", description: "true 면 이 맵의 차량 노선을 모두 지운다" },
     },
     additionalProperties: false,
@@ -456,24 +475,32 @@ export const SET_STREET_TRAFFIC_TOOL: ToolDefinition = {
     const density = args.density === "sparse" ? 10 : args.density === "busy" ? 4 : 6;
     const includeTurns = args.includeTurns !== false;
     const includeBus = args.includeBus !== false;
-    const bands = mapRoadBands(draft, map).road.filter((b) => b.edgeToEdge);
+    const allBands = mapRoadBands(draft, map);
+    const bands = allBands.road.filter((b) => b.edgeToEdge);
+    const hasTram = args.includeTram !== false && allBands.tram.some((b) => b.edgeToEdge);
+    const hasTrack = args.includeSubway !== false && allBands.track.some((b) => b.edgeToEdge);
+    // 차도가 없는 승강장·궤도 전용 맵이면 차 흐름은 건너뛴다(레일·선로도 없으면 차도 없음 오류를 그대로 낸다).
+    const traffic = bands.length > 0 || (!hasTram && !hasTrack);
     const ewBand = bands.find((b) => b.axis === "ew" && b.width >= 4);
     const nsBands = bands.filter((b) => b.axis === "ns");
     let stopX = Math.floor(map.width / 2);
     for (const cand of [Math.floor(map.width * 0.25), Math.floor(map.width * 0.75), Math.floor(map.width / 2)]) {
       if (!nsBands.some((ns) => cand >= ns.edge - 6 && cand <= ns.edge + ns.width + 6)) { stopX = cand; break; }
     }
-    const busStops = includeBus && ewBand
+    const busStops = traffic && includeBus && ewBand
       ? [{ x: stopX, y: ewBand.edge + ewBand.width - 2, at: "center" as const, name: "시내버스 정류장", waitSec: 4 }]
       : undefined;
+    const subway = args.subway && typeof args.subway === "object" ? args.subway : {};
     return SET_MAP_TRANSIT_TOOL.run(draft, {
       mapId: map.id,
       auto: {
-        traffic: true,
+        traffic,
         headwaySec: density,
         includeTurns,
         ...(Array.isArray(args.vehicles) ? { vehicles: args.vehicles } : {}),
         ...(busStops ? { busStops, busHeadwaySec: 28 } : {}),
+        ...(hasTram ? { tram: true, ...(Array.isArray(args.tramStops) ? { tramStops: args.tramStops } : {}) } : {}),
+        ...(hasTrack ? { subway } : {}),
       },
     });
   },

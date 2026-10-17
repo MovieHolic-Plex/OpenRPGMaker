@@ -583,6 +583,22 @@ export function createTransitSim(transit: MapTransit | undefined | null, mapSize
 }
 
 /**
+ * 정류장 앞 감속·떠날 때 가속(버스·노면전차·전철·지하철) — 등감속 꼴(속도 ∝ √남은 거리)으로 정차 칸에 스르르 서고,
+ * 문을 닫고 떠날 때는 같은 거리 동안 천천히 붙는다. 차 흐름(road)은 정류장이 없어 늘 1.
+ */
+export function transitStopEase(r: Pick<NormalizedTransitRoute, "kind" | "speed" | "stops">, v: Pick<TransitVehicleState, "pos" | "served">): number {
+  if (r.kind === "road" || !r.stops.length) return 1;
+  const brake = Math.min(14, Math.max(3, r.speed * 2));
+  let ease = 1;
+  for (const s of r.stops) {
+    const served = v.served.includes(s.index);
+    if (!served && s.index >= v.pos) ease = Math.min(ease, Math.sqrt((s.index - v.pos) / brake));
+    else if (served && v.pos >= s.index) ease = Math.min(ease, Math.sqrt((v.pos - s.index) / brake));
+  }
+  return Math.min(1, Math.max(0.12, ease));
+}
+
+/**
  * 한 걸음. `isBlocked(x, y)` 는 탈것이 들어가면 안 되는 칸(주인공·서 있는 이벤트) — 다음 몸 칸에 걸리면 그 자리에 선다.
  * 앞차와는 몸 사이 1칸 이상 띄운다(같은 칸을 차지하지 않는다).
  */
@@ -612,7 +628,7 @@ export function stepTransitSim(sim: TransitSim, dtSec: number, isBlocked: (x: nu
       if (v.wait > 0) continue;
       v.stopAt = null;
     }
-    let next = v.pos + r.speed * dtSec;
+    let next = v.pos + r.speed * transitStopEase(r, v) * dtSec;
     // 정류장: 이번에 지나칠 정류장이 있으면 거기서 선다(막히지 않았을 때만 확정)
     let reached: (typeof r.stops)[number] | null = null;
     for (const s of r.stops) {
