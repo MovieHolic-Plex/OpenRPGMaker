@@ -7,7 +7,7 @@ import {
   createTransitSim, expandTransitPath, normalizeMapTransit, transitFootprintRect, transitPose, transitRectCells, transitVehicle, transitVehicleCatalog,
   TRANSIT_ROUTE_VEHICLE_KINDS, type MapTransit, type MapTransitRoute, type MapTransitStop, type TransitDir, type TransitRouteKind,
 } from "@/project/mapTransit";
-import { autoTrafficRoutes, findRoadBands, headIndexFromCenter, straightPathIndex, type RoadBand } from "@/project/transitAuto";
+import { autoTrafficRoutes, DEFAULT_CAR_MIX, DEFAULT_MODERN_CAR_MIX, findRoadBands, headIndexFromCenter, straightPathIndex, type RoadBand } from "@/project/transitAuto";
 import type { GameMap, Project } from "@/project/types";
 import { inMapBounds, requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -26,11 +26,22 @@ const vehicleLine = (): string => transitVehicleCatalog().map((v) => `${v.id}(${
 /** 차가 지나가도 되는 길 칸 = 생활도로 묶음 + 횡단보도(묶음·길 4줄 키트) + 「생활도로」 이름표 키트 칸. 횡단보도로 끊긴 간선도 한 띠로 본다. */
 const CROSSWALK_GROUPS = ["jp-crosswalk-ew", "jp-crosswalk-ns"];
 const CROSSWALK_KITS = ["jp-road-lane-crosswalk-h", "jp-road-lane-crosswalk-v"];
+const MODERN_LANE_GROUPS = ["mc:road", "mc:crosswalk", "mc:marking-center", "mc:marking-stop", "mc:marking-arrow", "mc:marking-manhole"];
 function laneTileSet(project: Project, map: GameMap): Set<number> {
   const ts = project.tilesets[map.tilesetId];
   const out = new Set<number>();
   for (const g of ts?.autotileGroups ?? []) if (g.id === LANE_GROUP || CROSSWALK_GROUPS.includes(g.id)) for (const t of g.memberTileIds) out.add(t);
+  for (const g of ts?.tileGroups ?? []) if (MODERN_LANE_GROUPS.includes(g.id)) for (const t of g.tileIds) out.add(t);
   for (const t of kitTileSet(project, map, CROSSWALK_KITS, "tiles")) out.add(t);
+  for (const k of ts?.structureKits ?? []) {
+    if (k.id === "mc-street-ew-section") {
+      for (let r = 3; r <= 8; r += 1) for (const t of k.rows[r]?.tiles ?? []) if (t >= 0) out.add(t);
+    } else if (k.id === "mc-street-ns-section") {
+      for (const row of k.rows ?? []) for (let c = 3; c <= 8; c += 1) if ((row.tiles?.[c] ?? -1) >= 0) out.add(row.tiles![c]!);
+    } else if (k.id === "mc-intersection-12x12") {
+      (k.rows ?? []).forEach((row, r) => (row.tiles ?? []).forEach((t, c) => { if (t >= 0 && ((r >= 3 && r <= 8) || (c >= 3 && c <= 8))) out.add(t); }));
+    }
+  }
   (ts?.tileMeta ?? []).forEach((m, i) => { if ((m?.label ?? "").startsWith("생활도로")) out.add(i); });
   return out;
 }
@@ -221,19 +232,24 @@ export function planMapTransit(draft: Project, map: GameMap, args: Record<string
     const rm = new Set(args.removeRouteIds as string[]);
     routes = routes.filter((r) => !rm.has(r.id));
   }
-  const auto = args.auto && typeof args.auto === "object" ? (args.auto as Record<string, unknown>) : null;
+  const isModern = map.tilesetId === "modern_city" || draft.tilesets[map.tilesetId]?.family === "oprn-modern";
+  const bareCall = !args.auto && !Array.isArray(args.routes) && !Array.isArray(args.removeRouteIds) && args.clear !== true;
+  const auto = args.auto === true || bareCall ? {} : args.auto && typeof args.auto === "object" ? (args.auto as Record<string, unknown>) : null;
   if (auto) {
     const bands = mapRoadBands(draft, map);
     const onlyRail = Boolean(auto.subway || auto.tram === true) && auto.traffic === undefined && !Array.isArray(auto.busStops);
-    routes = routes.filter((r) => !(onlyRail ? (auto.tram === true ? /^tram-/ : /^$/) : /^(traffic|bus|tram)-/).test(r.id));
+    routes = routes.filter((r) => !(onlyRail ? (auto.tram === true ? /^tram-/ : /^$/) : /^(traffic|turn|bus|tram)-/).test(r.id));
     if (!onlyRail && (auto.traffic !== false || Array.isArray(auto.busStops))) {
       const usable = bands.road.filter((b) => b.edgeToEdge);
       if (!usable.length) {
-        throw new ToolError(`자동으로 깔 차도가 없다 — 가장자리에서 가장자리까지 이어진 생활도로 띠(1층 ${LANE_GROUP}, 폭 2~8칸)를 찾지 못했다. 찾은 띠: ${bands.road.map(describeBand).join(" / ") || "없음"}. 길을 맵 끝까지 잇거나, routes 로 칸 경로를 직접 준다.`, { code: "no-road", mapId: map.id });
+        throw new ToolError(`자동으로 깔 차도가 없다 — 가장자리에서 가장자리까지 이어진 차도 띠(1층 ${LANE_GROUP} 또는 mc:road, 폭 2~8칸)를 찾지 못했다. 찾은 띠: ${bands.road.map(describeBand).join(" / ") || "없음"}. 길을 맵 끝까지 잇거나, routes 로 칸 경로를 직접 준다.`, { code: "no-road", mapId: map.id });
       }
+      const defaultVehicles = isModern ? DEFAULT_MODERN_CAR_MIX : DEFAULT_CAR_MIX;
       const made = autoTrafficRoutes(bands.road, map, {
         ...(typeof auto.headwaySec === "number" ? { headwaySec: auto.headwaySec } : {}),
-        ...(Array.isArray(auto.vehicles) ? { vehicles: auto.vehicles as string[] } : {}),
+        vehicles: Array.isArray(auto.vehicles) ? (auto.vehicles as string[]) : defaultVehicles,
+        busVehicle: isModern ? "mc-veh-bus-a" : "jp-bus-city",
+        includeTurns: auto.includeTurns !== undefined ? Boolean(auto.includeTurns) : true,
         ...(Array.isArray(auto.busStops) ? { busStops: auto.busStops as NonNullable<Parameters<typeof autoTrafficRoutes>[2]>["busStops"] } : {}),
         ...(typeof auto.busHeadwaySec === "number" ? { busHeadwaySec: auto.busHeadwaySec } : {}),
       });
@@ -361,8 +377,9 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
         description: "길·레일·선로 그림에서 자동으로 깐다. 이전에 자동으로 깐 노선(traffic-*·bus-*·tram-*, subway 를 주면 subway-*/train-*)은 바꾼다. subway 나 tram 만 주면 차 흐름은 깔지 않는다.",
         properties: {
           traffic: { type: "boolean", description: "차 흐름(기본 true)" },
+          includeTurns: { type: "boolean", description: "교차로에서 방향지시등을 켜고 90° 회전(동서↔남북)하는 차량 노선 포함(기본 true)" },
           headwaySec: { type: "number", description: "차 간격 초(기본 7). 한산한 주택가 10~14, 큰길 4~6" },
-          vehicles: { type: "array", items: { type: "string", enum: vehicleIds() }, description: "차 흐름에 쓸 탈것(기본 승용·택시·경차·트럭 섞음)" },
+          vehicles: { type: "array", items: { type: "string", enum: vehicleIds() }, description: "차 흐름에 쓸 탈것(기본 맵 칩셋에 맞는 경찰차·택시·승용·트럭 섞음)" },
           busStops: { type: "array", items: stopSchema, description: "버스 정류장 — (x, y) 는 버스 머리가 서는 차선 칸(그 칸을 지나는 방향 차선)" },
           busHeadwaySec: { type: "number", description: "버스 간격 초(기본 35)" },
           tram: { type: "boolean", description: "2층 노면전차 레일 위로 노면전차(가장자리→가장자리 레일만)" },
@@ -413,4 +430,52 @@ export const SET_MAP_TRANSIT_TOOL: ToolDefinition = {
   },
 };
 
-export const TRANSIT_TOOLS: readonly ToolDefinition[] = [INSPECT_MAP_TRANSIT_TOOL, SET_MAP_TRANSIT_TOOL];
+export const SET_STREET_TRAFFIC_TOOL: ToolDefinition = {
+  name: "set_street_traffic",
+  mode: "write",
+  domains: ["map", "tile"],
+  fillsCurrentMapId: true,
+  description: "도시·마을 거리(modern_city · jp_city)의 아스팔트 도로와 교차로를 자동으로 찾아, 차선 직진 주행 차량·교차로 90° 회전 차량(방향지시등 점멸 + 수평↔수직 회전)·시내버스 노선을 한 번에 깐다. 주인공이 횡단보도를 건널 때는 정지선 앞에서 멈춘다.",
+  parameters: {
+    type: "object",
+    properties: {
+      mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵)" },
+      density: { type: "string", enum: ["sparse", "normal", "busy"], description: "차량 밀도(sparse=한산 10초 간격, normal=보통 6초 간격, busy=혼잡 4초 간격)" },
+      includeTurns: { type: "boolean", description: "교차로에서 90° 좌·우회전(동서↔남북)하는 차량 노선을 함께 깔지(기본 true)" },
+      includeBus: { type: "boolean", description: "시내버스 노선도 함께 깔지(기본 true)" },
+      vehicles: { type: "array", items: { type: "string", enum: vehicleIds() }, description: "주행할 차량 id 목록(생략하면 맵 칩셋에 맞춰 경찰차·택시·세단·밴·트럭 자동 배합)" },
+      clear: { type: "boolean", description: "true 면 이 맵의 차량 노선을 모두 지운다" },
+    },
+    additionalProperties: false,
+  },
+  invalidArgsExample: { density: "extreme" },
+  run(draft, args): ToolExecResult {
+    if (args.clear === true) return SET_MAP_TRANSIT_TOOL.run(draft, { mapId: args.mapId, clear: true });
+    const map = requireMap(draft, String(args.mapId ?? ""));
+    const density = args.density === "sparse" ? 10 : args.density === "busy" ? 4 : 6;
+    const includeTurns = args.includeTurns !== false;
+    const includeBus = args.includeBus !== false;
+    const bands = mapRoadBands(draft, map).road.filter((b) => b.edgeToEdge);
+    const ewBand = bands.find((b) => b.axis === "ew" && b.width >= 4);
+    const nsBands = bands.filter((b) => b.axis === "ns");
+    let stopX = Math.floor(map.width / 2);
+    for (const cand of [Math.floor(map.width * 0.25), Math.floor(map.width * 0.75), Math.floor(map.width / 2)]) {
+      if (!nsBands.some((ns) => cand >= ns.edge - 6 && cand <= ns.edge + ns.width + 6)) { stopX = cand; break; }
+    }
+    const busStops = includeBus && ewBand
+      ? [{ x: stopX, y: ewBand.edge + ewBand.width - 2, at: "center" as const, name: "시내버스 정류장", waitSec: 4 }]
+      : undefined;
+    return SET_MAP_TRANSIT_TOOL.run(draft, {
+      mapId: map.id,
+      auto: {
+        traffic: true,
+        headwaySec: density,
+        includeTurns,
+        ...(Array.isArray(args.vehicles) ? { vehicles: args.vehicles } : {}),
+        ...(busStops ? { busStops, busHeadwaySec: 28 } : {}),
+      },
+    });
+  },
+};
+
+export const TRANSIT_TOOLS: readonly ToolDefinition[] = [INSPECT_MAP_TRANSIT_TOOL, SET_MAP_TRANSIT_TOOL, SET_STREET_TRAFFIC_TOOL];

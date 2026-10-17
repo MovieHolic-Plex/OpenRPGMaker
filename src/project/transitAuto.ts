@@ -103,21 +103,35 @@ export function straightPathIndex(path: ReadonlyArray<{ x: number; y: number }>,
 export type StopAnchor = "head" | "center";
 /** 몸 가운데 칸 번호 → 머리 칸 번호. 경로 칸 번호는 진행 방향으로 늘고 몸은 머리 뒤(작은 번호)로 뻗는다. */
 export const headIndexFromCenter = (centerIndex: number, length: number): number => centerIndex + Math.floor((length - 1) / 2);
-const busLength = (): number => transitVehicle("jp-bus-city")?.length ?? 9;
-
 export const DEFAULT_CAR_MIX = ["jp-car-white", "jp-car-silver", "jp-car-kei-yellow", "jp-car-black", "jp-car-taxi", "jp-car-red", "jp-truck-kei", "jp-car-blue", "jp-car-kei-mint", "jp-truck-box"];
+export const DEFAULT_MODERN_CAR_MIX = [
+  "mc-veh-car2-c-red",
+  "mc-veh-taxi-b",
+  "mc-veh-sedan-a-navy",
+  "mc-veh-police-a",
+  "mc-veh-sedan-a-white",
+  "mc-veh-van-a",
+  "mc-veh-car2-c-beige",
+  "mc-veh-truck-a",
+  "mc-veh-car2-c-green",
+  "mc-veh-sedan-a-black",
+  "mc-veh-ambulance-a",
+  "mc-veh-firetruck-b",
+];
 
 export interface AutoTrafficOptions {
   /** 차 흐름 간격(초). 기본 7. */
   headwaySec?: number;
   vehicles?: string[];
+  busVehicle?: string;
+  /** 교차로에서 90° 회전(동서↔남북) 노선도 함께 깔지. */
+  includeTurns?: boolean;
   /** 버스 정류장: (x, y) = 버스 머리가 서는 차선 칸. 그 칸을 지나는 방향의 띠에 버스 노선을 하나 만든다. */
   busStops?: Array<{ x: number; y: number; at?: StopAnchor; name?: string; waitSec?: number; board?: MapTransitStop["board"] }>;
   busHeadwaySec?: number;
   /** 띠마다 차를 보낼지 거르는 함수(기본: 가장자리→가장자리 띠만). */
   accept?: (band: RoadBand) => boolean;
 }
-
 /** 찾은 띠마다 차 흐름 노선(좌측통행 두 방향)을 만들고, 정류장이 있으면 그 차선에 버스 노선을 더한다. */
 export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, opts: AutoTrafficOptions = {}): { routes: MapTransitRoute[]; unmatchedStops: Array<{ x: number; y: number }> } {
   const routes: MapTransitRoute[] = [];
@@ -137,19 +151,74 @@ export function autoTrafficRoutes(bands: readonly RoadBand[], grid: GridLike, op
       const id = `traffic-${band.axis}${band.edge}-${dir}`;
       const path = bandLanePath(band, dir, grid);
       lanes.push({ id, dir, path });
-      routes.push({ id, name: `${band.axis === "ew" ? "동서" : "남북"} 길 ${band.edge} ${({ right: "동쪽행", left: "서쪽행", down: "남쪽행", up: "북쪽행" } as const)[dir]}`, kind: "road", path, vehicles: opts.vehicles?.length ? [...opts.vehicles] : rotate(DEFAULT_CAR_MIX, routes.length * 3), headwaySec: opts.headwaySec ?? 7 });
+      const baseMix = opts.vehicles?.length ? opts.vehicles : DEFAULT_CAR_MIX;
+      const nsMix = baseMix.filter((vid) => { const k = transitVehicle(vid)?.kind; return k === "car" || k === "taxi" || k === "kei" || vid === "mc-veh-van-a" || vid === "mc-veh-bus-a"; });
+      const laneMix = band.axis === "ns" && nsMix.length ? nsMix : baseMix;
+      routes.push({ id, name: `${band.axis === "ew" ? "동서" : "남북"} 길 ${band.edge} ${({ right: "동쪽행", left: "서쪽행", down: "남쪽행", up: "북쪽행" } as const)[dir]}`, kind: "road", path, vehicles: rotate(laneMix, routes.length * 3), headwaySec: opts.headwaySec ?? 7 });
+    }
+  }
+  if (opts.includeTurns) {
+    const baseMix = opts.vehicles?.length ? opts.vehicles : DEFAULT_CAR_MIX;
+    const turnMix = baseMix.filter((id) => { const k = transitVehicle(id)?.kind; return k === "car" || k === "taxi" || k === "kei" || id === "mc-veh-van-a"; });
+    const mix = turnMix.length ? turnMix : baseMix;
+    const ews = accepted.filter((b) => b.axis === "ew" && b.width >= 4);
+    const nss = accepted.filter((b) => b.axis === "ns" && b.width >= 4);
+    let crossIdx = 0;
+    for (const ew of ews) {
+      for (const ns of nss) {
+        if (ns.edge < ew.from || ns.edge > ew.to || ew.edge < ns.from || ew.edge > ns.to) continue;
+        const ewRightY = laneOffsetFor("right", ew.edge, ew.width);
+        const nsUpX = laneOffsetFor("up", ns.edge, ns.width);
+        const nsDownX = laneOffsetFor("down", ns.edge, ns.width);
+        const loX = ew.from === 0 ? -OFF : ew.from;
+        const hiX = ew.to === grid.width - 1 ? grid.width - 1 + OFF : ew.to;
+        const loY = ns.from === 0 ? -OFF : ns.from;
+        const turnHeadway = Math.max(11, (opts.headwaySec ?? 7) * 2 - 1);
+        if (crossIdx % 2 === 0) {
+          routes.push({
+            id: `turn-ew${ew.edge}-ns${ns.edge}-up`,
+            name: `교차로 (${ns.edge},${ew.edge}) 동행→북행 좌회전`,
+            kind: "road",
+            path: [{ x: loX, y: ewRightY }, { x: nsUpX, y: ewRightY }, { x: nsUpX, y: loY }],
+            vehicles: rotate(mix, routes.length * 2),
+            headwaySec: turnHeadway,
+          });
+        } else {
+          routes.push({
+            id: `turn-ns${ns.edge}-ew${ew.edge}-right`,
+            name: `교차로 (${ns.edge},${ew.edge}) 남행→동행 좌회전`,
+            kind: "road",
+            path: [{ x: nsDownX, y: loY }, { x: nsDownX, y: ewRightY }, { x: hiX, y: ewRightY }],
+            vehicles: rotate(mix, routes.length * 2 + 1),
+            headwaySec: turnHeadway,
+          });
+        }
+        if (ews.length === 1 && nss.length === 1) {
+          routes.push({
+            id: `turn-ns${ns.edge}-ew${ew.edge}-right`,
+            name: `교차로 (${ns.edge},${ew.edge}) 남행→동행 좌회전`,
+            kind: "road",
+            path: [{ x: nsDownX, y: loY }, { x: nsDownX, y: ewRightY }, { x: hiX, y: ewRightY }],
+            vehicles: rotate(mix, routes.length * 2 + 1),
+            headwaySec: turnHeadway + 2,
+          });
+        }
+        crossIdx += 1;
+      }
     }
   }
   const unmatchedStops: Array<{ x: number; y: number }> = [];
   const busByLane = new Map<string, MapTransitRoute>();
+  const busId = opts.busVehicle ?? (opts.vehicles?.[0]?.startsWith("mc-veh-") ? "mc-veh-bus-a" : "jp-bus-city");
+  const busLen = transitVehicle(busId)?.length ?? 9;
   for (const stop of opts.busStops ?? []) {
     const lane = lanes.find((l) => straightPathIndex(l.path, stop.x, stop.y) !== null);
     if (!lane) { unmatchedStops.push({ x: stop.x, y: stop.y }); continue; }
     const raw = straightPathIndex(lane.path, stop.x, stop.y)!;
-    const index = stop.at === "center" ? headIndexFromCenter(raw, busLength()) : raw;
+    const index = stop.at === "center" ? headIndexFromCenter(raw, busLen) : raw;
     let bus = busByLane.get(lane.id);
     if (!bus) {
-      bus = { id: `bus-${lane.id.slice("traffic-".length)}`, name: "시내버스", kind: "bus", path: lane.path.map((p) => ({ ...p })), vehicles: ["jp-bus-city"], headwaySec: opts.busHeadwaySec ?? 35, stops: [] };
+      bus = { id: `bus-${lane.id.slice("traffic-".length)}`, name: "시내버스", kind: "bus", path: lane.path.map((p) => ({ ...p })), vehicles: [busId], headwaySec: opts.busHeadwaySec ?? 35, stops: [] };
       busByLane.set(lane.id, bus);
       routes.push(bus);
     }

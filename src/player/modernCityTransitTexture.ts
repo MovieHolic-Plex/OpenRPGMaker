@@ -1,0 +1,435 @@
+// player/modernCityTransitTexture.ts
+// modern_city 차량 키트(mc-veh-*)를 이미 로드된 tex_modern_city 시트에서 읽어,
+// 바퀴 스포크 4상 회전 · 차체 1px 서스펜션 바운스(타이어·그림자 접지 고정) · 경광등/방향지시등/브레이크등 ·
+// 버스 중앙 폴딩 도어 개폐 · 원본 칩셋(mc-veh-car-front-a* / mc-veh-car-back-a* + 원본 경광등/택시갓 이식)
+// 기반 남북(up/down) 프레임을 갖춘 Phaser 캔버스 텍스처로 조립한다.
+import type Phaser from "phaser";
+import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { createModernCityTileset, MODERN_CITY_TEXTURE } from "@/project/defaults/modernCity";
+import type { TransitVehicleDef } from "@/project/mapTransit";
+import type { StructureKitDef } from "@/project/types";
+import { renderHandNsFrame } from "./modernCityNsGrids";
+
+const TILE = 16;
+const TILES_PER_ROW = 48;
+
+interface KitPair {
+  readonly back: string;
+  readonly front: string;
+  readonly beacon?: "police" | "emergency" | "taxi";
+  readonly dualBounce?: boolean;
+}
+
+const KIT_META: Readonly<Record<string, KitPair>> = {
+  "mc-veh-police-a": { back: "mc-veh-car-back-a", front: "mc-veh-car-front-a", beacon: "police" },
+  "mc-veh-taxi-b": { back: "mc-veh-car-back-a", front: "mc-veh-car-front-a", beacon: "taxi" },
+  "mc-veh-car2-c-red": { back: "mc-veh-car-back-a-red", front: "mc-veh-car-front-a-red" },
+  "mc-veh-sedan-a-navy": { back: "mc-veh-car-back-a-navy", front: "mc-veh-car-front-a-navy" },
+  "mc-veh-sedan-a-white": { back: "mc-veh-car-back-a-white", front: "mc-veh-car-front-a-white" },
+  "mc-veh-sedan-a-black": { back: "mc-veh-car-back-a-black", front: "mc-veh-car-front-a-black" },
+  "mc-veh-car2-c-beige": { back: "mc-veh-car-back-a-beige", front: "mc-veh-car-front-a-beige" },
+  "mc-veh-car2-c-green": { back: "mc-veh-car-back-a-green", front: "mc-veh-car-front-a-green" },
+  "mc-veh-sedan-a": { back: "mc-veh-car-back-a", front: "mc-veh-car-front-a" },
+  "mc-veh-van-a": { back: "mc-veh-car-back-a-white", front: "mc-veh-car-front-a-white" },
+  "mc-veh-truck-a": { back: "mc-veh-car-back-a-white", front: "mc-veh-car-front-a-white", dualBounce: true },
+  "mc-veh-ambulance-a": { back: "mc-veh-car-back-a-white", front: "mc-veh-car-front-a-white", beacon: "emergency" },
+  "mc-veh-firetruck-b": { back: "mc-veh-car-back-a-red", front: "mc-veh-car-front-a-red", beacon: "emergency" },
+  "mc-veh-bus-a": { back: "mc-veh-car-back-a-green", front: "mc-veh-car-front-a-green" },
+};
+
+let cachedDefaultKits: Readonly<Record<string, StructureKitDef>> | null = null;
+
+function findKit(id: string): StructureKitDef | undefined {
+  cachedDefaultKits ??= Object.fromEntries((createModernCityTileset().structureKits ?? []).map((k) => [k.id, k]));
+  return cachedDefaultKits[id];
+}
+
+function extractKitImageData(
+  src: CanvasImageSource,
+  kit: StructureKitDef,
+  targetW: number,
+  targetH: number,
+): ImageData {
+  const rawW = kit.width * TILE;
+  const rawH = kit.height * TILE;
+  const scratch = document.createElement("canvas");
+  scratch.width = rawW;
+  scratch.height = rawH;
+  const sctx = scratch.getContext("2d")!;
+  sctx.imageSmoothingEnabled = false;
+  for (let r = 0; r < kit.rows.length; r += 1) {
+    const row = kit.rows[r]!;
+    for (const arr of [row.tiles, row.upperTiles ?? []]) {
+      for (let c = 0; c < arr.length; c += 1) {
+        const tid = arr[c] ?? -1;
+        if (tid < 0) continue;
+        const sx = (tid % TILES_PER_ROW) * TILE;
+        const sy = Math.floor(tid / TILES_PER_ROW) * TILE;
+        sctx.drawImage(src, sx, sy, TILE, TILE, c * TILE, r * TILE, TILE, TILE);
+      }
+    }
+  }
+  const raw = sctx.getImageData(0, 0, rawW, rawH);
+  let yMax = rawH - 1;
+  for (let y = rawH - 1; y >= 0; y -= 1) {
+    let any = false;
+    for (let x = 0; x < rawW; x += 1) {
+      if ((raw.data[(y * rawW + x) * 4 + 3] ?? 0) > 0) { any = true; break; }
+    }
+    if (any) { yMax = y; break; }
+  }
+  const out = new ImageData(targetW, targetH);
+  const shiftY = (targetH - 2) - yMax;
+  const shiftX = Math.floor((targetW - rawW) / 2);
+  for (let y = 0; y < rawH; y += 1) {
+    const dy = y + shiftY;
+    if (dy < 0 || dy >= targetH) continue;
+    for (let x = 0; x < rawW; x += 1) {
+      const dx = x + shiftX;
+      if (dx < 0 || dx >= targetW) continue;
+      const si = (y * rawW + x) * 4;
+      const di = (dy * targetW + dx) * 4;
+      out.data[di] = raw.data[si]!;
+      out.data[di + 1] = raw.data[si + 1]!;
+      out.data[di + 2] = raw.data[si + 2]!;
+      out.data[di + 3] = raw.data[si + 3]!;
+    }
+  }
+  return out;
+}
+
+function setPx(img: ImageData, x: number, y: number, r: number, g: number, b: number, a = 255): void {
+  const rx = Math.round(x), ry = Math.round(y);
+  if (rx < 0 || ry < 0 || rx >= img.width || ry >= img.height) return;
+  const i = (ry * img.width + rx) * 4;
+  if (a >= 255 || (img.data[i + 3] ?? 0) === 0) {
+    img.data[i] = r; img.data[i + 1] = g; img.data[i + 2] = b; img.data[i + 3] = a;
+  } else {
+    const t = a / 255;
+    img.data[i] = Math.round(img.data[i]! * (1 - t) + r * t);
+    img.data[i + 1] = Math.round(img.data[i + 1]! * (1 - t) + g * t);
+    img.data[i + 2] = Math.round(img.data[i + 2]! * (1 - t) + b * t);
+    img.data[i + 3] = Math.max(img.data[i + 3]!, a);
+  }
+}
+
+function mirrorHorizontal(src: ImageData): ImageData {
+  const { width: w, height: h } = src;
+  const out = new ImageData(w, h);
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const si = (y * w + x) * 4;
+      const di = (y * w + (w - 1 - x)) * 4;
+      out.data[di] = src.data[si]!;
+      out.data[di + 1] = src.data[si + 1]!;
+      out.data[di + 2] = src.data[si + 2]!;
+      out.data[di + 3] = src.data[si + 3]!;
+    }
+  }
+  return out;
+}
+
+function buildEwFrame(
+  base: ImageData,
+  kitId: string,
+  meta: KitPair | undefined,
+  phase: number,
+  brake: boolean,
+  openDoor: boolean,
+): ImageData {
+  const { width: w, height: h } = base;
+  const out = new ImageData(w, h);
+  const archY = h - 9;
+  const moving = !brake && !openDoor;
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const si = (y * w + x) * 4;
+      const a = base.data[si + 3]!;
+      if (a === 0) continue;
+      let dy = 0;
+      if (moving && a >= 200 && y < archY) {
+        if (meta?.dualBounce) {
+          dy = (x >= 58 && phase === 1) || (x < 58 && phase === 3) ? -1 : 0;
+        } else {
+          dy = phase === 1 || phase === 3 ? -1 : 0;
+        }
+      }
+      const ny = y + dy;
+      if (ny < 0 || ny >= h) continue;
+      const di = (ny * w + x) * 4;
+      out.data[di] = base.data[si]!;
+      out.data[di + 1] = base.data[si + 1]!;
+      out.data[di + 2] = base.data[si + 2]!;
+      out.data[di + 3] = a;
+    }
+  }
+  if (moving && phase > 0) {
+    const wheelXs = kitId === "mc-veh-firetruck-b" ? [19, 30, w - 18] : [18, w - 18];
+    const wy = h - 6;
+    const angles: readonly [number, number][] = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    const [dx, dy] = angles[phase & 3]!;
+    for (const wx of wheelXs) {
+      setPx(out, wx, wy, 195, 205, 220);
+      setPx(out, wx + dx, wy + dy, 225, 232, 244);
+      setPx(out, wx - dx, wy - dy, 120, 130, 145);
+      setPx(out, wx - dy, wy + dx, 70, 76, 88);
+    }
+  }
+  if (meta?.beacon === "police") {
+    const redLeft = (phase & 1) === 0;
+    const cL = redLeft ? [255, 50, 65] : [55, 165, 255];
+    const cR = redLeft ? [55, 165, 255] : [255, 50, 65];
+    for (let x = 35; x <= 38; x += 1) setPx(out, x, 17, cL[0]!, cL[1]!, cL[2]!);
+    for (let x = 39; x <= 42; x += 1) setPx(out, x, 17, cR[0]!, cR[1]!, cR[2]!);
+  } else if (meta?.beacon === "emergency") {
+    const flash = (phase & 1) === 0;
+    const c = flash ? [255, 45, 55] : [255, 240, 215];
+    for (let x = w - 28; x <= w - 22; x += 1) setPx(out, x, 16, c[0]!, c[1]!, c[2]!);
+  } else if (meta?.beacon === "taxi") {
+    const lit = (phase & 1) === 0;
+    for (let x = 36; x <= 41; x += 1) setPx(out, x, 18, 255, lit ? 220 : 185, 65);
+    if (moving && (phase === 1 || phase === 2)) {
+      setPx(out, w - 6, h - 10, 255, 190, 40);
+      setPx(out, w - 5, h - 10, 255, 210, 70);
+    }
+  }
+  if (moving) {
+    setPx(out, w - 5, h - 11, 255, 248, 200);
+    setPx(out, w - 4, h - 11, 255, 245, 180, 180);
+  }
+  if (brake) {
+    for (let y = h - 13; y <= h - 10; y += 1) {
+      setPx(out, 5, y, 255, 40, 55);
+      setPx(out, 4, y, 255, 50, 65, 150);
+    }
+  }
+  if (openDoor && kitId === "mc-veh-bus-a") {
+    for (let y = 23; y <= 42; y += 1) {
+      for (let x = 56; x <= 66; x += 1) {
+        if (y <= 24) setPx(out, x, y, 255, 242, 185);
+        else if (y >= 39) setPx(out, x, y, 52, 58, 70);
+        else setPx(out, x, y, 24, 28, 36);
+      }
+      setPx(out, 55, y, 42, 72, 58);
+      setPx(out, 67, y, 42, 72, 58);
+    }
+  }
+  return out;
+}
+
+/**
+ * 남북(up/down) 기본 스프라이트:
+ * 100% 원본 modern-city-chipset.png 의 mc-veh-car-front-a* / mc-veh-car-back-a* 화소를 그대로 쓰되,
+ * 경찰차(mc-veh-police-a)는 원본 흰색 지붕(mc-veh-car-front/back-a-white) + 원본 경찰차 경광등 화소(mc-veh-police-a y=15..19)를 이식하고,
+ * 택시(mc-veh-taxi-b)는 원본 택시 표시등 화소(mc-veh-taxi-b y=15..19)를 지붕 중앙에 이식한다.
+ */
+const CAR_GRAY_RAMP: readonly (readonly [number, number, number])[] = [
+  [103, 106, 119],
+  [117, 120, 134],
+  [132, 135, 148],
+  [148, 150, 161],
+  [161, 163, 172],
+  [175, 177, 184],
+  [188, 189, 195],
+];
+const TAXI_BODY_RAMP: readonly (readonly [number, number, number])[] = [
+  [14, 23, 32],
+  [25, 39, 55],
+  [25, 39, 55],
+  [40, 61, 83],
+  [40, 61, 83],
+  [54, 81, 106],
+  [54, 81, 106],
+];
+const POLICE_LOWER_RAMP: readonly (readonly [number, number, number])[] = [
+  [25, 39, 55],
+  [25, 39, 55],
+  [40, 61, 83],
+  [40, 61, 83],
+  [54, 81, 106],
+  [54, 81, 106],
+  [54, 81, 106],
+];
+
+function findGrayRampRank(r: number, g: number, b: number): number {
+  for (let i = 0; i < CAR_GRAY_RAMP.length; i += 1) {
+    const c = CAR_GRAY_RAMP[i]!;
+    if (c[0] === r && c[1] === g && c[2] === b) return i;
+  }
+  return -1;
+}
+
+function buildOriginalChipsetNsBase(
+  _srcImg: CanvasImageSource,
+  base: ImageData,
+  sideRight: ImageData,
+  meta: KitPair | undefined,
+  _dir: "up" | "down",
+): ImageData {
+  const { width: w, height: h } = base;
+  const out = new ImageData(new Uint8ClampedArray(base.data), w, h);
+  if (meta?.beacon === "police" || meta?.beacon === "taxi") {
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        const i = (y * w + x) * 4;
+        if ((out.data[i + 3] ?? 0) === 0) continue;
+        const rank = findGrayRampRank(out.data[i]!, out.data[i + 1]!, out.data[i + 2]!);
+        if (rank < 0) continue;
+        if (meta.beacon === "taxi") {
+          const c = y === 36 ? ([200, 154, 43] as const) : TAXI_BODY_RAMP[rank]!;
+          out.data[i] = c[0];
+          out.data[i + 1] = c[1];
+          out.data[i + 2] = c[2];
+        } else if (y >= 37) {
+          const c = POLICE_LOWER_RAMP[rank]!;
+          out.data[i] = c[0];
+          out.data[i + 1] = c[1];
+          out.data[i + 2] = c[2];
+        }
+      }
+    }
+  }
+  if (meta?.beacon === "police") {
+    for (let x = 20; x <= 27; x += 1) setPx(out, x, 6, 9, 17, 37, 255);
+    for (let sy = 15; sy <= 17; sy += 1) {
+      for (let sx = 34; sx <= 43; sx += 1) {
+        const si = (sy * sideRight.width + sx) * 4;
+        if ((sideRight.data[si + 3] ?? 0) < 200) continue;
+        setPx(out, sx - 15, sy - 8, sideRight.data[si]!, sideRight.data[si + 1]!, sideRight.data[si + 2]!, 255);
+      }
+    }
+  } else if (meta?.beacon === "taxi") {
+    for (let sy = 15; sy <= 17; sy += 1) {
+      for (let sx = 35; sx <= 42; sx += 1) {
+        const si = (sy * sideRight.width + sx) * 4;
+        if ((sideRight.data[si + 3] ?? 0) < 200) continue;
+        setPx(out, sx - 15, sy - 8, sideRight.data[si]!, sideRight.data[si + 1]!, sideRight.data[si + 2]!, 255);
+      }
+    }
+  } else if (meta?.beacon === "emergency") {
+    for (let x = 16; x <= 31; x += 1) {
+      setPx(out, x, 9, x < 24 ? 235 : 245, x < 24 ? 45 : 240, x < 24 ? 55 : 235);
+      setPx(out, x, 10, x < 24 ? 190 : 215, x < 24 ? 30 : 210, x < 24 ? 40 : 210);
+    }
+  }
+  return out;
+}
+
+function buildNsFrame(
+  base: ImageData,
+  meta: KitPair | undefined,
+  dir: "up" | "down",
+  phase: number,
+  brake: boolean,
+): ImageData {
+  const { width: w, height: h } = base;
+  const out = new ImageData(w, h);
+  const tireY = h - 7;
+  const moving = !brake;
+  const bob = moving && (phase === 1 || phase === 3) ? -1 : 0;
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      const si = (y * w + x) * 4;
+      const a = base.data[si + 3]!;
+      if (a === 0) continue;
+      const ny = y + (a >= 200 && y < tireY ? bob : 0);
+      if (ny < 0 || ny >= h) continue;
+      const di = (ny * w + x) * 4;
+      out.data[di] = base.data[si]!;
+      out.data[di + 1] = base.data[si + 1]!;
+      out.data[di + 2] = base.data[si + 2]!;
+      out.data[di + 3] = a;
+    }
+  }
+  if (meta?.beacon === "police" && (phase & 1) === 1) {
+    for (let y = 7; y <= 9; y += 1) {
+      for (let dx = 0; dx < 10; dx += 1) {
+        const si = (y * w + (28 - dx)) * 4;
+        if ((base.data[si + 3] ?? 0) === 0) continue;
+        setPx(out, 19 + dx, y + bob, base.data[si]!, base.data[si + 1]!, base.data[si + 2]!, base.data[si + 3]!);
+      }
+    }
+  }
+  if (dir === "down" && moving) {
+    for (const lx of [9, 10, w - 11, w - 10]) setPx(out, lx, h - 8 + bob, 255, 248, 200);
+  }
+  if (brake) {
+    for (const lx of [9, 10, 11, w - 12, w - 11, w - 10]) {
+      setPx(out, lx, h - 9, 255, 40, 55);
+      setPx(out, lx, h - 8, 255, 40, 55);
+    }
+  }
+  return out;
+}
+
+export function ensureModernCityVehicleTexture(
+  _scene: PlaySceneContext,
+  phaser: Phaser.Scene,
+  def: TransitVehicleDef,
+  key: string,
+): boolean {
+  if (!def.image.startsWith("mc-kit:")) return false;
+  if (!phaser.textures.exists(MODERN_CITY_TEXTURE)) {
+    void ensureSceneImageTexture(phaser, MODERN_CITY_TEXTURE, "/assets/modern-city/modern-city-chipset.png");
+    return false;
+  }
+  const kitId = def.image.slice("mc-kit:".length);
+  const sideKit = findKit(kitId);
+  if (!sideKit) return false;
+  const meta = KIT_META[kitId];
+  const backKit = findKit(meta?.back ?? "mc-veh-car-back-a") ?? sideKit;
+  const frontKit = findKit(meta?.front ?? "mc-veh-car-front-a") ?? sideKit;
+
+  const srcImg = phaser.textures.get(MODERN_CITY_TEXTURE).getSourceImage() as CanvasImageSource;
+  const ewW = def.length * TILE;
+  const ewH = 48;
+  const isBus = kitId === "mc-veh-bus-a";
+  const nsW = 48;
+  const nsH = isBus ? 64 : 48;
+
+  const baseRight = extractKitImageData(srcImg, sideKit, ewW, ewH);
+  const baseUp = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, backKit, nsW, nsH), baseRight, meta, "up");
+  const baseDown = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, frontKit, nsW, nsH), baseRight, meta, "down");
+
+  const canvas = document.createElement("canvas");
+  canvas.width = def.width;
+  canvas.height = def.height;
+  const ctx = canvas.getContext("2d")!;
+  ctx.imageSmoothingEnabled = false;
+
+  // Row 0 (right) & Row 1 (left)
+  const rightBase = buildEwFrame(baseRight, kitId, meta, 0, false, false);
+  ctx.putImageData(rightBase, 0, 0);
+  ctx.putImageData(mirrorHorizontal(rightBase), 0, 48);
+  for (let p = 0; p < 4; p += 1) {
+    const rf = buildEwFrame(baseRight, kitId, meta, p, false, false);
+    ctx.putImageData(rf, ewW * (p + 1), 0);
+    ctx.putImageData(mirrorHorizontal(rf), ewW * (p + 1), 48);
+  }
+  const rightBrake = buildEwFrame(baseRight, kitId, meta, 0, true, false);
+  ctx.putImageData(rightBrake, ewW * 5, 0);
+  ctx.putImageData(mirrorHorizontal(rightBrake), ewW * 5, 48);
+  if (isBus) {
+    const rightOpen = buildEwFrame(baseRight, kitId, meta, 0, false, true);
+    ctx.putImageData(rightOpen, ewW * 6, 0);
+    ctx.putImageData(mirrorHorizontal(rightOpen), ewW * 6, 48);
+  }
+
+  // Row 2 (up) & Row 3 (down)
+  const upY = 96;
+  const downY = 96 + nsH;
+  const makeNs = (dir: "up" | "down", base: ImageData, p: number, brake: boolean): ImageData =>
+    renderHandNsFrame(kitId, dir, nsW, nsH, p, brake) ?? buildNsFrame(base, meta, dir, p, brake);
+  ctx.putImageData(makeNs("up", baseUp, 0, false), 0, upY);
+  ctx.putImageData(makeNs("down", baseDown, 0, false), 0, downY);
+  for (let p = 0; p < 4; p += 1) {
+    ctx.putImageData(makeNs("up", baseUp, p, false), nsW * (p + 1), upY);
+    ctx.putImageData(makeNs("down", baseDown, p, false), nsW * (p + 1), downY);
+  }
+  ctx.putImageData(makeNs("up", baseUp, 0, true), nsW * 5, upY);
+  ctx.putImageData(makeNs("down", baseDown, 0, true), nsW * 5, downY);
+  const tex = phaser.textures.addCanvas(key, canvas);
+  tex?.setFilter(1);
+  return Boolean(tex);
+}

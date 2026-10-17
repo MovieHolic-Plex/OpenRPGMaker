@@ -1313,8 +1313,8 @@ function renderTransitTab(host: HTMLElement, map: import("@/project/types").Game
   section.append(el("p", {
     class: "map-props-hint",
     text: usable.length
-      ? `맵 끝에서 끝까지 이어진 차도 ${usable.length}줄을 찾았습니다(${usable.map((b) => b.axis === "ew" ? `동서 y ${b.edge}~${b.edge + b.width - 1}` : `남북 x ${b.edge}~${b.edge + b.width - 1}`).join(", ")}). 왼쪽 차선으로 달립니다(좌측통행).`
-      : "맵 끝에서 끝까지 이어진 생활도로(일본 도시 칩셋의 차도 바닥)가 없어 자동으로 깔 수 없습니다. 칸 경로는 AI 조수에게 「이 길로 버스가 다니게 해 줘」처럼 말해 만드세요.",
+      ? `맵 끝에서 끝까지 이어진 차도 ${usable.length}줄을 찾았습니다(${usable.map((b) => b.axis === "ew" ? `동서 y ${b.edge}~${b.edge + b.width - 1}` : `남북 x ${b.edge}~${b.edge + b.width - 1}`).join(", ")}). 직진 차선과 교차로 90° 회전 노선을 자동으로 깝니다.`
+      : "맵 끝에서 끝까지 이어진 차도(도시 아스팔트 도로 또는 생활도로)가 없어 자동으로 깔 수 없습니다. AI 조수에게 「도로에 자동차 다니게 해 줘」처럼 말해 만드세요.",
   }));
   const runAuto = (auto: Record<string, unknown>): void => {
     try {
@@ -1352,7 +1352,7 @@ function renderTransitTab(host: HTMLElement, map: import("@/project/types").Game
       setMapTransit(map.id, { routes: next });
       rerender(host);
     });
-    const names = [...new Set(route.vehicles.map((id) => transitVehicle(id)?.id.replace(/^jp-/, "") ?? id))];
+    const names = [...new Set(route.vehicles.map((id) => transitVehicle(id)?.id.replace(/^(jp|mc-veh)-/, "") ?? id))];
     const stops = route.stops?.length ? ` · 정류장 ${route.stops.map((s) => s.name ?? `#${s.index}`).join(", ")}` : "";
     const remove = el("button", { class: "btn btn-sm", text: "지우기", attrs: { type: "button" } });
     remove.addEventListener("click", (event) => {

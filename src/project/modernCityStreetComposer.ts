@@ -10,6 +10,9 @@
 //   소품·나무의 ★(통행 가능 윗줄) 칸도 건물·다른 소품 칸과 겹치지 않는다. 같은 건물 종류는 한 맵에 둘까지, 이웃끼리 같은 종류 금지.
 // 순수 함수다(프로젝트를 모른다). 칸 번호는 호출자가 준 사전(palette)에서 — 도구는 번들 정의에서 만든다(modernCityPaletteFromTileset).
 
+import type { MapTransit } from "./mapTransit";
+import { autoTrafficRoutes, DEFAULT_MODERN_CAR_MIX, type RoadBand, type StopAnchor } from "./transitAuto";
+
 export interface MCKit {
   readonly id: string;
   readonly width: number;
@@ -50,6 +53,7 @@ export interface MCStreetResult {
   readonly roads: { horizontal: number[]; vertical: number[] };
   readonly park: { x: number; y: number; w: number; h: number } | null;
   readonly notes: string[];
+  readonly transit: MapTransit;
 }
 
 export const MODERN_CITY_STREET_MIN = { w: 40, h: 30 } as const;
@@ -301,6 +305,7 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   // 소품: 가로 도로
   const nearCross = (x: number, pad: number) => vt.some((v) => x >= v - pad && x < v + 12 + pad);
   const trees = ["mc-prop-street-tree-a", "mc-prop-street-tree-b", "mc-prop-ginkgo-a", "mc-prop-tree-a"];
+  const busStops: Array<{ x: number; y: number; at?: StopAnchor; name?: string; waitSec?: number }> = [];
   for (const yy of hz) {
     // 남쪽 보도: 가로수·가로등 번갈아(발밑 = 맨 아래 보도 줄 yy+11, ★ 윗줄은 연석·보도 위)
     let alt = r() < 0.5;
@@ -311,28 +316,20 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
       else b.prop("mc-prop-lamp-a", x, yy + 9, ["walk", "road"]);
       alt = !alt;
     }
-    // 버스 정류장 하나(남쪽 보도): 표지 + 벤치
+    // 버스 정류장 하나(남쪽 보도): 표지 + 벤치, 서행 차선(yy+7)에 버스 정차점 연결
     for (let tries = 0; tries < 12; tries++) {
       const x = 2 + Math.floor(r() * (W - 6)); if (nearCross(x, 2) || nearCross(x + 3, 2)) continue;
-      if (b.fits("mc-prop-busstop-a", x, yy + 9, ["walk", "road"]) && b.fits("mc-prop-bench2-a", x + 1, yy + 11, ["walk"])) { b.prop("mc-prop-busstop-a", x, yy + 9, ["walk", "road"]); b.prop("mc-prop-bench2-a", x + 1, yy + 11, ["walk"]); break; }
+      if (b.fits("mc-prop-busstop-a", x, yy + 9, ["walk", "road"]) && b.fits("mc-prop-bench2-a", x + 1, yy + 11, ["walk"])) {
+        b.prop("mc-prop-busstop-a", x, yy + 9, ["walk", "road"]);
+        b.prop("mc-prop-bench2-a", x + 1, yy + 11, ["walk"]);
+        busStops.push({ x: x + 1, y: yy + 7, at: "center", name: "버스 정류장", waitSec: 4 });
+        break;
+      }
     }
     // 북쪽 보도 둘째 줄: 문 앞(keep) 피한 작은 소품
     for (let x = 2 + Math.floor(r() * 3); x < W - 1; x += 4 + Math.floor(r() * 4)) {
       if (nearCross(x, 0)) continue;
       b.prop(pick(r, ["mc-prop-hydrant-a", "mc-prop-bollard-a", "mc-prop-trash-a", "mc-prop-planter-a", "mc-prop-planter-b", "mc-prop-bollard-a"]), x, yy + 1, ["walk"]);
-    }
-    // 차: 북쪽 차선(동쪽 향함)·남쪽 차선(서쪽 향함), 구간마다 0~2대
-    const cuts = [-1, ...vt.flatMap((v) => [v - 2, v + 13]), W];
-    for (let j = 0; j + 1 < cuts.length; j += 2) {
-      const sx = cuts[j]! + 1, ex = cuts[j + 1]! - 1;
-      for (const [lane, dir] of [[yy + 3, ""], [yy + 6, "-l"]] as const) {
-        const n = Math.floor(r() * 2.4);
-        for (let c = 0, tries = 0; c < n && tries < 10; tries++) {
-          const x = sx + Math.floor(r() * Math.max(1, ex - sx - 5));
-          const id = `mc-veh-sedan-${pick(r, ["a", "b", "c"])}${pick(r, ["", "-black", "-navy", "-red", "-white", "-beige", "-green"])}${dir}`;
-          if (b.pal.kit(id) && b.fits(id, x, lane, ["road"], 1)) { b.stamp(id, x, lane, "veh"); b.props.push({ kit: id, x, y: lane }); c++; }
-        }
-      }
     }
   }
   // 세로 도로 보도: 가로등(서쪽 보도 안쪽 열·동쪽 보도 안쪽 열)
@@ -360,7 +357,22 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   // 같은 종류 두 채(편의점·은행 …)는 이름에 번호를 붙인다 — 장소 이름으로 찾을 때 앞 건물만 잡히지 않게(2026-10-14 실조수 경고).
   const named = new Map<string, number>();
   const buildings = b.buildings.map((d) => { const k = (named.get(d.name) ?? 0) + 1; named.set(d.name, k); return k > 1 ? { ...d, name: `${d.name} ${k}` } : d; });
-  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes };
+  const roadBands: RoadBand[] = [
+    ...hz.map((yy): RoadBand => ({ axis: "ew", edge: yy + 3, width: 6, from: 0, to: W - 1, edgeToEdge: true })),
+    ...vt.map((xx): RoadBand => ({ axis: "ns", edge: xx + 3, width: 6, from: 0, to: H - 1, edgeToEdge: true })),
+  ];
+  const rotatedMix = DEFAULT_MODERN_CAR_MIX.map((_, i) => DEFAULT_MODERN_CAR_MIX[(i + Math.abs(seed)) % DEFAULT_MODERN_CAR_MIX.length]!);
+  const transit = {
+    routes: autoTrafficRoutes(roadBands, { width: W, height: H }, {
+      vehicles: rotatedMix,
+      busVehicle: "mc-veh-bus-a",
+      headwaySec: 6,
+      busHeadwaySec: 28,
+      includeTurns: true,
+      busStops,
+    }).routes,
+  };
+  return { lower: b.lower, upper: b.upper, upper2: b.upper2, buildings, start, props: b.props, roads: { horizontal: hz, vertical: vt }, park: parkBlock ? { x: parkBlock.x0, y: parkBlock.y0, w: parkBlock.x1 - parkBlock.x0 + 1, h: parkBlock.y1 - parkBlock.y0 + 1 } : null, notes: b.notes, transit };
 }
 
 /** 번들 정의(또는 그 사본)에서 사전을 만든다. */

@@ -38,7 +38,8 @@ export type StampTool =
   | "build_jp_city_building"
   | "stamp_object"
   | "place_dungeon_room"
-  | "paint_tiles";
+  | "paint_tiles"
+  | "set_street_traffic";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -63,6 +64,7 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_object",
   "place_house",
   "place_dungeon_room",
+  "set_street_traffic",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -174,7 +176,9 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_trap {at:{x,y}, trigger?:\"touch\"|\"action\", message?:string}",
   "place_battle_blocker {at:{x,y}, troopId, intro?:[\"...\"]}",
   "set_scene_mood {weather:{kind:\"none\"|\"rain\"|\"storm\"|\"snow\"|\"fog\", intensity?:0..1}}",
+  "- MOVING CARS / STREET TRAFFIC (도로에 차/자동차/승용차/버스/택시/순찰차가 다니게·움직이는 차·차량 흐름·교차로 회전 차량): use ONE set_street_traffic step {density?:\"sparse\"|\"normal\"|\"busy\", includeTurns?:boolean, includeBus?:boolean, clear?:boolean}. Never place an NPC or static prop when the user asks for moving cars/traffic.",
   "set_start_position {at:{x,y}}",
+  "set_street_traffic {density?:\"sparse\"|\"normal\"|\"busy\", includeTurns?:boolean, includeBus?:boolean, clear?:boolean}",
   "move_event {eventId, at:{x,y}}",
   "remove_event {eventId}",
 ].join("\n");
@@ -328,6 +332,7 @@ const TOOL_KO: Record<StampTool, string> = {
   stamp_object: "건물",
   place_dungeon_room: "던전 방",
   paint_tiles: "타일 칠하기",
+  set_street_traffic: "주행 차량",
 };
 
 /**
@@ -336,7 +341,8 @@ const TOOL_KO: Record<StampTool, string> = {
  */
 export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampStepCheck {
   if (!isRecord(raw)) return { dropped: "단계가 객체가 아닙니다" };
-  const tool = typeof raw.tool === "string" ? raw.tool.trim() : "";
+  const rawTool = typeof raw.tool === "string" ? raw.tool.trim() : "";
+  const tool = rawTool === "set_map_transit" ? "set_street_traffic" : rawTool;
   if (!(STAMP_TOOLS as readonly string[]).includes(tool)) return { dropped: `허용되지 않은 도구 ${tool || "(없음)"}` };
   const stampTool = tool as StampTool;
   const args = isRecord(raw.args) ? raw.args : raw;
@@ -367,6 +373,9 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       }
       // 「집」을 물건으로 보내면 물건 사전(3×3 상한)이 거절한다 — 집 단계로 돌린다.
       if (HOUSE_NAME.test(primary.trim())) return validateStampStep({ tool: "place_house", label: raw.label, args }, facts);
+      if (/^(?:차|자동차|승용차|버스|택시|경찰차|트럭|차량|탈것)$/iu.test(primary.trim()) && /(?:다니|움직|달리|흐름|교통|노선|회전|지나가)/u.test(facts.text)) {
+        return validateStampStep({ tool: "set_street_traffic", label: raw.label, args: {} }, facts);
+      }
       if (facts.repairRound && !norm2(facts.text).includes(norm2(primary))) {
         return dropped(`수리 라운드에서는 요청하지 않은 물건(「${primary}」)으로 바꾸지 않습니다`);
       }
@@ -664,6 +673,13 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const at = pointOrCenter(args.at, rect, target);
       if (!at) return dropped("시작 위치가 없습니다");
       return { step: { tool: stampTool, label: labelText ?? "시작 위치", args: { mapId, x: at.x, y: at.y } } };
+    }
+    case "set_street_traffic": {
+      const density = enumArg(args.density, ["sparse", "normal", "busy"] as const) ?? (/혼잡|많이|빽빽/u.test(facts.text) ? "busy" : /한산|드문/u.test(facts.text) ? "sparse" : "normal");
+      const includeTurns = typeof args.includeTurns === "boolean" ? args.includeTurns : true;
+      const includeBus = typeof args.includeBus === "boolean" ? args.includeBus : true;
+      const clear = args.clear === true || /지워|없애|끄기|끄게/u.test(facts.text);
+      return { step: { tool: stampTool, label: labelText ?? (clear ? "주행 차량 지우기" : "거리 주행·회전 차량"), args: { mapId, ...(clear ? { clear: true } : { density, includeTurns, includeBus }) } } };
     }
     case "move_event":
     case "remove_event": {
