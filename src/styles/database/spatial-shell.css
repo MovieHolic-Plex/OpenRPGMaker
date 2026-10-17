@@ -357,6 +357,13 @@
 .database-modal-body .spatial-card-cell > .spatial-card {
   flex: 1 1 auto;
 }
+/* 선택한 칸은 두 칸을 차지하고 그림을 두 배로 보여준다 — 큰 그림을 보려고 호버에 기댈 필요가 없다. */
+.database-modal-body .spatial-gallery-grid > .spatial-card-cell.is-selected {
+  grid-column: span 2;
+}
+.database-modal-body .spatial-gallery-grid > .spatial-card-cell.is-selected .spatial-card-thumb {
+  height: 168px;
+}
 .database-modal-body .spatial-cell-actions {
   display: flex;
   flex-wrap: wrap;
