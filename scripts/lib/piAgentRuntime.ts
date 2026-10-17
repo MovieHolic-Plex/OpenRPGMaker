@@ -1,5 +1,6 @@
 import { PiMonsterGameProduction } from '../../src/ai/piAgent/monsterGameProduction.ts';
-import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, monsterScaleNote, isMonsterRequestTurn, withoutIntentNote } from '../../src/ai/piAgent/monsterGameRequest.ts';
+import { monsterAssetsAllowed, toolHiddenByMonsterLock } from '../../src/project/genreLockMonsterAssets.ts';
 import { EMERALD_MONSTER_AUTHORING_GUIDE, isEmeraldMonsterStyle } from '../../src/project/emeraldMonsterStyle.ts';
 import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
 import { GAME_SYSTEM_REQUEST_PATTERN, PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
@@ -234,6 +235,9 @@ function trimText(value: unknown, max: number): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
+/** 몬스터 자산이 막힌 프로젝트의 게임 시스템 저작 지침 — 몬스터 수집 낱말(configure_monster_system·gen1·collector·도감·배지)을 싣지 않는다. */
+const GAME_SYSTEM_PROMPT_GENERIC = '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·지도·음악을 함께 확인한다. configure_field_menu로 실제 기능 ID를 설정한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.';
+
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const setupTimer = piTimer("worker runPiAgent setup");
   // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
@@ -255,6 +259,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
     assistantRun: true,
+    // 몬스터 자산 역방향 잠금: 이 요청이 몬스터 수집 요청이면 이 턴만 몬스터 도구·자산이 풀린다(워커 입구가 채운다, 없으면 task 로 판정).
+    monsterTurn: request.monsterTurn ?? isMonsterRequestTurn(request.task),
   };
   setClientEditHistory(request.editHistory ?? []);
   setupTimer.mark("clone");
@@ -279,9 +285,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
   // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
   const scopeGuard = piMapScopeGuard(request);
+  // 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 전용 도구는 선언·능력 색인·find_tools 어디에도 나오지 않는다(실행기도 이름 호출을 거부한다).
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
-  });
+  }).filter(tool => !toolHiddenByMonsterLock(ctx.project, tool.name, ctx));
   // find_tools 는 레지스트리 전체를 찾는다 — 결과를 이 실행의 경계로 걸러 「찾았는데 못 부르는」 이름을 막는다.
   const allowedNames = new Set(allowedDefinitions.map(tool => tool.name));
   // 공간 시공 실행인가 — 선언 모델이 고른 첫 노출 도구로 판정한다. 목록이 없으면(전체 카탈로그) 모른다고 보고 싣는다.
@@ -656,7 +663,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
   if (/갤러리|엔딩 목록|엔딩 회상|엔딩 체크|세이브 카드|저장 칸|저장 썸네일|gallery|ending list|save card/iu.test(request.task)) systemPrompt.push('[미연시 추가 화면] 갤러리(잠긴 CG 칸 표시·본 엔딩 회상)·엔딩 목록(저작된 엔딩 정의를 읽어 자동으로 채움, 인물별·결말 3종 체크리스트)·세이브 카드(날짜+마지막 대사 한 줄)는 set_vn_extras 하나로 켜고 끈다. 연애·관계 중심 게임은 이미 전부 켜져 있으니 새로 켤 필요 없이 read_game_systems 의 vnExtras 를 먼저 읽는다. 바꿀 때는 필요한 칸만 보낸다(gallery, galleryShowLocked, endings, endingsHideUnseen, saveCards, language: ko|en|ja|zh|auto|inherit). 새 그림은 만들지 않는다: 갤러리 칸은 showPicture recordInGallery 로 저작된 그림이고 엔딩 목록은 저작된 엔딩 정의다 — 둘이 없으면 비어 보이니 먼저 지은 것을 확인한다. ESC 메뉴에 넣으려면 configure_field_menu preset:custom add:[{command:endings,label:엔딩}] 를 쓴다(기능도 함께 켜진다). 설정 뒤 review_game_systems 로 불일치를 확인하고 실제 플레이 검증은 별도다.');
   if (/백로그|오토|스킵|대사 기록|대사창|미연시|backlog/iu.test(request.task)) systemPrompt.push('[대사창 읽기 보조] 백로그(지난 대사·고른 선택지, 세이브에 저장)·오토·스킵·숨기기 단추는 set_dialogue_system 하나로 켜고 끈다. 연애·관계 중심 게임은 이미 전부 켜져 있으니 새로 켤 필요 없이 read_game_systems 의 dialogueSystem 을 먼저 읽는다. 바꿀 때는 필요한 칸만 보낸다(backlog, backlogLimit 20~500, auto, skip, hideButton, language, defaults{textSpeed, autoSpeed, skipScope, windowOpacity}). ESC 메뉴에 백로그를 넣으려면 configure_field_menu preset:custom add:[{command:backlog,label:백로그}] 를 쓴다(백로그도 함께 켜진다). 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추며 이는 설정이 아니다. 설정 뒤 review_game_systems 로 불일치를 확인하고, 실제 플레이 검증을 했다고 주장하지 않는다.');
-  if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
+  if ((monsterAssetsAllowed(ctx.project, ctx) ? /시스템|상점|shop|메뉴|포켓몬|몬스터/iu : /시스템|상점|shop|메뉴/iu).test(withoutIntentNote(request.task))) systemPrompt.push(monsterAssetsAllowed(ctx.project, ctx) ? '[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. 매입가는 sellPriceOverrides를 읽고 set_sell_prices로 명시한다. 0G는 실제 0G 매입이므로 가격표를 추측하지 않는다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.' : GAME_SYSTEM_PROMPT_GENERIC);
   if (/음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) systemPrompt.push('[음악 저작] 기존 recommend_bgm은 곡 선택이다. 새 곡 요청이면 get_music_composer -> compose_music -> get_music_score -> set_game_audio로 실제 원문 음표와 독립 파트를 만든다. 모티프/응답/쉼/구간별 악기 진입을 설계한다. 다른 게임의 곡을 복사하지 않는다. WAV 바이트와 측정값은 실제 합성이며 모델은 소리를 듣지 않는다. 원곡 수준/청취 완료/스튜디오 오케스트라라고 주장하지 않는다. 세션/M2 전투곡 우선순위를 확인한다.');
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
     const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']);

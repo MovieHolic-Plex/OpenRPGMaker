@@ -6,7 +6,7 @@ import { regionReferenceContext } from "@/project/regionReferences";
 // 토큰 예산(문자 수 근사) 상한을 넘으면 조회 툴 안내로 대체한다.
 
 import { genreLockPromptNote, genreMarkerNote } from "@/project/genreLock";
-import { runTool } from "@/editor/tools";
+import { activeTools, runTool } from "@/editor/tools";
 import { spatialAuthoringContext } from "./spatialContext";
 import type { ToolContext } from "@/editor/tools";
 import {
@@ -37,6 +37,8 @@ import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { ASSISTANT_PRESENTATION_BLOCK } from "./eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "./eventPageSemantics";
 import { buildTaskRecipes, buildToolCapabilityIndex } from "./toolCapabilityIndex";
+import { isMonsterOnlyTool, monsterAssetsAllowed } from "@/project/genreLockMonsterAssets";
+import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import type { AiConfig, ChatMessage, OpenAiToolSchema } from "./llmClient";
 import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
 import { compactMessagesForRequest, resolveRequestCharBudget } from "./messageBudget";
@@ -696,7 +698,7 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
   if (wiki.text) assembled += `\n\n## 프로젝트 위키 — 현재 작업의 근거\n아래는 저장된 설정과 제작 결정이다. 명시적 결정과 현재 맵 예외를 따르고, 추론·실제 적용 상태를 구별한다. 자세한 본문은 read_project_wiki로 조회한다.\n${wiki.text}`;
   return withProjectInstructions(
-    withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection), project.worldCanon),
+    withWorldCanon(withFixedBlocks(assembled, options.preferenceMemorySection, monsterAssetsAllowed(project, { monsterTurn: isMonsterRequestTurn(options.wikiQuery ?? "") })), project.worldCanon),
     project.aiInstructions,
   );
 }
@@ -720,10 +722,11 @@ function withWorldCanon(assembled: string, canon: Project["worldCanon"]): string
 // 페이지 의미론은 잘리면 모델이 조용히 죽는 이벤트 페이지를 저작하고,
 // 성향은 예산 슬라이싱에 걸리면 통째로 사라져 "AI 가 나를 기억하지 못한다"가 그대로 재발한다.
 // 성향 블록은 자체 하드캡(12줄/1,200자)이 있어 예산 밖에 둬도 프롬프트를 잡아먹지 않는다.
-function withFixedBlocks(assembled: string, preferenceMemorySection?: string): string {
-  const index = buildToolCapabilityIndex();
+// monsterAllowed=false(몬스터 프로젝트도 몬스터 요청 턴도 아님)면 능력 색인에서 포켓몬식 도구 이름을, 레시피에서 monster-* 줄을 뺀다(genreLockMonsterAssets.ts).
+function withFixedBlocks(assembled: string, preferenceMemorySection?: string, monsterAllowed = true): string {
+  const index = buildToolCapabilityIndex(monsterAllowed ? undefined : activeTools().filter((tool) => !isMonsterOnlyTool(tool.name)));
   const memory = preferenceMemorySection?.trim() ?? "";
-  const fixed = [index, buildTaskRecipes(), EVENT_PAGE_SEMANTICS_BLOCK, ASSISTANT_PRESENTATION_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
+  const fixed = [index, buildTaskRecipes({ monster: monsterAllowed }), EVENT_PAGE_SEMANTICS_BLOCK, ASSISTANT_PRESENTATION_BLOCK, ...(memory ? [memory] : [])].join("\n\n");
   if (assembled.startsWith(INTRO)) {
     return `${INTRO}\n\n${fixed}${assembled.slice(INTRO.length)}`;
   }

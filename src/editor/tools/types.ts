@@ -55,6 +55,8 @@ export interface ToolContext {
    * 맵 칩셋을 바꾸는 쓰기를 거부한다(retiredEasyRpgTilesets.ts). 편집기 UI·예제·콘텐츠 스크립트는 켜지 않는다.
    */
   readonly assistantRun?: boolean;
+  /** 이 사용자 요청 턴이 몬스터 수집(포켓몬식) 게임 요청으로 분류됐는가 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)을 이 턴만 푼다. 조수 경로가 요청 글로 판정해 채운다. */
+  readonly monsterTurn?: boolean;
 }
 
 // 툴 내부 실행이 돌려주는 값. runner가 diff/lint/커밋을 처리한다.

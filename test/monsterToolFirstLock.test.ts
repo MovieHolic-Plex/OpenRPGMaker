@@ -11,7 +11,8 @@ import type { Project } from "@/project/types";
 
 beforeEach(() => resetMapEditHistory());
 
-const ctxOf = (project: Project, assistantRun = true): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun });
+// 몬스터 자산 역방향 잠금(2026-10-17): 몬스터 도구·자산은 몬스터 프로젝트이거나 몬스터 요청 턴에서만 풀린다 — 이 시험은 몬스터 요청 턴이다.
+const ctxOf = (project: Project, assistantRun = true): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun, monsterTurn: true });
 const starters = (project: Project) => ({
   speciesIds: project.database.monsterSpecies!.slice(0, 3).map((species) => species.id),
   actorEvent: { mapId: project.startMapId, x: 5, y: 5, name: "박사" },

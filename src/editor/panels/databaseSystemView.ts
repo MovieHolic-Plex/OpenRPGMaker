@@ -55,6 +55,7 @@ import { linearObedienceCaps } from "@/project/badgeProgress";
 import { disableGenreLock, genreLockAllowedCharsetLabels, genreLockReport } from "@/project/genreLock";
 import { enableGenreLockSettled } from "@/project/genreLockCharsets";
 import { genreLockVisualSummary } from "@/project/genreLockVisuals";
+import { monsterAssetStatus } from "@/project/genreLockMonsterAssets";
 import { DEFAULT_ROLLING_HP_PER_SECOND, normalizeRollingHpSpeed, ROLLING_HP_SPEED_LIMITS } from "@/player/rollingHp";
 import type {
   ActionCombatHudConfig,
@@ -1730,7 +1731,14 @@ function genreLockField(project: ReturnType<typeof store.getCurrent>, rerender: 
         + (report.charsetViolations.length ? ` · 허용 밖 캐릭터 칩 ${report.charsetViolations.length}곳(손으로 칠한 것은 막지 않는다)` : "")
         + (report.charsetPreexisting.length ? ` · 잠금 이전부터 있던 허용 밖 칩 ${report.charsetPreexisting.length}곳` : ""),
   });
-  return el("div", { class: "db-genre-lock-field", children: [checkbox, badge] });
+  // 몬스터 자산 역방향 잠금(2026-10-17): 몬스터 수집 게임이 아니면 조수가 포켓몬식 도구·칩셋·칩·그림을 새로 고르지 못한다. 여기서 손으로 쓰는 것은 막지 않는다.
+  const monsterAssets = monsterAssetStatus(project);
+  const monsterBadge = el("p", {
+    class: "db-system-resolution-help",
+    dataset: { testid: "db-monster-asset-lock-badge" },
+    text: `몬스터 자산: ${monsterAssets.allowed ? "허용" : "조수에게 막힘"} — ${monsterAssets.reason}`,
+  });
+  return el("div", { class: "db-genre-lock-field", children: [checkbox, badge, monsterBadge] });
 }
 
 /** 원작식 복종 레벨 상한(몬스터 캠페인이 있을 때만). 켜면 기본 상한과 배지당 증가폭으로 일차 사다리를 만든다 — 세부 사다리는 조수 도구(configure_monster_campaign). */

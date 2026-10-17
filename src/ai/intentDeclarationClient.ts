@@ -10,12 +10,14 @@
 import { listLiveConceptFacilityLabels } from "@/editor/conceptBundleResolve";
 import { activeTools } from "@/editor/tools";
 import type { Project } from "@/project/types";
+import { monsterAssetsAllowed, toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
+import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import {
   buildIntentUserPayload,
   continuationIntentDeclaration,
   emptyIntentDeclaration,
   fallbackIntentDeclaration,
-  INTENT_SYSTEM_PROMPT,
+  intentSystemPrompt,
   isContinuationText,
   parseIntentDeclaration,
   type IntentDeclaration,
@@ -62,7 +64,9 @@ export function buildIntentFacts(input: BuildIntentFactsInput): IntentFacts {
     selection: input.selection ?? null,
     maps: Object.values(input.project.maps).map((map) => ({ id: map.id, name: map.name })),
     facilityLabels: [...listLiveConceptFacilityLabels(input.project)],
-    toolNames: activeTools().map((tool) => tool.name),
+    // 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 포켓몬식 도구는 선언 후보(툴 목록)에 올리지 않는다.
+    toolNames: activeTools().map((tool) => tool.name).filter((name) => !toolHiddenByMonsterLock(input.project, name, { monsterTurn: isMonsterRequestTurn(input.userText) })),
+    ...(monsterAssetsAllowed(input.project, { monsterTurn: isMonsterRequestTurn(input.userText) }) ? {} : { monsterLocked: true }),
     hasActivePlan: input.hasActivePlan,
     ...(input.unresolvedFunctional?.length ? { unresolvedFunctional: input.unresolvedFunctional } : {}),
     actualStart: { mapId: input.project.startMapId, ...input.project.startPos },
@@ -180,7 +184,7 @@ export function createLlmIntentDeclarer(
       const config = routingConfig();
       const request: ChatRequest = {
         messages: [
-          { role: "system", content: INTENT_SYSTEM_PROMPT },
+          { role: "system", content: intentSystemPrompt(facts) },
           { role: "user", content: buildIntentUserPayload(facts) },
         ],
         response_format: { type: "json_object" },

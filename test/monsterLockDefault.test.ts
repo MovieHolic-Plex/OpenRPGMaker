@@ -69,7 +69,7 @@ describe("몬스터 수집 잠금 기본값", () => {
   it("사용자가 푼 몬스터 프로젝트는 몬스터 의도 문장이 와도 되살아나지 않는다", () => {
     const project = createBlankProject();
     applyGenrePreset(project, "monster-collect");
-    const ctx: ToolContext = { project, assistantRun: true };
+    const ctx: ToolContext = { project, assistantRun: true, monsterTurn: true };
     expect(runTool(ctx, "configure_monster_system", { enabled: false }, { dryRun: false }).ok).toBe(true);
     expect(ctx.project.system.genreLock).toBeUndefined();
     expect(applyMonsterIntentStart(ctx.project)).toEqual({ opened: false, locked: false });
@@ -92,7 +92,7 @@ describe("몬스터 잠금 중에도 몬스터 게임 제작 도구는 막히지
   const lockedCtx = (): ToolContext => {
     const project = createBlankProject();
     applyGenrePreset(project, "monster-collect");
-    return { project, currentMapId: project.startMapId, assistantRun: true };
+    return { project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: true };
   };
 
   it("몬스터 도구 이름은 하나도 숨겨지지 않는다", () => {

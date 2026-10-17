@@ -1,4 +1,4 @@
-import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, MONSTER_FREE_CAMPAIGN_NOTE, monsterScaleNote, MONSTER_FREE_KIT_NOTE, hasMonsterCollectIntent, MONSTER_TOURNAMENT_INITIAL_TOOLS, MONSTER_TOURNAMENT_PROMPT, MONSTER_EXPEDITION_INITIAL_TOOLS, MONSTER_EXPEDITION_PROMPT } from './monsterGameRequest';
+import { requestsEmeraldMonsterGame, classifyMonsterGameRequest, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT, MONSTER_FREE_CAMPAIGN_NOTE, monsterScaleNote, MONSTER_FREE_KIT_NOTE, hasMonsterCollectIntent, isMonsterRequestTurn, MONSTER_TOURNAMENT_INITIAL_TOOLS, MONSTER_TOURNAMENT_PROMPT, MONSTER_EXPEDITION_INITIAL_TOOLS, MONSTER_EXPEDITION_PROMPT } from './monsterGameRequest';
 // 평문 조수 턴의 순수 부분 — 의도 선언 → 실행 계획, 그리고 Pi 요청(계획 턴·실행 턴) 조립.
 //
 // 채팅 패널(`aiChatPanel.plainPiTurn` + `aiPiAgentCommand.runPiCommand`)과 헤드리스 생성기
@@ -12,6 +12,8 @@ import { formatIntentAudit, type IntentSelectionFact } from "@/ai/intentDeclarat
 import { buildIntentFacts, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { RoleModel } from "@/ai/modelRoles";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
+import { monsterAssetsAllowed, toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
+import { stripMonsterKitMentions } from "@/ai/intentDeclaration";
 import { isLivedMap } from "@/editor/tools/livedMap";
 import type { Project } from "@/project/types";
 import type { PiApplyMode } from "./applyMode";
@@ -268,7 +270,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       // Send exact intent/adventure candidates through the real Pi request path.
       // This is exposure only: discovery can expand it, including full fallback.
       initialToolNames = [...new Set([
-        ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
+        ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow, hideTool: (toolName) => toolHiddenByMonsterLock(project, toolName, { monsterTurn: isMonsterRequestTurn(text) }) }).map(tool => tool.function.name),
         // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
         ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
         ...(interiorPlus ? INTERIOR_PLUS_EXPOSED_TOOLS : []),
@@ -295,6 +297,12 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     }
   }
   if (input.selectedEvent) intentNote = intentNote ? `${intentNote}\n${input.selectedEvent}` : input.selectedEvent;
+  // 몬스터 자산 역방향 잠금: 몬스터 프로젝트가 아니고 이번 요청도 몬스터 수집 요청이 아니면 첫 노출 목록에서 포켓몬식 도구를 빼고, 의도 메모의 몬스터 키트 문구를 지운다.
+  const monsterTurn = { monsterTurn: isMonsterRequestTurn(input.text) };
+  if (!monsterAssetsAllowed(input.project, monsterTurn)) {
+    if (initialToolNames) initialToolNames = initialToolNames.filter((toolName) => !toolHiddenByMonsterLock(input.project, toolName, monsterTurn));
+    if (intentNote) intentNote = stripMonsterKitMentions(intentNote);
+  }
   const monsterKit = !plan.readOnly && hasMonsterCollectIntent(input.text);
   if (monsterKit) {
     intentNote = intentNote ? `${intentNote}\n\n${MONSTER_FREE_KIT_NOTE}` : MONSTER_FREE_KIT_NOTE;

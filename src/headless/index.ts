@@ -123,7 +123,7 @@ export function runHeadlessToolWithProject(
   name: string,
   args: Record<string, unknown>,
   /** 조수 실행 정책(장르 잠금 등)을 집행하게 하는 문맥 — oprn-tools.mjs --assistant. 생략하면 편집기 UI·스크립트와 같은 무정책 실행. */
-  context: { readonly assistantRun?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] } = {},
+  context: { readonly assistantRun?: boolean; readonly monsterTurn?: boolean; readonly currentMapId?: string; readonly approvedTilesetFamilies?: readonly string[] } = {},
 ): { result: ToolResult; project: Project } {
   const tool = getTool(name);
   if (!tool) return { result: runHeadlessTool(project, name, args), project };

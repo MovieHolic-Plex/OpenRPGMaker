@@ -155,7 +155,7 @@ describe("복종 레벨 상한 — 전투 런타임", () => {
 });
 
 describe("도구 — place_badge_gate / configure_monster_campaign {obedienceLevelCaps}", () => {
-  const ctxOf = (project: Project): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun: true });
+  const ctxOf = (project: Project): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun: true, monsterTurn: true });
   const prepared = (): Project => {
     const project = createScarloxyPokemonDemoProject();
     project.system.battleModel = "gen1";

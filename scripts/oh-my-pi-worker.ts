@@ -12,6 +12,7 @@ import { generateProviderImage } from "./lib/ohMyPiImageRuntime.ts";
 import { generateCodexImage } from "./lib/codexImageRuntime.ts";
 import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { isMonsterRequestTurn } from "../src/ai/piAgent/monsterGameRequest.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
@@ -122,7 +123,9 @@ const server = Bun.serve({
         timer.mark("heavy", resolved?.missing ? `missing=${resolved.missing.length}` : "");
         timer.done();
         if (resolved?.missing) return json({ error: "heavy-missing", missing: resolved.missing }, 409);
-        const agentRequest: PiAgentRequest = resolved ? { ...sentRequest, project: resolved.project } : sentRequest;
+        const resolvedRequest: PiAgentRequest = resolved ? { ...sentRequest, project: resolved.project } : sentRequest;
+        // 몬스터 자산 역방향 잠금: 이 요청이 몬스터 수집 요청인지 입구에서 한 번 정해 팀 하위 실행까지 같은 값을 쓴다.
+        const agentRequest: PiAgentRequest = resolvedRequest.monsterTurn === undefined ? { ...resolvedRequest, monsterTurn: isMonsterRequestTurn(resolvedRequest.task) } : resolvedRequest;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         // Cold catalog parsing is preparation, before the live stream begins.
         // Team members reuse this revision rather than blocking its heartbeat.

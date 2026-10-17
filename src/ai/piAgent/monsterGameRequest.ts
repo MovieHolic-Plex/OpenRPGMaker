@@ -44,7 +44,7 @@ const MONSTER_SUBJECT = /몬스터|monster|조련사|테이머|\btamer|크리처
 const MONSTER_SYSTEM_SIGNALS: readonly RegExp[] = [
   /포획|잡아\s*(?:서|모|보)|잡을\s*수|수집|모으|\bcapture|\bcollect/iu,
   /도감|\bpok[eé]dex|\bdex\b/iu,
-  /체육관|관장|\bgym\b|배지/iu,
+  /체육관|관장|\bgyms?\b|배지/iu,
   /진화|\bevolv/iu,
   /트레이너|조련|테이머|\btrainer|\btamer/iu,
   /종\s*(?:을|를)?\s*(?:정의|추가|만들)|몬스터\s*종|\bspecies\b/iu,
@@ -79,12 +79,21 @@ const TRAINER_SETTING = /(?:트레이너|\btrainers?\b)[\s\S]{0,20}(?:마을|도
 const CARE_ONLY = /다마고치|tamagotchi|펫\s*(?:을|를)?\s*(?:키우|육성|기르)|\bpets?\s*(?:raising|training)|virtual\s*pets?/iu;
 const CAMPAIGN_WORDS = /체육관|배지|도감|포획|수집|\bgym|capture|collect|pok[eé]dex/iu;
 
+/**
+ * 고전 JRPG 를 가리키는 말(FF·드퀘·크로노·용사·마왕·비공정·시간여행·세계 붕괴) — 몬스터 자산 역방향 잠금(2026-10-17)이 요청 턴 하나로 포켓몬 도구를 푸는 판정이라,
+ * 「용사 파티가 배틀을 거쳐 동료를 모으는 FF풍 RPG」「동료를 모아 마을 사이를 오가며 마왕을 쓰러뜨리는 JRPG」 같은 문장이 몬스터 의도로 새면 안 된다(실측 2건).
+ * 이 낱말이 있어도 몬스터·도감·포획·체육관·트레이너·조련·진화 같은 몬스터 수집 고유 낱말이 함께 있으면 의도로 본다 — 모호하면 허용한다.
+ */
+const CLASSIC_RPG_MARK = /jrpg|파이널\s*판타지|final\s*fantasy|\bff\s*\d+|\bff\s*(?:풍|처럼|같은|스타일|style)|드래곤\s*퀘스트|dragon\s*quest|크로노\s*(?:트리거|크로스)|chrono\s*(?:trigger|cross)|용사|마왕|비공정|시간\s*여행|세계(?:가|는)?\s*(?:한\s*번\s*)?(?:멸망|붕괴|무너)/iu;
+const MONSTER_COLLECT_OWN_WORDS = /몬스터|\bmonsters?\b|도감|pok[eé]dex|포획|\bcapture|체육관|\bgyms?\b|트레이너|\btrainers?\b|조련|테이머|\btamers?\b|크리처|\bcreatures?\b|디지몬|다마고치|괴물|야생|진화|\bevolv/iu;
+
 /** 몬스터 수집·육성·대전 의도가 있는가(요청 문장 기준). 포켓몬 낱말이 없어도 신호가 둘 이상 겹치면 참. */
 export function hasMonsterCollectIntent(rawTask: string): boolean {
   const task = withoutIntentNote(rawTask);
   if (FREE_NOT_COLLECT.test(task)) return false;
   if (POKEMON_WORD.test(task)) return true;
   const scrubbed = task.replace(SCHOOL_OR_FITNESS, " ").replace(SPORT_LEAGUE, " ");
+  if (CLASSIC_RPG_MARK.test(scrubbed) && !MONSTER_COLLECT_OWN_WORDS.test(scrubbed)) return false;
   if (MONSTER_REFERENCE_TERMS.some(re => re.test(scrubbed)) || TRAINER_SETTING.test(scrubbed)) return true;
   const signals = MONSTER_SYSTEM_SIGNALS.filter(re => re.test(scrubbed)).length;
   return MONSTER_SUBJECT.test(scrubbed) ? signals >= 1 : signals >= 2;
@@ -222,3 +231,12 @@ review_monster_game 은 72맵·8체육관 캠페인 기준이라 이 게임에 �
 /** 포켓몬 낱말 없이 몬스터 수집 의도가 있는 작은 요청(마을·맵·종 하나)에 붙는다 — 전체 게임 제작 경로가 아닌 자유 경로. */
 export const MONSTER_FREE_KIT_NOTE = `[몬스터 수집 의도 — 몬스터 키트]
 이 프로젝트의 몬스터 수집 작업은 몬스터 칩셋 계열(oprn-monster·monster_overworld 등 몬스터 키트)로 이어 간다. 새 맵·마을·길은 지금 시작 맵의 칩셋 계열을 따른다 — 버들항·사막·숲 칩셋을 섞지 않는다(손대지 않은 빈 시작 맵이었다면 이미 몬스터 키트로 옮기고 장르 잠금도 걸어 두었다 — 사용자가 다른 계열을 정말 원할 때만 ask_tileset_change 로 묻고, 잠금 해제는 사용자가 말했을 때만 configure_monster_system(enabled:false)). 종을 정의하면 define_monster_species(한 종) 대신 계통이 여럿이면 define_monster_families 를 쓴다. 포획 없는 대전 중심이면 configure_monster_system(enabled:true, capture:false).`;
+
+/**
+ * 이 사용자 요청 턴이 몬스터 수집(포켓몬식) 요청인가 — 몬스터 자산 역방향 잠금(genreLockMonsterAssets.ts)이 그 턴만 푸는 신호.
+ * 키트·제작 경로 분류(hasMonsterCollectIntent · classifyMonsterGameRequest · requestsEmeraldMonsterGame)의 합집합이라 분류가 몬스터 경로로 보낸 요청은 첫 턴부터 도구가 풀린다.
+ * 의도 메모는 사용자 글이 아니므로 각 판정이 withoutIntentNote 로 먼저 뺀다.
+ */
+export function isMonsterRequestTurn(rawTask: string): boolean {
+  return hasMonsterCollectIntent(rawTask) || classifyMonsterGameRequest(rawTask, true) !== null || requestsEmeraldMonsterGame(rawTask);
+}
