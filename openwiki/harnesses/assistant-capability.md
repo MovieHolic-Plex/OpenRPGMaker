@@ -208,7 +208,9 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 | 갤러리·엔딩 목록·세이브 칸 대사 한 줄 켜 줘 | `set_vn_extras` 다섯 칸 전부 true → 세 기능 켜짐(기본값을 명시 저작으로 고정) |
 | 못 본 엔딩 이름도 미리 보이게 | `{endings:true, endingsHideUnseen:false}` → hideUnseen:false, 나머지 보존 |
 | 세이브 칸 대사 한 줄 꺼 줘, 나머지 그대로 | `{saveCards:false}` 하나만 → gallery·endings 보존, 보고 정확 |
-| 안 연 그림 칸 숨겨 줘 | **미검증** — 분류 호출이 Argon 지연(단순 호출 약 60초)으로 4번 모두 시간 초과 |
-| 갤러리·엔딩 글자를 일본어로 | **미검증** — 같은 이유 |
+| 안 연 그림 칸 숨겨 줘 | **통과(재시험, 2번째 시도)** — `read_game_systems` → `set_vn_extras {galleryShowLocked:false}` → `review_game_systems`(일치). 저장본 `gallery{enabled:true,showLocked:false}`, endings·saveCards·language 보존 |
+| 갤러리·엔딩 글자를 일본어로 | **통과(재시험, 4번째 시도)** — `read_game_systems` → `list_endings` → `set_vn_extras {language:"ja"}` → `review_game_systems`(일치). 저장본 `language:"ja"`, 갤러리·엔딩·저장 카드 보존, 대사 시스템 언어는 ko 그대로 |
 
-3/3 완주분은 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았다. 시간 초과는 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)에서 났다 — 제공자가 느릴 때는 분류 한도가 병목이다. 통과로 세지 않는다.
+5/5 통과. 앞 3문장은 첫 시험, 뒤 2문장은 같은 날 재시험(8319 Argon `gemini-4-argon-high` medium, 시드 `seed-novn.json`, `--no-check`)이다. 모두 `read_game_systems` → `set_vn_extras` → `review_game_systems` 순서와 인자·보존이 맞았고 인자는 바꿀 칸 하나뿐이었다.
+
+**재시험 시도 기록(정직하게):** 「안 연 그림 칸」 2번 시도 중 1번 실패·2번째 통과, 「일본어」 4번 시도 중 3번 실패·4번째 통과. 실패는 전부 `classifyPlainPiTurn` 30초 한도(재시도 1회 포함)의 `시간 초과(30000ms)` 로, 도구 인자·내용 때문이 아니라 제공자 지연이다 — 처음 시험에서 「미검증」으로 둔 이유와 같다. 같은 문장·같은 설정으로 다시 돌린 것이고 통과분의 저장본(`project.json` 의 `meta.oprnVnExtras`)을 직접 읽어 확인했다. 분류 호출이 막히는 동안은 모델 품질이 아니라 한도가 병목이므로, 시간 초과 한 번을 실패로, 통과 한 번을 만능으로 읽지 말 것(각 문장 표본 1개).
