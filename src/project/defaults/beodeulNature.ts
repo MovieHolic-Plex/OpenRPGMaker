@@ -11,7 +11,7 @@ export interface NatureShadow { dx: number; dy: number; rows: number[][]; kind: 
 export const BEODEUL_NATURE = catalog as unknown as {
   count: number; tilesPerRow: number;
   shadows: Record<string, NatureShadow>;
-  bankGrass: number[]; bankLawn: number[]; edgeLawn: number[]; bankSnow: number[]; bankBog: number[]; bankMud: number[];
+  bankGrass: number[]; bankLawn: number[]; edgeLawn: number[]; bankSnow: number[]; bankBog: number[]; bankMud: number[]; /** 용암 둑(흑요석) — bankBog 와 같은 256 비트 모양, 색만 다르다. */ bankLava: number[]; /** 성검 꽂힌 바위 1×2 — [위칸, 아래칸]. */ swordStone: number[];
   /** 불투명 흙 화소(집 밑동)가 든 그림자 칸. */
   soilTiles: number[];
   /** 울타리 조각(공용 숲 울타리 화소로 만든 모서리·끝 — 2026-10-11 「울타리 외곽 마감」). end* = 그 방향으로 뻗고 반대쪽이 문. */
