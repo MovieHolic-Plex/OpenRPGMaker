@@ -654,14 +654,12 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
         const lbag = args.layout as Record<string, unknown>;
         if (matchedProgram && typeof lbag.program === "string" && ["lobby", "konbini", "cafe", "mall-1f", "supermarket", "station", "hospital-1f", "cinema", "game-center", "famires"].includes(lbag.program) && lbag.program !== matchedProgram) {
           args = { ...args, layout: { ...lbag, program: matchedProgram } };
-          fitNotes.push(`맵 이름("${mapName}")에 맞춰 "${matchedProgram}" 다구역 표준 배치로 지었다`);
         }
       } else if (matchedProgram && Array.isArray(args.plan) && args.plan.length > 0 && typeof args.plan[0] === "string") {
         const planH = args.plan.length, planW = args.plan[0].length;
         if (planW < 28 || planH < 18) {
           const { plan: _p, zones: _z, objects: _o, tables: _t, goods: _g, lines: _l, daises: _d, start: _s, exits: _e, ...rest } = args as Record<string, unknown>;
           args = { ...rest, layout: { program: matchedProgram } } as typeof args;
-          fitNotes.push(`작은 실내 평면(${planW}×${planH})을 "${matchedProgram}" 다구역 표준 배치로 넓혀 지었다`);
         }
       }
     }

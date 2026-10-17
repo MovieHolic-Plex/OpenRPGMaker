@@ -9,6 +9,7 @@
 import type { HandInteriorSpec } from "./builder";
 import type { HandInteriorConnect, HandInteriorRoom } from "./rooms";
 import { programKinds, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate } from "./templates";
+import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernPresets";
 
 type Pair = readonly [string, string] | { readonly a: string; readonly b: string };
 export interface LayoutRoomRequest { readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string }
@@ -127,6 +128,15 @@ function rng(seed: number) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
+/** program 변주(modernPresets.ts MODERN_PROGRAM_VARIATION) — seed 1 은 견본 그대로, 그 뒤로 동↔서 뒤집기·바닥 벽면 묶음·큰 방 넓히기. */
+function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernProgramVariation; k: number; flip: boolean; palette?: Readonly<Record<string, readonly [string, string]>> } | undefined {
+  const v = req.program ? MODERN_PROGRAM_VARIATION[tilesetId]?.[req.program] : undefined;
+  if (!v) return undefined;
+  const k = Math.max(0, Math.floor(req.seed ?? 1) - 1);
+  const p = k % (v.palettes.length + 1);
+  return { v, k, flip: k % 2 === 1, ...(p ? { palette: v.palettes[p - 1] } : {}) };
+}
+
 interface Want { id: string; kind: string; tw: number; th: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate }
 interface Rect { x: number; y: number; w: number; h: number }
 
@@ -143,6 +153,8 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
   if (!rooms.length) throw new LayoutError("program 또는 rooms(방 종류 목록)를 준다");
   const seen = new Map<string, number>();
   const r = rng((req.seed ?? 1) * 7919);
+  const vary = programVariation(tilesetId, req);
+  const jr = rng((req.seed ?? 1) * 104729);
   // 화풍: program 이면 그 예제 맵의 묶음, 아니면 방 종류들이 가장 많이 나오는 묶음.
   const P = req.program ? programKinds(tilesetId, req.program) : undefined;
   let style = P ? templateStyle({ map: P.map }) : undefined;
@@ -165,12 +177,16 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     // 크기를 주지 않았으면 같은 종류 견본 중 하나를 고른다(seed 마다 다른 견본 — 같은 집이 반복되지 않게).
     const template = near ? pool[0] : pool[Math.floor(r() * pool.length)];
     const [dw, dh] = DEFAULT_SIZE[q.kind] ?? (/_shop$/u.test(q.kind) ? DEFAULT_SIZE.shop! : [6, 5]);
-    const tw = q.w ?? template?.w ?? dw, th = q.h ?? template?.h ?? dh;
+    // 변주 seed 면 큰 방을 조금 넓혀 가구 간격을 바꾼다(견본보다 작아지지는 않는다).
+    const grow = vary && vary.k > 0 && !near;
+    const tw0 = q.w ?? template?.w ?? dw, th0 = q.h ?? template?.h ?? dh;
+    const tw = tw0 + (grow && tw0 >= 10 ? Math.floor(jr() * 4) : 0), th = th0 + (grow && th0 >= 8 ? Math.floor(jr() * 2) : 0);
+    const pal = vary?.palette?.[q.kind];
     // 세로는 벽면 두 줄 + 걸을 바닥 — 작은 방(복도·현관·화장실·욕실)은 바닥 2줄, 나머지는 3줄 이상(2026-10-08: 바닥 2줄짜리 여관 방이 납작했다).
     const small = /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
     return { id, kind: q.kind, tw, th: Math.max(th, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
-      floor: q.floor ?? template?.floor, wall: q.wall ?? template?.wall, template };
+      floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
   });
 }
 
@@ -293,7 +309,12 @@ const matches = (w: Want, key: string) => w.id === key || w.kind === key;
 /** 배치 후보를 점수 순으로(낮을수록 좋다). */
 export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandInteriorSpec, count = 3): LayoutCandidate[] {
   const wants = layoutWants(tilesetId, req);
-  const entrance = pickEntrance(wants, req);
+  const vary = programVariation(tilesetId, req);
+  const entrance = pickEntrance(wants, req.entrance || !vary?.v.entrance ? req : { ...req, entrance: vary.v.entrance });
+  // program 이 위아래를 뒤집는 쌍은 기본 표의 반대 쌍을 뺀다(지하철역: 승강장이 대합실 위).
+  const aboveRules: Pair[] = vary?.v.above
+    ? [...ABOVE_DEFAULT.filter(([p, q]) => !vary.v.above!.some(([a, b]) => a === q && b === p)), ...vary.v.above]
+    : ABOVE_DEFAULT;
   const byId = new Map(wants.map((w) => [w.id, w]));
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map((x) => (Array.isArray(x) ? x : [(x as { a: string }).a, (x as { b: string }).b]) as readonly [string, string]).flatMap(([p, q]) =>
     wants.filter((w) => matches(w, p)).flatMap((a) => wants.filter((w) => w !== a && matches(w, q)).map((b) => [a.id, b.id] as [string, string])));
@@ -374,7 +395,7 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
     for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;   // 트는 쌍(부엌↔거실…)은 붙어 있는 편이 좋다
-    for (const [p, q] of pairOf(ABOVE_DEFAULT as Pair[])) {
+    for (const [p, q] of pairOf(aboveRules)) {
       const up = rects.get(p)!, dn = rects.get(q)!;
       if (!edges.some((e) => e.kind === "h" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || up.y > dn.y) { score += 6; notes.push(`${p} 가 ${q} 바로 위가 아니다`); }
     }
@@ -395,9 +416,11 @@ export function layoutCandidates(tilesetId: string, req: LayoutRequest, S: HandI
       const door = pick(A) ?? pick(B);
       return { a: e.a, b: e.b, ...(door && S.objects[door] ? { door } : {}) };
     });
+    // 변주 seed 의 동↔서 뒤집기는 점수를 다 매긴 뒤 결과 좌표에만 한다 — 왼·오른 쌍 규칙까지 거울로 뒤집힌 배치가 된다.
     const rooms: LayoutRoom[] = wants.map((w) => {
       const rc = rects.get(w.id)!;
-      return { id: w.id, kind: w.kind, x0: rc.x, y0: rc.y, x1: rc.x + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}) };
+      const x0 = vary?.flip ? BW - rc.x - rc.w : rc.x;
+      return { id: w.id, kind: w.kind, x0, y0: rc.y, x1: x0 + rc.w - 1, y1: rc.y + rc.h - 1, ...(w.floor ? { floor: w.floor } : {}), ...(w.wall ? { wall: w.wall } : {}), ...(w.template ? { template: w.template.id } : {}) };
     });
     const key = rooms.map((x) => `${x.id}:${x.x0},${x.y0},${x.x1},${x.y1}`).join("|");
     if (!found.has(key)) found.set(key, { width: BW, height: BH, score: Math.round(score * 100) / 100, rooms, connect, exit: { room: entrance }, notes });
