@@ -156,14 +156,19 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   }
 
   // 3c) 동료 — 요청이 동료를 만난다고 했는데 changeParty add 로 합류시키는 인물이 거의 없으면 파티는 주인공 혼자다(ct2: 시대마다 인물은 있으나 합류 0건).
-  if (COMPANION_WORDS.test(briefText)) {
-    const joined = new Set<string>();
-    visitAllCommands(project, (visit) => {
-      if (visit.command.kind === "changeParty" && visit.command.action === "add" && typeof visit.command.actorId === "string") joined.add(visit.command.actorId);
-    });
-    if (joined.size < COMPANION_MIN_JOINS) {
-      gaps.push(`동료를 만난다고 요청했는데 파티에 합류하는 인물이 ${joined.size}명뿐입니다(최소 ${COMPANION_MIN_JOINS}) — 시대·장소마다 한 명씩 upsert_actor(역할별 parameterCurves)로 만들고, NPC 이벤트의 선택지 승낙 분기에 {kind:"changeParty", action:"add", actorId} 를 넣으세요. 대사만 하는 NPC 는 동료가 아닙니다.`);
-    }
+  //     r3-ff1·ct1: changeParty add 이벤트는 만들었지만 set_party 로 시작 파티에 동료까지 전부 넣어 두어 만나기 전부터 파티에 있었다.
+  const joined = new Set<string>();
+  visitAllCommands(project, (visit) => {
+    if (visit.command.kind === "changeParty" && visit.command.action === "add" && typeof visit.command.actorId === "string") joined.add(visit.command.actorId);
+  });
+  const sys = project.system;
+  const legacyParty = sys && "party" in sys && Array.isArray(sys.party) ? sys.party.filter((id): id is string => typeof id === "string") : [];
+  const initialParty = new Set<string>([...(sys?.startActorIds ?? []), ...(project.session?.partyActorIds ?? []), ...legacyParty]);
+  const newlyJoined = [...joined].filter((id) => !initialParty.has(id));
+  if (COMPANION_WORDS.test(briefText) && joined.size < COMPANION_MIN_JOINS) {
+    gaps.push(`동료를 만난다고 요청했는데 파티에 합류하는 인물이 ${joined.size}명뿐입니다(최소 ${COMPANION_MIN_JOINS}) — 시대·장소마다 한 명씩 upsert_actor(역할별 parameterCurves)로 만들고, NPC 이벤트의 선택지 승낙 분기에 {kind:"changeParty", action:"add", actorId} 를 넣으세요. 대사만 하는 NPC 는 동료가 아닙니다.`);
+  } else if (joined.size >= COMPANION_MIN_JOINS && initialParty.size > 0 && newlyJoined.length < COMPANION_MIN_JOINS) {
+    gaps.push(`changeParty add 로 합류시키는 동료(${[...joined].join(", ")})가 이미 시작 파티(system.startActorIds / system.party)에 들어 있어 만나기 전부터 파티에 있습니다(새로 합류하는 인물 ${newlyJoined.length}명, 최소 ${COMPANION_MIN_JOINS}) — set_party({scope:"start", actorIds:[주인공 id]}) 로 시작 파티에는 주인공만 두고, 동료는 만나는 이벤트의 changeParty add 로 합류시키세요.`);
   }
 
   // 4) 전투 균형 — 파티원이 전부 같은 몸이거나, 보스가 피해를 못 주거나 이길 수 없으면 「끝」까지 갈 수는 있어도 게임이 아니다(jrpg-real-1 J06:
@@ -182,8 +187,14 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   for (const map of Object.values(project.maps)) {
     if (!reachable.has(map.id)) continue;
     if (!(map.structurePlacements ?? []).some((placement) => placement.kitId === SCAFFOLD_LANDMARK_KIT)) continue;
-    if (HARBOR_MAP_NAME.test(map.name ?? "")) continue;
-    gaps.push(`맵 「${map.name}」(${map.id}) 이 씨앗 어촌(등대·항구) 그대로입니다 — 이름과 다른 초록 항구 마을이 보입니다. 이 맵의 집은 보호돼 있어 안에서 지우거나 덧칠할 수 없습니다(tile_erase·clear_map·paint_tiles 는 거절됩니다). 새 맵을 만들어(create_map → author_beodeul_town 으로 요청 세계관에 맞게 짓기) set_start_position 으로 시작 맵을 새 마을로 옮기고, 옛 맵으로 가는 문(transfer)은 새 마을로 돌리세요 — 시작에서 닿지 않는 옛 씨앗 맵은 이 검사에서 빠집니다.`);
+    const retiredSeedMap = map.id === "map_blank_start" && project.startMapId !== "map_blank_start";
+    const harborExempt = !retiredSeedMap && HARBOR_MAP_NAME.test(map.name ?? "") && (map.id !== "map_blank_start" || !briefText.trim() || HARBOR_MAP_NAME.test(briefText));
+    if (harborExempt) continue;
+    gaps.push(
+      retiredSeedMap
+        ? `시작 맵을 ${project.startMapId} 로 옮겼는데 옛 씨앗 어촌 맵 「${map.name}」(${map.id}) 으로 가는 문(transfer)이 남아 플레이어가 초록 항구 마을에 들어갈 수 있습니다 — ${map.id} 로 가는 transfer 명령(문 이벤트)을 지우거나 새 마을로 돌리세요. 시작 맵에서 닿지 않게 끊으면(remove_map 불필요) 이 검사와 도달 불가 검사에서 모두 빠집니다.`
+        : `맵 「${map.name}」(${map.id}) 이 씨앗 어촌(등대·항구) 그대로입니다 — 이름과 다른 초록 항구 마을이 보입니다. 이 맵의 집은 보호돼 있어 안에서 지우거나 덧칠할 수 없습니다(tile_erase·clear_map·paint_tiles 는 거절됩니다). 새 맵을 만들어(create_map → author_beodeul_town 으로 요청 세계관에 맞게 짓기) set_start_position 으로 시작 맵을 새 마을로 옮기고, 옛 맵으로 가는 문(transfer)은 새 마을로 돌리세요 — 시작에서 닿지 않는 옛 씨앗 맵은 이 검사에서 빠집니다.`,
+    );
     break;
   }
   return gaps;
