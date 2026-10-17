@@ -1,6 +1,5 @@
 // 스튜디오 감독 보드 (Option B: 장르 적응형 비주얼 스토리보드 & 감독 보드)
 
-import { editorState } from "@/editor/editorState";
 import { addMapPlanningItem } from "@/editor/mapPlanningActions";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
@@ -304,8 +303,8 @@ export function createStudioDirectorBoard(options: StudioDirectorBoardOptions = 
       dataset: { testid: "ai-studio-planning-pin-input" },
       on: {
         input: (e) => { planningDraft = (e.currentTarget as HTMLInputElement).value; },
-        keydown: (e: KeyboardEvent) => {
-          if (e.key !== "Enter") return;
+        keydown: (e) => {
+          if (!(e instanceof KeyboardEvent) || e.key !== "Enter") return;
           e.preventDefault();
           const text = planningDraft.trim();
           if (!text || !targetMapId) return;

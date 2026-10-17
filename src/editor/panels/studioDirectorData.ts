@@ -103,7 +103,8 @@ export function detectDirectorGenre(project: Project): StudioDirectorGenre {
     project.gameDesignBrief?.presetId,
     project.system.genre,
   ]
-    .filter((v): v is string => typeof v === "string" && v.length > 0)
+    .map((value) => (typeof value === "string" ? value : ""))
+    .filter((value) => value.length > 0)
     .join(" ")
     .toLowerCase();
 
@@ -116,7 +117,8 @@ export function detectDirectorGenre(project: Project): StudioDirectorGenre {
   if (
     /monster|pokemon|creature|taming|몬스터|포켓몬|수집/.test(rawGenre)
     || project.system.battleModel === "gen1"
-    || Boolean(project.system.monsterCollection?.enabled || project.system.monsterBattleParty?.enabled)
+    || project.system.monsterCollection === true
+    || project.system.monsterBattleParty === true
     || (project.database.monsterSpecies?.length ?? 0) > 0
   ) {
     return "monster-taming";
@@ -128,13 +130,13 @@ function countCommandsByKind(commands: readonly Command[], targetKind: string): 
   let count = 0;
   for (const cmd of commands) {
     if (cmd.kind === targetKind) count += 1;
-    if (cmd.kind === "conditionalBranch") {
-      count += countCommandsByKind(cmd.thenCommands, targetKind);
-      if (cmd.elseCommands) count += countCommandsByKind(cmd.elseCommands, targetKind);
-    } else if (cmd.kind === "showChoices") {
-      for (const branch of cmd.choices) count += countCommandsByKind(branch.commands, targetKind);
+    if (cmd.kind === "fork") {
+      count += countCommandsByKind(cmd.then, targetKind);
+      if (cmd.else) count += countCommandsByKind(cmd.else, targetKind);
+    } else if (cmd.kind === "choices") {
+      for (const branch of cmd.options) count += countCommandsByKind(branch.branch, targetKind);
     } else if (cmd.kind === "loop") {
-      count += countCommandsByKind(cmd.commands, targetKind);
+      count += countCommandsByKind(cmd.body, targetKind);
     }
   }
   return count;
@@ -143,7 +145,7 @@ function countCommandsByKind(commands: readonly Command[], targetKind: string): 
 function countMapSwitchTouches(map: GameMap): number {
   let total = 0;
   for (const ev of map.events) {
-    for (const page of ev.pages) {
+    for (const page of ev.pages ?? []) {
       total += countCommandsByKind(page.commands, "changeSwitch");
       total += countCommandsByKind(page.commands, "changeVariable");
       total += countCommandsByKind(page.commands, "changeFriendship");
@@ -162,7 +164,8 @@ function orderedProjectMaps(project: Project): GameMap[] {
 
 export function buildBeatsForGenre(project: Project, genre: StudioDirectorGenre): DirectorBeat[] {
   const maps = orderedProjectMaps(project);
-  const linkGraph = collectMapLinkGraph(project);
+  const isolated = collectMapLinkGraph(project).find((node) => !node.isStart && !node.reachableFromStart);
+  const unlinkedName = isolated ? (project.maps[isolated.mapId]?.name || isolated.mapId) : "";
   const m1 = maps[0] ?? null;
   const m2 = maps[1] ?? m1;
   const m3 = maps[2] ?? m2;
@@ -389,8 +392,6 @@ export function buildBeatsForGenre(project: Project, genre: StudioDirectorGenre)
     ];
   }
 
-  const isolatedId = linkGraph.isolatedMapIds?.[0] ?? null;
-  const unlinkedNode = isolatedId ? (linkGraph.byMap?.get(isolatedId) ?? null) : null;
   return [
     {
       id: "beat-0-opening",
@@ -430,7 +431,7 @@ export function buildBeatsForGenre(project: Project, genre: StudioDirectorGenre)
       stageKind: "jrpg",
       stageSpeaker: "기교병 로보",
       stageLine: "「시스템 재기동 완료… 400년 동안 이 폐허에서 당신들을 기다리고 있었습니다. 파티에 합류하겠습니다.」",
-      stageSubtext: unlinkedNode ? `⚠ 맵 그래프 진단: 『${unlinkedNode.name}』 맵으로 들어오는 이동 이벤트(transferPlayer)가 0개라 플레이어가 도달할 수 없습니다.` : "시대 변형 맵 간 워프 게이트와 기교병 합류 이벤트가 연결되어 있습니다.",
+      stageSubtext: unlinkedName ? `⚠ 맵 그래프 진단: 『${unlinkedName}』 맵으로 들어오는 이동 이벤트(transferPlayer)가 0개라 플레이어가 도달할 수 없습니다.` : "시대 변형 맵 간 워프 게이트와 기교병 합류 이벤트가 연결되어 있습니다.",
       stageSprites: {
         leftUrl: "/assets/generated/charset-battlers/silver-swordswoman.png",
         rightUrl: "/assets/shared/portraits/blue-traveler/full-determined.png",
@@ -439,9 +440,9 @@ export function buildBeatsForGenre(project: Project, genre: StudioDirectorGenre)
       },
       planningNotes: mapNotes(m2, ["과거/폐허 맵 쌍(derive_map_variant) 전이 게이트 양방향 연결", "기교병 동료 합류 시 2인 연계기 『화염회전베기』 해금"]),
       defect: {
-        badge: unlinkedNode ? `고립 맵 (${unlinkedNode.name})` : "시대 변형 전이 누락",
-        detail: unlinkedNode ? `『${unlinkedNode.name}』 맵으로 들어오는 이동 이벤트(transferPlayer)가 없어 동료 영입 이벤트에 도달할 수 없습니다.` : "고대 폐허 변형 맵에서 기교병 동료를 영입하는 스위치와 복귀 포털이 아직 양방향으로 연결되지 않았습니다.",
-        aiPrompt: unlinkedNode ? `${m1?.name || "시작 맵"}에서 고립된 『${unlinkedNode.name}』 맵으로 이어지는 양방향 이동 문(transferPlayer)과 동료 영입 이벤트를 연결해 줘.` : `${m2?.name || "폐허 던전"}에 시대 변형 복귀 포털과 3번째 동료 합류 및 [연계] 합동기 해금 이벤트를 만들어 줘.`,
+        badge: unlinkedName ? `고립 맵 (${unlinkedName})` : "시대 변형 전이 누락",
+        detail: unlinkedName ? `『${unlinkedName}』 맵으로 들어오는 이동 이벤트(transferPlayer)가 없어 동료 영입 이벤트에 도달할 수 없습니다.` : "고대 폐허 변형 맵에서 기교병 동료를 영입하는 스위치와 복귀 포털이 아직 양방향으로 연결되지 않았습니다.",
+        aiPrompt: unlinkedName ? `${m1?.name || "시작 맵"}에서 고립된 『${unlinkedName}』 맵으로 이어지는 양방향 이동 문(transferPlayer)과 동료 영입 이벤트를 연결해 줘.` : `${m2?.name || "폐허 던전"}에 시대 변형 복귀 포털과 3번째 동료 합류 및 [연계] 합동기 해금 이벤트를 만들어 줘.`,
       },
     },
     {
@@ -690,10 +691,10 @@ export function buildOpeningShots(project: Project, genre: StudioDirectorGenre):
     return customScenes.slice(0, 6).map((scene, idx) => ({
       step: `SHOT ${idx + 1}`,
       beatRole: ["WORLD", "RUPTURE", "STAKES", "MYSTERY", "INVITATION", "HANDOFF"][idx] ?? "SCENE",
-      title: scene.caption.slice(0, 22) || `오프닝 컷 #${idx + 1}`,
-      durationLabel: `${((scene.durationMs ?? 3200) / 1000).toFixed(1)}s`,
+      title: scene.narration.slice(0, 22) || `오프닝 컷 #${idx + 1}`,
+      durationLabel: `${(scene.durationMs / 1000).toFixed(1)}s`,
       cameraLabel: idx % 2 === 0 ? "Slow Pan + Bloom" : "Zoom-In + Shake",
-      caption: scene.caption,
+      caption: scene.narration,
       imageUrl: "/assets/generated/opening/kingdom-day.png",
     }));
   }
