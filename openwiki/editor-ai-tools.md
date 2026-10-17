@@ -3428,6 +3428,11 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 사용자 기기 설정(텍스트 속도·오토 속도·스킵 범위·투명도)은 저작값이 아니라 `playerPreferences` 이고, 저작 `defaults` 는 기기 값이 없을 때의 시작값이다.
 
 
+## 공용 규칙 모듈 `src/project/menuSystem.ts` — 자료집 「메뉴·시스템」 탭과 같은 검증 (2026-10-17, 미연시 3단계)
+
+- `configure_field_menu`·`set_dialogue_system`·`set_vn_extras`·`review_game_systems` 가 쓰던 규칙 중 화면과 겹치는 것을 잎 모듈로 옮겼다: `menuSystemIssues`(어긋남 목록, `tool` 문장은 기존 그대로), `syncMenuFeatures`(메뉴 항목→기능 켜기), `syncMenuUiStyle`(메뉴 창 모양). 도구와 자료집 탭이 같은 함수를 부르므로 규칙을 바꾸면 한 곳만 고친다. 상세는 `openwiki/editor-database.md` 「자료집 「메뉴·시스템」 탭」.
+- 동작 변화: `review_game_systems` 의 issues 에 `gallery-on-no-entry`(갤러리가 켜졌는데 저작 메뉴에 갤러리 항목이 없음)가 추가됐다.
+
 ## `set_vn_extras` — 갤러리·엔딩 목록·세이브 카드 (2026-10-17, 미연시 시스템 UI 2단계)
 
 - 정본 저작 데이터는 `project.meta.oprnVnExtras`(`src/project/vnExtras.ts`, v1). 도구는 부분 패치만 받는다: `preset`(romance|default), `gallery`·`galleryShowLocked`·`endings`·`endingsHideUnseen`·`saveCards`(boolean), `language`(ko|en|ja|zh|auto|inherit). 자유 키 객체 없음, `additionalProperties:false`, 모르는 인자·잘못된 형식은 힌트가 붙은 `invalid-args` 로 거절한다. `preset:"default"` 단독은 저작을 지워 자동 판정으로 돌린다.

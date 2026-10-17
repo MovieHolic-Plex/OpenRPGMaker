@@ -33,6 +33,7 @@ import {
   renderVariablesTab,
 } from "@/editor/panels/databaseUtilityViews";
 import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
+import { renderMenuSystemTab } from "@/editor/panels/databaseMenuSystemTab";
 import {
   renderBattleCommandsTab,
   renderElementsTab,
@@ -94,6 +95,7 @@ export type DatabaseTab =
   | "tilesetSpaces"
   | "scratchConcepts"
   | "system"
+  | "menuSystem"
   | "opening"
   | "gameOver"
   | "terms"
@@ -154,6 +156,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "spatialWorlds", label: "세계", testid: "db-tab-spatial-worlds" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
+  { id: "menuSystem", label: "메뉴·시스템", testid: "db-tab-menu-system" },
   { id: "opening", label: "오프닝", testid: "db-tab-opening" },
   { id: "gameOver", label: "게임 오버", testid: "db-tab-game-over" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
@@ -189,7 +192,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
-  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
+  { label: "시스템", slug: "system", tabs: ["commonEvents", "system", "menuSystem", "opening", "gameOver", "characterGraphics", "terms", "switches", "variables"] },
 ];
 
 /** Facet editors hang off the tiles destination. Legacy map routes redirect below. */
@@ -1201,6 +1204,9 @@ function renderActiveTabUnguarded(
       break;
     case "battleScreen":
       renderBattleScreenTab(body);
+      break;
+    case "menuSystem":
+      renderMenuSystemTab(body);
       break;
     case "battleCommands":
       renderBattleCommandsTab(body);

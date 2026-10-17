@@ -29,6 +29,22 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
 네이티브 입력·이름·종류·필터·보기 전환·맨 끝 스크롤·키보드 선택 근거는
 `verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
 
+## 자료집 「메뉴·시스템」 탭 — ESC 메뉴·대사창·갤러리/엔딩/저장 카드 한 화면 (2026-10-17, 미연시 3단계)
+
+- 탭 id `menuSystem`, 라벨 「메뉴·시스템」, testid `db-tab-menu-system`, 그룹 「시스템」(`system` 바로 뒤). `databaseMenuSystemTab.ts` 의 `renderMenuSystemTab(host)`. 카드 셋:
+  - **ESC 메뉴**(`db-menu-system-menu-card`): 저작이 없으면(일반 게임) 옛 동작 안내 + 시작점 셋(`…-starter-custom|romance|collector`). 있으면 줄마다 이름 입력(`…-label-<명령>`, change 로 확정, 1~12자)·▲▼(`…-up|down-<명령>`)·✕(`…-remove-<명령>`), 아래 「항목 추가」 선택+추가(`…-add-select`·`…-add`), 되돌리기(`…-menu-reset` = `meta.oprnFieldMenu` 삭제). 「타이틀로」는 항상 맨 끝·이동 불가. 연애 게임은 저작이 없어도 기본 메뉴가 보이고 첫 편집이 그 게임만의 저작이 된다.
+  - **대사창**(`db-menu-system-dialogue-card`): 백로그·오토·스킵·숨기기 스위치, 백로그 줄 수(20~500, 백로그가 꺼지면 잠금+이유), 불투명도(0.4~1), 기본 대사 속도·오토 속도·스킵 범위(읽은 글만/전부)·글자 언어. 값은 `meta.oprnDialogueSystem`.
+  - **갤러리 · 엔딩 목록 · 저장 카드**(`db-menu-system-extras-card`): 스위치 다섯(갤러리·잠김 보이기·엔딩 목록·못 본 엔딩 ???·저장 카드)·글자 언어(대사창 따름)·현재 그림 칸/엔딩 수. 값은 `meta.oprnVnExtras`.
+  - **대사창 룩**(`db-menu-system-look-card`, #2816 `meta.oprnVnLook`): 프리셋 선택(`…-look-preset`, 8종·설명·어울리는 곳 `…-look-fit`)과 이름표·선택지·대기 표시(프리셋 기본 또는 직접), 글자 크기·줄 간격·글자 간격·초상 등장·ESC 메뉴 색(룩과 같은 색/예전 청색 창), 읽은 글 옅게. 연애 게임은 소재별 기본 룩이 처음부터 적용(안내띠 `…-look-default-note`), 다른 장르는 「옛 대사창」 기본에서 프리셋을 고르면 시작한다(`…-look-legacy`). 값은 `meta.oprnVnLook`, 저장은 같은 `applyMenuSystemEdit({look})` 경로(검증 `validateVnLook`)이고 지우면 소재별 기본/옛 대사창으로 돌아간다. 조수 `set_vn_look` 과 같은 `mergeVnLook` 을 쓴다.
+  - 맨 위 `db-menu-system-issues`: 메뉴 항목과 기능이 어긋난 곳(`menuSystemIssues(project).ui`)을 경고띠로 보이고, 고칠 수 있으면 단추(「백로그 켜기」「메뉴에 추가」…)를 붙인다. 엔딩·그림이 아직 없다는 안내(`endings-none`·`gallery-no-cg`)는 경고색이 아니라 안내색.
+- **검증·규칙은 조수 도구와 같은 함수** — `src/project/menuSystem.ts`(잎 모듈): `validateMenuSystemEdit`/`applyMenuSystemEdit`(검증 먼저, 실패하면 프로젝트를 건드리지 않는다), `syncMenuFeatures`(메뉴에 백로그·갤러리·엔딩을 넣으면 꺼진 기능을 같이 켠다 — 도구 `configure_field_menu` 와 같은 함수), `menuSystemIssues`(도구 `review_game_systems` 의 어긋남 목록과 같은 원천, 화면은 `ui` 문장·도구는 `tool` 문장), `syncMenuUiStyle`(메뉴를 처음 저작하면 `menuUiStyle=field-list`, 지우면 `pixel` — 도구와 같음), `describeMenuSystemError`(영문 검증 오류를 화면용 한국어로). 새 규칙은 여기 한 곳에만 쓴다. `gallery-on-no-entry`(갤러리가 켜졌는데 저작 메뉴에 갤러리 항목이 없음)는 3단계에서 목록에 새로 들어갔다 — 도구의 `review_game_systems` 에도 같이 나온다.
+- 저장 경로: `recordProjectSnapshot()` + `store.update(…, {scope:"system", label})`. scope 가 `system` 이라 모달 전체 새로고침을 일으키지 않고 탭이 자기 자리에서 다시 그린다. 되돌리기(Ctrl+Z·모달 되돌리기)는 편집 하나씩 되감는다(브라우저에서 확인: 이름→백로그→메뉴 시작이 거꾸로 풀림). 거절·연동 안내(`db-menu-system-rejection`·`…-notices`)는 그 프로젝트 판에 묶여 되돌리기·다른 편집 뒤 저절로 사라진다.
+- 함정: 토글 스위치는 `.db-toggle-input` 이 다른 탭 CSS 에 눌려 체크박스 크기로 보일 수 있어 이 탭 스코프(`.db-menu-system-studio`, `system-studio.css`)에서 34×18 로 고정했다. `field()` 는 컨트롤 하나일 때만 — 속도·범위는 `segmentedControl`(그룹 필드). 모드(uxLevel) 숨김은 쓰지 않는다 — 이 저장소에 `databaseUxLevel.ts` 가 없고, 초보도 연애 기본값을 보고 꺼야 하므로 모든 칸을 보인다.
+- **기기 단위 기록 안내(2026-10-17 수리 PR #2819 정책).** 한 번 본 엔딩과 한 번 연 CG 는 저장 칸이 아니라 이 기기에 남는다(`deviceRecords.ts`). 「갤러리 · 엔딩 목록 · 저장 카드」 카드의 안내 문장이 이를 밝힌다. `menuSystemIssues`: 저작 없는 연애 기본 구성의 「CG 0」은 경고하지 않고(작가가 갤러리를 직접 켠 경우만), 저작 메뉴에 갤러리 항목이 없으면 열 내용(CG 칸·엔딩)이 있을 때만 짚는다. `syncMenuFeatures` 는 작가가 저작해 둔 `oprnVnExtras` 의 꺼짐을 되돌리지 않고 알린다(도구와 같은 규칙).
+- 다국어: 화면 문구는 en/ja/zh 카탈로그에 95개 추가(기계 번역 초안). `menuSystem.ts` 는 추출기 `SCAN_ROOTS` 밖이다(도구용 문장이 섞여 있어) — 화면용 문구를 추가하면 카탈로그에 손으로 넣는다.
+- 시각 QA: `scripts/capture-menu-system-tab.mjs`(`DEV_SERVER_PORT`, `--mode beginner|expert`, `VIEWPORT=1024x768`, `LOCALE=en`). `?freshProject=1` 의 비동기 로드가 끝나기 전에 모달을 열면 프로젝트 전환으로 닫히므로 스크립트가 5초 기다린다.
+- 집중 테스트: `node scripts/run-vitest.mjs test/menuSystem.test.ts`(공용 규칙·거절 문구·탭 렌더/클릭·되돌리기/다시 하기·SQLite 저장 뒤 `deserialize` 재로드).
+
 ## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
 
 사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.

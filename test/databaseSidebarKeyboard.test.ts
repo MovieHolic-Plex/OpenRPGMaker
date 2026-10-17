@@ -30,6 +30,7 @@ const TAB_TESTID: Record<string, string> = {
   states: "db-tab-states",
   retroChoreographies: "db-tab-retro-choreographies",
   battleScreen: "db-tab-battle-screen",
+  menuSystem: "db-tab-menu-system",
   battleCommands: "db-tab-battle-commands",
   enemies: "db-tab-enemies",
   monsterSpecies: "db-tab-monster-species",
