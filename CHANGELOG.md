@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.251.0 — 2026-10-17
+
+### 기능
+
+- **database** — wayfinding — section-word search, 3-level crumb, recent tabs (#2829) (`77d3f0e`)
+- **dialogue** — 흉상·전신 초상이 있는 대사는 대사창을 항상 아래로 (#2828) (`73c179a`)
+
+### 수정
+
+- **jrpg** — seed-harbor gate names a path the assistant can take (new map + set_start_position) and only checks maps reachable from the start (#2830) (`a737c98`)
+- **qa** — identical-stats check survives a vehicle actor joining the party (#2822) (`0404905`)
+- **romance** — retire the unreachable generic happy ending once per-heroine endings exist (#2826) (`360b5d2`)
+- **qa** — title-art setting check reads title/subtitle/map names when there is no design brief (#2824) (`767a1bd`)
+- **qa** — autoplay ending goal accepts any ending after an auto-select triggerEnding (#2823) (`745206d`)
+- **ci** — record three new charset chips in the event graphic surface baselines (`8f890d1`)
+
 ## 0.250.0 — 2026-10-17
 
 ### 기능
