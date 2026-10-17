@@ -39,7 +39,8 @@ export type StampTool =
   | "stamp_object"
   | "place_dungeon_room"
   | "paint_tiles"
-  | "set_street_traffic";
+  | "set_street_traffic"
+  | "compose_scene";
 
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
@@ -65,6 +66,7 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_house",
   "place_dungeon_room",
   "set_street_traffic",
+  "compose_scene",
 ];
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
@@ -89,6 +91,23 @@ export interface StampStep {
   readonly group?: string;
   /** 이 단계가 놓는 칸(결과 줄에 좌표로 적는다). */
   readonly at?: readonly { readonly x: number; readonly y: number }[];
+  /** 실제로 부를 등록 도구 이름(compose_scene 이 고른 장면 구성기). 없으면 tool 이름을 그대로 부른다. */
+  readonly call?: string;
+}
+
+/**
+ * 이 맵 칩셋에서 바로 깔기가 부를 수 있는 장면 구성기 하나(모델에게 보여 주는 메뉴).
+ * 구성기는 도로망·블록·대지·여러 칸 건물 키트·소품·방 배치를 통째로 짠다 — 모델은 장면·스타일·가게·실내 구성만 고른다.
+ */
+export interface StampSceneOption {
+  readonly id: string;
+  readonly label: string;
+  readonly about: string;
+  readonly styles?: readonly string[];
+  /** 꼭 넣을 가게·건물 낱말(구성기가 받는 값 그대로). */
+  readonly shops?: readonly string[];
+  /** 실내 구성(program) id — scene 이 interior 일 때만. */
+  readonly programs?: readonly string[];
 }
 
 /** 모델에게 주는 사실. 재료는 현재 맵 타일셋의 실제 라벨이다. */
@@ -134,6 +153,8 @@ export interface StampPlanFacts {
   readonly isRoadCell?: (x: number, y: number) => boolean;
   /** 나무·화단이 우선 놓일 잔디·흙 칸인가(판석·보도 광장 위를 피한다). */
   readonly isGrassOrSoilCell?: (x: number, y: number) => boolean;
+  /** 이 칩셋의 장면 구성기 메뉴(마을·거리·던전·실내 한 장을 통째로). 비면 compose_scene 을 거절한다. */
+  readonly scenes?: readonly StampSceneOption[];
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -145,6 +166,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "- Shapes: 동그랗게/원/둥근/호수/연못 → fill_region shape \"circle\" (ellipse for wide ovals); otherwise \"rect\".",
   "- A circle needs a square box: give circle steps a sub-rectangle with w == h (the largest square that fits its part); use ellipse only when the user says 타원/길쭉하게.",
   "- Trees/forest use place_props with density: 숲/나무/숲길 → \"dense\" (walkable forest with water, small trees, rocks and hidden canopy paths), 울창/빽빽/통행 불가/막힌 → \"impassable\", 성글게 → \"normal\", 드문드문/가로수 → \"sparse\". density is ONLY for tree labels — never send density with any other material. Decorative crates/boxes (장식 상자·나무 상자) are place_props with count.",
+  "- WHOLE PLACES FIRST: when the sentence asks for a whole place (마을·동네·도시·번화가·거리·상점가·주택가·강변 산책로·던전·동굴·지하 묘지 한 층·실내 한 층: 오피스 로비·백화점·병원·마트·역·영화관·레스토랑·박물관·여관 실내…) and facts.target is the whole map (or most of it), emit ONE compose_scene step {scene, style?, program?, shops?, seed?} with scene/style/program/shops copied from facts.scenes. The scene composer lays out roads, city blocks and alleys, lots, multi-tile buildings, fences, gardens, props, dungeon rooms with walls/torches/pillars, or a furnished multi-room interior — it is far better than hand steps. NEVER rebuild that place with fill_region / paint_road / place_house / place_dungeon_room / place_object. After compose_scene you may add ONLY set_scene_mood or set_street_traffic (the composer may resize the map, so coordinate steps are dropped). Pick shops/program/style that match the sentence (편의점→konbini or 편의점, 오피스 로비→lobby or office-1f, 백화점→department-store). If facts.scenes is empty or the target is a small selection, use the normal tools below.",
   "- HOUSES & BUILDINGS (집·주택·단독주택·민가·오두막·가옥·초가집·저택·살림집·여관·상점·대장간·편의점·카페·이자카야·오피스·빌딩·아파트·은행·병원·호텔·건물 한 채/두 채) are ONE place_house step {area|at, kind?, size?, count?, stories?}. Put kind = the Korean building noun when specific (e.g. \"여관\",\"편의점\",\"카페\",\"이자카야\",\"오피스\",\"단독주택\"). Code picks this tileset's real building exterior (roof, walls, windows and door included) and a flat empty spot. NEVER build or imitate a house/building with build_wall, place_door, fill_region, place_props or place_object. size: 작은 → \"small\", 큰/저택/빌딩 → \"large\", otherwise \"medium\". If facts.houseLooks is 0 still send place_house — code refuses honestly.",
   "- DUNGEON ROOMS & CORRIDORS (던전 방·입구 방·중앙 홀·보물 방·함정 방·깊은 방·던전 복도 연결) use place_dungeon_room {area:{x,y,w,h}, kind:\"room\"|\"corridor\"|\"connect\", style?:\"crypt\"|\"sewer\"|\"temple\"|\"volcano\"|\"cave\", hazard?:\"lava\"|\"water\"} first so code carves the dungeon ceiling, 2-row north wall face, and stone floor before placing stairs, pillars, torches, chests, or traps.",
   "- PHYSICAL THINGS (물건: 화분·의자·탁자·침대·벤치·우물·가로등·자판기·책장·동상·우체통·통·바위·돌·카펫·모닥불·꽃밭·덤불 한 포기…) are placed ONLY with place_object {name, alternatives?, area|at, count?}. name = the correctly spelled everyday Korean noun alone (fix typos: 화뷴→화분, 의짜→의자; no numbers or verbs); alternatives = up to 3 true synonyms of the SAME thing (탁자→[\"테이블\",\"식탁\"]); never a different or merely similar thing (왕좌≠의자, 대포≠화로) — code ignores those and refuses honestly. Code looks the name up among this tileset's real object pictures (facts.objectNames are examples of names that exist) and REFUSES, listing the nearest names, when no picture matches. So NEVER imitate a thing with place_examine_hotspots (it makes an INVISIBLE event), place_npc/make_villager (people only), or a terrain place_props — those make invisible, wrong or person-shaped things. place_chest, place_savepoint, place_signpost keep their own jobs; place_door only goes on an existing WALL cell (code drops it, saying so, when the target has no wall). Use place_props only for terrain-like scatter with labels copied from the lists, never for a named object. Counts (세 개·둘·여러) → count (default 1, max 8); position words (창가·구석·가운데·왼쪽·입구 옆) → pick area/at inside the target accordingly.",
@@ -183,6 +205,7 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "set_street_traffic {density?:\"sparse\"|\"normal\"|\"busy\", includeTurns?:boolean, includeBus?:boolean, clear?:boolean}",
   "move_event {eventId, at:{x,y}}",
   "remove_event {eventId}",
+  "compose_scene {scene, style?:string, program?:string, shops?:[string], seed?:int}  (omit seed unless the user names one — code picks a new seed every run so the same sentence gives a different layout)",
 ].join("\n");
 
 export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
@@ -196,6 +219,7 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
     ...(facts.wallMaterials?.length ? { wallMaterials: facts.wallMaterials } : {}),
     ...(facts.doorMaterials?.length ? { doorMaterials: facts.doorMaterials } : {}),
     houseLooks: facts.houseLooks ?? 0,
+    ...(facts.scenes?.length ? { scenes: facts.scenes } : {}),
     ...(facts.objectSamples?.length ? { objectNames: facts.objectSamples } : {}),
     ...(facts.placement ? { placement: placementForModel(facts.placement) } : {}),
   });
@@ -335,6 +359,7 @@ const TOOL_KO: Record<StampTool, string> = {
   place_dungeon_room: "던전 방",
   paint_tiles: "타일 칠하기",
   set_street_traffic: "주행 차량",
+  compose_scene: "장면 구성",
 };
 
 /**
@@ -613,6 +638,37 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
           tool: stampTool,
           label: labelText ?? (kind === "connect" ? "던전 복도 연결" : "던전 방"),
           args: { mapId, area, kind, style, ...(hazard ? { hazard } : {}) },
+        },
+      };
+    }
+    case "compose_scene": {
+      const scenes = facts.scenes ?? [];
+      if (scenes.length === 0) return dropped(`이 칩셋(${facts.tilesetId ?? "현재 칩셋"})에는 장면 구성기가 없습니다`);
+      const wanted = stringArg(args.scene) ?? "";
+      const scene = scenes.find((option) => option.id === wanted) ?? scenes.find((option) => option.label === wanted);
+      if (!scene) return dropped(`장면 '${wanted || "(없음)"}' 이 이 칩셋 메뉴(${scenes.map((option) => option.id).join("·")})에 없습니다`);
+      // 구성기는 맵 한 장을 통째로 짠다 — 작은 선택 영역 안의 주문을 맵 전체 재구성으로 바꾸지 않는다.
+      const mapArea = Math.max(1, facts.mapWidth * facts.mapHeight);
+      if (facts.targetIsSelection && (target.w * target.h) / mapArea < 0.6) {
+        return dropped(`장면 구성기는 맵 전체를 짭니다 — 선택 영역(${target.w}×${target.h})이 맵의 60% 미만이라 쓰지 않습니다(선택을 풀고 다시 말하세요)`);
+      }
+      const style = scene.styles ? enumArg(args.style, scene.styles) : undefined;
+      const programRaw = stringArg(args.program);
+      const program = scene.programs && programRaw
+        ? scene.programs.find((id) => id === programRaw) ?? scene.programs.find((id) => id.includes(programRaw) || programRaw.includes(id))
+        : undefined;
+      if (scene.programs && !program) return dropped(`실내 구성 '${programRaw ?? "(없음)"}' 이 이 칩셋 구성 목록에 없습니다(${scene.programs.slice(0, 12).join("·")}…)`);
+      const askedShops = Array.isArray(args.shops) ? args.shops.map(stringArg).filter((shop): shop is string => shop !== null) : [];
+      const shops = scene.shops ? askedShops.filter((shop) => scene.shops!.includes(shop)).slice(0, 8) : [];
+      // 모델은 씨앗을 늘 같은 값(0·1·42)으로 채우는 버릇이 있다 — 사용자가 씨앗을 말했을 때만 받고, 아니면 코드가 매번 새로 고른다.
+      const seed = /씨앗|시드|seed/iu.test(facts.text) ? finiteInt(args.seed) : null;
+      const skipped = askedShops.length - shops.length;
+      return {
+        step: {
+          tool: stampTool,
+          label: labelText ?? `${scene.label}${style ? `(${style})` : ""}${program ? `(${program})` : ""}`,
+          ...(skipped > 0 ? { note: `구성기가 모르는 가게 ${skipped}개는 뺌` } : {}),
+          args: { mapId, scene: scene.id, ...(style ? { style } : {}), ...(program ? { program } : {}), ...(shops.length ? { shops } : {}), ...(seed !== null && seed >= 0 ? { seed } : {}) },
         },
       };
     }
@@ -1263,6 +1319,14 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
     else if ("refused" in check) refused.push(check.refused);
     else dropped.push(check.dropped);
   }
+  // 장면 구성기가 맵을 통째로 짜면(크기도 바꿀 수 있다) 같은 계획의 좌표 단계는 옛 맵 좌표다 — 장면 하나와 좌표 없는 단계만 남긴다.
+  const sceneStep = steps.find((step) => step.tool === "compose_scene");
+  if (sceneStep) {
+    const companions = steps.filter((step) => step !== sceneStep && SCENE_COMPANION_TOOLS[step.tool] === true);
+    const cut = steps.filter((step) => step !== sceneStep && SCENE_COMPANION_TOOLS[step.tool] !== true);
+    if (cut.length > 0) dropped.push(`장면 구성기가 맵 전체를 짜므로 좌표 단계 ${cut.length}개(${[...new Set(cut.map((step) => TOOL_KO[step.tool]))].join("·")})는 깔지 않음`);
+    return { steps: [sceneStep, ...companions], dropped, refused };
+  }
   const afterHouses = houseInsteadOfWalls(steps, facts, dropped);
   const finalSteps = dungeonInsteadOfWalls(afterHouses, facts);
   if (finalSteps.length === 0 && dropped.length === 0 && refused.length === 0 && houseAsk && facts.houseLooks === 0) {
@@ -1270,3 +1334,6 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
   }
   return { steps: finalSteps, dropped, refused };
 }
+
+/** 장면 구성 뒤에 같이 둘 수 있는 좌표 없는 단계. */
+const SCENE_COMPANION_TOOLS: Partial<Record<StampTool, true>> = { set_scene_mood: true, set_street_traffic: true };
