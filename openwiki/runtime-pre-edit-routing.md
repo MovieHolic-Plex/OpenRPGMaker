@@ -856,6 +856,16 @@ See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant
 글 여백(`padding-inline`)을 없앤다. 전신 초상(`dialogue-face-full`)은 위쪽 상자에서 흉상 크기로 줄인다(아래 절반의 주인공을 덜 가리려고). 규칙은 src/styles/dialogue.css.
 
 
+### 흉상·전신이 있는 대사는 대사창이 항상 아래 (2026-10-17, vn-bust-bottom-1)
+
+- **규칙.** 흉상·전신 초상이 실제로 그려지는 줄은 저작한 위치(위·가운데, `displayTextSettings`·say `position`·가림 방지 자동)와 상관없이 `position-bottom` 이다. 초상이 없는 줄·48px 작은 얼굴·`hideFace`·말풍선은 저작한 위치를 그대로 따른다. 위·가운데 저장은 막지 않는다.
+- **결정은 한 곳.** `src/project/dialoguePortraitPosition.ts`(`portraitForcesBottom`·`positionWithPortrait`·안내 문구 `PORTRAIT_BOTTOM_NOTICE`/`PORTRAIT_BOTTOM_RULE`). 플레이어는 `dialogue.ts` `mount()` 에서 vnLook→초상(`baseFace`/`portraitMode`)을 **먼저** 구한 뒤 `applyTextSettings(…, forceBottom)` → `applyOverlayPosition(…, forceBottom)` 로 넘긴다(순서가 거꾸로면 위치를 먼저 정해 버린다). 스크림 방향도 같은 `position` 을 쓴다.
+- **선택지.** `lastLineForcedBottom` 이 같은 세션(`wasOpen`)이면 `showChoices` 도 아래다 — 흉상 대사 바로 뒤 선택지가 위로 뛰지 않는다. 퇴장 끝·`resetOverlay`/`dispose` 에서 초기화한다. 숫자 입력(`dialogueNumberInput.ts`)은 대사 직후가 아니라 따로 이어 쓰지 않는다.
+- **전환 부드럽게.** 같은 세션에서 초상 규칙이 창 자리를 바꾸는 줄(흉상 없음(위) ↔ 흉상 있음(아래))에서만 `glideFromPreviousBox` 가 Web Animations `translate` 로 앞 창 자리에서 새 자리까지 220ms 미끄러진다. 레이아웃은 즉시 새 자리로 확정되고 출발점은 변환(진입 연출)을 뺀 `offsetTop` 에 호스트 배율을 곱한 값이다 — 배율로 나누지 않으면 화면 배율(3.2배)만큼 어긋나 창이 화면 밖에서 날아온다(실측). 움직임 줄이기에서는 쓰지 않는다. 그 밖의 줄(같은 위치끼리의 높이 변화 등)은 옛 동작 그대로다.
+- **옛 위쪽 흉상 CSS.** `.position-top` 흉상 매달기 규칙(위 절)은 `dialogue.ts` 경로에서는 더는 닿지 않는다(흉상이면 아래). 편집기 미리보기·저작 도구가 직접 `position-top` 을 붙일 때를 위해 남겼다.
+- **편집기·도구 안내.** 이벤트 명령 「문장 표시 설정」 위치 그룹, 자료집 「메뉴·시스템」 대사창·대사창 룩 카드(`db-menu-system-portrait-bottom-note`), 도구 설명(`schemaShapes` say·displayTextSettings position, `cutsceneStageTools`, `set_dialogue_system`, `set_vn_look`), `gameAuthoringPresets/romance.md` 한 문단. 카탈로그 en/ja/zh 에 안내 문장 한 줄.
+- **증거.** `scripts/qa/runtime/vn-bust-bottom.scenario.mjs`(프로필 `bustbottom`): 캡처마다 DOM 을 읽어 흉상 줄은 아래, 흉상 없는 줄은 저작 위치임을 단정하고(어긋나면 비트 실패) 프레임별 창 윗변 궤적(`_trace.json`)을 남긴다. 전 조합은 프로필 `bb` + `VN_POS_PROBE_DIR=<dir>`(캡처마다 `.json` 위치 탐침, `vn-matrix.lib.mjs`).
+
 ## 대사창 읽기 보조 — 백로그·오토·스킵·숨기기 (2026-10-17, 미연시 시스템 UI 1단계)
 
 - **옵트인 저작.** `meta.oprnDialogueSystem`(순수 모듈 `src/project/dialogueSystem.ts`)이 없고 관계 중심 게임도 아니면 대사창·ESC 메뉴·설정 화면은 예전과 바이트 단위로 같다(예전 hover 「기록」 단추·세션 로그 포함, 설정은 8줄 그대로). 켜지면 `dialogue.ts` 가 `createDialogueControlBar`(오토 A · 스킵 S · 백로그 L · 숨기기 H, Ctrl 누르는 동안 스킵), `dialogueBacklogView`(전체 화면, 휠·방향키·Esc, 캡처 단계에서 키를 삼킴)를 붙인다.

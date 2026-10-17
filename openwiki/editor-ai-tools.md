@@ -3450,4 +3450,4 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - ESC 메뉴(스킨 pixel)는 `uiTheme:"match"` 일 때 같은 `--vn-*` 색·모서리·그림자를 `--px-*` 토큰으로 받는다(`playerStatusMenu.ts` 가 루트에 `data-vn-theme`·변수를 심고 `vnLook.css` 하단이 매핑). 저장·불러오기 전용 패널과 설정 화면의 토큰 연결은 아직이다.
 - 편집기 UI는 이 데이터·`validateVnLook`·순수 함수(`resolveVnLook`, `mergeVnLook`, `vnLookAttributes`, `VN_PRESETS` 표)만 가져다 쓴다 — 미리보기도 같은 해석 함수를 쓴다.
 - 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(대사창 스킨·파스텔·글자 크게 낱말), `gameSystemProduction.ts`(요청 패턴·완료 가드), `scripts/lib/piAgentRuntime.ts`, `read_game_systems` 의 `vnLook`(authored/effective/source), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단, 시험 `test/vnLook.test.ts`, 증거 QA `scripts/qa/runtime/vn-matrix*.scenario.mjs`(`vn-matrix-fixture.mts <dir> look '<oprnVnLook json>'`).
-
+- 대사창 위치 규칙(2026-10-17, vn-bust-bottom-1): 흉상·전신 초상이 있는 대사는 위치 설정과 상관없이 항상 아래로 나온다(저장은 막지 않음). `set_vn_look`·`set_dialogue_system`·say/displayTextSettings `position` 설명과 `romance.md` 에 한 줄이 있다. 상세는 `runtime-pre-edit-routing.md` 「흉상·전신이 있는 대사는 대사창이 항상 아래」.

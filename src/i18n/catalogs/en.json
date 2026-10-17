@@ -10970,6 +10970,7 @@
 "이후 노출 비율":"Subsequent reveal ratio",
 "이후 문장 즉시 표시":"Show subsequent sentences instantly",
 "이후 문장·선택지·숫자 입력 창의 기본 위치를 바꿉니다.":"Changes the default position of subsequent messages, choices, and number input windows.",
+"흉상이 있는 대사는 항상 아래에 나옵니다. 위·가운데는 흉상 없는 대사에만 적용됩니다.":"Lines with a bust portrait always appear at the bottom. Top and center apply only to lines without a bust.",
 "인":"Villager",
 "인게임 HUD":"In-game HUD",
 "인물":"Characters",

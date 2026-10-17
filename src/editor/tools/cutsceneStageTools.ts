@@ -45,7 +45,7 @@ const STEP_SCHEMA: JsonSchema = {
     ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk", "bob"], description: "walk: 캐릭터셋 걷기 프레임 교체 / bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)이 발걸음 박자로 위아래 출렁이며 나아감" },
     pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
-    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom." },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom. 흉상·전신 초상이 있는 줄은 위치와 상관없이 항상 아래로 나온다(초상 없는 줄만 이 설정을 따른다)." },
     resourceId: { type: "string", description: "se/bgm 리소스 id" },
     color: { type: "string", enum: ["white", "red", "green", "blue", "yellow", "purple", "black"], description: "flash 색" },
     mapId: { type: "string", description: "transfer: 옮겨 갈 맵" }, x: { type: "integer", description: "transfer: 도착 칸 x" }, y: { type: "integer", description: "transfer: 도착 칸 y" },
