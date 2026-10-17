@@ -103,7 +103,13 @@ export function makePaletteSmartTabs(tileset: TilesetDef, onRerender: () => void
       dataset: { testid: `palette-tab-${item.id}`, paletteView: item.id },
       on: {
         click: () => {
-          if (currentPaletteView(tileset) === item.id) return;
+          const hadQuery = catalogQuery.trim().length > 0;
+          if (searchTimer !== null) {
+            clearTimeout(searchTimer);
+            searchTimer = null;
+          }
+          if (hadQuery) catalogQuery = "";
+          if (currentPaletteView(tileset) === item.id && !hadQuery) return;
           viewByTileset.set(tileset.id, item.id);
           onRerender();
         },

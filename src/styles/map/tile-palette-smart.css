@@ -4,10 +4,15 @@
 .palette-smart-tabs {
   display: flex;
   flex-flow: row nowrap;
-  gap: 3px;
+  gap: 2px;
   margin: 0;
+  padding: 2px;
   min-width: 0;
   width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
 }
 
 .palette-smart-tab {
@@ -16,10 +21,10 @@
   height: 24px;
   padding: 0 4px;
   border: 1px solid transparent;
-  border-radius: var(--radius-pill, 999px);
-  background: var(--control-bg);
+  border-radius: var(--radius-s);
+  background: transparent;
   color: var(--text-2);
-  font: 600 11px/24px var(--font-ui, sans-serif);
+  font: 600 11px/22px var(--font-ui, sans-serif);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -34,7 +39,7 @@
 
 .palette-smart-tab.is-active,
 .palette-smart-tab[aria-selected="true"] {
-  background: var(--accent-muted);
+  background: var(--bg-raised);
   border-color: var(--accent-border);
   color: var(--accent);
   font-weight: 700;

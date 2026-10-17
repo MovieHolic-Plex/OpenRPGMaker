@@ -209,4 +209,35 @@ describe("smart tile palette", () => {
     expect(find("tile-palette")).not.toBeNull();
     expect(find("tile-category-select")).not.toBeNull();
   });
+
+  it("clears active catalog search when switching palette tabs so the target tab renders immediately", () => {
+    mount(smartTileset());
+    const input = find("palette-catalog-search");
+    if (!(input instanceof HTMLInputElement)) throw new Error("missing catalog search");
+    input.value = "기와";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    vi.advanceTimersByTime(120);
+    expect(find("palette-search-results")).not.toBeNull();
+
+    find("palette-tab-prefab")?.click();
+    expect(find("palette-tab-prefab")?.getAttribute("aria-selected")).toBe("true");
+    expect(find("palette-search-results")).toBeNull();
+    expect(find("palette-smart")?.dataset.paletteView).toBe("prefab");
+    expect(find("palette-prefab-giwa-house")).not.toBeNull();
+  });
+
+  it("retains auxiliary relief-side-panel in left-palette-root across smart tab switches", () => {
+    mount(smartTileset());
+    const relief = document.createElement("section");
+    relief.dataset.testid = "relief-side-panel";
+    relief.hidden = true;
+    host.append(relief);
+
+    find("palette-tab-prefab")?.click();
+    find("palette-tab-tiles")?.click();
+    find("palette-tab-terrain")?.click();
+
+    expect(find("relief-side-panel")).toBe(relief);
+    expect(host.querySelectorAll('[data-testid="palette-work-shell"]')).toHaveLength(1);
+  });
 });

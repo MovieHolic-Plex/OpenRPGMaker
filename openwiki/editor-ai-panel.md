@@ -4547,3 +4547,10 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 - 이것은 «한 번에 한 장» 이라 정본 칩셋 그림이 아니다. 새 타일셋·기물은 공방(후보·검수·3/4 관문)을 쓴다. 낱장 도트는 `object-gate` 영수증 대상이 아니라 컷신 소품·아이콘 같은 프로젝트 리소스다.
 - 알려진 한계: 한 변 64 초과 소품은 확대라 도트가 굵다 / 모델이 한 변을 틀리게 세면 고치기 2번 뒤 실패(사용자에게 오류를 그대로 보인다) / 3/4 시점은 프롬프트 계약일 뿐 검수 관문이 없다.
 - 검증: `bun scripts/qa/image-route-table.ts`(용도별 표·입구 거절·표면 모델) — `pixel-draw` 줄과 새 용도 5개 포함. 단위 테스트는 `test/dotTextImage.test.ts`·`test/imageRoute.test.ts` 에 썼지만 **이 변경에서는 실행하지 않았다**.
+
+## 왼쪽 사이드바(그리기·지형·활동 막대) 탭 전환 계약 (2026-10-17)
+
+- `renderTilePalette`(`src/editor/panels/tilePalette.ts`)는 `[data-testid="left-palette-root"]` 안의 보조 형제 패널(`[data-testid="relief-side-panel"]`, `[data-testid="rule-audit-panel"]`, `[data-testid="map-history-panel"]`)을 지우지 않고 `mountPaletteShell`로 `.palette-work-shell`만 교체한 뒤 항상 `ensureReliefSidePanel`을 호출한다. `syncMountedPaletteToolPick`도 도구 전환 고속 경로에서 `ensureReliefSidePanel`을 불러 `tool: "relief"` 전환 시 좌측 패널이 지형 편집(`relief-side-panel`)으로 즉시 바뀌게 한다.
+- 지형 편집 패널(`src/editor/panels/reliefToolbar.ts`) 상단에는 「타일 그리기」(`data-testid="relief-back-to-paint"`) 복귀 버튼을 두고, 지형 편집 중 왼쪽 활동 막대의 「그리기」(`data-testid="sidebar-tools"`)를 누르면 사이드바를 접지 않고 `selectSidebarLayer("lower")`로 타일 그리기 팔레트로 돌아온다(`src/editor/panels/aiSidebarWorkspace.ts`).
+- 스마트 팔레트 탭(`지형 | 프리팹 | 최근 | 개별 타일`, `src/editor/panels/tilePaletteSmart.ts`)을 누를 때 `라벨·태그 검색`(`catalogQuery`)이 남아 있으면 검색어와 디바운스 타이머를 함께 비워, 검색 결과 화면에 갇히지 않고 고른 탭의 카드 목록으로 바로 전환한다.
+- 왼쪽 활동 막대의 「스토어」(`data-testid="sidebar-store"`)는 다른 활동 탭과 마찬가지로 좌측 `left-store-pane`만 열고, 전체 화면 스토어 모달(`.store-host`)은 패널 안의 「인기 에셋 둘러보기」(`data-testid="left-store-open"`)를 눌렀을 때만 연다.
