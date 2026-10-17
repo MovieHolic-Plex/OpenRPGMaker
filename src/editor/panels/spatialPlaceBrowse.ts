@@ -29,6 +29,9 @@ let hoverTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverHideTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverEl: HTMLElement | null = null;
 let hoverAnchor: HTMLElement | null = null;
+// 떠 있는 미리보기는 body 에 붙으므로, 탭 전환으로 카드가 DOM 에서 빠지면 mouseleave 가 오지 않아
+// 「세계」 등 다른 탭 위에 그대로 남았다. 카드가 떨어져 나가는 순간 닫는다.
+let hoverAnchorWatch: MutationObserver | null = null;
 let pointer = { x: 0, y: 0, known: false };
 let pointerTracked = false;
 let detailOpen = false;
@@ -71,6 +74,8 @@ export function hidePlaceHover(): void {
   hoverAnchor?.classList.remove("is-previewing");
   hoverAnchor?.removeAttribute("aria-describedby");
   hoverAnchor = null;
+  hoverAnchorWatch?.disconnect();
+  hoverAnchorWatch = null;
   hoverEl?.remove();
   hoverEl = null;
 }
@@ -208,6 +213,10 @@ function showHover(button: HTMLElement, card: SpatialGalleryCard): void {
   host.append(panel);
   hoverEl = panel;
   placeHover(panel, button.getBoundingClientRect());
+  hoverAnchorWatch = new MutationObserver(() => {
+    if (!button.isConnected) hidePlaceHover();
+  });
+  hoverAnchorWatch.observe(document.body, { childList: true, subtree: true });
 }
 
 function placeHover(panel: HTMLElement, rect: DOMRect): void {
