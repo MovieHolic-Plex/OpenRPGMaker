@@ -110,3 +110,13 @@ describe("요청한 규모 — 탈것·붕괴 전후 (jrpg-loop-1 D13)", () => {
   });
 });
 
+describe("동료 약속 (jrpg-loop-2 ct2)", () => {
+  it("requires two joining companions when the request promises companions (ct2 had none)", () => {
+    const talk = (id: string, commands: unknown[]) => ({ id, name: id, x: 1, y: 2, pages: [{ id: `${id}_p`, trigger: { kind: "action" }, commands }] });
+    const none = jrpg();
+    expect(jrpgCompletionGaps(none, "", { task: "시대마다 동료를 만나는 RPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(true);
+    const two = jrpg({ maps: { m1: { id: "m1", name: "마을", events: [talk("a", [{ kind: "changeParty", action: "add", actorId: "x1" }]), talk("b", [{ kind: "changeParty", action: "add", actorId: "x2" }])] } } });
+    expect(jrpgCompletionGaps(two, "", { task: "시대마다 동료를 만나는 RPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
+    expect(jrpgCompletionGaps(none, "", { task: "그냥 JRPG" }).some((gap) => gap.includes("합류하는 인물"))).toBe(false);
+  });
+});

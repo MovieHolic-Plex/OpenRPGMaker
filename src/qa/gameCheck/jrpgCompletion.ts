@@ -17,6 +17,9 @@ const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트", "New G
 const JRPG_TASK = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*트리거|파이널\s*판타지|\bff\s?(?:[0-9]{1,2}|[ivx]{1,4})\b|드래곤\s*퀘스트/iu;
 /** 이미 JRPG 인 프로젝트에서 게임 전체를 지으라는 요청인가(작은 수정 요청에는 가드를 걸지 않는다). */
 const WHOLE_GAME_TASK = /게임을?\s*(?:만들|제작|완성|지어|짜)|처음부터|전체를?\s*(?:만들|제작|완성)/u;
+/** 동료·파티원을 만난다는 요청 낱말 — 합류 이벤트가 둘 이상 있어야 한다(jrpg-loop-2 ct2: 「동료도 시대마다 만나고요」에 합류 0건). */
+const COMPANION_WORDS = /동료|파티원|파티\s*멤버|일행|동행|companion|party\s*member/iu;
+const COMPANION_MIN_JOINS = 2;
 const TIME_BRIEF = /시간|시대|과거|미래|타임|평행|크로노|time|chrono|era\b/iu;
 /** 탈것(비공정·비행선) 요청 낱말. */
 const AIRSHIP_WORDS = /비공정|비행선|비행\s*정|에어\s*쉽|airship|탈것/iu;
@@ -127,6 +130,17 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
     const otherMaps = Object.values(project.maps ?? {}).length - ruinMaps.length;
     if (ruinMaps.length === 0 || otherMaps === 0) {
       gaps.push("세계가 무너진다는 이야기인데 「붕괴 전/후」 맵 구조가 없습니다 — 같은 지리의 붕괴 후 변형을 derive_map_variant({sourceMapId, variants:[{id, name:\"… (붕괴 후)\", era:\"ruin\"}]}) 로 만들고(건물 철거·안개·어둠이 자동), create_time_gate 나 이벤트 transfer 로 붕괴 순간에 이어 붙이세요.");
+    }
+  }
+
+  // 3c) 동료 — 요청이 동료를 만난다고 했는데 changeParty add 로 합류시키는 인물이 거의 없으면 파티는 주인공 혼자다(ct2: 시대마다 인물은 있으나 합류 0건).
+  if (COMPANION_WORDS.test(briefText)) {
+    const joined = new Set<string>();
+    visitAllCommands(project, (visit) => {
+      if (visit.command.kind === "changeParty" && visit.command.action === "add" && typeof visit.command.actorId === "string") joined.add(visit.command.actorId);
+    });
+    if (joined.size < COMPANION_MIN_JOINS) {
+      gaps.push(`동료를 만난다고 요청했는데 파티에 합류하는 인물이 ${joined.size}명뿐입니다(최소 ${COMPANION_MIN_JOINS}) — 시대·장소마다 한 명씩 upsert_actor(역할별 parameterCurves)로 만들고, NPC 이벤트의 선택지 승낙 분기에 {kind:"changeParty", action:"add", actorId} 를 넣으세요. 대사만 하는 NPC 는 동료가 아닙니다.`);
     }
   }
 
