@@ -6,7 +6,8 @@ import {
   BACKLOG_LIMIT_MAX, BACKLOG_LIMIT_MIN, DIALOGUE_SPEEDS, DIALOGUE_UI_LANGUAGES, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN,
   backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
 } from '@/project/dialogueSystem';
-import { galleryActive, mergeVnExtras, resolveVnExtras, romanceVnExtras, validateVnExtras, listGallerySlots, listEndingRows, type VnExtrasPatch } from '@/project/vnExtras';
+import { mergeVnExtras, resolveVnExtras, romanceVnExtras, validateVnExtras, listGallerySlots, listEndingRows, type VnExtrasPatch } from '@/project/vnExtras';
+import { menuSystemIssues, syncMenuFeatures, syncMenuUiStyle } from '@/project/menuSystem';
 import {
   VN_CHOICE_STYLES, VN_FONT_SCALES, VN_LETTER_SPACINGS, VN_LINE_SPACINGS, VN_NAMEPLATES, VN_PORTRAIT_ENTRANCES, VN_PRESETS, VN_PRESET_IDS, VN_SETTINGS, VN_UI_THEMES, VN_WAIT_ICONS,
   mergeVnLook, resolveVnLook, validateVnLook, type AuthoredVnLook, type VnLookPatch,
@@ -30,20 +31,7 @@ function issues(p:Project):string[]{
   if(monsterParty&&!fieldMenu(p))errors.push('수집 게임의 ESC 항목/순서가 저작되지 않았습니다. 기본 범용 메뉴가 표시됩니다.');
   if(fieldMenu(p)?.entries.some(e=>['region-map','campaign-progress'].includes(e.command))&&!c)errors.push('지도·배지 항목에는 실제 캠페인 정의가 필요합니다.');
   if(fieldMenu(p)?.entries.some(e=>e.command==='monster-dex')&&!c&&s.monsterCollection!==true)errors.push('도감 항목에는 캠페인 정의 또는 포획(monsterCollection) 설정이 필요합니다.');
-  if(fieldMenu(p)?.entries.some(e=>e.command==='backlog')&&!backlogEnabled(p))errors.push('ESC 메뉴에 백로그 항목이 있지만 대사 시스템의 백로그가 꺼져 있어 항목이 보이지 않습니다. set_dialogue_system {backlog:true} 로 켜거나 메뉴에서 빼세요.');
-  if(backlogEnabled(p)&&fieldMenu(p)&&!fieldMenu(p)?.entries.some(e=>e.command==='backlog'))errors.push('대사 시스템의 백로그는 켜져 있지만 저작된 ESC 메뉴에 백로그 항목이 없습니다. 대사창 단추·L 키로는 열리지만 메뉴로는 못 엽니다. configure_field_menu {preset:"custom", add:[{command:"backlog",label:"백로그"}]} 로 넣으세요.');
-  {
-    const vn=resolveVnExtras(p),menuEntries=fieldMenu(p)?.entries;
-    if(menuEntries?.some(e=>e.command==='gallery')&&!galleryActive(p))errors.push('ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {gallery:true} 로 켜거나 메뉴에서 빼세요.');
-    if(menuEntries?.some(e=>e.command==='endings')&&!vn?.endings.enabled)errors.push('ESC 메뉴에 엔딩 항목이 있지만 엔딩 목록이 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {endings:true} 로 켜거나 메뉴에서 빼세요.');
-    if(menuEntries&&vn?.endings.enabled&&!menuEntries.some(e=>e.command==='endings'))errors.push('엔딩 목록은 켜져 있지만 저작된 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. configure_field_menu {preset:"custom", add:[{command:"endings",label:"엔딩"}]} 로 넣으세요.');
-    if(vn?.endings.enabled&&(p.endings??[]).length===0)errors.push('엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 저작하세요.');
-    if(vn?.saveCards.enabled&&!backlogEnabled(p))errors.push('세이브 카드는 켜져 있지만 대사 백로그가 꺼져 있어 저장 칸에 마지막 대사 한 줄이 비어 보입니다(날짜만 나옵니다). set_dialogue_system {backlog:true} 로 켜세요.');
-    // 연애 기본 구성(저작 없음)은 CG 없이도 정상이다 — 갤러리 항목이 비어 있으면 스스로 숨는다. 작가가 갤러리를 직접 켠 경우에만 짚는다.
-    if(p.meta.oprnVnExtras?.gallery.enabled&&listGallerySlots(p).length===0)errors.push('갤러리는 켜져 있지만 recordInGallery 로 기록되는 그림(showPicture)이 없어 CG 칸이 비어 있습니다.');
-    // 옛 저작 메뉴(갤러리 항목 없음)에서는 갤러리를 열 수 없다 — 열 내용(CG 칸·본 엔딩 회상)이 있을 때만 짚는다.
-    if(menuEntries&&vn?.gallery.enabled&&!menuEntries.some(e=>e.command==='gallery')&&(listGallerySlots(p).length>0||(p.endings??[]).length>0))errors.push('갤러리는 켜져 있지만 저작된 ESC 메뉴에 갤러리 항목이 없어 열 수 없습니다. configure_field_menu {preset:"custom", add:[{command:"gallery",label:"갤러리"}]} 로 넣으세요.');
-  }
+  errors.push(...menuSystemIssues(p).map(issue=>issue.tool));
   if(monsterParty&&s.monsterCollection===undefined)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다. 포획 없는 대회형이면 configure_monster_system(enabled:true, capture:false) 로 포획 없음을 선언하세요.');
   if(s.opening?.musicResourceId&&!p.assets.uploaded[s.opening.musicResourceId]?.ref&&!p.assets.uploaded[s.opening.musicResourceId]?.dataUrl && s.opening.musicResourceId.startsWith('composed_music_'))errors.push('저작 음악의 실제 바이트가 없습니다.');
   return errors;
@@ -98,26 +86,9 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(next)try{validateFieldMenu(next);}catch(e){throw new ToolError(`${String(e)} — 항목은 1~12개, 표시 이름은 1~12자(앞뒤 공백·줄바꿈 없음), 항목 중복 금지, to-title 은 마지막이어야 합니다.`,{code:'invalid-args'});}
     if(args.style!==undefined&&!['field-list','pixel','classic','sheet','workbench'].includes(String(args.style)))throw new ToolError('메뉴 스타일 오류: field-list|pixel|classic|sheet|workbench 중 하나.',{code:'invalid-args'});
     if(next)p.meta.oprnFieldMenu=next;else delete p.meta.oprnFieldMenu;
-    p.system.menuUiStyle=args.style as Project['system']['menuUiStyle']??(preset==='default'?'pixel':'field-list');
-    if(p.system.fieldHud)p.system.fieldHud.menuStyle=p.system.menuUiStyle==='field-list'?'field-list':'project';
-    // 백로그 항목은 백로그가 켜져 있어야 보인다 — 메뉴에 넣었으면 같이 켠다(조용히 안 보이는 항목을 만들지 않는다).
-    if(next?.entries.some(e=>e.command==='backlog')&&!backlogEnabled(p)){
-      p.meta.oprnDialogueSystem=mergeDialogueSystem(resolveDialogueSystem(p),{backlog:true});
-      notice.push('메뉴에 백로그가 있어 대사 시스템의 백로그를 켰습니다');
-    }
-    // 갤러리·엔딩 항목도 같은 이유로 — 메뉴에 넣었으면 기능을 같이 켠다.
-    if(next?.entries.some(e=>e.command==='gallery'||e.command==='endings')){
-      const vn=resolveVnExtras(p),wantGallery=next.entries.some(e=>e.command==='gallery')&&!galleryActive(p),wantEndings=next.entries.some(e=>e.command==='endings')&&!vn?.endings.enabled;
-      if(wantGallery||wantEndings){
-        // 작가가 set_vn_extras 로 이미 저작해 둔 프로젝트는 그 선택(명시 off 포함)을 조용히 뒤집지 않는다 — 켜진 기능만 메뉴와 맞추고, 꺼 둔 기능은 알려 준다.
-        const names=[wantGallery?'갤러리':'',wantEndings?'엔딩':''].filter(Boolean).join('·');
-        if(p.meta.oprnVnExtras)notice.push(`메뉴에 ${names} 항목이 있지만 set_vn_extras 로 꺼 둔 상태라 그대로 두었습니다(항목은 안 보임). 켜려면 set_vn_extras {${[wantGallery?'gallery':'',wantEndings?'endings':''].filter(Boolean).map(k=>k+':true').join(', ')}}`);
-        else{
-          p.meta.oprnVnExtras=mergeVnExtras(vn,{...(wantGallery?{gallery:true}:{}),...(wantEndings?{endings:true}:{})});
-          notice.push(`메뉴에 ${names} 항목이 있어 해당 기능을 켰습니다`);
-        }
-      }
-    }
+    syncMenuUiStyle(p,preset!=='default',args.style as Project['system']['menuUiStyle']|undefined);
+    // 메뉴에 백로그·갤러리·엔딩을 넣었으면 기능도 같이 켠다(조용히 안 보이는 항목을 만들지 않는다) — 화면(자료집 「메뉴·시스템」)과 같은 규칙.
+    notice.push(...syncMenuFeatures(p,next));
     return {summary:`ESC 메뉴를 실제 기능 ID에 연결했습니다${notice.length?' — '+notice.join('; '):''}. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.`,data:systemView(p)};
   }),
   tool('set_dialogue_system','대사창 읽기 보조를 저작: 백로그(지난 대사·고른 선택지, 세이브에 저장)·오토·스킵(읽은 글만/전부)·숨기기 단추와 시작 설정(대사 속도·오토 속도·스킵 범위·대사창 투명도)·단추 글자 언어. 연애·관계 중심·비주얼노벨형 게임은 이미 전부 켜져 있어 호출이 필요 없고, 끄거나 조정할 때만 쓴다. JRPG 등 다른 장르도 켤 수 있다. 주어진 칸만 바꾼다. 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추므로 안전 규칙은 설정 항목이 아니다. 플레이어 기기 설정이 있으면 그것이 이긴다.','write',schema({

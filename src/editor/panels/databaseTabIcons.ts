@@ -281,6 +281,12 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "circle", attrs: { cx: "14.2", cy: "11", r: "1.9" } },
     { tag: "circle", attrs: { cx: "9.6", cy: "15.4", r: "1.9" } },
   ],
+  // 메뉴·시스템 — 메뉴 목록(점 + 줄) 세 줄
+  menuSystem: [
+    { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },
+    { tag: "path", attrs: { d: "M9 8h7M9 11h7M9 14h7" } },
+    { tag: "path", attrs: { d: "M6 8h.1M6 11h.1M6 14h.1" } },
+  ],
   // 오프닝 — 재생 프레임
   opening: [
     { tag: "rect", attrs: { x: "3", y: "4", width: "16", height: "14", rx: "2" } },

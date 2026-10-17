@@ -30,6 +30,7 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   spatialWorlds: '[data-testid="spatial-shell-worlds"]',
   commonEvents: '[data-testid="db-common-event-search"]',
   system: '[data-testid="db-system-nav-font"]',
+  menuSystem: '[data-testid="db-menu-system-intro"]',
   opening: '[data-testid="db-cinematic-opening"] [data-testid="db-cinematic-enabled"]',
   gameOver: '[data-testid="db-cinematic-game-over"] [data-testid="db-cinematic-game-over-title"]',
   characterGraphics: '[data-testid="db-cg-message"]',
