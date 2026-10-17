@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.253.0 — 2026-10-17
+
+### 기능
+
+- **database** — 시스템 탭 구획 목록 · 폼 격자(R2) · 스위치(R3) 정리 (PR-5) (#2842) (`4f7f039`)
+
+### 수정
+
+- **ci** — record the portrait-bottom notice in the event text surface baselines (`f7a089a`)
+
 ## 0.252.0 — 2026-10-17
 
 ### 기능
