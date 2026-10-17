@@ -7,7 +7,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
-import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID, ensureHeroineEndings } from "@/project/deadlineEnding";
+import { buildDeadlineEndingEvent, DEADLINE_ENDING_COMMON_EVENT_ID, DEADLINE_ENDING_VARIABLE_ID, ensureHeroineEndings, hasRomanceDeadlineSkeleton, retireGenericHappy } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
 import { ANY_FRIENDSHIP_KEY } from "@/project/session";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -240,18 +240,20 @@ const setDeadlineEnding: ToolDefinition = {
     if (!draft.system.timeSystem?.enabled) {
       throw new ToolError("시간 시스템이 꺼져 있어 기한을 셀 수 없습니다 — configure_time_system({enabled:true}) 를 먼저 부르세요.", { code: "time-system-required" });
     }
-    const skeletonTiers = [
+    const skeletonTiersAll = [
       { endingId: ROMANCE_ENDING_HAPPY_ID, friendshipAtLeast: ROMANCE_ENDING_HAPPY_AT, characterId: ANY_FRIENDSHIP_KEY },
       { endingId: ROMANCE_ENDING_NORMAL_ID, friendshipAtLeast: ROMANCE_ENDING_NORMAL_AT, characterId: ANY_FRIENDSHIP_KEY },
       { endingId: SEGMENT_END_ENDING_ID },
     ];
     // tiers 를 생략했는데 호감 대화 인물이 둘 이상이면 인물마다 엔딩을 만들어 맨 위에 얹는다(romance-loop-2 rom-c: 인물 3명인데 엔딩은 호감 구간뿐이었다).
-    const heroine = args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
+    const heroine = args.tiers === undefined && hasRomanceDeadlineSkeleton(draft)
       ? ensureHeroineEndings(draft) : { tiers: [], generated: [] as string[], heroines: 0 };
+    // 인물 엔딩이 들어서면 같은 문턱의 일반 해피는 닿을 수 없는 죽은 엔딩이다 — 기한 판정에서 뺀다(정의는 판정을 심은 뒤에 지운다).
+    const skeletonTiers = heroine.tiers.length > 0 ? skeletonTiersAll.filter((tier) => tier.endingId !== ROMANCE_ENDING_HAPPY_ID) : skeletonTiersAll;
     const generated = heroine.generated;
     const heroineTiers = heroine.tiers.map((tier) => ({ endingId: tier.endingId, friendshipAtLeast: tier.threshold!, characterId: tier.characterId! }));
     const tiers = Array.isArray(args.tiers) ? args.tiers as { endingId?: unknown; friendshipAtLeast?: unknown; characterId?: unknown }[]
-      : args.tiers === undefined && (draft.endings ?? []).some((ending) => ending.id === ROMANCE_ENDING_HAPPY_ID)
+      : args.tiers === undefined && hasRomanceDeadlineSkeleton(draft)
         ? [...heroineTiers, ...skeletonTiers] : [];
     if (tiers.length === 0) throw new ToolError("tiers 에 엔딩이 하나 이상 있어야 합니다.", { code: "invalid-args" });
     const characterId = typeof args.characterId === "string" && args.characterId.trim() ? args.characterId.trim() : undefined;
@@ -300,7 +302,9 @@ const setDeadlineEnding: ToolDefinition = {
     const index = draft.commonEvents.findIndex((entry) => entry.id === DEADLINE_ENDING_COMMON_EVENT_ID);
     if (index >= 0) draft.commonEvents[index] = event; else draft.commonEvents.push(event);
     draft.system.timeSystem = { ...timeSystem, onDayEnd: DEADLINE_ENDING_COMMON_EVENT_ID };
+    const retiredHappy = args.tiers === undefined && heroine.tiers.length > 0 && retireGenericHappy(draft);
     const warnings = [
+      ...(retiredHappy ? [`일반 해피 엔딩 ${ROMANCE_ENDING_HAPPY_ID} 는 인물별 엔딩과 같은 문턱이라 닿을 수 없어 지웠습니다 — 인물 엔딩이 그 자리를 대신합니다.`] : []),
       ...(generated.length ? [`인물 엔딩 ${generated.join(", ")} 을(를) 기본 문구로 만들었습니다 — define_ending 으로 같은 id 의 에필로그를 그 인물에 맞게 다시 쓰세요(문턱은 이 도구가 건 호감 ${ROMANCE_ENDING_HAPPY_AT}).`] : []),
       ...(previousHook ? [`기존 onDayEnd '${previousHook}' 는 기한 판정 앞에서 먼저 실행하도록 이었습니다.`] : []),
       ...(timeSystem.forceSleep === true ? [] : ["forceSleep 이 꺼져 있으면 플레이어가 자지 않는 한 하루가 끝나지 않아 기한이 오지 않습니다 — 연애 게임은 하루 칸을 다 쓰면 자동으로 하루가 끝나도록 forceSleep 을 켜거나 잠자리 이벤트(sleepUntilMorning)를 두세요."]),
