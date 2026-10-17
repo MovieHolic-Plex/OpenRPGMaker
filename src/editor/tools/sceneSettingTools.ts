@@ -201,8 +201,8 @@ function rimStamps(map: GameMap, cells: readonly { x: number; y: number }[], kee
 
 const s = (id: string, dx: number, dy: number): Stamp => ({ id, dx, dy });
 
-/** 이벤트 칸 (x,y), 시작 칸 (x-1,y). 두 칸은 걸어 닿아야 하므로 아래 배치는 그 칸을 막지 않는다. */
-function layoutFor(theme: SceneTheme, map: GameMap, x: number): Layout {
+/** 배치는 이벤트 칸 기준 상대 좌표다. 이벤트 칸과 그 왼쪽 시작 칸은 막지 않는다. */
+function layoutFor(theme: SceneTheme): Layout {
   switch (theme) {
     case "lava_bridge": {
       // 용암 강이 가로로 흐르고(y-1..y), 바위 다리(3×7)가 세로로 가로지른다. 이벤트 칸은 다리 한가운데.
@@ -350,8 +350,8 @@ function roundedParts(map: GameMap, r: { x: number; y: number; w: number; h: num
   ];
 }
 
-function themeKitIds(theme: SceneTheme, map: GameMap, x: number): string[] {
-  return [...new Set(layoutFor(theme, map, x).stamps.map((st) => KIT + st.id))];
+function themeKitIds(theme: SceneTheme): string[] {
+  return [...new Set(layoutFor(theme).stamps.map((st) => KIT + st.id))];
 }
 
 function clampRect(map: GameMap, x: number, y: number, w: number, h: number) {
@@ -389,8 +389,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
     prepare: async (args) => {
       const theme = args.theme as SceneTheme;
       if (!SCENE_THEMES.includes(theme)) return;
-      const probe = { width: 40, height: 40 } as GameMap;
-      await Promise.all(themeKitIds(theme, probe, 10).map((id) => prepareSharedObject(id)));
+      await Promise.all(themeKitIds(theme).map((id) => prepareSharedObject(id)));
     },
     run(project: Project, args: Readonly<Record<string, unknown>>): ToolExecResult {
       const theme = args.theme as SceneTheme;
@@ -410,7 +409,7 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         throw new ToolError(`좌표 (${args.x},${args.y}) 가 맵 ${map.width}×${map.height} 밖입니다`, { code: "out-of-map" });
       }
 
-      const layout = layoutFor(theme, map, x);
+      const layout = layoutFor(theme);
       const fill = toolByName(CONSTRUCTION_TOOLS_V3, "fill_region");
       const stamp = toolByName(SHARED_OBJECT_TOOLS, "stamp_object");
       const warnings: string[] = [];
