@@ -76,3 +76,29 @@ describe("429 handling in the team runtime", () => {
     expect(rateLimitedUnresolved(retried)).toHaveLength(0);
   });
 });
+
+describe("요청한 규모 — 탈것·붕괴 전후 (jrpg-loop-1 D13)", () => {
+  const ask = "마법으로 평화롭던 세계가 무너져서 폐허가 된 뒤에 동료 모아서 반격하는 JRPG. 비공정 같은 탈것도 있으면 좋겠어요";
+  it("비공정을 말했는데 탈것이 없고 붕괴 후 맵도 없으면 둘 다 막는다", () => {
+    const gaps = jrpgCompletionGaps(jrpg(), "", { task: ask });
+    expect(gaps.some((gap) => gap.includes("place_vehicle"))).toBe(true);
+    expect(gaps.some((gap) => gap.includes("derive_map_variant"))).toBe(true);
+  });
+  it("비행선을 세우고 붕괴 후 맵을 만들면 통과한다", () => {
+    const project = jrpg({
+      system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, vehicles: [{ id: "airship", characterIndex: 2, mapId: "m1", x: 1, y: 1 }] },
+      maps: { m1: { id: "m1", name: "마을", events: [] }, m2: { id: "m2", name: "마을 (붕괴 후)", defaultLighting: { ambient: 0.5, color: "#223" }, events: [] } },
+    });
+    const gaps = jrpgCompletionGaps(project, "", { task: ask });
+    expect(gaps.some((gap) => gap.includes("place_vehicle"))).toBe(false);
+    expect(gaps.some((gap) => gap.includes("derive_map_variant"))).toBe(false);
+  });
+  it("이름만 「폐허」인 맵은 붕괴 후로 세지 않는다(jrpg-loop-2 ff2)", () => {
+    const project = jrpg({
+      system: { genre: "adventure-jrpg", titleScreen: { title: "버들나루의 봉인" }, vehicles: [{ id: "airship", characterIndex: 2, mapId: "m1", x: 1, y: 1 }] },
+      maps: { m1: { id: "m1", name: "마을", events: [] }, m2: { id: "m2", name: "에덴의 폐허 거점", events: [] } },
+    });
+    expect(jrpgCompletionGaps(project, "", { task: ask }).some((gap) => gap.includes("derive_map_variant"))).toBe(true);
+  });
+});
+
