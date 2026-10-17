@@ -78,8 +78,8 @@ export interface TransitVehicleDef {
   frames: Partial<Record<TransitFrameName, TransitFrameRect>>;
 }
 
-function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, openDoor = false): TransitVehicleDef {
-  const ewW = length * 16, ewH = 48, nsW = 48, nsH = openDoor ? 64 : 48;
+function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind, length: number, spriteCols = length, openDoor = false): TransitVehicleDef {
+  const ewW = spriteCols * 16, ewH = 48, nsW = 32, nsH = length * 16;
   const ewFoot = { w: length, h: 2 }, nsFoot = { w: 2, h: length };
   const frames: Partial<Record<TransitFrameName, TransitFrameRect>> = {};
   const suffixes = ["", "_0", "_1", "_2", "_3", "_brake"] as const;
@@ -94,20 +94,20 @@ function makeModernVehicleDef(id: string, name: string, kind: TransitVehicleKind
 }
 
 export const MODERN_CITY_TRANSIT_VEHICLES: readonly TransitVehicleDef[] = [
-  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 5),
-  makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 5),
-  makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 5),
-  makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 5),
-  makeModernVehicleDef("mc-veh-sedan-a-white", "승용차 · 흰색", "car", 5),
-  makeModernVehicleDef("mc-veh-sedan-a-black", "승용차 · 검정", "car", 5),
-  makeModernVehicleDef("mc-veh-car2-c-beige", "낮은 지붕 세단 · 베이지", "car", 5),
-  makeModernVehicleDef("mc-veh-car2-c-green", "낮은 지붕 세단 · 녹색", "car", 5),
-  makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 5),
-  makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 5),
-  makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 6),
-  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 6),
-  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 7),
-  makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 8, true),
+  makeModernVehicleDef("mc-veh-police-a", "경찰 패트롤카", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-taxi-b", "도심 택시", "taxi", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-red", "낮은 지붕 세단 · 빨강", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-navy", "승용차 · 남색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-white", "승용차 · 흰색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a-black", "승용차 · 검정", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-beige", "낮은 지붕 세단 · 베이지", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-car2-c-green", "낮은 지붕 세단 · 녹색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-sedan-a", "승용차 · 은색", "car", 3, 5),
+  makeModernVehicleDef("mc-veh-van-a", "승합차(밴)", "truck", 3, 5),
+  makeModernVehicleDef("mc-veh-truck-a", "소형 박스 트럭", "truck", 4, 6),
+  makeModernVehicleDef("mc-veh-ambulance-a", "구급차", "truck", 4, 6),
+  makeModernVehicleDef("mc-veh-firetruck-b", "소방차", "truck", 4, 7),
+  makeModernVehicleDef("mc-veh-bus-a", "시내버스", "bus", 5, 8, true),
 ];
 
 const CATALOG = catalogJson as unknown as { version: number; tileSize: number; vehicles: TransitVehicleDef[] };

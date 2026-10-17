@@ -117,8 +117,8 @@ export function syncTransitSprites(scene: PlaySceneContext): void {
       sprite = phaser.add.image(0, 0, key, frameName).setOrigin(0, 1);
       sprites.set(v.key, sprite);
     } else if (sprite.frame.name !== frameName) sprite.setFrame(frameName);
-    // 그림 아래 가장자리 = 발자국 아래 가장자리. 남북 프레임이 차선 폭보다 넓으면 중심을 맞춘다.
-    const centerX = (pose.dir === "up" || pose.dir === "down") && frameRect.w > pose.rect.w * SPRITE_CELL;
+    // 그림 아래 가장자리 = 발자국 아래 가장자리. 프레임 폭이 발자국 칸 폭과 다르면 중심을 맞춘다.
+    const centerX = frameRect.w !== pose.rect.w * SPRITE_CELL;
     const x = centerX
       ? Math.round((pose.rect.x + pose.rect.w / 2) * tile - (frameRect.w * scale) / 2)
       : Math.round(pose.rect.x * tile);

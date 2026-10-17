@@ -382,13 +382,15 @@ export function ensureModernCityVehicleTexture(
   const frontKit = findKit(meta?.front ?? "mc-veh-car-front-a") ?? sideKit;
 
   const srcImg = phaser.textures.get(MODERN_CITY_TEXTURE).getSourceImage() as CanvasImageSource;
-  const ewW = def.length * TILE;
+  const ewW = def.frames.right?.w ?? sideKit.width * TILE;
   const ewH = 48;
   const isBus = kitId === "mc-veh-bus-a";
-  const nsW = 48;
-  const nsH = isBus ? 64 : 48;
+  const nsW = def.frames.up?.w ?? 32;
+  const nsH = def.frames.up?.h ?? def.length * TILE;
 
   const baseRight = extractKitImageData(srcImg, sideKit, ewW, ewH);
+  const leftKit = findKit(`${kitId}-l`);
+  const baseLeftMirrored = leftKit ? mirrorHorizontal(extractKitImageData(srcImg, leftKit, ewW, ewH)) : baseRight;
   const baseUp = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, backKit, nsW, nsH), baseRight, meta, "up");
   const baseDown = buildOriginalChipsetNsBase(srcImg, extractKitImageData(srcImg, frontKit, nsW, nsH), baseRight, meta, "down");
 
@@ -398,24 +400,19 @@ export function ensureModernCityVehicleTexture(
   const ctx = canvas.getContext("2d")!;
   ctx.imageSmoothingEnabled = false;
 
-  // Row 0 (right) & Row 1 (left)
-  const rightBase = buildEwFrame(baseRight, kitId, meta, 0, false, false);
-  ctx.putImageData(rightBase, 0, 0);
-  ctx.putImageData(mirrorHorizontal(rightBase), 0, 48);
+  // Row 0 (right) & Row 1 (left — uses chipset's native <kitId>-l art)
+  ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, false, false), 0, 0);
+  ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, false, false)), 0, 48);
   for (let p = 0; p < 4; p += 1) {
-    const rf = buildEwFrame(baseRight, kitId, meta, p, false, false);
-    ctx.putImageData(rf, ewW * (p + 1), 0);
-    ctx.putImageData(mirrorHorizontal(rf), ewW * (p + 1), 48);
+    ctx.putImageData(buildEwFrame(baseRight, kitId, meta, p, false, false), ewW * (p + 1), 0);
+    ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, p, false, false)), ewW * (p + 1), 48);
   }
-  const rightBrake = buildEwFrame(baseRight, kitId, meta, 0, true, false);
-  ctx.putImageData(rightBrake, ewW * 5, 0);
-  ctx.putImageData(mirrorHorizontal(rightBrake), ewW * 5, 48);
+  ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, true, false), ewW * 5, 0);
+  ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, true, false)), ewW * 5, 48);
   if (isBus) {
-    const rightOpen = buildEwFrame(baseRight, kitId, meta, 0, false, true);
-    ctx.putImageData(rightOpen, ewW * 6, 0);
-    ctx.putImageData(mirrorHorizontal(rightOpen), ewW * 6, 48);
+    ctx.putImageData(buildEwFrame(baseRight, kitId, meta, 0, false, true), ewW * 6, 0);
+    ctx.putImageData(mirrorHorizontal(buildEwFrame(baseLeftMirrored, kitId, meta, 0, false, true)), ewW * 6, 48);
   }
-
   // Row 2 (up) & Row 3 (down)
   const upY = 96;
   const downY = 96 + nsH;
