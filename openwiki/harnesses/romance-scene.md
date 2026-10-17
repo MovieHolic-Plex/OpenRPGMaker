@@ -136,6 +136,11 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - **429 자동 재시도(연애·JRPG 공용).** 팀 finish 는 429 로 끊긴 채 같은 맵에 다시 맡겨지지 않은 배정(`rateLimitedUnresolved`)이 있으면 제공자 쿨다운(`retry-after-ms`, 없으면 60초, 최대 330초)만큼 쉰 뒤 같은 맵·같은 task 로 **한 번** 다시 맡기고(`retryRateLimitedAssignments`) 끝나면 이어서 finish 검사를 한다. 팀 남은 시간이 쉬는 시간+120초 미만이면 건너뛴다. 다시 429 면 기존 가드(팀장에게 되돌려 재배정, #2752)가 그대로 걸린다. 증거: `scripts/qa/fix-leftovers/team-429-retry.mts`.
 - **못 고친 것.** R11(맵 구도: 아스팔트 띠·봄에 가을 나무·NPC 밀집은 모델의 배치 판단이라 코드 규칙으로 고칠 수 없다), R13(연애 전용 도구를 안 쓰는 것은 모델 선택 — 지시문 효과는 실 Argon 재측정으로만 판정), R16(측정 한계).
 
+## 사물 이름 NPC 에 사람 흉상이 붙는 것 차단 (2026-10-17 romance-loop-4, R3 rom-a)
+
+실제 Argon 캠퍼스 판(`r3-rom-a`)에서 사물(「설렘 포인트 · 고백 전 심호흡」)을 `place_npc` 로 사람 캐릭터 칩(`tex_oprn_charset_modern2` #79)에 놓고 `eventCompile.ts` 가 사람 흉상(`changeFace`)을 자동 삽입했다.
+`checkRomance`(src/qa/gameCheck/romance.ts)가 `people` 이벤트(뼈대 시작·끝 이벤트 `ev_segment_starter`·`ev_segment_end` 제외) 중 사물 이름(`OBJECT_NPC_NAME`: 표지판·게시판·안내판·푯말·우편함·시계탑·나무·상자·벤치·분수대·자판기·포인트·안내데스크·다이어리·수첩)이면서 사람 역할어(`PERSON_ROLE_NAME`: 학생·선배·매니저 등)가 없고 투명하지 않은 칩 + `changeFace` 가 함께 있는 경우 `romance-object-npc-bust` 완료 조건 경고(`COMPLETION_CODES`)를 내어 `place_props`/투명 오브젝트 이벤트(`graphic:{transparent:true}·injectFace:false`)로 바꾸게 한다.
+
 ## 기한 엔딩의 기본 결말은 조건이 없어야 한다 (2026-10-17 romance-loop-1, R1 「아무도 안 만남」)
 
 실제 Argon 캠퍼스 판(rom-a)에서 `qa:game check` 의 자동 플레이가 「아무도 안 만남: 40일을 보내도 기한 엔딩이 오지 않았습니다」 를 냈다.

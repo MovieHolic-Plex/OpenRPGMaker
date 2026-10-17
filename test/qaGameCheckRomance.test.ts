@@ -1,6 +1,6 @@
 import { runTool } from "@/editor/tools";
 import { describe, expect, it } from "vitest";
-import { checkRomance, isRomanceCheckTarget, isRomanceGameRequest } from "@/qa/gameCheck/romance";
+import { checkRomance, isRomanceCheckTarget, isRomanceGameRequest, romanceCompletionGaps } from "@/qa/gameCheck/romance";
 import { createBlankProject } from "@/project/defaults";
 import { installDeadlineEnding } from "@/project/deadlineEnding";
 import { romanceTitleArtForText, ROMANCE_TITLE_BACKGROUNDS } from "@/project/romanceTitleArt";
@@ -230,5 +230,29 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     for (const ending of made) expect(chain).toContain(ending.id);
     expect(chain).toContain("ending_romance_happy");
     expect(codes(ctx.project)).not.toContain("romance-heroine-endings-uncalled");
+  });
+
+  it("사물 이름 NPC 가 사람 칩과 changeFace 를 달면 romance-object-npc-bust 완료 조건 경고를 내고, 인물 직함이나 투명 이벤트는 조용하다", () => {
+    const project = romanceProject();
+    const map = Object.values(project.maps)[0]!;
+    const objectNpc = npc("npc_sign", { name: "설렘 포인트 · 고백 전 심호흡", chip: "tex_oprn_charset_modern2" });
+    const page = objectNpc.pages?.[0];
+    if (!page) throw new Error("missing page");
+    page.commands = [
+      { kind: "changeFace", faceGraphic: "face_modern2" },
+      { kind: "text", speaker: "설렘 포인트 · 고백 전 심호흡", body: "심호흡을 했다." },
+    ];
+    map.events.push(objectNpc);
+    const finding = checkRomance(project).find((entry) => entry.code === "romance-object-npc-bust");
+    expect(finding?.message).toContain("설렘 포인트 · 고백 전 심호흡");
+    expect(finding?.message).toContain("place_props/오브젝트 이벤트");
+    expect(romanceCompletionGaps(project, { task: "캠퍼스 연애 게임 만들어 줘" }).some((msg) => msg.includes("설렘 포인트 · 고백 전 심호흡"))).toBe(true);
+
+    objectNpc.name = "방송부 안내 학생";
+    expect(codes(project)).not.toContain("romance-object-npc-bust");
+
+    objectNpc.name = "설렘 포인트 · 고백 전 심호흡";
+    page.graphic = { transparent: true };
+    expect(codes(project)).not.toContain("romance-object-npc-bust");
   });
 });
