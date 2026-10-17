@@ -1,17 +1,6 @@
 import { addMapFolder, createMapFromSpec } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { openEventSubdialog } from "@/editor/panels/eventEditor/subdialog";
-import {
-  createMapWithSpacePreset,
-  nextSpacePresetStyleVariant,
-  presetsByCategory,
-  SPACE_PRESET_CATEGORIES,
-  SPACE_PRESET_STYLE_VARIANTS,
-  styleVariantIndex,
-  type SpacePresetCategoryId,
-  type SpacePresetItem,
-  type SpacePresetStyleVariant,
-} from "@/editor/spacePresetCatalog";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import {
   clampMapSize,
@@ -35,7 +24,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
     title: spec.parentId ? "하위 맵 만들기" : "맵 만들기",
     subtitle: "이름·크기·타일 그림판을 정한 뒤 만듭니다. 트리 계층은 이동 문이 아닙니다.",
     testId: "map-create-dialog",
-    width: "wide",
+    width: "narrow",
     render: (body, close) => {
       const name = el("input", {
         attrs: { type: "text", "aria-label": "맵 이름" },
@@ -70,60 +59,7 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
       appendTreeParentOptions(parent, project.mapTree, project.maps, 0);
       parent.value = spec.parentId;
 
-      let selectedSpacePreset: SpacePresetItem | null = null;
-      let activeCategory: SpacePresetCategoryId = "modern_interior";
-      let styleVariant: SpacePresetStyleVariant = "A";
-      let variantSeed = 1;
-      let lastAutoPresetName = spec.name;
-
-      const confirmBtn = el("button", {
-        class: "btn primary",
-        text: "만들기",
-        attrs: { type: "button" },
-        dataset: { testid: "map-create-confirm" },
-      }) as HTMLButtonElement;
-
-      const activeBanner = el("div", {
-        class: "map-space-preset-active-banner",
-        dataset: { testid: "space-preset-active-banner" },
-      });
-
-      const updateConfirmAndBanner = (): void => {
-        if (!selectedSpacePreset) {
-          confirmBtn.textContent = "만들기";
-          activeBanner.hidden = true;
-          activeBanner.replaceChildren();
-          return;
-        }
-        const svMeta = SPACE_PRESET_STYLE_VARIANTS.find((v) => v.id === styleVariant) ?? SPACE_PRESET_STYLE_VARIANTS[0]!;
-        confirmBtn.textContent = `공간 프리셋 생성 (${selectedSpacePreset.shortName} · 구조 ${styleVariant})`;
-        activeBanner.hidden = false;
-        activeBanner.replaceChildren(
-          el("div", {
-            class: "map-space-preset-active-banner-info",
-            children: [
-              el("strong", { text: `선택됨: ${selectedSpacePreset.name} (${selectedSpacePreset.badge})` }),
-              el("span", { text: `${svMeta.label} · 시드 #${variantSeed} · 구역: ${selectedSpacePreset.zonesSummary}` }),
-            ],
-          }),
-          el("button", {
-            class: "btn map-space-preset-clear-btn",
-            text: "빈 맵으로 전환",
-            attrs: { type: "button" },
-            dataset: { testid: "space-preset-clear" },
-            on: {
-              click: () => {
-                selectedSpacePreset = null;
-                renderPresetCards();
-                updateConfirmAndBanner();
-              },
-            },
-          }),
-        );
-      };
-
       const applyPreset = (preset: MapCreatePreset): void => {
-        selectedSpacePreset = null;
         spec = resolveMapCreateDefaults(store.getCurrent(), {
           parentId: parent.value as MapId | "",
           preset,
@@ -132,41 +68,11 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         width.value = String(spec.width);
         height.value = String(spec.height);
         tileset.value = spec.tilesetId;
-        renderPresetCards();
-        updateConfirmAndBanner();
       };
 
-      const selectSpacePreset = (item: SpacePresetItem): void => {
-        selectedSpacePreset = item;
-        const trimmed = name.value.trim();
-        if (!trimmed || trimmed === "새 맵" || trimmed === lastAutoPresetName) {
-          name.value = item.name;
-          lastAutoPresetName = item.name;
-        }
-        width.value = String(item.defaultWidth);
-        height.value = String(item.defaultHeight);
-        if (project.tilesets[item.tilesetId]) {
-          tileset.value = item.tilesetId;
-        }
-        renderPresetCards();
-        updateConfirmAndBanner();
-      };
-
-      const presets = el("div", { class: "map-create-presets", dataset: { testid: "map-create-presets" } });
-      presets.append(el("button", {
-        class: "btn",
-        text: "빈 월드맵",
-        attrs: { type: "button" },
-        dataset: { testid: "map-create-worldmap-blank" },
-        on: {
-          click: () => {
-            applyPreset("blank");
-            tileset.value = WORLDMAP_AUTHORING_ID;
-            width.value = "48";
-            height.value = "36";
-          },
-        },
-      }));
+      const presets = el("div", { class: "map-create-presets" });
+      presets.append(el('button',{class:'btn',text:'빈 월드맵',attrs:{type:'button'},dataset:{testid:'map-create-worldmap-blank'},
+        on:{click:()=>{applyPreset('blank');tileset.value=WORLDMAP_AUTHORING_ID;width.value='48';height.value='36';}}}));
       for (const [value, label] of [
         ["blank", "빈 맵"],
         ["inherit-parent", "부모와 같게"],
@@ -181,112 +87,13 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         }));
       }
 
-      const categoryTabsHost = el("div", {
-        class: "map-space-preset-category-tabs",
-        attrs: { role: "tablist", "aria-label": "공간 프리셋 분류" },
-        dataset: { testid: "space-preset-category-tabs" },
-      });
-      const variantBarHost = el("div", {
-        class: "map-space-preset-variant-bar",
-        dataset: { testid: "space-preset-variant-bar" },
-      });
-      const cardsHost = el("div", {
-        class: "map-space-preset-grid",
-        dataset: { testid: "space-preset-grid" },
-      });
-
-      const renderCategoryTabs = (): void => {
-        categoryTabsHost.replaceChildren(
-          ...SPACE_PRESET_CATEGORIES.map((cat) => {
-            const active = cat.id === activeCategory;
-            return el("button", {
-              class: `map-space-preset-tab${active ? " is-active" : ""}`,
-              text: cat.label,
-              attrs: {
-                type: "button",
-                role: "tab",
-                "aria-selected": active ? "true" : "false",
-                title: cat.description,
-              },
-              dataset: { testid: `space-preset-cat-${cat.id}`, category: cat.id },
-              on: {
-                click: () => {
-                  activeCategory = cat.id;
-                  renderCategoryTabs();
-                  renderPresetCards();
-                },
-              },
-            });
-          }),
-        );
-      };
-
-      const renderVariantBar = (): void => {
-        const vIdx = styleVariantIndex(styleVariant) + 1;
-        const svMeta = SPACE_PRESET_STYLE_VARIANTS.find((v) => v.id === styleVariant) ?? SPACE_PRESET_STYLE_VARIANTS[0]!;
-        variantBarHost.replaceChildren(
-          el("div", {
-            class: "map-space-preset-style-pills",
-            children: SPACE_PRESET_STYLE_VARIANTS.map((sv) => {
-              const isCurrent = sv.id === styleVariant;
-              return el("button", {
-                class: `map-space-preset-style-pill${isCurrent ? " is-active" : ""}`,
-                text: sv.shortLabel,
-                attrs: {
-                  type: "button",
-                  "aria-pressed": isCurrent ? "true" : "false",
-                  title: `${sv.label} — ${sv.summary}`,
-                },
-                dataset: { testid: `space-preset-style-${sv.id}`, styleVariant: sv.id },
-                on: {
-                  click: () => {
-                    styleVariant = sv.id;
-                    variantSeed = styleVariantIndex(sv.id) + 1;
-                    renderVariantBar();
-                    updateConfirmAndBanner();
-                  },
-                },
-              });
-            }),
-          }),
-          el("button", {
-            class: "btn map-space-preset-cycle-btn",
-            text: `다른 구조·분위기로 변형 (Variant ${vIdx}/4 · ${svMeta.shortLabel})`,
-            attrs: {
-              type: "button",
-              title: "클릭할 때마다 방 구획 배치(동↔서 반전·광폭·비대칭)와 바닥/벽 팔레트, 소품 배치가 다른 변형으로 바뀝니다.",
-            },
-            dataset: { testid: "space-preset-cycle-variant" },
-            on: {
-              click: () => {
-                styleVariant = nextSpacePresetStyleVariant(styleVariant);
-                variantSeed = (variantSeed % 4) + 1;
-                renderVariantBar();
-                updateConfirmAndBanner();
-              },
-            },
-          }),
-        );
-      };
-
       const submit = (): void => {
+        // 상한 초과는 조용히 줄이지 않고 여기서 거부한다 — 입력 max 속성은 직접 입력·붙여넣기로
+        // 넘길 수 있어서 값만 클램프하면 요청과 다른 크기의 맵이 말없이 생겼다(OPRN-OUT-018).
         const requestedWidth = Number(width.value);
         const requestedHeight = Number(height.value);
         if (exceedsMapDimensionLimit(requestedWidth, requestedHeight)) {
           toast(mapSizeLimitMessage(), "error");
-          return;
-        }
-        if (selectedSpacePreset) {
-          const res = createMapWithSpacePreset(selectedSpacePreset, {
-            styleVariant,
-            variantSeed,
-            customName: name.value.trim() || selectedSpacePreset.name,
-            parentId: parent.value as MapId | "",
-            requestedWidth: clampMapSize(requestedWidth, selectedSpacePreset.defaultWidth),
-            requestedHeight: clampMapSize(requestedHeight, selectedSpacePreset.defaultHeight),
-          });
-          if (!res.ok) return;
-          close();
           return;
         }
         const id = createMapFromSpec({
@@ -302,105 +109,9 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
         close();
       };
 
-      const renderPresetCards = (): void => {
-        const list = presetsByCategory(activeCategory);
-        cardsHost.replaceChildren(
-          ...list.map((item) => {
-            const isSelected = selectedSpacePreset?.id === item.id;
-            return el("div", {
-              class: `map-space-preset-card${isSelected ? " is-active" : ""}`,
-              attrs: {
-                role: "button",
-                tabindex: "0",
-                "aria-pressed": isSelected ? "true" : "false",
-                title: `${item.name} (${item.badge})\n구역: ${item.zonesSummary}\n${item.description}`,
-              },
-              dataset: { testid: `space-preset-card-${item.id}`, presetId: item.id },
-              on: {
-                click: () => selectSpacePreset(item),
-                dblclick: () => {
-                  selectSpacePreset(item);
-                  submit();
-                },
-                keydown: (ev: Event) => {
-                  if (!(ev instanceof KeyboardEvent)) return;
-                  if (ev.key === "Enter" || ev.key === " ") {
-                    ev.preventDefault();
-                    selectSpacePreset(item);
-                  }
-                },
-              },
-              children: [
-                el("div", {
-                  class: "map-space-preset-card-top",
-                  children: [
-                    el("span", { class: "map-space-preset-card-title", text: item.name }),
-                    el("span", { class: "map-space-preset-card-badge", text: item.badge }),
-                  ],
-                }),
-                el("div", { class: "map-space-preset-card-zones", text: item.zonesSummary }),
-                el("div", {
-                  class: "map-space-preset-card-footer",
-                  children: [
-                    el("span", { class: "map-space-preset-card-desc", text: item.description }),
-                    el("button", {
-                      class: "btn map-space-preset-card-apply",
-                      text: "바로 생성",
-                      attrs: { type: "button" },
-                      dataset: { testid: `space-preset-instant-${item.id}` },
-                      on: {
-                        click: (ev: Event) => {
-                          ev.stopPropagation();
-                          selectSpacePreset(item);
-                          submit();
-                        },
-                      },
-                    }),
-                  ],
-                }),
-              ],
-            });
-          }),
-        );
-      };
-
-      confirmBtn.addEventListener("click", submit);
-      renderCategoryTabs();
-      renderVariantBar();
-      renderPresetCards();
-      updateConfirmAndBanner();
-
-      const gallerySection = el("section", {
-        class: "map-space-preset-gallery-section",
-        attrs: { "aria-label": "공간 프리셋 갤러리" },
-        dataset: { testid: "map-create-space-gallery" },
-        children: [
-          el("div", {
-            class: "map-space-preset-gallery-header",
-            children: [
-              el("div", {
-                class: "map-space-preset-gallery-title-wrap",
-                children: [
-                  el("strong", { class: "map-space-preset-gallery-title", text: "공간 프리셋 갤러리 (20종 다구역 완성 맵)" }),
-                  el("span", {
-                    class: "map-space-preset-gallery-subtitle",
-                    text: "빈 잔디판 대신 로비·강의실·백화점·지하철역·병원·강변·번화가·상점가·여관·던전을 1클릭으로 생성합니다.",
-                  }),
-                ],
-              }),
-              variantBarHost,
-            ],
-          }),
-          categoryTabsHost,
-          cardsHost,
-          activeBanner,
-        ],
-      });
-
       body.append(
         el("div", { class: "map-create-form", children: [
           presets,
-          gallerySection,
           field("이름", name),
           field("가로", width),
           field("세로", height),
@@ -414,14 +125,14 @@ export function openMapCreateDialog(request: MapCreateRequest = {}): void {
             class: "map-create-hint",
             text: "상위에 넣는 것만으로는 문이 생기지 않습니다. 만든 뒤 메뉴에서 왕복 이동을 넣을 수 있습니다.",
           }),
-          confirmBtn,
           el("button", {
-            class: "btn",
-            text: "세계 지도 만들기",
+            class: "btn primary",
+            text: "만들기",
             attrs: { type: "button" },
-            dataset: { testid: "map-create-world-atlas" },
-            on: { click: () => { close(); openWorldAtlasCreateDialog(); } },
+            dataset: { testid: "map-create-confirm" },
+            on: { click: submit },
           }),
+          el('button', {class:'btn',text:'세계 지도 만들기',attrs:{type:'button'},dataset:{testid:'map-create-world-atlas'},on:{click:()=>{close();openWorldAtlasCreateDialog();}}}),
           el("button", {
             class: "btn",
             text: "분류만 만들기",

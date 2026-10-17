@@ -2,7 +2,7 @@ import { el } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import { isTileCellChange, store } from "@/project/store";
 import { renderMapList } from "./mapList";
-import { createSpacePresetSidebarPanel } from "./spacePresetSidebarPanel";
+
 /** Painting emits per pointer sample; the tree only needs the settled stroke (thumbnails). */
 const TILE_PAINT_SETTLE_MS = 500;
 
@@ -14,13 +14,11 @@ const TILE_PAINT_SETTLE_MS = 500;
 export function createMapSidebarSection(): { root: HTMLElement; show(): void; dispose(): void } {
   let mapId = editorState.get().currentMapId;
   let settleTimer: ReturnType<typeof setTimeout> | null = null;
-  const presetHost = el("div", { class: "map-sidebar-preset-host", dataset: { testid: "map-sidebar-preset-host" } });
   const list = el("div", { class: "map-sidebar-list", dataset: { testid: "map-sidebar-list" } });
-  const root = el("section", { class: "map-sidebar-section", attrs: { "aria-label": "맵" }, dataset: { testid: "map-sidebar-section" }, children: [presetHost, list] });
+  const root = el("section", { class: "map-sidebar-section", attrs: { "aria-label": "맵" }, dataset: { testid: "map-sidebar-section" }, children: [list] });
   function refresh(): void {
     if (settleTimer !== null) { clearTimeout(settleTimer); settleTimer = null; }
     if (root.hidden) return;
-    presetHost.replaceChildren(createSpacePresetSidebarPanel({ defaultExpanded: true, testidPrefix: "sidebar-space-preset" }));
     renderMapList(list);
   }
   const unsubscribeEditor = editorState.subscribe(() => {

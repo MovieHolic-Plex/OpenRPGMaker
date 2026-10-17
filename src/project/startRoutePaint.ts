@@ -158,46 +158,61 @@ export function ensureCampusWaterTile(project: Project, ts: TilesetDef): number 
   return wid;
 }
 
+/** 구조 키트 하나를 위층에 찍는다. 발자국이 맵 밖이거나 이미 찬 칸(이벤트 주변·앞서 찍은 키트)에 걸치면 찍지 않는다. 찍으면 발자국을 occupied 에 넣는다. */
 function stampRiversideKit(
   ts: TilesetDef,
   map: GameMap,
   kitId: string,
   x0: number,
   y0: number,
-  reserved: ReadonlySet<number>,
-): void {
+  occupied: Set<number>,
+): boolean {
   const kit = ts.structureKits?.find((k) => k.id === kitId);
-  if (!kit) return;
+  if (!kit) return false;
   const W = map.width, H = map.height;
-  if (x0 < 0 || y0 < 0 || x0 + kit.width > W || y0 + kit.height > H) return;
+  if (x0 < 0 || y0 < 0 || x0 + kit.width > W || y0 + kit.height > H) return false;
   for (let dy = 0; dy < kit.height; dy++) {
     for (let dx = 0; dx < kit.width; dx++) {
-      if (reserved.has((y0 + dy) * W + (x0 + dx))) return;
+      if (occupied.has((y0 + dy) * W + (x0 + dx))) return false;
     }
   }
   for (let dy = 0; dy < kit.height; dy++) {
     const row = kit.rows[dy];
-    if (!row) continue;
     for (let dx = 0; dx < kit.width; dx++) {
       const idx = (y0 + dy) * W + (x0 + dx);
-      const up = row.upperTiles?.[dx];
+      occupied.add(idx);
+      const up = row?.upperTiles?.[dx];
       if (typeof up === "number" && up >= 0) map.upperTiles[idx] = up;
     }
   }
+  return true;
 }
 
+/** 칩셋별 강변 바닥 재료(lower 타일 번호)와 소품 키트 이름. 캠퍼스 칩셋에 없는 키트는 조용히 건너뛴다. */
+const RIVERSIDE_PALETTES = {
+  modern_city: {
+    embankment: 10, grass: 17, grassShade: 18, flower: 19, walkTop: 10, walk: 7, walkAlt: 8, walkBot: 9, paved: 7, pavedAlt: 8, path: 22,
+    trees: ["mc-prop-ginkgo-a", "mc-prop-keyaki-a", "mc-prop-blossom-a"], lamp: "mc-prop-park-lamp-a", bench: "mc-prop-bench-c", planter: "mc-prop-planter-b",
+  },
+  modern_campus: {
+    embankment: 6, grass: 1, grassShade: 4, flower: 3, walkTop: 7, walk: 8, walkAlt: 9, walkBot: 7, paved: 8, pavedAlt: 9, path: 9,
+    trees: ["mc-tree-zelkova", "mc-tree-ginkgo"], lamp: "mc-lamp", bench: "mc-bench", planter: "mc-planter",
+  },
+} as const;
+
 /**
- * 강변·수변·호숫가 산책로를 풍부하게 깐다:
- * - 높이 최소 15줄 확보
- * - 북쪽 4줄(y=0..3, 26.7%) 강물 + y=4 석축/연석 제방 1줄 (romance-waterfront-no-water 기준 15%·2줄 이상 충족)
- * - y=5..8 강변 잔디·화단 공원 띠(5~6칸 간격 가로수·가로등·벤치, NPC 밑 3×2 벽돌 섬 금지)
- * - y=9..12 끊기지 않는 연속 돌 산책로 + 남쪽 연석(보도 중간을 끊는 벽돌 패치 금지)
- * - y=13..H-1 남쪽 잔디·벤치·화분 띠
+ * 강변·수변·호숫가 산책로를 깐다(2026-10-18 적대적 VQA: 강이 자로 그은 직선이고 남쪽 절반이 빈 잔디 사각형이었다):
+ * - 높이 최소 15줄. 북쪽 강물은 씨앗마다 다른 완만한 굽이(깊이 3~6줄, 이웃 열과 1줄 넘게 차이 나지 않음) + 굽이 따라 석축 제방 1줄
+ *   (romance-waterfront-no-water 기준 물 15%·3줄 이상 유지), 물로 2줄 나간 돌 전망 부두 하나
+ * - 제방 아래 잔디·화단 띠에 가로수와 가로등을 번갈아(나무 3줄이 들어가는 자리에만)
+ * - 끊기지 않는 연속 돌 산책로 4줄(위 연석 · 포석 2줄 · 아래 연석) — 이동 이벤트·NPC 는 이 줄로 맞춘다
+ * - 산책로 남쪽: 6줄 이상이면 세 구획 — 분수 광장(포석 + 분수 + 벤치) · 카페 테라스(테라스 자리·매점) · 꽃 정원(굽은 모래 오솔길·꽃밭·철쭉·벚나무),
+ *   맨 아래는 가로등 선 보도. 그보다 얕으면 화단 띠 + 벤치·화분 교대.
  */
 export function paintRiversidePromenade(
   project: Project,
   map: GameMap,
-  plan?: Partial<Pick<StartPlan, "entryY" | "endY" | "seed">> & { readonly styleVariant?: "A" | "B" | "C" | "D" },
+  plan?: Partial<Pick<StartPlan, "entryY" | "endY" | "seed">>,
 ): void {
   ensureRiversideHeight(project, map, 15);
   const W = map.width, H = map.height;
@@ -205,9 +220,14 @@ export function paintRiversidePromenade(
   if (!map.upperTiles || map.upperTiles.length !== W * H) map.upperTiles = new Array<number>(W * H).fill(-1);
   if (!map.upperOverlayTiles || map.upperOverlayTiles.length !== W * H) map.upperOverlayTiles = new Array<number>(W * H).fill(-1);
 
-  const sv = plan?.styleVariant;
-  const mode = sv === "B" ? 1 : sv === "C" ? 2 : sv === "D" ? 3 : sv === "A" ? 0 : Math.max(0, ((plan?.seed ?? 1) - 1) % 4);
-  const baseWaterDepth = mode === 1 ? 5 : mode === 2 ? 3 : 4;
+  let a = (Math.floor(plan?.seed ?? 1) >>> 0) || 1;
+  const rnd = (): number => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), a | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const baseWaterDepth = H >= 20 ? 5 : 4;
 
   const ts = project.tilesets[map.tilesetId];
   if (map.tilesetId !== "modern_city" && map.tilesetId !== "modern_campus") {
@@ -235,20 +255,28 @@ export function paintRiversidePromenade(
   }
 
   const isCampus = map.tilesetId === "modern_campus";
+  const P = RIVERSIDE_PALETTES[isCampus ? "modern_campus" : "modern_city"];
   const water = isCampus && ts ? ensureCampusWaterTile(project, ts) : 23;
-  const embankment = isCampus ? 6 : 10;
-  const grass = isCampus ? 1 : 17;
-  const grassShade = isCampus ? 4 : 18;
-  const flower = isCampus ? 3 : 19;
-  const walkTop = isCampus ? 7 : 10;
-  const walkMid = isCampus ? 8 : mode === 2 ? 8 : 7;
-  const walkAlt = isCampus ? 9 : mode === 2 ? 7 : 8;
-  const walkBot = isCampus ? 7 : 9;
 
-  const walkTopY = mode === 1 ? 10 : mode === 2 ? 8 : 9;
+  // 강 굽이: 사인 두 개를 겹친 깊이(3..base+2), 이웃 열과 한 줄 넘게 차이 나지 않게 다듬는다.
+  // 진폭 1.1 은 굽이가 한두 칸 홈뿐이라 자로 그은 강으로 보였다(2026-10-18 VQA 1회차) — 1.9 로 넓힌다.
+  const phase = rnd() * Math.PI * 2, phase2 = rnd() * Math.PI * 2;
+  const depth: number[] = [];
+  for (let x = 0; x < W; x++) {
+    const v = baseWaterDepth + 0.5 + 1.9 * Math.sin((x / W) * Math.PI * 2 * 0.9 + phase) + 0.7 * Math.sin((x / W) * Math.PI * 2 * 2.1 + phase2);
+    depth.push(Math.max(3, Math.min(baseWaterDepth + 2, Math.round(v))));
+  }
+  for (let x = 1; x < W; x++) depth[x] = Math.max(depth[x - 1]! - 1, Math.min(depth[x - 1]! + 1, depth[x]!));
+  const deepest = Math.max(...depth);
+  // 제방 아래 잔디 띠는 나무(3줄)가 들어가도록 최소 3줄, 남쪽에 최소 2줄 남긴다.
+  const walkTopY = Math.min(H - 6, deepest + 4);
   const walkMidY1 = walkTopY + 1;
   const walkMidY2 = walkTopY + 2;
   const walkBotY = walkTopY + 3;
+  // 시작 맵이면 주인공을 강물이 아닌 산책로 가운데 줄에 세운다(강 굽이가 씨앗마다 달라 고정 줄은 물에 빠진다).
+  if (project.startMapId === map.id) project.startPos = { ...project.startPos, x: Math.min(W - 2, Math.max(1, project.startPos.x)), y: walkMidY1 };
+  const southY0 = walkBotY + 1;
+  const southRows = H - southY0;
 
   // 이동 이벤트와 NPC 가 물·제방·나무 줄에 걸리지 않고 연속 산책로 위에 서도록 정렬한다.
   for (const ev of map.events) {
@@ -265,88 +293,141 @@ export function paintRiversidePromenade(
     }
   }
 
-  const bayX0 = Math.floor(W * 0.28);
-  const bayX1 = Math.floor(W * 0.72);
-  const waterDepthAt = (x: number): number => (mode === 3 && x >= bayX0 && x <= bayX1 ? 5 : baseWaterDepth);
-
+  // 바닥: 물 · 제방 · 잔디 띠(물가 화단·그늘) · 산책로 4줄 · 남쪽 잔디(아래에서 구획을 덧칠한다).
+  const pierW = 3;
+  const pierX = Math.max(2, Math.min(W - pierW - 2, Math.floor(W * (0.2 + rnd() * 0.6))));
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const idx = y * W + x;
-      const wDepth = waterDepthAt(x);
-      if (y < wDepth) {
-        map.lowerTiles[idx] = water;
-      } else if (y === wDepth) {
-        map.lowerTiles[idx] = embankment;
-      } else if (y < walkTopY) {
-        const flowerY = wDepth + 2;
-        const isFlower = y === flowerY && (mode === 1 ? ((x + 2) % 6 <= 2) : mode === 2 ? ((x + 1) % 5 <= 1) : ((x >= 4 && x <= 6) || (x >= 11 && x <= 13) || (x >= 18 && x <= 19)));
-        const isShade = y === walkTopY - 2 && ((x + mode * 2) % 7 >= 1 && (x + mode * 2) % 7 <= 3);
-        map.lowerTiles[idx] = isFlower ? flower : isShade ? grassShade : grass;
-      } else if (y === walkTopY) {
-        map.lowerTiles[idx] = walkTop;
-      } else if (y === walkMidY1 || y === walkMidY2) {
-        const pattern = mode === 1 ? (x + y) % 3 === 0 : mode === 3 ? (x * 2 + y) % 4 === 1 : (x + y) % 5 === 2;
-        map.lowerTiles[idx] = pattern ? walkAlt : walkMid;
-      } else if (y === walkBotY) {
-        map.lowerTiles[idx] = walkBot;
-      } else {
-        const isSouthFlower = mode === 2 && y === walkBotY + 2 && (x % 6 >= 1 && x % 6 <= 3);
-        const isSouthShade = mode === 3 && y === H - 1 && (x % 5 <= 2);
-        map.lowerTiles[idx] = isSouthFlower ? flower : isSouthShade ? grassShade : grass;
-      }
+      const d = depth[x]!;
+      const onPier = x >= pierX && x < pierX + pierW && y >= d - 2 && y <= d;
+      let tile: number;
+      if (onPier) tile = x === pierX + 1 ? P.pavedAlt : P.paved;
+      else if (y < d) tile = water;
+      else if (y === d) tile = P.embankment;
+      else if (y < walkTopY) tile = y === d + 1 && (x + d) % 5 <= 1 ? P.flower : y === walkTopY - 1 && (x * 3 + y) % 7 <= 1 ? P.grassShade : P.grass;
+      else if (y === walkTopY) tile = P.walkTop;
+      else if (y === walkMidY1 || y === walkMidY2) tile = (x * 2 + y) % 5 === 1 ? P.walkAlt : P.walk;
+      else if (y === walkBotY) tile = P.walkBot;
+      else tile = (x * 5 + y * 3) % 11 === 0 ? P.grassShade : P.grass;
+      map.lowerTiles[idx] = tile;
       map.lowerOverlayTiles[idx] = -1;
       map.upperTiles[idx] = -1;
       map.upperOverlayTiles[idx] = -1;
     }
   }
+  const paint = (x0: number, y0: number, x1: number, y1: number, tile: number): void => {
+    for (let y = Math.max(0, y0); y <= Math.min(H - 1, y1); y++) for (let x = Math.max(0, x0); x <= Math.min(W - 1, x1); x++) map.lowerTiles[y * W + x] = tile;
+  };
+
+  // 남쪽 구획 바닥 — 세 구획(광장·테라스·정원)을 씨앗으로 섞어 놓는다.
+  type Block = "plaza" | "terrace" | "garden";
+  const blocks: { kind: Block; x0: number; x1: number }[] = [];
+  if (southRows >= 6) {
+    const order: Block[] = (["plaza", "terrace", "garden"] as Block[]).sort(() => rnd() - 0.5);
+    const cuts = [0, Math.floor(W / 3), Math.floor((2 * W) / 3), W];
+    for (let k = 0; k < 3; k++) blocks.push({ kind: order[k]!, x0: cuts[k]!, x1: cuts[k + 1]! - 1 });
+    const bottomY = H - 1;
+    paint(0, bottomY, W - 1, bottomY, P.paved);
+    for (const b of blocks) {
+      if (b.kind === "plaza") {
+        paint(b.x0 + 1, southY0, b.x1 - 1, bottomY - 1, P.paved);
+        for (let x = b.x0 + 1; x <= b.x1 - 1; x++) for (let y = southY0; y < bottomY; y++) if ((x + y) % 4 === 0) map.lowerTiles[y * W + x] = P.pavedAlt;
+        paint(b.x0, southY0, b.x0, bottomY - 1, P.flower);
+        paint(b.x1, southY0, b.x1, bottomY - 1, P.flower);
+      } else if (b.kind === "terrace") {
+        paint(b.x0 + 1, southY0 + 1, b.x1 - 1, bottomY - 1, P.pavedAlt);
+        paint(b.x0, southY0, b.x1, southY0, P.flower);
+        const gap = Math.floor((b.x0 + b.x1) / 2);
+        paint(gap - 1, southY0, gap + 1, southY0, P.paved);
+      } else {
+        // 굽은 오솔길: 산책로에서 맨 아래 보도까지 한 줄에 한 칸씩 옆으로 흔들린다.
+        let px = Math.floor((b.x0 + b.x1) / 2);
+        for (let y = southY0; y < bottomY; y++) {
+          paint(px - 1, y, px, y, P.path);
+          const step = rnd() < 0.5 ? -1 : 1;
+          px = Math.max(b.x0 + 2, Math.min(b.x1 - 2, px + step));
+        }
+        for (let y = southY0 + 1; y < bottomY; y++) for (let x = b.x0; x <= b.x1; x++) {
+          const idx = y * W + x;
+          if (map.lowerTiles[idx] === P.path) continue;
+          if ((x + 2 * y) % 6 <= 1 && y % 3 !== 0) map.lowerTiles[idx] = P.flower;
+        }
+      }
+    }
+  } else {
+    for (let x = 0; x < W; x++) if (x % 6 >= 1 && x % 6 <= 3) map.lowerTiles[southY0 * W + x] = P.flower;
+  }
 
   if (!ts) return;
-  const reserved = new Set<number>();
+  const occupied = new Set<number>();
   for (const ev of map.events) {
     for (let dy = -1; dy <= 1; dy++) {
       for (let dx = -1; dx <= 1; dx++) {
         const rx = ev.x + dx, ry = ev.y + dy;
-        if (rx >= 0 && rx < W && ry >= 0 && ry < H) reserved.add(ry * W + rx);
+        if (rx >= 0 && rx < W && ry >= 0 && ry < H) occupied.add(ry * W + rx);
       }
     }
   }
+  // 산책로 4줄과 부두는 비워 둔다(걷는 길).
+  for (let y = walkTopY; y <= walkBotY; y++) for (let x = 0; x < W; x++) occupied.add(y * W + x);
+  for (let x = pierX; x < pierX + pierW; x++) for (let y = depth[x]! - 2; y <= depth[x]!; y++) occupied.add(y * W + x);
 
-  const xShift = mode === 1 ? 2 : mode === 2 ? 1 : mode === 3 ? 3 : 0;
-  const treeStep = mode === 2 ? 6 : 7;
-  const southBenchY = Math.min(H - 2, walkBotY + 1);
-  if (isCampus) {
-    for (let x = 1 + xShift; x + 3 <= W; x += treeStep) {
-      const treeY = waterDepthAt(x + 1) + 1;
-      const flip = (Math.floor(x / treeStep) + mode) % 2 === 0;
-      stampRiversideKit(ts, map, flip ? "mc-tree-zelkova" : "mc-tree-ginkgo", x, treeY, reserved);
-    }
-    for (let x = 4 + (xShift % 3); x < W - 1; x += 6) {
-      const lampY = Math.min(walkTopY - 3, waterDepthAt(x) + 2);
-      if (lampY >= waterDepthAt(x) + 1) stampRiversideKit(ts, map, "mc-lamp", x, lampY, reserved);
-    }
+  // 물가 띠: 가로수(나무 3줄이 제방 아래 잔디에 들어가는 자리) 사이사이 가로등, 산책로 쪽 벤치.
+  const treeStep = 6 + Math.floor(rnd() * 2);
+  const xShift = Math.floor(rnd() * 4);
+  let treeK = Math.floor(rnd() * P.trees.length);
+  for (let x = 1 + xShift; x + 2 <= W; x += treeStep) {
+    const treeY = Math.max(depth[x]!, depth[x + 1]!) + 1;
+    if (treeY + 3 > walkTopY) continue;
+    if (stampRiversideKit(ts, map, P.trees[treeK % P.trees.length]!, x, treeY, occupied)) treeK++;
+    const lampX = x + Math.floor(treeStep / 2) + 1;
+    if (lampX < W - 1) stampRiversideKit(ts, map, P.lamp, lampX, walkTopY - 2, occupied);
+  }
+  for (let x = 3 + xShift; x + 2 <= W - 1; x += 9) stampRiversideKit(ts, map, "mc-in-mci-bench-metal", x, walkTopY - 1, occupied);
+
+  if (!blocks.length) {
     for (let x = 2 + xShift; x + 2 <= W - 1; x += 6) {
-      const flip = (Math.floor(x / 6) + mode) % 2 === 0;
-      stampRiversideKit(ts, map, flip ? "mc-bench" : "mc-planter", x, southBenchY, reserved);
+      const flip = (Math.floor(x / 6) + treeK) % 2 === 0;
+      stampRiversideKit(ts, map, flip ? P.bench : P.planter, x, Math.min(H - 2, southY0 + 1), occupied);
     }
-  } else {
-    for (let x = 1 + xShift; x + 3 <= W; x += treeStep) {
-      const treeY = waterDepthAt(x + 1) + 1;
-      const flip = (Math.floor(x / treeStep) + mode) % 2 === 0;
-      stampRiversideKit(ts, map, flip ? "mc-prop-ginkgo-a" : "mc-prop-keyaki-a", x, treeY, reserved);
-    }
-    for (let x = 4 + (xShift % 3); x < W - 1; x += 6) {
-      const lampY = Math.min(walkTopY - 3, waterDepthAt(x) + 2);
-      if (lampY >= waterDepthAt(x) + 1) stampRiversideKit(ts, map, "mc-prop-park-lamp-a", x, lampY, reserved);
-    }
-    const northBenchXs = mode === 1 ? [5, 17] : mode === 2 ? [2, 11, 20] : mode === 3 ? [6, 15] : [3, 19];
-    for (const bx of northBenchXs) {
-      if (bx + 2 <= W - 1) stampRiversideKit(ts, map, "mc-in-mci-bench-metal", bx, walkTopY - 1, reserved);
-    }
-    for (let x = 2 + xShift; x + 2 <= W - 1; x += 6) {
-      const flip = (Math.floor(x / 6) + mode) % 2 === 0;
-      stampRiversideKit(ts, map, flip ? "mc-prop-bench-c" : "mc-prop-planter-b", x, southBenchY, reserved);
+    return;
+  }
+
+  // 남쪽 구획 소품.
+  const bottomY = H - 1;
+  for (const b of blocks) {
+    const cx = Math.floor((b.x0 + b.x1) / 2);
+    if (b.kind === "plaza") {
+      const fy = southY0 + Math.max(1, Math.floor((bottomY - southY0 - 4) / 2));
+      stampRiversideKit(ts, map, "mc-prop-fountain-a", cx - 2, fy, occupied);
+      stampRiversideKit(ts, map, P.bench, b.x0 + 1, fy + 1, occupied);
+      stampRiversideKit(ts, map, P.bench, b.x1 - 2, fy + 1, occupied);
+      stampRiversideKit(ts, map, "mc-prop-bigpot-a", b.x0 + 1, southY0, occupied);
+      stampRiversideKit(ts, map, "mc-prop-bigpot-b", b.x1 - 1, southY0, occupied);
+      stampRiversideKit(ts, map, P.planter, b.x0 + 1, bottomY - 1, occupied);
+      stampRiversideKit(ts, map, P.planter, b.x1 - 1, bottomY - 1, occupied);
+    } else if (b.kind === "terrace") {
+      stampRiversideKit(ts, map, ["mc-prop-kiosk-a", "mc-prop-kiosk-b", "mc-prop-kiosk-c"][Math.floor(rnd() * 3)]!, b.x0 + 1, southY0 + 1, occupied);
+      const terraces = ["mc-prop-terrace-a", "mc-prop-terrace-b", "mc-prop-terrace-c"];
+      let k = 0;
+      for (let y = southY0 + 2; y + 1 < bottomY; y += 3) {
+        for (let x = b.x0 + 4; x + 1 <= b.x1 - 1; x += 3) stampRiversideKit(ts, map, terraces[k++ % 3]!, x, y, occupied);
+      }
+      stampRiversideKit(ts, map, "mc-prop-vending-a", b.x1 - 1, southY0 + 1, occupied);
+      stampRiversideKit(ts, map, "mc-prop-board-b-c", b.x0 + 1, bottomY - 2, occupied);
+    } else {
+      for (let y = southY0 + 1; y + 2 < bottomY; y += 3) {
+        stampRiversideKit(ts, map, rnd() < 0.5 ? "mc-prop-azalea-a" : "mc-prop-azalea-b", b.x0 + 1, y, occupied);
+        stampRiversideKit(ts, map, rnd() < 0.5 ? "mc-prop-azalea-a" : "mc-prop-azalea-b", b.x1 - 2, y, occupied);
+      }
+      stampRiversideKit(ts, map, "mc-prop-blossom-a", b.x0 + 3, southY0 + 1, occupied);
+      stampRiversideKit(ts, map, "mc-prop-blossom-b", b.x1 - 4, bottomY - 4, occupied);
     }
   }
+  // 맨 아래 보도: 가로등 줄 + 자전거 거치대.
+  for (let x = 2 + (xShift % 3); x < W - 1; x += 6) stampRiversideKit(ts, map, P.lamp, x, bottomY - 1, occupied);
+  stampRiversideKit(ts, map, "mc-prop-bike-row-a", Math.floor(W / 2) - 1, bottomY, occupied);
 }
 
 /**

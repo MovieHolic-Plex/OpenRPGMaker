@@ -19,6 +19,7 @@ import { referenceOwner } from "@/project/tilesetReferences";
 import { handInteriorPlanExits } from '@/editor/handInterior/exits';
 import { withComposedRooms } from '@/editor/handInterior/rooms';
 import { layoutAscii, layoutCandidates, LayoutError, type LayoutCandidate, type LayoutRequest } from '@/editor/handInterior/layout';
+import { composeInteriorBlueprint, type BlueprintInteriorArgs } from '@/editor/handInterior/blueprintComposers';
 import { furnishRooms } from '@/editor/handInterior/furnish';
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from '@/project/mapNamedLocations';
 
@@ -665,7 +666,24 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       }
     }
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
+    // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
+    // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
+    let blueprint: BlueprintInteriorArgs | undefined;
     if (args.layout && typeof args.layout === "object") {
+      const req = args.layout as LayoutRequest & { seed?: number };
+      // 청사진 출구는 한 칸이다 — 두 칸 출구(exitWidth:2)를 요구한 호출은 견본 배치를 쓴다.
+      if (typeof req.program === "string" && !req.rooms?.length && ((args.exitWidth as number | undefined) ?? 1) === 1) {
+        const seed = typeof req.seed === "number" ? req.seed : Math.floor(Math.random() * 10_000);
+        blueprint = composeInteriorBlueprint(tilesetId, req.program, spec, `${mapName}\n${briefText}`, seed);
+        if (blueprint) {
+          const { layout: _l, plan: _p, rooms: _r, connect: _c, exit: _e, ...rest } = args as Record<string, unknown>;
+          const { areas: _a, decisions, tileset: _t, ...built } = blueprint;
+          args = { ...rest, ...built } as typeof args;
+          fitNotes.push(`청사진 "${req.program}"(씨앗 ${seed})으로 새로 짰다 — ${decisions.join(" / ")}`);
+        }
+      }
+    }
+    if (!blueprint && args.layout && typeof args.layout === "object") {
       // 선택 칸을 다 채우는 모델이 layout 과 plan·rooms·connect·exit 를 함께 보낸다(2026-10-12 jp_city 도그푸딩: 같은 호출 4연속 거절).
       // layout 이 방 배치를 짜므로 layout 을 따르고, 같이 온 배치 칸은 버린 채 알린다.
       if (args.plan || args.rooms || args.connect || args.exit) {
@@ -786,6 +804,10 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     if (picked) {
       map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
       for (const r of picked.c.rooms) addMapLocation(map, { name: r.kind, x: r.x0, y: r.y0, w: r.x1 - r.x0 + 1, h: r.y1 - r.y0 + 1, note: "layout 으로 짠 방(견본 가구 한 벌)", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
+    }
+    if (blueprint) {
+      map.locations = (map.locations ?? []).filter((l) => !(l.tags ?? []).includes(HAND_LAYOUT_ROOM_TAG));
+      for (const a of blueprint.areas) addMapLocation(map, { name: a.name, x: a.x, y: a.y, w: a.w, h: a.h, note: "청사진으로 짠 구역", tags: [HAND_LAYOUT_ROOM_TAG, COMPOSED_LAYOUT_TAG] });
     }
     // 현대 실내(캠퍼스·도시·일본 도시)를 새로 지을 때 BGM 이 비면 맵 이름으로 곡을 고른다 — 연애·학원물 실내가 무음으로 남던 구멍(2026-10-16 실제 Argon 시험).
     // 다시 짓는 맵(replace)은 저작자가 정했을 수 있으니 건드리지 않는다. 환상 실내(손 도트 v5 등)는 그대로 둔다.

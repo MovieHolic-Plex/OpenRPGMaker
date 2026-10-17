@@ -3,6 +3,7 @@ import { MONSTER_TOURNAMENT_TOOLS } from './monsterTournamentTools';
 import { MONSTER_BATCH_TOOLS } from './monsterBatchTools';
 import { bindStreetToolLookup } from "./jpCityStreetTool";
 import { bindThemeToolLookup } from "./themeScenes";
+import { bindSpaceBlueprintToolLookup } from "@/editor/spacePresetCatalog";
 import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
@@ -97,6 +98,7 @@ import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
 import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
+import { SPACE_BLUEPRINT_TOOLS } from "./spaceBlueprintTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
 import { MODERN_CITY_TOOLS } from "./modernCityTools";
@@ -252,6 +254,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 방 세션·던전 방 파이프라인·팩 마을·
   // 숲 조립·키큰 풀 도구는 2026-10-07 저작권 정리로 칩셋과 함께 지웠다.
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
+  // AI 참고 청사진 — 공간 이름 한 마디(오피스 로비·강의실·강변·알현실…)를 청사진 규칙 + 요청 뉘앙스 + 새 씨앗으로 매번 다르게 짓는다(2026-10-18).
+  ...SPACE_BLUEPRINT_TOOLS,
   // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
   ...withDomain(JP_CITY_TOOLS, "tile"),
   // 현대 학교·캠퍼스(modern_campus) 야외 구성(학교 마당·교외 거리)과 건물 문 ↔ 실내 이음. modern_campus 맵에서만 동작한다.
@@ -408,6 +412,7 @@ export function getTool(name: string): ToolDefinition | undefined {
 }
 bindStreetToolLookup(getTool);
 bindThemeToolLookup(getTool);
+bindSpaceBlueprintToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;
