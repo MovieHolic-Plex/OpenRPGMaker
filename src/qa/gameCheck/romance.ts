@@ -15,7 +15,7 @@ import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID,
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
-import { checkEndingNpcReachable, checkHeroineEndingsCalled, checkPerHeroineEndings, checkRomanceEndings } from "./romanceEndings";
+import { checkEndingNpcReachable, checkHeroineEndingsCalled, checkPerHeroineEndings, checkSplitHeroineIds, checkRomanceEndings } from "./romanceEndings";
 import { allPages, visitPageCommands } from "./walk";
 import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 
@@ -174,6 +174,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
   findings.push(...checkRomanceEndings(project));
   findings.push(...checkEndingNpcReachable(project));
   findings.push(...checkHeroineEndingsCalled(project));
+  findings.push(...checkSplitHeroineIds(project));
   if (endings.length > 0 && endings.every((ending) => ending.id === SEGMENT_END_ENDING_ID)) {
     findings.push({
       severity: "warning", code: "romance-only-skeleton-ending",
@@ -254,9 +255,9 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
-const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled"]);
+const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";
 
 /** 사용자 요청 문장이 「연애 게임 만들기」인가 — 인터뷰 기획서가 없는 채팅 한 줄 경로도 같은 완료 검사를 받게 한다(romance-real-2 R03: 이 경로는 게이트가 안 걸렸다). */
