@@ -36,7 +36,8 @@ const CONCURRENCY = Number(arg("jobs", "5"));
 const RECORD = flag("record");
 const RENDER = flag("render");
 
-interface CorpusEntry { id: string; cat: string; text: string; expect: "art" | "event" | "refuse" | "any"; kw: string; count?: number }
+/** sel: 이 문장에 쓸 선택 크기 [w, h](기본 8×6 — 집은 8×6 에 들어가지 않는다). */
+interface CorpusEntry { id: string; cat: string; text: string; expect: "art" | "event" | "refuse" | "any"; kw: string; count?: number; sel?: readonly [number, number] }
 
 // ── 테마(칩셋) 맵 ────────────────────────────────────────────────────────────
 interface ThemeSetup { readonly id: string; readonly label: string; readonly mapId: string; readonly build: (ctx: { project: Project }) => void; readonly yard?: boolean }
@@ -331,10 +332,17 @@ for (const themeId of themeIds) {
   const base = setupCtx.project;
   const map = base.maps[theme.mapId];
   if (!map) { console.error(`테마 ${themeId} 맵을 만들지 못했습니다`); continue; }
-  const sel = pickSelection(base, map, 8, 6, theme.yard === true);
+  const sels = new Map<string, { x: number; y: number; width: number; height: number }>();
+  const selFor = (entry: CorpusEntry) => {
+    const [w, h] = entry.sel ?? [8, 6];
+    const key = `${w}x${h}`;
+    if (!sels.has(key)) sels.set(key, pickSelection(base, map, w, h, theme.yard === true));
+    return sels.get(key)!;
+  };
+  const sel = selFor({ id: "", cat: "", text: "", expect: "any", kw: "" });
   setupInfo[themeId] = { label: theme.label, tileset: map.tilesetId, map: `${map.width}x${map.height}`, selection: sel, events: map.events.length };
   console.log(`[setup] ${theme.label} ${map.width}x${map.height} sel=${JSON.stringify(sel)} events=${map.events.length}`);
-  for (const entry of entries) tasks.push(() => runCase(theme, entry, base, sel));
+  for (const entry of entries) tasks.push(() => runCase(theme, entry, base, selFor(entry)));
 }
 
 const results: RunRecord[] = [];

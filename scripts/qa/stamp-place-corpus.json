@@ -360,5 +360,46 @@
   "text": "황금 왕좌 놓아 줘",
   "expect": "refuse",
   "kw": ""
+ },
+ {
+  "id": "house",
+  "cat": "house",
+  "text": "집",
+  "expect": "art",
+  "kw": "place_terrain_house|build_jp_city_building",
+  "sel": [14, 11]
+ },
+ {
+  "id": "house-build",
+  "cat": "house",
+  "text": "집 지어줘",
+  "expect": "art",
+  "kw": "place_terrain_house|build_jp_city_building",
+  "sel": [14, 11]
+ },
+ {
+  "id": "house-small",
+  "cat": "house",
+  "text": "작은 집 하나 지어줘",
+  "expect": "art",
+  "kw": "place_terrain_house|build_jp_city_building",
+  "sel": [14, 11]
+ },
+ {
+  "id": "house-minga",
+  "cat": "house",
+  "text": "여기에 민가 한 채 지어줘",
+  "expect": "art",
+  "kw": "place_terrain_house|build_jp_city_building",
+  "sel": [14, 11]
+ },
+ {
+  "id": "house-two",
+  "cat": "house",
+  "text": "집 두 채 지어줘",
+  "expect": "art",
+  "kw": "place_terrain_house|build_jp_city_building",
+  "count": 2,
+  "sel": [20, 12]
  }
 ]

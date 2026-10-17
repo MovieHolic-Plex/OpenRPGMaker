@@ -1187,7 +1187,7 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 나눠 말하면 알아듣지 못했다).
 
 - `src/editor/stampPlaceRunner.ts` `runStampPlace({text, mapId, selection, signal, onPhase})` — 가벼운 모델(`configForLiteModel`, 추론 끔, JSON) 한 번으로
-  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`author_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
+  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`place_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
   부분 사각형으로 쪼개고, 재료는 **현재 타일셋의 실제 라벨**(`fillableMaterialSuggestions`·`formatMaterialLabelHint`·벽/문 후보) 중에서 고른다. 원은 정사각 상자.
 - 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
   실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
@@ -1243,6 +1243,8 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   결과 끝에 `stampEffect.ts` 가 적용 전후 맵을 비교해 「실제로 바뀐 것: 타일 N칸 · 새 이벤트 M개(그림 a · 투명 b)」를 적는다. 그림 도구가 「성공」인데 아무것도 안 바뀌면 `ok=false` + 「깔리지 않은 것으로 봅니다」.
   `StampRunResult.refused` 는 큐 주문의 `refused` 로 가서 채팅 헤드가 「실패」가 아니라 **「깔지 않음(칩셋에 그림 없음)」**/「일부 적용 · 그림 없는 물건 N개는 깔지 않음」이 된다.
 - 번개 버튼(`selection-chip-stamp`)·드래그 영역 handoff(`stamp:true`)·입력줄은 모두 `stampPlaceNow` → 같은 러너라 같은 규칙을 탄다. 일반 조수의 `place_npc`·조사 지점·`stamp_tileset_object` 도구 계약은 건드리지 않았다(가드는 바로 깔기 계획기에만).
+- **집 짓기 (`place_house`, 2026-10-17)**: 집·주택·민가·오두막 요청은 계획 단계 `place_house {area|at, size?, count?, stories?}` 로 받고, `expandStampHouses` 가 `place_terrain_house`(조립식 스타일 `quickHouseStyles`, 없으면 `quickHouseCatalog`) 또는 `jp_city` 맵(`quickHouseStyles` 가 비었을 때 `build_jp_city_building`)으로 펼친다.
+  먼저 있는 그대로 `planQuickHouse` 가 통과하는 깨끗한 땅을 찾고, 없으면 물·절벽·잠금·이벤트·기존 보호된 집(`protectedHouseCells`)과 겹치지 않으면서 지울 수 있는 위층 장식·나무·풀 때문에만 막힌 자리를 골라 발자국+문 앞 사각형에 `tile_erase` 를 먼저 넣고 복제된 미리보기 맵에서 검증한다. 집 외관이 없는 타일셋이나 영역 부족 사유는 ` 깔 단계가 없습니다` 로 덮어쓰지 않고 그대로 돌려준다.
 
 **측정법(회귀 가드):** `scripts/qa/stamp-place-corpus.mts` — 실제 계획기·검증기·러너·도구를 헤드리스로 돌리고 `scripts/qa/stamp-place-corpus.json`(50문장: 물건·오타·수량·위치·모호·비물건·없는 물건)을 칩셋별로 돌린다.
 `--mode script` 는 기록된 대본(`stamp-place-corpus.script.json`)을 재생(모델 없음), `--mode agy --record` 는 Argon medium(agy 대용)으로 새로 받아 기록. 판정: 그림 맞음/엉뚱한 물건/이벤트만/정직한 거절(그림 없음·자리 없음)/도구 실패/결과 줄 거짓.

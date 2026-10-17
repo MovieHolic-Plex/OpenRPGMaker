@@ -101,9 +101,16 @@ describe("clamping to the target rect", () => {
     expect("step" in check && check.step.args).toMatchObject({ count: 6, packing: "dense" });
   });
 
-  it("keeps a house at least 3x5 and single", () => {
-    const check = validateStampStep({ tool: "author_house", args: { wings: [{ x: 12, y: 6, w: 2, h: 2 }] } }, FACTS);
-    expect("step" in check && check.step.args).toMatchObject({ kind: "single", wings: [{ x: 12, y: 6, w: 3, h: 5 }], interior: "exterior-only", door: false });
+  it("validates place_house inside the target and converts house walls to place_house", () => {
+    const check = validateStampStep({ tool: "place_house", args: { area: { x: 12, y: 6, w: 8, h: 7 }, size: "small", count: 2 } }, FACTS);
+    expect("step" in check && check.step.args).toMatchObject({ area: { x: 12, y: 6, w: 8, h: 7 }, size: "small", count: 2, stories: 1 });
+    const converted = parseStampPlan(JSON.stringify({
+      steps: [
+        { tool: "build_wall", args: { rect: { x: 12, y: 6, w: 7, h: 6 }, material: "벽" } },
+        { tool: "place_door", args: { at: { x: 15, y: 11 }, material: "문" } },
+      ],
+    }), { ...FACTS, text: "여기에 작은 집 지어줘" });
+    expect(converted.steps.map((step) => step.tool)).toEqual(["place_house"]);
   });
 });
 
