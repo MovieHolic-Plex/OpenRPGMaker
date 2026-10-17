@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.249.0 — 2026-10-17
+
+### 기능
+
+- **romance** — finish gate flags one heroine placed under different characterIds per map (#2815) (`6919a26`)
+- **dialogue** — VN look presets — 8 dialogue-window skins, nameplate/choice/wait styles, font settings, ESC menu theme, set_vn_look (#2816) (`a14870e`)
+- **ai** — create_time_gate 그림 없을 때 빛 표식 (#2776) (`b8c5a41`)
+- **jrpg** — 역할별 능력치 곡선 경고·관문 + 요청 규모(비공정·붕괴 전후) 관문 (#2797) (`bb3af1b`)
+
+### 수정
+
+- **vn** — 미연시 수리 — 기기 단위 엔딩·CG 기록, 엔딩 목록 스크롤, 체크리스트·도구 경계 (vn-review-2) (#2819) (`994c36b`)
+- **ai** — 시대 변형 철거 덧그림 제거 + 전투 배경 지명 단계 (#2775) (`caf2e0c`)
+- **ai** — JRPG finish gate requires joining companions when the request promises them (#2805) (`15ab404`)
+- **ai** — JRPG finish gate also blocks an unplayable first segment and the untouched seed fishing village (#2804) (`e0820b8`)
+- **dialogue** — bust no longer narrows the text; centre-window head fits; right-bust bar clears the nameplate (#2814) (`d21c91c`)
+- **ai** — stronger era-variant looks (ruin/past/future) and no rubble on water (#2798) (`dbe4f7e`)
+- **battle** — skill/item list widens leftward under actor/keys/fan look presets (#2800) (`0e47a66`)
+- **title** — force title line-height so a two-line title cannot cover its subtitle (#2796) (`e13d506`)
+
 ## 0.248.0 — 2026-10-17
 
 ### 기능
