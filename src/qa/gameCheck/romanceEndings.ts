@@ -197,3 +197,20 @@ export function checkHeroineEndingsCalled(project: Project): Finding[] {
       + "set_deadline_ending 을 tiers 없이 한 번 부르면 인물 엔딩이 기한 판정 맨 위에 얹힙니다(또는 tiers 에 {endingId, friendshipAtLeast, characterId} 로 직접).",
   }];
 }
+
+/** 같은 이름의 호감 대화 인물이 맵마다 다른 characterId 를 달고 있는가 — 호감 키가 갈라져 한 곳에서 쌓은 호감이 다른 곳의 엔딩 문턱에 안 잡힌다(romance-loop-3 rom-d: yoon_seoha / yoon_seoha_2). */
+export function checkSplitHeroineIds(project: Project): Finding[] {
+  const byName = new Map<string, Set<string>>();
+  for (const map of Object.values(project.maps)) for (const event of map.events) {
+    const key = event.characterId?.trim();
+    const name = event.name?.trim();
+    if (!key || !name || !isTalkFriendshipEnabled(event)) continue;
+    byName.set(name, (byName.get(name) ?? new Set()).add(key));
+  }
+  const split = [...byName].filter(([, keys]) => keys.size > 1);
+  if (split.length === 0) return [];
+  return [{
+    severity: "warning", code: "romance-heroine-id-split",
+    message: `같은 인물이 맵마다 다른 characterId 로 놓여 호감이 따로 쌓입니다: ${split.slice(0, 4).map(([name, keys]) => `${name}(${[...keys].join(" / ")})`).join(", ")} — 한 곳에서 올린 호감이 다른 곳 엔딩 문턱에 잡히지 않습니다. 모든 맵에서 같은 characterId 를 쓰세요(이미 놓인 이벤트는 characterId 를 맞춰 다시 놓기).`,
+  }];
+}

@@ -194,4 +194,16 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
       { endingId: "ending_romance_happy", threshold: 60, characterId: "*" }, { endingId: "ending_first_segment" }]);
     expect(codes(project)).not.toContain("romance-heroine-endings-uncalled");
   });
+
+  it("같은 이름의 호감 인물이 맵마다 다른 characterId 면 짚는다", () => {
+    const project = romanceProject();
+    const maps = Object.values(project.maps);
+    const second = { ...structuredClone(maps[0]!), id: "map_two", name: "둘째" } as never as (typeof maps)[number];
+    second.events = [npc("x", { name: "하은", characterId: "haeun_2" })];
+    maps[0]!.events.push(npc("y", { name: "하은", characterId: "haeun" }));
+    project.maps.map_two = second;
+    expect(codes(project)).toContain("romance-heroine-id-split");
+    second.events[0]!.characterId = "haeun";
+    expect(codes(project)).not.toContain("romance-heroine-id-split");
+  });
 });
