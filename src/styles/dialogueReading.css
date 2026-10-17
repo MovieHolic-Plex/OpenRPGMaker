@@ -3,6 +3,7 @@
    단추 줄은 상자 위(아래 위치 창) 또는 아래(위쪽 위치 창)에 붙고, 상자 안 글을 가리지 않는다. */
 
 .dialogue-bar {
+  z-index: 5;
   align-items: center;
   bottom: calc(100% + 2px);
   display: flex;
@@ -12,7 +13,6 @@
   pointer-events: auto;
   position: absolute;
   right: 4px;
-  z-index: 3;
 }
 
 .dialogue-overlay.position-top .dialogue-bar,
@@ -26,14 +26,19 @@
   right: 104px;
 }
 
-/* 오른쪽 흉상은 상자 위로 솟아 오른쪽 정렬 단추 줄과 겹친다 — 흉상이 오른쪽이면 줄을 왼쪽으로 뒤집는다(적대 리뷰 D7). */
-.dialogue-box.bust-right .dialogue-bar,
-.dialogue-overlay.has-bust-face:has(.dialogue-box.bust-right) .dialogue-bar {
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  left: 4px;
-  max-width: 62%;
-  right: auto;
+/* 오른쪽 흉상은 상자 위로 솟아 오른쪽 정렬 단추 줄과 겹친다 — 줄을 흉상 폭만큼 왼쪽으로 비킨다.
+   (적대 리뷰 D7 은 줄을 왼쪽 끝으로 뒤집었으나 왼쪽에는 이름표가 있어 이름표를 가렸다 — 2026-10-17 매트릭스 실측.) */
+.dialogue-box.bust-right .dialogue-bar {
+  right: calc(var(--runtime-dialogue-bust-width) + 18px);
+}
+
+.dialogue-box.bust-right.portrait-full:not(.portrait-full-tall) .dialogue-bar {
+  right: calc(var(--runtime-dialogue-full-width) + 18px);
+}
+
+/* 하단 전신은 상자 뒤에 서서 줄과 겹치지 않는다. */
+.dialogue-box.bust-right.portrait-full-tall .dialogue-bar {
+  right: calc(var(--runtime-dialogue-bust-width) + 18px);
 }
 
 .dialogue-bar-btn {

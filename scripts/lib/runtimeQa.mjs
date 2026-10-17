@@ -66,6 +66,12 @@ export const OP_KINDS = [
   "pointerClick",
   "waitForAttr",
   "pressUntil",
+  // 키를 누를 때마다 testid 노드의 글에 text 가 들어왔는지 본다(대사 줄 번호표를 따라 넘길 때 — 쪽 수를 몰라도 다음 줄에서 멈춘다).
+  "pressUntilText",
+  // 노드에 클래스가 붙기를 기다린다(대사 쪽이 다 나와 page-ready 가 된 순간).
+  "waitForClass",
+  // 페이지 안에서 함수 본문을 실행하고 결과를 JSON 파일로 남긴다(레이아웃 측정용 탐침).
+  "evalToFile",
   // 체공(jump/dropIn). 이동 경로를 주인공에게 직접 물리고 리프트를 조건으로 기다린다 —
   // Phaser 의 displayOrigin 계약은 jsdom 으로 재현되지 않아 브라우저에서만 증명된다.
   "playerRoute",
