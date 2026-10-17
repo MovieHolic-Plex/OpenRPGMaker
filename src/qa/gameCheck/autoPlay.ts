@@ -1469,13 +1469,25 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false, trained = 0, h
   return trace(goal.label, true, "완료", driver, visit.where);
 }
 
+/**
+ * 같은 이벤트 페이지 최상위에서 이 명령보다 앞에 「엔딩 id 없는」 triggerEnding(호감으로 엔딩을 고르는 자동 선택)이 있는가.
+ * 연애 마무리는 `triggerEnding`(자동) 뒤에 뼈대의 `triggerEnding ending_first_segment` 를 그대로 남기는 일이 많다 —
+ * 자동 선택이 인물 엔딩에 닿으면 뒤 명령은 닿지 않는 게 정상이므로, 목표는 「어떤 엔딩이든 도달」로 본다.
+ */
+function precededByAutoEnding(visit: CommandVisit): boolean {
+  if (visit.segments.length > 0) return false;
+  const at = visit.indexPath[0];
+  if (at === undefined) return false;
+  return visit.page.commands.slice(0, at).some((command) => command.kind === "triggerEnding" && typeof command.endingId !== "string");
+}
+
 export function endingGoal(visit: CommandVisit): Goal {
   const endingId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
   const title = typeof visit.command.title === "string" ? visit.command.title : undefined;
   return {
     label: `엔딩 ${endingId ?? title ?? "(자동 선택)"} 도달`, visit,
     done: (_session, result) => visit.command.kind === "triggerEnding"
-      ? (endingId ? result.finalState.endingsReached.includes(endingId) : result.finalState.endingsReached.length > 0)
+      ? (endingId && !precededByAutoEnding(visit) ? result.finalState.endingsReached.includes(endingId) : result.finalState.endingsReached.length > 0)
       : false,
     verify: (_session, result) => (visit.command.kind === "ending"
       ? (result.log.some((line) => line.includes(`event ${visit.page.event?.id} start`)) ? null : "엔딩 이벤트가 실행되지 않았습니다.")

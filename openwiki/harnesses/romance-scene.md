@@ -163,6 +163,13 @@ Actual evidence is indexed in `verify-shots/romance-scene/SUMMARY.md`. The final
 - R1-05(기한 엔딩이 빠른 Enter 연타에서 늦게 열림): 대화 한 번당 칸 하나, 칸 3개가 하루. 14일째 하루 끝에서 엔딩은 slow·fast·spam 모두 즉시 열렸다(var_days_elapsed 13에서 시작). 이전 관측은 측정용 드라이버가
   Enter(= 행동 키)로 다음 대화를 연타해 한 반복 안에 여러 하루가 지나간 것으로 보이며 제품 결함으로 재현하지 못했다. 「Text cancelled」 는 하루 끝 취침이 열린 대사를 가져갈 때의 정상 AbortError(playSceneInterpreter 주석)다.
 
+## 자동 엔딩 뒤에 남은 뼈대 엔딩 (autoPlay 목표)
+
+연애 마무리 이벤트가 `triggerEnding`(id 없음, 호감으로 고르는 자동 선택) 뒤에 뼈대의 `triggerEnding ending_first_segment` 를 그대로 남기면,
+호감이 문턱을 넘은 판에서는 자동 선택이 인물 엔딩에 닿고 뒤 명령은 닿지 않는 것이 정상이다. `endingGoal`(`src/qa/gameCheck/autoPlay.ts`)은
+같은 페이지 최상위에서 앞서는 자동 `triggerEnding` 이 있으면 목표를 「어떤 엔딩이든 도달」로 본다 — 인물별 엔딩이 생기면서 기본 경로가
+`autoplay-failed` 거짓 막힘이 되던 것을 막는다(라운드 3 학원물 실측).
+
 ## 엔딩이 겨눈 인물의 호감이 오를 곳 (2026-10-17 romance-loop-2, `romance-ending-npc-unreachable`)
 
 실측(rom-b, 카페 6인): 엔딩 10개 중 `ending_haru`·`ending_yuu` 는 카페 안 두 인물의 호감을 보는데, 그 인물의 선택지는 스위치만 켜고 talkFriendship·changeFriendship 이 없어
