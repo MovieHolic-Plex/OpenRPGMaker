@@ -82,6 +82,7 @@ WebGL 한 장으로 얹는다. 그림은 이미지 모델로 만들고, 생성 �
   결과는 `verify-shots/runtime-qa/title-effects/SUMMARY.md`(다른 프리셋은 `title-effects-<preset>/`) 부터 읽는다.
 - 타이틀 DOM testid: 글자 제목 `title-text`(`h1.rm-title-screen-title`, `data-logo-style`), 그림 로고 `title-logo`,
   부제 `title-logo-subtitle`. 메뉴는 `.rm-title-menu[data-menu-style]`.
+  - 제목 줄 높이(jrpg-loop-1 D15): `fitTitleTextNodes` 가 제목 `h1` 에 인라인 `line-height:1.1` 을 건다 — 부제 위치가 제목 높이 = 줄 수 × 글자 크기 × 1.1 로 계산되는데 다른 CSS 가 줄 높이를 40px 로 덮으면 두 줄 제목이 부제를 덮었다(긴 제목 실측).
 - 메뉴: 조작 힌트 줄(「방향키로 고르고…」)은 없다. 저작자 표기는 하단 한 줄 대신 **크레딧** 메뉴 항목
   (testid `title-credits`, 라벨 `menuLabels.credits`, 기본 「크레딧」)이 창으로 연다. 크레딧은 숨길 수 없다 —
   CC BY 계열 에셋 표기의 유일한 입구다.
