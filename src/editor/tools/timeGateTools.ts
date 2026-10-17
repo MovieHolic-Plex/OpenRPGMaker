@@ -12,7 +12,7 @@
 
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { storyFlagById } from "@/project/storyFlags";
-import type { Command, Condition, EventPage, EventPageGraphic, GameEvent, Project } from "@/project/types";
+import type { Command, Condition, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import { genId } from "@/util/id";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { resolveGraphic } from "./eventCompile";
@@ -137,6 +137,28 @@ export function unlockCondition(project: Project, raw: unknown): { readonly cond
   return { condition: { kind: "variable", variableId, op, value: record.value }, ...(known ? {} : { note: `변수 '${variableId}' 가 없어 새로 등록했습니다 — 값을 올리는 이벤트(setVariable)를 만들어야 문이 열립니다.` }) };
 }
 
+/**
+ * 투명 시간의 문 자리에서 반짝이는 빛 — 그림이 없는 문은 화면에 아무 표시도 없어 플레이어가 문을 찾을 수 없었다
+ * (jrpg-loop-1 ct1: 현자가 「서쪽 푸른 시간문(14,25)」 이라고 좌표를 읊어야 했다). 새 그림 없이 파티클(m2-224 「magic」)만 쓴다:
+ * 문 칸에 겹쳐 놓은 병렬 이벤트가 1.6초짜리 빛을 1.2초마다 다시 피운다. 걷기·접촉 판정이 없는 이벤트라 문 동작은 그대로다.
+ */
+function addGateBeacon(map: GameMap, x: number, y: number, name: string): string {
+  const id = genId("ev_beacon");
+  const label = `${name} 빛`;
+  map.events.push({
+    id, name: label, x, y, trigger: { kind: "parallel" }, commands: [],
+    pages: [{
+      id: `${id}_page`, name: label, conditions: [], graphic: { transparent: true }, trigger: { kind: "parallel" },
+      priority: "below", overlapForbidden: false, movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [
+        m2("Particle Effect", { preset: "magic", target: "tile", x, y, eventId: "", durationMs: 1600, wait: false }),
+        { kind: "wait", ms: 1200 },
+      ],
+    }],
+  } as GameEvent);
+  return id;
+}
+
 function decorateGate(event: GameEvent, name: string, prelude: readonly Command[], transition: "fade" | "mosaic", graphic: EventPageGraphic, lock?: { readonly condition: Condition; readonly message: string }): void {
   event.name = name;
   for (const page of event.pages ?? []) {
@@ -242,11 +264,19 @@ const createTimeGate: ToolDefinition = {
       const locked = unlock && (lockSide === "both" || lockSide === side);
       decorateGate(event, label, prelude.commands, prelude.transition, graphic, locked ? { condition: unlock.condition, message: lockedMessage } : undefined);
     }
+    // 그림 없는 문(기본)에는 빛을 달아 눈에 보이게 한다. 그림을 준 문은 그 그림이 표식이다.
+    const beacons: string[] = [];
+    if (args.graphic === undefined) {
+      for (const { map, id } of found) {
+        const gate = map.events.find((entry) => entry.id === id);
+        if (gate) beacons.push(addGateBeacon(map, gate.x, gate.y, typeof gate.name === "string" ? gate.name.replace(/ [AB]$/u, "") : name));
+      }
+    }
     const warnings = [...(paired.warnings ?? []), ...(unlock?.note ? [unlock.note] : [])];
     const effectLabel = effect === "flash" ? "흰 섬광" : `${effect} 연출`;
     return {
       summary: `시간의 문 '${name}': ${found[0]!.map.name}(${data.gateA.x},${data.gateA.y}) ↔ ${found[1]!.map.name}(${data.gateB.x},${data.gateB.y}) — ${effectLabel} 전이${unlock ? ` · 잠금(${lockSide})` : ""}`,
-      data: { ...data, name, effect, ...(unlock ? { unlockWhen: unlock.condition, lockSide, lockedMessage } : {}) },
+      data: { ...data, name, effect, ...(beacons.length ? { beaconEventIds: beacons } : {}), ...(unlock ? { unlockWhen: unlock.condition, lockSide, lockedMessage } : {}) },
       ...(warnings.length ? { warnings } : {}),
     };
   },
