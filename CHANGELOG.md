@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.250.0 — 2026-10-17
+
+### 기능
+
+- **editor** — 자료집 「메뉴·시스템」 탭 — ESC 메뉴·대사창·갤러리/엔딩/저장 카드 한 화면 저작 (미연시 3단계) (#2808) (`6c70448`)
+
+### 수정
+
+- **ci** — record the visual-novel look and gallery backdrop in the CSS gates (`20bb7aa`)
+- **romance** — unique ending ids for non-ASCII heroine ids, keep the happy tier called, duplicate-chip check groups by characterId (#2818) (`57fbafe`)
+
 ## 0.249.0 — 2026-10-17
 
 ### 기능
