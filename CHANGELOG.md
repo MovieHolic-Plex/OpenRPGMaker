@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.256.0 — 2026-10-18
+
+### 기능
+
+- **studio** — reinvent Studio Mode center stage as Genre-Adaptive Storyboard & Director Board (#2875) (`75602b2`)
+- **editor** — expose 20-preset Space Preset Gallery with parametric A/B/C/D variants in New Map modal and Left Sidebar (#2874) (`666abbc`)
+- **transit** — tram and subway in set_street_traffic, stop-approach easing (#2872) (`365c6fa`)
+- **dialogue** — 양쪽 전신 베일 프리셋을 고해상도 오토메 일러스트·미디엄 풀샷·상단 장미 필리그리·페이드 베일로 고도화 (#2870) (`7086f21`)
+
+### 수정
+
+- **modern_city** — one-engine 1:1 vehicle art for all four directions (#2877) (`0842367`)
+- **ci** — align the studio director board with command and map-link types (`c211eaf`)
+- **ai** — repair right AI assistant panel layout, model presets, and tool loop UX (#2871) (`13f25f1`)
+- **interior** — bake orthogonal stairs & 7-venue props and resolve hostile VQA across 7 presets (#2867) (`f805359`)
+- **modern_city** — right-hand lane-centred traffic, signalled junction turns, equal-length 3x2/2x3 sprites (#2869) (`27063cc`)
+- **stamp-place** — 바로 깔기가 장소 한 장 요청을 기존 장면 구성기로 짓고 부를 때마다 다른 씨앗을 쓴다 (#2868) (`e9d4fd2`)
+
 ## 0.255.1 — 2026-10-18
 
 ### 수정
