@@ -683,14 +683,14 @@
     },
     "generated-enemy-mantis-blade": {
       "url": "/assets/generated/pixel-enemy-portraits/mantis-blade.png",
-      "sha256": "7c16f4c76256040a3ced74e68d688d74a15dbd735dfd8598cbb94911dfa4ca56",
-      "observation": "청녹색 금속성 등날개와 크고 밝은 두 칼날 낫을 가진 사마귀다.",
+      "sha256": "3e4bf2fd9c731dd456f1fde531b9f3f9c98319334ce671ccda7d73cb1fa13430",
+      "observation": "역삼각형 머리에 금빛·진홍 겹눈, 앞으로 기운 에메랄드 앞가슴과 청록 겉날개, 가는 걷는 다리 넷, 은빛 톱니 칼날 낫 앞다리 둘을 가진 사마귀다.",
       "index": 58,
-      "inspectionMethod": "Fresh native pixel anatomy and all nine poses. Locally reviewed artwork; user acceptance is not implied.",
+      "inspectionMethod": "Direct pixel redraw (scripts/content/monsters/redraw_mantis_blade.py): fresh mantis anatomy and nine distinct poses. Locally reviewed artwork; user acceptance is not implied.",
       "nativeSheet": "assets/generated/pixel-enemies/mantis-blade.png",
-      "nativeSheetSha256": "eead4d089b467869a4a1b1ca76e02448e75eff445bc95ba06e4e1e0c25cd1f25",
+      "nativeSheetSha256": "d0bca8be1721bc1e9946c8b7cadbaed4f8ebb39119d4836b3adab721b48daca0",
       "cell": 64,
-      "reviewEvidence": "verify-shots/monster-redraw-all/SUMMARY.md",
+      "reviewEvidence": "~/claude-viz/monster-mantis-fix-1.html",
       "sourceWorkingTree": true
     },
     "generated-enemy-centipede-fire": {
