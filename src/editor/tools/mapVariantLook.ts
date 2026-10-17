@@ -9,6 +9,7 @@
 // `look` 은 "ruin"(붕괴·폐허) | "past"(과거) | "future"(미래) | "none"(끔). 생략하면 era·name·id 낱말로 고른다.
 // 조수가 준 tileRemap·tileOverrides 는 이 프리셋 뒤에 적용되므로 항상 이긴다.
 
+import { BEODEUL_NATURE } from "@/project/defaults/beodeulNature";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import { appendStructurePlacement, captureStructureTiles, removeStructurePlacement, restoreStructurePlacementTiles, structurePlacementsOf } from "@/project/structurePlacements";
 import type { GameEvent, GameMap, Project, SectionStructureKitDef } from "@/project/types";
@@ -145,6 +146,36 @@ export type VariantLookReport = {
 };
 
 /**
+ * 철거한 건물 자리의 2층·4층 덧그림과 건물 그림자 띠를 지운다. restoreStructurePlacementTiles 는 1·3층만 되돌려서,
+ * 지붕·처마가 덧그림(4층)으로 올라간 건물은 철거 뒤에도 지붕 조각이 허공에 남았다(jrpg-loop-1 ct1 미래 맵).
+ * 4층은 처마가 건물 폭 밖으로 나오므로 오른쪽 한 칸을 더 지운다. 길 가장자리 덧그림은 건드리지 않는다(위 영역 밖).
+ */
+function clearDemolishedOverlays(copy: GameMap, placement: { kitId: string; x: number; y: number; w: number; h: number }): void {
+  for (let row = 0; row < placement.h; row += 1) {
+    for (let column = 0; column <= placement.w; column += 1) {
+      const x = placement.x + column;
+      const y = placement.y + row;
+      if (x < 0 || y < 0 || x >= copy.width || y >= copy.height) continue;
+      const index = y * copy.width + x;
+      if (column < placement.w && copy.lowerOverlayTiles && copy.lowerOverlayTiles[index] !== undefined) copy.lowerOverlayTiles[index] = -1;
+      if (copy.upperOverlayTiles && copy.upperOverlayTiles[index] !== undefined) copy.upperOverlayTiles[index] = -1;
+    }
+  }
+  // 마을 시공기가 건물마다 2층에 얹은 그림자 덧그림(BEODEUL_NATURE.shadows — 오른쪽·아래로 비낀 띠)도 같은 칸을 지운다.
+  // 안 지우면 빈 땅 위에 어두운 세로·가로 줄이 남는다(원해상도 렌더로 확인: 길 가장자리 덧그림은 이 칸 밖이라 그대로다).
+  const shadow = BEODEUL_NATURE.shadows[placement.kitId];
+  if (shadow && copy.lowerOverlayTiles) {
+    shadow.rows.forEach((row, j) => row.forEach((tile, i) => {
+      if (tile < 0) return;
+      const x = placement.x + shadow.dx + i;
+      const y = placement.y + shadow.dy + j;
+      if (x < 0 || y < 0 || x >= copy.width || y >= copy.height) return;
+      copy.lowerOverlayTiles![y * copy.width + x] = -1;
+    }));
+  }
+}
+
+/**
  * 변형 맵 `copy` 에 시대 프리셋을 건다. `copy` 는 cloneMapIntoProject 로 방금 복제한 맵이고,
  * 건물 철거는 복제본이 가진 structurePlacements 의 `before` 로 한다.
  */
@@ -184,6 +215,7 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     const doorIds = new Set(inside.map((event) => event.id));
     copy.events = copy.events.filter((event) => !doorIds.has(event.id));
     restoreStructurePlacementTiles(copy, placement);
+    clearDemolishedOverlays(copy, placement);
     removeStructurePlacement(copy, placement.id);
     report.demolishedBuildings += 1;
 

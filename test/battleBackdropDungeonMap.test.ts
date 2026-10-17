@@ -26,4 +26,13 @@ describe("resolveBattleBackdrop map-aware fallbacks (J08)", () => {
   it("a plain forest map keeps the forest", () => {
     expect(resolveBattleBackdrop(at(withMap({ name: "숲길" })))).toBe("battle-scenery-forest");
   });
+  // jrpg-loop-1 ct1: 안개 낀 「멸망한 폐허 크로노폴리스(미래)」 보스전이 울창한 숲에서 벌어졌다 — 맵 이름이 장소의 성격이다.
+  it("a ruined-city or town name gets the open plains, not the forest default", () => {
+    expect(resolveBattleBackdrop(at(withMap({ name: "멸망한 폐허 크로노폴리스(미래 A.D. 2300)" })))).toBe("battle-scenery-plains");
+    expect(resolveBattleBackdrop(at(withMap({ name: "시간의 마을 크로노폴리스(현재)" })))).toBe("battle-scenery-plains");
+  });
+  it("a desert name gets the desert; a name that also says forest keeps the forest", () => {
+    expect(resolveBattleBackdrop(at(withMap({ name: "모래바람 사막 도시" })))).toBe("battle-scenery-desert");
+    expect(resolveBattleBackdrop(at(withMap({ name: "고대의 숲 마을" })))).toBe("battle-scenery-forest");
+  });
 });
