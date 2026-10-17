@@ -5,6 +5,28 @@
 
 <!-- releases -->
 
+## 0.255.0 — 2026-10-18
+
+### 기능
+
+- **modern_city** — add moving & 90-degree turning street traffic and set_street_traffic tool (#2861) (`c843bfd`)
+- **interior** — add 7 multi-zone commercial/public interior presets and 10 3D stairs & department-store props (#2860) (`aa20f14`)
+- **dialogue** — 양쪽 전신 베일 프리셋에 좌하단 발화자 초상 추가 및 기본 7.5~8등신 비율 적용 (#2859) (`14d6869`)
+- **dialogue** — 연애·오토메 양쪽 전신 스탠딩 + 반투명 베일 대화창 프리셋(dual-fullbody-veil) 추가 (#2855) (`758facc`)
+- **stamp-place** — support town, city, and dungeon worldbuilding end-to-end (#2854) (`e4fb506`)
+- **opening** — AI 조수가 레이어드 도트 애니메틱 새로하기 오프닝을 저작 (#2560 대체) (#2852) (`52fc263`)
+
+### 수정
+
+- **opening,battle,jrpg** — 한 줄 게임 생성의 #2852 도트 애니메틱 오프닝 배선·픽셀 렌더러 결함·전투 4인 HUD 겹침·시대 변형 맵 지형 변환 수리 (#2863) (`a901e92`)
+- **portraits** — 인위적으로 왜곡된 현대 전신 초상 120장을 원본 비율로 복원하고 좌하단 화자 초상 유지 (#2862) (`a327110`)
+- **ci** — type the dungeon paint steps and jp house presets (`e8fecc6`)
+- **editor** — preserve relief side panel across palette tab switches and polish left sidebar UX (#2857) (`ed003ed`)
+- **store** — add OPK1 single-bundle streaming, reuse bundled reference URLs, and inline ref assets on .oprn export (#2856) (`8109a96`)
+- **qa,battle** — strip system intent note in jrpg gates, retry secondary endings with companions, and fall back onField battle backdrop (#2853) (`7e5f412`)
+- **romance,interior** — flush wall elevators, multi-zone office/campus presets, and 4-row riverside promenade (#2851) (`7b0aa71`)
+- **stamp-place** — 바로 깔기 place_house — 장식 터 비우기·jp_city 건물·거절 사유 유지 (#2849) (`5a82a24`)
+
 ## 0.254.0 — 2026-10-17
 
 ### 기능
