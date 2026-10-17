@@ -16,7 +16,6 @@ type Fields = Record<string, unknown>;
 const fieldsOf = (c: Command): Fields => ((c as { fields?: Fields }).fields ?? {}) as Fields;
 const commandIdOf = (c: Command): string => String((c as { commandId?: unknown }).commandId ?? '');
 
-const isTint = (c: Command) => commandIdOf(c) === 'm2-046-tint-screen';
 const isParticle = (c: Command) => commandIdOf(c) === 'm2-224-particle-effect' || (c.kind as string) === 'particles';
 const isWeather = (c: Command) => {
   const id = commandIdOf(c);
