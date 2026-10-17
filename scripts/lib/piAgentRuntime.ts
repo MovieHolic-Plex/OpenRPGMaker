@@ -108,6 +108,8 @@ export interface RunPiAgentOptions {
    */
   readonly codexApiKey?: string;
   readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
+  /** 실제 프레임을 그린 뒤 재는 수치(팔레트 수·자막 대비·움직이는 화소 비율)를 모델에게 한글로 돌려준다. */
+  readonly measureToolRender?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string | null>;
   readonly generateOpeningImage?: (project: Project, args: Record<string, unknown>, signal?: AbortSignal) => Promise<CinematicStillResult>;
   /**
    * Headless runners only: a model object resolved outside the bundled catalog (e.g. a provider from the user's local
@@ -499,8 +501,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const png = await options.renderToolImage(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal);
         if (!png) throw new Error('애니메틱 프레임을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        const measurements = await options.measureToolRender?.(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal).catch(() => null);
+        if (measurements) result.content.push({ type: 'text', text: measurements });
         openingProduction.sawAnimatic(ctx.project, data.shotId, data.atMs);
-        emit({ type: 'execution_status', name: 'opening.animatic.delivered', ok: true, summary: '실제 합성 시간 표본을 모델에게 전달했습니다.', data: { shotId: data.shotId, atMs: data.atMs, toolCallId: id } });
+        emit({ type: 'execution_status', name: 'opening.animatic.delivered', ok: true, summary: `실제 합성 시간 표본을 모델에게 전달했습니다.${measurements ? ` ${measurements.slice(0, 220)}` : ''}`, data: { shotId: data.shotId, atMs: data.atMs, toolCallId: id, measured: Boolean(measurements) } });
       }
       if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
@@ -569,7 +573,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'set_opening_pixel_grid', 'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption', 'apply_opening_walk', 'place_opening_charset_actor', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
@@ -908,22 +912,25 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : openingProduction.requiresPixelAnimatic ? 4 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
-      if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
+      if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame && !openingProduction.requiresPixelAnimatic)) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.'
+        + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '')
+        + (openingProduction.requiresPixelAnimatic ? ' 이 요청은 새로하기 픽셀 애니메틱입니다. storybook/image 장면을 더 만들거나 set_opening으로 정지 장면을 저장하지 말고, 지금 create_opening_animatic_shot(384,216) → set_opening_pixel_grid → upsert_opening_layer → place_opening_charset_actor/set_opening_caption/animate_opening_camera를 호출하세요. zero animatic이면 완료가 아닙니다.' : '')
+        + '\n' + signature);
     }
     // 인게임 컷신은 고치기를 3번까지만 한다 — 판정자 지적을 따라 값을 이리저리 돌리는 루프가 턴 상한까지 이어졌다(gen-28: 97턴, 끝내 불합격).
     // 남은 문제는 더 고치게 하지 않고 사용자에게 있는 그대로 보고하게 한다.
-    if (openingProduction.inGame && !fatal && !rejected && turns < maxTurns && !options.signal?.aborted) {
+    if ((openingProduction.inGame || openingProduction.requiresPixelAnimatic) && !fatal && !rejected && turns < maxTurns && !options.signal?.aborted) {
       await reviewInGameCutscene();
       const left = openingProduction.inspect(ctx.project, base);
       if (left.length) {
         emit({ type: 'execution_status', name: 'opening.unresolved', ok: false, summary: left.join(' '), data: { issues: left, playbackVerified: false } });
-        await promptResuming(`컷신 고치기를 여러 번 했지만 다음 문제가 남았습니다: ${left.join(' / ')}\n더 고치지 마세요. 지금 상태가 무엇이고(무엇이 되고 무엇이 안 되는지), 남은 문제가 무엇인지 사용자에게 있는 그대로 보고하고 끝내세요. 통과했다고 쓰지 마세요.`);
+        await promptResuming(`${openingProduction.requiresPixelAnimatic ? '픽셀 애니메틱 완료 조건' : '컷신'}을 여러 번 시도했지만 다음 문제가 남았습니다: ${left.join(' / ')}\n더 고치지 못하면 지금 상태와 실패 원인을 사용자에게 크게 보고하세요. 통과했다고 쓰지 마세요.`);
       }
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).

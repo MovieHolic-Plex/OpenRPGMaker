@@ -1,5 +1,6 @@
 /* ---- 데이터 구동 타이틀 연출: 배경 레이어 · 파티클 · 등장 애니메이션 ---- */
 /* fx 스택은 배경(루트 background-image) 위, UI(z-index:2 타이틀/로고/메뉴/힌트) 아래. */
+.rm-title-screen { image-rendering: pixelated; }
 .rm-title-screen .rm-title-fx {
   inset: 0;
   overflow: hidden;

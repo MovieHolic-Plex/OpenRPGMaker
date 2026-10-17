@@ -1,0 +1,31 @@
+{
+  "fixture": "legacyFixture",
+  "stage": "384x216",
+  "hashedPixels": "sha256(png bytes)",
+  "frames": [
+    {
+      "atMs": 0,
+      "sha256": "18b607aab3510d994a5b57b0dbcc6e219a519937c1883b65b641b618eedd48dc"
+    },
+    {
+      "atMs": 120,
+      "sha256": "2751e776e73a020966b6ee50719e0dc86c7fdfcab5824b31084e9b5a5cb9879b"
+    },
+    {
+      "atMs": 640,
+      "sha256": "2d03b5d4f3a6e184abceaa552afae092960a0a0cafb40179b1b10319456c97f6"
+    },
+    {
+      "atMs": 1500,
+      "sha256": "37164331444ab44accecf50ef2afa3df99b6a844b615e0c441ccd6463ad57126"
+    },
+    {
+      "atMs": 2600,
+      "sha256": "32578042f84d53baaf79d678b5ad1f26c3e68a2959a522d59f9bc022c2a8f5f5"
+    },
+    {
+      "atMs": 3999,
+      "sha256": "0e4619efa8ef11ee1e6128846e4e60756cd68362b5a4633729ae4792918c93d1"
+    }
+  ]
+}

@@ -421,12 +421,12 @@ function playTileAnimation<T extends RenderedEventSprite>(host: object, sprite: 
   const leaders = tileAnimationLeaders.get(host);
   const animation = sprite.anims as TileAnimationState | undefined;
   const leader = leaders?.get(key);
-  if (animation && leader?.getProgress && animation.setProgress) {
+  if (animation && animation.currentAnim && leader?.currentAnim && leader.getProgress && animation.setProgress) {
     animation.forward = leader.forward;
     animation.setProgress(leader.getProgress());
     animation.accumulator = leader.accumulator;
     animation.nextTick = leader.nextTick;
-  } else if (animation) leaders?.set(key, animation);
+  } else if (animation && animation.currentAnim) leaders?.set(key, animation);
   return sprite;
 }
 

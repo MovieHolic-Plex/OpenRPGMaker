@@ -22,6 +22,7 @@ import {createBlankProject} from '../../src/project/defaults/blankProject';
 import {reviewMonsterGame} from '../../src/editor/tools/monsterGameReview';
 import {buildMonsterGameAssistantRequest,monsterGameAssistantCompletionIssues} from './monster-game-assistant-request.mts';
 const arg=(name:string,fallback?:string)=>{const i=process.argv.indexOf('--'+name);return i<0?fallback:process.argv[i+1];};
+const __ban=/gpt-5\.6-sol|deepseek/i; if(__ban.test(String(arg('model','')))) throw Error('금지된 모델입니다: gpt-5.6-sol/DeepSeek 은 이 러너에서 쓰지 않는다(사용자 지시 2026-10-17). --model cpa8318/gemini-4-argon-high 를 쓰세요.');
 const mode=arg('mode','opening');
 if(mode!=='opening'&&mode!=='monster-game')throw Error('--mode must be opening or monster-game');
 const input=arg('project-json'),origin=arg('browser-url'),fresh=arg('fresh-project')==='1',routeOnly=arg('route-only')==='1';

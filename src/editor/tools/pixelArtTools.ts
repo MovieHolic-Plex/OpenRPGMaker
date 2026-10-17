@@ -133,9 +133,16 @@ async function buildPicture(args: Record<string, unknown>): Promise<Prepared> {
   const palette = parsePalette(args.palette);
   const image = rowsToImage(parseRows(args.rows, "rows"), palette, "rows");
   if (image.width > 480 || image.height > 270) throw new PixelArtError(`그림은 480×270 이하여야 합니다(받은 크기 ${image.width}×${image.height}).`);
-  if (artStats(image).opaque === 0) throw new PixelArtError("그림이 비어 있습니다.");
+  const stats = artStats(image);
+  if (stats.opaque === 0) throw new PixelArtError("그림이 비어 있습니다.");
+  const isCharacterStrip = image.width === 72 && image.height === 32;
+  if (isCharacterStrip && stats.colors < 5) {
+    throw new PixelArtError(`72×32 보행/포즈 스프라이트 스트립에 색이 ${stats.colors}가지뿐입니다(막대인간/단색 실루엣 금지). 어두운 외곽선·갑옷/의복 본색·명암·하이라이트·피부·머리·무기 등 최소 6가지 이상의 색으로 정밀한 JRPG 도트를 찍으세요.`);
+  }
+  const warnings: string[] = [];
+  if (stats.colors < 4) warnings.push(`색이 ${stats.colors}가지뿐이라 입체감이 부족합니다 — 최소 4~6단 이상의 명암과 재질 색을 쓰세요.`);
   const id = idOf(args, "pixelart_");
-  return { kind: "picture", id, name: nameOf(args, "도트 그림"), dataUrl: await encodePng(image), previewUrl: await encodePng(previewImage(image, image.width <= 120 ? 4 : 2)), width: image.width, height: image.height, warnings: [] };
+  return { kind: "picture", id, name: nameOf(args, "도트 그림"), dataUrl: await encodePng(image), previewUrl: await encodePng(previewImage(image, image.width <= 120 ? 4 : 2)), width: image.width, height: image.height, warnings };
 }
 
 /** 큰 걷는 유닛(기계·괴수·탈것)을 원본 해상도로 — 24×32 칩을 키우지 않고 프레임을 통째로 찍는다. 컷신 배우 resourceId 한 개로 걷기 전체가 붙는다. */

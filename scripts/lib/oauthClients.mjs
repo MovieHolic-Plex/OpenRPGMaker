@@ -35,9 +35,16 @@ export function readOAuthClientsFromPiAi() {
   const id = encoded("CLIENT_ID");
   const secret = encoded("CLIENT_SECRET");
   const codexId = codex.match(/const CLIENT_ID = "([^"]+)"/)?.[1];
+  // 2026-10-16 드리프트: pi-ai 2026-10-12 판은 Antigravity 자격을 TS 상수가 아니라 호환 규칙
+  // (pi-catalog/src/compat/rules/auth/google-antigravity.kdl)의 base64 client-id/client-secret 로 옮겼다.
+  // 위의 decode("...") 정규식이 빈손으로 돌아와 승인 런타임이 OPRN_ANTIGRAVITY_CLIENT_ID 미설정으로 죽었다.
+  // 두 저장 위치를 모두 읽어 어느 판이 깔려 있어도 같은 값을 얻는다(값은 여전히 이 저장소에 적지 않는다).
+  const kdl = read("src/compat/rules/auth/google-antigravity.kdl") || read("../pi-catalog/src/compat/rules/auth/google-antigravity.kdl");
+  const kdlValue = (name) => kdl.match(new RegExp(`\\b${name}\\s+"([A-Za-z0-9+/=]+)"\\s+encoding="base64"`))?.[1];
+  const kdlId = kdlValue("client-id"), kdlSecret = kdlValue("client-secret");
   return {
-    ...(id ? { antigravityClientId: decodeBase64(id) } : {}),
-    ...(secret ? { antigravityClientSecret: decodeBase64(secret) } : {}),
+    ...(id ? { antigravityClientId: decodeBase64(id) } : kdlId ? { antigravityClientId: decodeBase64(kdlId) } : {}),
+    ...(secret ? { antigravityClientSecret: decodeBase64(secret) } : kdlSecret ? { antigravityClientSecret: decodeBase64(kdlSecret) } : {}),
     ...(codexId ? { codexClientId: codexId } : {}),
   };
 }

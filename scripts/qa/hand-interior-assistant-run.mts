@@ -23,6 +23,7 @@ import { resolvePiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { Project } from "../../src/project/types.ts";
 
 const arg = (n: string, d?: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
+const __ban=/gpt-5\.6-sol|deepseek/i; if(__ban.test(String(arg('model','')))) throw Error('금지된 모델입니다: gpt-5.6-sol/DeepSeek 은 이 러너에서 쓰지 않는다(사용자 지시 2026-10-17). --model cpa8318/gemini-4-argon-high 를 쓰세요.');
 const label = arg("label", "run")!;
 const task = arg("task", "빵집 실내를 만들어줘")!;
 const [provider, modelId] = (arg("model", "klb/claude-opus-5.5")!).split("/") as [string, string];

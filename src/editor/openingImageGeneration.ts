@@ -51,7 +51,7 @@ export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "
     "STORY MOMENT: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ". Show what changed and its visible consequence; do not just depict a pretty place.",
     `FOCAL POINT: ${brief?.focus ?? "the single most important subject of the brief"}. The eye must land here first; everything else supports it and is rendered with less contrast and detail.`,
     `CAMERA: ${composition}. ${brief?.angle ? `Vantage: ${brief.angle}.` : "Choose a deliberate vantage rather than the default eye-level view."} Avoid dead-centre symmetry: put the focal point off-centre, use leading lines and overlapping depth planes. An establishing shot, medium shot and close-up must look visibly different.`,
-    `CAST: ${brief?.cast ?? "only the people or creatures named in the story moment may appear"}. Do not add extra figures, silhouettes, cloaked bystanders, crowds or animals; an empty place stays empty.`,
+    `CAST: ${brief?.cast && /^(none|nobody|empty|없음)$/iu.test(brief.cast.trim()) ? "STRICTLY NO PEOPLE, NO CHARACTERS, NO HUMANS, NO KNIGHTS, NO VILLAGERS, NO SILHOUETTES ANYWHERE IN THE IMAGE. Paint ONLY the empty environment/architecture/landscape so sprite actors can be composited on top later." : (brief?.cast ?? "only the people or creatures named in the story moment may appear")}. Do not add extra figures, silhouettes, cloaked bystanders, crowds or animals; an empty place stays empty.`,
     `LIGHT AND COLOUR: ${brief?.light ?? "one motivated key light source that is visible or clearly implied in the scene"}. Build a clear dark / mid / light value hierarchy; ${brief?.palette ? `use this palette: ${brief.palette}.` : "limit colour to three or four related hues plus one accent on the focal point."}`,
     `STYLE: ${brief?.artStyle ?? "hand-painted 2D game art"}. Keep the same drawing language shot to shot. Use confident, specific marks and lived-in details (wear, asymmetry, scale cues, signs of use) that carry the story instead of generic set dressing. Avoid photographic rendering and 3D-rendered surfaces.`,
     clearArea,
@@ -74,6 +74,20 @@ export async function generateCinematicStill(
   purpose: "opening" | "gameOver",
   options: CinematicStillRequest = {},
 ): Promise<CinematicStillResult> {
+  const unusedGeneratedBackdrops = (): string[] => {
+    if (purpose !== 'opening' || !options.project) return [];
+    const used = new Set((options.project.system.opening?.scenes ?? []).flatMap(scene =>
+      scene.kind === 'animatic'
+        ? scene.composition.layers.filter(layer => layer.kind === 'image').map(layer => layer.resourceId!)
+        : (scene.kind === 'image' || scene.kind === 'video') ? [scene.resourceId] : []));
+    return Object.keys(options.project.assets.uploaded)
+      .filter(id => /^opening_still_[0-9a-f-]+$/iu.test(id) && !used.has(id))
+      .slice(0, 8);
+  };
+  const failureSummary = (message: string): string => {
+    const fallback = unusedGeneratedBackdrops();
+    return `${message} 생성 실패를 성공으로 보고하거나 번들 스틸로 대체하지 마세요. ${fallback.length ? `사용하지 않은 전용 그림 후보를 먼저 검토하세요: ${fallback.join(', ')}.` : '사용하지 않은 전용 그림 후보가 없습니다.'} 후보도 없으면 제작을 멈추고 실패 원인을 보고하세요.`;
+  };
   let prompt: string;
   let name: string;
   let brief: OpeningImageBrief | undefined;
@@ -132,12 +146,12 @@ export async function generateCinematicStill(
     return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };
   } catch (error) {
     if (error instanceof ImageGenerationError) {
-      return { ok: false, summary: `${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`, code: "image-generation-failed" };
+      return { ok: false, summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`), code: "image-generation-failed" };
     }
     if (error instanceof DOMException && error.name === "AbortError") throw error;
     return {
       ok: false,
-      summary: `${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`,
+      summary: failureSummary(`${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`),
       code: "image-generation-failed",
     };
   }
@@ -146,17 +160,47 @@ export async function generateCinematicStill(
 /** Edge-connected chroma only. Never label an opaque failed cutout as a transparent actor. */
 /**
  * 생성기는 매끈한 에어브러시 그림을 주므로 컷마다 화풍·격자가 달라진다(실측: 타이틀은 굵은 도트, 컷은 디지털 페인팅).
- * 모든 오프닝 그림을 같은 격자(배경 가로 384칸 · 전경 192칸 이내)와 제한 팔레트로 내려 한 작품의 도트로 맞춘다.
- * 플레이어는 작은 그림에 pixelated 렌더링을 건다. 처리할 수 없으면(예: 노드의 JPEG) 원본을 그대로 쓴다.
+ * 모든 오프닝 그림을 정확히 같은 네이티브 격자(배경 384×216 · 전경 192px 이내)와 40색 이하의 제한 팔레트로 내려
+ * 한 작품의 도트로 맞춘다. 플레이어는 작은 그림에 pixelated 렌더링을 건다.
  */
 export async function pixelizeOpeningImage(dataUrl: string, isLayer: boolean): Promise<string> {
   try {
-    const { decodeImage, encodePng, pixelate } = await import('@/editor/cutsceneArt/imageProcess');
-    const source = await decodeImage(dataUrl);
-    const width = Math.min(isLayer ? 192 : 384, source.width);
+    const { coverCrop, decodeImage, encodePng, pixelate } = await import('@/editor/cutsceneArt/imageProcess');
+    // 워커(노드)의 decodeImage 는 PNG 만 읽는다 — 생성기가 JPEG 로 답하면 여기서 걸려 «원본 그대로» 가 나갔고,
+    // 오프닝 그림이 컷마다 다른 화풍·크기로 화면에 올라갔다(2026-10-16 run-2 실측: 861KB JPEG 한 장 그대로).
+    const source = await decodeImage(await transcodeToPng(dataUrl));
+    if (!isLayer) {
+      const covered = coverCrop(source, 384 / 216);
+      return await encodePng(pixelate(covered, 384, 216, 40));
+    }
+    const width = Math.min(192, source.width);
     const height = Math.max(1, Math.round(width * source.height / source.width));
-    return await encodePng(pixelate(source, width, height, isLayer ? 32 : 96));
-  } catch { return dataUrl; }
+    return await encodePng(pixelate(source, width, height, 24));
+  } catch (error) {
+    // 실패한 픽셀화를 원본 통과로 덮으면 384×216·40색 화풍 자물쇠가 조용히 꺼진다 — 호출부가 실패로 보게 한다.
+    throw new ImageGenerationError(`오프닝 그림을 384×216 격자·제한 팔레트로 내리지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+/** 캔버스가 없는 환경(워커)에서 JPEG 를 PNG data URL 로 바꾼다. PNG 는 그대로 통과. */
+async function transcodeToPng(dataUrl: string): Promise<string> {
+  // mime 접두부를 믿지 않고 실제 바이트를 본다 — 워커 겸 실행기 중에는 JPEG 바이트를 image/png 로
+  // 라벨해 보내는 곳이 있었다(2026-10-16 run-2 실측: 758KB JPEG 이 png 접두부로 와서 pngjs 가 실패,
+  // decodeImage 가 던지고 pixelizeOpeningImage 가 «원본 그대로» 를 돌려주어 화풍 자물쇠가 통째로 꺼졌다).
+  const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+  if (!/^data:image\/png;/iu.test(dataUrl) || !base64.startsWith('iVBORw0KGgo')) {
+    if (typeof document === 'undefined') {
+      const JimpModule = await import('jimp') as unknown as { Jimp?: { fromBuffer(buffer: unknown): Promise<{ getBuffer(mime: string): Promise<unknown> }> }; default?: { fromBuffer(buffer: unknown): Promise<{ getBuffer(mime: string): Promise<unknown> }> } };
+      const Jimp = JimpModule.Jimp ?? JimpModule.default!;
+      // 앱 타입 설정에는 Buffer 선언이 없다 — imageProcess.ts 와 같은 느슨한 접근을 쓴다.
+      const nodeBuffer = (globalThis as unknown as { Buffer: { from(data: unknown, encoding?: string): Uint8Array & { toString(encoding: string): string } } }).Buffer;
+      const image = await Jimp.fromBuffer(nodeBuffer.from(base64, 'base64'));
+      const png = await image.getBuffer('image/png') as Uint8Array;
+      return `data:image/png;base64,${nodeBuffer.from(png).toString('base64')}`;
+    }
+    return `data:image/png;base64,${base64}`;
+  }
+  return dataUrl;
 }
 
 export async function removeOpeningChroma(dataUrl: string, signal?: AbortSignal): Promise<string> {
