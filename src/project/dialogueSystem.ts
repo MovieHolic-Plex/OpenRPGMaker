@@ -139,7 +139,7 @@ export function resolveDialogueSystem(project: DialogueSystemHost | undefined): 
   return usesRelationshipMenu(project) ? romanceDialogueSystem() : undefined;
 }
 
-/** 대사창에 새 단추 줄이 있어야 하는가(오토·스킵·숨기기·백로그 중 하나라도 켜짐). */
+/** 읽기 보조가 하나라도 켜졌는가(오토·스킵·숨기기·백로그). 켜지면 대사창에 옛 「기록」 단추를 두지 않는다(대사창 단추 줄은 없다). */
 export function dialogueSystemHasControls(system: AuthoredDialogueSystem | undefined): boolean {
   return !!system && (system.backlog.enabled || system.auto.enabled || system.skip.enabled || system.hideButton.enabled);
 }

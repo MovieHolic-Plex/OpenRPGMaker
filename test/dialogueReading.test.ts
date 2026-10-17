@@ -81,24 +81,16 @@ describe("controls exist only for authored systems", () => {
     await line.promise;
   });
 
-  it("an authored system shows exactly the enabled buttons with shortcuts in the label", async () => {
-    useSystem({ skip: false });
+  it("an authored system draws no reading-tool buttons and no log button in the window (shortcuts still work)", async () => {
+    useSystem({});
     const dialogue = ui();
     const line = request(dialogue, "안녕");
-    const ids = [...host.querySelectorAll<HTMLElement>(".dialogue-bar-btn")].map((node) => node.dataset.testid);
-    expect(ids).toEqual(["dialogue-bar-auto", "dialogue-bar-backlog", "dialogue-bar-hide"]);
+    expect(host.querySelector('[data-testid="dialogue-bar"]')).toBeNull();
+    expect(host.querySelectorAll("button").length).toBe(0);
     expect(host.querySelector('[data-testid="dialogue-log-button"]')).toBeNull();
-    expect(host.querySelector('[data-testid="dialogue-bar-auto"]')?.getAttribute("aria-label")).toBe("오토 (A)");
-    press("Enter"); press("Enter");
-    await line.promise;
-  });
-
-  it("button labels follow the authored language", async () => {
-    useSystem({ language: "en" });
-    const dialogue = ui();
-    const line = request(dialogue, "hi");
-    expect(host.querySelector('[data-testid="dialogue-bar-skip"]')?.textContent).toContain("Skip");
-    expect(host.querySelector('[data-testid="dialogue-bar-backlog"]')?.getAttribute("aria-label")).toBe("Log (L)");
+    letter("a");
+    expect(dialogue.readingMode?.()).toBe("auto");
+    letter("a");
     press("Enter"); press("Enter");
     await line.promise;
   });
@@ -116,7 +108,6 @@ describe("auto", () => {
     const line = request(dialogue, "안녕하세요");
     letter("a");
     expect(dialogue.readingMode?.()).toBe("auto");
-    expect(host.querySelector('[data-testid="dialogue-bar-auto"]')?.getAttribute("aria-pressed")).toBe("true");
     await settle(8000);
     expect(line.done()).toBe(true);
   });
@@ -377,7 +368,7 @@ describe("backlog", () => {
     await b.promise;
   });
 
-  it("wheel up over the window opens it and the button works", async () => {
+  it("wheel up over the window opens it and L reopens it", async () => {
     useSystem({});
     const dialogue = ui();
     const line = request(dialogue, "휠 시험");
@@ -388,7 +379,7 @@ describe("backlog", () => {
     expect(host.querySelector('[data-testid="dialogue-backlog"]')).not.toBeNull();
     host.querySelector<HTMLElement>('[data-testid="dialogue-backlog-close"]')!.click();
     expect(host.querySelector('[data-testid="dialogue-backlog"]')).toBeNull();
-    host.querySelector<HTMLElement>('[data-testid="dialogue-bar-backlog"]')!.click();
+    letter("l");
     expect(host.querySelector('[data-testid="dialogue-backlog"]')).not.toBeNull();
     press("Escape");
     press("Enter"); press("Enter");

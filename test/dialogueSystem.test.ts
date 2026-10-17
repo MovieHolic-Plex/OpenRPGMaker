@@ -282,16 +282,16 @@ describe("four-language string table", () => {
     }
   });
   it("english, japanese and chinese differ from korean for visible labels and the language switch works", () => {
-    for (const key of ["bar.auto", "bar.skip", "bar.hide", "backlog.title", "option.windowOpacity"] as const) {
+    for (const key of ["option.autoSpeed", "option.skipScope", "backlog.title", "option.windowOpacity"] as const) {
       const row = DIALOGUE_UI_STRINGS[key];
       expect(row.en).not.toBe(row.ko);
       expect(row.ja).not.toBe(row.ko);
       expect(row.zh).not.toBe(row.ko);
     }
-    expect(dialogueUiText({ language: "ko" }, "bar.skip")).toBe("스킵");
-    expect(dialogueUiText({ language: "en" }, "bar.skip")).toBe("Skip");
+    expect(dialogueUiText({ language: "ko" }, "backlog.close")).toBe("닫기");
+    expect(dialogueUiText({ language: "en" }, "backlog.close")).toBe("Close");
     expect(dialogueUiText({ language: "ja" }, "backlog.count", 3)).toBe("3行");
-    expect(dialogueUiText(undefined, "bar.skip")).toBe("스킵");
+    expect(dialogueUiText(undefined, "backlog.close")).toBe("닫기");
     expect(dialogueUiLocale("auto")).toMatch(/^(ko|en|ja|zh)$/);
   });
   it("keeps the legacy options screen wording in korean", () => {

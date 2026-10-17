@@ -7,7 +7,8 @@
 // 연애의 romanceCompletionGaps 와 같은 방식이다: 메시지 배열을 돌려주고, 팀 finish 가 두 번 거절한 뒤에는 보고에 남기고 받는다.
 
 import { SEGMENT_END_ENDING_ID, SEGMENT_ROUTE_MAP_ID } from "@/project/playableSegmentContract";
-import type { Project } from "@/project/types";
+import { isTitleCardNarration } from "@/project/defaults/defaultOpeningSequence";
+import type { CinematicSequence, Project } from "@/project/types";
 import { briefTextOf } from "./brief";
 import { visitAllCommands } from "./walk";
 import { checkJrpg } from "./jrpg";
@@ -47,17 +48,15 @@ export function jrpgCompletionGateApplies(project: Project, task = ""): boolean 
   return isJrpg(project) && WHOLE_GAME_TASK.test(task);
 }
 
-/** 오프닝이 제목 카드(「— 제목 —」)뿐인가 — 도입을 쓰지 않은 채 끝낸 것이다. 사용자가 끈 오프닝(enabled:false)은 아니다. */
-function openingIsOnlyTitleCard(project: Project): boolean {
-  const opening = project.system?.opening;
+/**
+ * 오프닝이 제목 카드뿐인가 — 도입을 쓰지 않은 채 끝낸 것이다. 카드는 「— 제목 —」 모양(제목과 달라도·씨앗의 「— 새 게임 —」 포함),
+ * 기본 제목 「새 게임」 글, 또는 게임 제목만 적은 글이다. 사용자가 끈 오프닝(enabled:false)·빈 오프닝은 아니다(빈 것은 부르는 쪽이 따로 본다).
+ */
+export function openingIsOnlyTitleCard(opening: CinematicSequence | undefined, title?: string): boolean {
   if (!opening || opening.enabled === false) return false;
   const scenes = opening.scenes ?? [];
   if (scenes.length === 0) return false;
-  return scenes.every((scene) => {
-    const narration = typeof scene.narration === "string" ? scene.narration.trim() : "";
-    const hasPicture = "resourceId" in scene && Boolean((scene as { resourceId?: unknown }).resourceId);
-    return scene.kind === "text" && !hasPicture && /^[—–-]+\s*.+?\s*[—–-]+$/u.test(narration);
-  });
+  return scenes.every((scene) => scene.kind === "text" && typeof scene.narration === "string" && isTitleCardNarration(scene.narration, title));
 }
 
 /** 시작 맵에서 transfer 명령을 따라 닿는 맵 id 들(시작 맵 포함). */
@@ -95,7 +94,7 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
   }
 
   // 1b) 오프닝 — 제목 카드 한 장(씨앗이 남긴 「— 새 게임 —」 포함)뿐이면 새 게임을 눌러도 검은 화면에 글자만 뜬다.
-  if (openingIsOnlyTitleCard(project)) {
+  if (openingIsOnlyTitleCard(project.system?.opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
     gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜹니다. plan_opening/set_opening 으로 이 게임의 도입을 2~4컷(세계·발단·주인공) 써서 넣으세요.");
   }
 

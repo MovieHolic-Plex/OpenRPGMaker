@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T05:06:14.131Z",
+  "generatedAt": "2026-10-17T12:37:56.284Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -4297,11 +4297,6 @@
     "R4|vnLook.css|.dialogue-overlay[data-vn-layout=\"bubble\"][data-vn-look] .dialogue-box:not(.choices):not(.transparent)::after|--vn-bg-strong",
     "R4|vnLook.css|.dialogue-overlay[data-vn-layout=\"bubble\"][data-vn-look].position-top .dialogue-box:not(.choices):not(.transparent)::after|--vn-bg-strong",
     "R4|vnLook.css|.dialogue-overlay[data-vn-look=\"paper-note\"][data-vn-look] .dialogue-box:not(.transparent):not(.choices-prompt)|--vn-bg",
-    "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn[aria-pressed=\"true\"]|--vn-accent",
-    "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn[aria-pressed=\"true\"]|--vn-accent-text",
-    "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn|--vn-bg-strong",
-    "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn|--vn-border",
-    "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn|--vn-text",
     "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .body|--vn-text",
     "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .speaker.speaker-nameplate|--vn-name-bg",
     "R4|vnLook.css|.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .speaker.speaker-nameplate|--vn-name-text",

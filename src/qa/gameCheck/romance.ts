@@ -12,9 +12,13 @@ import { isTalkFriendshipEnabled } from "@/project/friendship";
 import { ROMANCE_TITLE_SUBTITLE } from "@/project/romancePreset";
 import { romanceTitleArtSettingGap, romanceTitleMismatch, romanceTitleMismatchMessage } from "@/project/romanceTitleArt";
 import { ROMANCE_PLACEHOLDER_NAMES, SEGMENT_END_ENDING_ID, SEGMENT_END_EVENT_ID, SEGMENT_ROUTE_MAP_ID, SEGMENT_STARTER_EVENT_ID } from "@/project/playableSegmentContract";
-import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import { TILE } from "@/project/defaults/constants";
+import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
+import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
+import type { Command, EventPage, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { briefTextOf } from "./brief";
 import type { Finding } from "./types";
+import { openingIsOnlyTitleCard } from "./jrpgCompletion";
 import { checkEndingNpcReachable, checkHeroineEndingsCalled, checkPerHeroineEndings, checkSplitHeroineIds, checkRomanceEndings } from "./romanceEndings";
 import { allPages, commandList, visitPageCommands } from "./walk";
 import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
@@ -27,6 +31,12 @@ const PLACEHOLDER_TITLES = new Set(["", "새 게임", "새 프로젝트"]);
 const AFFECTION_VARIABLE = /호감|friendship|affection|favou?r/iu;
 const OBJECT_NPC_NAME = /표지판|게시판|안내판|푯말|우편함|시계탑|나무|상자|벤치|분수대|자판기|포인트|안내데스크|다이어리|수첩/u;
 const PERSON_ROLE_NAME = /학생|선배|후배|동기|친구|교수|선생|매니저|바리스타|팀장|대리|사원|부원|위원|회장|서기|당번|주인|점원/u;
+/** 대사 본문 속 타일 좌표 「(40,13)」·「(16, 6)」 — 플레이어에게는 뜻 없는 숫자다. */
+const RAW_TILE_COORDS = /\(\s*\d{1,3}\s*,\s*\d{1,3}\s*\)/u;
+/** 이름이 물가를 약속하는 맵 — 플레이어는 강·호수·바다를 보러 온다. 실내(「강변 카페」)는 물이 없어도 된다. */
+const WATERFRONT_MAP_NAME = /강변|강가|호숫가|수변|해변/u;
+const INDOOR_MAP_NAME = /카페|실내|가게|식당|레스토랑|호텔|숙소|사무실|매장|편의점|원룸|아파트|교실|방$/u;
+const WATERFRONT_MIN_COVERAGE = 0.1;
 
 /** 연애 프로젝트인가 — 호감 하트 HUD(연애 기본값)·인터뷰 장르·기획 문장 중 하나. */
 export function isRomanceCheckTarget(project: Project, briefText = briefTextOf(project)): boolean {
@@ -91,6 +101,43 @@ function deadlineWithoutFallback(project: Project): string | undefined {
   return undefined;
 }
 
+/** 바닥 칸이 물인가. 칸 설명(tileMeta)이 있는 타일셋은 그 role·태그를, 없으면 내장 물 칸 번호를 믿는다. */
+function isWaterTile(tileset: TilesetDef | undefined, tile: number | undefined): boolean {
+  if (typeof tile !== "number" || tile < 0) return false;
+  const meta = tileset?.tileMeta?.[tile];
+  if (meta && (meta.role !== undefined || (meta.tags?.length ?? 0) > 0)) return meta.role === "water" || meta.tags?.some((tag) => tag === "water" || tag === "물") === true;
+  return tile === TILE.WATER || isWaterChipsetTile(tile) || isLakeAutotileTile(tile, tileset);
+}
+
+/**
+ * 물가 이름(강변·강가·호숫가·수변·해변)인데 물이 맵의 10% 미만이거나 한 줄(예: 맨 윗줄 y=0)에만 깔린 바깥 맵.
+ * 2026-10-17 「퇴근길 강변 야경 길」 이 맨 윗줄 물 한 줄로 강을 흉내 냈는데 검사가 통과시켰다.
+ */
+function waterfrontMapsWithoutWater(project: Project): string[] {
+  const found: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    const name = (map.name ?? "").trim();
+    if (!WATERFRONT_MAP_NAME.test(name) || INDOOR_MAP_NAME.test(name)) continue;
+    const cells = map.width * map.height;
+    if (cells <= 0) continue;
+    const tileset = project.tilesets[map.tilesetId];
+    const rows = new Set<number>();
+    let water = 0;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (!isWaterTile(tileset, map.lowerTiles[y * map.width + x])) continue;
+        water += 1;
+        rows.add(y);
+      }
+    }
+    const coverage = water / cells;
+    if (coverage >= WATERFRONT_MIN_COVERAGE && rows.size > 1) continue;
+    const row = rows.size === 1 ? ` · y=${[...rows][0]} 한 줄에만` : "";
+    found.push(`${name}(물 ${Math.round(coverage * 100)}%${row})`);
+  }
+  return found;
+}
+
 export function checkRomance(project: Project, briefText = briefTextOf(project)): Finding[] {
   if (!isRomanceCheckTarget(project, briefText)) return [];
   const findings: Finding[] = [];
@@ -139,6 +186,25 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     findings.push({
       severity: "warning", code: "romance-title-art-setting",
       message: `타이틀 배경이 이 게임 소재와 다른 그림인데 기획은 ${settingArt.label} 쪽입니다 — set_title_screen {backgroundResourceId:"${settingArt.id}"} 로 소재에 맞는 그림으로 바꾸세요(전용 그림을 만들었으면 generate_title_art).`,
+    });
+  }
+
+  // 1c) 오프닝 — 비었거나 제목 카드(「— 새 게임 —」 씨앗·제목만 적은 글)뿐이면 새 게임을 눌러도 검은 화면에 글자만 뜬다. 사용자가 끈 오프닝(enabled:false)은 짚지 않는다.
+  const opening = project.system?.opening;
+  const openingEmpty = opening?.enabled !== false && (opening?.scenes ?? []).length === 0;
+  if (openingEmpty || openingIsOnlyTitleCard(opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
+    findings.push({
+      severity: "warning", code: "romance-opening-title-card",
+      message: `오프닝이 ${openingEmpty ? "비어 있습니다" : "제목 카드뿐입니다"} — 새 게임을 누르면 바로 걷거나 검은 화면에 제목만 뜹니다. plan_opening/set_opening 으로 이 게임의 도입을 여러 장면(무대·주인공·첫 만남의 계기)으로 써 넣으세요.`,
+    });
+  }
+
+  // 1d) 물가 이름의 맵에 물이 보이나 — 한 줄짜리 물띠는 강·호수가 아니다.
+  const dryWaterfronts = waterfrontMapsWithoutWater(project);
+  if (dryWaterfronts.length > 0) {
+    findings.push({
+      severity: "warning", code: "romance-waterfront-no-water",
+      message: `물가 이름의 맵 ${dryWaterfronts.slice(0, 4).join(", ")}에 물이 거의 없거나 한 줄 띠뿐입니다 — 강·호수·바다가 화면에 보이도록 맵의 1/10 이상, 두 줄 이상 폭으로 물을 칠하거나(fill_region·물 오토타일) 맵 이름을 실제 모습에 맞게 바꾸세요.`,
     });
   }
 
@@ -262,20 +328,30 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     });
   }
 
-  // 4) 대사 본문 앞에 화자 표기가 또 붙은 줄(「[이름]」 이중 표기·바깥 따옴표).
+  // 4) 대사 본문 앞에 화자 표기가 또 붙은 줄(「[이름]」 이중 표기·바깥 따옴표) · 본문에 타일 좌표가 그대로 박힌 줄.
   let doubled = 0;
   let example = "";
+  let coordLines = 0;
+  let coordExample = "";
   for (const page of allPages(project)) visitPageCommands(page, (visit) => {
     const command = visit.command;
     if (command.kind !== "text" || typeof command.body !== "string") return;
     // 「[이름]」 줄 머리표, 또는 speaker 칸과 같은 이름이 「이름:」 로 본문 앞에 또 붙은 줄(romance-real-2 R07: `한지훈: "반가워!"`).
     const echoed = stripSpeakerEcho(command.body, typeof command.speaker === "string" ? command.speaker : undefined) !== command.body;
     if (echoed || /^\s*["“]?\s*\[[^\]\n]{1,20}\]\s*\n/u.test(command.body)) { doubled += 1; if (!example) example = command.body.slice(0, 30).replace(/\n/gu, "↵"); }
+    // 2026-10-17: 「(40,13) 쪽 벤치에서 기다릴게」 처럼 조수가 저작 좌표를 대사에 옮겨 적었다 — 플레이어는 좌표를 볼 수 없다.
+    if (RAW_TILE_COORDS.test(command.body)) { coordLines += 1; if (!coordExample) coordExample = command.body.slice(0, 40).replace(/\n/gu, "↵"); }
   });
   if (doubled > 0) {
     findings.push({
       severity: "warning", code: "romance-speaker-in-body",
       message: `대사 ${doubled}줄의 본문이 「[이름]」·「이름:」 으로 시작합니다(예: ${example}) — 화자는 speaker 칸에 있으니 본문에서 빼세요. 재생 화면은 이름표와 같은 이름의 머리표를 걷어 주지만 저작 데이터는 깨끗해야 합니다.`,
+    });
+  }
+  if (coordLines > 0) {
+    findings.push({
+      severity: "warning", code: "romance-dialogue-raw-coords",
+      message: `대사 ${coordLines}줄에 타일 좌표 (x,y) 가 그대로 들어 있습니다(예: ${coordExample}) — 플레이어에게 좌표는 뜻이 없습니다. 「분수대 옆 벤치」「도서관 2층 창가」처럼 장소를 자연스러운 말로 바꾸세요.`,
     });
   }
   const noFallback = deadlineWithoutFallback(project);
@@ -289,7 +365,7 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
 }
 
 /** 「끝낸 것으로 칠 수 없는」 연애 게임의 빈칸 — 팀의 finish·조수 완료 검사가 이것을 막는다(scripts/lib/piTeamRuntime.ts · piAgentRuntime.ts). 경고 코드 중 이 목록만 완료 조건이다. */
-const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split", "romance-object-npc-bust"]);
+const COMPLETION_CODES = new Set(["romance-skeleton-leftover", "romance-only-skeleton-ending", "romance-default-title", "romance-default-subtitle", "romance-title-art-mismatch", "romance-endings-unbranched", "romance-ending-shadowed", "romance-affection-variable-unmapped", "romance-endings-not-per-heroine", "romance-deadline-no-fallback", "romance-title-art-setting", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split", "romance-object-npc-bust", "romance-opening-title-card", "romance-dialogue-raw-coords", "romance-waterfront-no-water"]);
 /** 엔딩 분기를 요구하지 않는 코드 — 한 장면 하네스(첫 만남 한 장면)는 엔딩이 하나다. */
 const ENDING_CODES = new Set(["romance-only-skeleton-ending", "romance-endings-unbranched", "romance-ending-shadowed", "romance-endings-not-per-heroine", "romance-ending-npc-unreachable", "romance-heroine-endings-uncalled", "romance-heroine-id-split"]);
 const SINGLE_SCENE_ENDING_ID = "ending_romance_first_meeting";

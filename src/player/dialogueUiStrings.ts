@@ -1,5 +1,5 @@
 // player/dialogueUiStrings.ts
-// 대사창 읽기 보조(백로그·오토·스킵·숨기기)의 시스템 글자 — 네 언어 표(2026-10-17).
+// 대사창 읽기 보조(백로그·오토·스킵·숨기기)의 시스템 글자 — 네 언어 표(2026-10-17). 대사창 단추 줄은 없다(단축키만).
 // 게임 본문은 번역하지 않는다. 이 표는 단추·패널·알림 같은 「시스템 글자」만 다룬다. 어느 언어로 보일지는
 // 저작자가 정한다(meta.oprnDialogueSystem.language: ko|en|ja|zh, auto 는 기기 언어). 기본 ko 라 옛 화면은 그대로다.
 // 새 글자를 더할 땐 네 언어를 모두 채운다 — test/dialogueSystem.test.ts 가 빈 칸과 자리표시자 불일치를 막는다.
@@ -7,10 +7,8 @@ import { detectLocale, type SupportedLocale } from "@/i18n/locale";
 import type { AuthoredDialogueSystem, DialogueUiLanguage } from "@/project/dialogueSystem";
 
 export type DialogueUiKey =
-  | "bar.label" | "bar.auto" | "bar.skip" | "bar.backlog" | "bar.hide"
   | "backlog.title" | "backlog.hint" | "backlog.empty" | "backlog.choice" | "backlog.cancel" | "backlog.count" | "backlog.close"
   | "menu.backlog" | "menu.backlogOpen" | "menu.backlogHint" | "menu.backlogDisabled"
-  | "notice.unread" | "notice.choices" | "notice.ending" | "notice.boundary" | "notice.locked"
   | "option.autoSpeed" | "option.autoSpeedHint" | "option.skipScope" | "option.skipScopeHint" | "option.windowOpacity" | "option.windowOpacityHint"
   | "value.slow" | "value.normal" | "value.fast" | "value.scopeRead" | "value.scopeAll" | "value.on" | "value.off"
   | "option.title" | "option.footer" | "option.saved" | "option.savedSession" | "option.bgm" | "option.se" | "option.voice" | "option.down" | "option.up" | "option.volumeHint"
@@ -20,11 +18,6 @@ export type DialogueUiKey =
 type Row = Readonly<Record<SupportedLocale, string>>;
 
 export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
-  "bar.label": { ko: "읽기 도구", en: "Reading tools", ja: "読み進めツール", zh: "阅读工具" },
-  "bar.auto": { ko: "오토", en: "Auto", ja: "オート", zh: "自动" },
-  "bar.skip": { ko: "스킵", en: "Skip", ja: "スキップ", zh: "跳过" },
-  "bar.backlog": { ko: "백로그", en: "Log", ja: "ログ", zh: "回顾" },
-  "bar.hide": { ko: "숨기기", en: "Hide", ja: "隠す", zh: "隐藏" },
   "backlog.title": { ko: "백로그", en: "Backlog", ja: "バックログ", zh: "对话回顾" },
   "backlog.hint": { ko: "휠·↑↓ 넘겨 보기 · Esc 닫기", en: "Wheel / Up Down to scroll · Esc to close", ja: "ホイール・↑↓ でスクロール · Esc で閉じる", zh: "滚轮 / ↑↓ 滚动 · Esc 关闭" },
   "backlog.empty": { ko: "아직 나눈 대화가 없습니다.", en: "No conversation yet.", ja: "まだ会話がありません。", zh: "还没有对话记录。" },
@@ -36,11 +29,6 @@ export const DIALOGUE_UI_STRINGS: Readonly<Record<DialogueUiKey, Row>> = {
   "menu.backlogOpen": { ko: "지난 대사 읽기", en: "Read past dialogue", ja: "過去の会話を読む", zh: "查看过往对话" },
   "menu.backlogHint": { ko: "결정 키로 전체 화면을 엽니다. 최근 대사가 아래에 있습니다.", en: "Confirm to open the full screen. Latest lines are at the bottom.", ja: "決定キーで全画面を開きます。最新の会話は下にあります。", zh: "按确认键打开全屏，最新对话在最下方。" },
   "menu.backlogDisabled": { ko: "이 게임은 대사 기록을 쓰지 않습니다.", en: "This game does not keep a dialogue log.", ja: "このゲームは会話ログを使いません。", zh: "此游戏不记录对话。" },
-  "notice.unread": { ko: "읽지 않은 글에서 멈췄습니다", en: "Stopped at unread text", ja: "未読のテキストで止まりました", zh: "已在未读文本处停止" },
-  "notice.choices": { ko: "선택지에서 멈췄습니다", en: "Stopped at a choice", ja: "選択肢で止まりました", zh: "已在选项处停止" },
-  "notice.ending": { ko: "엔딩 앞에서 멈췄습니다", en: "Stopped before the ending", ja: "エンディングの前で止まりました", zh: "已在结局前停止" },
-  "notice.boundary": { ko: "장면이 바뀌어 멈췄습니다", en: "Stopped at a scene change", ja: "場面が変わって止まりました", zh: "场景切换，已停止" },
-  "notice.locked": { ko: "넘길 수 없는 글에서 멈췄습니다", en: "Stopped at text that cannot be skipped", ja: "飛ばせないテキストで止まりました", zh: "已在无法跳过的文本处停止" },
   "option.autoSpeed": { ko: "오토 속도", en: "Auto speed", ja: "オート速度", zh: "自动速度" },
   "option.autoSpeedHint": { ko: "선택하면 보통 → 빠르게 → 느리게 순서로 바뀝니다. 글이 길수록 더 오래 기다립니다.", en: "Cycles Normal, Fast, Slow. Longer text waits longer.", ja: "選ぶと 普通→速い→遅い の順で切り替わります。長い文ほど長く待ちます。", zh: "依次切换 普通→快→慢。文字越长等待越久。" },
   "option.skipScope": { ko: "스킵 범위", en: "Skip range", ja: "スキップ範囲", zh: "跳过范围" },

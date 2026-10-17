@@ -23,6 +23,41 @@ export function isUntouchedDefaultOpening(opening: CinematicSequence | undefined
   return shape(opening) === shape(defaultOpeningSequence(title));
 }
 
+/** 씨앗·빈 프로젝트가 남기는 기본 제목 — 이 이름의 제목 카드는 아직 아무도 쓰지 않은 자리다. */
+const PLACEHOLDER_OPENING_TITLES: Readonly<Record<string, true>> = { "새 게임": true, "새 프로젝트": true, "New Game": true, "New Project": true };
+const TITLE_CARD = /^[—–-]+\s*(.+?)\s*[—–-]+$/u;
+
+/** 제목 카드 글(「— 제목 —」·「- 제목 -」)에서 제목을 꺼낸다. 카드 모양이 아니면 글 그대로. */
+function titleCardName(narration: string): string {
+  const text = narration.trim();
+  return TITLE_CARD.exec(text)?.[1]?.trim() ?? text;
+}
+
+/** 이 글이 제목만 적은 카드인가 — 「— 무엇 —」 모양(제목과 달라도), 기본 제목 「새 게임」, 또는 게임 제목 그대로. */
+export function isTitleCardNarration(narration: string, title?: string): boolean {
+  const text = narration.trim();
+  if (TITLE_CARD.test(text)) return true;
+  const name = title?.trim();
+  return PLACEHOLDER_OPENING_TITLES[text] === true || (!!name && text === name);
+}
+
+/**
+ * 게임 제목이 바뀔 때 씨앗이 남긴 제목 카드 한 장짜리 오프닝(「— 새 게임 —」)의 글자도 새 제목으로 옮긴다.
+ * 연애 인터뷰 씨앗은 동기 문장이 없어 이 한 장만 남고, 제목을 정한 뒤에도 새 게임을 누르면 「— 새 게임 —」 이 떴다(2026-10-17).
+ * 장면이 하나뿐인 그림 없는 글 장면이고 그 글이 옛 제목 또는 기본 제목의 카드일 때만 바꾼다 — 저작된 오프닝은 그대로다.
+ * 바꿀 것이 없으면 undefined.
+ */
+export function retitlePlaceholderOpening(opening: CinematicSequence | undefined, previousTitles: readonly string[], nextTitle: string): CinematicSequence | undefined {
+  const scene = opening?.scenes.length === 1 ? opening.scenes[0] : undefined;
+  const next = nextTitle.trim();
+  if (!opening || !scene || scene.kind !== "text" || typeof scene.narration !== "string" || !next) return undefined;
+  const name = titleCardName(scene.narration);
+  if (name === next) return undefined;
+  const previous = previousTitles.map((title) => title.trim()).filter(Boolean);
+  if (PLACEHOLDER_OPENING_TITLES[name] !== true && !previous.includes(name)) return undefined;
+  return { ...opening, scenes: [{ ...scene, narration: `— ${next} —` }] };
+}
+
 /**
  * 확정 기획이 있는 새 프로젝트의 오프닝. 기본 프리셋은 「강을 낀 왕국 … 달빛만 남은 호숫가」 그림이라
  * 눈보라 항구 이야기 같은 기획과 정면으로 어긋났다(2026-09-23 도그푸딩). 그림을 지어내지 않고 기획의

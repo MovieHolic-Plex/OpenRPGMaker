@@ -1,5 +1,6 @@
 import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
+import { retitlePlaceholderOpening } from "@/project/defaults/defaultOpeningSequence";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
@@ -402,8 +403,11 @@ const setProjectSettings: ToolDefinition = {
       changed.push(`장 표시=${Object.keys(next.labels).length}개`);
     }
     if (typeof args.title === "string" && args.title.trim()) {
+      const previousTitles = [draft.meta.title, draft.system.titleScreen?.title ?? ""];
       draft.meta.title = args.title.trim();
       if (draft.system.titleScreen) draft.system.titleScreen.title = draft.meta.title;
+      const retitled = retitlePlaceholderOpening(draft.system.opening, previousTitles, draft.meta.title);
+      if (retitled) draft.system.opening = retitled;
       changed.push("제목");
     }
     if (typeof args.author === "string" && args.author.trim()) {

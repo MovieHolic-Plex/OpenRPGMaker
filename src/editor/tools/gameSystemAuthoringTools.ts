@@ -95,9 +95,9 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     preset:{type:'string',enum:['romance','default'],description:'romance: 네 기능을 모두 켠 연애 기본 구성에서 시작. default: 저작을 지우고 자동 판정(관계 중심 게임은 기본 구성, 그 밖은 옛 동작)으로 되돌린다.'},
     backlog:{type:'boolean',description:'백로그(최근 N건 링 버퍼, 저장됨).'},
     backlogLimit:{type:'integer',minimum:BACKLOG_LIMIT_MIN,maximum:BACKLOG_LIMIT_MAX,description:`백로그에 남길 줄 수 ${BACKLOG_LIMIT_MIN}~${BACKLOG_LIMIT_MAX}, 기본 100.`},
-    auto:{type:'boolean',description:'오토 진행 단추·A 키.'},
-    skip:{type:'boolean',description:'스킵 단추·S 키·Ctrl 누르는 동안 스킵.'},
-    hideButton:{type:'boolean',description:'숨기기 단추·H 키.'},
+    auto:{type:'boolean',description:'오토 진행(A 키). 대사창에 단추는 없다.'},
+    skip:{type:'boolean',description:'스킵(S 키·Ctrl 누르는 동안 스킵). 대사창에 단추는 없다.'},
+    hideButton:{type:'boolean',description:'대사창 숨기기(H 키). 대사창에 단추는 없다.'},
     language:{type:'string',enum:[...DIALOGUE_UI_LANGUAGES],description:'단추·백로그·설정 화면 글자 언어. ko 기본, auto 는 기기 언어. 게임 본문은 번역되지 않는다.'},
     defaults:{type:'object',additionalProperties:false,description:'플레이어가 아직 정하지 않았을 때의 시작 설정.',properties:{
       textSpeed:{type:'string',enum:[...DIALOGUE_SPEEDS]},autoSpeed:{type:'string',enum:[...DIALOGUE_SPEEDS]},skipScope:{type:'string',enum:[...SKIP_SCOPES],description:'read=읽은 글만, all=전부(선택지·엔딩 제외).'},
@@ -136,7 +136,7 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     const menu=fieldMenu(p);
     if(next.backlog.enabled&&menu&&!menu.entries.some(e=>e.command==='backlog'))notice.push('저작된 ESC 메뉴에 백로그 항목이 없습니다 — 메뉴로도 열려면 configure_field_menu {preset:"custom", add:[{command:"backlog",label:"백로그"}]}');
     if(!next.backlog.enabled&&menu?.entries.some(e=>e.command==='backlog'))notice.push('ESC 메뉴의 백로그 항목은 백로그가 꺼져 있는 동안 보이지 않습니다');
-    if(!next.backlog.enabled&&!next.auto.enabled&&!next.skip.enabled&&!next.hideButton.enabled)notice.push('네 기능이 모두 꺼졌습니다. 대사창 단추 줄이 사라지고 옛 「기록」 단추만 남습니다');
+    if(!next.backlog.enabled&&!next.auto.enabled&&!next.skip.enabled&&!next.hideButton.enabled)notice.push('네 기능이 모두 꺼졌습니다. 대사창에 옛 「기록」 단추가 돌아옵니다');
     return {summary:`대사창 읽기 보조를 저장했습니다(백로그 ${next.backlog.enabled?`${next.backlog.limit}줄`:'꺼짐'}, 오토 ${next.auto.enabled?'켜짐':'꺼짐'}, 스킵 ${next.skip.enabled?'켜짐':'꺼짐'}, 숨기기 ${next.hideButton.enabled?'켜짐':'꺼짐'}, 언어 ${next.language})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 검증은 별도입니다.`,data:systemView(p)};
   }),
   tool('set_vn_extras','미연시 추가 화면을 저작: 갤러리(CG 잠금 표시 + 본 엔딩 회상)·엔딩 목록(엔딩 정의를 읽어 자동으로 채움, 인물별·결말 3종 체크리스트)·세이브 카드(날짜 + 마지막 대사 한 줄)·글자 언어. 연애·관계 중심 게임은 이미 전부 켜져 있어 호출이 필요 없고, 끄거나 조정할 때만 쓴다. 다른 장르도 켤 수 있다. 주어진 칸만 바꾼다. 새 그림은 만들지 않는다 — 갤러리는 showPicture recordInGallery 로 저작된 그림을, 엔딩 목록은 저작된 엔딩 정의를 읽는다. 플레이어 기기 설정·기존 저장은 그대로다.','write',schema({
