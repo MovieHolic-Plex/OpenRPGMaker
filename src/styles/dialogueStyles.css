@@ -88,6 +88,51 @@
   color: var(--dlg-accent);
 }
 
+/* ── 양쪽 전신 · 반투명 베일 ── 양쪽 전신 스탠딩 초상 위로 부드럽게 번지는 다크 그라데이션 베일. */
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"],
+.dialogue-ambient-layer [data-dialogue-style="dual-fullbody-veil"] {
+  --runtime-dialogue-panel-height: 31%;
+  --runtime-choice-panel-height: 34%;
+  --runtime-dialogue-speaker-inset: 12px;
+  --dlg-bg: linear-gradient(
+    180deg,
+    rgba(8, 10, 18, 0.04) 0%,
+    rgba(10, 13, 22, 0.68) 22%,
+    rgba(10, 13, 22, 0.84) 60%,
+    rgba(8, 10, 18, 0.92) 100%
+  );
+  --dlg-border: 0 solid transparent;
+  --dlg-radius: 0;
+  --dlg-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --dlg-filter: none;
+  --dlg-hairline: transparent;
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.82), 1px 1px 0 rgba(0, 0, 0, 0.92);
+  --dlg-accent: rgb(243, 210, 140);
+  --dlg-name-bg: linear-gradient(90deg, rgba(12, 16, 28, 0.92) 0%, rgba(18, 24, 40, 0.78) 100%);
+  --dlg-name-text: rgb(247, 231, 196);
+  --dlg-name-border: 1px solid rgba(243, 210, 140, 0.45);
+  --dlg-name-radius: 999px;
+  --dlg-name-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  --dlg-select-bg: rgba(243, 210, 140, 0.18);
+  --dlg-weight: 700;
+}
+
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box {
+  max-width: none;
+}
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-box .speaker.speaker-nameplate {
+  left: 16px;
+  padding: 2px 11px;
+}
+
+.dialogue-overlay[data-dialogue-style="dual-fullbody-veil"] .dialogue-page-cursor {
+  bottom: 5px;
+  left: calc(50% - 4px);
+  right: auto;
+}
+
 /* ── 고전 · 윈도스킨 ── 자료집 시스템 그림(system.systemResourceId)을 9칸으로 편다. */
 /* A separate authored style: existing cream/gold projects keep their appearance. */
 .dialogue-overlay[data-dialogue-style="pixel-cinematic"],

@@ -6,7 +6,7 @@
 
 import { field, numberField, sliderStepperField, toggleSwitch } from "@/editor/panels/databaseControls";
 import { renderDialogueLookSample } from "@/editor/panels/eventEditor/commandPreview";
-import { FULL_PORTRAIT_SAMPLE_RESOURCE_ID, renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
+import { FULL_PORTRAIT_PARTNER_SAMPLE_RESOURCE_ID, FULL_PORTRAIT_SAMPLE_RESOURCE_ID, renderFullPortraitStage } from "@/editor/panels/fullPortraitStagePreview";
 import {
   DEFAULT_DIALOGUE_STYLE_ID,
   DIALOGUE_CONTAINER_DESCRIPTIONS,
@@ -55,8 +55,12 @@ export function dialogueStyleSection(project: Project, deps: DialogueStyleSectio
   let current = project;
   let showcase = dialogueContextShowcase(project, deps);
   let extras = dialogueExtrasShowcase(project, deps);
+  let fullPortrait = dialogueFullPortraitSettings(project, deps);
   const refresh = (patch: Partial<Project["system"]>) => {
     current = { ...current, system: { ...current.system, ...patch } };
+    const nextFullPortrait = dialogueFullPortraitSettings(current, deps);
+    fullPortrait.replaceWith(nextFullPortrait);
+    fullPortrait = nextFullPortrait;
     const nextShowcase = dialogueContextShowcase(current, deps);
     showcase.replaceWith(nextShowcase);
     showcase = nextShowcase;
@@ -66,7 +70,6 @@ export function dialogueStyleSection(project: Project, deps: DialogueStyleSectio
   };
   const gallery = dialogueStyleGallery(project, deps, (style) => refresh({ dialogueStyle: style }));
   const settings = dialogueTextSettings(project, deps, refresh);
-  const fullPortrait = dialogueFullPortraitSettings(project, deps);
   return [gallery, settings, fullPortrait, showcase, extras];
 }
 
@@ -123,8 +126,10 @@ function dialogueFullPortraitSettings(project: Project, deps: DialogueStyleSecti
   let settings = normalizeDialogueFullPortraitSettings(project.system.dialogueFullPortrait) ?? {};
   const stageHost = el("div", { class: "db-system-dialogue-full-stage", dataset: { testid: "db-system-dialogue-full-stage" } });
   const redraw = (): void => {
+    const isDualVeil = resolveDialogueStyleId(project.system.dialogueStyle) === "dual-fullbody-veil";
     stageHost.replaceChildren(renderFullPortraitStage({
-      resourceId: FULL_PORTRAIT_SAMPLE_RESOURCE_ID,
+      resourceId: isDualVeil ? "shared-modern-uni-girl-navy-expressions-full-base" : FULL_PORTRAIT_SAMPLE_RESOURCE_ID,
+      ...(isDualVeil ? { partnerResourceId: FULL_PORTRAIT_PARTNER_SAMPLE_RESOURCE_ID, veil: true } : {}),
       layout: resolveDialogueFullPortraitLayout(settings),
       width: 320,
     }));

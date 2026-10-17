@@ -7,7 +7,7 @@
 //     켜면 맵 칩셋뿐 아니라 인물 칩도 현대 연애 칩 Modern1~3 로 묶고(주인공 기본 외형 포함), ESC 메뉴는 전투 능력치 대신 호감도 중심(relationshipMenu.ts)이 된다
 //  4) 연애에 어울리는 번들 타이틀 그림(눈 덮인 마을 기본값 대신)
 //  5) 시작 맵 BGM — 비어 있으면 현대 일상 곡(잔잔한 찻집·옥상 저녁 따위) 하나
-import { romanceDialogueSystem } from "./dialogueSystem";
+import { DUAL_FULLBODY_VEIL_PRESET_ID, ROMANCE_FULL_PORTRAIT_DEFAULTS, romanceDialogueSystem } from "./dialogueSystem";
 import { romanceVnExtras } from "./vnExtras";
 import { DEADLINE_ENDING_COMMON_EVENT_ID, installDeadlineEnding, type DeadlineTier } from "@/project/deadlineEnding";
 import { ROMANCE_ENDING_HAPPY_AT, ROMANCE_ENDING_HAPPY_ID, ROMANCE_ENDING_NORMAL_AT, ROMANCE_ENDING_NORMAL_ID, SEGMENT_END_ENDING_ID } from "@/project/playableSegmentContract";
@@ -127,6 +127,15 @@ export function applyRomanceDefaults(project: Project): string[] {
   const start = project.maps[project.startMapId];
   if (!system.genreLock && start && GENRE_LOCK_PRESETS.romance.families.includes(tilesetFamily(project, start.tilesetId))) {
     if (enableGenreLockSettled(project, "romance")) applied.push("genreLock");
+  }
+  // 연애 기본 대화창 프리셋: 전신 양쪽 스탠딩 + 반투명 다크 베일 대화창(저작자가 다른 스타일을 직접 고르지 않았을 때만).
+  if (system.dialogueStyle === undefined || system.dialogueStyle === "pixel-cinematic") {
+    system.dialogueStyle = DUAL_FULLBODY_VEIL_PRESET_ID;
+    applied.push("dialogueStyle");
+  }
+  if (!system.dialogueFullPortrait) {
+    system.dialogueFullPortrait = { ...ROMANCE_FULL_PORTRAIT_DEFAULTS };
+    applied.push("dialogueFullPortrait");
   }
   // 대사창 읽기 보조(백로그·오토·스킵·숨기기): 저작이 없을 때만 연애 기본 구성을 명시 저작으로 심는다(2026-10-17). 저작자가 정한 값은 건드리지 않는다.
   if (!project.meta.oprnDialogueSystem) {

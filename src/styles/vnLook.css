@@ -45,6 +45,21 @@
     var(--vn-bg);
 }
 
+/* 양쪽 전신 · 반투명 베일: 상단 경계를 부드럽게 흐리는 반투명 다크 그라데이션 베일과 중앙 하단 대기 화살표. */
+.dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box:not(.transparent):not(.choices-prompt) {
+  backdrop-filter: none;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 10, 18, 0.04) 0%,
+    rgba(10, 13, 22, 0.68) 22%,
+    rgba(10, 13, 22, 0.84) 60%,
+    rgba(8, 10, 18, 0.92) 100%
+  );
+  border-width: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  max-width: none;
+}
+
 /* ── 이름표 — 세 가지 ── */
 .dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
   align-items: center;
@@ -200,6 +215,18 @@
   top: 4px;
 }
 
+.dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  background: linear-gradient(90deg, rgba(12, 16, 28, 0.92) 0%, rgba(18, 24, 40, 0.78) 100%);
+  border: 1px solid rgba(243, 210, 140, 0.45);
+  left: 16px;
+}
+
+.dialogue-overlay[data-vn-look="dual-fullbody-veil"][data-vn-look] .dialogue-page-cursor {
+  bottom: 5px;
+  left: calc(50% - 4px);
+  right: auto;
+}
+
 /* ── 선택지 단추 세 가지 ── */
 .dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-prompt-row {
   border-bottom-color: var(--vn-border);
@@ -264,15 +291,15 @@
 
 /* ── 초상 입퇴장 ── */
 @media (prefers-reduced-motion: no-preference) {
-  .dialogue-overlay[data-vn-enter="fade"][data-vn-look] .dialogue-face-bust {
+  .dialogue-overlay[data-vn-enter="fade"][data-vn-look]:has(.dialogue-box[data-dialogue-phase="enter"]) .dialogue-face-bust {
     animation: vn-face-fade 260ms ease-out both;
   }
 
-  .dialogue-overlay[data-vn-enter="slide"][data-vn-look] .dialogue-face-bust.dialogue-face-side-left {
+  .dialogue-overlay[data-vn-enter="slide"][data-vn-look]:has(.dialogue-box[data-dialogue-phase="enter"]) .dialogue-face-bust.dialogue-face-side-left {
     animation: vn-face-slide-left 280ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
   }
 
-  .dialogue-overlay[data-vn-enter="slide"][data-vn-look] .dialogue-face-bust.dialogue-face-side-right {
+  .dialogue-overlay[data-vn-enter="slide"][data-vn-look]:has(.dialogue-box[data-dialogue-phase="enter"]) .dialogue-face-bust.dialogue-face-side-right {
     animation: vn-face-slide-right 280ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
   }
 }

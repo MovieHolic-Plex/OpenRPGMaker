@@ -3,19 +3,23 @@ import { backlogViewIsOpen, backlogRecentlyClosed, closeBacklogView, openBacklog
 import { dialogueUiText } from '@/player/dialogueUiStrings';
 import { applyWindowOpacity } from '@/player/dialogueWindowOpacity';
 import {
+  DUAL_FULLBODY_VEIL_PRESET_ID, ROMANCE_FULL_PORTRAIT_DEFAULTS,
   SKIP_STEP_DELAY_MS, appendBacklog, autoAdvanceDelayMs, dialogueReadKey, dialogueSystemHasControls, isDialogueRead, markDialogueRead,
   normalizeBacklog, resolveDialogueSystem, skipVerdict,
   type AuthoredDialogueSystem, type BacklogHost, type ReadingStopReason,
 } from '@/project/dialogueSystem';
 import { cancelChoiceIndex } from '@/project/choiceCancellation';
-import { resolveVnLook, vnLookAttributes, vnLookShowsPortraits, type ResolvedVnLook } from '@/project/vnLook';
+import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPortraits, type ResolvedVnLook } from '@/project/vnLook';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
 
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { dialogueFaceForEmotion, findSharedPortrait } from "@/assets/sharedPortraitAssets";
+import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
+import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import { resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
@@ -213,13 +217,187 @@ const DIALOGUE_VISIBLE_LINES = 3;
 const DIALOGUE_FULL_ASPECT = 9 / 16;
 
 /** 상자 뒤에 서는 전신 초상의 크기·내림을 화면 높이로 심는다. 위치·층은 CSS(.dialogue-face-behind). */
-function styleBehindPortrait(node: HTMLElement, hostHeight: number, face: FaceGraphic): void {
-  const layout = resolveDialogueFullPortraitLayout(store.getCurrent()?.system.dialogueFullPortrait, face.fullScale);
+function styleBehindPortrait(node: HTMLElement, hostHeight: number, face: FaceGraphic, isDualFullbodyVeil = false): void {
+  const configured = store.getCurrent()?.system.dialogueFullPortrait ?? (isDualFullbodyVeil ? ROMANCE_FULL_PORTRAIT_DEFAULTS : undefined);
+  const layout = resolveDialogueFullPortraitLayout(configured, face.fullScale);
   const metrics = fullPortraitMetrics(hostHeight, layout);
   node.classList.add("dialogue-face-behind");
   node.style.setProperty("--runtime-dialogue-full-height", `${metrics.height}px`);
   node.style.setProperty("--runtime-dialogue-full-width", `${metrics.width}px`);
   node.style.setProperty("--runtime-dialogue-full-drop", `${metrics.drop}px`);
+}
+
+/**
+ * 양쪽 전신 베일 프리셋에서 얼굴·흉상 리소스를 같은 인물의 전신(full) 초상으로 승격한다.
+ * 공용 76종과 현대 연애 24종 모두 같은 세트 안에 -full-<표정> 이 있어 그림을 새로 만들지 않는다.
+ */
+export function promoteFaceToFullPortrait(
+  face: FaceGraphic | undefined,
+  emotion?: string,
+  expressionFace?: string,
+): FaceGraphic | undefined {
+  if (!face?.resourceId) return undefined;
+  const setId = sharedExpressionSetIdOf(face.resourceId);
+  if (setId) {
+    const baseExpr = findSharedPortrait(face.resourceId)?.expression ?? "base";
+    const fullBase = sharedPortraitId(setId, "full", baseExpr);
+    const fullEmotion = dialogueFaceForEmotion(fullBase, emotion, expressionFace) ?? fullBase;
+    if (findSharedPortrait(fullEmotion)) {
+      return { ...face, resourceId: fullEmotion, presentation: "full" };
+    }
+  }
+  if (face.resourceId === "generated-face-actor1-bust") {
+    return { ...face, resourceId: "generated-face-actor1-full", presentation: "full" };
+  }
+  const lineFace = dialogueFaceForEmotion(face.resourceId, emotion, expressionFace);
+  return { ...face, ...(lineFace ? { resourceId: lineFace } : {}), presentation: "full" };
+}
+
+function portraitIdentityOf(key: string, face: FaceGraphic): string {
+  const sharedSet = sharedExpressionSetIdOf(face.resourceId);
+  if (sharedSet) return sharedSet;
+  if (face.resourceId.startsWith("generated-face-actor1-")) return "generated-face-actor1";
+  const trimmed = key.trim();
+  return trimmed || face.resourceId;
+}
+
+function resolveActorFullPortrait(
+  project: Project,
+  rawActor: Project["database"]["actors"][number] | undefined,
+): FaceGraphic | undefined {
+  if (!rawActor) return undefined;
+  if (rawActor.appearanceId) {
+    const appFace = resolveAppearancePortrait(project, rawActor.appearanceId, "full");
+    if (appFace) return promoteFaceToFullPortrait(appFace);
+  }
+  const actor = resolveActorAppearance(project, rawActor);
+  if (actor.faceResourceId) {
+    return promoteFaceToFullPortrait({
+      resourceId: actor.faceResourceId,
+      position: "left",
+      flipHorizontally: false,
+    });
+  }
+  if (actor.characterResourceId) {
+    const paired = reviewedFaceIdForCharset(actor.characterResourceId, actor.characterIndex ?? 0);
+    if (paired) {
+      return promoteFaceToFullPortrait({
+        resourceId: paired,
+        position: "left",
+        flipHorizontally: false,
+      });
+    }
+  }
+  return undefined;
+}
+
+function resolveEventFullPortrait(
+  project: Project,
+  event: Project["maps"][string]["events"][number],
+): FaceGraphic | undefined {
+  for (const page of event.pages ?? []) {
+    if (page.graphic?.appearanceId) {
+      const appFace = resolveAppearancePortrait(project, page.graphic.appearanceId, "full");
+      if (appFace) return promoteFaceToFullPortrait(appFace);
+    }
+    for (const cmd of page.commands ?? []) {
+      if (cmd.kind === "changeFace") {
+        if (cmd.appearanceId) {
+          const appFace = resolveAppearancePortrait(project, cmd.appearanceId, "full");
+          if (appFace) return promoteFaceToFullPortrait(appFace);
+        }
+        if (cmd.resourceId) {
+          return promoteFaceToFullPortrait({
+            resourceId: cmd.resourceId,
+            position: cmd.position,
+            flipHorizontally: cmd.flipHorizontally,
+          });
+        }
+      }
+    }
+    const spriteId = page.graphic?.sprite?.id;
+    if (spriteId) {
+      const charIdx = decodeCharsetFrameIndex(typeof page.graphic.pattern === "number" ? page.graphic.pattern : 0).characterIndex;
+      const paired = reviewedFaceIdForCharset(spriteId, charIdx);
+      if (paired) {
+        return promoteFaceToFullPortrait({
+          resourceId: paired,
+          position: "right",
+          flipHorizontally: false,
+        });
+      }
+    }
+  }
+  return undefined;
+}
+
+function resolveSpeakerFullPortraitFromProject(
+  project: Project | undefined,
+  speakerName: string | undefined,
+): FaceGraphic | undefined {
+  const name = speakerName?.trim();
+  if (!project || !name) return undefined;
+  const actor = project.database.actors.find((entry) => entry.name.trim() === name);
+  if (actor) {
+    const actorFace = resolveActorFullPortrait(project, actor);
+    if (actorFace) return actorFace;
+  }
+  const appearance = project.database.characterAppearances?.find((entry) => entry.name.trim() === name);
+  if (appearance) {
+    const appFace = resolveAppearancePortrait(project, appearance.id, "full");
+    if (appFace) return promoteFaceToFullPortrait(appFace);
+  }
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const charName = event.characterId ? project.characters?.[event.characterId]?.displayName?.trim() : undefined;
+      if (charName === name || event.name?.trim() === name) {
+        const evFace = resolveEventFullPortrait(project, event);
+        if (evFace) return evFace;
+      }
+    }
+  }
+  return undefined;
+}
+
+function resolveDualStagePartner(
+  project: Project | undefined,
+  session: DialogueTextContext["session"] | undefined,
+  speakerKey: string,
+  speakerFace: FaceGraphic,
+): { readonly key: string; readonly face: FaceGraphic } | undefined {
+  if (!project) return undefined;
+  const speakerId = portraitIdentityOf(speakerKey, speakerFace);
+  const partyIds = (session as { readonly partyActorIds?: readonly string[] } | undefined)?.partyActorIds;
+  const leadActorId = partyIds?.[0] ?? project.system.startActorIds?.[0] ?? project.database.actors[0]?.id;
+  const leadActor = project.database.actors.find((entry) => entry.id === leadActorId) ?? project.database.actors[0];
+  const leadFace = resolveActorFullPortrait(project, leadActor);
+  if (leadFace && portraitIdentityOf(leadActor?.name ?? "", leadFace) !== speakerId && leadActor?.name?.trim() !== speakerKey) {
+    return { key: leadActor?.name?.trim() || "__hero__", face: leadFace };
+  }
+  const currentMapId = (session as { readonly currentMapId?: string } | undefined)?.currentMapId ?? project.startMapId;
+  const currentMap = project.maps[currentMapId];
+  for (const event of currentMap?.events ?? []) {
+    const evFace = resolveEventFullPortrait(project, event);
+    const evName = (event.characterId ? project.characters?.[event.characterId]?.displayName : undefined)?.trim()
+      || event.name?.trim()
+      || event.id;
+    if (evFace && portraitIdentityOf(evName, evFace) !== speakerId && evName !== speakerKey) {
+      return { key: evName, face: evFace };
+    }
+  }
+  for (const app of project.database.characterAppearances ?? []) {
+    const appFace = promoteFaceToFullPortrait(resolveAppearancePortrait(project, app.id, "full"));
+    if (appFace && portraitIdentityOf(app.name, appFace) !== speakerId && app.name.trim() !== speakerKey) {
+      return { key: app.name.trim() || app.id, face: appFace };
+    }
+  }
+  for (const actor of project.database.actors) {
+    const actorFace = resolveActorFullPortrait(project, actor);
+    if (actorFace && portraitIdentityOf(actor.name, actorFace) !== speakerId && actor.name.trim() !== speakerKey) {
+      return { key: actor.name.trim() || actor.id, face: actorFace };
+    }
+  }
+  return undefined;
 }
 
 function fullPortraitMetrics(
@@ -340,6 +518,7 @@ export function createDialogueUI(
       // 대화 세션이 끝났다 — 초상 무대가 기억한 앞 화자를 잊는다.
       lastPortrait = undefined;
       listenerPortrait = undefined;
+      stageSlots = {};
       lastLineForcedBottom = false;
       previousBoxTop = undefined;
     };
@@ -605,7 +784,10 @@ export function createDialogueUI(
   let lastLineForcedBottom = false;
   let previousBoxTop: number | undefined;
   let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
-
+  let stageSlots: {
+    left?: { readonly key: string; readonly idKey: string; readonly face: FaceGraphic };
+    right?: { readonly key: string; readonly idKey: string; readonly face: FaceGraphic };
+  } = {};
   function showText(rawRequest: DialogueTextRequest): Promise<void> {
     const request = withoutSpeakerEcho(rawRequest);
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
@@ -647,13 +829,36 @@ export function createDialogueUI(
         const behindPortraits: HTMLElement[] = [];
         let glideFromPrevious = false;
         box = dialogueBox("", "dialogue-box");
+        const activeProject = (request.textContext?.project && "system" in request.textContext.project ? request.textContext.project as Project : undefined) ?? store.getCurrent();
         applyDialogueLook(overlay, box, look);
-        const vnLook = applyVnLook(overlay, resolveVnLook(store.getCurrent()));
-        const baseFace = look.hideFace || balloon || !vnLookShowsPortraits(vnLook) ? undefined : request.face;
+        const rawVnLook = resolveVnLook(activeProject);
+        const effectiveVnLook = look.style === DUAL_FULLBODY_VEIL_PRESET_ID && (!rawVnLook || rawVnLook.source === "setting-default")
+          ? resolveAuthoredVnLook({ version: 1, preset: DUAL_FULLBODY_VEIL_PRESET_ID }, "setting-default")
+          : rawVnLook;
+        const vnLook = applyVnLook(overlay, effectiveVnLook);
+        const isDualFullbodyVeil = look.style === DUAL_FULLBODY_VEIL_PRESET_ID || vnLook?.preset === DUAL_FULLBODY_VEIL_PRESET_ID;
+        if (isDualFullbodyVeil) overlay.dataset.dialogueStage = DUAL_FULLBODY_VEIL_PRESET_ID;
+        else delete overlay.dataset.dialogueStage;
+        const speakerName = nameplateSpeaker(request.speaker);
+        const allowPortrait = !look.hideFace && !balloon && vnLookShowsPortraits(vnLook);
+        const stagedSpeakerFace = !wasOpen
+          ? undefined
+          : stageSlots.left && speakerKey !== "" && stageSlots.left.key === speakerKey
+            ? stageSlots.left.face
+            : stageSlots.right && speakerKey !== "" && stageSlots.right.key === speakerKey
+              ? stageSlots.right.face
+              : undefined;
+        const baseFace = !allowPortrait
+          ? undefined
+          : request.face ?? (isDualFullbodyVeil ? (stagedSpeakerFace ?? resolveSpeakerFullPortraitFromProject(activeProject, speakerName)) : undefined);
         // 공용 흉상·전신이면 줄의 표정으로 같은 모양의 표정 그림을 고른다(sharedPortraitAssets.ts).
-        const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
-        faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
-        const face = faceForLine;
+        if (baseFace && isDualFullbodyVeil) {
+          faceForLine = promoteFaceToFullPortrait(baseFace, look.emotion, look.expressionFace);
+        } else {
+          const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
+          faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
+        }
+        let face = faceForLine;
         const portraitMode = dialoguePortraitMode(face);
         const isPortrait = portraitMode !== "face";
         // 흉상·전신이 실제로 그려지는 줄은 저작한 위치(위·가운데)와 상관없이 아래다. 위치 결정은 여기 한 곳이다.
@@ -684,7 +889,49 @@ export function createDialogueUI(
         textColumn.append(bodyEl);
         content.append(textColumn);
         box.append(content);
+        if (!wasOpen) {
+          stageSlots = {};
+        }
         if (face && isPortrait) {
+          const idKey = portraitIdentityOf(speakerKey, face);
+          if (isDualFullbodyVeil) {
+            let speakerSide: "left" | "right";
+            if (stageSlots.left && (stageSlots.left.idKey === idKey || (speakerKey !== "" && stageSlots.left.key === speakerKey))) {
+              speakerSide = "left";
+            } else if (stageSlots.right && (stageSlots.right.idKey === idKey || (speakerKey !== "" && stageSlots.right.key === speakerKey))) {
+              speakerSide = "right";
+            } else if (stageSlots.left && !stageSlots.right) {
+              speakerSide = "right";
+            } else if (stageSlots.right && !stageSlots.left) {
+              speakerSide = "left";
+            } else {
+              speakerSide = face.position === "right" ? "right" : "left";
+            }
+            face = { ...face, position: speakerSide };
+            faceForLine = face;
+            stageSlots[speakerSide] = { key: speakerKey, idKey, face };
+            const otherSide: "left" | "right" = speakerSide === "left" ? "right" : "left";
+            if (!stageSlots[otherSide] || stageSlots[otherSide]?.idKey === idKey) {
+              const partner = (listenerPortrait && portraitIdentityOf(listenerPortrait.key, listenerPortrait.face) !== idKey)
+                ? { key: listenerPortrait.key, face: promoteFaceToFullPortrait(listenerPortrait.face) ?? listenerPortrait.face }
+                : resolveDualStagePartner(activeProject, request.textContext?.session, speakerKey || speakerName || "", face);
+              if (partner) {
+                const partnerFace: FaceGraphic = { ...partner.face, position: otherSide };
+                stageSlots[otherSide] = {
+                  key: partner.key,
+                  idKey: portraitIdentityOf(partner.key, partnerFace),
+                  face: partnerFace,
+                };
+              }
+            }
+            const otherEntry = stageSlots[otherSide];
+            listenerPortrait = otherEntry && otherEntry.idKey !== idKey
+              ? { key: otherEntry.key, face: { ...otherEntry.face, position: otherSide } }
+              : undefined;
+          } else {
+            if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
+            else if (!wasOpen || listenerPortrait?.key === speakerKey) listenerPortrait = undefined;
+          }
           // Attach to the message box so left/right tracks the window, not the full screen.
           box.classList.add("has-bust-face", `portrait-${portraitMode}`);
           // 하단 전신: 초상이 대사창 **뒤**에 서도록 상자 밖(오버레이의 상자 앞 형제)에 둔다.
@@ -698,13 +945,9 @@ export function createDialogueUI(
           overlay.classList.add("has-bust-face");
           faceEl = renderFace(face);
           if (tallFull) {
-            styleBehindPortrait(faceEl, logicalHostHeight(host), face);
+            styleBehindPortrait(faceEl, logicalHostHeight(host), face, isDualFullbodyVeil);
             behindPortraits.push(faceEl);
           } else box.append(faceEl);
-          // 초상 무대: 방금 전 다른 화자의 초상을 반대편에 흐리게 남긴다(듣는 쪽).
-          // 같은 화자가 이어 말하면 듣는 쪽은 그대로 남는다.
-          if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
-          else if (!wasOpen || listenerPortrait?.key === speakerKey) listenerPortrait = undefined;
           if (listenerPortrait) {
             const side: FaceGraphic["position"] = face.position === "right" ? "left" : "right";
             const other = renderFace({ ...listenerPortrait.face, position: side });
@@ -712,7 +955,7 @@ export function createDialogueUI(
             other.dataset.testid = "dialogue-portrait-listener";
             box.classList.add("has-portrait-listener");
             if (tallFull) {
-              styleBehindPortrait(other, logicalHostHeight(host), listenerPortrait.face);
+              styleBehindPortrait(other, logicalHostHeight(host), listenerPortrait.face, isDualFullbodyVeil);
               behindPortraits.push(other);
             } else box.append(other);
           }
@@ -726,7 +969,6 @@ export function createDialogueUI(
         }
         // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
         let nameplate: HTMLElement | undefined;
-        const speakerName = nameplateSpeaker(request.speaker);
         if (speakerName && !look.hideName) {
           box.classList.add("has-speaker");
           nameplate = el("div", {
@@ -882,8 +1124,9 @@ export function createDialogueUI(
           ...(expression?.emote ? { emote: expression.emote } : {}),
         };
         voice = dialogueVoiceFor(look, voiceUrl);
-        const nextFace = findSharedPortrait(request.face?.resourceId)
-          ? dialogueFaceForEmotion(request.face?.resourceId, emotion, expression?.face)
+        const baseResourceForExpr = faceForLine?.resourceId ?? request.face?.resourceId;
+        const nextFace = findSharedPortrait(baseResourceForExpr)
+          ? dialogueFaceForEmotion(baseResourceForExpr, emotion, expression?.face)
           : expression?.face;
         if (nextFace && faceEl) {
           currentFaceId = nextFace;
@@ -1488,6 +1731,7 @@ export function createDialogueUI(
     closeLog();
     lastPortrait = undefined;
     listenerPortrait = undefined;
+    stageSlots = {};
     lastLineForcedBottom = false;
     previousBoxTop = undefined;
   }

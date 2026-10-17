@@ -16503,4 +16503,9 @@
 "대사창 룩 편집":"Dialogue look edit",
 "대사창 룩 프리셋이 목록에 없습니다.":"The dialogue look preset is not in the list.",
 "대사창 룩 설정 값이 올바르지 않습니다.":"The dialogue look setting is not valid.",
-"메뉴에 갤러리·엔딩 항목이 있지만 저작에서 꺼 둔 상태라 그대로 두었습니다(항목은 안 보임)":"The menu has a gallery/endings entry, but it is switched off in the authoring, so it was left as is (the entry stays hidden)"}
+"메뉴에 갤러리·엔딩 항목이 있지만 저작에서 꺼 둔 상태라 그대로 두었습니다(항목은 안 보임)":"The menu has a gallery/endings entry, but it is switched off in the authoring, so it was left as is (the entry stays hidden)",
+"백로그·오토·스킵·숨기기와 양쪽 전신 반투명 베일 무대를 함께 켭니다.":"Turns on backlog, auto, skip, and hide along with the dual full-body translucent veil stage.",
+"양쪽 전신 · 반투명 베일":"Dual Full-Body · Translucent Veil",
+"연애 시뮬레이션 · 오토메 · 양쪽 전신 스탠딩 대화 장면":"Romance simulation · otome · dual full-body standing dialogue scenes",
+"연애 시뮬레이션 · 오토메 · 양쪽 전신 스탠딩 대화 장면.":"Romance simulation · otome · dual full-body standing dialogue scenes.",
+"화면 양쪽에 전신 스탠딩 초상을 함께 세우고, 하단에는 테두리 없는 반투명 다크 그라데이션 대화창을 겹칩니다.":"Places full-body standing portraits on both sides of the screen and overlays a borderless translucent dark-gradient dialogue veil across the bottom."}

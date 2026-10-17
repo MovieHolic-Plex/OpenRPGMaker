@@ -59,6 +59,51 @@ export function romanceDialogueSystem(): AuthoredDialogueSystem {
   };
 }
 
+/** 연애·오토메 전신 양쪽 스탠딩 + 반투명 베일 대화창 프리셋 id. */
+export const DUAL_FULLBODY_VEIL_PRESET_ID = "dual-fullbody-veil" as const;
+/** 양쪽 전신 스탠딩 무대 기본 비율 — 화면 높이의 ~87%까지 올라오고 머리 위 배경 여백을 남긴다(116% × (1 - 0.25) ≈ 87%). */
+export const ROMANCE_FULL_PORTRAIT_DEFAULTS = { height: 116, drop: 25 } as const;
+
+export type DialogueSystemPresetId = "default" | "romance" | typeof DUAL_FULLBODY_VEIL_PRESET_ID;
+export type DialogueSystemPresetDefinition = {
+  readonly id: DialogueSystemPresetId;
+  readonly label: string;
+  readonly description: string;
+  readonly dialogueStyle: "glass" | typeof DUAL_FULLBODY_VEIL_PRESET_ID;
+  readonly fullPortrait?: { readonly height: number; readonly drop: number };
+  readonly bilateralStanding: boolean;
+  readonly system: () => AuthoredDialogueSystem;
+};
+
+export const DIALOGUE_SYSTEM_PRESETS: Readonly<Record<DialogueSystemPresetId, DialogueSystemPresetDefinition>> = {
+  default: {
+    id: "default",
+    label: "기본 대사창",
+    description: "장르 공통 기본 대화창 구성입니다.",
+    dialogueStyle: "glass",
+    bilateralStanding: false,
+    system: defaultDialogueSystem,
+  },
+  romance: {
+    id: "romance",
+    label: "연애 기본 구성",
+    description: "백로그·오토·스킵·숨기기와 양쪽 전신 반투명 베일 무대를 함께 켭니다.",
+    dialogueStyle: DUAL_FULLBODY_VEIL_PRESET_ID,
+    fullPortrait: ROMANCE_FULL_PORTRAIT_DEFAULTS,
+    bilateralStanding: true,
+    system: romanceDialogueSystem,
+  },
+  "dual-fullbody-veil": {
+    id: "dual-fullbody-veil",
+    label: "양쪽 전신 · 반투명 베일",
+    description: "화면 양쪽에 전신 스탠딩 초상을 함께 세우고, 하단에는 테두리 없는 반투명 다크 그라데이션 대화창을 겹칩니다.",
+    dialogueStyle: DUAL_FULLBODY_VEIL_PRESET_ID,
+    fullPortrait: ROMANCE_FULL_PORTRAIT_DEFAULTS,
+    bilateralStanding: true,
+    system: romanceDialogueSystem,
+  },
+};
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
