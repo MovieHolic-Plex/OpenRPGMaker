@@ -12,6 +12,7 @@ import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
+import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic } from "@/project/types";
 import { ToolError } from "./types";
 import type { SimplePage, SimplePageChoice } from "./types";
@@ -270,7 +271,8 @@ export function usedCharsetGraphicKeysOnMapCount(map: {
 
 // 대사 한 줄을 text 커맨드로.
 function textCommand(speaker: string | undefined, body: string): Command {
-  return speaker ? { kind: "text", speaker, body } : { kind: "text", body };
+  const cleaned = stripSpeakerEcho(body, speaker);
+  return speaker ? { kind: "text", speaker, body: cleaned } : { kind: "text", body: cleaned };
 }
 
 // SimplePage의 대사 소스 — lines 외에 LLM이 자주 쓰는 별칭(showText/messages/text)도 수용한다.
@@ -424,6 +426,9 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     command.body = command.lines.join("\n");
     delete command.lines;
     warnings?.push(`SimplePage 정규화: ${path}.lines를 text.body로 변환했습니다.`);
+  }
+  if (kind === "text" && typeof command.body === "string" && typeof command.speaker === "string") {
+    command.body = stripSpeakerEcho(command.body, command.speaker);
   }
   if (kind === "setSelfSwitch" && typeof command.key !== "string" && typeof command.id === "string") {
     command.key = command.id;
