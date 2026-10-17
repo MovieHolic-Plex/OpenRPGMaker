@@ -187,6 +187,16 @@ fs.mkdirSync(videoDir, { recursive: true });
 fs.mkdirSync(shotsDir, { recursive: true });
 const server = await startPlayerQaServer();
 const browser2 = await chromium.launch({ headless: true, ...(process.env.QA_CHROME ? { executablePath: process.env.QA_CHROME } : {}), args: ['--no-sandbox', '--disable-dev-shm-usage', '--use-gl=swiftshader', '--disable-gpu', '--disable-background-networking', '--disable-features=NetworkChangeNotifier'] });
+try {
+  const warmCtx = await browser2.newContext({ viewport: { width: 960, height: 720 } });
+  const warmPage = await warmCtx.newPage();
+  await warmPage.addInitScript(() => { try { localStorage.clear(); } catch { /* ignore */ } window.__OPENRPG_BOOT__ = { projectUrl: '/__runtime-qa/project.json', saveNamespace: 'opening-pixel-qa-warm', qaInstrumentation: true }; });
+  await warmPage.route('**/__runtime-qa/project.json', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(project) }));
+  await warmPage.goto(`${server.url}/player.html`, { waitUntil: 'domcontentloaded' });
+  await warmPage.waitForSelector("[data-testid='title-screen']", { timeout: 120000 }).catch(() => undefined);
+  await warmCtx.close();
+} catch { /* ignore warmup error */ }
+const recordStartedAt = Date.now();
 const context = await browser2.newContext({ viewport: { width: 960, height: 720 }, recordVideo: { dir: videoDir, size: { width: 960, height: 720 } } });
 const page2 = await context.newPage();
 const pageErrors = [];
@@ -197,10 +207,12 @@ await page2.route('**/__runtime-qa/project.json', (r) => r.fulfill({ status: 200
 const marks = [];
 const snap = async (label) => { marks.push(label); await page2.screenshot({ path: path.join(shotsDir, `${String(marks.length).padStart(2, '0')}-${label}.png`) }); };
 let enterAt = 0;
+let titleVisibleAt = 0;
 let titleGate = { menuPresent: false, logoNodePresent: false, logoVisible: false };
 try {
   await page2.goto(`${server.url}/player.html`, { waitUntil: 'domcontentloaded' });
   await page2.waitForSelector("[data-testid='title-screen']", { timeout: 180000 });
+  titleVisibleAt = Date.now();
   await page2.waitForTimeout(600);
   titleGate = await page2.evaluate(() => {
     const menu = document.querySelector("[data-testid='title-screen'] .rm-title-menu");
@@ -255,7 +267,15 @@ try {
   await server.close();
   const videoPath = video ? await video.path() : null;
   const finalVideo = path.join(outDir, 'opening-player.webm');
-  if (videoPath && fs.existsSync(videoPath)) fs.copyFileSync(videoPath, finalVideo);
+  if (videoPath && fs.existsSync(videoPath)) {
+    const trimSec = Math.max(0, (titleVisibleAt - recordStartedAt - 400) / 1000);
+    if (trimSec >= 1) {
+      const trimmed = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-ss', trimSec.toFixed(2), '-i', videoPath, '-c', 'copy', finalVideo], { encoding: 'utf8' });
+      if (trimmed.status !== 0 || !fs.existsSync(finalVideo)) fs.copyFileSync(videoPath, finalVideo);
+    } else {
+      fs.copyFileSync(videoPath, finalVideo);
+    }
+  }
   const summary = {
     projectPath, outDir, openingMs: totalOpeningMs, openingElapsedMs, shots: rendered.shots.length,
     resourceFailures: rendered.failures, rendererErrors: renderErrors,

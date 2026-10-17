@@ -17,27 +17,61 @@ export function openingImageProject(project: Project, resourceIds: readonly stri
  * plan_opening·review_opening 을 부를 수 없는데도 끝마다 오프닝 재촉을 두 번씩 받았고, 팀 마지막 관문은 기록을 남길 수 없는
  * 오프닝 검토 영수증을 요구해 다 지은 게임을 「오프닝 제작 미완료」로 실패시켰다.
  */
+export const OPENING_ANIMATIC_AUTHORING_TOOLS = [
+  'plan_opening', 'get_opening', 'get_opening_direction', 'get_animatic_capabilities',
+  'list_opening_media', 'generate_opening_image', 'show_opening_image', 'generate_title_art',
+  'get_title_screen', 'set_title_screen', 'create_opening_animatic_shot', 'set_opening_pixel_grid',
+  'place_opening_background', 'place_opening_charset_actor', 'apply_opening_walk',
+  'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption',
+  'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'animate_opening_camera',
+  'set_opening_transition', 'set_opening', 'edit_opening', 'preview_opening_animatic',
+  'inspect_opening_timeline', 'review_opening', 'show_title_opening',
+] as const;
+
 export function withoutAuthoringPresetManual(task: string): string {
-  return task.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, '')
+  const memoIndex = task.indexOf('\n\n[의도 메모');
+  const userOnly = memoIndex >= 0 ? task.slice(0, memoIndex) : task;
+  return userOnly.replace(/AUTHORING_PRESET_BEGIN [\s\S]*?AUTHORING_PRESET_END[^\n]*/gu, '')
     // 몬스터 자유 경로 지시문(호스트가 붙인 글)도 사용자 요청이 아니다 — 「오프닝을 새로 만들지 않는다」 문장이 오프닝 제작 요청으로 읽혀
     // 대회·탐험 게임이 끝난 뒤 컷신 검증·타이틀 키아트 재촉으로 180여 호출이 더 들었다(2026-10-14 실측).
     .replace(/\[(?:포획 없는 대회형 몬스터 게임 제작|체육관 없는 도감 탐험형 몬스터 게임 제작|몬스터 수집 의도 — 몬스터 키트)\][^\n]*(?:\n(?!\n)[^\n]*)*/gu, '');
 }
 
+/**
+ * 한 줄 JRPG·연애 게임 제작 요청(「크로노 트리거처럼… 만들어 줘」「파이널판타지6 같은 게임 만들어 줘」「캠퍼스 연애물 만들어 줘」).
+ * 사용자가 「오프닝」이라는 낱말을 직접 쓰지 않아도 새 게임 첫 제작에는 #2852 레이어드 도트 애니메틱 오프닝을 기본 포함해야 한다.
+ */
+export function requestsFullGameOpeningProduction(rawTask: string): boolean {
+  const task = withoutAuthoringPresetManual(rawTask).trim();
+  if (!task) return false;
+  if (/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task)) return false;
+  if (/포켓몬|pokemon|몬스터\s*(?:수집|도감|포획|키트|토너먼트|대회)/iu.test(task)) return false;
+  if (/(?:맵|마을|던전|방|실내|집|전투|스킬|아이템|이벤트|대화창|폰트)(?:만|하나만)\s*(?:만들|추가|수정|고쳐)/iu.test(task)) return false;
+  const hasGenreOrGame = /jrpg|제이\s*알\s*피\s*지|알피지|\brpg\b|크로노\s*트리거|chrono\s*trigger|파이널\s*판타지|final\s*fantasy|\bff\s*6\b|드래곤\s*퀘스트|dragon\s*quest|연애(?:\s*물|\s*시뮬|\s*게임)?|미연시|로맨스(?:\s*물|\s*게임)?|오토메(?:\s*물|\s*게임)?|비주얼\s*노벨|visual\s*novel|dating\s*sim|otome|(?:게임|작품)(?:을|를)?\s*(?:하나\s*)?(?:만들|제작|완성|개발)/iu.test(task);
+  const hasCreateVerb = /만들|제작|짜\s*줘|구현|완성|기획|개발|시작해|부탁|싶어|싶습니다|build|create|make\b/iu.test(task);
+  return hasGenreOrGame && hasCreateVerb;
+}
+
 export function requestsOpeningProduction(rawTask: string): boolean {
   const task = withoutAuthoringPresetManual(rawTask);
-  return /오프닝|opening\b/iu.test(task)
-    && /만들|제작|연출|개선|새로|바꿔|바꾸|다시|멋|밋밋|create|design|rewrite|improve|polish|redo/iu.test(task)
-    && !/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task);
+  if (/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task)) return false;
+  return (/오프닝|opening\b/iu.test(task)
+    && /만들|제작|연출|개선|새로|바꿔|바꾸|다시|멋|밋밋|작성|구성|넣|create|design|rewrite|improve|polish|redo/iu.test(task))
+    || /plan_opening|create_opening_animatic_shot|set_opening_pixel_grid/iu.test(task);
 }
 
 /** 정지 컷 나열이 아니라 «실제 맵 위에서 인물이 움직이는 인게임 장면»으로 여는 오프닝 요청. */
 export function requestsInGameOpening(rawTask: string): boolean {
   const task = withoutAuthoringPresetManual(rawTask);
+  if (/plan_opening|create_opening_animatic_shot|set_opening_pixel_grid|애니메틱|animatic/iu.test(task) && !/인게임\s*오프닝|in-?game\s*opening|script_cutscene_staged/iu.test(task)) {
+    return false;
+  }
+  if (requestsFullGameOpeningProduction(rawTask) && !/인게임\s*오프닝|in-?game\s*opening|오프닝(?:을|은)?\s*(?:그림\s*나열\s*말고\s*)?(?:인게임|실제\s*맵|컷신)/iu.test(task)) {
+    return false;
+  }
   return /오프닝|opening\b|도입/iu.test(task)
     && /인게임|in-?game|게임\s*화면|실제\s*(?:맵|장면|게임\s*화면)|맵\s*위(?:에서|의)?\s*(?:배우|인물|캐릭터|주인공|장면|연출|걸|걷|움직|행진|이동)|(?:캐릭터|병사|로봇|기계|인물|주인공)\w*\s*(?:가|이)?\s*(?:직접\s*)?(?:걸어|걷|행진|움직|달려)|컷신|연출\s*장면|그림\s*(?:나열|슬라이드)\s*(?:말고|아니)/iu.test(task);
 }
-// 왜 «맵에서» 만으로는 부족한가(2026-10-15 실측): 「끝나면 시작 맵에서 조작이 이어져야 해」처럼 handoff 를 설명하는
 // 평범한 사용자 문장이 「맵에서」에 걸려 인게임 컷신 요청으로 판정됐고, 조수는 애니메틱 대신 시작 맵 이벤트를 만들기 시작했다.
 // 맵 낱말은 «그 맵 위에서 벌어지는 장면»을 말할 때만 인게임 신호다.
 
@@ -64,7 +98,7 @@ export class PiOpeningProduction {
   constructor(readonly requested: boolean, private readonly task = '') {
     this.inGame = requested && requestsInGameOpening(task);
     this.requiresPixelAnimatic = requested && !this.inGame && !/그림책|storybook|패널|언더테일|undertale/iu.test(task)
-      && /새로하기|new\s*game|오프닝|opening/iu.test(task);
+      && (/새로하기|new\s*game|오프닝|opening/iu.test(task) || requestsFullGameOpeningProduction(task));
   }
   record(name: string, ok: boolean, project: Project, args?: unknown): void {
     if (!ok) return;
@@ -150,8 +184,8 @@ export class PiOpeningProduction {
       if (!id || this.viewed.get(id) !== this.media(project, id)) issues.push(`show_opening_image로 현재 그림 ${id || '(미지정)'}의 실제 이미지를 확인하세요. 이름 조회는 시각 검수가 아닙니다.`);
     }
     if (/애니메틱|animatic|독립.*레이어|캐릭터.{0,12}움직/iu.test(this.task) && !opening?.scenes.some(s => s.kind === 'animatic')) issues.push('요청한 애니메틱을 실제 합성 샷으로 저작하세요. 정지 그림의 pan/zoom만으로 애니메틱 제작을 완료하지 마세요.');
-    // 픽셀 오프닝을 요청받았는데 정지 그림만 있으면 그 요청은 이행되지 않았다 — 격자 무대의 샷이 필요하다.
-    if (/도트|픽셀|pixel|도트\s*격자/iu.test(this.task) && (opening?.scenes.some(s => s.kind === 'image') || !opening?.scenes.some(s => s.kind === 'animatic')) && !opening?.scenes.some(s => s.kind === 'animatic' && s.composition.pixelGrid)) issues.push('픽셀/도트 오프닝을 요청받았습니다. 정지 그림 컷이 아니라 정수 픽셀 격자 무대(384×216) 샷으로 저작하세요: create_opening_animatic_shot(width:384,height:216) → set_opening_pixel_grid → 실제로 움직이는 것(region 루프·glow pulse·shaft·particles·walk)을 넣고 set_opening_caption 으로 막대 안 자막을 붙입니다. get_opening_direction 의 pixel-animatic-opening 레시피를 읽으세요.');
+    // 픽셀 오프닝 또는 새 게임 전체 제작을 요청받았는데 정지 그림만 있으면 그 요청은 이행되지 않았다 — 격자 무대의 샷이 필요하다.
+    if ((/도트|픽셀|pixel|도트\s*격자|새로하기|new\s*game|create_opening_animatic_shot|set_opening_pixel_grid/iu.test(this.task) || requestsFullGameOpeningProduction(this.task)) && !/그림책|storybook|패널|언더테일|undertale/iu.test(this.task) && (opening?.scenes.some(s => s.kind === 'image') || !opening?.scenes.some(s => s.kind === 'animatic')) && !opening?.scenes.some(s => s.kind === 'animatic' && s.composition.pixelGrid)) issues.push('새 게임/픽셀 오프닝을 요청받았습니다. 정지 그림 컷이나 자막 카드가 아니라 정수 픽셀 격자 무대(384×216) 샷으로 저작하세요: create_opening_animatic_shot(width:384,height:216) → set_opening_pixel_grid(384,216) → place_opening_background → place_opening_charset_actor(번들 24×32 캐릭터 칩) → 실제로 움직이는 것(region 루프·glow pulse·shaft·particles·walk)을 넣고 set_opening_caption 으로 막대 안 자막을 붙입니다. get_opening_direction 의 pixel-animatic-opening 레시피를 읽으세요.');
     for (const scene of opening?.scenes ?? []) if (scene.kind === 'animatic') {
       const preview = this.animatics.get(scene.id);
       if (preview?.fingerprint !== this.animaticFingerprint(project, scene.id) || preview.times.length < 2 || Math.max(...preview.times) - Math.min(...preview.times) < scene.durationMs * 0.25) issues.push(`${scene.id}: 마지막 변경 뒤 preview_opening_animatic으로 충분히 떨어진2개 이상의 실제 시간 표본을 보세요.`);
@@ -227,7 +261,7 @@ export class PiOpeningProduction {
     // 번들 캐릭터 칩 배우·지역 루프·시차 레이어가 동시에 사는 격자 무대 샷이다. 그림책을 명시로 요청한 게 아닌데
     // 그림 컷만 3장 이상이고 애니메틱 샷이 0이면 그 요청은 이행되지 않았다(2026-10-16 run-2: 그림 6장만 남았다).
     const storybookRequest = /그림책|storybook|패널|언더테일|undertale/iu.test(this.task);
-    if (!storybookRequest && !animaticScenes.length && stills.length >= 3) {
+    if (!storybookRequest && !animaticScenes.length && stills.length >= 1) {
       issues.push(`그림 컷만 ${stills.length}장이고 실제 합성 애니메틱 샷이 하나도 없습니다. 참조 도입부 같은 다층 연출을 내려면 create_opening_animatic_shot(384×216) + set_opening_pixel_grid 로 격자 무대 샷을 만들고, 배경/전경을 독립 레이어로 나눈 뒤 place_opening_charset_actor(번들 24×32 캐릭터 칩)로 인물을 움직이고 set_opening_region_loop(물·불빛)·upsert_opening_light_fx·animate_opening_camera 를 겹쳐 한 샷에 최소 3개가 동시에 살아 있게 하세요. get_animatic_capabilities 의 pixelOpening 계약과 get_opening_direction 의 pixel-animatic-opening 레시피를 읽으세요.`);
     }
     if (stills.length >= 3 && stills.every(sc => !sc.direction?.layers?.length && !sc.direction?.effects?.length)) issues.push('모든 컷이 정지 그림 한 장 + 줌뿐입니다. 컷 안에서 움직이는 것(빛줄기·안개 effects, 자라거나 나타나는 투명 전경 레이어)을 최소 절반의 컷에 넣으세요.');

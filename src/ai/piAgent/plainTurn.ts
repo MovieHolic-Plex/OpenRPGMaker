@@ -26,6 +26,8 @@ import type { PiTeamSpec } from "./teamSpec";
 export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
+import { OPENING_ANIMATIC_AUTHORING_TOOLS, requestsFullGameOpeningProduction, requestsOpeningProduction } from "./openingProduction";
+import { isRomanceGameRequest } from "@/qa/gameCheck/romance";
 import { GOTHIC_EXPOSED_TOOLS, gothicTargetFor } from '../gothicPolicy';
 import { INTERIOR_PLUS_EXPOSED_TOOLS, interiorPlusTargetFor } from '../interiorPlusPolicy';
 import { PIRATE_ISLES_EXPOSED_TOOLS, pirateIslesTargetFor } from '../pirateIslesPolicy';
@@ -285,8 +287,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...(prehistoric ? PREHISTORIC_EXPOSED_TOOLS : []),
         ...(desertEast ? DESERT_EAST_EXPOSED_TOOLS : []),
         ...(snowNorth ? SNOW_NORTH_EXPOSED_TOOLS : []),
+        ...(requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text) ? OPENING_ANIMATIC_AUTHORING_TOOLS : []),
       ])];
       if (SCENE_SETTING_PATTERN.test(text)) intentNote = intentNote ? `${intentNote}\n\n${SCENE_SETTING_NOTE}` : SCENE_SETTING_NOTE;
+      if ((requestsOpeningProduction(text) || requestsFullGameOpeningProduction(text) || isRomanceGameRequest(text)) && !(intentNote ?? "").includes("create_opening_animatic_shot")) {
+        const openingNote = "[새로하기 오프닝·타이틀 — #2852 레이어드 도트 애니메틱] 새 게임 제작 시 타이틀(set_title_screen + generate_title_art)과 새로하기 오프닝도 반드시 함께 제작한다: plan_opening(bible 포함, 3~4샷) → create_opening_animatic_shot(width:384,height:216) → set_opening_pixel_grid(384,216) → place_opening_background → place_opening_charset_actor(번들 24×32 캐릭터 칩 배우) + apply_opening_walk → set_opening_region_loop / upsert_opening_light_fx / animate_opening_camera → set_opening_caption(전 샷 #fff0dc 통일) → set_opening(composition:{shotId}) → preview_opening_animatic → review_opening → show_title_opening. 제목 카드 한 장이나 정지 그림 슬라이드로 끝내지 않는다.";
+        intentNote = intentNote ? `${intentNote}\n\n${openingNote}` : openingNote;
+      }
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
       // 키트 시트 야외 맵(몬스터 수집 마을 등)의 빈 터 꾸미기 — 도구를 보이게 하고 노트로 이름을 부른다(2026-10-07 이어 고치기 r8~r11).

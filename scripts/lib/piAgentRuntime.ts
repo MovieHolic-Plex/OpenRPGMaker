@@ -86,7 +86,7 @@ import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../sr
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
 import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
 import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
-import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
+import { PiOpeningProduction, OPENING_ANIMATIC_AUTHORING_TOOLS, OPENING_PRODUCTION_PROMPT, requestsFullGameOpeningProduction, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
 setWorldmapBuilder(buildWorldmap);
@@ -591,8 +591,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'set_opening_pixel_grid', 'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption', 'apply_opening_walk', 'place_opening_charset_actor', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'place_opening_background', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'set_opening_pixel_grid', 'set_opening_region_loop', 'upsert_opening_light_fx', 'upsert_opening_emote', 'set_opening_caption', 'apply_opening_walk', 'place_opening_charset_actor', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
     const shape = shapeFor(name); if (shape) declare(shape);
+  }
+  if (!openingProduction.requested && !request.readOnly && !options.readOnlyTools && (romanceProduction.requested || requestsFullGameOpeningProduction(request.task) || /plan_opening|set_opening|create_opening_animatic_shot|set_opening_pixel_grid|오프닝|opening\b/iu.test(request.task))) {
+    for (const name of OPENING_ANIMATIC_AUTHORING_TOOLS) { const shape = shapeFor(name); if (shape) declare(shape); }
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}

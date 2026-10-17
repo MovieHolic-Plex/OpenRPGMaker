@@ -34,9 +34,9 @@ import { hasPlayableSegmentSkeleton, playableSegmentGenre } from '../../src/proj
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { jrpgCompletionGateApplies, jrpgCompletionGaps, stripSystemIntentNote } from "../../src/qa/gameCheck/jrpgCompletion.ts";
-import { romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
+import { isRomanceGameRequest, romanceCompletionGaps } from "../../src/qa/gameCheck/romance.ts";
 import { syncHeroineDeadline } from "../../src/project/deadlineEnding.ts";
-import { requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
+import { OPENING_ANIMATIC_AUTHORING_TOOLS, requestsFullGameOpeningProduction, requestsOpeningProduction } from '../../src/ai/piAgent/openingProduction.ts';
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
 import { ROMANCE_ART_AXES, romanceArtReviewInstructions, romanceArtReviewFindings, romanceArtRepairFindings, romanceTownLayoutFindings, romanceStageFlatFindings } from '../../src/harnesses/romance-scene/artDirection.ts';
 import {
@@ -283,7 +283,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
    */
   const exposureFor = (member: { readonly toolDomains: readonly string[] }, reviewing: boolean): Pick<PiAgentRequest, "initialToolNames"> => {
     if (member.toolDomains.length > 0 || !request.initialToolNames) return { initialToolNames: undefined };
-    return { initialToolNames: [...new Set([...request.initialToolNames, ...(reviewing ? REVIEW_READ_TOOLS : [])])] };
+    const needsOpeningTools = !reviewing && (requestsOpeningProduction(request.task) || requestsFullGameOpeningProduction(request.task) || isRomanceGameRequest(request.task) || jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task)));
+    return { initialToolNames: [...new Set([...request.initialToolNames, ...(needsOpeningTools ? OPENING_ANIMATIC_AUTHORING_TOOLS : []), ...(reviewing ? REVIEW_READ_TOOLS : [])])] };
   };
 
   /**
@@ -339,8 +340,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let openingReport: { fingerprint: string; issues: readonly string[] } | undefined;
   const openingFingerprint = (project: Project) => JSON.stringify([project.system.opening,
     (project.system.opening?.scenes ?? []).map(s => s.resourceId ? project.assets.uploaded[s.resourceId] ?? s.resourceId : null)]);
-  const trackOpening = (done: PiAgentDoneEvent) => {
-    if (done.openingProduction && openingFingerprint(done.project) === openingFingerprint(working)) openingReport = { fingerprint: openingFingerprint(working), issues: done.openingProduction.issues };
+  const trackOpening = (done: PiAgentDoneEvent, snapshot?: Project) => {
+    if (!done.openingProduction || openingFingerprint(done.project) !== openingFingerprint(working)) return;
+    if (!openingReport || !snapshot || openingFingerprint(done.project) !== openingFingerprint(snapshot) || done.openingProduction.issues.length === 0) {
+      openingReport = { fingerprint: openingFingerprint(working), issues: done.openingProduction.issues };
+    }
   };
   const interiorReports = new Map<string, { mapId: string; issues: readonly unknown[] }>();
   const trackInterior = (done: PiAgentDoneEvent, snapshot: Project) => {
@@ -435,7 +439,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
         trackInterior(done, snapshot);
-        trackOpening(done);
+        trackOpening(done, snapshot);
         const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         ledger = settleAssignment(ledger, agentId, complete);
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
@@ -525,7 +529,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
         if (mode === "project") { working = cloneProjectSharingSharedDictionaries(done.project); }
         trackInterior(done, snapshot);
-        trackOpening(done);
+        trackOpening(done, snapshot);
         const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
         if (!complete) report += "\n" + completionFailure(done);
         const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: complete, summary: report, changedKeys: changes, spills: [], conflicts: [] };

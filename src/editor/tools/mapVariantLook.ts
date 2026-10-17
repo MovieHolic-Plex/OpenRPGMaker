@@ -28,6 +28,8 @@ type LookSpec = {
   readonly color: string;
   /** 안개를 깔 때만. */
   readonly fog?: number;
+  /** 대형 건물 철거 자리에 먼저 놓을 시대 랜드마크 킷(칩셋에 있는 것만 쓴다). */
+  readonly landmarkIds: readonly string[];
   /** 흩뿌릴 킷(칩셋에 있는 것만 쓴다). */
   readonly kitIds: readonly string[];
 };
@@ -35,12 +37,15 @@ type LookSpec = {
 const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   ruin: {
     label: "붕괴·폐허",
-    // jrpg-loop-1(D8): 0.6·ambient 0.4 로는 「세계의 붕괴」가 안개 낀 마을 정도로만 보였다 — 건물 4채 중 3채를 무너뜨리고 한 단계 더 어둡게.
-    demolishRatio: 0.75,
+    demolishRatio: 0.88,
     stampsPerSite: [5, 8],
     ambient: 0.5,
     color: "#2e2a3c",
     fog: 0.9,
+    landmarkIds: [
+      "bd-pick-temple-ruins-naiskos-pediment", "bd-pick-temple-ruins-ruined-wall-2",
+      "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-castle-catacombs-rubble",
+    ],
     kitIds: [
       "bd-pick-temple-ruins-rubble-temple", "bd-pick-aqueduct-sewer-rubble", "bd-pick-castle-catacombs-rubble",
       "bd-pick-temple-ruins-fallen-column-temple", "bd-pick-temple-ruins-column-temple-broken", "bd-pick-shipwreck-reef-plank-pile",
@@ -49,12 +54,14 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   },
   past: {
     label: "과거",
-    // jrpg-loop-1(D16): 시대 변형이 색조뿐이라 같은 마을로 읽혔다 — 건물을 더 걷어 내고(60%) 옛 야영·돌무더기를 자리마다 2~4개 놓고 옅은 아침 안개를 깐다.
-    demolishRatio: 0.6,
+    demolishRatio: 0.72,
     stampsPerSite: [2, 4],
     ambient: 0.56,
     color: "#8a4608",
     fog: 0.25,
+    landmarkIds: [
+      "bd-out-cabin", "bd-out-cabin-small", "bd-out-woodshed", "bd-pick-deep-forest-path-campfire",
+    ],
     kitIds: [
       "bd-pick-deep-forest-path-campfire", "bd-pick-deep-forest-path-cairn", "bd-pick-deep-forest-path-cairn-s",
       "bd-pick-desert-oasis-rock", "bd-pick-coast-cliff-road-heath-a", "bd-pick-coast-cliff-road-heath-b", "bd-pick-deep-forest-path-stones-a",
@@ -62,10 +69,13 @@ const LOOKS: Readonly<Record<VariantLook, LookSpec>> = {
   },
   future: {
     label: "미래",
-    demolishRatio: 0.55,
-    stampsPerSite: [2, 3],
+    demolishRatio: 0.65,
+    stampsPerSite: [2, 4],
     ambient: 0.56,
     color: "#0c2c70",
+    landmarkIds: [
+      "bd-pick-wizard-tower-glass-dome", "bd-pick-wizard-tower-moon-obelisk", "bd-pick-wizard-tower-armillary",
+    ],
     kitIds: [
       "bd-pick-volcano-cave-fire-crystal", "bd-pick-wizard-tower-moon-obelisk", "bd-pick-snowfield-lamp",
       "bd-pick-wizard-tower-armillary", "bd-pick-aqueduct-sewer-lantern-post",
@@ -112,7 +122,7 @@ function rng(seed: number): () => number {
   };
 }
 
-const NOT_A_BUILDING = /bonfire|bench|waterwheel|lamp|tree|well|fountain|bridge|gate|fence|stair|rock|stone|shrine-path|campfire/iu;
+const NOT_A_BUILDING = /bonfire|bench|lamp|tree|well|fountain|bridge|gate|fence|stair|rock|stone|shrine-path|campfire/iu;
 
 function isTransferDoor(event: GameEvent): boolean {
   const visit = (node: unknown): boolean => {
@@ -174,6 +184,50 @@ function clearDemolishedOverlays(copy: GameMap, placement: { kitId: string; x: n
     }));
   }
 }
+/**
+ * 시대별 길·경작지 변환 — structurePlacements 바깥에 칠해진 포장도로(beodeul_road_autotile)와
+ * 현대 밀밭·허수아비·울타리를 시대에 맞게 바꾼다. 오토타일 비트마스크(0..15)를 그대로 유지하므로 통행성은 변하지 않는다.
+ */
+function transformVariantRoadsAndFarms(copy: GameMap, tileset: Project["tilesets"][string] | undefined, look: VariantLook, seed: number): void {
+  const groups = tileset?.autotileGroups ?? [];
+  const roadGroup = groups.find((group) => group.id === "beodeul_road_autotile");
+  const sandGroup = groups.find((group) => group.id === "beodeul_sand_autotile");
+  const roadToSand = new Map<number, number>();
+  if (roadGroup?.variantMap && sandGroup?.variantMap) {
+    for (const [mask, roadTile] of Object.entries(roadGroup.variantMap)) {
+      const sandTile = sandGroup.variantMap[mask];
+      if (typeof roadTile === "number" && typeof sandTile === "number") roadToSand.set(roadTile, sandTile);
+    }
+  }
+  const farmUpperTiles = new Set<number>();
+  for (const kit of tileset?.structureKits ?? []) {
+    if (kit.kind !== "section" || !/wheat|scarecrow|haystack|fence/iu.test(kit.id)) continue;
+    for (const row of kit.rows) {
+      for (const tile of row.upperTiles ?? []) if (tile >= 0) farmUpperTiles.add(tile);
+    }
+  }
+  const grassTile = 27556;
+  const canUseGrass = Boolean(tileset?.tileMeta?.[grassTile]);
+  for (let y = 0; y < copy.height; y += 1) {
+    for (let x = 0; x < copy.width; x += 1) {
+      const index = y * copy.width + x;
+      const lower = copy.lowerTiles[index];
+      if (lower !== undefined && roadToSand.has(lower)) {
+        const replaceRoad = look === "past"
+          || (look === "ruin" && ((hash32(`${seed}:${Math.floor(x / 3)}:${Math.floor(y / 3)}`) % 100) < 58));
+        if (replaceRoad) copy.lowerTiles[index] = roadToSand.get(lower)!;
+      }
+      const upper = copy.upperTiles[index];
+      if (upper !== undefined && upper >= 0 && farmUpperTiles.has(upper) && !eventAt(copy, x, y)) {
+        clearTileStack(copy, "upper", index);
+        copy.upperTiles[index] = -1;
+        if (canUseGrass && lower !== undefined && !roadToSand.has(lower) && !isWaterCell(copy, tileset, index)) {
+          copy.lowerTiles[index] = grassTile;
+        }
+      }
+    }
+  }
+}
 
 /**
  * 변형 맵 `copy` 에 시대 프리셋을 건다. `copy` 는 cloneMapIntoProject 로 방금 복제한 맵이고,
@@ -190,8 +244,12 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
   };
 
   const tileset = draft.tilesets[copy.tilesetId];
+  const seed = hash32(`${copy.id}:${look}`);
+  transformVariantRoadsAndFarms(copy, tileset, look, seed);
+
   const kitsById = new Map<string, SectionStructureKitDef>((tileset?.structureKits ?? []).filter((kit) => kit.kind === "section").map((kit) => [kit.id, kit]));
   const kits = spec.kitIds.map((id) => kitsById.get(id)).filter((kit): kit is SectionStructureKitDef => kit !== undefined);
+  const landmarks = spec.landmarkIds.map((id) => kitsById.get(id)).filter((kit): kit is SectionStructureKitDef => kit !== undefined);
   const buildings = [...structurePlacementsOf(copy)]
     .filter((placement) => placement.w * placement.h >= 12 && Math.min(placement.w, placement.h) >= 3 && !NOT_A_BUILDING.test(placement.kitId))
     .sort((a, b) => a.y - b.y || a.x - b.x);
@@ -201,11 +259,19 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     return report;
   }
 
-  const random = rng(hash32(`${copy.id}:${look}`));
+  const random = rng(seed);
   const wanted = Math.max(1, Math.round(buildings.length * spec.demolishRatio));
-  // 시드 순서로 섞어 앞에서 wanted 채를 고른다 — 비율이 같아도 어떤 건물이 사라지는지는 변형마다 다르다.
-  const order = buildings.map((placement, index) => ({ placement, key: random() + index * 1e-9 })).sort((a, b) => a.key - b.key).map((entry) => entry.placement);
+  // 대형 현대 건물(길드홀·대성당·시청 등 w*h>=48)은 과거·폐허·미래에서 그대로 남으면 같은 시대로 읽히므로 우선 철거 대상으로 올린다.
+  const order = buildings
+    .map((placement, index) => ({
+      placement,
+      isLarge: placement.w * placement.h >= 48,
+      key: random() + index * 1e-9,
+    }))
+    .sort((a, b) => (a.isLarge === b.isLarge ? a.key - b.key : a.isLarge ? -1 : 1))
+    .map((entry) => entry.placement);
   const taken = new Set<number>();
+  let landmarkPlaced = 0;
   for (const placement of order) {
     if (report.demolishedBuildings >= wanted) break;
     const inside = copy.events.filter((event) => event.x >= placement.x && event.y >= placement.y && event.x < placement.x + placement.w && event.y < placement.y + placement.h);
@@ -219,22 +285,20 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
     removeStructurePlacement(copy, placement.id);
     report.demolishedBuildings += 1;
 
-    if (kits.length === 0) continue;
-    const [minStamps, maxStamps] = spec.stampsPerSite;
-    const count = minStamps + Math.floor(random() * (maxStamps - minStamps + 1));
-    for (let n = 0; n < count; n += 1) {
-      const kit = kits[Math.min(kits.length - 1, Math.floor(random() * kits.length))]!;
-      if (kit.width > placement.w || kit.height > placement.h) continue;
-      const x = placement.x + Math.floor(random() * (placement.w - kit.width + 1));
-      const y = placement.y + Math.floor(random() * (placement.h - kit.height + 1));
-      let blocked = false;
-      for (let row = 0; row < kit.height && !blocked; row += 1) {
+    const placeKitInSite = (kit: SectionStructureKitDef, centered = false): boolean => {
+      if (kit.width > placement.w || kit.height > placement.h) return false;
+      const x = centered
+        ? placement.x + Math.floor((placement.w - kit.width) / 2)
+        : placement.x + Math.floor(random() * (placement.w - kit.width + 1));
+      const y = centered
+        ? placement.y + Math.floor((placement.h - kit.height) / 2)
+        : placement.y + Math.floor(random() * (placement.h - kit.height + 1));
+      for (let row = 0; row < kit.height; row += 1) {
         for (let col = 0; col < kit.width; col += 1) {
           // 물 칸 위에는 폐허 조각을 놓지 않는다 — 받침 없는 물체로 커밋이 거절돼 변형 도구가 통째로 실패했다(jrpg-loop-2: 해안 건물 자리).
-          if (taken.has((y + row) * copy.width + x + col) || eventAt(copy, x + col, y + row) || isWaterCell(copy, tileset, (y + row) * copy.width + x + col)) { blocked = true; break; }
+          if (taken.has((y + row) * copy.width + x + col) || eventAt(copy, x + col, y + row) || isWaterCell(copy, tileset, (y + row) * copy.width + x + col)) return false;
         }
       }
-      if (blocked) continue;
       const rect = { x, y, w: kit.width, h: kit.height };
       const before = captureStructureTiles(copy, rect);
       for (let row = 0; row < kit.height; row += 1) {
@@ -249,6 +313,20 @@ export function applyVariantLook(draft: Project, copy: GameMap, look: VariantLoo
       }
       appendStructurePlacement(copy, { kitId: kit.id, rect, before });
       report.stampedPieces += 1;
+      return true;
+    };
+
+    if (landmarks.length > 0 && placement.w >= 4 && placement.h >= 4 && landmarkPlaced < 3) {
+      const landmark = landmarks[(landmarkPlaced + Math.floor(random() * landmarks.length)) % landmarks.length]!;
+      if (placeKitInSite(landmark, true)) landmarkPlaced += 1;
+    }
+
+    if (kits.length === 0) continue;
+    const [minStamps, maxStamps] = spec.stampsPerSite;
+    const count = minStamps + Math.floor(random() * (maxStamps - minStamps + 1));
+    for (let n = 0; n < count; n += 1) {
+      const kit = kits[Math.min(kits.length - 1, Math.floor(random() * kits.length))]!;
+      placeKitInSite(kit, false);
     }
   }
   if (kits.length === 0) {
