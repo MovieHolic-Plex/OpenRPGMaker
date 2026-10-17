@@ -99,11 +99,19 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
     gaps.push(`게임 제목이 기본값 「${title || metaTitle || "(비어 있음)"}」 그대로입니다 — configure_title_screen {title} 로 이 게임의 이름을 짓고, 기본 부제(「A NEW ADVENTURE」)를 쓰지 않을 거면 logoStyle 을 정하세요.`);
   }
 
-  // 1b) 오프닝 — 비어 있거나 제목/단문 카드 한 장, 또는 정지 그림 슬라이드뿐이고 #2852 도트 격자 애니메틱이 없으면 미완이다.
+  // 1b) 오프닝 — 비어 있거나 제목/단문 카드 한 장, 또는 정지 그림 슬라이드뿐이거나 #2852 도트 격자 애니메틱 6샷이 아니면 미완이다.
   const opening = project.system?.opening;
   const openingEmpty = Boolean(userTask) && opening?.enabled !== false && (opening?.scenes ?? []).length === 0;
+  const animaticShots = (opening?.scenes ?? []).filter((scene): scene is Extract<typeof scene, { kind: "animatic" }> => scene.kind === "animatic" && Boolean(scene.composition?.pixelGrid));
   if (openingEmpty || openingIsOnlyTitleCard(opening, project.system?.titleScreen?.title ?? project.meta?.title)) {
-    gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐이거나 정지 슬라이드뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜨거나 정지 그림만 넘어갑니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background → place_opening_charset_actor 번들 24×32 캐릭터 칩 → set_opening_caption → set_opening → preview_opening_animatic → review_opening)로 이 게임의 도입을 2~4컷 써서 넣으세요.");
+    gaps.push("오프닝이 제목 카드(「— …  —」) 한 장뿐이거나 정지 슬라이드뿐입니다 — 새 게임을 누르면 검은 화면에 글자만 뜨거나 정지 그림만 넘어갑니다. plan_opening/set_opening 및 #2852 도트 애니메틱 도구(create_opening_animatic_shot 384×216 → set_opening_pixel_grid 384×216 → place_opening_background(list_opening_media 의 oprn-still-* 배경, generate_opening_image 호출 금지) → place_opening_charset_actor(oprn-charset-heroes1 + toX 걷기) → upsert_opening_light_fx + animate_opening_camera → set_opening_caption → set_opening 6샷 연결 → review_opening)로 이 게임의 도입을 **6샷(shot_1..shot_6)** 도트 애니메틱으로 만들어 넣으세요.");
+  } else if (Boolean(userTask) && opening && opening.enabled !== false) {
+    const missingBg = animaticShots.filter((s) => !s.composition.layers.some((l) => l.kind === "image" && l.role === "background")).map((s) => s.id);
+    const missingActor = animaticShots.filter((s) => !s.composition.layers.some((l) => l.kind === "image" && l.role === "actor")).map((s) => s.id);
+    const missingCaption = animaticShots.filter((s) => !s.composition.layers.some((l) => l.kind === "caption")).map((s) => s.id);
+    if (animaticShots.length < 6 || missingBg.length > 0 || missingCaption.length > 0 || missingActor.length > 2) {
+      gaps.push(`오프닝 #2852 도트 격자 애니메틱(384×216)이 ${animaticShots.length}샷입니다(6샷 필수${missingBg.length ? `, 배경 누락: ${missingBg.join(",")}` : ""}${missingActor.length > 2 ? `, 배우 누락: ${missingActor.join(",")}` : ""}${missingCaption.length ? `, 자막 누락: ${missingCaption.join(",")}` : ""}) — generate_opening_image 호출 없이 list_opening_media 의 번들 배경(oprn-still-hero-dawn, oprn-still-kingdom-day, oprn-still-forest-path, oprn-still-corridor, oprn-still-dark-citadel, oprn-still-single-metropolis, oprn-still-lullaby, oprn-still-rally, oprn-pack-still-sky-01 등)으로 6샷(shot_1..shot_6, 각 384×216·durationMs:6500) 모두 place_opening_background + place_opening_charset_actor(oprn-charset-heroes1 + toX 걷기) + upsert_opening_light_fx + animate_opening_camera + set_opening_caption(#fff0dc)을 채우고 set_opening 으로 6샷을 저장하세요.`);
+    }
   }
 
   // 2) 시작 마을 인물 — 말을 거는 이벤트(text/say 명령이 있는 이벤트)가 시작 맵과, 문 하나로 닿는 마을(길 맵 제외)을 합쳐 최소 몇 명 있어야 한다.

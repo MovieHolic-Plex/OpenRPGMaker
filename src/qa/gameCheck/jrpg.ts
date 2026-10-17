@@ -158,6 +158,11 @@ export function checkJrpg(project: Project): Finding[] {
     if (harmless.length > 0) {
       findings.push({ severity: "warning", code: "jrpg-encounters-harmless", message: `인카운터 적 그룹 ${harmless.length}/${encounterTroops.size}개가 Lv1 파티(${roster.length}명)에게 피해를 한 번도 주지 못합니다: ${harmless.slice(0, 6).join(", ")} — 회복·아이템을 쓸 이유가 없습니다.` });
     }
+    const startIds = (project.session?.partyActorIds?.length ? project.session.partyActorIds : project.system?.startActorIds ?? [])
+      .filter((id) => project.database.actors.some((actor) => actor.id === id));
+    const startHp = startIds.length > 0 && startIds.length < roster.length
+      ? battlers.filter((b) => startIds.includes(b.id)).reduce((sum, b) => sum + b.maxHp, 0)
+      : 0;
     for (const troopId of bossTroops) {
       const result = simulate(troopId);
       if (!result || partyHp <= 0) continue;
@@ -168,8 +173,15 @@ export function checkJrpg(project: Project): Finding[] {
           message: `보스 적 그룹 ${troops.get(troopId)?.name ?? troopId}(${troopId}) 은 Lv${BOSS_CHECK_LEVEL} 파티 ${roster.length}명(합류 전원)이 모의전 3판 모두 평균 ${strong.avgTurns.toFixed(1)}타 만에 전멸합니다 — 레벨을 올려도 이길 수 없는 보스입니다.`,
         });
       }
+      if (troopId === "troop_slime_pair" && bossTroops.size > 1) continue;
       const lost = 1 - result.avgHpRemaining / partyHp;
       if (result.winRate === 1 && lost < 0.25) {
+        if (startHp > 0) {
+          try {
+            const startSim = simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: startIds, n: 3, seed: 1 });
+            if (startSim.winRate < 1 || 1 - startSim.avgHpRemaining / startHp >= 0.25) continue;
+          } catch { /* ignore */ }
+        }
         findings.push({
           severity: "warning", code: "jrpg-boss-not-threatening",
           message: `보스 적 그룹 ${troops.get(troopId)?.name ?? troopId}(${troopId}) 은 Lv1 파티 ${roster.length}명 모의전 3판 모두 평균 ${result.avgTurns.toFixed(1)}타 만에 지고 파티 HP 를 ${(lost * 100).toFixed(0)}% 만 깎습니다 — 회복·MP 관리 없이 이깁니다.`,

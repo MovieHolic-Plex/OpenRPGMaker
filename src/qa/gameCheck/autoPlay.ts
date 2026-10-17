@@ -1597,16 +1597,20 @@ export function runAutoPlay(
     : runPlan(project, "기본 경로", plan.goals, deadline, preamble)];
   // 합류하는 동료를 모두(배우별 첫 합류, 최대 MAX_COMPANION_JOINS 명) 차례로 데려간다 — JRPG 는 3인 파티를 전제로
   // 층마다 적을 세운다. 첫 동료만 데려가면 3층 순찰대에 둘이서 쓰러지는 거짓 막힘이 났다(2026-09-24 도그푸딩).
-  const joins: CommandVisit[] = [];
-  const joinedActors = new Set<string>();
+  const joinByActor = new Map<string, { readonly join: CommandVisit; readonly plan: CriticalPlan }>();
   for (const join of options.companionJoins ?? []) {
-    if (!join.page.map || !join.page.event || joins.length >= MAX_COMPANION_JOINS) continue;
+    if (!join.page.map || !join.page.event) continue;
     const actorKey = typeof join.command.actorId === "string" ? join.command.actorId : JSON.stringify(join.command);
-    if (joinedActors.has(actorKey)) continue;
-    joinedActors.add(actorKey);
-    joins.push(join);
+    const existing = joinByActor.get(actorKey);
+    if (existing && existing.plan.unresolved.length === 0) continue;
+    const candidatePlan = planCriticalPath(project, join, joinGoal(project, join));
+    if (!existing || candidatePlan.unresolved.length < existing.plan.unresolved.length) {
+      joinByActor.set(actorKey, { join, plan: candidatePlan });
+    }
   }
-  const joinPlans = joins.map((join) => planCriticalPath(project, join, joinGoal(project, join)));
+  const selectedJoins = [...joinByActor.values()].slice(0, MAX_COMPANION_JOINS);
+  const joins = selectedJoins.map((entry) => entry.join);
+  const joinPlans = selectedJoins.map((entry) => entry.plan);
   const joinGoals = joinPlans.flatMap((joinPlan) => joinPlan.goals);
   const joinUnresolved = joinPlans.flatMap((joinPlan) => joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`));
   if (joins.length > 0) {
@@ -1624,9 +1628,9 @@ export function runAutoPlay(
     // 1인 시작 파티(COMPANION_WORDS)에서 다른 엔딩이 합류 없이 걸어가다 3~4인 기준 잡몹·보스에게 지는 거짓 막힘(jrpg-loop-4 ct2·ff2·ff1) —
     // 첫 엔딩과 마찬가지로 동료를 먼저 데려간 실행을 시도해 끝까지 가거나 전투 단계까지 닿으면 그 결과를 채택한다.
     if (!otherRun.ok && joinGoals.length > 0 && Date.now() <= deadline
-      && /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해/u.test(otherRun.failure?.detail ?? "")) {
+      && /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해|게임 오버 중에는 retryCheckpoint/u.test(otherRun.failure?.detail ?? "")) {
       const joinedOther = runPlan(project, `다른 엔딩 ${key}(동료 합류 후)`, [...joinGoals, ...otherPlan.goals], deadline, [...joinUnresolved, ...otherPreamble]);
-      if (joinedOther.ok || /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해/u.test(joinedOther.failure?.detail ?? "")) {
+      if (joinedOther.ok || /(?:random encounter|battle) [^:]+: defeat|이벤트 전투에서 패배해|게임 오버 중에는 retryCheckpoint/u.test(joinedOther.failure?.detail ?? "")) {
         runs.push(joinedOther);
         continue;
       }

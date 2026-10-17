@@ -201,13 +201,19 @@ function transformVariantRoadsAndFarms(copy: GameMap, tileset: Project["tilesets
   }
   const farmUpperTiles = new Set<number>();
   for (const kit of tileset?.structureKits ?? []) {
-    if (kit.kind !== "section" || !/wheat|scarecrow|haystack|fence/iu.test(kit.id)) continue;
+    if (kit.kind !== "section" || !/wheat|scarecrow|haystack|fence/iu.test(kit.id) || /wild|trough/iu.test(kit.id)) continue;
     for (const row of kit.rows) {
       for (const tile of row.upperTiles ?? []) if (tile >= 0) farmUpperTiles.add(tile);
     }
   }
-  const grassTile = 27556;
-  const canUseGrass = Boolean(tileset?.tileMeta?.[grassTile]);
+  const fenceSourceTiles = new Set<number>(Object.values(BEODEUL_NATURE.fence ?? {}));
+  for (const graft of tileset?.tileGrafts ?? []) {
+    if (graft.sourceChipset === "tex_beodeul_nature" && fenceSourceTiles.has(graft.sourceTile)) {
+      farmUpperTiles.add(graft.targetTile);
+    }
+  }
+  const grassTile = 737;
+  const canUseGrass = Boolean(tileset?.tileMeta?.[grassTile]?.tags?.includes("grass"));
   for (let y = 0; y < copy.height; y += 1) {
     for (let x = 0; x < copy.width; x += 1) {
       const index = y * copy.width + x;
@@ -221,6 +227,11 @@ function transformVariantRoadsAndFarms(copy: GameMap, tileset: Project["tilesets
       if (upper !== undefined && upper >= 0 && farmUpperTiles.has(upper) && !eventAt(copy, x, y)) {
         clearTileStack(copy, "upper", index);
         copy.upperTiles[index] = -1;
+        if (copy.lowerOverlayTiles && copy.lowerOverlayTiles[index] !== undefined) copy.lowerOverlayTiles[index] = -1;
+        if (copy.upperOverlayTiles && copy.upperOverlayTiles[index] !== undefined) copy.upperOverlayTiles[index] = -1;
+        if (x + 1 < copy.width && (copy.upperTiles[index + 1] ?? -1) < 0 && !farmUpperTiles.has(copy.upperTiles[index + 1] ?? -1) && copy.lowerOverlayTiles && copy.lowerOverlayTiles[index + 1] !== undefined) {
+          copy.lowerOverlayTiles[index + 1] = -1;
+        }
         if (canUseGrass && lower !== undefined && !roadToSand.has(lower) && !isWaterCell(copy, tileset, index)) {
           copy.lowerTiles[index] = grassTile;
         }
