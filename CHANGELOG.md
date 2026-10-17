@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.246.0 — 2026-10-17
+
+### 기능
+
+- **vn** — stage 2 - gallery lock display and ending recall, ending checklist, save-card scene line (#2802) (`c919c0f`)
+
+### 수정
+
+- **ci** — record the dialogue bar and retro skill-list layout in CSS winners (`5801ee9`)
+
 ## 0.244.2 — 2026-10-17
 
 ### 수정
