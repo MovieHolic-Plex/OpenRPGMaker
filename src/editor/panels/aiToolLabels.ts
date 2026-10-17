@@ -379,6 +379,11 @@ const BRIEF_TOOL_PHRASES: Readonly<Record<string, readonly [doing: string, done:
   check_reachability: ["길이 이어졌는지 확인하는 중", "길 확인 완료"],
   place_npc: ["NPC 배치하는 중", "NPC 배치 완료"],
   list_authoring_presets: ["프리셋 살펴보는 중", "프리셋 살펴보기 완료"],
+  list_spatial_designs: ["공용 건물·소품 도안 찾는 중", "공용 건물·소품 도안 탐색 완료"],
+  get_spatial_design: ["건물·소품 도안 확인하는 중", "건물·소품 도안 확인 완료"],
+  list_npc_graphics: ["캐릭터 외형 찾는 중", "캐릭터 외형 탐색 완료"],
+  get_map_region: ["맵 지형·영역 스캔 중", "맵 지형·영역 스캔 완료"],
+  show_map_region: ["맵 배치 화면 검수 중", "맵 배치 화면 검수 완료"],
 };
 const BRIEF_GROUP_PHRASES: Readonly<Record<ToolGroup, readonly [doing: string, done: string]>> = {
   inspect: ["프로젝트 살펴보는 중", "프로젝트 살펴보기 완료"],

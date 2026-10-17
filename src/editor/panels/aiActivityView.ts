@@ -1,6 +1,7 @@
 import { activityEntryIndex, majorActivityKinds as majorKinds } from "./aiActivityIndex";
 import { createBetweenTurnLogSection } from "./aiBetweenTurnLog";
 import { createActivityMedia } from "./aiActivityMedia";
+import { buildRichToolExtras, createPipelineHeader } from "./aiActivityTelemetry";
 import { el } from "@/util/dom";
 import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
@@ -99,6 +100,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
   let query = "";
   const opened = new Set<string>();
   const root = el("section", { class: "ai-activity-view", dataset: { testid: "ai-activity-view" }, attrs: { "aria-label": "작업 과정" } });
+  const pipeline = createPipelineHeader();
   const meta = el("p", { class: "ai-activity-meta" });
   const filter = el("select", { attrs: { "aria-label": "실행 기록 종류" }, children: [el("option", { attrs: { value: "all" }, text: "전체 기록" }), el("option", { attrs: { value: "tool" }, text: "도구 실행" }), el("option", { attrs: { value: "error" }, text: "오류·검수 지적" })] }) as HTMLSelectElement;
   const actorFilter = el("select", { attrs: { "aria-label": "실행 담당자" } }) as HTMLSelectElement;
@@ -116,7 +118,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
   } } });
   const controls = el("div", { class: "ai-activity-filters", children: [search, filter, actorFilter, latest, exportButton] });
-  root.append(meta, controls, more, columns, list, notice);
+  root.append(pipeline.root, meta, controls, more, columns, list, notice);
   let lastRowsSignature = "";
   let lastRender: { trace: ActivityTrace; actor?: string; level: string; shown: number; severity: string; selectedActor: string; query: string; failed: boolean; length: number } | undefined;
   function render(): void {
@@ -143,6 +145,8 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     actorFilter.hidden = Boolean(actor) || actors.length < 2;
     meta.hidden = level !== "trace"; controls.hidden = level !== "trace"; columns.hidden = level !== "trace";
     root.dataset.member = String(Boolean(actor));
+    pipeline.root.hidden = Boolean(actor);
+    if (!actor) pipeline.update(current);
     const metaText = `실행 기록 · ${current.entries.length}건 · ${current.phase}`;
     if (meta.textContent !== metaText) meta.textContent = metaText;
     const source = actor ? index.byActor.get(actor) ?? [] : current.entries;
@@ -162,7 +166,6 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const completed: ActivityEntry[] = [];
       let activeCount = 0;
       let illustrated: ActivityEntry | undefined;
-      let plain: ActivityEntry | undefined;
       const collect = (entry: ActivityEntry): void => {
         if (entry.status === "running") {
           activeCount++;
@@ -170,8 +173,11 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
           if (active.length > 3) active.shift();
         } else {
           completed.push(entry);
-          if (completed.length > 4) completed.shift();
-          if (!entry.visuals?.length) plain = entry;
+          if (completed.length > 4) {
+            const nonBuildIdx = completed.findIndex(e => e.kind !== "tool" || toolGroup(e.name) === "inspect");
+            if (nonBuildIdx >= 0) completed.splice(nonBuildIdx, 1);
+            else completed.shift();
+          }
           if (entry.visuals?.some(v => v.phase !== "read") && (entry.kind !== "tool" || toolGroup(entry.name) !== "inspect")) illustrated = entry;
         }
       };
@@ -192,20 +198,28 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
         if (!majorKinds.has(entry.kind) || (entry.name === "run.phase" && entry.id !== latestPhase)
           || (entry.name.startsWith("save.") && entry.id !== latestSave)
           || (entry.name === "checkpoint.apply" && entry.status !== "error")
+          || (entry.kind === "status" && entry.name.endsWith(".image.delivered"))
           || (entry.kind === "tool" && entry.status === "error" && entry.id !== latestEntry)
           // 원인 줄(error)이 이미 있으면 같은 실패를 알리는 종료 줄(「실패」)은 뺀다.
           || (entry.name === "run.phase" && entry.status === "error" && hasErrorRow)) continue;
         if (previous && entry.kind === "tool" && entry.status === "ok" && previous.status === "ok"
-          && previous.name === entry.name && previous.actor === entry.actor && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) count++;
+          && toolGroup(entry.name) === "inspect" && previous.name === entry.name && previous.actor === entry.actor
+          && JSON.stringify(previous.input) === JSON.stringify(entry.input)
+          && previous.visuals?.at(-1)?.target === entry.visuals?.at(-1)?.target) count++;
         else { flush(); count = 1; }
         previous = entry;
       }
       flush();
-      rows = illustrated ? [illustrated, ...(plain ? [plain] : []), ...active].sort((a, b) => a.at - b.at)
-        : [...completed.slice(-Math.max(1, 4 - activeCount)), ...active];
+      const maxCompleted = Math.max(1, 4 - activeCount);
+      const sliced = completed.slice(-maxCompleted);
+      if (illustrated && !sliced.some(e => e.id === illustrated!.id)) {
+        if (sliced.length >= maxCompleted) sliced[0] = illustrated;
+        else sliced.unshift(illustrated);
+      }
+      rows = [...sliced, ...active].sort((a, b) => a.at - b.at);
       if (sayEntry) rows = [...rows, sayEntry].sort((a, b) => a.at - b.at);
-      // 같은 문장이 연달아 두 번 나오면 한 줄로 — 실패 때 같은 원인이 오류 기록·작업 종료 기록으로 두 번 적혔다(B안 1단계).
-      rows = rows.filter((entry, i) => i === 0 || briefEntryText(entry) !== briefEntryText(rows[i - 1]!));
+      // 같은 문장이 연달아 두 번 나오면 한 줄로 — 단, 인자가 다른 도구 호출은 각각 남긴다.
+      rows = rows.filter((entry, i) => i === 0 || briefEntryText(entry) !== briefEntryText(rows[i - 1]!) || (entry.kind === "tool" && JSON.stringify(entry.input) !== JSON.stringify(rows[i - 1]!.input)));
     } else {
       // Collect the visible window plus one row for the "more" button.
       const recent: ActivityEntry[] = [];
@@ -278,6 +292,14 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
             if (details.open) fillPayload();
             details.addEventListener("toggle", () => { if (!details.isConnected) return; if (details.open) { opened.add(entry.id); fillPayload(); } else opened.delete(entry.id); });
             next = details;
+          }
+          const richExtras = buildRichToolExtras(entry, level, opened);
+          if (richExtras) {
+            if (next instanceof HTMLDetailsElement) {
+              next = el("div", { children: [next, richExtras] });
+            } else {
+              next.append(richExtras);
+            }
           }
           const shownVisuals = level === "brief" ? briefActivityVisuals(entry.visuals) : entry.visuals ?? [];
           if (shownVisuals.length) {
