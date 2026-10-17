@@ -1,7 +1,8 @@
 /* One overlay workspace; the map keeps the same width when it opens. */
 .ai-right-dock { flex: 0 0 44px; width: 44px; min-width: 44px; z-index: 43; }
-/* The conversation overlay must leave map controls clickable. */
-.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar {
+/* The conversation overlay must leave map controls clickable.
+   스튜디오 머리띠가 입양한 도구바(relative)는 제외 — 여기 right/max-width 가 들어가면 348px 왼쪽으로 밀려 제목을 덮는다. */
+.editor-layout:has(> .ai-right-dock:not(.is-collapsed)) .canvas-toolbar:not(.ai-studio-monitor-chrome > .canvas-toolbar) {
   right: min(348px, calc(100vw - 80px));
   max-width: calc(100% - 360px);
 }

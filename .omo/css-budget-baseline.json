@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-17T05:06:09.830Z",
+  "generatedAt": "2026-10-17T18:28:09.846Z",
   "metrics": {
-    "hexLiterals": 2560,
+    "hexLiterals": 2557,
     "important": 303,
-    "undefinedVars": 61,
+    "undefinedVars": 60,
     "globalRootFiles": 10,
     "cssFileCount": 412
   },
@@ -75,7 +75,7 @@
       "src/styles/database/title-workbench.css": 39,
       "src/styles/database/workshop/workshop.css": 20,
       "src/styles/dialogue.css": 17,
-      "src/styles/dialogueReading.css": 14,
+      "src/styles/dialogueReading.css": 9,
       "src/styles/editor/relief-toolbar.css": 30,
       "src/styles/event/command-forms/forms-2.css": 22,
       "src/styles/event/command-forms/forms-3.css": 56,
@@ -158,7 +158,7 @@
       "src/styles/runtime/monsterCampaignMenu.css": 20,
       "src/styles/runtime/nameEntry.css": 11,
       "src/styles/runtime/playLoading.css": 17,
-      "src/styles/runtime/playSurface.css": 42,
+      "src/styles/runtime/playSurface.css": 44,
       "src/styles/runtime/shop.css": 138,
       "src/styles/runtime/statusMenuSkins.css": 17,
       "src/styles/runtime/tacticsBattle.css": 3,
@@ -282,7 +282,6 @@
       "--pop-x",
       "--radius-2",
       "--runtime-font-size-13",
-      "--s-text-1",
       "--shadow-sm",
       "--shop-space-5",
       "--studio-play",
@@ -462,9 +461,6 @@
       ],
       "--runtime-font-size-13": [
         "src/styles/runtime/commerce.css"
-      ],
-      "--s-text-1": [
-        "src/styles/database/assetStore/assetStore.css"
       ],
       "--shadow-sm": [
         "src/styles/map/region-task.part-4.css"

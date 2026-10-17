@@ -249,6 +249,22 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     class: "ai-studio-monitor-meta",
     dataset: { testid: "ai-studio-monitor-meta" },
   });
+  // 감독 보드가 고른 장면·탭에 맞춘 1클릭 지시. 조수 열의 대화 기록 위에 늘 보인다.
+  const fillComposer = (prompt: string): void => {
+    selectThread("director");
+    const input = composerSlot.querySelector<HTMLTextAreaElement | HTMLInputElement>("[data-testid=ai-input]")
+      ?? composerSlot.querySelector<HTMLTextAreaElement>("textarea")
+      ?? composerSlot.querySelector<HTMLInputElement>("input");
+    if (!input || !prompt) return;
+    input.value = prompt;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.focus();
+  };
+  const directorChips = el("section", {
+    class: "ai-studio-director-chips",
+    attrs: { "aria-label": "감독 지시 제안" },
+    dataset: { testid: "ai-studio-director-chips" },
+  });
   const directorBoard = createStudioDirectorBoard({
     onSelectMap: () => {
       refreshScenes();
@@ -257,18 +273,18 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     onOpenTileEditor: () => {
       requestExit();
     },
-    onPromptPick: (prompt) => {
-      selectThread("director");
-      const input = composerSlot.querySelector<HTMLTextAreaElement | HTMLInputElement>("[data-testid=ai-input]")
-        ?? composerSlot.querySelector<HTMLTextAreaElement>("textarea")
-        ?? composerSlot.querySelector<HTMLInputElement>("input");
-      if (input && prompt) {
-        input.value = prompt;
-        if (typeof Event === "function") {
-          input.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        input.focus();
-      }
+    onPromptPick: fillComposer,
+    onContextChange: (title, chips) => {
+      directorChips.replaceChildren(
+        el("p", { class: "ai-studio-kicker", text: `감독 지시 · ${title}` }),
+        ...chips.map((chip) => el("button", {
+          class: `ai-studio-director-chip is-${chip.tone}`,
+          attrs: { type: "button", title: chip.prompt },
+          dataset: { testid: "ai-studio-director-chip" },
+          children: [el("strong", { text: chip.label }), el("span", { text: chip.prompt })],
+          on: { click: () => fillComposer(chip.prompt) },
+        })),
+      );
     },
   });
   const canvasToggleButton = el("button", {
@@ -390,7 +406,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
           chatCollapseButton,
         ],
       }),
-      el("div", { class: "ai-studio-chat-body", children: [briefing, workSlot, chatLogSlot, laneThreadSlot, teamSlot] }),
+      el("div", { class: "ai-studio-chat-body", children: [briefing, directorChips, workSlot, chatLogSlot, laneThreadSlot, teamSlot] }),
       composerSlot,
     ],
   });
