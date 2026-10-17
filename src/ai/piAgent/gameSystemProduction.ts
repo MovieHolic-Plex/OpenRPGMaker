@@ -1,7 +1,7 @@
 import type { Project } from '../../project/types';
 import type { ToolResult } from '../../editor/tools/types';
 /** 게임 시스템(상점·ESC 메뉴·몬스터·음악·대사 읽기 보조 등) 요청으로 보고 시스템 도구를 처음부터 선언하게 하는 낱말(한·영·일·중). */
-export const GAME_SYSTEM_REQUEST_PATTERN = /시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b|백로그|오토|스킵|대사 기록|미연시|갤러리|엔딩 목록|엔딩 회상|엔딩 체크|세이브 카드|저장 칸|backlog|gallery|ending (?:list|checklist|recall)|save (?:card|slot thumbnail)|ギャラリー|エンディング一覧|セーブ画面|画廊|结局列表|結局列表|存档卡|visual.?novel|auto.?(?:play|advance)|\bskip\b|(?:message|dialogue|dialog) (?:log|history)|バックログ|オート|スキップ|回顾|回顧|自动播放|自動播放|跳过|跳過|对话记录|對話記錄/iu;
+export const GAME_SYSTEM_REQUEST_PATTERN = /시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b|백로그|오토|스킵|대사 기록|미연시|갤러리|엔딩 목록|엔딩 회상|엔딩 체크|세이브 카드|저장 칸|backlog|gallery|ending (?:list|checklist|recall)|save (?:card|slot thumbnail)|ギャラリー|エンディング一覧|セーブ画面|画廊|结局列表|結局列表|存档卡|대사\s?창|텍스트\s?(?:크|작)|글자\s?(?:크|작)|글씨\s?(?:크|작)|이름표|파스텔|말풍선|(?:느낌|분위기)\s?창|(?:dialogue|message) window|(?:text|font) size|name\s?plate|visual.?novel|auto.?(?:play|advance)|\bskip\b|(?:message|dialogue|dialog) (?:log|history)|バックログ|オート|スキップ|回顾|回顧|自动播放|自動播放|跳过|跳過|对话记录|對話記錄/iu;
 
 /** Completion evidence from actual tools, independent of the assistant's final text. */
 export class PiGameSystemProduction {
@@ -12,7 +12,7 @@ export class PiGameSystemProduction {
   record(name:string,result:ToolResult,p:Project):void {
     if(!result.ok)return;
     if(name==='read_game_systems')this.read=true;
-    if(['configure_monster_style','build_monster_game','configure_field_menu','set_dialogue_system','set_vn_extras','configure_shop_presentation','set_sell_prices','configure_monster_campaign','configure_monster_system','compose_music','set_game_audio'].includes(name))this.requested=true;
+    if(['configure_monster_style','build_monster_game','configure_field_menu','set_dialogue_system','set_vn_extras','set_vn_look','configure_shop_presentation','set_sell_prices','configure_monster_campaign','configure_monster_system','compose_music','set_game_audio'].includes(name))this.requested=true;
     if(name==='review_game_systems'){
       this.reviewed=this.fingerprint(p);
       const issues=(result.data as {issues?:unknown})?.issues;

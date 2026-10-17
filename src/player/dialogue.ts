@@ -9,6 +9,7 @@ import {
   type AuthoredDialogueSystem, type BacklogHost, type ReadingStopReason,
 } from '@/project/dialogueSystem';
 import { cancelChoiceIndex } from '@/project/choiceCancellation';
+import { resolveVnLook, vnLookAttributes, vnLookShowsPortraits, type ResolvedVnLook } from '@/project/vnLook';
 // player/dialogue.ts
 // DOM dialogue and choices overlay used by the runtime interpreter.
 // It resolves text advancement and choice selection through promises.
@@ -622,10 +623,11 @@ export function createDialogueUI(
         const behindPortraits: HTMLElement[] = [];
         box = dialogueBox("", "dialogue-box");
         applyDialogueLook(overlay, box, look);
+        const vnLook = applyVnLook(overlay, resolveVnLook(store.getCurrent()));
         position = applyTextSettings(overlay, box, request);
         applyDialoguePresentation(box, profile);
         applyDialogueScrim(scrim, profile, position);
-        const baseFace = look.hideFace || balloon ? undefined : request.face;
+        const baseFace = look.hideFace || balloon || !vnLookShowsPortraits(vnLook) ? undefined : request.face;
         // 공용 흉상·전신이면 줄의 표정으로 같은 모양의 표정 그림을 고른다(sharedPortraitAssets.ts).
         const lineFaceId = baseFace ? dialogueFaceForEmotion(baseFace.resourceId, look.emotion, look.expressionFace) : undefined;
         faceForLine = baseFace && lineFaceId && lineFaceId !== baseFace.resourceId ? { ...baseFace, resourceId: lineFaceId } : baseFace;
@@ -1055,6 +1057,8 @@ export function createDialogueUI(
       const lineKey = dialogueReadKey(recorded?.speaker, recorded?.text ?? "");
       // 빈 글(제어 태그뿐)은 읽을 것이 없으니 읽은 글로 친다.
       const wasRead = !recorded || (system !== undefined && sessionHost !== undefined && isDialogueRead(sessionHost, lineKey));
+      // 읽은 글 색 구분(vnLook readColor) — 이미 읽은 줄의 상자에 표시만 심는다. 색은 src/styles/vnLook.css.
+      if (wasRead && recorded) box.dataset.vnReadLine = "1";
       if (system?.skip.enabled && sessionHost && recorded) markDialogueRead(sessionHost, lineKey);
       const lockedLine = segmentsAll.some((segment) => segment.controlsBefore?.some((control) => control.kind === "lock" && control.on) === true);
       let readTimer = 0;
@@ -1325,6 +1329,7 @@ export function createDialogueUI(
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
       applyDialogueLook(overlay, choicesWindow, request.look ?? resolveDialogueLook(store.getCurrent()));
+      applyVnLook(overlay, resolveVnLook(store.getCurrent()));
       applyTextSettings(overlay, choicesWindow, request, position);
       const choicesProfile = dialoguePresentationProfile(undefined, {
         reducedMotion: resolveReducedMotion(undefined),
@@ -1813,7 +1818,8 @@ function logicalHostWidth(host: HTMLElement): number {
  * 그때만 상수로 되돌린다.
  */
 function dialogueMaxLines(bodyEl: HTMLElement): number {
-  const cap = bodyEl.closest('[data-monster-style="emerald"]') ? 2 : DIALOGUE_VISIBLE_LINES;
+  // 풀스크린 글 페이지(vnLook layout=page)는 상자가 화면을 채우므로 한 페이지에 여러 줄(상한 9)이 들어간다.
+  const cap = bodyEl.closest('[data-monster-style="emerald"]') ? 2 : bodyEl.closest('[data-vn-layout="page"]') ? 9 : DIALOGUE_VISIBLE_LINES;
   return Math.min(cap, derivedDialogueMaxLines(bodyEl));
 }
 
@@ -1966,6 +1972,24 @@ function applyDialogueLook(overlay: HTMLElement, box: HTMLElement, look: Dialogu
   // 외침은 감정 흔들림과 같은 규칙을 탄다 — 움직임 줄이기 안전망도 그대로 받는다.
   if (look.shake) box.dataset.dialogueShake = "1";
   if (look.font) box.style.setProperty("--runtime-dialogue-font", resolveFontStack(look.font));
+}
+
+const vnVarNames = new WeakMap<HTMLElement, readonly string[]>();
+
+/**
+ * 미연시 대사창 룩(meta.oprnVnLook · 연애 기본 룩)을 오버레이에 심는다. 룩이 없으면 이전 값을 걷어 옛 대사창 그대로 둔다.
+ * 해석은 src/project/vnLook.ts 한 곳, 모양은 src/styles/vnLook.css 한 곳이다.
+ */
+function applyVnLook(overlay: HTMLElement, look: ResolvedVnLook | undefined): ResolvedVnLook | undefined {
+  for (const key of Object.keys(overlay.dataset)) if (key.startsWith("vn")) delete overlay.dataset[key];
+  for (const name of vnVarNames.get(overlay) ?? []) overlay.style.removeProperty(name);
+  vnVarNames.delete(overlay);
+  if (!look) return undefined;
+  const attrs = vnLookAttributes(look);
+  for (const [key, value] of Object.entries(attrs.dataset)) overlay.dataset[key] = value;
+  for (const [name, value] of Object.entries(attrs.vars)) overlay.style.setProperty(name, value);
+  vnVarNames.set(overlay, Object.keys(attrs.vars));
+  return look;
 }
 
 function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings): MessageWindowPosition {

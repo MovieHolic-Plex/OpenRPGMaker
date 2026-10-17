@@ -110,6 +110,8 @@
 대사 위주 관계 게임은 지난 대사를 다시 읽는 백로그, 오토·스킵·숨기기를 기본으로 제공한다. 관계 중심(연애) 프로젝트에는 이미 전부 켜져 있어 새로 구현하지 않고 read_game_systems의 dialogueSystem을 읽어 확인한다. 끄거나 조정할 때만 set_dialogue_system을 쓰며(필요한 칸만: backlog·backlogLimit·auto·skip·hideButton·language·defaults), ESC 메뉴의 백로그 항목은 configure_field_menu로 넣는다. 스킵은 선택지·엔딩·넘기기금지 글에서 항상 멈추고 이는 설정이 아니다. 검수는 백로그에 방금 읽은 줄과 고른 선택지 원문이 남는지, 저장·재로드 뒤에도 남는지, 오토·스킵이 선택지 앞에서 멈추는지를 실제로 관측한다.
 갤러리·엔딩 목록·세이브 카드도 같은 방식이다. 관계 중심(연애) 프로젝트에는 잠긴 CG 칸 표시와 본 엔딩 회상, 저작된 엔딩 정의를 읽어 자동으로 채우는 엔딩 목록(인물별·결말 3종 체크리스트), 저장 칸의 마지막 대사 한 줄이 이미 켜져 있다. read_game_systems의 vnExtras를 읽어 확인하고, 끄거나 조정할 때만 set_vn_extras를 쓴다(gallery·galleryShowLocked·endings·endingsHideUnseen·saveCards·language). 새 그림은 만들지 않는다 — 갤러리 칸은 showPicture recordInGallery로 저작된 그림, 엔딩 목록은 저작된 엔딩 정의이므로 둘 다 없으면 비어 보인다. 검수는 클리어 기록이 없는 새 기기에서 엔딩이 「???」로 가려지는지, 엔딩을 본 뒤 달성 표시와 회상이 열리는지, 저장 칸에 날짜와 마지막 대사가 나오고 재로드 뒤에도 남는지를 실제로 관측한다.
 
+대사창의 룩(스킨)도 같은 방식이다. 연애 프로젝트에는 소재(캠퍼스·카페·사무실·바닷가·학원)에 맞는 룩이 이미 자동으로 켜져 있어 read_game_systems의 vnLook(authored/effective/source)을 읽어 확인하고, 사용자가 말투·분위기·글자 크기를 바꾸라고 할 때만 set_vn_look 을 쓴다. 인자는 정해진 값(프리셋·이름표·선택지·대기 표시·글자 크기)뿐이고 새 그림은 만들지 않는다.
+
 ## R16 다른 장르와 관계의 연결
 입력: secondary와 사용자가 선택한 blend 원문.
 실행: 다른 장르의 행동 결과가 관계의 조건과 반응으로 이어지도록 실제 상태 연결을 구현한다.

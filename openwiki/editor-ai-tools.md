@@ -3430,3 +3430,15 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 연애(관계 중심) 게임은 저작 없이 세 기능이 이미 켜져 있다 — `read_game_systems` 의 `vnExtras`(authored/effective/source/gallerySlots/endings)를 먼저 읽는다. 새 그림은 만들지 않는다: 갤러리 칸 = `showPicture recordInGallery` 그림, 엔딩 목록 = 저작된 엔딩 정의.
 - `configure_field_menu` 로 갤러리·엔딩 항목을 넣으면 해당 기능도 같이 켠다(조용히 안 보이는 항목 방지). `review_game_systems`(issues)는 메뉴 항목과 기능 불일치, 엔딩 정의·CG 없음, 세이브 카드인데 백로그 꺼짐을 지적한다.
 - 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(갤러리·엔딩 목록·세이브 카드 낱말), `gameSystemProduction.ts`, `scripts/lib/piAgentRuntime.ts`(선언 낱말·시스템 프롬프트 한 문단), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단(+ `documents.json` 재생성: `node scripts/content/prepare-game-authoring-presets.mjs`), 연애 프리셋 `romancePreset.ts`.
+
+## `set_vn_look` — 미연시 대사창 룩(프리셋·이름표·선택지·대기 표시·글자) (2026-10-17, vn-look-1)
+
+- 정본 저작 데이터는 `project.meta.oprnVnLook`(`src/project/vnLook.ts`, v1, 저장 시 `validateVnLook`). 해석 함수 한 곳(`resolveVnLook` → `vnLookAttributes`)이 오버레이의 `data-vn-*` 속성과 `--vn-*` 변수를 만들고, 모양은 `src/styles/vnLook.css` 한 파일이 가진다. 새 그림·글꼴 파일은 없다(CSS 만, 종이 줄무늬도 그라데이션).
+- 프리셋 8: `bar-tab`(반투명 바+이름 탭) `sakura-card`(파스텔 둥근 카드·하트) `paper-note`(따뜻한 종이) `office-bar`(깔끔한 그레이) `sea-glass`(청량한 바다 유리) `night-glass`(다크 글라스·금) `nvl-page`(풀스크린 글 페이지, 초상 숨김) `bubble`(말풍선). 소재 → 기본: campus→sakura-card, cafe→paper-note, office→office-bar, seaside→sea-glass, academy→night-glass.
+- **옵트인**: 저작이 없으면 관계 중심(연애) 프로젝트만 소재별 기본 룩(`source:"setting-default"`, 소재는 기획서·제목·시작 맵 이름에서 `detectVnSetting`)을 받고, 그 밖의 프로젝트는 `undefined` = 옛 대사창 그대로(속성·변수 하나도 안 심음). 저작이 있으면 어떤 장르든 그대로 쓴다. 옛 프로젝트·옛 저장은 필드가 없을 뿐이라 로드·재생에 영향이 없다.
+- 도구 인자는 enum 만(자유 키 객체 없음, `additionalProperties:false`): `preset`(+`default`=저작 삭제) `setting` `nameplate`(tab|pill|ribbon|preset) `choiceStyle`(bar|card|bubble|preset) `waitIcon`(arrow|heart|dot|preset) `fontScale`(small|normal|large) `lineSpacing` `letterSpacing` `readColor` `portraitEntrance`(none|fade|slide) `uiTheme`(match|legacy). 모르는 인자·범위 밖 값은 힌트가 붙은 `invalid-args`. preset/setting 을 주면 이름표·선택지·대기 표시 저작은 새 프리셋 기본으로 돌아가고, 글자 설정은 유지된다. 「카페 연애 게임인데 따뜻한 느낌」=`{setting:"cafe"}`, 「파스텔 카드」=`{preset:"sakura-card"}`, 「텍스트 크게」=`{fontScale:"large"}`.
+- 흉상 배치 규칙(같은 날 PR #2814): 흉상·전신은 상자 위(위쪽 창이면 아래)에 서고 글 폭을 줄이지 않는다(`--runtime-dialogue-bust-text-reserve: 0`). 가운데 창은 흉상을 남는 높이(78px)에 맞춘다. 풀스크린 글 페이지는 초상을 숨긴다.
+- ESC 메뉴(스킨 pixel)는 `uiTheme:"match"` 일 때 같은 `--vn-*` 색·모서리·그림자를 `--px-*` 토큰으로 받는다(`playerStatusMenu.ts` 가 루트에 `data-vn-theme`·변수를 심고 `vnLook.css` 하단이 매핑). 저장·불러오기 전용 패널과 설정 화면의 토큰 연결은 아직이다.
+- 편집기 UI는 이 데이터·`validateVnLook`·순수 함수(`resolveVnLook`, `mergeVnLook`, `vnLookAttributes`, `VN_PRESETS` 표)만 가져다 쓴다 — 미리보기도 같은 해석 함수를 쓴다.
+- 연결 지점: `aiToolLabels.ts`, `toolAliases.ts`(대사창 스킨·파스텔·글자 크게 낱말), `gameSystemProduction.ts`(요청 패턴·완료 가드), `scripts/lib/piAgentRuntime.ts`, `read_game_systems` 의 `vnLook`(authored/effective/source), 안내 문서 `gameAuthoringPresets/romance.md` 한 문단, 시험 `test/vnLook.test.ts`, 증거 QA `scripts/qa/runtime/vn-matrix*.scenario.mjs`(`vn-matrix-fixture.mts <dir> look '<oprnVnLook json>'`).
+

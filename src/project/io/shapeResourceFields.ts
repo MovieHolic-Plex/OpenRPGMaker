@@ -3,6 +3,7 @@ import { isShopUiPreset } from '../shopUiPresets';
 import { validateFieldMenu } from '../fieldMenu';
 import { validateDialogueSystem } from '../dialogueSystem';
 import { validateVnExtras } from '../vnExtras';
+import { validateVnLook } from '../vnLook';
 import { validateMusicScore } from '../musicScore';
 import { validateOpeningPortraitMotion } from '../openingPortraitMotion';
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
@@ -48,6 +49,7 @@ export function validateMeta(value: unknown): void {
   if (meta.oprnFieldMenu !== undefined) validateFieldMenu(meta.oprnFieldMenu);
   if (meta.oprnDialogueSystem !== undefined) validateDialogueSystem(meta.oprnDialogueSystem);
   if (meta.oprnVnExtras !== undefined) validateVnExtras(meta.oprnVnExtras);
+  if (meta.oprnVnLook !== undefined) validateVnLook(meta.oprnVnLook);
   if(meta.oprnMenuSounds!==undefined) {
     const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);
     assert(Object.keys(sounds).every(k=>['cursor','confirm','cancel'].includes(k)),'Unknown menu sound cue');

@@ -1,0 +1,334 @@
+/* === 미연시 대사창 룩(프리셋) — 2026-10-17, vn-look-1 ===
+   숫자·색의 정본은 src/project/vnLook.ts 의 프리셋 표다. 여기서는 오버레이의 data-vn-* 속성과 --vn-* 변수만 읽는다.
+   저작(meta.oprnVnLook)도, 연애 기본 룩도 없으면 이 파일의 어떤 규칙도 걸리지 않는다(옛 프로젝트 바이트 불변).
+   속성 선택자를 겹쳐 쓴 것은 dialogueStyles.css 의 `[data-dialogue-style]:not([glass])` 규칙(특이도 0,5,0)을 이기기 위해서다.
+   상자 padding 은 건드리지 않는다 — 페이지 나누기가 렌더 뒤 칸 높이를 재서 줄 수를 정한다(dialoguePagination.ts). */
+
+/* ── 글자 ── */
+.dialogue-overlay[data-vn-look][data-vn-look] {
+  --runtime-dialogue-text: var(--vn-text);
+  --runtime-dialogue-font-size: calc(var(--runtime-font-size-9) * var(--vn-font-scale, 1));
+  --vn-name-h: calc(var(--runtime-dialogue-font-size) * 1.9);
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .body {
+  color: var(--vn-text);
+  letter-spacing: var(--vn-letter-spacing, 0);
+  line-height: var(--vn-line-height, 1.5);
+  text-shadow: var(--vn-text-shadow, none);
+}
+
+/* 읽은 글 색 구분 — dialogue.ts 가 이미 읽은 줄의 상자에 data-vn-read-line 을 심는다. */
+.dialogue-overlay[data-vn-look][data-vn-read="on"] .dialogue-box[data-vn-read-line="1"] .body {
+  color: var(--vn-text-read);
+}
+
+/* ── 상자 ── */
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box:not(.transparent):not(.choices-prompt) {
+  backdrop-filter: var(--vn-blur, none);
+  background: var(--vn-bg);
+  border: var(--vn-border-width) solid var(--vn-border);
+  border-image: none;
+  border-radius: var(--vn-radius);
+  box-shadow: var(--vn-shadow);
+  color: var(--vn-text);
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box::before {
+  display: none;
+}
+
+/* 종이 노트: 가로 줄 무늬(CSS 그라데이션만). */
+.dialogue-overlay[data-vn-look="paper-note"][data-vn-look] .dialogue-box:not(.transparent):not(.choices-prompt) {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 calc(var(--runtime-dialogue-font-size) * 1.5 - 1px), rgba(150, 110, 60, 0.16) calc(var(--runtime-dialogue-font-size) * 1.5 - 1px) calc(var(--runtime-dialogue-font-size) * 1.5)),
+    var(--vn-bg);
+}
+
+/* ── 이름표 — 세 가지 ── */
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  align-items: center;
+  background: var(--vn-name-bg);
+  border: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--vn-name-text);
+  display: inline-flex;
+  font-weight: 700;
+  height: var(--vn-name-h);
+  left: 10px;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 0 10px;
+  text-shadow: none;
+}
+
+/* tab: 상자 윗변 바로 위에 붙은 탭(Ren'Py 기본 namebox 문법). */
+.dialogue-overlay[data-vn-name="tab"][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  border-radius: 4px 4px 0 0;
+  top: calc(-1 * var(--vn-name-h) + var(--vn-border-width));
+}
+
+/* pill: 윗변에 반쯤 걸친 둥근 알약. */
+.dialogue-overlay[data-vn-name="pill"][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  top: calc(-0.55 * var(--vn-name-h));
+}
+
+/* ribbon: 오른쪽이 비스듬히 잘린 리본. */
+.dialogue-overlay[data-vn-name="ribbon"][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 7px) 100%, 0 100%);
+  padding-right: 16px;
+  top: calc(-1 * var(--vn-name-h) + var(--vn-border-width));
+}
+
+/* 위쪽 창은 상자 위가 화면 밖이라 이름표를 상자 안쪽 윗줄로 내린다(글 시작점은 reserveSpeakerInset 이 이름표 높이만큼 내려 준다). */
+.dialogue-overlay[data-vn-look][data-vn-look].position-top .dialogue-box .speaker.speaker-nameplate {
+  border-radius: 6px;
+  clip-path: none;
+  left: 8px;
+  top: 4px;
+}
+
+/* ── 대기 표시(다음 쪽 ▼) 세 가지 ── */
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-page-cursor {
+  background: var(--vn-accent);
+}
+
+.dialogue-overlay[data-vn-wait="heart"][data-vn-look] .dialogue-page-cursor {
+  clip-path: polygon(50% 100%, 8% 55%, 0 30%, 6% 10%, 22% 0, 40% 6%, 50% 20%, 60% 6%, 78% 0, 94% 10%, 100% 30%, 92% 55%);
+  height: 9px;
+  width: 10px;
+}
+
+.dialogue-overlay[data-vn-wait="dot"][data-vn-look] .dialogue-page-cursor {
+  clip-path: circle(50% at 50% 50%);
+  height: 7px;
+  width: 7px;
+}
+
+/* ── 레이아웃 ── */
+/* bar: 전폭 바. 가장자리까지 닿고 모서리는 직각, 테두리는 장면 쪽 한 변만. */
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look] {
+  padding-inline: 0;
+}
+
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-bottom {
+  padding-bottom: 0;
+}
+
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top {
+  padding-top: 0;
+}
+
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look] .dialogue-box:not(.transparent):not(.choices-prompt) {
+  border-width: var(--vn-border-width) 0 0 0;
+}
+
+.dialogue-overlay[data-vn-layout="bar"][data-vn-look].position-top .dialogue-box:not(.transparent):not(.choices-prompt) {
+  border-width: 0 0 var(--vn-border-width) 0;
+}
+
+/* card: 안쪽으로 들어온 둥근 카드. */
+.dialogue-overlay[data-vn-layout="card"][data-vn-look].position-bottom {
+  padding-bottom: 10px;
+}
+
+/* bubble: 가운데로 모인 말풍선과 꼬리. */
+.dialogue-overlay[data-vn-layout="bubble"][data-vn-look] .dialogue-box:not(.choices) {
+  margin-inline: auto;
+  max-width: 88%;
+}
+
+.dialogue-overlay[data-vn-layout="bubble"][data-vn-look].position-bottom {
+  padding-bottom: 14px;
+}
+
+.dialogue-overlay[data-vn-layout="bubble"][data-vn-look] .dialogue-box:not(.choices):not(.transparent)::after {
+  border: 7px solid transparent;
+  border-bottom: 0;
+  border-top-color: var(--vn-bg-strong);
+  bottom: -7px;
+  content: "";
+  display: block;
+  height: 0;
+  left: 26px;
+  position: absolute;
+  width: 0;
+}
+
+.dialogue-overlay[data-vn-layout="bubble"][data-vn-look].position-top .dialogue-box:not(.choices):not(.transparent)::after {
+  border-bottom: 7px solid var(--vn-bg-strong);
+  border-top: 0;
+  bottom: auto;
+  top: -7px;
+}
+
+/* page(NVL): 화면 전체를 덮는 글 페이지. 초상은 숨기고 이름은 첫 줄 머리말이 된다. */
+.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) {
+  bottom: 0;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 12px 14px;
+  top: 0;
+  transform: none;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-box:not(.transparent) {
+  border-width: 0;
+  flex: 1 1 auto;
+  min-height: 100%;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look] .dialogue-face,
+.dialogue-overlay[data-vn-layout="page"][data-vn-look] .dialogue-face-behind {
+  display: none;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look][data-vn-look] .dialogue-box .speaker.speaker-nameplate {
+  background: transparent;
+  border-radius: 0;
+  clip-path: none;
+  left: 6px;
+  padding: 0;
+  top: 4px;
+}
+
+.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-gold-window,
+.dialogue-overlay[data-vn-layout="page"][data-vn-look]:not(.choices-active) .dialogue-bar {
+  bottom: auto;
+  top: 4px;
+}
+
+/* ── 선택지 단추 세 가지 ── */
+.dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-prompt-row {
+  border-bottom-color: var(--vn-border);
+  color: var(--vn-accent-ink);
+  text-shadow: none;
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-list .choice-btn {
+  color: var(--vn-text);
+  text-shadow: var(--vn-text-shadow, none);
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-list .choice-btn.selected,
+.dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-list .choice-btn:focus-visible {
+  background: var(--vn-accent);
+  border-color: var(--vn-accent);
+  box-shadow: none;
+  color: var(--vn-accent-text);
+  text-shadow: none;
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look].choices-active .choice-list .choice-btn.selected::before {
+  color: var(--vn-accent-text);
+}
+
+/* bar: 한 줄씩 가로로 꽉 찬 행. */
+.dialogue-overlay[data-vn-choice="bar"][data-vn-look].choices-active .choice-list .choice-btn {
+  border-radius: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--vn-border) 60%, transparent);
+}
+
+/* card: 간격을 둔 카드 단추. */
+.dialogue-overlay[data-vn-choice="card"][data-vn-look].choices-active .choice-list {
+  gap: 2px;
+}
+
+.dialogue-overlay[data-vn-choice="card"][data-vn-look].choices-active .choice-list .choice-btn {
+  background: var(--vn-bg-strong);
+  border: 1px solid var(--vn-border);
+  border-radius: max(2px, calc(var(--vn-radius) * 0.6));
+  padding-block: 2px;
+}
+
+/* bubble: 알약형 말풍선 단추, 가운데 정렬. */
+.dialogue-overlay[data-vn-choice="bubble"][data-vn-look].choices-active .choice-list {
+  align-items: center;
+  gap: 2px;
+}
+
+.dialogue-overlay[data-vn-choice="bubble"][data-vn-look].choices-active .choice-list .choice-btn {
+  background: var(--vn-bg-strong);
+  border: 1px solid var(--vn-border);
+  border-radius: 999px;
+  padding-block: 2px;
+  text-align: center;
+  width: 92%;
+}
+
+.dialogue-overlay[data-vn-choice="bubble"][data-vn-look].choices-active .choice-list .choice-btn.selected::before {
+  display: none;
+}
+
+/* ── 읽기 단추 줄(오토·스킵·백로그·숨기기) ── */
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn {
+  background: var(--vn-bg-strong);
+  border-color: var(--vn-border);
+  color: var(--vn-text);
+  text-shadow: none;
+}
+
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn[aria-pressed="true"],
+.dialogue-overlay[data-vn-look][data-vn-look] .dialogue-bar-btn.is-on {
+  background: var(--vn-accent);
+  border-color: var(--vn-accent);
+  color: var(--vn-accent-text);
+}
+
+/* ── 초상 입퇴장 ── */
+@media (prefers-reduced-motion: no-preference) {
+  .dialogue-overlay[data-vn-enter="fade"][data-vn-look] .dialogue-face-bust {
+    animation: vn-face-fade 260ms ease-out both;
+  }
+
+  .dialogue-overlay[data-vn-enter="slide"][data-vn-look] .dialogue-face-bust.dialogue-face-side-left {
+    animation: vn-face-slide-left 280ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
+  }
+
+  .dialogue-overlay[data-vn-enter="slide"][data-vn-look] .dialogue-face-bust.dialogue-face-side-right {
+    animation: vn-face-slide-right 280ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
+  }
+}
+
+.dialogue-overlay[data-vn-enter="none"][data-vn-look] .dialogue-face-bust {
+  animation: none;
+}
+
+/* 개별 속성 translate 를 쓴다 — 뒤집기(transform: scaleX(-1))와 부딪히지 않는다. */
+@keyframes vn-face-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes vn-face-slide-left {
+  from { opacity: 0; translate: -18px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes vn-face-slide-right {
+  from { opacity: 0; translate: 18px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* ── ESC 메뉴·저장·불러오기·설정: 같은 색·모서리·그림자 토큰(UI 테마 match) ──
+   기본 도트 창 스킨(pixel)이 쓰는 --px-* 토큰을 프리셋 색으로 바꾼다. 다른 메뉴 스킨을 저작자가 골랐다면 그대로 둔다. */
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-vn-theme="match"] {
+  --px-surface: var(--vn-bg-strong);
+  --px-stage: var(--vn-stage);
+  --px-edge: var(--vn-border);
+  --px-edge-shadow: var(--vn-shadow);
+  --px-line: var(--vn-border);
+  --px-ink: var(--vn-text);
+  --px-ink-dim: var(--vn-text-read);
+  --px-ink-faint: var(--vn-text-read);
+  --px-accent: var(--vn-accent-ink);
+  --px-accent-soft: color-mix(in srgb, var(--vn-accent) 22%, transparent);
+  --px-shadow: var(--vn-text-shadow, none);
+}
+
+.oprn-status-menu.main-menu[data-menu-skin="pixel"][data-vn-theme="match"] :is(.status-menu-party-overview, .status-menu-primary-dock, .status-menu-detail, .status-menu-party, .status-menu-footer, .status-menu-gold, .status-menu-time, .status-menu-location) {
+  border-radius: var(--vn-radius);
+}

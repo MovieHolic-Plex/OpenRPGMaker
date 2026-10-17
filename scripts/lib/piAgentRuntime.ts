@@ -592,7 +592,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
   if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}
-  if (GAME_SYSTEM_REQUEST_PATTERN.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','set_dialogue_system','set_vn_extras','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
+  if (GAME_SYSTEM_REQUEST_PATTERN.test(request.task)) for (const name of ['read_game_systems','set_sell_prices','configure_shop_presentation','configure_field_menu','set_dialogue_system','set_vn_extras','set_vn_look','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
   for (const name of PI_PRESENTATION_GENERATORS) {
     if (!registryTools.some(tool => tool.name === name)) continue;
     const shape = shapeFor(name);

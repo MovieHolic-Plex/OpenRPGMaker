@@ -7,6 +7,10 @@ import {
   backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type DialogueSystemPatch,
 } from '@/project/dialogueSystem';
 import { galleryActive, mergeVnExtras, resolveVnExtras, romanceVnExtras, validateVnExtras, listGallerySlots, listEndingRows, type VnExtrasPatch } from '@/project/vnExtras';
+import {
+  VN_CHOICE_STYLES, VN_FONT_SCALES, VN_LETTER_SPACINGS, VN_LINE_SPACINGS, VN_NAMEPLATES, VN_PORTRAIT_ENTRANCES, VN_PRESETS, VN_PRESET_IDS, VN_SETTINGS, VN_UI_THEMES, VN_WAIT_ICONS,
+  mergeVnLook, resolveVnLook, validateVnLook, type AuthoredVnLook, type VnLookPatch,
+} from '@/project/vnLook';
 import { validateMonsterCampaign } from '@/project/io/shapeMonsterCampaign';
 import { monsterCampaign } from '@/project/monsterJournal';
 import { defaultObedienceCaps } from '@/project/badgeProgress';
@@ -47,6 +51,7 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
   battle:{collection:p.system.monsterCollection===true,party:p.system.battleParty??(p.system.monsterBattleParty?'monsters':'actors'),rules:p.system.battleModel??'rm2k3',skin:p.system.battleUiStyle},
   fieldMenu:{style:p.system.fieldHud?.menuStyle&&p.system.fieldHud.menuStyle!=='project'?p.system.fieldHud.menuStyle:p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
   dialogueSystem:{authored:p.meta.oprnDialogueSystem??null,effective:resolveDialogueSystem(p)??null,source:p.meta.oprnDialogueSystem?'authored':resolveDialogueSystem(p)?'relationship-default':'legacy-none'},
+  vnLook:{authored:p.meta.oprnVnLook??null,effective:(()=>{const l=resolveVnLook(p);return l?{preset:l.preset,layout:l.layout,nameplate:l.nameplate,choiceStyle:l.choiceStyle,waitIcon:l.waitIcon,fontScale:l.fontScale,lineSpacing:l.lineSpacing,letterSpacing:l.letterSpacing,readColor:l.readColor,portraitEntrance:l.portraitEntrance,uiTheme:l.uiTheme}:null;})(),source:p.meta.oprnVnLook?'authored':resolveVnLook(p)?'relationship-default':'legacy-none'},
   vnExtras:{authored:p.meta.oprnVnExtras??null,effective:resolveVnExtras(p)??null,source:p.meta.oprnVnExtras?'authored':resolveVnExtras(p)?'relationship-default':'legacy-none',gallerySlots:listGallerySlots(p).length,endings:listEndingRows(p,[]).length},
   shop:{sellPriceOverrides:p.system.sellPrices??[],projectPreset:p.meta.oprnShopPreset??null,eventPresetCounts:(()=>{const counts:Record<string,number>={};const walk=(commands:unknown[])=>{for(const raw of commands){if(!raw||typeof raw!=='object')continue;const command=raw as Record<string,unknown>;if(command.kind==='shop'){const preset=effectiveShopUiPreset(command as {shopUiPreset?:import('@/project/types').ShopUiPreset},p);counts[preset]=(counts[preset]??0)+1;}for(const v of Object.values(command))if(Array.isArray(v))walk(v);}};for(const map of Object.values(p.maps))for(const event of map.events)for(const page of event.pages??[])walk(page.commands);return counts;})()},
   hud:p.system.fieldHud, campaign:c?{id:c.id,name:c.name,species:c.speciesIds.length,badges:c.badges.length,locations:c.locations.length,objectives:c.objectives.length}:null,
@@ -186,6 +191,53 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(next.saveCards.enabled&&!backlogEnabled(p))notice.push('대사 백로그가 꺼져 있어 세이브 카드에 대사 한 줄은 나오지 않습니다');
     if(next.gallery.enabled&&listGallerySlots(p).length===0)notice.push('recordInGallery 로 기록되는 그림이 없어 CG 칸이 비어 있습니다');
     return {summary:`미연시 추가 화면을 저장했습니다(갤러리 ${next.gallery.enabled?(next.gallery.showLocked?'켜짐·잠금 표시':'켜짐·잠금 숨김'):'꺼짐'}, 엔딩 목록 ${next.endings.enabled?(next.endings.hideUnseen?'켜짐·미달성 가림':'켜짐·이름 공개'):'꺼짐'}, 세이브 카드 ${next.saveCards.enabled?'켜짐':'꺼짐'}, 언어 ${next.language??'대사 시스템을 따름'})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 검증은 별도입니다.`,data:systemView(p)};
+  }),
+  tool('set_vn_look','미연시(연애 비주얼노벨) 대사창의 룩(스킨)을 고른다. 한 번에 프리셋 하나 + 이름표·선택지 단추·대기 표시·글자 크기/줄 간격/자간·읽은 글 색·초상 등장 연출·ESC 메뉴 색 테마를 바꾼다. 주어진 칸만 바꾼다. 새 그림·글꼴 파일은 쓰지 않는다(CSS 만). 프리셋: '+VN_PRESET_IDS.map(id=>`${id}(${VN_PRESETS[id].label})`).join(', ')+'. 소재만 말하면 setting 을 준다 — campus→벚꽃 파스텔 카드, cafe→따뜻한 종이 노트, office→깔끔한 그레이 바, seaside→청량한 바다 유리, academy→다크 글라스. 「카페 연애 게임인데 따뜻한 느낌」 = {setting:"cafe"}, 「파스텔 카드」 = {preset:"sakura-card"}, 「텍스트 크게」 = {fontScale:"large"}. 연애·관계 중심 게임은 소재에 맞는 룩이 이미 자동으로 켜져 있어 호출이 필요 없고, 바꾸거나 다른 장르에 켤 때만 쓴다. preset 이나 setting 을 주면 이름표·선택지·대기 표시는 그 프리셋 기본으로 돌아간다(같이 주면 그 값이 이긴다). preset:"default" 만 주면 저작을 지우고 자동 판정(연애 게임은 소재 기본 룩, 그 밖은 옛 대사창)으로 되돌린다. ESC 메뉴의 색 테마는 uiTheme:"match"(대사창과 같은 색·모서리, 기본) 또는 "legacy"(기존 청색 창).','write',schema({
+    preset:{type:'string',enum:[...VN_PRESET_IDS,'default'],description:'대사창 프리셋. default 는 저작 삭제(자동 판정으로 복귀).'},
+    setting:{type:'string',enum:[...VN_SETTINGS],description:'게임의 소재(분위기). 그 소재에 어울리는 프리셋을 고른다. preset 이 같이 오면 preset 이 이긴다.'},
+    nameplate:{type:'string',enum:[...VN_NAMEPLATES,'preset'],description:'이름표 모양: tab(윗변 탭)|pill(둥근 알약)|ribbon(비스듬한 리본). preset 은 프리셋 기본으로.'},
+    choiceStyle:{type:'string',enum:[...VN_CHOICE_STYLES,'preset'],description:'선택지 단추: bar(가로 행)|card(카드)|bubble(알약 풍선). preset 은 프리셋 기본으로.'},
+    waitIcon:{type:'string',enum:[...VN_WAIT_ICONS,'preset'],description:'다음 쪽 대기 표시: arrow(▼)|heart(하트)|dot(점). preset 은 프리셋 기본으로.'},
+    fontScale:{type:'string',enum:[...VN_FONT_SCALES],description:'글자 크기: small|normal|large(대사창 글자만, 해상도·다른 화면은 그대로).'},
+    lineSpacing:{type:'string',enum:[...VN_LINE_SPACINGS],description:'줄 간격 tight|normal|loose.'},
+    letterSpacing:{type:'string',enum:[...VN_LETTER_SPACINGS],description:'자간 tight|normal|wide.'},
+    readColor:{type:'boolean',description:'이미 읽은 글을 옅은 색으로 구분(스킵·다시 읽기에 유용). 기본 true.'},
+    portraitEntrance:{type:'string',enum:[...VN_PORTRAIT_ENTRANCES],description:'흉상 초상이 나타나는 연출 none|fade|slide.'},
+    uiTheme:{type:'string',enum:[...VN_UI_THEMES],description:'ESC 메뉴 색 테마. match=대사창 룩과 같은 색·모서리·그림자, legacy=기존 청색 창.'},
+  },[]),(p,args)=>{
+    const fail=(message:string):never=>{throw new ToolError(message,{code:'invalid-args'});};
+    const allowed=['preset','setting','nameplate','choiceStyle','waitIcon','fontScale','lineSpacing','letterSpacing','readColor','portraitEntrance','uiTheme'];
+    const unknown=Object.keys(args).filter(k=>!allowed.includes(k));
+    if(unknown.length)fail(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${allowed.join(', ')}.`);
+    if(Object.keys(args).length===0)fail('바꿀 내용이 없습니다. 예: {setting:"cafe"} · {preset:"sakura-card"} · {fontScale:"large"}');
+    const oneOf=(key:string,list:readonly string[],extra:readonly string[]=[])=>{if(args[key]!==undefined&&!list.includes(String(args[key]))&&!extra.includes(String(args[key])))fail(`${key} 는 ${[...list,...extra].join('|')} 중 하나여야 합니다. 받은 값: ${JSON.stringify(args[key])}.`);};
+    oneOf('preset',VN_PRESET_IDS,['default']);oneOf('setting',VN_SETTINGS);oneOf('nameplate',VN_NAMEPLATES,['preset']);oneOf('choiceStyle',VN_CHOICE_STYLES,['preset']);oneOf('waitIcon',VN_WAIT_ICONS,['preset']);
+    oneOf('fontScale',VN_FONT_SCALES);oneOf('lineSpacing',VN_LINE_SPACINGS);oneOf('letterSpacing',VN_LETTER_SPACINGS);oneOf('portraitEntrance',VN_PORTRAIT_ENTRANCES);oneOf('uiTheme',VN_UI_THEMES);
+    if(args.readColor!==undefined&&typeof args.readColor!=='boolean')fail(`readColor 는 true/false 여야 합니다(문자열 "true" 가 아님). 받은 값: ${JSON.stringify(args.readColor)}.`);
+    if(args.preset==='default'&&Object.keys(args).length===1){
+      delete p.meta.oprnVnLook;
+      const now=resolveVnLook(p);
+      return {summary:`미연시 대사창 룩 저작을 지웠습니다. 이제 자동 판정입니다(${now?`관계 중심 게임이라 소재 기본 룩 ${now.preset}`:'옛 대사창 그대로'}).`,data:systemView(p)};
+    }
+    if(args.preset==='default')fail('preset:"default" 는 저작을 지우는 값이라 다른 인자와 함께 줄 수 없습니다. 프리셋 id 를 고르세요.');
+    const patch:VnLookPatch={
+      ...(args.preset!==undefined?{preset:args.preset as VnLookPatch['preset']}:{}),...(args.setting!==undefined?{setting:args.setting as VnLookPatch['setting']}:{}),
+      ...(args.nameplate!==undefined?{nameplate:args.nameplate as VnLookPatch['nameplate']}:{}),...(args.choiceStyle!==undefined?{choiceStyle:args.choiceStyle as VnLookPatch['choiceStyle']}:{}),...(args.waitIcon!==undefined?{waitIcon:args.waitIcon as VnLookPatch['waitIcon']}:{}),
+      ...(args.fontScale!==undefined?{fontScale:args.fontScale as VnLookPatch['fontScale']}:{}),...(args.lineSpacing!==undefined?{lineSpacing:args.lineSpacing as VnLookPatch['lineSpacing']}:{}),...(args.letterSpacing!==undefined?{letterSpacing:args.letterSpacing as VnLookPatch['letterSpacing']}:{}),
+      ...(args.readColor!==undefined?{readColor:args.readColor as boolean}:{}),...(args.portraitEntrance!==undefined?{portraitEntrance:args.portraitEntrance as VnLookPatch['portraitEntrance']}:{}),...(args.uiTheme!==undefined?{uiTheme:args.uiTheme as VnLookPatch['uiTheme']}:{}),
+    };
+    // 지금 보이는 룩(저작이 없으면 소재 기본 룩)을 출발점으로 삼는다. 프리셋을 바꾸면 이름표·선택지·대기 표시 저작은 새 프리셋 기본으로 돌아간다.
+    const current:AuthoredVnLook|undefined=p.meta.oprnVnLook??(()=>{const l=resolveVnLook(p);return l?{version:1 as const,preset:l.preset}:undefined;})();
+    const switching=patch.preset!==undefined||patch.setting!==undefined;
+    const base=current&&switching?(()=>{const {nameplate:_n,choiceStyle:_c,waitIcon:_w,...rest}=current;return rest;})():current;
+    const next=mergeVnLook(base,patch);
+    try{validateVnLook(next);}catch(e){fail(`${e instanceof Error?e.message:String(e)}`);}
+    p.meta.oprnVnLook=next;
+    const eff=resolveVnLook(p)!;
+    const notice:string[]=[];
+    if(eff.layout==='page')notice.push('풀스크린 NVL 은 초상을 숨기고 화면 전체에 글만 보입니다 — 대화 장면 전체에 쓰면 얼굴이 안 보입니다');
+    if(!p.meta.oprnDialogueSystem&&!resolveDialogueSystem(p))notice.push('읽은 글 구분은 대사 시스템(set_dialogue_system)의 읽은 글 기록이 있을 때만 보입니다');
+    return {summary:`미연시 대사창 룩을 저장했습니다(프리셋 ${eff.preset} · ${VN_PRESETS[eff.preset].label}, 이름표 ${eff.nameplate}, 선택지 ${eff.choiceStyle}, 대기 ${eff.waitIcon}, 글자 ${eff.fontScale}, 줄 ${eff.lineSpacing}, 자간 ${eff.letterSpacing}, 읽은 글 색 ${eff.readColor?'켜짐':'꺼짐'}, 초상 등장 ${eff.portraitEntrance}, 메뉴 테마 ${eff.uiTheme})${notice.length?' — '+notice.join('; '):''}. 실제 플레이 화면 검증은 별도입니다.`,data:systemView(p)};
   }),
   tool('configure_monster_campaign','도감 순서·생태 설명·배지 스위치·지도 좌표·진행 목표를 실제 데이터/맵/스위치와 검증해 저장. 주어진 칸만 바꾼다(나머지는 유지). 줄이는 변경은 allowShrink:true 가 있어야 하고, 배지 수를 줄이려면 badgeCount 로 체육관 이벤트까지 함께 줄인다. 정의가 실제 지은 이벤트와 어긋나면 거부한다. 런타임 진행 상태는 바꾸지 않음.','write',schema({
     definition:{type:'object',additionalProperties:false,description:'바꿀 칸만 넣는다. 넣은 배열은 그 칸 전체를 대체한다(항목을 하나 고칠 때도 나머지를 함께 보낸다 — 먼저 read_game_systems).',properties:{
