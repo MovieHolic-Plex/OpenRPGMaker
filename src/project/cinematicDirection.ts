@@ -5,7 +5,7 @@ export type CinematicCameraFrame = [number, number, number]; // focus x/y 0..1, 
 export type CinematicDirection = {
   layers?: CinematicLayer[];
   camera?: { from: CinematicCameraFrame; to: CinematicCameraFrame };
-  transition?: { kind: 'cut' | 'dissolve' | 'fade' | 'flash'; durationMs: number };
+  transition?: { kind: 'cut' | 'dissolve' | 'fade' | 'flash' | 'dither'; durationMs: number };
   effects?: TitleEffect[];
   soundResourceId?: string;
   /** 장면 안의 시각별 효과음(여러 개). soundResourceId 는 장면 시작 한 번짜리로 그대로 유지한다. */
@@ -41,7 +41,7 @@ export function parseCinematicDirection(value: unknown): CinematicDirection {
   }
   if (input.transition !== undefined) {
     const transition = record(input.transition, ['kind', 'durationMs'], 'transition');
-    if (!['cut', 'dissolve', 'fade', 'flash'].includes(String(transition.kind))) throw new TypeError('transition.kind: cut/dissolve/fade/flash가 필요합니다.');
+    if (!['cut', 'dissolve', 'fade', 'flash', 'dither'].includes(String(transition.kind))) throw new TypeError('transition.kind: cut/dissolve/fade/flash/dither가 필요합니다.');
     out.transition = { kind: transition.kind as NonNullable<CinematicDirection['transition']>['kind'], durationMs: number(transition.durationMs, 0, 1000, 'transition.durationMs') };
   }
   if (input.effects !== undefined) {

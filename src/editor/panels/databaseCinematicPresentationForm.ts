@@ -30,9 +30,9 @@ export function cinematicPresentationForm(options: {
   });
   if (!value) return content;
   select('text-animation', '글자 등장', [['none', '바로 표시'], ['fade', '페이드인'], ['rise', '아래에서 올라오기'], ['typewriter', '한 글자씩'], ['blur', '흐림에서 선명하게'], ['scroll', '위로 흐르기']], resolved.text.animation, next => patch('text', 'animation', next));
-  select('text-layout', '글자 위치', [['center', '가운데'], ['bottom', '하단 자막'], ['left', '왼쪽 서문'], ['credits', '크레딧']], resolved.text.layout, next => patch('text', 'layout', next));
+  select('text-layout', '글자 위치', [['center', '가운데'], ['bottom', '하단 자막'], ['bar', '막대 안 자막'], ['left', '왼쪽 서문'], ['credits', '크레딧']], resolved.text.layout, next => patch('text', 'layout', next));
   select('text-font', '글꼴', [['serif', '명조'], ['sans', '고딕'], ['pixel', '도트']], resolved.text.font, next => patch('text', 'font', next));
-  select('scene-enter', '장면 등장', [['cut', '바로 전환'], ['fade', '페이드인'], ['dissolve', '디졸브'], ['wipe', '왼쪽에서 열기'], ['iris', '원형으로 열기'], ['flash', '섬광']], resolved.transition.enter, next => patch('transition', 'enter', next));
+  select('scene-enter', '장면 등장', [['cut', '바로 전환'], ['fade', '페이드인'], ['dissolve', '디졸브'], ['dither', '도트 디더 전환'], ['wipe', '왼쪽에서 열기'], ['iris', '원형으로 열기'], ['flash', '섬광']], resolved.transition.enter, next => patch('transition', 'enter', next));
   const number = (group: 'text' | 'transition' | undefined, key: string, label: string, saved: number, min: number, max: number): void => {
     const input = el('input', { attrs: { type: 'number', min: String(min), max: String(max), step: '1' }, value: saved, dataset: { testid: `db-cinematic-${group ?? 'scene'}-${key}` } });
     input.addEventListener('change', () => {

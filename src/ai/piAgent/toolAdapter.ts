@@ -6,6 +6,7 @@ import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { pixelArtPreview } from '@/editor/tools/pixelArtTools';
 import { presentationArtImages } from '@/editor/tools/presentationTools';
 import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
 import { worldAtlasReferenceImages } from '@/editor/tools/worldAtlasTools';
@@ -344,6 +345,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       if (tool.name === 'generate_cutscene_art') for (const image of cutsceneArtImages(ctx.project, result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
+      if (tool.name === 'author_pixel_art') { const image = pixelArtPreview(result.data); if (image) { content.push({ type: 'text', text: image.label }); content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)}); } }
       if (tool.name === 'preview_cutscene') for (const image of await cutscenePreviewImages(ctx.project, args)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }

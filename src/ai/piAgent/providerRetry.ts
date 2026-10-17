@@ -10,7 +10,7 @@
 // 모르는 오류(인자 검증·권한·할당량 소진 문구 등)는 여기서 true 가 되지 않는다 — 같은 요청을 되풀이해도
 // 결과가 같기 때문이다.
 
-export const PI_PROVIDER_STREAM_RETRY_LIMIT = 2;
+export const PI_PROVIDER_STREAM_RETRY_LIMIT = 4;
 
 const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /stream ended without a finish reason/i,
@@ -21,6 +21,15 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /\b(?:502|503|504)\b|bad gateway|service unavailable|gateway timeout/i,
   /\boverloaded\b|\bUNAVAILABLE\b/i,
   /returned an empty response/i,
+  // 2026-10-14 gpt-6-astra 오프닝 시험: OpenAI 쪽 「An error occurred while processing your request … (upstream_server_error)」 로 6·17턴째에 끝났다 — 재요청하면 풀리는 서버 오류.
+  // 2026-10-15 Argon 8318 프록시 경로: 계정 승격 순간 「unknown provider for model」, 소켓 끊김, 일회성 400 — 같은 요청을 다시 보내면 풀린다.
+  /socket connection was closed unexpectedly|unknown provider for model|400 Request contains an invalid argument/i,
+  // 2026-10-15 Argon 오프닝 2라운드: 「500 Internal error encountered」·「antigravity stream ended without a terminal candidate response」 로 8·10턴째에 끝났다.
+  /\b500\b[^\n]{0,24}internal error|Internal error encountered|stream ended without a terminal/i,
+  /upstream_server_error|An error occurred while processing your request/i,
+  // 2026-10-14 Argon 오프닝 px4: 20분 실행 중 「OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt」
+  // 로 28턴째에 끝났다. 다음 시도에서 토큰이 갱신된다고 스스로 말하는 오류라 이어 가면 풀린다.
+  /OAuth token expired[\s\S]*(?:retry|refresh)/i,
   // 2026-09-24 갤러리 호러 r3: 생각만 흘리고 답을 안 준 응답 — 한 번 더 요청하면 대개 풀린다.
   /thought-only response|without final output/i,
   // 2026-09-28 REFMAP 조수 시험: Cloud Code Assist 가 도구 호출을 만드는 도중(functionCallingConfig VALIDATED)

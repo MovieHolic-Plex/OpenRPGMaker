@@ -4,6 +4,8 @@
 // 좌표 규약: 배우의 위치는 «발 밑 가운데»(x = 가로 중심, y = 바닥) 픽셀. 모든 그림은 100% 배율(도트 크기를 섞지 않는다).
 // 같은 때에 겹쳐 도는 일(withPrevious)은 시각 표를 합쳐 wait 로 이어 붙인다 — parallel beat 와 달리 걷기 프레임 교체·이징도 동시에 돈다.
 
+import { SPRITE_POSES, type SpritePose } from "../../project/eventCommands/cinematicStaging";
+
 export type Side = "left" | "right" | "top" | "bottom";
 export type Facing = "left" | "right";
 
@@ -35,6 +37,8 @@ export type StageStep =
   | { readonly do: "wait"; readonly ms: number }
   | { readonly do: "flash"; readonly ms?: number; readonly color?: "white" | "red" | "green" | "blue" | "yellow" | "purple" | "black" }
   | { readonly do: "shake"; readonly ms?: number; readonly intensity?: number }
+  /** 대형 유닛이 맵의 것을 부순다 — 화면 흔들림+먼지/폭발+효과음+그 칸의 장식 제거(또는 타일 교체). 맵 칸 좌표(show_map_region 의 칸). */
+  | { readonly do: "smash"; readonly tile: { readonly x: number; readonly y: number }; readonly w?: number; readonly h?: number; readonly layer?: "lower" | "upper"; readonly tileId?: number; readonly effect?: "dust" | "explosion" | "smoke" | "fire"; readonly intensity?: number; readonly ms?: number; readonly resourceId?: string }
   | { readonly do: "se" | "bgm"; readonly resourceId: string }
   | { readonly do: "whiteout"; readonly ms?: number }
   /** whiteout 로 덮은 흰 화면을 걷어 낸다(새 장소에서 «눈을 뜨는» 연출). */
@@ -83,6 +87,8 @@ export interface StageInput {
   readonly actors: readonly StageActor[];
   readonly steps: readonly TimedStep[];
   readonly whiteResourceId: string;
+  /** 컷신이 도는 맵 — smash 가 칸을 바꿀 맵. */
+  readonly mapId?: string;
 }
 
 export interface StageResult {
@@ -199,7 +205,9 @@ export function compileStage(input: StageInput): StageResult {
     const events: TimedEvent[] = [];
     const walkFrames = a.spec.walk ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
     // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.
-    const bob = anim === "bob" && !walkFrames;
+    // anim 을 안 주면 걷기 프레임 없는 배우도 24px 이상 움직일 땐 발걸음 출렁임을 준다 — 같은 자세로 미끄러지는 인물·기계가 어색하다는 판정이 반복됐다.
+    const travel = Math.hypot(to.x - a.x, to.y - a.y);
+    const bob = !walkFrames && (anim === "bob" || (anim === undefined && travel >= 24 && ms >= 400));
     const segments = walkFrames || bob ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
     const from = { x: a.x, y: a.y };
     for (let i = 1; i <= segments; i += 1) {
@@ -332,6 +340,11 @@ export function compileStage(input: StageInput): StageResult {
         }
         case "pose": {
           const a = actorOf(step.actor, index);
+          // 맵 위 배우는 스프라이트 자세(눕기·웅크리기·뜨기)를 그대로 쓴다 — 회전으로 눕는 척하지 않는다.
+          if (a.spec.mapTarget !== undefined && !a.spec.poses[step.pose] && (SPRITE_POSES as readonly string[]).includes(step.pose)) {
+            out.push({ kind: "look", target: a.spec.mapTarget, pose: step.pose as SpritePose });
+            break;
+          }
           if (!a.spec.poses[step.pose]) throw new StageError(`배우 '${a.spec.name}' 에 포즈 '${step.pose}' 가 없습니다(있는 포즈: ${Object.keys(a.spec.poses).join(", ")}).`, index);
           a.pose = step.pose;
           for (const beat of showBeats(a)) events.push({ t: 0, order: order.n++, beat });
@@ -440,6 +453,16 @@ export function compileStage(input: StageInput): StageResult {
         case "weather": events.push({ t: 0, order: order.n++, beat: { kind: "weather", weather: step.weather, intensity: step.intensity ?? 0.6, durationMs: step.ms ?? 800 } }); break;
         case "letterbox": events.push({ t: 0, order: order.n++, beat: { kind: "letterbox", show: step.show, durationMs: step.ms ?? 500, keep: false } }); break;
         case "camera": events.push({ t: 0, order: order.n++, beat: { kind: "camera", mode: step.mode, ...(step.x !== undefined ? { x: step.x } : {}), ...(step.y !== undefined ? { y: step.y } : {}), ...(step.zoom !== undefined ? { zoom: step.zoom } : {}), durationMs: step.ms ?? 800, wait: false } }); end(step.ms ?? 800); break;
+        case "smash": {
+          const ms = step.ms ?? 900;
+          const w = Math.max(1, Math.trunc(step.w ?? 1)), h = Math.max(1, Math.trunc(step.h ?? 1));
+          events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 7, durationMs: ms } });
+          events.push({ t: 0, order: order.n++, beat: { kind: "particles", preset: step.effect ?? "dust", x: step.tile.x + Math.floor(w / 2), y: step.tile.y + Math.floor(h / 2), durationMs: Math.max(800, ms) } });
+          if (step.resourceId) events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } });
+          if (input.mapId) events.push({ t: 0, order: order.n++, beat: { kind: "changeTile", mapId: input.mapId, x: step.tile.x, y: step.tile.y, w, h, layer: step.layer ?? "upper", tile: step.tileId ?? 0 } });
+          end(ms);
+          break;
+        }
         case "shake": events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 9, durationMs: step.ms ?? 900 } }); break;
         case "se": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } }); break;
         case "bgm": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "bgm", resourceId: step.resourceId } }); break;

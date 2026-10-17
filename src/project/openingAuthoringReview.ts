@@ -1,12 +1,14 @@
 import type { Project } from "./types";
 import { openingAuthoringStatus } from "./openingAuthoringStatus";
+import { animaticCaptionText } from "./openingAnimatic";
+import { measureOpeningAnimatic, openingMeasurementSummary } from "./openingAnimaticMeasure";
 
 /** Structural clues for an author, never a score or proof of visual/playback quality. */
 export function reviewOpeningAuthoring(project: Project) {
   const opening = project.system.opening;
   const warnings: string[] = [];
   const scenes = (opening?.scenes ?? []).map((scene, index) => {
-    const visibleText = [scene.narration, ...(scene.kind === 'animatic' ? scene.composition.layers.filter(l => l.kind === 'text').map(l => l.text ?? '') : [])].filter(Boolean).join('\n');
+    const visibleText = [scene.narration, ...(scene.kind === 'animatic' ? [...scene.composition.layers.filter(l => l.kind === 'text').map(l => l.text ?? ''), ...animaticCaptionText(scene.composition)] : [])].filter(Boolean).join('\n');
     const narrationCharacters = [...visibleText.trim()].length;
     // A conservative heuristic for short Korean narration, not a reading-speed requirement.
     const estimatedReadingMs = narrationCharacters ? Math.ceil(1000 + narrationCharacters / 6 * 1000) : 0;
@@ -24,7 +26,7 @@ export function reviewOpeningAuthoring(project: Project) {
         : scene.durationMs > 0 ? "timer-or-confirm" : "confirm",
       ...(scene.kind === "video" ? { confirmAvailableWhilePlaying: false, confirmWhenMediaBlocked: true } : {}),
       motion: scene.kind === "image" ? scene.motion : null,
-      ...(scene.kind === "animatic" ? { layers: scene.composition.layers.map(l => ({ id: l.id, kind: l.kind, role: l.role, resourceId: l.resourceId, tracks: Object.keys(l.keys ?? {}), spriteLoop: !!l.sheet?.fps })), camera: scene.composition.camera, audioCueCount: scene.composition.audioCues?.length ?? 0 } : {}),
+      ...(scene.kind === "animatic" ? { layers: scene.composition.layers.map(l => ({ id: l.id, kind: l.kind, role: l.role, resourceId: l.resourceId, tracks: Object.keys(l.keys ?? {}), spriteLoop: !!l.sheet?.fps, region: l.region?.mode, walk: !!l.walk, captionCues: l.caption?.cues.length })), pixelGrid: scene.composition.pixelGrid ?? null, camera: scene.composition.camera, audioCueCount: scene.composition.audioCues?.length ?? 0 } : {}),
       narrationAudioResourceId: scene.narrationAudioResourceId ?? null,
     };
   });
@@ -41,10 +43,13 @@ export function reviewOpeningAuthoring(project: Project) {
   const status = openingAuthoringStatus(project);
   if (!status.configuredToPlay) warnings.push("현재 설정으로는 새 게임에서 오프닝이 재생되지 않습니다.");
   if (status.defaultPlaceholder) warnings.push("기본 오프닝이 남아 있습니다. 작품의 사건과 첫 행동에 맞게 저작하세요.");
+  const styleLock = measureOpeningAnimatic(project);
+  warnings.push(...styleLock.issues);
   return {
     verificationScope: "configuration-review" as const,
     playbackVerified: false, visualInspectionVerified: false,
     authoringStatus: status,
+    styleLock: { summary: styleLock.shots.length ? openingMeasurementSummary(styleLock) : "애니메틱 샷 없음", issueCount: styleLock.issues.length, grids: styleLock.distinctGrids, spriteScales: styleLock.distinctSpriteScales, captionSwitches: styleLock.captionSwitches, lowestCaptionContrast: styleLock.lowestCaptionContrast, emoteShotIds: styleLock.emoteShotIds, transitionCounts: styleLock.transitionCounts, shotMetrics: styleLock.shots.map(s => ({ id: s.id, durationMs: s.durationMs, movingCount: s.movingCount, moving: s.moving.map(m => `${m.id}:${m.what}`), planes: s.planes, hasCamera: s.hasCamera })) },
     sceneCount: scenes.length, distinctImageCount: imageUses.size,
     // Videos may end early and duration 0 may await input/video end: never claim an exact runtime.
     scheduledDurationMs: scenes.reduce((sum, scene) => sum + scene.durationMs, 0),
@@ -56,6 +61,7 @@ export function reviewOpeningAuthoring(project: Project) {
     remainingReview: [
       "그림을 직접 보고 장면별 사건·인물·구도와 기존 캐릭터 외형을 확인한다.",
       "정지 그림의 pan/zoom을 인물 행동 애니메이션으로 보고하지 않는다.",
+      "영역 루프·빛줄기·말풍선·자막·걷기는 실제 시간 표본으로 확인한다 — 구조 목록은 그림을 본 증거가 아니다.",
       "출하 플레이어 New Game에서 정상 완료·건너뛰기·그림 로드·문구 가독성·음악 유지/종료·첫 맵 진입을 확인한다.",
     ],
   };

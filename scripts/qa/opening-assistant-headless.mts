@@ -15,6 +15,7 @@ import { generateCinematicStill } from '../../src/editor/openingImageGeneration'
 import type { Project } from '../../src/project/types';
 import { createBlankProject } from '../../src/project/defaults/blankProject';
 const arg = (n: string, d?: string) => { const i = process.argv.indexOf('--' + n); return i < 0 ? d : process.argv[i + 1]; };
+const __ban=/gpt-5\.6-sol|deepseek/i; if(__ban.test(String(arg('model','')))) throw Error('금지된 모델입니다: gpt-5.6-sol/DeepSeek 은 이 러너에서 쓰지 않는다(사용자 지시 2026-10-17). --model cpa8318/gemini-4-argon-high 를 쓰세요.');
 const out = path.resolve(arg('out', '/tmp/oprn-opening-headless-' + Date.now())!); fs.mkdirSync(out, { recursive: true });
 const project = (arg('project-json') ? JSON.parse(fs.readFileSync(arg('project-json')!, 'utf8')) : createBlankProject()) as Project;
 const task = arg('task')!;
@@ -34,6 +35,8 @@ model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl:
 const imageProvider = arg('image-provider', 'openai-codex')!, imageModel = arg('image-model', 'codex-image-default')!;
 const providerApiKeys: Record<string, string | undefined> = { [provider!]: prov.apiKey };
 for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { providerApiKeys[p] ??= (await resolveRequestApiKey(p)) as string | undefined; } catch { /* absent */ } }
+// 긴 실행(20분+) 도중 OAuth 키가 만료된다 — getApiKey 는 요청마다 providerApiKeys 를 다시 읽으니 여기서 주기적으로 갱신해 둔다(px4·b2·b3 가 22분쯤에 이 오류로 끝났다).
+if (antigravity) setInterval(async () => { try { const k = (await resolveRequestApiKey(provider!)) as string | undefined; if (k) providerApiKeys[provider!] = k; } catch { /* 다음 주기에 다시 */ } }, 240000).unref();
 const log: unknown[] = [];
 const t0 = Date.now();
 const note = (e: any) => {
@@ -43,7 +46,7 @@ const note = (e: any) => {
 };
 let live = project;
 const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: (arg('thinking', 'high') as 'high'), imageProvider, imageModel,
-  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'author_actor_charset', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
+  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'author_actor_charset', 'author_pixel_art', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
 // 맵·애니메틱 미리보기는 실제 브라우저 렌더러(편집기 dev 서버)로 그린다 — --browser-url 이 있을 때만.
 const origin = arg('browser-url');
 let bridgePort = 0; let bridge: ReturnType<typeof spawn> | undefined;

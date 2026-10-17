@@ -14,7 +14,19 @@ import { allTools, toOpenAiTools } from "@/editor/tools/toolRegistry";
  * (`buildSessionRegistryTools({ contextWindow })`). 래칫은 이제 「좁은 창의 폴백 실제 목록」에 건다.
  */
 const CATALOG_TOKEN_CEILING = 99_000;
-const OPENING_FAMILY_TOKEN_CEILING = 1_300;
+/**
+ * 2026-10-15 실측: 변경 전 28도구 5,401토큰, 프리미티브 여섯을 더한 뒤 34도구 6,568토큰.
+ * 종전 1,300은 이미 그 5,401보다 작아 무효인 래칫이었다. 지금 값으로 다시 전설한다 —
+ * 계열 전체 계약은 get_animatic_capabilities 하나로 모으고, 여기서는 그 계열의 노출 몫만 기록한다.
+ * (전체 카탈로그 상한 CATALOG_TOKEN_CEILING 은 올리지 않는다.)
+ *
+ * 2026-10-16 결정: 7,000 → 7,400. place_opening_charset_actor(번들 24×32 칩 배우 + 보폭 걷기)를
+ * 계열에 더해 36도구 7,151토큰이 됐다. 이 한 도구가 계열 예산을 190토큰 먹었고, 다른 저작 도구의
+ * 스키마·설명을 깎아 메우면 실제 능력(빛줄기 먼지·말풍선 상자·자막 큐 등)이 사라진다 — 그래서
+ * 이 계열만 올리고 좁은 창 상한과 전체 카탈로그 상한은 그대로 둔다. 이 도구가 막대인간 배우를
+ * 없애고 배경과 같은 도트 크기를 강제하므로, 늘어난 151토큰은 의도한 값이다.
+ */
+const OPENING_FAMILY_TOKEN_CEILING = 7_400;
 
 const tokensOf = (tools: readonly unknown[]): number => estimateContextTokens([{ role: "system", content: JSON.stringify(tools) }]);
 
@@ -42,11 +54,14 @@ describe("AI 툴 카탈로그 예산", () => {
   it("오프닝 저작 툴 묶음의 몫을 기록한다", () => {
     const opening = toOpenAiTools(allTools()).filter(entry => entry.function.name.includes("opening"));
     expect(opening.map(entry => entry.function.name).sort()).toEqual([
-      "animate_opening_camera", "animate_opening_layer", "apply_opening_motion", "configure_opening_entry", "configure_opening_portrait_motion",
+      "animate_opening_camera", "animate_opening_layer", "apply_opening_motion", "apply_opening_walk", "configure_opening_entry", "configure_opening_portrait_motion",
       "create_opening_animatic_shot", "edit_opening", "generate_opening_image", "generate_opening_layer", "get_opening", "get_opening_direction",
       "get_opening_references", "inspect_opening_timeline", "list_opening_media", "make_opening_storybook", "plan_opening", "preview_opening_animatic",
       "preview_opening_reference", "remove_opening", "remove_opening_audio_cue", "remove_opening_layer", "retime_opening_shot", "review_opening",
-      "set_opening", "set_opening_transition", "show_opening_image", "show_title_opening", "upsert_opening_audio_cue", "upsert_opening_layer",
+      "set_opening", "set_opening_caption", "set_opening_pixel_grid", "set_opening_region_loop", "set_opening_transition", "show_opening_image",
+      "place_opening_background",
+      "place_opening_charset_actor",
+      "show_title_opening", "upsert_opening_audio_cue", "upsert_opening_emote", "upsert_opening_layer", "upsert_opening_light_fx",
     ]);
     const openingTokens = estimateContextTokens([{ role: "system", content: JSON.stringify(opening) }]);
     expect(openingTokens).toBeLessThanOrEqual(OPENING_FAMILY_TOKEN_CEILING);

@@ -16,6 +16,7 @@ const ENTRIES = [
   {
     entry: resolve(REPO_ROOT, "electron/main/main.ts"),
     outfile: resolve(OUT_DIR, "main.cjs"),
+    injectOAuth: true,
     format: "cjs",
     platform: "node",
     target: "node22",
@@ -43,6 +44,12 @@ const ENTRIES = [
 // CJS 번들에서 import.meta 는 빈 객체다. 모듈 최상위에서 import.meta.url 을 읽으면(fileURLToPath 등)
 // 메인 프로세스가 로드 즉시 죽어 앱이 켜지지 않는다 — 2026-09-22(ohMyPiPiAi·aiAuthRuntime),
 // 2026-10-04(worldmapBuild, v0.108.0) 두 번 출하됐다. 쓰는 곳에서 지연 평가해야 한다.
+function assertNoOAuthSecrets(file) {
+  const text = readFileSync(file, "utf8");
+  const leaked = Object.values(oauthClients).filter((value) => typeof value === "string" && value.length >= 8 && text.includes(value));
+  if (leaked.length) throw new Error(`${file}: OAuth 클라이언트 값이 ${leaked.length}건 들어 있다 — 메인 번들 밖으로 새면 안 된다.`);
+}
+
 function assertNoTopLevelImportMeta(file) {
   const offenders = readFileSync(file, "utf8")
     .split("\n")
@@ -68,7 +75,7 @@ await mkdir(OUT_DIR, { recursive: true });
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
 copyFileSync(resolve(REPO_ROOT, "node_modules/node-unrar-js/dist/js/unrar.wasm"), resolve(OUT_DIR, "unrar.wasm"));
 process.stdout.write("staged dist-electron/unrar.wasm\n");
-for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
+for (const { entry, outfile, format, platform, target, external, injectOAuth } of ENTRIES) {
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
@@ -79,10 +86,12 @@ for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
     platform,
     target,
     external,
-    define: { __OPRN_OAUTH_CLIENTS__: JSON.stringify(oauthClients) },
+    // 남의 앱 OAuth 값은 Node 메인 번들에만 넣는다 — preload·브라우저 브리지(페이지에 주입되는 파일)로 새면 안 된다.
+    define: { __OPRN_OAUTH_CLIENTS__: injectOAuth ? JSON.stringify(oauthClients) : "undefined" },
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
   if (format === "cjs") assertNoTopLevelImportMeta(outfile);
+  if (!injectOAuth) assertNoOAuthSecrets(outfile);
 }
 
 // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.

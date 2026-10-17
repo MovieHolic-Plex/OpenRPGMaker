@@ -47,7 +47,7 @@ const authorActorCharset: ToolDefinition = {
     "맵 위를 걸어 다닐 기계·병기·로봇·4족 탈것을 «걷는 캐릭터셋»(24×32 도트, 위·오른쪽·아래·왼쪽 × 걷기 3프레임)으로 만들어 이 프로젝트에 등록한다. "
     + "컷신에서 행진·순찰·침공처럼 인물이 맵 위를 진짜로 걷는 장면이 필요한데 맞는 캐릭터셋이 없을 때 쓴다(그림 생성 도구는 걷기 프레임이 없어 미끄러진다). "
     + "characters 마다 style(light 경량 · standard 보통 · heavy 중장갑 · quad 4족), kit(none · antenna · cannon 어깨포 · shield 방패), baseColor(#rrggbb 몸색)와 선택 glowColor(눈·광학부)·accentColor 를 준다. "
-    + "결과의 resourceId 와 characterIndex(0부터, 준 순서)를 script_cutscene_staged 의 actors[].character:{resourceId, characterIndex} 로 쓰고 scale 250~300 으로 키우면 화면에서 존재감이 난다.",
+    + "결과의 resourceId 와 characterIndex(0부터, 준 순서)를 script_cutscene_staged 의 actors[].character:{resourceId, characterIndex} 로 쓴다. 사람 크기(24×32)로만 쓰고 키우지 않는다 — 크게 보여야 하는 기계·괴수는 author_pixel_art kind:\"walker\" 로 처음부터 큰 도트로 그린다.",
   mode: "write",
   domains: ["event"],
   parameters: {

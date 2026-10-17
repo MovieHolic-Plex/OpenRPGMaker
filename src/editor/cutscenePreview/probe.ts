@@ -33,7 +33,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const timeline = simulateCutscene(commands);
   const area = viewport.width * viewport.height;
   const sizeOf = (id: string): { width: number; height: number } => pictureSize(project, id, { width: 48, height: 48 });
-  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; last?: { x: number; y: number } }>();
+  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; cut: number; born?: number; last?: { x: number; y: number } }>();
   let togetherSamples = 0, overlappedSamples = 0; let coverSamples = 0; let heroHitSamples = 0, heroSamples = 0;
   // 맵 위 주인공 자리(시작 위치) — 컷신이 주인공을 옮기지 않는다면 그 자리를 그림 배우가 가로지르면 안 된다.
   const heroBox = ((): Box | null => {
@@ -56,12 +56,14 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
       const box = pictureBox(snap, size);
       const full = (box.x1 - box.x0) * (box.y1 - box.y0) >= area * FULLSCREEN;
       if (full) { if (snap.opacity > 40 && !/white|black|fade|blank/iu.test(snap.resourceId)) coverSamples += 1; continue; } // 배경·흰 막
-      const entry = per.get(snap.pictureId) ?? { resourceId: snap.resourceId, visible: 0, maxH: 0, travel: 0 };
+      const entry = per.get(snap.pictureId) ?? { resourceId: snap.resourceId, visible: 0, maxH: 0, travel: 0, cut: 0 };
       entry.maxH = Math.max(entry.maxH, (box.y1 - box.y0) / viewport.height);
       const w = Math.max(0, Math.min(box.x1, viewport.width) - Math.max(box.x0, 0)), h = Math.max(0, Math.min(box.y1, viewport.height) - Math.max(box.y0, 0));
       const inside = (w * h) / Math.max(1, (box.x1 - box.x0) * (box.y1 - box.y0));
+      if (entry.born === undefined && snap.opacity > 40) entry.born = inside; // 처음 나타난 순간 몸이 화면 안에 있었는가(화면 밖 진입이면 거의 0)
       if (inside >= 0.5 && snap.opacity > 40) {
         entry.visible += STEP_MS;
+        if (inside < 0.9) entry.cut += STEP_MS; // 화면 가장자리에 걸려 몸이 잘려 보이는 시간
         boxes.push(box);
         if (entry.last) entry.travel += Math.hypot(snap.x - entry.last.x, snap.y - entry.last.y);
         entry.last = { x: snap.x, y: snap.y };
@@ -89,19 +91,34 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const sayCount = timeline.marks.filter((m) => m.kind === "say").length;
   const overlapShare = togetherSamples ? Math.round((overlappedSamples / togetherSamples) * 100) / 100 : 0;
 
+  // 색조가 화면을 사실상 못 바꾸는 값(알파가 매우 낮음)인지 — 장르와 무관한 측정값이다.
+  const tintAlphas = timeline.marks.filter((m) => m.kind === "tint").map((m) => (m.value.split(",").map((n) => Number(n.trim()))[3] ?? 0.4)).filter((a) => Number.isFinite(a) && a > 0);
+  const maxTintAlpha = tintAlphas.length ? Math.max(...tintAlphas) : 0;
+
   const issues: string[] = [];
+  const cameraMoves = commands.filter((c) => c.kind === "m2Command" && /camera/iu.test(String((c as { commandId?: string }).commandId ?? ""))).length;
+  if (tintAlphas.length > 0 && maxTintAlpha < 0.2) issues.push(`장면 색조의 알파가 최대 ${maxTintAlpha}라 화면이 거의 안 바뀝니다(눈으로 구분 불가). 분위기를 바꾸려는 색조라면 알파를 0.3 이상으로 올리고 색도 목표 분위기에 맞게(어둡게 하려면 어두운 색) 다시 정하세요.`);
   if (subjects.length > 0) {
     if (timeline.durationMs < 6000) issues.push(`컷신이 ${(timeline.durationMs / 1000).toFixed(1)}초로 너무 짧습니다(6초 미만) — 도입은 분위기를 깔 시간이 필요합니다.`);
     for (const s of subjects) {
       if (s.visibleMs < 1500) issues.push(`그림 ${s.pictureId}(${s.resourceId})는 화면 안에 ${(s.visibleMs / 1000).toFixed(1)}초만 보입니다(1.5초 미만) — 화면 밖에서 시작하거나 밖에서 끝나 사실상 안 보입니다. 시작 좌표와 이동 목표를 화면 안으로 두세요.`);
+      const cutShare = s.visibleMs > 0 ? (per.get(s.pictureId)?.cut ?? 0) / s.visibleMs : 0;
+      if (cutShare >= 0.4) issues.push(`그림 ${s.pictureId}(${s.resourceId})가 보이는 시간의 ${Math.round(cutShare * 100)}% 동안 화면 가장자리에 걸려 몸이 잘려 보입니다 — 머리·다리가 잘린 채 서 있지 않게, 멈추는 자리는 몸 전체가 화면 안에 들어오도록 fx/fy 와 scale 을 조정하세요.`);
       if (s.maxHeightRatio > 0.55) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 큽니다 — 배우 scale(%)로 줄이세요.`);
-      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다(scale 로 키우세요).`);
+      if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다 — 도트를 확대하지 말고(뭉개진 블록이 됩니다) 더 큰 캔버스로 다시 그리거나(author_pixel_art), 장면에 필요 없는 소품이면 빼세요. 글자(제목·지명 띠)를 그린 그림이면 도트 글자는 깨져 읽히지 않으니 빼고 say(context:"narration")나 타이틀 화면 글자로 보이세요.`);
     }
-    if (Math.max(...subjects.map((s) => s.maxHeightRatio)) < 0.3) issues.push(`가장 큰 주체도 화면 높이의 ${Math.round(Math.max(...subjects.map((s) => s.maxHeightRatio)) * 100)}% 입니다 — 장면의 주연이면 최소 30%(24×32 캐릭터셋은 scale 250~300)로 키워 위압감·존재감을 주세요.`);
+    if (Math.max(...subjects.map((s) => s.maxHeightRatio)) < 0.3) issues.push(`가장 큰 주체도 화면 높이의 ${Math.round(Math.max(...subjects.map((s) => s.maxHeightRatio)) * 100)}% 입니다 — 장면의 주연이 위압적인 존재(기계·괴수)라면 24×32 칩을 키우지 말고 author_pixel_art kind:\"walker\" 로 처음부터 큰 도트(64×80 이상)로 그려 쓰세요. 주연이 사람이면 이 지적은 무시해도 됩니다.`);
     if (!subjects.some((s) => s.travelPx >= 24)) issues.push("화면 안 주체가 하나도 움직이지 않습니다(이동 24px 미만) — enter/move/exit 로 실제로 이동시키세요.");
     if (coverShare >= 0.4) issues.push(`전체 화면을 덮는 그림이 컷신의 ${Math.round(coverShare * 100)}% 동안 보입니다 — 실제 시작 맵이 가려집니다. 맵 위 장면이어야 하면 전체 화면 배경 그림을 쓰지 말고 맵·캐릭터셋으로 연출하세요.`);
     if (heroSamples > 0 && heroHitSamples / heroSamples >= 0.1) issues.push(`주체가 맵 위 주인공이 서 있는 자리를 ${Math.round((heroHitSamples / heroSamples) * 100)}% 동안 가립니다 — 주인공을 ghost 배우(character 로 hero:true)로 두고 이동 단계로 길 밖으로 비키게 하거나, 주체의 동선(fy)을 주인공 자리에서 떼세요.`);
     if (overlapShare >= 0.4) issues.push(`주체끼리 절반 넘게 겹친 채로 보이는 시간이 ${Math.round(overlapShare * 100)}%입니다 — 서로 다른 fx 로 간격을 벌리세요.`);
+    const travelling = subjects.some((s) => s.travelPx >= 100);
+    if (travelling && timeline.durationMs >= 8000 && cameraMoves === 0) issues.push("주체가 길게 이동하는데 카메라가 한 번도 안 움직입니다 — 고정 화면에서 가로지르면 밋밋합니다. camera 단계(pan 으로 목적지를 훑거나 follow)로 행군을 따라가고, 주체는 화면 안 같은 자리에서 걷게(트레드밀 연출) 하세요.");
+    const poppedIn = subjects.filter((s) => s.travelPx >= 100 && s.maxHeightRatio >= 0.2 && (per.get(s.pictureId)?.born ?? 0) >= 0.9);
+    if (poppedIn.length > 0) issues.push(`큰 유닛 ${poppedIn.map((s) => s.pictureId).join("·")} 이 화면 안에서 갑자기 나타납니다 — 행군은 화면 가장자리 밖에서 들어와야 합니다. show 대신 enter(from 가장자리)나 화면 밖(offscreen)에서 시작해 걸어 들어오게 하세요.`);
+    const worldReactions = commands.filter((c) => c.kind === "changeTile").length;
+    const bigTravellers = subjects.filter((s) => s.travelPx >= 100 && s.maxHeightRatio >= 0.2);
+    if (bigTravellers.length > 0 && timeline.durationMs >= 8000 && worldReactions === 0) issues.push("큰 유닛이 마을을 가로지르는데 맵에서 부서지거나 바뀌는 것이 하나도 없습니다 — 무게감이 없습니다. 유닛이 담장·깃발·지붕 곁을 지나는 순간 smash 단계(그 칸 장식 제거+흔들림+먼지+효과음)를 한 번 이상 넣으세요.");
     if (audioCount === 0) issues.push("컷신에 효과음·음악이 하나도 없습니다 — se/bgm 단계로 소리를 깔아야 합니다.");
   }
   const summary = `길이 ${(timeline.durationMs / 1000).toFixed(1)}s · 주체 ${subjects.map((s) => `${s.pictureId}(보임 ${(s.visibleMs / 1000).toFixed(1)}s, 키 ${Math.round(s.maxHeightRatio * 100)}%, 이동 ${s.travelPx}px)`).join(" ") || "없음"} · 겹침 ${Math.round(overlapShare * 100)}% · 색조 ${tintCount} · 날씨 ${weatherCount} · 소리 ${audioCount} · 글 ${sayCount}`;

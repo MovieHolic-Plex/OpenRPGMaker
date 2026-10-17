@@ -55,6 +55,20 @@ function flattenCinematicFrame(shot: HTMLElement): string | undefined {
   } catch { return; } // Cross-origin art retains the normal last-image handoff.
 }
 
+let ditherCache: string[] | undefined;
+/** 4×4 베이어 임계값 마스크 17장(0칸~16칸 불투명). 한 칸 = 마스크 1픽셀, 화면에서 3배로 늘려 쓴다. */
+function ditherMasks(): string[] {
+  if (ditherCache) return ditherCache;
+  const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  ditherCache = Array.from({ length: 17 }, (_, level) => {
+    const canvas = document.createElement('canvas'); canvas.width = 4; canvas.height = 4;
+    const ctx = canvas.getContext('2d')!; const data = ctx.createImageData(4, 4);
+    for (let i = 0; i < 16; i += 1) { data.data[i * 4 + 3] = bayer[i]! < level ? 255 : 0; }
+    ctx.putImageData(data, 0, 0); return canvas.toDataURL('image/png');
+  });
+  return ditherCache;
+}
+
 /** DOM-only playback: no session, Phaser, editor store or global audio ownership. */
 export function playCinematicSequence(options: {
   readonly host: HTMLElement;
@@ -128,12 +142,14 @@ export function playCinematicSequence(options: {
   const observer = new MutationObserver(() => {
     if (!root.isConnected || !host.contains(root)) finish("aborted");
   });
+  let ditherRaf = 0;
   const disposeShot = (shot: HTMLElement): void => {
     shot.remove(); // Chromium may paint a white lost-context placeholder if still visible.
     for (const canvas of shot.querySelectorAll<HTMLCanvasElement>('.cinematic-effects')) stopTitleEffects(canvas);
   };
   const finish = (result: CinematicCompletion): void => {
     if (settled) return;
+    cancelAnimationFrame(ditherRaf);
     if (result !== 'aborted' && flattenFrame) {
       const last = sequence.scenes[index] ?? sequence.scenes.at(-1)!;
       options.onFrame?.(flattenFrame(), last.presentation ? resolveCinematicPresentation(last.presentation).transition.exitMs : 500);
@@ -320,6 +336,7 @@ export function playCinematicSequence(options: {
       // Book overlays live on the root so they survive page changes.
       if (atmosphere) root.append(atmosphere.layer);
       if (portraitMotion) root.append(portraitMotion.element);
+      if (!isBook && sequence.skippable && !root.querySelector('.cinematic-skip-hint')) root.append(el('div', { class: 'cinematic-skip-hint', text: 'Esc 건너뛰기', attrs: { 'aria-hidden': 'true' } }));
       if (isBook) frame.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   Enter 다음${sequence.skippable?' · Esc 건너뛰기':''}`}));
       root.dataset.page = String(index + 1);
       if (previous) {
@@ -343,7 +360,7 @@ export function playCinematicSequence(options: {
         const legacy = scene.kind === 'image' ? scene.direction?.transition : undefined;
         const enter = reducedMotion ? 'cut' : presentation?.transition.enter ?? legacy?.kind ?? 'cut';
         const enterMs = Math.min(presentation?.transition.enterMs ?? legacy?.durationMs ?? 0, scene.durationMs > 0 ? scene.durationMs / 2 : 5000);
-        if (previous && (enter !== 'dissolve' || enterMs <= 0)) disposeShot(previous);
+        if (previous && ((enter !== 'dissolve' && enter !== 'dither') || enterMs <= 0)) disposeShot(previous);
         if (enter !== 'cut' && enterMs > 0) {
           if (previous && enter === 'dissolve') {
             previous.dataset.previousFrame = 'true';
@@ -361,7 +378,22 @@ export function playCinematicSequence(options: {
               : enter === 'flash'
                 ? [{ filter: 'brightness(2.3)', opacity: 0.6 }, { filter: 'brightness(1)', opacity: 1 }]
                 : [{ opacity: 0 }, { opacity: 1 }];
-          animations.push(visibleFrame.animate(frames, { duration: enterMs, fill: 'both', easing: 'ease-in-out' }));
+          if (enter === 'dither') {
+            // 도트 감성 전환: 이전 컷 위로 새 컷이 4×4 베이어 패턴으로 칸마다 드러난다(마스크 17단계).
+            if (previous) { previous.dataset.previousFrame = 'true'; const oldShot = previous.querySelector<HTMLElement>('.cinematic-shot'); if (oldShot) oldShot.dataset.previousShot = 'true'; visibleFrame.before(previous); }
+            const masks = ditherMasks();
+            const style = visibleFrame.style as CSSStyleDeclaration & { webkitMaskImage?: string };
+            visibleFrame.style.setProperty('mask-size', '12px 12px'); visibleFrame.style.setProperty('-webkit-mask-size', '12px 12px');
+            const t0 = performance.now(); let step = -1;
+            const tick = (): void => {
+              if (!alive || settled) return;
+              const k = Math.min(16, Math.floor(((performance.now() - t0) / enterMs) * 17));
+              if (k !== step) { step = k; const url = `url(${masks[k]})`; style.maskImage = url; style.webkitMaskImage = url; }
+              if (k < 16) ditherRaf = requestAnimationFrame(tick);
+              else { style.maskImage = 'none'; style.webkitMaskImage = 'none'; if (previous) disposeShot(previous); }
+            };
+            tick();
+          } else animations.push(visibleFrame.animate(frames, { duration: enterMs, fill: 'both', easing: 'ease-in-out' }));
         }
         if (previous && !previous.isConnected) disposeShot(previous);
         if (scene.presentation) {
@@ -457,6 +489,9 @@ export function playCinematicSequence(options: {
         void (url ? assets.prepare(url) : Promise.reject(new Error('Missing image'))).then(async prepared => {
           image.src = prepared.url;
           await image.decode();
+          // 오프닝 그림은 작은 격자(가로 ≤640)의 도트다 — 확대·카메라 이동에서도 칸이 번지지 않게 한다.
+          const crisp = image.naturalWidth <= 640;
+          if (crisp) image.style.imageRendering = 'pixelated';
           if (!alive || settled) return;
           clearTimeout(loadTimer);
           const shot = el('div', { class: 'cinematic-shot', children: [image] });
@@ -467,13 +502,14 @@ export function playCinematicSequence(options: {
             const decoded = await assets.prepare(source);
             const item = el('img', { class: 'cinematic-layer', attrs: { alt: '', draggable: 'false' } });
             item.src = decoded.url; await item.decode();
+            if (item.naturalWidth <= 640) item.style.imageRendering = 'pixelated';
             item.dataset.depth = layer.depth;
             item.style.width = `${layer.width * 100}%`;
             return item;
           }));
           if (!alive || settled) return;
           if (scene.direction?.effects?.length) {
-            effects = createTitleEffectsCanvas({ imageUrl: prepared.url, effects: scene.direction.effects, fit: 'cover', rendering: 'smooth' });
+            effects = createTitleEffectsCanvas({ imageUrl: prepared.url, effects: scene.direction.effects, fit: 'cover', rendering: crisp ? 'pixelated' : 'smooth' });
             effects.classList.add('cinematic-effects');
             effects.dataset.motion = image.dataset.motion;
             shot.append(effects);

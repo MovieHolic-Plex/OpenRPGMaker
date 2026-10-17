@@ -1,14 +1,14 @@
 /** Common presentation for text, still pictures and video. Omission keeps legacy playback. */
 export const CINEMATIC_PRESENTATION_PRESETS = ['subtitle', 'prologue', 'chapter', 'memory', 'credits'] as const;
 export const CINEMATIC_TEXT_ANIMATIONS = ['none', 'fade', 'rise', 'typewriter', 'blur', 'scroll'] as const;
-export const CINEMATIC_ENTRANCES = ['cut', 'fade', 'dissolve', 'wipe', 'iris', 'flash'] as const;
+export const CINEMATIC_ENTRANCES = ['cut', 'fade', 'dissolve', 'wipe', 'iris', 'flash', 'dither'] as const;
 export type CinematicPresentation = {
   preset?: typeof CINEMATIC_PRESENTATION_PRESETS[number];
   backgroundColor?: string;
   /** Percentage of stage height at each edge. */
   letterbox?: number;
   text?: {
-    layout?: 'center' | 'bottom' | 'left' | 'credits';
+    layout?: 'center' | 'bottom' | 'bar' | 'left' | 'credits';
     font?: 'serif' | 'sans' | 'pixel';
     size?: number;
     color?: string;
@@ -25,7 +25,7 @@ export type CinematicPresentation = {
 };
 
 export const CINEMATIC_PRESENTATION_DEFAULTS = {
-  subtitle: { text: { layout: 'bottom', font: 'sans', size: 13, color: '#fff8ea', animation: 'rise', delayMs: 350, revealMs: 700, exitMs: 350 }, transition: { enter: 'dissolve', enterMs: 650, exitMs: 0 }, letterbox: 6 },
+  subtitle: { text: { layout: 'bottom', font: 'sans', size: 13, color: '#fff8ea', animation: 'typewriter', delayMs: 350, revealMs: 700, exitMs: 350 }, transition: { enter: 'dissolve', enterMs: 650, exitMs: 0 }, letterbox: 6 },
   prologue: { text: { layout: 'center', font: 'serif', size: 13, color: '#f5e7cd', animation: 'typewriter', delayMs: 300, revealMs: 1600, exitMs: 600 }, transition: { enter: 'fade', enterMs: 800, exitMs: 600 }, letterbox: 0 },
   chapter: { text: { layout: 'center', font: 'serif', size: 16, color: '#f4d69c', animation: 'rise', delayMs: 250, revealMs: 900, exitMs: 500 }, transition: { enter: 'iris', enterMs: 800, exitMs: 550 }, letterbox: 0 },
   memory: { text: { layout: 'left', font: 'serif', size: 13, color: '#eee7ff', animation: 'blur', delayMs: 450, revealMs: 1100, exitMs: 600 }, transition: { enter: 'fade', enterMs: 900, exitMs: 650 }, letterbox: 7 },
@@ -66,7 +66,7 @@ export function parseCinematicPresentation(value: unknown): CinematicPresentatio
   if (p.letterbox !== undefined) number(p.letterbox, 'presentation.letterbox', 0, 20);
   if (p.text !== undefined) {
     const t = record(p.text, 'presentation.text', ['layout', 'font', 'size', 'color', 'animation', 'delayMs', 'revealMs', 'exitMs']);
-    if (t.layout !== undefined) choice(t.layout, 'presentation.text.layout', ['center', 'bottom', 'left', 'credits']);
+    if (t.layout !== undefined) choice(t.layout, 'presentation.text.layout', ['center', 'bottom', 'bar', 'left', 'credits']);
     if (t.font !== undefined) choice(t.font, 'presentation.text.font', ['serif', 'sans', 'pixel']);
     if (t.animation !== undefined) choice(t.animation, 'presentation.text.animation', CINEMATIC_TEXT_ANIMATIONS);
     if (t.size !== undefined) number(t.size, 'presentation.text.size', 8, 64);

@@ -27,6 +27,19 @@ const server=createServer(async(req,res)=>{
     const url=payload.toolName==='preview_opening_animatic'?await a.renderOpeningAnimaticPreview(payload.project,payload.data):payload.toolName==='preview_opening_reference'?await a.renderOpeningReferencePreview(payload.data):payload.toolName==='show_opening_image'?await m.renderOpeningImage(payload.project,payload.data):await (await import('/src/ai/toolImageRenderer.ts')).renderPiMapImage(payload.project,payload.data);
     return {png:url.split(',')[1]};
    }
+   if(operation==='/toolimage') {
+    const t=await import('/src/ai/toolImageRenderer.ts');
+    return {png:(await t.renderPiToolImage(payload.project,payload.toolName,payload.data)).split(',')[1]};
+   }
+   if(operation==='/measure') {
+    const a=await import('/src/editor/openingAnimaticPreview.ts');
+    return {measurements:await a.measureOpeningAnimaticFrames(payload.project,payload.data)};
+   }
+   if(operation==='/preview') {
+    const a=await import('/src/editor/openingAnimaticPreview.ts');
+    const r=await a.renderOpeningAnimaticPreviewDetailed(payload.project,payload.data);
+    return {png:r.dataUrl.split(',')[1],measurements:r.measurements};
+   }
    throw Error('Unknown QA operation');
   },{operation:req.url,payload});
   res.writeHead(200,{'Content-Type':'application/json'});res.end(JSON.stringify(value));

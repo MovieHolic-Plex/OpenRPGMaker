@@ -208,7 +208,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
       enum: [
-        "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "animation", "shake", "wait", "parallel",
+        "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "animation", "shake", "changeTile", "wait", "parallel",
         "label", "jump", "switch", "transfer", "ending", "letterbox", "particles", "look", "emote", "weather", "text", "narrate",
       ],
     },

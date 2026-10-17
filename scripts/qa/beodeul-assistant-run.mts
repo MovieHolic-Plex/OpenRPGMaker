@@ -26,6 +26,7 @@ import type { Project } from "../../src/project/types.ts";
 import { analyzeBeodeul, type Stamp } from "../content/lib/beodeul-metrics.ts";
 
 const arg = (n: string, d?: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
+const __ban=/gpt-5\.6-sol|deepseek/i; if(__ban.test(String(arg('model','')))) throw Error('금지된 모델입니다: gpt-5.6-sol/DeepSeek 은 이 러너에서 쓰지 않는다(사용자 지시 2026-10-17). --model cpa8318/gemini-4-argon-high 를 쓰세요.');
 const projectDir = path.resolve(arg("project")!);
 const label = arg("label", "run")!;
 const mapId = arg("map", "beodeul_like")!;

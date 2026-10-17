@@ -1,6 +1,7 @@
 // editor/titleArtGeneration.ts
 // 타이틀 키아트 생성. 이미지 바이트는 세션 전사에 남기지 않고, 등록(upsert_resource)과
 // 연결(set_title_screen)은 호출자가 기존 쓰기 툴로 해 diff·제안 회계를 그대로 탄다.
+import { pixelizeOpeningImage } from "./openingImageGeneration";
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import { buildTitleArtPrompt, prepareTitleArtRequest, type TitleArtRequest } from "@/editor/tools/titleArtTools";
 import { fitTitleArtEffects, type TitleArtFitResult } from "@/editor/titleArtFitting";
@@ -65,7 +66,8 @@ export async function generateTitleArt(
       ok: true,
       request,
       resourceId: genId("title_art"),
-      dataUrl: image.dataUrl,
+      // 오프닝 컷과 같은 격자·팔레트로 내린다(타이틀만 굵은 도트이거나 매끈한 그림이면 한 작품으로 안 보인다).
+      dataUrl: await pixelizeOpeningImage(image.dataUrl, false),
       ...(fit && (fit.fitted.length > 0 || !request.preset) ? { effects: fit.effects } : {}),
       // 자유 모드에서 맞춤이 통째로 실패하면 카메라 호흡 하나라도 건다 — 프리셋 효과가 없으므로.
       ...(!request.preset && !fit ? { effects: [{ kind: "camera" } satisfies TitleEffect] } : {}),

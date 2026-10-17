@@ -3240,6 +3240,28 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 `scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
 계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.
 
+### 조수가 도트를 직접 찍는다 — `author_pixel_art` · `author_actor_charset` · Argon 기본 (2026-10-14)
+
+- **기본 모델 = `gemini-4-argon`**(Antigravity, 전송 ID `gemini-4-argon-{low,medium,high}`, minimal→low). 설치된 pi-catalog 에는 없어 `scripts/lib/ohMyPiModel.ts` 가 3.7 메타데이터를 덮어 쓴다. 모든 슬롯 기본값(llmClient·modelCatalog·modelPresets·modelRoles·ohMyPiProviders·ultrabrainConfig·providerSelection)이 Argon 이고 저장된 옛 기본 3.8 은 승격된다. 컷신 독립 심사자(`cutsceneCritic`)는 독립성을 위해 3.8 로 남겼다. 계약 테스트 기대값은 고쳤으나 돌리지 않았다.
+- **`author_pixel_art`**(`src/editor/tools/pixelArtTools.ts`, 순수 변환 `src/editor/pixelArt/rowsImage.ts`): 행 문자열+팔레트로 object(16px 칩셋 끝에 `bakeWorkshopObject` 로 구워 `workshop:<이름>`, `stamp_tileset_object` 로 놓음) · charset(24×32, 방향별 stand+선택 stepA/stepB, 안 주면 다리 1px 자동 걷기, left 생략 시 right 뒤집기) · picture(컷신 소품, 배경으로 맵을 가리지 말 것). 확대 미리보기를 `toolAdapter.ts` 가 모델에 돌려준다. **3/4 object-gate 는 배선돼 있지 않다** — 결과 요약이 «관문 영수증 없음»을 말하며 공용·스토어 게시 금지. 한글 이름은 id 가 비면 해시로 대신한다.
+- **`author_actor_charset`**: 파라미터 생성기(체형 4종), 자유 도트가 필요하면 `author_pixel_art` kind charset.
+- 측정 검사(`cutscenePreview/probe.ts`): 색조 알파 <0.2, 주체가 가장자리에 걸려 잘리는 시간 ≥40% 를 조수에게 되돌린다. 잘림 검사는 2026-10-14 실행 2회에서 한 번도 걸리지 않았다(원인 미조사). 증거 보고서: `~/claude-viz/argon-report.html`.
+
+### 대형 유닛 walker · smash — 세계가 반응하는 행군 (2026-10-14)
+
+- `author_pixel_art kind:"walker"` — 전투기계·괴수·탈것처럼 큰 유닛은 24×32 칩셋을 키우지 않고 **원본 해상도**(32×32~160×192, 모든 프레임 같은 캔버스)로 찍는다. `directions:{right:{stand,stepA?,stepB?}, left?, down?, up?}` — 반대쪽은 뒤집고 없는 방향은 옆모습으로 채운다. 프레임은 `cutscene_char_<slug>_0_walk<Dir><0-2>` 로 등록돼 `script_cutscene_staged` 배우 `resourceId`(결과 값) 하나로 걷기 전체가 붙는다(scale 100). 걷기 자동 생성은 높이/32 px 만큼 다리 한쪽을 든다.
+- `script_cutscene_staged` 새 단계 `smash` — `{tile:{x,y}, w?, h?, layer?, tileId?, effect?, intensity?, ms?, resourceId?}` 가 흔들림 + 파티클 + 효과음 + 맵 칸 교체(`changeTile` 비트 → 지형 변경 명령, 컷신 뒤에도 남음)를 한 번에 낸다. 비트 `changeTile`(`CutsceneChangeTileBeat`, 최대 64칸)이 `src/editor/cutscene/index.ts` 에 새로 생겼다.
+- 프로브(`cutscenePreview/probe.ts`): 큰 유닛(화면 높이 20%↑)이 100px↑ 이동하는 8초↑ 컷신에 `changeTile` 이 하나도 없으면 「무게감 없음」 이슈.
+- 도구 정책 문장은 `src/ai/toolCapabilityIndex.ts` cutscene-art 항목(대형 유닛은 walker, 행군은 화면 밖 진입→퇴장·멈추지 않기·smash).
+
+### 사람 비율·지문·색조·자세 (2026-10-15, 오프닝 1라운드 장면 분석 뒤)
+
+- **사람은 항상 영웅 크기(100%).** 예전 안내(「charset 걷기 200%·scale 250~300」)가 영웅 1배 옆에 3배 블록 인물을 만들었다 → 안내 삭제. `script_cutscene_staged` 는 charset 배우를 100% 로 고정하고, 큰 유닛은 `author_pixel_art kind:"walker"`(≥48px 네이티브)로만 만든다. 점프 `_pxw_` 그림은 배율 무시.
+- **지문 금지.** 대사창의 «(불길이 …)» 같은 괄호 지문은 거절(속마음 context:"thought" 는 괄호만 벗겨 통과).
+- **색조.** `tintPreset` night·moonlit·dusk·dawn·storm·ember·sickly. 손으로 준 어두운 색조가 흰 눈을 연보라로 씻기만 하면(밝은 블렌드 > 150) 거절. 요청에 밤이 있는데 오프닝 이벤트에 tint 가 없으면 관문이 막는다(`openingProduction.inspect`).
+- **자세.** `look.angle` 90° 근처로 눕는 척 금지 → `pose fallen|fallenLeft|crouch|normal`. 스테이지 `pose` 단계는 맵 위 배우에게 스프라이트 자세 beat 를 낸다.
+- **장면 연속성.** 시작 맵 오프닝이 `transfer` 로 옮긴 도착 맵에 `trigger:auto` 연출이 없으면 관문이 막는다(침실→마을 뒤 아무 일 없던 실측).
+- 공급자 흔들림 재시도 패턴(upstream_server_error·socket closed·unknown provider·transient 400, 한도 4)과 로딩 문구 「n / 5」, 대사 한글 어절 줄바꿈(`word-break: keep-all`)도 같은 변경에 있다.
 
 ## 몬스터 자유 경로 도구 (monster-free-b, 2026-10-14)
 
