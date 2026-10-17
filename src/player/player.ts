@@ -24,7 +24,8 @@ import { applyClearCarry, newGamePlusMenuLabel } from "@/project/newGamePlus";
 import { difficultiesOf, initialDifficultyId, setSessionDifficulty } from "@/project/difficulty";
 import { applyTitleVariant } from "@/project/titleVariants";
 import { renderDifficultyPanel } from "@/player/playerDifficultyPanel";
-import { clearHistoryOf, readClearRecord, recordEndingClear } from "@/player/clearRecord";
+import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
+import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
 import {
@@ -344,10 +345,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const session = request.session ?? newSession(effectiveSpawn(request, bootProject), bootProject);
     const clear = readClearRecord(window.localStorage);
     if (!request.session && request.newGamePlus && clear) applyClearCarry(bootProject, session, clear.carry);
-    // 회차는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다.
-    const history = clearHistoryOf(clear);
-    if (history) session.clearHistory = history;
-    else delete session.clearHistory;
+    // 회차·본 엔딩·연 CG 는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다(ESC 불러오기는 PlayScene.applySession 이 같은 함수로).
+    syncSessionWithDeviceRecords(window.localStorage, bootProject, session);
     if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
     if (!opening) {
       void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);

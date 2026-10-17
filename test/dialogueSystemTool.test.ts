@@ -111,7 +111,7 @@ describe("configure_field_menu with backlog", () => {
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "configure_field_menu", { preset: "romance" });
     expect(result.ok, result.summary).toBe(true);
-    expect(fieldMenu(ctx.project)?.entries.map((entry) => entry.command)).toEqual(["relationships", "quests", "items", "backlog", "save", "load", "options", "to-title"]);
+    expect(fieldMenu(ctx.project)?.entries.map((entry) => entry.command)).toEqual(["relationships", "quests", "items", "gallery", "endings", "backlog", "save", "load", "options", "to-title"]);
     expect(resolveDialogueSystem(ctx.project)?.backlog.enabled).toBe(true);
   });
 

@@ -12,7 +12,7 @@ import { friendshipDisplayMax, socialLoopSummary } from "@/project/socialLoop";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
 import { backlogEnabled, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { dialogueUiText } from "@/player/dialogueUiStrings";
-import { vnGalleryLabel, vnUiText } from "@/player/vnExtrasStrings";
+import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings";
 import { galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
@@ -381,8 +381,15 @@ function relationshipOverview(project: Project, session: PlaySession, leadName: 
   return { leadName, ...(timeLine ? { timeLine } : {}), rows };
 }
 
+/** 연애 기본 ESC 메뉴(저작 없음)의 기본 낱말 — 저작 언어로 번역한다. 저작한 메뉴의 라벨은 작가 글자 그대로 둔다. */
+const ROMANCE_DEFAULT_LABEL_KEYS: Partial<Record<StatusMenuCommandId, VnUiKey>> = {
+  relationships: "menu.relationships", quests: "menu.quests", items: "menu.items", save: "menu.save", load: "menu.load", options: "menu.options", "to-title": "menu.toTitle",
+};
+
 export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {
   const authored = project && fieldMenu(project)?.entries.find(row => row.command === commandId);
+  const defaultKey = authored && project && !project.meta.oprnFieldMenu && resolveVnExtras(project) ? ROMANCE_DEFAULT_LABEL_KEYS[commandId] : undefined;
+  if (defaultKey) return vnUiText(vnExtrasLanguage(project), defaultKey);
   // 저작하지 않은 기본 라벨(연애 기본 메뉴의 「백로그」「갤러리」「엔딩」)은 저작한 언어로 보인다. 저작자가 직접 쓴 라벨은 그대로다.
   const defaultName = authored && project && (
     (commandId === "backlog" && authored.label === "백로그")

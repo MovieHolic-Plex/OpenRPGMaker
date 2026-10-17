@@ -39,7 +39,10 @@ function issues(p:Project):string[]{
     if(menuEntries&&vn?.endings.enabled&&!menuEntries.some(e=>e.command==='endings'))errors.push('엔딩 목록은 켜져 있지만 저작된 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. configure_field_menu {preset:"custom", add:[{command:"endings",label:"엔딩"}]} 로 넣으세요.');
     if(vn?.endings.enabled&&(p.endings??[]).length===0)errors.push('엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 저작하세요.');
     if(vn?.saveCards.enabled&&!backlogEnabled(p))errors.push('세이브 카드는 켜져 있지만 대사 백로그가 꺼져 있어 저장 칸에 마지막 대사 한 줄이 비어 보입니다(날짜만 나옵니다). set_dialogue_system {backlog:true} 로 켜세요.');
-    if(vn?.gallery.enabled&&listGallerySlots(p).length===0)errors.push('갤러리는 켜져 있지만 recordInGallery 로 기록되는 그림(showPicture)이 없어 CG 칸이 비어 있습니다.');
+    // 연애 기본 구성(저작 없음)은 CG 없이도 정상이다 — 갤러리 항목이 비어 있으면 스스로 숨는다. 작가가 갤러리를 직접 켠 경우에만 짚는다.
+    if(p.meta.oprnVnExtras?.gallery.enabled&&listGallerySlots(p).length===0)errors.push('갤러리는 켜져 있지만 recordInGallery 로 기록되는 그림(showPicture)이 없어 CG 칸이 비어 있습니다.');
+    // 옛 저작 메뉴(갤러리 항목 없음)에서는 갤러리를 열 수 없다 — 열 내용(CG 칸·본 엔딩 회상)이 있을 때만 짚는다.
+    if(menuEntries&&vn?.gallery.enabled&&!menuEntries.some(e=>e.command==='gallery')&&(listGallerySlots(p).length>0||(p.endings??[]).length>0))errors.push('갤러리는 켜져 있지만 저작된 ESC 메뉴에 갤러리 항목이 없어 열 수 없습니다. configure_field_menu {preset:"custom", add:[{command:"gallery",label:"갤러리"}]} 로 넣으세요.');
   }
   if(monsterParty&&s.monsterCollection===undefined)errors.push('몬스터 전투는 활성화됐지만 포획 커맨드는 꺼져 있습니다. 포획 없는 대회형이면 configure_monster_system(enabled:true, capture:false) 로 포획 없음을 선언하세요.');
   if(s.opening?.musicResourceId&&!p.assets.uploaded[s.opening.musicResourceId]?.ref&&!p.assets.uploaded[s.opening.musicResourceId]?.dataUrl && s.opening.musicResourceId.startsWith('composed_music_'))errors.push('저작 음악의 실제 바이트가 없습니다.');
@@ -106,8 +109,13 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     if(next?.entries.some(e=>e.command==='gallery'||e.command==='endings')){
       const vn=resolveVnExtras(p),wantGallery=next.entries.some(e=>e.command==='gallery')&&!galleryActive(p),wantEndings=next.entries.some(e=>e.command==='endings')&&!vn?.endings.enabled;
       if(wantGallery||wantEndings){
-        p.meta.oprnVnExtras=mergeVnExtras(vn,{...(wantGallery?{gallery:true}:{}),...(wantEndings?{endings:true}:{})});
-        notice.push(`메뉴에 ${[wantGallery?'갤러리':'',wantEndings?'엔딩':''].filter(Boolean).join('·')}가 있어 해당 기능을 켰습니다`);
+        // 작가가 set_vn_extras 로 이미 저작해 둔 프로젝트는 그 선택(명시 off 포함)을 조용히 뒤집지 않는다 — 켜진 기능만 메뉴와 맞추고, 꺼 둔 기능은 알려 준다.
+        const names=[wantGallery?'갤러리':'',wantEndings?'엔딩':''].filter(Boolean).join('·');
+        if(p.meta.oprnVnExtras)notice.push(`메뉴에 ${names} 항목이 있지만 set_vn_extras 로 꺼 둔 상태라 그대로 두었습니다(항목은 안 보임). 켜려면 set_vn_extras {${[wantGallery?'gallery':'',wantEndings?'endings':''].filter(Boolean).map(k=>k+':true').join(', ')}}`);
+        else{
+          p.meta.oprnVnExtras=mergeVnExtras(vn,{...(wantGallery?{gallery:true}:{}),...(wantEndings?{endings:true}:{})});
+          notice.push(`메뉴에 ${names} 항목이 있어 해당 기능을 켰습니다`);
+        }
       }
     }
     return {summary:`ESC 메뉴를 실제 기능 ID에 연결했습니다${notice.length?' — '+notice.join('; '):''}. 원정 수첩은 주인공 기록, 동료는 실제 몬스터/보관함입니다.`,data:systemView(p)};
@@ -145,9 +153,10 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     }
     const patch:DialogueSystemPatch={...(args.backlog!==undefined?{backlog:args.backlog as boolean}:{}),...(args.backlogLimit!==undefined?{backlogLimit:args.backlogLimit as number}:{}),...(args.auto!==undefined?{auto:args.auto as boolean}:{}),...(args.skip!==undefined?{skip:args.skip as boolean}:{}),...(args.hideButton!==undefined?{hideButton:args.hideButton as boolean}:{}),...(args.language!==undefined?{language:args.language as DialogueSystemPatch['language']}:{}),...(defaults?{defaults}:{})};
     const notice:string[]=[];
-    if(args.preset==='default'&&Object.keys(patch).length===0){
+    if(args.preset==='default'){
       delete p.meta.oprnDialogueSystem;
-      return {summary:`대사 시스템 저작을 지웠습니다. 이제 자동 판정입니다(${resolveDialogueSystem(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).`,data:systemView(p)};
+      const ignored=Object.keys(patch);
+      return {summary:`대사 시스템 저작을 지웠습니다. 이제 자동 판정입니다(${resolveDialogueSystem(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).${ignored.length?` preset:"default" 는 저작을 지우는 것이라 함께 준 칸(${ignored.join(', ')})은 적용하지 않았습니다. 켜거나 조정하려면 preset 없이 따로 호출하세요.`:''}`,data:systemView(p)};
     }
     const base=args.preset==='romance'?mergeDialogueSystem(undefined,{backlog:true,auto:true,skip:true,hideButton:true}):args.preset==='default'?undefined:resolveDialogueSystem(p);
     const next=mergeDialogueSystem(base,patch);
@@ -176,10 +185,12 @@ export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
     for(const key of ['gallery','galleryShowLocked','endings','endingsHideUnseen','saveCards'] as const)if(args[key]!==undefined&&typeof args[key]!=='boolean')fail(`${key} 는 true/false 여야 합니다(문자열 "true" 가 아님). 받은 값: ${JSON.stringify(args[key])}.`);
     if(args.language!==undefined&&args.language!=='inherit'&&!(DIALOGUE_UI_LANGUAGES as readonly string[]).includes(String(args.language)))fail(`language 는 ${[...DIALOGUE_UI_LANGUAGES,'inherit'].join('|')} 중 하나여야 합니다. 받은 값: ${JSON.stringify(args.language)}.`);
     const patch:VnExtrasPatch={...(args.gallery!==undefined?{gallery:args.gallery as boolean}:{}),...(args.galleryShowLocked!==undefined?{galleryShowLocked:args.galleryShowLocked as boolean}:{}),...(args.endings!==undefined?{endings:args.endings as boolean}:{}),...(args.endingsHideUnseen!==undefined?{endingsHideUnseen:args.endingsHideUnseen as boolean}:{}),...(args.saveCards!==undefined?{saveCards:args.saveCards as boolean}:{}),...(args.language!==undefined?{language:args.language as VnExtrasPatch['language']}:{})};
-    if(args.preset==='default'&&Object.keys(patch).length===0){
+    if(args.preset==='default'){
       delete p.meta.oprnVnExtras;
-      return {summary:`미연시 추가 화면 저작을 지웠습니다. 이제 자동 판정입니다(${resolveVnExtras(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).`,data:systemView(p)};
+      const ignored=Object.keys(patch);
+      return {summary:`미연시 추가 화면 저작을 지웠습니다. 이제 자동 판정입니다(${resolveVnExtras(p)?'관계 중심 게임이라 기본 구성이 켜짐':'옛 동작 그대로'}).${ignored.length?` preset:"default" 는 저작을 지우는 것이라 함께 준 칸(${ignored.join(', ')})은 적용하지 않았습니다. 켜거나 조정하려면 preset 없이 따로 호출하세요.`:''}`,data:systemView(p)};
     }
+    if(args.preset===undefined&&Object.keys(patch).length===0)return {summary:'바꿀 칸이 없어 아무것도 저장하지 않았습니다. 예: set_vn_extras {gallery:true} 또는 {saveCards:false}. 연애·관계 중심 게임은 이미 기본으로 켜져 있습니다.',data:systemView(p)};
     const base=args.preset==='romance'?romanceVnExtras():args.preset==='default'?undefined:resolveVnExtras(p);
     const next=mergeVnExtras(base,patch);
     try{validateVnExtras(next);}catch(e){fail(`${e instanceof Error?e.message:String(e)}`);}

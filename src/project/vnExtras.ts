@@ -124,15 +124,35 @@ export function vnExtrasLanguage(project: VnExtrasHost | undefined): { readonly 
 
 // ── 갤러리: CG 칸 목록 ───────────────────────────────────────────────────────────────
 
-const gallerySlotCache = new WeakMap<object, readonly string[]>();
+type GallerySlotCacheEntry = { readonly signature: readonly unknown[]; readonly slots: readonly string[] };
+const gallerySlotCache = new WeakMap<object, GallerySlotCacheEntry>();
+
+/** 캐시가 낡았는지 보는 값 — 맵 묶음, 이벤트·페이지·명령 배열의 참조와 길이. 같은 객체를 제자리에서 고쳐 이벤트·페이지·최상위 명령 수가 바뀌어도 걸린다(중첩 분기 안을 제자리에서 바꾸는 것까지는 못 본다 — 스토어는 불변 갱신이다). 이벤트 수에 비례하는 값싼 비교라 깊이 훑는 것보다 훨씬 싸다. */
+function gallerySlotSignature(project: Pick<Project, "maps" | "commonEvents">): readonly unknown[] {
+  const signature: unknown[] = [project.maps, project.commonEvents, project.commonEvents?.length ?? 0];
+  for (const map of Object.values(project.maps ?? {})) {
+    signature.push(map, map.events, map.events?.length ?? 0);
+    for (const event of map.events ?? []) {
+      signature.push(event, event.pages);
+      for (const page of event.pages ?? []) signature.push(page, page.commands, page.commands?.length ?? 0);
+    }
+  }
+  for (const common of project.commonEvents ?? []) signature.push(common, common.commands, common.commands?.length ?? 0);
+  return signature;
+}
+
+function sameSignature(a: readonly unknown[], b: readonly unknown[]): boolean {
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
 
 /**
  * 이 게임에서 갤러리에 기록되도록 저작된 CG(showPicture recordInGallery)를 이벤트 순서대로 모은다.
  * 해금 전에도 칸 수를 알 수 있어야 「잠김」을 보일 수 있다. 맵 이벤트·공통 이벤트를 훑는다.
  */
 export function listGallerySlots(project: Pick<Project, "maps" | "commonEvents">): readonly string[] {
+  const signature = gallerySlotSignature(project);
   const cached = gallerySlotCache.get(project);
-  if (cached) return cached;
+  if (cached && sameSignature(cached.signature, signature)) return cached.slots;
   const found: string[] = [];
   const take = (command: Command): void => {
     if (command.kind === "showPicture" && command.recordInGallery === true && typeof command.resourceId === "string" && command.resourceId.trim()) {
@@ -142,7 +162,7 @@ export function listGallerySlots(project: Pick<Project, "maps" | "commonEvents">
   };
   for (const map of Object.values(project.maps ?? {})) for (const command of collectCommands(map.events ?? [])) take(command);
   for (const common of project.commonEvents ?? []) for (const command of collectCommands([{ commands: common.commands } as never])) take(command);
-  gallerySlotCache.set(project, found);
+  gallerySlotCache.set(project, { signature, slots: found });
   return found;
 }
 
@@ -217,26 +237,25 @@ export type EndingChecklistRow = {
 };
 
 /**
- * 인물별 결말 3종 체크리스트. 인물 전용 엔딩이 있으면 그 인물 행을, 공통 엔딩이 있으면 「공통」 행을 만든다.
- * 인물 행에서 자기 엔딩이 없는 결말 칸은 공통 엔딩이 갈음한다(호감 가장 높은 사람 기준 엔딩이 그 인물에게도 닿으므로).
+ * 인물별 결말 3종 체크리스트. 인물 전용 엔딩이 있는 인물마다 한 행, 인물 무관(공통) 엔딩이 있으면 「공통」 한 행.
+ * 칸은 **그 행 자신의 엔딩만** 센다 — 한 사람과의 평범 결말을 본 것이 호감이 0 인 다른 인물 칸까지 채우지 않는다(2026-10-17 리뷰 C2).
+ * 인물 이름을 못 찾으면(프로필·NPC 이름 없음) 내부 id 를 보이지 않고 `unknownLabel`(기본 「???」)로 가린다.
  */
-export function endingChecklist(project: Project, seenIds: readonly string[] | undefined, commonLabel: string): readonly EndingChecklistRow[] {
+export function endingChecklist(project: Project, seenIds: readonly string[] | undefined, commonLabel: string, unknownLabel = "???"): readonly EndingChecklistRow[] {
   const rows = listEndingRows(project, seenIds);
   const characters: string[] = [];
   for (const row of rows) if (row.characterId && !characters.includes(row.characterId)) characters.push(row.characterId);
   const common = rows.filter((row) => !row.characterId);
-  const cell = (tier: EndingTier, list: readonly EndingRow[], fallback: readonly EndingRow[]) => {
-    const own = list.filter((row) => row.tier === tier);
-    const pool = own.length > 0 ? own : fallback.filter((row) => row.tier === tier);
+  const cell = (tier: EndingTier, list: readonly EndingRow[]) => {
+    const pool = list.filter((row) => row.tier === tier);
     return { tier, defined: pool.length > 0, seen: pool.some((row) => row.seen) };
   };
   const out: EndingChecklistRow[] = [];
   for (const characterId of characters) {
     const own = rows.filter((row) => row.characterId === characterId);
-    out.push({ characterId, name: friendshipDisplayName(project, characterId) ?? characterId, tiers: ENDING_TIERS.map((tier) => cell(tier, own, common)) });
+    out.push({ characterId, name: friendshipDisplayName(project, characterId) ?? unknownLabel, tiers: ENDING_TIERS.map((tier) => cell(tier, own)) });
   }
-  // 인물 행이 있으면 공통 엔딩은 각 행의 빈 결말 칸을 갈음하므로 따로 행을 만들지 않는다. 인물 전용 엔딩이 없는 게임만 「공통」 한 행.
-  if (characters.length === 0 && common.length > 0) out.push({ name: commonLabel, tiers: ENDING_TIERS.map((tier) => cell(tier, common, [])) });
+  if (common.length > 0) out.push({ name: commonLabel, tiers: ENDING_TIERS.map((tier) => cell(tier, common)) });
   return out;
 }
 
@@ -264,10 +283,22 @@ export function saveSceneLine(backlog: readonly BacklogEntry[] | undefined): str
     const text = entry.text.replace(/\s+/g, " ").trim();
     if (!text) continue;
     const full = entry.speaker ? `${entry.speaker}: ${text}` : text;
-    const chars = [...full];
-    return chars.length > SCENE_LINE_MAX ? `${chars.slice(0, SCENE_LINE_MAX - 1).join("")}…` : full;
+    return clipSceneLine(stripBidi(full));
   }
   return undefined;
+}
+
+/** 방향을 뒤집는 제어문자(U+202A~202E·2066~2069·LRM/RLM/ALM)는 글자 순서를 바꿔 한 줄을 위장할 수 있어 버린다. */
+function stripBidi(text: string): string {
+  return text.replace(/[\u202a-\u202e\u2066-\u2069\u200e\u200f\u061c]/g, "");
+}
+
+const graphemeSegmenter = typeof Intl !== "undefined" && "Segmenter" in Intl ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : undefined;
+
+/** 한 줄 상한(SCENE_LINE_MAX 글자)까지만 남기고 말줄임. 이모지 시퀀스(ZWJ·피부색·국기)를 중간에서 끊지 않도록 글자 묶음(grapheme) 단위로 센다. */
+function clipSceneLine(text: string): string {
+  const units = graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text), (part) => part.segment) : [...text];
+  return units.length > SCENE_LINE_MAX ? `${units.slice(0, SCENE_LINE_MAX - 1).join("")}…` : text;
 }
 
 /** 저장 시각(ISO) → 「YYYY.MM.DD HH:mm」 로컬 시각. 무효면 빈 문자열. playerLoadPanel.formatSavedAt 과 같은 모양(그쪽은 스토어를 끌어와 잎 모듈이 못 쓴다). */
@@ -281,8 +312,7 @@ export function formatSaveDate(iso: string): string {
 /** 저장본에서 읽은 값을 안전한 한 줄로. */
 export function normalizeSceneLine(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
-  const text = value.replace(/[\u0000-\u001f]/g, " ").replace(/\s+/g, " ").trim();
+  const text = stripBidi(value.replace(/[\u0000-\u001f]/g, " ")).replace(/\s+/g, " ").trim();
   if (!text) return undefined;
-  const chars = [...text];
-  return chars.length > SCENE_LINE_MAX ? `${chars.slice(0, SCENE_LINE_MAX - 1).join("")}…` : text;
+  return clipSceneLine(text);
 }
