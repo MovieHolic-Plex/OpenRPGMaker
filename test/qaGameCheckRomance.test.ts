@@ -206,4 +206,29 @@ describe("checkRomance — 연애 게임 부합 경고", () => {
     second.events[0]!.characterId = "haeun";
     expect(codes(project)).not.toContain("romance-heroine-id-split");
   });
+
+
+  it("한글 characterId 인물도 서로 다른 엔딩 id 를 받고 기한 판정은 해피 호출을 유지한다", () => {
+    const project = romanceProject();
+    project.system.timeSystem = { enabled: true } as never;
+    project.endings = [
+      { id: "ending_first_segment", name: "혼자", conditions: [], priority: 0 },
+      { id: "ending_romance_happy", name: "해피", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 60 }], priority: 20 },
+      { id: "ending_romance_normal", name: "평범", conditions: [{ kind: "friendshipAtLeast", npcKey: "*", value: 25 }], priority: 10 },
+    ] as never;
+    installDeadlineEnding(project, 14, [
+      { endingId: "ending_romance_happy", threshold: 60, characterId: "*" }, { endingId: "ending_romance_normal", threshold: 25, characterId: "*" }, { endingId: "ending_first_segment" }]);
+    const ctx = { project };
+    const place = (name: string, x: number) => runTool(ctx, "place_npc", { mapId: project.startMapId, x, y: 8, name, characterId: name, talkFriendship: true, pages: [{ lines: ["안녕"] }] });
+    expect(place("한서윤", 3).ok).toBe(true);
+    expect(place("윤하늘", 5).ok).toBe(true);
+    expect(place("강나래", 7).ok).toBe(true);
+    const made = (ctx.project.endings ?? []).filter((ending) => ending.id.startsWith("ending_with_"));
+    expect(new Set(made.map((ending) => ending.id)).size).toBe(3);
+    expect(made.every((ending) => ending.id.length > "ending_with_".length + 1)).toBe(true);
+    const chain = JSON.stringify(ctx.project.commonEvents);
+    for (const ending of made) expect(chain).toContain(ending.id);
+    expect(chain).toContain("ending_romance_happy");
+    expect(codes(ctx.project)).not.toContain("romance-heroine-endings-uncalled");
+  });
 });

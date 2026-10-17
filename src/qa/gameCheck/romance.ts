@@ -192,18 +192,28 @@ export function checkRomance(project: Project, briefText = briefTextOf(project))
     });
   }
   // 같은 인물이 맵마다 같은 모습으로 서는 것은 일관성이다(characterId 가 맵마다 달라도 같은 이름이면 한 사람) — 서로 다른 사람이 한 칩일 때만 중복이다.
-  const byChip = new Map<string, Set<string>>();
+  // 같은 characterId 를 쓰는 이벤트도 한 사람이다(맵마다 「산책로의 한서윤」 처럼 이름 머리말이 달라도).
+  const byChip = new Map<string, { name: string; cid: string }[]>();
   for (const { event } of people) {
     const chip = (event.pages ?? []).map(chipOf).find((c): c is string => c !== undefined);
     if (!chip) continue;
-    const who = personKey(event);
-    byChip.set(chip, (byChip.get(chip) ?? new Set()).add(who));
+    byChip.set(chip, [...(byChip.get(chip) ?? []), { name: personKey(event), cid: event.characterId?.trim() ?? "" }]);
   }
-  for (const [chip, who] of byChip) {
-    if (who.size < 2) continue;
+  for (const [chip, entries] of byChip) {
+    const clusters: { names: Set<string>; cids: Set<string> }[] = [];
+    for (const entry of entries) {
+      const hit = clusters.filter((cluster) => cluster.names.has(entry.name) || (entry.cid && cluster.cids.has(entry.cid)));
+      const merged = hit[0] ?? { names: new Set<string>(), cids: new Set<string>() };
+      for (const other of hit.slice(1)) { other.names.forEach((n) => merged.names.add(n)); other.cids.forEach((c) => merged.cids.add(c)); clusters.splice(clusters.indexOf(other), 1); }
+      if (!hit[0]) clusters.push(merged);
+      merged.names.add(entry.name);
+      if (entry.cid) merged.cids.add(entry.cid);
+    }
+    if (clusters.length < 2) continue;
+    const who = clusters.map((cluster) => [...cluster.names][0]!);
     findings.push({
       severity: "warning", code: "romance-npc-duplicate-chip",
-      message: `서로 다른 인물 ${who.size}명(${[...who].slice(0, 5).join(", ")})이 같은 캐릭터 칩(${chip})입니다 — 화면에서 구분되지 않습니다. list_npc_graphics 에서 인물마다 다른 칩을 고르세요.`,
+      message: `서로 다른 인물 ${who.length}명(${who.slice(0, 5).join(", ")})이 같은 캐릭터 칩(${chip})입니다 — 화면에서 구분되지 않습니다. list_npc_graphics 에서 인물마다 다른 칩을 고르세요.`,
     });
   }
 
