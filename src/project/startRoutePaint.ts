@@ -197,7 +197,7 @@ function stampRiversideKit(
 export function paintRiversidePromenade(
   project: Project,
   map: GameMap,
-  plan?: Pick<StartPlan, "entryY" | "endY" | "seed">,
+  plan?: Partial<Pick<StartPlan, "entryY" | "endY" | "seed">> & { readonly styleVariant?: "A" | "B" | "C" | "D" },
 ): void {
   ensureRiversideHeight(project, map, 15);
   const W = map.width, H = map.height;
@@ -205,12 +205,16 @@ export function paintRiversidePromenade(
   if (!map.upperTiles || map.upperTiles.length !== W * H) map.upperTiles = new Array<number>(W * H).fill(-1);
   if (!map.upperOverlayTiles || map.upperOverlayTiles.length !== W * H) map.upperOverlayTiles = new Array<number>(W * H).fill(-1);
 
+  const sv = plan?.styleVariant;
+  const mode = sv === "B" ? 1 : sv === "C" ? 2 : sv === "D" ? 3 : sv === "A" ? 0 : Math.max(0, ((plan?.seed ?? 1) - 1) % 4);
+  const baseWaterDepth = mode === 1 ? 5 : mode === 2 ? 3 : 4;
+
   const ts = project.tilesets[map.tilesetId];
   if (map.tilesetId !== "modern_city" && map.tilesetId !== "modern_campus") {
     const waterTile = map.tilesetId === "jp_city" ? 849 : map.tilesetId === "beodeul_city" ? 8 : map.tilesetId === "joseon_baram" ? 48 : map.tilesetId === "sengoku_edo" ? 32 : undefined;
     const embankTile = map.tilesetId === "jp_city" ? 850 : map.tilesetId === "sengoku_edo" ? 34 : undefined;
     if (waterTile !== undefined) {
-      for (let y = 0; y < 4; y++) {
+      for (let y = 0; y < baseWaterDepth; y++) {
         for (let x = 0; x < W; x++) {
           const idx = y * W + x;
           map.lowerTiles[idx] = waterTile;
@@ -221,7 +225,7 @@ export function paintRiversidePromenade(
       }
       if (embankTile !== undefined) {
         for (let x = 0; x < W; x++) {
-          const idx = 4 * W + x;
+          const idx = baseWaterDepth * W + x;
           map.lowerTiles[idx] = embankTile;
           map.upperTiles[idx] = -1;
         }
@@ -237,16 +241,16 @@ export function paintRiversidePromenade(
   const grassShade = isCampus ? 4 : 18;
   const flower = isCampus ? 3 : 19;
   const walkTop = isCampus ? 7 : 10;
-  const walkMid = isCampus ? 8 : 7;
-  const walkAlt = isCampus ? 9 : 8;
+  const walkMid = isCampus ? 8 : mode === 2 ? 8 : 7;
+  const walkAlt = isCampus ? 9 : mode === 2 ? 7 : 8;
   const walkBot = isCampus ? 7 : 9;
 
-  const walkTopY = 9;
-  const walkMidY1 = 10;
-  const walkMidY2 = 11;
-  const walkBotY = 12;
+  const walkTopY = mode === 1 ? 10 : mode === 2 ? 8 : 9;
+  const walkMidY1 = walkTopY + 1;
+  const walkMidY2 = walkTopY + 2;
+  const walkBotY = walkTopY + 3;
 
-  // 이동 이벤트와 NPC 가 물·제방·나무 줄에 걸리지 않고 연속 산책로(y=9..11) 위에 서도록 정렬한다.
+  // 이동 이벤트와 NPC 가 물·제방·나무 줄에 걸리지 않고 연속 산책로 위에 서도록 정렬한다.
   for (const ev of map.events) {
     const isEdgeGate = ev.x <= 1 || ev.x >= W - 2 || /starter|end|gate|exit|enter/iu.test(ev.id);
     if (isEdgeGate) {
@@ -254,32 +258,41 @@ export function paintRiversidePromenade(
       if (ev.y !== targetY) {
         const prevY = ev.y;
         ev.y = targetY;
-        shiftIncomingTransfersToMap(project, map.id, (y) => (Math.abs(y - prevY) <= 1 ? targetY : undefined));
+        shiftIncomingTransfersToMap(project, map.id, (y) => (Math.abs(y - prevY) <= 2 ? targetY : undefined));
       }
     } else if (ev.y < walkTopY || ev.y > walkBotY) {
       ev.y = walkTopY;
     }
   }
 
+  const bayX0 = Math.floor(W * 0.28);
+  const bayX1 = Math.floor(W * 0.72);
+  const waterDepthAt = (x: number): number => (mode === 3 && x >= bayX0 && x <= bayX1 ? 5 : baseWaterDepth);
+
   for (let y = 0; y < H; y++) {
     for (let x = 0; x < W; x++) {
       const idx = y * W + x;
-      if (y < 4) {
+      const wDepth = waterDepthAt(x);
+      if (y < wDepth) {
         map.lowerTiles[idx] = water;
-      } else if (y === 4) {
+      } else if (y === wDepth) {
         map.lowerTiles[idx] = embankment;
       } else if (y < walkTopY) {
-        const isFlower = y === 6 && ((x >= 4 && x <= 6) || (x >= 11 && x <= 13) || (x >= 18 && x <= 19));
-        const isShade = y === 7 && (x % 7 >= 1 && x % 7 <= 3);
+        const flowerY = wDepth + 2;
+        const isFlower = y === flowerY && (mode === 1 ? ((x + 2) % 6 <= 2) : mode === 2 ? ((x + 1) % 5 <= 1) : ((x >= 4 && x <= 6) || (x >= 11 && x <= 13) || (x >= 18 && x <= 19)));
+        const isShade = y === walkTopY - 2 && ((x + mode * 2) % 7 >= 1 && (x + mode * 2) % 7 <= 3);
         map.lowerTiles[idx] = isFlower ? flower : isShade ? grassShade : grass;
       } else if (y === walkTopY) {
         map.lowerTiles[idx] = walkTop;
       } else if (y === walkMidY1 || y === walkMidY2) {
-        map.lowerTiles[idx] = (x + y) % 5 === 2 ? walkAlt : walkMid;
+        const pattern = mode === 1 ? (x + y) % 3 === 0 : mode === 3 ? (x * 2 + y) % 4 === 1 : (x + y) % 5 === 2;
+        map.lowerTiles[idx] = pattern ? walkAlt : walkMid;
       } else if (y === walkBotY) {
         map.lowerTiles[idx] = walkBot;
       } else {
-        map.lowerTiles[idx] = grass;
+        const isSouthFlower = mode === 2 && y === walkBotY + 2 && (x % 6 >= 1 && x % 6 <= 3);
+        const isSouthShade = mode === 3 && y === H - 1 && (x % 5 <= 2);
+        map.lowerTiles[idx] = isSouthFlower ? flower : isSouthShade ? grassShade : grass;
       }
       map.lowerOverlayTiles[idx] = -1;
       map.upperTiles[idx] = -1;
@@ -298,28 +311,40 @@ export function paintRiversidePromenade(
     }
   }
 
+  const xShift = mode === 1 ? 2 : mode === 2 ? 1 : mode === 3 ? 3 : 0;
+  const treeStep = mode === 2 ? 6 : 7;
+  const southBenchY = Math.min(H - 2, walkBotY + 1);
   if (isCampus) {
-    for (let x = 1; x + 3 <= W; x += 7) {
-      stampRiversideKit(ts, map, (Math.floor(x / 7) % 2 === 0) ? "mc-tree-zelkova" : "mc-tree-ginkgo", x, 5, reserved);
+    for (let x = 1 + xShift; x + 3 <= W; x += treeStep) {
+      const treeY = waterDepthAt(x + 1) + 1;
+      const flip = (Math.floor(x / treeStep) + mode) % 2 === 0;
+      stampRiversideKit(ts, map, flip ? "mc-tree-zelkova" : "mc-tree-ginkgo", x, treeY, reserved);
     }
-    for (let x = 5; x < W - 1; x += 6) {
-      stampRiversideKit(ts, map, "mc-lamp", x, 6, reserved);
+    for (let x = 4 + (xShift % 3); x < W - 1; x += 6) {
+      const lampY = Math.min(walkTopY - 3, waterDepthAt(x) + 2);
+      if (lampY >= waterDepthAt(x) + 1) stampRiversideKit(ts, map, "mc-lamp", x, lampY, reserved);
     }
-    for (let x = 3; x + 2 <= W - 1; x += 6) {
-      stampRiversideKit(ts, map, (Math.floor(x / 6) % 2 === 0) ? "mc-bench" : "mc-planter", x, 13, reserved);
+    for (let x = 2 + xShift; x + 2 <= W - 1; x += 6) {
+      const flip = (Math.floor(x / 6) + mode) % 2 === 0;
+      stampRiversideKit(ts, map, flip ? "mc-bench" : "mc-planter", x, southBenchY, reserved);
     }
   } else {
-    for (let x = 1; x + 3 <= W; x += 7) {
-      stampRiversideKit(ts, map, (Math.floor(x / 7) % 2 === 0) ? "mc-prop-ginkgo-a" : "mc-prop-keyaki-a", x, 5, reserved);
+    for (let x = 1 + xShift; x + 3 <= W; x += treeStep) {
+      const treeY = waterDepthAt(x + 1) + 1;
+      const flip = (Math.floor(x / treeStep) + mode) % 2 === 0;
+      stampRiversideKit(ts, map, flip ? "mc-prop-ginkgo-a" : "mc-prop-keyaki-a", x, treeY, reserved);
     }
-    for (let x = 5; x < W - 1; x += 6) {
-      stampRiversideKit(ts, map, "mc-prop-park-lamp-a", x, 6, reserved);
+    for (let x = 4 + (xShift % 3); x < W - 1; x += 6) {
+      const lampY = Math.min(walkTopY - 3, waterDepthAt(x) + 2);
+      if (lampY >= waterDepthAt(x) + 1) stampRiversideKit(ts, map, "mc-prop-park-lamp-a", x, lampY, reserved);
     }
-    for (const bx of [3, 19]) {
-      if (bx + 2 <= W - 1) stampRiversideKit(ts, map, "mc-in-mci-bench-metal", bx, 8, reserved);
+    const northBenchXs = mode === 1 ? [5, 17] : mode === 2 ? [2, 11, 20] : mode === 3 ? [6, 15] : [3, 19];
+    for (const bx of northBenchXs) {
+      if (bx + 2 <= W - 1) stampRiversideKit(ts, map, "mc-in-mci-bench-metal", bx, walkTopY - 1, reserved);
     }
-    for (let x = 3; x + 2 <= W - 1; x += 6) {
-      stampRiversideKit(ts, map, (Math.floor(x / 6) % 2 === 0) ? "mc-prop-bench-c" : "mc-prop-planter-b", x, 13, reserved);
+    for (let x = 2 + xShift; x + 2 <= W - 1; x += 6) {
+      const flip = (Math.floor(x / 6) + mode) % 2 === 0;
+      stampRiversideKit(ts, map, flip ? "mc-prop-bench-c" : "mc-prop-planter-b", x, southBenchY, reserved);
     }
   }
 }

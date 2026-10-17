@@ -6,7 +6,7 @@
 import { buildHandInteriorLayers, type HandInteriorInput, type HandInteriorSpec } from "./builder";
 import type { ComposedRooms } from "./rooms";
 import type { LayoutRoom } from "./layout";
-import { clusterShifts, fittingTemplate, itemArea, itemBox as itemBoxOf, roomTemplates, shiftItems, templateClusters, type InteriorTemplateItem } from "./templates";
+import { clusterShifts, fittingTemplate, itemArea, itemBox as itemBoxOf, roomTemplates, shiftItems, templateClusters, type InteriorStyleVariant, type InteriorTemplateItem } from "./templates";
 import type { TilesetDef } from "@/project/types";
 
 /** 탁자에 딸린 앉을 것 — 혼자서는 놓지 않는다. */
@@ -57,7 +57,7 @@ function flatCells(it: InteriorTemplateItem, S: HandInteriorSpec): string[] {
   return Array.from({ length: w * h }, (_, i) => `${it.x + (i % w)},${it.y + Math.floor(i / w)}`);
 }
 
-export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom[], composed: ComposedRooms, tilesetId: string, tileset: TilesetDef, S: HandInteriorSpec): FurnishResult {
+export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom[], composed: ComposedRooms, tilesetId: string, tileset: TilesetDef, S: HandInteriorSpec, styleVariant: InteriorStyleVariant = "A"): FurnishResult {
   const byId = new Map(roomTemplates(tilesetId).map((t) => [t.id, t]));
   const keep = doorwayCells(composed);
   let input = base;
@@ -89,7 +89,11 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
       for (const c of cells) taken.add(c);
       return true;
     };
-    const clusters = templateClusters(t, S).sort((a, b) => Number(b.pinTop) - Number(a.pinTop) || b.area - a.area);
+    const clusters = templateClusters(t, S).sort((a, b) =>
+      Number(b.pinTop) - Number(a.pinTop)
+      || (styleVariant === "D" ? a.area - b.area : b.area - a.area)
+      || (styleVariant === "B" || styleVariant === "D" ? b.box[0] - a.box[0] : a.box[0] - b.box[0]),
+    );
     for (const c of clusters) {
       // 덩이 안 이웃: 견본 좌표에서 붙어 있는 쌍. 몸통(가장 큰 가구)부터 넣고, 넣은 가구에 붙은 것만 이어 넣는다 —
       // 식탁이 안 들어가면 의자도 안 들어간다.
@@ -98,7 +102,7 @@ export function furnishRooms(base: HandInteriorInput, rooms: readonly LayoutRoom
       const saved = { input, errors, unreached, taken: new Set(taken) };
       let best: { input: HandInteriorInput; errors: number; unreached: number; taken: Set<string>; n: number } | undefined;
       let tried = 0;
-      for (const [sx, sy] of clusterShifts(t, c, w, h)) {
+      for (const [sx, sy] of clusterShifts(t, c, w, h, styleVariant)) {
         if (tried >= 6) break;
         const items = new Map(c.members.map((k, i) => [k, shiftItems(t, c, sx, sy, room)[i]!]));
         tried++;

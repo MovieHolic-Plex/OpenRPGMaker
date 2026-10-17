@@ -160,16 +160,41 @@ export function templateClusters(t: InteriorRoomTemplate, S: HandInteriorSpec): 
  *  2) 안 되면 다른 기준(왼·오른 벽, 위·아래 벽, 비율)과 1~3칸 비켜 놓기. 방 밖으로 나가는 자리는 빼고 준다.
  * 견본 세로가 2줄 이하(일본 현관 토방처럼 벽면 없는 띠)면 방 아래쪽에 붙인다.
  */
-export function clusterShifts(t: InteriorRoomTemplate, c: TemplateCluster, w: number, h: number): [number, number][] {
+export type InteriorStyleVariant = "A" | "B" | "C" | "D";
+
+export function clusterShifts(
+  t: InteriorRoomTemplate,
+  c: TemplateCluster,
+  w: number,
+  h: number,
+  styleVariant: InteriorStyleVariant = "A",
+): [number, number][] {
   const [bx0, by0, bx1, by1] = c.box, bw = bx1 - bx0, bh = by1 - by0;
   if (bw > w || bh > h) return [];
   const dw = w - t.w, dh = h - t.h;
   const lgap = bx0, rgap = t.w - bx1;
   const prop = (c0: number, c1: number, from: number, to: number, off = 0) => Math.round(((c0 + c1) / 2 - off) * (to - off) / Math.max(1, from - off) + off - (c0 + c1) / 2);
-  const xs = [lgap <= 1 && lgap <= rgap ? 0 : rgap <= 1 ? dw : prop(bx0, bx1, t.w, w), 0, dw, prop(bx0, bx1, t.w, w)];
+  const baseX = lgap <= 1 && lgap <= rgap ? 0 : rgap <= 1 ? dw : prop(bx0, bx1, t.w, w);
+  const mirrorX = (w - bx1) - bx0;
+  const offsetX = baseX + (lgap <= rgap ? 2 : -2);
+  const xs = styleVariant === "B" || styleVariant === "D"
+    ? [mirrorX, baseX, dw, 0, prop(bx0, bx1, t.w, w)]
+    : styleVariant === "C"
+      ? [offsetX, mirrorX, baseX, 0, dw, prop(bx0, bx1, t.w, w)]
+      : [baseX, 0, dw, prop(bx0, bx1, t.w, w)];
   const strip = t.h <= 2;
   const tgap = by0 - 2, bgap = t.h - by1;
-  const ys = c.pinTop ? [0] : strip ? [dh] : [tgap <= 1 && tgap <= bgap ? 0 : bgap <= 1 ? dh : prop(by0, by1, t.h, h, 2), 0, dh, prop(by0, by1, t.h, h, 2)];
+  const baseY = tgap <= 1 && tgap <= bgap ? 0 : bgap <= 1 ? dh : prop(by0, by1, t.h, h, 2);
+  const mirrorY = Math.max(2, h - bh) - by0;
+  const ys = c.pinTop
+    ? [0]
+    : strip
+      ? [dh]
+      : styleVariant === "D"
+        ? [mirrorY, baseY, dh, 0, prop(by0, by1, t.h, h, 2)]
+        : styleVariant === "C"
+          ? [baseY + (tgap <= bgap ? 1 : -1), baseY, dh, 0, prop(by0, by1, t.h, h, 2)]
+          : [baseY, 0, dh, prop(by0, by1, t.h, h, 2)];
   const out: [number, number][] = [];
   const seen = new Set<string>();
   const add = (sx: number, sy: number) => {
