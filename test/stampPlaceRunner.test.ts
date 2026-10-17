@@ -14,7 +14,7 @@ function reply(content: string): ChatResult {
 
 type Call = { name: string; args: Record<string, unknown> };
 
-const VISUAL: Readonly<Record<string, true>> = { fill_region: true, place_props: true, paint_road: true, tile_erase: true, build_wall: true, place_door: true, stamp_tileset_object: true, place_terrain_house: true, build_jp_city_building: true };
+const VISUAL: Readonly<Record<string, true>> = { fill_region: true, place_props: true, paint_road: true, paint_tiles: true, tile_erase: true, build_wall: true, place_door: true, stamp_tileset_object: true, place_terrain_house: true, build_jp_city_building: true };
 const BASE_PROJECT = createBlankProject();
 
 function harness(options: {
@@ -333,5 +333,46 @@ describe("runStampPlaceWith", () => {
     const result = await runStampPlaceWith({ text: "작은 집 하나 지어줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 10, height: 9 } }, h.deps);
     expect(result.ok).toBe(true);
     expect(h.applied[0]!.map((call) => call.name)).toEqual(["build_jp_city_building"]);
+  });
+
+  it("carves connected dungeon rooms via union floorMask without leaving floating wall tiles inside rooms", async () => {
+    const h = harness({
+      replies: [
+        JSON.stringify({
+          steps: [
+            { tool: "place_dungeon_room", args: { area: { x: 2, y: 2, w: 6, h: 6 }, kind: "room", style: "crypt" }, label: "서쪽 방" },
+            { tool: "place_dungeon_room", args: { area: { x: 8, y: 2, w: 6, h: 6 }, kind: "room", style: "crypt" }, label: "동쪽 방" },
+            { tool: "place_dungeon_room", args: { area: { x: 2, y: 2, w: 12, h: 6 }, kind: "connect", style: "crypt" }, label: "방 연결" },
+          ],
+        }),
+      ],
+    });
+    const map = h.project.maps[h.mapId]!;
+    h.project.tilesets.dungeon_test = {
+      ...h.project.tilesets[map.tilesetId]!,
+      id: "dungeon_test",
+      name: "던전",
+      structureKits: [
+        {
+          id: "bd-pick-aqueduct-sewer-face-cata-2h",
+          name: "벽",
+          width: 3,
+          height: 2,
+          rows: [{ tiles: [101, 102, 103] }, { tiles: [104, 105, 106] }],
+        },
+        {
+          id: "bd-pick-aqueduct-sewer-floor-cata",
+          name: "바닥",
+          width: 2,
+          height: 2,
+          rows: [{ tiles: [201, 202] }, { tiles: [203, 204] }],
+        },
+      ] as never,
+    };
+    map.tilesetId = "dungeon_test";
+    const result = await runStampPlaceWith({ text: "던전 방 두 개를 만들고 복도로 연결해줘", mapId: h.mapId, selection: { mapId: h.mapId, x: 2, y: 2, width: 12, height: 6 } }, h.deps);
+    expect(result.ok).toBe(true);
+    const paintCalls = h.applied[0]!.filter((call) => call.name === "paint_tiles");
+    expect(paintCalls.length).toBeGreaterThan(0);
   });
 });

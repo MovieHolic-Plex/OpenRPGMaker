@@ -82,6 +82,23 @@ describe("resolveStampObject", () => {
     ];
     expect(resolveStampObject(bridges, acceptedObjectNames("다리", []).names, { w: 40, h: 5 })?.entry.id).toBe("b-fit");
   });
+
+  it("prevents pillar/gate and stair-direction compound conflicts and prefers river footbridge & pedestrian signals", () => {
+    const dungeonPool: readonly StampObjectEntry[] = [
+      entry("bd-garden-gate", "버들항 소품 정원 정문 (돌 기둥 · 열린 쇠문)", { coreName: "정원 정문 돌 기둥 열린 쇠문", width: 2, height: 2 }),
+      entry("bd-column-cata", "버들항 고성·지하 카타콤 · 카타콤 기둥", { coreName: "카타콤 기둥", width: 1, height: 3 }),
+      entry("bd-stairs-up", "버들항 지하 수도교·하수도 · 올라가는 계단 (벽 앞면)", { coreName: "올라가는 계단 벽 앞면", width: 2, height: 3, placement: "wall", floorStanding: false }),
+      entry("bd-stairs-down", "버들항 지하 수도교·하수도 · 내려가는 계단", { coreName: "내려가는 계단", width: 2, height: 2 }),
+    ];
+    expect(resolveStampObject(dungeonPool, acceptedObjectNames("돌기둥", ["기둥"]).names)?.entry.id).toBe("bd-column-cata");
+    expect(resolveStampObject(dungeonPool, acceptedObjectNames("내려가는 계단", ["계단"]).names)?.entry.id).toBe("bd-stairs-down");
+
+    const bridgePool: readonly StampObjectEntry[] = [
+      entry("bd-bridge-arch", "버들항 다리 (아치)", { coreName: "다리 아치", width: 4, height: 5, placement: "water" }),
+      entry("bd-river-bridge", "버들항 강변 통나무 판자 다리 (인도교)", { coreName: "강변 통나무 판자 다리 인도교", width: 5, height: 4, placement: "water" }),
+    ];
+    expect(resolveStampObject(bridgePool, acceptedObjectNames("나무 다리", ["다리", "목교"]).names, { w: 40, h: 5 })?.entry.id).toBe("bd-river-bridge");
+  });
 });
 
 describe("place_object planning", () => {

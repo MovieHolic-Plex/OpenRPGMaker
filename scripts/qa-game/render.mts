@@ -11,6 +11,8 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import jpeg from "jpeg-js";
 import { drawCharsetPreview, type CharsetPreviewCandidate } from '../../src/ai/charsetPreview.ts';
+import { charsetFrameSource, decodeCharsetFrameIndex } from '../../src/assets/easyrpgRtp.ts';
+import { findCharsetAsset } from '../../src/assets/charsetCatalog.ts';
 import { resolveAssetResourceUrl } from '../../src/assets/generatedAssetResourceResolver.ts';
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
@@ -256,7 +258,14 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
     }
   }
   const surfaceY = (x: number, y: number) => relief?.rows[y]?.cells[x]?.y ?? y * size;
-  for (const event of map.events ?? []) outline(target, event.x * size, surfaceY(event.x, event.y), size, MARK[eventKind(event)]);
+  const context = new PngContext(target);
+  for (const event of map.events ?? []) {
+    const ex = event.x * size;
+    const ey = surfaceY(event.x, event.y);
+    if (!drawEventCharset(context, project, event, ex, ey, size)) {
+      outline(target, ex, ey, size, MARK[eventKind(event)]);
+    }
+  }
   if (map.id === project.startMapId) {
     const sx = project.startPos.x * size;
     const sy = surfaceY(project.startPos.x, project.startPos.y);
@@ -268,6 +277,64 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSourc
   return { png: PNG.sync.write(png), ...(note ? { note } : {}) };
 }
 
+
+function drawEventCharset(context: PngContext, project: Project, event: GameMap["events"][number], ex: number, ey: number, size: number): boolean {
+  const evName = `${event.name ?? ""} ${event.pages?.[0]?.name ?? ""}`;
+  const pageGraphic = event.pages?.[0]?.graphic;
+  const spriteId = pageGraphic?.sprite?.type === "bundled" ? pageGraphic.sprite.id : event.graphic?.textureKey;
+  // 표지판(이정표): Object1 0번(나무 문) 대신 나무 표지판 픽셀 아이콘을 그린다.
+  if (/이정표|표지판|푯말|안내판/u.test(evName) && (!spriteId || spriteId === "tex_easyrpg_charset_object1")) {
+    context.fillStyle = "rgba(92, 58, 33, 1)";
+    context.fillRect(ex + Math.floor(size * 0.42), ey + Math.floor(size * 0.35), Math.max(2, Math.floor(size * 0.16)), Math.floor(size * 0.6));
+    context.fillStyle = "rgba(62, 39, 22, 1)";
+    context.fillRect(ex + Math.floor(size * 0.12), ey + Math.floor(size * 0.12), Math.floor(size * 0.76), Math.floor(size * 0.42));
+    context.fillStyle = "rgba(181, 136, 86, 1)";
+    context.fillRect(ex + Math.floor(size * 0.18), ey + Math.floor(size * 0.18), Math.floor(size * 0.64), Math.floor(size * 0.3));
+    return true;
+  }
+  // 바닥 가시 함정(place_trap): 그래픽 없는 함정 이벤트는 분홍 테두리 대신 바닥 가시 함정 문양을 그린다.
+  if (!spriteId && (/트랩|함정|가시/u.test(evName) || event.id.includes("trap"))) {
+    context.fillStyle = "rgba(45, 48, 56, 0.85)";
+    context.fillRect(ex + 2, ey + 3, size - 4, size - 5);
+    for (const [sx, sy] of [[4, 5], [10, 5], [4, 10], [10, 10], [7, 7]] as const) {
+      context.fillStyle = "rgba(210, 218, 228, 1)";
+      context.fillRect(ex + sx, ey + sy, 2, 3);
+      context.fillStyle = "rgba(180, 45, 45, 0.9)";
+      context.fillRect(ex + sx, ey + sy, 2, 1);
+    }
+    return true;
+  }
+  if (!spriteId) return false;
+  const asset = findCharsetAsset(spriteId);
+  const url = asset?.url ?? resolveAssetResourceUrl(spriteId, { project });
+  const file = url && /^\/?assets\//u.test(url) ? path.join("public", url.replace(/^\//u, "").split("?")[0]!) : null;
+  const bytes = url?.startsWith("data:image/") ? Buffer.from(url.slice(url.indexOf(",") + 1), "base64")
+    : file && fs.existsSync(file) ? fs.readFileSync(file) : null;
+  if (!bytes) return false;
+  try {
+    const decoded = PNG.sync.read(bytes);
+    const raster: Raster = { width: decoded.width, height: decoded.height, data: new Uint8Array(decoded.data) };
+    // RTP 캐릭터셋은 좌상단(0,0) 배경색이 투명 키색이다.
+    if (raster.data[3] === 255) {
+      applyTransparentColorKey(raster.data, [raster.data[0]!, raster.data[1]!, raster.data[2]!]);
+    }
+    const rawPattern = pageGraphic?.pattern ?? event.graphic?.pattern;
+    const selection = typeof rawPattern === "number" && rawPattern >= 3
+      ? decodeCharsetFrameIndex(rawPattern)
+      : {
+          characterIndex: event.graphic?.characterIndex ?? 0,
+          direction: (pageGraphic?.direction ?? event.graphic?.direction ?? "down") as "down" | "left" | "right" | "up",
+          pattern: (typeof rawPattern === "number" ? rawPattern : 1) as 0 | 1 | 2,
+        };
+    const frame = charsetFrameSource(selection);
+    const dh = Math.round(size * 1.33);
+    const dw = size;
+    context.drawImage(raster, frame.x, frame.y, frame.width, frame.height, ex, ey + size - dh, dw, dh);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * 오프닝 그림 도구(show_opening_image·preview_opening_animatic·generate_opening_*)의 헤드리스 이미지. 브라우저는 캔버스로 합성한다.
