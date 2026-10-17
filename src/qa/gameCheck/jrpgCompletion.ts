@@ -115,7 +115,12 @@ export function jrpgCompletionGaps(project: Project, briefText = briefTextOf(pro
     gaps.push("비공정(비행선)을 요청했는데 탈것이 없습니다 — place_vehicle({vehicle:\"airship\", mapId, x, y, flightView:\"mode7\"}) 로 비행선을 세우고, 탈 수 있는 월드맵·착륙 지점(걸을 수 있는 칸)을 정하세요. NPC 이름에 「비공정」을 붙이는 것으로는 부족합니다.");
   }
   if (COLLAPSE_WORDS.test(briefText)) {
-    const ruinMaps = Object.values(project.maps ?? {}).filter((map) => RUIN_MAP_NAME.test(map.name ?? "") || ((map.defaultLighting?.ambient ?? 0) >= 0.45 && (map.climate && "weather" in map.climate && map.climate.weather === "fog")));
+    // 이름만 「폐허」인 맵은 붕괴 후가 아니다 — jrpg-loop-2 ff2: 씨앗 초록 항구에 「에덴의 폐허 거점」 이름만 붙었다. derive_map_variant(era ruin)가 남기는
+    // 조명·날씨(defaultLighting / climate.weather)가 있어야 붕괴 후 모습으로 센다.
+    const ruinMaps = Object.values(project.maps ?? {}).filter((map) => {
+      const looksAltered = Boolean(map.defaultLighting) || Boolean(map.climate && "weather" in map.climate && map.climate.weather && map.climate.weather !== "none");
+      return looksAltered && (RUIN_MAP_NAME.test(map.name ?? "") || (map.defaultLighting?.ambient ?? 0) >= 0.45);
+    });
     const otherMaps = Object.values(project.maps ?? {}).length - ruinMaps.length;
     if (ruinMaps.length === 0 || otherMaps === 0) {
       gaps.push("세계가 무너진다는 이야기인데 「붕괴 전/후」 맵 구조가 없습니다 — 같은 지리의 붕괴 후 변형을 derive_map_variant({sourceMapId, variants:[{id, name:\"… (붕괴 후)\", era:\"ruin\"}]}) 로 만들고(건물 철거·안개·어둠이 자동), create_time_gate 나 이벤트 transfer 로 붕괴 순간에 이어 붙이세요.");
