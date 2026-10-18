@@ -21,6 +21,11 @@ const WATER_OR_PADDY: Record<string, true> = {
   "수로": true,
   "연못": true,
   "논(물 댄 모)": true,
+  "inaka-paddy-water": true,
+  "inaka-paddy-summer": true,
+  "inaka-paddy-golden": true,
+  "inaka-canal-water": true,
+  "inaka-river-shallow": true,
 };
 
 /** 카탈로그의 rg-* 는 칩셋 키트 jp-rg-* 의 줄임이다. */
@@ -33,7 +38,10 @@ export function paintJpRegionGround(
   rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number },
   material: string,
 ): boolean {
-  const group = (tileset.tileGroups ?? []).find((g) => g.id.startsWith("jp:region-") && g.name === material && g.tileIds.length === 1);
+  const norm = material.startsWith("inaka-ground-") ? `inaka-${material.slice("inaka-ground-".length)}` : material;
+  const group = (tileset.tileGroups ?? []).find(
+    (g) => (g.id.startsWith("jp:region-") || g.id.startsWith("jp:inaka-")) && (g.name === norm || g.id === `jp:${norm}`) && g.tileIds.length === 1,
+  );
   const tileId = group?.tileIds[0];
   if (tileId === undefined) return false;
   const x0 = Math.max(0, rect.x), y0 = Math.max(0, rect.y);
@@ -53,7 +61,7 @@ function rng(seed: number): () => number {
 
 function canPlaceOnWaterOrPaddy(id: string): boolean {
   const k = regionKitId(id);
-  for (const tag of ["boat", "tetrapod", "lighthouse", "waterfall", "tsuribashi", "yukemuri", "kakashi", "hazakake", "bridge", "water"]) {
+  for (const tag of ["boat", "tetrapod", "lighthouse", "waterfall", "tsuribashi", "yukemuri", "kakashi", "hazakake", "bridge", "water", "stepping-stones", "sluice-gate", "scarecrow", "hasagi"]) {
     if (k.includes(tag)) return true;
   }
   return false;
