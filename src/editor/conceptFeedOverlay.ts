@@ -4,6 +4,10 @@ import { createConceptFeed } from "@/start/conceptFeed/conceptFeed";
 import { createConceptSource } from "@/concepts/source";
 import { menuBriefHandler, menuMakeHandler, welcomeBriefHandler, welcomeMakeHandler } from "./conceptMake";
 import { registerModal, unregisterModal } from "./ui/modalStack";
+import { focusProjectStartMap } from "@/editor/mapSelection";
+import { createFlagshipDemoProject } from "@/project/flagship";
+import { store } from "@/project/store";
+import { toast } from "@/util/toast";
 
 export type ConceptFeedOverlayResult = "made" | "closed" | "blank";
 
@@ -71,6 +75,10 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
       return started;
     },
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
+    onBuiltinDemo: (demoId, action) => {
+      if (blankBusy || feed.busy()) return;
+      openBuiltinDemoFromOverlay(demoId, action, () => finish("closed"));
+    },
     onBlank: mode === "menu"
       ? () => {
         if (blankBusy || feed.busy()) return;
@@ -94,6 +102,21 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
   feed.element.querySelector<HTMLInputElement>("input[type=search]")?.focus();
 }
 
+
+function openBuiltinDemoFromOverlay(
+  demoId: "chrono-bell" | "emerald-crown",
+  action: "play" | "open",
+  closeOverlay: () => void,
+): void {
+  const demo = createFlagshipDemoProject(demoId);
+  store.replaceProject(demo.project, { label: `${demo.manifest.title} 기본 데모 열기`, origin: "human" });
+  focusProjectStartMap();
+  closeOverlay();
+  toast(`${demo.manifest.title} 기본 데모를 불러왔습니다.`, "ok");
+  if (action === "play") {
+    window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
+  }
+}
 /** 메뉴의 「빈 프로젝트로 시작」 — 장르 없이 새 폴더. 예전 다이얼로그의 빈 프로젝트와 같다. */
 async function createBlankFromMenu(): Promise<boolean> {
   const { toast } = await import("@/util/toast");
