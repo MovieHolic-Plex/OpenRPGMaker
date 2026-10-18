@@ -11,10 +11,14 @@ export interface ModernPresetData {
 /** program 을 seed 로 다시 지을 때의 변주 — 같은 「백화점」·「레스토랑」이 매번 똑같은 맵으로 나오지 않게(2026-10-18 사용자 지적).
  *  seed 1 은 견본 그대로. seed k(≥2)는 (k-1)%2 로 동↔서 구역 배치를 뒤집고, (k-1)%(palettes+1) 로 바닥·벽면 묶음을 바꾸고,
  *  큰 방(가로 10칸↑·세로 8칸↑)을 0~3칸·0~1칸 넓혀 가구 간격을 바꾼다. palettes 는 방 종류 → [바닥, 벽면].
- *  entrance·above 는 그 program 만의 출구 방·위아래 쌍(layout.ts 기본 표의 반대 쌍을 대신한다). */
+ *  entrance·above·left 는 그 program 만의 출구 방·위아래 쌍·왼오른 쌍(layout.ts 기본 표보다 무겁게 지킨다 — 전동차 두 칸과 운전실이 한 줄로).
+ *  hubs 는 지나다니는 방 종류(layout.ts HUB 표에 더한다), fixed 는 변주 seed 에도 넓히지 않는 방 종류(개찰구 줄·전동차처럼 벽에서 벽까지 꽉 찬 방). */
 export interface ModernProgramVariation {
   readonly entrance?: string;
   readonly above?: readonly (readonly [string, string])[];
+  readonly left?: readonly (readonly [string, string])[];
+  readonly hubs?: readonly string[];
+  readonly fixed?: readonly string[];
   readonly palettes: readonly Readonly<Record<string, readonly [string, string]>>[];
 }
 
@@ -37,6 +41,8 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
     mc_station: {
       entrance: "subway-concourse",
       above: [["subway-platform", "subway-concourse"], ["subway-platform", "subway-kiosk"]],
+      // 개찰구 줄이 대합실 벽에서 벽까지 막고, 선로·스크린도어가 승강장 벽에서 벽까지 이어진다 - 넓히면 끝에 틈·맨바닥이 생긴다.
+      fixed: ["subway-concourse", "subway-platform"],
       palettes: [
         { "subway-concourse": ["mci-stone-lobby", "mci-wall-lobby"], "subway-kiosk": ["mci-tile-small", "mci-wall-tile"], "subway-platform": ["mci-concrete", "mci-wall-metal"] },
         { "subway-concourse": ["mci-concrete", "mci-wall-tile"], "subway-kiosk": ["mci-wood-oak", "mci-wall-home"], "subway-platform": ["mci-tile-concourse", "mci-wall-brick"] },
@@ -253,7 +259,6 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-plant-tall", x: 11, y: 2 },
           { t: "o", id: "mci-stairs-up", x: 14, y: 2 },
           { t: "o", id: "mci-reception", x: 1, y: 4 },
-          { t: "g", id: "mci-g-phone", x: 1, y: 4 },
           { t: "o", id: "mci-wait-bench", x: 12, y: 4 },
         ],
       },
@@ -373,7 +378,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "mci-coffee-table", x: 32, y: 5 },
           { t: "g", id: "mci-g-coffee", x: 32, y: 5 },
           { t: "g", id: "mci-g-vase", x: 33, y: 5 },
-          { t: "o", id: "mci-armchair", x: 35, y: 6 },
+          { t: "o", id: "mci-armchair", x: 34, y: 5 },
         ],
       },
       {
@@ -583,16 +588,20 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
           { t: "o", id: "subway-vending-machine", x: 15, y: 2 },
           { t: "o", id: "mci-wait-bench", x: 17, y: 2 },
           { t: "o", id: "mci-plant-tall", x: 21, y: 2 },
-          { t: "o", id: "mci-ticket-gate", x: 2, y: 5 },
-          { t: "o", id: "mci-ticket-gate", x: 5, y: 5 },
-          { t: "o", id: "mci-ticket-gate", x: 8, y: 5 },
-          { t: "o", id: "mci-ticket-gate", x: 11, y: 5 },
-          { t: "o", id: "mci-tactile", x: 10, y: 3 },
-          { t: "o", id: "mci-tactile", x: 10, y: 4 },
-          { t: "o", id: "mci-tactile", x: 10, y: 6 },
-          { t: "o", id: "subway-pillar-sign", x: 14, y: 5 },
-          { t: "o", id: "subway-trash-bins", x: 17, y: 4 },
-          { t: "o", id: "subway-pillar-sign", x: 20, y: 5 },
+          // 개찰구 줄은 벽에서 벽까지 끊김 없는 가로 차단선 - 개찰구 다섯 대 사이 한 칸 통로 넷만 지나가고, 동쪽은 역무원 부스·화분·차단봉으로 막는다.
+          { t: "o", id: "mci-ticket-gate", x: 0, y: 5 },
+          { t: "o", id: "mci-ticket-gate", x: 3, y: 5 },
+          { t: "o", id: "mci-ticket-gate", x: 6, y: 5 },
+          { t: "o", id: "mci-ticket-gate", x: 9, y: 5 },
+          { t: "o", id: "mci-ticket-gate", x: 12, y: 5 },
+          { t: "o", id: "mci-teller", x: 14, y: 5 },
+          { t: "o", id: "mci-planter", x: 17, y: 5 },
+          { t: "o", id: "museum-velvet-rope", x: 19, y: 5 },
+          { t: "o", id: "mci-tactile", x: 8, y: 3 },
+          { t: "o", id: "mci-tactile", x: 8, y: 4 },
+          { t: "o", id: "mci-tactile", x: 8, y: 6 },
+          { t: "o", id: "subway-trash-bins", x: 19, y: 7 },
+          { t: "o", id: "subway-pillar-sign", x: 4, y: 7 },
           { t: "o", id: "mci-bench-metal", x: 16, y: 7 },
         ],
       },

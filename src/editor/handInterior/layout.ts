@@ -305,7 +305,7 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     const template = near ? pool[0] : pool[Math.floor(r() * pool.length)];
     const [dw, dh] = DEFAULT_SIZE[q.kind] ?? (/_shop$/u.test(q.kind) ? DEFAULT_SIZE.shop! : [6, 5]);
     // 변주 seed 면 큰 방을 조금 넓혀 가구 간격을 바꾼다(견본보다 작아지지는 않는다).
-    const grow = vary && vary.k > 0 && !near;
+    const grow = vary && vary.k > 0 && !near && !vary.v.fixed?.includes(q.kind);
     const tw0 = q.w ?? template?.w ?? dw, th0 = q.h ?? template?.h ?? dh;
     const tw = tw0 + (grow && tw0 >= 10 ? Math.floor(jr() * 4) : 0), th = th0 + (grow && th0 >= 8 ? Math.floor(jr() * 2) : 0);
     const pal = vary?.palette?.[q.kind];
@@ -448,8 +448,9 @@ function buildCandidatesForVariant(
   const explicitWallIds = new Set((req.rooms ?? []).filter((q) => q.wall).map((q) => q.id ?? q.kind));
   const wants: Want[] = baseWants.map((w, idx) => {
     const isEnt = w.id === entrance;
-    const addW = styleVariant === "C" ? (isEnt ? 4 : idx % 2 === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx % 2 === 1 ? 2 : 0) : 0;
-    const addH = styleVariant === "C" ? (!isEnt && idx === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx === 0 ? 1 : 0) : 0;
+    const fixed = Boolean(vary?.v.fixed?.includes(w.kind));
+    const addW = fixed ? 0 : styleVariant === "C" ? (isEnt ? 4 : idx % 2 === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx % 2 === 1 ? 2 : 0) : 0;
+    const addH = fixed ? 0 : styleVariant === "C" ? (!isEnt && idx === 0 ? 2 : 0) : styleVariant === "D" ? (isEnt ? 2 : idx === 0 ? 1 : 0) : 0;
     return {
       ...w,
       tw: w.tw + addW,
@@ -458,10 +459,11 @@ function buildCandidatesForVariant(
       wall: explicitWallIds.has(w.id) ? w.wall : remapMaterial(tilesetId, "walls", w.wall, styleVariant, S),
     };
   });
-  // program 이 위아래를 뒤집는 쌍은 기본 표의 반대 쌍을 뺀다(지하철역: 승강장이 대합실 위).
+  // program 이 위아래를 뒤집는 쌍은 기본 표의 반대 쌍을 뺀다(지하철역: 승강장이 대합실 위). program 만의 쌍은 기본 표보다 무겁게 본다.
   const aboveRules: Pair[] = vary?.v.above
-    ? [...ABOVE_DEFAULT.filter(([p, q]) => !vary.v.above!.some(([a, b]) => a === q && b === p)), ...vary.v.above]
+    ? ABOVE_DEFAULT.filter(([p, q]) => !vary.v.above!.some(([a, b]) => a === q && b === p))
     : ABOVE_DEFAULT;
+  const isHub = (kind: string) => HUB.test(kind) || Boolean(vary?.v.hubs?.includes(kind));
   const byId = new Map(wants.map((w) => [w.id, w]));
   const pairTuple = (x: Pair): readonly [string, string] => ("a" in x ? [x.a, x.b] : x);
   const pairOf = (list: readonly Pair[] | undefined) => (list ?? []).map(pairTuple).flatMap(([p, q]) =>
@@ -471,6 +473,7 @@ function buildCandidatesForVariant(
   const isOpen = (a: string, b: string) => openPairs.some(([p, q]) => (p === a && q === b) || (p === b && q === a));
   const mirrorHorizontal = req.styleVariant ? (styleVariant === "B" || styleVariant === "D") : (styleVariant === "B" || styleVariant === "D" || Boolean(vary?.flip));
   const leftPairs = pairOf(LEFT_DEFAULT);
+  const programAbove = pairOf(vary?.v.above), programLeft = pairOf(vary?.v.left);
   const total = wants.reduce((s, w) => s + w.tw * w.th, 0);
   const variantSeedOffset = styleVariant === "A" ? 0 : styleVariant === "B" ? 101 : styleVariant === "C" ? 202 : 303;
   const r = rng((req.seed ?? 1) + variantSeedOffset);
@@ -501,7 +504,7 @@ function buildCandidatesForVariant(
     const edges = adjacency(rects);
     const prio = (e: Edge, from: string) => {
       const to = e.a === from ? e.b : e.a;
-      return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (HUB.test(byId.get(to)!.kind) ? 0 : 2);
+      return (prefer.some(([p, q]) => (p === from && q === to) || (p === to && q === from)) ? 0 : 4) + (isOpen(from, to) ? 0 : 1) + (isHub(byId.get(to)!.kind) ? 0 : 2);
     };
     const reached = new Set([entrance]); const tree: Edge[] = [];
     for (const allowLeafPass of [false, true]) {
@@ -509,7 +512,7 @@ function buildCandidatesForVariant(
       while (frontier.length) {
         const next: string[] = [];
         for (const from of frontier) {
-          if (!allowLeafPass && from !== entrance && !HUB.test(byId.get(from)!.kind)) continue;
+          if (!allowLeafPass && from !== entrance && !isHub(byId.get(from)!.kind)) continue;
           const out = edges.filter((e) => (e.a === from || e.b === from) && !reached.has(e.a === from ? e.b : e.a)).sort((x, y) => prio(x, from) - prio(y, from));
           for (const e of out) { const to = e.a === from ? e.b : e.a; if (reached.has(to)) continue; reached.add(to); tree.push(e); next.push(to); }
         }
@@ -542,15 +545,15 @@ function buildCandidatesForVariant(
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
     for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;
-    for (const [p, q] of pairOf(aboveRules)) {
+    for (const [weight, rules] of [[6, pairOf(aboveRules)], [20, programAbove]] as const) for (const [p, q] of rules) {
       const up = rects.get(p)!, dn = rects.get(q)!;
-      if (!edges.some((e) => e.kind === "h" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || up.y > dn.y) { score += 6; notes.push(`${p} 가 ${q} 바로 위가 아니다`); }
+      if (!edges.some((e) => e.kind === "h" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || up.y > dn.y) { score += weight; notes.push(`${p} 가 ${q} 바로 위가 아니다`); }
     }
-    for (const [p, q] of leftPairs) {
+    for (const [weight, rules] of [[6, leftPairs], [20, programLeft]] as const) for (const [p, q] of rules) {
       const lft = rects.get(p)!, rgt = rects.get(q)!;
-      if (!edges.some((e) => e.kind === "v" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || lft.x > rgt.x) { score += 6; notes.push(`${p} 가 ${q} 바로 왼쪽이 아니다`); }
+      if (!edges.some((e) => e.kind === "v" && ((e.a === p && e.b === q) || (e.a === q && e.b === p))) || lft.x > rgt.x) { score += weight; notes.push(`${p} 가 ${q} 바로 왼쪽이 아니다`); }
     }
-    for (const w of wants) if (!HUB.test(w.kind) && w.id !== entrance && (deg[w.id] ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
+    for (const w of wants) if (!isHub(w.kind) && w.id !== entrance && (deg[w.id] ?? 0) > 1) { score += 2.5; notes.push(`${w.id} 를 지나가야 다른 방에 간다`); }
     const openSpan = styleVariant === "C" || styleVariant === "D" ? 5 : 3;
     const connect: HandInteriorConnect[] = tree.map((e) => {
       const A = byId.get(e.a)!, B = byId.get(e.b)!;
