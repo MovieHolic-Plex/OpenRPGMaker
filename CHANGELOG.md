@@ -5,6 +5,15 @@
 
 <!-- releases -->
 
+## 0.265.0 — 2026-10-18
+
+### 기능
+
+- **ai** — add 3-tier fast-path command ops (place/erase/move) and quest/event rejection guard with handoff UI (#2950) (`e203fe2`)
+- **interior** — daily-routine 18 spaces right-sized + 150 new 3/4 top-view props (mart merchandise, dept boutique, subway car, cozy home, hospital/elevator) (#2949) (`f6431e2`)
+- **monster** — 종 다섯 면 단일 정본 하네스 + qa-game 일관성 게이트 (#2948) (`cff581a`)
+- **monster** — add 5-tool AI monster authoring & modification suite (inspect/edit/cellPatches/choreography) (#2946) (`81b8991`)
+
 ## 0.264.0 — 2026-10-18
 
 ### 기능
