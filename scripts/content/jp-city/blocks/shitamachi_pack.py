@@ -73,11 +73,11 @@ def fill_tex(c, x0, y0, w, h, fn, **kw):
         for x in range(x0, x0 + w): c.P(x, y, fn(x, y, **kw))
 
 
-def shade_poly(c, x0, y0, w, h, inside, fn, **kw):
-    """사선 그림자: inside(x,y) 가 참인 화소만 어두운 질감으로 다시 칠한다."""
+def shade_poly(c, x0, y0, w, h, inside, fn, s=1, **kw):
+    """사선 그림자: inside(x,y) 가 참인 화소만 s 단 어두운 질감으로 다시 칠한다."""
     for y in range(y0, y0 + h):
         for x in range(x0, x0 + w):
-            if inside(x - x0, y - y0): c.P(x, y, fn(x, y, shade=1, **kw))
+            if inside(x - x0, y - y0): c.P(x, y, fn(x, y, shade=s, **kw))
 
 
 # ═══════════════════════════ 그리기 부품 ═══════════════════════════
@@ -315,10 +315,21 @@ def _curb_n(c):
     fill_tex(c, 0, 4, 16, 12, brick_px)
     c.HL(0, 0, 16, K('yoru', -1)); c.HL(0, 1, 16, K('conc', 2)); c.HL(0, 2, 16, K('conc', 1)); c.HL(0, 3, 16, K('conc', -1))
     c.VL(7, 1, 2, K('conc', 0)); c.VL(15, 1, 2, K('conc', 0))
-def _shade(fn, inside=None):
+def _shade(fn, inside=None, s=1):
     def f(c):
         fill_tex(c, 0, 0, 16, 16, fn)
-        shade_poly(c, 0, 0, 16, 16, inside or (lambda x, y: True), fn)
+        shade_poly(c, 0, 0, 16, 16, inside or (lambda x, y: True), fn, s=s)
+    return f
+
+
+def _curb_shade(inside):
+    """연석 줄 사선 그림자: 그림자 진 연석(_curb_s shade=1)을 inside 화소에만 옮긴다(2026-10-18 적대 QA: 그림자가 보도 한 줄에서 뚝 끊겼다)."""
+    def f(c):
+        _curb_s(c, 0)
+        d = Cv(16, 16); _curb_s(d, 1)
+        for y in range(16):
+            for x in range(16):
+                if inside(x, y): c.a[y, x] = d.a[y, x]
     return f
 
 
@@ -331,10 +342,12 @@ _gnd('gnd-manhole', '둥근 주철 맨홀', _manhole, ['아스팔트', '맨홀']
 _gnd('gnd-drain', '빗물받이(グレーチング)', _drain, ['아스팔트', '배수'], '연석 바로 아래 도로 칸, 6칸마다.')
 _gnd('gnd-curb-s', '보도 남쪽 연석(아래가 도로)', _curb_s, ['벽돌', '연석'], '보도 맨 아랫줄(도로와 닿는 줄).')
 _gnd('gnd-curb-s-shade', '보도 남쪽 연석(그림자)', lambda c: _curb_s(c, 1), ['벽돌', '연석', '그림자'], '그림자 줄이 연석 줄일 때.')
+_gnd('gnd-curb-s-shade-dl', '보도 남쪽 연석(사선 그림자 시작)', _curb_shade(lambda x, y: x >= y), ['벽돌', '연석', '그림자'], '건물 왼쪽 끝 한 칸 오른쪽의 연석 줄.')
+_gnd('gnd-curb-s-shade-dr', '보도 남쪽 연석(사선 그림자 끝)', _curb_shade(lambda x, y: x < y), ['벽돌', '연석', '그림자'], '건물 오른쪽 끝 두 칸 오른쪽의 연석 줄.')
 _gnd('gnd-curb-n', '보도 북쪽 연석(위가 도로)', _curb_n, ['벽돌', '연석'], '도로 아래 보도 맨 윗줄.')
-_gnd('gnd-shade-brick', '건물 그림자 진 벽돌 보도', _shade(brick_px), ['벽돌', '그림자'], '건물 정면 바로 아래 보도 줄.')
-_gnd('gnd-shade-brick-dl', '사선 그림자 시작(벽돌)', _shade(brick_px, _DL), ['벽돌', '그림자'], '건물 왼쪽 끝 아래(빛 왼쪽 위 -> 그림자 오른쪽 아래 45°).')
-_gnd('gnd-shade-brick-dr', '사선 그림자 끝(벽돌)', _shade(brick_px, _DR), ['벽돌', '그림자'], '건물 오른쪽 끝 다음 칸.')
+_gnd('gnd-shade-brick', '건물 그림자 진 벽돌 보도', _shade(brick_px, s=2), ['벽돌', '그림자'], '건물 정면 바로 아래 보도 줄.')
+_gnd('gnd-shade-brick-dl', '사선 그림자 시작(벽돌)', _shade(brick_px, _DL, s=2), ['벽돌', '그림자'], '건물 왼쪽 끝 아래(빛 왼쪽 위 -> 그림자 오른쪽 아래 45°).')
+_gnd('gnd-shade-brick-dr', '사선 그림자 끝(벽돌)', _shade(brick_px, _DR, s=2), ['벽돌', '그림자'], '건물 오른쪽 끝 다음 칸.')
 _gnd('gnd-shade-asph', '건물 그림자 진 아스팔트', _shade(asph_px), ['아스팔트', '그림자'], '건물 바로 아래 도로 줄.')
 _gnd('gnd-shade-asph-dl', '사선 그림자 시작(아스팔트)', _shade(asph_px, _DL), ['아스팔트', '그림자'], '건물 왼쪽 끝 아래.')
 _gnd('gnd-shade-asph-dr', '사선 그림자 끝(아스팔트)', _shade(asph_px, _DR), ['아스팔트', '그림자'], '건물 오른쪽 끝 다음 칸.')
@@ -666,36 +679,82 @@ def bus_stop(c, base):
     disc(c, 8, 44, 5, K('conc', 0), ry=2.5); c.HL(4, 43, 8, K('conc', 2)); c.HL(4, 46, 9, OL)
 
 
-@kit('back-roofs', '뒤쪽 지붕 줄(기와·평지붕·물탱크·빨래 장대가 이어진 지붕 바다, 4×2)', 4, 2, 'structure', solid=rows(4, (0, 1)), tags=['지붕', '배경', '시타마치'],
-     rules='건물 띠 맨 위 줄(가게 키트 위 빈 하늘 자리). 가로로 이어 붙인다 - 씨앗 변형 4종.', role='building')
-def back_roofs(c, base):
-    _roofs(c, 0)
+# 지붕 바다(2026-10-18 적대 QA 1차): 예전 4×2 조각은 위 2~6px 가 투명이라 조각마다 회색 자갈 줄이 끼고, 가게 키트 위에만 깔려 조립 건물 위는 빈 자갈판이었다.
+# 이제 지붕 한 단을 조각 높이 그대로(16 또는 32px) 그리고, 지붕 한 채 폭을 넓게(20~44px) 잡아 박공 용마루·기와 줄이 읽히게 한다(2026-10-18 적대 QA 2차:
+# 16px 단마다 10~26px 조각을 윤곽으로 갈라 「지붕 바다」가 벽돌 벽 모자이크처럼 읽혔다). 폭 1·2·4 × 높이 1·2 조각을 구성기가 모든 건물 위(띠 꼭대기까지)에 이어 붙인다.
+ROOF_KINDS = ('kawara', 'tekko', 'flat', 'tekko', 'kawara', 'flat', 'renga', 'sora')      # 참고 그림 A: 갈색 기와 + 짙은 숯빛 골기와가 반반
 
 
-def _roofs(c, v):
-    """뒤 블록 지붕 바다: 4칸 폭을 지붕 셋으로 나눠 기와·골함석·평지붕을 섞는다(v 로 순서·색이 바뀐다)."""
-    cuts = ((0, 22, 'kawara'), (22, 44, 'conc'), (44, 64, 'tekko')) if v % 2 == 0 else ((0, 20, 'tekko'), (20, 42, 'kawara'), (42, 64, 'conc'))
-    ramps = ('kawara', 'tekko', 'renga', 'kawara')
-    for i, (x0, x1, kind) in enumerate(cuts):
-        top = 2 + ((i + v) % 3) * 2
-        if kind == 'conc':
-            flat_roof(c, x0, top, x1 - x0, 32 - top, 'conc', -1, seed=v * 7 + i)
-            if (i + v) % 2 == 0:                              # 물탱크
-                disc(c, x0 + 11, top + 8, 5, K('shiro', 0), ry=3); c.R(x0 + 6, top + 8, 11, 8, K('shiro', 0)); c.VL(x0 + 6, top + 8, 8, K('shiro', 2))
-                c.VL(x0 + 16, top + 8, 8, K('shiro', -2)); disc(c, x0 + 11, top + 8, 4, K('shiro', 1), ry=2); c.HL(x0 + 7, top + 16, 12, K('yoru', -1))
-            else:
-                for k in range(x0 + 3, x1 - 3, 4): c.VL(k, top + 4, 8, K('tekko', 1))
-                c.HL(x0 + 2, top + 4, x1 - x0 - 4, K('tekko', 2))
-                for k, col in enumerate(('shiro', 'sora', 'aka', 'shiro')): c.R(x0 + 4 + k * 4, top + 5, 3, 4, K(col, 1))
-        else:
-            kawara(c, x0, top, x1 - x0, 32 - top, ramps[(i + v) % 4] if kind == 'kawara' else 'tekko', -1 if kind == 'tekko' else 0)
-        c.VL(x1 - 1, top, 32 - top, OL)
-    c.HL(0, 31, 64, OL)
+def _roof_tier(c, x0, w, y0, seed, th=16):
+    """지붕 한 단(높이 th px): 폭 w 를 지붕 몇 채로 나눠 박공 기와·골함석·평지붕(물탱크·빨래·실외기)을 그린다. 이웃 사이는 윤곽 대신 어두운 램프 + 그늘."""
+    cuts = [x0]
+    i = 0
+    while cuts[-1] < x0 + w:
+        nx = cuts[-1] + 20 + int(H(i, seed, 41) * 25)
+        if x0 + w - nx < 14: nx = x0 + w
+        cuts.append(nx); i += 1
+    for j, (a, b) in enumerate(zip(cuts, cuts[1:])):
+        kind = ROOF_KINDS[int(H(j, seed, 43) * len(ROOF_KINDS))]
+        lift = int(H(j, seed, 47) * 3)                       # 뒤 건물 키 차이: 위쪽 lift px 는 더 먼 지붕의 처마 그늘
+        sw = b - a; top = y0 + lift; bot = y0 + th
+        if kind == 'flat':
+            for y in range(top, bot):
+                for x in range(a, b):
+                    v = H(x, y, seed + 5)
+                    c.P(x, y, K('conc', -1 if v > 0.93 else 1 if v < 0.08 else 0))
+            c.HL(a, top, sw, OL); c.HL(a, top + 1, sw, K('conc', 2)); c.HL(a, top + 2, sw, K('conc', 1))   # 파라펫 윗면
+            c.VL(a, top, th - lift, K('conc', 2)); c.VL(b - 2, top + 2, th - lift - 2, K('conc', -1))
+            c.HL(a, bot - 3, sw, K('conc', 2)); c.HL(a, bot - 2, sw, K('conc', -2))
+            prop = int(H(j, seed, 53) * 4); py = top + 4 + (th - 16) // 2
+            if prop == 0 and sw >= 14:                           # 물탱크
+                tx = a + 3
+                c.R(tx, py, 9, 7, K('shiro', 0)); c.HL(tx, py, 9, K('shiro', 2)); c.VL(tx + 8, py, 7, K('shiro', -2)); c.HL(tx, py + 6, 9, K('shiro', -1))
+                c.HL(tx + 1, py + 7, 10, K('yoru', -1)); c.VL(tx + 9, py + 1, 6, K('yoru', -1))
+            elif prop == 1 and sw >= 14:                         # 빨래 장대
+                c.HL(a + 2, py, sw - 4, K('tekko', 2))
+                for k, col in enumerate(('shiro', 'sora', 'aka', 'shiro', 'kii', 'midori')):
+                    if a + 3 + k * 3 + 2 < b - 2: c.R(a + 3 + k * 3, py + 1, 2, 4, K(col, 1)); c.HL(a + 3 + k * 3, py + 5, 2, K('conc', -2))
+            elif prop == 2 and sw >= 12:                         # 실외기
+                c.R(a + 3, py, 8, 6, K('shiro', 0)); c.HL(a + 3, py, 8, K('shiro', 2)); disc(c, a + 6, py + 3, 1.8, K('tekko', -1))
+                c.HL(a + 4, py + 6, 8, K('yoru', -1))
+        elif kind == 'sora':                                     # 파란 함석 지붕(드문 색)
+            for x in range(a, b):
+                k = (x - a) % 3
+                c.VL(x, top, th - lift, K('sora', -1 + (1 if k == 0 else -1 if k == 2 else 0)))
+            c.HL(a, top, sw, OL); c.HL(a, top + 1, sw, K('sora', 1)); c.HL(a, bot - 2, sw, K('sora', -2))
+        else:                                                     # 박공: 뒤 물매(좁고 어둡게) · 용마루 · 앞 물매(넓고 기와 줄)
+            ramp = kind; t = -1 if kind == 'tekko' else 0
+            ridge = top + max(2, (th - lift) // 4)
+            for y in range(top, bot):
+                for x in range(a, b):
+                    if y < ridge: tt = t - 1 + (1 if (x - a) % 4 == 0 else 0)
+                    else:
+                        r = (y - ridge) % 3; k = (x - a + (2 if ((y - ridge) // 3) % 2 else 0)) % 4
+                        tt = t + (1 if r == 0 else -1 if r == 2 else 0) + (1 if k == 0 and r == 1 else 0)
+                    c.P(x, y, K(ramp, tt))
+            c.HL(a, top, sw, OL)
+            c.HL(a, ridge, sw, K(ramp, t + 3)); c.HL(a, ridge + 1, sw, K(ramp, t - 2))                   # 용마루(빛 받는 윗선 + 그늘)
+            c.P(a + 1, ridge, K(ramp, t + 4)); c.P(b - 2, ridge, K(ramp, t + 2))
+            c.VL(a, ridge + 2, bot - ridge - 3, K(ramp, t + 2)); c.VL(b - 2, ridge + 2, bot - ridge - 3, K(ramp, t - 2))   # 박공 끝(破風) 밝은 왼쪽·어두운 오른쪽
+            c.HL(a, bot - 2, sw, K(ramp, t - 2))
+        for y in range(y0, top):                                 # 더 먼 지붕 처마 그늘
+            for x in range(a, b): c.P(x, y, K('yoru', -2 + (1 if (x + y) % 5 == 0 else 0)))
+        if a > x0: c.VL(a, top + 1, th - lift - 2, K('yoru', -1))   # 왼쪽 이웃 지붕이 떨어뜨린 그늘(빛 왼쪽 위)
+        c.VL(b - 1, top, th - lift, K('yoru', -2))
+        c.HL(a, bot - 1, sw, OL)                                 # 처마 끝선
 
 
-for _v in (1, 2, 3):
-    kit('back-roofs-%d' % _v, '뒤쪽 지붕 줄 변형 %d(4×2)' % _v, 4, 2, 'structure', solid=rows(4, (0, 1)), tags=['지붕', '배경', '시타마치'],
-        rules='jp-back-roofs 와 섞어 가로로 이어 붙인다.', role='building')((lambda vv: (lambda c, base: _roofs(c, vv)))(_v))
+def _roofs(c, v, w=4, h=2):
+    _roof_tier(c, 0, w * 16, 0, v * 7 + w * 101 + h * 13, th=h * 16)
+
+
+ROOF_PIECES = [(4, 2), (2, 2), (1, 2), (4, 1), (2, 1), (1, 1)]
+for _w, _h in ROOF_PIECES:
+    for _v in range(4 if (_w, _h) == (4, 2) else 2):
+        _id = 'back-roofs' + ('' if _v == 0 else '-%d' % _v) if (_w, _h) == (4, 2) else 'back-roofs-w%dh%d-%d' % (_w, _h, _v)
+        kit(_id, '뒤쪽 지붕 바다 조각(%d×%d, 변형 %d)' % (_w, _h, _v), _w, _h, 'structure', solid=rows(_w, range(_h)), tags=['지붕', '배경', '시타마치'],
+            rules='건물 위 띠 꼭대기까지(가게 키트·조립 건물 지붕 위 빈 대지). 폭 4·2·1, 높이 2·1 조각을 빈틈 없이 이어 붙인다.',
+            role='building')((lambda vv, ww, hh: (lambda c, base: _roofs(c, vv, ww, hh)))(_v, _w, _h))
 
 
 @kit('postbox-red', '빨간 우체통(〒, 1×2)', 1, 2, 'column', solid=[(0, 1)], tags=['우체통', '거리'], rules='보도 칸.', role='prop')
