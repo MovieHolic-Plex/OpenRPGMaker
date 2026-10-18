@@ -1067,19 +1067,21 @@ def _paddy_golden(c: Cv) -> None:
 
 
 def _aze_path(c: Cv) -> None:
-    """2. inaka-aze-path: Raised earthen rice-paddy bund / country dirt footpath with grass-tuft accents."""
+    """2. inaka-aze-path: Warm packed earthen country dirt footpath / courtyard soil with subtle grass accents."""
     for y in range(16):
         for x in range(16):
             h = H(x, y, 23)
-            lv = 3 if h < 0.62 else (2 if h < 0.88 else 4)
-            c.P(x, y, J('aged_cedar', lv))
-    for gx, gy in ((1, 2), (13, 1), (3, 13), (14, 12), (8, 0), (0, 8)):
+            if h < 0.56:
+                c.P(x, y, J('aged_cedar', 3))
+            elif h < 0.82:
+                c.P(x, y, J('aged_cedar', 2))
+            elif h < 0.94:
+                c.P(x, y, J('tatami_straw', 2))
+            else:
+                c.P(x, y, J('aged_cedar', 4))
+    for gx, gy in ((2, 3), (12, 2), (6, 12), (14, 11)):
         c.P(gx, gy, J('moss', 3))
-        c.P((gx + 1) % 16, gy, J('pine_bamboo', 3))
-    for px, py in ((5, 4), (11, 7), (6, 11), (10, 13)):
-        c.P(px, py, J('shrine_flagstone', 4))
-        c.P(px + 1, py, J('shrine_flagstone', 2))
-
+        c.P((gx + 1) % 16, gy, J('tatami_straw', 3))
 def _canal_water(c: Cv) -> None:
     """3a. inaka-canal-water: Rural irrigation canal water with flowing current streaks."""
     for y in range(16):
@@ -1129,21 +1131,21 @@ def _canal_wall(c: Cv) -> None:
 
 
 def _gravel_road(c: Cv) -> None:
-    """4. inaka-gravel-road: Sun-bleached country gravel road with twin wheel ruts."""
+    """4. inaka-gravel-road: Isotropic sun-bleached country sandy-gravel road (seamless in both H and V directions)."""
     for y in range(16):
         for x in range(16):
             h = H(x, y, 51)
-            rut = y in (4, 5, 10, 11)
-            if rut:
-                c.P(x, y, J('paving_stone', 2 if h < 0.65 else 3))
+            if h < 0.52:
+                c.P(x, y, J('cream_stucco', 3))
+            elif h < 0.80:
+                c.P(x, y, J('tatami_straw', 3))
+            elif h < 0.93:
+                c.P(x, y, J('cream_stucco', 2))
             else:
-                c.P(x, y, J('cream_stucco', 3 if h < 0.55 else (2 if h < 0.85 else 4)))
+                c.P(x, y, J('cream_stucco', 4))
     for gx, gy in ((2, 2), (9, 5), (13, 3), (4, 10), (11, 12), (7, 14)):
-        c.P(gx, gy, J('gravel', 2))
-        c.P((gx + 1) % 16, gy, J('shrine_flagstone', 4))
-    for mx, my in ((1, 0), (14, 15)):
-        c.P(mx, my, J('moss', 3))
-
+        c.P(gx, gy, J('aged_cedar', 3))
+        c.P((gx + 1) % 16, gy, J('tatami_straw', 4))
 
 def _river_shallow(c: Cv) -> None:
     """5. inaka-river-shallow: Clear shallow country stream with visible pebbles & sparkles."""
@@ -1170,30 +1172,25 @@ def _river_shallow(c: Cv) -> None:
 
 
 def _meadow_wildflower(c: Cv) -> None:
-    """6. inaka-meadow-wildflower: Lush summer meadow grass with clover and white/yellow wildflowers."""
+    """6. inaka-meadow-wildflower: Lush summer meadow grass with subtle organic clover and wildflower accents."""
     for y in range(16):
         for x in range(16):
             h = H(x, y, 89)
-            if h < 0.45:
+            if h < 0.44:
                 c.P(x, y, J('pine_bamboo', 2))
             elif h < 0.78:
                 c.P(x, y, J('moss', 3))
-            elif h < 0.92:
+            elif h < 0.93:
                 c.P(x, y, J('pine_bamboo', 3))
             else:
-                c.P(x, y, J('moss', 4))
-    # Grass blade tufts
-    for gx, gy in ((2, 4), (8, 2), (13, 6), (5, 11), (11, 13)):
-        c.P(gx, gy, J('pine_bamboo', 1))
-        c.P(gx, gy - 1, J('moss', 4))
-    # White clover blossoms & yellow summer dandelions
-    for wx, wy in ((3, 2), (10, 5), (6, 9), (14, 12)):
-        c.P(wx, wy, J('vending_cool_white', 4))
-        c.P(wx + 1, wy, J('moss', 4))
-    for yx, yy in ((12, 2), (2, 7), (9, 12), (4, 14)):
-        c.P(yx, yy, J('lantern_amber', 4))
-        c.P(yx, yy + 1, J('lantern_amber', 3))
-
+                c.P(x, y, J('moss', 2))
+    for gx, gy in ((3, 4), (10, 2), (13, 8), (6, 12), (12, 14)):
+        c.P(gx, gy, J('moss', 4))
+    # Subtle clover & wildflower specks that tile organically without a harsh grid
+    for wx, wy in ((4, 3), (11, 10)):
+        c.P(wx, wy, J('cream_stucco', 3))
+    for yx, yy in ((13, 4), (5, 11)):
+        c.P(yx, yy, J('tatami_straw', 4))
 
 GROUND: Final[collections.OrderedDict[str, tuple[Callable[[Cv], None], str]]] = collections.OrderedDict((
     ('gnd/inaka-paddy-water', (_paddy_water, 'solidfloor')),

@@ -764,66 +764,6 @@ def draw_wooden_station(c: Cv, base: Cv) -> None:
         c.R(88 + k * 4, 27, 2, 3, OL)
 
 
-# ─────────────────────────── 8. inaka-single-car-train (6×2) ───────────────────────────
-@kit(
-    'inaka-single-car-train',
-    '단량 디젤 동차(キハ単行気動車) — 크림·주홍 국철 도색·지붕 냉방기·전조등·대차(6×2)',
-    6, 2, 'vehicle',
-    solid=rows(6, [0, 1]),
-    tags=['inaka', '기차', '디젤동차', '키하', '단선철도', '열차'],
-    rules='단선 철길이나 간이역 승강장 앞 선로 위에 놓는다.',
-    role='prop',
-)
-def draw_single_car_train(c: Cv, base: Cv) -> None:
-    """Draw 6x2 retro 1-car KiHa diesel railcar in cream & vermilion livery with 3/4 roof HVAC pods and bogies."""
-    # Railbed shadow & steel bogie undercarriage (y=24..31)
-    c.R(2, 27, 92, 4, OL)
-    c.HL(3, 29, 90, J('noren_rust', 2))
-    for bx in (10, 22, 68, 80):
-        disc(c, bx, 27, 3.2, OL)
-        disc(c, bx, 27, 2.0, J('kawara_dark_tile', 2))
-        c.P(bx, 27, J('concrete_grey', 4))
-    for x in range(6, 90):
-        if not (8 <= x <= 25 or 65 <= x <= 83):
-            c.R(x, 25, 1, 4, J('kawara_dark_tile', 1))
-    # Main coach body (x=3..93, y=5..26)
-    c.R(3, 5, 90, 21, OL)
-    # 1) 3/4 Curved roof top surface (y=6..11) in cool grey
-    c.HL(4, 6, 88, J('concrete_grey', 4))
-    c.R(4, 7, 88, 3, J('concrete_grey', 3))
-    c.HL(4, 10, 88, J('concrete_grey', 2))
-    # 3/4 Roof HVAC pods & exhaust stack (x=18..28, 42..54, 66..76)
-    for hx, hw in ((18, 10), (42, 12), (66, 10)):
-        rect_3d(c, hx, 3, hw, 6, 2, 'vending_cool_white', top_t=4, front_t=2)
-        c.VL(hx + hw // 2, 5, 3, J('concrete_grey', 1))
-    # 2) Upper cream window band (y=11..19)
-    c.R(4, 11, 88, 8, J('cream_stucco', 4))
-    c.HL(4, 11, 88, J('torii_vermilion', 3))
-    # 3) Lower vermilion-orange livery band (y=19..25)
-    c.R(4, 19, 88, 6, J('torii_vermilion', 3))
-    c.HL(4, 19, 88, J('vending_cool_white', 4))
-    c.HL(4, 24, 88, J('torii_vermilion', 1))
-    # Left & right folding passenger doors (x=10..16, 80..86)
-    for dx in (10, 80):
-        c.R(dx, 12, 7, 13, OL)
-        c.R(dx + 1, 13, 5, 11, J('torii_vermilion', 2))
-        c.VL(dx + 3, 13, 11, OL)
-        c.R(dx + 1, 14, 2, 4, J('arcade_skylight_slate', 3))
-        c.R(dx + 4, 14, 2, 4, J('arcade_skylight_slate', 3))
-    # 5 Panoramic passenger windows (x=20..76)
-    for wx in range(20, 75, 11):
-        c.R(wx, 12, 9, 6, OL)
-        c.R(wx + 1, 13, 7, 4, J('arcade_skylight_slate', 2))
-        c.HL(wx + 1, 13, 4, J('arcade_skylight_slate', 4))
-        c.VL(wx + 4, 13, 4, J('concrete_grey', 3))
-    # Front/rear cab wraparound windows & headlights at ends
-    for ex, head_x in ((4, 4), (88, 90)):
-        c.R(ex, 12, 4, 5, OL)
-        c.R(ex + 1, 13, 2, 3, J('arcade_skylight_slate', 3))
-        c.R(head_x, 7, 2, 2, J('lantern_amber', 4))
-        c.R(head_x, 21, 2, 2, J('lantern_amber', 4))
-
-
 # ─────────────────────────── 9. inaka-red-iron-bridge (6×3) ───────────────────────────
 @kit(
     'inaka-red-iron-bridge',

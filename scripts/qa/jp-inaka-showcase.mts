@@ -7,6 +7,7 @@ import { createNewProjectSeed } from "../../src/editor/genrePacks.ts";
 import { ensureBundledTilesets } from "../../src/project/defaults/defaultAssets.ts";
 import { runTool } from "../../src/editor/tools/index.ts";
 import { blankFillTileFor } from "../../src/project/defaults/defaultMaps.ts";
+import { setLayerTileAt } from "../../src/project/mapLayers.ts";
 import {
   INAKA_GROUND_TILES,
   INAKA_KITS,
@@ -82,8 +83,26 @@ for (const scene of INAKA_SHOWCASE_SCENES) {
       }
       continue;
     }
-    const stampRes = runTool(ctx, "stamp_object", { ...step.args });
+    const curMapBefore = ctx.project.maps[mapId];
+    const prevUpper = curMapBefore ? curMapBefore.upperTiles.slice() : [];
+    const targetLayer = typeof step.args.layer === "number" ? step.args.layer : 3;
+    const { layer: _omitLayer, ...stampArgs } = step.args;
+    const stampRes = runTool(ctx, "stamp_object", stampArgs);
     if (stampRes.ok) {
+      const curMapAfter = ctx.project.maps[mapId];
+      if (curMapAfter && prevUpper.length === curMapAfter.upperTiles.length) {
+        for (let i = 0; i < curMapAfter.upperTiles.length; i++) {
+          const beforeTile = prevUpper[i] ?? -1;
+          const afterTile = curMapAfter.upperTiles[i] ?? -1;
+          if (beforeTile === afterTile) continue;
+          if (targetLayer === 4 && afterTile >= 0) {
+            setLayerTileAt(curMapAfter, 4, i, afterTile);
+            curMapAfter.upperTiles[i] = beforeTile;
+          } else if (beforeTile >= 0 && afterTile >= 0) {
+            setLayerTileAt(curMapAfter, 2, i, beforeTile);
+          }
+        }
+      }
       appliedStamps++;
     } else {
       failedStamps.push(`${step.note}: ${stampRes.summary}`);
