@@ -294,6 +294,7 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
   if (Array.isArray(s.pl)) {
     items.push(o("mci-plant-tall", s.pl[0], resolveY(s.pl[1])));
   }
+  const usedCells = new Set<string>();
   for (const it of items) {
     if (it.t !== "o") continue;
     const q = OBJ[it.id];
@@ -313,6 +314,20 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
     const touchesWall = it.y <= 2 || it.y + ih >= h || it.x === 0 || it.x + iw >= w;
     if (WALL_ONLY_RE.test(it.id) && !FLOOR_GONDOLA_RE.test(it.id) && !touchesWall) {
       throw new Error(`WALL_ONLY prop ${it.id} in ${kind} at (${it.x},${it.y}) must touch a wall`);
+    }
+    for (let dy = 0; dy < ih; dy++) for (let dx = 0; dx < iw; dx++) {
+      const ck = `${it.x + dx},${it.y + dy}`;
+      if (usedCells.has(ck)) throw new Error(`Overlapping prop ${it.id} in ${kind} at (${ck})`);
+      usedCells.add(ck);
+    }
+  }
+  for (const it of items) {
+    if (it.t !== "t") continue;
+    const tw = it.w ?? 1, th = it.h ?? 1;
+    for (let dy = 0; dy < th; dy++) for (let dx = 0; dx < tw; dx++) {
+      const ck = `${it.x + dx},${it.y + dy}`;
+      if (usedCells.has(ck)) throw new Error(`Overlapping table ${it.id} in ${kind} at (${ck})`);
+      usedCells.add(ck);
     }
   }
   return { kind, w, h, floor, wall, items, ...(s.openFloor ? { openFloor: true } : {}) };

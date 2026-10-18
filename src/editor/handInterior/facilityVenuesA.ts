@@ -576,9 +576,7 @@ export const FACILITIES_A: readonly FacilityVenue[] = [
         bar: [["food-sushi-case", "m:bar-stool", 5, 4, 3, "s"]],
         seat: [
           ["mci-t-wood", "m:chair-wood", 1, 7, 2, 1, { e: true, w: true }],
-          ["mci-t-wood", "m:chair-wood", 5, 7, 2, 1, { e: true, w: true }],
-          ["mci-t-wood", "m:chair-wood", 10, 7, 2, 1, { e: true, w: true }],
-          ["mci-t-wood", "m:chair-wood", 13, 7, 2, 1, { e: true, w: true }],
+          ["mci-t-wood", "m:chair-wood", 11, 7, 2, 1, { e: true, w: true }],
         ],
       }),
     ] }),

@@ -478,8 +478,10 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
     rooms: [
       R("bk-vault", 10, 8, F.conc, W.metal, {
         hang: ["m:wall-clock"],
-        wall: ["pub-vault-door", "m:filing", "m:filing"],
-        at: [["m:rack", 0, 2], ["library-shelf", 0, 7], ["library-shelf", 7, 7]],
+        at: [
+          ["m:rack", 0, 2], ["pub-vault-door", 3, 2], ["m:filing", 6, 2], ["m:filing", 8, 2],
+          ["library-shelf", 0, 7], ["library-shelf", 7, 7],
+        ],
       }),
       R("bk-hall", 22, 9, F.stone, W.lobby, {
         hang: ["hosp-number-display", "m:wall-clock", "m:menu-board", "m:notice-board"],
@@ -490,7 +492,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["hosp-wait-row-n", 3, 6], ["hosp-wait-row-n", 10, 6],
           ["hosp-wait-row-n", 3, 8], ["hosp-wait-row-n", 10, 8],
         ],
-        pl: [20, 8],
+        pl: [21, 8],
       }),
       R("bk-office", 12, 9, F.carpet, W.office, {
         hang: ["m:whiteboard", "m:wall-clock"],
