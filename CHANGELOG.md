@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.266.0 — 2026-10-18
+
+### 기능
+
+- **flagship** — add playable Flagship Demos (Chrono Bell JRPG & Emerald Crown Monster RPG) + welcome showcase (#2956) (`1fc61fc`)
+- **interior** — 50x50 3-floor stepped hospital, elevator cabin interior, and reused street vehicles (#2955) (`01e939b`)
+- **jrpg** — add 12 puzzle presets catalog (list_puzzle_presets) and atomic puzzle authoring tool (author_map_puzzle) (#2953) (`c99fa3f`)
+- **jp_city** — add formal 6-ramp color palette contract and 30 Japanese regions catalog & composer tools (#2951) (`9cba5ea`)
+
+### 수정
+
+- **forest** — 버들 마을 숲 수관을 겹친 나무 덩이(2×2 수관)로 다시 굽기 — 3모델 적대적 VQA (#2952) (`fc4e1ad`)
+
 ## 0.265.0 — 2026-10-18
 
 ### 기능
