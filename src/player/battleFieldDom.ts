@@ -6,7 +6,7 @@ import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
 import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
-import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
+import { pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
 import { partyPixelBackgroundPosition, partyPixelSheet, partyPixelSheetUrl, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { battleTypeBadges } from "@/player/battleTypeBadges";
 import { monsterExpBarProgress } from "@/player/battleExpBar";
@@ -793,7 +793,7 @@ function applyBattlerPose(node: HTMLElement, pose: ExtendedBattlerPose): void {
     node.dataset.battlePoseFrame = cell;
     if (cell === "idle") sprite.style.removeProperty("background-position");
     else {
-      const at = PIXEL_ENEMY_FRAME[cell];
+      const at = pixelEnemyFrame(pixelEnemySheet(sprite.dataset.pixelSheet), cell);
       sprite.style.backgroundPosition = `${at.col * 50}% ${at.row * 50}%`;
     }
     return;

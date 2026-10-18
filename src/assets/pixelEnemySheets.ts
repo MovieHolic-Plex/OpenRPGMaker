@@ -5,7 +5,7 @@
 //   1:1 도트, 알파 0/255. 오른쪽(아군 쪽)을 본다. 가로 중심 x=cell/2, 바닥 기준선 y=cell−4.
 //   (0,0)(1,0)(2,0) 대기 a·b·c — a→b→c→b 로 돈다
 //   (0,1) windup · (1,1) move · (2,1) attack
-//   (0,2) recover · (1,2) hit · (2,2) dead
+//   (0,2) recover · (1,2) hit · (2,2) dead — skillCell 시트는 (0,2)를 스킬 방출 자세로 그린다(pixelEnemyFrame)
 //
 // 같은 리소스 id 의 일반 이미지/다른 스킨은 pixelEnemyPortraits.ts 의 idle_a 한 칸을 그린다.
 // 옛 통짜 그림은 폐기했다. retro2003 에서만 이 3×3 포즈 시트를 직접 읽는다.
@@ -37,6 +37,11 @@ export interface PixelEnemySheet {
   readonly idleFrameMs: number;
   /** 셀 한 변(px). 생략 = 48. 시트는 cell×3 정사각. */
   readonly cell?: number;
+  /**
+   * (0,2) 칸을 복귀 자세가 아니라 **스킬** 자세(빛·독·음파 효과 포함)로 그린 시트.
+   * 몬스터 스킬의 타격·방출 순간(retroMonsterCellForPose → skill)은 이 칸을, 통상 공격의 복귀(recover)는 move 칸을 쓴다(pixelEnemyFrame).
+   */
+  readonly skillCell?: true;
 }
 
 export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
@@ -46,19 +51,19 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-dragon-01", path: "assets/generated/pixel-enemies/dragon.png", cell: 96, motion: "breath", idleFrameMs: 260 },
   { resourceId: "generated-enemy-skeleton-archer", path: "assets/generated/pixel-enemies/skeleton-archer.png", cell: 64, motion: "shoot", idleFrameMs: 240 },
   { resourceId: "generated-enemy-wolf-grey", path: "assets/generated/pixel-enemies/wolf-grey.png", cell: 64, motion: "dash", idleFrameMs: 180 },
-  { resourceId: "generated-enemy-spider-cave", path: "assets/generated/pixel-enemies/spider-cave.png", cell: 64, motion: "dash", idleFrameMs: 160 },
+  { resourceId: "generated-enemy-spider-cave", path: "assets/generated/pixel-enemies/spider-cave.png", cell: 64, motion: "dash", idleFrameMs: 160, skillCell: true },
   { resourceId: "generated-enemy-wisp-blue", path: "assets/generated/pixel-enemies/wisp-blue.png", cell: 64, motion: "float", idleFrameMs: 200 },
   { resourceId: "generated-enemy-slime-red", path: "assets/generated/pixel-enemies/slime-red.png", cell: 64, motion: "hop", idleFrameMs: 180 },
   { resourceId: "generated-enemy-zombie-rot", path: "assets/generated/pixel-enemies/zombie-rot.png", cell: 64, motion: "stomp", idleFrameMs: 340 },
   // 2026-09-28 확장 30종(계약 retroMonsterPlan.ts 순서). 대기 한 칸 길이는 tiledata/pixel-enemies/<slug>/README.md 권장값,
   // 권장값이 없는 짐승 10종은 이동 방식 기본값(swoop 120 · dash 170 · stomp 320). 식충 식물은 stomp 슬롯이지만 제자리 덩굴 채찍이다.
-  { resourceId: "generated-enemy-bat-vampire", path: "assets/generated/pixel-enemies/bat-vampire.png", cell: 64, motion: "swoop", idleFrameMs: 120 },
-  { resourceId: "generated-enemy-bee-giant", path: "assets/generated/pixel-enemies/bee-giant.png", cell: 64, motion: "swoop", idleFrameMs: 120 },
-  { resourceId: "generated-enemy-scorpion-sand", path: "assets/generated/pixel-enemies/scorpion-sand.png", cell: 64, motion: "dash", idleFrameMs: 170 },
-  { resourceId: "generated-enemy-mantis-blade", path: "assets/generated/pixel-enemies/mantis-blade.png", cell: 64, motion: "dash", idleFrameMs: 170 },
-  { resourceId: "generated-enemy-boar-tusk", path: "assets/generated/pixel-enemies/boar-tusk.png", cell: 64, motion: "dash", idleFrameMs: 170 },
+  { resourceId: "generated-enemy-bat-vampire", path: "assets/generated/pixel-enemies/bat-vampire.png", cell: 64, motion: "swoop", idleFrameMs: 120, skillCell: true },
+  { resourceId: "generated-enemy-bee-giant", path: "assets/generated/pixel-enemies/bee-giant.png", cell: 64, motion: "swoop", idleFrameMs: 120, skillCell: true },
+  { resourceId: "generated-enemy-scorpion-sand", path: "assets/generated/pixel-enemies/scorpion-sand.png", cell: 64, motion: "dash", idleFrameMs: 170, skillCell: true },
+  { resourceId: "generated-enemy-mantis-blade", path: "assets/generated/pixel-enemies/mantis-blade.png", cell: 64, motion: "dash", idleFrameMs: 170, skillCell: true },
+  { resourceId: "generated-enemy-boar-tusk", path: "assets/generated/pixel-enemies/boar-tusk.png", cell: 64, motion: "dash", idleFrameMs: 170, skillCell: true },
   { resourceId: "generated-enemy-bear-brown", path: "assets/generated/pixel-enemies/bear-brown.png", cell: 64, motion: "stomp", idleFrameMs: 320 },
-  { resourceId: "generated-enemy-snake-viper", path: "assets/generated/pixel-enemies/snake-viper.png", cell: 64, motion: "dash", idleFrameMs: 170 },
+  { resourceId: "generated-enemy-snake-viper", path: "assets/generated/pixel-enemies/snake-viper.png", cell: 64, motion: "dash", idleFrameMs: 170, skillCell: true },
   { resourceId: "generated-enemy-crab-rock", path: "assets/generated/pixel-enemies/crab-rock.png", cell: 64, motion: "dash", idleFrameMs: 170 },
   { resourceId: "generated-enemy-hound-hell", path: "assets/generated/pixel-enemies/hound-hell.png", cell: 64, motion: "dash", idleFrameMs: 170 },
   { resourceId: "generated-enemy-plant-carnivore", path: "assets/generated/pixel-enemies/plant-carnivore.png", cell: 64, motion: "stomp", idleFrameMs: 320 },
@@ -71,13 +76,13 @@ export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
   { resourceId: "generated-enemy-golem-iron", path: "assets/generated/pixel-enemies/golem-iron.png", cell: 64, motion: "stomp", idleFrameMs: 320 },
   { resourceId: "generated-enemy-armor-living", path: "assets/generated/pixel-enemies/armor-living.png", cell: 64, motion: "stomp", idleFrameMs: 300 },
   { resourceId: "generated-enemy-mimic-chest", path: "assets/generated/pixel-enemies/mimic-chest.png", cell: 64, motion: "hop", idleFrameMs: 200 },
-  { resourceId: "generated-enemy-eye-floating", path: "assets/generated/pixel-enemies/eye-floating.png", cell: 64, motion: "shoot", idleFrameMs: 200 },
+  { resourceId: "generated-enemy-eye-floating", path: "assets/generated/pixel-enemies/eye-floating.png", cell: 64, motion: "shoot", idleFrameMs: 200, skillCell: true },
   { resourceId: "generated-enemy-goblin-scout", path: "assets/generated/pixel-enemies/goblin-scout.png", cell: 64, motion: "dash", idleFrameMs: 160 },
   { resourceId: "generated-enemy-orc-warrior", path: "assets/generated/pixel-enemies/orc-warrior.png", cell: 64, motion: "stomp", idleFrameMs: 300 },
   { resourceId: "generated-enemy-orc-shaman", path: "assets/generated/pixel-enemies/orc-shaman.png", cell: 64, motion: "shoot", idleFrameMs: 240 },
   { resourceId: "generated-enemy-bandit-mask", path: "assets/generated/pixel-enemies/bandit-mask.png", cell: 64, motion: "dash", idleFrameMs: 170 },
   { resourceId: "generated-enemy-lizardman-spear", path: "assets/generated/pixel-enemies/lizardman-spear.png", cell: 64, motion: "dash", idleFrameMs: 190 },
-  { resourceId: "generated-enemy-harpy-cliff", path: "assets/generated/pixel-enemies/harpy-cliff.png", cell: 64, motion: "swoop", idleFrameMs: 120 },
+  { resourceId: "generated-enemy-harpy-cliff", path: "assets/generated/pixel-enemies/harpy-cliff.png", cell: 64, motion: "swoop", idleFrameMs: 120, skillCell: true },
   { resourceId: "generated-enemy-minotaur-maze", path: "assets/generated/pixel-enemies/minotaur-maze.png", cell: 96, motion: "stomp", idleFrameMs: 320 },
   { resourceId: "generated-enemy-troll-cave", path: "assets/generated/pixel-enemies/troll-cave.png", cell: 96, motion: "stomp", idleFrameMs: 340 },
   { resourceId: "generated-enemy-gargoyle-stone", path: "assets/generated/pixel-enemies/gargoyle-stone.png", cell: 64, motion: "swoop", idleFrameMs: 260 },
@@ -200,6 +205,19 @@ export const PIXEL_ENEMY_FRAME: Readonly<Record<PixelEnemyCell, { readonly col: 
   hit: { col: 1, row: 2 },
   dead: { col: 2, row: 2 },
 };
+
+/** 몬스터 스킬 재생기가 고르는 칸: 9칸 + 스킬 방출("skill"). */
+export type RetroMonsterCell = PixelEnemyCell | "skill";
+
+/**
+ * 칸 이름 → 시트 자리. skillCell 시트는 (0,2)가 스킬 방출 그림이라 skill → (0,2), 통상 복귀 recover → move 칸.
+ * 그 밖의 시트는 skill → attack 칸(예전과 같은 방출 그림).
+ */
+export function pixelEnemyFrame(sheet: Pick<PixelEnemySheet, "skillCell"> | undefined, cell: RetroMonsterCell): { readonly col: number; readonly row: number } {
+  if (cell === "skill") return sheet?.skillCell ? PIXEL_ENEMY_FRAME.recover : PIXEL_ENEMY_FRAME.attack;
+  if (cell === "recover" && sheet?.skillCell) return PIXEL_ENEMY_FRAME.move;
+  return PIXEL_ENEMY_FRAME[cell];
+}
 
 const byId = new Map(PIXEL_ENEMY_SHEETS.map((entry) => [entry.resourceId, entry]));
 const legacyAliases: Readonly<Record<string, string>> = {

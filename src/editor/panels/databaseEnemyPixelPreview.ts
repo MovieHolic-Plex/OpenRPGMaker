@@ -34,11 +34,13 @@ import {
 import {
   PIXEL_ENEMY_FRAME,
   pixelEnemyCell,
+  pixelEnemyFrame,
   pixelEnemySheet,
   pixelEnemySheetUrl,
   type PixelEnemyCell,
   type PixelEnemyMotion,
   type PixelEnemySheet,
+  type RetroMonsterCell,
 } from "@/assets/pixelEnemySheets";
 import { el } from "@/util/dom";
 
@@ -198,7 +200,7 @@ export function renderEnemyPixelPreview(
       class: "db-enemy-pixel-cell",
       attrs: { type: "button", "aria-pressed": "false" },
       dataset: { testid: "db-enemy-pixel-cell-" + id, cell: id },
-      children: [pic, el("span", { class: "db-enemy-pixel-cell-label", text: CELL_LABELS[id] })],
+      children: [pic, el("span", { class: "db-enemy-pixel-cell-label", text: id === "recover" && sheet.skillCell ? "스킬" : CELL_LABELS[id] })],
     });
     button.addEventListener("click", () => showStill(id));
     cellButtons.set(id, button);
@@ -218,11 +220,12 @@ export function renderEnemyPixelPreview(
   let from = { x: 0, y: 0 };
 
   let lastDrawing = "";
-  const draw = (current: PixelEnemyCell, dx: number, dy: number, allyStruck = current === "attack"): void => {
+  const draw = (current: RetroMonsterCell, dx: number, dy: number, allyStruck = current === "attack"): void => {
     const drawing = [current, Math.round(dx), Math.round(dy), allyStruck, action, still].join("|");
     if (drawing === lastDrawing) return;
     lastDrawing = drawing;
-    const pos = PIXEL_ENEMY_FRAME[current];
+    // 칸 표에서 고른 정지 칸은 시트 자리 그대로, 재생은 skillCell 규칙(pixelEnemyFrame)으로 고른다.
+    const pos = action === "still" && current !== "skill" ? PIXEL_ENEMY_FRAME[current] : pixelEnemyFrame(sheet, current);
     sprite.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
     sprite.style.top = Math.round(FEET_Y - (cell - 4) + dy) + "px";
@@ -233,7 +236,8 @@ export function renderEnemyPixelPreview(
     ally.classList.toggle("is-hit", allyStruck);
     stage.dataset.pixelCell = current;
     for (const [id, button] of cellButtons) {
-      const on = id === current;
+      const at = PIXEL_ENEMY_FRAME[id];
+      const on = at.col === pos.col && at.row === pos.row;
       button.classList.toggle("is-current", on);
       button.setAttribute("aria-pressed", String(action === "still" && on));
     }

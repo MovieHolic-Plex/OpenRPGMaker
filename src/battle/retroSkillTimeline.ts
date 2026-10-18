@@ -11,7 +11,7 @@ import type { MotionTrack, BattleMotionProgram } from "@/battle/battleMotionProg
 //   그 밖        착탄 순간부터 목록 순서대로 이어 재생한다. 다음 레이어는 앞 레이어의 55% 지점에서 겹쳐 시작한다.
 import { castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import type { RetroFxAnchor, RetroFxLayer, RetroSkillMotion } from "@/assets/retroClassSkills";
-import type { PartyPixelCell, PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import type { PartyPixelCell, RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import { retroTintFilter } from "@/assets/retroChoreographyTints";
 
 /** 시전자가 서는 자리. 좌표는 무대가 정한다. */
@@ -517,18 +517,21 @@ export function retroRecipeTimeline(recipe: RetroRecipeLike, options: { readonly
 // ── 몬스터 스킬 42개(계약 src/assets/retroMonsterSkills.ts) ──────────────────────────────────
 // 적은 왼쪽, 아군은 오른쪽이다. 타임라인의 편은 **시전자 기준**이다: enemies = 시전 몬스터의 상대(아군 파티),
 // allies = 몬스터 편, self = 시전 몬스터. 무대(런타임·편집기)가 편을 화면의 노드로 옮긴다.
-// 포즈 사건은 확장 포즈 이름을 그대로 쓰고 retroMonsterCellForPose 가 도트 적 시트 9칸으로 옮긴다
-// (windup·move·attack·recover). 투사체 첫 칸은 오른쪽을 본다 — 무대가 몬스터 손 → 아군으로 날린다.
+// 포즈 사건은 확장 포즈 이름이고 retroMonsterCellForPose 가 도트 적 시트 칸으로 옮긴다(windup·move·skill·recover).
+// 투사체 첫 칸은 오른쪽을 본다 — 무대가 몬스터 손 → 아군으로 날린다.
 
-/** 확장 포즈 → 도트 적 시트 칸. idle 이면 undefined(CSS 대기 루프). */
-export function retroMonsterCellForPose(pose: ExtendedBattlerPose): PixelEnemyCell | undefined {
+/**
+ * 확장 포즈 → 도트 적 시트 칸(몬스터 **스킬** 재생 전용). idle 이면 undefined(CSS 대기 루프).
+ * 타격·방출(attack·attack_strike·cast_release…)은 skill: skillCell 시트는 (0,2) 스킬 칸, 그 밖은 attack 칸(pixelEnemyFrame).
+ */
+export function retroMonsterCellForPose(pose: ExtendedBattlerPose): RetroMonsterCell | undefined {
   if (pose === "idle") return undefined;
   if (pose === "attack_windup" || pose === "cast_charge" || pose === "cast_raise" || pose === "defend") return "windup";
   if (pose === "walk_a" || pose === "walk_b" || pose === "walk_c") return "move";
   if (pose === "hit" || pose === "guard_hit") return "hit";
   if (pose === "dead" || pose === "dying") return "dead";
   if (pose === "evade" || pose === "attack_follow" || pose === "weak" || pose === "revive") return "recover";
-  return "attack";
+  return "skill";
 }
 
 /**
