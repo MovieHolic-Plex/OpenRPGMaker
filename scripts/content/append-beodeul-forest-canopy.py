@@ -393,7 +393,8 @@ def canopy_tile(style, data, mask, phx, phy):
     open_gap = ~(above & left & right) & (d < 17)
     up = np.full((S, S), 99.0)   # 바로 위 수관 화소까지 거리(px)
     for y in range(1, S): up[y] = np.where(covered[y - 1], 1, up[y - 1] + 1)
-    hang = (up <= 1 + (d - 9 - 0.5 * wob) * 1.75) | (d >= 13.5 + 1.2 * wob)   # 수관 사이 뒤 숲 그늘 윗선도 물결(곧은 칸 줄 금지)
+    ridge = 1.2 * wob + 1.8 * np.sin(2 * math.pi * AX / L * 9 + 0.4) * np.sin(2 * math.pi * AX / L * 4 + 1.9)   # 잔 물결: 3칸에 걸친 곧은 윗선 방지(9회차)
+    hang = (up <= 1 + (d - 9 - 0.5 * wob) * 1.75) | (d >= 13.5 + ridge)   # 수관 사이 뒤 숲 그늘 윗선도 물결(곧은 칸 줄 금지)
     gap = ~painted
     rgba[gap, 3] = np.where(np.where(open_gap, hang & (frac > 0), frac > 0.5 + dith)[gap], 255, 0)
     rgba[gap & fl & (frac > 0.2), 3] = 255   # 숲 바닥 햇빛 조각은 점묘로 쪼개지 않고 덩이로 남긴다(체 무늬 점 방지)
