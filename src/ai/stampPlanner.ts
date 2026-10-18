@@ -47,6 +47,7 @@ export type StampTool =
   | "carve_river"
   | "sculpt_hill"
   | "place_castle"
+  | "place_shop"
   | "place_corpses"
   | "harmonize_region"
   | "sculpt_relief"
@@ -82,6 +83,7 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "carve_river",
   "sculpt_hill",
   "place_castle",
+  "place_shop",
   "place_corpses",
   "harmonize_region",
 ];
@@ -102,6 +104,7 @@ export interface FastPathCommandClassification {
   readonly tier: FastPathCommandTier;
   readonly allowed: boolean;
   readonly op?: FastPathSpatialOpKind;
+  readonly spatialOp?: FastPathSpatialOpKind;
   readonly code?: FastPathRejectCode;
   readonly matchedCategory?: string;
   readonly guidance?: string;
@@ -243,7 +246,8 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "place_house {area?:{x,y,w,h}, at?:{x,y}, kind?:string, size?:\"small\"|\"medium\"|\"large\", count?:1..4, stories?:1|2}",
   "place_dungeon_room {area:{x,y,w,h}, kind?:\"room\"|\"corridor\"|\"connect\", style?:\"crypt\"|\"sewer\"|\"temple\"|\"volcano\"|\"cave\", hazard?:\"lava\"|\"water\"}",
   "place_chest {at:{x,y}, gold?:int, itemId?:string, why?:\"short basis\"}",
-  "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], merchant?:boolean, stock?:[itemId]}",
+  "place_npc {at:{x,y}, name, role?:string, lines?:[\"...\"], movement?:\"fixed\"|\"random\", merchant?:boolean, stock?:[itemId]}",
+  "place_shop {area?:{x,y,w,h}, at?:{x,y}, kind?:\"potion\"|\"weapon\"|\"armor\"|\"general\", name?:string}  (when the user asks for 간단한 상점/물약 상점/무기 상점/방어구 상점/잡화점/가게/노점을 만들어줘·세워줘 — places shop building/stall + merchant NPC with stock)",
   "place_savepoint {at:{x,y}, mode?:\"both\"|\"slot\"|\"checkpoint\", heal?:boolean}",
   "place_examine_hotspots {spots:[{at:{x,y}, name, lines:[\"...\"]}]}",
   "place_storage_chest {at:{x,y}}",
@@ -263,10 +267,11 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "compose_scene {scene, style?:string, program?:string, shops?:[string], seed?:int}  (omit seed unless the user names one — code picks a new seed every run so the same sentence gives a different layout)",
   "carve_river {area?:{x,y,w,h}, direction?:\"horizontal\"|\"vertical\", bridge?:boolean}  (when the user asks for 강/개울/물줄기/운하/내를 깔아줘·흐르게 해줘 — carves a natural winding water river channel + stone/wood bridge across the area)",
   "sculpt_hill {area?:{x,y,w,h}, levels?:1|2|3, stairs?:boolean}  (when the user asks for 언덕/고지/절벽 단차/단/계단식 언덕을 만들어줘·올려줘 — raises walkable relief cliff elevation + stairs + hilltop trees/flowers)",
-  "place_castle {area?:{x,y,w,h}, gate?:boolean, towers?:boolean}  (when the user asks for 성/성채/요새/성곽/성벽과 성문/망루를 지어줘·세워줘 — builds stone castle ramparts, battlements, round watchtowers, arched portcullis gate, and courtyard)",
+  "place_castle {area?:{x,y,w,h}, gate?:boolean, towers?:boolean, archetype?:\"citadel\"|\"keep\"|\"gatehouse\"|\"outpost\", seed?:int}  (when the user asks for 성/성채/요새/성곽/성벽과 성문/망루를 지어줘·세워줘 — builds stone castle ramparts, battlements, round watchtowers, arched portcullis gate, and courtyard; omit seed unless the user names one)",
   "place_corpses {area?:{x,y,w,h}, count?:int, withDebris?:boolean}  (when the user asks for 시체/시체들/백골/유골/유해/전사자 유해/해골 더미/전투 흔적을 깔아줘 — scatters skeletal/corpse remains, skull piles, graves, and battle debris/weapons)",
   "harmonize_region {area?:{x,y,w,h}}  (when the user asks for \"주변과 어울리게 해줘\", \"주변 풍경에 맞게 자연스럽게 꾸며줘\", \"어울리게 채워줘\" — inspects surrounding ground, roads, trees, and props to automatically blend the area with the map biome)",
-  "- QUEST / DIALOGUE / STORY / BOSS EVENT / PUZZLE / PARTY RECRUIT / SHOP-INN WIRING GUARD: if the sentence asks for 퀘스트 만들기/세우기, 대화·스토리·컷신 짜기, 보스전·퍼즐·선택지 이벤트 만들기, 동료 영입/합류, or 상점·숙소 기능 배선, NEVER pretend to fulfill it with static props or dummy NPCs; return ONLY {\"reject\":\"FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT\"}.",
+  "- SIMPLE NPC & SIMPLE SHOP ARE ALLOWED: \"간단한 NPC 만들고 대사도 만들어줘\", \"경비병과 산책하는 주민 NPC 만들어줘\" → use place_npc with 1-2 short lines. \"간단한 상점 만들어줘\", \"물약 상점과 상인 NPC 만들어줘\", \"무기 상점 세워줘\" → use place_shop (or place_house kind:\"상점\" + place_npc merchant:true stock:[...]).",
+  "- QUEST / BRANCHING STORY / BOSS EVENT / PUZZLE / PARTY RECRUIT / COMPLEX SYSTEM WIRING GUARD: ONLY if the sentence asks for 퀘스트 만들기/세우기, 분기·선택지 대화·스토리·컷신 짜기, 보스전·퍼즐·선택지 이벤트 만들기, 동료 영입/합류, or 상점·숙소 기능 배선/시스템 구현, return ONLY {\"reject\":\"FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT\"}.",
 ].join("\n");
 
 export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
@@ -428,6 +433,7 @@ const TOOL_KO: Record<StampTool, string> = {
   carve_river: "강·물줄기",
   sculpt_hill: "언덕·절벽 단차",
   place_castle: "성·성채",
+  place_shop: "상점",
   place_corpses: "백골 유해·전투 흔적",
   harmonize_region: "주변 맞춤 조경",
   sculpt_relief: "절벽 높이 빚기",
@@ -629,9 +635,17 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const name = stringArg(args.name) ?? "마을 사람";
       const role = stringArg(args.role);
       const lines = stringList(args.lines, 3);
-      const body = lines.length > 0 ? lines : [`${name}: 안녕하세요.`];
-      if (args.merchant === true || Array.isArray(args.stock)) {
-        const stock = merchantStock(args.stock, facts);
+      const body = lines.length > 0 ? lines : [`${name}: 안녕하세요. 좋은 하루입니다!`];
+      const movement = enumArg(args.movement, ["fixed", "random", "approach"] as const)
+        ?? (/산책|배회|걸어|돌아다니|구경/u.test(`${name} ${role ?? ""} ${facts.text}`)
+          ? "random"
+          : /경비|문지기|병사|보초|초병|상인|주인|점원|guard|soldier|merchant|shopkeeper/iu.test(`${name} ${role ?? ""}`)
+            ? "fixed"
+            : undefined);
+      const isMerchant = args.merchant === true || Array.isArray(args.stock) || /상인|상점\s*주인|약사|무기상|방어구상|잡화상|점원|merchant|shopkeeper/iu.test(`${name} ${role ?? ""}`);
+      if (isMerchant) {
+        const shopKind = inferShopKind(`${name} ${role ?? ""} ${facts.text}`);
+        const stock = merchantStock(args.stock, facts, shopKind);
         if (stock.itemIds.length > 0) {
           return {
             step: {
@@ -641,6 +655,7 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
               args: {
                 mapId, name, home: at,
                 graphic: { query: role ?? "merchant" },
+                movement: "fixed",
                 pages: [{ lines: body }],
                 shop: { stock: stock.itemIds.map((itemId) => ({ itemId })) },
               },
@@ -655,7 +670,31 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
           args: {
             mapId, x: at.x, y: at.y, name,
             graphic: { query: role ?? name },
+            ...(movement ? { movement } : {}),
             pages: [{ lines: body }],
+          },
+        },
+      };
+    }
+    case "place_shop": {
+      const area = args.at !== undefined ? pointRect(clampPointToTarget(args.at, target)) : (rect ?? target);
+      if (!area) return dropped("상점을 놓을 영역이 대상 밖입니다");
+      const kind = enumArg(args.kind, ["potion", "weapon", "armor", "general"] as const)
+        ?? inferShopKind(`${stringArg(args.kind) ?? ""} ${stringArg(args.name) ?? ""} ${labelText ?? ""} ${facts.text}`);
+      const defaultShopName = kind === "potion" ? "물약 상점" : kind === "weapon" ? "무기 상점" : kind === "armor" ? "방어구 상점" : "잡화 상점";
+      const name = stringArg(args.name) ?? defaultShopName;
+      const stock = merchantStock(args.stock, facts, kind);
+      return {
+        step: {
+          tool: "place_shop",
+          label: labelText ?? `${name}과 상인 NPC`,
+          ...(stock.note ? { note: stock.note } : {}),
+          args: {
+            mapId,
+            area,
+            kind,
+            name,
+            stock: stock.itemIds,
           },
         },
       };
@@ -862,8 +901,7 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       };
     }
     case "move_object": {
-      const query = stringArg(args.query) ?? stringArg(args.name) ?? stringArg(args.object) ?? stringArg(args.target) ?? extractMoveTargetNoun(facts.text);
-      if (!query) return dropped("옮길 물체 이름이 없습니다");
+      const query = stringArg(args.query) ?? stringArg(args.name) ?? stringArg(args.object) ?? stringArg(args.target) ?? extractMoveTargetNoun(facts.text) ?? "선택 물체";
       const parsedShift = parseRelativeShift(facts.text);
       const dx = finiteInt(args.dx) ?? parsedShift?.dx ?? null;
       const dy = finiteInt(args.dy) ?? parsedShift?.dy ?? null;
@@ -933,13 +971,23 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
     }
     case "place_castle": {
       const area = rect ?? target;
-      const gate = typeof args.gate === "boolean" ? args.gate : true;
-      const towers = typeof args.towers === "boolean" ? args.towers : true;
+      const gate = typeof args.gate === "boolean" ? args.gate : !/성문\s*없이|문\s*없이/u.test(facts.text);
+      const towers = typeof args.towers === "boolean" ? args.towers : !/망루\s*없이|탑\s*없이/u.test(facts.text);
+      const archetype = enumArg(args.archetype, ["citadel", "keep", "gatehouse", "outpost"] as const)
+        ?? inferCastleArchetypeFromText(facts.text);
+      const seed = /씨앗|시드|seed/iu.test(facts.text) ? finiteInt(args.seed) : null;
       return {
         step: {
           tool: "place_castle",
           label: labelText ?? "성채 성벽·망루·아치 성문",
-          args: { mapId, area, gate, towers },
+          args: {
+            mapId,
+            area,
+            gate,
+            towers,
+            ...(archetype ? { archetype } : {}),
+            ...(seed !== null && seed >= 0 ? { seed } : {}),
+          },
         },
       };
     }
@@ -986,18 +1034,48 @@ function asksForHostile(text: string): boolean {
   return /함정|트랩|가시|몬스터|적|습격|보스|전투|길막|괴물|trap|monster|enemy|boss|ambush/i.test(text);
 }
 
-/** 상인 재고 — 실제 id 만, 값이 이 맵 상자 범위의 두 배를 넘는 것은 뺀다. 비면 이 맵 보상 후보로 채운다. */
-function merchantStock(raw: unknown, facts: StampPlanFacts): { readonly itemIds: readonly string[]; readonly note?: string } {
+function inferShopKind(text: string): "potion" | "weapon" | "armor" | "general" {
+  if (/물약|포션|약초|약국|치료|회복약|연금|potion|herb|apothecary/iu.test(text)) return "potion";
+  if (/무기|대장간|검|도검|창|활|weapon|smith|forge/iu.test(text)) return "weapon";
+  if (/방어구|갑옷|방패|투구|장비|armor|armour/iu.test(text)) return "armor";
+  return "general";
+}
+
+function inferCastleArchetypeFromText(text: string): "citadel" | "keep" | "gatehouse" | "outpost" | undefined {
+  if (/왕성\s*원형|대성당형\s*왕성|왕성\s*전체|citadel/iu.test(text)) return "citadel";
+  if (/안뜰\s*본성|본성|천수각|내성|궁전\s*성채|keep/iu.test(text)) return "keep";
+  if (/해자|도개교|성문루|다리가\s*있는\s*성|gatehouse|moat/iu.test(text)) return "gatehouse";
+  if (/망루\s*초소|초소|정원\s*성채|쌍둥이\s*탑\s*요새|outpost/iu.test(text)) return "outpost";
+  return undefined;
+}
+
+/** 상인 재고 — 실제 id 만, 값이 이 맵 상자 범위의 두 배를 넘는 것은 뺀다. 비면 상점 종류별 기본 아이템·보상 후보로 채운다. */
+function merchantStock(
+  raw: unknown,
+  facts: StampPlanFacts,
+  shopKind: "potion" | "weapon" | "armor" | "general" = "general",
+): { readonly itemIds: readonly string[]; readonly note?: string } {
+  const defaultByKind: Record<"potion" | "weapon" | "armor" | "general", readonly string[]> = {
+    potion: ["item_potion", "item_hi_potion", "item_antidote", "item_ether"],
+    weapon: ["equip_sword", "item_potion", "item_antidote"],
+    armor: ["equip_shield", "equip_leather_armor", "equip_sword", "item_potion"],
+    general: ["item_potion", "item_antidote", "item_ether", "item_hi_potion"],
+  };
   const placement = facts.placement;
-  if (!placement) return { itemIds: [] };
-  const ceiling = placement.chestGold.max * 2;
+  if (!placement) {
+    return { itemIds: defaultByKind[shopKind] };
+  }
+  const ceiling = Math.max(120, placement.chestGold.max * 2);
   const asked = Array.isArray(raw) ? raw.map((entry) => (isRecord(entry) ? stringArg(entry.itemId) : stringArg(entry))).filter((id): id is string => Boolean(id)) : [];
   const priceOf = (id: string): number | undefined => placement.itemPrices[id];
   const kept = [...new Set(asked)].filter((id) => priceOf(id) !== undefined && priceOf(id)! <= ceiling).slice(0, 8);
   const removed = asked.filter((id) => !kept.includes(id));
   if (kept.length > 0) return { itemIds: kept, ...(removed.length ? { note: `재고에서 뺌: ${removed.join(", ")}(없는 id 이거나 ${ceiling}G 초과)` } : {}) };
-  const fallback = placement.rewardItems.filter((item) => item.price > 0 && item.price <= ceiling).slice(0, 4).map((item) => item.id);
-  return { itemIds: fallback, ...(fallback.length ? { note: `재고는 이 맵 보상 후보로 채움(${ceiling}G 이하)` } : {}) };
+  const preferred = defaultByKind[shopKind].filter((id) => placement.knownItemIds.includes(id));
+  const rewardIds = placement.rewardItems.filter((item) => item.price > 0 && item.price <= ceiling).slice(0, 4).map((item) => item.id);
+  const merged = [...new Set([...preferred, ...rewardIds])].slice(0, 5);
+  const finalIds = merged.length > 0 ? merged : placement.knownItemIds.slice(0, 3);
+  return { itemIds: finalIds, ...(finalIds.length ? { note: `기본 상점 재고(${finalIds.join(", ")})` } : {}) };
 }
 
 /** 칸에 서는 도구 — 겹침 해소 대상. set_start_position 은 이벤트가 아니라 칸만 피한다. */
@@ -1501,7 +1579,7 @@ const TIER2_REJECTION_RULES: readonly { readonly category: string; readonly patt
   },
   {
     category: "대화·스토리 짜기",
-    pattern: /(?:스토리|시나리오|서사|내러티브)\s*(?:를|을)?\s*(?:짜|만들|세우|세워|구상|진행|넣|추가|작성|연출)|(?:대화|대사|대화문)\s*(?:를|을|도)?\s*(?:짜|만들|세우|세워|작성|설계|이벤트|분기|선택지)|(?:분기|선택지)\s*(?:대화|대사|스토리)|컷신|오프닝\s*(?:이벤트|컷신|연출|만들|짜)|엔딩\s*(?:이벤트|컷신|연출|만들|짜)|사건\s*(?:이벤트|연출|컷신)|\b(?:cutscene|storyline)\b/iu,
+    pattern: /(?:스토리|시나리오|서사|내러티브)\s*(?:를|을)?\s*(?:짜|만들|세우|세워|구상|진행|넣|추가|작성|연출)|(?:대화|대사|대화문)\s*(?:이벤트|분기|선택지|시나리오|스토리|컷신)|(?:분기|선택지)\s*(?:대화|대사|스토리)|컷신|오프닝\s*(?:이벤트|컷신|연출|만들|짜)|엔딩\s*(?:이벤트|컷신|연출|만들|짜)|사건\s*(?:이벤트|연출|컷신)|\b(?:cutscene|storyline)\b/iu,
   },
   {
     category: "보스전·퍼즐 이벤트 만들기",
@@ -1523,7 +1601,7 @@ const ERASE_VERB_RE = /지워|지우|없애|삭제|철거|허물|치워|치우|�
 export function classifyFastPathCommand(text: string): FastPathCommandClassification {
   const trimmed = text.trim();
   if (!trimmed) {
-    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place" };
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place", spatialOp: "place" };
   }
   for (const rule of TIER2_REJECTION_RULES) {
     if (rule.pattern.test(trimmed)) {
@@ -1537,12 +1615,12 @@ export function classifyFastPathCommand(text: string): FastPathCommandClassifica
     }
   }
   if (MOVE_VERB_RE.test(trimmed)) {
-    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "move" };
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "move", spatialOp: "move" };
   }
   if (ERASE_VERB_RE.test(trimmed) && !/차|자동차|승용차|버스|택시|차량|주행|교통/u.test(trimmed)) {
-    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "erase" };
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "erase", spatialOp: "erase" };
   }
-  return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place" };
+  return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place", spatialOp: "place" };
 }
 
 const SPATIAL_ZONE_PATTERNS: readonly { readonly phrase: string; readonly re: RegExp }[] = [
@@ -1567,7 +1645,7 @@ export function extractSpatialZonePhrase(text: string): string | null {
 }
 
 const KNOWN_SPATIAL_NOUN_RE =
-  /(분수대|분수|돌\s*우물|우물|소나무|벚나무|은행나무|느티나무|전나무|가로수|침엽수|활엽수|나무|숲|통나무집|단독주택|오두막|초가집|기와집|살림집|민가|주택|저택|여관|상점|대장간|편의점|카페|빌딩|건물|집|나무\s*벤치|벤치|의자|탁자|테이블|식탁|침대|화분|꽃밭|화단|꽃|덤불|관목|산울타리|울타리|펜스|담장|가로등|등불|횃불|모닥불|화로|바위|돌|동상|조각상|석상|기둥|돌기둥|제단|통|오크통|술통|나무\s*상자|보물상자|상자|우체통|자판기|신호등|표지판|간판|다리|돌다리|계단)/u;
+  /(분수대|분수|돌\s*우물|우물|소나무|벚나무|은행나무|느티나무|전나무|가로수|침엽수|활엽수|나무|숲|왕성|성채|성곽|요새|성문|망루|성|통나무집|단독주택|오두막|초가집|기와집|살림집|민가|주택|저택|여관|물약\s*상점|무기\s*상점|방어구\s*상점|잡화점|상점|가게|노점|좌판|대장간|편의점|카페|빌딩|건물|집|나무\s*벤치|벤치|의자|탁자|테이블|식탁|침대|화분|꽃밭|화단|꽃|덤불|관목|산울타리|울타리|펜스|담장|가로등|등불|횃불|모닥불|화로|바위|돌|동상|조각상|석상|기둥|돌기둥|제단|통|오크통|술통|나무\s*상자|보물상자|상자|우체통|자판기|신호등|표지판|간판|다리|돌다리|계단)/u;
 
 export function extractEraseTargetNoun(text: string): string | null {
   const m = KNOWN_SPATIAL_NOUN_RE.exec(text);
@@ -1585,18 +1663,31 @@ export function extractMoveTargetNoun(text: string): string | null {
   return m?.[1]?.trim() ?? null;
 }
 
+function parseShiftAmountToken(token: string | undefined): number {
+  if (!token) return 3;
+  const trimmed = token.trim();
+  const num = Number(trimmed);
+  if (Number.isFinite(num) && num > 0) return Math.round(num);
+  const koMap: Readonly<Record<string, number>> = {
+    한: 1, 하나: 1, 두: 2, 둘: 2, 세: 3, 셋: 3, 네: 4, 넷: 4,
+    다섯: 5, 여섯: 6, 일곱: 7, 여덟: 8, 몇: 3, 조금: 2, 살짝: 2, 약간: 2,
+  };
+  return koMap[trimmed] ?? 3;
+}
+
 export function parseRelativeShift(text: string): { readonly dx: number; readonly dy: number } | null {
   let dx = 0;
   let dy = 0;
   let matched = false;
-  const right = /(?:오른쪽|우측|동쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
-  if (right?.[1]) { dx += Number(right[1]); matched = true; }
-  const left = /(?:왼쪽|좌측|서쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
-  if (left?.[1]) { dx -= Number(left[1]); matched = true; }
-  const down = /(?:아래쪽?|하단|남쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
-  if (down?.[1]) { dy += Number(down[1]); matched = true; }
-  const up = /(?:위쪽?|윗쪽|상단|북쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
-  if (up?.[1]) { dy -= Number(up[1]); matched = true; }
+  const qtyPat = "(\\d+|한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|몇|조금|살짝|약간)";
+  const right = new RegExp(`(?:오른쪽|우측|동쪽)(?:으로|로)?\\s*(?:${qtyPat}\\s*칸?|조금|살짝|약간)`, "u").exec(text);
+  if (right) { dx += parseShiftAmountToken(right[1]); matched = true; }
+  const left = new RegExp(`(?:왼쪽|좌측|서쪽)(?:으로|로)?\\s*(?:${qtyPat}\\s*칸?|조금|살짝|약간)`, "u").exec(text);
+  if (left) { dx -= parseShiftAmountToken(left[1]); matched = true; }
+  const down = new RegExp(`(?:아래쪽?|하단|남쪽)(?:으로|로)?\\s*(?:${qtyPat}\\s*칸?|조금|살짝|약간)`, "u").exec(text);
+  if (down) { dy += parseShiftAmountToken(down[1]); matched = true; }
+  const up = new RegExp(`(?:위쪽?|윗쪽|상단|북쪽)(?:으로|로)?\\s*(?:${qtyPat}\\s*칸?|조금|살짝|약간)`, "u").exec(text);
+  if (up) { dy -= parseShiftAmountToken(up[1]); matched = true; }
   if (matched) return { dx, dy };
   return null;
 }
@@ -1713,16 +1804,104 @@ function upgradeDirectSpatialOps(
     if (steps.some((step) => step.tool === "move_object" || step.tool === "move_event" || step.tool === "move_region")) {
       return [...steps];
     }
-    const noun = extractMoveTargetNoun(facts.text);
-    if (noun) {
-      const check = validateStampStep(
-        { tool: "move_object", args: { query: noun }, label: `${noun} 옮기기` },
-        facts,
-      );
-      if ("step" in check) {
-        dropped.length = 0;
-        return [check.step];
-      }
+    const noun = extractMoveTargetNoun(facts.text) ?? "선택 물체";
+    const check = validateStampStep(
+      { tool: "move_object", args: { query: noun }, label: `${noun} 옮기기` },
+      facts,
+    );
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 간단한 상점·물약 상점·무기 상점·잡화점과 상인 NPC
+  if (
+    /(?:간단한\s*)?(?:물약|포션|약초|무기|방어구|도구|잡화)?\s*(?:상점|가게|잡화점|무기점|방어구점|도구점|약국|노점|좌판)(?:과\s*상인(?:\s*NPC)?|이랑\s*상인(?:\s*NPC)?|\s*NPC)?(?:을|를|도|이|가)?\s*(?:하나\s*)?(?:만들|세우|세워|짓|지어|차리|차려|깔|놓|추가)/iu.test(facts.text)
+    && !steps.some((step) => step.tool === "place_shop")
+  ) {
+    const check = validateStampStep({ tool: "place_shop", args: { area: facts.target } }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 간단한 NPC·경비병·산책하는 주민 생성
+  if (
+    /(?:간단한\s*)?(?:마을\s*)?(?:경비병|문지기|병사|산책하는\s*주민|주민|마을\s*사람|NPC)(?:과|와|이랑|하고|\s|,)*(?:산책하는\s*주민|주민|대사도|대사|NPC)?(?:을|를|도|이|가)?\s*(?:만들|세우|세워|깔|놓|추가|배치)/iu.test(facts.text)
+    && !steps.some((step) => step.tool === "place_npc" || step.tool === "make_villager" || step.tool === "place_shop")
+  ) {
+    const wantsGuard = /경비|문지기|병사|보초|guard|soldier/iu.test(facts.text);
+    const wantsStroller = /산책|배회|주민|마을\s*사람/u.test(facts.text);
+    const npcSteps: StampStep[] = [];
+    const cx = facts.target.x + Math.floor(facts.target.w / 2);
+    const cy = facts.target.y + Math.floor(facts.target.h / 2);
+    if (wantsGuard && wantsStroller) {
+      const gCheck = validateStampStep({
+        tool: "place_npc",
+        label: "마을 경비병 NPC",
+        args: {
+          at: { x: Math.max(facts.target.x, cx - 2), y: cy },
+          name: "마을 경비병",
+          role: "guard",
+          movement: "fixed",
+          lines: [
+            "마을 경비병: 이상 무! 오늘도 버들항 거리는 평화롭습니다.",
+            "마을 경비병: 성문과 광장 주변을 순찰 중이니 안심하고 다니시오.",
+          ],
+        },
+      }, facts);
+      const vCheck = validateStampStep({
+        tool: "place_npc",
+        label: "산책하는 주민 NPC",
+        args: {
+          at: { x: Math.min(facts.target.x + facts.target.w - 1, cx + 2), y: cy },
+          name: "산책하는 주민",
+          role: "villager",
+          movement: "random",
+          lines: [
+            "산책하는 주민: 바람이 선선해서 마을 산책하기 참 좋은 날이네요.",
+            "산책하는 주민: 새로 문을 연 상점 쪽에서 향긋한 약초 냄새가 나더라고요.",
+          ],
+        },
+      }, facts);
+      if ("step" in gCheck) npcSteps.push(gCheck.step);
+      if ("step" in vCheck) npcSteps.push(vCheck.step);
+    } else if (wantsGuard) {
+      const gCheck = validateStampStep({
+        tool: "place_npc",
+        label: "마을 경비병 NPC",
+        args: {
+          at: { x: cx, y: cy },
+          name: "마을 경비병",
+          role: "guard",
+          movement: "fixed",
+          lines: [
+            "마을 경비병: 이상 무! 오늘도 마을은 평화롭습니다.",
+            "마을 경비병: 길을 잃으셨다면 큰길을 따라 광장으로 가 보십시오.",
+          ],
+        },
+      }, facts);
+      if ("step" in gCheck) npcSteps.push(gCheck.step);
+    } else {
+      const vCheck = validateStampStep({
+        tool: "place_npc",
+        label: "마을 주민 NPC",
+        args: {
+          at: { x: cx, y: cy },
+          name: "마을 주민",
+          role: "villager",
+          movement: "random",
+          lines: [
+            "마을 주민: 어서 오세요! 우리 마을에 오신 걸 환영합니다.",
+            "마을 주민: 날씨가 참 좋지요? 천천히 둘러보고 가세요.",
+          ],
+        },
+      }, facts);
+      if ("step" in vCheck) npcSteps.push(vCheck.step);
+    }
+    if (npcSteps.length > 0) {
+      dropped.length = 0;
+      return npcSteps;
     }
   }
   // 맥락 맞춤 조경("주변과 어울리게 해줘")
