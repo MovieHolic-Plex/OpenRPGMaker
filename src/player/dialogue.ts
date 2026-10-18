@@ -17,7 +17,7 @@ import { resolveAuthoredVnLook, resolveVnLook, vnLookAttributes, vnLookShowsPort
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
-import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId } from "@/assets/sharedPortraitAssets";
+import { dialogueFaceForEmotion, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitId, sharedPortraitRendering } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { resolveActorAppearance, resolveAppearancePortrait } from "@/project/characterAppearances";
 import { facePresentationForResource } from "@/project/facePresentation";
@@ -1919,6 +1919,7 @@ function setFaceImage(node: HTMLElement, resourceId: string): void {
   if (node.classList.contains("dialogue-face-image")) node.style.setProperty("--face-url", `url("${url}")`);
   else node.style.backgroundImage = `url("${url}")`;
   node.dataset.resourceId = resourceId;
+  if (node.dataset.portraitRender) node.dataset.portraitRender = sharedPortraitRendering(resourceId);
 }
 
 /** 이름표 옆 작은 이모트(맵 이모트와 같은 시트). */
@@ -2499,6 +2500,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
         faceMode: mode,
         position: side,
         resourceId: face.resourceId,
+        portraitRender: sharedPortraitRendering(face.resourceId),
       },
     });
   }

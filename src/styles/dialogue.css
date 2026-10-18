@@ -527,6 +527,11 @@
   z-index: 3;
 }
 
+/* 보간은 무대가 아니라 그림이 정한다(data-portrait-render): 현대 연애 일러스트는 매끈하게, 도트 초상은 계단 그대로. */
+.dialogue-face.dialogue-face-bust[data-portrait-render="smooth"] {
+  image-rendering: auto;
+}
+
 .dialogue-face.dialogue-face-full {
   height: var(--runtime-dialogue-full-height);
   width: var(--runtime-dialogue-full-width);
@@ -563,7 +568,6 @@
   background-position: bottom center;
   background-size: auto 100%;
   filter: none;
-  image-rendering: auto;
   left: calc(-8px * var(--dialogue-ui-scale, 1));
   opacity: 1;
   right: auto;

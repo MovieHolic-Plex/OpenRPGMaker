@@ -87,22 +87,16 @@ describe("공용 표정 세트 흉상·전신", () => {
     expect(MODERN_PORTRAIT_SETS).toHaveLength(24);
   });
 
-  it("현대 연애 대표 3세트(boy-navy·girl-long·girl-navy)는 고해상도 768×1130 매끈한 일러스트이고 나머지는 팔레트 초상이다", () => {
-    const highResStems = ["modern-uni-boy-navy", "modern-uni-girl-long", "modern-uni-girl-navy"] as const;
-    const offStyle = SHARED_PORTRAIT_ASSETS
-      .filter((asset) => MODERN_PORTRAIT_SETS.some((set) => asset.path.includes(`/${set.stem}/`)))
-      .flatMap((asset) => {
-        const png = readFileSync(path.join("public", asset.path));
-        const width = png.readUInt32BE(16);
-        const colourType = png[25];
-        const isHighRes = highResStems.some((stem) => asset.path.includes(`/${stem}/`));
-        if (isHighRes) {
-          const expectedW = asset.mode === "full" ? 768 : 512;
-          return colourType === 6 && width === expectedW ? [] : [`${asset.path} ${width}px type${colourType}`];
-        }
-        const limit = asset.mode === "full" ? 400 : 1100;
-        return colourType === 3 && width <= limit ? [] : [`${asset.path} ${width}px type${colourType}`];
-      });
+  it("현대 연애 초상은 한 그림체(고해상도 일러스트)로 잠겨 있다 - 거친 도트 인물이 섞이지 않는다", () => {
+    // #2870 이 세 세트만 768×1130 일러스트로 바꿔 매끈한 인물 옆에 120×288 도트 확대 인물이 섰다. 24세트 모두 같은 규격이다.
+    const modern = SHARED_PORTRAIT_ASSETS.filter((asset) => MODERN_PORTRAIT_SETS.some((set) => asset.path.includes(`/${set.stem}/`)));
+    const offStyle = modern.flatMap((asset) => {
+      const png = readFileSync(path.join("public", asset.path));
+      const size = `${png.readUInt32BE(16)}x${png.readUInt32BE(20)}`;
+      const expected = asset.mode === "full" ? "768x1130" : "512x512";
+      return size === expected && png[25] === 6 && asset.rendering === "smooth" ? [] : [`${asset.path} ${size} type${png[25]} ${asset.rendering}`];
+    });
     expect(offStyle).toEqual([]);
+    expect(modern.length).toBeGreaterThan(0);
   });
 });
