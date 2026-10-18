@@ -22,8 +22,14 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 놀람: emote{target,emote:"exclamation"} + moveActor 한 칸 뒤로(jump). 의문은 "question", 침묵은 "ellipsis".
 - 폭발·충돌: parallel[ particles{preset:"explosion",target 또는 x,y}, shake{intensity:6,axis:"both",durationMs:500}, flash{color:"white",durationMs:200} ].
 - 화산 열풍·용암 분출·불길 치솟음: 화면 붉은 tint 만으로는 «열풍이 안 보인다» 로 감점된다(2026-10-16). 최고 연출 순간에 parallel[ particles{preset:"fire",x,y}(용암 둘레 서로 다른 칸 3곳 이상, durationMs:1500) , particles{preset:"smoke",target:"player"}, shake, tint ] 로 솟아오르는 입자를 같은 화면에 함께 보인다.
-- 독안개·독기·유독 가스: 보라 tint 만으로는 «안개가 피어오르는 모습이 없다» 로 감점된다. weather{weather:"fog",intensity:0.8} 를 같이 깔고(장면 끝에 weather{weather:"none"}) particles{preset:"smoke",target:"player",durationMs:1500} 를 덧는다. 방독면 분기는 안개 속을 moveActor 로 몇 칸 전진하는 모습이 보여야 한다.
+- 독안개·독기·유독 가스: 보라 tint 만으로는 «안개가 피어오르는 모습이 없다» 로 감점된다. weather{weather:"fog",intensity:0.8} 를 같이 깔고(장면 끝에 weather{weather:"none"}) particles{preset:"smoke",target:"player",durationMs:1500} 를 덧는다.
 - 다리·바닥 붕괴: 타일을 바꾼 직후 그 칸에 particles{preset:"explosion",x,y} + particles{preset:"dust",x,y} 를 겹쳐 틈이 눈에 띄게 한다.
+- 조건부 생존·사망 함정(방독면·화염 반지·동료가 있으면 무사, 없으면 사망) — 두 분기는 정지 화면 한 장으로도 갈려 보여야 한다:
+  · 사망 분기: tint(위험 색) + parallel[ particles 2곳 이상 durationMs 1500, weather(fog 등), shake, music se ] → 비명 say → look{target:"player",pose:"fallen"} → 게임오버.
+  · 생존(무사 통과) 분기: 주인공을 한 칸에 세워 두고 대사만 치면 «통과 연출이 없다» 로 감점된다(2026-10-17 jrpg_003 45점).
+    같은 위험 색·입자로 시작한 뒤 say(안도·버팀 대사) → parallel[ moveActor{target:"player",moves:[이벤트 칸을 지나는 3~5걸음]} ,
+    tint{color:"neutral",durationMs:1200}, weather{weather:"none"} ] 로 위험이 걷히는 동안 걸어서 건너게 한다. build_scene_setting 을
+    썼다면 결과 data.survivalWalk.moves 가 막히지 않는 걸음 목록이다. 생존 분기를 따로 쪽(페이지)으로 둘 때도 같은 걸음을 넣는다.
 - 지진·거대한 발소리: shake{intensity:3,axis:"vertical",durationMs:800}, 잠깐 쉬고 반복. 부딪힘·휘청임은 axis:"horizontal".
 - 기절·쓰러짐·잠: look{target,pose:"fallen"} (+ emote "sleep"). 일어날 때 look{target,reset:true}.
 - 숨기·무릎 꿇기: look{target,pose:"crouch"}.
@@ -64,6 +70,7 @@ export const DIRECTING_GUIDE = `# 연출 지침 (script_cutscene 비트)
 - 파티클 효과 m2-224-particle-effect fields{preset,target:"player"|"this-event"|"event"|"tile",eventId,x,y,durationMs,wait}.
 - 모습 효과 m2-225-sprite-look fields{target:"player"|"this-event"|"event",eventId,reset,pose:"keep"|자세,tint:"keep"|"none"|색 이름,tintHex,tintFill/flip/afterimage:"keep"|"on"|"off",angle,opacity(%)}.
 - 이벤트 그림 자체를 늘 빛나게(불꽃·유령·마법진 이벤트): 페이지 graphic.blendMode:"add" (곱하기 그림자는 "multiply").
+- 주인공 걷기(생존 분기 통과 등) moveEvent{eventId:"@player",route:{moves:[{kind:"move",dir}],repeat:false,wait:true}} — eventId "" 는 이 이벤트(함정 칸)가 걸어간다.
 
 ## 전투 연출 (DB 도구)
 - 적이 쓰러지는 모습 upsert_enemy collapseEffect: 잡몹 "pixelBreak"(FF6 보랏빛 픽셀 분해) 또는 "flash"(하얀 세 번 점멸),

@@ -12,6 +12,7 @@ import { SHARED_OBJECT_TOOLS, prepareSharedObject } from "./sharedObjectTools";
 import { setLayerTileAt, layerTileAt } from "@/project/mapLayers";
 import { BEODEUL_NATURE, BEODEUL_NATURE_ID, createBeodeulNatureTileset } from "@/project/defaults/beodeulNature";
 import { translateTiles } from "@/project/objectStamp";
+import { canMove } from "@/project/collision";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const BUILD_SCENE_SETTING_TOOL = "build_scene_setting";
@@ -38,6 +39,17 @@ interface Layout {
   readonly stamps: readonly Stamp[];
   /** 칸 단위로 칠하는 불규칙 몸체(용암·물). 2×2 스탬프 격자로는 직각 윤곽만 나온다. */
   readonly bodies?: readonly Body[];
+  /** 바닥 전체에 이어 까는 바닥 표본 키트(하단 층). 오토타일 판석 한 장은 «벽돌 광장» 으로 읽혔다(2026-10-17 jrpg_003 심판). */
+  readonly floorKit?: string;
+  /** 바닥 위에 덧까는 표본 구역(둑길·다리 머리 테라스) — 칸마다 키트 무늬를 되풀이한다. */
+  readonly pads?: readonly { readonly kit: string; readonly dx: number; readonly dy: number; readonly w: number; readonly h: number }[];
+  /** 이벤트 칸을 가로지르는 가는 용암 균열(2칸 폭). dy 줄을 따라 dx0..dx1, 3칸마다 한 줄씩 굽는다. */
+  readonly fissures?: readonly { readonly dy: number; readonly dx0: number; readonly dx1: number; readonly seed: number }[];
+  /**
+   * 생존(무사 통과) 분기가 걸어갈 길 — 이벤트 칸에서 dir 로 steps 칸. 무대는 이 칸을 막지 않고, 결과 data.survivalWalk 로
+   * moveActor 이동 목록을 돌려준다. 생존 분기가 제자리에 서 있기만 하면 «무사 통과» 가 안 보인다(2026-10-17 jrpg_003 심판 45점).
+   */
+  readonly walk?: { readonly dir: "up" | "down" | "right"; readonly steps: number };
 }
 
 interface Body {
@@ -50,6 +62,10 @@ interface Body {
   readonly seed: number;
   /** 이 dx 보다 왼쪽(시작 칸 쪽)에는 칠하지 않는다. */
   readonly minDx: number;
+  /** 이 dx 보다 오른쪽에는 칠하지 않는다. */
+  readonly maxDx?: number;
+  /** 이벤트 줄 위아래 이 칸 수 안(|dy| ≤ keepDy)은 마른 땅으로 남긴다 — 두 못 사이의 둑길. */
+  readonly keepDy?: number;
 }
 
 /** 칸 좌표에서 0..1 결정적 잡음 — 같은 입력이면 항상 같은 윤곽이라 재현·측정이 된다. */
@@ -73,12 +89,13 @@ function trimSpurs(map: GameMap, cells: { x: number; y: number }[]): { x: number
   return cur;
 }
 
-function bodyCells(map: GameMap, x: number, y: number, b: Body): { x: number; y: number }[] {
+function bodyCells(map: GameMap, x: number, y: number, b: Body, keep: (cx: number, cy: number) => boolean): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
   const ox = x + b.cx, oy = y + b.cy;
   for (let cy = Math.floor(oy - b.ry - 2); cy <= Math.ceil(oy + b.ry + 2); cy++) {
     for (let cx = Math.floor(ox - b.rx - 2); cx <= Math.ceil(ox + b.rx + 2); cx++) {
       if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height || cx - x < b.minDx) continue;
+      if ((b.maxDx !== undefined && cx - x > b.maxDx) || (b.keepDy !== undefined && Math.abs(cy - y) <= b.keepDy) || !keep(cx, cy)) continue;
       const d = ((cx - ox) / b.rx) ** 2 + ((cy - oy) / b.ry) ** 2;
       if (d < 1 + (hash01(cx, cy, b.seed) - 0.5) * 0.7) out.push({ x: cx, y: cy });
     }
@@ -86,20 +103,64 @@ function bodyCells(map: GameMap, x: number, y: number, b: Body): { x: number; y:
   return trimSpurs(map, out);
 }
 
-/** 용암 강(가로 띠) — 위·아래 가장자리를 3칸 단위로 들쭉날쭉하게. 다리 기둥 칸(x-1..x+1)은 건드리지 않는다. */
+/**
+ * 용암 강(가로 띠, 기본 4줄 y-2..y+1) — 위·아래 가장자리를 3칸 단위로 들쭉날쭉하게. 다리(3×7, y-3..y+3)의 양 끝은
+ * 강 밖 둑에 닿는다. 2줄짜리 띠는 다리가 «바닥 위 석판» 으로 읽혔다.
+ */
 function lavaBandCells(map: GameMap, x: number, y: number): { x: number; y: number }[] {
   const out: { x: number; y: number }[] = [];
   for (let cx = 0; cx < map.width; cx++) {
-    const rows = [y - 1, y];
+    const rows = [y - 2, y - 1, y, y + 1];
     // 돌기는 3~4칸 묶음 단위이고, 다리(x-1..x+1) 양옆 2칸 안에서는 만들지 않는다(한 칸 돌기가 어두운 네모로 남는다).
     if (Math.abs(cx - x) > 2) {
-      if (hash01(Math.floor(cx / 3), 1, 77) < 0.5) rows.unshift(y - 2);
-      if (hash01(Math.floor((cx + 1) / 3), 2, 77) < 0.5) rows.push(y + 1);
-      if (hash01(Math.floor(cx / 4), 3, 91) < 0.25) rows.push(y + 2);
+      if (hash01(Math.floor(cx / 3), 1, 77) < 0.5) rows.unshift(y - 3);
+      if (hash01(Math.floor((cx + 1) / 3), 2, 77) < 0.5) rows.push(y + 2);
     }
     for (const cy of rows) if (cy >= 0 && cy < map.height) out.push({ x: cx, y: cy });
   }
   return out;
+}
+
+/**
+ * 가는 용암 균열 — 2칸 폭, 3칸 묶음마다 길 반대쪽으로 한 줄씩 굽는다(길 쪽으로 굽으면 길 띠에 잘려 1칸 폭 «검은 홈» 이 남았다).
+ * 굽는 자리는 두 묶음의 줄을 모두 칠해 끊기지 않는다.
+ */
+function fissureCells(map: GameMap, x: number, y: number, f: { dy: number; dx0: number; dx1: number; seed: number }, keep: (cx: number, cy: number) => boolean): { x: number; y: number }[] {
+  const off = (cx: number) => (hash01(Math.floor(cx / 3), 7, f.seed) < 0.5 ? 0 : Math.sign(f.dy));
+  const out = new Map<number, { x: number; y: number }>();
+  for (let cx = x + f.dx0; cx <= x + f.dx1; cx++) {
+    const base = y + f.dy + off(cx);
+    const rows = new Set([base, base + 1]);
+    if (cx > x + f.dx0 && off(cx - 1) !== off(cx)) for (const r of [y + f.dy + off(cx - 1), y + f.dy + off(cx - 1) + 1]) rows.add(r);
+    for (const cy of rows) {
+      if (cx < 0 || cy < 0 || cx >= map.width || cy >= map.height || Math.abs(cy - y) <= 1 || !keep(cx, cy)) continue;
+      out.set(cy * map.width + cx, { x: cx, y: cy });
+    }
+  }
+  return trimSpurs(map, [...out.values()]);
+}
+
+/** 바닥 표본 키트를 rect 칸마다 되풀이해 하단 층에 깐다(원점 ox,oy 기준 무늬 주기). */
+function tileKit(project: Project, map: GameMap, kitId: string, rect: { x: number; y: number; w: number; h: number }, ox: number, oy: number): number {
+  const kit = project.tilesets[map.tilesetId]?.structureKits?.find((k) => k.id === kitId);
+  if (!kit) return 0;
+  let n = 0;
+  for (let cy = Math.max(0, rect.y); cy < Math.min(map.height, rect.y + rect.h); cy++) {
+    for (let cx = Math.max(0, rect.x); cx < Math.min(map.width, rect.x + rect.w); cx++) {
+      const t = kit.rows[(((cy - oy) % kit.height) + kit.height) % kit.height]?.tiles[(((cx - ox) % kit.width) + kit.width) % kit.width] ?? -1;
+      if (t < 0) continue;
+      setLayerTileAt(map, 1, cy * map.width + cx, t);
+      n++;
+    }
+  }
+  return n;
+}
+
+const WALK_STEP = { up: [0, -1], down: [0, 1], right: [1, 0] } as const;
+
+function walkCells(x: number, y: number, walk: NonNullable<Layout["walk"]>): { x: number; y: number }[] {
+  const [sx, sy] = WALK_STEP[walk.dir];
+  return Array.from({ length: walk.steps }, (_, i) => ({ x: x + sx * (i + 1), y: y + sy * (i + 1) }));
 }
 
 const N8 = [[-1, -1], [0, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [0, 1], [1, 1]] as const;
@@ -137,11 +198,12 @@ function applyBankOverlay(project: Project, map: GameMap, cells: readonly { x: n
 /**
  * 무대마다 «빈 땅에 흩뿌릴 소품» 목록 — 15차 연속 심판이 «맵이 휑하다(소품이 가장자리·중앙에만)» 로 감점했다.
  * 자리는 해시로 고르되(같은 입력 → 같은 배치) 몸체·이미 찍은 키트·이벤트 칸·시작 칸과 1칸 간격을 둔다.
+ * 2026-10-18: 같은 1×1 뾰족돌을 고르게 뿌린 땅은 «무늬 잡음» 으로 읽혔다 — 무대는 이벤트 칸 둘레의 고정 세트가 맡고 흩뿌림은 줄였다.
  */
 const SCATTER: Record<SceneTheme, readonly (readonly [string, number])[]> = {
-  volcano: [[VOLCANO + "spike-small", 7], [VOLCANO + "ember-a", 4], [VOLCANO + "bones", 3], [VOLCANO + "steam-vent", 7], [VOLCANO + "stalagmite", 3], [VOLCANO + "spike-tall", 3], [VOLCANO + "coal-pile", 3], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 3]],
-  lava_bridge: [[VOLCANO + "spike-small", 6], [VOLCANO + "ember-a", 4], [VOLCANO + "bones", 3], [VOLCANO + "stalagmite", 3], [VOLCANO + "coal-pile", 3], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 4], [RUINS + "ruined-wall-2", 2], [VOLCANO + "ingots", 2]],
-  poison_swamp: [[SWAMP + "snag", 2], [SWAMP + "mangrove", 2], [RUINS + "cypress-ruin", 2], [VOLCANO + "brazier", 3], [RUINS + "rubble-temple", 3], [RUINS + "column-temple-broken", 3], [RUINS + "column-temple-tall", 2], [RUINS + "ruined-wall-2", 3], [RUINS + "floor-ruin", 3], [RUINS + "roof-hip-shrine", 1], [RUINS + "stairs-down", 1], [VOLCANO + "bones", 2]],
+  volcano: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "steam-vent", 3], [VOLCANO + "stalagmite", 2], [VOLCANO + "spike-tall", 2], [VOLCANO + "pillar-broken-b", 1], [RUINS + "rubble-temple", 2]],
+  lava_bridge: [[VOLCANO + "spike-small", 3], [VOLCANO + "ember-a", 2], [VOLCANO + "bones", 2], [VOLCANO + "stalagmite", 2], [VOLCANO + "pillar-broken-b", 2], [RUINS + "rubble-temple", 4], [RUINS + "fallen-column-temple", 1]],
+  poison_swamp: [[RUINS + "cypress-ruin", 2], [RUINS + "rubble-temple", 4], [RUINS + "column-temple-broken", 2], [RUINS + "fallen-column-temple", 1], [RUINS + "ruined-wall-2", 2], [VOLCANO + "bones", 2], [SWAMP + "reed-stack", 1]],
   ruins_shrine: [[RUINS + "rubble-temple", 6], [RUINS + "column-temple-broken", 3], [RUINS + "fallen-column-temple", 2], [RUINS + "cypress-ruin", 3], [RUINS + "vines-2", 3], [RUINS + "ruined-wall-2", 2], [VOLCANO + "brazier", 2], [VOLCANO + "bones", 2]],
 };
 
@@ -201,80 +263,131 @@ function rimStamps(map: GameMap, cells: readonly { x: number; y: number }[], kee
 
 const s = (id: string, dx: number, dy: number): Stamp => ({ id, dx, dy });
 
-/** 배치는 이벤트 칸 기준 상대 좌표다. 이벤트 칸과 그 왼쪽 시작 칸은 막지 않는다. */
+/** 배치는 이벤트 칸 기준 상대 좌표다. 이벤트 칸과 그 왼쪽 시작 칸, 생존 걷기 길(walk)은 막지 않는다. */
 function layoutFor(theme: SceneTheme): Layout {
   switch (theme) {
     case "lava_bridge": {
-      // 용암 강이 가로로 흐르고(y-1..y), 바위 다리(3×7)가 세로로 가로지른다. 이벤트 칸은 다리 한가운데.
+      // 그을린 흙바닥 협곡을 4~5줄 용암 강(y-3..y+2)이 가로지르고, 바위 다리(3×7, y-3..y+3)가 이벤트 칸을 지나 두 둑의
+      // 유적 테라스(트래버틴)를 잇는다. 다리 머리에 화로·신전 기둥, 둑에는 현무암 기둥·흑요석 무리·용암 폭포.
+      // 생존 분기는 다리를 따라 북쪽 테라스까지 4칸 건너간다.
       return {
-        ground: { material: "버들항 광장 판석", rx: 10, ry: 6 },
+        ground: { material: "버들항 모랫길", rx: 10, ry: 7 },
+        floorKit: `${RUINS}floor-dirt`,
+        pads: [
+          { kit: `${RUINS}floor-trav`, dx: -3, dy: -6, w: 7, h: 3 },
+          { kit: `${RUINS}floor-trav`, dx: -3, dy: 4, w: 7, h: 3 },
+        ],
         fills: [],
+        walk: { dir: "up", steps: 4 },
         stamps: [
           s(`${VOLCANO}bridge`, -1, -3),
-          s(`${VOLCANO}coal-pile`, -6, 4),
-          s(`${VOLCANO}bones`, 8, 4),
-          s(`${RUINS}rubble-temple`, 2, 4),
-          s(`${RUINS}column-temple-broken`, -9, 2),
-          s(`${RUINS}ruined-wall-2`, 7, -5),
-          s(`${VOLCANO}altar`, 5, -6),
-          s(`${VOLCANO}brazier`, -3, -4),
-          s(`${VOLCANO}brazier`, 3, -4),
-          s(`${VOLCANO}spike-wide`, -7, 3),
-          s(`${VOLCANO}spike-tall`, 6, 3),
-          s(`${VOLCANO}steam-vent`, 4, 5),
-          s(`${VOLCANO}stalagmite`, -4, 4),
-          s(`${VOLCANO}fire-crystal`, 3, -2),
-          s(`${VOLCANO}ember-a`, -5, 1),
+          s(`${VOLCANO}brazier`, -2, -5),
+          s(`${VOLCANO}brazier`, 2, -5),
+          s(`${VOLCANO}brazier`, -2, 3),
+          s(`${VOLCANO}brazier`, 2, 3),
+          s(`${RUINS}column-temple-tall`, -4, -7),
+          s(`${RUINS}column-temple-tall`, 4, -7),
+          s(`${RUINS}column-temple-broken`, -4, 4),
+          s(`${RUINS}column-temple-broken`, 4, 4),
+          s(`${VOLCANO}altar`, -9, -7),
+          s(`${RUINS}face-temple-3h`, 5, -7),
+          s(`${RUINS}ruined-wall-2`, -7, -6),
+          s("bd-prop-statue_sage", 6, 3),
+          s(`${VOLCANO}lava-fall-strip`, 6, -5),
+          s(`${VOLCANO}stalagmite`, -6, -5),
+          s(`${VOLCANO}spike-tall`, -9, 5),
+          s(`${VOLCANO}spike-wide`, -8, 3),
+          s(`${VOLCANO}pillar-broken-a`, -6, 3),
+          s(`${VOLCANO}pillar-fallen`, -3, 6),
+          s(`${VOLCANO}spike-small`, 3, -3),
+          s(`${VOLCANO}fire-crystal`, -3, -4),
+          s(`${VOLCANO}fire-crystal`, 3, 3),
+          s(`${VOLCANO}steam-vent`, -3, 3),
+          s(`${VOLCANO}bones`, 1, 5),
+          s(`${RUINS}rubble-temple`, -1, 6),
+          s(`${VOLCANO}ember-a`, 5, -4),
         ],
       };
     }
     case "volcano":
-      // 이벤트 칸 오른쪽에 용암 못과 용암 폭포, 둘레에 흑요석·증기 구멍. 왼쪽(시작 칸 쪽)은 열린 땅.
+      // 그을린 분화구 길: 이벤트 줄(y-1..y+1)이 길이고, 길 위(y-5..y-3)·아래(y+3..y+5)에 가는 용암 균열이 길을 따라 흐르다
+      // 오른쪽 분화구 용암 못에 닿는다. 이벤트 칸 바로 둘레에 흑요석 무리·증기 구멍·불탄 뼈(y±2 줄은 균열이 닿지 않는 소품 줄).
+      // 생존 분기는 길을 따라 오른쪽으로 3칸 나아간다(못은 x+4 부터).
       return {
         ground: { material: "버들항 모랫길", rx: 9, ry: 6 },
         fills: [],
-        bodies: [{ kind: "lava", cx: 6, cy: -1, rx: 4.2, ry: 3.6, seed: 11, minDx: 2 }],
+        bodies: [{ kind: "lava", cx: 7.2, cy: -0.5, rx: 3.2, ry: 4.6, seed: 11, minDx: 4 }],
+        fissures: [
+          { dy: -4, dx0: -7, dx1: 4, seed: 5 },
+          { dy: 3, dx0: -6, dx1: 4, seed: 9 },
+        ],
+        walk: { dir: "right", steps: 3 },
         stamps: [
-          s(`${VOLCANO}spike-wide`, 1, -2),
-          s(`${VOLCANO}coal-pile`, 2, -4),
-          s(`${VOLCANO}coal-pile`, 9, 2),
-          s(`${VOLCANO}bones`, 0, 2),
-          s(`${VOLCANO}pillar-broken-a`, -2, -5),
-          s(`${VOLCANO}spike-small`, 7, 0),
-          s(`${VOLCANO}spike-small`, 2, 3),
-          s(`${VOLCANO}spike-tall`, 6, -6),
-          s(`${VOLCANO}spike-small`, 4, -4),
-          s(`${VOLCANO}spike-wide`, -5, -4),
-          s(`${VOLCANO}spike-tall`, 8, 2),
-          s(`${VOLCANO}spike-small`, -3, 3),
-          s(`${VOLCANO}steam-vent`, 0, -2),
-          s(`${VOLCANO}steam-vent`, 1, 3),
-          s(`${VOLCANO}fire-crystal`, 7, -4),
-          s(`${VOLCANO}brazier`, -3, -2),
-          s(`${VOLCANO}ember-a`, -1, 1),
-          s(`${VOLCANO}stalagmite`, -6, 2),
+          s(`${VOLCANO}spike-wide`, -2, -2),
+          s(`${VOLCANO}spike-tall`, 1, -2),
+          s(`${VOLCANO}steam-vent`, 3, -1),
+          s(`${VOLCANO}steam-vent`, -1, 1),
+          s(`${VOLCANO}steam-vent`, 2, 1),
+          s(`${VOLCANO}bones`, 1, 1),
+          s(`${VOLCANO}ember-a`, 0, -1),
+          s(`${VOLCANO}fire-crystal`, -3, 1),
+          s(`${VOLCANO}spike-small`, -4, 1),
+          s(`${VOLCANO}pillar-broken-a`, -5, -2),
+          s(`${VOLCANO}stalagmite`, 3, 1),
+          s(`${VOLCANO}stalagmite`, -6, 1),
+          s(`${VOLCANO}spike-small`, 0, 2),
+          s(`${VOLCANO}bones`, -3, 2),
+          s(`${VOLCANO}spike-wide`, -6, -7),
+          s(`${VOLCANO}spike-tall`, 2, -7),
+          s(`${VOLCANO}pillar-broken-b`, -1, -7),
+          s(`${VOLCANO}lava-fall-strip`, 5, -6),
+          s(`${VOLCANO}fire-crystal`, -2, 6),
+          s(`${VOLCANO}spike-small`, 3, 6),
         ],
       };
     case "poison_swamp":
-      // 이벤트 칸은 늪 가장자리 뭍. 늪(물)은 오른쪽으로 번지고 증기 구멍이 독기 분출구 역할.
+      // 마도 유적의 독늪 둑길: 이끼 낀 유적 판석 바닥, 이벤트 줄(y-1..y+1)만 남기고 위·아래로 독늪이 붙어 이벤트 칸이 좁은 둑길 목이 된다.
+      // 둑길은 트래버틴 판석, 양 끝에 신전 기둥 문, 가장자리에 부러진 기둥·증기 분출구·뼈. 북쪽에는 무너진 신전 벽·소신전·교단 제단·
+      // 현자 석상, 둑길 끝(동쪽)에는 마법진 모자이크. 생존 분기는 둑길을 따라 오른쪽으로 4칸 건너간다.
       return {
-        // 마도 유적의 독늪 — 풀밭 위 연못은 «잔디 마을» 로 읽혀 유적 요구를 놓쳤다(18차). 바닥을 유적 판석으로 깔고 폐허를 얹는다.
         ground: { material: "버들항 광장 판석", rx: 24, ry: 20 },
+        floorKit: `${RUINS}floor-ruin`,
+        pads: [{ kit: `${RUINS}floor-trav`, dx: -4, dy: -1, w: 11, h: 3 }],
         fills: [],
-        bodies: [{ kind: "water", cx: 6, cy: 0, rx: 5.2, ry: 4.4, seed: 23, minDx: 2 }],
+        bodies: [
+          { kind: "water", cx: 1, cy: -3.3, rx: 4.6, ry: 2.1, seed: 23, minDx: -5, maxDx: 6, keepDy: 1 },
+          { kind: "water", cx: 1.5, cy: 3.4, rx: 4.8, ry: 1.9, seed: 29, minDx: -5, maxDx: 6, keepDy: 1 },
+        ],
+        walk: { dir: "right", steps: 4 },
         stamps: [
-          s(`${RUINS}mosaic-medallion-5x5`, -5, -6),
-          s(`${RUINS}roof-naiskos-pediment`, 1, -10),
-          s(`${SWAMP}mangrove`, 0, -6),
-          s(`${SWAMP}mangrove`, 9, -6),
-          s(`${SWAMP}mangrove`, 8, 5),
-          s(`${SWAMP}pilings`, 5, -1),
-          s(`${SWAMP}pilings`, 8, 1),
-          s(`${SWAMP}reed-stack`, -2, 3),
-          s(`${SWAMP}moss-log`, 2, 5),
-          s(`${SWAMP}lantern`, -4, 2),
-          s(`${RUINS}column-temple-broken`, -3, -4),
-          s(`${RUINS}rubble-temple`, -6, 0),
+          s(`${RUINS}column-temple-tall`, -5, -3),
+          s(`${RUINS}column-temple-tall`, 7, -3),
+          s(`${RUINS}column-temple-broken`, -2, -2),
+          s(`${RUINS}column-temple-broken`, 3, -2),
+          s(`${VOLCANO}steam-vent`, 0, -1),
+          s(`${VOLCANO}steam-vent`, 5, -1),
+          s(`${VOLCANO}steam-vent`, 2, 1),
+          s(`${VOLCANO}bones`, -1, 1),
+          s(`${RUINS}fallen-column-temple`, 3, 1),
+          s(`${RUINS}rubble-temple`, -3, 1),
+          s(`${SWAMP}pilings`, -1, -4),
+          s(`${SWAMP}pilings`, 4, -5),
+          s(`${RUINS}mosaic-medallion-5x5`, 8, -2),
+          s(`${RUINS}column-temple-broken`, 13, -2),
+          s(`${RUINS}fallen-column-temple`, 9, 3),
+          s("bd-pick-castle-catacombs-altar-stone", 9, -5),
+          s(`${RUINS}face-temple-3h`, -6, -11),
+          s("bd-pick-deep-forest-path-ruin-gate", -3, -11),
+          s(`${RUINS}roof-naiskos-pediment`, 2, -11),
+          s(`${RUINS}face-temple-2h`, 7, -11),
+          s(`${RUINS}face-temple-3h`, 10, -11),
+          s("bd-pick-aqueduct-sewer-altar-cult", 3, -7),
+          s("bd-prop-statue_sage", -6, -8),
+          s(`${RUINS}column-temple-broken`, 0, -8),
+          s(`${RUINS}column-temple-broken`, 7, -8),
+          s(`${SWAMP}snag`, 11, -9),
+          s(`${RUINS}ruined-wall-2`, -6, -2),
+          s(`${RUINS}cypress-ruin`, -6, 2),
         ],
       };
     case "ruins_shrine":
@@ -369,9 +482,10 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
     domains: ["map", "tile"],
     description:
       "이벤트·컷씬·함정이 놓일 «무대» 를 이벤트 좌표 둘레에 한 번에 짓는다(버들항 beodeul_city 맵 전용, 새 그림 없이 기존 키트). "
-      + "theme: volcano(화산 열풍·용암 못·흑요석·증기 구멍) · lava_bridge(용암 강 + 바위 다리가 가로지름, 이벤트 칸이 다리 위) · "
-      + "poison_swamp(독늪·맹그로브·증기 분출구, 이벤트 칸은 늪 가장자리) · ruins_shrine(마도·고대 유적/성소: 모자이크 바닥·소신전·기둥·화로). "
+      + "theme: volcano(그을린 분화구 길: 길 양옆 용암 균열·분화구 용암 못·흑요석·증기 구멍) · lava_bridge(협곡을 가로지르는 용암 강 + 바위 다리, 이벤트 칸이 다리 위, 양 끝 유적 테라스) · "
+      + "poison_swamp(마도 유적 독늪 둑길: 유적 판석·신전 기둥 문·소신전·제단, 이벤트 칸은 두 독늪 사이 좁은 둑길) · ruins_shrine(마도·고대 유적/성소: 모자이크 바닥·소신전·기둥·화로). "
       + "x,y 는 이벤트(트리거) 칸이고 x-1,y 는 플레이어가 걸어 들어오는 칸이다 — 이 두 칸은 막지 않는다. 이 좌표 둘레 한 구역만 바꾸고 맵의 나머지는 보존한다. "
+      + "결과 data.survivalWalk.moves 는 생존(무사 통과) 분기에서 주인공이 위험 구역을 건너는 막히지 않은 걸음이다(moveActor target:'player'). "
       + "houses 는 volcano 에서 «마을 외곽» 을 말할 때만(0~3) 구역 밖 모서리에 마을 집을 얹는다. 짓고 나서 show_map_region 으로 그림을 확인하고 이벤트를 만든다.",
     parameters: {
       type: "object",
@@ -419,6 +533,8 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       const ground = snapToMapEdge(map, clampRect(map, x - g.rx, y - g.ry, g.rx * 2 + 1, g.ry * 2 + 1));
       for (const r of roundedParts(map, ground)) fill.run(project, { mapId, rect: r, material: g.material, clearUpper: true });
       built.push(`바닥 ${g.material} ${ground.w}×${ground.h}`);
+      if (layout.floorKit && tileKit(project, map, layout.floorKit, ground, x, y) > 0) built.push(`바닥 무늬 ${layout.floorKit.replace("bd-pick-", "")}`);
+      for (const p of layout.pads ?? []) tileKit(project, map, p.kit, { x: x + p.dx, y: y + p.dy, w: p.w, h: p.h }, x, y);
 
       for (const f of layout.fills) {
         const r = clampRect(map, x + f.dx, y + f.dy, f.w, f.h);
@@ -434,17 +550,25 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       // 불규칙 몸체(용암·물) — 칸 단위로 칠하고 둘레에 흑요석·불씨를 둘러 직각 가장자리를 가린다.
       const bodyDecor: { id: string; x: number; y: number }[] = [];
       const bridgeBox = (cx: number, cy: number) => theme === "lava_bridge" && Math.abs(cx - x) <= 1 && cy >= y - 3 && cy <= y + 3;
-      const free = (cx: number, cy: number) => !((cx === x && cy === y) || (cx === x - 1 && cy === y)) && !bridgeBox(cx, cy);
-      const lavaOf = theme === "lava_bridge" ? [lavaBandCells(map, x, y)] : (layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => bodyCells(map, x, y, b));
-      for (const cells of lavaOf) {
+      const walk = layout.walk ? walkCells(x, y, layout.walk) : [];
+      const onWalk = (cx: number, cy: number) => walk.some((c) => c.x === cx && c.y === cy);
+      const free = (cx: number, cy: number) => !((cx === x && cy === y) || (cx === x - 1 && cy === y)) && !bridgeBox(cx, cy) && !onWalk(cx, cy);
+      const lavaOf: { cells: { x: number; y: number }[]; rim: number }[] = theme === "lava_bridge"
+        ? [{ cells: lavaBandCells(map, x, y), rim: 0.28 }]
+        : [
+          ...(layout.bodies ?? []).filter((b) => b.kind === "lava").map((b) => ({ cells: bodyCells(map, x, y, b, free), rim: 0.5 })),
+          ...(layout.fissures ?? []).map((f) => ({ cells: fissureCells(map, x, y, f, free), rim: 0.12 })),
+        ];
+      for (const { cells, rim } of lavaOf) {
         for (const c of cells) setLayerTileAt(map, 1, c.y * map.width + c.x, LAVA_TILES[c.y % 2]![c.x % 2]!);
         for (const c of cells) for (let l = 2; l <= 3; l++) setLayerTileAt(map, l as 2 | 3, c.y * map.width + c.x, -1);
         applyBankOverlay(project, map, cells, BEODEUL_NATURE.bankLava);
         if (theme === "lava_bridge") for (const c of cells) if (bridgeBox(c.x, c.y)) setLayerTileAt(map, 2, c.y * map.width + c.x, -1);
-        bodyDecor.push(...rimStamps(map, cells, free, 41, theme === "lava_bridge" ? 0.28 : 0.5));
+        bodyDecor.push(...rimStamps(map, cells, free, 41, rim));
       }
+      if (layout.fissures?.length) built.push(`용암 균열 ${layout.fissures.length}줄`);
       for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) {
-        const cells = bodyCells(map, x, y, b);
+        const cells = bodyCells(map, x, y, b, free);
         const rows = new Map<number, number[]>();
         for (const c of cells) (rows.get(c.y) ?? rows.set(c.y, []).get(c.y)!).push(c.x);
         for (const [cy, xs] of rows) {
@@ -469,8 +593,8 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
         for (let dy = 0; dy < (k?.height ?? 1); dy++) for (let dx = 0; dx < (k?.width ?? 1); dx++) occupied.add((py + dy) * map.width + px + dx);
       };
       const waterOrLava = new Set<number>();
-      for (const cells of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
-      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) for (const c of bodyCells(map, x, y, b)) waterOrLava.add(c.y * map.width + c.x);
+      for (const { cells } of lavaOf) for (const c of cells) waterOrLava.add(c.y * map.width + c.x);
+      for (const b of (layout.bodies ?? []).filter((q) => q.kind === "water")) for (const c of bodyCells(map, x, y, b, free)) waterOrLava.add(c.y * map.width + c.x);
       for (const d of bodyDecor) {
         try { stamp.run(project, { objectId: KIT + d.id, mapId, x: d.x, y: d.y }); stamped++; mark(d.id, d.x, d.y); } catch { /* 맵 밖·충돌 칸은 건너뛴다 */ }
       }
@@ -532,9 +656,14 @@ export const SCENE_SETTING_TOOLS: readonly ToolDefinition[] = [
       }
 
       const collapse = theme === "lava_bridge" ? bridgeCollapse(map, x, y) : undefined;
+      const blockedWalk = walk.filter((c, i) => !canMove(project, map, i === 0 ? x : walk[i - 1]!.x, i === 0 ? y : walk[i - 1]!.y, c.x, c.y));
+      if (blockedWalk.length) warnings.push(`생존 걷기 길 막힘: ${blockedWalk.map((c) => `(${c.x},${c.y})`).join(" ")}`);
+      const survivalWalk = layout.walk && !blockedWalk.length
+        ? { moves: walk.map(() => ({ kind: "move", dir: layout.walk!.dir })), cells: walk, end: walk[walk.length - 1]! }
+        : undefined;
       return {
-        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}`,
-        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}) },
+        summary: `무대 ${theme} → ${mapId} 이벤트 칸 (${x},${y}) 둘레: ${built.join(" · ")}. 이제 show_map_region 으로 확인하고 (${x},${y}) 에 이벤트를 만든다 — 시작 칸 (${x - 1},${y}) 은 막혀 있지 않다.${collapse ? ` 다리 붕괴 연출은 사망 분기에서 data.collapse.cells ${collapse.cells.length}칸에 changeTile{mapId,layer:"upper",x,y,tile} 을 적용한다(다리 그림이 상단 층이라 반드시 layer "upper" — 하단은 이미 용암이라 바꿔도 화면이 그대로다). 붕괴 직후 한 번 더 화면을 붉게 번쩍이면 틈이 눈에 띈다.` : ""}${survivalWalk ? ` 생존(무사 통과) 분기는 제자리에 세워 두지 말고 moveActor{target:"player",moves:data.survivalWalk.moves} 로 (${survivalWalk.end.x},${survivalWalk.end.y}) 까지 ${walk.length}칸 걸어 위험 구역을 건너게 하고, 걷는 동안 tint 를 원래대로·weather none 으로 거둔다.` : ""}`,
+        data: { theme, mapId, focus: { x, y }, start: { x: x - 1, y }, ground, stamped, total: layout.stamps.length, ...(collapse ? { collapse } : {}), ...(survivalWalk ? { survivalWalk } : {}) },
         ...(warnings.length ? { warnings } : {}),
       };
     },
