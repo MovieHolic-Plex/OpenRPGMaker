@@ -69,6 +69,7 @@ const VENUES: readonly Venue[] = [
   //    오뎅·핫스낵 옆 계산대) + 창고. 30×22 는 진열대 사이가 텅 비었다 - 일본 편의점 크기로 줄였다.
   { program: "mc_konbini_jp", map: "konbini-24h", variation: {
     rows: [["konbini-floor", "konbini-backroom"]],
+    trim: { "konbini-backroom": 8 },
     entrance: "konbini-floor", left: [["konbini-floor", "konbini-backroom"]], hubs: ["konbini-floor"], palettes: [
       { "konbini-floor": ["mci-tile-small", "mci-wall-tile"], "konbini-backroom": ["mci-concrete", "mci-wall-metal"] },
       { "konbini-floor": ["mci-vinyl-hospital", "mci-wall-office"], "konbini-backroom": ["mci-wood-oak", "mci-wall-brick"] },
@@ -98,6 +99,7 @@ const VENUES: readonly Venue[] = [
   // ── 학생 3. 08:10 지하철역 (46×32) - 북쪽 승강장(선로·스크린도어 벽에서 벽까지), 남쪽 대합실(개찰구 차단선)·역무실·역내 편의점.
   { program: "mc_station", map: "subway-station", aliases: ["concourse"], variation: {
     rows: [["subway-platform"], ["subway-office", "subway-concourse", "subway-kiosk"]],
+    trim: { "subway-office": 10, "subway-kiosk": 10 },
     entrance: "subway-concourse",
     above: [["subway-platform", "subway-concourse"], ["subway-platform", "subway-office"], ["subway-platform", "subway-kiosk"]],
     left: [["subway-office", "subway-concourse"], ["subway-concourse", "subway-kiosk"]],
@@ -156,9 +158,9 @@ const VENUES: readonly Venue[] = [
       { "train-car": ["mci-tile-concourse", "mci-wall-store"], "train-car-2": ["mci-tile-concourse", "mci-wall-store"], "train-cab": ["mci-tile-concourse", "mci-wall-office"] },
     ] }, rooms: [
     { kind: "train-cab", w: 4, h: 10, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      o("train-cab-windshield", 0, 0), o("train-sos-intercom", 3, 0),
-      o("train-cab-desk", 0, 2), o("mci-chair-office-n", 1, 3),
-      o("train-cab-console", 2, 6),
+      // 진행 방향 = 서쪽(왼쪽): 서쪽 가장자리 앞유리·제어대(train-cab-front-w)를 기관사 의자(train-cab-seat-w)가 서쪽으로 바라본다 - 칸막이 벽과 문은 의자 뒤(동쪽).
+      o("train-sos-intercom", 3, 0),
+      o("train-cab-front-w", 0, 2), o("train-cab-seat-w", 2, 6),
     ] },
     // 두 객차는 노선 색(초록 모켓 / 파랑 모켓)과 창(롤블라인드 / 터널 창)·창 위 안내(듀얼 LCD / 노선도 띠)만 달리한다.
     ...([["train-car", "train-window-blind", "train-lcd-dual", "green"], ["train-car-2", "train-window-tunnel", "train-route-strip", "blue"]] as const).map(([kind, win, sign, moquette]) => ({ kind, w: 16, h: 10, floor: "mci-concrete", wall: "mci-wall-metal", items: [
@@ -381,6 +383,7 @@ const VENUES: readonly Venue[] = [
   // ── 학생 10. 18:30 게임센터·노래방 & 만화카페 (40×28) - 위 줄 인형뽑기 존·노래방·서점, 아래 줄 아케이드 홀·만화카페.
   { program: "mc_game_center", map: "game-center", variation: {
     rows: [["game-crane", "karaoke-room", "book-floor"], ["game-floor", "manga-cafe"]],
+    trim: { "book-floor": 7, "manga-cafe": 8 },
     entrance: "game-floor", hubs: ["game-floor", "book-floor"],
     above: [["game-crane", "game-floor"], ["karaoke-room", "game-floor"], ["book-floor", "manga-cafe"]],
     left: [["game-crane", "karaoke-room"], ["karaoke-room", "book-floor"], ["game-floor", "manga-cafe"]],
@@ -424,7 +427,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 1. 07:30 원룸·오피스텔 (20×16) - 위 줄 욕실(세면대·세탁기·욕조)·드레스룸·원룸 침실, 아래 줄 엘리베이터 홀·키친 거실(식탁·소파).
   //    32×24 는 원룸이 아니라 강당이었다(2026-10-18 「너무 큼」) - 실제 원룸 평수로 줄이고 살림으로 채운다.
   { program: "mc_officetel", map: "officetel", variation: {
-    rows: [["otel-bath", "otel-dressing", "otel-room"], ["otel-elevator", "otel-kitchen"]],
+    rows: [["otel-bath", "otel-dressing", "otel-room", "void:6"], ["otel-elevator", "otel-kitchen"]],
     entrance: "otel-elevator", hubs: ["otel-elevator", "otel-kitchen"],
     above: [["otel-bath", "otel-elevator"], ["otel-room", "otel-kitchen"]], left: [["otel-bath", "otel-dressing"], ["otel-dressing", "otel-room"], ["otel-elevator", "otel-kitchen"]],
     palettes: [
@@ -461,7 +464,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 2. 08:30 베이커리 카페 (24×18) - 위 줄 제빵실(오븐·싱크·반죽대·바게트 바구니)·에스프레소 바(빵 선반·케이크·도넛 진열장·계산대),
   //    아래 줄 4방향 카페 좌석 홀 + 창가 소파. 32×22 는 손님석 사이가 너무 비었다.
   { program: "mc_bakery_cafe", map: "bakery-cafe", variation: {
-    rows: [["bakery-kitchen", "espresso-bar"], ["cafe-hall"]],
+    rows: [["bakery-kitchen", "espresso-bar", "void:6"], ["cafe-hall"]],
     entrance: "cafe-hall", hubs: ["cafe-hall"], above: [["bakery-kitchen", "cafe-hall"], ["espresso-bar", "cafe-hall"]], left: [["bakery-kitchen", "espresso-bar"]],
     palettes: [
       { "cafe-hall": ["mci-wood-dark", "mci-wall-brick"], "espresso-bar": ["mci-stone-lobby", "mci-wall-lobby"], "bakery-kitchen": ["mci-tile-small", "mci-wall-tile"] },
@@ -489,6 +492,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 3. 09:00 대형 오피스 층 (46×32) - 위 줄 열린 업무홀(마주 보는 책상 섬)·대회의실(4방향 의자), 아래 줄 리셉션 로비·임원실·탕비 라운지.
   { program: "mc_office", map: "office-floor", variation: {
     rows: [["open-office", "meeting"], ["lobby", "exec", "pantry"]],
+    trim: { "meeting": 9, "pantry": 9 },
     entrance: "lobby", hubs: ["open-office", "lobby"],
     above: [["open-office", "lobby"], ["meeting", "pantry"]], left: [["open-office", "meeting"], ["lobby", "exec"], ["exec", "pantry"]],
     palettes: [
@@ -541,6 +545,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 4. 12:30 레스토랑 & 다이닝 바 (38×28) - 위 줄 오픈 키친·바 라운지·피아노 무대, 아래 줄 4방향 식탁 홀(부스석·호스트석).
   { program: "mc_restaurant", map: "restaurant-bar", variation: {
     rows: [["rest-kitchen-bar", "rest-bar-lounge", "rest-live-stage"], ["rest-dining-hall"]],
+    trim: { "rest-live-stage": 6, "rest-kitchen-bar": 7 },
     entrance: "rest-dining-hall", hubs: ["rest-dining-hall"],
     above: [["rest-kitchen-bar", "rest-dining-hall"], ["rest-bar-lounge", "rest-dining-hall"], ["rest-live-stage", "rest-dining-hall"]],
     left: [["rest-kitchen-bar", "rest-bar-lounge"], ["rest-bar-lounge", "rest-live-stage"]],
@@ -582,6 +587,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 5. 19:00 퇴근 후 이자카야·라멘 (36×26) - 위 줄 주방·다다미 룸 둘, 아래 줄 다찌 카운터 홀(4방향 식탁).
   { program: "mc_izakaya", map: "izakaya", variation: {
     rows: [["izakaya-kitchen", "izakaya-tatami", "izakaya-tatami"], ["izakaya-hall"]],
+    trim: { "izakaya-tatami": 6 },
     entrance: "izakaya-hall", hubs: ["izakaya-hall"],
     above: [["izakaya-kitchen", "izakaya-hall"], ["izakaya-tatami", "izakaya-hall"]], left: [["izakaya-kitchen", "izakaya-tatami"]],
     palettes: [
@@ -616,6 +622,7 @@ const VENUES: readonly Venue[] = [
   //    아래 줄 계산대(유인 6레인 + 셀프 계산대 넷·카트 베이)·푸드코트. 2026-10-18 「파는 물건이나 진열대를 더 다양화해라」.
   { program: "mc_supermarket", map: "supermarket-mart", variation: {
     rows: [["mart-produce", "mart-butcher", "mart-storage"], ["mart-sales-hall"], ["mart-checkout", "mart-foodcourt"]],
+    trim: { "mart-produce": 7, "mart-foodcourt": 7 },
     entrance: "mart-checkout", hubs: ["mart-sales-hall", "mart-checkout"],
     above: [["mart-produce", "mart-sales-hall"], ["mart-butcher", "mart-sales-hall"], ["mart-storage", "mart-sales-hall"], ["mart-sales-hall", "mart-checkout"], ["mart-sales-hall", "mart-foodcourt"]],
     left: [["mart-produce", "mart-butcher"], ["mart-butcher", "mart-storage"], ["mart-checkout", "mart-foodcourt"]],
@@ -679,6 +686,7 @@ const VENUES: readonly Venue[] = [
   // ── 직장인 8. 22:00 센토·스파 (40×30) - 위 줄 사우나·노천탕, 가운데 목욕 홀(씻는 자리 열·대온탕·열탕·냉탕), 아래 줄 카운터 탈의실.
   { program: "mc_sento", map: "sento", variation: {
     rows: [["sento-sauna", "sento-rotenburo"], ["sento-bathhall"], ["sento-changing"]],
+    trim: { "sento-sauna": 5 },
     entrance: "sento-changing", hubs: ["sento-changing", "sento-bathhall"],
     above: [["sento-sauna", "sento-bathhall"], ["sento-rotenburo", "sento-bathhall"], ["sento-bathhall", "sento-changing"]], left: [["sento-sauna", "sento-rotenburo"]],
     fixed: ["sento-bathhall"], palettes: [

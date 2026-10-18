@@ -3,6 +3,7 @@
 import type { InteriorRoomTemplate } from "./templates";
 import { DAILY_VENUE_PROGRAMS, DAILY_VENUE_TEMPLATES, DAILY_VENUE_VARIATION } from "./dailyVenues";
 import { MODERN_VENUE_PROGRAMS, MODERN_VENUE_TEMPLATES, MODERN_VENUE_VARIATION } from "./modernVenues";
+import { FACILITY_PROGRAMS, FACILITY_TEMPLATES, FACILITY_VARIATION } from "./facilityVenues";
 
 export interface ModernPresetData {
   readonly templates: Readonly<Record<string, readonly InteriorRoomTemplate[]>>;
@@ -26,6 +27,8 @@ export interface ModernProgramVariation {
   readonly rows?: readonly (readonly string[])[];
   /** 참이면 줄 안의 방이 줄 높이로 늘지 않고 견본 높이(위쪽 맞춤)를 지킨다 - 짧은 방 아래는 건물 밖으로 들어간 계단형 외곽이 된다. */
   readonly ragged?: boolean;
+  /** 방 종류 → 줄 안 높이. 줄 끝 방의 높이를 줄여 그 아래를 건물 밖(ㄱ·ㄴ자 귀퉁이)으로 만든다 - 높이는 견본보다 크지 않다. */
+  readonly trim?: Readonly<Record<string, number>>;
 }
 
 export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<string, ModernProgramVariation>>>> = {
@@ -38,7 +41,10 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
       { "cinema-theater": ["mci-wood-dark", "mci-wall-brick"], "cinema-arcade-zone": ["mci-concrete", "mci-wall-metal"], "cinema-lobby": ["mci-tile-concourse", "mci-wall-store"] },
       { "cinema-theater": ["mci-carpet-office", "mci-wall-office"], "cinema-arcade-zone": ["mci-vinyl-store", "mci-wall-tile"], "cinema-lobby": ["mci-wood-dark", "mci-wall-brick"] },
     ] },
-    mc_museum: { palettes: [
+    mc_museum: {
+      rows: [["gallery-paintings", "gallery-sculpture"], ["gallery-lobby", "gallery-shop"]], trim: { "gallery-shop": 5 }, entrance: "gallery-lobby",
+      above: [["gallery-paintings", "gallery-lobby"], ["gallery-sculpture", "gallery-lobby"], ["gallery-sculpture", "gallery-shop"]], left: [["gallery-paintings", "gallery-sculpture"], ["gallery-lobby", "gallery-shop"]], hubs: ["gallery-lobby"],
+      palettes: [
       { "gallery-paintings": ["mci-wood-dark", "mci-wall-brick"], "gallery-sculpture": ["mci-concrete", "mci-wall-office"], "gallery-lobby": ["mci-tile-concourse", "mci-wall-store"], "gallery-shop": ["mci-wood-dark", "mci-wall-home"] },
       { "gallery-paintings": ["mci-carpet-office", "mci-wall-office"], "gallery-sculpture": ["mci-stone-lobby", "mci-wall-store"], "gallery-lobby": ["mci-wood-oak", "mci-wall-lobby"], "gallery-shop": ["mci-vinyl-store", "mci-wall-store"] },
     ] },
@@ -60,6 +66,7 @@ export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<s
       { elevatorhall: ["mci-tile-concourse", "mci-wall-store"], lounge: ["mci-wood-oak", "mci-wall-home"], lobby: ["mci-tile-concourse", "mci-wall-office"] },
     ] },
     ...DAILY_VENUE_VARIATION,
+    ...FACILITY_VARIATION,
   },
 };
 
@@ -81,6 +88,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
       ],
       ...MODERN_VENUE_PROGRAMS,
       ...DAILY_VENUE_PROGRAMS,
+      ...FACILITY_PROGRAMS,
     },
     modern_campus: {
       university_lecture: [
@@ -540,6 +548,7 @@ export const MODERN_PRESET_DATA: ModernPresetData = {
       },
       ...MODERN_VENUE_TEMPLATES,
       ...DAILY_VENUE_TEMPLATES,
+      ...FACILITY_TEMPLATES,
     ],
     modern_campus: [
       {
