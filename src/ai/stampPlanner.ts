@@ -43,7 +43,14 @@ export type StampTool =
   | "compose_scene"
   | "erase_object"
   | "move_object"
-  | "move_region";
+  | "move_region"
+  | "carve_river"
+  | "sculpt_hill"
+  | "place_castle"
+  | "place_corpses"
+  | "harmonize_region"
+  | "sculpt_relief"
+  | "place_terrain_ramp";
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
   "place_props",
@@ -72,6 +79,11 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "erase_object",
   "move_object",
   "move_region",
+  "carve_river",
+  "sculpt_hill",
+  "place_castle",
+  "place_corpses",
+  "harmonize_region",
 ];
 
 export type FastPathCommandTier =
@@ -249,6 +261,11 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "erase_object {query:\"나무\", region?:\"오른쪽 위\", rect?:{x,y,w,h}}  (when the user asks to erase/remove/clear a placed object, tree, fountain, well, fence or house)",
   "move_object {query:\"우물\", toRegion?:\"광장 한가운데\", fromRegion?:string, to?:{x,y}, dx?:int, dy?:int}  (when the user asks to move/relocate/shift an object or house, e.g. \"우물을 광장 한가운데로 옮겨줘\", \"집을 오른쪽으로 4칸 옮겨줘\")",
   "compose_scene {scene, style?:string, program?:string, shops?:[string], seed?:int}  (omit seed unless the user names one — code picks a new seed every run so the same sentence gives a different layout)",
+  "carve_river {area?:{x,y,w,h}, direction?:\"horizontal\"|\"vertical\", bridge?:boolean}  (when the user asks for 강/개울/물줄기/운하/내를 깔아줘·흐르게 해줘 — carves a natural winding water river channel + stone/wood bridge across the area)",
+  "sculpt_hill {area?:{x,y,w,h}, levels?:1|2|3, stairs?:boolean}  (when the user asks for 언덕/고지/절벽 단차/단/계단식 언덕을 만들어줘·올려줘 — raises walkable relief cliff elevation + stairs + hilltop trees/flowers)",
+  "place_castle {area?:{x,y,w,h}, gate?:boolean, towers?:boolean}  (when the user asks for 성/성채/요새/성곽/성벽과 성문/망루를 지어줘·세워줘 — builds stone castle ramparts, battlements, round watchtowers, arched portcullis gate, and courtyard)",
+  "place_corpses {area?:{x,y,w,h}, count?:int, withDebris?:boolean}  (when the user asks for 시체/시체들/백골/유골/유해/전사자 유해/해골 더미/전투 흔적을 깔아줘 — scatters skeletal/corpse remains, skull piles, graves, and battle debris/weapons)",
+  "harmonize_region {area?:{x,y,w,h}}  (when the user asks for \"주변과 어울리게 해줘\", \"주변 풍경에 맞게 자연스럽게 꾸며줘\", \"어울리게 채워줘\" — inspects surrounding ground, roads, trees, and props to automatically blend the area with the map biome)",
   "- QUEST / DIALOGUE / STORY / BOSS EVENT / PUZZLE / PARTY RECRUIT / SHOP-INN WIRING GUARD: if the sentence asks for 퀘스트 만들기/세우기, 대화·스토리·컷신 짜기, 보스전·퍼즐·선택지 이벤트 만들기, 동료 영입/합류, or 상점·숙소 기능 배선, NEVER pretend to fulfill it with static props or dummy NPCs; return ONLY {\"reject\":\"FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT\"}.",
 ].join("\n");
 
@@ -408,6 +425,13 @@ const TOOL_KO: Record<StampTool, string> = {
   erase_object: "물체 지우기",
   move_object: "물체 옮기기",
   move_region: "영역 옮기기",
+  carve_river: "강·물줄기",
+  sculpt_hill: "언덕·절벽 단차",
+  place_castle: "성·성채",
+  place_corpses: "백골 유해·전투 흔적",
+  harmonize_region: "주변 맞춤 조경",
+  sculpt_relief: "절벽 높이 빚기",
+  place_terrain_ramp: "오르막 계단",
 };
 
 /**
@@ -880,7 +904,71 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
         },
       };
     }
+    case "carve_river": {
+      const area = rect ?? target;
+      const direction = enumArg(args.direction, ["horizontal", "vertical"] as const)
+        ?? (/세로|남북|위아래/u.test(facts.text) ? "vertical" : /가로|동서|양옆/u.test(facts.text) ? "horizontal" : area.w >= area.h ? "horizontal" : "vertical");
+      const bridge = typeof args.bridge === "boolean" ? args.bridge : !/다리\s*없이/u.test(facts.text);
+      return {
+        step: {
+          tool: "carve_river",
+          label: labelText ?? (bridge ? "굽이치는 강줄기와 돌다리" : "굽이치는 강줄기"),
+          args: { mapId, area, direction, bridge },
+        },
+      };
+    }
+    case "sculpt_hill": {
+      const area = rect ?? target;
+      const lvMatch = /(\d+)\s*단/u.exec(facts.text);
+      const levelsRaw = finiteInt(args.levels) ?? (lvMatch?.[1] ? Number(lvMatch[1]) : 2);
+      const levels = Math.max(1, Math.min(3, levelsRaw));
+      const stairs = typeof args.stairs === "boolean" ? args.stairs : !/계단\s*없이/u.test(facts.text);
+      return {
+        step: {
+          tool: "sculpt_hill",
+          label: labelText ?? `${levels}단 언덕과 오르막 계단`,
+          args: { mapId, area, levels, stairs },
+        },
+      };
+    }
+    case "place_castle": {
+      const area = rect ?? target;
+      const gate = typeof args.gate === "boolean" ? args.gate : true;
+      const towers = typeof args.towers === "boolean" ? args.towers : true;
+      return {
+        step: {
+          tool: "place_castle",
+          label: labelText ?? "성채 성벽·망루·아치 성문",
+          args: { mapId, area, gate, towers },
+        },
+      };
+    }
+    case "place_corpses": {
+      const area = rect ?? target;
+      const countRaw = finiteInt(args.count);
+      const count = Math.max(2, Math.min(8, countRaw ?? 5));
+      const withDebris = typeof args.withDebris === "boolean" ? args.withDebris : /전투|무기|흔적|부서진|잔해|폐허|전장/u.test(facts.text);
+      return {
+        step: {
+          tool: "place_corpses",
+          label: labelText ?? (withDebris ? "전투 흔적과 백골 유해" : "백골 유해·해골 더미"),
+          args: { mapId, area, count, withDebris },
+        },
+      };
+    }
+    case "harmonize_region": {
+      const area = rect ?? target;
+      return {
+        step: {
+          tool: "harmonize_region",
+          label: labelText ?? "주변 바이옴 맞춤 자동 조경",
+          args: { mapId, area },
+        },
+      };
+    }
     case "paint_tiles":
+    case "sculpt_relief":
+    case "place_terrain_ramp":
       return dropped("내부 전용 도구입니다");
   }
 }
@@ -1635,6 +1723,62 @@ function upgradeDirectSpatialOps(
         dropped.length = 0;
         return [check.step];
       }
+    }
+  }
+  // 맥락 맞춤 조경("주변과 어울리게 해줘")
+  if (
+    /주변(?:과|이랑|하고|에|풍경에)?\s*(?:자연스럽게\s*)?(?:어울리|어우러지|맞추|맞게|조화)|풍경에\s*맞게\s*(?:자연스럽게\s*)?(?:꾸며|꾸미|채워)|맥락에\s*맞게/u.test(facts.text)
+    && !steps.some((step) => step.tool === "harmonize_region")
+  ) {
+    const check = validateStampStep({ tool: "harmonize_region", args: { area: facts.target }, label: "주변 바이옴 맞춤 자동 조경" }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 시체들·백골 유해·전투 흔적
+  if (
+    /(?:시체|시체들|백골|유골|전사자\s*유해|백골\s*유해|사체|주검|유해|해골\s*더미|뼈\s*더미)/u.test(facts.text)
+    && !steps.some((step) => step.tool === "place_corpses")
+  ) {
+    const check = validateStampStep({ tool: "place_corpses", args: { area: facts.target } }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 성·성채·요새·성벽과 성문
+  if (
+    /(?:성채|성곽|요새|성벽(?:과|와|이랑)?\s*성문|성문(?:과|와|이랑)?\s*성벽|망루(?:와|과)?\s*성벽|성벽을?\s*세우|성채를?\s*(?:지|세우|깔|만들)|성을?\s*(?:지|세우|깔|만들)|성채와\s*성문)/u.test(facts.text)
+    && !steps.some((step) => step.tool === "place_castle")
+  ) {
+    const check = validateStampStep({ tool: "place_castle", args: { area: facts.target } }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 언덕·고지·절벽 단차
+  if (
+    /(?:언덕|구릉|고지|절벽\s*단차|계단식\s*언덕|높은\s*단)(?:을|를|이|가|과|와)?\s*(?:계단(?:과|이랑)?\s*)?(?:만들|깔|올리|올려|세우|세워|빚|쌓|놓|추가)|(?:\d+\s*단\s*언덕)/u.test(facts.text)
+    && !steps.some((step) => step.tool === "sculpt_hill")
+  ) {
+    const check = validateStampStep({ tool: "sculpt_hill", args: { area: facts.target } }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
+    }
+  }
+  // 강·개울·물줄기("강 깔아줘", "가로로 강 흐르게 해줘") — 마을 전체 구성(강가 마을)은 제외
+  if (
+    /(?:강|강물|강줄기|개울|시내|물줄기|운하|하천)(?:을|를|이|가|과|와)?\s*(?:다리(?:와|랑)?\s*)?(?:깔|만들|흐르|내|파|놓|그려|추가)|(?:가로|세로|동서|남북)(?:로|으로)?\s*강/u.test(facts.text)
+    && !/강가\s*마을|강변\s*산책로\s*거리/u.test(facts.text)
+    && !steps.some((step) => step.tool === "carve_river")
+  ) {
+    const check = validateStampStep({ tool: "carve_river", args: { area: facts.target } }, facts);
+    if ("step" in check) {
+      dropped.length = 0;
+      return [check.step];
     }
   }
   return [...steps];
