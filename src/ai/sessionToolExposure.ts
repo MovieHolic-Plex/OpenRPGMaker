@@ -85,6 +85,7 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
   if (names.includes("author_dungeon") || names.includes("author_beodeul_dungeon")) names.push("author_dungeon", "link_world_entrance", "check_reachability", "show_map_region", "run_lint");
   // JRPG 한 장 시공기는 여러 맵을 한 번에 짓는다 — 지은 뒤 통행·그림을 확인할 도구를 함께 보인다.
   if (names.includes("author_jrpg_chapter")) names.push("author_jrpg_chapter", "check_reachability", "show_map_region", "run_lint");
+  if (names.some(n => ["author_map_puzzle", "list_puzzle_presets", "compile_puzzle"].includes(n))) names.push("list_puzzle_presets", "author_map_puzzle", "compile_puzzle", "check_reachability", "show_map_region", "run_lint");
   if (names.includes("stamp_object")) names.push("list_spatial_designs", "show_map_region");
   if (names.some(n => ["place_npc", "make_villager", "upsert_event", "list_npc_graphics"].includes(n))) names.push("place_npc", "list_npc_graphics");
   return toolSchemasForNames(names) as OpenAiTool[];
@@ -140,6 +141,9 @@ function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): O
     || input.intent?.tools.some(name => ["sculpt_relief", "design_terrain", "inspect_terrain", "lay_terrain_road"].includes(name))) {
     appendUnique(tools, seen, toolSchemasForNames(["read_relief", "sculpt_relief", "check_relief", "design_terrain",
       "inspect_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof", "check_terrain_access", "show_map_region"]) as OpenAiTool[]);
+  }
+  if (/(퍼즐|기믹|레버|비밀\s*통로|오르간|화로|점화|발판|미끄럼|컨베이어|다이너마이트|미믹|수수께끼|수문|다리\s*개방|잠입|결계|비석|\bpuzzle\b|\bgimmick\b)/iu.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["list_puzzle_presets", "author_map_puzzle", "compile_puzzle", "tile_change_effect", "check_reachability", "show_map_region", "run_lint"]) as OpenAiTool[]);
   }
   appendUnique(tools, seen, mentionedToolSchemas(input.requestText) as OpenAiTool[]);
   appendUnique(tools, seen, input.discoveredToolNames

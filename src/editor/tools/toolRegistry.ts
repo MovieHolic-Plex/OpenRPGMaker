@@ -102,6 +102,7 @@ import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { bindJrpgVolumeToolLookup, JRPG_VOLUME_TOOLS } from "./jrpgVolumeTools";
 import { JRPG_CHAPTER_TOOLS } from "./jrpgChapterTools";
+import { PUZZLE_AUTHORING_TOOLS } from "./puzzleAuthoringTools";
 import { SPACE_BLUEPRINT_TOOLS } from "./spaceBlueprintTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { CAMPUS_TOOLS } from "./campusTools";
@@ -320,6 +321,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TILE_CHANGE_EFFECT_TOOLS, "event"),
   ...withDomain(VEHICLE_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
+  ...withDomain(PUZZLE_AUTHORING_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(CUTSCENE_ART_TOOLS, "event"),
