@@ -29,7 +29,7 @@
 
   python3 scripts/content/append-beodeul-forest-canopy.py
 """
-import json, math
+import hashlib, json, math
 from pathlib import Path
 import numpy as np
 from PIL import Image
@@ -46,6 +46,31 @@ B = 2 * T          # 수관 덩이 한 변(px)
 
 sheet = np.array(Image.open(SHEET).convert("RGBA"))
 KITS = {k["id"]: k for k in json.loads(TSJ.read_text())["structureKits"]}
+
+# 버들항 시트의 나무·덤불 칸은 restyle-beodeul-foliage.py 가 이 수관과 같은 해·색 단으로 다시 칠해 둔다(2026-10-18).
+# 수관은 원래 그림의 잎 뭉치 결(밝기 순위)을 읽어야 하므로, 다시 칠하기 전 원본 칸을 덮어 써서 읽는다(두 번 칠해지지 않게).
+# 원본은 시트 칸이 아직 «다시 칠한 그 화소»(json 의 out 지문)일 때만 쓴다 — 다른 굽기(bake_picks·build-beodeul-city)가 칸을 새로 그렸으면
+# 그 새 그림이 원본이다(낡은 원본 띠로 새 그림을 되돌리지 않는다).
+FOLIAGE_SRC = ROOT / "scripts/content/beodeul-foliage/source-tiles.png"
+FOLIAGE_IDX = ROOT / "scripts/content/beodeul-foliage/source-tiles.json"
+
+def tile_fingerprint(px):
+    return hashlib.sha1(np.ascontiguousarray(px).tobytes()).hexdigest()[:16]
+
+def foliage_originals(cur):
+    """{칸 번호: 다시 칠하기 전 16×16 RGBA} — 원본 띠 그림(한 줄 16칸)·칸 번호·다시 칠한 지문 목록 중 cur 시트에 아직 다시 칠한 그림이 남은 칸만."""
+    if not FOLIAGE_IDX.exists(): return {}
+    idx = json.loads(FOLIAGE_IDX.read_text())
+    strip = np.array(Image.open(FOLIAGE_SRC).convert("RGBA"))
+    got = {}
+    for i, (n, fp) in enumerate(zip(idx["tiles"], idx["out"])):
+        if tile_fingerprint(cur[(n // 128) * T:(n // 128 + 1) * T, (n % 128) * T:(n % 128 + 1) * T]) != fp: continue
+        got[n] = strip[(i // COLS) * T:(i // COLS + 1) * T, (i % COLS) * T:(i % COLS + 1) * T].copy()
+    return got
+
+FOLIAGE_ORIG = foliage_originals(sheet)
+for _n, _px in FOLIAGE_ORIG.items():
+    sheet[(_n // 128) * T:(_n // 128 + 1) * T, (_n % 128) * T:(_n % 128 + 1) * T] = _px
 
 def tile_px(n):
     return sheet[(n // 128) * T:(n // 128 + 1) * T, (n % 128) * T:(n % 128 + 1) * T]
@@ -138,11 +163,14 @@ STYLES = {
     },
 }
 
-def relight(img, ramp, off, rim, snow=None, caps=False):
+def relight(img, ramp, off, rim, snow=None, caps=False, shape=None, clump=False):
     """수관 그림(RGBA) → 왼쪽 위 해로 다시 칠한 RGBA. off = 겹 깊이(아래 겹일수록 음수 → 짙은 단). rim = 왼쪽 위 테두리 1px 햇빛 테.
     snow 색 단이 오면 푸르스름·흰 화소(눈)는 그 단으로, 나머지(바늘잎)는 ramp 로 칠한다.
-    caps 면 눈이 없는 바늘잎 그림에 가지 층 윗면(위 화소가 비었거나 훨씬 짙은 곳)·해 쪽 1~2px 에 눈을 얹는다."""
+    caps 면 눈이 없는 바늘잎 그림에 가지 층 윗면(위 화소가 비었거나 훨씬 짙은 곳)·해 쪽 1~2px 에 눈을 얹는다.
+    shape(bool, 없으면 불투명 부분) = 둥근 지붕·테두리를 잴 실루엣 — 낱 나무는 잎 사이로 비치는 가지까지 넣어 잎 덩이 속에 테두리가 생기지 않게 한다.
+    clump 면 낱 나무용: 원래 잎 뭉치마다 그려 둔 밝은 윗면·짙은 밑면(밝기 순위)을 더 살리고 점묘를 반으로 줄인다(큰 수관이 한 덩이 둥근 지붕으로 뭉개지지 않게)."""
     a = img[..., 3] > 0
+    sh = a if shape is None else shape
     h, w = a.shape
     rgb = img[..., :3].astype(float)
     lum = rgb @ np.array([0.3, 0.59, 0.11])
@@ -151,7 +179,7 @@ def relight(img, ramp, off, rim, snow=None, caps=False):
     rank = np.zeros(h * w); rank[idx] = lum.ravel()[idx].argsort(kind="stable").argsort(kind="stable") / max(1, len(idx) - 1)
     rank = rank.reshape(h, w)
     # 둥근 지붕 높이 → 법선 → 햇빛
-    d = ndimage.distance_transform_edt(np.pad(a, 1))[1:-1, 1:-1]
+    d = ndimage.distance_transform_edt(np.pad(sh, 1))[1:-1, 1:-1]
     R = max(3.0, 0.34 * min(h, w))
     hgt = ndimage.gaussian_filter(np.sqrt(1 - (1 - np.clip(d / R, 0, 1)) ** 2) * R, 0.8)
     gy, gx = np.gradient(hgt)
@@ -159,9 +187,10 @@ def relight(img, ramp, off, rim, snow=None, caps=False):
     lam = n @ LIGHT
     lv = lam[a]; lam = (lam - lv.min()) / max(1e-6, lv.max() - lv.min())
     ys = np.arange(h)[:, None] / max(1, h - 1)
-    v = np.clip((0.5 * lam + 0.34 * rank + 0.16 * (1 - ys) - 0.5) * 1.3 + 0.5, 0, 1)
-    dith = BAYER[np.arange(h)[:, None] % 4, np.arange(w)[None, :] % 4] * 0.7
-    edge = a & ~ndimage.binary_erosion(a)
+    wl, wr, wy, dm = (0.36, 0.5, 0.14, 0.35) if clump else (0.5, 0.34, 0.16, 0.7)
+    v = np.clip((wl * lam + wr * rank + wy * (1 - ys) - 0.5) * 1.3 + 0.5, 0, 1)
+    dith = BAYER[np.arange(h)[:, None] % 4, np.arange(w)[None, :] % 4] * dm
+    edge = a & ~ndimage.binary_erosion(sh)
     out = np.zeros((h, w, 4), np.uint8)
     sn = (rgb[..., 2] >= rgb[..., 0]) & (rgb[..., 2] >= rgb[..., 1] - 6) & (lum > 60) if snow else np.zeros_like(a)
     if snow and caps:
