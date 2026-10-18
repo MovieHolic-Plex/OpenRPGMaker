@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.268.0 — 2026-10-18
+
+### 기능
+
+- **stamp-place** — support river, hill/cliff relief, house, castle, battlefield corpses, and context-aware harmonize_region (#2963) (`b7c523c`)
+
+### 수정
+
+- **interior** — hostile VQA fixes across 18 daily-routine spaces (non-rectangular trims, furniture orientation, aisle spacing) (#2964) (`9fb2670`)
+- **jrpg** — make puzzle solving dramatically transform multi-tile map structures (gates, bridges, rockfalls, stairs, portals) (#2962) (`6fac7f5`)
+
 ## 0.267.0 — 2026-10-18
 
 ### 기능
