@@ -389,7 +389,10 @@ function checkEventUnreachable(project: Project, issues: LintIssue[], analysis: 
         continue;
       }
       const immobile = eventIsMovable(event) && !placement.hasMovementStep(event);
-      if (!immobile && placement.hasInteractionPosition(event)) continue;
+      // 모든 페이지가 자동·병렬 실행이면 플레이어가 닿지 않아도 돈다(장면 분위기 이벤트 등) — 상호작용 자리를 요구하지 않는다.
+      const runsUnattended = (event.pages?.length ? event.pages.map((page) => page.trigger.kind) : [event.trigger.kind])
+        .every((kind) => kind === "auto" || kind === "parallel");
+      if (!immobile && (runsUnattended || placement.hasInteractionPosition(event))) continue;
       issues.push({
         severity: "warning",
         code: immobile ? "event-immobile" : "event-unreachable",
