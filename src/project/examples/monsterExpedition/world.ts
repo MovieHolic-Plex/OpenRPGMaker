@@ -745,9 +745,9 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       const at = (x: number, y: number) => ({ x, y });
       const split = (predicate: (c: Command) => boolean) => changes.filter(predicate);
       const devices: Device[] = key === "grass" ? [
-        // Keep the operator south of the cells that become the rotating barrier.
-        { key: "pivot", at: at(8,17), title: "회전 손잡이", question: "손잡이를 돌려 회전문의 방향을 바꿀까?", yes: "돌린다", no: "그대로 둔다", changes: split(c => c.kind === "changeTile" && c.y > 10) },
-        { key: "cut", at: at(12,6), title: "얽힌 가지", question: "비치된 정원 가위로 길을 덮은 가지를 정리할까?", yes: "가지를 정리한다", no: "나중에", changes: split(c => c.kind === "changeTile" && c.y <= 10) }
+        // Keep the operator south of the vine gate cells it opens.
+        { key: "pivot", at: at(8,17), title: "새싹 돌 받침", question: "받침에 손을 얹어 길을 막은 덩굴 나무 문을 열까?", yes: "손을 얹는다", no: "그대로 둔다", changes: split(c => c.kind === "changeTile" && c.y > 10) },
+        { key: "cut", at: at(12,6), title: "가시 덤불", question: "비치된 정원 가위로 길을 덮은 가시 덤불을 정리할까?", yes: "덤불을 정리한다", no: "나중에", changes: split(c => c.kind === "changeTile" && c.y <= 10) }
       ] : key === "fire" ? [
         { key: "quiz_1", at: at(7,15), title: "화로 퀴즈 1", question: "물 타입 기술은 불꽃 타입에게 효과적인가?", yes: "효과적이다", no: "효과가 없다", changes: split(c => c.kind === "changeTile" && c.x < 10) },
         { key: "quiz_2", at: at(9,9), title: "화로 퀴즈 2", question: "풀 타입 동료가 불꽃 기술을 맞으면 피해가 커지는가?", yes: "피해가 커진다", no: "피해가 줄어든다", changes: split(c => c.kind === "changeTile" && c.x >= 10) }

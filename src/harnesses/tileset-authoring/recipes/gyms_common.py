@@ -480,6 +480,73 @@ def _dist_out(inside, x, y, m, lim=8):
     return FAR
 
 
+_BUSH = ((3, 3), (11, 2), (7, 8), (14, 10), (2, 12), (10, 14))   # 잎 덩이 중심(16px 주기 — 칸끼리 이음매 없이 이어진다)
+_BLOOM = ((6, 4), (13, 13), (3, 9))                               # 덤불 위 꽃(분홍 꽃잎 + 노란 심)
+
+
+def _bush(P, x, y):
+    lf, fl = P["gy_hedge"], P["i2_c_flower"]
+    for fx, fy in _BLOOM:
+        d = abs(x - fx) + abs(y - fy)
+        if d == 0:
+            return px.hexc("#f8e070")
+        if d == 1:
+            return fl[1]
+    best = None
+    for bx, by in _BUSH:
+        for ox in (-T, 0, T):
+            for oy in (-T, 0, T):
+                dx, dy = x - bx - ox, y - by - oy
+                r = math.hypot(dx, dy)
+                if best is None or r < best[0]:
+                    best = (r, dx, dy)
+    r, dx, dy = best
+    if r <= 1.5 and dx + dy <= 0:
+        return lf[3]
+    if r <= 3.0:
+        return lf[2] if dx + dy < 0 else lf[1]
+    return lf[1] if r <= 3.6 and dx + dy <= 0 else lf[0]
+
+
+def planter(P, m: int, floor_im):
+    """화단(풀·벌레 체육관 칸막이, 실내 정원): 크림 돌 테두리 안에 흙과 잎 덤불·분홍 꽃, 앞면 칸 = 나무 판 화단 벽.
+    한 칸에 나무 한 그루씩 찍은 줄 울타리는 '어두운 상자 위 막대사탕 나무'로 읽혀 실내 체육관과 맞지 않았다(2026-10-18 사용자 반려)."""
+    wall_, kind = g2._virtual(m)
+    lf, rim, wd = P["gy_hedge"], P["gy_rim"], P["gy_wood"]
+    ol = lf[0]
+    soil = px.hexc("#5a3c22")
+    me_face = not (m & S)
+
+    def top(X, Y):
+        return 0 <= X < 3 * T and 0 <= Y < 3 * T and wall_[Y][X] and kind[Y][X] == "top"
+
+    def depth(X, Y):
+        for d in range(1, 5):
+            if not all(top(X + dx * d, Y + dy * d) for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                return d
+        return 5
+
+    im = px.new()
+    for y in range(T):
+        for x in range(T):
+            X, Y = T + x, T + y
+            if not wall_[Y][X]:
+                c = floor_im.getpixel((x, y))
+                im.putpixel((x, y), _shade(c, SH) if me_face and y == T - 1 else c)
+                continue
+            if any(not wall_[Y + dy][X + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                im.putpixel((x, y), ol)
+                continue
+            if kind[Y][X] == "face":                                # 화단 앞 벽: 세로 이음 판자, 맨 윗줄은 테두리 밑 그늘
+                c = wd[0] if kind[Y - 1][X] != "face" or X % 5 == 0 else (wd[2] if kind[Y - 2][X] != "face" else wd[1])
+                im.putpixel((x, y), c)
+                continue
+            d = depth(X, Y)
+            c = ol if d == 1 else rim[3] if d == 2 else rim[1] if d == 3 else soil if d == 4 else _bush(P, x, y)
+            im.putpixel((x, y), c)
+    return im
+
+
 def _dist_dir(inside, x, y, m, dx, dy, lim=12):
     """한 방향으로 바깥 픽셀까지의 거리. 이웃 칸이 이어져 있으면(마스크 비트) 그쪽으로는 끝이 없다(FAR)."""
     for d in range(1, lim):
