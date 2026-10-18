@@ -167,6 +167,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "windowskin-default": "/assets/ui/windowskin-default.png",
   "windowskin-warm": "/assets/ui/windowskin-warm.png",
   "windowskin-rm2003": "/assets/ui/windowskin-default.png",
+  // 스타터 고르기 미리보기 카드(72×72 손 도트, 200% 로 띄운다) — starterChoice.ts 가 몬스터 그림 밑에 깐다.
+  "starter-preview-card": "/assets/ui/starter-preview-card.png",
   // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
   ...PIXEL_ENEMY_PORTRAIT_URLS,

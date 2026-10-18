@@ -6,6 +6,12 @@ import { withJosa } from "@/util/josa";
 import type { Command, Project } from "@/project/types";
 
 export const STARTER_PREVIEW_PICTURE_ID = "starter_preview";
+/** 미리보기 카드(테두리 상자 + 풀 받침). 몬스터 그림보다 먼저 띄워 밑에 깔린다. */
+export const STARTER_PREVIEW_CARD_PICTURE_ID = "starter_preview_card";
+const STARTER_PREVIEW_CARD_RESOURCE_ID = "starter-preview-card";
+// 화면(480×320) 위쪽 가운데. 카드 72px·몬스터 64px 둘 다 정수 배율 200% 라 도트가 고르게 커진다(150% 는 줄마다 굵기가 달라 깨져 보였다).
+const CARD = { x: 168, y: 14, scale: 200 } as const;
+const MONSTER = { x: CARD.x + 8, y: CARD.y + 4, scale: 200 } as const;
 const PICK_LABEL = "starter_pick";
 
 export type StarterChoiceInput = {
@@ -33,9 +39,14 @@ export function starterChoiceCommands(project: Project, input: StarterChoiceInpu
     const species = project.database.monsterSpecies?.find((entry) => entry.id === speciesId);
     const name = species?.name ?? speciesId;
     const art = species?.graphic.monsterResourceId;
-    const erase: Command[] = art ? [{ kind: "erasePicture", pictureId: STARTER_PREVIEW_PICTURE_ID }] : [];
+    const erase: Command[] = art
+      ? [{ kind: "erasePicture", pictureId: STARTER_PREVIEW_PICTURE_ID }, { kind: "erasePicture", pictureId: STARTER_PREVIEW_CARD_PICTURE_ID }]
+      : [];
     const preview: Command[] = art
-      ? [{ kind: "showPicture", pictureId: STARTER_PREVIEW_PICTURE_ID, resourceId: art, x: 36, y: 84, scale: 150, opacity: 255, waitForPicture: false }]
+      ? [
+        { kind: "showPicture", pictureId: STARTER_PREVIEW_CARD_PICTURE_ID, resourceId: STARTER_PREVIEW_CARD_RESOURCE_ID, ...CARD, opacity: 255, waitForPicture: false },
+        { kind: "showPicture", pictureId: STARTER_PREVIEW_PICTURE_ID, resourceId: art, ...MONSTER, opacity: 255, waitForPicture: false },
+      ]
       : [];
     return {
       text: name,
