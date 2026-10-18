@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.268.1 — 2026-10-18
+
+### 수정
+
+- **interior** — R12 Opus hostile VQA - redraw R10 props (mart rewrite, sculpted mannequins, per-seat moquette, kotatsu, washer, beds, CT, OR, elevator) in place + hypermarket continuous aisle runs (#2966) (`e567b0b`)
+
 ## 0.268.0 — 2026-10-18
 
 ### 기능
