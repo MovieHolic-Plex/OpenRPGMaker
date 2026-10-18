@@ -15,19 +15,36 @@ export const FLAVOR_KITS: Readonly<Record<JpStreetFlavor, readonly FlavorKit[]>>
     { id: "jp-shop-greengrocer", w: 6, h: 7 },
     { id: "jp-izakaya-brick-wall", w: 4, h: 7 },
     { id: "jp-vending-stripe-alcove", w: 3, h: 7 },
+    { id: "jp-mansion-tile", w: 6, h: 7 },
+    { id: "jp-monthly-parking", w: 8, h: 7 },
     { id: "jp-fg-rooftop-dish", w: 6, h: 7 },
     { id: "jp-alley-stair-tree", w: 6, h: 7 },
     { id: "jp-fg-tiled-balcony", w: 6, h: 7 },
+    { id: "jp-shop-market-kissa", w: 4, h: 7 },
     { id: "jp-coin-parking", w: 8, h: 7 },
   ],
+  // 2026-10-18 사용자 반려 「대문통 이거 맞냐?」: 길 한가운데 홀로 선 大門通 간판 문은 뺐다 — 아케이드는 세로 보행자 길을 덮는 지붕(FLAVOR_ARCADE)이다.
   shotengai: [
-    { id: "jp-shotengai-canopy", w: 8, h: 7 },
-    { id: "jp-shotengai-arch", w: 7, h: 7 },
-    { id: "jp-coin-parking", w: 8, h: 7 },
     { id: "jp-shop-greengrocer", w: 6, h: 7 },
+    { id: "jp-shop-market-butcher", w: 4, h: 7 },
+    { id: "jp-shop-market-fish", w: 4, h: 7 },
+    { id: "jp-shop-market-drug", w: 4, h: 7 },
+    { id: "jp-shop-market-kissa", w: 4, h: 7 },
+    { id: "jp-shotengai-canopy", w: 8, h: 7 },
+    { id: "jp-coin-parking", w: 8, h: 7 },
     { id: "jp-vending-stripe-alcove", w: 3, h: 7 },
   ],
 };
+
+/**
+ * 쇼텐가이 비 가림 아케이드(shitamachi_pack ARCADE_WIDTHS): 세로 길(폭 w = 차로 + 양옆 보도)을 보행자 시장 길로 바꿔 한 줄마다 지붕(세 줄마다 -rib 철 아치),
+ * 큰길 쪽 어귀에 간판 아치(w×3)를 세운다. 지붕 양끝 칸은 처마 밑 진열대(막힘), 가운데는 걷는 통로.
+ */
+export const FLAVOR_ARCADE = { widths: [4, 5] as readonly number[], gateRows: 3, ribEvery: 3 } as const;
+export const arcadeRoofKit = (w: number, rib: boolean): string => `jp-arcade-roof-${w}${rib ? "-rib" : ""}`;
+export const arcadeGateKit = (w: number): string => `jp-arcade-gate-${w}`;
+/** 골목 꾸밈: 건물 옆 빈 열에 지장보살 감실(2×2). */
+export const FLAVOR_HOKORA = { id: "jp-hokora-jizo", w: 2, h: 2 } as const;
 
 /**
  * 조립 건물 위에 덮는 깊은 3/4 지붕 키트 `jp-roof-<종류>-<폭>`(shitamachi_pack ROOF_STYLES · ROOF_WIDTHS · ROOF_ROWS 와 같아야 한다).
@@ -48,13 +65,13 @@ export const FLAVOR_BUS_STOP = { id: "jp-bus-stop-sign", w: 1, h: 3 } as const;
 export const FLAVOR_POSTBOX = { id: "jp-postbox-red", w: 1, h: 2 } as const;
 
 /** 바닥 그룹 이름(shitamachi_pack GROUND_GROUPS) — fill_region material. */
-export const FLAVOR_SIDEWALK = "테라코타 벽돌 보도";
+export const FLAVOR_SIDEWALK = "콘크리트 판석 보도";
 export const FLAVOR_ROAD = "따뜻한 아스팔트 골목";
 
 /** 1칸 바닥 키트(아래층). */
 export const GND = {
-  ochre: "jp-gnd-brick-ochre",
-  stain: "jp-gnd-brick-c",
+  ochre: "jp-gnd-slab-b",
+  stain: "jp-gnd-slab-c",
   crack: "jp-gnd-asph-crack",
   manhole: "jp-gnd-manhole",
   drain: "jp-gnd-drain",
@@ -63,9 +80,9 @@ export const GND = {
   curbShade: "jp-gnd-curb-s-shade",
   curbShadeL: "jp-gnd-curb-s-shade-dl",
   curbShadeR: "jp-gnd-curb-s-shade-dr",
-  shade: "jp-gnd-shade-brick",
-  shadeL: "jp-gnd-shade-brick-dl",
-  shadeR: "jp-gnd-shade-brick-dr",
+  shade: "jp-gnd-shade-slab",
+  shadeL: "jp-gnd-shade-slab-dl",
+  shadeR: "jp-gnd-shade-slab-dr",
   lineN: "jp-gnd-asph-line-n",
   lineS: "jp-gnd-asph-line-s",
   zebra: "jp-gnd-zebra",
@@ -89,5 +106,6 @@ export function flavorFromText(text: string): JpStreetFlavor | undefined {
 /** 이 칩셋에 변형 키트가 모두 구워져 있는가 — 없으면 키트 줄이 빈 대지로 남으므로 변형을 쓰지 않는다. */
 export function flavorAvailable(tileset: Pick<TilesetDef, "structureKits"> | undefined, flavor: JpStreetFlavor): boolean {
   const ids = new Set((tileset?.structureKits ?? []).map((k) => k.id));
-  return FLAVOR_KITS[flavor].every((k) => ids.has(k.id));
+  const arcade = flavor === "shotengai" ? FLAVOR_ARCADE.widths.flatMap((w) => [arcadeRoofKit(w, false), arcadeRoofKit(w, true), arcadeGateKit(w)]) : [];
+  return [...FLAVOR_KITS[flavor].map((k) => k.id), ...arcade].every((id) => ids.has(id));
 }

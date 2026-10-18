@@ -29,7 +29,7 @@ function mulberry(seed: number): () => number {
 }
 
 const INFRA_AUTOTILES = ["jp-sidewalk-curb", "jp-lane-road", "jp-water-canal", "jp-water-pond", "jp-rail-track", "jp-lane-center", "jp-lane-dash", "jp-crosswalk-ew", "jp-crosswalk-ns", "jp-tactile"];
-const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water", "jp:shita-brick", "jp:shita-asphalt", "jp:shita-shade"];
+const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water", "jp:shita-slab", "jp:shita-asphalt", "jp:shita-shade"];
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];
 /** 길·물의 일부인 키트(하천 석축·둑·다리·노면 표시·발 그림자…) — 소품이 아니다. 측정기(scripts/qa/jpLotEmptiness.mts)와 같은 목록: 이걸 소품으로 세면 강가 대지가 「채워졌다」고 보고 일찍 멈춘다(2026-10-14 실측 내부 7% · 측정 16%). */
 const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform|gnd-)/;
@@ -71,6 +71,8 @@ export function fillLotUses(opts: {
   readonly buildings?: readonly Rect[];
   readonly view: () => LotUseView;
   readonly call: Call;
+  /** 시타마치·쇼텐가이 변형: 생울타리로 두르는 쓰임(놀이터·텃밭)을 고르지 않는다 — 초록 띠 금지(2026-10-18 사용자). */
+  readonly noGreen?: boolean;
 }): LotUseResult {
   const { mapId, call } = opts;
   const { map, tileset } = opts.view();
@@ -447,6 +449,7 @@ export function fillLotUses(opts: {
       if (sd && r.w >= 8 && r.h >= 5) order.push("construction");
       if (!fr && r.w >= 6 && r.h >= 4) order.push("veg");
     }
+    if (opts.noGreen) for (let i = order.length - 1; i >= 0; i--) if (order[i] === "park" || order[i] === "veg") order.splice(i, 1);
     order.push("yard");
     if (fr) order.push("nook");
     order.push("strip");

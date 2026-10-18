@@ -32,7 +32,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     properties: {
       mapId: { type: "string", description: "대상 맵 id(생략하면 지금 보는 맵). 칩셋이 jp_city 여야 한다" },
       seed: { type: "integer", minimum: 0, description: "거리 씨앗 — 다른 값이면 다른 거리. 생략하면 0" },
-      style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai"], description: "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·테라코타 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
+      style: { type: "string", enum: ["shopping", "residential", "shitamachi", "shotengai"], description: "shopping 상가 · residential 주택가 · shitamachi 시타마치 골목(청과 가게·벽돌 술집·자판기 골목·옥상 안테나·골목 계단·콘크리트 판석 보도) · shotengai 쇼텐가이 아케이드 상가(붉은 차양 아케이드·大門通 아치·코인 주차·변압기 전신주)" },
       shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
       lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },

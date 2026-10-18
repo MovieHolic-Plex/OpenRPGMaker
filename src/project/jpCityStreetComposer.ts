@@ -13,7 +13,7 @@
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap } from "@/project/types";
 import { EDGE_MATERIAL_AUTOTILE, fillLotUses, stampEdgeRect, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
-import { FLAVOR_BUS_STOP, FLAVOR_KITS, FLAVOR_KO, FLAVOR_POLE, FLAVOR_POSTBOX, FLAVOR_ROAD, FLAVOR_ROOF_ROWS, FLAVOR_ROOFS, FLAVOR_SIDEWALK, flavorFromText, flavorRoofKit, GND, type JpStreetFlavor } from "@/project/jpShitamachiStreet";
+import { arcadeGateKit, arcadeRoofKit, FLAVOR_ARCADE, FLAVOR_BUS_STOP, FLAVOR_HOKORA, FLAVOR_KITS, FLAVOR_KO, FLAVOR_POLE, FLAVOR_POSTBOX, FLAVOR_ROAD, FLAVOR_ROOF_ROWS, FLAVOR_ROOFS, FLAVOR_SIDEWALK, flavorFromText, flavorRoofKit, GND, type JpStreetFlavor } from "@/project/jpShitamachiStreet";
 
 /** shopping·residential = 기본 상가·주택가. shitamachi·shotengai = 상가 거리 위에 시타마치 골목·쇼텐가이 키트와 따뜻한 바닥을 얹은 변형. */
 export type JpStreetStyle = "shopping" | "residential" | JpStreetFlavor;
@@ -129,7 +129,7 @@ const PROP_SIZE: Readonly<Record<string, readonly [number, number]>> = {
   "jp-prop-curve-mirror": [1, 3], "jp-prop-garbage-net": [2, 1], "jp-prop-lamp-post": [1, 4], "jp-prop-lantern-post": [1, 3], "jp-prop-planter": [2, 1], "jp-prop-post-box": [1, 2],
   "jp-prop-pot": [1, 2], "jp-prop-stone-lantern": [1, 2], "jp-prop-utility-pole2": [2, 5], "jp-prop-vending-aka": [2, 2], "jp-prop-vending-midori": [2, 2], "jp-prop-vending-sora": [2, 2],
   "jp-prop-blade-sign-0": [1, 3], "jp-prop-blade-sign-1": [1, 3], "jp-prop-street-flag": [1, 3], "jp-prop-bike-cluster": [3, 1], "jp-prop-cat-sit": [1, 1], "jp-prop-cat-loaf": [1, 1], "jp-prop-neon-stack-0": [2, 8], "jp-prop-neon-stack-1": [2, 10], "jp-prop-neon-stack-2": [2, 6], "jp-prop-led-tower-0": [3, 8], "jp-prop-smoking-area": [2, 2], "jp-prop-vend-pair": [3, 2],
-  "jp-prop-nobori-aka": [1, 2], "jp-prop-nobori-sora": [1, 2], "jp-prop-nobori-midori": [1, 2],
+  "jp-prop-nobori-aka": [1, 2], "jp-prop-nobori-sora": [1, 2], "jp-prop-nobori-midori": [1, 2], "jp-hokora-jizo": [2, 2],
   "jp-prop-tree-zelkova": [4, 6], "jp-prop-tree-ginkgo": [4, 6], "jp-prop-tree-sakura": [4, 6], "jp-road-signal-ped": [1, 2], "jp-road-signal-ped-green": [1, 2],
 };
 
@@ -328,7 +328,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (style !== "residential") {
         const nf = bands[bands.indexOf(b) + 1]?.foot ?? H - 3;
         fill(0, rv.prom0 + 2, W, Math.max(0, nf - rv.prom0 - 1), "판석 광장");
-        if (riverPark) {                                       // 강변 공원: 잔디밭 + 산책로에서 건물 띠로 내려가는 판석 길
+        if (riverPark && !flavor) {                            // 강변 공원: 잔디밭 + 산책로에서 건물 띠로 내려가는 판석 길(변형 거리는 판석 그대로 — 초록 띠 금지)
           fill(0, riverPark.y0, W, riverPark.y1 - riverPark.y0 + 1, "잔디");
           for (let px = 6 + Math.floor(rng() * 6); px < W - 3; px += 12 + Math.floor(rng() * 6)) fill(px, riverPark.y0, 2, riverPark.y1 - riverPark.y0 + 1, "판석 광장");
         }
@@ -340,7 +340,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   }
   fill(0, H - 2, W, 2, "보도 연석");
-  // 변형 바닥: 기본 재료를 깐 뒤 그 위를 테라코타 벽돌 보도·따뜻한 아스팔트로 다시 깐다(optional — 굽지 않은 칩셋이면 기본 바닥이 남는다).
+  // 변형 바닥: 기본 재료를 깐 뒤 그 위를 콘크리트 판석 보도·따뜻한 아스팔트로 다시 깐다(optional — 굽지 않은 칩셋이면 기본 바닥이 남는다).
   if (flavor) {
     for (const b of bands) if (b.gap && !b.gap.river) {
       fill(0, b.gap.sw1, W, 2, FLAVOR_SIDEWALK, true);
@@ -351,7 +351,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   }
 
   // 세로 길: 0~2 개. 폭 2~3 + 양옆 보도 1칸. 전 구간을 지나거나(사거리) 일부 띠에서만 큰길에 붙는다(T자). 서로 14칸 이상 떨어뜨린다.
-  interface VStreet { x: number; lane: number; w: number; from: number; to: number }
+  /** arcade: 쇼텐가이 보행자 시장 길(차로 대신 비 가림 아케이드 지붕 + 어귀 간판 아치). 하천을 건너는 길은 다리가 필요해 그대로 둔다. */
+  interface VStreet { x: number; lane: number; w: number; from: number; to: number; arcade?: boolean }
   const streets: VStreet[] = [];
   const want = W < 40 ? (rng() < 0.7 ? 1 : 0) : rng() < 0.08 ? 0 : rng() < 0.45 ? 1 : 2;
   for (let t = 0; t < want * 6 && streets.length < want; t++) {
@@ -368,15 +369,22 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     if (streets[0]) streets[0] = { ...streets[0]!, lane: 3, w: 5, from: 0, to: N - 1 };
     else { const lane = 3; streets.push({ x: 6 + Math.floor(rng() * Math.max(1, W - 14 - lane)), lane, w: lane + 2, from: 0, to: N - 1 }); }
   }
+  // 2026-10-18 사용자 반려 「대문통 이거 맞냐? 손님들 비 맞는 거 방지하는 그런거잖아」: 쇼텐가이의 세로 길은 차가 다니는 길이 아니라 지붕 덮인 시장 길이다.
+  if (flavor === "shotengai") for (const s2 of streets) s2.arcade = FLAVOR_ARCADE.widths.includes(s2.w) && !(riverGap >= 0 && s2.from <= riverGap && s2.to > riverGap);
   const inStreet = (x: number, k?: number) => streets.some((s2) => x >= s2.x - 1 && x <= s2.x + s2.w && (k === undefined || (k >= s2.from && k <= s2.to)));
-  const vSegs: { s: VStreet; y0: number; y1: number }[] = [];
+  const vSegs: { s: VStreet; y0: number; y1: number; k: number }[] = [];
   for (const s2 of streets) {
     let segStart = s2.from === 0 ? 0 : bands[s2.from - 1]!.gap!.end - (bands[s2.from - 1]!.gap!.river ? 1 : 1);
     for (let k = s2.from; k <= s2.to; k++) {
       const crossRiver = k < s2.to && bands[k]!.gap!.river !== undefined;
       if (crossRiver) continue;                                      // 하천을 건너 다음 띠까지 한 번에 깐다(다리)
       const y1 = k === s2.to ? (k === N - 1 ? H - 1 : bands[k]!.gap!.road0 - 1) : bands[k]!.gap!.road0 - 1;
-      vSegs.push({ s: s2, y0: segStart, y1 });
+      vSegs.push({ s: s2, y0: segStart, y1, k });
+      if (s2.arcade) {                                               // 시장 길: 판석 바닥(지붕 키트가 띠 구간을 타일 통로로 덮는다), 차로 표시 없음
+        fill(s2.x, segStart, s2.w, y1 - segStart + 1, FLAVOR_SIDEWALK, true);
+        if (k < N - 1) segStart = bands[k]!.gap!.end - 1;
+        continue;
+      }
       fill(s2.x, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
@@ -471,9 +479,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   });
   // 변형 노면(1칸 바닥 키트, 아래층): 연석(세로 길 모퉁이 포함)·路側帯 흰 선·맨홀·빗물받이·금 간 아스팔트·황토 벽돌 — 큰길 건널목과 세로 길 차로는 비운다.
   if (flavor) {
-    /** 띠 k 를 지나는 세로 길의 칸 쓰임: 왼쪽 보도 "e"(오른쪽이 길)·오른쪽 보도 "w"·차로 "lane". */
+    /** 띠 k 를 지나는 세로 길의 칸 쓰임: 왼쪽 보도 "e"(오른쪽이 길)·오른쪽 보도 "w"·차로 "lane". 아케이드 시장 길은 보도라 큰길 연석이 끊기지 않고 이어진다. */
     const streetCell = (x: number, k: number): "e" | "w" | "lane" | undefined => {
-      const s = streets.find((s2) => x >= s2.x && x < s2.x + s2.w && k >= s2.from && k <= s2.to);
+      const s = streets.find((s2) => !s2.arcade && x >= s2.x && x < s2.x + s2.w && k >= s2.from && k <= s2.to);
       return !s ? undefined : x === s.x ? "e" : x === s.x + s.w - 1 ? "w" : "lane";
     };
     const crossing = (x: number, road: number) => crossings.some((c) => c.road === road && x >= c.x && x < c.x + 6);
@@ -497,7 +505,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     });
     for (let x = 0; x < W; x++) if (!inStreet(x)) { brick(x, H - 2); brick(x, H - 1); }
     // 세로 길 양옆 보도의 연석(큰길에 닿는 모퉁이 줄은 위에서 찍었다).
-    for (const seg of vSegs) for (let y = seg.y0; y <= seg.y1; y++) {
+    for (const seg of vSegs) if (!seg.s.arcade) for (let y = seg.y0; y <= seg.y1; y++) {
       if (bands.some((bb) => bb.gap && !bb.gap.river && (y === bb.gap.sw1 + 1 || y === bb.gap.sw2))) continue;
       if (bands.some((bb) => bb.gap?.river && y >= bb.gap.sw1 && y <= bb.gap.end)) continue;
       stamp(GND.curbE, seg.s.x, y, "ground");
@@ -573,6 +581,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // 건물 사이 빈터(yard)는 구성이 다 정해진 뒤(가로등·전봇대 자리 확정 뒤)에 칠한다 — 기둥이 선 빈터는 잔디를 걷어 낸다(기둥 머리가 풀밭 위에 뜨던 문제).
   interface YardDesc { gx: number; gw: number; foot: number; top: number; paver: boolean; parking: boolean; car: string; tree: string; noLawn: boolean }
   const yardDescs: YardDesc[] = [];
+  // 변형(시타마치·쇼텐가이) 거리에는 초록 띠가 없다 — 2026-10-18 사용자 「초록색 띠 저거 뭐냐. 저거 제거해라」. 생울타리 대신 콘크리트 블록담, 잔디 앞마당 없음.
+  const hedge = flavor ? "블록담" : "생울타리";
   const yard = (gx: number, gw: number, foot: number, top: number, paver = false) => {
     const parking = gw >= 6 && rng() < 0.55;                     // (난수 사용 순서는 예전과 같다: 주차장이면 차, 아니고 나무가 설 만하면 나무)
     const car = parking ? pick(rng, carsYard) : carsYard[0]!;
@@ -589,18 +599,18 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         f(gx, foot - 3, gw, 1, "블록담");
         put(y.car, gx + Math.floor((gw - 5) / 2), foot - 2);
       } else if (y.paver) {                                     // 판석 광장 띠: 잔디 대신 광장 꾸밈(나무 + 벤치/화분/돌등롱) — 판석 위 풀 조각이 스티커처럼 붙던 문제
-        f(gx, foot, gw, 1, "생울타리");
+        f(gx, foot, gw, 1, hedge);
         if (gw >= 4 && foot - 6 >= top) put(y.tree, gx + Math.floor((gw - 4) / 2), foot - 5);
         if (gw >= 4) put(gx % 2 ? "jp-prop-bench" : "jp-prop-planter", gx + (gw >= 7 ? 1 : Math.floor((gw - 2) / 2)), foot - 1);
         if (gw >= 7) put("jp-prop-stone-lantern", gx + gw - 2, foot - 2);
-      } else if (gw >= 4 && foot - 6 >= top && !y.noLawn) {                        // 앞마당: 폭 4+ 이고 나무가 설 만한 빈터만 — 위는 블록담, 아래는 생울타리로 경계 지은 잔디 줄 + 가로수
+      } else if (gw >= 4 && foot - 6 >= top && !y.noLawn && !flavor) {             // 앞마당: 폭 4+ 이고 나무가 설 만한 빈터만 — 위는 블록담, 아래는 생울타리로 경계 지은 잔디 줄 + 가로수
         const rows = Math.min(4, foot - top);
         f(gx, Math.max(top, foot - 4), gw, rows, "잔디");
         if (foot - 5 >= top) f(gx, foot - 5, gw, 1, "블록담");
         f(gx, foot, gw, 1, "생울타리");
         put(y.tree, gx + Math.floor((gw - 4) / 2), foot - 5);
-      } else {                                                  // 좁은 틈·기둥 선 틈: 대지 자갈 그대로 + 생울타리 한 줄(잔디 조각을 남기지 않는다)
-        f(gx, foot, gw, 1, "생울타리");
+      } else {                                                  // 좁은 틈·기둥 선 틈·변형 거리: 대지 그대로 + 경계 한 줄(잔디 조각을 남기지 않는다)
+        f(gx, foot, gw, 1, hedge);
       }
     }
   };
@@ -661,7 +671,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         fill(sx, b.top, w, R, rear ? FLAVOR_ROAD : FLAVOR_SIDEWALK, true);   // 건물 뒤 땅: 뒷골목은 아스팔트, 큰길 남쪽 띠는 앞 보도 벽돌이 이어진다(회색 자갈 금지)
         if (rear) {
           const rearTop = rear.foot - (4 + 2 * rear.floors);
-          if (bi === 0 && rearTop > b.top) fill(sx, b.top, w, 1, "생울타리", true);   // 뒷줄 지붕 위 남는 한 줄: 지도 끝 생울타리
+          if (bi === 0 && rearTop > b.top) fill(sx, b.top, w, 1, hedge, true);   // 뒷줄 지붕 위 남는 한 줄: 지도 끝 담
           rearRow(sx, ex, b.top, rear.foot, rear.floors);
         }
       }
@@ -738,7 +748,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   });
   // 맨 위 가장자리 생울타리 — 첫 띠 뒤가 지도 끝까지 열려 보이지 않게(세로 길 어귀는 비운다). 뒷줄 집이 선 변형은 집 지붕이 지도 끝이다.
-  if (!rearAny) for (const [sx, ex] of segmentsAround(W, streets.filter((s) => s.from === 0))) fill(sx, 0, ex - sx, 1, "생울타리", true);
+  if (!rearAny) for (const [sx, ex] of segmentsAround(W, streets.filter((s) => s.from === 0))) fill(sx, 0, ex - sx, 1, hedge, true);
   const yardAt = steps.length;                                  // 빈터 칠은 기둥 자리가 정해진 뒤에 이 자리로 끼워 넣는다
   steps.push(...buildSteps, ...alleySteps);
 
@@ -863,7 +873,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (wireOk[i]) wireSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${nx! - (x + 2) + 3}`, mapId, x: x + 2, y: b.foot + 2 - 4 }, optional: true, note: "prop" });
     });
     poleXsByBand.push(poleXs);
-    for (const s of streets) if (bi >= s.from && bi <= s.to) stamp("jp-prop-curve-mirror", s.x + s.w, b.foot + 2 - 2);
+    for (const s of streets) if (!s.arcade && bi >= s.from && bi <= s.to) stamp("jp-prop-curve-mirror", s.x + s.w, b.foot + 2 - 2);
     const busStop = flavor ? FLAVOR_BUS_STOP.id : "jp-bus-stop";
     for (const id of bi === 0 ? [busStop, "jp-hydrant-sign"] : rng() < 0.4 ? [busStop] : []) {
       for (let t = 0; t < 12; t++) {
@@ -893,6 +903,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
     nearWall(b, 3, (x) => stamp("jp-prop-bike-cluster", x, b.foot + 1), 2);
     nearWall(b, 1, (x) => stamp(pick(rng, ["jp-prop-cat-sit", "jp-prop-cat-loaf"]), x, b.foot + 1), 1);
+    if (flavor === "shitamachi") nearWall(b, FLAVOR_HOKORA.w, (x) => stamp(FLAVOR_HOKORA.id, x, b.foot + 2 - FLAVOR_HOKORA.h), 1);   // 골목 어귀 지장보살 감실
   });
   for (const b of placed) {
     if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) {
@@ -933,6 +944,20 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       claimed.push(r);
     }
     propRectsOut.push(...claimed);
+  }
+  // 쇼텐가이 아케이드: 시장 길 구간마다 큰길 쪽 끝(남쪽, 보는 쪽)에 간판 아치, 북쪽이 큰길에 닿으면 그쪽 어귀에도 아치, 사이는 지붕 줄(세 줄마다 철 아치).
+  // 소품 겹침 정리 뒤에 찍어 지붕이 소품·건물 위에 얹힌다(아래층 바닥은 판석 그대로).
+  for (const seg of vSegs) {
+    if (!seg.s.arcade) continue;
+    const { x, w } = seg.s;
+    const G = FLAVOR_ARCADE.gateRows;
+    // 지도 끝(위 y0=0 · 아래 y1=H-1)은 큰길이 아니라 어귀 아치를 세우지 않고 지붕을 끝까지 잇는다.
+    const southGate = seg.y1 < H - 1 ? seg.y1 - G + 1 : -1, northGate = seg.y0 > 0 ? seg.y0 : -1;
+    const top = northGate >= 0 ? northGate + G : seg.y0, bottom = southGate >= 0 ? southGate - 1 : seg.y1;
+    if (bottom - top + 1 < 2) continue;
+    for (let y = top; y <= bottom; y++) stamp(arcadeRoofKit(w, (y - top) % FLAVOR_ARCADE.ribEvery === 1), x, y, "arcade");
+    if (northGate >= 0) stamp(arcadeGateKit(w), x, northGate, "arcade");
+    if (southGate >= 0) stamp(arcadeGateKit(w), x, southGate, "arcade");
   }
   const zoneNames: Record<JpBlockZone, string> = { shop: "상가", house: "주택", park: "공원", parking: "주차장" };
   return {
@@ -1056,7 +1081,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       ...buildings.filter((b) => b.rect).map((b) => ({ x: b.rect!.x0, y: b.rect!.y0, w: b.rect!.w, h: b.rect!.h })),
       ...plan.buildings.filter((b) => b.role === "landmark" && b.h).map((b) => ({ x: b.x, y: b.foot - b.h! + 1, w: b.w, h: b.h! })),
     ];
-    const lot = fillLotUses({ mapId: plan.mapId, seed: plan.seed, style: plan.style === "residential" ? "residential" : "shopping", buildings: rects, view, call: (tool, args) => call(tool, args) });
+    const lot = fillLotUses({ mapId: plan.mapId, seed: plan.seed, style: plan.style === "residential" ? "residential" : "shopping", noGreen: plan.style === "shitamachi" || plan.style === "shotengai", buildings: rects, view, call: (tool, args) => call(tool, args) });
     props += lot.props; lotUses = lot.uses;
     if (nodeEnvFlag("LOTDBG")) console.error("[lot-use]", (lot.emptyBefore * 100).toFixed(1), "→", (lot.emptyAfter * 100).toFixed(1), lot.uses.map((u) => `${u.use}@${u.x},${u.y} ${u.w}x${u.h}`).join(" "));
   }
