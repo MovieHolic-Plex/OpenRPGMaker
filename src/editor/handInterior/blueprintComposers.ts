@@ -854,13 +854,15 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
     `팔레트 ${mood} · 층고 ${rowsY1 - 2}줄`,
   ];
 
-  // ── 아트리움: 북벽 에스컬레이터 둘 + 엘리베이터, 가운데 분수 원형 광장, 정문 융단, 양옆 명품 아일랜드 열.
+  // ── 아트리움: 북벽 에스컬레이터 상행·하행 한 쌍(같은 문틀, 나란히 한 군데 — 2026-10-18 VQA: 양 끝에 따로 떨어진 측면 에스컬레이터는 어색했다) + 엘리베이터,
+  //    가운데 분수 원형 광장, 정문 융단, 양옆 명품 아일랜드 열.
   const h = s.floorOf("hall");
-  // 엘리베이터는 벽면을 쓰므로 걸이보다 먼저 세운다(걸이가 먼저 벽면을 잡으면 엘리베이터가 빠진다 — VQA 6회차).
-  s.put("mci-elevator", cx - 1, h.y0, true);
+  const escX = fashionWest ? h.x1 - 5 : h.x0;
+  s.put("escalator-pair-up", escX, h.y0, true);
+  s.put("escalator-pair-down", escX + 3, h.y0, true);
+  // 엘리베이터는 벽면을 쓰므로 걸이보다 먼저 세운다(걸이가 먼저 벽면을 잡으면 엘리베이터가 빠진다 — VQA 6회차). 가운데가 에스컬레이터 문틀과 겹치면 반대쪽 끝으로.
+  if (!s.put("mci-elevator", cx - 1, h.y0, true)) s.put("mci-elevator", fashionWest ? h.x0 : h.x1 - 1, h.y0, true);
   hangRhythm(s, h, ["mci-art-frame", "mci-route-map", "mci-art-frame", "mci-wall-clock"], 4, 3);
-  s.put("escalator-side-up-east", h.x0, h.y0, true);
-  s.put("escalator-side-down-west", h.x1 - 3, h.y0, true);
   s.put("mci-plant-tall", cx - 2, h.y0); s.put("mci-plant-tall", cx + 1, h.y0);
   s.keepRect(h.x0, h.y0 + 1, h.x1, h.y0 + 1);
   const fy = h.y0 + Math.max(4, Math.floor((h.y1 - h.y0) / 2) - 1);
@@ -875,7 +877,7 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
     for (let y = h.y0 + 3; y + 1 < fy - 1; y += 3) s.put("dept-luxury-island", x0, y);
     let y = fy + 3;
     if (s.put("dept-glass-showcase", x0, y)) y += 2;
-    if (side < 0) { if (s.put("stairs-down-well", x0, y)) y += 3; } else if (s.put("mci-wait-bench", x0, y)) y += 2;
+    if (side < 0 && s.put("lounge-sofa-cream", x0, y)) y += 2; else if (s.put("mci-wait-bench", x0, y)) y += 2;
     if (y < h.y1) s.put("mci-planter", x0 + (side < 0 ? 0 : 1), y);
   }
   s.put("dept-directory-kiosk", cx - 2, h.y1 - 1); s.put("dept-directory-kiosk", cx + 2, h.y1 - 1);
