@@ -16,7 +16,7 @@
 // 수명: 모듈 싱글턴이다. 스튜디오 모드에서 장면을 추가하면 채팅 패널이 통째로 다시 만들어진다
 // (aiLaneSession.ts 와 같은 실측). 패널이 대기열을 소유하면 그 순간 돌던 주문이 사라진다.
 // 패널은 구독해서 그리기만 하고, 결과 줄은 takeUnreported() 로 한 번만 가져간다.
-import type { StampRunInput, StampRunResult, StampRunSelection } from "@/editor/stampPlaceRunner";
+import type { FastPathRejectCode, StampRunInput, StampRunResult, StampRunSelection } from "@/editor/stampPlaceRunner";
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 
 /** 동시에 도는 주문 상한. 공급자 동시 호출 한도를 넘지 않게 작게 둔다. */
@@ -56,6 +56,8 @@ export interface StampOrder {
   applied: number;
   /** 칩셋에 그림이 없어 깔지 않은 물건 수 — 헤드라인이 「실패」가 아니라 「깔지 않음」으로 읽게 한다. */
   refused: number;
+  code?: FastPathRejectCode;
+  handoffPrompt?: string;
   reported: boolean;
 }
 
@@ -224,7 +226,15 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     if (!signal.aborted && deps.projectKey() !== order.projectKey) controllers.get(order.id)?.abort();
   };
 
-  const finish = (order: StampOrder, status: StampOrderStatus, lines: readonly string[], applied: number, refused = 0): void => {
+  const finish = (
+    order: StampOrder,
+    status: StampOrderStatus,
+    lines: readonly string[],
+    applied: number,
+    refused = 0,
+    code?: FastPathRejectCode,
+    handoffPrompt?: string,
+  ): void => {
     controllers.delete(order.id);
     order.status = status;
     claims.get(order.id)?.();
@@ -235,6 +245,8 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     order.lines = lines;
     order.applied = applied;
     order.refused = refused;
+    if (code) order.code = code;
+    if (handoffPrompt) order.handoffPrompt = handoffPrompt;
     trim();
     emit();
     pump();
@@ -272,7 +284,15 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
       (result) => {
         if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }
         const aborted = controller.signal.aborted;
-        finish(order, aborted && result.applied === 0 ? "aborted" : result.ok ? "done" : "failed", result.lines, result.applied, result.refused ?? 0);
+        finish(
+          order,
+          aborted && result.applied === 0 ? "aborted" : result.ok ? "done" : "failed",
+          result.lines,
+          result.applied,
+          result.refused ?? 0,
+          result.code,
+          result.handoffPrompt,
+        );
       },
       (cause: unknown) => {
         if (disposed) { claims.get(order.id)?.(); claims.delete(order.id); return; }

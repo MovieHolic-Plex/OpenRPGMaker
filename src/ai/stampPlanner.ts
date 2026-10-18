@@ -40,8 +40,10 @@ export type StampTool =
   | "place_dungeon_room"
   | "paint_tiles"
   | "set_street_traffic"
-  | "compose_scene";
-
+  | "compose_scene"
+  | "erase_object"
+  | "move_object"
+  | "move_region";
 export const STAMP_TOOLS: readonly StampTool[] = [
   "fill_region",
   "place_props",
@@ -67,7 +69,44 @@ export const STAMP_TOOLS: readonly StampTool[] = [
   "place_dungeon_room",
   "set_street_traffic",
   "compose_scene",
+  "erase_object",
+  "move_object",
+  "move_region",
 ];
+
+export type FastPathCommandTier =
+  | "SPATIAL_DIRECT_OP"
+  | "QUEST_OR_NARRATIVE_REJECTED"
+  | "SCENE_COMPOSITION_OP";
+
+export type FastPathSpatialOpKind = "place" | "erase" | "move";
+
+export type FastPathRejectCode = "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT";
+
+export const FAST_PATH_QUEST_OR_EVENT_GUIDANCE =
+  "「퀘스트·이벤트·대화 만들기」는 타일만 찍는 『바로 깔기』로 처리할 수 없습니다. 일반 AI 조수 모드(『퀘스트/이벤트 제작』)로 전환해 실행해 주세요.";
+
+export interface FastPathCommandClassification {
+  readonly tier: FastPathCommandTier;
+  readonly allowed: boolean;
+  readonly op?: FastPathSpatialOpKind;
+  readonly code?: FastPathRejectCode;
+  readonly matchedCategory?: string;
+  readonly guidance?: string;
+}
+
+export interface PlacedMapObjectSummary {
+  readonly id: string;
+  readonly kind: "structure" | "kit" | "prop_cluster" | "event";
+  readonly name: string;
+  readonly coreName: string;
+  readonly kitId?: string;
+  readonly placementId?: string;
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+}
 
 /** 한 번에 받을 단계 상한. 바로 깔기는 한 문장이라 이보다 많으면 모델이 쪼개기에 빠진 것이다. */
 export const STAMP_MAX_STEPS = 8;
@@ -155,6 +194,8 @@ export interface StampPlanFacts {
   readonly isGrassOrSoilCell?: (x: number, y: number) => boolean;
   /** 이 칩셋의 장면 구성기 메뉴(마을·거리·던전·실내 한 장을 통째로). 비면 compose_scene 을 거절한다. */
   readonly scenes?: readonly StampSceneOption[];
+  /** 현재 맵에 이미 배치된 물체·건물·나무 요약(지우기·옮기기 대조용). */
+  readonly placedObjects?: readonly PlacedMapObjectSummary[];
 }
 
 export const STAMP_PLANNER_SYSTEM_PROMPT = [
@@ -205,7 +246,10 @@ export const STAMP_PLANNER_SYSTEM_PROMPT = [
   "set_street_traffic {density?:\"sparse\"|\"normal\"|\"busy\", includeTurns?:boolean, includeBus?:boolean, clear?:boolean}",
   "move_event {eventId, at:{x,y}}",
   "remove_event {eventId}",
+  "erase_object {query:\"나무\", region?:\"오른쪽 위\", rect?:{x,y,w,h}}  (when the user asks to erase/remove/clear a placed object, tree, fountain, well, fence or house)",
+  "move_object {query:\"우물\", toRegion?:\"광장 한가운데\", fromRegion?:string, to?:{x,y}, dx?:int, dy?:int}  (when the user asks to move/relocate/shift an object or house, e.g. \"우물을 광장 한가운데로 옮겨줘\", \"집을 오른쪽으로 4칸 옮겨줘\")",
   "compose_scene {scene, style?:string, program?:string, shops?:[string], seed?:int}  (omit seed unless the user names one — code picks a new seed every run so the same sentence gives a different layout)",
+  "- QUEST / DIALOGUE / STORY / BOSS EVENT / PUZZLE / PARTY RECRUIT / SHOP-INN WIRING GUARD: if the sentence asks for 퀘스트 만들기/세우기, 대화·스토리·컷신 짜기, 보스전·퍼즐·선택지 이벤트 만들기, 동료 영입/합류, or 상점·숙소 기능 배선, NEVER pretend to fulfill it with static props or dummy NPCs; return ONLY {\"reject\":\"FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT\"}.",
 ].join("\n");
 
 export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
@@ -221,6 +265,7 @@ export function buildStampPlannerUserPayload(facts: StampPlanFacts): string {
     houseLooks: facts.houseLooks ?? 0,
     ...(facts.scenes?.length ? { scenes: facts.scenes } : {}),
     ...(facts.objectSamples?.length ? { objectNames: facts.objectSamples } : {}),
+    ...(facts.placedObjects?.length ? { placedObjects: facts.placedObjects } : {}),
     ...(facts.placement ? { placement: placementForModel(facts.placement) } : {}),
   });
 }
@@ -360,6 +405,9 @@ const TOOL_KO: Record<StampTool, string> = {
   paint_tiles: "타일 칠하기",
   set_street_traffic: "주행 차량",
   compose_scene: "장면 구성",
+  erase_object: "물체 지우기",
+  move_object: "물체 옮기기",
+  move_region: "영역 옮기기",
 };
 
 /**
@@ -771,6 +819,66 @@ export function validateStampStep(raw: unknown, facts: StampPlanFacts): StampSte
       const at = clampPointToTarget(args.at, target);
       if (!at) return dropped("옮길 위치가 없습니다");
       return { step: { tool: stampTool, label: labelText ?? `${known.name} 옮기기`, args: { mapId, eventId, x: at.x, y: at.y } } };
+    }
+    case "erase_object": {
+      const query = stringArg(args.query) ?? stringArg(args.name) ?? stringArg(args.object) ?? stringArg(args.target) ?? extractEraseTargetNoun(facts.text);
+      const region = stringArg(args.region) ?? stringArg(args.where) ?? extractSpatialZonePhrase(facts.text);
+      if (!query && !rect) return dropped("지울 대상이 없습니다");
+      return {
+        step: {
+          tool: "erase_object",
+          label: labelText ?? `${region ? `${region} ` : ""}${query ?? "영역"} 지우기`,
+          args: {
+            mapId,
+            ...(query ? { query } : {}),
+            ...(region ? { region } : {}),
+            ...(rectRaw !== undefined && rect ? { rect } : {}),
+          },
+        },
+      };
+    }
+    case "move_object": {
+      const query = stringArg(args.query) ?? stringArg(args.name) ?? stringArg(args.object) ?? stringArg(args.target) ?? extractMoveTargetNoun(facts.text);
+      if (!query) return dropped("옮길 물체 이름이 없습니다");
+      const parsedShift = parseRelativeShift(facts.text);
+      const dx = finiteInt(args.dx) ?? parsedShift?.dx ?? null;
+      const dy = finiteInt(args.dy) ?? parsedShift?.dy ?? null;
+      const toRegion = stringArg(args.toRegion) ?? stringArg(args.where) ?? stringArg(args.destination) ?? extractMoveDestinationPhrase(facts.text);
+      const fromRegion = stringArg(args.fromRegion) ?? extractMoveSourcePhrase(facts.text);
+      const toPoint = args.to !== undefined ? clampPointToTarget(args.to, target) : args.at !== undefined ? clampPointToTarget(args.at, target) : null;
+      return {
+        step: {
+          tool: "move_object",
+          label: labelText ?? `${query} 옮기기`,
+          args: {
+            mapId,
+            query,
+            ...(toRegion ? { toRegion } : {}),
+            ...(fromRegion ? { fromRegion } : {}),
+            ...(dx !== null ? { dx } : {}),
+            ...(dy !== null ? { dy } : {}),
+            ...(toPoint ? { to: toPoint } : {}),
+          },
+        },
+      };
+    }
+    case "move_region": {
+      const fromRect = clampRectToTarget(args.from, { x: 0, y: 0, w: facts.mapWidth, h: facts.mapHeight });
+      const toPoint = clampPointToTarget(args.to, { x: 0, y: 0, w: facts.mapWidth, h: facts.mapHeight });
+      if (!fromRect || !toPoint) return dropped("옮길 영역(from/to)이 올바르지 않습니다");
+      const layers = enumArg(args.layers, ["all", "lower", "upper"] as const) ?? "upper";
+      return {
+        step: {
+          tool: "move_region",
+          label: labelText ?? "영역 옮기기",
+          args: {
+            from: { mapId, ...fromRect },
+            to: { mapId, ...toPoint },
+            layers,
+            ...(args.withEvents === true ? { withEvents: true } : {}),
+          },
+        },
+      };
     }
     case "paint_tiles":
       return dropped("내부 전용 도구입니다");
@@ -1280,18 +1388,171 @@ export function allowsPerson(text: string): boolean {
   return PERSON_WORDS.test(t) || VAGUE_WORDS.test(t);
 }
 
+export interface StampGuardRejection {
+  readonly code: FastPathRejectCode;
+  readonly matchedCategory: string;
+  readonly guidance: string;
+}
+
 export interface ParsedStampPlan {
   readonly steps: readonly StampStep[];
   /** 버린 단계와 이유(채팅에 한 줄로 남긴다). */
   readonly dropped: readonly string[];
   /** 칩셋에 그림이 없어 깔지 않은 물건(거절 사유와 가까운 이름). */
   readonly refused: readonly StampRefusal[];
+  /** 퀘스트·이벤트·대화 등 바로 깔기 금지 명령 가드. */
+  readonly guardRejected?: StampGuardRejection;
   /** JSON 을 읽지 못했을 때만. */
   readonly error?: string;
 }
 
+const TIER2_REJECTION_RULES: readonly { readonly category: string; readonly pattern: RegExp }[] = [
+  {
+    category: "퀘스트 만들기",
+    pattern: /퀘스트|서브\s*퀘스트|메인\s*퀘스트|\bquest\b|(?:의뢰|임무)\s*(?:를|을)?\s*(?:만들|세우|세워|짜|생성|추가|설계|넣)|(?:토벌|수집|심부름|배달|호위)\s*(?:의뢰|임무)/iu,
+  },
+  {
+    category: "대화·스토리 짜기",
+    pattern: /(?:스토리|시나리오|서사|내러티브)\s*(?:를|을)?\s*(?:짜|만들|세우|세워|구상|진행|넣|추가|작성|연출)|(?:대화|대사|대화문)\s*(?:를|을|도)?\s*(?:짜|만들|세우|세워|작성|설계|이벤트|분기|선택지)|(?:분기|선택지)\s*(?:대화|대사|스토리)|컷신|오프닝\s*(?:이벤트|컷신|연출|만들|짜)|엔딩\s*(?:이벤트|컷신|연출|만들|짜)|사건\s*(?:이벤트|연출|컷신)|\b(?:cutscene|storyline)\b/iu,
+  },
+  {
+    category: "보스전·퍼즐 이벤트 만들기",
+    pattern: /보스\s*(?:전|전투|이벤트|레이드|기믹|페이즈|등장)|(?:전투|배틀)\s*이벤트|퍼즐|수수께끼|선택지\s*(?:장치|기믹|이벤트|퍼즐)|(?:스위치|레버|비밀\s*통로|비밀\s*스위치|비밀\s*계단|암호|열쇠|봉인)\s*(?:기믹|퍼즐|이벤트|장치|해제)|기믹\s*(?:을|를)?\s*(?:만들|세우|세워|넣|짜|설계|추가)|\b(?:puzzle|gimmick|boss\s*fight|boss\s*event)\b/iu,
+  },
+  {
+    category: "동료 영입",
+    pattern: /동료\s*(?:를|을)?\s*(?:영입|합류|만들|추가|맞이)|파티\s*(?:합류|영입|가입|원\s*추가|에\s*들어오)|(?:영입|합류)\s*(?:이벤트|기믹|조건)|\b(?:party\s*recruit|recruit\s*event)\b/iu,
+  },
+  {
+    category: "상점·숙소 기능 배선",
+    pattern: /(?:상점|숙소|여관|무기점|방어구점|도구점|대장간|잡화점|시설|이벤트|스위치|변수|출입구|잠긴\s*문)[^\n,.!?]{0,14}배선|배선\s*(?:을|를)?\s*(?:해|하|만들|연결|짜)|(?:상점|숙소|여관)\s*(?:사고파는|숙박|회복|구매|판매)?\s*기능\s*(?:을|를)?\s*(?:만들|넣|배선|구현|연결)|(?:사고파는|숙박\s*회복|회복\s*캡슐|전직|조합|강화)\s*(?:기능|시스템|이벤트|기믹)/iu,
+  },
+];
+
+const MOVE_VERB_RE = /옮겨|옮기|이동해|이동시켜|밀어|당겨|자리\s*바꿔|위치\s*바꿔|재배치|\b(?:move|relocate|shift)\b/iu;
+const ERASE_VERB_RE = /지워|지우|없애|삭제|철거|허물|치워|치우|비워|제거|베어|뽑아|\b(?:erase|clear|remove|delete|demolish)\b/iu;
+
+export function classifyFastPathCommand(text: string): FastPathCommandClassification {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place" };
+  }
+  for (const rule of TIER2_REJECTION_RULES) {
+    if (rule.pattern.test(trimmed)) {
+      return {
+        tier: "QUEST_OR_NARRATIVE_REJECTED",
+        allowed: false,
+        code: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT",
+        matchedCategory: rule.category,
+        guidance: FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+      };
+    }
+  }
+  if (MOVE_VERB_RE.test(trimmed)) {
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "move" };
+  }
+  if (ERASE_VERB_RE.test(trimmed) && !/차|자동차|승용차|버스|택시|차량|주행|교통/u.test(trimmed)) {
+    return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "erase" };
+  }
+  return { tier: "SPATIAL_DIRECT_OP", allowed: true, op: "place" };
+}
+
+const SPATIAL_ZONE_PATTERNS: readonly { readonly phrase: string; readonly re: RegExp }[] = [
+  { phrase: "광장 한가운데", re: /광장\s*(?:한가운데|정중앙|가운데|중앙)/u },
+  { phrase: "광장", re: /광장/u },
+  { phrase: "오른쪽 위", re: /오른쪽\s*위|우측\s*상단|북동쪽?/u },
+  { phrase: "왼쪽 위", re: /왼쪽\s*위|좌측\s*상단|북서쪽?/u },
+  { phrase: "오른쪽 아래", re: /오른쪽\s*아래|우측\s*하단|남동쪽?/u },
+  { phrase: "왼쪽 아래", re: /왼쪽\s*아래|좌측\s*하단|남서쪽?/u },
+  { phrase: "한가운데", re: /한가운데|정중앙|가운데|중앙/u },
+  { phrase: "위쪽", re: /위쪽|윗쪽|상단|북쪽/u },
+  { phrase: "아래쪽", re: /아래쪽|하단|남쪽/u },
+  { phrase: "오른쪽", re: /오른쪽|우측|동쪽/u },
+  { phrase: "왼쪽", re: /왼쪽|좌측|서쪽/u },
+];
+
+export function extractSpatialZonePhrase(text: string): string | null {
+  for (const item of SPATIAL_ZONE_PATTERNS) {
+    if (item.re.test(text)) return item.phrase;
+  }
+  return null;
+}
+
+const KNOWN_SPATIAL_NOUN_RE =
+  /(분수대|분수|돌\s*우물|우물|소나무|벚나무|은행나무|느티나무|전나무|가로수|침엽수|활엽수|나무|숲|통나무집|단독주택|오두막|초가집|기와집|살림집|민가|주택|저택|여관|상점|대장간|편의점|카페|빌딩|건물|집|나무\s*벤치|벤치|의자|탁자|테이블|식탁|침대|화분|꽃밭|화단|꽃|덤불|관목|산울타리|울타리|펜스|담장|가로등|등불|횃불|모닥불|화로|바위|돌|동상|조각상|석상|기둥|돌기둥|제단|통|오크통|술통|나무\s*상자|보물상자|상자|우체통|자판기|신호등|표지판|간판|다리|돌다리|계단)/u;
+
+export function extractEraseTargetNoun(text: string): string | null {
+  const m = KNOWN_SPATIAL_NOUN_RE.exec(text);
+  return m?.[1]?.trim() ?? null;
+}
+
+export function extractMoveTargetNoun(text: string): string | null {
+  // "우물을 광장 한가운데로 옮겨줘", "집을 오른쪽으로 4칸 옮겨줘" → 목적격 조사 앞의 명사 우선
+  const beforeObj = /([가-힣a-zA-Z0-9\s]{1,18}?)(?:을|를)\s/u.exec(text);
+  if (beforeObj?.[1]) {
+    const m = KNOWN_SPATIAL_NOUN_RE.exec(beforeObj[1]);
+    if (m?.[1]) return m[1].trim();
+  }
+  const m = KNOWN_SPATIAL_NOUN_RE.exec(text);
+  return m?.[1]?.trim() ?? null;
+}
+
+export function parseRelativeShift(text: string): { readonly dx: number; readonly dy: number } | null {
+  let dx = 0;
+  let dy = 0;
+  let matched = false;
+  const right = /(?:오른쪽|우측|동쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
+  if (right?.[1]) { dx += Number(right[1]); matched = true; }
+  const left = /(?:왼쪽|좌측|서쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
+  if (left?.[1]) { dx -= Number(left[1]); matched = true; }
+  const down = /(?:아래쪽?|하단|남쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
+  if (down?.[1]) { dy += Number(down[1]); matched = true; }
+  const up = /(?:위쪽?|윗쪽|상단|북쪽)(?:으로|로)?\s*(\d+)\s*칸/u.exec(text);
+  if (up?.[1]) { dy -= Number(up[1]); matched = true; }
+  if (matched) return { dx, dy };
+  return null;
+}
+
+export function extractMoveDestinationPhrase(text: string): string | null {
+  if (parseRelativeShift(text)) return null;
+  const destMatch = /([가-힣\s]{1,18}?)(?:으로|로)\s*(?:옮겨|옮기|이동|미뤄|밀어|당겨|배치)/u.exec(text);
+  const candidate = destMatch?.[1]?.trim() ?? text;
+  return extractSpatialZonePhrase(candidate) ?? extractSpatialZonePhrase(text);
+}
+
+export function extractMoveSourcePhrase(text: string): string | null {
+  const beforeObj = /^(.+?)(?:을|를)\s/u.exec(text);
+  if (!beforeObj?.[1]) return null;
+  return extractSpatialZonePhrase(beforeObj[1]);
+}
+
 export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampPlan {
+  const preCheck = classifyFastPathCommand(facts.text);
+  if (!preCheck.allowed && preCheck.code === "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT") {
+    return {
+      steps: [],
+      dropped: [],
+      refused: [],
+      guardRejected: {
+        code: preCheck.code,
+        matchedCategory: preCheck.matchedCategory ?? "퀘스트·이벤트·대화 만들기",
+        guidance: preCheck.guidance ?? FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+      },
+    };
+  }
   const parsed = extractJsonObject(raw);
+  if (isRecord(parsed) && parsed.reject === "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT") {
+    return {
+      steps: [],
+      dropped: [],
+      refused: [],
+      guardRejected: {
+        code: "FAST_PATH_UNSUPPORTED_QUEST_OR_EVENT",
+        matchedCategory: stringArg(parsed.reason) ?? "퀘스트·이벤트·대화 만들기",
+        guidance: FAST_PATH_QUEST_OR_EVENT_GUIDANCE,
+      },
+    };
+  }
   const list = isRecord(parsed) && Array.isArray(parsed.steps)
     ? parsed.steps
     : Array.isArray(parsed) ? parsed : null;
@@ -1328,11 +1589,55 @@ export function parseStampPlan(raw: string, facts: StampPlanFacts): ParsedStampP
     return { steps: [sceneStep, ...companions], dropped, refused };
   }
   const afterHouses = houseInsteadOfWalls(steps, facts, dropped);
-  const finalSteps = dungeonInsteadOfWalls(afterHouses, facts);
+  const afterDungeon = dungeonInsteadOfWalls(afterHouses, facts);
+  const finalSteps = upgradeDirectSpatialOps(afterDungeon, facts, preCheck, dropped);
   if (finalSteps.length === 0 && dropped.length === 0 && refused.length === 0 && houseAsk && facts.houseLooks === 0) {
     dropped.push(`집: 이 타일셋(${facts.tilesetId ?? "현재 타일셋"})에는 집 외관이 없습니다(벽·문·바닥으로 흉내 내지 않음)`);
   }
   return { steps: finalSteps, dropped, refused };
+}
+
+function upgradeDirectSpatialOps(
+  steps: readonly StampStep[],
+  facts: StampPlanFacts,
+  classification: FastPathCommandClassification,
+  dropped: string[],
+): StampStep[] {
+  if (classification.op === "erase") {
+    if (steps.some((step) => step.tool === "erase_object" || step.tool === "remove_event" || step.tool === "set_street_traffic")) {
+      return [...steps];
+    }
+    const noun = extractEraseTargetNoun(facts.text);
+    const region = extractSpatialZonePhrase(facts.text);
+    // 문장이 특정 물체·나무·분수대·집을 지우라고 말했는데 모델이 맵 전체 tile_erase 나 빈 단계를 냈으면 erase_object 로 승격한다.
+    if (noun) {
+      const check = validateStampStep(
+        { tool: "erase_object", args: { query: noun, ...(region ? { region } : {}) }, label: `${region ? `${region} ` : ""}${noun} 지우기` },
+        facts,
+      );
+      if ("step" in check) {
+        dropped.length = 0;
+        return [check.step];
+      }
+    }
+  }
+  if (classification.op === "move") {
+    if (steps.some((step) => step.tool === "move_object" || step.tool === "move_event" || step.tool === "move_region")) {
+      return [...steps];
+    }
+    const noun = extractMoveTargetNoun(facts.text);
+    if (noun) {
+      const check = validateStampStep(
+        { tool: "move_object", args: { query: noun }, label: `${noun} 옮기기` },
+        facts,
+      );
+      if ("step" in check) {
+        dropped.length = 0;
+        return [check.step];
+      }
+    }
+  }
+  return [...steps];
 }
 
 /** 장면 구성 뒤에 같이 둘 수 있는 좌표 없는 단계. */
