@@ -165,22 +165,23 @@ export function createShitamachiFourthSeasonFlagshipDemo(): FlagshipDemoBuildRes
   });
 
   // 2) 8 Core Daily Routine Interior Venues (#2944)
+  // 통학 전철 객차는 jp_city 의 손 도트 견본(jp_station 의 train-car)을 그대로 쓴다 - 나머지는 modern_city 일상 견본.
   const interiorSpecs = [
-    { mapId: "map_venue_house", name: "하진의 자취방 · 아침", room: "mc_house", seed: 1 },
-    { mapId: "map_venue_train", name: "시타마치 통학 전철 객차", room: "mc_train_car", seed: 2 },
-    { mapId: "map_venue_school", name: "세이화 학원 교실 · 복도", room: "mc_school_building", seed: 3 },
-    { mapId: "map_venue_council", name: "학생회실 · 문화제 준비", room: "mc_council_room", seed: 4 },
-    { mapId: "map_venue_gym", name: "실내 체육관 · 농구 코트", room: "mc_gym", seed: 5 },
-    { mapId: "map_venue_rooftop", name: "학교 옥상 · 노을 전망대", room: "mc_rooftop", seed: 6 },
-    { mapId: "map_venue_bakery", name: "아케이드 베이커리 카페", room: "mc_bakery_cafe", seed: 7 },
-    { mapId: "map_venue_sento", name: "시타마치 대중목욕탕 · 센토", room: "mc_sento", seed: 8 },
+    { mapId: "map_venue_house", name: "하진의 자취방 · 아침", tileset: "modern_city", room: "mc_house", seed: 1 },
+    { mapId: "map_venue_train", name: "시타마치 통학 전철 객차", tileset: JP_CITY_ID, room: "train-car", seed: 1 },
+    { mapId: "map_venue_school", name: "세이화 학원 교실 · 복도", tileset: "modern_city", room: "mc_school_building", seed: 3 },
+    { mapId: "map_venue_council", name: "학생회실 · 문화제 준비", tileset: "modern_city", room: "mc_council_room", seed: 4 },
+    { mapId: "map_venue_gym", name: "실내 체육관 · 농구 코트", tileset: "modern_city", room: "mc_gym", seed: 5 },
+    { mapId: "map_venue_rooftop", name: "학교 옥상 · 노을 전망대", tileset: "modern_city", room: "mc_rooftop", seed: 6 },
+    { mapId: "map_venue_bakery", name: "아케이드 베이커리 카페", tileset: "modern_city", room: "mc_bakery_cafe", seed: 7 },
+    { mapId: "map_venue_sento", name: "시타마치 대중목욕탕 · 센토", tileset: "modern_city", room: "mc_sento", seed: 8 },
   ] as const;
 
   for (const v of interiorSpecs) {
     execTool(project, "build_hand_interior_room", {
       mapId: v.mapId,
       name: v.name,
-      tileset: "modern_city",
+      tileset: v.tileset,
       replace: true,
       layout: {
         program: v.room,
