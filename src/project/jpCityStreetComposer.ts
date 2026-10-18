@@ -13,7 +13,7 @@
 import { addMapLocation, COMPOSED_LAYOUT_TAG } from "@/project/mapNamedLocations";
 import type { GameMap } from "@/project/types";
 import { EDGE_MATERIAL_AUTOTILE, fillLotUses, stampEdgeRect, type LotUsePlaced, type LotUseView } from "@/project/jpCityLotUse";
-import { FLAVOR_BUS_STOP, FLAVOR_KITS, FLAVOR_KO, FLAVOR_POLE, FLAVOR_POSTBOX, FLAVOR_ROAD, FLAVOR_SIDEWALK, flavorFromText, GND, type JpStreetFlavor } from "@/project/jpShitamachiStreet";
+import { FLAVOR_BUS_STOP, FLAVOR_KITS, FLAVOR_KO, FLAVOR_POLE, FLAVOR_POSTBOX, FLAVOR_ROAD, FLAVOR_ROOF_ROWS, FLAVOR_ROOFS, FLAVOR_SIDEWALK, flavorFromText, flavorRoofKit, GND, type JpStreetFlavor } from "@/project/jpShitamachiStreet";
 
 /** shopping·residential = 기본 상가·주택가. shitamachi·shotengai = 상가 거리 위에 시타마치 골목·쇼텐가이 키트와 따뜻한 바닥을 얹은 변형. */
 export type JpStreetStyle = "shopping" | "residential" | JpStreetFlavor;
@@ -727,7 +727,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         // 같은 건물에 대한 후보 입력 12개(점점 단순) — 첫 성공을 쓴다(buildJpCityBuilding 이 거절하면 다음)
         let headTaken = false;
         for (let attempt = 0; attempt < 12; attempt++) {
-          const args = randomBuildingArgs(rng, bb.role, bb.w, attempt, fRows, side, headBudget > 0);
+          const args = randomBuildingArgs(rng, bb.role, bb.w, attempt, fRows, side, headBudget > 0 && !flavor);   // 변형은 깊은 지붕 키트가 맨 위를 덮으므로 옥상 간판을 달지 않는다
           if (canRear && attempt < 6) args.floors = Math.floor((fRows - 5) / 2);   // 뒷줄 띠: 앞줄 높이를 꼭 맞춰 골목 2줄 위가 바로 뒷줄 건물이 되게
           else if (flavor && attempt < 6) args.floors = Math.max(Number(args.floors), Math.min(Math.floor((fRows - 5) / 2), (LOOKS[bb.role] ?? LOOKS.shop!).floors[1]));   // 변형: 띠 높이를 채우는 쪽으로(건물 뒤 빈 땅을 줄인다)
           if (args.head) headTaken = true;
@@ -997,6 +997,29 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       call("stamp_object", { objectId: `kit:jp_city/${kit}`, mapId: plan.mapId, x: b.rect.x0, y: foot - 2 });
       props++;
     } catch (e) { if (nodeEnvFlag("SFDBG")) console.error("sf fail", kit, String((e as Error).message).slice(0, 200)); }
+  }
+  // 변형 깊은 지붕: 조립 건물(지붕 띠 1~2줄 + 맨 위층)을 3/4 지붕 키트 4줄(기와 비탈·함석·옥상 기물)로 덮는다 — 참고 그림처럼 집마다 지붕 윗면이 깊게 보이게.
+  // 1층(3줄)은 남겨야 하므로 키가 7줄 이상인 건물만. 같은 줄 이웃과 같은 지붕이 나란히 서지 않게 고른다.
+  if (plan.style === "shitamachi" || plan.style === "shotengai") {
+    const pool = FLAVOR_ROOFS[plan.style];
+    const rrng = mulberry((plan.seed ^ 0x3c6ef372) >>> 0);
+    const lastByFoot = new Map<number, string>();
+    for (const b of [...buildings].sort((p, q) => (p.rect?.x0 ?? 0) - (q.rect?.x0 ?? 0))) {
+      if (!b.rect || b.rect.h < FLAVOR_ROOF_ROWS + 3) continue;
+      const foot = b.rect.y0 + b.rect.h - 1;
+      const prev = lastByFoot.get(foot);
+      const choices = pool.filter((s) => s !== prev);
+      const style = choices[Math.floor(rrng() * choices.length)]!;
+      const kit = flavorRoofKit(style, b.rect.w);
+      if (!kit) continue;
+      const clear = Array.from({ length: FLAVOR_ROOF_ROWS }, () => Array.from({ length: b.rect!.w }, () => -2));
+      try {
+        call("stamp_layer_block", { mapId: plan.mapId, x: b.rect.x0, y: b.rect.y0, layers: { "3": clear, "4": clear }, reshape: false });
+        call("stamp_object", { objectId: `kit:jp_city/${kit}`, mapId: plan.mapId, x: b.rect.x0, y: b.rect.y0 });
+        lastByFoot.set(foot, style);
+        props++;
+      } catch (e) { if (nodeEnvFlag("SFDBG")) console.error("roof fail", kit, String((e as Error).message).slice(0, 200)); }
+    }
   }
   // 뒷담: 건물이 띠 꼭대기까지 닿지 않으면 지붕 위 한 줄에 블록담을 둘러 뒤가 허공처럼 비어 보이지 않게 한다(건물 뒤는 블록 안쪽 뒷마당).
   for (const b of buildings) {
