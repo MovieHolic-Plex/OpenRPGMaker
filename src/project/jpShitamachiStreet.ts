@@ -18,6 +18,7 @@ export const FLAVOR_KITS: Readonly<Record<JpStreetFlavor, readonly FlavorKit[]>>
     { id: "jp-fg-rooftop-dish", w: 6, h: 5 },
     { id: "jp-alley-stair-tree", w: 4, h: 5 },
     { id: "jp-fg-tiled-balcony", w: 6, h: 5 },
+    { id: "jp-coin-parking", w: 8, h: 6 },
   ],
   shotengai: [
     { id: "jp-shotengai-canopy", w: 8, h: 6 },
