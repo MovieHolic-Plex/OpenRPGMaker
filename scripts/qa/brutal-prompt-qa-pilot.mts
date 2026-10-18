@@ -970,7 +970,9 @@ export async function runLiveInGameBranch(
         followerCount: Number(s?.followerSprites?.size ?? 0),
         mapOverrideCount,
         dialogueVisible: Boolean(dlg && dlgRect && dlgRect.width > 0 && dlgRect.height > 0),
-        dialogueText: String(dlg?.textContent ?? "").replace(/\\s+/g, " ").trim(),
+        dialoguePageReady: Boolean(dlg?.classList.contains("page-ready")),
+        dialogueText: String((dlg?.querySelector(".body") ?? dlg)?.textContent ?? "").replace(/\\s+/g, " ").trim(),
+        eventRunning: Boolean(s?.running),
         missingResourceError: Boolean(missingEl),
         gameOverVisible: Boolean(document.querySelector('[data-testid="game-over-screen"]')),
       };
@@ -1010,10 +1012,13 @@ export async function runLiveInGameBranch(
   let walked = 16;
   const startPx = { x: Number(climaxState.playerPx ?? 0), y: Number(climaxState.playerPy ?? 0) };
   let idle = 0;
+  let typingTicks = 0;
   let gameOverSeen = Boolean(climaxState.gameOverVisible);
-  for (let step = 0; step < 90 && !gameOverSeen; step++) {
+  for (let step = 0; step < 120 && !gameOverSeen; step++) {
     const st = (await page.evaluate(sampleStateJs)) as any;
-    noteDialogue(st.dialogueText);
+    if (st.dialoguePageReady || !st.dialogueVisible) {
+      noteDialogue(st.dialogueText);
+    }
     for (const a of st.audioObserved ?? []) audioSeen.add(a);
     peak.shake = Math.max(peak.shake, st.shakeIntensity);
     peak.particles = Math.max(peak.particles, st.aliveParticles);
@@ -1032,11 +1037,15 @@ export async function runLiveInGameBranch(
     if (st.playerTint) peak.playerTint = st.playerTint;
     const sc = effectScore(st);
     const dist = Math.hypot(Number(st.playerPx) - startPx.x, Number(st.playerPy) - startPx.y);
-    if (options.walkPeak && !st.dialogueVisible && dist > walked) {
+    const hasActiveFx = Boolean(st.screenEffectVisible || st.weatherKind !== "none");
+    if (options.walkPeak && st.dialogueVisible && st.dialoguePageReady && st.dialogueText !== climaxState.dialogueText && sc >= bestScore) {
+      await page.screenshot({ path: options.screenshotPath });
+    }
+    if (options.walkPeak && !st.dialogueVisible && (st.eventRunning || st.letterboxPx > 0) && dist > walked && (hasActiveFx || walked <= 16)) {
       walked = dist;
       bestScore = Number.POSITIVE_INFINITY;
       if (options.peakScreenshotPath) await page.screenshot({ path: options.peakScreenshotPath });
-    } else if (sc > bestScore) {
+    } else if (sc > bestScore || (sc === bestScore && st.dialoguePageReady && bestScore < Number.POSITIVE_INFINITY)) {
       bestScore = sc;
       if (options.peakScreenshotPath) await page.screenshot({ path: options.peakScreenshotPath });
     }
@@ -1046,12 +1055,25 @@ export async function runLiveInGameBranch(
     }
     if (st.dialogueVisible) {
       idle = 0;
-      await page.evaluate(`(() => { window.__oprnInput?.action(); })()`);
-      await page.keyboard.press("Enter");
+      if (st.dialoguePageReady) {
+        typingTicks = 0;
+        await page.keyboard.press("Enter");
+      } else {
+        typingTicks++;
+        if (typingTicks >= 10) {
+          typingTicks = 0;
+          await page.keyboard.press("Enter");
+        }
+      }
     } else {
-      idle++;
-      // No dialogue and nothing new for ~3s: the event is over.
-      if (idle > 20) break;
+      typingTicks = 0;
+      if (st.eventRunning) {
+        idle = 0;
+      } else {
+        idle++;
+        // No dialogue and event interpreter is no longer running for ~2s: the event is over.
+        if (idle > 12) break;
+      }
     }
     await page.waitForTimeout(150);
   }

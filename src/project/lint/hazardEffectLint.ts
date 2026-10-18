@@ -90,15 +90,60 @@ export function lintHazardEffects(project: Project): LintIssue[] {
         add('hazard-collapse-missing-tile-change', `${event.id}: 붕괴를 말하지만 바뀌는 타일이 없어 다리가 온전히 보입니다. 사망 분기에서 build_scene_setting 결과 data.collapse.cells 를 changeTile{mapId,layer:"upper",x,y,tile} 로 적용하세요.`);
       }
       // 2026-10-18 jrpg_046(48점): 성검을 뽑는다고 말하는데 칼이 바위에 그대로였다.
-      if (/검|칼|sword/iu.test(lines) && /뽑|치켜|들어\s*올/u.test(lines) && !tileChanged) {
-        add('shrine-sword-not-pulled', `${event.id}: 검을 뽑는 장면인데 바위의 칼 칸이 그대로라 뽑힌 것이 보이지 않습니다. 섬광·흔들림·효과음·sparkle 과 함께 build_scene_setting 결과 data.swordPull.cells 를 changeTile 로 적용하고, 인물 jump{dx:0,dy:0} + «치켜들었다» 대사로 맺으세요.`);
+      const swordScene = /검|칼|sword/iu.test(lines) && /뽑|치켜|들어\s*올/u.test(lines);
+      if (swordScene && !tileChanged) {
+        add('shrine-sword-not-pulled', `${event.id}: 검을 뽑는 장면인데 바위의 칼 칸이 그대로라 뽑힌 것이 보이지 않습니다. 섬광·흔들림·효과음·sparkle 과 함께 build_scene_setting 결과 data.swordPull.cells 를 changeTile 로 적용하세요.`);
+      }
+      // 2026-10-18 jrpg_046(48점 «검을 치켜드는 동작 누락»): 칼을 바위에서 지우기만 하면(changeTile 1번) 칼이 사라질 뿐 인물이 든 모습이
+      // 없다. 캐릭터 도트에 검을 든 자세가 없으므로 칼 그림을 인물 머리 위 칸에 다시 찍어야(changeTile 2번째) 치켜든 것으로 읽힌다.
+      if (swordScene && /치켜|들어\s*올|높이/u.test(lines) && commands.filter((c) => c.kind === 'changeTile').length < 2) {
+        add('shrine-sword-not-raised', `${event.id}: «치켜들었다» 고 말하지만 칼이 바위에서 사라지기만 하고 인물 손에 보이지 않습니다. 인물을 정면(turn down)으로 돌리고 build_scene_setting 결과 data.swordPull.raise 를 changeTile 로 찍어 머리 위 칸에 칼을 솟게 한 뒤, sparkle + 금빛 색조 + 치켜드는 대사를 같은 순간에 두세요.`);
+      }
+      // 2026-10-18 jrpg_046(45점 «개구리 기사가 남쪽으로 이탈하고 검만 허공에 떠 있음»): NPC moveEvent 의 jump{dx:0,dy:0} 는 바라보는 방향으로
+      // 2칸 점프하므로 인물이 성검(data.swordPull.raise) 밑에서 벗어나 버린다.
+      if (
+        swordScene
+        && commands.some(
+          (c) =>
+            c.kind === 'moveEvent'
+            && c.eventId !== PLAYER_MOVE_TARGET
+            && c.route.moves.some((m) => m.kind === 'jump' || m.kind === 'move' || m.kind === 'stepForward'),
+        )
+      ) {
+        add('shrine-sword-actor-moved', `${event.id}: 성검을 뽑는 인물에 jump 나 move 를 쓰면 인물이 2칸 이동해 머리 위에 찍힌 성검(data.swordPull.raise) 밑에서 이탈합니다. 인물 이동은 {kind:"turn",dir:"right"} 와 {kind:"turn",dir:"down"} 방향 전환만 쓰고 제자리(fixed)에 유지하세요.`);
       }
       if (!commands.some(isDeath)) continue;
+      // 2026-10-18 jrpg_002(48점 «불길을 버텨내는 컷씬이 누락»): 조건 아이템·스위치 쪽이 있는데 생존 분기가 비었거나 대사가 없거나,
+      // 위험 입자·색조가 대사 전에 다 꺼져 대사 화면에 «버티는 모습» 이 안 남았다.
+      const conditionalPage = (event.pages ?? []).some((p) => p.conditions.some((c) => c.kind !== 'selfSwitch'));
+      const survivals = hazardous ? survivalBranches(event) : [];
+      if (hazardous && (conditionalPage || commands.some((c) => c.kind === 'fork')) && survivals.length === 0) {
+        add('hazard-survival-static', `${event.id}: ${hazard} 조건부 함정인데 생존(무사 통과) 분기가 없거나 비어 있습니다. 조건(아이템·스위치) 페이지 또는 분기에 같은 위험 색조·입자로 시작해 버팀 대사를 치고, moveActor{target:"player"} 로 ${MIN_SURVIVAL_STEPS}~5칸 걸어 건너는 컷씬을 넣으세요(build_scene_setting 결과 data.survivalWalk.moves).`);
+      }
+      for (const branch of survivals) {
+        const firstText = branch.findIndex((c) => c.kind === 'text');
+        const enduring = branch.some((c, i) => isParticle(c) && (Number(fieldsOf(c).durationMs ?? 0) >= 3000 || (firstText >= 0 && i > firstText)));
+        if (firstText >= 0 && !enduring) {
+          add('hazard-survival-static', `${event.id}: ${hazard} 생존 분기의 입자가 대사 전에 모두 꺼져, 대사 화면에는 위험을 «버티는» 모습이 없습니다. 첫 대사 직전에 particles(${family === 'poison' ? 'smoke' : 'fire'}, 인물 둘레 2곳, durationMs 4500 이상, wait:false) + particles{preset:"sparkle",target:"player",durationMs:4500}(보호막)를 다시 쏘고, 색조·안개는 주인공 걷기가 끝난 뒤에 푸세요.`);
+        }
+        // 걷는 도중에(moveEvent wait:false 뒤 m2-058-wait-for-all-movement 앞) 색조나 안개를 먼저 끄면 통과 장면에 위험·방어 효과가 사라진다.
+        const moveIdx = branch.findIndex((c) => c.kind === 'moveEvent' && c.eventId === PLAYER_MOVE_TARGET);
+        const waitMoveIdx = branch.findIndex((c, i) => i > moveIdx && commandIdOf(c) === 'm2-058-wait-for-all-movement');
+        const clearIdx = branch.findIndex(
+          (c, i) =>
+            i > moveIdx
+            && ((commandIdOf(c) === 'm2-046-tint-screen' && String(fieldsOf(c).value ?? '').trim() === '')
+              || (c.kind === 'setWeather' && c.weather === 'none')),
+        );
+        if (moveIdx >= 0 && waitMoveIdx > moveIdx && clearIdx > moveIdx && clearIdx < waitMoveIdx) {
+          add('hazard-survival-static', `${event.id}: ${hazard} 생존 분기에서 주인공 이동과 동시에(parallel 안에서) 색조·안개를 해제해 통과 장면에 위험·방어 효과가 사라집니다. moveActor{target:"player",moves:data.survivalWalk.moves,wait:true} 를 단독 비트로 먼저 실행해 다 건넌 뒤에 tint neutral 과 weather none 을 실행하세요.`);
+        }
+      }
       // 생존 분기 걷기는 색조 종류와 무관하다(다리 붕괴는 섬광·흔들림만 쓰기도 한다). 화면 효과가 없는 사망 이벤트(대화 끝 게임오버 등)는 함정이 아니다.
-      for (const branch of hazardous ? survivalBranches(event) : []) {
+      for (const branch of survivals) {
         const steps = playerSteps(branch);
         if (steps < MIN_SURVIVAL_STEPS) {
-          add('hazard-survival-static', `${event.id}: ${hazard} 생존(무사 통과) 분기에서 플레이어가 ${steps}칸만 움직여 제자리에 서 있는 것처럼 보입니다. moveActor{target:"player",moves:[…]}(이벤트 명령이면 moveEvent eventId:"${PLAYER_MOVE_TARGET}")로 이벤트 칸을 지나 ${MIN_SURVIVAL_STEPS}~5칸 걸어 위험 구역을 건너게 하고, 걷는 동안 색조를 되돌리고 weather none 으로 안개를 걷으세요. build_scene_setting 결과의 data.survivalWalk.moves 를 그대로 쓰면 막힌 칸이 없습니다.`);
+          add('hazard-survival-static', `${event.id}: ${hazard} 생존(무사 통과) 분기에서 플레이어가 ${steps}칸만 움직여 제자리에 서 있는 것처럼 보입니다. moveActor{target:"player",moves:[…],wait:true}(이벤트 명령이면 moveEvent eventId:"${PLAYER_MOVE_TARGET}")로 이벤트 칸을 지나 ${MIN_SURVIVAL_STEPS}~5칸 걸어 위험 구역을 먼저 다 건넌 뒤에 색조를 되돌리고 weather none 으로 안개를 걷으세요. build_scene_setting 결과의 data.survivalWalk.moves 를 그대로 쓰면 막힌 칸이 없습니다.`);
         }
       }
       if (!family) continue;

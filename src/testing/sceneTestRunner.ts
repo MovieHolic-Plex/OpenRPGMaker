@@ -1182,6 +1182,11 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
       state.log.push(`farm ${farm.kind}: ${map.id} (${farm.x},${farm.y})${farm.cropId ? ` ${farm.cropId}` : ""}`);
       return null;
     }
+    const touchHere = findRuntimeEventAtInMap(state.project, map, state.session, state.eventPositions, target.x, target.y, PLAYER_COLLISION_TRIGGER_KINDS);
+    if (touchHere) {
+      state.setupFailure = { kind: "no-interaction-target", stepIndex: state.stepIndex, mapId: map.id };
+      return `interact 는 trigger:"action" 이벤트 전용입니다: (${target.x},${target.y}) 의 '${touchHere.event.id}' 는 trigger:"${touchHere.trigger.kind}" 이므로 {kind:"move",dir:"${state.facing}"} 또는 {kind:"move",to:{x:${target.x},y:${target.y}}} 로 그 칸을 밟아야 발동합니다(trigger 를 action 으로 바꾸지 마세요).`;
+    }
   }
   state.setupFailure = { kind: "no-interaction-target", stepIndex: state.stepIndex, mapId: map.id };
   return `조사할 action 이벤트 없음: ${map.id} (${state.session.x},${state.session.y}) facing=${state.facing}`;
