@@ -238,8 +238,8 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:window-city", "m:wall-clock"],
         wall: ["home-sink-counter", "m:kitchen", "m:fridge", "home-appliance-rack"],
         at: [
-          ["m:chair-wood-e", 2, 5], ["home-dining-set", 3, 5], ["m:chair-wood-w", 5, 5],
-          ["m:chair-wood-e", 7, 5], ["home-dining-set", 8, 5], ["m:chair-wood-w", 10, 5],
+          ["m:chair-wood-e", 2, 4], ["home-dining-set", 3, 4], ["m:chair-wood-w", 5, 4],
+          ["m:chair-wood-e", 7, 7], ["home-dining-set", 8, 7], ["m:chair-wood-w", 10, 7],
         ],
       }),
     ] }),
@@ -328,6 +328,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["koban-wanted-board", "m:wall-clock", "m:whiteboard"],
         wall: ["m:filing", "m:shelf-office", "office-copier"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 3, 1, 4, 2, "s"]],
+        at: [["m:wait-bench", 1, 7], ["m:wait-bench", 8, 7]],
       }),
       R("po-cells", 10, 8, F.conc, W.metal, {
         hang: ["m:wall-clock"],
@@ -359,11 +360,13 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:wall-clock", "m:window-blind"],
         wall: ["pub-fire-locker", "pub-fire-locker", "m:wardrobe"],
         grid: [["m:bed-single", 1, 4, 3, 1, 3, 2]],
+        at: [["home-drying-rack", 1, 7], ["home-laundry-basket", 8, 7]],
       }),
       R("fs-office", 10, 8, F.carpet, W.office, {
         hang: ["m:whiteboard", "m:wall-clock"],
         wall: ["m:filing", "m:shelf-office", "m:coffee-station"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 2, 1, 5, 2, "s"]],
+        at: [["lounge-sofa-cream", 1, 7], ["m:coffee-table", 7, 7]],
       }),
       R("fs-garage", 32, 9, F.conc, W.metal, {
         openFloor: true,
@@ -390,6 +393,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:whiteboard", "m:wall-clock", "m:notice-board"],
         wall: ["m:filing", "m:shelf-office", "office-copier"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 3, 1, 4, 2, "s"]],
+        at: [["m:wait-bench", 1, 7], ["m:wait-bench", 8, 7]],
       }),
       R("ch-council", 12, 8, F.dark, W.office, {
         hang: ["court-emblem", "m:wall-clock"],
@@ -412,7 +416,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["hosp-number-display", "m:wall-clock", "hosp-number-display", "m:notice-board"],
         wall: ["m:filing", "m:shelf-office", "office-copier", "m:filing"],
         queue: [["pub-service-window", 3, 5, 3, "m:wait-bench", 7, 3]],
-        at: [["pub-ticket-dispenser", 1, 6]],
+        at: [["pub-ticket-dispenser", 17, 6]],
       }),
     ] }),
   facility({ cat: "공공시설", p: "mc_ward_office", map: "ward-office", ko: "구청", shape: "ㅗ자형", entrance: "wd-lobby",
@@ -422,12 +426,13 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:whiteboard", "m:wall-clock", "m:notice-board"],
         wall: ["m:filing", "m:shelf-office", "office-copier", "m:coffee-station"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 4, 1, 3, 2, "s"]],
+        at: [["m:wait-bench", 1, 7], ["m:wait-bench", 10, 7]],
       }),
       R("wd-welfare", 12, 9, F.stone, W.lobby, {
         hang: ["hosp-number-display", "m:notice-board", "m:wall-clock"],
         wall: ["m:filing", "m:shelf-office", "office-copier"],
         queue: [["pub-service-window", 1, 5, 2, "m:wait-bench", 7, 2]],
-        at: [["pub-ticket-dispenser", 10, 6]],
+        at: [["pub-ticket-dispenser", 11, 6]],
       }),
       R("wd-lobby", 12, 9, F.stone, W.lobby, {
         hang: ["m:wall-clock", "m:art-frame", "court-emblem"],
@@ -442,7 +447,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["hosp-number-display", "m:notice-board", "m:wall-clock"],
         wall: ["m:filing", "office-copier", "m:shelf-office"],
         queue: [["pub-service-window", 2, 5, 2, "m:wait-bench", 7, 2]],
-        at: [["pub-ticket-dispenser", 1, 6]],
+        at: [["pub-ticket-dispenser", 0, 6]],
       }),
     ] }),
   facility({ cat: "공공시설", p: "mc_post_office", map: "post-office", ko: "우체국", shape: "L자형", entrance: "pt-lobby",
@@ -457,7 +462,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:notice-board", "m:wall-clock", "m:art-frame"],
         at: [
           ["m:mailboxes", 1, 2], ["m:mailboxes", 3, 2], ["pub-atm", 10, 2], ["subway-vending-machine", 12, 2],
-          ["pub-ticket-dispenser", 13, 5], ["m:wait-bench", 1, 6], ["m:wait-bench", 10, 6],
+          ["pub-ticket-dispenser", 15, 5], ["m:wait-bench", 1, 6], ["m:wait-bench", 10, 6],
         ],
         pl: [0, 7],
       }),
@@ -473,16 +478,16 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       R("bk-vault", 10, 8, F.conc, W.metal, {
         hang: ["m:wall-clock"],
         wall: ["pub-vault-door", "m:filing", "m:filing"],
-        rows: [[5, ["m:pallet", "m:basket-stack", "m:pallet"]]],
+        at: [["m:rack", 0, 2], ["m:pallet", 1, 6], ["m:pallet", 7, 6]],
       }),
       R("bk-hall", 22, 9, F.stone, W.lobby, {
         hang: ["hosp-number-display", "m:wall-clock", "m:menu-board", "m:notice-board"],
         at: [
-          ["pub-atm", 1, 2], ["pub-atm", 3, 2], ["pub-atm", 5, 2], ["m:filing", 12, 2], ["m:shelf-office", 18, 2],
-          ["m:teller", 2, 4], ["m:teller", 5, 4], ["m:teller", 8, 4], ["m:teller", 13, 4],
-          ["pub-ticket-dispenser", 18, 5],
-          ["hosp-wait-row-n", 2, 6], ["hosp-wait-row-n", 6, 6], ["hosp-wait-row-n", 13, 6],
-          ["m:wait-bench", 2, 8], ["m:wait-bench", 14, 8],
+          ["m:filing", 2, 2], ["m:shelf-office", 6, 2], ["office-copier", 11, 2], ["pub-atm", 17, 2], ["pub-atm", 19, 2],
+          ["m:teller", 2, 4], ["m:teller", 5, 4], ["m:teller", 8, 4], ["m:teller", 11, 4], ["m:teller", 14, 4],
+          ["pub-ticket-dispenser", 21, 5],
+          ["hosp-wait-row-n", 3, 6], ["hosp-wait-row-n", 10, 6],
+          ["hosp-wait-row-n", 3, 8], ["hosp-wait-row-n", 10, 8],
         ],
         pl: [20, 8],
       }),
@@ -518,9 +523,10 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         at: [
           ["station-coin-lockers", 0, 2], ["m:elevator", 13, 2],
           ["m:bench-metal", 2, 3], ["m:bench-metal", 11, 3],
-          // 개찰구 차단선 (벽에서 벽까지 이어진 게이트 배리어, 중앙 통로 확보)
+          // 개찰구 차단선 (벽에서 벽까지 균일 간격 게이트 배리어, 중앙 통로 확보)
           ["m:ticket-gate", 0, 5], ["m:ticket-gate", 2, 5], ["m:ticket-gate", 4, 5],
           ["m:ticket-gate", 9, 5], ["m:ticket-gate", 11, 5], ["m:teller", 13, 5],
+          ["m:wait-bench", 2, 7], ["m:wait-bench", 11, 7],
         ],
       }),
       R("jr-shop", 12, 8, F.vinyl, W.store, {
@@ -541,6 +547,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:wall-clock", "m:notice-board"],
         wall: ["m:filing", "m:shelf-office", "m:coffee-station"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 2, 1, 5, 2, "s"]],
+        at: [["m:wait-bench", 1, 7], ["m:wait-bench", 6, 7]],
       }),
       R("bs-hall", 36, 8, F.tile, W.tile, {
         hang: ["station-name-sign", "m:route-map", "station-timetable", "tr-flight-board", "m:wall-clock"],
@@ -829,7 +836,8 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["jp-tokonoma", 0, 2], ["jp-shoji-screen", 10, 2], ["m:fridge", 14, 2],
           ["home-tatami-h", 2, 4], ["home-chabudai", 3, 4], ["home-zabuton", 3, 5],
           ["home-tatami-h", 9, 4], ["home-chabudai", 10, 4], ["home-zabuton", 10, 5],
-          ["home-tatami-h", 2, 7], ["home-tatami-h", 9, 7],
+          ["home-tatami-h", 2, 7], ["home-chabudai", 3, 7], ["home-zabuton", 3, 8],
+          ["home-tatami-h", 9, 7], ["home-chabudai", 10, 7], ["home-zabuton", 10, 8],
         ],
       }),
       R("on-lobby", 14, 7, F.stone, W.lobby, {
@@ -894,7 +902,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
           ["home-tatami-h", 1, 4], ["home-tatami-h", 7, 4],
           ["home-tatami-h", 1, 6], ["home-tatami-h", 7, 6],
           ["jp-tea-hearth", 5, 5],
-          ["home-zabuton", 3, 5], ["home-zabuton", 7, 5], ["home-zabuton", 5, 7],
+          ["home-zabuton", 3, 5], ["home-zabuton", 7, 5], ["home-zabuton", 5, 7], ["shrine-stone-lantern", 10, 6],
         ],
       }),
     ] }),
@@ -907,23 +915,25 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         hang: ["m:wall-clock", "m:whiteboard"],
         wall: ["m:filing", "m:shelf-office", "m:coffee-station"],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 2, 1, 5, 2, "s"]],
+        at: [["lounge-sofa-cream", 1, 7], ["m:coffee-table", 7, 7]],
       }),
       R("fc-lab", 10, 8, F.small, W.tile, {
         hang: ["m:wall-clock", "m:notice-board"],
         wall: ["lab-fume-hood", "lab-reagent-shelf", "m:washbasin"],
         pair: [["lab-bench", "m:chair-wood-n", 1, 4, 2, 1, 5, 2, "s"]],
+        at: [["m:med-cart", 1, 7], ["m:basket-stack", 8, 7]],
       }),
       R("fc-line", 36, 10, F.conc, W.metal, {
         hang: ["m:wall-clock", "m:notice-board", "m:ac-wall", "m:ac-wall"],
         at: [
           ["m:rack", 0, 2], ["m:rack", 7, 2], ["m:rack", 19, 2], ["m:filing", 28, 2], ["m:rack", 32, 2],
-          // 연속 컨베이어 벨트 라인 + 선반가공 셀 + 지게차 2칸 통로 + 하역장 팔레트 구역
+          // 연속 컨베이어 벨트 라인 + 연속 QC/선반가공 열 + 동쪽 벽 지게차·팔레트 구역
           ["ind-conveyor", 1, 4], ["ind-conveyor", 5, 4], ["ind-conveyor", 9, 4],
           ["ind-conveyor", 1, 7], ["ind-conveyor", 5, 7], ["ind-conveyor", 9, 7],
-          ["ind-lathe", 20, 4], ["ind-lathe", 23, 4], ["ind-lathe", 20, 7], ["ind-lathe", 23, 7],
-          ["ind-forklift", 27, 5],
-          ["m:pallet", 31, 4], ["m:pallet", 32, 4], ["m:pallet", 33, 4],
-          ["m:pallet", 31, 7], ["m:pallet", 32, 7], ["m:pallet", 33, 7],
+          ["ind-lathe", 18, 7], ["ind-lathe", 21, 7], ["ind-lathe", 24, 7], ["ind-lathe", 27, 7],
+          ["m:pallet", 31, 4], ["m:pallet", 33, 4],
+          ["ind-forklift", 33, 6],
+          ["m:pallet", 31, 8], ["m:pallet", 33, 8],
         ],
       }),
     ] }),
@@ -1050,7 +1060,7 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
       }),
       R("rt-office", 16, 8, F.carpet, W.office, {
         hang: ["svc-listing-board", "m:wall-clock", "m:notice-board", "m:art-frame"],
-        at: [["m:filing", 0, 2], ["m:shelf-office", 6, 2], ["office-copier", 10, 2], ["m:coffee-station", 13, 2]],
+        at: [["m:filing", 0, 2], ["m:shelf-office", 6, 2], ["office-copier", 10, 2], ["m:coffee-station", 13, 2], ["lounge-sofa-cream", 1, 7], ["m:coffee-table", 13, 7]],
         pair: [["m:desk-pc", "m:chair-office-s", 1, 4, 3, 1, 5, 2, "s"]],
       }),
       R("rt-lobby", 10, 8, F.stone, W.lobby, {
