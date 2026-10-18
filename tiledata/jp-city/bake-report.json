@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 16616,
+  "count": 16633,
   "tilesPerRow": 96,
   "rows": 174,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 13479,
+  "block_cells": 13496,
   "legacy": 0,
   "legacy_ids": [],
   "unused_source": 110,
@@ -24,13 +24,13 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 13479
+   "block": 13496
   }
  },
  "pc_counts": {
-  "star": 6745,
-  "solid": 4110,
-  "floor": 3909,
+  "star": 6766,
+  "solid": 4113,
+  "floor": 3902,
   "solidfloor": 1024,
   "flat": 673,
   "blank": 155
@@ -488,7 +488,7 @@
    },
    {
     "name": "jp_regions_pack",
-    "cells": 511,
+    "cells": 528,
     "autotiles": 0,
     "groups": 9,
     "kits": 26,
@@ -594,7 +594,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 16616,
+  "tiles_checked": 16633,
   "kits_checked": 1527,
   "groups_checked": 357,
   "autotiles_checked": 17
@@ -658,7 +658,7 @@
    }
   }
  },
- "sheet_hash": "0796ed28d934f8c4b7caa96330807ad1bb11a4f4",
+ "sheet_hash": "cc823bdda59186404e16bb5f6a1f6d9b8bd94dd9",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
   "kits_checked": 1527,
@@ -758,7 +758,7 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 16616,
+  "tiles_checked": 16633,
   "kits_checked": 1527,
   "groups_checked": 357,
   "autotiles_checked": 17
