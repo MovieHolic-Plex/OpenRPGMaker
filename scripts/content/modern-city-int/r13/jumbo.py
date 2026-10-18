@@ -779,3 +779,130 @@ def lobby_tree_bench():
     for x, y in ((12, 14), (22, 6), (32, 12), (8, 22), (38, 22), (28, 20)): c.r(x, y, x + 2, y, (150, 200, 110)); c.p(x + 1, y - 1, (190, 220, 140))
     for x, y in ((16, 20), (30, 26), (24, 12)): c.p(x, y, (60, 50, 90))
     return c.done()
+
+
+# ================================================================== R13b: konbini / lecture hall / officetel
+def konbini_hot_food_island():
+    """4x3 konbini hot-food island: hanging price strip, steel oden pot with daikon/egg/konnyaku/fishcake in
+    broth, glass nikuman steamer with fogged panes, heated fried-chicken warmer under amber lamps, self-serve
+    coffee machine; white counter body with the store's green-orange-blue stripe band."""
+    c = C(64, 64)
+    # hanging price strip (overhang)
+    c.r(14, 0, 14, 3, STEEL_D); c.r(49, 0, 49, 3, STEEL_D)
+    c.box(6, 3, 57, 10, WHITE)
+    for x, col in ((8, RED), (21, ORANGE), (34, YELLOW_D), (47, RED)):
+        c.r(x, 5, x + 9, 8, col); c.r(x + 1, 6, x + 4, 6, WHITE); c.r(x + 6, 7, x + 8, 7, WHITE)
+    c.r(1, 61, 62, 62, SH)
+    # counter body: 3/4 top + front face + stripe band
+    c.block(0, 26, 63, 59, 14, (236, 238, 240), WHITE)
+    c.r(1, 44, 62, 45, (60, 150, 90)); c.r(1, 46, 62, 47, ORANGE); c.r(1, 48, 62, 49, BLUE)
+    for x in range(6, 60, 10): c.r(x, 51, x + 5, 56, (232, 234, 238)); c.r(x, 51, x + 5, 51, WHITE_D)
+    # oden pot (west): steel rim, 4 compartments of broth with simmering pieces
+    c.box(2, 20, 25, 37, STEEL_D); c.r(3, 21, 24, 21, STEEL_L)
+    c.r(3, 22, 24, 36, (200, 160, 90)); c.r(13, 22, 14, 36, STEEL); c.r(3, 29, 24, 29, STEEL)
+    for x, y in ((5, 24), (16, 24)): c.oval(x, y, x + 5, y + 3, (246, 240, 220), (200, 180, 140))
+    for x, y in ((9, 25), (20, 31)): c.oval(x, y, x + 3, y + 3, WHITE, (210, 200, 170)); c.p(x + 1, y + 1, YELLOW)
+    for x, y in ((5, 31), (16, 31)): c.l(x, y + 4, x + 3, y, (90, 84, 88)); c.l(x + 1, y + 4, x + 4, y, (110, 104, 108)); c.l(x, y + 4, x + 4, y + 4, (90, 84, 88))
+    c.r(9, 32, 12, 34, (220, 200, 170)); c.r(9, 32, 12, 32, (240, 226, 200))
+    for x in (6, 12, 19, 23): ap(c, x, 18, (244, 248, 252), 140); ap(c, x + 1, 16, (244, 248, 252), 90); ap(c, x, 14, (244, 248, 252), 50)
+    # nikuman steamer (middle): glass box, fogged panes, buns on a rack
+    c.box(27, 12, 42, 37, STEEL_D)
+    c.glass(28, 13, 41, 36, (214, 230, 236))
+    for y in (18, 27):
+        c.r(28, y + 6, 41, y + 6, STEEL)
+        for x in (29, 35):
+            c.oval(x, y, x + 5, y + 5, (250, 246, 236), (206, 196, 176)); c.p(x + 2, y + 1, WHITE); c.p(x + 3, y + 2, (220, 150, 90))
+    c.dither(28, 13, 41, 15, (250, 252, 252)); c.r(28, 13, 41, 13, WHITE)
+    # fried-chicken warmer (east): amber heat lamps over karaage and croquettes
+    c.box(44, 16, 61, 37, (60, 62, 70))
+    c.r(45, 17, 60, 19, (255, 190, 80)); c.r(45, 17, 60, 17, (255, 230, 150))
+    c.glass(45, 20, 60, 36, (250, 214, 150))
+    for x, y in ((46, 24), (51, 23), (56, 25), (47, 30), (53, 30)):
+        c.oval(x, y, x + 4, y + 3, (200, 120, 40), (140, 76, 24)); c.p(x + 1, y + 1, (240, 180, 90))
+    c.r(45, 34, 60, 34, (226, 160, 70))
+    for y in range(20, 36, 3): ap(c, 44 + (y % 5), y, (255, 220, 140), 60)
+    # tongs + napkins + price cards on the top surface
+    c.l(28, 40, 40, 38, STEEL_L); c.l(28, 41, 40, 39, STEEL_D)
+    c.r(47, 39, 52, 41, WHITE); c.r(47, 42, 52, 42, WHITE_D)
+    for x, col in ((4, RED), (16, ORANGE), (55, YELLOW)): c.r(x, 39, x + 5, 41, col); c.r(x + 1, 40, x + 3, 40, WHITE)
+    return c.done()
+
+
+def lecture_tiered_desk():
+    """4x3 raked lecture-hall section: two stepped tiers of continuous oak writing desks with modesty panels,
+    blue flip-up seats behind each desk, a carpeted riser step with a bright nosing between the tiers, oak end
+    panels, and notebooks / laptops / pens on the desks."""
+    c = C(64, 64)
+    SEAT, SEAT_L, SEAT_D = (70, 110, 180), (110, 150, 214), (44, 72, 128)
+    RISER, RISER_L = (110, 92, 96), (150, 130, 132)
+    c.r(1, 61, 62, 62, SH)
+    # carpeted rake under everything (back tier drawn higher), lit stair nosing between tiers
+    c.box(0, 4, 63, 59, RISER)
+    c.r(1, 31, 62, 34, dk(RISER, 0.85)); c.r(1, 31, 62, 31, RISER_L); c.r(1, 30, 62, 30, (240, 214, 120))
+    for x in range(4, 62, 6): c.p(x, 33, dk(RISER, 0.7))
+
+    def tier(y):
+        # oak desk: lit top, front modesty panel, toe shadow
+        c.box(3, y, 60, y + 11, WOOD_D)
+        c.r(4, y + 1, 59, y + 5, WOOD_L); c.r(4, y + 1, 59, y + 1, (240, 218, 180))
+        c.r(4, y + 6, 59, y + 10, WOOD); c.r(4, y + 10, 59, y + 10, WOOD_D)
+        for x in (18, 32, 46): c.r(x, y + 6, x, y + 10, WOOD_D)
+        # desk-top kit per seat
+        c.r(7, y + 2, 12, y + 4, WHITE); c.r(7, y + 4, 12, y + 4, WHITE_D); c.l(9, y + 2, 11, y + 4, BLUE)
+        c.box(21, y + 1, 28, y + 4, (60, 62, 70)); c.r(22, y + 2, 27, y + 2, SCREEN)
+        c.r(35, y + 2, 41, y + 4, (240, 200, 90)); c.r(36, y + 3, 40, y + 3, WHITE)
+        c.box(49, y + 1, 56, y + 4, (190, 196, 206)); c.r(50, y + 2, 55, y + 2, SCREEN_D)
+        # flip-up seats (backs toward the viewer, students face north)
+        for x0 in (4, 18, 32, 46):
+            c.cushion(x0 + 1, y + 12, x0 + 12, y + 17, SEAT_L, SEAT, SEAT_D)
+            c.r(x0 + 3, y + 18, x0 + 4, y + 20, STEEL_D); c.r(x0 + 9, y + 18, x0 + 10, y + 20, STEEL_D)
+
+    tier(6)
+    tier(36)
+    # oak end panels with seat-row number plates
+    for x0 in (0, 60):
+        c.box(x0, 4, x0 + 3, 58, WOOD_D); c.r(x0 + 1, 5, x0 + 2, 5, WOOD_L)
+        for y in (12, 42): c.r(x0 + 1, y, x0 + 2, y + 2, GOLD)
+    return c.done()
+
+
+def officetel_studio_bed_desk():
+    """4x3 officetel studio module: black steel loft bed (mattress, rumpled duvet, pillow, guard rail) over a
+    built-in oak desk with monitor, lamp and mug; ladder on the east post and a tall bookcase with books and a plant."""
+    c = C(64, 64)
+    FRAME, FRAME_L = (48, 50, 58), (90, 94, 106)
+    DUVET, DUVET_L, DUVET_D = (150, 186, 220), (196, 220, 240), (100, 134, 176)
+    c.r(1, 61, 62, 62, SH)
+    # under-loft desk zone (drawn first, the bed covers its back)
+    c.r(3, 26, 45, 56, (214, 200, 176)); c.r(3, 26, 45, 30, (186, 170, 146))
+    c.box(6, 27, 20, 37, (40, 42, 50)); c.r(7, 28, 19, 35, SCREEN); c.r(7, 28, 19, 28, lt(SCREEN, 1.3)); c.r(9, 31, 15, 31, WHITE)
+    c.r(12, 38, 14, 40, FRAME)
+    c.l(36, 30, 40, 26, FRAME); c.oval(37, 24, 43, 28, YELLOW, YELLOW_D); ap(c, 39, 30, (255, 240, 180), 120)
+    c.block(3, 40, 45, 55, 6, WOOD_L, WOOD)
+    c.r(6, 42, 15, 44, (60, 62, 70)); c.r(7, 42, 14, 42, (110, 114, 126))
+    c.oval(31, 41, 35, 45, WHITE, (170, 170, 176)); c.p(33, 43, (110, 64, 34))
+    c.r(20, 42, 26, 45, (240, 236, 220)); c.r(20, 45, 26, 45, (200, 194, 180))
+    for x in (10, 30): c.r(x, 48, x + 6, 48, WOOD_D); c.p(x + 3, 50, GOLD)
+    # loft bed platform: mattress top, duvet, pillow, under-face
+    c.box(0, 2, 48, 25, FRAME)
+    c.r(1, 3, 47, 17, (240, 240, 236))
+    c.cushion(2, 4, 13, 12, WHITE, (236, 238, 242), WHITE_D)
+    c.cushion(14, 4, 46, 17, DUVET_L, DUVET, DUVET_D)
+    for x0 in (20, 30, 38): c.r(x0, 8, x0 + 4, 8, DUVET_D); c.r(x0 + 1, 9, x0 + 5, 9, DUVET_L); c.r(x0 - 2, 13, x0 + 2, 13, DUVET_D)
+    c.r(1, 18, 47, 21, FRAME_L); c.r(1, 18, 47, 18, (150, 154, 166))
+    for x in range(6, 46, 6): c.r(x, 19, x, 21, FRAME)
+    c.r(1, 22, 47, 24, (30, 32, 38))
+    # posts down to the floor
+    for x in (0, 46): c.r(x, 25, x + 2, 58, FRAME); c.r(x, 25, x, 58, FRAME_L)
+    # ladder (east)
+    c.r(47, 4, 47, 58, FRAME); c.r(52, 4, 52, 58, FRAME)
+    for y in range(9, 58, 7): c.r(48, y, 51, y, FRAME_L)
+    # tall bookcase
+    c.box(54, 6, 63, 58, WOOD_D); c.r(55, 7, 62, 8, WOOD_L)
+    for y in (16, 28, 40, 52): c.r(55, y, 62, y + 1, WOOD)
+    for i, y in enumerate((10, 22, 34, 46)):
+        for k, x in enumerate(range(55, 62, 2)):
+            col = [RED, BLUE, GREEN, YELLOW_D, PURPLE, ORANGE][(i + k) % 6]
+            c.r(x, y + (k % 2), x + 1, y + 5, col); c.p(x, y + (k % 2), lt(col, 1.4))
+    c.oval(56, 1, 62, 7, LEAF_D); c.e(57, 2, 61, 5, LEAF)
+    return c.done()

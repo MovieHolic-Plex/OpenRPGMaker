@@ -40,7 +40,15 @@ PROPS = [
     ('jumbo-park-box-truck-e', 'floor', 3, '택배 탑차(5×3·동향)', '파란 띠와 로고 흰 화물칸, 뒤 셔터, 짙은 앞유리 운전석, 복륜 뒷바퀴.', ['주차장', '차량', '대형'], ['block'], J.park_box_truck_e, 'transport', 'E'),
     ('jumbo-home-sectional', 'floor', 3, 'ㄱ자 소파·러그 세트(4×3)', '킬림 무늬 러그, 등·좌석 쿠션과 쿠션 베개를 올린 ㄱ자 패브릭 소파, 머그·잡지·리모컨을 둔 원형 탁자.', ['집', '거실', '소파', '대형'], ['block'], J.home_sectional_set, 'home', None),
     ('jumbo-lobby-tree-bench', 'floor', 3, '올리브나무 원형 벤치(3×3)', '참나무 원형 벤치가 두른 돌 화분, 지붕처럼 솟은 올리브나무, 흙 속 업라이트.', ['로비', '휴게', '대형'], ['block'], J.lobby_tree_bench, 'lobby', None),
+    # -- R13b (2026-10-19): the last four rooms without a centrepiece. Appended after the R13 tiles; never reorder above.
+    ('jumbo-konbini-hot-food-island', 'floor', 3, '편의점 핫푸드 아일랜드(4×3)', '매단 가격표 아래 오뎅 냄비(무·달걀·곤약·어묵), 김 서린 찐빵 찜기, 호박색 램프 아래 가라아게 온장고, 집게·냅킨.', ['편의점', '핫스낵', '대형'], ['search'], J.konbini_hot_food_island, 'store', None),
+    ('jumbo-lecture-tiered-desk', 'floor', 3, '계단식 강의 책상 블록(4×3)', '불 켜진 계단 코를 사이에 둔 두 단의 참나무 연속 책상과 파란 접이 의자, 노트·노트북·필통, 좌석 번호판 끝판.', ['강의실', '책상', '대형'], ['sit'], J.lecture_tiered_desk, 'campus', None),
+    ('jumbo-officetel-studio-bed-desk', 'floor', 3, '로프트 침대·책상 모듈(4×3)', '검은 철제 로프트 침대(매트리스·이불·베개·난간) 아래 참나무 책상과 모니터·스탠드·머그, 동쪽 사다리와 책장.', ['오피스텔', '침대', '책상', '대형'], ['sleep'], J.officetel_studio_bed_desk, 'home', None),
 ]
+R13_COUNT = 25  # PROPS[:25] were baked in R13; anything after is a later append (R13b) baked on its own.
 
 if __name__ == '__main__':
-    bake(PROPS, [], 'jumbo-hosp-mri', 'r13')
+    import json
+    baked = json.load(open(bake_r10.RS))['objects']
+    if 'jumbo-hosp-mri' not in baked: bake(PROPS[:R13_COUNT], [], 'jumbo-hosp-mri', 'r13')
+    bake(PROPS[R13_COUNT:], [], PROPS[R13_COUNT][0], 'r13')
