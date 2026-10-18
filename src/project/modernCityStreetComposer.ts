@@ -248,16 +248,24 @@ export function composeModernCityStreet(spec: MCStreetSpec, pal: MCPalette): MCS
   if (W < MODERN_CITY_STREET_MIN.w || H < MODERN_CITY_STREET_MIN.h) throw new Error(`맵이 작다(${W}×${H}) — ${MODERN_CITY_STREET_MIN.w}×${MODERN_CITY_STREET_MIN.h} 이상`);
   const r = mulberry(seed * 7919 + W * 31 + H);
   const b = new Board(W, H, pal);
-  // 계획: 가로 도로(12줄 단면) — 북쪽 띠(건물) 높이 9~13
+  // 계획: 가로 도로(12줄 단면) + 건물 띠. 띠 높이(8~13)와 맨 아래 남는 줄(없음 · 남향 건물 띠가 실제로 서는 10~13)을 씨앗으로 나눠
+  // 같은 맵 크기라도 도로망이 매번 달라지게 한다(R5 적대적 QA: 씨앗만 바꾸면 가로 도로 y 가 늘 같았다. 3~9줄 남김은
+  // 벤치만 늘어선 벽돌 띠·건물 없는 잔디 띠가 되어 뺐다).
   const hz: number[] = [];
   const nH = Math.max(1, Math.min(3, Math.floor(H / 22)));
-  const band = Math.min(11, Math.floor((H - 12 * nH) / nH));
-  if (band < 6) throw new Error(`맵 높이 ${H} 로는 건물 띠를 세울 수 없다`);
-  const spare = H - nH * (12 + band);
-  // 남는 줄: 7줄 이상이면 맨 아래에 남향 띠(맨 아래 보도 2줄이 접근칸 줄), 1~2줄이면 첫 띠를 키운다, 3~6줄이면 맨 아래 광장
-  const topExtra = spare <= 2 ? spare : 0;
-  let y = band + topExtra;
-  for (let i = 0; i < nH; i++) { hz.push(y); y += 12 + band; }
+  const free = H - 12 * nH;
+  if (Math.floor(free / nH) < 6) throw new Error(`맵 높이 ${H} 로는 건물 띠를 세울 수 없다`);
+  const splits: number[][] = [];
+  const grow = (acc: number[], left: number) => {
+    if (acc.length === nH) { if (left === 0 || (left >= 10 && left <= 13)) splits.push(acc); return; }
+    for (let h = 8; h <= 13 && h <= left; h++) grow([...acc, h], left - h);
+  };
+  grow([], free);
+  // 8줄 띠도 못 넣는 작은 맵: 옛 균등 분할(띠 ≤ 11, 남는 1~2 줄은 첫 띠로).
+  const even = Math.min(11, Math.floor(free / nH)), evenSpare = free - even * nH;
+  const split = splits.length ? splits[Math.floor(r() * splits.length)]! : [even + (evenSpare <= 2 ? evenSpare : 0), ...Array<number>(nH - 1).fill(even)];
+  let y = 0;
+  for (let i = 0; i < nH; i++) { y += split[i]!; hz.push(y); y += 12; }
   // 세로 도로 — 블록 폭 ≥ 16
   const vt: number[] = [];
   const nV = W >= 84 ? 2 : 1;
