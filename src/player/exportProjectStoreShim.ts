@@ -26,6 +26,10 @@ export const store = {
     return currentProject;
   },
 
+  subscribe(_listener: unknown): () => void {
+    return () => {};
+  },
+
   beginReadOnlyProjectSnapshot(project: Project): () => void {
     const previous = currentProject;
     const snapshot = structuredClone(project);

@@ -22,6 +22,7 @@ import type {
 import { charsetGraphic } from "./eventCompile";
 import { mainComponent, type Cell } from "./jrpgVolumeTools";
 import type { PuzzlePresetId } from "./puzzleAuthoringTools";
+import { buildPuzzleRoomStage, isPuzzleRoomPreset, type PuzzleRoomPresetId } from "./puzzleRoomScenery";
 
 export interface MapTileSnapshot {
   readonly lowerTiles: number[];
@@ -39,6 +40,8 @@ export interface PuzzleStagePlan {
   readonly stepChangeTileCommands: Readonly<Record<string, readonly Command[]>>;
   readonly extraEvents: ReadonlyArray<{ readonly event: GameEvent; readonly role: string }>;
   readonly snapshot: MapTileSnapshot;
+  /** 맵 타일이 이미 퍼즐 기물(오르간·화로·발판·석판·비석·낙석)을 그리는 칸 — 그 칸의 퍼즐 이벤트는 투명 그래픽으로 둔다. */
+  readonly tileDrawnCells?: readonly Cell[];
 }
 
 const FIXED_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
@@ -441,17 +444,25 @@ function paveStageFoundationAndConnectOrigin(
     occupied.add(`${ev.x},${ev.y}`);
   }
 
-  // Pave 9×8 stage [cx-4..cx+4] × [cy-4..cy+3]
+  // Clear upper obstacles across the 9×8 stage [cx-4..cx+4] × [cy-4..cy+3];
+  // only replace lowerTiles on cells whose current lowerTile is impassable so the map's native ground pattern stays seamless.
+  const ts = project.tilesets[map.tilesetId];
+  const isWalkableLower = (t: number): boolean => {
+    if (!ts || t < 0 || t >= ts.count) return false;
+    const p = ts.passability[t];
+    return Boolean(p && p.up && p.down && p.left && p.right);
+  };
   for (let y = center.y - 4; y <= center.y + 3; y += 1) {
     for (let x = center.x - 4; x <= center.x + 4; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      const curLower = map.lowerTiles[y * map.width + x] ?? -1;
       setMapTileBefore(project, map, x, y, {
-        lower: baseFloor,
+        ...(isWalkableLower(curLower) ? {} : { lower: baseFloor }),
         upper: -1,
         clearOverlays: true,
       });
     }
   }
-
   // Ensure connection from (center.x, center.y + 2) to existing main walkable component
   const main = mainComponent(project, map);
   const southHub = { x: center.x, y: center.y + 2 };
@@ -492,6 +503,52 @@ function paveStageFoundationAndConnectOrigin(
   return southHub;
 }
 
+/** 20×15 무대 방이 해결 뒤 내놓는 보상 한 점. kind 가 chest 가 아니면 성유물 수정의 id 접미사다. */
+const ROOM_REWARDS: Record<PuzzleRoomPresetId, { readonly kind: string; readonly name: string; readonly role: string; readonly beforeText: string; readonly afterText: string }> = {
+  cathedral_organ_tuning: {
+    kind: "chest",
+    name: "성소 황금 보물상자",
+    role: "개방된 성소 황금 보물상자",
+    beforeText: "오르간 옆 성가대석 바닥이 비어 있다.",
+    afterText: "지하 계단이 열리며 나타난 「성소 황금 보물상자」를 열었다!",
+  },
+  brazier_ignition_order: {
+    kind: "chest",
+    name: "화산 수호자의 보물상자",
+    role: "출현하는 수호자 보물상자",
+    beforeText: "그을린 돌바닥에 무언가 놓였던 자국이 있다.",
+    afterText: "세 화로의 성화로 봉인문이 열리며 나타난 「화산 수호자의 보물상자」를 열었다!",
+  },
+  statue_pressure_plates: {
+    kind: "chest",
+    name: "제단 황금 보물상자",
+    role: "돌다리 개방 보물상자",
+    beforeText: "심연 건너편 둑이다. 다리가 없으면 닿을 수 없다.",
+    afterText: "솟아오른 돌다리를 건너 「제단 황금 보물상자」를 열었다!",
+  },
+  dynamite_rock_blast: {
+    kind: "chest",
+    name: "광맥 황금 보물상자",
+    role: "폭파 후 드러난 보물상자",
+    beforeText: "흙바닥에 광석 부스러기가 흩어져 있다.",
+    afterText: "낙석을 폭파하자 드러난 「광맥 황금 보물상자」를 열었다!",
+  },
+  riddle_mimic_chests: {
+    kind: "sacred_relic",
+    name: "출현한 고대 성유물",
+    role: "출현한 발광 성유물",
+    beforeText: "사암 바닥에 고대 문양이 새겨져 있다.",
+    afterText: "진실의 상자가 열리며 비밀 계단 옆에 「고대 성유물」이 떠올랐다!",
+  },
+  boss_seal_monoliths: {
+    kind: "chest",
+    name: "성역 봉인 보물상자",
+    role: "마법진 출현 보물상자",
+    beforeText: "룬이 새겨진 석판 바닥이다.",
+    afterText: "세 비석이 깨어나 결계가 걷히며 나타난 「성역 봉인 보물상자」를 열었다!",
+  },
+};
+
 export function buildDramaticPuzzleStage(
   project: Project,
   map: GameMap,
@@ -501,6 +558,33 @@ export function buildDramaticPuzzleStage(
   requestedAnchor: Cell | undefined,
   landings: ReadonlySet<string>,
 ): PuzzleStagePlan | undefined {
+  if (isPuzzleRoomPreset(presetId)) {
+    const snapshot = captureMapTileSnapshot(map);
+    const room = buildPuzzleRoomStage(project, map, presetId, requestedAnchor, landings);
+    if (room) {
+      const reward = ROOM_REWARDS[presetId];
+      const event =
+        reward.kind === "chest"
+          ? makeRevealedChestEvent(baseId, solveSwitchId, room.reward, { ...reward, beforeGraphic: { transparent: true } })
+          : makeRevealedCrystalEvent(baseId, solveSwitchId, reward.kind, room.reward, { ...reward, beforeGraphic: { transparent: true } });
+      return {
+        center: room.center,
+        origin: room.origin,
+        cells: room.cells,
+        changeTileCommands: room.changeTileCommands,
+        stepChangeTileCommands: room.stepChangeTileCommands,
+        extraEvents: [{ event, role: reward.role }],
+        // 수수께끼 방의 세 상자와 광산 보급함은 방 타일에 없으니 상자 스프라이트를 그대로 쓴다.
+        tileDrawnCells:
+          presetId === "riddle_mimic_chests"
+            ? room.cells.slice(0, 1)
+            : presetId === "dynamite_rock_blast"
+              ? room.cells.slice(1)
+              : room.cells,
+        snapshot,
+      };
+    }
+  }
   const center = findStageCenter(project, map, requestedAnchor, landings);
   if (!center) return undefined;
 
@@ -514,15 +598,15 @@ export function buildDramaticPuzzleStage(
     tsId === "atlas_biome_interior"
       ? presetId === "dynamite_rock_blast"
         ? 326
-        : 1190
+        : pal.baseFloor
       : tsId === "prehistoric"
         ? 9
         : tsId === "gothic_manor"
-          ? 1364
+          ? pal.baseFloor
           : tsId === "snow_north"
-            ? 561
+            ? pal.baseFloor
             : tsId === "sky_island"
-              ? 638
+              ? pal.baseFloor
               : pal.baseFloor;
   const origin = paveStageFoundationAndConnectOrigin(project, map, center, baseFloor, landings);
   const changeTileCommands: Command[] = [];
@@ -588,40 +672,39 @@ export function buildDramaticPuzzleStage(
 
           const afterLower = 726 + col;
           const afterLower2 =
-            col <= 2 && y >= cy - 3
-              ? col === 0
+            y >= cy - 3 && isCenterCorridor
+              ? col === 1
                 ? 5462
-                : col === 1
-                  ? 5466
-                  : 5487
-              : col === 3 && (y === cy - 2 || y === cy - 1)
+                : 5487
+              : y === cy - 4 && isCenterCorridor
                 ? 3708
                 : undefined;
           const afterUpper =
             y === cy - 4
-              ? col === 0
-                ? 3660 // 황금 촛대 상단
+              ? col === 0 || col === 3
+                ? 3660 // 좌우 황금 촛대 상단
                 : col === 1
-                  ? 3712 // 황금 보물 더미 좌
-                  : col === 2
-                    ? 3713 // 황금 보물 더미 우
-                    : 6484 // 성소 발광 크리스탈 상단
+                  ? 3712 // 성소 황금 보물 더미 좌
+                  : 3713 // 성소 황금 보물 더미 우
               : y === cy - 3
                 ? col === 0
-                  ? 3672 // 황금 촛대 하단
-                  : col === 1
-                    ? 4242 // 성소 아치 문틀 좌상
-                    : col === 2
-                      ? 4244 // 성소 아치 문틀 우상
-                      : 6485 // 성소 발광 크리스탈 중단
+                  ? 3672 // 좌측 황금 촛대 하단
+                  : col === 3
+                    ? 6484 // 성소 발광 크리스탈 상단
+                    : -1 // 황금 카펫 회랑 개방!
                 : y === cy - 2
                   ? col === 0
-                    ? 4245 // 성소 아치 기둥 하단
+                    ? 4164 // 성소 대리석 황금 기둥 좌상
                     : col === 3
-                      ? 6486 // 성소 발광 크리스탈 하단
+                      ? 6485 // 성소 발광 크리스탈 중단
                       : -1 // 황금 카펫 회랑 개방!
-                  : -1;
-
+                  : y === cy - 1
+                    ? col === 0
+                      ? 4165 // 성소 대리석 황금 기둥 좌중
+                      : col === 3
+                        ? 6486 // 성소 발광 크리스탈 하단
+                        : -1 // 황금 카펫 회랑 개방!
+                    : -1;
           setBeforeAndAfterTile(project, map, changeTileCommands, x, y, {
             beforeLower,
             beforeUpper,
@@ -766,10 +849,10 @@ export function buildDramaticPuzzleStage(
     const isGothic = tsId === "gothic_manor";
     if (isGothic) {
       // Twin Gargoyle Statues flanking the southern platform
-      setMapTileBefore(project, map, cx - 3, cy - 1, { lower: 1364, upper: 815 });
-      setMapTileBefore(project, map, cx - 3, cy, { lower: 1364, upper: 816 });
-      setMapTileBefore(project, map, cx + 3, cy - 1, { lower: 1364, upper: 815 });
-      setMapTileBefore(project, map, cx + 3, cy, { lower: 1364, upper: 816 });
+      setMapTileBefore(project, map, cx - 3, cy - 1, { lower: pal.baseFloor, upper: 815 });
+      setMapTileBefore(project, map, cx - 3, cy, { lower: pal.baseFloor, upper: 816 });
+      setMapTileBefore(project, map, cx + 3, cy - 1, { lower: pal.baseFloor, upper: 815 });
+      setMapTileBefore(project, map, cx + 3, cy, { lower: pal.baseFloor, upper: 816 });
     }
 
     // 5×4 Black Abyss Chasm (x = cx - 2 .. cx + 2, y = cy - 4 .. cy - 1, 20 tiles!)
@@ -781,7 +864,7 @@ export function buildDramaticPuzzleStage(
         if (isGothic) {
           const beforeLower = 1411; // 칠흑 심연 낭떠러지 (이웃 255 순수 암흑 심연)
           const beforeUpper = y === cy - 1 ? 1464 : -1; // 심연 가장자리 차단 철책
-          const afterLower = col === 1 ? 855 : col === 2 ? 1046 : col === 3 ? 856 : 1364;
+          const afterLower = col === 1 ? 855 : col === 2 ? 1046 : col === 3 ? 856 : pal.baseFloor;
           const afterUpper = isBridge
             ? -1
             : y === cy - 4
@@ -812,7 +895,7 @@ export function buildDramaticPuzzleStage(
     // Bridgehead threshold at y = cy (x = cx - 1 .. cx + 1)
     for (let x = cx - 1; x <= cx + 1; x += 1) {
       setBeforeAndAfterTile(project, map, changeTileCommands, x, cy, {
-        beforeLower: isGothic ? 1364 : pal.baseFloor,
+        beforeLower: isGothic ? pal.baseFloor : pal.baseFloor,
         beforeUpper: -1,
         afterLower: isGothic ? 1047 : pal.revealFloor,
         afterUpper: -1,
@@ -1031,7 +1114,7 @@ export function buildDramaticPuzzleStage(
         if (isInterior) {
           const beforeLower =
             y >= cy
-              ? 582
+              ? pal.baseFloor
               : isOuterMoat
                 ? 906 // 쇠 격자 해자 바닥
                 : 582; // 잠긴 감옥 돌 제단

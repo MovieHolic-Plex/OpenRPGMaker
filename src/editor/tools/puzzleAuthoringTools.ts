@@ -2566,6 +2566,13 @@ const authorMapPuzzleTool: ToolDefinition = {
         break;
       }
     }
+    // 방 타일이 이미 그린 기물 위에는 보라 바위 같은 캐릭터 스프라이트를 겹치지 않는다.
+    const tileDrawn = new Set((stagePlan?.tileDrawnCells ?? []).map((c) => `${c.x},${c.y}`));
+    for (const evInfo of createdEvents) {
+      const ev = map.events.find((e) => e.id === evInfo.id);
+      if (!ev || !tileDrawn.has(`${ev.x},${ev.y}`)) continue;
+      ev.pages = ev.pages?.map((page) => ({ ...page, graphic: { transparent: true } }));
+    }
     for (const extra of stagePlan?.extraEvents ?? []) {
       registerEvent(map, extra.event, extra.role);
     }

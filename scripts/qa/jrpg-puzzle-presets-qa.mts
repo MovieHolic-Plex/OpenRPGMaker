@@ -168,13 +168,17 @@ console.log(`   -> 8 chapters built (${Object.keys(chapterCtx.project.maps).leng
 // ============================================================================
 console.log("3) Building live player.html showcase project with 6 distinct puzzle rooms...");
 const playCtx = { project: createBlankProject() };
+// 퍼즐 방은 author_map_puzzle 이 손 도트 v5 실내 칩셋으로 20×15 한 화면을 통째로 짓는다 — 빈 한 화면 맵만 만든다.
+const createPuzzleRoomMap = (id: string, name: string): void => {
+  const made = runTool(playCtx, "create_map", { id, name, width: 20, height: 15, tilesetId: "atlas_biome_interior" });
+  assert.equal(made.ok, true, made.summary);
+};
+// 방 전체가 한 칩셋으로 이어 깔리므로 해제 연출은 바뀌는 기물 칸(계단·다리·문·불)에만 생긴다 — 예전 15% 기준은
+// 맵 위에 큰 판을 덧찍던 시공을 전제로 했다. 지금은 눈에 보이는 변화가 있는지만 잰다.
+const MIN_STAGE_CHANGED_PCT = 1.5;
 
 // Room 1: 성당 파이프 오르간·별자리 조율 (cathedral_organ_tuning)
-runTool(playCtx, "build_hand_interior_room", {
-  mapId: "map_p1_cathedral",
-  name: "600 AD 대성당 · 파이프 오르간과 별자리 계단",
-  layout: { program: "throne", seed: 11 },
-});
+createPuzzleRoomMap("map_p1_cathedral", "600 AD 대성당 · 파이프 오르간과 별자리 계단");
 const p1 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p1_cathedral",
   presetId: "cathedral_organ_tuning",
@@ -184,12 +188,7 @@ const p1 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p1.ok, true, p1.summary);
 
 // Room 2: 원시 화산 사원 · 3화로 점화 순서 퍼즐 (brazier_ignition_order)
-runTool(playCtx, "create_map", {
-  id: "map_p2_brazier",
-  name: "티라노 화산 사원 · 삼연 화로 점화",
-  themeScene: "prehistoric:volcano",
-  seed: 12,
-});
+createPuzzleRoomMap("map_p2_brazier", "티라노 화산 사원 · 삼연 화로 점화");
 const p2 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p2_brazier",
   presetId: "brazier_ignition_order",
@@ -199,12 +198,7 @@ const p2 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p2.ok, true, p2.summary);
 
 // Room 3: 마왕성 예배당 · 석상 압력 발판 스위치 퍼즐 (statue_pressure_plates)
-runTool(playCtx, "create_map", {
-  id: "map_p3_plates",
-  name: "마왕성 회랑 광장 · 쌍둥이 석상 압력 발판과 3×4 돌다리",
-  themeScene: "gothic:gallery-plaza",
-  seed: 13,
-});
+createPuzzleRoomMap("map_p3_plates", "마왕성 지하 · 압력 발판과 심연 돌다리");
 const p3 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p3_plates",
   presetId: "statue_pressure_plates",
@@ -214,12 +208,7 @@ const p3 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p3.ok, true, p3.summary);
 
 // Room 4: 나르셰 탄광 · 다이너마이트 낙석 폭파 퍼즐 (dynamite_rock_blast)
-runTool(playCtx, "create_map", {
-  id: "map_p4_dynamite",
-  name: "나르셰 설원 갱도 · 다이너마이트 낙석 폭파",
-  themeScene: "snow_north:village",
-  seed: 14,
-});
+createPuzzleRoomMap("map_p4_dynamite", "나르셰 탄광 갱도 · 다이너마이트 낙석 폭파");
 const p4 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p4_dynamite",
   presetId: "dynamite_rock_blast",
@@ -229,11 +218,7 @@ const p4 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p4.ok, true, p4.summary);
 
 // Room 5: 케프카의 탑 · 미믹/진실의 보물상자 수수께끼 (riddle_mimic_chests)
-runTool(playCtx, "build_hand_interior_room", {
-  mapId: "map_p5_riddle",
-  name: "조조 시계탑 대금고 · 삼색 상자 수수께끼와 2×2 비밀 계단",
-  layout: { program: "chapel", seed: 15 },
-});
+createPuzzleRoomMap("map_p5_riddle", "고대 신전 · 스핑크스 수수께끼 석판과 비밀 계단");
 const p5 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p5_riddle",
   presetId: "riddle_mimic_chests",
@@ -243,12 +228,7 @@ const p5 = runTool(playCtx, "author_map_puzzle", {
 assert.equal(p5.ok, true, p5.summary);
 
 // Room 6: 제알 해저신전 · 보스 봉인 결계 3비석 해제 (boss_seal_monoliths)
-runTool(playCtx, "create_map", {
-  id: "map_p6_monoliths",
-  name: "제알 하늘 신전 · 태양·달·별 3비석 봉인 해제",
-  themeScene: "sky_island:shrine",
-  seed: 16,
-});
+createPuzzleRoomMap("map_p6_monoliths", "마왕성 보스 전실 · 태양·달·별 3비석 봉인 해제");
 const p6 = runTool(playCtx, "author_map_puzzle", {
   mapId: "map_p6_monoliths",
   presetId: "boss_seal_monoliths",
@@ -662,7 +642,7 @@ try {
     const distinctCells = new Set(p1Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p1_organ = { ...diff, changeTileCount: p1Data.changeTileCount, distinctCells };
     console.log("      P1 VQA diff:", vqaMetrics.p1_organ);
-    assert.ok(diff.stageChangedPct >= 15, `P1 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P1 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p1Data.solveSwitchId], true, "Puzzle 1 solveSwitch must be true");
@@ -732,7 +712,7 @@ try {
     const distinctCells = new Set(p2Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p2_brazier = { ...diff, changeTileCount: p2Data.changeTileCount, distinctCells };
     console.log("      P2 VQA diff:", vqaMetrics.p2_brazier);
-    assert.ok(diff.stageChangedPct >= 15, `P2 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P2 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p2Data.solveSwitchId], true, "Puzzle 2 solveSwitch must be true");
@@ -791,7 +771,7 @@ try {
     const distinctCells = new Set(p3Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p3_plates = { ...diff, changeTileCount: p3Data.changeTileCount, distinctCells };
     console.log("      P3 VQA diff:", vqaMetrics.p3_plates);
-    assert.ok(diff.stageChangedPct >= 15, `P3 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P3 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p3Data.solveSwitchId], true, "Puzzle 3 solveSwitch must be true");
@@ -852,7 +832,7 @@ try {
     const distinctCells = new Set(p4Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p4_dynamite = { ...diff, changeTileCount: p4Data.changeTileCount, distinctCells };
     console.log("      P4 VQA diff:", vqaMetrics.p4_dynamite);
-    assert.ok(diff.stageChangedPct >= 15, `P4 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P4 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p4Data.solveSwitchId], true, "Puzzle 4 solveSwitch must be true");
@@ -921,7 +901,7 @@ try {
     const distinctCells = new Set(p5Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p5_riddle = { ...diff, changeTileCount: p5Data.changeTileCount, distinctCells };
     console.log("      P5 VQA diff:", vqaMetrics.p5_riddle);
-    assert.ok(diff.stageChangedPct >= 15, `P5 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P5 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p5Data.solveSwitchId], true, "Puzzle 5 solveSwitch must be true");
@@ -991,7 +971,7 @@ try {
     const distinctCells = new Set(p6Data.changeTileCommands.map((c) => `${c.x},${c.y}`)).size;
     vqaMetrics.p6_monoliths = { ...diff, changeTileCount: p6Data.changeTileCount, distinctCells };
     console.log("      P6 VQA diff:", vqaMetrics.p6_monoliths);
-    assert.ok(diff.stageChangedPct >= 15, `P6 stage visual diff too small: ${diff.stageChangedPct}%`);
+    assert.ok(diff.stageChangedPct >= MIN_STAGE_CHANGED_PCT, `P6 stage visual diff too small: ${diff.stageChangedPct}%`);
 
     const st = await readState();
     assert.equal(st.switches[p6Data.solveSwitchId], true, "Puzzle 6 solveSwitch must be true");
