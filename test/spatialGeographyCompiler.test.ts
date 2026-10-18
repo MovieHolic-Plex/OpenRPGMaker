@@ -20,7 +20,7 @@ describe("bounded geography public compiler", () => {
     expect(binding).toBeDefined();
     if (!binding) throw new TypeError("Missing geographic raster owner");
     const overview = own(output.maps, binding.mapId);
-    expect(overview.tilesetId).toBe("easyrpg_chipset_world");
+    expect(overview.tilesetId).toBe("worldmap_selected");
     expect(overview.lowerTiles.some(tile => tile >= 0)).toBe(true);
     const transfers = output.mapConnections?.filter(connection => connection.from.mapId === overview.id);
     expect(transfers?.length).toBeGreaterThan(0);

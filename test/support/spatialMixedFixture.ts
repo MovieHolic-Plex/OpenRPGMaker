@@ -13,9 +13,9 @@ export function mixedFixture() {
     composition: { tilesetId: interiorAtlas, width: 20, height: 18, tiles: [{ x: 3, y: 5, layer: "lower", tile: 240 }], members: [member('loose-bed', 'object', 'bed-design', 4, 6)] } };
   doc.library.places['inn'] = { ...base, id: spatialId('inn'), name: '여관', kind: 'natural', children: [], layout: 'manual', ports: [], connections: [],
     composition: canvas(40, 30, [member('room', 'space', spaceDesign, 2, 2), member('sign', 'object', 'bed-design', 25, 8)]) };
-  doc.library.regions['town'] = { ...base, id: spatialId('town'), name: '마을', terrain: { tilesetId: 'easyrpg_chipset_world', width: 80, height: 60, floor: 'ground', areas: [] }, places: [], ports: [], routes: [],
+  doc.library.regions['town'] = { ...base, id: spatialId('town'), name: '마을', terrain: { tilesetId: 'worldmap_selected', width: 80, height: 60, floor: 'ground', areas: [] }, places: [], ports: [], routes: [],
     composition: canvas(80, 60, [member('inn', 'place', 'inn', 2, 2), member('square', 'space', spaceDesign, 45, 5), member('bench', 'object', 'bed-design', 55, 40)]) };
-  doc.library.worlds['world'] = { ...base, id: spatialId('world'), name: '세계', terrain: { tilesetId: 'easyrpg_chipset_world', width: 128, height: 100, floor: 'ground', areas: [] }, regions: [],
+  doc.library.worlds['world'] = { ...base, id: spatialId('world'), name: '세계', terrain: { tilesetId: 'worldmap_selected', width: 128, height: 100, floor: 'ground', areas: [] }, regions: [],
     ports: [{ id: spatialId('entry'), name: '입구', x: 0, y: 0 }], connections: [], entryPort: { childId: null, portId: spatialId('entry') },
     composition: canvas(128, 100, [member('town', 'region', 'town', 2, 2), member('inn', 'place', 'inn', 82, 2), member('room', 'space', spaceDesign, 82, 40), member('bed', 'object', 'bed-design', 95, 80)]) };
   project.spatialAuthoring = { ...doc, occurrences: {}, rootOccurrenceIds: [], connections: [] };

@@ -47,7 +47,7 @@ describe("registered canonical spatial tools", () => {
     // Then
     expect(result.ok, result.summary).toBe(true);
     const data = result.data as { terrain: { worldTilesetIds: string[]; materials: string[]; settlementTilesetId: string } };
-    expect(data.terrain.worldTilesetIds).toContain("easyrpg_chipset_world");
+    expect(data.terrain.worldTilesetIds).toContain("worldmap_selected");
     expect(data.terrain.materials).toEqual(expect.arrayContaining(["ground", "water", "dirt", "forest", "mountain"]));
     expect(data.terrain.settlementTilesetId).toBe("easyrpg_chipset_combined_town");
   });

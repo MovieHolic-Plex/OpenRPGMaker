@@ -19,13 +19,7 @@
 // 시트(알파는 전부 255)가 '전부 불투명' 으로 읽혀서, 정작 투명한 칸이 검토 목록에서 사라진다.
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { applyTransparentColorKeys, parseRgbHexColor } from "@/assets/transparentColorKey";
-import {
-  scanTileAlpha,
-  unknownTileAlphaScan,
-  type TileAlphaClass,
-  type TileAlphaSample,
-  type TileAlphaScan,
-} from "@/project/tileAlphaScan";
+import { scanTileAlpha, unknownTileAlphaScan, type TileAlphaScan } from "@/project/tileAlphaScan";
 import { isCustomTileset } from "@/project/tilesetKind";
 import type { TilesetDef } from "@/project/types";
 
@@ -177,19 +171,4 @@ function loadScanImage(url: string): Promise<HTMLImageElement | null> {
     image.onerror = () => resolve(null);
     image.src = url;
   });
-}
-
-/** 감지된 부류(캐시에 있을 때만). 없으면 null — 호출자는 "아직 모름" 으로 다룬다. */
-export function detectedTileAlphaClass(tileset: TilesetDef, tile: number): TileAlphaClass | null {
-  const scan = peekCustomChipsetAlphaScan(tileset);
-  if (!scan) return null;
-  if (scan.status === "unknown") return "unknown";
-  return scan.samples[tile]?.cls ?? null;
-}
-
-/** 감지 표본(캐시에 있을 때만) — 검토 목록이 실측 픽셀 수를 그대로 보여준다. */
-export function detectedTileAlphaSample(tileset: TilesetDef, tile: number): TileAlphaSample | null {
-  const scan = cachedCustomChipsetAlphaScan(tileset);
-  if (!scan || scan.status === "unknown") return null;
-  return scan.samples[tile] ?? null;
 }

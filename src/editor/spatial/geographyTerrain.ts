@@ -1,12 +1,11 @@
 import { canMove, isPassableLanding } from "@/project/collision";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
-import { isWorldTileset, WORLD_SEA_TILE } from "@/project/defaults/worldCoastMapping";
+import { isWorldTileset, WORLD_PLAIN_TILE, WORLD_SEA_TILE } from "@/project/defaults/worldCoastMapping";
 import { WORLD_TERRAIN_BLOCKS } from "@/project/defaults/worldTerrainAutotiles";
 import { own } from "@/project/spatial/domain";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { SpatialPoint, SpatialRoute, SpatialTerrain } from "@/project/spatial/types";
 import type { GameMap, Project } from "@/project/types";
-import { MAP_GENERATION_PROFILES } from "../tools/mapGenerationProfiles";
 import { resolveAutotile } from "../tools/v3/rmTypeExpander";
 import { inArea } from "./compileTerrain";
 import { SpatialCompileError } from "./compilerTypes";
@@ -28,9 +27,10 @@ function assertTerrainTileSize(terrain: SpatialTerrain, atlasTileSize: number): 
 export function geographyTerrain(project: Project, terrain: SpatialTerrain, identity: { readonly id: string; readonly name: string }): GameMap {
   const tileset = own(project.tilesets, terrain.tilesetId);
   assertTerrainTileSize(terrain, tileset.tileSize);
-  const profile = MAP_GENERATION_PROFILES.get(terrain.tilesetId);
-  if (profile?.layout !== "world" || !isWorldTileset(tileset)) throw new SpatialCompileError("atlas", terrain.tilesetId);
-  const materials = new Map<string, number>([["ground", profile.palettes.village.base], ["water", WORLD_SEA_TILE],
+  // 생성 프로필(MAP_GENERATION_PROFILES)에 기대지 않는다: 월드 프로필은 2026-10-07 EasyRPG 월드 칩셋과 함께 지워져
+  // 모든 지역·세계 컴파일이 "atlas" 로 멈췄다. 월드 배치(0..479칸)를 지닌 시트면 평야 240 을 바닥으로 쓴다.
+  if (!isWorldTileset(tileset)) throw new SpatialCompileError("atlas", terrain.tilesetId);
+  const materials = new Map<string, number>([["ground", WORLD_PLAIN_TILE], ["water", WORLD_SEA_TILE],
     ...WORLD_TERRAIN_BLOCKS.map(block => [block.key, block.anchor + 61] as const)]);
   const map: GameMap = { ...identity, tilesetId: terrain.tilesetId, tileSize: tileset.tileSize,
     width: terrain.width, height: terrain.height, lowerTiles: Array<number>(terrain.width * terrain.height).fill(-1),

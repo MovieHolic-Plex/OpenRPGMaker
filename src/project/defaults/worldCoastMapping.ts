@@ -24,8 +24,9 @@ export function isWorldAnimatedTile(tile: number, tileset?: Pick<TilesetDef, "ti
   return Boolean(strip && (!tileset || !hasWorldAutotileGraft(tileset, strip.frames)));
 }
 
-/** Sheets that keep the stock world layout in cells 0..479 (the atlas biome world sheet appends below it). */
-const WORLD_LAYOUT_TEXTURES = new Set([WORLD_COAST_TEXTURE, "tex_atlas_biome_world"]);
+/** Sheets that keep the stock world layout in cells 0..479 (the atlas biome world sheet appends below it).
+ * worldmap_selected keeps the same 480 world cells (createWorldmapSelectedTileset) and appends picked icons below. */
+const WORLD_LAYOUT_TEXTURES = new Set([WORLD_COAST_TEXTURE, "tex_atlas_biome_world", "tex_worldmap_selected"]);
 export function isWorldTileset(tileset: Pick<TilesetDef, "image"> | undefined): boolean {
   return tileset?.image.type === "bundled" && WORLD_LAYOUT_TEXTURES.has(tileset.image.id);
 }

@@ -45,7 +45,7 @@ export function geographyRecipeFixture(recipeId: GeographyRecipe, seed = 7) {
   const room = own(source.library.spaces, "room-design");
   const base = { revision: 1, tags: [], provenance: { origin: "user" } } as const;
   const regions: RegionDesign[] = regionRecipes.map(recipe => ({ ...base, id: spatialId(recipe.id), name: recipe.id,
-    terrain: { tilesetId: "easyrpg_chipset_world", width: 128, height: 96, floor: recipe.floor, areas: recipe.areas },
+    terrain: { tilesetId: "worldmap_selected", width: 128, height: 96, floor: recipe.floor, areas: recipe.areas },
     places: recipe.places.map((id, index) => {
       const point = recipe.markers[index];
       if (!point) throw new TypeError("Missing recipe marker");
@@ -55,7 +55,7 @@ export function geographyRecipeFixture(recipeId: GeographyRecipe, seed = 7) {
       to: { childId: spatialId(recipe.places[1]), portId: spatialId("entry") }, bidirectional: true, points: recipe.points }],
   }));
   const worlds: WorldDesign[] = worldRecipes.map((id, index) => ({ ...base, id: spatialId(id), name: id,
-    terrain: { tilesetId: "easyrpg_chipset_world", width: 96, height: 64, floor: index === 0 ? "ground" : "snow", areas: [] },
+    terrain: { tilesetId: "worldmap_selected", width: 96, height: 64, floor: index === 0 ? "ground" : "snow", areas: [] },
     regions: regions.slice(index * 3, index * 3 + 3).map((region, i) => ({ id: region.id, source: { kind: "region", id: region.id }, x: 16 + i * 30, y: 24, level: 0 })),
     ports: [{ id: spatialId("entry"), name: "Entry", x: 8, y: 24 }],
     connections: regions.slice(index * 3, index * 3 + 2).map((region, i) => {

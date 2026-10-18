@@ -1,3 +1,4 @@
+import { GEOGRAPHY_TERRAIN } from "@/project/defaults/spatial/geographyCatalog";
 import { assertNever, findOccurrenceChildId, spatialId } from "@/project/spatial/domain";
 import { genId } from "@/util/id";
 import type {
@@ -190,7 +191,7 @@ export function freshGeographyId(project: Project, kind: GeographyKind): Spatial
 }
 
 function blankTerrain(width: number, height: number): SpatialTerrain {
-  return { tilesetId: "easyrpg_chipset_world", width, height, floor: "ground", areas: [] };
+  return { tilesetId: GEOGRAPHY_TERRAIN.tilesetId, width, height, floor: "ground", areas: [] };
 }
 
 export function blankRegionDesign(project: Project): RegionDesign {

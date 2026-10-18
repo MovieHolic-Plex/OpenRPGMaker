@@ -18,7 +18,6 @@ import { boolean, choice, coordinate, id, integer, point, record, rect } from "@
 import { resolveSpatialDesign } from "@/project/spatial/resolve";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringDocument, SpatialConnection, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
-import { MAP_GENERATION_PROFILES } from "./mapGenerationProfiles";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
@@ -204,8 +203,9 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     description: "Allowed values for authoring region/world designs with upsert_spatial_design: accepted terrain tilesetIds, material names for terrain.floor/areas, mountain:<surface> structure materials, settlement presets for region.settlement, and route/connection rules. Read this BEFORE writing a region or world design — wrong tilesetId or material names are rejected by the compiler.",
     parameters: { type: "object", properties: {}, additionalProperties: false },
     run(project) {
-      const worldTilesetIds = [...MAP_GENERATION_PROFILES.values()].filter(profile => profile.layout === "world")
-        .map(profile => profile.tilesetId).filter(tilesetId => isWorldTileset(project.tilesets[tilesetId]));
+      // 월드 생성 프로필은 2026-10-07 에 지워졌다 — 프로필로 거르면 늘 0종이었다. 지형 컴파일러와 같은 판정을 쓴다.
+      const worldTilesetIds = Object.values(project.tilesets)
+        .filter(tileset => isWorldTileset(tileset) && !tileset.id.startsWith("world_structures_")).map(tileset => tileset.id);
       return { summary: `지형 어휘: 월드 칩셋 ${worldTilesetIds.length}종 · 재료 ${WORLD_TERRAIN_BLOCKS.length + 5}종`, data: {
         active: project.spatialAuthoring !== undefined,
         terrain: {
