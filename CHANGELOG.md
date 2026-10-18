@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.267.0 — 2026-10-18
+
+### 기능
+
+- **interiors** — 84 venues in 11 categories with non-rectangular footprints; west-facing train cab (#2961) (`7db58f6`)
+- **flagship** — embed Chrono Bell & Emerald Crown as built-in default demo games across welcome, menu, launcher, and URL deep-links (#2957) (`2fd9bbb`)
+
+### 수정
+
+- **monster** — rename all 60 monster species to natural names and fix starter eye positions (#2960) (`5b8d884`)
+- **forest** — 숲 수관 명암 고도화 - 햇빛·겹친 수관 그늘·빛줄기·숲 끝 실루엣 (Opus 적대적 VQA) (#2959) (`bac378d`)
+
 ## 0.266.0 — 2026-10-18
 
 ### 기능
