@@ -1,0 +1,40 @@
+// 공간 규모별 표준 크기 규격(VENUE_SCALE_CONTRACT) - 2026-10-18 사용자 「대형마트는 시발 너무 작다… 미리미리 정리해줘야하나. 가령 대형마트는 50x50 정도로」.
+// modern_city 실내 program 이 지어야 하는 맵 크기(벽 포함 전체 칸). 견본(dailyVenues.ts)은 이 크기로 짜여 seed 1 이 정확히 이 크기로 서고,
+// 변주 seed 는 큰 방을 몇 칸 넓힐 뿐 작아지지 않는다. 백화점 청사진(blueprintComposers.ts)도 이 크기를 바탕으로 짓는다.
+// 조수 도구 설명(build_hand_interior_room)에 그대로 실려 rooms 를 직접 짜는 조수도 이 규모를 따른다.
+
+export type VenueTier = "XL" | "L" | "M" | "S";
+
+export interface VenueScale {
+  readonly tier: VenueTier;
+  readonly w: number;
+  readonly h: number;
+  readonly ko: string;
+}
+
+/** XL 48~52 × 38~48 대형 상업·체육 · L 40~46 × 26~34 다동 시설·교통 · M 30~38 × 20~28 가게·주거 · S 40 × 12 이하 탈것. */
+export const VENUE_SCALE_CONTRACT: Readonly<Record<string, VenueScale>> = {
+  mc_supermarket: { tier: "XL", w: 50, h: 46, ko: "대형마트·하이퍼마켓(청과·정육·수산·곤돌라 12열·계산대 8레인·푸드코트·물류창고)" },
+  mc_department_store: { tier: "XL", w: 48, h: 38, ko: "백화점(아트리움 에스컬레이터 쌍·분수·화장품·명품·주얼리·패션관·VIP 라운지)" },
+  mc_gym: { tier: "XL", w: 46, h: 34, ko: "실내 종합 체육관(양쪽 골대 풀코트·관람석·본부석·남녀 라커룸·기구 창고)" },
+  mc_school_building: { tier: "L", w: 46, h: 34, ko: "학교 교사동(계단실·교실 둘·교무실·복도·현관 신발장·보건실·매점)" },
+  mc_station: { tier: "L", w: 46, h: 32, ko: "지하철역(승강장 스크린도어·선로 + 개찰구 차단선 대합실·역무실·역내 편의점)" },
+  mc_office: { tier: "L", w: 46, h: 32, ko: "대형 오피스 층(리셉션·마주 보는 책상 업무홀·대회의실·임원실·탕비 라운지)" },
+  mc_lecture_hall: { tier: "L", w: 42, h: 30, ko: "대학 강의동(계단식 대강의실·과학 실험실·준비실·로비)" },
+  mc_sento: { tier: "L", w: 40, h: 30, ko: "센토·스파(카운터·탈의실·씻는 자리 열·탕 셋·사우나·노천탕)" },
+  mc_game_center: { tier: "L", w: 40, h: 28, ko: "게임센터·노래방·만화카페(인형뽑기·리듬·대전 캐비닛·노래방 둘·만화 서가)" },
+  mc_restaurant: { tier: "M", w: 38, h: 28, ko: "레스토랑·다이닝 바(오픈 키친·바 라운지·피아노 무대·4방향 식탁·부스석)" },
+  mc_izakaya: { tier: "M", w: 36, h: 26, ko: "이자카야·라멘(주방 다찌 카운터·다다미 룸 둘·홀)" },
+  mc_council_room: { tier: "M", w: 36, h: 26, ko: "학생회실·밴드 동아리방(ㄷ자 회의 탁자 4방향 의자·비품실·밴드실·녹음 부스)" },
+  mc_rooftop: { tier: "M", w: 36, h: 24, ko: "학교 옥상(탑옥·안전 펜스·급수탑·벤치·자판기)" },
+  mc_house: { tier: "M", w: 34, h: 26, ko: "2층 가정집 1층(침실 둘·욕실·계단·거실·4방향 식탁 부엌·현관)" },
+  mc_officetel: { tier: "M", w: 32, h: 24, ko: "원룸·오피스텔(엘리베이터 홀·욕실·드레스룸·키친·원룸)" },
+  mc_bakery_cafe: { tier: "M", w: 32, h: 22, ko: "베이커리 카페(제빵실·에스프레소 바·4방향 카페 좌석 홀)" },
+  mc_konbini_jp: { tier: "M", w: 30, h: 22, ko: "편의점(진열대 3열·음료 냉장고 벽·도시락·ATM·계산대·창고)" },
+  mc_train_car: { tier: "S", w: 40, h: 12, ko: "전동차 내부(운전실 + 객차 둘 - 양쪽 롱시트·출입문·손잡이·봉)" },
+};
+
+/** 조수 도구 설명에 싣는 한 줄 요약. */
+export function venueScaleBrief(): string {
+  return Object.entries(VENUE_SCALE_CONTRACT).map(([k, v]) => `${k} ${v.w}×${v.h}`).join(" · ");
+}

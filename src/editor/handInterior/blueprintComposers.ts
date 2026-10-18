@@ -922,10 +922,12 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
   const grand = nuance.scale === "grand", compact = nuance.scale === "compact";
   const mood = nuance.mood === "neutral" ? pickOf(rng, ["neutral", "neutral", "cool", "warm"] as const) : nuance.mood;
   const pal = STORE_PALETTES[mood];
-  const wingW = pickInt(rng, 10, 12) + (grand ? 2 : 0) - (compact ? 1 : 0);
-  const hallW = pickOf(rng, [13, 15]) + (grand ? 2 : 0) - (compact ? 2 : 0);
-  const rowsY1 = pickInt(rng, 18, 20) + (grand ? 2 : 0) - (compact ? 3 : 0);
-  const topY1 = compact ? Math.floor(rowsY1 / 2) : pickInt(rng, 9, 10);
+  // 규모 규격(venueScale.ts mc_department_store 48×38): 바깥벽·칸막이 넷 + 윙 둘 + 아트리움 = 48칸, 위아래 벽 둘 + 36줄 = 38줄.
+  const baseHallW = pickOf(rng, [14, 16]);
+  const hallW = baseHallW + (grand ? 2 : 0) - (compact ? 4 : 0);
+  const wingW = (44 - baseHallW) / 2 + (grand ? 1 : 0) - (compact ? 3 : 0);
+  const rowsY1 = 36 + (grand ? 4 : 0) - (compact ? 12 : 0);
+  const topY1 = compact ? Math.floor(rowsY1 / 2) : pickInt(rng, 15, 18);
   const fashionWest = rng() < 0.5;
   const sideX0 = (west: boolean) => (west ? 1 : wingW + hallW + 3);
   const fashion: HandInteriorRoom = { id: "fashion", x0: sideX0(fashionWest), y0: 1, x1: sideX0(fashionWest) + wingW - 1, y1: rowsY1, floor: pal.fashion[0], wall: pal.fashion[1] };
@@ -1057,6 +1059,6 @@ export function composeInteriorBlueprint(tilesetId: string, program: string, spe
   if (tilesetId === "modern_city" && program === "lobby" && !/호텔|백화점|hotel|department/iu.test(request)) return composeOfficeLobby(spec, nuance, seed);
   if (tilesetId === "modern_campus" && program === "university-lecture-wing") return composeLectureWing(spec, nuance, seed);
   if (tilesetId === "atlas_biome_interior" && program === "throne") return composeThroneHall(spec, nuance, seed);
-  if (tilesetId === "modern_city" && program === "department-store") return composeDepartmentStore(spec, nuance, seed);
+  if (tilesetId === "modern_city" && (program === "department-store" || program === "mc_department_store")) return composeDepartmentStore(spec, nuance, seed);
   return undefined;
 }

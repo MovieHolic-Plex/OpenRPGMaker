@@ -8,8 +8,9 @@
 // 결과는 rooms.ts 의 rooms·connect·exit 그대로다.
 import type { HandInteriorSpec } from "./builder";
 import type { HandInteriorConnect, HandInteriorRoom } from "./rooms";
-import { programKinds, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
+import { programKinds, roomPrograms, roomTemplates, templatesOfKind, templateStyle, type InteriorRoomTemplate, type InteriorStyleVariant } from "./templates";
 import { MODERN_PROGRAM_VARIATION, type ModernProgramVariation } from "./modernPresets";
+import { VENUE_SCALE_CONTRACT } from "./venueScale";
 
 type Pair = readonly [string, string] | { readonly a: string; readonly b: string };
 export interface LayoutRoomRequest { readonly id?: string; readonly kind: string; readonly w?: number; readonly h?: number; readonly floor?: string; readonly wall?: string }
@@ -255,16 +256,25 @@ function rng(seed: number) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 
+/** program 은 건물 id(mc_office)나 그 건물의 맵 key(office-floor — 도구가 맵 이름 「오피스」에서 고른 값) 둘 다 온다 → 건물 id. */
+function programBuilding(tilesetId: string, program: string | undefined): string | undefined {
+  if (!program) return undefined;
+  const byBuilding = roomPrograms(tilesetId);
+  return byBuilding[program] ? program : Object.entries(byBuilding).find(([, maps]) => maps.some((m) => m.map === program))?.[0];
+}
+
 /** program 변주(modernPresets.ts MODERN_PROGRAM_VARIATION) — seed 1 은 견본 그대로, 그 뒤로 동↔서 뒤집기·바닥 벽면 묶음·큰 방 넓히기. */
 function programVariation(tilesetId: string, req: LayoutRequest): { v: ModernProgramVariation; k: number; flip: boolean; palette?: Readonly<Record<string, readonly [string, string]>> } | undefined {
-  const v = req.program ? MODERN_PROGRAM_VARIATION[tilesetId]?.[req.program] : undefined;
+  const building = programBuilding(tilesetId, req.program);
+  const v = building ? MODERN_PROGRAM_VARIATION[tilesetId]?.[building] : undefined;
   if (!v) return undefined;
   const k = Math.max(0, Math.floor(req.seed ?? 1) - 1);
   const p = k % (v.palettes.length + 1);
   return { v, k, flip: k % 2 === 1, ...(p ? { palette: v.palettes[p - 1] } : {}) };
 }
 
-interface Want { id: string; kind: string; tw: number; th: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate }
+/** bw·bh 는 seed 변주로 넓히기 전 견본 크기 - 줄 배치(rows)는 이 합으로 규모 규격 크기를 지키고, 넓힌 만큼은 칸막이 자리만 옮긴다. */
+interface Want { id: string; kind: string; tw: number; th: number; bw: number; bh: number; minW: number; minH: number; floor?: string; wall?: string; template?: InteriorRoomTemplate }
 interface Rect { x: number; y: number; w: number; h: number }
 
 export class LayoutError extends Error { constructor(message: string) { super(message); this.name = "LayoutError"; } }
@@ -312,7 +322,7 @@ export function layoutWants(tilesetId: string, req: LayoutRequest): Want[] {
     // 세로는 벽면 두 줄 + 걸을 바닥 — 작은 방(복도·현관·화장실·욕실)은 바닥 2줄, 나머지는 3줄 이상(2026-10-08: 바닥 2줄짜리 여관 방이 납작했다).
     const small = /^(hall|corridor|genkan|toilet|bath|unitbath|dressing|cell)$/u.test(q.kind);
     const minH = Math.max(small ? 4 : 5, Math.min(th, small ? 4 : 5));
-    return { id, kind: q.kind, tw, th: Math.max(th, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
+    return { id, kind: q.kind, tw, th: Math.max(th, minH), bw: tw0, bh: Math.max(th0, minH), minW: Math.max(2, Math.min(tw, 3) - (tw <= 2 ? 1 : 0)), minH,
       floor: q.floor ?? pal?.[0] ?? template?.floor, wall: q.wall ?? pal?.[1] ?? template?.wall, template };
   });
 }
@@ -433,6 +443,50 @@ function adjacency(rects: Map<string, Rect>): Edge[] {
 
 const matches = (w: Want, key: string) => w.id === key || w.kind === key;
 
+/**
+ * 줄 배치 → 방 사각형. 줄마다 방을 왼쪽부터 칸막이 한 칸씩 띄워 놓고, 줄 높이는 그 줄 견본 높이(bh) 중 가장 큰 값, 줄 너비는 견본 너비(bw)로 가장 넓은 줄에 맞춘다 -
+ * 견본 크기 합이 규모 규격(venueScale.ts)이라 seed 가 바뀌어도 맵 크기는 규격 그대로다. seed 변주로 넓힌 너비(tw - bw)는 그 줄의 남는 너비 안에서만
+ * 앞 방부터 받고 나머지는 견본이 가장 넓은 방이 받는다 - 칸막이 자리가 seed 마다 옮겨 가구 간격이 바뀐다. 줄에 없는 방이 있거나 없는 방 종류를 부르면 undefined.
+ */
+function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[]): Map<string, Rect> | undefined {
+  const pool = [...wants];
+  const grid: Want[][] = [];
+  for (const row of rows) {
+    const line: Want[] = [];
+    for (const key of row) {
+      const i = pool.findIndex((w) => matches(w, key));
+      if (i < 0) return undefined;
+      line.push(pool.splice(i, 1)[0]!);
+    }
+    grid.push(line);
+  }
+  if (pool.length) return undefined;
+  const baseWidth = (line: readonly Want[]) => line.reduce((s, w) => s + w.bw, 0) + line.length - 1;
+  const W = Math.max(...grid.map(baseWidth));
+  const out = new Map<string, Rect>();
+  let y = 1;
+  for (const line of grid) {
+    const h = Math.max(...line.map((w) => w.bh));
+    const widest = line.reduce((a, w) => (w.bw > a.bw ? w : a), line[0]!);
+    // 가장 넓은 방(15칸 이상)은 3칸까지 내어 준다 - 규격 너비를 꽉 채운 줄에서도 칸막이가 옮겨 간다(14칸 레스토랑 주방은 11칸이면 가구 하나가 빠졌다).
+    let budget = W - baseWidth(line) + (line.length > 1 && widest.bw >= 15 ? 3 : 0);
+    const widths = new Map(line.map((w) => {
+      const g = w === widest ? 0 : Math.min(Math.max(0, w.tw - w.bw), budget);
+      budget -= g;
+      return [w, w.bw + g] as const;
+    }));
+    widths.set(widest, W - line.reduce((s, w) => s + (w === widest ? 0 : widths.get(w)!), 0) - (line.length - 1));
+    let x = 1;
+    for (const w of line) {
+      const ww = widths.get(w)!;
+      out.set(w.id, { x, y, w: ww, h });
+      x += ww + 1;
+    }
+    y += h + 1;
+  }
+  return out;
+}
+
 /** 배치 후보를 점수 순으로(낮을수록 좋다). */
 function buildCandidatesForVariant(
   tilesetId: string,
@@ -475,9 +529,14 @@ function buildCandidatesForVariant(
   const leftPairs = pairOf(LEFT_DEFAULT);
   const programAbove = pairOf(vary?.v.above), programLeft = pairOf(vary?.v.left);
   const total = wants.reduce((s, w) => s + w.tw * w.th, 0);
+  const scaleKey = tilesetId === "modern_city" ? programBuilding(tilesetId, req.program) : undefined;
+  const scale = scaleKey ? VENUE_SCALE_CONTRACT[scaleKey] : undefined;
   const variantSeedOffset = styleVariant === "A" ? 0 : styleVariant === "B" ? 101 : styleVariant === "C" ? 202 : 303;
   const r = rng((req.seed ?? 1) + variantSeedOffset);
   const found = new Map<string, LayoutCandidate>();
+  // program 이 줄 배치(rows)를 주면 첫 시도는 그 줄 배치 그대로다 — 견본 방 크기 합이 규모 규격이라 seed 1 이 규격 크기로 선다. 나머지 시도는 다른 배치 후보(variant 1·2…).
+  const rowPlan = vary?.v.rows ? rowRects(vary.v.rows, wants) : undefined;
+  let rowKey: string | undefined;
   for (let trial = 0; trial < 600 && found.size < 60; trial++) {
     const order = [...wants];
     for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [order[i], order[j]] = [order[j]!, order[i]!]; }
@@ -488,14 +547,16 @@ function buildCandidatesForVariant(
     if (req.maxWidth) W = Math.min(W, req.maxWidth - 2);
     if (req.maxHeight) H = Math.min(H, req.maxHeight - 2);
     let rects: Map<string, Rect> | null;
-    if (trial % 2 === 0) {
+    const fromRows = trial === 0 && rowPlan !== undefined;
+    if (trial === 0 && rowPlan) rects = new Map([...rowPlan].map(([id, q]) => [id, { ...q }]));
+    else if (trial % 2 === 0) {
       const tree = buildTree(order, entrance, r);
       if ((req.maxWidth && tree.w > req.maxWidth - 2) || (req.maxHeight && tree.h > req.maxHeight - 2)) continue;
       rects = new Map(); placeTree(tree, { x: 1, y: 1, w: tree.w, h: tree.h }, rects, r);
       W = tree.w; H = tree.h;
     } else rects = slice({ x: 1, y: 1, w: W, h: H }, order, entrance, r);
     if (!rects) continue;
-    trimToTarget(rects, wants, entrance, W, H);
+    if (!fromRows) trimToTarget(rects, wants, entrance, W, H);
     {
       const mx = Math.min(...[...rects.values()].map((q) => q.x)) - 1, my = Math.min(...[...rects.values()].map((q) => q.y)) - 1;
       for (const q of rects.values()) { q.x -= mx; q.y -= my; }
@@ -542,6 +603,8 @@ function buildCandidatesForVariant(
       score += Math.max(0, (BW - 2) * (BH - 2) - roomArea * 1.25) / total * 6;
       const basp = Math.max(BW / BH, BH / BW);
       if (basp > 1.7) score += (basp - 1.7) * 3;
+      // 규모 규격이 있는 program 은 그 크기에 맞춘 배치를 고른다 - 견본 방 크기 합이 규격이라 맞는 배치가 있다(작아지는 쪽을 무겁게).
+      if (scale) score += Math.max(0, scale.w - BW) * 3 + Math.max(0, scale.h - BH) * 3 + Math.max(0, BW - scale.w) * 0.75 + Math.max(0, BH - scale.h) * 0.75;
     }
     for (const [p, q] of prefer) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) { score += 3; notes.push(`${p}–${q} 이 이웃이 아니다`); }
     for (const [p, q] of openPairs) if (!edges.some((e) => (e.a === p && e.b === q) || (e.a === q && e.b === p))) score += 1.5;
@@ -581,6 +644,7 @@ function buildCandidatesForVariant(
           ? exitRoom.x0 + Math.max(2, Math.floor(exitW * 0.36))
           : undefined;
     const key = `${styleVariant}|` + rooms.map((x) => `${x.id}:${x.x0},${x.y0},${x.x1},${x.y1}:${x.floor ?? ""}`).join("|");
+    if (fromRows) rowKey = key;
     if (!found.has(key)) {
       found.set(key, {
         width: BW,
@@ -595,7 +659,9 @@ function buildCandidatesForVariant(
     }
   }
   if (!found.size) throw new LayoutError(`방 ${wants.length}개를 ${req.maxWidth ?? "?"}×${req.maxHeight ?? "?"} 안에 배치하지 못했다 — 방 수를 줄이거나 크기 제한을 푼다`);
-  return [...found.values()].sort((a, b) => a.score - b.score).slice(0, limit);
+  const ranked = [...found.values()].sort((a, b) => a.score - b.score);
+  const rowCand = rowKey ? found.get(rowKey) : undefined;
+  return (rowCand ? [rowCand, ...ranked.filter((c) => c !== rowCand)] : ranked).slice(0, limit);
 }
 
 /** 배치 후보를 점수 순으로(낮을수록 좋다). count>1 이고 styleVariant 미지정이면 A/B/C/D 구조·색감 변형을 차례로 담는다. */

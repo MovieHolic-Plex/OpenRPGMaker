@@ -247,6 +247,44 @@ export function isFlushTravelPiece(d: Pick<SpecObject, "kind" | "use" | "up" | "
 
 interface Entry { key: number; order: number; tile: number; layer: 2 | 3; label: string }
 
+/** 탁자 칸으로 치는 가구: 식탁·책상·회의 탁자(id 의 table·desk 또는 태그 식탁·탁자·책상·회의). 파일 캐비닛·협탁 같은 윗면 가구는 빠진다. */
+const TABLE_ID = /(^|-)(table|desk)(-|$)/u;
+const TABLE_TAG = /^(식탁|탁자|책상|회의)$/u;
+function isTablePiece(id: string, d: SpecObject): boolean {
+  return d.kind === "floor" && !isSeatId(id, d) && (TABLE_ID.test(id) || !!d.tags?.some((t) => TABLE_TAG.test(t)));
+}
+/** 남향 좌석 id 의 다른 방향 그림(같은 크기만): mci-chair-office-s -> mci-chair-office-n, mci-armchair -> mci-armchair-e. */
+function facingSibling(id: string, dir: "n" | "e" | "w", S: HandInteriorSpec): string | undefined {
+  const d = S.objects[id]!;
+  const sib = /-s$/u.test(id) ? id.replace(/-s$/u, `-${dir}`) : `${id}-${dir}`;
+  const e = S.objects[sib];
+  return e && e.w === d.w && e.h === d.h ? sib : undefined;
+}
+/**
+ * 남향(그림 기본) 좌석이 탁자를 등지지 않게 돌린다 - 탁자 남쪽 의자는 북향, 서쪽 의자는 동향, 동쪽 의자는 서향 그림으로 바꾼다
+ * (2026-10-18 사용자 「의자가 아래 방향만 구현되어있는거냐. 학생회실 보니까 어이가없네」). 남쪽에 탁자가 있는(이미 탁자를 보는) 좌석, 탁자에 안 붙은 좌석,
+ * 방향 그림이 없는 칩셋의 좌석은 그대로 둔다. 견본·조수·청사진 어느 길로 들어온 의자든 여기서 한 번에 맞춘다.
+ */
+export function faceSeatsToTables(objects: readonly HandInteriorObject[], tables: readonly HandInteriorTable[], S: HandInteriorSpec): HandInteriorObject[] {
+  const cells = new Set<string>();
+  const mark = (x0: number, y0: number, w: number, h: number) => { for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) cells.add(`${x},${y}`); };
+  for (const t of tables) mark(t.x, t.y, t.w, t.h);
+  for (const o of objects) { const d = S.objects[o.id]; if (d && isTablePiece(o.id, d)) mark(o.x, o.y, d.w, d.h); }
+  if (!cells.size) return [...objects];
+  const any = (pts: readonly (readonly [number, number])[]) => pts.some(([x, y]) => cells.has(`${x},${y}`));
+  const span = (n: number, f: (k: number) => readonly [number, number]) => Array.from({ length: n }, (_, k) => f(k));
+  return objects.map((o) => {
+    const d = S.objects[o.id];
+    if (!d || !isSeatId(o.id, d) || (d.facing ?? "S") !== "S") return o;
+    if (any(span(d.w, (k) => [o.x + k, o.y + d.h]))) return o;
+    const dir = any(span(d.w, (k) => [o.x + k, o.y - 1])) ? "n"
+      : any(span(d.h, (k) => [o.x + d.w, o.y + k])) ? "e"
+      : any(span(d.h, (k) => [o.x - 1, o.y + k])) ? "w" : undefined;
+    const sib = dir && facingSibling(o.id, dir, S);
+    return sib ? { ...o, id: sib } : o;
+  });
+}
+
 /**
  * 평면 + 물건 목록 → 네 층. 오류(겹침·벽면 밖 걸이·바닥 밖 가구)는 issues 에 error 로, 통행 BFS 결과는 warning 으로 남긴다.
  * tileset 이 있으면 통행을 그 정의로 계산한다(없으면 BFS 생략).
@@ -280,14 +318,15 @@ export function buildHandInteriorLayers(input: HandInteriorInput, tileset?: Tile
   // "dining 1x3" / "dais 5x2 wood" 처럼 크기를 이름에 넣은 id 는 탁자·단 자동 타일로 푼다(예제 정답 배열의 표기).
   const tables: HandInteriorTable[] = [...(input.tables ?? [])];
   const daises: HandInteriorDais[] = [...(input.daises ?? [])];
-  const objects: HandInteriorObject[] = [];
+  const raw: HandInteriorObject[] = [];
   for (const o of input.objects ?? []) {
     const t = /^([a-z]+) (\d+)x(\d+)$/u.exec(o.id);
     const da = /^(dais(?:-w)?) (\d+)x(\d+) ([a-z]+)$/u.exec(o.id);
     if (!S.objects[o.id] && t && S.tables[t[1]!]) tables.push({ style: t[1]!, x: o.x, y: o.y, w: Number(t[2]), h: Number(t[3]) });
     else if (!S.objects[o.id] && da && S.daises[`${da[1]} ${da[4]}`]) daises.push({ id: `${da[1]} ${da[4]}`, x: o.x, y: o.y, w: Number(da[2]), h: Number(da[3]) });
-    else objects.push(o);
+    else raw.push(o);
   }
+  const objects = faceSeatsToTables(raw, tables, S);
   /** 벽면에 딱 맞춰 박은 탈것: 벽면 칸 → 이름표(걸이와 겹치면 안 된다), 탈 자리(그 앞 첫 바닥 줄 칸). */
   const flushFace = new Map<number, string>();
   const landings: { i: number; label: string }[] = [];
