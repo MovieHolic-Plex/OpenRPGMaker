@@ -666,7 +666,7 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
       }
     }
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
-    // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
+    // 청사진 구성기가 있는 공간(오피스 로비·대학 강의동·왕성 알현실·백화점)은 견본 한 벌 대신 청사진 규칙으로 매번 새로 짠다 —
     // 2026-10-18 사용자 반려 「프리셋을 그대로 깔지 말고 AI 가 참고해서, 똑같이 깔지 말고」. 방 목록을 직접 준 layout 은 그대로 따른다.
     let blueprint: BlueprintInteriorArgs | undefined;
     if (args.layout && typeof args.layout === "object") {

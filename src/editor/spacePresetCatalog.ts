@@ -12,6 +12,8 @@ import { createDraft, finishDraftTilesets } from "@/editor/tools/changeset";
 import { createBlankMap } from "@/project/defaults";
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 import { paintRiversidePromenade } from "@/project/startRoutePaint";
+import { allowedVillageForms } from "@/editor/tools/beodeulVillage";
+import { allowedVillageTerrains } from "@/editor/tools/beodeulTerrain";
 import type { GameMap, MapId, Project } from "@/project/types";
 
 export type SpaceBlueprintCategory = "modern_interior" | "modern_outdoor" | "fantasy_murim_dungeon";
@@ -310,7 +312,14 @@ export function composeSpaceFromBlueprintOnDraft(draft: Project, mapId: MapId, o
     case "beodeul_town": {
       const w = Math.max(48, scaled(bp.width)), h = Math.max(38, scaled(bp.height));
       resetBlueprintMap(draft, mapId, name, bp.tilesetId, w, h);
-      summary = runTool(draft, "author_beodeul_town", { mapId, name, width: w, height: h, theme: pick(e.themes, 0), form: pick(e.forms, 1), terrain: pick(e.terrains, 2), seed });
+      // 요청 문구가 기후·물가를 말하면 그 theme, 아니면 씨앗. form·terrain 은 엔진이 그 theme 에 허용하는 것만 고른다
+      // (씨앗 7 이 snow + riverbank 를 골라 시공이 터졌다 — 2026-10-18 VQA 4회차).
+      const theme = /눈|설원|겨울|snow/iu.test(options.request) ? "snow" : /바다|포구|항구|해안|coast|harbou?r/iu.test(options.request) ? "coast" : /강가|강변|river/iu.test(options.request) ? "river" : /도시|성곽|city/iu.test(options.request) ? "city" : pick(e.themes, 0);
+      const villageArgs = theme === "city" ? {} : {
+        form: pick(e.forms.filter((f) => allowedVillageForms(theme).includes(f)), 1),
+        terrain: pick(e.terrains.filter((t) => allowedVillageTerrains(theme).includes(t)), 2),
+      };
+      summary = runTool(draft, "author_beodeul_town", { mapId, name, width: w, height: h, theme, ...villageArgs, seed });
       break;
     }
     case "dungeon":

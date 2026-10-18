@@ -202,7 +202,7 @@ const RIVERSIDE_PALETTES = {
 
 /**
  * 강변·수변·호숫가 산책로를 깐다(2026-10-18 적대적 VQA: 강이 자로 그은 직선이고 남쪽 절반이 빈 잔디 사각형이었다):
- * - 높이 최소 15줄. 북쪽 강물은 씨앗마다 다른 완만한 굽이(깊이 3~6줄, 이웃 열과 1줄 넘게 차이 나지 않음) + 굽이 따라 석축 제방 1줄
+ * - 높이 최소 15줄. 북쪽 강물은 씨앗마다 다른, 맵을 비스듬히 가로지르는 굽이(깊이 3~8줄, 이웃 열과 1줄 넘게 차이 나지 않음) + 굽이 따라 석축 제방 1줄
  *   (romance-waterfront-no-water 기준 물 15%·3줄 이상 유지), 물로 2줄 나간 돌 전망 부두 하나
  * - 제방 아래 잔디·화단 띠에 가로수와 가로등을 번갈아(나무 3줄이 들어가는 자리에만)
  * - 끊기지 않는 연속 돌 산책로 4줄(위 연석 · 포석 2줄 · 아래 연석) — 이동 이벤트·NPC 는 이 줄로 맞춘다
@@ -258,13 +258,13 @@ export function paintRiversidePromenade(
   const P = RIVERSIDE_PALETTES[isCampus ? "modern_campus" : "modern_city"];
   const water = isCampus && ts ? ensureCampusWaterTile(project, ts) : 23;
 
-  // 강 굽이: 사인 두 개를 겹친 깊이(3..base+2), 이웃 열과 한 줄 넘게 차이 나지 않게 다듬는다.
-  // 진폭 1.1 은 굽이가 한두 칸 홈뿐이라 자로 그은 강으로 보였다(2026-10-18 VQA 1회차) — 1.9 로 넓힌다.
+  // 강 굽이: 사인 두 개를 겹친 깊이(3..base+3), 이웃 열과 한 줄 넘게 차이 나지 않게 다듬는다.
+  // 진폭 1.1 → 1.9 도 위쪽 띠로 보였다(2026-10-18 VQA 4회차) — 맵을 0.75 바퀴 가로지르는 긴 굽이(진폭 2.6)로 강이 비스듬히 흐르게 한다.
   const phase = rnd() * Math.PI * 2, phase2 = rnd() * Math.PI * 2;
   const depth: number[] = [];
   for (let x = 0; x < W; x++) {
-    const v = baseWaterDepth + 0.5 + 1.9 * Math.sin((x / W) * Math.PI * 2 * 0.9 + phase) + 0.7 * Math.sin((x / W) * Math.PI * 2 * 2.1 + phase2);
-    depth.push(Math.max(3, Math.min(baseWaterDepth + 2, Math.round(v))));
+    const v = baseWaterDepth + 0.5 + 2.6 * Math.sin((x / W) * Math.PI * 2 * 0.75 + phase) + 0.8 * Math.sin((x / W) * Math.PI * 2 * 1.9 + phase2);
+    depth.push(Math.max(3, Math.min(baseWaterDepth + 3, Math.round(v))));
   }
   for (let x = 1; x < W; x++) depth[x] = Math.max(depth[x - 1]! - 1, Math.min(depth[x - 1]! + 1, depth[x]!));
   const deepest = Math.max(...depth);
@@ -324,8 +324,11 @@ export function paintRiversidePromenade(
   type Block = "plaza" | "terrace" | "garden";
   const blocks: { kind: Block; x0: number; x1: number }[] = [];
   if (southRows >= 6) {
-    const order: Block[] = (["plaza", "terrace", "garden"] as Block[]).sort(() => rnd() - 0.5);
-    const cuts = [0, Math.floor(W / 3), Math.floor((2 * W) / 3), W];
+    // 세 구획 순서는 Fisher–Yates, 경계는 ±2칸 흔든다(sort 비교 난수는 씨앗 1·7 이 같은 순서를 냈다 — VQA 4회차).
+    const order: Block[] = ["plaza", "terrace", "garden"];
+    for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [order[i], order[j]] = [order[j]!, order[i]!]; }
+    const jitter = () => Math.floor(rnd() * 5) - 2;
+    const cuts = [0, Math.floor(W / 3) + jitter(), Math.floor((2 * W) / 3) + jitter(), W];
     for (let k = 0; k < 3; k++) blocks.push({ kind: order[k]!, x0: cuts[k]!, x1: cuts[k + 1]! - 1 });
     const bottomY = H - 1;
     paint(0, bottomY, W - 1, bottomY, P.paved);
@@ -383,6 +386,13 @@ export function paintRiversidePromenade(
     if (stampRiversideKit(ts, map, P.trees[treeK % P.trees.length]!, x, treeY, occupied)) treeK++;
     const lampX = x + Math.floor(treeStep / 2) + 1;
     if (lampX < W - 1) stampRiversideKit(ts, map, P.lamp, lampX, walkTopY - 2, occupied);
+  }
+  // 강이 얕게 물러난 굽이 안쪽은 잔디가 7줄 이상 비므로 3줄 아래에 엇갈린 둘째 줄 나무(자리가 없으면 화분)로 강변 숲을 채운다.
+  for (let x = 1 + xShift + Math.floor(treeStep / 2); x + 2 <= W; x += treeStep) {
+    const shore = Math.max(depth[x]!, depth[x + 1]!, depth[Math.max(0, x - 1)]!) + 1;
+    if (walkTopY - shore < 7) continue;
+    if (stampRiversideKit(ts, map, P.trees[treeK % P.trees.length]!, x - 1, shore + 3, occupied)) treeK++;
+    else stampRiversideKit(ts, map, P.planter, x, shore + 3, occupied);
   }
   for (let x = 3 + xShift; x + 2 <= W - 1; x += 9) stampRiversideKit(ts, map, "mc-in-mci-bench-metal", x, walkTopY - 1, occupied);
 
