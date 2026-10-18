@@ -123,18 +123,18 @@ interface ChapterSpec {
 }
 const say = (speaker: string, line: string): Beat => ({ kind: "say", speaker, text: line });
 
-/** 장(章) 사전 — 크로노 트리거 다섯 시대 + FF6 세 고장. 맵 key 는 "hub" 또는 sites[].key. */
+/** 장(章) 사전 — 시대초월 정통 JRPG 8장(오리지널 고유명사 정본). 맵 key 는 "hub" 또는 sites[].key. */
 export const JRPG_CHAPTERS = {
   ct_truce_fair: {
-    title: "천년제의 트루스 마을", era: "CT 1000 AD",
-    hub: { name: "트루스 마을 · 천년제 광장", scene: "beodeul_town:river", form: "plaza" },
-    sites: [{ key: "castle", name: "가르디아 성 왕좌의 방", interior: "throne" }],
+    title: "천년제의 벨하임 마을", era: "왕력 1000년 · 현재",
+    hub: { name: "벨하임 마을 · 천년제 광장", scene: "beodeul_town:river", form: "plaza" },
+    sites: [{ key: "castle", name: "벨하임 왕성 알현실", interior: "throne" }],
     moods: { hub: { ambient: 0.05, color: "#ffd9a0" } },
     atmosphere: { hub: ["petals"] },
-    // 천년제 광장: 마을 풀밭을 걷어 낸 장터 마당 — 북쪽 무대에 루카의 텔레포드 두 기, 가운데에 리아네의 종탑·분수, 둘레에 장터 노점·길드 깃발·쌍등 가로등.
+    // 천년제 광장: 마을 풀밭을 걷어 낸 장터 마당 — 북쪽 무대에 토우의 텔레포드 두 기, 가운데에 종탑·분수, 둘레에 장터 노점·길드 깃발·쌍등 가로등.
     dress: {
       hub: [
-        // 루카의 텔레포드 시연대 — 앞 칸에서 범종 신호를 울리고 출력을 맞추는 축제 놀이(devices). 광장이 좁아도 늘 서는 소품에 단다.
+        // 토우의 텔레포드 시연대 — 앞 칸에서 범종 신호를 울리고 출력을 맞추는 축제 놀이(devices). 광장이 좁아도 늘 서는 소품에 단다.
         { object: "kit:atlas_biome_interior/hand-interior:teleport pad", where: "fair-north", count: 2, light: "#80d0ff", mark: "telepod" },
         { object: "kit:sengoku_edo/se-bell-tower", where: "fair" },
         { object: "kit:beodeul_city/bd-prop-stall_veg", where: "fair" },
@@ -148,7 +148,7 @@ export const JRPG_CHAPTERS = {
         { object: "kit:modern_campus/mc-fountain-anim", where: "fair-center" },
       ],
     },
-    // 천년제 범종·텔레포드 놀이 — 신호 종을 힘껏 쳐야 루카가 텔레포드를 돌리고, 출력을 「중간」에 맞춰야 시연이 성공한다.
+    // 천년제 범종·텔레포드 놀이 — 신호 종을 힘껏 쳐야 토우가 텔레포드를 돌리고, 출력을 「중간」에 맞춰야 시연이 성공한다.
     devices: [{
       map: "hub", mark: "telepod", name: "천년제 텔레포드 시연대",
       graphic: { sheet: "object2", index: 0, beforeDir: "down", afterDir: "up" },
@@ -157,17 +157,17 @@ export const JRPG_CHAPTERS = {
       lines: ["데엥— 종소리에 맞춰 텔레포드 두 기가 푸르게 빛났다!", "구경꾼들이 환호하며 꽃잎을 뿌린다."],
       done: ["텔레포드가 은은하게 웅웅거린다.", "(천년제 기념 메달은 이미 받았다)"],
       puzzle: {
-        intro: ["루카의 텔레포드 시연대다. 곁의 신호 종 앞에서 종지기가 「힘 자랑 한번 해 보게!」 하며 당목을 건넨다."],
+        intro: ["토우의 텔레포드 시연대다. 곁의 신호 종 앞에서 종지기가 「힘 자랑 한번 해 보게!」 하며 당목을 건넨다."],
         stages: [
           {
             prompt: "범종을 어떻게 칠까?", options: ["힘껏 친다", "살살 친다"], answer: 0,
-            hit: { lines: ["데에엥!! 광장 끝까지 종소리가 울려 퍼졌다.", "루카: 「좋아, 그 소리면 충분해! 텔레포드 출력은 얼마로 할까?」"], fx: ["se:bell", "shake:2"] },
+            hit: { lines: ["데에엥!! 광장 끝까지 종소리가 울려 퍼졌다.", "토우: 「좋아, 그 소리면 충분해! 텔레포드 출력은 얼마로 할까?」"], fx: ["se:bell", "shake:2"] },
             miss: { lines: ["통… 종이 겨우 흔들렸다. 종지기가 웃는다."] },
           },
           {
             prompt: "텔레포드 출력은?", options: ["최대 출력", "중간 출력", "최소 출력"], answer: 1,
-            hit: { lines: ["루카: 「안정적이야! 이 정도면 사람이 타도 괜찮겠어!」"], fx: ["se:chime2"] },
-            miss: { lines: ["루카: 「으악, 출력이 안 맞아! 장치가 덜덜 떨려!」"], fx: ["shake:3", "flash:red"] },
+            hit: { lines: ["토우: 「안정적이야! 이 정도면 사람이 타도 괜찮겠어!」"], fx: ["se:chime2"] },
+            miss: { lines: ["토우: 「으악, 출력이 안 맞아! 장치가 덜덜 떨려!」"], fx: ["shake:3", "flash:red"] },
           },
         ],
         wrong: ["종지기: 「다시 한번 처음부터 해 보게.」"],
@@ -179,24 +179,24 @@ export const JRPG_CHAPTERS = {
       { map: "castle", presetId: "lever_secret_passage", title: "가르디아 성 지하 보물고 비밀 레버" },
     ],
     npcs: [
-      { key: "marle", name: "마르", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 루카가 만든 거래. 한번 타 볼래?"] },
-      { key: "lucca", name: "루카", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
+      { key: "marle", name: "세린", query: "공주", lines: ["천년제 구경 왔어? 나랑 같이 돌아보자!", "저 텔레포드, 토우가 만든 거래. 한번 타 볼래?"] },
+      { key: "lucca", name: "토우", query: "마법사 소녀", lines: ["내 텔레포드 시연 보러 왔구나! 광장 북쪽 무대야.", "펜던트가 장치랑 공명하는 건 계산에 없었는데…"] },
       { key: "balloon", name: "풍선 장수", query: "행상인 · 갈색 둥근 모자", lines: ["천년제 기념 풍선이오! 하나에 10골드!"], roam: true },
       { key: "bell", name: "종탑지기", query: "노인 · 흰 머리(남)", lines: ["천 년 전 왕국이 세워진 날을 이 종이 알린다네."] },
       { key: "cat", name: "길 잃은 고양이", query: "주황 고양이", lines: ["냐아… (집에 데려다 달라는 눈치다)"], roam: true },
-      { key: "chancellor", name: "대신", query: "귀족 남성", lines: ["공주님을 데려간 자가 누구냐!"], map: "castle" },
+      { key: "chancellor", name: "벨하임 대신", query: "귀족 남성", lines: ["왕녀님을 데려간 자가 누구냐!"], map: "castle" },
     ],
     joins: ["marle", "lucca"],
     quest: {
-      title: "천년제의 소녀", summary: "텔레포드 사고로 사라진 마르의 펜던트 단서를 가르디아 성에서 찾는다.",
+      title: "천년제의 왕녀", summary: "텔레포드 사고로 사라진 세린의 펜던트 단서를 벨하임 왕성에서 찾는다.",
       giver: "marle", ask: "내 펜던트… 텔레포드에 빨려 들어갈 때 빛났어. 성에 가면 뭔가 알 수 있을 거야.",
-      helper: { npc: "lucca", lines: ["펜던트 파장이 시간의 문을 연 거야. 성의 기록실을 살펴봐!"] },
-      clue: { map: "castle", label: "왕가의 초상화", lines: ["초상화 속 왕비가 마르와 같은 펜던트를 걸고 있다."] },
-      foe: { map: "castle", name: "가르디아 경비대장", query: "붉은 갑옷 기사", graphic: "generated-enemy-knight-fallen", intro: ["공주님을 납치한 놈이냐! 거기 서라!"], victory: ["…오해였군. 지나가게."] },
-      report: ["펜던트는 왕가의 보물이었구나… 고마워, 같이 가자!"], gold: 300,
+      helper: { npc: "lucca", lines: ["펜던트 파장이 시대의 문을 연 거야. 성의 기록실을 살펴봐!"] },
+      clue: { map: "castle", label: "왕가의 초상화", lines: ["초상화 속 옛 왕비가 세린과 같은 별빛 펜던트를 걸고 있다."] },
+      foe: { map: "castle", name: "벨하임 근위대장 오르벤", query: "붉은 갑옷 기사", graphic: "generated-enemy-knight-fallen", intro: ["왕녀님을 위협한 자냐! 거기 서라!"], victory: ["…오해였군. 시대의 문 너머를 부탁하네."] },
+      report: ["펜던트는 왕가의 성물이었구나… 고마워, 함께 시대의 문을 넘자!"], gold: 300,
     },
     event: {
-      map: "hub", title: "텔레포드 시연 — 마르의 실종",
+      map: "hub", title: "텔레포드 시연 — 세린의 실종",
       beats: [
         { kind: "letterbox", show: true },
         { kind: "moveActor", target: "lucca", moves: [{ kind: "move", dir: "down" }], wait: true },
@@ -212,11 +212,11 @@ export const JRPG_CHAPTERS = {
     },
   },
   ct_middle_ages: {
-    title: "600년 가르디아 · 대성당과 마왕성", era: "CT 600 AD",
-    hub: { name: "중세 가르디아 · 묘지 언덕", scene: "gothic:graveyard" },
+    title: "왕력 600년 벨하임 · 대성당과 마왕성", era: "왕력 600년 · 중세",
+    hub: { name: "중세 벨하임 · 안개 묘지 언덕", scene: "gothic:graveyard" },
     sites: [
       { key: "chapel", name: "대성당 예배당", scene: "gothic:chapel" },
-      { key: "keep", name: "마왕성 지하", dungeon: "castle" },
+      { key: "keep", name: "마왕성 지하 성채", dungeon: "castle" },
     ],
     moods: { hub: { weather: "fog", ambient: 0.35, color: "#1c2338" }, keep: { ambient: 0.5, color: "#2a1048" } },
     atmosphere: { keep: ["shades"] },
@@ -238,8 +238,8 @@ export const JRPG_CHAPTERS = {
       ],
     },
     npcs: [
-      { key: "captain", name: "기사단장", query: "파란 갑옷 기사", lines: ["마왕군이 국경을 넘었다. 성검만 있었더라면…"] },
-      { key: "frog", name: "개구리 기사", query: "양서 기사", lines: ["…부서진 성검 그랜드리온. 날을 되살릴 자를 찾고 있다."] },
+      { key: "captain", name: "왕국 기사단장", query: "파란 갑옷 기사", lines: ["마왕 나크타르의 군세가 국경을 넘었다. 성검만 있었더라면…"] },
+      { key: "frog", name: "개굴경 바르도", query: "양서 기사", lines: ["…부서진 성검 에테르리온. 날을 되살릴 자를 찾고 있다."] },
       { key: "nun", name: "수녀", query: "수녀", lines: ["대성당에서 기도하세요. 왕비님도 그곳에 계십니다."], map: "chapel" },
       { key: "squire", name: "견습 기사", query: "청년 병사", lines: ["단장님은 마왕성 지하에 성검 손잡이가 있다고 하셨어요!"], roam: true },
     ],
@@ -250,20 +250,28 @@ export const JRPG_CHAPTERS = {
     ],
     puzzle: {
       intro: ["낡은 파이프 오르간이다. 건반 위에 먼지가 소복이 쌓여 있다."],
-      stages: [{
-        prompt: "오르간 앞이다. 어떻게 할까?", options: ["오르간 건반을 연주한다", "뒤쪽 숨은 레버를 당긴다"], answer: 1,
-        miss: { lines: ["장엄한 화음이 성당 가득 울려 퍼졌다… 하지만 아무 일도 일어나지 않았다."], fx: ["se:chime2", "emote:music"] },
-      }],
+      stages: [
+        {
+          prompt: "1단계 — 오르간 건반의 어떤 화음을 누를까?", options: ["고대 성가의 첫 화음을 누른다", "건반을 무작위로 두드린다"], answer: 0,
+          hit: { lines: ["장엄한 파이프 공명이 예배당 벽면의 잠금쇠를 울렸다!"], fx: ["se:chime2", "emote:music"] },
+          miss: { lines: ["불협화음이 성당 가득 울려 퍼졌다… 아무 일도 일어나지 않았다."], fx: ["se:buzzer1"] },
+        },
+        {
+          prompt: "2단계 — 공명하는 오르간 뒤편을 어떻게 할까?", options: ["그냥 물러선다", "뒤쪽 숨은 레버를 당긴다"], answer: 1,
+          hit: { lines: ["철컥! 바닥 카펫이 걷히며 지하 성채로 이어지는 비밀 계단이 드러났다!"], fx: ["se:key"] },
+          miss: { lines: ["공명이 멎으며 잠금쇠가 다시 닫혔다."] },
+        },
+      ],
       wrong: ["아무 일도 일어나지 않았다."],
       solvedFx: ["se:collapse1", "shake:6", "flash:white", "particles:dust"],
     },
     quest: {
-      title: "성검 복원", summary: "대성당 숨은 계단의 단서로 마왕성 지하 수호자를 쓰러뜨리고 성검을 되살린다.",
+      title: "성검 에테르리온 복원", summary: "대성당 숨은 계단의 단서로 마왕성 지하 수호자를 쓰러뜨리고 성검을 되살린다.",
       giver: "captain", ask: "대성당 오르간 뒤에 비밀 계단이 있다는 소문이다. 그 아래 기록을 찾아 오게.",
       helper: { npc: "frog", lines: ["손잡이는 마왕성 지하 깊은 곳… 내가 길을 알려 주지."] },
       clue: { map: "chapel", label: "오르간 뒤 숨겨진 스위치", lines: ["딸깍— 바닥이 갈라지며 아래로 내려가는 계단이 드러났다!"] },
-      foe: { map: "keep", name: "마왕군 수호자 오자", query: "마족 장군", graphic: "generated-enemy-demon-lord", intro: ["마왕님의 성에 발을 들이다니!"], victory: ["크윽… 성검의 손잡이를 가져가라…"] },
-      report: ["그랜드리온이 다시 빛나는군! 이것으로 마왕과 맞설 수 있다."], gold: 600,
+      foe: { map: "keep", name: "마왕성 집행관 나크타르의 그림자", query: "마족 장군", graphic: "generated-enemy-demon-lord", intro: ["마왕 나크타르 님의 성채에 발을 들이다니!"], victory: ["크윽… 성검 에테르리온의 손잡이를 가져가라…"] },
+      report: ["성검 에테르리온이 다시 빛나는군! 이것으로 마왕 나크타르와 맞설 수 있다."], gold: 600,
     },
     event: {
       map: "chapel", title: "스테인드글라스 아래의 정체",
@@ -272,28 +280,28 @@ export const JRPG_CHAPTERS = {
         { kind: "moveActor", target: "nun", moves: [{ kind: "move", dir: "down" }], wait: true },
         say("수녀", "…왕비님이라면 이미 저 깊은 곳에 계시지요."),
         { kind: "tint", color: "#3a1030", durationMs: 600, wait: true }, { kind: "shake", intensity: 6, durationMs: 500, axis: "vertical" },
-        say("수녀", "키샤샤! 마왕님의 명으로 너희를 처리한다!"), { kind: "particles", preset: "smoke", target: "player", durationMs: 700, wait: true },
+        say("수녀", "크하하! 마왕 나크타르 님의 명으로 너희를 처리한다!"), { kind: "particles", preset: "smoke", target: "player", durationMs: 700, wait: true },
         { kind: "tint", color: "none", durationMs: 400 },
       ],
     },
-    gateName: "600년으로 가는 시간의 문",
+    gateName: "왕력 600년으로 가는 시대의 문",
   },
   ct_prehistory: {
-    title: "원시 이오카 부락 · 티라노 협곡", era: "CT 65,000,000 BC",
-    hub: { name: "이오카 부락", scene: "prehistoric:village" },
+    title: "태고의 화산석 부락 · 용암 폭포 협곡", era: "태고의 시대 · 화산 협곡",
+    hub: { name: "화산석 부락", scene: "prehistoric:village" },
     sites: [
-      { key: "canyon", name: "공룡 협곡 · 용암 폭포", scene: "prehistoric:volcano" },
-      { key: "lair", name: "티라노 소굴 용암 동굴", dungeon: "volcano", from: "canyon" },
+      { key: "canyon", name: "화산 협곡 · 용암 폭포", scene: "prehistoric:volcano" },
+      { key: "lair", name: "고대 용의 소굴 용암 동굴", dungeon: "volcano", from: "canyon" },
     ],
     moods: { canyon: { ambient: 0.15, color: "#ff8040" }, lair: { ambient: 0.4, color: "#3a0a00" } },
     atmosphere: { canyon: ["embers"], lair: ["embers"] },
     // 협곡: 소굴로 가는 입구 곁 토템 화로 두 기 — 용암 부싯돌로 불을 붙여야 입구가 열린다(lock).
     dress: { canyon: [{ object: "kit:beodeul_city/bd-pick-volcano-cave-brazier", where: "gate", count: 2, light: "#ff7030" }] },
     npcs: [
-      { key: "ayla", name: "에이라", query: "원시 전사 소녀", lines: ["에이라 강하다! 너 강하다? 같이 싸운다!"] },
-      { key: "kino", name: "키노", query: "삐쭉머리 남자아이", lines: ["불꽃 돌… 협곡 너머 용암 동굴에서 빛났다!"] },
+      { key: "ayla", name: "타라", query: "원시 전사 소녀", lines: ["타라 강하다! 너 강하다? 같이 싸운다!"] },
+      { key: "kino", name: "카루", query: "삐쭉머리 남자아이", lines: ["불꽃 돌… 협곡 너머 용암 동굴에서 빛났다!"] },
       { key: "elder", name: "족장 할멈", query: "노파", lines: ["밤이 되면 불 축제다. 불을 지킬 부싯돌이 필요해."] },
-      { key: "child", name: "부락 아이", query: "여자아이", lines: ["공룡인간들이 협곡 다리를 건너왔대!"], roam: true },
+      { key: "child", name: "부락 아이", query: "여자아이", lines: ["화산 비늘족이 협곡 다리를 건너왔대!"], roam: true },
     ],
     joins: ["ayla"],
     clueGraphic: { sheet: "object1", index: 0, beforeDir: "down", afterDir: "up" },
@@ -305,7 +313,7 @@ export const JRPG_CHAPTERS = {
       stages: [],
       wrong: [],
       solvedFx: ["particles:fire", "se:fire5"],
-      reward: { item: { id: "item_lava_flint", name: "용암 부싯돌", description: "용암에 달궈져 늘 뜨거운 부싯돌. 티라노 소굴 입구의 토템 화로에 불을 붙인다." }, line: "「용암 부싯돌」을 손에 넣었다!" },
+      reward: { item: { id: "item_lava_flint", name: "용암 부싯돌", description: "용암에 달궈져 늘 뜨거운 부싯돌. 고대 용의 소굴 입구의 토템 화로에 불을 붙인다." }, line: "「용암 부싯돌」을 손에 넣었다!" },
     },
     lock: {
       site: "lair", item: "item_lava_flint",
@@ -314,15 +322,15 @@ export const JRPG_CHAPTERS = {
       fx: ["se:fire7", "particles:fire", "flash:red", "shake:3"],
     },
     quest: {
-      title: "부싯돌과 용암 열쇠", summary: "협곡의 부싯돌을 찾고 용암 동굴의 공룡인간 우두머리를 물리친다.",
+      title: "부싯돌과 용암 열쇠", summary: "협곡의 부싯돌을 찾고 용암 동굴의 고대 용 아스칼을 물리친다.",
       giver: "elder", ask: "협곡 폭포 옆 바위에 불을 품은 부싯돌이 있다. 그걸 가져오면 동굴 문이 열려.",
       helper: { npc: "kino", lines: ["협곡 다리 건너 붉은 바위다! 뜨거우니 조심!"] },
       clue: { map: "canyon", label: "용암에 달궈진 부싯돌", lines: ["돌을 맞부딪치자 불꽃이 튀며 동굴 쪽 바위가 붉게 빛났다."] },
-      foe: { map: "lair", name: "블랙 티라노", query: "드레이크", graphic: "generated-enemy-dragon-red", intro: ["아자라: 원숭이 놈들! 블랙 티라노, 짓밟아라!"], victory: ["블랙 티라노가 쓰러지며 용암 열쇠가 굴러 나왔다."] },
+      foe: { map: "lair", name: "고대 용 아스칼", query: "드레이크", graphic: "generated-enemy-dragon-red", intro: ["크르르릉!! 화산의 심장을 깨운 자들이여, 불꽃으로 돌아가라!"], victory: ["고대 용 아스칼이 물러서며 용암 열쇠가 굴러 나왔다."] },
       report: ["불이 꺼지지 않는다! 오늘 밤 축제, 너희가 주인공이다!"], gold: 400,
     },
     event: {
-      map: "hub", title: "화톳불 축제와 에이라의 합류",
+      map: "hub", title: "화톳불 축제와 타라의 합류",
       beats: [
         { kind: "letterbox", show: true }, { kind: "tint", color: "#40180a", durationMs: 600 },
         { kind: "moveActor", target: "elder", moves: [{ kind: "move", dir: "down" }], wait: true },
@@ -332,13 +340,13 @@ export const JRPG_CHAPTERS = {
         say("에이라", "너 강하다. 에이라 따라간다!"), { kind: "tint", color: "none", durationMs: 500 },
       ],
     },
-    gateName: "원시 시대로 가는 시간의 문",
+    gateName: "태고의 화산으로 가는 시대의 문",
   },
   ct_zeal: {
-    title: "마법 왕국 제알 · 해저신전", era: "CT 12,000 BC",
-    hub: { name: "제알 왕궁 · 하늘 신전", scene: "sky_island:shrine" },
+    title: "천공 왕국 아스트라 · 해저신전", era: "고대 신기원 · 천공 왕국",
+    hub: { name: "아스트라 왕궁 · 하늘 신전", scene: "sky_island:shrine" },
     sites: [
-      { key: "dock", name: "검은 새 선착장", scene: "sky_island:dock" },
+      { key: "dock", name: "검은 날개 선착장", scene: "sky_island:dock" },
       { key: "ocean", name: "해저신전", dungeon: "temple" },
     ],
     moods: { ocean: { ambient: 0.45, color: "#08203c" } },
@@ -346,10 +354,10 @@ export const JRPG_CHAPTERS = {
     // 선착장 한가운데 마석 제단 — 그 앞 칸에서 펜던트로 봉인 문양을 차례로 지운다(퍼즐).
     dress: { dock: [{ object: "kit:sky_island/si-altar", where: "center", mark: "clue", light: "#60a0ff" }] },
     npcs: [
-      { key: "prophet", name: "예언자", query: "파란 로브 마법사", lines: ["라보스의 힘에 손대면 왕국은 바다 밑으로 가라앉으리라."] },
-      { key: "schala", name: "사라 공주", query: "신관 · 청록 로브", lines: ["어머니는 마신기에 홀리셨어요… 저를 도와주세요."] },
-      { key: "janus", name: "쟈키", query: "남자아이", lines: ["…누나 말고는 아무도 믿지 마."], roam: true },
-      { key: "captain", name: "검은 새 갑판장", query: "뱃사람 · 흰 선원 모자", lines: ["달팽이 같은 하늘배들이랑은 달라. 이게 검은 새다."], map: "dock" },
+      { key: "prophet", name: "현자 베일", query: "파란 로브 마법사", lines: ["무너진 별의 힘에 손대면 왕국은 바다 밑으로 가라앉으리라."] },
+      { key: "schala", name: "신관왕녀 엘리아", query: "신관 · 청록 로브", lines: ["어머니는 별의 성소에 홀리셨어요… 저를 도와주세요."] },
+      { key: "janus", name: "시온", query: "남자아이", lines: ["…누나 말고는 아무도 믿지 마."], roam: true },
+      { key: "captain", name: "검은 날개 갑판장", query: "뱃사람 · 흰 선원 모자", lines: ["구름 위를 가르는 하늘배, 이게 검은 날개호다."], map: "dock" },
     ],
     clueGraphic: { sheet: "object2", index: 3, beforeDir: "down", afterDir: "up" },
     puzzlePresets: [
@@ -357,7 +365,7 @@ export const JRPG_CHAPTERS = {
     ],
     // 마석 제단 — 펜던트를 대고 하늘·바다·대지 문양 가운데 예언자가 말한 순서(하늘 → 바다)대로 지운다.
     puzzle: {
-      intro: ["푸른 마석 제단이다. 표면에 하늘·바다·대지의 문양 셋이 새겨져 있다.", "(예언자: 「제단은 검은 새 그림자 아래에 있다」… 하늘이 먼저일까?)"],
+      intro: ["푸른 마석 제단이다. 표면에 하늘·바다·대지의 문양 셋이 새겨져 있다.", "(현자 베일: 「제단은 검은 날개 그림자 아래에 있다」… 하늘이 먼저일까?)"],
       stages: [
         {
           prompt: "펜던트를 어느 문양에 먼저 댈까?", options: ["하늘의 문양", "바다의 문양", "대지의 문양"], answer: 0,
@@ -373,15 +381,15 @@ export const JRPG_CHAPTERS = {
       solvedFx: ["flash:white", "particles:sparkle"],
     },
     quest: {
-      title: "마력 봉인 해제", summary: "선착장의 마석 제단을 깨우고 해저신전 마신기를 지키는 골렘을 쓰러뜨린다.",
+      title: "마력 봉인 해제", summary: "선착장의 마석 제단을 깨우고 해저신전 성소를 지키는 골렘을 쓰러뜨린다.",
       giver: "schala", ask: "선착장 끝 마석 제단에 펜던트를 대면 해저신전 봉인이 풀려요.",
-      helper: { npc: "prophet", lines: ["제단은 검은 새 그림자 아래에 있다. 서둘러라, 시간이 없다."] },
+      helper: { npc: "prophet", lines: ["제단은 검은 날개 그림자 아래에 있다. 서둘러라, 시간이 없다."] },
       clue: { map: "dock", label: "마석 제단", lines: ["펜던트가 푸르게 공명하며 마석의 봉인 문양이 사라졌다."] },
-      foe: { map: "ocean", name: "마신기의 골렘 쌍둥이", enemyName: "마신기 골렘", count: 2, query: "보라 갑옷 괴물", graphic: "generated-enemy-golem-crystal", intro: ["침입자를 감지. 배제한다."], victory: ["골렘이 무너지며 신전 깊은 곳 문이 열렸다."] },
-      report: ["고마워요… 하지만 라보스가 깨어나기 시작했어요."], gold: 800,
+      foe: { map: "ocean", name: "성소의 골렘 쌍둥이", enemyName: "성소 골렘", count: 2, query: "보라 갑옷 괴물", graphic: "generated-enemy-golem-crystal", intro: ["침입자를 감지. 배제한다."], victory: ["골렘이 무너지며 신전 깊은 곳 문이 열렸다."] },
+      report: ["고마워요… 하지만 무너진 별의 심장이 깨어나기 시작했어요."], gold: 800,
     },
     event: {
-      map: "ocean", title: "라보스의 각성",
+      map: "ocean", title: "무너진 별의 각성",
       beats: [
         { kind: "letterbox", show: true }, { kind: "distort", effect: "wave", amount: 0.5, durationMs: 500 },
         { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
@@ -390,11 +398,11 @@ export const JRPG_CHAPTERS = {
         { kind: "particles", preset: "explosion", target: "player", durationMs: 900, wait: true }, { kind: "distort", effect: "clear", durationMs: 200 },
       ],
     },
-    gateName: "고대로 가는 시간의 문",
+    gateName: "천공 왕국으로 가는 시대의 문",
   },
   ct_future: {
-    title: "멸망한 미래 · 아리스 돔과 로봇 공장", era: "CT 2300 AD",
-    hub: { name: "아리스 돔 크레이터", scene: "sf_station:moonbase" },
+    title: "멸망한 미래 · 아리아 돔과 로봇 공장", era: "왕력 2300년 · 잿빛 미래",
+    hub: { name: "아리아 돔 크레이터", scene: "sf_station:moonbase" },
     sites: [{ key: "factory", name: "지하 로봇 공장", scene: "sf_station:lab" }],
     moods: { hub: { ambient: 0.4, color: "#20202c" }, factory: { ambient: 0.3, color: "#101826" } },
     atmosphere: { hub: ["ash"], factory: ["sparks"] },
@@ -418,9 +426,9 @@ export const JRPG_CHAPTERS = {
       lines: ["에너트론이 웅웅 울리며 푸른 빛이 몸을 감싼다…", "HP·MP가 전부 회복되었다! …하지만 배는 여전히 고프다."],
     }],
     npcs: [
-      { key: "doan", name: "돔 장로 도안", query: "노인 · 흰 머리(남)", lines: ["씨앗 저장고도 바닥났소… 이 돔이 마지막 피난처요."] },
+      { key: "doan", name: "돔 장로 다온", query: "노인 · 흰 머리(남)", lines: ["씨앗 저장고도 바닥났소… 이 아리아 돔이 마지막 피난처요."] },
       { key: "survivor", name: "생존자", query: "청년 남성", lines: ["에너지 포드 하나만 있으면 오늘은 버틸 수 있어.", "캡슐에 들어가 봐. 배는 안 불러도 기운은 나."], roam: true },
-      { key: "robo", name: "로보", query: "고철 로봇", lines: ["…시스템 정지 상태. 재기동 신호를 기다립니다."] },
+      { key: "robo", name: "기계병 노바", query: "고철 로봇", lines: ["…시스템 정지 상태. 재기동 신호를 기다립니다."] },
       { key: "keeper", name: "공장 관리 로봇", query: "고철 로봇", lines: ["침입자 경고. 생산 라인에서 물러나십시오."], map: "factory" },
     ],
     joins: ["robo"],
@@ -432,7 +440,7 @@ export const JRPG_CHAPTERS = {
       intro: ["중앙 제어 콘솔이다. 화면에 「보안 잠금 — 관리자 코드 입력」이 깜박인다."],
       stages: [
         {
-          prompt: "관리자 코드를 입력한다", options: ["K-11A", "R-66Y", "X-99Z"], answer: 1,
+          prompt: "관리자 코드를 입력한다", options: ["K-11A", "N-08A", "X-99Z"], answer: 1,
           hit: { lines: ["「코드 확인. 보조 콘솔과 동시 기동이 필요합니다.」"], fx: ["se:key", "flash:blue"] },
           miss: { lines: ["「코드 불일치. 경보 단계 1.」 붉은 경고등이 번쩍인다."], fx: ["se:buzzer1", "flash:red"] },
         },
@@ -443,38 +451,38 @@ export const JRPG_CHAPTERS = {
       ],
       wrong: ["콘솔이 반응하지 않는다."],
       solvedFx: ["se:magic1", "flash:blue", "particles:sparkle", "shake:1"],
-      reward: { line: "「보안 잠금 해제. R-66Y 재기동 신호 송출.」" },
+      reward: { line: "「보안 잠금 해제. N-08A 재기동 신호 송출.」" },
     },
     quest: {
-      title: "로보 재기동", summary: "공장 제어 콘솔에서 재기동 코드를 받아 로보를 깨우고 경비 로봇을 무력화한다.",
-      giver: "doan", ask: "저 고철 로봇… 공장 제어 콘솔이라면 깨울 수 있을지도 모르오.",
+      title: "기계병 노바 재기동", summary: "공장 제어 콘솔에서 재기동 코드를 받아 노바를 깨우고 경비 로봇을 무력화한다.",
+      giver: "doan", ask: "저 고철 기계병… 공장 제어 콘솔이라면 깨울 수 있을지도 모르오.",
       helper: { npc: "survivor", lines: ["공장은 북쪽 지하야. 컨베이어 소리가 아직 들려."] },
-      clue: { map: "factory", label: "중앙 제어 콘솔", lines: ["화면에 「R-66Y 재기동 시퀀스」가 떠오르고 에너지 포드가 충전되었다."] },
-      foe: { map: "factory", name: "공장 수호기 가디언", query: "저주 갑옷", graphic: "generated-enemy-golem-iron", intro: ["R-66Y 의 반역 확인. 처분합니다."], victory: ["가디언이 불꽃을 튀기며 멈췄다."] },
-      report: ["로보가 눈을 떴다니… 이 미래에도 희망이 남아 있었군."], gold: 1000,
+      clue: { map: "factory", label: "중앙 제어 콘솔", lines: ["화면에 「N-08A 재기동 시퀀스」가 떠오르고 에너지 포드가 충전되었다."] },
+      foe: { map: "factory", name: "공장 수호기 가디언", query: "저주 갑옷", graphic: "generated-enemy-golem-iron", intro: ["N-08A 의 반역 확인. 처분합니다."], victory: ["가디언이 불꽃을 튀기며 멈췄다."] },
+      report: ["노바가 눈을 떴다니… 이 미래에도 희망이 남아 있었군."], gold: 1000,
     },
     event: {
-      map: "factory", title: "로보 재기동",
+      map: "factory", title: "기계병 노바 재기동",
       beats: [
         { kind: "letterbox", show: true },
         { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
         say("로보", "…시스템 부팅. 기억 장치 손상 37%."),
         { kind: "particles", preset: "sparkle", target: "player", durationMs: 800, wait: true }, { kind: "flash", color: "blue", durationMs: 300 },
-        say("로보", "당신이 저를 깨웠군요. 앞으로 함께하겠습니다."), { kind: "emote", target: "player", emote: "exclamation", durationMs: 700 },
+        say("기계병 노바", "당신이 저를 깨웠군요. 앞으로 함께하겠습니다."), { kind: "emote", target: "player", emote: "exclamation", durationMs: 700 },
       ],
     },
-    gateName: "미래로 가는 시간의 문",
+    gateName: "미래로 가는 시대의 문",
   },
   ff6_narshe: {
-    title: "탄광 도시 나르셰 · 마석 광산", era: "FF6 붕괴 전",
-    hub: { name: "탄광 도시 나르셰", scene: "snow_north:village" },
+    title: "설원 광산 마을 벨른 · 마석 광산", era: "북방 설원 · 마석 광산",
+    hub: { name: "설원 광산 마을 벨른", scene: "snow_north:village" },
     sites: [
-      { key: "house", name: "아르비스의 집", interior: "narshe" },
-      { key: "mine", name: "나르셰 마석 광산", dungeon: "mine" },
+      { key: "house", name: "장로 하르트의 집", interior: "narshe" },
+      { key: "mine", name: "벨른 마석 광산", dungeon: "mine" },
     ],
     moods: { hub: { weather: "snow", ambient: 0.2, color: "#a8c0e0" }, mine: { ambient: 0.45, color: "#0c3446" } },
     atmosphere: { mine: ["spirits"] },
-    // 마석 광산: 빛나는 얼음·마석 결정, 광차와 선로 끝 막이, 갱목 버팀목, 맨 안쪽 방에 얼음 속 환수의 수정 제단(단서 자리).
+    // 마석 광산: 빛나는 얼음·마석 결정, 광차와 선로 끝 막이, 갱목 버팀목, 맨 안쪽 방에 얼음 속 성수의 수정 제단(단서 자리).
     dress: {
       mine: [
         { object: "kit:sky_island/si-altar", where: "boss", mark: "clue", light: "#80f0ff" },
@@ -518,10 +526,10 @@ export const JRPG_CHAPTERS = {
       },
     }],
     npcs: [
-      { key: "arvis", name: "아르비스", query: "터번 노인", lines: ["제국 병사들이 광산 안 얼음 속 환수를 노리고 있네."] },
-      { key: "guard", name: "광산 경비병", query: "청년 병사", lines: ["제국의 마도 아머가 오면 광산 철로 입구를 지킨다!"] },
+      { key: "arvis", name: "장로 하르트", query: "터번 노인", lines: ["추격대 병사들이 광산 안 얼음 속 성수를 노리고 있네."] },
+      { key: "guard", name: "광산 경비병", query: "청년 병사", lines: ["철갑 기병대가 오면 광산 철로 입구를 지킨다!"] },
       { key: "miner", name: "광부", query: "갈색 머리 중년 전사", lines: ["깊은 갱도에서 얼음이 노래를 불러… 소름이 끼쳐."], roam: true },
-      { key: "terra", name: "티나", query: "요정 소녀", lines: ["…아무것도 기억나지 않아요. 왜 저 얼음이 부르는 걸까요."], map: "house" },
+      { key: "terra", name: "리아", query: "요정 소녀", lines: ["…아무것도 기억나지 않아요. 왜 저 얼음이 부르는 걸까요."], map: "house" },
     ],
     joins: ["terra"],
     clueGraphic: { sheet: "object2", index: 6, beforeDir: "down", afterDir: "up" },
@@ -529,39 +537,39 @@ export const JRPG_CHAPTERS = {
       { map: "mine", presetId: "dynamite_rock_blast", title: "나르셰 마석 광산 낙석 다이너마이트 폭파" },
     ],
     quest: {
-      title: "얼음 속 환수", summary: "광산 깊은 곳 얼어붙은 환수와 공명하고 제국의 거대 달팽이를 물리친다.",
-      giver: "arvis", ask: "티나를 데리고 광산 뒷길로 빠져나가게. 얼음 속 환수가 그녀를 부르고 있어.",
+      title: "얼음 속 성수", summary: "광산 깊은 곳 얼어붙은 성수와 공명하고 갱도 수호수를 물리친다.",
+      giver: "arvis", ask: "리아를 데리고 광산 뒷길로 빠져나가게. 얼음 속 성수가 그녀를 부르고 있어.",
       helper: { npc: "guard", lines: ["뒷길은 철로를 따라가다 왼쪽 갱도야. 몬스터가 들끓으니 조심해."] },
-      clue: { map: "mine", label: "얼어붙은 환수", lines: ["얼음이 푸르게 빛나며 티나와 환수가 서로를 부른다!"] },
-      foe: { map: "mine", name: "껍질 수호수 웰크", query: "슬라임", graphic: "generated-enemy-crab-rock", intro: ["껍질에 번개가 흐른다… 공격하면 반격한다!"], victory: ["수호수가 껍질 속으로 움츠러들며 쓰러졌다."] },
-      report: ["환수와 공명했다고? 그 아이는… 인간과 환수 사이에서 태어난 것인가."], gold: 500,
+      clue: { map: "mine", label: "얼어붙은 성수", lines: ["얼음이 푸르게 빛나며 리아와 성수가 서로를 부른다!"] },
+      foe: { map: "mine", name: "서리 껍질 수호수", query: "슬라임", graphic: "generated-enemy-crab-rock", intro: ["껍질에 서리 번개가 흐른다… 공격하면 반격한다!"], victory: ["수호수가 껍질 속으로 움츠러들며 쓰러졌다."] },
+      report: ["성수와 공명했다고? 그 아이는… 별의 기억을 품은 아이였군."], gold: 500,
     },
     event: {
-      map: "mine", title: "환수 공명",
+      map: "mine", title: "성수 공명",
       beats: [
         { kind: "letterbox", show: true },
         { kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }], wait: true },
         say("티나", "…이 소리는? 누군가 나를 부르고 있어."),
         { kind: "parallel", beats: [{ kind: "flash", color: "purple", durationMs: 800 }, { kind: "shake", intensity: 3, durationMs: 900, axis: "both" }] },
         { kind: "particles", preset: "magic", target: "player", durationMs: 1000, wait: true }, { kind: "look", target: "player", pose: "fallen" },
-        say("아르비스", "티나! 정신 차리게!"), { kind: "look", target: "player", reset: true },
+        say("장로 하르트", "리아! 정신 차리게!"), { kind: "look", target: "player", reset: true },
       ],
     },
   },
   ff6_figaro_opera: {
-    title: "사막의 기계성 피가로 · 오페라 하우스", era: "FF6 붕괴 전",
-    hub: { name: "사막의 기계성 피가로", scene: "desert_east:palace" },
+    title: "모래기계성 솔라리스 · 오페라 하우스", era: "사막 왕국 · 솔라리스",
+    hub: { name: "모래기계성 솔라리스", scene: "desert_east:palace" },
     sites: [
-      { key: "engine", name: "피가로 성 기관실", interior: "magitek" },
+      { key: "engine", name: "솔라리스 성 기관실", interior: "magitek" },
       { key: "opera", name: "오페라 하우스 무대", interior: "opera" },
     ],
     moods: { hub: { ambient: 0, color: "#fff0c0" }, opera: { ambient: 0.35, color: "#2a1830" } },
     atmosphere: { hub: ["sand"] },
     npcs: [
-      { key: "edgar", name: "에드거 왕", query: "왕", lines: ["피가로는 제국과 동맹이지만… 마음까지 판 적은 없다."] },
-      { key: "chancellor", name: "피가로 대신", query: "귀족 남성", lines: ["폐하, 성을 잠항시킬 준비가 끝났습니다."] },
-      { key: "engineer", name: "기관장", query: "기어 정비사", lines: ["사막 아래로 성을 숨기는 거대한 기어! 이게 피가로의 자랑이지."], map: "engine" },
-      { key: "impresario", name: "극장 지배인", query: "중절모 신사", lines: ["마리아 대역이라니! 아리아만 외우면 무대에 설 수 있소!"], map: "opera" },
+      { key: "edgar", name: "기계왕 레온", query: "왕", lines: ["솔라리스는 침묵하고 있지만… 별의 약속까지 잊은 적은 없다."] },
+      { key: "chancellor", name: "솔라리스 대신", query: "귀족 남성", lines: ["폐하, 성을 모래 아래로 잠항시킬 준비가 끝났습니다."] },
+      { key: "engineer", name: "기관장", query: "기어 정비사", lines: ["사막 아래로 성을 숨기는 거대한 기어! 이게 솔라리스의 자랑이지."], map: "engine" },
+      { key: "impresario", name: "극장 지배인", query: "중절모 신사", lines: ["가희 아리아의 대역이라니! 노래만 외우면 무대에 설 수 있소!"], map: "opera" },
     ],
     joins: ["edgar"],
     clueGraphic: { sheet: "object2", index: 5, beforeDir: "down", afterDir: "up" },
@@ -570,7 +578,7 @@ export const JRPG_CHAPTERS = {
     ],
     // 무대 위 아리아 — 1·2·3절 가사를 맞게 이어 불러야 박수 속에 공연이 이어지고, 들보 위 울트로스의 추가 드러난다.
     puzzle: {
-      intro: ["조명이 무대를 비춘다. 마리아의 드레스를 입고 아리아 「아리아 디 마리아」를 부를 차례다."],
+      intro: ["조명이 무대를 비춘다. 가희의 드레스를 입고 「별빛의 아리아」를 부를 차례다."],
       stages: [
         {
           prompt: "1절 — 첫 소절은?", options: ["검은 바람이여…", "오 나의 영웅이여…"], answer: 1,
@@ -593,12 +601,12 @@ export const JRPG_CHAPTERS = {
       reward: { gold: 500, line: "객석에서 우레 같은 박수가 터졌다! 꽃다발과 함께 출연료 500G 를 받았다." },
     },
     quest: {
-      title: "아리아 디 마리아", summary: "오페라 공연을 지키며 무대 위 샹들리에 아래에서 울트로스를 막는다.",
-      giver: "edgar", ask: "오페라 하우스로 가서 지배인을 만나게. 마리아로 분장해야 세처를 꾈 수 있어.",
+      title: "별빛의 아리아", summary: "오페라 공연을 지키며 무대 위 샹들리에 아래에서 심해 괴수를 막는다.",
+      giver: "edgar", ask: "오페라 하우스로 가서 지배인을 만나게. 가희로 분장해야 하늘해적의 비공정을 빌릴 수 있어.",
       helper: { npc: "impresario", lines: ["악보는 무대 뒤에 있소. 2막 아리아가 핵심이오!"] },
       clue: { map: "opera", label: "무대 위 샹들리에", lines: ["샹들리에가 흔들린다… 천장 들보 위에 누가 무거운 추를 올려놨다!"] },
-      foe: { map: "opera", name: "울트로스", query: "청룡", graphic: "generated-enemy-squid-deep", intro: ["무후후후! 4톤 추로 공연을 박살 내 주지!"], victory: ["울트로스: 오, 오늘은 이쯤 해 두지!"] },
-      report: ["공연을 지켰군! 이제 비공정 블랙잭으로 제국에 맞선다."], gold: 1200,
+      foe: { map: "opera", name: "심해 괴수 크라켄", query: "청룡", graphic: "generated-enemy-squid-deep", intro: ["크르르! 4톤 추로 공연장을 박살 내 주지!"], victory: ["심해 괴수가 먹물을 뿜으며 물러났다!"] },
+      report: ["공연을 지켰군! 이제 비공정 알바트로스로 잔해의 탑에 맞선다."], gold: 1200,
     },
     event: {
       map: "opera", title: "아리아 컷신",
@@ -612,11 +620,11 @@ export const JRPG_CHAPTERS = {
     },
   },
   ff6_zozo_kefka: {
-    title: "비 내리는 조조 · 잔해의 탑", era: "FF6 붕괴 후",
-    hub: { name: "비 내리는 슬럼 조조", scene: "steampunk_city:street" },
+    title: "증기 시계탑 도시 크로노스 · 잔해의 탑", era: "붕괴 후 · 시계탑과 잔해의 탑",
+    hub: { name: "증기 시계탑 도시 크로노스", scene: "steampunk_city:street" },
     sites: [
-      { key: "clock", name: "조조 시계탑 아파트", interior: "zozo" },
-      { key: "tower", name: "케프카의 잔해의 탑", dungeon: "volcano" },
+      { key: "clock", name: "크로노스 시계탑 아파트", interior: "zozo" },
+      { key: "tower", name: "나크타르의 잔해의 탑", dungeon: "volcano" },
     ],
     moods: { hub: { weather: "rain", ambient: 0.45, color: "#18202c" }, tower: { ambient: 0.45, color: "#3a0a24" } },
     atmosphere: { hub: ["leaks"], tower: ["embers"] },
@@ -637,10 +645,10 @@ export const JRPG_CHAPTERS = {
       ],
     },
     npcs: [
-      { key: "liar", name: "거짓말쟁이 사내", query: "단원 · 검은 코트(남)", lines: ["시계는 6시 정각이야. (이 마을 사람은 모두 거짓말을 한다)"] },
+      { key: "liar", name: "거짓말쟁이 사내", query: "단원 · 검은 코트(남)", lines: ["시계는 6시 정각이야. (이 거리 사람은 모두 거짓말을 한다)"] },
       { key: "dancer", name: "무희", query: "젊은 여성", lines: ["초침은 50초가 아니야… 아마도."] },
-      { key: "sabin", name: "마슈", query: "갈색 머리 중년 전사", lines: ["형님들은 어디 있지? 세계가 무너진 뒤로 흩어졌어."] },
-      { key: "celes", name: "셀리스", query: "붉은 갑옷 여전사", lines: ["모두를 다시 모아야 해. 케프카를 쓰러뜨리려면."] },
+      { key: "sabin", name: "로코", query: "갈색 머리 중년 전사", lines: ["동료들은 어디 있지? 별이 무너진 뒤로 흩어졌어."] },
+      { key: "celes", name: "이리스", query: "붉은 갑옷 여전사", lines: ["모두를 다시 모아야 해. 종말의 사도 나크타르를 쓰러뜨리려면."] },
       { key: "clockman", name: "시계지기", query: "노인 · 회색 머리 보라 숄(여)", lines: ["진짜 시각은 거짓말 사이에 숨어 있지."], map: "clock" },
     ],
     joins: ["sabin"],
@@ -650,7 +658,7 @@ export const JRPG_CHAPTERS = {
     ],
     // 조조의 시계 — 거짓말쟁이 셋의 말을 뒤집어 시·분·초를 차례로 맞춘다(6시 10분 50초).
     puzzle: {
-      intro: ["멈춘 벽시계다. 바늘 세 개를 손으로 돌릴 수 있다.", "(조조 사람들은 모두 거짓말을 한다… 들은 말을 뒤집어 보자)"],
+      intro: ["멈춘 벽시계다. 바늘 세 개를 손으로 돌릴 수 있다.", "(크로노스 거리 사람들은 모두 거짓말을 한다… 들은 말을 뒤집어 보자)"],
       stages: [
         { prompt: "시침을 맞춘다", options: ["2시", "6시", "9시"], answer: 1, hit: { lines: ["딸깍 — 시침이 6에 걸렸다."], fx: ["se:clock"] }, miss: { lines: ["끼익… 시침이 제자리로 튕겨 돌아갔다."], fx: ["se:buzzer1"] } },
         { prompt: "분침을 맞춘다", options: ["10분", "30분", "45분"], answer: 0, hit: { lines: ["딸깍 — 분침이 2를 가리킨다."], fx: ["se:clock"] }, miss: { lines: ["끼익… 분침이 제자리로 튕겨 돌아갔다."], fx: ["se:buzzer1"] } },
@@ -658,15 +666,15 @@ export const JRPG_CHAPTERS = {
       ],
       wrong: ["시계는 다시 멈췄다."],
       solvedFx: ["se:bell", "flash:white", "particles:sparkle"],
-      reward: { item: { id: "item_zozo_clock_key", name: "시계탑 열쇠", description: "조조 시계 뒤 벽에서 떨어진 낡은 열쇠. 잔해의 탑 봉인 문 하나를 연다." }, line: "「시계탑 열쇠」를 손에 넣었다!" },
+      reward: { item: { id: "item_zozo_clock_key", name: "시계탑 열쇠", description: "크로노스 시계 뒤 벽에서 떨어진 태엽 열쇠. 비공정 격납고와 잔해의 탑 봉인 문을 연다." }, line: "「시계탑 열쇠」를 손에 넣었다!" },
     },
     quest: {
-      title: "시계탑의 수수께끼와 재집결", summary: "조조 거짓말쟁이들의 말로 시계 비밀을 풀고 잔해의 탑의 케프카에게 도전한다.",
-      giver: "celes", ask: "마슈가 조조 시계탑에 단서가 있대. 시계를 맞추면 숨은 방이 열린다나 봐.",
+      title: "시계탑의 수수께끼와 재집결", summary: "크로노스 거짓말쟁이들의 말로 시계 비밀을 풀고 잔해의 탑의 나크타르에게 도전한다.",
+      giver: "celes", ask: "로코가 크로노스 시계탑에 단서가 있대. 시계를 맞추면 숨은 방이 열린다나 봐.",
       helper: { npc: "liar", lines: ["시계는 6시 10분 50초… 아니, 내가 그렇게 말했다면 거짓말이지."] },
       clue: { map: "clock", label: "멈춘 벽시계", lines: ["바늘을 6시 10분 50초에 맞추자 벽 뒤에서 열쇠가 떨어졌다."] },
-      foe: { map: "tower", name: "광대 케프카", query: "마왕", graphic: "generated-enemy-angel-fallen", intro: ["히히히! 파괴야말로 아름다운 거야!"], victory: ["케프카: 이, 이럴 수가… 신이 된 내가…!"] },
-      report: ["다들 돌아왔어. 이제 무너진 세계를 다시 일으킬 차례야."], gold: 3000,
+      foe: { map: "tower", name: "종말의 사도 나크타르", query: "마왕", graphic: "generated-enemy-demon-lord", intro: ["크하하! 무너진 별의 잔해 위에서 새로운 종말을 울려 주마!"], victory: ["나크타르: 이, 이럴 수가… 시대의 종소리가 나를…!"] },
+      report: ["다들 돌아왔어. 이제 무너진 별을 다시 일으킬 차례야."], gold: 3000,
     },
     event: {
       map: "hub", title: "흩어진 동료 재집결",
@@ -677,7 +685,7 @@ export const JRPG_CHAPTERS = {
         { kind: "moveActor", target: "sabin", moves: [{ kind: "move", dir: "up" }], wait: true },
         say("마슈", "셀리스! 살아 있었구나!"),
         { kind: "emote", target: "player", emote: "exclamation", durationMs: 700 }, { kind: "particles", preset: "heal", target: "player", durationMs: 800, wait: true },
-        say("셀리스", "모두를 찾아서 케프카의 탑으로 가자."),
+        say("이리스", "모두를 찾아서 나크타르의 잔해의 탑으로 가자."),
       ],
     },
   },

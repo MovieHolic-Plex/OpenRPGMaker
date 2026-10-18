@@ -26,6 +26,27 @@ import {
   newProjectChoiceByLabel,
   type NewProjectChoiceId,
 } from "@/editor/newProjectChoices";
+import {
+  FLAGSHIP_BEAT_MANIFESTS,
+  FLAGSHIP_DEMO_ID_BY_CHOICE,
+  createFlagshipDemoForChoice,
+  createFlagshipDemoProject,
+  flagshipBeatManifestForChoice,
+  formatFlagshipExemplarPrompt,
+  type FlagshipBeatManifest,
+  type FlagshipDemoId,
+} from "@/project/flagship";
+
+export {
+  FLAGSHIP_BEAT_MANIFESTS,
+  FLAGSHIP_DEMO_ID_BY_CHOICE,
+  createFlagshipDemoForChoice,
+  createFlagshipDemoProject,
+  flagshipBeatManifestForChoice,
+  formatFlagshipExemplarPrompt,
+  type FlagshipBeatManifest,
+  type FlagshipDemoId,
+};
 
 /** 첫 화면 포스터 id — 정본(newProjectChoices)과 같은 집합이다. */
 export type WelcomeGenrePresetId = NewProjectChoiceId;
@@ -247,6 +268,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(!brief.interview && textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
+      ...(flagshipBeatManifestForChoice(preset.id) ? [formatFlagshipExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
@@ -269,6 +291,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
     ...(preset.packId === "adventure-jrpg" ? ["", welcomeBattleLookLine()] : []),
+    ...(flagshipBeatManifestForChoice(preset.id) ? ["", formatFlagshipExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
