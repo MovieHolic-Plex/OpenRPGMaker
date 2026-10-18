@@ -707,10 +707,210 @@ const VENUES: readonly Venue[] = [
       o("mci-counter-register", 13, 5), o("mci-wait-bench", 3, 5), o("infirmary-scale", 9, 5), o("mci-wait-bench", 27, 5), o("mci-plant-tall", 37, 6),
     ] },
   ] },
+
+  // ── 19. 3층 다층 종합병원 (50×50, 비사각형 계단형 다동 외곽) - 2026-10-18 19:18 사용자 「종합병원은 다층으로 구성된 뭐 .. 그런거여야하는데 지금 졸라 허접하고
+  //    대기실도 너무 작고, 수술실도 엉망이고. 침대가 세로형만 있네. 가로형은 왜 없는거지. 대기실이 더 넓어야함 ... 종합병원 같은 대규모는 50x50 를 기본으로 잡게 하고 해라」.
+  //    3F(북쪽 줄, 서쪽 5칸 void 계단식 후퇴): 제1·제2수술실(가로 수술대·천장 무영등·마취기·모니터 뱅크·메이요 기구대·스크럽 세척대) + 중환자실(ICU 병상·가로/세로 병상·응급카트) + 영상의학·CT·X선실.
+  //    2F(가운데 줄): 서병동·동병동 다인실(서쪽·동쪽 벽 가로형 침대 mci-hosp-bed-e/w + 천장 레일 커튼 + 수액 펌프 + 협탁 + 생체 모니터) + 중앙 간호사 스테이션·엘리베이터 코어·라운지 + 1인 특실.
+  //    1F(남쪽 줄, 남서 약국 4칸 후퇴 ragged 비사각형 외곽): 원내 약국 + 대형 대기실 로비(26×17, 3연석 대기 의자 36석·원무과 대형 접수/수납 카운터·문진 혈압 측정대·번호표 발급기·전광판·엘리베이터 3기) + 응급실(ER)·구급차 반입구.
+  { program: "mc_hospital", map: "hospital-ward", variation: {
+    rows: [
+      ["void:5", "hosp-or-1", "hosp-or-2", "hosp-icu", "hosp-imaging"],
+      ["hosp-ward-west", "hosp-nurse-core", "hosp-ward-east", "hosp-vip-ward"],
+      ["hosp-pharmacy", "waiting_room", "hosp-er"],
+    ],
+    ragged: true,
+    entrance: "waiting_room",
+    hubs: ["waiting_room", "hosp-nurse-core", "hosp-ward-west", "hosp-ward-east", "hosp-icu"],
+    above: [
+      ["hosp-or-1", "hosp-ward-west"], ["hosp-or-2", "hosp-nurse-core"], ["hosp-icu", "hosp-ward-east"], ["hosp-imaging", "hosp-ward-east"],
+      ["hosp-ward-west", "waiting_room"], ["hosp-nurse-core", "waiting_room"], ["hosp-ward-east", "waiting_room"],
+    ],
+    left: [
+      ["hosp-or-1", "hosp-or-2"], ["hosp-or-2", "hosp-icu"], ["hosp-icu", "hosp-imaging"],
+      ["hosp-ward-west", "hosp-nurse-core"], ["hosp-nurse-core", "hosp-ward-east"], ["hosp-ward-east", "hosp-vip-ward"],
+      ["hosp-pharmacy", "waiting_room"], ["waiting_room", "hosp-er"],
+    ],
+    fixed: [
+      "hosp-or-1", "hosp-or-2", "hosp-icu", "hosp-imaging",
+      "hosp-ward-west", "hosp-nurse-core", "hosp-ward-east", "hosp-vip-ward",
+      "hosp-pharmacy", "waiting_room", "hosp-er",
+    ],
+    palettes: [
+      { "hosp-ward-west": ["mci-vinyl-store", "mci-wall-hospital"], "hosp-ward-east": ["mci-vinyl-store", "mci-wall-hospital"], "hosp-nurse-core": ["mci-tile-concourse", "mci-wall-lobby"], waiting_room: ["mci-tile-concourse", "mci-wall-lobby"] },
+      { "hosp-ward-west": ["mci-wood-oak", "mci-wall-home"], "hosp-ward-east": ["mci-wood-oak", "mci-wall-home"], "hosp-nurse-core": ["mci-stone-lobby", "mci-wall-office"], waiting_room: ["mci-stone-lobby", "mci-wall-office"] },
+    ] }, rooms: [
+    // ── 3F-1. 제1수술실 (10×14)
+    { kind: "hosp-or-1", w: 10, h: 14, floor: "mci-tile-small", wall: "mci-wall-hospital", items: [
+      o("mci-wall-clock", 1, 0), o("hosp-film-viewer", 4, 0), o("mci-ac-wall", 7, 0),
+      o("hosp-scrub-sink", 0, 2), o("hosp-vitals-bank", 3, 2), o("hospital-med-cabinet", 6, 2), o("hospital-med-cabinet", 8, 2),
+      o("hosp-surgical-lamp", 4, 5),
+      o("hosp-anesthesia", 2, 6), o("hosp-op-table", 3, 6), o("hosp-mayo-stand", 6, 6),
+      o("hosp-iv-pump", 2, 8), o("hosp-mayo-stand", 6, 8),
+      o("hosp-crash-cart", 0, 10), o("mci-med-cart", 9, 10),
+      o("hospital-bedside-monitor", 0, 12), o("hosp-stretcher", 6, 12),
+    ] },
+    // ── 3F-2. 제2수술실 (10×14)
+    { kind: "hosp-or-2", w: 10, h: 14, floor: "mci-tile-small", wall: "mci-wall-hospital", items: [
+      o("hosp-film-viewer", 1, 0), o("mci-wall-clock", 5, 0), o("mci-ac-wall", 7, 0),
+      o("hospital-med-cabinet", 0, 2), o("hosp-vitals-bank", 3, 2), o("hosp-scrub-sink", 6, 2), o("mci-washbasin", 8, 2),
+      o("hosp-surgical-lamp", 4, 5),
+      o("hosp-anesthesia", 2, 6), o("hosp-op-table", 3, 6), o("hosp-mayo-stand", 6, 6),
+      o("hosp-iv-pump", 2, 8), o("hospital-bedside-monitor", 6, 8),
+      o("hosp-crash-cart", 0, 10), o("mci-med-cart", 9, 10),
+      o("hosp-stretcher", 0, 12), o("hosp-mayo-stand", 8, 12),
+    ] },
+    // ── 3F-3. 중환자실 ICU (10×14) - 2×2 ICU 병상 둘 + 가로형 E/W 병상 넷 + 생체 모니터 뱅크 + 응급 카트
+    { kind: "hosp-icu", w: 10, h: 14, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+      o("mci-window-blind", 1, 0), o("mci-wall-clock", 4, 0), o("mci-window-blind", 7, 0),
+      o("hosp-vitals-bank", 0, 2), o("hosp-icu-pod", 2, 2), o("hospital-curtain-screen", 4, 2), o("hosp-icu-pod", 5, 2), o("hosp-vitals-bank", 8, 2),
+      o("mci-hosp-bed-e", 0, 6), o("hosp-iv-pump", 0, 7), o("hospital-bedside-monitor", 1, 7),
+      o("mci-hosp-bed-w", 8, 6), o("hospital-bedside-monitor", 8, 7), o("hosp-iv-pump", 9, 7),
+      o("mci-hosp-bed-e", 0, 9), o("mci-hosp-bed-w", 8, 9),
+      o("hosp-crash-cart", 0, 12), o("hospital-nurse-station", 6, 12),
+    ] },
+    // ── 3F-4. 영상의학·CT·X선실 (10×14) - CT 스캐너(3×2) + X선 촬영대(3×1) + 납유리 조작실 콘솔 + 판독 라이트박스 + 계단
+    { kind: "hosp-imaging", w: 10, h: 14, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+      o("hosp-film-viewer", 1, 0), o("hosp-film-viewer", 4, 0), o("mci-wall-clock", 8, 0),
+      o("hosp-xray-console", 0, 2), o("hosp-xray-console", 2, 2), o("hospital-med-cabinet", 5, 2), o("stairs-pair-down-stone", 7, 2),
+      o("hosp-ct-scanner", 1, 5), o("hosp-iv-pump", 5, 5), o("hospital-bedside-monitor", 8, 5),
+      o("hosp-curtain-track", 6, 7),
+      o("hosp-xray-table", 5, 9),
+      o("hospital-doctor-desk", 5, 12), o("mci-chair-office-n", 8, 12),
+    ] },
+    // ── 2F-1. 서병동 다인실 입원병동 (13×15) - 서쪽 가로 침대(mci-hosp-bed-e) 3상 + 동쪽 가로 침대(mci-hosp-bed-w) 3상 + 레일 커튼·수액 펌프·협탁·생체 모니터
+    { kind: "hosp-ward-west", w: 13, h: 15, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+      o("mci-window-blind", 1, 0), o("mci-window-blind", 4, 0), o("mci-wall-clock", 11, 0),
+      o("mci-washbasin", 0, 2), o("hospital-water-dispenser", 1, 2), o("hospital-med-cabinet", 3, 2), o("hospital-med-cabinet", 11, 2),
+      o("mci-hosp-bed-e", 0, 4), o("mci-bedside", 0, 5), o("hosp-iv-pump", 2, 4),
+      o("hosp-curtain-track", 0, 6),
+      o("mci-hosp-bed-e", 0, 8), o("mci-bedside", 0, 9), o("hosp-iv-pump", 2, 8),
+      o("hosp-curtain-track", 0, 10),
+      o("mci-hosp-bed-e", 0, 12), o("mci-bedside", 0, 13), o("hosp-iv-pump", 2, 12),
+      o("hospital-bedside-monitor", 5, 4), o("mci-hosp-bed-w", 6, 4), o("mci-bedside", 7, 5),
+      o("hosp-curtain-track", 5, 6),
+      o("hospital-bedside-monitor", 5, 8), o("mci-hosp-bed-w", 6, 8), o("mci-bedside", 7, 9),
+      o("hosp-curtain-track", 5, 10),
+      o("hospital-bedside-monitor", 5, 12), o("mci-hosp-bed-w", 6, 12), o("mci-bedside", 7, 13),
+      o("mci-med-cart", 11, 4), o("hospital-wheelchair", 12, 4),
+      o("hosp-wheelchair-bay", 11, 11),
+    ] },
+    // ── 2F-2. 중앙 간호사 스테이션 · 엘리베이터 홀 · 병동 휴게 라운지 (12×15)
+    { kind: "hosp-nurse-core", w: 12, h: 15, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
+      o("elev-floor-led", 1, 0), o("elev-hall-lantern", 4, 0), o("hosp-floor-directory", 8, 0), o("mci-wall-clock", 11, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 2, 2), o("hospital-med-cabinet", 8, 2), o("office-water-cooler", 10, 2), o("mci-plant-tall", 11, 2),
+      o("mci-chair-office-s", 3, 5), o("mci-chair-office-s", 5, 5), o("mci-chair-office-s", 7, 5),
+      o("hospital-nurse-station", 2, 6), o("hospital-nurse-station", 6, 6), o("hosp-crash-cart", 10, 5),
+      o("mci-sofa-e", 0, 10), o("mci-coffee-table", 1, 11), o("mci-armchair-w", 3, 11),
+      o("lounge-sofa-cream", 8, 10), o("mci-coffee-table", 8, 11), o("mci-sofa-n", 8, 12),
+      o("home-monstera", 0, 14), o("mci-plant-tall", 11, 14),
+    ] },
+    // ── 2F-3. 동병동 다인실 입원병동 (14×15) - 북벽 세로 병상 3상 + 중앙 가로형 병상(mci-hosp-bed-e/w) 5상 + 레일 커튼
+    { kind: "hosp-ward-east", w: 14, h: 15, floor: "mci-vinyl-hospital", wall: "mci-wall-hospital", items: [
+      o("mci-window-blind", 0, 0), o("mci-window-blind", 6, 0), o("mci-wall-clock", 9, 0),
+      o("mci-hosp-bed", 0, 2), o("mci-bedside", 1, 2), o("mci-iv-stand", 2, 2),
+      o("mci-hosp-bed", 6, 2), o("hospital-curtain-screen", 7, 2), o("mci-hosp-bed", 8, 2), o("mci-bedside", 9, 2), o("mci-iv-stand", 10, 2),
+      o("mci-hosp-bed-e", 2, 6), o("hosp-iv-pump", 4, 6),
+      o("hosp-curtain-track", 2, 8),
+      o("mci-hosp-bed-e", 2, 10), o("mci-bedside", 2, 11), o("hospital-bedside-monitor", 4, 10),
+      o("hospital-bedside-monitor", 7, 6), o("mci-hosp-bed-w", 8, 6), o("mci-bedside", 9, 7),
+      o("hosp-curtain-track", 7, 8),
+      o("hospital-bedside-monitor", 7, 10), o("mci-hosp-bed-w", 8, 10), o("mci-bedside", 9, 11),
+      o("hosp-iv-pump", 7, 13), o("mci-hosp-bed-w", 8, 13),
+      o("mci-med-cart", 12, 11), o("hospital-wheelchair", 13, 11), o("mci-plant-tall", 13, 14),
+    ] },
+    // ── 2F-4. 1인 특실 입원실 (6×15) - 가로형 병상 + 전용 세면대·옷장·TV + 보호자 응접 소파·책상
+    { kind: "hosp-vip-ward", w: 6, h: 15, floor: "mci-wood-oak", wall: "mci-wall-home", items: [
+      o("mci-window-curtain", 1, 0), o("home-wall-ac", 4, 0),
+      o("home-vanity-sink", 0, 2), o("mci-wardrobe", 2, 2), o("mci-tv-stand", 4, 2),
+      o("mci-bedside", 3, 4), o("hosp-iv-pump", 3, 5), o("mci-hosp-bed-w", 4, 5), o("hospital-bedside-monitor", 5, 6),
+      o("mci-rug", 1, 10), o("home-floor-lamp", 5, 10),
+      o("mci-armchair-e", 0, 11), o("mci-coffee-table", 1, 11), o("mci-armchair-w", 3, 11),
+      o("mci-desk-pc", 4, 13), o("mci-chair-office-n", 4, 14), o("home-monstera", 0, 14),
+    ] },
+    { kind: "hosp-pharmacy", w: 7, h: 13, floor: "mci-vinyl-store", wall: "mci-wall-hospital", items: [
+      o("hosp-number-display", 1, 0), o("mci-wall-clock", 5, 0),
+      o("hospital-pharmacy-window", 0, 2), o("hospital-med-cabinet", 3, 2), o("hospital-med-cabinet", 5, 2),
+      o("mci-counter-register", 0, 5), o("hosp-triage-desk", 4, 5),
+      o("mci-gondola", 0, 8), o("mci-med-cart", 3, 8),
+      o("hosp-wait-row-n", 0, 11), o("hosp-ticket-dispenser", 4, 11), o("mci-plant-tall", 6, 12),
+    ] },
+    // ── 1F-2. 대형 대기실 로비 · 원무과 수납 · 엘리베이터 홀 (26×17) - 대기 의자 3연석 12열(36석) + 대형 원무과 카운터 + 문진·혈압대 + 번호표 발급기·전광판
+    { kind: "waiting_room", w: 26, h: 17, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
+      o("hosp-floor-directory", 4, 0), o("elev-floor-led", 6, 0), o("elev-hall-lantern", 9, 0),
+      o("hosp-number-display", 14, 0), o("mci-tv-wall", 17, 0), o("hosp-number-display", 19, 0), o("mci-wall-clock", 24, 0),
+      o("mci-plant-tall", 0, 2),
+      o("mci-elevator", 4, 2), o("mci-elevator", 6, 2), o("mci-elevator", 8, 2),
+      o("hospital-pharmacy-window", 13, 2), o("hospital-water-dispenser", 16, 2), o("subway-vending-machine", 17, 2), o("hospital-med-cabinet", 19, 2),
+      o("mci-coffee-station", 24, 2),
+      o("hosp-triage-desk", 3, 5), o("hosp-ticket-dispenser", 6, 5), o("dept-directory-kiosk", 7, 5),
+      o("mci-chair-office-s", 14, 4), o("mci-chair-office-s", 16, 4), o("mci-chair-office-s", 18, 4), o("mci-chair-office-s", 20, 4),
+      o("mci-reception", 13, 5), o("mci-reception", 16, 5), o("hospital-nurse-station", 19, 5), o("hosp-ticket-dispenser", 23, 5),
+      o("hosp-wait-row-n", 3, 8), o("hosp-wait-row-n", 7, 8), o("hosp-wait-row-n", 13, 8), o("hosp-wait-row-n", 17, 8), o("hosp-wait-row-n", 20, 8),
+      o("hosp-wait-row-s", 3, 10), o("hosp-wait-row-s", 7, 10), o("hosp-wait-row-s", 13, 10), o("hosp-wait-row-s", 17, 10), o("hosp-wait-row-s", 20, 10),
+      o("hosp-wait-row-n", 3, 13), o("hosp-wait-row-n", 7, 13), o("hosp-wait-row-n", 15, 13), o("hosp-wait-row-n", 19, 13),
+      o("hosp-wheelchair-bay", 0, 15), o("hospital-wheelchair", 2, 15), o("dept-directory-kiosk", 9, 15),
+      o("mci-tactile", 12, 14), o("mci-tactile", 12, 15),
+      o("hosp-wheelchair-bay", 23, 15), o("mci-plant-tall", 0, 16), o("mci-plant-tall", 25, 16),
+    ] },
+    // ── 1F-3. 응급실(ER) 처치실 & 구급차 반입구 (13×17) - 문진 데스크·응급 카트·가로 병상·이송 들것 + 거리 구급차(hosp-ambulance-w) 하차장
+    { kind: "hosp-er", w: 13, h: 17, floor: "mci-concrete", wall: "mci-wall-hospital", items: [
+      o("hosp-number-display", 1, 0), o("hosp-film-viewer", 5, 0), o("mci-wall-clock", 10, 0),
+      o("hosp-vitals-bank", 0, 2), o("hospital-med-cabinet", 2, 2), o("hosp-scrub-sink", 5, 2), o("hosp-vitals-bank", 8, 2), o("hospital-med-cabinet", 10, 2),
+      o("hosp-triage-desk", 1, 5), o("hosp-crash-cart", 4, 5),
+      o("hosp-iv-pump", 10, 5), o("mci-hosp-bed-w", 11, 5),
+      o("hosp-stretcher", 5, 7), o("hosp-curtain-track", 10, 7),
+      o("hospital-bedside-monitor", 10, 9), o("mci-hosp-bed-w", 11, 9),
+      o("hosp-stretcher", 5, 10),
+      o("hosp-stretcher", 2, 14), o("hosp-ambulance-w", 6, 14),
+      o("hosp-wheelchair-bay", 2, 16),
+    ] },
+  ] },
+
+  // ── 20. 엘리베이터 내부 & 다층 승강장 홀 (24×16) - 2026-10-18 19:18 사용자 「엘리베이터 내부 이런 것도 좀 구현하면 좋을거같기도」.
+  //    위 줄: 1호기 일반 승객용 엘리베이터 카 내부(전면 거울·호두나무 벽판과 핸드레일·1F~10F 층 버튼 조작반·층 표시 LED·안쪽 카 문 elev-car-door) +
+  //    2호기 병원·비상용 대형 엘리베이터 카 내부(이송 들것·휠체어·거울·조작반·LED) + 비상 계단실 코어.
+  //    아래 줄: 다층 엘리베이터 승강장 홀(엘리베이터 문 3기·홀 랜턴 호출 버튼·층 표시 LED·층별 안내판·대기 좌석).
+  { program: "mc_elevator", map: "elevator-car", aliases: ["mc_elevator_car"], variation: {
+    rows: [["elev-cabin-1", "elev-cabin-2", "elev-stair-core"], ["elev-hall"]],
+    entrance: "elev-hall",
+    hubs: ["elev-hall"],
+    above: [["elev-cabin-1", "elev-hall"], ["elev-cabin-2", "elev-hall"], ["elev-stair-core", "elev-hall"]],
+    left: [["elev-cabin-1", "elev-cabin-2"], ["elev-cabin-2", "elev-stair-core"]],
+    fixed: ["elev-cabin-1", "elev-cabin-2", "elev-stair-core", "elev-hall"],
+    palettes: [
+      { "elev-cabin-1": ["mci-stone-lobby", "mci-wall-metal"], "elev-cabin-2": ["mci-vinyl-hospital", "mci-wall-metal"], "elev-hall": ["mci-tile-concourse", "mci-wall-lobby"] },
+      { "elev-cabin-1": ["mci-wood-dark", "mci-wall-office"], "elev-cabin-2": ["mci-stone-lobby", "mci-wall-metal"], "elev-hall": ["mci-stone-lobby", "mci-wall-store"] },
+    ] }, rooms: [
+    { kind: "elev-cabin-1", w: 7, h: 6, floor: "mci-tile-concourse", wall: "mci-wall-metal", items: [
+      o("elev-wood-panel", 0, 0), o("elev-mirror-wall", 2, 0), o("elev-button-panel", 5, 0), o("elev-floor-led", 6, 0),
+      o("mci-plant-tall", 0, 2), o("home-monstera", 6, 2),
+      o("mci-tactile", 3, 4),
+    ] },
+    { kind: "elev-cabin-2", w: 8, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-metal", items: [
+      o("elev-floor-led", 0, 0), o("elev-mirror-wall", 1, 0), o("elev-wood-panel", 4, 0), o("elev-button-panel", 6, 0), o("elev-hall-lantern", 7, 0),
+      o("hosp-stretcher", 0, 2), o("hospital-wheelchair", 7, 2),
+      o("mci-tactile", 3, 4),
+    ] },
+    { kind: "elev-stair-core", w: 5, h: 6, floor: "mci-concrete", wall: "mci-wall-metal", items: [
+      o("hosp-floor-directory", 0, 0), o("mci-wall-clock", 3, 0),
+      o("mci-stairs-up", 0, 2), o("mci-stairs-down", 3, 3),
+    ] },
+    { kind: "elev-hall", w: 22, h: 7, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
+      o("elev-floor-led", 0, 0), o("elev-hall-lantern", 2, 0),
+      o("elev-floor-led", 6, 0), o("elev-hall-lantern", 8, 0), o("hosp-floor-directory", 9, 0),
+      o("elev-floor-led", 14, 0), o("elev-hall-lantern", 17, 0), o("mci-wall-clock", 20, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 6, 2), o("mci-elevator", 15, 2), o("office-water-cooler", 20, 2), o("mci-plant-tall", 21, 2),
+      o("mci-tactile", 3, 3), o("mci-tactile", 11, 3),
+      o("hosp-wait-row-s", 0, 5), o("lounge-sofa-cream", 6, 5), o("dept-directory-kiosk", 14, 5), o("hosp-wait-row-s", 16, 5),
+      o("mci-plant-tall", 0, 6), o("mci-plant-tall", 21, 6),
+    ] },
+  ] },
 ];
 
 export const DAILY_VENUE_TEMPLATES: readonly InteriorRoomTemplate[] = VENUES.flatMap((v) =>
   v.rooms.map((r, i) => ({ ...r, id: `${v.map}:${r.kind}#${i}`, map: v.map, building: v.program, items: [...r.items] })));
 export const DAILY_VENUE_PROGRAMS: Readonly<Record<string, readonly { readonly map: string; readonly kinds: readonly string[] }[]>> =
-  Object.fromEntries(VENUES.map((v) => [v.program, [v.map, ...(v.aliases ?? [])].map((map) => ({ map, kinds: v.rooms.map((r) => r.kind) }))]));
-export const DAILY_VENUE_VARIATION: Readonly<Record<string, ModernProgramVariation>> = Object.fromEntries(VENUES.map((v) => [v.program, v.variation]));
+  Object.fromEntries(VENUES.flatMap((v) => [v.program, ...(v.aliases?.filter((a) => a.startsWith("mc_")) ?? [])].map((prog) => [prog, [v.map, ...(v.aliases ?? [])].map((map) => ({ map, kinds: v.rooms.map((r) => r.kind) }))])));
+export const DAILY_VENUE_VARIATION: Readonly<Record<string, ModernProgramVariation>> =
+  Object.fromEntries(VENUES.flatMap((v) => [v.program, ...(v.aliases?.filter((a) => a.startsWith("mc_")) ?? [])].map((prog) => [prog, v.variation])));

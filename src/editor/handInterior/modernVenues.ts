@@ -275,28 +275,36 @@ const VENUES: readonly Venue[] = [
     ] },
   ] },
   // 29. 지하 주차장 — 남쪽 주차 데크(북·남 주차 구획 줄과 차, 기둥, 가운데 차로), 북서 엘리베이터 홀(정산기·대기 의자), 북동 전기·창고실.
+  // 29. 지하 주차장 & 환승 센터 (34×25, 북서 4칸 void 계단식 외곽) — 2026-10-18 19:18 사용자 「자동차는 기존에 쓰던 게 있었는데… 버스도 있고」.
+  //     기존 modern_city 거리 차량 키트(흰 승용차·빨간 승용차·시내버스·구급차)와 정면/후면 주차 차량을 함께 배치한 주차 데크 + 엘리베이터 정산 홀 + 기계실.
   { program: "mc_parking", map: "parking-garage", variation: {
-    entrance: "parking-deck", above: [["parking-lobby", "parking-deck"], ["parking-utility", "parking-deck"]], left: [["parking-lobby", "parking-utility"]], hubs: ["parking-deck"], palettes: [
+    rows: [["void:4", "parking-lobby", "parking-utility"], ["parking-deck"]],
+    entrance: "parking-deck", above: [["parking-lobby", "parking-deck"], ["parking-utility", "parking-deck"]], left: [["parking-lobby", "parking-utility"]],
+    hubs: ["parking-deck"], fixed: ["parking-lobby", "parking-utility", "parking-deck"], palettes: [
       { "parking-deck": ["mci-tile-concourse", "mci-wall-brick"], "parking-lobby": ["mci-stone-lobby", "mci-wall-lobby"], "parking-utility": ["mci-concrete", "mci-wall-brick"] },
       { "parking-deck": ["mci-stone-lobby", "mci-wall-office"], "parking-lobby": ["mci-tile-small", "mci-wall-tile"], "parking-utility": ["mci-tile-concourse", "mci-wall-office"] },
     ] }, rooms: [
-    { kind: "parking-lobby", w: 13, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
-      o("mci-notice-board", 6, 0), o("mci-route-map", 9, 0),
-      o("mci-elevator", 0, 2), o("mci-elevator", 3, 2), o("subway-vending-machine", 11, 2),
-      o("park-pay-machine", 8, 3), o("park-pay-machine", 9, 3), o("mci-wait-bench", 1, 5), o("mci-plant-tall", 12, 5),
+    { kind: "parking-lobby", w: 14, h: 6, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [
+      o("elev-floor-led", 1, 0), o("elev-hall-lantern", 3, 0), o("mci-notice-board", 6, 0), o("mci-route-map", 9, 0),
+      o("mci-elevator", 0, 2), o("mci-elevator", 3, 2), o("subway-vending-machine", 12, 2),
+      o("park-pay-machine", 8, 3), o("park-pay-machine", 9, 3), o("mci-wait-bench", 1, 5), o("mci-plant-tall", 13, 5),
     ] },
     { kind: "parking-utility", w: 13, h: 6, floor: "mci-concrete", wall: "mci-wall-metal", items: [
       o("mci-ac-wall", 8, 0),
       o("mci-rack", 0, 2), o("mci-rack", 3, 2), o("mci-filing", 11, 2),
       o("roof-water-tank", 8, 3), o("mci-pallet", 1, 5), o("mci-pallet", 2, 5), o("mci-pallet", 11, 5),
     ] },
-    { kind: "parking-deck", w: 27, h: 13, floor: "mci-concrete", wall: "mci-wall-metal", items: [
-      // 칸마다 [구분선 2칸][차 3칸] - 납작한 구분선과 차가 겹치면 조립기가 구분선을 밀어낸다. 남쪽 줄 가운데(x 12..14)는 출구 통로.
-      ...row("park-stall-lines", 0, 5, 6, 2),
-      o("park-car-front-white", 2, 2), o("park-car-front-red", 7, 2), o("park-car-front-navy", 12, 2), o("park-car-front-red", 17, 2), o("park-car-front-white", 22, 2),
-      o("park-pillar", 6, 7), o("park-pillar", 20, 7),
-      ...row("park-stall-lines", 0, 5, 6, 10),
-      o("park-car-back-black", 2, 10), o("park-car-back-white", 7, 10), o("park-car-back-navy", 17, 10), o("park-car-back-black", 22, 10),
+    { kind: "parking-deck", w: 32, h: 16, floor: "mci-concrete", wall: "mci-wall-metal", items: [
+      // 북쪽 주차 구획(위 방 문 앞 x=10·25 는 비운다)
+      o("park-stall-lines", 0, 2), o("park-car-front-white", 2, 2), o("park-stall-lines", 5, 2), o("park-car-front-red", 6, 2),
+      o("park-stall-lines", 12, 2), o("park-car-front-navy", 14, 2), o("park-stall-lines", 18, 2), o("park-car-front-red", 20, 2),
+      o("park-stall-lines", 27, 2), o("park-car-front-white", 29, 2),
+      // 중앙 주행 차로 & 버스·구급차·승용차 환승 베이(거리 차량 키트 재사용)
+      o("park-bus-e", 1, 7), o("park-pillar", 10, 7), o("park-sedan-white-e", 12, 7), o("park-pillar", 18, 7), o("hosp-ambulance-e", 20, 7),
+      o("park-sedan-red-w", 26, 10),
+      // 남쪽 주차 구획(남쪽 출구 x=15..16 앞은 비운다)
+      o("park-stall-lines", 0, 13), o("park-car-back-black", 2, 13), o("park-stall-lines", 6, 13), o("park-car-back-white", 8, 13),
+      o("park-stall-lines", 18, 13), o("park-car-back-navy", 20, 13), o("park-stall-lines", 25, 13), o("park-car-back-black", 27, 13),
     ] },
   ] },
   // 30. 대학 중앙도서관 — 북서 열람실(벽 서가·서가 열 넷·스터디 램프 열람석 여덟), 북동 그룹 스터디룸(ㄷ자 탁자 둘), 남쪽 로비(대출 데스크·검색 PC·자판기).
