@@ -11,17 +11,25 @@ LED = (255, 80, 60)
 
 # ------------------------------------------------------------------ beds
 def hosp_bed_e():
-    """Horizontal ward bed, head against the west, feet to the east: grey headboard, pillow, mint blanket, side rail and castors."""
+    """Horizontal ward bed, head against the west, feet to the east: tall rounded headboard with a chrome top rail,
+    plump pillow, white sheet folded back over a quilted mint blanket, half-length side rail, footboard with a
+    chart clip, IV pole at the head and locking castors."""
     c = C(32, 32)
-    c.box(0, 4, 4, 28, STEEL_D); c.r(1, 5, 3, 7, STEEL_L)
-    c.block(3, 11, 30, 27, 9, WHITE, STEEL)
-    c.box(5, 12, 11, 19, WHITE); c.r(6, 13, 10, 14, WHITE_D)
-    c.r(12, 12, 29, 20, MINT); c.r(12, 12, 29, 12, MINT_L); c.r(12, 15, 29, 15, MINT_L); c.r(12, 20, 29, 20, MINT_D)
-    c.r(12, 12, 12, 20, MINT_D)
-    c.r(8, 23, 26, 23, STEEL_L); c.r(8, 25, 26, 25, STEEL_D)
-    for x in (8, 17, 26): c.r(x, 22, x, 26, STEEL_D)
-    c.box(29, 9, 31, 26, STEEL_D)
-    for x in (5, 27): c.r(x, 28, x + 1, 29, BLACK)
+    c.r(1, 0, 1, 10, STEEL); c.r(0, 0, 3, 0, STEEL_D); c.box(2, 1, 5, 4, (210, 236, 246)); c.p(3, 2, WHITE)  # IV pole + bag
+    c.rbox(0, 7, 5, 28, (176, 184, 196)); c.r(1, 8, 4, 8, STEEL_L); c.r(4, 9, 4, 27, STEEL_D)               # headboard
+    c.r(1, 12, 3, 12, (140, 148, 162)); c.r(1, 20, 3, 20, (140, 148, 162))
+    c.rbox(4, 11, 29, 25, WHITE)                                                                           # mattress top
+    c.cushion(6, 12, 12, 19, WHITE, (236, 240, 244), WHITE_D)                                                # pillow
+    c.p(9, 15, WHITE_D)
+    c.r(13, 12, 28, 21, MINT); c.r(13, 12, 28, 12, MINT_L); c.r(28, 13, 28, 21, MINT_D)                   # blanket
+    for x in range(16, 28, 4): c.r(x, 14, x, 20, MINT_D); c.p(x - 1, 13, MINT_L)                            # quilting
+    c.r(13, 12, 16, 21, WHITE); c.r(17, 12, 17, 21, WHITE_D); c.r(13, 21, 17, 21, WHITE_D)                # folded sheet
+    c.r(5, 21, 28, 22, MINT_D); c.r(5, 23, 28, 24, STEEL_D)                                                # blanket drop + frame
+    c.rbox(7, 20, 21, 24, (210, 216, 226)); c.r(8, 21, 20, 21, STEEL_L); c.r(8, 23, 20, 23, STEEL)          # side rail
+    for x in (10, 14, 18): c.p(x, 22, STEEL_D)
+    c.rbox(28, 10, 31, 26, (176, 184, 196)); c.r(29, 11, 30, 11, STEEL_L); c.box(28, 14, 31, 18, WHITE)    # footboard + chart
+    c.r(6, 25, 28, 26, (82, 88, 100))
+    for x in (6, 25): c.box(x, 26, x + 3, 29, BLACK); c.p(x + 1, 27, STEEL_D)
     c.r(4, 30, 30, 30, SH)
     return c.done()
 def hosp_bed_w(): return mirror(hosp_bed_e())
@@ -87,25 +95,40 @@ def crash_cart():
 
 # ------------------------------------------------------------------ operating theatre
 def op_table():
-    """Horizontal operating table (3 wide): patient under a teal surgical drape, head and cap on the west, arm boards, dark column base."""
+    """Horizontal operating table (3 wide): padded black table top under a teal surgical drape with fold creases,
+    patient head under a blue cap behind the anaesthesia screen frame on the west, arm boards out to both sides,
+    a lit instrument field on the drape, chrome rails and a hydraulic column on a wide base."""
     c = C(48, 32)
-    c.block(2, 10, 45, 20, 6, SURG, SURG_D)
-    c.r(3, 11, 9, 16, (70, 160, 120)); c.oval(4, 11, 9, 16, SKIN); c.r(4, 11, 9, 12, (110, 190, 200))
-    c.r(10, 12, 44, 15, (90, 176, 176)); c.r(10, 11, 44, 11, (130, 200, 200))
-    c.box(18, 6, 23, 11, SURG); c.box(18, 15, 23, 22, SURG)
-    c.r(25, 13, 31, 14, (220, 240, 240))
-    c.block(19, 21, 28, 27, 2, DARK_M, DARK)
-    c.block(12, 27, 35, 30, 1, STEEL_L, STEEL_D, shadow=False)
-    c.r(12, 31, 36, 31, SH)
+    c.rbox(2, 10, 45, 21, (40, 44, 54))                                                     # table top edge
+    c.rbox(3, 10, 44, 19, SURG); c.r(4, 10, 43, 10, lt(SURG, 1.3))
+    for x in range(14, 43, 6): c.l(x, 12, x + 3, 17, SURG_D)                                 # drape creases
+    c.r(4, 18, 43, 19, SURG_D)
+    c.r(4, 11, 10, 17, (110, 170, 220)); c.oval(4, 11, 10, 17, SKIN); c.r(4, 11, 10, 13, (90, 150, 220))   # head + cap
+    c.p(6, 15, SKIN_D); c.r(11, 9, 11, 18, STEEL_L); c.r(11, 8, 12, 8, STEEL)               # ether screen frame
+    c.rbox(17, 4, 23, 11, SURG); c.r(18, 5, 22, 5, lt(SURG, 1.3))                           # arm boards
+    c.rbox(17, 18, 23, 24, SURG); c.r(18, 23, 22, 23, SURG_D)
+    c.r(27, 12, 35, 15, (232, 244, 244)); c.r(27, 12, 35, 12, WHITE)                        # instrument field
+    c.r(29, 13, 33, 13, STEEL_D); c.p(31, 14, RED_D)
+    c.r(3, 20, 44, 20, STEEL_L); c.r(3, 21, 44, 21, STEEL_D)                                 # side rail
+    c.rbox(21, 21, 27, 27, DARK_M); c.r(22, 22, 26, 22, STEEL); c.r(26, 22, 26, 26, DARK)   # column
+    c.rbox(13, 26, 35, 30, STEEL); c.r(14, 27, 34, 27, STEEL_L); c.r(14, 29, 34, 29, STEEL_D)
+    c.p(16, 28, ECG); c.p(18, 28, ORANGE)
+    c.r(13, 31, 36, 31, SH)
     return c.done()
 def surgical_lamp():
-    """Overhead twin-dome surgical light seen from below the ceiling mount - drawn in the row above its footprint, walk-under."""
+    """Overhead twin-dome surgical light seen from below the ceiling mount - drawn in the row above its footprint,
+    walk-under: ceiling hub, two articulated spring arms with knuckle joints, and two deep LED domes with a ring
+    of lit cells, a sterile centre handle and a soft light pool."""
     c = C(32, 32)
-    c.r(15, 0, 16, 3, STEEL_D); c.l(15, 3, 6, 6, STEEL); c.l(16, 3, 25, 6, STEEL)
+    c.oval(13, 0, 18, 3, STEEL_D); c.p(15, 1, STEEL_L)
+    for (ax, ay), (bx, by) in (((14, 2), (8, 4)), ((17, 2), (23, 4))):
+        c.l(ax, ay, bx, by, STEEL_L); c.l(ax, ay + 1, bx, by + 1, STEEL_D); c.oval(bx - 1, by - 1, bx + 1, by + 1, DARK_M)
     for cx in (7, 24):
-        c.oval(cx - 6, 5, cx + 6, 13, STEEL_L); c.oval(cx - 4, 7, cx + 4, 12, (255, 252, 220))
-        c.p(cx - 2, 8, WHITE); c.p(cx + 1, 10, WHITE); c.p(cx, 9, YELLOW)
-        c.r(cx, 13, cx, 14, STEEL_D)
+        c.oval(cx - 7, 5, cx + 7, 15, (200, 206, 216)); c.r(cx - 5, 6, cx + 5, 6, WHITE)
+        c.oval(cx - 5, 7, cx + 5, 13, (232, 234, 214))
+        for dx, dy in ((-3, 9), (0, 8), (3, 9), (-3, 11), (3, 11), (0, 12)): c.p(cx + dx, dy, (255, 250, 190))
+        c.oval(cx - 1, 9, cx + 1, 11, STEEL_D); c.p(cx, 10, (120, 200, 210))
+        c.r(cx - 6, 14, cx + 6, 14, (150, 156, 168))
     return c.done()
 def anesthesia_machine():
     """Anesthesia workstation: monitor on top, flow-meter tubes, black bellows, blue O2 / green N2O cylinders at the base."""
@@ -150,15 +173,23 @@ def scrub_sink():
 
 # ------------------------------------------------------------------ imaging
 def ct_scanner():
-    """CT scanner (3x2): white donut gantry with blue ring light at the west, patient couch sliding out to the east."""
+    """CT scanner (3x2): white donut gantry on the west with a deep shaded bore (inner rim lit, far rim dark), blue
+    ring light, status screen and side cowl; padded patient couch with a headrest slides out east on a pedestal."""
     c = C(48, 48)
-    c.block(0, 4, 20, 44, 6, WHITE, WHITE_D)
-    c.oval(3, 13, 17, 37, (60, 70, 90)); c.oval(5, 15, 15, 35, (140, 200, 240)); c.oval(7, 18, 13, 32, (40, 48, 64))
-    c.r(2, 6, 18, 6, BLUE_L); c.r(4, 40, 16, 41, STEEL_D)
-    c.block(10, 22, 46, 30, 5, WHITE, (196, 206, 220))
-    c.r(22, 23, 30, 25, (150, 190, 230)); c.box(38, 23, 44, 26, WHITE)
-    c.block(26, 31, 40, 43, 2, (196, 206, 220), (150, 160, 178))
-    c.r(1, 45, 46, 45, SH)
+    c.rbox(0, 3, 21, 45, (226, 230, 236)); c.r(1, 4, 20, 9, WHITE); c.r(20, 5, 20, 44, (180, 188, 200))   # gantry body
+    c.r(1, 10, 20, 10, (196, 202, 212)); c.r(1, 40, 20, 44, (190, 196, 206))
+    c.r(3, 5, 18, 6, BLUE_L); c.r(3, 6, 18, 6, BLUE)                                        # top light bar
+    c.oval(2, 12, 19, 39, (176, 184, 198)); c.oval(3, 13, 18, 38, (110, 190, 240))           # bore ring
+    c.oval(5, 15, 16, 36, (200, 210, 222)); c.oval(7, 17, 15, 34, (60, 66, 84))              # bore depth
+    c.oval(9, 20, 15, 31, (30, 34, 48)); c.r(6, 24, 6, 28, WHITE); c.p(5, 22, GLASS_L)      # lit near rim
+    c.box(14, 41, 19, 44, (30, 40, 50)); c.r(15, 42, 18, 42, ECG)
+    c.rbox(9, 22, 46, 29, (196, 206, 220)); c.r(10, 22, 45, 22, WHITE)                       # couch
+    c.cushion(12, 22, 44, 27, WHITE, (226, 232, 240), (176, 186, 200))
+    c.r(20, 23, 31, 25, (150, 190, 230)); c.r(20, 23, 31, 23, BLUE_L)                        # cushion pad
+    c.cushion(38, 22, 44, 27, (240, 244, 248), (214, 220, 230), (170, 180, 196))             # head rest
+    c.rbox(27, 29, 40, 43, (176, 186, 200)); c.r(28, 30, 39, 31, (210, 216, 226)); c.r(39, 31, 39, 42, (140, 148, 164))
+    c.r(28, 41, 39, 42, (140, 148, 164)); c.p(30, 35, ECG)
+    c.r(1, 46, 46, 46, SH)
     return c.done()
 def xray_table():
     """Radiography table (3 wide) with the X-ray tube on a ceiling column over it and a bucky tray under the top."""
@@ -247,22 +278,35 @@ def triage_desk():
 
 # ------------------------------------------------------------------ elevator cabin / hall
 def elev_car_door():
-    """Elevator car doors seen from inside (door object, 1 wide): brushed-steel leaves parting at the centre, threshold groove."""
+    """Elevator car doors seen from inside (door object, 1 wide): dark jamb frame, two hairline-brushed steel leaves
+    with bevelled meeting edges, safety light-curtain strips on the jambs, and an aluminium threshold with a groove."""
     c = C(16, 48)
-    c.box(0, 0, 15, 31, STEEL_D)
-    c.r(1, 1, 7, 31, STEEL_L); c.r(9, 1, 14, 31, STEEL_L); c.r(8, 1, 8, 31, (60, 66, 78))
-    for y in range(3, 30, 4): c.p(3, y, WHITE); c.p(11, y + 2, WHITE)
-    c.r(0, 32, 15, 35, STEEL); c.r(0, 34, 15, 34, STEEL_D)
+    c.box(0, 0, 15, 32, (70, 76, 90))
+    c.r(1, 1, 1, 31, (120, 220, 255)); c.r(14, 1, 14, 31, (120, 220, 255))           # light-curtain strips
+    for x0, x1 in ((2, 7), (8, 13)):
+        c.r(x0, 1, x1, 31, (184, 190, 202))
+        for x in range(x0, x1 + 1, 2): c.r(x, 2, x, 30, (198, 204, 214))           # brushed hairline
+        c.r(x0, 1, x1, 1, (226, 230, 236))
+    c.r(7, 1, 7, 31, STEEL_D); c.r(8, 1, 8, 31, STEEL_L)                             # meeting edges
+    c.glare(3, 8, 6, 11, WHITE); c.glare(9, 18, 12, 21, WHITE)
+    c.r(2, 28, 13, 31, (150, 156, 168))                                             # kick plate
+    c.r(0, 33, 15, 36, (196, 200, 208)); c.r(0, 33, 15, 33, WHITE); c.r(0, 35, 15, 35, STEEL_D)
     return c.done()
 def elev_mirror_wall():
-    """Cabin back wall (3 wide): full-width mirror reflecting the cabin light, brushed-steel frame and a round handrail along the bottom."""
+    """Cabin back wall (3 wide): bevelled half-height mirror reflecting the ceiling light panel and the doors behind
+    you, brushed-steel panels below with a chrome tube handrail on standoff brackets."""
     c = C(48, 32)
-    c.box(0, 0, 47, 31, STEEL)
-    c.r(2, 2, 45, 22, (190, 210, 222)); c.r(2, 2, 45, 4, (232, 240, 246))
-    for i in range(8): c.p(8 + i, 20 - i, WHITE); c.p(30 + i, 20 - i, WHITE)
-    c.r(16, 10, 22, 22, (150, 160, 176))
-    c.r(1, 25, 46, 26, STEEL_L); c.r(1, 27, 46, 27, STEEL_D)
-    for x in (4, 43): c.r(x, 23, x + 1, 28, STEEL_D)
+    c.box(0, 0, 47, 31, (150, 156, 168))
+    c.box(2, 1, 45, 20, STEEL_L)
+    c.r(3, 2, 44, 19, (176, 198, 212)); c.r(3, 2, 44, 5, (214, 226, 234))                    # reflected ceiling
+    for x in range(6, 42, 8): c.r(x, 3, x + 4, 4, (250, 252, 255))                          # light panel cells
+    c.r(18, 8, 29, 19, (128, 136, 150)); c.r(23, 8, 24, 19, (90, 96, 110)); c.r(18, 8, 29, 8, (160, 168, 180))  # reflected doors
+    c.r(3, 17, 44, 19, (156, 176, 190))
+    c.glare(6, 8, 14, 16, (236, 246, 252)); c.glare(9, 10, 15, 16, (214, 230, 240)); c.glare(34, 6, 43, 15, (236, 246, 252))
+    for x in range(2, 46, 2): c.r(x, 22, x, 30, (164, 170, 182))
+    c.r(1, 21, 46, 21, STEEL_D)
+    c.rbox(1, 24, 46, 27, (220, 224, 232)); c.r(2, 25, 45, 25, WHITE); c.r(2, 26, 45, 26, STEEL)   # tube rail
+    for x in (4, 23, 43): c.r(x, 27, x + 1, 29, STEEL_D)
     return c.done()
 def elev_wood_panel():
     """Cabin side wall panel (2 wide): walnut veneer with a brushed-steel handrail and the capacity plate."""

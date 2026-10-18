@@ -59,27 +59,72 @@ class C:
         return self
 
     def glass(self, x0, y0, x1, y1, tint=GLASS):
+        """Glass pane: tint, darker lower band (depth), bright top rim and two diagonal glare streaks."""
         self.r(x0, y0, x1, y1, tint)
-        for i in range(0, min(x1 - x0, y1 - y0) // 2):
-            self.p(x0 + 2 + i, y1 - 2 - i, GLASS_L)
+        h = y1 - y0
+        if h >= 4: self.r(x0, y1 - max(1, h // 4), x1, y1, dk(tint, 0.9))
+        self.r(x0, y0, x1, y0, lt(tint, 1.12))
+        hi = lt(tint, 1.2)
+        for off, step in ((2, 1), (5, 2)):
+            for i in range(0, min(h - 1, x1 - x0 - off) + 1, step):
+                self.p(x0 + off + i, y1 - 1 - i, hi)
+        return self
+    def glare(self, x0, y0, x1, y1, col=GLASS_L):
+        """Single sharp diagonal reflection line across a pane (bottom-left to top-right)."""
+        n = min(x1 - x0, y1 - y0)
+        for i in range(n + 1): self.p(x0 + i, y1 - i, col)
+        return self
+    def rbox(self, x0, y0, x1, y1, fill, ol=OL):
+        """Box with clipped (rounded) corners - outline follows the curve."""
+        self.r(x0 + 1, y0, x1 - 1, y1, ol); self.r(x0, y0 + 1, x1, y1 - 1, ol)
+        self.r(x0 + 1, y0 + 1, x1 - 1, y1 - 1, fill)
+        return self
+    def cushion(self, x0, y0, x1, y1, L, M, D, ol=OL):
+        """Plump upholstered cushion: rounded outline, lit crown, mid body, shaded belly and right flank."""
+        self.rbox(x0, y0, x1, y1, M, ol)
+        self.r(x0 + 2, y0 + 1, x1 - 2, y0 + 1, L)
+        if y1 - y0 > 4: self.r(x0 + 1, y0 + 2, x0 + 1, y1 - 2, lt(M, 1.06))
+        self.r(x0 + 1, y1 - 1, x1 - 1, y1 - 1, D); self.r(x1 - 1, y0 + 2, x1 - 1, y1 - 1, D)
+        if y1 - y0 > 6: self.p(x0 + 2, y0 + 2, lt(L, 1.1))
+        return self
+    def shelf(self, x0, x1, y, lip=STEEL_L, tag=None):
+        """Shelf lip: bright lip edge over a darker edge row, optional price-tag flecks."""
+        self.r(x0, y, x1, y, lip); self.r(x0, y + 1, x1, y + 1, dk(lip, 0.72))
+        if tag:
+            for x in range(x0 + 2, x1 - 1, 6): self.p(x, y + 1, tag); self.p(x + 1, y + 1, tag)
+        return self
+    def dither(self, x0, y0, x1, y1, c, phase=0):
+        for y in range(y0, y1 + 1):
+            for x in range(x0 + ((y + phase) % 2), x1 + 1, 2): self.p(x, y, c)
         return self
 
     # merchandise ------------------------------------------------------
     def pack(self, x, y, w, h, c):
-        """Retail package: colour body, light top row, dark bottom row (reads as a box on a shelf)."""
+        """Retail package: lit top edge and left side, shaded right side and base, white label fleck."""
         self.r(x, y, x + w - 1, y + h - 1, c)
         self.r(x, y, x + w - 1, y, lt(c, 1.3))
-        if h > 2: self.r(x, y + h - 1, x + w - 1, y + h - 1, dk(c, 0.7))
-        if w > 2 and h > 3: self.p(x + w // 2, y + h // 2, WHITE)
+        if w > 2: self.r(x + w - 1, y + 1, x + w - 1, y + h - 1, dk(c, 0.78))
+        if h > 2: self.r(x, y + h - 1, x + w - 1, y + h - 1, dk(c, 0.65))
+        if w > 2 and h > 3: self.r(x, y + 1, x, y + h - 2, lt(c, 1.12)); self.p(x + w // 2, y + h // 2, WHITE)
         return self
     def bottle(self, x, y, c, h=6):
-        self.r(x, y + 2, x + 1, y + h - 1, c); self.p(x, y + 2, lt(c, 1.4))
-        self.r(x, y, x + 1, y + 1, dk(c, 0.6)); return self
+        """Two-pixel bottle: dark cap, shoulder, glossy body with a specular streak and a label band."""
+        self.p(x, y, dk(c, 0.5)); self.p(x + 1, y, dk(c, 0.5))
+        self.p(x, y + 1, dk(c, 0.82)); self.p(x + 1, y + 1, dk(c, 0.62))
+        self.r(x, y + 2, x + 1, y + h - 1, c); self.r(x + 1, y + 2, x + 1, y + h - 1, dk(c, 0.8))
+        self.r(x, y + 2, x, y + 3, lt(c, 1.5))
+        if h >= 6: self.r(x, y + h - 2, x + 1, y + h - 2, WHITE_D if sum(c) < 500 else dk(c, 0.6))
+        return self
     def can(self, x, y, c):
-        self.r(x, y, x + 2, y + 3, c); self.r(x, y, x + 2, y, STEEL_L); self.r(x, y + 3, x + 2, y + 3, STEEL_D); return self
+        """Three-pixel can: steel rim with a bright tab, body with highlight and shade columns, dark base rim."""
+        self.r(x, y, x + 2, y, STEEL_L); self.p(x + 1, y, WHITE)
+        self.r(x, y + 1, x + 2, y + 3, c); self.r(x, y + 1, x, y + 3, lt(c, 1.35)); self.r(x + 2, y + 1, x + 2, y + 3, dk(c, 0.75))
+        self.r(x, y + 3, x + 2, y + 3, STEEL_D); return self
     def ball(self, x, y, r, c):
-        self.e(x - r, y - r, x + r, y + r, dk(c, 0.7)); self.e(x - r, y - r, x + r - 1, y + r - 1, c)
-        self.p(x - r + 1, y - r + 1, lt(c, 1.45)); return self
+        """Round fruit / ball: dark rim, body, lit upper-left lobe, single specular pixel."""
+        self.e(x - r, y - r, x + r, y + r, dk(c, 0.62)); self.e(x - r, y - r, x + r - 1, y + r - 1, c)
+        if r >= 2: self.e(x - r + 1, y - r + 1, x, y, lt(c, 1.15))
+        self.p(x - r + 1, y - r + 1, lt(c, 1.6)); return self
     def shelf_rows(self, x0, x1, ys, colors, w=3, h=4, gap=1):
         """Fill shelf rows with packages cycling through colors."""
         k = 0

@@ -664,15 +664,17 @@ const VENUES: readonly Venue[] = [
     { kind: "mart-produce", w: 18, h: 12, floor: "mci-wood-oak", wall: "mci-wall-brick", items: [
       o("mart-sale-banner", 1, 0), o("mci-menu-board", 6, 0), o("mart-sale-banner", 13, 0),
       o("mart-veg-wall", 0, 2), o("mart-veg-wall", 2, 2), o("mart-cold-case", 4, 2), o("mart-cold-case", 12, 2), o("mart-veg-wall", 14, 2), o("mart-veg-wall", 16, 2),
-      o("mart-fruit-apple", 1, 5), o("mart-fruit-banana", 5, 5), o("mart-veg-pyramid", 9, 5), o("mart-fruit-orange", 14, 5),
-      o("mart-fruit-watermelon", 1, 8), o("mart-veg-pyramid", 5, 8), o("mart-egg-tower", 9, 8), o("mart-scale-station", 12, 8), o("mart-fruit-apple", 14, 8),
+      // 청과 매대는 두 줄의 이어진 아일랜드(y=5·8, x=2..15) - 서쪽 끝 저울대, 동쪽 끝 계란 타워.
+      o("mart-scale-station", 1, 5), o("mart-fruit-apple", 2, 5), o("mart-fruit-banana", 4, 5), o("mart-veg-pyramid", 6, 5), o("mart-fruit-orange", 9, 5), o("mart-fruit-apple", 11, 5), o("mart-veg-pyramid", 13, 5), o("mart-egg-tower", 16, 5),
+      o("mart-scale-station", 1, 8), o("mart-fruit-watermelon", 2, 8), o("mart-veg-pyramid", 4, 8), o("mart-fruit-orange", 7, 8), o("mart-fruit-banana", 9, 8), o("mart-veg-pyramid", 11, 8), o("mart-fruit-watermelon", 14, 8), o("mart-egg-tower", 16, 8),
       o("mci-basket-stack", 0, 11), o("mart-flower-buckets", 1, 11), o("mart-flower-buckets", 2, 11), o("mart-rice-pallet", 14, 11), o("mci-basket-stack", 17, 11),
     ] },
     { kind: "mart-butcher", w: 16, h: 12, floor: "mci-tile-small", wall: "mci-wall-tile", items: [
       o("mci-menu-board", 1, 0), o("mci-wall-clock", 7, 0), o("mci-menu-board", 12, 0),
-      o("mart-meat-showcase", 0, 2), o("mart-meat-showcase", 3, 2), o("mart-meat-case", 6, 2), o("mart-meat-case", 9, 2), o("mart-meat-showcase", 12, 2),
-      o("mart-fish-ice", 1, 5), o("mart-sashimi-case", 5, 5), o("mart-fish-ice", 9, 5), o("mart-sashimi-case", 13, 5),
-      o("mci-freezer", 1, 8), o("mart-freezer-dumpling", 4, 8), o("mart-freezer-icecream", 9, 8), o("mci-freezer", 12, 8),
+      o("mart-meat-showcase", 0, 2), o("mart-meat-showcase", 3, 2), o("mart-meat-case", 6, 2), o("mart-meat-case", 8, 2), o("mart-meat-showcase", 10, 2), o("mart-meat-showcase", 13, 2),
+      // 수산 얼음 매대·회 냉장 케이스를 한 줄 아일랜드(y=5, x=1..14)로, 냉동고도 한 줄(y=8, x=2..13)로 잇는다.
+      o("mart-fish-ice", 1, 5), o("mart-sashimi-case", 4, 5), o("mart-fish-ice", 6, 5), o("mart-sashimi-case", 9, 5), o("mart-fish-ice", 11, 5),
+      o("mci-freezer", 2, 8), o("mart-freezer-dumpling", 4, 8), o("mart-freezer-icecream", 6, 8), o("mart-freezer-icecream", 8, 8), o("mart-freezer-dumpling", 10, 8), o("mci-freezer", 12, 8),
       o("mci-basket-stack", 0, 11), o("mart-promo-endcap", 1, 11), o("mart-sample-cart", 14, 11),
     ] },
     { kind: "mart-storage", w: 10, h: 12, floor: "mci-concrete", wall: "mci-wall-metal", items: [
@@ -687,15 +689,19 @@ const VENUES: readonly Venue[] = [
       o("mart-dairy-open", 0, 2), o("mart-dairy-open", 2, 2), o("mart-drink-open", 4, 2), o("mart-drink-open", 6, 2),
       o("mart-bread-rack", 12, 2), o("mart-bread-rack", 14, 2), o("mart-cake-showcase", 16, 2), o("mart-donut-case", 18, 2), o("mart-liquor-fridge", 20, 2), o("mart-liquor-fridge", 22, 2), o("mart-cold-case", 24, 2),
       o("mci-cooler", 31, 2), o("mart-liquor-fridge", 33, 2), o("mart-drink-open", 35, 2), o("mart-dairy-open", 37, 2),
-      // 곤돌라 12열 + 중앙 특판 프로모션 아일랜드(x=19..25)로 가운데 빈 공간을 풍성하게 채운다.
-      ...([[1, "mart-gondola-ramen"], [4, "mart-gondola-snack"], [7, "mart-gondola-cereal"], [10, "mart-gondola-cans"], [13, "mart-gondola-tea"], [16, "mart-gondola-water"],
-        [28, "mart-gondola-detergent"], [31, "mart-gondola-household"], [34, "mart-gondola-snack"], [37, "mart-gondola-ramen"], [40, "mart-gondola-cereal"], [43, "mci-gondola"]] as const)
-        .flatMap(([x, id], i) => [...[6, 8, 10].map((y) => o(id, x, y)), o(i % 2 ? "mart-sale-endcap" : "mart-promo-endcap", x, 12)]),
+      // 곤돌라는 동서로 길게 이은 진열 줄 3개(y=6·9·12) × 서·동 블록 - 줄 끝마다 엔드캡, 줄 사이 통로 2칸(위 칸은 진열대 윗면).
+      // 낱개 곤돌라를 바둑판으로 흩어 놓던 R11 배치는 「떠 있는 상자」로 읽혀 폐기. 가운데 특판 아일랜드(x=19..25)가 두 블록을 가른다.
+      ...([[6, ["mart-gondola-ramen", "mart-gondola-snack", "mart-gondola-cereal"]], [9, ["mart-gondola-cans", "mart-gondola-tea", "mart-gondola-water"]],
+        [12, ["mart-gondola-detergent", "mart-gondola-household", "mci-gondola"]]] as const).flatMap(([y, ids]) => [
+        o("mart-promo-endcap", 1, y), ...[2, 4, 6, 8, 10, 12, 14].map((x, i) => o(ids[Math.floor(i / 3) % 3]!, x, y)), o("mart-sale-endcap", 16, y),
+        o("mart-sale-endcap", 28, y), ...[29, 31, 33, 35, 37, 39, 41].map((x, i) => o(ids[(Math.floor(i / 3) + 1) % 3]!, x, y)), o("mart-promo-endcap", 43, y),
+      ]),
       o("mart-promo-endcap", 20, 6), o("mart-sale-endcap", 23, 6),
-      o("mart-veg-pyramid", 20, 8), o("mart-egg-tower", 23, 8), o("mart-rice-pallet", 24, 8),
-      o("mart-sample-cart", 20, 11), o("mart-candy-bins", 23, 11),
-      ...[2, 5, 8, 11, 14, 17, 20, 23].map((x, i) => o(["mart-freezer-dumpling", "mart-freezer-icecream", "mci-freezer"][i % 3]!, x, 15)),
-      ...[28, 31, 34, 37, 40, 43].map((x, i) => o(["mart-freezer-icecream", "mci-freezer", "mart-freezer-dumpling"][i % 3]!, x, 15)),
+      o("mart-veg-pyramid", 20, 9), o("mart-egg-tower", 23, 9), o("mart-rice-pallet", 24, 9),
+      o("mart-sample-cart", 20, 12), o("mart-candy-bins", 23, 12),
+      // 냉동 평대도 이어 붙인 아일랜드 두 개(서 x=2..15 · 동 x=29..42) - 계산대 쪽으로 2칸 통로를 남긴다.
+      ...[2, 4, 6, 8, 10, 12, 14].map((x, i) => o(["mart-freezer-dumpling", "mart-freezer-icecream", "mci-freezer"][Math.floor(i / 2) % 3]!, x, 15)),
+      ...[29, 31, 33, 35, 37, 39, 41].map((x, i) => o(["mart-freezer-icecream", "mci-freezer", "mart-freezer-dumpling"][Math.floor(i / 2) % 3]!, x, 15)),
       o("mci-plant-tall", 0, 17), o("mci-plant-tall", 47, 17),
     ] },
     { kind: "mart-checkout", w: 31, h: 12, floor: "mci-stone-lobby", wall: "mci-wall-lobby", items: [

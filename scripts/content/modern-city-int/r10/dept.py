@@ -3,50 +3,85 @@ from lib import *
 
 
 # ------------------------------------------------------------------ mannequins (1x1 floor, tall)
+FORM, FORM_D, FORM_L = (232, 226, 218), (196, 188, 178), (250, 248, 244)
+
+
 def _plinth(c):
-    c.oval(2, 25, 13, 30, (210, 206, 200)); c.r(3, 26, 12, 27, (236, 234, 228))
-    c.r(7, 21, 8, 26, STEEL_D)
-def _head(c, hair=None):
-    c.oval(5, 1, 10, 6, (236, 232, 226)); c.p(6, 2, WHITE)
-    if hair: c.r(5, 1, 10, 2, hair)
+    """Round two-step plinth with a chrome support rod."""
+    c.oval(1, 25, 14, 31, (150, 146, 140)); c.oval(2, 25, 13, 29, (226, 222, 214)); c.r(4, 26, 11, 26, FORM_L)
+    c.r(7, 20, 8, 27, STEEL_L); c.p(8, 21, STEEL_D)
+def _head(c, hair=None, y=0):
+    """Egg head on a neck, lit from the upper left; optional sculpted hair cap."""
+    c.oval(5, y, 10, y + 6, FORM); c.p(6, y + 1, FORM_L); c.p(9, y + 4, FORM_D)
+    c.r(7, y + 6, 8, y + 7, FORM_D)
+    if hair: c.oval(5, y, 10, y + 3, hair); c.p(6, y + 1, lt(hair, 1.4)); c.p(10, y + 3, hair); c.p(5, y + 3, hair)
+def _torso(c, col, y0, y1, waist=None, shoulder=(2, 13)):
+    """Clothed torso: broad shoulders tapering to the waist, lit left flank, shaded right flank, ink outline."""
+    L, D = lt(col, 1.25), dk(col, 0.72)
+    for y in range(y0, y1 + 1):
+        t = (y - y0) / max(1, (waist or y1) - y0)
+        inset = 0 if y == y0 + 1 else min(2, int(t * 2))
+        x0, x1 = shoulder[0] + inset + (1 if y == y0 else 0), shoulder[1] - inset - (1 if y == y0 else 0)
+        c.r(x0 - 1, y, x1 + 1, y, OL); c.r(x0, y, x1, y, col); c.p(x0, y, L); c.p(x1, y, D)
+    c.r(shoulder[0] + 1, y1 + 1, shoulder[1] - 1, y1 + 1, OL)
+    c.r(shoulder[0] + 1, y0 + 1, shoulder[1] - 1, y0 + 1, L)
+def _arms(c, col, y0, y1):
+    """Arms hanging at the sides, sleeves in the garment colour, form-coloured hands."""
+    for x in (1, 14):
+        c.r(x, y0, x, y1, col); c.p(x, y0, lt(col, 1.2)); c.p(x, y1 + 1, FORM)
+        c.r(x - 1 if x == 1 else x + 1, y0 + 1, x - 1 if x == 1 else x + 1, y1, OL)
 def mannequin_suit():
-    """Male mannequin in a navy suit with white shirt and red tie on a round plinth."""
+    """Male mannequin in a navy two-button suit with notched lapels, white shirt, red tie and pocket square."""
     c = C(16, 32); _plinth(c); _head(c)
-    c.box(3, 6, 12, 21, NAVY); c.r(4, 7, 11, 7, lt(NAVY, 1.4))
-    c.r(7, 7, 8, 12, WHITE); c.r(7, 8, 8, 13, RED); c.l(5, 8, 7, 13, NAVY_D); c.l(10, 8, 8, 13, NAVY_D)
-    c.r(4, 15, 11, 15, NAVY_D); c.r(7, 16, 8, 21, NAVY_D)
+    _torso(c, NAVY, 7, 20, waist=15); _arms(c, NAVY, 8, 17)
+    c.l(5, 8, 7, 13, NAVY_D); c.l(10, 8, 8, 13, NAVY_D)                                  # lapels
+    c.r(7, 8, 8, 9, WHITE); c.r(7, 10, 8, 13, RED); c.p(7, 10, RED_L)                    # shirt + tie
+    c.p(10, 10, WHITE); c.p(8, 15, GOLD_D); c.p(8, 17, GOLD_D)                           # pocket square + buttons
+    c.r(5, 19, 10, 20, NAVY_D)
     return c.done()
 def mannequin_casual():
-    """Female mannequin in a striped knit and jeans."""
+    """Female mannequin in a Breton striped knit with rolled sleeves, belted high-waist jeans."""
     c = C(16, 32); _plinth(c); _head(c, (120, 80, 50))
-    c.box(4, 6, 11, 14, (246, 240, 226))
-    for y in (8, 10, 12): c.r(5, y, 10, y, (60, 110, 190))
-    c.box(4, 14, 11, 22, (80, 120, 180)); c.l(7, 16, 7, 22, BLUE_D); c.r(5, 14, 10, 14, BROWN)
+    _torso(c, (246, 240, 226), 7, 14, waist=14, shoulder=(3, 12)); _arms(c, (246, 240, 226), 8, 13)
+    for y in (9, 11, 13): c.r(4, y, 11, y, (60, 110, 190))
+    c.p(1, 10, (60, 110, 190)); c.p(14, 10, (60, 110, 190))
+    c.r(4, 15, 11, 15, BROWN); c.p(8, 15, GOLD)
+    for y in range(16, 22):
+        c.r(4, y, 6, y, (80, 120, 180)); c.r(9, y, 11, y, (80, 120, 180)); c.p(4, y, BLUE_L); c.p(11, y, BLUE_D)
+    c.r(3, 16, 3, 21, OL); c.r(12, 16, 12, 21, OL); c.r(7, 17, 8, 21, OL)
     return c.done()
 def mannequin_dress():
-    """Female mannequin in a flared red evening dress."""
+    """Female mannequin in a strapless red evening gown: fitted bodice, cinched waist, flared bias-cut skirt with folds."""
     c = C(16, 32); _plinth(c); _head(c, (60, 40, 30))
-    c.r(6, 6, 9, 7, (236, 232, 226))
-    c.box(5, 7, 10, 13, RED); c.r(6, 8, 9, 8, RED_L)
+    c.r(6, 7, 9, 8, FORM); c.p(6, 7, FORM_L)
+    _torso(c, RED, 8, 12, waist=12, shoulder=(4, 11))
     for i, y in enumerate(range(13, 25)):
-        w = 2 + i // 3
-        c.r(7 - w, y, 8 + w, y, RED if y < 23 else RED_D)
-    c.l(1, 24, 14, 24, OL); c.l(4, 13, 1, 24, OL); c.l(11, 13, 14, 24, OL); c.l(7, 15, 6, 23, RED_D)
+        w = 2 + (i * 5) // 11
+        c.r(6 - w, y, 9 + w, y, OL); c.r(7 - w, y, 8 + w, y, RED if y < 23 else RED_D)
+        c.p(7 - w, y, RED_L)
+    for x0, x1 in ((7, 4), (8, 9), (9, 12)): c.l(x0, 14, x1, 23, RED_D)                  # skirt folds
+    c.r(5, 12, 10, 12, RED_D); c.p(7, 9, RED_L)
     return c.done()
 def mannequin_coat():
-    """Mannequin in a camel trench coat with a belt and scarf."""
+    """Mannequin in a double-breasted camel trench: storm flap, belt with buckle, burgundy scarf, flared hem."""
     c = C(16, 32); _plinth(c); _head(c)
-    c.box(3, 6, 12, 23, (196, 156, 100)); c.r(4, 7, 11, 7, (224, 190, 140))
-    c.r(5, 6, 10, 8, (150, 40, 50)); c.r(4, 14, 11, 15, BROWN); c.p(8, 14, GOLD)
-    c.l(7, 9, 7, 22, BROWN_D); for_buttons = (10, 12, 17, 19)
-    for y in for_buttons: c.p(9, y, BROWN_D)
+    COAT = (196, 156, 100)
+    _torso(c, COAT, 7, 23, waist=14); _arms(c, COAT, 8, 18)
+    c.r(5, 7, 10, 9, (150, 40, 50)); c.r(9, 9, 10, 13, (150, 40, 50)); c.p(5, 7, (190, 70, 80))   # scarf + tail
+    c.r(3, 15, 12, 15, BROWN); c.box(7, 14, 9, 16, GOLD)                                  # belt + buckle
+    c.l(7, 10, 7, 22, BROWN_D)
+    for y in (11, 13, 18, 20): c.p(5, y, BROWN_D); c.p(9, y, BROWN_D)
+    c.r(4, 8, 6, 9, (224, 190, 140)); c.r(2, 23, 13, 23, dk(COAT, 0.7))
     return c.done()
 def mannequin_kids():
-    """Short kids mannequin in a yellow raincoat with a backpack."""
-    c = C(16, 32); _plinth(c)
-    c.oval(5, 7, 10, 12, (236, 232, 226))
-    c.box(4, 12, 11, 22, YELLOW); c.r(5, 13, 10, 13, (252, 230, 120)); c.r(4, 15, 4, 20, (60, 140, 220))
-    c.r(7, 14, 8, 21, YELLOW_D)
+    """Short kids mannequin in a yellow hooded raincoat with toggle buttons, blue backpack straps and red boots."""
+    c = C(16, 32); _plinth(c); _head(c, YELLOW, y=6)
+    c.p(5, 9, YELLOW_D); c.p(10, 9, YELLOW_D)
+    _torso(c, YELLOW, 13, 20, waist=20, shoulder=(4, 11))
+    c.r(4, 14, 4, 19, (60, 140, 220)); c.r(11, 14, 11, 19, (60, 140, 220))              # backpack straps
+    c.r(7, 14, 8, 20, YELLOW_D)
+    for y in (15, 18): c.p(6, y, BROWN); c.p(9, y, BROWN)
+    c.r(5, 22, 6, 24, RED); c.r(9, 22, 10, 24, RED); c.p(5, 22, RED_L); c.p(9, 22, RED_L)
     return c.done()
 
 

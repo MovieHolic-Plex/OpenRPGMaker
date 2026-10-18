@@ -11,39 +11,54 @@ MOQ_O = ((250, 180, 90), (230, 130, 50), (180, 90, 30))
 SEAT_LO = (36, 40, 52)
 
 
+def _sode(c, x0, y0, y1, flip=False):
+    """Sode-shikiri end partition: rounded stainless panel with a frosted inset and a grab-pole curl on top."""
+    c.rbox(x0, y0, x0 + 4, y1, STEEL)
+    c.r(x0 + 1, y0 + 2, x0 + 3, y1 - 2, (196, 212, 222)); c.r(x0 + 1, y0 + 1, x0 + 3, y0 + 1, STEEL_L)
+    c.r(x0 + 3 if not flip else x0 + 1, y0 + 2, x0 + 3 if not flip else x0 + 1, y1 - 2, STEEL_D)
+    c.p(x0 + 2, y0 + 4, WHITE); c.p(x0 + 2, y0 + 5, GLASS_L)
+
+
+def _seat_bounds(W, seats):
+    step = (W - 10) / seats
+    return [(int(5 + k * step), int(5 + (k + 1) * step) - 1) for k in range(seats)]
+
+
 def seat_s(moq, w_tiles, seats):
-    """Long seat against the NORTH wall facing south (toward the camera): low stainless backrest frame against the
-    wall, padded moquette back, deep cushion with one dimple per seat, stainless end partitions, dark kick plate."""
+    """Long seat against the NORTH wall facing south (toward the camera): stainless backrest frame on the wall,
+    one plump moquette back + cushion per seat (each its own rounded pillow, so the 7-seat division reads), sode-
+    shikiri partitions at both ends, a mid stanchion pole, dark kick plate with heater grille."""
     L, M, D = moq
     W = w_tiles * 16
     c = C(W, 32)
-    c.box(0, 4, W - 1, 14, D); c.r(1, 5, W - 2, 6, L)                                # backrest
-    c.r(1, 7, W - 2, 13, M)
-    c.box(0, 13, W - 1, 24, M); c.r(1, 14, W - 2, 15, L)                              # cushion top
-    step = (W - 8) / seats
-    for k in range(1, seats):                                                        # seat dividers (7-seat marks)
-        x = int(4 + k * step); c.l(x, 7, x, 22, D); c.p(x, 14, L)
-    c.box(0, 23, W - 1, 28, SEAT_LO); c.r(1, 24, W - 2, 24, STEEL_D)                  # kick plate
-    c.box(0, 2, 3, 28, STEEL); c.r(1, 3, 1, 27, STEEL_L)                              # end partitions
-    c.box(W - 4, 2, W - 1, 28, STEEL); c.r(W - 3, 3, W - 3, 27, STEEL_L)
+    c.box(2, 2, W - 3, 6, STEEL_D); c.r(3, 3, W - 4, 3, STEEL_L)                     # backrest frame on the wall
+    for x0, x1 in _seat_bounds(W, seats):
+        c.cushion(x0, 5, x1, 13, L, M, D)                                             # padded back
+        c.r(x0 + 2, 8, x1 - 2, 8, dk(M, 0.9))                                         # stitch line
+        c.cushion(x0, 13, x1, 22, lt(L, 1.05), L, D)                                  # seat cushion (lit top)
+        c.r(x0 + 1, 14, x1 - 1, 14, dk(D, 0.85)); c.r(x0 + 2, 15, x1 - 2, 15, lt(L, 1.15))
+    c.box(2, 22, W - 3, 28, SEAT_LO); c.r(3, 23, W - 4, 23, STEEL_D)                  # kick plate
+    for x in range(6, W - 6, 3): c.p(x, 25, (70, 76, 90)); c.p(x, 26, (70, 76, 90))   # heater grille
+    if seats >= 7: c.r(W // 2 - 1, 0, W // 2, 22, STEEL_L); c.p(W // 2 - 1, 0, WHITE); c.r(W // 2, 1, W // 2, 22, STEEL_D)
+    _sode(c, 0, 1, 28); _sode(c, W - 5, 1, 28, True)
     c.r(1, 29, W - 1, 29, SH)
     return c.done()
 
 
 def seat_n(moq, w_tiles, seats):
-    """Long seat on the SOUTH side facing north: the cushion is on the far side, the padded back faces the camera,
-    window-sill rail at the bottom edge."""
+    """Long seat on the SOUTH side facing north: the cushions are on the far side, each seat back faces the camera
+    as its own rounded pillow, window-sill rail and stainless backrest frame at the bottom edge."""
     L, M, D = moq
     W = w_tiles * 16
     c = C(W, 32)
-    c.box(0, 8, W - 1, 17, M); c.r(1, 9, W - 2, 10, lt(L, 1.1))                     # cushion (far side)
-    c.box(0, 15, W - 1, 28, D); c.r(1, 16, W - 2, 17, L); c.r(1, 18, W - 2, 26, M)  # backrest seen from the aisle
-    step = (W - 8) / seats
-    for k in range(1, seats):
-        x = int(4 + k * step); c.l(x, 9, x, 27, D)
-    c.r(1, 27, W - 2, 27, STEEL_L)                                                   # sill rail
-    c.box(0, 4, 3, 29, STEEL); c.r(1, 5, 1, 28, STEEL_L)
-    c.box(W - 4, 4, W - 1, 29, STEEL); c.r(W - 3, 5, W - 3, 28, STEEL_L)
+    for x0, x1 in _seat_bounds(W, seats):
+        c.cushion(x0, 7, x1, 16, lt(L, 1.05), L, D)                                   # seat cushion (far side)
+        c.r(x0 + 2, 8, x1 - 2, 8, lt(L, 1.2))
+        c.cushion(x0, 15, x1, 26, L, M, D)                                            # back seen from the aisle
+        c.r(x0 + 1, 16, x1 - 1, 16, dk(D, 0.85)); c.r(x0 + 2, 20, x1 - 2, 20, dk(M, 0.9))
+    c.box(2, 25, W - 3, 28, STEEL_D); c.r(3, 26, W - 4, 26, STEEL_L)                  # backrest frame / sill rail
+    if seats >= 7: c.r(W // 2 - 1, 4, W // 2, 26, STEEL_L); c.p(W // 2 - 1, 4, WHITE); c.r(W // 2, 5, W // 2, 26, STEEL_D)
+    _sode(c, 0, 3, 29); _sode(c, W - 5, 3, 29, True)
     c.r(1, 30, W - 1, 30, SH)
     return c.done()
 
