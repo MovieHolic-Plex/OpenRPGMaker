@@ -447,39 +447,47 @@ const matches = (w: Want, key: string) => w.id === key || w.kind === key;
  * 줄 배치 → 방 사각형. 줄마다 방을 왼쪽부터 칸막이 한 칸씩 띄워 놓고, 줄 높이는 그 줄 견본 높이(bh) 중 가장 큰 값, 줄 너비는 견본 너비(bw)로 가장 넓은 줄에 맞춘다 -
  * 견본 크기 합이 규모 규격(venueScale.ts)이라 seed 가 바뀌어도 맵 크기는 규격 그대로다. seed 변주로 넓힌 너비(tw - bw)는 그 줄의 남는 너비 안에서만
  * 앞 방부터 받고 나머지는 견본이 가장 넓은 방이 받는다 - 칸막이 자리가 seed 마다 옮겨 가구 간격이 바뀐다. 줄에 없는 방이 있거나 없는 방 종류를 부르면 undefined.
+ * `void:N` 칸은 방 없이 N칸(칸막이 포함)을 건물 밖으로 남긴다, ragged 면 방이 줄 높이로 늘지 않는다 - 둘 다 네모가 아닌 외곽(ㄱ·ㄷ·ㅗ자·계단형)을 만든다.
  */
-function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[]): Map<string, Rect> | undefined {
+function rowRects(rows: readonly (readonly string[])[], wants: readonly Want[], ragged = false): Map<string, Rect> | undefined {
+  type Cell = Want | { gap: number };
+  const isGap = (c: Cell): c is { gap: number } => "gap" in c;
   const pool = [...wants];
-  const grid: Want[][] = [];
+  const grid: Cell[][] = [];
   for (const row of rows) {
-    const line: Want[] = [];
+    const line: Cell[] = [];
     for (const key of row) {
+      const gap = /^void:(\d+)$/u.exec(key);
+      if (gap) { line.push({ gap: Number(gap[1]) }); continue; }
       const i = pool.findIndex((w) => matches(w, key));
       if (i < 0) return undefined;
       line.push(pool.splice(i, 1)[0]!);
     }
+    if (!line.some((c) => !isGap(c))) return undefined;
     grid.push(line);
   }
   if (pool.length) return undefined;
-  const baseWidth = (line: readonly Want[]) => line.reduce((s, w) => s + w.bw, 0) + line.length - 1;
+  const baseWidth = (line: readonly Cell[]) => line.reduce((s, c) => s + (isGap(c) ? c.gap : c.bw + 1), -1);
   const W = Math.max(...grid.map(baseWidth));
   const out = new Map<string, Rect>();
   let y = 1;
-  for (const line of grid) {
+  for (const cells of grid) {
+    const line = cells.filter((c): c is Want => !isGap(c));
     const h = Math.max(...line.map((w) => w.bh));
     const widest = line.reduce((a, w) => (w.bw > a.bw ? w : a), line[0]!);
     // 가장 넓은 방(15칸 이상)은 3칸까지 내어 준다 - 규격 너비를 꽉 채운 줄에서도 칸막이가 옮겨 간다(14칸 레스토랑 주방은 11칸이면 가구 하나가 빠졌다).
-    let budget = W - baseWidth(line) + (line.length > 1 && widest.bw >= 15 ? 3 : 0);
+    let budget = W - baseWidth(cells) + (line.length > 1 && widest.bw >= 15 ? 3 : 0);
     const widths = new Map(line.map((w) => {
       const g = w === widest ? 0 : Math.min(Math.max(0, w.tw - w.bw), budget);
       budget -= g;
       return [w, w.bw + g] as const;
     }));
-    widths.set(widest, W - line.reduce((s, w) => s + (w === widest ? 0 : widths.get(w)!), 0) - (line.length - 1));
+    widths.set(widest, widest.bw + W - baseWidth(cells) - line.reduce((s, w) => s + (w === widest ? 0 : widths.get(w)! - w.bw), 0));
     let x = 1;
-    for (const w of line) {
-      const ww = widths.get(w)!;
-      out.set(w.id, { x, y, w: ww, h });
+    for (const c of cells) {
+      if (isGap(c)) { x += c.gap; continue; }
+      const ww = widths.get(c)!;
+      out.set(c.id, { x, y, w: ww, h: ragged ? c.bh : h });
       x += ww + 1;
     }
     y += h + 1;
@@ -535,7 +543,7 @@ function buildCandidatesForVariant(
   const r = rng((req.seed ?? 1) + variantSeedOffset);
   const found = new Map<string, LayoutCandidate>();
   // program 이 줄 배치(rows)를 주면 첫 시도는 그 줄 배치 그대로다 — 견본 방 크기 합이 규모 규격이라 seed 1 이 규격 크기로 선다. 나머지 시도는 다른 배치 후보(variant 1·2…).
-  const rowPlan = vary?.v.rows ? rowRects(vary.v.rows, wants) : undefined;
+  const rowPlan = vary?.v.rows ? rowRects(vary.v.rows, wants, vary.v.ragged) : undefined;
   let rowKey: string | undefined;
   for (let trial = 0; trial < 600 && found.size < 60; trial++) {
     const order = [...wants];

@@ -21,8 +21,11 @@ export interface ModernProgramVariation {
   readonly hubs?: readonly string[];
   readonly fixed?: readonly string[];
   readonly palettes: readonly Readonly<Record<string, readonly [string, string]>>[];
-  /** 줄 배치(북→남, 줄마다 서→동 방 종류) - 주면 seed 마다 이 줄 배치로 선다(규모 규격 크기, venueScale.ts). 다른 배치는 layout.variant. */
+  /** 줄 배치(북→남, 줄마다 서→동 방 종류) - 주면 seed 마다 이 줄 배치로 선다(규모 규격 크기, venueScale.ts). 다른 배치는 layout.variant.
+   *  `void:N` 은 방 대신 N칸 바깥(건물 밖)을 비워 ㄱ·ㄷ·ㅗ자 평면을 만든다. */
   readonly rows?: readonly (readonly string[])[];
+  /** 참이면 줄 안의 방이 줄 높이로 늘지 않고 견본 높이(위쪽 맞춤)를 지킨다 - 짧은 방 아래는 건물 밖으로 들어간 계단형 외곽이 된다. */
+  readonly ragged?: boolean;
 }
 
 export const MODERN_PROGRAM_VARIATION: Readonly<Record<string, Readonly<Record<string, ModernProgramVariation>>>> = {
