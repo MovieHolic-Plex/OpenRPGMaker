@@ -101,6 +101,13 @@ export interface RoomSpec {
   /** 북쪽 벽 가구(y 2) - 기본 spread 정렬로 방 너비에 고르게 편다 (`_` 는 빈 구간 가중치). */
   readonly wall?: readonly string[];
   readonly wallAlign?: RowAlign;
+  /** 남쪽 벽 가구(y = h - objH) */
+  readonly south?: readonly string[];
+  /** 서쪽 벽 가구(x = 0) / 동쪽 벽 가구(x = w - objW) */
+  readonly west?: readonly string[];
+  readonly east?: readonly string[];
+  /** F-B counterLine: [카운터 id, n, x, y, staffProps?] — 연속 카운터 + 뒤쪽 직원 라인 */
+  readonly counterLine?: readonly (readonly [string, number, number, number, (readonly string[])?])[];
   /** [y (음수면 h+y), 가구 목록, 시작 x (생략 시 align), 간격, 정렬 = "spread"] */
   readonly rows?: readonly (readonly [number, readonly string[], number?, number?, RowAlign?])[];
   /** front/mid/back 3대역 자동 배치: [front(y=3..4), mid(y=h/2), back(y=h-2)] */
@@ -124,6 +131,8 @@ export interface RoomSpec {
   readonly pl?: boolean | readonly [number, number];
 }
 
+const WALL_ONLY_RE = /vending|locker|ticket-machine|atm|cooler|fridge|mci-shelf|filing|bookshelf|cabinet|vault-door|board|tv|plant-tall|dispenser/u;
+
 export type FRoom = Venue["rooms"][number] & { readonly openFloor?: boolean };
 
 export function room(kind: string, w: number, h: number, floor: string, wall: string, s: RoomSpec = {}): FRoom {
@@ -143,6 +152,41 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
   for (const [k, ax, ay] of s.at ?? []) {
     if (resolveY(ay) === 2) {
       markWallObj(id(k), ax, sizeOf(k).w);
+    }
+  }
+  if (s.south?.length) {
+    for (const sp of packLine(w, s.south, "spread", undefined, undefined, 1, w - 2)) {
+      const sh = sizeOf(sp.id).h;
+      items.push(o(sp.id, sp.x, h - sh));
+    }
+  }
+  if (s.west?.length) {
+    let wy = 2;
+    for (const wk of s.west) {
+      const wz = sizeOf(wk);
+      if (wy === 2) markWallObj(id(wk), 0, wz.w);
+      items.push(o(id(wk), 0, wy));
+      wy += wz.h + 1;
+    }
+  }
+  if (s.east?.length) {
+    let ey = 2;
+    for (const ek of s.east) {
+      const ez = sizeOf(ek);
+      if (ey === 2) markWallObj(id(ek), w - ez.w, ez.w);
+      items.push(o(id(ek), w - ez.w, ey));
+      ey += ez.h + 1;
+    }
+  }
+  for (const [cId, n, cx, cy0, staffProps] of s.counterLine ?? []) {
+    const cy = resolveY(cy0);
+    const cw = sizeOf(cId).w;
+    for (let i = 0; i < n; i++) items.push(o(id(cId), cx + i * cw, cy));
+    if (staffProps?.length) {
+      for (const sp of packLine(n * cw, staffProps, "spread", undefined, undefined, 0, n * cw - 1)) {
+        items.push(o(sp.id, cx + sp.x, 2));
+        markWallObj(sp.id, cx + sp.x, sp.w);
+      }
     }
   }
 
@@ -248,6 +292,16 @@ export function room(kind: string, w: number, h: number, floor: string, wall: st
   // 8) F2: 화분은 방당 최대 1개, 명시된 위치(s.pl = [x, y])에만 둔다(기본 pl: true 구석 쌍 화분 폐기).
   if (Array.isArray(s.pl)) {
     items.push(o("mci-plant-tall", s.pl[0], resolveY(s.pl[1])));
+  }
+  for (const it of items) {
+    if (it.t !== "o") continue;
+    const q = OBJ[it.id];
+    if (!q || q.kind === "hang" || q.kind === "flat") continue;
+    const iw = Math.max(1, q.w ?? 1), ih = Math.max(1, q.h ?? 1);
+    const touchesWall = it.y <= 2 || it.y + ih >= h - 1 || it.x === 0 || it.x + iw >= w;
+    if (WALL_ONLY_RE.test(it.id) && !touchesWall) {
+      throw new Error(`WALL_ONLY prop ${it.id} in ${kind} at (${it.x},${it.y}) must touch a wall`);
+    }
   }
   return { kind, w, h, floor, wall, items, ...(s.openFloor ? { openFloor: true } : {}) };
 }
