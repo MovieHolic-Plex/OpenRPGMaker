@@ -240,10 +240,33 @@ def car_side(sp, ph=0, brake=False, sig=None, open_=False):
 def _car_rows(sp, view):
     sport = sp.get('sport')
     if view == 'down':
-        return (dict(trunk=(2, 9), rg=(10, 13), roof=(14, 21), wind=(22, 31), hood=(32, 37), face=(38, 43)) if sport else
-                dict(trunk=(2, 8), rg=(9, 12), roof=(13, 23), wind=(24, 31), hood=(32, 37), face=(38, 43)))
-    return (dict(hood=(2, 9), wind=(10, 13), roof=(14, 21), rg=(22, 30), trunk=(31, 37), face=(38, 43)) if sport else
-            dict(hood=(2, 8), wind=(9, 12), roof=(13, 23), rg=(24, 30), trunk=(31, 37), face=(38, 43)))
+        return (dict(trunk=(2, 8), rg=(9, 11), roof=(12, 20), wind=(21, 31), hood=(32, 37), face=(38, 43)) if sport else
+                dict(trunk=(2, 7), rg=(8, 10), roof=(11, 22), wind=(23, 31), hood=(32, 37), face=(38, 43)))
+    return (dict(hood=(2, 8), wind=(9, 11), roof=(12, 20), rg=(21, 31), trunk=(32, 37), face=(38, 43)) if sport else
+            dict(hood=(2, 7), wind=(8, 10), roof=(11, 22), rg=(23, 31), trunk=(32, 37), face=(38, 43)))
+
+
+def corner_tyres(c, y, h, ph, x0=0, x1=31, w=4):
+    """tread of a front/rear axle pair seen from above: drawn before the body so only the outer 2px poke out
+    past the flanks (and the full width under the bumper). Lit outer edge on the left, rolling tread lines."""
+    for x in (x0, x1 - w + 1):
+        c.R(x, y, w, h, TIRE)
+        for k in range((ph % 2) + 1, h - 1, 2): c.HL(x, y + k, w, TIRE2)
+    c.VL(x0, y + 1, h - 2, TIRE2)
+
+def flank_axles(c, ys, ph):
+    """far/mid axles of a long body seen from above: 2px of tread poke past both flanks (drawn under the body)."""
+    for ty in ys:
+        corner_tyres(c, ty, 6, ph, 0, 31, 3)
+        for x in (1, 30): c.VL(x, ty + 2, 2, RIM2)
+
+
+def flank_glass(c, y0, y1, pillars, bx0=2, bx1=29, gl=G):
+    """side windows seen at a grazing angle: 1px lit glass on the left flank, shaded on the right, split by pillars."""
+    for y in range(y0, y1 + 1):
+        if y in pillars: continue
+        c.P(bx0 + 1, y, gl[3] if (y - y0) % 7 else gl[5]); c.P(bx1 - 1, y, gl[1])
+
 
 
 def car_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
@@ -251,52 +274,58 @@ def car_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     gl = GT if sp.get('teal') else G
     S = _car_rows(sp, view)
     bx0, bx1 = 2, 29
-    cx0, cx1 = 9, 22
+    cx0, cx1 = (8, 23) if sport else (7, 24)          # roof cap narrower than the body, like the side view's greenhouse
     down = view == 'down'
-    tyres(c, 41, 5, bx0, bx1, ph)
-    c.oy = -BOB[ph]
     near_glass, far_glass = ('wind', 'rg') if down else ('rg', 'wind')
     near_deck, far_deck = ('hood', 'trunk') if down else ('trunk', 'hood')
-    # top planes of both ends, shoulders along the cabin
+    for ty in (S[far_deck][0] + 2, S['face'][0] - 2):
+        corner_tyres(c, ty, 6, ph, 0, 31, 3)
+        for x in (1, 30): c.VL(x, ty + 2, 2, RIM2)                      # hub glint between the tread lines
+    for x in (4, 23): c.R(x, 44, 5, 2, TIRE); c.HL(x + 1, 44 + ph % 2, 3, TIRE2)   # treads under the near bumper
+    c.oy = -BOB[ph]
+    # top planes of both ends
     y0, y1 = S[far_deck][0], S[near_deck][1]
     c.R(bx0, y0, bx1 - bx0 + 1, y1 - y0 + 1, T[3])
     c.VL(bx0, y0, y1 - y0 + 1, T[4]); c.VL(bx1, y0, y1 - y0 + 1, T[2])
     for k in (far_deck, near_deck):
         a, b = S[k]; deck(c, bx0, bx1, a, b, T, far=(k == far_deck))
     a, b = S[near_deck]; c.HL(bx0 + 1, b, bx1 - bx0 - 1, T[5]); c.HL(bx0 + 1, a, bx1 - bx0 - 1, T[2])
-    for x in (10, 21): c.VL(x, a + 2, b - a - 2, T[4])                 # hood / trunk-lid creases
+    for j in range(1, b - a):                                            # hood / trunk-lid creases converge on the glass
+        t = (b - a - j) / max(1, b - a - 1)
+        c.P(lerp(9, 8, 1 - t), a + j, T[4]); c.P(lerp(22, 23, 1 - t), a + j, T[2])
     a, b = S[far_deck]; c.HL(bx0, b, bx1 - bx0 + 1, T[2])
     for k in range(2): c.X(bx0 + k, y0); c.X(bx1 - k, y0)
     c.X(bx0, y0 + 1); c.X(bx1, y0 + 1)
-    # far glass: dark, narrowing toward the roof
+    # far glass (seen at a grazing angle): dark, tapering from the deck edge in to the roof cap
     a, b = S[far_glass]; h = b - a + 1
     for j in range(h):
-        f = j / max(1, h - 1) if down else 1 - j / max(1, h - 1)
-        xl, xr = lerp(cx0 - 3, cx0, f), lerp(cx1 + 3, cx1, f)
-        c.HL(xl, a + j, xr - xl + 1, gl[2] if (j == 0 and down) or (j == h - 1 and not down) else gl[1] if j % 2 else gl[0])
-    # shoulders beside the cabin: body colour, with a 1px dark side-window strip hugging the roof
-    a, b = S['roof']
-    c.R(bx0 + 1, a, cx0 - bx0 - 1, b - a + 1, T[3]); c.R(cx1 + 1, a, bx1 - cx1 - 1, b - a + 1, T[2])
-    c.VL(bx0 + 1, a, b - a + 1, T[4])
-    c.VL(cx0 - 1, a, b - a + 1, gl[2]); c.VL(cx0 - 2, a + 1, b - a - 1, gl[3])
-    c.VL(cx1 + 1, a, b - a + 1, gl[0]); c.VL(cx1 + 2, a + 1, b - a - 1, gl[1])
-    rm = (a + b) // 2
-    c.R(cx0 - 2, rm, 2, 1, T[3]); c.R(cx1 + 1, rm, 2, 1, T[2])        # B-pillars
-    # roof
+        t = j / max(1, h - 1)
+        xl, xr = lerp(bx0 + 3, cx0, t), lerp(bx1 - 3, cx1, t)
+        c.P(xl, a + j, INK2); c.P(xr, a + j, INK2)
+        c.HL(xl + 1, a + j, xr - xl - 1, gl[2] if j == 0 else gl[1] if j % 2 else gl[0])
+    # greenhouse sides: shoulder in body colour, side glass (lit left, shaded right), B-pillar
+    a, b = S['roof']; rm = (a + b) // 2
+    for y in range(a, b + 1):
+        c.HL(bx0 + 2, y, cx0 - bx0 - 2, gl[2]); c.P(cx0 - 1, y, gl[3])
+        c.HL(cx1 + 1, y, bx1 - cx1 - 2, gl[1]); c.P(cx1 + 1, y, gl[0]); c.P(bx1 - 1, y, INK2)
+    for k in range(3): c.P(bx0 + 2 + k % 2, a + 2 + k, gl[5])
+    c.R(bx0 + 2, rm, cx0 - bx0 - 2, 2, T[3]); c.R(cx1 + 1, rm, bx1 - cx1 - 1, 2, T[1])
+    # roof cap: lit far edge and left side, shaded right side and near edge, top-left specular wedge
     c.R(cx0, a, cx1 - cx0 + 1, b - a + 1, T[4])
-    c.HL(cx0, a, cx1 - cx0 + 1, T[3] if down else T[5]); c.HL(cx0, b, cx1 - cx0 + 1, T[5] if down else T[3])
-    for j in range(1, 4): c.HL(cx0 + 1, a + j, 7 - 2 * j, T[5])
-    c.VL(cx0, a + 1, b - a - 1, T[5]); c.VL(cx1, a + 1, b - a - 1, T[3])
-    # near glass: sky rows, widening toward the deck, 3-band diagonal glare
+    c.HL(cx0 + 1, a, cx1 - cx0 - 1, T[5]); c.HL(cx0 + 1, b, cx1 - cx0 - 1, T[3])
+    c.VL(cx0, a + 1, b - a - 1, T[5]); c.VL(cx1, a + 1, b - a - 1, T[2]); c.VL(cx1 - 1, a + 2, b - a - 3, T[3])
+    for j in range(1, 4): c.HL(cx0 + 1, a + j, 8 - 2 * j, T[5])
+    # near glass: sky rows at the roof, widening to the deck, A/C-pillars, 3-band diagonal glare
     a, b = S[near_glass]; h = b - a + 1
     for j in range(h):
-        f = j / max(1, h - 1) if down else 1 - j / max(1, h - 1)
-        xl, xr = lerp(cx0, cx0 - 3, f), lerp(cx1, cx1 + 3, f)
-        glass_band(c, a + j, xl, xr, j if down else h - 1 - j, h, gl)
-    diag_glare(c, cx0 + 1, a, h, gl)
-    c.HL(cx0 - 3, b if down else a, cx1 - cx0 + 7, INK2)               # cowl / rear seal
-    my = S['wind'][1] - 2 if down else S['wind'][0]
-    c.R(1, my, 1, 2, T[3]); c.R(30, my, 1, 2, T[2])                   # mirrors
+        f = j / max(1, h - 1)
+        xl, xr = lerp(cx0, bx0 + 1, f), lerp(cx1, bx1 - 1, f)
+        c.P(xl, a + j, INK2); c.P(xr, a + j, INK2)
+        glass_band(c, a + j, xl + 1, xr - 1, j, h, gl)
+    diag_glare(c, cx0 + 3, a, h, gl)
+    c.HL(bx0 + 1, b, bx1 - bx0 - 1, INK2)                               # cowl / rear seal
+    my = S['wind'][1] - 2 if down else S['wind'][1] + 1
+    c.R(1, my, 1, 2, T[3]); c.R(30, my, 1, 2, T[2])                   # mirrors (behind the front tyres)
     # face
     a, b = S['face']
     c.R(bx0, a, bx1 - bx0 + 1, b - a + 1, T[2])
@@ -344,9 +373,9 @@ def car_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
             c.P(15, S['hood'][0] + 3, GOLD[2]); c.P(16, S['hood'][0] + 3, GOLD[2]); c.P(15, S['hood'][0] + 4, GOLD[1]); c.P(16, S['hood'][0] + 4, GOLD[1])
             c.HL(bx0 + 3, b - 1, bx1 - bx0 - 5, CHR[1]); c.VL(bx0 + 5, a + 3, 4, CHR[0]); c.VL(bx1 - 5, a + 3, 4, CHR[0])
         lit = ph % 2; ly = S['roof'][0] + 4
-        c.R(cx0 + 1, ly, 7, 3, '#c8404a' if lit else '#5e0a24'); c.R(cx0 + 8, ly, 7, 3, '#5e80b2' if not lit else '#2d436e')
-        c.HL(cx0 + 1, ly + 2, 14, INK2)
-        c.R(cx0 + 2 if lit else cx0 + 11, ly, 2, 1, '#ffd0c8' if lit else '#c1cfcc')
+        c.R(9, ly, 7, 3, '#c8404a' if lit else '#5e0a24'); c.R(16, ly, 7, 3, '#5e80b2' if not lit else '#2d436e')
+        c.HL(9, ly + 2, 14, INK2)
+        c.R(10 if lit else 19, ly, 2, 1, '#ffd0c8' if lit else '#c1cfcc')
     if sp.get('taxi'):
         ly = S['roof'][0] + 4
         c.R(12, ly, 8, 4, GOLD[2]); c.HL(12, ly, 8, GOLD[3]); c.HL(12, ly + 3, 8, GOLD[0]); c.HL(13, ly + 1, 6, GOLD[3])
@@ -390,7 +419,7 @@ def van_side(sp, ph=0, brake=False, sig=None, open_=False):
 
 def van_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     c = Cv(32, 48); T = R[sp['ramp']]; bx0, bx1 = 2, 29; down = view == 'down'
-    tyres(c, 41, 5, bx0, bx1, ph)
+    tyres(c, 41, 5, bx0, bx1, ph); flank_axles(c, (7,), ph)
     c.oy = -BOB[ph]
     left_on, right_on = (sig == 'R', sig == 'L') if down else (sig == 'L', sig == 'R')
     if down:
@@ -402,6 +431,7 @@ def van_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     c.HL(bx0 + 1, a, bx1 - bx0 - 1, T[5])
     for j in range(1, 6): c.HL(bx0 + 1, a + j, 12 - 2 * j, T[5])
     c.VL(bx0, a + 1, b - a, T[5]); c.VL(bx1, a + 1, b - a, T[3]); c.VL(bx1 - 1, a + 1, b - a, T[3])
+    flank_glass(c, a + 3, b - 2, {a + 3 + 8, a + 3 + 16} if down else {a + 7, a + 15})
     c.HL(bx0, b, bx1 - bx0 + 1, T[3])
     for k in range(2): c.X(bx0 + k, a); c.X(bx1 - k, a)
     if down:
@@ -504,7 +534,7 @@ def box_side(sp, ph=0, brake=False, sig=None, open_=False):
 def box_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     H = 64; c = Cv(32, H); T = R[sp['ramp']]; kind = sp['kind']; down = view == 'down'
     bx0, bx1, kx0, kx1 = 2, 29, 4, 27
-    tyres(c, 57, 5, bx0, bx1, ph)
+    tyres(c, 57, 5, bx0, bx1, ph); flank_axles(c, (7,) if kind != 'fire' else (7, 15), ph)
     c.oy = -BOB[ph]
     left_on, right_on = (sig == 'R', sig == 'L') if down else (sig == 'L', sig == 'R')
     gl = GT if kind == 'ambulance' else G
@@ -637,7 +667,7 @@ def bus_side(sp, ph=0, brake=False, sig=None, open_=False):
 
 def bus_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     H = 80; c = Cv(32, H); T = R['bus']; bx0, bx1 = 2, 29; down = view == 'down'
-    tyres(c, 73, 5, bx0, bx1, ph)
+    tyres(c, 73, 5, bx0, bx1, ph); flank_axles(c, (9,), ph)
     c.oy = -BOB[ph]
     left_on, right_on = (sig == 'R', sig == 'L') if down else (sig == 'L', sig == 'R')
     a, b = (2, 57) if down else (2, 59)
@@ -645,6 +675,7 @@ def bus_ns(sp, view, ph=0, brake=False, sig=None, open_=False):
     for j in range(1, 6): c.HL(bx0 + 1, a + j, 12 - 2 * j, T[5])
     c.VL(bx0, a, b - a + 1, T[5]); c.VL(bx1, a, b - a + 1, T[3]); c.VL(bx1 - 1, a, b - a + 1, T[3])
     c.HL(bx0, b, bx1 - bx0 + 1, T[3])
+    flank_glass(c, a + 4, b - 2, set(range(a + 4, b, 9)))
     for k in range(2): c.X(bx0 + k, a); c.X(bx1 - k, a)
     for p0 in ((8, 34) if down else (12, 38)):                            # two rounded AC pods
         c.R(7, p0, 18, 12, '#e4e9e8'); c.HL(8, p0 - 1, 16, '#e4e9e8')

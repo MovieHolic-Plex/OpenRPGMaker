@@ -549,9 +549,31 @@ function reachAhead(rect: TransitPose["rect"], dir: TransitDir, by: number): Tra
 }
 
 /**
- * 상자에 새로 들어가도 되는가 — 들어오는 축이 빨간불이면 정지선(상자 STOP_LINE_GAP 칸 앞)에서 선다. 초록이어도 상자 안에 다른 방향에서
- * 들어와 쓸고 지나갈 칸이 겹치는 탈것(맞은편 직진과 좌회전 등)이 있으면 기다린다 — 겹쳐 지나가거나 교착하지 않게.
- * 이미 상자에 몸이 걸친 탈것은 신호와 상관없이 빠져나간다.
+ * 상자 건너편이 비었는가 — 몸이 상자를 다 빠져나간 자리(+앞차 간격 1칸)에 다른 탈것이 있으면 들어가지 않는다.
+ * 아래쪽 줄이 상자까지 밀려 있을 때 상자 안에 서서 엇갈린 축을 영영 막는 교착(꼬리 물기)을 막는다.
+ */
+function junctionExitClear(sim: TransitSim, v: TransitVehicleState, box: Set<string>): boolean {
+  const r = sim.routes[v.routeIndex]!;
+  const L = v.def.length;
+  let p = v.pos, touched = false;
+  for (let k = 0; k < 400; k += 1, p += 0.25) {
+    if (touchesBox(transitBodyRect(r, p, L).rect, box)) touched = true;
+    else if (touched) break;
+  }
+  if (!touched) return true;
+  const out = transitBodyRect(r, p, L);
+  const need = new Set(transitRectCells(reachAhead(out.rect, out.dir, 1)).map((c) => cellKey(c.x, c.y)));
+  for (const o of sim.vehicles) {
+    if (o === v) continue;
+    if (transitRectCells(transitPose(sim, o).rect).some((c) => need.has(cellKey(c.x, c.y)))) return false;
+  }
+  return true;
+}
+
+/**
+ * 상자에 새로 들어가도 되는가 — 들어오는 축이 빨간불이면 정지선(상자 STOP_LINE_GAP 칸 앞)에서 선다. 초록이어도 상자 건너편이
+ * 막혔거나(junctionExitClear), 상자 안에 다른 방향에서 들어와 쓸고 지나갈 칸이 겹치는 탈것(맞은편 직진과 좌회전 등)이 있으면
+ * 기다린다 — 겹쳐 지나가거나 교착하지 않게. 이미 상자에 몸이 걸친 탈것은 신호와 상관없이 빠져나간다.
  */
 function junctionHolds(sim: TransitSim, v: TransitVehicleState, curRect: TransitPose["rect"], nextRect: TransitPose["rect"], nextDir: TransitDir): boolean {
   const j = sim.junctions!;
@@ -560,6 +582,7 @@ function junctionHolds(sim: TransitSim, v: TransitVehicleState, curRect: Transit
     const box = j.boxes[pass.box]!;
     if (touchesBox(curRect, box) || !touchesBox(reach, box)) continue;
     if (transitSignalAxis(sim.clockSec) !== (isHorizontal(pass.entryDir) ? "ew" : "ns")) return true;
+    if (!junctionExitClear(sim, v, box)) return true;
     for (const o of sim.vehicles) {
       if (o === v) continue;
       const op = (j.byRoute[o.routeIndex] ?? []).find((q) => q.box === pass.box);
