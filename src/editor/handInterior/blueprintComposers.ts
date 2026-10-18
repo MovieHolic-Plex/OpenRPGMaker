@@ -347,13 +347,17 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const bankX0 = cx - (bank === 3 ? 4 : 3);
   const bankX1 = bankX0 + bank * 3 - 2;
   const clearOfBank = (dx: number) => dx < bankX0 - 1 || dx > bankX1 + 1;
-  const connect: HandInteriorConnect[] = [{ a: "office", b: "hall", at: clearOfBank(officeDoorX) ? officeDoorX : (mirror ? office.x0 + 1 : office.x1 - 1) }];
+  // 칸막이 문은 틈만 열면 어디가 문인지 몰랐다(2026-10-18 사용자 반려 「문이 어디있는지도 모르겠고」) — 업무·회의실은 유리 자동문, 탕비실은 나무 문을 단다.
+  const connect: HandInteriorConnect[] = [{ a: "office", b: "hall", at: clearOfBank(officeDoorX) ? officeDoorX : (mirror ? office.x0 + 1 : office.x1 - 1), door: "mci-door-glass" }];
   const sideRow = 1 + 2 + 1; // 윙 첫 통로 줄(바닥 둘째 줄)
   connect.push({ a: "office", b: "meeting", at: sideRow });
+  const meeting = rooms.find((r) => r.id === "meeting")!;
+  const meetingDoorX = [Math.floor((meeting.x0 + meeting.x1) / 2), meeting.x0 + 1, meeting.x1 - 1].find(clearOfBank);
+  if (meetingDoorX !== undefined) connect.push({ a: "meeting", b: "hall", at: meetingDoorX, door: "mci-door-glass" });
   if (withPantry) {
     const pantry = rooms.find((r) => r.id === "pantry")!;
     const pdx = mirror ? pantry.x0 + 1 : pantry.x1 - 1;
-    connect.push({ a: "pantry", b: "hall", at: pdx });
+    connect.push({ a: "pantry", b: "hall", at: pdx, door: "mci-door-wood" });
   }
   const exit: HandInteriorExit = { room: "hall", x: cx, width: 1 };
   const s = new InteriorSketch(spec, rooms, connect, exit);
@@ -383,7 +387,10 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
   s.put("mci-rug", cx - 1, last - 1);
   // 융단 따라 화분 기둥(3줄 간격).
   for (let y = r(5); y <= last - 2; y += 3) { s.put("mci-plant-tall", cx - 3, y); s.put("mci-plant-tall", cx + 3, y); }
-  s.put("dept-directory-kiosk", cx + 2, last - 1);
+  // 정문 바람막이: 출입 매트 양옆 화분 한 쌍, 안내 키오스크는 그 바깥 — 남쪽 정문 틈이 한눈에 보이도록(2026-10-18 사용자 반려 「문이 어디있는지도 모르겠고」).
+  s.put("mci-plant-tall", cx - 2, last);
+  s.put("mci-plant-tall", cx + 2, last);
+  s.put("dept-directory-kiosk", cx + 4, last - 1);
   // 북쪽 벽 리듬: 창·액자·게시판, 벽 가구(우편함·자판기·잡지대).
   // 창밖은 낮 하늘(블라인드)이 기본, 밤·야경을 요청했을 때만 불 켜진 빌딩 야경 창(2026-10-18 사용자 반려 「창문 밖은 항상 어둡기만 한거냐」).
   const cityWindow = nuance.mood === "dark" ? "mci-window-city" : "mci-window-blind";
@@ -401,16 +408,17 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
     const mid = Math.floor((lx0 + lx1) / 2);
     if (kind === "sofa") {
       const sx = mid - 1;
-      s.put("mci-plant-tall", sx - 2, r(4));
+      // 안락의자는 2칸 높이 그림이라 소파 끝 바로 아래(sx-1·sx+3)에 두면 윗칸이 소파 모서리에 붙어 ㄴ자로 겹쳐 보였다
+      // (2026-10-18 사용자 반려 「소파 맞닿은 그러나 ㄴ하는거 다 어색하게 겹쳐있네」) — 소파 양끝에서 한 칸 띄운다.
+      s.put("mci-plant-tall", sx - 3, r(4));
       s.put("mci-sofa", sx, r(4), true);
-      s.put("mci-plant-tall", sx + 4, r(4));
+      s.put("mci-plant-tall", sx + 5, r(4));
       s.put("mci-rug", sx, r(5));
-      s.put("mci-armchair", sx - 1, r(5));
+      s.put("mci-armchair", sx - 2, r(5));
       s.put("mci-coffee-table", sx, r(5), true);
       s.goods(pickOf(rng, ["mci-g-coffee", "mci-g-vase"]), sx, r(5));
       s.goods("mci-g-books", sx + 1, r(5));
-      // sx+2 안락의자는 2칸 높이 그림 윗칸이 소파 오른쪽 자리를 덮었다(2026-10-18 사용자 반려) - 소파 양끝 바깥에만 둔다.
-      s.put("mci-armchair", sx + 3, r(5));
+      s.put("mci-armchair", sx + 4, r(5));
       if (r(8) <= last - 1) {
         s.put("mci-planter", sx - 2, r(8));
         s.put("lounge-sofa-cream", sx + 1, r(8));
@@ -418,8 +426,8 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
       }
     } else {
       // 카페 대기석: 2줄은 세트 사이가 맨바닥으로 비었다(2026-10-18 VQA 4회차) — 3줄 엇갈림 + 세트 사이 화분.
-      for (const [k, y] of [[0, r(4)], [1, r(6)], [0, r(8)]] as const) {
-        if (y > last - 1) continue;
+      const cafeRows = ([[0, r(4)], [1, r(6)], [0, r(8)]] as const).filter(([, y]) => y <= last - 1);
+      for (const [k, y] of cafeRows) {
         const tx = mid - 3 + k;
         for (const off of [0, 4]) {
           s.put("mci-cafe-chair-e", tx + off - 1, y);
@@ -428,7 +436,8 @@ export function composeOfficeLobby(spec: HandInteriorSpec, nuance: SpaceNuance, 
         }
         s.put("mci-planter", tx + 2 + (k ? -4 : 6), y);
       }
-      s.put("mci-wait-bench", mid - 1, last - 1);
+      // 대기 의자는 마지막 탁자 줄과 한 줄 이상 떨어질 때만 — 바로 밑에 붙으면 의자 2×3 덩어리로 뭉쳐 보였다(2026-10-18 사용자 반려).
+      if (last - 1 - cafeRows[cafeRows.length - 1]![1] >= 2) s.put("mci-wait-bench", mid - 1, last - 1);
     }
   };
   const westKind = rng() < 0.5 ? "sofa" : "cafe";
@@ -531,7 +540,8 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   const wLecture = Math.max(13, benchesPerSide * 3 * 2 + 3 + 2);
   const wSeminar = pickInt(rng, 10, 12) + (grand ? 2 : 0) - (compact ? 1 : 0);
   const topH = pickInt(rng, 12, 13) + (grand ? 2 : 0) - (compact ? 2 : 0);
-  const corH = pickInt(rng, 5, 6);
+  // 복도는 바닥 네 줄 — 계단실(북벽 오르는 계단 · 걷는 줄 · 내려가는 계단통 2줄)이 한 칸에 위아래로 들어간다.
+  const corH = pickInt(rng, 6, 7);
   const mirror = rng() < 0.5;
   const lecture: HandInteriorRoom = { id: "lecture", x0: 1, y0: 1, x1: wLecture, y1: topH, floor: pal.lecture[0], wall: pal.lecture[1] };
   const seminar: HandInteriorRoom = { id: "seminar", x0: wLecture + 2, y0: 1, x1: wLecture + 1 + wSeminar, y1: topH, floor: pal.seminar[0], wall: pal.seminar[1] };
@@ -610,23 +620,30 @@ export function composeLectureWing(spec: HandInteriorSpec, nuance: SpaceNuance, 
   }
   s.put("mc-mini-fridge", m.x1, m.y1);
 
-  // ── 복도: 위층 계단·아래층 계단참(건물이 1층뿐으로 보였다 - 2026-10-18 사용자 반려), 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자.
-  // 걷는 줄은 한 줄만 비운다 - 예전엔 복도 가운데 4줄을 통째로 비워 빈 바닥 띠가 됐다(VQA 14회차).
+  // ── 복도: 한쪽 끝 계단실(1F↔2F) — 북벽 오르는 계단 바로 아래 쇠 난간 내려가는 계단통, 다른 바닥 계단참.
+  //    계단이 복도 양끝에 따로 떨어져 작게 보여 건물이 1층뿐으로 읽혔다(2026-10-18 사용자 반려 「학교가 1층밖에 없는거냐」).
+  //    나머지 벽은 사물함 줄(문 앞은 비움), 게시판·소화기함, 음수대, 긴 의자. 걷는 줄은 한 줄만 비운다(VQA 14회차).
   const c = s.floorOf("corridor");
   const stairWest = rng() < 0.5;
-  s.put("sc-stairs-up", stairWest ? c.x0 + 1 : c.x1 - 2, c.y0, true);
-  hangRhythm(s, c, ["sc-notice-board", "mc-cork-board", "mc-window-class"], 1, 4);
-  for (let x = c.x0; x + 1 <= c.x1; x += 2) s.put(pickOf(rng, ["mc-hall-locker", "mc-hall-locker", "mc-hall-locker", "mc-bulletin-stand"]), x, c.y0);
-  s.put("mc-fire-cabinet", c.x0, c.y0);
-  s.put("mc-water-fountain", c.x1, c.y0);
+  const bayX0 = stairWest ? c.x0 : c.x1 - 4, bayX1 = bayX0 + 4;
+  const inBay = (x: number) => x + 1 >= bayX0 && x <= bayX1;
+  s.zone(bayX0, c.y0, bayX1, c.y1, pal.stage);
+  s.put("sc-stairs-up", bayX0 + 1, c.y0, true);
   s.keepRect(c.x0, c.y0 + 1, c.x1, c.y0 + 1);
-  s.put("sc-stairwell-down", stairWest ? c.x1 - 2 : c.x0 + 1, c.y1 - 1, true);
+  s.put("sc-stairwell-down", bayX0 + 1, c.y0 + 2, true);
+  s.put("mc-fire-cabinet", stairWest ? bayX0 + 3 : bayX0, c.y0);
+  hangRhythm(s, c, ["sc-notice-board", "mc-cork-board", "mc-window-class"], 1, 4);
+  for (let x = c.x0; x + 1 <= c.x1; x += 2) if (!inBay(x)) s.put(pickOf(rng, ["mc-hall-locker", "mc-hall-locker", "mc-hall-locker", "mc-bulletin-stand"]), x, c.y0);
+  s.put("mc-water-fountain", stairWest ? c.x1 : c.x0, c.y0);
   for (let x = c.x0 + 4; x + 1 <= c.x1 - 4; x += 5) {
+    if (inBay(x) || inBay(x + 2)) continue;
     s.put("mc-locker-bench", x, c.y1);
     if (c.y1 - 1 > c.y0 + 1) s.put(pickOf(rng, ["mc-trophy-case", "mc-vending-low", "mc-trophy-shelf"]), x + 2, c.y1);
   }
-  s.put("mc-trash-bin", c.x0, c.y1);
-  s.put("mc-vending-low", c.x1 - 1, c.y1) || s.put("mc-trash-bin", c.x1, c.y1);
+  s.put("mc-trash-bin", stairWest ? bayX1 : bayX0, c.y1);
+  if (stairWest) s.put("mc-vending-low", c.x1 - 1, c.y1) || s.put("mc-trash-bin", c.x1, c.y1);
+  else s.put("mc-vending-low", c.x0, c.y1) || s.put("mc-trash-bin", c.x0, c.y1);
+  decisions.push(`계단실(1F↔2F) ${stairWest ? "서쪽" : "동쪽"} 끝`);
 
   const areas = [areaOf("대강의실", f), areaOf("세미나·동아리실", m), areaOf("복도", c)];
   return s.finish({ tileset: "modern_campus", floor: pal.corridor[0], wall: pal.corridor[1] }, areas, decisions);
@@ -916,16 +933,17 @@ export function composeDepartmentStore(spec: HandInteriorSpec, nuance: SpaceNuan
     `팔레트 ${mood} · 층고 ${rowsY1 - 2}줄`,
   ];
 
-  // ── 아트리움: 북벽 에스컬레이터 상행·하행 한 쌍(같은 문틀, 나란히 한 군데 — 2026-10-18 VQA: 양 끝에 따로 떨어진 측면 에스컬레이터는 어색했다) + 엘리베이터,
+  // ── 아트리움: 북벽 한가운데(정문 융단 축) 에스컬레이터 ▲상행 · 안내판 · ▼하행 한 쌍 — 한쪽 구석에 붙은 6칸 덩어리는 한 대로 보였다
+  //    (2026-10-18 사용자 반려 「올라가는 에스컬레이터 내려가는 에스컬레이터 다 있어야지」). 양 끝은 엘리베이터와 오르는 계단.
   //    가운데 분수 원형 광장, 정문 융단, 양옆 명품 아일랜드 열.
   const h = s.floorOf("hall");
-  const escX = fashionWest ? h.x1 - 5 : h.x0;
-  s.put("escalator-pair-up", escX, h.y0, true);
-  s.put("escalator-pair-down", escX + 3, h.y0, true);
-  // 엘리베이터는 벽면을 쓰므로 걸이보다 먼저 세운다(걸이가 먼저 벽면을 잡으면 엘리베이터가 빠진다 — VQA 6회차). 가운데가 에스컬레이터 문틀과 겹치면 반대쪽 끝으로.
-  if (!s.put("mci-elevator", cx - 1, h.y0, true)) s.put("mci-elevator", fashionWest ? h.x0 : h.x1 - 1, h.y0, true);
+  s.put("escalator-pair-up", cx - 4, h.y0, true);
+  s.put("dept-sign-pillar", cx - 1, h.y0);
+  s.put("escalator-pair-down", cx, h.y0, true);
+  // 엘리베이터는 벽면을 쓰므로 걸이보다 먼저 세운다(걸이가 먼저 벽면을 잡으면 엘리베이터가 빠진다 — VQA 6회차).
+  s.put("mci-elevator", fashionWest ? h.x1 - 1 : h.x0, h.y0, true);
+  s.put("mci-stairs-up", fashionWest ? h.x0 : h.x1 - 1, h.y0, true);
   hangRhythm(s, h, ["mci-art-frame", "mci-route-map", "mci-art-frame", "mci-wall-clock"], 4, 3);
-  s.put("mci-plant-tall", cx - 2, h.y0); s.put("mci-plant-tall", cx + 1, h.y0);
   s.keepRect(h.x0, h.y0 + 1, h.x1, h.y0 + 1);
   const fy = h.y0 + Math.max(4, Math.floor((h.y1 - h.y0) / 2) - 1);
   s.zone(cx - 3, fy - 1, cx + 3, fy + 2, pal.ring);
